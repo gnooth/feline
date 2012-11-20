@@ -1,0 +1,6 @@
+*.o
+forth
+*.zip
+*.obj
+forth.exe
+*.pdb

@@ -1,0 +1,62 @@
+; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; (at your option) any later version.
+
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+
+; You should have received a copy of the GNU General Public License
+; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+extern c_allocate
+
+code allocate, 'allocate'               ; u -- a-addr ior
+; MEMORY
+%ifdef WIN64
+        popd    rcx
+        push    rbp
+        mov     rbp, [saved_rbp_data]
+        sub     rsp, 32
+%else
+        popd    rdi
+%endif
+        call    c_allocate
+%ifdef WIN64
+        add     rsp, 32
+        pop     rbp
+%endif
+        pushd   rax
+        _ dup
+        _if allocate1
+        _ zero                          ; success
+        _else allocate1
+        _ minusone                      ; failure
+        _then allocate1
+        next
+endcode
+
+extern c_free
+
+code free_, 'free'                      ; a-addr -- ior
+; MEMORY
+%ifdef WIN64
+        popd    rcx
+        push    rbp
+        mov     rbp, [saved_rbp_data]
+        sub     rsp, 32
+%else
+        popd    rdi
+%endif
+        call    c_free
+%ifdef WIN64
+        add     rsp, 32
+        pop     rbp
+%endif
+        _ zero                          ; ior
+        next
+endcode

@@ -1,0 +1,171 @@
+; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; (at your option) any later version.
+
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+
+; You should have received a copy of the GNU General Public License
+; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+variable hld, 'hld', 0
+
+code hold, 'hold'
+        _ minusone
+        _ hld
+        _ plusstore
+        _ hld
+        _ fetch
+        _ cstore
+        next
+endcode
+
+code sign, 'sign'                       ; n --
+        _ zlt
+        _if sign1
+        _lit '-'
+        _ hold
+        _then sign1
+        next
+endcode
+
+code ltsharp,"<#"
+        _ pad                           ; pad hld !
+        _ hld
+        _ store
+        next
+endcode
+
+code sharpgt,'#>'                       ; d --- addr len
+        _ twodrop                       ; 2drop hld @ pad over -
+        _ hld
+        _ fetch
+        _ pad
+        _ over
+        _ minus
+        next
+endcode
+
+code sharp, '#'                         ; ud1 -- ud2
+        _ base
+        _ fetch                         ; -- ud1 base
+        _ muslmod                       ; -- remainder ud2
+        _ rot                           ; -- ud2 remainder
+        _lit 9                          ; -- ud2 remainder 9
+        _ over                          ; -- ud2 remainder 9 remainder
+        _ lt                            ; -- ud2 remainder flag
+        _if sharp1                      ; remainder > 9
+        _lit 7
+        _ plus
+        _then sharp1
+        _lit '0'
+        _ plus
+        _ hold
+        next
+endcode
+
+code sharps, '#s'
+        _begin sharps1
+        _ sharp
+        _ twodup
+        _ dzeroequal
+        _until sharps1
+        next
+endcode
+
+code paren_dot, '(.)'                   ; n -- c-addr u
+        _ dup
+        _ abs_
+        _ zero
+        _ ltsharp
+        _ sharps
+        _ rot
+        _ sign
+        _ sharpgt
+        next
+endcode
+
+code dot, '.'
+        _ paren_dot
+        _ type
+        _ space
+        next
+endcode
+
+code dotr, '.r'                         ; n u --
+        _ tor
+        _ paren_dot
+        _ rfrom
+        _ over
+        _ minus
+        _ spaces
+        _ type
+        next
+endcode
+
+code paren_udot, '(u.)'
+        _ zero
+        _ ltsharp
+        _ sharps
+        _ sharpgt
+        next
+endcode
+
+code udot, 'u.'
+        _ paren_udot
+        _ type
+        _ space
+        next
+endcode
+
+code udotr, 'u.r'
+        _ tor
+        _ paren_udot
+        _ rfrom
+        _ over
+        _ minus
+        _ spaces
+        _ type
+        next
+endcode
+
+code hdot, 'h.'
+        _ base
+        _ fetch
+        _ tor
+        _ hex
+        _ dot
+        _ rfrom
+        _ base
+        _ store
+        next
+endcode
+
+code paren_uddot, '(ud.)'               ; ud -- c-addr u
+        _ ltsharp
+        _ sharps
+        _ sharpgt
+        next
+endcode
+
+code uddot, 'ud.'                       ; ud --
+        _ paren_uddot
+        _ type
+        _ space
+        next
+endcode
+
+code dottwo, '.2'                       ; ub --
+        _ zero
+        _ ltsharp
+        _ sharp
+        _ sharp
+        _ sharpgt
+        _ type
+        next
+endcode
