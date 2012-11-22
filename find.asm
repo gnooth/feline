@@ -21,51 +21,39 @@ code match?, 'match?'                   ; c-addr1 c-addr2 -- flag
         next
 endcode
 
-code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
-        _ latest
-        _ over                          ; c-addr latest c-addr
-        _ match?                        ; c-addr flag
-        test    ebx, ebx
-        jz     .continue
-        _ twodrop
-        _ latest
-        _ namefrom
-        pushd   -1
-        next
-.continue:
-        _ drop                          ; c-addr
-        _ tor                           ; --                    r: c-addr
-        _ latest
-        _ ntolink                       ; lfa
-.loop:
-        _ fetch                         ; link
-        test    rbx, rbx
-        jz      .notfound
-        _ dup                           ; -- name name
-        _ rfetch                        ; -- name name c-addr
-        _ match?
-        test    rbx, rbx
-        jnz     .found
-        _ drop                          ; drop flag left by MATCH?
-        _ ntolink
-        jmp     .loop
-.notfound:
-        _ drop
-        _ rfrom
-        pushd   0
-        next
-.found:
-        _ drop                          ; drop flag left by MATCH?
-        _ rfrom
-        _ drop
+code found, 'found'                     ; nfa -- xt 1  | xt -1
         _ namefrom                      ; -- xt
-        _ dup
-        _ immediate?
-        _if find1
-        pushd   1
-        _else find1
-        pushd   -1
-        _then find1
+        _ dup                           ; -- xt xt
+        _ immediate?                    ; -- xt flag
+        _if found1
+        _ one                           ; -- xt 1
+        _else found1
+        _ minusone                      ; -- xt -1
+        _then found1
+        next
+endcode
+
+code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
+        _ tor                           ; --                    r: -- c-addr
+        _ latest                        ; -- nfa
+        _begin find1
+        _ dup                           ; -- nfa nfa
+        _ rfetch                        ; -- nfa nfa c-addr
+        _ match?
+        _if find2                       ; -- nfa
+        _ rfrom
+        _ drop
+        _ found
+        next
+        _then find2                     ; -- nfa
+        _ ntolink                       ; -- lfa
+        _ fetch                         ; -- nfa
+        _ dup                           ; -- nfa nfa
+        _ zero?
+        _until find1
+        _ drop
+        _ rfrom
+        _ zero
         next
 endcode
 

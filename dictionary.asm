@@ -328,7 +328,7 @@ code syspad, 'syspad'
         next
 endcode
 
-code latest, 'latest'
+code latest, 'latest'                   ; -- nfa
         _ last
         _ fetch
         next
