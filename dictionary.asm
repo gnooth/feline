@@ -229,6 +229,16 @@ code colon, ':'
         next
 endcode
 
+code colonnoname, ':noname'
+        _ state
+        _ on
+        _ here
+        _ dup
+        _ cellplus
+        _ comma
+        next
+endcode
+
 code semi, ';', IMMEDIATE
         _lit 0xc3                       ; RET
         _ ccomma
