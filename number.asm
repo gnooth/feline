@@ -127,7 +127,7 @@ code convert, 'convert'                 ; n addr1 -- n addr2
         next
 endcode
 
-code number, 'number'                   ; -- addr -- n
+code number, 'number'                   ; addr -- n
         _ dup
         _ tor                           ; -- addr               r: addr
         _ zero
@@ -166,5 +166,46 @@ code number, 'number'                   ; -- addr -- n
         _ cr
         _ abort
         _then number2
+        next
+endcode
+
+code number_in_base, 'number-in-base'   ; base -- number
+        _ parse_name
+        _ tick_word
+        _ place
+        _ base
+        _ fetch
+        _ tor
+        _ base
+        _ store
+        _ tick_word
+        _ number
+        _ rfrom
+        _ base
+        _ store
+        _ state
+        _ fetch
+        _if hexnum1
+        _lit lit
+        _ commacall
+        _ comma
+        _then hexnum1
+        next
+
+code binnum, 'b#', IMMEDIATE
+        _lit 2
+        _ number_in_base
+        next
+endcode
+
+code decnum, 'd#', IMMEDIATE
+        _lit 10
+        _ number_in_base
+        next
+endcode
+
+code hexnum, 'h#', IMMEDIATE
+        _lit 16
+        _ number_in_base
         next
 endcode
