@@ -200,7 +200,7 @@ endcode
 
 code create, 'create'                   ; "<spaces>name" --
         _ header
-        pushd   docreate
+        _lit docreate
         _ commacall
         next
 endcode
@@ -221,7 +221,7 @@ endcode
 
 code constant, 'constant'
         _ header
-        pushd   doconstant
+        _lit doconstant
         _ commacall
         _ comma
         next
@@ -230,7 +230,7 @@ endcode
 code compilecomma, 'compile,'
         _ tocode
         _ commacall
-        _ next
+        next
 endcode
 
 code colon, ':'
