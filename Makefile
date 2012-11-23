@@ -40,7 +40,8 @@ ASM_SOURCES = forth.asm equates.asm macros.asm \
 	stack.asm \
 	store.asm \
 	strings.asm \
-	tools.asm
+	tools.asm \
+	value.asm
 
 forth.o: $(ASM_SOURCES)
 	nasm $(FLAGS) -g -felf64 forth.asm	# -felf64 even on Windows

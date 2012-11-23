@@ -40,6 +40,7 @@ default abs
 %include "store.asm"
 %include "strings.asm"
 %include "tools.asm"
+%include "value.asm"
 
 ; the last word
 variable last, 'last', last_nfa
