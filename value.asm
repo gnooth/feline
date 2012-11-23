@@ -29,3 +29,20 @@ code storeto, 'to', IMMEDIATE
         _then storeto1
         next
 endcode
+
+code plusstoreto, '+to', IMMEDIATE      ; n "<spaces>name" --
+        _ tick
+        _ tobody
+        _ state
+        _ fetch
+        _if plusstoreto1
+        _lit lit
+        _ commacall
+        _ comma
+        _lit plusstore
+        _ commacall
+        _else plusstoreto1                  ; -- n addr
+        _ plusstore
+        _then plusstoreto1
+        next
+endcode
