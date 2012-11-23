@@ -15,6 +15,18 @@
 
 variable dp, 'dp', 0                    ; initialized in main()
 
+variable limit, 'limit', 0              ; initialized in main()
+
+code unused, 'unused'                   ; -- u
+; CORE EXT
+        _ limit
+        _ fetch
+        _ dp
+        _ fetch
+        _ minus
+        next
+endcode
+
 ; code (8 bytes) link (8 bytes) flag (1 byte) name (1-256 bytes)
 
 code ntolink, 'n>link'

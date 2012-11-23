@@ -32,18 +32,21 @@ extern void cold();
 int main(int argc, char **argv, char **env)
 {
   extern uint64_t dp_data;
+  extern uint64_t limit_data;
   extern uint64_t tick_syspad_data;
   extern uint64_t tick_tib_data;
   extern uint64_t s0_data;
   extern uint64_t tick_tick_word_data;
+  uint64_t dictionary_size = 1024 * 1024;
 #ifdef WIN64
   void * dictionary =
-    VirtualAlloc(0, 1024 * 1024, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    VirtualAlloc(0, dictionary_size, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 #else
   void * dictionary =
-    mmap((void *)0x1000000, 1024 * 1024, PROT_EXEC|PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE, -1, 0);
+    mmap((void *)0x1000000, dictionary_size, PROT_EXEC|PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE, -1, 0);
 #endif
   dp_data = (uint64_t) dictionary;
+  limit_data = (uint64_t) dictionary + dictionary_size;
   tick_syspad_data = (uint64_t) malloc(1024);
   tick_tib_data = (uint64_t) malloc(256);
   s0_data = (uint64_t) malloc(1024) + (1024 - 64);
