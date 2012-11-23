@@ -72,3 +72,9 @@ code blchar, 'bl'
         mov     ebx, ' '
         next
 endcode
+
+code cell, 'cell'
+        pushrbx
+        mov     rbx, BYTES_PER_CELL
+        next
+endcode
