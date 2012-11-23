@@ -17,6 +17,10 @@
         ret
 %endmacro
 
+%macro  _return 0
+        ret
+%endmacro
+
 %macro  pushrbx 0
         lea     rbp, [rbp - BYTES_PER_CELL]
         mov     [rbp], rbx

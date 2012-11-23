@@ -101,7 +101,7 @@ code refill, 'refill'                   ; -- flag
         ; error
         _ twodrop
         _ false
-        _ exit_
+        _return
         _then refill1                   ; -- len flag
         _if refill2                     ; -- len
         _ nsource

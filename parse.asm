@@ -45,7 +45,7 @@ code skipwhite, 'skipwhite'             ; c-addr1 u1 -- c-addr2 u2
         _ blchar
         _ gt
         _if skipwhite2
-        _ exit_
+        _return
         _then skipwhite2
         _ one
         _ slashstring
@@ -63,7 +63,7 @@ code scantowhite, 'scantowhite'         ; c-addr1 u1 -- c-addr2 u2
         _ blchar
         _ le
         _if scantowhite2
-        _ exit_
+        _return
         _then scantowhite2
         _ one
         _ slashstring

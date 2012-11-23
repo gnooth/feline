@@ -167,7 +167,7 @@ code sequal, 's='                       ; addr1 addr2 len -- flag
         _ twodrop
         _ false
         _ unloop
-        _ exit_
+        _return
         _then sequal3
         _loop sequal2
         _then sequal1
@@ -216,7 +216,7 @@ code isequal, 'is='                     ; addr1 addr2 len -- flag
         _ twodrop
         _ false
         _ unloop
-        _ exit_
+        _return
         _then isequal4
         _then isequal3
         _loop isequal2
@@ -233,7 +233,7 @@ code strequal, 'str='                   ; addr1 len1 addr2 len2 -- flag
         _if strequal1
         _ threedrop
         _ false
-        _ exit_
+        _return
         _then strequal1
         _ sequal
         next
@@ -246,7 +246,7 @@ code istrequal, 'istr='                 ; addr1 len1 addr2 len2 -- flag
         _if istrequal1
         _ threedrop
         _ false
-        _ exit_
+        _return
         _then istrequal1
         _ isequal
         next

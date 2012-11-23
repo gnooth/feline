@@ -38,7 +38,7 @@ code findcode, 'find-code'              ; code-addr -- name-addr
         _ zero?
         _if find_code_3
         _ false                         ; not found
-        _ exit_
+        _return
         _then find_code_3
         _ dup
         _ namefrom

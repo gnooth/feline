@@ -286,7 +286,7 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _ zne                           ; false flag if i = 0
         _ zero
         _ unloop
-        _ exit_
+        _return
         _then read_line3
         _ dup
         _lit 10
@@ -298,7 +298,7 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _ true
         _ zero
         _ unloop
-        _ exit_
+        _return
         _then read_line4
         _ over                          ; -- u1 fileid c-addr char c-addr
         _ i

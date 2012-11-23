@@ -64,7 +64,7 @@ code interpret, 'interpret'             ; --
         _ zero?                         ; -- addr flag
         _if interp0
         _ drop                          ; --
-        _ exit_
+        _return
         _then interp0
         _ find
         _ ?dup

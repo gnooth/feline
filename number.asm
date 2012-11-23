@@ -49,7 +49,7 @@ code digit, 'digit'                     ; char -- n true  |  char -- false
         _ drop
         _ false
         _then digit2
-        _ exit_
+        _return
         _then digit1
         _ upc
         _lit 'A'
@@ -59,7 +59,7 @@ code digit, 'digit'                     ; char -- n true  |  char -- false
         _if digit3
         _ drop
         _ false
-        _ exit_
+        _return
         _then digit3
         _lit 10
         _ plus
@@ -70,7 +70,7 @@ code digit, 'digit'                     ; char -- n true  |  char -- false
         _if digit4
         _ drop
         _ false
-        _ exit_
+        _return
         _then digit4
         _ true
         next
@@ -85,7 +85,7 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
         _ digit
         _ zero?
         _if tonumber2
-        _ exit_
+        _return
         _then tonumber2
         _ tor
         _ twoswap
