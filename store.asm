@@ -37,14 +37,14 @@ code plusstore, '+!'                    ; n addr --
         next
 endcode
 
-code off, "off"                         ; addr --
+code off, 'off'                         ; addr --
         xor     eax, eax
         mov     [rbx], rax
         poprbx
         next
 endcode
 
-code on, "on"                           ; addr --
+code on, 'on'                           ; addr --
         mov     qword [rbx], -1
         poprbx
         next
