@@ -21,11 +21,18 @@ variable opcode
 
 0 value modrm-byte
 
+0 value size
+
 variable done?
 variable literal?
 
 : .2  ( ub -- )  0 <# # # #> type ;
 : .3  ( ub -- )  0 <# # # # #> type ;
+
+create mnemonic  2 cells allot
+
+: mnemonic!  ( addr len -- )  mnemonic 2! ;
+: .mnemonic  ( -- )  40 >pos  mnemonic 2@ type ;
 
 : !modrm-byte  ( -- )  ip prefix if 2 else 1 then + c@ to modrm-byte ;
 
@@ -55,69 +62,101 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 
 : handler  ( opcode -- handler )  cells handlers + @ ;
 
+: install-handler  ( xt opcode -- )  cells handlers + ! ;
+
 : .bytes  ( u -- )
    base @ >r
    hex
    0 ?do ip i + c@ .2 space loop
    r> base ! ;
 
-: .mnemonic  ( addr len -- )  40 >pos type ;
-
 : unsupported  ( -- )  40 >pos ." unsupported opcode " opcode @ h. ;
 
-: .name  ( code-addr -- )
-    find-code ?dup if
-\         [ decimal ] 64 #out @ - 1 max spaces
-        64 >pos
-        count type
-    then ;
+: .name  ( code-addr -- )  find-code ?dup if 64 >pos count type then ;
 
 : .ip  ( -- )  ?cr ip h. ;
 
 : .literal  ( -- )
    .ip
-   8 .bytes
+   cell .bytes
    64 >pos
+   ." #"
+   base @ >r
+   ip @ decimal .
+   r> base !
    ." $"
    ip @ h.
    cell +to ip ;
 
+: .relative  ( reg disp -- )
+   ." [" swap .reg64                    \ -- disp
+   ?dup if
+      dup 0> if
+         ." +"
+      else
+         ." -"
+      then
+      abs 0 .r
+   then
+   ." ]" ;
+
 : .call  ( -- )
-   5 .bytes
-   s" call" .mnemonic
+   5 to size
+   size .bytes
+   s" call" mnemonic!
+   .mnemonic
    48 >pos
-   ip 1+ sl@           \ signed 32-bit displacement
-   ip 5 + + dup h.
-\     find-code ?dup if count type then
-   dup >r
-    .name
-\     5 ip +!
-\    5 ip + to ip
-   5 +to ip
-    r@ ['] (lit) >code = if
-        .literal
-    then
-    r@ ['] (do) >code = if
-        .literal
-    then
-    r@ ['] (?do) >code = if
-        .literal
-    then
-    r@ ['] (loop) >code = if
-        .literal
-    then
-    r> drop
-    ;
+   ip 1+ l@s                            \ signed 32-bit displacement
+   ip size + + dup h.
+   dup .name >r
+   size +to ip
+   r@ ['] (lit) >code = if
+      .literal
+   then
+   r@ ['] (do) >code = if
+      .literal
+   then
+   r@ ['] (?do) >code = if
+      .literal
+   then
+   r@ ['] (loop) >code = if
+      .literal
+   then
+   r@ ['] dovalue >code = if
+      .literal
+   then
+   r> drop ;
 
 : .jmp  ( -- )
    5 .bytes
    40 >pos
    ." jmp"
    48 >pos
-   ip 1+ sl@                            \ signed 32-bit displacement
+   ip 1+ l@s                            \ signed 32-bit displacement
    ip 5 + + dup h.
    .name
    5 +to ip ;
+
+\ $01 handler
+:noname ( -- )
+   s" add" mnemonic!
+   !modrm-byte
+   modrm-mod 0= if
+      prefix if 3 else 2 then to size
+      size .bytes
+      .mnemonic
+      48 >pos
+      modrm-rm 0 .relative
+      ." , "
+      modrm-reg .reg64
+      size +to ip
+      exit
+   then
+   prefix if 2 else 1 then to size
+   unsupported
+   size +to ip ;
+
+h# 01 install-handler
 
 : .pop  ( -- )
    1 .bytes
@@ -129,20 +168,23 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 
 : .ret  ( -- )
    1 .bytes
-   s" ret" .mnemonic
+\    s" ret" .mnemonic
+   s" ret" mnemonic! .mnemonic
    1 +to ip
    done? on ;
 
 : .85  ( -- )
-   ip prefix if 2 else 1 then + c@      \ modrm-byte
-   dup modrm-mod 3 = if                 \ register operands
-      dup modrm-reg 0= if
-         prefix if 3 else 2 then .bytes
-         s" test" .mnemonic
+\    ip prefix if 2 else 1 then + c@      \ modrm-byte
+   !modrm-byte
+   modrm-mod 3 = if                     \ register operands
+      modrm-reg 0= if
+         prefix if 3 else 2 then to size
+         size .bytes
+         s" test" mnemonic! .mnemonic
          48 >pos
-         dup modrm-reg .reg64 ." , " modrm-rm .reg64
-         prefix if 3 else 2 then +to ip
-          exit
+         modrm-reg .reg64 ." , " modrm-rm .reg64
+         size +to ip
+         exit
       then
    then
    1 .bytes
@@ -150,46 +192,87 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    1 +to ip ;
 
 : .89  ( -- )
-    ip prefix if 2 else 1 then + c@         \ modrm-byte
-    dup modrm-mod 3 = if
-        prefix if 3 else 2 then .bytes
-        ." mov "
-
+   s" mov" mnemonic!
+   !modrm-byte
+   modrm-mod 0= if
+      prefix if 3 else 2 then to size
+      size .bytes
+      .mnemonic
+      48 >pos
+      modrm-rm 0 .relative
+      ." , "
+      modrm-reg .reg64
+      size +to ip
+      exit
+   then
+   modrm-mod 1 = if                     \ 1-byte displacement
+      prefix if 4 else 3 then to size
+      size .bytes
+      .mnemonic
+      48 >pos
+      modrm-rm
+      ip prefix if 3 else 2 then + c@s
+      .relative
+      ." , "
+      modrm-reg .reg64
+      size +to ip
+      exit
     then
-;
-
-: .relative  ( reg disp -- )
-   ." [" swap .reg64                    \ -- disp
-   ?dup if ." +" 0 .r then
-   ." ]" ;
+    modrm-mod 3 = if                    \ register operands
+       prefix if 3 else 2 then to size
+       size .bytes
+       .mnemonic
+       48 >pos
+       modrm-rm .reg64
+       ." , "
+       modrm-reg .reg64
+       size +to ip
+       exit
+    then
+    prefix if 2 else 1 then to size
+    size .bytes
+    unsupported
+    size +to ip ;
 
 : .8b  ( -- )
+   s" mov" mnemonic!
    !modrm-byte
+   modrm-mod 0= if
+      prefix if 3 else 2 then to size
+      size .bytes
+      .mnemonic
+      48 >pos
+      modrm-reg .reg64
+      ." , "
+      modrm-rm 0 .relative
+      size +to ip
+      exit
+   then
    modrm-mod 1 = if                \ 1-byte displacement
       prefix if 4 else 3 then .bytes
-      s" mov" .mnemonic
+      .mnemonic
       48 >pos
       modrm-reg .reg64 ." , "
       modrm-rm
-      ip prefix if 3 else 2 then + c@
+      ip prefix if 3 else 2 then + c@s
       .relative
       prefix if 4 else 3 then +to ip
       exit
    then
-   drop
    1 .bytes
    unsupported
    1 +to ip ;
 
 : .8d  ( -- )
+   s" lea" mnemonic!
    !modrm-byte
    modrm-mod 1 = if                \ 1-byte displacement
       prefix if 4 else 3 then .bytes
-      s" lea" .mnemonic
+      .mnemonic
       48 >pos
       modrm-reg .reg64 ." , "
       modrm-rm
-      ip prefix if 3 else 2 then + c@
+      ip prefix if 3 else 2 then + c@s
       .relative
       prefix if 4 else 3 then +to ip
       exit
@@ -198,8 +281,6 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    1 .bytes
    unsupported
    1 +to ip ;
-
-: install-handler  ( xt opcode -- )  cells handlers + ! ;
 
 hex
 ' .call e8 install-handler
@@ -211,7 +292,7 @@ hex
 ' .pop  5b install-handler
 ' .pop  5d install-handler
 ' .85   85 install-handler
-\ ' .89   handlers 89 cells + !
+' .89   89 install-handler
 ' .8b   8b install-handler
 ' .8d   8d install-handler
 decimal
