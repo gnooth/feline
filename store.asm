@@ -30,9 +30,10 @@ code cstore, 'c!'                       ; c addr --
 endcode
 
 code plusstore, '+!'                    ; n addr --
-        popd    rax                     ; addr
-        add     [rax], rbx
-        poprbx
+        mov     rax, [rbp]
+        add     [rbx], rax
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp+ BYTES_PER_CELL * 2]
         next
 endcode
 
