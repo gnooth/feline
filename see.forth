@@ -17,8 +17,9 @@ decimal
 
 0 value ip
 0 value prefix
-variable opcode
-
+0 value opcode
+0 value operand1                        \ destination
+0 value operand2                        \ source
 0 value modrm-byte
 
 0 value size
@@ -28,6 +29,7 @@ variable literal?
 
 : .2  ( ub -- )  0 <# # # #> type ;
 : .3  ( ub -- )  0 <# # # # #> type ;
+: .sep  ( -- )  ." , " ;
 
 create mnemonic  2 cells allot
 
@@ -70,7 +72,7 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    0 ?do ip i + c@ .2 space loop
    r> base ! ;
 
-: unsupported  ( -- )  40 >pos ." unsupported opcode " opcode @ h. ;
+: unsupported  ( -- )  40 >pos ." unsupported opcode " opcode h. ;
 
 : .name  ( code-addr -- )  find-code ?dup if 64 >pos count type then ;
 
@@ -100,12 +102,27 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    then
    ." ]" ;
 
-: .call  ( -- )
-   5 to size
+: .instruction  ( -- )
+\    ?cr .ip
    size .bytes
-   s" call" mnemonic!
    .mnemonic
    48 >pos
+   operand1 ?dup if
+      count type
+   then
+   operand2 ?dup if
+      .sep
+      count type
+   then
+;
+
+: .call  ( -- )
+   5 to size
+\    size .bytes
+   s" call" mnemonic!
+\    .mnemonic
+\    48 >pos
+   .instruction
    ip 1+ l@s                            \ signed 32-bit displacement
    ip size + + dup h.
    dup .name >r
@@ -147,7 +164,7 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
       .mnemonic
       48 >pos
       modrm-rm 0 .relative
-      ." , "
+      .sep
       modrm-reg .reg64
       size +to ip
       exit
@@ -163,7 +180,7 @@ h# 01 install-handler
    40 >pos
    ." pop"
    48 >pos
-   opcode @ h# 58 - .reg64
+   opcode h# 58 - .reg64
    1 +to ip ;
 
 : .ret  ( -- )
@@ -182,7 +199,7 @@ h# 01 install-handler
          size .bytes
          s" test" mnemonic! .mnemonic
          48 >pos
-         modrm-reg .reg64 ." , " modrm-rm .reg64
+         modrm-reg .reg64 .sep modrm-rm .reg64
          size +to ip
          exit
       then
@@ -200,7 +217,7 @@ h# 01 install-handler
       .mnemonic
       48 >pos
       modrm-rm 0 .relative
-      ." , "
+      .sep
       modrm-reg .reg64
       size +to ip
       exit
@@ -213,7 +230,7 @@ h# 01 install-handler
       modrm-rm
       ip prefix if 3 else 2 then + c@s
       .relative
-      ." , "
+      .sep
       modrm-reg .reg64
       size +to ip
       exit
@@ -224,7 +241,7 @@ h# 01 install-handler
        .mnemonic
        48 >pos
        modrm-rm .reg64
-       ." , "
+       .sep
        modrm-reg .reg64
        size +to ip
        exit
@@ -243,20 +260,21 @@ h# 01 install-handler
       .mnemonic
       48 >pos
       modrm-reg .reg64
-      ." , "
+      .sep
       modrm-rm 0 .relative
       size +to ip
       exit
    then
    modrm-mod 1 = if                \ 1-byte displacement
-      prefix if 4 else 3 then .bytes
+      prefix if 4 else 3 then to size
+      size .bytes
       .mnemonic
       48 >pos
-      modrm-reg .reg64 ." , "
+      modrm-reg .reg64 .sep
       modrm-rm
       ip prefix if 3 else 2 then + c@s
       .relative
-      prefix if 4 else 3 then +to ip
+      size +to ip
       exit
    then
    1 .bytes
@@ -270,7 +288,7 @@ h# 01 install-handler
       prefix if 4 else 3 then .bytes
       .mnemonic
       48 >pos
-      modrm-reg .reg64 ." , "
+      modrm-reg .reg64 .sep
       modrm-rm
       ip prefix if 3 else 2 then + c@s
       .relative
@@ -298,7 +316,7 @@ hex
 decimal
 
 : .opcode  ( -- )
-   opcode @ handler ?dup
+   opcode handler ?dup
    if
       execute
    else
@@ -311,9 +329,9 @@ decimal
    ip c@
    dup h# 48 = if
       to prefix
-      ip 1+ c@ opcode !
+      ip 1+ c@ to opcode
    else
-      opcode !
+      to opcode
       0 to prefix
    then
    .ip
