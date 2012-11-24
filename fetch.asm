@@ -23,12 +23,17 @@ code cfetch, 'c@'
         next
 endcode
 
+code cfetchs, 'c@s'                     ; c-addr -- n
+        movsx   rbx, byte [rbx]         ; n is the sign-extended 8-bit value stored at c_addr
+        next
+endcode
+
 code lfetch, 'l@'                       ; 32-bit fetch
         mov     ebx, dword [rbx]
         next
 endcode
 
-code slfetch, 'sl@'                     ; c_addr -- n
+code lfetchs, 'l@s'                     ; c-addr -- n
         movsx   rbx, dword [rbx]        ; n is the sign-extended 32-bit value stored at c_addr
         next
 endcode
