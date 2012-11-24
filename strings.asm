@@ -13,7 +13,7 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-code paren_sliteral, '(sliteral)'
+code parensquote, '(s")'
         _ rfrom                         ; return address (start of string)
         _ count                         ; -- addr len
         _ twodup
@@ -23,7 +23,9 @@ code paren_sliteral, '(sliteral)'
 endcode
 
 code sliteral, 'sliteral', IMMEDIATE    ; addr len --
-        _lit paren_sliteral
+; STRING
+; "Interpretation semantics for this word are undefined."
+        _lit parensquote
         _ commacall
         _ dup
         _ tor                           ; -- addr len           r: len
@@ -41,7 +43,7 @@ code sliteral, 'sliteral', IMMEDIATE    ; addr len --
 endcode
 
 code squote, 's"', IMMEDIATE
-        pushd   '"'
+        _lit '"'
         _ parse                         ; -- addr len
         _ state
         _ fetch
@@ -53,6 +55,55 @@ code squote, 's"', IMMEDIATE
         _ syspad
         _ count
         _then squote1
+        next
+endcode
+
+code parencquote, '(c")'
+        _ rfrom                         ; return address (start of string)
+;         _ count                         ; -- addr len
+;         _ twodup
+;         _ plus
+        _ dup                           ; -- addr addr
+        _ cfetch                        ; -- addr len
+        _ oneplus                       ; -- addr len+1
+        _ over
+        _ plus
+        _ tor
+        next
+endcode
+
+code cliteral, 'cliteral', IMMEDIATE    ; addr len --
+        _lit parencquote
+        _ commacall
+        _ dup
+        _ tor                           ; -- addr len           r: len
+        _ here                          ; -- addr len here      r: len
+        _ oneplus
+        _ swap
+        _ cmove                         ; --                    r: len
+        _ rfetch
+        _ here
+        _ cstore
+        _ rfrom
+        _ oneplus
+        _ allot
+        next
+endcode
+
+code cquote, 'c"', IMMEDIATE
+; CORE EXT
+; "Interpretation semantics for this word are undefined."
+        _lit '"'
+        _ parse                         ; -- addr len
+        _ state
+        _ fetch
+        _if cquote1
+        _ cliteral
+        _else cquote1
+        _ syspad
+        _ place
+        _ syspad
+        _then cquote1
         next
 endcode
 
