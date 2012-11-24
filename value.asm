@@ -3,6 +3,8 @@ code value, 'value'
         _lit dovalue
         _ commacall
         _ comma
+        _lit $0c3                       ; RET
+        _ ccomma                        ; for disassembler
         next
 endcode
 
