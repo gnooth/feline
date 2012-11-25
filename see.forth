@@ -15,6 +15,8 @@
 
 decimal
 
+0 value definition-start
+0 value instruction-start
 0 value ip
 0 value prefix
 0 value opcode
@@ -53,12 +55,22 @@ create mnemonic  2 cells allot
    cr  ."  rm: "      (modrm-rm) .3 space
    r> base ! ;
 
+: .reg32  ( +n -- )
+   s" eaxecxedxebxespebpesiedi"         \ +n addr len
+   drop                                 \ +n addr
+   swap                                 \ addr +n
+   3 * + 3 type
+;
+
 : .reg64  ( +n -- )
    s" raxrcxrdxrbxrsprbprsirdi"         \ +n addr len
    drop                                 \ +n addr
    swap                                 \ addr +n
    3 * + 3 type
 ;
+
+: .reg  ( +n -- )
+   prefix h# 48 = if .reg64 else .reg32 then ;
 
 create handlers  256 cells allot  handlers 256 cells 0 fill
 
@@ -67,10 +79,12 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 : install-handler  ( xt opcode -- )  cells handlers + ! ;
 
 : .bytes  ( u -- )
-   base @ >r
-   hex
-   0 ?do ip i + c@ .2 space loop
-   r> base ! ;
+   ?dup if
+      base @ >r
+      hex
+      instruction-start swap bounds do i c@ .2 space loop
+      r> base !
+   then ;
 
 : unsupported  ( -- )  40 >pos ." unsupported opcode " opcode h. ;
 
@@ -103,7 +117,6 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    ." ]" ;
 
 : .instruction  ( -- )
-\    ?cr .ip
    size .bytes
    .mnemonic
    48 >pos
@@ -295,10 +308,24 @@ h# 01 install-handler
       prefix if 4 else 3 then +to ip
       exit
    then
-   drop
    1 .bytes
    unsupported
    1 +to ip ;
+
+: .b8  ( -- )
+   s" mov" mnemonic!
+   prefix if 10 else 5 then to size
+   .instruction
+   opcode h# b8 - .reg
+   .sep
+   prefix if
+      ip 2 + @
+   else
+      ip 1 + l@s
+   then
+   .
+   size +to ip
+;
 
 hex
 ' .call e8 install-handler
@@ -312,6 +339,7 @@ hex
 ' .85   85 install-handler
 ' .89   89 install-handler
 ' .8b   8b install-handler
+:noname b8 8 bounds do ['] .b8 i install-handler loop ; execute
 ' .8d   8d install-handler
 decimal
 
@@ -326,6 +354,8 @@ decimal
   then ;
 
 : decode  ( -- )                        \ decode one instruction
+   ip to instruction-start
+   .ip
    ip c@
    dup h# 48 = if
       to prefix
@@ -334,11 +364,10 @@ decimal
       to opcode
       0 to prefix
    then
-   .ip
    .opcode ;
 
 : disasm  ( code-addr -- )
-   to ip
+   dup to definition-start to ip
    done? off
    begin
       done? @ 0=
