@@ -87,14 +87,6 @@ code immediate?, 'immediate?'           ; xt -- flag
         next
 endcode
 
-code recurse, 'recurse', IMMEDIATE
-        _ latest
-        _ namefrom
-        _ tocode
-        _ commacall
-        next
-endcode
-
 code hide, 'hide'
         _ latest
         _ dup
@@ -227,15 +219,22 @@ code constant, 'constant'
         next
 endcode
 
-code compilecomma, 'compile,'
+code compilecomma, 'compile,'           ; xt --
+; CORE EXT
+; "Interpretation semantics for this word are undefined."
         _ tocode
         _ commacall
         next
 endcode
 
+variable last_code, 'last-code', 0
+
 code colon, ':'
         _ header
         _ hide
+        _ here
+        _ last_code
+        _ store
         _ state
         _ on
         next
@@ -246,8 +245,18 @@ code colonnoname, ':noname'
         _ on
         _ here
         _ dup
-        _ cellplus
+        _ cellplus                      ; code address
+        _ dup
+        _ last_code
+        _ store
         _ comma
+        next
+endcode
+
+code recurse, 'recurse', IMMEDIATE
+        _ last_code
+        _ fetch
+        _ commacall
         next
 endcode
 
