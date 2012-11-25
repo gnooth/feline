@@ -124,7 +124,7 @@ endcode
 code comma, ','
         _ here
         _ store
-        pushd   BYTES_PER_CELL
+        _ cell
         _ dp
         _ plusstore
         next
