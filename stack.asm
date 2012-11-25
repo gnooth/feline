@@ -158,7 +158,9 @@ code dots, '.s'
 endcode
 
 code swap, 'swap'
-        xchg    rbx, [rbp]
+        mov     rax, rbx
+        mov     rbx, [rbp]
+        mov     [rbp], rax
         next
 endcode
 
