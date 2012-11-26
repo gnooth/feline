@@ -20,8 +20,8 @@ decimal
 0 value ip
 0 value prefix
 0 value opcode
-0 value operand1                        \ destination
-0 value operand2                        \ source
+\ 0 value operand1                        \ destination
+\ 0 value operand2                        \ source
 0 value modrm-byte
 
 0 value size
@@ -38,7 +38,8 @@ create mnemonic  2 cells allot
 : mnemonic!  ( addr len -- )  mnemonic 2! ;
 : .mnemonic  ( -- )  40 >pos  mnemonic 2@ type ;
 
-: !modrm-byte  ( -- )  ip prefix if 2 else 1 then + c@ to modrm-byte ;
+\ : !modrm-byte  ( -- )  ip prefix if 2 else 1 then + c@ to modrm-byte ;
+: !modrm-byte  ( -- )  ip c@ to modrm-byte  1 +to ip ;
 
 : (modrm-mod)  ( modrm-byte -- mod )  b# 11000000 and 6 rshift ;
 : (modrm-reg)  ( modrm-byte -- reg )  b# 00111000 and 3 rshift ;
@@ -76,7 +77,11 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 
 : handler  ( opcode -- handler )  cells handlers + @ ;
 
-: install-handler  ( xt opcode -- )  cells handlers + ! ;
+: install-handler  ( xt opcode -- )
+\   tuck
+   cells handlers + !
+\    ?cr h. ." handler installed"
+;
 
 : .bytes  ( u -- )
    ?dup if
@@ -120,13 +125,13 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    size .bytes
    .mnemonic
    48 >pos
-   operand1 ?dup if
-      count type
-   then
-   operand2 ?dup if
-      .sep
-      count type
-   then
+\    operand1 ?dup if
+\       count type
+\    then
+\    operand2 ?dup if
+\       .sep
+\       count type
+\    then
 ;
 
 : .call  ( -- )
@@ -136,10 +141,11 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 \    .mnemonic
 \    48 >pos
    .instruction
-   ip 1+ l@s                            \ signed 32-bit displacement
-   ip size + + dup h.
+   ip l@s                            \ signed 32-bit displacement
+   4 +to ip
+   ip + dup h.
    dup .name >r
-   size +to ip
+\    size +to ip
    r@ ['] (lit) >code = if
       .literal
    then
@@ -168,7 +174,7 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    5 +to ip ;
 
 \ $01 handler
-:noname ( -- )
+:noname  ( -- )
    s" add" mnemonic!
    !modrm-byte
    modrm-mod 0= if
@@ -179,7 +185,6 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
       modrm-rm 0 .relative
       .sep
       modrm-reg .reg64
-      size +to ip
       exit
    then
    prefix if 2 else 1 then to size
@@ -188,20 +193,68 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 
 h# 01 install-handler
 
+\ $03 handler
+:noname  ( -- )
+   s" add" mnemonic!
+   !modrm-byte
+   modrm-mod 1 = if                \ 1-byte displacement
+      prefix if 4 else 3 then .bytes
+      .mnemonic
+      48 >pos
+      modrm-reg .reg64 .sep
+      modrm-rm
+      ip c@s 1 +to ip
+      .relative
+      exit
+   then
+   ip instruction-start - .bytes
+   unsupported
+;
+
+h# 03 install-handler
+
+: .push  ( -- )
+   1 .bytes
+   40 >pos
+   ." push"
+   48 >pos
+   opcode h# 50 - .reg64
+;
+
 : .pop  ( -- )
    1 .bytes
    40 >pos
    ." pop"
    48 >pos
    opcode h# 58 - .reg64
-   1 +to ip ;
+;
 
 : .ret  ( -- )
    1 .bytes
 \    s" ret" .mnemonic
    s" ret" mnemonic! .mnemonic
-   1 +to ip
+\    1 +to ip
    done? on ;
+
+\ $83 handler
+:noname  ( -- )
+   !modrm-byte
+   modrm-mod 3 = if
+      modrm-reg 0= if
+         s" add" mnemonic!
+         prefix if 4 else 3 then to size
+         .instruction
+         modrm-rm .reg64
+         .sep
+         ip c@s  1 +to ip
+         .
+         exit
+      then
+   then
+   ip instruction-start - .bytes
+   unsupported ;
+
+h# 83 install-handler
 
 : .85  ( -- )
 \    ip prefix if 2 else 1 then + c@      \ modrm-byte
@@ -232,7 +285,7 @@ h# 01 install-handler
       modrm-rm 0 .relative
       .sep
       modrm-reg .reg64
-      size +to ip
+\       size +to ip
       exit
    then
    modrm-mod 1 = if                     \ 1-byte displacement
@@ -241,11 +294,12 @@ h# 01 install-handler
       .mnemonic
       48 >pos
       modrm-rm
-      ip prefix if 3 else 2 then + c@s
+\       ip prefix if 3 else 2 then + c@s
+      ip c@s  1 +to ip
       .relative
       .sep
       modrm-reg .reg64
-      size +to ip
+\       size +to ip
       exit
     then
     modrm-mod 3 = if                    \ register operands
@@ -256,13 +310,15 @@ h# 01 install-handler
        modrm-rm .reg64
        .sep
        modrm-reg .reg64
-       size +to ip
+\        size +to ip
        exit
     then
-    prefix if 2 else 1 then to size
-    size .bytes
+\     prefix if 2 else 1 then to size
+\     size .bytes
+    ip instruction-start - .bytes
     unsupported
-    size +to ip ;
+\     size +to ip
+;
 
 : .8b  ( -- )
    s" mov" mnemonic!
@@ -285,9 +341,10 @@ h# 01 install-handler
       48 >pos
       modrm-reg .reg64 .sep
       modrm-rm
-      ip prefix if 3 else 2 then + c@s
+\       ip prefix if 3 else 2 then + c@s
+      ip c@s  1 +to ip
       .relative
-      size +to ip
+\       size +to ip
       exit
    then
    1 .bytes
@@ -303,14 +360,16 @@ h# 01 install-handler
       48 >pos
       modrm-reg .reg64 .sep
       modrm-rm
-      ip prefix if 3 else 2 then + c@s
+\       ip prefix if 3 else 2 then + c@s
+      ip c@s 1 +to ip
       .relative
-      prefix if 4 else 3 then +to ip
+\       prefix if 4 else 3 then +to ip
       exit
    then
-   1 .bytes
+   ip instruction-start - .bytes
    unsupported
-   1 +to ip ;
+\    1 +to ip
+;
 
 : .b8  ( -- )
    s" mov" mnemonic!
@@ -327,15 +386,33 @@ h# 01 install-handler
    size +to ip
 ;
 
+\ $ff handler
+:noname  ( -- )
+   !modrm-byte
+   modrm-byte h# e0 = if
+      s" jmp" mnemonic!
+      2 to size
+      .instruction
+      ." rax"
+      exit
+   then
+   ip instruction-start - .bytes
+   unsupported
+;
+
+h# ff install-handler
+
 hex
 ' .call e8 install-handler
 ' .jmp  e9 install-handler
 ' .ret  c3 install-handler
-' .pop  58 install-handler
-' .pop  59 install-handler
-' .pop  5a install-handler
-' .pop  5b install-handler
-' .pop  5d install-handler
+:noname 50 8 bounds do ['] .push i install-handler loop ; execute
+\ ' .pop  58 install-handler
+\ ' .pop  59 install-handler
+\ ' .pop  5a install-handler
+\ ' .pop  5b install-handler
+\ ' .pop  5d install-handler
+:noname 58 8 bounds do ['] .pop i install-handler loop ; execute
 ' .85   85 install-handler
 ' .89   89 install-handler
 ' .8b   8b install-handler
@@ -350,7 +427,7 @@ decimal
    else
       prefix if 2 else 1 then .bytes
       unsupported
-      prefix if 2 else 1 then +to ip
+\       prefix if 2 else 1 then +to ip
   then ;
 
 : decode  ( -- )                        \ decode one instruction
@@ -360,9 +437,11 @@ decimal
    dup h# 48 = if
       to prefix
       ip 1+ c@ to opcode
+      2 +to ip
    else
       to opcode
       0 to prefix
+      1 +to ip
    then
    .opcode ;
 
