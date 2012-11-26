@@ -180,6 +180,7 @@ code tor, '>r'
         push    rbx
         poprbx
         jmp     rax
+        next                            ; for disassembler
 endcode
 
 code rfetch, 'r@'
@@ -187,6 +188,7 @@ code rfetch, 'r@'
         pushrbx
         mov     rbx, [rsp]
         jmp     rax
+        next                            ; for disassembler
 endcode
 
 code rfrom, 'r>'
@@ -194,6 +196,7 @@ code rfrom, 'r>'
         pushrbx
         pop     rbx
         jmp     rax
+        next                            ; for disassembler
 endcode
 
 code rpfetch, 'rp@'
