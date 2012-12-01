@@ -111,7 +111,7 @@ code convert, 'convert'                 ; n addr1 -- n addr2
         _begin convert0
         _ oneplus
         _ dup
-        _ tor                          ; n addr1+1              r: addr1+1
+        _ tor                           ; -- n addr1+1          r: -- addr1+1
         _ cfetch
         _ digit                         ; if successful: -- n n2 true  otherwise: -- n false
         _while convert0                 ; -- n n2
@@ -129,7 +129,7 @@ endcode
 
 code number, 'number'                   ; addr -- n
         _ dup
-        _ tor                           ; -- addr               r: addr
+        _ tor                           ; -- addr               r: -- addr
         _ zero
         _ swap                          ; -- 0 addr
         _ dup                           ; -- 0 addr addr
@@ -138,13 +138,13 @@ code number, 'number'                   ; addr -- n
         _lit '-'
         _ equal                         ; -- 0 addr flag
         _ dup
-        _ tor                           ; -- 0 addr flag        r: addr flag
+        _ tor                           ; -- 0 addr flag        r: -- addr flag
         _if number0
         _ oneplus
         _then number0
-        _ convert                       ; -- n addr             r: addr flag
+        _ convert                       ; -- n addr             r: -- addr flag
         _ swap                          ; -- addr n
-        _ rfrom                         ; -- addr n flag        r: addr
+        _ rfrom                         ; -- addr n flag        r: -- addr
         _if number1
         _ negate
         _then number1                   ; -- addr n
