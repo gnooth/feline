@@ -169,21 +169,29 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ zplace                        ; -- c-addr1 u c-addr2
         _ rot
         _ drop                          ; -- u c-addr2
-        _ swap
-        _ readonly
-        _ open_file                     ; -- fileid ior
+        _ swap                          ; -- c-addr2 u
+        _ twodup                        ; -- c-addr2 u c-addr2 u
+        _ readonly                      ; -- c-addr2 u c-addr2 u r/o
+        _ open_file                     ; -- c-addr2 u fileid ior
         _ zero?
-        _if included3                   ; -- fileid
-        _ dup
-        _ tor                           ; -- fileid             r: -- fileid
+        _if included3                   ; -- c-addr2 u fileid
+        _ tor                           ; -- c-addr2 u          r: -- fileid
+        _ twodrop                       ; --                    r: -- fileid
+        _ rfetch
         _ include_file
         _ rfrom                         ; -- fileid
         _ close_file                    ; -- ior
         _ drop                          ; REVIEW
+        _else included3                 ; -- c-addr2 u fileid
+        _ drop
+        _ ?cr
+        _dotq "Unable to open "
+        _ type
+        _ abort
         _then included3
         _then included2
         _else included1
-        _ drop                          ; FIXME report error opening file
+        _ drop
         _then included1
         next
 endcode
