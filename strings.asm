@@ -13,9 +13,9 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-code parensquote, '(s")'
+code parensquote, '(s")'                ; -- c-addr u
         _ rfrom                         ; return address (start of string)
-        _ count                         ; -- addr len
+        _ count                         ; -- c-addr u
         _ twodup
         _ plus
         _ tor
@@ -58,11 +58,35 @@ code squote, 's"', IMMEDIATE
         next
 endcode
 
+code dotquote, '."', IMMEDIATE
+        _ squote
+        _lit type
+        _ commacall
+        next
+endcode
+
+code parenabortquote, '(abort")'        ; flag c-addr u --
+        _ rot
+        _if parenabortquote1
+        _ ?cr
+        _ type
+        _ abort
+        _else parenabortquote1
+        _ twodrop
+        _then parenabortquote1
+        next
+endcode
+
+code abortquote, 'abort"', IMMEDIATE
+; CORE
+        _ squote
+        _lit parenabortquote
+        _ commacall
+        next
+endcode
+
 code parencquote, '(c")'
         _ rfrom                         ; return address (start of string)
-;         _ count                         ; -- addr len
-;         _ twodup
-;         _ plus
         _ dup                           ; -- addr addr
         _ cfetch                        ; -- addr len
         _ oneplus                       ; -- addr len+1
@@ -76,11 +100,11 @@ code cliteral, 'cliteral', IMMEDIATE    ; addr len --
         _lit parencquote
         _ commacall
         _ dup
-        _ tor                           ; -- addr len           r: len
-        _ here                          ; -- addr len here      r: len
+        _ tor                           ; -- addr len           r: -- len
+        _ here                          ; -- addr len here      r: -- len
         _ oneplus
         _ swap
-        _ cmove                         ; --                    r: len
+        _ cmove                         ; --                    r: -- len
         _ rfetch
         _ here
         _ cstore
@@ -300,13 +324,6 @@ code istrequal, 'istr='                 ; addr1 len1 addr2 len2 -- flag
         _return
         _then istrequal1
         _ isequal
-        next
-endcode
-
-code dotquote, '."', IMMEDIATE
-        _ squote
-        pushd   type
-        _ commacall
         next
 endcode
 
