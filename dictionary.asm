@@ -229,6 +229,21 @@ endcode
 
 variable last_code, 'last-code', 0
 
+variable csp, 'csp', 0
+
+code storecsp, '!csp'
+        mov     [csp_data], rbp
+        next
+endcode
+
+code ?csp, '?csp'
+        cmp     [csp_data], rbp
+        je      .1
+        _abortq "Stack changed"
+.1:
+        next
+endcode
+
 code colon, ':'
         _ header
         _ hide
@@ -237,6 +252,7 @@ code colon, ':'
         _ store
         _ state
         _ on
+        _ storecsp
         next
 endcode
 
@@ -250,6 +266,17 @@ code colonnoname, ':noname'
         _ last_code
         _ store
         _ comma
+        _ storecsp
+        next
+endcode
+
+code semi, ';', IMMEDIATE
+        _ ?csp
+        _lit 0xc3                       ; RET
+        _ ccomma
+        _ state
+        _ off
+        _ reveal
         next
 endcode
 
@@ -257,15 +284,6 @@ code recurse, 'recurse', IMMEDIATE
         _ last_code
         _ fetch
         _ commacall
-        next
-endcode
-
-code semi, ';', IMMEDIATE
-        _lit 0xc3                       ; RET
-        _ ccomma
-        _ state
-        _ off
-        _ reveal
         next
 endcode
 
