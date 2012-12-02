@@ -120,6 +120,20 @@ section .text
         call    type
 %endmacro
 
+%macro  _abortq 1
+section .data
+%strlen  len     %1
+%%string:
+        db      len                     ; length byte
+        db      %1                      ; string
+        db      0                       ; null byte at end
+section .text
+        pushrbx
+        mov     rbx, %%string
+        call    count
+        call    parenabortquote
+%endmacro
+
 %macro  _string 1
 section .data
 %strlen  len     %1
