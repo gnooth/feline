@@ -13,6 +13,23 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-include case.forth
-include dump.forth
-include see.forth
+: case  ( -- 0 )  0 ; immediate
+
+: of
+   1+ >r
+   postpone over
+   postpone =
+   postpone if
+   postpone drop
+   r> ; immediate
+
+: endof
+   >r
+   postpone else
+   r> ; immediate
+
+: endcase
+   postpone drop
+   0 ?do
+      postpone then
+   loop ; immediate
