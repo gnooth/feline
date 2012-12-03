@@ -13,6 +13,12 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+code sp@, 'sp@'
+        mov     rax, rsp
+        pushd   rax
+        next
+endcode
+
 code drop, 'drop'
         poprbx
         next
