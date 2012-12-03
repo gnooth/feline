@@ -13,6 +13,12 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+code ?pairs, '?pairs'
+        _ xor
+        _abortq "Control structure mismatch"
+        next
+endcode
+
 code fmark, '>mark'
         _ here
         _ zero
