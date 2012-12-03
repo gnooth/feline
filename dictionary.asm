@@ -408,6 +408,12 @@ code postpone, 'postpone', IMMEDIATE    ; "<spaces>name" --
         next
 endcode
 
+code bracketcompile, '[compile]', IMMEDIATE
+        _ tick
+        _ compilecomma
+        next
+endcode
+
 code words, 'words'
         _ zero
         _ tor
