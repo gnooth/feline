@@ -127,6 +127,24 @@ code convert, 'convert'                 ; n addr1 -- n addr2
         next
 endcode
 
+code missing, 'missing'
+        _ count
+        _ type
+        _dotq ' ?'
+        _ cr
+        _ source_id
+        _ zgt
+        _if missing1
+        _dotq "line "
+        _ source_line_number
+        _ fetch
+        _ dot
+        _ cr
+        _then missing1
+        _ abort
+        next
+endcode
+
 code number, 'number'                   ; addr -- n
         _ dup
         _ tor                           ; -- addr               r: -- addr
@@ -160,11 +178,7 @@ code number, 'number'                   ; addr -- n
         _ drop
         _else number2
         _ rfrom
-        _ count
-        _ type
-        _dotq ' ?'
-        _ cr
-        _ abort
+        _ missing
         _then number2
         next
 endcode

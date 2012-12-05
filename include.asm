@@ -80,7 +80,7 @@ code save_input, 'save-input'           ; -- addr len fileid source-buffer >in 5
         next
 endcode
 
-code restore_input, 'restore-input'     ; addr len fileid source-buffer >in 5 --
+code restore_input, 'restore-input'     ; addr len fileid source-buffer >in 5 -- flag
 ; CORE EXT
         _ drop                          ; REVIEW
         _ toin
@@ -88,11 +88,16 @@ code restore_input, 'restore-input'     ; addr len fileid source-buffer >in 5 --
         _ tick_source_buffer
         _ store
         _ set_input
+        _ zero                          ; -- flag
         next
 endcode
 
+variable source_line_number, 'source-line#', 0
+
 code refill, 'refill'                   ; -- flag
 ; CORE EXT  BLOCK EXT  FILE EXT
+; "When the input source is a text file, attempt to read the next line
+; from the text-input file."
         _ source_buffer
         _ slash_source_buffer
         _ source_id
@@ -106,10 +111,14 @@ code refill, 'refill'                   ; -- flag
         _if refill2                     ; -- len
         _ nsource
         _ store
+        _ one
+        _ source_line_number
+        _ plusstore
         _ toin
         _ off
         _ true
         _else refill2
+        ; end of file
         _ drop
         _ false
         _then refill2
@@ -137,6 +146,8 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _ store
         _ tick_source
         _ store
+        _ source_line_number
+        _ off
         _begin include_file2
         _ refill
         _while include_file2
@@ -152,6 +163,7 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _ rfrom
         _ five
         _ restore_input
+        _ drop                          ; REVIEW
         _then include_file1
         next
 endcode
@@ -232,6 +244,7 @@ code evaluate, 'evaluate'               ; i*x c-addr u -- j*x
         _ rfrom
         _ five
         _ restore_input
+        _ drop                          ; REVIEW
         _then evaluate1
         next
 endcode
