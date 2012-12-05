@@ -269,7 +269,7 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _ ?dup
         _if read_line1
         _ dup                           ; -- fileid c-addr u1 u1
-        _ tor                           ; -- fileid c-addr u1           r: u1
+        _ tor                           ; -- fileid c-addr u1           r: -- u1
         _ rrot                          ; -- u1 fileid c-addr
         _ rfrom                         ; -- u1 fileid c-addr u1        r: --
         _ zero
