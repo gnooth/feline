@@ -14,24 +14,22 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 code scan, 'scan'                       ; c-addr1 u1 char -- c-addr2 u2
-        _ tor                           ; -- c-addr1 u1                 r: -- char
+        _tor                            ; -- c-addr1 u1                 r: -- char
         _begin scan1
-        _ dup                           ; -- c-addr u u                 r: -- char
+        _dup                            ; -- c-addr u u                 r: -- char
         _while scan1
         _ over                          ; -- c-addr u c-addr            r: -- char
-        _ cfetch
-        _ rfetch
+        _cfetch
+        _rfetch
         _ equal                         ; -- c-addr u                   r: -- char
         _if scan2
-        _ rfrom
-        _ drop
+        _rfromdrop
         next
         _then scan2
         _ one
         _ slashstring
         _repeat scan1                   ; -- c-addr u                   r: -- char
-        _ rfrom
-        _ drop
+        _rfromdrop
         next
 endcode
 
