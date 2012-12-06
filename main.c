@@ -132,10 +132,20 @@ int64_t c_file_size(int fd)
   current = lseek(fd, 0, SEEK_CUR);
   end = lseek(fd, 0, SEEK_END);
   lseek(fd, current, SEEK_SET);
-  if (end < 0)
+  if (end = (off_t) -1)
     return (int64_t) -1;
   else
     return (int64_t) end;
+}
+
+int64_t c_file_position(int fd)
+{
+  return (int64_t) lseek(fd, 0, SEEK_CUR);
+}
+
+int64_t c_reposition_file(int fd, off_t offset)
+{
+  return (int64_t) lseek(fd, offset, SEEK_SET);
 }
 
 uint64_t c_ticks()
