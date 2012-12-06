@@ -224,3 +224,42 @@ section .text
         dq      %1_top
 %1_exit:
 %endmacro
+
+%macro _tor 0                           ; inline version of >R
+        push    rbx
+        poprbx
+%endmacro
+
+%macro _rfetch 0                        ; inline version of R@
+        pushrbx
+        mov     rbx, [rsp]
+%endmacro
+
+%macro _rfrom 0                         ; inline version of R>
+        pushrbx
+        pop     rbx
+%endmacro
+
+%macro _duptor 0                        ; inline version of DUP>R
+        push    rbx
+%endmacro
+
+%macro _rfromdrop 0                     ; inline version of R>DROP
+        add     rsp, BYTES_PER_CELL
+%endmacro
+
+%macro _fetch 0                         ; inline version of @
+        mov     rbx, [rbx]
+%endmacro
+
+%macro _cfetch 0                        ; inline version of C@
+        movzx   rbx, byte [rbx]
+%endmacro
+
+%macro _dup 0                           ; inline version of DUP
+        pushrbx
+%endmacro
+
+%macro _drop 0                          ; inline version of DROP
+        poprbx
+%endmacro
