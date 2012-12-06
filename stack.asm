@@ -105,14 +105,15 @@ code twoover, '2over'                   ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2
         next
 endcode
 
-code nip, 'nip'                         ; (s n1 n2 -- n2 )
+code nip, 'nip'                         ; x1 x2 -- x2
+; CORE EXT
         add     rbp, BYTES_PER_CELL
         next
 endcode
 
-code tuck, 'tuck'                       ; (s n1 n2 -- n2 n1 n2 )
-        popd    rax                     ; n2
-        popd    rdx                     ; n1
+code tuck, 'tuck'                       ; x1 x2 -- x2 x1 x2
+        popd    rax                     ; x2
+        popd    rdx                     ; x1
         pushd   rax
         pushd   rdx
         pushd   rax
@@ -189,6 +190,13 @@ code tor, '>r'
         next                            ; for disassembler
 endcode
 
+code duptor, 'dup>r'
+        pop     rax
+        push    rbx
+        jmp     rax
+        next
+endcode
+
 code rfetch, 'r@'
         pop     rax                     ; return address
         pushrbx
@@ -203,6 +211,13 @@ code rfrom, 'r>'
         pop     rbx
         jmp     rax
         next                            ; for disassembler
+endcode
+
+code rfromdrop, 'r>drop'
+        pop     rax                     ; return address
+        pop     rdx                     ; discard
+        jmp     rax
+        next
 endcode
 
 code rpfetch, 'rp@'
