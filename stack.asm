@@ -63,17 +63,16 @@ code threedup, '3dup'                   ; (s x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
         next
 endcode
 
-code rot, 'rot'                         ; (s x1 x2 x3 -- x2 x3 x1 )
-        popd    rax                     ; x3
-        popd    rcx                     ; x2
-        popd    rdx                     ; x1
-        pushd   rcx
-        pushd   rax
-        pushd   rdx
+code rot, 'rot'                         ; x1 x2 x3 -- x2 x3 x1
+        mov     rax, [rbp]                      ; x2 in RAX
+        mov     rdx, [rbp + BYTES_PER_CELL]     ; x1 in RDX
+        mov     [rbp + BYTES_PER_CELL], rax     ; x2
+        mov     [rbp], rbx                      ; x3
+        mov     rbx, rdx                        ; x1
         next
 endcode
 
-code rrot, '-rot'                       ; (s x1 x2 x3 -- x3 x1 x2 )
+code rrot, '-rot'                       ; x1 x2 x3 -- x3 x1 x2
         popd    rax                     ; x3
         popd    rcx                     ; x2
         popd    rdx                     ; x1
