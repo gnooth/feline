@@ -268,27 +268,26 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _ rrot                          ; -- fileid c-addr u1
         _ ?dup
         _if read_line1
-        _ dup                           ; -- fileid c-addr u1 u1
-        _ tor                           ; -- fileid c-addr u1           r: -- u1
+        _duptor                         ; -- fileid c-addr u1           r: -- u1
         _ rrot                          ; -- u1 fileid c-addr
-        _ rfrom                         ; -- u1 fileid c-addr u1        r: --
+        _rfrom                          ; -- u1 fileid c-addr u1        r: --
         _ zero
         _do read_line2                  ; -- u1 fileid c-addr
         _ over                          ; -- u1 fileid c-addr fileid
         _ read_char                     ; -- u1 fileid c-addr [ char | -1 ]
-        _ dup
+        _dup
         _ zlt
         _if read_line3                  ; -- u1 fileid c-addr [ char | -1 ]
         ; end of file
         _ fourdrop                      ; --
         _ i
-        _ dup
+        _dup
         _ zne                           ; false flag if i = 0
         _ zero
         _ unloop
         _return
         _then read_line3
-        _ dup
+        _dup
         _lit 10
         _ equal
         _if read_line4
