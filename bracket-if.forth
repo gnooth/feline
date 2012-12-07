@@ -43,3 +43,9 @@
 ; immediate
 
 : [then]  ( -- )  ; immediate
+
+: [defined]  ( "<name>" -- flag )
+   have ; immediate
+
+: [undefined]  ( "<name>" -- flag)
+   have 0= ; immediate
