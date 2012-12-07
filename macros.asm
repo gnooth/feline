@@ -150,9 +150,12 @@ section .text
 %macro  _if 1
         %push if
         section .text
-        mov     rax, rbx
-        poprbx
-        test    rax, rax
+;         mov     rax, rbx
+;         poprbx
+;         test    rax, rax
+        test    rbx, rbx
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
         jz      %1_ifnot
 %endmacro
 
