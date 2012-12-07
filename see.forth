@@ -260,19 +260,20 @@ h# 83 install-handler
 \    ip prefix if 2 else 1 then + c@      \ modrm-byte
    !modrm-byte
    modrm-mod 3 = if                     \ register operands
-      modrm-reg 0= if
+\       modrm-reg 0= if
          prefix if 3 else 2 then to size
          size .bytes
          s" test" mnemonic! .mnemonic
          48 >pos
          modrm-reg .reg64 .sep modrm-rm .reg64
-         size +to ip
+\          size +to ip
          exit
-      then
+\       then
    then
-   1 .bytes
+   prefix if 2 else 1 then to size
+   size .bytes
    unsupported
-   1 +to ip ;
+   size +to ip ;
 
 : .89  ( -- )
    s" mov" mnemonic!
