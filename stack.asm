@@ -106,7 +106,7 @@ endcode
 
 code nip, 'nip'                         ; x1 x2 -- x2
 ; CORE EXT
-        add     rbp, BYTES_PER_CELL
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
