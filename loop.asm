@@ -13,7 +13,7 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-code paren_do, '(do)'                   ; limit index --
+code parendo, '(do)'                    ; limit index --
         pop     rcx                     ; return address
         mov     rax, [rcx]              ; address for LEAVE
         push    rax                     ; r: -- leave-addr
@@ -30,13 +30,13 @@ code paren_do, '(do)'                   ; limit index --
 endcode
 
 code do, 'do', IMMEDIATE                ; -- addr
-        _lit paren_do
+        _lit parendo
         _ commacall
         _ fmark                         ; -- addr
         next
 endcode
 
-code paren_?do, '(?do)'                 ; limit index --
+code paren?do, '(?do)'                  ; limit index --
         pop     rcx                     ; return address
         mov     rax, [rcx]              ; address for LEAVE
         cmp     rbx, [rbp]
@@ -59,13 +59,13 @@ code paren_?do, '(?do)'                 ; limit index --
 endcode
 
 code ?do, '?do', IMMEDIATE
-        _lit paren_?do
+        _lit paren?do
         _ commacall
         _ fmark                         ; -- addr
         next
 endcode
 
-code paren_loop, '(loop)'               ; --
+code parenloop, '(loop)'                ; --
 ; "Add one to the loop index. If the loop index is then equal to the loop limit,
 ; discard the loop parameters and continue execution immediately following the
 ; loop. Otherwise continue execution at the beginning of the loop." 6.1.1800
@@ -86,7 +86,7 @@ code paren_loop, '(loop)'               ; --
 endcode
 
 code loop, 'loop', IMMEDIATE            ; addr --
-        _lit paren_loop
+        _lit parenloop
         _ commacall
         _ dup
         _ cellplus
@@ -95,7 +95,7 @@ code loop, 'loop', IMMEDIATE            ; addr --
         next
 endcode
 
-code paren_plusloop, '(+loop)'          ; n --
+code parenplusloop, '(+loop)'           ; n --
 ; "Add n to the loop index. If the loop index did not cross the boundary
 ; between the loop limit minus one and the loop limit, continue execution
 ; at the beginning of the loop. Otherwise, discard the current loop control
@@ -119,7 +119,7 @@ code paren_plusloop, '(+loop)'          ; n --
 endcode
 
 code plusloop, '+loop', IMMEDIATE       ; addr --
-        _lit paren_plusloop
+        _lit parenplusloop
         _ commacall
         _ dup
         _ cellplus
@@ -128,13 +128,13 @@ code plusloop, '+loop', IMMEDIATE       ; addr --
         next
 endcode
 
-code ileave, '(leave)'
+code parenleave, '(leave)'
         add     rsp, BYTES_PER_CELL * 3
         ret
 endcode
 
 code leave, 'leave', IMMEDIATE
-        _lit ileave
+        _lit parenleave
         _ commacall
         next
 endcode

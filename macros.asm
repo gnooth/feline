@@ -211,19 +211,19 @@ section .text
 %endmacro
 
 %macro _do 1
-        _ paren_do
+        _ parendo
         dq      %1_exit
 %1_top:
 %endmacro
 
 %macro _?do 1
-        _ paren_?do
+        _ paren?do
         dq      %1_exit
 %1_top:
 %endmacro
 
 %macro _loop 1
-        _ paren_loop
+        _ parenloop
         dq      %1_top
 %1_exit:
 %endmacro
