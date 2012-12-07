@@ -95,7 +95,7 @@ endcode
 code slash, '/'                         ; n1 n2 -- n3
 ; CORE
         _ slmod
-        _ nip
+        _nip
         next
 endcode
 
@@ -105,9 +105,6 @@ code mod, 'mod'                          ; n1 n2 -- n3
         _ drop
         next
 endcode
-
-; : */mod  (s n1 n2 n3 -- rem quot )  >r  m*  r>  m/mod  ;
-; : */     (s n1 n2 n3 -- n1*n2/n3 )   */mod  nip  ;
 
 code starslashmod, '*/mod'              ; n1 n2 n3 -- n4 n5
 ; CORE
@@ -121,7 +118,7 @@ endcode
 code starslash, '*/'                    ; n1 n2 n3 -- n4
 ; CORE
         _ starslashmod
-        _ nip
+        _nip
         next
 endcode
 
