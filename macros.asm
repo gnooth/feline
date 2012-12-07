@@ -266,3 +266,7 @@ section .text
 %macro _drop 0                          ; inline version of DROP
         poprbx
 %endmacro
+
+%macro _nip 0                           ; inline version of NIP
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
