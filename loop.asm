@@ -69,20 +69,14 @@ code parenloop, '(loop)'                ; --
 ; "Add one to the loop index. If the loop index is then equal to the loop limit,
 ; discard the loop parameters and continue execution immediately following the
 ; loop. Otherwise continue execution at the beginning of the loop." 6.1.1800
+                                        ; r: -- leave-addr limit index
         pop     rcx                     ; return address
-        pop     rax                     ; index
-        pop     rdx                     ; limit
-        inc     rax
+        inc     qword [rsp]
         jo      .1
-        push    rdx
-        push    rax
-        mov     rcx, [rcx]
-        jmp     rcx
-.1:
-        pop     rax                     ; drop LEAVE address from return stack
-        add     rcx, BYTES_PER_CELL     ; skip past loopback address
-        jmp     rcx
-        next                            ; for disassembler
+        jmp     [rcx]
+.1:                                     ; r: -- leave-addr limit index
+        add     rsp, BYTES_PER_CELL * 2 ; r: -- leave-addr
+        next
 endcode
 
 code loop, 'loop', IMMEDIATE            ; addr --
