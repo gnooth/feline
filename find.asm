@@ -79,3 +79,12 @@ code bracket_tick, "[']", IMMEDIATE
         _ comma
         next
 endcode
+
+code have, 'have'
+        _ blchar
+        _ word_
+        _ find
+        _nip
+        _ zne
+        next
+endcode
