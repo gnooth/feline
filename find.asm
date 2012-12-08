@@ -47,7 +47,7 @@ code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
         next
         _then find2                     ; -- nfa
         _ ntolink                       ; -- lfa
-        _ fetch                         ; -- nfa
+        _fetch                          ; -- nfa
         _ dup                           ; -- nfa nfa
         _ zero?
         _until find1

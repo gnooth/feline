@@ -13,7 +13,7 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-code fetch, '@'
+code fetch, '@', 0, 3
         mov     rbx, [rbx]
         next
 endcode

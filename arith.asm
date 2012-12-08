@@ -13,18 +13,18 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-code plus, '+'
+code plus, '+', 0, 8
         add     rbx, [rbp]
-        add     rbp, BYTES_PER_CELL
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
-code oneplus, '1+'
+code oneplus, '1+', 0, 3
         inc     rbx
         next
 endcode
 
-code charplus, 'char+'                  ; c-addr1 -- c-addr2
+code charplus, 'char+', 0, 3            ; c-addr1 -- c-addr2
 ; CORE 6.1.0897
         inc     rbx
         next

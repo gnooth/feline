@@ -25,7 +25,7 @@ code cstore, 'c!'                       ; c addr --
         mov     al, [rbp]               ; c
         mov     [rbx], al
         mov     rbx, [rbp + BYTES_PER_CELL]
-        add     rbp, BYTES_PER_CELL * 2
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
         next
 endcode
 
@@ -33,7 +33,7 @@ code plusstore, '+!'                    ; n addr --
         mov     rax, [rbp]
         add     [rbx], rax
         mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp+ BYTES_PER_CELL * 2]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
         next
 endcode
 

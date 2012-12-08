@@ -22,8 +22,8 @@
 %endmacro
 
 %macro  pushrbx 0
+        mov     [rbp - BYTES_PER_CELL], rbx
         lea     rbp, [rbp - BYTES_PER_CELL]
-        mov     [rbp], rbx
 %endmacro
 
 %macro  poprbx  0
@@ -51,14 +51,15 @@
 
 %define link    0
 
-%macro  head 2-3 0                      ; label, name, flag
+%macro  head 2-4 0, 0                   ; label, name, flags, inline size
 global %1
 %strlen len     %2
         [section .data]
         dq      %1                      ; cfa
-%1_lfa  equ     $
+; %1_lfa  equ     $
         dq      link
-        db      %3                      ; flag
+        db      %3                      ; flags
+        db      %4                      ; inline size
 %1_nfa  equ     $
 %define link    %1_nfa
         db      len                     ; length byte
@@ -66,31 +67,13 @@ global %1
         __SECT__
 %endmacro
 
-%macro  code 2-3 0
-head  %1, %2, %3
+%macro  code 2-4 0, 0
+head  %1, %2, %3, %4
 section .text
 %1:
 %endmacro
 
 %macro  endcode 0-1
-%endmacro
-
-%macro  inline_to_r 0
-section .text
-        push    rbx
-        poprbx
-%endmacro
-
-%macro  inline_r_from 0
-section .text
-        pushrbx
-        pop     rbx
-%endmacro
-
-%macro  inline_r_fetch 0
-section .text
-        pushrbx
-        mov     rbx, [rsp]
 %endmacro
 
 %macro  variable 3                      ; label, name, value

@@ -39,7 +39,7 @@ endcode
 
 code do_defined, 'do-defined'           ; xt flag --
         _ state
-        _ fetch
+        _fetch
         _if do_defined1
         _ zgt
         _if do_defined2
@@ -48,7 +48,7 @@ code do_defined, 'do-defined'           ; xt flag --
         _ compilecomma
         _then do_defined2
         _else do_defined1
-        _ drop
+        _drop
         _ execute
         _ ?stack
         _then do_defined1

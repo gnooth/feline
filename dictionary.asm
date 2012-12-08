@@ -27,15 +27,20 @@ code unused, 'unused'                   ; -- u
         next
 endcode
 
-; code (8 bytes) link (8 bytes) flag (1 byte) name (1-256 bytes)
+; Header layout:
+;   code ptr    8 bytes
+;   link ptr    8 bytes
+;   flags       1 byte
+;   inline      1 byte          number of bytes of code to copy
+;   name        1-256 bytes
 
 code ntolink, 'n>link'
-        sub     rbx, BYTES_PER_CELL + 1
+        sub     rbx, BYTES_PER_CELL + 2
         next
 endcode
 
 code ltoname, 'l>name'
-        add     rbx, BYTES_PER_CELL + 1
+        add     rbx, BYTES_PER_CELL + 2
         next
 endcode
 
@@ -44,13 +49,34 @@ code linkfrom, 'link>'
         next
 endcode
 
-code toname, '>name'
+code toflags, '>flags'                  ; xt -- addr
+        add     rbx, BYTES_PER_CELL * 2
+        next
+endcode
+
+code flags, 'flags'                     ; xt -- flags
+        _ toflags
+        _ cfetch
+        next
+endcode
+
+code toinline, '>inline'                ; xt -- addr
         add     rbx, BYTES_PER_CELL * 2 + 1
         next
 endcode
 
+code toname, '>name'
+        add     rbx, BYTES_PER_CELL * 2 + 2
+        next
+endcode
+
 code namefrom, 'name>'
-        sub     rbx, BYTES_PER_CELL * 2 + 1
+        sub     rbx, BYTES_PER_CELL * 2 + 2
+        next
+endcode
+
+code nametoflags, 'n>flags'
+        sub     rbx, 2
         next
 endcode
 
@@ -62,7 +88,7 @@ endcode
 code tobody, '>body'
         _ toname
         _ dup
-        _ cfetch
+        _cfetch
         _ oneplus
         _ plus
         _lit 5                          ; length of CALL instruction
@@ -72,17 +98,27 @@ endcode
 
 code immediate, 'immediate'
         _ latest
-        _ oneminus
-        _lit 0x80
+        _ nametoflags
+        _ dup
+        _cfetch
+        _lit IMMEDIATE
+        _ or
         _ swap
         _ cstore
         next
 endcode
 
 code immediate?, 'immediate?'           ; xt -- flag
-        _ toname
-        _ oneminus
-        _ cfetch
+        _ flags
+        _lit IMMEDIATE
+        _ and
+        _ zne
+        next
+endcode
+
+code inline?, 'inline?'                 ; xt -- flag
+        _ toinline
+        _cfetch
         _ zne
         next
 endcode
@@ -155,6 +191,8 @@ code header, 'header'                   ; --
         _ comma                         ; link
         _ zero                          ; flag
         _ ccomma                        ; -- c-addr u
+        _ zero                          ; inline size
+        _ ccomma
         _ here
         _ last
         _ store                         ; -- c-addr u
@@ -170,17 +208,33 @@ code header, 'header'                   ; --
         next
 endcode
 
-code commacall, ',call'                 ; code-addr --
-        pushd 0xe8
+code lcomma, 'l,'                       ; x --
+; 32-bit store, increment DP
+        mov     rax, [dp_data]
+        mov     [rax], ebx
+        add     rax, 4
+        mov     [dp_data], rax
+        poprbx
+        next
+endcode
+
+code commacall, ',call'                 ; code --
+        _lit $0e8
         _ ccomma
-        _ here                          ; -- code-addr here
-        add     rbx, 4
-        _ minus                         ; 32-bit displacement in EBX
-        popd    rax                     ; displacement in RAX ( -- )
-        mov     rdx, [dp_data]          ; HERE
-        mov     [rdx], eax              ; store 32-bit displacement
-        add     rdx, 4                  ; 4 ALLOT
-        mov     [dp_data], rdx
+        _ here                          ; -- code here
+        add     rbx, 4                  ; -- code here+4
+        _ minus                         ; -- displacement
+        _ lcomma
+        next
+endcode
+
+code commajmp, ',jmp'                   ; code --
+        _lit $0e9
+        _ ccomma
+        _ here                          ; -- code here
+        add     rbx, 4                  ; -- code here+4
+        _ minus                         ; -- displacement
+        _ lcomma
         next
 endcode
 
@@ -219,11 +273,52 @@ code constant, 'constant'
         next
 endcode
 
+code copy_code, 'copy-code'             ; xt --
+        _ dup                           ; -- xt xt
+        _ toinline                      ; -- xt addr
+        _ cfetch                        ; -- xt size
+        _ swap
+        _ tocode
+        _ swap                          ; -- code size
+        _ zero
+        _do copy_code1                  ; -- code
+        _ dup
+        _ i
+        _ plus
+        _cfetch
+        _ ccomma
+        _loop copy_code1
+        _drop
+        next
+endcode
+
+variable optimizing?, 'optimizing?', -1
+
+code plusopt, '+opt'
+        mov     qword [optimizing?_data], -1
+        next
+endcode
+
+code minusopt, '-opt'
+        mov     qword [optimizing?_data], 0
+        next
+endcode
+
 code compilecomma, 'compile,'           ; xt --
 ; CORE EXT
 ; "Interpretation semantics for this word are undefined."
+        _ dup
+        _ toinline
+        _cfetch
+        _ optimizing?
+        _ fetch
+        _ and
+        _if compilecomma1
+        _ copy_code
+        _else compilecomma1
         _ tocode
         _ commacall
+        _then compilecomma1
         next
 endcode
 
@@ -272,7 +367,7 @@ endcode
 
 code semi, ';', IMMEDIATE
         _ ?csp
-        _lit 0xc3                       ; RET
+        _lit $0c3                       ; RET
         _ ccomma
         _ state
         _ off

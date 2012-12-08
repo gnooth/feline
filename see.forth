@@ -123,6 +123,7 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 
 : .instruction  ( -- )
    size .bytes
+\    ip instruction-start - .bytes
    .mnemonic
    48 >pos
 \    operand1 ?dup if
@@ -164,14 +165,13 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    r> drop ;
 
 : .jmp  ( -- )
-   5 .bytes
-   40 >pos
-   ." jmp"
-   48 >pos
-   ip 1+ l@s                            \ signed 32-bit displacement
-   ip 5 + + dup h.
-   .name
-   5 +to ip ;
+   5 to size
+   s" jmp" mnemonic!
+   .instruction
+   ip l@s                            \ signed 32-bit displacement
+   4 +to ip
+   ip + h.
+   ;
 
 \ $01 handler
 :noname  ( -- )
@@ -332,7 +332,7 @@ h# 83 install-handler
       modrm-reg .reg64
       .sep
       modrm-rm 0 .relative
-      size +to ip
+\       size +to ip
       exit
    then
    modrm-mod 1 = if                \ 1-byte displacement
@@ -379,22 +379,36 @@ h# 83 install-handler
    opcode h# b8 - .reg
    .sep
    prefix if
-      ip 2 + @
+      ip ( 2 + ) @
+
    else
-      ip 1 + l@s
+      ip ( 1 + ) l@s
    then
    .
-   size +to ip
+   prefix if 8 else 4 then +to ip
 ;
 
 \ $ff handler
 :noname  ( -- )
    !modrm-byte
-   modrm-byte h# e0 = if
+   modrm-byte h# 20 = if        \ mod 0
+      s" jmp" mnemonic!
+      2 to size
+      .instruction
+      ." [rax]"
+      exit
+   then
+   modrm-byte h# e0 = if        \ mod 3
       s" jmp" mnemonic!
       2 to size
       .instruction
       ." rax"
+      exit
+   then
+   modrm-mod 3 = if
+      s" inc" mnemonic!
+      .instruction
+      modrm-rm .reg64
       exit
    then
    ip instruction-start - .bytes

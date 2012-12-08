@@ -42,7 +42,7 @@ code fourdrop, '4drop'
         next
 endcode
 
-code dup, 'dup'
+code dup, 'dup', 0, 8
         pushrbx
         next
 endcode

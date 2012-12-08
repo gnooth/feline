@@ -38,7 +38,7 @@ code bmark, '<mark'
         next
 endcode
 
-code bresolve, '<resolve'
+code bresolve, '<resolve'               ; addr --
         _ comma
         next
 endcode
@@ -97,8 +97,7 @@ endcode
 
 code dorepeat, 'dorepeat'               ; same as BRANCH
         pop     rax                     ; return addr
-        mov     rax, [rax]
-        push    rax
+        jmp     [rax]
         next
 endcode
 
@@ -118,9 +117,10 @@ code while, 'while', IMMEDIATE
 endcode
 
 code repeat, 'repeat', IMMEDIATE
-        _lit dorepeat
-        _ commacall
-        _ bresolve
+;         _lit dorepeat
+;         _ commacall
+;         _ bresolve
+        _ commajmp
         _ fresolve
         next
 endcode

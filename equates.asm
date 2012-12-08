@@ -15,5 +15,4 @@
 
 BYTES_PER_CELL  equ     8
 
-IMMEDIATE       equ     0x80
-
+IMMEDIATE       equ     $80
