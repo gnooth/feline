@@ -57,8 +57,12 @@ endcode
 
 code read_time_stamp_counter, 'rdtsc'
         rdtsc
-        pushd   rax
-        pushd   rdx
+; "The high-order 32 bits are loaded into EDX, and the low-order 32 bits are
+; loaded into the EAX register. This instruction ignores operand size."
+        pushrbx
+        mov     ebx, eax
+        shl     rdx, 32
+        add     rbx, rdx
         next
 endcode
 
