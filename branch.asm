@@ -33,125 +33,96 @@ code fresolve, '>resolve'
         next
 endcode
 
-code bmark, '<mark'
-        _ here
-        next
-endcode
+; code bmark, '<mark'
+;         _ here
+;         next
+; endcode
 
 code bresolve, '<resolve'               ; addr --
         _ comma
         next
 endcode
 
-code branch, 'branch'                   ; --
-        pop     rax                     ; return addr
-        mov     rax, [rax]
-        push    rax
-        next
-endcode
+section .text
+branch:
+        jmp     0
+branch_end:
 
-code ?branch, '?branch'                 ; flag --
-        popd    rax
-        or      rax, rax
-        jz      branch
-        pop     rax
-        add     rax, BYTES_PER_CELL
-        push    rax
-        next
-endcode
+?branch:
+        test    rbx, rbx
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        jz      0
+?branch_end:
 
 code if, 'if', IMMEDIATE
         _lit ?branch
-        _ commacall
-        _ fmark
+        _lit ?branch_end - ?branch
+        _ paren_copy_code
+        _ here
         next
 endcode
 
-code else, 'else', IMMEDIATE
+code else, 'else', IMMEDIATE            ; addr -- addr
         _lit branch
-        _ commacall
-        _ fmark
+        _lit branch_end - branch
+        _ paren_copy_code
+        _ here                          ; -- addr here
+        _ over                          ; -- addr here addr
+        _ minus                         ; -- addr here-addr
         _ swap
-        _ fresolve
+        _ four
+        _ minus
+        _ lstore                        ; --
+        _ here                          ; -- here
         next
 endcode
 
-code then, 'then', IMMEDIATE
-        _ fresolve
+code then, 'then', IMMEDIATE            ; addr --
+        _ here                          ; -- addr here
+        _ over                          ; -- addr here addr
+        _ minus                         ; -- addr here-addr
+        _ swap
+        _ four
+        _ minus
+        _ lstore
         next
 endcode
 
-code dobegin, 'dobegin'                 ; only needed for decompiler
+code begin, 'begin', IMMEDIATE          ; c: -- dest
+        _ here
         next
 endcode
 
-code ?while, '?while'                   ; flag --
-        popd    rax
-        or      rax, rax
-        jz      dorepeat
-        pop     rax
-        add     rax, BYTES_PER_CELL
-        push    rax
-        next
-endcode
-
-code dorepeat, 'dorepeat'               ; same as BRANCH
-        pop     rax                     ; return addr
-        jmp     [rax]
-        next
-endcode
-
-code begin, 'begin', IMMEDIATE
-        _lit dobegin
-        _ commacall
-        _ bmark
-        next
-endcode
-
-code while, 'while', IMMEDIATE
-        _lit ?while
-        _ commacall
-        _ fmark
+code while, 'while', IMMEDIATE          ; c: orig -- orig dest
+        _lit ?branch
+        _lit (?branch_end - ?branch)
+        _ paren_copy_code
+        _ here                          ; location to be patched
         _ swap
         next
 endcode
 
-code repeat, 'repeat', IMMEDIATE
-;         _lit dorepeat
-;         _ commacall
-;         _ bresolve
+code repeat, 'repeat', IMMEDIATE        ; orig dest --
+        _ again
+        _ then
+        next
+endcode
+
+code again, 'again', IMMEDIATE          ; dest --
         _ commajmp
-        _ fresolve
         next
 endcode
 
-code doagain, 'doagain'                 ; same as BRANCH
-        pop     rax                     ; return addr
-        mov     rax, [rax]
-        push    rax
-        next
-endcode
-
-code again, 'again', IMMEDIATE
-        _lit doagain
-        _ commacall
-        _ bresolve
-        next
-endcode
-
-code ?until, '?until'                   ; flag --
-        popd    rax
-        or      rax, rax
-        jz      dorepeat
-        pop     rax
-        add     rax, BYTES_PER_CELL
-        push    rax
-        next
-endcode
-
-code until, 'until', IMMEDIATE
-        _lit ?until
-        _ commacall
-        _ bresolve
+code until, 'until', IMMEDIATE          ; c: dest --
+        _lit ?branch
+        _lit (?branch_end - ?branch)
+        _ paren_copy_code
+        _ here
+        _ minus
+        _ here
+        _ four
+        _ minus
+        _ lstore
         next
 endcode
