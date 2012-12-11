@@ -321,9 +321,9 @@ code istrequal, 'istr='                 ; addr1 len1 addr2 len2 -- flag
         _if istrequal1
         _ threedrop
         _ false
-        _return
-        _then istrequal1
+        _else istrequal1
         _ isequal
+        _then istrequal1
         next
 endcode
 
