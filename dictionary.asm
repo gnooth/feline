@@ -273,6 +273,15 @@ code constant, 'constant'
         next
 endcode
 
+code paren_copy_code, '(copy-code)'     ; addr size --
+        _ here
+        _ over
+        _ allot
+        _ swap
+        _ cmove
+        next
+endcode
+
 code copy_code, 'copy-code'             ; xt --
         _ dup                           ; -- xt xt
         _ toinline                      ; -- xt addr
@@ -280,15 +289,7 @@ code copy_code, 'copy-code'             ; xt --
         _ swap
         _ tocode
         _ swap                          ; -- code size
-        _ zero
-        _do copy_code1                  ; -- code
-        _ dup
-        _ i
-        _ plus
-        _cfetch
-        _ ccomma
-        _loop copy_code1
-        _drop
+        _ paren_copy_code
         next
 endcode
 
