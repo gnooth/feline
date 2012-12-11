@@ -213,6 +213,39 @@ h# 01 install-handler
 
 h# 03 install-handler
 
+\ $09 handler
+:noname  ( -- )
+   !modrm-byte
+   modrm-mod 3 = if
+      prefix if 2 else 1 then to size
+      size .bytes
+      s" or" mnemonic! .mnemonic
+      48 >pos
+      modrm-reg .reg64 .sep modrm-rm .reg64
+      exit
+   then
+   ip instruction-start - .bytes
+   unsupported ;
+
+h# 09 install-handler
+
+\ $0f handler
+:noname  ( -- )
+   ip c@
+   1 +to ip
+   h# 84 = if
+      s" jz" mnemonic!
+      ip l@s            \ 32-bit signed offset
+      4 +to ip
+      6 to size
+      .instruction
+      ip + h.
+   else
+      unsupported
+   then ;
+
+h# 0f install-handler
+
 : .push  ( -- )
    1 .bytes
    40 >pos
@@ -235,6 +268,28 @@ h# 03 install-handler
    s" ret" mnemonic! .mnemonic
 \    1 +to ip
    done? on ;
+
+\ $74 handler
+:noname  ( -- )
+  s" jz" mnemonic!
+  ip c@s  1 +to ip      \ 8-bit signed offset
+  2 to size
+  .instruction
+   ip + h.
+;
+
+h# 74 install-handler
+
+\ $eb handler
+:noname  ( -- )
+  s" jmp" mnemonic!
+  ip c@s  1 +to ip      \ 8-bit signed offset
+  2 to size
+  .instruction
+   ip + h.
+;
+
+h# 0eb install-handler
 
 \ $83 handler
 :noname  ( -- )
