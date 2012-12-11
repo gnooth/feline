@@ -29,6 +29,14 @@ code cstore, 'c!'                       ; c addr --
         next
 endcode
 
+code lstore, 'l!'                       ; l addr --
+        mov     eax, [rbp]              ; l
+        mov     [rbx], eax
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        next
+endcode
+
 code plusstore, '+!'                    ; n addr --
         mov     rax, [rbp]
         add     [rbx], rax
