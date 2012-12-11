@@ -26,19 +26,19 @@ endcode
 
 code twodrop, '2drop'
         mov     rbx, [rbp + BYTES_PER_CELL]
-        add     rbp, BYTES_PER_CELL * 2
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
         next
 endcode
 
 code threedrop, '3drop'
         mov     rbx, [rbp + BYTES_PER_CELL * 2]
-        add     rbp, BYTES_PER_CELL * 3
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
         next
 endcode
 
 code fourdrop, '4drop'
         mov     rbx, [rbp + BYTES_PER_CELL * 3]
-        add     rbp, BYTES_PER_CELL * 4
+        lea     rbp, [rbp + BYTES_PER_CELL * 4]
         next
 endcode
 
@@ -53,7 +53,7 @@ code twodup, '2dup'
         next
 endcode
 
-code threedup, '3dup'                   ; (s x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
+code threedup, '3dup'                   ; x1 x2 x3 -- x1 x2 x3 x1 x2 x3
         sub     rbp, BYTES_PER_CELL * 3
         mov     [rbp + BYTES_PER_CELL * 2], rbx
         mov     rax, [rbp + BYTES_PER_CELL * 4]
