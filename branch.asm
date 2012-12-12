@@ -89,7 +89,20 @@ code then, 'then', IMMEDIATE            ; addr --
         next
 endcode
 
+code align_code, 'align-code'
+        _begin align_code1
+        _ here
+        _lit 8
+        _ mod
+        _while align_code1
+        _lit $90
+        _ ccomma
+        _repeat align_code1
+        next
+endcode
+
 code begin, 'begin', IMMEDIATE          ; c: -- dest
+        _ align_code
         _ here
         next
 endcode
