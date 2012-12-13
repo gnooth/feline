@@ -13,7 +13,8 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-code execute, 'execute'
+code execute, 'execute'                 ; i*x xt -- j*x
+; CORE
         mov     rax, [rbx]
         poprbx
         call    rax
