@@ -64,4 +64,4 @@ clean:
 
 zip:
 	-rm -f forth.zip
-	zip forth.zip *.c *.asm *.forth Makefile
+	zip forth.zip *.c *.asm *.forth tests/*.forth Makefile
