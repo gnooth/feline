@@ -125,6 +125,8 @@ code refill, 'refill'                   ; -- flag
         next
 endcode
 
+variable verbose, 'verbose', 0
+
 code include_file, 'include-file'       ; i*x fileid -- j*x
 ; FILE
         _ save_input
@@ -151,6 +153,13 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _begin include_file2
         _ refill
         _while include_file2
+        _ verbose
+        _ fetch
+        _if include_file3
+        _ source
+        _ type
+        _ cr
+        _then include_file3
         _ interpret
         _repeat include_file2
         _ source_buffer
