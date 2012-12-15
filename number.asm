@@ -202,7 +202,7 @@ code number_in_base, 'number-in-base'   ; base -- number
         _if hexnum1
         _lit lit
         _ commacall
-        _ comma
+        _ commac
         _then hexnum1
         next
 

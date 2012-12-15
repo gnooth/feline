@@ -13,20 +13,33 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-code value, 'value'
-        _ header
-        _lit dovalue
-        _ commacall
-        _ comma
-        _lit $0c3                       ; RET
-        _ ccomma                        ; for disassembler
-        next
-endcode
-
-code dovalue, 'dovalue'
-        pop     rax                     ; return address
+section .text
+dovalue:
         pushrbx
-        mov     rbx, [rax]
+        mov     rbx, 0                  ; <-- patch here
+dovalue_patch   equ     $ - BYTES_PER_CELL
+        mov     rbx, [rbx]
+dovalue_end:
+
+code value, 'value'                     ; x "<spaces>name" --
+; CORE EXT
+        _ header
+        _ align_data
+        _ here_c
+        _ latest
+        _ namefrom
+        _ store
+        _lit dovalue
+        _lit dovalue_end - dovalue
+        _ paren_copy_code
+        _ here                          ; -- addr
+        _ here_c
+        _lit dovalue_end - dovalue_patch
+        _ minus
+        _ store
+        _lit $0c3
+        _ ccommac
+        _ comma
         next
 endcode
 
@@ -38,7 +51,7 @@ code storeto, 'to', IMMEDIATE
         _if storeto1
         _lit lit
         _ commacall
-        _ comma
+        _ commac
         _lit store
         _ commacall
         _else storeto1
@@ -55,7 +68,7 @@ code plusstoreto, '+to', IMMEDIATE      ; n "<spaces>name" --
         _if plusstoreto1
         _lit lit
         _ commacall
-        _ comma
+        _ commac
         _lit plusstore
         _ commacall
         _else plusstoreto1                  ; -- n addr

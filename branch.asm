@@ -19,30 +19,6 @@ code ?pairs, '?pairs'
         next
 endcode
 
-code fmark, '>mark'
-        _ here
-        _ zero
-        _ comma
-        next
-endcode
-
-code fresolve, '>resolve'
-        _ here
-        _ swap
-        _ store
-        next
-endcode
-
-; code bmark, '<mark'
-;         _ here
-;         next
-; endcode
-
-code bresolve, '<resolve'               ; addr --
-        _ comma
-        next
-endcode
-
 section .text
 branch:
         jmp     0
@@ -55,31 +31,34 @@ branch_end:
         jz      0
 ?branch_end:
 
-code if, 'if', IMMEDIATE
+code if, 'if', IMMEDIATE                ; c: -- orig
+; CORE
         _lit ?branch
         _lit ?branch_end - ?branch
         _ paren_copy_code
-        _ here
+        _ here_c
         next
 endcode
 
-code else, 'else', IMMEDIATE            ; addr -- addr
+code else, 'else', IMMEDIATE            ; c: orig1 -- orig2
+; CORE
         _lit branch
         _lit branch_end - branch
         _ paren_copy_code
-        _ here                          ; -- addr here
-        _ over                          ; -- addr here addr
-        _ minus                         ; -- addr here-addr
+        _ here_c                        ; -- orig1 here
+        _ over                          ; -- orig1 here orig1
+        _ minus                         ; -- orig1 here-orig1
         _ swap
         _ four
         _ minus
         _ lstore                        ; --
-        _ here                          ; -- here
+        _ here_c                        ; -- orig2
         next
 endcode
 
-code then, 'then', IMMEDIATE            ; addr --
-        _ here                          ; -- addr here
+code then, 'then', IMMEDIATE            ; c: orig --
+; CORE
+        _ here_c                        ; -- addr here
         _ over                          ; -- addr here addr
         _ minus                         ; -- addr here-addr
         _ swap
@@ -90,6 +69,7 @@ code then, 'then', IMMEDIATE            ; addr --
 endcode
 
 code align_code, 'align-code'
+%if 0
         _begin align_code1
         _ here
         _lit 8
@@ -98,20 +78,21 @@ code align_code, 'align-code'
         _lit $90
         _ ccomma
         _repeat align_code1
+%endif
         next
 endcode
 
 code begin, 'begin', IMMEDIATE          ; c: -- dest
         _ align_code
-        _ here
+        _ here_c
         next
 endcode
 
 code while, 'while', IMMEDIATE          ; c: orig -- orig dest
         _lit ?branch
-        _lit (?branch_end - ?branch)
+        _lit ?branch_end - ?branch
         _ paren_copy_code
-        _ here                          ; location to be patched
+        _ here_c                        ; location to be patched
         _ swap
         next
 endcode
@@ -129,11 +110,11 @@ endcode
 
 code until, 'until', IMMEDIATE          ; c: dest --
         _lit ?branch
-        _lit (?branch_end - ?branch)
+        _lit ?branch_end - ?branch
         _ paren_copy_code
-        _ here
+        _ here_c
         _ minus
-        _ here
+        _ here_c
         _ four
         _ minus
         _ lstore

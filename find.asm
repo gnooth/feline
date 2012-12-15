@@ -76,7 +76,7 @@ code bracket_tick, "[']", IMMEDIATE
         _ tick
         pushd   lit
         _ commacall
-        _ comma
+        _ commac
         next
 endcode
 

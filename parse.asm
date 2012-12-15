@@ -135,7 +135,7 @@ code bracket_char, '[char]', IMMEDIATE
         _ char
         _lit lit
         _ commacall
-        _ comma
+        _ commac
         next
 endcode
 

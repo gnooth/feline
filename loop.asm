@@ -32,7 +32,9 @@ endcode
 code do, 'do', IMMEDIATE                ; -- addr
         _lit parendo
         _ commacall
-        _ fmark                         ; -- addr
+        _ here_c
+        _ zero
+        _ commac
         next
 endcode
 
@@ -61,7 +63,9 @@ endcode
 code ?do, '?do', IMMEDIATE
         _lit paren?do
         _ commacall
-        _ fmark                         ; -- addr
+        _ here_c
+        _ zero
+        _ commac
         next
 endcode
 
@@ -79,13 +83,15 @@ code parenloop, '(loop)'                ; --
         next
 endcode
 
-code loop, 'loop', IMMEDIATE            ; addr --
+code loop, 'loop', IMMEDIATE            ; c: do-sys --
         _lit parenloop
         _ commacall
         _ dup
         _ cellplus
-        _ bresolve
-        _ fresolve
+        _ commac
+        _ here_c
+        _ swap
+        _ store
         next
 endcode
 
@@ -117,8 +123,10 @@ code plusloop, '+loop', IMMEDIATE       ; addr --
         _ commacall
         _ dup
         _ cellplus
-        _ bresolve
-        _ fresolve
+        _ commac
+        _ here_c
+        _ swap
+        _ store
         next
 endcode
 

@@ -159,9 +159,9 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    r@ ['] (loop) >code = if
       .literal
    then
-   r@ ['] dovalue >code = if
-      .literal
-   then
+\    r@ ['] dovalue >code = if
+\       .literal
+\    then
    r> drop ;
 
 : .jmp  ( -- )

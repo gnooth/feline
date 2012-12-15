@@ -13,36 +13,92 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-code parensquote, '(s")'                ; -- c-addr u
-        _ rfrom                         ; return address (start of string)
-        _ count                         ; -- c-addr u
-        _ twodup
-        _ plus
-        _ tor
+code place, 'place'                     ; c-addr1 u c-addr2 --
+        _ threedup
+        _ oneplus
+        _ swap
+        _ move
+        _ cstore
+        _ drop
         next
 endcode
 
-code sliteral, 'sliteral', IMMEDIATE    ; addr len --
-; STRING
-; "Interpretation semantics for this word are undefined."
-        _lit parensquote
-        _ commacall
-        _ dup
-        _ tor                           ; -- addr len           r: len
-        _ here                          ; -- addr len here      r: len
-        _ oneplus
+code zplace, 'zplace'                   ; c-addr1 u c-addr2 --
+        _ threedup
         _ swap
-        _ cmove                         ; --                    r: len
-        _ rfetch
-        _ here
+        _ move
+        _ plus
+        _ zero
+        _ swap
         _ cstore
-        _ rfrom
+        _ drop
+        next
+endcode
+
+code stringcomma, 'string,'             ; addr u --
+        _ here
+        _ over
         _ oneplus
         _ allot
+        _ place
+        next
+endcode
+
+dosliteral:
+        pushrbx
+        mov     rbx, 0
+dosliteral_end:
+
+code cliteral, 'cliteral', IMMEDIATE    ; c: addr1 u --         runtime: -- c-addr2
+; not in standard
+        _ here                          ; addr for counted string
+        _ rrot                          ; -- here addr1 u
+        _ stringcomma                   ; -- here
+        _lit dosliteral
+        _lit dosliteral_end - dosliteral
+        _ paren_copy_code
+        _ here_c
+        _ cellminus
+        _ store
+        next
+endcode
+
+code sliteral, 'sliteral', IMMEDIATE    ; c: addr1 u --         runtime: -- c-addr2 u
+; STRING
+; "Interpretation semantics for this word are undefined."
+        _ here                          ; addr for counted string
+        _ rrot
+        _ stringcomma
+        _lit dosliteral
+        _lit dosliteral_end - dosliteral
+        _ paren_copy_code
+        _ here_c
+        _ cellminus
+        _ store
+        _lit count
+        _ commacall
+        next
+endcode
+
+code cquote, 'c"', IMMEDIATE
+; CORE EXT
+; "Interpretation semantics for this word are undefined."
+        _lit '"'
+        _ parse                         ; -- addr len
+        _ state
+        _ fetch
+        _if cquote1
+        _ cliteral
+        _else cquote1
+        _ syspad
+        _ place
+        _ syspad
+        _then cquote1
         next
 endcode
 
 code squote, 's"', IMMEDIATE
+; CORE  FILE
         _lit '"'
         _ parse                         ; -- addr len
         _ state
@@ -57,6 +113,7 @@ code squote, 's"', IMMEDIATE
         _then squote1
         next
 endcode
+
 
 code dotquote, '."', IMMEDIATE
         _ squote
@@ -82,52 +139,6 @@ code abortquote, 'abort"', IMMEDIATE
         _ squote
         _lit parenabortquote
         _ commacall
-        next
-endcode
-
-code parencquote, '(c")'
-        _ rfrom                         ; return address (start of string)
-        _ dup                           ; -- addr addr
-        _ cfetch                        ; -- addr len
-        _ oneplus                       ; -- addr len+1
-        _ over
-        _ plus
-        _ tor
-        next
-endcode
-
-code cliteral, 'cliteral', IMMEDIATE    ; addr len --
-        _lit parencquote
-        _ commacall
-        _ dup
-        _ tor                           ; -- addr len           r: -- len
-        _ here                          ; -- addr len here      r: -- len
-        _ oneplus
-        _ swap
-        _ cmove                         ; --                    r: -- len
-        _ rfetch
-        _ here
-        _ cstore
-        _ rfrom
-        _ oneplus
-        _ allot
-        next
-endcode
-
-code cquote, 'c"', IMMEDIATE
-; CORE EXT
-; "Interpretation semantics for this word are undefined."
-        _lit '"'
-        _ parse                         ; -- addr len
-        _ state
-        _ fetch
-        _if cquote1
-        _ cliteral
-        _else cquote1
-        _ syspad
-        _ place
-        _ syspad
-        _then cquote1
         next
 endcode
 
@@ -199,28 +210,6 @@ endcode
 code buffer_colon, 'buffer:'
         _ create
         _ allot
-        next
-endcode
-
-code place, 'place'                     ; c-addr1 u c-addr2 --
-        _ threedup
-        _ oneplus
-        _ swap
-        _ move
-        _ cstore
-        _ drop
-        next
-endcode
-
-code zplace, 'zplace'                   ; addr1 u addr2 --
-        _ threedup
-        _ swap
-        _ move
-        _ plus
-        _ zero
-        _ swap
-        _ cstore
-        _ drop
         next
 endcode
 
@@ -327,7 +316,7 @@ code istrequal, 'istr='                 ; addr1 len1 addr2 len2 -- flag
         next
 endcode
 
-code slashstring, "/string"             ; c-addr1 u1 n -- c-addr2 u2
+code slashstring, '/string'             ; c-addr1 u1 n -- c-addr2 u2
         sub     [rbp], rbx
         add     [rbp + BYTES_PER_CELL], rbx
         poprbx
@@ -339,7 +328,6 @@ code count, 'count'                     ; c-addr -- c-addr+1 u
         mov     al, [rbx]
         inc     rbx
         pushrbx
-        xor     ebx, ebx
-        mov     bl, al
+        movzx   rbx, al
         next
 endcode

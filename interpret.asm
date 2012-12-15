@@ -77,7 +77,7 @@ code interpret, 'interpret'             ; --
         _if interp3
         pushd lit
         _ commacall
-        _ comma
+        _ commac
         _then interp3
         _then interp2
         _again interp0

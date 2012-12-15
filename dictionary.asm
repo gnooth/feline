@@ -15,6 +15,8 @@
 
 variable dp, 'dp', 0                    ; initialized in main()
 
+variable cp, 'cp', 0                    ; initialized in main()
+
 variable limit, 'limit', 0              ; initialized in main()
 
 code unused, 'unused'                   ; -- u
@@ -33,6 +35,8 @@ endcode
 ;   flags       1 byte
 ;   inline      1 byte          number of bytes of code to copy
 ;   name        1-256 bytes
+;   padding     0-7 bytes       for alignment
+;   body
 
 code ntolink, 'n>link'
         sub     rbx, BYTES_PER_CELL + 2
@@ -91,8 +95,7 @@ code tobody, '>body'
         _cfetch
         _ oneplus
         _ plus
-        _lit 5                          ; length of CALL instruction
-        _ plus
+        _ aligned
         next
 endcode
 
@@ -145,18 +148,6 @@ code reveal, 'reveal'
         next
 endcode
 
-; REVIEW
-code align_, 'align'                    ; --
-; CORE
-        next
-endcode
-
-; REVIEW
-code aligned, 'aligned'                 ; addr -- a-addr
-; CORE
-        next
-endcode
-
 code comma, ','
         _ here
         _ store
@@ -181,18 +172,40 @@ code allot, 'allot'
         next
 endcode
 
+code commac, ',c'
+        _ here_c
+        _ store
+        _ cell
+        _ cp
+        _ plusstore
+        next
+endcode
+
+code ccommac, 'c,c'
+        _ here_c
+        _ cstore
+        _ one
+        _ cp
+        _ plusstore
+        next
+endcode
+
+code allot_c, 'allot-c'
+        _ cp
+        _ plusstore
+        next
+endcode
+
 code header, 'header'                   ; --
         _ parse_name                    ; -- c-addr u
-        _ here
-        _ tor
         _ zero                          ; code field (will be patched)
         _ comma
         _ latest
         _ comma                         ; link
         _ zero                          ; flag
         _ ccomma                        ; -- c-addr u
-        _ zero                          ; inline size
-        _ ccomma
+        _ zero
+        _ ccomma                        ; inline size
         _ here
         _ last
         _ store                         ; -- c-addr u
@@ -201,10 +214,6 @@ code header, 'header'                   ; --
         _ oneplus
         _ allot
         _ place
-        ; patch code field
-        _ here
-        _ rfrom
-        _ store
         next
 endcode
 
@@ -218,23 +227,53 @@ code lcomma, 'l,'                       ; x --
         next
 endcode
 
+code lcommac, 'l,c'                     ; x --
+; 32-bit store, increment DP
+        mov     rax, [cp_data]
+        mov     [rax], ebx
+        add     rax, 4
+        mov     [cp_data], rax
+        poprbx
+        next
+endcode
+
 code commacall, ',call'                 ; code --
         _lit $0e8
-        _ ccomma
-        _ here                          ; -- code here
+        _ ccommac
+        _ here_c                        ; -- code here
         add     rbx, 4                  ; -- code here+4
         _ minus                         ; -- displacement
-        _ lcomma
+        _ lcommac
         next
 endcode
 
 code commajmp, ',jmp'                   ; code --
         _lit $0e9
-        _ ccomma
-        _ here                          ; -- code here
+        _ ccommac
+        _ here_c                        ; -- code here
         add     rbx, 4                  ; -- code here+4
         _ minus                         ; -- displacement
-        _ lcomma
+        _ lcommac
+        next
+endcode
+
+code align_data, 'align'
+        _begin align1
+        _ here
+        _lit 8
+        _ mod
+        _while align1
+        _ zero
+        _ ccomma
+        _repeat align1
+        next
+endcode
+
+; REVIEW
+code aligned, 'aligned'                 ; addr -- a-addr
+; CORE
+        add     rbx, 7
+        and     rbx, -8
         next
 endcode
 
@@ -244,10 +283,37 @@ code docreate, 'docreate'
         ret
 endcode
 
+%if 0
 code create, 'create'                   ; "<spaces>name" --
         _ header
         _lit docreate
         _ commacall
+        next
+endcode
+%endif
+
+section .text
+dovariable:
+        pushrbx
+        mov     rbx, -1
+dovariable_end:
+
+code create, 'create'                   ; "<spaces>name" --
+        _ header
+        _ align_data
+        _ here_c
+        _ latest
+        _ namefrom
+        _ store
+        _lit dovariable
+        _lit dovariable_end - dovariable
+        _ paren_copy_code
+        _ here                          ; -- addr
+        _ here_c
+        _ cellminus
+        _ store
+        _lit $0c3
+        _ ccommac
         next
 endcode
 
@@ -258,25 +324,34 @@ code var, 'variable'
         next
 endcode
 
-code doconstant, 'doconstant'
-        pop     rax                     ; return address
+section .text
+doconst:
         pushrbx
-        mov     rbx, [rax]
-        next
-endcode
+        mov     rbx, 0
+doconst_end:
 
-code constant, 'constant'
-        _ header
-        _lit doconstant
-        _ commacall
-        _ comma
+code constant, 'constant'               ; x "<spaces>name" --
+; CORE
+        _ header                        ; -- x
+        _ here_c
+        _ latest
+        _ namefrom
+        _ store                         ; -- x
+        _lit doconst
+        _lit doconst_end - doconst
+        _ paren_copy_code               ; -- x
+        _ here_c
+        _ cellminus
+        _ store                         ; --
+        _lit $0c3
+        _ ccommac
         next
 endcode
 
 code paren_copy_code, '(copy-code)'     ; addr size --
-        _ here
+        _ here_c
         _ over
-        _ allot
+        _ allot_c
         _ swap
         _ cmove
         next
@@ -343,8 +418,12 @@ endcode
 code colon, ':'
         _ header
         _ hide
-        _ here
+        _ here_c
+        _ dup
         _ last_code
+        _ store
+        _ latest
+        _ namefrom
         _ store
         _ state
         _ on
@@ -355,9 +434,8 @@ endcode
 code colonnoname, ':noname'
         _ state
         _ on
-        _ here
-        _ dup
-        _ cellplus                      ; code address
+        _ here                          ; address of xt to be created
+        _ here_c                        ; code address
         _ dup
         _ last_code
         _ store
@@ -369,7 +447,7 @@ endcode
 code semi, ';', IMMEDIATE
         _ ?csp
         _lit $0c3                       ; RET
-        _ ccomma
+        _ ccommac
         _ state
         _ off
         _ reveal
@@ -412,20 +490,18 @@ endcode
 
 code paren_scode, '(;code)'
         pop     rax                     ; return address
-        inc     rax                     ; skip past ret to get to start of does> code
+        inc     rax                     ; skip past RET to get to start of DOES> code
         pushd   rax                     ; -- does>-code
-        _ latest                        ; -- does>-code nfa
-        _ namefrom                      ; -- does>-code cfa
-        _ tocode                        ; -- does>-code code-addr
-        ; we want to patch this code with a call to the code after does>
-        _ here
-        _ tor                           ; -- does>-code code-addr       r: -- here
-        _ dp
-        _ store                         ; -- does>-code
-        _ commacall
-        _ rfrom
-        _ dp
+        _ latest
+        _ namefrom
+        _ tocode
+        _lit dovariable_end - dovariable
+        _ plus
+        _ cp
         _ store
+        _ commacall
+        _lit $0c3
+        _ ccommac
         next
 endcode
 
@@ -433,18 +509,18 @@ code does, 'does>', IMMEDIATE
         _lit paren_scode                ; postpone (;code)
         _ commacall
         _lit $0c3                       ; next,
-        _ ccomma                        ; --
-        _lit docreate
-        _ here
-        _lit 9
-        _ dup
-        _ allot
-        _ cmove
+        _ ccommac                       ; --
         next
 endcode
 
 code here, 'here'
         _ dp
+        _ fetch
+        next
+endcode
+
+code here_c, 'here-c'
+        _ cp
         _ fetch
         next
 endcode
@@ -480,7 +556,7 @@ endcode
 code literal, 'literal', IMMEDIATE
         pushd   lit
         _ commacall
-        _ comma
+        _ commac
         next
 endcode
 
@@ -497,7 +573,7 @@ code postpone, 'postpone', IMMEDIATE    ; "<spaces>name" --
         _ tocode
         _lit lit
         _ commacall
-        _ comma
+        _ commac
         _lit commacall
         _ commacall
         _then postpone1
