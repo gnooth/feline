@@ -41,6 +41,12 @@ code cellplus, 'cell+'                  ; a-addr1 -- a-addr2
         next
 endcode
 
+code cellminus, 'cell-'                 ; a-addr1 -- a-addr2
+; not in standard
+        sub      rbx, BYTES_PER_CELL
+        next
+endcode
+
 code cells, 'cells'                     ; n1 -- n2
 ; CORE 6.1.0890
 ; "n2 is the size in address units of n1 cells"
