@@ -439,7 +439,7 @@ h# 83 install-handler
    else
       ip ( 1 + ) l@s
    then
-   .
+   h.
    prefix if 8 else 4 then +to ip
 ;
 
