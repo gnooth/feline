@@ -46,7 +46,9 @@ endcode
 
 dosliteral:
         pushrbx
-        mov     rbx, 0
+        db      $48                     ; mov rbx, 0
+        db      $0bb
+        dq      0                       ; 64-bit immediate value (to be patched)
 dosliteral_end:
 
 code cliteral, 'cliteral', IMMEDIATE    ; c: addr1 u --         runtime: -- c-addr2

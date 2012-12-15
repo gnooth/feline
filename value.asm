@@ -16,8 +16,10 @@
 section .text
 dovalue:
         pushrbx
-        mov     rbx, 0                  ; <-- patch here
-dovalue_patch   equ     $ - BYTES_PER_CELL
+        db      $48                     ; mov rbx, 0
+        db      $0bb
+dovalue_patch:
+        dq      0                       ; 64-bit immediate value (to be patched)
         mov     rbx, [rbx]
 dovalue_end:
 

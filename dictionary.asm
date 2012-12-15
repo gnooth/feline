@@ -277,25 +277,12 @@ code aligned, 'aligned'                 ; addr -- a-addr
         next
 endcode
 
-code docreate, 'docreate'
-        pushrbx
-        pop     rbx
-        ret
-endcode
-
-%if 0
-code create, 'create'                   ; "<spaces>name" --
-        _ header
-        _lit docreate
-        _ commacall
-        next
-endcode
-%endif
-
 section .text
 dovariable:
         pushrbx
-        mov     rbx, -1
+        db      $48                     ; mov rbx, 0
+        db      $0bb
+        dq      0                       ; 64-bit immediate value (to be patched)
 dovariable_end:
 
 code create, 'create'                   ; "<spaces>name" --
@@ -327,7 +314,9 @@ endcode
 section .text
 doconst:
         pushrbx
-        mov     rbx, 0
+        db      $48                     ; mov rbx, 0
+        db      $0bb
+        dq      0                       ; 64-bit immediate value (to be patched)
 doconst_end:
 
 code constant, 'constant'               ; x "<spaces>name" --
