@@ -41,7 +41,7 @@ code digit, 'digit'                     ; char -- n true  |  char -- false
         _ minus
         _ dup
         _ base
-        _ fetch
+        _fetch
         _ lt
         _if digit2
         _ true
@@ -65,7 +65,7 @@ code digit, 'digit'                     ; char -- n true  |  char -- false
         _ plus
         _ dup
         _ base
-        _ fetch
+        _fetch
         _ ge
         _if digit4
         _ drop
@@ -92,12 +92,12 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
         _ rfrom
         _ swap
         _ base
-        _ fetch
+        _fetch
         _ umstar
         _ drop
         _ rot
         _ base
-        _ fetch
+        _fetch
         _ umstar
         _ dplus
         _ twoswap
@@ -117,7 +117,7 @@ code convert, 'convert'                 ; n addr1 -- n addr2
         _while convert0                 ; -- n n2
         _ swap
         _ base
-        _ fetch
+        _fetch
         _ star
         _ swap
         _ plus
@@ -137,7 +137,7 @@ code missing, 'missing'
         _if missing1
         _dotq "line "
         _ source_line_number
-        _ fetch
+        _fetch
         _ dot
         _ cr
         _then missing1
@@ -188,7 +188,7 @@ code number_in_base, 'number-in-base'   ; base -- number
         _ tick_word
         _ place
         _ base
-        _ fetch
+        _fetch
         _ tor
         _ base
         _ store
@@ -198,11 +198,9 @@ code number_in_base, 'number-in-base'   ; base -- number
         _ base
         _ store
         _ state
-        _ fetch
+        _fetch
         _if hexnum1
-        _lit lit
-        _ commacall
-        _ commac
+        _ literal
         _then hexnum1
         next
 

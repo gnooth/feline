@@ -49,11 +49,9 @@ code storeto, 'to', IMMEDIATE
         _ tick
         _ tobody
         _ state
-        _ fetch
+        _fetch
         _if storeto1
-        _lit lit
-        _ commacall
-        _ commac
+        _ literal
         _lit store
         _ commacall
         _else storeto1
@@ -66,11 +64,9 @@ code plusstoreto, '+to', IMMEDIATE      ; n "<spaces>name" --
         _ tick
         _ tobody
         _ state
-        _ fetch
+        _fetch
         _if plusstoreto1
-        _lit lit
-        _ commacall
-        _ commac
+        _ literal
         _lit plusstore
         _ commacall
         _else plusstoreto1                  ; -- n addr

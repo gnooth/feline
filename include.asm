@@ -24,7 +24,7 @@ variable tick_source_id, "'source-id", 0
 
 code source_id, 'source-id'             ; -- 0 | -1 | fileid
         _ tick_source_id
-        _ fetch
+        _fetch
         next
 endcode
 
@@ -32,7 +32,7 @@ variable tick_source_buffer, "'source-buffer", 0
 
 code source_buffer, 'source-buffer'     ; -- addr
         _ tick_source_buffer
-        _ fetch
+        _fetch
         next
 endcode
 
@@ -48,9 +48,9 @@ variable nsource, '#source', 0
 code source, 'source'                   ; -- c-addr u
 ; CORE 6.1.2216
         _ tick_source
-        _ fetch
+        _fetch
         _ nsource
-        _ fetch
+        _fetch
         next
 endcode
 
@@ -75,7 +75,7 @@ code save_input, 'save-input'           ; -- addr len fileid source-buffer >in 5
         _ source_id                     ; -- addr len fileid
         _ source_buffer                 ; -- addr len fileid source-buffer
         _ toin
-        _ fetch                         ; -- addr len fileid source-buffer >in
+        _fetch                          ; -- addr len fileid source-buffer >in
         _lit 5
         next
 endcode
@@ -154,7 +154,7 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _ refill
         _while include_file2
         _ verbose
-        _ fetch
+        _fetch
         _if include_file3
         _ source
         _ type

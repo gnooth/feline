@@ -15,7 +15,7 @@
 
 code prompt, "prompt"
         _ state
-        _ fetch
+        _fetch
         _ zero?
         _if prompt1
         _ ?cr
@@ -69,7 +69,7 @@ variable tick_tib, "'tib", 0            ; initialized in main()
 
 code tib, 'tib'
         _ tick_tib
-        _ fetch
+        _fetch
         next
 endcode
 
@@ -93,13 +93,13 @@ code quit, 'quit'                       ; --            r:  i*x --
         _ off
         _begin quit1
         _ r0
-        _ fetch
+        _fetch
         _ rpstore
         _ prompt
         _ query
         _ tib
         _ ntib
-        _ fetch
+        _fetch
         _ zero
         _ set_input
         _ interpret

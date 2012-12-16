@@ -22,9 +22,9 @@ variable limit, 'limit', 0              ; initialized in main()
 code unused, 'unused'                   ; -- u
 ; CORE EXT
         _ limit
-        _ fetch
+        _fetch
         _ dp
-        _ fetch
+        _fetch
         _ minus
         next
 endcode
@@ -376,7 +376,7 @@ code compilecomma, 'compile,'           ; xt --
         _ toinline
         _cfetch
         _ optimizing?
-        _ fetch
+        _fetch
         _ and
         _if compilecomma1
         _ copy_code
@@ -445,7 +445,7 @@ endcode
 
 code recurse, 'recurse', IMMEDIATE
         _ last_code
-        _ fetch
+        _fetch
         _ commacall
         next
 endcode
@@ -467,7 +467,7 @@ code ?line, '?line'                     ; n --
 ; "Move to left margin on next line if we will be past the right margin
 ; after printing n characters."
         _ nout
-        _ fetch
+        _fetch
         _ plus
         pushd 80                        ; REVIEW right margin
         _ gt
@@ -504,13 +504,13 @@ endcode
 
 code here, 'here'
         _ dp
-        _ fetch
+        _fetch
         next
 endcode
 
 code here_c, 'here-c'
         _ cp
-        _ fetch
+        _fetch
         next
 endcode
 
@@ -530,21 +530,28 @@ endcode
 
 code latest, 'latest'                   ; -- nfa
         _ last
-        _ fetch
+        _fetch
         next
 endcode
 
-code lit, '(lit)'
+section .text
+push_tos:
         pushrbx
-        pop     rax                     ; return address
-        mov     rbx, [rax]
-        add     rax, BYTES_PER_CELL
-        jmp     rax
+push_tos_end:
+
+code push_tos_comma, 'push-tos,'
+        _lit push_tos
+        _lit push_tos_end - push_tos
+        _ paren_copy_code
+        next
 endcode
 
 code literal, 'literal', IMMEDIATE
-        pushd   lit
-        _ commacall
+        _ push_tos_comma
+        _lit $48
+        _ ccommac
+        _lit $0bb
+        _ ccommac
         _ commac
         next
 endcode
@@ -560,9 +567,7 @@ code postpone, 'postpone', IMMEDIATE    ; "<spaces>name" --
         _ commacall
         _else postpone1
         _ tocode
-        _lit lit
-        _ commacall
-        _ commac
+        _ literal
         _lit commacall
         _ commacall
         _then postpone1
@@ -587,7 +592,7 @@ code words, 'words'
         _ tor
         _ ntolink
 words_loop:
-        _ fetch
+        _fetch
         _ ?dup
         _if words1
         _ dup

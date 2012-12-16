@@ -73,11 +73,9 @@ code interpret, 'interpret'             ; --
         _else interp2
         _ number
         _ state
-        _ fetch
+        _fetch
         _if interp3
-        pushd lit
-        _ commacall
-        _ commac
+        _ literal
         _then interp3
         _then interp2
         _again interp0

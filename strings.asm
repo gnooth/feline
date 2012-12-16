@@ -88,7 +88,7 @@ code cquote, 'c"', IMMEDIATE
         _lit '"'
         _ parse                         ; -- addr len
         _ state
-        _ fetch
+        _fetch
         _if cquote1
         _ cliteral
         _else cquote1
@@ -104,7 +104,7 @@ code squote, 's"', IMMEDIATE
         _lit '"'
         _ parse                         ; -- addr len
         _ state
-        _ fetch
+        _fetch
         _if squote1
         _ sliteral
         _else squote1

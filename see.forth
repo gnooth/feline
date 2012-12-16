@@ -147,9 +147,9 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    ip + dup h.
    dup .name >r
 \    size +to ip
-   r@ ['] (lit) >code = if
-      .literal
-   then
+\    r@ ['] (lit) >code = if
+\       .literal
+\    then
    r@ ['] (do) >code = if
       .literal
    then

@@ -73,7 +73,7 @@ code parse, 'parse'                     ; char "ccc<char>" -- c-addr u
 ; CORE EXT 6.2.2008
         _ source                        ; char c-addr u
         _ toin
-        _ fetch                         ; char c-addr u1 u2
+        _fetch                          ; char c-addr u1 u2
         _ slashstring                   ; char c-addr2 u3
         _ over
         _ tor                           ; delim addr1 len1      r: addr1
@@ -100,7 +100,7 @@ code parse_name, 'parse-name'           ; <spaces>name -- c-addr u
         _ source                        ; -- source-addr source-length
         _ tuck                          ; -- source-length source-addr source-length
         _ toin
-        _ fetch
+        _fetch
         _ slashstring                   ; -- source-length addr1 #left
         _ skipwhite                     ; -- source-length start-of-word #left
         _ over                          ; -- source-length start-of-word #left start-of-word
@@ -133,9 +133,7 @@ endcode
 
 code bracket_char, '[char]', IMMEDIATE
         _ char
-        _lit lit
-        _ commacall
-        _ commac
+        _ literal
         next
 endcode
 
@@ -143,7 +141,7 @@ variable tick_tick_word, "''word", 0    ; initialized in main()
 
 code tick_word, "'word"
         _ tick_tick_word
-        _ fetch
+        _fetch
         next
 endcode
 

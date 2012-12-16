@@ -33,7 +33,7 @@ code findcode, 'find-code'              ; code-addr -- name-addr
         _then find_code1
         _ ntolink                       ; lfa
         _begin find_code2
-        _ fetch                         ; link
+        _fetch                          ; link
         _ dup
         _ zero?
         _if find_code_3

@@ -42,8 +42,17 @@ code fourdrop, '4drop'
         next
 endcode
 
-code dup, 'dup', 0, 8
+code dup, 'dup', 0, dup_ret - dup
         pushrbx
+dup_ret:
+        next
+endcode
+
+code ?dup, '?dup'
+        test    rbx, rbx
+        jz      .1
+        pushrbx
+.1:
         next
 endcode
 
@@ -82,17 +91,10 @@ code rrot, '-rot'                       ; x1 x2 x3 -- x3 x1 x2
         next
 endcode
 
-code ?dup, '?dup'
-        test    rbx, rbx
-        jz      .1
-        pushrbx
-.1:
-        next
-endcode
-
 code over, 'over'
-        pushrbx
-        mov     rbx, [rbp + BYTES_PER_CELL]
+        mov     [rbp - BYTES_PER_CELL], rbx
+        mov     rbx, [rbp]
+        lea     rbp, [rbp - BYTES_PER_CELL]
         next
 endcode
 

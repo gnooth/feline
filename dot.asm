@@ -20,7 +20,7 @@ code hold, 'hold'
         _ hld
         _ plusstore
         _ hld
-        _ fetch
+        _fetch
         _ cstore
         next
 endcode
@@ -44,7 +44,7 @@ endcode
 code sharpgt,'#>'                       ; d --- addr len
         _ twodrop                       ; 2drop hld @ pad over -
         _ hld
-        _ fetch
+        _fetch
         _ pad
         _ over
         _ minus
@@ -53,7 +53,7 @@ endcode
 
 code sharp, '#'                         ; ud1 -- ud2
         _ base
-        _ fetch                         ; -- ud1 base
+        _fetch                          ; -- ud1 base
         _ muslmod                       ; -- remainder ud2
         _ rot                           ; -- ud2 remainder
         _lit 9                          ; -- ud2 remainder 9
@@ -136,7 +136,7 @@ endcode
 
 code hdot, 'h.'
         _ base
-        _ fetch
+        _fetch
         _ tor
         _ hex
         _ dot

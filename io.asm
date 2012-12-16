@@ -122,7 +122,7 @@ endcode
 
 code topos, '>pos'                      ; +n --
         _ nout
-        _ fetch
+        _fetch
         _ minus
         _ one
         _ max
