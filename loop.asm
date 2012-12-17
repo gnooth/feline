@@ -83,12 +83,45 @@ code parenloop, '(loop)'                ; --
         next
 endcode
 
+section .text
+doloop:
+        inc     qword [rsp]
+        jno     0                       ; <-- patch
+doloop_patch    equ     $ - 4
+        add     rsp, BYTES_PER_CELL * 2
+        ret
+doloop_end:
+
 code loop, 'loop', IMMEDIATE            ; c: do-sys --
+%if 0
         _lit parenloop
         _ commacall
+%else
+        _ here_c                        ; -- do-sys             r: here-c
+        _ tor
+        _lit doloop
+        _lit doloop_end - doloop
+        _ paren_copy_code               ; -- do-sys             r: here-c
+        _lit doloop_patch - doloop
+        _ rfrom
+        _ plus                          ; -- do-sys addr-to-be-patched
+
+        _ twodup
+        _ swap
+        _ cellplus
+        _ swap
+        _ four
+        _ plus
+        _ minus                         ; -- do-sys addr-to-be-patched signed-displacement
+        _ swap
+        _ lstore                        ; -- do-sys
+%endif
+
+%if 0
         _ dup
         _ cellplus
         _ commac
+%endif
         _ here_c
         _ swap
         _ store
