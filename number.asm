@@ -187,6 +187,12 @@ code number_in_base, 'number-in-base'   ; base -- number
         _ parse_name
         _ tick_word
         _ place
+        _ tick_word
+        _ count
+        _ plus
+        _ blchar
+        _ swap
+        _ cstore
         _ base
         _fetch
         _ tor
