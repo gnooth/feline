@@ -20,8 +20,6 @@ decimal
 0 value ip
 0 value prefix
 0 value opcode
-\ 0 value operand1                        \ destination
-\ 0 value operand2                        \ source
 0 value modrm-byte
 
 0 value size
@@ -29,14 +27,56 @@ decimal
 variable done?
 variable literal?
 
+3 constant /operand
+
+: operand-kind      ( operand -- field )            ;
+: operand-register  ( operand -- field )      cell+ ;
+: operand-data      ( operand -- field )  2 cells + ;
+
+: operand  ( <name> -- )  create /operand cells allot ;
+
+: clear-operand  ( operand -- )  /operand cells erase ;
+
+: operand!  ( kind register data operand -- )
+   >r
+   r@ operand-data !
+   r@ operand-register !
+   r> operand-kind ! ;
+
+operand operand1
+operand operand2
+
+: source-operand        operand2 ;
+: destination-operand   operand1 ;
+
+: source!  ( kind register data -- )  source-operand      operand! ;
+: dest!    ( kind register data -- )  destination-operand operand! ;
+
+\ operand kinds
+0 constant ok_unknown
+1 constant ok_register
+2 constant ok_relative
+3 constant ok_immediate
+
 : .2  ( ub -- )  0 <# # # #> type ;
 : .3  ( ub -- )  0 <# # # # #> type ;
 : .sep  ( -- )  ." , " ;
 
-create mnemonic  2 cells allot
+\ Obsolete.
+create old-mnemonic  2 cells allot
 
-: mnemonic!  ( addr len -- )  mnemonic 2! ;
-: .mnemonic  ( -- )  40 >pos  mnemonic 2@ type ;
+: old-mnemonic!  ( addr len -- )  old-mnemonic 2! ;
+: old-.mnemonic  ( -- )  40 >pos  old-mnemonic 2@ type ;
+
+0 value mnemonic
+
+: .bytes  ( u -- )
+   ?dup if
+      base @ >r
+      hex
+      instruction-start swap bounds do i c@ .2 space loop
+      r> base !
+   then ;
 
 \ : !modrm-byte  ( -- )  ip prefix if 2 else 1 then + c@ to modrm-byte ;
 : !modrm-byte  ( -- )  ip c@ to modrm-byte  1 +to ip ;
@@ -60,18 +100,62 @@ create mnemonic  2 cells allot
    s" eaxecxedxebxespebpesiedi"         \ +n addr len
    drop                                 \ +n addr
    swap                                 \ addr +n
-   3 * + 3 type
-;
+   3 * + 3 type ;
 
 : .reg64  ( +n -- )
    s" raxrcxrdxrbxrsprbprsirdi"         \ +n addr len
    drop                                 \ +n addr
    swap                                 \ addr +n
-   3 * + 3 type
-;
+   3 * + 3 type ;
 
 : .reg  ( +n -- )
    prefix h# 48 = if .reg64 else .reg32 then ;
+
+: .relative  ( reg disp -- )
+   ." [" swap .reg64                    \ -- disp
+   ?dup if
+      dup 0> if
+         ." +"
+      else
+         ." -"
+      then
+      abs 0 .r
+   then
+   ." ]" ;
+
+0 value current-operand
+
+: .operand ( operand -- )
+   dup to current-operand
+   operand-kind @
+      case
+         ok_relative of
+            current-operand operand-register @
+            current-operand operand-data @
+            .relative
+         endof
+         ok_register of
+            current-operand operand-register @ .reg
+         endof
+         ok_immediate of
+            current-operand operand-data @ ." $" h.
+         endof
+      endcase ;
+
+: .inst ( -- )
+   ip instruction-start - .bytes
+   mnemonic if
+      40 >pos
+      mnemonic count type
+   then
+   48 >pos
+   destination-operand @ if
+      destination-operand .operand
+      source-operand operand-kind @ if ." , " then
+   then
+   source-operand @ if
+      source-operand .operand
+   then ;
 
 create handlers  256 cells allot  handlers 256 cells 0 fill
 
@@ -82,14 +166,6 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    cells handlers + !
 \    ?cr h. ." handler installed"
 ;
-
-: .bytes  ( u -- )
-   ?dup if
-      base @ >r
-      hex
-      instruction-start swap bounds do i c@ .2 space loop
-      r> base !
-   then ;
 
 : unsupported  ( -- )  40 >pos ." unsupported opcode " opcode h. ;
 
@@ -109,22 +185,10 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    ip @ h.
    cell +to ip ;
 
-: .relative  ( reg disp -- )
-   ." [" swap .reg64                    \ -- disp
-   ?dup if
-      dup 0> if
-         ." +"
-      else
-         ." -"
-      then
-      abs 0 .r
-   then
-   ." ]" ;
-
 : .instruction  ( -- )
    size .bytes
 \    ip instruction-start - .bytes
-   .mnemonic
+   old-.mnemonic
    48 >pos
 \    operand1 ?dup if
 \       count type
@@ -136,20 +200,25 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 ;
 
 : .call  ( -- )
-   5 to size
+\    5 to size
 \    size .bytes
-   s" call" mnemonic!
-\    .mnemonic
+\    s" call" old-mnemonic!
+\    old-.mnemonic
 \    48 >pos
-   .instruction
-   ip l@s                            \ signed 32-bit displacement
+
+   c" call" to mnemonic
+   ok_immediate 0 ip l@s
    4 +to ip
-   ip + dup h.
+   ip + dup>r
+   dest!
+   .inst
+
+\    .instruction
+\    ip l@s                            \ signed 32-bit displacement
+\    4 +to ip
+\    ip + dup h.
+   r>
    dup .name >r
-\    size +to ip
-\    r@ ['] (lit) >code = if
-\       .literal
-\    then
    r@ ['] (do) >code = if
       .literal
    then
@@ -159,14 +228,11 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    r@ ['] (loop) >code = if
       .literal
    then
-\    r@ ['] dovalue >code = if
-\       .literal
-\    then
    r> drop ;
 
 : .jmp  ( -- )
    5 to size
-   s" jmp" mnemonic!
+   s" jmp" old-mnemonic!
    .instruction
    ip l@s                            \ signed 32-bit displacement
    4 +to ip
@@ -175,12 +241,12 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 
 \ $01 handler
 :noname  ( -- )
-   s" add" mnemonic!
+   s" add" old-mnemonic!
    !modrm-byte
    modrm-mod 0= if
       prefix if 3 else 2 then to size
       size .bytes
-      .mnemonic
+      old-.mnemonic
       48 >pos
       modrm-rm 0 .relative
       .sep
@@ -194,17 +260,21 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 h# 01 install-handler
 
 \ $03 handler
-:noname  ( -- )
-   s" add" mnemonic!
+:noname  ( -- )                         \ ADD reg64, reg/mem64
+   c" add" to mnemonic
    !modrm-byte
    modrm-mod 1 = if                \ 1-byte displacement
-      prefix if 4 else 3 then .bytes
-      .mnemonic
-      48 >pos
-      modrm-reg .reg64 .sep
-      modrm-rm
-      ip c@s 1 +to ip
-      .relative
+\       prefix if 4 else 3 then .bytes
+\       old-.mnemonic
+\       48 >pos
+\       modrm-reg .reg64 .sep
+\       modrm-rm
+\       ip c@s 1 +to ip
+\       .relative
+      ok_relative modrm-rm ip c@s source!
+      1 +to ip
+      ok_register modrm-reg 0 dest!
+      .inst
       exit
    then
    ip instruction-start - .bytes
@@ -219,7 +289,7 @@ h# 03 install-handler
    modrm-mod 3 = if
       prefix if 2 else 1 then to size
       size .bytes
-      s" or" mnemonic! .mnemonic
+      s" or" old-mnemonic! old-.mnemonic
       48 >pos
       modrm-reg .reg64 .sep modrm-rm .reg64
       exit
@@ -233,16 +303,27 @@ h# 09 install-handler
 :noname  ( -- )
    ip c@
    1 +to ip
-   h# 84 = if
-      s" jz" mnemonic!
-      ip l@s            \ 32-bit signed offset
+   dup h# 84 = if
+      drop
+      c" jz" to mnemonic
+      ok_immediate 0
+      ip l@s                            \ 32-bit signed offset
       4 +to ip
-      6 to size
-      .instruction
-      ip + h.
-   else
-      unsupported
-   then ;
+      ip + dest!
+      .inst
+      exit
+   then
+   h# 81 = if
+      c" jno" to mnemonic
+      ok_immediate 0
+      ip l@s
+      4 +to ip
+      ip + dest!
+      .inst
+      exit
+   then
+   ip instruction-start - .bytes
+   unsupported ;
 
 h# 0f install-handler
 
@@ -263,15 +344,17 @@ h# 0f install-handler
 ;
 
 : .ret  ( -- )
-   1 .bytes
-\    s" ret" .mnemonic
-   s" ret" mnemonic! .mnemonic
-\    1 +to ip
+\    1 .bytes
+\ \    s" ret" old-.mnemonic
+\    s" ret" old-mnemonic! old-.mnemonic
+\ \    1 +to ip
+   c" ret" to mnemonic
+   .inst
    done? on ;
 
 \ $74 handler
 :noname  ( -- )
-  s" jz" mnemonic!
+  s" jz" old-mnemonic!
   ip c@s  1 +to ip      \ 8-bit signed offset
   2 to size
   .instruction
@@ -282,7 +365,7 @@ h# 74 install-handler
 
 \ $eb handler
 :noname  ( -- )
-  s" jmp" mnemonic!
+  s" jmp" old-mnemonic!
   ip c@s  1 +to ip      \ 8-bit signed offset
   2 to size
   .instruction
@@ -296,7 +379,7 @@ h# 0eb install-handler
    !modrm-byte
    modrm-mod 3 = if
       modrm-reg 0= if
-         s" add" mnemonic!
+         s" add" old-mnemonic!
          prefix if 4 else 3 then to size
          .instruction
          modrm-rm .reg64
@@ -318,7 +401,7 @@ h# 83 install-handler
 \       modrm-reg 0= if
          prefix if 3 else 2 then to size
          size .bytes
-         s" test" mnemonic! .mnemonic
+         s" test" old-mnemonic! old-.mnemonic
          48 >pos
          modrm-reg .reg64 .sep modrm-rm .reg64
 \          size +to ip
@@ -330,38 +413,39 @@ h# 83 install-handler
    unsupported
    size +to ip ;
 
-: .89  ( -- )
-   s" mov" mnemonic!
+: .89  ( -- )                           \ MOV reg/mem64, reg64
+   s" mov" old-mnemonic!
+   c" mov" to mnemonic
    !modrm-byte
    modrm-mod 0= if
-      prefix if 3 else 2 then to size
-      size .bytes
-      .mnemonic
-      48 >pos
-      modrm-rm 0 .relative
-      .sep
-      modrm-reg .reg64
-\       size +to ip
+\       prefix if 3 else 2 then to size
+\       size .bytes
+\       old-.mnemonic
+\       48 >pos
+\       modrm-rm 0 .relative
+\       .sep
+\       modrm-reg .reg64
+
+\       modrm-rm destination-operand operand-register !
+\       ok_relative destination-operand operand-kind !
+      ok_relative modrm-rm 0 dest!
+\       modrm-reg source-operand operand-register !
+\       ok_register source-operand operand-kind !
+      ok_register modrm-reg 0 source!
+      .inst
       exit
    then
    modrm-mod 1 = if                     \ 1-byte displacement
-      prefix if 4 else 3 then to size
-      size .bytes
-      .mnemonic
-      48 >pos
-      modrm-rm
-\       ip prefix if 3 else 2 then + c@s
-      ip c@s  1 +to ip
-      .relative
-      .sep
-      modrm-reg .reg64
-\       size +to ip
+      ok_relative modrm-rm ip c@s dest!
+      1 +to ip
+      ok_register modrm-reg 0 source!
+      .inst
       exit
     then
     modrm-mod 3 = if                    \ register operands
        prefix if 3 else 2 then to size
        size .bytes
-       .mnemonic
+       old-.mnemonic
        48 >pos
        modrm-rm .reg64
        .sep
@@ -377,12 +461,12 @@ h# 83 install-handler
 ;
 
 : .8b  ( -- )
-   s" mov" mnemonic!
+   s" mov" old-mnemonic!
    !modrm-byte
    modrm-mod 0= if
       prefix if 3 else 2 then to size
       size .bytes
-      .mnemonic
+      old-.mnemonic
       48 >pos
       modrm-reg .reg64
       .sep
@@ -393,7 +477,7 @@ h# 83 install-handler
    modrm-mod 1 = if                \ 1-byte displacement
       prefix if 4 else 3 then to size
       size .bytes
-      .mnemonic
+      old-.mnemonic
       48 >pos
       modrm-reg .reg64 .sep
       modrm-rm
@@ -407,19 +491,24 @@ h# 83 install-handler
    unsupported
    1 +to ip ;
 
-: .8d  ( -- )
-   s" lea" mnemonic!
+: .8d  ( -- )                           \ LEA reg64, mem
+\    s" lea" old-mnemonic!
+   c" lea" to mnemonic
    !modrm-byte
    modrm-mod 1 = if                \ 1-byte displacement
-      prefix if 4 else 3 then .bytes
-      .mnemonic
-      48 >pos
-      modrm-reg .reg64 .sep
-      modrm-rm
-\       ip prefix if 3 else 2 then + c@s
-      ip c@s 1 +to ip
-      .relative
-\       prefix if 4 else 3 then +to ip
+\       prefix if 4 else 3 then .bytes
+\       old-.mnemonic
+\       48 >pos
+\       modrm-reg .reg64 .sep
+\       modrm-rm
+\ \       ip prefix if 3 else 2 then + c@s
+\       ip c@s 1 +to ip
+\       .relative
+\ \       prefix if 4 else 3 then +to ip
+      ok_register modrm-reg 0 dest!
+      ok_relative modrm-rm ip c@s source!
+      1 +to ip
+      .inst
       exit
    then
    ip instruction-start - .bytes
@@ -428,7 +517,7 @@ h# 83 install-handler
 ;
 
 : .b8  ( -- )
-   s" mov" mnemonic!
+   s" mov" old-mnemonic!
    prefix if 10 else 5 then to size
    .instruction
    opcode h# b8 - .reg
@@ -447,24 +536,41 @@ h# 83 install-handler
 :noname  ( -- )
    !modrm-byte
    modrm-byte h# 20 = if        \ mod 0
-      s" jmp" mnemonic!
+      s" jmp" old-mnemonic!
       2 to size
       .instruction
       ." [rax]"
       exit
    then
    modrm-byte h# e0 = if        \ mod 3
-      s" jmp" mnemonic!
+      s" jmp" old-mnemonic!
       2 to size
       .instruction
       ." rax"
       exit
    then
-   modrm-mod 3 = if
-      s" inc" mnemonic!
-      .instruction
-      modrm-rm .reg64
-      exit
+   modrm-reg 0= if
+      s" inc" old-mnemonic!
+      c" inc" to mnemonic
+      modrm-mod 3 = if
+         3 to size
+         .instruction
+         modrm-rm .reg64
+         exit
+      then
+      modrm-mod 0= if
+                                        \ INC reg/mem64
+\          4 to size
+\          2 +to ip
+\          .instruction
+         ip c@ h# 24 = if
+            1 +to ip
+            ip instruction-start - .bytes
+            40 >pos ." inc"
+            48 >pos ." qword [" modrm-rm .reg64 ." ]"
+            exit
+         then
+      then
    then
    ip instruction-start - .bytes
    unsupported
@@ -502,6 +608,8 @@ decimal
 
 : decode  ( -- )                        \ decode one instruction
    ip to instruction-start
+   operand1 clear-operand
+   operand2 clear-operand
    .ip
    ip c@
    dup h# 48 = if
