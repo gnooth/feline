@@ -55,6 +55,7 @@
 global %1
 %strlen len     %2
         [section .data]
+        align   8
         dq      %1                      ; cfa
 ; %1_lfa  equ     $
         dq      link
@@ -69,7 +70,8 @@ global %1
 
 %macro  code 2-4 0, 0
 head  %1, %2, %3, %4
-section .text
+        section .text
+        align   8
 %1:
 %endmacro
 
@@ -78,11 +80,12 @@ section .text
 
 %macro  variable 3                      ; label, name, value
 head  %1, %2
-section .data
-global %1_data
+        section .data
+        global %1_data
+        align   8
 %1_data:
         dq      %3
-section .text
+        section .text
 %1:
         pushrbx
         mov     rbx, %1_data
@@ -90,13 +93,13 @@ section .text
 %endmacro
 
 %macro  _dotq 1
-section .data
+        section .data
 %strlen  len     %1
 %%string:
         db      len                     ; length byte
         db      %1                      ; string
         db      0                       ; null byte at end
-section .text
+        section .text
         pushrbx
         mov     rbx, %%string
         call    count
