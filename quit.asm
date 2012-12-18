@@ -104,10 +104,12 @@ code quit, 'quit'                       ; --            r:  i*x --
         _ set_input
         _ interpret
         _again quit1
+        next                            ; for decompiler
 endcode
 
 code abort, 'abort'                     ; i*x --        r: j*x --
 ; CORE
         mov     rbp, [s0_data]
         jmp     quit
+        next                            ; for decompiler
 endcode
