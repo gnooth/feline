@@ -69,7 +69,6 @@ code then, 'then', IMMEDIATE            ; c: orig --
 endcode
 
 code align_code, 'align-code'
-%if 0
         _begin align_code1
         _ here
         _lit 8
@@ -78,7 +77,6 @@ code align_code, 'align-code'
         _lit $90
         _ ccomma
         _repeat align_code1
-%endif
         next
 endcode
 
