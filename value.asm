@@ -27,6 +27,7 @@ code value, 'value'                     ; x "<spaces>name" --
 ; CORE EXT
         _ header
         _ align_data
+        _ align_code
         _ here_c
         _ latest
         _ namefrom
