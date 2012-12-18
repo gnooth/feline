@@ -21,6 +21,7 @@ decimal
 0 value prefix
 0 value opcode
 0 value modrm-byte
+0 value sib-byte
 
 0 value size
 
@@ -94,6 +95,23 @@ create old-mnemonic  2 cells allot
    ?cr ." mod: " dup (modrm-mod) .2 space
    cr  ." reg: " dup (modrm-reg) .3 space
    cr  ."  rm: "      (modrm-rm) .3 space
+   r> base ! ;
+
+: !sib-byte  ( -- )  ip c@ to sib-byte  1 +to ip ;
+
+: (sib-scale)  ( sib -- scale )  b# 11000000 and 6 rshift ;
+: (sib-index)  ( sib -- index )  b# 00111000 and 3 rshift ;
+: (sib-base)   ( sib -- base  )  b# 00000111 and ;
+
+: sib-scale  ( -- scale )  sib-byte (sib-scale) ;
+: sib-index  ( -- index )  sib-byte (sib-index) ;
+: sib-base   ( -- base  )  sib-byte (sib-base)  ;
+
+: .sib  ( sib -- )
+   base @ >r binary
+   ?cr ." scale: " dup (sib-scale) .2 space
+   cr  ." index: " dup (sib-index) .3 space
+   cr  ."  base: "     (sib-index) .3 space
    r> base ! ;
 
 : .reg32  ( +n -- )
@@ -231,12 +249,15 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    r> drop ;
 
 : .jmp  ( -- )
-   5 to size
-   s" jmp" old-mnemonic!
-   .instruction
-   ip l@s                            \ signed 32-bit displacement
-   4 +to ip
-   ip + h.
+\    5 to size
+\    s" jmp" old-mnemonic!
+\    .instruction
+\    ip l@s                            \ signed 32-bit displacement
+\    4 +to ip
+\    ip + h.
+   c" jmp" to mnemonic
+   ok_immediate 0 ip l@s 4 +to ip ip + dest!
+   .inst
    ;
 
 \ $01 handler
@@ -263,6 +284,7 @@ h# 01 install-handler
 :noname  ( -- )                         \ ADD reg64, reg/mem64
    c" add" to mnemonic
    !modrm-byte
+   modrm-rm 4 = if !sib-byte then
    modrm-mod 1 = if                \ 1-byte displacement
 \       prefix if 4 else 3 then .bytes
 \       old-.mnemonic
@@ -460,9 +482,11 @@ h# 83 install-handler
 \     size +to ip
 ;
 
-: .8b  ( -- )
+: .8b  ( -- )                           \ MOV reg64, reg/mem64          8b /r
    s" mov" old-mnemonic!
+   c" mov" to mnemonic
    !modrm-byte
+   modrm-rm 4 = if !sib-byte then
    modrm-mod 0= if
       prefix if 3 else 2 then to size
       size .bytes
@@ -475,21 +499,26 @@ h# 83 install-handler
       exit
    then
    modrm-mod 1 = if                \ 1-byte displacement
-      prefix if 4 else 3 then to size
-      size .bytes
-      old-.mnemonic
-      48 >pos
-      modrm-reg .reg64 .sep
-      modrm-rm
-\       ip prefix if 3 else 2 then + c@s
-      ip c@s  1 +to ip
-      .relative
-\       size +to ip
+\       prefix if 4 else 3 then to size
+\       size .bytes
+\       old-.mnemonic
+\       48 >pos
+\       modrm-reg .reg64 .sep
+\       modrm-rm
+\ \       ip prefix if 3 else 2 then + c@s
+\       ip c@s  1 +to ip
+\       .relative
+\ \       size +to ip
+      ok_register modrm-reg 0 dest!
+      ok_relative modrm-rm ip c@s source!
+      1 +to ip
+      .inst
       exit
    then
    1 .bytes
    unsupported
-   1 +to ip ;
+\    1 +to ip
+   ;
 
 : .8d  ( -- )                           \ LEA reg64, mem
 \    s" lea" old-mnemonic!
@@ -515,6 +544,12 @@ h# 83 install-handler
    unsupported
 \    1 +to ip
 ;
+
+:noname  ( -- )
+   c" nop" to mnemonic
+   .inst ;
+
+h# 90 install-handler
 
 : .b8  ( -- )
    s" mov" old-mnemonic!
