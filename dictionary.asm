@@ -44,6 +44,12 @@ code tocomp, '>comp'
         next
 endcode
 
+code tocompstore, '>comp!'              ; xt1 xt2 --
+        _ tocomp
+        _ store
+        next
+endcode
+
 code ntolink, 'n>link'
         sub     rbx, BYTES_PER_CELL + 2
         next
@@ -380,18 +386,28 @@ endcode
 code compilecomma, 'compile,'           ; xt --
 ; CORE EXT
 ; "Interpretation semantics for this word are undefined."
-        _ dup
-        _ toinline
-        _cfetch
         _ optimizing?
         _fetch
-        _ and
-        _if compilecomma1
+        _if compilecomma1               ; -- xt
+        _ dup                           ; -- xt xt
+        _ tocomp                        ; -- xt >comp
+        _fetch                          ; -- xt ct
+        _ ?dup
+        _if compilecomma2
+        _ execute
+        _return
+        _then compilecomma2             ; -- xt
+        _ dup                           ; -- xt xt
+        _ toinline                      ; -- xt >inline
+        _cfetch                         ; -- xt #bytes
+        _if compilecomma3
         _ copy_code
-        _else compilecomma1
+        _return
+        _then compilecomma3
+        _then compilecomma1
+        ; not optimizing
         _ tocode
         _ commacall
-        _then compilecomma1
         next
 endcode
 
@@ -436,6 +452,8 @@ code colonnoname, ':noname'
         _ dup
         _ last_code
         _ store
+        _ comma
+        _ zero                          ; comp field
         _ comma
         _ storecsp
         next
