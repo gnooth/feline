@@ -19,14 +19,16 @@ code sp@, 'sp@'
         next
 endcode
 
-code drop, 'drop'
+code drop, 'drop', 0, drop_ret - drop   ; inlineable
         poprbx
+drop_ret:
         next
 endcode
 
-code twodrop, '2drop'
+code twodrop, '2drop', 0, twodrop_ret - twodrop ; inlineable
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
+twodrop_ret:
         next
 endcode
 
