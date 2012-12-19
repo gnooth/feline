@@ -57,7 +57,7 @@ global %1
         [section .data]
         align   8
         dq      %1                      ; cfa
-; %1_lfa  equ     $
+        dq      0                       ; comp
         dq      link
         db      %3                      ; flags
         db      %4                      ; inline size

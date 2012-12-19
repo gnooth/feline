@@ -31,6 +31,7 @@ endcode
 
 ; Header layout:
 ;   code ptr    8 bytes
+;   comp field  8 bytes
 ;   link ptr    8 bytes
 ;   flags       1 byte
 ;   inline      1 byte          number of bytes of code to copy
@@ -49,12 +50,12 @@ code ltoname, 'l>name'
 endcode
 
 code linkfrom, 'link>'
-        sub     rbx, BYTES_PER_CELL
+        sub     rbx, BYTES_PER_CELL * 2
         next
 endcode
 
 code toflags, '>flags'                  ; xt -- addr
-        add     rbx, BYTES_PER_CELL * 2
+        add     rbx, BYTES_PER_CELL * 3
         next
 endcode
 
@@ -65,17 +66,17 @@ code flags, 'flags'                     ; xt -- flags
 endcode
 
 code toinline, '>inline'                ; xt -- addr
-        add     rbx, BYTES_PER_CELL * 2 + 1
+        add     rbx, BYTES_PER_CELL * 3 + 1
         next
 endcode
 
 code toname, '>name'
-        add     rbx, BYTES_PER_CELL * 2 + 2
+        add     rbx, BYTES_PER_CELL * 3 + 2
         next
 endcode
 
 code namefrom, 'name>'
-        sub     rbx, BYTES_PER_CELL * 2 + 2
+        sub     rbx, BYTES_PER_CELL * 3 + 2
         next
 endcode
 
@@ -199,6 +200,8 @@ endcode
 code header, 'header'                   ; --
         _ parse_name                    ; -- c-addr u
         _ zero                          ; code field (will be patched)
+        _ comma
+        _ zero                          ; comp field
         _ comma
         _ latest
         _ comma                         ; link
