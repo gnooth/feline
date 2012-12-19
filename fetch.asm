@@ -19,8 +19,9 @@ fetch_ret:
         next
 endcode
 
-code cfetch, 'c@'
+code cfetch, 'c@', 0, cfetch_ret - cfetch
         movzx   rbx, byte [rbx]
+cfetch_ret:
         next
 endcode
 
