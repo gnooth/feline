@@ -70,12 +70,12 @@ endcode
 
 code align_code, 'align-code'
         _begin align_code1
-        _ here
+        _ here_c
         _lit 8
         _ mod
         _while align_code1
         _lit $90
-        _ ccomma
+        _ ccommac
         _repeat align_code1
         next
 endcode
