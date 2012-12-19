@@ -39,6 +39,11 @@ endcode
 ;   padding     0-7 bytes       for alignment
 ;   body
 
+code tocomp, '>comp'
+        add     rbx, BYTES_PER_CELL
+        next
+endcode
+
 code ntolink, 'n>link'
         sub     rbx, BYTES_PER_CELL + 2
         next
