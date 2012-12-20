@@ -18,19 +18,19 @@ extern c_allocate
 code allocate, 'allocate'               ; u -- a-addr ior
 ; MEMORY
 %ifdef WIN64
-        popd    rcx
+        mov     rcx, rbx
         push    rbp
         mov     rbp, [saved_rbp_data]
         sub     rsp, 32
 %else
-        popd    rdi
+        mov     rdi, rbx
 %endif
         call    c_allocate
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
 %endif
-        pushd   rax
+        mov     rbx, rax                ; -- a-addr
         _ dup
         _if allocate1
         _ zero                          ; success
@@ -45,18 +45,18 @@ extern c_free
 code free_, 'free'                      ; a-addr -- ior
 ; MEMORY
 %ifdef WIN64
-        popd    rcx
+        mov     rcx, rbx
         push    rbp
         mov     rbp, [saved_rbp_data]
         sub     rsp, 32
 %else
-        popd    rdi
+        mov     rdi, rbx
 %endif
         call    c_free
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
 %endif
-        _ zero                          ; ior
+        xor     rbx, rbx                ; ior
         next
 endcode
