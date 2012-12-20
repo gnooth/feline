@@ -13,12 +13,6 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-variable dp, 'dp', 0                    ; initialized in main()
-
-variable cp, 'cp', 0                    ; initialized in main()
-
-variable limit, 'limit', 0              ; initialized in main()
-
 code unused, 'unused'                   ; -- u
 ; CORE EXT
         _ limit
@@ -26,6 +20,48 @@ code unused, 'unused'                   ; -- u
         _ dp
         _fetch
         _ minus
+        next
+endcode
+
+code dotused, '.used'                   ; u --
+        _lit 8
+        _ udotr
+        _dotq " bytes used"
+        next
+endcode
+
+code dotfree, '.free'                   ; u --
+        _lit 12
+        _ udotr
+        _dotq " bytes free"
+        next
+endcode
+
+code room, 'room'
+        _ ?cr
+        _dotq "code: "
+        _ here_c
+        _ origin_c
+        _fetch
+        _ minus
+        _ dotused
+        _ limit_c
+        _fetch
+        _ here_c
+        _ minus
+        _ dotfree
+        _ cr
+        _dotq "data: "
+        _ here
+        _ origin
+        _fetch
+        _ minus
+        _ dotused
+        _ limit
+        _fetch
+        _ here
+        _ minus
+        _ dotfree
         next
 endcode
 

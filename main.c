@@ -34,6 +34,7 @@ int main(int argc, char **argv, char **env)
   extern uint64_t dp_data;
   extern uint64_t cp_data;
   extern uint64_t limit_data;
+  extern uint64_t limit_c_data;
   extern uint64_t tick_syspad_data;
   extern uint64_t tick_tib_data;
   extern uint64_t s0_data;
@@ -56,6 +57,7 @@ int main(int argc, char **argv, char **env)
   dp_data = (uint64_t) data_space;
   cp_data = (uint64_t) code_space;
   limit_data = (uint64_t) data_space + data_space_size;
+  limit_c_data = (uint64_t) code_space + code_space_size;
   tick_syspad_data = (uint64_t) malloc(1024);
   tick_tib_data = (uint64_t) malloc(256);
   s0_data = (uint64_t) malloc(1024) + (1024 - 64);

@@ -19,11 +19,30 @@ variable s0, 's0', 0                    ; initialized in main()
 
 variable saved_rbp, 'saved-rbp', 0
 
-code cold, "cold"                       ; --
+variable origin, 'origin', 0
+
+variable origin_c, 'origin-c', 0
+
+variable dp, 'dp', 0                    ; initialized in main()
+
+variable cp, 'cp', 0                    ; initialized in main()
+
+variable limit, 'limit', 0              ; initialized in main()
+
+variable limit_c, 'limit-c', 0          ; initialized in main()
+
+code cold, 'cold'                       ; --
         mov     [r0_data], rsp
         mov     [saved_rbp_data], rbp
         mov     rbp, [s0_data]
+        _ here
+        _ origin
+        _ store
+        _ here_c
+        _ origin_c
+        _ store
         _string "boot.forth"
         _ included
         jmp quit
+        next
 endcode
