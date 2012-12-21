@@ -94,10 +94,18 @@ endcode
 
 variable source_line_number, 'source-line#', 0
 
+variable source_file_position, 'source-file-position', 0
+
 code refill, 'refill'                   ; -- flag
 ; CORE EXT  BLOCK EXT  FILE EXT
 ; "When the input source is a text file, attempt to read the next line
 ; from the text-input file."
+        _ source_id
+        _ file_position                 ; -- ud ior
+        _abortq "Bad fileid"
+        _ drop                          ; -- u
+        _ source_file_position
+        _ store
         _ source_buffer
         _ slash_source_buffer
         _ source_id
