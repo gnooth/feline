@@ -138,14 +138,7 @@ variable verbose, 'verbose', 0
 code include_file, 'include-file'       ; i*x fileid -- j*x
 ; FILE
         _ save_input
-        _ five
-        _ equal
-        _if include_file1
-        _ tor
-        _ tor
-        _ tor
-        _ tor
-        _ tor                           ; -- fileid
+        _ ntor                          ; -- fileid
         _ tick_source_id
         _ store                         ; --
         _ slash_source_buffer
@@ -173,15 +166,9 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _ source_buffer
         _ free_
         _ drop                          ; REVIEW
-        _ rfrom
-        _ rfrom
-        _ rfrom
-        _ rfrom
-        _ rfrom
-        _ five
+        _ nrfrom
         _ restore_input
         _ drop                          ; REVIEW
-        _then include_file1
         next
 endcode
 
