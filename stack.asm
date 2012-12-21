@@ -131,6 +131,16 @@ code depth, 'depth'
         next
 endcode
 
+code rdepth, 'rdepth'
+        pop     rcx                     ; return address
+        mov     rax, [r0_data]
+        sub     rax, rsp
+        shr     rax, 3
+        pushd   rax
+        push    rcx
+        next
+endcode
+
 code pick, 'pick'
 ; REVIEW error handling
         shl     rbx, 3
@@ -140,29 +150,53 @@ code pick, 'pick'
 endcode
 
 code dots, '.s'
-        pushd   '<'
+        _lit '<'
         _ emit
         _ depth
         _ paren_dot
         _ type
-        pushd   '>'
+        _lit '>'
         _ emit
         _ space
         _ depth
         mov     rcx, rbx
-        test    rcx, rcx
-        jle     .empty
-.loop:
+        jrcxz   .2
+.1:
         push    rcx
         pushd   rcx
         _ pick
         _ dot
         pop     rcx
-        dec     rcx
-        jnz     .loop
+        loop    .1
+.2:
         poprbx
         next
-.empty:
+endcode
+
+code dotrs, '.rs'
+        _lit '<'
+        _ emit
+        _ rdepth
+        _ paren_dot
+        _ type
+        _lit '>'
+        _ emit
+        _ space
+        _ rdepth
+        mov     rcx, rbx                ; depth in RCX
+        jrcxz   .2
+.1:
+        mov     rax, rcx
+        shl     rax, 3
+        add     rax, rsp
+        pushrbx
+        mov     rbx, [rax]
+        push    rcx
+        _ dot
+        pop     rcx
+        dec     rcx
+        jnz     .1
+.2:
         poprbx
         next
 endcode
@@ -235,4 +269,48 @@ code rpstore, 'rp!'
         mov     rsp, rbx
         poprbx
         jmp     rax
+endcode
+
+code ntor, 'n>r'                        ; i*n +n --             r: -- j*x +n
+; Forth 200x TOOLS EXT
+; "Interpretation semantics for this word are undefined."
+        _ dup
+        _begin ntor1
+        _ dup
+        _while ntor1
+        _ rot
+        _rfrom
+        _ swap
+        _tor
+        _tor
+        _oneminus
+        _repeat ntor1
+        _ drop
+        _ rfrom
+        _ swap
+        _tor
+        _tor
+        next
+endcode
+
+code nrfrom, 'nr>'                      ; -- i*x +n             r: j*x +n --
+; Forth 200x TOOLS EXT
+; "Interpretation semantics for this word are undefined."
+        _rfrom
+        _rfrom
+        _ swap
+        _tor
+        _ dup
+        _begin nrfrom1
+        _ dup
+        _while nrfrom1
+        _rfrom
+        _rfrom
+        _ swap
+        _tor
+        _ rrot
+        _oneminus
+        _repeat nrfrom1
+        _ drop
+        next
 endcode
