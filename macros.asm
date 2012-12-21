@@ -253,3 +253,7 @@ section .text
 %macro _nip 0                           ; inline version of NIP
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
+
+%macro _oneminus 0                      ; inline version of 1-
+        dec     rbx
+%endmacro
