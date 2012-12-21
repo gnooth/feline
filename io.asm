@@ -248,19 +248,19 @@ extern c_read_char
 
 code read_char, 'read-char'             ; fileid -- char | -1
 %ifdef WIN64
-        popd    rcx                     ; fileid
+        mov     rcx, rbx                ; fileid
         push    rbp
         mov     rbp, [saved_rbp_data]
         sub     rsp, 0x28
 %else
-        popd    rdi
+        mov     rdi, rbx
 %endif
         call    c_read_char
 %ifdef WIN64
         add     rsp, 0x28
         pop     rbp
 %endif
-        pushd   rax
+        mov     rbx, rax
         next
 endcode
 
@@ -397,27 +397,28 @@ endcode
 extern c_file_position
 
 code file_position, 'file-position'     ; fileid -- ud ior
+; FILE
 %ifdef WIN64
-        popd    rcx
+        mov     rcx, rbx
         push    rbp
         mov     rbp, [saved_rbp_data]
         sub     rsp, 32
 %else
-        popd    rdi
+        mov     rdi, rbx
 %endif
         call    c_file_position
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
 %endif
-        or      rax, rax
+        mov     rbx, rax
+        test    rbx, rbx
         js      .1
-        pushd   rax                     ; ud
-        _ stod
-        pushd   0                       ; ior
+        _ stod                          ; -- ud
+        pushd   0                       ; -- ud ior
         next
 .1:
-        _ minusone                      ; "fileid is undefined"
+        _ minusone                      ; "ud is undefined if ior is non-zero"
         _ minusone                      ; error!
         next
 endcode
