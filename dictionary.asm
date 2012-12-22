@@ -361,6 +361,15 @@ code var, 'variable'
         next
 endcode
 
+code twovar, '2variable'
+        _ create
+        _ zero
+        _ comma
+        _ zero
+        _ comma
+        next
+endcode
+
 section .text
 doconst:
         pushrbx
