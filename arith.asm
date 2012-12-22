@@ -13,20 +13,23 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-code plus, '+', 0, 8
+code plus, '+', 0, plus_ret - plus
         add     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
+plus_ret:
         next
 endcode
 
-code oneplus, '1+', 0, 3
+code oneplus, '1+', 0, oneplus_ret - oneplus
         inc     rbx
+oneplus_ret:
         next
 endcode
 
-code charplus, 'char+', 0, 3            ; c-addr1 -- c-addr2
+code charplus, 'char+', 0, charplus_ret - charplus      ; c-addr1 -- c-addr2
 ; CORE 6.1.0897
         inc     rbx
+charplus_ret:
         next
 endcode
 
@@ -146,15 +149,10 @@ endcode
 
 code umslmod, 'um/mod'                  ; ud u1 -- u2 u3
 ; 6.1.2370 CORE
-;         popd    rdx
         mov     rdx, [rbp]
-        add     rbp, BYTES_PER_CELL
-;         popd    rax
-        mov     rax, [rbp]
+        mov     rax, [rbp + BYTES_PER_CELL]
         add     rbp, BYTES_PER_CELL
         div     rbx                     ; remainder in RDX, quotient in RAX
-;         pushd   rdx
-        sub     rbp, BYTES_PER_CELL
         mov     [rbp], rdx
         mov     rbx, rax
         next
@@ -163,8 +161,7 @@ endcode
 code fmslmod, 'fm/mod'                  ; d1 n1 -- n2 n3
 ; CORE n2 is remainder, n3 is quotient
 ; gforth
-        _ dup
-        _ tor
+        _duptor
         _ dup
         _ zlt
         _if fmslmod1
