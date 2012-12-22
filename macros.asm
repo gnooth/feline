@@ -254,6 +254,10 @@ section .text
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
+%macro _oneplus 0                      ; inline version of 1+
+        inc     rbx
+%endmacro
+
 %macro _oneminus 0                      ; inline version of 1-
         dec     rbx
 %endmacro
