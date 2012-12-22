@@ -161,6 +161,35 @@ code leave, 'leave', IMMEDIATE
         next
 endcode
 
+%if 0
+section .text
+_i:
+        pushrbx
+        mov     rbx, [rsp]
+        add     rbx, [rsp + BYTES_PER_CELL];
+_i_end:
+
+code compile_i, 'compile-i'             ; xt --
+        _ ?cr
+        _ dots
+        _dotq "compile-i called"
+        _ cr
+        _ here_c
+        _ hdot
+        _ cr
+        _ drop
+        _lit _i
+        _lit _i_end - _i
+        _ cr
+        _ dots
+        _ paren_copy_code
+        _ here_c
+        _ hdot
+        _ cr
+        next
+endcode
+%endif
+
 code i, 'i'
         pushrbx
         mov     rbx, [rsp + BYTES_PER_CELL];
