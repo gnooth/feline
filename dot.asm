@@ -52,8 +52,7 @@ code sharpgt,'#>'                       ; d --- addr len
 endcode
 
 code sharp, '#'                         ; ud1 -- ud2
-        _ base
-        _fetch                          ; -- ud1 base
+        _ basefetch                     ; -- ud1 base
         _ muslmod                       ; -- remainder ud2
         _ rot                           ; -- ud2 remainder
         _lit 9                          ; -- ud2 remainder 9
@@ -134,15 +133,12 @@ code udotr, 'u.r'
         next
 endcode
 
-code hdot, 'h.'
-        _ base
-        _fetch
-        _ tor
+code hdot, 'h.'                         ; x --
+        _ basefetch
+        _ swap
         _ hex
-        _ dot
-        _ rfrom
-        _ base
-        _ store
+        _ udot
+        _ basestore
         next
 endcode
 
