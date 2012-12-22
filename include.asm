@@ -69,25 +69,51 @@ code set_input, 'set-input'             ; source-addr source-len source-id --
         next
 endcode
 
-code save_input, 'save-input'           ; -- addr len fileid source-buffer >in 5
+code save_input, 'save-input'           ; -- addr len fileid source-buffer >in 7
 ; CORE EXT
         _ source                        ; -- addr len
         _ source_id                     ; -- addr len fileid
         _ source_buffer                 ; -- addr len fileid source-buffer
+        _ source_file_position
+        _fetch
+        _ source_line_number
+        _fetch
         _ toin
         _fetch                          ; -- addr len fileid source-buffer >in
-        _lit 5
+        _lit 7
         next
 endcode
 
-code restore_input, 'restore-input'     ; addr len fileid source-buffer >in 5 -- flag
+code restore_input, 'restore-input'     ; addr len fileid source-buffer >in 7 -- flag
 ; CORE EXT
         _ drop                          ; REVIEW
         _ toin
         _ store
+        _ source_line_number
+        _ store
+        _ source_file_position
+        _ store
         _ tick_source_buffer
         _ store
         _ set_input
+        _ source_id
+        _ zgt
+        _if restore_input1
+        _ source_file_position
+        _fetch
+        _ stod
+        _ source_id
+        _ reposition_file
+        _abortq "REPOSITION-FILE error"
+        _ source_buffer
+        _ slash_source_buffer
+        _ source_id
+        _ read_line                     ; -- len flag ior
+        _abortq "READ-LINE error"
+        _ drop                          ; -- len
+        _ nsource
+        _ store
+        _then restore_input1
         _ zero                          ; -- flag
         next
 endcode
@@ -226,14 +252,7 @@ code evaluate, 'evaluate'               ; i*x c-addr u -- j*x
 ; When the parse area is empty, restore the prior input source specification.
 ; Other stack effects are due to the words EVALUATEd."
         _ save_input
-        _ five
-        _ equal
-        _if evaluate1
-        _ tor
-        _ tor
-        _ tor
-        _ tor
-        _ tor                           ; -- c-addr u
+        _ ntor                          ; -- c-addr u
         _ minusone
         _ tick_source_id
         _ store                         ; -- c-addr u
@@ -241,14 +260,8 @@ code evaluate, 'evaluate'               ; i*x c-addr u -- j*x
         _ toin
         _ off
         _ interpret
-        _ rfrom
-        _ rfrom
-        _ rfrom
-        _ rfrom
-        _ rfrom
-        _ five
+        _ nrfrom
         _ restore_input
         _ drop                          ; REVIEW
-        _then evaluate1
         next
 endcode
