@@ -87,8 +87,7 @@ code cquote, 'c"', IMMEDIATE
 ; "Interpretation semantics for this word are undefined."
         _lit '"'
         _ parse                         ; -- addr len
-        _ state
-        _fetch
+        _ statefetch
         _if cquote1
         _ cliteral
         _else cquote1
@@ -103,8 +102,7 @@ code squote, 's"', IMMEDIATE
 ; CORE  FILE
         _lit '"'
         _ parse                         ; -- addr len
-        _ state
-        _fetch
+        _ statefetch
         _if squote1
         _ sliteral
         _else squote1

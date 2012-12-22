@@ -91,19 +91,19 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
         _ dup
         _while tonumber1
         _ over
-        _ cfetch
+        _cfetch
         _ digit
         _ zero?
         _if tonumber2
         _return
-        _then tonumber2
-        _ tor
-        _ twoswap
-        _ rfrom
-        _ swap
-        _ basefetch
-        _ umstar
-        _ drop
+        _then tonumber2                 ; -- ud1 addr u1 digit
+        _tor                            ; -- ud1 addr u1                r: -- digit
+        _ twoswap                       ; -- c-addr u1 ud1              r: -- digit
+        _rfrom                          ; -- c-addr u1 ud1 digit
+        _ swap                          ; -- c-addr u1 lo digit hi
+        _ basefetch                     ; -- c-addr u1 lo digit hi base
+        _ umstar                        ; -- c-addr u1 lo digit ud2
+        _ drop                          ; -- c-addr u1 lo digit u2
         _ rot
         _ basefetch
         _ umstar
@@ -116,6 +116,7 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
 endcode
 
 code convert, 'convert'                 ; n addr1 -- n addr2
+; CORE EXT
         _begin convert0
         _oneplus
         _duptor                         ; -- n addr1+1          r: -- addr1+1
@@ -203,8 +204,7 @@ code number_in_base, 'number-in-base'   ; base -- number
         _ number
         _ rfrom
         _ basestore
-        _ state
-        _fetch
+        _ statefetch
         _if hexnum1
         _ literal
         _then hexnum1

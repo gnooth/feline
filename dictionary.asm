@@ -483,15 +483,13 @@ code colon, ':'
         _ latest
         _ namefrom
         _ store
-        _ state
-        _ on
+        _ rbrack
         _ storecsp
         next
 endcode
 
 code colonnoname, ':noname'
-        _ state
-        _ on
+        _ rbrack
         _ here                          ; address of xt to be created
         _ here_c                        ; code address
         _ dup
@@ -508,8 +506,7 @@ code semi, ';', IMMEDIATE
         _ ?csp
         _lit $0c3                       ; RET
         _ ccommac
-        _ state
-        _ off
+        _ lbrack
         _ reveal
         next
 endcode

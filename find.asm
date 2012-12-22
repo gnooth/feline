@@ -34,6 +34,7 @@ code found, 'found'                     ; nfa -- xt 1  | xt -1
 endcode
 
 code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
+; CORE, SEARCH
         _ tor                           ; --                    r: -- c-addr
         _ latest                        ; -- nfa
         _begin find1

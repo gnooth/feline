@@ -14,8 +14,7 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 code prompt, "prompt"
-        _ state
-        _fetch
+        _ statefetch
         _ zero?
         _if prompt1
         _ ?cr
@@ -89,8 +88,7 @@ endcode
 
 code quit, 'quit'                       ; --            r:  i*x --
 ; CORE
-        _ state
-        _ off
+        _ lbrack
         _begin quit1
         _ r0
         _fetch

@@ -13,17 +13,21 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-variable state, 'state', 0
+variable state, 'state', 0              ; CORE, TOOLS EXT
+
+code statefetch, 'state@'
+        pushrbx
+        mov     rbx, [state_data]
+        next
+endcode
 
 code lbrack, '[', IMMEDIATE
-        _ state
-        _ off
+        mov     qword [state_data], 0
         next
 endcode
 
 code rbrack, ']'
-        _ state
-        _ on
+        mov     qword [state_data], -1
         next
 endcode
 
@@ -38,8 +42,7 @@ code ?stack, '?stack'
 endcode
 
 code do_defined, 'do-defined'           ; xt flag --
-        _ state
-        _fetch
+        _ statefetch
         _if do_defined1
         _ zgt
         _if do_defined2
@@ -60,7 +63,7 @@ code interpret, 'interpret'             ; --
         _ blchar
         _ word_                         ; -- addr
         _ dup                           ; -- addr addr
-        _ cfetch                        ; -- addr len
+        _cfetch                         ; -- addr len
         _ zero?                         ; -- addr flag
         _if interp0
         _ drop                          ; --
@@ -72,8 +75,7 @@ code interpret, 'interpret'             ; --
         _ do_defined
         _else interp2
         _ number
-        _ state
-        _fetch
+        _ statefetch
         _if interp3
         _ literal
         _then interp3

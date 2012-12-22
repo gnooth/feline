@@ -49,8 +49,7 @@ endcode
 code storeto, 'to', IMMEDIATE
         _ tick
         _ tobody
-        _ state
-        _fetch
+        _ statefetch
         _if storeto1
         _ literal
         _lit store
@@ -64,8 +63,7 @@ endcode
 code plusstoreto, '+to', IMMEDIATE      ; n "<spaces>name" --
         _ tick
         _ tobody
-        _ state
-        _fetch
+        _ statefetch
         _if plusstoreto1
         _ literal
         _lit plusstore
