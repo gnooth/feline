@@ -42,6 +42,8 @@ code hex, 'hex'
         next
 endcode
 
+value double?, 'double?', 0
+
 code digit, 'digit'                     ; char -- n true  |  char -- false
         _ dup
         _lit '0'
@@ -87,6 +89,7 @@ code digit, 'digit'                     ; char -- n true  |  char -- false
 endcode
 
 code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
+; CORE
         _begin tonumber1
         _ dup
         _while tonumber1
@@ -102,8 +105,8 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
         _rfrom                          ; -- c-addr u1 ud1 digit
         _ swap                          ; -- c-addr u1 lo digit hi
         _ basefetch                     ; -- c-addr u1 lo digit hi base
-        _ umstar                        ; -- c-addr u1 lo digit ud2
-        _ drop                          ; -- c-addr u1 lo digit u2
+        _ umstar                        ; -- c-addr u1 lo digit ud
+        _ drop                          ; -- c-addr u1 lo digit u
         _ rot
         _ basefetch
         _ umstar
@@ -112,25 +115,6 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
         _ one
         _ slashstring
         _repeat tonumber1
-        next
-endcode
-
-code convert, 'convert'                 ; n addr1 -- n addr2
-; CORE EXT
-        _begin convert0
-        _oneplus
-        _duptor                         ; -- n addr1+1          r: -- addr1+1
-        _cfetch
-        _ digit                         ; if successful: -- n n2 true  otherwise: -- n false
-        _while convert0                 ; -- n n2
-        _ swap
-        _ basefetch
-        _ star
-        _ swap
-        _ plus
-        _rfrom
-        _repeat convert0
-        _rfrom
         next
 endcode
 
@@ -152,38 +136,67 @@ code missing, 'missing'
         next
 endcode
 
-code number, 'number'                   ; addr -- n
-        _duptor                         ; -- addr               r: -- addr
-        _ zero
-        _ swap                          ; -- 0 addr
-        _ dup                           ; -- 0 addr addr
-        _oneplus                        ; -- 0 addr addr+1
-        _cfetch                         ; -- 0 addr char
+value negative?, 'negative?', 0
+
+code number?, 'number?'                 ; c-addr u -- d flag
+        mov     qword [double?_data], 0
+        _ over
+        _ cfetch
         _lit '-'
-        _ equal                         ; -- 0 addr flag
-        _duptor                         ; -- 0 addr flag        r: -- addr flag
-        _if number0
-        _oneplus
-        _then number0
-        _ convert                       ; -- n addr             r: -- addr flag
-        _ swap                          ; -- addr n
-        _rfrom                          ; -- addr n flag        r: -- addr
-        _if number1
-        _ negate
-        _then number1                   ; -- addr n
-        _ swap                          ; -- n addr
-        _rfetch
-        _ dup
-        _cfetch
-        _ plus
-        _oneplus
         _ equal
-        _if number2
+        _if ixnumber1
+        mov     qword [negative?_data], -1
+        _ one
+        _ slashstring
+        _else ixnumber1
+        mov     qword [negative?_data], 0
+        _then ixnumber1
+        _ zero
+        _ zero
+        _ twoswap
+        _ tonumber                      ; -- ud c-addr' u'
+        _ dup                           ; -- ud c-addr' u' u'
+        _ zero?
+        _if ixnumber3                   ; -- ud c-addr' u'
+        ; no chars left over
+        _ twodrop
+        _ true
+        _return
+        _then ixnumber3
+        ; one or more chars left over
+        _ one
+        _ notequal
+        _if ixnumber4                   ; -- ud c-addr'
+        _ drop
+        _ false
+        _return
+        _then ixnumber4
+        _ cfetch                        ; -- ud char
+        _lit '.'
+        _ equal
+        _if ixnumber5
+        mov     qword [double?_data], -1
+        _ true
+        _else ixnumber5
+        _ false
+        _then ixnumber5
+        next
+endcode
+
+code number, 'number'                   ; string -- d
+        _duptor
+        _ count
+        _ number?
+        _ zero?
+        _if xnumber1
+        _ rfrom
+        _ missing                       ; doesn't return
+        _then xnumber1
         _rfromdrop
-        _else number2
-        _rfrom
-        _ missing
-        _then number2
+        _ negative?
+        _if xnumber2
+        _ dnegate
+        _then xnumber2
         next
 endcode
 
@@ -202,6 +215,7 @@ code number_in_base, 'number-in-base'   ; base -- number
         _ basestore
         _ tick_word
         _ number
+        _ drop                          ; REVIEW
         _ rfrom
         _ basestore
         _ statefetch

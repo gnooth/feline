@@ -61,23 +61,35 @@ endcode
 code interpret, 'interpret'             ; --
         _begin interp0
         _ blchar
-        _ word_                         ; -- addr
-        _ dup                           ; -- addr addr
-        _cfetch                         ; -- addr len
-        _ zero?                         ; -- addr flag
+        _ word_                         ; -- c-addr
+        _ dup                           ; -- c-addr c-addr
+        _cfetch                         ; -- c-addr len
+        _ zero?                         ; -- c-addr flag
         _if interp0
         _ drop                          ; --
         _return
-        _then interp0
+        _then interp0                   ; -- c-addr
         _ find
         _ ?dup
         _if interp2
         _ do_defined
-        _else interp2
+        _else interp2                   ; -- c-addr
         _ number
         _ statefetch
         _if interp3
+        _ double?
+        _if interp4
+        _ twoliteral
+        _else interp4
+        _ drop
         _ literal
+        _then interp4
+        _else interp3
+        _ double?
+        _ zero?
+        _if interp5
+        _ drop
+        _then interp5
         _then interp3
         _then interp2
         _again interp0
