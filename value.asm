@@ -23,7 +23,7 @@ dovalue_patch:
         mov     rbx, [rbx]
 dovalue_end:
 
-code value, 'value'                     ; x "<spaces>name" --
+code val, 'value'                       ; x "<spaces>name" --
 ; CORE EXT
         _ header
         _ align_data

@@ -92,6 +92,20 @@ head  %1, %2
         next
 %endmacro
 
+%macro  value 3                         ; label, name, value
+head  %1, %2
+        section .data
+        global %1_data
+        align   8
+%1_data:
+        dq      %3
+        section .text
+%1:
+        pushrbx
+        mov     rbx, [%1_data]
+        next
+%endmacro
+
 %macro  _dotq 1
         section .data
 %strlen  len     %1
