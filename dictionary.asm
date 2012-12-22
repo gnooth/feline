@@ -607,6 +607,7 @@ push_tos:
         pushrbx
 push_tos_end:
 
+; REVIEW
 code push_tos_comma, 'push-tos,'
         _lit push_tos
         _lit push_tos_end - push_tos
@@ -621,6 +622,35 @@ code literal, 'literal', IMMEDIATE
         _lit $0bb
         _ ccommac
         _ commac
+        next
+endcode
+
+; REVIEW
+code mov_tos_comma, 'mov-tos,'      ; compilation: x --
+        _lit $48
+        _ ccommac
+        _lit $0bb
+        _ ccommac
+        _ commac
+        next
+endcode
+
+code parentwoliteral, '(2literal)'      ; addr -- d
+        _ twofetch
+        next
+endcode
+
+code twoliteral, '2literal', IMMEDIATE  ; compilation: x1 x2 --         run-time: -- x1 x2
+; DOUBLE
+; "Interpretation semantics for this word are undefined."
+        _ here
+        _ rrot
+        _ comma
+        _ comma
+        _ push_tos_comma
+        _ mov_tos_comma
+        _lit parentwoliteral
+        _ commacall
         next
 endcode
 
