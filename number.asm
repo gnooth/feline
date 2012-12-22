@@ -15,6 +15,18 @@
 
 variable base, 'base', 10
 
+code basefetch, 'base@'                 ; -- n
+        pushrbx
+        mov     rbx, [base_data]
+        next
+endcode
+
+code basestore, 'base!'                 ; n --
+        mov     [base_data], rbx
+        poprbx
+        next
+endcode
+
 code binary, 'binary'
         mov     qword [base_data], 2
         next
@@ -34,14 +46,13 @@ code digit, 'digit'                     ; char -- n true  |  char -- false
         _ dup
         _lit '0'
         _lit '9'
-        _ oneplus
+        _oneplus
         _ within
         _if digit1
         _lit '0'
         _ minus
         _ dup
-        _ base
-        _fetch
+        _ basefetch
         _ lt
         _if digit2
         _ true
@@ -64,8 +75,7 @@ code digit, 'digit'                     ; char -- n true  |  char -- false
         _lit 10
         _ plus
         _ dup
-        _ base
-        _fetch
+        _ basefetch
         _ ge
         _if digit4
         _ drop
@@ -91,13 +101,11 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
         _ twoswap
         _ rfrom
         _ swap
-        _ base
-        _fetch
+        _ basefetch
         _ umstar
         _ drop
         _ rot
-        _ base
-        _fetch
+        _ basefetch
         _ umstar
         _ dplus
         _ twoswap
@@ -109,21 +117,19 @@ endcode
 
 code convert, 'convert'                 ; n addr1 -- n addr2
         _begin convert0
-        _ oneplus
-        _ dup
-        _ tor                           ; -- n addr1+1          r: -- addr1+1
-        _ cfetch
+        _oneplus
+        _duptor                         ; -- n addr1+1          r: -- addr1+1
+        _cfetch
         _ digit                         ; if successful: -- n n2 true  otherwise: -- n false
         _while convert0                 ; -- n n2
         _ swap
-        _ base
-        _fetch
+        _ basefetch
         _ star
         _ swap
         _ plus
-        _ rfrom
+        _rfrom
         _repeat convert0
-        _ rfrom
+        _rfrom
         next
 endcode
 
@@ -146,38 +152,35 @@ code missing, 'missing'
 endcode
 
 code number, 'number'                   ; addr -- n
-        _ dup
-        _ tor                           ; -- addr               r: -- addr
+        _duptor                         ; -- addr               r: -- addr
         _ zero
         _ swap                          ; -- 0 addr
         _ dup                           ; -- 0 addr addr
-        _ oneplus                       ; -- 0 addr addr+1
-        _ cfetch                        ; -- 0 addr char
+        _oneplus                        ; -- 0 addr addr+1
+        _cfetch                         ; -- 0 addr char
         _lit '-'
         _ equal                         ; -- 0 addr flag
-        _ dup
-        _ tor                           ; -- 0 addr flag        r: -- addr flag
+        _duptor                         ; -- 0 addr flag        r: -- addr flag
         _if number0
-        _ oneplus
+        _oneplus
         _then number0
         _ convert                       ; -- n addr             r: -- addr flag
         _ swap                          ; -- addr n
-        _ rfrom                         ; -- addr n flag        r: -- addr
+        _rfrom                          ; -- addr n flag        r: -- addr
         _if number1
         _ negate
         _then number1                   ; -- addr n
         _ swap                          ; -- n addr
-        _ rfetch
+        _rfetch
         _ dup
-        _ cfetch
+        _cfetch
         _ plus
-        _ oneplus
+        _oneplus
         _ equal
         _if number2
-        _ rfrom
-        _ drop
+        _rfromdrop
         _else number2
-        _ rfrom
+        _rfrom
         _ missing
         _then number2
         next
@@ -193,16 +196,13 @@ code number_in_base, 'number-in-base'   ; base -- number
         _ blchar
         _ swap
         _ cstore
-        _ base
-        _fetch
+        _ basefetch
         _ tor
-        _ base
-        _ store
+        _ basestore
         _ tick_word
         _ number
         _ rfrom
-        _ base
-        _ store
+        _ basestore
         _ state
         _fetch
         _if hexnum1
