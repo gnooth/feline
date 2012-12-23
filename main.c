@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 #ifdef WIN64
 #include <windows.h>
+#include <fcntl.h>      // _O_BINARY
 #else
 #include <sys/mman.h>
 #include <sys/time.h>
@@ -94,7 +95,11 @@ int c_file_status(char *path)
 
 int64_t c_open_file(const char *filename, int flags)
 {
-  int ret = open(filename, flags);
+  int ret;
+#ifdef WIN64
+  flags |= _O_BINARY;
+#endif
+  ret = open(filename, flags);
   if (ret < 0)
     return (int64_t) -1;
   else
