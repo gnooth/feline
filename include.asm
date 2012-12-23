@@ -159,7 +159,17 @@ code refill, 'refill'                   ; -- flag
         next
 endcode
 
-variable verbose, 'verbose', 0
+value verboseinclude, 'verboseinclude', 0
+
+code plusverboseinclude, '+verboseinclude', IMMEDIATE   ; --
+        mov     qword [verboseinclude_data], TRUE
+        next
+endcode
+
+code minusverboseinclude, '-verboseinclude', IMMEDIATE  ; --
+        mov     qword [verboseinclude_data], FALSE
+        next
+endcode
 
 code include_file, 'include-file'       ; i*x fileid -- j*x
 ; FILE
@@ -180,8 +190,7 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _begin include_file2
         _ refill
         _while include_file2
-        _ verbose
-        _fetch
+        _ verboseinclude
         _if include_file3
         _ source
         _ type
