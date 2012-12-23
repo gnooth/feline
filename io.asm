@@ -264,6 +264,19 @@ code read_char, 'read-char'             ; fileid -- char | -1
         next
 endcode
 
+code last_char, 'last-char'             ; c-addr u -- char
+        _ ?dup
+        _if last_char1
+        _ plus
+        _oneminus
+        _cfetch
+        _else last_char1
+        _ drop
+        _ zero
+        _then last_char1
+        next
+endcode
+
 code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _ rrot                          ; -- fileid c-addr u1
         _ ?dup
@@ -291,9 +304,20 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _lit 10
         _ equal
         _if read_line4
-        ; end of line
-        _ fourdrop
+        ; end of line                   ; -- u1 fileid c-addr 10
+        _ drop                          ; -- u1 fileid c-addr
+        _ rrot                          ; -- c-addr u1 fileid
+        _ twodrop                       ; -- c-addr
+        _ i                             ; -- c-addr i
+        _ last_char                     ; -- char
+        _lit 13
+        _ equal
+        _if read_line5                  ; CR precedes LF
         _ i
+        _oneminus
+        _else read_line5                ; no CR
+        _ i
+        _then read_line5
         _ true
         _ zero
         _ unloop
