@@ -13,22 +13,49 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef WIN64
-#include <unistd.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <setjmp.h>
 #include <sys/stat.h>
 #ifdef WIN64
 #include <windows.h>
 #include <fcntl.h>      // _O_BINARY
 #else
+#include <signal.h>
 #include <sys/mman.h>
 #include <sys/time.h>
 #endif
 
+#ifdef WIN64
+#define JMP_BUF                 jmp_buf
+#define SETJMP(env)             setjmp(env)
+#define LONGJMP(env, val)       longjmp(env, val)
+#else
+#define JMP_BUF                 sigjmp_buf
+#define SETJMP(env)             sigsetjmp(env, 1)
+#define LONGJMP(env, val)       siglongjmp(env, val)
+#endif
+
 extern void cold();
+
+JMP_BUF main_jmp_buf;
+
+#ifndef WIN64
+static void sigsegv_handler(int sig, siginfo_t *si, void * context)
+{
+  ucontext_t * uc;
+  void * rip;
+  void * rbx;
+  printf("SIGSEGV at $%lX\n", (unsigned long) si->si_addr);
+  uc = (ucontext_t *) context;
+  rip = (void *) uc->uc_mcontext.gregs[REG_RIP];
+  printf("RIP = $%lX\n", (unsigned long) rip);
+  rbx = (void *) uc->uc_mcontext.gregs[REG_RBX];
+  printf("RBX = $%lX\n", (unsigned long) rbx);
+  LONGJMP(main_jmp_buf, (unsigned long) si->si_addr);
+}
+#endif
 
 int main(int argc, char **argv, char **env)
 {
@@ -63,7 +90,20 @@ int main(int argc, char **argv, char **env)
   tick_tib_data = (uint64_t) malloc(256);
   s0_data = (uint64_t) malloc(1024) + (1024 - 64);
   tick_tick_word_data = (uint64_t) malloc(256);
-  cold();
+
+#ifndef WIN64
+  struct sigaction sa;
+  sa.sa_flags = SA_SIGINFO;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_sigaction = sigsegv_handler;
+  sigaction(SIGSEGV, &sa, NULL);
+  sigaction(SIGABRT, &sa, NULL);
+#endif
+
+  if (SETJMP(main_jmp_buf) == 0)
+    cold();
+  else
+    abort();
 }
 
 void c_emit(int c)
