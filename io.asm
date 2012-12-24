@@ -378,7 +378,7 @@ endcode
 
 extern c_write_file
 
-code write_file, 'write-file'           ; c-addr u1 fileid -- u2 ior
+code write_file, 'write-file'           ; c-addr u1 fileid -- ior
 %ifdef WIN64
         popd    rcx                     ; fileid
         popd    r8                      ; u1
@@ -402,6 +402,28 @@ code write_file, 'write-file'           ; c-addr u1 fileid -- u2 ior
         next
 .1:
         _ minusone                      ; error!
+        next
+endcode
+
+section .data
+crlf:
+        db      13
+lf:
+        db      10
+
+code write_line, 'write-line'           ; c-addr u1 fileid -- ior
+        _duptor
+        _ write_file                    ; -- ior        r: -- fileid
+%ifdef WIN64
+        _lit crlf
+        _ two
+%else
+        _lit lf
+        _ one
+%endif
+        _ rfrom
+        _ write_file                    ; -- ior ior'
+        _ or
         next
 endcode
 
