@@ -213,6 +213,28 @@ code buffer_colon, 'buffer:'
         next
 endcode
 
+code compare, 'compare'                 ; c-addr1 u1 c-addr2 u2 -- n
+; STRING
+; adapted from Win32Forth
+        mov     rdi, [rbp]                              ; c-addr2 in RDI
+        mov     rcx, [rbp + BYTES_PER_CELL]             ; u1 in RCX
+        mov     rsi, [rbp + BYTES_PER_CELL * 2]         ; c-addr1 in RSI
+        mov     rdx, 1
+        cmp     rcx, rbx                ; compare lengths
+        cmova   rcx, rbx                ; compare shorter of the strings
+        cmova   rbx, rdx                ; set string1 longer flag
+        mov     rdx, 0
+        cmove   rbx, rdx                ; strings equal lengths
+        mov     rdx, -1
+        cmovb   rbx, rdx                ; set string2 longer flag
+        repz    cmpsb                   ; compare the strings
+        mov     rsi, 1
+        cmovb   rbx, rdx                ; string1 > string2
+        cmova   rbx, rsi                ; string1 < string2
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+        next
+endcode
+
 code sequal, 's='                       ; addr1 addr2 len -- flag
         _ ?dup
         _if sequal1
