@@ -18,9 +18,9 @@
 #include <stdint.h>
 #include <setjmp.h>
 #include <sys/stat.h>
+#include <fcntl.h>      // _O_BINARY, O_CREAT
 #ifdef WIN64
 #include <windows.h>
-#include <fcntl.h>      // _O_BINARY
 #else
 #include <signal.h>
 #include <sys/mman.h>
@@ -140,6 +140,20 @@ int64_t c_open_file(const char *filename, int flags)
   flags |= _O_BINARY;
 #endif
   ret = open(filename, flags);
+  if (ret < 0)
+    return (int64_t) -1;
+  else
+    return ret;
+}
+
+int64_t c_create_file(const char *filename, int flags)
+{
+  int ret;
+  flags |= O_CREAT;
+#ifdef WIN64
+  flags |= _O_BINARY;
+#endif
+  ret = open(filename, flags, 0644);
   if (ret < 0)
     return (int64_t) -1;
   else

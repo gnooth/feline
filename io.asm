@@ -213,6 +213,41 @@ code open_file, 'open-file'             ; c-addr u fam -- fileid ior
         next
 endcode
 
+
+extern c_create_file
+
+code create_file, 'create-file'         ; c-addr u fam -- fileid ior
+        _ rrot                          ; -- fam c-addr u
+        _ here                          ; FIXME use syspad or something similar
+        _ zplace                        ; -- fam
+        _ here                          ; -- fam here
+        _ swap                          ; -- here fam
+%ifdef WIN64
+        popd    rdx
+        popd    rcx
+        push    rbp
+        mov     rbp, [saved_rbp_data]
+        sub     rsp, 0x28
+%else
+        popd    rsi
+        popd    rdi
+%endif
+        call    c_create_file
+%ifdef WIN64
+        add     rsp, 0x28
+        pop     rbp
+%endif
+        or      rax, rax
+        js      .1
+        pushd   rax                     ; fileid
+        pushd   0                       ; ior
+        next
+.1:
+        _ minusone                      ; "fileid is undefined"
+        _ minusone                      ; error!
+        next
+endcode
+
 extern c_read_file
 
 code read_file, 'read-file'             ; c-addr u1 fileid -- u2 ior
