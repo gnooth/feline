@@ -143,7 +143,7 @@ code writeonly, 'w/o'                   ; -- 1
 endcode
 
 code readwrite, 'r/w'                   ; -- 2
-        push rbx
+        pushrbx
         mov     ebx, 2
         next
 endcode
