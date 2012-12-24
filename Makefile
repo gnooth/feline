@@ -16,7 +16,7 @@ forth:  main.o forth.o
 	gcc main.o forth.o -o forth
 
 main.o:	main.c Makefile
-	gcc $(FLAGS) -c -o main.o main.c
+	gcc -D_GNU_SOURCE $(FLAGS) -c -o main.o main.c
 
 ASM_SOURCES = forth.asm equates.asm macros.asm \
 	arith.asm \
