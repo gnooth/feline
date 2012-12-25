@@ -26,6 +26,7 @@ ASM_SOURCES = forth.asm equates.asm macros.asm \
 	constants.asm \
 	dictionary.asm \
 	dot.asm \
+	double.asm \
 	execute.asm \
 	fetch.asm \
 	find.asm \

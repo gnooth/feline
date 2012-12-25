@@ -13,35 +13,15 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%include "equates.asm"
-%include "macros.asm"
-
-default abs
-
-%include "arith.asm"
-%include "branch.asm"
-%include "bye.asm"
-%include "cold.asm"
-%include "constants.asm"
-%include "dictionary.asm"
-%include "dot.asm"
-%include "double.asm"
-%include "execute.asm"
-%include "fetch.asm"
-%include "find.asm"
-%include "include.asm"
-%include "interpret.asm"
-%include "io.asm"
-%include "loop.asm"
-%include "memory.asm"
-%include "number.asm"
-%include "parse.asm"
-%include "quit.asm"
-%include "stack.asm"
-%include "store.asm"
-%include "strings.asm"
-%include "tools.asm"
-%include "value.asm"
-
-; the last word
-variable last, 'last', last_nfa
+code dequal, 'd='                       ; xd1 xd2 -- flag
+; DOUBLE
+; adapted from Win32Forth
+        mov     rax, [rbp + BYTES_PER_CELL * 2]
+        sub     rax, [rbp]
+        sbb     rbx, [rbp + BYTES_PER_CELL]
+        or      rbx, rax
+        sub     rbx, 1
+        sbb     rbx, rbx
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+        next
+endcode
