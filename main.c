@@ -149,7 +149,7 @@ int64_t c_open_file(const char *filename, int flags)
 int64_t c_create_file(const char *filename, int flags)
 {
   int ret;
-  flags |= O_CREAT;
+  flags |= O_CREAT|O_WRONLY|O_TRUNC;
 #ifdef WIN64
   flags |= _O_BINARY;
 #endif
