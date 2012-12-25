@@ -202,7 +202,7 @@ int64_t c_file_size(int fd)
   current = lseek(fd, 0, SEEK_CUR);
   end = lseek(fd, 0, SEEK_END);
   lseek(fd, current, SEEK_SET);
-  if (end = (off_t) -1)
+  if (end == (off_t) -1)
     return (int64_t) -1;
   else
     return (int64_t) end;
