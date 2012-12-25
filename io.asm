@@ -148,6 +148,10 @@ code readwrite, 'r/w'                   ; -- 2
         next
 endcode
 
+code bin, 'bin', IMMEDIATE
+        next
+endcode
+
 extern c_file_status
 
 code file_status, 'file-status'         ; c-addr u -- x ior
