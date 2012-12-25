@@ -450,6 +450,7 @@ endcode
 extern c_file_size
 
 code file_size, 'file-size'             ; fileid -- ud ior
+; FILE
 %ifdef WIN64
         popd    rcx
         push    rbp
@@ -470,7 +471,8 @@ code file_size, 'file-size'             ; fileid -- ud ior
         pushd   0                       ; ior
         next
 .1:
-        _ minusone                      ; "fileid is undefined"
+        _ minusone                      ; "ud is undefined if ior is non-zero."
+        _ stod
         _ minusone                      ; error!
         next
 endcode
