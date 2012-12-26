@@ -551,3 +551,24 @@ code reposition_file, 'reposition-file' ; ud fileid -- ior
         mov     rbx, -1                 ; error
         next
 endcode
+
+extern c_flush_file
+
+code flush_file, 'flush-file'           ; fileid -- ior
+; FILE EXT
+%ifdef WIN64
+        mov     rcx, rbx
+        push    rbp
+        mov     rbp, [saved_rbp_data]
+        sub     rsp, 32
+%else
+        mov     rdi, rbx
+%endif
+        call    c_flush_file
+%ifdef WIN64
+        add     rsp, 32
+        pop     rbp
+%endif
+        mov     rbx, rax
+        next
+endcode

@@ -313,6 +313,20 @@ Cell c_reposition_file(Cell fd, off_t offset)
 #endif
 }
 
+Cell c_flush_file(Cell fd)
+{
+#ifdef WIN64
+#ifdef WIN64_NATIVE
+  return 0;     // REVIEW
+#else
+  return 0;     // REVIEW
+#endif
+#else
+  // Linux
+  return fsync(fd);
+#endif
+}
+
 Cell c_ticks()
 {
 #ifdef WIN64
