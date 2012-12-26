@@ -9,7 +9,7 @@ uname_s := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 FLAGS =
 
 ifneq (,$(findstring MINGW,$(uname_s)))
-	FLAGS += -DWIN64
+	FLAGS += -DWIN64 -DWIN64_NATIVE
 endif
 
 forth:  main.o forth.o

@@ -37,6 +37,8 @@
 #define LONGJMP(env, val)       siglongjmp(env, val)
 #endif
 
+typedef int64_t Cell;
+
 extern void cold();
 
 JMP_BUF main_jmp_buf;
@@ -59,16 +61,16 @@ static void sigsegv_handler(int sig, siginfo_t *si, void * context)
 
 int main(int argc, char **argv, char **env)
 {
-  extern uint64_t dp_data;
-  extern uint64_t cp_data;
-  extern uint64_t limit_data;
-  extern uint64_t limit_c_data;
-  extern uint64_t tick_syspad_data;
-  extern uint64_t tick_tib_data;
-  extern uint64_t s0_data;
-  extern uint64_t tick_tick_word_data;
-  uint64_t data_space_size = 1024 * 1024;
-  uint64_t code_space_size = 1024 * 1024;
+  extern Cell dp_data;
+  extern Cell cp_data;
+  extern Cell limit_data;
+  extern Cell limit_c_data;
+  extern Cell tick_syspad_data;
+  extern Cell tick_tib_data;
+  extern Cell s0_data;
+  extern Cell tick_tick_word_data;
+  Cell data_space_size = 1024 * 1024;
+  Cell code_space_size = 1024 * 1024;
   void * data_space;
   void * code_space;
 #ifdef WIN64
@@ -82,14 +84,14 @@ int main(int argc, char **argv, char **env)
   code_space =
     mmap((void *)0x2000000, code_space_size, PROT_EXEC|PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE, -1, 0);
 #endif
-  dp_data = (uint64_t) data_space;
-  cp_data = (uint64_t) code_space;
-  limit_data = (uint64_t) data_space + data_space_size;
-  limit_c_data = (uint64_t) code_space + code_space_size;
-  tick_syspad_data = (uint64_t) malloc(1024);
-  tick_tib_data = (uint64_t) malloc(256);
-  s0_data = (uint64_t) malloc(1024) + (1024 - 64);
-  tick_tick_word_data = (uint64_t) malloc(256);
+  dp_data = (Cell) data_space;
+  cp_data = (Cell) code_space;
+  limit_data = (Cell) data_space + data_space_size;
+  limit_c_data = (Cell) code_space + code_space_size;
+  tick_syspad_data = (Cell) malloc(1024);
+  tick_tib_data = (Cell) malloc(256);
+  s0_data = (Cell) malloc(1024) + (1024 - 64);
+  tick_tick_word_data = (Cell) malloc(256);
 
 #ifndef WIN64
   struct sigaction sa;
@@ -133,21 +135,44 @@ int c_file_status(char *path)
   return stat(path, &buf);
 }
 
-int64_t c_open_file(const char *filename, int flags)
+Cell c_open_file(const char *filename, int flags)
 {
+#ifdef WIN64_NATIVE
+  HANDLE h = CreateFile(filename,
+                        flags,
+                        FILE_SHARE_READ,
+                        NULL, // default security descriptor
+                        OPEN_EXISTING,
+                        FILE_ATTRIBUTE_NORMAL,
+                        NULL // template file (ignored for existing file)
+                        );
+  return (Cell) h;
+#else
   int ret;
 #ifdef WIN64
   flags |= _O_BINARY;
 #endif
   ret = open(filename, flags);
   if (ret < 0)
-    return (int64_t) -1;
+    return (Cell) -1;
   else
     return ret;
+#endif
 }
 
-int64_t c_create_file(const char *filename, int flags)
+Cell c_create_file(const char *filename, int flags)
 {
+#ifdef WIN64_NATIVE
+  HANDLE h = CreateFile(filename,
+                        flags,
+                        FILE_SHARE_READ,
+                        NULL, // default security descriptor
+                        CREATE_ALWAYS,
+                        FILE_ATTRIBUTE_NORMAL,
+                        NULL // template file (ignored for existing file)
+                        );
+  return (Cell) h;
+#else
   int ret;
 #ifdef WIN64
   flags |= _O_CREAT|_O_TRUNC|_O_BINARY;
@@ -156,72 +181,141 @@ int64_t c_create_file(const char *filename, int flags)
 #endif
   ret = open(filename, flags, 0644);
   if (ret < 0)
-    return (int64_t) -1;
+    return (Cell) -1;
   else
     return ret;
+#endif
 }
 
-int64_t c_read_file(int fd, void *buf, size_t count)
+Cell c_read_file(Cell fd, void *buf, size_t count)
 {
+#ifdef WIN64_NATIVE
+  DWORD bytes_read;
+  BOOL ret = ReadFile((HANDLE)fd, buf, count, &bytes_read, NULL);
+  if (ret)
+    return (Cell) bytes_read;
+  else
+    return (Cell) -1;
+#else
   int ret = read(fd, buf, count);
   if (ret < 0)
-    return (int64_t) -1;
+    return (Cell) -1;
   else
     return ret;
+#endif
 }
 
-int64_t c_read_char(int fd)
+Cell c_read_char(Cell fd)
 {
+#ifdef WIN64_NATIVE
+  DWORD bytes_read;
+  char c;
+  BOOL ret = ReadFile((HANDLE)fd, &c, 1, &bytes_read, NULL);
+  // "When a synchronous read operation reaches the end of a file, ReadFile
+  // returns TRUE and sets *lpNumberOfBytesRead to zero."
+  if (ret && bytes_read == 1)
+    return (Cell) c;
+  else
+    return (Cell) -1;
+#else
   char c;
   int ret = read(fd, &c, 1);
   if (ret <= 0)
     return -1;
-  return (int64_t) c;
+  return (Cell) c;
+#endif
 }
 
-int64_t c_write_file(int fd, void *buf, size_t count)
+Cell c_write_file(Cell fd, void *buf, size_t count)
 {
+#ifdef WIN64_NATIVE
+  fflush(stdout);
+  DWORD bytes_written;
+  BOOL ret = WriteFile((HANDLE)fd, buf, count, &bytes_written, NULL);
+  fflush(stdout);
+  if (ret)
+    return 0;
+  else
+    return -1;
+#else
   int ret = write(fd, buf, count);
   if (ret < 0)
-    return (int64_t) -1;
+    return (Cell) -1;
   else
     return ret;
+#endif
 }
 
-int64_t c_close_file(int fd)
+Cell c_close_file(Cell fd)
 {
+#ifdef WIN64_NATIVE
+  Cell ret = (Cell) CloseHandle((HANDLE)fd);
+  if (ret)
+    return 0;
+  else
+    return (Cell) -1;
+#else
   int ret = close(fd);
   if (ret < 0)
-    return (int64_t) -1;
+    return (Cell) -1;
   else
     return ret;
+#endif
 }
 
-int64_t c_file_size(int fd)
+Cell c_file_size(Cell fd)
 {
+#ifdef WIN64_NATIVE
+  DWORD current = SetFilePointer((HANDLE)fd, 0, NULL, FILE_CURRENT);
+  if (current == INVALID_SET_FILE_POINTER)
+    return -1;
+  DWORD end = SetFilePointer((HANDLE)fd, 0, NULL, FILE_END);
+  if (end == INVALID_SET_FILE_POINTER)
+    return -1;
+  SetFilePointer((HANDLE)fd, current, NULL, FILE_BEGIN);
+  return end;
+#else
   off_t current, end;
   current = lseek(fd, 0, SEEK_CUR);
   end = lseek(fd, 0, SEEK_END);
   lseek(fd, current, SEEK_SET);
   if (end == (off_t) -1)
-    return (int64_t) -1;
+    return (Cell) -1;
   else
-    return (int64_t) end;
+    return (Cell) end;
+#endif
 }
 
-int64_t c_file_position(int fd)
+Cell c_file_position(Cell fd)
 {
-  return (int64_t) lseek(fd, 0, SEEK_CUR);
+#ifdef WIN64_NATIVE
+  DWORD pos = SetFilePointer((HANDLE)fd, 0, NULL, FILE_CURRENT);
+  if (pos == INVALID_SET_FILE_POINTER)
+    return -1;
+  else
+    return pos;
+#else
+  return (Cell) lseek(fd, 0, SEEK_CUR);
+#endif
 }
 
-int64_t c_reposition_file(int fd, off_t offset)
+Cell c_reposition_file(Cell fd, off_t offset)
 {
-  return (int64_t) lseek(fd, offset, SEEK_SET);
+#ifdef WIN64_NATIVE
+  // printf("c_reposition_file called\n");
+  DWORD pos = SetFilePointer((HANDLE)fd, offset, NULL, FILE_BEGIN);
+  if (pos == INVALID_SET_FILE_POINTER)
+    return -1;
+  else
+    return pos;
+#else
+  return (Cell) lseek(fd, offset, SEEK_SET);
+#endif
 }
 
-uint64_t c_ticks()
+Cell c_ticks()
 {
-#ifdef WIN32
+#ifdef WIN64
   return GetTickCount64();
 #else
   struct timeval tv;
