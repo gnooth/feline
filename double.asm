@@ -13,6 +13,29 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+code dplus, 'd+'                        ; d1|ud1 d2|ud2 -- d3|ud3
+; DOUBLE 8.6.1.1040
+        mov     rax, [rbp + BYTES_PER_CELL * 2]
+        add     rax, [rbp]
+        adc     rbx, [rbp + BYTES_PER_CELL]
+        mov     [rbp + BYTES_PER_CELL * 2], rax
+        add     rbp, BYTES_PER_CELL * 2
+        next
+endcode
+
+code dzeroequal, 'd0='                  ; xd -- flag
+; DOUBLE
+        mov     rax, [rbp]
+        add     rbp, BYTES_PER_CELL
+        or      rbx, rax
+        jz      dze1
+        xor     rbx, rbx
+        next
+dze1:
+        mov     rbx, -1
+        next
+endcode
+
 code dequal, 'd='                       ; xd1 xd2 -- flag
 ; DOUBLE
 ; adapted from Win32Forth
@@ -25,3 +48,26 @@ code dequal, 'd='                       ; xd1 xd2 -- flag
         lea     rbp, [rbp + BYTES_PER_CELL * 3]
         next
 endcode
+
+code dabs, 'dabs'                       ; d -- ud
+; DOUBLE
+; gforth
+        _ dup
+        _ zlt
+        _if dabs1
+        _ dnegate
+        _then dabs1
+        next
+endcode
+
+code dnegate, 'dnegate'                 ; d1 -- d2
+; DOUBLE
+        xor     rax, rax
+        mov     rdx, rax
+        sub     rdx, [rbp]
+        sbb     rax, rbx
+        mov     [rbp], rdx
+        mov     rbx, rax
+        next
+endcode
+

@@ -57,16 +57,6 @@ code cells, 'cells'                     ; n1 -- n2
         next
 endcode
 
-code dplus, 'd+'                        ; d1|ud1 d2|ud2 -- d3|ud3
-; DOUBLE 8.6.1.1040
-        mov     rax, [rbp + BYTES_PER_CELL * 2]
-        add     rax, [rbp]
-        adc     rbx, [rbp + BYTES_PER_CELL]
-        mov     [rbp + BYTES_PER_CELL * 2], rax
-        add     rbp, BYTES_PER_CELL * 2
-        next
-endcode
-
 code minus, '-'
         neg     rbx
         add     rbx, [rbp]
@@ -246,17 +236,6 @@ abs1:
         next
 endcode
 
-code dabs, 'dabs'                       ; d -- ud
-; DOUBLE
-; gforth
-        _ dup
-        _ zlt
-        _if dabs1
-        _ dnegate
-        _then dabs1
-        next
-endcode
-
 code equal, "="                         ; x1 x2 -- flag
         popd    rax
         cmp     rbx, rax
@@ -346,18 +325,6 @@ code zero?, '0='
         jnz     .1
         dec     rbx
 .1:
-        next
-endcode
-
-code dzeroequal, 'd0='
-        mov     rax, [rbp]
-        add     rbp, BYTES_PER_CELL
-        or      rbx, rax
-        jz      dze1
-        xor     rbx, rbx
-        next
-dze1:
-        mov     rbx, -1
         next
 endcode
 
@@ -458,6 +425,7 @@ endcode
 
 code invert, 'invert'                   ; x1 -- x2
 ; CORE
+; "Invert all bits of x1, giving its logical inverse x2."
         not     rbx
         next
 endcode
@@ -465,16 +433,5 @@ endcode
 code negate, 'negate'                   ; n1 -- n2
 ; CORE
         neg     rbx
-        next
-endcode
-
-code dnegate, 'dnegate'                 ; d1 -- d2
-; DOUBLE
-        xor     rax, rax
-        mov     rdx, rax
-        sub     rdx, [rbp]
-        sbb     rax, rbx
-        mov     [rbp], rdx
-        mov     rbx, rax
         next
 endcode
