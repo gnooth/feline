@@ -135,7 +135,7 @@ code readonly, 'r/o'                    ; -- 0
 %ifdef WIN64_NATIVE
         mov     ebx, GENERIC_READ
 %else
-        xor     ebx, ebx
+        mov     ebx, 0
 %endif
         next
 endcode
