@@ -19,3 +19,8 @@ IMMEDIATE       equ     $80
 
 TRUE            equ     -1
 FALSE           equ     0
+
+%ifdef WIN64_NATIVE
+GENERIC_READ    equ     $80000000       ; winnt.h
+GENERIC_WRITE   equ     $40000000
+%endif

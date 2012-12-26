@@ -132,19 +132,31 @@ endcode
 
 code readonly, 'r/o'                    ; -- 0
         pushrbx
+%ifdef WIN64_NATIVE
+        mov     ebx, GENERIC_READ
+%else
         xor     ebx, ebx
+%endif
         next
 endcode
 
 code writeonly, 'w/o'                   ; -- 1
         pushrbx
+%ifdef WIN64_NATIVE
+        mov     ebx, GENERIC_WRITE
+%else
         mov     ebx, 1
+%endif
         next
 endcode
 
 code readwrite, 'r/w'                   ; -- 2
         pushrbx
+%ifdef WIN64_NATIVE
+        mov     ebx, GENERIC_READ|GENERIC_WRITE
+%else
         mov     ebx, 2
+%endif
         next
 endcode
 
