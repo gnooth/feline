@@ -69,12 +69,17 @@ code scantowhite, 'scantowhite'         ; c-addr1 u1 -- c-addr2 u2
         next
 endcode
 
+code slashsource, '/source'             ; -- c-addr u
+        _ source
+        _ toin
+        _fetch
+        _ slashstring
+        next
+endcode
+
 code parse, 'parse'                     ; char "ccc<char>" -- c-addr u
 ; CORE EXT 6.2.2008
-        _ source                        ; char c-addr u
-        _ toin
-        _fetch                          ; char c-addr u1 u2
-        _ slashstring                   ; char c-addr2 u3
+        _ slashsource
         _ over
         _ tor                           ; delim addr1 len1      r: addr1
         _ rot
@@ -170,9 +175,20 @@ code word_, 'word'                      ; char "<chars>ccc<char>" -- c-addr
 endcode
 
 code paren, '(', IMMEDIATE
+        _begin paren1
+        _ slashsource
+        _lit ')'
+        _ scan
+        _ nip
+        _if paren2
         _lit ')'
         _ parse
         _ twodrop
+        _return
+        _then paren2
+        _ refill
+        _ zero?
+        _until paren1
         next
 endcode
 
