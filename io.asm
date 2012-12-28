@@ -582,6 +582,29 @@ code resize_file, 'resize-file'         ; ud fileid -- ior
         next
 endcode
 
+extern os_delete_file
+
+code delete_file, 'delete-file'         ; c-addr u -- ior
+        _ here
+        _ zplace
+        _ here
+%ifdef WIN64
+        mov     rcx, rbx
+        push    rbp
+        mov     rbp, [saved_rbp_data]
+        sub     rsp, 32
+%else
+        mov     rdi, rbx
+%endif
+        call    os_delete_file
+%ifdef WIN64
+        add     rsp, 32
+        pop     rbp
+%endif
+        mov     ebx, eax
+        next
+endcode
+
 extern os_flush_file
 
 code flush_file, 'flush-file'           ; fileid -- ior
