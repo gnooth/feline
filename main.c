@@ -329,7 +329,11 @@ Cell os_resize_file(Cell fd, off_t offset)
 
 Cell os_delete_file(const char *filename)
 {
+#ifdef WIN64_NATIVE
+  return DeleteFile(filename) ? 0 : -1;
+#else
   return unlink(filename);
+#endif
 }
 
 Cell os_flush_file(Cell fd)
