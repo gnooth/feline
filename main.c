@@ -177,7 +177,7 @@ Cell c_create_file(const char *filename, int flags)
 #ifdef WIN64
   flags |= _O_CREAT|_O_TRUNC|_O_BINARY;
 #else
-  flags |= O_CREAT|O_WRONLY|O_TRUNC;
+  flags |= O_CREAT|O_TRUNC;
 #endif
   ret = open(filename, flags, 0644);
   if (ret < 0)
