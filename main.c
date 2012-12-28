@@ -108,34 +108,34 @@ int main(int argc, char **argv, char **env)
     abort();
 }
 
-void c_emit(int c)
+void os_emit(int c)
 {
   fputc(c, stdout);
   fflush(stdout);
 }
 
-int c_key()
+int os_key()
 {
   return fgetc(stdin);
 }
 
-void * c_allocate(size_t size)
+void * os_allocate(size_t size)
 {
   return malloc(size);
 }
 
-void c_free(void *ptr)
+void os_free(void *ptr)
 {
   free(ptr);
 }
 
-int c_file_status(char *path)
+int os_file_status(char *path)
 {
   struct stat buf;
   return stat(path, &buf);
 }
 
-Cell c_open_file(const char *filename, int flags)
+Cell os_open_file(const char *filename, int flags)
 {
 #ifdef WIN64_NATIVE
   HANDLE h = CreateFile(filename,
@@ -160,7 +160,7 @@ Cell c_open_file(const char *filename, int flags)
 #endif
 }
 
-Cell c_create_file(const char *filename, int flags)
+Cell os_create_file(const char *filename, int flags)
 {
 #ifdef WIN64_NATIVE
   HANDLE h = CreateFile(filename,
@@ -187,7 +187,7 @@ Cell c_create_file(const char *filename, int flags)
 #endif
 }
 
-Cell c_read_file(Cell fd, void *buf, size_t count)
+Cell os_read_file(Cell fd, void *buf, size_t count)
 {
 #ifdef WIN64_NATIVE
   DWORD bytes_read;
@@ -205,7 +205,7 @@ Cell c_read_file(Cell fd, void *buf, size_t count)
 #endif
 }
 
-Cell c_read_char(Cell fd)
+Cell os_read_char(Cell fd)
 {
 #ifdef WIN64_NATIVE
   DWORD bytes_read;
@@ -226,7 +226,7 @@ Cell c_read_char(Cell fd)
 #endif
 }
 
-Cell c_write_file(Cell fd, void *buf, size_t count)
+Cell os_write_file(Cell fd, void *buf, size_t count)
 {
 #ifdef WIN64_NATIVE
   fflush(stdout);
@@ -246,7 +246,7 @@ Cell c_write_file(Cell fd, void *buf, size_t count)
 #endif
 }
 
-Cell c_close_file(Cell fd)
+Cell os_close_file(Cell fd)
 {
 #ifdef WIN64_NATIVE
   Cell ret = (Cell) CloseHandle((HANDLE)fd);
@@ -263,7 +263,7 @@ Cell c_close_file(Cell fd)
 #endif
 }
 
-Cell c_file_size(Cell fd)
+Cell os_file_size(Cell fd)
 {
 #ifdef WIN64_NATIVE
   DWORD current = SetFilePointer((HANDLE)fd, 0, NULL, FILE_CURRENT);
@@ -286,7 +286,7 @@ Cell c_file_size(Cell fd)
 #endif
 }
 
-Cell c_file_position(Cell fd)
+Cell os_file_position(Cell fd)
 {
 #ifdef WIN64_NATIVE
   DWORD pos = SetFilePointer((HANDLE)fd, 0, NULL, FILE_CURRENT);
@@ -299,10 +299,9 @@ Cell c_file_position(Cell fd)
 #endif
 }
 
-Cell c_reposition_file(Cell fd, off_t offset)
+Cell os_reposition_file(Cell fd, off_t offset)
 {
 #ifdef WIN64_NATIVE
-  // printf("c_reposition_file called\n");
   DWORD pos = SetFilePointer((HANDLE)fd, offset, NULL, FILE_BEGIN);
   if (pos == INVALID_SET_FILE_POINTER)
     return -1;
@@ -313,10 +312,9 @@ Cell c_reposition_file(Cell fd, off_t offset)
 #endif
 }
 
-Cell c_resize_file(Cell fd, off_t offset)
+Cell os_resize_file(Cell fd, off_t offset)
 {
 #ifdef WIN64_NATIVE
-  // printf("c_reposition_file called\n");
   DWORD pos = SetFilePointer((HANDLE)fd, offset, NULL, FILE_BEGIN);
   if (pos == INVALID_SET_FILE_POINTER)
     return -1;
@@ -329,7 +327,7 @@ Cell c_resize_file(Cell fd, off_t offset)
 #endif
 }
 
-Cell c_flush_file(Cell fd)
+Cell os_flush_file(Cell fd)
 {
 #ifdef WIN64
 #ifdef WIN64_NATIVE
@@ -347,7 +345,7 @@ Cell c_flush_file(Cell fd)
 #endif
 }
 
-Cell c_ticks()
+Cell os_ticks()
 {
 #ifdef WIN64
   return GetTickCount64();
@@ -359,7 +357,7 @@ Cell c_ticks()
 #endif
 }
 
-void c_bye()
+void os_bye()
 {
   exit(0);
 }

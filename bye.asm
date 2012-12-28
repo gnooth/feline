@@ -13,11 +13,12 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extern c_bye
+extern os_bye
 
 code bye, "bye"
         _ ?cr
         _dotq 'Bye!'
         _ cr
-        jmp c_bye
+        jmp os_bye
+        next
 endcode

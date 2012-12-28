@@ -13,7 +13,7 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extern c_allocate
+extern os_allocate
 
 code allocate, 'allocate'               ; u -- a-addr ior
 ; MEMORY
@@ -25,7 +25,7 @@ code allocate, 'allocate'               ; u -- a-addr ior
 %else
         mov     rdi, rbx
 %endif
-        call    c_allocate
+        call    os_allocate
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -40,7 +40,7 @@ code allocate, 'allocate'               ; u -- a-addr ior
         next
 endcode
 
-extern c_free
+extern os_free
 
 code free_, 'free'                      ; a-addr -- ior
 ; MEMORY
@@ -52,7 +52,7 @@ code free_, 'free'                      ; a-addr -- ior
 %else
         mov     rdi, rbx
 %endif
-        call    c_free
+        call    os_free
 %ifdef WIN64
         add     rsp, 32
         pop     rbp

@@ -66,7 +66,7 @@ code read_time_stamp_counter, 'rdtsc'
         next
 endcode
 
-extern c_ticks
+extern os_ticks
 
 code ticks, 'ticks'
 %ifdef WIN64
@@ -74,7 +74,7 @@ code ticks, 'ticks'
         mov     rbp, [saved_rbp_data]
         sub     rsp, 32
 %endif
-        call    c_ticks
+        call    os_ticks
 %ifdef WIN64
         add     rsp, 32
         pop     rbp

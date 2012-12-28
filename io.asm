@@ -13,7 +13,7 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-extern c_key
+extern os_key
 
 code key, 'key'
 %ifdef WIN64
@@ -21,7 +21,7 @@ code key, 'key'
         mov     rbp, [saved_rbp_data]
         sub     rsp, 32
 %endif
-        call    c_key
+        call    os_key
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -30,7 +30,7 @@ code key, 'key'
         next
 endcode
 
-extern c_emit
+extern os_emit
 
 code paren_emit, '(emit)'
 %ifdef WIN64
@@ -41,7 +41,7 @@ code paren_emit, '(emit)'
 %else
         popd    rdi
 %endif
-        call    c_emit
+        call    os_emit
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -164,7 +164,7 @@ code bin, 'bin', IMMEDIATE
         next
 endcode
 
-extern c_file_status
+extern os_file_status
 
 code file_status, 'file-status'         ; c-addr u -- x ior
 ; "If the file exists, ior is zero; otherwise ior is the implementation-defined I/O result code."
@@ -179,7 +179,7 @@ code file_status, 'file-status'         ; c-addr u -- x ior
 %else
         popd    rdi
 %endif
-        call    c_file_status
+        call    os_file_status
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -195,7 +195,7 @@ code file_status, 'file-status'         ; c-addr u -- x ior
         next
 endcode
 
-extern c_open_file
+extern os_open_file
 
 code open_file, 'open-file'             ; c-addr u fam -- fileid ior
         _ rrot                          ; -- fam c-addr u
@@ -213,7 +213,7 @@ code open_file, 'open-file'             ; c-addr u fam -- fileid ior
         popd    rsi
         popd    rdi
 %endif
-        call    c_open_file
+        call    os_open_file
 %ifdef WIN64
         add     rsp, 0x28
         pop     rbp
@@ -230,7 +230,7 @@ code open_file, 'open-file'             ; c-addr u fam -- fileid ior
 endcode
 
 
-extern c_create_file
+extern os_create_file
 
 code create_file, 'create-file'         ; c-addr u fam -- fileid ior
         _ rrot                          ; -- fam c-addr u
@@ -248,7 +248,7 @@ code create_file, 'create-file'         ; c-addr u fam -- fileid ior
         popd    rsi
         popd    rdi
 %endif
-        call    c_create_file
+        call    os_create_file
 %ifdef WIN64
         add     rsp, 0x28
         pop     rbp
@@ -264,7 +264,7 @@ code create_file, 'create-file'         ; c-addr u fam -- fileid ior
         next
 endcode
 
-extern c_read_file
+extern os_read_file
 
 code read_file, 'read-file'             ; c-addr u1 fileid -- u2 ior
 %ifdef WIN64
@@ -279,7 +279,7 @@ code read_file, 'read-file'             ; c-addr u1 fileid -- u2 ior
         popd    rdx
         popd    rsi
 %endif
-        call    c_read_file
+        call    os_read_file
 %ifdef WIN64
         add     rsp, 0x28
         pop     rbp
@@ -295,7 +295,7 @@ code read_file, 'read-file'             ; c-addr u1 fileid -- u2 ior
         next
 endcode
 
-extern c_read_char
+extern os_read_char
 
 code read_char, 'read-char'             ; fileid -- char | -1
 %ifdef WIN64
@@ -306,7 +306,7 @@ code read_char, 'read-char'             ; fileid -- char | -1
 %else
         mov     rdi, rbx
 %endif
-        call    c_read_char
+        call    os_read_char
 %ifdef WIN64
         add     rsp, 0x28
         pop     rbp
@@ -392,7 +392,7 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         next
 endcode
 
-extern c_write_file
+extern os_write_file
 
 code write_file, 'write-file'           ; c-addr u1 fileid -- ior
 %ifdef WIN64
@@ -407,7 +407,7 @@ code write_file, 'write-file'           ; c-addr u1 fileid -- ior
         popd    rdx
         popd    rsi
 %endif
-        call    c_write_file
+        call    os_write_file
 %ifdef WIN64
         add     rsp, 0x28
         pop     rbp
@@ -443,7 +443,7 @@ code write_line, 'write-line'           ; c-addr u1 fileid -- ior
         next
 endcode
 
-extern c_close_file
+extern os_close_file
 
 code close_file, 'close-file'           ; fileid -- ior
 %ifdef WIN64
@@ -454,7 +454,7 @@ code close_file, 'close-file'           ; fileid -- ior
 %else
         popd    rdi
 %endif
-        call    c_close_file
+        call    os_close_file
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -463,7 +463,7 @@ code close_file, 'close-file'           ; fileid -- ior
         next
 endcode
 
-extern c_file_size
+extern os_file_size
 
 code file_size, 'file-size'             ; fileid -- ud ior
 ; FILE
@@ -475,7 +475,7 @@ code file_size, 'file-size'             ; fileid -- ud ior
 %else
         popd    rdi
 %endif
-        call    c_file_size
+        call    os_file_size
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -493,7 +493,7 @@ code file_size, 'file-size'             ; fileid -- ud ior
         next
 endcode
 
-extern c_file_position
+extern os_file_position
 
 code file_position, 'file-position'     ; fileid -- ud ior
 ; FILE
@@ -505,7 +505,7 @@ code file_position, 'file-position'     ; fileid -- ud ior
 %else
         mov     rdi, rbx
 %endif
-        call    c_file_position
+        call    os_file_position
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -522,7 +522,7 @@ code file_position, 'file-position'     ; fileid -- ud ior
         next
 endcode
 
-extern c_reposition_file
+extern os_reposition_file
 
 code reposition_file, 'reposition-file' ; ud fileid -- ior
 ; We ignore the upper 64 bits of the 128-bit offset.
@@ -538,7 +538,7 @@ code reposition_file, 'reposition-file' ; ud fileid -- ior
         mov     rsi, [rbp + BYTES_PER_CELL]     ; 64-bit offset
         add     rbp, BYTES_PER_CELL * 2
 %endif
-        call    c_reposition_file
+        call    os_reposition_file
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -552,7 +552,7 @@ code reposition_file, 'reposition-file' ; ud fileid -- ior
         next
 endcode
 
-extern c_resize_file
+extern os_resize_file
 
 code resize_file, 'resize-file'         ; ud fileid -- ior
 ; We ignore the upper 64 bits of the 128-bit offset.
@@ -568,7 +568,7 @@ code resize_file, 'resize-file'         ; ud fileid -- ior
         mov     rsi, [rbp + BYTES_PER_CELL]     ; 64-bit offset
         add     rbp, BYTES_PER_CELL * 2
 %endif
-        call    c_resize_file
+        call    os_resize_file
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -582,7 +582,7 @@ code resize_file, 'resize-file'         ; ud fileid -- ior
         next
 endcode
 
-extern c_flush_file
+extern os_flush_file
 
 code flush_file, 'flush-file'           ; fileid -- ior
 ; FILE EXT
@@ -594,7 +594,7 @@ code flush_file, 'flush-file'           ; fileid -- ior
 %else
         mov     rdi, rbx
 %endif
-        call    c_flush_file
+        call    os_flush_file
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
