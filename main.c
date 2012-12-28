@@ -313,11 +313,31 @@ Cell c_reposition_file(Cell fd, off_t offset)
 #endif
 }
 
+Cell c_resize_file(Cell fd, off_t offset)
+{
+#ifdef WIN64_NATIVE
+  // printf("c_reposition_file called\n");
+  DWORD pos = SetFilePointer((HANDLE)fd, offset, NULL, FILE_BEGIN);
+  if (pos == INVALID_SET_FILE_POINTER)
+    return -1;
+  if (SetEndOfFile((HANDLE)fd))
+    return 0;
+  else
+    return -1;
+#else
+  return (Cell) ftruncate(fd, offset);
+#endif
+}
+
 Cell c_flush_file(Cell fd)
 {
 #ifdef WIN64
 #ifdef WIN64_NATIVE
-  return 0;     // REVIEW
+  BOOL ret = FlushFileBuffers((HANDLE)fd);
+  if (ret)
+    return 0;
+  else
+    return -1;
 #else
   return 0;     // REVIEW
 #endif

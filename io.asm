@@ -552,6 +552,36 @@ code reposition_file, 'reposition-file' ; ud fileid -- ior
         next
 endcode
 
+extern c_resize_file
+
+code resize_file, 'resize-file'         ; ud fileid -- ior
+; We ignore the upper 64 bits of the 128-bit offset.
+%ifdef WIN64
+        mov     rcx, rbx                        ; fileid in RCX
+        mov     rdx, [rbp + BYTES_PER_CELL]     ; 64-bit offset in RDX
+        add     rbp, BYTES_PER_CELL * 2
+        push    rbp
+        mov     rbp, [saved_rbp_data]
+        sub     rsp, 32
+%else
+        mov     rdi, rbx                        ; fileid
+        mov     rsi, [rbp + BYTES_PER_CELL]     ; 64-bit offset
+        add     rbp, BYTES_PER_CELL * 2
+%endif
+        call    c_resize_file
+%ifdef WIN64
+        add     rsp, 32
+        pop     rbp
+%endif
+        or      rax, rax
+        js      .1
+        xor     rbx, rbx                ; success
+        next
+.1:
+        mov     rbx, -1                 ; error
+        next
+endcode
+
 extern c_flush_file
 
 code flush_file, 'flush-file'           ; fileid -- ior
