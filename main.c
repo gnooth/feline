@@ -338,7 +338,11 @@ Cell os_delete_file(const char *filename)
 
 Cell os_rename_file(const char *oldpath, const char *newpath)
 {
+#ifdef WIN64_NATIVE
   return rename(oldpath, newpath);
+#else
+  return MoveFile(oldpath, newpath) ? 0 : -1;
+#endif
 }
 
 Cell os_flush_file(Cell fd)
