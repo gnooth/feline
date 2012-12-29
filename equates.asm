@@ -24,3 +24,5 @@ FALSE           equ     0
 GENERIC_READ    equ     $80000000       ; winnt.h
 GENERIC_WRITE   equ     $40000000
 %endif
+
+MAX_PATH        equ     260             ; windef.h
