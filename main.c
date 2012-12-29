@@ -336,6 +336,11 @@ Cell os_delete_file(const char *filename)
 #endif
 }
 
+Cell os_rename_file(const char *oldpath, const char *newpath)
+{
+  return rename(oldpath, newpath);
+}
+
 Cell os_flush_file(Cell fd)
 {
 #ifdef WIN64

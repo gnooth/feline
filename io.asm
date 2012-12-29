@@ -605,6 +605,37 @@ code delete_file, 'delete-file'         ; c-addr u -- ior
         next
 endcode
 
+extern os_rename_file
+
+code rename_file, 'rename-file'         ; c-addr1 u1 c-addr2 u2 -- ior
+        sub     rsp, ((MAX_PATH + 16) & $1f0) * 2
+        pushrbx
+        mov     rbx, rsp                ; new name
+        _ zplace                        ; -- c-addr1 u1
+        pushrbx
+        lea     rbx, [rsp + MAX_PATH]   ; old name
+        _ zplace                        ; --
+%ifdef WIN64
+        lea     rcx, [rsp + MAX_PATH]   ; old name
+        mov     rdx, rsp                ; new name
+        push    rbp
+        mov     rbp, [saved_rbp_data]
+        sub     rsp, 32
+%else
+        lea     rdi, [rsp + MAX_PATH]   ; old name
+        mov     rsi, rsp                ; new name
+%endif
+        call    os_rename_file
+%ifdef WIN64
+        add     rsp, 32
+        pop     rbp
+%endif
+        pushrbx
+        mov     rbx, rax
+        add     rsp, ((MAX_PATH + 16) & $1f0) * 2
+        next
+endcode
+
 extern os_flush_file
 
 code flush_file, 'flush-file'           ; fileid -- ior
