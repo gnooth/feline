@@ -183,10 +183,42 @@ code number?, 'number?'                 ; c-addr u -- d flag
         next
 endcode
 
+code maybe_change_base, 'maybe-change-base'     ; addr u -- addr' u'
+        _ twodup                        ; -- addr u addr u
+        _if mcb1
+        _cfetch
+        _ dup
+        _lit '$'
+        _ equal
+        _if mcb2
+        _ drop
+        _ one
+        _ slashstring
+        _ hex
+        _else mcb2
+        _lit '#'
+        _ equal
+        _if mcb3
+        _ one
+        _ slashstring
+        _ decimal
+        _then mcb3
+        _then mcb2
+        _else mcb1
+        _ drop
+        _then mcb1
+        next
+endcode
+
 code number, 'number'                   ; string -- d
-        _duptor
-        _ count
-        _ number?
+        _duptor                         ; -- string             r: -- string
+        _ count                         ; -- addr u
+        _ basefetch
+        _ tor
+        _ maybe_change_base             ; -- addr' u'
+        _ number?                       ; -- d flag
+        _ rfrom
+        _ basestore
         _ zero?
         _if xnumber1
         _ rfrom
