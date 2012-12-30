@@ -428,7 +428,7 @@ code minusopt, '-opt'
         next
 endcode
 
-code compilecomma, 'compile,'           ; xt --
+code parencompilecomma, '(compile,)'    ; xt --
 ; CORE EXT
 ; "Interpretation semantics for this word are undefined."
         _ optimizing?
@@ -455,6 +455,8 @@ code compilecomma, 'compile,'           ; xt --
         _ commacall
         next
 endcode
+
+deferred compilecomma, 'compile,', parencompilecomma
 
 variable last_code, 'last-code', 0
 
