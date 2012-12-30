@@ -353,3 +353,17 @@ code count, 'count'                     ; c-addr -- c-addr+1 u
         movzx   rbx, al
         next
 endcode
+
+code dashtrailing, '-trailing'          ; c-addr u1 -- c-addr u2
+; STRING
+        test    rbx, rbx
+        jz      .2
+        mov     rax, [rbp]
+.1:
+        cmp     byte [rax + rbx - 1], ' '
+        jne     .2
+        dec     rbx
+        jnz     .1
+.2:
+        next
+endcode
