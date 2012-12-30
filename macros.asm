@@ -69,13 +69,22 @@ global %1
 %endmacro
 
 %macro  code 2-4 0, 0
-head  %1, %2, %3, %4
+        head %1, %2, %3, %4
         section .text
         align   8
 %1:
 %endmacro
 
 %macro  endcode 0-1
+%endmacro
+
+%macro  deferred 3                      ; label, name, action
+        head %1, %2, 0, 0
+        section .text
+        align   8
+%1:
+        jmp     %3
+        ret                             ; for decompiler
 %endmacro
 
 %macro  variable 3                      ; label, name, value
