@@ -254,7 +254,7 @@ section .text
 %endmacro
 
 %macro _rfromdrop 0                     ; inline version of R>DROP
-        add     rsp, BYTES_PER_CELL
+        lea     rsp, [rsp + BYTES_PER_CELL]
 %endmacro
 
 %macro _fetch 0                         ; inline version of @
