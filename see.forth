@@ -380,7 +380,7 @@ h# 0f install-handler
   ip c@s  1 +to ip      \ 8-bit signed offset
   2 to size
   .instruction
-   ip + h.
+   ip + ." $" h.
 ;
 
 h# 74 install-handler
@@ -391,7 +391,7 @@ h# 74 install-handler
   ip c@s  1 +to ip      \ 8-bit signed offset
   2 to size
   .instruction
-   ip + h.
+   ip + ." $" h.
 ;
 
 h# 0eb install-handler
@@ -524,6 +524,7 @@ h# 83 install-handler
 \    s" lea" old-mnemonic!
    c" lea" to mnemonic
    !modrm-byte
+   modrm-rm 4 = if !sib-byte then
    modrm-mod 1 = if                \ 1-byte displacement
 \       prefix if 4 else 3 then .bytes
 \       old-.mnemonic
