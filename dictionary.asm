@@ -250,8 +250,10 @@ code header, 'header'                   ; --
         _ comma
         _ zero                          ; comp field
         _ comma
-        _ latest
-        _ comma                         ; link
+        _ current
+        _ fetch                         ; -- c-addr u wid
+        _ fetch                         ; -- c-addr u link
+        _ comma
         _ zero                          ; flag
         _ ccomma                        ; -- c-addr u
         _ zero
@@ -259,6 +261,10 @@ code header, 'header'                   ; --
         _ here
         _ last
         _ store                         ; -- c-addr u
+        _ here
+        _ current
+        _ fetch
+        _ store
         _ here                          ; -- c-addr u here
         _ over
         _ oneplus
