@@ -41,6 +41,14 @@ code cold, 'cold'                       ; --
         _ here_c
         _ origin_c
         _ store
+        _ forth_wordlist
+        _fetch
+        _ zero?
+        _if cold1
+        _ latest
+        _ forth_wordlist
+        _ store
+        _then cold1
         _string "boot.forth"
         _ included
         jmp quit
