@@ -33,28 +33,61 @@ code found, 'found'                     ; nfa -- xt 1  | xt -1
         next
 endcode
 
+variable current, 'current', forth_wordlist_data
+
+variable context, 'context', forth_wordlist_data
+
+section .data
+forth_wordlist_data:
+        dq      0
+
+code forth_wordlist, 'forth-wordlist'   ; -- wid
+; SEARCH
+        pushrbx
+        mov     rbx, forth_wordlist_data
+        next
+endcode
+
+code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
+; SEARCH
+        _ fetch                         ; last link in wordlist
+        _begin sw1                      ; -- c-addr u nfa
+        _duptor                         ; -- c-addr u nfa                       r: -- nfa
+        _ count                         ; -- c-addr u c-addr' u'                r: -- nfa
+        _ twoover                       ; -- c-addr u c-addr' u' c-addr-u       r: -- nfa
+        _ istrequal                     ; -- c-addr u flag                      r: -- nfa
+        _if sw2                         ; -- c-addr u                           r: -- nfa
+        ; found it!
+        _ twodrop                       ; --                                    r: -- nfa
+        _ rfrom                         ; -- nfa
+       _ found                         ; -- xt 1 | xt -1
+        _return
+        _then sw2                       ; -- c-addr u                           r: -- nfa
+        _ rfrom                         ; -- c-addr u nfa
+        _ ntolink                       ; -- c-addr u lfa
+        _ fetch                         ; -- c-addr u nfa
+        _ dup                           ; -- c-addr u nfa nfa
+        _ zero?
+        _until sw1
+        _ threedrop
+        _ false
+        next
+endcode
+
 code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
 ; CORE, SEARCH
-        _ tor                           ; --                    r: -- c-addr
-        _ latest                        ; -- nfa
-        _begin find1
-        _ dup                           ; -- nfa nfa
-        _ rfetch                        ; -- nfa nfa c-addr
-        _ match?
-        _if find2                       ; -- nfa
+        _duptor
+        _ count
+        _ context
+        _ fetch
+        _ search_wordlist
+        _ dup
+        _if find1
+        _rfromdrop
+        _else find1
         _ rfrom
-        _ drop
-        _ found
-        next
-        _then find2                     ; -- nfa
-        _ ntolink                       ; -- lfa
-        _fetch                          ; -- nfa
-        _ dup                           ; -- nfa nfa
-        _ zero?
-        _until find1
-        _ drop
-        _ rfrom
-        _ zero
+        _ swap
+        _then find1
         next
 endcode
 
