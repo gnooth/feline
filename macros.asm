@@ -1,4 +1,4 @@
-; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -283,4 +283,8 @@ section .text
 
 %macro _oneminus 0                      ; inline version of 1-
         dec     rbx
+%endmacro
+
+%macro _cells 0                         ; inline version of CELLS
+        shl     rbx, 3
 %endmacro
