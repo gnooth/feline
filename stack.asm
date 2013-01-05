@@ -1,4 +1,4 @@
-; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -271,7 +271,44 @@ code rpstore, 'rp!'
         jmp     rax
 endcode
 
-code ntor, 'n>r'                        ; i*n +n --             r: -- j*x +n
+code twotor, '2>r'                      ; x1 x2 --      r: -- x1 x2
+; CORE EXT
+; "Interpretation: Interpretation semantics for this word are undefined."
+        pop     rax                     ; return address
+        push    qword [rbp]
+        push    rbx
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        jmp     rax
+        next
+endcode
+
+code tworfrom, '2r>'                    ; -- x1 x2      r: x1 x2 --
+; CORE EXT
+; "Interpretation: Interpretation semantics for this word are undefined."
+        pop     rax                     ; return address
+        mov     [rbp - BYTES_PER_CELL], rbx
+        pop     rbx
+        pop     qword [rbp - BYTES_PER_CELL * 2]
+        lea     rbp, [rbp - BYTES_PER_CELL * 2]
+        jmp     rax
+        next
+endcode
+
+code tworfetch, '2r@'                   ; -- x1 x2      r: x1 x2 -- x1 x2
+; CORE EXT
+; "Interpretation: Interpretation semantics for this word are undefined."
+        pop     rax                     ; return address
+        mov     [rbp - BYTES_PER_CELL], rbx
+        mov     rdx, [rsp + BYTES_PER_CELL]
+        mov     rbx, [rsp]
+        mov     [rbp - BYTES_PER_CELL * 2], rdx
+        lea     rbp, [rbp - BYTES_PER_CELL * 2]
+        jmp     rax
+        next
+endcode
+
+code ntor, 'n>r'                        ; i*n +n --     r: -- j*x +n
 ; Forth 200x TOOLS EXT
 ; "Interpretation semantics for this word are undefined."
         _ dup
@@ -293,7 +330,7 @@ code ntor, 'n>r'                        ; i*n +n --             r: -- j*x +n
         next
 endcode
 
-code nrfrom, 'nr>'                      ; -- i*x +n             r: j*x +n --
+code nrfrom, 'nr>'                      ; -- i*x +n     r: j*x +n --
 ; Forth 200x TOOLS EXT
 ; "Interpretation semantics for this word are undefined."
         _rfrom
