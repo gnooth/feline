@@ -288,3 +288,11 @@ section .text
 %macro _cells 0                         ; inline version of CELLS
         shl     rbx, 3
 %endmacro
+
+%macro _cellplus 0                      ; inline version of CELL+
+        add     rbx, BYTES_PER_CELL
+%endmacro
+
+%macro _cellminus 0                     ; inline version of CELL-
+        sub     rbx, BYTES_PER_CELL
+%endmacro
