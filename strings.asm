@@ -1,4 +1,4 @@
-; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -367,3 +367,13 @@ code dashtrailing, '-trailing'          ; c-addr u1 -- c-addr u2
 .2:
         next
 endcode
+
+%if 0
+code search, 'search'                   ; c-addr1 u1 c-addr2 u2 -- c-addr3 u3 flag
+; STRING
+; "Search the string specified by c-addr1 u1 for the string specified by c-addr2 u2.
+; If flag is true, a match was found at c-addr3 with u3 characters remaining.
+; If flag is false there was no match and c-addr3 is c-addr1 and u3 is u1."
+        next
+endcode
+%endif
