@@ -13,7 +13,7 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-variable current, 'current', forth_wordlist_data
+variable current, 'current', forth_wid
 
 code nvocs, '#vocs'
         pushrbx
@@ -23,7 +23,7 @@ endcode
 
 variable norder, '#order', 1
 
-variable context, 'context', forth_wordlist_data
+variable context, 'context', forth_wid
 section .data
         times NVOCS dq 0
         dq      0                       ; sentinel for FIND
@@ -41,39 +41,99 @@ code set_current, 'set-current'         ; wid --
 endcode
 
 code definitions, 'definitions'         ; --
+; SEARCH
         mov     eax, [context_data]
         mov     [current_data], eax
         next
 endcode
 
+variable voclink, 'voc-link', forth_wid
+
 code wordlist, 'wordlist'               ; -- wid
 ; SEARCH
+        _ voclink
+        _ fetch
+        _ comma                         ; link
+        _ zero
+        _ comma                         ; pointer to vocabulary name
         _ here
+        _ dup
+        _ voclink
+        _ store
         _ zero
         _ comma                         ; link
         next
 endcode
 
+code widtolink, 'wid>link'
+        sub     rbx, BYTES_PER_CELL * 2
+        next
+endcode
+
+code widtoname, 'wid>name'
+        sub     rbx, BYTES_PER_CELL
+        next
+endcode
+
+code vocs, 'vocs'
+        _ voclink
+        _ fetch
+        _begin vocs1
+        _ dup
+        _ dotwid
+        _ widtolink
+        _ fetch
+        _ dup
+        _ zero?
+        _until vocs1
+        _ drop
+        next
+endcode
+
 section .data
-forth_wordlist_data:
+        dq      0                       ; link
+        dq      forth_nfa
+forth_wid:
         dq      0
 
 code forth_wordlist, 'forth-wordlist'   ; -- wid
 ; SEARCH
         pushrbx
-        mov     rbx, forth_wordlist_data
+        mov     rbx, forth_wid
         next
 endcode
 
-code forth, 'forth'
-        mov     rax, forth_wordlist_data
+code forth, 'forth'                     ; --
+; SEARCH EXT
+        mov     rax, forth_wid
         mov     [context_data], rax
+        next
+endcode
+
+code dotwid, '.wid'                     ; wid --
+        _ dup
+        _if dotwid1
+        _ dup                           ; -- wid wid
+        _ widtoname                     ; -- wid wid-8
+        _fetch                          ; -- wid nfa|0
+        _ ?dup
+        _if dotwid2
+        _ nip
+        _ dotid
+        _else dotwid2
+        _ udot
+        _then dotwid2
+        _else dotwid1
+        _ udot
+        _then dotwid1
         next
 endcode
 
 code order, 'order'
 ; SEARCH EXT
 ; FIXME
+        _ ?cr
+        _dotq "Context: "
         _ nvocs
         _ zero
         _do order1
@@ -81,9 +141,19 @@ code order, 'order'
         _ i
         _cells
         _ plus
-        _fetch
-        _ udot
+        _fetch                          ; -- wid
+        _ ?dup
+        _if order2
+        _ dotwid
+        _else order2
+        _ leave
+        _then order2
         _loop order1
+        _ cr
+        _dotq "Current: "
+        _ current
+        _ fetch
+        _ dotwid
         next
 endcode
 

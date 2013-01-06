@@ -13,9 +13,24 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-include vocabulary.forth
-include defer.forth
-include bracket-if.forth
-include case.forth
-include dump.forth
-include see.forth
+: vocabulary
+   wordlist
+   create dup ,
+   latest swap wid>name !
+   does>
+      @ context ! ;
+
+vocabulary root
+
+only forth also root definitions
+
+: only  only ;
+: forth  forth ;
+: also  also ;
+: previous previous ;
+: root  root ;
+: definitions definitions ;
+: order order ;
+: vocs vocs ;
+
+only forth definitions
