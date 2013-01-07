@@ -13,9 +13,14 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+[undefined] disassembler [if] vocabulary disassembler [then]
+
+only forth also disassembler definitions
+
 decimal
 
-0 value definition-start
+0 value start-address
+0 value end-address
 0 value instruction-start
 0 value ip
 0 value prefix
@@ -366,24 +371,24 @@ h# 0f install-handler
 ;
 
 : .ret  ( -- )
-\    1 .bytes
-\ \    s" ret" old-.mnemonic
-\    s" ret" old-mnemonic! old-.mnemonic
-\ \    1 +to ip
    c" ret" to mnemonic
    .inst
-   done? on ;
+   ip end-address > if
+      done? on
+   then ;
 
 \ $74 handler
 :noname  ( -- )
-  s" jz" old-mnemonic!
-  ip c@s  1 +to ip      \ 8-bit signed offset
-  2 to size
-  .instruction
-   ip + ." $" h.
+   s" jz" old-mnemonic!
+   ip c@s  1 +to ip     \ 8-bit signed offset
+   2 to size
+   .instruction
+   ip +                 \ jump target
+   dup end-address > if dup to end-address then
+   ." $" h.
 ;
 
-h# 74 install-handler
+$74 install-handler
 
 \ $eb handler
 :noname  ( -- )
@@ -660,7 +665,8 @@ decimal
    .opcode ;
 
 : disasm  ( code-addr -- )
-   dup to definition-start to ip
+   dup to start-address to ip
+   0 to end-address
    done? off
    begin
       done? @ 0=
@@ -671,5 +677,9 @@ decimal
 : disassemble  ( cfa -- )
    >code disasm ;
 
+also forth definitions
+
 : see  ( -- )
    ' disassemble ;
+
+only forth definitions
