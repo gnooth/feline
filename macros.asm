@@ -80,10 +80,16 @@ global %1
 
 %macro  deferred 3                      ; label, name, action
         head %1, %2, 0, 0
+        section .data
+        global %1_data
+        align   8
+%1_data:
+        dq      %3
         section .text
         align   8
 %1:
-        jmp     %3
+        mov     rax, %1_data
+        jmp     [rax]
         ret                             ; for decompiler
 %endmacro
 
