@@ -96,6 +96,11 @@ code ltoname, 'l>name'
         next
 endcode
 
+code tolink, '>link'
+        add     rbx, BYTES_PER_CELL * 2
+        next
+endcode
+
 code linkfrom, 'link>'
         sub     rbx, BYTES_PER_CELL * 2
         next
