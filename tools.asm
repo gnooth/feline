@@ -1,4 +1,4 @@
-; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -15,43 +15,6 @@
 
 code int3, 'int3'                       ; --
         int 3
-        next
-endcode
-
-code findcode, 'find-code'              ; code-addr -- name-addr
-        _ tor                           ; --                            r: code-addr
-        _ latest                        ; -- addr1
-        _ dup                           ; -- addr1 addr1
-        _ namefrom                      ; -- addr1 addr2
-        _ tocode                        ; -- addr1 addr3
-        _ rfetch                        ; -- addr1 addr3 code-addr      r: code-addr
-        _ equal                         ; -- addr1 flag
-        _if find_code1                  ; -- addr1
-        _ rfrom                         ; -- addr1 code-addr            r: --
-        _ drop                          ; -- addr1
-        next
-        _then find_code1
-        _ ntolink                       ; lfa
-        _begin find_code2
-        _fetch                          ; link
-        _ dup
-        _ zero?
-        _if find_code_3
-        _ false                         ; not found
-        _return
-        _then find_code_3
-        _ dup
-        _ namefrom
-        _ tocode
-        _ rfetch
-        _ equal
-        _if find_code_4
-        _ rfrom
-        _ drop
-        next
-        _then find_code_4
-        _ ntolink
-        _again find_code2
         next
 endcode
 

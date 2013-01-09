@@ -1,4 +1,4 @@
-\ Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -18,6 +18,33 @@
 only forth also disassembler definitions
 
 decimal
+
+: find-code-in-wordlist  ( code-addr wid -- xt | 0 )
+   swap >r                      \ -- wid        r: -- code-addr
+   @ dup if
+      begin                     \ -- nfa        r: -- code-addr
+         name> dup >code r@ = if
+            r>drop
+            exit
+         then
+         >link @ dup 0=
+      until
+   then
+   r>drop ;
+
+: find-code  ( code-addr -- xt | 0 )
+   >r                           \ --            r: -- code-addr
+   voc-link @                   \ -- wid        r: -- code-addr
+   begin
+      r@ over find-code-in-wordlist
+      ?dup if
+         r>drop
+         nip
+         exit
+      then
+      wid>link @ dup 0=
+   until
+   r>drop ;
 
 0 value start-address
 0 value end-address
@@ -192,7 +219,7 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 
 : unsupported  ( -- )  40 >pos ." unsupported opcode " opcode h. ;
 
-: .name  ( code-addr -- )  find-code ?dup if 64 >pos count type then ;
+: .name  ( code-addr -- )  find-code ?dup if 64 >pos >name count type then ;
 
 : .ip  ( -- )  ?cr ip h. ;
 
