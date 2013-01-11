@@ -23,6 +23,7 @@ ASM_SOURCES = forth.asm equates.asm macros.asm \
 	branch.asm \
 	bye.asm \
 	cold.asm \
+	compiler.asm \
 	constants.asm \
 	dictionary.asm \
 	dot.asm \
