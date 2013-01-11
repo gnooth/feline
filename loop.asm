@@ -30,6 +30,7 @@ code parendo, '(do)'                    ; limit index --
 endcode
 
 code do, 'do', IMMEDIATE                ; -- addr
+        _ flush_compilation_queue
         _lit parendo
         _ commacall
         _ here_c
@@ -61,6 +62,7 @@ code paren?do, '(?do)'                  ; limit index --
 endcode
 
 code ?do, '?do', IMMEDIATE
+        _ flush_compilation_queue
         _lit paren?do
         _ commacall
         _ here_c
@@ -92,6 +94,7 @@ doloop_patch    equ     $ - 4
 doloop_end:
 
 code loop, 'loop', IMMEDIATE            ; c: do-sys --
+        _ flush_compilation_queue
         _ here_c
         _ tor                           ; -- do-sys             r: here-c
         _lit doloop
@@ -139,6 +142,7 @@ code parenplusloop, '(+loop)'           ; n --
 endcode
 
 code plusloop, '+loop', IMMEDIATE       ; addr --
+        _ flush_compilation_queue
         _lit parenplusloop
         _ commacall
         _ dup
@@ -156,6 +160,7 @@ code parenleave, '(leave)'
 endcode
 
 code leave, 'leave', IMMEDIATE
+        _ flush_compilation_queue
         _lit parenleave
         _ commacall
         next

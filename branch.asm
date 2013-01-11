@@ -33,6 +33,7 @@ branch_end:
 
 code if, 'if', IMMEDIATE                ; c: -- orig
 ; CORE
+        _ flush_compilation_queue
         _lit ?branch
         _lit ?branch_end - ?branch
         _ paren_copy_code
@@ -42,6 +43,7 @@ endcode
 
 code else, 'else', IMMEDIATE            ; c: orig1 -- orig2
 ; CORE
+        _ flush_compilation_queue
         _lit branch
         _lit branch_end - branch
         _ paren_copy_code
@@ -58,6 +60,7 @@ endcode
 
 code then, 'then', IMMEDIATE            ; c: orig --
 ; CORE
+        _ flush_compilation_queue
         _ here_c                        ; -- addr here
         _ over                          ; -- addr here addr
         _ minus                         ; -- addr here-addr
@@ -81,12 +84,14 @@ code align_code, 'align-code'
 endcode
 
 code begin, 'begin', IMMEDIATE          ; c: -- dest
+        _ flush_compilation_queue
         _ align_code
         _ here_c
         next
 endcode
 
 code while, 'while', IMMEDIATE          ; c: orig -- orig dest
+        _ flush_compilation_queue
         _lit ?branch
         _lit ?branch_end - ?branch
         _ paren_copy_code
@@ -96,6 +101,7 @@ code while, 'while', IMMEDIATE          ; c: orig -- orig dest
 endcode
 
 code repeat, 'repeat', IMMEDIATE        ; orig dest --
+        _ flush_compilation_queue
         _ again
         _ then
         next

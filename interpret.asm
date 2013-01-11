@@ -46,6 +46,8 @@ code do_defined, 'do-defined'           ; xt flag --
         _if do_defined1
         _ zgt
         _if do_defined2
+        ; immediate word
+        _ flush_compilation_queue
         _ execute
         _else do_defined2
         _ compilecomma
@@ -77,6 +79,7 @@ code interpret, 'interpret'             ; --
         _ number
         _ statefetch
         _if interp3
+        _ flush_compilation_queue
         _ double?
         _if interp4
         _ twoliteral
