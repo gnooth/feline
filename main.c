@@ -229,9 +229,10 @@ Cell os_read_char(Cell fd)
 Cell os_write_file(Cell fd, void *buf, size_t count)
 {
 #ifdef WIN64_NATIVE
-  fflush(stdout);
   DWORD bytes_written;
-  BOOL ret = WriteFile((HANDLE)fd, buf, count, &bytes_written, NULL);
+  BOOL ret;
+  fflush(stdout);
+  ret = WriteFile((HANDLE)fd, buf, count, &bytes_written, NULL);
   fflush(stdout);
   if (ret)
     return 0;
@@ -266,10 +267,11 @@ Cell os_close_file(Cell fd)
 Cell os_file_size(Cell fd)
 {
 #ifdef WIN64_NATIVE
-  DWORD current = SetFilePointer((HANDLE)fd, 0, NULL, FILE_CURRENT);
+  DWORD current, end;
+  current = SetFilePointer((HANDLE)fd, 0, NULL, FILE_CURRENT);
   if (current == INVALID_SET_FILE_POINTER)
     return -1;
-  DWORD end = SetFilePointer((HANDLE)fd, 0, NULL, FILE_END);
+  end = SetFilePointer((HANDLE)fd, 0, NULL, FILE_END);
   if (end == INVALID_SET_FILE_POINTER)
     return -1;
   SetFilePointer((HANDLE)fd, current, NULL, FILE_BEGIN);
