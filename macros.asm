@@ -205,8 +205,9 @@ section .text
 %endmacro
 
 %macro _while 1
-        popd    rax                     ; flag in RAX
-        or      rax, rax
+        test    rbx, rbx
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
         je      %1_end
 %endmacro
 
@@ -217,8 +218,9 @@ section .text
 %endmacro
 
 %macro  _until 1
-        popd    rax
-        or      rax, rax
+        test    rbx, rbx
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
         jz      %1_begin
 %endmacro
 
