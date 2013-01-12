@@ -19,36 +19,29 @@ code sp@, 'sp@'
         next
 endcode
 
-code drop, 'drop', 0, drop_ret - drop   ; inlineable
+inline drop, 'drop'
         poprbx
-drop_ret:
-        next
-endcode
+endinline
 
-code twodrop, '2drop', 0, twodrop_ret - twodrop ; inlineable
+inline twodrop, '2drop'
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
-twodrop_ret:
-        next
-endcode
+endinline
 
-code threedrop, '3drop'
+inline threedrop, '3drop'
         mov     rbx, [rbp + BYTES_PER_CELL * 2]
         lea     rbp, [rbp + BYTES_PER_CELL * 3]
-        next
-endcode
+endinline
 
-code fourdrop, '4drop'
+inline fourdrop, '4drop'
         mov     rbx, [rbp + BYTES_PER_CELL * 3]
         lea     rbp, [rbp + BYTES_PER_CELL * 4]
         next
-endcode
+endinline
 
-code dup, 'dup', 0, dup_ret - dup
+inline dup, 'dup'
         pushrbx
-dup_ret:
-        next
-endcode
+endinline
 
 code ?dup, '?dup'
         test    rbx, rbx
@@ -112,11 +105,10 @@ code twoover, '2over'                   ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2
         next
 endcode
 
-code nip, 'nip'                         ; x1 x2 -- x2
+inline nip, 'nip'                       ; x1 x2 -- x2
 ; CORE EXT
         lea     rbp, [rbp + BYTES_PER_CELL]
-        next
-endcode
+endinline
 
 code tuck, 'tuck'                       ; x1 x2 -- x2 x1 x2
         popd    rax                     ; x2
@@ -205,12 +197,11 @@ code dotrs, '.rs'
         next
 endcode
 
-code swap, 'swap'
+inline swap, 'swap'
         mov     rax, rbx
         mov     rbx, [rbp]
         mov     [rbp], rax
-        next
-endcode
+endinline
 
 code twoswap, '2swap'                   ; x1 x2 x3 x4 -- x3 x4 x1 x2
         mov     rax, [rbp]                              ; x3
