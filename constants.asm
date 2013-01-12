@@ -1,4 +1,4 @@
-; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -13,29 +13,25 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-code zero, '0'
+inline zero, '0'
         pushrbx
         xor     ebx, ebx
-        next
-endcode
+endinline
 
-code one, '1'
+inline one, '1'
         pushrbx
         mov     ebx, 1
-        next
-endcode
+endinline
 
-code two, '2'
+inline two, '2'
         pushrbx
         mov     ebx, 2
-        next
-endcode
+endinline
 
-code three, '3'
+inline three, '3'
         pushrbx
         mov     ebx, 3
-        next
-endcode
+endinline
 
 code four, '4'
         pushrbx
