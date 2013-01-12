@@ -1,4 +1,4 @@
-; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -13,61 +13,50 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-code plus, '+', 0, plus_ret - plus
+inline plus, '+'
         add     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
-plus_ret:
-        next
-endcode
+endinline
 
-code oneplus, '1+', 0, oneplus_ret - oneplus
+inline oneplus, '1+'
         inc     rbx
-oneplus_ret:
-        next
-endcode
+endinline
 
-code charplus, 'char+', 0, charplus_ret - charplus      ; c-addr1 -- c-addr2
+inline charplus, 'char+'                ; c-addr1 -- c-addr2
 ; CORE 6.1.0897
         inc     rbx
-charplus_ret:
-        next
-endcode
+endinline
 
-code chars, 'chars'                     ; n1 -- n2
+code chars, 'chars', IMMEDIATE          ; n1 -- n2
 ; CORE 6.1.0898
         next
 endcode
 
-code cellplus, 'cell+'                  ; a-addr1 -- a-addr2
+inline cellplus, 'cell+'                ; a-addr1 -- a-addr2
 ; CORE 6.1.0880
         add      rbx, BYTES_PER_CELL
-        next
-endcode
+endinline
 
-code cellminus, 'cell-'                 ; a-addr1 -- a-addr2
+inline cellminus, 'cell-'               ; a-addr1 -- a-addr2
 ; not in standard
         sub      rbx, BYTES_PER_CELL
-        next
-endcode
+endinline
 
-code cells, 'cells'                     ; n1 -- n2
+inline cells, 'cells'                   ; n1 -- n2
 ; CORE 6.1.0890
 ; "n2 is the size in address units of n1 cells"
         shl     rbx, 3
-        next
-endcode
+endinline
 
-code minus, '-'
+inline minus, '-'
         neg     rbx
         add     rbx, [rbp]
-        add     rbp, BYTES_PER_CELL
-        next
-endcode
+        lea     rbp, [rbp + BYTES_PER_CELL]
+endinline
 
-code oneminus, '1-'
+inline oneminus, '1-'
         dec     rbx
-        next
-endcode
+endinline
 
 code star, '*'
         popd    rax
@@ -86,10 +75,9 @@ code mstar, 'm*'
         next
 endcode
 
-code twostar, '2*'
+inline twostar, '2*'
         shl     rbx, 1
-        next
-endcode
+endinline
 
 code slash, '/'                         ; n1 n2 -- n3
 ; CORE
