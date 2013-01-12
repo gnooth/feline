@@ -319,3 +319,9 @@ section .text
 %macro _cellminus 0                     ; inline version of CELL-
         sub     rbx, BYTES_PER_CELL
 %endmacro
+
+%macro _i 0                             ; inline version of I
+        pushrbx
+        mov     rbx, [rsp]
+        add     rbx, [rsp + BYTES_PER_CELL];
+%endmacro

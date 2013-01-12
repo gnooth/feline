@@ -241,11 +241,11 @@ code sequal, 's='                       ; addr1 addr2 len -- flag
         _ zero
         _do sequal2
         _ twodup
-        _ i
+        _i
         _ plus
         _ cfetch
         _ swap
-        _ i
+        _i
         _ plus
         _ cfetch
         _ notequal
@@ -278,22 +278,22 @@ code isequal, 'is='                     ; addr1 addr2 len -- flag
         _ zero
         _do isequal2
         _ twodup
-        _ i
+        _i
         _ plus
         _ cfetch
         _ swap
-        _ i
+        _i
         _ plus
         _ cfetch
         _ notequal
         _if isequal3
         _ twodup
-        _ i
+        _i
         _ plus
         _ cfetch
         _ upc
         _ swap
-        _ i
+        _i
         _ plus
         _ cfetch
         _ upc

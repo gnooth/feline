@@ -1,4 +1,4 @@
-; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -344,7 +344,7 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _if read_line3                  ; -- u1 fileid c-addr [ char | -1 ]
         ; end of file
         _ fourdrop                      ; --
-        _ i
+        _i
         _dup
         _ zne                           ; false flag if i = 0
         _ zero
@@ -359,15 +359,15 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _ drop                          ; -- u1 fileid c-addr
         _ rrot                          ; -- c-addr u1 fileid
         _ twodrop                       ; -- c-addr
-        _ i                             ; -- c-addr i
+        _i                              ; -- c-addr i
         _ last_char                     ; -- char
         _lit 13
         _ equal
         _if read_line5                  ; CR precedes LF
-        _ i
+        _i
         _oneminus
         _else read_line5                ; no CR
-        _ i
+        _i
         _then read_line5
         _ true
         _ zero
@@ -375,7 +375,7 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _return
         _then read_line4
         _ over                          ; -- u1 fileid c-addr char c-addr
-        _ i
+        _i
         _ plus
         _ cstore                        ; -- u1 fileid c-addr
         _loop read_line2

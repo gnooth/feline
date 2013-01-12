@@ -138,7 +138,7 @@ code order, 'order'
         _ zero
         _do order1
         _ context
-        _ i
+        _i
         _cells
         _ plus
         _fetch                          ; -- wid
@@ -167,7 +167,7 @@ code get_order, 'get-order'             ; -- widn ... wid1 n
         _?do get_order1
         _ norder
         _fetch
-        _ i
+        _i
         _ minus
         _oneminus
         _cells
@@ -218,7 +218,7 @@ code set_order, 'set-order'             ; widn ... wid1 n --
         _ zero
         _?do set_order1
         _ context
-        _ i
+        _i
         _cells
         _ plus
         _ store
@@ -313,7 +313,7 @@ code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
         _ zero
         _do find1
         _ context
-        _ i
+        _i
         _cells
         _ plus
         _ fetch                         ; -- wid
