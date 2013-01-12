@@ -56,15 +56,17 @@ global %1
 %strlen len     %2
         [section .data]
         align   8
+%1_cfa:
         dq      %1                      ; cfa
         dq      0                       ; comp
         dq      link
         db      %3                      ; flags
         db      %4                      ; inline size
-%1_nfa  equ     $
-%define link    %1_nfa
+; %1_nfa  equ     $
+%1_nfa:
         db      len                     ; length byte
         db      %2                      ; name
+%define link    %1_nfa
         __SECT__
 %endmacro
 
