@@ -146,7 +146,7 @@ code tobody, '>body'
         _ toname
         _ dup
         _cfetch
-        _ oneplus
+        _oneplus
         _ plus
         _ aligned
         next
@@ -295,26 +295,6 @@ code lcommac, 'l,c'                     ; x --
         add     rax, 4
         mov     [cp_data], rax
         poprbx
-        next
-endcode
-
-code commacall, ',call'                 ; code --
-        _lit $0e8
-        _ ccommac
-        _ here_c                        ; -- code here
-        add     rbx, 4                  ; -- code here+4
-        _ minus                         ; -- displacement
-        _ lcommac
-        next
-endcode
-
-code commajmp, ',jmp'                   ; code --
-        _lit $0e9
-        _ ccommac
-        _ here_c                        ; -- code here
-        add     rbx, 4                  ; -- code here+4
-        _ minus                         ; -- displacement
-        _ lcommac
         next
 endcode
 
