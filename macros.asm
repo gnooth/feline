@@ -78,6 +78,21 @@ global %1
 %macro  endcode 0-1
 %endmacro
 
+%macro  inline 2
+        %push inline
+        head %1, %2, 0, %$ret - %1
+        section .text
+        align   8
+%1:
+%endmacro
+
+%macro  endinline 0
+        section .text
+%$ret:
+        ret
+        %pop inline
+%endmacro
+
 %macro  deferred 3                      ; label, name, action
         head %1, %2, 0, 0
         section .data
@@ -94,7 +109,7 @@ global %1
 %endmacro
 
 %macro  variable 3                      ; label, name, value
-head  %1, %2
+        head  %1, %2
         section .data
         global %1_data
         align   8
@@ -108,7 +123,7 @@ head  %1, %2
 %endmacro
 
 %macro  value 3                         ; label, name, value
-head  %1, %2
+        head  %1, %2
         section .data
         global %1_data
         align   8
