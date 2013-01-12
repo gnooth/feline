@@ -1,4 +1,4 @@
-; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -196,6 +196,8 @@ endcode
 %endif
 
 code i, 'i'
+; CORE
+; "Interpretation semantics for this word are undefined."
         pushrbx
         mov     rbx, [rsp + BYTES_PER_CELL];
         add     rbx, [rsp + BYTES_PER_CELL * 2];
@@ -203,9 +205,11 @@ code i, 'i'
 endcode
 
 code j, 'j'
+; CORE
+; "Interpretation semantics for this word are undefined."
         pushrbx
-        mov     rbx, [rsp + BYTES_PER_CELL * 4];
-        add     rbx, [rsp + BYTES_PER_CELL * 5];
+        mov     rbx, [rsp + BYTES_PER_CELL * 4]
+        add     rbx, [rsp + BYTES_PER_CELL * 5]
         next
 endcode
 
