@@ -13,6 +13,15 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+code ?comp, '?comp'
+        mov     rax, [state_data]
+        test    rax, rax
+        jnz     .1
+        _abortq "Compilation only"
+.1:
+        next
+endcode
+
 code noop, 'noop'
         next
 endcode
@@ -33,7 +42,7 @@ endcode
 code copy_code, 'copy-code'             ; xt --
         _ dup                           ; -- xt xt
         _ toinline                      ; -- xt addr
-        _ cfetch                        ; -- xt size
+        _cfetch                         ; -- xt size
         _ swap
         _ tocode
         _ swap                          ; -- code size
@@ -41,7 +50,7 @@ code copy_code, 'copy-code'             ; xt --
         next
 endcode
 
-variable optimizing?, 'optimizing?', -1
+value optimizing?, 'optimizing?', -1
 
 code plusopt, '+opt'
         mov     qword [optimizing?_data], -1
@@ -53,29 +62,48 @@ code minusopt, '-opt'
         next
 endcode
 
+code commacall, ',call'                 ; code --
+        _lit $0e8
+        _ ccommac
+        _ here_c                        ; -- code here
+        add     rbx, 4                  ; -- code here+4
+        _ minus                         ; -- displacement
+        _ lcommac
+        next
+endcode
+
+code commajmp, ',jmp'                   ; code --
+        _lit $0e9
+        _ ccommac
+        _ here_c                        ; -- code here
+        add     rbx, 4                  ; -- code here+4
+        _ minus                         ; -- displacement
+        _ lcommac
+        next
+endcode
+
 code parencompilecomma, '(compile,)'    ; xt --
 ; CORE EXT
 ; "Interpretation semantics for this word are undefined."
-        _ optimizing?
-        _fetch
-        _if compilecomma1               ; -- xt
         _ dup                           ; -- xt xt
         _ tocomp                        ; -- xt >comp
-        _fetch                          ; -- xt ct
+        _fetch                          ; -- xt xt-comp
         _ ?dup
-        _if compilecomma2
+        _if compilecomma1
         _ execute
         _return
-        _then compilecomma2             ; -- xt
+        _then compilecomma1
+        _ optimizing?
+        _if compilecomma2               ; -- xt
         _ dup                           ; -- xt xt
         _ toinline                      ; -- xt >inline
         _cfetch                         ; -- xt #bytes
-        _if compilecomma3
+        _if compilecomma3               ; -- xt
         _ copy_code
         _return
         _then compilecomma3
-        _then compilecomma1
-        ; not optimizing
+        _then compilecomma2
+        ; default behavior
         _ tocode
         _ commacall
         next
