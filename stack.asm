@@ -100,6 +100,10 @@ code over, 'over'
         next
 endcode
 
+inline overplus, 'over+'
+        add     rbx, [rbp]
+endinline
+
 code twoover, '2over'                   ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2
         mov     rax, [rbp + BYTES_PER_CELL * 2]         ; x1
         mov     rdx, [rbp + BYTES_PER_CELL ]            ; x2
