@@ -17,16 +17,18 @@ code parendo, '(do)'                    ; limit index --
         pop     rcx                     ; return address
         mov     rax, [rcx]              ; address for LEAVE
         push    rax                     ; r: -- leave-addr
-        popd    rax                     ; index in rax
-        popd    rdx                     ; limit in rdx
-        mov     r11, $8000000000000000  ; offset loop limit by $8000000000000000
-        add     rdx, r11
+        ; index is in rbx
+        mov     rdx, [rbp]              ; limit in rdx
+        mov     rax, $8000000000000000  ; offset loop limit by $8000000000000000
+        add     rdx, rax
         push    rdx                     ; r: -- leave-addr limit
-        sub     rax, rdx                ; subtract modified limit from index
-        push    rax                     ; r: -- leave-addr limit index
+        sub     rbx, rdx                ; subtract modified limit from index
+        push    rbx                     ; r: -- leave-addr limit index
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
         add     rcx, BYTES_PER_CELL
-        jmp     rcx
-        next                            ; for disassembler
+        push    rcx
+        next
 endcode
 
 code do, 'do', IMMEDIATE                ; -- addr
@@ -104,15 +106,15 @@ code loop, 'loop', IMMEDIATE            ; c: do-sys --
         _ rfrom
         _ plus                          ; -- do-sys addr-to-be-patched
         _ twodup
-        _ swap
-        _ cellplus
+        _ swap                          ; -- do-sys addr-to-be-patched addr-to-be-patched do-sys
+        _cellplus
         _ swap
         _ four
         _ plus
         _ minus                         ; -- do-sys addr-to-be-patched signed-displacement
         _ swap
         _ lstore                        ; -- do-sys
-        _ here_c
+        _ here_c                        ; -- do-sys leave-addr
         _ swap
         _ store
         next
@@ -166,43 +168,16 @@ code leave, 'leave', IMMEDIATE
         next
 endcode
 
-%if 0
-section .text
-_i:
-        pushrbx
-        mov     rbx, [rsp]
-        add     rbx, [rsp + BYTES_PER_CELL];
-_i_end:
-
-code compile_i, 'compile-i'             ; xt --
-        _ ?cr
-        _ dots
-        _dotq "compile-i called"
-        _ cr
-        _ here_c
-        _ hdot
-        _ cr
-        _ drop
-        _lit _i
-        _lit _i_end - _i
-        _ cr
-        _ dots
-        _ paren_copy_code
-        _ here_c
-        _ hdot
-        _ cr
-        next
-endcode
-%endif
-
-code i, 'i'
+inline i, 'i'
 ; CORE
 ; "Interpretation semantics for this word are undefined."
-        pushrbx
-        mov     rbx, [rsp + BYTES_PER_CELL];
-        add     rbx, [rsp + BYTES_PER_CELL * 2];
-        next
-endcode
+        _i
+endinline
+
+inline iplus, 'i+'                      ; ( n -- i+n )
+        add     rbx, [rsp]
+        add     rbx, [rsp + BYTES_PER_CELL]
+endinline
 
 code j, 'j'
 ; CORE
@@ -213,12 +188,9 @@ code j, 'j'
         next
 endcode
 
-code unloop, 'unloop'
-        pop     rcx                     ; return address
-        add     rsp, BYTES_PER_CELL * 3
-        jmp     rcx
-        next                            ; for disassembler
-endcode
+inline unloop, 'unloop'
+        _unloop
+endinline
 
 code bounds, 'bounds'                   ; addr len -- addr+len addr
         _ over
