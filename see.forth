@@ -228,9 +228,9 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    cell .bytes
    64 >pos
    ." #"
-   base @ >r
+   base@ >r
    ip @ decimal .
-   r> base !
+   r> base!
    ." $"
    ip @ h.
    cell +to ip ;
@@ -270,12 +270,15 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    r>
    dup .name >r
    r@ ['] (do) >code = if
+      ip to instruction-start
       .literal
    then
    r@ ['] (?do) >code = if
+      ip to instruction-start
       .literal
    then
    r@ ['] (loop) >code = if
+      ip to instruction-start
       .literal
    then
    r> drop ;
@@ -401,6 +404,7 @@ h# 0f install-handler
    c" ret" to mnemonic
    .inst
    ip end-address > if
+      ip to end-address
       done? on
    then ;
 
@@ -699,7 +703,8 @@ decimal
       done? @ 0=
    while
       decode
-   repeat ;
+   repeat
+   ?cr end-address start-address - . ." bytes" ;
 
 : disassemble  ( cfa -- )
    >code disasm ;
