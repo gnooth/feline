@@ -26,7 +26,7 @@ code hold, 'hold'
 endcode
 
 code sign, 'sign'                       ; n --
-        _ zlt
+        _zlt
         _if sign1
         _lit '-'
         _ hold

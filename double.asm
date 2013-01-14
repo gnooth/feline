@@ -53,7 +53,7 @@ code dabs, 'dabs'                       ; d -- ud
 ; DOUBLE
 ; gforth
         _ dup
-        _ zlt
+        _zlt
         _if dabs1
         _ dnegate
         _then dabs1

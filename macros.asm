@@ -331,3 +331,14 @@ section .text
 %macro _unloop 0                        ; inline version of UNLOOP
         add     rsp, BYTES_PER_CELL * 3
 %endmacro
+
+%macro _zeq 0                           ; inline version of 0=
+; Win32Forth
+        cmp     rbx, 1
+        sbb     rbx, rbx
+%endmacro
+
+%macro _zlt 0                           ; inline version of 0<
+; Win32Forth
+        sar     rbx, 63
+%endmacro

@@ -84,7 +84,7 @@ code vocs, 'vocs'
         _ widtolink
         _ fetch
         _ dup
-        _ zero?
+        _zeq
         _until vocs1
         _ drop
         next
@@ -288,7 +288,7 @@ code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
         _ ntolink                       ; -- c-addr u lfa
         _ fetch                         ; -- c-addr u nfa
         _ dup                           ; -- c-addr u nfa nfa
-        _ zero?
+        _zeq
         _until sw2
         _then sw1
         _ threedrop
@@ -318,7 +318,7 @@ code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
         _ plus
         _ fetch                         ; -- wid
         _ dup
-        _ zero?
+        _zeq
         _if find2                       ; not found
         pushrbx
         mov     rbx, [find_arg]
@@ -345,7 +345,7 @@ code tick, "'"
         _ blchar
         _ word_
         _ find
-        _ zero?
+        _zeq
         _if tick1
         _ count
         _ type

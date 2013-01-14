@@ -66,7 +66,7 @@ code interpret, 'interpret'             ; --
         _ word_                         ; -- c-addr
         _ dup                           ; -- c-addr c-addr
         _cfetch                         ; -- c-addr len
-        _ zero?                         ; -- c-addr flag
+        _zeq                            ; -- c-addr flag
         _if interp0
         _ drop                          ; --
         _return
@@ -89,7 +89,7 @@ code interpret, 'interpret'             ; --
         _then interp4
         _else interp3
         _ double?
-        _ zero?
+        _zeq
         _if interp5
         _ drop
         _then interp5

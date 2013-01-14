@@ -43,7 +43,7 @@ code cold, 'cold'                       ; --
         _ store
         _ forth_wordlist
         _fetch
-        _ zero?
+        _zeq
         _if cold1
         _ latest
         _ forth_wordlist

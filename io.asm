@@ -340,7 +340,7 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _ over                          ; -- u1 fileid c-addr fileid
         _ read_char                     ; -- u1 fileid c-addr [ char | -1 ]
         _dup
-        _ zlt
+        _zlt
         _if read_line3                  ; -- u1 fileid c-addr [ char | -1 ]
         ; end of file
         _ fourdrop                      ; --

@@ -214,7 +214,7 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ dup
         _ oneplus
         _ allocate
-        _ zero?
+        _zeq
         _if included2                   ; -- c-addr1 u c-addr2
         _ threedup
         _ zplace                        ; -- c-addr1 u c-addr2
@@ -224,7 +224,7 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ twodup                        ; -- c-addr2 u c-addr2 u
         _ readonly                      ; -- c-addr2 u c-addr2 u r/o
         _ open_file                     ; -- c-addr2 u fileid ior
-        _ zero?
+        _zeq
         _if included3                   ; -- c-addr2 u fileid
         _ tor                           ; -- c-addr2 u          r: -- fileid
         _ twodrop                       ; --                    r: -- fileid

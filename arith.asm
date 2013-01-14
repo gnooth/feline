@@ -141,7 +141,7 @@ code fmslmod, 'fm/mod'                  ; d1 n1 -- n2 n3
 ; gforth
         _duptor
         _ dup
-        _ zlt
+        _zlt
         _if fmslmod1
         _ negate
         _ tor
@@ -149,7 +149,7 @@ code fmslmod, 'fm/mod'                  ; d1 n1 -- n2 n3
         _ rfrom
         _then fmslmod1
         _ over
-        _ zlt
+        _zlt
         _if fmslmod2
         _ tuck
         _ plus
@@ -157,7 +157,7 @@ code fmslmod, 'fm/mod'                  ; d1 n1 -- n2 n3
         _then fmslmod2
         _ umslmod
         _ rfrom
-        _ zlt
+        _zlt
         _if fmslmod3
         _ swap
         _ negate
@@ -189,12 +189,12 @@ code smslrem, 'sm/rem'                  ; d1 n1 -- n2 n3
         _ rfrom
         _ rfetch
         _ xor
-        _ zlt
+        _zlt
         _if smslrem1
         _ negate
         _then smslrem1
         _ rfrom
-        _ zlt
+        _zlt
         _if smslrem2
         _ swap
         _ negate
@@ -224,7 +224,7 @@ abs1:
         next
 endcode
 
-code equal, "="                         ; x1 x2 -- flag
+code equal, '='                         ; x1 x2 -- flag
         popd    rax
         cmp     rbx, rax
         jne     .1
@@ -235,7 +235,7 @@ code equal, "="                         ; x1 x2 -- flag
         next
 endcode
 
-code notequal, "<>"                     ; x1 x2 -- flag
+code notequal, '<>'                     ; x1 x2 -- flag
         popd    rax
         cmp     rbx, rax
         je      .1
@@ -308,14 +308,10 @@ code within, 'within'                   ; n min max -- flag
         next
 endcode
 
-code zero?, '0='
-        or      rbx, rbx
-        mov     ebx, 0
-        jnz     .1
-        dec     rbx
-.1:
-        next
-endcode
+inline zeq, '0='
+; CORE
+        _zeq
+endinline
 
 code zne, '0<>'
         or      rbx, rbx
@@ -344,18 +340,14 @@ code zge, '0>='
         next
 endcode
 
-code zlt, '0<'
-        or      rbx, rbx
-        mov     ebx, 0
-        jnl     .1
-        dec     rbx
-.1:
-        next
-endcode
+inline zlt, '0<'
+; CORE
+        _zlt
+endinline
 
 code stod, 's>d'                        ; n -- d
         _ dup
-        _ zlt
+        _zlt
         next
 endcode
 

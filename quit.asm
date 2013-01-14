@@ -15,7 +15,7 @@
 
 code prompt, "prompt"
         _ statefetch
-        _ zero?
+        _zeq
         _if prompt1
         _ ?cr
         _lit '<'

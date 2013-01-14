@@ -68,7 +68,7 @@ code digit, 'digit'                     ; char -- n true  |  char -- false
         _lit 'A'
         _ minus
         _ dup
-        _ zlt
+        _zlt
         _if digit3
         _ drop
         _ false
@@ -96,7 +96,7 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
         _ over
         _cfetch
         _ digit
-        _ zero?
+        _zeq
         _if tonumber2
         _return
         _then tonumber2                 ; -- ud1 addr u1 digit
@@ -156,7 +156,7 @@ code number?, 'number?'                 ; c-addr u -- d flag
         _ twoswap
         _ tonumber                      ; -- ud c-addr' u'
         _ dup                           ; -- ud c-addr' u' u'
-        _ zero?
+        _zeq
         _if ixnumber3                   ; -- ud c-addr' u'
         ; no chars left over
         _ twodrop
@@ -219,7 +219,7 @@ code number, 'number'                   ; string -- d
         _ number?                       ; -- d flag
         _ rfrom
         _ basestore
-        _ zero?
+        _zeq
         _if xnumber1
         _ rfrom
         _ missing                       ; doesn't return

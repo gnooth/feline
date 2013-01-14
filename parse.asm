@@ -187,7 +187,7 @@ code paren, '(', IMMEDIATE
         _return
         _then paren2
         _ refill
-        _ zero?
+        _zeq
         _until paren1
         next
 endcode
