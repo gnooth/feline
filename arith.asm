@@ -19,12 +19,12 @@ inline plus, '+'
 endinline
 
 inline oneplus, '1+'
-        inc     rbx
+        _oneplus
 endinline
 
 inline charplus, 'char+'                ; c-addr1 -- c-addr2
 ; CORE 6.1.0897
-        inc     rbx
+        _oneplus
 endinline
 
 code chars, 'chars', IMMEDIATE          ; n1 -- n2
@@ -55,7 +55,7 @@ inline minus, '-'
 endinline
 
 inline oneminus, '1-'
-        dec     rbx
+        _oneminus
 endinline
 
 code star, '*'
@@ -267,11 +267,12 @@ code ge, '>='                           ; n1 n2 -- flag
 endcode
 
 code lt, '<'                            ; n1 n2 -- flag
+; CORE
+; adapted from Win32Forth
+        xor     eax, eax
         cmp     [rbp], rbx
-        mov     ebx, 0
-        jge     .1
-        dec     rbx
-.1:
+        mov     rbx, -1
+        cmovnl  rbx, rax
         add     rbp, BYTES_PER_CELL
         next
 endcode
