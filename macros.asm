@@ -302,12 +302,12 @@ section .text
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
-%macro _oneplus 0                      ; inline version of 1+
-        inc     rbx
+%macro _oneplus 0                       ; inline version of 1+
+        add     rbx, 1                  ; faster than inc rbx
 %endmacro
 
 %macro _oneminus 0                      ; inline version of 1-
-        dec     rbx
+        sub     rbx, 1
 %endmacro
 
 %macro _cells 0                         ; inline version of CELLS
@@ -325,5 +325,9 @@ section .text
 %macro _i 0                             ; inline version of I
         pushrbx
         mov     rbx, [rsp]
-        add     rbx, [rsp + BYTES_PER_CELL];
+        add     rbx, [rsp + BYTES_PER_CELL]
+%endmacro
+
+%macro _unloop 0                        ; inline version of UNLOOP
+        add     rsp, BYTES_PER_CELL * 3
 %endmacro
