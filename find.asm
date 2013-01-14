@@ -323,7 +323,7 @@ code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
         pushrbx
         mov     rbx, [find_arg]
         _ swap
-        _ unloop
+        _unloop
         _return
         _then find2                     ; -- wid
         pushrbx
@@ -334,7 +334,7 @@ code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
         _ search_wordlist
         _ ?dup
         _if find3                       ; -- xt n
-        _ unloop
+        _unloop
         _return
         _then find3
         _loop find1
