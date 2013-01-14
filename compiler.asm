@@ -50,18 +50,6 @@ code copy_code, 'copy-code'             ; xt --
         next
 endcode
 
-value optimizing?, 'optimizing?', -1
-
-code plusopt, '+opt'
-        mov     qword [optimizing?_data], -1
-        next
-endcode
-
-code minusopt, '-opt'
-        mov     qword [optimizing?_data], 0
-        next
-endcode
-
 code commacall, ',call'                 ; code --
         _lit $0e8
         _ ccommac
@@ -93,8 +81,6 @@ code parencompilecomma, '(compile,)'    ; xt --
         _ execute
         _return
         _then compilecomma1
-        _ optimizing?
-        _if compilecomma2               ; -- xt
         _ dup                           ; -- xt xt
         _ toinline                      ; -- xt >inline
         _cfetch                         ; -- xt #bytes
@@ -102,7 +88,6 @@ code parencompilecomma, '(compile,)'    ; xt --
         _ copy_code
         _return
         _then compilecomma3
-        _then compilecomma2
         ; default behavior
         _ tocode
         _ commacall
