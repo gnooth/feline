@@ -1,4 +1,4 @@
-; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -21,13 +21,12 @@ code store, '!'                         ; n addr --
         next
 endcode
 
-code cstore, 'c!'                       ; c addr --
+inline cstore, 'c!'                     ; c addr --
         mov     al, [rbp]               ; c
         mov     [rbx], al
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
-        next
-endcode
+endinline
 
 code lstore, 'l!'                       ; l addr --
         mov     eax, [rbp]              ; l
