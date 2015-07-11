@@ -408,6 +408,18 @@ h# 0f install-handler
       done? on
    then ;
 
+\ $19 handler
+:noname  ( -- )
+   c" sbb" to mnemonic
+   !modrm-byte
+   ok_register modrm-rm 0 dest!
+   ok_register modrm-reg 0 source!
+   .inst
+   prefix if 3 else 2 then to size
+;
+
+$19 install-handler
+
 \ $74 handler
 :noname  ( -- )
    s" jz" old-mnemonic!
@@ -438,6 +450,16 @@ h# 0eb install-handler
    modrm-mod 3 = if
       modrm-reg 0= if
          s" add" old-mnemonic!
+         prefix if 4 else 3 then to size
+         .instruction
+         modrm-rm .reg64
+         .sep
+         ip c@s  1 +to ip
+         .
+         exit
+      then
+      modrm-reg 7 = if
+         s" cmp" old-mnemonic!
          prefix if 4 else 3 then to size
          .instruction
          modrm-rm .reg64
