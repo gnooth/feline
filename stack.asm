@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -14,10 +14,18 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 code sp@, 'sp@'
-        mov     rax, rsp
-        pushd   rax
+        lea     rbp, [rbp - BYTES_PER_CELL]
+        mov     [rbp], rbx
+        mov     rbx, rbp
         next
 endcode
+
+code spstore, 'sp!'
+        mov     rbp, rbx
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode        
 
 inline drop, 'drop'
         poprbx
