@@ -1,4 +1,4 @@
-// Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -37,6 +37,10 @@
 #define LONGJMP(env, val)       siglongjmp(env, val)
 #endif
 
+#ifdef WIN64
+HANDLE console_input_handle = INVALID_HANDLE_VALUE;
+#endif
+
 typedef int64_t Cell;
 
 extern void cold();
@@ -61,6 +65,8 @@ static void sigsegv_handler(int sig, siginfo_t *si, void * context)
 
 int main(int argc, char **argv, char **env)
 {
+  extern Cell echo_data;
+  extern Cell line_input_data;
   extern Cell dp_data;
   extern Cell cp_data;
   extern Cell limit_data;
@@ -73,6 +79,27 @@ int main(int argc, char **argv, char **env)
   Cell code_space_size = 1024 * 1024;
   void * data_space;
   void * code_space;
+
+#ifdef WIN64
+  DWORD mode;
+  console_input_handle = GetStdHandle(STD_INPUT_HANDLE);
+/*  printf("console_input_handle = %d\n", console_input_handle);*/
+  if (GetConsoleMode(console_input_handle, &mode))
+    {
+      mode = (mode & ~ENABLE_ECHO_INPUT);
+      mode = (mode & ~ENABLE_LINE_INPUT);
+      SetConsoleMode(console_input_handle, mode);
+      echo_data = -1;
+      line_input_data = 0;
+    }
+  else
+    {
+      console_input_handle = INVALID_HANDLE_VALUE;
+      echo_data = 0;
+      line_input_data = -1;
+    }
+#endif
+
 #ifdef WIN64
   data_space =
     VirtualAlloc(0, data_space_size, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
@@ -116,7 +143,18 @@ void os_emit(int c)
 
 int os_key()
 {
+#ifdef WIN64_NATIVE
+  if (console_input_handle != INVALID_HANDLE_VALUE) {
+    int c;
+    DWORD count;
+    ReadConsole(console_input_handle, &c, 1, &count, NULL);
+    return c;
+  }
+  else
+    return fgetc(stdin);
+#else
   return fgetc(stdin);
+#endif
 }
 
 void * os_allocate(size_t size)

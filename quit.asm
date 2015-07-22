@@ -1,4 +1,4 @@
-; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -13,25 +13,21 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-code prompt, "prompt"
+variable echo, 'echo', 0
+
+variable line_input, 'line-input', 0
+
+code ok, 'ok'
         _ statefetch
         _zeq
-        _if prompt1
-        _ ?cr
-        _lit '<'
-        _ emit
-        _ depth
-        _ paren_dot
-        _ type
-        _lit '>'
-        _ emit
-        _ space
-        _then prompt1
+        _if ok1
+        _dotq " ok"
+        _ cr
+        _then ok1
         next
 endcode
 
-code accept, 'accept'                   ; c-addr +n1 -- +n2
-; CORE
+code accept_line, 'accept-line'         ; c-addr +n1 -- +n2
         xor     ecx, ecx                ; counter in RCX
         _ drop                          ; FIXME ignore +n1 for now
         mov     rdx, rbx                ; c-addr in RDX
@@ -40,6 +36,50 @@ code accept, 'accept'                   ; c-addr +n1 -- +n2
         push    rcx
         push    rdx
         _ key                           ; char in bl
+        pop     rdx
+        pop     rcx
+        cmp     bl, 13
+        jz      accept_line_out
+        cmp     bl, 10
+        jz      accept_line_out
+        ; store char
+        mov     rax, rdx
+        add     rax, rcx
+        mov     [rax], bl
+        inc     rcx
+        _ drop
+        _again accept1
+accept_line_out:
+        _ drop
+        pushrbx
+        mov     rbx, rcx
+        next
+endcode
+
+code accept, 'accept'                   ; c-addr +n1 -- +n2
+; CORE
+        _ line_input
+        _ fetch
+        _if accept00
+        _ accept_line
+        next
+        _then accept00
+
+        xor     ecx, ecx                ; counter in RCX
+        _ drop                          ; FIXME ignore +n1 for now
+        mov     rdx, rbx                ; c-addr in RDX
+        poprbx
+        _begin accept0
+        push    rcx
+        push    rdx
+        _ key                           ; char in bl
+        _ dup
+        _ blchar
+        _ ge
+        _if accept0
+        _ dup
+        _ emit
+        _then accept0
         pop     rdx
         pop     rcx
         cmp     bl, 13
@@ -52,13 +92,12 @@ code accept, 'accept'                   ; c-addr +n1 -- +n2
         mov     [rax], bl
         inc     rcx
         _ drop
-        _again accept1
+        _again accept0
 out:
         _ drop
-        xor     eax, eax
-        mov     [nout_data], rax
         pushrbx
         mov     rbx, rcx
+        _ space
         next
 endcode
 
@@ -74,7 +113,7 @@ endcode
 
 variable toin, '>in', 0
 
-code query, "query"                     ; --
+code query, 'query'                     ; --
 ; CORE EXT
         _ tib
         _lit 80
@@ -93,7 +132,6 @@ code quit, 'quit'                       ; --            r:  i*x --
         _ r0
         _fetch
         _ rpstore
-        _ prompt
         _ query
         _ tib
         _ ntib
@@ -101,6 +139,7 @@ code quit, 'quit'                       ; --            r:  i*x --
         _ zero
         _ set_input
         _ interpret
+        _ ok
         _again quit1
         next                            ; for decompiler
 endcode
