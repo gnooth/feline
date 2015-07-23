@@ -27,6 +27,8 @@
 #include <sys/time.h>
 #endif
 
+#include "forth.h"
+
 #ifdef WIN64
 #define JMP_BUF                 jmp_buf
 #define SETJMP(env)             setjmp(env)
@@ -36,12 +38,6 @@
 #define SETJMP(env)             sigsetjmp(env, 1)
 #define LONGJMP(env, val)       siglongjmp(env, val)
 #endif
-
-#ifdef WIN64
-HANDLE console_input_handle = INVALID_HANDLE_VALUE;
-#endif
-
-typedef int64_t Cell;
 
 extern void cold();
 
@@ -65,7 +61,6 @@ static void sigsegv_handler(int sig, siginfo_t *si, void * context)
 
 int main(int argc, char **argv, char **env)
 {
-  extern Cell echo_data;
   extern Cell line_input_data;
   extern Cell dp_data;
   extern Cell cp_data;
@@ -80,25 +75,7 @@ int main(int argc, char **argv, char **env)
   void * data_space;
   void * code_space;
 
-#ifdef WIN64
-  DWORD mode;
-  console_input_handle = GetStdHandle(STD_INPUT_HANDLE);
-/*  printf("console_input_handle = %d\n", console_input_handle);*/
-  if (GetConsoleMode(console_input_handle, &mode))
-    {
-      mode = (mode & ~ENABLE_ECHO_INPUT);
-      mode = (mode & ~ENABLE_LINE_INPUT);
-      SetConsoleMode(console_input_handle, mode);
-      echo_data = -1;
-      line_input_data = 0;
-    }
-  else
-    {
-      console_input_handle = INVALID_HANDLE_VALUE;
-      echo_data = 0;
-      line_input_data = -1;
-    }
-#endif
+  prep_terminal();
 
 #ifdef WIN64
   data_space =
@@ -139,22 +116,6 @@ void os_emit(int c)
 {
   fputc(c, stdout);
   fflush(stdout);
-}
-
-int os_key()
-{
-#ifdef WIN64_NATIVE
-  if (console_input_handle != INVALID_HANDLE_VALUE) {
-    int c;
-    DWORD count;
-    ReadConsole(console_input_handle, &c, 1, &count, NULL);
-    return c;
-  }
-  else
-    return fgetc(stdin);
-#else
-  return fgetc(stdin);
-#endif
 }
 
 void * os_allocate(size_t size)
@@ -417,5 +378,6 @@ Cell os_ticks()
 
 void os_bye()
 {
+  deprep_terminal();
   exit(0);
 }

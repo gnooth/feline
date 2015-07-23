@@ -56,8 +56,7 @@ accept_line_out:
         next
 endcode
 
-code accept, 'accept'                   ; c-addr +n1 -- +n2
-; CORE
+code paren_accept, '(accept)'           ; c-addr +n1 -- +n2
         _ line_input
         _ fetch
         _if accept00
@@ -100,6 +99,9 @@ out:
         _ space
         next
 endcode
+
+; CORE
+deferred accept, 'accept', paren_accept ; c-addr +n1 -- +n2
 
 variable ntib, '#tib', 0
 

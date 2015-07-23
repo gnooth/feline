@@ -12,11 +12,14 @@ ifneq (,$(findstring MINGW,$(uname_s)))
 	FLAGS += -DWIN64 -DWIN64_NATIVE
 endif
 
-forth:  main.o forth.o
-	gcc main.o forth.o -o forth
+forth:  main.o terminal.o forth.o
+	gcc main.o terminal.o forth.o -o forth
 
-main.o:	main.c Makefile
+main.o:	forth.h main.c Makefile
 	gcc -D_GNU_SOURCE $(FLAGS) -c -o main.o main.c
+
+terminal.o: forth.h terminal.c Makefile
+	gcc -D_GNU_SOURCE $(FLAGS) -c -o terminal.o terminal.c
 
 ASM_SOURCES = forth.asm equates.asm macros.asm \
 	arith.asm \
