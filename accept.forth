@@ -32,6 +32,8 @@ $1b constant #esc
 
 : do-escape  ( -- )
    number-accepted 0 ?do #bs emit loop
+   number-accepted spaces
+   number-accepted 0 ?do #bs emit loop
    0 to number-accepted ;
 
 : do-enter  ( -- )
