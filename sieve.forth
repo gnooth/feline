@@ -22,6 +22,12 @@ variable flags  size allot
    drop ;
 
 [undefined] ticks [if]
+s" iforth" environment? [if]
+: ticks ?ms ;
+[then]
+[then]
+
+[undefined] ticks [if]
 [defined] utime [if]
 : ticks utime 1000 um/mod nip ; \ gforth
 [else]
