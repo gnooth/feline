@@ -65,6 +65,7 @@ void prep_terminal ()
   otio = tio;
   tio.c_lflag &= ~(ICANON | ECHO);
   tcsetattr (tty, TCSADRAIN, &tio);
+  line_input_data = 0;
   terminal_prepped = 1;
 #endif
 }
