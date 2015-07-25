@@ -79,4 +79,4 @@ $1b constant #esc
    repeat
    number-accepted ;
 
-' new-accept is accept
+line-input? 0= [if] ' new-accept is accept [then]

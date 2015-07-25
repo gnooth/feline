@@ -13,17 +13,15 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-variable echo, 'echo', 0
-
-variable line_input, 'line-input', 0
+value line_input, 'line-input?', -1
 
 code ok, 'ok'
         _ statefetch
         _zeq
         _if ok1
         _dotq " ok"
-        _ cr
         _then ok1
+        _ cr
         next
 endcode
 
@@ -39,9 +37,9 @@ code accept_line, 'accept-line'         ; c-addr +n1 -- +n2
         pop     rdx
         pop     rcx
         cmp     bl, 13
-        jz      accept_line_out
+        jz      accept_line_exit
         cmp     bl, 10
-        jz      accept_line_out
+        jz      accept_line_exit
         ; store char
         mov     rax, rdx
         add     rax, rcx
@@ -49,7 +47,7 @@ code accept_line, 'accept-line'         ; c-addr +n1 -- +n2
         inc     rcx
         _ drop
         _again accept1
-accept_line_out:
+accept_line_exit:
         _ drop
         pushrbx
         mov     rbx, rcx
@@ -58,27 +56,25 @@ endcode
 
 code paren_accept, '(accept)'           ; c-addr +n1 -- +n2
         _ line_input
-        _ fetch
-        _if accept00
+        _if accept1
         _ accept_line
-        next
-        _then accept00
-
+        _return
+        _then accept1
         xor     ecx, ecx                ; counter in RCX
         _ drop                          ; FIXME ignore +n1 for now
         mov     rdx, rbx                ; c-addr in RDX
         poprbx
-        _begin accept0
+        _begin accept2
         push    rcx
         push    rdx
         _ key                           ; char in bl
         _ dup
         _ blchar
         _ ge
-        _if accept0
+        _if accept3
         _ dup
         _ emit
-        _then accept0
+        _then accept3
         pop     rdx
         pop     rcx
         cmp     bl, 13
@@ -91,7 +87,7 @@ code paren_accept, '(accept)'           ; c-addr +n1 -- +n2
         mov     [rax], bl
         inc     rcx
         _ drop
-        _again accept0
+        _again accept2
 out:
         _ drop
         pushrbx

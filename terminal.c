@@ -41,40 +41,30 @@ void prep_terminal ()
   console_input_handle = GetStdHandle (STD_INPUT_HANDLE);
   if (GetConsoleMode (console_input_handle, &mode))
     {
-      mode = (mode & ~ENABLE_ECHO_INPUT);
-      mode = (mode & ~ENABLE_LINE_INPUT);
+      mode = (mode & ~ENABLE_ECHO_INPUT & ~ENABLE_LINE_INPUT & ~ENABLE_PROCESSED_INPUT);
       SetConsoleMode(console_input_handle, mode);
-      echo_data = -1;
       line_input_data = 0;
     }
   else
     {
       console_input_handle = INVALID_HANDLE_VALUE;
-      echo_data = 0;
       line_input_data = -1;
     }
 #else
   // Linux.
   tty = fileno (stdin);
   struct termios tio;
-
   if (terminal_prepped)
     return;
-
   if (!isatty (tty))
     {
       terminal_prepped = 1;
       return;
     }
-
   tcgetattr (tty, &tio);
-
   otio = tio;
-
   tio.c_lflag &= ~(ICANON | ECHO);
-
   tcsetattr (tty, TCSADRAIN, &tio);
-
   terminal_prepped = 1;
 #endif
 }
@@ -91,13 +81,9 @@ int os_key()
 {
 #ifdef WIN64_NATIVE
   if (console_input_handle != INVALID_HANDLE_VALUE)
-    {
-      int c;
-      DWORD count;
-      if (ReadConsole(console_input_handle, &c, 1, &count, NULL))
-        return c;
-    }
-  return fgetc(stdin);
+    return _getch();
+  else
+    return fgetc(stdin);
 #else
   return fgetc(stdin);
 #endif
