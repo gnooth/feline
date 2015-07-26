@@ -376,6 +376,11 @@ Cell os_ticks()
 #endif
 }
 
+void os_system(const char *filename)
+{
+  system(filename);
+}
+
 void os_bye()
 {
   deprep_terminal();

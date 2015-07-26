@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -52,12 +52,14 @@ code minusone, '-1'
 endcode
 
 code false, 'false'
+; CORE EXT
         pushrbx
         xor     ebx, ebx
         next
 endcode
 
 code true, 'true'
+; CORE EXT
         pushrbx
         mov     rbx, -1
         next
