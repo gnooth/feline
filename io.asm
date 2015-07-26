@@ -663,7 +663,18 @@ code system_, 'system'                  ; c-addr u --
         _ here                          ; FIXME use syspad or something similar
         _ zplace
         _ here
+%ifdef WIN64
+        popd    rcx
+        push    rbp
+        mov     rbp, [saved_rbp_data]
+        sub     rsp, 32
+%else
         popd    rdi
+%endif
         call    os_system
+%ifdef WIN64
+        add     rsp, 32
+        pop     rbp
+%endif
         next
 endcode
