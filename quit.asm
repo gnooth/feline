@@ -112,7 +112,7 @@ endcode
 variable toin, '>in', 0
 
 code query, 'query'                     ; --
-; CORE EXT
+; CORE EXT in Forth 94 but removed in Forth 200x
         _ tib
         _lit 80
         _ accept
