@@ -109,11 +109,25 @@ endcode
 code spaces, 'spaces'                   ; n --
 ; CORE "If n is greater than zero, display n spaces."
         popd    rcx
-        or      rcx, rcx
+        test    rcx, rcx
         jle     .2
 .1:
         push    rcx
         _ space
+        pop     rcx
+        loop    .1
+.2:
+        next
+endcode
+
+code backspaces, 'backspaces'           ; n --
+        popd    rcx
+        test    rcx, rcx
+        jle     .2
+.1:
+        push    rcx
+        _lit 8
+        _ emit
         pop     rcx
         loop    .1
 .2:
