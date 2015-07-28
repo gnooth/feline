@@ -21,7 +21,6 @@ code ok, 'ok'
         _if ok1
         _dotq " ok"
         _then ok1
-        _ cr
         next
 endcode
 
@@ -123,6 +122,39 @@ code query, 'query'                     ; --
         next
 endcode
 
+variable msg, 'msg', 0
+
+code do_error, 'do-error'               ; n --
+        _ dup
+        _ minusone
+        _ equal
+        _if do_error1
+        mov     rbp, [sp0_data]
+        jmp     quit
+        _then do_error1
+        _ dup
+        _lit -2
+        _ equal
+        _if do_error2
+        ; FIXME display message here
+        _ msg
+        _ fetch
+        _ ?dup
+        _if do_error3
+        _ count
+        _ type
+        _then do_error3
+        mov     rbp, [sp0_data]
+        jmp     quit
+        _then do_error2
+        ; otherwise...
+        _dotq "Exception # "
+        _ dot
+        mov     rbp, [sp0_data]
+        jmp     quit
+        next
+endcode
+
 code quit, 'quit'                       ; --            r:  i*x --
 ; CORE
         _ lbrack
@@ -130,21 +162,39 @@ code quit, 'quit'                       ; --            r:  i*x --
         _ rp0
         _fetch
         _ rpstore
+        _ ?cr
         _ query
         _ tib
         _ ntib
         _fetch
         _ zero
         _ set_input
-        _ interpret
+        _lit interpret_cfa
+        _ catch
+        _ ?dup
+        _if quit2
+        ; THROW occurred
+        _ do_error
+        _else quit2
         _ ok
+        _then quit2
         _again quit1
         next                            ; for decompiler
 endcode
 
-code abort, 'abort'                     ; i*x --        r: j*x --
-; CORE
+code reset, 'reset'                     ; i*x --        r: j*x --
+; This is the CORE version of ABORT (6.1.0670).
+; "Empty the data stack and perform the function of QUIT, which includes
+; emptying the return stack, without displaying a message."
         mov     rbp, [sp0_data]
         jmp     quit
+        next                            ; for decompiler
+endcode
+
+code abort, 'abort'                     ; i*x --        r: j*x --
+; This is the EXCEPTION EXT version of ABORT (9.6.2.0670).
+; "Perform the function of -1 THROW."
+        _ minusone
+        _ throw
         next                            ; for decompiler
 endcode
