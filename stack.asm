@@ -13,7 +13,7 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-code sp@, 'sp@'
+code spfetch, 'sp@'
         lea     rbp, [rbp - BYTES_PER_CELL]
         mov     [rbp], rbx
         mov     rbx, rbp
