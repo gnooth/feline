@@ -68,7 +68,7 @@ int main(int argc, char **argv, char **env)
   extern Cell limit_c_data;
   extern Cell tick_syspad_data;
   extern Cell tick_tib_data;
-  extern Cell s0_data;
+  extern Cell sp0_data;
   extern Cell tick_tick_word_data;
   Cell data_space_size = 1024 * 1024;
   Cell code_space_size = 1024 * 1024;
@@ -94,7 +94,7 @@ int main(int argc, char **argv, char **env)
   limit_c_data = (Cell) code_space + code_space_size;
   tick_syspad_data = (Cell) malloc(1024);
   tick_tib_data = (Cell) malloc(256);
-  s0_data = (Cell) malloc(1024) + (1024 - 64);
+  sp0_data = (Cell) malloc(1024) + (1024 - 64);
   tick_tick_word_data = (Cell) malloc(256);
 
 #ifndef WIN64

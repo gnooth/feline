@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -32,11 +32,11 @@ code rbrack, ']'
 endcode
 
 code ?stack, '?stack'
-        cmp     rbp, [s0_data]
+        cmp     rbp, [sp0_data]
         ja      .1
         next
 .1:
-        mov     rbp, [s0_data]
+        mov     rbp, [sp0_data]
         _dotq   "Stack underflow"
         jmp     abort
 endcode

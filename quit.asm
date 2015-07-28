@@ -127,7 +127,7 @@ code quit, 'quit'                       ; --            r:  i*x --
 ; CORE
         _ lbrack
         _begin quit1
-        _ r0
+        _ rp0
         _fetch
         _ rpstore
         _ query
@@ -144,7 +144,7 @@ endcode
 
 code abort, 'abort'                     ; i*x --        r: j*x --
 ; CORE
-        mov     rbp, [s0_data]
+        mov     rbp, [sp0_data]
         jmp     quit
         next                            ; for decompiler
 endcode

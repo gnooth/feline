@@ -25,7 +25,7 @@ code spstore, 'sp!'
         mov     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
         next
-endcode        
+endcode
 
 inline drop, 'drop'
         poprbx
@@ -127,7 +127,7 @@ code tuck, 'tuck'                       ; x1 x2 -- x2 x1 x2
 endcode
 
 code depth, 'depth'
-        mov     rax, [s0_data]
+        mov     rax, [sp0_data]
         sub     rax, rbp
         shr     rax, 3
         pushd   rax
@@ -136,7 +136,7 @@ endcode
 
 code rdepth, 'rdepth'
         pop     rcx                     ; return address
-        mov     rax, [r0_data]
+        mov     rax, [rp0_data]
         sub     rax, rsp
         shr     rax, 3
         pushd   rax

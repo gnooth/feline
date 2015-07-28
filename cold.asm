@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -13,9 +13,9 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-variable r0, 'r0', 0
+variable rp0, 'rp0', 0
 
-variable s0, 's0', 0                    ; initialized in main()
+variable sp0, 'sp0', 0                  ; initialized in main()
 
 variable saved_rbp, 'saved-rbp', 0
 
@@ -32,9 +32,9 @@ variable limit, 'limit', 0              ; initialized in main()
 variable limit_c, 'limit-c', 0          ; initialized in main()
 
 code cold, 'cold'                       ; --
-        mov     [r0_data], rsp
+        mov     [rp0_data], rsp
         mov     [saved_rbp_data], rbp
-        mov     rbp, [s0_data]
+        mov     rbp, [sp0_data]
         _ here
         _ origin
         _ store
