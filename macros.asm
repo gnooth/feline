@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -162,11 +162,22 @@ section .data
 section .text
         pushrbx
         mov     rbx, %%string
-        call    count
         call    parenabortquote
 %endmacro
 
-%macro  _string 1
+%macro  _cquoted 1                      ; -- c-addr
+section .data
+%strlen  len     %1
+%%string:
+        db      len                     ; length byte
+        db      %1                      ; string
+        db      0                       ; null byte at end
+section .text
+        pushrbx
+        mov     rbx, %%string
+%endmacro
+
+%macro  _squoted 1                      ; -- c-addr u
 section .data
 %strlen  len     %1
 %%string:
