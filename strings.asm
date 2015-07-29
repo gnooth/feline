@@ -121,21 +121,22 @@ code dotquote, '."', IMMEDIATE
         next
 endcode
 
-code parenabortquote, '(abort")'        ; flag c-addr u --
-        _ rot
+code parenabortquote, '(abort")'        ; flag c-addr --
+        _ swap
         _if parenabortquote1
-        _ ?cr
-        _ type
-        _ abort
+        _ msg
+        _ store
+        _lit -2
+        _ throw
         _else parenabortquote1
-        _ twodrop
+        _ drop
         _then parenabortquote1
         next
 endcode
 
 code abortquote, 'abort"', IMMEDIATE
 ; CORE
-        _ squote
+        _ cquote
         _lit parenabortquote
         _ commacall
         next
