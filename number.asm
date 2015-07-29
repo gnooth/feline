@@ -1,4 +1,4 @@
-; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -119,6 +119,7 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
 endcode
 
 code missing, 'missing'
+; REVIEW
         _ count
         _ type
         _dotq ' ?'
@@ -132,7 +133,11 @@ code missing, 'missing'
         _ dot
         _ cr
         _then missing1
-        _ abort
+        _cquoted "undefined word"
+        _ msg
+        _ store
+        _lit -13
+        _ throw
         next
 endcode
 
