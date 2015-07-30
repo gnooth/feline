@@ -21,21 +21,21 @@ $1b constant #esc
 
 0 value bufstart
 0 value buflen
-0 value number-accepted
+0 value number-chars-accepted
 0 value done?
 
 : do-bs  ( -- )
-   number-accepted if
-      -1 +to number-accepted
+   number-chars-accepted if
+      -1 +to number-chars-accepted
       #bs emit space #bs emit
    then ;
 
 : clear-line  ( -- )
-   number-accepted dup backspaces dup spaces backspaces
-   0 to number-accepted ;
+   number-chars-accepted dup backspaces dup spaces backspaces
+   0 to number-chars-accepted ;
 
 : redisplay-line  ( -- )
-   bufstart number-accepted type ;
+   bufstart number-chars-accepted type ;
 
 : do-escape  ( -- )
    clear-line ;
@@ -44,7 +44,7 @@ $1b constant #esc
 100 constant history-size
 
 \ The current location of the interactive history pointer.
-0 value history-offset
+-1 value history-offset
 
 \ The number of strings currently stored in the history list.
 0 value history-length
@@ -71,53 +71,141 @@ create history-array  history-size cells allot  history-array history-size cells
    history-array history-size 1- cells + ;
 
 : history  ( -- )
-   history-array 0= if 0 exit then      \ shouldn't happen
+   history-array 0= if exit then        \ shouldn't happen
    history-length 0 ?do
-      history-array history-length 1- i - cells + @
+      history-array i cells + @
       cr count type
    loop ;
 
-: add-history  ( -- )
-   number-accepted if
-      last-history @ ?dup if free drop then
-      history-array dup cell+ history-size 1- cells cmove>
-      number-accepted 1+ allocate 0= if
-         dup first-history !
-         bufstart number-accepted rot place
-         history-length history-size < if
+: save-history  ( -- )
+   history-array 0= if exit then        \ shouldn't happen
+   s" .history" w/o create-file 0= if   \ -- fileid
+      history-length 0 ?do
+         dup                            \ -- fileid fileid
+         history-array i cells + @
+         count                          \ -- fileid fileid c-addr u
+         rot                            \ -- fileid c-addr u fileid
+         write-line                     \ -- fileid ior
+         drop                           \ -- fileid
+      loop
+      close-file drop
+   then ;
+
+create restore-array  10 cells allot
+
+create restore-buffer  258 allot
+
+: read-history-line  ( fileid -- c-addr u2 )
+   restore-buffer 256 rot read-line     \ -- u2 flag ior
+   0= if
+      ( flag ) if
+         restore-buffer swap
+      else
+         drop 0 0
+      then
+   else
+      2drop 0 0
+   then ;
+
+: store-history-line  ( c-addr1 u -- c-addr2 )
+   ?dup if
+      \ non-zero count
+      dup 1+ allocate 0= if
+        dup >r
+        place
+        r>                              \ -- c-addr2
+      then
+   else
+      drop
+      0
+   then ;
+
+: allocate-history-entry  ( c-addr u -- alloc-addr )
+   dup 1+ allocate 0= if                \ -- c-addr u alloc-addr
+      dup >r
+      place
+      r>
+   else
+      -1 abort" allocation failed"
+   then ;
+
+: restore-history  ( -- )
+   s" .history" r/o open-file 0= if
+      history-array history-size cells erase
+      0 to history-length
+      0 to history-offset
+      >r
+      begin
+         r@ read-history-line           \ -- c-addr u
+         ?dup if
+            allocate-history-entry      \ -- alloc-addr
+            history-array history-offset cells + !
+            1 +to history-offset
             1 +to history-length
+         else
+            drop
+            r> close-file
+            drop                        \ REVIEW
+            -1 to history-offset
+            exit
+         then
+      again
+   then ;
+
+: clear-history  ( -- )
+   history-array history-size cells erase
+   0 to history-length
+   -1 to history-offset ;
+
+: add-history  ( -- )
+   number-chars-accepted if
+      history-length history-size < if
+         number-chars-accepted 1+ allocate 0= if
+            >r
+            bufstart number-chars-accepted r@ place
+            r> history-array history-length cells + !
+            1 +to history-length
+            -1 to history-offset
          then
       then
    then ;
 
 : do-previous
+   history-length 0= if exit then
+   history-offset 0< if
+      history-length to history-offset  \ most recent entry is at highest offset
+   then
+   history-offset 0> if
+      -1 +to history-offset
+   then
    history-offset history-length < if
-      1 +to history-offset
       current-history
       ?dup if
          clear-line
-         count dup to number-accepted
+         count dup to number-chars-accepted
          bufstart swap cmove
          redisplay-line
-      else
-         -1 +to history-offset
       then
    then ;
 
 : do-next  ( -- )
-   history-offset 0> if
-      -1 +to history-offset
+   history-length 0= if exit then
+   history-offset history-length 1- < if
+      1 +to history-offset
       current-history
       ?dup if
          clear-line
-         count dup to number-accepted
+         count dup to number-chars-accepted
          bufstart swap cmove
          redisplay-line
       then
+   else
+      clear-line
    then ;
 
 : do-enter  ( -- )
    add-history
+   save-history
    space
    true to done? ;
 
@@ -139,10 +227,10 @@ create history-array  history-size cells allot  history-array history-size cells
          do-escape
          -1 to history-offset
       endof
-      $10 of
+      $10 of                            \ control p
         do-previous
       endof
-      $0e of
+      $0e of                            \ control n
         do-next
       endof
    endcase ;
@@ -151,21 +239,24 @@ create history-array  history-size cells allot  history-array history-size cells
    to buflen
    to bufstart
    false to done?
-   0 to number-accepted
+   0 to number-chars-accepted
    begin
-      number-accepted buflen <
+      number-chars-accepted buflen <
       done? 0= and
    while
       key
       dup bl $7f within if
          dup emit
-         bufstart number-accepted + c!
-         1 +to number-accepted
+         bufstart number-chars-accepted + c!
+         1 +to number-chars-accepted
          -1 to history-offset
       else
          do-command
       then
    repeat
-   number-accepted ;
+   number-chars-accepted ;
 
-line-input? 0= [if] ' new-accept is accept [then]
+line-input? 0= [if]
+   restore-history
+   ' new-accept is accept
+[then]
