@@ -165,7 +165,7 @@ section .text
         call    parenabortquote
 %endmacro
 
-%macro  _cquoted 1                      ; -- c-addr
+%macro  _cquote 1                       ; -- c-addr
 section .data
 %strlen  len     %1
 %%string:
@@ -177,7 +177,7 @@ section .text
         mov     rbx, %%string
 %endmacro
 
-%macro  _squoted 1                      ; -- c-addr u
+%macro  _squote 1                       ; -- c-addr u
 section .data
 %strlen  len     %1
 %%string:

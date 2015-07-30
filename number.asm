@@ -133,7 +133,7 @@ code missing, 'missing'
         _ dot
         _ cr
         _then missing1
-        _cquoted "undefined word"
+        _cquote "undefined word"
         _ msg
         _ store
         _lit -13

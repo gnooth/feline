@@ -49,7 +49,7 @@ code cold, 'cold'                       ; --
         _ forth_wordlist
         _ store
         _then cold1
-        _squoted "boot.forth"
+        _squote "boot.forth"
         _ included
         jmp quit
         next
