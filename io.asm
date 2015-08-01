@@ -692,3 +692,29 @@ code system_, 'system'                  ; c-addr u --
 %endif
         next
 endcode
+
+extern os_getenv
+
+code getenv_, 'getenv'                  ; c-addr1 u1 -- c-addr2
+        _ here
+        _ zplace
+        _ here
+%ifdef WIN64
+        popd    rcx
+        push    rbp
+        mov     rbp, [saved_rbp_data]
+        sub     rsp, 32
+%else
+        popd    rdi
+%endif
+        xcall   os_getenv
+%ifdef WIN64
+        add     rsp, 32
+        pop     rbp
+%endif
+        pushd   rbx
+        mov     rbx, rax
+        pushd   rbx
+        call    zstrlen
+        next
+endcode

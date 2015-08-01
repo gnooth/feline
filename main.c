@@ -384,6 +384,11 @@ void os_system(const char *filename)
   system(filename);
 }
 
+char *os_getenv(const char *name)
+{
+  return getenv(name);
+}
+
 void os_bye()
 {
   deprep_terminal();
