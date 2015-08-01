@@ -75,6 +75,9 @@ int main(int argc, char **argv, char **env)
   void * data_space;
   void * code_space;
 
+  printf("Fired up\n");
+  fflush(stdout);
+
   prep_terminal();
 
 #ifdef WIN64
