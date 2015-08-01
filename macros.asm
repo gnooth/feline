@@ -41,6 +41,23 @@
         poprbx
 %endmacro
 
+%ifdef WIN64_NATIVE
+%macro  xcall   1
+        test    rsp, 0x0f
+        jnz     %%fixstack
+        call    %1
+        jmp     %%out
+%%fixstack:
+        sub     rsp, 8
+        call    %1
+        add     rsp, 8
+%%out:
+%endmacro
+%else
+; Linux
+%define xcall   call
+%endif
+
 %macro  _       1
         call    %1
 %endmacro
