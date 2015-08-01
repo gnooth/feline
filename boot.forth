@@ -22,3 +22,5 @@ include see.forth
 include accept.forth
 
 : sh 10 parse ?dup if system else drop then ;
+
+.( Ready to go)
