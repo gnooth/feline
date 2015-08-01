@@ -35,6 +35,19 @@ code zplace, 'zplace'                   ; c-addr1 u c-addr2 --
         next
 endcode
 
+code zstrlen, 'zstrlen'                 ; addr -- u
+        mov     rcx, rbx
+.1:
+        mov     al, [rbx]
+        test    al, al
+        jz      .2
+        inc     rbx
+        jmp     .1
+.2:
+        sub     rbx, rcx
+        next
+endcode
+
 code stringcomma, 'string,'             ; addr u --
         _ here
         _ over
