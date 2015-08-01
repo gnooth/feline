@@ -21,7 +21,7 @@ code key, 'key'
         mov     rbp, [saved_rbp_data]
         sub     rsp, 32
 %endif
-        call    os_key
+        xcall   os_key
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -41,7 +41,7 @@ code paren_emit, '(emit)'
 %else
         popd    rdi
 %endif
-        call    os_emit
+        xcall    os_emit
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -193,7 +193,7 @@ code file_status, 'file-status'         ; c-addr u -- x ior
 %else
         popd    rdi
 %endif
-        call    os_file_status
+        xcall   os_file_status
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -222,14 +222,14 @@ code open_file, 'open-file'             ; c-addr u fam -- fileid ior
         popd    rcx
         push    rbp
         mov     rbp, [saved_rbp_data]
-        sub     rsp, 0x28
+        sub     rsp, 32
 %else
         popd    rsi
         popd    rdi
 %endif
-        call    os_open_file
+        xcall   os_open_file
 %ifdef WIN64
-        add     rsp, 0x28
+        add     rsp, 32
         pop     rbp
 %endif
         or      rax, rax
@@ -262,7 +262,7 @@ code create_file, 'create-file'         ; c-addr u fam -- fileid ior
         popd    rsi
         popd    rdi
 %endif
-        call    os_create_file
+        xcall   os_create_file
 %ifdef WIN64
         add     rsp, 0x28
         pop     rbp
@@ -293,7 +293,7 @@ code read_file, 'read-file'             ; c-addr u1 fileid -- u2 ior
         popd    rdx
         popd    rsi
 %endif
-        call    os_read_file
+        xcall    os_read_file
 %ifdef WIN64
         add     rsp, 0x28
         pop     rbp
@@ -320,7 +320,7 @@ code read_char, 'read-char'             ; fileid -- char | -1
 %else
         mov     rdi, rbx
 %endif
-        call    os_read_char
+        xcall    os_read_char
 %ifdef WIN64
         add     rsp, 0x28
         pop     rbp
@@ -421,7 +421,7 @@ code write_file, 'write-file'           ; c-addr u1 fileid -- ior
         popd    rdx
         popd    rsi
 %endif
-        call    os_write_file
+        xcall    os_write_file
 %ifdef WIN64
         add     rsp, 0x28
         pop     rbp
@@ -468,7 +468,7 @@ code close_file, 'close-file'           ; fileid -- ior
 %else
         popd    rdi
 %endif
-        call    os_close_file
+        xcall    os_close_file
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -489,7 +489,7 @@ code file_size, 'file-size'             ; fileid -- ud ior
 %else
         popd    rdi
 %endif
-        call    os_file_size
+        xcall    os_file_size
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -519,7 +519,7 @@ code file_position, 'file-position'     ; fileid -- ud ior
 %else
         mov     rdi, rbx
 %endif
-        call    os_file_position
+        xcall    os_file_position
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -552,7 +552,7 @@ code reposition_file, 'reposition-file' ; ud fileid -- ior
         mov     rsi, [rbp + BYTES_PER_CELL]     ; 64-bit offset
         add     rbp, BYTES_PER_CELL * 2
 %endif
-        call    os_reposition_file
+        xcall    os_reposition_file
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -582,7 +582,7 @@ code resize_file, 'resize-file'         ; ud fileid -- ior
         mov     rsi, [rbp + BYTES_PER_CELL]     ; 64-bit offset
         add     rbp, BYTES_PER_CELL * 2
 %endif
-        call    os_resize_file
+        xcall    os_resize_file
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -610,7 +610,7 @@ code delete_file, 'delete-file'         ; c-addr u -- ior
 %else
         mov     rdi, rbx
 %endif
-        call    os_delete_file
+        xcall    os_delete_file
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -639,7 +639,7 @@ code rename_file, 'rename-file'         ; c-addr1 u1 c-addr2 u2 -- ior
         lea     rdi, [rsp + MAX_PATH]   ; old name
         mov     rsi, rsp                ; new name
 %endif
-        call    os_rename_file
+        xcall    os_rename_file
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -662,7 +662,7 @@ code flush_file, 'flush-file'           ; fileid -- ior
 %else
         mov     rdi, rbx
 %endif
-        call    os_flush_file
+        xcall    os_flush_file
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -685,7 +685,7 @@ code system_, 'system'                  ; c-addr u --
 %else
         popd    rdi
 %endif
-        call    os_system
+        xcall   os_system
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
