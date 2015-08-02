@@ -15,6 +15,7 @@
 
 extern os_key
 
+; ### key
 code key, 'key'
 %ifdef WIN64
         push    rbp
@@ -30,8 +31,29 @@ code key, 'key'
         next
 endcode
 
+%ifdef WIN64
+extern os_key_avail
+
+; ### key?
+code key?, 'key?'
+%ifdef WIN64
+        push    rbp
+        mov     rbp, [saved_rbp_data]
+        sub     rsp, 32
+%endif
+        xcall   os_key_avail
+%ifdef WIN64
+        add     rsp, 32
+        pop     rbp
+%endif
+        pushd   rax
+        next
+endcode
+%endif
+
 extern os_emit
 
+; ### (emit)
 code paren_emit, '(emit)'
 %ifdef WIN64
         popd    rcx
@@ -51,6 +73,7 @@ endcode
 
 variable nout, '#out', 0
 
+; ### emit
 code emit, 'emit'
         cmp     rbx, 10
         je      .1
@@ -63,6 +86,7 @@ code emit, 'emit'
         jmp    paren_emit
 endcode
 
+; ### type
 code type, 'type'                       ; addr n --
         mov     rcx, rbx                ; count in rcx
         mov     rdx, [rbp]              ; addr in rdx
@@ -84,12 +108,14 @@ code type, 'type'                       ; addr n --
         next
 endcode
 
+; ### cr
 code cr, 'cr'
         _lit 10
         _ emit
         next
 endcode
 
+; ### ?cr
 code ?cr, '?cr'
         mov     rax, [nout_data]
         or      rax, rax
@@ -99,6 +125,7 @@ code ?cr, '?cr'
         next
 endcode
 
+; ### space
 code space, 'space'                     ; --
 ; CORE
         _lit ' '
@@ -106,6 +133,7 @@ code space, 'space'                     ; --
         next
 endcode
 
+; ### spaces
 code spaces, 'spaces'                   ; n --
 ; CORE "If n is greater than zero, display n spaces."
         popd    rcx
@@ -120,6 +148,7 @@ code spaces, 'spaces'                   ; n --
         next
 endcode
 
+; ### backspaces
 code backspaces, 'backspaces'           ; n --
         popd    rcx
         test    rcx, rcx
@@ -134,6 +163,7 @@ code backspaces, 'backspaces'           ; n --
         next
 endcode
 
+; ### >pos
 code topos, '>pos'                      ; +n --
         _ nout
         _fetch
@@ -144,6 +174,7 @@ code topos, '>pos'                      ; +n --
         next
 endcode
 
+; ### r/o
 code readonly, 'r/o'                    ; -- 0
         pushrbx
 %ifdef WIN64_NATIVE
@@ -154,6 +185,7 @@ code readonly, 'r/o'                    ; -- 0
         next
 endcode
 
+; ### w/o
 code writeonly, 'w/o'                   ; -- 1
         pushrbx
 %ifdef WIN64_NATIVE
@@ -164,6 +196,7 @@ code writeonly, 'w/o'                   ; -- 1
         next
 endcode
 
+; ### r/w
 code readwrite, 'r/w'                   ; -- 2
         pushrbx
 %ifdef WIN64_NATIVE
@@ -174,12 +207,14 @@ code readwrite, 'r/w'                   ; -- 2
         next
 endcode
 
+; ### bin
 code bin, 'bin', IMMEDIATE
         next
 endcode
 
 extern os_file_status
 
+; ### file-status
 code file_status, 'file-status'         ; c-addr u -- x ior
 ; "If the file exists, ior is zero; otherwise ior is the implementation-defined I/O result code."
         _ here                          ; FIXME use syspad or something similar
@@ -211,6 +246,7 @@ endcode
 
 extern os_open_file
 
+; ### open-file
 code open_file, 'open-file'             ; c-addr u fam -- fileid ior
         _ rrot                          ; -- fam c-addr u
         _ here                          ; FIXME use syspad or something similar
@@ -246,6 +282,7 @@ endcode
 
 extern os_create_file
 
+; ### create-file
 code create_file, 'create-file'         ; c-addr u fam -- fileid ior
         _ rrot                          ; -- fam c-addr u
         _ here                          ; FIXME use syspad or something similar
@@ -280,6 +317,7 @@ endcode
 
 extern os_read_file
 
+; ### read-file
 code read_file, 'read-file'             ; c-addr u1 fileid -- u2 ior
 %ifdef WIN64
         popd    rcx                     ; fileid
@@ -311,6 +349,7 @@ endcode
 
 extern os_read_char
 
+; ### read-char
 code read_char, 'read-char'             ; fileid -- char | -1
 %ifdef WIN64
         mov     rcx, rbx                ; fileid
@@ -329,6 +368,7 @@ code read_char, 'read-char'             ; fileid -- char | -1
         next
 endcode
 
+; ### last-char
 code last_char, 'last-char'             ; c-addr u -- char
         _ ?dup
         _if last_char1
@@ -342,6 +382,7 @@ code last_char, 'last-char'             ; c-addr u -- char
         next
 endcode
 
+; ### read-line
 code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _ rrot                          ; -- fileid c-addr u1
         _ ?dup
@@ -408,6 +449,7 @@ endcode
 
 extern os_write_file
 
+; ### write-file
 code write_file, 'write-file'           ; c-addr u1 fileid -- ior
 %ifdef WIN64
         popd    rcx                     ; fileid
@@ -441,6 +483,7 @@ crlf:
 lf:
         db      10
 
+; ### write-line
 code write_line, 'write-line'           ; c-addr u1 fileid -- ior
         _duptor
         _ write_file                    ; -- ior        r: -- fileid
@@ -459,6 +502,7 @@ endcode
 
 extern os_close_file
 
+; ### close-file
 code close_file, 'close-file'           ; fileid -- ior
 %ifdef WIN64
         popd    rcx
@@ -479,6 +523,7 @@ endcode
 
 extern os_file_size
 
+; ### file-size
 code file_size, 'file-size'             ; fileid -- ud ior
 ; FILE
 %ifdef WIN64
@@ -509,6 +554,7 @@ endcode
 
 extern os_file_position
 
+; ### file-position
 code file_position, 'file-position'     ; fileid -- ud ior
 ; FILE
 %ifdef WIN64
@@ -538,6 +584,7 @@ endcode
 
 extern os_reposition_file
 
+; ### reposition-file
 code reposition_file, 'reposition-file' ; ud fileid -- ior
 ; We ignore the upper 64 bits of the 128-bit offset.
 %ifdef WIN64
@@ -568,6 +615,7 @@ endcode
 
 extern os_resize_file
 
+; ### resize-file
 code resize_file, 'resize-file'         ; ud fileid -- ior
 ; We ignore the upper 64 bits of the 128-bit offset.
 %ifdef WIN64
@@ -598,6 +646,7 @@ endcode
 
 extern os_delete_file
 
+; ### delete-file
 code delete_file, 'delete-file'         ; c-addr u -- ior
         _ here
         _ zplace
@@ -621,6 +670,7 @@ endcode
 
 extern os_rename_file
 
+; ### rename-file
 code rename_file, 'rename-file'         ; c-addr1 u1 c-addr2 u2 -- ior
         sub     rsp, ((MAX_PATH + 16) & $1f0) * 2
         pushrbx
@@ -652,6 +702,7 @@ endcode
 
 extern os_flush_file
 
+; ### flush-file
 code flush_file, 'flush-file'           ; fileid -- ior
 ; FILE EXT
 %ifdef WIN64
@@ -673,6 +724,7 @@ endcode
 
 extern os_system
 
+; ### system
 code system_, 'system'                  ; c-addr u --
         _ here                          ; FIXME use syspad or something similar
         _ zplace
@@ -695,6 +747,7 @@ endcode
 
 extern os_getenv
 
+; ### getenv
 code getenv_, 'getenv'                  ; c-addr1 u1 -- c-addr2
         _ here
         _ zplace
