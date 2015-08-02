@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -13,6 +13,7 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+; ### unused
 code unused, 'unused'                   ; -- u
 ; CORE EXT
         _ limit
@@ -23,6 +24,7 @@ code unused, 'unused'                   ; -- u
         next
 endcode
 
+; ### .used
 code dotused, '.used'                   ; u --
         _lit 8
         _ udotr
@@ -30,6 +32,7 @@ code dotused, '.used'                   ; u --
         next
 endcode
 
+; ### .free
 code dotfree, '.free'                   ; u --
         _lit 12
         _ udotr
@@ -37,6 +40,7 @@ code dotfree, '.free'                   ; u --
         next
 endcode
 
+; ### room
 code room, 'room'
         _ ?cr
         _dotq "code: "
@@ -75,73 +79,87 @@ endcode
 ;   padding     0-7 bytes       for alignment
 ;   body
 
+; ### >comp
 code tocomp, '>comp'
         add     rbx, BYTES_PER_CELL
         next
 endcode
 
+; ### >comp!
 code tocompstore, '>comp!'              ; xt1 xt2 --
         _ tocomp
         _ store
         next
 endcode
 
+; ### n>link
 code ntolink, 'n>link'
         sub     rbx, BYTES_PER_CELL + 2
         next
 endcode
 
+; ### l>name
 code ltoname, 'l>name'
         add     rbx, BYTES_PER_CELL + 2
         next
 endcode
 
+; ### >link
 code tolink, '>link'
         add     rbx, BYTES_PER_CELL * 2
         next
 endcode
 
+; ### link>
 code linkfrom, 'link>'
         sub     rbx, BYTES_PER_CELL * 2
         next
 endcode
 
+; ### >flags
 code toflags, '>flags'                  ; xt -- addr
         add     rbx, BYTES_PER_CELL * 3
         next
 endcode
 
+; ### flags
 code flags, 'flags'                     ; xt -- flags
         _ toflags
         _ cfetch
         next
 endcode
 
+; ### >inline
 code toinline, '>inline'                ; xt -- addr
         add     rbx, BYTES_PER_CELL * 3 + 1
         next
 endcode
 
+; ### >name
 code toname, '>name'
         add     rbx, BYTES_PER_CELL * 3 + 2
         next
 endcode
 
+; ### name>
 code namefrom, 'name>'
         sub     rbx, BYTES_PER_CELL * 3 + 2
         next
 endcode
 
+; ### n>flags
 code nametoflags, 'n>flags'
         sub     rbx, 2
         next
 endcode
 
+; ### >code
 code tocode, '>code'
         mov     rbx, [rbx]
         next
 endcode
 
+; ### >body
 code tobody, '>body'
         _ toname
         _ dup
@@ -152,6 +170,7 @@ code tobody, '>body'
         next
 endcode
 
+; ### immediate
 code immediate, 'immediate'
         _ latest
         _ nametoflags
@@ -164,6 +183,7 @@ code immediate, 'immediate'
         next
 endcode
 
+; ### immediate?
 code immediate?, 'immediate?'           ; xt -- flag
         _ flags
         _lit IMMEDIATE
@@ -172,6 +192,7 @@ code immediate?, 'immediate?'           ; xt -- flag
         next
 endcode
 
+; ### inline?
 code inline?, 'inline?'                 ; xt -- flag
         _ toinline
         _cfetch
@@ -179,6 +200,7 @@ code inline?, 'inline?'                 ; xt -- flag
         next
 endcode
 
+; ### hide
 code hide, 'hide'
         _ latest
         _ dup
@@ -190,6 +212,7 @@ code hide, 'hide'
         next
 endcode
 
+; ### reveal
 code reveal, 'reveal'
         _ latest
         _ dup
@@ -201,6 +224,7 @@ code reveal, 'reveal'
         next
 endcode
 
+; ### ,
 code comma, ','
         _ here
         _ store
@@ -210,6 +234,7 @@ code comma, ','
         next
 endcode
 
+; ### c,
 code ccomma, 'c,'
         _ here
         _ cstore
@@ -219,12 +244,14 @@ code ccomma, 'c,'
         next
 endcode
 
+; ### allot
 code allot, 'allot'
         _ dp
         _ plusstore
         next
 endcode
 
+; ### ,c
 code commac, ',c'
         _ here_c
         _ store
@@ -234,6 +261,7 @@ code commac, ',c'
         next
 endcode
 
+; ### c,c
 code ccommac, 'c,c'
         _ here_c
         _ cstore
@@ -243,12 +271,14 @@ code ccommac, 'c,c'
         next
 endcode
 
+; ### allot-c
 code allot_c, 'allot-c'
         _ cp
         _ plusstore
         next
 endcode
 
+; ### header
 code header, 'header'                   ; --
         _ parse_name                    ; -- c-addr u
         _ zero                          ; code field (will be patched)
@@ -278,6 +308,7 @@ code header, 'header'                   ; --
         next
 endcode
 
+; ### l,
 code lcomma, 'l,'                       ; x --
 ; 32-bit store, increment DP
         mov     rax, [dp_data]
@@ -288,6 +319,7 @@ code lcomma, 'l,'                       ; x --
         next
 endcode
 
+; ### l,c
 code lcommac, 'l,c'                     ; x --
 ; 32-bit store, increment DP
         mov     rax, [cp_data]
@@ -298,6 +330,7 @@ code lcommac, 'l,c'                     ; x --
         next
 endcode
 
+; ### align
 code align_data, 'align'
         _begin align1
         _ here
@@ -311,6 +344,7 @@ code align_data, 'align'
 endcode
 
 ; REVIEW
+; ### aligned
 code aligned, 'aligned'                 ; addr -- a-addr
 ; CORE
         add     rbx, 7
@@ -326,6 +360,7 @@ dovariable:
         dq      0                       ; 64-bit immediate value (to be patched)
 dovariable_end:
 
+; ### create
 code create, 'create'                   ; "<spaces>name" --
         _ header
         _ align_data
@@ -345,6 +380,7 @@ code create, 'create'                   ; "<spaces>name" --
         next
 endcode
 
+; ### variable
 code var, 'variable'
         _ create
         _ zero
@@ -352,6 +388,7 @@ code var, 'variable'
         next
 endcode
 
+; ### 2variable
 code twovar, '2variable'
         _ create
         _ zero
@@ -369,6 +406,7 @@ doconst:
         dq      0                       ; 64-bit immediate value (to be patched)
 doconst_end:
 
+; ### constant
 code constant, 'constant'               ; x "<spaces>name" --
 ; CORE
         _ header                        ; -- x
@@ -387,6 +425,7 @@ code constant, 'constant'               ; x "<spaces>name" --
         next
 endcode
 
+; ### recurse
 code recurse, 'recurse', IMMEDIATE
         _ last_code
         _fetch
@@ -394,12 +433,14 @@ code recurse, 'recurse', IMMEDIATE
         next
 endcode
 
+; ### exit
 code exit_, 'exit'
         _ rfrom
         _ drop
         next
 endcode
 
+; ### .id
 code dotid, '.id'
         _ count
         _ type
@@ -407,6 +448,7 @@ code dotid, '.id'
         next
 endcode
 
+; ### ?line
 code ?line, '?line'                     ; n --
 ; F83
 ; "Move to left margin on next line if we will be past the right margin
@@ -422,6 +464,7 @@ code ?line, '?line'                     ; n --
         next
 endcode
 
+; ### (;code)
 code paren_scode, '(;code)'
         pop     rax                     ; return address
         inc     rax                     ; skip past RET to get to start of DOES> code
@@ -439,6 +482,7 @@ code paren_scode, '(;code)'
         next
 endcode
 
+; ### does>
 code does, 'does>', IMMEDIATE
         _lit paren_scode                ; postpone (;code)
         _ commacall
@@ -447,18 +491,21 @@ code does, 'does>', IMMEDIATE
         next
 endcode
 
+; ### here
 code here, 'here'
         _ dp
         _fetch
         next
 endcode
 
+; ### here-c
 code here_c, 'here-c'
         _ cp
         _fetch
         next
 endcode
 
+; ### pad
 code pad, 'pad'
         _ here
         add     rbx, 512
@@ -467,12 +514,14 @@ endcode
 
 variable tick_syspad, "'syspad", 0
 
+; ### syspad
 code syspad, 'syspad'
         pushrbx
         mov     rbx, [tick_syspad_data]
         next
 endcode
 
+; ### latest
 code latest, 'latest'                   ; -- nfa
         _ last
         _fetch
@@ -485,6 +534,7 @@ push_tos:
 push_tos_end:
 
 ; REVIEW
+; ### push-tos,
 code push_tos_comma, 'push-tos,'
         _lit push_tos
         _lit push_tos_end - push_tos
@@ -492,6 +542,7 @@ code push_tos_comma, 'push-tos,'
         next
 endcode
 
+; ### literal
 code literal, 'literal', IMMEDIATE
         _ push_tos_comma
         _lit $48
@@ -503,6 +554,7 @@ code literal, 'literal', IMMEDIATE
 endcode
 
 ; REVIEW
+; ### mov-tos,
 code mov_tos_comma, 'mov-tos,'      ; compilation: x --
         _lit $48
         _ ccommac
@@ -512,11 +564,13 @@ code mov_tos_comma, 'mov-tos,'      ; compilation: x --
         next
 endcode
 
+; ### (2literal)
 code parentwoliteral, '(2literal)'      ; addr -- d
         _ twofetch
         next
 endcode
 
+; ### 2literal
 code twoliteral, '2literal', IMMEDIATE  ; compilation: x1 x2 --         run-time: -- x1 x2
 ; DOUBLE
 ; "Interpretation semantics for this word are undefined."
@@ -531,6 +585,7 @@ code twoliteral, '2literal', IMMEDIATE  ; compilation: x1 x2 --         run-time
         next
 endcode
 
+; ### postpone
 code postpone, 'postpone', IMMEDIATE    ; "<spaces>name" --
 ; CORE 6.1.2033
 ; compilation only
@@ -549,12 +604,14 @@ code postpone, 'postpone', IMMEDIATE    ; "<spaces>name" --
         next
 endcode
 
+; ### [compile]
 code bracketcompile, '[compile]', IMMEDIATE
         _ tick
         _ compilecomma
         next
 endcode
 
+; ### words
 code words, 'words'
         _ zero
         _ tor
