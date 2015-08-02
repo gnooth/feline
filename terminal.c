@@ -78,9 +78,16 @@ void deprep_terminal ()
 #endif
 }
 
+#ifdef WIN64
+Cell os_key_avail()
+{
+  return _kbhit() ? (Cell)-1 : 0;
+}
+#endif
+
 int os_key()
 {
-#ifdef WIN64_NATIVE
+#ifdef WIN64
   if (console_input_handle != INVALID_HANDLE_VALUE)
     return _getch();
   else
