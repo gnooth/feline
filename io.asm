@@ -31,7 +31,6 @@ code key, 'key'
         next
 endcode
 
-%ifdef WIN64
 extern os_key_avail
 
 ; ### key?
@@ -49,7 +48,6 @@ code key?, 'key?'
         pushd   rax
         next
 endcode
-%endif
 
 extern os_emit
 
