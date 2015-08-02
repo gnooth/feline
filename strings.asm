@@ -13,6 +13,7 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+; ### place
 code place, 'place'                     ; c-addr1 u c-addr2 --
         _ threedup
         _ oneplus
@@ -23,6 +24,7 @@ code place, 'place'                     ; c-addr1 u c-addr2 --
         next
 endcode
 
+; ### zplace
 code zplace, 'zplace'                   ; c-addr1 u c-addr2 --
         _ threedup
         _ swap
@@ -35,6 +37,7 @@ code zplace, 'zplace'                   ; c-addr1 u c-addr2 --
         next
 endcode
 
+; ### zstrlen
 code zstrlen, 'zstrlen'                 ; addr -- u
         mov     rcx, rbx
 .1:
@@ -48,6 +51,7 @@ code zstrlen, 'zstrlen'                 ; addr -- u
         next
 endcode
 
+; ### string,
 code stringcomma, 'string,'             ; addr u --
         _ here
         _ over
@@ -57,20 +61,21 @@ code stringcomma, 'string,'             ; addr u --
         next
 endcode
 
-dosliteral:
+do_sliteral:
         pushrbx
         db      $48                     ; mov rbx, 0
         db      $0bb
         dq      0                       ; 64-bit immediate value (to be patched)
-dosliteral_end:
+do_sliteral_end:
 
+; ### cliteral
 code cliteral, 'cliteral', IMMEDIATE    ; c: addr1 u --         runtime: -- c-addr2
 ; not in standard
         _ here                          ; addr for counted string
         _ rrot                          ; -- here addr1 u
         _ stringcomma                   ; -- here
-        _lit dosliteral
-        _lit dosliteral_end - dosliteral
+        _lit do_sliteral
+        _lit do_sliteral_end - do_sliteral
         _ paren_copy_code
         _ here_c
         _ cellminus
@@ -78,14 +83,15 @@ code cliteral, 'cliteral', IMMEDIATE    ; c: addr1 u --         runtime: -- c-ad
         next
 endcode
 
+; ### sliteral
 code sliteral, 'sliteral', IMMEDIATE    ; c: addr1 u --         runtime: -- c-addr2 u
 ; STRING
 ; "Interpretation semantics for this word are undefined."
         _ here                          ; addr for counted string
         _ rrot
         _ stringcomma
-        _lit dosliteral
-        _lit dosliteral_end - dosliteral
+        _lit do_sliteral
+        _lit do_sliteral_end - do_sliteral
         _ paren_copy_code
         _ here_c
         _ cellminus
@@ -95,6 +101,7 @@ code sliteral, 'sliteral', IMMEDIATE    ; c: addr1 u --         runtime: -- c-ad
         next
 endcode
 
+; ### c"
 code cquote, 'c"', IMMEDIATE
 ; CORE EXT
 ; "Interpretation semantics for this word are undefined."
@@ -111,6 +118,7 @@ code cquote, 'c"', IMMEDIATE
         next
 endcode
 
+; ### s"
 code squote, 's"', IMMEDIATE
 ; CORE  FILE
         _lit '"'
@@ -127,6 +135,7 @@ code squote, 's"', IMMEDIATE
         next
 endcode
 
+; ### ."
 code dotquote, '."', IMMEDIATE
         _ squote
         _lit type
@@ -134,6 +143,7 @@ code dotquote, '."', IMMEDIATE
         next
 endcode
 
+; ### (abort")
 code parenabortquote, '(abort")'        ; flag c-addr --
         _ swap
         _if parenabortquote1
@@ -147,6 +157,7 @@ code parenabortquote, '(abort")'        ; flag c-addr --
         next
 endcode
 
+; ### abort"
 code abortquote, 'abort"', IMMEDIATE
 ; CORE
         _ cquote
@@ -155,6 +166,7 @@ code abortquote, 'abort"', IMMEDIATE
         next
 endcode
 
+; ### cmove
 code cmove, 'cmove'                     ; c-addr1 c-addr2 u --
         popd    rcx                     ; count
         popd    rdi                     ; destination
@@ -165,6 +177,7 @@ cmove2:
         next
 endcode
 
+; ### cmove>
 code cmoveup, 'cmove>'                  ; c-addr1 c-addr2 u --
         popd    rcx
         popd    rdi
@@ -182,6 +195,7 @@ cmoveup2:
         next
 endcode
 
+; ### move
 code move, 'move'                       ; addr1 addr2 u --
         _ tor
         _ twodup
@@ -196,6 +210,7 @@ code move, 'move'                       ; addr1 addr2 u --
         next
 endcode
 
+; ### fill
 code fill, 'fill'                       ; c-addr u char --
         mov     rax, rbx                ; char in AL
         mov     rcx, [rbp]              ; count in RCX
@@ -208,6 +223,7 @@ code fill, 'fill'                       ; c-addr u char --
         next
 endcode
 
+; ### erase
 code erase, 'erase'                     ; addr u --
         xor     al, al                  ; 0 in AL
         mov     rcx, rbx                ; count in RCX
@@ -220,12 +236,14 @@ code erase, 'erase'                     ; addr u --
         next
 endcode
 
+; ### buffer:
 code buffer_colon, 'buffer:'
         _ create
         _ allot
         next
 endcode
 
+; ### compare
 code compare, 'compare'                 ; c-addr1 u1 c-addr2 u2 -- n
 ; STRING
 ; adapted from Win32Forth
@@ -248,6 +266,7 @@ code compare, 'compare'                 ; c-addr1 u1 c-addr2 u2 -- n
         next
 endcode
 
+; ### s=
 code sequal, 's='                       ; addr1 addr2 len -- flag
         _ ?dup
         _if sequal1
@@ -275,6 +294,7 @@ code sequal, 's='                       ; addr1 addr2 len -- flag
         next
 endcode
 
+; ### upc
 code upc, 'upc'
         cmp     rbx, 'a'
         jl      .1
@@ -285,6 +305,7 @@ code upc, 'upc'
         next
 endcode
 
+; ### is=
 code isequal, 'is='                     ; addr1 addr2 len -- flag
         _ ?dup
         _if isequal1
@@ -325,6 +346,7 @@ code isequal, 'is='                     ; addr1 addr2 len -- flag
         next
 endcode
 
+; ### str=
 code strequal, 'str='                   ; addr1 len1 addr2 len2 -- flag
         _ rot
         _ tuck
@@ -338,6 +360,7 @@ code strequal, 'str='                   ; addr1 len1 addr2 len2 -- flag
         next
 endcode
 
+; ### istr=
 code istrequal, 'istr='                 ; addr1 len1 addr2 len2 -- flag
         _ rot                           ; -- addr1 addr2 len2 len1
         _ tuck                          ; -- addr1 addr2 len1 len2 len1
@@ -351,6 +374,7 @@ code istrequal, 'istr='                 ; addr1 len1 addr2 len2 -- flag
         next
 endcode
 
+; ### /string
 code slashstring, '/string'             ; c-addr1 u1 n -- c-addr2 u2
         sub     [rbp], rbx
         add     [rbp + BYTES_PER_CELL], rbx
@@ -358,6 +382,7 @@ code slashstring, '/string'             ; c-addr1 u1 n -- c-addr2 u2
         next
 endcode
 
+; ### count
 code count, 'count'                     ; c-addr -- c-addr+1 u
 ; CORE 6.1.0980
         mov     al, [rbx]
@@ -367,6 +392,7 @@ code count, 'count'                     ; c-addr -- c-addr+1 u
         next
 endcode
 
+; ### -trailing
 code dashtrailing, '-trailing'          ; c-addr u1 -- c-addr u2
 ; STRING
         test    rbx, rbx
