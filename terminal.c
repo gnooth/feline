@@ -18,6 +18,7 @@
 #include <windows.h>
 #else
 #include <termios.h>
+#include <sys/ioctl.h>
 #endif
 
 #include "forth.h"
@@ -65,6 +66,7 @@ void prep_terminal ()
   otio = tio;
   tio.c_lflag &= ~(ICANON | ECHO);
   tcsetattr (tty, TCSADRAIN, &tio);
+  setvbuf(stdin, NULL, _IONBF, 0);
   line_input_data = 0;
   terminal_prepped = 1;
 #endif
@@ -78,12 +80,19 @@ void deprep_terminal ()
 #endif
 }
 
-#ifdef WIN64
 Cell os_key_avail()
 {
+#ifdef WIN64
   return _kbhit() ? (Cell)-1 : 0;
-}
+#else
+  // Linux
+  int chars_avail = 0;
+  int tty = fileno (stdin);
+  if (ioctl (tty, FIONREAD, &chars_avail) == 0)
+    return chars_avail ? (Cell)-1 : 0;
+  return 0;
 #endif
+}
 
 int os_key()
 {
