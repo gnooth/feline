@@ -13,6 +13,50 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+: test-key ( -- )
+   begin
+      key?
+   until
+   begin
+      key?
+   while
+      key h.
+   repeat ;
+
+windows? [if]
+
+: ekey ( -- x )                         \ FACILITY EXT
+   begin
+      key?
+   until
+   key
+   dup 0= if
+      drop
+      key $8000 or
+      exit
+   then
+   dup $80 u< if                        \ normal character
+      exit
+   then
+   dup $e0 if
+      drop
+      key $8000 or
+      exit
+   then ;
+
+$804d constant k-right
+$804b constant k-left
+$8048 constant k-up
+$8050 constant k-down
+$8047 constant k-home
+$804f constant k-end
+$8053 constant k-delete
+$8049 constant k-prior
+$8051 constant k-next
+
+[else]
+
+\ Linux
 : ekey ( -- x )                         \ FACILITY EXT
    begin
       key?
@@ -34,6 +78,8 @@ $1b5b46   constant k-end
 $1b5b337e constant k-delete
 $1b5b357e constant k-prior
 $1b5b367e constant k-next
+
+[then]
 
 : ekey>char ( x -- x false | char true )
 \ FACILITY EXT
