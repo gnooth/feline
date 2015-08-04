@@ -76,3 +76,25 @@ code cell, 'cell'
         mov     rbx, BYTES_PER_CELL
         next
 endcode
+
+; ### linux?
+code linux?, 'linux?'
+        pushrbx
+%ifdef WIN64
+        xor     ebx, ebx
+%else
+        mov     rbx, -1
+%endif
+        next
+endcode
+
+; ### windows?
+code windows?, 'windows?'
+        pushrbx
+%ifdef WIN64
+        mov     rbx, -1
+%else
+        xor     ebx, ebx
+%endif
+        next
+endcode
