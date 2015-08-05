@@ -212,6 +212,7 @@ create restore-buffer 258 allot
 
 : do-next ( -- )
    history-length 0= if exit then
+   history-offset 0< if exit then
    history-offset history-length 1- < if
       1 +to history-offset
       current-history
@@ -223,6 +224,7 @@ create restore-buffer 258 allot
       then
    else
       clear-line
+      -1 to history-offset
    then ;
 
 : do-enter ( -- )
