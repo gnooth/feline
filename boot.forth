@@ -19,6 +19,7 @@ include bracket-if.forth
 include case.forth
 include dump.forth
 include see.forth
+include ekey.forth
 include accept.forth
 
 : sh 10 parse ?dup if system else drop then ;
