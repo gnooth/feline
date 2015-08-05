@@ -60,6 +60,7 @@ $8051 constant k-next
 : ekey ( -- x )                         \ FACILITY EXT
    begin
       key?
+      20 ms
    until
    0
    begin
