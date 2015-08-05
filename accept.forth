@@ -59,9 +59,6 @@ $1b constant #esc
 : redisplay-line ( -- )
    bufstart number-chars-accepted type ;
 
-: do-escape ( -- )
-   clear-line ;
-
 \ The number of slots allocated for the history list.
 100 constant history-size
 
@@ -191,6 +188,10 @@ create restore-buffer 258 allot
       then
    then ;
 
+: do-escape ( -- )
+   clear-line
+   -1 to history-offset ;
+
 : do-previous ( -- )
    history-length 0= if exit then
    history-offset 0< if
@@ -270,7 +271,6 @@ create restore-buffer 258 allot
       endof
       #esc of
          do-escape
-         -1 to history-offset
       endof
       3 of                              \ control c
          bye
