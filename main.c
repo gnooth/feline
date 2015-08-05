@@ -379,6 +379,18 @@ Cell os_ticks()
 #endif
 }
 
+#ifdef WIN64
+void os_ms(DWORD ms)
+{
+  Sleep(ms);
+}
+#else
+void os_ms(unsigned int ms)
+{
+  usleep(ms * 1000);
+}
+#endif
+
 void os_system(const char *filename)
 {
   system(filename);

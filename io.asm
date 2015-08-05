@@ -720,6 +720,27 @@ code flush_file, 'flush-file'           ; fileid -- ior
         next
 endcode
 
+extern os_ms
+
+; ### ms
+code ms, 'ms'
+; FACILITY EXT
+%ifdef WIN64
+        popd    rcx
+        push    rbp
+        mov     rbp, [saved_rbp_data]
+        sub     rsp, 32
+%else
+        popd    rdi
+%endif
+        xcall   os_ms
+%ifdef WIN64
+        add     rsp, 32
+        pop     rbp
+%endif
+        next
+endcode
+
 extern os_system
 
 ; ### system
