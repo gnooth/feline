@@ -231,6 +231,7 @@ create restore-buffer 258 allot
    add-history
    save-history
    space
+   -1 to history-offset
    true to done? ;
 
 : do-home ( -- )
@@ -308,6 +309,7 @@ create restore-buffer 258 allot
    bufstart dot + c!
    1 +to dot
    1 +to number-chars-accepted
+   -1 to history-offset
    .full ;
 
 : new-accept ( c-addr +n1 -- +n2 )
@@ -323,7 +325,6 @@ create restore-buffer 258 allot
       ekey
       dup bl $7f within if
          do-normal-char
-         -1 to history-offset
       else
          do-command
       then
