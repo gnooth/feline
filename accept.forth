@@ -74,7 +74,7 @@ $1b constant #esc
 \ An array of history entries.
 create history-array  history-size cells allot  history-array history-size cells erase
 
-: current-history  ( -- addr )
+: current-history ( -- addr )
    history-array 0= if 0 exit then      \ shouldn't happen
    history-offset 0 history-length within if
       history-array history-offset cells + @
@@ -82,15 +82,11 @@ create history-array  history-size cells allot  history-array history-size cells
       0
    then ;
 
-\ Returns the address of the first (i.e. zeroth) cell in the history array.
-: first-history  ( -- addr )
+\ Returns the address of the last occupied cell in the history array.
+: last-history ( -- addr )
    history-array 0= if 0 exit then      \ shouldn't happen
-   history-array ;
-
-\ Returns the address of the last cell in the history array.
-: last-history  ( -- addr )
-   history-array 0= if 0 exit then      \ shouldn't happen
-   history-array history-size 1- cells + ;
+   history-length 0= if 0 exit then
+   history-array history-length 1- cells + ;
 
 : history ( -- )
    history-array 0= if exit then        \ shouldn't happen
@@ -117,7 +113,7 @@ create restore-array 10 cells allot
 
 create restore-buffer 258 allot
 
-: read-history-line  ( fileid -- c-addr u2 )
+: read-history-line ( fileid -- c-addr u2 )
    restore-buffer 256 rot read-line     \ -- u2 flag ior
    0= if
       ( flag ) if
@@ -129,7 +125,7 @@ create restore-buffer 258 allot
       2drop 0 0
    then ;
 
-: store-history-line  ( c-addr1 u -- c-addr2 )
+: store-history-line ( c-addr1 u -- c-addr2 )
    ?dup if
       \ non-zero count
       dup 1+ allocate 0= if
@@ -181,6 +177,9 @@ create restore-buffer 258 allot
 
 : add-history ( -- )
    number-chars-accepted if
+      last-history ?dup if
+         @ count bufstart number-chars-accepted compare 0= if exit then
+      then
       history-length history-size < if
          number-chars-accepted 1+ allocate 0= if
             >r
@@ -204,7 +203,7 @@ create restore-buffer 258 allot
       current-history
       ?dup if
          clear-line
-         count dup to number-chars-accepted
+         count dup to number-chars-accepted dup to dot
          bufstart swap cmove
          redisplay-line
       then
@@ -217,7 +216,7 @@ create restore-buffer 258 allot
       current-history
       ?dup if
          clear-line
-         count dup to number-chars-accepted
+         count dup to number-chars-accepted dup to dot
          bufstart swap cmove
          redisplay-line
       then
@@ -226,15 +225,13 @@ create restore-buffer 258 allot
    then ;
 
 : do-enter ( -- )
-   dot number-chars-accepted = if
-      add-history
-      save-history
-      space
-      true to done?
-   else
-      cr ." dot = " dot . ."  number-chars-accepted = " number-chars-accepted .
-      cr ." line = |" bufstart number-chars-accepted type ." |"
-   then ;
+   dot number-chars-accepted < if
+      bufstart dot + number-chars-accepted dot - type
+   then
+   add-history
+   save-history
+   space
+   true to done? ;
 
 : do-home ( -- )
    dot backspaces
@@ -323,7 +320,7 @@ create restore-buffer 258 allot
       number-chars-accepted buflen <
       done? 0= and
    while
-      ( ekey ) key
+      ekey
       dup bl $7f within if
          do-normal-char
          -1 to history-offset
