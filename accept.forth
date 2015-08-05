@@ -21,23 +21,45 @@ $1b constant #esc
 
 0 value bufstart
 0 value buflen
+0 value dot
 0 value number-chars-accepted
 0 value done?
 
-: do-bs  ( -- )
-   number-chars-accepted if
+: .full ( -- )
+   dot backspaces
+   bufstart number-chars-accepted type
+
+   \ FIXME fix display in case we've deleted 1 char in the middle of the line
+   space #bs emit
+
+   number-chars-accepted backspaces
+   bufstart dot type ;
+
+: do-bs ( -- )
+   number-chars-accepted 0= if exit then
+   dot 0= if exit then
+   number-chars-accepted dot = if
       -1 +to number-chars-accepted
+      -1 +to dot
       #bs emit space #bs emit
-   then ;
+      exit
+   then
+   bufstart dot + dup 1- number-chars-accepted dot - cmove
+   #bs emit
+   -1 +to dot
+   -1 +to number-chars-accepted
+   .full
+;
 
-: clear-line  ( -- )
+: clear-line ( -- )
    number-chars-accepted dup backspaces dup spaces backspaces
-   0 to number-chars-accepted ;
+   0 to number-chars-accepted
+   0 to dot ;
 
-: redisplay-line  ( -- )
+: redisplay-line ( -- )
    bufstart number-chars-accepted type ;
 
-: do-escape  ( -- )
+: do-escape ( -- )
    clear-line ;
 
 \ The number of slots allocated for the history list.
@@ -70,14 +92,14 @@ create history-array  history-size cells allot  history-array history-size cells
    history-array 0= if 0 exit then      \ shouldn't happen
    history-array history-size 1- cells + ;
 
-: history  ( -- )
+: history ( -- )
    history-array 0= if exit then        \ shouldn't happen
    history-length 0 ?do
       history-array i cells + @
       cr count type
    loop ;
 
-: save-history  ( -- )
+: save-history ( -- )
    history-array 0= if exit then        \ shouldn't happen
    s" .history" w/o create-file 0= if   \ -- fileid
       history-length 0 ?do
@@ -91,9 +113,9 @@ create history-array  history-size cells allot  history-array history-size cells
       close-file drop
    then ;
 
-create restore-array  10 cells allot
+create restore-array 10 cells allot
 
-create restore-buffer  258 allot
+create restore-buffer 258 allot
 
 : read-history-line  ( fileid -- c-addr u2 )
    restore-buffer 256 rot read-line     \ -- u2 flag ior
@@ -120,7 +142,7 @@ create restore-buffer  258 allot
       0
    then ;
 
-: allocate-history-entry  ( c-addr u -- alloc-addr )
+: allocate-history-entry ( c-addr u -- alloc-addr )
    dup 1+ allocate 0= if                \ -- c-addr u alloc-addr
       dup >r
       place
@@ -129,7 +151,7 @@ create restore-buffer  258 allot
       -1 abort" allocation failed"
    then ;
 
-: restore-history  ( -- )
+: restore-history ( -- )
    s" .history" r/o open-file 0= if
       history-array history-size cells erase
       0 to history-length
@@ -152,12 +174,12 @@ create restore-buffer  258 allot
       again
    then ;
 
-: clear-history  ( -- )
+: clear-history ( -- )
    history-array history-size cells erase
    0 to history-length
    -1 to history-offset ;
 
-: add-history  ( -- )
+: add-history ( -- )
    number-chars-accepted if
       history-length history-size < if
          number-chars-accepted 1+ allocate 0= if
@@ -170,7 +192,7 @@ create restore-buffer  258 allot
       then
    then ;
 
-: do-previous
+: do-previous ( -- )
    history-length 0= if exit then
    history-offset 0< if
       history-length to history-offset  \ most recent entry is at highest offset
@@ -188,7 +210,7 @@ create restore-buffer  258 allot
       then
    then ;
 
-: do-next  ( -- )
+: do-next ( -- )
    history-length 0= if exit then
    history-offset history-length 1- < if
       1 +to history-offset
@@ -203,13 +225,38 @@ create restore-buffer  258 allot
       clear-line
    then ;
 
-: do-enter  ( -- )
-   add-history
-   save-history
-   space
-   true to done? ;
+: do-enter ( -- )
+   dot number-chars-accepted = if
+      add-history
+      save-history
+      space
+      true to done?
+   else
+      cr ." dot = " dot . ."  number-chars-accepted = " number-chars-accepted .
+      cr ." line = |" bufstart number-chars-accepted type ." |"
+   then ;
 
-: do-command  ( n -- )
+: do-home ( -- )
+   dot backspaces
+   0 to dot ;
+
+: do-end ( -- )
+   bufstart dot + number-chars-accepted dot - type
+   number-chars-accepted to dot ;
+
+: do-right ( -- )
+   dot number-chars-accepted < if
+      bufstart dot + c@ emit
+      1 +to dot
+   then ;
+
+: do-left ( -- )
+   dot 0 > if
+      #bs emit
+      -1 +to dot
+   then ;
+
+: do-command ( n -- )
    case
       #lf of \ Linux
          do-enter
@@ -227,28 +274,58 @@ create restore-buffer  258 allot
          do-escape
          -1 to history-offset
       endof
+      3 of                              \ control c
+         bye
+      endof
       $10 of                            \ control p
-        do-previous
+         do-previous
       endof
       $0e of                            \ control n
-        do-next
+         do-next
+      endof
+      k-up of
+         do-previous
+      endof
+      k-down of
+         do-next
+      endof
+      k-left of
+         do-left
+      endof
+      k-right of
+         do-right
+      endof
+      k-home of
+         do-home
+      endof
+      k-end of
+         do-end
       endof
    endcase ;
 
-: new-accept  ( c-addr +n1 -- +n2 )
+: do-normal-char ( c -- )
+   dot number-chars-accepted < if
+      bufstart dot + dup 1+ number-chars-accepted dot - cmove>
+   then
+   dup emit
+   bufstart dot + c!
+   1 +to dot
+   1 +to number-chars-accepted
+   .full ;
+
+: new-accept ( c-addr +n1 -- +n2 )
    to buflen
    to bufstart
    false to done?
    0 to number-chars-accepted
+   0 to dot
    begin
       number-chars-accepted buflen <
       done? 0= and
    while
-      key
+      ( ekey ) key
       dup bl $7f within if
-         dup emit
-         bufstart number-chars-accepted + c!
-         1 +to number-chars-accepted
+         do-normal-char
          -1 to history-offset
       else
          do-command
