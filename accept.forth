@@ -48,8 +48,16 @@ $1b constant #esc
    #bs emit
    -1 +to dot
    -1 +to number-chars-accepted
-   .full
-;
+   .full ;
+
+: do-delete ( -- )
+   dot number-chars-accepted < if
+      -1 +to number-chars-accepted
+      dot number-chars-accepted < if
+         bufstart dot + dup 1+ swap number-chars-accepted dot - cmove
+      then
+      .full                             \ REVIEW
+   then ;
 
 : clear-line ( -- )
    number-chars-accepted dup backspaces dup spaces backspaces
@@ -273,6 +281,7 @@ k-left ,       ' do-left ,
 k-right ,      ' do-right ,
 k-home ,       ' do-home ,
 k-end ,        ' do-end ,
+k-delete ,     ' do-delete ,
 0 ,            ' drop ,                 \ REVIEW
 
 : do-command ( x -- )
