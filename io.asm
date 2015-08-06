@@ -790,3 +790,26 @@ code getenv_, 'getenv'                  ; c-addr1 u1 -- c-addr2
         call    zstrlen
         next
 endcode
+
+extern os_getcwd
+
+; ### getcwd
+code getcwd_, 'getcwd'
+%ifdef WIN64
+        popd    rdx
+        popd    rcx
+        push    rbp
+        mov     rbp, [saved_rbp_data]
+        sub     rsp, 32
+%else
+        popd    rsi
+        popd    rdi
+%endif
+        xcall   os_getcwd
+%ifdef WIN64
+        add     rsp, 32
+        pop     rbp
+%endif
+        pushd   rax
+        next
+endcode

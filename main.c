@@ -401,6 +401,17 @@ char *os_getenv(const char *name)
   return getenv(name);
 }
 
+char *os_getcwd(char * buf, size_t size)
+{
+  // REVIEW error handling
+#ifdef WIN64
+  GetCurrentDirectory(size, buf);
+#else
+  getcwd(buf, size);
+#endif
+  return buf;
+}
+
 void os_bye()
 {
   deprep_terminal();
