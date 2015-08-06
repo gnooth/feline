@@ -257,51 +257,26 @@ create restore-buffer 258 allot
       -1 +to dot
    then ;
 
-: do-command ( n -- )
-   case
-      #lf of \ Linux
-         do-enter
-      endof
-      #cr of \ Windows
-         do-enter
-      endof
-      #bs of \ Windows
-         do-bs
-      endof
-      #del of \ Linux
-         do-bs
-      endof
-      #esc of
-         do-escape
-      endof
-      3 of                              \ control c
-         bye
-      endof
-      $10 of                            \ control p
-         do-previous
-      endof
-      $0e of                            \ control n
-         do-next
-      endof
-      k-up of
-         do-previous
-      endof
-      k-down of
-         do-next
-      endof
-      k-left of
-         do-left
-      endof
-      k-right of
-         do-right
-      endof
-      k-home of
-         do-home
-      endof
-      k-end of
-         do-end
-      endof
-   endcase ;
+create keytable
+
+#lf ,          ' do-enter ,             \ Linux
+#cr ,          ' do-enter ,             \ Windows
+#bs ,          ' do-bs ,                \ Windows
+#del ,         ' do-bs ,                \ Linux
+#esc ,         ' do-escape ,
+3 ,            ' bye ,                  \ control c
+$10 ,          ' do-previous ,          \ control p
+$0e ,          ' do-next ,              \ control n
+k-up ,         ' do-previous ,
+k-down ,       ' do-next ,
+k-left ,       ' do-left ,
+k-right ,      ' do-right ,
+k-home ,       ' do-home ,
+k-end ,        ' do-end ,
+0 ,            ' drop ,                 \ REVIEW
+
+: do-command ( x -- )
+   keytable switch ;
 
 : do-normal-char ( c -- )
    dot number-chars-accepted < if
