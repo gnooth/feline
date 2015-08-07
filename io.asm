@@ -767,7 +767,7 @@ endcode
 extern os_getenv
 
 ; ### getenv
-code getenv_, 'getenv'                  ; c-addr1 u1 -- c-addr2
+code getenv_, 'getenv'                  ; c-addr1 u1 -- c-addr2 u2
         _ here
         _ zplace
         _ here
@@ -806,6 +806,27 @@ code getcwd_, 'getcwd'
         popd    rdi
 %endif
         xcall   os_getcwd
+%ifdef WIN64
+        add     rsp, 32
+        pop     rbp
+%endif
+        pushd   rax
+        next
+endcode
+
+extern forth_home
+
+; ### forth-home
+code forth_home_, 'forth-home'
+%ifdef WIN64
+        push    rbp
+        mov     rbp, [saved_rbp_data]
+        sub     rsp, 32
+%else
+        popd    rsi
+        popd    rdi
+%endif
+        xcall   forth_home
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
