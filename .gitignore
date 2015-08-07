@@ -4,3 +4,6 @@ forth
 *.obj
 forth.exe
 *.pdb
+forth_home.h
+forth_home
+forth_home.exe
