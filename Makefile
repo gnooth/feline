@@ -4,16 +4,20 @@
 # To build on Windows with the Microsoft compiler and linker:
 #    make forth.exe
 
-uname_s := $(shell sh -c 'uname -s 2>/dev/null || echo not')
-
 FLAGS =
 
-ifneq (,$(findstring MINGW,$(uname_s)))
+ifeq ($(OS),Windows_NT)
 	FLAGS += -DWIN64 -DWIN64_NATIVE
 endif
 
-forth:  main.o terminal.o forth.o
+forth:  forth_home.h main.o terminal.o forth.o
 	gcc main.o terminal.o forth.o -o forth
+
+forth_home.h: forth_home
+	./forth_home
+
+forth_home: forth_home.c
+	gcc forth_home.c -o forth_home
 
 main.o:	forth.h main.c Makefile
 	gcc -D_GNU_SOURCE $(FLAGS) -c -o main.o main.c
@@ -66,6 +70,7 @@ clean:
 	-rm -f forth.exe
 	-rm -f main.o*
 	-rm -f forth.o*
+	-rm -f forth_home.h forth_home.exe forth_home
 
 zip:
 	-rm -f forth.zip
