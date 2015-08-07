@@ -51,6 +51,13 @@ code zstrlen, 'zstrlen'                 ; addr -- u
         next
 endcode
 
+; ### zcount
+code zcount, 'zcount'                   ; zaddr -- zaddr len
+        _dup
+        _ zstrlen
+        next
+endcode
+
 ; ### string,
 code stringcomma, 'string,'             ; addr u --
         _ here
