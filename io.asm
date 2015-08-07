@@ -822,9 +822,6 @@ code forth_home_, 'forth-home'
         push    rbp
         mov     rbp, [saved_rbp_data]
         sub     rsp, 32
-%else
-        popd    rsi
-        popd    rdi
 %endif
         xcall   forth_home
 %ifdef WIN64
