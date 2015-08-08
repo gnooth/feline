@@ -1,4 +1,4 @@
-; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -207,6 +207,7 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         next
 endcode
 
+; ### included
 code included, 'included'               ; i*x c-addr u -- j*x
 ; FILE
         _ ?dup
@@ -238,7 +239,8 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ ?cr
         _dotq "Unable to open "
         _ type
-        _ abort
+        _lit -38
+        _ throw
         _then included3
         _then included2
         _else included1

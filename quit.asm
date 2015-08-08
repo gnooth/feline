@@ -13,8 +13,10 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+; ### line-input?
 value line_input, 'line-input?', -1
 
+; ### ok
 code ok, 'ok'
         _ statefetch
         _zeq
@@ -24,6 +26,7 @@ code ok, 'ok'
         next
 endcode
 
+; ### accept-line
 code accept_line, 'accept-line'         ; c-addr +n1 -- +n2
         xor     ecx, ecx                ; counter in RCX
         _ drop                          ; FIXME ignore +n1 for now
@@ -53,6 +56,7 @@ accept_line_exit:
         next
 endcode
 
+; ### (accept)
 code paren_accept, '(accept)'           ; c-addr +n1 -- +n2
         _ line_input
         _if accept1
@@ -96,20 +100,26 @@ out:
 endcode
 
 ; CORE
+; ### accept
 deferred accept, 'accept', paren_accept ; c-addr +n1 -- +n2
 
+; ### #tib
 variable ntib, '#tib', 0
 
+; ### 'tib
 variable tick_tib, "'tib", 0            ; initialized in main()
 
+; ### tib
 code tib, 'tib'
         _ tick_tib
         _fetch
         next
 endcode
 
+; ### >in
 variable toin, '>in', 0
 
+; ### query
 code query, 'query'                     ; --
 ; CORE EXT in Forth 94 but removed in Forth 200x
         _ tib
@@ -122,8 +132,10 @@ code query, 'query'                     ; --
         next
 endcode
 
+; ### msg
 variable msg, 'msg', 0
 
+; ### do-error
 code do_error, 'do-error'               ; n --
         _ dup
         _ minusone
@@ -148,6 +160,7 @@ code do_error, 'do-error'               ; n --
         jmp     quit
         _then do_error2
         ; otherwise...
+        _ ?cr
         _dotq "Exception # "
         _ dot
         mov     rbp, [sp0_data]
@@ -155,6 +168,7 @@ code do_error, 'do-error'               ; n --
         next
 endcode
 
+; ### quit
 code quit, 'quit'                       ; --            r:  i*x --
 ; CORE
         _ lbrack
@@ -182,6 +196,7 @@ code quit, 'quit'                       ; --            r:  i*x --
         next                            ; for decompiler
 endcode
 
+; ### reset
 code reset, 'reset'                     ; i*x --        r: j*x --
 ; This is the CORE version of ABORT (6.1.0670).
 ; "Empty the data stack and perform the function of QUIT, which includes
@@ -191,6 +206,7 @@ code reset, 'reset'                     ; i*x --        r: j*x --
         next                            ; for decompiler
 endcode
 
+; ### abort
 code abort, 'abort'                     ; i*x --        r: j*x --
 ; This is the EXCEPTION EXT version of ABORT (9.6.2.0670).
 ; "Perform the function of -1 THROW."
