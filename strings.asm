@@ -38,7 +38,7 @@ code zplace, 'zplace'                   ; c-addr1 u c-addr2 --
 endcode
 
 ; ### zstrlen
-code zstrlen, 'zstrlen'                 ; addr -- u
+code zstrlen, 'zstrlen'                 ; zaddr -- len
         mov     rcx, rbx
 .1:
         mov     al, [rbx]
@@ -55,6 +55,14 @@ endcode
 code zcount, 'zcount'                   ; zaddr -- zaddr len
         _dup
         _ zstrlen
+        next
+endcode
+
+; ### zappend
+code zappend, 'zappend'                 ; c-addr len zdest --
+        _ zcount
+        _ plus
+        _ zplace
         next
 endcode
 
