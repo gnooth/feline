@@ -32,8 +32,10 @@
 ;       sp! drop r>
 ;    then ;
 
+; ### handler
 variable handler, 'handler', 0
 
+; ### catch
 code catch, 'catch'
         _ spfetch
         _ tor
@@ -53,6 +55,7 @@ code catch, 'catch'
         next
 endcode
 
+; ### throw
 code throw, 'throw'
         _ ?dup
         _if throw1
