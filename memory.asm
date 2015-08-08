@@ -1,4 +1,4 @@
-; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
 
 extern os_allocate
 
+; ### allocate
 code allocate, 'allocate'               ; u -- a-addr ior
 ; MEMORY
 %ifdef WIN64
@@ -25,7 +26,7 @@ code allocate, 'allocate'               ; u -- a-addr ior
 %else
         mov     rdi, rbx
 %endif
-        call    os_allocate
+        xcall   os_allocate
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
@@ -42,6 +43,7 @@ endcode
 
 extern os_free
 
+; ### free
 code free_, 'free'                      ; a-addr -- ior
 ; MEMORY
 %ifdef WIN64
@@ -52,7 +54,7 @@ code free_, 'free'                      ; a-addr -- ior
 %else
         mov     rdi, rbx
 %endif
-        call    os_free
+        xcall   os_free
 %ifdef WIN64
         add     rsp, 32
         pop     rbp
