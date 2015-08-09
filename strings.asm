@@ -13,6 +13,40 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+; ### $bufstart
+value stringbuf_start, '$bufstart', 0   ; initialized in main()
+
+; ### $bufend
+code stringbuf_end, '$bufend'
+        _ stringbuf_start
+        _lit 1024
+        _ plus
+        next
+endcode
+
+; ### $buf
+value stringbuf, '$buf', 0
+
+; ### +$buf
+code plus_stringbuf, '+$buf'
+        _ stringbuf
+        _ count
+        _ plus
+        _oneplus
+        mov     [stringbuf_data], rbx
+        poprbx
+        _ stringbuf
+        _ stringbuf_end
+        _lit 258
+        _ minus
+        _ ugt
+        _if .1
+        mov     rax, [stringbuf_start_data]
+        mov     [stringbuf_data], rax
+        _then .1
+        next
+endcode
+
 ; ### place
 code place, 'place'                     ; c-addr1 u c-addr2 --
         _ threedup
@@ -73,6 +107,9 @@ code stringcomma, 'string,'             ; addr u --
         _ oneplus
         _ allot
         _ place
+        ; REVIEW terminal null byte
+        _ zero
+        _ ccomma
         next
 endcode
 
@@ -123,13 +160,14 @@ code cquote, 'c"', IMMEDIATE
         _lit '"'
         _ parse                         ; -- addr len
         _ statefetch
-        _if cquote1
+        _if .1
         _ cliteral
-        _else cquote1
-        _ syspad
+        _else .1
+        _ stringbuf
         _ place
-        _ syspad
-        _then cquote1
+        _ stringbuf
+        _ plus_stringbuf
+        _then .1
         next
 endcode
 
@@ -139,14 +177,15 @@ code squote, 's"', IMMEDIATE
         _lit '"'
         _ parse                         ; -- addr len
         _ statefetch
-        _if squote1
+        _if .1
         _ sliteral
-        _else squote1
-        _ syspad
+        _else .1
+        _ stringbuf
         _ place
-        _ syspad
+        _ stringbuf
+        _ plus_stringbuf
         _ count
-        _then squote1
+        _then .1
         next
 endcode
 

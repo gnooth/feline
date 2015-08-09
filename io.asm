@@ -215,7 +215,7 @@ extern os_file_status
 ; ### file-status
 code file_status, 'file-status'         ; c-addr u -- x ior
 ; "If the file exists, ior is zero; otherwise ior is the implementation-defined I/O result code."
-        _ here                          ; FIXME use syspad or something similar
+        _ here                          ; FIXME use $buf
         _ zplace
         _ here
 %ifdef WIN64
@@ -247,7 +247,7 @@ extern os_open_file
 ; ### open-file
 code open_file, 'open-file'             ; c-addr u fam -- fileid ior
         _ rrot                          ; -- fam c-addr u
-        _ here                          ; FIXME use syspad or something similar
+        _ here                          ; FIXME use $buf
         _ zplace                        ; -- fam
         _ here                          ; -- fam here
         _ swap                          ; -- here fam
@@ -283,7 +283,7 @@ extern os_create_file
 ; ### create-file
 code create_file, 'create-file'         ; c-addr u fam -- fileid ior
         _ rrot                          ; -- fam c-addr u
-        _ here                          ; FIXME use syspad or something similar
+        _ here                          ; FIXME use $buf
         _ zplace                        ; -- fam
         _ here                          ; -- fam here
         _ swap                          ; -- here fam
@@ -745,7 +745,7 @@ extern os_system
 
 ; ### system
 code system_, 'system'                  ; c-addr u --
-        _ here                          ; FIXME use syspad or something similar
+        _ here                          ; FIXME use $buf
         _ zplace
         _ here
 %ifdef WIN64
@@ -817,7 +817,7 @@ endcode
 extern forth_home
 
 ; ### forth-home
-code forth_home_, 'forth-home'
+code forth_home_, 'forth-home'          ; -- zaddr
 %ifdef WIN64
         push    rbp
         mov     rbp, [saved_rbp_data]

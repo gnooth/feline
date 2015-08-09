@@ -67,7 +67,8 @@ int main(int argc, char **argv, char **env)
   extern Cell cp_data;
   extern Cell limit_data;
   extern Cell limit_c_data;
-  extern Cell tick_syspad_data;
+  extern Cell stringbuf_start_data;
+  extern Cell stringbuf_data;
   extern Cell tick_tib_data;
   extern Cell sp0_data;
   extern Cell tick_tick_word_data;
@@ -96,7 +97,8 @@ int main(int argc, char **argv, char **env)
   cp_data = (Cell) code_space;
   limit_data = (Cell) data_space + data_space_size;
   limit_c_data = (Cell) code_space + code_space_size;
-  tick_syspad_data = (Cell) malloc(1024);
+  stringbuf_start_data = (Cell) malloc(1024);
+  stringbuf_data = stringbuf_start_data;
   tick_tib_data = (Cell) malloc(256);
   sp0_data = (Cell) malloc(1024) + (1024 - 64);
   tick_tick_word_data = (Cell) malloc(256);
