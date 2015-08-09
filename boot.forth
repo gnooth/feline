@@ -13,15 +13,15 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-include vocabulary.forth
-include defer.forth
-include bracket-if.forth
-include case.forth
-include dump.forth
-include see.forth
-include ekey.forth
-include switch.forth
-include accept.forth
+include-system-file vocabulary.forth
+include-system-file defer.forth
+include-system-file bracket-if.forth
+include-system-file case.forth
+include-system-file dump.forth
+include-system-file see.forth
+include-system-file ekey.forth
+include-system-file switch.forth
+include-system-file accept.forth
 
 : sh 10 parse ?dup if system else drop then ;
 

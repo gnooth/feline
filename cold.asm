@@ -60,6 +60,7 @@ code cold, 'cold'                       ; --
         _ store
         _then cold1
         _squote "boot.forth"
+        _ system_file_pathname
         _lit included_cfa
         _ catch
         _ ?dup

@@ -249,12 +249,52 @@ code included, 'included'               ; i*x c-addr u -- j*x
         next
 endcode
 
+; ### include
 code include, 'include'
         _ parse_name                    ; -- c-addr u
         _ included
         next
 endcode
 
+; ### system-file-pathname
+code system_file_pathname, 'system-file-pathname'
+; c-addr1 u1 -- c-addr2 u2
+        _ forth_home_
+        _ zcount
+        _ stringbuf
+        _oneplus
+        _ zplace
+%ifdef WIN64
+        _squote "\\"
+%else
+        _squote "/"
+%endif
+        _ stringbuf
+        _oneplus
+        _ zappend
+        _ stringbuf
+        _oneplus
+        _ zappend
+        _ stringbuf
+        _oneplus
+        _ zstrlen
+        _ stringbuf
+        _ cstore
+        _ stringbuf
+        _ count
+        _ plus_stringbuf
+        next
+endcode
+
+; ### include-system-file
+code include_system_file, 'include-system-file'
+        _ parse_name
+        _ system_file_pathname
+        _ included
+        next
+endcode
+
+; ### evaluate
 code evaluate, 'evaluate'               ; i*x c-addr u -- j*x
 ; CORE 6.1.1360
 ; "Save the current input source specification. Store minus-one (-1) in
