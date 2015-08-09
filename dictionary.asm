@@ -512,15 +512,6 @@ code pad, 'pad'
         next
 endcode
 
-variable tick_syspad, "'syspad", 0
-
-; ### syspad
-code syspad, 'syspad'
-        pushrbx
-        mov     rbx, [tick_syspad_data]
-        next
-endcode
-
 ; ### latest
 code latest, 'latest'                   ; -- nfa
         _ last
