@@ -100,9 +100,20 @@ create history-array  history-size cells allot  history-array history-size cells
       cr count type
    loop ;
 
+: history-file-pathname ( -- c-addr u )
+   [ linux? ] [if] s" HOME" [else] s" USERPROFILE" [then]
+   getenv                               \ -- c-addr u
+   $buf 1+ zplace
+   s" /" $buf 1+ zappend
+   s" .forth_history" $buf 1+ zappend
+   $buf 1+ zstrlen $buf c!
+   $buf count
+   +$buf ;
+
 : save-history ( -- )
    history-array 0= if exit then        \ shouldn't happen
-   s" .history" w/o create-file 0= if   \ -- fileid
+   history-file-pathname w/o create-file
+   0= if                                \ -- fileid
       history-length 0 ?do
          dup                            \ -- fileid fileid
          history-array i cells + @
@@ -130,19 +141,6 @@ create restore-buffer 258 allot
       2drop 0 0
    then ;
 
-: store-history-line ( c-addr1 u -- c-addr2 )
-   ?dup if
-      \ non-zero count
-      dup 1+ allocate 0= if
-        dup >r
-        place
-        r>                              \ -- c-addr2
-      then
-   else
-      drop
-      0
-   then ;
-
 : allocate-history-entry ( c-addr u -- alloc-addr )
    dup 1+ allocate 0= if                \ -- c-addr u alloc-addr
       dup >r
@@ -153,12 +151,14 @@ create restore-buffer 258 allot
    then ;
 
 : restore-history ( -- )
-   s" .history" r/o open-file 0= if
-      history-array history-size cells erase
-      0 to history-length
-      0 to history-offset
+   history-array history-size cells erase
+   0 to history-length
+   0 to history-offset
+   history-file-pathname r/o open-file 0= if
       >r
       begin
+         history-offset history-size <
+      while
          r@ read-history-line           \ -- c-addr u
          ?dup if
             allocate-history-entry      \ -- alloc-addr
@@ -172,7 +172,10 @@ create restore-buffer 258 allot
             -1 to history-offset
             exit
          then
-      again
+      repeat
+      r> close-file
+      drop                              \ REVIEW
+      -1 to history-offset
    then ;
 
 : clear-history ( -- )
@@ -185,14 +188,16 @@ create restore-buffer 258 allot
       last-history ?dup if
          @ count bufstart number-chars-accepted compare 0= if exit then
       then
+      history-length history-size > if abort" add-history: shouldn't happen" then
+      history-length history-size = if
+         history-array dup cell+ swap history-size 1- cells move
+         -1 +to history-length
+      then
       history-length history-size < if
-         number-chars-accepted 1+ allocate 0= if
-            >r
-            bufstart number-chars-accepted r@ place
-            r> history-array history-length cells + !
-            1 +to history-length
-            -1 to history-offset
-         then
+         bufstart number-chars-accepted
+         allocate-history-entry history-array history-length cells + !
+         1 +to history-length
+         -1 to history-offset
       then
    then ;
 

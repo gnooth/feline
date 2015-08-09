@@ -25,7 +25,7 @@ code stringbuf_end, '$bufend'
 endcode
 
 ; ### $buf
-value stringbuf, '$buf', 0
+value stringbuf, '$buf', 0              ; initialized in main()
 
 ; ### +$buf
 code plus_stringbuf, '+$buf'
