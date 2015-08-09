@@ -1,7 +1,7 @@
-s" tests/tester.forth" file-status nip 0= [if]
-   include tests/tester.forth
-   include tests/core.forth
+linux? [if]
+   include-system-file tests/tester.forth
+   include-system-file tests/core.forth
 [else]
-   include tests\tester.forth
-   include tests\core.forth
+   include-system-file tests\tester.forth
+   include-system-file tests\core.forth
 [then]
