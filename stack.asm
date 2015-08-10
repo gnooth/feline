@@ -13,6 +13,7 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+; ### sp@
 code spfetch, 'sp@'
         lea     rbp, [rbp - BYTES_PER_CELL]
         mov     [rbp], rbx
@@ -20,6 +21,7 @@ code spfetch, 'sp@'
         next
 endcode
 
+; ### sp!
 code spstore, 'sp!'
         mov     rbp, rbx
         mov     rbx, [rbp]
@@ -27,30 +29,36 @@ code spstore, 'sp!'
         next
 endcode
 
+; ### drop
 inline drop, 'drop'
-        poprbx
+        _drop
 endinline
 
+; ### 2drop
 inline twodrop, '2drop'
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 endinline
 
+; ### 3drop
 inline threedrop, '3drop'
         mov     rbx, [rbp + BYTES_PER_CELL * 2]
         lea     rbp, [rbp + BYTES_PER_CELL * 3]
 endinline
 
+; ### 4drop
 inline fourdrop, '4drop'
         mov     rbx, [rbp + BYTES_PER_CELL * 3]
         lea     rbp, [rbp + BYTES_PER_CELL * 4]
         next
 endinline
 
+; ### dup
 inline dup, 'dup'
         pushrbx
 endinline
 
+; ### ?dup
 code ?dup, '?dup'
         test    rbx, rbx
         jz      .1
@@ -59,12 +67,17 @@ code ?dup, '?dup'
         next
 endcode
 
-code twodup, '2dup'
-        _ over
-        _ over
-        next
+; ### 2dup
+code twodup, '2dup'                     ; x1 x2 -- x1 x2 x1 x2
+; CORE
+        mov     rax, [rbp]
+        lea     rbp, [rbp - BYTES_PER_CELL * 2]
+        mov     [rbp], rax
+        mov     [rbp + BYTES_PER_CELL], rbx
+next
 endcode
 
+; ### 3dup
 code threedup, '3dup'                   ; x1 x2 x3 -- x1 x2 x3 x1 x2 x3
         sub     rbp, BYTES_PER_CELL * 3
         mov     [rbp + BYTES_PER_CELL * 2], rbx
@@ -75,6 +88,7 @@ code threedup, '3dup'                   ; x1 x2 x3 -- x1 x2 x3 x1 x2 x3
         next
 endcode
 
+; ### rot
 code rot, 'rot'                         ; x1 x2 x3 -- x2 x3 x1
         mov     rax, [rbp]                      ; x2 in RAX
         mov     rdx, [rbp + BYTES_PER_CELL]     ; x1 in RDX
@@ -84,6 +98,7 @@ code rot, 'rot'                         ; x1 x2 x3 -- x2 x3 x1
         next
 endcode
 
+; ### -rot
 code rrot, '-rot'                       ; x1 x2 x3 -- x3 x1 x2
         popd    rax                     ; x3
         popd    rcx                     ; x2
@@ -94,16 +109,19 @@ code rrot, '-rot'                       ; x1 x2 x3 -- x3 x1 x2
         next
 endcode
 
+; ### over
 inline over, 'over'
         mov     [rbp - BYTES_PER_CELL], rbx
         mov     rbx, [rbp]
         lea     rbp, [rbp - BYTES_PER_CELL]
 endinline
 
+; ### over+
 inline overplus, 'over+'
         add     rbx, [rbp]
 endinline
 
+; ### 2over
 code twoover, '2over'                   ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2
         mov     rax, [rbp + BYTES_PER_CELL * 2]         ; x1
         mov     rdx, [rbp + BYTES_PER_CELL ]            ; x2
@@ -112,11 +130,13 @@ code twoover, '2over'                   ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2
         next
 endcode
 
+; ### nip
 inline nip, 'nip'                       ; x1 x2 -- x2
 ; CORE EXT
         lea     rbp, [rbp + BYTES_PER_CELL]
 endinline
 
+; ### tuck
 code tuck, 'tuck'                       ; x1 x2 -- x2 x1 x2
         popd    rax                     ; x2
         popd    rdx                     ; x1
@@ -126,6 +146,7 @@ code tuck, 'tuck'                       ; x1 x2 -- x2 x1 x2
         next
 endcode
 
+; ### depth
 code depth, 'depth'
         mov     rax, [sp0_data]
         sub     rax, rbp
@@ -134,6 +155,7 @@ code depth, 'depth'
         next
 endcode
 
+; ### rdepth
 code rdepth, 'rdepth'
         pop     rcx                     ; return address
         mov     rax, [rp0_data]
@@ -144,6 +166,7 @@ code rdepth, 'rdepth'
         next
 endcode
 
+; ### pick
 code pick, 'pick'
 ; REVIEW error handling
         shl     rbx, 3
@@ -152,6 +175,7 @@ code pick, 'pick'
         next
 endcode
 
+; ### .s
 code dots, '.s'
         _lit '<'
         _ emit
@@ -176,6 +200,7 @@ code dots, '.s'
         next
 endcode
 
+; ### .rs
 code dotrs, '.rs'
         _lit '<'
         _ emit
@@ -204,12 +229,14 @@ code dotrs, '.rs'
         next
 endcode
 
+; ### swap
 inline swap, 'swap'
         mov     rax, rbx
         mov     rbx, [rbp]
         mov     [rbp], rax
 endinline
 
+; ### 2swap
 code twoswap, '2swap'                   ; x1 x2 x3 x4 -- x3 x4 x1 x2
         mov     rax, [rbp]                              ; x3
         mov     rdx, [rbp + BYTES_PER_CELL]             ; x2
@@ -221,6 +248,7 @@ code twoswap, '2swap'                   ; x1 x2 x3 x4 -- x3 x4 x1 x2
         next
 endcode
 
+; ### >r
 code tor, '>r'
         pop     rax                     ; return address
         push    rbx
@@ -229,6 +257,7 @@ code tor, '>r'
         next                            ; for disassembler
 endcode
 
+; ### dup>r
 code duptor, 'dup>r'
         pop     rax
         push    rbx
@@ -236,6 +265,7 @@ code duptor, 'dup>r'
         next
 endcode
 
+; ### r@
 code rfetch, 'r@'
         pop     rax                     ; return address
         pushrbx
@@ -244,6 +274,7 @@ code rfetch, 'r@'
         next                            ; for disassembler
 endcode
 
+; ### r>
 code rfrom, 'r>'
         pop     rax                     ; return address
         pushrbx
@@ -252,6 +283,7 @@ code rfrom, 'r>'
         next                            ; for disassembler
 endcode
 
+; ### r>drop
 code rfromdrop, 'r>drop'
         pop     rax                     ; return address
         pop     rdx                     ; discard
@@ -259,6 +291,7 @@ code rfromdrop, 'r>drop'
         next
 endcode
 
+; ### rp@
 code rpfetch, 'rp@'
         pushrbx
         mov     rbx, rsp
@@ -266,6 +299,7 @@ code rpfetch, 'rp@'
         next
 endcode
 
+; ### rp!
 code rpstore, 'rp!'
         pop     rax                     ; return address
         mov     rsp, rbx
@@ -273,6 +307,7 @@ code rpstore, 'rp!'
         jmp     rax
 endcode
 
+; ### 2>r
 code twotor, '2>r'                      ; x1 x2 --      r: -- x1 x2
 ; CORE EXT
 ; "Interpretation: Interpretation semantics for this word are undefined."
@@ -285,6 +320,7 @@ code twotor, '2>r'                      ; x1 x2 --      r: -- x1 x2
         next
 endcode
 
+; ### 2r>
 code tworfrom, '2r>'                    ; -- x1 x2      r: x1 x2 --
 ; CORE EXT
 ; "Interpretation: Interpretation semantics for this word are undefined."
@@ -297,6 +333,7 @@ code tworfrom, '2r>'                    ; -- x1 x2      r: x1 x2 --
         next
 endcode
 
+; ### 2r@
 code tworfetch, '2r@'                   ; -- x1 x2      r: x1 x2 -- x1 x2
 ; CORE EXT
 ; "Interpretation: Interpretation semantics for this word are undefined."
@@ -310,6 +347,7 @@ code tworfetch, '2r@'                   ; -- x1 x2      r: x1 x2 -- x1 x2
         next
 endcode
 
+; ### n>r
 code ntor, 'n>r'                        ; i*n +n --     r: -- j*x +n
 ; Forth 200x TOOLS EXT
 ; "Interpretation semantics for this word are undefined."
@@ -332,6 +370,7 @@ code ntor, 'n>r'                        ; i*n +n --     r: -- j*x +n
         next
 endcode
 
+; ### nr>
 code nrfrom, 'nr>'                      ; -- i*x +n     r: j*x +n --
 ; Forth 200x TOOLS EXT
 ; "Interpretation semantics for this word are undefined."
