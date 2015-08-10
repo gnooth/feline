@@ -104,7 +104,8 @@ create history-array  history-size cells allot  history-array history-size cells
    [ linux? ] [if] s" HOME" [else] s" USERPROFILE" [then]
    getenv                               \ -- c-addr u
    $buf 1+ zplace
-   s" /" $buf 1+ zappend
+   [ linux? ] [if] s" /" [else] s" \" [then]
+   $buf 1+ zappend
    s" .forth_history" $buf 1+ zappend
    $buf 1+ zstrlen $buf c!
    $buf count
