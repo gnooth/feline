@@ -20,9 +20,16 @@ value line_input, 'line-input?', -1
 code ok, 'ok'
         _ statefetch
         _zeq
-        _if ok1
+        _if .1
         _dotq " ok"
-        _then ok1
+        _ depth
+        _ ?dup
+        _if .2
+        _lit '-'
+        _ emit
+        _ dot
+        _then .2
+        _then .1
         next
 endcode
 
