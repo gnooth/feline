@@ -49,12 +49,11 @@ endcode
 
 ; ### place
 code place, 'place'                     ; c-addr1 u c-addr2 --
-        _ threedup
-        _ oneplus
+        _ twodup
+        _ cstore
+        _oneplus
         _ swap
         _ move
-        _ cstore
-        _ drop
         next
 endcode
 
