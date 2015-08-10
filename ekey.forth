@@ -39,7 +39,7 @@ windows? [if]
    dup $80 u< if                        \ normal character
       exit
    then
-   dup $e0 if
+   dup $e0 = if
       drop
       key $8000 or
       exit
