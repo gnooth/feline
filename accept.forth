@@ -177,6 +177,8 @@ create restore-buffer 258 allot
       r> close-file
       drop                              \ REVIEW
       -1 to history-offset
+   else
+      drop
    then ;
 
 : clear-history ( -- )
