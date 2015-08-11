@@ -242,6 +242,14 @@ code file_status, 'file-status'         ; c-addr u -- x ior
         next
 endcode
 
+; ### file-exists?
+code file_exists, 'file-exists?'
+        _ file_status
+        _nip
+        _zeq
+        next
+endcode
+
 extern os_open_file
 
 ; ### open-file
