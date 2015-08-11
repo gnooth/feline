@@ -20,31 +20,39 @@
 ; -1              String (via EVALUATE)
 ; 0               User input device
 
+; ### 'source-id
 variable tick_source_id, "'source-id", 0
 
+; ### source-id
 code source_id, 'source-id'             ; -- 0 | -1 | fileid
         _ tick_source_id
         _fetch
         next
 endcode
 
+; ### 'source-buffer
 variable tick_source_buffer, "'source-buffer", 0
 
+; ### source-buffer
 code source_buffer, 'source-buffer'     ; -- addr
         _ tick_source_buffer
         _fetch
         next
 endcode
 
+; ### /source-buffer
 code slash_source_buffer, '/source-buffer'
         _lit 256
         next
 endcode
 
+; ### 'source
 variable tick_source, "'source", 0
 
+; ### #source
 variable nsource, '#source', 0
 
+; ### source
 code source, 'source'                   ; -- c-addr u
 ; CORE 6.1.2216
         _ tick_source
@@ -54,6 +62,7 @@ code source, 'source'                   ; -- c-addr u
         next
 endcode
 
+; ### set-source
 code set_source, 'set-source'           ; c-addr u --
         _ nsource
         _ store
@@ -62,6 +71,7 @@ code set_source, 'set-source'           ; c-addr u --
         next
 endcode
 
+; ### set-input
 code set_input, 'set-input'             ; source-addr source-len source-id --
         _ tick_source_id
         _ store
@@ -69,6 +79,7 @@ code set_input, 'set-input'             ; source-addr source-len source-id --
         next
 endcode
 
+; ### save-input
 code save_input, 'save-input'           ; -- addr len fileid source-buffer >in 7
 ; CORE EXT
         _ source                        ; -- addr len
@@ -84,6 +95,7 @@ code save_input, 'save-input'           ; -- addr len fileid source-buffer >in 7
         next
 endcode
 
+; ### restore-input
 code restore_input, 'restore-input'     ; addr len fileid source-buffer >in 7 -- flag
 ; CORE EXT
         _ drop                          ; REVIEW
@@ -118,10 +130,13 @@ code restore_input, 'restore-input'     ; addr len fileid source-buffer >in 7 --
         next
 endcode
 
+; ### source-line#
 variable source_line_number, 'source-line#', 0
 
+; ### source-file-position
 variable source_file_position, 'source-file-position', 0
 
+; ### refill
 code refill, 'refill'                   ; -- flag
 ; CORE EXT  BLOCK EXT  FILE EXT
 ; "When the input source is a text file, attempt to read the next line
@@ -159,18 +174,22 @@ code refill, 'refill'                   ; -- flag
         next
 endcode
 
+; ### verboseinclude
 value verboseinclude, 'verboseinclude', 0
 
+; ### +verboseinclude
 code plusverboseinclude, '+verboseinclude', IMMEDIATE   ; --
         mov     qword [verboseinclude_data], TRUE
         next
 endcode
 
+; ### -verboseinclude
 code minusverboseinclude, '-verboseinclude', IMMEDIATE  ; --
         mov     qword [verboseinclude_data], FALSE
         next
 endcode
 
+; ### include-file
 code include_file, 'include-file'       ; i*x fileid -- j*x
 ; FILE
         _ save_input
