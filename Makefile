@@ -69,6 +69,7 @@ clean:
 	-rm -f forth
 	-rm -f forth.exe
 	-rm -f main.o*
+	-rm -f terminal.o*
 	-rm -f forth.o*
 	-rm -f forth_home.h forth_home.exe forth_home
 
