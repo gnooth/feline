@@ -795,7 +795,12 @@ code getenv_, 'getenv'                  ; c-addr1 u1 -- c-addr2 u2
         pushd   rbx
         mov     rbx, rax
         pushd   rbx
+        test    rbx, rbx
+        jz      .1
         call    zstrlen
+        next
+.1:
+        xor     ebx, ebx
         next
 endcode
 
