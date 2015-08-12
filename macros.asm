@@ -334,6 +334,10 @@ section .text
         add     rbx, 1                  ; faster than inc rbx
 %endmacro
 
+%macro _twoplus 0                       ; inline version of 2+
+        add     rbx, 2
+%endmacro
+
 %macro _oneminus 0                      ; inline version of 1-
         sub     rbx, 1
 %endmacro

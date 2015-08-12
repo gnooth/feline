@@ -24,6 +24,11 @@ inline oneplus, '1+'
         _oneplus
 endinline
 
+; ### 2+
+inline twoplus, '2+'
+        _twoplus
+endinline
+
 ; ### char+
 inline charplus, 'char+'                ; c-addr1 -- c-addr2
 ; CORE 6.1.0897
