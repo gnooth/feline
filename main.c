@@ -62,7 +62,6 @@ static void sigsegv_handler(int sig, siginfo_t *si, void * context)
 
 int main(int argc, char **argv, char **env)
 {
-  extern Cell line_input_data;
   extern Cell dp_data;
   extern Cell cp_data;
   extern Cell limit_data;

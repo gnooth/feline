@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdio.h>
+#include <stdlib.h>
 #ifdef WIN64
 #include <windows.h>
 #else
@@ -26,13 +27,12 @@
 extern Cell echo_data;
 extern Cell line_input_data;
 
-static int terminal_prepped = 0;
-
 #ifdef WIN64
 static HANDLE console_input_handle = INVALID_HANDLE_VALUE;
 #else
 static int tty;
 static struct termios otio;
+static int terminal_prepped = 0;
 #endif
 
 void prep_terminal ()
@@ -55,13 +55,12 @@ void prep_terminal ()
   // Linux.
   tty = fileno (stdin);
   struct termios tio;
-  if (terminal_prepped)
-    return;
+  char *term;
   if (!isatty (tty))
-    {
-      terminal_prepped = 1;
-      return;
-    }
+    return;
+  term = getenv("TERM");
+  if (term == NULL || !strcmp(term, "dumb"))
+    return;
   tcgetattr (tty, &tio);
   otio = tio;
   tio.c_lflag &= ~(ICANON | ECHO);
