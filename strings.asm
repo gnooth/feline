@@ -47,6 +47,48 @@ code plus_stringbuf, '+$buf'
         next
 endcode
 
+; ### $!
+code copystring, '$!'                   ; $addr1 $addr2 --
+; Upper Deck Forth
+; "Copies the packed, null-terminated string at $addr1 to $addr2. The buffer
+; at $addr2 must be big enough to accept the string, including its length
+; byte and terminal null byte."
+        _ over
+        _cfetch
+        _twoplus
+        _ move
+        next
+endcode
+
+; ### $+
+code appendstring, '$+'                 ; $addr1 $addr2 -- $addr3
+; Upper Deck Forth
+; "Appends the packed, null-terminated string at $addr2 (without its length
+; byte) to the end of the packed, null-terminated string at $addr1 and places
+; the resulting string at the next free location in the temporary string
+; storage location. $addr3 is the address of that location."
+        _ swap
+        _ stringbuf
+        _ copystring
+        _ count
+        _duptor
+        _ stringbuf
+        _ count
+        _ plus
+        _ swap
+        _oneplus
+        _ move
+        _ stringbuf
+        _cfetch
+        _rfrom
+        _ plus
+        _ stringbuf
+        _ cstore
+        _ stringbuf
+        _ plus_stringbuf
+        next
+endcode
+
 ; ### place
 code place, 'place'                     ; c-addr1 u c-addr2 --
         _ twodup
@@ -164,6 +206,33 @@ code cquote, 'c"', IMMEDIATE
         _else .1
         _ stringbuf
         _ place
+        _ stringbuf
+        _ plus_stringbuf
+        _then .1
+        next
+endcode
+
+; ### $"
+code dollarquote, '$"', IMMEDIATE       ; -- $addr
+; Upper Deck Forth
+; "Parses a string delimited by " from the input stream.
+; Returns address of packed, null-terminated string."
+        _lit '"'
+        _ parse                         ; -- addr len
+        _ statefetch
+        _if .1
+        _ cliteral
+        _else .1
+        _ stringbuf
+        _ place
+
+        ; append terminal null byte
+        _ zero
+        _ stringbuf
+        _ count
+        _ plus
+        _ cstore
+
         _ stringbuf
         _ plus_stringbuf
         _then .1
