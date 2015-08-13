@@ -44,6 +44,30 @@ code plus_stringbuf, '+$buf'
         mov     rax, [stringbuf_start_data]
         mov     [stringbuf_data], rax
         _then .1
+        _ zero
+        _ stringbuf
+        _ store
+        next
+endcode
+
+; ### $buf+
+code stringbuf_plus, '$buf+'            ; -- $addr
+        _ stringbuf
+        _ plus_stringbuf
+        next
+endcode
+
+; ### >$buf
+code to_stringbuf, '>$buf'              ; c-addr u -- $addr
+        _ stringbuf
+        _ string_place
+        _ stringbuf_plus
+        next
+endcode
+
+; ### $>z
+code string_to_zstring, '$>z'           ; $addr -- zaddr
+        _oneplus
         next
 endcode
 
@@ -86,6 +110,29 @@ code appendstring, '$+'                 ; $addr1 $addr2 -- $addr3
         _ cstore
         _ stringbuf
         _ plus_stringbuf
+        next
+endcode
+
+; ### $place
+code string_place, '$place'             ; c-addr u $addr --
+        _ twodup
+        _ cstore
+        _duptor
+        _oneplus
+        _ swap
+        _ move
+        _ zero
+        _rfrom
+        _ count
+        _ plus
+        _ cstore
+        next
+endcode
+
+; ### $.
+code counttype, '$.'                    ; $addr --
+        _ count
+        _ type
         next
 endcode
 
