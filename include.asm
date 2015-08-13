@@ -227,20 +227,24 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
 endcode
 
 ; ### resolve-include-filename
-code resolve_include_filename, 'resolve-include-filename' ; $addr1 -- $addr2
+code resolve_include_filename, 'resolve-include-filename'
+                                        ; $addr1 -- $addr2
         _duptor
         _ count
         _ file_exists
         _if .1
+        _rfetch
+        _ count
+        _ file_is_directory
+        _zeq
+        _if .2
         _rfrom
-        _else .1
+        next
+        _then .2
+        _then .1
         _rfrom                          ; -- $addr1
         _cquote ".forth"
         _ appendstring                  ; -- $addr2
-        _ dup
-        _ cr
-        _ counttype
-        _then .1
         next
 endcode
 
@@ -251,9 +255,6 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _if .1
         _ to_stringbuf
         _ resolve_include_filename
-        _ dup
-        _ cr
-        _ counttype
         _ string_to_zstring
         _ readonly
         _ paren_open_file               ; -- fileid ior
@@ -286,30 +287,19 @@ endcode
 ; ### system-file-pathname
 code system_file_pathname, 'system-file-pathname'
 ; c-addr1 u1 -- c-addr2 u2
-        _ forth_home_
-        _ zcount
-        _ stringbuf
-        _oneplus
-        _ zplace
+        _ to_stringbuf                  ; -- $addr1
+        _ forth_home                    ; -- $addr1 zaddr
+        _ zcount                        ; -- $addr1 zaddr len
+        _ to_stringbuf                  ; -- $addr1 $addr2
 %ifdef WIN64
-        _squote "\\"
+        _cquote "\"
 %else
-        _squote "/"
+        _cquote "/"
 %endif
-        _ stringbuf
-        _oneplus
-        _ zappend
-        _ stringbuf
-        _oneplus
-        _ zappend
-        _ stringbuf
-        _oneplus
-        _ zstrlen
-        _ stringbuf
-        _ cstore
-        _ stringbuf
+        _ appendstring                  ; -- $addr1 $addr3
+        _ swap
+        _ appendstring
         _ count
-        _ plus_stringbuf
         next
 endcode
 

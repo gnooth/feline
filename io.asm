@@ -242,7 +242,6 @@ code file_status, 'file-status'         ; c-addr u -- x ior
         next
 endcode
 
-%ifndef WIN64
 extern os_file_is_directory
 
 ; ### file-is-directory?
@@ -270,7 +269,6 @@ code file_is_directory, 'file-is-directory?' ; c-addr u -- -1 | 0
         pushd   rax
         next
 endcode
-%endif
 
 ; ### file-exists?
 code file_exists, 'file-exists?'
@@ -862,16 +860,16 @@ code getcwd_, 'getcwd'
         next
 endcode
 
-extern forth_home
+extern os_forth_home
 
 ; ### forth-home
-code forth_home_, 'forth-home'          ; -- zaddr
+code forth_home, 'forth-home'          ; -- zaddr
 %ifdef WIN64
         push    rbp
         mov     rbp, [saved_rbp_data]
         sub     rsp, 32
 %endif
-        xcall   forth_home
+        xcall   os_forth_home
 %ifdef WIN64
         add     rsp, 32
         pop     rbp

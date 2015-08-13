@@ -114,7 +114,7 @@ int main(int argc, char **argv, char **env)
     abort();
 }
 
-const char *forth_home()
+const char *os_forth_home()
 {
   return FORTH_HOME;
 }
@@ -141,15 +141,23 @@ int os_file_status(char *path)
   return stat(path, &buf);
 }
 
-#ifndef WIN64
 int os_file_is_directory(char *path)
 {
+#ifdef WIN64
+  const DWORD attributes = GetFileAttributes(path);
+  if (attributes != INVALID_FILE_ATTRIBUTES)
+    {
+      if ((attributes & FILE_ATTRIBUTE_DIRECTORY) != 0)
+        return 1;
+    }
+  return 0;
+#else
   struct stat buf;
   // stat() follows symlinks; lstat() does not
   return (stat(path, &buf) == 0
           && S_ISDIR(buf.st_mode)) ? 1 : 0;
-}
 #endif
+}
 
 Cell os_open_file(const char *filename, int flags)
 {
