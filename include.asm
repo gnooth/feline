@@ -226,12 +226,34 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         next
 endcode
 
+; ### resolve-include-filename
+code resolve_include_filename, 'resolve-include-filename' ; $addr1 -- $addr2
+        _duptor
+        _ count
+        _ file_exists
+        _if .1
+        _rfrom
+        _else .1
+        _rfrom                          ; -- $addr1
+        _cquote ".forth"
+        _ appendstring                  ; -- $addr2
+        _ dup
+        _ cr
+        _ counttype
+        _then .1
+        next
+endcode
+
 ; ### included
 code included, 'included'               ; i*x c-addr u -- j*x
 ; FILE
         _ ?dup
         _if .1
         _ to_stringbuf
+        _ resolve_include_filename
+        _ dup
+        _ cr
+        _ counttype
         _ string_to_zstring
         _ readonly
         _ paren_open_file               ; -- fileid ior
