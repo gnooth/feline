@@ -250,15 +250,21 @@ code file_exists, 'file-exists?'
         next
 endcode
 
-extern os_open_file
-
 ; ### open-file
 code open_file, 'open-file'             ; c-addr u fam -- fileid ior
-        _ rrot                          ; -- fam c-addr u
-        _ here                          ; FIXME use $buf
-        _ zplace                        ; -- fam
-        _ here                          ; -- fam here
-        _ swap                          ; -- here fam
+; FILE
+        _tor
+        _ to_stringbuf
+        _ string_to_zstring
+        _rfrom
+        _ paren_open_file
+        next
+endcode
+
+extern os_open_file
+
+; ### (open-file)
+code paren_open_file, '(open-file)'     ; zaddr fam -- fileid ior
 %ifdef WIN64
         popd    rdx
         popd    rcx
@@ -284,7 +290,6 @@ code open_file, 'open-file'             ; c-addr u fam -- fileid ior
         _ minusone                      ; error!
         next
 endcode
-
 
 extern os_create_file
 
