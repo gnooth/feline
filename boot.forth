@@ -24,5 +24,3 @@ include-system-file switch.forth
 include-system-file accept.forth
 
 : sh 10 parse ?dup if system else drop then ;
-
-.( Ready to go)
