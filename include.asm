@@ -230,41 +230,27 @@ endcode
 code included, 'included'               ; i*x c-addr u -- j*x
 ; FILE
         _ ?dup
-        _if included1
-        _ dup
-        _ oneplus
-        _ allocate
+        _if .1
+        _ to_stringbuf
+        _ string_to_zstring
+        _ readonly
+        _ paren_open_file               ; -- fileid ior
         _zeq
-        _if included2                   ; -- c-addr1 u c-addr2
-        _ threedup
-        _ zplace                        ; -- c-addr1 u c-addr2
-        _ rot
-        _ drop                          ; -- u c-addr2
-        _ swap                          ; -- c-addr2 u
-        _ twodup                        ; -- c-addr2 u c-addr2 u
-        _ readonly                      ; -- c-addr2 u c-addr2 u r/o
-        _ open_file                     ; -- c-addr2 u fileid ior
-        _zeq
-        _if included3                   ; -- c-addr2 u fileid
-        _ tor                           ; -- c-addr2 u          r: -- fileid
-        _ twodrop                       ; --                    r: -- fileid
-        _ rfetch
+        _if .2
+        _duptor
         _ include_file
         _ rfrom                         ; -- fileid
         _ close_file                    ; -- ior
         _ drop                          ; REVIEW
-        _else included3                 ; -- c-addr2 u fileid
-        _ drop
+        _else .2
         _ ?cr
-        _dotq "Unable to open "
-        _ type
+        _dotq "Unable to open file"
         _lit -38
         _ throw
-        _then included3
-        _then included2
-        _else included1
+        _then .2
+        _else .1
         _ drop
-        _then included1
+        _then .1
         next
 endcode
 
