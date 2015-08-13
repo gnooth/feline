@@ -141,6 +141,16 @@ int os_file_status(char *path)
   return stat(path, &buf);
 }
 
+#ifndef WIN64
+int os_file_is_directory(char *path)
+{
+  struct stat buf;
+  // stat() follows symlinks; lstat() does not
+  return (stat(path, &buf) == 0
+          && S_ISDIR(buf.st_mode)) ? 1 : 0;
+}
+#endif
+
 Cell os_open_file(const char *filename, int flags)
 {
 #ifdef WIN64_NATIVE

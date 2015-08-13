@@ -242,6 +242,36 @@ code file_status, 'file-status'         ; c-addr u -- x ior
         next
 endcode
 
+%ifndef WIN64
+extern os_file_is_directory
+
+; ### file-is-directory?
+code file_is_directory, 'file-is-directory?' ; c-addr u -- -1 | 0
+        _ here
+        _ zplace
+        _ here
+%ifdef WIN64
+        popd    rcx
+        push    rbp
+        mov     rbp, [saved_rbp_data]
+        sub     rsp, 32
+%else
+        popd    rdi
+%endif
+        xcall   os_file_is_directory
+%ifdef WIN64
+        add     rsp, 32
+        pop     rbp
+%endif
+        test    rax, rax
+        jz      .1
+        mov     rax, -1
+.1:
+        pushd   rax
+        next
+endcode
+%endif
+
 ; ### file-exists?
 code file_exists, 'file-exists?'
         _ file_status
