@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -13,33 +13,40 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+; ### current
 variable current, 'current', forth_wid
 
+; ### #vocs
 code nvocs, '#vocs'
         pushrbx
         mov     rbx, NVOCS
         next
 endcode
 
+; ### #order
 variable norder, '#order', 1
 
+; ### context
 variable context, 'context', forth_wid
 section .data
         times NVOCS dq 0
         dq      0                       ; sentinel for FIND
 
+; ### get-current
 code get_current, 'get-current'         ; -- wid
         pushrbx
         mov     rbx, [current_data]
         next
 endcode
 
+; ### set-current
 code set_current, 'set-current'         ; wid --
         mov     [current_data], rbx
         poprbx
         next
 endcode
 
+; ### definitions
 code definitions, 'definitions'         ; --
 ; SEARCH
         mov     eax, [context_data]
@@ -47,8 +54,10 @@ code definitions, 'definitions'         ; --
         next
 endcode
 
+; ### voc-link
 variable voclink, 'voc-link', forth_wid
 
+; ### wordlist
 code wordlist, 'wordlist'               ; -- wid
 ; SEARCH
         _ voclink
@@ -65,16 +74,19 @@ code wordlist, 'wordlist'               ; -- wid
         next
 endcode
 
+; ### wid>link
 code widtolink, 'wid>link'
         sub     rbx, BYTES_PER_CELL * 2
         next
 endcode
 
+; ### wid>name
 code widtoname, 'wid>name'
         sub     rbx, BYTES_PER_CELL
         next
 endcode
 
+; ### vocs
 code vocs, 'vocs'
         _ voclink
         _ fetch
@@ -96,6 +108,7 @@ section .data
 forth_wid:
         dq      0
 
+; ### forth-wordlist
 code forth_wordlist, 'forth-wordlist'   ; -- wid
 ; SEARCH
         pushrbx
@@ -103,6 +116,7 @@ code forth_wordlist, 'forth-wordlist'   ; -- wid
         next
 endcode
 
+; ### forth
 code forth, 'forth'                     ; --
 ; SEARCH EXT
         mov     rax, forth_wid
@@ -110,6 +124,7 @@ code forth, 'forth'                     ; --
         next
 endcode
 
+; ### .wid
 code dotwid, '.wid'                     ; wid --
         _ dup
         _if dotwid1
@@ -129,6 +144,7 @@ code dotwid, '.wid'                     ; wid --
         next
 endcode
 
+; ### order
 code order, 'order'
 ; SEARCH EXT
 ; FIXME
@@ -157,6 +173,7 @@ code order, 'order'
         next
 endcode
 
+; ### get-order
 code get_order, 'get-order'             ; -- widn ... wid1 n
 ; SEARCH
 ; "wid1 identifies the word list that is searched first, and widn the word list
@@ -180,6 +197,7 @@ code get_order, 'get-order'             ; -- widn ... wid1 n
         next
 endcode
 
+; ### set-order
 code set_order, 'set-order'             ; widn ... wid1 n --
 ; SEARCH
 ; "Set the search order to the word lists identified by widn ... wid1.
@@ -226,6 +244,7 @@ code set_order, 'set-order'             ; widn ... wid1 n --
         next
 endcode
 
+; ### also
 code also, 'also'
         _ get_order
         _ over
@@ -235,6 +254,7 @@ code also, 'also'
         next
 endcode
 
+; ### only
 code only, 'only'
         _ context
         _ nvocs
@@ -247,6 +267,7 @@ code only, 'only'
         next
 endcode
 
+; ### previous
 code previous, 'previous'
         _ get_order
         _ nip
@@ -255,6 +276,7 @@ code previous, 'previous'
         next
 endcode
 
+; ### found
 code found, 'found'                     ; nfa -- xt 1  | xt -1
         _ namefrom                      ; -- xt
         _ dup                           ; -- xt xt
@@ -267,6 +289,7 @@ code found, 'found'                     ; nfa -- xt 1  | xt -1
         next
 endcode
 
+; ### search-wordlist
 code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
 ; SEARCH
         _ fetch                         ; last link in wordlist
@@ -301,6 +324,7 @@ find_arg:       dq      0
 find_addr:      dq      0
 find_len:       dq      0
 
+; ### find
 code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
 ; CORE, SEARCH
         mov     [find_arg], rbx
@@ -341,6 +365,7 @@ code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
         next
 endcode
 
+; ### '
 code tick, "'"
         _ blchar
         _ word_
@@ -356,12 +381,14 @@ code tick, "'"
         next
 endcode
 
+; ### [']
 code bracket_tick, "[']", IMMEDIATE
         _ tick
         _ literal
         next
 endcode
 
+; ### have
 code have, 'have'
         _ blchar
         _ word_

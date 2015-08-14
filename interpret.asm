@@ -13,24 +13,29 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+; ### state
 variable state, 'state', 0              ; CORE, TOOLS EXT
 
+; ### state@
 code statefetch, 'state@'
         pushrbx
         mov     rbx, [state_data]
         next
 endcode
 
+; ### [
 code lbrack, '[', IMMEDIATE
         mov     qword [state_data], 0
         next
 endcode
 
+; ### ]
 code rbrack, ']'
         mov     qword [state_data], -1
         next
 endcode
 
+; ### ?stack
 code ?stack, '?stack'
         cmp     rbp, [sp0_data]
         ja      .1
@@ -41,6 +46,7 @@ code ?stack, '?stack'
         jmp     abort
 endcode
 
+; ### do-defined
 code do_defined, 'do-defined'           ; xt flag --
         _ statefetch
         _if do_defined1
@@ -60,6 +66,7 @@ code do_defined, 'do-defined'           ; xt flag --
         next
 endcode
 
+; ### interpret
 code interpret, 'interpret'             ; --
         _begin interp0
         _ blchar
