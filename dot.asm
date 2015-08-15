@@ -1,4 +1,4 @@
-; Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -133,10 +133,21 @@ code udotr, 'u.r'
         next
 endcode
 
+; ### h.
 code hdot, 'h.'                         ; x --
         _ basefetch
         _ swap
         _ hex
+        _ udot
+        _ basestore
+        next
+endcode
+
+; ### dec.
+code decdot, 'dec.'                     ; n --
+        _ basefetch
+        _ swap
+        _ decimal
         _ udot
         _ basestore
         next
