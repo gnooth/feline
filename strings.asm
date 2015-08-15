@@ -406,7 +406,9 @@ code erase, 'erase'                     ; addr u --
 endcode
 
 ; ### buffer:
-code buffer_colon, 'buffer:'
+code buffer_colon, 'buffer:'            ; u "<spaces>name" --
+                                        ; Execution: -- a-addr
+; CORE EXT
         _ create
         _ allot
         next

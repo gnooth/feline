@@ -77,6 +77,7 @@ global %1
         dq      %1                      ; cfa
         dq      0                       ; comp
         dq      link
+        dq      0                       ; pfa
         db      %3                      ; flags
         db      %4                      ; inline size
 ; %1_nfa  equ     $

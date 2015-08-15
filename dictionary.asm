@@ -69,15 +69,16 @@ code room, 'room'
         next
 endcode
 
-; Header layout:
+; Header layout in code area:
 ;   code ptr    8 bytes
 ;   comp field  8 bytes
 ;   link ptr    8 bytes
+;   data ptr    8 bytes         REVIEW addr for >body
 ;   flags       1 byte
 ;   inline      1 byte          number of bytes of code to copy
 ;   name        1-256 bytes
 ;   padding     0-7 bytes       for alignment
-;   body
+;   body is in data area
 
 ; ### >comp
 code tocomp, '>comp'
@@ -94,13 +95,13 @@ endcode
 
 ; ### n>link
 code ntolink, 'n>link'
-        sub     rbx, BYTES_PER_CELL + 2
+        sub     rbx, BYTES_PER_CELL * 2 + 2
         next
 endcode
 
 ; ### l>name
 code ltoname, 'l>name'
-        add     rbx, BYTES_PER_CELL + 2
+        add     rbx, BYTES_PER_CELL * 2 + 2
         next
 endcode
 
@@ -116,9 +117,21 @@ code linkfrom, 'link>'
         next
 endcode
 
+; ### >body
+code tobody, '>body'                    ; xt -- a-addr
+; CORE
+; "a-addr is the data-field address corresponding to xt. An ambiguous condition
+; exists if xt is not for a word defined via CREATE."
+; "Rationale:a-addr is the address that HERE would have returned had it been
+; executed immediately after the execution of the CREATE that defined xt."
+        add     rbx, BYTES_PER_CELL * 3
+        mov     rbx, [rbx]
+        next
+endcode
+
 ; ### >flags
 code toflags, '>flags'                  ; xt -- addr
-        add     rbx, BYTES_PER_CELL * 3
+        add     rbx, BYTES_PER_CELL * 4
         next
 endcode
 
@@ -131,19 +144,19 @@ endcode
 
 ; ### >inline
 code toinline, '>inline'                ; xt -- addr
-        add     rbx, BYTES_PER_CELL * 3 + 1
+        add     rbx, BYTES_PER_CELL * 4 + 1
         next
 endcode
 
 ; ### >name
 code toname, '>name'
-        add     rbx, BYTES_PER_CELL * 3 + 2
+        add     rbx, BYTES_PER_CELL * 4 + 2
         next
 endcode
 
 ; ### name>
 code namefrom, 'name>'
-        sub     rbx, BYTES_PER_CELL * 3 + 2
+        sub     rbx, BYTES_PER_CELL * 4 + 2
         next
 endcode
 
@@ -156,17 +169,6 @@ endcode
 ; ### >code
 code tocode, '>code'
         mov     rbx, [rbx]
-        next
-endcode
-
-; ### >body
-code tobody, '>body'
-        _ toname
-        _ dup
-        _cfetch
-        _oneplus
-        _ plus
-        _ aligned
         next
 endcode
 
@@ -245,7 +247,8 @@ code ccomma, 'c,'
 endcode
 
 ; ### allot
-code allot, 'allot'
+code allot, 'allot'                     ; n --
+; CORE
         _ dp
         _ plusstore
         next
@@ -282,28 +285,33 @@ endcode
 code header, 'header'                   ; --
         _ parse_name                    ; -- c-addr u
         _ zero                          ; code field (will be patched)
-        _ comma
+        _ commac
         _ zero                          ; comp field
-        _ comma
+        _ commac
         _ current
         _ fetch                         ; -- c-addr u wid
         _ fetch                         ; -- c-addr u link
-        _ comma
+        _ commac
+
+        _ align_data
+        _ here                          ; data field address for >body
+        _ commac
+
         _ zero                          ; flag
-        _ ccomma                        ; -- c-addr u
+        _ ccommac                       ; -- c-addr u
         _ zero
-        _ ccomma                        ; inline size
-        _ here
+        _ ccommac                       ; inline size
+        _ here_c
         _ last
         _ store                         ; -- c-addr u
-        _ here
+        _ here_c
         _ current
         _ fetch
         _ store
-        _ here                          ; -- c-addr u here
+        _ here_c                        ; -- c-addr u here
         _ over
         _ oneplus
-        _ allot
+        _ allot_c
         _ place
         next
 endcode
