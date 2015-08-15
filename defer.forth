@@ -1,4 +1,4 @@
-\ Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ decimal
 : defer!  ( xt2 xt1 -- )
    \ Forth 200x CORE EXT
    \ "Set the word xt1 to execute xt2."
-   >body swap >code swap ! ;
+   >code 2+ @ swap >code swap ! ;
 
 : is
    \ Forth 200x CORE EXT
