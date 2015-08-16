@@ -173,6 +173,24 @@ code pick, 'pick'
         next
 endcode
 
+; ### roll
+code roll, 'roll'                       ; n1 n2 ... nk k -- n2 n3 ... nk n1
+; CORE EXT
+; Win32Forth
+; "Rotate k values on the stack, bringing the deepest to the top."
+        _duptor
+        _ pick
+        _ spfetch
+        _dup
+        _ cellplus
+        _ rfrom
+        _ cells
+        _ cellplus
+        _ move
+        _drop
+        next
+endcode
+
 ; ### .s
 code dots, '.s'
         _lit '<'
