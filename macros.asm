@@ -327,7 +327,22 @@ section .text
         poprbx
 %endmacro
 
+%macro _twodrop 0                       ; inline version of 2DROP
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+%endmacro
+
+%macro _threedrop 0                     ; inline version of 3DROP
+        mov     rbx, [rbp + BYTES_PER_CELL * 2]
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+%endmacro
+
 %macro _nip 0                           ; inline version of NIP
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
+%macro _plus 0
+        add     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
@@ -374,4 +389,8 @@ section .text
 %macro _zlt 0                           ; inline version of 0<
 ; Win32Forth
         sar     rbx, 63
+%endmacro
+
+%macro _ntolink 0                       ; inline version of N>LINK
+        sub     rbx, BYTES_PER_CELL * 2 + 2
 %endmacro

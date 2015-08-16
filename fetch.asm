@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -13,34 +13,35 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+; ### @
 inline fetch, '@'
-        mov     rbx, [rbx]
+        _fetch
 endinline
 
-; code cfetch, 'c@', 0, cfetch_ret - cfetch
-;         movzx   rbx, byte [rbx]
-; cfetch_ret:
-;         next
-; endcode
+; ### c@
 inline cfetch, 'c@'
-        movzx   rbx, byte [rbx]
+        _cfetch
 endinline
 
+; ### c@s
 code cfetchs, 'c@s'                     ; c-addr -- n
         movsx   rbx, byte [rbx]         ; n is the sign-extended 8-bit value stored at c_addr
         next
 endcode
 
+; ### l@
 code lfetch, 'l@'                       ; 32-bit fetch
         mov     ebx, dword [rbx]
         next
 endcode
 
+; ### l@s
 code lfetchs, 'l@s'                     ; c-addr -- n
         movsx   rbx, dword [rbx]        ; n is the sign-extended 32-bit value stored at c_addr
         next
 endcode
 
+; ### 2@
 code twofetch, '2@'                     ; a-addr -- x1 x2
 ; CORE
 ; "x2 is stored at a-addr and x1 at the next consecutive cell."

@@ -279,42 +279,42 @@ endcode
 ; ### found
 code found, 'found'                     ; nfa -- xt 1  | xt -1
         _ namefrom                      ; -- xt
-        _ dup                           ; -- xt xt
+        _dup                            ; -- xt xt
         _ immediate?                    ; -- xt flag
-        _if found1
+        _if .1
         _ one                           ; -- xt 1
-        _else found1
+        _else .1
         _ minusone                      ; -- xt -1
-        _then found1
+        _then .1
         next
 endcode
 
 ; ### search-wordlist
 code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
 ; SEARCH
-        _ fetch                         ; last link in wordlist
-        _ dup
-        _if sw1
-        _begin sw2                      ; -- c-addr u nfa
-        _duptor                         ; -- c-addr u nfa                       r: -- nfa
-        _ count                         ; -- c-addr u c-addr' u'                r: -- nfa
-        _ twoover                       ; -- c-addr u c-addr' u' c-addr-u       r: -- nfa
-        _ istrequal                     ; -- c-addr u flag                      r: -- nfa
-        _if sw3                         ; -- c-addr u                           r: -- nfa
+        _fetch            ; last link in wordlist
+        _dup
+        _if .1
+        _begin .2         ; -- c-addr u nfa
+        _duptor           ; -- c-addr u nfa                       r: -- nfa
+        _ count           ; -- c-addr u c-addr' u'                r: -- nfa
+        _ twoover         ; -- c-addr u c-addr' u' c-addr-u       r: -- nfa
+        _ istrequal       ; -- c-addr u flag                      r: -- nfa
+        _if .3            ; -- c-addr u                           r: -- nfa
         ; found it!
-        _ twodrop                       ; --                                    r: -- nfa
-        _ rfrom                         ; -- nfa
-       _ found                         ; -- xt 1 | xt -1
+        _twodrop          ; --                                    r: -- nfa
+        _ rfrom           ; -- nfa
+        _ found           ; -- xt 1 | xt -1
         _return
-        _then sw3                       ; -- c-addr u                           r: -- nfa
-        _ rfrom                         ; -- c-addr u nfa
-        _ ntolink                       ; -- c-addr u lfa
-        _ fetch                         ; -- c-addr u nfa
-        _ dup                           ; -- c-addr u nfa nfa
+        _then .3          ; -- c-addr u                           r: -- nfa
+        _ rfrom           ; -- c-addr u nfa
+        _ntolink          ; -- c-addr u lfa
+        _fetch            ; -- c-addr u nfa
+        _dup              ; -- c-addr u nfa nfa
         _zeq
-        _until sw2
-        _then sw1
-        _ threedrop
+        _until .2
+        _then .1
+        _threedrop
         _ false
         next
 endcode
@@ -339,9 +339,9 @@ code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
         _ context
         _i
         _cells
-        _ plus
-        _ fetch                         ; -- wid
-        _ dup
+        _plus
+        _fetch                          ; -- wid
+        _dup
         _zeq
         _if find2                       ; not found
         pushrbx

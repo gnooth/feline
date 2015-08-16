@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -13,11 +13,13 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+; ### int3
 code int3, 'int3'                       ; --
         int 3
         next
 endcode
 
+; ### rdtsc
 code read_time_stamp_counter, 'rdtsc'
         rdtsc
 ; "The high-order 32 bits are loaded into EDX, and the low-order 32 bits are
@@ -31,13 +33,14 @@ endcode
 
 extern os_ticks
 
-code ticks, 'ticks'
+; ### ticks
+code ticks, 'ticks'                     ; -- u
 %ifdef WIN64
         push    rbp
         mov     rbp, [saved_rbp_data]
         sub     rsp, 32
 %endif
-        call    os_ticks
+        xcall   os_ticks
 %ifdef WIN64
         add     rsp, 32
         pop     rbp

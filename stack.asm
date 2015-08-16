@@ -36,14 +36,12 @@ endinline
 
 ; ### 2drop
 inline twodrop, '2drop'
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        _twodrop
 endinline
 
 ; ### 3drop
 inline threedrop, '3drop'
-        mov     rbx, [rbp + BYTES_PER_CELL * 2]
-        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+        _threedrop
 endinline
 
 ; ### 4drop
@@ -74,7 +72,7 @@ code twodup, '2dup'                     ; x1 x2 -- x1 x2 x1 x2
         lea     rbp, [rbp - BYTES_PER_CELL * 2]
         mov     [rbp], rax
         mov     [rbp + BYTES_PER_CELL], rbx
-next
+        next
 endcode
 
 ; ### 3dup

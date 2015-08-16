@@ -15,8 +15,7 @@
 
 ; ### +
 inline plus, '+'
-        add     rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _plus
 endinline
 
 ; ### 1+
@@ -267,13 +266,13 @@ endcode
 
 ; ### <>
 code notequal, '<>'                     ; x1 x2 -- flag
-        popd    rax
-        cmp     rbx, rax
-        je      .1
-        mov     rbx, -1
-        next
-.1:
-        xor     rbx, rbx
+; CORE EXT
+; adapted from Win32Forth
+        mov     rdx, [rbp]
+        sub     rdx, rbx
+        neg     rdx
+        sbb     rbx, rbx
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
@@ -446,7 +445,7 @@ endcode
 code and, 'and'                         ; x1 x2 -- x3
 ; CORE
         and     rbx, [rbp]
-        add     rbp, BYTES_PER_CELL
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
@@ -454,7 +453,7 @@ endcode
 code or, 'or'                           ; x1 x2 -- x3
 ; CORE
         or      rbx, [rbp]
-        add     rbp, BYTES_PER_CELL
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
@@ -462,7 +461,7 @@ endcode
 code xor, 'xor'                         ; x1 x2 -- x3
 ; CORE
         xor     rbx, [rbp]
-        add     rbp, BYTES_PER_CELL
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 

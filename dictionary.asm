@@ -94,10 +94,9 @@ code tocompstore, '>comp!'              ; xt1 xt2 --
 endcode
 
 ; ### n>link
-code ntolink, 'n>link'
-        sub     rbx, BYTES_PER_CELL * 2 + 2
-        next
-endcode
+inline ntolink, 'n>link'
+        _ntolink
+endinline
 
 ; ### l>name
 code ltoname, 'l>name'
@@ -176,7 +175,7 @@ endcode
 code immediate, 'immediate'
         _ latest
         _ nametoflags
-        _ dup
+        _dup
         _cfetch
         _lit IMMEDIATE
         _ or
@@ -615,25 +614,25 @@ code words, 'words'
         _ zero
         _ tor
         _ latest
-        _ dup
+        _dup
         _ dotid
         _ rfrom
-        _ oneplus
+        _oneplus
         _ tor
-        _ ntolink
+        _ntolink
 words_loop:
         _fetch
         _ ?dup
         _if words1
         _ dup
-        _ cfetch
+        _cfetch
         _ ?line
-        _ dup
+        _dup
         _ dotid
         _ rfrom
-        _ oneplus
+        _oneplus
         _ tor
-        _ ntolink
+        _ntolink
         jmp     words_loop
         _then words1
         _ cr
