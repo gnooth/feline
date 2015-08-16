@@ -22,5 +22,7 @@ include-system-file see.forth
 include-system-file ekey.forth
 include-system-file switch.forth
 include-system-file accept.forth
+include-system-file search.forth
+include-system-file words.forth
 
 : sh 10 parse ?dup if system else drop then ;

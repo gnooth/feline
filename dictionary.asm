@@ -608,36 +608,3 @@ code bracketcompile, '[compile]', IMMEDIATE
         _ compilecomma
         next
 endcode
-
-; ### words
-code words, 'words'
-        _ zero
-        _ tor
-        _ latest
-        _dup
-        _ dotid
-        _ rfrom
-        _oneplus
-        _ tor
-        _ntolink
-words_loop:
-        _fetch
-        _ ?dup
-        _if words1
-        _ dup
-        _cfetch
-        _ ?line
-        _dup
-        _ dotid
-        _ rfrom
-        _oneplus
-        _ tor
-        _ntolink
-        jmp     words_loop
-        _then words1
-        _ cr
-        _ rfrom
-        _ dot
-        _dotq "words"
-        next
-endcode
