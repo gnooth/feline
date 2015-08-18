@@ -60,12 +60,13 @@ variable voclink, 'voc-link', forth_wid
 ; ### wordlist
 code wordlist, 'wordlist'               ; -- wid
 ; SEARCH
+; "Create a new empty word list, returning its word list identifier wid."
         _ voclink
         _ fetch
         _ comma                         ; link
         _ zero
         _ comma                         ; pointer to vocabulary name
-        _ here
+        _ here                          ; this address will be the wid
         _ dup
         _ voclink
         _ store
@@ -86,19 +87,39 @@ code widtoname, 'wid>name'
         next
 endcode
 
+; ### .wid
+code dotwid, '.wid'                     ; wid --
+        _dup
+        _if .1
+        _dup                            ; -- wid wid
+        _ widtoname                     ; -- wid wid-8
+        _fetch                          ; -- wid nfa|0
+        _ ?dup
+        _if .2
+        _nip
+        _ dotid
+        _else .2
+        _ udot
+        _then .2
+        _else .1
+        _ udot
+        _then .1
+        next
+endcode
+
 ; ### vocs
 code vocs, 'vocs'
         _ voclink
-        _ fetch
+        _fetch
         _begin vocs1
-        _ dup
+        _dup
         _ dotwid
         _ widtolink
-        _ fetch
-        _ dup
+        _fetch
+        _dup
         _zeq
         _until vocs1
-        _ drop
+        _drop
         next
 endcode
 
@@ -121,26 +142,6 @@ code forth, 'forth'                     ; --
 ; SEARCH EXT
         mov     rax, forth_wid
         mov     [context_data], rax
-        next
-endcode
-
-; ### .wid
-code dotwid, '.wid'                     ; wid --
-        _ dup
-        _if dotwid1
-        _ dup                           ; -- wid wid
-        _ widtoname                     ; -- wid wid-8
-        _fetch                          ; -- wid nfa|0
-        _ ?dup
-        _if dotwid2
-        _ nip
-        _ dotid
-        _else dotwid2
-        _ udot
-        _then dotwid2
-        _else dotwid1
-        _ udot
-        _then dotwid1
         next
 endcode
 
@@ -335,7 +336,7 @@ code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
         poprbx                          ; --
         _ nvocs
         _ zero
-        _do find1
+        _do .1
         _ context
         _i
         _cells
@@ -343,13 +344,13 @@ code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
         _fetch                          ; -- wid
         _dup
         _zeq
-        _if find2                       ; not found
+        _if .2                       ; not found
         pushrbx
         mov     rbx, [find_arg]
         _ swap
         _unloop
         _return
-        _then find2                     ; -- wid
+        _then .2                     ; -- wid
         pushrbx
         mov     rbx, [find_addr]
         pushrbx
@@ -357,11 +358,11 @@ code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
         _ rot
         _ search_wordlist
         _ ?dup
-        _if find3                       ; -- xt n
+        _if .3                       ; -- xt n
         _unloop
         _return
-        _then find3
-        _loop find1
+        _then .3
+        _loop .1
         next
 endcode
 
