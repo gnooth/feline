@@ -26,3 +26,5 @@ include-system-file search.forth
 include-system-file words.forth
 
 : sh 10 parse ?dup if system else drop then ;
+
+: in include ;
