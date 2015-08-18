@@ -60,7 +60,7 @@ endcode
 ; ### >$buf
 code to_stringbuf, '>$buf'              ; c-addr u -- $addr
         _ stringbuf
-        _ string_place
+        _ place_string
         _ stringbuf_plus
         next
 endcode
@@ -114,7 +114,7 @@ code appendstring, '$+'                 ; $addr1 $addr2 -- $addr3
 endcode
 
 ; ### $place
-code string_place, '$place'             ; c-addr u $addr --
+code place_string, '$place'             ; c-addr u $addr --
         _ twodup
         _ cstore
         _duptor
@@ -126,6 +126,34 @@ code string_place, '$place'             ; c-addr u $addr --
         _ count
         _ plus
         _ cstore
+        next
+endcode
+
+; : >$ ( c-addr u -- $addr )
+;     dup if
+;         dup 2+ allocate throw           \ -- c-addr u $addr
+;         dup>r $place
+;         r>
+;     else
+;         \ zero length
+;         nip
+;     then ;
+
+; ### >$
+code save_string, '>$'                  ; c-addr u -- $addr
+        _dup
+        _if .1
+        _dup
+        _twoplus
+        _ allocate
+        _ throw                         ; -- c-addr u $addr
+        _duptor
+        _ place_string
+        _rfrom
+        _else .1
+        ; zero length
+        _nip
+        _then .1
         next
 endcode
 
