@@ -17,38 +17,38 @@
 0 value words-count
 
 : process-word ( $addr -- )
-   words-pattern if
-      dup
-      count words-pattern count search 0= if
-         \ not a match
-         3drop
-         exit
-      else
-         2drop \ and fall through
-      then
-   then
-   c@ ?line
-   dup
-   .id
-   1 +to words-count ;
+    words-pattern if
+        dup
+        count words-pattern count search 0= if
+            \ not a match
+            3drop
+            exit
+        else
+            2drop \ and fall through
+        then
+    then
+    c@ ?line
+    dup
+    .id
+    1 +to words-count ;
 
 : (words) ( -- )
-   0 to words-count
-   context @
-   begin
-      @
-      ?dup
-   while
-      dup
-      process-word
-      n>link
-   repeat
-   cr
-   words-count .
-   ." word" words-count 1 <> if [char] s emit then ;
+    0 to words-count
+    context @
+    begin
+        @
+        ?dup
+    while
+        dup
+        process-word
+        n>link
+    repeat
+    cr
+    words-count .
+    ." word" words-count 1 <> if [char] s emit then ;
 
 : words ( -- )
 \ TOOLS
 \ "List the definition names in the first word list of the search order."
-   bl word count ?dup if >$buf else drop 0 then to words-pattern
-   (words) ;
+    bl word count ?dup if >$buf else drop 0 then to words-pattern
+    (words) ;
