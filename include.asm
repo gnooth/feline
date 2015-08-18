@@ -143,6 +143,15 @@ code refill, 'refill'                   ; -- flag
 ; "When the input source is a text file, attempt to read the next line
 ; from the text-input file."
         _ source_id
+        ; "When the input source is a string from EVALUATE, return false
+        ; and perform no other action."
+        _dup
+        _ minusone
+        _ equal
+        _if .1
+        _oneplus                        ; -- 0
+        _return
+        _then .1
         _ file_position                 ; -- ud ior
         _abortq "Bad fileid"
         _ drop                          ; -- u
