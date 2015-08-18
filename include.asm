@@ -55,6 +55,7 @@ variable nsource, '#source', 0
 ; ### source
 code source, 'source'                   ; -- c-addr u
 ; CORE 6.1.2216
+; "c-addr is the address of, and u is the number of characters in, the input buffer."
         _ tick_source
         _fetch
         _ nsource
@@ -227,8 +228,7 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
 endcode
 
 ; ### resolve-include-filename
-code resolve_include_filename, 'resolve-include-filename'
-                                        ; $addr1 -- $addr2
+code resolve_include_filename, 'resolve-include-filename' ; $addr1 -- $addr2
         _duptor
         _ count
         _ file_exists
@@ -248,6 +248,8 @@ code resolve_include_filename, 'resolve-include-filename'
         next
 endcode
 
+variable include_filename, 'include-filename', 0
+
 ; ### included
 code included, 'included'               ; i*x c-addr u -- j*x
 ; FILE
@@ -255,6 +257,11 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _if .1
         _ to_stringbuf
         _ resolve_include_filename
+        _ dup
+        _ count
+        _ save_string
+        _ include_filename
+        _ store
         _ string_to_zstring
         _ readonly
         _ paren_open_file               ; -- fileid ior
