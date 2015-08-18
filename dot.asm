@@ -13,8 +13,10 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+; ### hld
 variable hld, 'hld', 0
 
+; ### hold
 code hold, 'hold'
         _ minusone
         _ hld
@@ -25,6 +27,7 @@ code hold, 'hold'
         next
 endcode
 
+; ### sign
 code sign, 'sign'                       ; n --
         _zlt
         _if sign1
@@ -34,6 +37,7 @@ code sign, 'sign'                       ; n --
         next
 endcode
 
+; ### <#
 code ltsharp,"<#"
         _ pad                           ; pad hld !
         _ hld
@@ -41,6 +45,7 @@ code ltsharp,"<#"
         next
 endcode
 
+; ### #>
 code sharpgt,'#>'                       ; d --- addr len
         _ twodrop                       ; 2drop hld @ pad over -
         _ hld
@@ -51,6 +56,7 @@ code sharpgt,'#>'                       ; d --- addr len
         next
 endcode
 
+; ### #
 code sharp, '#'                         ; ud1 -- ud2
         _ basefetch                     ; -- ud1 base
         _ muslmod                       ; -- remainder ud2
@@ -68,6 +74,7 @@ code sharp, '#'                         ; ud1 -- ud2
         next
 endcode
 
+; ### #s
 code sharps, '#s'
         _begin sharps1
         _ sharp
@@ -77,6 +84,23 @@ code sharps, '#s'
         next
 endcode
 
+; ### holds
+code holds, 'holds'
+; CORE EXT
+        _begin .1
+        _dup
+        _while .1
+        _oneminus
+        _ twodup
+        _plus
+        _cfetch
+        _ hold
+        _repeat .1
+        _twodrop
+        next
+endcode
+
+; ### (.)
 code paren_dot, '(.)'                   ; n -- c-addr u
         _ dup
         _ abs_
@@ -89,6 +113,7 @@ code paren_dot, '(.)'                   ; n -- c-addr u
         next
 endcode
 
+; ### .
 code dot, '.'
         _ paren_dot
         _ type
@@ -96,6 +121,7 @@ code dot, '.'
         next
 endcode
 
+; ### .r
 code dotr, '.r'                         ; n u --
         _ tor
         _ paren_dot
@@ -107,6 +133,7 @@ code dotr, '.r'                         ; n u --
         next
 endcode
 
+; ### (u.)
 code paren_udot, '(u.)'
         _ zero
         _ ltsharp
@@ -115,6 +142,7 @@ code paren_udot, '(u.)'
         next
 endcode
 
+; ### u.
 code udot, 'u.'
         _ paren_udot
         _ type
@@ -122,6 +150,7 @@ code udot, 'u.'
         next
 endcode
 
+; ### u.r
 code udotr, 'u.r'
         _ tor
         _ paren_udot
@@ -153,6 +182,7 @@ code decdot, 'dec.'                     ; n --
         next
 endcode
 
+; ### (ud.)
 code paren_uddot, '(ud.)'               ; ud -- c-addr u
         _ ltsharp
         _ sharps
@@ -160,6 +190,7 @@ code paren_uddot, '(ud.)'               ; ud -- c-addr u
         next
 endcode
 
+; ### ud.
 code uddot, 'ud.'                       ; ud --
         _ paren_uddot
         _ type
@@ -167,6 +198,7 @@ code uddot, 'ud.'                       ; ud --
         next
 endcode
 
+; ### .2
 code dottwo, '.2'                       ; ub --
         _ zero
         _ ltsharp
