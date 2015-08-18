@@ -190,7 +190,7 @@ code quit, 'quit'                       ; --            r:  i*x --
         _fetch
         _ zero
         _ set_input
-        _lit interpret_cfa
+        _lit interpret_xt
         _ catch
         _ ?dup
         _if quit2

@@ -71,21 +71,22 @@
 %macro  head 2-4 0, 0                   ; label, name, flags, inline size
 global %1
 %strlen len     %2
-        [section .data]
+        section .data
         align   8
-%1_cfa:
-        dq      %1                      ; cfa
-        dq      0                       ; comp
-        dq      link
-        dq      0                       ; pfa
+%1_pfa:
+        section .text
+        align   8
+%1_xt:
+        dq      %1                      ; address of code
+        dq      0                       ; comp field
+        dq      link                    ; link field
+        dq      %1_pfa                  ; address of parameter field in data area
         db      %3                      ; flags
         db      %4                      ; inline size
-; %1_nfa  equ     $
 %1_nfa:
         db      len                     ; length byte
         db      %2                      ; name
-%define link    %1_nfa
-        __SECT__
+%define link    %1_nfa                  ; link field points to name field
 %endmacro
 
 %macro  code 2-4 0, 0
@@ -119,11 +120,12 @@ global %1
         global %1_data
         align   8
 %1_data:
-        dq      %3
+        dq      %3_xt
         section .text
         align   8
 %1:
         mov     rax, %1_data
+        mov     rax, [rax]
         jmp     [rax]
         ret                             ; for decompiler
 %endmacro

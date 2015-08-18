@@ -15,27 +15,38 @@
 
 decimal
 
-: defer   ( "<spaces>name" -- )
-   \ Forth 200x CORE EXT
-   header
-   align
-   here-c latest name> !
-   here
-   ['] abort >code ,
-   $48 c,c $b8 c,c ,c   \ mov rax, addr
-   $ff c,c $20 c,c      \ jmp [rax]
-   $c3 c,c              \ ret
-   ;
+: defer ( "<spaces>name" -- )
+    \ Forth 200x CORE EXT
+    header
+    align
+    here-c latest name> !
+    here                        \ addr in data area
+    ['] abort ( >code ) ,
+    $48 c,c $b8 c,c ,c          \ mov rax, addr
+    $48 c,c $8b c,c 0 c,c       \ mov rax, [rax]
+    $ff c,c $20 c,c             \ jmp [rax]
+    $c3 c,c                     \ ret
+;
 
-: defer!  ( xt2 xt1 -- )
-   \ Forth 200x CORE EXT
-   \ "Set the word xt1 to execute xt2."
-   >code 2+ @ swap >code swap ! ;
+: defer! ( xt2 xt1 -- )
+    \ Forth 200x CORE EXT
+    \ "Set the word xt1 to execute xt2."
+    >body ! ;
+
+: defer@ ( xt1 -- xt2 )
+    >body @ ;
+
+: action-of ( "<spaces>name" -- xt )
+    state@ if
+        postpone ['] postpone defer@
+    else
+        ' defer@
+    then ; immediate
 
 : is
-   \ Forth 200x CORE EXT
-   state @ if
-      postpone ['] postpone defer!
-   else
-      ' defer!
-   then ; immediate
+    \ Forth 200x CORE EXT
+    state @ if
+        postpone ['] postpone defer!
+    else
+        ' defer!
+    then ; immediate

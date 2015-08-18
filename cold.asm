@@ -61,7 +61,7 @@ code cold, 'cold'                       ; --
         _then cold1
         _squote "boot.forth"
         _ system_file_pathname
-        _lit included_cfa
+        _lit included_xt
         _ catch
         _ ?dup
         _if cold2
