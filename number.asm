@@ -127,6 +127,13 @@ code missing, 'missing'
         _ source_id
         _ zgt
         _if missing1
+        _ include_filename
+        _fetch
+        _ ?dup
+        _if .1
+        _ counttype
+        _ space
+        _then .1
         _dotq "line "
         _ source_line_number
         _fetch
