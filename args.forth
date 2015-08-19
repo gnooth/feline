@@ -1,4 +1,4 @@
-\ Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -13,19 +13,17 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-include-system-file vocabulary.forth
-include-system-file defer.forth
-include-system-file bracket-if.forth
-include-system-file case.forth
-include-system-file dump.forth
-include-system-file see.forth
-include-system-file ekey.forth
-include-system-file switch.forth
-include-system-file accept.forth
-include-system-file search.forth
-include-system-file words.forth
-include-system-file args.forth
+: (process-command-line)
+    argc @ 3 = if
+        argv @ cell+ @
+        ?dup if
+            zcount s" -e" str= if
+                argv @ 2 cells + @
+                ?dup if
+                    zcount evaluate
+                then
+            then
+        then
+    then ;
 
-: sh 10 parse ?dup if system else drop then ;
-
-: in include ;
+' (process-command-line) is process-command-line

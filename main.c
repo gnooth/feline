@@ -60,6 +60,14 @@ static void sigsegv_handler(int sig, siginfo_t *si, void * context)
 }
 #endif
 
+void args(int argc, char **argv)
+{
+  extern Cell argc_data;
+  extern Cell argv_data;
+  argc_data = argc;
+  argv_data = (Cell) argv;
+}
+
 int main(int argc, char **argv, char **env)
 {
   extern Cell dp_data;
@@ -75,6 +83,8 @@ int main(int argc, char **argv, char **env)
   Cell code_space_size = 1024 * 1024;
   void * data_space;
   void * code_space;
+
+  args(argc, argv);
 
   prep_terminal();
 

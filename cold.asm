@@ -40,6 +40,15 @@ variable limit, 'limit', 0              ; initialized in main()
 ; ### limit-c
 variable limit_c, 'limit-c', 0          ; initialized in main()
 
+; ### argc
+variable argc, 'argc', 0
+
+; ### argv
+variable argv, 'argv', 0
+
+; ### process-command-line
+deferred process_command_line, 'process-command-line', noop
+
 ; ### cold
 code cold, 'cold'                       ; --
         mov     [rp0_data], rsp
@@ -54,19 +63,20 @@ code cold, 'cold'                       ; --
         _ forth_wordlist
         _fetch
         _zeq
-        _if cold1
+        _if .1
         _ latest
         _ forth_wordlist
         _ store
-        _then cold1
+        _then .1
         _squote "boot.forth"
         _ system_file_pathname
         _lit included_xt
         _ catch
         _ ?dup
-        _if cold2
+        _if .2
         _ do_error
-        _then cold2
+        _then .2
+        _ process_command_line
         jmp quit
         next
 endcode
