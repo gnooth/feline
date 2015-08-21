@@ -159,22 +159,21 @@ global %1
 %endmacro
 
 %macro  _dotq 1
-        section .data
-%strlen  len     %1
+section .data
+%strlen len     %1
 %%string:
         db      len                     ; length byte
         db      %1                      ; string
         db      0                       ; null byte at end
-        section .text
+section .text
         pushrbx
         mov     rbx, %%string
-        call    count
-        call    type
+        call    counttype
 %endmacro
 
 %macro  _abortq 1
 section .data
-%strlen  len     %1
+%strlen len     %1
 %%string:
         db      len                     ; length byte
         db      %1                      ; string
@@ -187,7 +186,7 @@ section .text
 
 %macro  _cquote 1                       ; -- c-addr
 section .data
-%strlen  len     %1
+%strlen len     %1
 %%string:
         db      len                     ; length byte
         db      %1                      ; string
@@ -199,7 +198,7 @@ section .text
 
 %macro  _squote 1                       ; -- c-addr u
 section .data
-%strlen  len     %1
+%strlen len     %1
 %%string:
         db      len                     ; length byte
         db      %1                      ; string
