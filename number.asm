@@ -120,14 +120,14 @@ endcode
 
 code missing, 'missing'
 ; REVIEW
-        _ count
-        _ type
+        _ ?cr
+        _ counttype
         _dotq ' ?'
         _ cr
         _ source_id
         _ zgt
         _if missing1
-        _ include_filename
+        _ source_filename
         _fetch
         _ ?dup
         _if .1

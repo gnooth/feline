@@ -81,25 +81,29 @@ code set_input, 'set-input'             ; source-addr source-len source-id --
 endcode
 
 ; ### save-input
-code save_input, 'save-input'           ; -- addr len fileid source-buffer >in 7
+code save_input, 'save-input'
+; -- addr len fileid source-buffer source-file-position source-line-number >in 7
 ; CORE EXT
-        _ source                        ; -- addr len
-        _ source_id                     ; -- addr len fileid
-        _ source_buffer                 ; -- addr len fileid source-buffer
+        _ source                ; -- addr len
+        _ source_id             ; -- addr len fileid
+        _ source_buffer         ; -- addr len fileid source-buffer
         _ source_file_position
-        _fetch
+        _fetch                  ; -- addr len fileid source-buffer source-file-position
         _ source_line_number
-        _fetch
+        _fetch                  ; -- addr len fileid source-buffer source-filename source-line-number
         _ toin
-        _fetch                          ; -- addr len fileid source-buffer >in
+        _fetch                  ; -- addr len fileid source-buffer source-filename source-line-number >in
         _lit 7
         next
 endcode
 
 ; ### restore-input
-code restore_input, 'restore-input'     ; addr len fileid source-buffer >in 7 -- flag
+code restore_input, 'restore-input'
+; addr len fileid source-buffer source-file-position source-line-number >in 7 -- flag
 ; CORE EXT
-        _ drop                          ; REVIEW
+        _lit 7
+        _ notequal
+        _ throw                         ; REVIEW
         _ toin
         _ store
         _ source_line_number
@@ -111,22 +115,28 @@ code restore_input, 'restore-input'     ; addr len fileid source-buffer >in 7 --
         _ set_input
         _ source_id
         _ zgt
-        _if restore_input1
+        _if .1
         _ source_file_position
         _fetch
         _ stod
         _ source_id
         _ reposition_file
-        _abortq "REPOSITION-FILE error"
+        _if .2
+        _lit -73                        ; REPOSITION-FILE exception (Forth 2012 Table 9-1)
+        _ throw
+        _then .2
         _ source_buffer
         _ slash_source_buffer
         _ source_id
         _ read_line                     ; -- len flag ior
-        _abortq "READ-LINE error"
-        _ drop                          ; -- len
+        _if .3
+        _lit -71                        ; READ-LINE exception (Forth 2012 Table 9-1)
+        _ throw
+        _then .3
+        _drop                           ; -- len
         _ nsource
         _ store
-        _then restore_input1
+        _then .1
         _ zero                          ; -- flag
         next
 endcode
@@ -216,17 +226,17 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _ store
         _ source_line_number
         _ off
-        _begin include_file2
+        _begin .1
         _ refill
-        _while include_file2
+        _while .1
         _ verboseinclude
-        _if include_file3
+        _if .2
         _ source
         _ type
         _ cr
-        _then include_file3
+        _then .2
         _ interpret
-        _repeat include_file2
+        _repeat .1
         _ source_buffer
         _ free_
         _ drop                          ; REVIEW
@@ -257,19 +267,25 @@ code resolve_include_filename, 'resolve-include-filename' ; $addr1 -- $addr2
         next
 endcode
 
-variable include_filename, 'include-filename', 0
+; ### source-filename
+variable source_filename, 'source-filename', 0
 
 ; ### included
 code included, 'included'               ; i*x c-addr u -- j*x
 ; FILE
         _ ?dup
         _if .1
+
+        _ source_filename
+        _fetch
+        _ tor
+
         _ to_stringbuf
         _ resolve_include_filename
         _ dup
         _ count
         _ save_string
-        _ include_filename
+        _ source_filename
         _ store
         _ string_to_zstring
         _ readonly
@@ -283,13 +299,21 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ drop                          ; REVIEW
         _else .2
         _ ?cr
-        _dotq "Unable to open file"
+        _dotq "Unable to open file "
+        _ source_filename
+        _ fetch
+        _ counttype
         _lit -38
         _ throw
         _then .2
         _else .1
         _ drop
         _then .1
+
+        _ rfrom
+        _ source_filename
+        _ store
+
         next
 endcode
 

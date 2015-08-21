@@ -190,6 +190,9 @@ code quit, 'quit'                       ; --            r:  i*x --
         _fetch
         _ zero
         _ set_input
+        _ zero
+        _ source_filename
+        _ store
         _lit interpret_xt
         _ catch
         _ ?dup
