@@ -119,6 +119,8 @@ variable ntib, '#tib', 0
 variable tick_tib, "'tib", 0            ; initialized in main()
 
 ; ### tib
+; CORE EXT in Forth 94 but removed in Forth 2012
+; "The functions of TIB and #TIB have been superseded by SOURCE."
 code tib, 'tib'
         _ tick_tib
         _fetch
@@ -126,11 +128,12 @@ code tib, 'tib'
 endcode
 
 ; ### >in
+; CORE
 variable toin, '>in', 0
 
 ; ### query
 code query, 'query'                     ; --
-; CORE EXT in Forth 94 but removed in Forth 200x
+; CORE EXT in Forth 94 but removed in Forth 2012
         _ tib
         _lit 80
         _ accept
