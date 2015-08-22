@@ -13,6 +13,8 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+file __FILE__
+
 ; ### line-input?
 value line_input, 'line-input?', -1
 

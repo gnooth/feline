@@ -46,5 +46,7 @@ default abs ; use absolute addresses by default
 %include "tools.asm"
 %include "value.asm"
 
+file __FILE__
+
 ; the last word
 variable last, 'last', last_nfa
