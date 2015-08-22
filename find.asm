@@ -57,7 +57,7 @@ code definitions, 'definitions'         ; --
 endcode
 
 ; ### voc-link
-variable voclink, 'voc-link', forth_wid
+variable voclink, 'voc-link', files_wid
 
 ; ### wordlist
 code wordlist, 'wordlist'               ; -- wid
@@ -131,6 +131,11 @@ section .data
 forth_wid:
         dq      0
 
+        dq      forth_wid
+        dq      files_nfa
+files_wid:
+        dq      0
+
 ; ### forth-wordlist
 code forth_wordlist, 'forth-wordlist'   ; -- wid
 ; SEARCH
@@ -143,6 +148,20 @@ endcode
 code forth, 'forth'                     ; --
 ; SEARCH EXT
         mov     rax, forth_wid
+        mov     [context_data], rax
+        next
+endcode
+
+; ### files-wordlist
+code files_wordlist, 'files-wordlist'   ; -- wid
+        pushrbx
+        mov     rbx, files_wid
+        next
+endcode
+
+; ### files
+code files, 'files'
+        mov     rax, files_wid
         mov     [context_data], rax
         next
 endcode
@@ -259,6 +278,9 @@ endcode
 
 ; ### only
 code only, 'only'
+; SEARCH EXT
+; "Set the search order to the implementation-defined minimum search order. The
+; minimum search order shall include the words FORTH-WORDLIST and SET-ORDER."
         _ context
         _ nvocs
         _cells
