@@ -117,5 +117,5 @@
 %endmacro
 
 %macro _ntolink 0                       ; inline version of N>LINK
-        sub     rbx, BYTES_PER_CELL * 2 + 2
+        sub     rbx, BYTES_PER_CELL * 4 + 2
 %endmacro

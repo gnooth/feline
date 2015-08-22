@@ -66,6 +66,19 @@
         pushd   %1
 %endmacro
 
+%define current_file    0
+
+%macro  file    1
+%strlen len     %1
+section .text
+        align   8
+%%name:
+        db      len
+        db      %1
+        db      0
+%define current_file    %%name
+%endmacro
+
 %define link    0
 
 %macro  head 2-4 0, 0                   ; label, name, flags, inline size
@@ -83,6 +96,8 @@ global %1
         dq      %1_pfa                  ; address of parameter field in data area
         db      %3                      ; flags
         db      %4                      ; inline size
+        dq      current_file            ; pointer to source file name
+        dq      __LINE__                ; source line number
 %1_nfa:
         db      len                     ; length byte
         db      %2                      ; name

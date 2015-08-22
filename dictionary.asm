@@ -13,6 +13,8 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+file __FILE__
+
 ; ### unused
 code unused, 'unused'                   ; -- u
 ; CORE EXT
@@ -100,7 +102,7 @@ endinline
 
 ; ### l>name
 code ltoname, 'l>name'
-        add     rbx, BYTES_PER_CELL * 2 + 2
+        add     rbx, BYTES_PER_CELL * 4 + 2
         next
 endcode
 
@@ -147,21 +149,27 @@ code toinline, '>inline'                ; xt -- addr
         next
 endcode
 
+; ### >view
+code toview, '>view'                    ; xt -- addr
+        add     rbx, BYTES_PER_CELL * 4 + 2
+        next
+endcode
+
 ; ### >name
 code toname, '>name'
-        add     rbx, BYTES_PER_CELL * 4 + 2
+        add     rbx, BYTES_PER_CELL * 6 + 2
         next
 endcode
 
 ; ### name>
 code namefrom, 'name>'
-        sub     rbx, BYTES_PER_CELL * 4 + 2
+        sub     rbx, BYTES_PER_CELL * 6 + 2
         next
 endcode
 
 ; ### n>flags
 code nametoflags, 'n>flags'
-        sub     rbx, 2
+        sub     rbx, BYTES_PER_CELL * 2 + 2
         next
 endcode
 
@@ -300,6 +308,14 @@ code header, 'header'                   ; --
         _ ccommac                       ; -- c-addr u
         _ zero
         _ ccommac                       ; inline size
+
+        _ source_filename
+        _fetch
+        _ commac
+        _ source_line_number
+        _fetch
+        _ commac
+
         _ here_c
         _ last
         _ store                         ; -- c-addr u
