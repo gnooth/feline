@@ -272,21 +272,37 @@ endcode
 ; ### source-filename
 variable source_filename, 'source-filename', 0
 
+; ### file
+code file_, 'file'                      ; c-addr u -- xt
+        _ here_c
+        _ tor
+        _ get_current
+        _ tor
+        _ files_wordlist
+        _ set_current
+        _ quotecreate
+        _ zero
+        _ comma
+        _ rfrom
+        _ set_current
+        _ rfrom
+        _ toname
+        next
+endcode
+
 ; ### included
 code included, 'included'               ; i*x c-addr u -- j*x
 ; FILE
         _ ?dup
         _if .1
-
         _ source_filename
         _fetch
         _ tor
-
         _ to_stringbuf
-        _ resolve_include_filename
+        _ resolve_include_filename      ; -- $addr
         _ dup
         _ count
-        _ save_string
+        _ file_
         _ source_filename
         _ store
         _ string_to_zstring
