@@ -33,4 +33,7 @@ only forth also root definitions
 : order order ;
 : vocs vocs ;
 
+: forth-wordlist forth-wordlist ;
+: set-order set-order ;
+
 only forth definitions
