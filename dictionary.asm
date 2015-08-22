@@ -389,9 +389,8 @@ docreate:
         dq      0                       ; 64-bit immediate value (to be patched)
 docreate_end:
 
-; ### create
-code create, 'create'                   ; "<spaces>name" --
-        _ header
+; ### (create)
+code paren_create, '(create)'
         _ align_data
         _ here_c
         _ latest
@@ -406,6 +405,20 @@ code create, 'create'                   ; "<spaces>name" --
         _ store
         _lit $0c3
         _ ccommac
+        next
+endcode
+
+; ### create
+code create, 'create'                   ; "<spaces>name" --
+        _ header
+        _ paren_create
+        next
+endcode
+
+; ### "create
+code quotecreate, '"create'
+        _ quoteheader
+        _ paren_create
         next
 endcode
 
