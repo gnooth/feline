@@ -289,8 +289,14 @@ code allot_c, 'allot-c'
 endcode
 
 ; ### header
-code header, 'header'                   ; --
+code header, 'header'                   ; "spaces<name>" --
         _ parse_name                    ; -- c-addr u
+        _ quoteheader
+        next
+endcode
+
+; ### "header
+code quoteheader, '"header'             ; c-addr u --
         _ zero                          ; code field (will be patched)
         _ commac
         _ zero                          ; comp field
@@ -376,12 +382,12 @@ code aligned, 'aligned'                 ; addr -- a-addr
 endcode
 
 section .text
-dovariable:
+docreate:
         pushrbx
         db      $48                     ; mov rbx, 0
         db      $0bb
         dq      0                       ; 64-bit immediate value (to be patched)
-dovariable_end:
+docreate_end:
 
 ; ### create
 code create, 'create'                   ; "<spaces>name" --
@@ -391,8 +397,8 @@ code create, 'create'                   ; "<spaces>name" --
         _ latest
         _ namefrom
         _ store
-        _lit dovariable
-        _lit dovariable_end - dovariable
+        _lit docreate
+        _lit docreate_end - docreate
         _ paren_copy_code
         _ here                          ; -- addr
         _ here_c
@@ -495,7 +501,7 @@ code paren_scode, '(;code)'
         _ latest
         _ namefrom
         _ tocode
-        _lit dovariable_end - dovariable
+        _lit docreate_end - docreate
         _ plus
         _ cp
         _ store
