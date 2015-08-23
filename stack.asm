@@ -50,7 +50,6 @@ endinline
 inline fourdrop, '4drop'
         mov     rbx, [rbp + BYTES_PER_CELL * 3]
         lea     rbp, [rbp + BYTES_PER_CELL * 4]
-        next
 endinline
 
 ; ### dup
