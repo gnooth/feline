@@ -15,6 +15,7 @@
 
 file __FILE__
 
+; ### ?comp
 code ?comp, '?comp'
         mov     rax, [state_data]
         test    rax, rax
@@ -24,14 +25,18 @@ code ?comp, '?comp'
         next
 endcode
 
+; ### noop
 code noop, 'noop'
         next
 endcode
 
+; ### clear-compilation-queue
 deferred clear_compilation_queue, 'clear-compilation-queue', noop
 
+; ### flush-compilation-queue
 deferred flush_compilation_queue, 'flush-compilation-queue', noop
 
+; ### (copy-code)
 code paren_copy_code, '(copy-code)'     ; addr size --
         _ here_c
         _ over
@@ -41,6 +46,7 @@ code paren_copy_code, '(copy-code)'     ; addr size --
         next
 endcode
 
+; ### copy-code
 code copy_code, 'copy-code'             ; xt --
         _ dup                           ; -- xt xt
         _ toinline                      ; -- xt addr
@@ -52,6 +58,7 @@ code copy_code, 'copy-code'             ; xt --
         next
 endcode
 
+; ### ,call
 code commacall, ',call'                 ; code --
         _lit $0e8
         _ ccommac
@@ -62,6 +69,14 @@ code commacall, ',call'                 ; code --
         next
 endcode
 
+; ### xt-,call
+code xt_commacall, 'xt-,call'
+        _ tocode
+        _ commacall
+        next
+endcode
+
+; ### ,jmp
 code commajmp, ',jmp'                   ; code --
         _lit $0e9
         _ ccommac
@@ -72,6 +87,7 @@ code commajmp, ',jmp'                   ; code --
         next
 endcode
 
+; ### (compile,)
 code parencompilecomma, '(compile,)'    ; xt --
 ; CORE EXT
 ; "Interpretation semantics for this word are undefined."
@@ -79,34 +95,38 @@ code parencompilecomma, '(compile,)'    ; xt --
         _ tocomp                        ; -- xt >comp
         _fetch                          ; -- xt xt-comp
         _ ?dup
-        _if compilecomma1
+        _if .1
         _ execute
         _return
-        _then compilecomma1
+        _then .1
         _ dup                           ; -- xt xt
         _ toinline                      ; -- xt >inline
         _cfetch                         ; -- xt #bytes
-        _if compilecomma3               ; -- xt
+        _if .2                          ; -- xt
         _ copy_code
         _return
-        _then compilecomma3
+        _then .2
         ; default behavior
-        _ tocode
-        _ commacall
+        _ xt_commacall
         next
 endcode
 
+; ### compile,
 deferred compilecomma, 'compile,', parencompilecomma
 
+; ### last-code
 variable last_code, 'last-code', 0
 
+; ### csp
 variable csp, 'csp', 0
 
+; ### !csp
 code storecsp, '!csp'
         mov     [csp_data], rbp
         next
 endcode
 
+; ### ?csp
 code ?csp, '?csp'
         cmp     [csp_data], rbp
         je      .1
@@ -115,6 +135,7 @@ code ?csp, '?csp'
         next
 endcode
 
+; ### :
 code colon, ':'
         _ clear_compilation_queue
         _ header
@@ -131,21 +152,29 @@ code colon, ':'
         next
 endcode
 
+; ### :noname
 code colonnoname, ':noname'
         _ clear_compilation_queue
-        _ rbrack
-        _ here                          ; address of xt to be created
-        _ here_c                        ; code address
+        _ here_c                        ; xt to be returned
+
+        _ dup
+        _ two
+        _ cells
+        _ plus                          ; addr of start of code
         _ dup
         _ last_code
         _ store
-        _ comma
-        _ zero                          ; comp field
-        _ comma
+        _ commac
+
+        _lit xt_commacall_xt            ; comp field
+        _ commac
+
+        _ rbrack
         _ storecsp
         next
 endcode
 
+; ### ;
 code semi, ';', IMMEDIATE
         _ flush_compilation_queue
         _ ?csp
