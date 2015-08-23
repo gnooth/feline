@@ -36,7 +36,7 @@ windows? [if]
         key $8000 or
         exit
     then
-    dup $80 u< if                        \ normal character
+    dup $80 u< if                       \ normal character
         exit
     then
     dup $e0 = if
