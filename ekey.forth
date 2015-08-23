@@ -14,36 +14,36 @@
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 : test-key ( -- )
-   begin
-      key?
-   until
-   begin
-      key?
-   while
-      key h.
-   repeat ;
+    begin
+        key?
+    until
+    begin
+        key?
+    while
+        key h.
+    repeat ;
 
 windows? [if]
 
 : ekey ( -- x )                         \ FACILITY EXT
-   begin
-      key?
-      20 ms
-   until
-   key
-   dup 0= if
-      drop
-      key $8000 or
-      exit
-   then
-   dup $80 u< if                        \ normal character
-      exit
-   then
-   dup $e0 = if
-      drop
-      key $8000 or
-      exit
-   then ;
+    begin
+        key?
+        20 ms
+    until
+    key
+    dup 0= if
+        drop
+        key $8000 or
+        exit
+    then
+    dup $80 u< if                        \ normal character
+        exit
+    then
+    dup $e0 = if
+        drop
+        key $8000 or
+        exit
+    then ;
 
 $804d constant k-right
 $804b constant k-left
@@ -59,17 +59,17 @@ $8051 constant k-next
 
 \ Linux
 : ekey ( -- x )                         \ FACILITY EXT
-   begin
-      key?
-      20 ms
-   until
-   0
-   begin
-      key?
-   while
-      8 lshift
-      key or
-   repeat ;
+    begin
+        key?
+        20 ms
+    until
+    0
+    begin
+        key?
+    while
+        8 lshift
+        key or
+    repeat ;
 
 $1b5b43   constant k-right
 $1b5b44   constant k-left
@@ -85,8 +85,8 @@ $1b5b367e constant k-next
 
 : ekey>char ( x -- x false | char true )
 \ FACILITY EXT
-   dup 128 u< ;
+    dup 128 u< ;
 
 : ekey>fkey ( x -- x false | u true )
 \ FACILITY EXT
-   ekey>char 0= ;
+    ekey>char 0= ;
