@@ -54,7 +54,7 @@ endinline
 
 ; ### dup
 inline dup, 'dup'
-        pushrbx
+        _dup
 endinline
 
 ; ### ?dup
