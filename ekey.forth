@@ -59,17 +59,15 @@ $8051 constant k-next
 
 \ Linux
 : ekey ( -- x )                         \ FACILITY EXT
-    begin
-        key?
-        20 ms
-    until
-    0
-    begin
-        key?
-    while
-        8 lshift
-        key or
-    repeat ;
+    key
+    dup $1b = if
+        begin
+            key?
+        while
+            8 lshift
+            key or
+        repeat
+    then ;
 
 $1b5b43   constant k-right
 $1b5b44   constant k-left
