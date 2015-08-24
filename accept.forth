@@ -199,7 +199,6 @@ create restore-buffer 258 allot
         history-length history-size > if abort" add-history: shouldn't happen" then
         history-length history-size = if
             first-history ?dup if
-                ?cr ." freeing history at 0x" dup @ h.
                 @ free
             then
             history-array dup cell+ swap history-size 1- cells move
