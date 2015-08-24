@@ -16,6 +16,7 @@
 \ Adapted from GForth.
 
 : string-prefix? ( c-addr1 u1 c-addr2 u2 -- f ) \ gforth
+    \ Is the second string a prefix of the first?
     tuck 2>r min 2r> str= ;
 
 : search  ( c-addr1 u1 c-addr2 u2 -- c-addr3 u3 flag )
