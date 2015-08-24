@@ -27,13 +27,14 @@
             2drop \ and fall through
         then
     then
-    c@ ?line
+    c@ 2+ ?line
     dup
     .id
     1 +to words-count ;
 
 : (words) ( -- )
     0 to words-count
+    cr
     context @
     begin
         @
@@ -43,7 +44,7 @@
         process-word
         n>link
     repeat
-    cr
+    ?cr
     words-count .
     ." word" words-count 1 <> if [char] s emit then ;
 
