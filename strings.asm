@@ -370,9 +370,9 @@ code cmove, 'cmove'                     ; c-addr1 c-addr2 u --
         popd    rcx                     ; count
         popd    rdi                     ; destination
         popd    rsi                     ; source
-        jrcxz   cmove2
+        jrcxz   .1
         rep     movsb
-cmove2:
+.1:
         next
 endcode
 
@@ -381,8 +381,7 @@ code cmoveup, 'cmove>'                  ; c-addr1 c-addr2 u --
         popd    rcx
         popd    rdi
         popd    rsi
-        jrcxz   cmoveup2
-cmoveup1:
+        jrcxz   .1
         dec     rcx
         add     rdi, rcx
         add     rsi, rcx
@@ -390,7 +389,7 @@ cmoveup1:
         std
         rep     movsb
         cld
-cmoveup2:
+.1:
         next
 endcode
 
@@ -399,13 +398,13 @@ code move, 'move'                       ; addr1 addr2 u --
         _ tor
         _ twodup
         _ ult
-        _if move1
+        _if .1
         _ rfrom
         _ cmoveup
-        _else move1
+        _else .1
         _ rfrom
         _ cmove
-        _then move1
+        _then .1
         next
 endcode
 
