@@ -68,7 +68,7 @@ $1b constant #esc
     bufstart number-chars-accepted type ;
 
 \ The number of slots allocated for the history list.
-5 constant history-size
+100 constant history-size
 
 \ The current location of the interactive history pointer.
 -1 value history-offset
