@@ -68,7 +68,7 @@ $1b constant #esc
     bufstart number-chars-accepted type ;
 
 \ The number of slots allocated for the history list.
-100 constant history-size
+5 constant history-size
 
 \ The current location of the interactive history pointer.
 -1 value history-offset
@@ -200,6 +200,7 @@ create restore-buffer 258 allot
         history-length history-size = if
             first-history ?dup if
                 @ free
+                drop                    \ REVIEW
             then
             history-array dup cell+ swap history-size 1- cells move
             -1 +to history-length
