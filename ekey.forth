@@ -26,10 +26,6 @@
 windows? [if]
 
 : ekey ( -- x )                         \ FACILITY EXT
-    begin
-        key?
-        20 ms
-    until
     key
     dup 0= if
         drop
