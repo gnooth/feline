@@ -76,10 +76,10 @@ code interpret, 'interpret'             ; --
         _ dup                           ; -- c-addr c-addr
         _cfetch                         ; -- c-addr len
         _zeq                            ; -- c-addr flag
-        _if interp0
+        _if .1
         _ drop                          ; --
         _return
-        _then interp0                   ; -- c-addr
+        _then .1                        ; -- c-addr
         _ find
         _ ?dup
         _if interp2
@@ -99,9 +99,9 @@ code interpret, 'interpret'             ; --
         _else interp3
         _ double?
         _zeq
-        _if interp5
+        _if .6
         _ drop
-        _then interp5
+        _then .6
         _then interp3
         _then interp2
         _again interp0
