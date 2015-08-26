@@ -194,8 +194,9 @@ TESTING parsing behaviour of S" ." and (
 
 T{ : GC5 S" A string"2DROP ; GC5 -> }T
 T{ ( A comment)1234 -> 1234 }T
+0 [if]
 T{ : PB1 CR ." You should see 2345: "." 2345"( A comment) CR ; PB1 -> }T
-
+[then]
 \ ------------------------------------------------------------------------------
 TESTING number prefixes # $ % and 'c' character input
 \ Adapted from the Forth 200X Draft 14.5 document

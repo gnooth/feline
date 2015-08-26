@@ -179,7 +179,7 @@ code decdot, 'dec.'                     ; n --
         _ basefetch
         _ swap
         _ decimal
-        _ udot
+        _ dot
         _ basestore
         next
 endcode

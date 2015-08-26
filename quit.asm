@@ -29,7 +29,7 @@ code ok, 'ok'
         _if .2
         _lit '-'
         _ emit
-        _ dot
+        _ decdot
         _then .2
         _then .1
         next
@@ -152,31 +152,33 @@ code do_error, 'do-error'               ; n --
         _ dup
         _ minusone
         _ equal
-        _if do_error1
-        mov     rbp, [sp0_data]
-        jmp     quit
-        _then do_error1
+        _if .1
+        _ reset                         ; ABORT (no message)
+        _then .1
         _ dup
         _lit -2
         _ equal
-        _if do_error2
-        ; FIXME display message here
+        _if .2
+        _ msg                           ; ABORT"
+        _ fetch
+        _ ?dup
+        _if .3
+        _ counttype
+        _then .3
+        _ reset
+        _then .2
+        ; otherwise...
         _ msg
         _ fetch
         _ ?dup
-        _if do_error3
-        _ count
-        _ type
-        _then do_error3
-        mov     rbp, [sp0_data]
-        jmp     quit
-        _then do_error2
-        ; otherwise...
+        _if .4
+        _ counttype
+        _then .4
         _ ?cr
         _dotq "Exception # "
-        _ dot
-        mov     rbp, [sp0_data]
-        jmp     quit
+        _ decdot
+        _ where
+        _ reset
         next
 endcode
 
