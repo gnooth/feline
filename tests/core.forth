@@ -952,6 +952,7 @@ T{ FBUF CHAR+ FBUF 2 CHARS MOVE -> }T
 T{ SEEBUF -> 12 34 34 }T
 
 \ ------------------------------------------------------------------------
+0 [if]
 TESTING OUTPUT: . ." CR EMIT SPACE SPACES TYPE U.
 
 : OUTPUT-TEST
@@ -975,9 +976,9 @@ TESTING OUTPUT: . ." CR EMIT SPACE SPACES TYPE U.
 ;
 
 T{ OUTPUT-TEST -> }T
-
-
+[then]
 \ ------------------------------------------------------------------------
+0 [if]
 TESTING INPUT: ACCEPT
 
 CREATE ABUF 80 CHARS ALLOT
@@ -989,8 +990,8 @@ CREATE ABUF 80 CHARS ALLOT
    ABUF SWAP TYPE [CHAR] " EMIT CR
 ;
 
-\ T{ ACCEPT-TEST -> }T
-
+T{ ACCEPT-TEST -> }T
+[then]
 \ ------------------------------------------------------------------------
 TESTING DICTIONARY SEARCH RULES
 
