@@ -14,6 +14,7 @@
       include-system-file tests\errorreport.forth
       include-system-file tests\coreexttest.forth
       include-system-file tests\searchordertest.forth
+      report-errors
    [then]
 [else]
    include tests/tester.forth
@@ -22,4 +23,5 @@
    include tests/errorreport.forth
    include tests/coreexttest.forth
    include tests/searchordertest.forth
+   report-errors
 [then]
