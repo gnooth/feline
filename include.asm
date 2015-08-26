@@ -385,9 +385,11 @@ code evaluate, 'evaluate'               ; i*x c-addr u -- j*x
         _ set_source                    ; --
         _ toin
         _ off
-        _ interpret
+        _lit interpret_xt
+        _ catch
         _ nrfrom
         _ restore_input
         _ drop                          ; REVIEW
+        _ throw
         next
 endcode
