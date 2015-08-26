@@ -15,37 +15,47 @@
 
 file __FILE__
 
+; ### base
 variable base, 'base', 10
 
+; ### base@
 code basefetch, 'base@'                 ; -- n
         pushrbx
         mov     rbx, [base_data]
         next
 endcode
 
+; ### base!
 code basestore, 'base!'                 ; n --
         mov     [base_data], rbx
         poprbx
         next
 endcode
 
+; ### binary
 code binary, 'binary'
         mov     qword [base_data], 2
         next
 endcode
 
+; ### decimal
 code decimal, 'decimal'
+; CORE
         mov     qword [base_data], 10
         next
 endcode
 
+; ### hex
 code hex, 'hex'
+; CORE EXT
         mov     qword [base_data], 16
         next
 endcode
 
+; ### double?
 value double?, 'double?', 0
 
+; ### digit
 code digit, 'digit'                     ; char -- n true  |  char -- false
         _ dup
         _lit '0'
@@ -90,6 +100,7 @@ code digit, 'digit'                     ; char -- n true  |  char -- false
         next
 endcode
 
+; ### >number
 code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
 ; CORE
         _begin tonumber1
@@ -120,29 +131,31 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
         next
 endcode
 
-code missing, 'missing'
-; REVIEW
-        _ ?cr
-        _ counttype
-        _dotq ' ?'
-        _ cr
+; ### where
+code where, 'where'                     ; --
         _ source_id
         _ zgt
-        _if missing1
+        _if .1
         _ source_filename
         _fetch
         _ ?dup
-        _if .1
+        _if .2
         _ counttype
         _ space
-        _then .1
+        _then .2
         _dotq "line "
         _ source_line_number
         _fetch
-        _ dot
+        _ decdot
         _ cr
-        _then missing1
-        _cquote "undefined word"
+        _then .1
+        next
+endcode
+
+; ### missing
+code missing, 'missing'                 ; $addr --
+        _cquote ' ?'
+        _ appendstring
         _ msg
         _ store
         _lit -13
@@ -150,8 +163,10 @@ code missing, 'missing'
         next
 endcode
 
+; ### negative?
 value negative?, 'negative?', 0
 
+; ### number?
 code number?, 'number?'                 ; c-addr u -- d flag
         mov     qword [double?_data], 0
         _ over
@@ -197,6 +212,7 @@ code number?, 'number?'                 ; c-addr u -- d flag
         next
 endcode
 
+; ### maybe-change-base
 code maybe_change_base, 'maybe-change-base'     ; addr u -- addr' u'
         _ twodup                        ; -- addr u addr u
         _if mcb1
@@ -224,6 +240,7 @@ code maybe_change_base, 'maybe-change-base'     ; addr u -- addr' u'
         next
 endcode
 
+; ### number
 code number, 'number'                   ; string -- d
         _duptor                         ; -- string             r: -- string
         _ count                         ; -- addr u
@@ -234,18 +251,19 @@ code number, 'number'                   ; string -- d
         _ rfrom
         _ basestore
         _zeq
-        _if xnumber1
+        _if .1
         _ rfrom
         _ missing                       ; doesn't return
-        _then xnumber1
+        _then .1
         _rfromdrop
         _ negative?
-        _if xnumber2
+        _if .2
         _ dnegate
-        _then xnumber2
+        _then .2
         next
 endcode
 
+; ### number-in-base
 code number_in_base, 'number-in-base'   ; base -- number
         _ parse_name
         _ tick_word
@@ -270,18 +288,21 @@ code number_in_base, 'number-in-base'   ; base -- number
         _then hexnum1
         next
 
+; ### b#
 code binnum, 'b#', IMMEDIATE
         _lit 2
         _ number_in_base
         next
 endcode
 
+; ### d#
 code decnum, 'd#', IMMEDIATE
         _lit 10
         _ number_in_base
         next
 endcode
 
+; ### h#
 code hexnum, 'h#', IMMEDIATE
         _lit 16
         _ number_in_base

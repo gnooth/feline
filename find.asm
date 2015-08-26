@@ -350,7 +350,7 @@ find_addr:      dq      0
 find_len:       dq      0
 
 ; ### find
-code find, 'find'                       ; c-addr -- c-addr 0  |  xt 1  |  xt -1
+code find, 'find'                       ; c-addr -- c-addr 0 | xt 1 | xt -1
 ; CORE, SEARCH
         mov     [find_arg], rbx
         _ count                         ; -- addr len
@@ -392,22 +392,20 @@ endcode
 
 ; ### '
 code tick, "'"
+; CORE
         _ blchar
         _ word_
         _ find
         _zeq
-        _if tick1
-        _ count
-        _ type
-        _dotq ' ?'
-        _ cr
-        _ abort
-        _then tick1
+        _if .1
+        _ missing
+        _then .1
         next
 endcode
 
 ; ### [']
 code bracket_tick, "[']", IMMEDIATE
+; CORE
         _ tick
         _ literal
         next
