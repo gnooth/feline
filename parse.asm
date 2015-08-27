@@ -15,6 +15,7 @@
 
 file __FILE__
 
+; ### scan
 code scan, 'scan'                       ; c-addr1 u1 char -- c-addr2 u2
         _tor                            ; -- c-addr1 u1                 r: -- char
         _begin scan1
@@ -35,6 +36,7 @@ code scan, 'scan'                       ; c-addr1 u1 char -- c-addr2 u2
         next
 endcode
 
+; ### skipwhite
 code skipwhite, 'skipwhite'             ; c-addr1 u1 -- c-addr2 u2
         _begin skipwhite1
         _ dup
@@ -53,6 +55,7 @@ code skipwhite, 'skipwhite'             ; c-addr1 u1 -- c-addr2 u2
         next
 endcode
 
+; ### scantowhite
 code scantowhite, 'scantowhite'         ; c-addr1 u1 -- c-addr2 u2
         _begin scantowhite1
         _ dup
@@ -71,6 +74,7 @@ code scantowhite, 'scantowhite'         ; c-addr1 u1 -- c-addr2 u2
         next
 endcode
 
+; ### /source
 code slashsource, '/source'             ; -- c-addr u
         _ source
         _ toin
@@ -79,6 +83,7 @@ code slashsource, '/source'             ; -- c-addr u
         next
 endcode
 
+; ### parse
 code parse, 'parse'                     ; char "ccc<char>" -- c-addr u
 ; CORE EXT 6.2.2008
         _ slashsource
@@ -98,6 +103,7 @@ code parse, 'parse'                     ; char "ccc<char>" -- c-addr u
         next
 endcode
 
+; ### parse-name
 code parse_name, 'parse-name'           ; <spaces>name -- c-addr u
 ; Forth 200x CORE EXT 6.2.2020
 ; "Skip leading white space and parse name delimited by a white space character.
@@ -127,6 +133,7 @@ code parse_name, 'parse-name'           ; <spaces>name -- c-addr u
         next
 endcode
 
+; ### char
 code char, 'char'                       ; "<spaces>name" -- char
 ; 6.1.0895 CORE
         _ parse_name                    ; -- addr len
@@ -138,6 +145,7 @@ code char, 'char'                       ; "<spaces>name" -- char
         next
 endcode
 
+; ### [char]
 code bracket_char, '[char]', IMMEDIATE
         _ char
         _ literal
@@ -152,7 +160,9 @@ code tick_word, "'word"
         next
 endcode
 
+; ### word
 code word_, 'word'                      ; char "<chars>ccc<char>" -- c-addr
+; CORE
 ; "WORD always skips leading delimiters."
         _ dup
         _ blchar
@@ -176,6 +186,7 @@ code word_, 'word'                      ; char "<chars>ccc<char>" -- c-addr
         next
 endcode
 
+; ### (
 code paren, '(', IMMEDIATE
         _begin paren1
         _ slashsource
@@ -194,13 +205,7 @@ code paren, '(', IMMEDIATE
         next
 endcode
 
-code parens, '(s', IMMEDIATE
-        _lit ')'
-        _ parse
-        _ twodrop
-        next
-endcode
-
+; ### \
 code backslash, '\', IMMEDIATE
         _lit 10
         _ parse
@@ -208,6 +213,7 @@ code backslash, '\', IMMEDIATE
         next
 endcode
 
+; ### .(
 code dotparen, '.(', IMMEDIATE
         _lit ')'
         _ parse
