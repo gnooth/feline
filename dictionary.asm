@@ -467,6 +467,32 @@ code constant, 'constant'               ; x "<spaces>name" --
         next
 endcode
 
+; ### 2constant
+code twoconstant, '2constant'           ; x1 x2 "<spaces>name" --
+; DOUBLE
+        _ header                        ; -- x1 x2
+        _ here_c
+        _ latest
+        _ namefrom
+        _ store                         ; -- x1 x2
+        _lit doconst
+        _lit doconst_end - doconst
+        _ paren_copy_code               ; -- x1 x2
+        _ swap                          ; -- x2 x1
+        _ here_c
+        _ cellminus
+        _ store                         ; -- x2
+        _lit doconst
+        _lit doconst_end - doconst
+        _ paren_copy_code               ; -- x2
+        _ here_c
+        _ cellminus
+        _ store                         ; --
+        _lit $0c3
+        _ ccommac
+        next
+endcode
+
 ; ### recurse
 code recurse, 'recurse', IMMEDIATE
         _ last_code
