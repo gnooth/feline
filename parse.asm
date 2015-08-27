@@ -206,6 +206,11 @@ code paren, '(', IMMEDIATE
 endcode
 
 ; ### \
+; We need some additonal comment text here so that NASM isn't
+; confused by the '\' in the explicit tag.
+; "NASM uses backslash (\) as the line continuation character;
+; if a line ends with backslash, the next line is considered to
+; be a part of the backslash-ended line."
 code backslash, '\', IMMEDIATE
         _lit 10
         _ parse
