@@ -53,6 +53,7 @@ code minusone, '-1'
         next
 endcode
 
+; ### false
 code false, 'false'
 ; CORE EXT
         pushrbx
@@ -60,6 +61,7 @@ code false, 'false'
         next
 endcode
 
+; ### true
 code true, 'true'
 ; CORE EXT
         pushrbx
@@ -67,15 +69,34 @@ code true, 'true'
         next
 endcode
 
+; ### bl
 code blchar, 'bl'
+; CORE
         pushrbx
         mov     ebx, ' '
         next
 endcode
 
+; ### cell
 code cell, 'cell'
         pushrbx
         mov     rbx, BYTES_PER_CELL
+        next
+endcode
+
+; ### /hold
+code holdbufsize, '/hold'
+; "size of the pictured numeric output string buffer, in characters"
+        pushrbx
+        mov     rbx, 128
+        next
+endcode
+
+; ### /pad
+code padsize, '/pad'
+; "size of the scratch area pointed to by PAD, in characters"
+        pushrbx
+        mov     rbx, 1024
         next
 endcode
 

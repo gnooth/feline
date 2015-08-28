@@ -15,15 +15,44 @@
 
 file __FILE__
 
-; ### hld
-variable hld, 'hld', 0
+; ### holdbufptr
+variable holdbufptr, 'holdbufptr', 0    ; gforth
+
+; ### holdbuf
+code holdbuf, 'holdbuf'                 ; gforth
+        _ holdbufptr
+        _ fetch
+        next
+endcode
+
+; ### holdbuf-end
+code holdbuf_end, 'holdbuf-end'         ; gforth
+        _ holdbuf
+        _ holdbufsize
+        _ plus
+        next
+endcode
+
+; ### holdptr
+variable holdptr, 'holdptr', 0          ; gforth
+
+; ### <#
+code ltsharp,"<#"
+; CORE
+; "Initialize the pictured numeric output conversion process."
+        _ holdbuf_end
+        _ holdptr
+        _ store
+        next
+endcode
 
 ; ### hold
-code hold, 'hold'
+code hold, 'hold'                       ; char --
+; CORE
         _ minusone
-        _ hld
+        _ holdptr
         _ plusstore
-        _ hld
+        _ holdptr
         _fetch
         _ cstore
         next
@@ -31,28 +60,24 @@ endcode
 
 ; ### sign
 code sign, 'sign'                       ; n --
+; CORE
+; "If n is negative, add a minus sign to the beginning of the pictured
+; numeric output string."
         _zlt
-        _if sign1
+        _if .1
         _lit '-'
         _ hold
-        _then sign1
-        next
-endcode
-
-; ### <#
-code ltsharp,"<#"
-        _ pad                           ; pad hld !
-        _ hld
-        _ store
+        _then .1
         next
 endcode
 
 ; ### #>
-code sharpgt,'#>'                       ; d --- addr len
-        _ twodrop                       ; 2drop hld @ pad over -
-        _ hld
+code sharpgt,'#>'                       ; d --- c-addr u
+; CORE
+        _ twodrop                       ; 2drop holdptr @ holdbuf_end over -
+        _ holdptr
         _fetch
-        _ pad
+        _ holdbuf_end
         _ over
         _ minus
         next
@@ -60,16 +85,17 @@ endcode
 
 ; ### #
 code sharp, '#'                         ; ud1 -- ud2
+; CORE
         _ basefetch                     ; -- ud1 base
         _ muslmod                       ; -- remainder ud2
         _ rot                           ; -- ud2 remainder
         _lit 9                          ; -- ud2 remainder 9
         _ over                          ; -- ud2 remainder 9 remainder
         _ lt                            ; -- ud2 remainder flag
-        _if sharp1                      ; remainder > 9
+        _if .1                          ; remainder > 9
         _lit 7
         _ plus
-        _then sharp1
+        _then .1
         _lit '0'
         _ plus
         _ hold
@@ -78,6 +104,7 @@ endcode
 
 ; ### #s
 code sharps, '#s'
+; CORE
         _begin sharps1
         _ sharp
         _ twodup

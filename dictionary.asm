@@ -574,7 +574,8 @@ code here_c, 'here-c'
 endcode
 
 ; ### pad
-code pad, 'pad'
+code pad, 'pad'                         ; -- c-addr
+; CORE EXT
         _ here
         add     rbx, 512
         next
