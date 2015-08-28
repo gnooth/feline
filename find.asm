@@ -36,6 +36,8 @@ section .data
 
 ; ### get-current
 code get_current, 'get-current'         ; -- wid
+; SEARCH
+; Return the identifier of the compilation word list.
         pushrbx
         mov     rbx, [current_data]
         next

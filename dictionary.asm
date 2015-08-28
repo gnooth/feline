@@ -288,6 +288,9 @@ code allot_c, 'allot-c'
         next
 endcode
 
+; ### warning
+variable warning, 'warning', -1
+
 ; ### header
 code header, 'header'                   ; "spaces<name>" --
         _ parse_name                    ; -- c-addr u
@@ -297,6 +300,21 @@ endcode
 
 ; ### "header
 code quoteheader, '"header'             ; c-addr u --
+        _ warning
+        _fetch
+        _if .1
+        _ twodup
+        _ get_current
+        _ search_wordlist
+        _if .2
+        _ drop
+        _ ?cr
+        _ twodup
+        _ type
+        _dotq " isn't unique "
+        _then .2
+        _then .1
+
         _ zero                          ; code field (will be patched)
         _ commac
         _ zero                          ; comp field
