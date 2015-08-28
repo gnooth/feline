@@ -51,12 +51,28 @@ variable argv, 'argv', 0
 ; ### process-command-line
 deferred process_command_line, 'process-command-line', noop
 
+; ### 'pad
+variable tickpad, "'pad", 0
+
+; ### pad
+code pad, 'pad'                         ; -- c-addr
+; CORE EXT
+        _ tickpad
+        _fetch
+        next
+endcode
+
 ; ### initialize-task
 code initialize_task, 'initialize-task' ; --
         _ holdbufsize
         _ allocate
         _ drop                          ; REVIEW
         _ holdbufptr
+        _ store
+        _ padsize
+        _ allocate
+        _ drop                          ; REVIEW
+        _ tickpad
         _ store
         next
 endcode

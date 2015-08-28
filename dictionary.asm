@@ -573,14 +573,6 @@ code here_c, 'here-c'
         next
 endcode
 
-; ### pad
-code pad, 'pad'                         ; -- c-addr
-; CORE EXT
-        _ here
-        add     rbx, 512
-        next
-endcode
-
 ; ### latest
 code latest, 'latest'                   ; -- nfa
         _ last
