@@ -31,6 +31,7 @@ value stringbuf, '$buf', 0              ; initialized in main()
 
 ; ### new$                              ; REVIEW name from Win32Forth
 code newstring, 'new$'                  ; -- $addr
+; allocate a 256 byte temporary string buffer
         _ stringbuf
         _duptor
         _lit 258
@@ -55,6 +56,7 @@ endcode
 
 ; ### +$buf
 code plus_stringbuf, '+$buf'
+; advance $buf past the string at $buf
         _ stringbuf
         _ count
         _ plus
@@ -78,13 +80,16 @@ endcode
 
 ; ### $buf+
 code stringbuf_plus, '$buf+'            ; -- $addr
-        _ stringbuf
-        _ plus_stringbuf
+        _ stringbuf                     ; leave the current value of $buf on the stack
+        _ plus_stringbuf                ; advance the pointer past the current string
         next
 endcode
 
 ; ### >$buf
 code to_stringbuf, '>$buf'              ; c-addr u -- $addr
+; copy the string at c-addr u to the temporary string area
+; advance the pointer past the copied string
+; return the address of the copied string
         _ stringbuf
         _ place_string
         _ stringbuf_plus
@@ -93,6 +98,7 @@ endcode
 
 ; ### $>z
 code string_to_zstring, '$>z'           ; $addr -- zaddr
+; skip over the count byte
         _oneplus
         next
 endcode
@@ -167,6 +173,7 @@ endcode
 
 ; ### >$
 code save_string, '>$'                  ; c-addr u -- $addr
+; allocate permanent storage for the string at c-addr u
         _dup
         _if .1
         _dup
