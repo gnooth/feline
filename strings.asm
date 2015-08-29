@@ -29,6 +29,30 @@ endcode
 ; ### $buf
 value stringbuf, '$buf', 0              ; initialized in main()
 
+; ### new$                              ; REVIEW name from Win32Forth
+code newstring, 'new$'                  ; -- $addr
+        _ stringbuf
+        _duptor
+        _lit 258
+        _ plus
+        mov     [stringbuf_data], rbx
+        poprbx
+        _ stringbuf
+        _ stringbuf_end
+        _lit 258
+        _ minus
+        _ ugt
+        _if .1
+        mov     rax, [stringbuf_start_data]
+        mov     [stringbuf_data], rax
+        _then .1
+        _ zero
+        _ stringbuf
+        _ store
+        _rfrom
+        next
+endcode
+
 ; ### +$buf
 code plus_stringbuf, '+$buf'
         _ stringbuf
