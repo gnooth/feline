@@ -50,3 +50,59 @@ code ticks, 'ticks'                     ; -- u
         pushd   rax
         next
 endcode
+
+; ### break?
+variable break?, 'break?', 0
+
+; ### continue?
+variable continue?, 'continue?', 0
+
+; ### continue
+code continue, 'continue'
+        _ continue?
+        _ on
+        next
+endcode
+
+; ### break
+code break, 'break'                     ; --
+        _ break?
+        _fetch
+        _if .1
+        _ break?
+        _ off
+        _ continue?
+        _ off
+        _ cr
+        _dotq "stack: "
+        _ dots
+        _ cr
+        _begin .2
+        _dotq "break: "
+        _ query
+        _ tib
+        _ ntib
+        _fetch
+        _ zero
+        _ set_input
+        _ zero
+        _ source_filename
+        _ store
+        _lit interpret_xt
+        _ catch
+        _ ?dup
+        _if .3
+        ; THROW occurred
+        _ do_error
+        _else .3
+        _ ok
+        _ cr
+        _then .3
+        _ continue?
+        _fetch
+        _until .2
+        _ break?
+        _ on
+        _then .1
+        next
+endcode
