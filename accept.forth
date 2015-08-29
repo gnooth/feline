@@ -105,16 +105,21 @@ create history-array  history-size cells allot  history-array history-size cells
         cr count type
     loop ;
 
+0 value $history-file-pathname
+
 : history-file-pathname ( -- c-addr u )
-    [ linux? ] [if] s" HOME" [else] s" USERPROFILE" [then]
-    getenv                              \ -- c-addr u
-    $buf 1+ zplace
-    [ linux? ] [if] s" /" [else] s" \" [then]
-    $buf 1+ zappend
-    s" .forth_history" $buf 1+ zappend
-    $buf 1+ zstrlen $buf c!
-    $buf count
-    +$buf ;
+    $history-file-pathname 0= if
+        [ linux? ] [if] s" HOME" [else] s" USERPROFILE" [then]
+        getenv \ -- c-addr u
+        $buf 1+ zplace
+        [ linux? ] [if] s" /" [else] s" \" [then]
+        $buf 1+ zappend
+        s" .forth_history" $buf 1+ zappend
+        $buf 1+ zstrlen $buf c!
+        $buf count >$ to $history-file-pathname
+        +$buf
+    then
+    $history-file-pathname count ;
 
 : save-history ( -- )
     history-array 0= if exit then       \ shouldn't happen
