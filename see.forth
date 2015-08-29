@@ -626,6 +626,25 @@ h# 90 install-handler
    prefix if 8 else 4 then +to ip
 ;
 
+:noname ( -- )
+   s" int3" old-mnemonic!
+   1 to size
+   .instruction
+;
+
+$cc install-handler
+
+:noname ( -- )
+   s" int" old-mnemonic!
+   2 to size
+   .instruction
+   ip c@
+   1 +to ip
+   .
+;
+
+$cd install-handler
+
 \ $ff handler
 :noname  ( -- )
    !modrm-byte
