@@ -58,8 +58,8 @@ code definitions, 'definitions'         ; --
         next
 endcode
 
-; ### voc-link
-variable voclink, 'voc-link', files_wid
+; ### voclink
+variable voclink, 'voclink', files_wid
 
 ; ### wordlist
 code wordlist, 'wordlist'               ; -- wid

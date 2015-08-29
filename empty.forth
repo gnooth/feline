@@ -16,7 +16,7 @@
 0 value saved-dp
 0 value saved-cp
 0 value saved-latest
-0 value saved-voc-link
+0 value saved-voclink
 
 : trim ( wid -- )
     \ headers are in the code area
@@ -32,7 +32,7 @@
     then ;
 
 : trim-vocs ( -- )
-    voc-link @
+    voclink @
     begin
         dup
         trim
@@ -45,7 +45,7 @@
     here to saved-dp
     here-c to saved-cp
     last @ to saved-latest
-    voc-link @ to saved-voc-link ;
+    voclink @ to saved-voclink ;
 
 \ restore state saved by EMPTY!
 : empty ( -- )
@@ -53,6 +53,6 @@
         saved-dp dp !
         saved-cp cp !
         saved-latest last !
-        saved-voc-link voc-link !
+        saved-voclink voclink !
         trim-vocs
     then ;

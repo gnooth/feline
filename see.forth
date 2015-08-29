@@ -1,4 +1,4 @@
-\ Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ decimal
 
 : find-code  ( code-addr -- xt | 0 )
    >r                           \ --            r: -- code-addr
-   voc-link @                   \ -- wid        r: -- code-addr
+   voclink @                    \ -- wid        r: -- code-addr
    begin
       r@ over find-code-in-wordlist
       ?dup if
