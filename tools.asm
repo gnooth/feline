@@ -17,7 +17,7 @@ file __FILE__
 
 ; ### int3
 code int3, 'int3'                       ; --
-        int 3
+        int3
         next
 endcode
 
