@@ -841,8 +841,9 @@ endcode
 
 extern os_getcwd
 
-; ### getcwd
-code getcwd_, 'getcwd'
+; ### get-current-directory
+code get_current_directory, 'get-current-directory'
+; c-addr u -- c-addr
 %ifdef WIN64
         popd    rdx
         popd    rcx
@@ -859,6 +860,19 @@ code getcwd_, 'getcwd'
         pop     rbp
 %endif
         pushd   rax
+        next
+endcode
+
+; ### current-directory
+code current_directory, 'current-directory'     ; -- $addr
+        _ newstring
+        _ dup
+        _oneplus
+        _lit 255
+        _ get_current_directory
+        _ zstrlen
+        _ over
+        _ cstore
         next
 endcode
 
