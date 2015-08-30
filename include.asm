@@ -272,8 +272,8 @@ endcode
 ; ### source-filename
 variable source_filename, 'source-filename', 0
 
-; ### file
-code file_, 'file'                      ; c-addr u -- xt
+; ### link-file
+code link_file, 'link-file'             ; c-addr u -- nfa
         _ here_c
         _ tor
         _ get_current
@@ -302,7 +302,7 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ resolve_include_filename      ; -- $addr
         _ dup
         _ count
-        _ file_
+        _ link_file
         _ source_filename
         _ store
         _ string_to_zstring
