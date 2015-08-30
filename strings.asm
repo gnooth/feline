@@ -19,28 +19,24 @@ file __FILE__
 value stringbuf_start, '$bufstart', 0   ; initialized in main()
 
 ; ### $bufend
-code stringbuf_end, '$bufend'
-        _ stringbuf_start
-        _lit 1024
-        _ plus
-        next
-endcode
+value stringbuf_end, '$bufend', 0       ; initialized in main()
 
 ; ### $buf
 value stringbuf, '$buf', 0              ; initialized in main()
 
 ; ### new$                              ; REVIEW name from Win32Forth
 code newstring, 'new$'                  ; -- $addr
-; allocate a 256 byte temporary string buffer
+; Returns the address of a temporary buffer big enough for the biggest
+; counted string.
         _ stringbuf
         _duptor
-        _lit 258
+        _lit 257                        ; count byte, 255 chars, terminal null byte
         _ plus
         mov     [stringbuf_data], rbx
         poprbx
         _ stringbuf
         _ stringbuf_end
-        _lit 258
+        _lit 257
         _ minus
         _ ugt
         _if .1
