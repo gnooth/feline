@@ -43,6 +43,9 @@
 
 %ifdef WIN64_NATIVE
 %macro  xcall   1
+        push    rbp
+        mov     rbp, [saved_rbp_data]
+        sub     rsp, 32
         test    rsp, 0x0f
         jnz     %%fixstack
         call    %1
@@ -52,6 +55,8 @@
         call    %1
         add     rsp, 8
 %%out:
+        add     rsp, 32
+        pop     rbp
 %endmacro
 %else
 ; Linux

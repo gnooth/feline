@@ -37,16 +37,7 @@ extern os_ticks
 
 ; ### ticks
 code ticks, 'ticks'                     ; -- u
-%ifdef WIN64
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
-%endif
         xcall   os_ticks
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
         pushd   rax
         next
 endcode

@@ -19,16 +19,7 @@ extern os_key
 
 ; ### key
 code key, 'key'
-%ifdef WIN64
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
-%endif
         xcall   os_key
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
         pushd   rax
         next
 endcode
@@ -37,16 +28,7 @@ extern os_key_avail
 
 ; ### key?
 code key?, 'key?'
-%ifdef WIN64
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
-%endif
         xcall   os_key_avail
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
         pushd   rax
         next
 endcode
@@ -57,17 +39,10 @@ extern os_emit
 code paren_emit, '(emit)'
 %ifdef WIN64
         popd    rcx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         popd    rdi
 %endif
-        xcall    os_emit
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
+        xcall   os_emit
         next
 endcode
 
@@ -222,17 +197,10 @@ code file_status, 'file-status'         ; c-addr u -- x ior
         _ here
 %ifdef WIN64
         popd    rcx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         popd    rdi
 %endif
         xcall   os_file_status
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
         or      rax, rax
         jnz      .1
         pushd   rax
@@ -253,17 +221,10 @@ code file_is_directory, 'file-is-directory?' ; c-addr u -- -1 | 0
         _ here
 %ifdef WIN64
         popd    rcx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         popd    rdi
 %endif
         xcall   os_file_is_directory
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
         test    rax, rax
         jz      .1
         mov     rax, -1
@@ -298,19 +259,12 @@ code paren_open_file, '(open-file)'     ; zaddr fam -- fileid ior
 %ifdef WIN64
         popd    rdx
         popd    rcx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         popd    rsi
         popd    rdi
 %endif
         xcall   os_open_file
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
-        or      rax, rax
+        test    rax, rax
         js      .1
         pushd   rax                     ; fileid
         pushd   0                       ; ior
@@ -333,19 +287,12 @@ code create_file, 'create-file'         ; c-addr u fam -- fileid ior
 %ifdef WIN64
         popd    rdx
         popd    rcx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 0x28
 %else
         popd    rsi
         popd    rdi
 %endif
         xcall   os_create_file
-%ifdef WIN64
-        add     rsp, 0x28
-        pop     rbp
-%endif
-        or      rax, rax
+        test    rax, rax
         js      .1
         pushd   rax                     ; fileid
         pushd   0                       ; ior
@@ -364,20 +311,13 @@ code read_file, 'read-file'             ; c-addr u1 fileid -- u2 ior
         popd    rcx                     ; fileid
         popd    r8                      ; u1
         popd    rdx                     ; c-addr
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 0x28
 %else
         popd    rdi
         popd    rdx
         popd    rsi
 %endif
-        xcall    os_read_file
-%ifdef WIN64
-        add     rsp, 0x28
-        pop     rbp
-%endif
-        or      rax, rax
+        xcall   os_read_file
+        test    rax, rax
         js      .1
         pushd   rax                     ; u2
         pushd   0                       ; ior
@@ -394,17 +334,10 @@ extern os_read_char
 code read_char, 'read-char'             ; fileid -- char | -1
 %ifdef WIN64
         mov     rcx, rbx                ; fileid
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 0x28
 %else
         mov     rdi, rbx
 %endif
-        xcall    os_read_char
-%ifdef WIN64
-        add     rsp, 0x28
-        pop     rbp
-%endif
+        xcall   os_read_char
         mov     rbx, rax
         next
 endcode
@@ -496,19 +429,12 @@ code write_file, 'write-file'           ; c-addr u1 fileid -- ior
         popd    rcx                     ; fileid
         popd    r8                      ; u1
         popd    rdx                     ; c-addr
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 0x28
 %else
         popd    rdi
         popd    rdx
         popd    rsi
 %endif
-        xcall    os_write_file
-%ifdef WIN64
-        add     rsp, 0x28
-        pop     rbp
-%endif
+        xcall   os_write_file
         or      rax, rax
         js      .1
         pushd   0                       ; ior
@@ -547,17 +473,10 @@ extern os_close_file
 code close_file, 'close-file'           ; fileid -- ior
 %ifdef WIN64
         popd    rcx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         popd    rdi
 %endif
-        xcall    os_close_file
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
+        xcall   os_close_file
         pushd   rax
         next
 endcode
@@ -569,18 +488,11 @@ code file_size, 'file-size'             ; fileid -- ud ior
 ; FILE
 %ifdef WIN64
         popd    rcx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         popd    rdi
 %endif
-        xcall    os_file_size
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
-        or      rax, rax
+        xcall   os_file_size
+        test    rax, rax
         js      .1
         pushd   rax                     ; ud
         _ stod
@@ -600,17 +512,10 @@ code file_position, 'file-position'     ; fileid -- ud ior
 ; FILE
 %ifdef WIN64
         mov     rcx, rbx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         mov     rdi, rbx
 %endif
-        xcall    os_file_position
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
+        xcall   os_file_position
         mov     rbx, rax
         test    rbx, rbx
         js      .1
@@ -632,20 +537,13 @@ code reposition_file, 'reposition-file' ; ud fileid -- ior
         mov     rcx, rbx                        ; fileid in RCX
         mov     rdx, [rbp + BYTES_PER_CELL]     ; 64-bit offset in RDX
         add     rbp, BYTES_PER_CELL * 2
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         mov     rdi, rbx                        ; fileid
         mov     rsi, [rbp + BYTES_PER_CELL]     ; 64-bit offset
         add     rbp, BYTES_PER_CELL * 2
 %endif
-        xcall    os_reposition_file
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
-        or      rax, rax
+        xcall   os_reposition_file
+        test    rax, rax
         js      .1
         xor     rbx, rbx                ; success
         next
@@ -663,19 +561,12 @@ code resize_file, 'resize-file'         ; ud fileid -- ior
         mov     rcx, rbx                        ; fileid in RCX
         mov     rdx, [rbp + BYTES_PER_CELL]     ; 64-bit offset in RDX
         add     rbp, BYTES_PER_CELL * 2
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         mov     rdi, rbx                        ; fileid
         mov     rsi, [rbp + BYTES_PER_CELL]     ; 64-bit offset
         add     rbp, BYTES_PER_CELL * 2
 %endif
-        xcall    os_resize_file
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
+        xcall   os_resize_file
         or      rax, rax
         js      .1
         xor     rbx, rbx                ; success
@@ -694,17 +585,10 @@ code delete_file, 'delete-file'         ; c-addr u -- ior
         _ here
 %ifdef WIN64
         mov     rcx, rbx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         mov     rdi, rbx
 %endif
-        xcall    os_delete_file
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
+        xcall   os_delete_file
         mov     ebx, eax
         next
 endcode
@@ -723,18 +607,11 @@ code rename_file, 'rename-file'         ; c-addr1 u1 c-addr2 u2 -- ior
 %ifdef WIN64
         lea     rcx, [rsp + MAX_PATH]   ; old name
         mov     rdx, rsp                ; new name
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         lea     rdi, [rsp + MAX_PATH]   ; old name
         mov     rsi, rsp                ; new name
 %endif
-        xcall    os_rename_file
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
+        xcall   os_rename_file
         pushrbx
         mov     rbx, rax
         add     rsp, ((MAX_PATH + 16) & $1f0) * 2
@@ -748,17 +625,10 @@ code flush_file, 'flush-file'           ; fileid -- ior
 ; FILE EXT
 %ifdef WIN64
         mov     rcx, rbx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         mov     rdi, rbx
 %endif
-        xcall    os_flush_file
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
+        xcall   os_flush_file
         mov     rbx, rax
         next
 endcode
@@ -770,17 +640,10 @@ code ms, 'ms'
 ; FACILITY EXT
 %ifdef WIN64
         popd    rcx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         popd    rdi
 %endif
         xcall   os_ms
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
         next
 endcode
 
@@ -793,17 +656,10 @@ code system_, 'system'                  ; c-addr u --
         _ here
 %ifdef WIN64
         popd    rcx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         popd    rdi
 %endif
         xcall   os_system
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
         next
 endcode
 
@@ -816,17 +672,10 @@ code getenv_, 'getenv'                  ; c-addr1 u1 -- c-addr2 u2
         _ here
 %ifdef WIN64
         popd    rcx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         popd    rdi
 %endif
         xcall   os_getenv
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
         pushd   rbx
         mov     rbx, rax
         pushd   rbx
@@ -847,18 +696,11 @@ code get_current_directory, 'get-current-directory'
 %ifdef WIN64
         popd    rdx
         popd    rcx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         popd    rsi
         popd    rdi
 %endif
         xcall   os_getcwd
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
         pushd   rax
         next
 endcode
@@ -880,16 +722,7 @@ extern os_forth_home
 
 ; ### forth-home
 code forth_home, 'forth-home'          ; -- zaddr
-%ifdef WIN64
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
-%endif
         xcall   os_forth_home
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
         pushd   rax
         next
 endcode

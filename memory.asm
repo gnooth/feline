@@ -22,17 +22,10 @@ code allocate, 'allocate'               ; u -- a-addr ior
 ; MEMORY
 %ifdef WIN64
         mov     rcx, rbx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         mov     rdi, rbx
 %endif
         xcall   os_allocate
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
         mov     rbx, rax                ; -- a-addr
         _ dup
         _if .1
@@ -51,17 +44,10 @@ code free_, 'free'                      ; a-addr -- ior
 ; MEMORY
 %ifdef WIN64
         mov     rcx, rbx
-        push    rbp
-        mov     rbp, [saved_rbp_data]
-        sub     rsp, 32
 %else
         mov     rdi, rbx
 %endif
         xcall   os_free
-%ifdef WIN64
-        add     rsp, 32
-        pop     rbp
-%endif
-        xor     rbx, rbx                ; ior
+        xor     ebx, ebx                ; ior
         next
 endcode
