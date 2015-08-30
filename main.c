@@ -433,7 +433,7 @@ char *os_getenv(const char *name)
   return getenv(name);
 }
 
-char *os_getcwd(char * buf, size_t size)
+char *os_getcwd(char *buf, size_t size)
 {
   // REVIEW error handling
 #ifdef WIN64
@@ -442,6 +442,17 @@ char *os_getcwd(char * buf, size_t size)
   getcwd(buf, size);
 #endif
   return buf;
+}
+
+char *os_realpath(const char *path)
+{
+#ifdef WIN64_NATIVE
+  char *buf = malloc(PATH_MAX);
+  GetFullPathName(path, PATH_MAX, buf, NULL);
+  return buf;
+#else
+  return realpath(path, NULL);
+#endif
 }
 
 void os_bye()

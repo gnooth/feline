@@ -300,6 +300,7 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ tor
         _ to_stringbuf
         _ resolve_include_filename      ; -- $addr
+        _ realpath_
         _ dup
         _ count
         _ link_file

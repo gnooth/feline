@@ -721,8 +721,29 @@ endcode
 extern os_forth_home
 
 ; ### forth-home
-code forth_home, 'forth-home'          ; -- zaddr
+code forth_home, 'forth-home'           ; -- zaddr
         xcall   os_forth_home
         pushd   rax
+        next
+endcode
+
+extern os_realpath
+
+; ### realpath
+code realpath_, 'realpath'              ; $path -- $realpath
+        _ string_to_zstring             ; -- zaddr
+%ifdef WIN64
+        popd    rcx
+%else
+        popd    rdi
+%endif
+        xcall   os_realpath
+        pushd   rax                     ; -- zaddr
+        _ dup
+        _ zcount
+        _ to_stringbuf                  ; -- zaddr $addr
+        _ swap
+        _ free_
+        _ drop
         next
 endcode
