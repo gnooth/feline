@@ -22,6 +22,7 @@
 #ifdef WIN64
 #include <windows.h>
 #else
+#include <limits.h>     // PATH_MAX
 #include <signal.h>
 #include <sys/mman.h>
 #include <sys/time.h>
@@ -450,13 +451,13 @@ char *os_getcwd(char *buf, size_t size)
 
 char *os_realpath(const char *path)
 {
-#ifdef WIN64_NATIVE
   char *buf = malloc(PATH_MAX);
+#ifdef WIN64_NATIVE
   GetFullPathName(path, PATH_MAX, buf, NULL);
-  return buf;
 #else
-  return realpath(path, NULL);
+  realpath(path, buf);
 #endif
+  return buf;
 }
 
 void os_bye()
