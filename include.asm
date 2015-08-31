@@ -248,8 +248,8 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         next
 endcode
 
-; ### resolve-include-filename
-code resolve_include_filename, 'resolve-include-filename' ; $addr1 -- $addr2
+; ### includable?
+code includable?, 'includable?'         ; $addr -- flag
         _duptor
         _ count
         _ file_exists
@@ -260,12 +260,33 @@ code resolve_include_filename, 'resolve-include-filename' ; $addr1 -- $addr2
         _zeq
         _if .2
         _rfrom
-        next
+        _drop
+        _ true
+        _return
         _then .2
         _then .1
-        _rfrom                          ; -- $addr1
+        _rfromdrop
+        _ false
+        next
+endcode
+
+; ### resolve-include-filename
+code resolve_include_filename, 'resolve-include-filename' ; $addr1 -- $addr
+        _ dup                           ; -- $addr1 $addr1
+        _ includable?                   ; -- $addr1 flag
+        _if .1
+        _return
+        _then .1                        ; -- $addr1
+        _ dup                           ; -- $addr1 $addr1
         _cquote ".forth"
-        _ appendstring                  ; -- $addr2
+        _ appendstring                  ; -- $addr1 $addr2
+        _ dup                           ; -- $addr1 $addr2 $addr2
+        _ includable?                   ; -- $addr1 $addr2 flag
+        _if .2
+        _ nip                           ; return addr2
+        _else .2
+        _ drop                          ; return addr1
+        _then .2
         next
 endcode
 
@@ -325,14 +346,12 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _lit -38
         _ throw
         _then .2
-        _else .1
-        _ drop
-        _then .1
-
         _ rfrom
         _ source_filename
         _ store
-
+        _else .1
+        _ drop
+        _then .1
         next
 endcode
 
