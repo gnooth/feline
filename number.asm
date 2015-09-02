@@ -21,34 +21,39 @@ variable base, 'base', 10
 ; ### base@
 code basefetch, 'base@'                 ; -- n
         pushrbx
-        mov     rbx, [base_data]
+        mov     rbx, base_data
+        mov     rbx, [rbx]
         next
 endcode
 
 ; ### base!
 code basestore, 'base!'                 ; n --
-        mov     [base_data], rbx
+        mov     rax, base_data
+        mov     [rax], rbx
         poprbx
         next
 endcode
 
 ; ### binary
 code binary, 'binary'
-        mov     qword [base_data], 2
+        mov     rax, base_data
+        mov     qword [rax], 2
         next
 endcode
 
 ; ### decimal
 code decimal, 'decimal'
 ; CORE
-        mov     qword [base_data], 10
+        mov     rax, base_data
+        mov     qword [rax], 10
         next
 endcode
 
 ; ### hex
 code hex, 'hex'
 ; CORE EXT
-        mov     qword [base_data], 16
+        mov     rax, base_data
+        mov     qword [rax], 16
         next
 endcode
 
@@ -68,12 +73,12 @@ code digit, 'digit'                     ; char -- n true  |  char -- false
         _ dup
         _ basefetch
         _ lt
-        _if digit2
+        _if .2
         _ true
-        _else digit2
+        _else .2
         _ drop
         _ false
-        _then digit2
+        _then .2
         _return
         _then digit1
         _ upc
