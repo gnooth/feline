@@ -21,19 +21,25 @@ variable state, 'state', 0              ; CORE, TOOLS EXT
 ; ### state@
 code statefetch, 'state@'
         pushrbx
-        mov     rbx, [state_data]
+        mov     rbx, state_data
+        mov     rbx, [rbx]
         next
 endcode
 
 ; ### [
 code lbrack, '[', IMMEDIATE
-        mov     qword [state_data], 0
+        xor     eax, eax
+        mov     rdx, state_data
+        mov     [rdx], rax
         next
 endcode
 
 ; ### ]
 code rbrack, ']'
-        mov     qword [state_data], -1
+        xor     eax, eax
+        dec     rax
+        mov     rdx, state_data
+        mov     [rdx], rax
         next
 endcode
 
