@@ -409,7 +409,7 @@ h# 0f install-handler
    then ;
 
 \ $19 handler
-:noname  ( -- )
+:noname ( -- )
    c" sbb" to mnemonic
    !modrm-byte
    ok_register modrm-rm 0 dest!
@@ -420,8 +420,20 @@ h# 0f install-handler
 
 $19 install-handler
 
+\ $31 handler
+:noname ( -- )
+   c" xor" to mnemonic
+   !modrm-byte
+   ok_register modrm-rm 0 dest!
+   ok_register modrm-reg 0 source!
+   .inst
+   prefix if 3 else 2 then to size
+;
+
+$31 install-handler
+
 \ $74 handler
-:noname  ( -- )
+:noname ( -- )
    s" jz" old-mnemonic!
    ip c@s  1 +to ip     \ 8-bit signed offset
    2 to size
