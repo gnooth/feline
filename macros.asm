@@ -174,7 +174,8 @@ global %1
         section .text
 %1:
         pushrbx
-        mov     rbx, [%1_data]
+        mov     rbx, %1_data
+        mov     rbx, [rbx]
         next
 %endmacro
 
