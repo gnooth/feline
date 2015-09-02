@@ -152,13 +152,7 @@ code bracket_char, '[char]', IMMEDIATE
         next
 endcode
 
-variable tick_tick_word, "''word", 0    ; initialized in main()
-
-code tick_word, "'word"
-        _ tick_tick_word
-        _fetch
-        next
-endcode
+value word_buffer, 'word-buffer', 0     ; initialized in main()
 
 ; ### word
 code word_, 'word'                      ; char "<chars>ccc<char>" -- c-addr
@@ -174,9 +168,9 @@ code word_, 'word'                      ; char "<chars>ccc<char>" -- c-addr
         ; BUG! PARSE does not skip leading delimiters!
         _ parse                         ; -- addr len
         _then word1
-        _ tick_word
+        _ word_buffer
         _ place
-        _ tick_word
+        _ word_buffer
         _ dup
         _ count
         _ plus

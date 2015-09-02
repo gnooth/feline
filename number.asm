@@ -266,9 +266,9 @@ endcode
 ; ### number-in-base
 code number_in_base, 'number-in-base'   ; base -- number
         _ parse_name
-        _ tick_word
+        _ word_buffer
         _ place
-        _ tick_word
+        _ word_buffer
         _ count
         _ plus
         _ blchar
@@ -277,7 +277,7 @@ code number_in_base, 'number-in-base'   ; base -- number
         _ basefetch
         _ tor
         _ basestore
-        _ tick_word
+        _ word_buffer
         _ number
         _ drop                          ; REVIEW
         _ rfrom

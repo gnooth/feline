@@ -81,7 +81,7 @@ int main(int argc, char **argv, char **env)
   extern Cell stringbuf_data;
   extern Cell tick_tib_data;
   extern Cell sp0_data;
-  extern Cell tick_tick_word_data;
+  extern Cell word_buffer_data;
   Cell data_space_size = 1024 * 1024;
   Cell code_space_size = 1024 * 1024;
   void * data_space;
@@ -112,7 +112,7 @@ int main(int argc, char **argv, char **env)
 
   tick_tib_data = (Cell) malloc(256);
   sp0_data = (Cell) malloc(1024) + (1024 - 64);
-  tick_tick_word_data = (Cell) malloc(256);
+  word_buffer_data = (Cell) malloc(260);
 
 #ifndef WIN64
   struct sigaction sa;
