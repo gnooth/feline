@@ -532,6 +532,24 @@ code upc, 'upc'
         next
 endcode
 
+; ### upper
+code upper, 'upper'                     ; c-addr1 u --
+        _ ?dup
+        _if .1
+        _ bounds
+        _do .2
+        _i
+        _ cfetch
+        _ upc
+        _i
+        _ cstore
+        _loop .2
+        _else .1
+        _ drop
+        _then .1
+        next
+endcode
+
 ; ### is=
 code isequal, 'is='                     ; addr1 addr2 len -- flag
         _ ?dup
