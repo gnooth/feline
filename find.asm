@@ -115,14 +115,14 @@ endcode
 code vocs, 'vocs'
         _ voclink
         _fetch
-        _begin vocs1
+        _begin .1
         _dup
         _ dotwid
         _ widtolink
         _fetch
         _dup
         _zeq
-        _until vocs1
+        _until .1
         _drop
         next
 endcode
@@ -369,8 +369,7 @@ code find, 'find'                       ; c-addr -- c-addr 0 | xt 1 | xt -1
         _plus
         _fetch                          ; -- wid
         _dup
-        _zeq
-        _if .2                       ; not found
+        _zeq_if .2                      ; not found
         pushrbx
         mov     rbx, [find_arg]
         _ swap
@@ -398,8 +397,7 @@ code tick, "'"
         _ blchar
         _ word_
         _ find
-        _zeq
-        _if .1
+        _zeq_if .1
         _ missing
         _then .1
         next

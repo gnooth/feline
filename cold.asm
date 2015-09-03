@@ -90,8 +90,7 @@ code cold, 'cold'                       ; --
         _ store
         _ forth_wordlist
         _fetch
-        _zeq
-        _if .1
+        _zeq_if .1
         _ latest
         _ forth_wordlist
         _ store

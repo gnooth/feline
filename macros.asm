@@ -245,6 +245,15 @@ section .text
         jz      %1_ifnot
 %endmacro
 
+%macro  _zeq_if 1
+        %push if
+        section .text
+        test    rbx, rbx
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        jnz      %1_ifnot
+%endmacro
+
 %macro  _else 1
 %ifctx if
         %repl   else

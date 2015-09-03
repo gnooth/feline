@@ -57,9 +57,6 @@ code hex, 'hex'
         next
 endcode
 
-; ### double?
-value double?, 'double?', 0
-
 ; ### digit
 code digit, 'digit'                     ; char -- n true  |  char -- false
         _ dup
@@ -114,8 +111,7 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
         _ over
         _cfetch
         _ digit
-        _zeq
-        _if tonumber2
+        _zeq_if tonumber2
         _return
         _then tonumber2                 ; -- ud1 addr u1 digit
         _tor                            ; -- ud1 addr u1                r: -- digit
@@ -168,30 +164,35 @@ code missing, 'missing'                 ; $addr --
         next
 endcode
 
+; ### double?
+value double?, 'double?', 0
+
 ; ### negative?
 value negative?, 'negative?', 0
 
 ; ### number?
 code number?, 'number?'                 ; c-addr u -- d flag
-        mov     qword [double?_data], 0
+        _ zero
+        _to double?
         _ over
         _ cfetch
         _lit '-'
         _ equal
         _if ixnumber1
-        mov     qword [negative?_data], -1
+        _ minusone
+        _to negative?
         _ one
         _ slashstring
         _else ixnumber1
-        mov     qword [negative?_data], 0
+        _ zero
+        _to negative?
         _then ixnumber1
         _ zero
         _ zero
         _ twoswap
         _ tonumber                      ; -- ud c-addr' u'
         _ dup                           ; -- ud c-addr' u' u'
-        _zeq
-        _if ixnumber3                   ; -- ud c-addr' u'
+        _zeq_if ixnumber3               ; -- ud c-addr' u'
         ; no chars left over
         _ twodrop
         _ true
@@ -209,7 +210,8 @@ code number?, 'number?'                 ; c-addr u -- d flag
         _lit '.'
         _ equal
         _if ixnumber5
-        mov     qword [double?_data], -1
+        _ minusone
+        _to double?
         _ true
         _else ixnumber5
         _ false
@@ -220,28 +222,28 @@ endcode
 ; ### maybe-change-base
 code maybe_change_base, 'maybe-change-base'     ; addr u -- addr' u'
         _ twodup                        ; -- addr u addr u
-        _if mcb1
+        _if .1
         _cfetch
         _ dup
         _lit '$'
         _ equal
-        _if mcb2
+        _if .2
         _ drop
         _ one
         _ slashstring
         _ hex
-        _else mcb2
+        _else .2
         _lit '#'
         _ equal
-        _if mcb3
+        _if .3
         _ one
         _ slashstring
         _ decimal
-        _then mcb3
-        _then mcb2
-        _else mcb1
+        _then .3
+        _then .2
+        _else .1
         _ drop
-        _then mcb1
+        _then .1
         next
 endcode
 
@@ -250,14 +252,13 @@ code number, 'number'                   ; string -- d
         _duptor                         ; -- string             r: -- string
         _ count                         ; -- addr u
         _ basefetch
-        _ tor
+        _tor
         _ maybe_change_base             ; -- addr' u'
         _ number?                       ; -- d flag
-        _ rfrom
+        _rfrom
         _ basestore
-        _zeq
-        _if .1
-        _ rfrom
+        _zeq_if .1
+        _rfrom
         _ missing                       ; doesn't return
         _then .1
         _rfromdrop

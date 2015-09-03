@@ -257,8 +257,7 @@ code includable?, 'includable?'         ; $addr -- flag
         _rfetch
         _ count
         _ file_is_directory
-        _zeq
-        _if .2
+        _zeq_if .2
         _rfrom
         _drop
         _ true
@@ -330,8 +329,7 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ string_to_zstring
         _ readonly
         _ paren_open_file               ; -- fileid ior
-        _zeq
-        _if .2
+        _zeq_if .2
         _duptor
         _ include_file
         _ rfrom                         ; -- fileid

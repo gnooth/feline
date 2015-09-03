@@ -21,8 +21,7 @@ value line_input, 'line-input?', -1
 ; ### ok
 code ok, 'ok'
         _ statefetch
-        _zeq
-        _if .1
+        _zeq_if .1
         _dotq " ok"
         _ depth
         _ ?dup
