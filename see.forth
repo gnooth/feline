@@ -432,18 +432,32 @@ $19 install-handler
 
 $31 install-handler
 
-\ $74 handler
-:noname ( -- )
-   s" jz" old-mnemonic!
-   ip c@s  1 +to ip     \ 8-bit signed offset
-   2 to size
-   .instruction
-   ip +                 \ jump target
-   dup end-address > if dup to end-address then
-   ." $" h.
-;
+: .jcc ( $addr -- )
+    to mnemonic
+    ip c@s              \ 8-bit signed offset
+    1 +to ip
+    2 to size
+    .inst
+    ip +                \ jump target
+    dup end-address > if
+        dup to end-address
+    then
+    ." $" h. ;
 
-$74 install-handler
+\ $70 handler
+:noname ( -- ) $" jo" .jcc ; $70 install-handler
+
+\ $74 handler
+:noname ( -- ) $" jz" .jcc ; $74 install-handler
+
+\ $75 handler
+:noname ( -- ) $" jne" .jcc ; $75 install-handler
+
+\ $7c handler
+:noname ( -- ) $" jl" .jcc ; $7c install-handler
+
+\ $7f handler
+:noname ( -- ) $" jg" .jcc ; $7f install-handler
 
 \ $eb handler
 :noname  ( -- )
@@ -458,33 +472,43 @@ h# 0eb install-handler
 
 \ $83 handler
 :noname  ( -- )
-   !modrm-byte
-   modrm-mod 3 = if
-      modrm-reg 0= if
-         s" add" old-mnemonic!
-         prefix if 4 else 3 then to size
-         .instruction
-         modrm-rm .reg64
-         .sep
-         ip c@s  1 +to ip
-         .
-         exit
-      then
-      modrm-reg 7 = if
-         s" cmp" old-mnemonic!
-         prefix if 4 else 3 then to size
-         .instruction
-         modrm-rm .reg64
-         .sep
-         ip c@s  1 +to ip
-         .
-         exit
-      then
-   then
-   ip instruction-start - .bytes
-   unsupported ;
+    !modrm-byte
+    modrm-mod 3 = if
+        modrm-reg 0= if
+            s" add" old-mnemonic!
+            prefix if 4 else 3 then to size
+            .instruction
+            modrm-rm .reg64
+            .sep
+            ip c@s  1 +to ip
+            .
+            exit
+        then
+        modrm-reg 5 = if
+            $" sub" to mnemonic
+            prefix if 4 else 3 then to size
+            .inst
+            modrm-rm .reg64
+            .sep
+            ip c@s  1 +to ip
+            .
+            exit
+        then
+        modrm-reg 7 = if
+            s" cmp" old-mnemonic!
+            prefix if 4 else 3 then to size
+            .instruction
+            modrm-rm .reg64
+            .sep
+            ip c@s  1 +to ip
+            .
+            exit
+        then
+    then
+    ip instruction-start - .bytes
+    unsupported ;
 
-h# 83 install-handler
+$83 install-handler
 
 : .85  ( -- )
 \    ip prefix if 2 else 1 then + c@      \ modrm-byte
@@ -660,12 +684,14 @@ $cd install-handler
 \ $ff handler
 :noname  ( -- )
    !modrm-byte
-   modrm-byte h# 20 = if        \ mod 0
-      s" jmp" old-mnemonic!
-      2 to size
-      .instruction
-      ." [rax]"
-      exit
+   modrm-mod 0 = if
+       modrm-reg 4 = if
+           $" jmp" to mnemonic
+           ok_relative modrm-rm 0 dest!
+           2 to size
+           .inst
+           exit
+       then
    then
    modrm-byte h# e0 = if        \ mod 3
       s" jmp" old-mnemonic!
