@@ -358,7 +358,7 @@ code within, 'within'                   ; n min max -- flag
         next
 endcode
 
-; ### zeq
+; ### 0=
 inline zeq, '0='
 ; CORE
         _zeq
