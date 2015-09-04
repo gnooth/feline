@@ -31,3 +31,18 @@
 	1 /string
     repeat
     2drop 2r> 2drop false ;
+
+: string-prefix?-ignore-case ( c-addr1 u1 c-addr2 u2 -- f )
+    tuck 2>r min 2r> istr= ;
+
+: search-ignore-case ( c-addr1 u1 c-addr2 u2 -- c-addr3 u3 flag )
+    2>r 2dup
+    begin
+	dup r@ >=
+    while
+	2dup 2r@ string-prefix?-ignore-case if
+	    2swap 2drop 2r> 2drop true exit
+        then
+	1 /string
+    repeat
+    2drop 2r> 2drop false ;

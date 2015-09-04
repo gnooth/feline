@@ -18,8 +18,8 @@
 
 : process-word ( $addr -- )
     words-pattern if
-        dup
-        count words-pattern count search 0= if
+        dup count words-pattern count
+        search-ignore-case 0= if
             \ not a match
             3drop
             exit
