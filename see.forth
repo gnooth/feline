@@ -663,6 +663,13 @@ h# 90 install-handler
 ;
 
 :noname ( -- )
+    $" leave" to mnemonic
+    1 to size
+    .inst ;
+
+$c9 install-handler
+
+:noname ( -- )
    s" int3" old-mnemonic!
    1 to size
    .instruction
