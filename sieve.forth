@@ -23,6 +23,7 @@ variable flags  size allot
 
 [undefined] ticks [if]
 s" iforth" environment? [if]
+drop
 : ticks ?ms ;
 [then]
 [then]
