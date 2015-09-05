@@ -15,6 +15,7 @@
 
 file __FILE__
 
+; ### !
 code store, '!'                         ; n addr --
         mov     rax, [rbp]              ; n
         mov     [rbx], rax
@@ -23,6 +24,7 @@ code store, '!'                         ; n addr --
         next
 endcode
 
+; ### c!
 inline cstore, 'c!'                     ; c addr --
         mov     al, [rbp]               ; c
         mov     [rbx], al
@@ -30,6 +32,7 @@ inline cstore, 'c!'                     ; c addr --
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 endinline
 
+; ### l!
 code lstore, 'l!'                       ; l addr --
         mov     eax, [rbp]              ; l
         mov     [rbx], eax
@@ -38,6 +41,7 @@ code lstore, 'l!'                       ; l addr --
         next
 endcode
 
+; ### +!
 code plusstore, '+!'                    ; n addr --
         mov     rax, [rbp]
         add     [rbx], rax
@@ -46,6 +50,7 @@ code plusstore, '+!'                    ; n addr --
         next
 endcode
 
+; ### off
 code off, 'off'                         ; addr --
         xor     eax, eax
         mov     [rbx], rax
@@ -53,19 +58,22 @@ code off, 'off'                         ; addr --
         next
 endcode
 
+; ### on
 code on, 'on'                           ; addr --
         mov     qword [rbx], -1
         poprbx
         next
 endcode
 
+; ### 2!
 code twostore, '2!'                     ; x1 x2 a-addr --
 ; CORE
-; "Store the cell pair x1 x2 at a-addr, with x2 at a-addr and x1 at the next consecutive cell."
-        mov     rax, [rbp]                              ; x2
-        mov     [rbx], rax                              ; store at a-addr
-        mov     rax, [rbp + BYTES_PER_CELL]             ; x1
-        mov     [rbx + BYTES_PER_CELL], rax             ; store at next consecutive cell
+; "Store the cell pair x1 x2 at a-addr, with x2 at a-addr and x1 at the next
+; consecutive cell."
+        mov     rax, [rbp]                      ; x2
+        mov     [rbx], rax                      ; store at a-addr
+        mov     rax, [rbp + BYTES_PER_CELL]     ; x1
+        mov     [rbx + BYTES_PER_CELL], rax     ; store at next consecutive cell
         mov     rbx, [rbp + BYTES_PER_CELL * 2]
         add     rbp, BYTES_PER_CELL * 3
         next
