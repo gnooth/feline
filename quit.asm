@@ -146,6 +146,19 @@ endcode
 ; ### msg
 variable msg, 'msg', 0
 
+; ### .msg
+code dotmsg, '.msg'
+        _ msg
+        _fetch
+        _ ?dup
+        _if .1
+        _ counttype
+        _ msg
+        _ off
+        _then .1
+        next
+endcode
+
 ; ### do-error
 code do_error, 'do-error'               ; n --
         _ dup
@@ -158,21 +171,11 @@ code do_error, 'do-error'               ; n --
         _lit -2
         _ equal
         _if .2
-        _ msg                           ; ABORT"
-        _ fetch
-        _ ?dup
-        _if .3
-        _ counttype
-        _then .3
+        _ dotmsg                        ; ABORT"
         _ reset
         _then .2
         ; otherwise...
-        _ msg
-        _ fetch
-        _ ?dup
-        _if .4
-        _ counttype
-        _then .4
+        _ dotmsg
         _ ?cr
         _dotq "Exception # "
         _ decdot
