@@ -157,19 +157,9 @@ code place_string, '$place'             ; c-addr u $addr --
         next
 endcode
 
-; : >$ ( c-addr u -- $addr )
-;     dup if
-;         dup 2+ allocate throw           \ -- c-addr u $addr
-;         dup>r $place
-;         r>
-;     else
-;         \ zero length
-;         nip
-;     then ;
-
 ; ### >$
 code save_string, '>$'                  ; c-addr u -- $addr
-; allocate permanent storage for the string at c-addr u
+; allocate permanent storage for the string specified by c-addr u
         _dup
         _if .1
         _dup
