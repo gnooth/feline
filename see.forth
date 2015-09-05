@@ -46,6 +46,20 @@ decimal
    until
    r>drop ;
 
+\ "0 = default operand size   1 = 64-bit operand size"
+8 constant rex.w
+
+\ "1-bit (high) extension of the ModRM reg field, thus permitting access to 16 registers."
+4 constant rex.r
+
+\ "1-bit (high) extension of the SIB index field, thus permitting access to 16 registers."
+2 constant rex.x
+
+\ "1-bit (high) extension of the ModRM r/m field, SIB base field1, or opcode reg field,
+\ thus permitting access to 16 registers."
+1 constant rex.b
+
+
 0 value start-address
 0 value end-address
 0 value instruction-start
@@ -122,6 +136,22 @@ create old-mnemonic  2 cells allot
 : modrm-reg  ( -- reg )  modrm-byte (modrm-reg) ;
 : modrm-rm   ( -- rm  )  modrm-byte (modrm-rm)  ;
 
+: register-reg ( n1 -- n2 )
+    prefix if
+        prefix rex.r and if
+            8 or
+        then
+    then
+;
+
+: register-rm ( n1 -- n2 )
+    prefix if
+        prefix rex.b and if
+            8 or
+        then
+    then
+;
+
 : .modrm  ( modrm-byte -- )
    base @ >r binary
    ?cr ." mod: " dup (modrm-mod) .2 space
@@ -152,14 +182,56 @@ create old-mnemonic  2 cells allot
    swap                                 \ addr +n
    3 * + 3 type ;
 
+create reg64-regs 16 cells allot
+
+: define-reg64                          \ n "spaces<name>" --
+    >r
+    create
+    latest name> reg64-regs r@ cells + !
+    r> ,                                \ register number
+    latest ,                            \ register name
+;
+
+: reg64 ( n -- register )
+    dup 0 15 between if
+        reg64-regs swap cells + @ execute
+    else
+        throw                           \ REVIEW
+    then ;
+
+: register-number ( register -- n )
+    @ ;
+
+: register-name ( register -- $addr )
+    cell+ @ ;
+
+ 0 define-reg64 rax
+ 1 define-reg64 rcx
+ 2 define-reg64 rdx
+ 3 define-reg64 rbx
+ 4 define-reg64 rsp
+ 5 define-reg64 rbp
+ 6 define-reg64 rsi
+ 7 define-reg64 rdi
+ 8 define-reg64 r8
+ 9 define-reg64 r9
+10 define-reg64 r10
+11 define-reg64 r11
+12 define-reg64 r12
+13 define-reg64 r13
+14 define-reg64 r14
+15 define-reg64 r15
+
 : .reg64  ( +n -- )
-   s" raxrcxrdxrbxrsprbprsirdi"         \ +n addr len
-   drop                                 \ +n addr
-   swap                                 \ addr +n
-   3 * + 3 type ;
+    prefix $41 = if
+        \ extended register
+        8 or
+    then
+    reg64 register-name $.
+;
 
 : .reg  ( +n -- )
-   prefix h# 48 = if .reg64 else .reg32 then ;
+    prefix $40 and if .reg64 else .reg32 then ;
 
 : .relative  ( reg disp -- )
    ." [" swap .reg64                    \ -- disp
@@ -168,8 +240,9 @@ create old-mnemonic  2 cells allot
          ." +"
       else
          ." -"
+         abs
       then
-      abs 0 .r
+      0 .r
    then
    ." ]" ;
 
@@ -382,22 +455,24 @@ h# 09 install-handler
    ip instruction-start - .bytes
    unsupported ;
 
-h# 0f install-handler
+$0f install-handler
 
 : .push  ( -- )
-   1 .bytes
-   40 >pos
-   ." push"
-   48 >pos
-   opcode h# 50 - .reg64
+    prefix if 2 else 1 then to size
+    size .bytes
+    40 >pos
+    ." push"
+    48 >pos
+    opcode $50 - .reg64
 ;
 
 : .pop  ( -- )
-   1 .bytes
+    prefix if 2 else 1 then to size
+   size .bytes
    40 >pos
    ." pop"
    48 >pos
-   opcode h# 58 - .reg64
+   opcode $58 - .reg64
 ;
 
 : .ret  ( -- )
@@ -488,7 +563,7 @@ h# 0eb install-handler
             $" sub" to mnemonic
             prefix if 4 else 3 then to size
             .inst
-            modrm-rm .reg64
+            modrm-rm register-rm .reg64
             .sep
             ip c@s  1 +to ip
             .
@@ -529,45 +604,43 @@ $83 install-handler
    unsupported
    size +to ip ;
 
-: .89  ( -- )                           \ MOV reg/mem64, reg64
-   s" mov" old-mnemonic!
-   c" mov" to mnemonic
+: .89 ( -- )
+    \ MOV reg/mem64, reg64
+    \ "Move the contents of a 64-bit register to a 64-bit destination register
+    \ or memory operand."
+    \ 89 /r
+    \ "/r: indicates that the ModR/M byte of the instruction contains both a
+    \ register operand and an r/m operand."
+
+\    s" mov" old-mnemonic!
+   $" mov" to mnemonic
    !modrm-byte
    modrm-mod 0= if
-\       prefix if 3 else 2 then to size
-\       size .bytes
-\       old-.mnemonic
-\       48 >pos
-\       modrm-rm 0 .relative
-\       .sep
-\       modrm-reg .reg64
-
-\       modrm-rm destination-operand operand-register !
-\       ok_relative destination-operand operand-kind !
-      ok_relative modrm-rm 0 dest!
-\       modrm-reg source-operand operand-register !
-\       ok_register source-operand operand-kind !
-      ok_register modrm-reg 0 source!
-      .inst
-      exit
-   then
-   modrm-mod 1 = if                     \ 1-byte displacement
-      ok_relative modrm-rm ip c@s dest!
-      1 +to ip
-      ok_register modrm-reg 0 source!
+      ok_relative modrm-rm register-rm 0 dest!
+      ok_register modrm-reg register-reg 0 source!
       .inst
       exit
     then
+    modrm-mod 1 = if                     \ 1-byte displacement
+        ok_relative modrm-rm ip c@s dest!
+        1 +to ip
+        ok_register modrm-reg 0 source!
+        .inst
+        exit
+    then
     modrm-mod 3 = if                    \ register operands
-       prefix if 3 else 2 then to size
-       size .bytes
-       old-.mnemonic
-       48 >pos
-       modrm-rm .reg64
-       .sep
-       modrm-reg .reg64
-\        size +to ip
-       exit
+        prefix if 3 else 2 then to size
+\         size .bytes
+\         old-.mnemonic
+\         48 >pos
+\         modrm-rm .reg64
+\         .sep
+\         modrm-reg .reg64
+\ \        size +to ip
+        ok_register modrm-reg register-reg 0 source!
+        ok_register modrm-rm  register-rm  0 dest!
+        .inst
+        exit
     then
 \     prefix if 2 else 1 then to size
 \     size .bytes
@@ -616,28 +689,18 @@ $83 install-handler
 
 : .8d  ( -- )                           \ LEA reg64, mem
 \    s" lea" old-mnemonic!
-   c" lea" to mnemonic
-   !modrm-byte
-   modrm-rm 4 = if !sib-byte then
-   modrm-mod 1 = if                \ 1-byte displacement
-\       prefix if 4 else 3 then .bytes
-\       old-.mnemonic
-\       48 >pos
-\       modrm-reg .reg64 .sep
-\       modrm-rm
-\ \       ip prefix if 3 else 2 then + c@s
-\       ip c@s 1 +to ip
-\       .relative
-\ \       prefix if 4 else 3 then +to ip
-      ok_register modrm-reg 0 dest!
-      ok_relative modrm-rm ip c@s source!
-      1 +to ip
-      .inst
-      exit
-   then
-   ip instruction-start - .bytes
-   unsupported
-\    1 +to ip
+    c" lea" to mnemonic
+    !modrm-byte
+    modrm-rm 4 = if !sib-byte then
+    modrm-mod 1 = if                    \ 1-byte displacement
+        ok_register modrm-reg register-reg 0 dest!
+        ok_relative modrm-rm register-rm ip c@s source!
+        1 +to ip
+        .inst
+        exit
+    then
+    ip instruction-start - .bytes
+    unsupported
 ;
 
 :noname  ( -- )
@@ -765,32 +828,32 @@ decimal
   then ;
 
 : decode  ( -- )                        \ decode one instruction
-   ip to instruction-start
-   operand1 clear-operand
-   operand2 clear-operand
-   .ip
-   ip c@
-   dup h# 48 = if
-      to prefix
-      ip 1+ c@ to opcode
-      2 +to ip
-   else
-      to opcode
-      0 to prefix
-      1 +to ip
-   then
-   .opcode ;
+    ip to instruction-start
+    operand1 clear-operand
+    operand2 clear-operand
+    .ip
+    ip c@
+    dup $40 $4f between if
+        to prefix
+        ip 1+ c@ to opcode
+        2 +to ip
+    else
+        to opcode
+        0 to prefix
+        1 +to ip
+    then
+    .opcode ;
 
 : disasm  ( code-addr -- )
-   dup to start-address to ip
-   0 to end-address
-   done? off
-   begin
-      done? @ 0=
-   while
-      decode
-   repeat
-   ?cr end-address start-address - . ." bytes" ;
+    dup to start-address to ip
+    0 to end-address
+    done? off
+    begin
+        done? @ 0=
+    while
+        decode
+    repeat
+    ?cr end-address start-address - . ." bytes" ;
 
 : disassemble  ( cfa -- )
    >code disasm ;
