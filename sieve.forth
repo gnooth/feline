@@ -29,6 +29,13 @@ drop
 [then]
 
 [undefined] ticks [if]
+s" win32forth" environment? [if]
+drop
+: ticks ms@ ;
+[then]
+[then]
+
+[undefined] ticks [if]
 [defined] utime [if]
 : ticks utime 1000 um/mod nip ; \ gforth
 [else]
