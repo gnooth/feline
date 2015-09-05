@@ -41,6 +41,7 @@ ASM_SOURCES = forth.asm equates.asm macros.asm inlines.asm \
 	include.asm \
 	interpret.asm \
 	io.asm \
+	locals.asm \
 	loop.asm \
 	memory.asm \
 	number.asm \

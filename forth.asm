@@ -35,6 +35,7 @@ default abs ; use absolute addresses by default
 %include "include.asm"
 %include "interpret.asm"
 %include "io.asm"
+%include "locals.asm"
 %include "loop.asm"
 %include "memory.asm"
 %include "number.asm"

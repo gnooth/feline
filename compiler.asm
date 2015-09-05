@@ -169,6 +169,9 @@ code colonnoname, ':noname'
         _lit xt_commacall_xt            ; comp field
         _ commac
 
+        _ zero
+        _to using_locals?
+
         _ rbrack
         _ storecsp
         next
@@ -178,6 +181,13 @@ endcode
 code semi, ';', IMMEDIATE
         _ flush_compilation_queue
         _ ?csp
+        _ using_locals?
+        _if .1
+        _lit locals_leave_xt
+        _ compilecomma
+        _ zero
+        _to using_locals?
+        _then .1
         _lit $0c3                       ; RET
         _ ccommac
         _ lbrack
