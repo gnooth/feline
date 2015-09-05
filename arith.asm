@@ -348,13 +348,21 @@ endcode
 ; ### within
 code within, 'within'                   ; n min max -- flag
 ; CORE EXT
-; return true if min <= x < max
+; return true if min <= n < max
         _ over
         _ minus
         _ tor
         _ minus
         _ rfrom
         _ ult
+        next
+endcode
+
+; ### between
+code between, 'between'                 ; n min max -- flag
+; return true if min <= n <= max
+        _oneplus
+        _ within
         next
 endcode
 
