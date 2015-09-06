@@ -31,7 +31,7 @@ code lspstore, 'lsp!'
 endcode
 
 ; ### using-locals?
-value using_locals?, 'using-locals?', 0 
+value using_locals?, 'using-locals?', 0
 ; true at compile time if the current definition uses locals
 
 ; ### initialize-locals-stack
@@ -64,24 +64,59 @@ endinline
 ; ### locals-names
 value locals_names, 'locals-names', 0
 
+; ### #locals
+code nlocals, '#locals'                 ; -- n
+; maximum number of local variables in a definition
+        pushd   16
+        next
+endcode
+
+; ### locals-defined
+value locals_defined, 'locals-defined', 0
+
+; ### .locals
+code dotlocals, '.locals'
+        _ ?cr
+        _ locals_defined
+        _ dot
+        _dotq "local(s):"
+        _ locals_defined
+        _ zero
+        _do .1
+        _ ?cr
+        _ locals_names
+        _i
+        _ cells
+        _ plus
+        _ fetch
+        _ counttype
+        _loop .1
+        next
+endcode
+
 ; ### initialize-frame
 code initialize_frame, 'initialize-frame'
-        _lit 16
+        _ nlocals
         _ cells
+        _duptor
         _ allocate
         _ drop                          ; REVIEW
+        _ dup
         _to locals_names
+        _rfrom
+        _ erase
+        _ zero
+        _to locals_defined
         _ true
         _to using_locals?
         next
 endcode
 
 ; ### local-init
-inline local_init, 'local-init'
-;         sub     r15, BYTES_PER_CELL
-        lea     r15, [r15 - BYTES_PER_CELL]
-        mov     [r15], rbx
-        poprbx
+inline local_init, 'local-init'         ; x --
+        lea     r15, [r15 - BYTES_PER_CELL]     ; adjust lsp
+        mov     [r15], rbx                      ; initialize local with value from tos
+        poprbx                                  ; adjust stack
 endinline
 
 ; ### (local)
@@ -99,12 +134,36 @@ code paren_local, '(local)'             ; c-addr u --
         _ compilecomma
         _then .1
 
+        _ locals_defined
+        _ nlocals
+        _ ult
+        _if .3
+
         _lit local_init_xt
         _ compilecomma
 
+        _ twodup
         _ ?cr
         _dotq "local "
         _ type
+
+        _ save_string                   ; -- $addr
+        _ locals_names
+        _ locals_defined
+        _ cells
+        _ plus
+        _ store
+        _ one
+        _plusto locals_defined
+
+        _ ?cr
+        _ locals_defined
+        _ dot
+        _dotq "local(s) defined"
+
+        _else .3
+        _abortq "Too many locals"       ; REVIEW
+        _then .3
 
         next
 endcode

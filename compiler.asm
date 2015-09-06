@@ -185,6 +185,8 @@ code semi, ';', IMMEDIATE
         _if .1
         _lit locals_leave_xt
         _ compilecomma
+        _ dotlocals
+        ; FIXME free local names here
         _ zero
         _to using_locals?
         _then .1
