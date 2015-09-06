@@ -15,6 +15,7 @@
 
 file __FILE__
 
+; ### (do)
 code parendo, '(do)'                    ; limit index --
         pop     rcx                     ; return address
         mov     rax, [rcx]              ; address for LEAVE
@@ -33,6 +34,7 @@ code parendo, '(do)'                    ; limit index --
         next
 endcode
 
+; ### do
 code do, 'do', IMMEDIATE                ; -- addr
         _ flush_compilation_queue
         _lit parendo
@@ -43,6 +45,7 @@ code do, 'do', IMMEDIATE                ; -- addr
         next
 endcode
 
+; ### (?do)
 code paren?do, '(?do)'                  ; limit index --
         pop     rcx                     ; return address
         mov     rax, [rcx]              ; address for LEAVE
@@ -65,6 +68,7 @@ code paren?do, '(?do)'                  ; limit index --
         next                            ; for disassembler
 endcode
 
+; ### ?do
 code ?do, '?do', IMMEDIATE
         _ flush_compilation_queue
         _lit paren?do
@@ -75,6 +79,7 @@ code ?do, '?do', IMMEDIATE
         next
 endcode
 
+; ### (loop)
 code parenloop, '(loop)'                ; --
 ; "Add one to the loop index. If the loop index is then equal to the loop limit,
 ; discard the loop parameters and continue execution immediately following the
@@ -97,6 +102,7 @@ doloop_patch    equ     $ - 4
         add     rsp, BYTES_PER_CELL * 3
 doloop_end:
 
+; ### loop
 code loop, 'loop', IMMEDIATE            ; c: do-sys --
         _ flush_compilation_queue
         _ here_c
@@ -122,6 +128,7 @@ code loop, 'loop', IMMEDIATE            ; c: do-sys --
         next
 endcode
 
+; ### (+loop)
 code parenplusloop, '(+loop)'           ; n --
 ; "Add n to the loop index. If the loop index did not cross the boundary
 ; between the loop limit minus one and the loop limit, continue execution
@@ -145,6 +152,7 @@ code parenplusloop, '(+loop)'           ; n --
         next                            ; for disassembler
 endcode
 
+; ### +loop
 code plusloop, '+loop', IMMEDIATE       ; addr --
         _ flush_compilation_queue
         _lit parenplusloop
@@ -158,11 +166,13 @@ code plusloop, '+loop', IMMEDIATE       ; addr --
         next
 endcode
 
+; ### (leave)
 code parenleave, '(leave)'
         add     rsp, BYTES_PER_CELL * 3
         ret
 endcode
 
+; ### leave
 code leave, 'leave', IMMEDIATE
         _ flush_compilation_queue
         _lit parenleave
@@ -170,17 +180,21 @@ code leave, 'leave', IMMEDIATE
         next
 endcode
 
+; FIXME inline _i works from .asm but the call _ i does not!!
+; ### i
 inline i, 'i'
 ; CORE
 ; "Interpretation semantics for this word are undefined."
         _i
 endinline
 
+; ### i+
 inline iplus, 'i+'                      ; ( n -- i+n )
         add     rbx, [rsp]
         add     rbx, [rsp + BYTES_PER_CELL]
 endinline
 
+; ### j
 code j, 'j'
 ; CORE
 ; "Interpretation semantics for this word are undefined."
@@ -190,10 +204,12 @@ code j, 'j'
         next
 endcode
 
+; ### unloop
 inline unloop, 'unloop'
         _unloop
 endinline
 
+; ### bounds
 code bounds, 'bounds'                   ; addr len -- addr+len addr
         _ over
         _ plus
