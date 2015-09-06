@@ -185,6 +185,12 @@ global %1
         poprbx
 %endmacro
 
+%macro  _plusto 1                       ; label
+        mov     rax, %1_data
+        add     [rax], rbx
+        poprbx
+%endmacro
+
 %macro  _dotq 1
 section .data
 %strlen len     %1
