@@ -233,20 +233,26 @@ create reg64-regs 16 cells allot
 : .reg  ( +n -- )
     prefix $40 and if .reg64 else .reg32 then ;
 
-: .relative  ( reg disp -- )
-   ." [" swap .reg64                    \ -- disp
-   ?dup if
-      dup 0> if
-         ." +"
-      else
-         ." -"
-         abs
-      then
-      0 .r
-   then
-   ." ]" ;
+0 value relative-size                   \ $addr or 0
 
-0 value current-operand
+: .relative  ( reg disp -- )
+    relative-size ?dup if
+        $. space
+        0 to relative-size
+    then
+    ." [" swap .reg64                   \ -- disp
+    ?dup if
+        dup 0> if
+            ." +"
+        else
+            ." -"
+            abs
+        then
+        0 .r
+    then
+    ." ]" ;
+
+0 value current-operand                 \ FIXME this should be a local!
 
 : .operand ( operand -- )
    dup to current-operand
@@ -431,29 +437,39 @@ h# 09 install-handler
 
 \ $0f handler
 :noname  ( -- )
-   ip c@
-   1 +to ip
-   dup h# 84 = if
-      drop
-      c" jz" to mnemonic
-      ok_immediate 0
-      ip l@s                            \ 32-bit signed offset
-      4 +to ip
-      ip + dest!
-      .inst
-      exit
-   then
-   h# 81 = if
-      c" jno" to mnemonic
-      ok_immediate 0
-      ip l@s
-      4 +to ip
-      ip + dest!
-      .inst
-      exit
-   then
-   ip instruction-start - .bytes
-   unsupported ;
+    ip c@
+    1 +to ip
+    dup $b6 = if
+        drop
+        $" movzx" to mnemonic
+        !modrm-byte
+        ok_relative modrm-rm register-rm 0 source!
+        ok_register modrm-reg register-reg 0 dest!
+        $" byte" to relative-size
+        .inst
+        exit
+    then
+    dup $84 = if
+        drop
+        $" jz" to mnemonic
+        ok_immediate 0
+        ip l@s                            \ 32-bit signed offset
+        4 +to ip
+        ip + dest!
+        .inst
+        exit
+    then
+    $81 = if
+        $" jno" to mnemonic
+        ok_immediate 0
+        ip l@s
+        4 +to ip
+        ip + dest!
+        .inst
+        exit
+    then
+    ip instruction-start - .bytes
+    unsupported ;
 
 $0f install-handler
 
