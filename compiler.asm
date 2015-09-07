@@ -20,7 +20,8 @@ code ?comp, '?comp'
         mov     rax, [state_data]
         test    rax, rax
         jnz     .1
-        _abortq "Compilation only"
+        _lit    -14
+        _ throw
 .1:
         next
 endcode
@@ -89,8 +90,6 @@ endcode
 
 ; ### (compile,)
 code parencompilecomma, '(compile,)'    ; xt --
-; CORE EXT
-; "Interpretation semantics for this word are undefined."
         _ dup                           ; -- xt xt
         _ tocomp                        ; -- xt >comp
         _fetch                          ; -- xt xt-comp
@@ -113,6 +112,8 @@ endcode
 
 ; ### compile,
 deferred compilecomma, 'compile,', parencompilecomma
+; CORE EXT
+; "Interpretation semantics for this word are undefined."
 
 ; ### last-code
 variable last_code, 'last-code', 0
