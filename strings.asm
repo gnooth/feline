@@ -486,9 +486,9 @@ endcode
 ; ### s=
 code sequal, 's='                       ; addr1 addr2 len -- flag
         _ ?dup
-        _if sequal1
+        _if .1
         _ zero
-        _do sequal2
+        _do .2
         _ twodup
         _i
         _ plus
@@ -498,14 +498,14 @@ code sequal, 's='                       ; addr1 addr2 len -- flag
         _ plus
         _ cfetch
         _ notequal
-        _if sequal3
+        _if .3
         _ twodrop
         _ false
         _unloop
         _return
-        _then sequal3
-        _loop sequal2
-        _then sequal1
+        _then .3
+        _loop .2
+        _then .1
         _ twodrop
         _ true
         next
