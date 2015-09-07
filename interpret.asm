@@ -57,20 +57,20 @@ endcode
 ; ### do-defined
 code do_defined, 'do-defined'           ; xt flag --
         _ statefetch
-        _if do_defined1
+        _if .1
         _ zgt
-        _if do_defined2
+        _if .2
         ; immediate word
         _ flush_compilation_queue
         _ execute
-        _else do_defined2
+        _else .2
         _ compilecomma
-        _then do_defined2
-        _else do_defined1
+        _then .2
+        _else .1
         _drop
         _ execute
         _ ?stack
-        _then do_defined1
+        _then .1
         next
 endcode
 
