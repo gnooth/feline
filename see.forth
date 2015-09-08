@@ -199,6 +199,28 @@ create reg64-regs 16 cells allot
         throw                           \ REVIEW
     then ;
 
+create reg8-regs 8 cells allot
+
+: define-reg8                           \ n "spaces<name>" --
+    >r
+    create
+    latest name> reg8-regs r@ cells + !
+    r> ,                                \ register number
+    latest ,                            \ register name
+;
+
+: reg8 ( n -- register )
+    dup 0 7 between if
+        reg8-regs swap cells + @ execute
+    else
+        throw                           \ REVIEW
+    then ;
+
+ 0 define-reg8 al
+ 1 define-reg8 cl
+ 2 define-reg8 dl
+ 3 define-reg8 bl
+
 : register-number ( register -- n )
     @ ;
 
@@ -230,8 +252,16 @@ create reg64-regs 16 cells allot
     reg64 register-name $.
 ;
 
-: .reg  ( +n -- )
-    prefix $40 and if .reg64 else .reg32 then ;
+\ FIXME need a consistent interface here
+: .reg  ( x -- )
+    dup 15 > if
+        \ x is address of register structure
+        register-name $.
+    else
+        \ x is register number (can't be address if <= 15)
+        prefix $40 and if .reg64 else .reg32 then
+    then
+;
 
 0 value relative-size                   \ $addr or 0
 
@@ -433,7 +463,19 @@ h# 03 install-handler
    ip instruction-start - .bytes
    unsupported ;
 
-h# 09 install-handler
+$09 install-handler
+
+: .jcc32 ( $mnemonic -- )
+    to mnemonic
+    ip l@s                          \ 32-bit signed offset
+    4 +to ip
+    5 to size
+    .inst
+    ip +                \ jump target
+    dup end-address > if
+        dup to end-address
+    then
+    ." $" h. ;
 
 \ $0f handler
 :noname  ( -- )
@@ -451,21 +493,11 @@ h# 09 install-handler
     then
     dup $84 = if
         drop
-        $" jz" to mnemonic
-        ok_immediate 0
-        ip l@s                            \ 32-bit signed offset
-        4 +to ip
-        ip + dest!
-        .inst
+        $" jz" .jcc32
         exit
     then
     $81 = if
-        $" jno" to mnemonic
-        ok_immediate 0
-        ip l@s
-        4 +to ip
-        ip + dest!
-        .inst
+        $" jno" .jcc32
         exit
     then
     ip instruction-start - .bytes
@@ -523,7 +555,7 @@ $19 install-handler
 
 $31 install-handler
 
-: .jcc ( $addr -- )
+: .jcc8 ( $mnemonic -- )
     to mnemonic
     ip c@s              \ 8-bit signed offset
     1 +to ip
@@ -536,19 +568,19 @@ $31 install-handler
     ." $" h. ;
 
 \ $70 handler
-:noname ( -- ) $" jo" .jcc ; $70 install-handler
+:noname ( -- ) $" jo" .jcc8 ; $70 install-handler
 
 \ $74 handler
-:noname ( -- ) $" jz" .jcc ; $74 install-handler
+:noname ( -- ) $" jz" .jcc8 ; $74 install-handler
 
 \ $75 handler
-:noname ( -- ) $" jne" .jcc ; $75 install-handler
+:noname ( -- ) $" jne" .jcc8 ; $75 install-handler
 
 \ $7c handler
-:noname ( -- ) $" jl" .jcc ; $7c install-handler
+:noname ( -- ) $" jl" .jcc8 ; $7c install-handler
 
 \ $7f handler
-:noname ( -- ) $" jg" .jcc ; $7f install-handler
+:noname ( -- ) $" jg" .jcc8 ; $7f install-handler
 
 \ $eb handler
 :noname  ( -- )
@@ -559,7 +591,7 @@ $31 install-handler
    ip + ." $" h.
 ;
 
-h# 0eb install-handler
+$eb install-handler
 
 \ $83 handler
 :noname  ( -- )
@@ -620,6 +652,29 @@ $83 install-handler
    unsupported
    size +to ip ;
 
+\ $88 handler
+:noname ( -- )                          \ MOV reg/mem8, reg8            88 /r
+    $" mov" to mnemonic
+    !modrm-byte
+    modrm-mod 0 = if
+        ok_register modrm-reg reg8 0 source!
+        ok_relative modrm-rm 0 dest!
+        .inst
+        exit
+    then
+    modrm-mod 1 = if                    \ 1-byte displacement
+        ok_register modrm-reg reg8 0 source!
+        ok_relative modrm-rm ip c@s dest!
+        1 +to ip
+        .inst
+        exit
+    then
+    1 .bytes
+    unsupported
+;
+
+$88 install-handler
+
 : .89 ( -- )
     \ MOV reg/mem64, reg64
     \ "Move the contents of a 64-bit register to a 64-bit destination register
@@ -664,6 +719,23 @@ $83 install-handler
     unsupported
 \     size +to ip
 ;
+
+\ $8a handler
+:noname ( -- )                          \ MOV reg8, reg/mem8            8a /r
+    $" mov" to mnemonic
+    !modrm-byte
+    modrm-mod 1 = if                    \ 1-byte displacement
+        ok_register modrm-reg reg8 0 dest!
+        ok_relative modrm-rm ip c@s source!
+        1 +to ip
+        .inst
+        exit
+    then
+    1 .bytes
+    unsupported
+;
+
+$8a install-handler
 
 : .8b  ( -- )                           \ MOV reg64, reg/mem64          8b /r
    s" mov" old-mnemonic!
