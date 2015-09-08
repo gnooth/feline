@@ -165,7 +165,6 @@ T{ ALSOWID2 C"W2" FIND SO5 ->  1 -9876 }T
 T{ PREVIOUS C"W2" FIND SO5 -> -1  1234 }T
 
 \ ------------------------------------------------------------------------------
-0 [if]
 TESTING ORDER  \ Should display search order and compilation wordlist
 
 CR .( ONLY FORTH DEFINITIONS search order and compilation wordlist) CR
@@ -173,7 +172,7 @@ T{ ONLY FORTH DEFINITIONS ORDER -> }T
 
 CR .( Plus another unnamed wordlist at the head of the search order) CR
 T{ ALSOWID2 DEFINITIONS ORDER -> }T
-[then]
+
 \ ------------------------------------------------------------------------------
 
 SEARCHORDER-ERRORS SET-ERROR-COUNT
