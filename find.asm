@@ -330,11 +330,11 @@ code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
         _if .3            ; -- c-addr u                           r: -- nfa
         ; found it!
         _twodrop          ; --                                    r: -- nfa
-        _ rfrom           ; -- nfa
+        _rfrom            ; -- nfa
         _ found           ; -- xt 1 | xt -1
         _return
         _then .3          ; -- c-addr u                           r: -- nfa
-        _ rfrom           ; -- c-addr u nfa
+        _rfrom            ; -- c-addr u nfa
         _ntolink          ; -- c-addr u lfa
         _fetch            ; -- c-addr u nfa
         _dup              ; -- c-addr u nfa nfa

@@ -123,7 +123,7 @@ code tobody, '>body'                    ; xt -- a-addr
 ; CORE
 ; "a-addr is the data-field address corresponding to xt. An ambiguous condition
 ; exists if xt is not for a word defined via CREATE."
-; "Rationale:a-addr is the address that HERE would have returned had it been
+; "Rationale: a-addr is the address that HERE would have returned had it been
 ; executed immediately after the execution of the CREATE that defined xt."
         add     rbx, BYTES_PER_CELL * 3
         mov     rbx, [rbx]
@@ -139,7 +139,7 @@ endcode
 ; ### flags
 code flags, 'flags'                     ; xt -- flags
         _ toflags
-        _ cfetch
+        _cfetch
         next
 endcode
 
@@ -183,8 +183,7 @@ endcode
 code immediate, 'immediate'
         _ latest
         _ nametoflags
-        _dup
-        _cfetch
+        _dupcfetch
         _lit IMMEDIATE
         _ or
         _ swap
@@ -212,8 +211,7 @@ endcode
 ; ### hide
 code hide, 'hide'
         _ latest
-        _ dup
-        _ cfetch
+        _dupcfetch
         _lit $80
         _ or
         _ swap
@@ -224,8 +222,7 @@ endcode
 ; ### reveal
 code reveal, 'reveal'
         _ latest
-        _ dup
-        _ cfetch
+        _dupcfetch
         _lit $7f
         _ and
         _ swap
@@ -478,7 +475,7 @@ code constant, 'constant'               ; x "<spaces>name" --
         _lit doconst_end - doconst
         _ paren_copy_code               ; -- x
         _ here_c
-        _ cellminus
+        _cellminus
         _ store                         ; --
         _lit $0c3
         _ ccommac

@@ -13,109 +13,114 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%macro _tor 0                           ; inline version of >R
+%macro _tor 0                           ; >R
         push    rbx
         poprbx
 %endmacro
 
-%macro _rfetch 0                        ; inline version of R@
+%macro _rfetch 0                        ; R@
         pushrbx
         mov     rbx, [rsp]
 %endmacro
 
-%macro _rfrom 0                         ; inline version of R>
+%macro _rfrom 0                         ; R>
         pushrbx
         pop     rbx
 %endmacro
 
-%macro _duptor 0                        ; inline version of DUP>R
+%macro _duptor 0                        ; DUP >R
         push    rbx
 %endmacro
 
-%macro _rfromdrop 0                     ; inline version of R>DROP
+%macro _rfromdrop 0                     ; R> DROP
         lea     rsp, [rsp + BYTES_PER_CELL]
 %endmacro
 
-%macro _fetch 0                         ; inline version of @
+%macro _fetch 0                         ; @
         mov     rbx, [rbx]
 %endmacro
 
-%macro _cfetch 0                        ; inline version of C@
+%macro _cfetch 0                        ; C@
         movzx   rbx, byte [rbx]
 %endmacro
 
-%macro _dup 0                           ; inline version of DUP
+%macro _dup 0                           ; DUP
         pushrbx
 %endmacro
 
-%macro _drop 0                          ; inline version of DROP
+%macro _dupcfetch 0                     ; DUP C@
+        _dup
+        _cfetch
+%endmacro
+
+%macro _drop 0                          ; DROP
         poprbx
 %endmacro
 
-%macro _twodrop 0                       ; inline version of 2DROP
+%macro _twodrop 0                       ; 2DROP
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
 
-%macro _threedrop 0                     ; inline version of 3DROP
+%macro _threedrop 0                     ; 3DROP
         mov     rbx, [rbp + BYTES_PER_CELL * 2]
         lea     rbp, [rbp + BYTES_PER_CELL * 3]
 %endmacro
 
-%macro _nip 0                           ; inline version of NIP
+%macro _nip 0                           ; NIP
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
-%macro _plus 0                          ; inline version of +
+%macro _plus 0                          ; +
         add     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
-%macro _oneplus 0                       ; inline version of 1+
+%macro _oneplus 0                       ; 1+
         add     rbx, 1                  ; faster than inc rbx
 %endmacro
 
-%macro _twoplus 0                       ; inline version of 2+
+%macro _twoplus 0                       ; 2+
         add     rbx, 2
 %endmacro
 
-%macro _oneminus 0                      ; inline version of 1-
+%macro _oneminus 0                      ; 1-
         sub     rbx, 1
 %endmacro
 
-%macro _cells 0                         ; inline version of CELLS
+%macro _cells 0                         ; CELLS
         shl     rbx, 3
 %endmacro
 
-%macro _cellplus 0                      ; inline version of CELL+
+%macro _cellplus 0                      ; CELL+
         add     rbx, BYTES_PER_CELL
 %endmacro
 
-%macro _cellminus 0                     ; inline version of CELL-
+%macro _cellminus 0                     ; CELL-
         sub     rbx, BYTES_PER_CELL
 %endmacro
 
-%macro _i 0                             ; inline version of I
+%macro _i 0                             ; I
         pushrbx
         mov     rbx, [rsp]
         add     rbx, [rsp + BYTES_PER_CELL]
 %endmacro
 
-%macro _unloop 0                        ; inline version of UNLOOP
+%macro _unloop 0                        ; UNLOOP
         add     rsp, BYTES_PER_CELL * 3
 %endmacro
 
-%macro _zeq 0                           ; inline version of 0=
+%macro _zeq 0                           ; 0=
 ; Win32Forth
         cmp     rbx, 1
         sbb     rbx, rbx
 %endmacro
 
-%macro _zlt 0                           ; inline version of 0<
+%macro _zlt 0                           ; 0<
 ; Win32Forth
         sar     rbx, 63
 %endmacro
 
-%macro _ntolink 0                       ; inline version of N>LINK
+%macro _ntolink 0                       ; N>LINK
         sub     rbx, BYTES_PER_CELL * 4 + 2
 %endmacro

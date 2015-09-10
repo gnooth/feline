@@ -160,7 +160,7 @@ code colonnoname, ':noname'
 
         _ dup
         _ two
-        _ cells
+        _cells
         _ plus                          ; addr of start of code
         _ dup
         _ last_code
