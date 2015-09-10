@@ -94,6 +94,43 @@ code dotlocals, '.locals'
         next
 endcode
 
+; ### find-local
+code find_local, 'find-local'           ; $addr -- index flag
+        _ locals_defined
+        _ zero
+        _do .1
+        _ locals_names
+        _i
+        _ cells
+        _ plus
+        _ fetch                         ; -- $addr $addr2
+        _ over                          ; -- $addr $addr2 $addr
+        _ count
+        _ rot
+        _ count
+        _ istrequal
+        _if .2
+        _ drop
+        _i
+        _ true
+        _ ?cr
+        _dotq "leaving..."
+        _ paren_leave
+        _then .2
+        _loop .1
+        _ ?cr
+        _dotq "got to here"
+        _ true
+        _ equal
+        _if .3
+        _ true
+        _else .3
+        _ false
+        _ false
+        _then .3
+        next
+endcode
+
 ; ### initialize-frame
 code initialize_frame, 'initialize-frame'
         _ nlocals

@@ -176,19 +176,19 @@ code order, 'order'
         _dotq "Context: "
         _ nvocs
         _ zero
-        _do order1
+        _do .1
         _ context
         _i
         _cells
         _ plus
         _fetch                          ; -- wid
         _ ?dup
-        _if order2
+        _if .2
         _ dotwid
-        _else order2
-        _ leave
-        _then order2
-        _loop order1
+        _else .2
+        _ paren_leave
+        _then .2
+        _loop .1
         _ cr
         _dotq "Current: "
         _ current
@@ -205,7 +205,7 @@ code get_order, 'get-order'             ; -- widn ... wid1 n
         _ norder
         _fetch
         _ zero
-        _?do get_order1
+        _?do .1
         _ norder
         _fetch
         _i
@@ -215,7 +215,7 @@ code get_order, 'get-order'             ; -- widn ... wid1 n
         _ context
         _ plus
         _ fetch
-        _loop get_order1
+        _loop .1
         _ norder
         _ fetch
         next
@@ -258,13 +258,13 @@ code set_order, 'set-order'             ; widn ... wid1 n --
         _ norder
         _ store
         _ zero
-        _?do set_order1
+        _?do .3
         _ context
         _i
         _cells
         _ plus
         _ store
-        _loop set_order1
+        _loop .3
         next
 endcode
 
@@ -375,7 +375,7 @@ code find, 'find'                       ; $addr -- $addr 0 | xt 1 | xt -1
         _ swap
         _unloop
         _return
-        _then .2                     ; -- wid
+        _then .2                        ; -- wid
         pushrbx
         mov     rbx, [find_addr]
         pushrbx
@@ -383,7 +383,7 @@ code find, 'find'                       ; $addr -- $addr 0 | xt 1 | xt -1
         _ rot
         _ search_wordlist
         _ ?dup
-        _if .3                       ; -- xt n
+        _if .3                          ; -- xt n
         _unloop
         _return
         _then .3
