@@ -314,19 +314,42 @@ section .text
 %endmacro
 
 %macro _do 1
-        _ parendo
-        dq      %1_exit
+        mov     rax, %1_exit            ; leave-addr in rax
+        push    rax                     ; r: -- leave-addr
+        mov     rdx, [rbp]              ; limit in rdx
+        mov     rax, $8000000000000000  ; offset loop limit by $8000000000000000
+        add     rdx, rax
+        push    rdx                     ; r: -- leave-addr limit
+        sub     rbx, rdx                ; subtract modified limit from index
+        push    rbx                     ; r: -- leave-addr limit index
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %1_top:
 %endmacro
 
 %macro _?do 1
-        _ paren?do
-        dq      %1_exit
+        cmp     rbx, [rbp]
+        jne     %1_ok
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        jmp     %1_exit
+%1_ok:
+        mov     rax, %1_exit            ; leave-addr in rax
+        push    rax                     ; r: -- leave-addr
+        mov     rdx, [rbp]              ; limit in rdx
+        mov     rax, $8000000000000000  ; offset loop limit by $8000000000000000
+        add     rdx, rax
+        push    rdx                     ; r: -- leave-addr limit
+        sub     rbx, rdx                ; subtract modified limit from index
+        push    rbx                     ; r: -- leave-addr limit index
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %1_top:
 %endmacro
 
 %macro _loop 1
-        _ parenloop
-        dq      %1_top
+        inc     qword [rsp]
+        jno     %1_top
+        add     rsp, BYTES_PER_CELL * 3
 %1_exit:
 %endmacro
