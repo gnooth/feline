@@ -406,23 +406,20 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 
 \ $01 handler
 :noname  ( -- )
-   s" add" old-mnemonic!
-   !modrm-byte
-   modrm-mod 0= if
-      prefix if 3 else 2 then to size
-      size .bytes
-      old-.mnemonic
-      48 >pos
-      modrm-rm 0 .relative
-      .sep
-      modrm-reg .reg64
-      exit
-   then
-   prefix if 2 else 1 then to size
-   unsupported
-   size +to ip ;
+    $" add" to mnemonic
+    !modrm-byte
+    modrm-mod 3 = if
+        prefix if 3 else 2 then to size
+        ok_register modrm-rm register-rm 0 dest!
+        ok_register modrm-reg register-reg 0 source!
+        .inst
+        exit
+    then
+    prefix if 2 else 1 then to size
+    unsupported
+    size +to ip ;
 
-h# 01 install-handler
+$01 install-handler
 
 \ $03 handler
 :noname  ( -- )                         \ ADD reg64, reg/mem64
@@ -553,6 +550,23 @@ $19 install-handler
    prefix if 3 else 2 then to size
 ;
 
+\ $29 handler
+:noname  ( -- )
+    $" sub" to mnemonic
+    !modrm-byte
+    modrm-mod 3 = if
+        prefix if 3 else 2 then to size
+        ok_register modrm-rm register-rm 0 dest!
+        ok_register modrm-reg register-reg 0 source!
+        .inst
+        exit
+    then
+    prefix if 2 else 1 then to size
+    unsupported
+    size +to ip ;
+
+$29 install-handler
+
 $31 install-handler
 
 : .jcc8 ( $mnemonic -- )
@@ -569,6 +583,9 @@ $31 install-handler
 
 \ $70 handler
 :noname ( -- ) $" jo" .jcc8 ; $70 install-handler
+
+\ $71 handler
+:noname ( -- ) $" jno" .jcc8 ; $71 install-handler
 
 \ $74 handler
 :noname ( -- ) $" jz" .jcc8 ; $74 install-handler
