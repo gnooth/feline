@@ -386,9 +386,9 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
       ip to instruction-start
       .literal
    then
-   r@ ['] (loop) >code = if
-      ip to instruction-start
-      .literal
+   r@ ['] (+loop) >code = if
+       ip to instruction-start
+       .literal
    then
    r> drop ;
 
