@@ -328,14 +328,14 @@ section .text
 %endmacro
 
 %macro _?do 1
+        mov     rax, %1_exit            ; leave-addr in rax
+        push    rax                     ; r: -- leave-addr
         cmp     rbx, [rbp]
         jne     %1_ok
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
-        jmp     %1_exit
+        ret                             ; same as jumping to %1_exit
 %1_ok:
-        mov     rax, %1_exit            ; leave-addr in rax
-        push    rax                     ; r: -- leave-addr
         mov     rdx, [rbp]              ; limit in rdx
         mov     rax, $8000000000000000  ; offset loop limit by $8000000000000000
         add     rdx, rax
