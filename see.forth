@@ -159,7 +159,9 @@ create old-mnemonic  2 cells allot
    cr  ."  rm: "      (modrm-rm) .3 space
    r> base ! ;
 
-: !sib-byte  ( -- )  ip c@ to sib-byte  1 +to ip ;
+: !sib-byte ( -- )
+    ip c@ to sib-byte
+    1 +to ip ;
 
 : (sib-scale)  ( sib -- scale )  b# 11000000 and 6 rshift ;
 : (sib-index)  ( sib -- index )  b# 00111000 and 3 rshift ;
@@ -405,9 +407,18 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    ;
 
 \ $01 handler
-:noname  ( -- )
+:noname  ( -- )                         \ ADD reg/mem64, reg64
     $" add" to mnemonic
     !modrm-byte
+    modrm-mod 3 <> if
+        modrm-rm 4 = if !sib-byte then
+    then
+    modrm-mod 0= if
+        ok_relative modrm-rm register-rm 0 dest!
+        ok_register modrm-reg register-reg 0 source!
+        .inst
+        exit
+    then
     modrm-mod 3 = if
         prefix if 3 else 2 then to size
         ok_register modrm-rm register-rm 0 dest!
@@ -423,10 +434,10 @@ $01 install-handler
 
 \ $03 handler
 :noname  ( -- )                         \ ADD reg64, reg/mem64
-   c" add" to mnemonic
-   !modrm-byte
-   modrm-rm 4 = if !sib-byte then
-   modrm-mod 1 = if                \ 1-byte displacement
+    $" add" to mnemonic
+    !modrm-byte
+    modrm-rm 4 = if !sib-byte then
+    modrm-mod 1 = if                \ 1-byte displacement
 \       prefix if 4 else 3 then .bytes
 \       old-.mnemonic
 \       48 >pos
@@ -434,14 +445,14 @@ $01 install-handler
 \       modrm-rm
 \       ip c@s 1 +to ip
 \       .relative
-      ok_relative modrm-rm ip c@s source!
-      1 +to ip
-      ok_register modrm-reg 0 dest!
-      .inst
-      exit
-   then
-   ip instruction-start - .bytes
-   unsupported
+        ok_relative modrm-rm ip c@s source!
+        1 +to ip
+        ok_register modrm-reg 0 dest!
+        .inst
+        exit
+    then
+    ip instruction-start - .bytes
+    unsupported
 ;
 
 h# 03 install-handler
