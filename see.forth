@@ -561,6 +561,25 @@ $19 install-handler
    prefix if 3 else 2 then to size
 ;
 
+$31 install-handler
+
+\ $3b handler
+:noname ( -- )
+    $" cmp" to mnemonic
+    !modrm-byte
+    modrm-mod 1 = if
+        ok_relative modrm-rm ip c@s source!
+        1 +to ip
+        ok_register modrm-reg 0 dest!
+        prefix if 4 else 3 then to size
+        .inst
+        exit
+    then
+    unsupported
+;
+
+$3b install-handler
+
 \ $29 handler
 :noname  ( -- )
     $" sub" to mnemonic
@@ -577,8 +596,6 @@ $19 install-handler
     size +to ip ;
 
 $29 install-handler
-
-$31 install-handler
 
 : .jcc8 ( $mnemonic -- )
     to mnemonic
