@@ -391,6 +391,7 @@ endcode
 ; ### aligned
 code aligned, 'aligned'                 ; addr -- a-addr
 ; CORE
+; "a-addr is the first aligned address greater than or equal to addr."
         add     rbx, 7
         and     rbx, -8
         next

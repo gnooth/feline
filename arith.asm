@@ -308,7 +308,7 @@ code lt, '<'                            ; n1 n2 -- flag
         cmp     [rbp], rbx
         mov     rbx, -1
         cmovnl  rbx, rax
-        add     rbp, BYTES_PER_CELL
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
