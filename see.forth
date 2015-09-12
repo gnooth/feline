@@ -551,6 +551,23 @@ $0f install-handler
 
 $19 install-handler
 
+\ $29 handler
+:noname  ( -- )
+    $" sub" to mnemonic
+    !modrm-byte
+    modrm-mod 3 = if
+        prefix if 3 else 2 then to size
+        ok_register modrm-rm register-rm 0 dest!
+        ok_register modrm-reg register-reg 0 source!
+        .inst
+        exit
+    then
+    prefix if 2 else 1 then to size
+    unsupported
+    size +to ip ;
+
+$29 install-handler
+
 \ $31 handler
 :noname ( -- )
    c" xor" to mnemonic
@@ -579,23 +596,6 @@ $31 install-handler
 ;
 
 $3b install-handler
-
-\ $29 handler
-:noname  ( -- )
-    $" sub" to mnemonic
-    !modrm-byte
-    modrm-mod 3 = if
-        prefix if 3 else 2 then to size
-        ok_register modrm-rm register-rm 0 dest!
-        ok_register modrm-reg register-reg 0 source!
-        .inst
-        exit
-    then
-    prefix if 2 else 1 then to size
-    unsupported
-    size +to ip ;
-
-$29 install-handler
 
 : .jcc8 ( $mnemonic -- )
     to mnemonic
@@ -883,6 +883,21 @@ $cc install-handler
 ;
 
 $cd install-handler
+
+\ $f7 handler
+:noname ( -- )
+    !modrm-byte
+    modrm-reg 3 = if
+        $" neg" to mnemonic
+        prefix if 3 else 2 then to size
+        modrm-rm 3 = if
+            ok_register modrm-rm register-rm 0 dest!
+            .inst
+            exit
+        then
+    then ;
+
+$f7 install-handler
 
 \ $ff handler
 :noname  ( -- )
