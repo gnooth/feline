@@ -580,6 +580,23 @@ $29 install-handler
 
 $31 install-handler
 
+\ $39 handler
+:noname ( -- )
+    $" cmp" to mnemonic
+    !modrm-byte
+    modrm-mod 1 = if
+        ok_relative modrm-rm ip c@s dest!
+        1 +to ip
+        ok_register modrm-reg 0 source!
+        prefix if 4 else 3 then to size
+        .inst
+        exit
+    then
+    unsupported
+;
+
+$39 install-handler
+
 \ $3b handler
 :noname ( -- )
     $" cmp" to mnemonic
@@ -857,6 +874,25 @@ h# 90 install-handler
    h.
    prefix if 8 else 4 then +to ip
 ;
+
+\ $c7 handler
+:noname ( -- )
+    !modrm-byte
+    modrm-reg 0= if
+        $" mov" to mnemonic
+        modrm-mod 3 = if
+            ok_register modrm-rm register-rm 0 dest!
+            ok_immediate 0 ip l@ source!
+            prefix if 7 else 6 then to size
+            .inst
+            size +to ip
+            exit
+        then
+    then
+    unsupported
+;
+
+$c7 install-handler
 
 :noname ( -- )
     $" leave" to mnemonic
