@@ -367,7 +367,7 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 \    old-.mnemonic
 \    48 >pos
 
-   c" call" to mnemonic
+   $" call" to mnemonic
    ok_immediate 0 ip l@s
    4 +to ip
    ip + dup>r
@@ -380,18 +380,18 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 \    ip + dup h.
    r>
    dup .name >r
-   r@ ['] (do) >code = if
-      ip to instruction-start
-      .literal
-   then
-   r@ ['] (?do) >code = if
-      ip to instruction-start
-      .literal
-   then
-   r@ ['] (+loop) >code = if
-       ip to instruction-start
-       .literal
-   then
+\    r@ ['] (do) >code = if
+\       ip to instruction-start
+\       .literal
+\    then
+\    r@ ['] (?do) >code = if
+\       ip to instruction-start
+\       .literal
+\    then
+\    r@ ['] (+loop) >code = if
+\        ip to instruction-start
+\        .literal
+\    then
    r> drop ;
 
 : .jmp  ( -- )
