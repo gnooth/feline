@@ -93,11 +93,9 @@ code sharp, '#'                         ; ud1 -- ud2
         _ over                          ; -- ud2 remainder 9 remainder
         _ lt                            ; -- ud2 remainder flag
         _if .1                          ; remainder > 9
-        _lit 7
-        _ plus
+        add     rbx, 7
         _then .1
-        _lit '0'
-        _ plus
+        add     rbx, '0'
         _ hold
         next
 endcode
