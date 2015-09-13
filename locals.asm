@@ -30,13 +30,45 @@ code lspstore, 'lsp!'
         next
 endcode
 
+code local0, 'local0'                   ; -- x
+        pushrbx
+        mov     rbx, [r14]
+        next
+endcode
+
+code local1, 'local1'                   ; -- x
+        pushrbx
+        mov     rbx, [r14 - BYTES_PER_CELL]
+        next
+endcode
+
+code tolocal0, 'tolocal0'               ; x --
+        mov     [r14], rbx
+        poprbx
+        next
+endcode
+
+code tolocal1, 'tolocal1'               ; x --
+        mov     [r14 - BYTES_PER_CELL], rbx
+        poprbx
+        next
+endcode
+
 ; ### using-locals?
 value using_locals?, 'using-locals?', 0
 ; true at compile time if the current definition uses locals
 
 ; ### initialize-locals-stack
+; FIXME this should be done at startup!
 code initialize_locals_stack, 'initialize-locals-stack'
-        _lit    4096
+        ; idempotent
+        _ lsp0
+        _fetch
+        _if .1
+        _return
+        _then .1
+
+        _lit    4096                    ; REVIEW
         _ dup
         _ allocate
         _ drop                          ; REVIEW
@@ -133,6 +165,8 @@ endcode
 
 ; ### initialize-frame
 code initialize_frame, 'initialize-frame'
+        _ initialize_locals_stack
+        ; for now, just make a frame big enough for the maximum number of locals
         _ nlocals
         _ cells
         _duptor
