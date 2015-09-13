@@ -825,7 +825,14 @@ $8a install-handler
         modrm-mod 0= if
             prefix if 3 else 2 then to size
             ok_register modrm-reg register-reg 0 dest!
-            ok_relative modrm-reg register-rm 0 source!
+            ok_relative modrm-rm register-rm 0 source!
+            .inst
+            exit
+        then
+        modrm-mod 1 = if
+            ok_register modrm-reg 0 dest!
+            ok_relative modrm-rm register-rm ip c@s source!
+            1 +to ip
             .inst
             exit
         then
@@ -852,16 +859,6 @@ $8a install-handler
         exit
     then
     modrm-mod 1 = if                \ 1-byte displacement
-\       prefix if 4 else 3 then to size
-\       size .bytes
-\       old-.mnemonic
-\       48 >pos
-\       modrm-reg .reg64 .sep
-\       modrm-rm
-\ \       ip prefix if 3 else 2 then + c@s
-\       ip c@s  1 +to ip
-\       .relative
-\ \       size +to ip
         ok_register modrm-reg 0 dest!
         ok_relative modrm-rm ip c@s source!
         1 +to ip
