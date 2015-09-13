@@ -13,7 +13,11 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-[undefined] disassembler [if] vocabulary disassembler [then]
+[undefined] disassembler [if]
+vocabulary disassembler
+[then]
+
+[defined] see [if] warning off [then]   \ temporary
 
 only forth also disassembler definitions
 
@@ -104,6 +108,7 @@ operand operand2
 1 constant ok_register
 2 constant ok_relative
 3 constant ok_immediate
+4 constant ok_relative_no_reg
 
 : .2  ( ub -- )  0 <# # # #> type ;
 : .3  ( ub -- )  0 <# # # # #> type ;
@@ -284,24 +289,37 @@ create reg8-regs 8 cells allot
     then
     ." ]" ;
 
+: .relative-no-reg ( disp -- )
+    ." [$"
+    base@ >r
+    0 hex u.r
+    r> base!
+    ." ]"
+;
+
 0 value current-operand                 \ FIXME this should be a local!
 
 : .operand ( operand -- )
-   dup to current-operand
-   operand-kind @
-      case
-         ok_relative of
+    dup to current-operand
+    operand-kind @
+    case
+        ok_relative of
             current-operand operand-register @
             current-operand operand-data @
             .relative
-         endof
-         ok_register of
+        endof
+        ok_relative_no_reg of
+            current-operand operand-data @
+            .relative-no-reg
+        endof
+        ok_register of
             current-operand operand-register @ .reg
-         endof
-         ok_immediate of
+        endof
+        ok_immediate of
             current-operand operand-data @ ." $" h.
-         endof
-      endcase ;
+        endof
+    endcase
+;
 
 : .inst ( -- )
    ip instruction-start - .bytes
@@ -800,22 +818,40 @@ $88 install-handler
 $8a install-handler
 
 : .8b  ( -- )                           \ MOV reg64, reg/mem64          8b /r
-   s" mov" old-mnemonic!
-   c" mov" to mnemonic
-   !modrm-byte
-   modrm-rm 4 = if !sib-byte then
-   modrm-mod 0= if
-      prefix if 3 else 2 then to size
-      size .bytes
-      old-.mnemonic
-      48 >pos
-      modrm-reg .reg64
-      .sep
-      modrm-rm 0 .relative
-\       size +to ip
-      exit
-   then
-   modrm-mod 1 = if                \ 1-byte displacement
+    s" mov" old-mnemonic!
+    $" mov" to mnemonic
+    !modrm-byte
+    modrm-rm 4 <> if
+        modrm-mod 0= if
+            prefix if 3 else 2 then to size
+            ok_register modrm-reg register-reg 0 dest!
+            ok_relative modrm-reg register-rm 0 source!
+            .inst
+            exit
+        then
+    then
+    modrm-rm 4 = if !sib-byte then
+    modrm-mod 0= if
+        sib-scale 0= if
+            sib-index 4 = if
+                prefix if 7 else 6 then to size
+                ok_register modrm-reg register-reg 0 dest!
+                ok_relative_no_reg 0 ip l@s source!
+                4 +to ip
+                .inst
+                exit
+            then
+        then
+        prefix if 3 else 2 then to size
+        size .bytes
+        old-.mnemonic
+        48 >pos
+        modrm-reg .reg64
+        .sep
+        modrm-rm 0 .relative
+        exit
+    then
+    modrm-mod 1 = if                \ 1-byte displacement
 \       prefix if 4 else 3 then to size
 \       size .bytes
 \       old-.mnemonic
@@ -826,16 +862,16 @@ $8a install-handler
 \       ip c@s  1 +to ip
 \       .relative
 \ \       size +to ip
-      ok_register modrm-reg 0 dest!
-      ok_relative modrm-rm ip c@s source!
-      1 +to ip
-      .inst
-      exit
-   then
-   1 .bytes
-   unsupported
+        ok_register modrm-reg 0 dest!
+        ok_relative modrm-rm ip c@s source!
+        1 +to ip
+        .inst
+        exit
+    then
+    1 .bytes
+    unsupported
 \    1 +to ip
-   ;
+;
 
 : .8d  ( -- )                           \ LEA reg64, mem
 \    s" lea" old-mnemonic!
@@ -857,29 +893,39 @@ $8a install-handler
    c" nop" to mnemonic
    .inst ;
 
-h# 90 install-handler
+$90 install-handler
 
 : .b8  ( -- )
-   s" mov" old-mnemonic!
-   prefix if 10 else 5 then to size
-   .instruction
-   opcode h# b8 - .reg
-   .sep
-   prefix if
-      ip ( 2 + ) @
-
-   else
-      ip ( 1 + ) l@s
-   then
-   h.
-   prefix if 8 else 4 then +to ip
+    $" mov" to mnemonic
+    prefix if 10 else 5 then to size
+    ok_register opcode $b8 - 0 dest!
+    ok_immediate 0
+    prefix if
+        ip @ cell +to ip
+    else
+        ip l@s 4 +to ip
+    then
+    source!
+    .inst
+\     h.
+\     prefix if 8 else 4 then +to ip
 ;
+
+:noname $b8 8 bounds do ['] .b8 i install-handler loop ; execute
 
 \ $c7 handler
 :noname ( -- )
     !modrm-byte
     modrm-reg 0= if
         $" mov" to mnemonic
+        modrm-mod 0 = if
+            ok_relative modrm-reg register-reg 0 dest!
+            ok_immediate 0 ip l@ source!
+            4 +to ip
+            prefix if 7 else 6 then to size
+            .inst
+            exit
+        then
         modrm-mod 3 = if
             ok_register modrm-rm register-rm 0 dest!
             ok_immediate 0 ip l@ source!
@@ -947,7 +993,7 @@ $f7 install-handler
            exit
        then
    then
-   modrm-byte h# e0 = if        \ mod 3
+   modrm-byte $e0 = if                  \ mod 3
       s" jmp" old-mnemonic!
       2 to size
       .instruction
@@ -977,6 +1023,13 @@ $f7 install-handler
          then
       then
    then
+   modrm-reg 1 = if
+       $" dec" to mnemonic
+       prefix if 3 else 2 then to size
+       ok_register modrm-rm register-rm 0 dest!
+       .inst
+       exit
+   then
    ip instruction-start - .bytes
    unsupported
 ;
@@ -997,7 +1050,6 @@ hex
 ' .85   85 install-handler
 ' .89   89 install-handler
 ' .8b   8b install-handler
-:noname b8 8 bounds do ['] .b8 i install-handler loop ; execute
 ' .8d   8d install-handler
 decimal
 
@@ -1047,4 +1099,6 @@ also forth definitions
 : see  ( -- )
    ' disassemble ;
 
-only forth definitions
+only forth also disassembler also forth definitions     \ REVIEW
+
+warning on                              \ REVIEW
