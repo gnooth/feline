@@ -16,21 +16,21 @@
 file __FILE__
 
 ; ### state
+; "STATE is true when in compilation state, false otherwise. The true value
+; in STATE is non-zero, but is otherwise implementation-defined."
 variable state, 'state', 0              ; CORE, TOOLS EXT
 
 ; ### state@
 code statefetch, 'state@'
         pushrbx
-        mov     rbx, state_data
-        mov     rbx, [rbx]
+        mov     rbx, [state_data]
         next
 endcode
 
 ; ### [
 code lbrack, '[', IMMEDIATE
         xor     eax, eax
-        mov     rdx, state_data
-        mov     [rdx], rax
+        mov     [state_data], rax
         next
 endcode
 
@@ -38,8 +38,7 @@ endcode
 code rbrack, ']'
         xor     eax, eax
         dec     rax
-        mov     rdx, state_data
-        mov     [rdx], rax
+        mov     [state_data], rax
         next
 endcode
 
