@@ -53,20 +53,6 @@
         _cfetch
 %endmacro
 
-%macro _drop 0                          ; DROP
-        poprbx
-%endmacro
-
-%macro _twodrop 0                       ; 2DROP
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
-%endmacro
-
-%macro _threedrop 0                     ; 3DROP
-        mov     rbx, [rbp + BYTES_PER_CELL * 2]
-        lea     rbp, [rbp + BYTES_PER_CELL * 3]
-%endmacro
-
 %macro _nip 0                           ; NIP
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
@@ -98,16 +84,6 @@
 
 %macro _cellminus 0                     ; CELL-
         sub     rbx, BYTES_PER_CELL
-%endmacro
-
-%macro _i 0                             ; I
-        pushrbx
-        mov     rbx, [rsp]
-        add     rbx, [rsp + BYTES_PER_CELL]
-%endmacro
-
-%macro _unloop 0                        ; UNLOOP
-        add     rsp, BYTES_PER_CELL * 3
 %endmacro
 
 %macro _zeq 0                           ; 0=

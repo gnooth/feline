@@ -23,26 +23,12 @@ inline i?do, '(?do)'                    ; limit index --        r: leave-addr --
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
         ret                             ; same as jumping to leave-addr
 .1:
-        mov     rdx, [rbp]              ; limit in rdx
-        mov     rax, $8000000000000000  ; offset loop limit by $8000000000000000
-        add     rdx, rax
-        push    rdx                     ; r: -- leave-addr limit
-        sub     rbx, rdx                ; subtract modified limit from index
-        push    rbx                     ; r: -- leave-addr limit index
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        _do_common
 endinline
 
 ; ### (do)
 inline ido, '(do)'                      ; limit index --
-        mov     rdx, [rbp]              ; limit in rdx
-        mov     rax, $8000000000000000  ; offset loop limit by $8000000000000000
-        add     rdx, rax
-        push    rdx                     ; r: -- leave-addr limit
-        sub     rbx, rdx                ; subtract modified limit from index
-        push    rbx                     ; r: -- leave-addr limit index
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        _do_common
 endinline
 
 ; ### do
@@ -202,9 +188,7 @@ endcode
 
 ; ### inline-i
 inline inline_i, 'inline-i'
-        pushrbx
-        mov     rbx, [rsp]
-        add     rbx, [rsp + BYTES_PER_CELL]
+        _i
 endinline
 
 ; ### i

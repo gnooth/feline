@@ -313,17 +313,34 @@ section .text
         jz      %1_begin
 %endmacro
 
-%macro _do 1
-        mov     rax, %1_exit            ; leave-addr in rax
-        push    rax                     ; r: -- leave-addr
+%macro _drop 0                          ; DROP
+        poprbx
+%endmacro
+
+%macro _twodrop 0                       ; 2DROP
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+%endmacro
+
+%macro _threedrop 0                     ; 3DROP
+        mov     rbx, [rbp + BYTES_PER_CELL * 2]
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+%endmacro
+
+%macro _do_common 0
         mov     rdx, [rbp]              ; limit in rdx
         mov     rax, $8000000000000000  ; offset loop limit by $8000000000000000
         add     rdx, rax
         push    rdx                     ; r: -- leave-addr limit
         sub     rbx, rdx                ; subtract modified limit from index
         push    rbx                     ; r: -- leave-addr limit index
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        _twodrop
+%endmacro
+
+%macro _do 1
+        mov     rax, %1_exit            ; leave-addr in rax
+        push    rax                     ; r: -- leave-addr
+        _do_common
 %1_top:
 %endmacro
 
@@ -332,18 +349,10 @@ section .text
         push    rax                     ; r: -- leave-addr
         cmp     rbx, [rbp]
         jne     %1_ok
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        _twodrop
         ret                             ; same as jumping to %1_exit
 %1_ok:
-        mov     rdx, [rbp]              ; limit in rdx
-        mov     rax, $8000000000000000  ; offset loop limit by $8000000000000000
-        add     rdx, rax
-        push    rdx                     ; r: -- leave-addr limit
-        sub     rbx, rdx                ; subtract modified limit from index
-        push    rbx                     ; r: -- leave-addr limit index
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        _do_common
 %1_top:
 %endmacro
 
@@ -352,4 +361,14 @@ section .text
         jno     %1_top
         add     rsp, BYTES_PER_CELL * 3
 %1_exit:
+%endmacro
+
+%macro _i 0                             ; I
+        pushrbx
+        mov     rbx, [rsp]
+        add     rbx, [rsp + BYTES_PER_CELL]
+%endmacro
+
+%macro _unloop 0                        ; UNLOOP
+        add     rsp, BYTES_PER_CELL * 3
 %endmacro
