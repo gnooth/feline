@@ -165,22 +165,13 @@ endcode
 
 ; ### inline-leave
 inline inline_leave, 'inline-leave'
-        add     rsp, BYTES_PER_CELL * 2
-        ret
+        _leave
 endinline
-
-; ### (leave)
-code paren_leave, '(leave)'
-        add     rsp, BYTES_PER_CELL * 3
-        ret
-endcode
 
 ; ### leave
 code leave, 'leave', IMMEDIATE
         _ ?comp
         _ flush_compilation_queue
-;         _lit paren_leave
-;         _ commacall
         _lit inline_leave_xt
         _ copy_code
         next

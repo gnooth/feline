@@ -186,7 +186,7 @@ code order, 'order'
         _if .2
         _ dotwid
         _else .2
-        _ paren_leave
+        _leave
         _then .2
         _loop .1
         _ cr

@@ -30,26 +30,30 @@ code lspstore, 'lsp!'
         next
 endcode
 
+; ### local0
 code local0, 'local0'                   ; -- x
-        pushrbx
-        mov     rbx, [r14]
-        next
-endcode
-
-code local1, 'local1'                   ; -- x
         pushrbx
         mov     rbx, [r14 - BYTES_PER_CELL]
         next
 endcode
 
+; ### local1
+code local1, 'local1'                   ; -- x
+        pushrbx
+        mov     rbx, [r14 - BYTES_PER_CELL * 2]
+        next
+endcode
+
+; ### tolocal0
 code tolocal0, 'tolocal0'               ; x --
-        mov     [r14], rbx
+        mov     [r14 - BYTES_PER_CELL], rbx
         poprbx
         next
 endcode
 
+; ### tolocal1
 code tolocal1, 'tolocal1'               ; x --
-        mov     [r14 - BYTES_PER_CELL], rbx
+        mov     [r14 - BYTES_PER_CELL * 2], rbx
         poprbx
         next
 endcode
@@ -128,6 +132,14 @@ endcode
 
 ; ### find-local
 code find_local, 'find-local'           ; $addr -- index flag
+        _ using_locals?
+        _zeq_if .0
+        _ drop
+        _ zero
+        _ false
+        _return
+        _then .0
+
         _ locals_defined
         _ zero
         _do .1
@@ -145,13 +157,9 @@ code find_local, 'find-local'           ; $addr -- index flag
         _ drop
         _i
         _ true
-        _ ?cr
-        _dotq "leaving..."
-        _ paren_leave
+        _leave
         _then .2
         _loop .1
-        _ ?cr
-        _dotq "got to here"
         _ true
         _ equal
         _if .3
@@ -160,6 +168,31 @@ code find_local, 'find-local'           ; $addr -- index flag
         _ false
         _ false
         _then .3
+        next
+endcode
+
+; ### compile-local
+code compile_local, 'compile-local'     ; index --
+        _ ?cr
+        _dotq "compile-local index = "
+        _ dup
+        _ dot
+
+        _ dup
+        _zeq_if .1
+        _ drop
+        _lit local0_xt
+        _ compilecomma
+        _return
+        _then .1
+
+        _ one
+        _ equal
+        _if .2
+        _lit local1_xt
+        _ compilecomma
+        _then .2
+
         next
 endcode
 

@@ -369,6 +369,11 @@ section .text
         add     rbx, [rsp + BYTES_PER_CELL]
 %endmacro
 
+%macro _leave 0                         ; LEAVE
+        add     rsp, BYTES_PER_CELL * 2
+        ret                             ; same as jumping to %1_exit
+%endmacro
+
 %macro _unloop 0                        ; UNLOOP
         add     rsp, BYTES_PER_CELL * 3
 %endmacro
