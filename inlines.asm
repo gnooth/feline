@@ -100,3 +100,7 @@
 %macro _ntolink 0                       ; N>LINK
         sub     rbx, BYTES_PER_CELL * 4 + 2
 %endmacro
+
+%macro _negate 0
+        neg     rbx
+%endmacro

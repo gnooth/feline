@@ -169,7 +169,7 @@ code fmslmod, 'fm/mod'                  ; d1 n1 -- n2 n3
         _ dup
         _zlt
         _if fmslmod1
-        _ negate
+        _negate
         _ tor
         _ dnegate
         _ rfrom
@@ -186,7 +186,7 @@ code fmslmod, 'fm/mod'                  ; d1 n1 -- n2 n3
         _zlt
         _if fmslmod3
         _ swap
-        _ negate
+        _negate
         _ swap
         _then fmslmod3
         next
@@ -219,13 +219,13 @@ code smslrem, 'sm/rem'                  ; d1 n1 -- n2 n3
         _ xor
         _zlt
         _if smslrem1
-        _ negate
+        _negate
         _then smslrem1
         _ rfrom
         _zlt
         _if smslrem2
         _ swap
-        _ negate
+        _negate
         _ swap
         _then smslrem2
         next
@@ -484,8 +484,7 @@ code invert, 'invert'                   ; x1 -- x2
 endcode
 
 ; ### negate
-code negate, 'negate'                   ; n1 -- n2
+inline negate, 'negate'                 ; n1 -- n2
 ; CORE
-        neg     rbx
-        next
-endcode
+        _negate
+endinline
