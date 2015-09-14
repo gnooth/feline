@@ -53,6 +53,21 @@ code ?stack, '?stack'
         jmp     abort
 endcode
 
+; ### ?enough
+code ?enough, '?enough'                 ; n --
+        _ depth
+        _oneminus
+        _ ugt
+        _if .1
+        _cquote "Not enough parameters"
+        _ msg
+        _ store
+        _lit -4                         ; Forth 2012 Table 9.1 stack underflow
+        _ throw
+        _then .1
+        next
+endcode
+
 ; ### do-defined
 code do_defined, 'do-defined'           ; xt flag --
         _ statefetch
