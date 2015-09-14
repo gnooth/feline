@@ -88,7 +88,8 @@ endcode
 inline locals_enter, 'locals-enter'
         push    r15                     ; lsp
         push    r14                     ; frame pointer
-        mov     r14, r15
+;         mov     r14, r15
+        lea     r14, [r15 - BYTES_PER_CELL];
 endinline
 
 ; ### locals-leave
@@ -103,7 +104,9 @@ value locals_names, 'locals-names', 0
 ; ### #locals
 code nlocals, '#locals'                 ; -- n
 ; maximum number of local variables in a definition
-        pushd   16
+; "A system implementing the Locals word set shall support the
+; declaration of at least sixteen locals in a definition."
+        pushd 16
         next
 endcode
 
@@ -178,20 +181,43 @@ code compile_local, 'compile-local'     ; index --
         _ dup
         _ dot
 
-        _ dup
-        _zeq_if .1
-        _ drop
-        _lit local0_xt
-        _ compilecomma
-        _return
-        _then .1
+        _ push_tos_comma
 
-        _ one
-        _ equal
-        _if .2
-        _lit local1_xt
-        _ compilecomma
-        _then .2
+        _lit $49
+        _ ccommac
+        _lit $8b
+        _ ccommac
+        _lit $5e
+        _ ccommac
+
+;         _oneplus
+        _cells
+        _negate
+        _ ccommac
+
+        next
+endcode
+
+; ### compile-tolocal
+code compile_tolocal, 'compile-tolocal' ; index --
+        _ ?cr
+        _dotq "compile-local index = "
+        _ dup
+        _ dot
+
+        _lit $49
+        _ ccommac
+        _lit $89
+        _ ccommac
+        _lit $5e
+        _ ccommac
+
+;         _oneplus
+        _cells
+        _negate
+        _ ccommac
+
+        _ pop_tos_comma
 
         next
 endcode

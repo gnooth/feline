@@ -25,6 +25,7 @@ dovalue_patch:
         mov     rbx, [rbx]
 dovalue_end:
 
+; ### value
 code val, 'value'                       ; x "<spaces>name" --
 ; CORE EXT
         _ header
@@ -48,30 +49,52 @@ code val, 'value'                       ; x "<spaces>name" --
         next
 endcode
 
-code storeto, 'to', IMMEDIATE
-        _ tick
+; ### to
+code storeto, 'to', IMMEDIATE           ; n "<spaces>name" --
+        _ blchar
+        _ word_                         ; -- n $addr
+
+        _ statefetch
+        _if .1
+        _ dup
+        _ find_local                    ; -- $addr index flag
+        _if .2
+        _ nip
+        _ compile_tolocal
+        _return
+        _else .2
+        _ drop
+        _then .2
+        _then .1
+
+        _ find
+        _zeq_if .3
+        _ missing
+        _then .3
+
         _ tobody
         _ statefetch
-        _if storeto1
+        _if .4
         _ literal
         _lit store
         _ commacall
-        _else storeto1
+        _else .4
         _ store
-        _then storeto1
+        _then .4
         next
 endcode
 
+; ### +to
 code plusstoreto, '+to', IMMEDIATE      ; n "<spaces>name" --
         _ tick
         _ tobody
         _ statefetch
-        _if plusstoreto1
+        _if .1
         _ literal
         _lit plusstore
         _ commacall
-        _else plusstoreto1                  ; -- n addr
+        _else .1                        ; -- n addr
         _ plusstore
-        _then plusstoreto1
+        _then .1
         next
 endcode

@@ -92,13 +92,30 @@ endcode
 code interpret, 'interpret'             ; --
         _begin interp0
         _ blchar
-        _ word_                         ; -- c-addr
-        _ dup                           ; -- c-addr c-addr
-        _cfetch                         ; -- c-addr len
+        _ word_                         ; -- $addr
+        _ dup                           ; -- $addr $addr
+        _cfetch                         ; -- $addr len
         _zeq_if .1
+        ; end of input
         _ drop                          ; --
         _return
-        _then .1                        ; -- c-addr
+        _then .1                        ; -- $addr
+
+        _ statefetch
+        _if .2
+        _ dup                           ; -- $addr $addr
+
+        _ find_local                    ; -- $addr index flag
+
+        _if .3
+        _ nip
+        _ compile_local
+        jmp     interp0_begin
+        _else .3
+        _ drop
+        _then .3
+        _then .2
+
         _ find
         _ ?dup
         _if interp2
