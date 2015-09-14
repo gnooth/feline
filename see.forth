@@ -454,26 +454,29 @@ $01 install-handler
 :noname  ( -- )                         \ ADD reg64, reg/mem64
     $" add" to mnemonic
     !modrm-byte
-    modrm-rm 4 = if !sib-byte then
-    modrm-mod 1 = if                \ 1-byte displacement
-\       prefix if 4 else 3 then .bytes
-\       old-.mnemonic
-\       48 >pos
-\       modrm-reg .reg64 .sep
-\       modrm-rm
-\       ip c@s 1 +to ip
-\       .relative
-        ok_relative modrm-rm ip c@s source!
-        1 +to ip
-        ok_register modrm-reg 0 dest!
-        .inst
-        exit
+    modrm-rm 4 = if
+        !sib-byte
+        modrm-mod 0= if
+            ok_register modrm-reg register-reg 0 dest!
+            ok_relative_no_reg 0 ip l@s source!
+            4 +to ip
+            .inst
+            exit
+        then
+    else
+        modrm-mod 1 = if                \ 1-byte displacement
+            ok_relative modrm-rm ip c@s source!
+            1 +to ip
+            ok_register modrm-reg 0 dest!
+            .inst
+            exit
+        then
     then
     ip instruction-start - .bytes
     unsupported
 ;
 
-h# 03 install-handler
+$03 install-handler
 
 \ $09 handler
 :noname  ( -- )
@@ -762,42 +765,46 @@ $88 install-handler
     \ 89 /r
     \ "/r: indicates that the ModR/M byte of the instruction contains both a
     \ register operand and an r/m operand."
-
-\    s" mov" old-mnemonic!
-   $" mov" to mnemonic
-   !modrm-byte
-   modrm-mod 0= if
-      ok_relative modrm-rm register-rm 0 dest!
-      ok_register modrm-reg register-reg 0 source!
-      .inst
-      exit
+    $" mov" to mnemonic
+    !modrm-byte
+    modrm-rm 4 = if
+        !sib-byte
+        modrm-mod 0= if
+            sib-scale 0= if
+                sib-index 4 = if
+                    prefix if 7 else 6 then to size
+                    ok_register modrm-reg register-reg 0 source!
+                    ok_relative_no_reg 0 ip l@s dest!
+                    4 +to ip
+                    .inst
+                    exit
+                then
+            then
+        then
+    else
+        modrm-mod 0= if
+            ok_relative modrm-rm register-rm 0 dest!
+            ok_register modrm-reg register-reg 0 source!
+            .inst
+            exit
+        then
+        modrm-mod 1 = if                     \ 1-byte displacement
+            ok_relative modrm-rm ip c@s dest!
+            1 +to ip
+            ok_register modrm-reg 0 source!
+            .inst
+            exit
+        then
+        modrm-mod 3 = if                    \ register operands
+            prefix if 3 else 2 then to size
+            ok_register modrm-reg register-reg 0 source!
+            ok_register modrm-rm  register-rm  0 dest!
+            .inst
+            exit
+        then
     then
-    modrm-mod 1 = if                     \ 1-byte displacement
-        ok_relative modrm-rm ip c@s dest!
-        1 +to ip
-        ok_register modrm-reg 0 source!
-        .inst
-        exit
-    then
-    modrm-mod 3 = if                    \ register operands
-        prefix if 3 else 2 then to size
-\         size .bytes
-\         old-.mnemonic
-\         48 >pos
-\         modrm-rm .reg64
-\         .sep
-\         modrm-reg .reg64
-\ \        size +to ip
-        ok_register modrm-reg register-reg 0 source!
-        ok_register modrm-rm  register-rm  0 dest!
-        .inst
-        exit
-    then
-\     prefix if 2 else 1 then to size
-\     size .bytes
     ip instruction-start - .bytes
     unsupported
-\     size +to ip
 ;
 
 \ $8a handler
