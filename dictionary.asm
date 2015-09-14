@@ -269,7 +269,7 @@ code commac, ',c'
 endcode
 
 ; ### c,c
-code ccommac, 'c,c'
+code ccommac, 'c,c'                     ; char --
         _ here_c
         _ cstore
         _ one
@@ -279,9 +279,10 @@ code ccommac, 'c,c'
 endcode
 
 ; ### allot-c
-code allot_c, 'allot-c'
-        _ cp
-        _ plusstore
+code allot_c, 'allot-c'                 ; n --
+        add     rbx, [cp_data]
+        mov     [cp_data], rbx
+        poprbx
         next
 endcode
 
@@ -365,7 +366,7 @@ endcode
 
 ; ### l,c
 code lcommac, 'l,c'                     ; x --
-; 32-bit store, increment DP
+; 32-bit store, increment CP
         mov     rax, [cp_data]
         mov     [rax], ebx
         add     rax, 4
