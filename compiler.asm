@@ -59,6 +59,28 @@ code copy_code, 'copy-code'             ; xt --
         next
 endcode
 
+; ### push-tos,
+code push_tos_comma, 'push-tos,'
+        _lit push_tos_top
+        _lit push_tos_end - push_tos_top
+        _ paren_copy_code
+        next
+push_tos_top:
+        pushrbx
+push_tos_end:
+endcode
+
+; ### pop-tos,
+code pop_tos_comma, 'pop-tos,'
+        _lit pop_tos_top
+        _lit pop_tos_end - pop_tos_top
+        _ paren_copy_code
+        next
+pop_tos_top:
+        poprbx
+pop_tos_end:
+endcode
+
 ; ### ,call
 code commacall, ',call'                 ; code --
         _lit $0e8

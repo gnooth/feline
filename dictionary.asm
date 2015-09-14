@@ -597,20 +597,6 @@ code latest, 'latest'                   ; -- nfa
         next
 endcode
 
-section .text
-push_tos:
-        pushrbx
-push_tos_end:
-
-; REVIEW
-; ### push-tos,
-code push_tos_comma, 'push-tos,'
-        _lit push_tos
-        _lit push_tos_end - push_tos
-        _ paren_copy_code
-        next
-endcode
-
 ; ### literal
 code literal, 'literal', IMMEDIATE
         _ push_tos_comma
