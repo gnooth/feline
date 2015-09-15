@@ -19,6 +19,7 @@ default abs ; use absolute addresses by default
 %include "macros.asm"
 %include "inlines.asm"
 
+%include "ansi.asm"
 %include "arith.asm"
 %include "branch.asm"
 %include "bye.asm"
