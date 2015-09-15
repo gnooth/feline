@@ -179,6 +179,15 @@ global %1
         next
 %endmacro
 
+%macro  constant 3                      ; label, name, value
+        head  %1, %2
+        section .text
+%1:
+        pushrbx
+        mov     rbx, %3
+        next
+%endmacro
+
 %macro  _to 1                           ; label
         mov     rax, %1_data
         mov     [rax], rbx
