@@ -663,6 +663,19 @@ code system_, 'system'                  ; c-addr u --
         next
 endcode
 
+; ### sh
+code sh, 'sh'
+        _lit 10
+        _ parse
+        _ ?dup
+        _if .1
+        _ system_
+        _else .1
+        _ drop
+        _then .1
+        next
+endcode
+
 extern os_getenv
 
 ; ### getenv

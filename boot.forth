@@ -29,8 +29,6 @@ include-system-file tools.forth
 include-system-file empty.forth
 include-system-file environment.forth
 
-: sh 10 parse ?dup if system else drop then ;
-
 : in include ;
 
 empty!
