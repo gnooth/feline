@@ -466,7 +466,7 @@ doconst:
 doconst_end:
 
 ; ### constant
-code constant, 'constant'               ; x "<spaces>name" --
+code constant_, 'constant'              ; x "<spaces>name" --
 ; CORE
         _ header                        ; -- x
         _ here_c
