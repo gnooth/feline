@@ -17,6 +17,7 @@ file __FILE__
 
 extern os_bye
 
+; ### bye
 code bye, "bye"
         _ ?cr
         _dotq 'Bye!'
