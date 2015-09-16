@@ -15,6 +15,15 @@
 
 file __FILE__
 
+; ### #locals
+code nlocals, '#locals'                 ; -- n
+; maximum number of local variables in a definition
+; "A system implementing the Locals word set shall support the
+; declaration of at least sixteen locals in a definition."
+        pushd 16
+        next
+endcode
+
 ; ### lsp0
 variable lsp0, 'lsp0', 0
 
@@ -27,34 +36,6 @@ endcode
 ; ### lsp!
 code lspstore, 'lsp!'
         popd    r15
-        next
-endcode
-
-; ### local0
-code local0, 'local0'                   ; -- x
-        pushrbx
-        mov     rbx, [r14 - BYTES_PER_CELL]
-        next
-endcode
-
-; ### local1
-code local1, 'local1'                   ; -- x
-        pushrbx
-        mov     rbx, [r14 - BYTES_PER_CELL * 2]
-        next
-endcode
-
-; ### tolocal0
-code tolocal0, 'tolocal0'               ; x --
-        mov     [r14 - BYTES_PER_CELL], rbx
-        poprbx
-        next
-endcode
-
-; ### tolocal1
-code tolocal1, 'tolocal1'               ; x --
-        mov     [r14 - BYTES_PER_CELL * 2], rbx
-        poprbx
         next
 endcode
 
@@ -88,7 +69,6 @@ endcode
 inline locals_enter, 'locals-enter'
         push    r15                     ; lsp
         push    r14                     ; frame pointer
-;         mov     r14, r15
         lea     r14, [r15 - BYTES_PER_CELL];
 endinline
 
@@ -98,46 +78,17 @@ inline locals_leave, 'locals-leave'
         pop     r15
 endinline
 
-; ### locals-names
-value locals_names, 'locals-names', 0
-
-; ### #locals
-code nlocals, '#locals'                 ; -- n
-; maximum number of local variables in a definition
-; "A system implementing the Locals word set shall support the
-; declaration of at least sixteen locals in a definition."
-        pushd 16
-        next
-endcode
+; ### local-names
+value local_names, 'local-names', 0
 
 ; ### locals-defined
 value locals_defined, 'locals-defined', 0
-
-; ### .locals
-code dotlocals, '.locals'
-        _ ?cr
-        _ locals_defined
-        _ dot
-        _dotq "local(s):"
-        _ locals_defined
-        _ zero
-        _do .1
-        _ ?cr
-        _ locals_names
-        _i
-        _ cells
-        _ plus
-        _ fetch
-        _ counttype
-        _loop .1
-        next
-endcode
 
 ; ### find-local
 code find_local, 'find-local'           ; $addr -- index flag
         _ using_locals?
         _zeq_if .0
-        _ drop
+        _drop
         _ zero
         _ false
         _return
@@ -146,18 +97,18 @@ code find_local, 'find-local'           ; $addr -- index flag
         _ locals_defined
         _ zero
         _do .1
-        _ locals_names
+        _ local_names
         _i
-        _ cells
-        _ plus
-        _ fetch                         ; -- $addr $addr2
+        _cells
+        _plus
+        _fetch                          ; -- $addr $addr2
         _ over                          ; -- $addr $addr2 $addr
         _ count
         _ rot
         _ count
         _ istrequal
         _if .2
-        _ drop
+        _drop
         _i
         _ true
         _leave
@@ -204,23 +155,52 @@ code compile_tolocal, 'compile-tolocal' ; index --
         next
 endcode
 
-; ### initialize-frame
-code initialize_frame, 'initialize-frame'
+; ### initialize-local-names
+code initialize_local_names, 'initialize-local-names'
         _ initialize_locals_stack
-        ; for now, just make a frame big enough for the maximum number of locals
+        ; allow for maximum number of locals
         _ nlocals
-        _ cells
+        _cells
         _duptor
         _ allocate
-        _ drop                          ; REVIEW
+        _ throw
         _ dup
-        _to locals_names
+        _to local_names
         _rfrom
         _ erase
         _ zero
         _to locals_defined
         _ true
         _to using_locals?
+        next
+endcode
+
+; ### delete-local-names
+code delete_local_names, 'delete-local-names'
+        _ local_names
+        _if .1
+        _ locals_defined
+        _ zero
+        _?do .2
+        _ local_names
+        _i
+        _cells
+        _plus
+        _fetch
+        _ ?dup
+        _if .3
+        _ free_
+        _ throw
+        _then .3
+        _loop .2
+        _ local_names
+        _ free_
+        _ throw
+        _ zero
+        _to local_names
+        _ zero
+        _to locals_defined
+        _then .1
         next
 endcode
 
@@ -234,38 +214,46 @@ endinline
 ; ### (local)
 code paren_local, '(local)'             ; c-addr u --
 ; LOCALS 13.6.1.0086
-        _ using_locals?
+        ; "If u is zero, the message is "last local" and c-addr has
+        ; no significance.
+        _ ?dup
         _zeq_if .1
+        _drop
+        _return
+        _then .1
+
+        _ using_locals?
+        _zeq_if .2
         ; first local in this definition
         _ lspfetch
-        _zeq_if .2
+        _zeq_if .3
         _ initialize_locals_stack
-        _then .2
-        _ initialize_frame
+        _then .3
+        _ initialize_local_names
         _lit locals_enter_xt
         _ compilecomma
-        _then .1
+        _then .2
 
         _ locals_defined
         _ nlocals
         _ ult
-        _if .3
-
-        _lit local_init_xt
-        _ compilecomma
+        _if .4
 
         _ save_string                   ; -- $addr
-        _ locals_names
+        _ local_names
         _ locals_defined
-        _ cells
+        _cells
         _ plus
         _ store
         _ one
         _plusto locals_defined
 
-        _else .3
+        _lit local_init_xt
+        _ compilecomma
+
+        _else .4
         _abortq "Too many locals"       ; REVIEW
-        _then .3
+        _then .4
 
         next
 endcode
