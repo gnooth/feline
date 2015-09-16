@@ -297,10 +297,11 @@ create reg8-regs 8 cells allot
     ." ]"
 ;
 
-0 value current-operand                 \ FIXME this should be a local!
+\ 0 value current-operand                 \ FIXME this should be a local!
 
 : .operand ( operand -- )
-    dup to current-operand
+\     dup to current-operand
+    dup local current-operand
     operand-kind @
     case
         ok_relative of
@@ -843,6 +844,12 @@ $8a install-handler
             .inst
             exit
         then
+        modrm-mod 3 = if
+            ok_register modrm-reg register-reg 0 dest!
+            ok_register modrm-rm register-rm 0 source!
+            .inst
+            exit
+        then
     then
     modrm-rm 4 = if !sib-byte then
     modrm-mod 0= if
@@ -892,6 +899,21 @@ $8a install-handler
     ip instruction-start - .bytes
     unsupported
 ;
+
+: .8f ( -- )
+    $" pop" to mnemonic
+    !modrm-byte
+    modrm-reg 0= if
+        ok_relative modrm-rm register-rm ip c@s dest!
+        1 +to ip
+        .inst
+        exit
+    then
+    ip instruction-start - .bytes
+    unsupported
+;
+
+' .8f $8f install-handler
 
 :noname  ( -- )
    c" nop" to mnemonic
