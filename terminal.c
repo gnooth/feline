@@ -24,7 +24,6 @@
 
 #include "forth.h"
 
-extern Cell echo_data;
 extern Cell line_input_data;
 
 #ifdef WIN64
