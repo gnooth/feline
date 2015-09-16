@@ -49,8 +49,12 @@ code ?stack, '?stack'
         next
 .1:
         mov     rbp, [sp0_data]
-        _dotq   "Stack underflow"
-        jmp     abort
+        _cquote "Stack underflow"
+        _ msg
+        _ store
+        _lit -4
+        _ throw
+        next
 endcode
 
 ; ### ?enough
