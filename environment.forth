@@ -30,21 +30,23 @@ vocabulary environment
 
 environment definitions
 
-   255 constant /counted-string
- /hold constant /hold
-  /pad constant /pad
-     8 constant address-unit-bits
-  true constant floored
+255     constant /counted-string
+/hold   constant /hold
+/pad    constant /pad
+8       constant address-unit-bits
+true    constant floored
+#locals constant #locals
 
- 255 constant max-char                  \ maximum value of any character in the
+255     constant max-char               \ maximum value of any character in the
                                         \ implementation-defined character set
 
- 1 63 lshift 1-  constant max-n         \ largest usable signed integer
--1               constant max-u         \ largest usable unsigned integer
-    max-u max-n 2constant max-d         \ largest usable signed double number
-          -1 -1 2constant max-ud        \ largest usable unsigned double number
+1 63 lshift 1-  constant        max-n   \ largest usable signed integer
+-1              constant        max-u   \ largest usable unsigned integer
+
+max-u max-n     2constant       max-d   \ largest usable signed double number
+-1 -1           2constant       max-ud  \ largest usable unsigned double number
 
 \   0 constant return-stack-cells       \ FIXME
-128 constant stack-cells
+128     constant stack-cells
 
 only forth definitions
