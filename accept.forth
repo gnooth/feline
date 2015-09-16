@@ -327,6 +327,7 @@ k-delete ,     ' do-delete ,
     false to done?
     0 to number-chars-accepted
     0 to dot
+    yellow foreground
     begin
         number-chars-accepted buflen <
         done? 0= and
@@ -338,9 +339,11 @@ k-delete ,     ' do-delete ,
             do-command
         then
     repeat
+    white foreground
     number-chars-accepted ;
 
 line-input? 0= [if]
 restore-history
 ' new-accept is accept
+true to color?
 [then]
