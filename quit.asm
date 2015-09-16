@@ -22,6 +22,8 @@ value line_input, 'line-input?', -1
 code ok, 'ok'
         _ statefetch
         _zeq_if .1
+        _ green
+        _ foreground
         _dotq " ok"
         _ depth
         _ ?dup
@@ -152,6 +154,9 @@ code dotmsg, '.msg'
         _fetch
         _ ?dup
         _if .1
+        _ red
+        _ foreground
+        _ ?cr
         _ counttype
         _ msg
         _ off
@@ -176,6 +181,8 @@ code do_error, 'do-error'               ; n --
         _then .2
         ; otherwise...
         _ dotmsg
+        _ red
+        _ foreground
         _ ?cr
         _dotq "Exception # "
         _ decdot
