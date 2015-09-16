@@ -176,49 +176,31 @@ endcode
 
 ; ### compile-local
 code compile_local, 'compile-local'     ; index --
-        _ ?cr
-        _dotq "compile-local index = "
-        _ dup
-        _ dot
-
         _ push_tos_comma
-
         _lit $49
         _ ccommac
         _lit $8b
         _ ccommac
         _lit $5e
         _ ccommac
-
-;         _oneplus
         _cells
         _negate
         _ ccommac
-
         next
 endcode
 
 ; ### compile-tolocal
 code compile_tolocal, 'compile-tolocal' ; index --
-        _ ?cr
-        _dotq "compile-local index = "
-        _ dup
-        _ dot
-
         _lit $49
         _ ccommac
         _lit $89
         _ ccommac
         _lit $5e
         _ ccommac
-
-;         _oneplus
         _cells
         _negate
         _ ccommac
-
         _ pop_tos_comma
-
         next
 endcode
 
@@ -272,11 +254,6 @@ code paren_local, '(local)'             ; c-addr u --
         _lit local_init_xt
         _ compilecomma
 
-        _ twodup
-        _ ?cr
-        _dotq "local "
-        _ type
-
         _ save_string                   ; -- $addr
         _ locals_names
         _ locals_defined
@@ -285,11 +262,6 @@ code paren_local, '(local)'             ; c-addr u --
         _ store
         _ one
         _plusto locals_defined
-
-        _ ?cr
-        _ locals_defined
-        _ dot
-        _dotq "local(s) defined"
 
         _else .3
         _abortq "Too many locals"       ; REVIEW
