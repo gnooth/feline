@@ -37,6 +37,9 @@ endcode
 
 ; ### foreground
 code foreground, 'foreground'           ; color --
+%ifdef WIN64
+        _drop
+%else
         _ color?
         _if .1
         _ ansi_escape
@@ -50,11 +53,15 @@ code foreground, 'foreground'           ; color --
         _else .1
         _drop
         _then .1
+%endif
         next
 endcode
 
 ; ### background
 code background, 'background'           ; color --
+%ifdef WIN64
+        _drop
+%else
         _ color?
         _if .1
         _ ansi_escape
@@ -68,6 +75,7 @@ code background, 'background'           ; color --
         _else .1
         _drop
         _then .1
+%endif
         next
 endcode
 
@@ -76,15 +84,17 @@ code page, 'page'
 ; FACILITY
 ; "On a terminal, PAGE clears the screen and resets the cursor
 ; position to the upper left corner."
+%ifndef WIN64
         _ ansi_escape
         _lit '2'
         _ emit
         _lit 'J'
         _ emit
         _ ansi_escape
-        _lit ';'
+        _lit $3b
         _ emit
         _lit 'H'
         _ emit
+%endif
         next
 endcode
