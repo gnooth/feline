@@ -264,3 +264,18 @@ code local, 'local', IMMEDIATE
         _ paren_local
         next
 endcode
+
+; ### end-locals
+code end_locals, 'end-locals'           ; --
+; called by ; and DOES>
+        _ ?comp
+        _ using_locals?
+        _if .1
+        _lit locals_leave_xt
+        _ compilecomma
+        _ delete_local_names
+        _ zero
+        _to using_locals?
+        _then .1
+        next
+endcode

@@ -569,6 +569,7 @@ endcode
 
 ; ### does>
 code does, 'does>', IMMEDIATE
+        _ end_locals
         _lit paren_scode                ; postpone (;code)
         _ commacall
         _lit $0c3                       ; next,

@@ -204,14 +204,7 @@ endcode
 code semi, ';', IMMEDIATE
         _ flush_compilation_queue
         _ ?csp
-        _ using_locals?
-        _if .1
-        _lit locals_leave_xt
-        _ compilecomma
-        _ delete_local_names
-        _ zero
-        _to using_locals?
-        _then .1
+        _ end_locals
         _lit $0c3                       ; RET
         _ ccommac
         _ lbrack
