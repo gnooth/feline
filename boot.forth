@@ -13,6 +13,7 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+include-system-file locals.forth
 include-system-file vocabulary.forth
 include-system-file defer.forth
 include-system-file bracket-if.forth
