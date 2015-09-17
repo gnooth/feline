@@ -519,9 +519,17 @@ code recurse, 'recurse', IMMEDIATE
 endcode
 
 ; ### exit
-code exit_, 'exit'
-        _ rfrom
-        _ drop
+code exit_, 'exit', IMMEDIATE
+; CORE
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
+        _ using_locals?
+        _if .1
+        _lit locals_leave_xt
+        _ compilecomma
+        _then .1
+        _lit $0c3
+        _ ccommac
         next
 endcode
 
