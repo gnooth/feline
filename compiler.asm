@@ -20,7 +20,7 @@ code ?comp, '?comp'
         mov     rax, [state_data]
         test    rax, rax
         jnz     .1
-        _lit    -14
+        _lit    -14                     ; "interpreting a compile-only word"
         _ throw
 .1:
         next
