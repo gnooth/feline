@@ -510,14 +510,6 @@ code twoconstant, '2constant'           ; x1 x2 "<spaces>name" --
         next
 endcode
 
-; ### recurse
-code recurse, 'recurse', IMMEDIATE
-        _ last_code
-        _fetch
-        _ commacall
-        next
-endcode
-
 ; ### exit
 code exit_, 'exit', IMMEDIATE
 ; CORE

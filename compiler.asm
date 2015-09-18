@@ -140,6 +140,14 @@ deferred compilecomma, 'compile,', parencompilecomma
 ; ### last-code
 variable last_code, 'last-code', 0
 
+; ### recurse
+code recurse, 'recurse', IMMEDIATE
+        _ last_code
+        _fetch
+        _ commacall
+        next
+endcode
+
 ; ### csp
 variable csp, 'csp', 0
 
