@@ -31,6 +31,10 @@ code noop, 'noop'
         next
 endcode
 
+variable pending_literal, 'pending-literal', 0
+
+value pending_literal?, 'pending-literal?', 0
+
 ; ### (literal)
 code iliteral, '(literal)'              ; n --
         _ push_tos_comma
@@ -51,12 +55,56 @@ code iliteral, '(literal)'              ; n --
         next
 endcode
 
+; ### combine-literal?
+value combine_literal?, 'combine-literal?', 0
+
 ; ### literal
 code literal, 'literal', IMMEDIATE      ; n --
 ; CORE
 ; "Interpretation semantics for this word are undefined."
         _ ?comp
+        _ flush_compilation_queue
+        _ combine_literal?
+        _if .1
+        _ ?cr
+        _dotq "literal "
+        _ dup
+        _ dot
+        _ pending_literal
+        _ store
+        _ true
+        _to pending_literal?
+        _else .1
         _ iliteral
+        _then .1
+        next
+endcode
+
+; ### flush-pending-literal
+code flush_pending_literal, 'flush-pending-literal'
+        _ pending_literal?
+        _if .1
+        _ ?cr
+        _dotq "flush-pending-literal "
+        _ pending_literal
+        _ fetch
+        _ dup
+        _ dot
+        _ iliteral
+
+        ; REVIEW
+        _ zero
+        _ pending_literal
+        _ store
+
+        _clear pending_literal?
+        _then .1
+        next
+endcode
+
+; ### (flush-compilation-queue)
+code iflush_compilation_queue, '(flush-compilation-queue)'
+        _ flush_pending_literal
         next
 endcode
 

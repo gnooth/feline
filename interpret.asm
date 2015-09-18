@@ -134,7 +134,7 @@ code interpret, 'interpret'             ; --
         _ twoliteral
         _else interp4
         _ drop
-        _ iliteral
+        _ literal
         _then interp4
         _else interp3
         _ double?
