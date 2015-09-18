@@ -194,6 +194,12 @@ global %1
         poprbx
 %endmacro
 
+%macro  _clear 1                        ; label
+        mov     rax, %1_data
+        xor     rdx, rdx
+        mov     [rax], rdx
+%endmacro
+
 %macro  _plusto 1                       ; label
         mov     rax, %1_data
         add     [rax], rbx
