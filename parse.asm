@@ -147,8 +147,11 @@ endcode
 
 ; ### [char]
 code bracket_char, '[char]', IMMEDIATE
+; CORE
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
         _ char
-        _ literal
+        _ iliteral
         next
 endcode
 

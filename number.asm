@@ -137,6 +137,7 @@ code where, 'where'                     ; --
         _ source_id
         _ zgt
         _if .1
+        _ ?cr
         _ source_filename
         _fetch
         _ ?dup
@@ -289,9 +290,9 @@ code number_in_base, 'number-in-base'   ; base -- number
         _ rfrom
         _ basestore
         _ statefetch
-        _if hexnum1
-        _ literal
-        _then hexnum1
+        _if .1
+        _ iliteral
+        _then .1
         next
 
 ; ### b#

@@ -99,7 +99,7 @@ code plusstoreto, '+to', IMMEDIATE      ; n "<spaces>name" --
         _ tobody
         _ statefetch
         _if .1
-        _ literal
+        _ iliteral
         _lit plusstore
         _ commacall
         _else .1                        ; -- n addr

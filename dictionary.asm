@@ -633,24 +633,30 @@ endcode
 ; ### postpone
 code postpone, 'postpone', IMMEDIATE    ; "<spaces>name" --
 ; CORE 6.1.2033
-; compilation only
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
         _ tick
         _ dup
         _ immediate?
-        _if postpone1
+        _if .1
         _ tocode
         _ commacall
-        _else postpone1
+        _else .1
         _ tocode
-        _ literal
+        _ iliteral
         _lit commacall
         _ commacall
-        _then postpone1
+        _then .1
         next
 endcode
 
 ; ### [compile]
 code bracketcompile, '[compile]', IMMEDIATE
+; CORE EXT
+; "This word is obsolescent and is included as a concession to existing
+; implementations."
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
         _ tick
         _ compilecomma
         next

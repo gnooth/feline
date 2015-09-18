@@ -31,23 +31,6 @@ code noop, 'noop'
         next
 endcode
 
-variable pending_literal, 'pending-literal', 0
-
-value pending_literal?, 'pending-literal?', 0
-
-; ### flush-literal
-code flush_literal, 'flush-literal'
-        _ pending_literal?
-        _if .1
-        _ pending_literal
-        _fetch
-        _ iliteral
-        _ zero
-        _to pending_literal?
-        _then .1
-        next
-endcode
-
 ; ### (literal)
 code iliteral, '(literal)'              ; n --
         _ push_tos_comma
@@ -74,13 +57,6 @@ code literal, 'literal', IMMEDIATE      ; n --
 ; "Interpretation semantics for this word are undefined."
         _ ?comp
         _ iliteral
-%if 0
-        _ flush_literal
-        _ pending_literal
-        _ store
-        _ true
-        _to pending_literal?
-%endif
         next
 endcode
 
@@ -88,7 +64,7 @@ endcode
 deferred clear_compilation_queue, 'clear-compilation-queue', noop
 
 ; ### flush-compilation-queue
-deferred flush_compilation_queue, 'flush-compilation-queue', flush_literal
+deferred flush_compilation_queue, 'flush-compilation-queue', noop
 
 ; ### (copy-code)
 code paren_copy_code, '(copy-code)'     ; addr size --
