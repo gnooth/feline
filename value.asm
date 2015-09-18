@@ -72,12 +72,21 @@ code storeto, 'to', IMMEDIATE           ; n "<spaces>name" --
         _ missing
         _then .3
 
-        _ tobody
+        _ tobody                        ; -- n pfa
         _ statefetch
         _if .4
-        _ literal
-        _lit store
-        _ commacall
+        _lit $48
+        _ ccommac
+        _lit $0b8
+        _ ccommac
+        _ commac                        ; mov rax, pfa
+        _lit $48
+        _ ccommac
+        _lit $89
+        _ ccommac
+        _lit $18
+        _ ccommac                       ; mov [rax], rbx
+        _ pop_tos_comma
         _else .4
         _ store
         _then .4
