@@ -31,17 +31,56 @@ code noop, 'noop'
         next
 endcode
 
-; ### literal
-code literal, 'literal', IMMEDIATE
-; CORE
-; "Interpretation semantics for this word are undefined."
-        _ ?comp
+variable pending_literal, 'pending-literal', 0
+
+value pending_literal?, 'pending-literal?', 0
+
+; ### flush-literal
+code flush_literal, 'flush-literal'
+        _ pending_literal?
+        _if .1
+        _ pending_literal
+        _fetch
+        _ iliteral
+        _ zero
+        _to pending_literal?
+        _then .1
+        next
+endcode
+
+; ### (literal)
+code iliteral, '(literal)'              ; n --
         _ push_tos_comma
+        _ dup
+        _lit $0ffffffff
+        _ ult
+        _if .1
+        _lit $0bb
+        _ ccommac
+        _ lcommac
+        _else .1
         _lit $48
         _ ccommac
         _lit $0bb
         _ ccommac
         _ commac
+        _then .1
+        next
+endcode
+
+; ### literal
+code literal, 'literal', IMMEDIATE      ; n --
+; CORE
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
+        _ iliteral
+%if 0
+        _ flush_literal
+        _ pending_literal
+        _ store
+        _ true
+        _to pending_literal?
+%endif
         next
 endcode
 
@@ -49,7 +88,7 @@ endcode
 deferred clear_compilation_queue, 'clear-compilation-queue', noop
 
 ; ### flush-compilation-queue
-deferred flush_compilation_queue, 'flush-compilation-queue', noop
+deferred flush_compilation_queue, 'flush-compilation-queue', flush_literal
 
 ; ### (copy-code)
 code paren_copy_code, '(copy-code)'     ; addr size --
