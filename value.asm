@@ -75,6 +75,7 @@ code storeto, 'to', IMMEDIATE           ; n "<spaces>name" --
         _ tobody                        ; -- n pfa
         _ statefetch
         _if .4
+        _ flush_compilation_queue
         _lit $48
         _ ccommac
         _lit $0b8
@@ -99,6 +100,7 @@ code plusstoreto, '+to', IMMEDIATE      ; n "<spaces>name" --
         _ tobody
         _ statefetch
         _if .1
+        _ flush_compilation_queue
         _ iliteral
         _lit plusstore
         _ commacall

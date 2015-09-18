@@ -274,6 +274,8 @@ endcode
 code sliteral, 'sliteral', IMMEDIATE    ; c: addr1 u --         runtime: -- c-addr2 u
 ; STRING
 ; "Interpretation semantics for this word are undefined."
+        _ ?comp
+        _ flush_compilation_queue
         _ here                          ; addr for counted string
         _ rrot
         _ stringcomma
@@ -353,6 +355,10 @@ endcode
 
 ; ### ."
 code dotquote, '."', IMMEDIATE
+; CORE
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
+        _ flush_compilation_queue
         _ squote
         _lit type
         _ commacall
@@ -376,6 +382,9 @@ endcode
 ; ### abort"
 code abortquote, 'abort"', IMMEDIATE
 ; CORE
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
+        _ flush_compilation_queue
         _ cquote
         _lit parenabortquote
         _ commacall

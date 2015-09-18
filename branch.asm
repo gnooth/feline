@@ -33,8 +33,11 @@ branch_end:
         jz      0
 ?branch_end:
 
+; ### if
 code if, 'if', IMMEDIATE                ; c: -- orig
 ; CORE
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
         _ flush_compilation_queue
         _lit ?branch
         _lit ?branch_end - ?branch
@@ -43,8 +46,11 @@ code if, 'if', IMMEDIATE                ; c: -- orig
         next
 endcode
 
+; ### else
 code else, 'else', IMMEDIATE            ; c: orig1 -- orig2
 ; CORE
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
         _ flush_compilation_queue
         _lit branch
         _lit branch_end - branch
@@ -60,8 +66,11 @@ code else, 'else', IMMEDIATE            ; c: orig1 -- orig2
         next
 endcode
 
+; ### then
 code then, 'then', IMMEDIATE            ; c: orig --
 ; CORE
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
         _ flush_compilation_queue
         _ here_c                        ; -- addr here
         _ over                          ; -- addr here addr
@@ -86,14 +95,22 @@ code align_code, 'align-code'
         next
 endcode
 
+; ### begin
 code begin, 'begin', IMMEDIATE          ; c: -- dest
+; CORE
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
         _ flush_compilation_queue
         _ align_code
         _ here_c
         next
 endcode
 
+; ### while
 code while, 'while', IMMEDIATE          ; c: orig -- orig dest
+; CORE
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
         _ flush_compilation_queue
         _lit ?branch
         _lit ?branch_end - ?branch
@@ -103,19 +120,33 @@ code while, 'while', IMMEDIATE          ; c: orig -- orig dest
         next
 endcode
 
+; ### repeat
 code repeat, 'repeat', IMMEDIATE        ; orig dest --
+; CORE
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
         _ flush_compilation_queue
         _ again
         _ then
         next
 endcode
 
+; ### again
 code again, 'again', IMMEDIATE          ; dest --
+; CORE EXT
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
+        _ flush_compilation_queue
         _ commajmp
         next
 endcode
 
+; ### until
 code until, 'until', IMMEDIATE          ; c: dest --
+; CORE
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
+        _ flush_compilation_queue
         _lit ?branch
         _lit ?branch_end - ?branch
         _ paren_copy_code

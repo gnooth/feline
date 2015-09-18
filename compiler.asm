@@ -171,6 +171,10 @@ variable last_code, 'last-code', 0
 
 ; ### recurse
 code recurse, 'recurse', IMMEDIATE
+; CORE
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
+        _ flush_compilation_queue
         _ last_code
         _fetch
         _ commacall
@@ -239,6 +243,8 @@ endcode
 
 ; ### ;
 code semi, ';', IMMEDIATE
+; CORE
+        _ ?comp
         _ flush_compilation_queue
         _ ?csp
         _ end_locals

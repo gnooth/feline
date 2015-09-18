@@ -569,6 +569,10 @@ endcode
 
 ; ### does>
 code does, 'does>', IMMEDIATE
+; CORE
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
+        _ flush_compilation_queue
         _ end_locals
         _lit paren_scode                ; postpone (;code)
         _ commacall
@@ -619,6 +623,8 @@ endcode
 code twoliteral, '2literal', IMMEDIATE  ; compilation: x1 x2 --         run-time: -- x1 x2
 ; DOUBLE
 ; "Interpretation semantics for this word are undefined."
+        _ ?comp
+        _ flush_compilation_queue
         _ here
         _ rrot
         _ comma
@@ -635,6 +641,7 @@ code postpone, 'postpone', IMMEDIATE    ; "<spaces>name" --
 ; CORE 6.1.2033
 ; "Interpretation semantics for this word are undefined."
         _ ?comp
+        _ flush_compilation_queue
         _ tick
         _ dup
         _ immediate?
