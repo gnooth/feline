@@ -31,6 +31,20 @@ code noop, 'noop'
         next
 endcode
 
+; ### literal
+code literal, 'literal', IMMEDIATE
+; CORE
+; "Interpretation semantics for this word are undefined."
+        _ ?comp
+        _ push_tos_comma
+        _lit $48
+        _ ccommac
+        _lit $0bb
+        _ ccommac
+        _ commac
+        next
+endcode
+
 ; ### clear-compilation-queue
 deferred clear_compilation_queue, 'clear-compilation-queue', noop
 

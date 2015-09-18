@@ -598,20 +598,6 @@ code latest, 'latest'                   ; -- nfa
         next
 endcode
 
-; ### literal
-code literal, 'literal', IMMEDIATE
-; CORE
-; "Interpretation semantics for this word are undefined."
-        _ ?comp
-        _ push_tos_comma
-        _lit $48
-        _ ccommac
-        _lit $0bb
-        _ ccommac
-        _ commac
-        next
-endcode
-
 ; REVIEW
 ; ### mov-tos,
 code mov_tos_comma, 'mov-tos,'      ; compilation: x --
