@@ -305,7 +305,7 @@ endcode
 
 ; ### found
 code found, 'found'                     ; nfa -- xt 1  | xt -1
-        _ namefrom                      ; -- xt
+        _namefrom                       ; -- xt
         _dup                            ; -- xt xt
         _ immediate?                    ; -- xt flag
         _if .1

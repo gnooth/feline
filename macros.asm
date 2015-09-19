@@ -124,6 +124,10 @@ section .text
         add     rbx, BYTES_PER_CELL * 4 + 1
 %endmacro
 
+%macro  _namefrom 0
+        sub     rbx, BYTES_PER_CELL * 6 + 2
+%endmacro
+
 %macro  code 2-4 0, 0
         head %1, %2, %3, %4
         section .text

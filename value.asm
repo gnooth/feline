@@ -33,7 +33,7 @@ code val, 'value'                       ; x "<spaces>name" --
         _ align_code
         _ here_c
         _ latest
-        _ namefrom
+        _namefrom
         _ store
         _lit dovalue
         _lit dovalue_end - dovalue

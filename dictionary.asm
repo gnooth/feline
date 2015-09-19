@@ -158,10 +158,9 @@ code toname, '>name'
 endcode
 
 ; ### name>
-code namefrom, 'name>'
-        sub     rbx, BYTES_PER_CELL * 6 + 2
-        next
-endcode
+inline namefrom, 'name>'
+        _namefrom
+endinline
 
 ; ### n>flags
 code nametoflags, 'n>flags'
@@ -416,7 +415,7 @@ code paren_create, '(create)'
         _ align_data
         _ here_c
         _ latest
-        _ namefrom
+        _namefrom
         _ store
         _lit docreate
         _lit docreate_end - docreate
@@ -476,7 +475,7 @@ code constant_, 'constant'              ; x "<spaces>name" --
         _ header                        ; -- x
         _ here_c
         _ latest
-        _ namefrom
+        _namefrom
         _ store                         ; -- x
         _lit doconst
         _lit doconst_end - doconst
@@ -495,7 +494,7 @@ code twoconstant, '2constant'           ; x1 x2 "<spaces>name" --
         _ header                        ; -- x1 x2
         _ here_c
         _ latest
-        _ namefrom
+        _namefrom
         _ store                         ; -- x1 x2
         _lit doconst
         _lit doconst_end - doconst
@@ -560,7 +559,7 @@ code paren_scode, '(;code)'
         inc     rax                     ; skip past RET to get to start of DOES> code
         pushd   rax                     ; -- does>-code
         _ latest
-        _ namefrom
+        _namefrom
         _tocode
         _lit docreate_end - docreate
         _ plus

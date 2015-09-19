@@ -258,7 +258,7 @@ code colon, ':'
         _ last_code
         _ store
         _ latest
-        _ namefrom
+        _namefrom
         _ store
         _ rbrack
         _ storecsp
