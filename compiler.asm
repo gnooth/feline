@@ -127,10 +127,10 @@ endcode
 ; ### copy-code
 code copy_code, 'copy-code'             ; xt --
         _ dup                           ; -- xt xt
-        _ toinline                      ; -- xt addr
+        _toinline                       ; -- xt addr
         _cfetch                         ; -- xt size
         _ swap
-        _ tocode
+        _tocode
         _ swap                          ; -- code size
         _ paren_copy_code
         next
@@ -171,7 +171,7 @@ endcode
 
 ; ### xt-,call
 code xt_commacall, 'xt-,call'
-        _ tocode
+        _tocode
         _ commacall
         next
 endcode
@@ -198,7 +198,7 @@ code parencompilecomma, '(compile,)'    ; xt --
         _return
         _then .1
         _ dup                           ; -- xt xt
-        _ toinline                      ; -- xt >inline
+        _toinline                       ; -- xt >inline
         _cfetch                         ; -- xt #bytes
         _if .2                          ; -- xt
         _ copy_code

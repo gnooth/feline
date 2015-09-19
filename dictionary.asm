@@ -142,10 +142,9 @@ code flags, 'flags'                     ; xt -- flags
 endcode
 
 ; ### >inline
-code toinline, '>inline'                ; xt -- addr
+inline toinline, '>inline'               ; xt -- addr
         add     rbx, BYTES_PER_CELL * 4 + 1
-        next
-endcode
+endinline
 
 ; ### >view
 code toview, '>view'                    ; xt -- addr
@@ -172,10 +171,9 @@ code nametoflags, 'n>flags'
 endcode
 
 ; ### >code
-code tocode, '>code'
-        mov     rbx, [rbx]
-        next
-endcode
+inline tocode, '>code'                  ; xt -- code-addr
+        _tocode
+endinline
 
 ; ### immediate
 code immediate, 'immediate'
@@ -200,7 +198,7 @@ endcode
 
 ; ### inline?
 code inline?, 'inline?'                 ; xt -- flag
-        _ toinline
+        _toinline
         _cfetch
         _ zne
         next
@@ -564,7 +562,7 @@ code paren_scode, '(;code)'
         pushd   rax                     ; -- does>-code
         _ latest
         _ namefrom
-        _ tocode
+        _tocode
         _lit docreate_end - docreate
         _ plus
         _ cp
@@ -654,10 +652,10 @@ code postpone, 'postpone', IMMEDIATE    ; "<spaces>name" --
         _ dup
         _ immediate?
         _if .1
-        _ tocode
+        _tocode
         _ commacall
         _else .1
-        _ tocode
+        _tocode
         _ iliteral
         _lit commacall
         _ commacall
