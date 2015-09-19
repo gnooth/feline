@@ -108,6 +108,10 @@ section .text
 %define link    %1_nfa                  ; link field points to name field
 %endmacro
 
+%macro  _tobody 0
+        mov     rbx, [rbx + BYTES_PER_CELL * 3]
+%endmacro
+
 %macro  code 2-4 0, 0
         head %1, %2, %3, %4
         section .text

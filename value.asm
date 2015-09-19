@@ -72,7 +72,7 @@ code storeto, 'to', IMMEDIATE           ; n "<spaces>name" --
         _ missing
         _then .3
 
-        _ tobody                        ; -- n pfa
+        _tobody                         ; -- n pfa
         _ statefetch
         _if .4
         _ flush_compilation_queue
@@ -97,7 +97,7 @@ endcode
 ; ### +to
 code plusstoreto, '+to', IMMEDIATE      ; n "<spaces>name" --
         _ tick
-        _ tobody
+        _tobody
         _ statefetch
         _if .1
         _ flush_compilation_queue

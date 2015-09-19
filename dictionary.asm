@@ -119,16 +119,14 @@ code linkfrom, 'link>'
 endcode
 
 ; ### >body
-code tobody, '>body'                    ; xt -- a-addr
+inline tobody, '>body'                  ; xt -- a-addr
 ; CORE
 ; "a-addr is the data-field address corresponding to xt. An ambiguous condition
 ; exists if xt is not for a word defined via CREATE."
 ; "Rationale: a-addr is the address that HERE would have returned had it been
 ; executed immediately after the execution of the CREATE that defined xt."
-        add     rbx, BYTES_PER_CELL * 3
-        mov     rbx, [rbx]
-        next
-endcode
+        _tobody
+endinline
 
 ; ### >flags
 code toflags, '>flags'                  ; xt -- addr
