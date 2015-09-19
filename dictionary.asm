@@ -314,42 +314,52 @@ code quoteheader, '"header'             ; c-addr u --
         _then .1
 
         _ zero                          ; code field (will be patched)
-        _ commac
+        _ comma
         _ zero                          ; comp field
-        _ commac
+        _ comma
         _ current
         _ fetch                         ; -- c-addr u wid
         _ fetch                         ; -- c-addr u link
-        _ commac
+        _ comma
 
-        _ align_data
-        _ here                          ; data field address for >body
-        _ commac
+;         _ align_data
+;         _ here                          ; data field address for >body
+;         _ commac
+        _ here
+        _tor                            ; -- r: addr-to-be-patched
+        _ zero
+        _ comma                         ; pfa (will be patched)
 
         _ zero                          ; flag
-        _ ccommac                       ; -- c-addr u
+        _ ccomma                        ; -- c-addr u
         _ zero
-        _ ccommac                       ; inline size
+        _ ccomma                        ; inline size
 
         _ source_filename
         _fetch
-        _ commac
+        _ comma
         _ source_line_number
         _fetch
-        _ commac
+        _ comma
 
-        _ here_c
+        _ here
         _ last
         _ store                         ; -- c-addr u
-        _ here_c
+        _ here
         _ current
         _ fetch
         _ store
-        _ here_c                        ; -- c-addr u here
+        _ here                          ; -- c-addr u here
         _ over
         _ oneplus
-        _ allot_c
+        _ allot
         _ place
+
+        _ align_data
+        _ here
+        _rfrom                          ; addr-to-be-patched
+        _ store
+
         next
 endcode
 
