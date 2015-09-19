@@ -167,7 +167,7 @@ endcode
 ; ### do-error
 code do_error, 'do-error'               ; n --
         _ dup
-        _ minusone
+        _lit -1
         _ equal
         _if .1
         _ reset                         ; ABORT (no message)
@@ -204,9 +204,9 @@ code quit, 'quit'                       ; --            r:  i*x --
         _ tib
         _ ntib
         _fetch
-        _ zero
+        _zero
         _ set_input
-        _ zero
+        _zero
         _ source_filename
         _ store
         _lit interpret_xt
@@ -236,7 +236,7 @@ endcode
 code abort, 'abort'                     ; i*x --        r: j*x --
 ; This is the EXCEPTION EXT version of ABORT (9.6.2.0670).
 ; "Perform the function of -1 THROW."
-        _ minusone
+        _lit -1
         _ throw
         next                            ; for decompiler
 endcode

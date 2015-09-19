@@ -59,7 +59,7 @@ code else, 'else', IMMEDIATE            ; c: orig1 -- orig2
         _ over                          ; -- orig1 here orig1
         _ minus                         ; -- orig1 here-orig1
         _ swap
-        _ four
+        _lit 4
         _ minus
         _ lstore                        ; --
         _ here_c                        ; -- orig2
@@ -76,7 +76,7 @@ code then, 'then', IMMEDIATE            ; c: orig --
         _ over                          ; -- addr here addr
         _ minus                         ; -- addr here-addr
         _ swap
-        _ four
+        _lit 4
         _ minus
         _ lstore
         next
@@ -153,7 +153,7 @@ code until, 'until', IMMEDIATE          ; c: dest --
         _ here_c
         _ minus
         _ here_c
-        _ four
+        _lit 4
         _ minus
         _ lstore
         next

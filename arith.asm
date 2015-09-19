@@ -234,7 +234,7 @@ endcode
 ; ### mu/mod
 code muslmod, 'mu/mod'                  ; d n -- rem dquot
         _ tor
-        _ zero
+        _zero
         _ rfetch
         _ umslmod
         _ rfrom

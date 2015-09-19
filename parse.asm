@@ -29,7 +29,7 @@ code scan, 'scan'                       ; c-addr1 u1 char -- c-addr2 u2
         _rfromdrop
         next
         _then scan2
-        _ one
+        _lit 1
         _ slashstring
         _repeat scan1                   ; -- c-addr u                   r: -- char
         _rfromdrop
@@ -49,7 +49,7 @@ code skipwhite, 'skipwhite'             ; c-addr1 u1 -- c-addr2 u2
         _if skipwhite2
         _return
         _then skipwhite2
-        _ one
+        _lit 1
         _ slashstring
         _repeat skipwhite1
         next
@@ -68,7 +68,7 @@ code scantowhite, 'scantowhite'         ; c-addr1 u1 -- c-addr2 u2
         _if scantowhite2
         _return
         _then scantowhite2
-        _ one
+        _lit 1
         _ slashstring
         _repeat scantowhite1
         next

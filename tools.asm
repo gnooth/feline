@@ -74,9 +74,9 @@ code break, 'break'                     ; --
         _ tib
         _ ntib
         _fetch
-        _ zero
+        _zero
         _ set_input
-        _ zero
+        _zero
         _ source_filename
         _ store
         _lit interpret_xt

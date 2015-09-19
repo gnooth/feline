@@ -126,7 +126,7 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
         _ umstar
         _ dplus
         _ twoswap
-        _ one
+        _lit 1
         _ slashstring
         _repeat tonumber1
         next
@@ -173,23 +173,23 @@ value negative?, 'negative?', 0
 
 ; ### number?
 code number?, 'number?'                 ; c-addr u -- d flag
-        _ zero
+        _zero
         _to double?
         _ over
         _ cfetch
         _lit '-'
         _ equal
         _if ixnumber1
-        _ minusone
+        _lit -1
         _to negative?
-        _ one
+        _lit 1
         _ slashstring
         _else ixnumber1
-        _ zero
+        _zero
         _to negative?
         _then ixnumber1
-        _ zero
-        _ zero
+        _zero
+        _zero
         _ twoswap
         _ tonumber                      ; -- ud c-addr' u'
         _ dup                           ; -- ud c-addr' u' u'
@@ -200,7 +200,7 @@ code number?, 'number?'                 ; c-addr u -- d flag
         _return
         _then ixnumber3
         ; one or more chars left over
-        _ one
+        _lit 1
         _ notequal
         _if ixnumber4                   ; -- ud c-addr'
         _ drop
@@ -211,7 +211,7 @@ code number?, 'number?'                 ; c-addr u -- d flag
         _lit '.'
         _ equal
         _if ixnumber5
-        _ minusone
+        _lit -1
         _to double?
         _ true
         _else ixnumber5
@@ -230,14 +230,14 @@ code maybe_change_base, 'maybe-change-base'     ; addr u -- addr' u'
         _ equal
         _if .2
         _ drop
-        _ one
+        _lit 1
         _ slashstring
         _ hex
         _else .2
         _lit '#'
         _ equal
         _if .3
-        _ one
+        _lit 1
         _ slashstring
         _ decimal
         _then .3

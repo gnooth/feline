@@ -89,13 +89,13 @@ code find_local, 'find-local'           ; $addr -- index flag
         _ using_locals?
         _zeq_if .0
         _drop
-        _ zero
+        _zero
         _ false
         _return
         _then .0
 
         _ locals_defined
-        _ zero
+        _zero
         _do .1
         _ local_names
         _i
@@ -168,7 +168,7 @@ code initialize_local_names, 'initialize-local-names'
         _to local_names
         _rfrom
         _ erase
-        _ zero
+        _zero
         _to locals_defined
         _ true
         _to using_locals?
@@ -180,7 +180,7 @@ code delete_local_names, 'delete-local-names'
         _ local_names
         _if .1
         _ locals_defined
-        _ zero
+        _zero
         _?do .2
         _ local_names
         _i
@@ -196,9 +196,9 @@ code delete_local_names, 'delete-local-names'
         _ local_names
         _ free_
         _ throw
-        _ zero
+        _zero
         _to local_names
-        _ zero
+        _zero
         _to locals_defined
         _then .1
         next
@@ -245,7 +245,7 @@ code paren_local, '(local)'             ; c-addr u --
         _cells
         _ plus
         _ store
-        _ one
+        _lit 1
         _plusto locals_defined
 
         _lit local_init_xt
@@ -274,7 +274,7 @@ code end_locals, 'end-locals'           ; --
         _lit locals_leave_xt
         _ compilecomma
         _ delete_local_names
-        _ zero
+        _zero
         _to using_locals?
         _then .1
         next

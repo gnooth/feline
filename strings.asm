@@ -43,7 +43,7 @@ code newstring, 'new$'                  ; -- $addr
         mov     rax, [stringbuf_start_data]
         mov     [stringbuf_data], rax
         _then .1
-        _ zero
+        _zero
         _ stringbuf
         _ store
         _rfrom
@@ -68,7 +68,7 @@ code plus_stringbuf, '+$buf'
         mov     rax, [stringbuf_start_data]
         mov     [stringbuf_data], rax
         _then .1
-        _ zero
+        _zero
         _ stringbuf
         _ store
         next
@@ -149,7 +149,7 @@ code place_string, '$place'             ; c-addr u $addr --
         _oneplus
         _ swap
         _ move
-        _ zero
+        _zero
         _rfrom
         _ count
         _ plus
@@ -199,7 +199,7 @@ code zplace, 'zplace'                   ; c-addr1 u c-addr2 --
         _ swap
         _ move
         _ plus
-        _ zero
+        _zero
         _ swap
         _ cstore
         _ drop
@@ -243,7 +243,7 @@ code stringcomma, 'string,'             ; addr u --
         _ allot
         _ place
         ; REVIEW terminal null byte
-        _ zero
+        _zero
         _ ccomma
         next
 endcode
@@ -323,7 +323,7 @@ code dollarquote, '$"', IMMEDIATE       ; -- $addr
         _ place
 
         ; append terminal null byte
-        _ zero
+        _zero
         _ stringbuf
         _ count
         _ plus
@@ -496,7 +496,7 @@ endcode
 code sequal, 's='                       ; addr1 addr2 len -- flag
         _ ?dup
         _if .1
-        _ zero
+        _zero
         _do .2
         _ twodup
         _i
@@ -553,7 +553,7 @@ endcode
 code isequal, 'is='                     ; addr1 addr2 len -- flag
         _ ?dup
         _if isequal1
-        _ zero
+        _zero
         _do isequal2
         _ twodup
         _i

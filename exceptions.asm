@@ -53,7 +53,7 @@ code catch, 'catch'
         _ store
         _ rfrom
         _ drop
-        _ zero
+        _zero
         next
 endcode
 

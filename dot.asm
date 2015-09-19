@@ -49,7 +49,7 @@ endcode
 ; ### hold
 code hold, 'hold'                       ; char --
 ; CORE
-        _ minusone
+        _lit -1
         _ holdptr
         _ plusstore
         _ holdptr
@@ -131,7 +131,7 @@ endcode
 code paren_dot, '(.)'                   ; n -- c-addr u
         _ dup
         _ abs_
-        _ zero
+        _zero
         _ ltsharp
         _ sharps
         _ rot
@@ -162,7 +162,7 @@ endcode
 
 ; ### (u.)
 code paren_udot, '(u.)'
-        _ zero
+        _zero
         _ ltsharp
         _ sharps
         _ sharpgt
@@ -227,7 +227,7 @@ endcode
 
 ; ### .2
 code dottwo, '.2'                       ; ub --
-        _ zero
+        _zero
         _ ltsharp
         _ sharp
         _ sharp

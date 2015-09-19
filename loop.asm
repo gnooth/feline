@@ -41,7 +41,7 @@ code do, 'do', IMMEDIATE                ; -- addr
         _lit $0b8                       ; mov rax, imm64
         _ ccommac
         _ here_c                        ; address to be patched by LOOP or +LOOP
-        _ zero                          ; placeholder for address of LEAVE code
+        _zero                          ; placeholder for address of LEAVE code
         _ commac
         _lit $50                        ; push rax
         _ ccommac
@@ -63,7 +63,7 @@ code ?do, '?do', IMMEDIATE               ; -- addr
         _lit $0b8
         _ ccommac
         _ here_c                        ; address to be patched
-        _ zero
+        _zero
         _ commac
         _lit $50                        ; push rax
         _ ccommac

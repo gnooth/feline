@@ -139,7 +139,7 @@ code restore_input, 'restore-input'
         _ nsource
         _ store
         _then .1
-        _ zero                          ; -- flag
+        _zero                          ; -- flag
         next
 endcode
 
@@ -158,7 +158,7 @@ code refill, 'refill'                   ; -- flag
         ; "When the input source is a string from EVALUATE, return false
         ; and perform no other action."
         _dup
-        _ minusone
+        _lit -1
         _ equal
         _if .1
         _oneplus                        ; -- 0
@@ -182,7 +182,7 @@ code refill, 'refill'                   ; -- flag
         _if refill2                     ; -- len
         _ nsource
         _ store
-        _ one
+        _lit 1
         _ source_line_number
         _ plusstore
         _ toin
@@ -301,7 +301,7 @@ code link_file, 'link-file'             ; c-addr u -- nfa
         _ files_wordlist
         _ set_current
         _ quotecreate
-        _ zero
+        _zero
         _ comma
         _ rfrom
         _ set_current
@@ -397,7 +397,7 @@ code evaluate, 'evaluate'               ; i*x c-addr u -- j*x
 ; Other stack effects are due to the words EVALUATEd."
         _ save_input
         _ ntor                          ; -- c-addr u
-        _ minusone
+        _lit -1
         _ tick_source_id
         _ store                         ; -- c-addr u
         _ set_source                    ; --

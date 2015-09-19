@@ -239,7 +239,7 @@ endcode
 code ccomma, 'c,'
         _ here
         _ cstore
-        _ one
+        _lit 1
         _ dp
         _ plusstore
         next
@@ -267,7 +267,7 @@ endcode
 code ccommac, 'c,c'                     ; char --
         _ here_c
         _ cstore
-        _ one
+        _lit 1
         _ cp
         _ plusstore
         next
@@ -308,9 +308,9 @@ code quoteheader, '"header'             ; c-addr u --
         _then .2
         _then .1
 
-        _ zero                          ; code field (will be patched)
+        _zero                          ; code field (will be patched)
         _ comma
-        _ zero                          ; comp field
+        _zero                          ; comp field
         _ comma
         _ current
         _ fetch                         ; -- c-addr u wid
@@ -322,12 +322,12 @@ code quoteheader, '"header'             ; c-addr u --
 ;         _ commac
         _ here
         _tor                            ; -- r: addr-to-be-patched
-        _ zero
+        _zero
         _ comma                         ; pfa (will be patched)
 
-        _ zero                          ; flag
+        _zero                          ; flag
         _ ccomma                        ; -- c-addr u
-        _ zero
+        _zero
         _ ccomma                        ; inline size
 
         _ source_filename
@@ -387,7 +387,7 @@ code align_data, 'align'
         _lit 8
         _ mod
         _while align1
-        _ zero
+        _zero
         _ ccomma
         _repeat align1
         next
@@ -447,7 +447,7 @@ endcode
 ; ### variable
 code var, 'variable'
         _ create
-        _ zero
+        _zero
         _ comma
         next
 endcode
@@ -455,9 +455,9 @@ endcode
 ; ### 2variable
 code twovar, '2variable'
         _ create
-        _ zero
+        _zero
         _ comma
-        _ zero
+        _zero
         _ comma
         next
 endcode

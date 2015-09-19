@@ -929,12 +929,10 @@ $90 install-handler
     prefix if
         ip @ cell +to ip
     else
-        ip l@s 4 +to ip
+        ip l@ 4 +to ip
     then
     source!
     .inst
-\     h.
-\     prefix if 8 else 4 then +to ip
 ;
 
 :noname $b8 8 bounds do ['] .b8 i install-handler loop ; execute

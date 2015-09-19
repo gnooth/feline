@@ -143,7 +143,7 @@ code topos, '>pos'                      ; +n --
         _ nout
         _fetch
         _ minus
-        _ one
+        _lit 1
         _ max
         _ spaces
         next
@@ -207,8 +207,8 @@ code file_status, 'file-status'         ; c-addr u -- x ior
         pushd   rax
         next
 .1:
-        _ zero
-        _ minusone
+        _zero
+        _lit -1
         next
 endcode
 
@@ -270,8 +270,8 @@ code paren_open_file, '(open-file)'     ; zaddr fam -- fileid ior
         pushd   0                       ; ior
         next
 .1:
-        _ minusone                      ; "fileid is undefined"
-        _ minusone                      ; error!
+        _lit -1                         ; "fileid is undefined"
+        _lit -1                         ; error!
         next
 endcode
 
@@ -298,8 +298,8 @@ code create_file, 'create-file'         ; c-addr u fam -- fileid ior
         pushd   0                       ; ior
         next
 .1:
-        _ minusone                      ; "fileid is undefined"
-        _ minusone                      ; error!
+        _lit -1                         ; "fileid is undefined"
+        _lit -1                         ; error!
         next
 endcode
 
@@ -323,8 +323,8 @@ code read_file, 'read-file'             ; c-addr u1 fileid -- u2 ior
         pushd   0                       ; ior
         next
 .1:
-        _ minusone
-        _ minusone                      ; error!
+        _lit -1
+        _lit -1                         ; error!
         next
 endcode
 
@@ -351,7 +351,7 @@ code last_char, 'last-char'             ; c-addr u -- char
         _cfetch
         _else last_char1
         _ drop
-        _ zero
+        _zero
         _then last_char1
         next
 endcode
@@ -364,7 +364,7 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _duptor                         ; -- fileid c-addr u1           r: -- u1
         _ rrot                          ; -- u1 fileid c-addr
         _rfrom                          ; -- u1 fileid c-addr u1        r: --
-        _ zero
+        _zero
         _do read_line2                  ; -- u1 fileid c-addr
         _ over                          ; -- u1 fileid c-addr fileid
         _ read_char                     ; -- u1 fileid c-addr [ char | -1 ]
@@ -376,7 +376,7 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _i
         _dup
         _ zne                           ; false flag if i = 0
-        _ zero
+        _zero
         _unloop
         _return
         _then read_line3
@@ -399,7 +399,7 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _i
         _then read_line5
         _ true
-        _ zero
+        _zero
         _unloop
         _return
         _then read_line4
@@ -411,12 +411,12 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         ; fall through
         _ twodrop                       ; -- u2
         _ true                          ; -- u2 flag
-        _ zero                          ; -- u2 flag ior
+        _zero                          ; -- u2 flag ior
         _else read_line1
         _ twodrop
-        _ zero
+        _zero
         _ true
-        _ zero
+        _zero
         _then read_line1
         next
 endcode
@@ -440,7 +440,7 @@ code write_file, 'write-file'           ; c-addr u1 fileid -- ior
         pushd   0                       ; ior
         next
 .1:
-        _ minusone                      ; error!
+        _lit -1                         ; error!
         next
 endcode
 
@@ -459,7 +459,7 @@ code write_line, 'write-line'           ; c-addr u1 fileid -- ior
         _ two
 %else
         _lit lf
-        _ one
+        _lit 1
 %endif
         _ rfrom
         _ write_file                    ; -- ior ior'
@@ -499,9 +499,9 @@ code file_size, 'file-size'             ; fileid -- ud ior
         pushd   0                       ; ior
         next
 .1:
-        _ minusone                      ; "ud is undefined if ior is non-zero."
+        _lit -1                         ; "ud is undefined if ior is non-zero."
         _ stod
-        _ minusone                      ; error!
+        _lit -1                         ; error!
         next
 endcode
 
@@ -523,8 +523,8 @@ code file_position, 'file-position'     ; fileid -- ud ior
         pushd   0                       ; -- ud ior
         next
 .1:
-        _ minusone                      ; "ud is undefined if ior is non-zero"
-        _ minusone                      ; error!
+        _lit -1                         ; "ud is undefined if ior is non-zero"
+        _lit -1                         ; error!
         next
 endcode
 

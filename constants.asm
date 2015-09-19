@@ -15,44 +15,6 @@
 
 file __FILE__
 
-inline zero, '0'
-        pushrbx
-        xor     ebx, ebx
-endinline
-
-inline one, '1'
-        pushrbx
-        mov     ebx, 1
-endinline
-
-inline two, '2'
-        pushrbx
-        mov     ebx, 2
-endinline
-
-inline three, '3'
-        pushrbx
-        mov     ebx, 3
-endinline
-
-code four, '4'
-        pushrbx
-        mov     ebx, 4
-        next
-endcode
-
-code five, '5'
-        pushrbx
-        mov     ebx, 5
-        next
-endcode
-
-code minusone, '-1'
-        pushrbx
-        mov     rbx, -1
-        next
-endcode
-
 ; ### false
 code false, 'false'
 ; CORE EXT

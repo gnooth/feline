@@ -68,13 +68,13 @@ code wordlist, 'wordlist'               ; -- wid
         _ voclink
         _ fetch
         _ comma                         ; link
-        _ zero
+        _zero
         _ comma                         ; pointer to vocabulary name
         _ here                          ; this address will be the wid
         _ dup
         _ voclink
         _ store
-        _ zero
+        _zero
         _ comma                         ; link
         next
 endcode
@@ -175,7 +175,7 @@ code order, 'order'
         _ ?cr
         _dotq "Context: "
         _ nvocs
-        _ zero
+        _zero
         _do .1
         _ context
         _i
@@ -204,7 +204,7 @@ code get_order, 'get-order'             ; -- widn ... wid1 n
 ; that is searched last."
         _ norder
         _fetch
-        _ zero
+        _zero
         _?do .1
         _ norder
         _fetch
@@ -236,7 +236,7 @@ code set_order, 'set-order'             ; widn ... wid1 n --
         _ nvocs
         _cells
         _ erase
-        _ zero
+        _zero
         _ norder
         _ store
         _return
@@ -257,7 +257,7 @@ code set_order, 'set-order'             ; widn ... wid1 n --
         _ dup
         _ norder
         _ store
-        _ zero
+        _zero
         _?do .3
         _ context
         _i
@@ -288,7 +288,7 @@ code only, 'only'
         _cells
         _ erase
         _ forth                         ; FIXME
-        _ one
+        _lit 1
         _ norder
         _ store
         next
@@ -309,9 +309,9 @@ code found, 'found'                     ; nfa -- xt 1  | xt -1
         _dup                            ; -- xt xt
         _ immediate?                    ; -- xt flag
         _if .1
-        _ one                           ; -- xt 1
+        _lit 1                          ; -- xt 1
         _else .1
-        _ minusone                      ; -- xt -1
+        _lit -1                         ; -- xt -1
         _then .1
         next
 endcode
@@ -361,7 +361,7 @@ code find, 'find'                       ; $addr -- $addr 0 | xt 1 | xt -1
         mov     [find_addr], rbx
         poprbx                          ; --
         _ nvocs
-        _ zero
+        _zero
         _do .1
         _ context
         _i

@@ -29,7 +29,7 @@ code allocate, 'allocate'               ; u -- a-addr ior
         mov     rbx, rax                ; -- a-addr
         _ dup
         _if .1
-        _ zero                          ; success
+        _zero                          ; success
         _else .1
         ; failed!
         _lit -59                        ; THROW code (Forth 2012 Table 9.1)

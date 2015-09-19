@@ -93,7 +93,7 @@ code flush_pending_literal, 'flush-pending-literal'
         _ iliteral
 
         ; REVIEW
-        _ zero
+        _zero
         _ pending_literal
         _ store
 
@@ -271,7 +271,7 @@ code colonnoname, ':noname'
         _ here_c                        ; xt to be returned
 
         _ dup
-        _ two
+        _lit 2
         _cells
         _ plus                          ; addr of start of code
         _ dup
@@ -282,7 +282,7 @@ code colonnoname, ':noname'
         _lit xt_commacall_xt            ; comp field
         _ commac
 
-        _ zero
+        _zero
         _to using_locals?
 
         _ rbrack
