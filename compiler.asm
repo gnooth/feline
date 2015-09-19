@@ -39,7 +39,7 @@ value pending_literal?, 'pending-literal?', 0
 code iliteral, '(literal)'              ; n --
         _ push_tos_comma
         _ dup
-        _lit $0ffffffff
+        _lit $100000000
         _ ult
         _if .1
         _lit $0bb
@@ -190,13 +190,14 @@ endcode
 ; ### (compile,)
 code parencompilecomma, '(compile,)'    ; xt --
         _ dup                           ; -- xt xt
-        _ tocomp                        ; -- xt >comp
+        _tocomp                         ; -- xt >comp
         _fetch                          ; -- xt xt-comp
         _ ?dup
         _if .1
         _ execute
         _return
         _then .1
+        _ flush_compilation_queue
         _ dup                           ; -- xt xt
         _toinline                       ; -- xt >inline
         _cfetch                         ; -- xt #bytes

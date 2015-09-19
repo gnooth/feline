@@ -83,14 +83,13 @@ endcode
 ;   body is in data area
 
 ; ### >comp
-code tocomp, '>comp'
-        add     rbx, BYTES_PER_CELL
-        next
-endcode
+inline tocomp, '>comp'
+        _tocomp
+endinline
 
 ; ### >comp!
 code tocompstore, '>comp!'              ; xt1 xt2 --
-        _ tocomp
+        _tocomp
         _ store
         next
 endcode

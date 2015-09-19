@@ -112,6 +112,10 @@ section .text
         mov     rbx, [rbx]
 %endmacro
 
+%macro  _tocomp 0
+        add     rbx, BYTES_PER_CELL
+%endmacro
+
 %macro  _tobody 0
         mov     rbx, [rbx + BYTES_PER_CELL * 3]
 %endmacro
