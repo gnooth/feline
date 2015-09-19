@@ -256,13 +256,12 @@ endcode
 
 ; ### =
 code equal, '='                         ; x1 x2 -- flag
-        popd    rax
-        cmp     rbx, rax
-        jne     .1
-        mov     rbx, -1
-        next
-.1:
-        xor     rbx, rbx
+; CORE
+; adapted from Win32Forth
+        sub     rbx, [rbp]
+        cmp     rbx, 1
+        sbb     rbx, rbx
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
@@ -270,9 +269,9 @@ endcode
 code notequal, '<>'                     ; x1 x2 -- flag
 ; CORE EXT
 ; adapted from Win32Forth
-        mov     rdx, [rbp]
-        sub     rdx, rbx
-        neg     rdx
+        mov     rax, [rbp]
+        sub     rax, rbx
+        neg     rax
         sbb     rbx, rbx
         lea     rbp, [rbp + BYTES_PER_CELL]
         next
