@@ -87,12 +87,9 @@ section .text
 %define link    0
 
 %macro  head 2-4 0, 0                   ; label, name, flags, inline size
-global %1
+        global %1
 %strlen len     %2
         section .data
-        align   8
-%1_pfa:
-        section .text
         align   8
 %1_xt:
         dq      %1                      ; address of code
@@ -106,6 +103,8 @@ global %1
 %1_nfa:
         db      len                     ; length byte
         db      %2                      ; name
+        align   8
+%1_pfa:                                 ; define pfa (but don't reserve any space)
 %define link    %1_nfa                  ; link field points to name field
 %endmacro
 
