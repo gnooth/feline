@@ -19,6 +19,9 @@ VARIABLE VERBOSE
 	FALSE VERBOSE !
 \	TRUE VERBOSE !
 
+variable quit-on-error
+true quit-on-error !
+
 : EMPTY-STACK	\ ( ... -- ) EMPTY STACK: HANDLES UNDERFLOWED STACK TOO.
    DEPTH ?DUP IF DUP 0< IF NEGATE 0 DO 0 LOOP ELSE 0 DO DROP LOOP THEN THEN ;
 
@@ -30,6 +33,7 @@ VARIABLE #ERRORS 0 #ERRORS !
    EMPTY-STACK				   \ THROW AWAY EVERY THING ELSE
    #ERRORS @ 1 + #ERRORS !
 \	QUIT  \ *** Uncomment this line to QUIT on an error
+   quit-on-error @ if quit then
 ;
 
 VARIABLE ACTUAL-DEPTH			\ STACK RECORD
