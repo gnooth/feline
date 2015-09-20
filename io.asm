@@ -456,7 +456,7 @@ code write_line, 'write-line'           ; c-addr u1 fileid -- ior
         _ write_file                    ; -- ior        r: -- fileid
 %ifdef WIN64
         _lit crlf
-        _ two
+        _lit 2
 %else
         _lit lf
         _lit 1
