@@ -472,7 +472,7 @@ code var, 'variable'
         _ create
         _zero
         _ comma
-;         _ inline_latest               ; REVIEW
+        _ inline_latest
         next
 endcode
 
