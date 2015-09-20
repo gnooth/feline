@@ -265,7 +265,7 @@ code cliteral, 'cliteral', IMMEDIATE    ; c: addr1 u --         runtime: -- c-ad
         _lit do_sliteral_end - do_sliteral
         _ paren_copy_code
         _ here_c
-        _ cellminus
+        _cellminus
         _ store
         next
 endcode
@@ -283,7 +283,7 @@ code sliteral, 'sliteral', IMMEDIATE    ; c: addr1 u --         runtime: -- c-ad
         _lit do_sliteral_end - do_sliteral
         _ paren_copy_code
         _ here_c
-        _ cellminus
+        _cellminus
         _ store
         _lit count
         _ commacall

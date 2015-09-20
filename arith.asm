@@ -45,20 +45,20 @@ endcode
 ; ### cell+
 inline cellplus, 'cell+'                ; a-addr1 -- a-addr2
 ; CORE 6.1.0880
-        add      rbx, BYTES_PER_CELL
+        _cellplus
 endinline
 
 ; ### cell-
 inline cellminus, 'cell-'               ; a-addr1 -- a-addr2
 ; not in standard
-        sub      rbx, BYTES_PER_CELL
+        _cellminus
 endinline
 
 ; ### cells
 inline cells, 'cells'                   ; n1 -- n2
 ; CORE 6.1.0890
 ; "n2 is the size in address units of n1 cells"
-        shl     rbx, 3
+        _cells
 endinline
 
 ; ### -

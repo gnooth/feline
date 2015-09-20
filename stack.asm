@@ -183,10 +183,10 @@ code roll, 'roll'                       ; n1 n2 ... nk k -- n2 n3 ... nk n1
         _ pick
         _ spfetch
         _dup
-        _ cellplus
+        _cellplus
         _ rfrom
-        _ cells
-        _ cellplus
+        _cells
+        _cellplus
         _ move
         _drop
         next

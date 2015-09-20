@@ -422,7 +422,7 @@ code paren_create, '(create)'
         _ paren_copy_code
         _ here                          ; -- addr
         _ here_c
-        _ cellminus
+        _cellminus
         _ store
         _lit $0c3
         _ ccommac
@@ -501,13 +501,13 @@ code twoconstant, '2constant'           ; x1 x2 "<spaces>name" --
         _ paren_copy_code               ; -- x1 x2
         _ swap                          ; -- x2 x1
         _ here_c
-        _ cellminus
+        _cellminus
         _ store                         ; -- x2
         _lit doconst
         _lit doconst_end - doconst
         _ paren_copy_code               ; -- x2
         _ here_c
-        _ cellminus
+        _cellminus
         _ store                         ; --
         _lit $0c3
         _ ccommac
