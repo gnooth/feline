@@ -179,7 +179,7 @@ section .text
         section .text
 %1:
         pushrbx
-        mov     ebx, %1_data
+        mov     ebx, %1_data            ; REVIEW assumes 32-bit address
         next
 %endmacro
 

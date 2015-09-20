@@ -68,6 +68,11 @@ inline minus, '-'
         lea     rbp, [rbp + BYTES_PER_CELL]
 endinline
 
+; ### swap-
+inline swapminus, 'swap-'
+        _swapminus
+endinline
+
 ; ### 1-
 inline oneminus, '1-'
         _oneminus

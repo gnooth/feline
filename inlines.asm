@@ -74,6 +74,11 @@
         sub     rbx, 1
 %endmacro
 
+%macro _swapminus 0                     ; SWAP-
+        sub     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
 %macro _cells 0                         ; CELLS
         shl     rbx, 3
 %endmacro
