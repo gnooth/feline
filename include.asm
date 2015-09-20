@@ -294,7 +294,7 @@ variable source_filename, 'source-filename', 0
 
 ; ### link-file
 code link_file, 'link-file'             ; c-addr u -- nfa
-        _ here_c
+        _ here
         _ tor
         _ get_current
         _ tor
