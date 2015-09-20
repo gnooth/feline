@@ -170,7 +170,7 @@ section .text
 %endmacro
 
 %macro  variable 3                      ; label, name, value
-        head  %1, %2
+        head    %1, %2
         section .data
         global %1_data
         align   8
@@ -179,12 +179,12 @@ section .text
         section .text
 %1:
         pushrbx
-        mov     rbx, %1_data
+        mov     ebx, %1_data
         next
 %endmacro
 
 %macro  value 3                         ; label, name, value
-        head  %1, %2
+        head    %1, %2
         section .data
         global %1_data
         align   8
@@ -199,7 +199,7 @@ section .text
 %endmacro
 
 %macro  constant 3                      ; label, name, value
-        head  %1, %2
+        head    %1, %2
         section .text
 %1:
         pushrbx
