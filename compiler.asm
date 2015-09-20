@@ -243,7 +243,11 @@ endcode
 code ?csp, '?csp'
         cmp     [csp_data], rbp
         je      .1
-        _abortq "Stack changed"
+        _cquote "Stack changed"
+        _ msg
+        _ store
+        _lit -22                        ; "control structure mismatch"
+        _ throw
 .1:
         next
 endcode
