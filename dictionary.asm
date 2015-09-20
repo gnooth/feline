@@ -402,28 +402,36 @@ code aligned, 'aligned'                 ; addr -- a-addr
         next
 endcode
 
-section .text
-docreate:
-        pushrbx
-        db      $48                     ; mov rbx, 0
-        db      $0bb
-        dq      0                       ; 64-bit immediate value (to be patched)
-docreate_end:
-
 ; ### (create)
 code paren_create, '(create)'
         _ align_data
+
         _ here_c
         _ latest
         _namefrom
         _ store
-        _lit docreate
-        _lit docreate_end - docreate
-        _ paren_copy_code
+
+        _ push_tos_comma
+
+        _ here                          ; -- pfa
+        _lit $100000000
+        _ ult
+        _if .1
+        ; 32-bit address
+        _lit $0bb
+        _ ccommac
+        _ here
+        _ lcommac
+        _else .1
+        ; 64-bit address
+        _lit $48
+        _ ccommac
+        _lit $0bb
+        _ ccommac
         _ here                          ; -- addr
-        _ here_c
-        _cellminus
-        _ store
+        _ commac
+        _then .1
+
         _lit $0c3
         _ ccommac
         next
@@ -443,11 +451,28 @@ code quotecreate, '"create'
         next
 endcode
 
+; ### inline-latest
+code inline_latest, 'inline-latest'     ; --
+; make the most recent definition inline
+        _ latest
+        _namefrom
+        _dup
+        _tocode
+        _ here_c
+        _swapminus
+        _oneminus                       ; don't include final $c3
+        _ swap
+        _toinline
+        _ cstore
+        next
+endcode
+
 ; ### variable
 code var, 'variable'
         _ create
         _zero
         _ comma
+;         _ inline_latest               ; REVIEW
         next
 endcode
 
@@ -560,11 +585,21 @@ code paren_scode, '(;code)'
         pushd   rax                     ; -- does>-code
         _ latest
         _namefrom
-        _tocode
-        _lit docreate_end - docreate
-        _ plus
+        _tocode                         ; code address of most recent definition
+
+        add     rbx, 8                  ; skip over pushrbx (8 bytes)
+        _dupcfetch
+        _lit $48
+        _ equal
+        _if .1
+        _lit 10
+        _else .1
+        _lit 5
+        _then .1
+        _plus
         _ cp
         _ store
+
         _ commacall
         _lit $0c3
         _ ccommac
