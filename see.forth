@@ -142,19 +142,19 @@ create old-mnemonic  2 cells allot
 : modrm-rm   ( -- rm  )  modrm-byte (modrm-rm)  ;
 
 : register-reg ( n1 -- n2 )
-    prefix if
+\     prefix if
         prefix rex.r and if
             8 or
         then
-    then
+\     then
 ;
 
 : register-rm ( n1 -- n2 )
-    prefix if
+\     prefix if
         prefix rex.b and if
             8 or
         then
-    then
+\     then
 ;
 
 : .modrm  ( modrm-byte -- )
@@ -509,10 +509,9 @@ $09 install-handler
 
 \ $0f handler
 :noname  ( -- )
-    ip c@
+    ip c@ local byte2
     1 +to ip
-    dup $b6 = if
-        drop
+    byte2 $b6 = if
         $" movzx" to mnemonic
         !modrm-byte
         ok_relative modrm-rm register-rm 0 source!
@@ -521,12 +520,23 @@ $09 install-handler
         .inst
         exit
     then
-    dup $84 = if
-        drop
+    byte2 $4d = if
+        $" cmovnl" to mnemonic
+        !modrm-byte
+        modrm-mod 3 = if
+            ok_register modrm-rm register-rm 0 source!
+            ok_register modrm-reg register-reg 0 dest!
+            .inst
+        else
+            unsupported
+        then
+        exit
+    then
+    byte2 $84 = if
         $" jz" .jcc32
         exit
     then
-    $81 = if
+    byte2 $81 = if
         $" jno" .jcc32
         exit
     then
@@ -939,6 +949,8 @@ $90 install-handler
 
 \ $c7 handler
 :noname ( -- )
+    \ Move a 32-bit signed immediate value to a 64-bit register
+    \ or memory operand.
     !modrm-byte
     modrm-reg 0= if
         $" mov" to mnemonic
@@ -946,16 +958,14 @@ $90 install-handler
             ok_relative modrm-reg register-reg 0 dest!
             ok_immediate 0 ip l@ source!
             4 +to ip
-            prefix if 7 else 6 then to size
             .inst
             exit
         then
         modrm-mod 3 = if
             ok_register modrm-rm register-rm 0 dest!
-            ok_immediate 0 ip l@ source!
-            prefix if 7 else 6 then to size
+            ok_immediate 0 ip l@s source!
+            4 +to ip
             .inst
-            size +to ip
             exit
         then
     then
