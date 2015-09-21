@@ -283,7 +283,7 @@ code resolve_include_filename, 'resolve-include-filename' ; $addr1 -- $addr
         _ dup                           ; -- $addr1 $addr2 $addr2
         _ includable?                   ; -- $addr1 $addr2 flag
         _if .2
-        _ nip                           ; return addr2
+        _nip                            ; return addr2
         _else .2
         _ drop                          ; return addr1
         _then .2

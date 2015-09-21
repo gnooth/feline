@@ -111,7 +111,7 @@ code interpret, 'interpret'             ; --
         _ find_local                    ; -- $addr index flag
 
         _if .3
-        _ nip
+        _nip
         _ compile_local
         jmp     interp0_begin
         _else .3

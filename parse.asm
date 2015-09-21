@@ -189,7 +189,7 @@ code paren, '(', IMMEDIATE
         _ slashsource
         _lit ')'
         _ scan
-        _ nip
+        _nip
         _if paren2
         _lit ')'
         _ parse

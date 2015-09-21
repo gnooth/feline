@@ -297,7 +297,7 @@ endcode
 ; ### previous
 code previous, 'previous'
         _ get_order
-        _ nip
+        _nip
         _ oneminus
         _ set_order
         next

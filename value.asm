@@ -59,7 +59,7 @@ code storeto, 'to', IMMEDIATE           ; n "<spaces>name" --
         _ dup
         _ find_local                    ; -- $addr index flag
         _if .2
-        _ nip
+        _nip
         _ compile_tolocal
         _return
         _else .2

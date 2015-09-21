@@ -132,7 +132,7 @@ endcode
 ; ### nip
 inline nip, 'nip'                       ; x1 x2 -- x2
 ; CORE EXT
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _nip
 endinline
 
 ; ### tuck
