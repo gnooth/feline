@@ -34,9 +34,11 @@ decimal
     >body ! ;
 
 : defer@ ( xt1 -- xt2 )
+    \ Forth 200x CORE EXT
     >body @ ;
 
 : action-of ( "<spaces>name" -- xt )
+    \ Forth 200x CORE EXT
     state@ if
         postpone ['] postpone defer@
     else
@@ -45,7 +47,7 @@ decimal
 
 : is
     \ Forth 200x CORE EXT
-    state @ if
+    state@ if
         postpone ['] postpone defer!
     else
         ' defer!
