@@ -193,7 +193,7 @@ code paren, '(', IMMEDIATE
         _if paren2
         _lit ')'
         _ parse
-        _ twodrop
+        _2drop
         _return
         _then paren2
         _ refill
@@ -211,7 +211,7 @@ endcode
 code backslash, '\', IMMEDIATE
         _lit 10
         _ parse
-        _ twodrop
+        _2drop
         next
 endcode
 

@@ -38,12 +38,12 @@ endinline
 
 ; ### 2drop
 inline twodrop, '2drop'
-        _twodrop
+        _2drop
 endinline
 
 ; ### 3drop
 inline threedrop, '3drop'
-        _threedrop
+        _3drop
 endinline
 
 ; ### 4drop

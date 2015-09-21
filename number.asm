@@ -195,7 +195,7 @@ code number?, 'number?'                 ; c-addr u -- d flag
         _ dup                           ; -- ud c-addr' u' u'
         _zeq_if ixnumber3               ; -- ud c-addr' u'
         ; no chars left over
-        _ twodrop
+        _2drop
         _ true
         _return
         _then ixnumber3

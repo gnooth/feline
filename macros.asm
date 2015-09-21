@@ -351,14 +351,19 @@ section .text
         poprbx
 %endmacro
 
-%macro _twodrop 0
+%macro _2drop 0
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
 
-%macro  _threedrop 0
+%macro  _3drop 0
         mov     rbx, [rbp + BYTES_PER_CELL * 2]
         lea     rbp, [rbp + BYTES_PER_CELL * 3]
+%endmacro
+
+%macro  _4drop 0
+        mov     rbx, [rbp + BYTES_PER_CELL * 3]
+        lea     rbp, [rbp + BYTES_PER_CELL * 4]
 %endmacro
 
 %macro  _do_common 0
@@ -368,7 +373,7 @@ section .text
         push    rdx                     ; r: -- leave-addr limit
         sub     rbx, rdx                ; subtract modified limit from index
         push    rbx                     ; r: -- leave-addr limit index
-        _twodrop
+        _2drop
 %endmacro
 
 %macro  _do 1
@@ -383,7 +388,7 @@ section .text
         push    rax                     ; r: -- leave-addr
         cmp     rbx, [rbp]
         jne     %1_ok
-        _twodrop
+        _2drop
         ret                             ; same as jumping to %1_exit
 %1_ok:
         _do_common

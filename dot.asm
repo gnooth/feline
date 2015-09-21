@@ -74,7 +74,7 @@ endcode
 ; ### #>
 code sharpgt,'#>'                       ; d --- c-addr u
 ; CORE
-        _ twodrop                       ; 2drop holdptr @ holdbuf_end over -
+        _2drop                          ; 2drop holdptr @ holdbuf_end over -
         _ holdptr
         _fetch
         _ holdbuf_end
@@ -123,7 +123,7 @@ code holds, 'holds'
         _cfetch
         _ hold
         _repeat .1
-        _twodrop
+        _2drop
         next
 endcode
 

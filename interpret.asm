@@ -97,8 +97,7 @@ code interpret, 'interpret'             ; --
         _begin interp0
         _ blchar
         _ word_                         ; -- $addr
-        _ dup                           ; -- $addr $addr
-        _cfetch                         ; -- $addr len
+        _dupcfetch                      ; -- $addr len
         _zeq_if .1
         ; end of input
         _ drop                          ; --

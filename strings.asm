@@ -508,14 +508,14 @@ code sequal, 's='                       ; addr1 addr2 len -- flag
         _ cfetch
         _ notequal
         _if .3
-        _ twodrop
+        _2drop
         _ false
         _unloop
         _return
         _then .3
         _loop .2
         _then .1
-        _ twodrop
+        _2drop
         _ true
         next
 endcode
@@ -577,7 +577,7 @@ code isequal, 'is='                     ; addr1 addr2 len -- flag
         _ upc
         _ notequal
         _if isequal4
-        _twodrop
+        _2drop
         _ false
         _unloop
         _return
@@ -585,7 +585,7 @@ code isequal, 'is='                     ; addr1 addr2 len -- flag
         _then isequal3
         _loop isequal2
         _then isequal1
-        _twodrop
+        _2drop
         _ true
         next
 endcode
@@ -596,7 +596,7 @@ code strequal, 'str='                   ; addr1 len1 addr2 len2 -- flag
         _ tuck
         _ notequal
         _if strequal1
-        _threedrop
+        _3drop
         _ false
         _return
         _then strequal1
@@ -610,7 +610,7 @@ code istrequal, 'istr='                 ; addr1 len1 addr2 len2 -- flag
         _ tuck                          ; -- addr1 addr2 len1 len2 len1
         _ notequal                      ; -- addr1 addr2 len1 flag
         _if .1
-        _threedrop
+        _3drop
         _ false
         _else .1
         _ isequal

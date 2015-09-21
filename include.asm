@@ -173,13 +173,13 @@ code refill, 'refill'                   ; -- flag
         _ slash_source_buffer
         _ source_id
         _ read_line                     ; -- len flag ior
-        _if refill1
+        _if .2
         ; error
-        _ twodrop
+        _2drop
         _ false
         _return
-        _then refill1                   ; -- len flag
-        _if refill2                     ; -- len
+        _then .2                        ; -- len flag
+        _if .3                          ; -- len
         _ nsource
         _ store
         _lit 1
@@ -188,11 +188,12 @@ code refill, 'refill'                   ; -- flag
         _ toin
         _ off
         _ true
-        _else refill2
+        _else .3
         ; end of file
-        _ drop
-        _ false
-        _then refill2
+;         _ drop
+;         _ false
+        xor     rbx, rbx
+        _then .3
         next
 endcode
 

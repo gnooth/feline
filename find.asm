@@ -329,7 +329,7 @@ code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
         _ istrequal       ; -- c-addr u flag                      r: -- nfa
         _if .3            ; -- c-addr u                           r: -- nfa
         ; found it!
-        _twodrop          ; --                                    r: -- nfa
+        _2drop            ; --                                    r: -- nfa
         _rfrom            ; -- nfa
         _ found           ; -- xt 1 | xt -1
         _return
@@ -341,7 +341,7 @@ code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
         _zeq
         _until .2
         _then .1
-        _threedrop
+        _3drop
         _ false
         next
 endcode
