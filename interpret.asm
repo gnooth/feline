@@ -131,13 +131,10 @@ endcode
 
 ; ### compile1
 code compile1, 'compile1'
-        _ dup                           ; -- $addr $addr
-        _ find_local                    ; -- $addr index flag
+        _ find_local                    ; -- $addr-or-index flag
         _if .3
-        _nip
         _ compile_local
         _else .3
-        _ drop
         _ find
         _ ?dup
         _if .1
