@@ -72,29 +72,87 @@ code ?enough, '?enough'                 ; n --
         next
 endcode
 
-; ### do-defined
-code do_defined, 'do-defined'           ; xt flag --
-        _ statefetch
+; ### interpret-do-defined
+code interpret_do_defined, 'interpret-do-defined'       ; xt flag --
+        _ drop
+        _ execute
+        next
+endcode
+
+; ### compile-do-defined
+code compile_do_defined, 'compile-do-defined'           ; xt flag --
+        _ zlt
         _if .1
-        _ zgt
-        _if .2
-        ; immediate word
+        ; not immediate
+        _ compilecomma
+        _else .1
+        ; immediate
         _ flush_compilation_queue
         _ execute
-        _else .2
-        _ compilecomma
-        _then .2
-        _else .1
-        _drop
-        _ execute
-        _ ?stack
         _then .1
+        next
+endcode
+
+; ### interpret-do-literal
+code interpret_do_literal, 'interpret-do-literal'
+        _ number
+        _ double?
+        _zeq_if .3
+        _ drop
+        _then .3
+        next
+endcode
+
+; ### compile-do-literal
+code compile_do_literal, 'compile-do-literal'
+        _ number
+        _ flush_compilation_queue
+        _ double?
+        _if .2
+        _ twoliteral
+        _else .2
+        _ drop
+        _ literal
+        _then .2
+        next
+endcode
+
+; ### interpret1
+code interpret1, 'interpret1'
+        _ find
+        _ ?dup
+        _if .1
+        _ interpret_do_defined
+        _else .1                        ; -- c-addr
+        _ interpret_do_literal
+        _then .1
+        next
+endcode
+
+; ### compile1
+code compile1, 'compile1'
+        _ dup                           ; -- $addr $addr
+        _ find_local                    ; -- $addr index flag
+        _if .3
+        _nip
+        _ compile_local
+        _else .3
+        _ drop
+        _ find
+        _ ?dup
+        _if .1
+        _ compile_do_defined
+        _else .1                        ; -- c-addr
+        _ compile_do_literal
+        _then .1
+        _then .3
         next
 endcode
 
 ; ### interpret
 code interpret, 'interpret'             ; --
         _begin interp0
+        _ ?stack
         _ blchar
         _ word_                         ; -- $addr
         _dupcfetch                      ; -- $addr len
@@ -106,42 +164,11 @@ code interpret, 'interpret'             ; --
 
         _ statefetch
         _if .2
-        _ dup                           ; -- $addr $addr
-
-        _ find_local                    ; -- $addr index flag
-
-        _if .3
-        _nip
-        _ compile_local
-        jmp     interp0_begin
-        _else .3
-        _ drop
-        _then .3
+        _ compile1
+        _else .2
+        _ interpret1
         _then .2
 
-        _ find
-        _ ?dup
-        _if interp2
-        _ do_defined
-        _else interp2                   ; -- c-addr
-        _ number
-        _ statefetch
-        _if interp3
-        _ flush_compilation_queue
-        _ double?
-        _if interp4
-        _ twoliteral
-        _else interp4
-        _ drop
-        _ literal
-        _then interp4
-        _else interp3
-        _ double?
-        _zeq_if .6
-        _ drop
-        _then .6
-        _then interp3
-        _then interp2
         _again interp0
         next
 endcode
