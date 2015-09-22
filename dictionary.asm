@@ -100,22 +100,19 @@ inline ntolink, 'n>link'
 endinline
 
 ; ### l>name
-code ltoname, 'l>name'
-        add     rbx, BYTES_PER_CELL * 4 + 2
-        next
-endcode
+inline ltoname, 'l>name'
+        _ltoname
+endinline
 
 ; ### >link
-code tolink, '>link'
-        add     rbx, BYTES_PER_CELL * 2
-        next
-endcode
+inline tolink, '>link'
+        _tolink
+endinline
 
 ; ### link>
-code linkfrom, 'link>'
-        sub     rbx, BYTES_PER_CELL * 2
-        next
-endcode
+inline linkfrom, 'link>'
+        _linkfrom
+endinline
 
 ; ### >body
 inline tobody, '>body'                  ; xt -- a-addr
@@ -128,34 +125,31 @@ inline tobody, '>body'                  ; xt -- a-addr
 endinline
 
 ; ### >flags
-code toflags, '>flags'                  ; xt -- addr
-        add     rbx, BYTES_PER_CELL * 4
-        next
-endcode
+inline toflags, '>flags'                ; xt -- addr
+        _toflags
+endinline
 
 ; ### flags
 code flags, 'flags'                     ; xt -- flags
-        _ toflags
+        _toflags
         _cfetch
         next
 endcode
 
 ; ### >inline
 inline toinline, '>inline'               ; xt -- addr
-        add     rbx, BYTES_PER_CELL * 4 + 1
+        _toinline
 endinline
 
 ; ### >view
-code toview, '>view'                    ; xt -- addr
-        add     rbx, BYTES_PER_CELL * 4 + 2
-        next
-endcode
+inline toview, '>view'                  ; xt -- addr
+        _toview
+endinline
 
 ; ### >name
-code toname, '>name'
-        add     rbx, BYTES_PER_CELL * 6 + 2
-        next
-endcode
+inline toname, '>name'
+        _toname
+endinline
 
 ; ### name>
 inline namefrom, 'name>'
@@ -163,10 +157,9 @@ inline namefrom, 'name>'
 endinline
 
 ; ### n>flags
-code nametoflags, 'n>flags'
-        sub     rbx, BYTES_PER_CELL * 2 + 2
-        next
-endcode
+inline nametoflags, 'n>flags'
+        _nametoflags
+endinline
 
 ; ### >code
 inline tocode, '>code'                  ; xt -- code-addr
@@ -176,7 +169,7 @@ endinline
 ; ### immediate
 code immediate, 'immediate'
         _ latest
-        _ nametoflags
+        _nametoflags
         _dupcfetch
         _lit IMMEDIATE
         _ or
@@ -324,10 +317,12 @@ code quoteheader, '"header'             ; c-addr u --
         _zero
         _ comma                         ; pfa (will be patched)
 
-        _zero                          ; flag
+        _zero                           ; flag
         _ ccomma                        ; -- c-addr u
         _zero
         _ ccomma                        ; inline size
+        _zero
+        _ ccomma                        ; type
 
         _ source_filename
         _fetch

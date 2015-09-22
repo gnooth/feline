@@ -84,9 +84,15 @@ section .text
 %define current_file    %%name
 %endmacro
 
+; Types
+%define TYPE_VARIABLE   1
+%define TYPE_VALUE      2
+%define TYPE_DEFERRED   3
+%define TYPE_CONSTANT   4
+
 %define link    0
 
-%macro  head 2-4 0, 0                   ; label, name, flags, inline size
+%macro  head 2-5 0, 0, 0                ; label, name, flags, inline size, type
         global %1
 %strlen len     %2
         section .data
@@ -98,6 +104,7 @@ section .text
         dq      %1_pfa                  ; address of parameter field in data area
         db      %3                      ; flags
         db      %4                      ; inline size
+        db      %5                      ; type
         dq      current_file            ; pointer to source file name
         dq      __LINE__                ; source line number
 %1_nfa:
@@ -116,16 +123,52 @@ section .text
         add     rbx, BYTES_PER_CELL
 %endmacro
 
+%macro  _tolink 0
+        add     rbx, BYTES_PER_CELL * 2
+%endmacro
+
+%macro  _linkfrom 0
+        sub     rbx, BYTES_PER_CELL * 2
+%endmacro
+
 %macro  _tobody 0
         mov     rbx, [rbx + BYTES_PER_CELL * 3]
+%endmacro
+
+%macro  _toflags 0
+        add     rbx, BYTES_PER_CELL * 4
 %endmacro
 
 %macro  _toinline 0
         add     rbx, BYTES_PER_CELL * 4 + 1
 %endmacro
 
+%macro  _totype 0
+        add     rbx, BYTES_PER_CELL * 4 + 2
+%endmacro
+
+%macro  _toview 0
+        add     rbx, BYTES_PER_CELL * 4 + 3
+%endmacro
+
+%macro  _toname 0
+        add     rbx, BYTES_PER_CELL * 6 + 3
+%endmacro
+
 %macro  _namefrom 0
-        sub     rbx, BYTES_PER_CELL * 6 + 2
+        sub     rbx, BYTES_PER_CELL * 6 + 3
+%endmacro
+
+%macro  _ntolink 0
+        sub     rbx, BYTES_PER_CELL * 4 + 3
+%endmacro
+
+%macro  _ltoname 0
+        add     rbx, BYTES_PER_CELL * 4 + 3
+%endmacro
+
+%macro  _nametoflags 0
+        sub     rbx, BYTES_PER_CELL * 2 + 3
 %endmacro
 
 %macro  code 2-4 0, 0
