@@ -53,25 +53,22 @@ endcode
 code storeto, 'to', IMMEDIATE           ; n "<spaces>name" --
         _ blchar
         _ word_                         ; -- n $addr
-
         _ statefetch
         _if .1
-        _ dup
-        _ find_local                    ; -- $addr index flag
-        _if .2
-        _nip
+        _ find_local                    ; -- n $addr-or-index flag
+        _if .2                          ; -- n index
         _ compile_tolocal
         _return
-        _else .2
-        _ drop
         _then .2
-        _then .1
+        _then .1                        ; -- n $addr
 
+        ; not a local
         _ find
-        _zeq_if .3
-        _ missing
-        _then .3
+        _zeq_if .3                      ; not found
+        _ missing                       ; -13 THROW
+        _then .3                        ; -- n xt
 
+        ; FIXME verify that what we're storing to is a VALUE or VARIABLE
         _tobody                         ; -- n pfa
         _ statefetch
         _if .4
