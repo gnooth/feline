@@ -85,18 +85,17 @@ value local_names, 'local-names', 0
 value locals_defined, 'locals-defined', 0
 
 ; ### find-local
-code find_local, 'find-local'           ; $addr -- index flag
+code find_local, 'find-local'           ; found:        $addr -- index true
+                                        ; not found:    $addr -- $addr false
         _ using_locals?
-        _zeq_if .0
-        _drop
-        _zero
+        _zeq_if .1
         _ false
         _return
-        _then .0
+        _then .1
 
         _ locals_defined
         _zero
-        _do .1
+        _do .2
         _ local_names
         _i
         _cells
@@ -107,21 +106,18 @@ code find_local, 'find-local'           ; $addr -- index flag
         _ rot
         _ count
         _ istrequal
-        _if .2
+        _if .3
+        ; found it!
         _drop
         _i
         _ true
-        _leave
-        _then .2
-        _loop .1
-        _ true
-        _ equal
-        _if .3
-        _ true
-        _else .3
-        _ false
-        _ false
+        _unloop
+        _return
         _then .3
+        _loop .2
+
+        ; not found
+        _ false
         next
 endcode
 
