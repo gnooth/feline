@@ -148,24 +148,19 @@ endcode
 
 ; ### interpret
 code interpret, 'interpret'             ; --
-        _begin interp0
+        _begin .7
         _ ?stack
         _ blchar
-        _ word_                         ; -- $addr
-        _dupcfetch                      ; -- $addr len
-        _zeq_if .1
-        ; end of input
-        _ drop                          ; --
-        _return
-        _then .1                        ; -- $addr
-
+        _ word_
+        _dupcfetch
+        _while .7
         _ statefetch
         _if .2
         _ compile1
         _else .2
         _ interpret1
         _then .2
-
-        _again interp0
+        _repeat .7
+        _drop
         next
 endcode
