@@ -250,6 +250,7 @@ endcode
 
 ; ### number
 code number, 'number'                   ; string -- d
+; not in standard
         _duptor                         ; -- string             r: -- string
         _ count                         ; -- addr u
         _ basefetch

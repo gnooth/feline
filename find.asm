@@ -319,6 +319,9 @@ endcode
 ; ### search-wordlist
 code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
 ; SEARCH
+; "If the definition is not found, return 0. If the definition is found,
+; return its execution token xt and 1 if the definition is immediate, -1
+; otherwise."
         _fetch            ; last link in wordlist
         _dup
         _if .1
@@ -354,6 +357,10 @@ find_len:       dq      0
 ; ### find
 code find, 'find'                       ; $addr -- $addr 0 | xt 1 | xt -1
 ; CORE, SEARCH
+; "Find the definition named in the counted string at c-addr. If the
+; definition is not found, return c-addr and 0. If the definition is
+; found, return its execution token xt. If the definition is immediate,
+; also return 1, otherwise also return -1."
         mov     [find_arg], rbx
         _ count                         ; -- addr len
         mov     [find_len], rbx
