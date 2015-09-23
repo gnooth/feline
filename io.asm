@@ -731,12 +731,17 @@ code current_directory, 'current-directory'     ; -- $addr
         next
 endcode
 
-extern os_forth_home
+section .data
+forth_home_data:
+%strlen len     FORTH_HOME
+        db      len
+        db      FORTH_HOME
+        db      0
 
 ; ### forth-home
 code forth_home, 'forth-home'           ; -- zaddr
-        xcall   os_forth_home
-        pushd   rax
+        pushrbx
+        mov     ebx, forth_home_data    ; assumes 32-bit address
         next
 endcode
 

@@ -29,7 +29,6 @@
 #endif
 
 #include "forth.h"
-#include "forth_home.h"
 
 #ifdef WIN64
 #define JMP_BUF                 jmp_buf
@@ -127,11 +126,6 @@ int main(int argc, char **argv, char **env)
     cold();
   else
     abort();
-}
-
-const char *os_forth_home()
-{
-  return FORTH_HOME;
 }
 
 void os_emit(int c)

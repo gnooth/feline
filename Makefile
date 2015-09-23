@@ -10,11 +10,8 @@ ifeq ($(OS),Windows_NT)
 	FLAGS += -DWIN64 -DWIN64_NATIVE
 endif
 
-forth:  forth_home.h main.o terminal.o forth.o
+forth:  main.o terminal.o forth.o
 	gcc main.o terminal.o forth.o -o forth
-
-forth_home.h: forth_home
-	./forth_home
 
 forth_home.asm: forth_home
 	./forth_home
@@ -76,8 +73,8 @@ clean:
 	-rm -f main.o*
 	-rm -f terminal.o*
 	-rm -f forth.o*
-	-rm -f forth_home.h forth_home.asm forth_home.exe forth_home
+	-rm -f forth_home.asm forth_home.exe forth_home
 
 zip:
 	-rm -f forth.zip
-	zip forth.zip *.c *.asm *.forth tests/*.forth Makefile
+	zip forth.zip *.c *.h *.asm *.forth tests/*.forth Makefile

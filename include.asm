@@ -365,9 +365,7 @@ endcode
 code system_file_pathname, 'system-file-pathname'
 ; c-addr1 u1 -- c-addr2 u2
         _ to_stringbuf                  ; -- $addr1
-        _ forth_home                    ; -- $addr1 zaddr
-        _ zcount                        ; -- $addr1 zaddr len
-        _ to_stringbuf                  ; -- $addr1 $addr2
+        _ forth_home                    ; -- $addr1 $addr2
 %ifdef WIN64
         _cquote "\"
 %else
