@@ -16,6 +16,9 @@ forth:  forth_home.h main.o terminal.o forth.o
 forth_home.h: forth_home
 	./forth_home
 
+forth_home.asm: forth_home
+	./forth_home
+
 forth_home: forth_home.c
 	gcc forth_home.c -o forth_home
 
@@ -25,7 +28,7 @@ main.o:	forth.h main.c Makefile
 terminal.o: forth.h terminal.c Makefile
 	gcc -D_GNU_SOURCE $(FLAGS) -c -o terminal.o terminal.c
 
-ASM_SOURCES = forth.asm equates.asm macros.asm inlines.asm \
+ASM_SOURCES = forth.asm forth_home.asm equates.asm macros.asm inlines.asm \
 	ansi.asm \
 	arith.asm \
 	branch.asm \
@@ -73,7 +76,7 @@ clean:
 	-rm -f main.o*
 	-rm -f terminal.o*
 	-rm -f forth.o*
-	-rm -f forth_home.h forth_home.exe forth_home
+	-rm -f forth_home.h forth_home.asm forth_home.exe forth_home
 
 zip:
 	-rm -f forth.zip

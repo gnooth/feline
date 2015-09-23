@@ -74,11 +74,18 @@
 %define current_file    0
 
 %macro  file    1
-%strlen len     %1
+%strlen len1    %1
+%strlen len2    FORTH_HOME
 section .text
         align   8
 %%name:
-        db      len
+        db      len1 + len2 + 1
+        db      FORTH_HOME
+%ifdef WIN64_NATIVE
+        db      '\'
+%else
+        db      '/'
+%endif
         db      %1
         db      0
 %define current_file    %%name

@@ -15,6 +15,7 @@
 
 default abs ; use absolute addresses by default
 
+%include "forth_home.asm"
 %include "equates.asm"
 %include "macros.asm"
 %include "inlines.asm"

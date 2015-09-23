@@ -24,4 +24,10 @@ int main()
       fprintf(file, "#define FORTH_HOME \"%s\"\n", outbuf);
       fclose(file);
     }
+  file = fopen("forth_home.asm", "w");
+  if (file)
+    {
+      fprintf(file, "%%define FORTH_HOME \"%s\"\n", outbuf);
+      fclose(file);
+    }
 }
