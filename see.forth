@@ -1125,21 +1125,23 @@ decimal
     repeat
     ?cr end-address start-address - . ." bytes" ;
 
-: disassemble  ( cfa -- )
-   >code disasm ;
+: disassemble  ( xt -- )
+    >code disasm ;
 
 also forth definitions
 
-: see  ( -- )
+: see  ( "<spaces>name" -- )
    ' local xt
-   xt >type c@
-   case
-       tvar of cr ." variable " endof
-       tvalue of cr ." value " endof
-       tdefer of cr ." defer " endof
-       tconst of cr ." constant " endof
-   endcase
-   xt >name .id
+   xt >type c@ ?dup if
+       cr
+       case
+           tvar   of ." variable " endof
+           tvalue of ." value "    endof
+           tdefer of ." defer "    endof
+           tconst of ." constant " endof
+       endcase
+       xt >name .id
+   then
    xt disassemble ;
 
 only forth also disassembler also forth definitions     \ REVIEW
