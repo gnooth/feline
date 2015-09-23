@@ -1131,7 +1131,16 @@ decimal
 also forth definitions
 
 : see  ( -- )
-   ' disassemble ;
+   ' local xt
+   xt >type c@
+   case
+       tvar of cr ." variable " endof
+       tvalue of cr ." value " endof
+       tdefer of cr ." defer " endof
+       tconst of cr ." constant " endof
+   endcase
+   xt >name .id
+   xt disassemble ;
 
 only forth also disassembler also forth definitions     \ REVIEW
 

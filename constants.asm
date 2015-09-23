@@ -15,6 +15,12 @@
 
 file __FILE__
 
+; Types
+constant tvar, 'tvar', TYPE_VARIABLE
+constant tvalue, 'tvalue', TYPE_VALUE
+constant tdeferred, 'tdefer', TYPE_DEFERRED
+constant tconst, 'tconst', TYPE_CONSTANT
+
 ; ### false
 code false, 'false'
 ; CORE EXT

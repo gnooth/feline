@@ -171,8 +171,12 @@ section .text
         sub     rbx, BYTES_PER_CELL * 2 + 3
 %endmacro
 
-%macro  code 2-4 0, 0
-        head %1, %2, %3, %4
+%macro  _nametotype 0
+        sub     rbx, BYTES_PER_CELL * 2 + 1
+%endmacro
+
+%macro  code 2-5 0, 0, 0
+        head %1, %2, %3, %4, %5
         section .text
         align   8
 %1:
@@ -181,7 +185,7 @@ section .text
 %macro  endcode 0-1
 %endmacro
 
-%macro  inline 2
+%macro  inline 2-5 0, 0, 0
         %push inline
         head %1, %2, 0, %$ret - %1
         section .text
@@ -197,7 +201,7 @@ section .text
 %endmacro
 
 %macro  deferred 3                      ; label, name, action
-        head %1, %2, 0, 0
+        head %1, %2, 0, 0, TYPE_DEFERRED
         section .data
         global %1_data
         align   8
@@ -213,7 +217,7 @@ section .text
 %endmacro
 
 %macro  variable 3                      ; label, name, value
-        head    %1, %2
+        head    %1, %2, 0, 0, TYPE_VARIABLE
         section .data
         global %1_data
         align   8
@@ -227,7 +231,7 @@ section .text
 %endmacro
 
 %macro  value 3                         ; label, name, value
-        head    %1, %2
+        head    %1, %2, 0, 0, TYPE_VALUE
         section .data
         global %1_data
         align   8
@@ -242,7 +246,7 @@ section .text
 %endmacro
 
 %macro  constant 3                      ; label, name, value
-        head    %1, %2
+        head    %1, %2, 0, 0, TYPE_CONSTANT
         section .text
 %1:
         pushrbx

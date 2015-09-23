@@ -75,9 +75,12 @@ endcode
 ;   code ptr    8 bytes
 ;   comp field  8 bytes
 ;   link ptr    8 bytes
-;   data ptr    8 bytes         REVIEW addr for >body
+;   data ptr    8 bytes         pfa
 ;   flags       1 byte
+;   type        1 byte
 ;   inline      1 byte          number of bytes of code to copy
+;   sourcefile  8 bytes         pointer to source file name
+;   line number 8 bytes         source line number
 ;   name        1-256 bytes
 ;   padding     0-7 bytes       for alignment
 ;   body is in data area
@@ -137,8 +140,13 @@ code flags, 'flags'                     ; xt -- flags
 endcode
 
 ; ### >inline
-inline toinline, '>inline'               ; xt -- addr
+inline toinline, '>inline'              ; xt -- addr
         _toinline
+endinline
+
+; ### >type
+inline totype, '>type'                  ; xt -- addr
+        _totype
 endinline
 
 ; ### >view
@@ -159,6 +167,11 @@ endinline
 ; ### n>flags
 inline nametoflags, 'n>flags'
         _nametoflags
+endinline
+
+; ### n>type
+inline nametotype, 'n>type'
+        _nametotype
 endinline
 
 ; ### >code
