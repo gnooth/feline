@@ -29,6 +29,8 @@ include-system-file args.forth
 include-system-file tools.forth
 include-system-file empty.forth
 include-system-file environment.forth
+include-system-file user-home.forth
+include-system-file process-init-file.forth
 
 : in include ;
 
