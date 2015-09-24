@@ -51,6 +51,9 @@ variable argv, 'argv', 0
 ; ### process-command-line
 deferred process_command_line, 'process-command-line', noop
 
+; ### process-init-file
+deferred process_init_file, 'process-init-file', noop
+
 ; ### 'pad
 variable tickpad, "'pad", 0
 
@@ -105,6 +108,7 @@ code cold, 'cold'                       ; --
         _ do_error
         _then .2
         _ process_command_line
+        _ process_init_file
         jmp quit
         next
 endcode
