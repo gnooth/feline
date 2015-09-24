@@ -234,7 +234,7 @@ code file_is_directory, 'file-is-directory?' ; c-addr u -- -1 | 0
 endcode
 
 ; ### file-exists?
-code file_exists, 'file-exists?'
+code file_exists, 'file-exists?'        ; c-addr u -- -1 | 0
         _ file_status
         _nip
         _zeq
