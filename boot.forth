@@ -32,6 +32,4 @@ include-system-file environment.forth
 include-system-file user-home.forth
 include-system-file process-init-file.forth
 
-: in include ;
-
 empty!
