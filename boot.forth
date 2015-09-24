@@ -13,8 +13,8 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-include-system-file locals.forth
 include-system-file vocabulary.forth
+include-system-file locals.forth
 include-system-file defer.forth
 include-system-file bracket-if.forth
 include-system-file case.forth
@@ -31,5 +31,7 @@ include-system-file empty.forth
 include-system-file environment.forth
 include-system-file user-home.forth
 include-system-file process-init-file.forth
+
+only forth definitions
 
 empty!

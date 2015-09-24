@@ -129,6 +129,11 @@ endcode
 
 section .data
         dq      0                       ; link
+        dq      root_nfa
+root_wid:
+        dq      0
+
+        dq      root_wid                ; link
         dq      forth_nfa
 forth_wid:
         dq      0
@@ -137,6 +142,20 @@ forth_wid:
         dq      files_nfa
 files_wid:
         dq      0
+
+; ### root-wordlist
+code root_wordlist, 'root-wordlist'     ; -- wid
+        pushrbx
+        mov     rbx, root_wid
+        next
+endcode
+
+; ### root
+code root, 'root'
+        mov     rax, root_wid
+        mov     [context_data], rax
+        next
+endcode
 
 ; ### forth-wordlist
 code forth_wordlist, 'forth-wordlist'   ; -- wid
@@ -273,7 +292,7 @@ code also, 'also'
         _ get_order
         _ over
         _ swap
-        _ oneplus
+        _oneplus
         _ set_order
         next
 endcode
@@ -287,8 +306,23 @@ code only, 'only'
         _ nvocs
         _cells
         _ erase
-        _ forth                         ; FIXME
-        _lit 1
+
+;         _ forth_wordlist
+;         _ context
+;         _ store
+
+;         _ root_wordlist
+;         _ context
+;         _cellplus
+;         _ store
+        _ root_wordlist
+        _ context
+        _ twodup
+        _ store
+        _cellplus
+        _ store
+
+        _lit 2
         _ norder
         _ store
         next
@@ -296,10 +330,26 @@ endcode
 
 ; ### previous
 code previous, 'previous'
-        _ get_order
+; SEARCH EXT
+; "Transform the search order consisting of widn, ... wid2, wid1
+; (where wid1 is searched first) into widn, ... wid2. An ambiguous
+; condition exists if the search order was empty before PREVIOUS
+; was executed."
+        _ get_order                     ; -- widn ... wid1 n
+        _ dup
+        _lit 1
+        _ gt
+        _if .1
         _nip
         _ oneminus
         _ set_order
+        _else .1
+        _cquote "Search order underflow"
+        _ msg
+        _ store
+        _lit -50	                ; "search-order underflow"
+        _ throw
+        _then .1
         next
 endcode
 

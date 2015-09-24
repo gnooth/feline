@@ -20,20 +20,11 @@
    does>
       @ context ! ;
 
-vocabulary root
+also root definitions
 
-only forth also root definitions
-
-: only  only ;
 : forth  forth ;
-: also  also ;
-: previous previous ;
-: root  root ;
-: definitions definitions ;
-: order order ;
-: vocs vocs ;
-
 : forth-wordlist forth-wordlist ;
 : set-order set-order ;
+: order order ;
 
 only forth definitions
