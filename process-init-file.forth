@@ -19,6 +19,8 @@
     $" .init.forth" $+
     dup count file-exists? if
         count included
+    else
+        drop
     then
 ;
 
