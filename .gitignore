@@ -4,6 +4,7 @@ forth
 *.obj
 forth.exe
 *.pdb
-forth_home.h
 forth_home
 forth_home.exe
+forth_home.asm
+a.out
