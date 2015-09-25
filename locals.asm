@@ -227,7 +227,7 @@ code paren_local, '(local)'             ; c-addr u --
         _then .3
         _ initialize_local_names
         _lit locals_enter_xt
-        _ compilecomma
+        _ copy_code                     ; must be inline!
         _then .2
 
         _ locals_defined
@@ -256,6 +256,7 @@ endcode
 
 ; ### local
 code local, 'local', IMMEDIATE
+        _ flush_compilation_queue
         _ parse_name                    ; -- c-addr u
         _ paren_local
         next
@@ -268,7 +269,7 @@ code end_locals, 'end-locals'           ; --
         _ using_locals?
         _if .1
         _lit locals_leave_xt
-        _ compilecomma
+        _ copy_code                     ; must be inline!
         _ delete_local_names
         _zero
         _to using_locals?
