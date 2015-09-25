@@ -184,6 +184,11 @@ endcode
 
 ; ### bin
 code bin, 'bin', IMMEDIATE
+; FILE
+; "Modify the implementation-defined file access method fam1 to
+; additionally select a 'binary', i.e., not line oriented, file
+; access method, giving access method fam2."
+        ; nothing to do
         next
 endcode
 
