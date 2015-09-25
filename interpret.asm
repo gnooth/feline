@@ -133,6 +133,7 @@ endcode
 code compile1, 'compile1'
         _ find_local                    ; -- $addr-or-index flag
         _if .3
+        _ flush_compilation_queue
         _ compile_local
         _else .3
         _ find
