@@ -39,6 +39,7 @@ endinline
 ; ### chars
 code chars, 'chars', IMMEDIATE          ; n1 -- n2
 ; CORE 6.1.0898
+        ; nothing to do
         next
 endcode
 
