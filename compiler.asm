@@ -108,12 +108,6 @@ code iflush_compilation_queue, '(flush-compilation-queue)'
         next
 endcode
 
-; ### clear-compilation-queue
-deferred clear_compilation_queue, 'clear-compilation-queue', noop
-
-; ### flush-compilation-queue
-deferred flush_compilation_queue, 'flush-compilation-queue', noop
-
 ; ### (copy-code)
 code paren_copy_code, '(copy-code)'     ; addr size --
         _ here_c
@@ -187,6 +181,67 @@ code commajmp, ',jmp'                   ; code --
         next
 endcode
 
+; ### pending-xt
+variable pending_xt, 'pending-xt', 0
+
+; ### .pending-xt
+code dot_pending_xt, '.pending-xt'
+        _ pending_xt
+        _fetch
+        _ ?dup
+        _if .1
+        _ ?cr
+        _toname
+        _ dotid
+        _else .1
+        _ ?cr
+        _dotq "no pending xt"
+        _then .1
+        next
+endcode
+
+; ### compile-pending-xt
+code compile_pending_xt, 'compile-pending-xt'
+        _ pending_xt
+        _fetch
+        _ ?dup
+        _if .1
+;         _ dot_pending_xt
+        _ inline_or_call_xt
+        _zero
+        _ pending_xt
+        _ store
+        _then .1
+        next
+endcode
+
+; ### clear-compilation-queue
+; deferred clear_compilation_queue, 'clear-compilation-queue', noop
+code clear_compilation_queue, 'clear-compilation-queue'
+        _zero
+        _ pending_xt
+        _ store
+        next
+endcode
+
+; ### flush-compilation-queue
+; deferred flush_compilation_queue, 'flush-compilation-queue', noop
+deferred flush_compilation_queue, 'flush-compilation-queue', compile_pending_xt
+
+; ### inline-or-call-xt
+code inline_or_call_xt, 'inline-or-call-xt'     ; xt --
+        _ dup                           ; -- xt xt
+        _toinline                       ; -- xt >inline
+        _cfetch                         ; -- xt #bytes
+        _if .1                          ; -- xt
+        _ copy_code
+        _return
+        _then .1
+        ; default behavior
+        _ xt_commacall
+        next
+endcode
+
 ; ### (compile,)
 code parencompilecomma, '(compile,)'    ; xt --
         _ dup                           ; -- xt xt
@@ -198,15 +253,21 @@ code parencompilecomma, '(compile,)'    ; xt --
         _return
         _then .1
         _ flush_compilation_queue
-        _ dup                           ; -- xt xt
-        _toinline                       ; -- xt >inline
-        _cfetch                         ; -- xt #bytes
-        _if .2                          ; -- xt
-        _ copy_code
-        _return
-        _then .2
-        ; default behavior
-        _ xt_commacall
+
+;         _ dup                           ; -- xt xt
+;         _toinline                       ; -- xt >inline
+;         _cfetch                         ; -- xt #bytes
+;         _if .2                          ; -- xt
+;         _ copy_code
+;         _return
+;         _then .2
+;         ; default behavior
+;         _ xt_commacall
+
+;         _ inline_or_call_xt
+
+        _ pending_xt
+        _ store
         next
 endcode
 
