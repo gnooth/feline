@@ -245,7 +245,7 @@ code paren_local, '(local)'             ; c-addr u --
         _plusto locals_defined
 
         _lit local_init_xt
-        _ compilecomma
+        _ copy_code                     ; must be inline!
 
         _else .4
         _abortq "Too many locals"       ; REVIEW
