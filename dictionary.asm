@@ -552,10 +552,11 @@ code exit_, 'exit', IMMEDIATE
 ; CORE
 ; "Interpretation semantics for this word are undefined."
         _ ?comp
+        _ flush_compilation_queue
         _ using_locals?
         _if .1
         _lit locals_leave_xt
-        _ compilecomma
+        _ copy_code                     ; must be inline!
         _then .1
         _lit $0c3
         _ ccommac
@@ -711,6 +712,7 @@ code bracketcompile, '[compile]', IMMEDIATE
 ; implementations."
 ; "Interpretation semantics for this word are undefined."
         _ ?comp
+        _ flush_compilation_queue
         _ tick
         _ compilecomma
         next
