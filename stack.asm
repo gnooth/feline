@@ -117,7 +117,7 @@ endinline
 
 ; ### over+
 inline overplus, 'over+'
-        add     rbx, [rbp]
+        _overplus
 endinline
 
 ; ### 2over
