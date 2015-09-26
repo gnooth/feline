@@ -197,18 +197,18 @@ code refill, 'refill'                   ; -- flag
         next
 endcode
 
-; ### verboseinclude
-value verboseinclude, 'verboseinclude', 0
+; ### echo
+value echo, 'echo', 0
 
-; ### +verboseinclude
-code plusverboseinclude, '+verboseinclude', IMMEDIATE   ; --
-        mov     qword [verboseinclude_data], TRUE
+; ### +echo
+code plusecho, '+echo', IMMEDIATE   ; --
+        mov     qword [echo_data], TRUE
         next
 endcode
 
-; ### -verboseinclude
-code minusverboseinclude, '-verboseinclude', IMMEDIATE  ; --
-        mov     qword [verboseinclude_data], FALSE
+; ### -echo
+code minusecho, '-echo', IMMEDIATE  ; --
+        mov     qword [echo_data], FALSE
         next
 endcode
 
@@ -232,7 +232,7 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _begin .1
         _ refill
         _while .1
-        _ verboseinclude
+        _ echo
         _if .2
         _ source
         _ type
