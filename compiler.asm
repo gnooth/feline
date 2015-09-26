@@ -235,10 +235,10 @@ code inline_or_call_xt, 'inline-or-call-xt'     ; xt --
         _cfetch                         ; -- xt #bytes
         _if .1                          ; -- xt
         _ copy_code
-        _return
-        _then .1
+        _else .1
         ; default behavior
         _ xt_commacall
+        _then .1
         next
 endcode
 
@@ -275,18 +275,6 @@ code parencompilecomma, '(compile,)'    ; xt --
         _then .2
 
         _ flush_compilation_queue
-
-;         _ dup                           ; -- xt xt
-;         _toinline                       ; -- xt >inline
-;         _cfetch                         ; -- xt #bytes
-;         _if .2                          ; -- xt
-;         _ copy_code
-;         _return
-;         _then .2
-;         ; default behavior
-;         _ xt_commacall
-
-;         _ inline_or_call_xt
 
         _ pending_xt
         _ store
