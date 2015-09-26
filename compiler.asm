@@ -242,16 +242,38 @@ code inline_or_call_xt, 'inline-or-call-xt'     ; xt --
         next
 endcode
 
+; ### opt
+value opt, 'opt', 0
+
+; ### +opt
+code plusopt, '+opt', IMMEDIATE   ; --
+        mov     qword [opt_data], TRUE
+        next
+endcode
+
+; ### -opt
+code minusopt, '-opt', IMMEDIATE  ; --
+        mov     qword [opt_data], FALSE
+        next
+endcode
+
 ; ### (compile,)
 code parencompilecomma, '(compile,)'    ; xt --
+        _ opt
+        _zeq_if .1
+        _ inline_or_call_xt
+        _return
+        _then .1
+
         _ dup                           ; -- xt xt
         _tocomp                         ; -- xt >comp
         _fetch                          ; -- xt xt-comp
         _ ?dup
-        _if .1
+        _if .2
         _ execute
         _return
-        _then .1
+        _then .2
+
         _ flush_compilation_queue
 
 ;         _ dup                           ; -- xt xt
