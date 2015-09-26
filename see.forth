@@ -540,6 +540,10 @@ $09 install-handler
         $" jno" .jcc32
         exit
     then
+    byte2 $8d = if
+        $" jge" .jcc32
+        exit
+    then
     ip instruction-start - .bytes
     unsupported ;
 
