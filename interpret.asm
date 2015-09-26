@@ -29,6 +29,7 @@ endcode
 
 ; ### [
 code lbrack, '[', IMMEDIATE
+        _ flush_compilation_queue
         xor     eax, eax
         mov     [state_data], rax
         next
@@ -87,7 +88,7 @@ code compile_do_defined, 'compile-do-defined'           ; xt flag --
         _ compilecomma
         _else .1
         ; immediate
-        _ flush_compilation_queue
+;         _ flush_compilation_queue
         _ execute
         _then .1
         next

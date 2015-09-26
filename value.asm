@@ -57,6 +57,7 @@ code storeto, 'to', IMMEDIATE           ; n "<spaces>name" --
         _if .1
         _ find_local                    ; -- n $addr-or-index flag
         _if .2                          ; -- n index
+        _ flush_compilation_queue
         _ compile_tolocal
         _return
         _then .2

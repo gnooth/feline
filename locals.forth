@@ -55,6 +55,7 @@
     0 0 (LOCAL) ;
 
 : {: ( -- )
+    flush-compilation-queue
     0 PARSE-NAME
     scan-args scan-locals scan-end
     2DROP define-locals

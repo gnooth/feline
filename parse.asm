@@ -150,6 +150,7 @@ code bracket_char, '[char]', IMMEDIATE
 ; CORE
 ; "Interpretation semantics for this word are undefined."
         _ ?comp
+        _ flush_compilation_queue
         _ char
         _ iliteral
         next
@@ -217,6 +218,9 @@ endcode
 
 ; ### .(
 code dotparen, '.(', IMMEDIATE
+; CORE EXT
+; ".( is an immediate word."
+        _ flush_compilation_queue
         _lit ')'
         _ parse
         _ type

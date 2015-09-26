@@ -1,4 +1,4 @@
-\ Copyright (C) 2012 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -13,23 +13,32 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-: case  ( -- 0 )  0 ; immediate
+: case ( -- 0 )
+    flush-compilation-queue
+    0
+; immediate
 
 : of
-   1+ >r
-   postpone over
-   postpone =
-   postpone if
-   postpone drop
-   r> ; immediate
+    flush-compilation-queue
+    1+ >r
+    postpone over
+    postpone =
+    postpone if
+    postpone drop
+    r>
+; immediate
 
 : endof
-   >r
-   postpone else
-   r> ; immediate
+    flush-compilation-queue
+    >r
+    postpone else
+    r>
+; immediate
 
 : endcase
-   postpone drop
-   0 ?do
-      postpone then
-   loop ; immediate
+    flush-compilation-queue
+    postpone drop
+    0 ?do
+        postpone then
+    loop
+; immediate

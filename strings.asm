@@ -258,6 +258,8 @@ do_sliteral_end:
 ; ### cliteral
 code cliteral, 'cliteral', IMMEDIATE    ; c: addr1 u --         runtime: -- c-addr2
 ; not in standard
+        _ ?comp
+        _ flush_compilation_queue
         _ here                          ; addr for counted string
         _ rrot                          ; -- here addr1 u
         _ stringcomma                   ; -- here
@@ -294,6 +296,8 @@ endcode
 code cquote, 'c"', IMMEDIATE
 ; CORE EXT
 ; "Interpretation semantics for this word are undefined."
+        _ ?comp
+        _ flush_compilation_queue
         _lit '"'
         _ parse                         ; -- addr len
         _ statefetch

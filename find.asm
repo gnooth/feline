@@ -465,6 +465,7 @@ code bracket_tick, "[']", IMMEDIATE
 ; CORE
 ; "Interpretation semantics for this word are undefined."
         _ ?comp
+        _ flush_compilation_queue
         _ tick
         _ iliteral
         next

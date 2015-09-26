@@ -211,6 +211,7 @@ endinline
 ; ### unloop
 code unloop, 'unloop', IMMEDIATE
         _ ?comp
+        _ flush_compilation_queue
         _lit inline_unloop_xt
         _ copy_code
         next

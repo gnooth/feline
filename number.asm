@@ -298,6 +298,7 @@ code number_in_base, 'number-in-base'   ; base -- number
 
 ; ### b#
 code binnum, 'b#', IMMEDIATE
+        _ flush_compilation_queue
         _lit 2
         _ number_in_base
         next
@@ -305,6 +306,7 @@ endcode
 
 ; ### d#
 code decnum, 'd#', IMMEDIATE
+        _ flush_compilation_queue
         _lit 10
         _ number_in_base
         next
@@ -312,6 +314,7 @@ endcode
 
 ; ### h#
 code hexnum, 'h#', IMMEDIATE
+        _ flush_compilation_queue
         _lit 16
         _ number_in_base
         next
