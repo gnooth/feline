@@ -182,12 +182,11 @@ code commajmp, ',jmp'                   ; code --
 endcode
 
 ; ### pending-xt
-variable pending_xt, 'pending-xt', 0
+value pending_xt, 'pending-xt', 0
 
 ; ### .pending-xt
 code dot_pending_xt, '.pending-xt'
         _ pending_xt
-        _fetch
         _ ?dup
         _if .1
         _ ?cr
@@ -203,14 +202,11 @@ endcode
 ; ### compile-pending-xt
 code compile_pending_xt, 'compile-pending-xt'
         _ pending_xt
-        _fetch
         _ ?dup
         _if .1
 ;         _ dot_pending_xt
         _ inline_or_call_xt
-        _zero
-        _ pending_xt
-        _ store
+        _clear pending_xt
         _then .1
         next
 endcode
@@ -218,9 +214,7 @@ endcode
 ; ### clear-compilation-queue
 ; deferred clear_compilation_queue, 'clear-compilation-queue', noop
 code clear_compilation_queue, 'clear-compilation-queue'
-        _zero
-        _ pending_xt
-        _ store
+        _clear pending_xt
         next
 endcode
 
@@ -276,8 +270,7 @@ code parencompilecomma, '(compile,)'    ; xt --
 
         _ flush_compilation_queue
 
-        _ pending_xt
-        _ store
+        _to pending_xt
         next
 endcode
 
