@@ -109,3 +109,8 @@
 %macro  _overplus 0                     ; OVER +
         add     rbx, [rbp]
 %endmacro
+
+%macro  _plusdup 0                      ; + DUP
+        add     rbx, [rbp]
+        mov     [rbp], rbx
+%endmacro

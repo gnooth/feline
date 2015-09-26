@@ -120,6 +120,11 @@ inline overplus, 'over+'
         _overplus
 endinline
 
+; ### +dup
+inline plusdup, '+dup'
+        _plusdup
+endinline
+
 ; ### 2over
 code twoover, '2over'                   ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2
         mov     rax, [rbp + BYTES_PER_CELL * 2]         ; x1
