@@ -307,7 +307,7 @@ endcode
 code ?csp, '?csp'
         cmp     [csp_data], rbp
         je      .1
-        _cquote "Stack changed"
+        _cquote "Control structure mismatch"
         _ msg
         _ store
         _lit -22                        ; "control structure mismatch"
