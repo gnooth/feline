@@ -15,22 +15,142 @@
 
 file __FILE__
 
+value pending_tokens, 'pending-tokens', 0
+
+value pending_data, 'pending-data', 0
+
+constant compilation_queue_capacity, 'compilation-queue-capacity', 16   ; space for 16 entries
+
+value compilation_queue_size, 'compilation-queue-size', 0
+
+; ### initialize-compilation-queue
+code initialize_compilation_queue, 'initialize-compilation-queue'       ; --
+        _ pending_tokens
+        _zeq_if .1
+        ; allocate bytes for the tokens
+        _ compilation_queue_capacity
+        _ dup
+        _ allocate
+        _ throw                         ; REVIEW
+        _to pending_tokens
+        ; cells for the data
+        _cells
+        _ allocate
+        _ throw
+        _to pending_data
+        _then .1
+        next
+endcode
+
+; ### .entry
+code dot_entry, '.entry'                ; index --
+        _ ?cr
+        _ pending_tokens
+        _overplus
+        _cfetch
+        _ dup
+        _ dot
+        _lit TOKEN_XT
+        _ equal
+        _if .1
+        _ pending_data
+        _ swap
+        _cells
+        _plus
+        _fetch
+        _toname
+        _ dotid
+        _else .1
+        _ pending_data
+        _ swap
+        _cells
+        _plus
+        _fetch
+        _ dot
+        _then .1
+        next
+endcode
+
+; ### add-compilation-queue-entry
+code add_compilation_queue_entry, 'add-compilation-queue-entry'         ; xt data --
+        _ compilation_queue_size
+        _ compilation_queue_capacity
+        _ equal
+        _if .1
+        _ flush_compilation_queue
+        _then .1                        ; -- xt data
+        _ pending_data
+        _ compilation_queue_size
+        _cells
+        _plus
+        _ store
+        _ pending_tokens
+        _ compilation_queue_size
+        _plus
+        _ cstore
+        _lit 1
+        _plusto compilation_queue_size
+        next
+endcode
+
+
 ; ### clear-compilation-queue
-; deferred clear_compilation_queue, 'clear-compilation-queue', noop
 code clear_compilation_queue, 'clear-compilation-queue'
-        _clear pending_xt
+        _zeroto compilation_queue_size
+        next
+endcode
+
+; ### process-compilation-queue-entry
+code process_compilation_queue_entry, 'process-compilation-queue-entry' ; index --
+        _ dup
+        _ pending_tokens
+        _plus
+        _cfetch                         ; -- index token
+        _ dup                           ; -- index token token
+        _lit TOKEN_XT                   ; -- index token token TOKEN_XT
+        _ equal                         ; -- index token flag
+        _if .1                          ; -- index token
+        _drop                           ; -- index
+        _ pending_data
+        _ swap
+        _cells
+        _plus
+        _fetch                          ; -- xt
+        _ inline_or_call_xt
+        _else .1
+        _dotq "unknown token "
+        _ dot
+        _then .1
         next
 endcode
 
 ; ### flush-compilation-queue
-; deferred flush_compilation_queue, 'flush-compilation-queue', noop
-deferred flush_compilation_queue, 'flush-compilation-queue', compile_pending_xt
+code flush_compilation_queue, 'flush-compilation-queue'
+        _ compilation_queue_size
+
+        _ dup
+        _if .0
+        _ ?cr
+        _dotq "flush-compilation-queue"
+        _then .0
+
+        _lit 0
+        _?do .1
+        _i
+        _ dup
+        _ dot_entry
+        _ process_compilation_queue_entry
+        _loop .1
+        _zeroto compilation_queue_size
+        next
+endcode
 
 ; ### opt
 value opt, 'opt', 0
 
 ; ### +opt
 code plusopt, '+opt', IMMEDIATE   ; --
+        _ initialize_compilation_queue
         mov     qword [opt_data], TRUE
         next
 endcode
@@ -38,5 +158,6 @@ endcode
 ; ### -opt
 code minusopt, '-opt', IMMEDIATE  ; --
         mov     qword [opt_data], FALSE
+        _ flush_compilation_queue
         next
 endcode

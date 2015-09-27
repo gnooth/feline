@@ -28,3 +28,6 @@ GENERIC_WRITE   equ     $40000000
 MAX_PATH        equ     260             ; windef.h
 
 NVOCS           equ     8               ; maximum number of word lists in the search order
+
+TOKEN_LITERAL   equ     1               ; data is value of literal
+TOKEN_XT        equ     2               ; data is xt

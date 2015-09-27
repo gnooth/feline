@@ -187,12 +187,7 @@ code i, 'i', IMMEDIATE
         _ ?comp
         _ flush_compilation_queue
         _lit inline_i_xt
-        _ opt
-        _if .1
-        _to pending_xt
-        _else .1
         _ copy_code
-        _then .1
         next
 endcode
 
