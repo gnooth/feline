@@ -211,17 +211,6 @@ code compile_pending_xt, 'compile-pending-xt'
         next
 endcode
 
-; ### clear-compilation-queue
-; deferred clear_compilation_queue, 'clear-compilation-queue', noop
-code clear_compilation_queue, 'clear-compilation-queue'
-        _clear pending_xt
-        next
-endcode
-
-; ### flush-compilation-queue
-; deferred flush_compilation_queue, 'flush-compilation-queue', noop
-deferred flush_compilation_queue, 'flush-compilation-queue', compile_pending_xt
-
 ; ### inline-or-call-xt
 code inline_or_call_xt, 'inline-or-call-xt'     ; xt --
         _ dup                           ; -- xt xt
@@ -233,21 +222,6 @@ code inline_or_call_xt, 'inline-or-call-xt'     ; xt --
         ; default behavior
         _ xt_commacall
         _then .1
-        next
-endcode
-
-; ### opt
-value opt, 'opt', 0
-
-; ### +opt
-code plusopt, '+opt', IMMEDIATE   ; --
-        mov     qword [opt_data], TRUE
-        next
-endcode
-
-; ### -opt
-code minusopt, '-opt', IMMEDIATE  ; --
-        mov     qword [opt_data], FALSE
         next
 endcode
 

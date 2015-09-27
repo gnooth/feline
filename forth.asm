@@ -41,6 +41,7 @@ default abs ; use absolute addresses by default
 %include "loop.asm"
 %include "memory.asm"
 %include "number.asm"
+%include "optimizer.asm"
 %include "parse.asm"
 %include "quit.asm"
 %include "stack.asm"

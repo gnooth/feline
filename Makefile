@@ -46,6 +46,7 @@ ASM_SOURCES = forth.asm forth_home.asm equates.asm macros.asm inlines.asm \
 	loop.asm \
 	memory.asm \
 	number.asm \
+	optimizer.asm \
 	parse.asm \
 	quit.asm \
 	stack.asm \
