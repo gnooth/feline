@@ -57,7 +57,14 @@ code literal, 'literal', IMMEDIATE      ; n --
 ; "Interpretation semantics for this word are undefined."
         _ ?comp
         _ flush_compilation_queue
+        _ opt
+        _if .1
+        _lit TOKEN_LITERAL
+        _ swap
+        _ add_compilation_queue_entry
+        _else .1
         _ iliteral
+        _then .1
         next
 endcode
 
@@ -163,7 +170,7 @@ code parencompilecomma, '(compile,)'    ; xt --
         _if .2
         _ execute
         _return
-        _then .2
+        _then .2                        ; -- xt
 
         _lit TOKEN_XT
         _ swap

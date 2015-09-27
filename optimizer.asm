@@ -72,13 +72,13 @@ code dot_entry, '.entry'                ; index --
 endcode
 
 ; ### add-compilation-queue-entry
-code add_compilation_queue_entry, 'add-compilation-queue-entry'         ; xt data --
+code add_compilation_queue_entry, 'add-compilation-queue-entry'         ; token data --
         _ compilation_queue_size
         _ compilation_queue_capacity
         _ equal
         _if .1
         _ flush_compilation_queue
-        _then .1                        ; -- xt data
+        _then .1                        ; -- token data
         _ pending_data
         _ compilation_queue_size
         _cells
@@ -117,10 +117,24 @@ code process_compilation_queue_entry, 'process-compilation-queue-entry' ; index 
         _plus
         _fetch                          ; -- xt
         _ inline_or_call_xt
-        _else .1
+        _return
+        _then .1                        ; -- index token
+        _ dup
+        _lit TOKEN_LITERAL
+        _ equal
+        _if .2
+        _drop
+        _ pending_data
+        _ swap
+        _cells
+        _plus
+        _fetch                          ; value of literal
+        _ iliteral
+        _return
+        _then .2
+        ; shouldn't happen
         _dotq "unknown token "
         _ dot
-        _then .1
         next
 endcode
 
