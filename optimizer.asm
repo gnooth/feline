@@ -139,7 +139,7 @@ code process_compilation_queue_entry, 'process-compilation-queue-entry' ; index 
 endcode
 
 ; ### flush-compilation-queue
-code flush_compilation_queue, 'flush-compilation-queue'
+code iflush_compilation_queue, '(flush-compilation-queue)'
         _ compilation_queue_size
 
         _ dup
@@ -158,6 +158,8 @@ code flush_compilation_queue, 'flush-compilation-queue'
         _zeroto compilation_queue_size
         next
 endcode
+
+deferred flush_compilation_queue, 'flush-compilation-queue', iflush_compilation_queue
 
 ; ### opt
 value opt, 'opt', 0

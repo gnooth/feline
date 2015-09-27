@@ -107,9 +107,10 @@ endcode
 ; ### compile-do-literal
 code compile_do_literal, 'compile-do-literal'
         _ number
-        _ flush_compilation_queue
+;         _ flush_compilation_queue
         _ double?
         _if .2
+        _ flush_compilation_queue
         _ twoliteral
         _else .2
         _ drop

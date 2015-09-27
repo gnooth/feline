@@ -56,7 +56,7 @@ code literal, 'literal', IMMEDIATE      ; n --
 ; CORE
 ; "Interpretation semantics for this word are undefined."
         _ ?comp
-        _ flush_compilation_queue
+;         _ flush_compilation_queue
         _ opt
         _if .1
         _lit TOKEN_LITERAL
