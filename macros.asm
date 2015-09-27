@@ -269,7 +269,13 @@ section .text
 
 %macro  _clear 1                        ; label
         mov     rax, %1_data
-        xor     rdx, rdx
+        xor     edx, edx
+        mov     [rax], rdx
+%endmacro
+
+%macro  _zeroto 1                       ; label
+        mov     rax, %1_data
+        xor     edx, edx
         mov     [rax], rdx
 %endmacro
 
