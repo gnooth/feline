@@ -137,11 +137,11 @@ endcode
 code char, 'char'                       ; "<spaces>name" -- char
 ; 6.1.0895 CORE
         _ parse_name                    ; -- addr len
-        _if char1
+        _if .1
         movzx   rbx, byte [rbx]
-        _else char1
-        xor     rbx, rbx
-        _then char1
+        _else .1
+        xor     ebx, ebx
+        _then .1
         next
 endcode
 
