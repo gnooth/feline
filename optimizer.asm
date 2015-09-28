@@ -71,6 +71,25 @@ code dot_entry, '.entry'                ; index --
         next
 endcode
 
+; ### convert-token-and-data
+code convert_token_and_data, 'convert-token-and-data'                   ; token data --
+        _ over                          ; -- token data token
+        _lit TOKEN_XT
+        _ equal
+        _if .1                          ; -- token data
+        _lit store_xt
+        _ over
+        _ equal
+        _if .2
+        _2drop
+        _lit TOKEN_STORE
+        _lit store_xt
+        _return
+        _then .2
+        _then .1
+        next
+endcode
+
 ; ### add-compilation-queue-entry
 code add_compilation_queue_entry, 'add-compilation-queue-entry'         ; token data --
         _ compilation_queue_size
@@ -79,17 +98,29 @@ code add_compilation_queue_entry, 'add-compilation-queue-entry'         ; token 
         _if .1
         _ flush_compilation_queue
         _then .1                        ; -- token data
+
+        _ ?cr
+        _ dots
+
+        _ convert_token_and_data
+
+        _ ?cr
+        _ dots
+
         _ pending_data
         _ compilation_queue_size
         _cells
         _plus
-        _ store
+        _ store                         ; -- token
+
         _ pending_tokens
         _ compilation_queue_size
         _plus
         _ cstore
+
         _lit 1
         _plusto compilation_queue_size
+
         next
 endcode
 
@@ -106,6 +137,13 @@ code process_compilation_queue_entry, 'process-compilation-queue-entry' ; index 
         _ pending_tokens
         _plus
         _cfetch                         ; -- index token
+
+        _ dup
+        _zeq_if .0                      ; zero in the token slot means NOP
+        _2drop
+        _return
+        _then .0
+
         _ dup                           ; -- index token token
         _lit TOKEN_XT                   ; -- index token token TOKEN_XT
         _ equal                         ; -- index token flag
@@ -119,6 +157,7 @@ code process_compilation_queue_entry, 'process-compilation-queue-entry' ; index 
         _ inline_or_call_xt
         _return
         _then .1                        ; -- index token
+
         _ dup
         _lit TOKEN_LITERAL
         _ equal
@@ -131,10 +170,27 @@ code process_compilation_queue_entry, 'process-compilation-queue-entry' ; index 
         _fetch                          ; value of literal
         _ iliteral
         _return
-        _then .2
-        ; shouldn't happen
-        _dotq "unknown token "
-        _ dot
+        _then .2                        ; -- index token
+
+        ; otherwise ignore the token and compile the xt in the data field
+        _ ?cr
+        _dotq "here we go "
+        _ dots
+        _ drop
+        _ pending_data
+        _ swap
+        _ ?cr
+        _ dots
+        _cells
+        _plus
+        _ ?cr
+        _ dots
+        _fetch                          ; -- xt
+        _ inline_or_call_xt
+;         ; shouldn't happen
+;         _nip
+;         _dotq "unknown token "
+;         _ dot
         next
 endcode
 

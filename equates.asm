@@ -31,3 +31,4 @@ NVOCS           equ     8               ; maximum number of word lists in the se
 
 TOKEN_LITERAL   equ     1               ; data is value of literal
 TOKEN_XT        equ     2               ; data is xt
+TOKEN_STORE     equ     3
