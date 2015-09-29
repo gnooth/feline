@@ -24,6 +24,7 @@
 #else
 #include <limits.h>     // PATH_MAX
 #include <signal.h>
+#include <unistd.h>
 #include <sys/mman.h>
 #include <sys/time.h>
 #endif
@@ -130,8 +131,22 @@ int main(int argc, char **argv, char **env)
 
 void os_emit(int c)
 {
+#ifdef WIN64
   fputc(c, stdout);
   fflush(stdout);
+#else
+  write(STDOUT_FILENO, &c, 1);
+#endif
+}
+
+void os_emit_file(int c, int fd)
+{
+#ifdef WIN64
+  fputc(c, fd);
+  fflush(fd);
+#else
+  write(fd, &c, 1);
+#endif
 }
 
 void * os_allocate(size_t size)
