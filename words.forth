@@ -13,6 +13,21 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+: traverse-wordlist                     \ xt wid --
+\ TOOLS EXT
+    local wid
+    local xt
+    wid @ local nfa
+    begin
+        nfa
+    while
+        nfa xt execute
+        0= if
+            exit
+        then
+        nfa n>link @ to nfa
+    repeat ;
+
 0 value words-pattern
 0 value words-count
 
