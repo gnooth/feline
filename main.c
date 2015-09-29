@@ -129,26 +129,6 @@ int main(int argc, char **argv, char **env)
     abort();
 }
 
-void os_emit(int c)
-{
-#ifdef WIN64
-  fputc(c, stdout);
-  fflush(stdout);
-#else
-  write(STDOUT_FILENO, &c, 1);
-#endif
-}
-
-void os_emit_file(int c, int fd)
-{
-#ifdef WIN64
-  fputc(c, fd);
-  fflush(fd);
-#else
-  write(fd, &c, 1);
-#endif
-}
-
 void * os_allocate(size_t size)
 {
   return malloc(size);
@@ -279,9 +259,7 @@ Cell os_write_file(Cell fd, void *buf, size_t count)
 #ifdef WIN64_NATIVE
   DWORD bytes_written;
   BOOL ret;
-  fflush(stdout);
   ret = WriteFile((HANDLE)fd, buf, count, &bytes_written, NULL);
-  fflush(stdout);
   if (ret)
     return 0;
   else
@@ -410,6 +388,15 @@ Cell os_flush_file(Cell fd)
 #else
   // Linux
   return fsync(fd);
+#endif
+}
+
+void os_emit_file(int c, int fd)
+{
+#ifdef WIN64
+  os_write_file (fd, &c, 1);
+#else
+  write(fd, &c, 1);
 #endif
 }
 

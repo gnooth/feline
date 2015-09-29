@@ -33,30 +33,22 @@ code key?, 'key?'
         next
 endcode
 
-extern os_emit
-
-; ### (emit)
-code paren_emit, '(emit)'
-%ifdef WIN64
-        popd    rcx
-%else
-        popd    rdi
-%endif
-        xcall   os_emit
-        next
-endcode
-
 ; ### #out
 variable nout, '#out', 0
 
+; For Windows, the Forth standard handles are initialized in prep_terminal().
+; The values here are correct for Linux.
+
 ; ### stdin
-constant forth_stdin,  'stdin',  0
+value forth_stdin,  'stdin',  0
 
 ; ### stdout
-constant forth_stdout, 'stdout', 1
+value forth_stdout, 'stdout', 1
 
 ; ### stderr
-constant forth_stderr, 'stderr', 2
+value forth_stderr, 'stderr', 2
+
+; For Windows, OUTPUT-FILE is initialized by calling STANDARD-OUTPUT in COLD.
 
 ; ### output-file
 value output_file, 'output-file', 1

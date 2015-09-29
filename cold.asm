@@ -85,6 +85,7 @@ code cold, 'cold'                       ; --
         mov     [rp0_data], rsp
         mov     [saved_rbp_data], rbp
         mov     rbp, [sp0_data]
+        _ standard_output
         _ here
         _ origin
         _ store
