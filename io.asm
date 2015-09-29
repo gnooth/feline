@@ -46,7 +46,27 @@ code paren_emit, '(emit)'
         next
 endcode
 
+; ### #out
 variable nout, '#out', 0
+
+; ### stdin
+constant forth_stdin,  'stdin',  0
+
+; ### stdout
+constant forth_stdout, 'stdout', 1
+
+; ### stderr
+constant forth_stderr, 'stderr', 2
+
+; ### output-file
+value output_file, 'output-file', 1
+
+; ### standard-output
+code standard_output, 'standard-output'
+        _ forth_stdout
+        _to output_file
+        next
+endcode
 
 ; ### emit
 code emit, 'emit'
@@ -56,9 +76,26 @@ code emit, 'emit'
         jmp     .2
 .1:
         xor     eax, eax
-        mov     [nout_data], eax
+        mov     [nout_data], rax
 .2:
-        jmp    paren_emit
+        _ output_file
+        _ emit_file
+        next
+endcode
+
+extern os_emit_file
+
+; ### emit-file
+code emit_file, 'emit-file'             ; char fileid --
+%ifdef WIN64
+        popd    rdx
+        popd    rcx
+%else
+        popd    rsi
+        popd    rdi
+%endif
+        xcall   os_emit_file
+        next
 endcode
 
 ; ### type
@@ -93,7 +130,7 @@ endcode
 ; ### ?cr
 code ?cr, '?cr'
         mov     rax, [nout_data]
-        or      rax, rax
+        test    rax, rax
         jz     .1
         _ cr
 .1:
