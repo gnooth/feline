@@ -23,18 +23,31 @@ only forth also disassembler definitions
 
 decimal
 
+\ : find-code-in-wordlist  ( code-addr wid -- xt | 0 )
+\    swap >r                      \ -- wid        r: -- code-addr
+\    @ dup if
+\       begin                     \ -- nfa        r: -- code-addr
+\          name> dup >code r@ = if
+\             r>drop
+\             exit
+\          then
+\          >link @ dup 0=
+\       until
+\    then
+\    r>drop ;
+
 : find-code-in-wordlist  ( code-addr wid -- xt | 0 )
-   swap >r                      \ -- wid        r: -- code-addr
-   @ dup if
-      begin                     \ -- nfa        r: -- code-addr
-         name> dup >code r@ = if
-            r>drop
-            exit
-         then
-         >link @ dup 0=
-      until
-   then
-   r>drop ;
+    local wid
+    local code-addr
+    wid @ dup if
+        begin                           \ -- nfa
+            name> dup >code code-addr = if
+                exit
+            then
+            >link @ dup 0=
+        until
+    then
+;
 
 : find-code  ( code-addr -- xt | 0 )
    >r                           \ --            r: -- code-addr
@@ -158,11 +171,11 @@ create old-mnemonic  2 cells allot
 ;
 
 : .modrm  ( modrm-byte -- )
-   base @ >r binary
+   base@ >r binary
    ?cr ." mod: " dup (modrm-mod) .2 space
    cr  ." reg: " dup (modrm-reg) .3 space
    cr  ."  rm: "      (modrm-rm) .3 space
-   r> base ! ;
+   r> base! ;
 
 : !sib-byte ( -- )
     ip c@ to sib-byte
@@ -177,11 +190,11 @@ create old-mnemonic  2 cells allot
 : sib-base   ( -- base  )  sib-byte (sib-base)  ;
 
 : .sib  ( sib -- )
-   base @ >r binary
+   base@ >r binary
    ?cr ." scale: " dup (sib-scale) .2 space
    cr  ." index: " dup (sib-index) .3 space
-   cr  ."  base: "     (sib-index) .3 space
-   r> base ! ;
+   cr  ."  base: "     (sib-base)  .3 space
+   r> base! ;
 
 : .reg32  ( +n -- )
    s" eaxecxedxebxespebpesiedi"         \ +n addr len
@@ -1021,55 +1034,59 @@ $f7 install-handler
 
 \ $ff handler
 :noname  ( -- )
-   !modrm-byte
-   modrm-mod 0 = if
-       modrm-reg 4 = if
-           $" jmp" to mnemonic
-           ok_relative modrm-rm 0 dest!
-           2 to size
-           .inst
-           exit
-       then
-   then
-   modrm-byte $e0 = if                  \ mod 3
-      s" jmp" old-mnemonic!
-      2 to size
-      .instruction
-      ." rax"
-      exit
-   then
-   modrm-reg 0= if
-      s" inc" old-mnemonic!
-      c" inc" to mnemonic
-      modrm-mod 3 = if
-         3 to size
-         .instruction
-         modrm-rm .reg64
-         exit
-      then
-      modrm-mod 0= if
+    !modrm-byte
+    modrm-mod 0 = if
+        modrm-reg 4 = if
+            $" jmp" to mnemonic
+            ok_relative modrm-rm 0 dest!
+            2 to size
+            .inst
+            exit
+        then
+    then
+    modrm-byte $e0 = if                 \ mod 3
+        s" jmp" old-mnemonic!
+        2 to size
+        .instruction
+        ." rax"
+        exit
+    then
+    modrm-reg 0= if
+        s" inc" old-mnemonic!
+        c" inc" to mnemonic
+        modrm-mod 3 = if
+            3 to size
+            .instruction
+            modrm-rm .reg64
+            exit
+        then
+        modrm-mod 0= if
                                         \ INC reg/mem64
 \          4 to size
 \          2 +to ip
 \          .instruction
-         ip c@ h# 24 = if
-            1 +to ip
+            !sib-byte
+            sib-base 5 = if
+                ok_relative_no_reg 0 ip l@s dest!
+                4 +to ip
+                .inst
+                exit
+            then
             ip instruction-start - .bytes
             40 >pos ." inc"
             48 >pos ." qword [" modrm-rm .reg64 ." ]"
             exit
-         then
-      then
-   then
-   modrm-reg 1 = if
-       $" dec" to mnemonic
-       prefix if 3 else 2 then to size
-       ok_register modrm-rm register-rm 0 dest!
-       .inst
-       exit
-   then
-   ip instruction-start - .bytes
-   unsupported
+        then
+    then
+    modrm-reg 1 = if
+        $" dec" to mnemonic
+        prefix if 3 else 2 then to size
+        ok_register modrm-rm register-rm 0 dest!
+        .inst
+        exit
+    then
+    ip instruction-start - .bytes
+    unsupported
 ;
 
 h# ff install-handler
