@@ -36,6 +36,7 @@ ASM_SOURCES = forth.asm forth_home.asm equates.asm macros.asm inlines.asm \
 	dictionary.asm \
 	dot.asm \
 	double.asm \
+	exceptions.asm \
 	execute.asm \
 	fetch.asm \
 	find.asm \
