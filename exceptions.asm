@@ -76,3 +76,16 @@ code throw, 'throw'
         _then throw1
         next
 endcode
+
+; ### ?throw
+code ?throw, '?throw'                   ; flag n --
+; Win32Forth
+; throw n if flag is nonzero
+        _ swap
+        _if .1
+        _ throw
+        _else .1
+        _drop
+        _then .1
+        next
+endcode
