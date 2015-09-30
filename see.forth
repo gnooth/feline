@@ -72,7 +72,7 @@ decimal
 \ "1-bit (high) extension of the SIB index field, thus permitting access to 16 registers."
 2 constant rex.x
 
-\ "1-bit (high) extension of the ModRM r/m field, SIB base field1, or opcode reg field,
+\ "1-bit (high) extension of the ModRM r/m field, SIB base field, or opcode reg field,
 \ thus permitting access to 16 registers."
 1 constant rex.b
 
@@ -1017,6 +1017,20 @@ $cc install-handler
 
 $cd install-handler
 
+\ $d1 handler
+: .d1 ( -- )
+    !modrm-byte
+    modrm-reg 4 = if
+        $" shl" to mnemonic
+        ok_register modrm-rm register-rm 0 dest!
+        .inst
+        exit
+    then
+    unsupported
+;
+
+' .d1 $d1 install-handler
+
 \ $f7 handler
 :noname ( -- )
     !modrm-byte
@@ -1144,7 +1158,7 @@ decimal
     while
         decode
     repeat
-    ?cr end-address start-address - . ." bytes" ;
+    ?cr end-address start-address - dec. ." bytes" ;
 
 : disassemble  ( xt -- )
     >code disasm ;
