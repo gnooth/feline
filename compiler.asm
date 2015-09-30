@@ -59,9 +59,7 @@ code literal, 'literal', IMMEDIATE      ; n --
 ;         _ flush_compilation_queue
         _ opt
         _if .1
-        _lit TOKEN_LITERAL
-        _ swap
-        _ add_compilation_queue_entry
+        _ cq_add_literal
         _else .1
         _ iliteral
         _then .1
@@ -172,9 +170,7 @@ code parencompilecomma, '(compile,)'    ; xt --
         _return
         _then .2                        ; -- xt
 
-        _lit TOKEN_XT
-        _ swap
-        _ add_compilation_queue_entry
+        _ cq_add_xt
         next
 endcode
 
@@ -222,7 +218,7 @@ endcode
 
 ; ### :
 code colon, ':'
-        _ clear_compilation_queue
+        _ cq_clear
         _ header
         _ hide
         _ here_c
@@ -239,7 +235,7 @@ endcode
 
 ; ### :noname
 code colonnoname, ':noname'
-        _ clear_compilation_queue
+        _ cq_clear
         _ here_c                        ; xt to be returned
 
         _ dup

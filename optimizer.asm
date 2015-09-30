@@ -15,214 +15,175 @@
 
 file __FILE__
 
-value pending_tokens, 'pending-tokens', 0
+; A compilation queue entry consists of two cells: CAR (compilation address
+; register) and CDR (compilation data register). For most words the CAR holds the
+; word's xt. Since the xt is an address, we can use also very small numbers
+; (arbitrarily, numbers < 10) in the CAR as tokens to indicate cq entries that
+; need special handling. There won't be very many of these.
 
-value pending_data, 'pending-data', 0
+; ### cq_nop
+constant cq_nop, 'cq-nop', 0            ; token indicates entry should be ignored
 
-constant compilation_queue_capacity, 'compilation-queue-capacity', 16   ; space for 16 entries
+; ### cq_lit
+constant cq_lit, 'cq-lit', 1            ; token indicates a literal value in the CDR
 
-value compilation_queue_size, 'compilation-queue-size', 0
+; ### cq-capacity
+constant cq_capacity, 'cq-capacity', 16 ; space for 16 entries
 
-; ### initialize-compilation-queue
-code initialize_compilation_queue, 'initialize-compilation-queue'       ; --
-        _ pending_tokens
-        _zeq_if .1
-        ; allocate bytes for the tokens
-        _ compilation_queue_capacity
-        _ dup
-        _ allocate
-        _ throw                         ; REVIEW
-        _to pending_tokens
-        ; cells for the data
-        _cells
-        _ allocate
-        _ throw
-        _to pending_data
-        _then .1
-        next
-endcode
+; ### cq-size
+value cq_size, 'cq-size', 0             ; number of entries in use
 
-; ### .entry
-code dot_entry, '.entry'                ; index --
-        _ ?cr
-        _ pending_tokens
-        _overplus
-        _cfetch
-        _ dup
-        _ dot
-        _lit TOKEN_XT
+; ### cq-index
+value cq_index, 'cq-index', 0
+
+; ### cq-add-xt
+code cq_add_xt, 'cq-add-xt'             ; xt --
+        _ cq_size
+        _ cq_capacity
         _ equal
         _if .1
-        _ pending_data
-        _ swap
-        _cells
-        _plus
-        _fetch
-        _toname
-        _ dotid
-        _else .1
-        _ pending_data
-        _ swap
-        _cells
-        _plus
-        _fetch
-        _ dot
+        _ cq_flush
+        _zeroto cq_size                 ; FIXME should be done by cq_flush
+        _zeroto cq_index                ; FIXME should be done by cq_flush
         _then .1
+        _ cq
+        _ cq_index
+        _cells
+        _plus
+        _ store
+        _lit 1
+        _plusto cq_index
+        _lit 1
+        _plusto cq_size
         next
 endcode
 
-; ### convert-token-and-data
-code convert_token_and_data, 'convert-token-and-data'                   ; token data --
-        _ over                          ; -- token data token
-        _lit TOKEN_XT
-        _ equal
-        _if .1                          ; -- token data
-        _lit store_xt
-        _ over
-        _ equal
-        _if .2
-        _2drop
-        _lit TOKEN_STORE
-        _lit store_xt
-        _return
-        _then .2
-        _then .1
-        next
-endcode
-
-; ### add-compilation-queue-entry
-code add_compilation_queue_entry, 'add-compilation-queue-entry'         ; token data --
-        _ compilation_queue_size
-        _ compilation_queue_capacity
+; ### cq-add-literal
+code cq_add_literal, 'cq-add-literal'   ; n --
+        _ cq_size
+        _ cq_capacity
         _ equal
         _if .1
-        _ flush_compilation_queue
-        _then .1                        ; -- token data
+        _ cq_flush
+        _zeroto cq_size                 ; FIXME should be done by cq_flush
+        _zeroto cq_index                ; FIXME should be done by cq_flush
+        _then .1
 
-        _ ?cr
-        _ dots
-
-        _ convert_token_and_data
-
-        _ ?cr
-        _ dots
-
-        _ pending_data
-        _ compilation_queue_size
+        _ cq_lit                        ; token
+        _ cq
+        _ cq_index
         _cells
         _plus
-        _ store                         ; -- token
+        _ store                         ; -- n
 
-        _ pending_tokens
-        _ compilation_queue_size
+        _ cq
+        _ cq_index
+        _oneplus
+        _cells
         _plus
-        _ cstore
+        _ store
 
         _lit 1
-        _plusto compilation_queue_size
-
+        _plusto cq_index
+        _lit 1
+        _plusto cq_size
         next
 endcode
 
-
-; ### clear-compilation-queue
-code clear_compilation_queue, 'clear-compilation-queue'
-        _zeroto compilation_queue_size
-        next
-endcode
-
-; ### process-compilation-queue-entry
-code process_compilation_queue_entry, 'process-compilation-queue-entry' ; index --
-        _ dup
-        _ pending_tokens
-        _plus
-        _cfetch                         ; -- index token
-
-        _ dup
-        _zeq_if .0                      ; zero in the token slot means NOP
-        _2drop
-        _return
-        _then .0
-
-        _ dup                           ; -- index token token
-        _lit TOKEN_XT                   ; -- index token token TOKEN_XT
-        _ equal                         ; -- index token flag
-        _if .1                          ; -- index token
-        _drop                           ; -- index
-        _ pending_data
+; ### cq-entry
+code cq_entry, 'cq-entry'               ; index -- addr
+; returns address of entry pointed to by index
+        _ cq
         _ swap
         _cells
         _plus
-        _fetch                          ; -- xt
-        _ inline_or_call_xt
-        _return
-        _then .1                        ; -- index token
+        next
+endcode
 
+; ### cq-index-entry
+code cq_index_entry, 'cq-index-entry'   ; -- addr
+; returns address of entry pointed to by cq-index
+        _ cq_index
+        _ cq_entry
+        next
+endcode
+
+code cq_first, 'cq-first'               ; -- x
+; returns contents of CAR of first unprocessed cq entry
+; returns 0 if there are no unprocessed entries
+        _ cq_index
+        _ cq_size
+        _ lt
+        _if .1
+        _ cq_index_entry
+        _fetch
+        _else .1
+        _zero
+        _then .1
+        next
+endcode
+
+code cq_second, 'cq-second'
+; returns contents of CAR of second unprocessed cq entry
+; returns 0 if there are not at least 2 unprocessed entries
+        _ cq_index
+        _oneplus
         _ dup
-        _lit TOKEN_LITERAL
-        _ equal
-        _if .2
+        _ cq_size
+        _ lt
+        _if .1
+        _ cq_entry
+        _fetch
+        _else .1
         _drop
-        _ pending_data
-        _ swap
-        _cells
-        _plus
-        _fetch                          ; value of literal
-        _ iliteral
-        _return
-        _then .2                        ; -- index token
+        _zero
+        _then .1
+        next
+endcode
 
-        ; otherwise ignore the token and compile the xt in the data field
-        _ ?cr
-        _dotq "here we go "
-        _ dots
-        _ drop
-        _ pending_data
-        _ swap
-        _ ?cr
-        _ dots
+value cq, 'cq', 0                       ; address of compilation queue
+
+; ### cq-init
+code cq_init, 'cq-init'       ; --
+        _ cq
+        _zeq_if .1
+        _ cq_capacity
+        _twostar
         _cells
-        _plus
-        _ ?cr
-        _ dots
-        _fetch                          ; -- xt
-        _ inline_or_call_xt
-;         ; shouldn't happen
-;         _nip
-;         _dotq "unknown token "
-;         _ dot
+        _ dup
+        _ allocate
+        _lit -59                        ; ALLOCATE error
+        _ ?throw
+        _to cq
+        _ cq
+        _ swap
+        _ erase
+        _then .1
+        next
+endcode
+
+; ### cq-clear
+code cq_clear, 'cq-clear'
+        _zeroto cq_size
+        next
+endcode
+
+; ### cq-flush
+code cq_flush, 'cq-flush'
+        _ true
+        _abortq "cq-flush needs code"
         next
 endcode
 
 ; ### flush-compilation-queue
-code iflush_compilation_queue, '(flush-compilation-queue)'
-        _ compilation_queue_size
-
-        _ dup
-        _if .0
-        _ ?cr
-        _dotq "flush-compilation-queue"
-        _then .0
-
-        _lit 0
-        _?do .1
-        _i
-        _ dup
-        _ dot_entry
-        _ process_compilation_queue_entry
-        _loop .1
-        _zeroto compilation_queue_size
-        next
-endcode
-
-deferred flush_compilation_queue, 'flush-compilation-queue', iflush_compilation_queue
+deferred flush_compilation_queue, 'flush-compilation-queue', noop
 
 ; ### opt
 value opt, 'opt', 0
 
 ; ### +opt
 code plusopt, '+opt', IMMEDIATE   ; --
-        _ initialize_compilation_queue
+        _ cq_init
         mov     qword [opt_data], TRUE
         next
 endcode
