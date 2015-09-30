@@ -100,7 +100,7 @@ endcode
 
 ; ### 2*
 inline twostar, '2*'
-        shl     rbx, 1
+        _twostar
 endinline
 
 ; ### /
