@@ -477,6 +477,13 @@ $01 install-handler
             .inst
             exit
         then
+        modrm-mod 1 = if
+            ok_register modrm-reg register-reg 0      dest!
+            ok_relative modrm-rm  register-rm  ip c@s source!
+            1 +to ip
+            .inst
+            exit
+        then
     else
         modrm-mod 1 = if                \ 1-byte displacement
             ok_relative modrm-rm ip c@s source!
@@ -555,6 +562,23 @@ $09 install-handler
     then
     byte2 $8d = if
         $" jge" .jcc32
+        exit
+    then
+    byte2 $9c = if
+        $" setl" to mnemonic
+        !modrm-byte
+        modrm-mod 3 = if
+            ok_register modrm-rm reg8 0 dest!
+            .inst
+            exit
+        then
+    then
+    byte2 $be = if
+        $" movsx" to mnemonic
+        !modrm-byte
+        ok_register modrm-reg reg8 0 source!
+        ok_register modrm-rm register-rm 0 dest!
+        .inst
         exit
     then
     ip instruction-start - .bytes
@@ -878,26 +902,34 @@ $8a install-handler
             exit
         then
     then
-    modrm-rm 4 = if !sib-byte then
-    modrm-mod 0= if
-        sib-scale 0= if
-            sib-index 4 = if
-                prefix if 7 else 6 then to size
-                ok_register modrm-reg register-reg 0 dest!
-                ok_relative_no_reg 0 ip l@s source!
-                4 +to ip
-                .inst
-                exit
-            then
+    modrm-rm 4 = if
+        !sib-byte
+        sib-byte   $24 = if
+            ok_register modrm-reg register-reg 0 dest!
+            ok_relative modrm-rm  register-rm  0 source!
+            .inst
+            exit
         then
-        prefix if 3 else 2 then to size
-        size .bytes
-        old-.mnemonic
-        48 >pos
-        modrm-reg .reg64
-        .sep
-        modrm-rm 0 .relative
-        exit
+        modrm-mod 0= if
+            sib-scale 0= if
+                sib-index 4 = if
+                    prefix if 7 else 6 then to size
+                    ok_register modrm-reg register-reg 0 dest!
+                    ok_relative_no_reg 0 ip l@s source!
+                    4 +to ip
+                    .inst
+                    exit
+                then
+            then
+            prefix if 3 else 2 then to size
+            size .bytes
+            old-.mnemonic
+            48 >pos
+            modrm-reg .reg64
+            .sep
+            modrm-rm 0 .relative
+            exit
+        then
     then
     modrm-mod 1 = if                \ 1-byte displacement
         ok_register modrm-reg 0 dest!
@@ -1030,6 +1062,20 @@ $cd install-handler
 ;
 
 ' .d1 $d1 install-handler
+
+\ $f6 handler
+:noname ( -- )
+    !modrm-byte
+    modrm-reg 3 = if
+        $" neg" to mnemonic
+        ok_register modrm-rm reg8 0 dest!
+        .inst
+        exit
+    then
+    unsupported
+;
+
+$f6 install-handler
 
 \ $f7 handler
 :noname ( -- )
