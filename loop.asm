@@ -49,6 +49,8 @@ code do, 'do', IMMEDIATE                ; -- addr
         _lit ido_xt
         _ copy_code
 
+        _ align_code
+
         _ here_c                        ; address to jump back to at bottom of loop
         next
 endcode
@@ -70,6 +72,8 @@ code ?do, '?do', IMMEDIATE               ; -- addr
 
         _lit i?do_xt
         _ copy_code
+
+        _ align_code
 
         _ here_c
 
@@ -185,9 +189,11 @@ endinline
 ; ### i
 code i, 'i', IMMEDIATE
         _ ?comp
-        _ flush_compilation_queue
+;         _ flush_compilation_queue
+;         _lit inline_i_xt
+;         _ copy_code
         _lit inline_i_xt
-        _ copy_code
+        _ compilecomma
         next
 endcode
 
