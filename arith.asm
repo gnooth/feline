@@ -313,6 +313,12 @@ code lt, '<'                            ; n1 n2 -- flag
         cmp     [rbp], rbx
         mov     rbx, -1
         cmovnl  rbx, rax
+
+;         cmp     [rbp], rbx
+;         setl    bl
+;         neg     bl
+;         movsx   rbx, bl
+
         lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
