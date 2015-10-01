@@ -82,19 +82,6 @@ code then, 'then', IMMEDIATE            ; c: orig --
         next
 endcode
 
-; ### align-code
-code align_code, 'align-code'
-        _begin .1
-        _ here_c
-        _lit 8
-        _ mod
-        _while .1
-        _lit $90
-        _ ccommac
-        _repeat .1
-        next
-endcode
-
 ; ### begin
 code begin, 'begin', IMMEDIATE          ; c: -- dest
 ; CORE

@@ -26,6 +26,7 @@ terminal.o: forth.h terminal.c Makefile
 	gcc -D_GNU_SOURCE $(FLAGS) -c -o terminal.o terminal.c
 
 ASM_SOURCES = forth.asm forth_home.asm equates.asm macros.asm inlines.asm \
+	align.asm \
 	ansi.asm \
 	arith.asm \
 	branch.asm \

@@ -13,6 +13,10 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+%define DEFAULT_DATA_ALIGNMENT  8
+
+%define DEFAULT_CODE_ALIGNMENT 16
+
 %macro  next    0
         ret
 %endmacro
@@ -77,7 +81,7 @@
 %strlen len1    %1
 %strlen len2    FORTH_HOME
 section .text
-        align   8
+        align   DEFAULT_CODE_ALIGNMENT
 %%name:
         db      len1 + len2 + 1
         db      FORTH_HOME
@@ -103,7 +107,7 @@ section .text
         global %1
 %strlen len     %2
         section .data
-        align   8
+        align   DEFAULT_DATA_ALIGNMENT
 %1_xt:
         dq      %1                      ; address of code
         dq      0                       ; comp field
@@ -117,7 +121,7 @@ section .text
 %1_nfa:
         db      len                     ; length byte
         db      %2                      ; name
-        align   8
+        align   DEFAULT_DATA_ALIGNMENT
 %1_pfa:                                 ; define pfa (but don't reserve any space)
 %define link    %1_nfa                  ; link field points to name field
 %endmacro
@@ -185,7 +189,7 @@ section .text
 %macro  code 2-5 0, 0, 0
         head %1, %2, %3, %4, %5
         section .text
-        align   8
+        align   DEFAULT_CODE_ALIGNMENT
 %1:
 %endmacro
 
@@ -196,7 +200,7 @@ section .text
         %push inline
         head %1, %2, 0, %$ret - %1
         section .text
-        align   8
+        align   DEFAULT_CODE_ALIGNMENT
 %1:
 %endmacro
 
@@ -211,11 +215,11 @@ section .text
         head %1, %2, 0, 0, TYPE_DEFERRED
         section .data
         global %1_data
-        align   8
+        align   DEFAULT_DATA_ALIGNMENT
 %1_data:
         dq      %3_xt
         section .text
-        align   8
+        align   DEFAULT_CODE_ALIGNMENT
 %1:
         mov     rax, %1_data
         mov     rax, [rax]
@@ -227,7 +231,7 @@ section .text
         head    %1, %2, 0, 0, TYPE_VARIABLE
         section .data
         global %1_data
-        align   8
+        align   DEFAULT_DATA_ALIGNMENT
 %1_data:
         dq      %3
         section .text
@@ -241,7 +245,7 @@ section .text
         head    %1, %2, 0, 0, TYPE_VALUE
         section .data
         global %1_data
-        align   8
+        align   DEFAULT_DATA_ALIGNMENT
 %1_data:
         dq      %3
         section .text

@@ -387,29 +387,6 @@ code lcommac, 'l,c'                     ; x --
         next
 endcode
 
-; ### align
-code align_data, 'align'
-        _begin align1
-        _ here
-        _lit 8
-        _ mod
-        _while align1
-        _zero
-        _ ccomma
-        _repeat align1
-        next
-endcode
-
-; REVIEW
-; ### aligned
-code aligned, 'aligned'                 ; addr -- a-addr
-; CORE
-; "a-addr is the first aligned address greater than or equal to addr."
-        add     rbx, 7
-        and     rbx, -8
-        next
-endcode
-
 ; ### (create)
 code paren_create, '(create)'
         _ align_data

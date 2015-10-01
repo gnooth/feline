@@ -468,6 +468,8 @@ endcode
 code buffer_colon, 'buffer:'            ; u "<spaces>name" --
                                         ; Execution: -- a-addr
 ; CORE EXT
+; "Reserve u address units at an aligned address. Contiguity of
+; this region with any other region is undefined."
         _ create
         _ allot
         next
