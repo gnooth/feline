@@ -289,10 +289,46 @@ endcode
 ; ### warning
 variable warning, 'warning', -1
 
-; ### header
-code header, 'header'                   ; "spaces<name>" --
-        _ parse_name                    ; -- c-addr u
-        _ quoteheader
+
+; ### noname-header
+code noname_header, 'noname-header'     ; --
+        _ align_code
+        _ here_c
+        _ comma                         ; code field
+
+        _lit xt_commacall_xt
+        _ comma                         ; comp field
+
+        _zero
+        _ comma                         ; link field
+
+        _ here
+        _tor                            ; -- r: addr-to-be-patched
+        _zero
+        _ comma                         ; pfa (will be patched)
+
+        _zero                           ; flag field
+        _ ccomma
+        _zero
+        _ ccomma                        ; inline field
+        _zero
+        _ ccomma                        ; type field
+
+        _ source_filename
+        _fetch
+        _ comma
+        _ source_line_number
+        _fetch
+        _ comma
+
+        _zero
+        _ ccomma                        ; length byte of name
+
+        _ align_data
+        _ here
+        _rfrom                          ; addr-to-be-patched
+        _ store
+
         next
 endcode
 
@@ -322,20 +358,17 @@ code quoteheader, '"header'             ; c-addr u --
         _ fetch                         ; -- c-addr u link
         _ comma
 
-;         _ align_data
-;         _ here                          ; data field address for >body
-;         _ commac
         _ here
-        _tor                            ; -- r: addr-to-be-patched
+        _tor                            ; -- r: addr
         _zero
-        _ comma                         ; pfa (will be patched)
+        _ comma                         ; pfa field (will be patched)
 
         _zero                           ; flag
         _ ccomma                        ; -- c-addr u
         _zero
-        _ ccomma                        ; inline size
+        _ ccomma                        ; inline field
         _zero
-        _ ccomma                        ; type
+        _ ccomma                        ; type field
 
         _ source_filename
         _fetch
@@ -347,10 +380,12 @@ code quoteheader, '"header'             ; c-addr u --
         _ here
         _ last
         _ store                         ; -- c-addr u
+
         _ here
         _ current
         _ fetch
         _ store
+
         _ here                          ; -- c-addr u here
         _ over
         _ oneplus
@@ -362,6 +397,13 @@ code quoteheader, '"header'             ; c-addr u --
         _rfrom                          ; addr-to-be-patched
         _ store
 
+        next
+endcode
+
+; ### header
+code header, 'header'                   ; "spaces<name>" --
+        _ parse_name                    ; -- c-addr u
+        _ quoteheader
         next
 endcode
 

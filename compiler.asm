@@ -161,14 +161,11 @@ code parencompilecomma, '(compile,)'    ; xt --
         _return
         _then .1
 
-        _ dup                           ; -- xt xt
-        _tocomp                         ; -- xt >comp
-        _fetch                          ; -- xt xt-comp
-        _ ?dup
-        _if .2
-        _ execute
+        _ statefetch
+        _zeq_if .2
+        _ inline_or_call_xt
         _return
-        _then .2                        ; -- xt
+        _then .2
 
         _ cq_add_xt
         next
@@ -221,6 +218,7 @@ code colon, ':'
         _ cq_clear
         _ header
         _ hide
+        _ align_code
         _ here_c
         _ dup
         _ last_code
@@ -236,23 +234,12 @@ endcode
 ; ### :noname
 code colonnoname, ':noname'
         _ cq_clear
-        _ here_c                        ; xt to be returned
-
-        _ dup
-        _lit 2
-        _cells
-        _ plus                          ; addr of start of code
-        _ dup
+        _ here                          ; xt to be returned
+        _ noname_header
+        _ here_c
         _ last_code
         _ store
-        _ commac
-
-        _lit xt_commacall_xt            ; comp field
-        _ commac
-
-        _zero
-        _to using_locals?
-
+        _zeroto using_locals?
         _ rbrack
         _ storecsp
         next
