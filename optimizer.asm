@@ -15,6 +15,36 @@
 
 file __FILE__
 
+; Cached literals.
+
+; ### cq-lit1
+value cq_lit1, 'cq-lit1', 0
+
+; ### cq-#lits
+value cq_nlits, 'cq-#lits', 0
+
+; ### cq-flush-literals
+code cq_flush_literals, 'cq-flush-literals'
+        _ cq_nlits
+        _if .1
+        _ cq_lit1
+        _ iliteral
+        _zeroto cq_nlits
+        _then .1
+        next
+endcode
+
+; ### cq-cache-literal
+code cq_cache_literal, 'cq-cache-literal'       ; n --
+        _ cq_nlits
+        _if .1
+        _ cq_flush_literals
+        _then .1
+        _to cq_lit1
+        _oneplusto cq_nlits
+        next
+endcode
+
 ; A compilation queue entry consists of two cells: CAR (compilation address
 ; register) and CDR (compilation data register). For most words the CAR holds the
 ; word's xt. Since the xt is an address, we can use also very small numbers
@@ -53,20 +83,13 @@ code cq_add_xt, 'cq-add-xt'             ; xt --
         _cells
         _plus
         _ store
-        _lit 1
-        _plusto cq_index
-        _lit 1
-        _plusto cq_size
+        _oneplusto cq_index
+        _oneplusto cq_size
         next
 endcode
 
 ; ### cq-add-literal
 code cq_add_literal, 'cq-add-literal'   ; n --
-;         _ ?cr
-;         _dotq "cq-add-literal "
-;         _ dup
-;         _ decdot
-
         _ cq_size
         _ cq_capacity
         _ equal
@@ -77,26 +100,15 @@ code cq_add_literal, 'cq-add-literal'   ; n --
         _then .1
 
         _ cq_lit                        ; token
-;         _ cq
-;         _ cq_index
-;         _cells
-;         _plus
         _ cq_index_entry
         _ store                         ; -- n
 
-;         _ cq
-;         _ cq_index
-;         _oneplus
-;         _cells
-;         _plus
         _ cq_index_entry
         _cellplus
         _ store
 
-        _lit 1
-        _plusto cq_index
-        _lit 1
-        _plusto cq_size
+        _oneplusto cq_index
+        _oneplusto cq_size
         next
 endcode
 
@@ -175,7 +187,7 @@ endcode
 value cq, 'cq', 0                       ; address of compilation queue
 
 ; ### cq-init
-code cq_init, 'cq-init'       ; --
+code cq_init, 'cq-init'                 ; --
         _ cq
         _zeq_if .1
         _ cq_capacity
@@ -230,28 +242,27 @@ endcode
 
 ; ### cq-flush1
 code cq_flush1, 'cq-flush1'
-;         _ dot_first
-
+        ; nop
         _ cq_first
         _ cq_nop
         _ equal
         _if .1
-        _lit 1
-        _plusto cq_index
+        _oneplusto cq_index
         _return
         _then .1
 
+        ; literal
         _ cq_first
         _ cq_lit
         _ equal
         _if .2
         _ cq_first_data
-        _ iliteral
-        _lit 1
-        _plusto cq_index
+        _ cq_cache_literal
+        _oneplusto cq_index
         _return
         _then .2
 
+        ; xt
         _ cq_first                      ; -- xt
         _ dup                           ; -- xt xt
         _tocomp                         ; -- xt >comp
@@ -260,15 +271,10 @@ code cq_flush1, 'cq-flush1'
         _if .3
         _ execute
         _else .3
+        _ cq_flush_literals
         _ inline_or_call_xt
-        _lit 1
-        _plusto cq_index
+        _oneplusto cq_index
         _then .3
-
-;         _ cq_first
-;         _ inline_or_call_xt
-;         _lit 1
-;         _plusto cq_index
 
         next
 endcode
@@ -306,27 +312,18 @@ endcode
 ; ### cq-flush
 code cq_flush, 'cq-flush'
         _ opt
-        _if .0
-
-;         _ ?cr
-;         _dotq "cq-flush size = "
-;         _ cq_size
-;         _ decdot
-
-;         _ dotcq
-
+        _if .1
         _zeroto cq_index
-        _begin .1
+        _begin .2
         _ cq_index
         _ cq_size
         _ lt
-        _while .1
+        _while .2
         _ cq_flush1
-        _repeat .1
-
+        _repeat .2
         _ cq_clear
-
-        _then .0
+        _ cq_flush_literals
+        _then .1
         next
 endcode
 
