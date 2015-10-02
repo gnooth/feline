@@ -289,6 +289,10 @@ section .text
         poprbx
 %endmacro
 
+%macro  _oneplusto 1                    ; label
+        inc     qword [%1_data]
+%endmacro
+
 %macro  _dotq 1
 section .data
 %strlen len     %1
