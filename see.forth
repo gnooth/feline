@@ -728,8 +728,24 @@ $3b install-handler
 
 $eb install-handler
 
+\ $81 handler
+:noname ( -- )
+    !modrm-byte
+    modrm-reg 0= if
+        $" add" to mnemonic
+        ok_register modrm-rm  register-rm  0 dest!
+        ok_immediate 0 ip l@ source!
+        4 +to ip
+        .inst
+        exit
+    then
+    unsupported
+;
+
+$81 install-handler
+
 \ $83 handler
-:noname  ( -- )
+:noname ( -- )
     !modrm-byte
     modrm-mod 3 = if
         modrm-reg 0= if
