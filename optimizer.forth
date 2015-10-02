@@ -15,13 +15,16 @@
 
 : compile-dup ( xt -- )
     local xt
-    ?cr ." compile-dup xt = $" xt h.
+\     ?cr ." compile-dup xt = $" xt h.
 
-    ?cr ." compile-dup cq-second = $" cq-second h.
+\     ?cr ." compile-dup cq-second = $" cq-second h.
+
+    cq-flush-literals
 
     cq-second ['] + = if
         ['] 2* inline-or-call-xt
         2 +to cq-index
+        ?cr ." dup + -> 2* "
         exit
     then
 
@@ -34,10 +37,32 @@
 : compile-+ ( xt -- )
     local xt
 
+    cq-#lits 1 = if
+        cq-lit1 $ffffffff <= if
+            $48 c,c
+            $81 c,c
+            $c3 c,c
+            cq-lit1 l,c
+        else
+            $48 c,c
+            $b8 c,c
+            cq-lit1 ,c                  \ mov rax, literal
+            $48 c,c
+            $01 c,c
+            $c3 c,c                     \ add rbx, rax
+        then
+        ?cr ." lit + -> add rbx, lit "
+        0 to cq-#lits
+        1 +to cq-index
+        exit
+    then
+
+    cq-flush-literals
+
     cq-second ['] dup = if
         ['] +dup copy-code
         2 +to cq-index
-        cr ." + dup => +dup"
+        cr ." + dup -> +dup "
         exit
     then
 
@@ -49,9 +74,13 @@
 
 : compile-over ( xt -- )
     local xt
+
+    cq-flush-literals
+
     cq-second ['] + = if
         ['] over+ inline-or-call-xt
         2 +to cq-index
+        ?cr ." over + -> over+ "
         exit
     then
 
@@ -63,9 +92,13 @@
 
 : compile-inline-i ( xt -- )
     local xt
+
+    cq-flush-literals
+
     cq-second ['] + = if
         ['] inline-i+ copy-code
         2 +to cq-index
+        ?cr ." i + -> i+ "
         exit
     then
 
