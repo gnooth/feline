@@ -1239,6 +1239,10 @@ decimal
 
 also forth definitions
 
+: .modrm .modrm ;
+
+: disasm disasm ;
+
 : see  ( "<spaces>name" -- )
    ' local xt
    xt >type c@ ?dup if
