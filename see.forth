@@ -425,7 +425,7 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    c" jmp" to mnemonic
    ok_immediate 0 ip l@s 4 +to ip ip + dest!
    .inst
-   ;
+;
 
 \ $01 handler
 :noname  ( -- )                         \ ADD reg/mem64, reg64
@@ -706,13 +706,36 @@ $3b install-handler
 \ $7f handler
 :noname ( -- ) $" jg" .jcc8 ; $7f install-handler
 
+\ $80 handler
+:noname ( -- )
+    !modrm-byte
+    modrm-reg 7 = if
+        $" cmp" to mnemonic
+        ok_register modrm-rm reg8 0 dest!
+        ok_immediate 0 ip c@ source!
+        1 +to ip
+        .inst
+        exit
+    then
+    unsupported
+;
+
+$80 install-handler
+
 \ $eb handler
 :noname  ( -- )
-  s" jmp" old-mnemonic!
-  ip c@s  1 +to ip      \ 8-bit signed offset
-  2 to size
-  .instruction
-   ip + ." $" h.
+    s" jmp" old-mnemonic!
+    ip c@s  1 +to ip      \ 8-bit signed offset
+    2 to size
+    .instruction
+    ip + dup ." $" h.
+
+    \ -- target-address
+    dup end-address > if
+        to end-address
+    else
+        drop
+    then
 ;
 
 $eb install-handler
