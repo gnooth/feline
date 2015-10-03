@@ -222,29 +222,33 @@ endcode
 
 ; ### maybe-change-base
 code maybe_change_base, 'maybe-change-base'     ; addr u -- addr' u'
-        _ twodup                        ; -- addr u addr u
-        _if .1
-        _cfetch
-        _ dup
-        _lit '$'
-        _ equal
-        _if .2
-        _ drop
-        _lit 1
-        _ slashstring
+        test    rbx, rbx
+        jnz     .1
+        ret
+.1:
+        _ over                          ; -- addr u addr
+        _cfetch                         ; -- addr u char
+
+        cmp     bl, '$'
+        jne     .2
         _ hex
-        _else .2
-        _lit '#'
-        _ equal
-        _if .3
-        _lit 1
-        _ slashstring
+        jmp     .5
+.2:
+        cmp     bl, '%'
+        jne     .3
+        _ binary
+        jmp     .5
+.3:
+        cmp     bl, '#'
+        jne     .4
         _ decimal
-        _then .3
-        _then .2
-        _else .1
-        _ drop
-        _then .1
+        jmp     .5
+.4:
+        _drop
+        ret
+.5:
+        mov     ebx, 1
+        _ slashstring
         next
 endcode
 
