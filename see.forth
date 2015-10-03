@@ -135,9 +135,9 @@ create old-mnemonic  2 cells allot
 \ : !modrm-byte  ( -- )  ip prefix if 2 else 1 then + c@ to modrm-byte ;
 : !modrm-byte  ( -- )  ip c@ to modrm-byte  1 +to ip ;
 
-: (modrm-mod)  ( modrm-byte -- mod )  b# 11000000 and 6 rshift ;
-: (modrm-reg)  ( modrm-byte -- reg )  b# 00111000 and 3 rshift ;
-: (modrm-rm)   ( modrm-byte -- rm  )  b# 00000111 and ;
+: (modrm-mod)  ( modrm-byte -- mod )  %11000000 and 6 rshift ;
+: (modrm-reg)  ( modrm-byte -- reg )  %00111000 and 3 rshift ;
+: (modrm-rm)   ( modrm-byte -- rm  )  %00000111 and ;
 
 : modrm-mod  ( -- mod )  modrm-byte (modrm-mod) ;
 : modrm-reg  ( -- reg )  modrm-byte (modrm-reg) ;
@@ -170,9 +170,9 @@ create old-mnemonic  2 cells allot
     ip c@ to sib-byte
     1 +to ip ;
 
-: (sib-scale)  ( sib -- scale )  b# 11000000 and 6 rshift ;
-: (sib-index)  ( sib -- index )  b# 00111000 and 3 rshift ;
-: (sib-base)   ( sib -- base  )  b# 00000111 and ;
+: (sib-scale)  ( sib -- scale )  %11000000 and 6 rshift ;
+: (sib-index)  ( sib -- index )  %00111000 and 3 rshift ;
+: (sib-base)   ( sib -- base  )  %00000111 and ;
 
 : sib-scale  ( -- scale )  sib-byte (sib-scale) ;
 : sib-index  ( -- index )  sib-byte (sib-index) ;
@@ -1177,7 +1177,7 @@ $f7 install-handler
     unsupported
 ;
 
-h# ff install-handler
+$ff install-handler
 
 hex
 ' .call e8 install-handler
