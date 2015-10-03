@@ -50,6 +50,15 @@ code plusstore, '+!'                    ; n addr --
         next
 endcode
 
+; ### c+!
+code cplusstore, 'c+!'                  ; byte addr --
+        mov     al, byte [rbp]
+        add     byte [rbx], al
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        next
+endcode
+
 ; ### off
 code off, 'off'                         ; addr --
         xor     eax, eax
