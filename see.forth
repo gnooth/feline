@@ -13,13 +13,15 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-[undefined] disassembler [if]
-vocabulary disassembler
-[then]
+only forth
+
+[undefined] disassembler [if] vocabulary disassembler [then]
 
 [defined] see [if] warning off [then]   \ temporary
 
-only forth also disassembler definitions
+[undefined] x86-64 [if] include-system-file x86-64.forth [then]
+
+only forth also x86-64 also disassembler definitions
 
 decimal
 
@@ -62,19 +64,6 @@ decimal
       wid>link @ dup 0=
    until
    r>drop ;
-
-\ "0 = default operand size   1 = 64-bit operand size"
-8 constant rex.w
-
-\ "1-bit (high) extension of the ModRM reg field, thus permitting access to 16 registers."
-4 constant rex.r
-
-\ "1-bit (high) extension of the SIB index field, thus permitting access to 16 registers."
-2 constant rex.x
-
-\ "1-bit (high) extension of the ModRM r/m field, SIB base field, or opcode reg field,
-\ thus permitting access to 16 registers."
-1 constant rex.b
 
 
 0 value start-address
