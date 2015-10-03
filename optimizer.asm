@@ -73,8 +73,8 @@ code cq_add_xt, 'cq-add-xt'             ; xt --
         _ equal
         _if .1
         _ cq_flush
-        _zeroto cq_size                 ; FIXME should be done by cq_flush
-        _zeroto cq_index                ; FIXME should be done by cq_flush
+;         _zeroto cq_size                 ; FIXME should be done by cq_flush
+;         _zeroto cq_index                ; FIXME should be done by cq_flush
         _then .1
 
         _ cq
@@ -95,8 +95,8 @@ code cq_add_literal, 'cq-add-literal'   ; n --
         _ equal
         _if .1
         _ cq_flush
-        _zeroto cq_size                 ; FIXME should be done by cq_flush
-        _zeroto cq_index                ; FIXME should be done by cq_flush
+;         _zeroto cq_size                 ; FIXME should be done by cq_flush
+;         _zeroto cq_index                ; FIXME should be done by cq_flush
         _then .1
 
         _ cq_lit                        ; token
@@ -262,19 +262,47 @@ code cq_flush1, 'cq-flush1'
         _return
         _then .2
 
+        ; variable
+        _ cq_first                      ; -- xt
+        _totype
+        _cfetch
+        _ tvar
+        _ equal
+        _if .3
+        _ cq_first
+        _tobody
+        _ cq_cache_literal
+        _oneplusto cq_index
+        _return
+        _then .3
+
+        ; constant
+        _ cq_first
+        _totype
+        _cfetch
+        _ tconst
+        _ equal
+        _if .4
+        _ cq_first
+        _ execute
+        _ cq_cache_literal
+        _oneplusto cq_index
+        _return
+        _then .4
+
         ; xt
         _ cq_first                      ; -- xt
         _ dup                           ; -- xt xt
         _tocomp                         ; -- xt >comp
         _fetch                          ; -- xt xt-comp
         _ ?dup
-        _if .3
+        _if .5
         _ execute
-        _else .3
+        _else .5
         _ cq_flush_literals
         _ inline_or_call_xt
         _oneplusto cq_index
-        _then .3
+        _then .5
 
         next
 endcode

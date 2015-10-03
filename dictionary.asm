@@ -500,6 +500,13 @@ code var, 'variable'
         _zero
         _ comma
         _ inline_latest
+
+        _ tvar
+        _ latest
+        _namefrom
+        _totype
+        _ cstore
+
         next
 endcode
 
@@ -522,12 +529,13 @@ doconst:
 doconst_end:
 
 ; ### constant
-code constant_, 'constant'              ; x "<spaces>name" --
+code forth_constant, 'constant'         ; x "<spaces>name" --
 ; CORE
         _ header                        ; -- x
         _ here_c
         _ latest
-        _namefrom
+        _namefrom                       ; -- x xt
+        _duptor                         ; -- x xt       r: -- xt
         _ store                         ; -- x
         _lit doconst
         _lit doconst_end - doconst
@@ -537,6 +545,12 @@ code constant_, 'constant'              ; x "<spaces>name" --
         _ store                         ; --
         _lit $0c3
         _ ccommac
+
+        _ tconst
+        _rfrom
+        _totype
+        _ cstore
+
         next
 endcode
 
