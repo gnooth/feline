@@ -39,8 +39,6 @@ defer byte,
 \ ' .2 is byte,
 ' >tbuf is byte,
 
-: prefix, ( byte -- ) byte, ;
-
 : make-modrm-byte ( mod reg rm -- byte )
     local rm
     local reg
@@ -50,9 +48,13 @@ defer byte,
     rm + ;
 
 -1 value sreg \ source register
-64 value sreg-size
+64 value ssize
 -1 value dreg \ destination register
-64 value dreg-size
+64 value dsize
+
+ 0 value prefix-byte
+
+: prefix, ( -- ) prefix-byte ?dup if byte, then ;
 
 false value dest?
 
@@ -62,9 +64,9 @@ false value dest?
     create ,
     does>
         @ dest? if
-            to dreg 64 to dreg-size
+            to dreg 64 to dsize
         else
-            to sreg 64 to sreg-size
+            to sreg 64 to ssize
         then
 ;
 
@@ -85,9 +87,17 @@ false value dest?
 14 define-reg64 r14
 15 define-reg64 r15
 
+: extreg? ( reg64 -- flag )
+    8 and ;
+
 : ;opc ( -- )
+    \ reset assembler for next instruction
     -1 to sreg
     -1 to dreg
+    64 to ssize
+    64 to dsize
+     0 to prefix-byte
+     0 to dest?
 
     \ for testing only!
     $c3 >tbuf
@@ -101,17 +111,38 @@ false value dest?
 
 : pop,  ( -- )
     sreg -1 = abort" no source register"
-    sreg 7 > if $41 prefix, sreg 8 - else sreg then $58 + byte, ;opc ;
+    sreg 7 > if
+        \ extended register
+        $41 to prefix-byte prefix,
+        -8 +to sreg
+    then
+    sreg $58 + byte,
+    ;opc ;
 
 : push, ( -- )
     sreg -1 = abort" no source register"
-    sreg 7 > if $41 prefix, sreg 8 - else sreg then $50 + byte, ;opc ;
+    sreg 8 and if
+        \ extended register
+        $41 to prefix-byte prefix,
+        -8 +to sreg
+    then
+    sreg $50 + byte,
+    ;opc ;
 
 : mov,  ( -- )
     sreg -1 <> dreg -1 <> and if
-        sreg-size 64 = dreg-size 64 = or if
-            $48 prefix,
+        ssize 64 = dsize 64 = or if
+            $48 to prefix-byte
         then
+        sreg extreg? if
+            prefix-byte rex.r or to prefix-byte
+            -8 +to sreg
+        then
+        dreg extreg? if
+            prefix-byte rex.b or to prefix-byte
+            -8 +to dreg
+        then
+        prefix,
         $89 byte,
         3 sreg dreg make-modrm-byte byte,
     then
