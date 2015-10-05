@@ -280,9 +280,10 @@ code open_file, 'open-file'             ; c-addr u fam -- fileid ior
 ; FILE
         _tor
         _ to_stringbuf
-        _ string_to_zstring
+;         _ string_to_zstring
         _rfrom
-        _ paren_open_file
+;         _ paren_open_file
+        _ string_open_file
         next
 endcode
 
@@ -309,21 +310,50 @@ code paren_open_file, '(open-file)'     ; zaddr fam -- fileid ior
         next
 endcode
 
+; ### string-open-file
+code string_open_file, '$open-file'     ; $addr fam -- fileid ior
+%ifdef WIN64
+        popd    rdx                     ; fam in rdx
+        popd    rcx                     ; $addr in rcx
+        inc     rcx                     ; skip count byte to point at null-terminated string
+%else
+        popd    rsi                     ; fam in rsi
+        popd    rdi                     ; $addr in rdi
+        inc     rdi                     ; skip count byte to point at null-terminated string
+%endif
+        xcall   os_open_file
+        test    rax, rax
+        js      .1
+        pushd   rax                     ; fileid
+        pushd   0                       ; ior
+        next
+.1:
+        _lit -1                         ; "fileid is undefined"
+        _lit -1                         ; error!
+        next
+endcode
+
 extern os_create_file
 
 ; ### create-file
 code create_file, 'create-file'         ; c-addr u fam -- fileid ior
-        _ rrot                          ; -- fam c-addr u
-        _ here                          ; FIXME use $buf
-        _ zplace                        ; -- fam
-        _ here                          ; -- fam here
-        _ swap                          ; -- here fam
+        _tor
+        _ to_stringbuf
+        _rfrom
+        _ string_create_file
+        next
+endcode
+
+; ### $create-file
+code string_create_file, '$create-file' ; $addr fam -- fileid ior
 %ifdef WIN64
-        popd    rdx
-        popd    rcx
+        popd    rdx                     ; fam in rdx
+        popd    rcx                     ; $addr in rcx
+        inc     rcx                     ; skip count byte to point at null-terminated string
 %else
-        popd    rsi
-        popd    rdi
+        popd    rsi                     ; fam in rsi
+        popd    rdi                     ; $addr in rdi
+        inc     rdi                     ; skip count byte to point at null-terminated string
 %endif
         xcall   os_create_file
         test    rax, rax
@@ -334,6 +364,7 @@ code create_file, 'create-file'         ; c-addr u fam -- fileid ior
 .1:
         _lit -1                         ; "fileid is undefined"
         _lit -1                         ; error!
+        next
         next
 endcode
 
