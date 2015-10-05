@@ -397,9 +397,11 @@ endcode
 
 ; ### cmove
 code cmove, 'cmove'                     ; c-addr1 c-addr2 u --
-        popd    rcx                     ; count
-        popd    rdi                     ; destination
-        popd    rsi                     ; source
+        mov     rcx, rbx                        ; count
+        mov     rdi, [rbp]                      ; destination
+        mov     rsi, [rbp + BYTES_PER_CELL]     ; source
+        mov     rbx, [rbp + BYTES_PER_CELL * 2]
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
         jrcxz   .1
         rep     movsb
 .1:
@@ -408,9 +410,11 @@ endcode
 
 ; ### cmove>
 code cmoveup, 'cmove>'                  ; c-addr1 c-addr2 u --
-        popd    rcx
-        popd    rdi
-        popd    rsi
+        mov     rcx, rbx                        ; count
+        mov     rdi, [rbp]                      ; destination
+        mov     rsi, [rbp + BYTES_PER_CELL]     ; source
+        mov     rbx, [rbp + BYTES_PER_CELL * 2]
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
         jrcxz   .1
         dec     rcx
         add     rdi, rcx
