@@ -90,24 +90,24 @@ endcode
 
 ; ### push-tos,
 code push_tos_comma, 'push-tos,'
-        _lit push_tos_top
-        _lit push_tos_end - push_tos_top
+        _lit .1
+        _lit .2 - .1
         _ paren_copy_code
         next
-push_tos_top:
+.1:
         pushrbx
-push_tos_end:
+.2:
 endcode
 
 ; ### pop-tos,
 code pop_tos_comma, 'pop-tos,'
-        _lit pop_tos_top
-        _lit pop_tos_end - pop_tos_top
+        _lit .1
+        _lit .2 - .1
         _ paren_copy_code
         next
-pop_tos_top:
+.1:
         poprbx
-pop_tos_end:
+.2:
 endcode
 
 ; ### ,call
