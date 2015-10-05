@@ -58,7 +58,7 @@ code storeto, 'to', IMMEDIATE           ; n "<spaces>name" --
         _ find_local                    ; -- n $addr-or-index flag
         _if .2                          ; -- n index
         _ flush_compilation_queue
-        _ compile_tolocal
+        _ tolocalcomma
         _return
         _then .2
         _then .1                        ; -- n $addr
@@ -94,16 +94,33 @@ endcode
 
 ; ### +to
 code plusstoreto, '+to', IMMEDIATE      ; n "<spaces>name" --
-        _ tick
-        _tobody
+        _ blword                        ; -- n $addr
+
         _ statefetch
         _if .1
+        _ find_local                    ; -- n $addr-or-index flag
+        _if .2                          ; -- n index
+        _ flush_compilation_queue
+        _ plustolocalcomma
+        _return
+        _then .2
+        _then .1                        ; -- n $addr
+
+        ; not a local
+        _ find
+        _zeq_if .3                      ; not found
+        _ missing                       ; -13 THROW
+        _then .3                        ; -- n xt
+
+        _tobody
+        _ statefetch
+        _if .4
         _ flush_compilation_queue
         _ iliteral
         _lit plusstore
         _ commacall
-        _else .1                        ; -- n addr
+        _else .4                        ; -- n addr
         _ plusstore
-        _then .1
+        _then .4
         next
 endcode

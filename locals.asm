@@ -136,17 +136,32 @@ code compile_local, 'compile-local'     ; index --
         next
 endcode
 
-; ### compile-tolocal
-code compile_tolocal, 'compile-tolocal' ; index --
+; ### to-local,
+code tolocalcomma, 'to-local,'          ; index --
         _lit $49
         _ ccommac
         _lit $89
         _ ccommac
         _lit $5e
-        _ ccommac
+        _ ccommac                       ; mov [r14 + 0], rbx
         _cells
         _negate
+        _ ccommac                       ; 8-bit displacement
+        _ pop_tos_comma
+        next
+endcode
+
+; ### +to-local,
+code plustolocalcomma, '+to-local,'     ; index --
+        _lit $49
         _ ccommac
+        _lit $01
+        _ ccommac
+        _lit $5e
+        _ ccommac                       ; add [r14 + 0], rbx
+        _cells
+        _negate
+        _ ccommac                       ; 8-bit displacement
         _ pop_tos_comma
         next
 endcode
