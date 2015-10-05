@@ -551,6 +551,8 @@ code forth_constant, 'constant'         ; x "<spaces>name" --
         _totype
         _ cstore
 
+        _ inline_latest
+
         next
 endcode
 
