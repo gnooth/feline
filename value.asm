@@ -51,8 +51,8 @@ endcode
 
 ; ### to
 code storeto, 'to', IMMEDIATE           ; n "<spaces>name" --
-        _ blchar
-        _ word_                         ; -- n $addr
+        _ blword                        ; -- n $addr
+
         _ statefetch
         _if .1
         _ find_local                    ; -- n $addr-or-index flag

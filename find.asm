@@ -451,8 +451,7 @@ endcode
 ; ### '
 code tick, "'"
 ; CORE
-        _ blchar
-        _ word_
+        _ blword
         _ find
         _zeq_if .1
         _ missing
@@ -473,8 +472,7 @@ endcode
 
 ; ### have
 code have, 'have'
-        _ blchar
-        _ word_
+        _ blword
         _ find
         _nip
         _ zne

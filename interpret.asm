@@ -153,8 +153,7 @@ endcode
 code interpret, 'interpret'             ; --
         _begin .7
         _ ?stack
-        _ blchar
-        _ word_
+        _ blword
         _dupcfetch
         _while .7
         _ statefetch

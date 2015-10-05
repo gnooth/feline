@@ -159,28 +159,32 @@ endcode
 value word_buffer, 'word-buffer', 0     ; initialized in main()
 
 ; ### word
-code word_, 'word'                      ; char "<chars>ccc<char>" -- c-addr
+code forth_word, 'word'                 ; char "<chars>ccc<char>" -- c-addr
 ; CORE
 ; "WORD always skips leading delimiters."
         _ dup
         _ blchar
         _ equal
-        _if word1
+        _if .1
         _ drop
         _ parse_name
-        _else word1
+        _else .1
         ; BUG! PARSE does not skip leading delimiters!
         _ parse                         ; -- addr len
-        _then word1
+        _then .1
         _ word_buffer
         _ place
         _ word_buffer
-        _ dup
-        _ count
-        _ plus
-        _ blchar
-        _ swap
-        _ cstore
+        next
+endcode
+
+; ### blword
+code blword, 'blword'                   ; "<chars>ccc<char>" -- c-addr
+        _ parse_name
+        _ word_buffer
+        _duptor
+        _ place
+        _rfrom
         next
 endcode
 
