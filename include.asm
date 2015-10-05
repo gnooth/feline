@@ -327,9 +327,13 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ link_file
         _ source_filename
         _ store
-        _ string_to_zstring
+
+;         _ string_to_zstring
+;         _ readonly
+;         _ paren_open_file               ; -- fileid ior
         _ readonly
-        _ paren_open_file               ; -- fileid ior
+        _ string_open_file
+
         _zeq_if .2
         _duptor
         _ include_file
