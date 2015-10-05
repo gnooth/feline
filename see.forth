@@ -440,6 +440,13 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
         .inst
         exit
     then
+    modrm-mod 1 = if                     \ 1-byte displacement
+        ok_relative modrm-rm register-rm ip c@s dest!
+        1 +to ip
+        ok_register modrm-reg register-reg 0 source!
+        .inst
+        exit
+    then
     modrm-mod 3 = if
         prefix if 3 else 2 then to size
         ok_register modrm-rm register-rm 0 dest!
@@ -869,9 +876,9 @@ $88 install-handler
             exit
         then
         modrm-mod 1 = if                     \ 1-byte displacement
-            ok_relative modrm-rm ip c@s dest!
+            ok_relative modrm-rm register-rm ip c@s dest!
             1 +to ip
-            ok_register modrm-reg 0 source!
+            ok_register modrm-reg register-reg 0 source!
             .inst
             exit
         then
