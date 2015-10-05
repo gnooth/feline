@@ -107,3 +107,23 @@
 ;
 
 ' compile-inline-i ' inline-i >comp !
+
+: compile->r ( xt -- )
+    drop
+    cq-flush-literals
+    $53 c,c                             \ push rbx
+    pop-tos,
+    1 +to cq-index
+;
+
+' compile->r ' >r >comp !
+
+: compile-r> ( xt -- )
+    drop
+    cq-flush-literals
+    push-tos,
+    $5b c,c                             \ pop rbx
+    1 +to cq-index
+;
+
+' compile-r> ' r> >comp!
