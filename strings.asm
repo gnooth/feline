@@ -56,7 +56,7 @@ code plus_stringbuf, '+$buf'
         _ stringbuf
         _ count
         _ plus
-        _oneplus
+        _oneplus                        ; terminal null byte
         mov     [stringbuf_data], rbx
         poprbx
         _ stringbuf
@@ -93,11 +93,10 @@ code to_stringbuf, '>$buf'              ; c-addr u -- $addr
 endcode
 
 ; ### $>z
-code string_to_zstring, '$>z'           ; $addr -- zaddr
+inline string_to_zstring, '$>z'         ; $addr -- zaddr
 ; skip over the count byte
         _oneplus
-        next
-endcode
+endinline
 
 ; ### $!
 code copystring, '$!'                   ; $addr1 $addr2 --
@@ -185,11 +184,12 @@ endcode
 
 ; ### place
 code place, 'place'                     ; c-addr1 u c-addr2 --
-        _ twodup
-        _ cstore
-        _oneplus
-        _ swap
-        _ move
+;         _ twodup
+;         _ cstore
+;         _oneplus
+;         _ swap
+;         _ move
+        _ place_string
         next
 endcode
 
