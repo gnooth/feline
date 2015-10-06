@@ -349,7 +349,7 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 \    ?cr h. ." handler installed"
 ;
 
-: unsupported  ( -- )  40 >pos ." unsupported opcode " opcode h. ;
+: unsupported  ( -- )  40 >pos ." unsupported opcode " opcode h. abort ;
 
 : .name  ( code-addr -- )  find-code ?dup if 64 >pos >name count type then ;
 
@@ -854,21 +854,31 @@ $88 install-handler
     \ register operand and an r/m operand."
     $" mov" to mnemonic
     !modrm-byte
-    modrm-rm 4 = if
+    modrm-rm 4 =
+    modrm-mod 3 <> and
+    if
         !sib-byte
         modrm-mod 0= if
             sib-scale 0= if
                 sib-index 4 = if
-                    prefix if 7 else 6 then to size
-                    ok_register modrm-reg register-reg 0 source!
-                    ok_relative_no_reg 0 ip l@s dest!
-                    4 +to ip
-                    .inst
-                    exit
+                    sib-base 5 = if
+                        prefix if 7 else 6 then to size
+                        ok_register modrm-reg register-reg 0 source!
+                        ok_relative_no_reg 0 ip l@s dest!
+                        4 +to ip
+                        .inst
+                        exit
+                    else
+                        ok_register modrm-reg register-reg 0 source!
+                        ok_relative sib-base 0 dest!
+                        .inst
+                        exit
+                    then
                 then
             then
         then
     else
+        \ no sib byte
         modrm-mod 0= if
             ok_relative modrm-rm register-rm 0 dest!
             ok_register modrm-reg register-reg 0 source!
