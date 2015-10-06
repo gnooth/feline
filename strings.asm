@@ -502,8 +502,8 @@ code compare, 'compare'                 ; c-addr1 u1 c-addr2 u2 -- n
         next
 endcode
 
-; ### s=
-code sequal, 's='                       ; addr1 addr2 len -- flag
+; ### mem=
+code memequal, 'mem='                   ; addr1 addr2 len -- flag
         _ ?dup
         _if .1
         _zero
@@ -605,12 +605,12 @@ code strequal, 'str='                   ; addr1 len1 addr2 len2 -- flag
         _ rot
         _ tuck
         _ notequal
-        _if strequal1
+        _if .1
         _3drop
         _ false
         _return
-        _then strequal1
-        _ sequal
+        _then .1
+        _ memequal
         next
 endcode
 
