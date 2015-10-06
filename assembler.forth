@@ -43,14 +43,18 @@ defer byte,
     local rm
     local reg
     local mod
-    mod 6 lshift
-    reg 3 lshift +
-    rm + ;
+    mod       6 lshift
+    reg 7 and 3 lshift +                \ extended registers 8-15 need to fit in 3 bits
+    rm  7 and          + ;
 
--1 value sreg \ source register
-64 value ssize
--1 value dreg \ destination register
-64 value dsize
+-1 value sreg   \ source register
+64 value ssize  \ source operand size
+-1 value sbase  \ source base register
+ 0 value sdisp  \ source displacement
+-1 value dreg   \ destination register
+64 value dsize  \ destination operand size
+-1 value dbase  \ destination base register
+ 0 value ddisp  \ destination displacement
 
  0 value prefix-byte
 
@@ -90,14 +94,67 @@ false value dest?
 : extreg? ( reg64 -- flag )
     8 and ;
 
-: ;opc ( -- )
+: define-base-reg ( reg# -- )
+    create ,
+    does>
+        @ dest? if to dbase else to sbase then
+;
+
+\ displacement is set by +]
+ 0 define-base-reg [rax
+ 1 define-base-reg [rcx
+ 2 define-base-reg [rdx
+ 3 define-base-reg [rbx
+ 4 define-base-reg [rsp
+ 5 define-base-reg [rbp
+ 6 define-base-reg [rsi
+ 7 define-base-reg [rdi
+ 8 define-base-reg [r8
+ 9 define-base-reg [r9
+10 define-base-reg [r10
+11 define-base-reg [r11
+12 define-base-reg [r12
+13 define-base-reg [r13
+14 define-base-reg [r14
+15 define-base-reg [r15
+
+\ displacement is 0
+ 0 define-base-reg [rax]
+ 1 define-base-reg [rcx]
+ 2 define-base-reg [rdx]
+ 3 define-base-reg [rbx]
+ 4 define-base-reg [rsp]
+ 5 define-base-reg [rbp]
+ 6 define-base-reg [rsi]
+ 7 define-base-reg [rdi]
+ 8 define-base-reg [r8]
+ 9 define-base-reg [r9]
+10 define-base-reg [r10]
+11 define-base-reg [r11]
+12 define-base-reg [r12]
+13 define-base-reg [r13]
+14 define-base-reg [r14]
+15 define-base-reg [r15]
+
+: +] ( n -- ) dest? if to ddisp else to sdisp then ;
+
+: reset-assembler ( -- )
     \ reset assembler for next instruction
     -1 to sreg
     -1 to dreg
     64 to ssize
     64 to dsize
+    -1 to sbase
+    -1 to dbase
+     0 to sdisp
+     0 to ddisp
+
      0 to prefix-byte
      0 to dest?
+;
+
+: ;opc ( -- )
+    reset-assembler
 
     \ for testing only!
     $c3 >tbuf
@@ -131,26 +188,51 @@ false value dest?
 
 : mov,  ( -- )
     sreg -1 <> dreg -1 <> and if
+        \ register to register move
         ssize 64 = dsize 64 = or if
             $48 to prefix-byte
         then
         sreg extreg? if
             prefix-byte rex.r or to prefix-byte
-            -8 +to sreg
         then
         dreg extreg? if
             prefix-byte rex.b or to prefix-byte
-            -8 +to dreg
         then
         prefix,
         $89 byte,
         3 sreg dreg make-modrm-byte byte,
+        ;opc
+        exit
     then
-    ;opc
+    sreg -1 <> if
+        ssize 64 = if $48 to prefix-byte then
+        dbase -1 <> if
+            \ reg to mem
+            dbase extreg? if
+                prefix-byte rex.b or to prefix-byte
+            then
+            ddisp 0= if
+                prefix, $89 byte,
+                0 sreg dbase make-modrm-byte byte,
+                dbase 4 = if \ rsp
+                    $24 byte,           \ REVIEW
+                then
+                ;opc
+                exit
+            then
+        then
+    then
+    true abort" unsupported"
 ;
 
 : }asm ( -- ) previous ; immediate
 
 also forth definitions
 
-: asm{ ( -- ) also assembler ; immediate
+: asm{ ( -- )
+    reset-assembler
+    0 tbuf c!
+    also assembler ; immediate
+
+\ TEMPORARY
+also disassembler
