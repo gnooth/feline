@@ -102,6 +102,7 @@ endcode
 ; ### restore-input
 code restore_input, 'restore-input'
 ; addr len fileid source-buffer source-file-position source-line-number >in 7 -- flag
+; "flag is true if the input source specification cannot be so restored."
 ; CORE EXT
         _lit 7
         _ notequal
