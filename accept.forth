@@ -152,14 +152,8 @@ create restore-buffer 258 allot
         2drop 0 0
     then ;
 
-: allocate-history-entry ( c-addr u -- alloc-addr )
-    dup 1+ allocate 0= if               \ -- c-addr u alloc-addr
-        dup >r
-        place
-        r>
-    else
-        -1 abort" allocation failed"
-    then ;
+: allocate-history-entry ( c-addr u -- $addr )
+    >$ ;
 
 : restore-history ( -- )
     history-array history-size cells erase
