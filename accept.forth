@@ -77,7 +77,7 @@ $1b constant esc
 \ An array of history entries.
 create history-array  history-size cells allot  history-array history-size cells erase
 
-: current-history ( -- addr )
+: current-history ( -- $addr )
     history-array 0= if 0 exit then     \ shouldn't happen
     history-offset 0 history-length within if
         history-array history-offset cells + @
@@ -85,16 +85,16 @@ create history-array  history-size cells allot  history-array history-size cells
         0
     then ;
 
-\ Returns the address of the first cell in the history array.
-: first-history ( -- addr )
+\ Return the contents of the first cell in the history array.
+: oldest ( -- addr )
     history-array 0= if 0 exit then     \ shouldn't happen
-    history-array ;
+    history-array @ ;
 
-\ Returns the address of the last occupied cell in the history array.
-: last-history ( -- addr )
+\ Return the contents of the last occupied cell in the history array.
+: newest ( -- addr )
     history-array 0= if 0 exit then     \ shouldn't happen
     history-length 0= if 0 exit then
-    history-array history-length 1- cells + ;
+    history-array history-length 1- cells + @ ;
 
 : history ( -- )
     history-array 0= if exit then       \ shouldn't happen
@@ -190,29 +190,45 @@ create restore-buffer 258 allot
 
 : add-history ( -- )
     #in if
-        last-history ?dup if
-            @ count bufstart #in str= if exit then
+        newest ?dup if
+            count bufstart #in str= if exit then
         then
-        history-length history-size > if abort" add-history: shouldn't happen" then
+        history-length history-size > if true abort" add-history: shouldn't happen" then
         history-length history-size = if
-            first-history ?dup if
-                @ free
+            \ we need to make room
+            oldest ?dup if
+                free
                 drop                    \ REVIEW
             then
             history-array dup cell+ swap history-size 1- cells move
             -1 +to history-length
+
+            history-offset -1 <> if
+                -1 +to history-offset
+            then
+
         then
         history-length history-size < if
             bufstart #in
             allocate-history-entry history-array history-length cells + !
             1 +to history-length
-            -1 to history-offset
+\             -1 to history-offset
         then
     then ;
 
 : do-escape ( -- )
     clear-line
     -1 to history-offset ;
+
+: get-current-history ( -- )
+    current-history
+    ?dup if
+        clear-line
+        count dup to #in dup to dot
+        bufstart swap cmove
+        redisplay-line
+    then
+;
 
 : do-previous ( -- )
     history-length 0= if exit then
@@ -224,13 +240,7 @@ create restore-buffer 258 allot
         -1 +to history-offset
     then
     history-offset history-length < if
-        current-history
-        ?dup if
-            clear-line
-            count dup to #in dup to dot
-            bufstart swap cmove
-            redisplay-line
-        then
+        get-current-history
     then ;
 
 : do-next ( -- )
@@ -238,13 +248,7 @@ create restore-buffer 258 allot
     history-offset 0< if exit then
     history-offset history-length 1- < if
         1 +to history-offset
-        current-history
-        ?dup if
-            clear-line
-            count dup to #in dup to dot
-            bufstart swap cmove
-            redisplay-line
-        then
+        get-current-history
     else
         clear-line
         -1 to history-offset
@@ -258,6 +262,16 @@ create restore-buffer 258 allot
     save-history
     space
     -1 to history-offset
+    true to done? ;
+
+: accept-line-and-down-history ( -- )
+    dot #in < if
+        bufstart dot + #in dot - type
+    then
+    add-history
+    save-history
+    space
+\     -1 to history-offset
     true to done? ;
 
 : do-home ( -- )
@@ -297,6 +311,7 @@ k-right ,      ' do-right ,
 k-home ,       ' do-home ,
 k-end ,        ' do-end ,
 k-delete ,     ' do-delete ,
+$0f ,          ' accept-line-and-down-history ,
 0 ,            ' drop ,                 \ REVIEW
 
 : do-command ( x -- )
@@ -317,9 +332,14 @@ k-delete ,     ' do-delete ,
     to buflen
     to bufstart
     false to done?
-    0 to #in
-    0 to dot
     yellow foreground
+    history-offset -1 <> if
+        1 +to history-offset
+        get-current-history
+    else
+        0 to #in
+        0 to dot
+    then
     begin
         #in buflen <
         done? 0= and
