@@ -164,7 +164,8 @@ code save_string, '>$'                  ; c-addr u -- $addr
         _dup
         _twoplus
         _ allocate
-        _ throw                         ; -- c-addr u $addr
+        _lit -59
+        _ ?throw                        ; -- c-addr u $addr
         _duptor
         _ place_string
         _rfrom
