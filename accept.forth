@@ -13,59 +13,57 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-$08 constant #bs
-$7f constant #del
-$0d constant #cr
-$0a constant #lf
-$1b constant #esc
+$08 constant bs
+$7f constant del
+$1b constant esc
 
 0 value bufstart
 0 value buflen
 0 value dot
-0 value number-chars-accepted
+0 value #in
 0 value done?
 
 : .full ( -- )
     dot backspaces
-    bufstart number-chars-accepted type
+    bufstart #in type
 
     \ FIXME fix display in case we've deleted 1 char in the middle of the line
-    space #bs emit
+    space bs emit
 
-    number-chars-accepted backspaces
+    #in backspaces
     bufstart dot type ;
 
 : do-bs ( -- )
-    number-chars-accepted 0= if exit then
+    #in 0= if exit then
     dot 0= if exit then
-    number-chars-accepted dot = if
-        -1 +to number-chars-accepted
+    #in dot = if
+        -1 +to #in
         -1 +to dot
-        #bs emit space #bs emit
+        bs emit space bs emit
         exit
     then
-    bufstart dot + dup 1- number-chars-accepted dot - cmove
-    #bs emit
+    bufstart dot + dup 1- #in dot - cmove
+    bs emit
     -1 +to dot
-    -1 +to number-chars-accepted
+    -1 +to #in
     .full ;
 
 : do-delete ( -- )
-    dot number-chars-accepted < if
-        -1 +to number-chars-accepted
-        dot number-chars-accepted < if
-            bufstart dot + dup 1+ swap number-chars-accepted dot - cmove
+    dot #in < if
+        -1 +to #in
+        dot #in < if
+            bufstart dot + dup 1+ swap #in dot - cmove
         then
         .full                           \ REVIEW
     then ;
 
 : clear-line ( -- )
-    number-chars-accepted dup backspaces dup spaces backspaces
-    0 to number-chars-accepted
+    #in dup backspaces dup spaces backspaces
+    0 to #in
     0 to dot ;
 
 : redisplay-line ( -- )
-    bufstart number-chars-accepted type ;
+    bufstart #in type ;
 
 \ The number of slots allocated for the history list.
 100 constant history-size
@@ -191,9 +189,9 @@ create restore-buffer 258 allot
     -1 to history-offset ;
 
 : add-history ( -- )
-    number-chars-accepted if
+    #in if
         last-history ?dup if
-            @ count bufstart number-chars-accepted str= if exit then
+            @ count bufstart #in str= if exit then
         then
         history-length history-size > if abort" add-history: shouldn't happen" then
         history-length history-size = if
@@ -205,7 +203,7 @@ create restore-buffer 258 allot
             -1 +to history-length
         then
         history-length history-size < if
-            bufstart number-chars-accepted
+            bufstart #in
             allocate-history-entry history-array history-length cells + !
             1 +to history-length
             -1 to history-offset
@@ -229,7 +227,7 @@ create restore-buffer 258 allot
         current-history
         ?dup if
             clear-line
-            count dup to number-chars-accepted dup to dot
+            count dup to #in dup to dot
             bufstart swap cmove
             redisplay-line
         then
@@ -243,7 +241,7 @@ create restore-buffer 258 allot
         current-history
         ?dup if
             clear-line
-            count dup to number-chars-accepted dup to dot
+            count dup to #in dup to dot
             bufstart swap cmove
             redisplay-line
         then
@@ -253,8 +251,8 @@ create restore-buffer 258 allot
     then ;
 
 : do-enter ( -- )
-    dot number-chars-accepted < if
-        bufstart dot + number-chars-accepted dot - type
+    dot #in < if
+        bufstart dot + #in dot - type
     then
     add-history
     save-history
@@ -267,28 +265,28 @@ create restore-buffer 258 allot
     0 to dot ;
 
 : do-end ( -- )
-    bufstart dot + number-chars-accepted dot - type
-    number-chars-accepted to dot ;
+    bufstart dot + #in dot - type
+    #in to dot ;
 
 : do-right ( -- )
-    dot number-chars-accepted < if
+    dot #in < if
         bufstart dot + c@ emit
         1 +to dot
     then ;
 
 : do-left ( -- )
     dot 0 > if
-        #bs emit
+        bs emit
         -1 +to dot
     then ;
 
 create keytable
 
-#lf ,          ' do-enter ,             \ Linux
-#cr ,          ' do-enter ,             \ Windows
-#bs ,          ' do-bs ,                \ Windows
-#del ,         ' do-bs ,                \ Linux
-#esc ,         ' do-escape ,
+$0a ,          ' do-enter ,             \ Linux
+$0d ,          ' do-enter ,             \ Windows
+bs ,           ' do-bs ,                \ Windows
+del ,          ' do-bs ,                \ Linux
+esc ,          ' do-escape ,
 3 ,            ' bye ,                  \ control c
 $10 ,          ' do-previous ,          \ control p
 $0e ,          ' do-next ,              \ control n
@@ -305,13 +303,13 @@ k-delete ,     ' do-delete ,
     keytable switch ;
 
 : do-normal-char ( c -- )
-    dot number-chars-accepted < if
-        bufstart dot + dup 1+ number-chars-accepted dot - cmove>
+    dot #in < if
+        bufstart dot + dup 1+ #in dot - cmove>
     then
     dup emit
     bufstart dot + c!
     1 +to dot
-    1 +to number-chars-accepted
+    1 +to #in
     -1 to history-offset
     .full ;
 
@@ -319,11 +317,11 @@ k-delete ,     ' do-delete ,
     to buflen
     to bufstart
     false to done?
-    0 to number-chars-accepted
+    0 to #in
     0 to dot
     yellow foreground
     begin
-        number-chars-accepted buflen <
+        #in buflen <
         done? 0= and
     while
         ekey
@@ -334,7 +332,7 @@ k-delete ,     ' do-delete ,
         then
     repeat
     white foreground
-    number-chars-accepted ;
+    #in ;
 
 line-input? 0= [if]
 restore-history
