@@ -297,18 +297,26 @@ variable source_filename, 'source-filename', 0
 ; ### link-file
 code link_file, 'link-file'             ; c-addr u -- nfa
         _ here
-        _ tor
+        _tor
         _ get_current
-        _ tor
+        _tor
         _ files_wordlist
         _ set_current
+        _ warning
+        _fetch
+        _tor
+        _ warning
+        _ off
         _ quotecreate
+        _rfrom
+        _ warning
+        _ store
         _zero
         _ comma
-        _ rfrom
+        _rfrom
         _ set_current
-        _ rfrom
-        _ toname
+        _rfrom
+        _toname
         next
 endcode
 
