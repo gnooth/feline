@@ -121,6 +121,7 @@ section .text
 %1_nfa:
         db      len                     ; length byte
         db      %2                      ; name
+        db      0                       ; terminal null byte
         align   DEFAULT_DATA_ALIGNMENT
 %1_pfa:                                 ; define pfa (but don't reserve any space)
 %define link    %1_nfa                  ; link field points to name field

@@ -388,7 +388,7 @@ code quoteheader, '"header'             ; c-addr u --
 
         _ here                          ; -- c-addr u here
         _ over
-        _ oneplus
+        _twoplus                        ; count byte, terminal null byte
         _ allot
         _ place
 
