@@ -349,6 +349,15 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ rfrom                         ; -- fileid
         _ close_file                    ; -- ior
         _ drop                          ; REVIEW
+
+        _ source_filename
+        _ fetch
+        _namefrom
+        _tobody
+        _lit -1
+        _ swap
+        _ store
+
         _else .2
         _ ?cr
         _dotq "Unable to open file "
@@ -396,6 +405,41 @@ code include_system_file, 'include-system-file'
         _ parse_name
         _ system_file_pathname
         _ included
+        next
+endcode
+
+; ### required
+code required, 'required'               ; i*x c-addr u -- i*x
+; FILE EXT
+        _ ?dup
+        _if .1
+        _ to_stringbuf
+        _ resolve_include_filename      ; -- $addr
+        _ realpath_
+        _ count
+        _ twodup
+        _ files_wordlist
+        _ search_wordlist
+        _if .2
+        _ execute
+        _fetch
+        _if .3
+        _2drop
+        _return
+        _then .3
+        _then .2
+        _ included
+        _else .1
+        _drop
+        _then .1
+        next
+endcode
+
+; ### require
+code require, 'require'                 ; i*x "name" -- i*x
+; FILE EXT
+        _ parse_name
+        _ required
         next
 endcode
 
