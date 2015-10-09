@@ -13,7 +13,14 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-only forth
+only forth also definitions
+
+decimal
+
+: .2  ( ub -- )  base@ >r hex 0 <# # # #> r> base! type space ;
+
+: dump-bytes ( $addr -- )
+    count bounds ?do i c@ .2 loop ;
 
 \ TEMPORARY
 [defined] assembler [if] warning off [then]
@@ -24,15 +31,11 @@ only forth
 
 only forth also x86-64 also assembler definitions
 
-decimal
-
-: .2  ( ub -- )  base@ >r hex 0 <# # # #> r> base! type space ;
-
 32 buffer: tbuf
 
 : >tbuf ( byte -- ) tbuf count + c! 1 tbuf c+! ;
 
-: .tbuf ( -- ) tbuf count bounds ?do i c@ .2 loop ;
+: .tbuf ( -- ) tbuf dump-bytes ;
 
 defer byte,
 
@@ -153,40 +156,43 @@ false value dest?
      0 to dest?
 ;
 
+0 value expected
+
+0 value actual
+
+0 value testing?
+
 : ;opc ( -- )
+    tbuf count >$buf to actual
+
+    testing? 0= if
+        $c3 >tbuf
+        .tbuf
+        tbuf 1+ ( skip count byte ) disasm
+    then
+
     reset-assembler
-
-    \ for testing only!
-    $c3 >tbuf
-    .tbuf
-    tbuf 1+ ( skip count byte ) disasm
-
     0 tbuf c!
 ;
 
-: ret, ( -- ) $c3 byte, ;opc ;
-
-: pop,  ( -- )
-    sreg -1 = abort" no source register"
-    sreg 7 > if
-        \ extended register
-        $41 to prefix-byte prefix,
-        -8 +to sreg
+: lea, ( -- )
+    sbase -1 <> if
+        dreg -1 <> if
+            dsize 64 = if
+                $48 to prefix-byte
+            then
+            prefix,
+            $8d byte,
+            1 sbase dreg make-modrm-byte byte,
+            sdisp byte,
+            ;opc
+            exit
+        then
     then
-    sreg $58 + byte,
-    ;opc ;
+    true abort" unsupported"
+;
 
-: push, ( -- )
-    sreg -1 = abort" no source register"
-    sreg 8 and if
-        \ extended register
-        $41 to prefix-byte prefix,
-        -8 +to sreg
-    then
-    sreg $50 + byte,
-    ;opc ;
-
-: mov,  ( -- )
+: mov, ( -- )
     sreg -1 <> dreg -1 <> and if
         \ register to register move
         ssize 64 = dsize 64 = or if
@@ -212,18 +218,48 @@ false value dest?
                 prefix-byte rex.b or to prefix-byte
             then
             ddisp 0= if
+                \ zero displacement
                 prefix, $89 byte,
                 0 sreg dbase make-modrm-byte byte,
                 dbase 4 = if \ rsp
                     $24 byte,           \ REVIEW
                 then
-                ;opc
-                exit
+            else
+                prefix, $89 byte,
+                1 sreg dbase make-modrm-byte byte,
+                dbase 4 = if \ rsp
+                    $24 byte,           \ REVIEW
+                then
+                ddisp byte,
             then
+            ;opc
+            exit
         then
     then
     true abort" unsupported"
 ;
+
+: pop, ( -- )
+    sreg -1 = abort" no source register"
+    sreg 7 > if
+        \ extended register
+        $41 to prefix-byte prefix,
+        -8 +to sreg
+    then
+    sreg $58 + byte,
+    ;opc ;
+
+: push, ( -- )
+    sreg -1 = abort" no source register"
+    sreg 8 and if
+        \ extended register
+        $41 to prefix-byte prefix,
+        -8 +to sreg
+    then
+    sreg $50 + byte,
+    ;opc ;
+
+: ret, ( -- ) $c3 byte, ;opc ;
 
 : }asm ( -- ) previous ; immediate
 
@@ -232,7 +268,16 @@ also forth definitions
 : asm{ ( -- )
     reset-assembler
     0 tbuf c!
-    also assembler ; immediate
+    also assembler
+; immediate
+
+: asm ( c-addr u -- $addr )
+    reset-assembler
+    0 tbuf c!
+    also assembler
+    evaluate
+    previous
+;
 
 \ TEMPORARY
 also disassembler
