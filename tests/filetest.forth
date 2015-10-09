@@ -197,16 +197,16 @@ TESTING REQUIRED REQUIRE INCLUDED
 \ Tests taken from Forth 2012 RfD
 
 T{ 0
-  S" required-helper1.fth" REQUIRED
-  REQUIRE required-helper1.fth
-  INCLUDE required-helper1.fth
+  S" required-helper1.forth" REQUIRED
+  REQUIRE required-helper1.forth
+  INCLUDE required-helper1.forth
   -> 2 }T
 
 T{ 0
-  INCLUDE required-helper2.fth
-  S" required-helper2.fth" REQUIRED
-  REQUIRE required-helper2.fth
-  S" required-helper2.fth" INCLUDED
+  INCLUDE required-helper2.forth
+  S" required-helper2.forth" REQUIRED
+  REQUIRE required-helper2.forth
+  S" required-helper2.forth" INCLUDED
   -> 2 }T
 [then]
 \ ------------------------------------------------------------------------------
