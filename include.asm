@@ -22,15 +22,7 @@ file __FILE__
 ; -1              String (via EVALUATE)
 ; 0               User input device
 
-; ### 'source-id
-variable tick_source_id, "'source-id", 0
-
-; ### source-id
-code source_id, 'source-id'             ; -- 0 | -1 | fileid
-        _ tick_source_id
-        _fetch
-        next
-endcode
+value source_id, 'source-id', 0
 
 ; ### 'source-buffer
 variable tick_source_buffer, "'source-buffer", 0
@@ -76,8 +68,7 @@ endcode
 
 ; ### set-input
 code set_input, 'set-input'             ; source-addr source-len source-id --
-        _ tick_source_id
-        _ store
+        _to source_id
         _ set_source
         next
 endcode
@@ -218,8 +209,7 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
 ; FILE
         _ save_input
         _ ntor                          ; -- fileid
-        _ tick_source_id
-        _ store                         ; --
+        _to source_id
         _ slash_source_buffer
         _ allocate                      ; -- a-addr ior
         _ drop                          ; REVIEW
@@ -454,8 +444,7 @@ code evaluate, 'evaluate'               ; i*x c-addr u -- j*x
         _ save_input
         _ ntor                          ; -- c-addr u
         _lit -1
-        _ tick_source_id
-        _ store                         ; -- c-addr u
+        _to source_id
         _ set_source                    ; --
         _ toin
         _ off
