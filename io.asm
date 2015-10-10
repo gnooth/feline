@@ -789,6 +789,36 @@ code current_directory, 'current-directory'     ; -- $addr
         next
 endcode
 
+extern os_chdir
+
+; ### set-current-directory
+code set_current_directory, 'set-current-directory'     ; $addr -- flag
+        _ string_to_zstring
+%ifdef WIN64
+        popd    rcx
+%else
+        popd    rdi
+%endif
+        xcall   os_chdir
+        pushd   rax
+        next
+endcode
+
+; ### cd
+code cd, 'cd'
+        _ blword
+        _dupcfetch
+        _if .1
+        _ set_current_directory
+        _ drop
+        _else .1
+        _ drop
+        _ current_directory
+        _ counttype
+        _then .1
+        next
+endcode
+
 section .data
 forth_home_data:
 %strlen len     FORTH_HOME

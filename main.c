@@ -445,6 +445,17 @@ char *os_getcwd(char *buf, size_t size)
   return buf;
 }
 
+Cell os_chdir(const char *path)
+{
+  // REVIEW error handling
+#ifdef WIN64
+  BOOL ret = SetCurrentDirectory(path);
+  return ret ? -1 : 0;
+#else
+  return chdir(path) ? 0 : -1;
+#endif
+}
+
 char *os_realpath(const char *path)
 {
   char *buf = malloc(PATH_MAX);
