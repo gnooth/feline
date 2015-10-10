@@ -22,8 +22,10 @@ file __FILE__
 ; -1              String (via EVALUATE)
 ; 0               User input device
 
+; ### source-id
 value source_id, 'source-id', 0
 
+; ### source-buffer
 value source_buffer, 'source-buffer', 0
 
 ; ### source-buffer-size
@@ -295,6 +297,32 @@ code link_file, 'link-file'             ; c-addr u -- nfa
         _ set_current
         _rfrom
         _toname
+        next
+endcode
+
+; ### dirname
+code forth_dirname, 'dirname'           ; $filename -- $dirname | 0
+        _ count                         ; -- c-addr u
+        _begin .1
+        _ dup
+        _while .1
+        _oneminus
+        _ twodup
+        _ plus
+        _cfetch
+        _lit '/'
+        _ equal
+        _if .2
+        _dup
+        _zeq_if .3
+        _oneplus
+        _then .3
+        _ copy_to_temp_string
+        _return
+        _then .2
+        _repeat .1
+        _2drop
+        _zero
         next
 endcode
 
