@@ -200,7 +200,8 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _to source_id
         _ source_buffer_size
         _ allocate                      ; -- a-addr ior
-        _ drop                          ; REVIEW
+        _lit -59
+        _ ?throw
         _ dup
         _to source_buffer
         _ tick_source
