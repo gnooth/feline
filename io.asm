@@ -279,10 +279,8 @@ endcode
 code open_file, 'open-file'             ; c-addr u fam -- fileid ior
 ; FILE
         _tor
-        _ to_stringbuf
-;         _ string_to_zstring
+        _ to_temp_string
         _rfrom
-;         _ paren_open_file
         _ string_open_file
         next
 endcode
@@ -338,7 +336,7 @@ extern os_create_file
 ; ### create-file
 code create_file, 'create-file'         ; c-addr u fam -- fileid ior
         _tor
-        _ to_stringbuf
+        _ to_temp_string
         _rfrom
         _ string_create_file
         next
@@ -824,7 +822,7 @@ code realpath_, 'realpath'              ; $path -- $realpath
         pushd   rax                     ; -- zaddr
         _ dup
         _ zcount
-        _ to_stringbuf                  ; -- zaddr $addr
+        _ to_temp_string                ; -- zaddr $addr
         _ swap
         _ free_
         _ drop

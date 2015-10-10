@@ -66,7 +66,7 @@
 : words ( -- )
 \ TOOLS
 \ "List the definition names in the first word list of the search order."
-    bl word count ?dup if >$buf else drop 0 then to words-pattern
+    blword count ?dup if >temp$ else drop 0 then to words-pattern
     (words) ;
 
 only forth also root definitions

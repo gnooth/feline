@@ -328,7 +328,7 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ source_filename
         _fetch
         _ tor
-        _ to_stringbuf
+        _ to_temp_string
         _ resolve_include_filename      ; -- $addr
         _ realpath_
         _ dup
@@ -386,7 +386,7 @@ endcode
 ; ### system-file-pathname
 code system_file_pathname, 'system-file-pathname'
 ; c-addr1 u1 -- c-addr2 u2
-        _ to_stringbuf                  ; -- $addr1
+        _ to_temp_string                ; -- $addr1
         _ forth_home                    ; -- $addr1 $addr2
 %ifdef WIN64
         _cquote "\"
@@ -413,7 +413,7 @@ code required, 'required'               ; i*x c-addr u -- i*x
 ; FILE EXT
         _ ?dup
         _if .1
-        _ to_stringbuf
+        _ to_temp_string
         _ resolve_include_filename      ; -- $addr
         _ realpath_
         _ count

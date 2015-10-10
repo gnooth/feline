@@ -163,7 +163,7 @@ false value dest?
 0 value testing?
 
 : ;opc ( -- )
-    tbuf count >$buf to actual
+    tbuf count >temp$ to actual
 
     testing? 0= if
         $c3 >tbuf

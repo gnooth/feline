@@ -81,10 +81,10 @@ code stringbuf_plus, '$buf+'            ; -- $addr
         next
 endcode
 
-; ### >$buf
-code to_stringbuf, '>$buf'              ; c-addr u -- $addr
+; ### >temp$
+code to_temp_string, '>temp$'           ; c-addr u -- $addr
 ; copy the string at c-addr u to the temporary string area
-; advance the pointer past the copied string
+; advance the temporary string pointer past the copied string
 ; return the address of the copied string
         _ stringbuf
         _ place_string
@@ -158,11 +158,11 @@ endcode
 
 ; ### >$
 code save_string, '>$'                  ; c-addr u -- $addr
-; allocate permanent storage for the string specified by c-addr u
+; copy the string specified by c-addr u to allocated storage
         _dup
         _if .1
         _dup
-        _twoplus
+        _twoplus                        ; count byte, terminal null byte
         _ allocate
         _lit -59
         _ ?throw                        ; -- c-addr u $addr

@@ -22,7 +22,7 @@
     ' >view 2@ ?dup if
         swap                    \ -- $addr n
         $" j +"
-        swap (.) >$buf $+
+        swap (.) >temp$ $+
         $"  " $+
         swap $+
         count system
