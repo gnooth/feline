@@ -242,7 +242,7 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _ interpret
         _repeat .1
         _ source_buffer
-        _ free_
+        _ forth_free
         _ drop                          ; REVIEW
         _ nrfrom
         _ restore_input
@@ -328,9 +328,9 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ source_filename
         _fetch
         _ tor
-        _ to_temp_string
+        _ copy_to_temp_string
         _ resolve_include_filename      ; -- $addr
-        _ realpath_
+        _ forth_realpath
         _ dup
         _ count
         _ link_file
@@ -386,7 +386,7 @@ endcode
 ; ### system-file-pathname
 code system_file_pathname, 'system-file-pathname'
 ; c-addr1 u1 -- c-addr2 u2
-        _ to_temp_string                ; -- $addr1
+        _ copy_to_temp_string           ; -- $addr1
         _ forth_home                    ; -- $addr1 $addr2
 %ifdef WIN64
         _cquote "\"
@@ -413,9 +413,9 @@ code required, 'required'               ; i*x c-addr u -- i*x
 ; FILE EXT
         _ ?dup
         _if .1
-        _ to_temp_string
+        _ copy_to_temp_string
         _ resolve_include_filename      ; -- $addr
-        _ realpath_
+        _ forth_realpath
         _ count
         _ twodup
         _ files_wordlist

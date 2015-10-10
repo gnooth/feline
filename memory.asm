@@ -40,7 +40,7 @@ endcode
 extern os_free
 
 ; ### free
-code free_, 'free'                      ; a-addr -- ior
+code forth_free, 'free'                 ; a-addr -- ior
 ; MEMORY
 %ifdef WIN64
         mov     rcx, rbx

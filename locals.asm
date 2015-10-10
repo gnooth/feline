@@ -200,12 +200,12 @@ code delete_local_names, 'delete-local-names'
         _fetch
         _ ?dup
         _if .3
-        _ free_
+        _ forth_free
         _ throw
         _then .3
         _loop .2
         _ local_names
-        _ free_
+        _ forth_free
         _ throw
         _zero
         _to local_names

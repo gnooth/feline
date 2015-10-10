@@ -82,7 +82,7 @@ code stringbuf_plus, '$buf+'            ; -- $addr
 endcode
 
 ; ### >temp$
-code to_temp_string, '>temp$'           ; c-addr u -- $addr
+code copy_to_temp_string, '>temp$'      ; c-addr u -- $addr
 ; copy the string at c-addr u to the temporary string area
 ; advance the temporary string pointer past the copied string
 ; return the address of the copied string
@@ -240,10 +240,10 @@ endcode
 code stringcomma, 'string,'             ; addr u --
         _ here
         _ over
-        _ oneplus
+        _oneplus
         _ allot
         _ place
-        ; REVIEW terminal null byte
+        ; terminal null byte
         _zero
         _ ccomma
         next
@@ -297,18 +297,13 @@ endcode
 code cquote, 'c"', IMMEDIATE
 ; CORE EXT
 ; "Interpretation semantics for this word are undefined."
-        _ ?comp
-        _ flush_compilation_queue
         _lit '"'
-        _ parse                         ; -- addr len
+        _ parse                         ; -- c-addr u
         _ statefetch
         _if .1
         _ cliteral
         _else .1
-        _ stringbuf
-        _ place
-        _ stringbuf
-        _ plus_stringbuf
+        _ copy_to_temp_string
         _then .1
         next
 endcode
@@ -324,18 +319,7 @@ code dollarquote, '$"', IMMEDIATE       ; -- $addr
         _if .1
         _ cliteral
         _else .1
-        _ stringbuf
-        _ place
-
-        ; append terminal null byte
-        _zero
-        _ stringbuf
-        _ count
-        _ plus
-        _ cstore
-
-        _ stringbuf
-        _ plus_stringbuf
+        _ copy_to_temp_string
         _then .1
         next
 endcode
@@ -349,10 +333,7 @@ code squote, 's"', IMMEDIATE
         _if .1
         _ sliteral
         _else .1
-        _ stringbuf
-        _ place
-        _ stringbuf
-        _ plus_stringbuf
+        _ copy_to_temp_string
         _ count
         _then .1
         next

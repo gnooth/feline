@@ -279,7 +279,7 @@ endcode
 code open_file, 'open-file'             ; c-addr u fam -- fileid ior
 ; FILE
         _tor
-        _ to_temp_string
+        _ copy_to_temp_string
         _rfrom
         _ string_open_file
         next
@@ -336,7 +336,7 @@ extern os_create_file
 ; ### create-file
 code create_file, 'create-file'         ; c-addr u fam -- fileid ior
         _tor
-        _ to_temp_string
+        _ copy_to_temp_string
         _rfrom
         _ string_create_file
         next
@@ -811,7 +811,7 @@ endcode
 extern os_realpath
 
 ; ### realpath
-code realpath_, 'realpath'              ; $path -- $realpath
+code forth_realpath, 'realpath'         ; $path -- $realpath
         _ string_to_zstring             ; -- zaddr
 %ifdef WIN64
         popd    rcx
@@ -822,9 +822,9 @@ code realpath_, 'realpath'              ; $path -- $realpath
         pushd   rax                     ; -- zaddr
         _ dup
         _ zcount
-        _ to_temp_string                ; -- zaddr $addr
+        _ copy_to_temp_string           ; -- zaddr $addr
         _ swap
-        _ free_
+        _ forth_free
         _ drop
         next
 endcode
