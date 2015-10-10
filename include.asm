@@ -26,11 +26,8 @@ value source_id, 'source-id', 0
 
 value source_buffer, 'source-buffer', 0
 
-; ### /source-buffer
-code slash_source_buffer, '/source-buffer'
-        _lit 256
-        next
-endcode
+; ### source-buffer-size
+constant source_buffer_size, 'source-buffer-size', 256
 
 ; ### 'source
 variable tick_source, "'source", 0
@@ -111,7 +108,7 @@ code restore_input, 'restore-input'
         _ throw
         _then .2
         _ source_buffer
-        _ slash_source_buffer
+        _ source_buffer_size
         _ source_id
         _ read_line                     ; -- len flag ior
         _if .3
@@ -153,7 +150,7 @@ code refill, 'refill'                   ; -- flag
         _ source_file_position
         _ store
         _ source_buffer
-        _ slash_source_buffer
+        _ source_buffer_size
         _ source_id
         _ read_line                     ; -- len flag ior
         _if .2
@@ -201,7 +198,7 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _ save_input
         _ ntor                          ; -- fileid
         _to source_id
-        _ slash_source_buffer
+        _ source_buffer_size
         _ allocate                      ; -- a-addr ior
         _ drop                          ; REVIEW
         _ dup
