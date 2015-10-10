@@ -783,14 +783,14 @@ endcode
 
 ; ### current-directory
 code current_directory, 'current-directory'     ; -- $addr
-        _ newstring
+        _ tempstring
         _ dup
-        _oneplus
+        _oneplus                        ; skip over count byte
         _lit 255
         _ get_current_directory
         _ zstrlen
         _ over
-        _ cstore
+        _ cstore                        ; count byte
         next
 endcode
 

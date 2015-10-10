@@ -21,7 +21,7 @@ warning off
     \ Gather n bytes from the stack and make them into a counted string in
     \ the transient string area. Return the address of the transient string.
     local count
-    new$ local buf
+    temp$ local buf
     count buf c!
     count 0 ?do
         count i - buf + c!
