@@ -24,15 +24,7 @@ file __FILE__
 
 value source_id, 'source-id', 0
 
-; ### 'source-buffer
-variable tick_source_buffer, "'source-buffer", 0
-
-; ### source-buffer
-code source_buffer, 'source-buffer'     ; -- addr
-        _ tick_source_buffer
-        _fetch
-        next
-endcode
+value source_buffer, 'source-buffer', 0
 
 ; ### /source-buffer
 code slash_source_buffer, '/source-buffer'
@@ -104,8 +96,7 @@ code restore_input, 'restore-input'
         _ store
         _ source_file_position
         _ store
-        _ tick_source_buffer
-        _ store
+        _to source_buffer
         _ set_input
         _ source_id
         _ zgt
@@ -214,8 +205,7 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _ allocate                      ; -- a-addr ior
         _ drop                          ; REVIEW
         _ dup
-        _ tick_source_buffer
-        _ store
+        _to source_buffer
         _ tick_source
         _ store
         _ source_line_number
