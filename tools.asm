@@ -77,8 +77,7 @@ code break, 'break'                     ; --
         _zero
         _ set_input
         _zero
-        _ source_filename
-        _ store
+        _to source_filename
         _lit interpret_xt
         _ catch
         _ ?dup

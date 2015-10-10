@@ -315,7 +315,6 @@ code noname_header, 'noname-header'     ; --
         _ ccomma                        ; type field
 
         _ source_filename
-        _fetch
         _ comma
         _ source_line_number
         _fetch
@@ -371,7 +370,6 @@ code quoteheader, '"header'             ; c-addr u --
         _ ccomma                        ; type field
 
         _ source_filename
-        _fetch
         _ comma
         _ source_line_number
         _fetch

@@ -139,7 +139,6 @@ code where, 'where'                     ; --
         _if .1
         _ ?cr
         _ source_filename
-        _fetch
         _ ?dup
         _if .2
         _ counttype

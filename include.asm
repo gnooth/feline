@@ -270,7 +270,7 @@ code resolve_include_filename, 'resolve-include-filename' ; $addr1 -- $addr
 endcode
 
 ; ### source-filename
-variable source_filename, 'source-filename', 0
+value source_filename, 'source-filename', 0
 
 ; ### link-file
 code link_file, 'link-file'             ; c-addr u -- nfa
@@ -304,7 +304,6 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ ?dup
         _if .1
         _ source_filename
-        _fetch
         _tor
         _ copy_to_temp_string           ; -- $addr
         _ resolve_include_filename      ; -- $addr
@@ -312,8 +311,7 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _dup
         _ count
         _ link_file
-        _ source_filename
-        _ store
+        _to source_filename
 
         _ readonly
         _ string_open_file
@@ -326,7 +324,6 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ drop                          ; REVIEW
 
         _ source_filename
-        _ fetch
         _namefrom
         _tobody
         _lit -1
@@ -337,14 +334,12 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ ?cr
         _dotq "Unable to open file "
         _ source_filename
-        _ fetch
         _ counttype
         _lit -38
         _ throw
         _then .2
         _ rfrom
-        _ source_filename
-        _ store
+        _to source_filename
         _else .1
         _ drop
         _then .1
