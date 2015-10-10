@@ -118,3 +118,7 @@
         add     rbx, [rbp]
         mov     [rbp], rbx
 %endmacro
+
+%macro  _string_to_zstring 0            ; $>z
+        _oneplus
+%endmacro

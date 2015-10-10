@@ -226,9 +226,8 @@ extern os_file_status
 ; ### file-status
 code file_status, 'file-status'         ; c-addr u -- x ior
 ; "If the file exists, ior is zero; otherwise ior is the implementation-defined I/O result code."
-        _ here                          ; FIXME use $buf
-        _ zplace
-        _ here
+        _ copy_to_temp_string           ; -- $addr
+        _string_to_zstring              ; -- zaddr
 %ifdef WIN64
         popd    rcx
 %else
@@ -250,9 +249,8 @@ extern os_file_is_directory
 
 ; ### file-is-directory?
 code file_is_directory, 'file-is-directory?' ; c-addr u -- -1 | 0
-        _ here
-        _ zplace
-        _ here
+        _ copy_to_temp_string           ; -- $addr
+        _string_to_zstring              ; -- zaddr
 %ifdef WIN64
         popd    rcx
 %else
@@ -643,9 +641,8 @@ extern os_delete_file
 
 ; ### delete-file
 code delete_file, 'delete-file'         ; c-addr u -- ior
-        _ here
-        _ zplace
-        _ here
+        _ copy_to_temp_string           ; -- $addr
+        _string_to_zstring
 %ifdef WIN64
         mov     rcx, rbx
 %else
@@ -714,9 +711,8 @@ extern os_system
 
 ; ### system
 code system_, 'system'                  ; c-addr u --
-        _ here                          ; FIXME use $buf
-        _ zplace
-        _ here
+        _ copy_to_temp_string           ; -- $addr
+        _string_to_zstring
 %ifdef WIN64
         popd    rcx
 %else
@@ -743,9 +739,8 @@ extern os_getenv
 
 ; ### getenv
 code getenv_, 'getenv'                  ; c-addr1 u1 -- c-addr2 u2
-        _ here
-        _ zplace
-        _ here
+        _ copy_to_temp_string           ; -- $addr
+        _string_to_zstring
 %ifdef WIN64
         popd    rcx
 %else

@@ -305,19 +305,16 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _if .1
         _ source_filename
         _fetch
-        _ tor
-        _ copy_to_temp_string
+        _tor
+        _ copy_to_temp_string           ; -- $addr
         _ resolve_include_filename      ; -- $addr
         _ forth_realpath
-        _ dup
+        _dup
         _ count
         _ link_file
         _ source_filename
         _ store
 
-;         _ string_to_zstring
-;         _ readonly
-;         _ paren_open_file               ; -- fileid ior
         _ readonly
         _ string_open_file
 

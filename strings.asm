@@ -95,7 +95,7 @@ endcode
 ; ### $>z
 inline string_to_zstring, '$>z'         ; $addr -- zaddr
 ; skip over the count byte
-        _oneplus
+        _string_to_zstring              ; 1+
 endinline
 
 ; ### $!
