@@ -628,6 +628,32 @@ code count, 'count'                     ; c-addr -- c-addr+1 u
         next
 endcode
 
+; ### string-nth
+code string_nth, 'string-nth'           ; index $addr -- char
+; name from Factor, but slightly different behavior
+; returns character at index, or 0 if index is out of range
+        xor     eax, eax                ; rax = 0
+        mov     al, [rbx]               ; length in rax
+        mov     rdx, [rbp]              ; index in rdx
+        lea     rbp, [rbp + BYTES_PER_CELL]     ; adjust stack
+        cmp     rax, rdx
+        jle     .1
+        add     rbx, rdx
+        mov     al, [rbx + 1]
+        mov     rbx, rax
+        ret
+.1:
+        ; index out of range
+        xor     rbx, rbx
+        next
+endcode
+
+; ### string-first-char
+inline string_first_char, 'string-first-char'   ; $addr -- char
+; returns char at index 0 (which is 0 if it's an empty string)
+        movzx   rbx, byte [rbx + 1]
+endinline
+
 ; ### -trailing
 code dashtrailing, '-trailing'          ; c-addr u1 -- c-addr u2
 ; STRING
