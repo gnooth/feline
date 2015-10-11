@@ -448,10 +448,7 @@ code path_append_filename, 'path-append-filename'       ; $path $filename -- $pa
         _ swap                          ; -- $filename $path
 
         _ dup
-        _ count
-        _ plus
-        _oneminus
-        _cfetch                         ; last char of $path
+        _ string_last_char
         _ path_separator_char
         _ notequal
         _if .2

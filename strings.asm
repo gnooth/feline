@@ -632,8 +632,7 @@ endcode
 code string_nth, 'string-nth'           ; index $addr -- char
 ; name from Factor, but slightly different behavior
 ; returns character at index, or 0 if index is out of range
-        xor     eax, eax                ; rax = 0
-        mov     al, [rbx]               ; length in rax
+        movzx   rax, byte [rbx]         ; length in rax
         mov     rdx, [rbp]              ; index in rdx
         lea     rbp, [rbp + BYTES_PER_CELL]     ; adjust stack
         cmp     rax, rdx
@@ -653,6 +652,15 @@ inline string_first_char, 'string-first-char'   ; $addr -- char
 ; returns char at index 0 (which is 0 if it's an empty string)
         movzx   rbx, byte [rbx + 1]
 endinline
+
+; ### string-last-char
+code string_last_char, 'string-last-char'       ; $addr -- char
+; returns last char of string (0 if the string is empty)
+        movzx   rax, byte [rbx]         ; length in rax
+        add     rbx, rax
+        movzx   rbx, byte [rbx]
+        next
+endcode
 
 ; ### -trailing
 code dashtrailing, '-trailing'          ; c-addr u1 -- c-addr u2
