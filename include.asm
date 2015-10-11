@@ -403,8 +403,7 @@ constant path_separator_char, 'path-separator-char', '/'
 ; ### filename-is-absolute
 code filename_is_absolute, 'filename-is-absolute'       ; $filename -- flag
 ; FIXME incomplete
-        _oneplus
-        _cfetch                         ; first char of $filename
+        _ string_first_char
         _ path_separator_char
         _ equal
         next
