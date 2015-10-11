@@ -407,9 +407,8 @@ code filename_is_absolute, 'filename-is-absolute'       ; $filename -- flag
         _ string_first_char
         _ path_separator_char
         _ equal
-        _if .1
-        _drop
-        _ true
+        _if .1                          ; -- $filename
+        mov     rbx, -1
         _return
         _then .1
 
@@ -418,7 +417,7 @@ code filename_is_absolute, 'filename-is-absolute'       ; $filename -- flag
         _ ge
         _if .2                          ; -- $filename
         _lit 1
-        _ swap                          ; --1 $filename
+        _ swap                          ; -- 1 $filename
         _ string_nth
         _lit ':'
         _ equal

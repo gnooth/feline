@@ -219,7 +219,7 @@ false value dest?
             then
             ddisp 0= if
                 \ zero displacement
-                prefix, $89 byte,
+                prefix, $89 byte,       \ MOV r/m64, r64s               89 /r
                 0 sreg dbase make-modrm-byte byte,
                 dbase 4 = if \ rsp
                     $24 byte,           \ REVIEW
