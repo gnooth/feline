@@ -333,9 +333,21 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _if .1
         _ source_filename
         _tor
-        _ copy_to_temp_string           ; -- $addr
-        _ resolve_include_filename      ; -- $addr
-        _ forth_realpath
+        _ copy_to_temp_string           ; -- $filename
+
+        _ source_filename
+        _ ?dup
+        _if .2
+        _ forth_dirname
+        _ ?dup
+        _if .3                          ; -- $filename $dirname
+        _ swap
+        _ path_append_filename          ; -- $pathname1
+        _then .3
+        _then .2
+
+        _ forth_realpath                ; -- $pathname2
+        _ resolve_include_filename      ; -- $pathname3
         _dup
         _ count
         _ link_file
@@ -344,7 +356,7 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ readonly
         _ string_open_file
 
-        _zeq_if .2
+        _zeq_if .4                      ; -- fileid
         _duptor
         _ include_file
         _ rfrom                         ; -- fileid
@@ -358,14 +370,14 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ swap
         _ store
 
-        _else .2
+        _else .4
         _ ?cr
         _dotq "Unable to open file "
         _ source_filename
         _ counttype
         _lit -38
         _ throw
-        _then .2
+        _then .4
         _ rfrom
         _to source_filename
         _else .1
@@ -378,6 +390,54 @@ endcode
 code include, 'include'
         _ parse_name                    ; -- c-addr u
         _ included
+        next
+endcode
+
+; ### path-separator-char
+%ifdef WIN64
+constant path_separator_char, 'path-separator-char', '\'
+%else
+constant path_separator_char, 'path-separator-char', '/'
+%endif
+
+; ### filename-is-absolute
+code filename_is_absolute, 'filename-is-absolute'       ; $filename -- flag
+; FIXME incomplete
+        _oneplus
+        _cfetch                         ; first char of $filename
+        _ path_separator_char
+        _ equal
+        next
+endcode
+
+; ### path-append-filename
+code path_append_filename, 'path-append-filename'       ; $path $filename -- $pathname
+        _ dup
+        _ filename_is_absolute
+        _if .1
+        _nip
+        _return
+        _then .1                        ; -- $path $filename
+
+        _ swap                          ; -- $filename $path
+
+        _ dup
+        _ count
+        _ plus
+        _oneminus
+        _cfetch                         ; last char of $path
+        _ path_separator_char
+        _ notequal
+        _if .2
+%ifdef WIN64
+        _cquote "\"
+%else
+        _cquote "/"
+%endif
+        _ appendstring                  ; -- $name $path1
+        _then .2
+        _ swap
+        _ appendstring
         next
 endcode
 
@@ -411,22 +471,36 @@ code required, 'required'               ; i*x c-addr u -- i*x
 ; FILE EXT
         _ ?dup
         _if .1
-        _ copy_to_temp_string
-        _ resolve_include_filename      ; -- $addr
-        _ forth_realpath
+        _ copy_to_temp_string           ; -- $filename
+
+        _ source_filename
+        _ ?dup
+        _if .2
+        _ forth_dirname
+        _ ?dup
+        _if .3                          ; -- $filename $dirname
+        _ swap
+        _ path_append_filename          ; -- $pathname1
+        _then .3
+        _then .2
+
+        _ forth_realpath                ; -- $pathname2
+        _ resolve_include_filename      ; -- $pathname3
         _ count
         _ twodup
         _ files_wordlist
         _ search_wordlist
-        _if .2
+        _if .4
         _ execute
         _fetch
-        _if .3
+        _if .5
         _2drop
         _return
-        _then .3
-        _then .2
+        _then .5
+        _then .4
+
         _ included
+
         _else .1
         _drop
         _then .1
