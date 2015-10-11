@@ -646,7 +646,7 @@ $29 install-handler
 $31 install-handler
 
 \ $39 handler
-:noname ( -- )
+:noname ( -- )                          \ CMP r/m64, r64                39 /r
     $" cmp" to mnemonic
     !modrm-byte
     modrm-mod 1 = if
@@ -654,6 +654,12 @@ $31 install-handler
         1 +to ip
         ok_register modrm-reg 0 source!
         prefix if 4 else 3 then to size
+        .inst
+        exit
+    then
+    modrm-mod 3 = if
+        ok_register modrm-rm register-rm 0 dest!
+        ok_register modrm-reg register-reg 0 source!
         .inst
         exit
     then
@@ -705,6 +711,9 @@ $3b install-handler
 
 \ $7c handler
 :noname ( -- ) $" jl" .jcc8 ; $7c install-handler
+
+\ $7e handler
+:noname ( -- ) $" jle" .jcc8 ; $7e install-handler
 
 \ $7f handler
 :noname ( -- ) $" jg" .jcc8 ; $7f install-handler
