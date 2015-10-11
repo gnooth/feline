@@ -523,15 +523,6 @@ $09 install-handler
 :noname  ( -- )
     ip c@ local byte2
     1 +to ip
-    byte2 $b6 = if
-        $" movzx" to mnemonic
-        !modrm-byte
-        ok_relative modrm-rm register-rm 0 source!
-        ok_register modrm-reg register-reg 0 dest!
-        $" byte" to relative-size
-        .inst
-        exit
-    then
     byte2 $4d = if
         $" cmovnl" to mnemonic
         !modrm-byte
@@ -561,6 +552,25 @@ $09 install-handler
         !modrm-byte
         modrm-mod 3 = if
             ok_register modrm-rm reg8 0 dest!
+            .inst
+            exit
+        then
+    then
+    byte2 $b6 = if
+        $" movzx" to mnemonic
+        !modrm-byte
+        modrm-mod 0= if
+            ok_relative modrm-rm register-rm 0 source!
+            ok_register modrm-reg register-reg 0 dest!
+            $" byte" to relative-size
+            .inst
+            exit
+        then
+        modrm-mod 1 = if
+            ok_relative modrm-rm register-rm ip c@s source!
+            1 +to ip
+            ok_register modrm-reg register-reg 0 dest!
+            $" byte" to relative-size
             .inst
             exit
         then
