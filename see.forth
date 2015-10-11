@@ -144,19 +144,15 @@ create old-mnemonic  2 cells allot
 : modrm-rm   ( -- rm  )  modrm-byte (modrm-rm)  ;
 
 : register-reg ( n1 -- n2 )
-\     prefix if
-        prefix rex.r and if
-            8 or
-        then
-\     then
+    prefix rex.r and if
+        8 or
+    then
 ;
 
 : register-rm ( n1 -- n2 )
-\     prefix if
-        prefix rex.b and if
-            8 or
-        then
-\     then
+    prefix rex.b and if
+        8 or
+    then
 ;
 
 : .modrm  ( modrm-byte -- )
@@ -908,6 +904,12 @@ $88 install-handler
 :noname ( -- )                          \ MOV reg8, reg/mem8            8a /r
     $" mov" to mnemonic
     !modrm-byte
+    modrm-mod 0= if
+        ok_register modrm-reg reg8 0 dest!
+        ok_relative modrm-rm register-rm 0 source!
+        .inst
+        exit
+    then
     modrm-mod 1 = if                    \ 1-byte displacement
         ok_register modrm-reg reg8 0 dest!
         ok_relative modrm-rm ip c@s source!
