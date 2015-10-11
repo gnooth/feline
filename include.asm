@@ -310,7 +310,7 @@ code forth_dirname, 'dirname'           ; $filename -- $dirname | 0
         _ twodup
         _ plus
         _cfetch
-        _lit '/'
+        _ path_separator_char
         _ equal
         _if .2
         _dup
@@ -402,10 +402,37 @@ constant path_separator_char, 'path-separator-char', '/'
 
 ; ### filename-is-absolute
 code filename_is_absolute, 'filename-is-absolute'       ; $filename -- flag
-; FIXME incomplete
+%ifdef WIN64
+        _dup
         _ string_first_char
         _ path_separator_char
         _ equal
+        _if .1
+        _drop
+        _ true
+        _return
+        _then .1
+
+        _dupcfetch                      ; -- $filename length
+        _lit 2
+        _ ge
+        _if .2                          ; -- $filename
+        _lit 1
+        _ swap                          ; --1 $filename
+        _ string_nth
+        _lit ':'
+        _ equal
+        _return
+        _then .2
+
+        ; otherwise...
+        _ false
+%else
+        ; Linux
+        _ string_first_char
+        _ path_separator_char
+        _ equal
+%endif
         next
 endcode
 
