@@ -53,6 +53,7 @@ ASM_SOURCES = forth.asm forth_home.asm equates.asm macros.asm inlines.asm \
 	quit.asm \
 	stack.asm \
 	store.asm \
+	string.asm \
 	strings.asm \
 	tools.asm \
 	value.asm
