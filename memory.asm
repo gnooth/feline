@@ -27,13 +27,13 @@ code allocate, 'allocate'               ; u -- a-addr ior
 %endif
         xcall   os_allocate
         mov     rbx, rax                ; -- a-addr
-        _ dup
-        _if .1
-        _zero                          ; success
-        _else .1
+        test    rbx, rbx
+        jz .1
+        _zero                           ; success
+        _return
+.1:
         ; failed!
         _lit -59                        ; THROW code (Forth 2012 Table 9.1)
-        _then .1
         next
 endcode
 
