@@ -92,23 +92,11 @@ endcode
 
 ; ### type
 code type, 'type'                       ; addr n --
-        mov     rcx, rbx                ; count in rcx
-        mov     rdx, [rbp]              ; addr in rdx
-        add     rbp, BYTES_PER_CELL
-        mov     rbx, [rbp]
-        add     rbp, BYTES_PER_CELL
-        jrcxz   .2
-.1:
-        movzx   rax, byte [rdx]
-        pushd   rax
-        push    rcx
-        push    rdx
-        _ emit
-        pop     rdx
-        pop     rcx
-        inc     rdx
-        loop    .1
-.2:
+        add     [nout_data], rbx
+        _ output_file
+        _ write_file
+        _lit -75
+        _ ?throw
         next
 endcode
 
