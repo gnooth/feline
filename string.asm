@@ -41,8 +41,7 @@ code to_string, '>string'               ; c-addr u -- string
         _lit 4
         _cells
         _ allocate
-        _lit -59
-        _ ?throw                        ; -- c-addr u string
+        _ throw
         _tor                            ; -- c-addr u           r: -- string
         _zero
         _rfetch
@@ -58,16 +57,23 @@ code to_string, '>string'               ; c-addr u -- string
         _ plus
         _ store                         ; -- c-addr u
         _ dup
+        _oneplus                        ; terminal null byte
         _ allocate
-        _lit -59
-        _ ?throw                        ; -- c-addr u data-address
+        _ throw                         ; -- c-addr u data-address
         _ dup
         _rfetch
         _lit OFFSET_DATA_ADDRESS
         _ plus
         _ store
 
+        _ swap                          ; -- c-addr data-address u
+
+        _ twodup
+        _ plus
+        _zero
         _ swap
+        _ cstore
+
         _ cmove
 
         _ rfrom
@@ -76,15 +82,24 @@ endcode
 
 ; ### string>
 code string_from, 'string>'             ; string -- caddr u
-        mov     rax, [rbx + OFFSET_DATA_ADDRESS]
-        mov     rbx, [rbx + OFFSET_LENGTH]
+;         mov     rax, [rbx + OFFSET_DATA_ADDRESS]
+;         mov     rbx, [rbx + OFFSET_LENGTH]
+;         pushrbx
+;         mov     rbx, rax
+;         _ swap
+        mov     rax, rbx                ; address of string object in rax
+        mov     rbx, [rax + OFFSET_DATA_ADDRESS]
         pushrbx
-        mov     rbx, rax
-        _ swap
+        mov     rbx, [rax + OFFSET_LENGTH]
         next
 endcode
 
-code string_destroy, '~string'
+; ### ~string
+code string_destroy, '~string'          ; string --
+        _dup
+        mov     rbx, [rbx]
+        _ ifree
+        _ ifree
         next
 endcode
 
