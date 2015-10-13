@@ -39,6 +39,19 @@ endcode
 
 extern os_free
 
+; ### -free
+code ifree, '-free'                     ; a-addr --
+; a version of FREE that doesn't return the meaningless ior
+%ifdef WIN64
+        mov     rcx, rbx
+%else
+        mov     rdi, rbx
+%endif
+        xcall   os_free                 ; "The free() function returns no value."
+        poprbx
+        next
+endcode
+
 ; ### free
 code forth_free, 'free'                 ; a-addr -- ior
 ; MEMORY
@@ -48,6 +61,6 @@ code forth_free, 'free'                 ; a-addr -- ior
         mov     rdi, rbx
 %endif
         xcall   os_free
-        xor     ebx, ebx                ; ior
+        xor     ebx, ebx                ; "The free() function returns no value."
         next
 endcode
