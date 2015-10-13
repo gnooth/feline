@@ -428,7 +428,16 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
     $" add" to mnemonic
     !modrm-byte
     modrm-mod 3 <> if
-        modrm-rm 4 = if !sib-byte then
+        modrm-rm 4 = if
+            !sib-byte
+            sib-byte $25 = if
+                ok_relative_no_reg 0 ip l@s dest!
+                4 +to ip
+                ok_register modrm-reg register-reg 0 source!
+                .inst
+                exit
+                then
+        then
     then
     modrm-mod 0= if
         ok_relative modrm-rm register-rm 0 dest!
