@@ -59,8 +59,12 @@ endcode
 
 ; ### throw
 code throw, 'throw'
-        _ ?dup
-        _if throw1
+        test    rbx, rbx
+        jnz .1
+        poprbx
+        _return
+.1:
+        _ dup
         _ handler
         _ fetch
         _ rpstore
@@ -73,7 +77,6 @@ code throw, 'throw'
         _ spstore
         _ drop
         _ rfrom
-        _then throw1
         next
 endcode
 
