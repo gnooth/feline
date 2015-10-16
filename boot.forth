@@ -19,6 +19,7 @@ include-system-file defer.forth
 include-system-file bracket-if.forth
 include-system-file case.forth
 include-system-file dump.forth
+include-system-file view.forth
 include-system-file see.forth
 include-system-file ekey.forth
 include-system-file switch.forth
