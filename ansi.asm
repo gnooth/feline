@@ -84,7 +84,10 @@ code page, 'page'
 ; FACILITY
 ; "On a terminal, PAGE clears the screen and resets the cursor
 ; position to the upper left corner."
-%ifndef WIN64
+%ifdef WIN64
+        _squote "cls"
+        _ system_
+%else
         _ ansi_escape
         _lit '2'
         _ emit
@@ -99,12 +102,20 @@ code page, 'page'
         next
 endcode
 
+%ifdef WIN64
+extern os_set_console_cursor_position
+%endif
+
 ; ### at-xy
 code at_xy, 'at-xy'                     ; col row --
 ; FACILITY
 ; zero based (Forth 2012 10.6.1.0742)
 ; ANSI values are 1-based
-%ifndef WIN64
+%ifdef WIN64
+        popd    rdx
+        popd    rcx
+        xcall   os_set_console_cursor_position
+%else
         _ ansi_escape
         _ paren_udot                    ; -- col c-addr u
         _ type

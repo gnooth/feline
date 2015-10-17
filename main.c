@@ -467,6 +467,17 @@ char *os_realpath(const char *path)
   return buf;
 }
 
+#ifdef WIN64
+void os_set_console_cursor_position(SHORT x, SHORT y)
+{
+  HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+  COORD coord;
+  coord.X = x;
+  coord.Y = y;
+  SetConsoleCursorPosition(h, coord);
+}
+#endif
+
 void os_bye()
 {
   deprep_terminal();
