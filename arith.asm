@@ -30,6 +30,13 @@ inline twoplus, '2+'
         _twoplus
 endinline
 
+; ### under+
+code underplus, 'under+'                ; n1 n2 n3 -- n1+n3 n2
+        add     [rbp + BYTES_PER_CELL], rbx
+        poprbx
+        next
+endcode
+
 ; ### char+
 inline charplus, 'char+'                ; c-addr1 -- c-addr2
 ; CORE 6.1.0897
