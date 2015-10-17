@@ -98,3 +98,22 @@ code page, 'page'
 %endif
         next
 endcode
+
+; ### at-xy
+code at_xy, 'at-xy'                     ; col row --
+; FACILITY
+; zero based (Forth 2012 10.6.1.0742)
+; ANSI values are 1-based
+%ifndef WIN64
+        _ ansi_escape
+        _ paren_udot                    ; -- col c-addr u
+        _ type
+        _lit ';'
+        _ emit
+        _ paren_udot
+        _ type
+        _lit 'H'
+        _ emit
+%endif
+        next
+endcode
