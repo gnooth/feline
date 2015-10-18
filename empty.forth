@@ -19,12 +19,12 @@
 0 value saved-voclink
 
 : trim ( wid -- )
-    \ headers are in the code area
-    saved-cp if
+    \ headers are in the data area
+    saved-dp if
         dup>r
         begin
             @
-            dup saved-cp u>
+            dup saved-dp u>
         while
             n>link
         repeat
