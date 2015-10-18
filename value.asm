@@ -46,6 +46,13 @@ code val, 'value'                       ; x "<spaces>name" --
         _lit $0c3
         _ ccommac
         _ comma
+
+        _ tvalue
+        _ latest
+        _namefrom
+        _totype
+        _ cstore
+
         next
 endcode
 
