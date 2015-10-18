@@ -33,6 +33,12 @@ code key?, 'key?'
         next
 endcode
 
+; ### #rows
+value nrows, '#rows', 0
+
+; ### #cols
+value ncols, '#cols', 0
+
 ; ### #out
 variable nout, '#out', 0
 

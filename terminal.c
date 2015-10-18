@@ -18,6 +18,7 @@
 #ifdef WIN64
 #include <windows.h>
 #else
+#include <signal.h>
 #include <termios.h>
 #include <sys/ioctl.h>
 #endif
@@ -32,6 +33,27 @@ static HANDLE console_input_handle = INVALID_HANDLE_VALUE;
 static int tty;
 static struct termios otio;
 static int terminal_prepped = 0;
+#endif
+
+#ifndef WIN64
+static void get_terminal_size()
+{
+  extern Cell nrows_data;
+  extern Cell ncols_data;
+  struct winsize size;
+  if (ioctl(tty, TIOCGWINSZ, (char *) &size) < 0)
+    nrows_data = ncols_data = 0;
+  else
+    {
+      nrows_data = size.ws_row;
+      ncols_data = size.ws_col;
+    }
+}
+
+static void sig_winch(int signo)
+{
+  get_terminal_size();
+}
 #endif
 
 void prep_terminal ()
@@ -58,19 +80,22 @@ void prep_terminal ()
     }
 #else
   // Linux.
-  tty = fileno (stdin);
+  tty = fileno(stdin);
   struct termios tio;
   char *term;
-  if (!isatty (tty))
+  struct winsize size;
+  if (!isatty(tty))
     return;
   term = getenv("TERM");
   if (term == NULL || !strcmp(term, "dumb"))
     return;
-  tcgetattr (tty, &tio);
+  tcgetattr(tty, &tio);
   otio = tio;
   tio.c_lflag &= ~(ICANON | ECHO);
-  tcsetattr (tty, TCSADRAIN, &tio);
+  tcsetattr(tty, TCSADRAIN, &tio);
   setvbuf(stdin, NULL, _IONBF, 0);
+  signal(SIGWINCH, sig_winch);
+  get_terminal_size();
   line_input_data = 0;
   terminal_prepped = 1;
 #endif
