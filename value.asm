@@ -65,7 +65,7 @@ code storeto, 'to', IMMEDIATE           ; n "<spaces>name" --
         _ find_local                    ; -- n $addr-or-index flag
         _if .2                          ; -- n index
         _ flush_compilation_queue
-        _ tolocalcomma
+        _ compile_to_local
         _return
         _then .2
         _then .1                        ; -- n $addr
@@ -108,7 +108,7 @@ code plusstoreto, '+to', IMMEDIATE      ; n "<spaces>name" --
         _ find_local                    ; -- n $addr-or-index flag
         _if .2                          ; -- n index
         _ flush_compilation_queue
-        _ plustolocalcomma
+        _ compile_plusto_local
         _return
         _then .2
         _then .1                        ; -- n $addr

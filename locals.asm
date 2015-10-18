@@ -136,8 +136,8 @@ code compile_local, 'compile-local'     ; index --
         next
 endcode
 
-; ### to-local,
-code tolocalcomma, 'to-local,'          ; index --
+; ### compile-to-local
+code compile_to_local, 'compile-to-local,'      ; index --
         _lit $49
         _ ccommac
         _lit $89
@@ -151,8 +151,8 @@ code tolocalcomma, 'to-local,'          ; index --
         next
 endcode
 
-; ### +to-local,
-code plustolocalcomma, '+to-local,'     ; index --
+; ### compile-+to-local
+code compile_plusto_local, 'compile-+to-local,' ; index --
         _lit $49
         _ ccommac
         _lit $01
@@ -225,8 +225,8 @@ endinline
 ; ### (local)
 code paren_local, '(local)'             ; c-addr u --
 ; LOCALS 13.6.1.0086
-        ; "If u is zero, the message is "last local" and c-addr has
-        ; no significance.
+        ; "If u is zero, the message is 'last local' and c-addr has
+        ; no significance."
         _ ?dup
         _zeq_if .1
         _drop
