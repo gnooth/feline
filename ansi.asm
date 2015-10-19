@@ -110,17 +110,18 @@ extern os_set_console_cursor_position
 code at_xy, 'at-xy'                     ; col row --
 ; FACILITY
 ; zero based (Forth 2012 10.6.1.0742)
-; ANSI values are 1-based
 %ifdef WIN64
         popd    rdx
         popd    rcx
         xcall   os_set_console_cursor_position
 %else
         _ ansi_escape
+        _oneplus                        ; ANSI values are 1-based
         _ paren_udot                    ; -- col c-addr u
         _ type
         _lit ';'
         _ emit
+        _oneplus                        ; ANSI values are 1-based
         _ paren_udot
         _ type
         _lit 'H'
