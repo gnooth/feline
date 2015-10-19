@@ -610,7 +610,6 @@ code ?line, '?line'                     ; n --
 ; "Move to left margin on next line if we will be past the right margin
 ; after printing n characters."
         _ nout
-        _fetch
         _ plus
         pushd 80                        ; REVIEW right margin
         _ gt

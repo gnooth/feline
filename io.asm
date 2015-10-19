@@ -40,7 +40,7 @@ value nrows, '#rows', 0
 value ncols, '#cols', 0
 
 ; ### #out
-variable nout, '#out', 0
+value nout, '#out', 0
 
 ; For Windows, the Forth standard handles are initialized in prep_terminal().
 ; The values here are correct for Linux.
@@ -164,7 +164,6 @@ endcode
 ; ### >pos
 code topos, '>pos'                      ; +n --
         _ nout
-        _fetch
         _ minus
         _lit 1
         _ max
