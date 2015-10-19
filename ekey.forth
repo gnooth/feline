@@ -75,6 +75,10 @@ $1b5b337e constant k-delete
 $1b5b357e constant k-prior
 $1b5b367e constant k-next
 
+\ REVIEW non-standard, should use K-CTRL-MASK
+$1b5b313b3548   constant k-^home
+$1b5b313b3546   constant k-^end
+
 [then]
 
 : ekey>char ( x -- x false | char true )
