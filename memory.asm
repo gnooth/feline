@@ -37,20 +37,30 @@ code allocate, 'allocate'               ; u -- a-addr ior
         next
 endcode
 
-extern os_free
-
-; ### -free
-code ifree, '-free'                     ; a-addr --
-; a version of FREE that doesn't return the meaningless ior
+; ### -allocate
+code iallocate, '-allocate'             ; u -- a-addr
+; A version of ALLOCATE that returns just the address of the allocated space
+; if the allocation is successful and otherwise calls THROW with the numeric
+; code specified by Forth 2012.
 %ifdef WIN64
         mov     rcx, rbx
 %else
         mov     rdi, rbx
 %endif
-        xcall   os_free                 ; "The free() function returns no value."
-        poprbx
+        xcall   os_allocate
+        test    rax, rax
+        jz .1
+        mov     rbx, rax                ; -- a-addr
+        _return
+.1:
+        ; failed!
+        mov     rbx, -59                ; Forth 2012 Table 9.1
+        _ throw
+        ; not reached
         next
 endcode
+
+extern os_free
 
 ; ### free
 code forth_free, 'free'                 ; a-addr -- ior
@@ -62,5 +72,18 @@ code forth_free, 'free'                 ; a-addr -- ior
 %endif
         xcall   os_free
         xor     ebx, ebx                ; "The free() function returns no value."
+        next
+endcode
+
+; ### -free
+code ifree, '-free'                     ; a-addr --
+; a version of FREE that doesn't return the meaningless ior
+%ifdef WIN64
+        mov     rcx, rbx
+%else
+        mov     rdi, rbx
+%endif
+        xcall   os_free                 ; "The free() function returns no value."
+        poprbx
         next
 endcode
