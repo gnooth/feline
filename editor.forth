@@ -15,6 +15,8 @@
 
 only forth also definitions
 
+[defined] >log 0= [if] include-system-file log.forth +log [then]
+
 [defined] <vector> 0= [if] include-system-file object.forth [then]
 
 [defined] editor 0= [if] vocabulary editor [then]
@@ -81,7 +83,7 @@ false value repaint?
                 i lines vector-nth          \ -- string
                 string>                     \ -- c-addr u
                 dup>r
-                type
+                #cols min type
                 #cols r> - spaces
             else
                 #cols spaces
@@ -125,6 +127,7 @@ false value repaint?
     then
 ;
 
+\ REVIEW what about lines too long to fit in the window?
 : do-end ( -- )
     cursor-line-length local length
     cursor-x length < if
@@ -251,11 +254,13 @@ $11 ,           ' do-quit ,
 
     filename string> r/o open-file throw to fileid
     fileid file-size throw drop to filesize
-    filesize allocate throw to buffer
+    filesize -allocate to buffer
     buffer filesize fileid read-file throw to bufsize
     fileid close-file throw
 
     buffer bufsize >lines
+
+    buffer -free
 
     edit-loop
 
@@ -267,6 +272,7 @@ only forth also editor also forth definitions
 : edit ( "<spaces>name" -- )
     blword
     count
+    >log ." edit " 2dup type log>
     >string to filename
     (edit)
     clear-status-text

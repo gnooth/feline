@@ -22,6 +22,10 @@ s" /home/peter/forth.log" >$ to log-filename
 
 0 value log-file                        \ fileid
 
+0 value /dev/null
+
+s" /dev/null" w/o open-file throw to /dev/null
+
 : initialize-logging ( -- )
     log-filename count 2dup file-exists? if
         w/o open-file throw
@@ -29,6 +33,8 @@ s" /home/peter/forth.log" >$ to log-filename
         w/o create-file throw
     then
     to log-file
+    log-file file-size throw
+    log-file reposition-file throw
 ;
 
 false value log?
@@ -54,7 +60,12 @@ false value log?
             output-file to old-output-file
             log-file to output-file
             true to logging?
+            \ TEMPORARY
+            ticks dec. space
         then
+    else
+        output-file to old-output-file
+        /dev/null to output-file
     then
 ;
 
@@ -66,5 +77,8 @@ false value log?
             old-output-file to output-file
             false to logging?
         then
+    then
+    output-file /dev/null = if
+        old-output-file to output-file
     then
 ;
