@@ -35,11 +35,18 @@ static struct termios otio;
 static int terminal_prepped = 0;
 #endif
 
-#ifndef WIN64
 static void get_terminal_size()
 {
   extern Cell nrows_data;
   extern Cell ncols_data;
+#ifdef WIN64
+  CONSOLE_SCREEN_BUFFER_INFO info;
+  if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info))
+    {
+      ncols_data = info.srWindow.Right - info.srWindow.Left;
+      nrows_data = info.srWindow.Bottom - info.srWindow.Top;
+    }
+#else
   struct winsize size;
   if (ioctl(tty, TIOCGWINSZ, (char *) &size) < 0)
     nrows_data = ncols_data = 0;
@@ -48,8 +55,10 @@ static void get_terminal_size()
       nrows_data = size.ws_row;
       ncols_data = size.ws_col;
     }
+#endif
 }
 
+#ifndef WIN64
 static void sig_winch(int signo)
 {
   get_terminal_size();
@@ -62,15 +71,22 @@ void prep_terminal ()
   extern Cell forth_stdin_data;
   extern Cell forth_stdout_data;
   extern Cell forth_stderr_data;
+  extern Cell nrows_data;
+  extern Cell ncols_data;
   DWORD mode;
-  console_input_handle = GetStdHandle (STD_INPUT_HANDLE);
+  console_input_handle = GetStdHandle(STD_INPUT_HANDLE);
   forth_stdin_data  = (Cell) console_input_handle;
-  forth_stdout_data = (Cell) GetStdHandle (STD_OUTPUT_HANDLE);
-  forth_stderr_data = (Cell) GetStdHandle (STD_ERROR_HANDLE);
+  forth_stdout_data = (Cell) GetStdHandle(STD_OUTPUT_HANDLE);
+  forth_stderr_data = (Cell) GetStdHandle(STD_ERROR_HANDLE);
   if (GetConsoleMode (console_input_handle, &mode))
     {
       mode = (mode & ~ENABLE_ECHO_INPUT & ~ENABLE_LINE_INPUT & ~ENABLE_PROCESSED_INPUT);
       SetConsoleMode(console_input_handle, mode);
+      get_terminal_size();
+      COORD size;
+      size.X = ncols_data;
+      size.Y = nrows_data;
+      SetConsoleScreenBufferSize(console_input_handle, size);
       line_input_data = 0;
     }
   else
