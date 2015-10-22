@@ -51,6 +51,10 @@ $8053 constant k-delete
 $8049 constant k-prior
 $8051 constant k-next
 
+\ REVIEW non-standard, should use K-CTRL-MASK
+$8077   constant k-^home
+$8075   constant k-^end
+
 [else]
 
 \ Linux
