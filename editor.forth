@@ -88,6 +88,7 @@ false value repaint?
             else
                 #cols spaces
             then
+            cr \ needed for Windows
         loop
         0 to repaint?
     then
