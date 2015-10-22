@@ -18,13 +18,9 @@ only forth also definitions
 0 value log-filename                    \ set this in ~/.init.forth
 
 \ TEMPORARY!
-s" /home/peter/forth.log" >$ to log-filename
+user-home $" forth.log" path-append-filename count >$ to log-filename
 
 0 value log-file                        \ fileid
-
-0 value /dev/null
-
-s" /dev/null" w/o open-file throw to /dev/null
 
 : initialize-logging ( -- )
     log-filename count 2dup file-exists? if
@@ -54,7 +50,7 @@ false value log?
 
 0 value logging?
 
-: >log ( -- )
+: (>log) ( -- )
     log? if
         output-file log-file <> if
             output-file to old-output-file
@@ -63,13 +59,17 @@ false value log?
             \ TEMPORARY
             ticks dec. space
         then
-    else
-        output-file to old-output-file
-        /dev/null to output-file
     then
 ;
 
-: log> ( -- )
+: >log ( -- )
+    ?comp
+    postpone log?
+    postpone if
+    postpone (>log)
+; immediate
+
+: (log>) ( -- )
     log? if
         logging? if
             cr
@@ -78,7 +78,10 @@ false value log?
             false to logging?
         then
     then
-    output-file /dev/null = if
-        old-output-file to output-file
-    then
 ;
+
+: log>
+    ?comp
+    postpone (log>)
+    postpone then
+; immediate
