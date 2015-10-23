@@ -47,7 +47,7 @@ default abs ; use absolute addresses by default
 %include "quit.asm"
 %include "stack.asm"
 %include "store.asm"
-%include "string.asm"
+; %include "string.asm"
 %include "strings.asm"
 %include "tools.asm"
 %include "value.asm"
