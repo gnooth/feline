@@ -455,6 +455,7 @@ endcode
 
 ; ### lshift
 code lshift, 'lshift'                   ; x1 u -- x2
+; CORE
         mov     ecx, ebx
         poprbx
         shl     rbx, cl
@@ -463,9 +464,18 @@ endcode
 
 ; ### rshift
 code rshift, 'rshift'                   ; x1 u -- x2
+; CORE
         mov     ecx, ebx
         poprbx
         shr     rbx, cl
+        next
+endcode
+
+; ### rol
+code rol, 'rol'
+        mov     ecx, ebx
+        poprbx
+        rol     rbx, cl
         next
 endcode
 
