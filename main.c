@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/time.h>
+#include <sys/resource.h>       // getrusage
 #endif
 
 #include "forth.h"
@@ -82,7 +83,7 @@ int main(int argc, char **argv, char **env)
   extern Cell tick_tib_data;
   extern Cell sp0_data;
   extern Cell word_buffer_data;
-  Cell data_space_size = 1024 * 1024;
+  Cell data_space_size = 8 * 1024 * 1024;
   Cell code_space_size = 1024 * 1024;
   void * data_space;
   void * code_space;
@@ -411,6 +412,19 @@ Cell os_ticks()
   return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 #endif
 }
+
+#ifndef WIN64
+extern Cell user_microseconds;
+extern Cell system_microseconds;
+
+void os_cputime()
+{
+  struct rusage rusage;
+  getrusage(RUSAGE_SELF, &rusage);
+  user_microseconds = rusage.ru_utime.tv_sec * 1000000 + rusage.ru_utime.tv_usec;
+  system_microseconds = rusage.ru_stime.tv_sec * 1000000 + rusage.ru_stime.tv_usec;
+}
+#endif
 
 #ifdef WIN64
 void os_ms(DWORD ms)

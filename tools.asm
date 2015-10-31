@@ -42,6 +42,31 @@ code ticks, 'ticks'                     ; -- u
         next
 endcode
 
+%ifndef WIN64
+        global  user_microseconds
+        global  system_microseconds
+section .data
+        align   DEFAULT_DATA_ALIGNMENT
+user_microseconds:
+        dq      0
+system_microseconds:
+        dq      0
+
+extern os_cputime
+
+; ### cputime
+code cputime, 'cputime'
+        xcall   os_cputime
+        mov     rax, [user_microseconds]
+        pushd   rax
+        pushd   0
+        mov     rax, [system_microseconds]
+        pushd   rax
+        pushd   0
+        next
+endcode
+%endif
+
 ; ### break?
 variable break?, 'break?', 0
 
