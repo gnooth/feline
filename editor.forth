@@ -103,12 +103,22 @@ false value repaint?
 : do-up ( -- )
     cursor-y 0> if
         cursor-x cursor-y 1- set-cursor
+    else
+        top 0> if
+            -1 +to top
+            true to repaint?
+        then
     then
 ;
 
 : do-down ( -- )
     cursor-y /page < if
         cursor-x cursor-y 1+ set-cursor
+    else
+        top #lines < if
+            1 +to top
+            true to repaint?
+        then
     then
 ;
 
