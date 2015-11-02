@@ -44,6 +44,30 @@ only forth also definitions
     3 cells + !
 ;
 
+: string-ensure-capacity ( string n -- )
+    local new
+    local s
+    s string-capacity local old
+    0 local old-data
+    0 local new-data
+    new old > if
+        \ at least double current capacity
+        new old 2* max to new
+        >log ." string-ensure-capacity " old . ." -> " new . log>
+        new cells -allocate to new-data
+        new-data new cells erase
+        \ copy existing data
+        s string-data dup to old-data
+        new-data s string-length cmove
+        \ point existing string at new data
+        new-data s string-data!
+        \ free old storage
+        old-data -free
+        \ update capacity slot of existing vector
+        new s string-capacity!
+    then
+;
+
 4 cells constant STRING_SIZE            \ size in bytes of a string object (without data)
 
 : >string ( c-addr u -- string )
@@ -73,4 +97,30 @@ only forth also definitions
         dup string-data -free
         -free
     then
+;
+
+: string-set-nth ( char n string -- )
+    2dup string-length < if
+        string-data + c!
+    else
+        true abort" string-set-nth index out of range"
+    then
+;
+
+: string-insert-nth ( char n string -- )
+    local s
+    local n
+    local c
+    s string-length s string-capacity > abort" string-insert-nth length > capacity"
+    s dup string-length 1+ string-ensure-capacity
+    s string-length s string-capacity < if
+        s string-data n +
+        dup 1+
+        s string-length n - cmove>
+        s string-length 1+ s string-length!
+        c n s string-set-nth
+    else
+        true abort" string-insert-nth out of room"
+    then
+
 ;
