@@ -122,5 +122,4 @@ only forth also definitions
     else
         true abort" string-insert-nth out of room"
     then
-
 ;

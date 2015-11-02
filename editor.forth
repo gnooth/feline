@@ -39,6 +39,10 @@ only forth also editor definitions
     top cursor-y +
 ;
 
+: cursor-line ( -- string )
+    cursor-line# lines vector-nth
+;
+
 : cursor-line-length ( -- n )
     cursor-line# lines vector-nth       \ -- string or 0
     ?dup if
@@ -178,6 +182,30 @@ false value repaint?
     then
 ;
 
+: do-normal-char ( char -- )
+    cursor-x                            \ -- char index
+    cursor-line                         \ -- char index string
+    string-insert-nth
+    1 +to cursor-x
+    true to repaint?
+;
+
+: do-save ( -- )
+    0 local fileid
+    \ FIXME test.out
+    s" test.out" w/o create-file throw to fileid
+    cr ." fileid = " fileid . cr
+    #lines 0 ?do
+        i lines vector-nth              \ -- string
+        string>                         \ -- c-addr u
+        fileid                          \ -- c-addr u fileid
+        write-line                      \ -- ior
+        \ REVIEW
+        throw
+    loop
+    fileid close-file throw
+;
+
 false value quit?
 
 : do-quit
@@ -196,7 +224,8 @@ k-prior ,       ' do-page-up ,
 k-next ,        ' do-page-down ,
 k-^home ,       ' do-^home ,
 k-^end ,        ' do-^end ,
-$11 ,           ' do-quit ,
+$13 ,           ' do-save ,             \ c-s
+$11 ,           ' do-quit ,             \ c-q
 0 ,             ' drop ,
 
 : do-command ( x -- )
@@ -211,8 +240,7 @@ $11 ,           ' do-quit ,
         redisplay
         ekey
         dup bl $7f within if
-            \ do-normal-char
-            drop
+            do-normal-char
         else
             do-command
         then
