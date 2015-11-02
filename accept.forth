@@ -197,8 +197,7 @@ create restore-buffer 258 allot
         history-length history-size = if
             \ we need to make room
             oldest ?dup if
-                free
-                drop                    \ REVIEW
+                -free
             then
             history-array dup cell+ swap history-size 1- cells move
             -1 +to history-length
