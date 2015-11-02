@@ -183,8 +183,8 @@ false value repaint?
 ;
 
 : do-normal-char ( char -- )
-    cursor-x                            \ -- char index
-    cursor-line                         \ -- char index string
+    cursor-line                         \ -- char string
+    cursor-x                            \ -- char string index
     string-insert-nth
     1 +to cursor-x
     true to repaint?
@@ -194,7 +194,6 @@ false value repaint?
     0 local fileid
     \ FIXME test.out
     s" test.out" w/o create-file throw to fileid
-    cr ." fileid = " fileid . cr
     #lines 0 ?do
         i lines vector-nth              \ -- string
         string>                         \ -- c-addr u

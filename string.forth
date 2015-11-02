@@ -44,6 +44,8 @@ only forth also definitions
     3 cells + !
 ;
 
+4 cells constant STRING_SIZE            \ size in bytes of a string object (without data)
+
 : string-ensure-capacity ( string n -- )
     local new
     local s
@@ -54,8 +56,8 @@ only forth also definitions
         \ at least double current capacity
         new old 2* max to new
         >log ." string-ensure-capacity " old . ." -> " new . log>
-        new cells -allocate to new-data
-        new-data new cells erase
+        new 1+ ( terminal null byte ) chars -allocate to new-data
+        new-data new 1+ chars erase
         \ copy existing data
         s string-data dup to old-data
         new-data s string-length cmove
@@ -67,8 +69,6 @@ only forth also definitions
         new s string-capacity!
     then
 ;
-
-4 cells constant STRING_SIZE            \ size in bytes of a string object (without data)
 
 : >string ( c-addr u -- string )
 \ construct a string object from a Forth string descriptor
@@ -107,9 +107,9 @@ only forth also definitions
     then
 ;
 
-: string-insert-nth ( char n string -- )
-    local s
+: string-insert-nth ( char string n -- )
     local n
+    local s
     local c
     s string-length s string-capacity > abort" string-insert-nth length > capacity"
     s dup string-length 1+ string-ensure-capacity
