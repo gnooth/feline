@@ -55,13 +55,26 @@ code initialize_locals_stack, 'initialize-locals-stack'
 
         _lit    4096                    ; REVIEW
         _ dup
-        _ allocate
-        _ drop                          ; REVIEW
+        _ iallocate
         _ plus
         _ dup
         _ lsp0
         _ store
         _ lspstore
+        next
+endcode
+
+; ### free-locals-stack
+code free_locals_stack, 'free-locals-stack'
+; called by BYE to make sure we're freeing all allocated memorys
+        _ lsp0
+        _fetch
+        _ ?dup
+        _if .1
+        _lit 4096
+        _ minus
+        _ ifree
+        _then .1
         next
 endcode
 
@@ -173,8 +186,7 @@ code initialize_local_names, 'initialize-local-names'
         _ nlocals
         _cells
         _duptor
-        _ allocate
-        _ throw
+        _ iallocate
         _ dup
         _to local_names
         _rfrom
@@ -200,13 +212,11 @@ code delete_local_names, 'delete-local-names'
         _fetch
         _ ?dup
         _if .3
-        _ forth_free
-        _ throw
+        _ ifree
         _then .3
         _loop .2
         _ local_names
-        _ forth_free
-        _ throw
+        _ ifree
         _zero
         _to local_names
         _zero
