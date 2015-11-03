@@ -114,7 +114,8 @@ create history-array  history-size cells allot  history-array history-size cells
         $buf 1+ zappend
         s" .forth_history" $buf 1+ zappend
         $buf 1+ zstrlen $buf c!
-        $buf count >$ to $history-file-pathname
+\         $buf count >$ to $history-file-pathname
+        here $buf count string, to $history-file-pathname
         +$buf
     then
     $history-file-pathname count ;
@@ -187,6 +188,14 @@ create restore-buffer 258 allot
     history-array history-size cells erase
     0 to history-length
     -1 to history-offset ;
+
+: (free-history) ( -- )
+    history-size 0 ?do
+        history-array i cells + @
+        ?dup if
+            -free
+        then
+    loop ;
 
 : add-history ( -- )
     #in if
@@ -355,6 +364,7 @@ $0f ,          ' accept-line-and-down-history ,
 
 line-input? 0= [if]
 restore-history
+' (free-history) is free-history
 ' new-accept is accept
 true to color?
 [then]
