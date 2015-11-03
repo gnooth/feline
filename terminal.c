@@ -18,6 +18,8 @@
 #ifdef WIN64
 #include <windows.h>
 #else
+#include <unistd.h>     // isatty
+#include <string.h>     // strcmp
 #include <signal.h>
 #include <termios.h>
 #include <sys/ioctl.h>
