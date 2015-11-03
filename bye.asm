@@ -15,10 +15,17 @@
 
 file __FILE__
 
+deferred free_history, 'free-history', noop
+
 extern os_bye
 
 ; ### bye
 code bye, "bye"
+        _ free_locals_stack
+        _ free_history
+
+        _ ?cr
+        _ report_allocations
         _ ?cr
         _dotq 'Bye!'
         _ cr
