@@ -19,8 +19,8 @@
     $user-home 0= if
         [ linux? ] [if] s" HOME" [else] s" USERPROFILE" [then]
         getenv  \ -- c-addr u
-        >$      \ store it permanently
-        to $user-home
+        dup 255 > abort" user-home pathname too long"
+        here >r string, r> to $user-home
     then
     $user-home
 ;
