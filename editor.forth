@@ -133,7 +133,9 @@ false value repaint?
 ;
 
 : do-right ( -- )
-    cursor-x 1+ to cursor-x
+    cursor-x cursor-line-length < if
+        cursor-x 1+ to cursor-x
+    then
 ;
 
 : do-home ( -- )
@@ -182,6 +184,20 @@ false value repaint?
     then
 ;
 
+: do-delete ( -- )
+    cursor-x cursor-line-length < if
+        cursor-line cursor-x string-delete-char
+        true to repaint?        \ FIXME repaint cursor line only
+    then
+;
+
+: do-backspace ( -- )
+    cursor-x 0> if
+        do-left
+        do-delete
+    then
+;
+
 : do-normal-char ( char -- )
     cursor-line                         \ -- char string
     cursor-x                            \ -- char string index
@@ -223,6 +239,9 @@ k-prior ,       ' do-page-up ,
 k-next ,        ' do-page-down ,
 k-^home ,       ' do-^home ,
 k-^end ,        ' do-^end ,
+k-delete ,      ' do-delete ,
+$08 ,           ' do-backspace ,        \ Windows c-h
+$7f ,           ' do-backspace ,        \ Linux
 $13 ,           ' do-save ,             \ c-s
 $11 ,           ' do-quit ,             \ c-q
 0 ,             ' drop ,
