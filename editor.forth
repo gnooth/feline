@@ -279,7 +279,7 @@ $11 ,           ' do-quit ,             \ c-q
 
 : ~lines ( -- )
     lines vector-length 0 ?do
-        i lines vector-nth check-string -free
+        i lines vector-nth check-string ~string
     loop
     lines ~vector
 ;
