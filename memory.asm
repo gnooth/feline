@@ -15,6 +15,13 @@
 
 file __FILE__
 
+%define DEBUG_MEMORY    0
+
+%if DEBUG_MEMORY
+value bytes_allocated, 'bytes-allocated', 0
+value bytes_freed, 'bytes-freed', 0
+%endif
+
 extern os_allocate
 
 ; ### allocate
@@ -38,10 +45,21 @@ code allocate, 'allocate'               ; u -- a-addr ior
 endcode
 
 ; ### -allocate
-code iallocate, '-allocate'             ; u -- a-addr
-; A version of ALLOCATE that returns just the address of the allocated space
-; if the allocation is successful and otherwise calls THROW with the numeric
+code iallocate, '-allocate'             ; size -- a-addr
+; A version of ALLOCATE that returns the address of the allocated space if
+; the allocation is successful and otherwise calls THROW with the numeric
 ; code specified by Forth 2012.
+%if DEBUG_MEMORY > 1
+        _ ?cr
+        _dotq "-ALLOCATE "
+        _ dup
+        _ decdot
+%endif
+%if DEBUG_MEMORY
+        push    rbx
+        add     [bytes_allocated_data], rbx
+        add     rbx, 16
+%endif
 %ifdef WIN64
         mov     rcx, rbx
 %else
@@ -50,9 +68,18 @@ code iallocate, '-allocate'             ; u -- a-addr
         xcall   os_allocate
         test    rax, rax
         jz .1
+        ; allocation succeeded
         mov     rbx, rax                ; -- a-addr
+%if DEBUG_MEMORY
+        pop     rax                     ; size
+        mov     [rbx], rax
+        add     rbx, 16
+%endif
         _return
 .1:
+%if DEBUG_MEMORY
+        pop     rbx
+%endif
         ; failed!
         mov     rbx, -59                ; Forth 2012 Table 9.1
         _ throw
@@ -78,6 +105,17 @@ endcode
 ; ### -free
 code ifree, '-free'                     ; a-addr --
 ; a version of FREE that doesn't return the meaningless ior
+%if DEBUG_MEMORY
+        sub     rbx, 16
+        mov     rax, [rbx]              ; size
+        add     [bytes_freed_data], rax
+%endif
+%if DEBUG_MEMORY > 1
+        pushd  rax
+        _ ?cr
+        _dotq "-FREE "
+        _ decdot
+%endif
 %ifdef WIN64
         mov     rcx, rbx
 %else
@@ -85,5 +123,24 @@ code ifree, '-free'                     ; a-addr --
 %endif
         xcall   os_free                 ; "The free() function returns no value."
         poprbx
+        next
+endcode
+
+; ### report-allocations
+code report_allocations, 'report-allocations'
+%if DEBUG_MEMORY
+        _dotq "["
+        _ bytes_allocated
+        _ decdot
+        _dotq "bytes allocated, "
+        _ bytes_freed
+        _ decdot
+        _dotq "bytes freed, "
+        _ bytes_allocated
+        _ bytes_freed
+        _ minus
+        _ decdot
+        _dotq "bytes not freed]"
+%endif
         next
 endcode
