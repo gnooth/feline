@@ -201,9 +201,7 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _ ntor                          ; -- fileid
         _to source_id
         _ source_buffer_size
-        _ allocate                      ; -- a-addr ior
-        _lit -59
-        _ ?throw
+        _ iallocate
         _ dup
         _to source_buffer
         _ tick_source
@@ -222,8 +220,7 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _ interpret
         _repeat .1
         _ source_buffer
-        _ forth_free
-        _ drop                          ; REVIEW
+        _ ifree
         _ nrfrom
         _ restore_input
         _ drop                          ; REVIEW

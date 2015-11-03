@@ -194,9 +194,7 @@ code cq_init, 'cq-init'                 ; --
         _twostar
         _cells
         _ dup
-        _ allocate
-        _lit -59                        ; ALLOCATE error
-        _ ?throw
+        _ iallocate
         _to cq
         _ cq
         _ swap

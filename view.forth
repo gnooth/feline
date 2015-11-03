@@ -116,7 +116,7 @@ only forth also hidden definitions
 
     filename count r/o open-file throw to fileid
     fileid file-size throw drop to filesize
-    filesize allocate throw to buffer
+    filesize -allocate to buffer
     buffer filesize fileid read-file throw to bufsize
     fileid close-file throw
 

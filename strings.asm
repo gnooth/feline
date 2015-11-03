@@ -163,9 +163,7 @@ code save_string, '>$'                  ; c-addr u -- $addr
         _if .1
         _dup
         _twoplus                        ; count byte, terminal null byte
-        _ allocate
-        _lit -59
-        _ ?throw                        ; -- c-addr u $addr
+        _ iallocate                     ; -- c-addr u $addr
         _duptor
         _ place_string
         _rfrom
@@ -185,11 +183,6 @@ endcode
 
 ; ### place
 code place, 'place'                     ; c-addr1 u c-addr2 --
-;         _ twodup
-;         _ cstore
-;         _oneplus
-;         _ swap
-;         _ move
         _ place_string
         next
 endcode

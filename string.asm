@@ -40,8 +40,7 @@ code to_string, '>string'               ; c-addr u -- string
 ; return address of string object
         _lit 4
         _cells
-        _ allocate
-        _ throw
+        _ iallocate
         _tor                            ; -- c-addr u           r: -- string
         _zero
         _rfetch
@@ -58,8 +57,7 @@ code to_string, '>string'               ; c-addr u -- string
         _ store                         ; -- c-addr u
         _ dup
         _oneplus                        ; terminal null byte
-        _ allocate
-        _ throw                         ; -- c-addr u data-address
+        _ iallocate                     ; -- c-addr u data-address
         _ dup
         _rfetch
         _lit OFFSET_DATA_ADDRESS
