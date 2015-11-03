@@ -842,7 +842,14 @@ code forth_realpath, 'realpath'         ; $path -- $realpath
         _ zcount
         _ copy_to_temp_string           ; -- zaddr $addr
         _ swap
-        _ forth_free
-        _ drop
+;         _ forth_free                    ; can't use -FREE here!
+;         _ drop
+%ifdef WIN64
+        mov     rcx, rbx
+%else
+        mov     rdi, rbx
+%endif
+        xcall   os_free
+        poprbx
         next
 endcode
