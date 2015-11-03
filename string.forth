@@ -123,3 +123,18 @@ only forth also definitions
         true abort" string-insert-nth out of room"
     then
 ;
+
+: string-delete-char ( string n -- )
+    local n
+    local s
+    s string-length local len
+    0 local src
+    0 local dst
+    n len < if
+        s string-data n + 1+ to src
+        src 1- to dst
+        src dst len n - 1- cmove
+        0 s string-data len 1- + c!
+        len 1- s string-length!
+    then
+;
