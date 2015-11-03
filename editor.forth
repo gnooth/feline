@@ -15,11 +15,11 @@
 
 only forth also definitions
 
-[defined] >log 0= [if] include-system-file log.forth +log [then]
+[undefined] [log [if] include-system-file log.forth +log [then]
 
-[defined] <vector> 0= [if] include-system-file object.forth [then]
+[undefined] <vector> [if] include-system-file object.forth [then]
 
-[defined] editor 0= [if] vocabulary editor [then]
+[undefined] editor [if] vocabulary editor [then]
 
 only forth also editor definitions
 
@@ -310,7 +310,7 @@ only forth also editor also forth definitions
 : edit ( "<spaces>name" -- )
     blword
     count
-    >log ." edit " 2dup type log>
+    [log ." edit " 2dup type log]
     >string to filename
     (edit)
     clear-status-text

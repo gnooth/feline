@@ -50,7 +50,7 @@ false value log?
 
 0 value logging?
 
-: (>log) ( -- )
+: ([log) ( -- )
     log? if
         output-file log-file <> if
             output-file to old-output-file
@@ -62,14 +62,14 @@ false value log?
     then
 ;
 
-: >log ( -- )
+: [log ( -- )
     ?comp
     postpone log?
     postpone if
-    postpone (>log)
+    postpone ([log)
 ; immediate
 
-: (log>) ( -- )
+: (log]) ( -- )
     log? if
         logging? if
             cr
@@ -80,8 +80,8 @@ false value log?
     then
 ;
 
-: log>
+: log]
     ?comp
-    postpone (log>)
+    postpone (log])
     postpone then
 ; immediate

@@ -55,7 +55,7 @@ only forth also definitions
     new old > if
         \ at least double current capacity
         new old 2* max to new
-        >log ." string-ensure-capacity " old . ." -> " new . log>
+        [log ." string-ensure-capacity " old . ." -> " new . log]
         new 1+ ( terminal null byte ) chars -allocate to new-data
         new-data new 1+ chars erase
         \ copy existing data
