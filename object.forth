@@ -30,7 +30,11 @@ $4d81 constant STRING_TYPE
 ;
 
 : vector? ( object -- flag )
-    object-header VECTOR_TYPE =
+    ?dup if
+        object-header VECTOR_TYPE =
+    else
+        false
+    then
 ;
 
 : check-vector ( object -- vector )
@@ -38,7 +42,11 @@ $4d81 constant STRING_TYPE
 ;
 
 : string? ( object -- flag )
-    object-header STRING_TYPE =
+    ?dup if
+        object-header STRING_TYPE =
+    else
+        false
+    then
 ;
 
 : check-string ( object -- string )

@@ -64,13 +64,33 @@ only forth also editor definitions
     cursor-x cursor-y at-xy
 ;
 
-: status ( -- )
+: .status-text ( string -- )
+    dup string? if
+        0 #rows at-xy
+        string> type
+    else
+        drop
+    then
+;
+
+: clear-status-text ( -- )
+    0 #rows at-xy
+    #cols 20 - spaces
+;
+
+: status ( c-addr u -- )
+    >string local s
+    s .status-text
+    s ~string
+;
+
+: .status ( -- )
     #cols 20 - #rows at-xy
     ." Line " top cursor-y + 1+ .
     ." Col " cursor-x 1+ .
 ;
 
-: clear-status-text ( -- )
+: clear-status ( -- )
     0 #rows at-xy
     #cols spaces
 ;
@@ -96,7 +116,7 @@ false value repaint?
         loop
         0 to repaint?
     then
-    status
+    .status
     .cursor
 ;
 
@@ -207,6 +227,7 @@ false value repaint?
 ;
 
 : do-save ( -- )
+    s" Saving..." status
     0 local fileid
     \ FIXME test.out
     s" test.out" w/o create-file throw to fileid
@@ -215,10 +236,10 @@ false value repaint?
         string>                         \ -- c-addr u
         fileid                          \ -- c-addr u fileid
         write-line                      \ -- ior
-        \ REVIEW
-        throw
+        -76 ?throw
     loop
-    fileid close-file throw
+    fileid close-file -62 ?throw
+    s" Saving...done" status
 ;
 
 false value quit?
@@ -257,6 +278,7 @@ $11 ,           ' do-quit ,             \ c-q
     begin
         redisplay
         ekey
+        clear-status-text
         dup bl $7f within if
             do-normal-char
         else
@@ -332,7 +354,7 @@ only forth also editor also forth definitions
     [log ." edit " 2dup type log]
     >string to filename
     (edit)
-    clear-status-text
+    clear-status
     #cols #rows 1- at-xy
 ;
 
