@@ -50,14 +50,37 @@ false value log?
 
 0 value logging?
 
+: .2  ( ub -- )  0 <# # # #> type ;
+
+: .time&date ( -- )
+    time&date
+    local year
+    local month
+    local day
+    local hour
+    local min
+    local sec
+    year 4 .r
+    [char] - emit
+    month .2
+    [char] - emit
+    day .2
+    space
+    hour .2
+    [char] : emit
+    min .2
+    [char] : emit
+    sec .2
+;
+
 : ([log) ( -- )
     log? if
         output-file log-file <> if
             output-file to old-output-file
             log-file to output-file
             true to logging?
-            \ TEMPORARY
-            ticks dec. space
+            .time&date
+            space
         then
     then
 ;
