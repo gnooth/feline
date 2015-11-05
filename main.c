@@ -417,7 +417,6 @@ Cell os_ticks()
 void os_time_and_date(void * buf)
 {
   time_t now;
-  struct tm ltime;
   time(&now);
   localtime_r(&now, buf);
 }
