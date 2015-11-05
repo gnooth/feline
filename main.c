@@ -18,13 +18,14 @@
 #include <stdint.h>
 #include <setjmp.h>
 #include <sys/stat.h>
-#include <fcntl.h>      // _O_BINARY, O_CREAT
+#include <fcntl.h>              // _O_BINARY, O_CREAT
 #ifdef WIN64
 #include <windows.h>
 #else
-#include <limits.h>     // PATH_MAX
+#include <limits.h>             // PATH_MAX
 #include <signal.h>
 #include <unistd.h>
+#include <time.h>               // time, localtime_r
 #include <sys/mman.h>
 #include <sys/time.h>
 #include <sys/resource.h>       // getrusage
@@ -411,6 +412,14 @@ Cell os_ticks()
     return 0;
   return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 #endif
+}
+
+void os_time_and_date(void * buf)
+{
+  time_t now;
+  struct tm ltime;
+  time(&now);
+  localtime_r(&now, buf);
 }
 
 #ifndef WIN64

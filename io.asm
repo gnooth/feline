@@ -853,3 +853,33 @@ code forth_realpath, 'realpath'         ; $path -- $realpath
         poprbx
         next
 endcode
+
+extern os_time_and_date
+
+; ### time&date
+code itime_and_date, 'time&date'
+; FACILITY EXT
+        _ tempstring                    ; -- buffer
+        _duptor
+%ifdef WIN64
+        popd    rcx
+%else
+        popd    rdi
+%endif
+        xcall os_time_and_date
+        _rfetch                         ; -- buffer
+        _lfetch                         ; -- sec
+        _rfetch
+        mov     ebx, [rbx + 4]          ; -- sec min
+        _rfetch
+        mov     ebx, [rbx + 8]          ; -- sec min hour
+        _rfetch
+        mov     ebx, [rbx + 12]         ; -- sec min hour day
+        _rfetch
+        mov     ebx, [rbx + 16]
+        add     ebx, 1                  ; -- sec min hour day month
+        _rfrom
+        mov     ebx, [rbx + 20]
+        add     ebx, 1900               ; -- sec min hour day month year
+        next
+endcode
