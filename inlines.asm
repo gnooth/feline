@@ -44,6 +44,10 @@
         movzx   rbx, byte [rbx]
 %endmacro
 
+%macro  _lfetch 0                       ; L@
+        mov     ebx, [rbx]
+%endmacro
+
 %macro  _dup 0                          ; DUP
         pushrbx
 %endmacro

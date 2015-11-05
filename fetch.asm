@@ -32,7 +32,7 @@ endinline
 
 ; ### l@
 inline lfetch, 'l@'                     ; 32-bit fetch
-        mov     ebx, [rbx]
+        _lfetch
 endinline
 
 ; ### l@s
