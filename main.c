@@ -19,13 +19,13 @@
 #include <setjmp.h>
 #include <sys/stat.h>
 #include <fcntl.h>              // _O_BINARY, O_CREAT
+#include <time.h>               // time, localtime_r
 #ifdef WIN64
 #include <windows.h>
 #else
 #include <limits.h>             // PATH_MAX
 #include <signal.h>
 #include <unistd.h>
-#include <time.h>               // time, localtime_r
 #include <sys/mman.h>
 #include <sys/time.h>
 #include <sys/resource.h>       // getrusage
@@ -417,8 +417,16 @@ Cell os_ticks()
 void os_time_and_date(void * buf)
 {
   time_t now;
+#ifdef WIN64
+  struct tm * ltime;
+  time(&now);
+  ltime = localtime(&now);
+  if (ltime)
+    memcpy(buf, ltime, sizeof(struct tm));
+#else
   time(&now);
   localtime_r(&now, buf);
+#endif
 }
 
 #ifndef WIN64
