@@ -159,3 +159,14 @@ only forth also definitions
     start end > abort" substring start > end"
     s string-data start + end start - >string
 ;
+
+: string-append-string ( string-to-be-appended string -- )
+    local s
+    local sappend
+    s string-length sappend string-length + s string-ensure-capacity
+    sappend string-data                 \ -- src
+    s string-data s string-length +     \ -- src dest
+    sappend string-length               \ -- src dest n
+    cmove
+    s string-length sappend string-length + s string-length!
+;

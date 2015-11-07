@@ -218,15 +218,41 @@ false value repaint?
     then
 ;
 
+: delete-line-separator ( -- )
+    [log ." DELETE-LINE-SEPARATOR" log]
+    cursor-line# #lines 1- < if
+        cursor-x cursor-line-length = if
+            cursor-line# 1+ lines vector-nth    \ -- string
+            cursor-line string-append-string
+            cursor-line# 1+ lines vector-remove-nth
+            true to repaint?
+        then
+    then
+;
+
 : do-delete ( -- )
+    cursor-x cursor-line-length > abort" DO-DELETE cursor-x > cursor-line-length"
     cursor-x cursor-line-length < if
         cursor-x cursor-line string-delete-char
         true to repaint?        \ FIXME repaint cursor line only
+    else
+        \ cursor-x == cursor-line-length
+        delete-line-separator
     then
 ;
 
 : do-backspace ( -- )
-    cursor-x 0> if
+    cursor-x 0= if
+        cursor-line# 0> if
+            -1 +to cursor-y
+            cursor-y 0< if
+                -1 +to top
+                0 to cursor-y
+            then
+            cursor-line-length to cursor-x
+            delete-line-separator
+        then
+    else
         do-left
         do-delete
     then

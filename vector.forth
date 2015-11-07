@@ -112,7 +112,9 @@ only forth also definitions
     local v
     local n
     local elt
+    \ this should never happen!
     v vector-length v vector-capacity > abort" VECTOR-INSERT-NTH length > capacity"
+    n v vector-length > abort" VECTOR-INSERT-NTH n > length"
     v vector-length 1+ v vector-ensure-capacity
     v vector-length v vector-capacity < if
         v vector-data n cells +
@@ -125,6 +127,20 @@ only forth also definitions
     then
 ;
 
+: vector-remove-nth ( n vector -- )
+    local v
+    local n
+    \ this should never happen!
+    v vector-length v vector-capacity > abort" VECTOR-REMOVE-NTH length > capacity"
+    n v vector-length 1- > abort" VECTOR-REMOVE-NTH n > length - 1"
+    n 0< abort" VECTOR-REMOVE-NTH n < 0"
+    v vector-data n 1+ cells +
+    dup cell-
+    v vector-length 1- cells cmove
+    0 v vector-data v vector-length 1- cells + !
+    v vector-length 1- v vector-length!
+;
+
 : vector-push ( elt vector -- )
     local v
     local elt
@@ -135,12 +151,12 @@ only forth also definitions
 \     else
 \         true abort" vector-push out of room"
 \     then
-    v vector-length v vector-capacity > abort" vector-push length > capacity"
+    v vector-length v vector-capacity > abort" VECTOR-PUSH length > capacity"
     v vector-length 1+ v vector-ensure-capacity
     v vector-length v vector-capacity < if
         v vector-length 1+ v vector-length!
         elt v dup vector-length 1- swap vector-set-nth
     else
-        true abort" vector-push out of room"
+        true abort" VECTOR-PUSH out of room"
     then
 ;
