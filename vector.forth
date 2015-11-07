@@ -108,6 +108,23 @@ only forth also definitions
     then
 ;
 
+: vector-insert-nth ( elt vector n -- )
+    local n
+    local v
+    local elt
+    v vector-length v vector-capacity > abort" vector-insert-nth length > capacity"
+    v dup vector-length 1+ vector-ensure-capacity
+    v vector-length v vector-capacity < if
+        v vector-data n cells +
+        dup cell+
+        v vector-length n - cells cmove>
+        v vector-length 1+ v vector-length!
+        elt n v vector-set-nth
+    else
+        true abort" vector-insert-nth out of room"
+    then
+;
+
 : vector-push ( elt vector -- )
     local v
     local elt
