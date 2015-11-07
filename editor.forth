@@ -27,7 +27,7 @@ only forth also editor definitions
 
 0 value lines                           \ a vector of strings
 
-0 value #lines                          \ number of lines in the file being edited
+: #lines lines vector-length ;          \ number of lines in the file being edited
 
 0 value top                             \ zero-based line number of top line of display
 
@@ -226,6 +226,17 @@ false value repaint?
     true to repaint?
 ;
 
+: insert-line-separator ( -- )
+    cursor-x cursor-line-length <= if
+        cursor-line cursor-x cursor-line-length string-substring       \ -- string
+        lines cursor-line# 1+ vector-insert-nth
+        cursor-line cursor-x string-set-length
+        1 +to cursor-y
+        0 to cursor-x
+        true to repaint?
+    then
+;
+
 : do-save ( -- )
     s" Saving..." status
     0 local fileid
@@ -261,10 +272,11 @@ k-next ,        ' do-page-down ,
 k-^home ,       ' do-^home ,
 k-^end ,        ' do-^end ,
 k-delete ,      ' do-delete ,
-$08 ,           ' do-backspace ,        \ Windows c-h
-$7f ,           ' do-backspace ,        \ Linux
-$13 ,           ' do-save ,             \ c-s
-$11 ,           ' do-quit ,             \ c-q
+$08 ,           ' do-backspace ,                \ Windows c-h
+$7f ,           ' do-backspace ,                \ Linux
+$0a ,           ' insert-line-separator ,
+$13 ,           ' do-save ,                     \ c-s
+$11 ,           ' do-quit ,                     \ c-q
 0 ,             ' drop ,
 
 : do-command ( x -- )
