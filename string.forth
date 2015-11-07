@@ -138,3 +138,24 @@ only forth also definitions
         len 1- s string-length!
     then
 ;
+
+: string-set-length ( string n -- )
+    local n
+    local s
+    n s string-length < if
+        n s string-length!
+    else
+        \ REVIEW Java AbstractStringBuilder calls ensureCapacityInternal() and appends nulls
+        n s string-length > abort" string-set-length new length exceed existing length"
+    then
+;
+
+: string-substring ( string start end -- string )
+    local end
+    local start
+    local s
+    start 0< abort" substring start < 0"
+    end s string-length > abort" substring end > string-length"
+    start end > abort" substring start > end"
+    s string-data start + end start - >string
+;
