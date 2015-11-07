@@ -44,12 +44,7 @@ only forth also editor definitions
 ;
 
 : cursor-line-length ( -- n )
-    cursor-line# lines vector-nth       \ -- string or 0
-    ?dup if
-        string-length
-    else
-        0
-    then
+    cursor-line string-length
 ;
 
 : set-cursor ( x y -- )
@@ -124,6 +119,15 @@ false value repaint?
     #rows 2 -
 ;
 
+0 value goal-x
+
+: adjust-cursor-x ( -- )
+    goal-x to cursor-x
+    cursor-x cursor-line-length > if
+        cursor-line-length to cursor-x
+    then
+;
+
 : do-up ( -- )
     cursor-y 0> if
         cursor-x cursor-y 1- set-cursor
@@ -133,6 +137,7 @@ false value repaint?
             true to repaint?
         then
     then
+    adjust-cursor-x
 ;
 
 : do-down ( -- )
@@ -144,23 +149,27 @@ false value repaint?
             true to repaint?
         then
     then
+    adjust-cursor-x
 ;
 
 : do-left ( -- )
     cursor-x 0> if
         -1 +to cursor-x
+        cursor-x to goal-x
     then
 ;
 
 : do-right ( -- )
     cursor-x cursor-line-length < if
         cursor-x 1+ to cursor-x
+        cursor-x to goal-x
     then
 ;
 
 : do-home ( -- )
     cursor-x 0> if
         0 to cursor-x
+        cursor-x to goal-x
     then
 ;
 
@@ -169,6 +178,7 @@ false value repaint?
     cursor-line-length local length
     cursor-x length < if
         length to cursor-x
+        cursor-x to goal-x
     then
 ;
 
@@ -177,6 +187,7 @@ false value repaint?
         /page +to top
         true to repaint?
     then
+    adjust-cursor-x
 ;
 
 : do-page-up
@@ -185,12 +196,14 @@ false value repaint?
         0 to top
     then
     true to repaint?
+    adjust-cursor-x
 ;
 
 \ FIXME bad name
 : do-^home ( -- )
     0 to top
     0 0 set-cursor
+    0 to goal-x
     true to repaint?    \ not always necessary
 ;
 
@@ -200,13 +213,14 @@ false value repaint?
         to top
         0 to cursor-y
         cursor-line-length to cursor-x
+        cursor-x to goal-x
         true to repaint?        \ not always necessary
     then
 ;
 
 : do-delete ( -- )
     cursor-x cursor-line-length < if
-        cursor-line cursor-x string-delete-char
+        cursor-x cursor-line string-delete-char
         true to repaint?        \ FIXME repaint cursor line only
     then
 ;
@@ -219,29 +233,30 @@ false value repaint?
 ;
 
 : do-normal-char ( char -- )
-    cursor-line                         \ -- char string
-    cursor-x                            \ -- char string index
+    cursor-x                            \ -- char index
+    cursor-line                         \ -- char index string
     string-insert-nth
     1 +to cursor-x
+    cursor-x to goal-x
     true to repaint?
 ;
 
 : insert-line-separator ( -- )
     cursor-x cursor-line-length <= if
-        cursor-line cursor-x cursor-line-length string-substring       \ -- string
-        lines cursor-line# 1+ vector-insert-nth
-        cursor-line cursor-x string-set-length
+        cursor-x cursor-line-length cursor-line string-substring        \ -- string
+        cursor-line# 1+ lines vector-insert-nth
+        cursor-x cursor-line string-set-length
         1 +to cursor-y
         0 to cursor-x
+        0 to goal-x
         true to repaint?
     then
 ;
 
 : do-save ( -- )
     s" Saving..." status
-    0 local fileid
     \ FIXME test.out
-    s" test.out" w/o create-file throw to fileid
+    s" test.out" w/o create-file throw local fileid
     #lines 0 ?do
         i lines vector-nth              \ -- string
         string>                         \ -- c-addr u

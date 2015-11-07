@@ -46,16 +46,16 @@ only forth also definitions
 
 4 cells constant STRING_SIZE            \ size in bytes of a string object (without data)
 
-: string-ensure-capacity ( string n -- )
-    local new
+: string-ensure-capacity ( n string -- )
     local s
+    local new
     s string-capacity local old
     0 local old-data
     0 local new-data
     new old > if
         \ at least double current capacity
         new old 2* max to new
-        [log ." string-ensure-capacity " old . ." -> " new . log]
+        [log ." STRING-ENSURE-CAPACITY " old . ." -> " new . log]
         new 1+ ( terminal null byte ) chars -allocate to new-data
         new-data new 1+ chars erase
         \ copy existing data
@@ -107,12 +107,12 @@ only forth also definitions
     then
 ;
 
-: string-insert-nth ( char string n -- )
-    local n
+: string-insert-nth ( char n string -- )
     local s
+    local n
     local c
-    s string-length s string-capacity > abort" string-insert-nth length > capacity"
-    s dup string-length 1+ string-ensure-capacity
+    s string-length s string-capacity > abort" STRING-INSERT-NTH length > capacity"
+    s string-length 1+ s string-ensure-capacity
     s string-length s string-capacity < if
         s string-data n +
         dup 1+
@@ -120,13 +120,13 @@ only forth also definitions
         s string-length 1+ s string-length!
         c n s string-set-nth
     else
-        true abort" string-insert-nth out of room"
+        true abort" STRING-INSERT-NTH out of room"
     then
 ;
 
-: string-delete-char ( string n -- )
-    local n
+: string-delete-char ( n string -- )
     local s
+    local n
     s string-length local len
     0 local src
     0 local dst
@@ -139,23 +139,23 @@ only forth also definitions
     then
 ;
 
-: string-set-length ( string n -- )
-    local n
+: string-set-length ( n string -- )
     local s
+    local n
     n s string-length < if
         n s string-length!
     else
         \ REVIEW Java AbstractStringBuilder calls ensureCapacityInternal() and appends nulls
-        n s string-length > abort" string-set-length new length exceed existing length"
+        n s string-length > abort" STRING-SET-LENGTH new length exceeds existing length"
     then
 ;
 
-: string-substring ( string start end -- string )
+: string-substring ( start end string -- substring )
+    local s
     local end
     local start
-    local s
     start 0< abort" substring start < 0"
-    end s string-length > abort" substring end > string-length"
+    end s string-length > abort" STRING-SUBSTRING end > string-length"
     start end > abort" substring start > end"
     s string-data start + end start - >string
 ;

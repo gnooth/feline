@@ -66,16 +66,16 @@ only forth also definitions
     then
 ;
 
-: vector-ensure-capacity ( vector n -- ) \ n is number of elements (not bytes)
-    local new
+: vector-ensure-capacity ( n vector -- )        \ n is number of elements (not bytes)
     local v
+    local new
     v vector-capacity local old
     0 local old-data
     0 local new-data
     new old > if
         \ at least double current capacity
         new old 2* max to new
-        [log ." vector-ensure-capacity " old . ." -> " new . log]
+        [log ." VECTOR-ENSURE-CAPACITY " old . ." -> " new . log]
         new cells -allocate to new-data
         new-data new cells erase
         \ copy existing data
@@ -108,12 +108,12 @@ only forth also definitions
     then
 ;
 
-: vector-insert-nth ( elt vector n -- )
-    local n
+: vector-insert-nth ( elt n vector -- )
     local v
+    local n
     local elt
-    v vector-length v vector-capacity > abort" vector-insert-nth length > capacity"
-    v dup vector-length 1+ vector-ensure-capacity
+    v vector-length v vector-capacity > abort" VECTOR-INSERT-NTH length > capacity"
+    v vector-length 1+ v vector-ensure-capacity
     v vector-length v vector-capacity < if
         v vector-data n cells +
         dup cell+
@@ -121,7 +121,7 @@ only forth also definitions
         v vector-length 1+ v vector-length!
         elt n v vector-set-nth
     else
-        true abort" vector-insert-nth out of room"
+        true abort" VECTOR-INSERT-NTH out of room"
     then
 ;
 
@@ -136,7 +136,7 @@ only forth also definitions
 \         true abort" vector-push out of room"
 \     then
     v vector-length v vector-capacity > abort" vector-push length > capacity"
-    v dup vector-length 1+ vector-ensure-capacity
+    v vector-length 1+ v vector-ensure-capacity
     v vector-length v vector-capacity < if
         v vector-length 1+ v vector-length!
         elt v dup vector-length 1- swap vector-set-nth
