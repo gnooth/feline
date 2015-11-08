@@ -91,6 +91,19 @@ only forth also definitions
     s string-length
 ;
 
+: string-clone ( string1 -- string2 )
+    local s1
+    s1 string-length local len
+    STRING_SIZE -allocate local s2
+    s2 STRING_SIZE erase
+    STRING_TYPE s2 object-header!
+    len 1+ ( terminal null byte ) -allocate s2 string-data!
+    len s2 string-length!
+    len s2 string-capacity!
+    s1 string-data s2 string-data len cmove
+    0 s2 string-data len + c!           \ terminal null byte
+    s2                                  \ return address of string object
+;
 \ destructor
 : ~string ( string -- )
     ?dup if
@@ -169,4 +182,13 @@ only forth also definitions
     sappend string-length               \ -- src dest n
     cmove
     s string-length sappend string-length + s string-length!
+;
+
+: string-append-char ( char string -- )
+    local s
+    local c
+    s string-length local len
+    len 1+ s string-ensure-capacity
+    c s string-data len + c!
+    len 1+ s string-length!
 ;
