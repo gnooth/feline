@@ -19,11 +19,36 @@ only forth also definitions
 
 [undefined] <vector> [if] include-system-file object.forth [then]
 
+only forth also definitions
+
+: copy-file ( src dest -- )
+    local dest   \ string
+    local src    \ string
+
+    0 local fileid
+    0 local filesize
+    0 local buffer
+    0 local bufsize
+
+    [log ." COPY-FILE " src string> type space ." to " dest string> type log]
+
+    src string> r/o open-file throw to fileid
+    fileid file-size throw drop to filesize
+
+    filesize -allocate to buffer
+    buffer filesize fileid read-file throw to bufsize
+    fileid close-file throw
+
+    dest string> w/o create-file throw to fileid
+    buffer bufsize fileid write-file throw
+    fileid close-file throw
+;
+
 [undefined] editor [if] vocabulary editor [then]
 
 only forth also editor definitions
 
-0 value filename
+0 value editor-filename
 
 0 value lines                           \ a vector of strings
 
@@ -279,10 +304,16 @@ false value repaint?
     then
 ;
 
+: make-backup ( -- )
+    editor-filename string-clone local backup-filename
+    [char] ~ backup-filename string-append-char
+    editor-filename backup-filename copy-file
+;
+
 : do-save ( -- )
     s" Saving..." status
-    \ FIXME test.out
-    s" test.out" w/o create-file throw local fileid
+    make-backup
+    editor-filename string> w/o create-file throw local fileid
     #lines 0 ?do
         i lines vector-nth              \ -- string
         string>                         \ -- c-addr u
@@ -384,7 +415,7 @@ $11 ,           ' do-quit ,                     \ c-q
     0 local buffer
     0 local bufsize
 
-    filename string> r/o open-file throw to fileid
+    editor-filename string> r/o open-file throw to fileid
     fileid file-size throw drop to filesize
     filesize -allocate to buffer
     buffer filesize fileid read-file throw to bufsize
@@ -405,7 +436,7 @@ only forth also editor also forth definitions
     blword
     count
     [log ." edit " 2dup type log]
-    >string to filename
+    >string to editor-filename
     (edit)
     clear-status
     #cols #rows 1- at-xy
