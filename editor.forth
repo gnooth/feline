@@ -166,15 +166,17 @@ false value repaint?
 ;
 
 : do-down ( -- )
-    cursor-y /page < if
-        cursor-x cursor-y 1+ set-cursor
-    else
-        top #lines < if
-            1 +to top
-            true to repaint?
+    cursor-line# #lines 1- < if
+        cursor-y /page < if
+            cursor-x cursor-y 1+ set-cursor
+        else
+            top #lines < if
+                1 +to top
+                true to repaint?
+            then
         then
+        adjust-cursor-x
     then
-    adjust-cursor-x
 ;
 
 : do-left ( -- )
@@ -440,6 +442,14 @@ only forth also editor also forth definitions
     (edit)
     clear-status
     #cols #rows 1- at-xy
+;
+
+: ed ( -- )
+    editor-filename if
+        (edit)
+        clear-status
+        #cols #rows 1- at-xy
+    then
 ;
 
 only forth also definitions
