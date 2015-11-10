@@ -10,8 +10,8 @@ ifeq ($(OS),Windows_NT)
 	FLAGS += -DWIN64 -DWIN64_NATIVE
 endif
 
-forth:  main.o terminal.o forth.o
-	gcc main.o terminal.o forth.o -o forth
+forth:  main.o os.o terminal.o forth.o
+	gcc main.o os.o terminal.o forth.o -o forth
 
 forth_home.asm: forth_home
 	./forth_home
@@ -21,6 +21,9 @@ forth_home: forth_home.c
 
 main.o:	forth.h main.c Makefile
 	gcc -D_GNU_SOURCE $(FLAGS) -c -o main.o main.c
+
+os.o:	forth.h os.c Makefile
+	gcc -D_GNU_SOURCE $(FLAGS) -c -o os.o os.c
 
 terminal.o: forth.h terminal.c Makefile
 	gcc -D_GNU_SOURCE $(FLAGS) -c -o terminal.o terminal.c
