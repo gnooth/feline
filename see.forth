@@ -1297,7 +1297,10 @@ also forth definitions
        case
            tvar   of ." variable " endof
            tvalue of ." value "    endof
-           tdefer of ." defer "    endof
+           tdefer of
+               ." deferred " xt >name .id
+               ." is " xt >body @ to xt
+           endof
            tconst of ." constant " endof
        endcase
        xt >name .id
