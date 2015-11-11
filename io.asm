@@ -96,8 +96,8 @@ code emit_file, 'emit-file'             ; char fileid --
         next
 endcode
 
-; ### type
-code type, 'type'                       ; addr n --
+; ### (type)
+code itype, '(type)'                    ; addr n --
         add     [nout_data], rbx
         _ output_file
         _ write_file
@@ -105,6 +105,9 @@ code type, 'type'                       ; addr n --
         _ ?throw
         next
 endcode
+
+; ### type
+deferred type, 'type', itype
 
 ; ### cr
 code cr, 'cr'
