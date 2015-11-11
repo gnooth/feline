@@ -66,8 +66,8 @@ code standard_output, 'standard-output'
         next
 endcode
 
-; ### emit
-code emit, 'emit'
+; ### (emit)
+code iemit, '(emit)'
         cmp     rbx, 10
         je      .1
         inc     qword [nout_data]
@@ -80,6 +80,9 @@ code emit, 'emit'
         _ emit_file
         next
 endcode
+
+; ### emit
+deferred emit, 'emit', iemit
 
 extern os_emit_file
 
