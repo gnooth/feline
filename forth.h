@@ -23,4 +23,12 @@ void deprep_terminal ();
 
 typedef int64_t Cell;
 
+#ifdef WINDOWS_UI
+void CDECL debug_log(LPCSTR lpFormat, ...);
+void pushkey(UINT theKey);
+void pushfunctionkey(WPARAM wParam);
+int c_key();
+int c_accept(LPSTR pBuffer, int iBufSize);
+#endif
+
 #endif

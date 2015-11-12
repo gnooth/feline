@@ -109,9 +109,31 @@ out:
         next
 endcode
 
+%ifdef WINDOWS_UI
+
+extern c_accept
+
+; ### waccept
+code waccept, 'waccept'                 ; c-addr +n1 -- +n2
+        popd    rdx
+        popd    rcx
+        xcall   c_accept
+        pushrbx
+        mov     rbx, rax
+        next
+endcode
+
+; CORE
+; ### accept
+deferred accept, 'accept', waccept      ; c-addr +n1 -- +n2
+
+%else
+
 ; CORE
 ; ### accept
 deferred accept, 'accept', paren_accept ; c-addr +n1 -- +n2
+
+%endif
 
 ; ### #tib
 variable ntib, '#tib', 0

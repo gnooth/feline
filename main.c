@@ -105,9 +105,7 @@ void initialize_forth()
   word_buffer_data = (Cell) malloc(260);
 }
 
-#define USE_WINDOWS_UI
-
-#if defined WIN64 && defined USE_WINDOWS_UI
+#if defined WIN64 && defined WINDOWS_UI
 
 #define CLASS_NAME "F64"
 
@@ -119,15 +117,15 @@ const int MAXCOLS = 128;                // number of columns in the screen save 
 
 const int LEFTMARGIN = 4;
 
-#define SCREEN(x,y) *(screen + (y * maxcols) + x)
+#define SCREEN(x,y) *(screen + (y * MAXCOLS) + x)
 
 HANDLE g_hLogFile;
 
-void CDECL debug_log( LPCSTR lpFormat, ... )
+void CDECL debug_log(LPCSTR lpFormat, ...)
 {
   char szT[1024];
-  LPSTR lpArgs = (LPSTR)&lpFormat + sizeof( lpFormat );
-  wvsprintf( szT, lpFormat, lpArgs );
+  LPSTR lpArgs = (LPSTR)&lpFormat + sizeof(lpFormat);
+  wvsprintf(szT, lpFormat, lpArgs);
   DWORD bytes_written;
   WriteFile(g_hLogFile, szT, lstrlen(szT), &bytes_written, NULL);
 }
@@ -140,7 +138,7 @@ int g_iNumCols;
 int g_iCharHeight;
 int g_iCharWidth;
 
-void MoveCaret( )
+void update_caret_pos()
 {
   if (GetFocus() == g_hWndMain)
     SetCaretPos(LEFTMARGIN + x * g_iCharWidth, (y - rowoff) * g_iCharHeight);
@@ -205,11 +203,19 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
               }
           }
 
-        MoveCaret();
+        update_caret_pos();
 
         EndPaint(hwnd, &ps);
         break;
       }
+      return 0;
+
+    case WM_CHAR:
+      pushkey(wParam);
+      return 0;
+
+    case WM_KEYDOWN:
+      pushfunctionkey(wParam);
       return 0;
     }
   return DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -217,6 +223,61 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 void c_emit(char c)
 {
+  if (!screen)
+    return;
+
+  //  scrollfix();
+  switch (c)
+    {
+      //       case BS:
+      //         if (x)
+      //           --x;
+      //         break;
+
+    case 10:
+      {
+        char szT[ 256 ];
+        ++y;
+//         wrap();
+//         if (y > maxrows - 1)
+//           {
+//             wsprintf(szT, "emit after wrap y = %d", y);
+//             MessageBox(NULL, szT, "emit", MB_OK);
+//           }
+        UpdateWindow(g_hWndMain);
+        break;
+      }
+
+    case 13:
+      x = 0;
+      break;
+
+    default:
+      if (y > MAXROWS - 1)
+        {
+          char szT[ 256 ];
+          wsprintf(szT, "emit error y = %d", y);
+          MessageBox(NULL, szT, "emit error", MB_OK);
+          ExitProcess(0);
+          memmove(screen, screen + MAXCOLS, (MAXROWS - 1) * MAXCOLS);
+          memset(screen + (MAXROWS - 1) * MAXCOLS, ' ', MAXCOLS);
+          InvalidateRect(g_hWndMain, NULL, FALSE);
+          y = MAXROWS - 1;
+        }
+
+      SCREEN(x, y) = c;
+
+      RECT r;
+      r.top = (y - rowoff) * g_iCharHeight;
+      r.bottom = r.top + g_iCharHeight;
+      r.left = LEFTMARGIN + x * g_iCharWidth;
+      r.right = r.left + g_iCharWidth;
+      InvalidateRect(g_hWndMain, &r, FALSE);
+
+      ++x;
+      //         wrap();
+
+    }
 }
 
 void c_type(LPSTR lpString, int iNumChars)
@@ -224,29 +285,31 @@ void c_type(LPSTR lpString, int iNumChars)
   if (!screen)
     return;
 
-  BOOL bContainsControlChar = FALSE;
+  debug_log("c_type iNumChars = %d\n", iNumChars);
 
-  for (int i = 0; i < iNumChars; i++)
-    {
-      if (lpString[ i ] < ' ')
-        {
-          bContainsControlChar = TRUE;
-          break;
-        }
-    }
+//   BOOL bContainsControlChar = FALSE;
 
-  if (!bContainsControlChar && x + iNumChars < MAXCOLS)
-    {
-      memcpy(screen + y * MAXCOLS + x, lpString, iNumChars);
-      RECT r;
-      r.top = (y - rowoff) * g_iCharHeight;
-      r.bottom = r.top + g_iCharHeight;
-      r.left = LEFTMARGIN + x * g_iCharWidth;
-      r.right = r.left + iNumChars * g_iCharWidth;
-      InvalidateRect(g_hWndMain, &r, FALSE);
-      x += iNumChars;
-    }
-  else
+//   for (int i = 0; i < iNumChars; i++)
+//     {
+//       if (lpString[ i ] < ' ')
+//         {
+//           bContainsControlChar = TRUE;
+//           break;
+//         }
+//     }
+
+//   if (!bContainsControlChar && x + iNumChars < MAXCOLS)
+//     {
+//       memcpy(screen + y * MAXCOLS + x, lpString, iNumChars);
+//       RECT r;
+//       r.top = (y - rowoff) * g_iCharHeight;
+//       r.bottom = r.top + g_iCharHeight;
+//       r.left = LEFTMARGIN + x * g_iCharWidth;
+//       r.right = r.left + iNumChars * g_iCharWidth;
+//       InvalidateRect(g_hWndMain, &r, FALSE);
+//       x += iNumChars;
+//     }
+//   else
     {
       for (int i = 0; i < iNumChars; i++)
         c_emit(lpString[i]);
@@ -293,7 +356,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     NULL,                               // menu
     hInstance,                          // instance handle
     NULL                                // additional application data
-    );
+   );
 
   if (!hwnd)
     return FALSE;
@@ -316,22 +379,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                           CREATE_ALWAYS,
                           FILE_ATTRIBUTE_NORMAL,
                           NULL // template file (ignored for existing file)
-                          );
+                         );
   debug_log("WinMain\n");
+
+  initialize_forth();
 
   InitApplication(hInstance);
   InitInstance(hInstance, nCmdShow);
 
-  c_type("this is a test of the emergency broadcasting system", 51);
+//   c_type("this is a test of the emergency broadcasting system", 51);
 
-  // Run the message loop.
-  MSG msg = {};
+#if 0
+  MSG msg;
   while (GetMessage(&msg, NULL, 0, 0))
     {
       TranslateMessage(&msg);
       DispatchMessage(&msg);
     }
-
+#endif
+//   while (1)
+//     {
+//       char buf[256];
+//       c_accept(buf, 256);
+//     }
+  extern void cold();
+  cold();
   return 0;
 }
 

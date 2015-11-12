@@ -1,43 +1,49 @@
 # To build with gcc (even on Windows):
 #    make forth
 
-# To build on Windows with the Microsoft compiler and linker:
-#    make forth.exe
+CFLAGS =
+ASMFLAGS =
+LINKFLAGS =
 
-FLAGS =
-
-ifeq ($(OS),Windows_NT)
-	FLAGS += -DWIN64 -DWIN64_NATIVE
-endif
+OBJS = main.o os.o terminal.o forth.o
 
 ifeq ($(OS),Windows_NT)
-forth.exe:  main.o os.o terminal.o forth.o
-	gcc -mwindows main.o os.o terminal.o forth.o -o forth
+	CFLAGS += -DWIN64 -DWIN64_NATIVE
+	ASMFLAGS += -DWIN64 -DWIN64_NATIVE
+	FORTH_EXE = forth.exe
+	FORTH_HOME_EXE = forth_home.exe
 else
-forth:  main.o os.o terminal.o forth.o
-	gcc main.o os.o terminal.o forth.o -o forth
+	FORTH_EXE = forth
+	FORTH_HOME_EXE = forth_home
 endif
 
 ifeq ($(OS),Windows_NT)
-forth_home.asm: forth_home.exe
-	./forth_home
-forth_home.exe: forth_home.c
-	gcc forth_home.c -o forth_home
-else
-forth_home.asm: forth_home
-	./forth_home
-forth_home: forth_home.c
-	gcc forth_home.c -o forth_home
+	CFLAGS += -DWINDOWS_UI
+	ASMFLAGS += -DWINDOWS_UI
+	LINKFLAGS += -mwindows
+	OBJS += winkey.o
 endif
+
+$(FORTH_EXE):  $(OBJS)
+	gcc $(LINKFLAGS) $(OBJS) -o forth
+
+forth_home.asm: $(FORTH_HOME_EXE)
+	./forth_home
+
+$(FORTH_HOME_EXE): forth_home.c
+	gcc forth_home.c -o forth_home
 
 main.o:	forth.h main.c Makefile
-	gcc --std=c99 -g -D_GNU_SOURCE $(FLAGS) -c -o main.o main.c
+	gcc --std=c99 -g -D_GNU_SOURCE $(CFLAGS) -c -o main.o main.c
 
 os.o:	forth.h os.c Makefile
-	gcc -D_GNU_SOURCE $(FLAGS) -c -o os.o os.c
+	gcc -D_GNU_SOURCE $(CFLAGS) -c -o os.o os.c
 
 terminal.o: forth.h terminal.c Makefile
-	gcc -D_GNU_SOURCE $(FLAGS) -c -o terminal.o terminal.c
+	gcc -D_GNU_SOURCE $(CFLAGS) -c -o terminal.o terminal.c
+
+winkey.o: forth.h winkey.c Makefile
+	gcc -D_GNU_SOURCE $(CFLAGS) -c -o winkey.o winkey.c
 
 ASM_SOURCES = forth.asm forth_home.asm equates.asm macros.asm inlines.asm \
 	align.asm \
@@ -72,15 +78,16 @@ ASM_SOURCES = forth.asm forth_home.asm equates.asm macros.asm inlines.asm \
 	tools.asm \
 	value.asm
 
-forth.o: $(ASM_SOURCES)
-	nasm $(FLAGS) -g -felf64 forth.asm	# -felf64 even on Windows
+# -felf64 even on Windows
+forth.o: $(ASM_SOURCES) Makefile
+	nasm $(ASMFLAGS) -g -felf64 forth.asm
 
 # Microsoft compiler and linker
 # main.obj: main.c
-# 	cl -Zi -c $(FLAGS) main.c
+# 	cl -Zi -c $(CFLAGS) main.c
 
 # forth.obj: $(ASM_SOURCES)
-# 	nasm $(FLAGS) -g -fwin64 forth.asm
+# 	nasm $(ASMFLAGS) -g -fwin64 forth.asm
 
 # forth.exe: main.obj forth.obj
 # 	link /subsystem:console /machine:x64 /largeaddressaware:no forth.obj  main.obj /out:forth.exe

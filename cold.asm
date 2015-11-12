@@ -110,6 +110,8 @@ code cold, 'cold'                       ; --
         _then .2
         _ process_command_line
         _ process_init_file
+        _dotq "Hello!"
+        _ cr
         jmp quit
         next
 endcode

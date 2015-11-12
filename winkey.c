@@ -1,0 +1,129 @@
+// Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+// Adapted from Win32Forth
+
+#include <windows.h>
+#include "forth.h"
+
+#define special_mask   0x20000
+
+#define kblength 256
+UINT keybuf[kblength];  // circular buffer
+int head = 0, tail = 0;
+
+#define next(x) ((x + 1) % kblength)
+
+void beep()
+{
+}
+
+void yield()
+{
+  MSG msg;
+
+  while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+  {
+    TranslateMessage(&msg);
+    DispatchMessage(&msg);
+  }
+}
+
+int c_key()
+{
+  while (head == tail)
+  {
+    MSG msg;
+    if (!GetMessage(&msg, NULL, 0, 0))
+      ExitProcess(0);
+    TranslateMessage(&msg);
+    DispatchMessage(&msg);
+  }
+  int c = keybuf[tail];
+  tail = next(tail);
+  return c;
+}
+
+BOOL c_qkey()
+{
+  return head == tail ? 0 : -1;
+}
+
+int c_accept(LPSTR pBuffer, int iBufSize)
+{
+  debug_log("c_accept\n");
+
+  BOOL bEmpty = TRUE;
+
+  int c;
+
+  memset(pBuffer, 0, iBufSize);
+
+  int index = -1;
+
+  extern int x;
+  while ((c = c_key()) != '\r')
+    {
+      if (x < iBufSize && c >= ' ')
+        {
+          pBuffer[x] = c;
+          c_emit(c);
+          index = -1;
+          bEmpty = FALSE;
+        }
+      else
+        beep();
+    }
+//   pBuffer[x] = 0;
+//   debug_log("c_accept: %s\n", pBuffer);
+  return x;
+}
+
+// push a character into the keyboard typeahead buffer
+void pushkey(UINT theKey)
+{
+  UINT keytemp;
+
+  if (next(head) == tail)
+    beep();                            // buffer full
+  else
+    {
+      keytemp = theKey;                   // a copy of the theKey
+      //    if ((GetKeyState (VK_SHIFT) & 0x8000) && (thekey < 32)) // if shift is down
+      //      keytemp |= shift_mask;                // then include the shift bit
+      keybuf[ head ] = keytemp;
+      head = next(head);
+    }
+}
+
+void pushfunctionkey(WPARAM wParam)
+{
+  switch (wParam)
+    {
+    case VK_NEXT:
+    case VK_PRIOR:
+    case VK_LEFT:
+    case VK_RIGHT:
+    case VK_UP:
+    case VK_DOWN:
+    case VK_HOME:
+    case VK_END:
+      pushkey(special_mask | wParam);
+      break;
+
+    default:
+      break;
+    }
+}

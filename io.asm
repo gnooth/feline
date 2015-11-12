@@ -61,8 +61,10 @@ value output_file, 'output-file', 1
 
 ; ### standard-output
 code standard_output, 'standard-output'
+%ifndef WINDOWS_UI
         _ forth_stdout
         _to output_file
+%endif
         next
 endcode
 
@@ -81,8 +83,20 @@ code iemit, '(emit)'
         next
 endcode
 
+%ifdef WINDOWS_UI
+extern c_emit
+; ### wemit
+code wemit, 'wemit'                     ; char --
+        popd    rcx
+        xcall   c_emit
+        next
+endcode
+; ### emit
+deferred emit, 'emit', wemit
+%else
 ; ### emit
 deferred emit, 'emit', iemit
+%endif
 
 extern os_emit_file
 
@@ -109,8 +123,22 @@ code itype, '(type)'                    ; addr n --
         next
 endcode
 
+%ifdef WINDOWS_UI
+extern c_type
+; ### wtype
+code wtype, 'wtype'                     ; addr n --
+        add     [nout_data], rbx
+        popd    rdx
+        popd    rcx
+        xcall   c_type
+        next
+endcode
+; ### type
+deferred type, 'type', wtype
+%else
 ; ### type
 deferred type, 'type', itype
+%endif
 
 ; ### cr
 code cr, 'cr'
