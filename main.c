@@ -63,7 +63,7 @@ void args(int argc, char **argv)
   argv_data = (Cell) argv;
 }
 
-int main(int argc, char **argv, char **env)
+void initialize_forth()
 {
   extern Cell dp_data;
   extern Cell cp_data;
@@ -80,10 +80,6 @@ int main(int argc, char **argv, char **env)
   Cell code_space_size = 1024 * 1024;
   void * data_space;
   void * code_space;
-
-  args(argc, argv);
-
-  prep_terminal();
 
 #ifdef WIN64
   data_space =
@@ -107,6 +103,247 @@ int main(int argc, char **argv, char **env)
   tick_tib_data = (Cell) malloc(256);
   sp0_data = (Cell) malloc(1024) + (1024 - 64);
   word_buffer_data = (Cell) malloc(260);
+}
+
+#define USE_WINDOWS_UI
+
+#if defined WIN64 && defined USE_WINDOWS_UI
+
+#define CLASS_NAME "F64"
+
+LPSTR screen = 0;                       // address of screen buffer
+int x, y;                               // current cursor position ABSOLUTE FROM BUFFER TOP
+int rowoff = 0;
+const int MAXROWS = 500;                // number of lines in the screen save buffer
+const int MAXCOLS = 128;                // number of columns in the screen save buffer
+
+const int LEFTMARGIN = 4;
+
+#define SCREEN(x,y) *(screen + (y * maxcols) + x)
+
+HANDLE g_hLogFile;
+
+void CDECL debug_log( LPCSTR lpFormat, ... )
+{
+  char szT[1024];
+  LPSTR lpArgs = (LPSTR)&lpFormat + sizeof( lpFormat );
+  wvsprintf( szT, lpFormat, lpArgs );
+  DWORD bytes_written;
+  WriteFile(g_hLogFile, szT, lstrlen(szT), &bytes_written, NULL);
+}
+
+HINSTANCE g_hInst;
+HWND g_hWndMain;
+HFONT g_hConsoleFont;
+int g_iNumRows;
+int g_iNumCols;
+int g_iCharHeight;
+int g_iCharWidth;
+
+void MoveCaret( )
+{
+  if (GetFocus() == g_hWndMain)
+    SetCaretPos(LEFTMARGIN + x * g_iCharWidth, (y - rowoff) * g_iCharHeight);
+}
+
+LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg)
+    {
+    case WM_CREATE:
+      {
+        TEXTMETRIC tm;
+        HDC hdc = GetDC(hwnd);
+        SelectObject(hdc, (HFONT)GetStockObject(SYSTEM_FIXED_FONT));
+        GetTextMetrics(hdc, &tm);
+        ReleaseDC(hwnd, hdc);
+
+        g_iCharWidth = (int)tm.tmAveCharWidth;
+        debug_log("g_iCharWidth = %d\n", g_iCharWidth);
+        g_iCharHeight = (int)tm.tmHeight;
+      }
+      return 0;
+
+    case WM_DESTROY:
+      PostQuitMessage(0);
+      return 0;
+
+    case WM_SIZE:
+      g_iNumRows = HIWORD(lParam) / g_iCharHeight;
+      g_iNumCols = LOWORD(lParam) / g_iCharWidth;
+      InvalidateRect(hwnd, NULL, FALSE);
+      break;
+
+    case WM_PAINT:
+      {
+        PAINTSTRUCT ps;
+        HDC hDC = BeginPaint(hwnd, &ps);
+        SelectObject(hDC, g_hConsoleFont);
+
+        for (int i = 0; i < g_iNumRows + 1; i++)
+          {
+            int yOut = i * g_iCharHeight;
+
+            if (yOut + g_iCharHeight >= ps.rcPaint.top && yOut <= ps.rcPaint.bottom)
+              {
+                if (i + rowoff < MAXROWS)
+                  TextOut(hDC,
+                          LEFTMARGIN,
+                          yOut,
+                          screen + (i + rowoff) * MAXCOLS,
+                          g_iNumCols);
+                else
+                  {
+                    char szT[MAXCOLS];
+                    memset(szT, ' ', MAXCOLS);
+                    TextOut(hDC,
+                            LEFTMARGIN,
+                            yOut,
+                            szT,
+                            g_iNumCols);
+                  }
+              }
+          }
+
+        MoveCaret();
+
+        EndPaint(hwnd, &ps);
+        break;
+      }
+      return 0;
+    }
+  return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+void c_emit(char c)
+{
+}
+
+void c_type(LPSTR lpString, int iNumChars)
+{
+  if (!screen)
+    return;
+
+  BOOL bContainsControlChar = FALSE;
+
+  for (int i = 0; i < iNumChars; i++)
+    {
+      if (lpString[ i ] < ' ')
+        {
+          bContainsControlChar = TRUE;
+          break;
+        }
+    }
+
+  if (!bContainsControlChar && x + iNumChars < MAXCOLS)
+    {
+      memcpy(screen + y * MAXCOLS + x, lpString, iNumChars);
+      RECT r;
+      r.top = (y - rowoff) * g_iCharHeight;
+      r.bottom = r.top + g_iCharHeight;
+      r.left = LEFTMARGIN + x * g_iCharWidth;
+      r.right = r.left + iNumChars * g_iCharWidth;
+      InvalidateRect(g_hWndMain, &r, FALSE);
+      x += iNumChars;
+    }
+  else
+    {
+      for (int i = 0; i < iNumChars; i++)
+        c_emit(lpString[i]);
+    }
+
+  UpdateWindow(g_hWndMain);
+}
+
+BOOL InitApplication(HINSTANCE hInstance)
+{
+  WNDCLASS  wc;
+
+  wc.style = CS_HREDRAW | CS_VREDRAW;
+  wc.lpfnWndProc = MainWndProc;
+  wc.cbClsExtra = 0;
+  wc.cbWndExtra = 0;
+  wc.hInstance = hInstance;
+  wc.hIcon = 0;
+  wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+  wc.hbrBackground = 0;
+  wc.lpszMenuName = NULL;
+  wc.lpszClassName = CLASS_NAME;
+
+  return RegisterClass(&wc);
+}
+
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+{
+  g_hInst = hInstance;
+
+  screen = (LPSTR)HeapAlloc(GetProcessHeap(), 0, MAXROWS * MAXCOLS);
+  memset(screen, ' ', MAXROWS * MAXCOLS);
+
+  HWND hwnd = CreateWindowEx(
+    0,                                  // optional window styles
+    CLASS_NAME,                         // window class
+    "F64",                              // window name
+    WS_OVERLAPPEDWINDOW,                // Window style
+
+    // size and position
+    CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+
+    NULL,                               // parent window
+    NULL,                               // menu
+    hInstance,                          // instance handle
+    NULL                                // additional application data
+    );
+
+  if (!hwnd)
+    return FALSE;
+
+  g_hWndMain = hwnd;
+
+  g_hConsoleFont = (HFONT)GetStockObject(SYSTEM_FIXED_FONT);
+
+  ShowWindow(hwnd, nCmdShow);
+  UpdateWindow(hwnd);
+  return TRUE;
+}
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow)
+{
+  g_hLogFile = CreateFile("forth.log",
+                          GENERIC_WRITE,
+                          FILE_SHARE_READ,
+                          NULL, // default security descriptor
+                          CREATE_ALWAYS,
+                          FILE_ATTRIBUTE_NORMAL,
+                          NULL // template file (ignored for existing file)
+                          );
+  debug_log("WinMain\n");
+
+  InitApplication(hInstance);
+  InitInstance(hInstance, nCmdShow);
+
+  c_type("this is a test of the emergency broadcasting system", 51);
+
+  // Run the message loop.
+  MSG msg = {};
+  while (GetMessage(&msg, NULL, 0, 0))
+    {
+      TranslateMessage(&msg);
+      DispatchMessage(&msg);
+    }
+
+  return 0;
+}
+
+#else
+
+int main(int argc, char **argv, char **env)
+{
+  args(argc, argv);
+
+  prep_terminal();
+
+  initialize_forth();
 
 #ifndef WIN64
   struct sigaction sa;
@@ -122,3 +359,5 @@ int main(int argc, char **argv, char **env)
   else
     abort();
 }
+
+#endif
