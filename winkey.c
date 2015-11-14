@@ -83,6 +83,7 @@ int c_accept(char *buffer, int bufsize)
                 buffer[--i] = '\0';
               else
                 buffer[--i] = BL;
+              c_emit(BS);
               c_emit(BL);
               c_emit(BS);
             }

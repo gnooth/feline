@@ -129,6 +129,7 @@ void CDECL debug_log(LPCSTR lpFormat, ...)
   wvsprintf(szT, lpFormat, lpArgs);
   DWORD bytes_written;
   WriteFile(g_hLogFile, szT, lstrlen(szT), &bytes_written, NULL);
+  FlushFileBuffers(g_hLogFile);
 }
 
 HINSTANCE g_hInst;
@@ -136,8 +137,8 @@ HWND g_hWndMain;
 HFONT g_hConsoleFont;
 int g_iNumRows;
 int g_iNumCols;
-int g_iCharHeight;
-int g_iCharWidth;
+static int char_height;
+static int char_width;
 
 VOID WINAPI set_console_font(HWND hWnd)
 {
@@ -188,8 +189,8 @@ VOID WINAPI set_console_font(HWND hWnd)
 
       TEXTMETRIC tm;
       GetTextMetrics(hDC, &tm);
-      g_iCharWidth = (int)tm.tmAveCharWidth;
-      g_iCharHeight = (int)tm.tmHeight;
+      char_width = (int)tm.tmAveCharWidth;
+      char_height = (int)tm.tmHeight;
       ReleaseDC(hWnd, hDC);
     }
   else
@@ -199,7 +200,13 @@ VOID WINAPI set_console_font(HWND hWnd)
 void update_caret_pos()
 {
   if (GetFocus() == g_hWndMain)
-    SetCaretPos(LEFTMARGIN + screen_col * g_iCharWidth, (screen_line - top) * g_iCharHeight);
+    SetCaretPos(LEFTMARGIN + screen_col * char_width, (screen_line - top) * char_height);
+}
+
+void c_at_xy(int col, int row)
+{
+  if (GetFocus() == g_hWndMain)
+    SetCaretPos(LEFTMARGIN + col * char_width, row * char_height);
 }
 
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -214,9 +221,9 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 //         GetTextMetrics(hdc, &tm);
 //         ReleaseDC(hwnd, hdc);
 
-//         g_iCharWidth = (int)tm.tmAveCharWidth;
-//         debug_log("g_iCharWidth = %d\n", g_iCharWidth);
-//         g_iCharHeight = (int)tm.tmHeight;
+//         char_width = (int)tm.tmAveCharWidth;
+//         debug_log("char_width = %d\n", char_width);
+//         char_height = (int)tm.tmHeight;
         set_console_font(hwnd);
       }
       return 0;
@@ -227,7 +234,7 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_SETFOCUS:
       InvalidateRect(hwnd, NULL, FALSE);
-      CreateCaret(hwnd, NULL, g_iCharWidth, g_iCharHeight);
+      CreateCaret(hwnd, NULL, char_width, char_height);
       update_caret_pos();
       ShowCaret(hwnd);
       break;
@@ -238,9 +245,15 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       break;
 
     case WM_SIZE:
-      g_iNumRows = HIWORD(lParam) / g_iCharHeight;
-      g_iNumCols = LOWORD(lParam) / g_iCharWidth;
-      InvalidateRect(hwnd, NULL, FALSE);
+      {
+        g_iNumRows = HIWORD(lParam) / char_height;
+        g_iNumCols = LOWORD(lParam) / char_width;
+        extern Cell nrows_data;
+        extern Cell ncols_data;
+        nrows_data = g_iNumRows;
+        ncols_data = g_iNumCols;
+        InvalidateRect(hwnd, NULL, FALSE);
+      }
       break;
 
     case WM_PAINT:
@@ -251,9 +264,9 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         for (int i = 0; i < g_iNumRows + 1; i++)
           {
-            int yOut = i * g_iCharHeight;
+            int yOut = i * char_height;
 
-            if (yOut + g_iCharHeight >= ps.rcPaint.top && yOut <= ps.rcPaint.bottom)
+            if (yOut + char_height >= ps.rcPaint.top && yOut <= ps.rcPaint.bottom)
               {
                 if (i + top < MAXLINES)
                   TextOut(hDC,
@@ -305,7 +318,7 @@ void scroll_window_up()
         }
     }
 
-  ScrollWindow(g_hWndMain, 0, -g_iCharHeight, NULL, NULL);
+  ScrollWindow(g_hWndMain, 0, -char_height, NULL, NULL);
   UpdateWindow(g_hWndMain);
 //   UpdateScrollBar();
 }
@@ -330,6 +343,16 @@ void maybe_reframe()
     }
 }
 
+void redisplay_current_line()
+{
+  RECT r;
+  r.top = (screen_line - top) * char_height;
+  r.bottom = r.top + char_height;
+  r.left = LEFTMARGIN;
+  r.right = LEFTMARGIN + g_iNumCols * char_width;
+  InvalidateRect(g_hWndMain, &r, FALSE);
+}
+
 void c_emit(char c)
 {
   extern Cell nout_data;
@@ -341,7 +364,11 @@ void c_emit(char c)
     {
     case BS:
       if (screen_col)
-        --screen_col;
+        {
+          --screen_col;
+          --nout_data;
+          redisplay_current_line();
+        }
       break;
 
     case LF:
@@ -381,10 +408,10 @@ void c_emit(char c)
       SCREEN(screen_line, screen_col) = c;
 
       RECT r;
-      r.top = (screen_line - top) * g_iCharHeight;
-      r.bottom = r.top + g_iCharHeight;
-      r.left = LEFTMARGIN + screen_col * g_iCharWidth;
-      r.right = r.left + g_iCharWidth;
+      r.top = (screen_line - top) * char_height;
+      r.bottom = r.top + char_height;
+      r.left = LEFTMARGIN + screen_col * char_width;
+      r.right = r.left + char_width;
       InvalidateRect(g_hWndMain, &r, FALSE);
 
       ++screen_col;
@@ -417,10 +444,10 @@ void c_type(LPSTR lpString, int iNumChars)
 //     {
 //       memcpy(screen + screen_line * MAXCOLS + screen_col, lpString, iNumChars);
 //       RECT r;
-//       r.top = (screen_line - top) * g_iCharHeight;
-//       r.bottom = r.top + g_iCharHeight;
-//       r.left = LEFTMARGIN + screen_col * g_iCharWidth;
-//       r.right = r.left + iNumChars * g_iCharWidth;
+//       r.top = (screen_line - top) * char_height;
+//       r.bottom = r.top + char_height;
+//       r.left = LEFTMARGIN + screen_col * char_width;
+//       r.right = r.left + iNumChars * char_width;
 //       InvalidateRect(g_hWndMain, &r, FALSE);
 //       screen_col += iNumChars;
 //     }
@@ -444,7 +471,7 @@ BOOL InitApplication(HINSTANCE hInstance)
   wc.hInstance = hInstance;
   wc.hIcon = 0;
   wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-  wc.hbrBackground = 0;
+  wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
   wc.lpszMenuName = NULL;
   wc.lpszClassName = CLASS_NAME;
 
