@@ -107,17 +107,18 @@ void initialize_forth()
 
 #if defined WIN64 && defined WINDOWS_UI
 
-#define CLASS_NAME "F64"
+#define APP_NAME        "Forth"
+#define CLASS_NAME      "Forth"
 
-LPSTR screen = 0;                       // address of screen buffer
-int x, y;                               // current cursor position ABSOLUTE FROM BUFFER TOP
-int rowoff = 0;
-const int MAXROWS = 500;                // number of lines in the screen save buffer
-const int MAXCOLS = 128;                // number of columns in the screen save buffer
+char * screen = 0;                      // address of screen buffer
+static int screen_line, screen_col;     // current position in screen buffer
+int top = 0;                            // line number of top line in window
+const int MAXLINES = 500;               // number of lines in the screen buffer
+const int MAXCOLS = 128;                // number of columns in the screen buffer
 
 const int LEFTMARGIN = 4;
 
-#define SCREEN(x,y) *(screen + (y * MAXCOLS) + x)
+#define SCREEN(row, col) *(screen + (row * MAXCOLS) + col)
 
 HANDLE g_hLogFile;
 
@@ -138,10 +139,67 @@ int g_iNumCols;
 int g_iCharHeight;
 int g_iCharWidth;
 
+VOID WINAPI set_console_font(HWND hWnd)
+{
+  g_hConsoleFont = NULL;
+
+  char szFontName[64];
+
+//   LPCSTR lpszBorlandTE = "BorlandTE" ;
+  LPCSTR lpszBorlandTE = "Liberation Mono" ;
+
+  LOGFONT lf;
+
+  lstrcpy(szFontName, lpszBorlandTE);
+  int iSize = 10;
+
+  lf.lfHeight = - (iSize * 4 / 3);
+  lf.lfWidth = 0;
+  lf.lfEscapement = 0;
+  lf.lfOrientation = 0;
+
+  lf.lfWeight = FW_NORMAL;
+
+  lf.lfItalic = lf.lfUnderline = lf.lfStrikeOut = 0;
+  lf.lfCharSet = DEFAULT_CHARSET;
+  lf.lfOutPrecision = 0;
+  lf.lfClipPrecision = 0;
+  lf.lfQuality = 0;
+  lf.lfPitchAndFamily = 0;
+  lstrcpy((LPSTR)lf.lfFaceName, szFontName);
+
+  g_hConsoleFont = CreateFontIndirect(&lf);
+
+  if (g_hConsoleFont)
+    {
+      HDC hDC = GetDC(hWnd);
+
+      HFONT hOldFont = (HFONT)SelectObject(hDC, g_hConsoleFont);
+
+      char szT[64];
+      GetTextFace(hDC, sizeof(szT), szT);
+      if (lstrcmpi(szT, lpszBorlandTE))
+        {
+          SelectObject(hDC, hOldFont);
+          DeleteObject(g_hConsoleFont);
+          g_hConsoleFont = (HFONT)GetStockObject(SYSTEM_FIXED_FONT);
+          SelectObject(hDC, g_hConsoleFont);
+        }
+
+      TEXTMETRIC tm;
+      GetTextMetrics(hDC, &tm);
+      g_iCharWidth = (int)tm.tmAveCharWidth;
+      g_iCharHeight = (int)tm.tmHeight;
+      ReleaseDC(hWnd, hDC);
+    }
+  else
+    g_hConsoleFont = (HFONT)GetStockObject(SYSTEM_FIXED_FONT);
+}
+
 void update_caret_pos()
 {
   if (GetFocus() == g_hWndMain)
-    SetCaretPos(LEFTMARGIN + x * g_iCharWidth, (y - rowoff) * g_iCharHeight);
+    SetCaretPos(LEFTMARGIN + screen_col * g_iCharWidth, (screen_line - top) * g_iCharHeight);
 }
 
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -150,21 +208,34 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
     case WM_CREATE:
       {
-        TEXTMETRIC tm;
-        HDC hdc = GetDC(hwnd);
-        SelectObject(hdc, (HFONT)GetStockObject(SYSTEM_FIXED_FONT));
-        GetTextMetrics(hdc, &tm);
-        ReleaseDC(hwnd, hdc);
+//         TEXTMETRIC tm;
+//         HDC hdc = GetDC(hwnd);
+//         SelectObject(hdc, (HFONT)GetStockObject(SYSTEM_FIXED_FONT));
+//         GetTextMetrics(hdc, &tm);
+//         ReleaseDC(hwnd, hdc);
 
-        g_iCharWidth = (int)tm.tmAveCharWidth;
-        debug_log("g_iCharWidth = %d\n", g_iCharWidth);
-        g_iCharHeight = (int)tm.tmHeight;
+//         g_iCharWidth = (int)tm.tmAveCharWidth;
+//         debug_log("g_iCharWidth = %d\n", g_iCharWidth);
+//         g_iCharHeight = (int)tm.tmHeight;
+        set_console_font(hwnd);
       }
       return 0;
 
     case WM_DESTROY:
       PostQuitMessage(0);
       return 0;
+
+    case WM_SETFOCUS:
+      InvalidateRect(hwnd, NULL, FALSE);
+      CreateCaret(hwnd, NULL, g_iCharWidth, g_iCharHeight);
+      update_caret_pos();
+      ShowCaret(hwnd);
+      break;
+
+    case WM_KILLFOCUS:
+      HideCaret(hwnd);
+      DestroyCaret();
+      break;
 
     case WM_SIZE:
       g_iNumRows = HIWORD(lParam) / g_iCharHeight;
@@ -184,11 +255,11 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
             if (yOut + g_iCharHeight >= ps.rcPaint.top && yOut <= ps.rcPaint.bottom)
               {
-                if (i + rowoff < MAXROWS)
+                if (i + top < MAXLINES)
                   TextOut(hDC,
                           LEFTMARGIN,
                           yOut,
-                          screen + (i + rowoff) * MAXCOLS,
+                          screen + (i + top) * MAXCOLS,
                           g_iNumCols);
                 else
                   {
@@ -221,63 +292,107 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
   return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
+void scroll_window_up()
+{
+  if (screen)
+    {
+      if (top < MAXLINES - g_iNumRows)
+        ++top;
+      else
+        {
+          memmove(screen, screen + MAXCOLS, (MAXLINES - 1) * MAXCOLS);
+          memset(screen + (MAXLINES - 1) * MAXCOLS, BL, MAXCOLS);
+        }
+    }
+
+  ScrollWindow(g_hWndMain, 0, -g_iCharHeight, NULL, NULL);
+  UpdateWindow(g_hWndMain);
+//   UpdateScrollBar();
+}
+
+void maybe_reframe()
+{
+  if (screen_line > MAXLINES - 1)
+    {
+      memmove(screen, screen + MAXCOLS, (MAXLINES - 1) * MAXCOLS);
+      memset(screen + (MAXLINES - 1) * MAXCOLS, BL, MAXCOLS);
+      --top;
+      --screen_line;
+    }
+
+  if (screen_line - top > g_iNumRows - 1)
+    {
+      scroll_window_up();
+      screen_line = top + g_iNumRows - 1;
+      if (screen_line > MAXLINES - 1)
+        MessageBox(NULL, "screen_line > MAXLINES - 1", "wrap", MB_OK);
+      update_caret_pos();
+    }
+}
+
 void c_emit(char c)
 {
+  extern Cell nout_data;
+
   if (!screen)
     return;
 
-  //  scrollfix();
   switch (c)
     {
-      //       case BS:
-      //         if (x)
-      //           --x;
-      //         break;
+    case BS:
+      if (screen_col)
+        --screen_col;
+      break;
 
-    case 10:
+    case LF:
       {
-        char szT[ 256 ];
-        ++y;
-//         wrap();
-//         if (y > maxrows - 1)
-//           {
-//             wsprintf(szT, "emit after wrap y = %d", y);
-//             MessageBox(NULL, szT, "emit", MB_OK);
-//           }
+        nout_data = 0;
+        screen_col = 0;
+        ++screen_line;
+        maybe_reframe();
+        if (screen_line > MAXLINES - 1)
+          {
+            char szT[256];
+            wsprintf(szT, "emit after maybe_reframe screen_line = %d", screen_line);
+            MessageBox(NULL, szT, "emit", MB_OK);
+          }
         UpdateWindow(g_hWndMain);
         break;
       }
 
-    case 13:
-      x = 0;
+    case CR:
+//       nout_data = 0;
+//       screen_col = 0;
       break;
 
     default:
-      if (y > MAXROWS - 1)
+      if (screen_line > MAXLINES - 1)
         {
-          char szT[ 256 ];
-          wsprintf(szT, "emit error y = %d", y);
+          char szT[256];
+          wsprintf(szT, "emit error screen_line = %d", screen_line);
           MessageBox(NULL, szT, "emit error", MB_OK);
           ExitProcess(0);
-          memmove(screen, screen + MAXCOLS, (MAXROWS - 1) * MAXCOLS);
-          memset(screen + (MAXROWS - 1) * MAXCOLS, ' ', MAXCOLS);
+          memmove(screen, screen + MAXCOLS, (MAXLINES - 1) * MAXCOLS);
+          memset(screen + (MAXLINES - 1) * MAXCOLS, ' ', MAXCOLS);
           InvalidateRect(g_hWndMain, NULL, FALSE);
-          y = MAXROWS - 1;
+          screen_line = MAXLINES - 1;
         }
 
-      SCREEN(x, y) = c;
+      SCREEN(screen_line, screen_col) = c;
 
       RECT r;
-      r.top = (y - rowoff) * g_iCharHeight;
+      r.top = (screen_line - top) * g_iCharHeight;
       r.bottom = r.top + g_iCharHeight;
-      r.left = LEFTMARGIN + x * g_iCharWidth;
+      r.left = LEFTMARGIN + screen_col * g_iCharWidth;
       r.right = r.left + g_iCharWidth;
       InvalidateRect(g_hWndMain, &r, FALSE);
 
-      ++x;
-      //         wrap();
-
+      ++screen_col;
+      ++nout_data;
+      maybe_reframe();
     }
+
+  update_caret_pos();
 }
 
 void c_type(LPSTR lpString, int iNumChars)
@@ -285,7 +400,7 @@ void c_type(LPSTR lpString, int iNumChars)
   if (!screen)
     return;
 
-  debug_log("c_type iNumChars = %d\n", iNumChars);
+//   debug_log("c_type iNumChars = %d\n", iNumChars);
 
 //   BOOL bContainsControlChar = FALSE;
 
@@ -298,16 +413,16 @@ void c_type(LPSTR lpString, int iNumChars)
 //         }
 //     }
 
-//   if (!bContainsControlChar && x + iNumChars < MAXCOLS)
+//   if (!bContainsControlChar && screen_col + iNumChars < MAXCOLS)
 //     {
-//       memcpy(screen + y * MAXCOLS + x, lpString, iNumChars);
+//       memcpy(screen + screen_line * MAXCOLS + screen_col, lpString, iNumChars);
 //       RECT r;
-//       r.top = (y - rowoff) * g_iCharHeight;
+//       r.top = (screen_line - top) * g_iCharHeight;
 //       r.bottom = r.top + g_iCharHeight;
-//       r.left = LEFTMARGIN + x * g_iCharWidth;
+//       r.left = LEFTMARGIN + screen_col * g_iCharWidth;
 //       r.right = r.left + iNumChars * g_iCharWidth;
 //       InvalidateRect(g_hWndMain, &r, FALSE);
-//       x += iNumChars;
+//       screen_col += iNumChars;
 //     }
 //   else
     {
@@ -340,14 +455,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
   g_hInst = hInstance;
 
-  screen = (LPSTR)HeapAlloc(GetProcessHeap(), 0, MAXROWS * MAXCOLS);
-  memset(screen, ' ', MAXROWS * MAXCOLS);
+  screen = (char *)HeapAlloc(GetProcessHeap(), 0, MAXLINES * MAXCOLS);
+  memset(screen, ' ', MAXLINES * MAXCOLS);
 
   HWND hwnd = CreateWindowEx(
     0,                                  // optional window styles
     CLASS_NAME,                         // window class
-    "F64",                              // window name
-    WS_OVERLAPPEDWINDOW,                // Window style
+    APP_NAME,                           // window name
+    WS_OVERLAPPEDWINDOW,                // window style
 
     // size and position
     CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
@@ -356,14 +471,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     NULL,                               // menu
     hInstance,                          // instance handle
     NULL                                // additional application data
-   );
+ );
 
   if (!hwnd)
     return FALSE;
 
   g_hWndMain = hwnd;
 
-  g_hConsoleFont = (HFONT)GetStockObject(SYSTEM_FIXED_FONT);
+//   g_hConsoleFont = (HFONT)GetStockObject(SYSTEM_FIXED_FONT);
 
   ShowWindow(hwnd, nCmdShow);
   UpdateWindow(hwnd);
@@ -379,7 +494,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                           CREATE_ALWAYS,
                           FILE_ATTRIBUTE_NORMAL,
                           NULL // template file (ignored for existing file)
-                         );
+                       );
   debug_log("WinMain\n");
 
   initialize_forth();

@@ -61,34 +61,39 @@ BOOL c_qkey()
   return head == tail ? 0 : -1;
 }
 
-int c_accept(LPSTR pBuffer, int iBufSize)
+int c_accept(char *buffer, int bufsize)
 {
-  debug_log("c_accept\n");
+  memset(buffer, 0, bufsize);
 
-  BOOL bEmpty = TRUE;
+  int i = 0;
 
-  int c;
-
-  memset(pBuffer, 0, iBufSize);
-
-  int index = -1;
-
-  extern int x;
-  while ((c = c_key()) != '\r')
+  while (1)
     {
-      if (x < iBufSize && c >= ' ')
+      int c = c_key();
+      if (i < bufsize && c >= ' ')
         {
-          pBuffer[x] = c;
+          buffer[i++] = c;
           c_emit(c);
-          index = -1;
-          bEmpty = FALSE;
         }
+      else if (c == BS)
+        {
+          if (i > 0)
+            {
+              if (i == lstrlen(buffer))
+                buffer[--i] = '\0';
+              else
+                buffer[--i] = BL;
+              c_emit(BL);
+              c_emit(BS);
+            }
+        }
+      else if (c == CR)
+        break;
       else
         beep();
     }
-//   pBuffer[x] = 0;
-//   debug_log("c_accept: %s\n", pBuffer);
-  return x;
+  c_emit(BL);
+  return i;
 }
 
 // push a character into the keyboard typeahead buffer

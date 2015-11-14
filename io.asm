@@ -127,7 +127,6 @@ endcode
 extern c_type
 ; ### wtype
 code wtype, 'wtype'                     ; addr n --
-        add     [nout_data], rbx
         popd    rdx
         popd    rcx
         xcall   c_type
@@ -142,6 +141,10 @@ deferred type, 'type', itype
 
 ; ### cr
 code cr, 'cr'
+%ifdef WIN64
+        _lit 13
+        _ emit
+%endif
         _lit 10
         _ emit
         next

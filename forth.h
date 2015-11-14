@@ -23,6 +23,12 @@ void deprep_terminal ();
 
 typedef int64_t Cell;
 
+#define LF      '\n'
+#define CR      '\r'
+#define BS      '\b'
+#define BL      ' '
+#define ESC     0x1b
+
 #ifdef WINDOWS_UI
 void CDECL debug_log(LPCSTR lpFormat, ...);
 void pushkey(UINT theKey);
