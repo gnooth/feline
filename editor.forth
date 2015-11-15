@@ -15,7 +15,7 @@
 
 only forth also definitions
 
-[undefined] [log [if] include-system-file log.forth +log [then]
+[undefined] [log [if] include-system-file log.forth ( +log ) [then]
 
 [undefined] <vector> [if] include-system-file object.forth [then]
 
@@ -356,6 +356,13 @@ $11 ,           ' do-quit ,                     \ c-q
 : do-command ( x -- )
     keytable switch ;
 
+: editor-key ( -- char )
+    windows-ui? if
+        key
+    else
+        ekey
+    then ;
+
 : edit-loop ( -- )
     0 to top
     0 0 set-cursor
@@ -363,7 +370,7 @@ $11 ,           ' do-quit ,                     \ c-q
     false to quit?
     begin
         redisplay
-        ekey
+        ( ekey ) editor-key
         clear-status-text
         dup bl $7f within if
             do-normal-char

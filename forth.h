@@ -30,10 +30,13 @@ typedef int64_t Cell;
 #define ESC     0x1b
 
 #ifdef WINDOWS_UI
+extern HWND g_hWndMain;
+
 void CDECL debug_log(LPCSTR lpFormat, ...);
 void pushkey(UINT theKey);
 void pushfunctionkey(WPARAM wParam);
 int c_key();
+int c_key_avail();
 int c_accept(LPSTR pBuffer, int iBufSize);
 #endif
 

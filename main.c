@@ -405,18 +405,21 @@ void c_emit(char c)
           screen_line = MAXLINES - 1;
         }
 
-      SCREEN(screen_line, screen_col) = c;
+      if (screen_col < MAXCOLS)
+        {
+          SCREEN(screen_line, screen_col) = c;
 
-      RECT r;
-      r.top = (screen_line - top) * char_height;
-      r.bottom = r.top + char_height;
-      r.left = LEFTMARGIN + screen_col * char_width;
-      r.right = r.left + char_width;
-      InvalidateRect(g_hWndMain, &r, FALSE);
+          RECT r;
+          r.top = (screen_line - top) * char_height;
+          r.bottom = r.top + char_height;
+          r.left = LEFTMARGIN + screen_col * char_width;
+          r.right = r.left + char_width;
+          InvalidateRect(g_hWndMain, &r, FALSE);
 
-      ++screen_col;
-      ++nout_data;
-      maybe_reframe();
+          ++screen_col;
+          ++nout_data;
+          maybe_reframe();
+        }
     }
 
   update_caret_pos();

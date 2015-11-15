@@ -56,7 +56,7 @@ int c_key()
   return c;
 }
 
-BOOL c_qkey()
+int c_key_avail()
 {
   return head == tail ? 0 : -1;
 }
@@ -94,6 +94,7 @@ int c_accept(char *buffer, int bufsize)
         beep();
     }
   c_emit(BL);
+  UpdateWindow(g_hWndMain);
   return i;
 }
 

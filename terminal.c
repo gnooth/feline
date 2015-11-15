@@ -131,12 +131,16 @@ void deprep_terminal ()
 Cell os_key_avail()
 {
 #ifdef WIN64
+#ifdef WINDOWS_UI
+  return c_key_avail();
+#else
   return _kbhit() ? (Cell)-1 : 0;
+#endif
 #else
   // Linux
   int chars_avail = 0;
   int tty = fileno (stdin);
-  if (ioctl (tty, FIONREAD, &chars_avail) == 0)
+  if (ioctl(tty, FIONREAD, &chars_avail) == 0)
     return chars_avail ? (Cell)-1 : 0;
   return 0;
 #endif
@@ -145,11 +149,16 @@ Cell os_key_avail()
 int os_key()
 {
 #ifdef WIN64
+#ifdef WINDOWS_UI
+  return c_key();
+#else
   if (console_input_handle != INVALID_HANDLE_VALUE)
     return _getch();
   else
     return fgetc(stdin);
+#endif
 #else
+  // Linux
   return fgetc(stdin);
 #endif
 }
