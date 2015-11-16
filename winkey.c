@@ -17,8 +17,10 @@
 
 #include <windows.h>
 #include "forth.h"
+#include "windows-ui.h"
 
-#define special_mask   0x20000
+#define SPECIAL_MASK    0x20000
+#define CONTROL_MASK    0x40000
 
 #define kblength 256
 UINT keybuf[kblength];  // circular buffer
@@ -43,6 +45,7 @@ void yield()
 
 int c_key()
 {
+  ShowCaret(g_hWndMain);
   while (head == tail)
   {
     MSG msg;
@@ -53,6 +56,7 @@ int c_key()
   }
   int c = keybuf[tail];
   tail = next(tail);
+  HideCaret(g_hWndMain);
   return c;
 }
 
@@ -64,9 +68,7 @@ int c_key_avail()
 int c_accept(char *buffer, int bufsize)
 {
   memset(buffer, 0, bufsize);
-
   int i = 0;
-
   while (1)
     {
       int c = c_key();
@@ -110,7 +112,7 @@ void pushkey(UINT theKey)
       keytemp = theKey;                   // a copy of the theKey
       //    if ((GetKeyState (VK_SHIFT) & 0x8000) && (thekey < 32)) // if shift is down
       //      keytemp |= shift_mask;                // then include the shift bit
-      keybuf[ head ] = keytemp;
+      keybuf[head] = keytemp;
       head = next(head);
     }
 }
@@ -127,7 +129,10 @@ void pushfunctionkey(WPARAM wParam)
     case VK_DOWN:
     case VK_HOME:
     case VK_END:
-      pushkey(special_mask | wParam);
+    case VK_DELETE:
+      if (GetKeyState(VK_CONTROL) & 0x8000)
+        wParam |= CONTROL_MASK;
+      pushkey(SPECIAL_MASK | wParam);
       break;
 
     default:

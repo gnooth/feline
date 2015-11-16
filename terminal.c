@@ -27,6 +27,10 @@
 
 #include "forth.h"
 
+#ifdef WINDOWS_UI
+#include "windows-ui.h"
+#endif
+
 extern Cell line_input_data;
 
 #ifdef WIN64

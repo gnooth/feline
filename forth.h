@@ -18,8 +18,8 @@
 
 #include <stdint.h>
 
-void prep_terminal ();
-void deprep_terminal ();
+void prep_terminal();
+void deprep_terminal();
 
 typedef int64_t Cell;
 
@@ -28,16 +28,5 @@ typedef int64_t Cell;
 #define BS      '\b'
 #define BL      ' '
 #define ESC     0x1b
-
-#ifdef WINDOWS_UI
-extern HWND g_hWndMain;
-
-void CDECL debug_log(LPCSTR lpFormat, ...);
-void pushkey(UINT theKey);
-void pushfunctionkey(WPARAM wParam);
-int c_key();
-int c_key_avail();
-int c_accept(LPSTR pBuffer, int iBufSize);
-#endif
 
 #endif
