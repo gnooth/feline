@@ -111,10 +111,18 @@ code at_xy, 'at-xy'                     ; col row --
 ; FACILITY
 ; zero based (Forth 2012 10.6.1.0742)
 %ifdef WIN64
+%ifdef WINDOWS_UI
+        popd    rdx
+        popd    rcx
+        extern  c_at_xy
+        xcall   c_at_xy
+%else
         popd    rdx
         popd    rcx
         xcall   os_set_console_cursor_position
+%endif
 %else
+; Linux
         _ ansi_escape
         _oneplus                        ; ANSI values are 1-based
         _ paren_udot                    ; -- col c-addr u

@@ -27,6 +27,10 @@
 
 #include "forth.h"
 
+#ifdef WINDOWS_UI
+#include "windows-ui.h"
+#endif
+
 extern Cell line_input_data;
 
 #ifdef WIN64
@@ -67,7 +71,7 @@ static void sig_winch(int signo)
 }
 #endif
 
-void prep_terminal ()
+void prep_terminal()
 {
 #ifdef WIN64
   extern Cell forth_stdin_data;
@@ -80,7 +84,7 @@ void prep_terminal ()
   forth_stdin_data  = (Cell) console_input_handle;
   forth_stdout_data = (Cell) GetStdHandle(STD_OUTPUT_HANDLE);
   forth_stderr_data = (Cell) GetStdHandle(STD_ERROR_HANDLE);
-  if (GetConsoleMode (console_input_handle, &mode))
+  if (GetConsoleMode(console_input_handle, &mode))
     {
       mode = (mode & ~ENABLE_ECHO_INPUT & ~ENABLE_LINE_INPUT & ~ENABLE_PROCESSED_INPUT);
       SetConsoleMode(console_input_handle, mode);
@@ -120,24 +124,28 @@ void prep_terminal ()
 #endif
 }
 
-void deprep_terminal ()
+void deprep_terminal()
 {
 #ifndef WIN64
   if (terminal_prepped)
-    tcsetattr (tty, TCSANOW, &otio);
+    tcsetattr(tty, TCSANOW, &otio);
 #endif
 }
 
 Cell os_key_avail()
 {
 #ifdef WIN64
-  return _kbhit() ? (Cell)-1 : 0;
+#ifdef WINDOWS_UI
+  return c_key_avail();
+#else
+  return _kbhit() ? (Cell) -1 : 0;
+#endif
 #else
   // Linux
   int chars_avail = 0;
-  int tty = fileno (stdin);
-  if (ioctl (tty, FIONREAD, &chars_avail) == 0)
-    return chars_avail ? (Cell)-1 : 0;
+  int tty = fileno(stdin);
+  if (ioctl(tty, FIONREAD, &chars_avail) == 0)
+    return chars_avail ? (Cell) -1 : 0;
   return 0;
 #endif
 }
@@ -145,11 +153,16 @@ Cell os_key_avail()
 int os_key()
 {
 #ifdef WIN64
+#ifdef WINDOWS_UI
+  return c_key();
+#else
   if (console_input_handle != INVALID_HANDLE_VALUE)
     return _getch();
   else
     return fgetc(stdin);
+#endif
 #else
+  // Linux
   return fgetc(stdin);
 #endif
 }

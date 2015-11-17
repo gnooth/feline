@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,20 +13,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __FORTH_H
-#define __FORTH_H
+#ifndef __WINDOWS_UI_H
+#define __WINDOWS_UI_H
 
-#include <stdint.h>
+#ifdef WINDOWS_UI
 
-void prep_terminal();
-void deprep_terminal();
+extern HWND hWndMain;
 
-typedef int64_t Cell;
+BOOL InitApplication(HINSTANCE hInstance);
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow);
 
-#define LF      '\n'
-#define CR      '\r'
-#define BS      '\b'
-#define BL      ' '
-#define ESC     0x1b
+void CDECL debug_log(LPCSTR lpFormat, ...);
 
-#endif
+void pushkey(WPARAM theKey);
+void pushfunctionkey(WPARAM wParam);
+
+void c_emit(char c);
+
+int c_key();
+int c_key_avail();
+
+int c_accept(char *buffer, int bufsize);
+
+#endif // WINDOWS_UI
+
+#endif // __WINDOWS_UI_H

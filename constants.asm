@@ -89,3 +89,14 @@ code windows?, 'windows?'
 %endif
         next
 endcode
+
+; ### windows-ui?
+code windows_ui?, 'windows-ui?'
+        pushrbx
+%ifdef WINDOWS_UI
+        mov     rbx, -1
+%else
+        xor     ebx, ebx
+%endif
+        next
+endcode

@@ -25,6 +25,28 @@
 
 windows? [if]
 
+windows-ui? [if]
+
+: ekey ( -- x )
+    key ;
+
+$20027 constant k-right
+$20025 constant k-left
+$20026 constant k-up
+$20028 constant k-down
+$20024 constant k-home
+$20023 constant k-end
+$2002e constant k-delete
+$20021 constant k-prior
+$20022 constant k-next
+
+\ REVIEW non-standard, should use K-CTRL-MASK
+$60024 constant k-^home
+$60023 constant k-^end
+
+[else]
+
+\ Windows console
 : ekey ( -- x )                         \ FACILITY EXT
     key
     dup 0= if
@@ -54,6 +76,8 @@ $8051 constant k-next
 \ REVIEW non-standard, should use K-CTRL-MASK
 $8077   constant k-^home
 $8075   constant k-^end
+
+[then]
 
 [else]
 

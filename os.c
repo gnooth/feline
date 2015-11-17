@@ -303,6 +303,7 @@ void os_emit_file(int c, int fd)
 Cell os_ticks()
 {
 #ifdef WIN64
+  ULONGLONG WINAPI GetTickCount64(void);
   return GetTickCount64();
 #else
   struct timeval tv;

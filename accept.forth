@@ -362,7 +362,8 @@ $0f ,          ' accept-line-and-down-history ,
     white foreground
     #in ;
 
-line-input? 0= [if]
+line-input? 0=
+windows-ui? or [if]
 restore-history
 ' (free-history) is free-history
 ' new-accept is accept

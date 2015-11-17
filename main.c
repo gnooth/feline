@@ -25,6 +25,10 @@
 
 #include "forth.h"
 
+#ifdef WINDOWS_UI
+#include "windows-ui.h"
+#endif
+
 #ifdef WIN64
 #define JMP_BUF                 jmp_buf
 #define SETJMP(env)             setjmp(env)
@@ -63,7 +67,7 @@ void args(int argc, char **argv)
   argv_data = (Cell) argv;
 }
 
-int main(int argc, char **argv, char **env)
+void initialize_forth()
 {
   extern Cell dp_data;
   extern Cell cp_data;
@@ -80,10 +84,6 @@ int main(int argc, char **argv, char **env)
   Cell code_space_size = 1024 * 1024;
   void * data_space;
   void * code_space;
-
-  args(argc, argv);
-
-  prep_terminal();
 
 #ifdef WIN64
   data_space =
@@ -107,6 +107,31 @@ int main(int argc, char **argv, char **env)
   tick_tib_data = (Cell) malloc(256);
   sp0_data = (Cell) malloc(1024) + (1024 - 64);
   word_buffer_data = (Cell) malloc(260);
+}
+
+#if defined WIN64 && defined WINDOWS_UI
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow)
+{
+  initialize_forth();
+  InitApplication(hInstance);
+  InitInstance(hInstance, nCmdShow);
+
+  extern void cold();
+  cold();
+
+  return 0;
+}
+
+#else
+
+int main(int argc, char **argv, char **env)
+{
+  args(argc, argv);
+
+  prep_terminal();
+
+  initialize_forth();
 
 #ifndef WIN64
   struct sigaction sa;
@@ -121,4 +146,8 @@ int main(int argc, char **argv, char **env)
     cold();
   else
     abort();
+
+  return 0;
 }
+
+#endif
