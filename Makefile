@@ -33,19 +33,19 @@ forth_home.asm: $(FORTH_HOME_EXE)
 $(FORTH_HOME_EXE): forth_home.c
 	gcc forth_home.c -o forth_home
 
-main.o:	forth.h main.c Makefile
+main.o:	forth.h windows-ui.h main.c Makefile
 	gcc $(CFLAGS) -c -o main.o main.c
 
 os.o:	forth.h os.c Makefile
 	gcc $(CFLAGS) -c -o os.o os.c
 
-terminal.o: forth.h terminal.c Makefile
+terminal.o: forth.h windows-ui.h terminal.c Makefile
 	gcc $(CFLAGS) -c -o terminal.o terminal.c
 
 windows-ui.o: forth.h windows-ui.h windows-ui.c Makefile
 	gcc $(CFLAGS) -c -o windows-ui.o windows-ui.c
 
-winkey.o: forth.h winkey.c Makefile
+winkey.o: forth.h windows-ui.h winkey.c Makefile
 	gcc $(CFLAGS) -c -o winkey.o winkey.c
 
 ASM_SOURCES = forth.asm forth_home.asm equates.asm macros.asm inlines.asm \

@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 // Adapted from Win32Forth
 
 #include <windows.h>
+
 #include "forth.h"
 #include "windows-ui.h"
 
@@ -23,24 +24,15 @@
 #define CONTROL_MASK    0x40000
 
 #define kblength 256
-UINT keybuf[kblength];  // circular buffer
-int head = 0, tail = 0;
+
+static UINT keybuf[kblength];
+
+static int head = 0, tail = 0;
 
 #define next(x) ((x + 1) % kblength)
 
 void beep()
 {
-}
-
-void yield()
-{
-  MSG msg;
-
-  while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-  {
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
-  }
 }
 
 int c_key()
@@ -63,6 +55,39 @@ int c_key()
 int c_key_avail()
 {
   return head == tail ? 0 : -1;
+}
+
+void pushkey(WPARAM wparam)
+{
+  if (next(head) == tail)
+    beep();
+  else
+    {
+      keybuf[head] = wparam;
+      head = next(head);
+    }
+}
+
+void pushfunctionkey(WPARAM wparam)
+{
+  switch (wparam)
+    {
+    case VK_NEXT:
+    case VK_PRIOR:
+    case VK_LEFT:
+    case VK_RIGHT:
+    case VK_UP:
+    case VK_DOWN:
+    case VK_HOME:
+    case VK_END:
+    case VK_DELETE:
+      if (GetKeyState(VK_CONTROL) & 0x8000)
+        wparam |= CONTROL_MASK;
+      pushkey(SPECIAL_MASK | wparam);
+      break;
+    default:
+      break;
+    }
 }
 
 int c_accept(char *buffer, int bufsize)
@@ -98,44 +123,4 @@ int c_accept(char *buffer, int bufsize)
   c_emit(BL);
   UpdateWindow(g_hWndMain);
   return i;
-}
-
-// push a character into the keyboard typeahead buffer
-void pushkey(UINT theKey)
-{
-  UINT keytemp;
-
-  if (next(head) == tail)
-    beep();                            // buffer full
-  else
-    {
-      keytemp = theKey;                   // a copy of the theKey
-      //    if ((GetKeyState (VK_SHIFT) & 0x8000) && (thekey < 32)) // if shift is down
-      //      keytemp |= shift_mask;                // then include the shift bit
-      keybuf[head] = keytemp;
-      head = next(head);
-    }
-}
-
-void pushfunctionkey(WPARAM wParam)
-{
-  switch (wParam)
-    {
-    case VK_NEXT:
-    case VK_PRIOR:
-    case VK_LEFT:
-    case VK_RIGHT:
-    case VK_UP:
-    case VK_DOWN:
-    case VK_HOME:
-    case VK_END:
-    case VK_DELETE:
-      if (GetKeyState(VK_CONTROL) & 0x8000)
-        wParam |= CONTROL_MASK;
-      pushkey(SPECIAL_MASK | wParam);
-      break;
-
-    default:
-      break;
-    }
 }

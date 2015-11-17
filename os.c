@@ -29,10 +29,6 @@
 
 #include "forth.h"
 
-#ifdef WINDOWS_UI
-#include "windows-ui.h"
-#endif
-
 void * os_allocate(size_t size)
 {
   return malloc(size);
