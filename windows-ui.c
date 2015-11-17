@@ -31,29 +31,22 @@ static const int LEFTMARGIN = 4;
 
 #define SCREEN(row, col) *(screen + (row * MAXCOLS) + col)
 
-HWND g_hWndMain;
+HWND hWndMain;
 
 static HINSTANCE hInst;
 static HFONT hConsoleFont;
-static int g_iNumRows;
-static int g_iNumCols;
+static int num_rows;
+static int num_cols;
 static int char_height;
 static int char_width;
 
 VOID WINAPI set_console_font(HWND hWnd)
 {
-  hConsoleFont = NULL;
-
-  char szFontName[64];
-
-  LPCSTR lpszBorlandTE = "Liberation Mono" ;
-
+  char * font_name = "Liberation Mono" ;
   LOGFONT lf;
+  int size = 10;
 
-  lstrcpy(szFontName, lpszBorlandTE);
-  int iSize = 10;
-
-  lf.lfHeight = - (iSize * 4 / 3);
+  lf.lfHeight = - (size * 4 / 3);
   lf.lfWidth = 0;
   lf.lfEscapement = 0;
   lf.lfOrientation = 0;
@@ -66,26 +59,23 @@ VOID WINAPI set_console_font(HWND hWnd)
   lf.lfClipPrecision = 0;
   lf.lfQuality = 0;
   lf.lfPitchAndFamily = 0;
-  lstrcpy((LPSTR)lf.lfFaceName, szFontName);
+  lstrcpy(lf.lfFaceName, font_name);
 
   hConsoleFont = CreateFontIndirect(&lf);
 
   if (hConsoleFont)
     {
       HDC hDC = GetDC(hWnd);
-
       HFONT hOldFont = (HFONT)SelectObject(hDC, hConsoleFont);
-
-      char szT[64];
-      GetTextFace(hDC, sizeof(szT), szT);
-      if (lstrcmpi(szT, lpszBorlandTE))
+      char temp[64];
+      GetTextFace(hDC, sizeof(temp), temp);
+      if (lstrcmpi(temp, font_name))
         {
           SelectObject(hDC, hOldFont);
           DeleteObject(hConsoleFont);
           hConsoleFont = (HFONT)GetStockObject(SYSTEM_FIXED_FONT);
           SelectObject(hDC, hConsoleFont);
         }
-
       TEXTMETRIC tm;
       GetTextMetrics(hDC, &tm);
       char_width = (int)tm.tmAveCharWidth;
@@ -98,13 +88,13 @@ VOID WINAPI set_console_font(HWND hWnd)
 
 void update_caret_pos()
 {
-  if (GetFocus() == g_hWndMain)
+  if (GetFocus() == hWndMain)
     SetCaretPos(LEFTMARGIN + screen_col * char_width, (screen_line - top) * char_height);
 }
 
 void c_at_xy(int col, int row)
 {
-  if (GetFocus() == g_hWndMain)
+  if (GetFocus() == hWndMain)
     SetCaretPos(LEFTMARGIN + col * char_width, row * char_height);
 }
 
@@ -124,22 +114,20 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       InvalidateRect(hwnd, NULL, FALSE);
       CreateCaret(hwnd, NULL, char_width, char_height);
       update_caret_pos();
-//       ShowCaret(hwnd);
       break;
 
     case WM_KILLFOCUS:
-//       HideCaret(hwnd);
       DestroyCaret();
       break;
 
     case WM_SIZE:
       {
-        g_iNumRows = HIWORD(lParam) / char_height;
-        g_iNumCols = LOWORD(lParam) / char_width;
+        num_rows = HIWORD(lParam) / char_height;
+        num_cols = LOWORD(lParam) / char_width;
         extern Cell nrows_data;
         extern Cell ncols_data;
-        nrows_data = g_iNumRows;
-        ncols_data = g_iNumCols;
+        nrows_data = num_rows;
+        ncols_data = num_cols;
         InvalidateRect(hwnd, NULL, FALSE);
       }
       break;
@@ -149,28 +137,26 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         PAINTSTRUCT ps;
         HDC hDC = BeginPaint(hwnd, &ps);
         SelectObject(hDC, hConsoleFont);
-
-        for (int i = 0; i < g_iNumRows + 1; i++)
+        for (int i = 0; i < num_rows + 1; i++)
           {
-            int yOut = i * char_height;
-
-            if (yOut + char_height >= ps.rcPaint.top && yOut <= ps.rcPaint.bottom)
+            int y = i * char_height;
+            if (y + char_height >= ps.rcPaint.top && y <= ps.rcPaint.bottom)
               {
                 if (i + top < MAXLINES)
                   TextOut(hDC,
                           LEFTMARGIN,
-                          yOut,
+                          y,
                           screen + (i + top) * MAXCOLS,
-                          g_iNumCols);
+                          num_cols);
                 else
                   {
                     char szT[MAXCOLS];
                     memset(szT, ' ', MAXCOLS);
                     TextOut(hDC,
                             LEFTMARGIN,
-                            yOut,
+                            y,
                             szT,
-                            g_iNumCols);
+                            num_cols);
                   }
               }
           }
@@ -194,7 +180,7 @@ void scroll_window_up()
 {
   if (screen)
     {
-      if (top < MAXLINES - g_iNumRows)
+      if (top < MAXLINES - num_rows)
         ++top;
       else
         {
@@ -203,9 +189,8 @@ void scroll_window_up()
         }
     }
 
-  ScrollWindow(g_hWndMain, 0, -char_height, NULL, NULL);
-  UpdateWindow(g_hWndMain);
-//   UpdateScrollBar();
+  ScrollWindow(hWndMain, 0, -char_height, NULL, NULL);
+  UpdateWindow(hWndMain);
 }
 
 void maybe_reframe()
@@ -217,11 +202,10 @@ void maybe_reframe()
       --top;
       --screen_line;
     }
-
-  if (screen_line - top > g_iNumRows - 1)
+  if (screen_line - top > num_rows - 1)
     {
       scroll_window_up();
-      screen_line = top + g_iNumRows - 1;
+      screen_line = top + num_rows - 1;
       if (screen_line > MAXLINES - 1)
         MessageBox(NULL, "screen_line > MAXLINES - 1", "wrap", MB_OK);
       update_caret_pos();
@@ -234,8 +218,8 @@ void redisplay_current_line()
   r.top = (screen_line - top) * char_height;
   r.bottom = r.top + char_height;
   r.left = LEFTMARGIN;
-  r.right = LEFTMARGIN + g_iNumCols * char_width;
-  InvalidateRect(g_hWndMain, &r, FALSE);
+  r.right = LEFTMARGIN + num_cols * char_width;
+  InvalidateRect(hWndMain, &r, FALSE);
 }
 
 void c_emit(char c)
@@ -265,28 +249,26 @@ void c_emit(char c)
         if (screen_line > MAXLINES - 1)
           {
             char szT[256];
-            wsprintf(szT, "emit after maybe_reframe screen_line = %d", screen_line);
-            MessageBox(NULL, szT, "emit", MB_OK);
+            wsprintf(szT, "c_emit after maybe_reframe screen_line = %d", screen_line);
+            MessageBox(NULL, szT, "c_emit", MB_OK);
           }
-        UpdateWindow(g_hWndMain);
-        break;
+        UpdateWindow(hWndMain);
       }
+      break;
 
     case CR:
-//       nout_data = 0;
-//       screen_col = 0;
       break;
 
     default:
       if (screen_line > MAXLINES - 1)
         {
           char szT[256];
-          wsprintf(szT, "emit error screen_line = %d", screen_line);
-          MessageBox(NULL, szT, "emit error", MB_OK);
+          wsprintf(szT, "c_emit error screen_line = %d", screen_line);
+          MessageBox(NULL, szT, "c_emit error", MB_OK);
           ExitProcess(0);
           memmove(screen, screen + MAXCOLS, (MAXLINES - 1) * MAXCOLS);
           memset(screen + (MAXLINES - 1) * MAXCOLS, ' ', MAXCOLS);
-          InvalidateRect(g_hWndMain, NULL, FALSE);
+          InvalidateRect(hWndMain, NULL, FALSE);
           screen_line = MAXLINES - 1;
         }
 
@@ -299,7 +281,7 @@ void c_emit(char c)
           r.bottom = r.top + char_height;
           r.left = LEFTMARGIN + screen_col * char_width;
           r.right = r.left + char_width;
-          InvalidateRect(g_hWndMain, &r, FALSE);
+          InvalidateRect(hWndMain, &r, FALSE);
 
           ++screen_col;
           ++nout_data;
@@ -310,42 +292,15 @@ void c_emit(char c)
   update_caret_pos();
 }
 
-void c_type(LPSTR lpString, int iNumChars)
+void c_type(char * chars, int num_chars)
 {
   if (!screen)
     return;
 
-//   debug_log("c_type iNumChars = %d\n", iNumChars);
+  for (int i = 0; i < num_chars; i++)
+    c_emit(chars[i]);
 
-//   BOOL bContainsControlChar = FALSE;
-
-//   for (int i = 0; i < iNumChars; i++)
-//     {
-//       if (lpString[ i ] < ' ')
-//         {
-//           bContainsControlChar = TRUE;
-//           break;
-//         }
-//     }
-
-//   if (!bContainsControlChar && screen_col + iNumChars < MAXCOLS)
-//     {
-//       memcpy(screen + screen_line * MAXCOLS + screen_col, lpString, iNumChars);
-//       RECT r;
-//       r.top = (screen_line - top) * char_height;
-//       r.bottom = r.top + char_height;
-//       r.left = LEFTMARGIN + screen_col * char_width;
-//       r.right = r.left + iNumChars * char_width;
-//       InvalidateRect(g_hWndMain, &r, FALSE);
-//       screen_col += iNumChars;
-//     }
-//   else
-    {
-      for (int i = 0; i < iNumChars; i++)
-        c_emit(lpString[i]);
-    }
-
-  UpdateWindow(g_hWndMain);
+  UpdateWindow(hWndMain);
 }
 
 BOOL InitApplication(HINSTANCE hInstance)
@@ -391,9 +346,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   if (!hwnd)
     return FALSE;
 
-  g_hWndMain = hwnd;
-
-//   hConsoleFont = (HFONT)GetStockObject(SYSTEM_FIXED_FONT);
+  hWndMain = hwnd;
 
   ShowWindow(hwnd, nCmdShow);
   UpdateWindow(hwnd);

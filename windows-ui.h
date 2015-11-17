@@ -18,7 +18,7 @@
 
 #ifdef WINDOWS_UI
 
-extern HWND g_hWndMain;
+extern HWND hWndMain;
 
 BOOL InitApplication(HINSTANCE hInstance);
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow);

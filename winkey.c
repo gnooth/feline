@@ -37,7 +37,7 @@ void beep()
 
 int c_key()
 {
-  ShowCaret(g_hWndMain);
+  ShowCaret(hWndMain);
   while (head == tail)
   {
     MSG msg;
@@ -48,7 +48,7 @@ int c_key()
   }
   int c = keybuf[tail];
   tail = next(tail);
-  HideCaret(g_hWndMain);
+  HideCaret(hWndMain);
   return c;
 }
 
@@ -121,6 +121,6 @@ int c_accept(char *buffer, int bufsize)
         beep();
     }
   c_emit(BL);
-  UpdateWindow(g_hWndMain);
+  UpdateWindow(hWndMain);
   return i;
 }

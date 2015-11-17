@@ -113,15 +113,13 @@ void initialize_forth()
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow)
 {
-  debug_log("WinMain\n");
-
   initialize_forth();
-
   InitApplication(hInstance);
   InitInstance(hInstance, nCmdShow);
 
   extern void cold();
   cold();
+
   return 0;
 }
 
@@ -148,6 +146,8 @@ int main(int argc, char **argv, char **env)
     cold();
   else
     abort();
+
+  return 0;
 }
 
 #endif
