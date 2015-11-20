@@ -208,6 +208,16 @@ code topos, '>pos'                      ; +n --
         next
 endcode
 
+%ifdef WINDOWS_UI
+extern c_repaint
+; ### repaint
+code repaint, 'repaint'
+        popd    rcx
+        xcall   c_repaint
+        next
+endcode
+%endif
+
 ; ### r/o
 code readonly, 'r/o'                    ; -- 0
         pushrbx
