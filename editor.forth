@@ -101,20 +101,28 @@ only forth also editor definitions
 ;
 
 : status ( c-addr u -- )
-    >string local s
-    s .status-text
-    s ~string
+    windows-ui? if
+        2drop
+    else
+        >string local s
+        s .status-text
+        s ~string
+    then
 ;
 
 : .status ( -- )
-    #cols 20 - #rows at-xy
-    ." Line " editor-top-line cursor-y + 1+ .
-    ." Col " cursor-x 1+ .
+    windows-ui? 0= if
+        #cols 20 - #rows at-xy
+        ." Line " editor-top-line cursor-y + 1+ .
+        ." Col " cursor-x 1+ .
+    then
 ;
 
 : clear-status ( -- )
-    0 #rows at-xy
-    #cols spaces
+    windows-ui? 0= if
+        0 #rows at-xy
+        #cols spaces
+    then
 ;
 
 false value repaint?
@@ -436,11 +444,23 @@ $11 ,           ' do-quit ,                     \ c-q
 
     buffer -free
 
+    windows-ui? if
+        create-editor-window
+    then
+
     edit-loop
 
     0 to editor-line-vector
 
     ~lines
+
+    windows-ui? if
+        destroy-editor-window
+    else
+        \ REVIEW
+        clear-status
+        #cols #rows 1- at-xy
+    then
 ;
 
 only forth also editor also forth definitions
@@ -451,15 +471,11 @@ only forth also editor also forth definitions
 \     [log ." edit " 2dup type log]
     >string to editor-filename
     (edit)
-    clear-status
-    #cols #rows 1- at-xy
 ;
 
 : ed ( -- )
     editor-filename if
         (edit)
-        clear-status
-        #cols #rows 1- at-xy
     then
 ;
 

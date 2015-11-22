@@ -22,7 +22,8 @@ extern Cell editor_line_vector_data;
 extern Cell editor_top_line_data;
 
 #define APP_NAME        "Forth"
-#define CLASS_NAME      "Forth"
+#define MAIN_CLASS_NAME "Forth"
+#define EDIT_CLASS_NAME "Forth Editor"
 
 static char * screen = 0;               // address of screen buffer
 static int screen_line, screen_col;     // current position in screen buffer
@@ -35,6 +36,7 @@ static const int LEFTMARGIN = 4;
 #define SCREEN(row, col) *(screen + (row * MAXCOLS) + col)
 
 HWND hWndMain;
+HWND hWndEdit;
 
 static HINSTANCE hInst;
 static HFONT hConsoleFont;
@@ -91,13 +93,12 @@ VOID WINAPI set_console_font(HWND hWnd)
 
 void update_caret_pos()
 {
-  if (GetFocus() == hWndMain)
-    SetCaretPos(LEFTMARGIN + screen_col * char_width, (screen_line - top) * char_height);
+  SetCaretPos(LEFTMARGIN + screen_col * char_width, (screen_line - top) * char_height);
 }
 
 void c_at_xy(int col, int row)
 {
-  if (GetFocus() == hWndMain)
+//   if (GetFocus() == hWndMain)
     SetCaretPos(LEFTMARGIN + col * char_width, row * char_height);
 }
 
@@ -164,22 +165,6 @@ void paint_editor(HWND hwnd)
           int y = i * char_height;
           if (y + char_height >= ps.rcPaint.top && y <= ps.rcPaint.bottom)
             {
-              //           if (i + top < MAXLINES)
-              //             TextOut(hdc,
-              //                     LEFTMARGIN,
-              //                     y,
-              //                     screen + (i + top) * MAXCOLS,
-              //                     num_cols);
-              //           else
-              //             {
-              //               char temp[MAXCOLS];
-              //               memset(temp, ' ', MAXCOLS);
-              //               TextOut(hdc,
-              //                       LEFTMARGIN,
-              //                       y,
-              //                       temp,
-              //                       num_cols);
-              //             }
               int line_num = top_line_num + i;
               if (line_num >= 0 && line_num < v->length)
                 {
@@ -200,8 +185,6 @@ void paint_editor(HWND hwnd)
                 }
               else
                 {
-//                   char temp[MAXCOLS];
-//                   memset(temp, ' ', MAXCOLS);
                   TextOut(hdc,
                           LEFTMARGIN,
                           y,
@@ -234,7 +217,11 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_SETFOCUS:
       InvalidateRect(hwnd, NULL, FALSE);
       CreateCaret(hwnd, NULL, char_width, char_height);
-      update_caret_pos();
+      if (hWndEdit == NULL)
+        {
+          update_caret_pos();
+          ShowCaret(hwnd);
+        }
       break;
 
     case WM_KILLFOCUS:
@@ -254,13 +241,63 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       break;
 
     case WM_PAINT:
+//       {
+//         if (editor_line_vector_data)
+//           paint_editor(hwnd);
+//         else
+      paint_terminal(hwnd);
+//         break;
+//       }
+      return 0;
+
+    case WM_CHAR:
+      pushkey(wParam);
+      return 0;
+
+    case WM_KEYDOWN:
+      pushfunctionkey(wParam);
+      return 0;
+    }
+  return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+LRESULT CALLBACK EditWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg)
+    {
+    case WM_CREATE:
+      set_console_font(hwnd);
+      return 0;
+
+//     case WM_DESTROY:
+//       PostQuitMessage(0);
+//       return 0;
+
+    case WM_SETFOCUS:
+      InvalidateRect(hwnd, NULL, FALSE);
+      CreateCaret(hwnd, NULL, char_width, char_height);
+      update_caret_pos();
+      ShowCaret(hwnd);
+      break;
+
+    case WM_KILLFOCUS:
+      DestroyCaret();
+      break;
+
+    case WM_SIZE:
       {
-        if (editor_line_vector_data)
-          paint_editor(hwnd);
-        else
-          paint_terminal(hwnd);
-        break;
+        num_rows = HIWORD(lParam) / char_height;
+        num_cols = LOWORD(lParam) / char_width;
+        extern Cell nrows_data;
+        extern Cell ncols_data;
+        nrows_data = num_rows;
+        ncols_data = num_cols;
+        InvalidateRect(hwnd, NULL, FALSE);
       }
+      break;
+
+    case WM_PAINT:
+      paint_editor(hwnd);
       return 0;
 
     case WM_CHAR:
@@ -403,20 +440,31 @@ void c_type(char * chars, int num_chars)
 
 BOOL InitApplication(HINSTANCE hInstance)
 {
-  WNDCLASS  wc;
+  WNDCLASS  wcMain, wcEdit;
 
-  wc.style = CS_HREDRAW | CS_VREDRAW;
-  wc.lpfnWndProc = MainWndProc;
-  wc.cbClsExtra = 0;
-  wc.cbWndExtra = 0;
-  wc.hInstance = hInstance;
-  wc.hIcon = 0;
-  wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-  wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-  wc.lpszMenuName = NULL;
-  wc.lpszClassName = CLASS_NAME;
+  wcMain.style = CS_HREDRAW | CS_VREDRAW;
+  wcMain.lpfnWndProc = MainWndProc;
+  wcMain.cbClsExtra = 0;
+  wcMain.cbWndExtra = 0;
+  wcMain.hInstance = hInstance;
+  wcMain.hIcon = 0;
+  wcMain.hCursor = LoadCursor(NULL, IDC_ARROW);
+  wcMain.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+  wcMain.lpszMenuName = NULL;
+  wcMain.lpszClassName = MAIN_CLASS_NAME;
 
-  return RegisterClass(&wc);
+  wcEdit.style = CS_HREDRAW | CS_VREDRAW;
+  wcEdit.lpfnWndProc = EditWndProc;
+  wcEdit.cbClsExtra = 0;
+  wcEdit.cbWndExtra = 0;
+  wcEdit.hInstance = hInstance;
+  wcEdit.hIcon = 0;
+  wcEdit.hCursor = LoadCursor(NULL, IDC_ARROW);
+  wcEdit.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+  wcEdit.lpszMenuName = NULL;
+  wcEdit.lpszClassName = EDIT_CLASS_NAME;
+
+  return RegisterClass(&wcMain) && RegisterClass(&wcEdit);
 }
 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
@@ -428,18 +476,18 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
   HWND hwnd = CreateWindowEx(
     0,                                  // optional window styles
-    CLASS_NAME,                         // window class
+    MAIN_CLASS_NAME,                    // window class
     APP_NAME,                           // window name
     WS_OVERLAPPEDWINDOW,                // window style
 
-    // size and position
+                                        // size and position
     CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 
     NULL,                               // parent window
     NULL,                               // menu
     hInstance,                          // instance handle
     NULL                                // additional application data
- );
+    );
 
   if (!hwnd)
     return FALSE;
@@ -449,6 +497,33 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
   ShowWindow(hwnd, nCmdShow);
   UpdateWindow(hwnd);
   return TRUE;
+}
+
+void c_create_editor_window()
+{
+  hWndEdit = CreateWindowEx(
+    0,                                  // optional window styles
+    EDIT_CLASS_NAME,                    // window class
+    APP_NAME,                           // window name
+    WS_OVERLAPPEDWINDOW,                // window style
+
+                                        // size and position
+    CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+
+    NULL,                               // parent window
+    NULL,                               // menu
+    hInst,                              // instance handle
+    NULL                                // additional application data
+    );
+
+  ShowWindow(hWndEdit, SW_SHOWNORMAL);
+  UpdateWindow(hWndEdit);
+}
+
+void c_destroy_editor_window()
+{
+  DestroyWindow(hWndEdit);
+  hWndEdit = NULL;
 }
 
 void CDECL debug_log(LPCSTR lpFormat, ...)

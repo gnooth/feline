@@ -37,7 +37,7 @@ void beep()
 
 int c_key()
 {
-  ShowCaret(hWndMain);
+  ShowCaret(NULL);
   while (head == tail)
   {
     MSG msg;
@@ -48,7 +48,7 @@ int c_key()
   }
   int c = keybuf[tail];
   tail = next(tail);
-  HideCaret(hWndMain);
+  HideCaret(NULL);
   return c;
 }
 

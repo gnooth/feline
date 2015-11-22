@@ -121,3 +121,21 @@ value editor_line_vector, 'editor-line-vector', 0
 
 ; ### editor-top-line
 value editor_top_line, 'editor-top-line', 0
+
+; ### create-editor-window
+code create_editor_window, 'create-editor-window'
+%ifdef WINDOWS_UI
+        extern  c_create_editor_window
+        xcall   c_create_editor_window
+%endif
+        next
+endcode
+
+; ### destroy-editor-window
+code destroy_editor_window, 'destroy-editor-window'
+%ifdef WINDOWS_UI
+        extern  c_destroy_editor_window
+        xcall   c_destroy_editor_window
+%endif
+        next
+endcode
