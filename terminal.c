@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #ifdef WIN64
 #include <windows.h>
+#include <conio.h>
 #else
 #include <unistd.h>     // isatty
 #include <string.h>     // strcmp

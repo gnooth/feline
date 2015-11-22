@@ -15,7 +15,7 @@
 
 only forth also definitions
 
-[undefined] [log [if] include-system-file log.forth +log [then]
+[undefined] [log [if] include-system-file log.forth ( +log ) [then]
 
 [undefined] <vector> [if] include-system-file object.forth [then]
 
@@ -30,7 +30,7 @@ only forth also definitions
     0 local buffer
     0 local bufsize
 
-    [log ." COPY-FILE " src string> type space ." to " dest string> type log]
+\     [log ." COPY-FILE " src string> type space ." to " dest string> type log]
 
     src string> r/o open-file throw to fileid
     fileid file-size throw drop to filesize
@@ -54,14 +54,14 @@ only forth also editor definitions
 
 : #lines lines vector-length ;          \ number of lines in the file being edited
 
-0 value top                             \ zero-based line number of top line of display
+\ 0 value top                             \ zero-based line number of top line of display
 
 0 value cursor-x
 
 0 value cursor-y
 
 : cursor-line# ( -- n )                 \ zero-based index of current line in lines vector
-    top cursor-y +
+    editor-top-line cursor-y +
 ;
 
 : cursor-line ( -- string )
@@ -94,8 +94,10 @@ only forth also editor definitions
 ;
 
 : clear-status-text ( -- )
-    0 #rows at-xy
-    #cols 20 - spaces
+    windows-ui? 0= if
+        0 #rows at-xy
+        #cols 20 - spaces
+    then
 ;
 
 : status ( c-addr u -- )
@@ -106,7 +108,7 @@ only forth also editor definitions
 
 : .status ( -- )
     #cols 20 - #rows at-xy
-    ." Line " top cursor-y + 1+ .
+    ." Line " editor-top-line cursor-y + 1+ .
     ." Col " cursor-x 1+ .
 ;
 
@@ -119,8 +121,13 @@ false value repaint?
 
 : redisplay ( -- )
     repaint? if
+        [ windows-ui? ] [if]
+            true repaint
+            0 to repaint?
+            exit
+        [then]
         0 0 at-xy
-        top
+        editor-top-line
         #rows 1 -
         bounds ?do
             i #lines < if
@@ -132,7 +139,7 @@ false value repaint?
             else
                 #cols spaces
             then
-            cr \ needed for Windows
+            cr \ needed for Windows console app
         loop
         0 to repaint?
     then
@@ -157,8 +164,8 @@ false value repaint?
     cursor-y 0> if
         cursor-x cursor-y 1- set-cursor
     else
-        top 0> if
-            -1 +to top
+        editor-top-line 0> if
+            -1 +to editor-top-line
             true to repaint?
         then
     then
@@ -170,8 +177,8 @@ false value repaint?
         cursor-y /page < if
             cursor-x cursor-y 1+ set-cursor
         else
-            top #lines < if
-                1 +to top
+            editor-top-line #lines < if
+                1 +to editor-top-line
                 true to repaint?
             then
         then
@@ -210,17 +217,17 @@ false value repaint?
 ;
 
 : do-page-down
-    top /page + #lines < if
-        /page +to top
+    editor-top-line /page + #lines < if
+        /page +to editor-top-line
         true to repaint?
     then
     adjust-cursor-x
 ;
 
 : do-page-up
-    /page negate +to top
-    top 0< if
-        0 to top
+    /page negate +to editor-top-line
+    editor-top-line 0< if
+        0 to editor-top-line
     then
     true to repaint?
     adjust-cursor-x
@@ -228,7 +235,7 @@ false value repaint?
 
 \ FIXME bad name
 : do-^home ( -- )
-    0 to top
+    0 to editor-top-line
     0 0 set-cursor
     0 to goal-x
     true to repaint?    \ not always necessary
@@ -237,7 +244,7 @@ false value repaint?
 \ FIXME bad name
 : do-^end ( -- )
     lines vector-length 1- dup 0>= if
-        to top
+        to editor-top-line
         0 to cursor-y
         cursor-line-length to cursor-x
         cursor-x to goal-x
@@ -246,7 +253,7 @@ false value repaint?
 ;
 
 : delete-line-separator ( -- )
-    [log ." DELETE-LINE-SEPARATOR" log]
+\     [log ." DELETE-LINE-SEPARATOR" log]
     cursor-line# #lines 1- < if
         cursor-x cursor-line-length = if
             cursor-line# 1+ lines vector-nth    \ -- string
@@ -273,7 +280,7 @@ false value repaint?
         cursor-line# 0> if
             -1 +to cursor-y
             cursor-y 0< if
-                -1 +to top
+                -1 +to editor-top-line
                 0 to cursor-y
             then
             cursor-line-length to cursor-x
@@ -357,7 +364,7 @@ $11 ,           ' do-quit ,                     \ c-q
     keytable switch ;
 
 : edit-loop ( -- )
-    0 to top
+    0 to editor-top-line
     0 0 set-cursor
     true to repaint?
     false to quit?
@@ -402,6 +409,8 @@ $11 ,           ' do-quit ,                     \ c-q
     until
 
     lines vector-length to #lines
+
+    lines to editor-line-vector
 ;
 
 : ~lines ( -- )
@@ -429,6 +438,8 @@ $11 ,           ' do-quit ,                     \ c-q
 
     edit-loop
 
+    0 to editor-line-vector
+
     ~lines
 ;
 
@@ -437,7 +448,7 @@ only forth also editor also forth definitions
 : edit ( "<spaces>name" -- )
     blword
     count
-    [log ." edit " 2dup type log]
+\     [log ." edit " 2dup type log]
     >string to editor-filename
     (edit)
     clear-status

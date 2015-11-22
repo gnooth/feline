@@ -18,6 +18,9 @@
 #include "forth.h"
 #include "windows-ui.h"
 
+extern Cell editor_line_vector_data;
+extern Cell editor_top_line_data;
+
 #define APP_NAME        "Forth"
 #define CLASS_NAME      "Forth"
 
@@ -98,6 +101,124 @@ void c_at_xy(int col, int row)
     SetCaretPos(LEFTMARGIN + col * char_width, row * char_height);
 }
 
+void paint_terminal(HWND hwnd)
+{
+  PAINTSTRUCT ps;
+  HDC hdc = BeginPaint(hwnd, &ps);
+  SelectObject(hdc, hConsoleFont);
+  for (int i = 0; i < num_rows + 1; i++)
+    {
+      int y = i * char_height;
+      if (y + char_height >= ps.rcPaint.top && y <= ps.rcPaint.bottom)
+        {
+          if (i + top < MAXLINES)
+            TextOut(hdc,
+                    LEFTMARGIN,
+                    y,
+                    screen + (i + top) * MAXCOLS,
+                    num_cols);
+          else
+            {
+              char temp[MAXCOLS];
+              memset(temp, ' ', MAXCOLS);
+              TextOut(hdc,
+                      LEFTMARGIN,
+                      y,
+                      temp,
+                      num_cols);
+            }
+        }
+    }
+  EndPaint(hwnd, &ps);
+}
+
+typedef struct vector
+{
+  Cell object_header;
+  Cell length;
+  Cell * data_address;
+  Cell capacity;
+} VECTOR;
+
+typedef struct string
+{
+  Cell object_header;
+  Cell length;
+  char * data_address;
+  Cell capacity;
+} STRING;
+
+void paint_editor(HWND hwnd)
+{
+  PAINTSTRUCT ps;
+  HDC hdc = BeginPaint(hwnd, &ps);
+  SelectObject(hdc, hConsoleFont);
+  char temp[MAXCOLS];
+  memset(temp, ' ', MAXCOLS);
+  VECTOR * v = (VECTOR *) editor_line_vector_data;
+  if (v)
+    {
+      int top_line_num = editor_top_line_data;
+      for (int i = 0; i < num_rows + 1; i++)
+        {
+          int y = i * char_height;
+          if (y + char_height >= ps.rcPaint.top && y <= ps.rcPaint.bottom)
+            {
+              //           if (i + top < MAXLINES)
+              //             TextOut(hdc,
+              //                     LEFTMARGIN,
+              //                     y,
+              //                     screen + (i + top) * MAXCOLS,
+              //                     num_cols);
+              //           else
+              //             {
+              //               char temp[MAXCOLS];
+              //               memset(temp, ' ', MAXCOLS);
+              //               TextOut(hdc,
+              //                       LEFTMARGIN,
+              //                       y,
+              //                       temp,
+              //                       num_cols);
+              //             }
+              int line_num = top_line_num + i;
+              if (line_num >= 0 && line_num < v->length)
+                {
+                  STRING * s = (STRING *) v->data_address[line_num];
+                  char * text = s->data_address;
+                  int len = s->length;
+                  TextOut(hdc,
+                          LEFTMARGIN,
+                          y,
+                          text,
+                          len);
+                  if (len < num_cols)
+                    TextOut(hdc,
+                            LEFTMARGIN + len * char_width,
+                            y,
+                            temp,
+                            num_cols - len);
+                }
+              else
+                {
+//                   char temp[MAXCOLS];
+//                   memset(temp, ' ', MAXCOLS);
+                  TextOut(hdc,
+                          LEFTMARGIN,
+                          y,
+                          temp,
+                          num_cols);
+                }
+            }
+        }
+    }
+  EndPaint(hwnd, &ps);
+}
+
+void c_repaint(Cell erase)
+{
+  InvalidateRect(hWndMain, NULL, erase);
+}
+
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch (uMsg)
@@ -134,33 +255,10 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_PAINT:
       {
-        PAINTSTRUCT ps;
-        HDC hDC = BeginPaint(hwnd, &ps);
-        SelectObject(hDC, hConsoleFont);
-        for (int i = 0; i < num_rows + 1; i++)
-          {
-            int y = i * char_height;
-            if (y + char_height >= ps.rcPaint.top && y <= ps.rcPaint.bottom)
-              {
-                if (i + top < MAXLINES)
-                  TextOut(hDC,
-                          LEFTMARGIN,
-                          y,
-                          screen + (i + top) * MAXCOLS,
-                          num_cols);
-                else
-                  {
-                    char szT[MAXCOLS];
-                    memset(szT, ' ', MAXCOLS);
-                    TextOut(hDC,
-                            LEFTMARGIN,
-                            y,
-                            szT,
-                            num_cols);
-                  }
-              }
-          }
-        EndPaint(hwnd, &ps);
+        if (editor_line_vector_data)
+          paint_editor(hwnd);
+        else
+          paint_terminal(hwnd);
         break;
       }
       return 0;

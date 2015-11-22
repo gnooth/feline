@@ -115,3 +115,9 @@ code cold, 'cold'                       ; --
         jmp quit
         next
 endcode
+
+; ### editor-line-vector
+value editor_line_vector, 'editor-line-vector', 0
+
+; ### editor-top-line
+value editor_top_line, 'editor-top-line', 0
