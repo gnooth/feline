@@ -15,6 +15,14 @@
 
 only forth also definitions
 
+\ typedef struct string
+\ {
+\   Cell object_header;
+\   Cell length;
+\   char * data_address;
+\   Cell capacity;
+\ } STRING;
+
 \ slot 0 is the object header (see object.forth)
 
 \ slot 1
