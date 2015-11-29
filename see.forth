@@ -68,6 +68,7 @@ decimal
 
 0 value start-address
 0 value end-address
+0 value #insts
 0 value instruction-start
 0 value ip
 0 value prefix
@@ -1276,18 +1277,23 @@ decimal
         0 to prefix
         1 +to ip
     then
-    .opcode ;
+    .opcode
+    1 +to #insts
+;
 
 : disasm  ( code-addr -- )
     dup to start-address to ip
     0 to end-address
+    0 to #insts
     done? off
     begin
         done? @ 0=
     while
         decode
     repeat
-    ?cr end-address start-address - dec. ." bytes" ;
+    ?cr
+    #insts dec. ." instructions "
+    end-address start-address - dec. ." bytes" ;
 
 : disassemble  ( xt -- )
     >code disasm ;
@@ -1300,8 +1306,8 @@ also forth definitions
 
 : see  ( "<spaces>name" -- )
    ' local xt
+   cr
    xt >type c@ ?dup if
-       cr
        case
            tvar   of ." variable " endof
            tvalue of ." value "    endof
@@ -1311,7 +1317,18 @@ also forth definitions
            endof
            tconst of ." constant " endof
        endcase
-       xt >name .id
+   then
+   xt >name .id
+   xt immediate? if
+       ." (immediate) "
+   then
+   xt inline? if
+       ." (inlineable) "
+   then
+   xt >view 2@ ?dup if
+       $. ."  line " u.
+   else
+       drop
    then
    xt disassemble ;
 
