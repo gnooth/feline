@@ -218,39 +218,6 @@ code repaint, 'repaint'
 endcode
 %endif
 
-; ### r/o
-code readonly, 'r/o'                    ; -- 0
-        pushrbx
-%ifdef WIN64_NATIVE
-        mov     ebx, GENERIC_READ
-%else
-        mov     ebx, 0
-%endif
-        next
-endcode
-
-; ### w/o
-code writeonly, 'w/o'                   ; -- 1
-        pushrbx
-%ifdef WIN64_NATIVE
-        mov     ebx, GENERIC_WRITE
-%else
-        mov     ebx, 1
-%endif
-        next
-endcode
-
-; ### r/w
-code readwrite, 'r/w'                   ; -- 2
-        pushrbx
-%ifdef WIN64_NATIVE
-        mov     ebx, GENERIC_READ|GENERIC_WRITE
-%else
-        mov     ebx, 2
-%endif
-        next
-endcode
-
 ; ### bin
 code bin, 'bin', IMMEDIATE
 ; FILE

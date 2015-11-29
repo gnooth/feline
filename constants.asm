@@ -100,3 +100,24 @@ code windows_ui?, 'windows-ui?'
 %endif
         next
 endcode
+
+; ### r/o
+%ifdef WIN64_NATIVE
+constant readonly, 'r/o', GENERIC_READ
+%else
+constant readonly, 'r/o', 0
+%endif
+
+; ### w/o
+%ifdef WIN64_NATIVE
+constant writeonly, 'w/o', GENERIC_WRITE
+%else
+constant writeonly, 'w/o', 1
+%endif
+
+; ### r/w
+%ifdef WIN64_NATIVE
+constant readwrite, 'r/w', GENERIC_READ | GENERIC_WRITE
+%else
+constant readwrite, 'r/w', 2
+%endif
