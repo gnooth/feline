@@ -237,8 +237,11 @@ code paren_local, '(local)'             ; c-addr u --
 ; LOCALS 13.6.1.0086
         ; "If u is zero, the message is 'last local' and c-addr has
         ; no significance."
+        _ flush_compilation_queue
+
         _ ?dup
         _zeq_if .1
+        ; last local
         _drop
         _return
         _then .1
@@ -281,7 +284,6 @@ endcode
 
 ; ### local
 code local, 'local', IMMEDIATE
-        _ flush_compilation_queue
         _ parse_name                    ; -- c-addr u
         _ paren_local
         next
