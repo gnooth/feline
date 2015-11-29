@@ -1085,6 +1085,14 @@ $90 install-handler
             .inst
             exit
         then
+        modrm-mod 1 = if                \ 1-byte displacement
+            ok_relative modrm-rm ip c@s dest!
+            1 +to ip
+            ok_immediate 0 ip l@s source!
+            4 +to ip
+            .inst
+            exit
+        then
         modrm-mod 3 = if
             ok_register modrm-rm register-rm 0 dest!
             ok_immediate 0 ip l@s source!
