@@ -336,13 +336,13 @@ section .text
 section .data
 %strlen len     %1
 %%string:
-        db      len                     ; length byte
         db      %1                      ; string
         db      0                       ; null byte at end
 section .text
-        pushrbx
-        mov     rbx, %%string
-        call    count
+        lea     rbp, [rbp - BYTES_PER_CELL * 2]
+        mov     [rbp + BYTES_PER_CELL], rbx
+        mov     qword [rbp], %%string
+        mov     rbx, len
 %endmacro
 
 %macro  _if 1
