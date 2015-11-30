@@ -24,17 +24,17 @@ code nlocals, '#locals'                 ; -- n
         next
 endcode
 
-; ### lsp0
-variable lsp0, 'lsp0', 0
+; ### lp0
+variable lp0, 'lp0', 0
 
-; ### lsp@
-code lspfetch, 'lsp@'
+; ### lp@
+code lpfetch, 'lp@'
         pushd   r15
         next
 endcode
 
-; ### lsp!
-code lspstore, 'lsp!'
+; ### lp!
+code lpstore, 'lp!'
         popd    r15
         next
 endcode
@@ -47,7 +47,7 @@ value using_locals?, 'using-locals?', 0
 ; FIXME this should be done at startup!
 code initialize_locals_stack, 'initialize-locals-stack'
         ; idempotent
-        _ lsp0
+        _ lp0
         _fetch
         _if .1
         _return
@@ -58,16 +58,16 @@ code initialize_locals_stack, 'initialize-locals-stack'
         _ iallocate
         _ plus
         _ dup
-        _ lsp0
+        _ lp0
         _ store
-        _ lspstore
+        _ lpstore
         next
 endcode
 
 ; ### free-locals-stack
 code free_locals_stack, 'free-locals-stack'
 ; called by BYE to make sure we're freeing all allocated memorys
-        _ lsp0
+        _ lp0
         _fetch
         _ ?dup
         _if .1
@@ -249,7 +249,7 @@ code paren_local, '(local)'             ; c-addr u --
         _ using_locals?
         _zeq_if .2
         ; first local in this definition
-        _ lspfetch
+        _ lpfetch
         _zeq_if .3
         _ initialize_locals_stack
         _then .3
