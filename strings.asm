@@ -231,6 +231,7 @@ endcode
 
 ; ### string,
 code stringcomma, 'string,'             ; addr u --
+; not in standard
         _ here
         _ over
         _oneplus
@@ -242,12 +243,12 @@ code stringcomma, 'string,'             ; addr u --
         next
 endcode
 
-do_sliteral:
+do_cliteral:
         pushrbx
         db      $48                     ; mov rbx, 0
         db      $0bb
         dq      0                       ; 64-bit immediate value (to be patched)
-do_sliteral_end:
+do_cliteral_end:
 
 ; ### cliteral
 code cliteral, 'cliteral', IMMEDIATE    ; c: addr1 u --         runtime: -- c-addr2
@@ -257,8 +258,8 @@ code cliteral, 'cliteral', IMMEDIATE    ; c: addr1 u --         runtime: -- c-ad
         _ here                          ; addr for counted string
         _ rrot                          ; -- here addr1 u
         _ stringcomma                   ; -- here
-        _lit do_sliteral
-        _lit do_sliteral_end - do_sliteral
+        _lit do_cliteral
+        _lit do_cliteral_end - do_cliteral
         _ paren_copy_code
         _ here_c
         _cellminus
@@ -266,23 +267,56 @@ code cliteral, 'cliteral', IMMEDIATE    ; c: addr1 u --         runtime: -- c-ad
         next
 endcode
 
+; ### sliteral-string,
+code sliteral_stringcomma, 'sliteral-string,'   ; addr u --
+; not in standard
+        _ here
+        _ over
+        _ allot
+        _ swap
+        _ move
+        ; terminal null byte
+        _zero
+        _ ccomma
+        next
+endcode
+
+do_sliteral:
+        lea     rbp, [rbp - BYTES_PER_CELL * 2]
+        mov     [rbp + BYTES_PER_CELL], rbx
+        db      $48
+        db      $0bb
+do_sliteral_end:
+
 ; ### sliteral
-code sliteral, 'sliteral', IMMEDIATE    ; c: addr1 u --         runtime: -- c-addr2 u
+code sliteral, 'sliteral', IMMEDIATE    ; c: c-addr1 u --       runtime: -- c-addr2 u
 ; STRING
 ; "Interpretation semantics for this word are undefined."
         _ ?comp
         _ flush_compilation_queue
         _ here                          ; addr for counted string
-        _ rrot
-        _ stringcomma
+        _ rrot                          ; -- here c-addr1 u
+        _ twodup                        ; -- here c-addr1 u c-addr1 u
+        _ sliteral_stringcomma          ; -- here c-addr1 u
+        _ nip                           ; -- here u
+        _ swap                          ; -- u here
+
         _lit do_sliteral
         _lit do_sliteral_end - do_sliteral
-        _ paren_copy_code
-        _ here_c
-        _cellminus
-        _ store
-        _lit count
-        _ commacall
+        _ paren_copy_code               ; -- u here
+
+        _ commac                        ; -- u
+
+        ; mov [rbp], rbx
+        _ccommac $48
+        _ccommac $89
+        _ccommac $5d
+        _ccommac 0
+
+        _ccommac $48
+        _ccommac $0bb
+        _ commac
+
         next
 endcode
 
