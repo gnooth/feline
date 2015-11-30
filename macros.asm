@@ -258,11 +258,12 @@ section .text
 %endmacro
 
 %macro  constant 3                      ; label, name, value
-        head    %1, %2, 0, 0, TYPE_CONSTANT
+        head    %1, %2, 0, %1_ret - %1, TYPE_CONSTANT
         section .text
 %1:
         pushrbx
         mov     rbx, %3
+%1_ret:
         next
 %endmacro
 
