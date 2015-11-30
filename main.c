@@ -40,6 +40,7 @@
 #endif
 
 extern void cold();
+extern void reset();
 
 JMP_BUF main_jmp_buf;
 
@@ -116,10 +117,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
   initialize_forth();
   InitApplication(hInstance);
   InitInstance(hInstance, nCmdShow);
-
-  extern void cold();
   cold();
-
   return 0;
 }
 
@@ -145,7 +143,7 @@ int main(int argc, char **argv, char **env)
   if (SETJMP(main_jmp_buf) == 0)
     cold();
   else
-    abort();
+    reset();
 
   return 0;
 }
