@@ -341,7 +341,8 @@ section .data
 section .text
         lea     rbp, [rbp - BYTES_PER_CELL * 2]
         mov     [rbp + BYTES_PER_CELL], rbx
-        mov     qword [rbp], %%string
+        mov     rbx, %%string
+        mov     [rbp], rbx
         mov     rbx, len
 %endmacro
 
@@ -494,4 +495,9 @@ section .text
 
 %macro  _zero 0
         _lit 0
+%endmacro
+
+%macro  _ccommac 1
+        _lit    %1
+        _ ccommac
 %endmacro
