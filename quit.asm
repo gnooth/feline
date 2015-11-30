@@ -218,9 +218,7 @@ code quit, 'quit'                       ; --            r:  i*x --
 ; CORE
         _ lbrack
         _begin quit1
-        _ rp0
-        _fetch
-        _ rpstore
+        mov     rsp, [rp0_data]
         _ ?cr
         _ query
         _ tib
@@ -249,6 +247,14 @@ code reset, 'reset'                     ; i*x --        r: j*x --
 ; "Empty the data stack and perform the function of QUIT, which includes
 ; emptying the return stack, without displaying a message."
         mov     rbp, [sp0_data]
+
+        _ lp0
+        _fetch
+        _ ?dup
+        _if .1
+        _ lpstore
+        _then .1
+
         jmp     quit
         next                            ; for decompiler
 endcode
