@@ -8,6 +8,7 @@
       include-system-file tests/filetest.forth
       include-system-file tests/localstest.forth
       include-system-file tests/searchordertest.forth
+      include-system-file tests/toolstest.forth
    [else]
       include-system-file tests\tester.forth
       include-system-file tests\core.forth
@@ -17,6 +18,7 @@
       include-system-file tests\filetest.forth
       include-system-file tests\localstest.forth
       include-system-file tests\searchordertest.forth
+      include-system-file tests\toolstest.forth
    [then]
 [else]
    include tests/tester.forth
@@ -27,6 +29,7 @@
    include tests/filetest.forth
    include tests/localstest.forth
    include tests/searchordertest.forth
+   include tests/toolstest.forth
 [then]
 
 report-errors
