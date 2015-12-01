@@ -258,3 +258,17 @@ code semi, ';', IMMEDIATE
         _ reveal
         next
 endcode
+
+; ### synonym
+code synonym, 'synonym'
+; TOOLS EXT
+        _ create
+        _ hide
+        _ tick
+        _tocode
+        _ latest
+        _namefrom
+        _ store
+        _ reveal
+        next
+endcode
