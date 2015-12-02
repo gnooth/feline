@@ -21,6 +21,7 @@
 #else
 #include <signal.h>
 #include <sys/mman.h>
+#include <string.h>             // memset
 #endif
 
 #include "forth.h"
@@ -45,22 +46,51 @@ extern void reset();
 JMP_BUF main_jmp_buf;
 
 #ifndef WIN64
+
+Cell saved_backtrace_array[16];
+Cell saved_backtrace_size;
+
+Cell * get_saved_backtrace_array()
+{
+  return saved_backtrace_array;
+}
+
+Cell get_saved_backtrace_size()
+{
+  return saved_backtrace_size;
+}
+
+static void save_backtrace(void *rip, Cell *rsp)
+{
+  memset(saved_backtrace_array, 0, sizeof(saved_backtrace_array));
+  saved_backtrace_array[0] = (Cell) rip;
+  int i = 1;
+  extern Cell *rp0_data;
+  for (Cell * p = rsp; p < rp0_data; ++p)
+    {
+      saved_backtrace_array[i++] = *p;
+      if (i == sizeof(saved_backtrace_array))
+        return;
+    }
+  saved_backtrace_size = i;
+}
+
 static void sigsegv_handler(int sig, siginfo_t *si, void * context)
 {
   ucontext_t * uc;
-  void * rip;
-  void * rbx;
-  printf("SIGSEGV at $%lX\n", (unsigned long) si->si_addr);
+  printf("\nSIGSEGV at $%lX\n", (unsigned long) si->si_addr);
   uc = (ucontext_t *) context;
-  rip = (void *) uc->uc_mcontext.gregs[REG_RIP];
+  void * rip = (void *) uc->uc_mcontext.gregs[REG_RIP];
   printf("RIP = $%lX\n", (unsigned long) rip);
-  rbx = (void *) uc->uc_mcontext.gregs[REG_RBX];
+  Cell rbx = (Cell) uc->uc_mcontext.gregs[REG_RBX];
   printf("RBX = $%lX\n", (unsigned long) rbx);
+  Cell * rsp = (Cell *) uc->uc_mcontext.gregs[REG_RSP];
+  save_backtrace(rip, rsp);
   LONGJMP(main_jmp_buf, (unsigned long) si->si_addr);
 }
 #endif
 
-void args(int argc, char **argv)
+static void args(int argc, char **argv)
 {
   extern Cell argc_data;
   extern Cell argv_data;
@@ -68,7 +98,7 @@ void args(int argc, char **argv)
   argv_data = (Cell) argv;
 }
 
-void initialize_forth()
+static void initialize_forth()
 {
   extern Cell dp_data;
   extern Cell cp_data;

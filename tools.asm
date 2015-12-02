@@ -43,6 +43,22 @@ code ticks, 'ticks'                     ; -- u
 endcode
 
 %ifndef WIN64
+
+extern get_saved_backtrace_array
+extern get_saved_backtrace_size
+
+; ### get-saved-backtrace
+code get_saved_backtrace, 'get-saved-backtrace' ; -- addr u
+        xcall   get_saved_backtrace_array
+        pushd   rax
+        xcall   get_saved_backtrace_size
+        pushd   rax
+        next
+endcode
+
+%endif
+
+%ifndef WIN64
         global  user_microseconds
         global  system_microseconds
 section .data
