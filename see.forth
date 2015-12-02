@@ -289,11 +289,7 @@ create reg8-regs 8 cells allot
     ." ]" ;
 
 : .relative-no-reg ( disp -- )
-    ." [$"
-    base@ >r
-    0 hex u.r
-    r> base!
-    ." ]"
+    ." [" 0 h.r ." ]"
 ;
 
 \ 0 value current-operand                 \ FIXME this should be a local!
@@ -316,7 +312,7 @@ create reg8-regs 8 cells allot
             current-operand operand-register @ .reg
         endof
         ok_immediate of
-            current-operand operand-data @ ." $" h.
+            current-operand operand-data @ h.
         endof
     endcase
 ;
@@ -357,10 +353,7 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    cell .bytes
    64 >pos
    ." #"
-   base@ >r
-   ip @ decimal .
-   r> base!
-   ." $"
+   ip @ dec.
    ip @ h.
    cell +to ip ;
 
@@ -527,7 +520,7 @@ $09 install-handler
     dup end-address > if
         dup to end-address
     then
-    ." $" h. ;
+    h. ;
 
 \ $0f handler
 :noname  ( -- )
@@ -715,7 +708,7 @@ $3b install-handler
     dup end-address > if
         dup to end-address
     then
-    ." $" h. ;
+    h. ;
 
 \ $70 handler
 :noname ( -- ) $" jo" .jcc8 ; $70 install-handler
@@ -760,7 +753,7 @@ $80 install-handler
     ip c@s  1 +to ip      \ 8-bit signed offset
     2 to size
     .instruction
-    ip + dup ." $" h.
+    ip + dup h.
 
     \ -- target-address
     dup end-address > if
