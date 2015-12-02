@@ -149,7 +149,8 @@ code dot, '.'
 endcode
 
 ; ### .r
-code dotr, '.r'                         ; n u --
+code dotr, '.r'                         ; n width --
+; CORE EXT
         _ tor
         _ paren_dot
         _ rfrom
@@ -178,7 +179,8 @@ code udot, 'u.'
 endcode
 
 ; ### u.r
-code udotr, 'u.r'
+code udotr, 'u.r'                       ; u width --
+; CORE EXT
         _ tor
         _ paren_udot
         _ rfrom
@@ -189,13 +191,39 @@ code udotr, 'u.r'
         next
 endcode
 
+; ### (h.)
+code paren_hdot, '(h.)'
+        _ basefetch
+        _tor
+        _ hex
+        _zero
+        _ ltsharp
+        _ sharps
+        _lit '$'
+        _ hold
+        _ sharpgt
+        _rfrom
+        _ basestore
+        next
+endcode
+
 ; ### h.
 code hdot, 'h.'                         ; x --
-        _ basefetch
-        _ swap
-        _ hex
-        _ udot
-        _ basestore
+        _ paren_hdot
+        _ type
+        _ space
+        next
+endcode
+
+; ### h.r
+code hdotr, 'h.r'                       ; x width --
+        _ tor
+        _ paren_hdot
+        _ rfrom
+        _ over
+        _ minus
+        _ spaces
+        _ type
         next
 endcode
 
@@ -205,6 +233,17 @@ code decdot, 'dec.'                     ; n --
         _ swap
         _ decimal
         _ dot
+        _ basestore
+        next
+endcode
+
+; ### dec.r
+code decdotr, 'dec.r'                   ; n --
+        _ basefetch
+        _tor
+        _ decimal
+        _ dotr
+        _rfrom
         _ basestore
         next
 endcode
