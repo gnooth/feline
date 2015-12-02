@@ -1,6 +1,8 @@
 # To build with gcc (even on Windows):
 #    make forth
 
+CC = gcc
+
 CFLAGS = --std=c99 -D_GNU_SOURCE -g -m64
 ASMFLAGS =
 LINKFLAGS = -m64
@@ -25,28 +27,28 @@ ifeq ($(OS),Windows_NT)
 endif
 
 $(FORTH_EXE):  $(OBJS)
-	gcc $(LINKFLAGS) $(OBJS) -o forth
+	$(CC) $(LINKFLAGS) $(OBJS) -o forth
 
 forth_home.asm: $(FORTH_HOME_EXE)
 	./forth_home
 
 $(FORTH_HOME_EXE): forth_home.c
-	gcc forth_home.c -o forth_home
+	$(CC) forth_home.c -o forth_home
 
 main.o:	forth.h windows-ui.h main.c Makefile
-	gcc $(CFLAGS) -c -o main.o main.c
+	$(CC) $(CFLAGS) -c -o main.o main.c
 
 os.o:	forth.h os.c Makefile
-	gcc $(CFLAGS) -c -o os.o os.c
+	$(CC) $(CFLAGS) -c -o os.o os.c
 
 terminal.o: forth.h windows-ui.h terminal.c Makefile
-	gcc $(CFLAGS) -c -o terminal.o terminal.c
+	$(CC) $(CFLAGS) -c -o terminal.o terminal.c
 
 windows-ui.o: forth.h windows-ui.h windows-ui.c Makefile
-	gcc $(CFLAGS) -c -o windows-ui.o windows-ui.c
+	$(CC) $(CFLAGS) -c -o windows-ui.o windows-ui.c
 
 winkey.o: forth.h windows-ui.h winkey.c Makefile
-	gcc $(CFLAGS) -c -o winkey.o winkey.c
+	$(CC) $(CFLAGS) -c -o winkey.o winkey.c
 
 ASM_SOURCES = forth.asm forth_home.asm equates.asm macros.asm inlines.asm \
 	align.asm \
