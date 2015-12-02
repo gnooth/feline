@@ -14,8 +14,10 @@
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 include-system-file vocabulary.forth
-include-system-file backtrace.forth
 include-system-file bracket-if.forth
+linux? [if]
+include-system-file backtrace.forth
+[then]
 include-system-file locals.forth
 include-system-file defer.forth
 include-system-file case.forth

@@ -13,6 +13,8 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+linux? [if]
+
 only forth also definitions
 
 : (find-word-in-wordlist) ( code-address wid -- nfa distance )
@@ -100,3 +102,5 @@ only forth also definitions
 ;
 
 synonym bt backtrace
+
+[then]
