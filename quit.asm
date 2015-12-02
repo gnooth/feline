@@ -217,7 +217,7 @@ endcode
 code quit, 'quit'                       ; --            r:  i*x --
 ; CORE
         _ lbrack
-        _begin quit1
+        _begin .1
         mov     rsp, [rp0_data]
         _ ?cr
         _ query
@@ -231,13 +231,13 @@ code quit, 'quit'                       ; --            r:  i*x --
         _lit interpret_xt
         _ catch
         _ ?dup
-        _if quit2
+        _if .2
         ; THROW occurred
         _ do_error
-        _else quit2
+        _else .2
         _ ok
-        _then quit2
-        _again quit1
+        _then .2
+        _again .1
         next                            ; for decompiler
 endcode
 
@@ -254,6 +254,9 @@ code reset, 'reset'                     ; i*x --        r: j*x --
         _if .1
         _ lpstore
         _then .1
+
+        ; REVIEW windows-ui
+        _ standard_output
 
         jmp     quit
         next                            ; for decompiler
