@@ -144,6 +144,7 @@ static void initialize_forth()
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow)
 {
+  start_time_ticks_data = os_ticks();
   initialize_forth();
   InitApplication(hInstance);
   InitInstance(hInstance, nCmdShow);
@@ -155,6 +156,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
 
 int main(int argc, char **argv, char **env)
 {
+  start_time_ticks_data = os_ticks();
+
   args(argc, argv);
 
   prep_terminal();

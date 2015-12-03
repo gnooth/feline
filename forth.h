@@ -18,10 +18,14 @@
 
 #include <stdint.h>
 
+typedef int64_t Cell;
+
+Cell os_ticks();
+
 void prep_terminal();
 void deprep_terminal();
 
-typedef int64_t Cell;
+extern Cell start_time_ticks_data;
 
 #define LF      '\n'
 #define CR      '\r'

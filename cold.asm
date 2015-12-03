@@ -15,6 +15,9 @@
 
 file __FILE__
 
+; ### start-time-ticks
+value start_time_ticks, 'start-time-ticks', 0
+
 ; ### rp0
 variable rp0, 'rp0', 0
 
@@ -80,6 +83,18 @@ code initialize_task, 'initialize-task' ; --
         next
 endcode
 
+; ### report-startup-time
+code report_startup_time, 'report-startup-time' ; --
+        _dotq "Startup completed in "
+        _ ticks
+        _ start_time_ticks
+        _ minus
+        _ dot
+        _dotq "milliseconds."
+        _ cr
+        next
+endcode
+
 ; ### cold
 code cold, 'cold'                       ; --
         mov     [rp0_data], rsp
@@ -108,9 +123,10 @@ code cold, 'cold'                       ; --
         _if .2
         _ do_error
         _then .2
+        _ report_startup_time
         _ process_command_line
         _ process_init_file
-        _dotq "Hello!"
+        _dotq "Meow!"
         _ cr
         jmp quit
         next
