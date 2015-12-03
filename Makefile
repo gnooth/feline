@@ -1,6 +1,17 @@
-# To build with gcc (even on Windows):
-#    make forth
+# On Windows, to build with the experimental Windows UI (not recommended):
+#
+#       make WINDOWS_UI=1
+#
+# Otherwise just:
+#
+#       make
+#
+# should do it, on both Windows and Linux.
 
+# Tested with gcc 5.2.1 and clang 3.6.2 on Linux (Ubuntu).
+# Tested with gcc (tdm64-1) 5.1.0 on Windows 10.
+# NASM 2.11.08 on Windows, 2.11.05 on Linux.
+# No support in this makefile for Microsoft tools.
 CC = gcc
 
 CFLAGS = --std=c99 -D_GNU_SOURCE -g -m64
@@ -20,10 +31,12 @@ else
 endif
 
 ifeq ($(OS),Windows_NT)
+ifdef WINDOWS_UI
 	CFLAGS += -DWINDOWS_UI
 	ASMFLAGS += -DWINDOWS_UI
 	LINKFLAGS += -mwindows
 	OBJS += windows-ui.o winkey.o
+endif
 endif
 
 $(FORTH_EXE):  $(OBJS)
