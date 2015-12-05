@@ -53,7 +53,13 @@ code hold, 'hold'                       ; char --
         _ holdptr
         _ plusstore
         _ holdptr
-        _fetch
+        _fetch                          ; -- char addr
+        ; make addr is not below start of buffer
+        _dup
+        _ holdbuf
+        _ ult
+        _lit 17
+        _ ?throw                        ; -- char addr
         _ cstore
         next
 endcode
