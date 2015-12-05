@@ -16,14 +16,19 @@
 #ifndef __FORTH_H
 #define __FORTH_H
 
-#include <stdint.h>
+#include <stdint.h>             // int64_t
 
 typedef int64_t Cell;
 
+// os.c
 Cell os_ticks();
 
+// terminal.c
 void prep_terminal();
 void deprep_terminal();
+
+// backtrace.c
+void c_save_backtrace(void *rip, Cell *rsp);
 
 extern Cell start_time_ticks_data;
 

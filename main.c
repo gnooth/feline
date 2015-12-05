@@ -21,7 +21,6 @@
 #else
 #include <signal.h>
 #include <sys/mman.h>
-#include <string.h>             // memset
 #endif
 
 #include "forth.h"
@@ -47,45 +46,33 @@ JMP_BUF main_jmp_buf;
 
 #ifndef WIN64
 
-Cell saved_backtrace_array[16];
-Cell saved_backtrace_size;
-
-Cell * get_saved_backtrace_array()
-{
-  return saved_backtrace_array;
-}
-
-Cell get_saved_backtrace_size()
-{
-  return saved_backtrace_size;
-}
-
-static void save_backtrace(void *rip, Cell *rsp)
-{
-  memset(saved_backtrace_array, 0, sizeof(saved_backtrace_array));
-  saved_backtrace_array[0] = (Cell) rip;
-  int i = 1;
-  extern Cell *rp0_data;
-  for (Cell * p = rsp; p < rp0_data; ++p)
-    {
-      saved_backtrace_array[i++] = *p;
-      if (i == sizeof(saved_backtrace_array))
-        return;
-    }
-  saved_backtrace_size = i;
-}
-
-static void sigsegv_handler(int sig, siginfo_t *si, void * context)
+static void signal_handler(int sig, siginfo_t *si, void * context)
 {
   ucontext_t * uc;
-  printf("\nSIGSEGV at $%lX\n", (unsigned long) si->si_addr);
+  char * name;
+  switch (sig)
+    {
+    case SIGSEGV:
+      name = "SIGSEGV";
+      break;
+    case SIGABRT:
+      name = "SIGABRT";
+      break;
+    case SIGFPE:
+      name = "SIGFPE";
+      break;
+    default:
+      name = "Error";
+      break;
+    }
+  printf("\n%s at $%lX\n", name, (unsigned long) si->si_addr);
   uc = (ucontext_t *) context;
   void * rip = (void *) uc->uc_mcontext.gregs[REG_RIP];
   printf("RIP = $%lX\n", (unsigned long) rip);
   Cell rbx = (Cell) uc->uc_mcontext.gregs[REG_RBX];
   printf("RBX = $%lX\n", (unsigned long) rbx);
   Cell * rsp = (Cell *) uc->uc_mcontext.gregs[REG_RSP];
-  save_backtrace(rip, rsp);
+  c_save_backtrace(rip, rsp);
   LONGJMP(main_jmp_buf, (unsigned long) si->si_addr);
 }
 #endif
@@ -168,9 +155,10 @@ int main(int argc, char **argv, char **env)
   struct sigaction sa;
   sa.sa_flags = SA_SIGINFO;
   sigemptyset(&sa.sa_mask);
-  sa.sa_sigaction = sigsegv_handler;
+  sa.sa_sigaction = signal_handler;
   sigaction(SIGSEGV, &sa, NULL);
   sigaction(SIGABRT, &sa, NULL);
+  sigaction(SIGFPE,  &sa, NULL);
 #endif
 
   if (SETJMP(main_jmp_buf) == 0)

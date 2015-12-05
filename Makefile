@@ -18,7 +18,7 @@ CFLAGS = --std=c99 -D_GNU_SOURCE -g -m64
 ASMFLAGS =
 LINKFLAGS = -m64
 
-OBJS = main.o os.o terminal.o forth.o
+OBJS = main.o os.o terminal.o backtrace.o forth.o
 
 ifeq ($(OS),Windows_NT)
 	CFLAGS += -DWIN64 -DWIN64_NATIVE
@@ -56,6 +56,9 @@ os.o:	forth.h os.c Makefile
 
 terminal.o: forth.h windows-ui.h terminal.c Makefile
 	$(CC) $(CFLAGS) -c -o terminal.o terminal.c
+
+backtrace.o: forth.h backtrace.c Makefile
+	$(CC) $(CFLAGS) -c -o backtrace.o backtrace.c
 
 windows-ui.o: forth.h windows-ui.h windows-ui.c Makefile
 	$(CC) $(CFLAGS) -c -o windows-ui.o windows-ui.c

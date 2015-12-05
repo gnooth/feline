@@ -42,21 +42,37 @@ code ticks, 'ticks'                     ; -- u
         next
 endcode
 
-%ifndef WIN64
+; %ifndef WIN64
 
-extern get_saved_backtrace_array
-extern get_saved_backtrace_size
+extern c_get_saved_backtrace_array
+extern c_get_saved_backtrace_size
+
+extern c_save_backtrace
+
+; ### save-backtrace
+code save_backtrace, 'save-backtrace'   ; --
+%ifdef WIN64
+        mov     rcx, $
+        mov     rdx, rsp
+%else
+        mov     rdi, $
+        mov     rsi, rsp
+%endif
+        xcall   c_save_backtrace
+        next
+endcode
+
 
 ; ### get-saved-backtrace
 code get_saved_backtrace, 'get-saved-backtrace' ; -- addr u
-        xcall   get_saved_backtrace_array
+        xcall   c_get_saved_backtrace_array
         pushd   rax
-        xcall   get_saved_backtrace_size
+        xcall   c_get_saved_backtrace_size
         pushd   rax
         next
 endcode
 
-%endif
+; %endif
 
 %ifndef WIN64
         global  user_microseconds

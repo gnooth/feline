@@ -64,6 +64,7 @@ code throw, 'throw'
         poprbx
         _return
 .1:
+        _ save_backtrace
         _ dup
         _ handler
         _ fetch
