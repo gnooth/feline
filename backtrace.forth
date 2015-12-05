@@ -13,8 +13,6 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-linux? [if]
-
 only forth also definitions
 
 : (find-word-in-wordlist) ( code-address wid -- nfa distance )
@@ -89,7 +87,7 @@ only forth also definitions
     local array
     0 local code-address
     0 local nfa
-    size 0 do
+    size 0 ?do
         array i cells + @ to code-address
         cr code-address 17 h.r space
         code-address find-word-from-code-address to nfa
@@ -102,5 +100,3 @@ only forth also definitions
 ;
 
 synonym bt backtrace
-
-[then]
