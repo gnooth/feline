@@ -44,7 +44,6 @@ value using_locals?, 'using-locals?', 0
 ; true at compile time if the current definition uses locals
 
 ; ### initialize-locals-stack
-; FIXME this should be done at startup!
 code initialize_locals_stack, 'initialize-locals-stack'
         ; idempotent
         _ lp0
@@ -66,7 +65,7 @@ endcode
 
 ; ### free-locals-stack
 code free_locals_stack, 'free-locals-stack'
-; called by BYE to make sure we're freeing all allocated memorys
+; called by BYE to make sure we're freeing all allocated memory
         _ lp0
         _fetch
         _ ?dup
@@ -235,8 +234,8 @@ endinline
 ; ### (local)
 code paren_local, '(local)'             ; c-addr u --
 ; LOCALS 13.6.1.0086
-        ; "If u is zero, the message is 'last local' and c-addr has
-        ; no significance."
+; "If u is zero, the message is 'last local' and c-addr has no
+; significance."
         _ flush_compilation_queue
 
         _ ?dup
