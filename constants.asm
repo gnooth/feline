@@ -53,12 +53,10 @@ code cell, 'cell'
 endcode
 
 ; ### /hold
-code holdbufsize, '/hold'
 ; "size of the pictured numeric output string buffer, in characters"
-        pushrbx
-        mov     rbx, 128
-        next
-endcode
+; size must be at least (2*n)+2 chars where n is number of bits per cell
+; Gerry Jackson (coreexttest.fth)
+constant holdbufsize, '/hold', 256      ; minimum is 130 for 64-bit Forth
 
 ; ### /pad
 code padsize, '/pad'
