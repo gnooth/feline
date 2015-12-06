@@ -226,6 +226,7 @@ code colon, ':'
         _ latest
         _namefrom
         _ store
+        _zeroto using_locals?
         _ rbrack
         _ storecsp
         next
