@@ -112,7 +112,7 @@ create history-array  history-size cells allot  history-array history-size cells
         $buf 1+ zplace
         [ linux? ] [if] s" /" [else] s" \" [then]
         $buf 1+ zappend
-        s" .forth_history" $buf 1+ zappend
+        s" .forth-history" $buf 1+ zappend
         $buf 1+ zstrlen $buf c!
 \         $buf count >$ to $history-file-pathname
         here $buf count string, to $history-file-pathname
@@ -121,18 +121,30 @@ create history-array  history-size cells allot  history-array history-size cells
     $history-file-pathname count ;
 
 : save-history ( -- )
+    -1 local fileid
     history-array 0= if exit then       \ shouldn't happen
     history-file-pathname w/o create-file
     0= if                               \ -- fileid
+\         history-length 0 ?do
+\             dup                         \ -- fileid fileid
+\             history-array i cells + @
+\             count                       \ -- fileid fileid c-addr u
+\             rot                         \ -- fileid c-addr u fileid
+\             write-line                  \ -- fileid ior
+\             drop                        \ -- fileid
+\         loop
+\         close-file drop
+        to fileid                       \ --
         history-length 0 ?do
-            dup                         \ -- fileid fileid
-            history-array i cells + @
-            count                       \ -- fileid fileid c-addr u
-            rot                         \ -- fileid c-addr u fileid
-            write-line                  \ -- fileid ior
-            drop                        \ -- fileid
+\             dup                         \ -- fileid fileid
+            history-array i cells + @   \ -- c-addr
+            count                       \ -- c-addr u
+\             rot                         \ -- fileid c-addr u fileid
+            fileid                      \ -- c-addr u fileid
+            write-line                  \ -- ior
+            drop                        \ --
         loop
-        close-file drop
+        fileid close-file drop
     then ;
 
 create restore-array 10 cells allot
@@ -229,7 +241,7 @@ create restore-buffer 258 allot
     -1 to history-offset ;
 
 : get-current-history ( -- )
-    current-history
+    current-history                     \ -- c-addr
     ?dup if
         clear-line
         count dup to #in dup to dot
@@ -261,6 +273,62 @@ create restore-buffer 258 allot
         clear-line
         -1 to history-offset
     then ;
+
+256 buffer: copied-input-buffer
+
+0 value copied-input-length
+
+: copied-input ( -- c-addr u )
+    copied-input-buffer copied-input-length
+;
+
+: copy-input ( -- )
+    copied-input-buffer 256 erase
+    bufstart copied-input-buffer #in 256 min cmove
+    #in to copied-input-length
+;
+
+: do-previous-matching-input ( -- )
+    #in 0= if
+        do-previous
+        exit
+    then
+    history-length 0= if exit then
+    history-offset 0< if
+        copy-input
+        \ most recent entry is at highest offset
+        history-length to history-offset
+    then
+    history-offset 0> if
+        -1 +to history-offset
+    then
+    begin
+        history-offset 0>=
+        history-offset history-length < and
+    while
+        current-history
+        ?dup if
+            count                       \ -- c-addr1 u1
+            copied-input                \ -- c-addr1 u1 c-addr2 u2
+            rot                         \ -- c-addr1 c-addr2 u2 u1
+            2dup <=                     \ -- c-addr1 c-addr2 u2 u1 flag
+            nip                         \ -- c-addr1 c-addr2 u2 flag
+            >r
+            mem=
+            r> and
+            if
+                \ prefix match
+                \ skip this entry if it is identical to what is already
+                \ on the command line
+                current-history count bufstart #in str= 0= if
+                    get-current-history
+                    exit
+                then
+            then
+        then
+        -1 +to history-offset
+    repeat
+;
 
 : do-enter ( -- )
     dot #in < if
@@ -310,7 +378,8 @@ bs ,           ' do-bs ,                \ Windows
 del ,          ' do-bs ,                \ Linux
 esc ,          ' do-escape ,
 3 ,            ' bye ,                  \ control c
-$10 ,          ' do-previous ,          \ control p
+\ $10 ,          ' do-previous ,          \ control p
+$10 ,          ' do-previous-matching-input ,          \ control p
 $0e ,          ' do-next ,              \ control n
 k-up ,         ' do-previous ,
 k-down ,       ' do-next ,
