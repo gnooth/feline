@@ -722,6 +722,9 @@ $3b install-handler
 \ $75 handler
 :noname ( -- ) $" jne" .jcc8 ; $75 install-handler
 
+\ $78 handler
+:noname ( -- ) $" js" .jcc8 ; $78 install-handler
+
 \ $7c handler
 :noname ( -- ) $" jl" .jcc8 ; $7c install-handler
 
