@@ -15,27 +15,34 @@
 
 file __FILE__
 
+%define         NEW_LOCALS
+
+MAX_LOCALS      equ     16
+
 ; ### #locals
-code nlocals, '#locals'                 ; -- n
 ; maximum number of local variables in a definition
 ; "A system implementing the Locals word set shall support the
 ; declaration of at least sixteen locals in a definition."
-        pushd 16
-        next
-endcode
+constant nlocals, '#locals', MAX_LOCALS
 
 ; ### lp0
 variable lp0, 'lp0', 0
 
+%if 0
 ; ### lp@
 code lpfetch, 'lp@'
         pushd   r15
         next
 endcode
+%endif
 
 ; ### lp!
 code lpstore, 'lp!'
+%ifdef NEW_LOCALS
+        popd    r14
+%else
         popd    r15
+%endif
         next
 endcode
 
@@ -79,15 +86,22 @@ endcode
 
 ; ### locals-enter
 inline locals_enter, 'locals-enter'
+%ifdef NEW_LOCALS
+        push    r14
+        lea     r14, [r14 - BYTES_PER_CELL * MAX_LOCALS];
+%else
         push    r15                     ; lsp
         push    r14                     ; frame pointer
         lea     r14, [r15 - BYTES_PER_CELL];
+%endif
 endinline
 
 ; ### locals-leave
 inline locals_leave, 'locals-leave'
         pop     r14
+%ifndef NEW_LOCALS
         pop     r15
+%endif
 endinline
 
 ; ### local-names
@@ -143,7 +157,9 @@ code compile_local, 'compile-local'     ; index --
         _lit $5e
         _ ccommac
         _cells
+%ifndef NEW_LOCALS
         _negate
+%endif
         _ ccommac
         next
 endcode
@@ -157,7 +173,9 @@ code compile_to_local, 'compile-to-local,'      ; index --
         _lit $5e
         _ ccommac                       ; mov [r14 + 0], rbx
         _cells
+%ifndef NEW_LOCALS
         _negate
+%endif
         _ ccommac                       ; 8-bit displacement
         _ pop_tos_comma
         next
@@ -172,7 +190,9 @@ code compile_plusto_local, 'compile-+to-local,' ; index --
         _lit $5e
         _ ccommac                       ; add [r14 + 0], rbx
         _cells
+%ifndef NEW_LOCALS
         _negate
+%endif
         _ ccommac                       ; 8-bit displacement
         _ pop_tos_comma
         next
@@ -180,7 +200,9 @@ endcode
 
 ; ### initialize-local-names
 code initialize_local_names, 'initialize-local-names'
-        _ initialize_locals_stack
+        ; FIXME this is now done in COLD
+;         _ initialize_locals_stack
+
         ; allow for maximum number of locals
         _ nlocals
         _cells
@@ -224,12 +246,14 @@ code delete_local_names, 'delete-local-names'
         next
 endcode
 
+%ifndef NEW_LOCALS
 ; ### local-init
 inline local_init, 'local-init'         ; x --
         lea     r15, [r15 - BYTES_PER_CELL]     ; adjust lsp
         mov     [r15], rbx                      ; initialize local with value from tos
         poprbx                                  ; adjust stack
 endinline
+%endif
 
 ; ### (local)
 code paren_local, '(local)'             ; c-addr u --
@@ -248,10 +272,13 @@ code paren_local, '(local)'             ; c-addr u --
         _ using_locals?
         _zeq_if .2
         ; first local in this definition
-        _ lpfetch
-        _zeq_if .3
-        _ initialize_locals_stack
-        _then .3
+
+        ; this is now done in COLD
+;         _ lpfetch
+;         _zeq_if .3
+;         _ initialize_locals_stack
+;         _then .3
+
         _ initialize_local_names
         _lit locals_enter_xt
         _ copy_code                     ; must be inline!
@@ -268,11 +295,17 @@ code paren_local, '(local)'             ; c-addr u --
         _cells
         _ plus
         _ store
-        _lit 1
-        _plusto locals_defined
 
+%ifdef NEW_LOCALS
+        _ locals_defined                ; -- index
+        _ compile_to_local
+%else
         _lit local_init_xt
         _ copy_code                     ; must be inline!
+%endif
+
+        _lit 1
+        _plusto locals_defined
 
         _else .4
         _abortq "Too many locals"       ; REVIEW
@@ -297,8 +330,7 @@ code end_locals, 'end-locals'           ; --
         _lit locals_leave_xt
         _ copy_code                     ; must be inline!
         _ delete_local_names
-        _zero
-        _to using_locals?
+        _zeroto using_locals?
         _then .1
         next
 endcode
