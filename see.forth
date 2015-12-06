@@ -1065,6 +1065,21 @@ $90 install-handler
 
 :noname $b8 8 bounds do ['] .b8 i install-handler loop ; execute
 
+: .c1 ( -- )
+    !modrm-byte
+    modrm-reg 4 = if
+        $" shl" to mnemonic
+        ok_register modrm-rm register-rm 0 dest!
+        ok_immediate 0 ip c@ source!
+        1 +to ip
+        .inst
+        exit
+    then
+    unsupported
+;
+
+' .c1 $c1 install-handler
+
 \ $c7 handler
 :noname ( -- )
     \ Move a 32-bit signed immediate value to a 64-bit register
