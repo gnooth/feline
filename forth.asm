@@ -54,5 +54,6 @@ default abs ; use absolute addresses by default
 
 file __FILE__
 
+; ### last
 ; the last word
 variable last, 'last', last_nfa
