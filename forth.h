@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __FORTH_H
-#define __FORTH_H
+#ifndef FORTH_H
+#define FORTH_H
 
 #include <stdint.h>             // int64_t
 
@@ -38,4 +38,4 @@ extern Cell start_time_ticks_data;
 #define BL      ' '
 #define ESC     0x1b
 
-#endif
+#endif // FORTH_H

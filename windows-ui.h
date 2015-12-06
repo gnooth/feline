@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __WINDOWS_UI_H
-#define __WINDOWS_UI_H
+#ifndef WINDOWS_UI_H
+#define WINDOWS_UI_H
 
 #ifdef WINDOWS_UI
 
@@ -37,4 +37,4 @@ int c_accept(char *buffer, int bufsize);
 
 #endif // WINDOWS_UI
 
-#endif // __WINDOWS_UI_H
+#endif // WINDOWS_UI_H
