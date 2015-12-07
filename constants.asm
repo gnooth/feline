@@ -46,11 +46,7 @@ code blchar, 'bl'
 endcode
 
 ; ### cell
-code cell, 'cell'
-        pushrbx
-        mov     rbx, BYTES_PER_CELL
-        next
-endcode
+constant cell, 'cell', BYTES_PER_CELL   ; not in standard
 
 ; ### /hold
 ; "size of the pictured numeric output string buffer, in characters"
