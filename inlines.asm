@@ -87,6 +87,11 @@
         shl     rbx, 1
 %endmacro
 
+%macro  _cell 0                         ; CELL
+        pushrbx
+        mov     rbx, BYTES_PER_CELL
+%endmacro
+
 %macro  _cells 0                        ; CELLS
         shl     rbx, 3
 %endmacro
