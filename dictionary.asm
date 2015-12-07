@@ -19,7 +19,6 @@ file __FILE__
 code unused, 'unused'                   ; -- u
 ; CORE EXT
         _ limit
-        _fetch
         _ dp
         _fetch
         _ minus
@@ -52,7 +51,6 @@ code room, 'room'
         _ minus
         _ dotused
         _ limit_c
-        _fetch
         _ here_c
         _ minus
         _ dotfree
@@ -64,7 +62,6 @@ code room, 'room'
         _ minus
         _ dotused
         _ limit
-        _fetch
         _ here
         _ minus
         _ dotfree

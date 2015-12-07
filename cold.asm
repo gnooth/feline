@@ -40,10 +40,10 @@ variable dp, 'dp', 0                    ; initialized in main()
 variable cp, 'cp', 0                    ; initialized in main()
 
 ; ### limit
-variable limit, 'limit', 0              ; initialized in main()
+value limit, 'limit', 0                 ; initialized in main()
 
 ; ### limit-c
-variable limit_c, 'limit-c', 0          ; initialized in main()
+value limit_c, 'limit-c', 0             ; initialized in main()
 
 ; ### argc
 variable argc, 'argc', 0
