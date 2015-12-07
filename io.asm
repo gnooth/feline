@@ -418,7 +418,7 @@ code last_char, 'last-char'             ; c-addr u -- char
         _oneminus
         _cfetch
         _else last_char1
-        _ drop
+        _drop
         _zero
         _then last_char1
         next
@@ -453,7 +453,7 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _ equal
         _if read_line4
         ; end of line                   ; -- u1 fileid c-addr 10
-        _ drop                          ; -- u1 fileid c-addr
+        _drop                           ; -- u1 fileid c-addr
         _ rrot                          ; -- c-addr u1 fileid
         _2drop                          ; -- c-addr
         _i                              ; -- c-addr i
@@ -737,7 +737,7 @@ code sh, 'sh'
         _if .1
         _ system_
         _else .1
-        _ drop
+        _drop
         _then .1
         next
 endcode
@@ -817,9 +817,9 @@ code cd, 'cd'
         _dupcfetch
         _if .1
         _ set_current_directory
-        _ drop
+        _drop
         _else .1
-        _ drop
+        _drop
         _ current_directory
         _ counttype
         _then .1
