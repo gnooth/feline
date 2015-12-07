@@ -334,13 +334,9 @@ create reg8-regs 8 cells allot
 
 create handlers  256 cells allot  handlers 256 cells 0 fill
 
-: handler  ( opcode -- handler )  cells handlers + @ ;
+: handler ( opcode -- handler )    cells handlers + @ ;
 
-: install-handler  ( xt opcode -- )
-\   tuck
-   cells handlers + !
-\    ?cr h. ." handler installed"
-;
+: install-handler ( xt opcode -- ) cells handlers + ! ;
 
 : unsupported  ( -- )  40 >pos ." unsupported opcode " opcode h. abort ;
 
@@ -496,19 +492,41 @@ $03 install-handler
 
 \ $09 handler
 :noname  ( -- )
-   !modrm-byte
-   modrm-mod 3 = if
-      prefix if 2 else 1 then to size
-      size .bytes
-      s" or" old-mnemonic! old-.mnemonic
-      48 >pos
-      modrm-reg .reg64 .sep modrm-rm .reg64
-      exit
+    \ /r
+    \ ModR/M byte contains both a register and an r/m operand
+    \ source is r/m32/64
+    \ dest is r32/64
+    !modrm-byte
+    $" or" to mnemonic
+    modrm-mod 3 = if
+        ok_register modrm-rm register-rm 0 dest!
+        ok_register modrm-rm register-reg 0 source!
+        .inst
+        exit
    then
-   ip instruction-start - .bytes
-   unsupported ;
+   unsupported
+;
 
 $09 install-handler
+
+: .0b ( -- )
+    \ /r
+    \ ModR/M byte contains both a register and an r/m operand
+    \ source is r/m32/64
+    \ dest is r32/64
+    !modrm-byte
+    $" or" to mnemonic
+    modrm-mod 1 = if
+        ok_register modrm-reg register-reg 0      dest!
+        ok_relative modrm-reg register-rm  ip c@s source!
+        1 +to ip
+        .inst
+        exit
+    then
+    unsupported
+;
+
+' .0b $0b install-handler
 
 : .jcc32 ( $mnemonic -- )
     to mnemonic
@@ -629,8 +647,27 @@ $0f install-handler
 
 $19 install-handler
 
+: .23 ( -- )
+    \ /r
+    \ ModR/M byte contains both a register and an r/m operand
+    \ source is r/m32/64
+    \ dest is r32/64
+    !modrm-byte
+    $" and" to mnemonic
+    modrm-mod 1 = if
+        ok_register modrm-reg register-reg 0      dest!
+        ok_relative modrm-reg register-rm  ip c@s source!
+        1 +to ip
+        .inst
+        exit
+    then
+    unsupported
+;
+
+' .23 $23 install-handler
+
 \ $29 handler
-:noname  ( -- )
+:noname ( -- )
     $" sub" to mnemonic
     !modrm-byte
     modrm-mod 3 = if
@@ -734,22 +771,6 @@ $3b install-handler
 \ $7f handler
 :noname ( -- ) $" jg" .jcc8 ; $7f install-handler
 
-\ $80 handler
-:noname ( -- )
-    !modrm-byte
-    modrm-reg 7 = if
-        $" cmp" to mnemonic
-        ok_register modrm-rm reg8 0 dest!
-        ok_immediate 0 ip c@ source!
-        1 +to ip
-        .inst
-        exit
-    then
-    unsupported
-;
-
-$80 install-handler
-
 \ $eb handler
 :noname  ( -- )
     s" jmp" old-mnemonic!
@@ -768,26 +789,94 @@ $80 install-handler
 
 $eb install-handler
 
-\ $81 handler
-:noname ( -- )
+: .80 ( -- )
+    \ modrm-reg encodes opcode extension
+    \ source is imm8
+    \ dest is r/m8
     !modrm-byte
-    modrm-reg 0= if
-        $" add" to mnemonic
-        ok_register modrm-rm  register-rm  0 dest!
-        ok_immediate 0 ip l@ source!
-        4 +to ip
+    modrm-reg 1 = if
+        $" or" to mnemonic
+        modrm-mod 0 = if
+            ok_relative modrm-rm register-rm 0 dest!
+            $" byte" to relative-size
+            ok_immediate 0 ip c@ source!
+            1 +to ip
+            .inst
+            exit
+        then
+    then
+    modrm-reg 4 = if
+        $" and" to mnemonic
+        modrm-mod 0 = if
+            ok_relative modrm-rm register-rm 0 dest!
+            $" byte" to relative-size
+            ok_immediate 0 ip c@ source!
+            1 +to ip
+            .inst
+            exit
+        then
+    then
+    modrm-reg 7 = if
+        $" cmp" to mnemonic
+        ok_register modrm-rm reg8 0 dest!
+        ok_immediate 0 ip c@ source!
+        1 +to ip
         .inst
         exit
     then
     unsupported
 ;
 
-$81 install-handler
+' .80 $80 install-handler
+
+: .81 ( -- )
+    \ modrm-reg encodes opcode extension
+    \ source is imm32
+    \ dest is r/m32/64
+    !modrm-byte
+    modrm-reg 0= if
+        $" add" to mnemonic
+        ok_register modrm-rm register-rm 0 dest!
+        ok_immediate 0 ip l@ source!
+        4 +to ip
+        .inst
+        exit
+    then
+    modrm-reg 4 = if
+        $" and" to mnemonic
+        modrm-mod 3 = if
+            \ register-direct addressing mode
+            ok_register modrm-rm register-rm 0 dest!
+            ok_immediate 0 ip l@ source!
+            4 +to ip
+            .inst
+            exit
+        then
+    then
+    modrm-reg 1 = if
+        $" or" to mnemonic
+        modrm-mod 3 = if
+            \ register-direct addressing mode
+            ok_register modrm-rm register-rm 0 dest!
+            ok_immediate 0 ip l@ source!
+            4 +to ip
+            .inst
+            exit
+        then
+    then
+    unsupported
+;
+
+' .81 $81 install-handler
 
 \ $83 handler
 :noname ( -- )
+    \ modrm-reg encodes opcode extension
+    \ source is imm8
+    \ dest is r/m32/64
     !modrm-byte
     modrm-mod 3 = if
+        \ register-direct addressing mode
         modrm-reg 0= if
             s" add" old-mnemonic!
             prefix if 4 else 3 then to size
@@ -800,12 +889,10 @@ $81 install-handler
         then
         modrm-reg 5 = if
             $" sub" to mnemonic
-            prefix if 4 else 3 then to size
+            ok_register modrm-rm register-rm 0 dest!
+            ok_immediate 0 ip c@s source!
+            1 +to ip
             .inst
-            modrm-rm register-rm .reg64
-            .sep
-            ip c@s  1 +to ip
-            .
             exit
         then
         modrm-reg 7 = if
