@@ -179,20 +179,16 @@ endinline
 ; ### immediate
 code immediate, 'immediate'
         _ latest
-        _nametoflags
-        _dupcfetch
-        _lit IMMEDIATE
-        _ or
-        _ swap
-        _ cstore
+        _nametoflags                    ; -- flags-addr
+        or byte [rbx], IMMEDIATE
+        poprbx
         next
 endcode
 
 ; ### immediate?
 code immediate?, 'immediate?'           ; xt -- flag
         _ flags
-        _lit IMMEDIATE
-        _ and
+        and rbx, IMMEDIATE
         _ zne
         next
 endcode
@@ -206,72 +202,63 @@ code inline?, 'inline?'                 ; xt -- flag
 endcode
 
 ; ### hide
-code hide, 'hide'
-        _ latest
-        _dupcfetch
-        _lit $80
-        _ or
-        _ swap
-        _ cstore
+code hide, 'hide'                       ; --
+        _ latest                        ; -- nfa
+        or byte [rbx], $80
+        poprbx
         next
 endcode
 
 ; ### reveal
-code reveal, 'reveal'
-        _ latest
-        _dupcfetch
-        _lit $7f
-        _ and
-        _ swap
-        _ cstore
+code reveal, 'reveal'                   ; --
+        _ latest                        ; -- nfa
+        and byte [rbx], $7f
+        poprbx
         next
 endcode
 
 ; ### ,
 code comma, ','
         _ here
+        _cell
+        _ allot
         _ store
-        _ cell
-        _ dp
-        _ plusstore
         next
 endcode
 
 ; ### c,
 code ccomma, 'c,'
         _ here
-        _ cstore
         _lit 1
-        _ dp
-        _ plusstore
+        _ allot
+        _ cstore
         next
 endcode
 
 ; ### allot
 code allot, 'allot'                     ; n --
 ; CORE
-        _ dp
-        _ plusstore
+        add rbx, [dp_data]
+        mov [dp_data], rbx
+        poprbx
         next
 endcode
 
 ; ### ,c
 code commac, ',c'
         _ here_c
+        _cell
+        _ allot_c
         _ store
-        _ cell
-        _ cp
-        _ plusstore
         next
 endcode
 
 ; ### c,c
 code ccommac, 'c,c'                     ; char --
         _ here_c
-        _ cstore
         _lit 1
-        _ cp
-        _ plusstore
+        _ allot_c
+        _ cstore
         next
 endcode
 
@@ -285,7 +272,6 @@ endcode
 
 ; ### warning
 variable warning, 'warning', -1
-
 
 ; ### noname-header
 code noname_header, 'noname-header'     ; --
@@ -659,16 +645,17 @@ code does, 'does>', IMMEDIATE
 endcode
 
 ; ### here
-code here, 'here'
-        _ dp
-        _fetch
+code here, 'here'                       ; -- addr
+; CORE
+        pushrbx
+        mov     rbx, [dp_data]
         next
 endcode
 
 ; ### here-c
 code here_c, 'here-c'
-        _ cp
-        _fetch
+        pushrbx
+        mov     rbx, [cp_data]
         next
 endcode
 
@@ -681,7 +668,7 @@ endcode
 
 ; REVIEW
 ; ### mov-tos,
-code mov_tos_comma, 'mov-tos,'      ; compilation: x --
+code mov_tos_comma, 'mov-tos,'          ; compilation: x --
         _lit $48
         _ ccommac
         _lit $0bb
