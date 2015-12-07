@@ -340,7 +340,7 @@ code quoteheader, '"header'             ; c-addr u --
         _ get_current
         _ search_wordlist
         _if .2
-        _ drop
+        _drop
         _ ?cr
         _ twodup
         _ type

@@ -75,7 +75,7 @@ endcode
 
 ; ### interpret-do-defined
 code interpret_do_defined, 'interpret-do-defined'       ; xt flag --
-        _ drop
+        _drop
         _ execute
         next
 endcode
@@ -99,7 +99,7 @@ code interpret_do_literal, 'interpret-do-literal'
         _ number
         _ double?
         _zeq_if .3
-        _ drop
+        _drop
         _then .3
         next
 endcode
@@ -113,7 +113,7 @@ code compile_do_literal, 'compile-do-literal'
         _ flush_compilation_queue
         _ twoliteral
         _else .2
-        _ drop
+        _drop
         _ literal
         _then .2
         next
