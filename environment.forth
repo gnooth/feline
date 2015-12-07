@@ -34,7 +34,9 @@ environment definitions
 /hold   constant /hold
 /pad    constant /pad
 8       constant address-unit-bits
-true    constant floored
+
+-10 7 / -2 =    constant floored        \ test from Win32Forth
+
 #locals constant #locals
 
 255     constant max-char               \ maximum value of any character in the
