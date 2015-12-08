@@ -18,11 +18,19 @@
 %define DEFAULT_CODE_ALIGNMENT 16
 
 %macro  next    0
+%ifndef in_inline
         ret
+%else
+        %error "next in inline"
+%endif
 %endmacro
 
 %macro  _return 0
+%ifndef in_inline
         ret
+%else
+        %error "_return in inline"
+%endif
 %endmacro
 
 %macro  pushrbx 0
@@ -195,10 +203,14 @@ section .text
 %endmacro
 
 %macro  endcode 0-1
+%ifdef  in_inline
+        %error "endcode in inline"
+%endif
 %endmacro
 
 %macro  inline 2-5 0, 0, 0
         %push inline
+        %define in_inline
         head %1, %2, 0, %$ret - %1
         section .text
         align   DEFAULT_CODE_ALIGNMENT
@@ -206,9 +218,14 @@ section .text
 %endmacro
 
 %macro  endinline 0
+%ifdef  in_inline
+        %undef in_inline
         section .text
 %$ret:
         ret
+%else
+        %error "endinline not in inline"
+%endif
         %pop inline
 %endmacro
 
