@@ -491,7 +491,6 @@ inline or, 'or'                         ; x1 x2 -- x3
 ; CORE
         or      rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
-        next
 endinline
 
 ; ### xor
