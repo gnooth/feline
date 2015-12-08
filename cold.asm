@@ -28,22 +28,22 @@ variable sp0, 'sp0', 0                  ; initialized in main()
 variable saved_rbp, 'saved-rbp', 0
 
 ; ### origin
-variable origin, 'origin', 0
+value origin, 'origin', 0
 
 ; ### origin-c
-variable origin_c, 'origin-c', 0
-
-; ### dp
-variable dp, 'dp', 0                    ; initialized in main()
-
-; ### cp
-variable cp, 'cp', 0                    ; initialized in main()
+value origin_c, 'origin-c', 0
 
 ; ### limit
 value limit, 'limit', 0                 ; initialized in main()
 
 ; ### limit-c
 value limit_c, 'limit-c', 0             ; initialized in main()
+
+; ### dp
+variable dp, 'dp', 0                    ; initialized in main()
+
+; ### cp
+variable cp, 'cp', 0                    ; initialized in main()
 
 ; ### argc
 variable argc, 'argc', 0
@@ -100,14 +100,12 @@ code cold, 'cold'                       ; --
         mov     [rp0_data], rsp
         mov     [saved_rbp_data], rbp
         mov     rbp, [sp0_data]
+        mov     rax, [dp_data]
+        mov     [origin_data], rax
+        mov     rax, [cp_data]
+        mov     [origin_c_data], rax
         _ initialize_locals_stack
         _ standard_output
-        _ here
-        _ origin
-        _ store
-        _ here_c
-        _ origin_c
-        _ store
         _ forth_wordlist
         _fetch
         _zeq_if .1

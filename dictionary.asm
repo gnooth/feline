@@ -47,7 +47,6 @@ code room, 'room'
         _dotq "code: "
         _ here_c
         _ origin_c
-        _fetch
         _ minus
         _ dotused
         _ limit_c
@@ -58,7 +57,6 @@ code room, 'room'
         _dotq "data: "
         _ here
         _ origin
-        _fetch
         _ minus
         _ dotused
         _ limit
