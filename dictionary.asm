@@ -178,7 +178,7 @@ endinline
 code immediate, 'immediate'
         _ latest
         _nametoflags                    ; -- flags-addr
-        or byte [rbx], IMMEDIATE
+        or      byte [rbx], IMMEDIATE
         poprbx
         next
 endcode
@@ -186,7 +186,7 @@ endcode
 ; ### immediate?
 code immediate?, 'immediate?'           ; xt -- flag
         _ flags
-        and rbx, IMMEDIATE
+        and     rbx, IMMEDIATE
         _ zne
         next
 endcode
@@ -202,7 +202,7 @@ endcode
 ; ### hide
 code hide, 'hide'                       ; --
         _ latest                        ; -- nfa
-        or byte [rbx], $80
+        or      byte [rbx], $80
         poprbx
         next
 endcode
@@ -210,8 +210,41 @@ endcode
 ; ### reveal
 code reveal, 'reveal'                   ; --
         _ latest                        ; -- nfa
-        and byte [rbx], $7f
+        and     byte [rbx], $7f
         poprbx
+        next
+endcode
+
+; ### allot
+code allot, 'allot'                     ; n --
+; CORE
+        add     rbx, [dp_data]          ; new value for here in rbx
+        cmp     rbx, [origin_data]
+        jb .1
+        cmp     rbx, [limit_data]
+        jae .1
+        mov [dp_data], rbx
+        poprbx
+        ret
+.1:
+        _lit -8
+        _ throw
+        next
+endcode
+
+; ### allot-c
+code allot_c, 'allot-c'                 ; n --
+        add     rbx, [cp_data]          ; new value for here-c in rbx
+        cmp     rbx, [origin_c_data]
+        jb .1
+        cmp     rbx, [limit_c_data]
+        jae .1
+        mov [cp_data], rbx
+        poprbx
+        ret
+.1:
+        _lit -8
+        _ throw
         next
 endcode
 
@@ -233,15 +266,6 @@ code ccomma, 'c,'
         next
 endcode
 
-; ### allot
-code allot, 'allot'                     ; n --
-; CORE
-        add rbx, [dp_data]
-        mov [dp_data], rbx
-        poprbx
-        next
-endcode
-
 ; ### ,c
 code commac, ',c'
         _ here_c
@@ -257,14 +281,6 @@ code ccommac, 'c,c'                     ; char --
         _lit 1
         _ allot_c
         _ cstore
-        next
-endcode
-
-; ### allot-c
-code allot_c, 'allot-c'                 ; n --
-        add     rbx, [cp_data]
-        mov     [cp_data], rbx
-        poprbx
         next
 endcode
 
