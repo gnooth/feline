@@ -453,27 +453,41 @@ endcode
 
 ; ### fill
 code fill, 'fill'                       ; c-addr u char --
-        mov     rax, rbx                ; char in AL
-        mov     rcx, [rbp]              ; count in RCX
+; CORE
+%ifdef WIN64
+        push    rdi                     ; rdi is callee-saved on Windows
+%endif
+        mov     rax, rbx                ; char in al
+        mov     rcx, [rbp]              ; count in rcx
         mov     rdi, [rbp + BYTES_PER_CELL]
         mov     rbx, [rbp + BYTES_PER_CELL * 2]
         add     rbp, BYTES_PER_CELL * 3
         jrcxz   .1                      ; do nothing if count = 0
         rep     stosb
 .1:
+%ifdef WIN64
+        pop     rdi
+%endif
         next
 endcode
 
 ; ### erase
 code erase, 'erase'                     ; addr u --
-        xor     al, al                  ; 0 in AL
-        mov     rcx, rbx                ; count in RCX
+; CORE EXT
+%ifdef WIN64
+        push    rdi                     ; rdi is callee-saved on Windows
+%endif
+        xor     al, al                  ; 0 in al
+        mov     rcx, rbx                ; count in rcx
         mov     rdi, [rbp]
         mov     rbx, [rbp + BYTES_PER_CELL]
         add     rbp, BYTES_PER_CELL * 2
         jrcxz   .1                      ; do nothing if count = 0
         rep     stosb
 .1:
+%ifdef WIN64
+        pop     rdi
+%endif
         next
 endcode
 
