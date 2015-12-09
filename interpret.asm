@@ -81,7 +81,7 @@ code interpret_do_defined, 'interpret-do-defined'       ; xt flag --
 endcode
 
 ; ### compile-do-defined
-code compile_do_defined, 'compile-do-defined'           ; xt flag --
+code compile_do_defined, 'compile-do-defined'   ; xt flag --
         _ zlt
         _if .1
         ; not immediate
@@ -94,18 +94,59 @@ code compile_do_defined, 'compile-do-defined'           ; xt flag --
         next
 endcode
 
+; ### character-literal?
+code character_literal?, 'character-literal?'   ; $addr -- char true | $addr false
+        mov     al, [rbx + 1]           ; first char of string in al
+        cmp     al, $27                 ; single quote char
+        je     .1
+        pushrbx
+        xor     ebx, ebx
+        _return
+.1:
+        ; slow path
+        mov     al, [rbx]               ; length in al
+        cmp     al, 3
+        je      .2
+        pushrbx
+        xor     ebx, ebx
+        _return
+.2:
+        ; length = 3
+        mov     al, [rbx + 3]
+        cmp     al, $27
+        jne      .3
+        mov     al, [rbx + 2]
+        movzx   rbx, al
+        pushrbx
+        mov     ebx, 1
+        _return
+.3:
+        pushrbx
+        xor     ebx, ebx
+        next
+endcode
+
 ; ### interpret-do-literal
-code interpret_do_literal, 'interpret-do-literal'
+code interpret_do_literal, 'interpret-do-literal'       ; $addr -- n | d
+        _ character_literal?
+        _if .1
+        _return
+        _then .1
         _ number
         _ double?
-        _zeq_if .3
+        _zeq_if .2
         _drop
-        _then .3
+        _then .2
         next
 endcode
 
 ; ### compile-do-literal
-code compile_do_literal, 'compile-do-literal'
+code compile_do_literal, 'compile-do-literal'           ; $addr --
+        _ character_literal?
+        _if .1
+        _ literal
+        _return
+        _then .1
         _ number
 ;         _ flush_compilation_queue
         _ double?
@@ -120,7 +161,7 @@ code compile_do_literal, 'compile-do-literal'
 endcode
 
 ; ### interpret1
-code interpret1, 'interpret1'
+code interpret1, 'interpret1'           ; $addr --
         _ find
         _ ?dup
         _if .1
@@ -132,37 +173,38 @@ code interpret1, 'interpret1'
 endcode
 
 ; ### compile1
-code compile1, 'compile1'
+code compile1, 'compile1'               ; $addr --
         _ find_local                    ; -- $addr-or-index flag
-        _if .3
+        _if .1
         _ flush_compilation_queue
         _ compile_local
-        _else .3
+        _else .1
         _ find
         _ ?dup
-        _if .1
+        _if .2
         _ compile_do_defined
-        _else .1                        ; -- c-addr
+        _else .2                        ; -- c-addr
         _ compile_do_literal
+        _then .2
         _then .1
-        _then .3
         next
 endcode
 
 ; ### interpret
 code interpret, 'interpret'             ; --
-        _begin .7
+; not in standard
+        _begin .1
         _ ?stack
         _ blword
         _dupcfetch
-        _while .7
+        _while .1
         _ statefetch
         _if .2
         _ compile1
         _else .2
         _ interpret1
         _then .2
-        _repeat .7
+        _repeat .1
         _drop
         next
 endcode
