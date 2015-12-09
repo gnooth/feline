@@ -16,6 +16,7 @@
 file __FILE__
 
 ; ### current
+; not in standard
 variable current, 'current', forth_wid
 
 ; ### #vocs
@@ -29,6 +30,7 @@ endcode
 variable norder, '#order', 1
 
 ; ### context
+; not in standard
 variable context, 'context', forth_wid
 section .data
         times NVOCS dq 0
