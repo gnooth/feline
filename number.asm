@@ -220,13 +220,13 @@ code number?, 'number?'                 ; c-addr u -- d flag
 endcode
 
 ; ### maybe-change-base
-code maybe_change_base, 'maybe-change-base'     ; addr u -- addr' u'
+code maybe_change_base, 'maybe-change-base'     ; c-addr1 u1 -- c-addr2 u2
         test    rbx, rbx
         jnz     .1
         ret
 .1:
-        _ over                          ; -- addr u addr
-        _cfetch                         ; -- addr u char
+        _ over                          ; -- c-addr1 u1 c-addr1
+        _cfetch                         ; -- c-addr1 u1 char
 
         cmp     bl, '$'
         jne     .2
@@ -252,13 +252,13 @@ code maybe_change_base, 'maybe-change-base'     ; addr u -- addr' u'
 endcode
 
 ; ### number
-code number, 'number'                   ; string -- d
+code number, 'number'                   ; $addr -- d
 ; not in standard
-        _duptor                         ; -- string             r: -- string
-        _ count                         ; -- addr u
+        _duptor                         ; -- $addr              r: -- $addr
+        _ count                         ; -- c-addr1 u1
         _ basefetch
         _tor
-        _ maybe_change_base             ; -- addr' u'
+        _ maybe_change_base             ; -- c-addr2 u2
         _ number?                       ; -- d flag
         _rfrom
         _ basestore
