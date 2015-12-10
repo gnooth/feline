@@ -870,11 +870,26 @@ $eb install-handler
 ' .81 $81 install-handler
 
 \ $83 handler
-:noname ( -- )
+: .83 ( -- )
     \ modrm-reg encodes opcode extension
     \ source is imm8
     \ dest is r/m32/64
     !modrm-byte
+    modrm-mod 1 = if
+        \ register-indirect addressing mode
+        modrm-reg 0= if
+            \ /0
+            \ add r/m32,imm8
+            $" add" to mnemonic
+            ok_relative modrm-rm register-rm ip c@s dest!
+            $" qword" to relative-size
+            1 +to ip
+            ok_immediate 0 ip c@ source!
+            1 +to ip
+            .inst
+            exit
+        then
+    then
     modrm-mod 3 = if
         \ register-direct addressing mode
         modrm-reg 0= if
@@ -909,7 +924,7 @@ $eb install-handler
     ip instruction-start - .bytes
     unsupported ;
 
-$83 install-handler
+' .83 $83 install-handler
 
 : .85  ( -- )
 \    ip prefix if 2 else 1 then + c@      \ modrm-byte
