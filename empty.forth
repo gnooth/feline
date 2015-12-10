@@ -20,32 +20,35 @@
 
 : trim ( wid -- )
     \ headers are in the data area
-    saved-dp if
-        dup>r
-        begin
-            @
-            dup saved-dp u>
-        while
-            n>link
-        repeat
-        r> !
-    then ;
+    \ must be called *after* dp is restored
+    dup>r
+    begin
+        @
+        dup dp @ u>
+    while
+        n>link
+    repeat
+    r> !
+;
 
 : trim-vocs ( -- )
+    \ must be called *after* dp and voclink are restored
     voclink @
     begin
         dup
         trim
         wid>link @ dup 0=
     until
-    drop ;
+    drop
+;
 
 \ save current system state to be restored by EMPTY
 : empty! ( -- )
     here to saved-dp
     here-c to saved-cp
     last @ to saved-latest
-    voclink @ to saved-voclink ;
+    voclink @ to saved-voclink
+;
 
 \ restore state saved by EMPTY!
 : empty ( -- )
@@ -55,4 +58,34 @@
         saved-latest last !
         saved-voclink voclink !
         trim-vocs
-    then ;
+    then
+;
+
+: save-search-order ( -- addr )
+    here
+    #vocs cells allot
+    context swap #vocs cells cmove
+;
+
+: restore-search-order ( addr -- )
+    context #vocs cells 2dup erase cmove
+;
+
+\ CORE EXT
+: marker ( "<spaces>name" -- )
+    here                                \ -- here
+    dup ,                               \ save here
+    here-c ,                            \ save here-c
+    latest ,                            \ save latest
+    voclink @ ,                         \ save voclink
+    save-search-order                   \ -- here
+    create ,
+    does>
+        @
+        @+ dp !
+        @+ cp !
+        @+ last !
+        @+ voclink !
+        trim-vocs
+        restore-search-order
+;
