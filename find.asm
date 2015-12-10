@@ -20,11 +20,8 @@ file __FILE__
 variable current, 'current', forth_wid
 
 ; ### #vocs
-code nvocs, '#vocs'
-        pushrbx
-        mov     rbx, NVOCS
-        next
-endcode
+; not in standard
+constant nvocs, '#vocs', NVOCS          ; maximum number of word lists in search order
 
 ; ### #order
 variable norder, '#order', 1
