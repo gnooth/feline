@@ -49,18 +49,16 @@ endcode
 constant cell, 'cell', BYTES_PER_CELL   ; not in standard
 
 ; ### /hold
-; "size of the pictured numeric output string buffer, in characters"
-; size must be at least (2*n)+2 chars where n is number of bits per cell
-; Gerry Jackson (coreexttest.fth)
+; "The size of the pictured numeric output string buffer shall be at least
+; (2 * n) + 2 characters, where n is the number of bits in a cell."
+; (Forth 2012 3.3.3.6)
 constant holdbufsize, '/hold', 256      ; minimum is 130 for 64-bit Forth
 
 ; ### /pad
-code padsize, '/pad'
+; "The size of the scratch area whose address is returned by PAD shall be
+; at least 84 characters." (Forth 2012 3.3.3.6)
+constant padsize, '/pad', 84
 ; "size of the scratch area pointed to by PAD, in characters"
-        pushrbx
-        mov     rbx, 1024
-        next
-endcode
 
 ; ### linux?
 code linux?, 'linux?'
