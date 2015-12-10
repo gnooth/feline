@@ -341,7 +341,7 @@ code dollarquote, '$"', IMMEDIATE       ; -- $addr
 ; "Parses a string delimited by " from the input stream.
 ; Returns address of packed, null-terminated string."
         _lit '"'
-        _ parse                         ; -- addr len
+        _ parse                         ; -- c-addr u
         _ statefetch
         _if .1
         _ cliteral
@@ -353,9 +353,9 @@ endcode
 
 ; ### s"
 code squote, 's"', IMMEDIATE
-; CORE  FILE
+; CORE, FILE
         _lit '"'
-        _ parse                         ; -- addr len
+        _ parse                         ; -- c-addr u
         _ statefetch
         _if .1
         _ sliteral
@@ -653,6 +653,7 @@ endcode
 
 ; ### /string
 code slashstring, '/string'             ; c-addr1 u1 n -- c-addr2 u2
+; STRING 17.6.1.0245
         sub     [rbp], rbx
         add     [rbp + BYTES_PER_CELL], rbx
         poprbx
