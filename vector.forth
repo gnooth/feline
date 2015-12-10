@@ -75,7 +75,7 @@ only forth also definitions
     new old > if
         \ at least double current capacity
         new old 2* max to new
-        [log ." VECTOR-ENSURE-CAPACITY " old . ." -> " new . log]
+\         [log ." VECTOR-ENSURE-CAPACITY " old . ." -> " new . log]
         new cells -allocate to new-data
         new-data new cells erase
         \ copy existing data
