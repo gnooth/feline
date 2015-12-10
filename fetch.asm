@@ -21,8 +21,6 @@ inline fetch, '@'
 endinline
 
 ; ### @+
-; iForth
-;
 code fetchplus, '@+'                    ; a-addr1 -- a-addr2 x
 ; iForth
 ; fetch x from a-addr1
@@ -42,6 +40,17 @@ endinline
 inline cfetchs, 'c@s'                   ; c-addr -- n
         movsx   rbx, byte [rbx]         ; n is the sign-extended 8-bit value stored at c_addr
 endinline
+
+; ### c@+
+code cfetchplus, 'c@+'                  ; c-addr1 -- c-addr2 char
+; iForth
+; fetch char from c-addr1
+; c-addr2 = c-addr1 + 1
+        pushrbx
+        add     qword [rbp], 1
+        movzx   rbx, byte [rbx]
+        next
+endcode
 
 ; ### l@
 inline lfetch, 'l@'                     ; 32-bit fetch
