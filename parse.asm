@@ -39,11 +39,11 @@ endcode
 ; ### skip-whitespace
 code skip_whitespace, 'skip-whitespace' ; c-addr1 u1 -- c-addr2 u2
         _begin .1
-        _ dup
+        _dup
         _ zgt
         _while .1
         _ over
-        _ cfetch
+        _cfetch
         _ blchar
         _ gt
         _if .2
@@ -62,7 +62,7 @@ code scan_to_whitespace, 'scan-to-whitespace'   ; c-addr1 u1 -- c-addr2 u2
         _ zgt
         _while .1
         _ over
-        _ cfetch
+        _cfetch
         _ blchar
         _ le
         _if .2
@@ -162,11 +162,11 @@ value word_buffer, 'word-buffer', 0     ; initialized in main()
 code forth_word, 'word'                 ; char "<chars>ccc<char>" -- c-addr
 ; CORE
 ; "WORD always skips leading delimiters."
-        _ dup
+        _dup
         _ blchar
         _ equal
         _if .1
-        _ drop
+        _drop
         _ parse_name
         _else .1
         ; BUG! PARSE does not skip leading delimiters!
@@ -208,7 +208,7 @@ code paren, '(', IMMEDIATE
 endcode
 
 ; ### \
-; We need some additonal comment text here so that NASM isn't
+; We need some additional comment text here so that NASM isn't
 ; confused by the '\' in the explicit tag.
 ; "NASM uses backslash (\) as the line continuation character;
 ; if a line ends with backslash, the next line is considered to
