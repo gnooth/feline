@@ -36,41 +36,41 @@ code scan, 'scan'                       ; c-addr1 u1 char -- c-addr2 u2
         next
 endcode
 
-; ### skipwhite
-code skipwhite, 'skipwhite'             ; c-addr1 u1 -- c-addr2 u2
-        _begin skipwhite1
+; ### skip-whitespace
+code skip_whitespace, 'skip-whitespace' ; c-addr1 u1 -- c-addr2 u2
+        _begin .1
         _ dup
         _ zgt
-        _while skipwhite1
+        _while .1
         _ over
         _ cfetch
         _ blchar
         _ gt
-        _if skipwhite2
+        _if .2
         _return
-        _then skipwhite2
+        _then .2
         _lit 1
         _ slashstring
-        _repeat skipwhite1
+        _repeat .1
         next
 endcode
 
-; ### scantowhite
-code scantowhite, 'scantowhite'         ; c-addr1 u1 -- c-addr2 u2
-        _begin scantowhite1
+; ### scan-to-whitespace
+code scan_to_whitespace, 'scan-to-whitespace'   ; c-addr1 u1 -- c-addr2 u2
+        _begin .1
         _ dup
         _ zgt
-        _while scantowhite1
+        _while .1
         _ over
         _ cfetch
         _ blchar
         _ le
-        _if scantowhite2
+        _if .2
         _return
-        _then scantowhite2
+        _then .2
         _lit 1
         _ slashstring
-        _repeat scantowhite1
+        _repeat .1
         next
 endcode
 
@@ -88,17 +88,17 @@ code parse, 'parse'                     ; char "ccc<char>" -- c-addr u
 ; CORE EXT 6.2.2008
         _ slashsource
         _ over
-        _ tor                           ; delim addr1 len1      r: addr1
+        _tor                            ; delim addr1 len1      r: addr1
         _ rot
         _ scan                          ; addr2 len2            r: addr1
-        _ drop
-        _ rfetch                        ; addr2 addr1           r: addr1
+        _drop
+        _rfetch                         ; addr2 addr1           r: addr1
         _ minus                         ; len                   r: addr1
-        _ dup
-        _ oneplus
+        _dup
+        _oneplus
         _ toin
         _ plusstore                     ; len                   r: addr1
-        _ rfrom
+        _rfrom
         _ swap
         next
 endcode
@@ -115,18 +115,18 @@ code parse_name, 'parse-name'           ; <spaces>name -- c-addr u
         _ toin
         _fetch
         _ slashstring                   ; -- source-length addr1 #left
-        _ skipwhite                     ; -- source-length start-of-word #left
+        _ skip_whitespace               ; -- source-length start-of-word #left
         _ over                          ; -- source-length start-of-word #left start-of-word
         _ swap                          ; -- source-length start-of-word start-of-word #left
-        _ scantowhite                   ; -- source-length start-of-word end-of-word #left
-        _ tor                           ; -- source-length start-of-word end-of-word                    r: #left
+        _ scan_to_whitespace            ; -- source-length start-of-word end-of-word #left
+        _tor                            ; -- source-length start-of-word end-of-word                    r: #left
         _ over                          ; -- source-length start-of-word end-of-word start-of-word
         _ minus                         ; -- source-length start-of-word word-length
         _ rot                           ; -- start-of-word word-length source-length
-        _ rfrom                         ; -- start-of-word word-length source-length #left              r: --
-        _ dup                           ; -- start-of-word word-length source-length #left #left
+        _rfrom                          ; -- start-of-word word-length source-length #left              r: --
+        _dup                            ; -- start-of-word word-length source-length #left #left
         _ zne                           ; -- start-of-word word-length source-length #left -1|0
-        _ plus                          ; -- start-of-word word-length source-length #left-1|#left
+        _plus                           ; -- start-of-word word-length source-length #left-1|#left
         _ minus
         _ toin
         _ store
