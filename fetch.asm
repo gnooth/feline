@@ -20,6 +20,19 @@ inline fetch, '@'
         _fetch
 endinline
 
+; ### @+
+; iForth
+;
+code fetchplus, '@+'                    ; a-addr1 -- a-addr2 x
+; iForth
+; fetch x from a-addr1
+; a-addr2 = a-addr1 + BYTES_PER_CELL
+        pushrbx
+        add     qword [rbp], BYTES_PER_CELL
+        mov     rbx, [rbx]
+        next
+endcode
+
 ; ### c@
 inline cfetch, 'c@'
         _cfetch
