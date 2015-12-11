@@ -41,63 +41,60 @@ decimal
   r> base!
 ;
 
-create EscapeTable      \ -- addr
-\ *G Table of translations for \a..\z.
-        7 c,    \ \a BEL (Alert)
-        8 c,    \ \b BS  (Backspace)
-   char c c,    \ \c
-   char d c,    \ \d
-       27 c,    \ \e ESC (Escape)
-       12 c,    \ \f FF  (Form feed)
-   char g c,    \ \g
-   char h c,    \ \h
-   char i c,    \ \i
-   char j c,    \ \j
-   char k c,    \ \k
-       10 c,    \ \l LF  (Line feed)
-   char m c,    \ \m
-       10 c,    \ \n (Linux only)
-   char o c,    \ \o
-   char p c,    \ \p
-   char " c,    \ \q "   (Double quote)
-       13 c,    \ \r CR  (Carriage Return)
-   char s c,    \ \s
-        9 c,    \ \t HT  (horizontal tab}
-   char u c,    \ \u
-       11 c,    \ \v VT  (vertical tab)
-   char w c,    \ \w
-   char x c,    \ \x
-   char y c,    \ \y
-        0 c,    \ \z NUL (no character)
-
-create CRLF$    \ -- addr ; CR/LF as counted string
-  2 c,  13 c,  10 c,
+create escape-table     \ -- addr
+\ Translation table for \a..\z.
+       7  c,    \ \a BEL (Alert)
+       8  c,    \ \b BS  (Backspace)
+      'c' c,    \ \c
+      'd' c,    \ \d
+      27  c,    \ \e ESC (Escape)
+      12  c,    \ \f FF  (Form feed)
+      'g' c,    \ \g
+      'h' c,    \ \h
+      'i' c,    \ \i
+      'j' c,    \ \j
+      'k' c,    \ \k
+      10  c,    \ \l LF  (Line feed)
+      'm' c,    \ \m
+      10  c,    \ \n (Linux only)
+      'o' c,    \ \o
+      'p' c,    \ \p
+      '"' c,    \ \q "   (Double quote)
+      13  c,    \ \r CR  (Carriage Return)
+      's' c,    \ \s
+       9  c,    \ \t HT  (horizontal tab}
+      'u' c,    \ \u
+      11  c,    \ \v VT  (vertical tab)
+      'w' c,    \ \w
+      'x' c,    \ \x
+      'y' c,    \ \y
+       0  c,    \ \z NUL (no character)
 
 : add-escape    \ c-addr1 u1 $dest -- c-addr2 u2
 \ Add an escape sequence to the counted string at $dest, returning the
 \ remaining string.
-    over 0=                             \ zero length check
-    if
+    local $dest                         \ c-addr1 u1
+    dup 0= if                           \ zero length check
         drop exit
     then
-    >r                                  \ -- caddr len          r: -- dest
     over c@ 'x' = if                    \ hex number?
         1 /string extract-hex
-        r> add-char
+        $dest add-char
         exit
     then
     over c@ 'm' = if                    \ CR/LF pair
-        1 /string  13 r@ add-char  10 r> add-char  exit
+        1 /string  13 $dest add-char  10 $dest add-char  exit
     then
-    over c@ [char] n = if               \ CR/LF pair? (Windows only)
+    over c@ 'n' = if                    \ CR/LF pair? (Windows only)
         1 /string
-        crlf$ count r> append
+        13 $dest add-char
+        10 $dest add-char
         exit
     then
-    over c@ [char] a [char] z 1+ within if
-        over c@ [char] a - EscapeTable + c@  r> add-char
+    over c@ 'a' 'z' 1+ within if
+        over c@ 'a' - escape-table + c@ $dest add-char
     else
-        over c@ r> add-char
+        over c@ $dest add-char
     then
     1 /string
 ;
@@ -122,8 +119,9 @@ create CRLF$    \ -- addr ; CR/LF as counted string
 \ \xAB    Two char Hex numerical character value
 \ \\      backslash itself
 \ \       before any other character represents that character
-    dup >r 0 swap c!                    \ zero destination
-    begin                               \ -- caddr len          r: -- dest
+    local dest                          \ -- c-addr1 u1
+    0 dest c!
+    begin                               \ -- c-addr1 u1
         dup
     while
         \ check for terminator
@@ -132,10 +130,10 @@ create CRLF$    \ -- addr ; CR/LF as counted string
             over c@ '\' = if
                 \ deal with escapes
                 1 /string
-                r@ add-escape
+                dest add-escape
             else
                 \ normal character
-                over c@ r@ add-char
+                over c@ dest add-char
                 1 /string
             then
         repeat
@@ -144,7 +142,6 @@ create CRLF$    \ -- addr ; CR/LF as counted string
         \ step over terminating "
         1 /string
     then
-    r> drop
 ;
 
 : read-escaped  \ "ccc<quote>" -- c-addr
