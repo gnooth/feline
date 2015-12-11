@@ -17,11 +17,6 @@
 
 decimal
 
-: c+!           \ c c-addr --
-    \ *G Add character C to the contents of address C-ADDR.
-    tuck c@ + swap c!
-;
-
 : addchar       \ char string --
 \ *G Add the character to the end of the counted string.
   tuck count + c!
