@@ -139,17 +139,21 @@ create CRLF$    \ -- addr ; CR/LF as counted string
   r> drop
 ;
 
+0 [if]
 create pocket  \ -- addr
 \ *G A tempory buffer to hold processed string.
 \    This would normally be an internal system buffer.
 
 s" /COUNTED-STRING" environment? 0= [if] 256 [then]
 1 chars + allot
+[then]
 
 : readEscaped	\ "ccc" -- c-addr
 \ *G Parses an escaped string from the input stream according to
 \ ** the rules of *\fo{parse\"} above, returning the address
 \ ** of the translated counted string in *\fo{POCKET}.
+  temp$ local pocket
+
   source >in @ /string tuck             \ -- len caddr len
   pocket parse\" nip
   - >in +!
