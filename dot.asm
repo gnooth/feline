@@ -270,13 +270,16 @@ code uddot, 'ud.'                       ; ud --
         next
 endcode
 
-; ### .2
-code dottwo, '.2'                       ; ub --
+; ### .hexbyte
+code dothexbyte, '.hexbyte'             ; ub --
+        push    qword [base_data]
+        mov     qword [base_data], 16
         _zero
         _ ltsharp
         _ sharp
         _ sharp
         _ sharpgt
         _ type
+        pop     qword [base_data]
         next
 endcode
