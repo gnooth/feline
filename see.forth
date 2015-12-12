@@ -113,9 +113,13 @@ operand operand2
 3 constant ok_immediate
 4 constant ok_relative_no_reg
 
-: .2  ( ub -- )  0 <# # # #> type ;
-: .3  ( ub -- )  0 <# # # # #> type ;
 : .sep  ( -- )  ." , " ;
+
+\ REVIEW Forth also defines >POS (io.asm)
+: >pos ( u -- )
+    #out 1+ over u> if cr then
+    #out - 1 max spaces
+;
 
 \ Obsolete.
 create old-mnemonic  2 cells allot
@@ -125,24 +129,30 @@ create old-mnemonic  2 cells allot
 
 0 value mnemonic
 
-: .bytes  ( u -- )
+: .bytes ( u -- )
    ?dup if
-      base @ >r
-      hex
-      instruction-start swap bounds do i c@ .2 space loop
-      r> base !
+      instruction-start swap bounds do i c@ .hexbyte space loop
    then ;
-
-\ : !modrm-byte  ( -- )  ip prefix if 2 else 1 then + c@ to modrm-byte ;
-: !modrm-byte  ( -- )  ip c@ to modrm-byte  1 +to ip ;
 
 : (modrm-mod)  ( modrm-byte -- mod )  %11000000 and 6 rshift ;
 : (modrm-reg)  ( modrm-byte -- reg )  %00111000 and 3 rshift ;
 : (modrm-rm)   ( modrm-byte -- rm  )  %00000111 and ;
 
-: modrm-mod  ( -- mod )  modrm-byte (modrm-mod) ;
-: modrm-reg  ( -- reg )  modrm-byte (modrm-reg) ;
-: modrm-rm   ( -- rm  )  modrm-byte (modrm-rm)  ;
+0 value modrm-mod
+0 value modrm-reg
+0 value modrm-rm
+
+\ REGOP is a synonym of MODRM-REG
+0 value regop   \ REGister or OPcode extension (depending on the instruction)
+
+: !modrm-byte ( -- )
+    ip c@ dup to modrm-byte
+    1 +to ip
+    dup (modrm-mod) to modrm-mod
+    dup (modrm-reg) to modrm-reg
+    (modrm-rm) to modrm-rm
+    modrm-reg to regop
+;
 
 : register-reg ( n1 -- n2 )
     prefix rex.r and if
@@ -156,12 +166,16 @@ create old-mnemonic  2 cells allot
     then
 ;
 
-: .modrm  ( modrm-byte -- )
+: .2 ( ub -- ) 0 <# # # #>   type ;
+: .3 ( ub -- ) 0 <# # # # #> type ;
+
+: .modrm ( modrm-byte -- )
    base@ >r binary
    ?cr ." mod: " dup (modrm-mod) .2 space
    cr  ." reg: " dup (modrm-reg) .3 space
    cr  ."  rm: "      (modrm-rm) .3 space
-   r> base! ;
+   r> base!
+;
 
 : !sib-byte ( -- )
     ip c@ to sib-byte
@@ -1136,6 +1150,20 @@ $8a install-handler
 : .8f ( -- )
     $" pop" to mnemonic
     !modrm-byte
+    modrm-mod 0= if
+        modrm-rm 4 = if
+            !sib-byte
+            sib-index 4 = if
+                sib-base 5 = if         \ base == rbp means no base register (when mod == 0)
+                    \ [disp32]
+                    ok_relative_no_reg 0 ip l@s dest!
+                    4 +to ip
+                    .inst
+                    exit
+                then
+            then
+        then
+    then
     modrm-reg 0= if
         ok_relative modrm-rm register-rm ip c@s dest!
         1 +to ip
@@ -1189,9 +1217,21 @@ $90 install-handler
 :noname ( -- )
     \ Move a 32-bit signed immediate value to a 64-bit register
     \ or memory operand.
+    $" mov" to mnemonic
     !modrm-byte
     modrm-reg 0= if
-        $" mov" to mnemonic
+        modrm-rm 4 = if
+            !sib-byte
+            sib-base 5 = if             \ no base register (when mod == 0)
+                \ [disp32]
+                ok_relative_no_reg 0 ip l@s dest!
+                4 +to ip
+                ok_immediate 0 ip l@s source!
+                4 +to ip
+                .inst
+                exit
+            then
+        then
         modrm-mod 0 = if
             ok_relative modrm-reg register-reg 0 dest!
             ok_immediate 0 ip l@ source!
@@ -1290,11 +1330,44 @@ $f6 install-handler
 $f7 install-handler
 
 \ $ff handler
-:noname  ( -- )
+: .ff ( -- )
     !modrm-byte
+
+    regop
+    case
+        0 of $" inc"  endof
+        1 of $" dec"  endof
+        2 of $" call" endof
+        4 of $" jmp"  endof
+        6 of $" push" endof
+    endcase
+    to mnemonic
+
+    modrm-mod 3 = if
+        \ register-direct addressing mode
+        ok_register modrm-rm register-rm 0 dest!
+        .inst
+        exit
+    then
+
+    modrm-mod 0= if
+        modrm-rm 4 = if
+            !sib-byte
+            sib-index 4 = if
+                sib-base 5 = if         \ base == rbp means no base register (when mod == 0)
+                    \ [disp32]
+                    ok_relative_no_reg 0 ip l@s dest!
+                    4 +to ip
+                    .inst
+                    exit
+                then
+            then
+        then
+    then
+
     modrm-mod 0 = if
         modrm-reg 4 = if
-            $" jmp" to mnemonic
+\             $" jmp" to mnemonic
             ok_relative modrm-rm 0 dest!
             2 to size
             .inst
@@ -1346,7 +1419,7 @@ $f7 install-handler
     unsupported
 ;
 
-$ff install-handler
+' .ff $ff install-handler
 
 hex
 ' .call e8 install-handler
@@ -1413,9 +1486,9 @@ decimal
 
 also forth definitions
 
-: .modrm .modrm ;
+synonym .modrm .modrm
 
-: disasm disasm ;
+synonym disasm disasm
 
 : see  ( "<spaces>name" -- )
    ' local xt
