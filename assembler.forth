@@ -17,10 +17,8 @@ only forth also definitions
 
 decimal
 
-: .2  ( ub -- )  base@ >r hex 0 <# # # #> r> base! type space ;
-
 : dump-bytes ( $addr -- )
-    count bounds ?do i c@ .2 loop ;
+    count bounds ?do i c@ .hexbyte loop ;
 
 \ TEMPORARY
 [defined] assembler [if] warning off [then]
