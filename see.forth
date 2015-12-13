@@ -310,20 +310,23 @@ create reg8-regs 8 cells allot
 0 value immediate-operand
 
 0 value register-direct?
--1 value destreg
+-1 value sreg
+-1 value dreg
 
 -1 value #operands
 
 : reset-disassembler
     ip to instruction-start
+    0 to mnemonic
     operand1 clear-operand
     operand2 clear-operand
 
     0 to immediate-operand?
     0 to immediate-operand
 
-    0 to register-direct?
-    -1 to destreg
+    false to register-direct?
+    -1 to sreg
+    -1 to dreg
 
     -1 to #operands
 ;
@@ -361,8 +364,8 @@ create reg8-regs 8 cells allot
    then
    48 >pos
    register-direct? if
-       destreg -1 = abort" .inst destreg not set"
-       destreg .reg
+       dreg -1 = abort" .inst dreg not set"
+       dreg .reg
    else
        destination-operand @ if
            destination-operand .operand
@@ -371,11 +374,18 @@ create reg8-regs 8 cells allot
    immediate-operand? if
        .sep
        immediate-operand h.
-   else
-       source-operand @ if
-           source-operand operand-kind @ if .sep then
-           source-operand .operand
+       exit
+   then
+\    register-direct? if
+       sreg 0>= if
+           .sep
+           sreg .reg
+           exit
        then
+\    then
+   source-operand @ if
+       source-operand operand-kind @ if .sep then
+       source-operand .operand
    then
 ;
 
@@ -385,7 +395,10 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 
 : install-handler ( xt opcode -- ) cells handlers + ! ;
 
-: unsupported  ( -- )  ." unsupported opcode " opcode h. abort ;
+: unsupported  ( -- )
+    ?cr ." unsupported instruction at " instruction-start h.
+    instruction-start 16 dump
+    abort ;
 
 : .name  ( code-addr -- )  find-code ?dup if 64 >pos >name count type then ;
 
@@ -417,32 +430,47 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 
 : .call  ( -- )
    $" call" to mnemonic
-\    ip l@s local disp
    ok_immediate 0 ip l@s
    4 +to ip
-   ip + dup>r
+   ip + dup local code-address
    dest!
    .inst
-
-   r>
-   dup .name >r
-   r> drop
+   code-address .name
 ;
 
 : .jmp  ( -- )
-\    5 to size
-\    s" jmp" old-mnemonic!
-\    .instruction
-\    ip l@s                            \ signed 32-bit displacement
-\    4 +to ip
-\    ip + h.
-   c" jmp" to mnemonic
+   $" jmp" to mnemonic
    ok_immediate 0 ip l@s 4 +to ip ip + dest!
    .inst
 ;
 
+\ $00 handler
+: .00 ( -- )
+    $" add" to mnemonic
+    \ source is r8
+    \ dest is r/m8
+    !modrm-byte
+    modrm-mod 0 = if
+        ok_relative modrm-rm register-rm 0 dest!
+        modrm-reg reg8 to sreg
+        .inst
+        exit
+    then
+    modrm-mod 1 = if
+        \ 1-byte displacement
+        ok_relative modrm-rm register-rm ip c@s dest!
+        1 +to ip
+        modrm-reg reg8 to sreg
+        .inst
+        exit
+    then
+    unsupported
+;
+
+latest-xt $00 install-handler
+
 \ $01 handler
-:noname  ( -- )                         \ ADD reg/mem64, reg64
+: .01 ( -- )                            \ ADD reg/mem64, reg64
     $" add" to mnemonic
     !modrm-byte
     modrm-mod 3 <> if
@@ -454,7 +482,7 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
                 ok_register modrm-reg register-reg 0 source!
                 .inst
                 exit
-                then
+            then
         then
     then
     modrm-mod 0= if
@@ -481,10 +509,10 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
     unsupported
     size +to ip ;
 
-$01 install-handler
+latest-xt $01 install-handler
 
 \ $03 handler
-:noname  ( -- )                         \ ADD reg64, reg/mem64
+: .03 ( -- )                            \ ADD reg64, reg/mem64
     $" add" to mnemonic
     !modrm-byte
     modrm-rm 4 = if
@@ -516,10 +544,10 @@ $01 install-handler
     unsupported
 ;
 
-$03 install-handler
+latest-xt $03 install-handler
 
 \ $09 handler
-:noname  ( -- )
+: .09 ( -- )
     \ /r
     \ ModR/M byte contains both a register and an r/m operand
     \ source is r/m32/64
@@ -531,11 +559,11 @@ $03 install-handler
         ok_register modrm-rm register-reg 0 source!
         .inst
         exit
-   then
-   unsupported
+    then
+    unsupported
 ;
 
-$09 install-handler
+latest-xt $09 install-handler
 
 : .0b ( -- )
     \ /r
@@ -568,11 +596,42 @@ $09 install-handler
     then
     h. ;
 
+create cmov-mnemonic-table 16 cells allot
+
+: initialize-cmov-mnemonic-table ( -- )
+    cmov-mnemonic-table local t
+    $" cmovo"  t  0 cells +  !
+    $" cmovno" t  1 cells +  !
+    $" cmovc"  t  2 cells +  !
+    $" cmovnc" t  3 cells +  !
+    $" cmovz"  t  4 cells +  !
+    $" cmovnz" t  5 cells +  !
+    $" cmovna" t  6 cells +  !
+    $" cmova"  t  7 cells +  !
+    $" cmovs"  t  8 cells +  !
+    $" cmovns" t  9 cells +  !
+    $" cmovpe" t 10 cells +  !
+    $" cmovpo" t 11 cells +  !
+    $" cmovl"  t 12 cells +  !
+    $" cmovge" t 13 cells +  !
+    $" cmovle" t 14 cells +  !
+    $" cmovg"  t 15 cells +  !
+;
+
+: cmov-mnemonic ( byte2 -- )
+    cmov-mnemonic-table @ 0= if
+        initialize-cmov-mnemonic-table
+    then
+    $0f and cells cmov-mnemonic-table + @
+;
+
 : .0f ( -- )
     ip c@ local byte2
     1 +to ip
-    byte2 $4d = if
-        $" cmovnl" to mnemonic
+\     byte2 $4d = if
+    byte2 $f0 and $40 = if
+\         $" cmovnl" to mnemonic
+        byte2 cmov-mnemonic to mnemonic
         !modrm-byte
         modrm-mod 3 = if
             ok_register modrm-rm register-rm 0 source!
@@ -611,6 +670,9 @@ $09 install-handler
         then
     then
     byte2 $b6 = if
+        \ ModR/M byte contains both a register and an r/m operand
+        \ source is r/m8
+        \ dest is r32/64
         $" movzx" to mnemonic
         !modrm-byte
         modrm-mod 0= if
@@ -628,6 +690,13 @@ $09 install-handler
             .inst
             exit
         then
+        modrm-mod 3 = if
+            true to register-direct?
+            modrm-rm  reg8         to sreg
+            modrm-reg register-reg to dreg
+            .inst
+            exit
+        then
     then
     byte2 $be = if
         $" movsx" to mnemonic
@@ -640,7 +709,7 @@ $09 install-handler
     ip instruction-start - .bytes
     unsupported ;
 
-' .0f $0f install-handler
+latest-xt $0f install-handler
 
 : .push  ( -- )
     prefix if 2 else 1 then to size
@@ -701,11 +770,22 @@ $19 install-handler
 ' .23 $23 install-handler
 
 \ $29 handler
-:noname ( -- )
+: .29 ( -- )
     $" sub" to mnemonic
+    \ /r
+    \ ModR/M byte contains both a register and an r/m operand
+    \ source is r32/64
+    \ dest is r/m32/64
     !modrm-byte
+    modrm-mod 1 = if
+        \ dest is [r/m + disp8]
+        modrm-reg register-reg to sreg
+        ok_relative modrm-rm register-rm ip c@s dest!
+        1 +to ip
+        .inst
+        exit
+    then
     modrm-mod 3 = if
-        prefix if 3 else 2 then to size
         ok_register modrm-rm register-rm 0 dest!
         ok_register modrm-reg register-reg 0 source!
         .inst
@@ -715,11 +795,28 @@ $19 install-handler
     unsupported
     size +to ip ;
 
-$29 install-handler
+latest-xt $29 install-handler
+
+: .30 ( -- )
+    \ source r8
+    \ dest r/m8
+    $" xor" to mnemonic
+    !modrm-byte
+    modrm-mod 3 = if
+        true to register-direct?
+        modrm-rm  reg8 to sreg
+        modrm-reg reg8 to dreg
+        .inst
+        exit
+    then
+    unsupported
+;
+
+latest-xt $30 install-handler
 
 \ $31 handler
 :noname ( -- )
-   c" xor" to mnemonic
+   $" xor" to mnemonic
    !modrm-byte
    ok_register modrm-rm 0 dest!
    ok_register modrm-reg 0 source!
@@ -737,7 +834,7 @@ $31 install-handler
         ok_relative modrm-rm ip c@s dest!
         1 +to ip
         ok_register modrm-reg 0 source!
-        prefix if 4 else 3 then to size
+\         prefix if 4 else 3 then to size
         .inst
         exit
     then
@@ -1019,7 +1116,25 @@ $eb install-handler
     unsupported
 ;
 
-' .83 $83 install-handler
+latest-xt $83 install-handler
+
+: .84 ( -- )
+    \ /r
+    \ source is r8
+    \ dest is r/m8
+    $" test" to mnemonic
+    !modrm-byte
+    modrm-mod 3 = if
+        true to register-direct?
+        modrm-reg reg8 to sreg
+        modrm-rm  reg8 to dreg
+        .inst
+        exit
+    then
+    unsupported
+;
+
+latest-xt $84 install-handler
 
 : .85  ( -- )
 \    ip prefix if 2 else 1 then + c@      \ modrm-byte
@@ -1123,7 +1238,10 @@ $88 install-handler
 ;
 
 \ $8a handler
-:noname ( -- )                          \ MOV reg8, reg/mem8            8a /r
+: .8a ( -- )                            \ MOV reg8, reg/mem8            8a /r
+    \ /r
+    \ source is r/m8
+    \ dest is r8
     $" mov" to mnemonic
     !modrm-byte
     modrm-mod 0= if
@@ -1139,11 +1257,10 @@ $88 install-handler
         .inst
         exit
     then
-    1 .bytes
     unsupported
 ;
 
-$8a install-handler
+latest-xt $8a install-handler
 
 : .8b ( -- )
     \ ModR/M byte contains both a register operand and an r/m operand
@@ -1304,7 +1421,7 @@ $90 install-handler
         \ direct-mode register addressing
 \         ok_register modrm-rm register-rm 0 dest!
         true to register-direct?
-        modrm-rm register-rm to destreg
+        modrm-rm register-rm to dreg
         true to immediate-operand?
         ip c@s to immediate-operand
         1 +to ip
@@ -1408,7 +1525,42 @@ $c9 install-handler
     unsupported
 ;
 
-' .d1 $d1 install-handler
+latest-xt $d1 install-handler
+
+: .e3 ( -- )
+    \ jump short if rcx == 0
+    $" jrcxz" to mnemonic
+    0 ip c@s                            \ --
+    1 +to ip
+    ip + local target
+    ip instruction-start - .bytes
+    40 >pos ." jrcxz"
+    48 >pos target h.
+;
+
+latest-xt $e3 install-handler
+
+: .f3 ( -- )
+    ip c@ local byte2
+    1 +to ip
+    ip instruction-start - .bytes
+    40 >pos ." repz"
+    byte2 $a4 = if
+        48 >pos ." movsb"
+        exit
+    then
+    byte2 $a6 = if
+        48 >pos ." cmpsb"
+        exit
+    then
+    byte2 $aa = if
+        48 >pos ." stosb"
+        exit
+    then
+    unsupported
+;
+
+latest-xt $f3 install-handler
 
 \ $f6 handler
 :noname ( -- )
@@ -1438,6 +1590,20 @@ $f6 install-handler
     then ;
 
 $f7 install-handler
+
+: .fc ( -- )
+   ip instruction-start - .bytes
+   48 >pos ." cld"
+;
+
+latest-xt $fc install-handler
+
+: .fd ( -- )
+   ip instruction-start - .bytes
+   48 >pos ." std"
+;
+
+latest-xt $fd install-handler
 
 : .ff ( -- )
     !modrm-byte
