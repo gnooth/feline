@@ -177,6 +177,7 @@ deferred compilecomma, 'compile,', parencompilecomma
 ; "Interpretation semantics for this word are undefined."
 
 ; ### last-code
+; needed for RECURSE
 variable last_code, 'last-code', 0
 
 ; ### recurse
