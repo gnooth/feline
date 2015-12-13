@@ -312,6 +312,8 @@ create reg8-regs 8 cells allot
 0 value register-direct?
 -1 value destreg
 
+-1 value #operands
+
 : reset-disassembler
     ip to instruction-start
     operand1 clear-operand
@@ -322,6 +324,8 @@ create reg8-regs 8 cells allot
 
     0 to register-direct?
     -1 to destreg
+
+    -1 to #operands
 ;
 
 : .operand ( operand -- )
@@ -351,6 +355,9 @@ create reg8-regs 8 cells allot
    mnemonic if
       40 >pos
       mnemonic count type
+   then
+   #operands 0= if
+       exit
    then
    48 >pos
    register-direct? if
@@ -409,38 +416,18 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 ;
 
 : .call  ( -- )
-\    5 to size
-\    size .bytes
-\    s" call" old-mnemonic!
-\    old-.mnemonic
-\    48 >pos
-
    $" call" to mnemonic
+\    ip l@s local disp
    ok_immediate 0 ip l@s
    4 +to ip
    ip + dup>r
    dest!
    .inst
 
-\    .instruction
-\    ip l@s                            \ signed 32-bit displacement
-\    4 +to ip
-\    ip + dup h.
    r>
    dup .name >r
-\    r@ ['] (do) >code = if
-\       ip to instruction-start
-\       .literal
-\    then
-\    r@ ['] (?do) >code = if
-\       ip to instruction-start
-\       .literal
-\    then
-\    r@ ['] (+loop) >code = if
-\        ip to instruction-start
-\        .literal
-\    then
-   r> drop ;
+   r> drop
+;
 
 : .jmp  ( -- )
 \    5 to size
@@ -598,6 +585,7 @@ $09 install-handler
     then
     byte2 $31 = if
         $" rdtsc" to mnemonic
+        0 to #operands
         .inst
         exit
     then
@@ -673,7 +661,8 @@ $09 install-handler
 ;
 
 : .ret  ( -- )
-   c" ret" to mnemonic
+   $" ret" to mnemonic
+   0 to #operands
    .inst
    ip end-address > if
       ip to end-address
@@ -834,41 +823,54 @@ $3b install-handler
 
 $eb install-handler
 
+: mnemonic-from-regop ( -- $addr )
+    opcode $80 $83 between if
+        regop
+        case
+            0 of $" add" endof
+            1 of $" or"  endof
+            2 of $" adc" endof
+            3 of $" sbb" endof
+            4 of $" and" endof
+            5 of $" sub" endof
+            6 of $" xor" endof
+            7 of $" cmp" endof
+        endcase
+        exit
+    then
+    true abort" mnemonic-from-regop unsupported opcode"
+;
+
 : .80 ( -- )
     \ modrm-reg encodes opcode extension
     \ source is imm8
     \ dest is r/m8
     !modrm-byte
-    modrm-reg 1 = if
-        $" or" to mnemonic
-        modrm-mod 0 = if
-            ok_relative modrm-rm register-rm 0 dest!
-            $" byte" to relative-size
-            ok_immediate 0 ip c@ source!
-            1 +to ip
-            .inst
-            exit
-        then
-    then
-    modrm-reg 4 = if
-        $" and" to mnemonic
-        modrm-mod 0 = if
-            ok_relative modrm-rm register-rm 0 dest!
-            $" byte" to relative-size
-            ok_immediate 0 ip c@ source!
-            1 +to ip
-            .inst
-            exit
-        then
-    then
-    modrm-reg 7 = if
-        $" cmp" to mnemonic
-        ok_register modrm-rm reg8 0 dest!
+    mnemonic-from-regop to mnemonic
+
+    modrm-mod 0 = if
+        ok_relative modrm-rm register-rm 0 dest!
+        $" byte" to relative-size
         ok_immediate 0 ip c@ source!
         1 +to ip
         .inst
         exit
     then
+
+    modrm-mod 3 <
+    modrm-rm 4 = and if
+        !sib-byte
+        modrm-mod 1 = if
+            break \ FIXME!!
+        then
+    then
+
+    ok_register modrm-rm reg8 0 dest!
+    ok_immediate 0 ip c@ source!
+    1 +to ip
+    .inst
+    exit
+
     unsupported
 ;
 
@@ -878,18 +880,18 @@ $eb install-handler
     \ modrm-reg encodes opcode extension
     \ source is imm32
     \ dest is r/m32/64
-    regop
-    case
-        0 of $" add" endof
-        1 of $" or"  endof
-        2 of $" adc" endof
-        3 of $" sbb" endof
-        4 of $" and" endof
-        5 of $" sub" endof
-        6 of $" xor" endof
-        7 of $" cmp" endof
-    endcase
-    to mnemonic
+\     regop
+\     case
+\         0 of $" add" endof
+\         1 of $" or"  endof
+\         2 of $" adc" endof
+\         3 of $" sbb" endof
+\         4 of $" and" endof
+\         5 of $" sub" endof
+\         6 of $" xor" endof
+\         7 of $" cmp" endof
+\     endcase
+    mnemonic-from-regop to mnemonic
 
     modrm-reg 0= if
         $" add" to mnemonic
@@ -932,18 +934,18 @@ $eb install-handler
     \ source is imm8
     \ dest is r/m32/64
     !modrm-byte
-    regop
-    case
-        0 of $" add" endof
-        1 of $" or"  endof
-        2 of $" adc" endof
-        3 of $" sbb" endof
-        4 of $" and" endof
-        5 of $" sub" endof
-        6 of $" xor" endof
-        7 of $" cmp" endof
-    endcase
-    to mnemonic
+\     regop
+\     case
+\         0 of $" add" endof
+\         1 of $" or"  endof
+\         2 of $" adc" endof
+\         3 of $" sbb" endof
+\         4 of $" and" endof
+\         5 of $" sub" endof
+\         6 of $" xor" endof
+\         7 of $" cmp" endof
+\     endcase
+    mnemonic-from-regop to mnemonic
 
     modrm-mod 1 = if
         \ register-indirect addressing mode
@@ -1143,7 +1145,10 @@ $88 install-handler
 
 $8a install-handler
 
-: .8b  ( -- )                           \ MOV reg64, reg/mem64          8b /r
+: .8b ( -- )
+    \ ModR/M byte contains both a register operand and an r/m operand
+    \ source is r/m32/64
+    \ dest is r32/64
     s" mov" old-mnemonic!
     $" mov" to mnemonic
     !modrm-byte
@@ -1373,24 +1378,23 @@ $c7 install-handler
 
 $c9 install-handler
 
-:noname ( -- )
-   s" int3" old-mnemonic!
-   1 to size
-   .instruction
+: .cc ( -- )
+    $" int3" to mnemonic
+    .inst
 ;
 
-$cc install-handler
+' .cc $cc install-handler
 
-:noname ( -- )
-   s" int" old-mnemonic!
-   2 to size
-   .instruction
-   ip c@
-   1 +to ip
-   .
+: .cd ( -- )
+    $" int" to mnemonic
+    0 to #operands
+    ip c@
+    1 +to ip
+    .inst
+    48 >pos .
 ;
 
-$cd install-handler
+' .cd $cd install-handler
 
 \ $d1 handler
 : .d1 ( -- )
