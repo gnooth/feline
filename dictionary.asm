@@ -680,6 +680,14 @@ code latest, 'latest'                   ; -- nfa
         next
 endcode
 
+; ### latest-xt
+code latestxt, 'latest-xt'              ; -- xt
+        _ last
+        _fetch
+        _namefrom
+        next
+endcode
+
 ; REVIEW
 ; ### mov-tos,
 code mov_tos_comma, 'mov-tos,'          ; compilation: x --
