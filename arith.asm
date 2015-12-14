@@ -502,12 +502,11 @@ code xor, 'xor'                         ; x1 x2 -- x3
 endcode
 
 ; ### invert
-code invert, 'invert'                   ; x1 -- x2
+inline invert, 'invert'                 ; x1 -- x2
 ; CORE
 ; "Invert all bits of x1, giving its logical inverse x2."
         not     rbx
-        next
-endcode
+endinline
 
 ; ### negate
 inline negate, 'negate'                 ; n1 -- n2
