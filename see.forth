@@ -134,6 +134,18 @@ create old-mnemonic  2 cells allot
       instruction-start swap bounds do i c@ .hexbyte space loop
    then ;
 
+: next-byte ( -- byte )
+    ip c@
+    1 +to ip ;
+
+: next-disp8 ( -- disp8 )
+    ip c@s
+    1 +to ip ;
+
+: next-disp32 ( -- disp32 )
+    ip l@s
+    4 +to ip ;
+
 : (modrm-mod)  ( modrm-byte -- mod )  %11000000 and 6 rshift ;
 : (modrm-reg)  ( modrm-byte -- reg )  %00111000 and 3 rshift ;
 : (modrm-rm)   ( modrm-byte -- rm  )  %00000111 and ;
@@ -146,8 +158,9 @@ create old-mnemonic  2 cells allot
 0 value regop   \ REGister or OPcode extension (depending on the instruction)
 
 : !modrm-byte ( -- )
-    ip c@ dup to modrm-byte
-    1 +to ip
+\     ip c@ dup to modrm-byte
+\     1 +to ip
+    next-byte dup to modrm-byte
     dup (modrm-mod) to modrm-mod
     dup (modrm-reg) to modrm-reg
     (modrm-rm) to modrm-rm
@@ -178,8 +191,9 @@ create old-mnemonic  2 cells allot
 ;
 
 : !sib-byte ( -- )
-    ip c@ to sib-byte
-    1 +to ip ;
+\     ip c@ to sib-byte
+\     1 +to ip ;
+    next-byte to sib-byte ;
 
 : (sib-scale)  ( sib -- scale )  %11000000 and 6 rshift ;
 : (sib-index)  ( sib -- index )  %00111000 and 3 rshift ;
@@ -478,9 +492,9 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 
 : .call  ( -- )
    $" call" to mnemonic
-   ip l@s
-   4 +to ip
-   ip + local code-address
+\    ip l@s
+\    4 +to ip
+   next-disp32 ip + local code-address
 
    .instruction-bytes
    .mnemonic
@@ -494,9 +508,9 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 \    ok_immediate 0 ip l@s 4 +to ip ip + dest!
 \    .inst
    $" jmp" to mnemonic
-   ip l@s
-   4 +to ip
-   ip + local code-address
+\    ip l@s
+\    4 +to ip
+   next-disp32 ip + local code-address
 
    .instruction-bytes
    .mnemonic
@@ -806,8 +820,9 @@ latest-xt $0f install-handler
     modrm-mod 1 = if
         \ disp8
         modrm-rm register-rm to sbase
-        ip c@s to sdisp
-        1 +to ip
+\         ip c@s to sdisp
+\         1 +to ip
+        next-disp8 to sdisp
         modrm-reg register-reg to dreg
         .inst
         exit
@@ -832,7 +847,7 @@ latest-xt $13 install-handler
    ok_register modrm-rm 0 dest!
    ok_register modrm-reg 0 source!
    .inst
-   prefix if 3 else 2 then to size
+\    prefix if 3 else 2 then to size
 ;
 
 $19 install-handler
@@ -901,7 +916,8 @@ latest-xt $1b install-handler
     then
     prefix if 2 else 1 then to size
     unsupported
-    size +to ip ;
+    size +to ip
+;
 
 latest-xt $29 install-handler
 
@@ -910,17 +926,6 @@ latest-xt $29 install-handler
     \ dest is r32/64
     \ source is r/m32/64
     $" sub" to mnemonic
-\     !modrm-byte
-\     modrm-mod 1 = if
-\         \ disp8
-\         modrm-rm register-rm to sbase
-\         ip c@s to sdisp
-\         1 +to ip
-\         modrm-reg register-reg to dreg
-\         .inst
-\         exit
-\     then
-\     unsupported
     /r-reg-r/m
 ;
 
@@ -1097,14 +1102,23 @@ latest-xt $63 install-handler
 \ $75 handler
 :noname ( -- ) $" jne" .jcc8 ; $75 install-handler
 
+\ $76 handler
+:noname ( -- ) $" jna" .jcc8 ; $76 install-handler
+
 \ $77 handler
 :noname ( -- ) $" ja" .jcc8 ; $77 install-handler
 
 \ $78 handler
 :noname ( -- ) $" js" .jcc8 ; $78 install-handler
 
+\ $79 handler
+:noname ( -- ) $" jns" .jcc8 ; $79 install-handler
+
 \ $7c handler
 :noname ( -- ) $" jl" .jcc8 ; $7c install-handler
+
+\ $7d handler
+:noname ( -- ) $" jge" .jcc8 ; $7d install-handler
 
 \ $7e handler
 :noname ( -- ) $" jle" .jcc8 ; $7e install-handler
