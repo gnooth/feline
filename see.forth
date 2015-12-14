@@ -1159,8 +1159,8 @@ $eb install-handler
         endcase
         exit
     then
-    opcode $c1 =
-    opcode $d3 = or if
+    opcode $c0 $c1 between
+    opcode $d0 $d3 between or if
         regop
         case
             0 of $" rol" endof
@@ -1800,9 +1800,18 @@ $c9 install-handler
 \ $d1 handler
 : .d1 ( -- )
     !modrm-byte
-    modrm-reg 4 = if
-        $" shl" to mnemonic
-        ok_register modrm-rm register-rm 0 dest!
+    mnemonic-from-regop to mnemonic
+\     modrm-reg 4 = if
+\         $" shl" to mnemonic
+\         ok_register modrm-rm register-rm 0 dest!
+\         .inst
+\         exit
+\     then
+    modrm-mod 3 = if
+        \ register-direct
+        modrm-rm register-rm to dreg
+        1 to immediate-operand
+        true to immediate-operand?
         .inst
         exit
     then
@@ -1900,14 +1909,17 @@ $f6 install-handler
         \ NOT NEG
         1 to #operands
     then
-\     modrm-reg 3 = if
-\         prefix if 3 else 2 then to size
-\         modrm-rm 3 = if
-\             ok_register modrm-rm register-rm 0 dest!
-\             .inst
-\             exit
-\         then
-\     then
+    regop 4 7 between if
+        \ MUL IMUL DIV IDIV
+        modrm-mod 1 = if
+            \ disp8
+            next-disp8 to ddisp
+            modrm-rm register-rm to dbase
+            $" qword" to relative-size
+            .inst
+            exit
+        then
+    then
     modrm-mod 3 = if
         \ register-direct
         modrm-rm register-rm to dreg
