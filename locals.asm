@@ -165,35 +165,29 @@ code compile_local, 'compile-local'     ; index --
 endcode
 
 ; ### compile-to-local
-code compile_to_local, 'compile-to-local,'      ; index --
-        _lit $49
-        _ ccommac
-        _lit $89
-        _ ccommac
-        _lit $5e
-        _ ccommac                       ; mov [r14 + 0], rbx
+code compile_to_local, 'compile-to-local'       ; index --
+        _ccommac $49
+        _ccommac $89
+        _ccommac $5e                    ; mov [r14 + disp8], rbx
         _cells
 %ifndef NEW_LOCALS
         _negate
 %endif
-        _ ccommac                       ; 8-bit displacement
+        _ ccommac                       ; disp8
         _ pop_tos_comma
         next
 endcode
 
 ; ### compile-+to-local
-code compile_plusto_local, 'compile-+to-local,' ; index --
-        _lit $49
-        _ ccommac
-        _lit $01
-        _ ccommac
-        _lit $5e
-        _ ccommac                       ; add [r14 + 0], rbx
+code compile_plusto_local, 'compile-+to-local'  ; index --
+        _ccommac $49
+        _ccommac $01
+        _ccommac $5e                    ; add [r14 + disp8], rbx
         _cells
 %ifndef NEW_LOCALS
         _negate
 %endif
-        _ ccommac                       ; 8-bit displacement
+        _ ccommac                       ; disp8
         _ pop_tos_comma
         next
 endcode
