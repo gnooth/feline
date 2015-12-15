@@ -52,7 +52,7 @@ endcode
 
 ; ### c+!
 code cplusstore, 'c+!'                  ; byte addr --
-        mov     al, byte [rbp]
+        mov     al, [rbp]
         add     byte [rbx], al
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
