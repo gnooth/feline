@@ -255,8 +255,8 @@ create reg8-regs 8 cells allot
  2 define-reg8 dl
  3 define-reg8 bl
 
-: register-number ( register -- n )
-    @ ;
+\ : register-number ( register -- n )
+\     @ ;
 
 : register-name ( register -- $addr )
     cell+ @ ;
@@ -278,19 +278,116 @@ create reg8-regs 8 cells allot
 14 define-reg64 r14
 15 define-reg64 r15
 
+\ New way
+create reg8-names 4 cells allot         \ REVIEW 4
+
+: init-reg8-names ( -- )
+    $" al" reg8-names 0 cells + !
+    $" cl" reg8-names 1 cells + !
+    $" dl" reg8-names 2 cells + !
+    $" bl" reg8-names 3 cells + !
+;
+
+init-reg8-names
+
+: reg8-name ( register-number -- $addr )
+    dup 0 3 between if
+        cells reg8-names + @
+    else
+        drop
+        true abort" reg8-name index out of range"
+    then
+;
+
+create reg32-names 8 cells allot
+
+: init-reg32-names ( -- )
+    $" eax" reg32-names  0 cells + !
+    $" ecx" reg32-names  1 cells + !
+    $" edx" reg32-names  2 cells + !
+    $" ebx" reg32-names  3 cells + !
+    $" esp" reg32-names  4 cells + !
+    $" ebp" reg32-names  5 cells + !
+    $" esi" reg32-names  6 cells + !
+    $" edi" reg32-names  7 cells + !
+;
+
+init-reg32-names
+
+: reg32-name ( register-number -- $addr )
+    dup 0 7 between if
+        cells reg32-names + @
+    else
+        drop
+        true abort" reg32-name index out of range"
+    then
+;
+
+create reg64-names 16 cells allot
+
+: init-reg64-names ( -- )
+    $" rax" reg64-names  0 cells + !
+    $" rcx" reg64-names  1 cells + !
+    $" rdx" reg64-names  2 cells + !
+    $" rbx" reg64-names  3 cells + !
+    $" rsp" reg64-names  4 cells + !
+    $" rbp" reg64-names  5 cells + !
+    $" rsi" reg64-names  6 cells + !
+    $" rdi" reg64-names  7 cells + !
+    $" r8"  reg64-names  8 cells + !
+    $" r9"  reg64-names  9 cells + !
+    $" r10" reg64-names 10 cells + !
+    $" r11" reg64-names 11 cells + !
+    $" r12" reg64-names 12 cells + !
+    $" r13" reg64-names 13 cells + !
+    $" r14" reg64-names 14 cells + !
+    $" r15" reg64-names 15 cells + !
+;
+
+init-reg64-names
+
+: reg64-name ( register-number -- $addr )
+    dup 0 15 between if
+        cells reg64-names + @
+    else
+        cr ." reg64-name register-number = " .
+        true abort" reg64-name index out of range"
+    then
+;
+
+: .register-name ( register-number size -- )
+    local size
+    local n
+    size 64 = if
+        n reg64-name $.
+        exit
+    then
+    size 32 = if
+        n reg32-name $.
+        exit
+    then
+    size 8 = if
+        n reg8-name $.
+        exit
+    then
+    true abort" .register-name unsupported case"
+;
+
 : .reg64  ( +n -- )
     prefix $41 = if
         \ extended register
         8 or
     then
-    reg64 register-name $.
+\     reg64 register-name $.
+    reg64-name $.
 ;
 
 \ FIXME need a consistent interface here
-: .reg  ( x -- )
+: .reg ( x -- )
     dup 15 > if
         \ x is address of register structure
         register-name $.
+        true abort" .reg"
     else
         \ x is register number (can't be address if <= 15)
         prefix $40 and if .reg64 else .reg32 then
@@ -393,7 +490,7 @@ create reg8-regs 8 cells allot
 : .dest ( -- )
     48 >pos
     dreg -1 <> if
-        dreg .reg
+        dreg dsize .register-name
         exit
     then
     dbase -1 <> if
@@ -428,7 +525,7 @@ create reg8-regs 8 cells allot
     then
     sreg 0>= if
         .sep
-        sreg .reg
+        sreg ssize .register-name
         exit
     then
     source-operand @ if
@@ -518,15 +615,17 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    code-address h.
 ;
 
-\ $00 handler
 : .00 ( -- )
     $" add" to mnemonic
     \ source is r8
     \ dest is r/m8
     !modrm-byte
     modrm-mod 0 = if
-        ok_relative modrm-rm register-rm 0 dest!
-        modrm-reg reg8 to sreg
+\         ok_relative modrm-rm register-rm 0 dest!
+        modrm-rm register-rm to dbase
+        $" byte" to relative-size       \ REVIEW
+        modrm-reg to sreg
+        8 to ssize
         .inst
         exit
     then
@@ -766,7 +865,8 @@ create cmov-mnemonic-table 16 cells allot
         then
         modrm-mod 3 = if
             true to register-direct?
-            modrm-rm  reg8         to sreg
+            modrm-rm register-rm to sreg
+            8 to ssize
             modrm-reg register-reg to dreg
             .inst
             exit
@@ -775,12 +875,26 @@ create cmov-mnemonic-table 16 cells allot
     byte2 $be = if
         $" movsx" to mnemonic
         !modrm-byte
-        ok_register modrm-reg reg8 0 source!
-        ok_register modrm-rm register-rm 0 dest!
+        modrm-mod 0= if
+\             ok_relative modrm-rm register-rm 0 source!
+            modrm-rm register-rm to sbase
+            8 to ssize
+            $" byte" to relative-size   \ REVIEW shouldn't need to do this if we've set ssize
+
+\             ok_register modrm-reg register-reg 0 dest!
+\             $" byte" to relative-size
+            modrm-rm register-reg to dreg
+            .inst
+            exit
+        then
+\         ok_register modrm-reg reg8 0 source!
+        modrm-reg to sreg
+        8 to ssize
+\         ok_register modrm-rm register-rm 0 dest!
+        modrm-rm register-rm to dreg
         .inst
         exit
     then
-    ip instruction-start - .bytes
     unsupported ;
 
 latest-xt $0f install-handler
@@ -938,8 +1052,10 @@ latest-xt $2b install-handler
     !modrm-byte
     modrm-mod 3 = if
         true to register-direct?
-        modrm-rm  reg8 to sreg
-        modrm-reg reg8 to dreg
+        modrm-rm to sreg
+        8 to ssize
+        modrm-reg to dreg
+        8 to dsize
         .inst
         exit
     then
@@ -1198,6 +1314,16 @@ $eb install-handler
     !modrm-byte
     mnemonic-from-regop to mnemonic
 
+    modrm-mod 3 = if
+        \ register-direct
+        modrm-rm to dreg
+        8 to dsize
+        next-byte to immediate-operand
+        true to immediate-operand?
+        .inst
+        exit
+    then
+
     modrm-mod 0 = if
         ok_relative modrm-rm register-rm 0 dest!
         $" byte" to relative-size
@@ -1370,8 +1496,10 @@ latest-xt $83 install-handler
     !modrm-byte
     modrm-mod 3 = if
         true to register-direct?
-        modrm-reg reg8 to sreg
-        modrm-rm  reg8 to dreg
+        modrm-reg to sreg
+        8 to ssize
+        modrm-rm to dreg
+        8 to dsize
         .inst
         exit
     then
@@ -1399,18 +1527,21 @@ latest-xt $84 install-handler
    unsupported
    size +to ip ;
 
-\ $88 handler
-:noname ( -- )                          \ MOV reg/mem8, reg8            88 /r
+: .88 ( -- )                            \ MOV reg/mem8, reg8            88 /r
     $" mov" to mnemonic
     !modrm-byte
     modrm-mod 0 = if
-        ok_register modrm-reg reg8 0 source!
+\         ok_register modrm-reg reg8 0 source!
+        modrm-reg to sreg
+        8 to ssize
         ok_relative modrm-rm 0 dest!
         .inst
         exit
     then
     modrm-mod 1 = if                    \ 1-byte displacement
-        ok_register modrm-reg reg8 0 source!
+\         ok_register modrm-reg reg8 0 source!
+        modrm-reg to sreg
+        8 to ssize
         ok_relative modrm-rm ip c@s dest!
         1 +to ip
         .inst
@@ -1420,7 +1551,7 @@ latest-xt $84 install-handler
     unsupported
 ;
 
-$88 install-handler
+latest-xt $88 install-handler
 
 : .89 ( -- )
     \ MOV reg/mem64, reg64
@@ -1481,7 +1612,6 @@ $88 install-handler
     unsupported
 ;
 
-\ $8a handler
 : .8a ( -- )                            \ MOV reg8, reg/mem8            8a /r
     \ /r
     \ source is r/m8
@@ -1489,13 +1619,19 @@ $88 install-handler
     $" mov" to mnemonic
     !modrm-byte
     modrm-mod 0= if
-        ok_register modrm-reg reg8 0 dest!
-        ok_relative modrm-rm register-rm 0 source!
+\         ok_register modrm-reg reg8 0 dest!
+        modrm-reg to dreg
+        8 to dsize
+
+\         ok_relative modrm-rm register-rm 0 source!
+        modrm-rm register-rm to sbase
         .inst
         exit
     then
     modrm-mod 1 = if                    \ 1-byte displacement
-        ok_register modrm-reg reg8 0 dest!
+\         ok_register modrm-reg reg8 0 dest!
+        modrm-reg to dreg
+        8 to dsize
         ok_relative modrm-rm ip c@s source!
         1 +to ip
         .inst
@@ -1668,15 +1804,20 @@ $90 install-handler
 
 : .b8  ( -- )
     $" mov" to mnemonic
-    prefix if 10 else 5 then to size
-    ok_register opcode $b8 - 0 dest!
-    ok_immediate 0
+\     prefix if 10 else 5 then to size
+\     ok_register opcode $b8 - 0 dest!
+    opcode $b8 - to dreg
+
+\     ok_immediate 0
     prefix if
         ip @ cell +to ip
     else
         ip l@ 4 +to ip
+        32 to dsize
     then
-    source!
+\     source!
+    to immediate-operand
+    true to immediate-operand?
     .inst
 ;
 
@@ -1828,7 +1969,8 @@ latest-xt $d1 install-handler
     modrm-mod 3 = if
         \ register-direct
         modrm-rm register-rm to dreg
-        1 reg8 ( cl ) to sreg
+        1 ( cl ) to sreg
+        8 to ssize
         .inst
         exit
     then
@@ -1975,9 +2117,9 @@ latest-xt $fd install-handler
         modrm-rm register-rm to dreg
 
 \         cr ." dreg = " dreg h.
-        regop 1 > if
-            dreg reg64 to dreg
-        then
+\         regop 1 > if
+\             dreg reg64 to dreg
+\         then
 
         .inst
         exit
