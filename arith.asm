@@ -367,20 +367,29 @@ endcode
 code within, 'within'                   ; n min max -- flag
 ; CORE EXT
 ; return true if min <= n < max
-        _ over
-        _ minus
-        _ tor
-        _ minus
-        _ rfrom
-        _ ult
+; implementation adapted from Win32Forth
+        mov     rax, [rbp]
+        mov     rdx, [rbp + BYTES_PER_CELL]
+        sub     rbx, rax
+        sub     rdx, rax
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        sub     rdx, rbx
+        sbb     rbx, rbx
         next
 endcode
 
 ; ### between
 code between, 'between'                 ; n min max -- flag
 ; return true if min <= n <= max
+; implementation adapted from Win32Forth
         _oneplus
-        _ within
+        mov     rax, [rbp]
+        mov     rdx, [rbp + BYTES_PER_CELL]
+        sub     rbx, rax
+        sub     rdx, rax
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        sub     rdx, rbx
+        sbb     rbx, rbx
         next
 endcode
 
