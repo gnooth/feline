@@ -138,12 +138,16 @@ create old-mnemonic  2 cells allot
     ip c@
     1 +to ip ;
 
-: next-disp8 ( -- disp8 )
+: next-signed-byte ( -- signed-byte )
     ip c@s
     1 +to ip ;
 
-: next-disp32 ( -- disp32 )
+: next-int32 ( -- int32 )
     ip l@s
+    4 +to ip ;
+
+: next-uint32 ( -- uint32 )
+    ip l@
     4 +to ip ;
 
 : (modrm-mod)  ( modrm-byte -- mod )  %11000000 and 6 rshift ;
@@ -190,10 +194,7 @@ create old-mnemonic  2 cells allot
    r> base!
 ;
 
-: !sib-byte ( -- )
-\     ip c@ to sib-byte
-\     1 +to ip ;
-    next-byte to sib-byte ;
+: !sib-byte ( -- ) next-byte to sib-byte ;
 
 : (sib-scale)  ( sib -- scale )  %11000000 and 6 rshift ;
 : (sib-index)  ( sib -- index )  %00111000 and 3 rshift ;
@@ -502,9 +503,10 @@ init-reg64-names
         0 to memory-operand?
         exit
     then
-    destination-operand @ if
-        destination-operand .operand
-    then
+\     destination-operand @ if
+\         destination-operand .operand
+\     then
+    true abort" .dest"
 ;
 
 : .source ( -- )
@@ -591,7 +593,7 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    $" call" to mnemonic
 \    ip l@s
 \    4 +to ip
-   next-disp32 ip + local code-address
+   next-int32 ip + local code-address
 
    .instruction-bytes
    .mnemonic
@@ -607,12 +609,101 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    $" jmp" to mnemonic
 \    ip l@s
 \    4 +to ip
-   next-disp32 ip + local code-address
+   next-int32 ip + local code-address
 
    .instruction-bytes
    .mnemonic
    48 >pos
    code-address h.
+;
+
+: /r-r/m-reg ( -- )
+    !modrm-byte
+    modrm-reg register-reg to sreg
+    modrm-mod 0= if
+        modrm-rm 4 = if
+            !sib-byte
+\             ok_register modrm-reg register-reg 0 source!
+\             ok_relative_no_reg 0 ip l@s dest!
+\             4 +to ip
+            sib-base 5 = if             \ base == rbp means no base register (when mod == 0)
+                -1 to dbase
+                ip l@s to ddisp
+                4 +to ip
+                true to memory-operand?
+            then
+            .inst
+            exit
+        then
+        modrm-rm register-rm to dbase
+        .inst
+        exit
+    then
+    modrm-mod 1 = if
+\         ok_relative modrm-rm ip c@s dest!
+\         1 +to ip
+        next-signed-byte to ddisp
+        modrm-rm register-rm to dbase
+\         ok_register modrm-reg 0 source!
+        modrm-reg register-reg to sreg
+        .inst
+        exit
+    then
+    modrm-mod 3 = if
+\         ok_register modrm-rm register-rm 0 dest!
+        modrm-rm register-rm to dreg
+\         ok_register modrm-reg register-reg 0 source!
+        modrm-reg register-reg to sreg
+        .inst
+        exit
+    then
+    unsupported
+;
+
+: /r-reg-r/m ( -- )
+    \ /r
+    \ source is r/m32/64
+    \ dest is r32/64
+    !modrm-byte
+    modrm-reg register-reg to dreg
+    modrm-mod 0= if
+        modrm-rm 4 = if
+            !sib-byte
+            sib-base 5 = if             \ base == rbp means no base register (when mod == 0)
+                next-int32 to sdisp
+                true to memory-operand?
+                .inst
+                exit
+            then
+        then
+    then
+    modrm-mod 1 = if
+        \ disp8
+        modrm-rm 4 = if
+            !sib-byte
+            next-signed-byte to sdisp
+            sib-byte $24 = if
+                sib-base to sbase
+            else
+                unsupported
+            then
+\             modrm-reg register-reg to dreg
+        else
+            modrm-rm register-rm to sbase
+            next-signed-byte to sdisp
+\             modrm-reg register-reg to dreg
+        then
+        .inst
+        exit
+    then
+    modrm-mod 3 = if
+        \ register-direct
+        modrm-rm register-rm to sreg
+\         modrm-reg register-reg to dreg
+        .inst
+        exit
+    then
+    unsupported
 ;
 
 : .00 ( -- )
@@ -642,79 +733,88 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 
 latest-xt $00 install-handler
 
-\ $01 handler
+
 : .01 ( -- )                            \ ADD reg/mem64, reg64
     $" add" to mnemonic
-    !modrm-byte
-    modrm-mod 3 <> if
-        modrm-rm 4 = if
-            !sib-byte
-            sib-byte $25 = if
-                ok_relative_no_reg 0 ip l@s dest!
-                4 +to ip
-                ok_register modrm-reg register-reg 0 source!
-                .inst
-                exit
-            then
-        then
-    then
-    modrm-mod 0= if
-        ok_relative modrm-rm register-rm 0 dest!
-        ok_register modrm-reg register-reg 0 source!
-        .inst
-        exit
-    then
-    modrm-mod 1 = if                     \ 1-byte displacement
-        ok_relative modrm-rm register-rm ip c@s dest!
-        1 +to ip
-        ok_register modrm-reg register-reg 0 source!
-        .inst
-        exit
-    then
-    modrm-mod 3 = if
-        prefix if 3 else 2 then to size
-        ok_register modrm-rm register-rm 0 dest!
-        ok_register modrm-reg register-reg 0 source!
-        .inst
-        exit
-    then
-    prefix if 2 else 1 then to size
-    unsupported
-    size +to ip ;
+    /r-r/m-reg
+\     !modrm-byte
+\     modrm-mod 3 <> if
+\         modrm-rm 4 = if
+\             !sib-byte
+\             sib-byte $25 = if
+\                 ok_relative_no_reg 0 ip l@s dest!
+\                 4 +to ip
+\                 ok_register modrm-reg register-reg 0 source!
+\                 .inst
+\                 exit
+\             then
+\         then
+\     then
+\     modrm-mod 0= if
+\         ok_relative modrm-rm register-rm 0 dest!
+\         ok_register modrm-reg register-reg 0 source!
+\         .inst
+\         exit
+\     then
+\     modrm-mod 1 = if                     \ 1-byte displacement
+\         ok_relative modrm-rm register-rm ip c@s dest!
+\         1 +to ip
+\         ok_register modrm-reg register-reg 0 source!
+\         .inst
+\         exit
+\     then
+\     modrm-mod 3 = if
+\         prefix if 3 else 2 then to size
+\         ok_register modrm-rm register-rm 0 dest!
+\         ok_register modrm-reg register-reg 0 source!
+\         .inst
+\         exit
+\     then
+\     prefix if 2 else 1 then to size
+\     unsupported
+\     size +to ip
+;
 
 latest-xt $01 install-handler
 
 \ $03 handler
 : .03 ( -- )                            \ ADD reg64, reg/mem64
+    \ /r
+    \ source is r/m32/64
+    \ dest is r32/64
     $" add" to mnemonic
-    !modrm-byte
-    modrm-rm 4 = if
-        !sib-byte
-        modrm-mod 0= if
-            ok_register modrm-reg register-reg 0 dest!
-            ok_relative_no_reg 0 ip l@s source!
-            4 +to ip
-            .inst
-            exit
-        then
-        modrm-mod 1 = if
-            ok_register modrm-reg register-reg 0      dest!
-            ok_relative modrm-rm  register-rm  ip c@s source!
-            1 +to ip
-            .inst
-            exit
-        then
-    else
-        modrm-mod 1 = if                \ 1-byte displacement
-            ok_relative modrm-rm ip c@s source!
-            1 +to ip
-            ok_register modrm-reg 0 dest!
-            .inst
-            exit
-        then
-    then
-    ip instruction-start - .bytes
-    unsupported
+    /r-reg-r/m
+\     !modrm-byte
+\     modrm-rm 4 = if
+\         !sib-byte
+\         modrm-mod 0= if
+\             ok_register modrm-reg register-reg 0 dest!
+\             ok_relative_no_reg 0 ip l@s source!
+\             4 +to ip
+\             .inst
+\             exit
+\         then
+\         modrm-mod 1 = if
+\             ok_register modrm-reg register-reg 0      dest!
+\             ok_relative modrm-rm  register-rm  ip c@s source!
+\             1 +to ip
+\             .inst
+\             exit
+\         then
+\     else
+\         modrm-mod 1 = if                \ 1-byte displacement
+\ \             ok_relative modrm-rm ip c@s source!
+\ \             1 +to ip
+\             modrm-rm register-rm to sbase
+\             next-signed-byte to sdisp
+\ \             ok_register modrm-reg 0 dest!
+\             modrm-reg register-reg to dreg
+\             .inst
+\             exit
+\         then
+\     then
+\     ip instruction-start - .bytes
+\     unsupported
 ;
 
 latest-xt $03 install-handler
@@ -743,31 +843,41 @@ latest-xt $09 install-handler
     \ ModR/M byte contains both a register and an r/m operand
     \ source is r/m32/64
     \ dest is r32/64
-    !modrm-byte
     $" or" to mnemonic
-    modrm-mod 1 = if
-        ok_register modrm-reg register-reg 0      dest!
-        ok_relative modrm-reg register-rm  ip c@s source!
-        1 +to ip
-        .inst
-        exit
-    then
-    unsupported
+\     !modrm-byte
+\     modrm-mod 1 = if
+\         ok_register modrm-reg register-reg 0      dest!
+\         ok_relative modrm-reg register-rm  ip c@s source!
+\         1 +to ip
+\         .inst
+\         exit
+\     then
+\     unsupported
+    /r-reg-r/m
 ;
 
-' .0b $0b install-handler
+latest-xt $0b install-handler
 
 : .jcc32 ( $mnemonic -- )
     to mnemonic
-    ip l@s                          \ 32-bit signed offset
-    4 +to ip
-    5 to size
-    .inst
-    ip +                \ jump target
-    dup end-address > if
-        dup to end-address
+    next-int32 ip + local jump-target
+
+\     jump-target to immediate-operand
+\     true to immediate-operand?
+\     1 to #operands
+
+\     .inst
+\     ip +                \ jump target
+
+    .instruction-bytes
+    .mnemonic
+    48 >pos jump-target h.
+
+    jump-target end-address > if
+        jump-target to end-address
     then
-    h. ;
+\     h.
+;
 
 create cmov-mnemonic-table 16 cells allot
 
@@ -807,8 +917,10 @@ create cmov-mnemonic-table 16 cells allot
         byte2 cmov-mnemonic to mnemonic
         !modrm-byte
         modrm-mod 3 = if
-            ok_register modrm-rm register-rm 0 source!
-            ok_register modrm-reg register-reg 0 dest!
+\             ok_register modrm-rm register-rm 0 source!
+            modrm-rm register-rm to sreg
+\             ok_register modrm-reg register-reg 0 dest!
+            modrm-reg register-reg to dreg
             .inst
         else
             unsupported
@@ -849,16 +961,21 @@ create cmov-mnemonic-table 16 cells allot
         $" movzx" to mnemonic
         !modrm-byte
         modrm-mod 0= if
-            ok_relative modrm-rm register-rm 0 source!
-            ok_register modrm-reg register-reg 0 dest!
+\             ok_relative modrm-rm register-rm 0 source!
+            modrm-rm register-rm to sbase
+\             ok_register modrm-reg register-reg 0 dest!
+            modrm-reg register-reg to dreg
             $" byte" to relative-size
             .inst
             exit
         then
         modrm-mod 1 = if
-            ok_relative modrm-rm register-rm ip c@s source!
-            1 +to ip
-            ok_register modrm-reg register-reg 0 dest!
+\             ok_relative modrm-rm register-rm ip c@s source!
+\             1 +to ip
+            modrm-rm register-rm to sbase
+            next-signed-byte to sdisp
+\             ok_register modrm-reg register-reg 0 dest!
+            modrm-reg register-reg to dreg
             $" byte" to relative-size
             .inst
             exit
@@ -926,24 +1043,6 @@ latest-xt $0f install-handler
       done? on
    then ;
 
-: /r-reg-r/m ( -- )
-    \ /r
-    \ dest is r32/64
-    \ source is r/m32/64
-    !modrm-byte
-    modrm-mod 1 = if
-        \ disp8
-        modrm-rm register-rm to sbase
-\         ip c@s to sdisp
-\         1 +to ip
-        next-disp8 to sdisp
-        modrm-reg register-reg to dreg
-        .inst
-        exit
-    then
-    unsupported
-;
-
 : .13 ( -- )
     \ /r
     \ source is r/m32/64
@@ -954,17 +1053,16 @@ latest-xt $0f install-handler
 
 latest-xt $13 install-handler
 
-\ $19 handler
-:noname ( -- )
+: .19 ( -- )
    $" sbb" to mnemonic
-   !modrm-byte
-   ok_register modrm-rm 0 dest!
-   ok_register modrm-reg 0 source!
-   .inst
-\    prefix if 3 else 2 then to size
+\    !modrm-byte
+\    ok_register modrm-rm 0 dest!
+\    ok_register modrm-reg 0 source!
+\    .inst
+   /r-r/m-reg
 ;
 
-$19 install-handler
+latest-xt $19 install-handler
 
 : .1b ( -- )
     \ /r
@@ -989,8 +1087,8 @@ latest-xt $1b install-handler
 
 : .23 ( -- )
     \ /r
-    \ dest is r32/64
     \ source is r/m32/64
+    \ dest is r32/64
     $" and" to mnemonic
 \     !modrm-byte
 \     modrm-mod 1 = if
@@ -1009,28 +1107,29 @@ latest-xt $1b install-handler
 \ $29 handler
 : .29 ( -- )
     $" sub" to mnemonic
-    \ /r
-    \ ModR/M byte contains both a register and an r/m operand
-    \ source is r32/64
-    \ dest is r/m32/64
-    !modrm-byte
-    modrm-mod 1 = if
-        \ dest is [r/m + disp8]
-        modrm-reg register-reg to sreg
-        ok_relative modrm-rm register-rm ip c@s dest!
-        1 +to ip
-        .inst
-        exit
-    then
-    modrm-mod 3 = if
-        ok_register modrm-rm register-rm 0 dest!
-        ok_register modrm-reg register-reg 0 source!
-        .inst
-        exit
-    then
-    prefix if 2 else 1 then to size
-    unsupported
-    size +to ip
+    /r-reg-r/m
+\     \ /r
+\     \ ModR/M byte contains both a register and an r/m operand
+\     \ source is r32/64
+\     \ dest is r/m32/64
+\     !modrm-byte
+\     modrm-mod 1 = if
+\         \ dest is [r/m + disp8]
+\         modrm-reg register-reg to sreg
+\         ok_relative modrm-rm register-rm ip c@s dest!
+\         1 +to ip
+\         .inst
+\         exit
+\     then
+\     modrm-mod 3 = if
+\         ok_register modrm-rm register-rm 0 dest!
+\         ok_register modrm-reg register-reg 0 source!
+\         .inst
+\         exit
+\     then
+\     prefix if 2 else 1 then to size
+\     unsupported
+\     size +to ip
 ;
 
 latest-xt $29 install-handler
@@ -1064,17 +1163,16 @@ latest-xt $2b install-handler
 
 latest-xt $30 install-handler
 
-\ $31 handler
-:noname ( -- )
+: .31 ( -- )
    $" xor" to mnemonic
-   !modrm-byte
-   ok_register modrm-rm 0 dest!
-   ok_register modrm-reg 0 source!
-   .inst
-   prefix if 3 else 2 then to size
+   /r-r/m-reg
+\    !modrm-byte
+\    ok_register modrm-rm 0 dest!
+\    ok_register modrm-reg 0 source!
+\    .inst
 ;
 
-$31 install-handler
+latest-xt $31 install-handler
 
 : .33 ( -- )
     $" xor" to mnemonic
@@ -1082,42 +1180,6 @@ $31 install-handler
 ;
 
 latest-xt $33 install-handler
-
-: /r-r/m-reg ( -- )
-    !modrm-byte
-    modrm-reg register-reg to sreg
-    modrm-mod 0= if
-        modrm-rm 4 = if
-            !sib-byte
-\             ok_register modrm-reg register-reg 0 source!
-\             ok_relative_no_reg 0 ip l@s dest!
-\             4 +to ip
-            sib-base 5 = if             \ base == rbp means no base register (when mod == 0)
-                -1 to dbase
-                ip l@s to ddisp
-                4 +to ip
-                true to memory-operand?
-            then
-            .inst
-            exit
-        then
-    then
-    modrm-mod 1 = if
-        ok_relative modrm-rm ip c@s dest!
-        1 +to ip
-        ok_register modrm-reg 0 source!
-\         prefix if 4 else 3 then to size
-        .inst
-        exit
-    then
-    modrm-mod 3 = if
-        ok_register modrm-rm register-rm 0 dest!
-        ok_register modrm-reg register-reg 0 source!
-        .inst
-        exit
-    then
-    unsupported
-;
 
 : .39 ( -- )                            \ CMP r/m64, r64                39 /r
     \ /r
@@ -1188,59 +1250,81 @@ latest-xt $3c install-handler
 
 latest-xt $63 install-handler
 
+\ : .jcc8 ( $mnemonic -- )
+\     to mnemonic
+\     ip c@s                              \ 8-bit signed offset
+\     1 +to ip
+\ \     2 to size
+\     1 to #operands
+\     .inst
+\     ip +                                \ jump target
+\     dup end-address > if
+\         dup to end-address
+\     then
+\     h. ;
+
 : .jcc8 ( $mnemonic -- )
     to mnemonic
-    ip c@s                              \ 8-bit signed offset
-    1 +to ip
-    2 to size
-    .inst
-    ip +                                \ jump target
-    dup end-address > if
-        dup to end-address
+    next-signed-byte ip + local jump-target
+
+\     jump-target to immediate-operand
+\     true to immediate-operand?
+\     1 to #operands
+
+\     .inst
+\     ip +                \ jump target
+
+    .instruction-bytes
+    .mnemonic
+    48 >pos jump-target h.
+
+    jump-target end-address > if
+        jump-target to end-address
     then
-    h. ;
+\     h.
+;
 
 \ $70 handler
-:noname ( -- ) $" jo" .jcc8 ; $70 install-handler
+: .70 ( -- ) $" jo" .jcc8 ; latest-xt $70 install-handler
 
 \ $71 handler
-:noname ( -- ) $" jno" .jcc8 ; $71 install-handler
+: .71 ( -- ) $" jno" .jcc8 ; latest-xt $71 install-handler
 
 \ $72 handler
-:noname ( -- ) $" jc" .jcc8 ; $72 install-handler
+: .72 ( -- ) $" jc" .jcc8 ; latest-xt $72 install-handler
 
 \ $73 handler
-:noname ( -- ) $" jnc" .jcc8 ; $73 install-handler
+: .73 ( -- ) $" jnc" .jcc8 ; latest-xt $73 install-handler
 
 \ $74 handler
-:noname ( -- ) $" jz" .jcc8 ; $74 install-handler
+: .74 ( -- ) $" jz" .jcc8 ; latest-xt $74 install-handler
 
 \ $75 handler
-:noname ( -- ) $" jne" .jcc8 ; $75 install-handler
+: .75 ( -- ) $" jne" .jcc8 ; latest-xt $75 install-handler
 
 \ $76 handler
-:noname ( -- ) $" jna" .jcc8 ; $76 install-handler
+: .76 ( -- ) $" jna" .jcc8 ; latest-xt $76 install-handler
 
 \ $77 handler
-:noname ( -- ) $" ja" .jcc8 ; $77 install-handler
+: .77 ( -- ) $" ja" .jcc8 ; latest-xt $77 install-handler
 
 \ $78 handler
-:noname ( -- ) $" js" .jcc8 ; $78 install-handler
+: .78 ( -- ) $" js" .jcc8 ; latest-xt $78 install-handler
 
 \ $79 handler
-:noname ( -- ) $" jns" .jcc8 ; $79 install-handler
+: .79 ( -- ) $" jns" .jcc8 ; latest-xt $79 install-handler
 
 \ $7c handler
-:noname ( -- ) $" jl" .jcc8 ; $7c install-handler
+: .7c ( -- ) $" jl" .jcc8 ; latest-xt $7c install-handler
 
 \ $7d handler
-:noname ( -- ) $" jge" .jcc8 ; $7d install-handler
+: .7d ( -- ) $" jge" .jcc8 ; latest-xt $7d install-handler
 
 \ $7e handler
-:noname ( -- ) $" jle" .jcc8 ; $7e install-handler
+: .7e ( -- ) $" jle" .jcc8 ; latest-xt $7e install-handler
 
 \ $7f handler
-:noname ( -- ) $" jg" .jcc8 ; $7f install-handler
+: .7f ( -- ) $" jg" .jcc8 ; latest-xt $7f install-handler
 
 \ $eb handler
 :noname  ( -- )
@@ -1325,10 +1409,12 @@ $eb install-handler
     then
 
     modrm-mod 0 = if
-        ok_relative modrm-rm register-rm 0 dest!
+\         ok_relative modrm-rm register-rm 0 dest!
+        modrm-rm register-rm to dbase
         $" byte" to relative-size
-        ok_immediate 0 ip c@ source!
-        1 +to ip
+\         ok_immediate 0 ip c@ source!
+        next-byte to immediate-operand
+        true to immediate-operand?
         .inst
         exit
     then
@@ -1407,7 +1493,6 @@ $eb install-handler
 
 ' .81 $81 install-handler
 
-\ $83 handler
 : .83 ( -- )
     \ modrm-reg encodes opcode extension
     \ source is imm8
@@ -1419,70 +1504,73 @@ $eb install-handler
         modrm-reg 0= if
             \ /0
             \ add r/m32,imm8
-\             $" add" to mnemonic
-            ok_relative modrm-rm register-rm ip c@s dest!
+\             ok_relative modrm-rm register-rm ip c@s dest!
+            modrm-rm register-rm to dbase
+            next-signed-byte to ddisp
             $" qword" to relative-size
-            1 +to ip
+\             1 +to ip
 \             ok_immediate 0 ip c@ source!
 \             1 +to ip
-    \ source is imm8
-    true to immediate-operand?
-    ip c@s to immediate-operand
-    1 +to ip
-
+            \ source is imm8
+            true to immediate-operand?
+\             ip c@s to immediate-operand
+\             1 +to ip
+            next-byte to immediate-operand
             .inst
             exit
         then
     then
     modrm-mod 3 = if
         \ register-direct addressing mode
-        modrm-reg 0= if
-\             s" add" old-mnemonic!
-\             prefix if 4 else 3 then to size
-\             .instruction
-\             modrm-rm .reg64
-            ok_register modrm-rm register-rm 0 dest!
-\             .sep
-\             ip c@s  1 +to ip
-\             .
-    \ source is imm8
-    true to immediate-operand?
-    ip c@s to immediate-operand
-    1 +to ip
-
-            .inst
-            exit
-        then
-        modrm-reg 5 = if
-\             $" sub" to mnemonic
-            ok_register modrm-rm register-rm 0 dest!
-\             ok_immediate 0 ip c@s source!
-\             1 +to ip
-    \ source is imm8
-    true to immediate-operand?
-    ip c@s to immediate-operand
-    1 +to ip
-
-            .inst
-            exit
-        then
-        modrm-reg 7 = if
-\             s" cmp" old-mnemonic!
-\             prefix if 4 else 3 then to size
-\             .instruction
-\             modrm-rm .reg64
-\             .sep
-\             ip c@s  1 +to ip
-\             .
-            ok_register modrm-rm register-rm 0 dest!
-            \ source is imm8
-            true to immediate-operand?
-            ip c@s to immediate-operand
-            1 +to ip
-            .inst
-            exit
-        then
+        modrm-rm register-rm to dreg
+        next-signed-byte to immediate-operand
+        true to immediate-operand?
+        .inst
+        exit
     then
+
+\         modrm-reg 0= if
+\ \             ok_register modrm-rm register-rm 0 dest!
+\             modrm-rm register-rm to dreg
+\             \ source is imm8
+\             true to immediate-operand?
+\ \             ip c@s to immediate-operand
+\ \             1 +to ip
+\             next-signed-byte to immediate-operand
+
+\             .inst
+\             exit
+\         then
+\         modrm-reg 5 = if
+\ \             $" sub" to mnemonic
+\             ok_register modrm-rm register-rm 0 dest!
+\ \             ok_immediate 0 ip c@s source!
+\ \             1 +to ip
+\     \ source is imm8
+\     true to immediate-operand?
+\     ip c@s to immediate-operand
+\     1 +to ip
+
+\             .inst
+\             exit
+\         then
+\         modrm-reg 7 = if
+\ \             s" cmp" old-mnemonic!
+\ \             prefix if 4 else 3 then to size
+\ \             .instruction
+\ \             modrm-rm .reg64
+\ \             .sep
+\ \             ip c@s  1 +to ip
+\ \             .
+\             ok_register modrm-rm register-rm 0 dest!
+\             \ source is imm8
+\             true to immediate-operand?
+\             ip c@s to immediate-operand
+\             1 +to ip
+\             .inst
+\             exit
+\         then
+\     then
     unsupported
 ;
 
@@ -1534,7 +1622,9 @@ latest-xt $84 install-handler
 \         ok_register modrm-reg reg8 0 source!
         modrm-reg to sreg
         8 to ssize
-        ok_relative modrm-rm 0 dest!
+\         ok_relative modrm-rm 0 dest!
+        modrm-rm to dbase
+        8 to dsize
         .inst
         exit
     then
@@ -1554,14 +1644,13 @@ latest-xt $84 install-handler
 latest-xt $88 install-handler
 
 : .89 ( -- )
-    \ MOV reg/mem64, reg64
-    \ "Move the contents of a 64-bit register to a 64-bit destination register
-    \ or memory operand."
-    \ 89 /r
-    \ "/r: indicates that the ModR/M byte of the instruction contains both a
-    \ register operand and an r/m operand."
+    \ /r
+    \ source is r32/64
+    \ dest is r/m32/64
     $" mov" to mnemonic
-    !modrm-byte
+    /r-r/m-reg
+    exit
+
     modrm-rm 4 =
     modrm-mod 3 <> and
     if
@@ -1770,37 +1859,44 @@ latest-xt $8a install-handler
 : .8f ( -- )
     $" pop" to mnemonic
     !modrm-byte
-    modrm-mod 0= if
-        modrm-rm 4 = if
-            !sib-byte
-            sib-index 4 = if
-                sib-base 5 = if         \ base == rbp means no base register (when mod == 0)
-                    \ [disp32]
-                    ok_relative_no_reg 0 ip l@s dest!
-                    4 +to ip
-                    .inst
-                    exit
+    regop 0 = if
+        modrm-mod 0= if
+            modrm-rm 4 = if
+                !sib-byte
+                sib-index 4 = if
+                    sib-base 5 = if         \ base == rbp means no base register (when mod == 0)
+                        \ [disp32]
+\                         ok_relative_no_reg 0 ip l@s dest!
+\                         4 +to ip
+                        next-int32 to ddisp
+                        true to memory-operand?
+                        .inst
+                        exit
+                    then
                 then
             then
         then
+        modrm-mod 1 = if
+\             ok_relative modrm-rm register-rm ip c@s dest!
+\             1 +to ip
+            modrm-rm register-rm to dbase
+            next-signed-byte to ddisp
+            $" qword" to relative-size  \ REVIEW
+            .inst
+            exit
+        then
     then
-    modrm-reg 0= if
-        ok_relative modrm-rm register-rm ip c@s dest!
-        1 +to ip
-        .inst
-        exit
-    then
-    ip instruction-start - .bytes
     unsupported
 ;
 
 ' .8f $8f install-handler
 
-:noname  ( -- )
-   c" nop" to mnemonic
+: .90 ( -- )
+   $" nop" to mnemonic
+   0 to #operands
    .inst ;
 
-$90 install-handler
+latest-xt $90 install-handler
 
 : .b8  ( -- )
     $" mov" to mnemonic
@@ -1866,29 +1962,35 @@ $90 install-handler
 
 ' .c1 $c1 install-handler
 
-\ $c7 handler
-:noname ( -- )
+: .c7 ( -- )
     \ Move a 32-bit signed immediate value to a 64-bit register
     \ or memory operand.
     $" mov" to mnemonic
     !modrm-byte
-    modrm-reg 0= if
+\     modrm-reg 0= if
         modrm-rm 4 = if
             !sib-byte
             sib-base 5 = if             \ no base register (when mod == 0)
                 \ [disp32]
-                ok_relative_no_reg 0 ip l@s dest!
-                4 +to ip
-                ok_immediate 0 ip l@s source!
-                4 +to ip
+\                 ok_relative_no_reg 0 ip l@s dest!
+\                 4 +to ip
+                next-int32 to ddisp
+                true to memory-operand?
+\                 ok_immediate 0 ip l@s source!
+\                 4 +to ip
+                next-uint32 to immediate-operand
+                true to immediate-operand?
                 .inst
                 exit
             then
         then
         modrm-mod 0 = if
-            ok_relative modrm-reg register-reg 0 dest!
-            ok_immediate 0 ip l@ source!
-            4 +to ip
+\             ok_relative modrm-reg register-reg 0 dest!
+            modrm-reg register-reg to dreg
+\             ok_immediate 0 ip l@ source!
+\             4 +to ip
+            next-uint32 to immediate-operand
+            true to immediate-operand?
             .inst
             exit
         then
@@ -1901,17 +2003,20 @@ $90 install-handler
             exit
         then
         modrm-mod 3 = if
-            ok_register modrm-rm register-rm 0 dest!
-            ok_immediate 0 ip l@s source!
-            4 +to ip
+\             ok_register modrm-rm register-rm 0 dest!
+            modrm-rm register-rm to dreg
+\             ok_immediate 0 ip l@s source!
+\             4 +to ip
+            next-int32 to immediate-operand
+            true to immediate-operand?
             .inst
             exit
         then
-    then
+\     then
     unsupported
 ;
 
-$c7 install-handler
+latest-xt $c7 install-handler
 
 :noname ( -- )
     $" leave" to mnemonic
@@ -1922,6 +2027,7 @@ $c9 install-handler
 
 : .cc ( -- )
     $" int3" to mnemonic
+    0 to #operands
     .inst
 ;
 
@@ -2055,7 +2161,7 @@ $f6 install-handler
         \ MUL IMUL DIV IDIV
         modrm-mod 1 = if
             \ disp8
-            next-disp8 to ddisp
+            next-signed-byte to ddisp
             modrm-rm register-rm to dbase
             $" qword" to relative-size
             .inst
@@ -2130,14 +2236,17 @@ latest-xt $fd install-handler
             !sib-byte
             sib-index 4 = if
                 sib-base 4 = if         \ base == rsp means no index
-                    ok_relative modrm-rm register-rm 0 dest!
+\                     ok_relative modrm-rm register-rm 0 dest!
+                    modrm-rm register-rm to dbase
                     .inst
                     exit
                 then
                 sib-base 5 = if         \ base == rbp means no base register (when mod == 0)
                     \ [disp32]
-                    ok_relative_no_reg 0 ip l@s dest!
-                    4 +to ip
+\                     ok_relative_no_reg 0 ip l@s dest!
+\                     4 +to ip
+                    next-int32 to ddisp
+                    true to memory-operand?
                     .inst
                     exit
                 then
@@ -2148,8 +2257,8 @@ latest-xt $fd install-handler
     modrm-mod 0 = if
         modrm-reg 4 = if
 \             $" jmp" to mnemonic
-            ok_relative modrm-rm 0 dest!
-            2 to size
+            modrm-rm register-rm to dbase
+\             ok_relative modrm-rm 0 dest!
             .inst
             exit
         then
