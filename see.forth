@@ -371,20 +371,29 @@ init-reg64-names
 
 0 value relative-size                   \ $addr or 0
 
-: .relative  ( reg disp -- )
+: .relative ( base index disp -- )
+    local disp
+    local index
+    local base
+
     relative-size ?dup if
         $. space
         0 to relative-size
     then
-    ." [" swap .reg64                   \ -- disp
-    ?dup if
-        dup 0> if
+
+    ." [" base .reg64
+    index -1 <> if
+        ." +"
+        index .reg64
+    then
+    disp if
+        disp 0> if
             ." +"
         else
             ." -"
-            abs
+            disp negate to disp
         then
-        0 .r
+        disp 0 .r
     then
     ." ]" ;
 
@@ -400,10 +409,12 @@ init-reg64-names
 -1 value sreg   \ source register
 64 value ssize  \ source operand size
 -1 value sbase  \ source base register
+-1 value sindex \ source index register
  0 value sdisp  \ source displacement
 -1 value dreg   \ destination register
 64 value dsize  \ destination operand size
 -1 value dbase  \ destination base register
+-1 value dindex \ destination index register
  0 value ddisp  \ destination displacement
 
 -1 value #operands
@@ -425,6 +436,8 @@ init-reg64-names
     64 to dsize
     -1 to sbase
     -1 to dbase
+    -1 to sindex
+    -1 to dindex
      0 to sdisp
      0 to ddisp
 
@@ -447,7 +460,7 @@ init-reg64-names
         exit
     then
     dbase -1 <> if
-        dbase ddisp .relative
+        dbase dindex ddisp .relative
         exit
     then
     memory-operand? if
@@ -469,7 +482,7 @@ init-reg64-names
     then
     sbase -1 <> if
         .sep
-        sbase sdisp .relative
+        sbase sindex sdisp .relative
         exit
     then
     memory-operand? if
@@ -665,20 +678,18 @@ latest-xt $e9 install-handler
     \ source is r8
     \ dest is r/m8
     !modrm-byte
+    modrm-reg to sreg
+    8 to ssize
     modrm-mod 0 = if
-\         ok_relative modrm-rm register-rm 0 dest!
         modrm-rm register-rm to dbase
         $" byte" to relative-size       \ REVIEW
-        modrm-reg to sreg
-        8 to ssize
         .inst
         exit
     then
     modrm-mod 1 = if
         \ 1-byte displacement
-        ok_relative modrm-rm register-rm ip c@s dest!
-        1 +to ip
-        modrm-reg reg8 to sreg
+        modrm-rm register-rm to dbase
+        next-signed-byte to ddisp
         .inst
         exit
     then
@@ -686,7 +697,6 @@ latest-xt $e9 install-handler
 ;
 
 latest-xt $00 install-handler
-
 
 : .01 ( -- )                            \ ADD reg/mem64, reg64
     $" add" to mnemonic
@@ -1142,6 +1152,33 @@ latest-xt $63 install-handler
     !modrm-byte
     mnemonic-from-regop to mnemonic
 
+    modrm-mod 0 = if
+        modrm-rm register-rm to dbase
+        $" byte" to relative-size
+        next-byte to immediate-operand
+        true to immediate-operand?
+        .inst
+        exit
+    then
+
+    modrm-mod 1 = if
+        modrm-rm 4 = if
+            !sib-byte
+            sib-index 4 <>
+            sib-base 5 <> and if
+                sib-scale 0= if
+                    sib-base to dbase
+                    sib-index to dindex
+                    next-signed-byte to ddisp
+                    next-byte to immediate-operand
+                    true to immediate-operand?
+                    .inst
+                    exit
+                then
+            then
+        then
+    then
+
     modrm-mod 3 = if
         \ register-direct
         modrm-rm to dreg
@@ -1151,31 +1188,6 @@ latest-xt $63 install-handler
         .inst
         exit
     then
-
-    modrm-mod 0 = if
-\         ok_relative modrm-rm register-rm 0 dest!
-        modrm-rm register-rm to dbase
-        $" byte" to relative-size
-\         ok_immediate 0 ip c@ source!
-        next-byte to immediate-operand
-        true to immediate-operand?
-        .inst
-        exit
-    then
-
-    modrm-mod 3 <
-    modrm-rm 4 = and if
-        !sib-byte
-        modrm-mod 1 = if
-            break \ FIXME!!
-        then
-    then
-
-    ok_register modrm-rm reg8 0 dest!
-    ok_immediate 0 ip c@ source!
-    1 +to ip
-    .inst
-    exit
 
     unsupported
 ;
