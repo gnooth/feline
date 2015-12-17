@@ -143,6 +143,8 @@ code break, 'break'                     ; --
         _ do_error
         _else .3
         _ ok
+        _ white
+        _ foreground
         _ cr
         _then .3
         _ continue?
