@@ -21,6 +21,9 @@ only forth
 
 [undefined] x86-64 [if] include-system-file x86-64.forth [then]
 
+\ REVIEW
+[undefined] <string> [if] include-system-file object.forth [then]
+
 only forth also x86-64 also disassembler definitions
 
 decimal
@@ -251,10 +254,6 @@ init-reg64-names
 ;
 
 : .reg64  ( +n -- )
-    prefix $41 = if
-        \ extended register
-        8 or
-    then
     reg64-name $.
 ;
 
@@ -264,6 +263,8 @@ init-reg64-names
     local disp
     local index
     local base
+
+    [ false ] [if]
 
     relative-size ?dup if
         $. space
@@ -284,7 +285,40 @@ init-reg64-names
         then
         disp 0 .r
     then
-    ." ]" ;
+    ." ]"
+
+    [else]
+    \ faster!
+    260 <string> local buffer
+
+    relative-size ?dup if
+        count buffer string-append-chars
+        $20 ( space ) buffer string-append-char
+        0 to relative-size
+    then
+
+    '[' buffer string-append-char
+    base reg64-name count buffer string-append-chars
+    index -1 <> if
+        '+' buffer string-append-char
+        index reg64-name count buffer string-append-chars
+    then
+    disp if
+        disp 0> if
+            '+' buffer string-append-char
+        else
+            '-' buffer string-append-char
+            disp negate to disp
+        then
+        disp (.) buffer string-append-chars
+    then
+    ']' buffer string-append-char
+
+    buffer string> type
+    buffer ~string
+
+    [then]
+;
 
 : .memory-operand ( disp -- )
     ." [" 0 h.r ." ]"
@@ -752,21 +786,17 @@ create cmov-mnemonic-table 16 cells allot
 latest-xt $0f install-handler
 
 : .push  ( -- )
-    prefix if 2 else 1 then to size
-    size .bytes
-    40 >pos
-    ." push"
-    48 >pos
-    opcode $50 - .reg64
+    $" push" to mnemonic
+    opcode $50 - register-rm to dreg
+    1 to #operands
+    .inst
 ;
 
 : .pop  ( -- )
-    prefix if 2 else 1 then to size
-   size .bytes
-   40 >pos
-   ." pop"
-   48 >pos
-   opcode $58 - .reg64
+    $" pop" to mnemonic
+    opcode $58 - register-rm to dreg
+    1 to #operands
+    .inst
 ;
 
 : .ret  ( -- )
