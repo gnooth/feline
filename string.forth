@@ -56,16 +56,15 @@ only forth also definitions
 
 : string-ensure-capacity ( n string -- )
     local s
-    local new
-    s string-capacity local old
+    local new-capacity
+    s string-capacity local old-capacity
     0 local old-data
     0 local new-data
-    new old > if
+    new-capacity old-capacity > if
         \ at least double current capacity
-        new old 2* max to new
-\         [log ." STRING-ENSURE-CAPACITY " old . ." -> " new . log]
-        new 1+ ( terminal null byte ) chars -allocate to new-data
-        new-data new 1+ chars erase
+        new-capacity old-capacity 2* max to new-capacity
+        new-capacity 1+ ( terminal null byte ) chars -allocate to new-data
+        new-data new-capacity 1+ chars erase
         \ copy existing data
         s string-data dup to old-data
         new-data s string-length cmove
@@ -74,8 +73,19 @@ only forth also definitions
         \ free old storage
         old-data -free
         \ update capacity slot of existing vector
-        new s string-capacity!
+        new-capacity s string-capacity!
     then
+;
+
+\ constructor
+: <string> ( capacity -- string )
+    local capacity
+    STRING_SIZE -allocate local s
+    s STRING_SIZE erase
+    STRING_TYPE s object-header!
+    capacity chars -allocate s string-data!
+    capacity s string-capacity!
+    s
 ;
 
 : >string ( c-addr u -- string )
@@ -162,12 +172,14 @@ only forth also definitions
 
 : string-set-length ( n string -- )
     local s
-    local n
-    n s string-length < if
-        n s string-length!
+    local new-length
+    new-length s string-length < if
+        new-length s string-length!
+        0 s string-data new-length + c!
     else
         \ REVIEW Java AbstractStringBuilder calls ensureCapacityInternal() and appends nulls
-        n s string-length > abort" STRING-SET-LENGTH new length exceeds existing length"
+        new-length s string-length >
+        abort" STRING-SET-LENGTH new length exceeds existing length"
     then
 ;
 
@@ -192,11 +204,26 @@ only forth also definitions
     s string-length sappend string-length + s string-length!
 ;
 
+: string-append-chars ( addr len string -- )
+    local this
+    local len
+    local addr
+
+    this string-length len + this string-ensure-capacity
+    addr                                        \ -- src
+    this string-data this string-length +       \ -- dest
+    len                                         \ -- src dest len
+    cmove
+    this string-length len + this string-length!
+    0 this string-data this string-length + c!
+;
+
 : string-append-char ( char string -- )
-    local s
+    local this
     local c
-    s string-length local len
-    len 1+ s string-ensure-capacity
-    c s string-data len + c!
-    len 1+ s string-length!
+    this string-length local len
+    len 1+ this string-ensure-capacity
+    c this string-data len + c!
+    len 1+ this string-length!
+    0 this string-data len 1+ + c!
 ;
