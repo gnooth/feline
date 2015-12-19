@@ -127,11 +127,18 @@ static void initialize_forth()
   word_buffer_data = (Cell) malloc(260);
 }
 
+static void print_version()
+{
+  printf("Feline 0.0.0.1\n");
+  printf("Copyright (C) 2012-2015 Peter Graves\n");
+}
+
 #if defined WIN64 && defined WINDOWS_UI
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow)
 {
   start_time_ticks_data = os_ticks();
+  print_version();
   initialize_forth();
   InitApplication(hInstance);
   InitInstance(hInstance, nCmdShow);
@@ -144,6 +151,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
 int main(int argc, char **argv, char **env)
 {
   start_time_ticks_data = os_ticks();
+
+  print_version();
 
   args(argc, argv);
 

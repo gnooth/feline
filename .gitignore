@@ -1,8 +1,10 @@
 *.o
 forth
+feline
 *.zip
 *.obj
 forth.exe
+feline.exe
 *.pdb
 forth_home
 forth_home.exe

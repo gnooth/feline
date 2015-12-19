@@ -16,7 +16,7 @@
 : (process-init-file) ( -- )
     user-home
     [ linux? ] [if] $" /" [else] $" \" [then] $+
-    $" .init.forth" $+
+    $" .init.feline" $+
     dup count file-exists? if
         count included
     else

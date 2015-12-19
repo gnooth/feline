@@ -23,9 +23,11 @@ OBJS = main.o os.o terminal.o backtrace.o forth.o
 ifeq ($(OS),Windows_NT)
 	CFLAGS += -DWIN64 -DWIN64_NATIVE
 	ASMFLAGS += -DWIN64 -DWIN64_NATIVE
+	FELINE_EXE = feline.exe
 	FORTH_EXE = forth.exe
 	FORTH_HOME_EXE = forth_home.exe
 else
+	FELINE_EXE = feline
 	FORTH_EXE = forth
 	FORTH_HOME_EXE = forth_home
 endif
@@ -39,8 +41,8 @@ ifdef WINDOWS_UI
 endif
 endif
 
-$(FORTH_EXE):  $(OBJS)
-	$(CC) $(LINKFLAGS) $(OBJS) -o forth
+$(FELINE_EXE):  $(OBJS)
+	$(CC) $(LINKFLAGS) $(OBJS) -o feline
 
 forth_home.asm: $(FORTH_HOME_EXE)
 	./forth_home
@@ -116,6 +118,8 @@ forth.o: $(ASM_SOURCES) Makefile
 clean:
 	-rm -f forth
 	-rm -f forth.exe
+	-rm -f feline
+	-rm -f feline.exe
 	-rm -f main.o*
 	-rm -f os.o*
 	-rm -f terminal.o*

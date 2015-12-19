@@ -112,7 +112,7 @@ create history-array  history-size cells allot  history-array history-size cells
         $buf 1+ zplace
         [ linux? ] [if] s" /" [else] s" \" [then]
         $buf 1+ zappend
-        s" .forth-history" $buf 1+ zappend
+        s" .feline-history" $buf 1+ zappend
         $buf 1+ zstrlen $buf c!
 \         $buf count >$ to $history-file-pathname
         here $buf count string, to $history-file-pathname
