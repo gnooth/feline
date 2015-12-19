@@ -98,9 +98,9 @@ create history-array  history-size cells allot  history-array history-size cells
 
 : history ( -- )
     history-array 0= if exit then       \ shouldn't happen
-    history-length 0 ?do
+    history-length dup 16 - 0 max ?do
         history-array i cells + @
-        cr count type
+        cr $.
     loop ;
 
 0 value $history-file-pathname
@@ -282,25 +282,22 @@ create restore-buffer 258 allot
     copied-input-buffer copied-input-length
 ;
 
+: clear-copied-input ( -- )
+    copied-input-buffer 256 erase
+;
+
 : copy-input ( -- )
     copied-input-buffer 256 erase
     bufstart copied-input-buffer #in 256 min cmove
     #in to copied-input-length
 ;
 
-: do-previous-matching-input ( -- )
-    #in 0= if
-        do-previous
-        exit
-    then
-    history-length 0= if exit then
-    history-offset 0< if
-        copy-input
-        \ most recent entry is at highest offset
-        history-length to history-offset
-    then
+: do-matching-input ( direction -- )
+    \ direction is -1 for previous matching input, +1 for next matching input
+    local direction
+
     history-offset 0> if
-        -1 +to history-offset
+        direction +to history-offset
     then
     begin
         history-offset 0>=
@@ -326,8 +323,35 @@ create restore-buffer 258 allot
                 then
             then
         then
-        -1 +to history-offset
+        direction +to history-offset
     repeat
+    \ not found
+    \ reset history-offset and restore copied input
+    clear-line
+    -1 to history-offset
+    copied-input bufstart swap cmove
+    copied-input-length dup to #in to dot
+    clear-copied-input
+    redisplay-line
+;
+
+: do-next-matching-input ( -- )
+    \ history-offset starts where do-previous-matching-input left it
+    1 do-matching-input
+;
+
+: do-previous-matching-input ( -- )
+    #in 0= if
+        do-previous
+        exit
+    then
+    history-length 0= if exit then
+    history-offset 0< if
+        copy-input
+        \ most recent entry is at highest offset
+        history-length to history-offset
+    then
+    -1 do-matching-input
 ;
 
 : do-enter ( -- )
@@ -372,24 +396,25 @@ create restore-buffer 258 allot
 
 create keytable
 
-$0a ,          ' do-enter ,             \ Linux
-$0d ,          ' do-enter ,             \ Windows
-bs ,           ' do-bs ,                \ Windows
-del ,          ' do-bs ,                \ Linux
-esc ,          ' do-escape ,
-3 ,            ' bye ,                  \ control c
-\ $10 ,          ' do-previous ,          \ control p
-$10 ,          ' do-previous-matching-input ,          \ control p
-$0e ,          ' do-next ,              \ control n
-k-up ,         ' do-previous ,
-k-down ,       ' do-next ,
-k-left ,       ' do-left ,
-k-right ,      ' do-right ,
-k-home ,       ' do-home ,
-k-end ,        ' do-end ,
-k-delete ,     ' do-delete ,
-$0f ,          ' accept-line-and-down-history ,
-0 ,            ' drop ,                 \ REVIEW
+$0a ,           ' do-enter ,            \ Linux
+$0d ,           ' do-enter ,            \ Windows
+bs ,            ' do-bs ,               \ Windows
+del ,           ' do-bs ,               \ Linux
+esc ,           ' do-escape ,
+3 ,             ' bye ,                 \ control c
+\ $10 ,         ' do-previous ,         \ control p
+$10 ,           ' do-previous-matching-input ,          \ control p
+\ $0e ,         ' do-next ,             \ control n
+$0e ,           ' do-next-matching-input ,              \ control n
+k-up ,          ' do-previous ,
+k-down ,        ' do-next ,
+k-left ,        ' do-left ,
+k-right ,       ' do-right ,
+k-home ,        ' do-home ,
+k-end ,         ' do-end ,
+k-delete ,      ' do-delete ,
+$0f ,           ' accept-line-and-down-history ,
+0 ,             ' drop ,                 \ REVIEW
 
 : do-command ( x -- )
     keytable switch ;
