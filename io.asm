@@ -834,7 +834,7 @@ forth_home_data:
         db      0
 
 ; ### forth-home
-code forth_home, 'forth-home'           ; -- zaddr
+code forth_home, 'forth-home'           ; -- $addr
         pushrbx
         mov     ebx, forth_home_data    ; assumes 32-bit address
         next
