@@ -1197,7 +1197,7 @@ latest-xt $88 install-handler
     modrm-mod 1 = if                    \ 1-byte displacement
         modrm-reg to dreg
         8 to dsize
-        modrm-rm register-rm to sreg
+        modrm-rm register-rm to sbase
         next-signed-byte to sdisp
         .inst
         exit
