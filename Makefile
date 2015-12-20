@@ -12,6 +12,9 @@
 # Tested with gcc (tdm64-1) 5.1.0 on Windows 10.
 # NASM 2.11.08 on Windows, 2.11.05 on Linux.
 # No support in this makefile for Microsoft tools.
+
+VERSION = `git describe --tags`
+
 CC = gcc
 
 CFLAGS = --std=c99 -D_GNU_SOURCE -g -m64
@@ -50,7 +53,10 @@ forth_home.asm: $(FORTH_HOME_EXE)
 $(FORTH_HOME_EXE): forth_home.c
 	$(CC) forth_home.c -o forth_home
 
-main.o:	forth.h windows-ui.h main.c Makefile
+version.h:
+	echo "#define VERSION \"$(VERSION)\"" > version.h
+
+main.o:	forth.h version.h windows-ui.h main.c Makefile
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
 os.o:	forth.h os.c Makefile
@@ -125,6 +131,7 @@ clean:
 	-rm -f terminal.o*
 	-rm -f forth.o*
 	-rm -f forth_home.asm forth_home.exe forth_home
+	-rm -f version.h
 
 zip:
 	-rm -f forth.zip

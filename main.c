@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>             // strlen
 #include <setjmp.h>
 #ifdef WIN64
 #include <windows.h>
@@ -24,6 +25,7 @@
 #endif
 
 #include "forth.h"
+#include "version.h"
 
 #ifdef WINDOWS_UI
 #include "windows-ui.h"
@@ -129,7 +131,11 @@ static void initialize_forth()
 
 static void print_version()
 {
-  printf("Feline 0.0.0.1\n");
+  char * version = VERSION;     // from the generated file version.h (see Makefile)
+  if (!strlen(version))
+    // the string might be empty (if git is not installed, for example)
+    version = "0.0.0.1";
+  printf("Feline %s\n", version);
   printf("Copyright (C) 2012-2015 Peter Graves\n");
 }
 
