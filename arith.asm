@@ -463,22 +463,20 @@ code max, 'max'                         ; n1 n2 -- n3
 endcode
 
 ; ### lshift
-code lshift, 'lshift'                   ; x1 u -- x2
+inline lshift, 'lshift'                 ; x1 u -- x2
 ; CORE
         mov     ecx, ebx
         poprbx
         shl     rbx, cl
-        next
-endcode
+endinline
 
 ; ### rshift
-code rshift, 'rshift'                   ; x1 u -- x2
+inline rshift, 'rshift'                 ; x1 u -- x2
 ; CORE
         mov     ecx, ebx
         poprbx
         shr     rbx, cl
-        next
-endcode
+endinline
 
 ; ### rol
 code rol, 'rol'
@@ -503,12 +501,11 @@ inline or, 'or'                         ; x1 x2 -- x3
 endinline
 
 ; ### xor
-code xor, 'xor'                         ; x1 x2 -- x3
+inline xor, 'xor'                       ; x1 x2 -- x3
 ; CORE
         xor     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
-        next
-endcode
+endinline
 
 ; ### invert
 inline invert, 'invert'                 ; x1 -- x2
