@@ -515,6 +515,14 @@ section .text
         _lit 0
 %endmacro
 
+%macro  _true 0
+        _lit -1
+%endmacro
+
+%macro  _false 0
+        _lit 0
+%endmacro
+
 %macro  _ccommac 1
         _lit    %1
         _ ccommac
