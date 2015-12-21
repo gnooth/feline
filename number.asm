@@ -36,24 +36,21 @@ endcode
 
 ; ### binary
 code binary, 'binary'
-        mov     rax, base_data
-        mov     qword [rax], 2
+        mov     qword [base_data], 2
         next
 endcode
 
 ; ### decimal
 code decimal, 'decimal'
 ; CORE
-        mov     rax, base_data
-        mov     qword [rax], 10
+        mov     qword [base_data], 10
         next
 endcode
 
 ; ### hex
 code hex, 'hex'
 ; CORE EXT
-        mov     rax, base_data
-        mov     qword [rax], 16
+        mov     qword [base_data], 16
         next
 endcode
 
