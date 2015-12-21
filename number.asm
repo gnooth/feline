@@ -71,10 +71,10 @@ code digit, 'digit'                     ; char -- n true  |  char -- false
         _ basefetch
         _ lt
         _if .2
-        _ true
+        _true
         _else .2
         _ drop
-        _ false
+        _false
         _then .2
         _return
         _then digit1
@@ -85,7 +85,7 @@ code digit, 'digit'                     ; char -- n true  |  char -- false
         _zlt
         _if digit3
         _ drop
-        _ false
+        _false
         _return
         _then digit3
         _lit 10
@@ -95,10 +95,10 @@ code digit, 'digit'                     ; char -- n true  |  char -- false
         _ ge
         _if digit4
         _ drop
-        _ false
+        _false
         _return
         _then digit4
-        _ true
+        _true
         next
 endcode
 
@@ -106,7 +106,7 @@ endcode
 code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
 ; CORE
         _begin tonumber1
-        _ dup
+        _dup
         _while tonumber1
         _ over
         _cfetch
@@ -120,7 +120,7 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
         _ swap                          ; -- c-addr u1 lo digit hi
         _ basefetch                     ; -- c-addr u1 lo digit hi base
         _ umstar                        ; -- c-addr u1 lo digit ud
-        _ drop                          ; -- c-addr u1 lo digit u
+        _drop                           ; -- c-addr u1 lo digit u
         _ rot
         _ basefetch
         _ umstar
@@ -195,15 +195,15 @@ code number?, 'number?'                 ; c-addr u -- d flag
         _zeq_if ixnumber3               ; -- ud c-addr' u'
         ; no chars left over
         _2drop
-        _ true
+        _true
         _return
         _then ixnumber3
         ; one or more chars left over
         _lit 1
         _ notequal
         _if ixnumber4                   ; -- ud c-addr'
-        _ drop
-        _ false
+        _drop
+        _false
         _return
         _then ixnumber4
         _ cfetch                        ; -- ud char
@@ -212,9 +212,9 @@ code number?, 'number?'                 ; c-addr u -- d flag
         _if ixnumber5
         _lit -1
         _to double?
-        _ true
+        _true
         _else ixnumber5
-        _ false
+        _false
         _then ixnumber5
         next
 endcode

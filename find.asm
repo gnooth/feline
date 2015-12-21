@@ -65,12 +65,12 @@ code wordlist, 'wordlist'               ; -- wid
 ; SEARCH
 ; "Create a new empty word list, returning its word list identifier wid."
         _ voclink
-        _ fetch
+        _fetch
         _ comma                         ; link
         _zero
         _ comma                         ; pointer to vocabulary name
         _ here                          ; this address will be the wid
-        _ dup
+        _dup
         _ voclink
         _ store
         _zero
@@ -394,7 +394,7 @@ code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
         _until .2
         _then .1
         _3drop
-        _ false
+        _false
         next
 endcode
 

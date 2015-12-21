@@ -115,7 +115,7 @@ code find_local, 'find-local'           ; found:        $addr -- index true
                                         ; not found:    $addr -- $addr false
         _ using_locals?
         _zeq_if .1
-        _ false
+        _false
         _return
         _then .1
 
@@ -136,14 +136,14 @@ code find_local, 'find-local'           ; found:        $addr -- index true
         ; found it!
         _drop
         _i
-        _ true
+        _true
         _unloop
         _return
         _then .3
         _loop .2
 
         ; not found
-        _ false
+        _false
         next
 endcode
 
@@ -208,7 +208,7 @@ code initialize_local_names, 'initialize-local-names'
         _ erase
         _zero
         _to locals_defined
-        _ true
+        _true
         _to using_locals?
         next
 endcode

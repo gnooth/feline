@@ -158,7 +158,7 @@ code refill, 'refill'                   ; -- flag
         _if .2
         ; error
         _2drop
-        _ false
+        _false
         _return
         _then .2                        ; -- len flag
         _if .3                          ; -- len
@@ -169,7 +169,7 @@ code refill, 'refill'                   ; -- flag
         _ plusstore
         _ toin
         _ off
-        _ true
+        _true
         _else .3
         ; end of file
 ;         _ drop
@@ -239,12 +239,12 @@ code includable?, 'includable?'         ; $addr -- flag
         _zeq_if .2
         _rfrom
         _drop
-        _ true
+        _true
         _return
         _then .2
         _then .1
         _rfromdrop
-        _ false
+        _false
         next
 endcode
 
@@ -422,7 +422,7 @@ code filename_is_absolute, 'filename-is-absolute'       ; $filename -- flag
         _then .2
 
         ; otherwise...
-        _ false
+        _false
 %else
         ; Linux
         _ string_first_char

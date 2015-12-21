@@ -466,7 +466,7 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _else read_line5                ; no CR
         _i
         _then read_line5
-        _ true
+        _true
         _zero
         _unloop
         _return
@@ -478,12 +478,12 @@ code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
         _loop read_line2
         ; fall through
         _2drop                          ; -- u2
-        _ true                          ; -- u2 flag
+        _true                           ; -- u2 flag
         _zero                           ; -- u2 flag ior
         _else read_line1
         _2drop
         _zero
-        _ true
+        _true
         _zero
         _then read_line1
         next
