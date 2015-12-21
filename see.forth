@@ -100,6 +100,10 @@ variable done?
     ip l@
     4 +to ip ;
 
+: next-uint64 ( -- uint64 )
+    ip @
+    8 +to ip ;
+
 : (modrm-mod)  ( modrm-byte -- mod )  %11000000 and 6 rshift ;
 : (modrm-reg)  ( modrm-byte -- reg )  %00111000 and 3 rshift ;
 : (modrm-rm)   ( modrm-byte -- rm  )  %00000111 and ;
@@ -321,6 +325,10 @@ init-reg64-names
 ;
 
 : .memory-operand ( disp -- )
+    relative-size ?dup if
+        $. space
+        0 to relative-size
+    then
     ." [" 0 h.r ." ]"
 ;
 
@@ -1286,12 +1294,16 @@ latest-xt $8f install-handler
 latest-xt $90 install-handler
 
 : .b8  ( -- )
+    \ source is imm32/64
+    \ dest is r32/64
     $" mov" to mnemonic
     opcode $b8 - to dreg
     prefix if
-        ip @ cell +to ip
+\         ip @ cell +to ip
+        next-uint64
     else
-        ip l@ 4 +to ip
+\         ip l@ 4 +to ip
+        next-uint32
         32 to dsize
     then
     to immediate-operand
@@ -1323,35 +1335,42 @@ latest-xt $90 install-handler
 ' .c1 $c1 install-handler
 
 : .c7 ( -- )
+    \ /0
     \ Move a 32-bit signed immediate value to a 64-bit register
     \ or memory operand.
-    $" mov" to mnemonic
     !modrm-byte
-    modrm-rm 4 = if
-        !sib-byte
-        sib-base 5 = if                 \ no base register (when mod == 0)
-            \ [disp32]
-            next-int32 to ddisp
-            true to memory-operand?
-            next-uint32 to immediate-operand
+    regop 0= if                         \ /0
+        $" mov" to mnemonic
+        modrm-mod 0= if
+            modrm-rm 4 = if
+                !sib-byte
+                sib-base 5 = if         \ no base register (when mod == 0)
+                    \ [disp32]
+                    next-int32 to ddisp
+                    true to memory-operand?
+                    $" qword" to relative-size
+                    next-uint32 to immediate-operand
+                    true to immediate-operand?
+                    .inst
+                    exit
+                then
+            then
+        then
+        modrm-mod 0= if
+            modrm-rm register-rm to dbase
+            $" qword" to relative-size
+            next-int32 to immediate-operand
             true to immediate-operand?
             .inst
             exit
         then
-    then
-    modrm-mod 0= if
-        modrm-reg register-reg to dreg
-        next-uint32 to immediate-operand
-        true to immediate-operand?
-        .inst
-        exit
-    then
-    modrm-mod 3 = if
-        modrm-rm register-rm to dreg
-        next-int32 to immediate-operand
-        true to immediate-operand?
-        .inst
-        exit
+        modrm-mod 3 = if
+            modrm-rm register-rm to dreg
+            next-int32 to immediate-operand
+            true to immediate-operand?
+            .inst
+            exit
+        then
     then
     unsupported
 ;
