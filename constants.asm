@@ -22,28 +22,13 @@ constant tdeferred, 'tdefer', TYPE_DEFERRED
 constant tconst, 'tconst', TYPE_CONSTANT
 
 ; ### false
-code false, 'false'
-; CORE EXT
-        pushrbx
-        xor     ebx, ebx
-        next
-endcode
+constant false, 'false', 0              ; CORE EXT
 
 ; ### true
-code true, 'true'
-; CORE EXT
-        pushrbx
-        mov     rbx, -1
-        next
-endcode
+constant true, 'true', -1               ; CORE EXT
 
 ; ### bl
-code blchar, 'bl'
-; CORE
-        pushrbx
-        mov     ebx, ' '
-        next
-endcode
+constant blchar, 'bl', 32               ; CORE
 
 ; ### cell
 constant cell, 'cell', BYTES_PER_CELL   ; not in standard
