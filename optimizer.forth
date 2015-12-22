@@ -127,3 +127,30 @@
 ;
 
 ' compile-r> ' r> >comp!
+
+: compile-rshift/lshift ( xt -- )
+    local xt
+
+    cq-#lits 1 =
+    cq-lit1 $ff <= and
+    if
+        $48 c,c
+        $c1 c,c
+        xt ['] rshift = if
+            $eb c,c
+            cq-lit1 c,c
+            ?cr ." rshift lit -> shr rbx, lit"
+        else
+            $e3 c,c
+            cq-lit1 c,c
+            ?cr ." lshift lit -> shl rbx, lit"
+        then
+        0 to cq-#lits
+    else
+        cq-flush-literals
+        xt inline-or-call-xt
+    then
+    1 +to cq-index
+;
+
+latest-xt dup ' rshift >comp! ' lshift >comp!
