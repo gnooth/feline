@@ -15,6 +15,9 @@
 
 file __FILE__
 
+; ### feline?
+constant feline?, 'feline?', -1
+
 ; Types
 constant tvar, 'tvar', TYPE_VARIABLE
 constant tvalue, 'tvalue', TYPE_VALUE
