@@ -43,8 +43,7 @@ code val, 'value'                       ; x "<spaces>name" --
         _lit dovalue_end - dovalue_patch
         _ minus
         _ store
-        _lit $0c3
-        _ ccommac
+        _ccommac $0c3
         _ comma
 
         _ tvalue
@@ -52,6 +51,8 @@ code val, 'value'                       ; x "<spaces>name" --
         _namefrom
         _totype
         _ cstore
+
+        _ inline_latest
 
         next
 endcode
