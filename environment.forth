@@ -31,7 +31,7 @@ vocabulary environment
 environment definitions
 
 \ REVIEW gforth reports its version string, which seems like a good idea
-true    constant feline?
+true    constant feline
 
 255     constant /counted-string
 /hold   constant /hold
