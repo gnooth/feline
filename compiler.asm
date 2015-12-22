@@ -67,7 +67,7 @@ code literal, 'literal', IMMEDIATE      ; n --
 endcode
 
 ; ### (copy-code)
-code paren_copy_code, '(copy-code)'     ; addr size --
+code paren_copy_code, '(copy-code)'     ; code-addr size --
         _ here_c
         _ over
         _ allot_c
@@ -78,12 +78,12 @@ endcode
 
 ; ### copy-code
 code copy_code, 'copy-code'             ; xt --
-        _ dup                           ; -- xt xt
+        _dup                            ; -- xt xt
         _toinline                       ; -- xt addr
         _cfetch                         ; -- xt size
-        _ swap
-        _tocode
-        _ swap                          ; -- code size
+        _ swap                          ; -- size xt
+        _tocode                         ; -- size code-address
+        _ swap                          ; -- code-address size
         _ paren_copy_code
         next
 endcode
@@ -130,8 +130,7 @@ endcode
 
 ; ### ,jmp
 code commajmp, ',jmp'                   ; code --
-        _lit $0e9
-        _ ccommac
+        _ccommac $0e9
         _ here_c                        ; -- code here
         add     rbx, 4                  ; -- code here+4
         _ minus                         ; -- displacement
@@ -141,7 +140,7 @@ endcode
 
 ; ### inline-or-call-xt
 code inline_or_call_xt, 'inline-or-call-xt'     ; xt --
-        _ dup                           ; -- xt xt
+        _dup                            ; -- xt xt
         _toinline                       ; -- xt >inline
         _cfetch                         ; -- xt #bytes
         _if .1                          ; -- xt
