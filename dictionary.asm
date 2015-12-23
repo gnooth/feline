@@ -594,8 +594,15 @@ code exit_, 'exit', IMMEDIATE
 endcode
 
 ; ### .id
-code dotid, '.id'
+code dotid, '.id'                       ; nfa --
         _ count
+
+        ; REVIEW
+        ; HIDE sets the high bit of the count byte.
+        ; Mask it off so we don't type garbage in that situation.
+        _lit $7f
+        _ and
+
         _ type
         _ space
         next
