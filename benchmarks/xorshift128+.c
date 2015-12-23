@@ -24,8 +24,13 @@ int main(int argc, char** argv)
     xorshift128plus();
   t2 = ticks();
   printf("%ld ms\n", t2 - t1);
+#ifdef WIN64
+  printf("state0 = %llu\n", state0);
+  printf("state1 = %llu\n", state1);
+#else
   printf("state0 = %lu\n", state0);
   printf("state1 = %lu\n", state1);
+#endif
 }
 
 // gcc xorshift128+.c -o xorshift128+
