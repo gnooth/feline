@@ -88,8 +88,7 @@ code copy_code, 'copy-code'             ; xt --
         next
 endcode
 
-; ### push-tos,
-; code push_tos_comma, 'push-tos,'
+; ### compile-pushrbx
 code compile_pushrbx, 'compile-pushrbx'
         _lit .1
         _lit .2 - .1
@@ -100,8 +99,7 @@ code compile_pushrbx, 'compile-pushrbx'
 .2:
 endcode
 
-; ### pop-tos,
-; code pop_tos_comma, 'pop-tos,'
+; ### compile-poprbx
 code compile_poprbx, 'compile-poprbx'
         _lit .1
         _lit .2 - .1
