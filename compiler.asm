@@ -88,26 +88,100 @@ code copy_code, 'copy-code'             ; xt --
         next
 endcode
 
-; ### compile-pushrbx
-code compile_pushrbx, 'compile-pushrbx'
-        _lit .1
-        _lit .2 - .1
-        _ paren_copy_code
+; OPTIMIZE-PUSHRBX
+
+; DROP (poprbx) followed immediately by DUP (pushrbx) looks like this:
+
+;         mov     rbx, [rbp]              ; DROP (poprbx)
+;         lea     rbp, [rbp+8]
+;         mov     [rbp-8], rbx            ; DUP (pushrbx)
+;         lea     rbp, [rbp-8]
+
+; This can be reduced to a single instruction:
+
+;         mov     rbx, [rbp]
+
+; COMPILE-PUSHRBX looks for the 8-byte sequence POPRBX-BYTES immediately
+; preceding HERE-C:
+
+;         mov     rbx, [rbp]              ; 48 8b 5d 00
+;         lea     rbp, [rbp+8]            ; 48 8d 6d 08
+; HERE-C:
+
+; If it finds the POPRBX-BYTES sequence, COMPILE-PUSHRBX simply backs up
+; HERE-C by 4 bytes:
+
+;         mov     rbx, [rbp]
+; HERE-C:
+
+; No new code needs to be added.
+
+; If the POPRBX-BYTES sequence is not found, the pushrbx code is compiled
+; inline as usual.
+
+; Note that we can't do the optimization if it would delete code at the
+; target of a forward branch:
+
+;         mov     rbx, [rbp]              ; DROP (poprbx)
+;         lea     rbp, [rbp+8]
+; target:
+;         mov     [rbp-8], rbx            ; DUP (pushrbx)
+;         lea     rbp, [rbp-8]
+
+; So we check that HERE-C is not equal to LAST-BRANCH-TARGET (which is set
+; by THEN).
+
+; ### pushrbx-bytes
+constant pushrbx_bytes, 'pushrbx-bytes', $0f86d8d48f85d8948
+
+; ### poprbx-bytes
+constant poprbx_bytes, 'poprbx-bytes', $086d8d48005d8b48
+
+; ### optimize-pushrbx
+; returns true if optimization was performed
+code optimize_pushrbx, 'optimize-pushrbx'       ; -- flag
+        _ here_c
+        _cellminus
+        _dup
+        _ origin_c
+        _ ge
+        _if .1
+        _fetch
+        _ poprbx_bytes
+        _ equal
+        _if .2
+        _ here_c
+        _ last_branch_target
+        _ notequal
+        _if .3
+        _lit -4
+        _ allot_c
+        _true
+        _return
+        _then .3
+        _then .2
+        _else .1
+        _drop
+        _then .1
+        _false
         next
-.1:
-        pushrbx
-.2:
+endcode
+
+; ### compile-pushrbx
+code compile_pushrbx, 'compile-pushrbx' ; --
+        _ optimize_pushrbx              ; -- flag
+        _zeq_if .1
+        _ pushrbx_bytes
+        _ commac
+        _then .1
+        next
 endcode
 
 ; ### compile-poprbx
 code compile_poprbx, 'compile-poprbx'
-        _lit .1
-        _lit .2 - .1
-        _ paren_copy_code
+        _ poprbx_bytes
+        _ commac
         next
-.1:
-        poprbx
-.2:
 endcode
 
 ; ### ,call
