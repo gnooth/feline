@@ -433,7 +433,7 @@ code paren_create, '(create)'
         _namefrom
         _ store
 
-        _ push_tos_comma
+        _ compile_pushrbx
 
         _ here                          ; -- pfa
         _lit $100000000
@@ -715,7 +715,7 @@ code twoliteral, '2literal', IMMEDIATE  ; compilation: x1 x2 --         run-time
         _ rrot
         _ comma
         _ comma
-        _ push_tos_comma
+        _ compile_pushrbx
         _ mov_tos_comma
         _lit parentwoliteral
         _ commacall

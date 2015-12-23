@@ -33,8 +33,8 @@ endcode
 
 ; ### (literal)
 code iliteral, '(literal)'              ; n --
-        _ push_tos_comma
-        _ dup
+        _ compile_pushrbx
+        _dup
         _lit $100000000
         _ ult
         _if .1
@@ -89,7 +89,8 @@ code copy_code, 'copy-code'             ; xt --
 endcode
 
 ; ### push-tos,
-code push_tos_comma, 'push-tos,'
+; code push_tos_comma, 'push-tos,'
+code compile_pushrbx, 'compile-pushrbx'
         _lit .1
         _lit .2 - .1
         _ paren_copy_code
@@ -100,7 +101,8 @@ code push_tos_comma, 'push-tos,'
 endcode
 
 ; ### pop-tos,
-code pop_tos_comma, 'pop-tos,'
+; code pop_tos_comma, 'pop-tos,'
+code compile_poprbx, 'compile-poprbx'
         _lit .1
         _lit .2 - .1
         _ paren_copy_code
@@ -111,11 +113,10 @@ code pop_tos_comma, 'pop-tos,'
 endcode
 
 ; ### ,call
-code commacall, ',call'                 ; code --
-        _lit $0e8
-        _ ccommac
-        _ here_c                        ; -- code here
-        add     rbx, 4                  ; -- code here+4
+code commacall, ',call'                 ; target-address --
+        _ccommac $0e8
+        _ here_c                        ; -- target-address here-c
+        add     rbx, 4                  ; -- target-address here-c+4
         _ minus                         ; -- displacement
         _ lcommac
         next

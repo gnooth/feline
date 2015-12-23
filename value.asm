@@ -93,7 +93,7 @@ code storeto, 'to', IMMEDIATE           ; n "<spaces>name" --
         _ ccommac
         _lit $18
         _ ccommac                       ; mov [rax], rbx
-        _ pop_tos_comma
+        _ compile_poprbx
         _else .4
         _ store
         _then .4

@@ -112,7 +112,7 @@
     drop
     cq-flush-literals
     $53 c,c                             \ push rbx
-    pop-tos,
+    compile-poprbx
     1 +to cq-index
 ;
 
@@ -121,7 +121,7 @@
 : compile-r> ( xt -- )
     drop
     cq-flush-literals
-    push-tos,
+    compile-pushrbx
     $5b c,c                             \ pop rbx
     1 +to cq-index
 ;

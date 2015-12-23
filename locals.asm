@@ -149,7 +149,7 @@ endcode
 
 ; ### compile-local
 code compile_local, 'compile-local'     ; index --
-        _ push_tos_comma
+        _ compile_pushrbx
         _lit $49
         _ ccommac
         _lit $8b
@@ -174,7 +174,7 @@ code compile_to_local, 'compile-to-local'       ; index --
         _negate
 %endif
         _ ccommac                       ; disp8
-        _ pop_tos_comma
+        _ compile_poprbx
         next
 endcode
 
@@ -188,7 +188,7 @@ code compile_plusto_local, 'compile-+to-local'  ; index --
         _negate
 %endif
         _ ccommac                       ; disp8
-        _ pop_tos_comma
+        _ compile_poprbx
         next
 endcode
 
