@@ -66,12 +66,20 @@ code else, 'else', IMMEDIATE            ; c: orig1 -- orig2
         next
 endcode
 
+value last_branch_target, 'last-branch-target', 0
+
 ; ### then
 code then, 'then', IMMEDIATE            ; c: orig --
 ; CORE
 ; "Interpretation semantics for this word are undefined."
         _ ?comp
         _ flush_compilation_queue
+
+        ; We can't do peephole optimization across a
+        ; forward branch target (see COMPILE-PUSHRBX).
+        _ here_c
+        _to last_branch_target
+
         _ here_c                        ; -- addr here
         _ over                          ; -- addr here addr
         _ minus                         ; -- addr here-addr
