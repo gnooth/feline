@@ -15,15 +15,45 @@
 
 file __FILE__
 
-section .text
-dovalue:
-        pushrbx
-        db      $48                     ; mov rbx, 0
-        db      $0bb
-dovalue_patch:
-        dq      0                       ; 64-bit immediate value (to be patched)
-        mov     rbx, [rbx]
-dovalue_end:
+; ### compile-value-ref
+code compile_value_ref, 'compile-value-ref'     ; xt --
+        ; REVIEW
+        _ cq
+        _if .1
+        _ cq_flush_literals             ; -- xt
+        _then .1
+
+        _tobody                         ; -- pfa
+        _tor                            ; --            r: -- pfa
+        _ compile_pushrbx
+        _ccommac $48
+        _rfetch
+        _lit $100000000
+        _ ult
+        _if .2
+        _ccommac $8b                    ; mov rbx, [disp32]
+        _ccommac $1c
+        _ccommac $25
+        _rfetch
+        _ lcommac
+        _else .2
+        _ccommac $0bb                   ; mov rbx, imm64
+        _rfetch
+        _ commac
+        _ccommac $48                    ; mov rbx, [rbx]
+        _ccommac $8b
+        _ccommac $1b
+        _then .2
+        _rfromdrop
+
+        _ cq
+        _if .3
+        _lit 1
+        _plusto cq_index
+        _then .3
+
+        next
+endcode
 
 ; ### value
 code val, 'value'                       ; x "<spaces>name" --
@@ -35,16 +65,13 @@ code val, 'value'                       ; x "<spaces>name" --
         _ latest
         _namefrom
         _ store
-        _lit dovalue
-        _lit dovalue_end - dovalue
-        _ paren_copy_code
-        _ here                          ; -- addr
-        _ here_c
-        _lit dovalue_end - dovalue_patch
-        _ minus
-        _ store
-        _ccommac $0c3
-        _ comma
+
+        _ latestxt
+        _ compile_value_ref
+
+        _ccommac $0c3                   ; -- x
+
+        _ comma                         ; --
 
         _ tvalue
         _ latest
@@ -52,13 +79,20 @@ code val, 'value'                       ; x "<spaces>name" --
         _totype
         _ cstore
 
+        ; inline by default
         _ inline_latest
+
+        ; set compiler
+        _lit compile_value_ref_xt
+        _ latestxt
+        _ tocompstore
 
         next
 endcode
 
 ; ### to
 code storeto, 'to', IMMEDIATE           ; n "<spaces>name" --
+; CORE EXT
         _ blword                        ; -- n $addr
 
         _ statefetch
@@ -82,17 +116,12 @@ code storeto, 'to', IMMEDIATE           ; n "<spaces>name" --
         _ statefetch
         _if .4
         _ flush_compilation_queue
-        _lit $48
-        _ ccommac
-        _lit $0b8
-        _ ccommac
+        _ccommac $48
+        _ccommac $0b8
         _ commac                        ; mov rax, pfa
-        _lit $48
-        _ ccommac
-        _lit $89
-        _ ccommac
-        _lit $18
-        _ ccommac                       ; mov [rax], rbx
+        _ccommac $48
+        _ccommac $89
+        _ccommac $18                    ; mov [rax], rbx
         _ compile_poprbx
         _else .4
         _ store
