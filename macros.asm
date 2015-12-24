@@ -260,7 +260,7 @@ section .text
 %endmacro
 
 %macro  value 3                         ; label, name, value
-        head    %1, %2, 0, 0, TYPE_VALUE
+        head    %1, %2, 0, %1_ret - %1, TYPE_VALUE
         section .data
         global %1_data
         align   DEFAULT_DATA_ALIGNMENT
@@ -269,8 +269,8 @@ section .text
         section .text
 %1:
         pushrbx
-        mov     rbx, %1_data
-        mov     rbx, [rbx]
+        mov     rbx, [%1_data]
+%1_ret:
         next
 %endmacro
 
