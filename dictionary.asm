@@ -66,7 +66,7 @@ code room, 'room'
         next
 endcode
 
-; Header layout in code area:
+; Header layout in data area:
 ;   code ptr    8 bytes
 ;   comp field  8 bytes
 ;   link ptr    8 bytes
@@ -78,7 +78,7 @@ endcode
 ;   line number 8 bytes         source line number
 ;   name        1-256 bytes
 ;   padding     0-7 bytes       for alignment
-;   body is in data area
+;   body        8 bytes
 
 ; ### >comp
 inline tocomp, '>comp'
@@ -688,6 +688,7 @@ code latest, 'latest'                   ; -- nfa
 endcode
 
 ; ### latest-xt
+; latest_xt is the xt of the word LATEST
 code latestxt, 'latest-xt'              ; -- xt
         _ last
         _fetch
