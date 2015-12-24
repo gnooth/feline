@@ -160,17 +160,11 @@ endcode
 code save_string, '>$'                  ; c-addr u -- $addr
 ; copy the string specified by c-addr u to allocated storage
         _dup
-        _if .1
-        _dup
         _twoplus                        ; count byte, terminal null byte
         _ iallocate                     ; -- c-addr u $addr
         _duptor
         _ place_string
         _rfrom
-        _else .1
-        ; zero length
-        _nip
-        _then .1
         next
 endcode
 
