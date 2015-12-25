@@ -11,3 +11,5 @@ forth_home.exe
 forth_home.asm
 version.h
 a.out
+benchmarks/xorshift128+
+benchmarks/xorshift128+.exe
