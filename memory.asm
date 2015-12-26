@@ -44,6 +44,34 @@ code allocate, 'allocate'               ; u -- a-addr ior
         next
 endcode
 
+extern os_resize
+
+; ### resize
+code resize, 'resize'                   ; a-addr1 u -- a-addr2 ior
+%ifdef WIN64
+        mov     rdx, rbx                ; u in rdx
+        mov     rcx, [rbp]              ; a-addr1 in rcx
+        push    rcx                     ; save a copy
+%else
+        mov     rsi, rbx                ; u
+        mov     rdi, [rbp]              ; a-addr1
+        push    rdi                     ; save a copy
+%endif
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        xcall   os_resize
+        mov     rbx, rax
+        pop     rdx                     ; copy of a-addr1 in rdx
+        test    rbx, rbx
+        jz .1
+        _zero                           ; success
+        _return
+.1:
+        ; failed!
+        mov     rbx, rdx                ; a-addr2 = a-addr1
+        _lit -61                        ; THROW code (Forth 2012 Table 9.1)
+        next
+endcode
+
 ; ### -allocate
 code iallocate, '-allocate'             ; size -- a-addr
 ; A version of ALLOCATE that returns the address of the allocated space if
