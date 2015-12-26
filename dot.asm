@@ -270,6 +270,34 @@ code uddot, 'ud.'                       ; ud --
         next
 endcode
 
+; ### d.r
+code ddotr, 'd.r'                       ;  d n --
+; DOUBLE
+        _ tor
+        _ tuck
+        _ dabs
+        _ ltsharp
+        _ sharps
+        _ rot
+        _ sign
+        _ sharpgt
+        _ rfrom
+        _ over
+        _ minus
+        _ spaces
+        _ type
+        next
+endcode
+
+; ### d.
+code ddot, 'd.'                         ; d --
+; DOUBLE
+        _zero
+        _ ddotr
+        _ space
+        next
+endcode
+
 ; ### .hexbyte
 code dothexbyte, '.hexbyte'             ; ub --
         push    qword [base_data]
