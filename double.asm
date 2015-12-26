@@ -15,6 +15,7 @@
 
 file __FILE__
 
+; ### d+
 code dplus, 'd+'                        ; d1|ud1 d2|ud2 -- d3|ud3
 ; DOUBLE 8.6.1.1040
         mov     rax, [rbp + BYTES_PER_CELL * 2]
@@ -25,19 +26,45 @@ code dplus, 'd+'                        ; d1|ud1 d2|ud2 -- d3|ud3
         next
 endcode
 
+; ### d-
+code dminus, 'd-'                       ; d1|ud1 d2|ud2 -- d3|ud3
+; DOUBLE
+        ; high word of d2 in rbx
+        ; low word of d2 in [rbp]
+        ; high word of d1 in [rbp+8]
+        ; low word of d1 in [rbp+16]
+        mov     rax, [rbp + BYTES_PER_CELL * 2] ; rax = low word of d1
+        sub     rax, [rbp]                      ; subtract low word of d2
+        sbb     [rbp + BYTES_PER_CELL], rbx     ; subtract high word of d2 from high word of d1
+        mov     rbx, [rbp + BYTES_PER_CELL]     ; high word of d3 in rbx
+        mov     [rbp + BYTES_PER_CELL * 2], rax
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        next
+endcode
+
+; ### d0=
 code dzeroequal, 'd0='                  ; xd -- flag
 ; DOUBLE
         mov     rax, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
         or      rbx, rax
-        jz      dze1
+        jz      .1
         xor     rbx, rbx
         next
-dze1:
+.1:
         mov     rbx, -1
         next
 endcode
 
+; ### d0<
+code dzerolt, 'd0<'                     ; d -- flag
+; DOUBLE
+        _nip
+        _zlt
+        next
+endcode
+
+; ### d=
 code dequal, 'd='                       ; xd1 xd2 -- flag
 ; DOUBLE
 ; adapted from Win32Forth
@@ -51,6 +78,50 @@ code dequal, 'd='                       ; xd1 xd2 -- flag
         next
 endcode
 
+; ### d<
+code dlt, 'd<'                          ; d1 d2 -- flag
+; DOUBLE
+        ; high word of d2 in rbx
+        ; low word of d2 in [rbp]
+        ; high word of d1 in [rbp+8]
+        ; low word of d1 in [rbp+16]
+        mov     rax, [rbp]              ; low word of d2
+        cmp     [rbp + BYTES_PER_CELL * 2], rax
+        sbb     [rbp + BYTES_PER_CELL], rbx
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+        jl      .1
+        xor     ebx, ebx
+        _return
+.1:
+        mov     rbx, -1
+        next
+endcode
+
+; ### d>
+code dgt, 'd>'                          ; d1 d2 -- flag
+; not in standard
+        _ twoswap
+        _ dlt
+        next
+endcode
+
+; ### d2*
+code dtwostar, 'd2*'                    ; xd1 -- xd2
+; DOUBLE
+        shl     qword [rbp], 1          ; low word
+        rcl     rbx, 1                  ; high word
+        next
+endcode
+
+; ### d2/
+code dtwoslash, 'd2/'                   ; xd1 -- xd2
+; DOUBLE
+        sar     rbx, 1
+        rcr     qword [rbp], 1
+        next
+endcode
+
+; ### dabs
 code dabs, 'dabs'                       ; d -- ud
 ; DOUBLE
 ; gforth
@@ -62,6 +133,7 @@ code dabs, 'dabs'                       ; d -- ud
         next
 endcode
 
+; ### dnegate
 code dnegate, 'dnegate'                 ; d1 -- d2
 ; DOUBLE
         xor     rax, rax
@@ -70,6 +142,56 @@ code dnegate, 'dnegate'                 ; d1 -- d2
         sbb     rax, rbx
         mov     [rbp], rdx
         mov     rbx, rax
+        next
+endcode
+
+; ### dmax
+code dmax, 'dmax'                       ; d1 d2 -- d3
+; DOUBLE
+; gforth
+        _ twoover
+        _ twoover
+        _ dlt
+        _if .1
+        _ twoswap
+        _then .1
+        _2drop
+        next
+endcode
+
+; ### dmin
+code dmin, 'dmin'                       ; d1 d2 -- d3
+; DOUBLE
+; gforth
+        _ twoover
+        _ twoover
+        _ dgt
+        _if .1
+        _ twoswap
+        _then .1
+        _2drop
+        next
+endcode
+
+; ### d>s
+inline dtos, 'd>s'                      ; d -- n
+; DOUBLE
+        _drop
+endinline
+
+; ### m+
+code mplus, 'm+'                        ; d1|ud1 n -- d2|ud2
+; DOUBLE
+        ; n in rbx
+        ; high word of d1 in [rbp]
+        ; low word of d1 in [rbp+8]
+        mov     rax, rbx                ; n in rax
+        cqo                             ; sign-extend rax into rdx:rax
+        add     rax, [rbp + BYTES_PER_CELL]
+        adc     rdx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        mov     rbx, rdx                ; high word
+        mov     [rbp], rax              ; low word
         next
 endcode
 
