@@ -21,14 +21,14 @@ code dplus, 'd+'                        ; d1|ud1 d2|ud2 -- d3|ud3
         add     rax, [rbp]
         adc     rbx, [rbp + BYTES_PER_CELL]
         mov     [rbp + BYTES_PER_CELL * 2], rax
-        add     rbp, BYTES_PER_CELL * 2
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
         next
 endcode
 
 code dzeroequal, 'd0='                  ; xd -- flag
 ; DOUBLE
         mov     rax, [rbp]
-        add     rbp, BYTES_PER_CELL
+        lea     rbp, [rbp + BYTES_PER_CELL]
         or      rbx, rax
         jz      dze1
         xor     rbx, rbx

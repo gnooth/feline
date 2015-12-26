@@ -167,7 +167,7 @@ code umslmod, 'um/mod'                  ; ud u1 -- u2 u3
 ; 6.1.2370 CORE
         mov     rdx, [rbp]
         mov     rax, [rbp + BYTES_PER_CELL]
-        add     rbp, BYTES_PER_CELL
+        lea     rbp, [rbp + BYTES_PER_CELL]
         div     rbx                     ; remainder in RDX, quotient in RAX
         mov     [rbp], rdx
         mov     rbx, rax
@@ -297,7 +297,7 @@ code gt, '>'                            ; n1 n2 -- flag
         jle     .1
         dec     rbx
 .1:
-        add     rbp, BYTES_PER_CELL
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
@@ -308,7 +308,7 @@ code ge, '>='                           ; n1 n2 -- flag
         jl      .1
         dec     rbx
 .1:
-        add     rbp, BYTES_PER_CELL
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
@@ -337,29 +337,31 @@ code le, '<='                           ; n1 n2 -- flag
         jg      .1
         dec     rbx
 .1:
-        add     rbp, BYTES_PER_CELL
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
 ; ### u<
 code ult, 'u<'
+; CORE
         cmp     [rbp], rbx
         mov     ebx, 0
         jae     .1
         dec     rbx
 .1:
-        add     rbp, BYTES_PER_CELL
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
 ; ### u>
 code ugt, 'u>'
+; CORE EXT
         cmp     [rbp], rbx
         mov     ebx, 0
         jbe     .1
         dec     rbx
 .1:
-        add     rbp, BYTES_PER_CELL
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
@@ -401,6 +403,7 @@ endinline
 
 ; ### 0<>
 code zne, '0<>'
+; CORE EXT
         or      rbx, rbx
         mov     ebx, 0
         jz      .1
@@ -411,6 +414,7 @@ endcode
 
 ; ### 0>
 code zgt, '0>'
+; CORE EXT
         or      rbx, rbx
         mov     ebx, 0
         jng     .1

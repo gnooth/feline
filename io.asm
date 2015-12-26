@@ -604,11 +604,11 @@ code reposition_file, 'reposition-file' ; ud fileid -- ior
 %ifdef WIN64
         mov     rcx, rbx                        ; fileid in RCX
         mov     rdx, [rbp + BYTES_PER_CELL]     ; 64-bit offset in RDX
-        add     rbp, BYTES_PER_CELL * 2
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %else
         mov     rdi, rbx                        ; fileid
         mov     rsi, [rbp + BYTES_PER_CELL]     ; 64-bit offset
-        add     rbp, BYTES_PER_CELL * 2
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endif
         xcall   os_reposition_file
         test    rax, rax
@@ -628,11 +628,11 @@ code resize_file, 'resize-file'         ; ud fileid -- ior
 %ifdef WIN64
         mov     rcx, rbx                        ; fileid in RCX
         mov     rdx, [rbp + BYTES_PER_CELL]     ; 64-bit offset in RDX
-        add     rbp, BYTES_PER_CELL * 2
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %else
         mov     rdi, rbx                        ; fileid
         mov     rsi, [rbp + BYTES_PER_CELL]     ; 64-bit offset
-        add     rbp, BYTES_PER_CELL * 2
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endif
         xcall   os_resize_file
         or      rax, rax

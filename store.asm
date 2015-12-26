@@ -20,7 +20,7 @@ code store, '!'                         ; n addr --
         mov     rax, [rbp]              ; n
         mov     [rbx], rax
         mov     rbx, [rbp + BYTES_PER_CELL]
-        add     rbp, BYTES_PER_CELL * 2
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
         next
 endcode
 
@@ -84,6 +84,6 @@ code twostore, '2!'                     ; x1 x2 a-addr --
         mov     rax, [rbp + BYTES_PER_CELL]     ; x1
         mov     [rbx + BYTES_PER_CELL], rax     ; store at next consecutive cell
         mov     rbx, [rbp + BYTES_PER_CELL * 2]
-        add     rbp, BYTES_PER_CELL * 3
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
         next
 endcode

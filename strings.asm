@@ -455,7 +455,7 @@ code fill, 'fill'                       ; c-addr u char --
         mov     rcx, [rbp]              ; count in rcx
         mov     rdi, [rbp + BYTES_PER_CELL]
         mov     rbx, [rbp + BYTES_PER_CELL * 2]
-        add     rbp, BYTES_PER_CELL * 3
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
         jrcxz   .1                      ; do nothing if count = 0
         rep     stosb
 .1:
@@ -475,7 +475,7 @@ code erase, 'erase'                     ; addr u --
         mov     rcx, rbx                ; count in rcx
         mov     rdi, [rbp]
         mov     rbx, [rbp + BYTES_PER_CELL]
-        add     rbp, BYTES_PER_CELL * 2
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
         jrcxz   .1                      ; do nothing if count = 0
         rep     stosb
 .1:

@@ -78,7 +78,7 @@ endcode
 
 ; ### 3dup
 code threedup, '3dup'                   ; x1 x2 x3 -- x1 x2 x3 x1 x2 x3
-        sub     rbp, BYTES_PER_CELL * 3
+        lea     rbp, [rbp - BYTES_PER_CELL * 3]
         mov     [rbp + BYTES_PER_CELL * 2], rbx
         mov     rax, [rbp + BYTES_PER_CELL * 4]
         mov     [rbp + BYTES_PER_CELL], rax
