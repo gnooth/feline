@@ -39,6 +39,11 @@ void os_free(void *ptr)
   free(ptr);
 }
 
+void * os_resize(void *ptr, size_t size)
+{
+  return realloc(ptr, size);
+}
+
 int os_file_status(char *path)
 {
   struct stat buf;
