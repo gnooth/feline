@@ -19,12 +19,13 @@
 
 \     ?cr ." compile-dup cq-second = $" cq-second h.
 
+    opt-debug if ?cr ." compile-+ calling cq-flush-literals" then
     cq-flush-literals
 
     cq-second ['] + = if
         ['] 2* inline-or-call-xt
         2 +to cq-index
-        ?cr ." dup + -> 2* "
+        opt-debug if ?cr ." dup + -> 2*" then
         exit
     then
 
@@ -51,18 +52,19 @@
             $01 c,c
             $c3 c,c                     \ add rbx, rax
         then
-        ?cr ." lit + -> add rbx, lit "
+        opt-debug if ?cr ." lit + -> add rbx, lit" then
         0 to cq-#lits
         1 +to cq-index
         exit
     then
 
+    opt-debug if ?cr ." compile-+ calling cq-flush-literals" then
     cq-flush-literals
 
     cq-second ['] dup = if
         ['] +dup copy-code
         2 +to cq-index
-        cr ." + dup -> +dup "
+        opt-debug if cr ." + dup -> +dup" then
         exit
     then
 
@@ -80,7 +82,7 @@
     cq-second ['] + = if
         ['] over+ inline-or-call-xt
         2 +to cq-index
-        ?cr ." over + -> over+ "
+        opt-debug if ?cr ." over + -> over+" then
         exit
     then
 
@@ -98,7 +100,7 @@
     cq-second ['] + = if
         ['] inline-i+ copy-code
         2 +to cq-index
-        ?cr ." i + -> i+ "
+        opt-debug if ?cr ." i + -> i+" then
         exit
     then
 
@@ -139,11 +141,11 @@
         xt ['] rshift = if
             $eb c,c
             cq-lit1 c,c
-            ?cr ." rshift lit -> shr rbx, lit"
+            opt-debug if ?cr ." rshift lit -> shr rbx, lit" then
         else
             $e3 c,c
             cq-lit1 c,c
-            ?cr ." lshift lit -> shl rbx, lit"
+            opt-debug if ?cr ." lshift lit -> shl rbx, lit" then
         then
         0 to cq-#lits
     else

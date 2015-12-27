@@ -25,12 +25,18 @@ value cq_nlits, 'cq-#lits', 0
 
 ; ### cq-flush-literals
 code cq_flush_literals, 'cq-flush-literals'
-        _ cq_nlits
+        _ opt_debug
         _if .1
+        _ ?cr
+        _dotq "cq-flush-literals"
+        _then .1
+
+        _ cq_nlits
+        _if .2
         _ cq_lit1
         _ iliteral
         _zeroto cq_nlits
-        _then .1
+        _then .2
         next
 endcode
 
@@ -38,6 +44,13 @@ endcode
 code cq_cache_literal, 'cq-cache-literal'       ; n --
         _ cq_nlits
         _if .1
+
+        _ opt_debug
+        _if .debug
+        _ ?cr
+        _dotq "cq-cache-literal calling cq-flush-literals"
+        _then .debug
+
         _ cq_flush_literals
         _then .1
         _to cq_lit1
@@ -68,14 +81,23 @@ value cq_index, 'cq-index', 0
 
 ; ### cq-add-xt
 code cq_add_xt, 'cq-add-xt'             ; xt --
+        _ opt_debug
+        _if .1
+        _ ?cr
+        _dotq "cq-add-xt "
+        _dup
+        _toname
+        _ dotid
+        _then .1
+
         _ cq_length
         _ cq_capacity
         _ equal
-        _if .1
+        _if .2
         _ cq_flush
 ;         _zeroto cq_length               ; FIXME should be done by cq_flush
 ;         _zeroto cq_index                ; FIXME should be done by cq_flush
-        _then .1
+        _then .2
 
         _ cq
         _ cq_index
@@ -85,19 +107,35 @@ code cq_add_xt, 'cq-add-xt'             ; xt --
         _ store
         _oneplusto cq_index
         _oneplusto cq_length
+
+        _ opt_debug
+        _if .3
+        _ dotcq
+        _then .3
+
         next
 endcode
 
 ; ### cq-add-literal
 code cq_add_literal, 'cq-add-literal'   ; n --
+        _ opt_debug
+        _if .1
+        _ ?cr
+        _dotq "cq-add-literal "
+        _dup
+        _ dot
+        _dup
+        _ hdot
+        _then .1
+
         _ cq_length
         _ cq_capacity
         _ equal
-        _if .1
+        _if .2
         _ cq_flush
 ;         _zeroto cq_length               ; FIXME should be done by cq_flush
 ;         _zeroto cq_index                ; FIXME should be done by cq_flush
-        _then .1
+        _then .2
 
         _ cq_lit                        ; token
         _ cq_index_entry
@@ -109,6 +147,12 @@ code cq_add_literal, 'cq-add-literal'   ; n --
 
         _oneplusto cq_index
         _oneplusto cq_length
+
+        _ opt_debug
+        _if .3
+        _ dotcq
+        _then .3
+
         next
 endcode
 
@@ -238,8 +282,55 @@ code dot_first, '.first'
         next
 endcode
 
+; ### .cq-entry
+code dotcq_entry, '.cq-entry'           ; addr --
+        _duptor
+        _fetch                          ; -- xt or cq-lit
+        _lit 4
+        _ topos
+        _dup
+        _lit 256
+        _ lt
+        _if .1
+        _ decdot
+        _ rfrom
+        _cellplus
+        _fetch
+        _lit 20
+        _ topos
+        _ decdot
+        _else .1
+        _toname
+        _ dotid
+        _rfromdrop
+        _then .1
+        next
+endcode
+
 ; ### cq-flush1
 code cq_flush1, 'cq-flush1'
+        _ opt_debug
+        _if .debug
+        _ ?cr
+        _dotq "cq-flush1 "
+        _ cq_first
+;         _ dot_xt
+        _dup
+;         _lit 256
+;         _ lt
+        _ cq_lit
+        _ equal
+        _if .debug1
+        _drop
+        _dotq "cq-lit "
+        _ cq_first_data
+        _ decdot
+        _else .debug1
+        _toname
+        _ dotid
+        _then .debug1
+        _then .debug
+
         ; nop
         _ cq_first
         _ cq_nop
@@ -297,6 +388,13 @@ code cq_flush1, 'cq-flush1'
         _if .5
         _ execute
         _else .5
+
+        _ opt_debug
+        _if .6
+        _ ?cr
+        _dotq "cq-flush1 calling cq-flush-literals"
+        _then .6
+
         _ cq_flush_literals
         _ inline_or_call_xt
         _oneplusto cq_index
@@ -305,31 +403,20 @@ code cq_flush1, 'cq-flush1'
         next
 endcode
 
-; TEMPORARY
-code dotcq, '.cq'
+; ### .cq
+code dotcq, '.cq'                       ; --
+        _ ?cr
+        _dotq "compilation queue:"
+
         _ cq
         _if .1
-        _ cq_capacity
+        _ cq_length
         _zero
         _?do .2
         _ ?cr
-        _ cq
         _i
-        _ twostar
-        _cells
-        _plus
-        _fetch
-        _ decdot
-        _lit 16
-        _ topos
-        _ cq
-        _i
-        _ twostar
-        _cells
-        _plus
-        _cellplus
-        _fetch
-        _ decdot
+        _ cq_entry
+        _ dotcq_entry
         _loop .2
         _then .1
         next
@@ -337,38 +424,72 @@ endcode
 
 ; ### cq-flush
 code cq_flush, 'cq-flush'
-        _ opt
+        _ opt_debug
         _if .1
+        _ ?cr
+        _dotq "cq-flush"
+        _then .1
+
+        _ opt
+        _if .2
         _zeroto cq_index
-        _begin .2
+        _begin .3
         _ cq_index
         _ cq_length
         _ lt
-        _while .2
+        _while .3
         _ cq_flush1
-        _repeat .2
+        _repeat .3
         _ cq_clear
+
+        _ opt_debug
+        _if .4
+        _ ?cr
+        _dotq "cq-flush calling cq-flush-literals"
+        _then .4
+
         _ cq_flush_literals
-        _then .1
+        _then .2
         next
 endcode
 
 ; ### flush-compilation-queue
-deferred flush_compilation_queue, 'flush-compilation-queue', cq_flush
+deferred flush_compilation_queue, 'flush-compilation-queue', noop
 
 ; ### opt
 value opt, 'opt', 0
 
 ; ### +opt
-code plusopt, '+opt', IMMEDIATE   ; --
+code plus_opt, '+opt', IMMEDIATE   ; --
         _ cq_init
+        _lit cq_flush_xt
+        _lit flush_compilation_queue_xt
+        _tobody
+        _ store
         mov     qword [opt_data], TRUE
         next
 endcode
 
 ; ### -opt
-code minusopt, '-opt', IMMEDIATE  ; --
+code minus_opt, '-opt', IMMEDIATE  ; --
         _ flush_compilation_queue
+        _lit noop_xt
+        _lit flush_compilation_queue_xt
+        _tobody
+        _ store
         mov     qword [opt_data], FALSE
         next
 endcode
+
+; ### opt-debug
+value opt_debug, 'opt-debug', 0
+
+; ### +opt-debug
+inline plus_opt_debug, '+opt-debug'
+        mov     qword [opt_debug_data], TRUE
+endinline
+
+; ### -opt-debug
+inline minus_opt_debug, '-opt-debug'
+        mov     qword [opt_debug_data], FALSE
+endinline
