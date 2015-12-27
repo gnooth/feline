@@ -60,20 +60,20 @@ constant cq_lit, 'cq-lit', 1            ; token indicates a literal value in the
 ; ### cq-capacity
 constant cq_capacity, 'cq-capacity', 16 ; space for 16 entries
 
-; ### cq-size
-value cq_size, 'cq-size', 0             ; number of entries in use
+; ### cq-length
+value cq_length, 'cq-length', 0         ; number of entries in use
 
 ; ### cq-index
 value cq_index, 'cq-index', 0
 
 ; ### cq-add-xt
 code cq_add_xt, 'cq-add-xt'             ; xt --
-        _ cq_size
+        _ cq_length
         _ cq_capacity
         _ equal
         _if .1
         _ cq_flush
-;         _zeroto cq_size                 ; FIXME should be done by cq_flush
+;         _zeroto cq_length               ; FIXME should be done by cq_flush
 ;         _zeroto cq_index                ; FIXME should be done by cq_flush
         _then .1
 
@@ -84,18 +84,18 @@ code cq_add_xt, 'cq-add-xt'             ; xt --
         _plus
         _ store
         _oneplusto cq_index
-        _oneplusto cq_size
+        _oneplusto cq_length
         next
 endcode
 
 ; ### cq-add-literal
 code cq_add_literal, 'cq-add-literal'   ; n --
-        _ cq_size
+        _ cq_length
         _ cq_capacity
         _ equal
         _if .1
         _ cq_flush
-;         _zeroto cq_size                 ; FIXME should be done by cq_flush
+;         _zeroto cq_length               ; FIXME should be done by cq_flush
 ;         _zeroto cq_index                ; FIXME should be done by cq_flush
         _then .1
 
@@ -108,7 +108,7 @@ code cq_add_literal, 'cq-add-literal'   ; n --
         _ store
 
         _oneplusto cq_index
-        _oneplusto cq_size
+        _oneplusto cq_length
         next
 endcode
 
@@ -136,7 +136,7 @@ code cq_first, 'cq-first'               ; -- x
 ; returns contents of CAR of first unprocessed cq entry
 ; returns 0 if there are no unprocessed entries
         _ cq_index
-        _ cq_size
+        _ cq_length
         _ lt
         _if .1
         _ cq_index_entry
@@ -151,7 +151,7 @@ endcode
 code cq_first_data, 'cq-first-data'     ; -- x
 ; returns contents of CDR of first unprocessed cq entry
         _ cq_index
-        _ cq_size
+        _ cq_length
         _ lt
         _if .1
         _ cq_index_entry
@@ -171,7 +171,7 @@ code cq_second, 'cq-second'
         _ cq_index
         _oneplus
         _ dup
-        _ cq_size
+        _ cq_length
         _ lt
         _if .1
         _ cq_entry
@@ -207,7 +207,7 @@ endcode
 code cq_clear, 'cq-clear'
         _ cq
         _if .1
-        _zeroto cq_size
+        _zeroto cq_length
         _zeroto cq_index
         _ cq
         _ cq_capacity
@@ -342,7 +342,7 @@ code cq_flush, 'cq-flush'
         _zeroto cq_index
         _begin .2
         _ cq_index
-        _ cq_size
+        _ cq_length
         _ lt
         _while .2
         _ cq_flush1
