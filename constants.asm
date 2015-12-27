@@ -36,6 +36,12 @@ constant blchar, 'bl', 32               ; CORE
 ; ### cell
 constant cell, 'cell', BYTES_PER_CELL   ; not in standard
 
+; ### min-int32
+constant min_int32, 'min-int32', -2147483648
+
+; ### max-int32
+constant max_int32, 'max-int32', 2147483647
+
 ; ### /hold
 ; "The size of the pictured numeric output string buffer shall be at least
 ; (2 * n) + 2 characters, where n is the number of bits in a cell."
