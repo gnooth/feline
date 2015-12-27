@@ -38,7 +38,7 @@
     local xt
 
     cq-#lits 1 = if
-        cq-lit1 $ffffffff <= if
+        cq-lit1 min-int32 max-int32 between if
             $48 c,c
             $81 c,c
             $c3 c,c
