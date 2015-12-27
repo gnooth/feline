@@ -78,6 +78,25 @@ code dequal, 'd='                       ; xd1 xd2 -- flag
         next
 endcode
 
+; ### du<
+code dult, 'du<'                        ; d1 d2 -- flag
+; DOUBLE
+        ; high word of d2 in rbx
+        ; low word of d2 in [rbp]
+        ; high word of d1 in [rbp+8]
+        ; low word of d1 in [rbp+16]
+        mov     rax, [rbp]              ; low word of d2
+        cmp     [rbp + BYTES_PER_CELL * 2], rax
+        sbb     [rbp + BYTES_PER_CELL], rbx
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+        jb      .1
+        xor     ebx, ebx
+        _return
+.1:
+        mov     rbx, -1
+        next
+endcode
+
 ; ### d<
 code dlt, 'd<'                          ; d1 d2 -- flag
 ; DOUBLE
