@@ -38,14 +38,11 @@ code iliteral, '(literal)'              ; n --
         _lit $100000000
         _ ult
         _if .1
-        _lit $0bb
-        _ ccommac
+        _ccommac $0bb
         _ lcommac
         _else .1
-        _lit $48
-        _ ccommac
-        _lit $0bb
-        _ ccommac
+        _ccommac $48
+        _ccommac $0bb
         _ commac
         _then .1
         next

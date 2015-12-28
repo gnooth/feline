@@ -17,8 +17,19 @@ file __FILE__
 
 ; Cached literals.
 
+; ### cq-cached-literals
+value cq_cached_literals, 'cq-cached-literals', 0
+
+; ### cq-cached-literals-capacity
+constant cq_cached_literals_capacity, 'cq-cached-literals-capacity', 1
+
 ; ### cq-lit1
-value cq_lit1, 'cq-lit1', 0
+; value cq_lit1, 'cq-lit1', 0
+code cq_lit1, 'cq-lit1'
+        _ cq_cached_literals
+        _fetch
+        next
+endcode
 
 ; ### cq-#lits
 value cq_nlits, 'cq-#lits', 0
@@ -53,7 +64,10 @@ code cq_cache_literal, 'cq-cache-literal'       ; n --
 
         _ cq_flush_literals
         _then .1
-        _to cq_lit1
+;         _to cq_lit1
+        _ cq_cached_literals
+        _ store
+
         _oneplusto cq_nlits
         next
 endcode
@@ -108,10 +122,10 @@ code cq_add_xt, 'cq-add-xt'             ; xt --
         _oneplusto cq_index
         _oneplusto cq_length
 
-        _ opt_debug
-        _if .3
-        _ dotcq
-        _then .3
+;         _ opt_debug
+;         _if .3
+;         _ dotcq
+;         _then .3
 
         next
 endcode
@@ -148,10 +162,10 @@ code cq_add_literal, 'cq-add-literal'   ; n --
         _oneplusto cq_index
         _oneplusto cq_length
 
-        _ opt_debug
-        _if .3
-        _ dotcq
-        _then .3
+;         _ opt_debug
+;         _if .3
+;         _ dotcq
+;         _then .3
 
         next
 endcode
@@ -234,10 +248,19 @@ value cq, 'cq', 0                       ; address of compilation queue
 code cq_init, 'cq-init'                 ; --
         _ cq
         _zeq_if .1
+        _ cq_cached_literals_capacity
+        _cells
+        _dup
+        _ iallocate
+        _to cq_cached_literals
+        _ cq_cached_literals
+        _ swap
+        _ erase
+
         _ cq_capacity
         _twostar
         _cells
-        _ dup
+        _dup
         _ iallocate
         _to cq
         _ cq
@@ -255,8 +278,8 @@ code cq_clear, 'cq-clear'
         _zeroto cq_index
         _ cq
         _ cq_capacity
-        _ twostar
-        _ cells
+        _twostar
+        _cells
         _ erase
         _then .1
         next
@@ -289,15 +312,18 @@ code dotcq_entry, '.cq-entry'           ; addr --
         _lit 4
         _ topos
         _dup
-        _lit 256
-        _ lt
+;         _lit 256
+;         _ lt
+        _ cq_lit
+        _ equal
         _if .1
-        _ decdot
-        _ rfrom
+        _drop
+        _dotq "cq_lit "
+        _rfrom
         _cellplus
         _fetch
-        _lit 20
-        _ topos
+;         _lit 20
+;         _ topos
         _ decdot
         _else .1
         _toname
@@ -314,10 +340,7 @@ code cq_flush1, 'cq-flush1'
         _ ?cr
         _dotq "cq-flush1 "
         _ cq_first
-;         _ dot_xt
         _dup
-;         _lit 256
-;         _ lt
         _ cq_lit
         _ equal
         _if .debug1
@@ -418,6 +441,19 @@ code dotcq, '.cq'                       ; --
         _ cq_entry
         _ dotcq_entry
         _loop .2
+
+        _ ?cr
+        _dotq "cached literals:"
+        _ cr
+        _lit 4
+        _ topos
+        _ cq_nlits
+        _if .3
+        _ cq_lit1
+        _ decdot
+        _else .3
+        _dotq "none"
+        _then .3
         _then .1
         next
 endcode
@@ -428,6 +464,7 @@ code cq_flush, 'cq-flush'
         _if .1
         _ ?cr
         _dotq "cq-flush"
+        _ dotcq
         _then .1
 
         _ opt
@@ -443,10 +480,10 @@ code cq_flush, 'cq-flush'
         _ cq_clear
 
         _ opt_debug
-        _if .4
+        _if .debug
         _ ?cr
         _dotq "cq-flush calling cq-flush-literals"
-        _then .4
+        _then .debug
 
         _ cq_flush_literals
         _then .2
