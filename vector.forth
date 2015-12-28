@@ -15,6 +15,8 @@
 
 only forth also definitions
 
+0 [if]
+
 \ slot 0 is the object header (see object.forth)
 
 \ slot 1
@@ -44,7 +46,11 @@ only forth also definitions
     3 cells + !
 ;
 
+[then]
+
 4 cells constant VECTOR_SIZE            \ size in bytes of a vector object (without data)
+
+0 [if]
 
 \ constructor
 : <vector> ( capacity -- vector )
@@ -57,6 +63,8 @@ only forth also definitions
 \     0 v vector-length!
     v
 ;
+
+[then]
 
 \ destructor
 : ~vector ( vector -- )

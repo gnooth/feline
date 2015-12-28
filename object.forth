@@ -21,6 +21,8 @@ only forth also definitions
 $7fa7 constant VECTOR_TYPE
 $4d81 constant STRING_TYPE
 
+0 [if]
+
 : object-header ( object -- header )
     @
 ;
@@ -28,6 +30,8 @@ $4d81 constant STRING_TYPE
 : object-header! ( header object -- )
     !
 ;
+
+[then]
 
 : vector? ( object -- flag )
     ?dup if
