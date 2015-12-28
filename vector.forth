@@ -68,25 +68,21 @@ only forth also definitions
 
 : vector-ensure-capacity ( n vector -- )        \ n is number of elements (not bytes)
     local v
-    local new
-    v vector-capacity local old
-    0 local old-data
+    local new-capacity
+    v vector-capacity local old-capacity
     0 local new-data
-    new old > if
+    new-capacity old-capacity > if
         \ at least double current capacity
-        new old 2* max to new
-\         [log ." VECTOR-ENSURE-CAPACITY " old . ." -> " new . log]
-        new cells -allocate to new-data
-        new-data new cells erase
-        \ copy existing data
-        v vector-data dup to old-data
-        new-data v vector-length cells cmove
+        new-capacity old-capacity 2* max to new-capacity
+
+        \ resize data area
+        v vector-data new-capacity cells resize throw to new-data
+
         \ point existing vector at new data
         new-data v vector-data!
-        \ free old storage
-        old-data -free
-        \ update capacity slot of existing vector
-        new v vector-capacity!
+
+        \ update capacity slot
+        new-capacity v vector-capacity!
     then
 ;
 
@@ -112,6 +108,7 @@ only forth also definitions
     local v
     local n
     local elt
+
     \ this should never happen!
     v vector-length v vector-capacity > abort" VECTOR-INSERT-NTH length > capacity"
     n v vector-length > abort" VECTOR-INSERT-NTH n > length"
@@ -130,6 +127,7 @@ only forth also definitions
 : vector-remove-nth ( n vector -- )
     local v
     local n
+
     \ this should never happen!
     v vector-length v vector-capacity > abort" VECTOR-REMOVE-NTH length > capacity"
     n v vector-length 1- > abort" VECTOR-REMOVE-NTH n > length - 1"
@@ -144,13 +142,7 @@ only forth also definitions
 : vector-push ( elt vector -- )
     local v
     local elt
-\     v vector-length
-\     v vector-capacity 1- < if
-\         v vector-length 1+ v vector-length!
-\         elt v dup vector-length 1- swap vector-set-nth
-\     else
-\         true abort" vector-push out of room"
-\     then
+
     v vector-length v vector-capacity > abort" VECTOR-PUSH length > capacity"
     v vector-length 1+ v vector-ensure-capacity
     v vector-length v vector-capacity < if
@@ -159,4 +151,14 @@ only forth also definitions
     else
         true abort" VECTOR-PUSH out of room"
     then
+;
+
+: vector-each ( xt vector -- )
+    local v
+    local xt
+
+    v vector-length 0 ?do
+        i v vector-nth
+        xt execute
+    loop
 ;
