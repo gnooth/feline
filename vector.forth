@@ -64,8 +64,6 @@ only forth also definitions
     v
 ;
 
-[then]
-
 \ destructor
 : ~vector ( vector -- )
     ?dup if
@@ -132,6 +130,8 @@ only forth also definitions
     then
 ;
 
+[then]
+
 : vector-remove-nth ( n vector -- )
     local v
     local n
@@ -146,6 +146,8 @@ only forth also definitions
     0 v vector-data v vector-length 1- cells + !
     v vector-length 1- v vector-length!
 ;
+
+0 [if]
 
 : vector-push ( elt vector -- )
     local v
@@ -170,3 +172,5 @@ only forth also definitions
         xt execute
     loop
 ;
+
+[then]

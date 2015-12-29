@@ -15,6 +15,10 @@
 
 file __FILE__
 
+%macro  __this  0
+        pushd   r15
+%endmacro
+
 ; ### slot 0
 ; returns contents of slot0
 ; slot 0 is the object header
@@ -136,3 +140,171 @@ code construct_vector, '<vector>'       ; capacity -- vector
         _ set_vector_capacity           ; -- vector
         next
 endcode
+
+; ### ~vector
+code destroy_vector, '~vector'          ; vector --
+        _ ?dup
+        _if .1
+        _dup
+        _ vector_data
+        _ ifree
+        _ ifree
+        _then .1
+        next
+endcode
+
+; ### vector-resize
+code vector_resize, 'vector-resize'     ; vector new-capacity --
+        _ over                          ; -- vector new-capacity vector
+        _ vector_data                   ; -- vector new-capacity data-address
+        _ over                          ; -- vector new-capacity data-address new-capacity
+        _cells
+        _ resize                        ; -- vector new-capacity new-data-address ior
+        _ throw                         ; -- vector new-capacity new-data-address
+        _tor
+        _ over                          ; -- vector new-capacity vector     r: -- new-data-addr
+        _ set_vector_capacity           ; -- vector                         r: -- new-data-addr
+        _rfrom                          ; -- vector new-data-addr
+        _ swap
+        _ set_vector_data
+        next
+endcode
+
+; ### vector-ensure-capacity
+code vector_ensure_capacity, 'vector-ensure-capacity'   ; u vector --
+        _ twodup                        ; -- u vector u vector
+        _ vector_capacity               ; -- u vector u capacity
+        _ ugt
+        _if .1                          ; -- u vector
+        _dup                            ; -- u vector vector
+        _ vector_capacity               ; -- u vector capacity
+        _twostar                        ; -- u vector capacity*2
+        _ rot                           ; -- vector capacity*2 u
+        _ max                           ; -- vector new-capacity
+        _ vector_resize
+        _else .1
+        _2drop
+        _then .1
+        next
+endcode
+
+; ### vector-nth
+code vector_nth, 'vector-nth'           ; index vector -- elt
+        _ twodup
+        _ vector_length
+        _ ult
+        _if .1
+        _ vector_data
+        _ swap
+        _cells
+        _plus
+        _fetch
+        _else .1
+        _true
+        _abortq "vector-nth index out of range"
+        _then .1
+        next
+endcode
+
+; ### vector-set-nth
+code vector_set_nth, 'vector-set-nth'   ; elt index vector --
+        _ twodup
+        _ vector_length
+        _ ult
+        _if .1
+        _ vector_data
+        _ swap
+        _cells
+        _plus
+        _ store
+        _else .1
+        _true
+        _abortq "vector-set-nth index out of range"
+        _then .1
+        next
+endcode
+
+; ### vector-insert-nth
+code vector_insert_nth, 'vector-insert-nth'     ; elt n vector --
+        push    r15
+        mov     r15, rbx                ; -- elt n vector
+
+        _ twodup                        ; -- elt n vector n vector
+        _ vector_length                 ; -- elt n vector n length
+        _ ugt                           ; -- elt n vector
+        _abortq "vector-insert-nth n > length"
+
+        _dup                            ; -- elt n vector vector
+        _ vector_length                 ; -- elt n vector length
+        _oneplus                        ; -- elt n vector length+1
+        _ over                          ; -- elt n vector length+1 vector
+        _ vector_ensure_capacity        ; -- elt n vector
+
+        _ vector_data                   ; -- elt n data-address
+        _ over                          ; -- elt n data-address n
+        _duptor                         ; -- elt n data-address n       r: -- n
+        _cells
+        _plus                           ; -- elt n addr
+        _dup
+        _cellplus                       ; -- elt n addr addr+8
+        pushd   r15
+        _ vector_length
+        _rfrom
+        _ minus
+        _cells                          ; -- elt n addr addr+8 #bytes
+        _ cmoveup                       ; -- elt n
+
+        pushd   r15
+        _ vector_length
+        _oneplus
+        pushd   r15
+        _ set_vector_length             ; -- elt n
+
+        pushd   r15                     ; -- elt n vector
+        _ vector_set_nth                ; ---
+
+        pop     r15
+        next
+endcode
+
+; ### vector-push
+code vector_push, 'vector-push'         ; elt vector --
+        push    r15                     ; save callee-saved register
+        mov     r15, rbx                ; vector in r15
+        _ vector_length                 ; -- elt length
+        _dup                            ; -- elt length length
+        _oneplus                        ; -- elt length length+1
+        _dup                            ; -- elt length length+1 length+1
+;         pushd   r15                     ; -- elt length length+1 length+1 this
+        __this                          ; -- elt length length+1 length+1 this
+        _ vector_ensure_capacity        ; -- elt length length+1
+;         pushd   r15                     ; -- elt length length+1 this
+        __this                          ; -- elt length length+1 this
+        _ set_vector_length             ; -- elt length
+;         pushd   r15                     ; -- elt length this
+        __this                          ; -- elt length this
+        _ vector_set_nth
+        pop     r15                     ; restore callee-saved register
+        next
+endcode
+
+; ### vector-each
+code vector_each, 'vector-each'         ; xt vector --
+        push    r15
+        mov     r15, rbx
+        _ vector_length
+        _zero
+        _?do .1
+        _i
+;         pushd   r15
+        __this
+        _ vector_nth                    ; -- xt elt
+        _ over                          ; -- xt elt xt
+        _ execute
+        _loop .1                        ; -- xt
+        _drop
+        pop     r15
+        next
+endcode
+
+%unmacro __this  0
