@@ -57,5 +57,5 @@ $4d81 constant STRING_TYPE
     dup string? 0= abort" not a string"
 ;
 
-include-system-file vector.forth
+\ include-system-file vector.forth
 include-system-file string.forth

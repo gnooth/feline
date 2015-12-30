@@ -46,11 +46,7 @@ only forth also definitions
     3 cells + !
 ;
 
-[then]
-
 4 cells constant VECTOR_SIZE            \ size in bytes of a vector object (without data)
-
-0 [if]
 
 \ constructor
 : <vector> ( capacity -- vector )
@@ -130,8 +126,6 @@ only forth also definitions
     then
 ;
 
-[then]
-
 : vector-remove-nth ( n vector -- )
     local v
     local n
@@ -142,12 +136,10 @@ only forth also definitions
     n 0< abort" VECTOR-REMOVE-NTH n < 0"
     v vector-data n 1+ cells +
     dup cell-
-    v vector-length 1- cells cmove
+    v vector-length 1- n - cells cmove
     0 v vector-data v vector-length 1- cells + !
     v vector-length 1- v vector-length!
 ;
-
-0 [if]
 
 : vector-push ( elt vector -- )
     local v
