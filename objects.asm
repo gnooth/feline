@@ -15,7 +15,7 @@
 
 file __FILE__
 
-%macro  __this  0
+%macro  _this 0
         pushd   r15
 %endmacro
 
@@ -267,6 +267,55 @@ code vector_insert_nth, 'vector-insert-nth'     ; elt n vector --
         next
 endcode
 
+; ### vector-remove-nth ( n vector -- )
+code vector_remove_nth, 'vector-remove-nth'     ; n vector --
+        push    r15
+        mov     r15, rbx
+
+        _ twodup
+        _ vector_length                 ; -- n vector n length
+        _zero                           ; -- n vector n length 0
+        _ swap                          ; -- n vector n 0 length
+        _ within                        ; -- n vector flag
+        _ zeq
+        _abortq "vector-remove-nth n > length - 1"      ; -- n vector
+
+        _ vector_data                   ; -- n addr
+        _ swap                          ; -- addr n
+        _duptor                         ; -- addr n                      r: -- n
+        _oneplus
+        _cells
+        _plus                           ; -- addr2
+        _dup                            ; -- addr2 addr2
+        _cellminus                      ; -- addr2 addr2-8
+        _this
+        _ vector_length
+        _oneminus                       ; -- addr2 addr2-8 len-1         r: -- n
+        _rfrom                          ; -- addr2 addr2-8 len-1 n
+        _ minus                         ; -- addr2 addr2-8 len-1-n
+        _cells                          ; -- addr2 addr2-8 #bytes
+        _ cmove
+
+        _zero
+        _this
+        _ vector_data
+        _this
+        _ vector_length
+        _oneminus
+        _cells
+        _plus
+        _ store
+
+        _this
+        _ vector_length
+        _oneminus
+        _this
+        _ set_vector_length
+
+        pop     r15
+        next
+endcode
+
 ; ### vector-push
 code vector_push, 'vector-push'         ; elt vector --
         push    r15                     ; save callee-saved register
@@ -275,16 +324,37 @@ code vector_push, 'vector-push'         ; elt vector --
         _dup                            ; -- elt length length
         _oneplus                        ; -- elt length length+1
         _dup                            ; -- elt length length+1 length+1
-;         pushd   r15                     ; -- elt length length+1 length+1 this
-        __this                          ; -- elt length length+1 length+1 this
+        _this                           ; -- elt length length+1 length+1 this
         _ vector_ensure_capacity        ; -- elt length length+1
-;         pushd   r15                     ; -- elt length length+1 this
-        __this                          ; -- elt length length+1 this
+        _this                           ; -- elt length length+1 this
         _ set_vector_length             ; -- elt length
-;         pushd   r15                     ; -- elt length this
-        __this                          ; -- elt length this
+        _this                           ; -- elt length this
         _ vector_set_nth
         pop     r15                     ; restore callee-saved register
+        next
+endcode
+
+; ### vector-pop
+code vector_pop, 'vector-pop'           ; vector -- elt
+        push    r15
+        mov     r15, rbx
+
+        _ vector_length
+        _oneminus
+        _dup
+        _zlt
+        _abortq "vector-pop vector is empty"
+
+        _this
+        _ vector_nth                    ; -- elt
+
+        _this
+        _ vector_length
+        _oneminus
+        _this
+        _ set_vector_length
+
+        pop     r15
         next
 endcode
 
@@ -296,8 +366,7 @@ code vector_each, 'vector-each'         ; xt vector --
         _zero
         _?do .1
         _i
-;         pushd   r15
-        __this
+        _this
         _ vector_nth                    ; -- xt elt
         _ over                          ; -- xt elt xt
         _ execute
@@ -307,4 +376,4 @@ code vector_each, 'vector-each'         ; xt vector --
         next
 endcode
 
-%unmacro __this  0
+%unmacro _this 0
