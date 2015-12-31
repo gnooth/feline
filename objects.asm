@@ -19,16 +19,20 @@ file __FILE__
         pushd   r15
 %endmacro
 
+%macro  _slot0 0
+        _fetch
+%endmacro
+
 ; ### slot 0
 ; returns contents of slot0
 ; slot 0 is the object header
 inline slot0, 'slot0'                   ; object-addr -- x
-        _fetch
+        _slot0
 endinline
 
 ; ### object-header
 inline object_header, 'object-header'   ; object -- x
-        _fetch
+        _slot0
 endinline
 
 ; ### object-header!
@@ -79,6 +83,34 @@ endcode
 
 VECTOR_TYPE     equ $7fa7
 STRING_TYPE     equ $4d81
+
+code vector?, 'vector?'                 ; object -- flag
+        test    rbx, rbx
+        jz      .1
+        _slot0
+        cmp     rbx, VECTOR_TYPE
+        jnz     .2
+        mov     rbx, -1
+        _return
+.2:
+        xor     ebx, ebx
+.1:
+        next
+endcode
+
+; ### check-vector
+code check_vector, 'check-vector'       ; object -- vector
+        _dup
+        _ vector?
+        test    rbx, rbx
+        poprbx
+        jz      .1
+        _return
+.1:
+        _true
+        _abortq "not a vector"
+        next
+endcode
 
 ; Vectors
 
