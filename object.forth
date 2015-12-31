@@ -31,8 +31,6 @@ $4d81 constant STRING_TYPE
     !
 ;
 
-[then]
-
 : vector? ( object -- flag )
     ?dup if
         object-header VECTOR_TYPE =
@@ -44,6 +42,8 @@ $4d81 constant STRING_TYPE
 : check-vector ( object -- vector )
     dup vector? 0= abort" not a vector"
 ;
+
+[then]
 
 : string? ( object -- flag )
     ?dup if
