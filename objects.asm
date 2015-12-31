@@ -175,13 +175,15 @@ endcode
 
 ; ### ~vector
 code destroy_vector, '~vector'          ; vector --
-        _ ?dup
-        _if .1
+;         _ ?dup
+;         _if .1
+        _ check_vector
+        mov     qword [rbx], 0          ; clear type field in object header
         _dup
         _ vector_data
         _ ifree
         _ ifree
-        _then .1
+;         _then .1
         next
 endcode
 
