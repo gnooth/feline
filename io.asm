@@ -313,7 +313,7 @@ code paren_open_file, '(open-file)'     ; zaddr fam -- fileid ior
         next
 endcode
 
-; ### string-open-file
+; ### $open-file
 code string_open_file, '$open-file'     ; $addr fam -- fileid ior
 %ifdef WIN64
         popd    rdx                     ; fam in rdx
