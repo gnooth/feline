@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -151,7 +151,7 @@ Cell os_read_char(Cell fd)
   else
     return (Cell) -1;
 #else
-  char c;
+  unsigned char c;
   int ret = read(fd, &c, 1);
   if (ret <= 0)
     return -1;
