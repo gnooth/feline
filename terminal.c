@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -82,9 +82,11 @@ void prep_terminal()
   extern Cell ncols_data;
   DWORD mode;
   console_input_handle = GetStdHandle(STD_INPUT_HANDLE);
+#ifdef WIN64_NATIVE
   forth_stdin_data  = (Cell) console_input_handle;
   forth_stdout_data = (Cell) GetStdHandle(STD_OUTPUT_HANDLE);
   forth_stderr_data = (Cell) GetStdHandle(STD_ERROR_HANDLE);
+#endif
   if (GetConsoleMode(console_input_handle, &mode))
     {
       mode = (mode & ~ENABLE_ECHO_INPUT & ~ENABLE_LINE_INPUT & ~ENABLE_PROCESSED_INPUT);
