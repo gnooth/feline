@@ -142,7 +142,7 @@ Cell os_read_char(Cell fd)
 {
 #ifdef WIN64_NATIVE
   DWORD bytes_read;
-  char c;
+  unsigned char c;
   BOOL ret = ReadFile((HANDLE)fd, &c, 1, &bytes_read, NULL);
   // "When a synchronous read operation reaches the end of a file, ReadFile
   // returns TRUE and sets *lpNumberOfBytesRead to zero."
