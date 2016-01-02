@@ -20,6 +20,7 @@
 #include <time.h>               // time, localtime_r
 #ifdef WIN64
 #include <windows.h>
+#include <io.h>                 // _chsize
 #else
 #include <limits.h>             // PATH_MAX
 #include <unistd.h>
@@ -255,6 +256,8 @@ Cell os_resize_file(Cell fd, off_t offset)
     return 0;
   else
     return -1;
+#elif defined(WIN64)
+  return (Cell) _chsize(fd, offset);
 #else
   return (Cell) ftruncate(fd, offset);
 #endif
@@ -393,7 +396,7 @@ Cell os_chdir(const char *path)
 char *os_realpath(const char *path)
 {
   char *buf = malloc(PATH_MAX);
-#ifdef WIN64_NATIVE
+#ifdef WIN64
   GetFullPathName(path, PATH_MAX, buf, NULL);
 #else
   realpath(path, buf);
