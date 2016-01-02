@@ -53,7 +53,7 @@
         poprbx
 %endmacro
 
-%ifdef WIN64_NATIVE
+%ifdef WIN64
 %macro  xcall   1
         push    rbp
         mov     rbp, [saved_rbp_data]
@@ -93,7 +93,7 @@ section .text
 %%name:
         db      len1 + len2 + 1
         db      FORTH_HOME
-%ifdef WIN64_NATIVE
+%ifdef WIN64
         db      '\'
 %else
         db      '/'
