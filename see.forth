@@ -904,6 +904,25 @@ latest-xt $31 install-handler
 
 latest-xt $33 install-handler
 
+: .38 ( -- )                            \ CMP r/m8, r8                  38 /r
+    \ /r
+    \ dest is r/m8
+    \ source is r8
+    $" cmp" to mnemonic
+    !modrm-byte
+    modrm-mod 3 = if
+        modrm-rm register-rm to dreg
+        8 to dsize
+        modrm-reg register-reg to sreg
+        8 to ssize
+        .inst
+        exit
+    then
+    unsupported
+;
+
+latest-xt $38 install-handler
+
 : .39 ( -- )                            \ CMP r/m64, r64                39 /r
     \ /r
     \ dest is r/m32/64
