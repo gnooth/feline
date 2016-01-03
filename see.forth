@@ -910,6 +910,13 @@ latest-xt $33 install-handler
     \ source is r8
     $" cmp" to mnemonic
     !modrm-byte
+    modrm-mod 0= if
+        modrm-rm register-rm to dbase
+        modrm-reg register-reg to sreg
+        8 to ssize
+        .inst
+        exit
+    then
     modrm-mod 3 = if
         modrm-rm register-rm to dreg
         8 to dsize
