@@ -17,22 +17,18 @@ file __FILE__
 
 ; ### scan
 code scan, 'scan'                       ; c-addr1 u1 char -- c-addr2 u2
-        _tor                            ; -- c-addr1 u1                 r: -- char
-        _begin scan1
-        _dup                            ; -- c-addr u u                 r: -- char
-        _while scan1
-        _ over                          ; -- c-addr u c-addr            r: -- char
-        _cfetch
-        _rfetch
-        _ equal                         ; -- c-addr u                   r: -- char
-        _if scan2
-        _rfromdrop
-        next
-        _then scan2
-        _lit 1
-        _ slashstring
-        _repeat scan1                   ; -- c-addr u                   r: -- char
-        _rfromdrop
+; not in standard
+        popd    rax                     ; char in al
+.1:                                     ; -- addr u
+        test    rbx, rbx                ; u = 0?
+        jz      .2                      ; u = 0, we're done
+        mov     rdx, [rbp]              ; addr in rdx
+        cmp     [rdx], al               ; is char at addr the char we're looking for?
+        je      .2                      ; if so, we're done
+        sub     rbx, 1                  ; otherwise decrement u
+        add     qword [rbp], 1          ; and increment addr
+        jmp     .1
+.2:
         next
 endcode
 
