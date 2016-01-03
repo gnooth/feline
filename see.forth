@@ -856,7 +856,7 @@ latest-xt $1b install-handler
 \ $29 handler
 : .29 ( -- )
     $" sub" to mnemonic
-    /r-reg-r/m
+    /r-r/m-reg
 ;
 
 latest-xt $29 install-handler
