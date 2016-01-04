@@ -15,8 +15,6 @@
 
 file __FILE__
 
-%define         NEW_LOCALS
-
 MAX_LOCALS      equ     16
 
 ; ### #locals
@@ -28,21 +26,9 @@ constant nlocals, '#locals', MAX_LOCALS
 ; ### lp0
 variable lp0, 'lp0', 0
 
-%if 0
-; ### lp@
-code lpfetch, 'lp@'
-        pushd   r15
-        next
-endcode
-%endif
-
 ; ### lp!
 code lpstore, 'lp!'
-%ifdef NEW_LOCALS
         popd    r14
-%else
-        popd    r15
-%endif
         next
 endcode
 
@@ -86,22 +72,13 @@ endcode
 
 ; ### locals-enter
 inline locals_enter, 'locals-enter'
-%ifdef NEW_LOCALS
         push    r14
         lea     r14, [r14 - BYTES_PER_CELL * MAX_LOCALS];
-%else
-        push    r15                     ; lsp
-        push    r14                     ; frame pointer
-        lea     r14, [r15 - BYTES_PER_CELL];
-%endif
 endinline
 
 ; ### locals-leave
 inline locals_leave, 'locals-leave'
         pop     r14
-%ifndef NEW_LOCALS
-        pop     r15
-%endif
 endinline
 
 ; ### local-names
@@ -150,16 +127,10 @@ endcode
 ; ### compile-local
 code compile_local, 'compile-local'     ; index --
         _ compile_pushrbx
-        _lit $49
-        _ ccommac
-        _lit $8b
-        _ ccommac
-        _lit $5e
-        _ ccommac
+        _ccommac $49
+        _ccommac $8b
+        _ccommac $5e
         _cells
-%ifndef NEW_LOCALS
-        _negate
-%endif
         _ ccommac
         next
 endcode
@@ -170,9 +141,6 @@ code compile_to_local, 'compile-to-local'       ; index --
         _ccommac $89
         _ccommac $5e                    ; mov [r14 + disp8], rbx
         _cells
-%ifndef NEW_LOCALS
-        _negate
-%endif
         _ ccommac                       ; disp8
         _ compile_poprbx
         next
@@ -184,9 +152,6 @@ code compile_plusto_local, 'compile-+to-local'  ; index --
         _ccommac $01
         _ccommac $5e                    ; add [r14 + disp8], rbx
         _cells
-%ifndef NEW_LOCALS
-        _negate
-%endif
         _ ccommac                       ; disp8
         _ compile_poprbx
         next
@@ -194,9 +159,6 @@ endcode
 
 ; ### initialize-local-names
 code initialize_local_names, 'initialize-local-names'
-        ; FIXME this is now done in COLD
-;         _ initialize_locals_stack
-
         ; allow for maximum number of locals
         _ nlocals
         _cells
@@ -240,15 +202,6 @@ code delete_local_names, 'delete-local-names'
         next
 endcode
 
-%ifndef NEW_LOCALS
-; ### local-init
-inline local_init, 'local-init'         ; x --
-        lea     r15, [r15 - BYTES_PER_CELL]     ; adjust lsp
-        mov     [r15], rbx                      ; initialize local with value from tos
-        poprbx                                  ; adjust stack
-endinline
-%endif
-
 ; ### (local)
 code paren_local, '(local)'             ; c-addr u --
 ; LOCALS 13.6.1.0086
@@ -266,13 +219,6 @@ code paren_local, '(local)'             ; c-addr u --
         _ using_locals?
         _zeq_if .2
         ; first local in this definition
-
-        ; this is now done in COLD
-;         _ lpfetch
-;         _zeq_if .3
-;         _ initialize_locals_stack
-;         _then .3
-
         _ initialize_local_names
         _lit locals_enter_xt
         _ copy_code                     ; must be inline!
@@ -290,13 +236,8 @@ code paren_local, '(local)'             ; c-addr u --
         _ plus
         _ store
 
-%ifdef NEW_LOCALS
         _ locals_defined                ; -- index
         _ compile_to_local
-%else
-        _lit local_init_xt
-        _ copy_code                     ; must be inline!
-%endif
 
         _lit 1
         _plusto locals_defined
