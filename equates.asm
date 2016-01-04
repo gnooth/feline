@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -28,3 +28,5 @@ GENERIC_WRITE   equ     $40000000
 MAX_PATH        equ     260             ; windef.h
 
 NVOCS           equ     8               ; maximum number of word lists in the search order
+
+MAX_LOCALS      equ     16              ; maximum number of local variables in a definition

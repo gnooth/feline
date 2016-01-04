@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -14,8 +14,6 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 file __FILE__
-
-MAX_LOCALS      equ     16
 
 ; ### #locals
 ; maximum number of local variables in a definition
