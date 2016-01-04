@@ -70,13 +70,12 @@ endcode
 
 ; ### locals-enter
 inline locals_enter, 'locals-enter'
-        push    r14
-        lea     r14, [r14 - BYTES_PER_CELL * MAX_LOCALS];
+        _locals_enter
 endinline
 
 ; ### locals-leave
 inline locals_leave, 'locals-leave'
-        pop     r14
+        _locals_leave
 endinline
 
 ; ### local-names
