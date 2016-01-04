@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -130,4 +130,8 @@
 
 %macro  _string_to_zstring 0            ; $>z
         _oneplus
+%endmacro
+
+%macro  _dtos 0                         ; D>S
+        _drop
 %endmacro
