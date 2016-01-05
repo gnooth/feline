@@ -110,9 +110,7 @@ endcode
 
 ; ### over
 inline over, 'over'
-        mov     [rbp - BYTES_PER_CELL], rbx
-        mov     rbx, [rbp]
-        lea     rbp, [rbp - BYTES_PER_CELL]
+        _over
 endinline
 
 ; ### over+

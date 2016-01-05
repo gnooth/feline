@@ -67,6 +67,12 @@
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
+%macro  _over 0                         ; OVER
+        mov     [rbp - BYTES_PER_CELL], rbx
+        mov     rbx, [rbp]
+        lea     rbp, [rbp - BYTES_PER_CELL]
+%endmacro
+
 %macro  _plus 0                         ; +
         add     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
