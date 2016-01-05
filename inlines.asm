@@ -57,6 +57,12 @@
         _cfetch
 %endmacro
 
+%macro  _swap 0                         ; SWAP
+        mov     rax, rbx
+        mov     rbx, [rbp]
+        mov     [rbp], rax
+%endmacro
+
 %macro  _nip 0                          ; NIP
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro

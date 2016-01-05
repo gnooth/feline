@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -252,10 +252,8 @@ code dotrs, '.rs'
 endcode
 
 ; ### swap
-inline swap, 'swap'
-        mov     rax, rbx
-        mov     rbx, [rbp]
-        mov     [rbp], rax
+inline swap, 'swap'                     ; x1 x2 -- x2 x1
+        _swap
 endinline
 
 ; ### 2swap
