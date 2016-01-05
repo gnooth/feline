@@ -440,11 +440,10 @@ inline zlt, '0<'
 endinline
 
 ; ### s>d
-code stod, 's>d'                        ; n -- d
-        _ dup
-        _zlt
-        next
-endcode
+inline stod, 's>d'                        ; n -- d
+; CORE
+        _stod
+endinline
 
 ; ### min
 code min, 'min'                         ; n1 n2 -- n3

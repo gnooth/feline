@@ -135,3 +135,8 @@
 %macro  _dtos 0                         ; D>S
         _drop
 %endmacro
+
+%macro  _stod 0                         ; S>D
+        _dup
+        _zlt
+%endmacro
