@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -368,7 +368,6 @@ code string_create_file, '$create-file' ; $addr fam -- fileid ior
         _lit -1                         ; "fileid is undefined"
         _lit -1                         ; error!
         next
-        next
 endcode
 
 extern os_read_file
@@ -412,81 +411,89 @@ endcode
 
 ; ### last-char
 code last_char, 'last-char'             ; c-addr u -- char
-        _ ?dup
-        _if last_char1
-        _ plus
+        test    rbx, rbx
+        jz .1
+        _plus
         _oneminus
         _cfetch
-        _else last_char1
-        _drop
-        _zero
-        _then last_char1
+        next
+.1:
+        _nip                            ; return 0 if no chars
         next
 endcode
 
 ; ### read-line
-code read_line, 'read-line'             ; c-addr u1 fileid -- u2 flag ior
-        _ rrot                          ; -- fileid c-addr u1
-        _ ?dup
-        _if read_line1
-        _duptor                         ; -- fileid c-addr u1           r: -- u1
-        _ rrot                          ; -- u1 fileid c-addr
-        _rfrom                          ; -- u1 fileid c-addr u1        r: --
-        _zero
-        _do read_line2                  ; -- u1 fileid c-addr
-        _ over                          ; -- u1 fileid c-addr fileid
-        _ read_char                     ; -- u1 fileid c-addr [ char | -1 ]
-        _dup
-        _zlt
-        _if read_line3                  ; -- u1 fileid c-addr [ char | -1 ]
-        ; end of file
-        _4drop                          ; --
-        _i
-        _dup
-        _ zne                           ; false flag if i = 0
-        _zero
-        _unloop
-        _return
-        _then read_line3
-        _dup
+code read_line, 'read-line'             ; bufaddr bufsize fileid -- u flag ior
+
+; locals:
+%define fileid  local0
+%define bufaddr local1
+%define bufsize local2
+%define filepos local3
+
+        _locals_enter
+        popd    fileid
+        popd    bufsize
+        popd    bufaddr
+
+        pushd   fileid
+        _ file_position
+        _ throw
+        _dtos
+        popd    filepos
+
+        pushd   bufaddr
+        pushd   bufsize
+        pushd   fileid
+        _ read_file                     ; -- #bytes-read ior
+        _ throw                         ; -- #bytes-read
+        test    rbx, rbx
+        jnz .1
+        ; rbx = 0, end of file
+        mov     [rbp - BYTES_PER_CELL], rbx
+        mov     [rbp - BYTES_PER_CELL * 2], rbx
+        lea     rbp, [rbp - BYTES_PER_CELL * 2] ; -- 0 0 0
+        jmp     .exit
+.1:                                     ; -- #bytes-read
+        pushd   bufaddr
+        _swap
         _lit 10
-        _ equal
-        _if read_line4
-        ; end of line                   ; -- u1 fileid c-addr 10
-        _drop                           ; -- u1 fileid c-addr
-        _ rrot                          ; -- c-addr u1 fileid
-        _2drop                          ; -- c-addr
-        _i                              ; -- c-addr i
-        _ last_char                     ; -- char
-        _lit 13
-        _ equal
-        _if read_line5                  ; CR precedes LF
-        _i
+        _ scan                          ; -- addr u
+        _if .2
+        ; found lf                      ; -- addr
+        sub     rbx, bufaddr            ; -- u
+        pushd   filepos                 ; -- u filepos
+        add     rbx, [rbp]              ; -- u filepos+u
+        _oneplus                        ; advance past linefeed
+        _stod
+        pushd   fileid
+        _ reposition_file
+        _ throw                         ; -- u
+
+        ; check for cr preceding lf
+        pushd bufaddr                   ; -- u bufaddr
+        _over                           ; -- u bufaddr u
+        _ last_char                     ; -- u char
+        cmp     rbx, 13
+        poprbx                          ; -- u
+        jnz     .3
         _oneminus
-        _else read_line5                ; no CR
-        _i
-        _then read_line5
+.3:
+        _else .2
+        sub     rbx, bufaddr            ; -- u
+        _then .2
+
         _true
         _zero
-        _unloop
-        _return
-        _then read_line4
-        _ over                          ; -- u1 fileid c-addr char c-addr
-        _i
-        _ plus
-        _ cstore                        ; -- u1 fileid c-addr
-        _loop read_line2
-        ; fall through
-        _2drop                          ; -- u2
-        _true                           ; -- u2 flag
-        _zero                           ; -- u2 flag ior
-        _else read_line1
-        _2drop
-        _zero
-        _true
-        _zero
-        _then read_line1
+.exit:
+        _locals_leave
         next
+
+%undef fileid
+%undef bufaddr
+%undef bufsize
+%undef filepos
+
 endcode
 
 extern os_write_file
