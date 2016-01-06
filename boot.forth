@@ -1,4 +1,4 @@
-\ Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@ include-system-file tools.forth
 include-system-file empty.forth
 include-system-file double.forth
 include-system-file environment.forth
-include-system-file user-home.forth
 include-system-file process-init-file.forth
 
 only forth definitions

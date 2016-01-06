@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -65,6 +65,32 @@ code pad, 'pad'                         ; -- c-addr
 ; CORE EXT
         _ tickpad
         _fetch
+        next
+endcode
+
+value user_home_string, '$user-home', 0
+
+; ### user-home
+code user_home, 'user-home'             ; -- $addr
+        _ user_home_string
+        _zeq_if .1
+%ifdef WIN64
+        _squote "USERPROFILE"
+%else
+        _squote "HOME"
+%endif
+        _ getenv_                       ; -- c-addr u
+        _dup
+        _lit 255
+        _ gt
+        _abortq "user-home pathname too long"
+        _ here
+        _tor
+        _ stringcomma
+        _rfrom
+        _to user_home_string
+        _then .1
+        _ user_home_string
         next
 endcode
 
