@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -117,7 +117,7 @@ code appendstring, '$+'                 ; $addr1 $addr2 -- $addr3
 ; "Appends the packed, null-terminated string at $addr2 (without its length
 ; byte) to the end of the packed, null-terminated string at $addr1 and places
 ; the resulting string at the next free location in the temporary string
-; storage location. $addr3 is the address of that location."
+; storage area. $addr3 is the address of that location."
         _ swap
         _ stringbuf
         _ copystring
@@ -544,6 +544,15 @@ code memequal, 'mem='                   ; addr1 addr2 len -- flag
         _then .1
         _2drop
         _true
+        next
+endcode
+
+; ### $=
+code string_equal, '$='                 ; $addr1 $addr2 -- flag
+        _ count
+        _ rot
+        _ count
+        _ strequal
         next
 endcode
 
