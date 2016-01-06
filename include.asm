@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -323,6 +323,46 @@ code forth_dirname, 'dirname'           ; $filename -- $dirname | 0
         next
 endcode
 
+; ### normalize-filename
+code normalize_filename, 'normalize-filename'   ; $addr1 -- $addr2
+        _dup
+        _ string_first_char
+        _lit '~'
+        _ notequal
+        _if .1
+        _return
+        _then .1
+
+        _dupcfetch
+        _lit 1
+        _ equal
+        _if .2
+        _drop
+        _ user_home
+        _return
+        _then .2
+
+        ; length <> 1
+        _dup
+        _twoplus
+        _cfetch
+        _ path_separator_char
+        _ equal
+        _if .3
+        _ user_home
+        _swap
+        _ count
+        _lit 1
+        _ slashstring
+        _ copy_to_temp_string
+        _ appendstring
+        _return
+        _then .3                        ; -- $addr1
+
+        ; return original string
+        next
+endcode
+
 ; ### included
 code included, 'included'               ; i*x c-addr u -- j*x
 ; FILE
@@ -331,6 +371,7 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ source_filename
         _tor
         _ copy_to_temp_string           ; -- $filename
+        _ normalize_filename
 
         _ source_filename
         _ ?dup
