@@ -218,14 +218,6 @@ code zcount, 'zcount'                   ; zaddr -- zaddr len
         next
 endcode
 
-; ### zappend
-code zappend, 'zappend'                 ; c-addr len zdest --
-        _ zcount
-        _ plus
-        _ zplace
-        next
-endcode
-
 ; ### string,
 code stringcomma, 'string,'             ; addr u --
 ; not in standard
