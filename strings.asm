@@ -159,23 +159,28 @@ code counttype, '$.'                    ; $addr --
         next
 endcode
 
-; ### place
-code place, 'place'                     ; addr1 +n addr2 --
-; not in standard
-; Stores +n consecutive bytes starting at addr1 as a counted, null-
-; terminated string at addr2. Does not test for an overlapping move.
-        _ twodup
-        _ cstore
-        _duptor
-        _oneplus
-        _ swap
-        _ cmove
-        ; store terminal null byte
-        _zero
-        _rfrom
-        _ count
-        _ plus
-        _ cstore
+code place, 'place'
+%ifdef WIN64
+        ; rsi and rdi are callee saved on Windows but not on Linux
+        push    rsi
+        push    rdi
+%endif
+        mov     rdi, rbx                ; destination in rdi
+        mov     rcx, [rbp]              ; length in rcx
+        mov     rsi, [rbp + BYTES_PER_CELL]     ; source in rsi
+        mov     al, cl
+        stosb                           ; store count byte
+        jrcxz   .1
+        rep     movsb
+.1:
+        xor     al, al                  ; terminal null byte
+        stosb
+        mov     rbx, [rbp + BYTES_PER_CELL * 2]
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+%ifdef WIN64
+        pop     rdi
+        pop     rsi
+%endif
         next
 endcode
 
