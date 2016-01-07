@@ -1202,6 +1202,14 @@ latest-xt $85 install-handler
         .inst
         exit
     then
+    modrm-mod 3 = if
+        modrm-rm to dreg
+        8 to dsize
+        modrm-reg to sreg
+        8 to ssize
+        .inst
+        exit
+    then
     unsupported
 ;
 
@@ -1318,6 +1326,14 @@ latest-xt $8f install-handler
 ;
 
 latest-xt $90 install-handler
+
+: .aa ( -- )
+   $" stosb" to mnemonic
+   0 to #operands
+   .inst
+;
+
+latest-xt $aa install-handler
 
 : .b8  ( -- )
     \ source is imm32/64
