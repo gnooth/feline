@@ -1,4 +1,4 @@
-\ Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -103,22 +103,8 @@ create history-array  history-size cells allot  history-array history-size cells
         cr $.
     loop ;
 
-0 value $history-file-pathname
-
 : history-file-pathname ( -- c-addr u )
-    $history-file-pathname 0= if
-        [ linux? ] [if] s" HOME" [else] s" USERPROFILE" [then]
-        getenv \ -- c-addr u
-        $buf 1+ zplace
-        [ linux? ] [if] s" /" [else] s" \" [then]
-        $buf 1+ zappend
-        s" .feline-history" $buf 1+ zappend
-        $buf 1+ zstrlen $buf c!
-\         $buf count >$ to $history-file-pathname
-        here $buf count string, to $history-file-pathname
-        +$buf
-    then
-    $history-file-pathname count ;
+    user-home $" .feline-history" path-append-filename count ;
 
 : save-history ( -- )
     -1 local fileid
