@@ -89,6 +89,7 @@ endcode
 
 ; ### rot
 code rot, 'rot'                         ; x1 x2 x3 -- x2 x3 x1
+; CORE
         mov     rax, [rbp]                      ; x2 in RAX
         mov     rdx, [rbp + BYTES_PER_CELL]     ; x1 in RDX
         mov     [rbp + BYTES_PER_CELL], rax     ; x2
@@ -99,12 +100,12 @@ endcode
 
 ; ### -rot
 code rrot, '-rot'                       ; x1 x2 x3 -- x3 x1 x2
-        popd    rax                     ; x3
-        popd    rcx                     ; x2
-        popd    rdx                     ; x1
-        pushd   rax
-        pushd   rdx
-        pushd   rcx
+; not in standard
+        mov     rax, [rbp]                      ; x2 in RAX
+        mov     rdx, [rbp + BYTES_PER_CELL]     ; x1 in RDX
+        mov     [rbp + BYTES_PER_CELL], rbx     ; x3
+        mov     [rbp], rdx                      ; x1
+        mov     rbx, rax                        ; x2
         next
 endcode
 
