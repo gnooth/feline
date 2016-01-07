@@ -124,9 +124,22 @@ endcode
 ; ### compile-local
 code compile_local, 'compile-local'     ; index --
         _ compile_pushrbx
+        ; check to see if last instruction at this point is mov rbx, [rbp]
+        ; (left by optimize-pushrbx when it performs its optimization)
+        _ here_c
+        _lit 4
+        _ minus
+        _lfetch
+        _lit $005d8b48                  ; mov rbx, [rbp]
+        _ equal
+        _if .1
+        ; eliminate dead store
+        _lit -4
+        _ allot_c
+        _then .1
         _ccommac $49
         _ccommac $8b
-        _ccommac $5e
+        _ccommac $5e                    ; mov rbx, [r14 + disp8]
         _cells
         _ ccommac
         next
