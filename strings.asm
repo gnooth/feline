@@ -87,7 +87,7 @@ code copy_to_temp_string, '>temp$'      ; c-addr u -- $addr
 ; advance the temporary string pointer past the copied string
 ; return the address of the copied string
         _ stringbuf
-        _ place_string
+        _ place
         _ stringbuf_plus
         next
 endcode
@@ -140,22 +140,6 @@ code appendstring, '$+'                 ; $addr1 $addr2 -- $addr3
         next
 endcode
 
-; ### $place
-code place_string, '$place'             ; c-addr u $addr --
-        _ twodup
-        _ cstore
-        _duptor
-        _oneplus
-        _ swap
-        _ move
-        _zero
-        _rfrom
-        _ count
-        _ plus
-        _ cstore
-        next
-endcode
-
 ; ### >$
 code save_string, '>$'                  ; c-addr u -- $addr
 ; copy the string specified by c-addr u to allocated storage
@@ -163,7 +147,7 @@ code save_string, '>$'                  ; c-addr u -- $addr
         _twoplus                        ; count byte, terminal null byte
         _ iallocate                     ; -- c-addr u $addr
         _duptor
-        _ place_string
+        _ place
         _rfrom
         next
 endcode
@@ -176,8 +160,22 @@ code counttype, '$.'                    ; $addr --
 endcode
 
 ; ### place
-code place, 'place'                     ; c-addr1 u c-addr2 --
-        _ place_string
+code place, 'place'                     ; addr1 +n addr2 --
+; not in standard
+; Stores +n consecutive bytes starting at addr1 as a counted, null-
+; terminated string at addr2. Does not test for an overlapping move.
+        _ twodup
+        _ cstore
+        _duptor
+        _oneplus
+        _ swap
+        _ cmove
+        ; store terminal null byte
+        _zero
+        _rfrom
+        _ count
+        _ plus
+        _ cstore
         next
 endcode
 
