@@ -671,24 +671,23 @@ extern os_rename_file
 
 ; ### rename-file
 code rename_file, 'rename-file'         ; c-addr1 u1 c-addr2 u2 -- ior
-        sub     rsp, ((MAX_PATH + 16) & $1f0) * 2
-        pushrbx
-        mov     rbx, rsp                ; new name
-        _ zplace                        ; -- c-addr1 u1
-        pushrbx
-        lea     rbx, [rsp + MAX_PATH]   ; old name
-        _ zplace                        ; --
+        ; -- old new
+        _ copy_to_temp_string           ; new name
+        _string_to_zstring
+        _ rrot
+        _ copy_to_temp_string           ; old name
+        _string_to_zstring
+        ; -- new old
 %ifdef WIN64
-        lea     rcx, [rsp + MAX_PATH]   ; old name
-        mov     rdx, rsp                ; new name
+        popd    rcx                     ; old name
+        popd    rdx                     ; new name
 %else
-        lea     rdi, [rsp + MAX_PATH]   ; old name
-        mov     rsi, rsp                ; new name
+        popd    rdi                     ; old name
+        popd    rsi                     ; new name
 %endif
         xcall   os_rename_file
         pushrbx
         mov     rbx, rax
-        add     rsp, ((MAX_PATH + 16) & $1f0) * 2
         next
 endcode
 
