@@ -765,7 +765,7 @@ code getenv_, 'getenv'                  ; c-addr1 u1 -- c-addr2 u2
         pushd   rbx
         test    rbx, rbx
         jz      .1
-        call    zstrlen
+        _ zstrlen
         next
 .1:
         xor     ebx, ebx
@@ -792,12 +792,12 @@ endcode
 ; ### current-directory
 code current_directory, 'current-directory'     ; -- $addr
         _ tempstring
-        _ dup
+        _dup
         _oneplus                        ; skip over count byte
         _lit 255
         _ get_current_directory
         _ zstrlen
-        _ over
+        _over
         _ cstore                        ; count byte
         next
 endcode
@@ -806,14 +806,15 @@ extern os_chdir
 
 ; ### set-current-directory
 code set_current_directory, 'set-current-directory'     ; $addr -- flag
-        _ string_to_zstring
+; returns true on success, 0 on failure
+        _string_to_zstring
 %ifdef WIN64
-        popd    rcx
+        mov     rcx, rbx
 %else
-        popd    rdi
+        mov     rdi, rbx
 %endif
         xcall   os_chdir
-        pushd   rax
+        mov     rbx, rax
         next
 endcode
 
