@@ -47,6 +47,15 @@ inline dup_zerobranch, 'dup-0branch'
         jz      0
 endinline
 
+; ### ?dup-0branch
+inline ?dup_zerobranch, '?dup-0branch'
+        test    rbx, rbx
+        jnz     .1
+        poprbx
+        jmp     0
+.1:
+endinline
+
 ; ### if
 code if, 'if', IMMEDIATE                ; c: -- orig
 ; CORE
