@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -33,15 +33,28 @@ branch_end:
         jz      0
 ?branch_end:
 
+; ### 0branch
+inline zerobranch, '0branch'
+        test    rbx, rbx
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        jz      0
+endinline
+
+; ### dup-0branch
+inline dup_zerobranch, 'dup-0branch'
+        test    rbx, rbx
+        jz      0
+endinline
+
 ; ### if
 code if, 'if', IMMEDIATE                ; c: -- orig
 ; CORE
 ; "Interpretation semantics for this word are undefined."
         _ ?comp
+        _lit zerobranch_xt
+        _ compile_xt
         _ flush_compilation_queue
-        _lit ?branch
-        _lit ?branch_end - ?branch
-        _ paren_copy_code
         _ here_c
         next
 endcode
