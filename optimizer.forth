@@ -1,4 +1,4 @@
-\ Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -13,19 +13,32 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+: compile-0branch ( xt -- )
+    opt-debug if ?cr ." compile-0branch " .s then
+    cq-flush-literals
+    copy-code
+    1 +to cq-index
+;
+
+' compile-0branch ' 0branch >comp!
+
 : compile-dup ( xt -- )
     local xt
-\     ?cr ." compile-dup xt = $" xt h.
 
-\     ?cr ." compile-dup cq-second = $" cq-second h.
-
-    opt-debug if ?cr ." compile-+ calling cq-flush-literals" then
+    opt-debug if ?cr ." compile-dup calling cq-flush-literals" then
     cq-flush-literals
 
     cq-second ['] + = if
         ['] 2* inline-or-call-xt
         2 +to cq-index
         opt-debug if ?cr ." dup + -> 2*" then
+        exit
+    then
+
+    cq-second ['] 0branch = if
+        ['] dup-0branch copy-code
+        2 +to cq-index
+        opt-debug if ?cr ." dup 0branch -> dup-0branch" then
         exit
     then
 
