@@ -58,13 +58,9 @@ inline dup, 'dup'
 endinline
 
 ; ### ?dup
-code ?dup, '?dup'
-        test    rbx, rbx
-        jz      .1
-        pushrbx
-.1:
-        next
-endcode
+inline ?dup, '?dup'
+        _?dup
+endinline
 
 ; ### 2dup
 code twodup, '2dup'                     ; x1 x2 -- x1 x2 x1 x2
