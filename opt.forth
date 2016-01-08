@@ -48,6 +48,25 @@
 
 ' compile-dup ' dup >comp!
 
+: compile-?dup ( xt -- )
+    local xt
+
+    opt-debug if ?cr ." compile-?dup calling cq-flush-literals" then
+    cq-flush-literals
+
+    cq-second ['] 0branch = if
+        ['] ?dup-0branch copy-code
+        2 +to cq-index
+        opt-debug if ?cr ." ?dup 0branch -> ?dup-0branch" then
+        exit
+    then
+
+    xt inline-or-call-xt
+    1 +to cq-index
+;
+
+' compile-?dup ' ?dup >comp!
+
 : compile-+ ( xt -- )
     local xt
 
