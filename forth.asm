@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ default abs ; use absolute addresses by default
 %include "memory.asm"
 %include "number.asm"
 %include "objects.asm"
-%include "optimizer.asm"
+%include "opt.asm"
 %include "parse.asm"
 %include "quit.asm"
 %include "stack.asm"

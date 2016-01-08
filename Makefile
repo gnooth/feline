@@ -98,7 +98,7 @@ ASM_SOURCES = forth.asm forth_home.asm equates.asm macros.asm inlines.asm \
 	memory.asm \
 	number.asm \
 	objects.asm \
-	optimizer.asm \
+	opt.asm \
 	parse.asm \
 	quit.asm \
 	stack.asm \
