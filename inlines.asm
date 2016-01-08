@@ -57,6 +57,13 @@
         _cfetch
 %endmacro
 
+%macro  _?dup 0
+        test    rbx, rbx
+        jz      %%skip
+        pushrbx
+%%skip:
+%endmacro
+
 %macro  _swap 0                         ; SWAP
         mov     rax, rbx
         mov     rbx, [rbp]
