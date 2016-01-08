@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -66,9 +66,9 @@ endcode
 ; ### (copy-code)
 code paren_copy_code, '(copy-code)'     ; code-addr size --
         _ here_c
-        _ over
+        _over
         _ allot_c
-        _ swap
+        _swap
         _ cmove
         next
 endcode
@@ -78,9 +78,9 @@ code copy_code, 'copy-code'             ; xt --
         _dup                            ; -- xt xt
         _toinline                       ; -- xt addr
         _cfetch                         ; -- xt size
-        _ swap                          ; -- size xt
+        _swap                           ; -- size xt
         _tocode                         ; -- size code-address
-        _ swap                          ; -- code-address size
+        _swap                           ; -- code-address size
         _ paren_copy_code
         next
 endcode
@@ -222,8 +222,8 @@ code inline_or_call_xt, 'inline-or-call-xt'     ; xt --
         next
 endcode
 
-; ### (compile,)
-code parencompilecomma, '(compile,)'    ; xt --
+; ### compile-xt
+code compile_xt, 'compile-xt'           ; xt --
         _ opt
         _zeq_if .1
         _ inline_or_call_xt
@@ -241,7 +241,7 @@ code parencompilecomma, '(compile,)'    ; xt --
 endcode
 
 ; ### compile,
-deferred compilecomma, 'compile,', parencompilecomma
+deferred compilecomma, 'compile,', compile_xt
 ; CORE EXT
 ; "Interpretation semantics for this word are undefined."
 
