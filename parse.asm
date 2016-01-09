@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -54,10 +54,10 @@ endcode
 ; ### scan-to-whitespace
 code scan_to_whitespace, 'scan-to-whitespace'   ; c-addr1 u1 -- c-addr2 u2
         _begin .1
-        _ dup
+        _dup
         _ zgt
         _while .1
-        _ over
+        _over
         _cfetch
         _ blchar
         _ le
@@ -73,8 +73,7 @@ endcode
 ; ### /source
 code slashsource, '/source'             ; -- c-addr u
         _ source
-        _ toin
-        _fetch
+        _from toin
         _ slashstring
         next
 endcode
@@ -83,19 +82,18 @@ endcode
 code parse, 'parse'                     ; char "ccc<char>" -- c-addr u
 ; CORE EXT 6.2.2008
         _ slashsource
-        _ over
+        _over
         _tor                            ; delim addr1 len1      r: addr1
         _ rot
         _ scan                          ; addr2 len2            r: addr1
         _drop
         _rfetch                         ; addr2 addr1           r: addr1
-        _ minus                         ; len                   r: addr1
+        _minus                          ; len                   r: addr1
         _dup
         _oneplus
-        _ toin
-        _ plusstore                     ; len                   r: addr1
+        _plusto toin                    ; len                   r: addr1
         _rfrom
-        _ swap
+        _swap
         next
 endcode
 
@@ -108,24 +106,20 @@ code parse_name, 'parse-name'           ; <spaces>name -- c-addr u
 ; resulting string has length zero."
         _ source                        ; -- source-addr source-length
         _ tuck                          ; -- source-length source-addr source-length
-        _ toin
-        _fetch
+        _from toin                      ; -- source-length source-addr source-length >in
         _ slashstring                   ; -- source-length addr1 #left
         _ skip_whitespace               ; -- source-length start-of-word #left
-        _ over                          ; -- source-length start-of-word #left start-of-word
-        _ swap                          ; -- source-length start-of-word start-of-word #left
+        _overswap                       ; -- source-length start-of-word start-of-word #left
         _ scan_to_whitespace            ; -- source-length start-of-word end-of-word #left
         _tor                            ; -- source-length start-of-word end-of-word                    r: #left
-        _ over                          ; -- source-length start-of-word end-of-word start-of-word
-        _ minus                         ; -- source-length start-of-word word-length
+        _overminus                      ; -- source-length start-of-word word-length
         _ rot                           ; -- start-of-word word-length source-length
         _rfrom                          ; -- start-of-word word-length source-length #left              r: --
         _dup                            ; -- start-of-word word-length source-length #left #left
         _ zne                           ; -- start-of-word word-length source-length #left -1|0
         _plus                           ; -- start-of-word word-length source-length #left-1|#left
-        _ minus
-        _ toin
-        _ store
+        _minus
+        _to toin
         next
 endcode
 
