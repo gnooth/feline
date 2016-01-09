@@ -285,6 +285,11 @@ section .text
         next
 %endmacro
 
+%macro  _from 1
+        pushrbx
+        mov     rbx, [%1_data]
+%endmacro
+
 %macro  _to 1                           ; label
         mov     rax, %1_data
         mov     [rax], rbx
