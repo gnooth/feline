@@ -246,7 +246,7 @@ section .text
 %endmacro
 
 %macro  variable 3                      ; label, name, value
-        head    %1, %2, 0, 0, TYPE_VARIABLE
+        head    %1, %2, 0, %1_ret - %1, TYPE_VARIABLE
         section .data
         global %1_data
         align   DEFAULT_DATA_ALIGNMENT
@@ -256,6 +256,7 @@ section .text
 %1:
         pushrbx
         mov     ebx, %1_data            ; REVIEW assumes 32-bit address
+%1_ret:
         next
 %endmacro
 
