@@ -148,6 +148,12 @@
         add     rbx, [rbp]
 %endmacro
 
+%macro  _overswap 0
+        mov     rax, [rbp]
+        mov     [rbp - BYTES_PER_CELL], rax
+        lea     rbp, [rbp - BYTES_PER_CELL]
+%endmacro
+
 %macro  _plusdup 0                      ; + DUP
         add     rbx, [rbp]
         mov     [rbp], rbx
