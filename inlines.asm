@@ -93,6 +93,12 @@
         add     rbx, 2
 %endmacro
 
+%macro  _minus 0                        ; -
+        neg     rbx
+        add     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
 %macro  _oneminus 0                     ; 1-
         sub     rbx, 1
 %endmacro

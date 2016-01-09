@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -71,9 +71,7 @@ endinline
 
 ; ### -
 inline minus, '-'
-        neg     rbx
-        add     rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _minus
 endinline
 
 ; ### swap-
