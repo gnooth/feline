@@ -148,7 +148,11 @@
         add     rbx, [rbp]
 %endmacro
 
-%macro  _overswap 0
+%macro  _overminus 0                    ; OVER -
+        sub     rbx, [rbp]
+%endmacro
+
+%macro  _overswap 0                     ; OVER SWAP
         mov     rax, [rbp]
         mov     [rbp - BYTES_PER_CELL], rax
         lea     rbp, [rbp - BYTES_PER_CELL]
