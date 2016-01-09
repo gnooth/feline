@@ -291,8 +291,7 @@ section .text
 %endmacro
 
 %macro  _to 1                           ; label
-        mov     rax, %1_data
-        mov     [rax], rbx
+        mov     [%1_data], rbx          ; REVIEW 32-bit address
         poprbx
 %endmacro
 
@@ -309,8 +308,7 @@ section .text
 %endmacro
 
 %macro  _plusto 1                       ; label
-        mov     rax, %1_data
-        add     [rax], rbx
+        add     [%1_data], rbx          ; REVIEW 32-bit address
         poprbx
 %endmacro
 
