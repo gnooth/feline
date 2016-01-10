@@ -296,15 +296,13 @@ section .text
 %endmacro
 
 %macro  _clear 1                        ; label
-        mov     rax, %1_data
-        xor     edx, edx
-        mov     [rax], rdx
+        xor     eax, eax
+        mov     [%1_data], rax          ; REVIEW 32-bit address
 %endmacro
 
 %macro  _zeroto 1                       ; label
-        mov     rax, %1_data
-        xor     edx, edx
-        mov     [rax], rdx
+        xor     eax, eax
+        mov     [%1_data], rax          ; REVIEW 32-bit address
 %endmacro
 
 %macro  _plusto 1                       ; label
