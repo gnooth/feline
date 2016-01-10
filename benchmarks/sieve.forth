@@ -1,3 +1,5 @@
+include bench.forth
+
 decimal
 
 8190 constant size
@@ -21,31 +23,10 @@ variable flags  size allot
    loop
    drop ;
 
-[undefined] ticks [if]
-s" iforth" environment? [if]
-drop
-: ticks ?ms ;
-[then]
-[then]
-
-[undefined] ticks [if]
-s" win32forth" environment? [if]
-drop
-: ticks ms@ ;
-[then]
-[then]
-
-[undefined] ticks [if]
-[defined] utime [if]
-: ticks utime 1000 um/mod nip ; \ gforth
-[else]
-: ticks counter ; \ SwiftForth
-[then]
-[then]
-
-: test  ( -- )
-   ticks >r
-   10000 0 do
-      primes
-   loop
-   ticks r> - . ." ticks" ;
+: test ( -- )
+    start-timer
+    10000 0 ?do
+        primes
+    loop
+    .elapsed
+;
