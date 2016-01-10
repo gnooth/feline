@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -177,7 +177,7 @@ code compile1, 'compile1'               ; $addr --
         _ find_local                    ; -- $addr-or-index flag
         _if .1
         _ flush_compilation_queue
-        _ compile_local
+        _ compile_local_ref
         _else .1
         _ find
         _ ?dup

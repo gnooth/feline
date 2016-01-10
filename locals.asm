@@ -121,8 +121,8 @@ code find_local, 'find-local'           ; found:        $addr -- index true
         next
 endcode
 
-; ### compile-local
-code compile_local, 'compile-local'     ; index --
+; ### compile-local-ref
+code compile_local_ref, 'compile-local-ref'     ; index --
         _ compile_pushrbx
         ; check to see if last instruction at this point is mov rbx, [rbp]
         ; (left by optimize-pushrbx when it performs its optimization)
