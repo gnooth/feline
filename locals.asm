@@ -123,12 +123,14 @@ endcode
 
 ; ### compile-local-ref
 code compile_local_ref, 'compile-local-ref'     ; index --
+        _tor                            ; r: -- index
         _ compile_pushrbx
+
         ; check to see if last instruction at this point is mov rbx, [rbp]
         ; (left by optimize-pushrbx when it performs its optimization)
         _ here_c
         _lit 4
-        _ minus
+        _minus
         _lfetch
         _lit $005d8b48                  ; mov rbx, [rbp]
         _ equal
@@ -136,10 +138,30 @@ code compile_local_ref, 'compile-local-ref'     ; index --
         ; eliminate dead store
         _lit -4
         _ allot_c
+
+        ; now check to see if last instruction was a store from rbx to the same local
+        _ here_c
+        _lit 4
+        _minus
+        _lfetch                         ; -- uint32
+        _lit $005e8949                  ; mov [r14 + 0], rbx
+        _rfetch                         ; -- uint32 $005e8949 index     r: -- index
+        _cells                          ; -- uint32 $005e8949 disp8     r: -- index
+        _lit 24
+        _ lshift                        ; -- uint32 $005e8949 xx
+        _plus                           ; -- uint32 $xx5e8949
+        _ equal
+        _if .2
+        ; no fetch needed
+        _rfromdrop
+        _return
+        _then .2
         _then .1
+
         _ccommac $49
         _ccommac $8b
         _ccommac $5e                    ; mov rbx, [r14 + disp8]
+        _rfrom                          ; -- index
         _cells
         _ ccommac
         next
