@@ -90,6 +90,22 @@ code val, 'value'                       ; x "<spaces>name" --
         next
 endcode
 
+; ### check-value-or-variable
+code check_value_or_variable, 'check-value-or-variable' ; xt -- xt
+        _dup
+        _totype
+        _cfetch
+        cmp     rbx, TYPE_VALUE
+        je      .1
+        cmp     rbx, TYPE_VARIABLE
+        je      .1
+        _true
+        _abortq "not a value or variable"
+.1:
+        _drop
+        next
+endcode
+
 ; ### to
 code storeto, 'to', IMMEDIATE           ; n "<spaces>name" --
 ; CORE EXT
@@ -111,7 +127,9 @@ code storeto, 'to', IMMEDIATE           ; n "<spaces>name" --
         _ missing                       ; -13 THROW
         _then .3                        ; -- n xt
 
-        ; FIXME verify that what we're storing to is a VALUE or VARIABLE
+        ; verify that what we're storing to is a VALUE or VARIABLE
+        _ check_value_or_variable
+
         _tobody                         ; -- n pfa
         _ statefetch
         _if .4
@@ -148,6 +166,9 @@ code plusstoreto, '+to', IMMEDIATE      ; n "<spaces>name" --
         _zeq_if .3                      ; not found
         _ missing                       ; -13 THROW
         _then .3                        ; -- n xt
+
+        ; verify that what we're storing to is a VALUE or VARIABLE
+        _ check_value_or_variable
 
         _tobody
         _ statefetch
