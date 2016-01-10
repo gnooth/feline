@@ -1327,6 +1327,14 @@ latest-xt $8f install-handler
 
 latest-xt $90 install-handler
 
+: .99 ( -- )
+    prefix if $" cqo" else $" cdq" then to mnemonic
+    0 to #operands
+    .inst
+;
+
+latest-xt $99 install-handler
+
 : .aa ( -- )
    $" stosb" to mnemonic
    0 to #operands
@@ -1449,6 +1457,16 @@ latest-xt $cd install-handler
 : .d1 ( -- )
     !modrm-byte
     mnemonic-from-regop to mnemonic
+    modrm-mod 1 = if
+        \ 1-byte displacement
+        modrm-rm register-rm to dbase
+        next-signed-byte to ddisp
+        $" qword" to relative-size
+        1 to immediate-operand
+        true to immediate-operand?
+        .inst
+        exit
+    then
     modrm-mod 3 = if
         \ register-direct
         modrm-rm register-rm to dreg
