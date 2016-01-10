@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -19,9 +19,14 @@ file __FILE__
 constant feline?, 'feline?', -1
 
 ; Types
+
+; ### tvar
 constant tvar, 'tvar', TYPE_VARIABLE
+; ### tvalue
 constant tvalue, 'tvalue', TYPE_VALUE
-constant tdeferred, 'tdefer', TYPE_DEFERRED
+; ### tdefer
+constant tdefer, 'tdefer', TYPE_DEFERRED
+; ### tconst
 constant tconst, 'tconst', TYPE_CONSTANT
 
 ; ### false
