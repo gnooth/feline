@@ -311,22 +311,14 @@ code ge, '>='                           ; n1 n2 -- flag
 endcode
 
 ; ### <
-code lt, '<'                            ; n1 n2 -- flag
+inline lt, '<'                          ; n1 n2 -- flag
 ; CORE
-; adapted from Win32Forth
-        xor     eax, eax
         cmp     [rbp], rbx
-        mov     rbx, -1
-        cmovnl  rbx, rax
-
-;         cmp     [rbp], rbx
-;         setl    bl
-;         neg     bl
-;         movsx   rbx, bl
-
+        setl    bl
+        neg     bl
+        movsx   rbx, bl
         lea     rbp, [rbp + BYTES_PER_CELL]
-        next
-endcode
+endinline
 
 ; ### <=
 code le, '<='                           ; n1 n2 -- flag
