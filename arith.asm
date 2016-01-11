@@ -266,15 +266,14 @@ abs1:
 endcode
 
 ; ### =
-code equal, '='                         ; x1 x2 -- flag
+inline equal, '='                       ; x1 x2 -- flag
 ; CORE
-; adapted from Win32Forth
-        sub     rbx, [rbp]
-        cmp     rbx, 1
-        sbb     rbx, rbx
+        cmp     rbx, [rbp]
+        sete    bl
+        neg     bl
+        movsx   rbx, bl
         lea     rbp, [rbp + BYTES_PER_CELL]
-        next
-endcode
+endinline
 
 ; ### <>
 code notequal, '<>'                     ; x1 x2 -- flag
