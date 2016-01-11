@@ -332,16 +332,14 @@ code le, '<='                           ; n1 n2 -- flag
 endcode
 
 ; ### u<
-code ult, 'u<'
+inline ult, 'u<'
 ; CORE
         cmp     [rbp], rbx
-        mov     ebx, 0
-        jae     .1
-        dec     rbx
-.1:
+        setb    bl
+        neg     bl
+        movsx   rbx, bl
         lea     rbp, [rbp + BYTES_PER_CELL]
-        next
-endcode
+endinline
 
 ; ### u>
 code ugt, 'u>'
