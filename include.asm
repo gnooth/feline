@@ -202,12 +202,10 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _to source_id
         _ source_buffer_size
         _ iallocate
-        _ dup
+        _dup
         _to source_buffer
-        _ tick_source
-        _ store
-        _ source_line_number
-        _ off
+        _to tick_source
+        _clear source_line_number
         _begin .1
         _ refill
         _while .1
@@ -223,7 +221,7 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
         _ ifree
         _ nrfrom
         _ restore_input
-        _ drop                          ; REVIEW
+        _drop                           ; REVIEW
         next
 endcode
 
@@ -272,7 +270,7 @@ endcode
 value source_filename, 'source-filename', 0
 
 ; ### link-file
-code link_file, 'link-file'             ; c-addr u -- nfa
+code link_file, 'link-file'             ; $addr -- nfa
         _ here
         _tor
         _ get_current
@@ -282,12 +280,11 @@ code link_file, 'link-file'             ; c-addr u -- nfa
         _ warning
         _fetch
         _tor
-        _ warning
-        _ off
+        _clear warning
+        _ count
         _ quotecreate
         _rfrom
-        _ warning
-        _ store
+        _to warning
         _zero
         _ comma
         _rfrom
@@ -380,32 +377,36 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ ?dup
         _if .3                          ; -- $filename $dirname
         _ swap
-        _ path_append_filename          ; -- $pathname1
+        _ path_append_filename          ; -- $pathname
         _then .3
         _then .2
 
-        _ forth_realpath                ; -- $pathname2
-        _ resolve_include_filename      ; -- $pathname3
-        _dup
-        _ count
-        _ link_file
-        _to source_filename
+        _ forth_realpath                ; -- $pathname
+        _ resolve_include_filename      ; -- $pathname
+        _to source_filename             ; -- $pathname
 
+        _ source_filename
         _ readonly
         _ string_open_file
 
         _zeq_if .4                      ; -- fileid
+        ; file has been opened successfully
+        ; make an entry for it in the FILES wordlist
+        _from source_filename
+        _ link_file
+        ; replace the transient string that we've been working with up to now
+        ; with the name field of the FILES wordlist entry (which is permanent)
+        _to source_filename
         _duptor
         _ include_file
-        _ rfrom                         ; -- fileid
+        _rfrom                          ; -- fileid
         _ close_file                    ; -- ior
-        _ drop                          ; REVIEW
+        _drop                           ; REVIEW
 
-        _ source_filename
+        _lit -1
+        _from source_filename
         _namefrom
         _tobody
-        _lit -1
-        _ swap
         _ store
 
         _else .4
@@ -416,10 +417,10 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _lit -38
         _ throw
         _then .4
-        _ rfrom
+        _rfrom
         _to source_filename
         _else .1
-        _ drop
+        _drop
         _then .1
         next
 endcode
@@ -532,6 +533,7 @@ code required, 'required'               ; i*x c-addr u -- i*x
         _ ?dup
         _if .1
         _ copy_to_temp_string           ; -- $filename
+        _ normalize_filename            ; -- $filename
 
         _ source_filename
         _ ?dup
@@ -540,12 +542,12 @@ code required, 'required'               ; i*x c-addr u -- i*x
         _ ?dup
         _if .3                          ; -- $filename $dirname
         _ swap
-        _ path_append_filename          ; -- $pathname1
+        _ path_append_filename          ; -- $pathname
         _then .3
         _then .2
 
-        _ forth_realpath                ; -- $pathname2
-        _ resolve_include_filename      ; -- $pathname3
+        _ forth_realpath                ; -- $pathname
+        _ resolve_include_filename      ; -- $pathname
         _ count
         _ twodup
         _ files_wordlist
