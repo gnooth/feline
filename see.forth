@@ -669,10 +669,10 @@ latest-xt $0b install-handler
 \     h.
 ;
 
-create cmov-mnemonic-table 16 cells allot
+create cmovcc-mnemonic-table 16 cells allot
 
-: initialize-cmov-mnemonic-table ( -- )
-    cmov-mnemonic-table local t
+: initialize-cmovcc-mnemonic-table ( -- )
+    cmovcc-mnemonic-table local t
     $" cmovo"  t  0 cells +  !
     $" cmovno" t  1 cells +  !
     $" cmovc"  t  2 cells +  !
@@ -691,18 +691,44 @@ create cmov-mnemonic-table 16 cells allot
     $" cmovg"  t 15 cells +  !
 ;
 
-: cmov-mnemonic ( byte2 -- )
-    cmov-mnemonic-table @ 0= if
-        initialize-cmov-mnemonic-table
-    then
-    $0f and cells cmov-mnemonic-table + @
+: cmovcc-mnemonic ( byte2 -- )
+    $0f and cells cmovcc-mnemonic-table + @
+;
+
+initialize-cmovcc-mnemonic-table
+
+create setcc-mnemonic-table 16 cells allot
+
+: initialize-setcc-mnemonic-table ( -- )
+    setcc-mnemonic-table local t
+    $" seto"  t  0 cells +  !
+    $" setno" t  1 cells +  !
+    $" setc"  t  2 cells +  !
+    $" setnc" t  3 cells +  !
+    $" setz"  t  4 cells +  !
+    $" setnz" t  5 cells +  !
+    $" setna" t  6 cells +  !
+    $" seta"  t  7 cells +  !
+    $" sets"  t  8 cells +  !
+    $" setns" t  9 cells +  !
+    $" setpe" t 10 cells +  !
+    $" setpo" t 11 cells +  !
+    $" setl"  t 12 cells +  !
+    $" setge" t 13 cells +  !
+    $" setle" t 14 cells +  !
+    $" setg"  t 15 cells +  !
+;
+
+initialize-setcc-mnemonic-table
+
+: setcc-mnemonic ( byte2 -- )
+    $0f and cells setcc-mnemonic-table + @
 ;
 
 : .0f ( -- )
-    ip c@ local byte2
-    1 +to ip
+    next-byte local byte2
     byte2 $f0 and $40 = if
-        byte2 cmov-mnemonic to mnemonic
+        byte2 cmovcc-mnemonic to mnemonic
         !modrm-byte
         modrm-mod 3 = if
             modrm-rm register-rm to sreg
@@ -731,8 +757,8 @@ create cmov-mnemonic-table 16 cells allot
         $" jge" .jcc32
         exit
     then
-    byte2 $9c = if
-        $" setl" to mnemonic
+    byte2 $f0 and $90 = if
+        byte2 setcc-mnemonic to mnemonic
         !modrm-byte
         modrm-mod 3 = if
             modrm-rm to dreg
@@ -741,6 +767,7 @@ create cmov-mnemonic-table 16 cells allot
             .inst
             exit
         then
+        unsupported
     then
     byte2 $b6 = if
         \ ModR/M byte contains both a register and an r/m operand
