@@ -290,7 +290,7 @@ code colon, ':'
         _ hide
         _ align_code
         _ here_c
-        _ dup
+        _dup
         _ last_code
         _ store
         _ latest
@@ -305,6 +305,7 @@ endcode
 ; ### :noname
 code colonnoname, ':noname'
         _ cq_clear
+        _ align_data
         _ here                          ; xt to be returned
         _ noname_header
         _ here_c
@@ -323,8 +324,7 @@ code semi, ';', IMMEDIATE
         _ flush_compilation_queue
         _ ?csp
         _ end_locals
-        _lit $0c3                       ; RET
-        _ ccommac
+        _ccommac $0c3                   ; RET
         _ lbrack
         _ reveal
         next

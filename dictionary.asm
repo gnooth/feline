@@ -295,29 +295,23 @@ code noname_header, 'noname-header'     ; --
         _lit xt_commacall_xt
         _ comma                         ; comp field
 
-        _zero
-        _ comma                         ; link field
+;         _zero
+;         _ comma                         ; link field
 
         _ here
         _tor                            ; -- r: addr-to-be-patched
         _zero
         _ comma                         ; pfa (will be patched)
 
-        _zero                           ; flag field
-        _ ccomma
         _zero
-        _ ccomma                        ; inline field
-        _zero
-        _ ccomma                        ; type field
-
-        _ source_filename
-        _ comma
-        _ source_line_number
-        _fetch
-        _ comma
+        _ comma                         ; no name pointer
 
         _zero
-        _ ccomma                        ; length byte of name
+        _ ccomma                        ; flags
+        _zero
+        _ ccomma                        ; inline
+        _zero
+        _ ccomma                        ; type
 
         _ align_data
         _ here
@@ -345,6 +339,7 @@ code quoteheader, '"header'             ; c-addr u --
         _then .1
 
         ; name token comes first
+        _ align_data
         _ source_filename
         _ comma
         _ source_line_number
