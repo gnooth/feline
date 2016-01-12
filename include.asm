@@ -271,8 +271,6 @@ value source_filename, 'source-filename', 0
 
 ; ### link-file
 code link_file, 'link-file'             ; $addr -- nfa
-        _ here
-        _tor
         _ get_current
         _tor
         _ files_wordlist
@@ -289,8 +287,8 @@ code link_file, 'link-file'             ; $addr -- nfa
         _ comma
         _rfrom
         _ set_current
-        _rfrom
-        _toname
+        _ last
+        _ fetch
         next
 endcode
 

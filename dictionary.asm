@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -66,19 +66,23 @@ code room, 'room'
         next
 endcode
 
-; Header layout in data area:
-;   code ptr    8 bytes
-;   comp field  8 bytes
-;   link ptr    8 bytes
-;   data ptr    8 bytes         pfa
-;   flags       1 byte
-;   type        1 byte
-;   inline      1 byte          number of bytes of code to copy
+; Layout of name token in data area:
 ;   sourcefile  8 bytes         pointer to source file name
 ;   line number 8 bytes         source line number
-;   name        1-256 bytes
-;   padding     0-7 bytes       for alignment
-;   body        8 bytes
+;   xt          8 bytes
+;   link ptr    8 bytes
+;   name        2-257 bytes     followed by padding as needed for alignment
+
+; Layout of execution token in data area:
+;   code ptr    8 bytes
+;   comp field  8 bytes
+;   data ptr    8 bytes         address of parameter field for >BODY
+;   name ptr    8 bytes         address of name field in name token
+;   flags       1 byte
+;   inline      1 byte          number of bytes of code to copy (0 if not inlineable)
+;   type        1 byte
+;   (followed by padding as needed for alignment)
+;   parameter field (if applicable)
 
 ; ### >comp
 inline tocomp, '>comp'
@@ -105,11 +109,6 @@ endinline
 ; ### >link
 inline tolink, '>link'
         _tolink
-endinline
-
-; ### link>
-inline linkfrom, 'link>'
-        _linkfrom
 endinline
 
 ; ### >body
@@ -345,33 +344,25 @@ code quoteheader, '"header'             ; c-addr u --
         _then .2
         _then .1
 
-        _zero                          ; code field (will be patched)
-        _ comma
-        _zero                          ; comp field
-        _ comma
-        _ current
-        _ fetch                         ; -- c-addr u wid
-        _ fetch                         ; -- c-addr u link
-        _ comma
-
-        _ here
-        _tor                            ; -- r: addr
-        _zero
-        _ comma                         ; pfa field (will be patched)
-
-        _zero                           ; flag
-        _ ccomma                        ; -- c-addr u
-        _zero
-        _ ccomma                        ; inline field
-        _zero
-        _ ccomma                        ; type field
-
+        ; name token comes first
         _ source_filename
         _ comma
         _ source_line_number
         _fetch
         _ comma
 
+        _ here
+        _tor
+        _zero                           ; xt field (will be patched)
+        _ comma
+
+        ; link field
+        _ current
+        _ fetch                         ; -- c-addr u wid
+        _ fetch                         ; -- c-addr u link
+        _ comma
+
+        ; HERE is now the nfa
         _ here
         _ last
         _ store                         ; -- c-addr u
@@ -386,8 +377,41 @@ code quoteheader, '"header'             ; c-addr u --
         _twoplus                        ; count byte, terminal null byte
         _ allot
         _ place
+        ; end of name token
 
         _ align_data
+
+        ; patch xt field in name token
+        _ here
+        _rfrom
+        _ store
+
+        ; execution token
+        _zero                          ; code field (will be patched)
+        _ comma
+        _zero                          ; comp field
+        _ comma
+
+        _ here
+        _tor                            ; r: -- addr
+        _zero
+        _ comma                         ; pfa field (will be patched)
+
+        ; name pointer
+        _ last
+        _ fetch
+        _ comma
+
+        _zero                           ; flags
+        _ ccomma
+        _zero
+        _ ccomma                        ; inline field
+        _zero
+        _ ccomma                        ; type field
+
+        _ align_data
+
+        ; patch pfa field
         _ here
         _rfrom                          ; addr-to-be-patched
         _ store

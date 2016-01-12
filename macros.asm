@@ -111,48 +111,66 @@ section .text
 
 %define link    0
 
-%macro  head 2-5 0, 0, 0                ; label, name, flags, inline size, type
-        global %1
+%macro  name_token 2                    ; label, name
 %strlen len     %2
+        section .data
+        align   DEFAULT_DATA_ALIGNMENT
+        dq      current_file
+        dq      __LINE__
+        dq      %1_xt                   ; xt
+        dq      link                    ; link field
+%1_nfa:
+        db      len
+        db      %2
+        db      0
+        align   DEFAULT_DATA_ALIGNMENT
+%define link    %1_nfa                  ; link field points to name field
+%endmacro
+
+%macro  execution_token 1-4             ; label, flags, inline size, type
+        global %1
         section .data
         align   DEFAULT_DATA_ALIGNMENT
 %1_xt:
         dq      %1                      ; address of code
         dq      0                       ; comp field
-        dq      link                    ; link field
-        dq      %1_pfa                  ; address of parameter field in data area
-        db      %3                      ; flags
-        db      %4                      ; inline size
-        db      %5                      ; type
-        dq      current_file            ; pointer to source file name
-        dq      __LINE__                ; source line number
-%1_nfa:
-        db      len                     ; length byte
-        db      %2                      ; name
-        db      0                       ; terminal null byte
+        dq      %1_pfa                  ; address of parameter field
+        dq      %1_nfa                  ; nfa
+        db      %2                      ; flags
+        db      %3                      ; inline size
+        db      %4                      ; type
         align   DEFAULT_DATA_ALIGNMENT
 %1_pfa:                                 ; define pfa (but don't reserve any space)
-%define link    %1_nfa                  ; link field points to name field
 %endmacro
 
-%macro  _tocode 0
+%macro  head 2-5 0, 0, 0                ; label, name, flags, inline size, type
+        name_token %1, %2
+        execution_token %1, %3, %4, %5
+%endmacro
+
+%macro  _toname 0                       ; xt -- nt
+        mov     rbx, [rbx + BYTES_PER_CELL * 3]
+%endmacro
+
+%macro  _namefrom 0                     ; nt -- xt
+        mov     rbx, [rbx - BYTES_PER_CELL * 2]
+%endmacro
+
+%macro  _tocode 0                       ; xt -- code-address
         mov     rbx, [rbx]
 %endmacro
 
-%macro  _tocomp 0
+%macro  _tocomp 0                       ; xt -- comp-field
         add     rbx, BYTES_PER_CELL
 %endmacro
 
-%macro  _tolink 0
-        add     rbx, BYTES_PER_CELL * 2
-%endmacro
-
-%macro  _linkfrom 0
-        sub     rbx, BYTES_PER_CELL * 2
+%macro  _tolink 0                       ; xt -- lfa
+        _toname
+        sub     rbx, BYTES_PER_CELL
 %endmacro
 
 %macro  _tobody 0
-        mov     rbx, [rbx + BYTES_PER_CELL * 3]
+        mov     rbx, [rbx + BYTES_PER_CELL * 2]
 %endmacro
 
 %macro  _toflags 0
@@ -168,31 +186,26 @@ section .text
 %endmacro
 
 %macro  _toview 0
-        add     rbx, BYTES_PER_CELL * 4 + 3
-%endmacro
-
-%macro  _toname 0
-        add     rbx, BYTES_PER_CELL * 6 + 3
-%endmacro
-
-%macro  _namefrom 0
-        sub     rbx, BYTES_PER_CELL * 6 + 3
+        _toname
+        sub     rbx, BYTES_PER_CELL * 4
 %endmacro
 
 %macro  _ntolink 0
-        sub     rbx, BYTES_PER_CELL * 4 + 3
+        sub     rbx, BYTES_PER_CELL
 %endmacro
 
 %macro  _ltoname 0
-        add     rbx, BYTES_PER_CELL * 4 + 3
+        add     rbx, BYTES_PER_CELL
 %endmacro
 
 %macro  _nametoflags 0
-        sub     rbx, BYTES_PER_CELL * 2 + 3
+        _namefrom
+        _toflags
 %endmacro
 
 %macro  _nametotype 0
-        sub     rbx, BYTES_PER_CELL * 2 + 1
+        _namefrom
+        _totype
 %endmacro
 
 %macro  code 2-5 0, 0, 0
