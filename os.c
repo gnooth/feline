@@ -395,10 +395,11 @@ Cell os_chdir(const char *path)
 
 char *os_realpath(const char *path)
 {
-  char *buf = malloc(PATH_MAX);
 #ifdef WIN64
-  GetFullPathName(path, PATH_MAX, buf, NULL);
+  char *buf = malloc(MAX_PATH);
+  GetFullPathName(path, MAX_PATH, buf, NULL);
 #else
+  char *buf = malloc(PATH_MAX);
   realpath(path, buf);
 #endif
   return buf;
