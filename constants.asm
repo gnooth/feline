@@ -47,6 +47,9 @@ constant min_int32, 'min-int32', -2147483648
 ; ### max-int32
 constant max_int32, 'max-int32', 2147483647
 
+; ### max-int64
+constant max_int64, 'max-int64', $7fffffffffffffff
+
 ; ### /hold
 ; "The size of the pictured numeric output string buffer shall be at least
 ; (2 * n) + 2 characters, where n is the number of bits in a cell."
