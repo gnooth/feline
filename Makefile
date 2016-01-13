@@ -9,13 +9,13 @@
 # should do it, on both Windows and Linux.
 
 # Tested with gcc 5.2.1 and clang 3.6.2 on Linux (Ubuntu).
-# Tested with gcc (tdm64-1) 5.1.0 on Windows 10.
+# Tested with gcc (tdm64-1) 5.1.0 and clang 3.7.1 on Windows 10.
 # NASM 2.11.08 on Windows, 2.11.05 on Linux.
 # No support in this makefile for Microsoft tools.
 
 VERSION = `git describe --tags`
 
-CC = gcc
+CC = clang
 
 CFLAGS = --std=c99 -D_GNU_SOURCE -g -m64
 ASMFLAGS =
@@ -45,7 +45,7 @@ endif
 endif
 
 $(FELINE_EXE):  $(OBJS)
-	$(CC) $(LINKFLAGS) $(OBJS) -o feline
+	$(CC) $(LINKFLAGS) $(OBJS) -o $(FELINE_EXE)
 
 forth_home.asm: $(FORTH_HOME_EXE)
 	./forth_home
@@ -135,5 +135,5 @@ clean:
 	-rm -f version.h
 
 zip:
-	-rm -f forth.zip
-	zip forth.zip *.c *.h *.asm *.forth tests/*.forth Makefile
+	-rm -f feline.zip
+	zip feline.zip *.c *.h *.asm *.forth benchmarks/*.forth benchmarks/*.c tests/*.forth Makefile
