@@ -1,4 +1,4 @@
-include bench.forth
+require bench.forth
 
 decimal
 
@@ -28,5 +28,6 @@ variable flags  size allot
     10000 0 ?do
         primes
     loop
+    stop-timer
     .elapsed
 ;

@@ -15,7 +15,7 @@
 \   return state0 + state1;
 \ }
 
-include bench.forth
+require bench.forth
 
 1 value state0
 2 value state1
@@ -71,6 +71,7 @@ feline? [if]
     10000000 0 ?do
         xorshift128+ drop
     loop
+    stop-timer
     .elapsed
     cr ." state0 = " state0 u.
     cr ." state1 = " state1 u.

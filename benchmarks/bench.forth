@@ -21,44 +21,44 @@ s" gforth" environment? [if]
 
 \ VFX Forth defines TICKS
 
-0 value start-time
+0 value start-ticks
+0 value end-ticks
+
+: elapsed-ms ( -- ms )
+    end-ticks start-ticks - ;
 
 feline? [if]
 
-0 value cycles
+0 value start-cycles
+0 value end-cycles
 
 : start-timer ( -- )
-    rdtsc to cycles
-    ticks to start-time ;
+    0 to end-ticks
+    0 to end-cycles
+    ticks to start-ticks
+    rdtsc to start-cycles ;
 
-: elapsed ( -- cycles ms )
-    rdtsc cycles -
-    ticks start-time - ;
+: stop-timer ( -- )
+    rdtsc to end-cycles
+    ticks to end-ticks ;
+
+: elapsed-cycles ( -- cycles )
+    end-cycles start-cycles - ;
 
 : .elapsed ( -- )
-    elapsed cr . ." ms " . ." cycles " ;
+    cr elapsed-ms     . ." ms "
+    cr elapsed-cycles . ." cycles " ;
 
 [else]
 
 \ not Feline, no RDTSC support
 : start-timer ( -- )
-    ticks to start-time ;
+    ticks to start-ticks ;
 
-: elapsed ( -- cycles ms )
-    ticks start-time - ;
+: stop-timer ( -- )
+    ticks to end-ticks ;
 
 : .elapsed ( -- )
-    elapsed cr . ." ms " ;
+    cr elapsed-ms . ." ms " ;
 
-[then]
-
-0 [if]
-\ Individual benchmarks should define a TEST function like this:
-: test ( -- )
-    start-timer
-    ( number of repetitions ) 0 ?do
-        ( code to be tested )
-    loop
-    .elapsed
-;
 [then]
