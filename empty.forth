@@ -1,4 +1,4 @@
-\ Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@
     then
 ;
 
-: save-search-order ( -- addr )
+: save-search-order ( -- )
     here
     #vocs cells allot
     context swap #vocs cells cmove
