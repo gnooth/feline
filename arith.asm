@@ -278,18 +278,10 @@ endinline
 ; ### <>
 inline notequal, '<>'                   ; x1 x2 -- flag
 ; CORE EXT
-%if 1
-; adapted from Win32Forth
-        mov     rax, [rbp]
-        sub     rax, rbx
-        neg     rax
-        sbb     rbx, rbx
-%else
         cmp     rbx, [rbp]
         setne   bl
         neg     bl
         movsx   rbx, bl
-%endif
         lea     rbp, [rbp + BYTES_PER_CELL]
 endinline
 
