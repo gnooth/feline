@@ -286,15 +286,13 @@ inline notequal, '<>'                   ; x1 x2 -- flag
 endinline
 
 ; ### >
-code gt, '>'                            ; n1 n2 -- flag
+inline gt, '>'                          ; n1 n2 -- flag
         cmp     [rbp], rbx
-        mov     ebx, 0
-        jle     .1
-        dec     rbx
-.1:
+        setg    bl
+        neg     bl
+        movsx   rbx, bl
         lea     rbp, [rbp + BYTES_PER_CELL]
-        next
-endcode
+endinline
 
 ; ### >=
 code ge, '>='                           ; n1 n2 -- flag
