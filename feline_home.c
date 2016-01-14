@@ -7,10 +7,10 @@ int main()
   FILE *file;
   int i = 0;
   getcwd(buf, sizeof(buf));
-  file = fopen("forth_home.asm", "w");
+  file = fopen("feline_home.asm", "w");
   if (file)
     {
-      fprintf(file, "%%define FORTH_HOME \"%s\"\n", buf);
+      fprintf(file, "%%define FELINE_HOME \"%s\"\n", buf);
       fclose(file);
     }
 }

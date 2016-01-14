@@ -835,16 +835,16 @@ code cd, 'cd'
 endcode
 
 section .data
-forth_home_data:
-%strlen len     FORTH_HOME
+feline_home_data:
+%strlen len     FELINE_HOME
         db      len
-        db      FORTH_HOME
+        db      FELINE_HOME
         db      0
 
-; ### forth-home
-code forth_home, 'forth-home'           ; -- $addr
+; ### feline-home
+code feline_home, 'feline-home'         ; -- $addr
         pushrbx
-        mov     ebx, forth_home_data    ; assumes 32-bit address
+        mov     ebx, feline_home_data   ; assumes 32-bit address
         next
 endcode
 

@@ -8,8 +8,8 @@
 #
 # should do it, on both Windows and Linux.
 
-# Tested with gcc 5.2.1 and clang 3.6.2 on Linux (Ubuntu).
-# Tested with gcc (tdm64-1) 5.1.0 and clang 3.7.1 on Windows 10.
+# Tested with GNU Make 4.0, gcc 5.2.1 and clang 3.6.2 on Linux (Ubuntu).
+# Tested with GNU Make 3.81, gcc (tdm64-1) 5.1.0 and clang 3.7.1 on Windows 10.
 # NASM 2.11.08 on Windows, 2.11.05 on Linux.
 # No support in this makefile for Microsoft tools.
 
@@ -28,11 +28,11 @@ ifeq ($(OS),Windows_NT)
 	ASMFLAGS += -DWIN64 -DWIN64_NATIVE
 	FELINE_EXE = feline.exe
 	FORTH_EXE = forth.exe
-	FORTH_HOME_EXE = forth_home.exe
+	FELINE_HOME_EXE = feline_home.exe
 else
 	FELINE_EXE = feline
 	FORTH_EXE = forth
-	FORTH_HOME_EXE = forth_home
+	FELINE_HOME_EXE = feline_home
 endif
 
 ifeq ($(OS),Windows_NT)
@@ -47,11 +47,11 @@ endif
 $(FELINE_EXE):  $(OBJS)
 	$(CC) $(LINKFLAGS) $(OBJS) -o $(FELINE_EXE)
 
-forth_home.asm: $(FORTH_HOME_EXE)
-	./forth_home
+feline_home.asm: $(FELINE_HOME_EXE)
+	./feline_home
 
-$(FORTH_HOME_EXE): forth_home.c
-	$(CC) forth_home.c -o forth_home
+$(FELINE_HOME_EXE): feline_home.c
+	$(CC) feline_home.c -o $(FELINE_HOME_EXE)
 
 version.h:
 	echo "#define VERSION \"$(VERSION)\"" > version.h
@@ -74,7 +74,7 @@ windows-ui.o: forth.h windows-ui.h windows-ui.c Makefile
 winkey.o: forth.h windows-ui.h winkey.c Makefile
 	$(CC) $(CFLAGS) -c -o winkey.o winkey.c
 
-ASM_SOURCES = forth.asm forth_home.asm equates.asm macros.asm inlines.asm \
+ASM_SOURCES = forth.asm feline_home.asm equates.asm macros.asm inlines.asm \
 	align.asm \
 	ansi.asm \
 	arith.asm \
@@ -131,7 +131,7 @@ clean:
 	-rm -f os.o*
 	-rm -f terminal.o*
 	-rm -f forth.o*
-	-rm -f forth_home.asm forth_home.exe forth_home
+	-rm -f feline_home.asm feline_home.exe feline_home
 	-rm -f version.h
 
 zip:

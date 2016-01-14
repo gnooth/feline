@@ -87,12 +87,12 @@
 
 %macro  file    1
 %strlen len1    %1
-%strlen len2    FORTH_HOME
+%strlen len2    FELINE_HOME
 section .text
         align   DEFAULT_CODE_ALIGNMENT
 %%name:
         db      len1 + len2 + 1
-        db      FORTH_HOME
+        db      FELINE_HOME
 %ifdef WIN64
         db      '\'
 %else

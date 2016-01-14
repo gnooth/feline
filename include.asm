@@ -504,7 +504,7 @@ endcode
 code system_file_pathname, 'system-file-pathname'
 ; c-addr1 u1 -- c-addr2 u2
         _ copy_to_temp_string           ; -- $addr1
-        _ forth_home                    ; -- $addr1 $addr2
+        _ feline_home                   ; -- $addr1 $addr2
 %ifdef WIN64
         _cquote "\"
 %else

@@ -6,9 +6,9 @@ feline
 forth.exe
 feline.exe
 *.pdb
-forth_home
-forth_home.exe
-forth_home.asm
+feline_home
+feline_home.exe
+feline_home.asm
 version.h
 a.out
 benchmarks/xorshift128+
