@@ -166,6 +166,13 @@
         lea     rbp, [rbp - BYTES_PER_CELL]
 %endmacro
 
+%macro  _dropswap 0                     ; DROP SWAP
+        mov     rax, [rbp]
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        mov     [rbp + BYTES_PER_CELL], rax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
 %macro  _plusdup 0                      ; + DUP
         add     rbx, [rbp]
         mov     [rbp], rbx
