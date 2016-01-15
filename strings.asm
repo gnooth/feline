@@ -660,14 +660,10 @@ code slashstring, '/string'             ; c-addr1 u1 n -- c-addr2 u2
 endcode
 
 ; ### count
-code count, 'count'                     ; c-addr -- c-addr+1 u
+inline count, 'count'                   ; c-addr -- c-addr+1 u
 ; CORE 6.1.0980
-        mov     al, [rbx]
-        inc     rbx
-        pushrbx
-        movzx   rbx, al
-        next
-endcode
+        _count
+endinline
 
 ; ### string-nth
 code string_nth, 'string-nth'           ; index $addr -- char
