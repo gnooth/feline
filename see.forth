@@ -1441,6 +1441,16 @@ latest-xt $aa install-handler
             .inst
             exit
         then
+        modrm-mod 1 = if
+            \ [r/m + disp8]
+            modrm-rm register-rm to dbase
+            $" qword" to relative-size
+            next-signed-byte to ddisp
+            next-int32 to immediate-operand
+            true to immediate-operand?
+            .inst
+            exit
+        then
         modrm-mod 3 = if
             modrm-rm register-rm to dreg
             next-int32 to immediate-operand
