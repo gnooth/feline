@@ -190,3 +190,10 @@
         _dup
         _zlt
 %endmacro
+
+%macro  _count 0                        ; COUNT
+        mov     al, [rbx]
+        inc     rbx
+        pushrbx
+        movzx   rbx, al
+%endmacro
