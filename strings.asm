@@ -637,15 +637,16 @@ endcode
 
 ; ### istr=
 code istrequal, 'istr='                 ; addr1 len1 addr2 len2 -- flag
-        _ rot                           ; -- addr1 addr2 len2 len1
-        _ tuck                          ; -- addr1 addr2 len1 len2 len1
-        _notequal                       ; -- addr1 addr2 len1 flag
-        _if .1
-        _3drop
-        _false
-        _else .1
+        ; compare lengths
+        cmp     rbx, [rbp + BYTES_PER_CELL]
+        jz .1
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+        xor     ebx, ebx
+        next
+.1:
+        ; lengths match                 ; -- addr1 len1 addr2 len2
+        _dropswap                       ; -- addr1 addr2 len1
         _ isequal
-        _then .1
         next
 endcode
 
