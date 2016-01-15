@@ -376,7 +376,7 @@ code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
         _if .1
         _begin .2         ; -- c-addr u nfa
         _duptor           ; -- c-addr u nfa                       r: -- nfa
-        _ count           ; -- c-addr u c-addr' u'                r: -- nfa
+        _count            ; -- c-addr u c-addr' u'                r: -- nfa
         _ twoover         ; -- c-addr u c-addr' u' c-addr-u       r: -- nfa
         _ istrequal       ; -- c-addr u flag                      r: -- nfa
         _if .3            ; -- c-addr u                           r: -- nfa
@@ -411,7 +411,7 @@ code find, 'find'                       ; $addr -- $addr 0 | xt 1 | xt -1
 ; found, return its execution token xt. If the definition is immediate,
 ; also return 1, otherwise also return -1."
         mov     [find_arg], rbx
-        _ count                         ; -- addr len
+        _count                          ; -- addr len
         mov     [find_len], rbx
         poprbx
         mov     [find_addr], rbx
