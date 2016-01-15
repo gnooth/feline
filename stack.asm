@@ -418,3 +418,10 @@ code nrfrom, 'nr>'                      ; -- i*x +n     r: j*x +n --
         _ drop
         next
 endcode
+
+; ### 0-over
+inline zero_over, '0-over'              ; x -- x 0 x
+        lea     rbp, [rbp-16]
+        mov     [rbp+8], rbx
+        mov     qword [rbp], 0
+endinline
