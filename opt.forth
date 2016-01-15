@@ -109,6 +109,16 @@
 : compile-over ( xt -- )
     local xt
 
+    cq-#lits 1 = if
+        cq-lit1 0= if
+            ['] 0-over copy-code
+            opt-debug if ?cr ." 0 over -> 0-over" then
+            0 to cq-#lits
+            1 +to cq-index
+            exit
+        then
+    then
+
     cq-flush-literals
 
     cq-second ['] + = if
