@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -197,7 +197,7 @@ code number?, 'number?'                 ; c-addr u -- d flag
         _then ixnumber3
         ; one or more chars left over
         _lit 1
-        _ notequal
+        _notequal
         _if ixnumber4                   ; -- ud c-addr'
         _drop
         _false

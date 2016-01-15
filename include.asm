@@ -87,7 +87,7 @@ code restore_input, 'restore-input'
 ; "flag is true if the input source specification cannot be so restored."
 ; CORE EXT
         _lit 7
-        _ notequal
+        _notequal
         _ throw                         ; REVIEW
         _ toin
         _ store
@@ -323,7 +323,7 @@ code normalize_filename, 'normalize-filename'   ; $addr1 -- $addr2
         _dup
         _ string_first_char
         _lit '~'
-        _ notequal
+        _notequal
         _if .1
         _return
         _then .1
@@ -486,7 +486,7 @@ code path_append_filename, 'path-append-filename'       ; $path $filename -- $pa
         _ dup
         _ string_last_char
         _ path_separator_char
-        _ notequal
+        _notequal
         _if .2
 %ifdef WIN64
         _cquote "\"

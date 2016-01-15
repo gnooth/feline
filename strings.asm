@@ -528,7 +528,7 @@ code memequal, 'mem='                   ; addr1 addr2 len -- flag
         _i
         _ plus
         _cfetch
-        _ notequal
+        _notequal
         _if .3
         _2drop
         _false
@@ -594,7 +594,7 @@ code isequal, 'is='                     ; addr1 addr2 len -- flag
         _i
         _plus
         _cfetch
-        _ notequal
+        _notequal
         _if isequal3
         _ twodup
         _i
@@ -606,7 +606,7 @@ code isequal, 'is='                     ; addr1 addr2 len -- flag
         _plus
         _cfetch
         _ upc
-        _ notequal
+        _notequal
         _if isequal4
         _2drop
         _false
@@ -625,7 +625,7 @@ endcode
 code strequal, 'str='                   ; addr1 len1 addr2 len2 -- flag
         _ rot
         _ tuck
-        _ notequal
+        _notequal
         _if .1
         _3drop
         _false
@@ -639,7 +639,7 @@ endcode
 code istrequal, 'istr='                 ; addr1 len1 addr2 len2 -- flag
         _ rot                           ; -- addr1 addr2 len2 len1
         _ tuck                          ; -- addr1 addr2 len1 len2 len1
-        _ notequal                      ; -- addr1 addr2 len1 flag
+        _notequal                       ; -- addr1 addr2 len1 flag
         _if .1
         _3drop
         _false

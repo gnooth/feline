@@ -278,11 +278,7 @@ endinline
 ; ### <>
 inline notequal, '<>'                   ; x1 x2 -- flag
 ; CORE EXT
-        cmp     rbx, [rbp]
-        setne   bl
-        neg     bl
-        movsx   rbx, bl
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _notequal
 endinline
 
 ; ### >

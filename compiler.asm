@@ -149,7 +149,7 @@ code optimize_pushrbx, 'optimize-pushrbx'       ; -- flag
         _if .2
         _ here_c
         _ last_branch_target
-        _ notequal
+        _notequal
         _if .3
         _lit -4
         _ allot_c
