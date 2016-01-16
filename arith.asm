@@ -310,15 +310,13 @@ inline lt, '<'                          ; n1 n2 -- flag
 endinline
 
 ; ### <=
-code le, '<='                           ; n1 n2 -- flag
+inline le, '<='                         ; n1 n2 -- flag
         cmp     [rbp], rbx
-        mov     ebx, 0
-        jg      .1
-        dec     rbx
-.1:
+        setle   bl
+        neg     bl
+        movsx   rbx, bl
         lea     rbp, [rbp + BYTES_PER_CELL]
-        next
-endcode
+endinline
 
 ; ### u<
 inline ult, 'u<'
