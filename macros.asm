@@ -117,7 +117,7 @@ section .text
         align   DEFAULT_DATA_ALIGNMENT
         dq      current_file
         dq      __LINE__
-        dq      %1_xt                   ; xt
+        dq      %1_xt                   ; xt pointer field
         dq      link                    ; link field
 %1_nfa:
         db      len
@@ -134,7 +134,7 @@ section .text
 %1_xt:
         dq      %1                      ; address of code
         dq      0                       ; comp field
-        dq      %1_pfa                  ; address of parameter field
+        dq      %1_pfa                  ; parameter field address
         dq      %1_nfa                  ; nfa
         db      %2                      ; flags
         db      %3                      ; inline size
@@ -148,12 +148,20 @@ section .text
         execution_token %1, %3, %4, %5
 %endmacro
 
-%macro  _toname 0                       ; xt -- nt
+%macro  _toname 0                       ; xt -- nfa
         mov     rbx, [rbx + BYTES_PER_CELL * 3]
 %endmacro
 
 %macro  _namefrom 0                     ; nt -- xt
         mov     rbx, [rbx - BYTES_PER_CELL * 2]
+%endmacro
+
+%macro  _set_xt 0                       ; xt nfa --
+; stores xt in the xt pointer field of the name token
+        mov     rax, [rbp]              ; xt in rax
+        mov     [rbx - BYTES_PER_CELL * 2], rax
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
 
 %macro  _tocode 0                       ; xt -- code-address
