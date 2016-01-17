@@ -346,8 +346,6 @@ code quoteheader, '"header'             ; c-addr u --
         _fetch
         _ comma
 
-        _ here
-        _tor
         _zero                           ; xt field (will be patched)
         _ comma
 
@@ -376,10 +374,10 @@ code quoteheader, '"header'             ; c-addr u --
 
         _ align_data
 
-        ; patch xt field in name token
-        _ here
-        _rfrom
-        _ store
+        ; patch xt pointer field in name token
+        _ here                          ; -- xt
+        _ latest                        ; -- xt nfa
+        _set_xt                         ; --
 
         ; execution token
         _zero                          ; code field (will be patched)
