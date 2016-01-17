@@ -453,26 +453,22 @@ code paren_create, '(create)'
         _ compile_pushrbx
 
         _ here                          ; -- pfa
-        _lit $100000000
+        _ max_int32
         _ ult
         _if .1
         ; 32-bit address
-        _lit $0bb
-        _ ccommac
+        _ccommac $0bb
         _ here
         _ lcommac
         _else .1
         ; 64-bit address
-        _lit $48
-        _ ccommac
-        _lit $0bb
-        _ ccommac
+        _ccommac $48
+        _ccommac $0bb
         _ here                          ; -- addr
         _ commac
         _then .1
 
-        _lit $0c3
-        _ ccommac
+        _ccommac $0c3
         next
 endcode
 
