@@ -331,15 +331,13 @@ code semi, ';', IMMEDIATE
 endcode
 
 ; ### synonym
-code synonym, 'synonym'
+code synonym, 'synonym'                 ; "<spaces>newname" "<spaces>oldname" --
 ; TOOLS EXT
         _ create
         _ hide
         _ tick
-        _tocode
         _ latest
-        _namefrom
-        _ store
+        _set_xt
         _ reveal
         next
 endcode
