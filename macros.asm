@@ -168,6 +168,11 @@ section .text
         mov     rbx, [rbx]
 %endmacro
 
+%macro  _name_to_code 0
+        _namefrom
+        _tocode
+%endmacro
+
 %macro  _tocomp 0                       ; xt -- comp-field
         add     rbx, BYTES_PER_CELL
 %endmacro
