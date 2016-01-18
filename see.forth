@@ -1,4 +1,4 @@
-\ Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -28,20 +28,19 @@ only forth also x86-64 also disassembler definitions
 
 decimal
 
-: find-code-in-wordlist  ( code-addr wid -- xt | 0 )
+: find-code-in-wordlist ( code-addr wid -- nfa | 0 )
     local wid
     local code-addr
     wid @ dup if
         begin                           \ -- nfa
-            name> dup >code code-addr = if
+            dup name>code code-addr = if
                 exit
-            then
-            >link @ dup 0=
+            then                        \ -- nfa
+            n>link @ dup 0=
         until
-    then
-;
+    then ;
 
-: find-code  ( code-addr -- xt | 0 )
+: find-code ( code-addr -- nfa | 0 )
    >r                                   \ --            r: -- code-addr
    voclink @                            \ -- wid        r: -- code-addr
    begin
@@ -449,7 +448,7 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
     abort ;
 
 : .name ( code-address -- )
-    find-code ?dup if 64 >pos >name .id then ;
+    find-code ?dup if 64 >pos .id then ;
 
 : .ip ( -- ) ?cr ip h. ;
 
