@@ -101,6 +101,11 @@ inline ntolink, 'n>link'
         _ntolink
 endinline
 
+; ### name>code
+inline name_to_code, 'name>code'
+        _name_to_code
+endinline
+
 ; ### l>name
 inline ltoname, 'l>name'
         _ltoname
