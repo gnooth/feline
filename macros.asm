@@ -203,7 +203,7 @@ section .text
         sub     rbx, BYTES_PER_CELL * 4
 %endmacro
 
-%macro  _ntolink 0
+%macro  _name_to_link 0
         sub     rbx, BYTES_PER_CELL
 %endmacro
 

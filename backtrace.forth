@@ -1,4 +1,4 @@
-\ Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ only forth also definitions
             distance to best-distance
         then
 
-        nfa n>link @ to nfa
+        nfa name>link @ to nfa
     repeat
 
     best-nfa best-distance

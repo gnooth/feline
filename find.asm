@@ -388,7 +388,7 @@ code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
         _return
         _then .3          ; -- c-addr u                           r: -- nfa
         _rfrom            ; -- c-addr u nfa
-        _ntolink          ; -- c-addr u lfa
+        _name_to_link     ; -- c-addr u lfa
         _fetch            ; -- c-addr u nfa
         _dup              ; -- c-addr u nfa nfa
         _zeq

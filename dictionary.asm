@@ -96,9 +96,9 @@ code tocompstore, '>comp!'              ; xt1 xt2 --
         next
 endcode
 
-; ### n>link
-inline ntolink, 'n>link'
-        _ntolink
+; ### name>link
+inline name_to_link, 'name>link'
+        _name_to_link
 endinline
 
 ; ### name>code

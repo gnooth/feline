@@ -35,7 +35,7 @@ create empty-search-order #vocs cells allot
         @
         dup dp @ u>
     while
-        n>link
+        name>link
     repeat
     r> ! ;
 

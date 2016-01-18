@@ -1,4 +1,4 @@
-\ Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
         0= if
             exit
         then
-        nfa n>link @ to nfa
+        nfa name>link @ to nfa
     repeat ;
 
 0 value words-pattern
@@ -57,7 +57,7 @@
     while
         dup
         process-word
-        n>link
+        name>link
     repeat
     ?cr
     words-count .

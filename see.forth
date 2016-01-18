@@ -36,7 +36,7 @@ decimal
             dup name>code code-addr = if
                 exit
             then                        \ -- nfa
-            n>link @ dup 0=
+            name>link @ dup 0=
         until
     then ;
 
