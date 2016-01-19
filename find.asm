@@ -398,11 +398,6 @@ code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
         next
 endcode
 
-section .data
-find_arg:       dq      0
-find_addr:      dq      0
-find_len:       dq      0
-
 ; ### find
 code find, 'find'                       ; $addr -- $addr 0 | xt 1 | xt -1
 ; CORE, SEARCH
@@ -410,41 +405,32 @@ code find, 'find'                       ; $addr -- $addr 0 | xt 1 | xt -1
 ; definition is not found, return c-addr and 0. If the definition is
 ; found, return its execution token xt. If the definition is immediate,
 ; also return 1, otherwise also return -1."
-        mov     [find_arg], rbx
-        _count                          ; -- addr len
-        mov     [find_len], rbx
-        poprbx
-        mov     [find_addr], rbx
-        poprbx                          ; --
-
         _ nvocs
         _zero
         _do .1
+        _dup                            ; -- $addr $addr
+        _count                          ; -- $addr c-addr u
         _ context
         _i
         _cells
         _plus
-        _fetch                          ; -- wid
+        _fetch                          ; -- $addr c-addr u wid
         _?dup
         _if .2
-        pushrbx
-        mov     rbx, [find_addr]
-        pushrbx
-        mov     rbx, [find_len]         ; -- wid addr len
-        _ rot
         _ search_wordlist
-        _ ?dup
-        _if .3                          ; -- xt n
+        _?dup
+        _if .3                          ; -- $addr xt flag
+        _ rot
+        _drop
         _unloop
         _return
         _then .3
         _else .2
         ; wid = 0, reached end of search order
+        _2drop
         _leave
         _then .2
         _loop .1
-        pushrbx
-        mov     rbx, [find_arg]
         _false
         next
 endcode
