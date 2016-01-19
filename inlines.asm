@@ -52,6 +52,13 @@
         pushrbx
 %endmacro
 
+%macro  _twodup 0                       ; 2DUP
+        mov     rax, [rbp]
+        lea     rbp, [rbp - BYTES_PER_CELL * 2]
+        mov     [rbp], rax
+        mov     [rbp + BYTES_PER_CELL], rbx
+%endmacro
+
 %macro  _dupcfetch 0                    ; DUP C@
         _dup
         _cfetch
