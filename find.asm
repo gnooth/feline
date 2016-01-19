@@ -377,7 +377,7 @@ code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
         _begin .2         ; -- c-addr u nfa
         _duptor           ; -- c-addr u nfa                       r: -- nfa
         _count            ; -- c-addr u c-addr' u'                r: -- nfa
-        _ twoover         ; -- c-addr u c-addr' u' c-addr-u       r: -- nfa
+        _ twoover         ; -- c-addr u c-addr' u' c-addr u       r: -- nfa
         _ istrequal       ; -- c-addr u flag                      r: -- nfa
         _if .3            ; -- c-addr u                           r: -- nfa
         ; found it!
@@ -416,6 +416,7 @@ code find, 'find'                       ; $addr -- $addr 0 | xt 1 | xt -1
         poprbx
         mov     [find_addr], rbx
         poprbx                          ; --
+
         _ nvocs
         _zero
         _do .1
@@ -424,14 +425,8 @@ code find, 'find'                       ; $addr -- $addr 0 | xt 1 | xt -1
         _cells
         _plus
         _fetch                          ; -- wid
-        _dup
-        _zeq_if .2                      ; not found
-        pushrbx
-        mov     rbx, [find_arg]
-        _ swap
-        _unloop
-        _return
-        _then .2                        ; -- wid
+        _?dup
+        _if .2
         pushrbx
         mov     rbx, [find_addr]
         pushrbx
@@ -443,7 +438,14 @@ code find, 'find'                       ; $addr -- $addr 0 | xt 1 | xt -1
         _unloop
         _return
         _then .3
+        _else .2
+        ; wid = 0, reached end of search order
+        _leave
+        _then .2
         _loop .1
+        pushrbx
+        mov     rbx, [find_arg]
+        _false
         next
 endcode
 
