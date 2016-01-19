@@ -329,16 +329,14 @@ inline ult, 'u<'
 endinline
 
 ; ### u>
-code ugt, 'u>'
+inline ugt, 'u>'
 ; CORE EXT
         cmp     [rbp], rbx
-        mov     ebx, 0
-        jbe     .1
-        dec     rbx
-.1:
+        seta    bl
+        neg     bl
+        movsx   rbx, bl
         lea     rbp, [rbp + BYTES_PER_CELL]
-        next
-endcode
+endinline
 
 ; ### within
 code within, 'within'                   ; n min max -- flag
