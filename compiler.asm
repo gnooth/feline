@@ -275,8 +275,7 @@ code ?csp, '?csp'
         cmp     [csp_data], rbp
         je      .1
         _cquote "Control structure mismatch"
-        _ msg
-        _ store
+        _to msg
         _lit -22                        ; "control structure mismatch"
         _ throw
 .1:

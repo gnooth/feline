@@ -154,9 +154,8 @@ endcode
 code missing, 'missing'                 ; $addr --
         _cquote ' ?'
         _ appendstring
-        _ msg
-        _ store
-        _lit -13
+        _to msg
+        _lit -13                        ; "undefined word" Forth 2012 Table 9.1
         _ throw
         next
 endcode

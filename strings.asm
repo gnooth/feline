@@ -114,10 +114,10 @@ endcode
 ; ### $+
 code appendstring, '$+'                 ; $addr1 $addr2 -- $addr3
 ; Upper Deck Forth
-; "Appends the packed, null-terminated string at $addr2 (without its length
+; Appends the packed, null-terminated string at $addr2 (without its length
 ; byte) to the end of the packed, null-terminated string at $addr1 and places
-; the resulting string at the next free location in the temporary string
-; storage area. $addr3 is the address of that location."
+; the resulting string at the next free location in the transient string
+; storage area. $addr3 is the address of that location.
         _ swap
         _ stringbuf
         _ copystring
@@ -369,15 +369,14 @@ endcode
 
 ; ### (abort")
 code parenabortquote, '(abort")'        ; flag c-addr --
-        _ swap
-        _if parenabortquote1
-        _ msg
-        _ store
+        _swap
+        _if .1
+        _to msg
         _lit -2
         _ throw
-        _else parenabortquote1
-        _ drop
-        _then parenabortquote1
+        _else .1
+        _drop
+        _then .1
         next
 endcode
 

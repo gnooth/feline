@@ -51,8 +51,7 @@ code ?stack, '?stack'
 .1:
         mov     rbp, [sp0_data]
         _cquote "Stack underflow"
-        _ msg
-        _ store
+        _to msg
         _lit -4
         _ throw
         next
@@ -65,8 +64,7 @@ code ?enough, '?enough'                 ; n --
         _ ugt
         _if .1
         _cquote "Not enough parameters"
-        _ msg
-        _ store
+        _to msg
         _lit -4                         ; Forth 2012 Table 9.1 stack underflow
         _ throw
         _then .1

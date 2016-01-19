@@ -345,8 +345,7 @@ code previous, 'previous'
         _ set_order
         _else .1
         _cquote "Search order underflow"
-        _ msg
-        _ store
+        _to msg
         _lit -50	                ; "search-order underflow"
         _ throw
         _then .1

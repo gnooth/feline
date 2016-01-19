@@ -106,7 +106,7 @@ code restore_input, 'restore-input'
         _ source_id
         _ reposition_file
         _if .2
-        _lit -73                        ; REPOSITION-FILE exception (Forth 2012 Table 9-1)
+        _lit -73                        ; REPOSITION-FILE exception (Forth 2012 Table 9.1)
         _ throw
         _then .2
         _ source_buffer
@@ -114,14 +114,14 @@ code restore_input, 'restore-input'
         _ source_id
         _ read_line                     ; -- len flag ior
         _if .3
-        _lit -71                        ; READ-LINE exception (Forth 2012 Table 9-1)
+        _lit -71                        ; READ-LINE exception (Forth 2012 Table 9.1)
         _ throw
         _then .3
         _drop                           ; -- len
         _ nsource
         _ store
         _then .1
-        _zero                          ; -- flag
+        _zero                           ; -- flag
         next
 endcode
 
@@ -408,11 +408,11 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ store
 
         _else .4
-        _ ?cr
-        _dotq "Unable to open file "
+        _cquote "Unable to open file "
         _ source_filename
-        _ counttype
-        _lit -38
+        _ appendstring
+        _to msg
+        _lit -38                        ; "non-existent file" Forth 2012 Table 9.1
         _ throw
         _then .4
         _rfrom

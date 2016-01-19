@@ -168,33 +168,31 @@ code query, 'query'                     ; --
 endcode
 
 ; ### msg
-variable msg, 'msg', 0
+value msg, 'msg', 0
 
 ; ### .msg
 code dotmsg, '.msg'
-        _ msg
-        _fetch
-        _ ?dup
+        _from msg
+        _?dup
         _if .1
         _ red
         _ foreground
         _ ?cr
         _ counttype
-        _ msg
-        _ off
+        _clear msg
         _then .1
         next
 endcode
 
 ; ### do-error
 code do_error, 'do-error'               ; n --
-        _ dup
+        _dup
         _lit -1
         _ equal
         _if .1
         _ reset                         ; ABORT (no message)
         _then .1
-        _ dup
+        _dup
         _lit -2
         _ equal
         _if .2
