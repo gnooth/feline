@@ -285,10 +285,10 @@ code sliteral, 'sliteral', IMMEDIATE    ; c: c-addr1 u --       runtime: -- c-ad
         _ flush_compilation_queue
         _ here                          ; addr for counted string
         _ rrot                          ; -- here c-addr1 u
-        _ twodup                        ; -- here c-addr1 u c-addr1 u
+        _twodup                         ; -- here c-addr1 u c-addr1 u
         _ sliteral_stringcomma          ; -- here c-addr1 u
-        _ nip                           ; -- here u
-        _ swap                          ; -- u here
+        _nip                            ; -- here u
+        _swap                           ; -- u here
 
         _lit do_sliteral
         _lit do_sliteral_end - do_sliteral
@@ -427,14 +427,14 @@ endcode
 
 ; ### move
 code move, 'move'                       ; addr1 addr2 u --
-        _ tor
-        _ twodup
+        _tor
+        _twodup
         _ ult
         _if .1
-        _ rfrom
+        _rfrom
         _ cmoveup
         _else .1
-        _ rfrom
+        _rfrom
         _ cmove
         _then .1
         next
@@ -516,17 +516,17 @@ endcode
 
 ; ### mem=
 code memequal, 'mem='                   ; addr1 addr2 len -- flag
-        _ ?dup
+        _?dup
         _if .1
         _zero
         _do .2
-        _ twodup
+        _twodup
         _i
-        _ plus
+        _plus
         _cfetch
-        _ swap
+        _swap
         _i
-        _ plus
+        _plus
         _cfetch
         _notequal
         _if .3
@@ -583,39 +583,39 @@ endcode
 ; ### is=
 code isequal, 'is='                     ; addr1 addr2 len -- flag
         _ ?dup
-        _if isequal1
+        _if .1
         _zero
-        _do isequal2
-        _ twodup
+        _do .2
+        _twodup
         _i
         _plus
         _cfetch
-        _ swap
+        _swap
         _i
         _plus
         _cfetch
         _notequal
-        _if isequal3
-        _ twodup
+        _if .3
+        _twodup
         _i
         _plus
         _cfetch
         _ upc
-        _ swap
+        _swap
         _i
         _plus
         _cfetch
         _ upc
         _notequal
-        _if isequal4
+        _if .4
         _2drop
         _false
         _unloop
         _return
-        _then isequal4
-        _then isequal3
-        _loop isequal2
-        _then isequal1
+        _then .4
+        _then .3
+        _loop .2
+        _then .1
         _2drop
         _true
         next
