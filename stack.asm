@@ -63,14 +63,10 @@ inline ?dup, '?dup'
 endinline
 
 ; ### 2dup
-code twodup, '2dup'                     ; x1 x2 -- x1 x2 x1 x2
+inline twodup, '2dup'                   ; x1 x2 -- x1 x2 x1 x2
 ; CORE
-        mov     rax, [rbp]
-        lea     rbp, [rbp - BYTES_PER_CELL * 2]
-        mov     [rbp], rax
-        mov     [rbp + BYTES_PER_CELL], rbx
-        next
-endcode
+        _twodup
+endinline
 
 ; ### 3dup
 code threedup, '3dup'                   ; x1 x2 x3 -- x1 x2 x3 x1 x2 x3
