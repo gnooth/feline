@@ -415,19 +415,18 @@ code find, 'find'                       ; $addr -- $addr 0 | xt 1 | xt -1
         _cells
         _plus
         _fetch                          ; -- $addr c-addr u wid
-        _?dup
-        _if .2
+        _dup_if .2
         _ search_wordlist
-        _?dup
-        _if .3                          ; -- $addr xt flag
+        _dup_if .3                      ; -- $addr xt flag
         _ rot
         _drop
         _unloop
         _return
         _then .3
+        _drop
         _else .2
         ; wid = 0, reached end of search order
-        _2drop
+        _3drop
         _leave
         _then .2
         _loop .1
