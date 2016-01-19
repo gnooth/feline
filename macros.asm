@@ -409,6 +409,13 @@ section .text
         jnz      %1_ifnot
 %endmacro
 
+%macro  _dup_if 1
+        %push if
+        section .text
+        test    rbx, rbx
+        jz     %1_ifnot
+%endmacro
+
 %macro  _else 1
 %ifctx if
         %repl   else
