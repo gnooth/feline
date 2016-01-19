@@ -387,8 +387,7 @@ section .data
 section .text
         lea     rbp, [rbp - BYTES_PER_CELL * 2]
         mov     [rbp + BYTES_PER_CELL], rbx
-        mov     rbx, %%string
-        mov     [rbp], rbx
+        mov     qword [rbp], %%string
         mov     rbx, len
 %endmacro
 
