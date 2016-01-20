@@ -268,11 +268,7 @@ endcode
 ; ### =
 inline equal, '='                       ; x1 x2 -- flag
 ; CORE
-        cmp     rbx, [rbp]
-        sete    bl
-        neg     bl
-        movsx   rbx, bl
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _equal
 endinline
 
 ; ### <>
