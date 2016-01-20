@@ -204,3 +204,11 @@
         pushrbx
         movzx   rbx, al
 %endmacro
+
+%macro  _twoover 0                      ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2
+        mov     rax, [rbp + BYTES_PER_CELL * 2]         ; x1
+        mov     [rbp - BYTES_PER_CELL], rbx
+        mov     [rbp - BYTES_PER_CELL * 2], rax
+        mov     rbx, [rbp + BYTES_PER_CELL]             ; x2
+        lea     rbp, [rbp - BYTES_PER_CELL * 2]
+%endmacro
