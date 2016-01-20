@@ -16,20 +16,19 @@
 file __FILE__
 
 ; ### base
+; CORE
 variable base, 'base', 10
 
 ; ### base@
 code basefetch, 'base@'                 ; -- n
         pushrbx
-        mov     rbx, base_data
-        mov     rbx, [rbx]
+        mov     rbx, [base_data]
         next
 endcode
 
 ; ### base!
 code basestore, 'base!'                 ; n --
-        mov     rax, base_data
-        mov     [rax], rbx
+        mov     [base_data], rbx
         poprbx
         next
 endcode
