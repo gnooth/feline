@@ -131,7 +131,7 @@ endcode
 ; ### where
 code where, 'where'                     ; --
         _ source_id
-        _ zgt
+        _zgt
         _if .1
         _ ?cr
         _ source_filename
