@@ -154,7 +154,15 @@
         sar     rbx, 63
 %endmacro
 
-%macro  _notequal 0
+%macro  _equal 0                        ; =
+        cmp     rbx, [rbp]
+        sete    bl
+        neg     bl
+        movsx   rbx, bl
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
+%macro  _notequal 0                     ; <>
         cmp     rbx, [rbp]
         setne   bl
         neg     bl
