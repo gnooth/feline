@@ -36,9 +36,9 @@ endcode
 code skip_whitespace, 'skip-whitespace' ; c-addr1 u1 -- c-addr2 u2
         _begin .1
         _dup
-        _ zgt
+        _zgt
         _while .1
-        _ over
+        _over
         _cfetch
         _ blchar
         _ gt
@@ -55,7 +55,7 @@ endcode
 code scan_to_whitespace, 'scan-to-whitespace'   ; c-addr1 u1 -- c-addr2 u2
         _begin .1
         _dup
-        _ zgt
+        _zgt
         _while .1
         _over
         _cfetch

@@ -268,11 +268,7 @@ endcode
 ; ### =
 inline equal, '='                       ; x1 x2 -- flag
 ; CORE
-        cmp     rbx, [rbp]
-        sete    bl
-        neg     bl
-        movsx   rbx, bl
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _equal
 endinline
 
 ; ### <>
@@ -386,15 +382,10 @@ code zne, '0<>'
 endcode
 
 ; ### 0>
-code zgt, '0>'
+inline zgt, '0>'
 ; CORE EXT
-        or      rbx, rbx
-        mov     ebx, 0
-        jng     .1
-        dec     rbx
-.1:
-        next
-endcode
+        _zgt
+endinline
 
 ; ### 0>=
 code zge, '0>='
@@ -413,7 +404,7 @@ inline zlt, '0<'
 endinline
 
 ; ### s>d
-inline stod, 's>d'                        ; n -- d
+inline stod, 's>d'                      ; n -- d
 ; CORE
         _stod
 endinline

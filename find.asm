@@ -98,7 +98,7 @@ code dotwid, '.wid'                     ; wid --
         _dup                            ; -- wid wid
         _ widtoname                     ; -- wid wid-8
         _fetch                          ; -- wid nfa|0
-        _ ?dup
+        _?dup
         _if .2
         _nip
         _ dotid
@@ -199,9 +199,9 @@ code order, 'order'
         _ context
         _i
         _cells
-        _ plus
+        _plus
         _fetch                          ; -- wid
-        _ ?dup
+        _?dup
         _if .2
         _ dotwid
         _else .2
@@ -211,7 +211,7 @@ code order, 'order'
         _ cr
         _dotq "Current: "
         _ current
-        _ fetch
+        _fetch
         _ dotwid
         next
 endcode
@@ -228,12 +228,12 @@ code get_order, 'get-order'             ; -- widn ... wid1 n
         _ norder
         _fetch
         _i
-        _ minus
+        _minus
         _oneminus
         _cells
         _ context
-        _ plus
-        _ fetch
+        _plus
+        _fetch
         _loop .1
         _ norder
         _ fetch
@@ -246,42 +246,52 @@ code set_order, 'set-order'             ; widn ... wid1 n --
 ; "Set the search order to the word lists identified by widn ... wid1.
 ; Subsequently, word list wid1 will be searched first, and word list widn
 ; searched last."
-        mov     rax, rbx
-        poprbx
-        test    rax, rax
-        jnz     .1
+        _dup
+        _zeq_if .1
         ; "If n is zero, empty the search order."
+        _drop
         _ context
         _ nvocs
         _cells
         _ erase
         _zero
-        _ norder
-        _ store
+        _to norder
         _return
-.1:
-        cmp     rax, -1
-        jnz     .2
+        _then .1
+
+        _dup
+        _lit -1
+        _equal
+        _if .2
         ; "If n is minus one, set the search order to the implementation-
         ; defined minimum search order."
+        _drop
         _ only
         _return
-.2:
-        pushrbx
-        mov     rbx, rax
+        _then .2
+
+        _dup
+        _ nvocs
+        _ ugt
+        _if .0
+        _cquote "Search-order overflow"
+        _to msg
+        _lit -49
+        _ throw
+        _then .0
+
         _ context
         _ nvocs
         _cells
         _ erase
         _ dup
-        _ norder
-        _ store
+        _to norder
         _zero
         _?do .3
         _ context
         _i
         _cells
-        _ plus
+        _plus
         _ store
         _loop .3
         next
@@ -371,25 +381,34 @@ code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
 ; "If the definition is not found, return 0. If the definition is found,
 ; return its execution token xt and 1 if the definition is immediate, -1
 ; otherwise."
-        _fetch            ; last link in wordlist
+        _fetch                          ; last link in wordlist
         _dup
         _if .1
-        _begin .2         ; -- c-addr u nfa
-        _duptor           ; -- c-addr u nfa                       r: -- nfa
-        _count            ; -- c-addr u c-addr' u'                r: -- nfa
-        _ twoover         ; -- c-addr u c-addr' u' c-addr u       r: -- nfa
-        _ istrequal       ; -- c-addr u flag                      r: -- nfa
-        _if .3            ; -- c-addr u                           r: -- nfa
+        _begin .2                       ; -- c-addr u nfa
+        _duptor                         ; -- c-addr u nfa                       r: -- nfa
+        ; do lengths match?
+        _cfetch                         ; -- c-addr u len                       r: -- nfa
+        _over                           ; -- c-addr u len u                     r: -- nfa
+        _equal                          ; -- c-addr u flag                      r: -- nfa
+        _if .3
+        ; lengths match
+        _twodup                         ; -- c-addr u c-addr u
+        _rfetch                         ; -- c-addr u c-addr u nfa
+        _oneplus                        ; -- c-addr u c-addr u nfa+1
+        _swap                           ; -- c-addr u c-addr nfa+1 u
+        _ isequal                       ; -- c-addr u flag                      r: -- nfa
+        _if .4                          ; -- c-addr u                           r: -- nfa
         ; found it!
-        _2drop            ; --                                    r: -- nfa
-        _rfrom            ; -- nfa
-        _ found           ; -- xt 1 | xt -1
+        _2drop                          ; --                                    r: -- nfa
+        _rfrom                          ; -- nfa
+        _ found                         ; -- xt 1 | xt -1
         _return
-        _then .3          ; -- c-addr u                           r: -- nfa
-        _rfrom            ; -- c-addr u nfa
-        _name_to_link     ; -- c-addr u lfa
-        _fetch            ; -- c-addr u nfa
-        _dup              ; -- c-addr u nfa nfa
+        _then .4                        ; -- c-addr u                           r: -- nfa
+        _then .3
+        _rfrom                          ; -- c-addr u nfa
+        _name_to_link                   ; -- c-addr u lfa
+        _fetch                          ; -- c-addr u nfa
+        _dup                            ; -- c-addr u nfa nfa
         _zeq
         _until .2
         _then .1

@@ -142,12 +142,27 @@
         sbb     rbx, rbx
 %endmacro
 
+%macro  _zgt 0                          ; 0>
+        test    rbx, rbx
+        setg    bl
+        neg     bl
+        movsx   rbx, bl
+%endmacro
+
 %macro  _zlt 0                          ; 0<
 ; Win32Forth
         sar     rbx, 63
 %endmacro
 
-%macro  _notequal 0
+%macro  _equal 0                        ; =
+        cmp     rbx, [rbp]
+        sete    bl
+        neg     bl
+        movsx   rbx, bl
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
+%macro  _notequal 0                     ; <>
         cmp     rbx, [rbp]
         setne   bl
         neg     bl
@@ -203,4 +218,12 @@
         inc     rbx
         pushrbx
         movzx   rbx, al
+%endmacro
+
+%macro  _twoover 0                      ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2
+        mov     rax, [rbp + BYTES_PER_CELL * 2]         ; x1
+        mov     [rbp - BYTES_PER_CELL], rbx
+        mov     [rbp - BYTES_PER_CELL * 2], rax
+        mov     rbx, [rbp + BYTES_PER_CELL]             ; x2
+        lea     rbp, [rbp - BYTES_PER_CELL * 2]
 %endmacro

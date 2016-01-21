@@ -41,10 +41,8 @@ variable nsource, '#source', 0
 code source, 'source'                   ; -- c-addr u
 ; CORE 6.1.2216
 ; "c-addr is the address of, and u is the number of characters in, the input buffer."
-        _ tick_source
-        _fetch
-        _ nsource
-        _fetch
+        _from tick_source
+        _from nsource
         next
 endcode
 
@@ -98,7 +96,7 @@ code restore_input, 'restore-input'
         _to source_buffer
         _ set_input
         _ source_id
-        _ zgt
+        _zgt
         _if .1
         _ source_file_position
         _fetch
