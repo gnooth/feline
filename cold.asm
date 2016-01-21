@@ -24,6 +24,9 @@ variable rp0, 'rp0', 0
 ; ### sp0
 variable sp0, 'sp0', 0                  ; initialized in main()
 
+; ### stack-cells                       ; environment query
+value stack_cells, 'stack-cells', 0     ; initialized in main()
+
 ; ### saved-rbp
 variable saved_rbp, 'saved-rbp', 0
 

@@ -1,4 +1,4 @@
-\ Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -52,6 +52,6 @@ max-u max-n     2constant       max-d   \ largest usable signed double number
 -1 -1           2constant       max-ud  \ largest usable unsigned double number
 
 \   0 constant return-stack-cells       \ FIXME
-128     constant stack-cells
+stack-cells constant stack-cells
 
 only forth definitions

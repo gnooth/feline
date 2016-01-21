@@ -99,6 +99,7 @@ static void initialize_forth()
   extern Cell stringbuf_data;
   extern Cell tick_tib_data;
   extern Cell sp0_data;
+  extern Cell stack_cells_data;
   extern Cell word_buffer_data;
   Cell data_space_size = 8 * 1024 * 1024;
   Cell code_space_size = 1024 * 1024;
@@ -125,7 +126,12 @@ static void initialize_forth()
   stringbuf_end_data = stringbuf_start_data + stringbuf_size;
 
   tick_tib_data = (Cell) malloc(256);
-  sp0_data = (Cell) malloc(1024) + (1024 - 64);
+
+  // data stack
+  stack_cells_data = 4096;
+  size_t data_stack_size = stack_cells_data * sizeof(Cell);
+  sp0_data = (Cell) malloc(data_stack_size + 64) + data_stack_size;
+
   word_buffer_data = (Cell) malloc(260);
 }
 
