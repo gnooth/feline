@@ -46,8 +46,33 @@ extern void reset();
 
 JMP_BUF main_jmp_buf;
 
-#ifndef WIN64
+#ifdef WIN64
+LONG CALLBACK windows_exception_handler(EXCEPTION_POINTERS *exception_pointers)
+{
+  CONTEXT *context = exception_pointers->ContextRecord;
+  c_save_backtrace((void *)context->Rip, (Cell *)context->Rsp);
+  EXCEPTION_RECORD *exception_record = exception_pointers->ExceptionRecord;
+  DWORD exception_code = exception_record->ExceptionCode;
+  PVOID exception_address = exception_record->ExceptionAddress;
+  switch (exception_code)
+    {
+    case EXCEPTION_ACCESS_VIOLATION:
+      printf("Invalid memory access at 0x%p", exception_address);
+      break;
+    case EXCEPTION_INT_DIVIDE_BY_ZERO:
+      printf("Division by zero at 0x%p", exception_address);
+      break;
+    default:
+      printf("Exception 0x%lx at 0x%p", exception_code, exception_address);
+      break;
+    }
+  reset();
+  // not reached
+  return EXCEPTION_CONTINUE_SEARCH;
+}
+#endif
 
+#ifndef WIN64
 static void signal_handler(int sig, siginfo_t *si, void * context)
 {
   ucontext_t * uc;
@@ -171,7 +196,9 @@ int main(int argc, char **argv, char **env)
 
   initialize_forth();
 
-#ifndef WIN64
+#ifdef WIN64
+  AddVectoredExceptionHandler(1, windows_exception_handler);
+#else
   struct sigaction sa;
   sa.sa_flags = SA_SIGINFO;
   sigemptyset(&sa.sa_mask);
