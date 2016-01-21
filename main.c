@@ -136,7 +136,6 @@ static void print_version()
     // the string might be empty (if git is not installed, for example)
     version = "0.0.0.1";
   printf("Feline %s\n", version);
-  printf("Copyright (C) 2012-2016 Peter Graves\n");
 }
 
 #if defined WIN64 && defined WINDOWS_UI
