@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -99,8 +99,10 @@ code check_value_or_variable, 'check-value-or-variable' ; xt -- xt
         je      .1
         cmp     rbx, TYPE_VARIABLE
         je      .1
-        _true
-        _abortq "not a value or variable"
+        _cquote "Invalid name argument"
+        _to msg
+        _lit -32                        ; "invalid name argument" Forth 2012 Table 9.1
+        _ throw
 .1:
         _drop
         next
