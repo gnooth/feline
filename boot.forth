@@ -36,8 +36,15 @@ include-system-file process-init-file.forth
 
 only forth definitions
 
-: see ( -- )
+: see ( "<spaces>name" -- )
     feline-home $" see.forth" path-append-filename count included
     -4 >in +! ;
+
+: edit ( "<spaces>name" -- )
+    warning @ >r
+    warning off
+    feline-home $" editor.forth" path-append-filename count included
+    r> warning !
+    -5 >in +! ;
 
 empty!
