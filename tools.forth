@@ -1,4 +1,4 @@
-\ Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -18,12 +18,12 @@
         $. space .
     else drop then ;
 
-: edit ( <spaces>name -- )
-    ' >view 2@ ?dup if
-        swap                    \ -- $addr n
-        $" j +"
-        swap (.) >temp$ $+
-        $"  " $+
-        swap $+
-        count system
-    else drop then ;
+\ : edit ( <spaces>name -- )
+\     ' >view 2@ ?dup if
+\         swap                    \ -- $addr n
+\         $" j +"
+\         swap (.) >temp$ $+
+\         $"  " $+
+\         swap $+
+\         count system
+\     else drop then ;
