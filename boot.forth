@@ -22,7 +22,6 @@ include-system-file defer.forth
 include-system-file case.forth
 include-system-file dump.forth
 include-system-file view.forth
-include-system-file see.forth
 include-system-file ekey.forth
 include-system-file switch.forth
 include-system-file accept.forth
@@ -36,5 +35,9 @@ include-system-file environment.forth
 include-system-file process-init-file.forth
 
 only forth definitions
+
+: see ( -- )
+    feline-home $" see.forth" path-append-filename count included
+    -4 >in +! ;
 
 empty!
