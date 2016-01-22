@@ -151,7 +151,7 @@ code cold, 'cold'                       ; --
         _if .2
         _ do_error
         _then .2
-        _ report_startup_time
+;         _ report_startup_time
         _ process_command_line
         _ process_init_file
         _dotq "Meow!"
