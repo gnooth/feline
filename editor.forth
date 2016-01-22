@@ -1,4 +1,4 @@
-\ Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -15,9 +15,10 @@
 
 only forth also definitions
 
-[undefined] [log [if] include-system-file log.forth ( +log ) [then]
+\ [undefined] [log [if] include-system-file log.forth ( +log ) [then]
 
-[undefined] <vector> [if] include-system-file object.forth [then]
+\ [undefined] <vector> [if] include-system-file object.forth [then]
+require object.forth
 
 only forth also definitions
 
@@ -408,8 +409,6 @@ $11 ,           ' do-quit ,                     \ c-q
         dot bufend =
     until
 
-    lines vector-length to #lines
-
     lines to editor-line-vector
 ;
 
@@ -446,8 +445,7 @@ $11 ,           ' do-quit ,                     \ c-q
 only forth also editor also forth definitions
 
 : edit ( "<spaces>name" -- )
-    blword
-    count
+    parse-name
 \     [log ." edit " 2dup type log]
     >string to editor-filename
     (edit)
