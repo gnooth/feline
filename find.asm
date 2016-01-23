@@ -75,7 +75,7 @@ code wordlist, 'wordlist'               ; -- wid
         _ voclink
         _ store
         _zero
-        _ comma                         ; link
+        _ comma                         ; pointer to name field of last word in this wordlist
         next
 endcode
 

@@ -369,16 +369,16 @@ code ntor, 'n>r'                        ; i*n +n --     r: -- j*x +n
 ; Forth 200x TOOLS EXT
 ; "Interpretation semantics for this word are undefined."
         _ dup
-        _begin ntor1
+        _begin .1
         _ dup
-        _while ntor1
+        _while .1
         _ rot
         _rfrom
         _ swap
         _tor
         _tor
         _oneminus
-        _repeat ntor1
+        _repeat .1
         _ drop
         _ rfrom
         _ swap
@@ -396,16 +396,16 @@ code nrfrom, 'nr>'                      ; -- i*x +n     r: j*x +n --
         _ swap
         _tor
         _ dup
-        _begin nrfrom1
+        _begin .1
         _ dup
-        _while nrfrom1
+        _while .1
         _rfrom
         _rfrom
         _ swap
         _tor
         _ rrot
         _oneminus
-        _repeat nrfrom1
+        _repeat .1
         _ drop
         next
 endcode
