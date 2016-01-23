@@ -187,9 +187,24 @@ code plusstoreto, '+to', IMMEDIATE      ; n "<spaces>name" --
         _ statefetch
         _if .4
         _ flush_compilation_queue
-        _ iliteral
-        _lit plusstore
-        _ commacall
+        _dup
+        _ max_int32
+        _ ult
+        _if .5
+        _ccommac $48
+        _ccommac $01
+        _ccommac $1c
+        _ccommac $25
+        _ lcommac                       ; 32-bit address
+        _else .5
+        _ccommac $48
+        _ccommac $0b8
+        _ commac                        ; mov rax, pfa
+        _ccommac $48
+        _ccommac $01
+        _ccommac $18                    ; add [rax], rbx
+        _then .5
+        _ compile_poprbx
         _else .4                        ; -- n addr
         _ plusstore
         _then .4
