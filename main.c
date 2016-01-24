@@ -25,7 +25,6 @@
 #endif
 
 #include "forth.h"
-#include "version.h"
 
 #ifdef WINDOWS_UI
 #include "windows-ui.h"
@@ -160,21 +159,11 @@ static void initialize_forth()
   word_buffer_data = (Cell) malloc(260);
 }
 
-static void print_version()
-{
-  char * version = VERSION;     // from the generated file version.h (see Makefile)
-  if (!strlen(version))
-    // the string might be empty (if git is not installed, for example)
-    version = "0.0.0.1";
-  printf("Feline %s\n", version);
-}
-
 #if defined WIN64 && defined WINDOWS_UI
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow)
 {
   start_time_ticks_data = os_ticks();
-  print_version();
   initialize_forth();
   InitApplication(hInstance);
   InitInstance(hInstance, nCmdShow);
@@ -187,8 +176,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
 int main(int argc, char **argv, char **env)
 {
   start_time_ticks_data = os_ticks();
-
-  print_version();
 
   args(argc, argv);
 

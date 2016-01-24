@@ -10,6 +10,7 @@ feline_home
 feline_home.exe
 feline_home.asm
 version.h
+version.asm
 a.out
 benchmarks/xorshift128+
 benchmarks/xorshift128+.exe

@@ -53,10 +53,10 @@ feline_home.asm: $(FELINE_HOME_EXE)
 $(FELINE_HOME_EXE): feline_home.c
 	$(CC) feline_home.c -o $(FELINE_HOME_EXE)
 
-version.h:
-	echo "#define VERSION \"$(VERSION)\"" > version.h
+version.asm:
+	echo "%define VERSION \"$(VERSION)\"" > version.asm
 
-main.o:	forth.h version.h windows-ui.h main.c Makefile
+main.o:	forth.h windows-ui.h main.c Makefile
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
 os.o:	forth.h os.c Makefile
@@ -74,7 +74,7 @@ windows-ui.o: forth.h windows-ui.h windows-ui.c Makefile
 winkey.o: forth.h windows-ui.h winkey.c Makefile
 	$(CC) $(CFLAGS) -c -o winkey.o winkey.c
 
-ASM_SOURCES = forth.asm feline_home.asm equates.asm macros.asm inlines.asm \
+ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlines.asm \
 	align.asm \
 	ansi.asm \
 	arith.asm \
@@ -132,7 +132,7 @@ clean:
 	-rm -f terminal.o*
 	-rm -f forth.o*
 	-rm -f feline_home.asm feline_home.exe feline_home
-	-rm -f version.h
+	-rm -f version.h version.asm
 
 zip:
 	-rm -f feline.zip
