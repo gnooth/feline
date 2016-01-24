@@ -348,7 +348,6 @@ code quoteheader, '"header'             ; c-addr u --
         _ source_filename
         _ comma
         _ source_line_number
-        _fetch
         _ comma
 
         _zero                           ; xt field (will be patched)

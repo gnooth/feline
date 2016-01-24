@@ -198,7 +198,6 @@ code where, 'where'                     ; --
         _then .2
         _dotq "line "
         _ source_line_number
-        _fetch
         _ decdot
         _ cr
         _then .1

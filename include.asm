@@ -62,6 +62,15 @@ code set_input, 'set-input'             ; source-addr source-len source-id --
         next
 endcode
 
+; ### source-filename
+value source_filename, 'source-filename', 0
+
+; ### source-line#
+value source_line_number, 'source-line#', 0
+
+; ### source-file-position
+value source_file_position, 'source-file-position', 0
+
 ; ### save-input
 code save_input, 'save-input'
 ; -- addr len fileid source-buffer source-file-position source-line-number >in 7
@@ -69,10 +78,8 @@ code save_input, 'save-input'
         _ source                ; -- addr len
         _ source_id             ; -- addr len fileid
         _ source_buffer         ; -- addr len fileid source-buffer
-        _ source_file_position
-        _fetch                  ; -- addr len fileid source-buffer source-file-position
-        _ source_line_number
-        _fetch                  ; -- addr len fileid source-buffer source-filename source-line-number
+        _ source_file_position  ; -- addr len fileid source-buffer source-file-position
+        _ source_line_number    ; -- addr len fileid source-buffer source-filename source-line-number
         _ toin
         _fetch                  ; -- addr len fileid source-buffer source-filename source-line-number >in
         _lit 7
@@ -89,17 +96,14 @@ code restore_input, 'restore-input'
         _ throw                         ; REVIEW
         _ toin
         _ store
-        _ source_line_number
-        _ store
-        _ source_file_position
-        _ store
+        _to source_line_number
+        _to source_file_position
         _to source_buffer
         _ set_input
         _ source_id
         _zgt
         _if .1
         _ source_file_position
-        _fetch
         _ stod
         _ source_id
         _ reposition_file
@@ -123,32 +127,27 @@ code restore_input, 'restore-input'
         next
 endcode
 
-; ### source-line#
-variable source_line_number, 'source-line#', 0
-
-; ### source-file-position
-variable source_file_position, 'source-file-position', 0
-
 ; ### refill
 code refill, 'refill'                   ; -- flag
 ; CORE EXT  BLOCK EXT  FILE EXT
 ; "When the input source is a text file, attempt to read the next line
 ; from the text-input file."
         _ source_id
+
         ; "When the input source is a string from EVALUATE, return false
         ; and perform no other action."
         _dup
         _lit -1
-        _ equal
+        _equal
         _if .1
         _oneplus                        ; -- 0
         _return
         _then .1
+
         _ file_position                 ; -- ud ior
         _abortq "Bad fileid"
         _ drop                          ; -- u
-        _ source_file_position
-        _ store
+        _to source_file_position
         _ source_buffer
         _ source_buffer_size
         _ source_id
@@ -163,8 +162,7 @@ code refill, 'refill'                   ; -- flag
         _ nsource
         _ store
         _lit 1
-        _ source_line_number
-        _ plusstore
+        _plusto source_line_number
         _ toin
         _ off
         _true
@@ -264,9 +262,6 @@ code resolve_include_filename, 'resolve-include-filename' ; $addr1 -- $addr
         next
 endcode
 
-; ### source-filename
-value source_filename, 'source-filename', 0
-
 ; ### link-file
 code link_file, 'link-file'             ; $addr -- nfa
         _ get_current
@@ -328,7 +323,7 @@ code normalize_filename, 'normalize-filename'   ; $addr1 -- $addr2
 
         _dupcfetch
         _lit 1
-        _ equal
+        _equal
         _if .2
         _drop
         _ user_home
@@ -340,11 +335,11 @@ code normalize_filename, 'normalize-filename'   ; $addr1 -- $addr2
         _twoplus
         _cfetch
         _ path_separator_char
-        _ equal
+        _equal
         _if .3
         _ user_home
         _swap
-        _ count
+        _count
         _lit 1
         _ slashstring
         _ copy_to_temp_string
@@ -399,7 +394,8 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ close_file                    ; -- ior
         _drop                           ; REVIEW
 
-        _lit -1
+        ; store a true flag in the parameter field of the FILES wordlist entry
+        _true
         _from source_filename
         _namefrom
         _tobody
@@ -422,7 +418,8 @@ code included, 'included'               ; i*x c-addr u -- j*x
 endcode
 
 ; ### include
-code include, 'include'
+code include, 'include'                 ; i*x "name" -- j*x
+; FILE EXT
         _ parse_name                    ; -- c-addr u
         _ included
         next
