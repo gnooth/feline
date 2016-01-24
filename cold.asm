@@ -152,8 +152,16 @@ code cold, 'cold'                       ; --
         _ do_error
         _then .2
 ;         _ report_startup_time
+
         _ process_command_line
-        _ process_init_file
+
+        _lit process_init_file_xt
+        _ catch
+        _ ?dup
+        _if .3
+        _ do_error
+        _then .3
+
         _dotq "Meow!"
         _ cr
         jmp quit
