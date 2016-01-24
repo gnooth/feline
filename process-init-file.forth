@@ -1,4 +1,4 @@
-\ Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -14,9 +14,7 @@
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 : (process-init-file) ( -- )
-    user-home
-    [ linux? ] [if] $" /" [else] $" \" [then] $+
-    $" .init.feline" $+
+    user-home $" .init.feline" path-append-filename
     dup count file-exists? if
         count included
     else
