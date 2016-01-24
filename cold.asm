@@ -124,6 +124,9 @@ code report_startup_time, 'report-startup-time' ; --
         next
 endcode
 
+; ### interactive?
+value interactive?, 'interactive?', 0
+
 ; ### cold
 code cold, 'cold'                       ; --
         mov     [rp0_data], rsp
@@ -155,6 +158,9 @@ code cold, 'cold'                       ; --
 
         _ process_command_line
 
+        _true
+        _to interactive?
+
         _lit process_init_file_xt
         _ catch
         _ ?dup
@@ -164,6 +170,7 @@ code cold, 'cold'                       ; --
 
         _dotq "Meow!"
         _ cr
+
         jmp quit
         next
 endcode

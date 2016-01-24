@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -26,9 +26,14 @@ code bye, "bye"
 
         _ ?cr
         _ report_allocations
+
+        _ interactive?
+        _if .1
         _ ?cr
         _dotq 'Bye!'
         _ cr
+        _then .1
+
         jmp os_bye
         next
 endcode
