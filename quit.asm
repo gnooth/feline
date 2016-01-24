@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -184,6 +184,27 @@ code dotmsg, '.msg'
         next
 endcode
 
+; ### where
+code where, 'where'                     ; --
+        _ source_id
+        _zgt
+        _if .1
+        _ ?cr
+        _ source_filename
+        _ ?dup
+        _if .2
+        _ counttype
+        _ space
+        _then .2
+        _dotq "line "
+        _ source_line_number
+        _fetch
+        _ decdot
+        _ cr
+        _then .1
+        next
+endcode
+
 ; ### do-error
 code do_error, 'do-error'               ; n --
         _dup
@@ -194,7 +215,7 @@ code do_error, 'do-error'               ; n --
         _then .1
         _dup
         _lit -2
-        _ equal
+        _equal
         _if .2
         _ dotmsg                        ; ABORT"
         _ reset

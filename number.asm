@@ -128,27 +128,6 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
         next
 endcode
 
-; ### where
-code where, 'where'                     ; --
-        _ source_id
-        _zgt
-        _if .1
-        _ ?cr
-        _ source_filename
-        _ ?dup
-        _if .2
-        _ counttype
-        _ space
-        _then .2
-        _dotq "line "
-        _ source_line_number
-        _fetch
-        _ decdot
-        _ cr
-        _then .1
-        next
-endcode
-
 ; ### missing
 code missing, 'missing'                 ; $addr --
         _cquote ' ?'
