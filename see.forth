@@ -1780,17 +1780,21 @@ synonym disasm disasm
            tconst of ." constant " endof
        endcase
    then
-   xt >name .id
-   xt immediate? if
-       ." (immediate) "
-   then
-   xt inline? if
-       ." (inlineable) "
-   then
-   xt >view 2@ ?dup if
-       $. ."  line " u.
+   xt >name ?dup if
+       .id
+       xt immediate? if
+           ." (immediate) "
+       then
+       xt inline? if
+           ." (inlineable) "
+       then
+       xt >view 2@ ?dup if
+           $. ."  line " u.
+       else
+           drop
+       then
    else
-       drop
+       ." [anonymous] "
    then
    xt disassemble ;
 
