@@ -27,3 +27,51 @@
 \         swap $+
 \         count system
 \     else drop then ;
+
+0 value $build
+
+: initialize-build-string ( -- )
+    0 local fileid
+    0 local buffer
+    0 local length
+
+    feline-home $" build" path-append-filename count
+    r/o open-file                       \ -- fileid ior
+    if
+        drop exit
+    then                                \ -- fileid
+    to fileid
+    256 allocate                        \ -- addr ior
+    0= if
+        to buffer
+        buffer 256 fileid read-file     \ -- length ior
+        0= if
+            to length
+            begin
+                length 0>
+                buffer length 1- + c@ bl < and
+            while
+                -1 +to length
+            repeat
+            length 0> if
+                \ valid string, save it
+                buffer length >$
+            else
+                \ don't try again!
+                -1
+            then
+            to $build
+        then
+        buffer -free
+    then
+    fileid close-file                   \ -- ior
+    drop
+;
+
+: (.build) ( -- )
+    $build 0= if
+        initialize-build-string
+    then
+    $build 0> if ." built " $build $. then ;
+
+' (.build) is .build

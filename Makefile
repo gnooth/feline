@@ -46,6 +46,7 @@ endif
 
 $(FELINE_EXE):  $(OBJS)
 	$(CC) $(LINKFLAGS) $(OBJS) -o $(FELINE_EXE)
+	date > build
 
 feline_home.asm: $(FELINE_HOME_EXE)
 	./feline_home
@@ -133,6 +134,7 @@ clean:
 	-rm -f forth.o*
 	-rm -f feline_home.asm feline_home.exe feline_home
 	-rm -f version.h version.asm
+	-rm -f build
 
 zip:
 	-rm -f feline.zip

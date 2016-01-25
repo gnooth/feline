@@ -138,12 +138,16 @@ code version, 'version'
         next
 endcode
 
+deferred dotbuild, '.build', noop
+
 ; ### .version
-code print_version, '.version'          ; --
+code dotversion, '.version'             ; --
         _cquote "Feline "
         _ version
         _ appendstring
         _ counttype
+        _ space
+        _ dotbuild
         next
 endcode
 
@@ -184,7 +188,7 @@ code cold, 'cold'                       ; --
         _true
         _to interactive?
 
-        _ print_version
+        _ dotversion
         _ cr
 
         _lit process_init_file_xt

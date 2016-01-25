@@ -14,3 +14,4 @@ version.asm
 a.out
 benchmarks/xorshift128+
 benchmarks/xorshift128+.exe
+build
