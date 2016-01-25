@@ -49,7 +49,7 @@ JMP_BUF main_jmp_buf;
 LONG CALLBACK windows_exception_handler(EXCEPTION_POINTERS *exception_pointers)
 {
   CONTEXT *context = exception_pointers->ContextRecord;
-  c_save_backtrace((void *)context->Rip, (Cell *)context->Rsp);
+  c_save_backtrace(context->Rip, context->Rsp);
   EXCEPTION_RECORD *exception_record = exception_pointers->ExceptionRecord;
   DWORD exception_code = exception_record->ExceptionCode;
   PVOID exception_address = exception_record->ExceptionAddress;
