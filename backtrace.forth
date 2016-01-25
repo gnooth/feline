@@ -81,7 +81,23 @@ only forth also definitions
     best-nfa
 ;
 
-: backtrace ( -- )
+: print-saved-registers ( -- )
+    ?cr
+    ." Registers:" cr
+    4 >pos ." RAX = " saved-rax h.     40 >pos ." R8  = " saved-r8  h. cr
+    4 >pos ." RBX = " saved-rbx h.     40 >pos ." R9  = " saved-r9  h. cr
+    4 >pos ." RCX = " saved-rcx h.     40 >pos ." R10 = " saved-r10 h. cr
+    4 >pos ." RDX = " saved-rdx h.     40 >pos ." R11 = " saved-r11 h. cr
+    4 >pos ." RSI = " saved-rsi h.     40 >pos ." R12 = " saved-r12 h. cr
+    4 >pos ." RDI = " saved-rdi h.     40 >pos ." R13 = " saved-r13 h. cr
+    4 >pos ." RBP = " saved-rbp h.     40 >pos ." R14 = " saved-r14 h. cr
+    4 >pos ." RSP = " saved-rsp h.     40 >pos ." R15 = " saved-r15 h. cr
+    4 >pos ." RIP = " saved-rip h.     40 >pos ." EFL = " saved-efl h. cr
+;
+
+: print-backtrace ( -- )
+    ?cr
+    ." Backtrace:"
     get-saved-backtrace                 \ -- addr u
     local size
     local array
@@ -99,4 +115,9 @@ only forth also definitions
     loop
 ;
 
-synonym bt backtrace
+synonym bt print-backtrace
+
+:noname ( -- )
+    print-saved-registers
+    print-backtrace
+; is print-saved-registers-and-backtrace

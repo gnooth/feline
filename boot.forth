@@ -15,10 +15,10 @@
 
 include-system-file vocabulary.forth
 include-system-file bracket-if.forth
+include-system-file defer.forth
 include-system-file backtrace.forth
 include-system-file locals.forth
 include-system-file escaped-strings.forth
-include-system-file defer.forth
 include-system-file case.forth
 include-system-file dump.forth
 include-system-file view.forth

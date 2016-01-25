@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,9 +28,31 @@ void prep_terminal();
 void deprep_terminal();
 
 // backtrace.c
-void c_save_backtrace(void *rip, Cell *rsp);
+void c_save_backtrace(Cell rip, Cell rsp);
 
 extern Cell start_time_ticks_data;
+
+extern Cell saved_signal_data;
+extern Cell saved_signal_address_data;
+
+extern Cell saved_rax_data;
+extern Cell saved_rbx_data;
+extern Cell saved_rcx_data;
+extern Cell saved_rdx_data;
+extern Cell saved_rsi_data;
+extern Cell saved_rdi_data;
+extern Cell saved_rbp_data;
+extern Cell saved_rsp_data;
+extern Cell saved_r8_data;
+extern Cell saved_r9_data;
+extern Cell saved_r10_data;
+extern Cell saved_r11_data;
+extern Cell saved_r12_data;
+extern Cell saved_r13_data;
+extern Cell saved_r14_data;
+extern Cell saved_r15_data;
+extern Cell saved_rip_data;
+extern Cell saved_efl_data;
 
 #define LF      '\n'
 #define CR      '\r'

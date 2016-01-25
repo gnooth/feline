@@ -1,4 +1,4 @@
-// Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,13 +30,13 @@ Cell c_get_saved_backtrace_size()
   return saved_backtrace_size;
 }
 
-void c_save_backtrace(void *rip, Cell *rsp)
+void c_save_backtrace(Cell rip, Cell rsp)
 {
   memset(saved_backtrace_array, 0, sizeof(saved_backtrace_array));
-  saved_backtrace_array[0] = (Cell) rip;
+  saved_backtrace_array[0] = rip;
   int i = 1;
   extern Cell *rp0_data;
-  for (Cell * p = rsp; p < rp0_data; ++p)
+  for (Cell * p = (Cell *)rsp; p < rp0_data; ++p)
     {
       saved_backtrace_array[i++] = *p;
       if (i >= sizeof(saved_backtrace_array) / sizeof(Cell))

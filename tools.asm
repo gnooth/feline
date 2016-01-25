@@ -98,6 +98,57 @@ code cputime, 'cputime'
 endcode
 %endif
 
+value saved_signal, 'saved-signal', 0
+value saved_signal_address, 'saved-signal-address', 0
+
+value saved_rax, 'saved-rax', 0
+value saved_rbx, 'saved-rbx', 0
+value saved_rcx, 'saved-rcx', 0
+value saved_rdx, 'saved-rdx', 0
+value saved_rsi, 'saved-rsi', 0
+value saved_rdi, 'saved-rdi', 0
+value saved_rbp, 'saved-rbp', 0
+value saved_rsp, 'saved-rsp', 0
+value saved_r8,  'saved-r8',  0
+value saved_r9,  'saved-r9',  0
+value saved_r10, 'saved-r10', 0
+value saved_r11, 'saved-r11', 0
+value saved_r12, 'saved-r12', 0
+value saved_r13, 'saved-r13', 0
+value saved_r14, 'saved-r14', 0
+value saved_r15, 'saved-r15', 0
+value saved_rip, 'saved-rip', 0
+value saved_efl, 'saved-efl', 0
+
+; ### print-saved-registers-and-backtrace
+deferred print_saved_registers_and_backtrace, 'print-saved-registers-and-backtrace', noop
+
+; ### handle-signal
+code handle_signal, 'handle-signal'
+        mov     rbp, [sp0_data]
+        mov     rsp, [rp0_data]
+
+        _ lp0
+        _fetch
+        _ ?dup
+        _if .1
+        _ lpstore
+        _then .1
+
+        _ ?cr
+        _dotq "Caught signal "
+        _ saved_signal
+        _ decdot
+        _dotq "at address "
+        _ saved_signal_address
+        _ hdot
+
+        _ print_saved_registers_and_backtrace
+
+        _ reset
+        next
+endcode
+
 ; ### break?
 variable break?, 'break?', 0
 

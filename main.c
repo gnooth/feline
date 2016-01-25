@@ -74,32 +74,35 @@ LONG CALLBACK windows_exception_handler(EXCEPTION_POINTERS *exception_pointers)
 #ifndef WIN64
 static void signal_handler(int sig, siginfo_t *si, void * context)
 {
-  ucontext_t * uc;
-  char * name;
-  switch (sig)
-    {
-    case SIGSEGV:
-      name = "SIGSEGV";
-      break;
-    case SIGABRT:
-      name = "SIGABRT";
-      break;
-    case SIGFPE:
-      name = "SIGFPE";
-      break;
-    default:
-      name = "Error";
-      break;
-    }
-  printf("\n%s at $%lX\n", name, (unsigned long) si->si_addr);
-  uc = (ucontext_t *) context;
-  void * rip = (void *) uc->uc_mcontext.gregs[REG_RIP];
-  printf("RIP = $%lX\n", (unsigned long) rip);
-  Cell rbx = (Cell) uc->uc_mcontext.gregs[REG_RBX];
-  printf("RBX = $%lX\n", (unsigned long) rbx);
-  Cell * rsp = (Cell *) uc->uc_mcontext.gregs[REG_RSP];
-  c_save_backtrace(rip, rsp);
-  LONGJMP(main_jmp_buf, (unsigned long) si->si_addr);
+  saved_signal_data = sig;
+  saved_signal_address_data = (Cell) si->si_addr;
+
+  // see /usr/include/x86_64-linux-gnu/sys/ucontext.h
+  ucontext_t * uc = (ucontext_t *) context;
+  saved_rax_data = (Cell) uc->uc_mcontext.gregs[REG_RAX];
+  saved_rbx_data = (Cell) uc->uc_mcontext.gregs[REG_RBX];
+  saved_rcx_data = (Cell) uc->uc_mcontext.gregs[REG_RCX];
+  saved_rdx_data = (Cell) uc->uc_mcontext.gregs[REG_RDX];
+  saved_rsi_data = (Cell) uc->uc_mcontext.gregs[REG_RSI];
+  saved_rdi_data = (Cell) uc->uc_mcontext.gregs[REG_RDI];
+  saved_rbp_data = (Cell) uc->uc_mcontext.gregs[REG_RBP];
+  saved_rsp_data = (Cell) uc->uc_mcontext.gregs[REG_RSP];
+  saved_r8_data =  (Cell) uc->uc_mcontext.gregs[REG_R8];
+  saved_r9_data =  (Cell) uc->uc_mcontext.gregs[REG_R9];
+  saved_r10_data = (Cell) uc->uc_mcontext.gregs[REG_R10];
+  saved_r11_data = (Cell) uc->uc_mcontext.gregs[REG_R11];
+  saved_r12_data = (Cell) uc->uc_mcontext.gregs[REG_R12];
+  saved_r13_data = (Cell) uc->uc_mcontext.gregs[REG_R13];
+  saved_r14_data = (Cell) uc->uc_mcontext.gregs[REG_R14];
+  saved_r15_data = (Cell) uc->uc_mcontext.gregs[REG_R15];
+  saved_rip_data = (Cell) uc->uc_mcontext.gregs[REG_RIP];
+  saved_efl_data = (Cell) uc->uc_mcontext.gregs[REG_EFL];
+
+  c_save_backtrace(saved_rip_data, saved_rsp_data);
+
+//   LONGJMP(main_jmp_buf, (unsigned long) si->si_addr);
+  extern void handle_signal();
+  handle_signal();
 }
 #endif
 
