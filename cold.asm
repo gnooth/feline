@@ -27,8 +27,8 @@ variable sp0, 'sp0', 0                  ; initialized in main()
 ; ### stack-cells                       ; environment query
 value stack_cells, 'stack-cells', 0     ; initialized in main()
 
-; ### saved-rbp
-variable saved_rbp, 'saved-rbp', 0
+; ### cold-rbp
+variable cold_rbp, 'cold-rbp', 0
 
 ; ### origin
 value origin, 'origin', 0
@@ -157,7 +157,7 @@ value interactive?, 'interactive?', 0
 ; ### cold
 code cold, 'cold'                       ; --
         mov     [rp0_data], rsp
-        mov     [saved_rbp_data], rbp
+        mov     [cold_rbp_data], rbp
         mov     rbp, [sp0_data]
         mov     rax, [dp_data]
         mov     [origin_data], rax

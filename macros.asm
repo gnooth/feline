@@ -56,7 +56,7 @@
 %ifdef WIN64
 %macro  xcall   1
         push    rbp
-        mov     rbp, [saved_rbp_data]
+        mov     rbp, [cold_rbp_data]
         sub     rsp, 32
         test    rsp, 0x0f
         jnz     %%fixstack
