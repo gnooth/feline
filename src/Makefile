@@ -26,12 +26,10 @@ OBJS = main.o os.o terminal.o backtrace.o forth.o
 ifeq ($(OS),Windows_NT)
 	CFLAGS += -DWIN64 -DWIN64_NATIVE
 	ASMFLAGS += -DWIN64 -DWIN64_NATIVE
-	FELINE_EXE = feline.exe
-	FORTH_EXE = forth.exe
+	FELINE_EXE = ..\feline.exe
 	FELINE_HOME_EXE = feline_home.exe
 else
-	FELINE_EXE = feline
-	FORTH_EXE = forth
+	FELINE_EXE = ../feline
 	FELINE_HOME_EXE = feline_home
 endif
 
@@ -46,7 +44,7 @@ endif
 
 $(FELINE_EXE):  $(OBJS)
 	$(CC) $(LINKFLAGS) $(OBJS) -o $(FELINE_EXE)
-	date > build
+	date > ../build
 
 feline_home.asm: $(FELINE_HOME_EXE)
 	./feline_home
@@ -124,17 +122,15 @@ forth.o: $(ASM_SOURCES) Makefile
 # 	link /subsystem:console /machine:x64 /largeaddressaware:no forth.obj  main.obj /out:forth.exe
 
 clean:
-	-rm -f forth
-	-rm -f forth.exe
 	-rm -f feline
 	-rm -f feline.exe
 	-rm -f main.o*
 	-rm -f os.o*
 	-rm -f terminal.o*
+	-rm -f backtrace.o*
 	-rm -f forth.o*
 	-rm -f feline_home.asm feline_home.exe feline_home
 	-rm -f version.h version.asm
-	-rm -f build
 
 zip:
 	-rm -f feline.zip
