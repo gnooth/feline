@@ -500,15 +500,11 @@ code system_file_pathname, 'system-file-pathname'
 ; c-addr1 u1 -- c-addr2 u2
         _ copy_to_temp_string           ; -- $addr1
         _ feline_home                   ; -- $addr1 $addr2
-%ifdef WIN64
-        _cquote "\"
-%else
-        _cquote "/"
-%endif
-        _ appendstring                  ; -- $addr1 $addr3
-        _ swap
-        _ appendstring
-        _ count
+        _cquote "src"
+        _ path_append_filename
+        _swap
+        _ path_append_filename
+        _count
         next
 endcode
 
