@@ -98,8 +98,13 @@ code cputime, 'cputime'
 endcode
 %endif
 
+%ifdef WIN64
+value saved_exception_code, 'saved-exception-code', 0
+value saved_exception_address, 'saved-exception-address', 0
+%else
 value saved_signal, 'saved-signal', 0
 value saved_signal_address, 'saved-signal-address', 0
+%endif
 
 value saved_rax, 'saved-rax', 0
 value saved_rbx, 'saved-rbx', 0
@@ -123,6 +128,71 @@ value saved_efl, 'saved-efl', 0
 ; ### print-saved-registers-and-backtrace
 deferred print_saved_registers_and_backtrace, 'print-saved-registers-and-backtrace', noop
 
+%ifdef WIN64
+; ### exception-text
+code exception_text, 'exception-text'   ; n -- $addr
+; The exception text should end with a space for compatibility with
+; the string printed by h. when there is no exception text.
+        _dup
+        _lit $0C0000005
+        _equal
+        _if .1
+        _drop
+        _cquote "memory access exception "
+        _return
+        _then .1
+        _dup
+        _lit $0C0000094
+        _equal
+        _if .2
+        _drop
+        _cquote "division by zero exception "
+        _return
+        _then .2
+        _dup
+        _lit $080000003
+        _equal
+        _if .3
+        _drop
+        _cquote "breakpoint exception "
+        _return
+        _then .3
+        ; default
+        _drop
+        _zero
+        next
+endcode
+%endif
+
+; ### print-exception
+code print_exception, 'print-exception'
+%ifdef WIN64
+        _ saved_exception_code
+        _ exception_text
+        _?dup
+        _if .1
+        _dotq "Caught "
+        _ counttype
+        _else .1
+        ; no text for this exception code
+        _dotq "Caught exception "
+        _ saved_exception_code
+        _ hdot
+        _then .1
+        _dotq "at address "
+        _ saved_exception_address
+        _ hdot
+%else
+        _dotq "Caught signal "
+        _ saved_signal
+        _ decdot
+        _dotq "at address "
+        _ saved_signal_address
+        _ hdot
+%endif
+        next
+endcode
+
 ; ### handle-signal
 code handle_signal, 'handle-signal'
         mov     rbp, [sp0_data]
@@ -136,15 +206,8 @@ code handle_signal, 'handle-signal'
         _then .1
 
         _ ?cr
-        _dotq "Caught signal "
-        _ saved_signal
-        _ decdot
-        _dotq "at address "
-        _ saved_signal_address
-        _ hdot
-
+        _ print_exception
         _ print_saved_registers_and_backtrace
-
         _ reset
         next
 endcode

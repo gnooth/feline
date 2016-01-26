@@ -48,24 +48,36 @@ JMP_BUF main_jmp_buf;
 #ifdef WIN64
 LONG CALLBACK windows_exception_handler(EXCEPTION_POINTERS *exception_pointers)
 {
-  CONTEXT *context = exception_pointers->ContextRecord;
-  c_save_backtrace(context->Rip, context->Rsp);
   EXCEPTION_RECORD *exception_record = exception_pointers->ExceptionRecord;
-  DWORD exception_code = exception_record->ExceptionCode;
-  PVOID exception_address = exception_record->ExceptionAddress;
-  switch (exception_code)
-    {
-    case EXCEPTION_ACCESS_VIOLATION:
-      printf("Invalid memory access at 0x%p", exception_address);
-      break;
-    case EXCEPTION_INT_DIVIDE_BY_ZERO:
-      printf("Division by zero at 0x%p", exception_address);
-      break;
-    default:
-      printf("Exception 0x%lx at 0x%p", exception_code, exception_address);
-      break;
-    }
-  reset();
+  saved_exception_code_data = exception_record->ExceptionCode;
+  saved_exception_address_data = (Cell) exception_record->ExceptionAddress;
+
+  CONTEXT *context = exception_pointers->ContextRecord;
+
+  saved_rax_data = (Cell) context->Rax;
+  saved_rbx_data = (Cell) context->Rbx;
+  saved_rcx_data = (Cell) context->Rcx;
+  saved_rdx_data = (Cell) context->Rdx;
+  saved_rsi_data = (Cell) context->Rsi;
+  saved_rdi_data = (Cell) context->Rdi;
+  saved_rbp_data = (Cell) context->Rbp;
+  saved_rsp_data = (Cell) context->Rsp;
+  saved_r8_data =  (Cell) context->R8;
+  saved_r9_data =  (Cell) context->R9;
+  saved_r10_data = (Cell) context->R10;
+  saved_r11_data = (Cell) context->R11;
+  saved_r12_data = (Cell) context->R12;
+  saved_r13_data = (Cell) context->R13;
+  saved_r14_data = (Cell) context->R14;
+  saved_r15_data = (Cell) context->R15;
+  saved_rip_data = (Cell) context->Rip;
+  saved_efl_data = (Cell) context->EFlags;
+
+  c_save_backtrace(context->Rip, context->Rsp);
+
+  extern void handle_signal();
+  handle_signal();
+
   // not reached
   return EXCEPTION_CONTINUE_SEARCH;
 }

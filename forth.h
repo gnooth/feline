@@ -32,9 +32,13 @@ void c_save_backtrace(Cell rip, Cell rsp);
 
 extern Cell start_time_ticks_data;
 
+#ifdef WIN64
+extern Cell saved_exception_code_data;
+extern Cell saved_exception_address_data;
+#else
 extern Cell saved_signal_data;
 extern Cell saved_signal_address_data;
-
+#endif
 extern Cell saved_rax_data;
 extern Cell saved_rbx_data;
 extern Cell saved_rcx_data;
