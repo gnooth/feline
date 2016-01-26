@@ -15,7 +15,7 @@
 
 #include <string.h>             // memset
 
-#include "forth.h"
+#include "feline.h"
 
 static Cell saved_backtrace_array[16];
 static Cell saved_backtrace_size;

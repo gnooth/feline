@@ -28,7 +28,7 @@
 #include <sys/resource.h>       // getrusage
 #endif
 
-#include "forth.h"
+#include "feline.h"
 
 void * os_allocate(size_t size)
 {

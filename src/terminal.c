@@ -26,7 +26,7 @@
 #include <sys/ioctl.h>
 #endif
 
-#include "forth.h"
+#include "feline.h"
 
 #ifdef WINDOWS_UI
 #include "windows-ui.h"

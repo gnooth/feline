@@ -55,22 +55,22 @@ $(FELINE_HOME_EXE): feline_home.c
 version.asm:
 	echo "%define VERSION \"$(VERSION)\"" > version.asm
 
-main.o:	forth.h windows-ui.h main.c Makefile
+main.o:	feline.h windows-ui.h main.c Makefile
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
-os.o:	forth.h os.c Makefile
+os.o:	feline.h os.c Makefile
 	$(CC) $(CFLAGS) -c -o os.o os.c
 
-terminal.o: forth.h windows-ui.h terminal.c Makefile
+terminal.o: feline.h windows-ui.h terminal.c Makefile
 	$(CC) $(CFLAGS) -c -o terminal.o terminal.c
 
-backtrace.o: forth.h backtrace.c Makefile
+backtrace.o: feline.h backtrace.c Makefile
 	$(CC) $(CFLAGS) -c -o backtrace.o backtrace.c
 
-windows-ui.o: forth.h windows-ui.h windows-ui.c Makefile
+windows-ui.o: feline.h windows-ui.h windows-ui.c Makefile
 	$(CC) $(CFLAGS) -c -o windows-ui.o windows-ui.c
 
-winkey.o: forth.h windows-ui.h winkey.c Makefile
+winkey.o: feline.h windows-ui.h winkey.c Makefile
 	$(CC) $(CFLAGS) -c -o winkey.o winkey.c
 
 ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlines.asm \
