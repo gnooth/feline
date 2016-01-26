@@ -208,6 +208,7 @@ int main(int argc, char **argv, char **env)
   sigaction(SIGSEGV, &sa, NULL);
   sigaction(SIGABRT, &sa, NULL);
   sigaction(SIGFPE,  &sa, NULL);
+  sigaction(SIGTRAP, &sa, NULL);
 #endif
 
   if (SETJMP(main_jmp_buf) == 0)
