@@ -122,13 +122,7 @@ forth.o: $(ASM_SOURCES) Makefile
 # 	link /subsystem:console /machine:x64 /largeaddressaware:no forth.obj  main.obj /out:forth.exe
 
 clean:
-	-rm -f feline
-	-rm -f feline.exe
-	-rm -f main.o*
-	-rm -f os.o*
-	-rm -f terminal.o*
-	-rm -f backtrace.o*
-	-rm -f forth.o*
+	-rm -f *.o *.obj
 	-rm -f feline_home.asm feline_home.exe feline_home
 	-rm -f version.h version.asm
 
