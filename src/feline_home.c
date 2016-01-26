@@ -6,8 +6,9 @@ int main()
   char buf[1024];
   FILE *file;
   int i = 0;
+  chdir("..");
   getcwd(buf, sizeof(buf));
-  file = fopen("feline_home.asm", "w");
+  file = fopen("src/feline_home.asm", "w");
   if (file)
     {
       fprintf(file, "%%define FELINE_HOME \"%s\"\n", buf);
