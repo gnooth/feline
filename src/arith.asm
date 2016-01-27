@@ -111,26 +111,47 @@ endinline
 ; ### /
 code slash, '/'                         ; n1 n2 -- n3
 ; CORE
-        _ slmod
-        _nip
+        mov     rax, [rbp]
+        cqo                             ; sign-extend rax into rdx:rax
+        idiv    rbx                     ; quotient in rax, remainder in rdx
+        mov     rbx, rax
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
 ; ### mod
 code mod, 'mod'                          ; n1 n2 -- n3
 ; CORE
-        _ slmod
-        _ drop
+        mov     rax, [rbp]
+        cqo                             ; sign-extend rax into rdx:rax
+        idiv    rbx                     ; quotient in rax, remainder in rdx
+        mov     rbx, rdx
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
+; ### /mod
+code slmod, '/mod'                      ; n1 n2 -- remainder quotient
+; CORE
+        mov     rax, [rbp]
+        cqo                             ; sign-extend rax into rdx:rax
+        idiv    rbx                     ; quotient in rax, remainder in rdx
+        mov     [rbp], rdx              ; remainder
+        mov     rbx, rax                ; quotient
         next
 endcode
 
 ; ### */mod
-code starslashmod, '*/mod'              ; n1 n2 n3 -- n4 n5
+code starslashmod, '*/mod'              ; n1 n2 n3 -- remainder quotient
 ; CORE
-        _ tor
-        _ mstar
-        _ rfrom
-        _ fmslmod
+; "Multiply n1 by n2 producing the intermediate double-cell result d. Divide d
+; by n3 producing the single-cell remainder n4 and the single-cell quotient n5."
+        mov     rax, [rbp + BYTES_PER_CELL]
+        imul    qword [rbp]             ; result in rdx:rax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        idiv    rbx                     ; quotient in rax, remainder in rdx
+        mov     rbx, rax                ; quotient in rbx
+        mov     [rbp], rdx              ; remainder in [rbp]
         next
 endcode
 
@@ -200,15 +221,6 @@ code fmslmod, 'fm/mod'                  ; d1 n1 -- n2 n3
         _negate
         _ swap
         _then fmslmod3
-        next
-endcode
-
-; ### /mod
-code slmod, '/mod'                      ; n1 n2 -- n3 n4
-        _ tor                           ; >r s>d r> fm/mod
-        _ stod
-        _ rfrom
-        _ fmslmod
         next
 endcode
 
