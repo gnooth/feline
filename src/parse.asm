@@ -180,20 +180,20 @@ endcode
 
 ; ### (
 code paren, '(', IMMEDIATE
-        _begin paren1
+        _begin .1
         _ slashsource
         _lit ')'
         _ scan
         _nip
-        _if paren2
+        _if .2
         _lit ')'
         _ parse
         _2drop
         _return
-        _then paren2
+        _then .2
         _ refill
         _zeq
-        _until paren1
+        _until .1
         next
 endcode
 
