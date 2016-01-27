@@ -106,8 +106,9 @@ section .text
 ; Types
 %define TYPE_VARIABLE   1
 %define TYPE_VALUE      2
-%define TYPE_DEFERRED   3
-%define TYPE_CONSTANT   4
+%define TYPE_2VALUE     3
+%define TYPE_DEFERRED   4
+%define TYPE_CONSTANT   5
 
 %define link    0
 

@@ -24,6 +24,8 @@ constant feline?, 'feline?', -1
 constant tvar, 'tvar', TYPE_VARIABLE
 ; ### tvalue
 constant tvalue, 'tvalue', TYPE_VALUE
+; ### t2value
+constant t2value, 't2value', TYPE_2VALUE
 ; ### tdefer
 constant tdefer, 'tdefer', TYPE_DEFERRED
 ; ### tconst
