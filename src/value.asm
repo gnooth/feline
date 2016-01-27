@@ -26,25 +26,25 @@ code compile_value_ref, 'compile-value-ref'     ; xt --
         _tobody                         ; -- pfa
         _tor                            ; --            r: -- pfa
         _ compile_pushrbx
-        _ccommac $48
         _rfetch
-        _lit $100000000
+        _ max_int32
         _ ult
         _if .2
+        _ccommac $48
         _ccommac $8b                    ; mov rbx, [disp32]
         _ccommac $1c
         _ccommac $25
-        _rfetch
+        _rfrom
         _ lcommac
         _else .2
+        _ccommac $48
         _ccommac $0bb                   ; mov rbx, imm64
-        _rfetch
+        _rfrom
         _ commac
         _ccommac $48                    ; mov rbx, [rbx]
         _ccommac $8b
         _ccommac $1b
         _then .2
-        _rfromdrop
 
         _ cq
         _if .3
