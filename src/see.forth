@@ -1798,6 +1798,34 @@ synonym disasm disasm
    then
    xt disassemble ;
 
+\ testing the disassembler
+
+only forth also disassembler also forth definitions
+
+0 value #words
+
+: dis ( nfa -- flag )
+    1 +to #words
+    cr #words . dup .id name> disassemble
+    key? if key drop key drop then
+    true ;
+
+: test-forth ( -- )
+    0 to #words
+    ['] dis forth-wordlist traverse-wordlist ;
+
+: test-all ( -- )
+    0 to #words
+    voclink @                           \ -- wid
+    begin
+        ['] dis over traverse-wordlist
+        wid>link @ dup 0=
+    until
+    drop
+    cr #words . ." words" ;
+
+\ end of definitions for testing the disassembler
+
 only forth also disassembler also forth definitions     \ REVIEW
 
 warning on                              \ REVIEW
