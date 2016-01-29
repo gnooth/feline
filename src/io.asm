@@ -168,9 +168,23 @@ code space, 'space'                     ; --
         next
 endcode
 
+section .data
+spaces_data:
+        times 256 db ' '
+
 ; ### spaces
 code spaces, 'spaces'                   ; n --
 ; CORE "If n is greater than zero, display n spaces."
+        _dup
+        _lit 256
+        _ ult
+        _if .0
+        pushd   spaces_data
+        _swap
+        _ type
+        _return
+        _then .0
+
         popd    rcx
         test    rcx, rcx
         jle     .2
