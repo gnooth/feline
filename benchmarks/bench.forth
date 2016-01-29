@@ -62,3 +62,12 @@ feline? [if]
     cr elapsed-ms . ." ms " ;
 
 [then]
+
+: (time) ( xt -- )
+    start-timer
+    execute
+    stop-timer
+    .elapsed ;
+
+: time ( -- )
+    ' (time) ;
