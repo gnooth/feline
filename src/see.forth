@@ -768,6 +768,11 @@ initialize-setcc-mnemonic-table
         then
         unsupported
     then
+    byte2 $af = if
+        $" imul" to mnemonic
+        /r-reg-r/m
+        exit
+    then
     byte2 $b6 = if
         \ ModR/M byte contains both a register and an r/m operand
         \ source is r/m8
@@ -1625,6 +1630,10 @@ latest-xt $f6 install-handler
     modrm-mod 3 = if
         \ register-direct
         modrm-rm register-rm to dreg
+        regop 0= if
+            next-int32 to immediate-operand
+            true to immediate-operand?
+        then
         .inst
         exit
     then
