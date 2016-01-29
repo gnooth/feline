@@ -85,11 +85,10 @@ inline oneminus, '1-'
 endinline
 
 ; ### *
-code star, '*'
-        popd    rax
-        popd    rdx
-        imul    rdx
-        pushd   rax
+code star, '*'                          ; n1 n2 -- n3
+; CORE
+        imul    rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
