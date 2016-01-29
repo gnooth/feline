@@ -93,12 +93,13 @@ code star, '*'                          ; n1 n2 -- n3
 endcode
 
 ; ### m*
-code mstar, 'm*'
-        popd    rax
-        popd    rdx
-        imul    rdx
-        pushd   rax
-        pushd   rdx
+code mstar, 'm*'                        ; n1 n2 -- d
+; CORE
+; "d is the signed product of n1 times n2."
+        mov     rax, rbx
+        imul    qword [rbp]
+        mov     [rbp], rax
+        mov     rbx, rdx
         next
 endcode
 
