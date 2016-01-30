@@ -95,7 +95,7 @@ only forth also definitions
     4 >pos ." RIP = " saved-rip h.     40 >pos ." EFL = " saved-efl h. cr
 ;
 
-: print-backtrace ( -- )
+: (print-backtrace) ( -- )
     ?cr
     ." Backtrace:"
     get-saved-backtrace                 \ -- addr u
@@ -114,6 +114,8 @@ only forth also definitions
         then
     loop
 ;
+
+' (print-backtrace) is print-backtrace
 
 synonym bt print-backtrace
 

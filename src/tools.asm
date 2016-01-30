@@ -125,6 +125,9 @@ value saved_r15, 'saved-r15', 0
 value saved_rip, 'saved-rip', 0
 value saved_efl, 'saved-efl', 0
 
+; ### print-backtrace
+deferred print_backtrace, 'print-backtrace', noop
+
 ; ### print-saved-registers-and-backtrace
 deferred print_saved_registers_and_backtrace, 'print-saved-registers-and-backtrace', noop
 

@@ -217,6 +217,7 @@ code do_error, 'do-error'               ; n --
         _equal
         _if .2
         _ dotmsg                        ; ABORT"
+        _ print_backtrace
         _ reset
         _then .2
         ; otherwise...
@@ -224,9 +225,10 @@ code do_error, 'do-error'               ; n --
         _ red
         _ foreground
         _ ?cr
-        _dotq "Exception # "
+        _dotq "Error "
         _ decdot
         _ where
+        _ print_backtrace
         _ reset
         next
 endcode
