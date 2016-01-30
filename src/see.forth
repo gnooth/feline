@@ -333,6 +333,7 @@ init-reg64-names
 
 0 value immediate-operand?
 0 value immediate-operand
+0 value signed?
 
 0 value register-direct?
 0 value memory-operand?
@@ -402,7 +403,8 @@ init-reg64-names
 : .source ( -- )
      immediate-operand? if
         .sep
-        immediate-operand h.
+        \ REVIEW
+        immediate-operand signed? if . else h. then
         exit
     then
     sbase -1 <> if
@@ -1141,8 +1143,9 @@ latest-xt $63 install-handler
     modrm-mod 3 = if
         \ register-direct addressing mode
         modrm-rm register-rm to dreg
-        next-uint32 to immediate-operand
+        next-int32 to immediate-operand
         true to immediate-operand?
+        true to signed?
         .inst
         exit
     then
