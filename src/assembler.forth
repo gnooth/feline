@@ -1,4 +1,4 @@
-\ Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -12,6 +12,8 @@
 
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+require see.forth
 
 only forth also definitions
 
@@ -33,12 +35,17 @@ only forth also x86-64 also assembler definitions
 
 : >tbuf ( byte -- ) tbuf count + c! 1 tbuf c+! ;
 
+: dword>tbuf ( dword -- ) tbuf count + l! 4 tbuf c+! ;
+
 : .tbuf ( -- ) tbuf dump-bytes ;
 
 defer byte,
 
 \ ' .2 is byte,
 ' >tbuf is byte,
+
+: dword, ( dword -- )
+    dword>tbuf ;
 
 : make-modrm-byte ( mod reg rm -- byte )
     local rm
@@ -47,6 +54,9 @@ defer byte,
     mod       6 lshift
     reg 7 and 3 lshift +                \ extended registers 8-15 need to fit in 3 bits
     rm  7 and          + ;
+
+ 0 value immediate-operand?
+ 0 value immediate-operand
 
 -1 value sreg   \ source register
 64 value ssize  \ source operand size
@@ -60,6 +70,9 @@ defer byte,
  0 value prefix-byte
 
 : prefix, ( -- ) prefix-byte ?dup if byte, then ;
+
+: int32? ( n -- flag )
+    min-int32 max-int32 between ;
 
 false value dest?
 
@@ -141,6 +154,9 @@ false value dest?
 
 : reset-assembler ( -- )
     \ reset assembler for next instruction
+     0 to immediate-operand?
+     0 to immediate-operand
+
     -1 to sreg
     -1 to dreg
     64 to ssize
@@ -160,7 +176,7 @@ false value dest?
 
 0 value testing?
 
-: ;opc ( -- )
+: end-instruction ( -- )
     tbuf count >temp$ to actual
 
     testing? 0= if
@@ -173,6 +189,29 @@ false value dest?
     0 tbuf c!
 ;
 
+: # ( n -- )
+    dest? abort" # can't be a destination"
+    to immediate-operand
+    true to immediate-operand? ;
+
+: add, ( -- )
+    immediate-operand? if
+        dreg -1 <> if
+            dsize 64 = if
+                $48 to prefix-byte
+            then
+            prefix,
+            immediate-operand int32? if
+                $81 byte,
+                3 0 dreg make-modrm-byte byte,
+                immediate-operand dword,
+                end-instruction
+                exit
+            then
+        then
+    then
+    true abort" unsupported" ;
+
 : lea, ( -- )
     sbase -1 <> if
         dreg -1 <> if
@@ -183,7 +222,7 @@ false value dest?
             $8d byte,
             1 sbase dreg make-modrm-byte byte,
             sdisp byte,
-            ;opc
+            end-instruction
             exit
         then
     then
@@ -205,7 +244,7 @@ false value dest?
         prefix,
         $89 byte,
         3 sreg dreg make-modrm-byte byte,
-        ;opc
+        end-instruction
         exit
     then
     sreg -1 <> if
@@ -230,7 +269,7 @@ false value dest?
                 then
                 ddisp byte,
             then
-            ;opc
+            end-instruction
             exit
         then
     then
@@ -245,7 +284,7 @@ false value dest?
         -8 +to sreg
     then
     sreg $58 + byte,
-    ;opc ;
+    end-instruction ;
 
 : push, ( -- )
     sreg -1 = abort" no source register"
@@ -255,9 +294,9 @@ false value dest?
         -8 +to sreg
     then
     sreg $50 + byte,
-    ;opc ;
+    end-instruction ;
 
-: ret, ( -- ) $c3 byte, ;opc ;
+: ret, ( -- ) $c3 byte, end-instruction ;
 
 : }asm ( -- ) previous ; immediate
 

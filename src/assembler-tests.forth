@@ -1,4 +1,4 @@
-\ Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@ s" rbx -> [rsp] mov,"           { $48 $89 $1c $24 } ok?
 s" rbx -> [rbp -8 +] mov,"      { $48 $89 $5d $f8 } ok?
 s" rbx -> [rsp  8 +] mov,"      { $48 $89 $5c $24 $08 } ok?
 s" [rbp -8 +] -> rbp lea,"      { $48 $8d $6d $f8 } ok?
+s" 42 # -> rax add,"            { $48 $81 $C0 $2A $00 $00 $00 } ok?
 
 false to testing?
 
