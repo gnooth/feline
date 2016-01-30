@@ -447,5 +447,5 @@ windows-ui? or [if]
 restore-history
 ' (free-history) is free-history
 ' new-accept is accept
-true to color?
+\ true to color?
 [then]
