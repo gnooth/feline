@@ -19,8 +19,7 @@ only forth also definitions
 
 decimal
 
-: dump-bytes ( $addr -- )
-    count bounds ?do i c@ .hexbyte loop ;
+: dump-bytes ( c-addr u -- ) 2 ?enough bounds ?do i c@ .hexbyte space loop ;
 
 \ TEMPORARY
 [defined] assembler [if] warning off [then]
@@ -31,21 +30,23 @@ decimal
 
 only forth also x86-64 also assembler definitions
 
-32 buffer: tbuf
+\ 32 buffer: tbuf
 
-: >tbuf ( byte -- ) tbuf count + c! 1 tbuf c+! ;
+\ : >tbuf ( byte -- ) tbuf count + c! 1 tbuf c+! ;
 
-: dword>tbuf ( dword -- ) tbuf count + l! 4 tbuf c+! ;
+\ : dword>tbuf ( dword -- ) tbuf count + l! 4 tbuf c+! ;
 
-: .tbuf ( -- ) tbuf dump-bytes ;
+\ : .tbuf ( -- ) tbuf dump-bytes ;
 
-defer byte,
+\ defer byte,
 
-\ ' .2 is byte,
-' >tbuf is byte,
+\ \ ' .2 is byte,
+\ ' >tbuf is byte,
 
-: dword, ( dword -- )
-    dword>tbuf ;
+\ : dword, ( dword -- ) dword>tbuf ;
+
+: byte,  ( byte -- )  c,c ;
+: int32, ( int32 -- ) l,c ;
 
 : make-modrm-byte ( mod reg rm -- byte )
     local rm
@@ -71,8 +72,8 @@ defer byte,
 
 : prefix, ( -- ) prefix-byte ?dup if byte, then ;
 
-: int32? ( n -- flag )
-    min-int32 max-int32 between ;
+: int32?       ( n -- flag ) min-int32 max-int32 between ;
+: signed-byte? ( n -- flag ) -128 127 between ;
 
 false value dest?
 
@@ -152,6 +153,9 @@ false value dest?
 
 : +] ( n -- ) dest? if to ddisp else to sdisp then ;
 
+0 value asm-start
+0 value asm-end
+
 : reset-assembler ( -- )
     \ reset assembler for next instruction
      0 to immediate-operand?
@@ -170,23 +174,10 @@ false value dest?
      0 to dest?
 ;
 
-0 value expected
-
-0 value actual
-
 0 value testing?
 
 : end-instruction ( -- )
-    tbuf count >temp$ to actual
-
-    testing? 0= if
-        $c3 >tbuf
-        .tbuf
-        tbuf 1+ ( skip count byte ) disasm
-    then
-
     reset-assembler
-    0 tbuf c!
 ;
 
 : # ( n -- )
@@ -201,10 +192,17 @@ false value dest?
                 $48 to prefix-byte
             then
             prefix,
+            immediate-operand signed-byte? if
+                $83 byte,
+                3 0 dreg make-modrm-byte byte,
+                immediate-operand byte,
+                end-instruction
+                exit
+            then
             immediate-operand int32? if
                 $81 byte,
                 3 0 dreg make-modrm-byte byte,
-                immediate-operand dword,
+                immediate-operand int32,
                 end-instruction
                 exit
             then
@@ -298,22 +296,48 @@ false value dest?
 
 : ret, ( -- ) $c3 byte, end-instruction ;
 
-: }asm ( -- ) previous ; immediate
+0 value saved-state
+
+: }asm ( -- )
+\     testing? 0= if
+\         here-c to asm-end
+\         asm-start asm-end over - dump-bytes
+\         asm-start
+\         begin
+\             .inst
+\             dup asm-end >=
+\         until
+\         drop
+\     then
+
+    previous
+    saved-state if ] then
+;
 
 also forth definitions
 
 : asm{ ( -- )
     reset-assembler
-    0 tbuf c!
+    state@ to saved-state
+    postpone [
     also assembler
+    here-c to asm-start
 ; immediate
 
-: asm ( c-addr u -- $addr )
-    reset-assembler
-    0 tbuf c!
-    also assembler
-    evaluate
+: code ( "<spaces>name" -- )
+\ TOOLS EXT
+    cq-clear
+    header
+    hide
+    align-code
+    here-c dup last-code ! latest name> !
+    postpone asm{
+;
+
+: end-code ( -- )
+    }asm
     previous
+    reveal
 ;
 
 \ TEMPORARY

@@ -39,17 +39,29 @@ warning off
     depth to starting-depth
 ;
 
+0 value expected
+
+0 value actual
+
 0 value #errors
 
+: asm ( c-addr u -- $addr )
+    reset-assembler
+    also assembler
+    here-c to actual
+    evaluate
+    previous
+;
+
 : ok? ( c-addr u byte1 ... byten n -- )
-    >temp$ to expected
+    >temp$ to expected                  \ -- c-addr u
     cr 2dup type
     asm
-    expected actual dup c@ 1+ mem= 0= if
+    expected count actual swap mem= 0= if
         ?cr
         red foreground
-        ." Error: expected " expected dump-bytes
-        ." actual " actual dump-bytes
+        ." Error: expected " expected count dump-bytes cr
+        ."          actual " actual here-c over - dump-bytes
         white foreground
         1 +to #errors
     then
@@ -71,7 +83,7 @@ s" rbx -> [rsp] mov,"           { $48 $89 $1c $24 } ok?
 s" rbx -> [rbp -8 +] mov,"      { $48 $89 $5d $f8 } ok?
 s" rbx -> [rsp  8 +] mov,"      { $48 $89 $5c $24 $08 } ok?
 s" [rbp -8 +] -> rbp lea,"      { $48 $8d $6d $f8 } ok?
-s" 42 # -> rax add,"            { $48 $81 $C0 $2A $00 $00 $00 } ok?
+s" 42 # -> rax add,"            { $48 $83 $C0 $2A } ok?
 
 false to testing?
 
