@@ -1180,6 +1180,7 @@ latest-xt $81 install-handler
         modrm-rm register-rm to dreg
         next-signed-byte to immediate-operand
         true to immediate-operand?
+        true to signed?
         .inst
         exit
     then
