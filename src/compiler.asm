@@ -20,6 +20,8 @@ code ?comp, '?comp'
         mov     rax, [state_data]
         test    rax, rax
         jnz     .1
+        _cquote "Attempt to interpret a compile-only word"
+        _to msg
         _lit    -14                     ; "interpreting a compile-only word"
         _ throw
 .1:
