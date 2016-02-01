@@ -159,8 +159,6 @@ false value dest?
      0 to dest?
 ;
 
-0 value testing?
-
 : end-instruction ( -- )
     reset-assembler
 ;
