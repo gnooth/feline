@@ -19,8 +19,6 @@ only forth also definitions
 
 decimal
 
-: dump-bytes ( c-addr u -- ) 2 ?enough bounds ?do i c@ .hexbyte space loop ;
-
 \ TEMPORARY
 [defined] assembler [if] warning off [then]
 
@@ -30,23 +28,9 @@ decimal
 
 only forth also x86-64 also assembler definitions
 
-\ 32 buffer: tbuf
-
-\ : >tbuf ( byte -- ) tbuf count + c! 1 tbuf c+! ;
-
-\ : dword>tbuf ( dword -- ) tbuf count + l! 4 tbuf c+! ;
-
-\ : .tbuf ( -- ) tbuf dump-bytes ;
-
-\ defer byte,
-
-\ \ ' .2 is byte,
-\ ' >tbuf is byte,
-
-\ : dword, ( dword -- ) dword>tbuf ;
-
-: byte,  ( byte -- )  c,c ;
+: byte,  ( byte  -- ) c,c ;
 : int32, ( int32 -- ) l,c ;
+: int64, ( int64 -- )  ,c ;
 
 : make-modrm-byte ( mod reg rm -- byte )
     local rm
@@ -152,6 +136,7 @@ false value dest?
 15 define-base-reg [r15]
 
 : +] ( n -- ) dest? if to ddisp else to sdisp then ;
+: -] ( n -- ) negate +] ;
 
 0 value asm-start
 0 value asm-end
@@ -186,6 +171,16 @@ false value dest?
     true to immediate-operand? ;
 
 : add, ( -- )
+    sreg -1 <> dreg -1 <> and if
+        dsize 64 = if
+            $48 to prefix-byte
+        then
+        prefix,
+        $03 byte,
+        3 dreg sreg make-modrm-byte byte,
+        end-instruction
+        exit
+    then
     immediate-operand? if
         dreg -1 <> if
             dsize 64 = if
@@ -271,6 +266,28 @@ false value dest?
             exit
         then
     then
+    immediate-operand? if
+        immediate-operand int32? if
+            dsize 64 = if $48 to prefix-byte then
+            prefix,
+            dreg -1 <> if
+                $c7 byte,
+                3 0 dreg make-modrm-byte byte,
+                immediate-operand int32,
+                end-instruction
+                exit
+            then
+        else
+            dsize 64 = if $48 to prefix-byte then
+            prefix,
+            dreg -1 <> if
+                $b8 dreg + byte,
+                immediate-operand int64,
+                end-instruction
+                exit
+            then
+        then
+    then
     true abort" unsupported"
 ;
 
@@ -299,17 +316,6 @@ false value dest?
 0 value saved-state
 
 : }asm ( -- )
-\     testing? 0= if
-\         here-c to asm-end
-\         asm-start asm-end over - dump-bytes
-\         asm-start
-\         begin
-\             .inst
-\             dup asm-end >=
-\         until
-\         drop
-\     then
-
     previous
     saved-state if ] then
 ;

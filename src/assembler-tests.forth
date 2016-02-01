@@ -17,6 +17,8 @@ only forth also assembler definitions
 
 warning off
 
+: dump-bytes ( c-addr u -- ) 2 ?enough bounds ?do i c@ .hexbyte space loop ;
+
 : >temp$ ( byte1 byte2 ... byten n -- $addr )
     \ Gather n bytes from the stack and make them into a counted string in
     \ the transient string area. Return the address of the transient string.
@@ -75,16 +77,14 @@ warning off
 
 0 to #errors
 
-true to testing?
-
 s" rax -> rbx mov,"             { $48 $89 $c3 } ok?
 s" rbx -> rax mov,"             { $48 $89 $d8 } ok?
 s" rbx -> [rsp] mov,"           { $48 $89 $1c $24 } ok?
-s" rbx -> [rbp -8 +] mov,"      { $48 $89 $5d $f8 } ok?
-s" rbx -> [rsp  8 +] mov,"      { $48 $89 $5c $24 $08 } ok?
+s" rbx -> [rbp 8 -] mov,"       { $48 $89 $5d $f8 } ok?
+s" rbx -> [rsp 8 +] mov,"       { $48 $89 $5c $24 $08 } ok?
 s" [rbp -8 +] -> rbp lea,"      { $48 $8d $6d $f8 } ok?
 s" 42 # -> rax add,"            { $48 $83 $C0 $2A } ok?
-
-false to testing?
+s" 1234 # -> rax mov,"          { $48 $c7 $c0 $d2 $04 $00 $00 } ok?
+s" rax -> rbx add,"             { $48 $03 $d8 } ok?
 
 report-errors
