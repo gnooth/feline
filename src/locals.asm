@@ -283,6 +283,7 @@ endcode
 
 ; ### local
 code local, 'local', IMMEDIATE
+        _ ?comp
         _ parse_name                    ; -- c-addr u
         _ paren_local
         next
