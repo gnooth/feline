@@ -479,6 +479,14 @@ code erase, 'erase'                     ; addr u --
         next
 endcode
 
+; ### blank
+code blank, 'blank'                     ; addr u --
+; STRING
+        _ blchar
+        _ fill
+        next
+endcode
+
 ; ### buffer:
 code buffer_colon, 'buffer:'            ; u "<spaces>name" --
                                         ; Execution: -- a-addr
