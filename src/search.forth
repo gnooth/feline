@@ -40,18 +40,25 @@
         1 +to string-remaining -1 +to string-length-remaining
     again ;
 
-\ Following adapted from gforth
-: string-prefix?-ignore-case ( c-addr1 u1 c-addr2 u2 -- f )
-    tuck 2>r min 2r> istr= ;
-
 : search-ignore-case ( c-addr1 u1 c-addr2 u2 -- c-addr3 u3 flag )
-    2>r 2dup
+    local pattern-length
+    local pattern                       \ -- c-addr1 u1
+
+    pattern-length 0= if true exit then
+
+    local string-length
+    local string                        \ --
+
+    string        local string-remaining
+    string-length local string-length-remaining
+
     begin
-	dup r@ >=
-    while
-	2dup 2r@ string-prefix?-ignore-case if
-	    2swap 2drop 2r> 2drop true exit
+        string-length-remaining pattern-length < if
+            string string-length false exit
         then
-	1 /string
-    repeat
-    2drop 2r> 2drop false ;
+        \ string-length-remaining >= pattern-length
+        string-remaining pattern pattern-length is= if
+            string-remaining string-length-remaining true exit
+        then
+        1 +to string-remaining -1 +to string-length-remaining
+    again ;
