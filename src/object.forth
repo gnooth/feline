@@ -43,8 +43,6 @@ $4d81 constant STRING_TYPE
     dup vector? 0= abort" not a vector"
 ;
 
-[then]
-
 : string? ( object -- flag )
     ?dup if
         object-header STRING_TYPE =
@@ -56,6 +54,8 @@ $4d81 constant STRING_TYPE
 : check-string ( object -- string )
     dup string? 0= abort" not a string"
 ;
+
+[then]
 
 \ include-system-file vector.forth
 include-system-file string.forth

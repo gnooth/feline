@@ -1,4 +1,4 @@
-\ Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ only forth also definitions
 
 \ slot 0 is the object header (see object.forth)
 
+0 [if]
 \ slot 1
 : string-length ( string -- length )
     cell+ @
@@ -42,6 +43,7 @@ only forth also definitions
 : string-data! ( data-address string -- )
     2 cells + !
 ;
+[then]
 
 \ slot 3
 : string-capacity ( string -- capacity )
@@ -103,11 +105,13 @@ only forth also definitions
     s                                   \ return address of string object
 ;
 
+0 [if]
 : string> ( string -- c-addr u )
     local s
     s string-data
     s string-length
 ;
+[then]
 
 : string-clone ( string1 -- string2 )
     local s1

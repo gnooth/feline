@@ -1,4 +1,4 @@
-; Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -84,6 +84,9 @@ endcode
 VECTOR_TYPE     equ $7fa7
 STRING_TYPE     equ $4d81
 
+; Vectors
+
+; ### vector?
 code vector?, 'vector?'                 ; object -- flag
         test    rbx, rbx
         jz      .1
@@ -111,8 +114,6 @@ code check_vector, 'check-vector'       ; object -- vector
         _abortq "not a vector"
         next
 endcode
-
-; Vectors
 
 ; ### vector-length
 code vector_length, 'vector-length'     ; vector -- length
@@ -411,3 +412,67 @@ code vector_each, 'vector-each'         ; xt vector --
 endcode
 
 %unmacro _this 0
+
+; Strings
+
+; ### string?
+code string?, 'string?'                 ; object -- flag
+        test    rbx, rbx
+        jz      .1
+        _slot0
+        cmp     rbx, STRING_TYPE
+        jnz     .2
+        mov     rbx, -1
+        _return
+.2:
+        xor     ebx, ebx
+.1:
+        next
+endcode
+
+; ### check-string
+code check_string, 'check-string'       ; object -- string
+        _dup
+        _ string?
+        test    rbx, rbx
+        poprbx
+        jz      .1
+        _return
+.1:
+        _true
+        _abortq "not a string"
+        next
+endcode
+
+; ### string-length
+code string_length, 'string-length'     ; string -- length
+        _ slot1
+        next
+endcode
+
+; ### string-length!
+code set_string_length, 'string-length!' ; length string --
+        _ set_slot1
+        next
+endcode
+
+; ### string-data
+code string_data, 'string-data'         ; string -- data-address
+        _ slot2
+        next
+endcode
+
+; ### string-data!
+code set_string_data, 'string-data!'    ; data-address string --
+        _ set_slot2
+        next
+endcode
+
+; ### string>
+code string_from, 'string>'             ; string -- c-addr u
+        _duptor
+        _ string_data                   ; -- string data-address
+        _rfrom
+        _ string_length
+        next
+endcode
