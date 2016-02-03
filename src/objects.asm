@@ -81,8 +81,9 @@ endcode
 
 ; Object types
 
-VECTOR_TYPE     equ $7fa7
-STRING_TYPE     equ $4d81
+VECTOR_TYPE             equ 1
+STRING_TYPE             equ 2
+SIMPLE_STRING_TYPE      equ 3
 
 ; Vectors
 
@@ -472,6 +473,23 @@ endcode
 code string_from, 'string>'             ; string -- c-addr u
         _duptor
         _ string_data                   ; -- string data-address
+        _rfrom
+        _ string_length
+        next
+endcode
+
+; ### simple-string-data
+code simple_string_data, 'simple-string-data'   ; simple-string -- data-address
+        _lit 2
+        _cells
+        _plus
+        next
+endcode
+
+; ### simple-string>
+code simple_string_from, 'simple-string>'       ; simple-string -- c-addr u
+        _duptor
+        _ simple_string_data
         _rfrom
         _ string_length
         next

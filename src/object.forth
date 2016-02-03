@@ -16,10 +16,9 @@
 only forth also definitions
 
 \ REVIEW
-\ For now, type numbers are arbitrarily chosen prime numbers that fit in
-\ 16 bits. Not exactly a bulletproof scheme, but better than nothing.
-$7fa7 constant VECTOR_TYPE
-$4d81 constant STRING_TYPE
+1 constant VECTOR_TYPE
+2 constant STRING_TYPE
+3 constant SIMPLE_STRING_TYPE
 
 0 [if]
 
