@@ -116,7 +116,7 @@ code character_literal?, 'character-literal?'   ; $addr -- char true | $addr fal
         mov     al, [rbx + 2]
         movzx   rbx, al
         pushrbx
-        mov     ebx, 1
+        mov     ebx, -1
         _return
 .3:
         pushrbx
