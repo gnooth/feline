@@ -1756,11 +1756,6 @@ decimal
     1 +to #insts
 ;
 
-: .inst ( code-addr1 -- code-addr2 )
-    to ip
-    decode
-    ip ;
-
 : disasm  ( code-addr -- )
     dup to start-address to ip
     0 to end-address
@@ -1781,8 +1776,6 @@ decimal
 also forth definitions
 
 synonym .modrm .modrm
-
-synonym .inst .inst
 
 synonym disasm disasm
 
