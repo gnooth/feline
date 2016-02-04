@@ -489,6 +489,7 @@ latest-xt $e9 install-handler
     \ /r
     \ source is r32/64
     \ dest is r/m32/64
+    prefix if 64 else 32 then dup to dsize to ssize
     !modrm-byte
     modrm-reg register-reg to sreg
     modrm-mod 0= if
@@ -525,6 +526,7 @@ latest-xt $e9 install-handler
     \ /r
     \ source is r/m32/64
     \ dest is r32/64
+    prefix if 64 else 32 then dup to dsize to ssize
     !modrm-byte
     modrm-reg register-reg to dreg
     modrm-mod 0= if
@@ -1138,6 +1140,7 @@ latest-xt $63 install-handler
     \ modrm-reg encodes opcode extension
     \ source is imm32
     \ dest is r/m32/64
+    prefix if 64 else 32 then dup to dsize to ssize
     !modrm-byte
     mnemonic-from-regop to mnemonic
     modrm-mod 3 = if
