@@ -110,6 +110,11 @@ section .text
 %define TYPE_DEFERRED   4
 %define TYPE_CONSTANT   5
 
+; Object types
+_OBJECT_TYPE_VECTOR             equ 1
+_OBJECT_TYPE_STRING             equ 2
+_OBJECT_TYPE_SIMPLE_STRING      equ 3
+
 %define link    0
 
 %macro  name_token 2                    ; label, name

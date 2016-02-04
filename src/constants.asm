@@ -31,6 +31,15 @@ constant tdefer, 'tdefer', TYPE_DEFERRED
 ; ### tconst
 constant tconst, 'tconst', TYPE_CONSTANT
 
+; Object types
+
+; ### OBJECT_TYPE_VECTOR
+constant OBJECT_TYPE_VECTOR, 'OBJECT_TYPE_VECTOR', _OBJECT_TYPE_VECTOR
+; ### OBJECT_TYPE_STRING
+constant OBJECT_TYPE_STRING, 'OBJECT_TYPE_STRING', _OBJECT_TYPE_STRING
+; ### OBJECT_TYPE_SIMPLE_STRING
+constant OBJECT_TYPE_SIMPLE_STRING, 'OBJECT_TYPE_SIMPLE_STRING', _OBJECT_TYPE_SIMPLE_STRING
+
 ; ### false
 constant false, 'false', 0              ; CORE EXT
 

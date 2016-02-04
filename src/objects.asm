@@ -79,12 +79,6 @@ code set_slot3, 'slot3!'                ; x object --
         next
 endcode
 
-; Object types
-
-VECTOR_TYPE             equ 1
-STRING_TYPE             equ 2
-SIMPLE_STRING_TYPE      equ 3
-
 ; Vectors
 
 ; ### vector?
@@ -92,7 +86,7 @@ code vector?, 'vector?'                 ; object -- flag
         test    rbx, rbx
         jz      .1
         _slot0
-        cmp     rbx, VECTOR_TYPE
+        cmp     rbx, _OBJECT_TYPE_VECTOR
         jnz     .2
         mov     rbx, -1
         _return
@@ -161,7 +155,7 @@ code construct_vector, '<vector>'       ; capacity -- vector
         _lit 4
         _cells
         _ erase
-        _lit VECTOR_TYPE
+        _lit _OBJECT_TYPE_VECTOR
         _rfetch                         ; -- capacity vector            r: -- vector
         _ set_object_header             ; -- capacity                   r: -- vector
         _dup                            ; -- capacity capacity          r: -- vector
@@ -421,7 +415,7 @@ code string?, 'string?'                 ; object -- flag
         test    rbx, rbx
         jz      .1
         _slot0
-        cmp     rbx, STRING_TYPE
+        cmp     rbx, _OBJECT_TYPE_STRING
         jnz     .2
         mov     rbx, -1
         _return

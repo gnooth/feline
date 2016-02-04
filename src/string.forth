@@ -84,7 +84,7 @@ only forth also definitions
     local capacity
     STRING_SIZE -allocate local s
     s STRING_SIZE erase
-    STRING_TYPE s object-header!
+    OBJECT_TYPE_STRING s object-header!
     capacity chars -allocate s string-data!
     capacity s string-capacity!
     s
@@ -96,7 +96,7 @@ only forth also definitions
     local c-addr
     STRING_SIZE -allocate local s
     s STRING_SIZE erase
-    STRING_TYPE s object-header!
+    OBJECT_TYPE_STRING s object-header!
     u 1+ ( terminal null byte ) -allocate s string-data!
     u s string-length!
     u s string-capacity!
@@ -118,7 +118,7 @@ only forth also definitions
     s1 string-length local len
     STRING_SIZE -allocate local s2
     s2 STRING_SIZE erase
-    STRING_TYPE s2 object-header!
+    OBJECT_TYPE_STRING s2 object-header!
     len 1+ ( terminal null byte ) -allocate s2 string-data!
     len s2 string-length!
     len s2 string-capacity!
