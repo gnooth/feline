@@ -46,8 +46,8 @@ feline? [if]
     end-cycles start-cycles - ;
 
 : .elapsed ( -- )
-    cr elapsed-ms     . ." ms "
-    cr elapsed-cycles . ." cycles " ;
+    ?cr elapsed-ms     . ." ms "
+     cr elapsed-cycles . ." cycles " ;
 
 [else]
 
