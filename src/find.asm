@@ -53,8 +53,8 @@ endcode
 ; ### definitions
 code definitions, 'definitions'         ; --
 ; SEARCH
-        mov     eax, [context_data]
-        mov     [current_data], eax
+        mov     rax, [context_data]
+        mov     [current_data], rax
         next
 endcode
 
