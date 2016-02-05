@@ -357,7 +357,7 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ ?dup
         _if .1
         _ source_filename
-        _tor
+        _tor                            ; -- c-addr u           r: -- $old-source-filename
         _ copy_to_temp_string           ; -- $filename
         _ normalize_filename
 
@@ -373,21 +373,18 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _then .2
 
         _ forth_realpath                ; -- $pathname
-        _ resolve_include_filename      ; -- $pathname
-        _to source_filename             ; -- $pathname
-
-        _ source_filename
+        _ resolve_include_filename      ; -- $pathname          r: -- $old-source-filename
+        _duptor                         ; -- $pathname          r: -- $old-source-filename $pathname
         _ readonly
-        _ string_open_file
+        _ string_open_file              ; -- fileid ior         r: -- $old-source-filename $pathname
 
-        _zeq_if .4                      ; -- fileid
+        _zeq_if .4                      ; -- fileid             r: -- $old-source-filename $pathname
         ; file has been opened successfully
         ; make an entry for it in the FILES wordlist
-        _from source_filename
-        _ link_file
-        ; replace the transient string that we've been working with up to now
-        ; with the name field of the FILES wordlist entry (which is permanent)
-        _to source_filename
+        _rfrom                          ; -- fileid $pathname   r: -- $old-source-filename
+        _ link_file                     ; -- fileid nfa
+        ; and (only now!) update SOURCE-FILENAME
+        _to source_filename             ; -- fileid             r: -- $old-source-filename
         _duptor
         _ include_file
         _rfrom                          ; -- fileid
@@ -401,14 +398,16 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _tobody
         _ store
 
-        _else .4
+        _else .4                        ; -- undefined          r: -- $old-source-filename $pathname
+        _drop                           ; --                    r: -- $old-source-filename $pathname
         _cquote "Unable to open file "
-        _ source_filename
+        _rfrom
         _ appendstring
         _to msg
         _lit -38                        ; "non-existent file" Forth 2012 Table 9.1
-        _ throw
+        _ throw                         ; does not return
         _then .4
+
         _rfrom
         _to source_filename
         _else .1
