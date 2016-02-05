@@ -261,15 +261,6 @@ code comma, ','
         next
 endcode
 
-; ### c,
-code ccomma, 'c,'
-        _ here
-        _lit 1
-        _ allot
-        _ cstore
-        next
-endcode
-
 ; ### ,c
 code commac, ',c'
         _ here_c
@@ -279,12 +270,41 @@ code commac, ',c'
         next
 endcode
 
+; ### c,
+code ccomma, 'c,'
+        _ here
+        _lit 1
+        _ allot
+        _ cstore
+        next
+endcode
+
 ; ### c,c
 code ccommac, 'c,c'                     ; char --
         _ here_c
         _lit 1
         _ allot_c
         _ cstore
+        next
+endcode
+
+; ### l,
+code lcomma, 'l,'                       ; x --
+; 32-bit store, increment DP
+        _ here
+        _lit 4
+        _ allot
+        _ lstore
+        next
+endcode
+
+; ### l,c
+code lcommac, 'l,c'                     ; x --
+; 32-bit store, increment CP
+        _ here_c
+        _lit 4
+        _ allot_c
+        _ lstore
         next
 endcode
 
@@ -420,28 +440,6 @@ endcode
 code header, 'header'                   ; "spaces<name>" --
         _ parse_name                    ; -- c-addr u
         _ quoteheader
-        next
-endcode
-
-; ### l,
-code lcomma, 'l,'                       ; x --
-; 32-bit store, increment DP
-        mov     rax, [dp_data]
-        mov     [rax], ebx
-        add     rax, 4
-        mov     [dp_data], rax
-        poprbx
-        next
-endcode
-
-; ### l,c
-code lcommac, 'l,c'                     ; x --
-; 32-bit store, increment CP
-        mov     rax, [cp_data]
-        mov     [rax], ebx
-        add     rax, 4
-        mov     [cp_data], rax
-        poprbx
         next
 endcode
 
