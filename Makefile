@@ -4,7 +4,7 @@ else
 	FELINE_EXE = feline
 endif
 
-$(FELINE_EXE):
+all:
 	cd src && $(MAKE)
 
 clean:
