@@ -18,7 +18,7 @@ only forth also definitions
 \ [undefined] [log [if] include-system-file log.forth ( +log ) [then]
 
 \ [undefined] <vector> [if] include-system-file object.forth [then]
-require object.forth
+require string.forth
 
 only forth also definitions
 
