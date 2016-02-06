@@ -294,59 +294,38 @@ code file_exists, 'file-exists?'        ; c-addr u -- -1 | 0
         next
 endcode
 
+extern os_open_file
+
+; ### (open-file)
+code iopen_file, '(open-file)'          ; zaddr fam -- fileid ior
+%ifdef WIN64
+        popd    rdx                     ; fam in rdx
+        popd    rcx                     ; zaddr in rcx
+%else
+        popd    rsi                     ; fam in rsi
+        popd    rdi                     ; zaddr in rdi
+%endif
+        xcall   os_open_file
+        test    rax, rax
+        js      .1
+        pushd   rax                     ; fileid
+        pushd   0                       ; ior
+        next
+.1:
+        ; error
+        _lit -1                         ; "fileid is undefined"
+        _lit -1                         ; error!
+        next
+endcode
+
 ; ### open-file
 code open_file, 'open-file'             ; c-addr u fam -- fileid ior
 ; FILE
         _tor
         _ copy_to_temp_string
+        _string_to_zstring
         _rfrom
-        _ string_open_file
-        next
-endcode
-
-extern os_open_file
-
-; ### (open-file)
-code paren_open_file, '(open-file)'     ; zaddr fam -- fileid ior
-%ifdef WIN64
-        popd    rdx
-        popd    rcx
-%else
-        popd    rsi
-        popd    rdi
-%endif
-        xcall   os_open_file
-        test    rax, rax
-        js      .1
-        pushd   rax                     ; fileid
-        pushd   0                       ; ior
-        next
-.1:
-        _lit -1                         ; "fileid is undefined"
-        _lit -1                         ; error!
-        next
-endcode
-
-; ### $open-file
-code string_open_file, '$open-file'     ; $addr fam -- fileid ior
-%ifdef WIN64
-        popd    rdx                     ; fam in rdx
-        popd    rcx                     ; $addr in rcx
-        inc     rcx                     ; skip count byte to point at null-terminated string
-%else
-        popd    rsi                     ; fam in rsi
-        popd    rdi                     ; $addr in rdi
-        inc     rdi                     ; skip count byte to point at null-terminated string
-%endif
-        xcall   os_open_file
-        test    rax, rax
-        js      .1
-        pushd   rax                     ; fileid
-        pushd   0                       ; ior
-        next
-.1:
-        _lit -1                         ; "fileid is undefined"
-        _lit -1                         ; error!
+        _ iopen_file
         next
 endcode
 
@@ -866,7 +845,7 @@ extern os_realpath
 
 ; ### realpath
 code forth_realpath, 'realpath'         ; $path -- $realpath
-        _ string_to_zstring             ; -- zaddr
+        _string_to_zstring              ; -- zaddr
 %ifdef WIN64
         popd    rcx
 %else

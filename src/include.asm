@@ -331,7 +331,7 @@ code normalize_filename, 'normalize-filename'   ; $addr1 -- $addr2
         next
 endcode
 
-; ### resolve_include_filename
+; ### resolve-include-filename
 code resolve_include_filename, 'resolve-include-filename'       ; c-addr u -- $addr
         _ copy_to_temp_string           ; -- $filename
         _ normalize_filename
@@ -380,8 +380,9 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ resolve_include_filename
         _dup
         _to include_filename
+        _string_to_zstring
         _ readonly
-        _ string_open_file              ; -- fileid ior
+        _ iopen_file                    ; -- fileid ior
 
         test    rbx, rbx
         poprbx                          ; -- fileid
