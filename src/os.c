@@ -18,6 +18,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>              // _O_BINARY, O_CREAT
 #include <time.h>               // time, localtime_r
+#include <errno.h>
+#include <string.h>             // strerror
 #ifdef WIN64
 #include <windows.h>
 #include <io.h>                 // _chsize
@@ -88,7 +90,10 @@ Cell os_open_file(const char *filename, int flags)
 #endif
   ret = open(filename, flags);
   if (ret < 0)
-    return (Cell) -1;
+    {
+      os_errno_data = errno;
+      return (Cell) -1;
+    }
   else
     return ret;
 #endif
@@ -133,7 +138,10 @@ Cell os_read_file(Cell fd, void *buf, size_t count)
 #else
   int ret = read(fd, buf, count);
   if (ret < 0)
-    return (Cell) -1;
+    {
+      os_errno_data = errno;
+      return (Cell) -1;
+    }
   else
     return ret;
 #endif
@@ -403,6 +411,11 @@ char *os_realpath(const char *path)
   realpath(path, buf);
 #endif
   return buf;
+}
+
+char *os_strerror(int errnum)
+{
+  return strerror(errnum);
 }
 
 #ifdef WIN64
