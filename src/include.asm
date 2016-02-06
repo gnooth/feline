@@ -242,26 +242,6 @@ code includable?, 'includable?'         ; $addr -- flag
         next
 endcode
 
-; ### resolve-include-filename
-code resolve_include_filename, 'resolve-include-filename' ; $addr1 -- $addr
-        _ dup                           ; -- $addr1 $addr1
-        _ includable?                   ; -- $addr1 flag
-        _if .1
-        _return
-        _then .1                        ; -- $addr1
-        _ dup                           ; -- $addr1 $addr1
-        _cquote ".forth"
-        _ appendstring                  ; -- $addr1 $addr2
-        _ dup                           ; -- $addr1 $addr2 $addr2
-        _ includable?                   ; -- $addr1 $addr2 flag
-        _if .2
-        _nip                            ; return addr2
-        _else .2
-        _ drop                          ; return addr1
-        _then .2
-        next
-endcode
-
 ; ### link-file
 code link_file, 'link-file'             ; $addr -- nfa
         _ get_current
@@ -272,7 +252,7 @@ code link_file, 'link-file'             ; $addr -- nfa
         _fetch
         _tor
         _clear warning
-        _ count
+        _count
         _ quotecreate
         _rfrom
         _to warning
@@ -281,7 +261,7 @@ code link_file, 'link-file'             ; $addr -- nfa
         _rfrom
         _ set_current
         _ last
-        _ fetch
+        _fetch
         next
 endcode
 
@@ -351,68 +331,102 @@ code normalize_filename, 'normalize-filename'   ; $addr1 -- $addr2
         next
 endcode
 
-; ### included
-code included, 'included'               ; i*x c-addr u -- j*x
-; FILE
-        _ ?dup
-        _if .1
-        _ source_filename
-        _tor                            ; -- c-addr u           r: -- $old-source-filename
+; ### resolve_include_filename
+code resolve_include_filename, 'resolve-include-filename'       ; c-addr u -- $addr
         _ copy_to_temp_string           ; -- $filename
         _ normalize_filename
 
         _ source_filename
-        _ ?dup
-        _if .2
+        _?dup
+        _if .1
         _ forth_dirname
-        _ ?dup
-        _if .3                          ; -- $filename $dirname
-        _ swap
+        _?dup
+        _if .2                          ; -- $filename $dirname
+        _swap
         _ path_append_filename          ; -- $pathname
-        _then .3
         _then .2
+        _then .1
 
         _ forth_realpath                ; -- $pathname
-        _ resolve_include_filename      ; -- $pathname          r: -- $old-source-filename
-        _duptor                         ; -- $pathname          r: -- $old-source-filename $pathname
-        _ readonly
-        _ string_open_file              ; -- fileid ior         r: -- $old-source-filename $pathname
 
-        _zeq_if .4                      ; -- fileid             r: -- $old-source-filename $pathname
+        _dup                            ; -- $addr1 $addr1
+        _ includable?                   ; -- $addr1 flag
+        _if .3
+        _return
+        _then .3                        ; -- $addr1
+        _dup                            ; -- $addr1 $addr1
+        _cquote ".forth"
+        _ appendstring                  ; -- $addr1 $addr2
+        _dup                            ; -- $addr1 $addr2 $addr2
+        _ includable?                   ; -- $addr1 $addr2 flag
+        _if .4
+        _nip                            ; return addr2
+        _else .4
+        _drop                           ; return addr1
+        _then .4
+
+        next
+endcode
+
+; ### include-filename
+value include_filename, 'include-filename', 0
+
+; ### included
+code included, 'included'               ; i*x c-addr u -- j*x
+; FILE
+        test    rbx, rbx
+        jz .1
+
+        _ resolve_include_filename
+        _dup
+        _to include_filename
+        _ readonly
+        _ string_open_file              ; -- fileid ior
+
+        test    rbx, rbx
+        poprbx                          ; -- fileid
+        jnz .2
+
         ; file has been opened successfully
         ; make an entry for it in the FILES wordlist
-        _rfrom                          ; -- fileid $pathname   r: -- $old-source-filename
+        _ include_filename              ; -- fileid $pathname
         _ link_file                     ; -- fileid nfa
-        ; and (only now!) update SOURCE-FILENAME
+
+        _ source_filename
+        _tor                            ; -- fileid nfa         r: -- $old-source-filename
         _to source_filename             ; -- fileid             r: -- $old-source-filename
         _duptor
         _ include_file
-        _rfrom                          ; -- fileid
-        _ close_file                    ; -- ior
+        _rfrom                          ; -- fileid             r: -- $old-source-filename
+        _ close_file                    ; -- ior                r: -- $old-source-filename
         _drop                           ; REVIEW
 
-        ; store a true flag in the parameter field of the FILES wordlist entry
+        ; store true flag in the parameter field of the FILES wordlist entry
+        ; to indicate file was included without error
         _true
         _from source_filename
         _namefrom
         _tobody
-        _ store
+        _ store                         ; --                    r: -- $old-source-filename
 
-        _else .4                        ; -- undefined          r: -- $old-source-filename $pathname
-        _drop                           ; --                    r: -- $old-source-filename $pathname
-        _cquote "Unable to open file "
-        _rfrom
-        _ appendstring
-        _to msg
-        _lit -38                        ; "non-existent file" Forth 2012 Table 9.1
-        _ throw                         ; does not return
-        _then .4
-
+        ; restore old value of SOURCE-FILENAME
         _rfrom
         _to source_filename
-        _else .1
+        _zeroto include_filename
+        next
+.1:
+        _2drop
+        next
+.2:
+        ; error!
         _drop
-        _then .1
+        _cquote "Unable to open file "
+        _ include_filename
+        _ appendstring
+        _to msg
+        _zeroto include_filename
+        _lit -38                        ; "non-existent file" Forth 2012 Table 9.1
+        _ throw
         next
 endcode
 
@@ -520,28 +534,14 @@ code required, 'required'               ; i*x c-addr u -- i*x
 ; FILE EXT
         _ ?dup
         _if .1
-        _ copy_to_temp_string           ; -- $filename
-        _ normalize_filename            ; -- $filename
+        _ resolve_include_filename
 
-        _ source_filename
-        _ ?dup
-        _if .2
-        _ forth_dirname
-        _ ?dup
-        _if .3                          ; -- $filename $dirname
-        _ swap
-        _ path_append_filename          ; -- $pathname
-        _then .3
-        _then .2
-
-        _ forth_realpath                ; -- $pathname
-        _ resolve_include_filename      ; -- $pathname
-        _ count
-        _ twodup
+        _count
+        _twodup
         _ files_wordlist
         _ search_wordlist
         _if .4
-        _ execute
+        _tobody
         _fetch
         _if .5
         _2drop
