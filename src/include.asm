@@ -224,11 +224,11 @@ endcode
 ; ### includable?
 code includable?, 'includable?'         ; $addr -- flag
         _duptor
-        _ count
+        _count
         _ file_exists
         _if .1
         _rfetch
-        _ count
+        _count
         _ file_is_directory
         _zeq_if .2
         _rfrom
@@ -362,7 +362,16 @@ code resolve_include_filename, 'resolve-include-filename'       ; c-addr u -- $a
         _if .4
         _nip                            ; return addr2
         _else .4
-        _drop                           ; return addr1
+        _drop                           ; -- $addr1
+        _dup
+        _count
+        _ file_is_directory
+        _if .5
+        _cquote "Is a directory"
+        _to msg
+        _lit -37                        ; "file I/O exception"
+        _ throw
+        _then .5
         _then .4
 
         next
@@ -421,9 +430,11 @@ code included, 'included'               ; i*x c-addr u -- j*x
 .2:
         ; error!
         _drop
-        _cquote "Unable to open file "
-        _ include_filename
-        _ appendstring
+;         _cquote "Unable to open file "
+;         _ include_filename
+;         _ appendstring
+        _ os_errno
+        _ forth_strerror
         _to msg
         _zeroto include_filename
         _lit -38                        ; "non-existent file" Forth 2012 Table 9.1
