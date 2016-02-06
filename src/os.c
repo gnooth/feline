@@ -82,6 +82,8 @@ Cell os_open_file(const char *filename, int flags)
                         FILE_ATTRIBUTE_NORMAL,
                         NULL // template file (ignored for existing file)
                         );
+  if (h == INVALID_HANDLE_VALUE)
+    os_errno_data = GetLastError();
   return (Cell) h;
 #else
   int ret;
