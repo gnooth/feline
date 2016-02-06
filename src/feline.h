@@ -30,6 +30,8 @@ void deprep_terminal();
 // backtrace.c
 void c_save_backtrace(Cell rip, Cell rsp);
 
+extern Cell os_errno_data;
+
 extern Cell start_time_ticks_data;
 
 #ifdef WIN64

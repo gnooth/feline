@@ -15,6 +15,9 @@
 
 file __FILE__
 
+; ### errno
+value os_errno, 'errno', 0
+
 extern os_key
 
 ; ### key
