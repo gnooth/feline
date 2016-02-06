@@ -748,12 +748,16 @@ initialize-setcc-mnemonic-table
         .inst
         exit
     then
+    byte2 $81 = if
+        $" jno" .jcc32
+        exit
+    then
     byte2 $84 = if
         $" jz" .jcc32
         exit
     then
-    byte2 $81 = if
-        $" jno" .jcc32
+    byte2 $85 = if
+        $" jne" .jcc32
         exit
     then
     byte2 $8d = if
