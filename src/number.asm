@@ -55,45 +55,44 @@ endcode
 
 ; ### digit
 code digit, 'digit'                     ; char -- n true  |  char -- false
-        _ dup
+        _dup
         _lit '0'
         _lit '9'
-        _oneplus
-        _ within
-        _if digit1
+        _ between
+        _if .1
         _lit '0'
-        _ minus
-        _ dup
+        _minus
+        _dup
         _ basefetch
         _ lt
         _if .2
         _true
         _else .2
-        _ drop
+        _drop
         _false
         _then .2
         _return
-        _then digit1
+        _then .1
         _ upc
         _lit 'A'
-        _ minus
-        _ dup
+        _minus
+        _dup
         _zlt
-        _if digit3
-        _ drop
+        _if .3
+        _drop
         _false
         _return
-        _then digit3
+        _then .3
         _lit 10
-        _ plus
-        _ dup
+        _plus
+        _dup
         _ basefetch
         _ ge
-        _if digit4
-        _ drop
+        _if .4
+        _drop
         _false
         _return
-        _then digit4
+        _then .4
         _true
         next
 endcode
