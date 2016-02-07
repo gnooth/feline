@@ -65,15 +65,13 @@ variable voclink, 'voclink', files_wid
 code wordlist, 'wordlist'               ; -- wid
 ; SEARCH
 ; "Create a new empty word list, returning its word list identifier wid."
-        _ voclink
-        _fetch
+        _from voclink
         _ comma                         ; link
         _zero
         _ comma                         ; pointer to vocabulary name
         _ here                          ; this address will be the wid
         _dup
-        _ voclink
-        _ store
+        _to voclink
         _zero
         _ comma                         ; pointer to name field of last word in this wordlist
         next
@@ -113,8 +111,7 @@ endcode
 
 ; ### vocs
 code vocs, 'vocs'
-        _ voclink
-        _fetch
+        _from voclink
         _begin .1
         _dup
         _ dotwid
@@ -221,12 +218,10 @@ code get_order, 'get-order'             ; -- widn ... wid1 n
 ; SEARCH
 ; "wid1 identifies the word list that is searched first, and widn the word list
 ; that is searched last."
-        _ norder
-        _fetch
+        _from norder
         _zero
         _?do .1
-        _ norder
-        _fetch
+        _from norder
         _i
         _minus
         _oneminus
@@ -235,8 +230,7 @@ code get_order, 'get-order'             ; -- widn ... wid1 n
         _plus
         _fetch
         _loop .1
-        _ norder
-        _ fetch
+        _from norder
         next
 endcode
 
@@ -254,8 +248,7 @@ code set_order, 'set-order'             ; widn ... wid1 n --
         _ nvocs
         _cells
         _ erase
-        _zero
-        _to norder
+        _zeroto norder
         _return
         _then .1
 
@@ -284,7 +277,7 @@ code set_order, 'set-order'             ; widn ... wid1 n --
         _ nvocs
         _cells
         _ erase
-        _ dup
+        _dup
         _to norder
         _zero
         _?do .3
@@ -300,8 +293,7 @@ endcode
 ; ### also
 code also, 'also'
         _ get_order
-        _ over
-        _ swap
+        _overswap
         _oneplus
         _ set_order
         next
@@ -327,14 +319,13 @@ code only, 'only'
 ;         _ store
         _ root_wordlist
         _ context
-        _ twodup
+        _twodup
         _ store
         _cellplus
         _ store
 
         _lit 2
-        _ norder
-        _ store
+        _to norder
         next
 endcode
 
@@ -346,12 +337,12 @@ code previous, 'previous'
 ; condition exists if the search order was empty before PREVIOUS
 ; was executed."
         _ get_order                     ; -- widn ... wid1 n
-        _ dup
+        _dup
         _lit 1
         _ gt
         _if .1
         _nip
-        _ oneminus
+        _oneminus
         _ set_order
         _else .1
         _cquote "Search order underflow"
