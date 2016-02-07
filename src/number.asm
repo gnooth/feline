@@ -146,50 +146,48 @@ value negative?, 'negative?', 0
 
 ; ### number?
 code number?, 'number?'                 ; c-addr u -- d flag
-        _zero
-        _to double?
-        _ over
-        _ cfetch
+        _clear double?
+        _over
+        _cfetch
         _lit '-'
-        _ equal
-        _if ixnumber1
+        _equal
+        _if .1
         _lit -1
         _to negative?
         _lit 1
         _ slashstring
-        _else ixnumber1
-        _zero
-        _to negative?
-        _then ixnumber1
+        _else .1
+        _clear negative?
+        _then .1
         _zero
         _zero
         _ twoswap
         _ tonumber                      ; -- ud c-addr' u'
-        _ dup                           ; -- ud c-addr' u' u'
-        _zeq_if ixnumber3               ; -- ud c-addr' u'
+        _dup                            ; -- ud c-addr' u' u'
+        _zeq_if .2                      ; -- ud c-addr' u'
         ; no chars left over
         _2drop
         _true
         _return
-        _then ixnumber3
+        _then .2
         ; one or more chars left over
         _lit 1
         _notequal
-        _if ixnumber4                   ; -- ud c-addr'
+        _if .3                          ; -- ud c-addr'
         _drop
         _false
         _return
-        _then ixnumber4
-        _ cfetch                        ; -- ud char
+        _then .3
+        _cfetch                         ; -- ud char
         _lit '.'
-        _ equal
-        _if ixnumber5
+        _equal
+        _if .4
         _lit -1
         _to double?
         _true
-        _else ixnumber5
+        _else .4
         _false
-        _then ixnumber5
+        _then .4
         next
 endcode
 
