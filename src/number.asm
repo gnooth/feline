@@ -101,19 +101,19 @@ endcode
 ; ### >number
 code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
 ; CORE
-        _begin tonumber1
+        _begin .1
         _dup
-        _while tonumber1
-        _ over
+        _while .1
+        _over
         _cfetch
         _ digit
-        _zeq_if tonumber2
+        _zeq_if .2
         _return
-        _then tonumber2                 ; -- ud1 addr u1 digit
+        _then .2                        ; -- ud1 addr u1 digit
         _tor                            ; -- ud1 addr u1                r: -- digit
         _ twoswap                       ; -- c-addr u1 ud1              r: -- digit
         _rfrom                          ; -- c-addr u1 ud1 digit
-        _ swap                          ; -- c-addr u1 lo digit hi
+        _swap                           ; -- c-addr u1 lo digit hi
         _ basefetch                     ; -- c-addr u1 lo digit hi base
         _ umstar                        ; -- c-addr u1 lo digit ud
         _drop                           ; -- c-addr u1 lo digit u
@@ -124,7 +124,7 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
         _ twoswap
         _lit 1
         _ slashstring
-        _repeat tonumber1
+        _repeat .1
         next
 endcode
 
