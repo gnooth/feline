@@ -172,47 +172,81 @@ value msg, 'msg', 0
 
 ; ### .msg
 code dotmsg, '.msg'
+        _ red
+        _ foreground
         _from msg
         _?dup
         _if .1
-        _ red
-        _ foreground
         _ ?cr
         _ counttype
         _clear msg
+        _else .1
+        _dotq "Error "
+        _ exception
+        _ dot
         _then .1
         next
 endcode
 
 ; ### where
 code where, 'where'                     ; --
+        ; print source line
+        _ ?cr
+        _ source
+        _ type
+
+        ; put ^ under first character of offending token
+        _ cr
+        _from toin
+        _ word_buffer
+        _cfetch
+        _minus
+        ; if parsing hasn't reached the end of the line, we need to back up
+        ; one more character
+        _from toin
+        _from nsource
+        _ lt
+        _if .1
+        _oneminus
+        _then .1
+        _ spaces
+        _lit '^'
+        _ emit
+        _ cr
+
         _ source_id
         _zgt
-        _if .1
+        _if .2
         _ ?cr
         _ source_filename
         _ ?dup
-        _if .2
+        _if .3
         _ counttype
         _ space
-        _then .2
+        _then .3
         _dotq "line "
         _ source_line_number
         _ decdot
         _ cr
-        _then .1
+        _then .2
+
         next
 endcode
 
+value exception, 'exception', 0
+
 ; ### do-error
 code do_error, 'do-error'               ; n --
-        _dup
+        _to exception
+
+        _ exception
         _lit -1
         _ equal
         _if .1
         _ reset                         ; ABORT (no message)
         _then .1
-        _dup
+
+        _ exception
         _lit -2
         _equal
         _if .2
@@ -220,15 +254,22 @@ code do_error, 'do-error'               ; n --
         _ print_backtrace
         _ reset
         _then .2
+
         ; otherwise...
         _ dotmsg
-        _ red
-        _ foreground
-        _ ?cr
-        _dotq "Error "
-        _ decdot
+
         _ where
+
+        ; automatically print a backtrace if it is likely to be useful
+        _ exception
+        _lit -13                        ; undefined word
+        _notequal
+        _lit -4                         ; data stack underflow
+        _notequal
+        _ and
+        _if .4
         _ print_backtrace
+        _then .4
         _ reset
         next
 endcode
@@ -274,6 +315,9 @@ code reset, 'reset'                     ; i*x --        r: j*x --
         _if .1
         _ lpstore
         _then .1
+
+        ; REVIEW
+        _clear exception
 
         ; REVIEW windows-ui
         _ standard_output
