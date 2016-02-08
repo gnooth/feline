@@ -50,7 +50,7 @@ code ?stack, '?stack'
         next
 .1:
         mov     rbp, [sp0_data]
-        _cquote "Stack underflow"
+        _cquote "Error: data stack underflow"
         _to msg
         _lit -4
         _ throw
