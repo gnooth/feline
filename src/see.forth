@@ -354,11 +354,11 @@ init-reg64-names
     ip to instruction-start
     0 to mnemonic
 
-    0 to immediate-operand?
-    0 to immediate-operand
-
+    false to immediate-operand?
+    false to signed?
     false to register-direct?
     false to memory-operand?
+
     -1 to sreg
     -1 to dreg
     64 to ssize
