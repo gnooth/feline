@@ -547,12 +547,7 @@ code forth_constant, 'constant'         ; x "<spaces>name" --
         _namefrom                       ; -- x xt
         _duptor                         ; -- x xt       r: -- xt
         _ store                         ; -- x
-        _lit doconst
-        _lit doconst_end - doconst
-        _ paren_copy_code               ; -- x
-        _ here_c
-        _cellminus
-        _ store                         ; --
+        _ iliteral
         _lit $0c3
         _ ccommac
 
