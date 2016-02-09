@@ -530,14 +530,6 @@ code twovar, '2variable'
         next
 endcode
 
-section .text
-doconst:
-        pushrbx
-        db      $48                     ; mov rbx, 0
-        db      $0bb
-        dq      0                       ; 64-bit immediate value (to be patched)
-doconst_end:
-
 ; ### constant
 code forth_constant, 'constant'         ; x "<spaces>name" --
 ; CORE
@@ -568,21 +560,10 @@ code twoconstant, '2constant'           ; x1 x2 "<spaces>name" --
         _ latest
         _namefrom
         _ store                         ; -- x1 x2
-        _lit doconst
-        _lit doconst_end - doconst
-        _ paren_copy_code               ; -- x1 x2
-        _ swap                          ; -- x2 x1
-        _ here_c
-        _cellminus
-        _ store                         ; -- x2
-        _lit doconst
-        _lit doconst_end - doconst
-        _ paren_copy_code               ; -- x2
-        _ here_c
-        _cellminus
-        _ store                         ; --
-        _lit $0c3
-        _ ccommac
+        _swap
+        _ iliteral
+        _ iliteral
+        _ccommac $0c3
         next
 endcode
 
