@@ -291,8 +291,8 @@ code forth_dirname, 'dirname'           ; $filename -- $dirname | 0
         next
 endcode
 
-; ### normalize-filename
-code normalize_filename, 'normalize-filename'   ; $addr1 -- $addr2
+; ### tilde-expand-filename
+code tilde_expand_filename, 'tilde-expand-filename'     ; $addr1 -- $addr2
         _dup
         _ string_first_char
         _lit '~'
@@ -334,7 +334,7 @@ endcode
 ; ### resolve-include-filename
 code resolve_include_filename, 'resolve-include-filename'       ; c-addr u -- $addr
         _ copy_to_temp_string           ; -- $filename
-        _ normalize_filename
+        _ tilde_expand_filename
 
         _ source_filename
         _?dup

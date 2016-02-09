@@ -825,7 +825,7 @@ code cd, 'cd'
         _ blword
         _dupcfetch
         _if .1
-        _ normalize_filename
+        _ tilde_expand_filename
         _ set_current_directory
         _drop
         _else .1
