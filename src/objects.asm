@@ -510,14 +510,10 @@ code to_string, '>string'               ; c-addr u -- string
         _ set_string_length
         _ set_string_capacity           ; --
 
-        _ cr
-        _ dots
         pushd   c_addr
         pushd   string
         _ string_data
         pushd   u                       ; -- c-addr data-address u
-        _ cr
-        _ dots
         _ cmove                         ; --
         _zero
         pushd   string
