@@ -546,13 +546,12 @@ code forth_constant, 'constant'         ; x "<spaces>name" --
         _ latest
         _namefrom                       ; -- x xt
         _duptor                         ; -- x xt       r: -- xt
-        _ store                         ; -- x
+        _ store                         ; -- x          r: -- xt
         _ iliteral
-        _lit $0c3
-        _ ccommac
+        _ccommac $0c3
 
         _ tconst
-        _rfrom
+        _rfrom                          ; -- xt
         _totype
         _ cstore
 
