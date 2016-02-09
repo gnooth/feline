@@ -463,6 +463,78 @@ code set_string_data, 'string-data!'    ; data-address string --
         next
 endcode
 
+; ### string-capacity
+code string_capacity, 'string-capacity' ; string -- capacity
+        _ slot3
+        next
+endcode
+
+; ### string-capacity!
+code set_string_capacity, 'string-capacity!'    ; capacity string --
+        _ set_slot3
+        next
+endcode
+
+; ### >string
+code to_string, '>string'               ; c-addr u -- string
+
+; locals:
+%define u      local0
+%define c_addr local1
+%define string local2
+
+        _locals_enter
+        popd    u
+        popd    c_addr
+
+        _lit 32                         ; -- 32
+        _dup
+        _ iallocate                     ; -- 32 string
+        popd    string                  ; -- 32
+        pushd   string
+        _swap
+        _ erase                         ; --
+        _ OBJECT_TYPE_STRING
+        pushd   string
+        _ set_object_header             ; --
+
+        pushd   u
+        _oneplus
+        _ iallocate
+        pushd   string
+        _ set_string_data
+
+        pushd   u
+        pushd   string
+        _twodup
+        _ set_string_length
+        _ set_string_capacity           ; --
+
+        _ cr
+        _ dots
+        pushd   c_addr
+        pushd   string
+        _ string_data
+        pushd   u                       ; -- c-addr data-address u
+        _ cr
+        _ dots
+        _ cmove                         ; --
+        _zero
+        pushd   string
+        _ string_data
+        pushd   u
+        _plus
+        _ cstore
+        pushd   string
+        _locals_leave
+        next
+
+%undef u
+%undef c_addr
+%undef string
+
+endcode
+
 ; ### string>
 code string_from, 'string>'             ; string -- c-addr u
         _duptor

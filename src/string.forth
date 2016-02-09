@@ -43,7 +43,6 @@ only forth also definitions
 : string-data! ( data-address string -- )
     2 cells + !
 ;
-[then]
 
 \ slot 3
 : string-capacity ( string -- capacity )
@@ -53,6 +52,7 @@ only forth also definitions
 : string-capacity! ( capacity string -- )
     3 cells + !
 ;
+[then]
 
 4 cells constant STRING_SIZE            \ size in bytes of a string object (without data)
 
@@ -90,6 +90,7 @@ only forth also definitions
     s
 ;
 
+0 [if]
 : >string ( c-addr u -- string )
 \ construct a string object from a Forth string descriptor
     local u
@@ -105,7 +106,6 @@ only forth also definitions
     s                                   \ return address of string object
 ;
 
-0 [if]
 : string> ( string -- c-addr u )
     local s
     s string-data
