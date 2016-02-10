@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -16,30 +16,19 @@
 file __FILE__
 
 ; ### !
-code store, '!'                         ; n addr --
-        mov     rax, [rbp]              ; n
-        mov     [rbx], rax
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
-        next
-endcode
+inline store, '!'                       ; n addr --
+        _store
+endinline
 
 ; ### c!
 inline cstore, 'c!'                     ; c addr --
-        mov     al, [rbp]               ; c
-        mov     [rbx], al
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        _cstore
 endinline
 
 ; ### l!
-code lstore, 'l!'                       ; l addr --
-        mov     eax, [rbp]              ; l
-        mov     [rbx], eax
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
-        next
-endcode
+inline lstore, 'l!'                       ; l addr --
+        _lstore
+endinline
 
 ; ### +!
 code plusstore, '+!'                    ; n addr --

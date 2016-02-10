@@ -48,6 +48,27 @@
         mov     ebx, [rbx]
 %endmacro
 
+%macro  _store 0                        ; !
+        mov     rax, [rbp]
+        mov     [rbx], rax
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+%endmacro
+
+%macro  _cstore 0                       ; C!
+        mov     al, [rbp]
+        mov     [rbx], al
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+%endmacro
+
+%macro  _lstore 0                       ; L!
+        mov     eax, [rbp]
+        mov     [rbx], eax
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+%endmacro
+
 %macro  _dup 0                          ; DUP
         pushrbx
 %endmacro
