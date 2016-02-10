@@ -1271,16 +1271,27 @@ latest-xt $88 install-handler
     \ dest is r8
     $" mov" to mnemonic
     !modrm-byte
+    modrm-reg to dreg
+    8 to dsize
     modrm-mod 0= if
-        modrm-reg to dreg
-        8 to dsize
         modrm-rm register-rm to sbase
         .inst
         exit
     then
     modrm-mod 1 = if                    \ 1-byte displacement
-        modrm-reg to dreg
-        8 to dsize
+        modrm-rm 4 = if
+            !sib-byte
+            sib-index 4 <>
+            sib-base 5 <> and if
+                sib-scale 0= if
+                    sib-base to sbase
+                    sib-index to sindex
+                    next-signed-byte to sdisp
+                    .inst
+                    exit
+                then
+            then
+        then
         modrm-rm register-rm to sbase
         next-signed-byte to sdisp
         .inst

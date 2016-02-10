@@ -681,8 +681,7 @@ code string_nth, 'string-nth'           ; index $addr -- char
         lea     rbp, [rbp + BYTES_PER_CELL]     ; adjust stack
         cmp     rax, rdx
         jle     .1
-        add     rbx, rdx
-        mov     al, [rbx + 1]
+        mov     al, [rbx + rdx + 1]
         mov     rbx, rax
         ret
 .1:
