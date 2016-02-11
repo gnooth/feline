@@ -331,6 +331,23 @@ code tilde_expand_filename, 'tilde-expand-filename'     ; $addr1 -- $addr2
         next
 endcode
 
+; ### source-dirs
+value source_dirs, 'source-dirs', 0
+
+; ### add-source-dir
+code add_source_dir, 'add-source-dir'   ; c-addr u --
+        _from source_dirs
+        _zeq_if .1
+        _lit 8
+        _ construct_vector
+        _to source_dirs
+        _then .1
+        _ to_string                     ; -- string
+        _from source_dirs
+        _ vector_push
+        next
+endcode
+
 ; ### resolve-include-filename
 code resolve_include_filename, 'resolve-include-filename'       ; c-addr u -- $addr
         _ copy_to_temp_string           ; -- $filename
