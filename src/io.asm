@@ -852,8 +852,8 @@ endcode
 
 extern os_realpath
 
-; ### realpath
-code forth_realpath, 'realpath'         ; $path -- $realpath
+; ### canonical-path
+code canonical_path, 'canonical-path'   ; $path -- $realpath
         _string_to_zstring              ; -- zaddr
 %ifdef WIN64
         popd    rcx

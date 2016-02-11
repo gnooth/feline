@@ -364,7 +364,7 @@ code resolve_include_filename, 'resolve-include-filename'       ; c-addr u -- $a
         _then .2
         _then .1
 
-        _ forth_realpath                ; -- $pathname
+        _ canonical_path                ; -- $pathname
 
         _dup                            ; -- $addr1 $addr1
         _ includable?                   ; -- $addr1 flag
