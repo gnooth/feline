@@ -231,8 +231,7 @@ code includable?, 'includable?'         ; $addr -- flag
         _count
         _ file_is_directory
         _zeq_if .2
-        _rfrom
-        _drop
+        _rdrop
         _true
         _return
         _then .2
