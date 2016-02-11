@@ -300,8 +300,8 @@ code rfrom, 'r>'
         next                            ; for disassembler
 endcode
 
-; ### r>drop
-code rfromdrop, 'r>drop'
+; ### rdrop
+code rdrop, 'rdrop'
         pop     rax                     ; return address
         pop     rdx                     ; discard
         jmp     rax

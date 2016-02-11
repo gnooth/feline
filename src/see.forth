@@ -46,13 +46,13 @@ decimal
    begin
       r@ over find-code-in-wordlist
       ?dup if
-         r>drop
+         rdrop
          nip
          exit
       then
       wid>link @ dup 0=
    until
-   r>drop ;
+   rdrop ;
 
 0 value start-address
 0 value end-address
