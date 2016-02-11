@@ -556,3 +556,14 @@ code simple_string_from, 'simple-string>'       ; simple-string -- c-addr u
         _ string_length
         next
 endcode
+
+; ### .string
+code dot_string, '.string'              ; string --
+        _dup_if .1
+        _ string_from
+        _ type
+        _else .1
+        _drop
+        _then .1
+        next
+endcode
