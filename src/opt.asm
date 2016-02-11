@@ -328,7 +328,7 @@ code dotcq_entry, '.cq-entry'           ; addr --
         _else .1
         _toname
         _ dotid
-        _rfromdrop
+        _rdrop
         _then .1
         next
 endcode

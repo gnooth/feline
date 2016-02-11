@@ -153,7 +153,7 @@ code compile_local_ref, 'compile-local-ref'     ; index --
         _ equal
         _if .2
         ; no fetch needed
-        _rfromdrop
+        _rdrop
         _return
         _then .2
         _then .1

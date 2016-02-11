@@ -237,7 +237,7 @@ code number, 'number'                   ; $addr -- d
         _rfrom
         _ missing                       ; doesn't return
         _then .1
-        _rfromdrop
+        _rdrop
         _ negative?
         _if .2
         _ dnegate

@@ -32,7 +32,7 @@
         push    rbx
 %endmacro
 
-%macro  _rfromdrop 0                    ; R> DROP
+%macro  _rdrop 0                        ; RDROP
         lea     rsp, [rsp + BYTES_PER_CELL]
 %endmacro
 

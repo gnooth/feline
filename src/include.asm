@@ -237,7 +237,7 @@ code includable?, 'includable?'         ; $addr -- flag
         _return
         _then .2
         _then .1
-        _rfromdrop
+        _rdrop
         _false
         next
 endcode
