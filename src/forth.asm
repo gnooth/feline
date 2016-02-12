@@ -51,6 +51,7 @@ default abs ; use absolute addresses by default
 %include "store.asm"
 ; %include "string.asm"
 %include "strings.asm"
+%include "transient-strings.asm"
 %include "tools.asm"
 %include "value.asm"
 
