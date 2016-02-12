@@ -548,6 +548,52 @@ code simple_string_data, 'simple-string-data'   ; simple-string -- data-address
         next
 endcode
 
+; ### >simple-string
+code to_simple_string, '>simple-string' ; c-addr u -- string
+
+; locals:
+%define u      local0
+%define c_addr local1
+%define string local2
+
+        _locals_enter                   ; -- c-addr u
+        popd    u
+        popd    c_addr                  ; --
+
+        _lit 16
+        pushd   u
+        _oneplus                        ; terminal null byte
+        _plus                           ; -- size
+        _dup
+        _ iallocate                     ; -- size string
+        popd    string                  ; -- size
+        pushd   string                  ; -- size string
+        _swap                           ; -- string size
+        _ erase                         ; --
+        _ OBJECT_TYPE_SIMPLE_STRING
+        pushd   string
+        _ set_object_header             ; --
+
+        pushd   u
+        pushd   string
+        _ set_string_length             ; --
+
+        pushd   c_addr
+        pushd   string
+        _ simple_string_data
+        pushd   u
+        _ cmove                         ; --
+
+        pushd   string                  ; -- string
+        _locals_leave
+        next
+
+%undef u
+%undef c_addr
+%undef string
+
+endcode
+
 ; ### simple-string>
 code simple_string_from, 'simple-string>'       ; simple-string -- c-addr u
         _duptor
