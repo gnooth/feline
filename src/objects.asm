@@ -548,15 +548,17 @@ code simple_string_data, 'simple-string-data'   ; simple-string -- data-address
         next
 endcode
 
-; ### >simple-string
-code to_simple_string, '>simple-string' ; c-addr u -- string
+; ### make-simple-string
+code make_simple_string, 'make-simple-string'   ; c-addr u transient? -- string
 
 ; locals:
-%define u      local0
-%define c_addr local1
-%define string local2
+%define transient?      local0
+%define u               local1
+%define c_addr          local2
+%define string          local3
 
-        _locals_enter                   ; -- c-addr u
+        _locals_enter                   ; -- c-addr u transient?
+        popd    transient?
         popd    u
         popd    c_addr                  ; --
 
@@ -565,7 +567,12 @@ code to_simple_string, '>simple-string' ; c-addr u -- string
         _oneplus                        ; terminal null byte
         _plus                           ; -- size
         _dup
-        _ iallocate                     ; -- size string
+        pushd   transient?
+        _if .1
+        _ tsb_alloc
+        _else .1
+        _ iallocate
+        _then .1                        ; -- size string
         popd    string                  ; -- size
         pushd   string                  ; -- size string
         _swap                           ; -- string size
@@ -588,10 +595,18 @@ code to_simple_string, '>simple-string' ; c-addr u -- string
         _locals_leave
         next
 
+%undef transient?
 %undef u
 %undef c_addr
 %undef string
 
+endcode
+
+; ### >simple-string
+code to_simple_string, '>simple-string' ; c-addr u -- string
+        _false                          ; not transient
+        _ make_simple_string
+        next
 endcode
 
 ; ### simple-string>
@@ -605,50 +620,11 @@ endcode
 
 ; ### >transient-string
 code to_transient_string, '>transient-string'   ; c-addr u -- string
-; A transient string is a simple string with storage allocated in the transient
-; string buffer.
-
-; locals:
-%define u      local0
-%define c_addr local1
-%define string local2
-
-        _locals_enter                   ; -- c-addr u
-        popd    u
-        popd    c_addr                  ; --
-
-        _lit 16
-        pushd   u
-        _oneplus                        ; terminal null byte
-        _plus                           ; -- size
-        _dup
-        _ tsb_alloc                     ; -- size string
-        popd    string                  ; -- size
-        pushd   string                  ; -- size string
-        _swap                           ; -- string size
-        _ erase                         ; --
-        _ OBJECT_TYPE_SIMPLE_STRING
-        pushd   string
-        _ set_object_header             ; --
-
-        pushd   u
-        pushd   string
-        _ set_string_length             ; --
-
-        pushd   c_addr
-        pushd   string
-        _ simple_string_data
-        pushd   u
-        _ cmove                         ; --
-
-        pushd   string                  ; -- string
-        _locals_leave
+; A transient string is a simple string with storage allocated in the
+; transient string buffer.
+        _true                           ; transient
+        _ make_simple_string
         next
-
-%undef u
-%undef c_addr
-%undef string
-
 endcode
 
 ; ### .string
