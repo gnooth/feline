@@ -363,14 +363,20 @@ code resolve_include_filename, 'resolve-include-filename'       ; c-addr u -- $a
         _then .2
         _then .1
 
-        _ canonical_path                ; -- $pathname
-
-        _dup                            ; -- $addr1 $addr1
         _ coerce_to_string
-        _ includable?                   ; -- $addr1 flag
+        _ canonical_path                ; -- string
+        _dup                            ; -- string string
+        _ includable?                   ; -- string flag
         _if .3
+        ; FIXME
+        _ string_from
+        _ copy_to_temp_string
         _return
-        _then .3                        ; -- $addr1
+        _then .3                        ; -- string
+        ; FIXME
+        _ string_from
+        _ copy_to_temp_string
+
         _dup                            ; -- $addr1 $addr1
         _cquote ".forth"
         _ appendstring                  ; -- $addr1 $addr2

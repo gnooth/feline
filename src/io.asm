@@ -838,21 +838,19 @@ endcode
 extern os_realpath
 
 ; ### canonical-path
-code canonical_path, 'canonical-path'   ; $path -- $realpath
-        _string_to_zstring              ; -- zaddr
+code canonical_path, 'canonical-path'   ; string1 -- string2
+        _ string_data                   ; -- zaddr1
 %ifdef WIN64
         popd    rcx
 %else
         popd    rdi
 %endif
         xcall   os_realpath
-        pushd   rax                     ; -- zaddr
+        pushd   rax                     ; -- zaddr2
         _ dup
         _ zcount
-        _ copy_to_temp_string           ; -- zaddr $addr
+        _ to_transient_string           ; -- string2
         _ swap
-;         _ forth_free                    ; can't use -FREE here!
-;         _ drop
 %ifdef WIN64
         mov     rcx, rbx
 %else
