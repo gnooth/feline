@@ -410,8 +410,23 @@ endcode
 
 ; Strings
 
-; ### string?
-code string?, 'string?'                 ; object -- flag
+; ### simple-string?
+code simple_string?, 'simple-string?'   ; object -- flag
+        test    rbx, rbx
+        jz      .1
+        _slot0
+        cmp     rbx, _OBJECT_TYPE_SIMPLE_STRING
+        jnz     .2
+        mov     rbx, -1
+        _return
+.2:
+        xor     ebx, ebx
+.1:
+        next
+endcode
+
+; ### growable-string?
+code growable_string?, 'growable-string?' ; object -- flag
         test    rbx, rbx
         jz      .1
         _slot0
@@ -425,15 +440,34 @@ code string?, 'string?'                 ; object -- flag
         next
 endcode
 
+; ### string?
+code string?, 'string?'                 ; object -- flag
+        _dup
+        _ simple_string?
+        _if .1
+        mov     rbx, TRUE
+        _return
+        _then .1
+        _ growable_string?
+        next
+endcode
+
 ; ### check-string
 code check_string, 'check-string'       ; object -- string
         _dup
-        _ string?
+        _ simple_string?
         test    rbx, rbx
         poprbx
         jz      .1
         _return
 .1:
+        _dup
+        _ growable_string?
+        test    rbx, rbx
+        poprbx
+        jz      .2
+        _return
+.2:
         _true
         _abortq "not a string"
         next
@@ -451,9 +485,24 @@ code set_string_length, 'string-length!' ; length string --
         next
 endcode
 
+; ### simple-string-data
+code simple_string_data, 'simple-string-data'   ; simple-string -- data-address
+        _lit 2
+        _cells
+        _plus
+        next
+endcode
+
 ; ### string-data
 code string_data, 'string-data'         ; string -- data-address
+        _ check_string
+        _dup
+        _ simple_string?
+        _if .1
+        _ simple_string_data
+        _else .1
         _ slot2
+        _then .1
         next
 endcode
 
@@ -529,23 +578,6 @@ code to_string, '>string'               ; c-addr u -- string
 %undef c_addr
 %undef string
 
-endcode
-
-; ### string>
-code string_from, 'string>'             ; string -- c-addr u
-        _duptor
-        _ string_data                   ; -- string data-address
-        _rfrom
-        _ string_length
-        next
-endcode
-
-; ### simple-string-data
-code simple_string_data, 'simple-string-data'   ; simple-string -- data-address
-        _lit 2
-        _cells
-        _plus
-        next
 endcode
 
 ; ### make-simple-string
@@ -624,6 +656,15 @@ code to_transient_string, '>transient-string'   ; c-addr u -- string
 ; transient string buffer.
         _true                           ; transient
         _ make_simple_string
+        next
+endcode
+
+; ### string>
+code string_from, 'string>'             ; string -- c-addr u
+        _duptor
+        _ string_data                   ; -- string data-address
+        _rfrom
+        _ string_length
         next
 endcode
 
