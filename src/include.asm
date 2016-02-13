@@ -252,7 +252,7 @@ code link_file, 'link-file'             ; $addr -- nfa
         _tor
         _clear warning
         _count
-        _ quotecreate
+        _ create_word
         _rfrom
         _to warning
         _zero

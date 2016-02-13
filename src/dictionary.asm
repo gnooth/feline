@@ -346,8 +346,8 @@ code noname_header, 'noname-header'     ; --
         next
 endcode
 
-; ### "header
-code quoteheader, '"header'             ; c-addr u --
+; ### make-header
+code make_header, 'make-header'         ; c-addr u --
         _ warning
         _fetch
         _if .1
@@ -439,7 +439,7 @@ endcode
 ; ### header
 code header, 'header'                   ; "spaces<name>" --
         _ parse_name                    ; -- c-addr u
-        _ quoteheader
+        _ make_header
         next
 endcode
 
@@ -481,9 +481,9 @@ code create, 'create'                   ; "<spaces>name" --
         next
 endcode
 
-; ### "create
-code quotecreate, '"create'
-        _ quoteheader
+; ### create-word
+code create_word, 'create-word'         ; c-addr u --
+        _ make_header
         _ paren_create
         next
 endcode
