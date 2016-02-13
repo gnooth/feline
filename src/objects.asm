@@ -667,6 +667,28 @@ code as_c_string, 'as-c-string'         ; c-addr u -- zaddr
         next
 endcode
 
+; ### coerce-to-string
+; REVIEW transitional
+code coerce_to_string, 'coerce-to-string'
+        _dup
+        _lit 256
+        _ ult
+        _if .1
+        _ to_transient_string
+        _return
+        _then .1
+
+        _dup
+        _ string?
+        _if .2
+        _return
+        _then .2
+
+        _count
+        _ to_transient_string
+        next
+endcode
+
 ; ### string>
 code string_from, 'string>'             ; string -- c-addr u
         _duptor
@@ -677,9 +699,15 @@ code string_from, 'string>'             ; string -- c-addr u
 endcode
 
 ; ### .string
-code dot_string, '.string'              ; string --
+code dot_string, '.string'              ; string | $addr --
+; REVIEW remove support for legacy strings
         _dup_if .1
+        _ string?
+        _if .2
         _ string_from
+        _else .2
+        _ count
+        _then .2
         _ type
         _else .1
         _drop
