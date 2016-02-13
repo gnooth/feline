@@ -338,22 +338,14 @@ extern os_create_file
 ; ### create-file
 code create_file, 'create-file'         ; c-addr u fam -- fileid ior
         _tor
-        _ copy_to_temp_string
+        _ as_c_string
         _rfrom
-        _ string_create_file
-        next
-endcode
-
-; ### $create-file
-code string_create_file, '$create-file' ; $addr fam -- fileid ior
 %ifdef WIN64
         popd    rdx                     ; fam in rdx
-        popd    rcx                     ; $addr in rcx
-        inc     rcx                     ; skip count byte to point at null-terminated string
+        popd    rcx                     ; zaddr in rcx
 %else
         popd    rsi                     ; fam in rsi
-        popd    rdi                     ; $addr in rdi
-        inc     rdi                     ; skip count byte to point at null-terminated string
+        popd    rdi                     ; zaddr in rdi
 %endif
         xcall   os_create_file
         test    rax, rax
