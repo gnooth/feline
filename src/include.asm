@@ -222,13 +222,13 @@ code include_file, 'include-file'       ; i*x fileid -- j*x
 endcode
 
 ; ### includable?
-code includable?, 'includable?'         ; $addr -- flag
+code includable?, 'includable?'         ; string -- flag
         _duptor
-        _count
+        _ string_from
         _ file_exists
         _if .1
         _rfetch
-        _count
+        _ string_from
         _ file_is_directory
         _zeq_if .2
         _rdrop
@@ -366,6 +366,7 @@ code resolve_include_filename, 'resolve-include-filename'       ; c-addr u -- $a
         _ canonical_path                ; -- $pathname
 
         _dup                            ; -- $addr1 $addr1
+        _ coerce_to_string
         _ includable?                   ; -- $addr1 flag
         _if .3
         _return
@@ -374,6 +375,7 @@ code resolve_include_filename, 'resolve-include-filename'       ; c-addr u -- $a
         _cquote ".forth"
         _ appendstring                  ; -- $addr1 $addr2
         _dup                            ; -- $addr1 $addr2 $addr2
+        _ coerce_to_string
         _ includable?                   ; -- $addr1 $addr2 flag
         _if .4
         _nip                            ; return addr2
