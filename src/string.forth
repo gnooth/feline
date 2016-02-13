@@ -56,6 +56,7 @@ only forth also definitions
 
 4 cells constant STRING_SIZE            \ size in bytes of a string object (without data)
 
+0 [if]
 : string-ensure-capacity ( n string -- )
     local s
     local new-capacity
@@ -78,6 +79,7 @@ only forth also definitions
         new-capacity s string-capacity!
     then
 ;
+[then]
 
 \ constructor
 : <string> ( capacity -- string )
@@ -208,6 +210,7 @@ only forth also definitions
     s string-length sappend string-length + s string-length!
 ;
 
+0 [if]
 : string-append-chars ( addr len string -- )
     local this
     local len
@@ -221,6 +224,7 @@ only forth also definitions
     this string-length len + this string-length!
     0 this string-data this string-length + c!
 ;
+[then]
 
 : string-append-char ( char string -- )
     local this

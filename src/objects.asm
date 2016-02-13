@@ -54,7 +54,7 @@ code set_slot1, 'slot1!'                ; x object --
 endcode
 
 ; ### slot2
-; returns contents of slot1
+; returns contents of slot2
 inline slot2, 'slot2'                   ; object -- x
         mov     rbx, [rbx + BYTES_PER_CELL * 2]
 endinline
@@ -445,7 +445,8 @@ code string?, 'string?'                 ; object -- flag
         _dup
         _ simple_string?
         _if .1
-        mov     rbx, TRUE
+        _drop
+        _true
         _return
         _then .1
         _ growable_string?
@@ -456,20 +457,33 @@ endcode
 code check_string, 'check-string'       ; object -- string
         _dup
         _ simple_string?
+        _if .1
+        _return
+        _then .1
+
+        _dup
+        _ growable_string?
+        _if .2
+        _return
+        _then .2
+
+        _drop
+        _true
+        _abortq "not a string"
+        next
+endcode
+
+; ### check-growable-string
+code check_growable_string, 'check-growable-string'     ; object -- string
+        _dup
+        _ growable_string?
         test    rbx, rbx
         poprbx
         jz      .1
         _return
 .1:
-        _dup
-        _ growable_string?
-        test    rbx, rbx
-        poprbx
-        jz      .2
-        _return
-.2:
         _true
-        _abortq "not a string"
+        _abortq "not a growable string"
         next
 endcode
 
@@ -495,10 +509,10 @@ endcode
 
 ; ### string-data
 code string_data, 'string-data'         ; string -- data-address
-        _ check_string
-        _dup
-        _ simple_string?
-        _if .1
+        _ check_string                  ; -- string
+        _dup                            ; -- string string
+        _ simple_string?                ; -- string flag
+        _if .1                          ; -- string
         _ simple_string_data
         _else .1
         _ slot2
@@ -548,7 +562,7 @@ code to_string, '>string'               ; c-addr u -- string
         _ set_object_header             ; --
 
         pushd   u
-        _oneplus
+        _oneplus                        ; terminal null byte
         _ iallocate
         pushd   string
         _ set_string_data
@@ -689,7 +703,7 @@ code coerce_to_string, 'coerce-to-string'
         next
 endcode
 
-; ### string>
+        ; ### string>
 code string_from, 'string>'             ; string -- c-addr u
         _duptor
         _ string_data                   ; -- string data-address
@@ -698,10 +712,48 @@ code string_from, 'string>'             ; string -- c-addr u
         next
 endcode
 
+; ### string-resize
+code string_resize, 'string-resize'     ; string new-capacity --
+        _ over                          ; -- string new-capacity string
+        _ string_data                   ; -- string new-capacity data-address
+        _ over                          ; -- string new-capacity data-address new-capacity
+        _oneplus                        ; terminal null byte
+        _ resize                        ; -- string new-capacity new-data-address ior
+        _ throw                         ; -- string new-capacity new-data-address
+        _tor
+        _ over                          ; -- string new-capacity string     r: -- new-data-addr
+        _ set_string_capacity           ; -- string                         r: -- new-data-addr
+        _rfrom                          ; -- string new-data-addr
+        _ swap
+        _ set_string_data
+        next
+endcode
+
+; ### string-ensure-capacity
+code string_ensure_capacity, 'string-ensure-capacity'   ; u string --
+        _ check_growable_string         ; -- u string
+        _ twodup                        ; -- u string u string
+        _ string_capacity               ; -- u string u capacity
+        _ ugt
+        _if .1                          ; -- u string
+        _dup                            ; -- u string string
+        _ string_capacity               ; -- u string capacity
+        _twostar                        ; -- u string capacity*2
+        _oneplus                        ; -- u string capacity*2+1
+        _ rot                           ; -- string capacity*2 u
+        _ max                           ; -- string new-capacity
+        _ string_resize
+        _else .1
+        _2drop
+        _then .1
+        next
+endcode
+
 ; ### .string
 code dot_string, '.string'              ; string | $addr --
 ; REVIEW remove support for legacy strings
         _dup_if .1
+        _dup
         _ string?
         _if .2
         _ string_from
@@ -712,5 +764,68 @@ code dot_string, '.string'              ; string | $addr --
         _else .1
         _drop
         _then .1
+        next
+endcode
+
+; ### string-append-chars
+code string_append_chars, 'string-append-chars' ; addr len string --
+
+; locals:
+%define this   local0
+%define len    local1
+%define addr   local2
+
+        _locals_enter
+        popd    this
+        popd    len
+        popd    addr
+
+        pushd   this
+        _ string_length
+        pushd   len
+        _plus
+        pushd   this
+        _ string_ensure_capacity
+        pushd   addr
+        pushd   this
+        _ string_data
+        pushd   this
+        _ string_length
+        _plus
+        pushd   len
+        _ cmove
+        pushd   this
+        _ string_length
+        pushd   len
+        _plus
+        pushd   this
+        _ set_string_length
+        _zero
+        pushd   this
+        _ string_data
+        pushd   this
+        _ string_length
+        _plus
+        _cstore
+
+        _locals_leave
+        next
+
+%undef this
+%undef len
+%undef addr
+
+endcode
+
+; ### concat
+code concat, 'concat'                   ; string1 string2 -- string3
+        _ check_string
+        _ string_from                   ; -- s1 c-addr u
+        _ rot                           ; -- c-addr u s1
+        _ string_from
+        _ to_string                     ; -- c-addr u s3
+        _duptor
+        _ string_append_chars           ; --
+        _rfrom
         next
 endcode
