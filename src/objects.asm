@@ -659,6 +659,14 @@ code to_transient_string, '>transient-string'   ; c-addr u -- string
         next
 endcode
 
+; ### as-c-string
+code as_c_string, 'as-c-string'         ; c-addr u -- zaddr
+; Returns a pointer to a null-terminated string in the transient string buffer.
+        _ to_transient_string
+        _ simple_string_data
+        next
+endcode
+
 ; ### string>
 code string_from, 'string>'             ; string -- c-addr u
         _duptor
