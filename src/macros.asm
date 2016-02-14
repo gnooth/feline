@@ -582,3 +582,33 @@ section .text
 %define local2          [r14 + BYTES_PER_CELL * 2]
 %define local3          [r14 + BYTES_PER_CELL * 3]
 %define local4          [r14 + BYTES_PER_CELL * 4]
+
+%macro  _local0 0
+        pushrbx
+        mov     rbx, local0
+%endmacro
+
+%macro  _to_local0 0
+        mov     local0, rbx
+        poprbx
+%endmacro
+
+%macro  _local1 0
+        pushrbx
+        mov     rbx, local1
+%endmacro
+
+%macro  _to_local1 0
+        mov     local1, rbx
+        poprbx
+%endmacro
+
+%macro  _local2 0
+        pushrbx
+        mov     rbx, local2
+%endmacro
+
+%macro  _to_local2 0
+        mov     local2, rbx
+        poprbx
+%endmacro
