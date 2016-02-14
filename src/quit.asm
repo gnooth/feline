@@ -178,7 +178,7 @@ code dotmsg, '.msg'
         _?dup
         _if .1
         _ ?cr
-        _ counttype
+        _ dot_string
         _clear msg
         _else .1
         _dotq "Error "
@@ -221,7 +221,7 @@ code where, 'where'                     ; --
         _ source_filename
         _ ?dup
         _if .3
-        _ counttype
+        _ dot_string
         _ space
         _then .3
         _dotq "line "
@@ -287,8 +287,7 @@ code quit, 'quit'                       ; --            r:  i*x --
         _fetch
         _zero
         _ set_input
-        _zero
-        _to source_filename
+        _zeroto source_filename
         _lit interpret_xt
         _ catch
         _ ?dup
