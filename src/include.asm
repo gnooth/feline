@@ -242,7 +242,9 @@ code includable?, 'includable?'         ; string -- flag
 endcode
 
 ; ### link-file
-code link_file, 'link-file'             ; $addr -- nfa
+code link_file, 'link-file'             ; string -- nfa
+        _ check_string
+
         _ get_current
         _tor
         _ files_wordlist
@@ -251,7 +253,8 @@ code link_file, 'link-file'             ; $addr -- nfa
         _fetch
         _tor
         _clear warning
-        _count
+;         _count
+        _ string_from
         _ create_word
         _rfrom
         _to warning
@@ -374,21 +377,28 @@ code resolve_include_filename, 'resolve-include-filename'       ; c-addr u -- $a
         _return
         _then .3                        ; -- string
         ; FIXME
-        _ string_from
-        _ copy_to_temp_string
+;         _ string_from
+;         _ copy_to_temp_string
 
-        _dup                            ; -- $addr1 $addr1
-        _cquote ".forth"
-        _ appendstring                  ; -- $addr1 $addr2
+        _dup                            ; -- string string
+;         _cquote ".forth"
+        _squote ".forth"
+        _ coerce_to_string
+        _ concat                        ; -- $addr1 $addr2
         _dup                            ; -- $addr1 $addr2 $addr2
         _ coerce_to_string
         _ includable?                   ; -- $addr1 $addr2 flag
         _if .4
         _nip                            ; return addr2
+        ; FIXME
+        _ string_from
+        _ copy_to_temp_string
+
         _else .4
         _drop                           ; -- $addr1
         _dup
-        _count
+;         _count
+        _ string_from
         _ file_is_directory
         _if .5
         _cquote "Is a directory"
@@ -401,39 +411,48 @@ code resolve_include_filename, 'resolve-include-filename'       ; c-addr u -- $a
         next
 endcode
 
-; ### include-filename
-value include_filename, 'include-filename', 0
-
 ; ### included
 code included, 'included'               ; i*x c-addr u -- j*x
 ; FILE
+        _locals_enter
         test    rbx, rbx
         jz .1
 
         _ resolve_include_filename
+        _ coerce_to_string              ; -- string
+
+        ; Store the resolved filename in local0.
         _dup
-        _to include_filename
-        _string_to_zstring
+        _to_local0                      ; -- string
+
+        ; Open the file.
+        _ string_data
         _ readonly
         _ iopen_file                    ; -- fileid ior
 
+        ; Check the I/O result.
         test    rbx, rbx
         poprbx                          ; -- fileid
         jnz .2
 
-        ; file has been opened successfully
-        ; make an entry for it in the FILES wordlist
-        _ include_filename              ; -- fileid $pathname
-        _ link_file                     ; -- fileid nfa
+        ; The file has been opened successfully.
+        ; Store the fileid in local1.
+        _to_local1
 
+        ; Store the old value of SOURCE-FILENAME in local2.
         _ source_filename
-        _tor                            ; -- fileid nfa         r: -- $old-source-filename
-        _to source_filename             ; -- fileid             r: -- $old-source-filename
-        _duptor
+        _to_local2
+
+        ; Make an entry for the new filename in the FILES wordlist.
+        _local0                         ; -- string
+        _ link_file                     ; -- nfa
+
+        _to source_filename             ; --
+        _local1                         ; -- fileid
         _ include_file
-        _rfrom                          ; -- fileid             r: -- $old-source-filename
-        _ close_file                    ; -- ior                r: -- $old-source-filename
-        _drop                           ; REVIEW
+        _local1                         ; -- fileid
+        _ close_file                    ; -- ior
+        _drop                           ; REVIEW safe to ignore ior?
 
         ; store true flag in the parameter field of the FILES wordlist entry
         ; to indicate file was included without error
@@ -441,28 +460,25 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _from source_filename
         _namefrom
         _tobody
-        _ store                         ; --                    r: -- $old-source-filename
+        _store                          ; --                    r: -- $old-source-filename
 
-        ; restore old value of SOURCE-FILENAME
-        _rfrom
+        ; Restore the old value of SOURCE-FILENAME.
+        _local2
         _to source_filename
-        _zeroto include_filename
-        next
+        jmp     .exit
 .1:
         _2drop
-        next
+        jmp     .exit
 .2:
         ; error!
         _drop
-;         _cquote "Unable to open file "
-;         _ include_filename
-;         _ appendstring
         _ os_errno
         _ forth_strerror
         _to msg
-        _zeroto include_filename
         _lit -38                        ; "non-existent file" Forth 2012 Table 9.1
         _ throw
+.exit:
+        _locals_leave
         next
 endcode
 
