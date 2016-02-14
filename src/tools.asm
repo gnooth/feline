@@ -249,8 +249,7 @@ code break, 'break'                     ; --
         _fetch
         _zero
         _ set_input
-        _zero
-        _to source_filename
+        _zeroto source_filename
         _lit interpret_xt
         _ catch
         _ ?dup
