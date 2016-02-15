@@ -649,6 +649,49 @@ code to_string, '>string'               ; c-addr u -- string
 
 endcode
 
+; ### <transient-string>
+code new_transient_string, '<transient-string>' ; capacity -- string
+
+; locals:
+%define capacity        local0
+%define string          local1
+
+        _locals_enter                   ; -- capacity
+        popd    capacity                ; --
+
+        _lit 16
+        pushd capacity
+        _oneplus                        ; terminal null byte
+        _plus                           ; -- size
+        _dup
+        _ tsb_alloc                     ; -- size string
+        popd    string                  ; -- size
+        pushd   string                  ; -- size string
+        _swap                           ; -- string size
+        _ erase                         ; --
+        _ OBJECT_TYPE_SIMPLE_STRING
+        pushd   string
+        _ set_object_type               ; --
+
+        _lit STRING_TRANSIENT
+        pushd   string
+        _ set_object_flags              ; --
+
+        pushd   capacity
+        pushd   string
+        _ set_string_length             ; --
+
+        pushd   string                  ; -- string
+        _locals_leave
+        next
+
+%undef transient?
+%undef u
+%undef c_addr
+%undef string
+
+endcode
+
 ; ### make-simple-string
 code make_simple_string, 'make-simple-string'   ; c-addr u transient? -- string
 
@@ -910,13 +953,32 @@ endcode
 ; ### concat
 ; FIXME this should return a transient simple string
 code concat, 'concat'                   ; string1 string2 -- string3
+        _locals_enter
+
         _ check_string
-        _ string_from                   ; -- s1 c-addr u
-        _ rot                           ; -- c-addr u s1
-        _ string_from
-        _ to_string                     ; -- c-addr u s3
-        _duptor
-        _ string_append_chars           ; --
-        _rfrom
+        _ string_from                   ; -- s1 c-addr2 u2
+        _ rot                           ; -- c-addr2 u2 s1
+        _ string_from                   ; -- c-addr2 u2 c-addr1 u1
+        _lit 2
+        _ pick                          ; -- c-addr2 u2 c-addr1 u1 u2
+        _overplus                       ; -- c-addr2 u2 c-addr1 u1 u2+u1
+        _ new_transient_string          ; -- c-addr2 u2 c-addr1 u1 string3
+        _to_local0                      ; -- c-addr2 u2 c-addr1 u1
+
+        _ tuck                           ; -- c-addr2 u2 u1 c-addr1 u1
+
+        _local0
+        _ string_data                   ; -- c-addr2 u2 u1 c-addr1 u1 data-address
+        _swap                           ; -- c-addr2 u2 u1 c-addr1 data-address u1
+        _ cmove                         ; -- c-addr2 u2 u1
+        _local0
+        _ string_data                   ; -- c-addr2 u2 u1 data-address
+        _plus
+        _swap
+        _ cmove
+
+        _local0                         ; -- string
+
+        _locals_leave
         next
 endcode
