@@ -128,6 +128,8 @@ only forth also definitions
     0 s2 string-data len + c!           \ terminal null byte
     s2                                  \ return address of string object
 ;
+
+0 [if]
 \ destructor
 : ~string ( string -- )
     ?dup if
@@ -135,6 +137,7 @@ only forth also definitions
         -free
     then
 ;
+[then]
 
 : string-set-nth ( char n string -- )
     2dup string-length < if

@@ -23,21 +23,54 @@ file __FILE__
         _fetch
 %endmacro
 
+; Slot 0 is the object header.
+
 ; ### slot 0
 ; returns contents of slot0
-; slot 0 is the object header
 inline slot0, 'slot0'                   ; object-addr -- x
         _slot0
 endinline
 
 ; ### object-header
+; DEPRECATED
 inline object_header, 'object-header'   ; object -- x
         _slot0
 endinline
 
 ; ### object-header!
+; DEPRECATED
 code set_object_header, 'object-header!' ; x object --
         _ store
+        next
+endcode
+
+; The first byte of the object header is the object type.
+
+; ### object-type
+code object_type, 'object-type'         ; object -- type
+        _cfetch
+        next
+endcode
+
+; ### object-type!
+code set_object_type, 'object-type!'    ; type object --
+        _cstore
+        next
+endcode
+
+; The second byte of the object header contains the object flags.
+
+; ### object-flags
+code object_flags, 'object-flags'       ; object -- flags
+        movzx   rbx, byte [rbx + 1]
+        next
+endcode
+
+; ### object-flags!
+code set_object_flags, 'object-flags!'  ; flags object --
+        mov     rax, [rbp]
+        mov     [rbx + 1], al
+        _2drop
         next
 endcode
 
@@ -85,7 +118,7 @@ endcode
 code vector?, 'vector?'                 ; object -- flag
         test    rbx, rbx
         jz      .1
-        _slot0
+        _ object_type
         cmp     rbx, _OBJECT_TYPE_VECTOR
         jnz     .2
         mov     rbx, -1
@@ -157,7 +190,7 @@ code construct_vector, '<vector>'       ; capacity -- vector
         _ erase
         _lit _OBJECT_TYPE_VECTOR
         _rfetch                         ; -- capacity vector            r: -- vector
-        _ set_object_header             ; -- capacity                   r: -- vector
+        _ set_object_type               ; -- capacity                   r: -- vector
         _dup                            ; -- capacity capacity          r: -- vector
         _cells
         _ iallocate                     ; -- capacity data-address              r: -- vector
@@ -297,7 +330,7 @@ code vector_insert_nth, 'vector-insert-nth'     ; elt n vector --
         next
 endcode
 
-; ### vector-remove-nth ( n vector -- )
+; ### vector-remove-nth
 code vector_remove_nth, 'vector-remove-nth'     ; n vector --
         push    r15
         mov     r15, rbx
@@ -410,11 +443,29 @@ endcode
 
 ; Strings
 
+; String flag bits.
+STRING_TRANSIENT        equ     1
+STRING_ALLOCATED         equ     2
+
+; ### string-transient?
+code string_transient?, 'string-transient?' ; string -- flag
+        _ object_flags
+        and     ebx, STRING_TRANSIENT
+        next
+endcode
+
+; ### string-allocated?
+code string_allocated?, 'string-allocated?' ; string -- flag
+        _ object_flags
+        and     ebx, STRING_ALLOCATED
+        next
+endcode
+
 ; ### simple-string?
 code simple_string?, 'simple-string?'   ; object -- flag
         test    rbx, rbx
         jz      .1
-        _slot0
+        _ object_type
         cmp     rbx, _OBJECT_TYPE_SIMPLE_STRING
         jnz     .2
         mov     rbx, -1
@@ -429,7 +480,7 @@ endcode
 code growable_string?, 'growable-string?' ; object -- flag
         test    rbx, rbx
         jz      .1
-        _slot0
+        _ object_type
         cmp     rbx, _OBJECT_TYPE_STRING
         jnz     .2
         mov     rbx, -1
@@ -559,7 +610,11 @@ code to_string, '>string'               ; c-addr u -- string
         _ erase                         ; --
         _ OBJECT_TYPE_STRING
         pushd   string
-        _ set_object_header             ; --
+        _ set_object_type               ; --
+
+        _lit STRING_ALLOCATED
+        pushd   string
+        _ set_object_flags              ; --
 
         pushd   u
         _oneplus                        ; terminal null byte
@@ -625,7 +680,16 @@ code make_simple_string, 'make-simple-string'   ; c-addr u transient? -- string
         _ erase                         ; --
         _ OBJECT_TYPE_SIMPLE_STRING
         pushd   string
-        _ set_object_header             ; --
+        _ set_object_type               ; --
+
+        pushd   transient?
+        _if .2
+        _lit STRING_TRANSIENT
+        _else .2
+        _lit STRING_ALLOCATED
+        _then .2
+        pushd   string
+        _ set_object_flags              ; --
 
         pushd   u
         pushd   string
@@ -656,7 +720,7 @@ code to_simple_string, '>simple-string' ; c-addr u -- string
 endcode
 
 ; ### simple-string>
-code simple_string_from, 'simple-string>'       ; simple-string -- c-addr u
+code simple_string_from, 'simple-string>' ; simple-string -- c-addr u
         _duptor
         _ simple_string_data
         _rfrom
@@ -666,8 +730,7 @@ endcode
 
 ; ### >transient-string
 code to_transient_string, '>transient-string'   ; c-addr u -- string
-; A transient string is a simple string with storage allocated in the
-; transient string buffer.
+; A transient string is a simple string with storage in the transient string buffer.
         _true                           ; transient
         _ make_simple_string
         next
@@ -703,12 +766,39 @@ code coerce_to_string, 'coerce-to-string'
         next
 endcode
 
-        ; ### string>
+; ### string>
 code string_from, 'string>'             ; string -- c-addr u
         _duptor
         _ string_data                   ; -- string data-address
         _rfrom
         _ string_length
+        next
+endcode
+
+; ### ~string
+code delete_string, '~string'           ; string --
+        _ check_string
+
+        _dup
+        _zeq_if .1
+        _drop
+        _return
+        _then .1
+
+        _dup
+        _ string_allocated?
+        _if .2
+        _dup
+        _ growable_string?
+        _if .3
+        _dup
+        _ string_data
+        _ ifree
+        _then .3
+        _ ifree
+        _else .2
+        _drop
+        _then .2
         next
 endcode
 
@@ -818,6 +908,7 @@ code string_append_chars, 'string-append-chars' ; addr len string --
 endcode
 
 ; ### concat
+; FIXME this should return a transient simple string
 code concat, 'concat'                   ; string1 string2 -- string3
         _ check_string
         _ string_from                   ; -- s1 c-addr u
