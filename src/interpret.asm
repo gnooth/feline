@@ -93,7 +93,7 @@ code compile_do_defined, 'compile-do-defined'   ; xt flag --
 endcode
 
 ; ### character-literal?
-code character_literal?, 'character-literal?'   ; $addr -- char true | $addr false
+code character_literal?, 'character-literal?' ; $addr -- char true | $addr false
         mov     al, [rbx + 1]           ; first char of string in al
         cmp     al, $27                 ; single quote char
         je     .1
@@ -124,37 +124,78 @@ code character_literal?, 'character-literal?'   ; $addr -- char true | $addr fal
         next
 endcode
 
+; ### string-literal?
+code string_literal?, 'string-literal?' ; $addr -- c-addr u true | $addr false
+        mov     al, [rbx + 1]           ; first char of string in al
+        cmp     al, '"'
+        je     .1
+        pushrbx
+        xor     ebx, ebx
+        _return
+.1:
+        ; first char is "
+        _drop
+        _ word_start
+        _ source
+        _drop
+        _minus
+        _oneplus                        ; skip past opening " char
+        _to toin
+        _lit '"'
+        _ parse                         ; -- c-addr u
+        _true                           ; -- string true
+        next
+endcode
+
 ; ### interpret-do-literal
-code interpret_do_literal, 'interpret-do-literal'       ; $addr -- n | d
+code interpret_do_literal, 'interpret-do-literal' ; $addr -- n | d
         _ character_literal?
         _if .1
         _return
         _then .1
+
+        _ string_literal?
+        _if .2
+        _ copy_to_transient_string
+        _return
+        _then .2
+
         _ number
         _ double?
-        _zeq_if .2
+        _zeq_if .3
         _drop
-        _then .2
+        _then .3
         next
 endcode
 
 ; ### compile-do-literal
-code compile_do_literal, 'compile-do-literal'           ; $addr --
+code compile_do_literal, 'compile-do-literal' ; $addr --
         _ character_literal?
         _if .1
         _ literal
         _return
         _then .1
+
+        _ string_literal?
+        _if .2                          ; -- c-addr u
+        _ align_data
+        _ here
+        _tor
+        _ compile_string_literal
+        _rfrom
+        _ literal
+        _return
+        _then .2
+
         _ number
-;         _ flush_compilation_queue
         _ double?
-        _if .2
+        _if .3
         _ flush_compilation_queue
         _ twoliteral
-        _else .2
+        _else .3
         _drop
         _ literal
-        _then .2
+        _then .3
         next
 endcode
 
