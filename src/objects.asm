@@ -769,6 +769,23 @@ code simple_string_from, 'simple-string>' ; simple-string -- c-addr u
         next
 endcode
 
+; ### compile-string-literal
+code compile_string_literal, 'compile-string-literal' ; c-addr u --
+        ; object header
+        _lit _OBJECT_TYPE_SIMPLE_STRING
+        _ comma
+        ; length
+        _dup
+        _ comma                         ; -- c-addr u
+
+        _ here                          ; -- c-addr u here
+        _over                           ; -- c-addr u here u
+        _oneplus                        ; -- c-addr u here u+1
+        _ allot
+        _ zplace
+        next
+endcode
+
 ; ### >transient-string
 code copy_to_transient_string, '>transient-string' ; c-addr u -- string
 ; A transient string is a simple string with storage in the transient string buffer.
