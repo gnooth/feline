@@ -383,15 +383,10 @@ inline zeq, '0='
 endinline
 
 ; ### 0<>
-code zne, '0<>'
+inline zne, '0<>'
 ; CORE EXT
-        or      rbx, rbx
-        mov     ebx, 0
-        jz      .1
-        dec     rbx
-.1:
-        next
-endcode
+        _zne
+endinline
 
 ; ### 0>
 inline zgt, '0>'

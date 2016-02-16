@@ -163,6 +163,13 @@
         sbb     rbx, rbx
 %endmacro
 
+%macro  _zne 0                          ; 0<>
+; Win32Forth
+        cmp     rbx, 1
+        sbb     rbx, rbx
+        not     rbx
+%endmacro
+
 %macro  _zgt 0                          ; 0>
         test    rbx, rbx
         setg    bl
