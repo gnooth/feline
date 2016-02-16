@@ -376,6 +376,22 @@ section .text
         call    parenabortquote
 %endmacro
 
+%macro  _quote 1                        ; -- simple-string
+section .data
+%strlen len     %1
+%%string:
+        db      _OBJECT_TYPE_SIMPLE_STRING
+        db      0                       ; flags byte
+        dw      0                       ; not used
+        dd      0                       ; not used
+        dq      len                     ; length
+        db      %1                      ; string
+        db      0                       ; null byte at end
+section .text
+        pushrbx
+        mov     rbx, %%string
+%endmacro
+
 %macro  _cquote 1                       ; -- c-addr
 section .data
 %strlen len     %1
