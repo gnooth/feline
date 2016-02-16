@@ -697,15 +697,6 @@ inline string_first_char, 'string-first-char'   ; $addr -- char
         movzx   rbx, byte [rbx + 1]
 endinline
 
-; ### string-last-char
-code string_last_char, 'string-last-char'       ; $addr -- char
-; returns last char of string (0 if the string is empty)
-        movzx   rax, byte [rbx]         ; length in rax
-        add     rbx, rax
-        movzx   rbx, byte [rbx]
-        next
-endcode
-
 ; ### -trailing
 code dashtrailing, '-trailing'          ; c-addr u1 -- c-addr u2
 ; STRING

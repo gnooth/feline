@@ -789,21 +789,21 @@ endcode
 
 ; ### coerce-to-string
 ; REVIEW transitional
-code coerce_to_string, 'coerce-to-string'
+code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
         _dup
         _lit 256
         _ ult
-        _if .1
+        _if .1                          ; -- c-addr u
         _ to_transient_string
         _return
         _then .1
 
         _dup
         _ string?
-        _if .2
+        _if .2                          ; -- string
         _return
         _then .2
-
+                                        ; -- $addr
         _count
         _ to_transient_string
         next
@@ -900,6 +900,27 @@ code dot_string, '.string'              ; string | $addr --
         next
 endcode
 
+; ### string-last-char
+code string_last_char, 'string-last-char' ; string -- char
+; Returns last character of string (0 if the string is empty).
+        _ coerce_to_string
+
+        _dup
+        _ string_length
+        _dup
+        _zeq_if .1
+        _2drop
+        _zero
+        _else .1
+        _ swap
+        _ string_data
+        _plus
+        _oneminus
+        _cfetch
+        _then .1
+        next
+endcode
+
 ; ### string-append-chars
 code string_append_chars, 'string-append-chars' ; addr len string --
 
@@ -951,7 +972,6 @@ code string_append_chars, 'string-append-chars' ; addr len string --
 endcode
 
 ; ### concat
-; FIXME this should return a transient simple string
 code concat, 'concat'                   ; string1 string2 -- string3
         _locals_enter
 
