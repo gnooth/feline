@@ -168,9 +168,13 @@ code forth_word, 'word'                 ; char "<chars>ccc<char>" -- c-addr
         next
 endcode
 
+value word_start, 'word-start', 0
+
 ; ### blword
 code blword, 'blword'                   ; "<chars>ccc<char>" -- c-addr
-        _ parse_name
+        _ parse_name                    ; -- c-addr u
+        _over
+        _to word_start
         _ word_buffer
         _duptor
         _ place
