@@ -590,7 +590,7 @@ code set_string_capacity, 'string-capacity!'    ; capacity string --
 endcode
 
 ; ### >string
-code to_string, '>string'               ; c-addr u -- string
+code copy_to_string, '>string'          ; c-addr u -- string
 
 ; locals:
 %define u      local0
@@ -756,7 +756,7 @@ code make_simple_string, 'make-simple-string'   ; c-addr u transient? -- string
 endcode
 
 ; ### >simple-string
-code to_simple_string, '>simple-string' ; c-addr u -- string
+code copy_to_simple_string, '>simple-string' ; c-addr u -- string
         _false                          ; not transient
         _ make_simple_string
         next
@@ -772,7 +772,7 @@ code simple_string_from, 'simple-string>' ; simple-string -- c-addr u
 endcode
 
 ; ### >transient-string
-code to_transient_string, '>transient-string'   ; c-addr u -- string
+code copy_to_transient_string, '>transient-string' ; c-addr u -- string
 ; A transient string is a simple string with storage in the transient string buffer.
         _true                           ; transient
         _ make_simple_string
@@ -782,7 +782,7 @@ endcode
 ; ### as-c-string
 code as_c_string, 'as-c-string'         ; c-addr u -- zaddr
 ; Returns a pointer to a null-terminated string in the transient string buffer.
-        _ to_transient_string
+        _ copy_to_transient_string
         _ simple_string_data
         next
 endcode
@@ -794,7 +794,7 @@ code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
         _lit 256
         _ ult
         _if .1                          ; -- c-addr u
-        _ to_transient_string
+        _ copy_to_transient_string
         _return
         _then .1
 
@@ -805,7 +805,7 @@ code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
         _then .2
                                         ; -- $addr
         _count
-        _ to_transient_string
+        _ copy_to_transient_string
         next
 endcode
 

@@ -344,7 +344,7 @@ code add_source_dir, 'add-source-dir'   ; c-addr u --
         _ construct_vector
         _to source_dirs
         _then .1
-        _ to_string                     ; -- string
+        _ copy_to_simple_string         ; -- string
         _from source_dirs
         _ vector_push
         next
