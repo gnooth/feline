@@ -443,10 +443,6 @@ endcode
 
 ; Strings
 
-; String flag bits.
-STRING_TRANSIENT        equ     1
-STRING_ALLOCATED         equ     2
-
 ; ### string-transient?
 code string_transient?, 'string-transient?' ; string -- flag
         _ object_flags

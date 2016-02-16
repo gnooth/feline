@@ -115,6 +115,10 @@ _OBJECT_TYPE_VECTOR             equ 1
 _OBJECT_TYPE_STRING             equ 2
 _OBJECT_TYPE_SIMPLE_STRING      equ 3
 
+; String flag bits.
+STRING_TRANSIENT                equ 1
+STRING_ALLOCATED                equ 2
+
 %define link    0
 
 %macro  name_token 2                    ; label, name
