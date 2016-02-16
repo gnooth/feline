@@ -498,26 +498,33 @@ constant path_separator_char, 'path-separator-char', '/'
 %endif
 
 ; ### filename-is-absolute
-code filename_is_absolute, 'filename-is-absolute'       ; $filename -- flag
+code filename_is_absolute, 'filename-is-absolute' ; string -- flag
+        _ check_string
 %ifdef WIN64
         _dup
-        _ string_first_char
+;         _ string_first_char
+        _ string_data
+        _cfetch
         _ path_separator_char
-        _ equal
-        _if .1                          ; -- $filename
+        _equal
+        _if .1                          ; -- string
         mov     rbx, -1
         _return
         _then .1
 
-        _dupcfetch                      ; -- $filename length
+        _dup
+        _ string_length                 ; -- string length
         _lit 2
         _ ge
-        _if .2                          ; -- $filename
+        _if .2                          ; -- string
         _lit 1
-        _ swap                          ; -- 1 $filename
-        _ string_nth
+        _ swap                          ; -- 1 string
+;         _ string_nth
+        _ string_data
+        _plus
+        _cfetch
         _lit ':'
-        _ equal
+        _equal
         _return
         _then .2
 
@@ -525,16 +532,19 @@ code filename_is_absolute, 'filename-is-absolute'       ; $filename -- flag
         _false
 %else
         ; Linux
-        _ string_first_char
+;         _ string_first_char
+        _ string_data
+        _cfetch
         _ path_separator_char
-        _ equal
+        _equal
 %endif
         next
 endcode
 
 ; ### path-append-filename
 code path_append_filename, 'path-append-filename'       ; $path $filename -- $pathname
-        _ dup
+        _dup
+        _ coerce_to_string
         _ filename_is_absolute
         _if .1
         _nip
@@ -561,8 +571,7 @@ code path_append_filename, 'path-append-filename'       ; $path $filename -- $pa
 endcode
 
 ; ### system-file-pathname
-code system_file_pathname, 'system-file-pathname'
-; c-addr1 u1 -- c-addr2 u2
+code system_file_pathname, 'system-file-pathname' ; c-addr1 u1 -- c-addr2 u2
         _ copy_to_temp_string           ; -- $addr1
         _ feline_home                   ; -- $addr1 $addr2
         _cquote "src"
