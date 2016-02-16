@@ -14,8 +14,8 @@ s" this is a test" >transient-string to s1
 : test1
     s1 simple-string? assert
     s1 string? assert
-    s1 string-transient? assert
-    s1 string-allocated? 0= assert
+    s1 transient? assert
+    s1 allocated? 0= assert
     s1 string-length 14 = assert
     s1 check-string string-length 14 = assert
     s1 simple-string> s" this is a test" str= assert
@@ -29,8 +29,8 @@ s" another test" >transient-string to s2
 : test2
     s2 simple-string? assert
     s2 string? assert
-    s1 string-transient? assert
-    s1 string-allocated? 0= assert
+    s1 transient? assert
+    s1 allocated? 0= assert
     s2 string-length 12 = assert
     s2 check-string string-length 12 = assert
     s2 simple-string> s" another test" str= assert
@@ -48,8 +48,8 @@ s"  and " >transient-string to s3
     s1 s3 concat to s4
     s4 string? assert
     s4 simple-string? assert
-    s4 string-transient? assert
-    s4 string-allocated? 0= assert
+    s4 transient? assert
+    s4 allocated? 0= assert
     s4 string> s" this is a test and " str= assert
     s4 ~string
     0 to s4
@@ -67,8 +67,8 @@ test3
         s1 s3 concat s2 concat to s4
         s4 string? assert
         s4 simple-string? assert
-        s4 string-transient? assert
-        s4 string-allocated? 0= assert
+        s4 transient? assert
+        s4 allocated? 0= assert
         s4 string> s" this is a test and another test" str= assert
         s" x" >string s4 over concat ~string ~string
         s1 ~string

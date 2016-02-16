@@ -443,17 +443,19 @@ endcode
 
 ; Strings
 
-; ### string-transient?
-code string_transient?, 'string-transient?' ; string -- flag
+; ### transient?
+code transient?, 'transient?'           ; string -- flag
         _ object_flags
         and     ebx, STRING_TRANSIENT
+        _zne
         next
 endcode
 
-; ### string-allocated?
-code string_allocated?, 'string-allocated?' ; string -- flag
+; ### allocated?
+code allocated?, 'allocated?'           ; string -- flag
         _ object_flags
         and     ebx, STRING_ALLOCATED
+        _zne
         next
 endcode
 
@@ -825,7 +827,7 @@ code delete_string, '~string'           ; string --
         _then .1
 
         _dup
-        _ string_allocated?
+        _ allocated?
         _if .2
         _dup
         _ growable_string?
