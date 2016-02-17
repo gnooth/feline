@@ -268,23 +268,24 @@ code link_file, 'link-file'             ; string -- nfa
 endcode
 
 ; ### dirname
-code forth_dirname, 'dirname'           ; $filename -- $dirname | 0
-        _ count                         ; -- c-addr u
+code forth_dirname, 'dirname'           ; string1 -- string2 | 0
+        _ check_string
+        _ string_from                   ; -- c-addr u
         _begin .1
-        _ dup
+        _dup
         _while .1
         _oneminus
-        _ twodup
-        _ plus
+        _twodup
+        _plus
         _cfetch
         _ path_separator_char
-        _ equal
+        _equal
         _if .2
         _dup
         _zeq_if .3
         _oneplus
         _then .3
-        _ copy_to_temp_string
+        _ copy_to_transient_string
         _return
         _then .2
         _repeat .1
@@ -358,9 +359,13 @@ code resolve_include_filename, 'resolve-include-filename'       ; c-addr u -- $a
         _ source_filename
         _?dup
         _if .1
+        _ coerce_to_string
         _ forth_dirname
         _?dup
-        _if .2                          ; -- $filename $dirname
+        _if .2                          ; -- $filename directory-string
+        _ check_string
+        _ string_from
+        _ copy_to_temp_string
         _swap
         _ path_append_filename          ; -- $pathname
         _then .2
