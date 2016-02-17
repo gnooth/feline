@@ -25,8 +25,14 @@ inline cstore, 'c!'                     ; c addr --
         _cstore
 endinline
 
+; ### w!
+; 16-bit store
+inline wstore, 'w!'                     ; w addr --
+        _wstore
+endinline
+
 ; ### l!
-inline lstore, 'l!'                       ; l addr --
+inline lstore, 'l!'                     ; l addr --
         _lstore
 endinline
 

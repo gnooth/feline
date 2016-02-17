@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ endinline
 
 ; ### c@s
 inline cfetchs, 'c@s'                   ; c-addr -- n
-        movsx   rbx, byte [rbx]         ; n is the sign-extended 8-bit value stored at c_addr
+        movsx   rbx, byte [rbx]         ; n is the sign-extended 8-bit value stored at c-addr
 endinline
 
 ; ### c@+
@@ -52,6 +52,17 @@ code cfetchplus, 'c@+'                  ; c-addr1 -- c-addr2 char
         next
 endcode
 
+; ### w@
+; 16-bit fetch
+inline wfetch, 'w@'
+        _wfetch
+endinline
+
+; ### w@s
+inline wfetchs, 'w@s'                   ; c-addr -- n
+        movsx   rbx, word [rbx]         ; n is the sign-extended 16-bit value stored at c-addr
+endinline
+
 ; ### l@
 inline lfetch, 'l@'                     ; 32-bit fetch
         _lfetch
@@ -59,7 +70,7 @@ endinline
 
 ; ### l@s
 inline lfetchs, 'l@s'                   ; c-addr -- n
-        movsx   rbx, dword [rbx]        ; n is the sign-extended 32-bit value stored at c_addr
+        movsx   rbx, dword [rbx]        ; n is the sign-extended 32-bit value stored at c-addr
 endinline
 
 ; ### 2@

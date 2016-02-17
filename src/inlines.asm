@@ -44,6 +44,10 @@
         movzx   rbx, byte [rbx]
 %endmacro
 
+%macro  _wfetch 0                       ; W@
+        movzx   rbx, word [rbx]
+%endmacro
+
 %macro  _lfetch 0                       ; L@
         mov     ebx, [rbx]
 %endmacro
@@ -58,6 +62,13 @@
 %macro  _cstore 0                       ; C!
         mov     al, [rbp]
         mov     [rbx], al
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+%endmacro
+
+%macro  _wstore 0                       ; W!
+        mov     ax, [rbp]
+        mov     [rbx], ax
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
