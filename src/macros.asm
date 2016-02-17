@@ -380,9 +380,9 @@ section .text
 section .data
 %strlen len     %1
 %%string:
-        db      _OBJECT_TYPE_SIMPLE_STRING
+        dw      _OBJECT_TYPE_SIMPLE_STRING
         db      0                       ; flags byte
-        dw      0                       ; not used
+        db      0                       ; not used
         dd      0                       ; not used
         dq      len                     ; length
         db      %1                      ; string

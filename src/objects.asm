@@ -44,32 +44,39 @@ code set_object_header, 'object-header!' ; x object --
         next
 endcode
 
-; The first byte of the object header is the object type.
+; The first word (16 bits) of the object header is the object type.
+
+; Use the first word here and not just the first byte so that the header is
+; less likely to be mistaken for the start of a legacy counted string. The
+; first byte of a counted string might take on any value at all, but normally
+; the second byte won't be zero unless the first byte is also zero. This gives
+; us 255 distinct object types (1-255) before we need to set any bits in the
+; second byte.
 
 ; ### object-type
 code object_type, 'object-type'         ; object -- type
-        _cfetch
+        _wfetch                         ; 16 bits
         next
 endcode
 
 ; ### object-type!
 code set_object_type, 'object-type!'    ; type object --
-        _cstore
+        _wstore                         ; 16 bits
         next
 endcode
 
-; The second byte of the object header contains the object flags.
+; The third byte of the object header contains the object flags.
 
 ; ### object-flags
 code object_flags, 'object-flags'       ; object -- flags
-        movzx   rbx, byte [rbx + 1]
+        movzx   rbx, byte [rbx + 2]
         next
 endcode
 
 ; ### object-flags!
 code set_object_flags, 'object-flags!'  ; flags object --
         mov     rax, [rbp]
-        mov     [rbx + 1], al
+        mov     [rbx + 2], al
         _2drop
         next
 endcode
