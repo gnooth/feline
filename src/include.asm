@@ -295,7 +295,7 @@ code forth_dirname, 'dirname'           ; string1 -- string2 | 0
 endcode
 
 ; ### tilde-expand-filename
-code tilde_expand_filename, 'tilde-expand-filename'     ; $addr1 -- $addr2
+code tilde_expand_filename, 'tilde-expand-filename' ; $addr1 -- $addr2
         _dup
         _ string_first_char
         _lit '~'
@@ -524,10 +524,7 @@ code filename_is_absolute, 'filename-is-absolute' ; string -- flag
         _if .2                          ; -- string
         _lit 1
         _ swap                          ; -- 1 string
-;         _ string_nth
-        _ string_data
-        _plus
-        _cfetch
+        _ string_nth
         _lit ':'
         _equal
         _return
@@ -547,7 +544,7 @@ code filename_is_absolute, 'filename-is-absolute' ; string -- flag
 endcode
 
 ; ### path-append-filename
-code path_append_filename, 'path-append-filename'       ; $path $filename -- $pathname
+code path_append_filename, 'path-append-filename' ; $path $filename -- $pathname
         _dup
         _ coerce_to_string
         _ filename_is_absolute
