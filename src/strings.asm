@@ -670,24 +670,6 @@ inline count, 'count'                   ; c-addr -- c-addr+1 u
         _count
 endinline
 
-; ### string-nth
-code string_nth, 'string-nth'           ; index $addr -- char
-; name from Factor, but slightly different behavior
-; returns character at index, or 0 if index is out of range
-        movzx   rax, byte [rbx]         ; length in rax
-        mov     rdx, [rbp]              ; index in rdx
-        lea     rbp, [rbp + BYTES_PER_CELL]     ; adjust stack
-        cmp     rax, rdx
-        jle     .1
-        mov     al, [rbx + rdx + 1]
-        mov     rbx, rax
-        ret
-.1:
-        ; index out of range
-        xor     rbx, rbx
-        next
-endcode
-
 ; ### string-first-char
 inline string_first_char, 'string-first-char'   ; $addr -- char
 ; returns char at index 0 (which is 0 if it's an empty string)
@@ -708,13 +690,3 @@ code dashtrailing, '-trailing'          ; c-addr u1 -- c-addr u2
 .2:
         next
 endcode
-
-%if 0
-code search, 'search'                   ; c-addr1 u1 c-addr2 u2 -- c-addr3 u3 flag
-; STRING
-; "Search the string specified by c-addr1 u1 for the string specified by c-addr2 u2.
-; If flag is true, a match was found at c-addr3 with u3 characters remaining.
-; If flag is false there was no match and c-addr3 is c-addr1 and u3 is u1."
-        next
-endcode
-%endif

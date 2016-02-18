@@ -922,6 +922,28 @@ code dot_string, '.string'              ; string | $addr --
         next
 endcode
 
+; ### string-nth
+code string_nth, 'string-nth'           ; index string -- char
+; REVIEW
+; Name from Factor, but slightly different behavior.
+; Return character at index, or 0 if index is out of range.
+        _ check_string
+
+        _twodup
+        _ string_length
+        _ ult
+        _if .1
+        _ string_data
+        _swap
+        _plus
+        _cfetch
+        _else .1
+        _2drop
+        _zero
+        _then .1
+        next
+endcode
+
 ; ### string-last-char
 code string_last_char, 'string-last-char' ; string -- char
 ; Returns last character of string (0 if the string is empty).
