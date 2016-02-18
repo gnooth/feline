@@ -60,7 +60,7 @@ test3
 
 : test4
     10000 0 do
-        cr i 6 .r space tsb-next h.
+\         cr i 6 .r space tsb-next h.
         s" this is a test" >transient-string to s1
         s" another test" >transient-string to s2
         s"  and " >transient-string to s3
@@ -83,5 +83,15 @@ test3
 ;
 
 test4
+
+: test5
+    "this is a test" local s
+    0 s string-nth 't' = assert
+    \ index out of range returns 0
+    42 s string-nth 0= assert
+    -1 s string-nth 0= assert
+;
+
+test5
 
 cr .( Reached end of string tests)
