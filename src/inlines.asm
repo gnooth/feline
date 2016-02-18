@@ -252,11 +252,17 @@
         _zlt
 %endmacro
 
-%macro  _count 0                        ; COUNT
+%macro  _count 0                        ; count
         mov     al, [rbx]
         inc     rbx
         pushrbx
         movzx   rbx, al
+%endmacro
+
+%macro  _slashstring 0                  ; /string
+        sub     [rbp], rbx
+        add     [rbp + BYTES_PER_CELL], rbx
+        poprbx
 %endmacro
 
 %macro  _twoover 0                      ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2

@@ -324,7 +324,7 @@ code tilde_expand_filename, 'tilde-expand-filename'     ; $addr1 -- $addr2
         _swap
         _count
         _lit 1
-        _ slashstring
+        _slashstring
         _ copy_to_temp_string
         _ appendstring
         _return

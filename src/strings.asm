@@ -659,13 +659,10 @@ code istrequal, 'istr='                 ; addr1 len1 addr2 len2 -- flag
 endcode
 
 ; ### /string
-code slashstring, '/string'             ; c-addr1 u1 n -- c-addr2 u2
+inline slashstring, '/string'           ; c-addr1 u1 n -- c-addr2 u2
 ; STRING 17.6.1.0245
-        sub     [rbp], rbx
-        add     [rbp + BYTES_PER_CELL], rbx
-        poprbx
-        next
-endcode
+        _slashstring
+endinline
 
 ; ### count
 inline count, 'count'                   ; c-addr -- c-addr+1 u

@@ -122,7 +122,7 @@ code tonumber, '>number'                ; ud1 c-addr1 u1 -- ud2 c-addr2 u2
         _ dplus
         _ twoswap
         _lit 1
-        _ slashstring
+        _slashstring
         _repeat .1
         next
 endcode
@@ -154,7 +154,7 @@ code number?, 'number?'                 ; c-addr u -- d flag
         _lit -1
         _to negative?
         _lit 1
-        _ slashstring
+        _slashstring
         _else .1
         _clear negative?
         _then .1
@@ -218,7 +218,7 @@ code maybe_change_base, 'maybe-change-base'     ; c-addr1 u1 -- c-addr2 u2
         ret
 .5:
         mov     ebx, 1
-        _ slashstring
+        _slashstring
         next
 endcode
 

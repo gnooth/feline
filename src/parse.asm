@@ -46,7 +46,7 @@ code skip_whitespace, 'skip-whitespace' ; c-addr1 u1 -- c-addr2 u2
         _return
         _then .2
         _lit 1
-        _ slashstring
+        _slashstring
         _repeat .1
         next
 endcode
@@ -65,7 +65,7 @@ code scan_to_whitespace, 'scan-to-whitespace'   ; c-addr1 u1 -- c-addr2 u2
         _return
         _then .2
         _lit 1
-        _ slashstring
+        _slashstring
         _repeat .1
         next
 endcode
@@ -74,7 +74,7 @@ endcode
 code slashsource, '/source'             ; -- c-addr u
         _ source
         _from toin
-        _ slashstring
+        _slashstring
         next
 endcode
 
@@ -107,7 +107,7 @@ code parse_name, 'parse-name'           ; <spaces>name -- c-addr u
         _ source                        ; -- source-addr source-length
         _ tuck                          ; -- source-length source-addr source-length
         _from toin                      ; -- source-length source-addr source-length >in
-        _ slashstring                   ; -- source-length addr1 #left
+        _slashstring                    ; -- source-length addr1 #left
         _ skip_whitespace               ; -- source-length start-of-word #left
         _overswap                       ; -- source-length start-of-word start-of-word #left
         _ scan_to_whitespace            ; -- source-length start-of-word end-of-word #left
