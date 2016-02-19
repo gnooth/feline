@@ -13,13 +13,13 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-: (process-init-file) ( -- )
-    user-home $" .init.feline" path-append-filename
-    dup count file-exists? if
-        count included
+: init-file-included ( -- )
+    user-home ".init.feline" path-append
+    dup path-file-exists? if
+        string> included
     else
         drop
     then
 ;
 
-' (process-init-file) is process-init-file
+latest-xt is process-init-file
