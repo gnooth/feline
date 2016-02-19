@@ -296,6 +296,16 @@ code file_exists, 'file-exists?'        ; c-addr u -- -1 | 0
         next
 endcode
 
+; ### path-file-exists?
+code path_file_exists?, 'path-file-exists?' ; string -- flag
+        _ check_string
+        _ string_from
+        _ file_status
+        _nip
+        _zeq
+        next
+endcode
+
 extern os_open_file
 
 ; ### (open-file)
