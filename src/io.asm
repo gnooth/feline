@@ -831,20 +831,6 @@ code cd, 'cd'
         next
 endcode
 
-section .data
-feline_home_data:
-%strlen len     FELINE_HOME
-        db      len
-        db      FELINE_HOME
-        db      0
-
-; ### feline-home
-code feline_home, 'feline-home'         ; -- $addr
-        pushrbx
-        mov     ebx, feline_home_data   ; assumes 32-bit address
-        next
-endcode
-
 extern os_realpath
 
 ; ### canonical-path

@@ -588,11 +588,16 @@ code path_append, 'path-append'         ; string1 string2 -- string3
         next
 endcode
 
+; ### feline-home
+code feline_home, 'feline-home'         ; -- string
+        _quote FELINE_HOME
+        next
+endcode
+
 ; ### system-file-pathname
 code system_file_pathname, 'system-file-pathname' ; c-addr1 u1 -- c-addr2 u2
         _ copy_to_transient_string
         _ feline_home
-        _ coerce_to_string
         _quote "src"
         _ path_append
         _swap

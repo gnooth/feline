@@ -35,7 +35,7 @@
     0 local buffer
     0 local length
 
-    feline-home $" build" path-append-filename count
+    feline-home "build" path-append string>
     r/o open-file                       \ -- fileid ior
     if
         drop exit
