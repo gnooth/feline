@@ -71,26 +71,25 @@ code pad, 'pad'                         ; -- c-addr
         next
 endcode
 
-value user_home_string, '$user-home', 0
+; ### user-home-string
+value user_home_string, 'user-home-string', 0
 
 ; ### user-home
-code user_home, 'user-home'             ; -- $addr
+code user_home, 'user-home'             ; -- string
         _ user_home_string
         _zeq_if .1
 %ifdef WIN64
-        _squote "USERPROFILE"
+        _quote "USERPROFILE"
 %else
-        _squote "HOME"
+        _quote "HOME"
 %endif
-        _ getenv_                       ; -- c-addr u
-        _dup
-        _lit 255
-        _ gt
-        _abortq "user-home pathname too long"
+        _ get_environment_variable      ; -- string
         _ here
         _tor
-        _ stringcomma
+        _ string_from
+        _ compile_string_literal
         _rfrom
+        _ check_string
         _to user_home_string
         _then .1
         _ user_home_string

@@ -766,9 +766,10 @@ endcode
 
 extern os_getenv
 
-; ### getenv
-code getenv_, 'getenv'                  ; c-addr1 u1 -- c-addr2 u2
-        _ as_c_string
+; ### get-environment-variable
+code get_environment_variable, 'get-environment-variable' ; name -- value
+        _ check_string
+        _ string_data
 %ifdef WIN64
         popd    rcx
 %else
@@ -781,9 +782,11 @@ code getenv_, 'getenv'                  ; c-addr1 u1 -- c-addr2 u2
         test    rbx, rbx
         jz      .1
         _ zstrlen
-        next
+        jmp     .2
 .1:
         xor     ebx, ebx
+.2:
+        _ copy_to_transient_string
         next
 endcode
 
