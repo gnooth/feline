@@ -544,18 +544,6 @@ code filename_is_absolute, 'filename-is-absolute' ; string -- flag
         next
 endcode
 
-; ### path-append-filename
-code path_append_filename, 'path-append-filename' ; $path $filename -- $pathname
-        _ coerce_to_string
-        _ swap
-        _ coerce_to_string
-        _ swap
-        _ path_append
-        _ string_from
-        _ copy_to_temp_string
-        next
-endcode
-
 ; ### path-append
 code path_append, 'path-append'         ; string1 string2 -- string3
         _ check_string
