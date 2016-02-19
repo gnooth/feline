@@ -802,9 +802,10 @@ endcode
 extern os_chdir
 
 ; ### set-current-directory
-code set_current_directory, 'set-current-directory'     ; $addr -- flag
-; returns true on success, 0 on failure
-        _string_to_zstring
+code set_current_directory, 'set-current-directory' ; string -- flag
+; Return true on success, 0 on failure.
+        _ check_string
+        _ string_data
 %ifdef WIN64
         mov     rcx, rbx
 %else
@@ -817,14 +818,14 @@ endcode
 
 ; ### cd
 code cd, 'cd'
-        _ blword
-        _dupcfetch
-        _if .1
+        _ parse_name                    ; -- c-addr u
+        _dup_if .1
+        _ copy_to_transient_string
         _ tilde_expand_filename
         _ set_current_directory
-        _drop
+        _drop                           ; REVIEW error message?
         _else .1
-        _drop
+        _2drop
         _ current_directory
         _ counttype
         _then .1

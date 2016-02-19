@@ -670,12 +670,6 @@ inline count, 'count'                   ; c-addr -- c-addr+1 u
         _count
 endinline
 
-; ### string-first-char
-inline string_first_char, 'string-first-char'   ; $addr -- char
-; returns char at index 0 (which is 0 if it's an empty string)
-        movzx   rbx, byte [rbx + 1]
-endinline
-
 ; ### -trailing
 code dashtrailing, '-trailing'          ; c-addr u1 -- c-addr u2
 ; STRING

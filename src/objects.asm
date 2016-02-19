@@ -944,6 +944,16 @@ code string_nth, 'string-nth'           ; index string -- char
         next
 endcode
 
+; ### string-first-char
+code string_first_char, 'string-first-char' ; string -- char
+; Returns first character of string (0 if the string is empty).
+        _ coerce_to_string
+        _zero
+        _swap
+        _ string_nth
+        next
+endcode
+
 ; ### string-last-char
 code string_last_char, 'string-last-char' ; string -- char
 ; Returns last character of string (0 if the string is empty).

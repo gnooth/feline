@@ -295,7 +295,9 @@ code forth_dirname, 'dirname'           ; string1 -- string2 | 0
 endcode
 
 ; ### tilde-expand-filename
-code tilde_expand_filename, 'tilde-expand-filename' ; $addr1 -- $addr2
+code tilde_expand_filename, 'tilde-expand-filename' ; string1 -- string2
+        _ check_string
+
         _dup
         _ string_first_char
         _lit '~'
@@ -304,29 +306,33 @@ code tilde_expand_filename, 'tilde-expand-filename' ; $addr1 -- $addr2
         _return
         _then .1
 
-        _dupcfetch
+        _dup
+        _ string_length
         _lit 1
         _equal
         _if .2
         _drop
         _ user_home
+        _ coerce_to_string
         _return
         _then .2
 
         ; length <> 1
-        _dup
-        _twoplus
-        _cfetch
+        _lit 1
+        _over
+        _ string_nth
         _ path_separator_char
         _equal
         _if .3
+        ; "~/" or "~\"
         _ user_home
+        _ coerce_to_string
         _swap
-        _count
+        _ string_from
         _lit 1
         _slashstring
-        _ copy_to_temp_string
-        _ appendstring
+        _ copy_to_transient_string
+        _ concat
         _return
         _then .3                        ; -- $addr1
 
@@ -353,7 +359,7 @@ endcode
 
 ; ### resolve-include-filename
 code resolve_include_filename, 'resolve-include-filename' ; c-addr u -- $addr
-        _ copy_to_temp_string           ; -- $filename
+        _ copy_to_transient_string
         _ tilde_expand_filename
 
         _ source_filename
