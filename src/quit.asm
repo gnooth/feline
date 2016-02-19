@@ -190,25 +190,19 @@ endcode
 
 ; ### where
 code where, 'where'                     ; --
-        ; print source line
+        ; Print source line.
         _ ?cr
         _ source
         _ type
 
-        ; put ^ under first character of offending token
+        ; Put ^ on next line after last character of offending token.
         _ cr
-        _from toin
-        _ word_buffer
-        _cfetch
+        _ parsed_name_start
+        _ parsed_name_length
+        _plus
+        _ source
+        _drop
         _minus
-        ; if parsing hasn't reached the end of the line, we need to back up
-        ; one more character
-        _from toin
-        _from nsource
-        _ lt
-        _if .1
-        _oneminus
-        _then .1
         _ spaces
         _lit '^'
         _ emit
