@@ -271,23 +271,6 @@ endcode
 
 extern os_file_is_directory
 
-; ### file-is-directory?
-code file_is_directory, 'file-is-directory?' ; c-addr u -- -1 | 0
-        _ as_c_string
-%ifdef WIN64
-        popd    rcx
-%else
-        popd    rdi
-%endif
-        xcall   os_file_is_directory
-        test    rax, rax
-        jz      .1
-        mov     rax, -1
-.1:
-        pushd   rax
-        next
-endcode
-
 ; ### path-is-directory?
 code path_is_directory?, 'path-is-directory?' ; string -- flag
         _ check_string

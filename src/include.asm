@@ -403,9 +403,7 @@ code resolve_include_filename, 'resolve-include-filename' ; c-addr u -- $addr
         _else .4
         _drop                           ; -- $addr1
         _dup
-;         _count
-        _ string_from
-        _ file_is_directory
+        _ path_is_directory?
         _if .5
         _cquote "Is a directory"
         _to msg
