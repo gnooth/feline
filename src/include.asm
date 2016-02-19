@@ -352,7 +352,7 @@ code add_source_dir, 'add-source-dir'   ; c-addr u --
 endcode
 
 ; ### resolve-include-filename
-code resolve_include_filename, 'resolve-include-filename'       ; c-addr u -- $addr
+code resolve_include_filename, 'resolve-include-filename' ; c-addr u -- $addr
         _ copy_to_temp_string           ; -- $filename
         _ tilde_expand_filename
 
@@ -364,10 +364,11 @@ code resolve_include_filename, 'resolve-include-filename'       ; c-addr u -- $a
         _?dup
         _if .2                          ; -- $filename directory-string
         _ check_string
+        _swap
+        _ coerce_to_string
+        _ path_append                   ; -- $pathname
         _ string_from
         _ copy_to_temp_string
-        _swap
-        _ path_append_filename          ; -- $pathname
         _then .2
         _then .1
 
@@ -545,42 +546,58 @@ endcode
 
 ; ### path-append-filename
 code path_append_filename, 'path-append-filename' ; $path $filename -- $pathname
-        _dup
         _ coerce_to_string
+        _ swap
+        _ coerce_to_string
+        _ swap
+        _ path_append
+        _ string_from
+        _ copy_to_temp_string
+        next
+endcode
+
+; ### path-append
+code path_append, 'path-append'         ; string1 string2 -- string3
+        _ check_string
+        _swap
+        _ check_string
+        _swap
+
+        _dup
         _ filename_is_absolute
         _if .1
         _nip
         _return
-        _then .1                        ; -- $path $filename
+        _then .1
 
-        _ swap                          ; -- $filename $path
-
-        _ dup
+        _swap                           ; -- filename path
+        _dup
         _ string_last_char
         _ path_separator_char
         _notequal
         _if .2
 %ifdef WIN64
-        _cquote "\"
+        _quote "\"
 %else
-        _cquote "/"
+        _quote "/"
 %endif
-        _ appendstring                  ; -- $name $path1
+        _ concat
         _then .2
-        _ swap
-        _ appendstring
+        _swap
+        _ concat
         next
 endcode
 
 ; ### system-file-pathname
 code system_file_pathname, 'system-file-pathname' ; c-addr1 u1 -- c-addr2 u2
-        _ copy_to_temp_string           ; -- $addr1
-        _ feline_home                   ; -- $addr1 $addr2
-        _cquote "src"
-        _ path_append_filename
+        _ copy_to_transient_string
+        _ feline_home
+        _ coerce_to_string
+        _quote "src"
+        _ path_append
         _swap
-        _ path_append_filename
-        _count
+        _ path_append
+        _ string_from
         next
 endcode
 
