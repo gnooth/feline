@@ -168,13 +168,9 @@ code rdepth, 'rdepth'
 endcode
 
 ; ### pick
-code pick, 'pick'
-; REVIEW error handling
-        shl     rbx, 3
-        add     rbx, rbp
-        mov     rbx, [rbx]
-        next
-endcode
+inline pick, 'pick'
+        _pick
+endinline
 
 ; ### roll
 code roll, 'roll'                       ; n1 n2 ... nk k -- n2 n3 ... nk n1
