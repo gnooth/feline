@@ -104,7 +104,7 @@ create history-array  history-size cells allot  history-array history-size cells
     loop ;
 
 : history-file-pathname ( -- c-addr u )
-    user-home $" .feline-history" path-append-filename count ;
+    user-home ".feline-history" path-append string> ;
 
 : save-history ( -- )
     -1 local fileid
