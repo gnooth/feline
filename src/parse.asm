@@ -97,6 +97,12 @@ code parse, 'parse'                     ; char "ccc<char>" -- c-addr u
         next
 endcode
 
+; ### parsed-name-start
+value parsed_name_start,  'parsed-name-start',  0
+
+; ### parsed-name-length
+value parsed_name_length, 'parsed-name-length', 0
+
 ; ### parse-name
 code parse_name, 'parse-name'           ; <spaces>name -- c-addr u
 ; Forth 200x CORE EXT 6.2.2020
@@ -120,6 +126,11 @@ code parse_name, 'parse-name'           ; <spaces>name -- c-addr u
         _plus                           ; -- start-of-word word-length source-length #left-1|#left
         _minus
         _to toin
+
+        _twodup
+        _to parsed_name_length
+        _to parsed_name_start
+
         next
 endcode
 
@@ -168,13 +179,9 @@ code forth_word, 'word'                 ; char "<chars>ccc<char>" -- c-addr
         next
 endcode
 
-value word_start, 'word-start', 0
-
 ; ### blword
 code blword, 'blword'                   ; "<chars>ccc<char>" -- c-addr
         _ parse_name                    ; -- c-addr u
-        _over
-        _to word_start
         _ word_buffer
         _duptor
         _ place

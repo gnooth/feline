@@ -135,7 +135,7 @@ code string_literal?, 'string-literal?' ; $addr -- c-addr u true | $addr false
 .1:
         ; first char is "
         _drop
-        _ word_start
+        _ parsed_name_start
         _ source
         _drop
         _minus
