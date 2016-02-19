@@ -223,21 +223,15 @@ endcode
 
 ; ### includable?
 code includable?, 'includable?'         ; string -- flag
-        _duptor
-        _ string_from
-        _ file_exists
+        _dup
+        _ path_file_exists?
         _if .1
-        _rfetch
-        _ string_from
-        _ file_is_directory
-        _zeq_if .2
-        _rdrop
-        _true
-        _return
-        _then .2
-        _then .1
-        _rdrop
+        _ path_is_directory?
+        _zeq
+        _else .1
+        _drop
         _false
+        _then .1
         next
 endcode
 
