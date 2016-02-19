@@ -289,14 +289,6 @@ code path_is_directory?, 'path-is-directory?' ; string -- flag
         next
 endcode
 
-; ### file-exists?
-code file_exists, 'file-exists?'        ; c-addr u -- -1 | 0
-        _ file_status
-        _nip
-        _zeq
-        next
-endcode
-
 ; ### path-file-exists?
 code path_file_exists?, 'path-file-exists?' ; string -- flag
         _ check_string
