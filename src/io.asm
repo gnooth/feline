@@ -857,16 +857,16 @@ endcode
 extern os_strerror
 
 ; ### errno-to-string
-code errno_to_string, 'errno-to-string' ; n -- c-addr u
+code errno_to_string, 'errno-to-string' ; n -- string
 %ifdef WIN64
-        popd    rcx
+        mov     rcx, rbx
 %else
-        popd    rdi
+        mov     rdi, rbx
 %endif
         xcall   os_strerror
-        pushd   rax
+        mov     rbx, rax
         _ zcount
-        _ copy_to_temp_string
+        _ copy_to_transient_string
         next
 endcode
 
