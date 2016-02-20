@@ -460,7 +460,7 @@ code included, 'included'               ; i*x c-addr u -- j*x
         ; error!
         _drop
         _ os_errno
-        _ forth_strerror
+        _ errno_to_string
         _to msg
         _lit -38                        ; "non-existent file" Forth 2012 Table 9.1
         _ throw

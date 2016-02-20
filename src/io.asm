@@ -319,7 +319,7 @@ code iopen_file, '(open-file)'          ; zaddr fam -- fileid ior
 .1:
         ; error
         _ os_errno
-        _ forth_strerror
+        _ errno_to_string
         _to msg
         _lit -1                         ; "fileid is undefined"
         _lit -1                         ; error!
@@ -383,7 +383,7 @@ code read_file, 'read-file'             ; c-addr u1 fileid -- u2 ior
         next
 .1:
         _ os_errno
-        _ forth_strerror
+        _ errno_to_string
         _to msg
         _lit -1
         _lit -70                        ; error!
@@ -856,8 +856,8 @@ endcode
 
 extern os_strerror
 
-; ### strerror
-code forth_strerror, 'strerror'         ; n -- c-addr u
+; ### errno-to-string
+code errno_to_string, 'errno-to-string' ; n -- c-addr u
 %ifdef WIN64
         popd    rcx
 %else
