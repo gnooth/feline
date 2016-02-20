@@ -247,7 +247,6 @@ code link_file, 'link-file'             ; string -- nfa
         _fetch
         _tor
         _clear warning
-;         _count
         _ string_from
         _ create_word
         _rfrom
@@ -352,66 +351,50 @@ code add_source_dir, 'add-source-dir'   ; c-addr u --
 endcode
 
 ; ### resolve-include-filename
-code resolve_include_filename, 'resolve-include-filename' ; c-addr u -- $addr
-        _ copy_to_transient_string
-        _ tilde_expand_filename
+code resolve_include_filename, 'resolve-include-filename' ; c-addr u -- string
+        _ copy_to_transient_string      ; -- string
+        _ tilde_expand_filename         ; -- string
 
         _ source_filename
-        _?dup
-        _if .1
+        _?dup_if .1
         _ coerce_to_string
         _ forth_dirname
-        _?dup
-        _if .2                          ; -- $filename directory-string
+        _?dup_if .2                     ; -- string directory-string
         _ check_string
         _swap
-        _ coerce_to_string
-        _ path_append                   ; -- $pathname
-        _ string_from
-        _ copy_to_temp_string
+        _ check_string
+        _ path_append                   ; -- string
         _then .2
         _then .1
 
-        _ coerce_to_string
+        _ check_string
         _ canonical_path                ; -- string
         _dup                            ; -- string string
         _ includable?                   ; -- string flag
         _if .3
-        ; FIXME
-        _ string_from
-        _ copy_to_temp_string
         _return
         _then .3                        ; -- string
-        ; FIXME
-;         _ string_from
-;         _ copy_to_temp_string
 
         _dup                            ; -- string string
-;         _cquote ".forth"
-        _squote ".forth"
-        _ coerce_to_string
-        _ concat                        ; -- $addr1 $addr2
-        _dup                            ; -- $addr1 $addr2 $addr2
-        _ coerce_to_string
-        _ includable?                   ; -- $addr1 $addr2 flag
+        _quote ".forth"
+        _ concat                        ; -- string1 string2
+        _dup                            ; -- string1 string2 string2
+        _ includable?                   ; -- string1 string2 flag
         _if .4
-        _nip                            ; return addr2
-        ; FIXME
-        _ string_from
-        _ copy_to_temp_string
-
+        _nip                            ; return string2
         _else .4
-        _drop                           ; -- $addr1
+        _drop                           ; -- string1
         _dup
         _ path_is_directory?
         _if .5
-        _cquote "Is a directory"
+        _quote "Is a directory"
         _to msg
         _lit -37                        ; "file I/O exception"
         _ throw
         _then .5
         _then .4
 
+        _ check_string
         next
 endcode
 
@@ -423,7 +406,7 @@ code included, 'included'               ; i*x c-addr u -- j*x
         jz .1
 
         _ resolve_include_filename
-        _ coerce_to_string              ; -- string
+        _ check_string                  ; -- string
 
         ; Store the resolved filename in local0.
         _dup
@@ -603,11 +586,11 @@ endcode
 ; ### required
 code required, 'required'               ; i*x c-addr u -- i*x
 ; FILE EXT
-        _ ?dup
-        _if .1
+        _?dup_if .1
         _ resolve_include_filename
+        _ check_string
 
-        _count
+        _ string_from
         _twodup
         _ files_wordlist
         _ search_wordlist
