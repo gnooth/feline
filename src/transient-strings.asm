@@ -47,7 +47,7 @@ constant tsb_alloc_max, 'tsb-alloc-max', 1024   ; REVIEW size
 
 ; ### tsb-alloc
 code tsb_alloc, 'tsb-alloc'             ; u -- addr
-        _ tsb
+        _from tsb
         _zeq_if .1
         _ tsb_init
         _then .1                        ; -- u
@@ -57,22 +57,22 @@ code tsb_alloc, 'tsb-alloc'             ; u -- addr
         _ ugt
         _abortq "TSB-ALLOC requested size too big"      ; FIXME error message
 
-        _ tsb_next
+        _from tsb_next
         _ aligned                       ; -- u a-addr1
         _twodup
         _plus                           ; -- u a-addr1 addr2
         _dup
-        _ tsb_limit
+        _from tsb_limit
         _ ult
         _if .3                          ; -- u a-addr1 addr2
         _to tsb_next                    ; -- u a-addr1
         _nip                            ; -- a-addr1
         _else .3                        ; -- u a-addr1 addr2
         _2drop                          ; -- u
-        _ tsb
+        _from tsb
         _plus
         _to tsb_next
-        _ tsb                           ; -- addr
+        _from tsb                       ; -- addr
         _then .3
         next
 endcode
