@@ -524,8 +524,7 @@ endcode
 
 ; ### mem=
 code memequal, 'mem='                   ; addr1 addr2 len -- flag
-        _?dup
-        _if .1
+        _?dup_if .1
         _zero
         _do .2
         _twodup
@@ -572,8 +571,7 @@ endcode
 
 ; ### upper
 code upper, 'upper'                     ; c-addr1 u --
-        _ ?dup
-        _if .1
+        _?dup_if .1
         _ bounds
         _do .2
         _i
@@ -590,8 +588,7 @@ endcode
 
 ; ### is=
 code isequal, 'is='                     ; addr1 addr2 len -- flag
-        _ ?dup
-        _if .1
+        _?dup_if .1
         _zero
         _do .2
         _twodup

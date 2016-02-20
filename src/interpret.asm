@@ -198,8 +198,7 @@ endcode
 ; ### interpret1
 code interpret1, 'interpret1'           ; $addr --
         _ find
-        _ ?dup
-        _if .1
+        _?dup_if .1
         _ interpret_do_defined
         _else .1                        ; -- c-addr
         _ interpret_do_literal
@@ -215,8 +214,7 @@ code compile1, 'compile1'               ; $addr --
         _ compile_local_ref
         _else .1
         _ find
-        _ ?dup
-        _if .2
+        _?dup_if .2
         _ compile_do_defined
         _else .2                        ; -- c-addr
         _ compile_do_literal

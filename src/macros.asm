@@ -439,7 +439,17 @@ section .text
         %push if
         section .text
         test    rbx, rbx
-        jz     %1_ifnot
+        jz      %1_ifnot
+%endmacro
+
+%macro  _?dup_if 1
+        %push if
+        section .text
+        test    rbx, rbx
+        jnz     %%skip
+        poprbx
+        jz      %1_ifnot
+%%skip:
 %endmacro
 
 %macro  _else 1

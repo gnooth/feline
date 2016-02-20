@@ -26,8 +26,7 @@ code ok, 'ok'
         _ foreground
         _dotq " ok"
         _ depth
-        _ ?dup
-        _if .2
+        _?dup_if .2
         _lit '-'
         _ emit
         _ decdot
@@ -175,8 +174,7 @@ code dotmsg, '.msg'
         _ red
         _ foreground
         _from msg
-        _?dup
-        _if .1
+        _?dup_if .1
         _ ?cr
         _ dot_string
         _clear msg
@@ -213,8 +211,7 @@ code where, 'where'                     ; --
         _if .2
         _ ?cr
         _ source_filename
-        _ ?dup
-        _if .3
+        _?dup_if .3
         _ dot_string
         _ space
         _then .3
@@ -284,8 +281,7 @@ code quit, 'quit'                       ; --            r:  i*x --
         _zeroto source_filename
         _lit interpret_xt
         _ catch
-        _ ?dup
-        _if .2
+        _?dup_if .2
         ; THROW occurred
         _ do_error
         _else .2
@@ -304,8 +300,7 @@ code reset, 'reset'                     ; i*x --        r: j*x --
 
         _ lp0
         _fetch
-        _ ?dup
-        _if .1
+        _?dup_if .1
         _ lpstore
         _then .1
 
