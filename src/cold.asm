@@ -84,11 +84,8 @@ code user_home, 'user-home'             ; -- string
         _quote "HOME"
 %endif
         _ get_environment_variable      ; -- string
-        _ here
-        _tor
         _ string_from
-        _ compile_string_literal
-        _rfrom
+        _ copy_to_static_string
         _ check_string
         _to user_home_string
         _then .1

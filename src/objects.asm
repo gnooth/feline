@@ -776,8 +776,12 @@ code simple_string_from, 'simple-string>' ; simple-string -- c-addr u
         next
 endcode
 
-; ### compile-string-literal
-code compile_string_literal, 'compile-string-literal' ; c-addr u --
+; ### >static_string
+code copy_to_static_string, '>static-string' ; c-addr u -- string
+        _ align_data
+        _ here                          ; this will be the address of the string
+        _tor
+
         ; object header
         _lit _OBJECT_TYPE_SIMPLE_STRING
         _ comma
@@ -789,7 +793,9 @@ code compile_string_literal, 'compile-string-literal' ; c-addr u --
         _over                           ; -- c-addr u here u
         _oneplus                        ; -- c-addr u here u+1
         _ allot
-        _ zplace
+        _ zplace                        ; --
+
+        _rfrom                          ; -- string
         next
 endcode
 
