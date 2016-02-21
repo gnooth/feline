@@ -53,45 +53,56 @@ endcode
 ; us 255 distinct object types (1-255) before we need to set any bits in the
 ; second byte.
 
-; ### object-type
-code object_type, 'object-type'         ; object -- type
+%macro  _object_type 0
         _wfetch                         ; 16 bits
-        next
-endcode
+%endmacro
+
+%macro  _set_object_type 0
+        _wstore                         ; 16 bits
+%endmacro
+
+; ### object-type
+inline object_type, 'object-type'       ; object -- type
+        _object_type
+endinline
 
 ; ### object-type!
-code set_object_type, 'object-type!'    ; type object --
-        _wstore                         ; 16 bits
-        next
-endcode
+inline set_object_type, 'set-object-type' ; type object --
+        _set_object_type
+endinline
 
 ; The third byte of the object header contains the object flags.
 
-; ### object-flags
-code object_flags, 'object-flags'       ; object -- flags
+%macro  _object_flags 0
         movzx   rbx, byte [rbx + 2]
-        next
-endcode
+%endmacro
 
-; ### object-flags!
-code set_object_flags, 'object-flags!'  ; flags object --
-        mov     rax, [rbp]
-        mov     [rbx + 2], al
-        _2drop
-        next
-endcode
-
-; ### slot1
-; returns contents of slot1
-inline slot1, 'slot1'                   ; object -- x
-        mov     rbx, [rbx + BYTES_PER_CELL]
+; ### object-flags
+inline object_flags, 'object-flags'     ; object -- flags
+        _object_flags
 endinline
 
-code set_slot1, 'slot1!'                ; x object --
-        add     rbx, BYTES_PER_CELL
-        _ store
-        next
-endcode
+%macro  _set_object_flags 0
+        mov     al, [rbp]
+        mov     [rbx + 2], al
+        _2drop
+%endmacro
+
+; ### set-object-flags
+inline set_object_flags, 'set-object-flags' ; flags object --
+        _set_object_flags
+endinline
+
+%macro  _slot1 0                        ; object -- x
+        mov     rbx, [rbx + BYTES_PER_CELL]
+%endmacro
+
+%macro  _set_slot1 0                    ; x object --
+        mov     rax, [rbp]
+        mov     [rbx + BYTES_PER_CELL], rax
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+%endmacro
 
 ; ### slot2
 ; returns contents of slot2
@@ -102,7 +113,7 @@ endinline
 ; ### slot2!
 code set_slot2, 'slot2!'                ; x object --
         add     rbx, BYTES_PER_CELL * 2
-        _ store
+        _store
         next
 endcode
 
@@ -115,7 +126,7 @@ endinline
 ; ### slot3!
 code set_slot3, 'slot3!'                ; x object --
         add     rbx, BYTES_PER_CELL * 3
-        _ store
+        _store
         next
 endcode
 
@@ -125,7 +136,7 @@ endcode
 code vector?, 'vector?'                 ; object -- flag
         test    rbx, rbx
         jz      .1
-        _ object_type
+        _object_type
         cmp     rbx, _OBJECT_TYPE_VECTOR
         jnz     .2
         mov     rbx, -1
@@ -152,13 +163,13 @@ endcode
 
 ; ### vector-length
 code vector_length, 'vector-length'     ; vector -- length
-        _ slot1
+        _slot1
         next
 endcode
 
 ; ### vector-length!
 code set_vector_length, 'vector-length!' ; length vector --
-        _ set_slot1
+        _set_slot1
         next
 endcode
 
@@ -197,7 +208,7 @@ code construct_vector, '<vector>'       ; capacity -- vector
         _ erase
         _lit _OBJECT_TYPE_VECTOR
         _rfetch                         ; -- capacity vector            r: -- vector
-        _ set_object_type               ; -- capacity                   r: -- vector
+        _set_object_type                ; -- capacity                   r: -- vector
         _dup                            ; -- capacity capacity          r: -- vector
         _cells
         _ iallocate                     ; -- capacity data-address              r: -- vector
@@ -470,7 +481,7 @@ endcode
 code simple_string?, 'simple-string?'   ; object -- flag
         test    rbx, rbx
         jz      .1
-        _ object_type
+        _object_type
         cmp     rbx, _OBJECT_TYPE_SIMPLE_STRING
         jnz     .2
         mov     rbx, -1
@@ -485,7 +496,7 @@ endcode
 code growable_string?, 'growable-string?' ; object -- flag
         test    rbx, rbx
         jz      .1
-        _ object_type
+        _object_type
         cmp     rbx, _OBJECT_TYPE_STRING
         jnz     .2
         mov     rbx, -1
@@ -545,13 +556,13 @@ endcode
 
 ; ### string-length
 code string_length, 'string-length'     ; string -- length
-        _ slot1
+        _slot1
         next
 endcode
 
 ; ### string-length!
 code set_string_length, 'string-length!' ; length string --
-        _ set_slot1
+        _set_slot1
         next
 endcode
 
@@ -615,7 +626,7 @@ code copy_to_string, '>string'          ; c-addr u -- string
         _ erase                         ; --
         _ OBJECT_TYPE_STRING
         pushd   string
-        _ set_object_type               ; --
+        _set_object_type               ; --
 
         _lit STRING_ALLOCATED
         pushd   string
@@ -676,7 +687,7 @@ code new_transient_string, '<transient-string>' ; capacity -- string
         _ erase                         ; --
         _ OBJECT_TYPE_SIMPLE_STRING
         pushd   string
-        _ set_object_type               ; --
+        _set_object_type               ; --
 
         _lit STRING_TRANSIENT
         pushd   string
@@ -728,7 +739,7 @@ code make_simple_string, 'make-simple-string'   ; c-addr u transient? -- string
         _ erase                         ; --
         _ OBJECT_TYPE_SIMPLE_STRING
         pushd   string
-        _ set_object_type               ; --
+        _set_object_type                ; --
 
         pushd   transient?
         _if .2
@@ -737,7 +748,7 @@ code make_simple_string, 'make-simple-string'   ; c-addr u transient? -- string
         _lit STRING_ALLOCATED
         _then .2
         pushd   string
-        _ set_object_flags              ; --
+        _set_object_flags               ; --
 
         pushd   u
         pushd   string
