@@ -21,8 +21,8 @@ only forth
 
 [undefined] x86-64 [if] include-system-file x86-64.forth [then]
 
-\ REVIEW
-[undefined] <string> [if] include-system-file string.forth [then]
+\ FIXME temporary
+include-system-file string.forth
 
 only forth also x86-64 also disassembler definitions
 

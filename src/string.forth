@@ -79,7 +79,6 @@ only forth also definitions
         new-capacity s string-capacity!
     then
 ;
-[then]
 
 \ constructor
 : <string> ( capacity -- string )
@@ -92,7 +91,6 @@ only forth also definitions
     s
 ;
 
-0 [if]
 : >string ( c-addr u -- string )
 \ construct a string object from a Forth string descriptor
     local u
@@ -121,9 +119,9 @@ only forth also definitions
     STRING_SIZE -allocate local s2
     s2 STRING_SIZE erase
     OBJECT_TYPE_STRING s2 object-header!
-    len 1+ ( terminal null byte ) -allocate s2 string-data!
-    len s2 string-length!
-    len s2 string-capacity!
+    len 1+ ( terminal null byte ) -allocate s2 set-string-data
+    len s2 set-string-length
+    len s2 set-string-capacity
     s1 string-data s2 string-data len cmove
     0 s2 string-data len + c!           \ terminal null byte
     s2                                  \ return address of string object
@@ -157,7 +155,7 @@ only forth also definitions
         s string-data n +
         dup 1+
         s string-length n - cmove>
-        s string-length 1+ s string-length!
+        s string-length 1+ s set-string-length
         c n s string-set-nth
     else
         true abort" STRING-INSERT-NTH out of room"
@@ -175,7 +173,7 @@ only forth also definitions
         src 1- to dst
         src dst len n - 1- cmove
         0 s string-data len 1- + c!
-        len 1- s string-length!
+        len 1- s set-string-length
     then
 ;
 
@@ -183,7 +181,7 @@ only forth also definitions
     local s
     local new-length
     new-length s string-length < if
-        new-length s string-length!
+        new-length s set-string-length
         0 s string-data new-length + c!
     else
         \ REVIEW Java AbstractStringBuilder calls ensureCapacityInternal() and appends nulls
@@ -210,7 +208,7 @@ only forth also definitions
     s string-data s string-length +     \ -- src dest
     sappend string-length               \ -- src dest n
     cmove
-    s string-length sappend string-length + s string-length!
+    s string-length sappend string-length + s set-string-length
 ;
 
 0 [if]
@@ -235,6 +233,6 @@ only forth also definitions
     this string-length local len
     len 1+ this string-ensure-capacity
     c this string-data len + c!
-    len 1+ this string-length!
+    len 1+ this set-string-length
     0 this string-data len 1+ + c!
 ;

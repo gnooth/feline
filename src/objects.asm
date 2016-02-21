@@ -66,7 +66,7 @@ inline object_type, 'object-type'       ; object -- type
         _object_type
 endinline
 
-; ### object-type!
+; ### set-object-type
 inline set_object_type, 'set-object-type' ; type object --
         _set_object_type
 endinline
@@ -560,14 +560,14 @@ code string_length, 'string-length'     ; string -- length
         next
 endcode
 
-; ### string-length!
-code set_string_length, 'string-length!' ; length string --
+; ### set-string-length
+code set_string_length, 'set-string-length' ; length string --
         _set_slot1
         next
 endcode
 
 ; ### simple-string-data
-code simple_string_data, 'simple-string-data'   ; simple-string -- data-address
+code simple_string_data, 'simple-string-data' ; simple-string -- data-address
         _lit 2
         _cells
         _plus
@@ -587,8 +587,8 @@ code string_data, 'string-data'         ; string -- data-address
         next
 endcode
 
-; ### string-data!
-code set_string_data, 'string-data!'    ; data-address string --
+; ### set-string-data
+code set_string_data, 'set-string-data' ; data-address string --
         _ set_slot2
         next
 endcode
@@ -599,9 +599,67 @@ code string_capacity, 'string-capacity' ; string -- capacity
         next
 endcode
 
-; ### string-capacity!
-code set_string_capacity, 'string-capacity!'    ; capacity string --
+; ### set-string-capacity
+code set_string_capacity, 'set-string-capacity' ; capacity string --
         _ set_slot3
+        next
+endcode
+
+; ### make-growable-string
+code make_growable_string, 'make-growable-string' ; capacity -- string
+
+; locals:
+%define capacity        local0
+%define string          local1
+
+        _locals_enter
+
+        popd    capacity
+
+        _lit 32                         ; -- 32
+        _dup
+        _ iallocate                     ; -- 32 string
+        popd    string                  ; -- 32
+        pushd   string
+        _swap
+        _ erase                         ; --
+        _ OBJECT_TYPE_STRING
+        pushd   string
+        _set_object_type               ; --
+
+        _lit STRING_ALLOCATED
+        pushd   string
+        _set_object_flags              ; --
+
+        pushd   capacity
+        _oneplus                        ; terminal null byte
+        _ iallocate
+        pushd   string
+        _ set_string_data
+
+        pushd   capacity
+        pushd   string
+        _ set_string_capacity           ; --
+
+        pushd   string
+
+        _locals_leave
+        next
+
+%undef capacity
+%undef string
+
+endcode
+
+; ### <string>
+code new_string, '<string>'             ; capacity -- string
+        _ make_growable_string          ; -- string
+        _ dup
+        _ string_data                   ; -- string data-address
+        _over
+        _ string_capacity               ; -- string data-address capacity
+        _oneplus
+        _ erase                         ; -- string
         next
 endcode
 
@@ -617,46 +675,31 @@ code copy_to_string, '>string'          ; c-addr u -- string
         popd    u
         popd    c_addr
 
-        _lit 32                         ; -- 32
-        _dup
-        _ iallocate                     ; -- 32 string
-        popd    string                  ; -- 32
-        pushd   string
-        _swap
-        _ erase                         ; --
-        _ OBJECT_TYPE_STRING
-        pushd   string
-        _set_object_type               ; --
-
-        _lit STRING_ALLOCATED
-        pushd   string
-        _ set_object_flags              ; --
-
         pushd   u
-        _oneplus                        ; terminal null byte
-        _ iallocate
-        pushd   string
-        _ set_string_data
-
-        pushd   u
-        pushd   string
-        _twodup
-        _ set_string_length
-        _ set_string_capacity           ; --
+        _ make_growable_string
+        popd    string
 
         pushd   c_addr
         pushd   string
         _ string_data
         pushd   u                       ; -- c-addr data-address u
         _ cmove                         ; --
+
         _zero
         pushd   string
         _ string_data
         pushd   u
         _plus
         _ cstore
+
+        pushd   u
         pushd   string
+        _ set_string_length
+
+        pushd   string
+
         _locals_leave
+
         next
 
 %undef u
