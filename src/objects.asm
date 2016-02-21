@@ -701,9 +701,7 @@ code new_transient_string, '<transient-string>' ; capacity -- string
         _locals_leave
         next
 
-%undef transient?
-%undef u
-%undef c_addr
+%undef capacity
 %undef string
 
 endcode
