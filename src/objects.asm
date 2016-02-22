@@ -581,11 +581,14 @@ code set_string_length, 'set-string-length' ; length string --
         next
 endcode
 
+; Simple strings store their character data inline starting at 'this' + 16 bytes.
+%macro _simple_string_data 0
+        lea     rbx, [rbx + BYTES_PER_CELL * 2]
+%endmacro
+
 ; ### simple-string-data
 code simple_string_data, 'simple-string-data' ; simple-string -- data-address
-        _lit 2
-        _cells
-        _plus
+        _simple_string_data
         next
 endcode
 
@@ -595,7 +598,7 @@ code string_data, 'string-data'         ; string -- data-address
         _dup                            ; -- string string
         _ simple_string?                ; -- string flag
         _if .1                          ; -- string
-        _ simple_string_data
+        _simple_string_data
         _else .1
         _ slot2
         _then .1
@@ -812,7 +815,7 @@ code make_simple_string, 'make-simple-string'   ; c-addr u transient? -- string
 
         pushd   c_addr
         pushd   string
-        _ simple_string_data
+        _simple_string_data
         pushd   u
         _ cmove                         ; --
 
@@ -837,7 +840,7 @@ endcode
 ; ### simple-string>
 code simple_string_from, 'simple-string>' ; simple-string -- c-addr u
         _duptor
-        _ simple_string_data
+        _simple_string_data
         _rfrom
         _ string_length
         next
@@ -878,7 +881,7 @@ endcode
 code as_c_string, 'as-c-string'         ; c-addr u -- zaddr
 ; Returns a pointer to a null-terminated string in the transient string buffer.
         _ copy_to_transient_string
-        _ simple_string_data
+        _simple_string_data
         next
 endcode
 
