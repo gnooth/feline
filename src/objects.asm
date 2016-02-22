@@ -932,7 +932,11 @@ code delete_string, '~string'           ; string --
         _dup
         _ string_data
         _ ifree
-        _then .3
+        _then .3                        ; -- string
+        ; Zero out the object header so it won't look like a valid object
+        ; after it has been freed.
+        xor     eax, eax
+        mov     [rbx], rax
         _ ifree
         _else .2
         _drop
