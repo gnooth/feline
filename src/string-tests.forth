@@ -107,4 +107,17 @@ test5
 
 test6
 
-cr .( Reached end of string tests)
+: test7
+    256 <string> local s
+    s "this is a test" string> string-append-chars
+    s string-length 14 = assert
+    s string> s" this is a test" str= assert
+    s " of the emergency broadcasting system" string> string-append-chars
+    s string> s" this is a test of the emergency broadcasting system" str= assert
+    s ~string
+    s string? 0= assert
+;
+
+test7
+
+cr .( Reached end of string-tests.forth )

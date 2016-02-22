@@ -1049,7 +1049,7 @@ code string_last_char, 'string-last-char' ; string -- char
 endcode
 
 ; ### string-append-chars
-code string_append_chars, 'string-append-chars' ; addr len string --
+code string_append_chars, 'string-append-chars' ; string addr len --
 
 ; locals:
 %define this   local0
@@ -1057,9 +1057,10 @@ code string_append_chars, 'string-append-chars' ; addr len string --
 %define addr   local2
 
         _locals_enter
-        popd    this
         popd    len
         popd    addr
+        _ check_string
+        popd    this
 
         pushd   this
         _ string_length
