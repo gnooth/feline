@@ -92,12 +92,6 @@ code copy_to_temp_string, '>temp$'      ; c-addr u -- $addr
         next
 endcode
 
-; ### $>z
-inline string_to_zstring, '$>z'         ; $addr -- zaddr
-; skip over the count byte
-        _string_to_zstring              ; 1+
-endinline
-
 ; ### >$
 code save_string, '>$'                  ; c-addr u -- $addr
 ; copy the string specified by c-addr u to allocated storage

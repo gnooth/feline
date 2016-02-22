@@ -243,10 +243,6 @@
         mov     [rbp], rbx
 %endmacro
 
-%macro  _string_to_zstring 0            ; $>z
-        _oneplus
-%endmacro
-
 %macro  _dtos 0                         ; D>S
         _drop
 %endmacro
