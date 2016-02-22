@@ -28,7 +28,7 @@
 \         count system
 \     else drop then ;
 
-0 value $build
+0 value build-string
 
 : initialize-build-string ( -- )
     0 local fileid
@@ -55,12 +55,12 @@
             repeat
             length 0> if
                 \ valid string, save it
-                buffer length >$
+                buffer length >simple-string
             else
                 \ don't try again!
                 -1
             then
-            to $build
+            to build-string
         then
         buffer -free
     then
@@ -68,10 +68,10 @@
     drop
 ;
 
-: (.build) ( -- )
-    $build 0= if
+: .build-impl ( -- )
+    build-string 0= if
         initialize-build-string
     then
-    $build 0> if ." built " $build $. then ;
+    build-string -1 <> if ." built " build-string .string then ;
 
-' (.build) is .build
+' .build-impl is .build
