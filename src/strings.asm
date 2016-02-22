@@ -98,48 +98,6 @@ inline string_to_zstring, '$>z'         ; $addr -- zaddr
         _string_to_zstring              ; 1+
 endinline
 
-; ### $!
-code copystring, '$!'                   ; $addr1 $addr2 --
-; Upper Deck Forth
-; "Copies the packed, null-terminated string at $addr1 to $addr2. The buffer
-; at $addr2 must be big enough to accept the string, including its length
-; byte and terminal null byte."
-        _ over
-        _cfetch
-        _twoplus
-        _ move
-        next
-endcode
-
-; ### $+
-code appendstring, '$+'                 ; $addr1 $addr2 -- $addr3
-; Upper Deck Forth
-; Appends the packed, null-terminated string at $addr2 (without its length
-; byte) to the end of the packed, null-terminated string at $addr1 and places
-; the resulting string at the next free location in the transient string
-; storage area. $addr3 is the address of that location.
-        _ swap
-        _ stringbuf
-        _ copystring
-        _ count
-        _duptor
-        _ stringbuf
-        _ count
-        _ plus
-        _ swap
-        _oneplus
-        _ move
-        _ stringbuf
-        _cfetch
-        _rfrom
-        _ plus
-        _ stringbuf
-        _ cstore
-        _ stringbuf
-        _ plus_stringbuf
-        next
-endcode
-
 ; ### >$
 code save_string, '>$'                  ; c-addr u -- $addr
 ; copy the string specified by c-addr u to allocated storage
