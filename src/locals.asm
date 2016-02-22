@@ -101,10 +101,10 @@ code find_local, 'find-local'           ; found:        $addr -- index true
         _cells
         _plus
         _fetch                          ; -- $addr $addr2
-        _ over                          ; -- $addr $addr2 $addr
-        _ count
+        _over                           ; -- $addr $addr2 $addr
+        _count
         _ rot
-        _ count
+        _count
         _ istrequal
         _if .3
         ; found it!
@@ -196,12 +196,11 @@ code initialize_local_names, 'initialize-local-names'
         _cells
         _duptor
         _ iallocate
-        _ dup
+        _dup
         _to local_names
         _rfrom
         _ erase
-        _zero
-        _to locals_defined
+        _zeroto locals_defined
         _true
         _to using_locals?
         next
@@ -219,8 +218,7 @@ code delete_local_names, 'delete-local-names'
         _cells
         _plus
         _fetch
-        _ ?dup
-        _if .3
+        _?dup_if .3
         _ ifree
         _then .3
         _loop .2
