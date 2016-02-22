@@ -296,26 +296,26 @@ init-reg64-names
 
     relative-size ?dup if
         count buffer string-append-chars
-        $20 ( space ) buffer string-append-char
+        buffer $20 ( space ) string-append-char
         0 to relative-size
     then
 
-    '[' buffer string-append-char
+    buffer '[' string-append-char
     base reg64-name count buffer string-append-chars
     index -1 <> if
-        '+' buffer string-append-char
+        buffer '+' string-append-char
         index reg64-name count buffer string-append-chars
     then
     disp if
         disp 0> if
-            '+' buffer string-append-char
+            buffer '+' string-append-char
         else
-            '-' buffer string-append-char
+            buffer '-' string-append-char
             disp negate to disp
         then
         disp (.) buffer string-append-chars
     then
-    ']' buffer string-append-char
+    buffer ']' string-append-char
 
     buffer string> type
     buffer ~string

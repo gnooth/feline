@@ -520,6 +520,21 @@ code string?, 'string?'                 ; object -- flag
         next
 endcode
 
+; ### check-char
+code check_char, 'check-char'           ; char -- char
+        _dup
+        _lit 256
+        _ ult
+        _if .1
+        _return
+        _then .1
+
+        _drop
+        _true
+        _abortq "not a char"
+        next
+endcode
+
 ; ### check-string
 code check_string, 'check-string'       ; object -- string
         _dup
@@ -1080,6 +1095,63 @@ code string_append_chars, 'string-append-chars' ; addr len string --
 %undef this
 %undef len
 %undef addr
+
+endcode
+
+; ### string-append-char
+code string_append_char, 'string-append-char' ; string char --
+
+; locals:
+%define this   local0
+%define char   local1
+%define len    local2
+
+        _locals_enter
+        _ check_char
+        popd    char
+        _ check_string
+        popd    this                    ; --
+
+        ; this string-length local len
+        pushd   this
+        _ string_length
+        popd    len
+
+        ; len 1+ this string-ensure-capacity
+        pushd   len
+        _oneplus
+        pushd   this
+        _ string_ensure_capacity
+
+        ; char this string-data len + c!
+        pushd   char
+        pushd   this
+        _ string_data
+        pushd   len
+        _plus
+        _cstore
+
+        ; len 1+ this set-string-length
+        pushd   len
+        _oneplus
+        pushd   this
+        _ set_string_length
+
+        ; 0 this string-data len 1+ + c!
+        _zero
+        pushd   this
+        _ string_data
+        pushd   len
+        _oneplus
+        _plus
+        _cstore
+
+        _locals_leave
+        next
+
+%undef this
+%undef char
+%undef len
 
 endcode
 

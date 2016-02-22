@@ -225,7 +225,6 @@ only forth also definitions
     this string-length len + this string-length!
     0 this string-data this string-length + c!
 ;
-[then]
 
 : string-append-char ( char string -- )
     local this
@@ -236,3 +235,4 @@ only forth also definitions
     len 1+ this set-string-length
     0 this string-data len 1+ + c!
 ;
+[then]

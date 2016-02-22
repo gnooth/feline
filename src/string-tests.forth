@@ -94,4 +94,17 @@ test4
 
 test5
 
+: test6
+    s" two short" >string local s
+    s string-length 9 = assert
+    s growable-string? assert
+    s 's' string-append-char
+    s string-length 10 = assert
+    s string> s" two shorts" str= assert
+    s allocated? assert
+    s ~string
+;
+
+test6
+
 cr .( Reached end of string tests)
