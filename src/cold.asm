@@ -120,30 +120,16 @@ code report_startup_time, 'report-startup-time' ; --
         next
 endcode
 
-section .data
-version_data:
-%strlen len     VERSION
-        db      len
-        db      VERSION
-        db      0
-
-; ### version
-code version, 'version'
-        pushrbx
-        mov     rbx, version_data
-        next
-endcode
-
-deferred dotbuild, '.build', noop
+deferred dot_build, '.build', noop
 
 ; ### .version
-code dotversion, '.version'             ; --
-        _cquote "Feline "
-        _ version
-        _ appendstring
-        _ counttype
+code dot_version, '.version'            ; --
+        _quote "Feline "
+        _quote VERSION
+        _ concat
+        _ dot_string
         _ space
-        _ dotbuild
+        _ dot_build
         next
 endcode
 
@@ -184,7 +170,7 @@ code cold, 'cold'                       ; --
         _true
         _to interactive?
 
-        _ dotversion
+        _ dot_version
         _ cr
 
         _lit process_init_file_xt
