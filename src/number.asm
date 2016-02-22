@@ -129,8 +129,10 @@ endcode
 
 ; ### missing
 code missing, 'missing'                 ; $addr --
-        _cquote ' ?'
-        _ appendstring
+        _count
+        _ copy_to_transient_string
+        _quote " ?"
+        _ concat
         _to msg
         _lit -13                        ; "undefined word" Forth 2012 Table 9.1
         _ throw
