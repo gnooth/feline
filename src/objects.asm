@@ -569,9 +569,13 @@ code check_growable_string, 'check-growable-string'     ; object -- string
         next
 endcode
 
+%macro _string_length 0
+        _slot1
+%endmacro
+
 ; ### string-length
 code string_length, 'string-length'     ; string -- length
-        _slot1
+        _string_length
         next
 endcode
 
@@ -842,7 +846,7 @@ code simple_string_from, 'simple-string>' ; simple-string -- c-addr u
         _duptor
         _simple_string_data
         _rfrom
-        _ string_length
+        _string_length
         next
 endcode
 
@@ -912,7 +916,7 @@ code string_from, 'string>'             ; string -- c-addr u
         _duptor
         _ string_data                   ; -- string data-address
         _rfrom
-        _ string_length
+        _string_length
         next
 endcode
 
@@ -1010,7 +1014,7 @@ code string_nth, 'string-nth'           ; index string -- char
         _ check_string
 
         _twodup
-        _ string_length
+        _string_length
         _ ult
         _if .1
         _ string_data
@@ -1040,7 +1044,7 @@ code string_last_char, 'string-last-char' ; string -- char
         _ coerce_to_string
 
         _dup
-        _ string_length
+        _string_length
         _dup
         _zeq_if .1
         _2drop
@@ -1070,7 +1074,7 @@ code string_append_chars, 'string-append-chars' ; string addr len --
         popd    this
 
         pushd   this
-        _ string_length
+        _string_length
         pushd   len
         _plus
         pushd   this
@@ -1079,12 +1083,12 @@ code string_append_chars, 'string-append-chars' ; string addr len --
         pushd   this
         _ string_data
         pushd   this
-        _ string_length
+        _string_length
         _plus
         pushd   len
         _ cmove
         pushd   this
-        _ string_length
+        _string_length
         pushd   len
         _plus
         pushd   this
@@ -1093,7 +1097,7 @@ code string_append_chars, 'string-append-chars' ; string addr len --
         pushd   this
         _ string_data
         pushd   this
-        _ string_length
+        _string_length
         _plus
         _cstore
 
@@ -1122,7 +1126,7 @@ code string_append_char, 'string-append-char' ; string char --
 
         ; this string-length local len
         pushd   this
-        _ string_length
+        _string_length
         popd    len
 
         ; len 1+ this string-ensure-capacity
