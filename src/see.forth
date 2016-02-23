@@ -910,6 +910,23 @@ initialize-setcc-mnemonic-table
         .inst
         exit
     then
+    byte2 $bf = if
+        $" movsx" to mnemonic
+        !modrm-byte
+        modrm-mod 0= if
+            modrm-rm register-rm to sbase
+            16 to ssize
+            $" word" to relative-size   \ REVIEW shouldn't need to do this if we've set ssize
+            modrm-rm register-reg to dreg
+            .inst
+            exit
+        then
+        modrm-reg to sreg
+        16 to ssize
+        modrm-rm register-rm to dreg
+        .inst
+        exit
+    then
     unsupported ;
 
 latest-xt $0f install-handler
