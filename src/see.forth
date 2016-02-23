@@ -291,8 +291,9 @@ init-reg64-names
 
 0 value relative-size                   \ $addr or 0
 
-: .relative ( base index disp -- )
+: .relative ( base index scale disp -- )
     local disp
+    local scale
     local index
     local base
 
@@ -334,6 +335,10 @@ init-reg64-names
     index -1 <> if
         buffer '+' string-append-char
         index reg64-name buffer swap count string-append-chars
+        scale if
+            buffer '*' string-append-char
+            buffer 1 scale lshift (.) string-append-chars
+        then
     then
     disp if
         disp 0> if
@@ -370,11 +375,13 @@ init-reg64-names
 64 value ssize  \ source operand size
 -1 value sbase  \ source base register
 -1 value sindex \ source index register
+ 0 value sscale \ source scaling factor
  0 value sdisp  \ source displacement
 -1 value dreg   \ destination register
 64 value dsize  \ destination operand size
 -1 value dbase  \ destination base register
 -1 value dindex \ destination index register
+ 0 value dscale \ destination scaling factor
  0 value ddisp  \ destination displacement
 
 -1 value #operands
@@ -396,6 +403,8 @@ init-reg64-names
     -1 to dbase
     -1 to sindex
     -1 to dindex
+     0 to sscale
+     0 to dscale
      0 to sdisp
      0 to ddisp
 
@@ -418,7 +427,7 @@ init-reg64-names
         exit
     then
     dbase -1 <> if
-        dbase dindex ddisp .relative
+        dbase dindex dscale ddisp .relative
         exit
     then
     memory-operand? if
@@ -438,7 +447,7 @@ init-reg64-names
     then
     sbase -1 <> if
         .sep
-        sbase sindex sdisp .relative
+        sbase sindex sscale sdisp .relative
         exit
     then
     memory-operand? if
@@ -601,7 +610,9 @@ latest-xt $e9 install-handler
             sib-byte $24 = if
                 sib-base to sbase
             else
-                unsupported
+                sib-base to sbase
+                sib-index to sindex
+                sib-scale to sscale
             then
         else
             modrm-rm register-rm to sbase
