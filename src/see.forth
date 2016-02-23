@@ -120,14 +120,18 @@ variable done?
 ;
 
 : register-reg ( n1 -- n2 )
-    prefix rex.r and if
-        8 or
+    prefix 4 rshift $4 = if
+        prefix rex.r and if
+            8 or
+        then
     then
 ;
 
 : register-rm ( n1 -- n2 )
-    prefix rex.b and if
-        8 or
+    prefix 4 rshift $4 = if
+        prefix rex.b and if
+            8 or
+        then
     then
 ;
 
@@ -176,6 +180,30 @@ init-reg8-names
     else
         drop
         true abort" reg8-name index out of range"
+    then
+;
+
+create reg16-names 8 cells allot
+
+: init-reg16-names ( -- )
+    "ax" reg16-names  0 cells + !
+    "cx" reg16-names  1 cells + !
+    "dx" reg16-names  2 cells + !
+    "bx" reg16-names  3 cells + !
+    "sp" reg16-names  4 cells + !
+    "bp" reg16-names  5 cells + !
+    "si" reg16-names  6 cells + !
+    "di" reg16-names  7 cells + !
+;
+
+init-reg16-names
+
+: reg16-name ( register-number -- string )
+    dup 0 7 between if
+        cells reg16-names + @
+    else
+        drop
+        true abort" reg16-name index out of range"
     then
 ;
 
@@ -244,6 +272,10 @@ init-reg64-names
     then
     size 32 = if
         n reg32-name $.
+        exit
+    then
+    size 16 = if
+        n reg16-name .string
         exit
     then
     size 8 = if
@@ -482,11 +514,23 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 
 latest-xt $e9 install-handler
 
+: set-instruction-size ( -- )
+    prefix $66 = if
+        16 dup to dsize to ssize
+    else
+        prefix $40 and if
+            64
+        else
+            32
+        then dup to dsize to ssize
+    then
+;
+
 : /r-r/m-reg ( -- )
     \ /r
     \ source is r32/64
     \ dest is r/m32/64
-    prefix if 64 else 32 then dup to dsize to ssize
+    set-instruction-size
     !modrm-byte
     modrm-reg register-reg to sreg
     modrm-mod 0= if
@@ -523,7 +567,7 @@ latest-xt $e9 install-handler
     \ /r
     \ source is r/m32/64
     \ dest is r32/64
-    prefix if 64 else 32 then dup to dsize to ssize
+    set-instruction-size
     !modrm-byte
     modrm-reg register-reg to dreg
     modrm-mod 0= if
@@ -1141,7 +1185,7 @@ latest-xt $63 install-handler
     \ modrm-reg encodes opcode extension
     \ source is imm32
     \ dest is r/m32/64
-    prefix if 64 else 32 then dup to dsize to ssize
+    set-instruction-size
     !modrm-byte
     mnemonic-from-regop to mnemonic
     modrm-mod 3 = if
@@ -1757,13 +1801,15 @@ decimal
 : decode  ( -- )                        \ decode one instruction
     reset-disassembler
     .ip
-    ip c@
-    dup $40 $4f between if
-        to prefix
+    ip c@ local byte
+    byte $66 =
+    byte $40 $4f between or
+    if
+        byte to prefix
         ip 1+ c@ to opcode
         2 +to ip
     else
-        to opcode
+        byte to opcode
         0 to prefix
         1 +to ip
     then
