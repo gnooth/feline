@@ -120,4 +120,15 @@ test6
 
 test7
 
+: test8
+    s" this" >string local s
+    s string> "this" string> str= assert
+    s " is a test" string-append
+    s string> "this is a test" string> str= assert
+    s ~string
+    s string? 0= assert
+;
+
+test8
+
 cr .( Reached end of string-tests.forth )

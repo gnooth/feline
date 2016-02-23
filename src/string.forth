@@ -200,6 +200,7 @@ only forth also definitions
     s string-data start + end start - >string
 ;
 
+0 [if]
 : string-append-string ( string-to-be-appended string -- )
     local s
     local sappend
@@ -211,7 +212,6 @@ only forth also definitions
     s string-length sappend string-length + s set-string-length
 ;
 
-0 [if]
 : string-append-chars ( addr len string -- )
     local this
     local len

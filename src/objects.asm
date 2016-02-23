@@ -1167,6 +1167,17 @@ code string_append_char, 'string-append-char' ; string char --
 
 endcode
 
+; ### string-append
+code string_append, 'string-append'     ; string1 string2 --
+        _ check_string
+        _swap
+        _ check_string
+        _swap                           ; -- s1 s2
+        _ string_from
+        _ string_append_chars
+        next
+endcode
+
 ; ### concat
 code concat, 'concat'                   ; string1 string2 -- string3
         _locals_enter
