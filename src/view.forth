@@ -43,14 +43,14 @@ only forth also hidden definitions
     loop
 ;
 
-: looking-at ( c-addr u -- flag )
-    local u
-    local c-addr
+: looking-at ( string -- flag )
+    check-string local s
+    s string-length local len
     true local result
-    dot u + bufsize <= if
-        u 0 ?do
+    dot len + bufsize <= if
+        len 0 ?do
             buffer dot + i + c@
-            c-addr i + c@
+            i s string-nth
             <> if
                 false to result
                 leave
@@ -66,14 +66,14 @@ only forth also hidden definitions
 
 : set-termination
     0 to termination
-    s" : " looking-at if
-        $" ;" to termination
+    ": " looking-at if
+        ";" to termination
     else
-        s" code " looking-at if
-            $" endcode" to termination
+        "code " looking-at if
+            "endcode" to termination
         else
-            s" inline " looking-at if
-                $" endinline" to termination
+            "inline " looking-at if
+                "endinline" to termination
             then
         then
     then
@@ -81,7 +81,7 @@ only forth also hidden definitions
 
 : termination?
     termination if
-        termination count looking-at
+        termination check-string looking-at
     else
         dot-char $0a =
     then
