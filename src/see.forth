@@ -863,6 +863,36 @@ initialize-setcc-mnemonic-table
             exit
         then
     then
+    byte2 $b7 = if
+        \ ModR/M byte contains both a register and an r/m operand
+        \ source is r/m16
+        \ dest is r32/64
+        $" movzx" to mnemonic
+        !modrm-byte
+        modrm-mod 0= if
+            modrm-rm register-rm to sbase
+            modrm-reg register-reg to dreg
+            $" word" to relative-size
+            .inst
+            exit
+        then
+        modrm-mod 1 = if
+            modrm-rm register-rm to sbase
+            next-signed-byte to sdisp
+            modrm-reg register-reg to dreg
+            $" word" to relative-size
+            .inst
+            exit
+        then
+        modrm-mod 3 = if
+            true to register-direct?
+            modrm-rm register-rm to sreg
+            16 to ssize
+            modrm-reg register-reg to dreg
+            .inst
+            exit
+        then
+    then
     byte2 $be = if
         $" movsx" to mnemonic
         !modrm-byte
