@@ -476,28 +476,18 @@ endcode
 
 ; ### mem=
 code memequal, 'mem='                   ; addr1 addr2 len -- flag
-        _?dup_if .1
-        _zero
-        _do .2
-        _twodup
-        _i
-        _plus
-        _cfetch
-        _swap
-        _i
-        _plus
-        _cfetch
-        _notequal
-        _if .3
-        _2drop
-        _false
-        _unloop
-        _return
-        _then .3
-        _loop .2
-        _then .1
-        _2drop
-        _true
+        mov     rcx, rbx
+        mov     rdi, [rbp]
+        mov     rsi, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        jrcxz   .1
+        repe    cmpsb
+        jne     .2
+.1:
+        mov     rbx, -1
+        next
+.2:
+        xor     ebx, ebx
         next
 endcode
 
