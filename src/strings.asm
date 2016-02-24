@@ -580,14 +580,14 @@ endcode
 
 ; ### str=
 code strequal, 'str='                   ; addr1 len1 addr2 len2 -- flag
-        _ rot
-        _ tuck
-        _notequal
-        _if .1
-        _3drop
-        _false
-        _return
-        _then .1
+        cmp     rbx, [rbp + BYTES_PER_CELL]
+        jz      .1
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+        xor     ebx, ebx
+        next
+.1:
+        ; lengths match                 ; -- addr1 len1 addr2 len2
+        _dropswap                       ; -- addr1 addr2 len1
         _ memequal
         next
 endcode
