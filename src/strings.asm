@@ -491,15 +491,6 @@ code memequal, 'mem='                   ; addr1 addr2 len -- flag
         next
 endcode
 
-; ### $=
-code string_equal, '$='                 ; $addr1 $addr2 -- flag
-        _ count
-        _ rot
-        _ count
-        _ strequal
-        next
-endcode
-
 ; ### upc
 code upc, 'upc'
         cmp     rbx, 'a'
