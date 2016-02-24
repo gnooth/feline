@@ -1209,3 +1209,12 @@ code concat, 'concat'                   ; string1 string2 -- string3
         _locals_leave
         next
 endcode
+
+; ### string=
+code stringequal, 'string='             ; string1 string2 -- flag
+        _ string_from
+        _ rot
+        _ string_from
+        _ strequal
+        next
+endcode

@@ -131,4 +131,23 @@ test7
 
 test8
 
+: test9
+    "this is a test" local s1
+    "this is a test" local s2
+    s1 s2 <> assert
+    s1 s2 string= assert
+    s" this is a test" >simple-string local s3
+    s1 s3 string= assert
+    s" this is a test" >transient-string local s4
+    s1 s4 string= assert
+    s" this is a test" >simple-string local s5
+    s1 s5 string= assert
+    "this is not a test" local s6
+    s1 s6 string= 0= assert
+    "this is a text" local s7
+    s1 s7 string= 0= assert
+;
+
+test9
+
 cr .( Reached end of string-tests.forth )
