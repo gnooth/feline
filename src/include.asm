@@ -260,6 +260,32 @@ code link_file, 'link-file'             ; string -- nfa
         next
 endcode
 
+; ### path-separator-char
+%ifdef WIN64
+constant path_separator_char, 'path-separator-char', '\'
+%else
+constant path_separator_char, 'path-separator-char', '/'
+%endif
+
+; ### path-separator-char?
+code path_separator_char?, 'path-separator-char?' ; char -- flag
+; Accept '/' even on Windows.
+%ifdef WIN64
+        _dup
+        _lit '\\'
+        _equal
+        _if .1
+        _drop
+        _true
+        _return
+        _then .1
+        ; Fall through...
+%endif
+        _lit '/'
+        _equal
+        next
+endcode
+
 ; ### dirname
 code forth_dirname, 'dirname'           ; string1 -- string2 | 0
         _ check_string
@@ -314,12 +340,10 @@ code tilde_expand_filename, 'tilde-expand-filename' ; string1 -- string2
         _lit 1
         _over
         _ string_nth
-        _ path_separator_char
-        _equal
+        _ path_separator_char?          ; "~/" or "~\"
         _if .3
-        ; "~/" or "~\"
         _ user_home
-        _ coerce_to_string
+        _ check_string
         _swap
         _ string_from
         _lit 1
@@ -477,13 +501,6 @@ code include, 'include'                 ; i*x "name" -- j*x
         next
 endcode
 
-; ### path-separator-char
-%ifdef WIN64
-constant path_separator_char, 'path-separator-char', '\'
-%else
-constant path_separator_char, 'path-separator-char', '/'
-%endif
-
 ; ### filename-is-absolute
 code filename_is_absolute, 'filename-is-absolute' ; string -- flag
         _ check_string
@@ -589,7 +606,6 @@ code required, 'required'               ; i*x c-addr u -- i*x
         _?dup_if .1
         _ resolve_include_filename
         _ check_string
-
         _ string_from
         _twodup
         _ files_wordlist
