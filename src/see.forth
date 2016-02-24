@@ -234,27 +234,27 @@ init-reg32-names
 create reg64-names 16 cells allot
 
 : init-reg64-names ( -- )
-    $" rax" reg64-names  0 cells + !
-    $" rcx" reg64-names  1 cells + !
-    $" rdx" reg64-names  2 cells + !
-    $" rbx" reg64-names  3 cells + !
-    $" rsp" reg64-names  4 cells + !
-    $" rbp" reg64-names  5 cells + !
-    $" rsi" reg64-names  6 cells + !
-    $" rdi" reg64-names  7 cells + !
-    $" r8"  reg64-names  8 cells + !
-    $" r9"  reg64-names  9 cells + !
-    $" r10" reg64-names 10 cells + !
-    $" r11" reg64-names 11 cells + !
-    $" r12" reg64-names 12 cells + !
-    $" r13" reg64-names 13 cells + !
-    $" r14" reg64-names 14 cells + !
-    $" r15" reg64-names 15 cells + !
+    "rax" reg64-names  0 cells + !
+    "rcx" reg64-names  1 cells + !
+    "rdx" reg64-names  2 cells + !
+    "rbx" reg64-names  3 cells + !
+    "rsp" reg64-names  4 cells + !
+    "rbp" reg64-names  5 cells + !
+    "rsi" reg64-names  6 cells + !
+    "rdi" reg64-names  7 cells + !
+    "r8"  reg64-names  8 cells + !
+    "r9"  reg64-names  9 cells + !
+    "r10" reg64-names 10 cells + !
+    "r11" reg64-names 11 cells + !
+    "r12" reg64-names 12 cells + !
+    "r13" reg64-names 13 cells + !
+    "r14" reg64-names 14 cells + !
+    "r15" reg64-names 15 cells + !
 ;
 
 init-reg64-names
 
-: reg64-name ( register-number -- $addr )
+: reg64-name ( register-number -- string )
     dup 0 15 between if
         cells reg64-names + @
     else
@@ -267,7 +267,7 @@ init-reg64-names
     local size
     local n
     size 64 = if
-        n reg64-name $.
+        n reg64-name .string
         exit
     then
     size 32 = if
@@ -286,7 +286,7 @@ init-reg64-names
 ;
 
 : .reg64  ( +n -- )
-    reg64-name $.
+    reg64-name .string
 ;
 
 0 value relative-size                   \ $addr or 0
@@ -331,10 +331,10 @@ init-reg64-names
     then
 
     buffer '[' string-append-char
-    base reg64-name buffer swap count string-append-chars
+    buffer base reg64-name string-append-string
     index -1 <> if
         buffer '+' string-append-char
-        index reg64-name buffer swap count string-append-chars
+        buffer index reg64-name string-append-string
         scale if
             buffer '*' string-append-char
             buffer 1 scale lshift (.) string-append-chars
