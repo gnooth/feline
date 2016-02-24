@@ -1168,7 +1168,7 @@ code string_append_char, 'string-append-char' ; string char --
 endcode
 
 ; ### string-append
-code string_append, 'string-append'     ; string1 string2 --
+code string_append_string, 'string-append-string' ; string1 string2 --
         _ check_string
         _swap
         _ check_string

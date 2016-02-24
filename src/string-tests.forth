@@ -123,7 +123,7 @@ test7
 : test8
     s" this" >string local s
     s string> "this" string> str= assert
-    s " is a test" string-append
+    s " is a test" string-append-string
     s string> "this is a test" string> str= assert
     s ~string
     s string? 0= assert
