@@ -284,7 +284,8 @@ create restore-buffer 258 allot
     while
         current-history
         ?dup if
-            count                       \ -- c-addr1 u1
+            check-string
+            string>
             copied-input                \ -- c-addr1 u1 c-addr2 u2
             rot                         \ -- c-addr1 c-addr2 u2 u1
             2dup <=                     \ -- c-addr1 c-addr2 u2 u1 flag
