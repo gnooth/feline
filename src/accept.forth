@@ -77,7 +77,7 @@ $1b constant esc
 \ An array of history entries.
 create history-array  history-size cells allot  history-array history-size cells erase
 
-: current-history ( -- $addr )
+: current-history ( -- string )
     history-array 0= if 0 exit then     \ shouldn't happen
     history-offset 0 history-length within if
         history-array history-offset cells + @
@@ -86,12 +86,12 @@ create history-array  history-size cells allot  history-array history-size cells
     then ;
 
 \ Return the contents of the first cell in the history array.
-: oldest ( -- addr )
+: oldest ( -- string )
     history-array 0= if 0 exit then     \ shouldn't happen
     history-array @ ;
 
 \ Return the contents of the last occupied cell in the history array.
-: newest ( -- addr )
+: newest ( -- string )
     history-array 0= if 0 exit then     \ shouldn't happen
     history-length 0= if 0 exit then
     history-array history-length 1- cells + @ ;
@@ -100,7 +100,7 @@ create history-array  history-size cells allot  history-array history-size cells
     history-array 0= if exit then       \ shouldn't happen
     history-length dup 16 - 0 max ?do
         history-array i cells + @
-        cr $.
+        cr .string
     loop ;
 
 : history-file-pathname ( -- c-addr u )
@@ -111,21 +111,10 @@ create history-array  history-size cells allot  history-array history-size cells
     history-array 0= if exit then       \ shouldn't happen
     history-file-pathname w/o create-file
     0= if                               \ -- fileid
-\         history-length 0 ?do
-\             dup                         \ -- fileid fileid
-\             history-array i cells + @
-\             count                       \ -- fileid fileid c-addr u
-\             rot                         \ -- fileid c-addr u fileid
-\             write-line                  \ -- fileid ior
-\             drop                        \ -- fileid
-\         loop
-\         close-file drop
         to fileid                       \ --
         history-length 0 ?do
-\             dup                         \ -- fileid fileid
-            history-array i cells + @   \ -- c-addr
-            count                       \ -- c-addr u
-\             rot                         \ -- fileid c-addr u fileid
+            history-array i cells + @   \ -- string
+            string>                     \ -- c-addr u
             fileid                      \ -- c-addr u fileid
             write-line                  \ -- ior
             drop                        \ --
@@ -149,8 +138,8 @@ create restore-buffer 258 allot
         2drop 0 0
     then ;
 
-: allocate-history-entry ( c-addr u -- $addr )
-    >$ ;
+: allocate-history-entry ( c-addr u -- string )
+    >simple-string ;
 
 : restore-history ( -- )
     history-array history-size cells erase
@@ -163,7 +152,7 @@ create restore-buffer 258 allot
         while
             r@ read-history-line        \ -- c-addr u
             ?dup if
-                allocate-history-entry  \ -- alloc-addr
+                allocate-history-entry  \ -- string
                 history-array history-offset cells + !
                 1 +to history-offset
                 1 +to history-length
@@ -182,29 +171,32 @@ create restore-buffer 258 allot
         drop
     then ;
 
-: clear-history ( -- )
-    history-array history-size cells erase
-    0 to history-length
-    -1 to history-offset ;
+\ : clear-history ( -- )
+\     history-array history-size cells erase
+\     0 to history-length
+\     -1 to history-offset ;
 
 : (free-history) ( -- )
     history-size 0 ?do
         history-array i cells + @
         ?dup if
-            -free
+            ~string
         then
     loop ;
 
 : add-history ( -- )
     #in if
+        \ Don't add the same string twice in a row.
         newest ?dup if
-            count bufstart #in str= if exit then
+            string> bufstart #in str= if exit then
         then
+        \ Don't add "bye" to history.
+        "bye" string> bufstart #in -trailing str= if exit then
         history-length history-size > if true abort" add-history: shouldn't happen" then
         history-length history-size = if
             \ we need to make room
             oldest ?dup if
-                -free
+                ~string
             then
             history-array dup cell+ swap history-size 1- cells move
             -1 +to history-length
@@ -229,8 +221,9 @@ create restore-buffer 258 allot
 : get-current-history ( -- )
     current-history                     \ -- c-addr
     ?dup if
+        coerce-to-string
         clear-line
-        count dup to #in dup to dot
+        string> dup to #in dup to dot
         bufstart swap cmove
         redisplay-line
     then
