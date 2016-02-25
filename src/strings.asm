@@ -270,8 +270,8 @@ code squote, 's"', IMMEDIATE
         _if .1
         _ sliteral
         _else .1
-        _ copy_to_temp_string
-        _ count
+        _ copy_to_transient_string
+        _ string_from
         _then .1
         next
 endcode
