@@ -271,7 +271,7 @@ init-reg64-names
         exit
     then
     size 32 = if
-        n reg32-name $.
+        n reg32-name .string
         exit
     then
     size 16 = if
@@ -279,7 +279,7 @@ init-reg64-names
         exit
     then
     size 8 = if
-        n reg8-name $.
+        n reg8-name .string
         exit
     then
     true abort" .register-name unsupported case"
@@ -300,7 +300,7 @@ init-reg64-names
     [ false ] [if]
 
     relative-size ?dup if
-        $. space
+        .string space
         0 to relative-size
     then
 
@@ -359,7 +359,7 @@ init-reg64-names
 
 : .memory-operand ( disp -- )
     relative-size ?dup if
-        $. space
+        .string space
         0 to relative-size
     then
     ." [" 0 h.r ." ]"
@@ -414,7 +414,7 @@ init-reg64-names
 : .mnemonic ( -- )
    mnemonic if
       40 >pos
-      mnemonic $.
+      mnemonic .string
    then ;
 
 : .instruction-bytes ( -- )
@@ -1922,7 +1922,7 @@ synonym disasm disasm
            ." (inlineable) "
        then
        xt >view 2@ ?dup if
-           $. ."  line " u.
+           .string ."  line " u.
        else
            drop
        then
