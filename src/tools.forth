@@ -15,7 +15,7 @@
 
 : locate ( <spaces>name -- )
     ' >view 2@ ?dup if
-        $. space .
+        .string space .
     else drop then ;
 
 \ : edit ( <spaces>name -- )
