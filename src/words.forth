@@ -33,7 +33,7 @@
 
 : process-word ( $addr -- )
     words-pattern if
-        dup count words-pattern count
+        dup count words-pattern string>
         search-ignore-case 0= if
             \ not a match
             3drop
@@ -61,12 +61,12 @@
     repeat
     ?cr
     words-count .
-    ." word" words-count 1 <> if [char] s emit then ;
+    ." word" words-count 1 <> if 's' emit then ;
 
 : words ( -- )
 \ TOOLS
 \ "List the definition names in the first word list of the search order."
-    blword count ?dup if >temp$ else drop 0 then to words-pattern
+    parse-name ?dup if >transient-string else drop 0 then to words-pattern
     (words) ;
 
 only forth also root definitions
