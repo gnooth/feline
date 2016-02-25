@@ -1264,6 +1264,7 @@ latest-xt $81 install-handler
     \ modrm-reg encodes opcode extension
     \ source is imm8
     \ dest is r/m32/64
+    set-instruction-size
     !modrm-byte
     mnemonic-from-regop to mnemonic
     modrm-mod 1 = if
