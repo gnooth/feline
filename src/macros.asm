@@ -88,8 +88,8 @@
 %macro  file    1
 %strlen len1    %1
 %strlen len2    FELINE_SOURCE_DIR
-section .text
-        align   DEFAULT_CODE_ALIGNMENT
+section .data
+        align   DEFAULT_DATA_ALIGNMENT
 %%name:
         db      len1 + len2 + 1
         db      FELINE_SOURCE_DIR
