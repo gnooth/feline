@@ -166,10 +166,10 @@ variable done?
 create reg8-names 4 cells allot         \ REVIEW 4
 
 : init-reg8-names ( -- )
-    $" al" reg8-names 0 cells + !
-    $" cl" reg8-names 1 cells + !
-    $" dl" reg8-names 2 cells + !
-    $" bl" reg8-names 3 cells + !
+    "al" reg8-names 0 cells + !
+    "cl" reg8-names 1 cells + !
+    "dl" reg8-names 2 cells + !
+    "bl" reg8-names 3 cells + !
 ;
 
 init-reg8-names
@@ -210,14 +210,14 @@ init-reg16-names
 create reg32-names 8 cells allot
 
 : init-reg32-names ( -- )
-    $" eax" reg32-names  0 cells + !
-    $" ecx" reg32-names  1 cells + !
-    $" edx" reg32-names  2 cells + !
-    $" ebx" reg32-names  3 cells + !
-    $" esp" reg32-names  4 cells + !
-    $" ebp" reg32-names  5 cells + !
-    $" esi" reg32-names  6 cells + !
-    $" edi" reg32-names  7 cells + !
+    "eax" reg32-names  0 cells + !
+    "ecx" reg32-names  1 cells + !
+    "edx" reg32-names  2 cells + !
+    "ebx" reg32-names  3 cells + !
+    "esp" reg32-names  4 cells + !
+    "ebp" reg32-names  5 cells + !
+    "esi" reg32-names  6 cells + !
+    "edi" reg32-names  7 cells + !
 ;
 
 init-reg32-names
@@ -289,7 +289,7 @@ init-reg64-names
     reg64-name .string
 ;
 
-0 value relative-size                   \ $addr or 0
+0 value relative-size                   \ string or 0
 
 : .relative ( base index scale disp -- )
     local disp
@@ -325,7 +325,8 @@ init-reg64-names
     260 <string> local buffer
 
     relative-size ?dup if
-        buffer swap count string-append-chars
+        coerce-to-string
+        buffer swap string-append-string
         buffer $20 ( space ) string-append-char
         0 to relative-size
     then
@@ -502,7 +503,7 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
    cell +to ip ;
 
 : .call  ( -- )
-   $" call" to mnemonic
+   "call" to mnemonic
    next-int32 ip + local code-address
 
    .instruction-bytes
@@ -513,7 +514,7 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 ;
 
 : .e9  ( -- )
-   $" jmp" to mnemonic
+   "jmp" to mnemonic
    next-int32 ip + local code-address
    .instruction-bytes
    .mnemonic
@@ -631,7 +632,7 @@ latest-xt $e9 install-handler
 ;
 
 : .00 ( -- )
-    $" add" to mnemonic
+    "add" to mnemonic
     \ source is r8
     \ dest is r/m8
     !modrm-byte
@@ -639,7 +640,7 @@ latest-xt $e9 install-handler
     8 to ssize
     modrm-mod 0= if
         modrm-rm register-rm to dbase
-        $" byte" to relative-size       \ REVIEW
+        "byte" to relative-size       \ REVIEW
         .inst
         exit
     then
@@ -656,7 +657,7 @@ latest-xt $e9 install-handler
 latest-xt $00 install-handler
 
 : .01 ( -- )                            \ ADD reg/mem64, reg64
-    $" add" to mnemonic
+    "add" to mnemonic
     /r-r/m-reg
 ;
 
@@ -667,7 +668,7 @@ latest-xt $01 install-handler
     \ /r
     \ source is r/m32/64
     \ dest is r32/64
-    $" add" to mnemonic
+    "add" to mnemonic
     /r-reg-r/m
 ;
 
@@ -679,7 +680,7 @@ latest-xt $03 install-handler
     \ source is r32/64
     \ dest is r/m32/64
     !modrm-byte
-    $" or" to mnemonic
+    "or" to mnemonic
     modrm-mod 3 = if
         \ register-direct
         modrm-reg register-reg to sreg
@@ -697,7 +698,7 @@ latest-xt $09 install-handler
     \ ModR/M byte contains both a register and an r/m operand
     \ source is r/m32/64
     \ dest is r32/64
-    $" or" to mnemonic
+    "or" to mnemonic
     /r-reg-r/m
 ;
 
@@ -728,22 +729,22 @@ create cmovcc-mnemonic-table 16 cells allot
 
 : initialize-cmovcc-mnemonic-table ( -- )
     cmovcc-mnemonic-table local t
-    $" cmovo"  t  0 cells +  !
-    $" cmovno" t  1 cells +  !
-    $" cmovc"  t  2 cells +  !
-    $" cmovnc" t  3 cells +  !
-    $" cmovz"  t  4 cells +  !
-    $" cmovnz" t  5 cells +  !
-    $" cmovna" t  6 cells +  !
-    $" cmova"  t  7 cells +  !
-    $" cmovs"  t  8 cells +  !
-    $" cmovns" t  9 cells +  !
-    $" cmovpe" t 10 cells +  !
-    $" cmovpo" t 11 cells +  !
-    $" cmovl"  t 12 cells +  !
-    $" cmovge" t 13 cells +  !
-    $" cmovle" t 14 cells +  !
-    $" cmovg"  t 15 cells +  !
+    "cmovo"  t  0 cells +  !
+    "cmovno" t  1 cells +  !
+    "cmovc"  t  2 cells +  !
+    "cmovnc" t  3 cells +  !
+    "cmovz"  t  4 cells +  !
+    "cmovnz" t  5 cells +  !
+    "cmovna" t  6 cells +  !
+    "cmova"  t  7 cells +  !
+    "cmovs"  t  8 cells +  !
+    "cmovns" t  9 cells +  !
+    "cmovpe" t 10 cells +  !
+    "cmovpo" t 11 cells +  !
+    "cmovl"  t 12 cells +  !
+    "cmovge" t 13 cells +  !
+    "cmovle" t 14 cells +  !
+    "cmovg"  t 15 cells +  !
 ;
 
 : cmovcc-mnemonic ( byte2 -- )
@@ -756,22 +757,22 @@ create setcc-mnemonic-table 16 cells allot
 
 : initialize-setcc-mnemonic-table ( -- )
     setcc-mnemonic-table local t
-    $" seto"  t  0 cells +  !
-    $" setno" t  1 cells +  !
-    $" setc"  t  2 cells +  !
-    $" setnc" t  3 cells +  !
-    $" setz"  t  4 cells +  !
-    $" setnz" t  5 cells +  !
-    $" setna" t  6 cells +  !
-    $" seta"  t  7 cells +  !
-    $" sets"  t  8 cells +  !
-    $" setns" t  9 cells +  !
-    $" setpe" t 10 cells +  !
-    $" setpo" t 11 cells +  !
-    $" setl"  t 12 cells +  !
-    $" setge" t 13 cells +  !
-    $" setle" t 14 cells +  !
-    $" setg"  t 15 cells +  !
+    "seto"  t  0 cells +  !
+    "setno" t  1 cells +  !
+    "setc"  t  2 cells +  !
+    "setnc" t  3 cells +  !
+    "setz"  t  4 cells +  !
+    "setnz" t  5 cells +  !
+    "setna" t  6 cells +  !
+    "seta"  t  7 cells +  !
+    "sets"  t  8 cells +  !
+    "setns" t  9 cells +  !
+    "setpe" t 10 cells +  !
+    "setpo" t 11 cells +  !
+    "setl"  t 12 cells +  !
+    "setge" t 13 cells +  !
+    "setle" t 14 cells +  !
+    "setg"  t 15 cells +  !
 ;
 
 initialize-setcc-mnemonic-table
@@ -795,25 +796,25 @@ initialize-setcc-mnemonic-table
         exit
     then
     byte2 $31 = if
-        $" rdtsc" to mnemonic
+        "rdtsc" to mnemonic
         0 to #operands
         .inst
         exit
     then
     byte2 $81 = if
-        $" jno" .jcc32
+        "jno" .jcc32
         exit
     then
     byte2 $84 = if
-        $" jz" .jcc32
+        "jz" .jcc32
         exit
     then
     byte2 $85 = if
-        $" jne" .jcc32
+        "jne" .jcc32
         exit
     then
     byte2 $8d = if
-        $" jge" .jcc32
+        "jge" .jcc32
         exit
     then
     byte2 $f0 and $90 = if
@@ -829,7 +830,7 @@ initialize-setcc-mnemonic-table
         unsupported
     then
     byte2 $af = if
-        $" imul" to mnemonic
+        "imul" to mnemonic
         /r-reg-r/m
         exit
     then
@@ -837,12 +838,12 @@ initialize-setcc-mnemonic-table
         \ ModR/M byte contains both a register and an r/m operand
         \ source is r/m8
         \ dest is r32/64
-        $" movzx" to mnemonic
+        "movzx" to mnemonic
         !modrm-byte
         modrm-mod 0= if
             modrm-rm register-rm to sbase
             modrm-reg register-reg to dreg
-            $" byte" to relative-size
+            "byte" to relative-size
             .inst
             exit
         then
@@ -850,7 +851,7 @@ initialize-setcc-mnemonic-table
             modrm-rm register-rm to sbase
             next-signed-byte to sdisp
             modrm-reg register-reg to dreg
-            $" byte" to relative-size
+            "byte" to relative-size
             .inst
             exit
         then
@@ -867,12 +868,12 @@ initialize-setcc-mnemonic-table
         \ ModR/M byte contains both a register and an r/m operand
         \ source is r/m16
         \ dest is r32/64
-        $" movzx" to mnemonic
+        "movzx" to mnemonic
         !modrm-byte
         modrm-mod 0= if
             modrm-rm register-rm to sbase
             modrm-reg register-reg to dreg
-            $" word" to relative-size
+            "word" to relative-size
             .inst
             exit
         then
@@ -880,7 +881,7 @@ initialize-setcc-mnemonic-table
             modrm-rm register-rm to sbase
             next-signed-byte to sdisp
             modrm-reg register-reg to dreg
-            $" word" to relative-size
+            "word" to relative-size
             .inst
             exit
         then
@@ -894,12 +895,12 @@ initialize-setcc-mnemonic-table
         then
     then
     byte2 $be = if
-        $" movsx" to mnemonic
+        "movsx" to mnemonic
         !modrm-byte
         modrm-mod 0= if
             modrm-rm register-rm to sbase
             8 to ssize
-            $" byte" to relative-size   \ REVIEW shouldn't need to do this if we've set ssize
+            "byte" to relative-size   \ REVIEW shouldn't need to do this if we've set ssize
             modrm-rm register-reg to dreg
             .inst
             exit
@@ -911,12 +912,12 @@ initialize-setcc-mnemonic-table
         exit
     then
     byte2 $bf = if
-        $" movsx" to mnemonic
+        "movsx" to mnemonic
         !modrm-byte
         modrm-mod 0= if
             modrm-rm register-rm to sbase
             16 to ssize
-            $" word" to relative-size   \ REVIEW shouldn't need to do this if we've set ssize
+            "word" to relative-size   \ REVIEW shouldn't need to do this if we've set ssize
             modrm-rm register-reg to dreg
             .inst
             exit
@@ -932,21 +933,21 @@ initialize-setcc-mnemonic-table
 latest-xt $0f install-handler
 
 : .push  ( -- )
-    $" push" to mnemonic
+    "push" to mnemonic
     opcode $50 - register-rm to dreg
     1 to #operands
     .inst
 ;
 
 : .pop  ( -- )
-    $" pop" to mnemonic
+    "pop" to mnemonic
     opcode $58 - register-rm to dreg
     1 to #operands
     .inst
 ;
 
 : .ret  ( -- )
-   $" ret" to mnemonic
+   "ret" to mnemonic
    0 to #operands
    .inst
    ip end-address > if
@@ -958,14 +959,14 @@ latest-xt $0f install-handler
     \ /r
     \ source is r/m32/64
     \ dest is r32/64
-    $" adc" to mnemonic
+    "adc" to mnemonic
     /r-reg-r/m
 ;
 
 latest-xt $13 install-handler
 
 : .19 ( -- )
-   $" sbb" to mnemonic
+   "sbb" to mnemonic
    /r-r/m-reg
 ;
 
@@ -975,7 +976,7 @@ latest-xt $19 install-handler
     \ /r
     \ source is r/m32/64
     \ dest is r32/64
-    $" sbb" to mnemonic
+    "sbb" to mnemonic
     /r-reg-r/m
 ;
 
@@ -985,7 +986,7 @@ latest-xt $1b install-handler
     \ /r
     \ source is r/m32/64
     \ dest is r32/64
-    $" and" to mnemonic
+    "and" to mnemonic
     /r-reg-r/m
 ;
 
@@ -993,7 +994,7 @@ latest-xt $1b install-handler
 
 \ $29 handler
 : .29 ( -- )
-    $" sub" to mnemonic
+    "sub" to mnemonic
     /r-r/m-reg
 ;
 
@@ -1003,7 +1004,7 @@ latest-xt $29 install-handler
     \ /r
     \ dest is r32/64
     \ source is r/m32/64
-    $" sub" to mnemonic
+    "sub" to mnemonic
     /r-reg-r/m
 ;
 
@@ -1012,7 +1013,7 @@ latest-xt $2b install-handler
 : .30 ( -- )
     \ source r8
     \ dest r/m8
-    $" xor" to mnemonic
+    "xor" to mnemonic
     !modrm-byte
     modrm-mod 3 = if
         true to register-direct?
@@ -1029,14 +1030,14 @@ latest-xt $2b install-handler
 latest-xt $30 install-handler
 
 : .31 ( -- )
-   $" xor" to mnemonic
+   "xor" to mnemonic
    /r-r/m-reg
 ;
 
 latest-xt $31 install-handler
 
 : .33 ( -- )
-    $" xor" to mnemonic
+    "xor" to mnemonic
     /r-reg-r/m
 ;
 
@@ -1046,7 +1047,7 @@ latest-xt $33 install-handler
     \ /r
     \ dest is r/m8
     \ source is r8
-    $" cmp" to mnemonic
+    "cmp" to mnemonic
     !modrm-byte
     modrm-mod 0= if
         modrm-rm register-rm to dbase
@@ -1072,7 +1073,7 @@ latest-xt $38 install-handler
     \ /r
     \ dest is r/m32/64
     \ source is r32/64
-    $" cmp" to mnemonic
+    "cmp" to mnemonic
     /r-r/m-reg
 ;
 
@@ -1080,7 +1081,7 @@ latest-xt $39 install-handler
 
 \ $3b handler
 : .3b ( -- )
-    $" cmp" to mnemonic
+    "cmp" to mnemonic
     \ /r
     \ source is r/m32/64
     \ dest is r32/64
@@ -1090,7 +1091,7 @@ latest-xt $39 install-handler
 latest-xt $3b install-handler
 
 : .3c ( -- )                            \ cmp al, imm8
-    $" cmp" to mnemonic
+    "cmp" to mnemonic
     ip c@                               \ -- imm8
     1 +to ip
     .instruction-bytes
@@ -1105,11 +1106,11 @@ latest-xt $3c install-handler
     \ /r
     \ source is r/m32
     \ dest is r32/64
-    $" movsx" to mnemonic
+    "movsx" to mnemonic
     !modrm-byte
     modrm-reg register-reg to dreg
     modrm-rm  register-rm  to sbase
-    $" dword" to relative-size
+    "dword" to relative-size
     .inst
 ;
 
@@ -1126,35 +1127,35 @@ latest-xt $63 install-handler
     then
 ;
 
-: .70 ( -- ) $" jo"  jmp/jcc-rel8 ; latest-xt $70 install-handler
-: .71 ( -- ) $" jno" jmp/jcc-rel8 ; latest-xt $71 install-handler
-: .72 ( -- ) $" jc"  jmp/jcc-rel8 ; latest-xt $72 install-handler
-: .73 ( -- ) $" jnc" jmp/jcc-rel8 ; latest-xt $73 install-handler
-: .74 ( -- ) $" jz"  jmp/jcc-rel8 ; latest-xt $74 install-handler
-: .75 ( -- ) $" jne" jmp/jcc-rel8 ; latest-xt $75 install-handler
-: .76 ( -- ) $" jna" jmp/jcc-rel8 ; latest-xt $76 install-handler
-: .77 ( -- ) $" ja"  jmp/jcc-rel8 ; latest-xt $77 install-handler
-: .78 ( -- ) $" js"  jmp/jcc-rel8 ; latest-xt $78 install-handler
-: .79 ( -- ) $" jns" jmp/jcc-rel8 ; latest-xt $79 install-handler
-: .7a ( -- ) $" jpe" jmp/jcc-rel8 ; latest-xt $7a install-handler
-: .7b ( -- ) $" jpo" jmp/jcc-rel8 ; latest-xt $7b install-handler
-: .7c ( -- ) $" jl"  jmp/jcc-rel8 ; latest-xt $7c install-handler
-: .7d ( -- ) $" jge" jmp/jcc-rel8 ; latest-xt $7d install-handler
-: .7e ( -- ) $" jle" jmp/jcc-rel8 ; latest-xt $7e install-handler
-: .7f ( -- ) $" jg"  jmp/jcc-rel8 ; latest-xt $7f install-handler
+: .70 ( -- ) "jo"  jmp/jcc-rel8 ; latest-xt $70 install-handler
+: .71 ( -- ) "jno" jmp/jcc-rel8 ; latest-xt $71 install-handler
+: .72 ( -- ) "jc"  jmp/jcc-rel8 ; latest-xt $72 install-handler
+: .73 ( -- ) "jnc" jmp/jcc-rel8 ; latest-xt $73 install-handler
+: .74 ( -- ) "jz"  jmp/jcc-rel8 ; latest-xt $74 install-handler
+: .75 ( -- ) "jne" jmp/jcc-rel8 ; latest-xt $75 install-handler
+: .76 ( -- ) "jna" jmp/jcc-rel8 ; latest-xt $76 install-handler
+: .77 ( -- ) "ja"  jmp/jcc-rel8 ; latest-xt $77 install-handler
+: .78 ( -- ) "js"  jmp/jcc-rel8 ; latest-xt $78 install-handler
+: .79 ( -- ) "jns" jmp/jcc-rel8 ; latest-xt $79 install-handler
+: .7a ( -- ) "jpe" jmp/jcc-rel8 ; latest-xt $7a install-handler
+: .7b ( -- ) "jpo" jmp/jcc-rel8 ; latest-xt $7b install-handler
+: .7c ( -- ) "jl"  jmp/jcc-rel8 ; latest-xt $7c install-handler
+: .7d ( -- ) "jge" jmp/jcc-rel8 ; latest-xt $7d install-handler
+: .7e ( -- ) "jle" jmp/jcc-rel8 ; latest-xt $7e install-handler
+: .7f ( -- ) "jg"  jmp/jcc-rel8 ; latest-xt $7f install-handler
 
 : mnemonic-from-regop ( -- $addr )
     opcode $80 $83 between if
         regop
         case
-            0 of $" add" endof
-            1 of $" or"  endof
-            2 of $" adc" endof
-            3 of $" sbb" endof
-            4 of $" and" endof
-            5 of $" sub" endof
-            6 of $" xor" endof
-            7 of $" cmp" endof
+            0 of "add" endof
+            1 of "or"  endof
+            2 of "adc" endof
+            3 of "sbb" endof
+            4 of "and" endof
+            5 of "sub" endof
+            6 of "xor" endof
+            7 of "cmp" endof
         endcase
         exit
     then
@@ -1162,28 +1163,28 @@ latest-xt $63 install-handler
     opcode $d0 $d3 between or if
         regop
         case
-            0 of $" rol" endof
-            1 of $" ror" endof
-            2 of $" rcl" endof
-            3 of $" rcr" endof
-            4 of $" shl" endof
-            5 of $" shr" endof
-            6 of $" shl" endof
-            7 of $" sar" endof
+            0 of "rol" endof
+            1 of "ror" endof
+            2 of "rcl" endof
+            3 of "rcr" endof
+            4 of "shl" endof
+            5 of "shr" endof
+            6 of "shl" endof
+            7 of "sar" endof
         endcase
         exit
     then
     opcode $f7 = if
         regop
         case
-            0 of $" test" endof
-            1 of $" test" endof
-            2 of $" not"  endof
-            3 of $" neg"  endof
-            4 of $" mul"  endof
-            5 of $" imul" endof
-            6 of $" div"  endof
-            7 of $" idiv" endof
+            0 of "test" endof
+            1 of "test" endof
+            2 of "not"  endof
+            3 of "neg"  endof
+            4 of "mul"  endof
+            5 of "imul" endof
+            6 of "div"  endof
+            7 of "idiv" endof
         endcase
         exit
     then
@@ -1199,7 +1200,7 @@ latest-xt $63 install-handler
 
     modrm-mod 0= if
         modrm-rm register-rm to dbase
-        $" byte" to relative-size
+        "byte" to relative-size
         next-byte to immediate-operand
         true to immediate-operand?
         .inst
@@ -1274,7 +1275,7 @@ latest-xt $81 install-handler
             \ add r/m32,imm8
             modrm-rm register-rm to dbase
             next-signed-byte to ddisp
-            $" qword" to relative-size
+            "qword" to relative-size
             \ source is imm8
             true to immediate-operand?
             next-byte to immediate-operand
@@ -1301,7 +1302,7 @@ latest-xt $83 install-handler
     \ /r
     \ source is r8
     \ dest is r/m8
-    $" test" to mnemonic
+    "test" to mnemonic
     !modrm-byte
     modrm-mod 3 = if
         true to register-direct?
@@ -1321,14 +1322,14 @@ latest-xt $84 install-handler
     \ /r
     \ source is r32/64
     \ dest is r/m32/64
-    $" test" to mnemonic
+    "test" to mnemonic
     /r-r/m-reg
 ;
 
 latest-xt $85 install-handler
 
 : .88 ( -- )                            \ MOV reg/mem8, reg8            88 /r
-    $" mov" to mnemonic
+    "mov" to mnemonic
     !modrm-byte
     modrm-reg to sreg
     8 to ssize
@@ -1361,7 +1362,7 @@ latest-xt $88 install-handler
     \ /r
     \ source is r32/64
     \ dest is r/m32/64
-    $" mov" to mnemonic
+    "mov" to mnemonic
     /r-r/m-reg
 ;
 
@@ -1369,7 +1370,7 @@ latest-xt $88 install-handler
     \ /r
     \ source is r/m8
     \ dest is r8
-    $" mov" to mnemonic
+    "mov" to mnemonic
     !modrm-byte
     modrm-reg to dreg
     8 to dsize
@@ -1406,12 +1407,12 @@ latest-xt $8a install-handler
     \ /r
     \ source is r/m32/64
     \ dest is r32/64
-    $" mov" to mnemonic
+    "mov" to mnemonic
     /r-reg-r/m
 ;
 
 : .8d  ( -- )                           \ LEA reg64, mem
-    $" lea" to mnemonic
+    "lea" to mnemonic
     !modrm-byte
     modrm-reg register-reg to dreg
     modrm-mod 2 = if
@@ -1441,7 +1442,7 @@ latest-xt $8a install-handler
 ;
 
 : .8f ( -- )
-    $" pop" to mnemonic
+    "pop" to mnemonic
     1 to #operands
     !modrm-byte
     regop 0= if
@@ -1462,7 +1463,7 @@ latest-xt $8a install-handler
         modrm-mod 1 = if
             modrm-rm register-rm to dbase
             next-signed-byte to ddisp
-            $" qword" to relative-size  \ REVIEW
+            "qword" to relative-size  \ REVIEW
             .inst
             exit
         then
@@ -1473,7 +1474,7 @@ latest-xt $8a install-handler
 latest-xt $8f install-handler
 
 : .90 ( -- )
-   $" nop" to mnemonic
+   "nop" to mnemonic
    0 to #operands
    .inst
 ;
@@ -1481,7 +1482,7 @@ latest-xt $8f install-handler
 latest-xt $90 install-handler
 
 : .99 ( -- )
-    prefix if $" cqo" else $" cdq" then to mnemonic
+    prefix if "cqo" else "cdq" then to mnemonic
     0 to #operands
     .inst
 ;
@@ -1489,7 +1490,7 @@ latest-xt $90 install-handler
 latest-xt $99 install-handler
 
 : .aa ( -- )
-   $" stosb" to mnemonic
+   "stosb" to mnemonic
    0 to #operands
    .inst
 ;
@@ -1499,7 +1500,7 @@ latest-xt $aa install-handler
 : .b8  ( -- )
     \ source is imm32/64
     \ dest is r32/64
-    $" mov" to mnemonic
+    "mov" to mnemonic
     opcode $b8 - to dreg
     prefix if
 \         ip @ cell +to ip
@@ -1543,7 +1544,7 @@ latest-xt $aa install-handler
     \ or memory operand.
     !modrm-byte
     regop 0= if                         \ /0
-        $" mov" to mnemonic
+        "mov" to mnemonic
         modrm-mod 0= if
             modrm-rm 4 = if
                 !sib-byte
@@ -1551,7 +1552,7 @@ latest-xt $aa install-handler
                     \ [disp32]
                     next-int32 to ddisp
                     true to memory-operand?
-                    $" qword" to relative-size
+                    "qword" to relative-size
                     next-uint32 to immediate-operand
                     true to immediate-operand?
                     .inst
@@ -1561,7 +1562,7 @@ latest-xt $aa install-handler
         then
         modrm-mod 0= if
             modrm-rm register-rm to dbase
-            $" qword" to relative-size
+            "qword" to relative-size
             next-int32 to immediate-operand
             true to immediate-operand?
             .inst
@@ -1570,7 +1571,7 @@ latest-xt $aa install-handler
         modrm-mod 1 = if
             \ [r/m + disp8]
             modrm-rm register-rm to dbase
-            $" qword" to relative-size
+            "qword" to relative-size
             next-signed-byte to ddisp
             next-int32 to immediate-operand
             true to immediate-operand?
@@ -1591,7 +1592,7 @@ latest-xt $aa install-handler
 latest-xt $c7 install-handler
 
 : .c9 ( -- )
-    $" leave" to mnemonic
+    "leave" to mnemonic
     1 to #operands
     .inst
 ;
@@ -1599,7 +1600,7 @@ latest-xt $c7 install-handler
 latest-xt $c9 install-handler
 
 : .cc ( -- )
-    $" int3" to mnemonic
+    "int3" to mnemonic
     0 to #operands
     .inst
 ;
@@ -1607,7 +1608,7 @@ latest-xt $c9 install-handler
 latest-xt $cc install-handler
 
 : .cd ( -- )
-    $" int" to mnemonic
+    "int" to mnemonic
     0 to #operands
     ip c@
     1 +to ip
@@ -1624,7 +1625,7 @@ latest-xt $cd install-handler
         \ 1-byte displacement
         modrm-rm register-rm to dbase
         next-signed-byte to ddisp
-        $" qword" to relative-size
+        "qword" to relative-size
         1 to immediate-operand
         true to immediate-operand?
         .inst
@@ -1662,7 +1663,7 @@ latest-xt $d1 install-handler
 latest-xt $d3 install-handler
 
 : .e2 ( -- )
-   $" loop" to mnemonic
+   "loop" to mnemonic
    ip c@s
    1 +to ip
    ip + local code-address
@@ -1677,7 +1678,7 @@ latest-xt $e2 install-handler
 
 : .e3 ( -- )
     \ jump short if rcx == 0
-    $" jrcxz" to mnemonic
+    "jrcxz" to mnemonic
     ip c@s                              \ --
     1 +to ip
     ip + local target
@@ -1688,7 +1689,7 @@ latest-xt $e2 install-handler
 
 latest-xt $e3 install-handler
 
-: .eb ( -- ) $" jmp" jmp/jcc-rel8 ; latest-xt $eb install-handler
+: .eb ( -- ) "jmp" jmp/jcc-rel8 ; latest-xt $eb install-handler
 
 : .f3 ( -- )
     ip c@ local byte2
@@ -1715,7 +1716,7 @@ latest-xt $f3 install-handler
 : .f6 ( -- )
     !modrm-byte
     modrm-reg 3 = if
-        $" neg" to mnemonic
+        "neg" to mnemonic
         modrm-rm to dreg
         8 to dsize
         1 to #operands
@@ -1740,7 +1741,7 @@ latest-xt $f6 install-handler
             \ disp8
             next-signed-byte to ddisp
             modrm-rm register-rm to dbase
-            $" qword" to relative-size
+            "qword" to relative-size
             .inst
             exit
         then
@@ -1783,11 +1784,11 @@ latest-xt $fd install-handler
 
     regop
     case
-        0 of $" inc"  endof
-        1 of $" dec"  endof
-        2 of $" call" endof
-        4 of $" jmp"  endof
-        6 of $" push" endof
+        0 of "inc"  endof
+        1 of "dec"  endof
+        2 of "call" endof
+        4 of "jmp"  endof
+        6 of "push" endof
     endcase
     to mnemonic
 
