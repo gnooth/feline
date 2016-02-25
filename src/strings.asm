@@ -345,53 +345,6 @@ code abortquote, 'abort"', IMMEDIATE
         next
 endcode
 
-; ### cmove
-code cmove, 'cmove'                     ; c-addr1 c-addr2 u --
-        mov     rcx, rbx                        ; count
-        mov     rdi, [rbp]                      ; destination
-        mov     rsi, [rbp + BYTES_PER_CELL]     ; source
-        mov     rbx, [rbp + BYTES_PER_CELL * 2]
-        lea     rbp, [rbp + BYTES_PER_CELL * 3]
-        jrcxz   .1
-        rep     movsb
-.1:
-        next
-endcode
-
-; ### cmove>
-code cmoveup, 'cmove>'                  ; c-addr1 c-addr2 u --
-        mov     rcx, rbx                        ; count
-        mov     rdi, [rbp]                      ; destination
-        mov     rsi, [rbp + BYTES_PER_CELL]     ; source
-        mov     rbx, [rbp + BYTES_PER_CELL * 2]
-        lea     rbp, [rbp + BYTES_PER_CELL * 3]
-        jrcxz   .1
-        dec     rcx
-        add     rdi, rcx
-        add     rsi, rcx
-        inc     rcx
-        std
-        rep     movsb
-        cld
-.1:
-        next
-endcode
-
-; ### move
-code move, 'move'                       ; addr1 addr2 u --
-        _tor
-        _twodup
-        _ ult
-        _if .1
-        _rfrom
-        _ cmoveup
-        _else .1
-        _rfrom
-        _ cmove
-        _then .1
-        next
-endcode
-
 ; ### fill
 code fill, 'fill'                       ; c-addr u char --
 ; CORE

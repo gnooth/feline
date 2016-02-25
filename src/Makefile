@@ -95,6 +95,7 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	locals.asm \
 	loop.asm \
 	memory.asm \
+	move.asm \
 	number.asm \
 	objects.asm \
 	opt.asm \

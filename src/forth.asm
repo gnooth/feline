@@ -42,6 +42,7 @@ default abs ; use absolute addresses by default
 %include "locals.asm"
 %include "loop.asm"
 %include "memory.asm"
+%include "move.asm"
 %include "number.asm"
 %include "objects.asm"
 %include "opt.asm"
