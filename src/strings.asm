@@ -261,22 +261,6 @@ code cquote, 'c"', IMMEDIATE
         next
 endcode
 
-; ### $"
-code dollarquote, '$"', IMMEDIATE       ; -- $addr
-; Upper Deck Forth
-; "Parses a string delimited by " from the input stream.
-; Returns address of packed, null-terminated string."
-        _lit '"'
-        _ parse                         ; -- c-addr u
-        _ statefetch
-        _if .1
-        _ cliteral
-        _else .1
-        _ copy_to_temp_string
-        _then .1
-        next
-endcode
-
 ; ### s"
 code squote, 's"', IMMEDIATE
 ; CORE, FILE
