@@ -254,14 +254,10 @@ endcode
 code cquote, 'c"', IMMEDIATE
 ; CORE EXT
 ; "Interpretation semantics for this word are undefined."
+        _ ?comp
         _lit '"'
         _ parse                         ; -- c-addr u
-        _ statefetch
-        _if .1
         _ cliteral
-        _else .1
-        _ copy_to_temp_string
-        _then .1
         next
 endcode
 
