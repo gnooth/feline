@@ -81,17 +81,6 @@ code stringbuf_plus, '$buf+'            ; -- $addr
         next
 endcode
 
-; ### >temp$
-code copy_to_temp_string, '>temp$'      ; c-addr u -- $addr
-; copy the string at c-addr u to the temporary string area
-; advance the temporary string pointer past the copied string
-; return the address of the copied string
-        _ stringbuf
-        _ place
-        _ stringbuf_plus
-        next
-endcode
-
 ; ### $.
 code counttype, '$.'                    ; $addr --
         _ count
