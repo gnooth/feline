@@ -100,11 +100,12 @@ code find_local, 'find-local'           ; found:        $addr -- index true
         _i
         _cells
         _plus
-        _fetch                          ; -- $addr $addr2
-        _over                           ; -- $addr $addr2 $addr
-        _count
-        _ rot
-        _count
+        _fetch                          ; -- $addr string
+        _ check_string                  ; -- $addr string
+        _over                           ; -- $addr string $addr
+        _count                          ; -- $addr string c-addr u
+        _ rot                           ; -- $addr c-addr u string
+        _ string_from                   ; -- $addr c-addr u c-addr2 u2
         _ istrequal
         _if .3
         ; found it!
@@ -219,7 +220,8 @@ code delete_local_names, 'delete-local-names'
         _plus
         _fetch
         _?dup_if .3
-        _ ifree
+        _ check_string
+        _ delete_string
         _then .3
         _loop .2
         _ local_names
@@ -239,7 +241,7 @@ code paren_local, '(local)'             ; c-addr u --
 ; significance."
         _ flush_compilation_queue
 
-        _ ?dup
+        _?dup
         _zeq_if .1
         ; last local
         _drop
@@ -259,12 +261,12 @@ code paren_local, '(local)'             ; c-addr u --
         _ ult
         _if .4
 
-        _ save_string                   ; -- $addr
+        _ copy_to_simple_string         ; -- string
         _ local_names
         _ locals_defined
         _cells
-        _ plus
-        _ store
+        _plus
+        _store
 
         _ locals_defined                ; -- index
         _ compile_to_local
