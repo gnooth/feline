@@ -25,12 +25,6 @@ file __FILE__
 
 ; Slot 0 is the object header.
 
-; ### slot 0
-; returns contents of slot0
-inline slot0, 'slot0'                   ; object-addr -- x
-        _slot0
-endinline
-
 ; ### object-header
 ; DEPRECATED
 inline object_header, 'object-header'   ; object -- x
@@ -93,6 +87,22 @@ inline set_object_flags, 'set-object-flags' ; flags object --
         _set_object_flags
 endinline
 
+; ### transient?
+code transient?, 'transient?'           ; string -- flag
+        _object_flags
+        and     ebx, TRANSIENT
+        _zne
+        next
+endcode
+
+; ### allocated?
+code allocated?, 'allocated?'           ; string -- flag
+        _object_flags
+        and     ebx, ALLOCATED
+        _zne
+        next
+endcode
+
 %macro  _slot1 0                        ; object -- x
         mov     rbx, [rbx + BYTES_PER_CELL]
 %endmacro
@@ -104,31 +114,27 @@ endinline
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
 
-; ### slot2
-; returns contents of slot2
-inline slot2, 'slot2'                   ; object -- x
+%macro  _slot2 0                        ; object -- x
         mov     rbx, [rbx + BYTES_PER_CELL * 2]
-endinline
+%endmacro
 
-; ### slot2!
-code set_slot2, 'slot2!'                ; x object --
-        add     rbx, BYTES_PER_CELL * 2
-        _store
-        next
-endcode
+%macro  _set_slot2 0                    ; x object --
+        mov     rax, [rbp]
+        mov     [rbx + BYTES_PER_CELL * 2], rax
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+%endmacro
 
-; ### slot3
-; returns contents of slot1
-inline slot3, 'slot3'                   ; object -- x
+%macro _slot3 0                         ; object -- x
         mov     rbx, [rbx + BYTES_PER_CELL * 3]
-endinline
+%endmacro
 
-; ### slot3!
-code set_slot3, 'slot3!'                ; x object --
-        add     rbx, BYTES_PER_CELL * 3
-        _store
-        next
-endcode
+%macro _set_slot3 0                     ; x object --
+        mov     rax, [rbp]
+        mov     [rbx + BYTES_PER_CELL * 3], rax
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+%endmacro
 
 ; Vectors
 
@@ -137,7 +143,7 @@ code vector?, 'vector?'                 ; object -- flag
         test    rbx, rbx
         jz      .1
         _object_type
-        cmp     rbx, _OBJECT_TYPE_VECTOR
+        cmp     rbx, OBJECT_TYPE_VECTOR
         jnz     .2
         mov     rbx, -1
         _return
@@ -175,25 +181,25 @@ endcode
 
 ; ### vector-data
 code vector_data, 'vector-data'         ; vector -- data-address
-        _ slot2
+        _slot2
         next
 endcode
 
 ; ### vector-data!
 code set_vector_data, 'vector-data!'    ; data-address vector --
-        _ set_slot2
+        _set_slot2
         next
 endcode
 
 ; ### vector-capacity
 code vector_capacity, 'vector-capacity' ; vector -- capacity
-        _ slot3
+        _slot3
         next
 endcode
 
 ; ### vector-capacity!
 code set_vector_capacity, 'vector-capacity!' ; capacity vector --
-        _ set_slot3
+        _set_slot3
         next
 endcode
 
@@ -206,7 +212,7 @@ code construct_vector, '<vector>'       ; capacity -- vector
         _lit 4
         _cells
         _ erase
-        _lit _OBJECT_TYPE_VECTOR
+        _lit OBJECT_TYPE_VECTOR
         _rfetch                         ; -- capacity vector            r: -- vector
         _set_object_type                ; -- capacity                   r: -- vector
         _dup                            ; -- capacity capacity          r: -- vector
@@ -461,111 +467,31 @@ endcode
 
 ; Strings
 
-; ### transient?
-code transient?, 'transient?'           ; string -- flag
-        _ object_flags
-        and     ebx, STRING_TRANSIENT
-        _zne
-        next
-endcode
-
-; ### allocated?
-code allocated?, 'allocated?'           ; string -- flag
-        _ object_flags
-        and     ebx, STRING_ALLOCATED
-        _zne
-        next
-endcode
-
-; ### simple-string?
-code simple_string?, 'simple-string?'   ; object -- flag
-        test    rbx, rbx
-        jz      .1
-        _object_type
-        cmp     rbx, _OBJECT_TYPE_SIMPLE_STRING
-        jnz     .2
-        mov     rbx, -1
-        _return
-.2:
-        xor     ebx, ebx
-.1:
-        next
-endcode
-
-; ### growable-string?
-code growable_string?, 'growable-string?' ; object -- flag
-        test    rbx, rbx
-        jz      .1
-        _object_type
-        cmp     rbx, _OBJECT_TYPE_STRING
-        jnz     .2
-        mov     rbx, -1
-        _return
-.2:
-        xor     ebx, ebx
-.1:
-        next
-endcode
-
 ; ### string?
 code string?, 'string?'                 ; object -- flag
-        _dup
-        _ simple_string?
-        _if .1
-        _drop
-        _true
+        test    rbx, rbx
+        jz      .1
+        _object_type
+        cmp     rbx, OBJECT_TYPE_STRING
+        jnz     .2
+        mov     rbx, -1
         _return
-        _then .1
-        _ growable_string?
-        next
-endcode
-
-; ### check-char
-code check_char, 'check-char'           ; char -- char
-        _dup
-        _lit 256
-        _ ult
-        _if .1
-        _return
-        _then .1
-
-        _drop
-        _true
-        _abortq "not a char"
+.2:
+        xor     ebx, ebx
+.1:
         next
 endcode
 
 ; ### check-string
 code check_string, 'check-string'       ; object -- string
         _dup
-        _ simple_string?
+        _ string?
         _if .1
         _return
         _then .1
-
-        _dup
-        _ growable_string?
-        _if .2
-        _return
-        _then .2
-
         _drop
         _true
         _abortq "not a string"
-        next
-endcode
-
-; ### check-growable-string
-code check_growable_string, 'check-growable-string'     ; object -- string
-        _dup
-        _ growable_string?
-        test    rbx, rbx
-        poprbx
-        jz      .1
-        _return
-.1:
-        _true
-        _abortq "not a growable string"
         next
 endcode
 
@@ -579,155 +505,22 @@ code string_length, 'string-length'     ; string -- length
         next
 endcode
 
-; ### set-string-length
-code set_string_length, 'set-string-length' ; length string --
+; ### string-set-length
+code string_set_length, 'string-set-length' ; length string --
         _set_slot1
         next
 endcode
 
-; Simple strings store their character data inline starting at 'this' + 16 bytes.
-%macro _simple_string_data 0
+; Strings store their character data inline starting at 'this' + 16 bytes.
+%macro _string_data 0
         lea     rbx, [rbx + BYTES_PER_CELL * 2]
 %endmacro
-
-; ### simple-string-data
-code simple_string_data, 'simple-string-data' ; simple-string -- data-address
-        _simple_string_data
-        next
-endcode
 
 ; ### string-data
 code string_data, 'string-data'         ; string -- data-address
         _ check_string                  ; -- string
-        _dup                            ; -- string string
-        _ simple_string?                ; -- string flag
-        _if .1                          ; -- string
-        _simple_string_data
-        _else .1
-        _ slot2
-        _then .1
+        _string_data
         next
-endcode
-
-; ### set-string-data
-code set_string_data, 'set-string-data' ; data-address string --
-        _ set_slot2
-        next
-endcode
-
-; ### string-capacity
-code string_capacity, 'string-capacity' ; string -- capacity
-        _ slot3
-        next
-endcode
-
-; ### set-string-capacity
-code set_string_capacity, 'set-string-capacity' ; capacity string --
-        _ set_slot3
-        next
-endcode
-
-; ### make-growable-string
-code make_growable_string, 'make-growable-string' ; capacity -- string
-
-; locals:
-%define capacity        local0
-%define string          local1
-
-        _locals_enter
-
-        popd    capacity
-
-        _lit 32                         ; -- 32
-        _dup
-        _ iallocate                     ; -- 32 string
-        popd    string                  ; -- 32
-        pushd   string
-        _swap
-        _ erase                         ; --
-        _ OBJECT_TYPE_STRING
-        pushd   string
-        _set_object_type               ; --
-
-        _lit STRING_ALLOCATED
-        pushd   string
-        _set_object_flags              ; --
-
-        pushd   capacity
-        _oneplus                        ; terminal null byte
-        _ iallocate
-        pushd   string
-        _ set_string_data
-
-        pushd   capacity
-        pushd   string
-        _ set_string_capacity           ; --
-
-        pushd   string
-
-        _locals_leave
-        next
-
-%undef capacity
-%undef string
-
-endcode
-
-; ### <string>
-code new_string, '<string>'             ; capacity -- string
-        _ make_growable_string          ; -- string
-        _ dup
-        _ string_data                   ; -- string data-address
-        _over
-        _ string_capacity               ; -- string data-address capacity
-        _oneplus
-        _ erase                         ; -- string
-        next
-endcode
-
-; ### >string
-code copy_to_string, '>string'          ; c-addr u -- string
-
-; locals:
-%define u      local0
-%define c_addr local1
-%define string local2
-
-        _locals_enter
-        popd    u
-        popd    c_addr
-
-        pushd   u
-        _ make_growable_string
-        popd    string
-
-        pushd   c_addr
-        pushd   string
-        _ string_data
-        pushd   u                       ; -- c-addr data-address u
-        _ cmove                         ; --
-
-        _zero
-        pushd   string
-        _ string_data
-        pushd   u
-        _plus
-        _ cstore
-
-        pushd   u
-        pushd   string
-        _ set_string_length
-
-        pushd   string
-
-        _locals_leave
-
-        next
-
-%undef u
-%undef c_addr
-%undef string
-
 endcode
 
 ; ### <transient-string>
@@ -750,17 +543,17 @@ code new_transient_string, '<transient-string>' ; capacity -- string
         pushd   string                  ; -- size string
         _swap                           ; -- string size
         _ erase                         ; --
-        _ OBJECT_TYPE_SIMPLE_STRING
+        _lit OBJECT_TYPE_STRING
         pushd   string
-        _set_object_type               ; --
+        _set_object_type                ; --
 
-        _lit STRING_TRANSIENT
+        _lit TRANSIENT
         pushd   string
         _ set_object_flags              ; --
 
         pushd   capacity
         pushd   string
-        _ set_string_length             ; --
+        _ string_set_length             ; --
 
         pushd   string                  ; -- string
         _locals_leave
@@ -771,8 +564,8 @@ code new_transient_string, '<transient-string>' ; capacity -- string
 
 endcode
 
-; ### make-simple-string
-code make_simple_string, 'make-simple-string'   ; c-addr u transient? -- string
+; ### make-string
+code make_string, 'make-string'         ; c-addr u transient? -- string
 
 ; locals:
 %define transient?      local0
@@ -800,26 +593,26 @@ code make_simple_string, 'make-simple-string'   ; c-addr u transient? -- string
         pushd   string                  ; -- size string
         _swap                           ; -- string size
         _ erase                         ; --
-        _ OBJECT_TYPE_SIMPLE_STRING
+        _lit OBJECT_TYPE_STRING
         pushd   string
         _set_object_type                ; --
 
         pushd   transient?
         _if .2
-        _lit STRING_TRANSIENT
+        _lit TRANSIENT
         _else .2
-        _lit STRING_ALLOCATED
+        _lit ALLOCATED
         _then .2
         pushd   string
         _set_object_flags               ; --
 
         pushd   u
         pushd   string
-        _ set_string_length             ; --
+        _ string_set_length             ; --
 
         pushd   c_addr
         pushd   string
-        _simple_string_data
+        _string_data
         pushd   u
         _ cmove                         ; --
 
@@ -834,17 +627,18 @@ code make_simple_string, 'make-simple-string'   ; c-addr u transient? -- string
 
 endcode
 
-; ### >simple-string
-code copy_to_simple_string, '>simple-string' ; c-addr u -- string
+; ### >string
+code copy_to_string, '>string'          ; c-addr u -- string
         _false                          ; not transient
-        _ make_simple_string
+        _ make_string
         next
 endcode
 
-; ### simple-string>
-code simple_string_from, 'simple-string>' ; simple-string -- c-addr u
+; ### string>
+code string_from, 'string>'             ; string -- c-addr u
+        _ check_string
         _duptor
-        _simple_string_data
+        _string_data
         _rfrom
         _string_length
         next
@@ -857,7 +651,7 @@ code copy_to_static_string, '>static-string' ; c-addr u -- string
         _tor
 
         ; object header
-        _lit _OBJECT_TYPE_SIMPLE_STRING
+        _lit OBJECT_TYPE_STRING
         _ comma
         ; length
         _dup
@@ -875,9 +669,32 @@ endcode
 
 ; ### >transient-string
 code copy_to_transient_string, '>transient-string' ; c-addr u -- string
-; A transient string is a simple string with storage in the transient string buffer.
         _true                           ; transient
-        _ make_simple_string
+        _ make_string
+        next
+endcode
+
+; ### ~string
+code delete_string, '~string'           ; string --
+        _ check_string
+
+        _dup
+        _zeq_if .1
+        _drop
+        _return
+        _then .1
+
+        _dup
+        _ allocated?
+        _if .2
+        ; Zero out the object header so it won't look like a valid object
+        ; after it has been freed.
+        xor     eax, eax
+        mov     [rbx], rax
+        _ ifree
+        _else .2
+        _drop
+        _then .2
         next
 endcode
 
@@ -885,7 +702,7 @@ endcode
 code as_c_string, 'as-c-string'         ; c-addr u -- zaddr
 ; Returns a pointer to a null-terminated string in the transient string buffer.
         _ copy_to_transient_string
-        _simple_string_data
+        _string_data
         next
 endcode
 
@@ -911,18 +728,196 @@ code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
         next
 endcode
 
-; ### string>
-code string_from, 'string>'             ; string -- c-addr u
-        _duptor
-        _ string_data                   ; -- string data-address
-        _rfrom
-        _string_length
+; Stringbuffers
+
+; ### sbuf?
+code sbuf?, 'sbuf?'                     ; object -- flag
+        test    rbx, rbx
+        jz      .1
+        _object_type
+        cmp     rbx, OBJECT_TYPE_SBUF
+        jnz     .2
+        mov     rbx, -1
+        _return
+.2:
+        xor     ebx, ebx
+.1:
         next
 endcode
 
-; ### ~string
-code delete_string, '~string'           ; string --
-        _ check_string
+; ### check-sbuf
+code check_sbuf, 'check-sbuf'           ; object -- sbuf
+        _dup
+        _ sbuf?
+        _if .1
+        _return
+        _then .1
+
+        _drop
+        _true
+        _abortq "not an sbuf"
+        next
+endcode
+
+; ### sbuf-length
+code sbuf_length, 'sbuf-length'         ; sbuf -- length
+        _ check_sbuf
+        _slot1
+        next
+endcode
+
+; ### sbuf-set-length
+code sbuf_set_length, 'sbuf-set-length' ; length sbuf --
+        _ check_sbuf
+        _set_slot1
+        next
+endcode
+
+; ### sbuf-data
+code sbuf_data, 'sbuf-data'             ; sbuf -- data-address
+        _ check_sbuf
+        _slot2
+        next
+endcode
+
+; ### sbuf-set-data
+code sbuf_set_data, 'sbuf-set-data'     ; sbuf -- data-address
+        _ check_sbuf
+        _set_slot2
+        next
+endcode
+
+; ### sbuf-capacity
+code sbuf_capacity, 'sbuf-capacity'     ; sbuf -- capacity
+        _ check_sbuf
+        _slot3
+        next
+endcode
+
+; ### sbuf-set-capacity
+code sbuf_set_capacity, 'sbuf-set-capacity' ; capacity sbuf --
+        _ check_sbuf
+        _set_slot3
+        next
+endcode
+
+; ### make-sbuf
+code make_sbuf, 'make-sbuf'             ; capacity -- sbuf
+
+; locals:
+%define capacity        local0
+%define sbuf            local1
+
+        _locals_enter
+
+        popd    capacity
+
+        _lit 32                         ; -- 32
+        _dup
+        _ iallocate                     ; -- 32 sbuf
+        popd    sbuf                    ; -- 32
+        pushd   sbuf
+        _swap
+        _ erase                         ; --
+        _lit OBJECT_TYPE_SBUF
+        pushd   sbuf
+        _set_object_type                ; --
+
+        _lit ALLOCATED
+        pushd   sbuf
+        _set_object_flags               ; --
+
+        pushd   capacity
+        _oneplus                        ; terminal null byte
+        _ iallocate
+        pushd   sbuf
+        _ sbuf_set_data
+
+        pushd   capacity
+        pushd   sbuf
+        _ sbuf_set_capacity             ; --
+
+        pushd   sbuf
+
+        _locals_leave
+        next
+
+%undef capacity
+%undef sbuf
+
+endcode
+
+; ### <sbuf>
+code new_sbuf, '<sbuf>'                 ; capacity -- sbuf
+        _ make_sbuf                     ; -- sbuf
+        _ dup
+        _ sbuf_data                     ; -- sbuf data-address
+        _over
+        _ sbuf_capacity                 ; -- sbuf data-address capacity
+        _oneplus
+        _ erase                         ; -- sbuf
+        next
+endcode
+
+; ### >sbuf
+code copy_to_sbuf, '>sbuf'              ; c-addr u -- sbuf
+
+; locals:
+%define u      local0
+%define c_addr local1
+%define sbuf   local2
+
+        _locals_enter
+        popd    u
+        popd    c_addr
+
+        pushd   u
+        _ make_sbuf
+        popd    sbuf
+
+        pushd   c_addr
+        pushd   sbuf
+        _ sbuf_data
+        pushd   u                       ; -- c-addr data-address u
+        _ cmove                         ; --
+
+        _zero
+        pushd   sbuf
+        _ sbuf_data
+        pushd   u
+        _plus
+        _ cstore
+
+        pushd   u
+        pushd   sbuf
+        _ sbuf_set_length
+
+        pushd   sbuf
+
+        _locals_leave
+
+        next
+
+%undef u
+%undef c_addr
+%undef sbuf
+
+endcode
+
+; ### sbuf>string
+code sbuf_to_string, 'sbuf>string'      ; sbuf -- string
+        _ check_sbuf
+        _duptor
+        _ sbuf_data
+        _rfrom
+        _ sbuf_length
+        _ copy_to_string
+        next
+endcode
+
+; ### ~sbuf
+code delete_sbuf, '~sbuf'               ; sbuf --
+        _ check_sbuf
 
         _dup
         _zeq_if .1
@@ -934,10 +929,10 @@ code delete_string, '~string'           ; string --
         _ allocated?
         _if .2
         _dup
-        _ growable_string?
+        _ sbuf?
         _if .3
         _dup
-        _ string_data
+        _ sbuf_data
         _ ifree
         _then .3                        ; -- string
         ; Zero out the object header so it won't look like a valid object
@@ -951,37 +946,37 @@ code delete_string, '~string'           ; string --
         next
 endcode
 
-; ### string-resize
-code string_resize, 'string-resize'     ; string new-capacity --
-        _ over                          ; -- string new-capacity string
-        _ string_data                   ; -- string new-capacity data-address
-        _ over                          ; -- string new-capacity data-address new-capacity
+; ### sbuf-resize
+code sbuf_resize, 'sbuf-resize'         ; sbuf new-capacity --
+        _ over                          ; -- sbuf new-capacity sbuf
+        _ sbuf_data                     ; -- sbuf new-capacity data-address
+        _ over                          ; -- sbuf new-capacity data-address new-capacity
         _oneplus                        ; terminal null byte
-        _ resize                        ; -- string new-capacity new-data-address ior
-        _ throw                         ; -- string new-capacity new-data-address
+        _ resize                        ; -- sbuf new-capacity new-data-address ior
+        _ throw                         ; -- sbuf new-capacity new-data-address
         _tor
-        _ over                          ; -- string new-capacity string     r: -- new-data-addr
-        _ set_string_capacity           ; -- string                         r: -- new-data-addr
-        _rfrom                          ; -- string new-data-addr
+        _ over                          ; -- sbuf new-capacity sbuf     r: -- new-data-addr
+        _ sbuf_set_capacity             ; -- sbuf                         r: -- new-data-addr
+        _rfrom                          ; -- sbuf new-data-addr
         _ swap
-        _ set_string_data
+        _ sbuf_set_data
         next
 endcode
 
-; ### string-ensure-capacity
-code string_ensure_capacity, 'string-ensure-capacity'   ; u string --
-        _ check_growable_string         ; -- u string
-        _ twodup                        ; -- u string u string
-        _ string_capacity               ; -- u string u capacity
+; ### sbuf-ensure-capacity
+code sbuf_ensure_capacity, 'sbuf-ensure-capacity'   ; u sbuf --
+        _ check_sbuf                    ; -- u sbuf
+        _ twodup                        ; -- u sbuf u sbuf
+        _ sbuf_capacity                 ; -- u sbuf u capacity
         _ ugt
-        _if .1                          ; -- u string
-        _dup                            ; -- u string string
-        _ string_capacity               ; -- u string capacity
-        _twostar                        ; -- u string capacity*2
-        _oneplus                        ; -- u string capacity*2+1
-        _ rot                           ; -- string capacity*2 u
-        _ max                           ; -- string new-capacity
-        _ string_resize
+        _if .1                          ; -- u sbuf
+        _dup                            ; -- u sbuf sbuf
+        _ sbuf_capacity                 ; -- u sbuf capacity
+        _twostar                        ; -- u sbuf capacity*2
+        _oneplus                        ; -- u sbuf capacity*2+1
+        _ rot                           ; -- sbuf capacity*2 u
+        _ max                           ; -- sbuf new-capacity
+        _ sbuf_resize
         _else .1
         _2drop
         _then .1
@@ -1059,8 +1054,8 @@ code string_last_char, 'string-last-char' ; string -- char
         next
 endcode
 
-; ### string-append-chars
-code string_append_chars, 'string-append-chars' ; string addr len --
+; ### sbuf-append-chars
+code sbuf_append_chars, 'sbuf-append-chars' ; sbuf addr len --
 
 ; locals:
 %define this   local0
@@ -1070,34 +1065,34 @@ code string_append_chars, 'string-append-chars' ; string addr len --
         _locals_enter
         popd    len
         popd    addr
-        _ check_string
+        _ check_sbuf
         popd    this
 
         pushd   this
-        _string_length
+        _ sbuf_length
         pushd   len
         _plus
         pushd   this
-        _ string_ensure_capacity
+        _ sbuf_ensure_capacity
         pushd   addr
         pushd   this
-        _ string_data
+        _ sbuf_data
         pushd   this
-        _string_length
+        _ sbuf_length
         _plus
         pushd   len
         _ cmove
         pushd   this
-        _string_length
+        _ sbuf_length
         pushd   len
         _plus
         pushd   this
-        _ set_string_length
+        _ sbuf_set_length
         _zero
         pushd   this
-        _ string_data
+        _ sbuf_data
         pushd   this
-        _string_length
+        _ sbuf_length
         _plus
         _cstore
 
@@ -1110,8 +1105,23 @@ code string_append_chars, 'string-append-chars' ; string addr len --
 
 endcode
 
-; ### string-append-char
-code string_append_char, 'string-append-char' ; string char --
+; ### check-char
+code check_char, 'check-char'           ; char -- char
+        _dup
+        _lit 256
+        _ ult
+        _if .1
+        _return
+        _then .1
+
+        _drop
+        _true
+        _abortq "not a char"
+        next
+endcode
+
+; ### sbuf-append-char
+code sbuf_append_char, 'sbuf-append-char' ; sbuf char --
 
 ; locals:
 %define this   local0
@@ -1121,38 +1131,38 @@ code string_append_char, 'string-append-char' ; string char --
         _locals_enter
         _ check_char
         popd    char
-        _ check_string
+        _ check_sbuf
         popd    this                    ; --
 
-        ; this string-length local len
+        ; this sbuf-length local len
         pushd   this
-        _string_length
+        _ sbuf_length
         popd    len
 
-        ; len 1+ this string-ensure-capacity
+        ; len 1+ this sbuf-ensure-capacity
         pushd   len
         _oneplus
         pushd   this
-        _ string_ensure_capacity
+        _ sbuf_ensure_capacity
 
-        ; char this string-data len + c!
+        ; char this sbuf-data len + c!
         pushd   char
         pushd   this
-        _ string_data
+        _ sbuf_data
         pushd   len
         _plus
         _cstore
 
-        ; len 1+ this set-string-length
+        ; len 1+ this sbuf-set-length
         pushd   len
         _oneplus
         pushd   this
-        _ set_string_length
+        _ sbuf_set_length
 
-        ; 0 this string-data len 1+ + c!
+        ; 0 this sbuf-data len 1+ + c!
         _zero
         pushd   this
-        _ string_data
+        _ sbuf_data
         pushd   len
         _oneplus
         _plus
@@ -1167,14 +1177,14 @@ code string_append_char, 'string-append-char' ; string char --
 
 endcode
 
-; ### string-append
-code string_append_string, 'string-append-string' ; string1 string2 --
+; ### sbuf-append-string
+code sbuf_append_string, 'sbuf-append-string' ; sbuf string --
         _ check_string
         _swap
-        _ check_string
-        _swap                           ; -- s1 s2
+        _ check_sbuf
+        _swap                           ; -- sbuf string
         _ string_from
-        _ string_append_chars
+        _ sbuf_append_chars
         next
 endcode
 
@@ -1192,7 +1202,7 @@ code concat, 'concat'                   ; string1 string2 -- string3
         _ new_transient_string          ; -- c-addr2 u2 c-addr1 u1 string3
         _to_local0                      ; -- c-addr2 u2 c-addr1 u1
 
-        _ tuck                           ; -- c-addr2 u2 u1 c-addr1 u1
+        _ tuck                          ; -- c-addr2 u2 u1 c-addr1 u1
 
         _local0
         _ string_data                   ; -- c-addr2 u2 u1 c-addr1 u1 data-address

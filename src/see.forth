@@ -322,38 +322,38 @@ init-reg64-names
 
     [else]
     \ faster!
-    260 <string> local buffer
+    260 <sbuf> local buffer
 
     relative-size ?dup if
         coerce-to-string
-        buffer swap string-append-string
-        buffer $20 ( space ) string-append-char
+        buffer swap sbuf-append-string
+        buffer $20 ( space ) sbuf-append-char
         0 to relative-size
     then
 
-    buffer '[' string-append-char
-    buffer base reg64-name string-append-string
+    buffer '[' sbuf-append-char
+    buffer base reg64-name sbuf-append-string
     index -1 <> if
-        buffer '+' string-append-char
-        buffer index reg64-name string-append-string
+        buffer '+' sbuf-append-char
+        buffer index reg64-name sbuf-append-string
         scale if
-            buffer '*' string-append-char
-            buffer 1 scale lshift (.) string-append-chars
+            buffer '*' sbuf-append-char
+            buffer 1 scale lshift (.) sbuf-append-chars
         then
     then
     disp if
         disp 0> if
-            buffer '+' string-append-char
+            buffer '+' sbuf-append-char
         else
-            buffer '-' string-append-char
+            buffer '-' sbuf-append-char
             disp negate to disp
         then
-        buffer disp (.) string-append-chars
+        buffer disp (.) sbuf-append-chars
     then
-    buffer ']' string-append-char
+    buffer ']' sbuf-append-char
 
-    buffer string> type
-    buffer ~string
+    buffer sbuf>string .string
+    buffer ~sbuf
 
     [then]
 ;

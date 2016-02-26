@@ -261,7 +261,7 @@ code paren_local, '(local)'             ; c-addr u --
         _ ult
         _if .4
 
-        _ copy_to_simple_string         ; -- string
+        _ copy_to_string                ; -- string
         _ local_names
         _ locals_defined
         _cells

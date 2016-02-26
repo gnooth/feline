@@ -113,8 +113,7 @@ section .data
 ; Object types
 OBJECT_TYPE_VECTOR              equ 1
 OBJECT_TYPE_STRING              equ 2
-OBJECT_TYPE_SIMPLE_STRING       equ 3
-OBJECT_TYPE_SBUF                equ 4
+OBJECT_TYPE_SBUF                equ 3
 
 ; String flag bits.
 TRANSIENT                       equ 1
@@ -377,11 +376,11 @@ section .text
         call    parenabortquote
 %endmacro
 
-%macro  _quote 1                        ; -- simple-string
+%macro  _quote 1                        ; -- string
 section .data
 %strlen len     %1
 %%string:
-        dw      OBJECT_TYPE_SIMPLE_STRING
+        dw      OBJECT_TYPE_STRING
         db      0                       ; flags byte
         db      0                       ; not used
         dd      0                       ; not used

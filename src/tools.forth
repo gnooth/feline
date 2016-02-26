@@ -55,7 +55,7 @@
             repeat
             length 0> if
                 \ valid string, save it
-                buffer length >simple-string
+                buffer length >string
             else
                 \ don't try again!
                 -1

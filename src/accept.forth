@@ -139,7 +139,7 @@ create restore-buffer 258 allot
     then ;
 
 : allocate-history-entry ( c-addr u -- string )
-    >simple-string ;
+    >string ;
 
 : restore-history ( -- )
     history-array history-size cells erase

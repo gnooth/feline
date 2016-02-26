@@ -12,14 +12,13 @@
 s" this is a test" >transient-string to s1
 
 : test1
-    s1 simple-string? assert
     s1 string? assert
     s1 transient? assert
     s1 allocated? 0= assert
     s1 string-length 14 = assert
     s1 check-string string-length 14 = assert
-    s1 simple-string> s" this is a test" str= assert
-    s1 check-string simple-string> s" this is a test" str= assert
+    s1 string> s" this is a test" str= assert
+    s1 check-string string> s" this is a test" str= assert
 ;
 
 test1
@@ -27,14 +26,13 @@ test1
 s" another test" >transient-string to s2
 
 : test2
-    s2 simple-string? assert
     s2 string? assert
     s1 transient? assert
     s1 allocated? 0= assert
     s2 string-length 12 = assert
     s2 check-string string-length 12 = assert
-    s2 simple-string> s" another test" str= assert
-    s2 check-string simple-string> s" another test" str= assert
+    s2 string> s" another test" str= assert
+    s2 check-string string> s" another test" str= assert
 ;
 
 test2
@@ -47,7 +45,6 @@ s"  and " >transient-string to s3
 : test3
     s1 s3 concat to s4
     s4 string? assert
-    s4 simple-string? assert
     s4 transient? assert
     s4 allocated? 0= assert
     s4 string> s" this is a test and " str= assert
@@ -66,7 +63,6 @@ test3
         s"  and " >transient-string to s3
         s1 s3 concat s2 concat to s4
         s4 string? assert
-        s4 simple-string? assert
         s4 transient? assert
         s4 allocated? 0= assert
         s4 string> s" this is a test and another test" str= assert
@@ -95,59 +91,28 @@ test4
 test5
 
 : test6
-    s" two short" >string local s
-    s string-length 9 = assert
-    s growable-string? assert
-    s 's' string-append-char
-    s string-length 10 = assert
-    s string> s" two shorts" str= assert
-    s allocated? assert
-    s ~string
-;
-
-test6
-
-: test7
-    256 <string> local s
-    s "this is a test" string> string-append-chars
-    s string-length 14 = assert
-    s string> s" this is a test" str= assert
-    s " of the emergency broadcasting system" string> string-append-chars
-    s string> s" this is a test of the emergency broadcasting system" str= assert
-    s ~string
-    s string? 0= assert
-;
-
-test7
-
-: test8
-    s" this" >string local s
-    s string> "this" string> str= assert
-    s " is a test" string-append-string
-    s string> "this is a test" string> str= assert
-    s ~string
-    s string? 0= assert
-;
-
-test8
-
-: test9
     "this is a test" local s1
     "this is a test" local s2
     s1 s2 <> assert
     s1 s2 string= assert
-    s" this is a test" >simple-string local s3
+    s" this is a test" >string local s3
     s1 s3 string= assert
+    s3 ~string
+    s3 string? 0= assert
     s" this is a test" >transient-string local s4
     s1 s4 string= assert
-    s" this is a test" >simple-string local s5
+    s" this is a test" >string local s5
     s1 s5 string= assert
+    s5 ~string
+    s5 string? 0= assert
     "this is not a test" local s6
     s1 s6 string= 0= assert
     "this is a text" local s7
     s1 s7 string= 0= assert
 ;
 
-test9
+test6
+
+empty
 
 cr .( Reached end of string-tests.forth )
