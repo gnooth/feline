@@ -57,6 +57,7 @@ default abs ; use absolute addresses by default
 ; Objects
 %include "objects.asm"                  ; Must be first!
 %include "vector.asm"
+%include "string.asm"
 
 file __FILE__
 

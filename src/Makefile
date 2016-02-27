@@ -103,6 +103,7 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	quit.asm \
 	stack.asm \
 	store.asm \
+	string.asm \
 	strings.asm \
 	tools.asm \
 	transient-strings.asm \

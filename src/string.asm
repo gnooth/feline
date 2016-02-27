@@ -1,0 +1,348 @@
+; Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
+
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; (at your option) any later version.
+
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+
+; You should have received a copy of the GNU General Public License
+; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+file __FILE__
+
+; ### string?
+code string?, 'string?'                 ; object -- flag
+        test    rbx, rbx
+        jz      .1
+        _object_type
+        cmp     rbx, OBJECT_TYPE_STRING
+        jnz     .2
+        mov     rbx, -1
+        _return
+.2:
+        xor     ebx, ebx
+.1:
+        next
+endcode
+
+; ### check-string
+code check_string, 'check-string'       ; object -- string
+        _dup
+        _ string?
+        _if .1
+        _return
+        _then .1
+        _drop
+        _true
+        _abortq "not a string"
+        next
+endcode
+
+%macro _string_length 0
+        _slot1
+%endmacro
+
+; ### string-length
+code string_length, 'string-length'     ; string -- length
+        _string_length
+        next
+endcode
+
+; ### string-set-length
+code string_set_length, 'string-set-length' ; length string --
+        _set_slot1
+        next
+endcode
+
+; Strings store their character data inline starting at 'this' + 16 bytes.
+%macro _string_data 0
+        lea     rbx, [rbx + BYTES_PER_CELL * 2]
+%endmacro
+
+; ### string-data
+code string_data, 'string-data'         ; string -- data-address
+        _ check_string                  ; -- string
+        _string_data
+        next
+endcode
+
+; ### <transient-string>
+code new_transient_string, '<transient-string>' ; capacity -- string
+
+; locals:
+%define capacity        local0
+%define string          local1
+
+        _locals_enter                   ; -- capacity
+        popd    capacity                ; --
+
+        _lit 16
+        pushd capacity
+        _oneplus                        ; terminal null byte
+        _plus                           ; -- size
+        _dup
+        _ tsb_alloc                     ; -- size string
+        popd    string                  ; -- size
+        pushd   string                  ; -- size string
+        _swap                           ; -- string size
+        _ erase                         ; --
+        _lit OBJECT_TYPE_STRING
+        pushd   string
+        _set_object_type                ; --
+
+        _lit TRANSIENT
+        pushd   string
+        _ set_object_flags              ; --
+
+        pushd   capacity
+        pushd   string
+        _ string_set_length             ; --
+
+        pushd   string                  ; -- string
+        _locals_leave
+        next
+
+%undef capacity
+%undef string
+
+endcode
+
+; ### make-string
+code make_string, 'make-string'         ; c-addr u transient? -- string
+
+; locals:
+%define transient?      local0
+%define u               local1
+%define c_addr          local2
+%define string          local3
+
+        _locals_enter                   ; -- c-addr u transient?
+        popd    transient?
+        popd    u
+        popd    c_addr                  ; --
+
+        _lit 16
+        pushd   u
+        _oneplus                        ; terminal null byte
+        _plus                           ; -- size
+        _dup
+        pushd   transient?
+        _if .1
+        _ tsb_alloc
+        _else .1
+        _ iallocate
+        _then .1                        ; -- size string
+        popd    string                  ; -- size
+        pushd   string                  ; -- size string
+        _swap                           ; -- string size
+        _ erase                         ; --
+        _lit OBJECT_TYPE_STRING
+        pushd   string
+        _set_object_type                ; --
+
+        pushd   transient?
+        _if .2
+        _lit TRANSIENT
+        _else .2
+        _lit ALLOCATED
+        _then .2
+        pushd   string
+        _set_object_flags               ; --
+
+        pushd   u
+        pushd   string
+        _ string_set_length             ; --
+
+        pushd   c_addr
+        pushd   string
+        _string_data
+        pushd   u
+        _ cmove                         ; --
+
+        pushd   string                  ; -- string
+        _locals_leave
+        next
+
+%undef transient?
+%undef u
+%undef c_addr
+%undef string
+
+endcode
+
+; ### >string
+code copy_to_string, '>string'          ; c-addr u -- string
+        _false                          ; not transient
+        _ make_string
+        next
+endcode
+
+; ### string>
+code string_from, 'string>'             ; string -- c-addr u
+        _ check_string
+        _duptor
+        _string_data
+        _rfrom
+        _string_length
+        next
+endcode
+
+; ### >static_string
+code copy_to_static_string, '>static-string' ; c-addr u -- string
+        _ align_data
+        _ here                          ; this will be the address of the string
+        _tor
+
+        ; object header
+        _lit OBJECT_TYPE_STRING
+        _ comma
+        ; length
+        _dup
+        _ comma                         ; -- c-addr u
+
+        _ here                          ; -- c-addr u here
+        _over                           ; -- c-addr u here u
+        _oneplus                        ; -- c-addr u here u+1
+        _ allot
+        _ zplace                        ; --
+
+        _rfrom                          ; -- string
+        next
+endcode
+
+; ### >transient-string
+code copy_to_transient_string, '>transient-string' ; c-addr u -- string
+        _true                           ; transient
+        _ make_string
+        next
+endcode
+
+; ### ~string
+code delete_string, '~string'           ; string --
+        _ check_string
+
+        _dup
+        _zeq_if .1
+        _drop
+        _return
+        _then .1
+
+        _dup
+        _ allocated?
+        _if .2
+        ; Zero out the object header so it won't look like a valid object
+        ; after it has been freed.
+        xor     eax, eax
+        mov     [rbx], rax
+        _ ifree
+        _else .2
+        _drop
+        _then .2
+        next
+endcode
+
+; ### as-c-string
+code as_c_string, 'as-c-string'         ; c-addr u -- zaddr
+; Returns a pointer to a null-terminated string in the transient string buffer.
+        _ copy_to_transient_string
+        _string_data
+        next
+endcode
+
+; ### coerce-to-string
+; REVIEW transitional
+code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
+        _dup
+        _lit 256
+        _ ult
+        _if .1                          ; -- c-addr u
+        _ copy_to_transient_string
+        _return
+        _then .1
+
+        _dup
+        _ string?
+        _if .2                          ; -- string
+        _return
+        _then .2
+                                        ; -- $addr
+        _count
+        _ copy_to_transient_string
+        next
+endcode
+
+; ### string-nth
+code string_nth, 'string-nth'           ; index string -- char
+; REVIEW
+; Name from Factor, but slightly different behavior.
+; Return character at index, or 0 if index is out of range.
+        _ check_string
+
+        _twodup
+        _string_length
+        _ ult
+        _if .1
+        _ string_data
+        _swap
+        _plus
+        _cfetch
+        _else .1
+        _2drop
+        _zero
+        _then .1
+        next
+endcode
+
+; ### string-first-char
+code string_first_char, 'string-first-char' ; string -- char
+; Returns first character of string (0 if the string is empty).
+        _ coerce_to_string
+        _zero
+        _swap
+        _ string_nth
+        next
+endcode
+
+; ### string-last-char
+code string_last_char, 'string-last-char' ; string -- char
+; Returns last character of string (0 if the string is empty).
+        _ coerce_to_string
+
+        _dup
+        _string_length
+        _dup
+        _zeq_if .1
+        _2drop
+        _zero
+        _else .1
+        _ swap
+        _ string_data
+        _plus
+        _oneminus
+        _cfetch
+        _then .1
+        next
+endcode
+
+; ### .string
+code dot_string, '.string'              ; string | $addr --
+; REVIEW remove support for legacy strings
+        _dup_if .1
+        _dup
+        _ string?
+        _if .2
+        _ string_from
+        _else .2
+        _ count
+        _then .2
+        _ type
+        _else .1
+        _drop
+        _then .1
+        next
+endcode
