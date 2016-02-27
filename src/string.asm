@@ -276,18 +276,17 @@ code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
         next
 endcode
 
-; ### string-nth
-code string_nth, 'string-nth'           ; index string -- char
-; REVIEW
-; Name from Factor, but slightly different behavior.
+; ### string-char
+code string_char, 'string-char'         ; string index -- char
 ; Return character at index, or 0 if index is out of range.
-        _ check_string
+        _ swap
+        _ check_string                  ; -- index string
 
         _twodup
         _string_length
         _ ult
         _if .1
-        _ string_data
+        _string_data
         _swap
         _plus
         _cfetch
@@ -303,8 +302,7 @@ code string_first_char, 'string-first-char' ; string -- char
 ; Returns first character of string (0 if the string is empty).
         _ coerce_to_string
         _zero
-        _swap
-        _ string_nth
+        _ string_char
         next
 endcode
 

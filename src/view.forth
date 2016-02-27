@@ -50,7 +50,7 @@ only forth also hidden definitions
     dot len + bufsize <= if
         len 0 ?do
             buffer dot + i + c@
-            i s string-nth
+            s i string-char
             <> if
                 false to result
                 leave

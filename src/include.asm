@@ -335,11 +335,11 @@ code tilde_expand_filename, 'tilde-expand-filename' ; string1 -- string2
         _ coerce_to_string
         _return
         _then .2
-
+                                        ; -- string
         ; length <> 1
+        _dup
         _lit 1
-        _over
-        _ string_nth
+        _ string_char
         _ path_separator_char?          ; "~/" or "~\"
         _if .3
         _ user_home
@@ -522,8 +522,7 @@ code filename_is_absolute, 'filename-is-absolute' ; string -- flag
         _ ge
         _if .2                          ; -- string
         _lit 1
-        _ swap                          ; -- 1 string
-        _ string_nth
+        _ string_char
         _lit ':'
         _equal
         _return
