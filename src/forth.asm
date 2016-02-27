@@ -44,7 +44,6 @@ default abs ; use absolute addresses by default
 %include "memory.asm"
 %include "move.asm"
 %include "number.asm"
-%include "objects.asm"
 %include "opt.asm"
 %include "parse.asm"
 %include "quit.asm"
@@ -54,6 +53,10 @@ default abs ; use absolute addresses by default
 %include "transient-strings.asm"
 %include "tools.asm"
 %include "value.asm"
+
+; Objects
+%include "objects.asm"                  ; Must be first!
+%include "vector.asm"
 
 file __FILE__
 

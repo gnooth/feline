@@ -106,7 +106,8 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	strings.asm \
 	tools.asm \
 	transient-strings.asm \
-	value.asm
+	value.asm \
+	vector.asm
 
 # -felf64 even on Windows
 forth.o: $(ASM_SOURCES) Makefile
