@@ -158,18 +158,37 @@ endcode
 
 ; ### vector-nth
 code vector_nth, 'vector-nth'           ; index vector -- elt
-        _ twodup
+        _twodup
         _ vector_length
         _ ult
         _if .1
         _ vector_data
-        _ swap
+        _swap
         _cells
         _plus
         _fetch
         _else .1
         _true
         _abortq "vector-nth index out of range"
+        _then .1
+        next
+endcode
+
+; ### vector-ref
+code vector_ref, 'vector-ref'           ; vector index -- elt
+        _swap
+        _twodup
+        _ vector_length
+        _ ult
+        _if .1
+        _ vector_data
+        _swap
+        _cells
+        _plus
+        _fetch
+        _else .1
+        _true
+        _abortq "vector-ref index out of range"
         _then .1
         next
 endcode
