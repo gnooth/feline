@@ -202,6 +202,17 @@ code sbuf_to_string, 'sbuf>string'      ; sbuf -- string
         next
 endcode
 
+; ### sbuf>transient-string
+code sbuf_to_transient_string, 'sbuf>transient-string' ; sbuf -- string
+        _ check_sbuf
+        _duptor
+        _ sbuf_data
+        _rfrom
+        _ sbuf_length
+        _ copy_to_transient_string
+        next
+endcode
+
 ; ### ~sbuf
 code delete_sbuf, '~sbuf'               ; sbuf --
         _ check_sbuf
