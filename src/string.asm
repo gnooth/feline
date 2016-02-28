@@ -270,6 +270,13 @@ code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
         _if .2                          ; -- string
         _return
         _then .2
+
+        _dup
+        _ sbuf?
+        _if .3                          ; -- sbuf
+        _ sbuf_to_transient_string      ; -- string
+        _return
+        _then .3
                                         ; -- $addr
         _count
         _ copy_to_transient_string
