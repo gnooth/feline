@@ -590,8 +590,7 @@ code dotid, '.id'                       ; nfa --
         ; REVIEW
         ; HIDE sets the high bit of the count byte.
         ; Mask it off so we don't type garbage in that situation.
-        _lit $7f
-        _ and
+        and     rbx, $7f
 
         _ type
         _ space
