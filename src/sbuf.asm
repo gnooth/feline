@@ -244,6 +244,27 @@ code delete_sbuf, '~sbuf'               ; sbuf --
         next
 endcode
 
+; ### sbuf-char
+code sbuf_char, 'sbuf-char'             ; sbuf index -- char
+; REVIEW Return character at index, or 0 if index is out of range.
+        _swap
+        _ check_sbuf                    ; -- index sbuf
+
+        _twodup
+        _ sbuf_length
+        _ ult
+        _if .1
+        _ sbuf_data
+        _swap
+        _plus
+        _cfetch
+        _else .1
+        _2drop
+        _zero
+        _then .1
+        next
+endcode
+
 ; ### sbuf-resize
 code sbuf_resize, 'sbuf-resize'         ; sbuf new-capacity --
         _ over                          ; -- sbuf new-capacity sbuf
