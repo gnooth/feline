@@ -17,49 +17,49 @@ file __FILE__
 
 ; variable handler   0 handler !
 
+; ### handler
+variable handler, 'handler', 0
+
 ; : catch
 ;    sp@ >r
+;    lp@ >r
 ;    handler @ >r
 ;    rp@ handler !
 ;    execute
 ;    r> handler !
 ;    r> drop
+;    r> drop
 ;    0 ;
+
+; ### catch
+code catch, 'catch'
+        _ spfetch
+        _tor
+        _ lpfetch
+        _tor
+        _ handler
+        _fetch
+        _tor
+        _ rpfetch
+        _ handler
+        _store
+        _ execute
+        _rfrom
+        _ handler
+        _store
+        lea     rsp, [rsp + BYTES_PER_CELL * 2] ; rdrop rdrop
+        _zero
+        next
+endcode
 
 ; : throw
 ;    ?dup if
 ;       handler @ rp!
 ;       r> handler !
+;       r> lp!
 ;       r> swap >r
 ;       sp! drop r>
 ;    then ;
-
-; ### handler
-variable handler, 'handler', 0
-
-; ### catch
-code catch, 'catch'
-        _ spfetch
-        _ tor
-        _ lpfetch
-        _ tor
-        _ handler
-        _ fetch
-        _ tor
-        _ rpfetch
-        _ handler
-        _ store
-        _ execute
-        _ rfrom
-        _ handler
-        _ store
-        _ rfrom
-        _ drop
-        _ rfrom
-        _ drop
-        _zero
-        next
-endcode
 
 ; ### throw
 code throw, 'throw'
@@ -69,21 +69,21 @@ code throw, 'throw'
         _return
 .1:
         _ save_backtrace
-        _ dup
+        _dup
         _ handler
-        _ fetch
+        _fetch
         _ rpstore
-        _ rfrom
+        _rfrom
         _ handler
-        _ store
-        _ rfrom
+        _store
+        _rfrom
         _ lpstore
-        _ rfrom
-        _ swap
-        _ tor
+        _rfrom
+        _swap
+        _tor
         _ spstore
-        _ drop
-        _ rfrom
+        _drop
+        _rfrom
         next
 endcode
 
@@ -91,7 +91,7 @@ endcode
 code ?throw, '?throw'                   ; flag n --
 ; Win32Forth
 ; throw n if flag is nonzero
-        _ swap
+        _swap
         _if .1
         _ throw
         _else .1
