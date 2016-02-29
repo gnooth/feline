@@ -54,8 +54,10 @@ code sbuf_length, 'sbuf-length'         ; sbuf -- length
 endcode
 
 ; ### sbuf-set-length
-code sbuf_set_length, 'sbuf-set-length' ; length sbuf --
+code sbuf_set_length, 'sbuf-set-length' ; sbuf length --
+        _swap
         _ check_sbuf
+        _swap
         _set_slot1
         next
 endcode
@@ -68,8 +70,10 @@ code sbuf_data, 'sbuf-data'             ; sbuf -- data-address
 endcode
 
 ; ### sbuf-set-data
-code sbuf_set_data, 'sbuf-set-data'     ; sbuf -- data-address
+code sbuf_set_data, 'sbuf-set-data'     ; sbuf data-address --
+        _swap
         _ check_sbuf
+        _swap
         _set_slot2
         next
 endcode
@@ -82,8 +86,10 @@ code sbuf_capacity, 'sbuf-capacity'     ; sbuf -- capacity
 endcode
 
 ; ### sbuf-set-capacity
-code sbuf_set_capacity, 'sbuf-set-capacity' ; capacity sbuf --
+code sbuf_set_capacity, 'sbuf-set-capacity' ; sbuf capacity --
+        _swap
         _ check_sbuf
+        _swap
         _set_slot3
         next
 endcode
@@ -118,10 +124,11 @@ code make_sbuf, 'make-sbuf'             ; capacity -- sbuf
         _oneplus                        ; terminal null byte
         _ iallocate
         pushd   sbuf
+        _swap
         _ sbuf_set_data
 
-        pushd   capacity
         pushd   sbuf
+        pushd   capacity
         _ sbuf_set_capacity             ; --
 
         pushd   sbuf
@@ -175,8 +182,8 @@ code copy_to_sbuf, '>sbuf'              ; c-addr u -- sbuf
         _plus
         _ cstore
 
-        pushd   u
         pushd   sbuf
+        pushd   u
         _ sbuf_set_length
 
         pushd   sbuf
@@ -297,10 +304,10 @@ code sbuf_resize, 'sbuf-resize'         ; sbuf new-capacity --
         _ resize                        ; -- sbuf new-capacity new-data-address ior
         _ throw                         ; -- sbuf new-capacity new-data-address
         _tor
-        _ over                          ; -- sbuf new-capacity sbuf     r: -- new-data-addr
-        _ sbuf_set_capacity             ; -- sbuf                         r: -- new-data-addr
+        _ over                          ; -- sbuf new-capacity sbuf     r: -- new-data-address
+        _swap
+        _ sbuf_set_capacity             ; -- sbuf                       r: -- new-data-address
         _rfrom                          ; -- sbuf new-data-addr
-        _ swap
         _ sbuf_set_data
         next
 endcode
@@ -354,10 +361,10 @@ code sbuf_append_chars, 'sbuf-append-chars' ; sbuf addr len --
         pushd   len
         _ cmove
         pushd   this
+        _dup
         _ sbuf_length
         pushd   len
         _plus
-        pushd   this
         _ sbuf_set_length
         _zero
         pushd   this
@@ -424,10 +431,10 @@ code sbuf_append_char, 'sbuf-append-char' ; sbuf char --
         _plus
         _cstore
 
-        ; len 1+ this sbuf-set-length
+        ; this len 1+ sbuf-set-length
+        pushd   this
         pushd   len
         _oneplus
-        pushd   this
         _ sbuf_set_length
 
         ; 0 this sbuf-data len 1+ + c!
