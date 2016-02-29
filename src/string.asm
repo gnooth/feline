@@ -54,7 +54,7 @@ code string_length, 'string-length'     ; string -- length
 endcode
 
 ; ### string-set-length
-code string_set_length, 'string-set-length' ; length string --
+code string_set_length, 'string-set-length' ; string length --
         _set_slot1
         next
 endcode
@@ -99,8 +99,8 @@ code new_transient_string, '<transient-string>' ; capacity -- string
         pushd   string
         _ set_object_flags              ; --
 
-        pushd   capacity
         pushd   string
+        pushd   capacity
         _ string_set_length             ; --
 
         pushd   string                  ; -- string
@@ -154,8 +154,8 @@ code make_string, 'make-string'         ; c-addr u transient? -- string
         pushd   string
         _set_object_flags               ; --
 
-        pushd   u
         pushd   string
+        pushd   u
         _ string_set_length             ; --
 
         pushd   c_addr
