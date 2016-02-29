@@ -54,8 +54,8 @@ code vector_length, 'vector-length'     ; vector -- length
         next
 endcode
 
-; ### vector-length!
-code set_vector_length, 'vector-length!' ; length vector --
+; ### vector-set-length
+code vector_set_length, 'vector-set-length' ; vector length --
         _set_slot1
         next
 endcode
@@ -66,8 +66,11 @@ code vector_data, 'vector-data'         ; vector -- data-address
         next
 endcode
 
-; ### vector-data!
-code set_vector_data, 'vector-data!'    ; data-address vector --
+; ### vector-set-data
+code vector_set_data, 'vector-set-data' ; vector data-address  --
+        _swap
+        _ check_vector
+        _swap
         _set_slot2
         next
 endcode
@@ -78,8 +81,11 @@ code vector_capacity, 'vector-capacity' ; vector -- capacity
         next
 endcode
 
-; ### vector-capacity!
-code set_vector_capacity, 'vector-capacity!' ; capacity vector --
+; ### vector-set-capacity
+code vector_set_capacity, 'vector-set-capacity' ; vector capacity --
+        _swap
+        _ check_vector
+        _swap
         _set_slot3
         next
 endcode
@@ -89,21 +95,23 @@ code construct_vector, '<vector>'       ; capacity -- vector
         _lit 4
         _cells
         _ iallocate
-        _duptor                         ; -- capacity vector            r: -- vector
+        _duptor                         ; -- capacity vector                    r: -- vector
         _lit 4
         _cells
         _ erase
         _lit OBJECT_TYPE_VECTOR
-        _rfetch                         ; -- capacity vector            r: -- vector
-        _set_object_type                ; -- capacity                   r: -- vector
-        _dup                            ; -- capacity capacity          r: -- vector
+        _rfetch                         ; -- capacity vector                    r: -- vector
+        _set_object_type                ; -- capacity                           r: -- vector
+        _dup                            ; -- capacity capacity                  r: -- vector
         _cells
         _ iallocate                     ; -- capacity data-address              r: -- vector
         _rfetch                         ; -- capacity data-address vector       r: -- vector
-        _ set_vector_data               ; -- capacity                   r: -- vector
-        _rfrom                          ; -- capacity vector
-        _ tuck                          ; -- vector capacity vector
-        _ set_vector_capacity           ; -- vector
+        _swap                           ; -- capacity vector data-address       r: -- vector
+        _ vector_set_data               ; -- capacity                           r: -- vector
+        _rfetch                         ; -- capacity vector                    r: -- vector
+        _swap                           ; -- vector capacity                    r: -- vector
+        _ vector_set_capacity           ; --                                    r: -- vector
+        _rfrom
         next
 endcode
 
@@ -131,10 +139,10 @@ code vector_resize, 'vector-resize'     ; vector new-capacity --
         _ throw                         ; -- vector new-capacity new-data-address
         _tor
         _ over                          ; -- vector new-capacity vector     r: -- new-data-addr
-        _ set_vector_capacity           ; -- vector                         r: -- new-data-addr
-        _rfrom                          ; -- vector new-data-addr
         _ swap
-        _ set_vector_data
+        _ vector_set_capacity           ; -- vector                         r: -- new-data-addr
+        _rfrom                          ; -- vector new-data-addr
+        _ vector_set_data
         next
 endcode
 
@@ -212,7 +220,7 @@ code vector_set_nth, 'vector-set-nth'   ; elt index vector --
 endcode
 
 ; ### vector-insert-nth
-code vector_insert_nth, 'vector-insert-nth'     ; elt n vector --
+code vector_insert_nth, 'vector-insert-nth' ; elt n vector --
         push    r15
         mov     r15, rbx                ; -- elt n vector
 
@@ -241,11 +249,11 @@ code vector_insert_nth, 'vector-insert-nth'     ; elt n vector --
         _cells                          ; -- elt n addr addr+8 #bytes
         _ cmoveup                       ; -- elt n
 
-        pushd   r15
-        _ vector_length
-        _oneplus
-        pushd   r15
-        _ set_vector_length             ; -- elt n
+        pushd   r15                     ; -- elt n vector
+        _dup                            ; -- elt n vector vector
+        _ vector_length                 ; -- elt n vector length
+        _oneplus                        ; -- elt n vector length+1
+        _ vector_set_length             ; -- elt n
 
         pushd   r15                     ; -- elt n vector
         _ vector_set_nth                ; ---
@@ -294,10 +302,10 @@ code vector_remove_nth, 'vector-remove-nth'     ; n vector --
         _ store
 
         _this
+        _dup
         _ vector_length
         _oneminus
-        _this
-        _ set_vector_length
+        _ vector_set_length
 
         pop     r15
         next
@@ -314,7 +322,8 @@ code vector_push, 'vector-push'         ; elt vector --
         _this                           ; -- elt length length+1 length+1 this
         _ vector_ensure_capacity        ; -- elt length length+1
         _this                           ; -- elt length length+1 this
-        _ set_vector_length             ; -- elt length
+        _swap                           ; -- elt length this length+1
+        _ vector_set_length             ; -- elt length
         _this                           ; -- elt length this
         _ vector_set_nth
         pop     r15                     ; restore callee-saved register
@@ -336,10 +345,10 @@ code vector_pop, 'vector-pop'           ; vector -- elt
         _ vector_nth                    ; -- elt
 
         _this
+        _dup
         _ vector_length
         _oneminus
-        _this
-        _ set_vector_length
+        _ vector_set_length
 
         pop     r15
         next
