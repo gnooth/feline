@@ -107,9 +107,9 @@ endcode
         mov     rbx, [rbx + BYTES_PER_CELL]
 %endmacro
 
-%macro  _set_slot1 0                    ; x object --
+%macro  _set_slot1 0                    ; object x --
         mov     rax, [rbp]
-        mov     [rbx + BYTES_PER_CELL], rax
+        mov     [rax + BYTES_PER_CELL], rbx
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
@@ -118,9 +118,9 @@ endcode
         mov     rbx, [rbx + BYTES_PER_CELL * 2]
 %endmacro
 
-%macro  _set_slot2 0                    ; x object --
+%macro  _set_slot2 0                    ; object x --
         mov     rax, [rbp]
-        mov     [rbx + BYTES_PER_CELL * 2], rax
+        mov     [rax + BYTES_PER_CELL * 2], rbx
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
@@ -129,9 +129,9 @@ endcode
         mov     rbx, [rbx + BYTES_PER_CELL * 3]
 %endmacro
 
-%macro _set_slot3 0                     ; x object --
+%macro _set_slot3 0                     ; object x --
         mov     rax, [rbp]
-        mov     [rbx + BYTES_PER_CELL * 3], rax
+        mov     [rax + BYTES_PER_CELL * 3], rbx
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
