@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@ variable handler, 'handler', 0
 code catch, 'catch'
         _ spfetch
         _ tor
+        _ lpfetch
+        _ tor
         _ handler
         _ fetch
         _ tor
@@ -51,6 +53,8 @@ code catch, 'catch'
         _ rfrom
         _ handler
         _ store
+        _ rfrom
+        _ drop
         _ rfrom
         _ drop
         _zero
@@ -72,6 +76,8 @@ code throw, 'throw'
         _ rfrom
         _ handler
         _ store
+        _ rfrom
+        _ lpstore
         _ rfrom
         _ swap
         _ tor
