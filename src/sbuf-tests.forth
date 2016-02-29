@@ -1,12 +1,11 @@
-require check
+require test-framework
 
 0 value s1
 0 value s2
 0 value s3
 0 value s4
 
-: test1
-    cr ." test1 "
+test: test1
     256 <sbuf> to s1
     s1 sbuf? check
     s1 string? check-false
@@ -16,8 +15,7 @@ require check
 
 test1
 
-: test2
-    cr ." test2 "
+test: test2
     s" this is a test" >sbuf to s1
     s1 sbuf? check
     s1 string? check-false
@@ -29,8 +27,7 @@ test1
 
 test2
 
-: test3
-    cr ." test3 "
+test: test3
     s" this is a test " >sbuf to s1
     s1 sbuf? check
     s1 string? check-false
@@ -44,8 +41,7 @@ test2
 
 test3
 
-: test4
-    cr ." test4 "
+test: test4
     s" test" >sbuf to s1
     s1 sbuf? check
     s1 string? check-false
@@ -60,6 +56,24 @@ test3
 ;
 
 test4
+
+\ sbuf-char
+test: test5
+    s" this is a test" >sbuf to s1
+    s1 sbuf? check
+    s1 string? check-false
+    s1 0 sbuf-char 't' = check
+    s1 1 sbuf-char 'h' = check
+
+    \ REVIEW index out of range returns 0
+    s1 -1 sbuf-char 0= check
+    s1 99 sbuf-char 0= check
+
+    s1 ~sbuf
+    s1 sbuf? check-false
+;
+
+test5
 
 empty
 
