@@ -30,6 +30,12 @@ code lpstore, 'lp!'
         next
 endcode
 
+; ### lp@
+code lpfetch, 'lp@'
+        pushd   r14
+        next
+endcode
+
 ; ### using-locals?
 value using_locals?, 'using-locals?', 0
 ; true at compile time if the current definition uses locals
