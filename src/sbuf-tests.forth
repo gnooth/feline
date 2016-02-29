@@ -75,6 +75,29 @@ test: test5
 
 test5
 
+\ sbuf-set-char
+test: test6
+    s" this is a test" >sbuf to s1
+    s1 sbuf? check
+    s1 string? check-false
+    s1 2 'a' sbuf-set-char
+    s1 3 't' sbuf-set-char
+    s1 2 sbuf-char 'a' = check
+    s1 3 sbuf-char 't' = check
+    s1 sbuf>transient-string "that is a test" string= check
+
+    \ index out of range
+    s1 -1 'x' ['] sbuf-set-char catch 0<> check
+    depth 3 = check 3drop
+    s1 99 'x' ['] sbuf-set-char catch 0<> check
+    depth 3 = check 3drop
+
+    s1 ~sbuf
+    s1 sbuf? check-false
+;
+
+test6
+
 empty
 
 cr .( Reached end of sbuf-tests.forth )

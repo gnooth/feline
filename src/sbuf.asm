@@ -244,23 +244,46 @@ code delete_sbuf, '~sbuf'               ; sbuf --
         next
 endcode
 
+; ### sbuf-check-index
+code sbuf_check_index, 'sbuf-check-index' ; sbuf index -- flag
+        _swap
+        _ check_sbuf                    ; -- index sbuf
+        _ sbuf_length                   ; -- index length
+        _ ult                           ; -- flag
+        next
+endcode
+
 ; ### sbuf-char
 code sbuf_char, 'sbuf-char'             ; sbuf index -- char
 ; REVIEW Return character at index, or 0 if index is out of range.
-        _swap
-        _ check_sbuf                    ; -- index sbuf
-
         _twodup
-        _ sbuf_length
-        _ ult
+        _ sbuf_check_index
         _if .1
-        _ sbuf_data
-        _swap
+        _swap                           ; -- index sbuf
+        _ sbuf_data                     ; -- index data-address
         _plus
         _cfetch
         _else .1
         _2drop
         _zero
+        _then .1
+        next
+endcode
+
+; ### sbuf-set-char
+code sbuf_set_char, 'sbuf-set-char'     ; sbuf index char --
+        _ rrot                          ; char sbuf index
+        _twodup
+        _ sbuf_check_index
+        _if .1                          ; -- char sbuf index
+        _swap                           ; -- char index sbuf
+        _ sbuf_data                     ; -- char index data-address
+        _plus
+        _cstore
+        _else .1
+        _3drop
+        _true
+        _abortq "index out of range"
         _then .1
         next
 endcode
