@@ -13,6 +13,12 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+only forth also definitions
+
+vocabulary accept-private
+
+accept-private definitions
+
 $08 constant bs
 $7f constant del
 $1b constant esc
@@ -443,3 +449,5 @@ restore-history
 ' new-accept is accept
 \ true to color?
 [then]
+
+only forth also definitions
