@@ -18,7 +18,7 @@ only forth also definitions
 \ [undefined] [log [if] include-system-file log.forth ( +log ) [then]
 
 \ [undefined] <vector> [if] include-system-file object.forth [then]
-require string.forth
+\ require string.forth
 
 only forth also definitions
 
@@ -132,8 +132,10 @@ false value repaint?
         #rows 1 -
         bounds ?do
             i #lines < if
-                i lines vector-nth          \ -- string
-                string>                     \ -- c-addr u
+                i lines vector-nth      \ -- string-or-sbuf
+                \ REVIEW
+                coerce-to-string        \ -- string
+                string>                 \ -- c-addr u
                 dup>r
                 #cols min type
                 #cols r> - spaces
@@ -253,87 +255,87 @@ false value repaint?
     then
 ;
 
-: delete-line-separator ( -- )
-\     [log ." DELETE-LINE-SEPARATOR" log]
-    cursor-line# #lines 1- < if
-        cursor-x cursor-line-length = if
-            cursor-line# 1+ lines vector-nth    \ -- string
-            cursor-line string-append-string
-            cursor-line# 1+ lines vector-remove-nth
-            true to repaint?
-        then
-    then
-;
+\ : delete-line-separator ( -- )
+\     cursor-line# #lines 1- < if
+\         cursor-x cursor-line-length = if
+\             cursor-line# 1+ lines vector-nth check-sbuf \ -- sbuf
+\             cursor-line sbuf>string sbuf-append-string
+\             cursor-line# 1+ lines vector-remove-nth
+\             true to repaint?
+\         then
+\     then
+\ ;
 
-: do-delete ( -- )
-    cursor-x cursor-line-length > abort" DO-DELETE cursor-x > cursor-line-length"
-    cursor-x cursor-line-length < if
-        cursor-x cursor-line string-delete-char
-        true to repaint?        \ FIXME repaint cursor line only
-    else
-        \ cursor-x == cursor-line-length
-        delete-line-separator
-    then
-;
+\ : do-delete ( -- )
+\     cursor-x cursor-line-length > abort" DO-DELETE cursor-x > cursor-line-length"
+\     cursor-x cursor-line-length < if
+\         cursor-x cursor-line string-delete-char
+\         true to repaint?        \ FIXME repaint cursor line only
+\     else
+\         \ cursor-x == cursor-line-length
+\         delete-line-separator
+\     then
+\ ;
 
-: do-backspace ( -- )
-    cursor-x 0= if
-        cursor-line# 0> if
-            -1 +to cursor-y
-            cursor-y 0< if
-                -1 +to editor-top-line
-                0 to cursor-y
-            then
-            cursor-line-length to cursor-x
-            delete-line-separator
-        then
-    else
-        do-left
-        do-delete
-    then
-;
+\ : do-backspace ( -- )
+\     cursor-x 0= if
+\         cursor-line# 0> if
+\             -1 +to cursor-y
+\             cursor-y 0< if
+\                 -1 +to editor-top-line
+\                 0 to cursor-y
+\             then
+\             cursor-line-length to cursor-x
+\             delete-line-separator
+\         then
+\     else
+\         do-left
+\         do-delete
+\     then
+\ ;
 
-: do-normal-char ( char -- )
-    cursor-x                            \ -- char index
-    cursor-line                         \ -- char index string
-    string-insert-nth
-    1 +to cursor-x
-    cursor-x to goal-x
-    true to repaint?
-;
 
-: insert-line-separator ( -- )
-    cursor-x cursor-line-length <= if
-        cursor-x cursor-line-length cursor-line string-substring        \ -- string
-        cursor-line# 1+ lines vector-insert-nth
-        cursor-x cursor-line string-set-length
-        1 +to cursor-y
-        0 to cursor-x
-        0 to goal-x
-        true to repaint?
-    then
-;
+\ : do-normal-char ( char -- )
+\     cursor-x                            \ -- char index
+\     cursor-line                         \ -- char index string
+\     string-insert-nth
+\     1 +to cursor-x
+\     cursor-x to goal-x
+\     true to repaint?
+\ ;
 
-: make-backup ( -- )
-    editor-filename string-clone local backup-filename
-    [char] ~ backup-filename string-append-char
-    editor-filename backup-filename copy-file
-;
+\ : insert-line-separator ( -- )
+\     cursor-x cursor-line-length <= if
+\         cursor-x cursor-line-length cursor-line string-substring        \ -- string
+\         cursor-line# 1+ lines vector-insert-nth
+\         cursor-x cursor-line string-set-length
+\         1 +to cursor-y
+\         0 to cursor-x
+\         0 to goal-x
+\         true to repaint?
+\     then
+\ ;
 
-: do-save ( -- )
-    s" Saving..." status
-    make-backup
-    editor-filename string> w/o create-file throw local fileid
-    #lines 0 ?do
-        i lines vector-nth              \ -- string
-        string>                         \ -- c-addr u
-        fileid                          \ -- c-addr u fileid
-        write-line                      \ -- ior
-        -76 ?throw
-    loop
-    fileid close-file -62 ?throw
-    s" Saving...done" status
-;
+\ : make-backup ( -- )
+\     editor-filename string-clone local backup-filename
+\     '~' backup-filename string-append-char
+\     editor-filename backup-filename copy-file
+\ ;
+
+\ : do-save ( -- )
+\     s" Saving..." status
+\     make-backup
+\     editor-filename string> w/o create-file throw local fileid
+\     #lines 0 ?do
+\         i lines vector-nth              \ -- string
+\         string>                         \ -- c-addr u
+\         fileid                          \ -- c-addr u fileid
+\         write-line                      \ -- ior
+\         -76 ?throw
+\     loop
+\     fileid close-file -62 ?throw
+\     s" Saving...done" status
+\ ;
 
 false value quit?
 
@@ -353,11 +355,11 @@ k-prior ,       ' do-page-up ,
 k-next ,        ' do-page-down ,
 k-^home ,       ' do-^home ,
 k-^end ,        ' do-^end ,
-k-delete ,      ' do-delete ,
-$08 ,           ' do-backspace ,                \ Windows c-h
-$7f ,           ' do-backspace ,                \ Linux
-$0a ,           ' insert-line-separator ,
-$13 ,           ' do-save ,                     \ c-s
+\ k-delete ,      ' do-delete ,
+\ $08 ,           ' do-backspace ,                \ Windows c-h
+\ $7f ,           ' do-backspace ,                \ Linux
+\ $0a ,           ' insert-line-separator ,
+\ $13 ,           ' do-save ,                     \ c-s
 $11 ,           ' do-quit ,                     \ c-q
 0 ,             ' drop ,
 
@@ -414,7 +416,8 @@ $11 ,           ' do-quit ,                     \ c-q
 
 : ~lines ( -- )
     lines vector-length 0 ?do
-        i lines vector-nth check-string ~string
+        i lines vector-nth
+        dup sbuf? if ~sbuf else ~string then
     loop
     lines ~vector
 ;
