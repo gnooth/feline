@@ -49,6 +49,7 @@ endcode
 
 ; ### string-length
 code string_length, 'string-length'     ; string -- length
+        _ check_string
         _string_length
         next
 endcode
