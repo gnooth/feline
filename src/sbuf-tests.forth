@@ -100,4 +100,4 @@ test6
 
 empty
 
-cr .( Reached end of sbuf-tests.forth )
+?cr .( Reached end of sbuf-tests.forth )

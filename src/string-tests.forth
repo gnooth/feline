@@ -1,4 +1,21 @@
-require check
+\ Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+
+\ This program is free software: you can redistribute it and/or modify
+\ it under the terms of the GNU General Public License as published by
+\ the Free Software Foundation, either version 3 of the License, or
+\ (at your option) any later version.
+
+\ This program is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+\ GNU General Public License for more details.
+
+\ You should have received a copy of the GNU General Public License
+\ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+only forth also definitions
+
+require test-framework
 
 0 value s1
 0 value s2
@@ -7,7 +24,7 @@ require check
 
 s" this is a test" >transient-string to s1
 
-: test1
+test: test1
     s1 string? check
     s1 transient? check
     s1 allocated? 0= check
@@ -21,7 +38,7 @@ test1
 
 s" another test" >transient-string to s2
 
-: test2
+test: test2
     s2 string? check
     s1 transient? check
     s1 allocated? 0= check
@@ -38,7 +55,7 @@ test1
 
 s"  and " >transient-string to s3
 
-: test3
+test: test3
     s1 s3 concat to s4
     s4 string? check
     s4 transient? check
@@ -51,9 +68,8 @@ s"  and " >transient-string to s3
 
 test3
 
-: test4
+test: test4
     10000 0 do
-\         cr i 6 .r space tsb-next h.
         s" this is a test" >transient-string to s1
         s" another test" >transient-string to s2
         s"  and " >transient-string to s3
@@ -76,7 +92,7 @@ test3
 
 test4
 
-: test5
+test: test5
     "this is a test" local s
     s 0 string-char 't' = check
     \ index out of range returns 0
@@ -86,7 +102,7 @@ test4
 
 test5
 
-: test6
+test: test6
     "this is a test" local s1
     "this is a test" local s2
     s1 s2 <> check
@@ -109,7 +125,7 @@ test5
 
 test6
 
-: test7
+test: test7
     "this is a test" local s1
     s1 8 string-char 'a' = check
 ;

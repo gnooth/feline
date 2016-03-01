@@ -1,4 +1,4 @@
-require check
+require test-framework
 
 42 constant k1
 17 constant k2
