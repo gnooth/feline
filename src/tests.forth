@@ -1,5 +1,26 @@
-include local-tests.forth
-include string-tests.forth
-include sbuf-tests.forth
-include vector-tests.forth
-include misc-tests.forth
+\ Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+
+\ This program is free software: you can redistribute it and/or modify
+\ it under the terms of the GNU General Public License as published by
+\ the Free Software Foundation, either version 3 of the License, or
+\ (at your option) any later version.
+
+\ This program is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+\ GNU General Public License for more details.
+
+\ You should have received a copy of the GNU General Public License
+\ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+only forth also definitions
+
+require test-framework
+
+include-tests local-tests.forth
+include-tests string-tests.forth
+include-tests sbuf-tests.forth
+include-tests vector-tests.forth
+include-tests misc-tests.forth
+
+?cr .( Reached end of tests.forth )

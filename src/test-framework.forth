@@ -28,3 +28,14 @@ only forth also definitions
     :
     postpone .test-name
 ;
+
+: include-tests ( "name" -- )
+    parse-name                          \ -- c-addr u
+    >transient-string local filename
+    ?cr ." Including " filename .string
+    ."  ... "
+    filename string> included
+;
+
+\ REVIEW
+empty!
