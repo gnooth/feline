@@ -506,9 +506,7 @@ code path_is_absolute?, 'path-is-absolute?' ; string -- flag
         _ check_string
 %ifdef WIN64
         _dup
-;         _ string_first_char
-        _ string_data
-        _cfetch
+        _ string_first_char
         _ path_separator_char
         _equal
         _if .1                          ; -- string
@@ -532,9 +530,7 @@ code path_is_absolute?, 'path-is-absolute?' ; string -- flag
         _false
 %else
         ; Linux
-;         _ string_first_char
-        _ string_data
-        _cfetch
+        _ string_first_char
         _ path_separator_char
         _equal
 %endif
