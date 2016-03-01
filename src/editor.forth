@@ -65,12 +65,12 @@ only forth also editor definitions
     editor-top-line cursor-y +
 ;
 
-: cursor-line ( -- string )
-    cursor-line# lines vector-nth
+: cursor-line ( -- sbuf )
+    cursor-line# lines vector-nth check-sbuf
 ;
 
 : cursor-line-length ( -- n )
-    cursor-line string-length
+    cursor-line sbuf-length
 ;
 
 : set-cursor ( x y -- )
@@ -132,9 +132,9 @@ false value repaint?
         #rows 1 -
         bounds ?do
             i #lines < if
-                i lines vector-nth      \ -- string-or-sbuf
+                i lines vector-nth      \ -- sbuf
                 \ REVIEW
-                coerce-to-string        \ -- string
+                sbuf>transient-string
                 string>                 \ -- c-addr u
                 dup>r
                 #cols min type
@@ -295,14 +295,16 @@ false value repaint?
 \ ;
 
 
-\ : do-normal-char ( char -- )
-\     cursor-x                            \ -- char index
-\     cursor-line                         \ -- char index string
-\     string-insert-nth
-\     1 +to cursor-x
-\     cursor-x to goal-x
-\     true to repaint?
-\ ;
+: do-normal-char ( char -- )
+    cursor-line check-sbuf              \ -- char sbuf
+    cursor-x                            \ -- char sbuf index
+    rot                                 \ -- sbuf index char
+    sbuf-insert-char                    \ --
+
+    1 +to cursor-x
+    cursor-x to goal-x
+    true to repaint?
+;
 
 \ : insert-line-separator ( -- )
 \     cursor-x cursor-line-length <= if
@@ -402,7 +404,7 @@ $11 ,           ' do-quit ,                     \ c-q
             1 +to dot
         repeat
 
-        linestart dot over - >string    \ -- string
+        linestart dot over - >sbuf      \ -- sbuf
         lines vector-push
 
         1 +to dot
