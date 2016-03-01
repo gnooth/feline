@@ -338,13 +338,20 @@ endcode
 code dot_string, '.string'              ; string | $addr --
 ; REVIEW remove support for legacy strings
         _dup_if .1
+
+        _dup
+        _ sbuf?
+        _if .2
+        _ sbuf_to_transient_string
+        _then .2
+
         _dup
         _ string?
-        _if .2
+        _if .3
         _ string_from
-        _else .2
+        _else .3
         _ count
-        _then .2
+        _then .3
         _ type
         _else .1
         _drop
