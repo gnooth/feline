@@ -18,7 +18,7 @@ VERSION = `git describe --tags`
 CC = clang
 
 CFLAGS = --std=c99 -D_GNU_SOURCE -g -m64
-ASMFLAGS =
+ASMFLAGS = -Werror
 LINKFLAGS = -m64
 
 OBJS = main.o os.o terminal.o backtrace.o forth.o
