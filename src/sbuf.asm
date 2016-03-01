@@ -112,9 +112,9 @@ code make_sbuf, 'make-sbuf'             ; capacity -- sbuf
         pushd   sbuf
         _swap
         _ erase                         ; --
-        _lit OBJECT_TYPE_SBUF
         pushd   sbuf
-        _set_object_type                ; --
+        _lit OBJECT_TYPE_SBUF
+        _object_set_type                ; --
 
         _lit ALLOCATED
         pushd   sbuf

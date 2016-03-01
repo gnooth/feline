@@ -98,10 +98,10 @@ code construct_vector, '<vector>'       ; capacity -- vector
         _duptor                         ; -- capacity vector                    r: -- vector
         _lit 4
         _cells
-        _ erase
+        _ erase                         ; -- capacity                           r: -- vector
+        _rfetch
         _lit OBJECT_TYPE_VECTOR
-        _rfetch                         ; -- capacity vector                    r: -- vector
-        _set_object_type                ; -- capacity                           r: -- vector
+        _object_set_type
         _dup                            ; -- capacity capacity                  r: -- vector
         _cells
         _ iallocate                     ; -- capacity data-address              r: -- vector

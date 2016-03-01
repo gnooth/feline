@@ -15,10 +15,6 @@
 
 file __FILE__
 
-; %macro  _this 0
-;         pushd   r15
-; %endmacro
-
 %macro  _slot0 0
         _fetch
 %endmacro
@@ -51,18 +47,19 @@ endcode
         _wfetch                         ; 16 bits
 %endmacro
 
-%macro  _set_object_type 0
-        _wstore                         ; 16 bits
-%endmacro
-
 ; ### object-type
 inline object_type, 'object-type'       ; object -- type
         _object_type
 endinline
 
-; ### set-object-type
-inline set_object_type, 'set-object-type' ; type object --
-        _set_object_type
+%macro  _object_set_type 0              ; object type --
+        _swap
+        _wstore
+%endmacro
+
+; ### object-set-type
+inline object_set_type, 'object-set-type' ; object type --
+        _object_set_type
 endinline
 
 ; The third byte of the object header contains the object flags.

@@ -91,9 +91,9 @@ code new_transient_string, '<transient-string>' ; capacity -- string
         pushd   string                  ; -- size string
         _swap                           ; -- string size
         _ erase                         ; --
-        _lit OBJECT_TYPE_STRING
         pushd   string
-        _set_object_type                ; --
+        _lit OBJECT_TYPE_STRING
+        _object_set_type                ; --
 
         _lit TRANSIENT
         pushd   string
@@ -141,9 +141,9 @@ code make_string, 'make-string'         ; c-addr u transient? -- string
         pushd   string                  ; -- size string
         _swap                           ; -- string size
         _ erase                         ; --
-        _lit OBJECT_TYPE_STRING
         pushd   string
-        _set_object_type                ; --
+        _lit OBJECT_TYPE_STRING
+        _object_set_type                ; --
 
         pushd   transient?
         _if .2
