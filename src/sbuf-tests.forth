@@ -98,6 +98,20 @@ test: test6
 
 test6
 
+\ sbuf-insert-char
+test: test7
+    s" this is a test" >sbuf to s1
+    s1 sbuf? check
+    s1 string? check-false
+    s1 9 'x' sbuf-insert-char
+    s1 sbuf>transient-string "this is ax test" string= check
+
+    s1 ~sbuf
+    s1 sbuf? check-false
+;
+
+test7
+
 empty
 
 ?cr .( Reached end of sbuf-tests.forth )
