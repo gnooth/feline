@@ -91,7 +91,7 @@ code vector_set_capacity, 'vector-set-capacity' ; vector capacity --
 endcode
 
 ; ### <vector>
-code construct_vector, '<vector>'       ; capacity -- vector
+code new_vector, '<vector>'             ; capacity -- vector
         _lit 4
         _cells
         _ iallocate

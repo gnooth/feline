@@ -365,7 +365,7 @@ code add_source_dir, 'add-source-dir'   ; c-addr u --
         _from source_dirs
         _zeq_if .1
         _lit 8
-        _ construct_vector
+        _ new_vector
         _to source_dirs
         _then .1
         _ copy_to_string                ; -- string
