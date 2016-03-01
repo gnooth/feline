@@ -501,8 +501,8 @@ code include, 'include'                 ; i*x "name" -- j*x
         next
 endcode
 
-; ### filename-is-absolute
-code filename_is_absolute, 'filename-is-absolute' ; string -- flag
+; ### path-is-absolute?
+code path_is_absolute?, 'path-is-absolute?' ; string -- flag
         _ check_string
 %ifdef WIN64
         _dup
@@ -549,7 +549,7 @@ code path_append, 'path-append'         ; string1 string2 -- string3
         _swap
 
         _dup
-        _ filename_is_absolute
+        _ path_is_absolute?
         _if .1
         _nip
         _return
