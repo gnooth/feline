@@ -112,6 +112,29 @@ test: test7
 
 test7
 
+\ sbuf-delete-char
+test: test8
+    s" this is a test" >sbuf to s1
+    s1 sbuf? check
+    s1 string? check-false
+    s1 sbuf-length 14 = check
+    s1 0 sbuf-delete-char
+    s1 sbuf>transient-string "his is a test" string= check
+    s1 sbuf-length 13 = check
+    s1 12 sbuf-delete-char
+    s1 sbuf>transient-string "his is a tes" string= check
+    s1 sbuf-length 12 = check
+    s1 4 sbuf-delete-char
+    s1 sbuf>transient-string "his s a tes" string= check
+    s1 sbuf-length 11 = check
+
+    s1 sbuf? check
+    s1 ~sbuf
+    s1 sbuf? check-false
+;
+
+test8
+
 empty
 
 ?cr .( Reached end of sbuf-tests.forth )

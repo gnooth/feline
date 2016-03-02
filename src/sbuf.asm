@@ -528,3 +528,69 @@ code sbuf_insert_char, 'sbuf-insert-char' ; sbuf index char --
 %undef char
 
 endcode
+
+; ### sbuf-delete-char
+code sbuf_delete_char, 'sbuf-delete-char' ; sbuf index --
+%define sbuf    local0
+%define index   local1
+%define len     local2
+
+        _locals_enter
+
+        popd    index
+        _ check_sbuf
+        popd    sbuf                    ; --
+
+        pushd   sbuf
+        pushd   index
+        _ sbuf_check_index
+        _if .1
+        pushd   sbuf
+        _ sbuf_length
+        popd    len
+
+        ; sbuf sbuf-data index + 1+
+        pushd   sbuf
+        _ sbuf_data
+        pushd   index
+        _plus
+        _oneplus                        ; -- src
+
+        ; dup 1-
+        _dup
+        _oneminus                       ; -- src dest
+
+        ; len index - 1- cmove
+        pushd   len
+        pushd   index
+        _minus
+        _oneminus                       ; -- src dest count
+        _ cmove
+
+        ; 0 sbuf sbuf-data len 1- + c!
+        _zero
+        pushd   sbuf
+        _ sbuf_data
+        pushd   len
+        _oneminus
+        _plus
+        _cstore
+
+        ; sbuf len 1- sbuf-set-length
+        pushd   sbuf
+        pushd   len
+        _oneminus
+        _ sbuf_set_length
+
+        _else .1
+        _true
+        _abortq "index out of range"
+        _then .1
+
+        _locals_leave
+        next
+
+%undef sbuf
+%undef index
+%undef len
+endcode
