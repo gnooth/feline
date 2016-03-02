@@ -493,6 +493,10 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _drop
         _ os_errno
         _ errno_to_string
+        _quote ": "
+        _ concat
+        _local0
+        _ concat
         _to msg
         _lit -38                        ; "non-existent file" Forth 2012 Table 9.1
         _ throw
