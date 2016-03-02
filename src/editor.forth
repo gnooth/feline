@@ -266,16 +266,16 @@ false value repaint?
 \     then
 \ ;
 
-\ : do-delete ( -- )
-\     cursor-x cursor-line-length > abort" DO-DELETE cursor-x > cursor-line-length"
-\     cursor-x cursor-line-length < if
-\         cursor-x cursor-line string-delete-char
-\         true to repaint?        \ FIXME repaint cursor line only
+: do-delete ( -- )
+    cursor-x cursor-line-length > abort" DO-DELETE cursor-x > cursor-line-length"
+    cursor-x cursor-line-length < if
+        cursor-line cursor-x sbuf-delete-char
+        true to repaint?        \ FIXME repaint cursor line only
 \     else
 \         \ cursor-x == cursor-line-length
 \         delete-line-separator
-\     then
-\ ;
+    then
+;
 
 \ : do-backspace ( -- )
 \     cursor-x 0= if
@@ -357,7 +357,7 @@ k-prior ,       ' do-page-up ,
 k-next ,        ' do-page-down ,
 k-^home ,       ' do-^home ,
 k-^end ,        ' do-^end ,
-\ k-delete ,      ' do-delete ,
+k-delete ,      ' do-delete ,
 \ $08 ,           ' do-backspace ,                \ Windows c-h
 \ $7f ,           ' do-backspace ,                \ Linux
 \ $0a ,           ' insert-line-separator ,
