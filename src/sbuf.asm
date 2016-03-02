@@ -350,66 +350,6 @@ code check_char, 'check-char'           ; char -- char
         next
 endcode
 
-; ### sbuf-insert-char
-code sbuf_insert_char, 'sbuf-insert-char' ; sbuf index char --
-; locals:
-%define sbuf   local0
-%define index  local1
-%define char   local2
-
-        _locals_enter
-        _ check_char
-        popd    char
-        popd    index
-        _ check_sbuf
-        popd    sbuf
-
-        ; sbuf sbuf-length 1+ sbuf sbuf-ensure-capacity
-        pushd   sbuf
-        _ sbuf_length
-        _oneplus
-        pushd   sbuf
-        _ sbuf_ensure_capacity
-
-        ; sbuf sbuf-data index +
-        pushd   sbuf
-        _ sbuf_data
-        pushd   index
-        _plus                           ; -- source
-
-        ; dup 1+
-        _dup
-        _oneplus                        ; -- source dest
-
-        ; sbuf sbuf-length index - cmove>
-        pushd   sbuf
-        _ sbuf_length
-        pushd   index
-        _minus                          ; -- source dest count
-        _ cmoveup                       ; --
-
-        ; sbuf dup sbuf-length 1+ sbuf-set-length
-        pushd   sbuf
-        _dup                            ; -- sbuf sbuf
-        _ sbuf_length                   ; -- sbuf length
-        _oneplus                        ; -- sbuf length+1
-        _ sbuf_set_length
-
-        ; sbuf index char sbuf-set-char
-        pushd   sbuf
-        pushd   index
-        pushd   char
-        _ sbuf_set_char
-
-        _locals_leave
-        next
-
-%undef sbuf
-%undef index
-%undef char
-
-endcode
-
 ; ### sbuf-append-char
 code sbuf_append_char, 'sbuf-append-char' ; sbuf char --
 
@@ -527,4 +467,64 @@ code sbuf_append_string, 'sbuf-append-string' ; sbuf string --
         _ string_from
         _ sbuf_append_chars
         next
+endcode
+
+; ### sbuf-insert-char
+code sbuf_insert_char, 'sbuf-insert-char' ; sbuf index char --
+; locals:
+%define sbuf   local0
+%define index  local1
+%define char   local2
+
+        _locals_enter
+        _ check_char
+        popd    char
+        popd    index
+        _ check_sbuf
+        popd    sbuf
+
+        ; sbuf sbuf-length 1+ sbuf sbuf-ensure-capacity
+        pushd   sbuf
+        _ sbuf_length
+        _oneplus
+        pushd   sbuf
+        _ sbuf_ensure_capacity
+
+        ; sbuf sbuf-data index +
+        pushd   sbuf
+        _ sbuf_data
+        pushd   index
+        _plus                           ; -- source
+
+        ; dup 1+
+        _dup
+        _oneplus                        ; -- source dest
+
+        ; sbuf sbuf-length index - cmove>
+        pushd   sbuf
+        _ sbuf_length
+        pushd   index
+        _minus                          ; -- source dest count
+        _ cmoveup                       ; --
+
+        ; sbuf dup sbuf-length 1+ sbuf-set-length
+        pushd   sbuf
+        _dup                            ; -- sbuf sbuf
+        _ sbuf_length                   ; -- sbuf length
+        _oneplus                        ; -- sbuf length+1
+        _ sbuf_set_length
+
+        ; sbuf index char sbuf-set-char
+        pushd   sbuf
+        pushd   index
+        pushd   char
+        _ sbuf_set_char
+
+        _locals_leave
+        next
+
+%undef sbuf
+%undef index
+%undef char
+
 endcode
