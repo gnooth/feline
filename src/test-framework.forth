@@ -29,9 +29,14 @@ only forth also definitions
     postpone .test-name
 ;
 
+: test-directory ( -- string )
+    feline-home "test" path-append
+;
+
 : include-tests ( "name" -- )
     parse-name                          \ -- c-addr u
     >transient-string local filename
+    test-directory filename path-append to filename
     ?cr ." Including " filename .string
     ."  ... "
     filename string> included
