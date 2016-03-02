@@ -15,7 +15,7 @@
 
 only forth also definitions
 
-require test-framework
+require-system-file test-framework
 
 variable foo
 
@@ -34,4 +34,4 @@ test1
 
 empty
 
-cr .( Reached end of misc-tests.forth )
+?cr .( Reached end of misc-tests.forth )

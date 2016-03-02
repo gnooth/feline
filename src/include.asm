@@ -603,6 +603,14 @@ code include_system_file, 'include-system-file'
         next
 endcode
 
+; ### require-system-file
+code require_system_file, 'require-system-file'
+        _ parse_name
+        _ system_file_pathname
+        _ required
+        next
+endcode
+
 ; ### required
 code required, 'required'               ; i*x c-addr u -- i*x
 ; FILE EXT

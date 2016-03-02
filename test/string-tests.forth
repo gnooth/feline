@@ -15,7 +15,7 @@
 
 only forth also definitions
 
-require test-framework
+require-system-file test-framework
 
 0 value s1
 0 value s2
