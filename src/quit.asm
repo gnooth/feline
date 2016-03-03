@@ -255,6 +255,7 @@ code do_error, 'do-error'               ; n --
         _ exception
         _lit -13                        ; undefined word
         _notequal
+        _ exception
         _lit -4                         ; data stack underflow
         _notequal
         _ and
