@@ -286,8 +286,8 @@ code path_separator_char?, 'path-separator-char?' ; char -- flag
         next
 endcode
 
-; ### dirname
-code forth_dirname, 'dirname'           ; string1 -- string2 | 0
+; ### path-get-directory
+code path_get_directory, 'path-get-directory' ; string1 -- string2 | 0
         _ check_string
         _ string_from                   ; -- c-addr u
         _begin .1
@@ -297,8 +297,7 @@ code forth_dirname, 'dirname'           ; string1 -- string2 | 0
         _twodup
         _plus
         _cfetch
-        _ path_separator_char
-        _equal
+        _ path_separator_char?
         _if .2
         _dup
         _zeq_if .3
@@ -379,15 +378,15 @@ code resolve_include_filename, 'resolve-include-filename' ; c-addr u -- string
         _ copy_to_transient_string      ; -- string
         _ tilde_expand_filename         ; -- string
 
-        ; If the path is not absolute, append it to the directory part of the
-        ; current source filename.
+        ; If the argument after tilde expansion is not an absolute pathname,
+        ; append it to the directory part of the current source filename.
         _dup
         _ path_is_absolute?
         _zeq_if .1
         _ source_filename
         _?dup_if .2
         _ coerce_to_string
-        _ forth_dirname
+        _ path_get_directory
         _?dup_if .3                     ; -- string directory-string
         _ check_string
         _swap
