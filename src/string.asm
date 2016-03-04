@@ -15,6 +15,10 @@
 
 file __FILE__
 
+%macro  _this 0
+        pushd   r15
+%endmacro
+
 ; ### string?
 code string?, 'string?'                 ; object -- flag
         test    rbx, rbx
@@ -234,16 +238,27 @@ code delete_string, '~string'           ; string --
         _then .1
 
         _dup
-        _ allocated?
+        _ transient?
         _if .2
         ; Zero out the object header so it won't look like a valid object
-        ; after it has been freed.
+        ; after it has been destroyed.
+        xor     eax, eax
+        mov     [rbx], rax
+        _drop
+        _return
+        _then .2
+
+        _dup
+        _ allocated?
+        _if .3
+        ; Zero out the object header so it won't look like a valid object
+        ; after it has been destroyed.
         xor     eax, eax
         mov     [rbx], rax
         _ ifree
-        _else .2
+        _else .3
         _drop
-        _then .2
+        _then .3
         next
 endcode
 
@@ -335,6 +350,34 @@ code string_last_char, 'string-last-char' ; string -- char
         next
 endcode
 
+; ### string-substring
+code string_substring, 'string-substring' ; string start-index end-index --
+        _ rot
+        _ check_string
+        push    r15
+        popd    r15                     ; -- start-index end-index
+
+        _dup
+        _this
+        _ string_length
+        _ ugt
+        _abortq "end index out of range"
+                                        ; -- start-index end-index
+        _twodup                         ; -- start-index end-index start-index end-index
+        _ ugt
+        _abortq "start index > end index"
+                                        ; -- start-index end-index
+        _over
+        _minus                          ; -- start-index length
+        _this
+        _ string_data
+        _ underplus
+        _ copy_to_transient_string
+
+        pop     r15
+        next
+endcode
+
 ; ### .string
 code dot_string, '.string'              ; string | $addr --
 ; REVIEW remove support for legacy strings
@@ -400,3 +443,5 @@ code stringequal, 'string='             ; string1 string2 -- flag
         _ strequal
         next
 endcode
+
+%unmacro _this 0
