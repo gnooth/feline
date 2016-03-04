@@ -396,14 +396,26 @@ code resolve_include_filename, 'resolve-include-filename' ; c-addr u -- string
         _then .2
         _then .1
 
-        ; If the path we've got at this point is includable, we're done.
         _ check_string
         _ canonical_path                ; -- string
+
+        _dup
+        _ path_is_directory?
+        _if .4
+        _quote "Is a directory: "
+        _swap
+        _ concat
+        _to msg
+        _lit -37                        ; "file I/O exception"
+        _ throw
+        _then .4
+
+        ; If the path we've got at this point is includable, we're done.
         _dup                            ; -- string string
         _ includable?                   ; -- string flag
-        _if .4
+        _if .5
         _return
-        _then .4                        ; -- string
+        _then .5                        ; -- string
 
         ; Otherwise try appending the default extension.
         _dup                            ; -- string string
@@ -411,19 +423,9 @@ code resolve_include_filename, 'resolve-include-filename' ; c-addr u -- string
         _ concat                        ; -- string1 string2
         _dup                            ; -- string1 string2 string2
         _ includable?                   ; -- string1 string2 flag
-        _if .5
+        _if .6
         _nip                            ; return string2
         _return
-        _then .5
-
-        _drop                           ; -- string1
-        _dup
-        _ path_is_directory?
-        _if .6
-        _quote "Is a directory"
-        _to msg
-        _lit -37                        ; "file I/O exception"
-        _ throw
         _then .6
 
         next
