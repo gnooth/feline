@@ -46,10 +46,14 @@ code check_sbuf, 'check-sbuf'           ; object -- sbuf
         next
 endcode
 
+%macro _sbuf_length 0
+        _slot1
+%endmacro
+
 ; ### sbuf-length
 code sbuf_length, 'sbuf-length'         ; sbuf -- length
         _ check_sbuf
-        _slot1
+        _sbuf_length
         next
 endcode
 
@@ -255,8 +259,8 @@ endcode
 code sbuf_check_index, 'sbuf-check-index' ; sbuf index -- flag
         _swap
         _ check_sbuf                    ; -- index sbuf
-        _ sbuf_length                   ; -- index length
-        _ ult                           ; -- flag
+        _sbuf_length                    ; -- index length
+        _ult                            ; -- flag
         next
 endcode
 
