@@ -329,11 +329,7 @@ endinline
 ; ### u<
 inline ult, 'u<'
 ; CORE
-        cmp     [rbp], rbx
-        setb    bl
-        neg     bl
-        movsx   rbx, bl
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _ult
 endinline
 
 ; ### u>
