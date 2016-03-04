@@ -126,8 +126,18 @@ test: test6
 test6
 
 test: test7
-    "this is a test" local s1
-    s1 8 string-char 'a' = check
+    "this is a test" to s1
+    s1 0 4 string-substring to s2
+    s2 string? check
+    s2 string-length 4 = check
+    s2 "this" string= check
+
+    \ s2 copies its data
+    s1 string-data s2 string-data <> check
+
+    \ can't destroy s1 because it's a static string
+    s2 ~string
+    s2 string? check-false
 ;
 
 test7
