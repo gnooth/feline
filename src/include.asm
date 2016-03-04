@@ -272,7 +272,7 @@ code path_separator_char?, 'path-separator-char?' ; char -- flag
 ; Accept '/' even on Windows.
 %ifdef WIN64
         _dup
-        _lit '\\'
+        _lit '\'
         _equal
         _if .1
         _drop
