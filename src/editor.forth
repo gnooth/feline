@@ -259,7 +259,7 @@ false value repaint?
 \     cursor-line# #lines 1- < if
 \         cursor-x cursor-line-length = if
 \             cursor-line# 1+ lines vector-nth check-sbuf \ -- sbuf
-\             cursor-line sbuf>string sbuf-append-string
+\             cursor-line sbuf>transient-string sbuf-append-string
 \             cursor-line# 1+ lines vector-remove-nth
 \             true to repaint?
 \         then
@@ -277,8 +277,8 @@ false value repaint?
     then
 ;
 
-\ : do-backspace ( -- )
-\     cursor-x 0= if
+: do-backspace ( -- )
+    cursor-x 0= if
 \         cursor-line# 0> if
 \             -1 +to cursor-y
 \             cursor-y 0< if
@@ -288,11 +288,11 @@ false value repaint?
 \             cursor-line-length to cursor-x
 \             delete-line-separator
 \         then
-\     else
-\         do-left
-\         do-delete
-\     then
-\ ;
+    else
+        do-left
+        do-delete
+    then
+;
 
 
 : do-normal-char ( char -- )
@@ -358,8 +358,8 @@ k-next ,        ' do-page-down ,
 k-^home ,       ' do-^home ,
 k-^end ,        ' do-^end ,
 k-delete ,      ' do-delete ,
-\ $08 ,           ' do-backspace ,                \ Windows c-h
-\ $7f ,           ' do-backspace ,                \ Linux
+$08 ,           ' do-backspace ,                \ Windows c-h
+$7f ,           ' do-backspace ,                \ Linux
 \ $0a ,           ' insert-line-separator ,
 \ $13 ,           ' do-save ,                     \ c-s
 $11 ,           ' do-quit ,                     \ c-q
