@@ -147,6 +147,7 @@ code cold, 'cold'                       ; --
         mov     [origin_c_data], rax
         _ initialize_locals_stack
         _ standard_output
+
         _ forth_wordlist
         _fetch
         _zeq_if .1
@@ -154,6 +155,16 @@ code cold, 'cold'                       ; --
         _ forth_wordlist
         _ store
         _then .1
+
+        _ feline_wordlist
+        _fetch
+        _zeq_if .17
+        _ feline_last
+        _ fetch
+        _ feline_wordlist
+        _ store
+        _then .17
+
         _ initialize_task
         _squote "boot.forth"
         _ system_file_pathname
