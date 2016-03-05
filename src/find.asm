@@ -135,7 +135,12 @@ root_wid:
 forth_wid:
         dq      0
 
-        dq      forth_wid
+        dq      forth_wid               ; link
+        dq      feline_nfa
+feline_wid:
+        dq      0
+
+        dq      feline_wid              ; link
         dq      files_nfa
 files_wid:
         dq      0
@@ -166,6 +171,22 @@ endcode
 code forth, 'forth'                     ; --
 ; SEARCH EXT
         mov     rax, forth_wid
+        mov     [context_data], rax
+        next
+endcode
+
+; ### feline-wordlist
+code feline_wordlist, 'feline-wordlist'   ; -- wid
+; SEARCH
+        pushrbx
+        mov     rbx, feline_wid
+        next
+endcode
+
+; ### feline
+code feline, 'feline'                     ; --
+; SEARCH EXT
+        mov     rax, feline_wid
         mov     [context_data], rax
         next
 endcode
