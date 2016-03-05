@@ -21,6 +21,8 @@ default abs ; use absolute addresses by default
 %include "macros.asm"
 %include "inlines.asm"
 
+IN_FORTH
+
 %include "align.asm"
 %include "ansi.asm"
 %include "arith.asm"
@@ -54,13 +56,20 @@ default abs ; use absolute addresses by default
 %include "tools.asm"
 %include "value.asm"
 
+IN_FELINE
+
 ; Objects
 %include "objects.asm"                  ; Must be first!
 %include "vector.asm"
 %include "string.asm"
 %include "sbuf.asm"
 
+IN_FORTH
+
 file __FILE__
+
+; ### feline-last
+variable feline_last, 'feline-last', feline_link
 
 ; ### last
 ; the last word
