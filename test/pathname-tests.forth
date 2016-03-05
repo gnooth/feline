@@ -15,13 +15,31 @@
 
 only forth also definitions
 
-require test-framework
+require-system-file test-framework
 
-include-tests local-tests.forth
-include-tests string-tests.forth
-include-tests sbuf-tests.forth
-include-tests pathname-tests.forth
-include-tests vector-tests.forth
-include-tests misc-tests.forth
+0 value s
 
-?cr .( Reached end of tests.forth )
+test: test1
+    "foo" path-get-extension 0= check
+;
+
+test1
+
+test: test2
+    "foo.bar" path-get-extension to s
+    s string? check
+    s transient? check
+    s ".bar" string= check
+;
+
+test2
+
+test: test3
+    "foo.bar/zork" path-get-extension 0= check
+;
+
+test3
+
+empty
+
+?cr .( Reached end of pathname-tests.forth )
