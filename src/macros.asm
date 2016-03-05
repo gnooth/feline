@@ -119,22 +119,52 @@ OBJECT_TYPE_SBUF                equ 3
 TRANSIENT                       equ 1
 ALLOCATED                       equ 2
 
-%define link    0
+%define forth_link      0
+
+%define feline_link     0
+
+%macro  IN_FELINE 0
+%undef  in_forth
+%define in_feline
+%endmacro
+
+%macro  IN_FORTH 0
+%undef  in_feline
+%define in_forth
+%endmacro
 
 %macro  name_token 2                    ; label, name
+
 %strlen len     %2
         section .data
         align   DEFAULT_DATA_ALIGNMENT
         dq      current_file
         dq      __LINE__
         dq      %1_xt                   ; xt pointer field
-        dq      link                    ; link field
+
+%ifdef in_feline
+        dq      feline_link
+%elifdef in_forth
+        dq      forth_link              ; link field
+%else
+        %fatal "no vocabulary specified"
+%endif
+
 %1_nfa:
         db      len
         db      %2
         db      0
         align   DEFAULT_DATA_ALIGNMENT
-%define link    %1_nfa                  ; link field points to name field
+
+; Link field points to name field.
+%ifdef in_feline
+%define feline_link     %1_nfa
+%elifdef in_forth
+%define forth_link      %1_nfa
+%else
+        %fatal "no vocabulary specified"
+%endif
+
 %endmacro
 
 %macro  execution_token 1-4             ; label, flags, inline size, type
