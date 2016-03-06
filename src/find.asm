@@ -374,6 +374,28 @@ code previous, 'previous'
         next
 endcode
 
+; ### forth!
+code forth_order, 'forth!'
+        _ only
+        _ feline
+        _ also
+        _ forth
+        _ also
+        _ definitions
+        next
+endcode
+
+; ### feline!
+code feline_order, 'feline!'
+        _ only
+        _ forth
+        _ also
+        _ feline
+        _ also
+        _ definitions
+        next
+endcode
+
 ; ### found
 code found, 'found'                     ; nfa -- xt 1  | xt -1
         _namefrom                       ; -- xt
