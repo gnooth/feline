@@ -1,4 +1,4 @@
-\ Copyright (C) 2012-2013 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -13,6 +13,8 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+forth!
+
 : vocabulary
    wordlist
    create dup ,
@@ -20,11 +22,11 @@
    does>
       @ context ! ;
 
-also root definitions
+root definitions
 
-: forth  forth ;
-: forth-wordlist forth-wordlist ;
-: set-order set-order ;
-: order order ;
+synonym forth           forth
+synonym forth-wordlist  forth-wordlist
+synonym set-order       set-order
+synonym order           order
 
-only forth definitions
+forth!
