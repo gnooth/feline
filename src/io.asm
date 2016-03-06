@@ -768,8 +768,7 @@ endcode
 extern os_getcwd
 
 ; ### get-current-directory
-code get_current_directory, 'get-current-directory'
-; c-addr u -- c-addr
+code get_current_directory, 'get-current-directory' ; c-addr u -- c-addr
 %ifdef WIN64
         popd    rdx
         popd    rcx
@@ -783,15 +782,13 @@ code get_current_directory, 'get-current-directory'
 endcode
 
 ; ### current-directory
-code current_directory, 'current-directory'     ; -- $addr
-        _ tempstring
-        _dup
-        _oneplus                        ; skip over count byte
-        _lit 255
+code current_directory, 'current-directory' ; -- string
+        _lit 1024
+        _ transient_alloc               ; -- c-addr
+        _lit 1024
         _ get_current_directory
-        _ zstrlen
-        _over
-        _ cstore                        ; count byte
+        _ zcount                        ; -- c-addr u
+        _ copy_to_transient_string      ; -- string
         next
 endcode
 
@@ -823,7 +820,7 @@ code cd, 'cd'
         _else .1
         _2drop
         _ current_directory
-        _ counttype
+        _ dot_string
         _then .1
         next
 endcode
@@ -875,7 +872,8 @@ extern os_time_and_date
 ; ### time&date
 code itime_and_date, 'time&date'
 ; FACILITY EXT
-        _ tempstring                    ; -- buffer
+        _lit 1024
+        _ transient_alloc               ; -- buffer
         _duptor
 %ifdef WIN64
         popd    rcx
