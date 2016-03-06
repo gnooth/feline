@@ -13,7 +13,7 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-only forth
+forth!
 
 [undefined] disassembler [if] vocabulary disassembler [then]
 
@@ -21,7 +21,7 @@ only forth
 
 [undefined] x86-64 [if] include-system-file x86-64.forth [then]
 
-only forth also x86-64 also disassembler definitions
+forth! x86-64 also disassembler definitions
 
 decimal
 
@@ -1934,7 +1934,7 @@ synonym disasm disasm
 
 \ testing the disassembler
 
-only forth also disassembler also forth definitions
+also forth definitions
 
 0 value #words
 
@@ -1960,6 +1960,6 @@ only forth also disassembler also forth definitions
 
 \ end of definitions for testing the disassembler
 
-only forth also disassembler also forth definitions     \ REVIEW
+forth!
 
 warning on                              \ REVIEW
