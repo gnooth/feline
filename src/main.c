@@ -132,10 +132,6 @@ static void initialize_forth()
   extern Cell cp_data;
   extern Cell limit_data;
   extern Cell limit_c_data;
-  const size_t stringbuf_size = 16384;
-  extern Cell stringbuf_start_data;
-  extern Cell stringbuf_end_data;
-  extern Cell stringbuf_data;
   extern Cell tick_tib_data;
   extern Cell sp0_data;
   extern Cell stack_cells_data;
@@ -160,9 +156,6 @@ static void initialize_forth()
   cp_data = (Cell) code_space;
   limit_data = (Cell) data_space + data_space_size;
   limit_c_data = (Cell) code_space + code_space_size;
-
-  stringbuf_data = stringbuf_start_data = (Cell) malloc(stringbuf_size);
-  stringbuf_end_data = stringbuf_start_data + stringbuf_size;
 
   tick_tib_data = (Cell) malloc(256);
 

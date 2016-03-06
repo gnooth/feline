@@ -15,69 +15,12 @@
 
 file __FILE__
 
-; ### $bufstart
-value stringbuf_start, '$bufstart', 0   ; initialized in main()
-
-; ### $bufend
-value stringbuf_end, '$bufend', 0       ; initialized in main()
-
-; ### $buf
-value stringbuf, '$buf', 0              ; initialized in main()
-
 ; ### temp$
 code tempstring, 'temp$'                ; -- $addr
 ; Returns the address of a temporary buffer big enough for the biggest
 ; counted string.
-        _ stringbuf
-        _duptor
-        _lit 260                        ; count byte, 255 chars, terminal null byte (and round up)
-        _ plus
-        mov     [stringbuf_data], rbx
-        poprbx
-        _ stringbuf
-        _ stringbuf_end
         _lit 260
-        _ minus
-        _ ugt
-        _if .1
-        mov     rax, [stringbuf_start_data]
-        mov     [stringbuf_data], rax
-        _then .1
-        _zero
-        _ stringbuf
-        _ store
-        _rfrom
-        next
-endcode
-
-; ### +$buf
-code plus_stringbuf, '+$buf'
-; advance $buf past the string at $buf
-        _ stringbuf
-        _ count
-        _ plus
-        _oneplus                        ; terminal null byte
-        mov     [stringbuf_data], rbx
-        poprbx
-        _ stringbuf
-        _ stringbuf_end
-        _lit 258
-        _ minus
-        _ ugt
-        _if .1
-        mov     rax, [stringbuf_start_data]
-        mov     [stringbuf_data], rax
-        _then .1
-        _zero
-        _ stringbuf
-        _ store
-        next
-endcode
-
-; ### $buf+
-code stringbuf_plus, '$buf+'            ; -- $addr
-        _ stringbuf                     ; leave the current value of $buf on the stack
-        _ plus_stringbuf                ; advance the pointer past the current string
+        _ tsb_alloc
         next
 endcode
 
