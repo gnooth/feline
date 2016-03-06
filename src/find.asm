@@ -176,7 +176,7 @@ code forth, 'forth'                     ; --
 endcode
 
 ; ### feline-wordlist
-code feline_wordlist, 'feline-wordlist'   ; -- wid
+code feline_wordlist, 'feline-wordlist' ; -- wid
 ; SEARCH
         pushrbx
         mov     rbx, feline_wid
@@ -184,7 +184,7 @@ code feline_wordlist, 'feline-wordlist'   ; -- wid
 endcode
 
 ; ### feline
-code feline, 'feline'                     ; --
+code feline, 'feline'                   ; --
 ; SEARCH EXT
         mov     rax, feline_wid
         mov     [context_data], rax
