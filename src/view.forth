@@ -13,9 +13,11 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+forth!
+
 [defined] hidden 0= [if] vocabulary hidden [then]
 
-only forth also hidden definitions
+hidden definitions
 
 0 value buffer
 
@@ -146,4 +148,4 @@ also forth definitions
     ' (view)
 ;
 
-only forth definitions
+forth!
