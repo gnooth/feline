@@ -1,4 +1,4 @@
-\ Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
+\ Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
 
 \ This program is free software: you can redistribute it and/or modify
 \ it under the terms of the GNU General Public License as published by
@@ -13,11 +13,11 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-only forth
+forth!
 
 [undefined] x86-64 [if] vocabulary x86-64 [then]
 
-only forth also x86-64 definitions
+x86-64 definitions
 
 decimal
 
