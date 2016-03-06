@@ -185,6 +185,13 @@
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
+%macro  _ugt 0                          ; u>
+; Win32Forth
+        cmp     rbx, [rbp]
+        sbb     rbx, rbx
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
 %macro  _zne 0                          ; 0<>
 ; Win32Forth
         cmp     rbx, 1

@@ -335,11 +335,7 @@ endinline
 ; ### u>
 inline ugt, 'u>'
 ; CORE EXT
-        cmp     [rbp], rbx
-        seta    bl
-        neg     bl
-        movsx   rbx, bl
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _ugt
 endinline
 
 ; ### within
