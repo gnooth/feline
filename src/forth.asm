@@ -52,7 +52,7 @@ IN_FORTH
 %include "stack.asm"
 %include "store.asm"
 %include "strings.asm"
-%include "transient-strings.asm"
+%include "transient-alloc.asm"
 %include "tools.asm"
 %include "value.asm"
 

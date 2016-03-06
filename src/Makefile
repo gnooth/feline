@@ -107,7 +107,7 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	string.asm \
 	strings.asm \
 	tools.asm \
-	transient-strings.asm \
+	transient-alloc.asm \
 	value.asm \
 	vector.asm
 
