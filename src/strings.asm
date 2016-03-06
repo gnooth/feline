@@ -20,7 +20,7 @@ code tempstring, 'temp$'                ; -- $addr
 ; Returns the address of a temporary buffer big enough for the biggest
 ; counted string.
         _lit 260
-        _ tsb_alloc
+        _ transient_alloc
         next
 endcode
 

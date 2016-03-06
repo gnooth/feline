@@ -91,7 +91,7 @@ code new_transient_string, '<transient-string>' ; capacity -- string
         _oneplus                        ; terminal null byte
         _plus                           ; -- size
         _dup
-        _ tsb_alloc                     ; -- size string
+        _ transient_alloc               ; -- size string
         popd    string                  ; -- size
         pushd   string                  ; -- size string
         _swap                           ; -- string size
@@ -138,7 +138,7 @@ code make_string, 'make-string'         ; c-addr u transient? -- string
         _dup
         pushd   transient?
         _if .1
-        _ tsb_alloc
+        _ transient_alloc
         _else .1
         _ iallocate
         _then .1                        ; -- size string

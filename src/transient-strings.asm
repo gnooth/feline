@@ -15,64 +15,65 @@
 
 file __FILE__
 
-; ### tsb
-value tsb, 'tsb', 0
+; ### transient-area
+value transient_area, 'transient_area', 0
 
-; ### tsb-next
-value tsb_next, 'tsb-next', 0
+; ### transient-area-next
+value transient_area_next, 'transient-area-next', 0
 
-; ### tsb-limit
-value tsb_limit, 'tsb-limit', 0
+; ### transient-area-limit
+value transient_area_limit, 'transient-area-limit', 0
 
-; ### tsb-size
-constant tsb_size, 'tsb-size', 16384    ; REVIEW size
+; ### transient-area-size
+constant transient_area_size, 'transient-area-size', 16384 ; REVIEW size
 
-; ### tsb-init
-code tsb_init, 'tsb-init'
-        _ tsb_size
+; ### transient-alloc-max
+constant transient_alloc_max, 'transient-alloc-max', 1024 ; REVIEW size
+
+; ### initialize-transient-area
+code initialize_transient_area, 'initialize-transient-area'
+        _ transient_area_size
         _ iallocate
         _dup
-        _to tsb
-        _to tsb_next
+        _to transient_area
+        _to transient_area_next
 
-        _ tsb
-        _ tsb_size
+        _ transient_area
+        _ transient_area_size
         _plus
-        _to tsb_limit
+        _to transient_area_limit
 
         next
 endcode
 
-constant tsb_alloc_max, 'tsb-alloc-max', 1024   ; REVIEW size
-
-; ### tsb-alloc
-code tsb_alloc, 'tsb-alloc'             ; u -- addr
-        _from tsb
+; ### transient-alloc
+code transient_alloc, 'transient-alloc' ; u -- addr
+        _ transient_area
         _zeq_if .1
-        _ tsb_init
+        _ initialize_transient_area
         _then .1                        ; -- u
 
         _dup
-        _ tsb_alloc_max
-        _ ugt
-        _abortq "TSB-ALLOC requested size too big"      ; FIXME error message
+        _ transient_alloc_max
+        _ugt
+        _abortq "transient-alloc requested size too big" ; FIXME error message
 
-        _from tsb_next
+        _ transient_area_next
         _ aligned                       ; -- u a-addr1
         _twodup
         _plus                           ; -- u a-addr1 addr2
         _dup
-        _from tsb_limit
-        _ ult
+        _ transient_area_limit
+        _ult
         _if .3                          ; -- u a-addr1 addr2
-        _to tsb_next                    ; -- u a-addr1
+        _to transient_area_next         ; -- u a-addr1
         _nip                            ; -- a-addr1
         _else .3                        ; -- u a-addr1 addr2
         _2drop                          ; -- u
-        _from tsb
+        _ transient_area
         _plus
-        _to tsb_next
-        _from tsb                       ; -- addr
+        _to transient_area_next
+        _ transient_area                ; -- addr
         _then .3
         next
 endcode
