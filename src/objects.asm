@@ -15,6 +15,12 @@
 
 file __FILE__
 
+%define this    r15
+
+%macro  _this 0
+        pushd   this
+%endmacro
+
 %macro  _slot0 0
         _fetch
 %endmacro
@@ -102,6 +108,11 @@ endcode
 
 %macro  _slot1 0                        ; object -- x
         mov     rbx, [rbx + BYTES_PER_CELL]
+%endmacro
+
+%macro  _this_slot1 0
+        pushrbx
+        mov     rbx, [this + BYTES_PER_CELL]
 %endmacro
 
 %macro  _set_slot1 0                    ; object x --
