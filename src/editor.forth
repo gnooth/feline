@@ -13,14 +13,7 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-only forth also definitions
-
-\ [undefined] [log [if] include-system-file log.forth ( +log ) [then]
-
-\ [undefined] <vector> [if] include-system-file object.forth [then]
-\ require string.forth
-
-only forth also definitions
+feline!
 
 : copy-file ( src dest -- )
     local dest   \ string
@@ -30,8 +23,6 @@ only forth also definitions
     0 local filesize
     0 local buffer
     0 local bufsize
-
-\     [log ." COPY-FILE " src string> type space ." to " dest string> type log]
 
     src string> r/o open-file throw to fileid
     fileid file-size throw drop to filesize
@@ -47,7 +38,7 @@ only forth also definitions
 
 [undefined] editor [if] vocabulary editor [then]
 
-only forth also editor definitions
+editor definitions
 
 0 value editor-filename
 
@@ -255,39 +246,40 @@ false value repaint?
     then
 ;
 
-\ : delete-line-separator ( -- )
-\     cursor-line# #lines 1- < if
-\         cursor-x cursor-line-length = if
-\             cursor-line# 1+ lines vector-nth check-sbuf \ -- sbuf
-\             cursor-line sbuf>transient-string sbuf-append-string
-\             cursor-line# 1+ lines vector-remove-nth
-\             true to repaint?
-\         then
-\     then
-\ ;
+: delete-line-separator ( -- )
+    cursor-line# #lines 1- < if
+        cursor-x cursor-line-length = if
+            cursor-line# 1+ lines vector-nth check-sbuf \ -- sbuf
+            sbuf>transient-string \ -- string
+            cursor-line swap sbuf-append-string
+            cursor-line# 1+ lines vector-remove-nth
+            true to repaint?
+        then
+    then
+;
 
 : do-delete ( -- )
     cursor-x cursor-line-length > abort" DO-DELETE cursor-x > cursor-line-length"
     cursor-x cursor-line-length < if
         cursor-line cursor-x sbuf-delete-char
         true to repaint?        \ FIXME repaint cursor line only
-\     else
-\         \ cursor-x == cursor-line-length
-\         delete-line-separator
+    else
+        \ cursor-x == cursor-line-length
+        delete-line-separator
     then
 ;
 
 : do-backspace ( -- )
     cursor-x 0= if
-\         cursor-line# 0> if
-\             -1 +to cursor-y
-\             cursor-y 0< if
-\                 -1 +to editor-top-line
-\                 0 to cursor-y
-\             then
-\             cursor-line-length to cursor-x
-\             delete-line-separator
-\         then
+        cursor-line# 0> if
+            -1 +to cursor-y
+            cursor-y 0< if
+                -1 +to editor-top-line
+                0 to cursor-y
+            then
+            cursor-line-length to cursor-x
+            delete-line-separator
+        then
     else
         do-left
         do-delete
@@ -447,11 +439,10 @@ $11 ,           ' do-quit ,                     \ c-q
     ~lines
 ;
 
-only forth also editor also forth definitions
+also forth definitions
 
 : edit ( "<spaces>name" -- )
     parse-name
-\     [log ." edit " 2dup type log]
     >string to editor-filename
     (edit)
     clear-status
@@ -466,4 +457,4 @@ only forth also editor also forth definitions
     then
 ;
 
-only forth also definitions
+feline! \ REVIEW
