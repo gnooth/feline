@@ -15,10 +15,6 @@
 
 file __FILE__
 
-%macro  _this 0
-        pushd   r15
-%endmacro
-
 ; ### vector?
 code vector?, 'vector?'                 ; object -- flag
         test    rbx, rbx
@@ -371,5 +367,3 @@ code vector_each, 'vector-each'         ; xt vector --
         pop     r15
         next
 endcode
-
-%unmacro _this 0
