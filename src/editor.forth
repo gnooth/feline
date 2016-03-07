@@ -298,17 +298,21 @@ false value repaint?
     true to repaint?
 ;
 
-\ : insert-line-separator ( -- )
-\     cursor-x cursor-line-length <= if
-\         cursor-x cursor-line-length cursor-line string-substring        \ -- string
-\         cursor-line# 1+ lines vector-insert-nth
-\         cursor-x cursor-line string-set-length
-\         1 +to cursor-y
-\         0 to cursor-x
-\         0 to goal-x
-\         true to repaint?
-\     then
-\ ;
+: insert-line-separator ( -- )
+    cursor-x cursor-line-length <= if
+        cursor-line check-sbuf          \ -- sbuf
+        sbuf>transient-string           \ -- string
+        cursor-x cursor-line-length     \ -- string index1 index2
+        string-substring                \ -- substring
+        string> >sbuf                   \ -- sbuf
+        cursor-line# 1+ lines vector-insert-nth
+        cursor-line cursor-x sbuf-set-length
+        1 +to cursor-y
+        0 to cursor-x
+        0 to goal-x
+        true to repaint?
+    then
+;
 
 \ : make-backup ( -- )
 \     editor-filename string-clone local backup-filename
@@ -352,7 +356,7 @@ k-^end ,        ' do-^end ,
 k-delete ,      ' do-delete ,
 $08 ,           ' do-backspace ,                \ Windows c-h
 $7f ,           ' do-backspace ,                \ Linux
-\ $0a ,           ' insert-line-separator ,
+$0a ,           ' insert-line-separator ,
 \ $13 ,           ' do-save ,                     \ c-s
 $11 ,           ' do-quit ,                     \ c-q
 0 ,             ' drop ,
