@@ -15,10 +15,6 @@
 
 file __FILE__
 
-%macro  _this 0
-        pushd   r15
-%endmacro
-
 ; ### string?
 code string?, 'string?'                 ; object -- flag
         test    rbx, rbx
@@ -47,8 +43,12 @@ code check_string, 'check-string'       ; object -- string
         next
 endcode
 
-%macro _string_length 0
+%macro _string_length 0                 ; string -- length
         _slot1
+%endmacro
+
+%macro _this_string_length 0            ; -- length
+        _this_slot1
 %endmacro
 
 ; ### string-length
@@ -64,9 +64,14 @@ code string_set_length, 'string-set-length' ; string length --
         next
 endcode
 
-; Strings store their character data inline starting at 'this' + 16 bytes.
+; Strings store their character data inline starting at this + 16 bytes.
 %macro _string_data 0
         lea     rbx, [rbx + BYTES_PER_CELL * 2]
+%endmacro
+
+%macro _this_string_data 0
+        pushrbx
+        lea     rbx, [this + BYTES_PER_CELL * 2]
 %endmacro
 
 ; ### string-data
@@ -358,19 +363,17 @@ code string_substring, 'string-substring' ; string start-index end-index --
         popd    r15                     ; -- start-index end-index
 
         _dup
-        _this
-        _ string_length
-        _ ugt
+        _this_string_length
+        _ugt
         _abortq "end index out of range"
                                         ; -- start-index end-index
         _twodup                         ; -- start-index end-index start-index end-index
-        _ ugt
+        _ugt
         _abortq "start index > end index"
                                         ; -- start-index end-index
         _over
         _minus                          ; -- start-index length
-        _this
-        _ string_data
+        _this_string_data
         _ underplus
         _ copy_to_transient_string
 
@@ -443,5 +446,3 @@ code stringequal, 'string='             ; string1 string2 -- flag
         _ strequal
         next
 endcode
-
-%unmacro _this 0
