@@ -102,6 +102,25 @@ test: test5 ( -- )
 
 test5
 
+test: test6 ( -- )
+    10 <vector> check-vector local v
+    v vector-length 0= check
+    v vector-capacity 10 = check
+    13 v vector-push
+    v vector-length 1 = check
+    v 0 42 vector-set
+    v vector-length 1 = check
+    v 0 vector-ref 42 = check
+
+    v 1 87 ['] vector-set catch 0<> check 3drop
+    v 1 ['] vector-ref catch 0<> check 2drop
+
+    v ~vector
+    v vector? check-false
+;
+
+test6
+
 empty
 
 ?cr .( Reached end of vector-tests.forth )
