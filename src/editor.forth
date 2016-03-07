@@ -304,7 +304,7 @@ false value repaint?
         sbuf>transient-string           \ -- string
         cursor-x cursor-line-length     \ -- string index1 index2
         string-substring                \ -- substring
-        string> >sbuf                   \ -- sbuf
+        string>sbuf                     \ -- sbuf
         cursor-line# 1+ lines vector-insert-nth
         cursor-line cursor-x sbuf-set-length
         1 +to cursor-y

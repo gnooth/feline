@@ -202,6 +202,13 @@ code copy_to_sbuf, '>sbuf'              ; c-addr u -- sbuf
 
 endcode
 
+; ### string>sbuf
+code string_to_sbuf, 'string>sbuf'      ; string -- sbuf
+        _ string_from
+        _ copy_to_sbuf
+        next
+endcode
+
 ; ### sbuf>string
 code sbuf_to_string, 'sbuf>string'      ; sbuf -- string
         _ check_sbuf

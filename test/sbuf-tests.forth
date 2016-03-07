@@ -152,6 +152,24 @@ test: test8
 
 test8
 
+\ string>sbuf
+test: test9
+    "this is a test" to s1
+    s1 string? check
+    s1 string>sbuf to s2
+    s2 sbuf? check
+    s2 sbuf>transient-string s1 string= check
+
+    \ s1 is a static string and can't be destroyed
+    s1 ~string
+    s1 string? check
+
+    s2 ~sbuf
+    s2 sbuf? check-false
+;
+
+test9
+
 empty
 
 ?cr .( Reached end of sbuf-tests.forth )
