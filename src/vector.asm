@@ -178,13 +178,21 @@ code vector_nth, 'vector-nth'           ; index vector -- elt
         next
 endcode
 
+; ### vector-check-index
+code vector_check_index, 'vector-check-index' ; vector index -- flag
+        _swap
+        _ check_vector                  ; -- index vector
+        _ vector_length                 ; -- index length
+        _ult                            ; -- flag
+        next
+endcode
+
 ; ### vector-ref
 code vector_ref, 'vector-ref'           ; vector index -- elt
-        _swap
         _twodup
-        _ vector_length
-        _ ult
+        _ vector_check_index
         _if .1
+        _swap
         _ vector_data
         _swap
         _cells
@@ -199,10 +207,29 @@ endcode
 
 ; ### vector-set-nth
 code vector_set_nth, 'vector-set-nth'   ; elt index vector --
-        _ twodup
+        _twodup
         _ vector_length
         _ ult
         _if .1
+        _ vector_data
+        _swap
+        _cells
+        _plus
+        _ store
+        _else .1
+        _true
+        _abortq "vector-set-nth index out of range"
+        _then .1
+        next
+endcode
+
+; ### vector-set
+code vector_set, 'vector-set'           ; vector index element --
+        _ rrot                          ; -- element vector index
+        _ twodup
+        _ vector_check_index
+        _if .1                          ; -- element vector index
+        _ swap
         _ vector_data
         _ swap
         _cells
@@ -210,7 +237,7 @@ code vector_set_nth, 'vector-set-nth'   ; elt index vector --
         _ store
         _else .1
         _true
-        _abortq "vector-set-nth index out of range"
+        _abortq "vector-set index out of range"
         _then .1
         next
 endcode
