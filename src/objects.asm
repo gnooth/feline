@@ -106,6 +106,23 @@ code allocated?, 'allocated?'           ; string -- flag
         next
 endcode
 
+; ### object?
+code object?, 'object?'                 ; x -- flag
+        _dup
+        _lit 256
+        _ult
+        _if .1
+        xor     ebx, ebx
+        _return
+        _then .1
+
+        _object_type
+        _lit OBJECT_TYPE_FIRST
+        _lit OBJECT_TYPE_LAST
+        _ between
+        next
+endcode
+
 %macro  _slot1 0                        ; object -- x
         mov     rbx, [rbx + BYTES_PER_CELL]
 %endmacro
