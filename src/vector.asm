@@ -394,3 +394,29 @@ code vector_each, 'vector-each'         ; xt vector --
         pop     r15
         next
 endcode
+
+; ### .vector
+code dot_vector, '.vector'              ; vector --
+        push    r15
+        mov     r15, rbx
+
+        _dotq "{ "
+        _ vector_length
+        _zero
+        _?do .1
+        _i
+        _this
+        _ vector_nth
+        _dup
+        _ object?
+        _if .2
+        _ dot_object
+        _else .2
+        _ dot
+        _then .2
+        _loop .1
+        _dotq "}"
+
+        pop     r15
+        next
+endcode
