@@ -160,3 +160,54 @@ endcode
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
+
+; ### check-object
+code check_object, 'check-object'       ; object -- object
+        _dup
+        _ object?
+        _if .1
+        _return
+        _then .1
+        _drop
+        _true
+        _abortq "not an object"
+        next
+endcode
+
+; ### .object
+code dot_object, '.object'              ; object --
+        _ check_object
+
+        _dup
+        _ string?
+        _if .1
+        _ dot_string
+        _ space
+        _return
+        _then .1
+
+        _dup
+        _ sbuf?
+        _if .2
+        _dotq 'sbuf" '
+        _ sbuf_to_transient_string
+        _ string_from
+        _ type
+        _lit '"'
+        _ emit
+        _ space
+        _return
+        _then .2
+
+        _dup
+        _ vector?
+        _if .3
+        _ dot_vector
+        _ space
+        _else .3
+        _true
+        _abortq "shouldn't happen"
+        _then .3
+
+        next
+endcode
