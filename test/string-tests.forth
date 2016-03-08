@@ -25,9 +25,10 @@ require-system-file test-framework
 s" this is a test" >transient-string to s1
 
 test: test1
+    s1 object? check
     s1 string? check
     s1 transient? check
-    s1 allocated? 0= check
+    s1 allocated? check-false
     s1 string-length 14 = check
     s1 check-string string-length 14 = check
     s1 string> s" this is a test" str= check
@@ -39,9 +40,10 @@ test1
 s" another test" >transient-string to s2
 
 test: test2
+    s2 object? check
     s2 string? check
-    s1 transient? check
-    s1 allocated? 0= check
+    s2 transient? check
+    s2 allocated? check-false
     s2 string-length 12 = check
     s2 check-string string-length 12 = check
     s2 string> s" another test" str= check
@@ -57,9 +59,10 @@ s"  and " >transient-string to s3
 
 test: test3
     s1 s3 concat to s4
+    s4 object? check
     s4 string? check
     s4 transient? check
-    s4 allocated? 0= check
+    s4 allocated? check-false
     s4 string> s" this is a test and " str= check
     s4 ~string
     0 to s4
@@ -74,6 +77,7 @@ test: test4
         s" another test" >transient-string to s2
         s"  and " >transient-string to s3
         s1 s3 concat s2 concat to s4
+        s4 object? check
         s4 string? check
         s4 transient? check
         s4 allocated? 0= check

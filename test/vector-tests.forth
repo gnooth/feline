@@ -20,6 +20,7 @@ require-system-file test-framework
 test: test1 ( -- )
     100000 local #reps
     10 <vector> check-vector local v
+    v object? check
     v vector? check
     #reps 0 do
         i v vector-push
@@ -28,6 +29,7 @@ test: test1 ( -- )
         i v vector-nth i = check
     loop
     v ~vector
+    v object? check-false
     v vector? check-false
 ;
 
@@ -36,6 +38,7 @@ test1
 test: test2 ( -- )
     10000 local #reps
     10 <vector> check-vector local v
+    v object? check
     v vector? check
     #reps 0 ?do
         i v vector-push
@@ -46,6 +49,7 @@ test: test2 ( -- )
         0 v vector-remove-nth
     loop
     v ~vector
+    v object? check-false
     v vector? check-false
 ;
 
@@ -54,6 +58,7 @@ test2
 test: test3 ( -- )
     10000 local #reps
     10 <vector> check-vector local v
+    v object? check
     v vector? check
     #reps 0 do
         i v vector-push
@@ -65,6 +70,7 @@ test: test3 ( -- )
         0 v vector-remove-nth
     loop
     v ~vector
+    v object? check-false
     v vector? check-false
 ;
 
@@ -73,6 +79,7 @@ test3
 test: test4
     10000 local #reps
     10 <vector> check-vector local v
+    v object? check
     v vector? check
     #reps 0 do
         i v vector-push
@@ -83,6 +90,7 @@ test: test4
         v vector-length 1- v vector-pop = check
     loop
     v ~vector
+    v object? check-false
     v vector? check-false
 ;
 
@@ -90,6 +98,7 @@ test4
 
 test: test5 ( -- )
     10 <vector> check-vector local v
+    v object? check
     42 v vector-push
     v vector-length 1 = check
     v 0 vector-ref 42 = check
@@ -97,6 +106,7 @@ test: test5 ( -- )
     v -1 ['] vector-ref catch 0<> check 2drop
     v 99 ['] vector-ref catch 0<> check 2drop
     v ~vector
+    v object? check-false
     v vector? check-false
 ;
 
@@ -104,6 +114,7 @@ test5
 
 test: test6 ( -- )
     10 <vector> check-vector local v
+    v object? check
     v vector-length 0= check
     v vector-capacity 10 = check
     13 v vector-push
@@ -116,6 +127,7 @@ test: test6 ( -- )
     v 1 ['] vector-ref catch 0<> check 2drop
 
     v ~vector
+    v object? check-false
     v vector? check-false
 ;
 
