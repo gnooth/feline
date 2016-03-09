@@ -181,6 +181,22 @@ test: test9
 
 test9
 
+\ sbuf>
+test: test10
+    "haskell" string> >sbuf to s1
+    s1 object? check
+    s1 sbuf? check
+    s1 transient? check-false
+    s1 allocated? check
+    s1 sbuf> >transient-string "haskell" string= check
+
+    s1 ~sbuf
+    s1 sbuf? check-false
+    s1 object? check-false
+;
+
+test10
+
 empty
 
 ?cr .( Reached end of sbuf-tests.forth )

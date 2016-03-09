@@ -66,10 +66,14 @@ code sbuf_set_length, 'sbuf-set-length' ; sbuf length --
         next
 endcode
 
+%macro _sbuf_data 0
+        _slot2
+%endmacro
+
 ; ### sbuf-data
 code sbuf_data, 'sbuf-data'             ; sbuf -- data-address
         _ check_sbuf
-        _slot2
+        _sbuf_data
         next
 endcode
 
@@ -209,24 +213,26 @@ code string_to_sbuf, 'string>sbuf'      ; string -- sbuf
         next
 endcode
 
-; ### sbuf>string
-code sbuf_to_string, 'sbuf>string'      ; sbuf -- string
+; ### sbuf>
+code sbuf_from, 'sbuf>'                 ; sbuf -- c-addr u
         _ check_sbuf
         _duptor
-        _ sbuf_data
+        _sbuf_data
         _rfrom
-        _ sbuf_length
+        _sbuf_length
+        next
+endcode
+
+; ### sbuf>string
+code sbuf_to_string, 'sbuf>string'      ; sbuf -- string
+        _ sbuf_from
         _ copy_to_string
         next
 endcode
 
 ; ### sbuf>transient-string
 code sbuf_to_transient_string, 'sbuf>transient-string' ; sbuf -- string
-        _ check_sbuf
-        _duptor
-        _ sbuf_data
-        _rfrom
-        _ sbuf_length
+        _ sbuf_from
         _ copy_to_transient_string
         next
 endcode
