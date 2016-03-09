@@ -181,7 +181,11 @@ code dot_object, '.object'              ; object --
         _dup
         _ string?
         _if .1
+        _lit '"'
+        _ emit
         _ dot_string
+        _lit '"'
+        _ emit
         _ space
         _return
         _then .1
@@ -190,16 +194,9 @@ code dot_object, '.object'              ; object --
         _ sbuf?
         _if .2
         _dotq 'sbuf" '
-        _duptor
-        ; FIXME inline
-        _ sbuf_data
-        _rfrom
-        ; FIXME inline
-        _ sbuf_length
+        _ sbuf_from
         _ type
-        _lit '"'
-        _ emit
-        _ space
+        _dotq '" '
         _return
         _then .2
 
