@@ -382,14 +382,21 @@ code string_substring, 'string-substring' ; string start-index end-index --
 endcode
 
 ; ### .string
-code dot_string, '.string'              ; string | $addr --
+code dot_string, '.string'              ; string | sbuf | $addr --
 ; REVIEW remove support for legacy strings
         _dup_if .1
 
         _dup
         _ sbuf?
         _if .2
-        _ sbuf_to_transient_string
+        _duptor
+        ; FIXME inline
+        _ sbuf_data
+        _rfrom
+        ; FIXME inline
+        _ sbuf_length
+        _ type
+        _return
         _then .2
 
         _dup

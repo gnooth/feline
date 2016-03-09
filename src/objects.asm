@@ -190,8 +190,12 @@ code dot_object, '.object'              ; object --
         _ sbuf?
         _if .2
         _dotq 'sbuf" '
-        _ sbuf_to_transient_string
-        _ string_from
+        _duptor
+        ; FIXME inline
+        _ sbuf_data
+        _rfrom
+        ; FIXME inline
+        _ sbuf_length
         _ type
         _lit '"'
         _ emit
