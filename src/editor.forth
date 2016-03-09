@@ -16,8 +16,8 @@
 feline!
 
 : copy-file ( src dest -- )
-    local dest   \ string
-    local src    \ string
+    check-string local dest   \ string
+    check-string local src    \ string
 
     0 local fileid
     0 local filesize
@@ -314,26 +314,26 @@ false value repaint?
     then
 ;
 
-\ : make-backup ( -- )
-\     editor-filename string-clone local backup-filename
-\     '~' backup-filename string-append-char
-\     editor-filename backup-filename copy-file
-\ ;
+: make-backup ( -- )
+    editor-filename string>sbuf local backup-filename
+    backup-filename '~' sbuf-append-char
+    editor-filename backup-filename sbuf>transient-string copy-file
+;
 
-\ : do-save ( -- )
-\     s" Saving..." status
-\     make-backup
-\     editor-filename string> w/o create-file throw local fileid
-\     #lines 0 ?do
-\         i lines vector-nth              \ -- string
-\         string>                         \ -- c-addr u
-\         fileid                          \ -- c-addr u fileid
-\         write-line                      \ -- ior
-\         -76 ?throw
-\     loop
-\     fileid close-file -62 ?throw
-\     s" Saving...done" status
-\ ;
+: do-save ( -- )
+    s" Saving..." status
+    make-backup
+    editor-filename string> w/o create-file throw local fileid
+    #lines 0 ?do
+        i lines vector-nth              \ -- string
+        sbuf>                           \ -- c-addr u
+        fileid                          \ -- c-addr u fileid
+        write-line                      \ -- ior
+        -76 ?throw
+    loop
+    fileid close-file -62 ?throw
+    s" Saving...done" status
+;
 
 false value quit?
 
@@ -357,7 +357,7 @@ k-delete ,      ' do-delete ,
 $08 ,           ' do-backspace ,                \ Windows c-h
 $7f ,           ' do-backspace ,                \ Linux
 $0a ,           ' insert-line-separator ,
-\ $13 ,           ' do-save ,                     \ c-s
+$13 ,           ' do-save ,                     \ c-s
 $11 ,           ' do-quit ,                     \ c-q
 0 ,             ' drop ,
 
