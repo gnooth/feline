@@ -34,7 +34,7 @@ include-system-file double.forth
 include-system-file environment.forth
 include-system-file process-init-file.forth
 
-only forth definitions
+forth!
 
 : see ( "<spaces>name" -- )
     s" see.forth" system-file-pathname included
