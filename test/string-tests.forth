@@ -140,11 +140,30 @@ test: test7
     s1 string-data s2 string-data <> check
 
     \ can't destroy s1 because it's a static string
+    s1 ~string
+    s1 string? check
+
     s2 ~string
     s2 string? check-false
 ;
 
 test7
+
+test: test8
+    "this is another test" to s1
+    s1 'x' string-index-of -1 = check
+    s1 's' string-index-of  3 = check
+    s1 'a' string-index-of  8 = check
+    s1 'n' string-index-of  9 = check
+    s1 't' string-index-of  0 = check
+    s1 'e' string-index-of 13 = check
+
+    \ can't destroy s1 because it's a static string
+    s1 ~string
+    s1 string? check
+;
+
+test8
 
 empty
 

@@ -355,6 +355,35 @@ code string_last_char, 'string-last-char' ; string -- char
         next
 endcode
 
+; ### string-index-of
+code string_index_of, 'string-index-of' ; string char -- index | -1
+        _swap
+        _ check_string
+        push    r15
+        popd    r15                     ; -- char
+
+        _this_string_length
+        _zero
+        _?do .1
+        _this
+        _i
+        _ string_char
+        _over
+        _equal
+        _if .2
+        _drop
+        _i
+        _unloop
+        jmp     .exit
+        _then .2
+        _loop .1
+        _drop
+        _lit -1
+.exit:
+        pop     r15
+        next
+endcode
+
 ; ### string-substring
 code string_substring, 'string-substring' ; string start-index end-index --
         _ rot
