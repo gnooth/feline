@@ -40,6 +40,8 @@ feline!
 
 editor definitions
 
+false value editing?
+
 0 value editor-filename
 
 0 value lines                           \ a vector of strings
@@ -79,7 +81,7 @@ editor definitions
 : .status-text ( string -- )
     dup string? if
         0 #rows at-xy
-        string> type
+        .string
     else
         drop
     then
@@ -92,10 +94,15 @@ editor definitions
     then
 ;
 
-: status ( c-addr u -- )
-    >string local s
-    s .status-text
-    s ~string
+: clear-status-line ( -- )
+    windows-ui? 0= if
+        0 #rows at-xy
+        #cols 1- spaces
+    then
+;
+
+: status ( string -- )
+    .status-text
 ;
 
 : .status ( -- )
@@ -314,6 +321,11 @@ false value repaint?
     then
 ;
 
+: do-escape ( -- )
+    clear-status-line
+    quit
+;
+
 : make-backup ( -- )
     editor-filename string>sbuf local backup-filename
     backup-filename '~' sbuf-append-char
@@ -321,7 +333,7 @@ false value repaint?
 ;
 
 : do-save ( -- )
-    s" Saving..." status
+    "Saving..." status
     make-backup
     editor-filename string> w/o create-file throw local fileid
     #lines 0 ?do
@@ -332,12 +344,13 @@ false value repaint?
         -76 ?throw
     loop
     fileid close-file -62 ?throw
-    s" Saving...done" status
+    "Saving...done" status
 ;
 
 false value quit?
 
 : do-quit
+    clear-status-line
     true to quit?
 ;
 
@@ -356,7 +369,12 @@ k-^end ,        ' do-^end ,
 k-delete ,      ' do-delete ,
 $08 ,           ' do-backspace ,                \ Windows c-h
 $7f ,           ' do-backspace ,                \ Linux
+windows? [if]
+$0d ,           ' insert-line-separator ,
+[else]
 $0a ,           ' insert-line-separator ,
+[then]
+$1b ,           ' do-escape ,
 $13 ,           ' do-save ,                     \ c-s
 $11 ,           ' do-quit ,                     \ c-q
 0 ,             ' drop ,
@@ -365,8 +383,14 @@ $11 ,           ' do-quit ,                     \ c-q
     keytable switch ;
 
 : edit-loop ( -- )
-    0 to editor-top-line
-    0 0 set-cursor
+    page
+    editing? if
+        cursor-x cursor-y set-cursor
+    else
+        0 to editor-top-line
+        0 0 set-cursor
+    then
+    true to editing?
     true to repaint?
     false to quit?
     begin
@@ -418,6 +442,7 @@ $11 ,           ' do-quit ,                     \ c-q
         dup sbuf? if ~sbuf else ~string then
     loop
     lines ~vector
+    0 to lines
 ;
 
 : (edit) ( -- )
@@ -441,6 +466,8 @@ $11 ,           ' do-quit ,                     \ c-q
     0 to editor-line-vector
 
     ~lines
+
+    false to editing?
 ;
 
 also forth definitions
@@ -454,10 +481,8 @@ also forth definitions
 ;
 
 : ed ( -- )
-    editor-filename if
-        (edit)
-        clear-status
-        #cols #rows 1- at-xy
+    editing? if
+        edit-loop
     then
 ;
 
