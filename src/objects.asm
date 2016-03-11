@@ -79,15 +79,15 @@ inline object_flags, 'object-flags'     ; object -- flags
         _object_flags
 endinline
 
-%macro  _set_object_flags 0
+%macro  _object_set_flags 0
         mov     al, [rbp]
         mov     [rbx + 2], al
         _2drop
 %endmacro
 
-; ### set-object-flags
-inline set_object_flags, 'set-object-flags' ; flags object --
-        _set_object_flags
+; ### object-set-flags
+inline object_set_flags, 'object-set-flags' ; flags object --
+        _object_set_flags
 endinline
 
 ; ### transient?

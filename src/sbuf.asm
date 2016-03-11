@@ -126,7 +126,7 @@ code make_sbuf, 'make-sbuf'             ; capacity -- sbuf
 
         _lit ALLOCATED
         pushd   sbuf
-        _set_object_flags               ; --
+        _object_set_flags               ; --
 
         pushd   capacity
         _oneplus                        ; terminal null byte

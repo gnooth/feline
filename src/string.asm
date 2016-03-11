@@ -107,7 +107,7 @@ code new_transient_string, '<transient-string>' ; capacity -- string
 
         _lit TRANSIENT
         pushd   string
-        _ set_object_flags              ; --
+        _object_set_flags               ; --
 
         pushd   string
         pushd   capacity
@@ -162,7 +162,7 @@ code make_string, 'make-string'         ; c-addr u transient? -- string
         _lit ALLOCATED
         _then .2
         pushd   string
-        _set_object_flags               ; --
+        _object_set_flags               ; --
 
         pushd   string
         pushd   u
@@ -202,7 +202,7 @@ code string_from, 'string>'             ; string -- c-addr u
         next
 endcode
 
-; ### >static_string
+; ### >static-string
 code copy_to_static_string, '>static-string' ; c-addr u -- string
         _ align_data
         _ here                          ; this will be the address of the string
