@@ -442,6 +442,10 @@ $0f ,           ' accept-line-and-down-history ,
     white foreground
     #in ;
 
+also forth definitions
+
+synonym history history
+
 line-input? 0=
 windows-ui? or [if]
 restore-history
