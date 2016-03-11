@@ -193,7 +193,7 @@ code dot_object, '.object'              ; object --
         _dup
         _ sbuf?
         _if .2
-        _dotq 'sbuf" '
+        _dotq 'SBUF" '
         _ sbuf_from
         _ type
         _dotq '" '
