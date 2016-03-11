@@ -352,7 +352,7 @@ init-reg64-names
     then
     buffer ']' sbuf-append-char
 
-    buffer sbuf>string .string
+    buffer .string
     buffer ~sbuf
 
     [then]
