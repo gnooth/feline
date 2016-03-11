@@ -22,7 +22,7 @@ file __FILE__
 constant nlocals, '#locals', MAX_LOCALS
 
 ; ### lp0
-variable lp0, 'lp0', 0
+value lp0, 'lp0', 0
 
 ; ### lp!
 code lpstore, 'lp!'
@@ -44,7 +44,6 @@ value using_locals?, 'using-locals?', 0
 code initialize_locals_stack, 'initialize-locals-stack'
         ; idempotent
         _ lp0
-        _fetch
         _if .1
         _return
         _then .1
@@ -54,8 +53,7 @@ code initialize_locals_stack, 'initialize-locals-stack'
         _ iallocate
         _ plus
         _ dup
-        _ lp0
-        _ store
+        _to lp0
         _ lpstore
         next
 endcode
@@ -64,7 +62,6 @@ endcode
 code free_locals_stack, 'free-locals-stack'
 ; called by BYE to make sure we're freeing all allocated memory
         _ lp0
-        _fetch
         _ ?dup
         _if .1
         _lit 4096

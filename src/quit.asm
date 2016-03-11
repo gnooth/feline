@@ -300,7 +300,6 @@ code reset, 'reset'                     ; i*x --        r: j*x --
         mov     rbp, [sp0_data]
 
         _ lp0
-        _fetch
         _?dup_if .1
         _ lpstore
         _then .1

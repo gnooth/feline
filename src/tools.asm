@@ -202,8 +202,7 @@ code handle_signal, 'handle-signal'
         mov     rsp, [rp0_data]
 
         _ lp0
-        _fetch
-        _ ?dup
+        _?dup
         _if .1
         _ lpstore
         _then .1
