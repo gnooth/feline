@@ -79,6 +79,34 @@ inline object_flags, 'object-flags'     ; object -- flags
         _object_flags
 endinline
 
+; ### .object-flags
+code dot_object_flags, '.object-flags'  ; object --
+        _ check_object
+        _ object_flags                  ; -- flags
+
+        _dup
+        _lit MARKED
+        _ and
+        _if .1
+        _dotq "MARKED "
+        _then .1
+
+        _dup
+        _lit TRANSIENT
+        _ and
+        _if .2
+        _dotq "TRANSIENT "
+        _then .2
+
+        _lit ALLOCATED
+        _ and
+        _if .3
+        _dotq "ALLOCATED "
+        _then .3
+
+        next
+endcode
+
 %macro  _object_set_flags 0             ; object flags --
         mov     rax, [rbp]              ; object in rax
         mov     [rax + 2], bl
