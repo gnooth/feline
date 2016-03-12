@@ -238,7 +238,7 @@ code copy_to_transient_string, '>transient-string' ; c-addr u -- string
 endcode
 
 ; ### ~string
-code delete_string, '~string'           ; string --
+code destroy_string, '~string'          ; string --
         _ check_string
 
         _dup

@@ -242,7 +242,7 @@ code sbuf_to_transient_string, 'sbuf>transient-string' ; sbuf -- string
 endcode
 
 ; ### ~sbuf
-code delete_sbuf, '~sbuf'               ; sbuf --
+code destroy_sbuf, '~sbuf'              ; sbuf --
         _ check_sbuf
 
         _dup
@@ -260,7 +260,7 @@ code delete_sbuf, '~sbuf'               ; sbuf --
         _dup
         _ sbuf_data
         _ ifree
-        _then .3                        ; -- string
+        _then .3                        ; -- sbuf
         ; Zero out the object header so it won't look like a valid object
         ; after it has been freed.
         xor     eax, eax

@@ -224,7 +224,7 @@ code delete_local_names, 'delete-local-names'
         _fetch
         _?dup_if .3
         _ check_string
-        _ delete_string
+        _ destroy_string
         _then .3
         _loop .2
         _ local_names
