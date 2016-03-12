@@ -119,9 +119,10 @@ OBJECT_TYPE_SBUF                equ 3
 
 OBJECT_TYPE_LAST                equ 3
 
-; String flag bits.
-TRANSIENT                       equ 1
-ALLOCATED                       equ 2
+; Object flag bits.
+MARKED                          equ 1
+TRANSIENT                       equ 2
+ALLOCATED                       equ 4
 
 %define forth_link      0
 
