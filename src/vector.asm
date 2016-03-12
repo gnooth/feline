@@ -381,7 +381,9 @@ code vector_pop, 'vector-pop'           ; vector -- elt
 endcode
 
 ; ### vector-each
-code vector_each, 'vector-each'         ; xt vector --
+code vector_each, 'vector-each'         ; vector xt --
+        _swap
+        _ check_vector
         push    r15
         mov     r15, rbx
         _ vector_length
