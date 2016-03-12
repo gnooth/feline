@@ -63,6 +63,7 @@ IN_FELINE
 %include "vector.asm"
 %include "string.asm"
 %include "sbuf.asm"
+%include "gc.asm"
 
 IN_FORTH
 
