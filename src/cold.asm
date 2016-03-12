@@ -158,12 +158,16 @@ code cold, 'cold'                       ; --
 
         _ feline_wordlist
         _fetch
-        _zeq_if .17
+        _zeq_if .2
         _ feline_last
         _ fetch
         _ feline_wordlist
         _ store
-        _then .17
+        _then .2
+
+        _lit 256
+        _ new_vector
+        _to allocated_objects
 
         _ initialize_task
         _squote "boot.forth"
@@ -171,9 +175,9 @@ code cold, 'cold'                       ; --
         _lit included_xt
         _ catch
         _ ?dup
-        _if .2
+        _if .3
         _ do_error
-        _then .2
+        _then .3
 ;         _ report_startup_time
 
         _ process_command_line
@@ -187,9 +191,9 @@ code cold, 'cold'                       ; --
         _lit process_init_file_xt
         _ catch
         _ ?dup
-        _if .3
+        _if .4
         _ do_error
-        _then .3
+        _then .4
 
         _dotq "Meow!"
         _ cr
