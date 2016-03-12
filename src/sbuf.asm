@@ -116,6 +116,10 @@ code make_sbuf, 'make-sbuf'             ; capacity -- sbuf
         _lit 32                         ; -- 32
         _dup
         _ iallocate                     ; -- 32 sbuf
+
+        _dup
+        _ add_allocated_object
+
         popd    sbuf                    ; -- 32
         pushd   sbuf
         _swap
@@ -261,7 +265,9 @@ code delete_sbuf, '~sbuf'               ; sbuf --
         ; after it has been freed.
         xor     eax, eax
         mov     [rbx], rax
+        _dup
         _ ifree
+        _ remove_allocated_object
         _else .2
         _drop
         _then .2

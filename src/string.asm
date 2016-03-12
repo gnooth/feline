@@ -146,6 +146,10 @@ code make_string, 'make-string'         ; c-addr u transient? -- string
         _ transient_alloc
         _else .1
         _ iallocate
+
+        _dup
+        _ add_allocated_object
+
         _then .1                        ; -- size string
         popd    string                  ; -- size
         pushd   string                  ; -- size string
@@ -156,11 +160,11 @@ code make_string, 'make-string'         ; c-addr u transient? -- string
         _object_set_type                ; --
 
         pushd   transient?
-        _if .2
+        _if .3
         _lit TRANSIENT
-        _else .2
+        _else .3
         _lit ALLOCATED
-        _then .2
+        _then .3
         pushd   string
         _object_set_flags               ; --
 
@@ -260,7 +264,9 @@ code delete_string, '~string'           ; string --
         ; after it has been destroyed.
         xor     eax, eax
         mov     [rbx], rax
+        _dup
         _ ifree
+        _ remove_allocated_object
         _else .3
         _drop
         _then .3

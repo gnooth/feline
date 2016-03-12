@@ -97,7 +97,7 @@ code new_vector, '<vector>'             ; capacity -- vector
         _ erase                         ; -- capacity                           r: -- vector
         _rfetch
         _lit OBJECT_TYPE_VECTOR
-        _object_set_type
+        _object_set_type                ; -- capacity
         _dup                            ; -- capacity capacity                  r: -- vector
         _cells
         _ iallocate                     ; -- capacity data-address              r: -- vector
@@ -107,21 +107,24 @@ code new_vector, '<vector>'             ; capacity -- vector
         _rfetch                         ; -- capacity vector                    r: -- vector
         _swap                           ; -- vector capacity                    r: -- vector
         _ vector_set_capacity           ; --                                    r: -- vector
-        _rfrom
+        _rfrom                          ; -- vector
+
+        _dup
+        _ add_allocated_object
+
         next
 endcode
 
 ; ### ~vector
 code destroy_vector, '~vector'          ; vector --
-;         _ ?dup
-;         _if .1
         _ check_vector
         mov     qword [rbx], 0          ; clear type field in object header
         _dup
         _ vector_data
+        _ ifree                         ; -- vector
+        _ dup
+        _ remove_allocated_object
         _ ifree
-        _ ifree
-;         _then .1
         next
 endcode
 
@@ -286,7 +289,7 @@ code vector_insert_nth, 'vector-insert-nth' ; elt n vector --
 endcode
 
 ; ### vector-remove-nth
-code vector_remove_nth, 'vector-remove-nth'     ; n vector --
+code vector_remove_nth, 'vector-remove-nth' ; n vector --
         push    r15
         mov     r15, rbx
 
