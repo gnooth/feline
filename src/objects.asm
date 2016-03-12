@@ -79,14 +79,14 @@ inline object_flags, 'object-flags'     ; object -- flags
         _object_flags
 endinline
 
-%macro  _object_set_flags 0
-        mov     al, [rbp]
-        mov     [rbx + 2], al
+%macro  _object_set_flags 0             ; object flags --
+        mov     rax, [rbp]              ; object in rax
+        mov     [rax + 2], bl
         _2drop
 %endmacro
 
 ; ### object-set-flags
-inline object_set_flags, 'object-set-flags' ; flags object --
+inline object_set_flags, 'object-set-flags' ; object flags --
         _object_set_flags
 endinline
 

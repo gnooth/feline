@@ -128,8 +128,8 @@ code make_sbuf, 'make-sbuf'             ; capacity -- sbuf
         _lit OBJECT_TYPE_SBUF
         _object_set_type                ; --
 
-        _lit ALLOCATED
         pushd   sbuf
+        _lit ALLOCATED
         _object_set_flags               ; --
 
         pushd   capacity
