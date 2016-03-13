@@ -165,6 +165,17 @@ code cold, 'cold'                       ; --
         _ store
         _then .2
 
+        ; REVIEW
+        ; The explicit-roots vector is immortal and contains only addresses
+        ; where pointers to objects might be stored. Construct it before
+        ; constructing the allocated-objects vector so it won't be visible
+        ; to gc.
+        _lit 256
+        _ new_vector
+        _to explicit_roots
+
+        ; After the allocated-objects vector is constructed, all object
+        ; allocations will be registered.
         _lit 256
         _ new_vector
         _to allocated_objects
