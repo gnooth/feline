@@ -32,6 +32,8 @@ forth!
 
 0 value build-string
 
+' build-string >body add-explicit-root
+
 : initialize-build-string ( -- )
     0 local fileid
     0 local buffer
