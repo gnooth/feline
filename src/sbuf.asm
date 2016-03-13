@@ -115,7 +115,7 @@ code make_sbuf, 'make-sbuf'             ; capacity -- sbuf
 
         _lit 32                         ; -- 32
         _dup
-        _ iallocate                     ; -- 32 sbuf
+        _ allocate_object               ; -- 32 sbuf
 
         _dup
         _ add_allocated_object

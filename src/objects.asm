@@ -136,6 +136,12 @@ code allocated?, 'allocated?'           ; string -- flag
         next
 endcode
 
+; ### allocate-object
+code allocate_object, 'allocate-object' ; size -- object
+        _ iallocate
+        next
+endcode
+
 ; ### object?
 code object?, 'object?'                 ; x -- flag
         _dup

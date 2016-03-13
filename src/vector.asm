@@ -90,7 +90,7 @@ endcode
 code new_vector, '<vector>'             ; capacity -- vector
         _lit 4
         _cells
-        _ iallocate
+        _ allocate_object
         _duptor                         ; -- capacity vector                    r: -- vector
         _lit 4
         _cells

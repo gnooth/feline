@@ -145,11 +145,9 @@ code make_string, 'make-string'         ; c-addr u transient? -- string
         _if .1
         _ transient_alloc
         _else .1
-        _ iallocate
-
+        _ allocate_object
         _dup
         _ add_allocated_object
-
         _then .1                        ; -- size string
         popd    string                  ; -- size
         pushd   string                  ; -- size string
