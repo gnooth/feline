@@ -18,7 +18,7 @@ feline!
 require-system-file test-framework
 
 test: test1 ( -- )
-    s" testing" >string local s1
+    s" testing1" >string local s1
     s1 object? check
     s1 string? check
     gc
@@ -27,3 +27,17 @@ test: test1 ( -- )
 ;
 
 test1
+
+test: test2 ( -- )
+    s" testing2" >string
+    dup string? check
+    gc
+    dup string? check
+    drop
+;
+
+test2
+
+empty
+
+?cr .( Reached end of gc-tests.forth )
