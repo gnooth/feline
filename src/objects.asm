@@ -136,9 +136,32 @@ code allocated?, 'allocated?'           ; string -- flag
         next
 endcode
 
+; ### minimum-object-address
+value minimum_object_address, 'minimum-object-address', -1
+
+; ### maximum-object-address
+value maximum_object_address, 'maximum-object-address', 0
+
 ; ### allocate-object
 code allocate_object, 'allocate-object' ; size -- object
         _ iallocate
+
+        _dup
+        _ minimum_object_address
+        _ult
+        _if .1
+        _dup
+        _to minimum_object_address
+        _then .1
+
+        _dup
+        _ maximum_object_address
+        _ugt
+        _if .2
+        _dup
+        _to maximum_object_address
+        _then .2
+
         next
 endcode
 
@@ -156,6 +179,50 @@ code object?, 'object?'                 ; x -- flag
         _lit OBJECT_TYPE_FIRST
         _lit OBJECT_TYPE_LAST
         _ between
+        next
+endcode
+
+; ### allocated-object?
+code allocated_object?, 'allocated-object' ; object --flag
+        _dup
+        _ minimum_object_address
+        _ maximum_object_address
+        _ between
+        _zeq_if .1
+        xor     ebx, ebx
+        _return
+        _then .1
+
+        _object_type
+        _lit OBJECT_TYPE_FIRST
+        _lit OBJECT_TYPE_LAST
+        _ between
+        next
+endcode
+
+; ### check-object
+code check_object, 'check-object'       ; object -- object
+        _dup
+        _ object?
+        _if .1
+        _return
+        _then .1
+        _drop
+        _true
+        _abortq "not an object"
+        next
+endcode
+
+; ### check-allocated-object
+code check_allocated_object, 'check-allocated-object' ; object -- object
+        _dup
+        _ allocated_object?
+        _if .1
+        _return
+        _then .1
+        _drop
+        _true
+        _abortq "not an allocated object"
         next
 endcode
 
@@ -196,19 +263,6 @@ endcode
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
-
-; ### check-object
-code check_object, 'check-object'       ; object -- object
-        _dup
-        _ object?
-        _if .1
-        _return
-        _then .1
-        _drop
-        _true
-        _abortq "not an object"
-        next
-endcode
 
 ; ### ~object
 code destroy_object, '~object'          ; object --
