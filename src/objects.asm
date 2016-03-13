@@ -120,6 +120,7 @@ endinline
 
 ; ### transient?
 code transient?, 'transient?'           ; string -- flag
+        _ check_object
         _object_flags
         and     ebx, TRANSIENT
         _zne
@@ -128,6 +129,7 @@ endcode
 
 ; ### allocated?
 code allocated?, 'allocated?'           ; string -- flag
+        _ check_object
         _object_flags
         and     ebx, ALLOCATED
         _zne
