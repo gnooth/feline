@@ -122,6 +122,22 @@ code maybe_mark_from_root, 'maybe-mark-from-root' ; root --
         next
 endcode
 
+; ### mark-locals-stack
+code mark_locals_stack, 'mark-locals-stack' ; --
+        _ lpfetch
+        _begin .3
+        _dup
+        _ lp0
+        _ult
+        _while .3
+        _dup
+        _ maybe_mark_from_root
+        _cellplus
+        _repeat .3
+        _drop
+        next
+endcode
+
 ; ### gc-start-ticks
 value gc_start_ticks, 'gc-start-ticks', 0
 
@@ -153,17 +169,7 @@ code gc, 'gc'                           ; --
         ; TODO return stack
 
         ; locals stack
-        _ lpfetch
-        _begin .3
-        _dup
-        _ lp0
-        _ult
-        _while .3
-        _dup
-        _ maybe_mark_from_root
-        _cellplus
-        _repeat .3
-        _drop
+        _ mark_locals_stack
 
         ; explicit roots
         _ explicit_roots
