@@ -202,6 +202,36 @@ code check_object, 'check-object'       ; object -- object
         next
 endcode
 
+; ### ~object
+code destroy_object, '~object'          ; object --
+        _ check_object
+
+        _dup
+        _ string?
+        _if .1
+        _ destroy_string
+        _return
+        _then .1
+
+        _dup
+        _ sbuf?
+        _if .2
+        _ destroy_sbuf
+        _return
+        _then .2
+
+        _dup
+        _ vector?
+        _if .3
+        _ destroy_vector
+        _return
+        _then .3
+
+        ; REVIEW
+        _abortq "unknown object"
+        next
+endcode
+
 ; ### .object
 code dot_object, '.object'              ; object --
         _ check_object
