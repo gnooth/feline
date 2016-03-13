@@ -152,7 +152,18 @@ code gc, 'gc'                           ; --
 
         ; TODO return stack
 
-        ; TODO locals stack
+        ; locals stack
+        _ lpfetch
+        _begin .3
+        _dup
+        _ lp0
+        _ult
+        _while .3
+        _dup
+        _ maybe_mark_from_root
+        _cellplus
+        _repeat .3
+        _drop
 
         ; explicit roots
         _ explicit_roots
@@ -162,22 +173,22 @@ code gc, 'gc'                           ; --
         ; sweep
         _ allocated_objects
         _ vector_length
-        _begin .3
+        _begin .4
         _oneminus
         _dup
         _ zge
-        _while .3
+        _while .4
         _dup
         _ allocated_objects
         _ vector_nth                    ; -- index object
         _dup
         _ object_marked?
-        _zeq_if .4                      ; -- index object
+        _zeq_if .5                      ; -- index object
         _ destroy_object
-        _else .4
+        _else .5
         _drop
-        _then .4
-        _repeat .3
+        _then .5
+        _repeat .4
         _drop
 
         _ ticks
