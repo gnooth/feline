@@ -82,7 +82,7 @@ endcode
 
 ; ### mark-object
 code mark_object, 'mark-object'         ; object --
-        _ check_object
+        _ check_allocated_object
         _dup
         _object_flags                   ; -- object flags
         _lit MARKED
@@ -93,7 +93,7 @@ endcode
 
 ; ### unmark-object
 code unmark_object, 'unmark-object'     ; object --
-        _ check_object
+        _ check_allocated_object
         _dup
         _object_flags                   ; -- object flags
         _lit MARKED
@@ -106,7 +106,7 @@ endcode
 ; ### maybe-mark-object
 code maybe_mark_object, 'maybe-mark-object' ; address --
         _dup
-        _ object?
+        _ allocated_object?
         _if .1
         _ mark_object
         _else .1
