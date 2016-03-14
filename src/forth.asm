@@ -59,7 +59,8 @@ IN_FORTH
 IN_FELINE
 
 ; Objects
-%include "objects.asm"                  ; Must be first!
+%include "handles.asm"                  ; Must be first!
+%include "objects.asm"
 %include "vector.asm"
 %include "string.asm"
 %include "sbuf.asm"

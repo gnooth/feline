@@ -165,6 +165,8 @@ code cold, 'cold'                       ; --
         _ store
         _then .2
 
+        _ initialize_handle_space
+
         ; REVIEW
         ; The explicit-roots vector is immortal and contains only addresses
         ; where pointers to allocated objects might be stored. Construct it
