@@ -183,7 +183,7 @@ code object?, 'object?'                 ; x -- flag
 endcode
 
 ; ### allocated-object?
-code allocated_object?, 'allocated-object' ; object --flag
+code allocated_object?, 'allocated-object?' ; object --flag
         _dup
         _ minimum_object_address
         _ maximum_object_address
