@@ -122,6 +122,27 @@ code maybe_mark_from_root, 'maybe-mark-from-root' ; root --
         next
 endcode
 
+; ### mark-return-stack
+code mark_return_stack, 'mark-return-stack' ; --
+        _ rdepth
+        mov     rcx, rbx                ; depth in rcx
+        jrcxz   .2
+.1:
+        mov     rax, rcx
+        shl     rax, 3
+        add     rax, rsp
+        pushrbx
+        mov     rbx, [rax]
+        push    rcx
+        _ maybe_mark_object
+        pop     rcx
+        dec     rcx
+        jnz     .1
+.2:
+        poprbx
+        next
+endcode
+
 ; ### mark-locals-stack
 code mark_locals_stack, 'mark-locals-stack' ; --
         _ lpfetch
@@ -166,7 +187,8 @@ code gc, 'gc'                           ; --
 .2:
         _drop
 
-        ; TODO return stack
+        ; return stack
+        _ mark_return_stack
 
         ; locals stack
         _ mark_locals_stack
@@ -179,22 +201,22 @@ code gc, 'gc'                           ; --
         ; sweep
         _ allocated_objects
         _ vector_length
-        _begin .4
+        _begin .3
         _oneminus
         _dup
         _ zge
-        _while .4
+        _while .3
         _dup
         _ allocated_objects
         _ vector_nth                    ; -- index object
         _dup
         _ object_marked?
-        _zeq_if .5                      ; -- index object
+        _zeq_if .4                      ; -- index object
         _ destroy_object
-        _else .5
+        _else .4
         _drop
-        _then .5
-        _repeat .4
+        _then .4
+        _repeat .3
         _drop
 
         _ ticks

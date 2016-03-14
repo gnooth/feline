@@ -17,26 +17,38 @@ feline!
 
 require-system-file test-framework
 
+\ data stack
 test: test1 ( -- )
-    s" testing1" >string local s1
-    s1 object? check
-    s1 string? check
-    gc
-    s1 object? check
-    s1 string? check
-;
-
-test1
-
-test: test2 ( -- )
-    s" testing2" >string
+    s" testing1" >string
     dup string? check
     gc
     dup string? check
     drop
 ;
 
+test1
+
+\ locals stack
+test: test2 ( -- )
+    s" testing2" >string local s1
+    s1 object? check
+    s1 string? check
+    gc
+    s1 object? check
+    s1 string? check
+;
+
 test2
+
+\ return stack
+test: test3 ( -- )
+    s" testing3" >string >r
+    r@ string? check
+    gc
+    r> string? check
+;
+
+test3
 
 empty
 
