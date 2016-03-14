@@ -118,13 +118,23 @@ endcode
 ; ### ~vector
 code destroy_vector, '~vector'          ; vector --
         _ check_vector
+        _ check_allocated_object
+
         mov     qword [rbx], 0          ; clear type field in object header
         _dup
         _ vector_data
         _ ifree                         ; -- vector
-        _ dup
+
+        _ in_gc?
+        _zeq_if .1
+        ; Not in gc. Update the allocated-objects vector. (If we are in gc,
+        ; we don't need to update the allocated-objects vector because we
+        ; replace it with the live-objects vector at the end of gc.)
+        _dup
         _ remove_allocated_object
+        _then .1
         _ ifree
+
         next
 endcode
 

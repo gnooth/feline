@@ -255,19 +255,24 @@ code destroy_sbuf, '~sbuf'              ; sbuf --
         _ allocated?
         _if .2
         _dup
-        _ sbuf?
-        _if .3
-        _dup
         _ sbuf_data
         _ ifree
-        _then .3                        ; -- sbuf
+
         ; Zero out the object header so it won't look like a valid object
         ; after it has been freed.
         xor     eax, eax
         mov     [rbx], rax
+
+        _ in_gc?
+        _zeq_if .4
+        ; Not in gc. Update the allocated-objects vector. (If we are in gc,
+        ; we don't need to update the allocated-objects vector because we
+        ; replace it with the live-objects vector at the end of gc.)
         _dup
-        _ ifree
         _ remove_allocated_object
+        _then .4
+        _ ifree
+
         _else .2
         _drop
         _then .2

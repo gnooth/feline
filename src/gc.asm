@@ -18,6 +18,9 @@ file __FILE__
 ; ### allocated-objects
 value allocated_objects, 'allocated-objects', 0
 
+; ### live-objects
+value live_objects, 'live-objects', 0
+
 ; ### add-allocated-object
 code add_allocated_object, 'add-allocated-object' ; object --
         _ allocated_objects
@@ -159,6 +162,9 @@ code mark_locals_stack, 'mark-locals-stack' ; --
         next
 endcode
 
+; ### in-gc?
+value in_gc?, 'in-gc?', 0
+
 ; ### gc-start-ticks
 value gc_start_ticks, 'gc-start-ticks', 0
 
@@ -166,6 +172,9 @@ value gc_start_ticks, 'gc-start-ticks', 0
 code gc, 'gc'                           ; --
         _ ticks
         _to gc_start_ticks
+
+        _true
+        _to in_gc?
 
         ; unmark everything
         _ allocated_objects
@@ -199,6 +208,11 @@ code gc, 'gc'                           ; --
         _ vector_each
 
         ; sweep
+        _ live_objects
+        _ check_vector
+        _zero
+        _ vector_set_length
+
         _ allocated_objects
         _ vector_length
         _begin .3
@@ -211,13 +225,23 @@ code gc, 'gc'                           ; --
         _ vector_nth                    ; -- index object
         _dup
         _ object_marked?
-        _zeq_if .4                      ; -- index object
-        _ destroy_object
+        _if .4                          ; -- index object
+        _ live_objects
+        _ vector_push
         _else .4
-        _drop
+        _ destroy_object
         _then .4
         _repeat .3
         _drop
+
+        ; flip
+        _ allocated_objects
+        _ live_objects
+        _to allocated_objects
+        _to live_objects
+
+        _false
+        _to in_gc?
 
         _ ticks
         _ gc_start_ticks

@@ -263,9 +263,17 @@ code destroy_string, '~string'          ; string --
         ; after it has been destroyed.
         xor     eax, eax
         mov     [rbx], rax
+
+        _ in_gc?
+        _zeq_if .4
+        ; Not in gc. Update the allocated-objects vector. (If we are in gc,
+        ; we don't need to update the allocated-objects vector because we
+        ; replace it with the live-objects vector at the end of gc.)
         _dup
-        _ ifree
         _ remove_allocated_object
+        _then .4
+        _ ifree
+
         _else .3
         _drop
         _then .3
