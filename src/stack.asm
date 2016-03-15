@@ -191,7 +191,7 @@ code roll, 'roll'                       ; n1 n2 ... nk k -- n2 n3 ... nk n1
 endcode
 
 ; ### .s
-code dots, '.s'
+code dot_s, '.s'
         _lit '<'
         _ emit
         _ depth
@@ -206,7 +206,7 @@ code dots, '.s'
 .1:
         push    rcx
         pushd   rcx
-        _ pick
+        _pick
         _ dot
         pop     rcx
         loop    .1
@@ -216,7 +216,7 @@ code dots, '.s'
 endcode
 
 ; ### .rs
-code dotrs, '.rs'
+code dot_rs, '.rs'
         _lit '<'
         _ emit
         _ rdepth

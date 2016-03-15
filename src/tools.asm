@@ -238,7 +238,7 @@ code break, 'break'                     ; --
         _ off
         _ cr
         _dotq "stack: "
-        _ dots
+        _ dot_s
         _ cr
         _begin .2
         _dotq "break: "
