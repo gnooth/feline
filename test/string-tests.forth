@@ -165,6 +165,17 @@ test: test8
 
 test8
 
+test: test9
+    s" this is a test" >string to s1
+    s1 string? check-false
+    s1 handle? check
+    s1 ~string
+    s1 handle? check
+    s1 to-object check-false
+;
+
+test9
+
 empty
 
 cr .( Reached end of string-tests.forth )
