@@ -56,9 +56,13 @@ code remove_allocated_object, 'remove-allocated-object' ; object --
         _ vector_remove_nth
         _leave
         _then .2
-        _loop .1
+        _loop .1                        ; -- object
 
-        _drop
+        _ find_handle
+        _?dup_if .3
+        _ release_handle
+        _then .3
+
         next
 endcode
 
