@@ -62,6 +62,7 @@ endcode
 
 ; ### handle?
 code handle?, 'handle?'                 ; x -- flag
+        ; must be aligned
         _dup
         _lit 7
         _ and
@@ -70,6 +71,7 @@ code handle?, 'handle?'                 ; x -- flag
         _return
         _then .1
 
+        ; must point into handle space
         _ handle_space
         _ handle_space_free
         _ within
@@ -93,5 +95,146 @@ endcode
 code to_object, 'to-object'             ; handle -- object
         _ check_handle
         _fetch
+        next
+endcode
+
+; ### find-handle
+code find_handle, 'find-handle'         ; object -- handle | 0
+        _dup
+        _ allocated_object?
+        _zeq_if .1
+        xor     ebx, ebx
+        _return
+        _then .1                        ; -- object
+
+        _ handle_space                  ; -- object addr
+        _begin .2
+        _dup
+        _ handle_space_free
+        _ult
+        _while .2                       ; -- object addr
+        _twodup                         ; -- object addr object handle
+        _fetch                          ; -- object addr object object2
+        _equal
+        _if .3
+        ; found it!
+        _nip
+        _return
+        _then .3                        ; -- object addr
+
+        _cellplus
+        _repeat .2
+        _drop                           ; -- object
+        ; not found
+        _ ?cr
+        _dotq "can't find handle for object at "
+        _ hdot
+        ; return false
+        _zero
+        next
+endcode
+
+; ### release-handle
+code release_handle, 'release-handle'   ; -- handle
+        _ check_handle
+        _zero
+        _swap
+        _store
+        next
+endcode
+
+; ### #objects
+value nobjects, '#objects',  0
+
+; ### #free
+value nfree, '#free', 0
+
+; ### check-handle-space
+code check_handle_space, 'check-handle-space'
+        _zeroto nobjects
+        _zeroto nfree
+
+        _ handle_space
+        _begin .1
+        _dup
+        _ handle_space_free
+        _ult
+        _while .1
+
+;         _ ?cr
+;         _dup
+;         _ hdot
+
+        _dup
+        _fetch
+
+;         _dup
+;         _ hdot
+
+        _?dup_if .2
+        _lit 1
+        _plusto nobjects
+
+;         _ dot_object
+        _drop
+
+        _else .2
+        _lit 1
+        _plusto nfree
+        _then .2
+        _cellplus
+        _repeat .1
+        _drop
+
+        _ ?cr
+        _ handle_space_free
+        _ handle_space
+        _minus
+        _ cell
+        _ slash
+        _ dot
+        _dotq "handles "
+
+        _ nobjects
+        _ dot
+        _dotq "objects "
+
+        _ nfree
+        _ dot
+        _dotq "free"
+
+        next
+endcode
+
+; ### .handles
+code dot_handles, '.handles'
+        _ ?cr
+        _ handle_space_free
+        _ handle_space
+        _minus
+        _ cell
+        _ slash
+        _ dot
+        _dotq "handles"
+
+        _ handle_space
+        _begin .1
+        _dup
+        _ handle_space_free
+        _ult
+        _while .1
+        _ ?cr
+        _dup
+        _ hdot
+        _dup
+        _fetch
+        _ dup
+        _ hdot
+        _?dup_if .2
+        _ dot_object
+        _then .2
+        _cellplus
+        _repeat .1
+        _drop
         next
 endcode
