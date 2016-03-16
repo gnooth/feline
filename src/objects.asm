@@ -119,7 +119,15 @@ inline object_set_flags, 'object-set-flags' ; object flags --
 endinline
 
 ; ### transient?
-code transient?, 'transient?'           ; string -- flag
+code transient?, 'transient?'           ; object-or-handle -- flag
+        _dup
+        _ handle?
+        _if .1
+        ; allocated object
+        xor     ebx, ebx
+        _return
+        _then .1
+
         _ check_object
         _object_flags
         and     ebx, TRANSIENT
@@ -128,7 +136,15 @@ code transient?, 'transient?'           ; string -- flag
 endcode
 
 ; ### allocated?
-code allocated?, 'allocated?'           ; string -- flag
+code allocated?, 'allocated?'           ; object-or-handle -- flag
+        _dup
+        _ handle?
+        _if .1
+        ; allocated object
+        mov     rbx, TRUE
+        _return
+        _then .1
+
         _ check_object
         _object_flags
         and     ebx, ALLOCATED
