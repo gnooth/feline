@@ -174,18 +174,21 @@ code cold, 'cold'                       ; --
         ; visible to gc.
         _lit 256
         _ new_vector
+        _ handle_to_object_unsafe
         _to explicit_roots
 
         ; The live-objects vector is also immortal. It is used in gc but
         ; is not itself subject to gc.
         _lit 256
         _ new_vector
+        _ handle_to_object_unsafe
         _to live_objects
 
         ; Now construct the allocated-objects vector. All future object
         ; allocations will be registered.
         _lit 256
         _ new_vector
+        _ handle_to_object_unsafe
         _to allocated_objects
 
         _ initialize_task
