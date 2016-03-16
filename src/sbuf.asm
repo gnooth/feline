@@ -33,12 +33,19 @@ code sbuf?, 'sbuf?'                     ; object -- flag
 endcode
 
 ; ### check-sbuf
-code check_sbuf, 'check-sbuf'           ; object -- sbuf
+code check_sbuf, 'check-sbuf'           ; handle-or-object -- sbuf
+        ; REVIEW
+        _dup
+        _ handle?
+        _if .1
+        _ to_object
+        _then .1
+
         _dup
         _ sbuf?
-        _if .1
+        _if .2
         _return
-        _then .1
+        _then .2
 
         _drop
         _true
@@ -144,6 +151,8 @@ code make_sbuf, 'make-sbuf'             ; capacity -- sbuf
         _ sbuf_set_capacity             ; --
 
         pushd   sbuf
+        ; return handle of allocated object
+        _ new_handle
 
         _locals_leave
         next
@@ -258,11 +267,6 @@ code destroy_sbuf, '~sbuf'              ; sbuf --
         _ sbuf_data
         _ ifree
 
-        ; Zero out the object header so it won't look like a valid object
-        ; after it has been freed.
-        xor     eax, eax
-        mov     [rbx], rax
-
         _ in_gc?
         _zeq_if .4
         ; Not in gc. Update the allocated-objects vector. (If we are in gc,
@@ -271,8 +275,11 @@ code destroy_sbuf, '~sbuf'              ; sbuf --
         _dup
         _ remove_allocated_object
         _then .4
+        ; Zero out the object header so it won't look like a valid object
+        ; after it has been freed.
+        xor     eax, eax
+        mov     [rbx], rax
         _ ifree
-
         _else .2
         _drop
         _then .2
