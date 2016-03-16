@@ -98,6 +98,12 @@ code to_object, 'to-object'             ; handle -- object
         next
 endcode
 
+; ### handle-to-object-unsafe
+code handle_to_object_unsafe, 'handle-to-object-unsafe' ; handle -- object | 0
+        _fetch
+        next
+endcode
+
 ; ### find-handle
 code find_handle, 'find-handle'         ; object -- handle | 0
         _dup
