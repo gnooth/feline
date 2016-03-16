@@ -31,12 +31,20 @@ code string?, 'string?'                 ; object -- flag
 endcode
 
 ; ### check-string
-code check_string, 'check-string'       ; object -- string
+code check_string, 'check-string'       ; x -- string
+        ; REVIEW
+        _dup
+        _ handle?
+        _if .1
+        _ to_object
+        _then .1
+
         _dup
         _ string?
-        _if .1
+        _if .2
         _return
-        _then .1
+        _then .2
+
         _drop
         _true
         _abortq "not a string"
@@ -178,6 +186,13 @@ code make_string, 'make-string'         ; c-addr u transient? -- string
         _ cmove                         ; --
 
         pushd   string                  ; -- string
+
+        pushd   transient?
+        _zeq_if .4
+        ; return handle of allocated string
+        _ new_handle
+        _then .4
+
         _locals_leave
         next
 
@@ -259,11 +274,6 @@ code destroy_string, '~string'          ; string --
         _dup
         _ allocated?
         _if .3
-        ; Zero out the object header so it won't look like a valid object
-        ; after it has been destroyed.
-        xor     eax, eax
-        mov     [rbx], rax
-
         _ in_gc?
         _zeq_if .4
         ; Not in gc. Update the allocated-objects vector. (If we are in gc,
@@ -272,8 +282,11 @@ code destroy_string, '~string'          ; string --
         _dup
         _ remove_allocated_object
         _then .4
+        ; Zero out the object header so it won't look like a valid object
+        ; after it has been destroyed.
+        xor     eax, eax
+        mov     [rbx], rax
         _ ifree
-
         _else .3
         _drop
         _then .3
@@ -292,25 +305,34 @@ endcode
 ; REVIEW transitional
 code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
         _dup
-        _lit 256
-        _ ult
-        _if .1                          ; -- c-addr u
-        _ copy_to_transient_string
+        _ handle?
+        _if .1
+        _fetch
+        ; FIXME sbuf is ok too
+        _ check_string
         _return
         _then .1
 
         _dup
-        _ string?
-        _if .2                          ; -- string
+        _lit 256
+        _ ult
+        _if .2                          ; -- c-addr u
+        _ copy_to_transient_string
         _return
         _then .2
 
         _dup
-        _ sbuf?
-        _if .3                          ; -- sbuf
-        _ sbuf_to_transient_string      ; -- string
+        _ string?
+        _if .3                          ; -- string
         _return
         _then .3
+
+        _dup
+        _ sbuf?
+        _if .4                          ; -- sbuf
+        _ sbuf_to_transient_string      ; -- string
+        _return
+        _then .4
                                         ; -- $addr
         _count
         _ copy_to_transient_string
@@ -427,6 +449,13 @@ endcode
 code dot_string, '.string'              ; string | sbuf | $addr --
 ; REVIEW remove support for legacy strings
         _dup_if .1
+
+        ; REVIEW
+        _dup
+        _ handle?
+        _if .4
+        _ to_object
+        _then .4
 
         _dup
         _ sbuf?
