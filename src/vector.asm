@@ -31,14 +31,21 @@ code vector?, 'vector?'                 ; object -- flag
 endcode
 
 ; ### check-vector
-code check_vector, 'check-vector'       ; object -- vector
+code check_vector, 'check-vector'       ; handle-or-object -- vector
+        ; REVIEW
+        _dup
+        _ handle?
+        _if .1
+        _ to_object
+        _then .1
+
         _dup
         _ vector?
-        test    rbx, rbx
-        poprbx
-        jz      .1
+        _if .2
         _return
-.1:
+        _then .2
+
+        _drop
         _true
         _abortq "not a vector"
         next
@@ -112,6 +119,9 @@ code new_vector, '<vector>'             ; capacity -- vector
         _dup
         _ add_allocated_object
 
+        ; return handle of allocated object
+        _ new_handle
+
         next
 endcode
 
@@ -120,7 +130,6 @@ code destroy_vector, '~vector'          ; vector --
         _ check_vector
         _ check_allocated_object
 
-        mov     qword [rbx], 0          ; clear type field in object header
         _dup
         _ vector_data
         _ ifree                         ; -- vector
@@ -133,6 +142,12 @@ code destroy_vector, '~vector'          ; vector --
         _dup
         _ remove_allocated_object
         _then .1
+
+        ; Zero out the object header so it won't look like a valid object
+        ; after it has been destroyed.
+        xor     eax, eax
+        mov     [rbx], rax
+
         _ ifree
 
         next
