@@ -115,7 +115,6 @@ endcode
 ; ### maybe-mark-from-root
 code maybe_mark_from_root, 'maybe-mark-from-root' ; root --
         _fetch
-;         _ maybe_mark_object
         _ maybe_mark_handle
         next
 endcode
@@ -132,7 +131,6 @@ code mark_return_stack, 'mark-return-stack' ; --
         pushrbx
         mov     rbx, [rax]
         push    rcx
-;         _ maybe_mark_object
         _ maybe_mark_handle
         pop     rcx
         dec     rcx
@@ -196,10 +194,6 @@ code gc, 'gc'                           ; --
         _to in_gc?
 
         ; unmark everything
-;         _ allocated_objects
-;         _ check_vector
-;         _lit unmark_object_xt
-;         _ vector_each
         _lit unmark_handle_xt
         _ each_handle
 
@@ -211,7 +205,6 @@ code gc, 'gc'                           ; --
         push    rcx
         pushd   rcx
         _pick
-;         _ maybe_mark_object
         _ maybe_mark_handle
         pop     rcx
         loop    .1
