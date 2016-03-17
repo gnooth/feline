@@ -20,9 +20,9 @@ require-system-file test-framework
 \ data stack
 test: test1 ( -- )
     s" testing1" >string
-    dup string? check
+    dup handle? check
     gc
-    dup string? check
+    dup handle? check
     drop
 ;
 
@@ -31,11 +31,9 @@ test1
 \ locals stack
 test: test2 ( -- )
     s" testing2" >string local s1
-    s1 object? check
-    s1 string? check
+    s1 handle? check
     gc
-    s1 object? check
-    s1 string? check
+    s1 handle? check
 ;
 
 test2
@@ -43,9 +41,9 @@ test2
 \ return stack
 test: test3 ( -- )
     s" testing3" >string >r
-    r@ string? check
+    r@ handle? check
     gc
-    r> string? check
+    r> handle? check
 ;
 
 test3
