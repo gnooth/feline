@@ -15,54 +15,12 @@
 
 file __FILE__
 
-; ### allocated-objects
-value allocated_objects, 'allocated-objects', 0
-
-; ### live-objects
-value live_objects, 'live-objects', 0
-
-; ### add-allocated-object
-code add_allocated_object, 'add-allocated-object' ; object --
-        _ allocated_objects
-        _if .1
-        _ allocated_objects
-        _ vector_push
-        _else .1
-        _drop
-        _then .1
-        next
-endcode
-
 ; ### remove-allocated-object
 code remove_allocated_object, 'remove-allocated-object' ; object --
-        _ allocated_objects
-        _zeq_if .1
-        _drop
-        _return
-        _then .1
-                                        ; -- object
-        _ allocated_objects
-        _ vector_length
-        _zero
-        _?do .1
-        _i
-        _ allocated_objects
-        _ vector_nth
-        _over
-        _equal
-        _if .2
-        _i
-        _ allocated_objects
-        _ vector_remove_nth
-        _leave
-        _then .2
-        _loop .1                        ; -- object
-
         _ find_handle
         _?dup_if .3
         _ release_handle
         _then .3
-
         next
 endcode
 
@@ -98,6 +56,16 @@ code mark_object, 'mark-object'         ; object --
         next
 endcode
 
+; ### mark-handle
+code mark_handle, 'mark-handle'         ; handle --
+        _ check_handle
+        _ handle_to_object_unsafe
+        _?dup_if .1
+        _ mark_object
+        _then .1
+        next
+endcode
+
 ; ### unmark-object
 code unmark_object, 'unmark-object'     ; object --
         _ check_allocated_object
@@ -107,6 +75,28 @@ code unmark_object, 'unmark-object'     ; object --
         _ invert
         _ and
         _object_set_flags
+        next
+endcode
+
+; ### unmark-handle
+code unmark_handle, 'unmark-handle'     ; handle --
+        _ check_handle
+        _ handle_to_object_unsafe
+        _?dup_if .1
+        _ unmark_object
+        _then .1
+        next
+endcode
+
+; ### maybe-mark-handle
+code maybe_mark_handle, 'maybe-mark-handle' ; handle --
+        _dup
+        _ handle?
+        _if .1
+        _ mark_handle
+        _else .1
+        _drop
+        _then .1
         next
 endcode
 
@@ -125,7 +115,8 @@ endcode
 ; ### maybe-mark-from-root
 code maybe_mark_from_root, 'maybe-mark-from-root' ; root --
         _fetch
-        _ maybe_mark_object
+;         _ maybe_mark_object
+        _ maybe_mark_handle
         next
 endcode
 
@@ -141,7 +132,8 @@ code mark_return_stack, 'mark-return-stack' ; --
         pushrbx
         mov     rbx, [rax]
         push    rcx
-        _ maybe_mark_object
+;         _ maybe_mark_object
+        _ maybe_mark_handle
         pop     rcx
         dec     rcx
         jnz     .1
@@ -166,6 +158,29 @@ code mark_locals_stack, 'mark-locals-stack' ; --
         next
 endcode
 
+; ### maybe-collect-handle
+code maybe_collect_handle, 'maybe-collect-handle' ; handle --
+        _dup                            ; -- handle handle
+        _ handle_to_object_unsafe       ; -- handle object|0
+        _dup_if .1
+        ; -- handle object
+        _dup
+        _ object_marked?
+        _if .2
+        _2drop
+        _else .2
+        _ destroy_object
+        _zero
+        _swap
+        _store
+        _then .2
+        _else .1
+        ; -- handle 0
+        _2drop
+        _then .1
+        next
+endcode
+
 ; ### in-gc?
 value in_gc?, 'in-gc?', 0
 
@@ -181,10 +196,12 @@ code gc, 'gc'                           ; --
         _to in_gc?
 
         ; unmark everything
-        _ allocated_objects
-        _ check_vector
-        _lit unmark_object_xt
-        _ vector_each
+;         _ allocated_objects
+;         _ check_vector
+;         _lit unmark_object_xt
+;         _ vector_each
+        _lit unmark_handle_xt
+        _ each_handle
 
         ; data stack
         _ depth
@@ -194,7 +211,8 @@ code gc, 'gc'                           ; --
         push    rcx
         pushd   rcx
         _pick
-        _ maybe_mark_object
+;         _ maybe_mark_object
+        _ maybe_mark_handle
         pop     rcx
         loop    .1
 .2:
@@ -212,40 +230,10 @@ code gc, 'gc'                           ; --
         _ vector_each
 
         ; sweep
-        _ live_objects
-        _ check_vector
-        _zero
-        _ vector_set_length
+        _lit maybe_collect_handle_xt
+        _ each_handle
 
-        _ allocated_objects
-        _ vector_length
-        _begin .3
-        _oneminus
-        _dup
-        _ zge
-        _while .3
-        _dup
-        _ allocated_objects
-        _ vector_nth                    ; -- index object
-        _dup
-        _ object_marked?
-        _if .4                          ; -- index object
-        _ live_objects
-        _ vector_push
-        _else .4
-        _ destroy_object
-        _then .4
-        _repeat .3
-        _drop
-
-        ; flip
-        _ allocated_objects
-        _ live_objects
-        _to allocated_objects
-        _to live_objects
-
-        _false
-        _to in_gc?
+        _zeroto in_gc?
 
         _ ticks
         _ gc_start_ticks

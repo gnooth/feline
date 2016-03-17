@@ -167,29 +167,11 @@ code cold, 'cold'                       ; --
 
         _ initialize_handle_space
 
-        ; REVIEW
-        ; The explicit-roots vector is immortal and contains only addresses
-        ; where pointers to allocated objects might be stored. Construct it
-        ; before constructing the allocated-objects vector so it won't be
-        ; visible to gc.
         _lit 256
         _ new_vector
-        _ handle_to_object_unsafe
         _to explicit_roots
-
-        ; The live-objects vector is also immortal. It is used in gc but
-        ; is not itself subject to gc.
-        _lit 256
-        _ new_vector
-        _ handle_to_object_unsafe
-        _to live_objects
-
-        ; Now construct the allocated-objects vector. All future object
-        ; allocations will be registered.
-        _lit 256
-        _ new_vector
-        _ handle_to_object_unsafe
-        _to allocated_objects
+        _lit explicit_roots_data
+        _ add_explicit_root
 
         _ initialize_task
         _squote "boot.forth"
