@@ -244,3 +244,22 @@ code dot_handles, '.handles'
         _drop
         next
 endcode
+
+; ### each-handle
+code each_handle, 'each-handle'         ; xt --
+        _tor
+        _ handle_space                  ; -- addr
+        _begin .1
+        _dup
+        _ handle_space_free
+        _ult
+        _while .1                       ; -- addr
+        _dup
+        _rfetch
+        _ execute
+        _cellplus
+        _repeat .1
+        _drop
+        _rdrop
+        next
+endcode
