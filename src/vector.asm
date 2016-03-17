@@ -116,9 +116,6 @@ code new_vector, '<vector>'             ; capacity -- vector
         _ vector_set_capacity           ; --                                    r: -- vector
         _rfrom                          ; -- vector
 
-        _dup
-        _ add_allocated_object
-
         ; return handle of allocated object
         _ new_handle
 

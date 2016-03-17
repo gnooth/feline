@@ -31,7 +31,7 @@ code string?, 'string?'                 ; object -- flag
 endcode
 
 ; ### check-string
-code check_string, 'check-string'       ; x -- string
+code check_string, 'check-string'       ; handle-or-object -- string
         ; REVIEW
         _dup
         _ handle?
@@ -154,8 +154,6 @@ code make_string, 'make-string'         ; c-addr u transient? -- string
         _ transient_alloc
         _else .1
         _ allocate_object
-        _dup
-        _ add_allocated_object
         _then .1                        ; -- size string
         popd    string                  ; -- size
         pushd   string                  ; -- size string

@@ -124,9 +124,6 @@ code make_sbuf, 'make-sbuf'             ; capacity -- sbuf
         _dup
         _ allocate_object               ; -- 32 sbuf
 
-        _dup
-        _ add_allocated_object
-
         popd    sbuf                    ; -- 32
         pushd   sbuf
         _swap
