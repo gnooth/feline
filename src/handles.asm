@@ -43,8 +43,24 @@ code initialize_handle_space, 'initialize-handle-space' ; --
         next
 endcode
 
+; ### free-handles
+value free_handles, 'free-handles', 0
+
 ; ### new-handle
 code new_handle, 'new-handle'           ; object -- handle
+        _ free_handles
+        _?dup_if .1
+        _ vector_length
+        _zgt
+        _if .2
+        _ free_handles
+        _ vector_pop                    ; -- object handle
+        _ tuck
+        _store
+        _return
+        _then .2
+        _then .1
+
         _ handle_space_free
         _ handle_space_limit
         _ult
@@ -144,8 +160,16 @@ endcode
 code release_handle, 'release-handle'   ; -- handle
         _ check_handle
         _zero
-        _swap
+        _over
         _store
+
+        _ free_handles
+        _?dup_if .1
+        _ vector_push
+        _else .1
+        _drop
+        _then .1
+
         next
 endcode
 

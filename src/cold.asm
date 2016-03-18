@@ -173,6 +173,12 @@ code cold, 'cold'                       ; --
         _lit explicit_roots_data
         _ add_explicit_root
 
+        _lit 256
+        _ new_vector
+        _to free_handles
+        _lit free_handles_data
+        _ add_explicit_root
+
         _ initialize_task
         _squote "boot.forth"
         _ system_file_pathname
