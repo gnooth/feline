@@ -53,12 +53,16 @@ endcode
 
 ; ### vector-length
 code vector_length, 'vector-length'     ; vector -- length
+        _ check_vector
         _slot1
         next
 endcode
 
 ; ### vector-set-length
 code vector_set_length, 'vector-set-length' ; vector length --
+        _swap
+        _ check_vector
+        _swap
         _set_slot1
         next
 endcode
@@ -80,6 +84,7 @@ endcode
 
 ; ### vector-capacity
 code vector_capacity, 'vector-capacity' ; vector -- capacity
+        _ check_vector
         _slot3
         next
 endcode
@@ -152,6 +157,9 @@ endcode
 
 ; ### vector-resize
 code vector_resize, 'vector-resize'     ; vector new-capacity --
+        _swap
+        _ check_vector
+        _swap
         _ over                          ; -- vector new-capacity vector
         _ vector_data                   ; -- vector new-capacity data-address
         _ over                          ; -- vector new-capacity data-address new-capacity
@@ -169,6 +177,7 @@ endcode
 
 ; ### vector-ensure-capacity
 code vector_ensure_capacity, 'vector-ensure-capacity'   ; u vector --
+        _ check_vector
         _ twodup                        ; -- u vector u vector
         _ vector_capacity               ; -- u vector u capacity
         _ ugt
@@ -361,6 +370,7 @@ endcode
 
 ; ### vector-push
 code vector_push, 'vector-push'         ; elt vector --
+        _ check_vector
         push    r15                     ; save callee-saved register
         mov     r15, rbx                ; vector in r15
         _ vector_length                 ; -- elt length
@@ -380,6 +390,7 @@ endcode
 
 ; ### vector-pop
 code vector_pop, 'vector-pop'           ; vector -- elt
+        _ check_vector                  ; -- vector
         push    r15
         mov     r15, rbx
 
