@@ -18,9 +18,9 @@ file __FILE__
 ; ### remove-allocated-object
 code remove_allocated_object, 'remove-allocated-object' ; object --
         _ find_handle
-        _?dup_if .3
+        _?dup_if .1
         _ release_handle
-        _then .3
+        _then .1
         next
 endcode
 
@@ -167,10 +167,8 @@ code maybe_collect_handle, 'maybe-collect-handle' ; handle --
         _if .2
         _2drop
         _else .2
-        _ destroy_object
-        _zero
-        _swap
-        _store
+        _ destroy_object                ; -- handle
+        _ release_handle
         _then .2
         _else .1
         ; -- handle 0
