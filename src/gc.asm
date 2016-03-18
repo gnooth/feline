@@ -100,18 +100,6 @@ code maybe_mark_handle, 'maybe-mark-handle' ; handle --
         next
 endcode
 
-; ### maybe-mark-object
-code maybe_mark_object, 'maybe-mark-object' ; address --
-        _dup
-        _ allocated_object?
-        _if .1
-        _ mark_object
-        _else .1
-        _ drop
-        _then .1
-        next
-endcode
-
 ; ### maybe-mark-from-root
 code maybe_mark_from_root, 'maybe-mark-from-root' ; root --
         _fetch
