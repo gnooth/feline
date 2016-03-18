@@ -119,6 +119,23 @@ code maybe_mark_from_root, 'maybe-mark-from-root' ; root --
         next
 endcode
 
+; ### mark-data-stack
+code mark_data_stack, 'mark-data-stack' ; --
+        _ depth
+        mov     rcx, rbx
+        jrcxz   .2
+.1:
+        push    rcx
+        pushd   rcx
+        _pick
+        _ maybe_mark_handle
+        pop     rcx
+        loop    .1
+.2:
+        _drop
+        next
+endcode
+
 ; ### mark-return-stack
 code mark_return_stack, 'mark-return-stack' ; --
         _ rdepth
@@ -196,18 +213,7 @@ code gc, 'gc'                           ; --
         _ each_handle
 
         ; data stack
-        _ depth
-        mov     rcx, rbx
-        jrcxz   .2
-.1:
-        push    rcx
-        pushd   rcx
-        _pick
-        _ maybe_mark_handle
-        pop     rcx
-        loop    .1
-.2:
-        _drop
+        _ mark_data_stack
 
         ; return stack
         _ mark_return_stack
