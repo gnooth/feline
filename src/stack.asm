@@ -215,6 +215,31 @@ code dot_s, '.s'
         next
 endcode
 
+; ### hex.s
+code hex_dot_s, '.s'
+        _lit '<'
+        _ emit
+        _ depth
+        _ paren_dot
+        _ type
+        _lit '>'
+        _ emit
+        _ space
+        _ depth
+        mov     rcx, rbx
+        jrcxz   .2
+.1:
+        push    rcx
+        pushd   rcx
+        _pick
+        _ hdot
+        pop     rcx
+        loop    .1
+.2:
+        poprbx
+        next
+endcode
+
 ; ### .rs
 code dot_rs, '.rs'
         _lit '<'
