@@ -35,16 +35,6 @@ code add_explicit_root, 'add-explicit-root' ; address --
         next
 endcode
 
-; ### object-marked?
-code object_marked?, 'object-marked?'   ; object -- flag
-        _ check_object
-        _ object_flags
-        _lit OBJECT_MARKED_BIT
-        _ and
-        _zne                            ; REVIEW
-        next
-endcode
-
 ; ### mark-object
 code mark_object, 'mark-object'         ; object --
         _ check_allocated_object
@@ -168,7 +158,7 @@ code maybe_collect_handle, 'maybe-collect-handle' ; handle --
         _dup_if .1
         ; -- handle object
         _dup
-        _ object_marked?
+        _object_marked?
         _if .2
         _2drop
         _else .2
