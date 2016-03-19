@@ -286,3 +286,12 @@
         mov     rbx, [rbp + BYTES_PER_CELL]             ; x2
         lea     rbp, [rbp - BYTES_PER_CELL * 2]
 %endmacro
+
+%macro  _and 0
+        and     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
+%macro  _and_literal 1
+        and     rbx, %1
+%endmacro

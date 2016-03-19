@@ -455,8 +455,7 @@ endcode
 ; ### and
 inline and, 'and'                       ; x1 x2 -- x3
 ; CORE
-        and     rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _and
 endinline
 
 ; ### or

@@ -80,8 +80,7 @@ endcode
 code handle?, 'handle?'                 ; x -- flag
         ; must be aligned
         _dup
-        _lit 7
-        _ and
+        _and_literal 7
         _if .1
         xor     ebx, ebx
         _return
