@@ -860,6 +860,7 @@ initialize-setcc-mnemonic-table
             modrm-rm register-rm to sreg
             8 to ssize
             modrm-reg register-reg to dreg
+            prefix if 64 else 32 then to dsize
             .inst
             exit
         then
@@ -1174,7 +1175,7 @@ latest-xt $63 install-handler
         endcase
         exit
     then
-    opcode $f7 = if
+    opcode $f6 $f7 between if
         regop
         case
             0 of "test" endof
@@ -1715,8 +1716,19 @@ latest-xt $f3 install-handler
 
 : .f6 ( -- )
     !modrm-byte
-    modrm-reg 3 = if
-        "neg" to mnemonic
+    mnemonic-from-regop to mnemonic
+    modrm-reg 0= if
+        \ TEST r/m8, imm8
+        modrm-mod 1 = if
+            modrm-rm register-rm to dbase
+            next-signed-byte to ddisp
+            next-byte to immediate-operand
+            true to immediate-operand?
+            8 to dsize
+            .inst
+            exit
+        then
+    else
         modrm-rm to dreg
         8 to dsize
         1 to #operands
