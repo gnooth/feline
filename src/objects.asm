@@ -85,6 +85,12 @@ endinline
         movzx   ebx, bl
 %endmacro
 
+%macro  _mark_object 0                  ; object --
+        or      byte [rbx + 2], OBJECT_MARKED_BIT
+        poprbx
+%endmacro
+
+
 ; ### .object-flags
 code dot_object_flags, '.object-flags'  ; object --
         _ check_object

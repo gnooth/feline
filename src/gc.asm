@@ -35,22 +35,11 @@ code add_explicit_root, 'add-explicit-root' ; address --
         next
 endcode
 
-; ### mark-object
-code mark_object, 'mark-object'         ; object --
-        _ check_allocated_object
-        _dup
-        _object_flags                   ; -- object flags
-        _lit OBJECT_MARKED_BIT
-        _ or
-        _object_set_flags
-        next
-endcode
-
 ; ### mark-handle
 code mark_handle, 'mark-handle'         ; handle --
         _handle_to_object_unsafe
         _?dup_if .1
-        _ mark_object
+        _mark_object
         _then .1
         next
 endcode
