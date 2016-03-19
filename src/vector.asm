@@ -198,7 +198,7 @@ endcode
 code vector_nth, 'vector-nth'           ; index vector -- elt
         _twodup
         _ vector_length
-        _ ult
+        _ult
         _if .1
         _ vector_data
         _swap
@@ -425,7 +425,7 @@ code vector_each, 'vector-each'         ; vector xt --
         _i
         _this
         _ vector_nth                    ; -- xt elt
-        _ over                          ; -- xt elt xt
+        _over                           ; -- xt elt xt
         _ execute
         _loop .1                        ; -- xt
         _drop
