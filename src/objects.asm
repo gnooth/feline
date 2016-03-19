@@ -79,6 +79,12 @@ inline object_flags, 'object-flags'     ; object -- flags
         _object_flags
 endinline
 
+%macro  _object_marked? 0
+        test    byte [rbx + 2], OBJECT_MARKED_BIT
+        setnz   bl
+        movzx   ebx, bl
+%endmacro
+
 ; ### .object-flags
 code dot_object_flags, '.object-flags'  ; object --
         _ check_object
