@@ -70,7 +70,6 @@ endcode
 
 ; ### unmark-handle
 code unmark_handle, 'unmark-handle'     ; handle --
-        _ check_handle
         _handle_to_object_unsafe
         _?dup_if .1
         _ unmark_object
