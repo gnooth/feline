@@ -49,7 +49,7 @@ endcode
 ; ### mark-handle
 code mark_handle, 'mark-handle'         ; handle --
         _ check_handle
-        _ handle_to_object_unsafe
+        _handle_to_object_unsafe
         _?dup_if .1
         _ mark_object
         _then .1
@@ -71,7 +71,7 @@ endcode
 ; ### unmark-handle
 code unmark_handle, 'unmark-handle'     ; handle --
         _ check_handle
-        _ handle_to_object_unsafe
+        _handle_to_object_unsafe
         _?dup_if .1
         _ unmark_object
         _then .1
@@ -154,7 +154,7 @@ endcode
 ; ### maybe-collect-handle
 code maybe_collect_handle, 'maybe-collect-handle' ; handle --
         _dup                            ; -- handle handle
-        _ handle_to_object_unsafe       ; -- handle object|0
+        _handle_to_object_unsafe        ; -- handle object|0
         _dup_if .1
         ; -- handle object
         _dup
