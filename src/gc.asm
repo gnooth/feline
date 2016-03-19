@@ -48,7 +48,6 @@ endcode
 
 ; ### mark-handle
 code mark_handle, 'mark-handle'         ; handle --
-        _ check_handle
         _handle_to_object_unsafe
         _?dup_if .1
         _ mark_object
