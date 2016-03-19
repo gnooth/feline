@@ -85,20 +85,20 @@ code dot_object_flags, '.object-flags'  ; object --
         _ object_flags                  ; -- flags
 
         _dup
-        _lit MARKED
+        _lit OBJECT_MARKED_BIT
         _ and
         _if .1
         _dotq "MARKED "
         _then .1
 
         _dup
-        _lit TRANSIENT
+        _lit OBJECT_TRANSIENT_BIT
         _ and
         _if .2
         _dotq "TRANSIENT "
         _then .2
 
-        _lit ALLOCATED
+        _lit OBJECT_ALLOCATED_BIT
         _ and
         _if .3
         _dotq "ALLOCATED "
@@ -130,7 +130,7 @@ code transient?, 'transient?'           ; object-or-handle -- flag
 
         _ check_object
         _object_flags
-        and     ebx, TRANSIENT
+        and     ebx, OBJECT_TRANSIENT_BIT
         _zne
         next
 endcode
@@ -147,7 +147,7 @@ code allocated?, 'allocated?'           ; object-or-handle -- flag
 
         _ check_object
         _object_flags
-        and     ebx, ALLOCATED
+        and     ebx, OBJECT_ALLOCATED_BIT
         _zne
         next
 endcode

@@ -120,9 +120,9 @@ OBJECT_TYPE_SBUF                equ 3
 OBJECT_TYPE_LAST                equ 3
 
 ; Object flag bits.
-MARKED                          equ 1
-TRANSIENT                       equ 2
-ALLOCATED                       equ 4
+OBJECT_MARKED_BIT               equ 1
+OBJECT_TRANSIENT_BIT            equ 2
+OBJECT_ALLOCATED_BIT            equ 4
 
 %define forth_link      0
 

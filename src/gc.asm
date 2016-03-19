@@ -39,7 +39,7 @@ endcode
 code object_marked?, 'object-marked?'   ; object -- flag
         _ check_object
         _ object_flags
-        _lit MARKED
+        _lit OBJECT_MARKED_BIT
         _ and
         _zne                            ; REVIEW
         next
@@ -50,7 +50,7 @@ code mark_object, 'mark-object'         ; object --
         _ check_allocated_object
         _dup
         _object_flags                   ; -- object flags
-        _lit MARKED
+        _lit OBJECT_MARKED_BIT
         _ or
         _object_set_flags
         next
@@ -71,7 +71,7 @@ code unmark_object, 'unmark-object'     ; object --
         _ check_allocated_object
         _dup
         _object_flags                   ; -- object flags
-        _lit MARKED
+        _lit OBJECT_MARKED_BIT
         _ invert
         _ and
         _object_set_flags

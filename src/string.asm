@@ -114,7 +114,7 @@ code new_transient_string, '<transient-string>' ; capacity -- string
         _object_set_type                ; --
 
         pushd   string
-        _lit TRANSIENT
+        _lit OBJECT_TRANSIENT_BIT
         _object_set_flags               ; --
 
         pushd   string
@@ -166,10 +166,10 @@ code make_string, 'make-string'         ; c-addr u transient? -- string
         pushd   transient?
         _if .3
         pushd   string
-        _lit TRANSIENT
+        _lit OBJECT_TRANSIENT_BIT
         _else .3
         pushd   string
-        _lit ALLOCATED
+        _lit OBJECT_ALLOCATED_BIT
         _then .3
         _object_set_flags               ; --
 

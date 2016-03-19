@@ -133,7 +133,7 @@ code make_sbuf, 'make-sbuf'             ; capacity -- sbuf
         _object_set_type                ; --
 
         pushd   sbuf
-        _lit ALLOCATED
+        _lit OBJECT_ALLOCATED_BIT
         _object_set_flags               ; --
 
         pushd   capacity
