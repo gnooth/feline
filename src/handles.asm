@@ -87,8 +87,8 @@ code handle?, 'handle?'                 ; x -- flag
         _then .1
 
         ; must point into handle space
-        _ handle_space
-        _ handle_space_free
+        _from handle_space
+        _from handle_space_free
         _ within
         next
 endcode
