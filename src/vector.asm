@@ -51,6 +51,10 @@ code check_vector, 'check-vector'       ; handle-or-object -- vector
         next
 endcode
 
+%macro _vector_length 0                 ; vector -- length
+        _slot1
+%endmacro
+
 ; ### vector-length
 code vector_length, 'vector-length'     ; vector -- length
         _ check_vector
@@ -66,6 +70,10 @@ code vector_set_length, 'vector-set-length' ; vector length --
         _set_slot1
         next
 endcode
+
+%macro _vector_data 0
+        _slot2
+%endmacro
 
 ; ### vector-data
 code vector_data, 'vector-data'         ; vector -- data-address
@@ -160,15 +168,16 @@ code vector_resize, 'vector-resize'     ; vector new-capacity --
         _swap
         _ check_vector
         _swap
-        _ over                          ; -- vector new-capacity vector
-        _ vector_data                   ; -- vector new-capacity data-address
-        _ over                          ; -- vector new-capacity data-address new-capacity
+
+        _over                           ; -- vector new-capacity vector
+        _vector_data                    ; -- vector new-capacity data-address
+        _over                           ; -- vector new-capacity data-address new-capacity
         _cells
         _ resize                        ; -- vector new-capacity new-data-address ior
         _ throw                         ; -- vector new-capacity new-data-address
         _tor
-        _ over                          ; -- vector new-capacity vector     r: -- new-data-addr
-        _ swap
+        _over                           ; -- vector new-capacity vector     r: -- new-data-addr
+        _swap
         _ vector_set_capacity           ; -- vector                         r: -- new-data-addr
         _rfrom                          ; -- vector new-data-addr
         _ vector_set_data
@@ -199,10 +208,10 @@ code vector_nth, 'vector-nth'           ; index vector -- elt
         _ check_vector
 
         _twodup
-        _ vector_length
+        _vector_length
         _ult
         _if .1
-        _ vector_data
+        _vector_data
         _swap
         _cells
         _plus
@@ -218,7 +227,7 @@ endcode
 code vector_check_index, 'vector-check-index' ; vector index -- flag
         _swap
         _ check_vector                  ; -- index vector
-        _ vector_length                 ; -- index length
+        _vector_length                  ; -- index length
         _ult                            ; -- flag
         next
 endcode
@@ -243,15 +252,17 @@ endcode
 
 ; ### vector-set-nth
 code vector_set_nth, 'vector-set-nth'   ; elt index vector --
+        _ check_vector
+
         _twodup
-        _ vector_length
-        _ ult
+        _vector_length
+        _ult
         _if .1
-        _ vector_data
+        _vector_data
         _swap
         _cells
         _plus
-        _ store
+        _store
         _else .1
         _true
         _abortq "vector-set-nth index out of range"
@@ -377,9 +388,10 @@ endcode
 ; ### vector-push
 code vector_push, 'vector-push'         ; elt vector --
         _ check_vector
+
         push    r15                     ; save callee-saved register
         mov     r15, rbx                ; vector in r15
-        _ vector_length                 ; -- elt length
+        _vector_length                  ; -- elt length
         _dup                            ; -- elt length length
         _oneplus                        ; -- elt length length+1
         _dup                            ; -- elt length length+1 length+1
@@ -397,10 +409,11 @@ endcode
 ; ### vector-pop
 code vector_pop, 'vector-pop'           ; vector -- elt
         _ check_vector                  ; -- vector
+
         push    r15
         mov     r15, rbx
 
-        _ vector_length
+        _vector_length
         _oneminus
         _dup
         _zlt
@@ -423,9 +436,10 @@ endcode
 code vector_each, 'vector-each'         ; vector xt --
         _swap
         _ check_vector
+
         push    r15
         mov     r15, rbx
-        _ vector_length
+        _vector_length
         _zero
         _?do .1
         _i
