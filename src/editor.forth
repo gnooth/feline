@@ -438,8 +438,7 @@ $11 ,           ' do-quit ,                     \ c-q
 
 : ~lines ( -- )
     lines vector-length 0 ?do
-        i lines vector-nth
-        dup sbuf? if ~sbuf else ~string then
+        i lines vector-nth ~object
     loop
     lines ~vector
     0 to lines
