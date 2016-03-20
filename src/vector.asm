@@ -36,7 +36,7 @@ code check_vector, 'check-vector'       ; handle-or-object -- vector
         _dup
         _ handle?
         _if .1
-        _ to_object
+        _handle_to_object_unsafe
         _then .1
 
         _dup

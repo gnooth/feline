@@ -36,7 +36,7 @@ code check_string, 'check-string'       ; handle-or-object -- string
         _dup
         _ handle?
         _if .1
-        _ to_object
+        _handle_to_object_unsafe
         _then .1
 
         _dup

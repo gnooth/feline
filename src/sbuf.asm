@@ -38,7 +38,7 @@ code check_sbuf, 'check-sbuf'           ; handle-or-object -- sbuf
         _dup
         _ handle?
         _if .1
-        _ to_object
+        _handle_to_object_unsafe
         _then .1
 
         _dup
