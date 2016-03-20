@@ -230,11 +230,19 @@ endcode
 
 ; ### check-object
 code check_object, 'check-object'       ; object -- object
+        ; REVIEW
+        _dup
+        _ handle?
+        _if .1
+        _handle_to_object_unsafe
+        _then .1
+
         _dup
         _ object?
-        _if .1
+        _if .2
         _return
-        _then .1
+        _then .2
+
         _drop
         _true
         _abortq "not an object"
