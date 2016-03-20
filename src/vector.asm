@@ -196,6 +196,8 @@ endcode
 
 ; ### vector-nth
 code vector_nth, 'vector-nth'           ; index vector -- elt
+        _ check_vector
+
         _twodup
         _ vector_length
         _ult
@@ -278,6 +280,8 @@ endcode
 
 ; ### vector-insert-nth
 code vector_insert_nth, 'vector-insert-nth' ; elt n vector --
+        _ check_vector
+
         push    r15
         mov     r15, rbx                ; -- elt n vector
 
@@ -321,6 +325,8 @@ endcode
 
 ; ### vector-remove-nth
 code vector_remove_nth, 'vector-remove-nth' ; n vector --
+        _ check_vector
+
         push    r15
         mov     r15, rbx
 
