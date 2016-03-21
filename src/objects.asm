@@ -92,6 +92,10 @@ endinline
         poprbx
 %endmacro
 
+%macro  _unmark_object 0                ; object --
+        and     OBJECT_FLAGS_BYTE, ~OBJECT_MARKED_BIT
+        poprbx
+%endmacro
 
 ; ### .object-flags
 code dot_object_flags, '.object-flags'  ; object --

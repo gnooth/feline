@@ -46,11 +46,7 @@ endcode
 
 ; ### unmark-object
 code unmark_object, 'unmark-object'     ; object --
-        _ check_allocated_object
-        _dup
-        _object_flags                   ; -- object flags
-        _and_literal ~OBJECT_MARKED_BIT
-        _object_set_flags
+        _unmark_object
         next
 endcode
 
