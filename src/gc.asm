@@ -140,20 +140,23 @@ endcode
 code maybe_collect_handle, 'maybe-collect-handle' ; handle --
         _dup                            ; -- handle handle
         _handle_to_object_unsafe        ; -- handle object|0
-        _dup_if .1
-        ; -- handle object
-        _dup
-        _object_marked?
-        _if .2
+        ; Check for null object address.
+        test    rbx, rbx
+        jnz     .1
+        ; Null object address, nothing to do.
         _2drop
-        _else .2
+        _return
+.1:                                     ; -- handle object
+        ; Is object marked?
+        test    OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
+        jz .2
+        ; Object is marked.
+        _2drop
+        _return
+.2:                                     ; -- handle object
+        ; Object is not marked.
         _ destroy_object                ; -- handle
         _ release_handle
-        _then .2
-        _else .1
-        ; -- handle 0
-        _2drop
-        _then .1
         next
 endcode
 
