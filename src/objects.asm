@@ -70,8 +70,10 @@ endinline
 
 ; The third byte of the object header contains the object flags.
 
+%define OBJECT_FLAGS_BYTE       byte [rbx + 2]
+
 %macro  _object_flags 0
-        movzx   rbx, byte [rbx + 2]
+        movzx   rbx, OBJECT_FLAGS_BYTE
 %endmacro
 
 ; ### object-flags
@@ -79,14 +81,14 @@ inline object_flags, 'object-flags'     ; object -- flags
         _object_flags
 endinline
 
-%macro  _object_marked? 0
-        test    byte [rbx + 2], OBJECT_MARKED_BIT
+%macro  _object_marked? 0               ; object -- 0|1
+        test    OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
         setnz   bl
         movzx   ebx, bl
 %endmacro
 
 %macro  _mark_object 0                  ; object --
-        or      byte [rbx + 2], OBJECT_MARKED_BIT
+        or      OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
         poprbx
 %endmacro
 
