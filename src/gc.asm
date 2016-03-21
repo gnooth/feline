@@ -151,7 +151,8 @@ code maybe_collect_handle, 'maybe-collect-handle' ; handle --
         test    OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
         jz .2
         ; Object is marked.
-        _2drop
+        _nip                            ; -- object
+        _ unmark_object
         _return
 .2:                                     ; -- handle object
         ; Object is not marked.
@@ -173,10 +174,6 @@ code gc, 'gc'                           ; --
 
         _true
         _to in_gc?
-
-        ; unmark everything
-        _lit unmark_handle_xt
-        _ each_handle
 
         ; data stack
         _ mark_data_stack
