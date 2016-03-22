@@ -209,7 +209,7 @@ test: test10
     s1 sbuf? check-false
     s1 handle? check
     s1 transient? check-false
-    s1 allocated? check
+\     s1 allocated? check
     s1 sbuf> >transient-string "this is a test" string= check
 
     s1 ~sbuf

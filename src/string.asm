@@ -270,7 +270,7 @@ code destroy_string, '~string'          ; string --
         _then .2
 
         _dup
-        _ allocated?
+        _object_allocated?
         _if .3
         _ in_gc?
         _zeq_if .4

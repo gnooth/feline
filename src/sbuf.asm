@@ -258,7 +258,7 @@ code destroy_sbuf, '~sbuf'              ; sbuf --
         _then .1
 
         _dup
-        _ allocated?
+        _object_allocated?
         _if .2
         _dup
         _ sbuf_data

@@ -28,7 +28,7 @@ test: test1
     s1 object? check
     s1 string? check
     s1 transient? check
-    s1 allocated? check-false
+\     s1 allocated? check-false
     s1 string-length 14 = check
     s1 check-string string-length 14 = check
     s1 string> s" this is a test" str= check
@@ -43,7 +43,7 @@ test: test2
     s2 object? check
     s2 string? check
     s2 transient? check
-    s2 allocated? check-false
+\     s2 allocated? check-false
     s2 string-length 12 = check
     s2 check-string string-length 12 = check
     s2 string> s" another test" str= check
@@ -62,7 +62,7 @@ test: test3
     s4 object? check
     s4 string? check
     s4 transient? check
-    s4 allocated? check-false
+\     s4 allocated? check-false
     s4 string> s" this is a test and " str= check
     s4 ~string
     0 to s4
@@ -80,7 +80,7 @@ test: test4
         s4 object? check
         s4 string? check
         s4 transient? check
-        s4 allocated? 0= check
+\         s4 allocated? 0= check
         s4 string> s" this is a test and another test" str= check
         s" x" >string s4 over concat ~string ~string
         s1 ~string

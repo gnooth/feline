@@ -97,34 +97,6 @@ endinline
         poprbx
 %endmacro
 
-; ### .object-flags
-code dot_object_flags, '.object-flags'  ; object --
-        _ check_object
-        _ object_flags                  ; -- flags
-
-        _dup
-        _lit OBJECT_MARKED_BIT
-        _ and
-        _if .1
-        _dotq "MARKED "
-        _then .1
-
-        _dup
-        _lit OBJECT_TRANSIENT_BIT
-        _ and
-        _if .2
-        _dotq "TRANSIENT "
-        _then .2
-
-        _lit OBJECT_ALLOCATED_BIT
-        _ and
-        _if .3
-        _dotq "ALLOCATED "
-        _then .3
-
-        next
-endcode
-
 %macro  _object_set_flags 0             ; object flags --
         mov     rax, [rbp]              ; object in rax
         mov     [rax + 2], bl
@@ -153,22 +125,11 @@ code transient?, 'transient?'           ; object-or-handle -- flag
         next
 endcode
 
-; ### allocated?
-code allocated?, 'allocated?'           ; object-or-handle -- flag
-        _dup
-        _ handle?
-        _if .1
-        ; allocated object
-        mov     rbx, TRUE
-        _return
-        _then .1
-
-        _ check_object
-        _object_flags
-        and     ebx, OBJECT_ALLOCATED_BIT
-        _zne
-        next
-endcode
+%macro  _object_allocated? 0            ; object -- 0|1
+        test    OBJECT_FLAGS_BYTE, OBJECT_ALLOCATED_BIT
+        setnz   bl
+        movzx   ebx, bl
+%endmacro
 
 ; ### minimum-object-address
 value minimum_object_address, 'minimum-object-address', -1
