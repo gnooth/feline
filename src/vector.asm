@@ -211,6 +211,14 @@ code vector_ensure_capacity, 'vector-ensure-capacity'   ; u vector --
         next
 endcode
 
+%macro _vector_nth_unsafe 0             ; index vector -- elt
+        _vector_data
+        _swap
+        _cells
+        _plus
+        _fetch
+%endmacro
+
 ; ### vector-nth
 code vector_nth, 'vector-nth'           ; index vector -- elt
         _ check_vector
@@ -219,15 +227,13 @@ code vector_nth, 'vector-nth'           ; index vector -- elt
         _vector_length
         _ult
         _if .1
-        _vector_data
-        _swap
-        _cells
-        _plus
-        _fetch
-        _else .1
+        _vector_nth_unsafe
+        _return
+        _then .1
+
+        _2drop
         _true
         _abortq "vector-nth index out of range"
-        _then .1
         next
 endcode
 
@@ -452,7 +458,7 @@ code vector_each, 'vector-each'         ; vector xt --
         _?do .1
         _i
         _this
-        _ vector_nth                    ; -- xt elt
+        _vector_nth_unsafe              ; -- xt elt
         _over                           ; -- xt elt xt
         _ execute
         _loop .1                        ; -- xt
