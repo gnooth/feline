@@ -266,9 +266,6 @@ code destroy_sbuf, '~sbuf'              ; sbuf --
 
         _ in_gc?
         _zeq_if .4
-        ; Not in gc. Update the allocated-objects vector. (If we are in gc,
-        ; we don't need to update the allocated-objects vector because we
-        ; replace it with the live-objects vector at the end of gc.)
         _dup
         _ release_handle_for_object
         _then .4
