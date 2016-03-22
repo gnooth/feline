@@ -136,12 +136,15 @@ code new_vector, '<vector>'             ; capacity -- vector
 endcode
 
 ; ### ~vector
-code destroy_vector, '~vector'          ; vector --
-        _ check_vector
-        _ check_allocated_object
+code destroy_vector, '~vector'          ; handle --
+        ; Vectors are always allocated, so we expect a handle here.
+        ; This call to check_handle is just an assertion of that.
+;         _ check_handle                  ; -- handle
+
+        _ check_vector                  ; -- vector
 
         _dup
-        _ vector_data
+        _vector_data
         _ ifree                         ; -- vector
 
         _ in_gc?

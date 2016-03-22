@@ -255,19 +255,6 @@ code check_object, 'check-object'       ; object -- object
         next
 endcode
 
-; ### check-allocated-object
-code check_allocated_object, 'check-allocated-object' ; object -- object
-        _dup
-        _ allocated_object?
-        _if .1
-        _return
-        _then .1
-        _drop
-        _true
-        _abortq "not an allocated object"
-        next
-endcode
-
 %macro  _slot1 0                        ; object -- x
         mov     rbx, [rbx + BYTES_PER_CELL]
 %endmacro
