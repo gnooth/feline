@@ -131,32 +131,9 @@ endcode
         movzx   ebx, bl
 %endmacro
 
-; ### minimum-object-address
-value minimum_object_address, 'minimum-object-address', -1
-
-; ### maximum-object-address
-value maximum_object_address, 'maximum-object-address', 0
-
 ; ### allocate-object
 code allocate_object, 'allocate-object' ; size -- object
         _ iallocate
-
-        _dup
-        _ minimum_object_address
-        _ult
-        _if .1
-        _dup
-        _to minimum_object_address
-        _then .1
-
-        _dup
-        _ maximum_object_address
-        _ugt
-        _if .2
-        _dup
-        _to maximum_object_address
-        _then .2
-
         next
 endcode
 
