@@ -253,12 +253,6 @@ code destroy_string, '~string'          ; string --
         _ check_string
 
         _dup
-        _zeq_if .1
-        _drop
-        _return
-        _then .1
-
-        _dup
         _ transient?
         _if .2
         ; Zero out the object header so it won't look like a valid object
