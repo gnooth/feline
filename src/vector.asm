@@ -460,7 +460,7 @@ code vector_each, 'vector-each'         ; vector xt --
         _this
         _vector_nth_unsafe              ; -- xt elt
         _over                           ; -- xt elt xt
-        _ execute
+        _execute
         _loop .1                        ; -- xt
         _drop
         pop     r15

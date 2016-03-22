@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -15,20 +15,22 @@
 
 file __FILE__
 
-; ### execute
-code execute, 'execute'                 ; i*x xt -- j*x
-; CORE
+%macro _execute 0
         mov     rax, [rbx]
         poprbx
         call    rax
+%endmacro
+
+; ### execute
+code execute, 'execute'                 ; i*x xt -- j*x
+; CORE
+        _execute
         next
 endcode
 
 ; ### perform
 code perform, 'perform'                 ; i*x addr -- j*x
         _fetch
-        mov     rax, [rbx]
-        poprbx
-        call    rax
+        _execute
         next
 endcode
