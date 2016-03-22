@@ -82,18 +82,19 @@ endcode
 
 ; ### handle?
 code handle?, 'handle?'                 ; x -- flag
-        ; must be aligned
+        ; must point into handle space
         _dup
-        _and_literal 7
-        _if .1
+        _from handle_space
+        _from handle_space_free
+        _ within
+        _zeq_if .1
         xor     ebx, ebx
         _return
         _then .1
 
-        ; must point into handle space
-        _from handle_space
-        _from handle_space_free
-        _ within
+        ; must be aligned
+        _and_literal 7
+        _zeq
         next
 endcode
 
