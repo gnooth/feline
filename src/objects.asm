@@ -216,24 +216,6 @@ code object?, 'object?'                 ; x -- flag
         next
 endcode
 
-; ### allocated-object?
-code allocated_object?, 'allocated-object?' ; object --flag
-        _dup
-        _ minimum_object_address
-        _ maximum_object_address
-        _ between
-        _zeq_if .1
-        xor     ebx, ebx
-        _return
-        _then .1
-
-        _object_type
-        _lit OBJECT_TYPE_FIRST
-        _lit OBJECT_TYPE_LAST
-        _ between
-        next
-endcode
-
 ; ### check-object
 code check_object, 'check-object'       ; object -- object
         ; REVIEW

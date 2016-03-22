@@ -120,13 +120,6 @@ endcode
 
 ; ### find-handle
 code find_handle, 'find-handle'         ; object -- handle | 0
-        _dup
-        _ allocated_object?
-        _zeq_if .1
-        xor     ebx, ebx
-        _return
-        _then .1                        ; -- object
-
         _ handle_space                  ; -- object addr
         _begin .2
         _dup
