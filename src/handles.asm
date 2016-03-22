@@ -271,7 +271,7 @@ code each_handle, 'each-handle'         ; xt --
         _while .1                       ; -- addr
         _dup
         _rfetch
-        _ execute
+        _execute
         _cellplus
         _repeat .1
         _drop
