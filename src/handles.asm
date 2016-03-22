@@ -40,6 +40,11 @@ code initialize_handle_space, 'initialize-handle-space' ; --
         _to handle_space_free
         _plus
         _to handle_space_limit
+
+        _lit 256
+        _ new_vector
+        _to free_handles
+
         next
 endcode
 
@@ -150,16 +155,13 @@ endcode
 ; ### release-handle
 code release_handle, 'release-handle'   ; -- handle
         _ check_handle
-        _zero
-        _over
-        _store
 
-        _ free_handles
-        _?dup_if .1
+        ; Zero out the stored address.
+        mov     qword [rbx], 0
+
+        ; Add handle to free-handles vector.
+        _from free_handles
         _ vector_push
-        _else .1
-        _drop
-        _then .1
 
         next
 endcode
