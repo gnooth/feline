@@ -278,7 +278,7 @@ code destroy_string, '~string'          ; string --
         ; we don't need to update the allocated-objects vector because we
         ; replace it with the live-objects vector at the end of gc.)
         _dup
-        _ remove_allocated_object
+        _ release_handle_for_object
         _then .4
         ; Zero out the object header so it won't look like a valid object
         ; after it has been destroyed.

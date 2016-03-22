@@ -15,8 +15,8 @@
 
 file __FILE__
 
-; ### remove-allocated-object
-code remove_allocated_object, 'remove-allocated-object' ; object --
+; ### release-handle-for-object
+code release_handle_for_object, 'release-handle-for-object' ; object --
         _ find_handle
         _?dup_if .1
         _ release_handle
