@@ -1223,6 +1223,13 @@ latest-xt $63 install-handler
                     exit
                 then
             then
+        else
+            modrm-rm register-rm to dbase
+            next-signed-byte to ddisp
+            next-byte to immediate-operand
+            true to immediate-operand?
+            .inst
+            exit
         then
     then
 
