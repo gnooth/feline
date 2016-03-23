@@ -35,12 +35,29 @@ code add_explicit_root, 'add-explicit-root' ; address --
         next
 endcode
 
+; ### mark-vector
+code mark_vector, 'mark-vector'         ; vector --
+        _lit maybe_mark_handle_xt
+        _ vector_each
+        next
+endcode
+
 ; ### mark-handle
 code mark_handle, 'mark-handle'         ; handle --
-        _handle_to_object_unsafe
-        _?dup_if .1
-        _mark_object
-        _then .1
+        _handle_to_object_unsafe        ; -- object|0
+        test    rbx, rbx
+        jz .1
+        or      OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
+        _dup
+        _object_type                    ; -- object object-type
+        _lit OBJECT_TYPE_VECTOR
+        _equal
+        _if .2
+        _ mark_vector
+        _return
+        _then .2
+.1:
+        _drop
         next
 endcode
 
