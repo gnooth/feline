@@ -17,16 +17,20 @@ file __FILE__
 
 ; ### string?
 code string?, 'string?'                 ; object -- flag
+        _dup
+        _ handle?
+        _if .1
+        _handle_to_object_unsafe
+        _then .1
+
         test    rbx, rbx
-        jz      .1
+        jz      .2
         _object_type
         cmp     rbx, OBJECT_TYPE_STRING
-        jnz     .2
-        mov     rbx, -1
-        _return
+        sete    bl
+        neg     bl
+        movsx   rbx, bl
 .2:
-        xor     ebx, ebx
-.1:
         next
 endcode
 
@@ -39,10 +43,14 @@ code check_string, 'check-string'       ; handle-or-object -- string
         _handle_to_object_unsafe
         _then .1
 
+        _dup_if .2
         _dup
-        _ string?
-        _if .2
+        _object_type                    ; -- object object-type
+        _lit OBJECT_TYPE_STRING
+        _equal
+        _if .3
         _return
+        _then .3
         _then .2
 
         _drop

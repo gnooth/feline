@@ -19,17 +19,18 @@ require-system-file test-framework
 
 test: test1 ( -- )
     100000 local #reps
-    10 <vector> check-vector local v
-    v object? check
+    10 <vector> local v
+\     v object? check
     v vector? check
     #reps 0 do
         i v vector-push
     loop
+    v vector-length #reps = check
     #reps 0 do
         i v vector-nth i = check
     loop
     v ~vector
-    v object? check-false
+\     v object? check-false
     v vector? check-false
 ;
 
