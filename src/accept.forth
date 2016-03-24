@@ -235,7 +235,6 @@ create restore-buffer 258 allot
 : get-current-history ( -- )
     current-history                     \ -- c-addr
     ?dup if
-        coerce-to-string
         clear-line
         string> dup to #in dup to dot
         bufstart swap cmove
@@ -298,7 +297,6 @@ create restore-buffer 258 allot
     while
         current-history
         ?dup if
-            check-string
             string>
             copied-input                \ -- c-addr1 u1 c-addr2 u2
             rot                         \ -- c-addr1 c-addr2 u2 u1
