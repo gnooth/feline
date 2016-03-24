@@ -16,7 +16,7 @@
 file __FILE__
 
 ; ### transient-area
-value transient_area, 'transient_area', 0
+value transient_area, 'transient-area', 0
 
 ; ### transient-area-next
 value transient_area_next, 'transient-area-next', 0
@@ -75,5 +75,18 @@ code transient_alloc, 'transient-alloc' ; u -- addr
         _to transient_area_next
         _ transient_area                ; -- addr
         _then .3
+        next
+endcode
+
+; ### in-transient-area?
+code in_transient_area?, 'in-transient-area?' ; addr -- flag
+        cmp     rbx, [transient_area_data]
+        jb .1
+        cmp     rbx, [transient_area_limit_data]
+        jae .1
+        mov     ebx, 1
+        _return
+.1:
+        xor     ebx, ebx
         next
 endcode
