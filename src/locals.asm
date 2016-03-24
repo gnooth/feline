@@ -104,7 +104,6 @@ code find_local, 'find-local'           ; found:        $addr -- index true
         _cells
         _plus
         _fetch                          ; -- $addr string
-        _ check_string                  ; -- $addr string
         _over                           ; -- $addr string $addr
         _count                          ; -- $addr string c-addr u
         _ rot                           ; -- $addr c-addr u string
@@ -223,7 +222,6 @@ code delete_local_names, 'delete-local-names'
         _plus
         _fetch
         _?dup_if .3
-        _ check_string
         _ destroy_string
         _then .3
         _loop .2
