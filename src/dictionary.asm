@@ -752,3 +752,16 @@ code bracketcompile, '[compile]', IMMEDIATE
         _ compilecomma
         next
 endcode
+
+; ### in-dictionary-space?
+code in_dictionary_space?, 'in-dictionary-space?' ; addr -- flag
+        cmp     rbx, [origin_data]
+        jb .1
+        cmp     rbx, [dp_data]
+        jae .1
+        mov     ebx, 1
+        _return
+.1:
+        xor     ebx, ebx
+        next
+endcode
