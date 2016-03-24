@@ -23,6 +23,9 @@ default abs ; use absolute addresses by default
 
 IN_FORTH
 
+section .data
+static_data_area:
+
 %include "align.asm"
 %include "ansi.asm"
 %include "arith.asm"
@@ -70,9 +73,25 @@ IN_FORTH
 
 file __FILE__
 
+; ### in-static-data-area?
+code in_static_data_area?, 'in-static-data-area?' ; addr -- flag
+        cmp     rbx, static_data_area
+        jb .1
+        cmp     rbx, static_data_area_limit
+        jae .1
+        mov     ebx, 1
+        _return
+.1:
+        xor     ebx, ebx
+        next
+endcode
+
 ; ### feline-last
 variable feline_last, 'feline-last', feline_link
 
 ; ### last
 ; the last word
 variable last, 'last', last_nfa
+
+section .data
+static_data_area_limit:
