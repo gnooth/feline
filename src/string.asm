@@ -16,13 +16,13 @@
 file __FILE__
 
 ; ### string?
-code string?, 'string?'                 ; object -- flag
+code string?, 'string?'                 ; x -- flag
         _dup
         _ handle?
         _if .1
-        _handle_to_object_unsafe
+        _handle_to_object_unsafe        ; -- object
         _dup_if .2
-        _object_type                    ; -- object object-type
+        _object_type                    ; -- object-type
         _lit OBJECT_TYPE_STRING
         _equal
         _then .2
@@ -30,35 +30,45 @@ code string?, 'string?'                 ; object -- flag
         _then .1
 
         ; Not a handle. Make sure address is in a permissible range.
-        _dup                            ; -- addr addr
-        _ in_transient_area?            ; -- addr flag
-        _zeq_if .3                      ; -- addr
+        _dup                            ; -- x x
+        _ in_transient_area?            ; -- x flag
+        _zeq_if .3                      ; -- x
         _dup
-        _ in_dictionary_space?          ; -- addr flag
+        _ in_dictionary_space?          ; -- x flag
         _zeq_if .4
+        _dup
+        _ in_static_data_area?
+        _zeq_if .5
         ; Address is not in a permissible range.
-        _drop
+        _drop                           ; --
         _false
         _return
+        _then .5
         _then .4
-        _then .3
+        _then .3                        ; -- object
 
-        _object_type                    ; -- object object-type
+        _object_type                    ; -- object-type
         _lit OBJECT_TYPE_STRING
         _equal
 
         next
 endcode
 
-; ### check-string
-code check_string, 'check-string'       ; handle-or-object -- string
+; ### error-not-string
+code error_not_string, 'error-not-string' ; x --
         ; REVIEW
+        _drop
+        _true
+        _abortq "not a string"
+        next
+endcode
+
+; ### check-string
+code check_string, 'check-string'       ; x -- string
         _dup
         _ handle?
         _if .1
-        _handle_to_object_unsafe
-        _then .1
-
+        _handle_to_object_unsafe        ; -- object|0
         _dup_if .2
         _dup
         _object_type                    ; -- object object-type
@@ -68,10 +78,35 @@ code check_string, 'check-string'       ; handle-or-object -- string
         _return
         _then .3
         _then .2
+        _ error_not_string
+        _then .1
 
-        _drop
-        _true
-        _abortq "not a string"
+        ; Not a handle. Make sure address is in a permissible range.
+        _dup                            ; -- x x
+        _ in_transient_area?            ; -- x flag
+        _zeq_if .4                      ; -- x
+        _dup
+        _ in_dictionary_space?          ; -- x flag
+        _zeq_if .5
+        _dup
+        _ in_static_data_area?
+        _zeq_if .6
+        ; Address is not in a permissible range.
+        _ error_not_string
+        _return
+        _then .6
+        _then .5
+        _then .4                        ; -- object
+
+        _dup
+        _object_type                    ; -- object object-type
+        _lit OBJECT_TYPE_STRING
+        _equal
+        _if .7
+        _return
+        _then .7
+
+        _ error_not_string
         next
 endcode
 
@@ -275,7 +310,12 @@ endcode
 ; ### ~string
 code destroy_string, '~string'          ; string --
         _ check_string
+        _ destroy_string_unchecked
+        next
+endcode
 
+; ### ~string-unchecked
+code destroy_string_unchecked, '~string-unchecked' ; string --
         _dup
         _ transient?
         _if .2
@@ -497,7 +537,6 @@ endcode
 code concat, 'concat'                   ; string1 string2 -- string3
         _locals_enter
 
-        _ check_string
         _ string_from                   ; -- s1 c-addr2 u2
         _ rot                           ; -- c-addr2 u2 s1
         _ string_from                   ; -- c-addr2 u2 c-addr1 u1

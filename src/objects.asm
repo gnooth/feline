@@ -229,7 +229,7 @@ code destroy_object, '~object'          ; object --
         _string?
 
         _if .1
-        _ destroy_string
+        _ destroy_string_unchecked
         _return
         _then .1
 
