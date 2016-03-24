@@ -213,12 +213,21 @@ endcode
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
 
+%macro _string? 0
+        _object_type
+        _lit OBJECT_TYPE_STRING
+        _equal
+%endmacro
+
 ; ### ~object
 code destroy_object, '~object'          ; object --
-        _ check_object
-
+; The argument is known to be the address of a valid heap object, not a
+; handle or null. Called only by maybe-collect-handle during gc.
         _dup
-        _ string?
+
+        ; Macro is OK here since we have a valid object address.
+        _string?
+
         _if .1
         _ destroy_string
         _return
@@ -239,6 +248,7 @@ code destroy_object, '~object'          ; object --
         _then .3
 
         ; REVIEW
+        _true
         _abortq "unknown object"
         next
 endcode
