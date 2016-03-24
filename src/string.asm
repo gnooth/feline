@@ -21,16 +21,32 @@ code string?, 'string?'                 ; object -- flag
         _ handle?
         _if .1
         _handle_to_object_unsafe
+        _dup_if .2
+        _object_type                    ; -- object object-type
+        _lit OBJECT_TYPE_STRING
+        _equal
+        _then .2
+        _return
         _then .1
 
-        test    rbx, rbx
-        jz      .2
-        _object_type
-        cmp     rbx, OBJECT_TYPE_STRING
-        sete    bl
-        neg     bl
-        movsx   rbx, bl
-.2:
+        ; Not a handle. Make sure address is in a permissible range.
+        _dup                            ; -- addr addr
+        _ in_transient_area?            ; -- addr flag
+        _zeq_if .3                      ; -- addr
+        _dup
+        _ in_dictionary_space?          ; -- addr flag
+        _zeq_if .4
+        ; Address is not in a permissible range.
+        _drop
+        _false
+        _return
+        _then .4
+        _then .3
+
+        _object_type                    ; -- object object-type
+        _lit OBJECT_TYPE_STRING
+        _equal
+
         next
 endcode
 
@@ -449,9 +465,11 @@ code dot_string, '.string'              ; string | sbuf | $addr --
 
         ; REVIEW
         _dup
-        _ handle?
+        _ string?
         _if .4
-        _ to_object
+        _ string_from
+        _ type
+        _return
         _then .4
 
         _dup
@@ -467,13 +485,7 @@ code dot_string, '.string'              ; string | sbuf | $addr --
         _return
         _then .2
 
-        _dup
-        _ string?
-        _if .3
-        _ string_from
-        _else .3
         _ count
-        _then .3
         _ type
         _else .1
         _drop
