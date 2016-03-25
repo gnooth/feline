@@ -19,57 +19,72 @@ file __FILE__
 
 ; ### sbuf?
 code sbuf?, 'sbuf?'                     ; object -- flag
-        test    rbx, rbx
-        jz      .1
-        _object_type
-        cmp     rbx, OBJECT_TYPE_SBUF
-        jnz     .2
-        mov     rbx, -1
-        _return
-.2:
-        xor     ebx, ebx
-.1:
-        next
-endcode
-
-; ### check-sbuf
-code check_sbuf, 'check-sbuf'           ; handle-or-object -- sbuf
-        ; REVIEW
         _dup
         _ handle?
         _if .1
-        _handle_to_object_unsafe
-        _then .1
-
-        _dup
-        _ sbuf?
-        _if .2
-        _return
+        _handle_to_object_unsafe        ; -- object
+        _dup_if .2
+        _object_type                    ; -- object-type
+        _lit OBJECT_TYPE_SBUF
+        _equal
         _then .2
+        _else .1
+        xor     ebx, ebx
+        _then .1
+        next
+endcode
 
+; ### error-not-sbuf
+code error_not_sbuf, 'error-not-sbuf'   ; x --
+        ; REVIEW
         _drop
         _true
         _abortq "not an sbuf"
         next
 endcode
 
-%macro _sbuf_length 0
+; ### check-sbuf
+code check_sbuf, 'check-sbuf'           ; handle -- sbuf
+        _dup
+        _ handle?
+        _if .1
+        _handle_to_object_unsafe        ; -- object|0
+        _dup_if .2
+        _dup
+        _object_type                    ; -- object object-type
+        _lit OBJECT_TYPE_SBUF
+        _equal
+        _if .3
+        _return
+        _then .3
+        _then .2
+        _then .1
+
+        _ error_not_sbuf
+        next
+endcode
+
+%macro _sbuf_length 0                   ; sbuf -- length
         _slot1
 %endmacro
 
 ; ### sbuf-length
-code sbuf_length, 'sbuf-length'         ; sbuf -- length
+code sbuf_length, 'sbuf-length'         ; handle -- length
         _ check_sbuf
         _sbuf_length
         next
 endcode
 
+%macro _sbuf_set_length 0               ; sbuf length --
+        _set_slot1
+%endmacro
+
 ; ### sbuf-set-length
-code sbuf_set_length, 'sbuf-set-length' ; sbuf length --
+code sbuf_set_length, 'sbuf-set-length' ; handle length --
         _swap
         _ check_sbuf
         _swap
-        _set_slot1
+        _sbuf_set_length
         next
 endcode
 
@@ -84,28 +99,40 @@ code sbuf_data, 'sbuf-data'             ; sbuf -- data-address
         next
 endcode
 
+%macro _sbuf_set_data 0
+        _set_slot2
+%endmacro
+
 ; ### sbuf-set-data
 code sbuf_set_data, 'sbuf-set-data'     ; sbuf data-address --
         _swap
         _ check_sbuf
         _swap
-        _set_slot2
+        _sbuf_set_data
         next
 endcode
+
+%macro _sbuf_capacity 0
+        _slot3
+%endmacro
 
 ; ### sbuf-capacity
 code sbuf_capacity, 'sbuf-capacity'     ; sbuf -- capacity
         _ check_sbuf
-        _slot3
+        _sbuf_capacity
         next
 endcode
+
+%macro _sbuf_set_capacity 0
+        _set_slot3
+%endmacro
 
 ; ### sbuf-set-capacity
 code sbuf_set_capacity, 'sbuf-set-capacity' ; sbuf capacity --
         _swap
         _ check_sbuf
         _swap
-        _set_slot3
+        _sbuf_set_capacity
         next
 endcode
 
@@ -141,11 +168,11 @@ code make_sbuf, 'make-sbuf'             ; capacity -- sbuf
         _ iallocate
         pushd   sbuf
         _swap
-        _ sbuf_set_data
+        _sbuf_set_data
 
         pushd   sbuf
         pushd   capacity
-        _ sbuf_set_capacity             ; --
+        _sbuf_set_capacity              ; --
 
         pushd   sbuf
         ; return handle of allocated object
@@ -248,8 +275,8 @@ code sbuf_to_transient_string, 'sbuf>transient-string' ; sbuf -- string
 endcode
 
 ; ### ~sbuf
-code destroy_sbuf, '~sbuf'              ; sbuf --
-        _ check_sbuf
+code destroy_sbuf, '~sbuf'              ; handle --
+        _ check_sbuf                    ; -- sbuf|0
 
         _dup
         _zeq_if .1
@@ -261,7 +288,7 @@ code destroy_sbuf, '~sbuf'              ; sbuf --
         _object_allocated?
         _if .2
         _dup
-        _ sbuf_data
+        _sbuf_data
         _ ifree
 
         _ in_gc?
@@ -280,12 +307,18 @@ code destroy_sbuf, '~sbuf'              ; sbuf --
         next
 endcode
 
-; ### sbuf-check-index
-code sbuf_check_index, 'sbuf-check-index' ; sbuf index -- flag
+%macro _sbuf_check_index 0              ; sbuf index -- flag
         _swap
-        _ check_sbuf                    ; -- index sbuf
         _sbuf_length                    ; -- index length
         _ult                            ; -- flag
+%endmacro
+
+; ### sbuf-check-index
+code sbuf_check_index, 'sbuf-check-index' ; handle index -- flag
+        _swap
+        _ check_sbuf                    ; -- index sbuf
+        _swap
+        _sbuf_check_index
         next
 endcode
 
@@ -306,8 +339,14 @@ code sbuf_char, 'sbuf-char'             ; sbuf index -- char
         next
 endcode
 
+%macro _sbuf_set_nth_unsafe 0           ; char index sbuf --
+        _sbuf_data
+        _plus
+        _cstore
+%endmacro
+
 ; ### sbuf-set-char
-code sbuf_set_char, 'sbuf-set-char'     ; sbuf index char --
+code sbuf_set_char, 'sbuf-set-char'     ; handle index char --
         _ rrot                          ; char sbuf index
         _twodup
         _ sbuf_check_index
@@ -326,30 +365,29 @@ endcode
 
 ; ### sbuf-resize
 code sbuf_resize, 'sbuf-resize'         ; sbuf new-capacity --
-        _ over                          ; -- sbuf new-capacity sbuf
-        _ sbuf_data                     ; -- sbuf new-capacity data-address
-        _ over                          ; -- sbuf new-capacity data-address new-capacity
+        _over                           ; -- sbuf new-capacity sbuf
+        _sbuf_data                      ; -- sbuf new-capacity data-address
+        _over                           ; -- sbuf new-capacity data-address new-capacity
         _oneplus                        ; terminal null byte
         _ resize                        ; -- sbuf new-capacity new-data-address ior
         _ throw                         ; -- sbuf new-capacity new-data-address
         _tor
-        _ over                          ; -- sbuf new-capacity sbuf     r: -- new-data-address
+        _over                           ; -- sbuf new-capacity sbuf     r: -- new-data-address
         _swap
-        _ sbuf_set_capacity             ; -- sbuf                       r: -- new-data-address
+        _sbuf_set_capacity              ; -- sbuf                       r: -- new-data-address
         _rfrom                          ; -- sbuf new-data-addr
-        _ sbuf_set_data
+        _sbuf_set_data
         next
 endcode
 
 ; ### sbuf-ensure-capacity
 code sbuf_ensure_capacity, 'sbuf-ensure-capacity'   ; u sbuf --
-        _ check_sbuf                    ; -- u sbuf
-        _ twodup                        ; -- u sbuf u sbuf
-        _ sbuf_capacity                 ; -- u sbuf u capacity
-        _ ugt
+        _twodup                         ; -- u sbuf u sbuf
+        _sbuf_capacity                  ; -- u sbuf u capacity
+        _ugt
         _if .1                          ; -- u sbuf
         _dup                            ; -- u sbuf sbuf
-        _ sbuf_capacity                 ; -- u sbuf capacity
+        _sbuf_capacity                  ; -- u sbuf capacity
         _twostar                        ; -- u sbuf capacity*2
         _oneplus                        ; -- u sbuf capacity*2+1
         _ rot                           ; -- sbuf capacity*2 u
@@ -395,7 +433,7 @@ code sbuf_append_char, 'sbuf-append-char' ; sbuf char --
 
         ; this sbuf-length local len
         pushd   this
-        _ sbuf_length
+        _sbuf_length
         popd    len
 
         ; len 1+ this sbuf-ensure-capacity
@@ -407,7 +445,7 @@ code sbuf_append_char, 'sbuf-append-char' ; sbuf char --
         ; char this sbuf-data len + c!
         pushd   char
         pushd   this
-        _ sbuf_data
+        _sbuf_data
         pushd   len
         _plus
         _cstore
@@ -416,12 +454,12 @@ code sbuf_append_char, 'sbuf-append-char' ; sbuf char --
         pushd   this
         pushd   len
         _oneplus
-        _ sbuf_set_length
+        _sbuf_set_length
 
         ; 0 this sbuf-data len 1+ + c!
         _zero
         pushd   this
-        _ sbuf_data
+        _sbuf_data
         pushd   len
         _oneplus
         _plus
@@ -451,30 +489,30 @@ code sbuf_append_chars, 'sbuf-append-chars' ; sbuf addr len --
         popd    this
 
         pushd   this
-        _ sbuf_length
+        _sbuf_length
         pushd   len
         _plus
         pushd   this
         _ sbuf_ensure_capacity
         pushd   addr
         pushd   this
-        _ sbuf_data
+        _sbuf_data
         pushd   this
-        _ sbuf_length
+        _sbuf_length
         _plus
         pushd   len
         _ cmove
         pushd   this
         _dup
-        _ sbuf_length
+        _sbuf_length
         pushd   len
         _plus
-        _ sbuf_set_length
+        _sbuf_set_length
         _zero
         pushd   this
-        _ sbuf_data
+        _sbuf_data
         pushd   this
-        _ sbuf_length
+        _sbuf_length
         _plus
         _cstore
 
@@ -489,17 +527,13 @@ endcode
 
 ; ### sbuf-append-string
 code sbuf_append_string, 'sbuf-append-string' ; sbuf string --
-        _ check_string
-        _swap
-        _ check_sbuf
-        _swap                           ; -- sbuf string
         _ string_from
         _ sbuf_append_chars
         next
 endcode
 
 ; ### sbuf-insert-char
-code sbuf_insert_char, 'sbuf-insert-char' ; sbuf index char --
+code sbuf_insert_char, 'sbuf-insert-char' ; handle index char --
 ; locals:
 %define sbuf   local0
 %define index  local1
@@ -514,14 +548,14 @@ code sbuf_insert_char, 'sbuf-insert-char' ; sbuf index char --
 
         ; sbuf sbuf-length 1+ sbuf sbuf-ensure-capacity
         pushd   sbuf
-        _ sbuf_length
+        _sbuf_length
         _oneplus
         pushd   sbuf
         _ sbuf_ensure_capacity
 
         ; sbuf sbuf-data index +
         pushd   sbuf
-        _ sbuf_data
+        _sbuf_data
         pushd   index
         _plus                           ; -- source
 
@@ -531,7 +565,7 @@ code sbuf_insert_char, 'sbuf-insert-char' ; sbuf index char --
 
         ; sbuf sbuf-length index - cmove>
         pushd   sbuf
-        _ sbuf_length
+        _sbuf_length
         pushd   index
         _minus                          ; -- source dest count
         _ cmoveup                       ; --
@@ -539,15 +573,15 @@ code sbuf_insert_char, 'sbuf-insert-char' ; sbuf index char --
         ; sbuf dup sbuf-length 1+ sbuf-set-length
         pushd   sbuf
         _dup                            ; -- sbuf sbuf
-        _ sbuf_length                   ; -- sbuf length
+        _sbuf_length                    ; -- sbuf length
         _oneplus                        ; -- sbuf length+1
-        _ sbuf_set_length
+        _sbuf_set_length
 
-        ; sbuf index char sbuf-set-char
-        pushd   sbuf
-        pushd   index
+        ; char index sbuf sbuf-set-nth
         pushd   char
-        _ sbuf_set_char
+        pushd   index
+        pushd   sbuf
+        _sbuf_set_nth_unsafe
 
         _locals_leave
         next
@@ -572,15 +606,15 @@ code sbuf_delete_char, 'sbuf-delete-char' ; sbuf index --
 
         pushd   sbuf
         pushd   index
-        _ sbuf_check_index
+        _sbuf_check_index
         _if .1
         pushd   sbuf
-        _ sbuf_length
+        _sbuf_length
         popd    len
 
         ; sbuf sbuf-data index + 1+
         pushd   sbuf
-        _ sbuf_data
+        _sbuf_data
         pushd   index
         _plus
         _oneplus                        ; -- src
@@ -599,7 +633,7 @@ code sbuf_delete_char, 'sbuf-delete-char' ; sbuf index --
         ; 0 sbuf sbuf-data len 1- + c!
         _zero
         pushd   sbuf
-        _ sbuf_data
+        _sbuf_data
         pushd   len
         _oneminus
         _plus
@@ -609,7 +643,7 @@ code sbuf_delete_char, 'sbuf-delete-char' ; sbuf index --
         pushd   sbuf
         pushd   len
         _oneminus
-        _ sbuf_set_length
+        _sbuf_set_length
 
         _else .1
         _true
