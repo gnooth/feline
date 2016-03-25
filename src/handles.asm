@@ -88,18 +88,17 @@ endcode
 ; ### handle?
 code handle?, 'handle?'                 ; x -- flag
         ; must point into handle space
-        _dup
-        _from handle_space
-        _from handle_space_free
-        _ within
-        _zeq_if .1
-        xor     ebx, ebx
-        _return
-        _then .1
+        cmp     rbx, [handle_space_data]
+        jb .1
+        cmp     rbx, [handle_space_free_data]
+        jae .1
 
         ; must be aligned
-        _and_literal 7
-        _zeq
+        and     ebx, 7
+        setz    bl
+        _return
+.1:
+        xor     ebx, ebx
         next
 endcode
 
