@@ -59,7 +59,7 @@ false value editing?
 ;
 
 : cursor-line ( -- sbuf )
-    cursor-line# lines vector-nth check-sbuf
+    cursor-line# lines vector-nth
 ;
 
 : cursor-line-length ( -- n )
@@ -256,7 +256,7 @@ false value repaint?
 : delete-line-separator ( -- )
     cursor-line# #lines 1- < if
         cursor-x cursor-line-length = if
-            cursor-line# 1+ lines vector-nth check-sbuf \ -- sbuf
+            cursor-line# 1+ lines vector-nth \ -- sbuf
             sbuf>transient-string \ -- string
             cursor-line swap sbuf-append-string
             cursor-line# 1+ lines vector-remove-nth
@@ -295,7 +295,7 @@ false value repaint?
 
 
 : do-normal-char ( char -- )
-    cursor-line check-sbuf              \ -- char sbuf
+    cursor-line                         \ -- char sbuf
     cursor-x                            \ -- char sbuf index
     rot                                 \ -- sbuf index char
     sbuf-insert-char                    \ --
@@ -307,7 +307,7 @@ false value repaint?
 
 : insert-line-separator ( -- )
     cursor-x cursor-line-length <= if
-        cursor-line check-sbuf          \ -- sbuf
+        cursor-line                     \ -- sbuf
         sbuf>transient-string           \ -- string
         cursor-x cursor-line-length     \ -- string index1 index2
         string-substring                \ -- substring
