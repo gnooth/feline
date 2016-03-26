@@ -138,7 +138,7 @@ endcode
 
 %macro _this_string_data 0
         pushrbx
-        lea     rbx, [this + BYTES_PER_CELL * 2]
+        lea     rbx, [this_register + BYTES_PER_CELL * 2]
 %endmacro
 
 ; ### string-data
@@ -447,8 +447,8 @@ endcode
 code string_index_of, 'string-index-of' ; string char -- index | -1
         _swap
         _ check_string
-        push    r15
-        popd    r15                     ; -- char
+        push    this_register
+        popd    this_register           ; -- char
 
         _this_string_length
         _zero
@@ -468,7 +468,7 @@ code string_index_of, 'string-index-of' ; string char -- index | -1
         _drop
         _lit -1
 .exit:
-        pop     r15
+        pop     this_register
         next
 endcode
 
@@ -476,8 +476,8 @@ endcode
 code string_substring, 'string-substring' ; string start-index end-index --
         _ rot
         _ check_string
-        push    r15
-        popd    r15                     ; -- start-index end-index
+        push    this_register
+        popd    this_register           ; -- start-index end-index
 
         _dup
         _this_string_length
@@ -494,7 +494,7 @@ code string_substring, 'string-substring' ; string start-index end-index --
         _ underplus
         _ copy_to_transient_string
 
-        pop     r15
+        pop     this_register
         next
 endcode
 
