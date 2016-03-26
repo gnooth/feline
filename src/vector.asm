@@ -16,33 +16,37 @@
 file __FILE__
 
 ; ### vector?
-code vector?, 'vector?'                 ; handle-or-object -- flag
+code vector?, 'vector?'                 ; handle -- flag
         _dup
         _ handle?
         _if .1
-        _handle_to_object_unsafe
+        _handle_to_object_unsafe        ; -- object
+        _dup_if .2
+        _object_type                    ; -- object-type
+        _lit OBJECT_TYPE_VECTOR
+        _equal
+        _then .2
+        _else .1
+        xor     ebx, ebx
         _then .1
+        next
+endcode
 
-        test    rbx, rbx
-        jz      .2
-        _object_type
-        cmp     rbx, OBJECT_TYPE_VECTOR
-        sete    bl
-        neg     bl
-        movsx   rbx, bl
-.2:
+; ### error-not-vector
+code error_not_vector, 'error-not-vector' ; x --
+        ; REVIEW
+        _drop
+        _true
+        _abortq "not a vector"
         next
 endcode
 
 ; ### check-vector
-code check_vector, 'check-vector'       ; handle-or-object -- vector
-        ; REVIEW
+code check_vector, 'check-vector'       ; handle -- vector
         _dup
         _ handle?
         _if .1
-        _handle_to_object_unsafe
-        _then .1
-
+        _handle_to_object_unsafe        ; -- object|0
         _dup_if .2
         _dup
         _object_type                    ; -- object object-type
@@ -52,10 +56,9 @@ code check_vector, 'check-vector'       ; handle-or-object -- vector
         _return
         _then .3
         _then .2
+        _then .1
 
-        _drop
-        _true
-        _abortq "not a vector"
+        _ error_not_vector
         next
 endcode
 
@@ -66,16 +69,20 @@ endcode
 ; ### vector-length
 code vector_length, 'vector-length'     ; vector -- length
         _ check_vector
-        _slot1
+        _vector_length
         next
 endcode
 
+%macro _vector_set_length 0             ; vector length --
+        _set_slot1
+%endmacro
+
 ; ### vector-set-length
-code vector_set_length, 'vector-set-length' ; vector length --
+code vector_set_length, 'vector-set-length' ; handle length --
         _swap
         _ check_vector
         _swap
-        _set_slot1
+        _vector_set_length
         next
 endcode
 
@@ -85,37 +92,25 @@ endcode
 
 ; ### vector-data
 code vector_data, 'vector-data'         ; vector -- data-address
-        _slot2
+        _ check_vector
+        _vector_data
         next
 endcode
 
-; ### vector-set-data
-code vector_set_data, 'vector-set-data' ; vector data-address  --
-        _swap
-        _ check_vector
-        _swap
+%macro _vector_set_data 0               ; vector data-address --
         _set_slot2
-        next
-endcode
+%endmacro
 
-; ### vector-capacity
-code vector_capacity, 'vector-capacity' ; vector -- capacity
-        _ check_vector
+%macro _vector_capacity 0               ; vector -- capacity
         _slot3
-        next
-endcode
+%endmacro
 
-; ### vector-set-capacity
-code vector_set_capacity, 'vector-set-capacity' ; vector capacity --
-        _swap
-        _ check_vector
-        _swap
+%macro _vector_set_capacity 0           ; vector capacity --
         _set_slot3
-        next
-endcode
+%endmacro
 
 ; ### <vector>
-code new_vector, '<vector>'             ; capacity -- vector
+code new_vector, '<vector>'             ; capacity -- handle
         _lit 4
         _cells
         _ allocate_object
@@ -131,24 +126,21 @@ code new_vector, '<vector>'             ; capacity -- vector
         _ iallocate                     ; -- capacity data-address              r: -- vector
         _rfetch                         ; -- capacity data-address vector       r: -- vector
         _swap                           ; -- capacity vector data-address       r: -- vector
-        _ vector_set_data               ; -- capacity                           r: -- vector
+        _vector_set_data                ; -- capacity                           r: -- vector
         _rfetch                         ; -- capacity vector                    r: -- vector
         _swap                           ; -- vector capacity                    r: -- vector
-        _ vector_set_capacity           ; --                                    r: -- vector
+        _vector_set_capacity            ; --                                    r: -- vector
         _rfrom                          ; -- vector
 
         ; return handle of allocated object
-        _ new_handle
+        _ new_handle                    ; -- handle
 
         next
 endcode
 
 ; ### ~vector
 code destroy_vector, '~vector'          ; handle --
-        ; Vectors are always allocated, so we expect a handle here.
-        ; This call to check_handle is just an assertion of that.
-;         _ check_handle                  ; -- handle
-
+; Vectors are always allocated, so we expect a handle here.
         _ check_vector                  ; -- vector
 
         _dup
@@ -173,10 +165,6 @@ endcode
 
 ; ### vector-resize
 code vector_resize, 'vector-resize'     ; vector new-capacity --
-        _swap
-        _ check_vector
-        _swap
-
         _over                           ; -- vector new-capacity vector
         _vector_data                    ; -- vector new-capacity data-address
         _over                           ; -- vector new-capacity data-address new-capacity
@@ -184,23 +172,22 @@ code vector_resize, 'vector-resize'     ; vector new-capacity --
         _ resize                        ; -- vector new-capacity new-data-address ior
         _ throw                         ; -- vector new-capacity new-data-address
         _tor
-        _over                           ; -- vector new-capacity vector     r: -- new-data-addr
+        _over                           ; -- vector new-capacity vector         r: -- new-data-addr
         _swap
-        _ vector_set_capacity           ; -- vector                         r: -- new-data-addr
+        _vector_set_capacity            ; -- vector                             r: -- new-data-addr
         _rfrom                          ; -- vector new-data-addr
-        _ vector_set_data
+        _vector_set_data
         next
 endcode
 
 ; ### vector-ensure-capacity
 code vector_ensure_capacity, 'vector-ensure-capacity'   ; u vector --
-        _ check_vector
         _ twodup                        ; -- u vector u vector
-        _ vector_capacity               ; -- u vector u capacity
-        _ ugt
+        _vector_capacity                ; -- u vector u capacity
+        _ugt
         _if .1                          ; -- u vector
         _dup                            ; -- u vector vector
-        _ vector_capacity               ; -- u vector capacity
+        _vector_capacity                ; -- u vector capacity
         _twostar                        ; -- u vector capacity*2
         _ rot                           ; -- vector capacity*2 u
         _ max                           ; -- vector new-capacity
@@ -211,7 +198,7 @@ code vector_ensure_capacity, 'vector-ensure-capacity'   ; u vector --
         next
 endcode
 
-%macro _vector_nth_unsafe 0             ; index vector -- elt
+%macro _vector_nth_unsafe 0             ; index vector -- element
         _vector_data
         _swap
         _cells
@@ -220,7 +207,7 @@ endcode
 %endmacro
 
 ; ### vector-nth
-code vector_nth, 'vector-nth'           ; index vector -- elt
+code vector_nth, 'vector-nth'           ; index handle -- element
         _ check_vector
 
         _twodup
@@ -247,7 +234,7 @@ code vector_check_index, 'vector-check-index' ; vector index -- flag
 endcode
 
 ; ### vector-ref
-code vector_ref, 'vector-ref'           ; vector index -- elt
+code vector_ref, 'vector-ref'           ; vector index -- element
         _twodup
         _ vector_check_index
         _if .1
@@ -264,8 +251,16 @@ code vector_ref, 'vector-ref'           ; vector index -- elt
         next
 endcode
 
+%macro _vector_set_nth_unsafe 0         ; element index vector --
+        _vector_data
+        _swap
+        _cells
+        _plus
+        _store
+%endmacro
+
 ; ### vector-set-nth
-code vector_set_nth, 'vector-set-nth'   ; elt index vector --
+code vector_set_nth, 'vector-set-nth'   ; element index vector --
         _ check_vector
 
         _twodup
@@ -304,128 +299,128 @@ code vector_set, 'vector-set'           ; vector index element --
 endcode
 
 ; ### vector-insert-nth
-code vector_insert_nth, 'vector-insert-nth' ; elt n vector --
+code vector_insert_nth, 'vector-insert-nth' ; element n vector --
         _ check_vector
 
-        push    r15
-        mov     r15, rbx                ; -- elt n vector
+        push    this_register
+        mov     this_register, rbx      ; -- element n vector
 
-        _ twodup                        ; -- elt n vector n vector
-        _ vector_length                 ; -- elt n vector n length
-        _ ugt                           ; -- elt n vector
+        _twodup                         ; -- element n vector n vector
+        _vector_length                  ; -- element n vector n length
+        _ugt                            ; -- element n vector
         _abortq "vector-insert-nth n > length"
 
-        _dup                            ; -- elt n vector vector
-        _ vector_length                 ; -- elt n vector length
-        _oneplus                        ; -- elt n vector length+1
-        _ over                          ; -- elt n vector length+1 vector
-        _ vector_ensure_capacity        ; -- elt n vector
+        _dup                            ; -- element n vector vector
+        _vector_length                  ; -- element n vector length
+        _oneplus                        ; -- element n vector length+1
+        _over                           ; -- element n vector length+1 vector
+        _ vector_ensure_capacity        ; -- element n vector
 
-        _ vector_data                   ; -- elt n data-address
-        _ over                          ; -- elt n data-address n
-        _duptor                         ; -- elt n data-address n       r: -- n
+        _vector_data                    ; -- element n data-address
+        _over                           ; -- element n data-address n
+        _duptor                         ; -- element n data-address n           r: -- n
         _cells
-        _plus                           ; -- elt n addr
+        _plus                           ; -- element n addr
         _dup
-        _cellplus                       ; -- elt n addr addr+8
-        pushd   r15
-        _ vector_length
+        _cellplus                       ; -- element n addr addr+8
+        _this
+        _vector_length
         _rfrom
-        _ minus
-        _cells                          ; -- elt n addr addr+8 #bytes
-        _ cmoveup                       ; -- elt n
+        _minus
+        _cells                          ; -- element n addr addr+8 #bytes
+        _ cmoveup                       ; -- element n
 
-        pushd   r15                     ; -- elt n vector
-        _dup                            ; -- elt n vector vector
-        _ vector_length                 ; -- elt n vector length
-        _oneplus                        ; -- elt n vector length+1
-        _ vector_set_length             ; -- elt n
+        _this                           ; -- element n vector
+        _dup                            ; -- element n vector vector
+        _vector_length                  ; -- element n vector length
+        _oneplus                        ; -- element n vector length+1
+        _vector_set_length              ; -- element n
 
-        pushd   r15                     ; -- elt n vector
-        _ vector_set_nth                ; ---
+        _this                           ; -- element n vector
+        _vector_set_nth_unsafe          ; ---
 
-        pop     r15
+        pop     this_register
         next
 endcode
 
 ; ### vector-remove-nth
-code vector_remove_nth, 'vector-remove-nth' ; n vector --
+code vector_remove_nth, 'vector-remove-nth' ; n handle --
         _ check_vector
 
-        push    r15
-        mov     r15, rbx
+        push    this_register
+        mov     this_register, rbx
 
-        _ twodup
-        _ vector_length                 ; -- n vector n length
+        _twodup
+        _vector_length                  ; -- n vector n length
         _zero                           ; -- n vector n length 0
-        _ swap                          ; -- n vector n 0 length
+        _swap                           ; -- n vector n 0 length
         _ within                        ; -- n vector flag
-        _ zeq
-        _abortq "vector-remove-nth n > length - 1"      ; -- n vector
+        _zeq
+        _abortq "vector-remove-nth n > length - 1" ; -- n vector
 
-        _ vector_data                   ; -- n addr
-        _ swap                          ; -- addr n
-        _duptor                         ; -- addr n                      r: -- n
+        _vector_data                    ; -- n addr
+        _swap                           ; -- addr n
+        _duptor                         ; -- addr n                     r: -- n
         _oneplus
         _cells
         _plus                           ; -- addr2
         _dup                            ; -- addr2 addr2
         _cellminus                      ; -- addr2 addr2-8
         _this
-        _ vector_length
-        _oneminus                       ; -- addr2 addr2-8 len-1         r: -- n
+        _vector_length
+        _oneminus                       ; -- addr2 addr2-8 len-1        r: -- n
         _rfrom                          ; -- addr2 addr2-8 len-1 n
-        _ minus                         ; -- addr2 addr2-8 len-1-n
+        _minus                          ; -- addr2 addr2-8 len-1-n
         _cells                          ; -- addr2 addr2-8 #bytes
         _ cmove
 
         _zero
         _this
-        _ vector_data
+        _vector_data
         _this
-        _ vector_length
+        _vector_length
         _oneminus
         _cells
         _plus
-        _ store
+        _store
 
         _this
         _dup
-        _ vector_length
+        _vector_length
         _oneminus
-        _ vector_set_length
+        _vector_set_length
 
-        pop     r15
+        pop     this_register
         next
 endcode
 
 ; ### vector-push
-code vector_push, 'vector-push'         ; elt vector --
+code vector_push, 'vector-push'         ; element vector --
         _ check_vector
 
-        push    r15                     ; save callee-saved register
-        mov     r15, rbx                ; vector in r15
-        _vector_length                  ; -- elt length
-        _dup                            ; -- elt length length
-        _oneplus                        ; -- elt length length+1
-        _dup                            ; -- elt length length+1 length+1
-        _this                           ; -- elt length length+1 length+1 this
-        _ vector_ensure_capacity        ; -- elt length length+1
-        _this                           ; -- elt length length+1 this
-        _swap                           ; -- elt length this length+1
-        _ vector_set_length             ; -- elt length
-        _this                           ; -- elt length this
-        _ vector_set_nth
-        pop     r15                     ; restore callee-saved register
+        push    this_register           ; save callee-saved register
+        mov     this_register, rbx      ; vector in this_register
+        _vector_length                  ; -- element length
+        _dup                            ; -- element length length
+        _oneplus                        ; -- element length length+1
+        _dup                            ; -- element length length+1 length+1
+        _this                           ; -- element length length+1 length+1 this
+        _ vector_ensure_capacity        ; -- element length length+1
+        _this                           ; -- element length length+1 this
+        _swap                           ; -- element length this length+1
+        _vector_set_length              ; -- element length
+        _this                           ; -- element length this
+        _vector_set_nth_unsafe
+        pop     this_register           ; restore callee-saved register
         next
 endcode
 
 ; ### vector-pop
-code vector_pop, 'vector-pop'           ; vector -- elt
+code vector_pop, 'vector-pop'           ; vector -- element
         _ check_vector                  ; -- vector
 
-        push    r15
-        mov     r15, rbx
+        push    this_register
+        mov     this_register, rbx
 
         _vector_length
         _oneminus
@@ -434,15 +429,15 @@ code vector_pop, 'vector-pop'           ; vector -- elt
         _abortq "vector-pop vector is empty"
 
         _this
-        _ vector_nth                    ; -- elt
+        _vector_nth_unsafe              ; -- element
 
         _this
         _dup
-        _ vector_length
+        _vector_length
         _oneminus
-        _ vector_set_length
+        _vector_set_length
 
-        pop     r15
+        pop     this_register
         next
 endcode
 
@@ -451,44 +446,40 @@ code vector_each, 'vector-each'         ; vector xt --
         _swap
         _ check_vector
 
-        push    r15
-        mov     r15, rbx
+        push    this_register
+        mov     this_register, rbx
         _vector_length
         _zero
         _?do .1
         _i
         _this
-        _vector_nth_unsafe              ; -- xt elt
-        _over                           ; -- xt elt xt
+        _vector_nth_unsafe              ; -- xt element
+        _over                           ; -- xt element xt
         _execute
         _loop .1                        ; -- xt
         _drop
-        pop     r15
+        pop     this_register
         next
 endcode
 
 ; ### .vector
 code dot_vector, '.vector'              ; vector --
-        push    r15
-        mov     r15, rbx
+        _ check_vector
+
+        push    this_register
+        mov     this_register, rbx
 
         _dotq "{ "
-        _ vector_length
+        _vector_length
         _zero
         _?do .1
         _i
         _this
-        _ vector_nth
-        _dup
-        _ object?
-        _if .2
+        _vector_nth_unsafe
         _ dot_object
-        _else .2
-        _ dot
-        _then .2
         _loop .1
         _dotq "}"
 
-        pop     r15
+        pop     this_register
         next
 endcode
