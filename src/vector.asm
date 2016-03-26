@@ -140,9 +140,13 @@ endcode
 
 ; ### ~vector
 code destroy_vector, '~vector'          ; handle --
-; Vectors are always allocated, so we expect a handle here.
-        _ check_vector                  ; -- vector
+        _ check_vector                  ; -- vector|0
+        _ destroy_vector_unchecked
+        next
+endcode
 
+; ### ~vector-unchecked
+code destroy_vector_unchecked, '~vector-unchecked' ; vector --
         _dup
         _vector_data
         _ ifree                         ; -- vector

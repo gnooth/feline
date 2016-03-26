@@ -256,7 +256,7 @@ code destroy_object, '~object'          ; object --
         _dup
         _vector?
         _if .3
-        _ destroy_vector
+        _ destroy_vector_unchecked
         _return
         _then .3
 
