@@ -30,15 +30,23 @@ value explicit_roots, 'explicit-roots', 0 ; initialized in cold
 ; ### add-explicit-root
 code add_explicit_root, 'add-explicit-root' ; address --
         _ explicit_roots
-        _ check_vector
         _ vector_push
         next
 endcode
 
 ; ### mark-vector
 code mark_vector, 'mark-vector'         ; vector --
-        _lit maybe_mark_handle_xt
-        _ vector_each
+        push    this_register
+        mov     this_register, rbx
+        _vector_length
+        _zero
+        _?do .1
+        _i
+        _this
+        _vector_nth_unsafe              ; -- elt
+        _ maybe_mark_handle
+        _loop .1                        ; --
+        pop     this_register
         next
 endcode
 
