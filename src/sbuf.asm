@@ -277,7 +277,12 @@ endcode
 ; ### ~sbuf
 code destroy_sbuf, '~sbuf'              ; handle --
         _ check_sbuf                    ; -- sbuf|0
+        _ destroy_sbuf_unchecked
+        next
+endcode
 
+; ### ~sbuf-unchecked
+code destroy_sbuf_unchecked, '~sbuf-unchecked' ; sbuf --
         _dup
         _zeq_if .1
         _drop
