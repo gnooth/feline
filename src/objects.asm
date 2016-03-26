@@ -15,10 +15,11 @@
 
 file __FILE__
 
-%define this    r15
+; Register reserved for 'this' pointer.
+%define this_register   r15
 
 %macro  _this 0
-        pushd   this
+        pushd   this_register
 %endmacro
 
 %macro  _slot0 0
@@ -109,7 +110,7 @@ inline object_set_flags, 'object-set-flags' ; object flags --
 endinline
 
 ; ### transient?
-code transient?, 'transient?'           ; object-or-handle -- flag
+code transient?, 'transient?'           ; handle-or-object -- flag
         _dup
         _ handle?
         _if .1
@@ -181,7 +182,7 @@ endcode
 
 %macro  _this_slot1 0
         pushrbx
-        mov     rbx, [this + BYTES_PER_CELL]
+        mov     rbx, [this_register + BYTES_PER_CELL]
 %endmacro
 
 %macro  _set_slot1 0                    ; object x --
@@ -219,6 +220,18 @@ endcode
         _equal
 %endmacro
 
+%macro _sbuf? 0
+        _object_type
+        _lit OBJECT_TYPE_SBUF
+        _equal
+%endmacro
+
+%macro _vector? 0
+        _object_type
+        _lit OBJECT_TYPE_VECTOR
+        _equal
+%endmacro
+
 ; ### ~object
 code destroy_object, '~object'          ; object --
 ; The argument is known to be the address of a valid heap object, not a
@@ -234,14 +247,14 @@ code destroy_object, '~object'          ; object --
         _then .1
 
         _dup
-        _ sbuf?
+        _sbuf?
         _if .2
-        _ destroy_sbuf
+        _ destroy_sbuf_unchecked
         _return
         _then .2
 
         _dup
-        _ vector?
+        _vector?
         _if .3
         _ destroy_vector
         _return
@@ -254,9 +267,7 @@ code destroy_object, '~object'          ; object --
 endcode
 
 ; ### .object
-code dot_object, '.object'              ; object --
-        _ check_object
-
+code dot_object, '.object'              ; handle-or-object --
         _dup
         _ string?
         _if .1
@@ -284,10 +295,11 @@ code dot_object, '.object'              ; object --
         _if .3
         _ dot_vector
         _ space
-        _else .3
-        _true
-        _abortq "shouldn't happen"
+        _return
         _then .3
+
+        ; give up
+        _ hdot
 
         next
 endcode
