@@ -250,9 +250,10 @@ code dot_handles, '.handles'
         _ hdot
         _dup
         _fetch
-        _ dup
+        _dup
         _ hdot
-        _?dup_if .2
+        _if .2
+        _dup
         _ dot_object
         _then .2
         _cellplus
