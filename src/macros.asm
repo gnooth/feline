@@ -109,6 +109,7 @@ section .data
 %define TYPE_2VALUE     3
 %define TYPE_DEFERRED   4
 %define TYPE_CONSTANT   5
+%define TYPE_GLOBAL     6
 
 ; Object types
 OBJECT_TYPE_FIRST               equ 1

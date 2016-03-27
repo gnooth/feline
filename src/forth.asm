@@ -68,6 +68,7 @@ IN_FELINE
 %include "string.asm"
 %include "sbuf.asm"
 %include "gc.asm"
+%include "global.asm"
 
 IN_FORTH
 
