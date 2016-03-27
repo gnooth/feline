@@ -24,12 +24,12 @@ code release_handle_for_object, 'release-handle-for-object' ; object --
         next
 endcode
 
-; ### explicit-roots
-value explicit_roots, 'explicit-roots', 0 ; initialized in cold
+; ### gc-roots
+value gc_roots, 'gc-roots', 0           ; initialized in cold
 
-; ### add-explicit-root
-code add_explicit_root, 'add-explicit-root' ; address --
-        _ explicit_roots
+; ### gc-add-root
+code gc_add_root, 'gc-add-root'         ; address --
+        _ gc_roots
         _ vector_push
         next
 endcode
@@ -43,7 +43,7 @@ code mark_vector, 'mark-vector'         ; vector --
         _?do .1
         _i
         _this
-        _vector_nth_unsafe              ; -- elt
+        _vector_nth_unsafe              ; -- element
         _ maybe_mark_handle
         _loop .1                        ; --
         pop     this_register
@@ -206,7 +206,7 @@ code gc, 'gc'                           ; --
         _ mark_locals_stack
 
         ; explicit roots
-        _ explicit_roots
+        _ gc_roots
         _lit maybe_mark_from_root_xt
         _ vector_each
 

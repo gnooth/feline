@@ -71,7 +71,7 @@ code global_var, 'global'               ; x "<spaces>name" --
         _ccommac $0c3                   ; -- x
 
         _ here
-        _ add_explicit_root
+        _ gc_add_root
 
         _ comma                         ; --
 

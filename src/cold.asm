@@ -169,12 +169,12 @@ code cold, 'cold'                       ; --
 
         _lit 256
         _ new_vector
-        _to explicit_roots
-        _lit explicit_roots_data
-        _ add_explicit_root
+        _to gc_roots
+        _lit gc_roots_data
+        _ gc_add_root
 
         _lit free_handles_data
-        _ add_explicit_root
+        _ gc_add_root
 
         _ initialize_task
         _squote "boot.forth"

@@ -83,13 +83,11 @@ $1b constant esc
 \ An array of history entries.
 create history-array  history-size cells allot  history-array history-size cells erase
 
-: add-explicit-roots ( -- )
+:noname ( -- )
     history-size 0 ?do
-        history-array i cells + add-explicit-root
+        history-array i cells + gc-add-root
     loop
-;
-
-add-explicit-roots
+; execute
 
 : current-history ( -- string )
     history-array 0= if 0 exit then     \ shouldn't happen
