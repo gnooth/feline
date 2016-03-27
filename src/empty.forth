@@ -49,6 +49,23 @@ create empty-search-order #vocs cells allot
     until
     drop ;
 
+0 value new-gc-roots
+
+: maybe-copy-root ( root -- )
+    dup here limit within if
+        drop
+    else
+        new-gc-roots vector-push
+    then ;
+
+: trim-gc-roots ( -- )
+    \ must be called *after* dp is restored
+    gc-roots vector-length <vector> to new-gc-roots
+    gc-roots ['] maybe-copy-root vector-each
+    new-gc-roots to gc-roots
+    0 to new-gc-roots
+;
+
 \ save current system state to be restored by EMPTY
 : empty! ( -- )
     here to empty-dp
@@ -68,6 +85,7 @@ create empty-search-order #vocs cells allot
         empty-current set-current
         empty-search-order restore-search-order
         trim-vocs
+        trim-gc-roots
     then ;
 
 \ CORE EXT
@@ -93,4 +111,5 @@ create empty-search-order #vocs cells allot
         @+ set-current                  \ -- addr
         restore-search-order            \ --
         trim-vocs
+        trim-gc-roots
 ;
