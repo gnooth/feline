@@ -30,9 +30,7 @@ forth!
 \         count system
 \     else drop then ;
 
-0 value build-string
-
-' build-string >body add-explicit-root
+0 global build-string
 
 : initialize-build-string ( -- )
     0 local fileid
@@ -64,7 +62,7 @@ forth!
                 \ don't try again!
                 -1
             then
-            to build-string
+            !> build-string
         then
         buffer -free
     then
