@@ -54,10 +54,10 @@ code hold, 'hold'                       ; char --
         _ plusstore
         _ holdptr
         _fetch                          ; -- char addr
-        ; make addr is not below start of buffer
+        ; Make sure address is not below start of buffer.
         _dup
         _ holdbuf
-        _ ult
+        _ult
         _lit 17
         _ ?throw                        ; -- char addr
         _ cstore
@@ -80,12 +80,12 @@ endcode
 ; ### #>
 code sharpgt,'#>'                       ; d --- c-addr u
 ; CORE
-        _2drop                          ; 2drop holdptr @ holdbuf_end over -
+        _2drop                          ; 2drop holdptr @ holdbuf-end over -
         _ holdptr
         _fetch
         _ holdbuf_end
-        _ over
-        _ minus
+        _over
+        _minus
         next
 endcode
 
