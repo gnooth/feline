@@ -518,13 +518,26 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ close_file                    ; -- ior
         _drop                           ; REVIEW safe to ignore ior?
 
-        ; store true flag in the parameter field of the FILES wordlist entry
-        ; to indicate file was included without error
+        ; Sanity check. The file that we just included might have called
+        ; EMPTY (or a marker word), and the entry for the latest filename
+        ; in the FILES wordlist might be adrift in the wilderness beyond
+        ; the current value of HERE. If that is the case, the pointers
+        ; associated with that dictionary entry may well have been over-
+        ; written, and there is no guarantee that NAME> >BODY below will
+        ; take us to a safe place (let alone the right place).
+        _from source_filename
+        _ here
+        _ult
+        _if .3
+        ; The filename entry is below HERE, which is what we were hoping for.
+        ; Store a true flag in the parameter field of the FILES wordlist entry
+        ; to indicate the file was included without error.
         _true
         _from source_filename
         _namefrom
         _tobody
         _store                          ; --                    r: -- $old-source-filename
+        _then .3
 
         ; Restore the old value of SOURCE-FILENAME.
         _local2
