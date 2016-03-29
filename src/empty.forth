@@ -86,6 +86,8 @@ create empty-search-order #vocs cells allot
         empty-search-order restore-search-order
         trim-vocs
         trim-gc-roots
+        here limit over - erase
+        here-c limit-c over - erase
     then ;
 
 \ CORE EXT
@@ -112,4 +114,8 @@ create empty-search-order #vocs cells allot
         restore-search-order            \ --
         trim-vocs
         trim-gc-roots
+        here limit over - erase
+
+\ FIXME The following line causes a crash in the Forth 2012 test suite MARKER tests.
+\         here-c limit-c over - erase
 ;
