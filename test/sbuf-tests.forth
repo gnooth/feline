@@ -219,6 +219,23 @@ test: test10
 
 test10
 
+\ sbuf-shorten
+test: test11
+    "this is a test" string>sbuf to s1
+    s1 handle? check
+    s1 sbuf? check
+    s1 sbuf-length 14 = check
+    s1 sbuf>transient-string "this is a test" string= check
+    4 s1 sbuf-shorten
+    s1 sbuf-length 4 = check
+    s1 sbuf>transient-string "this" string= check
+
+    s1 ~sbuf
+    s1 sbuf? check-false
+;
+
+test11
+
 empty
 
 ?cr .( Reached end of sbuf-tests.forth )

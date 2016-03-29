@@ -383,6 +383,21 @@ code sbuf_ensure_capacity, 'sbuf-ensure-capacity'   ; u sbuf --
         next
 endcode
 
+; ### sbuf-shorten
+code sbuf_shorten, 'sbuf-shorten'       ; u handle --
+        _ check_sbuf                    ; -- u sbuf
+        _twodup
+        _sbuf_length
+        _ult
+        _if .1
+        _swap
+        _sbuf_set_length
+        _else .1
+        _2drop
+        _then .1
+        next
+endcode
+
 ; ### check-char
 code check_char, 'check-char'           ; char -- char
 ; REVIEW
