@@ -44,7 +44,7 @@ false value editing?
 
 0 value editor-filename
 
-0 value lines                           \ a vector of strings
+0 global lines                          \ a vector of sbufs
 
 : #lines lines vector-length ;          \ number of lines in the file being edited
 
@@ -313,7 +313,7 @@ false value repaint?
         string-substring                \ -- substring
         string>sbuf                     \ -- sbuf
         cursor-line# 1+ lines vector-insert-nth
-        cursor-line cursor-x sbuf-set-length
+        cursor-x cursor-line sbuf-shorten
         1 +to cursor-y
         0 to cursor-x
         0 to goal-x
@@ -410,7 +410,7 @@ $11 ,           ' do-quit ,                     \ c-q
     local bufsize
     local buffer
 
-    10 <vector> to lines
+    10 <vector> !> lines
 
     buffer local dot
     dot local linestart
@@ -437,11 +437,12 @@ $11 ,           ' do-quit ,                     \ c-q
 ;
 
 : ~lines ( -- )
-    lines vector-length 0 ?do
-        i lines vector-nth ~object
-    loop
-    lines ~vector
-    0 to lines
+\     lines vector-length 0 ?do
+\         i lines vector-nth ~object
+\     loop
+\     lines ~vector
+    0 !> lines
+    gc
 ;
 
 : (edit) ( -- )
