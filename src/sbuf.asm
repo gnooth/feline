@@ -136,8 +136,8 @@ code sbuf_set_capacity, 'sbuf-set-capacity' ; sbuf capacity --
         next
 endcode
 
-; ### make-sbuf
-code make_sbuf, 'make-sbuf'             ; capacity -- sbuf
+; ### make-sbuf-internal
+code make_sbuf_internal, 'make-sbuf-internal' ; capacity -- sbuf
 
 ; locals:
 %define capacity        local0
@@ -175,8 +175,6 @@ code make_sbuf, 'make-sbuf'             ; capacity -- sbuf
         _sbuf_set_capacity              ; --
 
         pushd   sbuf
-        ; return handle of allocated object
-        _ new_handle
 
         _locals_leave
         next
@@ -184,6 +182,13 @@ code make_sbuf, 'make-sbuf'             ; capacity -- sbuf
 %undef capacity
 %undef sbuf
 
+endcode
+
+; ### make-sbuf
+code make_sbuf, 'make-sbuf'             ; capacity -- handle
+        _ make_sbuf_internal
+        _ new_handle
+        next
 endcode
 
 ; ### <sbuf>
@@ -199,7 +204,7 @@ code new_sbuf, '<sbuf>'                 ; capacity -- sbuf
 endcode
 
 ; ### >sbuf
-code copy_to_sbuf, '>sbuf'              ; c-addr u -- sbuf
+code copy_to_sbuf, '>sbuf'              ; c-addr u -- handle
 
 ; locals:
 %define u      local0
@@ -211,7 +216,7 @@ code copy_to_sbuf, '>sbuf'              ; c-addr u -- sbuf
         popd    c_addr
 
         pushd   u
-        _ make_sbuf
+        _ make_sbuf                     ; -- handle
         popd    sbuf
 
         pushd   c_addr
@@ -244,14 +249,14 @@ code copy_to_sbuf, '>sbuf'              ; c-addr u -- sbuf
 endcode
 
 ; ### string>sbuf
-code string_to_sbuf, 'string>sbuf'      ; string -- sbuf
+code string_to_sbuf, 'string>sbuf'      ; handle-or-string -- handle
         _ string_from
         _ copy_to_sbuf
         next
 endcode
 
 ; ### sbuf>
-code sbuf_from, 'sbuf>'                 ; sbuf -- c-addr u
+code sbuf_from, 'sbuf>'                 ; handle -- c-addr u
         _ check_sbuf
         _duptor
         _sbuf_data
@@ -261,7 +266,7 @@ code sbuf_from, 'sbuf>'                 ; sbuf -- c-addr u
 endcode
 
 ; ### sbuf>string
-code sbuf_to_string, 'sbuf>string'      ; sbuf -- string
+code sbuf_to_string, 'sbuf>string'      ; handle -- string
         _ sbuf_from
         _ copy_to_string
         next
