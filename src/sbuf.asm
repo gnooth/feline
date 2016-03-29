@@ -79,15 +79,6 @@ endcode
         _set_slot1
 %endmacro
 
-; ### sbuf-set-length
-code sbuf_set_length, 'sbuf-set-length' ; handle length --
-        _swap
-        _ check_sbuf
-        _swap
-        _sbuf_set_length
-        next
-endcode
-
 %macro _sbuf_data 0
         _slot2
 %endmacro
@@ -103,15 +94,6 @@ endcode
         _set_slot2
 %endmacro
 
-; ### sbuf-set-data
-code sbuf_set_data, 'sbuf-set-data'     ; sbuf data-address --
-        _swap
-        _ check_sbuf
-        _swap
-        _sbuf_set_data
-        next
-endcode
-
 %macro _sbuf_capacity 0
         _slot3
 %endmacro
@@ -126,15 +108,6 @@ endcode
 %macro _sbuf_set_capacity 0
         _set_slot3
 %endmacro
-
-; ### sbuf-set-capacity
-code sbuf_set_capacity, 'sbuf-set-capacity' ; sbuf capacity --
-        _swap
-        _ check_sbuf
-        _swap
-        _sbuf_set_capacity
-        next
-endcode
 
 ; ### make-sbuf-internal
 code make_sbuf_internal, 'make-sbuf-internal' ; capacity -- sbuf
@@ -216,27 +189,28 @@ code copy_to_sbuf, '>sbuf'              ; c-addr u -- handle
         popd    c_addr
 
         pushd   u
-        _ make_sbuf                     ; -- handle
+        _ make_sbuf_internal
         popd    sbuf
 
         pushd   c_addr
         pushd   sbuf
-        _ sbuf_data
+        _sbuf_data
         pushd   u                       ; -- c-addr data-address u
         _ cmove                         ; --
 
         _zero
         pushd   sbuf
-        _ sbuf_data
+        _sbuf_data
         pushd   u
         _plus
-        _ cstore
+        _cstore
 
         pushd   sbuf
         pushd   u
-        _ sbuf_set_length
+        _sbuf_set_length
 
         pushd   sbuf
+        _ new_handle
 
         _locals_leave
 
