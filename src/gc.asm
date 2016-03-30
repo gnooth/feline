@@ -188,6 +188,9 @@ value in_gc?, 'in-gc?', 0
 ; ### gc-start-ticks
 value gc_start_ticks, 'gc-start-ticks', 0
 
+; ### gc-verbose
+value gc_verbose, 'gc-verbose', 0
+
 ; ### gc
 code gc, 'gc'                           ; --
         _ ticks
@@ -216,12 +219,15 @@ code gc, 'gc'                           ; --
 
         _zeroto in_gc?
 
+        _ gc_verbose
+        _if .1
         _ ticks
         _ gc_start_ticks
         _minus
         _ ?cr
         _ decdot
         _dotq "ms "
+        _then .1
 
         next
 endcode
