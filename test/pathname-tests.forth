@@ -28,7 +28,6 @@ test1
 test: test2
     "foo.bar" path-get-extension to s
     s string? check
-    s transient? check
     s ".bar" string= check
 ;
 

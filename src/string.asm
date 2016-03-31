@@ -190,7 +190,7 @@ code new_transient_string, '<transient-string>' ; capacity -- string
 endcode
 
 ; ### make-string
-code make_string, 'make-string'         ; c-addr u transient? -- string
+code make_string, 'make-string'         ; c-addr u transient? -- handle-or-string
 
 ; locals:
 %define transient?      local0
@@ -261,7 +261,7 @@ code make_string, 'make-string'         ; c-addr u transient? -- string
 endcode
 
 ; ### >string
-code copy_to_string, '>string'          ; c-addr u -- string
+code copy_to_string, '>string'          ; c-addr u -- handle
         _false                          ; not transient
         _ make_string
         next
@@ -473,7 +473,7 @@ code string_index_of, 'string-index-of' ; string char -- index | -1
 endcode
 
 ; ### string-substring
-code string_substring, 'string-substring' ; string start-index end-index --
+code string_substring, 'string-substring' ; string start-index end-index -- handle
         _ rot
         _ check_string
         push    this_register
@@ -492,7 +492,7 @@ code string_substring, 'string-substring' ; string start-index end-index --
         _minus                          ; -- start-index length
         _this_string_data
         _ underplus
-        _ copy_to_transient_string
+        _ copy_to_string
 
         pop     this_register
         next
