@@ -265,6 +265,40 @@ false value repaint?
     then
 ;
 
+0 global kill-ring
+
+: kill-line ( -- )
+    cursor-x cursor-line-length < if
+        kill-ring 0= if
+            10 <vector> !> kill-ring
+        then
+        cursor-line sbuf>transient-string
+        cursor-x cursor-line-length string-substring
+        kill-ring vector-push
+        cursor-x cursor-line sbuf-shorten
+        true to repaint?
+    then
+;
+
+: paste ( -- )
+    0 local s
+    0 local paste-length
+    kill-ring if
+        kill-ring vector-length 0> if
+            cursor-line sbuf>transient-string !> s
+            s 0 cursor-x string-substring
+            kill-ring vector-pop
+            dup string-length !> paste-length
+            concat
+            s cursor-x cursor-line-length string-substring concat
+            string>sbuf
+            cursor-line# lines vector-set-nth
+            paste-length +to cursor-x
+            true to repaint?
+        then
+    then
+;
+
 : do-delete ( -- )
     cursor-x cursor-line-length > abort" DO-DELETE cursor-x > cursor-line-length"
     cursor-x cursor-line-length < if
@@ -374,6 +408,8 @@ $0d ,           ' insert-line-separator ,
 [else]
 $0a ,           ' insert-line-separator ,
 [then]
+$0b ,           ' kill-line ,                   \ c-k
+$16 ,           ' paste ,                       \ c-v
 $1b ,           ' do-escape ,
 $13 ,           ' do-save ,                     \ c-s
 $11 ,           ' do-quit ,                     \ c-q
