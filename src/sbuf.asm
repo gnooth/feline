@@ -166,13 +166,14 @@ endcode
 
 ; ### <sbuf>
 code new_sbuf, '<sbuf>'                 ; capacity -- sbuf
-        _ make_sbuf                     ; -- sbuf
-        _ dup
-        _ sbuf_data                     ; -- sbuf data-address
+        _ make_sbuf_internal            ; -- sbuf
+        _dup
+        _sbuf_data                      ; -- sbuf data-address
         _over
-        _ sbuf_capacity                 ; -- sbuf data-address capacity
+        _sbuf_capacity                  ; -- sbuf data-address capacity
         _oneplus
         _ erase                         ; -- sbuf
+        _ new_handle
         next
 endcode
 
