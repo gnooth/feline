@@ -355,11 +355,6 @@ false value repaint?
     then
 ;
 
-: do-escape ( -- )
-    clear-status-line
-    quit
-;
-
 : make-backup ( -- )
     editor-filename string>sbuf local backup-filename
     backup-filename '~' sbuf-append-char
@@ -381,11 +376,26 @@ false value repaint?
     "Saving...done" status
 ;
 
-false value quit?
+: ~lines ( -- )
+\     lines vector-length 0 ?do
+\         i lines vector-nth ~object
+\     loop
+\     lines ~vector
+    0 !> lines
+    gc
+;
 
 : do-quit
     clear-status-line
-    true to quit?
+    0 to editor-line-vector
+    ~lines
+    false to editing?
+    quit
+;
+
+: do-escape ( -- )
+    clear-status-line
+    quit
 ;
 
 create keytable
@@ -428,7 +438,6 @@ $11 ,           ' do-quit ,                     \ c-q
     then
     true to editing?
     true to repaint?
-    false to quit?
     begin
         redisplay
         ekey
@@ -438,8 +447,7 @@ $11 ,           ' do-quit ,                     \ c-q
         else
             do-command
         then
-        quit?
-    until
+    again
 ;
 
 : >lines ( buffer bufsize -- )
@@ -472,15 +480,6 @@ $11 ,           ' do-quit ,                     \ c-q
     lines to editor-line-vector
 ;
 
-: ~lines ( -- )
-\     lines vector-length 0 ?do
-\         i lines vector-nth ~object
-\     loop
-\     lines ~vector
-    0 !> lines
-    gc
-;
-
 : (edit) ( -- )
     0 local fileid
     0 local filesize
@@ -498,12 +497,6 @@ $11 ,           ' do-quit ,                     \ c-q
     buffer -free
 
     edit-loop
-
-    0 to editor-line-vector
-
-    ~lines
-
-    false to editing?
 ;
 
 also forth definitions
