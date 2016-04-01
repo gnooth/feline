@@ -23,5 +23,6 @@ include-tests sbuf-tests.forth
 include-tests pathname-tests.forth
 include-tests vector-tests.forth
 include-tests misc-tests.forth
+include-tests gc-tests.forth
 
 ?cr .( Reached end of tests.forth )
