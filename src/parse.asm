@@ -118,7 +118,7 @@ code parse_name, 'parse-name'           ; <spaces>name -- c-addr u
         _overswap                       ; -- source-length start-of-word start-of-word #left
         _ scan_to_whitespace            ; -- source-length start-of-word end-of-word #left
         _tor                            ; -- source-length start-of-word end-of-word                    r: #left
-        _overminus                      ; -- source-length start-of-word word-length
+        _over_minus                     ; -- source-length start-of-word word-length
         _ rot                           ; -- start-of-word word-length source-length
         _rfrom                          ; -- start-of-word word-length source-length #left              r: --
         _dup                            ; -- start-of-word word-length source-length #left #left

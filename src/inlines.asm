@@ -235,7 +235,7 @@
         add     rbx, [rbp]
 %endmacro
 
-%macro  _overminus 0                    ; OVER -
+%macro  _over_minus 0                   ; over -
         sub     rbx, [rbp]
 %endmacro
 

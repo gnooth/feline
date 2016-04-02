@@ -112,8 +112,8 @@ inline overplus, 'over+'
 endinline
 
 ; ### over-
-inline overminus, 'over-'
-        _overminus
+inline over_minus, 'over-'
+        _over_minus
 endinline
 
 ; ### over-swap
