@@ -317,7 +317,9 @@ endcode
 ; ### ~string-unchecked
 code destroy_string_unchecked, '~string-unchecked' ; string --
         _dup
-        _ transient?
+        _object_flags
+        and     ebx, OBJECT_TRANSIENT_BIT
+        _zne
         _if .2
         ; Zero out the object header so it won't look like a valid object
         ; after it has been destroyed.
