@@ -22,10 +22,6 @@ code ?pairs, '?pairs'
 endcode
 
 section .text
-branch:
-        jmp     0
-branch_end:
-
 ?branch:
         test    rbx, rbx
         mov     rbx, [rbp]
@@ -74,16 +70,14 @@ code else, 'else', IMMEDIATE            ; c: orig1 -- orig2
 ; "Interpretation semantics for this word are undefined."
         _ ?comp
         _ flush_compilation_queue
-        _lit branch
-        _lit branch_end - branch
-        _ paren_copy_code
+        _ccommac $0e9
+        _zero
+        _ lcommac
         _ here_c                        ; -- orig1 here
-        _ over                          ; -- orig1 here orig1
-        _ minus                         ; -- orig1 here-orig1
-        _ swap
-        _lit 4
-        _ minus
-        _ lstore                        ; --
+        _over_minus                     ; -- orig1 here-orig1
+        _swap
+        sub     rbx, 4
+        _lstore                         ; --
         _ here_c                        ; -- orig2
         next
 endcode
