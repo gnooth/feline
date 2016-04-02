@@ -73,8 +73,13 @@ code new_handle, 'new-handle'           ; object -- handle
         _ handle_space_free
         _ handle_space_limit
         _ult
-        _zeq
+        _zeq_if .3
+        _ gc
+        _ handle_space_free
+        _ handle_space_limit
+        _ult
         _abortq "out of handle space"
+        _then .3
 
         _ handle_space_free
         _store
