@@ -24,9 +24,8 @@ require-system-file test-framework
 
 test: test1
     256 <sbuf> to s1
-\     s1 object? check
-\     s1 sbuf? check
     s1 handle? check
+    s1 object? check
     s1 sbuf? check
     s1 string? check-false
     s1 ~sbuf
@@ -38,9 +37,8 @@ test1
 
 test: test2
     s" this is a test" >sbuf to s1
-\     s1 object? check
-\     s1 sbuf? check
     s1 handle? check
+    s1 object? check
     s1 sbuf? check
     s1 string? check-false
     s1 sbuf-length 14 = check
@@ -54,9 +52,8 @@ test2
 
 test: test3
     s" this is a test " >sbuf to s1
-\     s1 object? check
-\     s1 sbuf? check
     s1 handle? check
+    s1 object? check
     s1 sbuf? check
     s1 string? check-false
     s1 sbuf-length 15 = check
@@ -72,15 +69,14 @@ test3
 
 test: test4
     s" test" >sbuf to s1
-\     s1 object? check
-\     s1 sbuf? check
     s1 handle? check
+    s1 object? check
     s1 sbuf? check
     s1 string? check-false
     s1 sbuf-length 4 = check
     s1 sbuf-capacity 4 = check
     s1 's' sbuf-append-char
-\     s1 object? check
+    s1 object? check
     s1 handle? check
     s1 sbuf-length 5 = check
     s1 sbuf-capacity 5 >= check
@@ -95,9 +91,8 @@ test4
 \ sbuf-char
 test: test5
     s" this is a test" >sbuf to s1
-\     s1 object? check
-\     s1 sbuf? check
     s1 handle? check
+    s1 object? check
     s1 sbuf? check
     s1 string? check-false
     s1 0 sbuf-char 't' = check
@@ -117,8 +112,8 @@ test5
 \ sbuf-set-char
 test: test6
     s" this is a test" >sbuf to s1
-\     s1 sbuf? check
     s1 handle? check
+    s1 object? check
     s1 sbuf? check
     s1 string? check-false
     s1 2 'a' sbuf-set-char
@@ -142,8 +137,8 @@ test6
 \ sbuf-insert-char
 test: test7
     s" this is a test" >sbuf to s1
-\     s1 sbuf? check
     s1 handle? check
+    s1 object? check
     s1 sbuf? check
     s1 string? check-false
     s1 9 'x' sbuf-insert-char
@@ -158,8 +153,8 @@ test7
 \ sbuf-delete-char
 test: test8
     s" this is a test" >sbuf to s1
-\     s1 sbuf? check
     s1 handle? check
+    s1 object? check
     s1 sbuf? check
     s1 string? check-false
     s1 sbuf-length 14 = check
@@ -173,8 +168,8 @@ test: test8
     s1 sbuf>transient-string "his s a tes" string= check
     s1 sbuf-length 11 = check
 
-\     s1 sbuf? check
     s1 handle? check
+    s1 sbuf? check
     s1 ~sbuf
     s1 sbuf? check-false
 ;
@@ -186,8 +181,8 @@ test: test9
     "this is a test" to s1
     s1 string? check
     s1 string>sbuf to s2
-\     s2 sbuf? check
     s2 handle? check
+    s2 object? check
     s2 sbuf? check
     s2 sbuf>transient-string s1 string= check
 
@@ -204,13 +199,10 @@ test9
 \ sbuf>
 test: test10
     "this is a test" string> >sbuf to s1
-\     s1 object? check
-\     s1 sbuf? check
     s1 handle? check
+    s1 object? check
     s1 sbuf? check
-    s1 transient? check-false
-\     s1 allocated? check
-    s1 sbuf> >transient-string "this is a test" string= check
+    s1 sbuf>transient-string "this is a test" string= check
 
     s1 ~sbuf
     s1 sbuf? check-false
@@ -223,6 +215,7 @@ test10
 test: test11
     "this is a test" string>sbuf to s1
     s1 handle? check
+    s1 object? check
     s1 sbuf? check
     s1 sbuf-length 14 = check
     s1 sbuf>transient-string "this is a test" string= check

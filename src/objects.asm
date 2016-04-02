@@ -109,23 +109,6 @@ inline object_set_flags, 'object-set-flags' ; object flags --
         _object_set_flags
 endinline
 
-; ### transient?
-code transient?, 'transient?'           ; handle-or-object -- flag
-        _dup
-        _ handle?
-        _if .1
-        ; allocated object
-        xor     ebx, ebx
-        _return
-        _then .1
-
-        _ check_object
-        _object_flags
-        and     ebx, OBJECT_TRANSIENT_BIT
-        _zne
-        next
-endcode
-
 %macro  _object_allocated? 0            ; object -- 0|1
         test    OBJECT_FLAGS_BYTE, OBJECT_ALLOCATED_BIT
         setnz   bl
@@ -141,38 +124,15 @@ endcode
 ; ### object?
 code object?, 'object?'                 ; x -- flag
         _dup
-        _lit 256
-        _ult
-        _if .1
-        xor     ebx, ebx
-        _return
-        _then .1
-
-        _object_type
-        _lit OBJECT_TYPE_FIRST
-        _lit OBJECT_TYPE_LAST
-        _ between
-        next
-endcode
-
-; ### check-object
-code check_object, 'check-object'       ; object -- object
-        ; REVIEW
-        _dup
         _ handle?
-        _if .1
+        _if .0
         _handle_to_object_unsafe
-        _then .1
-
-        _dup
-        _ object?
-        _if .2
+        _zne
         _return
-        _then .2
+        _then .0
 
-        _drop
-        _true
-        _abortq "not an object"
+        ; Not allocated. Must be a string or not an object.
+        _ string?
         next
 endcode
 

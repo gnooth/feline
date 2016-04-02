@@ -136,7 +136,7 @@ code compile_local_ref, 'compile-local-ref'     ; index --
         _minus
         _lfetch
         _lit $005d8b48                  ; mov rbx, [rbp]
-        _ equal
+        _equal
         _if .1
         ; eliminate dead store
         _lit -4
@@ -153,7 +153,7 @@ code compile_local_ref, 'compile-local-ref'     ; index --
         _lit 24
         _ lshift                        ; -- uint32 $005e8949 xx
         _plus                           ; -- uint32 $xx5e8949
-        _ equal
+        _equal
         _if .2
         ; no fetch needed
         _rdrop
@@ -259,10 +259,10 @@ code paren_local, '(local)'             ; c-addr u --
 
         _ locals_defined
         _ nlocals
-        _ ult
+        _ult
         _if .4
 
-        _ copy_to_string                ; -- string
+        _ copy_to_string                ; -- handle
         _ local_names
         _ locals_defined
         _cells
