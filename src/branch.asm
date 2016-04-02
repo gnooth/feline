@@ -21,6 +21,18 @@ code ?pairs, '?pairs'
         next
 endcode
 
+; ### ahead
+code ahead, 'ahead', IMMEDIATE          ; c: -- orig
+; TOOLS EXT
+        _ ?comp
+        _ flush_compilation_queue
+        _ccommac $0e9
+        _zero
+        _ lcommac
+        _ here_c                        ; -- orig
+        next
+endcode
+
 section .text
 ?branch:
         test    rbx, rbx
@@ -68,12 +80,7 @@ endcode
 code else, 'else', IMMEDIATE            ; c: orig1 -- orig2
 ; CORE
 ; "Interpretation semantics for this word are undefined."
-        _ ?comp
-        _ flush_compilation_queue
-        _ccommac $0e9
-        _zero
-        _ lcommac
-        _ here_c                        ; -- orig1 here
+        _ ahead                         ; -- orig1 here
         _over_minus                     ; -- orig1 here-orig1
         _swap
         sub     rbx, 4
