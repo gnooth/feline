@@ -23,7 +23,7 @@ code counttype, '$.'                    ; $addr --
 endcode
 
 ; ### place
-code place, 'place'
+code place, 'place'                     ; c-addr1 u c-addr2 --
 %ifdef WIN64
         ; rsi and rdi are callee saved on Windows but not on Linux
         push    rsi
