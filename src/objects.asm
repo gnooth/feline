@@ -69,6 +69,10 @@ inline object_set_type, 'object-set-type' ; object type --
         _object_set_type
 endinline
 
+%macro  _this_object_set_type 1
+        mov     word [this_register], %1
+%endmacro
+
 ; The third byte of the object header contains the object flags.
 
 %define OBJECT_FLAGS_BYTE       byte [rbx + 2]
@@ -102,6 +106,10 @@ endinline
         mov     rax, [rbp]              ; object in rax
         mov     [rax + 2], bl
         _2drop
+%endmacro
+
+%macro  _this_object_set_flags 1
+        mov     byte [this_register + 2], %1
 %endmacro
 
 ; ### object-set-flags
@@ -140,7 +148,7 @@ endcode
         mov     rbx, [rbx + BYTES_PER_CELL]
 %endmacro
 
-%macro  _this_slot1 0
+%macro  _this_slot1 0                   ; -- x
         pushrbx
         mov     rbx, [this_register + BYTES_PER_CELL]
 %endmacro
@@ -150,6 +158,11 @@ endcode
         mov     [rax + BYTES_PER_CELL], rbx
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
+%endmacro
+
+%macro  _this_set_slot1 0               ; x --
+        mov     [this_register + BYTES_PER_CELL], rbx
+        poprbx
 %endmacro
 
 %macro  _slot2 0                        ; object -- x
