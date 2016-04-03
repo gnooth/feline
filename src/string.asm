@@ -193,17 +193,15 @@ code new_transient_string, '<transient-string>' ; capacity -- string
 
 endcode
 
-; ### make-string
-code make_string, 'make-string'         ; c-addr u transient? -- handle-or-string
+; ### >string
+code copy_to_string, '>string'          ; c-addr u -- handle
 
 ; locals:
-%define transient?      local0
 %define u               local1
 %define c_addr          local2
-%define string          local3
 
-        _locals_enter                   ; -- c-addr u transient?
-        popd    transient?
+        push    this_register
+        _locals_enter                   ; -- c-addr u
         popd    u
         popd    c_addr                  ; --
 
@@ -211,64 +209,44 @@ code make_string, 'make-string'         ; c-addr u transient? -- handle-or-strin
         pushd   u
         _oneplus                        ; terminal null byte
         _plus                           ; -- size
-        _dup
-        pushd   transient?
-        _if .1
-        _ transient_alloc
-        _else .1
-        _ allocate_object
-        _then .1                        ; -- size string
-        popd    string                  ; -- size
-        pushd   string                  ; -- size string
-        _swap                           ; -- string size
-        _ erase                         ; --
-        pushd   string
-        _lit OBJECT_TYPE_STRING
-        _object_set_type                ; --
 
-        pushd   transient?
-        _if .3
-        pushd   string
-        _lit OBJECT_TRANSIENT_BIT
-        _else .3
-        pushd   string
-        _lit OBJECT_ALLOCATED_BIT
-        _then .3
-        _object_set_flags               ; --
+        _ allocate_object               ; -- string
 
-        pushd   string
+        popd    this_register
+
+        ; Zero all bits of object header.
+        xor     eax, eax
+        mov     [this_register], rax
+
+        _this_object_set_type OBJECT_TYPE_STRING
+        _this_object_set_flags OBJECT_ALLOCATED_BIT
+
         pushd   u
-        _ string_set_length             ; --
+        _this_string_set_length         ; --
 
         pushd   c_addr
-        pushd   string
-        _string_data
+        _this_string_data
         pushd   u
         _ cmove                         ; --
 
-        pushd   string                  ; -- string
+        _zero
+        _this_string_data
+        pushd   u
+        _plus
+        _cstore
 
-        pushd   transient?
-        _zeq_if .4
+        _this                           ; -- string
+
         ; return handle of allocated string
-        _ new_handle
-        _then .4
+        _ new_handle                    ; -- handle
 
         _locals_leave
+        pop     this_register
         next
 
-%undef transient?
 %undef u
 %undef c_addr
-%undef string
 
-endcode
-
-; ### >string
-code copy_to_string, '>string'          ; c-addr u -- handle
-        _false                          ; not transient
-        _ make_string
-        next
 endcode
 
 ; ### string>
