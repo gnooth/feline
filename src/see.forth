@@ -57,6 +57,7 @@ decimal
 0 value instruction-start
 0 value ip
 0 value prefix
+0 value operand-size-prefix
 0 value opcode
 0 value modrm-byte
 0 value sib-byte
@@ -388,6 +389,9 @@ init-reg64-names
 -1 value #operands
 
 : reset-disassembler
+    0 to prefix
+    0 to operand-size-prefix
+
     ip to instruction-start
     0 to mnemonic
 
@@ -525,7 +529,7 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 latest-xt $e9 install-handler
 
 : set-instruction-size ( -- )
-    prefix $66 = if
+    operand-size-prefix $66 = if
         16 dup to dsize to ssize
     else
         prefix $40 and if
@@ -1881,8 +1885,12 @@ decimal
     reset-disassembler
     .ip
     ip c@ local byte
-    byte $66 =
-    byte $40 $4f between or
+    byte $66 = if
+        byte to operand-size-prefix
+        1 +to ip
+        ip c@ to byte
+    then
+    byte $40 $4f between
     if
         byte to prefix
         ip 1+ c@ to opcode
