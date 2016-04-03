@@ -89,6 +89,10 @@ variable done?
     ip c@s
     1 +to ip ;
 
+: next-uint16 ( -- int16 )
+    ip w@
+    2 +to ip ;
+
 : next-int32 ( -- int32 )
     ip l@s
     4 +to ip ;
@@ -1550,6 +1554,29 @@ latest-xt $aa install-handler
 
 ' .c1 $c1 install-handler
 
+: .c6 ( -- )
+    \ /0
+    \ source is imm8
+    \ dest is r/m8
+    !modrm-byte
+    "mov" to mnemonic
+    modrm-reg 0= if
+        modrm-mod 1 = if
+            \ [r/m + disp8]
+            modrm-rm register-rm to dbase
+            "byte" to relative-size
+            next-signed-byte to ddisp
+            next-byte to immediate-operand
+            true to immediate-operand?
+            .inst
+            exit
+        then
+    then
+    unsupported
+;
+
+latest-xt $c6 install-handler
+
 : .c7 ( -- )
     \ /0
     \ Move a 32-bit signed immediate value to a 64-bit register
@@ -1574,8 +1601,13 @@ latest-xt $aa install-handler
         then
         modrm-mod 0= if
             modrm-rm register-rm to dbase
-            "qword" to relative-size
-            next-int32 to immediate-operand
+            operand-size-prefix $66 = if
+                "word" to relative-size
+                next-uint16 to immediate-operand
+            else
+                "qword" to relative-size
+                next-int32 to immediate-operand
+            then
             true to immediate-operand?
             .inst
             exit
