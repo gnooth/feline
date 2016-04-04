@@ -195,24 +195,14 @@ endcode
 
 ; ### >string
 code copy_to_string, '>string'          ; c-addr u -- handle
-
-; locals:
-%define u               local1
-%define c_addr          local2
-
         push    this_register
-        _locals_enter                   ; -- c-addr u
-        popd    u
-        popd    c_addr                  ; --
 
         _lit 16
-        pushd   u
+        _over
         _oneplus                        ; terminal null byte
-        _plus                           ; -- size
-
-        _ allocate_object               ; -- string
-
-        popd    this_register
+        _plus                           ; -- c-addr u size
+        _ allocate_object               ; -- c-addr u string
+        popd    this_register           ; -- c-addr u
 
         ; Zero all bits of object header.
         xor     eax, eax
@@ -221,32 +211,28 @@ code copy_to_string, '>string'          ; c-addr u -- handle
         _this_object_set_type OBJECT_TYPE_STRING
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 
-        pushd   u
-        _this_string_set_length         ; --
+        _dup
+        _this_string_set_length         ; -- c-addr u
 
-        pushd   c_addr
+        _tor                            ; -- c-addr             r: -- u
+
         _this_string_data
-        pushd   u
-        _ cmove                         ; --
+        _rfetch
+        _ cmove                         ; --                    r: -- u
 
-        _zero
-        _this_string_data
-        pushd   u
-        _plus
-        _cstore
+        ; Store terminal null byte.
+        _this_string_data               ; -- data-address       r: -- u
+        pop     rax                     ;                       r: --
+        add     rbx, rax                ; -- data-address + u
+        mov     byte [rbx], 0           ; -- data-address + u
 
-        _this                           ; -- string
+        mov     rbx, this_register      ; -- string
 
-        ; return handle of allocated string
+        ; Return handle of allocated string.
         _ new_handle                    ; -- handle
 
-        _locals_leave
         pop     this_register
         next
-
-%undef u
-%undef c_addr
-
 endcode
 
 ; ### string>
