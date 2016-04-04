@@ -1561,6 +1561,14 @@ latest-xt $aa install-handler
     !modrm-byte
     "mov" to mnemonic
     modrm-reg 0= if
+        modrm-mod 0= if
+            modrm-rm register-rm to dbase
+            "byte" to relative-size
+            next-byte to immediate-operand
+            true to immediate-operand?
+            .inst
+            exit
+        then
         modrm-mod 1 = if
             \ [r/m + disp8]
             modrm-rm register-rm to dbase
