@@ -235,3 +235,53 @@ code bounds, 'bounds'                   ; addr len -- addr+len addr
         _ swap
         next
 endcode
+
+; ### times
+code times_, 'times'                    ; n xt --
+        push    r12
+        mov     r12, [rbp]
+        test    r12, r12
+        jle     .3
+.1:
+        call    [rbx]
+        dec     r12
+        jz      .3
+        call    [rbx]
+        dec     r12
+        jnz     .1
+.3:
+        pop     r12
+.2:
+        _2drop
+        next
+endcode
+
+; ### each-integer
+code each_integer, 'each-integer'       ; n xt --
+        push    r12
+        push    r13
+        push    r14
+        xor     r12, r12                ; loop index in r12
+        mov     r13, [rbx]              ; code address in r13
+        mov     r14, [rbp]              ; loop limit in r14
+        test    r14, r14
+        jle     .3
+.1:
+        pushd   r12
+        call    r13
+        inc     r12
+        cmp     r12, r14
+        je     .3
+        pushd   r12
+        call    r13
+        inc     r12
+        cmp     r12, r14
+        jne     .1
+.3:
+        pop     r14
+        pop     r13
+        pop     r12
+.4:
+        _2drop
+        next
+endcode
