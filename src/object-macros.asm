@@ -214,9 +214,8 @@ file __FILE__
 %endmacro
 
 %macro _this_vector_nth_unsafe 0        ; index -- element
-        _this_vector_data
-        _swap
         _cells
+        _this_vector_data
         _plus
         _fetch
 %endmacro
@@ -230,9 +229,8 @@ file __FILE__
 %endmacro
 
 %macro _this_vector_set_nth_unsafe 0    ; element index --
-        _this_vector_data
-        _swap
         _cells
+        _this_vector_data
         _plus
         _store
 %endmacro
