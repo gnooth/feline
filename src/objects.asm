@@ -28,19 +28,6 @@ file __FILE__
 
 ; Slot 0 is the object header.
 
-; ### object-header
-; DEPRECATED
-inline object_header, 'object-header'   ; object -- x
-        _slot0
-endinline
-
-; ### object-header!
-; DEPRECATED
-code set_object_header, 'object-header!' ; x object --
-        _ store
-        next
-endcode
-
 ; The first word (16 bits) of the object header is the object type.
 
 ; Use the first word here and not just the first byte so that the header is
