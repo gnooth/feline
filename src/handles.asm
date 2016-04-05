@@ -157,11 +157,12 @@ endcode
 ; ### release-handle-unsafe
 code release_handle_unsafe, 'release-handle-unsafe' ; handle --
         ; Zero out the stored address.
-        mov     qword [rbx], 0
+        mov     qword [rbx], 0          ; -- handle
 
         ; Add handle to free-handles vector.
         _from free_handles
-        _ vector_push
+        _handle_to_object_unsafe        ; -- handle vectors
+        _ vector_push_unchecked         ; --
 
         next
 endcode
