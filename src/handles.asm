@@ -152,10 +152,8 @@ code find_handle, 'find-handle'         ; object -- handle | 0
         next
 endcode
 
-; ### release-handle
-code release_handle, 'release-handle'   ; -- handle
-        _ check_handle
-
+; ### release-handle-unsafe
+code release_handle_unsafe, 'release-handle-unsafe' ; handle --
         ; Zero out the stored address.
         mov     qword [rbx], 0
 

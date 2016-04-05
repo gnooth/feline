@@ -19,7 +19,7 @@ file __FILE__
 code release_handle_for_object, 'release-handle-for-object' ; object --
         _ find_handle
         _?dup_if .1
-        _ release_handle
+        _ release_handle_unsafe
         _then .1
         next
 endcode
@@ -178,7 +178,7 @@ code maybe_collect_handle, 'maybe-collect-handle' ; handle --
 .2:                                     ; -- handle object
         ; Object is not marked.
         _ destroy_object_unchecked      ; -- handle
-        _ release_handle
+        _ release_handle_unsafe
         next
 endcode
 
