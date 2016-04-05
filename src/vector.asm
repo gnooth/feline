@@ -389,16 +389,19 @@ code vector_pop_unchecked, 'vector-pop-unchecked'
         _vector_length
         _oneminus
         _dup
-        _zlt
-        _abortq "vector-pop vector is empty"
-
-        _this_vector_nth_unsafe         ; -- element
-
-        _this_vector_length
-        _oneminus
+        _zge
+        _if .1
+        _dup
         _this_vector_set_length
-
+        _this_vector_nth_unsafe         ; -- element
         pop     this_register
+        _else .1
+        _drop
+        pop     this_register
+        _true
+        _abortq "vector-pop-unchecked vector is empty"
+        _then .1
+
         next
 endcode
 
