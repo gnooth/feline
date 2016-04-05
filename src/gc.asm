@@ -177,7 +177,7 @@ code maybe_collect_handle, 'maybe-collect-handle' ; handle --
         _return
 .2:                                     ; -- handle object
         ; Object is not marked.
-        _ destroy_object                ; -- handle
+        _ destroy_object_unchecked      ; -- handle
         _ release_handle
         next
 endcode

@@ -36,8 +36,8 @@ code object?, 'object?'                 ; x -- flag
         next
 endcode
 
-; ### ~object
-code destroy_object, '~object'          ; object --
+; ### ~object-unchecked
+code destroy_object_unchecked, '~object-unchecked' ; object --
 ; The argument is known to be the address of a valid heap object, not a
 ; handle or null. Called only by maybe-collect-handle during gc.
         _dup
