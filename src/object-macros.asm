@@ -126,6 +126,16 @@ file __FILE__
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
 
+%macro  _this_slot2 0                   ; -- x
+        pushrbx
+        mov     rbx, [this_register + BYTES_PER_CELL * 2]
+%endmacro
+
+%macro  _this_set_slot2 0               ; x --
+        mov     [this_register + BYTES_PER_CELL * 2], rbx
+        poprbx
+%endmacro
+
 %macro _slot3 0                         ; object -- x
         mov     rbx, [rbx + BYTES_PER_CELL * 3]
 %endmacro
@@ -163,12 +173,28 @@ file __FILE__
         _set_slot1
 %endmacro
 
+%macro _this_vector_length 0            ; -- length
+        _this_slot1
+%endmacro
+
+%macro _this_vector_set_length 0        ; length --
+        _this_set_slot1
+%endmacro
+
 %macro _vector_data 0
         _slot2
 %endmacro
 
 %macro _vector_set_data 0               ; vector data-address --
         _set_slot2
+%endmacro
+
+%macro _this_vector_data 0
+        _this_slot2
+%endmacro
+
+%macro _this_vector_set_data 0               ; vector data-address --
+        _this_set_slot2
 %endmacro
 
 %macro _vector_capacity 0               ; vector -- capacity
@@ -187,8 +213,24 @@ file __FILE__
         _fetch
 %endmacro
 
+%macro _this_vector_nth_unsafe 0        ; index -- element
+        _this_vector_data
+        _swap
+        _cells
+        _plus
+        _fetch
+%endmacro
+
 %macro _vector_set_nth_unsafe 0         ; element index vector --
         _vector_data
+        _swap
+        _cells
+        _plus
+        _store
+%endmacro
+
+%macro _this_vector_set_nth_unsafe 0    ; element index --
+        _this_vector_data
         _swap
         _cells
         _plus
