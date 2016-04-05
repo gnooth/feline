@@ -53,33 +53,35 @@ value free_handles, 'free-handles', 0
 
 ; ### new-handle
 code new_handle, 'new-handle'           ; object -- handle
-        _ free_handles
+        _from free_handles
         _?dup_if .1
-        _ vector_length
+        _handle_to_object_unsafe
+        _vector_length
         _zgt
         _if .2
-        _ free_handles
-        _ vector_pop                    ; -- object handle
-        _ tuck
+        _from free_handles
+        _handle_to_object_unsafe
+        _ vector_pop_unchecked          ; -- object handle
+        _tuck
         _store
         _return
         _then .2
         _then .1
 
-        _ handle_space_free
-        _ handle_space_limit
+        _from handle_space_free
+        _from handle_space_limit
         _ult
         _zeq_if .3
         _ gc
-        _ handle_space_free
-        _ handle_space_limit
+        _from handle_space_free
+        _from handle_space_limit
         _ult
         _abortq "out of handle space"
         _then .3
 
-        _ handle_space_free
+        _from handle_space_free
         _store
-        _ handle_space_free
+        _from handle_space_free
         _dup
         _cellplus
         _to handle_space_free
