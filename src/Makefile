@@ -100,6 +100,7 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	memory.asm \
 	move.asm \
 	number.asm \
+	object-macros.asm \
 	objects.asm \
 	opt.asm \
 	parse.asm \

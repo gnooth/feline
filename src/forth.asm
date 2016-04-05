@@ -62,7 +62,8 @@ static_data_area:
 IN_FELINE
 
 ; Objects
-%include "handles.asm"                  ; Must be first!
+%include "object-macros.asm"
+%include "handles.asm"
 %include "objects.asm"
 %include "vector.asm"
 %include "string.asm"

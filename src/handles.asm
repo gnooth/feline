@@ -51,10 +51,6 @@ endcode
 ; ### free-handles
 value free_handles, 'free-handles', 0
 
-%macro _handle_to_object_unsafe 0
-        _fetch
-%endmacro
-
 ; ### new-handle
 code new_handle, 'new-handle'           ; object -- handle
         _ free_handles
