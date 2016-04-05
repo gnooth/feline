@@ -388,11 +388,7 @@ endinline
 
 ; ### 0>=
 code zge, '0>='
-        or      rbx, rbx
-        mov     ebx, 0
-        js      .1
-        dec     rbx
-.1:
+        _zge
         next
 endcode
 

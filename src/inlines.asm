@@ -211,6 +211,11 @@
         sar     rbx, 63
 %endmacro
 
+%macro  _zge 0
+        _zlt
+        not     rbx
+%endmacro
+
 %macro  _equal 0                        ; =
         cmp     rbx, [rbp]
         sete    bl
