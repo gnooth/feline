@@ -140,10 +140,7 @@ endinline
 ; ### tuck
 code tuck, 'tuck'                       ; x1 x2 -- x2 x1 x2
 ; CORE EXT
-        mov     rax, [rbp]              ; x1 in rax, x2 in rbx
-        mov     [rbp], rbx
-        mov     [rbp - BYTES_PER_CELL], rax
-        lea     rbp, [rbp - BYTES_PER_CELL]
+        _tuck
         next
 endcode
 

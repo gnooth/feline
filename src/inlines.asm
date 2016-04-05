@@ -295,3 +295,10 @@
 %macro  _and_literal 1
         and     rbx, %1
 %endmacro
+
+%macro  _tuck 0                         ; x1 x2 -- x2 x1 x2
+        mov     rax, [rbp]              ; x1 in rax, x2 in rbx
+        mov     [rbp], rbx
+        mov     [rbp - BYTES_PER_CELL], rax
+        lea     rbp, [rbp - BYTES_PER_CELL]
+%endmacro
