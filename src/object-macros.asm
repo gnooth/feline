@@ -154,3 +154,43 @@ file __FILE__
         _lit OBJECT_TYPE_VECTOR
         _equal
 %endmacro
+
+%macro _vector_length 0                 ; vector -- length
+        _slot1
+%endmacro
+
+%macro _vector_set_length 0             ; vector length --
+        _set_slot1
+%endmacro
+
+%macro _vector_data 0
+        _slot2
+%endmacro
+
+%macro _vector_set_data 0               ; vector data-address --
+        _set_slot2
+%endmacro
+
+%macro _vector_capacity 0               ; vector -- capacity
+        _slot3
+%endmacro
+
+%macro _vector_set_capacity 0           ; vector capacity --
+        _set_slot3
+%endmacro
+
+%macro _vector_nth_unsafe 0             ; index vector -- element
+        _vector_data
+        _swap
+        _cells
+        _plus
+        _fetch
+%endmacro
+
+%macro _vector_set_nth_unsafe 0         ; element index vector --
+        _vector_data
+        _swap
+        _cells
+        _plus
+        _store
+%endmacro

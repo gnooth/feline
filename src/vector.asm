@@ -62,20 +62,12 @@ code check_vector, 'check-vector'       ; handle -- vector
         next
 endcode
 
-%macro _vector_length 0                 ; vector -- length
-        _slot1
-%endmacro
-
 ; ### vector-length
 code vector_length, 'vector-length'     ; vector -- length
         _ check_vector
         _vector_length
         next
 endcode
-
-%macro _vector_set_length 0             ; vector length --
-        _set_slot1
-%endmacro
 
 ; ### vector-set-length
 code vector_set_length, 'vector-set-length' ; handle length --
@@ -86,28 +78,12 @@ code vector_set_length, 'vector-set-length' ; handle length --
         next
 endcode
 
-%macro _vector_data 0
-        _slot2
-%endmacro
-
 ; ### vector-data
 code vector_data, 'vector-data'         ; vector -- data-address
         _ check_vector
         _vector_data
         next
 endcode
-
-%macro _vector_set_data 0               ; vector data-address --
-        _set_slot2
-%endmacro
-
-%macro _vector_capacity 0               ; vector -- capacity
-        _slot3
-%endmacro
-
-%macro _vector_set_capacity 0           ; vector capacity --
-        _set_slot3
-%endmacro
 
 ; ### <vector>
 code new_vector, '<vector>'             ; capacity -- handle
@@ -202,14 +178,6 @@ code vector_ensure_capacity, 'vector-ensure-capacity'   ; u vector --
         next
 endcode
 
-%macro _vector_nth_unsafe 0             ; index vector -- element
-        _vector_data
-        _swap
-        _cells
-        _plus
-        _fetch
-%endmacro
-
 ; ### vector-nth
 code vector_nth, 'vector-nth'           ; index handle -- element
         _ check_vector
@@ -254,14 +222,6 @@ code vector_ref, 'vector-ref'           ; vector index -- element
         _then .1
         next
 endcode
-
-%macro _vector_set_nth_unsafe 0         ; element index vector --
-        _vector_data
-        _swap
-        _cells
-        _plus
-        _store
-%endmacro
 
 ; ### vector-set-nth
 code vector_set_nth, 'vector-set-nth'   ; element index vector --
