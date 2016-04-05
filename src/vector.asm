@@ -379,10 +379,8 @@ code vector_push, 'vector-push'         ; element vector --
         next
 endcode
 
-; ### vector-pop
-code vector_pop, 'vector-pop'           ; vector -- element
-        _ check_vector                  ; -- vector
-
+; ### vector-pop-unchecked              ; vector -- element
+code vector_pop_unchecked, 'vector-pop-unchecked'
         push    this_register
         mov     this_register, rbx
 
@@ -402,6 +400,13 @@ code vector_pop, 'vector-pop'           ; vector -- element
         _vector_set_length
 
         pop     this_register
+        next
+endcode
+
+; ### vector-pop
+code vector_pop, 'vector-pop'           ; handle -- element
+        _ check_vector                  ; -- vector
+        _ vector_pop_unchecked
         next
 endcode
 
