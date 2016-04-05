@@ -368,11 +368,8 @@ code vector_push_unchecked, 'vector-push-unchecked' ; element vector --
         _dup                            ; -- element length length+1 length+1
         _this                           ; -- element length length+1 length+1 this
         _ vector_ensure_capacity        ; -- element length length+1
-        _this                           ; -- element length length+1 this
-        _swap                           ; -- element length this length+1
-        _vector_set_length              ; -- element length
-        _this                           ; -- element length this
-        _vector_set_nth_unsafe
+        _this_vector_set_length         ; -- element length
+        _this_vector_set_nth_unsafe     ; --
         pop     this_register           ; restore callee-saved register
         next
 endcode
@@ -395,14 +392,11 @@ code vector_pop_unchecked, 'vector-pop-unchecked'
         _zlt
         _abortq "vector-pop vector is empty"
 
-        _this
-        _vector_nth_unsafe              ; -- element
+        _this_vector_nth_unsafe         ; -- element
 
-        _this
-        _dup
-        _vector_length
+        _this_vector_length
         _oneminus
-        _vector_set_length
+        _this_vector_set_length
 
         pop     this_register
         next
