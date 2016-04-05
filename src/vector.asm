@@ -358,10 +358,8 @@ code vector_remove_nth, 'vector-remove-nth' ; n handle --
         next
 endcode
 
-; ### vector-push
-code vector_push, 'vector-push'         ; element vector --
-        _ check_vector
-
+; ### vector-push-unchecked
+code vector_push_unchecked, 'vector-push-unchecked' ; element vector --
         push    this_register           ; save callee-saved register
         mov     this_register, rbx      ; vector in this_register
         _vector_length                  ; -- element length
@@ -376,6 +374,13 @@ code vector_push, 'vector-push'         ; element vector --
         _this                           ; -- element length this
         _vector_set_nth_unsafe
         pop     this_register           ; restore callee-saved register
+        next
+endcode
+
+; ### vector-push
+code vector_push, 'vector-push'         ; element handle --
+        _ check_vector
+        _ vector_push_unchecked
         next
 endcode
 
