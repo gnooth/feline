@@ -165,6 +165,64 @@ file __FILE__
         _equal
 %endmacro
 
+%macro  _array? 0
+        _object_type
+        _lit OBJECT_TYPE_ARRAY
+        _equal
+%endmacro
+
+%macro _array_length 0                  ; array -- length
+        _slot1
+%endmacro
+
+%macro _this_array_length 0             ; -- length
+        _this_slot1
+%endmacro
+
+%macro _this_array_set_length 0         ; -- length
+        _this_set_slot1
+%endmacro
+
+; Arrays store their data inline starting at this + 16 bytes.
+%macro _array_data 0
+        lea     rbx, [rbx + BYTES_PER_CELL * 2]
+%endmacro
+
+%macro _this_array_data 0
+        pushrbx
+        lea     rbx, [this_register + BYTES_PER_CELL * 2]
+%endmacro
+
+%macro  _array_nth_unsafe 0             ; index array -- element
+        _array_data
+        _swap
+        _cells
+        _plus
+        _fetch
+%endmacro
+
+%macro  _this_array_nth_unsafe 0        ; index -- element
+        _cells
+        _this_array_data
+        _plus
+        _fetch
+%endmacro
+
+%macro  _array_set_nth_unsafe 0         ; element index array --
+        _array_data
+        _swap
+        _cells
+        _plus
+        _store
+%endmacro
+
+%macro  _this_array_set_nth_unsafe 0    ; element index --
+        _cells
+        _this_array_data
+        _plus
+        _store
+%endmacro
+
 %macro  _vector_length 0                ; vector -- length
         _slot1
 %endmacro
