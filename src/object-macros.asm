@@ -15,7 +15,7 @@
 
 file __FILE__
 
-%macro _handle_to_object_unsafe 0
+%macro  _handle_to_object_unsafe 0
         _fetch
 %endmacro
 
@@ -136,76 +136,76 @@ file __FILE__
         poprbx
 %endmacro
 
-%macro _slot3 0                         ; object -- x
+%macro  _slot3 0                        ; object -- x
         mov     rbx, [rbx + BYTES_PER_CELL * 3]
 %endmacro
 
-%macro _set_slot3 0                     ; object x --
+%macro  _set_slot3 0                    ; object x --
         mov     rax, [rbp]
         mov     [rax + BYTES_PER_CELL * 3], rbx
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
 
-%macro _string? 0
+%macro  _string? 0
         _object_type
         _lit OBJECT_TYPE_STRING
         _equal
 %endmacro
 
-%macro _sbuf? 0
+%macro  _sbuf? 0
         _object_type
         _lit OBJECT_TYPE_SBUF
         _equal
 %endmacro
 
-%macro _vector? 0
+%macro  _vector? 0
         _object_type
         _lit OBJECT_TYPE_VECTOR
         _equal
 %endmacro
 
-%macro _vector_length 0                 ; vector -- length
+%macro  _vector_length 0                ; vector -- length
         _slot1
 %endmacro
 
-%macro _vector_set_length 0             ; vector length --
+%macro  _vector_set_length 0            ; vector length --
         _set_slot1
 %endmacro
 
-%macro _this_vector_length 0            ; -- length
+%macro  _this_vector_length 0           ; -- length
         _this_slot1
 %endmacro
 
-%macro _this_vector_set_length 0        ; length --
+%macro  _this_vector_set_length 0       ; length --
         _this_set_slot1
 %endmacro
 
-%macro _vector_data 0
+%macro  _vector_data 0
         _slot2
 %endmacro
 
-%macro _vector_set_data 0               ; vector data-address --
+%macro  _vector_set_data 0              ; vector data-address --
         _set_slot2
 %endmacro
 
-%macro _this_vector_data 0
+%macro  _this_vector_data 0
         _this_slot2
 %endmacro
 
-%macro _this_vector_set_data 0               ; vector data-address --
+%macro  _this_vector_set_data 0         ; vector data-address --
         _this_set_slot2
 %endmacro
 
-%macro _vector_capacity 0               ; vector -- capacity
+%macro  _vector_capacity 0              ; vector -- capacity
         _slot3
 %endmacro
 
-%macro _vector_set_capacity 0           ; vector capacity --
+%macro  _vector_set_capacity 0          ; vector capacity --
         _set_slot3
 %endmacro
 
-%macro _vector_nth_unsafe 0             ; index vector -- element
+%macro  _vector_nth_unsafe 0            ; index vector -- element
         _vector_data
         _swap
         _cells
@@ -213,14 +213,14 @@ file __FILE__
         _fetch
 %endmacro
 
-%macro _this_vector_nth_unsafe 0        ; index -- element
+%macro  _this_vector_nth_unsafe 0       ; index -- element
         _cells
         _this_vector_data
         _plus
         _fetch
 %endmacro
 
-%macro _vector_set_nth_unsafe 0         ; element index vector --
+%macro  _vector_set_nth_unsafe 0        ; element index vector --
         _vector_data
         _swap
         _cells
@@ -228,7 +228,7 @@ file __FILE__
         _store
 %endmacro
 
-%macro _this_vector_set_nth_unsafe 0    ; element index --
+%macro  _this_vector_set_nth_unsafe 0   ; element index --
         _cells
         _this_vector_data
         _plus
