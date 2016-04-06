@@ -76,6 +76,7 @@ winkey.o: feline.h windows-ui.h winkey.c Makefile
 ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlines.asm \
 	align.asm \
 	ansi.asm \
+	array.asm \
 	arith.asm \
 	branch.asm \
 	bye.asm \

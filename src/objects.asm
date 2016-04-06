@@ -64,6 +64,13 @@ code destroy_object_unchecked, '~object-unchecked' ; object --
         _return
         _then .3
 
+        _dup
+        _array?
+        _if .4
+        _ destroy_array_unchecked
+        _return
+        _then .4
+
         ; REVIEW
         _true
         _abortq "unknown object"

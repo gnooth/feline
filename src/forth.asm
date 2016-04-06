@@ -65,6 +65,7 @@ IN_FELINE
 %include "object-macros.asm"
 %include "handles.asm"
 %include "objects.asm"
+%include "array.asm"
 %include "vector.asm"
 %include "string.asm"
 %include "sbuf.asm"
