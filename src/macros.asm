@@ -117,8 +117,9 @@ OBJECT_TYPE_FIRST               equ 1
 OBJECT_TYPE_VECTOR              equ 1
 OBJECT_TYPE_STRING              equ 2
 OBJECT_TYPE_SBUF                equ 3
+OBJECT_TYPE_ARRAY               equ 4
 
-OBJECT_TYPE_LAST                equ 3
+OBJECT_TYPE_LAST                equ 4
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
