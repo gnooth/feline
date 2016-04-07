@@ -69,21 +69,6 @@ code mark_handle, 'mark-handle'         ; handle --
         next
 endcode
 
-; ### unmark-object
-code unmark_object, 'unmark-object'     ; object --
-        _unmark_object
-        next
-endcode
-
-; ### unmark-handle
-code unmark_handle, 'unmark-handle'     ; handle --
-        _handle_to_object_unsafe
-        _?dup_if .1
-        _ unmark_object
-        _then .1
-        next
-endcode
-
 ; ### maybe-mark-handle
 code maybe_mark_handle, 'maybe-mark-handle' ; handle --
         _dup
@@ -173,7 +158,7 @@ code maybe_collect_handle, 'maybe-collect-handle' ; handle --
         jz .2
         ; Object is marked.
         _nip                            ; -- object
-        _ unmark_object
+        _unmark_object
         _return
 .2:                                     ; -- handle object
         ; Object is not marked.
