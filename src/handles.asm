@@ -118,13 +118,6 @@ code check_handle, 'check-handle'       ; handle -- handle
         next
 endcode
 
-; ### to-object
-code to_object, 'to-object'             ; handle -- object
-        _ check_handle
-        _fetch
-        next
-endcode
-
 ; ### find-handle
 code find_handle, 'find-handle'         ; object -- handle | 0
         _ handle_space                  ; -- object addr

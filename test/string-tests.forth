@@ -163,8 +163,8 @@ test: test9
     s1 handle? check
     s1 ~string
     s1 handle? check
+    s1 object? check-false
     s1 string? check-false
-    s1 to-object check-false
 ;
 
 test9
