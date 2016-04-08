@@ -50,12 +50,29 @@ code mark_vector, 'mark-vector'         ; vector --
         next
 endcode
 
+; ### mark-array
+code mark_array, 'mark-array'           ; array --
+        push    this_register
+        mov     this_register, rbx
+        _array_length
+        _zero
+        _?do .1
+        _i
+        _this_array_nth_unsafe          ; -- element
+        _ maybe_mark_handle
+        _loop .1                        ; --
+        pop     this_register
+        next
+endcode
+
 ; ### mark-handle
 code mark_handle, 'mark-handle'         ; handle --
         _handle_to_object_unsafe        ; -- object|0
         test    rbx, rbx
         jz .1
+        ; Set the marked bit in the object header.
         or      OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
+
         _dup
         _object_type                    ; -- object object-type
         _lit OBJECT_TYPE_VECTOR
@@ -64,6 +81,15 @@ code mark_handle, 'mark-handle'         ; handle --
         _ mark_vector
         _return
         _then .2
+
+        _dup
+        _object_type                    ; -- object object-type
+        _lit OBJECT_TYPE_ARRAY
+        _equal
+        _if .3
+        _ mark_array
+        _return
+        _then .3
 .1:
         _drop
         next
