@@ -15,15 +15,19 @@
 
 file __FILE__
 
-; ### rdtsc
-inline read_time_stamp_counter, 'rdtsc'
-        rdtsc
+%macro _rdtsc 0                         ; -- u
 ; "The high-order 32 bits are loaded into EDX, and the low-order 32 bits are
 ; loaded into the EAX register. This instruction ignores operand size."
+        rdtsc
         pushrbx
         mov     ebx, eax
         shl     rdx, 32
         add     rbx, rdx
+%endmacro
+
+; ### rdtsc
+inline read_time_stamp_counter, 'rdtsc' ; -- u
+        _rdtsc
 endinline
 
 extern os_ticks
@@ -59,3 +63,73 @@ code cputime, 'cputime'
         next
 endcode
 %endif
+
+; ### start-ticks
+value start_ticks, 'start-ticks', 0
+
+; ### end-ticks
+value end_ticks, 'end-ticks', 0
+
+; ### elapsed-ms
+code elapsed_ms, 'elapsed-ms'           ; -- ms
+        _ end_ticks
+        _ start_ticks
+        _minus
+        next
+endcode
+
+; ### start-cycles
+value start_cycles, 'start-cycles', 0
+
+; ### end-cycles
+value end_cycles, 'end-cycles', 0
+
+; ### elapsed-cycles
+code elapsed_cycles, 'elapsed-cycles'   ; -- cycles
+        _ end_cycles
+        _ start_cycles
+        _minus
+        next
+endcode
+
+; ### start-timer
+code start_timer, 'start-timer'         ; --
+        _clear end_ticks
+        _clear end_cycles
+        _ ticks
+        _to start_ticks
+        _rdtsc
+        _to start_cycles
+        next
+endcode
+
+; ### stop-timer
+code stop_timer, 'stop-timer'           ; --
+        _rdtsc
+        _to end_cycles
+        _ ticks
+        _to end_ticks
+        next
+endcode
+
+; ### .elapsed
+code dot_elapsed, '.elapsed'            ; --
+        _ ?cr
+        _ elapsed_ms
+        _ decdot
+        _dotq "ms "
+        _ cr
+        _ elapsed_cycles
+        _ decdot
+        _dotq "cycles"
+        next
+endcode
+
+; ### time
+code time, 'time'                       ; xt --
+        _ start_timer
+        _execute
+        _ stop_timer
+        _ dot_elapsed
+        next
+endcode
