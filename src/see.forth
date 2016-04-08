@@ -523,11 +523,15 @@ create handlers  256 cells allot  handlers 256 cells 0 fill
 
 : .e9  ( -- )
    "jmp" to mnemonic
-   next-int32 ip + local code-address
+   next-int32 ip + local jump-target
    .instruction-bytes
    .mnemonic
    48 >pos
-   code-address h.
+   jump-target h.
+
+   jump-target end-address > if
+       jump-target to end-address
+   then
 ;
 
 latest-xt $e9 install-handler
