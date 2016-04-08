@@ -1,4 +1,6 @@
-[undefined] feline? [if] false constant feline? [then]
+[undefined] feline? [if]
+
+false constant feline?
 
 s" iforth" environment? [if]
 drop
@@ -22,36 +24,12 @@ s" gforth" environment? [if]
 \ VFX Forth defines TICKS
 
 0 value start-ticks
+
 0 value end-ticks
 
 : elapsed-ms ( -- ms )
     end-ticks start-ticks - ;
 
-feline? [if]
-
-0 value start-cycles
-0 value end-cycles
-
-: start-timer ( -- )
-    0 to end-ticks
-    0 to end-cycles
-    ticks to start-ticks
-    rdtsc to start-cycles ;
-
-: stop-timer ( -- )
-    rdtsc to end-cycles
-    ticks to end-ticks ;
-
-: elapsed-cycles ( -- cycles )
-    end-cycles start-cycles - ;
-
-: .elapsed ( -- )
-    ?cr elapsed-ms     . ." ms "
-     cr elapsed-cycles . ." cycles " ;
-
-[else]
-
-\ not Feline, no RDTSC support
 : start-timer ( -- )
     ticks to start-ticks ;
 
@@ -62,12 +40,3 @@ feline? [if]
     cr elapsed-ms . ." ms " ;
 
 [then]
-
-: (time) ( xt -- )
-    start-timer
-    execute
-    stop-timer
-    .elapsed ;
-
-: time ( -- )
-    ' (time) ;
