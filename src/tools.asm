@@ -21,26 +21,6 @@ code int3, 'int3'                       ; --
         next
 endcode
 
-; ### rdtsc
-inline read_time_stamp_counter, 'rdtsc'
-        rdtsc
-; "The high-order 32 bits are loaded into EDX, and the low-order 32 bits are
-; loaded into the EAX register. This instruction ignores operand size."
-        pushrbx
-        mov     ebx, eax
-        shl     rdx, 32
-        add     rbx, rdx
-endinline
-
-extern os_ticks
-
-; ### ticks
-code ticks, 'ticks'                     ; -- u
-        xcall   os_ticks
-        pushd   rax
-        next
-endcode
-
 ; %ifndef WIN64
 
 extern c_get_saved_backtrace_array
@@ -72,31 +52,6 @@ code get_saved_backtrace, 'get-saved-backtrace' ; -- addr u
 endcode
 
 ; %endif
-
-%ifndef WIN64
-        global  user_microseconds
-        global  system_microseconds
-section .data
-        align   DEFAULT_DATA_ALIGNMENT
-user_microseconds:
-        dq      0
-system_microseconds:
-        dq      0
-
-extern os_cputime
-
-; ### cputime
-code cputime, 'cputime'
-        xcall   os_cputime
-        mov     rax, [user_microseconds]
-        pushd   rax
-        pushd   0
-        mov     rax, [system_microseconds]
-        pushd   rax
-        pushd   0
-        next
-endcode
-%endif
 
 %ifdef WIN64
 value saved_exception_code, 'saved-exception-code', 0
