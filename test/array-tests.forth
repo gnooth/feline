@@ -53,6 +53,23 @@ test: test2 ( -- )
 
 test2
 
+test: test3 ( -- )
+    42 17 2array local a
+    a object? check
+    a array? check
+    a array-length 2 = check
+    a array-first 42 = check
+    a array-second 17 = check
+    gc
+    a array-length 2 = check
+    a array-first 42 = check
+    a array-second 17 = check
+    0 !> a
+    gc
+;
+
+test3
+
 empty
 
 ?cr .( Reached end of array-tests.forth )

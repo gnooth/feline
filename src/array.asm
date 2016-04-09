@@ -158,7 +158,7 @@ code array_nth, 'array-nth'             ; index handle -- element
 endcode
 
 ; ### array-set-nth
-code array_set_nth, 'array-set-nth'     ; element index array --
+code array_set_nth, 'array-set-nth'     ; element index handle --
         _ check_array
 
         _twodup
@@ -174,6 +174,38 @@ code array_set_nth, 'array-set-nth'     ; element index array --
         _true
         _abortq "array-set-nth index out of range"
         _then .1
+        next
+endcode
+
+; ### 2array
+code two_array, '2array'                ; x y -- handle
+        _lit 2
+        _lit 0
+        _ new_array                     ; -- x y handle
+        _duptor
+        _lit 1
+        _swap
+        _ array_set_nth
+        _lit 0
+        _rfetch
+        _ array_set_nth
+        _rfrom
+        next
+endcode
+
+; ### array-first
+code array_first, 'array-first'         ; handle -- element
+        _zero
+        _swap
+        _ array_nth
+        next
+endcode
+
+; ### array-second
+code array_second, 'array-second'       ; handle -- element
+        _lit 1
+        _swap
+        _ array_nth
         next
 endcode
 
