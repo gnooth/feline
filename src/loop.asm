@@ -265,23 +265,22 @@ code each_integer, 'each-integer'       ; n xt --
         mov     r13, [rbx]              ; code address in r13
         mov     r14, [rbp]              ; loop limit in r14
         test    r14, r14
-        jle     .3
+        jle     .2
 .1:
         pushd   r12
         call    r13
         inc     r12
         cmp     r12, r14
-        je     .3
+        je     .2
         pushd   r12
         call    r13
         inc     r12
         cmp     r12, r14
         jne     .1
-.3:
+.2:
         pop     r14
         pop     r13
         pop     r12
-.4:
         _2drop
         next
 endcode
