@@ -114,3 +114,58 @@ code dot_object, '.object'              ; handle-or-object --
 
         next
 endcode
+
+%ifdef USE_TAGS
+
+; ### fixnum?
+code fixnum?, 'fixnum?'                 ; x -- flag
+        _fixnum?
+        next
+endcode
+
+; ### print
+code print, 'print'                     ; x --
+        _dup
+        _fixnum?
+        _if .1
+        _fixnum_to_int
+        _then .1
+        _ dot
+        next
+endcode
+
+code generic_plus, '+'                  ; n1 n2 -- n1+n2
+        _dup
+        _fixnum?
+        _if .1
+        _fixnum_to_int
+        _then .1
+        _swap
+        _dup
+        _fixnum?
+        _if .2
+        _fixnum_to_int
+        _then .2
+        _plus
+        _make_fixnum
+        next
+endcode
+
+code generic_minus, '-'                 ; n1 n2 -- n1-n2
+        _dup
+        _fixnum?
+        _if .1
+        _fixnum_to_int
+        _then .1
+        _swap
+        _dup
+        _fixnum?
+        _if .2
+        _fixnum_to_int
+        _then .2
+        sub     rbx, [rbp]
+        _make_fixnum
+        next
+endcode
+
+%endif

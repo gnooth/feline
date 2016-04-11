@@ -13,6 +13,49 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+; %define USE_TAGS
+
+%ifdef USE_TAGS
+
+%define TAG_LOW_BITS
+
+%ifdef TAG_HIGH_BITS
+
+%macro  _fixnum? 0
+        shr     rbx, 62
+        _zeq
+%endmacro
+
+%macro  _make_fixnum 0
+        shl     rbx, 2
+        shr     rbx, 2
+%endmacro
+
+%macro  _fixnum_to_int 0
+        shl     rbx, 2
+        sar     rbx, 2
+%endmacro
+
+%elifdef TAG_LOW_BITS
+
+%macro  _fixnum? 0
+        and     rbx, 3
+        _zeq
+%endmacro
+
+%macro  _make_fixnum 0
+        shl     rbx, 2
+%endmacro
+
+%macro  _fixnum_to_int 0
+        sar     rbx, 2
+%endmacro
+
+%endif ; TAG_HIGH_BITS / TAG_LOW_BITS
+
+%endif ; USE_TAGS
+
+
 %define DEFAULT_DATA_ALIGNMENT  8
 
 %define DEFAULT_CODE_ALIGNMENT 16

@@ -147,6 +147,9 @@ code string_literal?, 'string-literal?' ; $addr -- c-addr u true | $addr false
         next
 endcode
 
+; ### use-tags?
+value use_tags?, 'use-tags?', 0
+
 ; ### interpret-do-literal
 code interpret_do_literal, 'interpret-do-literal' ; $addr -- n | d
         _ character_literal?
@@ -161,10 +164,18 @@ code interpret_do_literal, 'interpret-do-literal' ; $addr -- n | d
         _then .2
 
         _ number
+
         _ double?
         _zeq_if .3
         _drop
+%ifdef USE_TAGS
+        _ use_tags?
+        _if .4
+        _make_fixnum
+        _then .4
+%endif
         _then .3
+
         next
 endcode
 
@@ -190,6 +201,12 @@ code compile_do_literal, 'compile-do-literal' ; $addr --
         _ twoliteral
         _else .3
         _drop
+%ifdef USE_TAGS
+        _ use_tags?
+        _if .4
+        _make_fixnum
+        _then .4
+%endif
         _ literal
         _then .3
         next
