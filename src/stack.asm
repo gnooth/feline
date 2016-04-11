@@ -213,7 +213,7 @@ code dot_s, '.s'
 endcode
 
 ; ### hex.s
-code hex_dot_s, '.s'
+code hex_dot_s, 'hex.s'
         _lit '<'
         _ emit
         _ depth
