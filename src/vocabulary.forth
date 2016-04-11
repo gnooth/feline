@@ -24,9 +24,11 @@ forth!
 
 root definitions
 
-synonym forth           forth
-synonym forth-wordlist  forth-wordlist
-synonym set-order       set-order
-synonym order           order
+import forth
+import forth-wordlist
+import set-order
+import order
+
+import feline
 
 forth!
