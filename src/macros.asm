@@ -17,41 +17,55 @@
 
 %ifdef USE_TAGS
 
+%define TAG_BITS        2
+
 %define TAG_LOW_BITS
 
 %ifdef TAG_HIGH_BITS
 
+%macro  _tag 0
+        shr     rbx, 64 - TAG_BITS
+%endmacro
+
 %macro  _fixnum? 0
-        shr     rbx, 62
+        _tag
         _zeq
 %endmacro
 
 %macro  _make_fixnum 0
-        shl     rbx, 2
-        shr     rbx, 2
+        shl     rbx, TAG_BITS
+        shr     rbx, TAG_BITS
 %endmacro
 
 %macro  _fixnum_to_int 0
-        shl     rbx, 2
-        sar     rbx, 2
+        shl     rbx, TAG_BITS
+        sar     rbx, TAG_BITS
 %endmacro
 
 %elifdef TAG_LOW_BITS
 
-%macro  _fixnum? 0
+%macro  _tag 0
         and     rbx, 3
+%endmacro
+
+%macro  _fixnum? 0
+        _tag
         _zeq
 %endmacro
 
 %macro  _make_fixnum 0
-        shl     rbx, 2
+        shl     rbx, TAG_BITS
 %endmacro
 
 %macro  _fixnum_to_int 0
-        sar     rbx, 2
+        sar     rbx, TAG_BITS
 %endmacro
 
 %endif ; TAG_HIGH_BITS / TAG_LOW_BITS
+
+%else ; not using tags
+
+%define TAG_BITS        0
 
 %endif ; USE_TAGS
 
