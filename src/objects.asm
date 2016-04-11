@@ -117,6 +117,13 @@ endcode
 
 %ifdef USE_TAGS
 
+; ### tag-bits
+code tag_bits, 'tag-bits'
+        _lit TAG_BITS
+        _make_fixnum
+        next
+endcode
+
 ; ### fixnum?
 code fixnum?, 'fixnum?'                 ; x -- flag
         _fixnum?
@@ -124,7 +131,7 @@ code fixnum?, 'fixnum?'                 ; x -- flag
 endcode
 
 ; ### print
-code print, 'print'                     ; x --
+code generic_dot, '.'                   ; x --
         _dup
         _fixnum?
         _if .1
@@ -134,7 +141,7 @@ code print, 'print'                     ; x --
         next
 endcode
 
-code generic_plus, '+'                  ; n1 n2 -- n1+n2
+code generic_add, '+'                   ; n1 n2 -- n1+n2
         _dup
         _fixnum?
         _if .1
@@ -151,7 +158,7 @@ code generic_plus, '+'                  ; n1 n2 -- n1+n2
         next
 endcode
 
-code generic_minus, '-'                 ; n1 n2 -- n1-n2
+code generic_subtract, '-'              ; n1 n2 -- n1-n2
         _dup
         _fixnum?
         _if .1
@@ -164,6 +171,25 @@ code generic_minus, '-'                 ; n1 n2 -- n1-n2
         _fixnum_to_int
         _then .2
         sub     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        _make_fixnum
+        next
+endcode
+
+code generic_multiply, '*'              ; n1 n2 -- n1*n2
+        _dup
+        _fixnum?
+        _if .1
+        _fixnum_to_int
+        _then .1
+        _swap
+        _dup
+        _fixnum?
+        _if .2
+        _fixnum_to_int
+        _then .2
+        imul     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
         _make_fixnum
         next
 endcode
