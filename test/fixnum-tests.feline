@@ -1,0 +1,67 @@
+\ Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+
+\ This program is free software: you can redistribute it and/or modify
+\ it under the terms of the GNU General Public License as published by
+\ the Free Software Foundation, either version 3 of the License, or
+\ (at your option) any later version.
+
+\ This program is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+\ GNU General Public License for more details.
+
+\ You should have received a copy of the GNU General Public License
+\ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+feline!
+
+true to use-tags?
+
+require-system-file test-framework
+
+test: test1 ( -- )
+    1 fixnum? check
+    2 fixnum? check
+    3 fixnum? check
+    1 2 + 3 = check
+    1 2 + fixnum? check
+;
+
+test1
+
+test: test2 ( -- )
+    -1 fixnum? check
+    -2 fixnum? check
+    -3 fixnum? check
+    -1 -2 + -3 = check
+;
+
+test2
+
+test: test3 ( -- )
+    0 fixnum? check
+    0 0= check
+    1 0= check-false
+    -1 0= check-false
+    1 -1 + 0= check
+    4 -4 + 0= check
+;
+
+test3
+
+test: test4 ( -- )
+    1 2 u< check
+    1 2 < check
+;
+
+test4
+
+test: test5 ( -- )
+    2 3 * 6 = check
+;
+
+test5
+
+empty
+
+?cr .( Reached end of fixnum-tests.feline )
