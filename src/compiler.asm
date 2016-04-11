@@ -342,3 +342,15 @@ code synonym, 'synonym'                 ; "<spaces>newname" "<spaces>oldname" --
         _ reveal
         next
 endcode
+
+; ### import
+code import, 'import'                   ; "<spaces>name" --
+        _ tick                          ; -- xt
+        _dup
+        _toname
+        _count
+        _ create_word                   ; -- xt
+        _ latest
+        _set_xt
+        next
+endcode
