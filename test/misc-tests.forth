@@ -17,6 +17,8 @@ feline!
 
 require-system-file test-framework
 
+use-tags? 0= [if]
+
 variable foo
 
 test: test1 ( -- )
@@ -31,6 +33,8 @@ test: test1 ( -- )
 ;
 
 test1
+
+[then]
 
 empty
 

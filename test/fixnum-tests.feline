@@ -19,6 +19,8 @@ true to use-tags?
 
 require-system-file test-framework
 
+only feline also definitions
+
 test: test1 ( -- )
     1 fixnum? check
     2 fixnum? check

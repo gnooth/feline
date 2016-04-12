@@ -116,6 +116,7 @@ test: test6
     s1 object? check
     s1 sbuf? check
     s1 string? check-false
+    s1 sbuf-length 14 = check
     s1 2 'a' sbuf-set-char
     s1 3 't' sbuf-set-char
     s1 2 sbuf-char 'a' = check
