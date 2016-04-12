@@ -64,24 +64,25 @@ code check_sbuf, 'check-sbuf'           ; handle -- sbuf
         next
 endcode
 
-%macro _sbuf_length 0                   ; sbuf -- length
-        _slot1
-%endmacro
+; %macro _sbuf_length 0                   ; sbuf -- length
+;         _slot1
+; %endmacro
 
 ; ### sbuf-length
 code sbuf_length, 'sbuf-length'         ; handle -- length
         _ check_sbuf
         _sbuf_length
+        _make_fixnum
         next
 endcode
 
-%macro _sbuf_set_length 0               ; sbuf length --
-        _set_slot1
-%endmacro
+; %macro _sbuf_set_length 0               ; sbuf length --
+;         _set_slot1
+; %endmacro
 
-%macro _sbuf_data 0
-        _slot2
-%endmacro
+; %macro _sbuf_data 0
+;         _slot2
+; %endmacro
 
 ; ### sbuf-data
 code sbuf_data, 'sbuf-data'             ; sbuf -- data-address
@@ -90,13 +91,13 @@ code sbuf_data, 'sbuf-data'             ; sbuf -- data-address
         next
 endcode
 
-%macro _sbuf_set_data 0
-        _set_slot2
-%endmacro
+; %macro _sbuf_set_data 0
+;         _set_slot2
+; %endmacro
 
-%macro _sbuf_capacity 0
-        _slot3
-%endmacro
+; %macro _sbuf_capacity 0
+;         _slot3
+; %endmacro
 
 ; ### sbuf-capacity
 code sbuf_capacity, 'sbuf-capacity'     ; sbuf -- capacity
@@ -105,9 +106,9 @@ code sbuf_capacity, 'sbuf-capacity'     ; sbuf -- capacity
         next
 endcode
 
-%macro _sbuf_set_capacity 0
-        _set_slot3
-%endmacro
+; %macro _sbuf_set_capacity 0
+;         _set_slot3
+; %endmacro
 
 ; ### make-sbuf-internal
 code make_sbuf_internal, 'make-sbuf-internal' ; capacity -- sbuf
@@ -292,11 +293,11 @@ code destroy_sbuf_unchecked, '~sbuf-unchecked' ; sbuf --
         next
 endcode
 
-%macro _sbuf_check_index 0              ; sbuf index -- flag
-        _swap
-        _sbuf_length                    ; -- index length
-        _ult                            ; -- flag
-%endmacro
+; %macro _sbuf_check_index 0              ; sbuf index -- flag
+;         _swap
+;         _sbuf_length                    ; -- index length
+;         _ult                            ; -- flag
+; %endmacro
 
 ; ### sbuf-check-index
 code sbuf_check_index, 'sbuf-check-index' ; handle index -- flag
@@ -324,11 +325,11 @@ code sbuf_char, 'sbuf-char'             ; sbuf index -- char
         next
 endcode
 
-%macro _sbuf_set_nth_unsafe 0           ; char index sbuf --
-        _sbuf_data
-        _plus
-        _cstore
-%endmacro
+; %macro _sbuf_set_nth_unsafe 0           ; char index sbuf --
+;         _sbuf_data
+;         _plus
+;         _cstore
+; %endmacro
 
 ; ### sbuf-set-char
 code sbuf_set_char, 'sbuf-set-char'     ; handle index char --

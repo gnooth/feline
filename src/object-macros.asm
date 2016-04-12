@@ -292,3 +292,39 @@ file __FILE__
         _plus
         _store
 %endmacro
+
+%macro _sbuf_length 0                   ; sbuf -- length
+        _slot1
+%endmacro
+
+%macro _sbuf_set_length 0               ; sbuf length --
+        _set_slot1
+%endmacro
+
+%macro _sbuf_data 0
+        _slot2
+%endmacro
+
+%macro _sbuf_set_data 0
+        _set_slot2
+%endmacro
+
+%macro _sbuf_capacity 0
+        _slot3
+%endmacro
+
+%macro _sbuf_set_capacity 0
+        _set_slot3
+%endmacro
+
+%macro _sbuf_check_index 0              ; sbuf index -- flag
+        _swap
+        _sbuf_length                    ; -- index length
+        _ult                            ; -- flag
+%endmacro
+
+%macro _sbuf_set_nth_unsafe 0           ; char index sbuf --
+        _sbuf_data
+        _plus
+        _cstore
+%endmacro
