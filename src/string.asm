@@ -484,6 +484,7 @@ code string_index_of, 'string-index-of' ; string char -- index | -1
         _lit -1
 .exit:
         pop     this_register
+        _make_fixnum
         next
 endcode
 
