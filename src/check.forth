@@ -15,10 +15,35 @@
 
 feline!
 
-: check ( flag -- )
-    0= abort" check failed"
+: do-check ( flag addr -- )
+    0 local message
+    swap
+    if
+        drop
+    else
+        "check failed" string>sbuf !> message
+        2@ ?dup if
+            message bl sbuf-append-char
+            message swap count sbuf-append-chars
+            message " line " sbuf-append-string
+            message swap (.) sbuf-append-chars
+        else
+            drop
+        then
+        message sbuf>string to msg
+        -256 throw
+    then
 ;
 
-: check-false ( flag -- )
-    abort" check failed"
-;
+: check ( -- )
+    here
+    source-filename ,
+    source-line# ,
+    postpone literal
+    postpone do-check
+; immediate
+
+: check-false ( -- )
+    postpone 0=
+    postpone check
+; immediate
