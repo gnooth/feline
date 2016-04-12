@@ -67,6 +67,16 @@
 
 %define TAG_BITS        0
 
+%macro  _fixnum? 0
+        mov     rbx, -1
+%endmacro
+
+%macro  _make_fixnum 0
+%endmacro
+
+%macro  _fixnum_to_int 0
+%endmacro
+
 %endif ; USE_TAGS
 
 
