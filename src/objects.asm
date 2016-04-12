@@ -115,7 +115,22 @@ code dot_object, '.object'              ; handle-or-object --
         next
 endcode
 
-%ifdef USE_TAGS
+; ### most-positive-fixnum
+code most_positive_fixnum, 'most-positive-fixnum'
+        _lit 1
+        _lit 63 - TAG_BITS
+        _ lshift
+        _oneminus
+        next
+endcode
+
+; ### most-negative-fixnum
+code most_negative_fixnum, 'most-negative-fixnum'
+        _lit 1
+        _lit 63 - TAG_BITS
+        _ lshift
+        next
+endcode
 
 ; ### tag-bits
 code tag_bits, 'tag-bits'
@@ -123,6 +138,8 @@ code tag_bits, 'tag-bits'
         _make_fixnum
         next
 endcode
+
+%ifdef USE_TAGS
 
 ; ### fixnum?
 code fixnum?, 'fixnum?'                 ; x -- flag
