@@ -34,6 +34,8 @@ include-system-file double.forth
 include-system-file environment.forth
 include-system-file process-init-file.forth
 
+include-system-file feline.forth
+
 forth!
 
 : see ( "<spaces>name" -- )
