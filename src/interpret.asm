@@ -159,7 +159,7 @@ code interpret_do_literal, 'interpret-do-literal' ; $addr -- n | d
 
         _ string_literal?
         _if .2
-        _ copy_to_transient_string
+        _ copy_to_transient_string_untagged
         _return
         _then .2
 
@@ -168,12 +168,6 @@ code interpret_do_literal, 'interpret-do-literal' ; $addr -- n | d
         _ double?
         _zeq_if .3
         _drop
-%ifdef USE_TAGS
-        _ use_tags?
-        _if .4
-        _make_fixnum
-        _then .4
-%endif
         _then .3
 
         next
@@ -201,12 +195,6 @@ code compile_do_literal, 'compile-do-literal' ; $addr --
         _ twoliteral
         _else .3
         _drop
-%ifdef USE_TAGS
-        _ use_tags?
-        _if .4
-        _make_fixnum
-        _then .4
-%endif
         _ literal
         _then .3
         next
@@ -240,8 +228,8 @@ code compile1, 'compile1'               ; $addr --
         next
 endcode
 
-; ### interpret
-code interpret, 'interpret'             ; --
+; ### forth-interpret
+code forth_interpret, 'forth_interpret' ; --
 ; not in standard
         _begin .1
         _ ?stack
@@ -258,3 +246,5 @@ code interpret, 'interpret'             ; --
         _drop
         next
 endcode
+
+deferred interpret, 'interpret', forth_interpret
