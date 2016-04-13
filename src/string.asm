@@ -124,8 +124,10 @@ endcode
 
 ; ### string-length
 code string_length, 'string-length'     ; string -- length
+; Returns a tagged fixnum.
         _ check_string
         _string_length
+        _tag_fixnum
         next
 endcode
 
@@ -237,6 +239,7 @@ endcode
 
 ; ### string>
 code string_from, 'string>'             ; string -- c-addr u
+; Returned values are untagged.
         _ check_string
         _duptor
         _string_data
@@ -274,6 +277,23 @@ code copy_to_transient_string, '>transient-string' ; c-addr u -- string
 ; locals:
 %define u               local0
 %define c_addr          local1
+
+%ifdef USE_TAGS
+        _dup
+        _fixnum?
+        _if .1
+        _untag_fixnum
+        _then .1
+        _swap
+        _dup
+        _fixnum?
+        _if .2
+        _untag_fixnum
+        _then .2
+        _swap
+%endif
+
+copy_to_transient_string_untagged:
 
         push    this_register
         _locals_enter                   ; -- c-addr u
@@ -410,12 +430,21 @@ endcode
 ; ### string-char
 code string_char, 'string-char'         ; string index -- char
 ; Return character at index, or 0 if index is out of range.
-        _ swap
+%ifdef USE_TAGS
+        _dup
+        _fixnum?
+        _if .2
+        _untag_fixnum
+        _then .2
+%endif
+
+string_char_untagged:
+        _swap
         _ check_string                  ; -- index string
 
         _twodup
         _string_length
-        _ ult
+        _ult
         _if .1
         _string_data
         _swap
@@ -425,6 +454,8 @@ code string_char, 'string-char'         ; string index -- char
         _2drop
         _zero
         _then .1
+
+        _tag_char
         next
 endcode
 
@@ -433,7 +464,7 @@ code string_first_char, 'string-first-char' ; string -- char
 ; Returns first character of string (0 if the string is empty).
         _ coerce_to_string
         _zero
-        _ string_char
+        _ string_char_untagged
         next
 endcode
 
@@ -449,12 +480,14 @@ code string_last_char, 'string-last-char' ; string -- char
         _2drop
         _zero
         _else .1
-        _ swap
-        _ string_data
+        _swap
+        _string_data
         _plus
         _oneminus
         _cfetch
         _then .1
+
+        _tag_char
         next
 endcode
 
@@ -484,7 +517,7 @@ code string_index_of, 'string-index-of' ; string char -- index | -1
         _lit -1
 .exit:
         pop     this_register
-        _make_fixnum
+        _tag_fixnum
         next
 endcode
 
