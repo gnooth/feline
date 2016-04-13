@@ -586,7 +586,8 @@ code path_is_absolute?, 'path-is-absolute?' ; string -- flag
         _then .1
 
         _dup
-        _string_length                  ; -- string length
+        _ string_length                 ; -- string length
+        _untag_fixnum
         _lit 2
         _ ge
         _if .2                          ; -- string
