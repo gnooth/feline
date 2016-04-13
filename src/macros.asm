@@ -19,32 +19,44 @@
 
 %define TAG_BITS        2
 
-%define TAG_LOW_BITS
+%define TAG_HIGH_BITS
 
 %ifdef TAG_HIGH_BITS
 
-%macro  _tag 0
+%define FIXNUM_TAG      1
+
+%macro  _tag 0                          ; object -- tag
         shr     rbx, 64 - TAG_BITS
 %endmacro
 
 %macro  _fixnum? 0
         _tag
+%if FIXNUM_TAG = 0
         _zeq
+%else
+        _lit FIXNUM_TAG
+        _equal
+%endif
 %endmacro
 
-%macro  _make_fixnum 0
+%macro  _tag_fixnum 0
         shl     rbx, TAG_BITS
         shr     rbx, TAG_BITS
+%if FIXNUM_TAG <> 0
+;         add     rbx, FIXNUM_TAG << (64 - TAG_BITS)
+        mov     rax, FIXNUM_TAG << (64 - TAG_BITS)
+        add     rbx, rax
+%endif
 %endmacro
 
-%macro  _fixnum_to_int 0
+%macro  _untag_fixnum 0
         shl     rbx, TAG_BITS
         sar     rbx, TAG_BITS
 %endmacro
 
 %elifdef TAG_LOW_BITS
 
-%macro  _tag 0
+%macro  _tag 0                          ; object -- tag
         and     rbx, 3
 %endmacro
 
@@ -53,11 +65,11 @@
         _zeq
 %endmacro
 
-%macro  _make_fixnum 0
+%macro  _tag_fixnum 0
         shl     rbx, TAG_BITS
 %endmacro
 
-%macro  _fixnum_to_int 0
+%macro  _untag_fixnum 0
         sar     rbx, TAG_BITS
 %endmacro
 
@@ -71,13 +83,21 @@
         mov     rbx, -1
 %endmacro
 
-%macro  _make_fixnum 0
+%macro  _tag_fixnum 0
 %endmacro
 
-%macro  _fixnum_to_int 0
+%macro  _untag_fixnum 0
 %endmacro
 
 %endif ; USE_TAGS
+
+%macro  _tag_char 0
+        _tag_fixnum
+%endmacro
+
+%macro  _untag_char 0
+        _untag_fixnum
+%endmacro
 
 
 %define DEFAULT_DATA_ALIGNMENT  8
