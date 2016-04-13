@@ -837,9 +837,9 @@ code canonical_path, 'canonical-path'   ; string1 -- string2
 %endif
         xcall   os_realpath
         pushd   rax                     ; -- zaddr2
-        _ dup
+        _dup
         _ zcount
-        _ copy_to_transient_string      ; -- string2
+        _ copy_to_transient_string_untagged ; -- string2
         _ swap
 %ifdef WIN64
         mov     rcx, rbx
