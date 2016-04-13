@@ -266,13 +266,18 @@ code do_error, 'do-error'               ; n --
         next
 endcode
 
-; ### quit
+; ### forth-quit
 code forth_quit, 'forth-quit'           ; --            r:  i*x --
 ; CORE
         _ lbrack
         _begin .1
         mov     rsp, [rp0_data]
         _ ?cr
+
+        _ green
+        _ foreground
+        _dotq "Forth> "
+
         _ query
         _ tib
         _ ntib
