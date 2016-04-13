@@ -38,7 +38,7 @@ code iliteral, '(literal)'              ; n --
         _ compile_pushrbx
         _dup
         _lit $100000000
-        _ ult
+        _ult
         _if .1
         _ccommac $0bb
         _ lcommac
