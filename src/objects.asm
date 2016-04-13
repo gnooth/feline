@@ -135,7 +135,19 @@ endcode
 ; ### tag-bits
 code tag_bits, 'tag-bits'
         _lit TAG_BITS
-        _make_fixnum
+        _tag_fixnum
+        next
+endcode
+
+; ### tag-fixnum
+code tag_fixnum, 'tag-fixnum'           ; n -- tagged
+        _tag_fixnum
+        next
+endcode
+
+; ### untag-fixnum
+code untag_fixnum, 'untag-fixnum'       ; tagged -- n
+        _untag_fixnum
         next
 endcode
 
@@ -144,7 +156,7 @@ endcode
 ; ### tag
 code tag, 'tag'                         ; object -- tag
         _tag
-        _make_fixnum
+        _tag_fixnum
         next
 endcode
 
@@ -159,7 +171,7 @@ code generic_dot, '.'                   ; x --
         _dup
         _fixnum?
         _if .1
-        _fixnum_to_int
+        _untag_fixnum
         _then .1
         _ dot
         next
@@ -169,16 +181,16 @@ code generic_add, '+'                   ; n1 n2 -- n1+n2
         _dup
         _fixnum?
         _if .1
-        _fixnum_to_int
+        _untag_fixnum
         _then .1
         _swap
         _dup
         _fixnum?
         _if .2
-        _fixnum_to_int
+        _untag_fixnum
         _then .2
         _plus
-        _make_fixnum
+        _tag_fixnum
         next
 endcode
 
@@ -186,17 +198,17 @@ code generic_subtract, '-'              ; n1 n2 -- n1-n2
         _dup
         _fixnum?
         _if .1
-        _fixnum_to_int
+        _untag_fixnum
         _then .1
         _swap
         _dup
         _fixnum?
         _if .2
-        _fixnum_to_int
+        _untag_fixnum
         _then .2
         sub     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
-        _make_fixnum
+        _tag_fixnum
         next
 endcode
 
@@ -204,17 +216,17 @@ code generic_multiply, '*'              ; n1 n2 -- n1*n2
         _dup
         _fixnum?
         _if .1
-        _fixnum_to_int
+        _untag_fixnum
         _then .1
         _swap
         _dup
         _fixnum?
         _if .2
-        _fixnum_to_int
+        _untag_fixnum
         _then .2
         imul     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
-        _make_fixnum
+        _tag_fixnum
         next
 endcode
 
