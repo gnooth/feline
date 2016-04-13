@@ -419,7 +419,7 @@ endcode
 
 ; ### resolve-include-filename
 code resolve_include_filename, 'resolve-include-filename' ; c-addr u -- string
-        _ copy_to_transient_string      ; -- string
+        _ copy_to_transient_string_untagged ; -- string
         _ tilde_expand_filename         ; -- string
 
         ; If the argument after tilde expansion is not an absolute pathname,
@@ -577,6 +577,7 @@ code path_is_absolute?, 'path-is-absolute?' ; string -- flag
 %ifdef WIN64
         _dup
         _ string_first_char
+        _untag_char
         _ path_separator_char
         _equal
         _if .1                          ; -- string
@@ -585,12 +586,13 @@ code path_is_absolute?, 'path-is-absolute?' ; string -- flag
         _then .1
 
         _dup
-        _ string_length                 ; -- string length
+        _string_length                  ; -- string length
         _lit 2
         _ ge
         _if .2                          ; -- string
         _lit 1
-        _ string_char
+        _ string_char_untagged
+        _untag_char
         _lit ':'
         _equal
         _return
@@ -601,6 +603,7 @@ code path_is_absolute?, 'path-is-absolute?' ; string -- flag
 %else
         ; Linux
         _ string_first_char
+        _untag_char
         _ path_separator_char
         _equal
 %endif
@@ -647,7 +650,8 @@ endcode
 
 ; ### system-file-pathname
 code system_file_pathname, 'system-file-pathname' ; c-addr1 u1 -- c-addr2 u2
-        _ copy_to_transient_string
+; Returned values are untagged.
+        _ copy_to_transient_string_untagged
         _ feline_home
         _quote "src"
         _ path_append
@@ -659,7 +663,7 @@ endcode
 
 ; ### include-system-file
 code include_system_file, 'include-system-file'
-        _ parse_name
+        _ parse_name                    ; -- c-addr u
         _ system_file_pathname
         _ included
         next
