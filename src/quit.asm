@@ -267,7 +267,7 @@ code do_error, 'do-error'               ; n --
 endcode
 
 ; ### quit
-code quit, 'quit'                       ; --            r:  i*x --
+code forth_quit, 'forth-quit'           ; --            r:  i*x --
 ; CORE
         _ lbrack
         _begin .1
@@ -291,6 +291,8 @@ code quit, 'quit'                       ; --            r:  i*x --
         _again .1
         next                            ; for decompiler
 endcode
+
+deferred quit, 'quit', forth_quit
 
 ; ### reset
 code reset, 'reset'                     ; i*x --        r: j*x --
