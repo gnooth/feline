@@ -141,6 +141,13 @@ endcode
 
 %ifdef USE_TAGS
 
+; ### tag
+code tag, 'tag'                         ; object -- tag
+        _tag
+        _make_fixnum
+        next
+endcode
+
 ; ### fixnum?
 code fixnum?, 'fixnum?'                 ; x -- flag
         _fixnum?
