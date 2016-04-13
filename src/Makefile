@@ -105,6 +105,7 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	objects.asm \
 	opt.asm \
 	parse.asm \
+	primitives.asm \
 	quit.asm \
 	sbuf.asm \
 	stack.asm \

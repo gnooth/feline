@@ -63,6 +63,7 @@ static_data_area:
 IN_FELINE
 
 ; Objects
+%include "primitives.asm"
 %include "object-macros.asm"
 %include "handles.asm"
 %include "objects.asm"
