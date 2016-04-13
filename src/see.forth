@@ -302,7 +302,7 @@ init-reg64-names
     local index
     local base
 
-    [ false ] [if]
+    [ true ] [if]
 
     relative-size ?dup if
         .string space
