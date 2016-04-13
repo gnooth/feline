@@ -31,8 +31,12 @@ import [then]
 import (
 import \
 
-import =
-import 0=
+\ import =
+: = ( n1 n2 -- flag ) = tag-fixnum ;
+
+\ import 0=
+: 0= ( n -- flag ) 0 = tag-fixnum ;
+
 import u<
 import <
 
@@ -47,3 +51,5 @@ import decimal
 
 import constant
 import local
+
+: depth ( -- n ) depth tag-fixnum ;
