@@ -18,6 +18,7 @@ feline!
 : do-check ( flag addr -- )
     0 local message
     swap
+    untag-fixnum
     if
         drop
     else
