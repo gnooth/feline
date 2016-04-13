@@ -72,7 +72,7 @@ endcode
 code sbuf_length, 'sbuf-length'         ; handle -- length
         _ check_sbuf
         _sbuf_length
-        _make_fixnum
+        _tag_fixnum
         next
 endcode
 
