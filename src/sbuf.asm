@@ -314,19 +314,33 @@ endcode
 
 ; ### sbuf-set-char
 code sbuf_set_char, 'sbuf-set-char'     ; handle index char --
+%ifdef USE_TAGS
+        _dup
+        _fixnum?
+        _if .1
+        _untag_fixnum
+        _then .1
+        _swap
+        _dup
+        _fixnum?
+        _if .2
+        _untag_fixnum
+        _then .2
+        _swap
+%endif
         _ rrot                          ; char sbuf index
         _twodup
         _ sbuf_check_index
-        _if .1                          ; -- char sbuf index
+        _if .3                          ; -- char sbuf index
         _swap                           ; -- char index sbuf
         _ sbuf_data                     ; -- char index data-address
         _plus
         _cstore
-        _else .1
+        _else .3
         _3drop
         _true
         _abortq "index out of range"
-        _then .1
+        _then .3
         next
 endcode
 
@@ -528,6 +542,21 @@ code sbuf_insert_char, 'sbuf-insert-char' ; handle index char --
 %define sbuf   local0
 %define index  local1
 %define char   local2
+
+%ifdef USE_TAGS
+        _dup
+        _fixnum?
+        _if .1
+        _untag_fixnum
+        _then .1
+        _swap
+        _dup
+        _fixnum?
+        _if .2
+        _untag_fixnum
+        _then .2
+        _swap
+%endif
 
         _locals_enter
         _ check_char
