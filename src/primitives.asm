@@ -50,7 +50,7 @@ endcode
 code feline_compile_do_literal, 'feline-compile-do-literal' ; $addr --
         _ character_literal?
         _if .1
-        _tag_char       
+        _tag_char
         _ literal
         _return
         _then .1
@@ -127,33 +127,10 @@ code feline_interpret, 'feline-interpret' ; --
         next
 endcode
 
-; ### feline-quit
-code feline_quit, 'feline-quit'         ; --            r:  i*x --
-; CORE
-        _ lbrack
-        _begin .1
-        mov     rsp, [rp0_data]
-        _ ?cr
-
+; ### feline-prompt
+code feline_prompt, 'feline-prompt'     ; --
         _ green
         _ foreground
         _dotq "Feline> "
-
-        _ query
-        _ tib
-        _ ntib
-        _fetch
-        _zero
-        _ set_input
-        _zeroto source_filename
-        _lit feline_interpret_xt
-        _ catch
-        _?dup_if .2
-        ; THROW occurred
-        _ do_error
-        _else .2
-        _ ok
-        _then .2
-        _again .1
-        next                            ; for decompiler
+        next
 endcode
