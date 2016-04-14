@@ -103,6 +103,7 @@ endcode
 code sbuf_capacity, 'sbuf-capacity'     ; sbuf -- capacity
         _ check_sbuf
         _sbuf_capacity
+        _tag_fixnum
         next
 endcode
 
