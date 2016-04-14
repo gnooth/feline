@@ -28,6 +28,7 @@ code object?, 'object?'                 ; x -- flag
         _if .0
         _handle_to_object_unsafe
         _zne
+        _tag_fixnum
         _return
         _then .0
 
@@ -81,6 +82,7 @@ endcode
 code dot_object, '.object'              ; handle-or-object --
         _dup
         _ string?
+        _untag_fixnum
         _if .1
         _lit '"'
         _ emit
