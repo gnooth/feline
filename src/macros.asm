@@ -21,13 +21,7 @@
 
 %define TAG_HIGH_BITS
 
-%ifdef TAG_HIGH_BITS
-
 %define FIXNUM_TAG      1
-
-%macro  _tag 0                          ; object -- tag
-        shr     rbx, 64 - TAG_BITS
-%endmacro
 
 %macro  _fixnum? 0
         _tag
@@ -37,6 +31,12 @@
         _lit FIXNUM_TAG
         _equal
 %endif
+%endmacro
+
+%ifdef TAG_HIGH_BITS
+
+%macro  _tag 0                          ; object -- tag
+        shr     rbx, 64 - TAG_BITS
 %endmacro
 
 %macro  _tag_fixnum 0
@@ -58,11 +58,6 @@
 
 %macro  _tag 0                          ; object -- tag
         and     rbx, 3
-%endmacro
-
-%macro  _fixnum? 0
-        _tag
-        _zeq
 %endmacro
 
 %macro  _tag_fixnum 0
