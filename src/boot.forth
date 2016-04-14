@@ -33,14 +33,11 @@ include-system-file empty.forth
 include-system-file double.forth
 include-system-file environment.forth
 include-system-file process-init-file.forth
+include-system-file see.forth
 
 include-system-file feline.forth
 
 forth!
-
-: see ( "<spaces>name" -- )
-    s" see.forth" system-file-pathname included
-    -4 >in +! ;
 
 : edit ( "<spaces>name" -- )
     warning @ >r
