@@ -863,7 +863,7 @@ code errno_to_string, 'errno-to-string' ; n -- string
         xcall   os_strerror
         mov     rbx, rax
         _ zcount
-        _ copy_to_transient_string
+        _ copy_to_transient_string_untagged
         next
 endcode
 
