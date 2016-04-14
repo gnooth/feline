@@ -288,19 +288,27 @@ code sbuf_check_index, 'sbuf-check-index' ; handle index -- flag
 endcode
 
 ; ### sbuf-char
-code sbuf_char, 'sbuf-char'             ; sbuf index -- char
+code sbuf_char, 'sbuf-char'             ; handle index -- char
 ; REVIEW Return character at index, or 0 if index is out of range.
+%ifdef USE_TAGS
+        _dup
+        _fixnum?
+        _if .1
+        _untag_fixnum
+        _then .1
+%endif
         _twodup
         _ sbuf_check_index
-        _if .1
+        _if .2
         _swap                           ; -- index sbuf
         _ sbuf_data                     ; -- index data-address
         _plus
         _cfetch
-        _else .1
+        _else .2
         _2drop
         _zero
-        _then .1
+        _then .2
+        _tag_char
         next
 endcode
 
@@ -398,6 +406,14 @@ code sbuf_append_char, 'sbuf-append-char' ; sbuf char --
 %define this   local0
 %define char   local1
 %define len    local2
+
+%ifdef USE_TAGS
+        _dup
+        _fixnum?
+        _if .1
+        _untag_fixnum
+        _then .1
+%endif
 
         _locals_enter
         _ check_char
