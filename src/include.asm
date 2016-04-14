@@ -303,7 +303,7 @@ code path_get_directory, 'path-get-directory' ; string1 -- string2 | 0
         _zeq_if .3
         _oneplus
         _then .3
-        _ copy_to_transient_string
+        _ copy_to_transient_string_untagged
         _return
         _then .2
         _repeat .1
@@ -391,7 +391,7 @@ code tilde_expand_filename, 'tilde-expand-filename' ; string1 -- string2
         _ string_from
         _lit 1
         _slashstring
-        _ copy_to_transient_string
+        _ copy_to_transient_string_untagged
         _ concat
         _return
         _then .3                        ; -- $addr1
