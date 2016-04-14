@@ -229,7 +229,7 @@ code compile1, 'compile1'               ; $addr --
 endcode
 
 ; ### forth-interpret
-code forth_interpret, 'forth_interpret' ; --
+code forth_interpret, 'forth-interpret' ; --
 ; not in standard
         _begin .1
         _ ?stack
