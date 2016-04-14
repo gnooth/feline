@@ -35,7 +35,7 @@ import \
 : = ( n1 n2 -- flag ) = tag-fixnum ;
 
 \ import 0=
-: 0= ( n -- flag ) 0 = tag-fixnum ;
+: 0= ( n -- flag ) untag-fixnum 0= tag-fixnum ;
 
 import u<
 import <
