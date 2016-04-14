@@ -266,6 +266,16 @@ code do_error, 'do-error'               ; n --
         next
 endcode
 
+; ### forth-prompt
+code forth_prompt, 'forth-prompt'       ; --
+        _ green
+        _ foreground
+        _dotq "Forth> "
+        next
+endcode
+
+deferred prompt, 'prompt', forth_prompt
+
 ; ### forth-quit
 code forth_quit, 'forth-quit'           ; --            r:  i*x --
 ; CORE
@@ -273,11 +283,7 @@ code forth_quit, 'forth-quit'           ; --            r:  i*x --
         _begin .1
         mov     rsp, [rp0_data]
         _ ?cr
-
-        _ green
-        _ foreground
-        _dotq "Forth> "
-
+        _ prompt
         _ query
         _ tib
         _ ntib
