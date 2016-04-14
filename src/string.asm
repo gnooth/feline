@@ -527,6 +527,20 @@ endcode
 
 ; ### string-substring
 code string_substring, 'string-substring' ; string start-index end-index -- handle
+%ifdef USE_TAGS
+        _dup
+        _fixnum?
+        _if .1
+        _untag_fixnum
+        _then .1
+        _swap
+        _dup
+        _fixnum?
+        _if .2
+        _untag_fixnum
+        _then .2
+        _swap
+%endif
         _ rot
         _ check_string
         push    this_register
