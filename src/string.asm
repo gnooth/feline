@@ -20,12 +20,13 @@ code string?, 'string?'                 ; x -- flag
         _dup
         _ handle?
         _if .1
-        _handle_to_object_unsafe        ; -- object
+        _handle_to_object_unsafe        ; -- object|0
         _dup_if .2
         _object_type                    ; -- object-type
         _lit OBJECT_TYPE_STRING
         _equal
         _then .2
+        _tag_fixnum
         _return
         _then .1
 
@@ -42,6 +43,7 @@ code string?, 'string?'                 ; x -- flag
         ; Address is not in a permissible range.
         _drop                           ; --
         _false
+        _tag_fixnum
         _return
         _then .5
         _then .4
@@ -50,6 +52,7 @@ code string?, 'string?'                 ; x -- flag
         _object_type                    ; -- object-type
         _lit OBJECT_TYPE_STRING
         _equal
+        _tag_fixnum
 
         next
 endcode
@@ -411,6 +414,7 @@ code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
 
         _dup
         _ string?
+        _untag_fixnum
         _if .3                          ; -- string
         _return
         _then .3
@@ -555,6 +559,7 @@ code dot_string, '.string'              ; string | sbuf | $addr --
         ; REVIEW
         _dup
         _ string?
+        _untag_fixnum
         _if .4
         _ string_from
         _ type
@@ -619,5 +624,6 @@ code stringequal, 'string='             ; string1 string2 -- flag
         _ rot
         _ string_from
         _ strequal
+        _tag_fixnum
         next
 endcode
