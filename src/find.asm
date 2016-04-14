@@ -382,14 +382,20 @@ code forth_order, 'forth!'
         _ forth
         _ also
         _ definitions
+        next
+endcode
+
+; ### >forth
+code to_forth, '>forth'
+        _ forth_order
 
         _lit forth_interpret_xt
         _lit interpret_xt
         _tobody
         _store
 
-        _lit forth_quit_xt
-        _lit quit_xt
+        _lit forth_prompt_xt
+        _lit prompt_xt
         _tobody
         _store
 
@@ -404,14 +410,20 @@ code feline_order, 'feline!'
         _ feline
         _ also
         _ definitions
+        next
+endcode
+
+; ### >feline
+code to_feline, '>feline'
+        _ feline_order
 
         _lit feline_interpret_xt
         _lit interpret_xt
         _tobody
         _store
 
-        _lit feline_quit_xt
-        _lit quit_xt
+        _lit feline_prompt_xt
+        _lit prompt_xt
         _tobody
         _store
 
