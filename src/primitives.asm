@@ -21,6 +21,7 @@ IN_FELINE
 code feline_interpret_do_literal, 'feline-interpret-do-literal' ; $addr -- n | d
         _ character_literal?
         _if .1
+        _tag_char
         _return
         _then .1
 
