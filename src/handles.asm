@@ -90,6 +90,8 @@ endcode
 
 ; ### handle?
 code handle?, 'handle?'                 ; x -- flag
+; Argument is untagged.
+; Returned value is untagged.
         ; must point into handle space
         cmp     rbx, [handle_space_data]
         jb .1
