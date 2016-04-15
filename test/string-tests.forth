@@ -160,9 +160,9 @@ test8
 test: test9
     s" this is a test" >string to s1
     s1 string? check
-    s1 handle? check
+\     s1 handle? check
     s1 ~string
-    s1 handle? check
+\     s1 handle? check
     s1 object? check-false
     s1 string? check-false
 ;

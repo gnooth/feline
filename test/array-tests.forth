@@ -28,7 +28,7 @@ test: test1 ( -- )
     a ~array
     a array? check-false
     a object? check-false
-    a handle? check
+\     a handle? check
 ;
 
 test1
