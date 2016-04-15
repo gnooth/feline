@@ -281,20 +281,20 @@ code copy_to_transient_string, '>transient-string' ; c-addr u -- string
 %define u               local0
 %define c_addr          local1
 
-%ifdef USE_TAGS
-        _dup
-        _fixnum?
-        _if .1
-        _untag_fixnum
-        _then .1
-        _swap
-        _dup
-        _fixnum?
-        _if .2
-        _untag_fixnum
-        _then .2
-        _swap
-%endif
+; %ifdef USE_TAGS
+;         _dup
+;         _fixnum?
+;         _if .1
+;         _untag_fixnum
+;         _then .1
+;         _swap
+;         _dup
+;         _fixnum?
+;         _if .2
+;         _untag_fixnum
+;         _then .2
+;         _swap
+; %endif
 
 copy_to_transient_string_untagged:
 
@@ -387,7 +387,7 @@ endcode
 ; ### as-c-string
 code as_c_string, 'as-c-string'         ; c-addr u -- zaddr
 ; Returns a pointer to a null-terminated string in the transient string buffer.
-        _ copy_to_transient_string
+        _ copy_to_transient_string_untagged
         _string_data
         next
 endcode
@@ -497,6 +497,13 @@ endcode
 
 ; ### string-index-of
 code string_index_of, 'string-index-of' ; string char -- index | -1
+%ifdef USE_TAGS
+        _dup
+        _fixnum?
+        _if .0
+        _untag_fixnum
+        _then .0
+%endif
         _swap
         _ check_string
         push    this_register
@@ -505,9 +512,10 @@ code string_index_of, 'string-index-of' ; string char -- index | -1
         _this_string_length
         _zero
         _?do .1
-        _this
         _i
-        _ string_char
+        _this_string_data
+        _plus
+        _cfetch
         _over
         _equal
         _if .2
