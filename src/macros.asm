@@ -62,6 +62,9 @@
 
 %macro  _tag_fixnum 0
         shl     rbx, TAG_BITS
+%if FIXNUM_TAG <> 0
+        add     rbx, FIXNUM_TAG
+%endif
 %endmacro
 
 %macro  _untag_fixnum 0
