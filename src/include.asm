@@ -312,50 +312,6 @@ code path_get_directory, 'path-get-directory' ; string1 -- string2 | 0
         next
 endcode
 
-; ### path-get-extension
-code path_get_extension, 'path-get-extension' ; pathname -- extension | 0
-        _locals_enter
-
-        _ check_string
-        _dup
-        _to_local0
-        _ string_length
-        _begin .1
-        _dup
-        _while .1
-        _oneminus
-        _dup
-        _local0
-        _swap
-        _ string_char
-
-        ; If we find a path separator char before finding a '.', there is no
-        ; extension. Return 0.
-        _dup
-        _ path_separator_char?
-        _if .2
-        _2drop
-        _zero
-        jmp     .exit
-        _then .2
-
-        _lit '.'
-        _equal
-        _if .3
-        _local0
-        _swap                           ; -- string1 index
-        _local0
-        _ string_length                 ; -- string1 start-index end-index
-        _ string_substring              ; -- substring
-        jmp     .exit
-        _then .3
-        _repeat .1
-
-.exit:
-        _locals_leave
-        next
-endcode
-
 ; ### tilde-expand-filename
 code tilde_expand_filename, 'tilde-expand-filename' ; string1 -- string2
         _ check_string

@@ -418,6 +418,12 @@ code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
         next
 endcode
 
+%macro  _string_nth_unsafe 0            ; index string -- char
+        _string_data
+        _plus
+        _cfetch
+%endmacro
+
 ; ### string-char
 code string_char, 'string-char'         ; string index -- char
 ; Return character at index, or 0 if index is out of range.
@@ -437,10 +443,7 @@ string_char_untagged:
         _string_length
         _ult
         _if .1
-        _string_data
-        _swap
-        _plus
-        _cfetch
+        _string_nth_unsafe
         _else .1
         _2drop
         _zero
@@ -634,5 +637,49 @@ code stringequal, 'string='             ; string1 string2 -- flag
         _ string_from
         _ strequal
         _tag_fixnum
+        next
+endcode
+
+; ### path-get-extension
+code path_get_extension, 'path-get-extension' ; pathname -- extension | 0
+        _locals_enter
+
+        _ check_string
+        _dup
+        _to_local0
+        _string_length
+        _begin .1
+        _dup
+        _while .1
+        _oneminus
+        _dup
+        _local0
+        _string_nth_unsafe
+
+        ; If we find a path separator char before finding a '.', there is no
+        ; extension. Return 0.
+        _dup
+        _ path_separator_char?
+        _if .2
+        _2drop
+        _zero
+        jmp     .exit
+        _then .2
+
+        _lit '.'
+        _equal
+        _if .3
+        _local0
+        _swap                           ; -- string1 index
+        _tag_fixnum
+        _local0
+        _ string_length                 ; -- string1 start-index end-index
+        _ string_substring              ; -- substring
+        jmp     .exit
+        _then .3
+        _repeat .1
+
+.exit:
+        _locals_leave
         next
 endcode
