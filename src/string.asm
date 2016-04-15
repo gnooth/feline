@@ -200,6 +200,7 @@ endcode
 
 ; ### >string
 code copy_to_string, '>string'          ; c-addr u -- handle
+; Arguments are untagged.
         push    this_register
 
         _lit 16
@@ -253,6 +254,7 @@ endcode
 
 ; ### >static-string
 code copy_to_static_string, '>static-string' ; c-addr u -- string
+; Arguments are untagged.
         _ align_data
         _ here                          ; this will be the address of the string
         _tor
@@ -276,27 +278,11 @@ endcode
 
 ; ### >transient-string
 code copy_to_transient_string, '>transient-string' ; c-addr u -- string
+; Arguments are untagged.
 
 ; locals:
 %define u               local0
 %define c_addr          local1
-
-; %ifdef USE_TAGS
-;         _dup
-;         _fixnum?
-;         _if .1
-;         _untag_fixnum
-;         _then .1
-;         _swap
-;         _dup
-;         _fixnum?
-;         _if .2
-;         _untag_fixnum
-;         _then .2
-;         _swap
-; %endif
-
-copy_to_transient_string_untagged:
 
         push    this_register
         _locals_enter                   ; -- c-addr u
@@ -386,8 +372,9 @@ endcode
 
 ; ### as-c-string
 code as_c_string, 'as-c-string'         ; c-addr u -- zaddr
+; Arguments are untagged.
 ; Returns a pointer to a null-terminated string in the transient string buffer.
-        _ copy_to_transient_string_untagged
+        _ copy_to_transient_string
         _string_data
         next
 endcode

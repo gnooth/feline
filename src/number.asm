@@ -130,7 +130,7 @@ endcode
 ; ### missing
 code missing, 'missing'                 ; $addr --
         _count
-        _ copy_to_transient_string_untagged
+        _ copy_to_transient_string
         _quote " ?"
         _ concat
         _to msg

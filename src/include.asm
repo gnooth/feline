@@ -303,7 +303,7 @@ code path_get_directory, 'path-get-directory' ; string1 -- string2 | 0
         _zeq_if .3
         _oneplus
         _then .3
-        _ copy_to_transient_string_untagged
+        _ copy_to_transient_string
         _return
         _then .2
         _repeat .1
@@ -391,7 +391,7 @@ code tilde_expand_filename, 'tilde-expand-filename' ; string1 -- string2
         _ string_from
         _lit 1
         _slashstring
-        _ copy_to_transient_string_untagged
+        _ copy_to_transient_string
         _ concat
         _return
         _then .3                        ; -- $addr1
@@ -419,7 +419,7 @@ endcode
 
 ; ### resolve-include-filename
 code resolve_include_filename, 'resolve-include-filename' ; c-addr u -- string
-        _ copy_to_transient_string_untagged ; -- string
+        _ copy_to_transient_string      ; -- string
         _ tilde_expand_filename         ; -- string
 
         ; If the argument after tilde expansion is not an absolute pathname,
@@ -652,7 +652,7 @@ endcode
 ; ### system-file-pathname
 code system_file_pathname, 'system-file-pathname' ; c-addr1 u1 -- c-addr2 u2
 ; Returned values are untagged.
-        _ copy_to_transient_string_untagged
+        _ copy_to_transient_string
         _ feline_home
         _quote "src"
         _ path_append

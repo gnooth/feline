@@ -159,7 +159,7 @@ code interpret_do_literal, 'interpret-do-literal' ; $addr -- n | d
 
         _ string_literal?
         _if .2
-        _ copy_to_transient_string_untagged
+        _ copy_to_transient_string
         _return
         _then .2
 

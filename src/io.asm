@@ -839,7 +839,7 @@ code canonical_path, 'canonical-path'   ; string1 -- string2
         pushd   rax                     ; -- zaddr2
         _dup
         _ zcount
-        _ copy_to_transient_string_untagged ; -- string2
+        _ copy_to_transient_string      ; -- string2
         _ swap
 %ifdef WIN64
         mov     rcx, rbx
@@ -863,7 +863,7 @@ code errno_to_string, 'errno-to-string' ; n -- string
         xcall   os_strerror
         mov     rbx, rax
         _ zcount
-        _ copy_to_transient_string_untagged
+        _ copy_to_transient_string
         next
 endcode
 
