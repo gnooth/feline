@@ -663,6 +663,7 @@ code path_get_extension, 'path-get-extension' ; pathname -- extension | 0
         _if .2
         _2drop
         _zero
+        _tag_fixnum
         jmp     .exit
         _then .2
 
@@ -678,7 +679,7 @@ code path_get_extension, 'path-get-extension' ; pathname -- extension | 0
         jmp     .exit
         _then .3
         _repeat .1
-
+        _tag_fixnum
 .exit:
         _locals_leave
         next
