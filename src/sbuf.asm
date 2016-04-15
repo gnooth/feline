@@ -382,16 +382,25 @@ endcode
 
 ; ### sbuf-shorten
 code sbuf_shorten, 'sbuf-shorten'       ; u handle --
+%ifdef USE_TAGS
+        _swap
+        _dup
+        _fixnum?
+        _if .1
+        _untag_fixnum
+        _then .1
+        _swap
+%endif
         _ check_sbuf                    ; -- u sbuf
         _twodup
         _sbuf_length
         _ult
-        _if .1
+        _if .2
         _swap
         _sbuf_set_length
-        _else .1
+        _else .2
         _2drop
-        _then .1
+        _then .2
         next
 endcode
 
@@ -613,6 +622,14 @@ endcode
 
 ; ### sbuf-delete-char
 code sbuf_delete_char, 'sbuf-delete-char' ; sbuf index --
+%ifdef USE_TAGS
+        _dup
+        _fixnum?
+        _if .1
+        _untag_fixnum
+        _then .1
+%endif
+
 %define sbuf    local0
 %define index   local1
 %define len     local2
@@ -626,7 +643,7 @@ code sbuf_delete_char, 'sbuf-delete-char' ; sbuf index --
         pushd   sbuf
         pushd   index
         _sbuf_check_index
-        _if .1
+        _if .2
         pushd   sbuf
         _sbuf_length
         popd    len
@@ -664,10 +681,10 @@ code sbuf_delete_char, 'sbuf-delete-char' ; sbuf index --
         _oneminus
         _sbuf_set_length
 
-        _else .1
+        _else .2
         _true
         _abortq "index out of range"
-        _then .1
+        _then .2
 
         _locals_leave
         next
