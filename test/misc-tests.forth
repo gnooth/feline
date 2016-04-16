@@ -13,11 +13,11 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-feline!
-
 require-system-file test-framework
 
-use-tags? 0= [if]
+[forth]
+
+only feline also forth also definitions
 
 variable foo
 
@@ -33,8 +33,6 @@ test: test1 ( -- )
 ;
 
 test1
-
-[then]
 
 empty
 

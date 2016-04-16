@@ -13,9 +13,9 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-feline!
-
 require-system-file test-framework
+
+[feline]
 
 test: test1 ( -- )
     100000 local #reps
@@ -42,6 +42,9 @@ test: test2 ( -- )
         i v vector-push
     loop
     v vector-length #reps = check
+    #reps 0 ?do
+        i v vector-nth i = check
+    loop
     #reps 0 ?do
         0 v vector-nth i = check
         0 v vector-remove-nth
@@ -81,7 +84,7 @@ test: test4
     v vector-length #reps = check
     #reps 0 do
         v vector-length #reps i - = check
-        v vector-length 1- v vector-pop = check
+        v vector-length 1 - v vector-pop = check
     loop
     v ~vector
     v vector? check-false
