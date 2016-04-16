@@ -66,11 +66,20 @@ endcode
 code array_length, 'array-length'       ; array -- length
         _ check_array
         _array_length
+        _tag_fixnum
         next
 endcode
 
 ; ### <array>
 code new_array, '<array>'               ; length element -- handle
+
+%ifdef USE_TAGS
+        _swap
+        _untag_fixnum
+        _swap
+%endif
+
+new_array_untagged:
         push    this_register
 
         _over                           ; -- length element length
@@ -141,15 +150,23 @@ endcode
 
 ; ### array-nth
 code array_nth, 'array-nth'             ; index handle -- element
+
+%ifdef USE_TAGS
+        _swap
+        _untag_fixnum
+        _swap
+%endif
+
+array_nth_untagged:
         _ check_array
 
         _twodup
         _array_length
         _ult
-        _if .1
+        _if .2
         _array_nth_unsafe
         _return
-        _then .1
+        _then .2
 
         _2drop
         _true
@@ -159,21 +176,29 @@ endcode
 
 ; ### array-set-nth
 code array_set_nth, 'array-set-nth'     ; element index handle --
+
+%ifdef USE_TAGS
+        _swap
+        _untag_fixnum
+        _swap
+%endif
+
+array_set_nth_untagged:
         _ check_array
 
         _twodup
         _array_length
         _ult
-        _if .1
+        _if .2
         _array_data
         _swap
         _cells
         _plus
         _store
-        _else .1
+        _else .2
         _true
         _abortq "array-set-nth index out of range"
-        _then .1
+        _then .2
         next
 endcode
 
@@ -181,14 +206,14 @@ endcode
 code two_array, '2array'                ; x y -- handle
         _lit 2
         _lit 0
-        _ new_array                     ; -- x y handle
+        _ new_array_untagged            ; -- x y handle
         _duptor
         _lit 1
         _swap
-        _ array_set_nth
+        _ array_set_nth_untagged
         _lit 0
         _rfetch
-        _ array_set_nth
+        _ array_set_nth_untagged
         _rfrom
         next
 endcode
@@ -197,7 +222,7 @@ endcode
 code array_first, 'array-first'         ; handle -- element
         _zero
         _swap
-        _ array_nth
+        _ array_nth_untagged
         next
 endcode
 
@@ -205,7 +230,7 @@ endcode
 code array_second, 'array-second'       ; handle -- element
         _lit 1
         _swap
-        _ array_nth
+        _ array_nth_untagged
         next
 endcode
 
