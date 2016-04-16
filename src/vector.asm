@@ -317,6 +317,13 @@ endcode
 
 ; ### vector-remove-nth
 code vector_remove_nth, 'vector-remove-nth' ; n handle --
+
+%ifdef USE_TAGS
+        _swap
+        _untag_fixnum
+        _swap
+%endif
+
         _ check_vector
 
         push    this_register
