@@ -13,9 +13,11 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-feline!
-
 [undefined] check [if] require check [then]
+
+[forth]
+
+only forth also feline also definitions
 
 : .test-name
     postpone ?cr
