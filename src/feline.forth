@@ -53,3 +53,16 @@ import constant
 import local
 
 : depth ( -- n ) depth tag-fixnum ;
+
+: do ( n1 n2 -- )
+    postpone untag-fixnum
+    postpone swap
+    postpone untag-fixnum
+    postpone swap
+    postpone do
+; immediate
+
+: i ( -- index )
+    postpone i
+    postpone tag-fixnum
+; immediate
