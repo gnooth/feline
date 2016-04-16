@@ -181,6 +181,13 @@ endcode
 
 ; ### vector-nth
 code vector_nth, 'vector-nth'           ; index handle -- element
+
+%ifdef USE_TAGS
+        _swap
+        _untag_fixnum
+        _swap
+%endif
+
         _ check_vector
 
         _twodup
