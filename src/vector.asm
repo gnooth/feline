@@ -66,6 +66,7 @@ endcode
 code vector_length, 'vector-length'     ; vector -- length
         _ check_vector
         _vector_length
+        _tag_fixnum
         next
 endcode
 
