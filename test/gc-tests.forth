@@ -13,16 +13,16 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-feline!
-
 require-system-file test-framework
+
+[feline]
 
 \ data stack
 test: test1 ( -- )
     s" testing1" >string
-    dup handle? check
+    dup string? check
     gc
-    dup handle? check
+    dup string? check
     drop
 ;
 
@@ -31,9 +31,9 @@ test1
 \ locals stack
 test: test2 ( -- )
     s" testing2" >string local s1
-    s1 handle? check
+    s1 string? check
     gc
-    s1 handle? check
+    s1 string? check
 ;
 
 test2
@@ -41,9 +41,9 @@ test2
 \ return stack
 test: test3 ( -- )
     s" testing3" >string >r
-    r@ handle? check
+    r@ string? check
     gc
-    r> handle? check
+    r> string? check
 ;
 
 test3
