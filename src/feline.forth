@@ -13,7 +13,7 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-feline!
+only forth also feline also definitions
 
 import bye
 
@@ -43,6 +43,8 @@ import <
 import :
 import ;
 
+import include
+import require
 import include-system-file
 import empty
 import forth!
@@ -62,7 +64,29 @@ import local
     postpone do
 ; immediate
 
+: ?do ( n1 n2 -- )
+    postpone untag-fixnum
+    postpone swap
+    postpone untag-fixnum
+    postpone swap
+    postpone ?do
+; immediate
+
 : i ( -- index )
     postpone i
     postpone tag-fixnum
 ; immediate
+
+: [feline]
+    ['] feline-prompt is prompt
+    ['] feline-interpret is interpret
+; immediate
+
+: [forth]
+    ['] forth-prompt is prompt
+    ['] forth-interpret is interpret
+; immediate
+
+also forth definitions
+
+import [feline]
