@@ -215,6 +215,11 @@ endcode
 
 ; ### vector-ref
 code vector_ref, 'vector-ref'           ; vector index -- element
+
+%ifdef USE_TAGS
+        _untag_fixnum
+%endif
+
         _twodup
         _ vector_check_index
         _if .1
@@ -254,6 +259,11 @@ endcode
 ; ### vector-set
 code vector_set, 'vector-set'           ; vector index element --
         _ rrot                          ; -- element vector index
+
+%ifdef USE_TAGS
+        _untag_fixnum
+%endif
+
         _ twodup
         _ vector_check_index
         _if .1                          ; -- element vector index
