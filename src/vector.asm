@@ -465,6 +465,45 @@ code vector_each, 'vector-each'         ; vector xt --
         next
 endcode
 
+; ### vector-find-string
+code vector_find_string, 'vector-find-string' ; string vector -- index flag
+        _ check_vector
+
+        push    this_register
+        mov     this_register, rbx
+
+        _vector_length
+        _zero
+        _?do .1
+        _i
+        _this_vector_nth_unsafe         ; -- string element
+        _over
+        _ string_equal?                 ; -- string flag
+        _untag_fixnum
+        _if .2
+        ; found it!
+        _drop
+        _i
+        _tag_fixnum
+        _true
+        _tag_fixnum
+        _unloop
+        jmp     .exit
+        _then .2
+        _loop .1
+
+        ; not found
+        _drop
+        _zero
+        _tag_fixnum
+        _false
+        _tag_fixnum
+
+.exit:
+        pop     this_register
+        next
+endcode
+
 ; ### .vector
 code dot_vector, '.vector'              ; vector --
         _ check_vector

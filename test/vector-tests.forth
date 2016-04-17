@@ -124,6 +124,33 @@ test: test6 ( -- )
 
 test6
 
+0 global v
+
+test: test7 ( -- )
+    10 <vector> !> v
+    "foo" v vector-push
+    "bar" v vector-push
+    "baz" v vector-push
+
+    "foo" v vector-find-string          \ -- index flag
+    check
+    0 = check
+
+    "baz" v vector-find-string
+    check
+    2 = check
+
+    "gazonk" v vector-find-string
+    check-false
+    check-false
+
+    42 v vector-find-string
+    check-false
+    check-false
+;
+
+test7
+
 empty
 
 ?cr .( Reached end of vector-tests.forth )
