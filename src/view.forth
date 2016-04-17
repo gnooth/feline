@@ -46,13 +46,13 @@ hidden definitions
 ;
 
 : looking-at ( string -- flag )
-    check-string local s
-    s string-length local len
+    local s
+    s string-length untag-fixnum local len
     true local result
     dot len + bufsize <= if
         len 0 ?do
             buffer dot + i + c@
-            s i string-char
+            s i string-char untag-fixnum
             <> if
                 false to result
                 leave
@@ -83,7 +83,7 @@ hidden definitions
 
 : termination?
     termination if
-        termination check-string looking-at
+        termination looking-at
     else
         dot-char $0a =
     then
