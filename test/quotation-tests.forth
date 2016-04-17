@@ -47,6 +47,8 @@ test: test3
     45 = check
 ;
 
+test3
+
 empty
 
 ?cr .( Reached end of quotation-tests.forth )
