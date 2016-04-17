@@ -13,19 +13,26 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-forth!
+[forth]
+
+only forth definitions
 
 : save-compilation-state
     csp @
+    local-names
+    using-locals?
 ;
 
 : restore-compilation-state
+    to using-locals?
+    to local-names
     csp !
 ;
 
 : [:
     state@ if
         save-compilation-state
+        0 to using-locals?
         postpone ahead
         true
     else
@@ -48,7 +55,7 @@ forth!
     then
 ; immediate
 
-feline!
+only forth also feline definitions
 
 synonym [ [:
 
