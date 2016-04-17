@@ -85,7 +85,17 @@ endinline
 value local_names, 'local-names', 0
 
 ; ### locals-defined
-value locals_defined, 'locals-defined', 0
+code locals_defined, 'locals-defined'   ; -- n
+; Returned value is untagged.
+        _ local_names
+        _?dup_if .1
+        _ vector_length
+        _untag_fixnum
+        _else .1
+        _zero
+        _then .1
+        next
+endcode
 
 ; ### find-local
 code find_local, 'find-local'           ; found:        $addr -- index true
@@ -96,31 +106,24 @@ code find_local, 'find-local'           ; found:        $addr -- index true
         _return
         _then .1
 
-        _ locals_defined
-        _zero
-        _do .2
-        _ local_names
-        _i
-        _cells
-        _plus
-        _fetch                          ; -- $addr string
-        _over                           ; -- $addr string $addr
-        _count                          ; -- $addr string c-addr u
-        _ rot                           ; -- $addr c-addr u string
-        _ string_from                   ; -- $addr c-addr u c-addr2 u2
-        _ istrequal
-        _if .3
-        ; found it!
-        _drop
-        _i
-        _true
-        _unloop
-        _return
-        _then .3
-        _loop .2
-
+        _duptor                         ; -- $addr              r: -- $addr
+        _count                          ; -- c-addr u
+        _ copy_to_transient_string      ; -- string
+        _ local_names                   ; -- string vector
+        _ vector_find_string            ; -- index flag
+        _untag_fixnum
+        _if .2
+        _untag_fixnum                   ; -- index
+        _true                           ; -- index true
+        _tag_fixnum
+        _rdrop
+        _else .2
         ; not found
-        _false
+        _drop                           ; --                    r: -- $addr
+        _rfrom                          ; -- $addr              r: --
+        _zero                           ; -- $addr false
+        _then .2
+
         next
 endcode
 
@@ -196,14 +199,9 @@ endcode
 code initialize_local_names, 'initialize-local-names'
         ; allow for maximum number of locals
         _ nlocals
-        _cells
-        _duptor
-        _ iallocate
-        _dup
+        _ new_vector_untagged
         _to local_names
-        _rfrom
-        _ erase
-        _zeroto locals_defined
+
         _true
         _to using_locals?
         next
@@ -211,27 +209,7 @@ endcode
 
 ; ### delete-local-names
 code delete_local_names, 'delete-local-names'
-        _ local_names
-        _if .1
-        _ locals_defined
-        _zero
-        _?do .2
-        _ local_names
-        _i
-        _cells
-        _plus
-        _fetch
-        _?dup_if .3
-        _ destroy_string
-        _then .3
-        _loop .2
-        _ local_names
-        _ ifree
-        _zero
-        _to local_names
-        _zero
-        _to locals_defined
-        _then .1
+        _zeroto local_names
         next
 endcode
 
@@ -264,16 +242,11 @@ code paren_local, '(local)'             ; c-addr u --
 
         _ copy_to_string                ; -- handle
         _ local_names
-        _ locals_defined
-        _cells
-        _plus
-        _store
+        _ vector_push
 
-        _ locals_defined                ; -- index
+        _ locals_defined                ; -- length
+        _oneminus                       ; -- index
         _ compile_to_local
-
-        _lit 1
-        _plusto locals_defined
 
         _else .4
         _abortq "Too many locals"       ; REVIEW
