@@ -54,6 +54,14 @@ import decimal
 import constant
 import local
 
+import swap
+import dup
+
+\ REVIEW
+import execute
+import ?cr
+import .(
+
 : depth ( -- n ) depth tag-fixnum ;
 
 : do ( n1 n2 -- )
