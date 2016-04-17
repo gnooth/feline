@@ -169,6 +169,20 @@ test: test9
 
 test9
 
+\ string-equal?
+test: test10
+    "test" "test" string-equal? check
+    "test" "text" string-equal? check-false
+    42 "test" string-equal? check-false
+    "test" 89 string-equal? check-false
+    42 17 string-equal? check-false
+
+    s" testing" >transient-string "testing" string-equal? check
+    s" testing" >transient-string s" testing" >string string-equal? check
+;
+
+test10
+
 empty
 
 cr .( Reached end of string-tests.forth )

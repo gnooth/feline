@@ -640,6 +640,30 @@ code stringequal, 'string='             ; string1 string2 -- flag
         next
 endcode
 
+; ### string-equal?
+code string_equal?, 'string-equal?'     ; object1 object2 -- flag
+; Returns true if both objects are strings and those strings are identical.
+        _dup
+        _ string?
+        _untag_fixnum
+        _if .1
+        _swap
+        _dup
+        _ string?
+        _untag_fixnum
+        _if .2
+        ; both objects are strings
+        _ stringequal
+        _return
+        _then .2
+        _then .1
+
+        _2drop
+        _false
+        _tag_fixnum
+        next
+endcode
+
 ; ### path-get-extension
 code path_get_extension, 'path-get-extension' ; pathname -- extension | 0
         _locals_enter
