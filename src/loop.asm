@@ -258,6 +258,17 @@ endcode
 
 ; ### each-integer
 code each_integer, 'each-integer'       ; n xt --
+
+%ifdef USE_TAGS
+        _over
+        _fixnum?
+        _if .1
+        _swap
+        _untag_fixnum
+        _swap
+        _then .1
+%endif
+
         push    r12
         push    r13
         push    r14
