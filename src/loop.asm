@@ -238,6 +238,17 @@ endcode
 
 ; ### times
 code times_, 'times'                    ; n xt --
+
+%ifdef USE_TAGS
+        _over
+        _fixnum?
+        _if .1
+        _swap
+        _untag_fixnum
+        _swap
+        _then .1
+%endif
+
         push    r12
         mov     r12, [rbp]
         test    r12, r12
