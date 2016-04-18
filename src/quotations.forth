@@ -58,3 +58,5 @@ only forth also feline definitions
 synonym [ [:
 
 synonym ] ;]
+
+only forth definitions
