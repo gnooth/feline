@@ -168,13 +168,23 @@ code fixnum?, 'fixnum?'                 ; x -- flag
         next
 endcode
 
-; ### print
+; ### .
 code generic_dot, '.'                   ; x --
         _dup
-        _fixnum?
+        _f
+        _equal
         _if .1
-        _untag_fixnum
+        _drop
+        _lit 'f'
+        _ emit
+        _return
         _then .1
+
+        _dup
+        _fixnum?
+        _if .2
+        _untag_fixnum
+        _then .2
         _ dot
         next
 endcode
