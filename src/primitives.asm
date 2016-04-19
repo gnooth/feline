@@ -17,6 +17,11 @@
 
 IN_FELINE
 
+; ### f
+inline f, 'f'                           ; -- f
+        _f
+endinline
+
 ; ### feline-interpret-do-literal
 code feline_interpret_do_literal, 'feline-interpret-do-literal' ; $addr -- n | d
         _ character_literal?

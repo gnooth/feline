@@ -13,15 +13,26 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+%macro  pushrbx 0
+        mov     [rbp - BYTES_PER_CELL], rbx
+        lea     rbp, [rbp - BYTES_PER_CELL]
+%endmacro
+
+%macro  poprbx  0
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
 ; %define USE_TAGS
 
 %ifdef USE_TAGS
 
-%define TAG_BITS        2
+%define TAG_BITS        3
 
-%define TAG_HIGH_BITS
+%define TAG_LOW_BITS
 
 %define FIXNUM_TAG      1
+%define F_TAG           6
 
 %macro  _fixnum? 0
         _tag
@@ -54,10 +65,15 @@
         sar     rbx, TAG_BITS
 %endmacro
 
+%macro  _f 0
+        pushrbx
+        mov     rbx, F_TAG << (64 - TAG_BITS)
+%endmacro
+
 %elifdef TAG_LOW_BITS
 
 %macro  _tag 0                          ; object -- tag
-        and     rbx, 3
+        and     rbx, (1 << TAG_BITS) - 1
 %endmacro
 
 %macro  _tag_fixnum 0
@@ -69,6 +85,11 @@
 
 %macro  _untag_fixnum 0
         sar     rbx, TAG_BITS
+%endmacro
+
+%macro  _f 0
+        pushrbx
+        mov     ebx, F_TAG
 %endmacro
 
 %endif ; TAG_HIGH_BITS / TAG_LOW_BITS
@@ -85,6 +106,11 @@
 %endmacro
 
 %macro  _untag_fixnum 0
+%endmacro
+
+%macro  _f 0
+        pushrbx
+        mov     ebx, 0
 %endmacro
 
 %endif ; USE_TAGS
@@ -116,16 +142,6 @@
 %else
         %error "_return in inline"
 %endif
-%endmacro
-
-%macro  pushrbx 0
-        mov     [rbp - BYTES_PER_CELL], rbx
-        lea     rbp, [rbp - BYTES_PER_CELL]
-%endmacro
-
-%macro  poprbx  0
-        mov     rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
 %macro  pushd   1
