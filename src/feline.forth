@@ -95,6 +95,16 @@ import .(
     ['] forth-interpret is interpret
 ; immediate
 
+: file-contents ( path -- string )
+    string> r/o open-file throw local fileid
+    fileid file-size throw drop local filesize
+    filesize -allocate local buffer
+    buffer filesize fileid read-file throw local bufsize
+    fileid close-file throw
+    buffer bufsize >string
+    buffer -free
+;
+
 also forth definitions
 
 import [feline]
