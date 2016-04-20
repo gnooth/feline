@@ -22,6 +22,46 @@ inline f, 'f'                           ; -- f
         _f
 endinline
 
+; ### if
+code if_else, 'if'                      ; ? true false --
+        _ rot
+        _f
+        _equal
+        _if .1
+        _nip
+        _else .1
+        _drop
+        _then .1
+        _ execute
+        next
+endcode
+
+; ### when
+code when, 'when'                       ; ? true --
+        _swap
+        _f
+        _equal
+        _if .1
+        _drop
+        _else .1
+        _ execute
+        _then .1
+        next
+endcode
+
+; ### unless
+code unless, 'unless'                   ; ? false --
+        _swap
+        _f
+        _equal
+        _if .1
+        _ execute
+        _else .1
+        _drop
+        _then .1
+        next
+endcode
+
 ; ### feline-interpret-do-literal
 code feline_interpret_do_literal, 'feline-interpret-do-literal' ; $addr -- n | d
         _ character_literal?
