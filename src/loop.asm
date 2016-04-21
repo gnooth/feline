@@ -290,11 +290,13 @@ code each_integer, 'each-integer'       ; n xt --
         jle     .2
 .1:
         pushd   r12
+        _tag_fixnum
         call    r13
         inc     r12
         cmp     r12, r14
         je     .2
         pushd   r12
+        _tag_fixnum
         call    r13
         inc     r12
         cmp     r12, r14
