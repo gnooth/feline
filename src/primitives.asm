@@ -23,7 +23,7 @@ inline f, 'f'                           ; -- f
 endinline
 
 ; ### if
-code if_else, 'if'                      ; ? true false --
+code if_else, 'if/else'                 ; ? true false --
         _ rot
         _f
         _equal
