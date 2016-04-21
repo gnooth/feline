@@ -147,9 +147,6 @@ code string_literal?, 'string-literal?' ; $addr -- c-addr u true | $addr false
         next
 endcode
 
-; ### use-tags?
-value use_tags?, 'use-tags?', 0
-
 ; ### interpret-do-literal
 code interpret_do_literal, 'interpret-do-literal' ; $addr -- n | d
         _ character_literal?

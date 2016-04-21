@@ -81,12 +81,7 @@ code feline_interpret_do_literal, 'feline-interpret-do-literal' ; $addr -- n | d
         _ double?
         _zeq_if .3
         _drop
-; %ifdef USE_TAGS
-;         _ use_tags?
-;         _if .4
         _tag_fixnum
-;         _then .4
-; %endif
         _then .3
 
         next
