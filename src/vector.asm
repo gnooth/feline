@@ -71,11 +71,36 @@ code vector_length, 'vector-length'     ; vector -- length
 endcode
 
 ; ### vector-set-length
-code vector_set_length, 'vector-set-length' ; handle length --
-        _swap
-        _ check_vector
-        _swap
-        _vector_set_length
+code vector_set_length, 'vector-set-length' ; tagged-new-length handle --
+        _ check_vector                  ; -- tagged-new-length vector
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- tagged-new-length
+        _untag_fixnum                   ; -- new-length
+        _dup
+        _this_vector_capacity
+        _ugt
+        _if .1                          ; -- new-length
+        _dup
+        _this
+        _ vector_ensure_capacity
+        _then .1                        ; -- new-length
+        _dup
+        _this_vector_length
+        _ugt
+        _if .2                          ; -- new-length
+        ; initialize new cells to 0
+        _dup
+        _this_vector_length
+        _?do .3
+        _lit 0
+        _tag_fixnum
+        _i
+        _this_vector_set_nth_unsafe
+        _loop .3
+        _then .2
+        _this_vector_set_length
+        pop     this_register
         next
 endcode
 
