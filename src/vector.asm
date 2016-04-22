@@ -458,8 +458,7 @@ code vector_each, 'vector-each'         ; vector xt --
         _zero
         _?do .1
         _i
-        _this
-        _vector_nth_unsafe              ; -- xt element
+        _this_vector_nth_unsafe         ; -- xt element
         _over                           ; -- xt element xt
         _execute
         _loop .1                        ; -- xt
