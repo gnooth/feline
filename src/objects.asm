@@ -111,6 +111,14 @@ code dot_object, '.object'              ; handle-or-object --
         _return
         _then .3
 
+        _dup
+        _fixnum?
+        _if .4
+        _untag_fixnum
+        _ decdot
+        _return
+        _then .4
+
         ; give up
         _ hdot
 
