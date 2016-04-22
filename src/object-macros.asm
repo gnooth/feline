@@ -147,6 +147,11 @@ file __FILE__
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
 
+%macro  _this_slot3 0                   ; -- x
+        pushrbx
+        mov     rbx, [this_register + BYTES_PER_CELL * 3]
+%endmacro
+
 %macro  _string? 0
         _object_type
         _lit OBJECT_TYPE_STRING
@@ -261,6 +266,10 @@ file __FILE__
 
 %macro  _vector_set_capacity 0          ; vector capacity --
         _set_slot3
+%endmacro
+
+%macro  _this_vector_capacity 0
+        _this_slot3
 %endmacro
 
 %macro  _vector_nth_unsafe 0            ; index vector -- element
