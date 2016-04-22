@@ -325,28 +325,10 @@ code only, 'only'
 ; SEARCH EXT
 ; "Set the search order to the implementation-defined minimum search order. The
 ; minimum search order shall include the words FORTH-WORDLIST and SET-ORDER."
-        _ context
-        _ nvocs
-        _cells
-        _ erase
-
-;         _ forth_wordlist
-;         _ context
-;         _ store
-
-;         _ root_wordlist
-;         _ context
-;         _cellplus
-;         _ store
         _ root_wordlist
-        _ context
-        _twodup
-        _ store
-        _cellplus
-        _ store
-
+        _dup
         _lit 2
-        _to norder
+        _ set_order
         next
 endcode
 
