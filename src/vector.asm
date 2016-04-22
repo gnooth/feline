@@ -467,6 +467,29 @@ code vector_each, 'vector-each'         ; vector xt --
         next
 endcode
 
+; ### vector-each-index
+code vector_each_index, 'vector-each-index' ; vector quot: ( element index -- ) --
+        _swap
+        _ check_vector
+
+        push    this_register
+        mov     this_register, rbx
+        _vector_length
+        _zero
+        _?do .1
+        _i                              ; -- xt i
+        _this_vector_nth_unsafe         ; -- xt element
+        _i                              ; -- xt element i
+        _tag_fixnum                     ; -- xt element index
+        _lit 2
+        _pick
+        _execute
+        _loop .1                        ; -- xt
+        _drop
+        pop     this_register
+        next
+endcode
+
 ; ### vector-find-string
 code vector_find_string, 'vector-find-string' ; string vector -- index flag
         _ check_vector
