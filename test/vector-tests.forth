@@ -151,6 +151,29 @@ test: test7 ( -- )
 
 test7
 
+\ each-integer vector-each-index vector-set-length
+test: test8 ( -- )
+    10 <vector> !> v
+    v vector-length 0 = check
+    \ element is index+1
+    16 [ 1 + v vector-push ] each-integer
+    v vector-length 16 = check
+    v [ ( element index -- ) 1 + = check ] vector-each-index
+    9 v vector-set-length
+    v vector-length 9 = check
+    v [ ( element index -- ) 1 + = check ] vector-each-index
+    25 v vector-set-length
+    v vector-length 25 = check
+    9 0 do
+        i v vector-nth i 1 + = check
+    loop
+    25 10 do
+        i v vector-nth 0 = check
+    loop
+;
+
+test8
+
 empty
 
 ?cr .( Reached end of vector-tests.forth )
