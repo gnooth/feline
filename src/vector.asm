@@ -274,21 +274,28 @@ endcode
 
 ; ### vector-set-nth
 code vector_set_nth, 'vector-set-nth'   ; element index vector --
-        _ check_vector
 
-        _twodup
-        _vector_length
-        _ult
-        _if .1
-        _vector_data
+%ifdef USE_TAGS
         _swap
-        _cells
-        _plus
-        _store
-        _else .1
-        _true
-        _abortq "vector-set-nth index out of range"
-        _then .1
+        _untag_fixnum
+        _swap
+%endif
+
+vector_set_nth_untagged:
+        _ check_vector
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- element untagged-index
+        _dup
+        _this
+        _ vector_ensure_capacity        ; -- element untagged-index
+        _dup
+        _oneplus
+        _this_vector_length
+        _ max
+        _this_vector_set_length
+        _this_vector_set_nth_unsafe
+        pop     this_register
         next
 endcode
 

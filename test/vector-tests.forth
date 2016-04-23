@@ -170,9 +170,31 @@ test: test8 ( -- )
     25 10 do
         i v vector-nth 0 = check
     loop
+    0 v vector-set-length
+    v vector-length 0 = check
+    42 v vector-push
+    87 v vector-push
+    19 v vector-push
+    v vector-length 3 = check
+    0 v vector-nth 42 = check
+    1 v vector-nth 87 = check
+    2 v vector-nth 19 = check
+    0 !> v
 ;
 
 test8
+
+test: test9
+    10 <vector> !> v
+    42 0 v vector-set-nth
+    v vector-length 1 = check
+    0 v vector-nth 42 = check
+    87 12 v vector-set-nth
+    v vector-length 13 = check
+    12 v vector-nth 87 = check
+;
+
+test9
 
 empty
 
