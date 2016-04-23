@@ -223,6 +223,7 @@ code vector_nth, 'vector-nth'           ; index handle -- element
         _swap
 %endif
 
+vector_nth_untagged:
         _ check_vector
 
         _twodup
