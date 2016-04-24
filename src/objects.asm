@@ -197,10 +197,20 @@ code generic_dot, '.'                   ; x --
         _then .1
 
         _dup
-        _fixnum?
+        _t
+        _equal
         _if .2
-        _untag_fixnum
+        _drop
+        _lit 't'
+        _ emit
+        _return
         _then .2
+
+        _dup
+        _fixnum?
+        _if .3
+        _untag_fixnum
+        _then .3
         _ dot
         next
 endcode
