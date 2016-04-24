@@ -32,7 +32,7 @@
 %define TAG_LOW_BITS
 
 %define FIXNUM_TAG      1
-%define F_TAG           6
+%define BOOLEAN_TAG     6
 
 %macro  _fixnum? 0
         _tag
@@ -67,7 +67,12 @@
 
 %macro  _f 0
         pushrbx
-        mov     rbx, F_TAG << (64 - TAG_BITS)
+        mov     rbx, BOOLEAN_TAG << (64 - TAG_BITS)
+%endmacro
+
+%macro  _t 0
+        pushrbx
+        mov     rbx, (BOOLEAN_TAG << (64 - TAG_BITS)) + 1
 %endmacro
 
 %elifdef TAG_LOW_BITS
@@ -89,7 +94,12 @@
 
 %macro  _f 0
         pushrbx
-        mov     ebx, F_TAG
+        mov     ebx, BOOLEAN_TAG
+%endmacro
+
+%macro  _t 0
+        pushrbx
+        mov     ebx, (1 << TAG_BITS) + BOOLEAN_TAG
 %endmacro
 
 %endif ; TAG_HIGH_BITS / TAG_LOW_BITS
@@ -111,6 +121,11 @@
 %macro  _f 0
         pushrbx
         mov     ebx, 0
+%endmacro
+
+%macro  _t 0
+        pushrbx
+        mov     ebx, 1
 %endmacro
 
 %endif ; USE_TAGS

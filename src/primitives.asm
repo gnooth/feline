@@ -17,6 +17,11 @@
 
 IN_FELINE
 
+; ### t
+inline t, 't'                           ; -- t
+        _t
+endinline
+
 ; ### f
 inline f, 'f'                           ; -- f
         _f
