@@ -309,7 +309,7 @@ endcode
 ; ### also
 code also, 'also'
         _ get_order
-        _overswap
+        _dupd
         _oneplus
         _ set_order
         next

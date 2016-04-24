@@ -244,7 +244,7 @@
         sub     rbx, [rbp]
 %endmacro
 
-%macro  _overswap 0                     ; OVER SWAP
+%macro  _dupd 0                         ; dupd
         mov     rax, [rbp]
         mov     [rbp - BYTES_PER_CELL], rax
         lea     rbp, [rbp - BYTES_PER_CELL]

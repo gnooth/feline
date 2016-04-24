@@ -116,9 +116,9 @@ inline over_minus, 'over-'
         _over_minus
 endinline
 
-; ### over-swap
-inline overswap, 'over-swap'
-        _overswap
+; ### dupd
+inline dupd, 'dupd'
+        _dupd
 endinline
 
 ; ### +dup
