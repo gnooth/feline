@@ -90,6 +90,8 @@ import .(
     ['] feline-interpret is interpret
 ; immediate
 
+import feline!
+
 : [forth]
     ['] forth-prompt is prompt
     ['] forth-interpret is interpret
