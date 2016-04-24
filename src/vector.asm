@@ -569,7 +569,7 @@ code dot_vector, '.vector'              ; vector --
         push    this_register
         mov     this_register, rbx
 
-        _dotq "{ "
+        _dotq "V{ "
         _vector_length
         _zero
         _?do .1
