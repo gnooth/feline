@@ -22,10 +22,14 @@
 create empty-search-order #vocs cells allot
 
 : save-search-order ( addr -- )
-    context swap #vocs cells cmove ;
+\     context swap #vocs cells cmove
+    drop
+;
 
 : restore-search-order ( addr -- )
-    context #vocs cells 2dup erase cmove ;
+\     context #vocs cells 2dup erase cmove
+    drop
+;
 
 : trim ( wid -- )
     \ headers are in the data area

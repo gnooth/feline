@@ -20,7 +20,7 @@ forth!
    create dup ,
    latest swap wid>name !
    does>
-      @ context ! ;
+      @ 0 context-vector vector-set-nth ;
 
 root definitions
 

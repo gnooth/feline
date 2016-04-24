@@ -52,7 +52,7 @@ forth!
 : (words) ( -- )
     0 to words-count
     cr
-    context @
+    get-context
     begin
         @
         ?dup

@@ -23,16 +23,6 @@ variable current, 'current', forth_wid
 ; not in standard
 constant nvocs, '#vocs', NVOCS          ; maximum number of word lists in search order
 
-; ### #order
-variable norder, '#order', 1
-
-; ### context
-; not in standard
-variable context, 'context', forth_wid
-section .data
-        times NVOCS dq 0
-        dq      0                       ; sentinel for FIND
-
 ; ### get-current
 code get_current, 'get-current'         ; -- wid
 ; SEARCH
@@ -53,9 +43,11 @@ endcode
 ; ### definitions
 code definitions, 'definitions'         ; --
 ; SEARCH
-        mov     rax, [context_data]
-        mov     [current_data], rax
-        next
+         _zero
+         _ context_vector
+         _ vector_nth_untagged
+         _ set_current
+         next
 endcode
 
 ; ### voclink
@@ -154,8 +146,10 @@ endcode
 
 ; ### root
 code root, 'root'
-        mov     rax, root_wid
-        mov     [context_data], rax
+        _ root_wordlist
+        _zero
+        _ context_vector
+        _ vector_set_nth_untagged
         next
 endcode
 
@@ -170,14 +164,15 @@ endcode
 ; ### forth
 code forth, 'forth'                     ; --
 ; SEARCH EXT
-        mov     rax, forth_wid
-        mov     [context_data], rax
+        _ forth_wordlist
+        _zero
+        _ context_vector
+        _ vector_set_nth_untagged
         next
 endcode
 
 ; ### feline-wordlist
 code feline_wordlist, 'feline-wordlist' ; -- wid
-; SEARCH
         pushrbx
         mov     rbx, feline_wid
         next
@@ -185,9 +180,10 @@ endcode
 
 ; ### feline
 code feline, 'feline'                   ; --
-; SEARCH EXT
-        mov     rax, feline_wid
-        mov     [context_data], rax
+        _ feline_wordlist
+        _zero
+        _ context_vector
+        _ vector_set_nth_untagged
         next
 endcode
 
@@ -200,36 +196,35 @@ endcode
 
 ; ### files
 code files, 'files'
-        mov     rax, files_wid
-        mov     [context_data], rax
+        _ files_wordlist
+        _zero
+        _ context_vector
+        _ vector_set_nth_untagged
+        next
+endcode
+
+; ### context-vector
+value context_vector, 'context-vector', 0
+
+; ### get-context
+code get_context, 'get-context'
+        _zero
+        _ context_vector
+        _ vector_nth_untagged
         next
 endcode
 
 ; ### order
 code order, 'order'
 ; SEARCH EXT
-; FIXME
         _ ?cr
         _dotq "Context: "
-        _ nvocs
-        _zero
-        _do .1
-        _ context
-        _i
-        _cells
-        _plus
-        _fetch                          ; -- wid
-        _?dup
-        _if .2
-        _ dotwid
-        _else .2
-        _leave
-        _then .2
-        _loop .1
+        _ context_vector
+        _lit dotwid_xt
+        _ vector_each
         _ cr
         _dotq "Current: "
-        _ current
-        _fetch
+        _ get_current
         _ dotwid
         next
 endcode
@@ -239,19 +234,25 @@ code get_order, 'get-order'             ; -- widn ... wid1 n
 ; SEARCH
 ; "wid1 identifies the word list that is searched first, and widn the word list
 ; that is searched last."
-        _from norder
+        _ context_vector
+        _ vector_length
+        _untag_fixnum
         _zero
         _?do .1
-        _from norder
+        _ context_vector
+        _ vector_length
+        _untag_fixnum
         _i
         _minus
         _oneminus
-        _cells
-        _ context
-        _plus
-        _fetch
+        _ context_vector
+        _ vector_nth_untagged
         _loop .1
-        _from norder
+
+        _ context_vector
+        _ vector_length
+        _untag_fixnum
+
         next
 endcode
 
@@ -264,12 +265,10 @@ code set_order, 'set-order'             ; widn ... wid1 n --
         _dup
         _zeq_if .1
         ; "If n is zero, empty the search order."
-        _drop
-        _ context
-        _ nvocs
-        _cells
-        _ erase
-        _zeroto norder
+        _zero
+        _tag_fixnum
+        _ context_vector
+        _ vector_set_length
         _return
         _then .1
 
@@ -286,7 +285,7 @@ code set_order, 'set-order'             ; widn ... wid1 n --
 
         _dup
         _ nvocs
-        _ ugt
+        _ugt
         _if .0
         _cquote "Search-order overflow"
         _to msg
@@ -294,19 +293,15 @@ code set_order, 'set-order'             ; widn ... wid1 n --
         _ throw
         _then .0
 
-        _ context
-        _ nvocs
-        _cells
-        _ erase
-        _dup
-        _to norder
+        _zero
+        _tag_fixnum
+        _ context_vector
+        _ vector_set_length
+
         _zero
         _?do .3
-        _ context
-        _i
-        _cells
-        _plus
-        _ store
+        _ context_vector
+        _ vector_push
         _loop .3
         next
 endcode
@@ -474,30 +469,24 @@ code find, 'find'                       ; $addr -- $addr 0 | xt 1 | xt -1
 ; definition is not found, return c-addr and 0. If the definition is
 ; found, return its execution token xt. If the definition is immediate,
 ; also return 1, otherwise also return -1."
-        _ nvocs
+        _ context_vector
+        _ vector_length
+        _untag_fixnum
         _zero
-        _do .1
-        _dup                            ; -- $addr $addr
-        _count                          ; -- $addr c-addr u
-        _ context
+        _?do .1
+        _dup
+        _count
         _i
-        _cells
-        _plus
-        _fetch                          ; -- $addr c-addr u wid
-        _dup_if .2
+        _ context_vector
+        _ vector_nth_untagged
         _ search_wordlist
-        _dup_if .3                      ; -- $addr xt flag
+        _dup_if .3
         _ rot
         _drop
         _unloop
         _return
         _then .3
         _drop
-        _else .2
-        ; wid = 0, reached end of search order
-        _3drop
-        _leave
-        _then .2
         _loop .1
         _false
         next

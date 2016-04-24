@@ -176,6 +176,16 @@ code cold, 'cold'                       ; --
         _lit free_handles_data
         _ gc_add_root
 
+        _lit 16
+        _ new_vector
+        _to context_vector
+        _ forth_wordlist
+        _ context_vector
+        _ vector_push
+
+        _lit context_vector_data
+        _ gc_add_root
+
         _ initialize_task
         _squote "boot.forth"
         _ system_file_pathname
