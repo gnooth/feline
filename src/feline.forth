@@ -13,7 +13,14 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-only forth also feline also definitions
+language: forth
+
+context: forth feline ;
+current: feline
+
+import language:
+import context:
+import current:
 
 import bye
 
@@ -107,6 +114,6 @@ import feline!
     buffer -free
 ;
 
-also forth definitions
+current: forth
 
 import [feline]
