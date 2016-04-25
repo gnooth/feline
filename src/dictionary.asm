@@ -584,7 +584,7 @@ code exit_, 'exit', IMMEDIATE
 endcode
 
 ; ### .id
-code dotid, '.id'                       ; nfa --
+code dot_id, '.id'                      ; nfa --
         _ count
 
         ; REVIEW

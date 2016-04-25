@@ -101,7 +101,7 @@ code cq_add_xt, 'cq-add-xt'             ; xt --
         _dotq "cq-add-xt "
         _dup
         _toname
-        _ dotid
+        _ dot_id
         _then .1
 
         _ cq_length
@@ -327,7 +327,7 @@ code dotcq_entry, '.cq-entry'           ; addr --
         _ decdot
         _else .1
         _toname
-        _ dotid
+        _ dot_id
         _rdrop
         _then .1
         next
@@ -350,7 +350,7 @@ code cq_flush1, 'cq-flush1'
         _ decdot
         _else .debug1
         _toname
-        _ dotid
+        _ dot_id
         _then .debug1
         _then .debug
 

@@ -70,28 +70,28 @@ code wordlist, 'wordlist'               ; -- wid
 endcode
 
 ; ### wid>link
-code widtolink, 'wid>link'
+code wid_to_link, 'wid>link'
         sub     rbx, BYTES_PER_CELL * 2
         next
 endcode
 
 ; ### wid>name
-code widtoname, 'wid>name'
+code wid_to_name, 'wid>name'
         sub     rbx, BYTES_PER_CELL
         next
 endcode
 
 ; ### .wid
-code dotwid, '.wid'                     ; wid --
+code dot_wid, '.wid'                    ; wid --
         _dup
         _if .1
         _dup                            ; -- wid wid
-        _ widtoname                     ; -- wid wid-8
+        _ wid_to_name                   ; -- wid wid-8
         _fetch                          ; -- wid nfa|0
         _?dup
         _if .2
         _nip
-        _ dotid
+        _ dot_id
         _else .2
         _ udot
         _then .2
@@ -106,8 +106,8 @@ code vocs, 'vocs'
         _from voclink
         _begin .1
         _dup
-        _ dotwid
-        _ widtolink
+        _ dot_wid
+        _ wid_to_link
         _fetch
         _dup
         _zeq
@@ -220,12 +220,12 @@ code order, 'order'
         _ ?cr
         _dotq "Context: "
         _ context_vector
-        _lit dotwid_xt
+        _lit dot_wid_xt
         _ vector_each
         _ cr
         _dotq "Current: "
         _ get_current
-        _ dotwid
+        _ dot_wid
         next
 endcode
 
