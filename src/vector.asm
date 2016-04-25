@@ -104,6 +104,14 @@ code vector_set_length, 'vector-set-length' ; tagged-new-length handle --
         next
 endcode
 
+; ### vector-delete-all
+code vector_delete_all, 'vector-delete-all' ; handle --
+        _ check_vector
+        _zero
+        _vector_set_length
+        next
+endcode
+
 ; ### vector-data
 code vector_data, 'vector-data'         ; vector -- data-address
         _ check_vector
