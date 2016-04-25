@@ -13,16 +13,20 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-forth!
+language: forth
+
+context: forth feline ;
+current: forth
 
 : vocabulary
    wordlist
    create dup ,
-   latest swap wid>name !
+   latest over wid>name !
+   add-vocab
    does>
       @ 0 context-vector vector-set-nth ;
 
-root definitions
+current: root
 
 import forth
 import forth-wordlist
@@ -31,4 +35,4 @@ import order
 
 import feline
 
-forth!
+current: forth
