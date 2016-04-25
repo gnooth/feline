@@ -116,6 +116,7 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	tools.asm \
 	transient-alloc.asm \
 	value.asm \
+	vocabs.asm \
 	vector.asm
 
 # -felf64 even on Windows

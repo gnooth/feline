@@ -186,6 +186,8 @@ code cold, 'cold'                       ; --
         _lit context_vector_data
         _ gc_add_root
 
+        _ initialize_vocabs
+
         _ initialize_task
         _squote "boot.forth"
         _ system_file_pathname

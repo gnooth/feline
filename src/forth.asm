@@ -59,6 +59,7 @@ static_data_area:
 %include "tools.asm"
 %include "transient-alloc.asm"
 %include "value.asm"
+%include "vocabs.asm"
 
 IN_FELINE
 
