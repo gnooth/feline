@@ -35,4 +35,8 @@ import order
 
 import feline
 
+import language:
+import context:
+import current:
+
 current: forth
