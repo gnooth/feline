@@ -631,12 +631,16 @@ code concat, 'concat'                   ; string1 string2 -- string3
 endcode
 
 ; ### string=
-code stringequal, 'string='             ; string1 string2 -- flag
+code stringequal, 'string='             ; string1 string2 -- ?
         _ string_from
         _ rot
         _ string_from
-        _ strequal
-        _tag_fixnum
+        _ strequal                      ; -- -1|0
+        _if .1
+        _t
+        _else .1
+        _f
+        _then .1
         next
 endcode
 
@@ -659,8 +663,7 @@ code string_equal?, 'string-equal?'     ; object1 object2 -- flag
         _then .1
 
         _2drop
-        _false
-        _tag_fixnum
+        _f
         next
 endcode
 
