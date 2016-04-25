@@ -44,6 +44,7 @@ static_data_area:
 %include "include.asm"
 %include "interpret.asm"
 %include "io.asm"
+%include "language.asm"
 %include "locals.asm"
 %include "loop.asm"
 %include "memory.asm"
