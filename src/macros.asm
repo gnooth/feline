@@ -57,23 +57,27 @@
         sar     rbx, TAG_BITS
 %endmacro
 
+%define f_value BOOLEAN_TAG
+
+%define t_value BOOLEAN_TAG + (1 << TAG_BITS)
+
 %macro  _f 0
         pushrbx
-        mov     ebx, BOOLEAN_TAG
+        mov     ebx, f_value
 %endmacro
 
 %macro  _t 0
         pushrbx
-        mov     ebx, (1 << TAG_BITS) + BOOLEAN_TAG
+        mov     ebx, t_value
 %endmacro
 
 %macro  _tag_boolean 0
         test    rbx, rbx
         jz      %%1
-        mov     ebx, (1 << TAG_BITS) + BOOLEAN_TAG
+        mov     ebx, t_value
         jmp     %%2
 %%1:
-        mov     ebx, BOOLEAN_TAG
+        mov     ebx, f_value
 %%2:
 %endmacro
 
@@ -95,14 +99,18 @@
 %macro  _untag_fixnum 0
 %endmacro
 
+%define f_value 0
+
+%define t_value -1
+
 %macro  _f 0
         pushrbx
-        mov     ebx, 0
+        mov     ebx, f_value
 %endmacro
 
 %macro  _t 0
         pushrbx
-        mov     rbx, -1
+        mov     rbx, t_value
 %endmacro
 
 %macro  _tag_boolean 0
@@ -560,6 +568,19 @@ section .text
         mov     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
         jz      %1_ifnot
+%endmacro
+
+%macro  _tagged_if 1
+%ifdef USE_TAGS
+        %push if
+        section .text
+        cmp     rbx, f_value
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        jz      %1_ifnot
+%else
+        _if %1
+%endif
 %endmacro
 
 %macro  _zeq_if 1
