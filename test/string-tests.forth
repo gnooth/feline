@@ -136,7 +136,7 @@ test: test7
     s1 string? check
 
     s2 ~string
-    s2 string? check-false
+    s2 string? f = check
 ;
 
 test7
@@ -163,22 +163,22 @@ test: test9
 \     s1 handle? check
     s1 ~string
 \     s1 handle? check
-    s1 object? check-false
-    s1 string? check-false
+    s1 object? f = check
+    s1 string? f = check
 ;
 
 test9
 
 \ string-equal?
 test: test10
-    "test" "test" string-equal? check
-    "test" "text" string-equal? check-false
-    42 "test" string-equal? check-false
-    "test" 89 string-equal? check-false
-    42 17 string-equal? check-false
+    "test" "test" string-equal? t = check
+    "test" "text" string-equal? f = check
+    42 "test" string-equal? f = check
+    "test" 89 string-equal? f = check
+    42 17 string-equal? f = check
 
-    s" testing" >transient-string "testing" string-equal? check
-    s" testing" >transient-string s" testing" >string string-equal? check
+    s" testing" >transient-string "testing" string-equal? t = check
+    s" testing" >transient-string s" testing" >string string-equal? t = check
 ;
 
 test10
