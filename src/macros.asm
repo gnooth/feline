@@ -23,7 +23,7 @@
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
-; %define USE_TAGS
+%define USE_TAGS
 
 %ifdef USE_TAGS
 
