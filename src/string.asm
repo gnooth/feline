@@ -16,7 +16,7 @@
 file __FILE__
 
 ; ### string?
-code string?, 'string?'                 ; x -- flag
+code string?, 'string?'                 ; x -- t|f
         _dup
         _ handle?
         _if .1
@@ -26,7 +26,7 @@ code string?, 'string?'                 ; x -- flag
         _lit OBJECT_TYPE_STRING
         _equal
         _then .2
-        _tag_fixnum
+        _tag_boolean
         _return
         _then .1
 
@@ -43,7 +43,7 @@ code string?, 'string?'                 ; x -- flag
         ; Address is not in a permissible range.
         _drop                           ; --
         _false
-        _tag_fixnum
+        _tag_boolean
         _return
         _then .5
         _then .4
@@ -52,7 +52,7 @@ code string?, 'string?'                 ; x -- flag
         _object_type                    ; -- object-type
         _lit OBJECT_TYPE_STRING
         _equal
-        _tag_fixnum
+        _tag_boolean
 
         next
 endcode
@@ -401,8 +401,7 @@ code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
 
         _dup
         _ string?
-        _untag_fixnum
-        _if .3                          ; -- string
+        _tagged_if .3                   ; -- string
         _return
         _then .3
 
@@ -571,8 +570,7 @@ code dot_string, '.string'              ; string | sbuf | $addr --
         ; REVIEW
         _dup
         _ string?
-        _untag_fixnum
-        _if .4
+        _tagged_if .4
         _ string_from
         _ type
         _return
@@ -631,31 +629,25 @@ code concat, 'concat'                   ; string1 string2 -- string3
 endcode
 
 ; ### string=
-code stringequal, 'string='             ; string1 string2 -- ?
+code stringequal, 'string='             ; string1 string2 -- t|f
         _ string_from
         _ rot
         _ string_from
         _ strequal                      ; -- -1|0
-        _if .1
-        _t
-        _else .1
-        _f
-        _then .1
+        _tag_boolean                    ; -- t|f
         next
 endcode
 
 ; ### string-equal?
-code string_equal?, 'string-equal?'     ; object1 object2 -- flag
+code string_equal?, 'string-equal?'     ; object1 object2 -- t|f
 ; Returns true if both objects are strings and those strings are identical.
         _dup
         _ string?
-        _untag_fixnum
-        _if .1
+        _tagged_if .1
         _swap
         _dup
         _ string?
-        _untag_fixnum
-        _if .2
+        _tagged_if .2
         ; both objects are strings
         _ stringequal
         _return
