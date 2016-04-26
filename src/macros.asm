@@ -75,6 +75,21 @@
         mov     rbx, (BOOLEAN_TAG << (64 - TAG_BITS)) + 1
 %endmacro
 
+%macro  _tag_boolean 0
+        test    rbx, rbx
+        jz      %%1
+        mov     rbx, (BOOLEAN_TAG << (64 - TAG_BITS)) + 1
+        jmp     %%2
+%%1:
+        mov     rbx, BOOLEAN_TAG << (64 - TAG_BITS)
+%%2:
+%endmacro
+
+%macro  _untag_boolean 0
+        shl     rbx, TAG_BITS
+        shr     rbx, TAG_BITS
+%endmacro
+
 %elifdef TAG_LOW_BITS
 
 %macro  _tag 0                          ; object -- tag
@@ -102,6 +117,20 @@
         mov     ebx, (1 << TAG_BITS) + BOOLEAN_TAG
 %endmacro
 
+%macro  _tag_boolean 0
+        test    rbx, rbx
+        jz      %%1
+        mov     ebx, (1 << TAG_BITS) + BOOLEAN_TAG
+        jmp     %%2
+%%1:
+        mov     ebx, BOOLEAN_TAG
+%%2:
+%endmacro
+
+%macro  _untag_boolean 0                ; t|f -- 1|0
+        shr     rbx, TAG_BITS
+%endmacro
+
 %endif ; TAG_HIGH_BITS / TAG_LOW_BITS
 
 %else ; not using tags
@@ -125,7 +154,13 @@
 
 %macro  _t 0
         pushrbx
-        mov     ebx, 1
+        mov     rbx, -1
+%endmacro
+
+%macro  _tag_boolean 0
+%endmacro
+
+%macro  _untag_boolean 0
 %endmacro
 
 %endif ; USE_TAGS
