@@ -89,7 +89,7 @@ code new_handle, 'new-handle'           ; object -- handle
 endcode
 
 ; ### handle?
-code handle?, 'handle?'                 ; x -- flag
+code handle?, 'handle?'                 ; x -- 1|0
 ; Argument is untagged.
 ; Returned value is untagged.
         ; must point into handle space
