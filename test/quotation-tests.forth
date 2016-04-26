@@ -15,9 +15,10 @@
 
 require-system-file test-framework
 
-[feline]
+language: feline
 
-only feline also definitions
+context: feline forth ;
+current: feline
 
 test: test1 ( -- )
     [ 42 ] execute 42  = check
