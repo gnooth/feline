@@ -29,8 +29,6 @@
 
 %define TAG_BITS        3
 
-%define TAG_LOW_BITS
-
 %define FIXNUM_TAG      1
 %define BOOLEAN_TAG     6
 
@@ -43,54 +41,6 @@
         _equal
 %endif
 %endmacro
-
-%ifdef TAG_HIGH_BITS
-
-%macro  _tag 0                          ; object -- tag
-        shr     rbx, 64 - TAG_BITS
-%endmacro
-
-%macro  _tag_fixnum 0
-        shl     rbx, TAG_BITS
-        shr     rbx, TAG_BITS
-%if FIXNUM_TAG <> 0
-;         add     rbx, FIXNUM_TAG << (64 - TAG_BITS)
-        mov     rax, FIXNUM_TAG << (64 - TAG_BITS)
-        add     rbx, rax
-%endif
-%endmacro
-
-%macro  _untag_fixnum 0
-        shl     rbx, TAG_BITS
-        sar     rbx, TAG_BITS
-%endmacro
-
-%macro  _f 0
-        pushrbx
-        mov     rbx, BOOLEAN_TAG << (64 - TAG_BITS)
-%endmacro
-
-%macro  _t 0
-        pushrbx
-        mov     rbx, (BOOLEAN_TAG << (64 - TAG_BITS)) + 1
-%endmacro
-
-%macro  _tag_boolean 0
-        test    rbx, rbx
-        jz      %%1
-        mov     rbx, (BOOLEAN_TAG << (64 - TAG_BITS)) + 1
-        jmp     %%2
-%%1:
-        mov     rbx, BOOLEAN_TAG << (64 - TAG_BITS)
-%%2:
-%endmacro
-
-%macro  _untag_boolean 0
-        shl     rbx, TAG_BITS
-        shr     rbx, TAG_BITS
-%endmacro
-
-%elifdef TAG_LOW_BITS
 
 %macro  _tag 0                          ; object -- tag
         and     rbx, (1 << TAG_BITS) - 1
@@ -130,8 +80,6 @@
 %macro  _untag_boolean 0                ; t|f -- 1|0
         shr     rbx, TAG_BITS
 %endmacro
-
-%endif ; TAG_HIGH_BITS / TAG_LOW_BITS
 
 %else ; not using tags
 
