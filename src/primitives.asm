@@ -27,13 +27,17 @@ inline f, 'f'                           ; -- f
         _f
 endinline
 
-; ### =
-inline feline_equal, '='                ; n1 n2 -- t|f
+%macro _feline_equal 0                  ; n1 n2 -- t|f
         mov     eax, t_value
         cmp     rbx, [rbp]
         mov     ebx, f_value
         cmove   ebx, eax
         lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
+; ### =
+inline feline_equal, '='                ; n1 n2 -- t|f
+        _feline_equal
 endinline
 
 ; ### 0=
