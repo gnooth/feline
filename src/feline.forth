@@ -38,12 +38,6 @@ import [then]
 import (
 import \
 
-\ import =
-: = ( n1 n2 -- flag ) = tag-fixnum ;
-
-\ import 0=
-: 0= ( n -- flag ) untag-fixnum 0= tag-fixnum ;
-
 import u<
 import <
 

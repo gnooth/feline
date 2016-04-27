@@ -27,8 +27,25 @@ inline f, 'f'                           ; -- f
         _f
 endinline
 
-; ### if
-code if_else, 'if/else'                 ; ? true false --
+; ### =
+inline feline_equal, '='                ; n1 n2 -- t|f
+        mov     eax, t_value
+        cmp     rbx, [rbp]
+        mov     ebx, f_value
+        cmove   ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+endinline
+
+; ### 0=
+inline feline_zeq, '0='
+        mov     eax, t_value
+        cmp     rbx, tagged_zero
+        mov     ebx, f_value
+        cmovz   ebx, eax
+endinline
+
+; ### if-else
+code if_else, 'if-else'                 ; ? true false --
         _ rot
         _f
         _equal
