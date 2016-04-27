@@ -13,16 +13,15 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-language: forth
+language: feline
 
 context: forth feline ;
-current: forth
+current: feline
 
 : do-check ( flag addr -- )
     0 local message
     swap
-    untag-fixnum
-    if
+    f <> if
         drop
     else
         "check failed" string>sbuf !> message
@@ -48,6 +47,6 @@ current: forth
 ; immediate
 
 : check-false ( -- )
-    postpone 0=
+    postpone not
     postpone check
 ; immediate
