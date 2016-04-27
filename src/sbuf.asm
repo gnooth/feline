@@ -18,7 +18,7 @@ file __FILE__
 ; Stringbuffers
 
 ; ### sbuf?
-code sbuf?, 'sbuf?'                     ; object -- flag
+code sbuf?, 'sbuf?'                     ; object -- t|f
         _dup
         _ handle?
         _if .1
@@ -26,11 +26,11 @@ code sbuf?, 'sbuf?'                     ; object -- flag
         _dup_if .2
         _object_type                    ; -- object-type
         _lit OBJECT_TYPE_SBUF
-        _equal
+        _feline_equal
+        _return
         _then .2
-        _else .1
-        xor     ebx, ebx
         _then .1
+        mov     ebx, f_value
         next
 endcode
 

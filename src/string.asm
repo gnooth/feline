@@ -407,7 +407,7 @@ code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
 
         _dup
         _ sbuf?
-        _if .4                          ; -- sbuf
+        _tagged_if .4                   ; -- sbuf
         _ sbuf_to_transient_string      ; -- string
         _return
         _then .4
@@ -578,7 +578,7 @@ code dot_string, '.string'              ; string | sbuf | $addr --
 
         _dup
         _ sbuf?
-        _if .2
+        _tagged_if .2
         _duptor
         ; FIXME inline
         _ sbuf_data
