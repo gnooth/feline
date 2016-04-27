@@ -44,6 +44,14 @@ inline feline_zeq, '0='
         cmovz   ebx, eax
 endinline
 
+; ### not
+inline not, 'not'
+        mov     eax, t_value
+        cmp     rbx, f_value
+        mov     ebx, f_value
+        cmove   ebx, eax
+endinline
+
 ; ### if-else
 code if_else, 'if-else'                 ; ? true false --
         _ rot
