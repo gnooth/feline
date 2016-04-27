@@ -16,7 +16,7 @@
 file __FILE__
 
 ; ### vector?
-code vector?, 'vector?'                 ; handle -- flag
+code vector?, 'vector?'                 ; handle -- t|f
         _dup
         _ handle?
         _if .1
@@ -24,11 +24,11 @@ code vector?, 'vector?'                 ; handle -- flag
         _dup_if .2
         _object_type                    ; -- object-type
         _lit OBJECT_TYPE_VECTOR
-        _equal
+        _feline_equal
+        _return
         _then .2
-        _else .1
-        xor     ebx, ebx
         _then .1
+        mov     ebx, f_value
         next
 endcode
 
@@ -560,10 +560,8 @@ code vector_find_string, 'vector-find-string' ; string vector -- index flag
 
         ; not found
         _drop
-        _zero
-        _tag_fixnum
-        _false
-        _tag_fixnum
+        _f
+        _f
 
 .exit:
         pop     this_register

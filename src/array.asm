@@ -16,7 +16,7 @@
 file __FILE__
 
 ; ### array?
-code array?, 'array?'                   ; handle -- flag
+code array?, 'array?'                   ; handle -- t|f
         _dup
         _ handle?
         _if .1
