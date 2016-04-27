@@ -13,11 +13,12 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-[undefined] check [if] require check [then]
+require check
 
-[forth]
+language: feline
 
-only forth also feline also definitions
+context: feline forth ;
+current: feline
 
 : .test-name
     postpone ?cr

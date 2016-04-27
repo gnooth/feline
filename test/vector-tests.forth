@@ -15,7 +15,10 @@
 
 require-system-file test-framework
 
-[feline]
+language: feline
+
+context: feline forth ;
+current: feline
 
 test: test1 ( -- )
     100000 local #reps

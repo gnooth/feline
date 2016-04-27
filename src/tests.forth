@@ -15,8 +15,6 @@
 
 require test-framework
 
-[feline]
-
 include-tests local-tests.forth
 include-tests quotation-tests.forth
 include-tests string-tests.forth

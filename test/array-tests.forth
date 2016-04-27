@@ -13,9 +13,12 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-feline!
-
 require-system-file test-framework
+
+language: feline
+
+context: feline forth ;
+current: feline
 
 test: test1 ( -- )
     10 42 <array> local a

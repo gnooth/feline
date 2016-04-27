@@ -13,9 +13,12 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-feline!
-
 require-system-file test-framework
+
+language: feline
+
+context: feline forth ;
+current: feline
 
 0 value s1
 0 value s2
@@ -106,17 +109,17 @@ test: test6
     s" this is a test" >string local s3
     s1 s3 string= check
     s3 ~string
-    s3 string? 0= check
+    s3 string? check-false
     s" this is a test" >transient-string local s4
     s1 s4 string= check
     s" this is a test" >string local s5
     s1 s5 string= check
     s5 ~string
-    s5 string? 0= check
+    s5 string? check-false
     "this is not a test" local s6
-    s1 s6 string= 0= check
+    s1 s6 string= check-false
     "this is a text" local s7
-    s1 s7 string= 0= check
+    s1 s7 string= check-false
 ;
 
 test6
