@@ -168,7 +168,7 @@ code untag_fixnum, 'untag-fixnum'       ; tagged -- n
         next
 endcode
 
-%ifdef USE_TAGS
+; %ifdef USE_TAGS
 
 ; ### tag
 code tag, 'tag'                         ; object -- tag
@@ -267,4 +267,4 @@ code generic_multiply, '*'              ; n1 n2 -- n1*n2
         next
 endcode
 
-%endif
+; %endif
