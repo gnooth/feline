@@ -32,6 +32,10 @@
 %define FIXNUM_TAG      1
 %define BOOLEAN_TAG     6
 
+%macro  _tag 0                          ; object -- tag
+        and     rbx, (1 << TAG_BITS) - 1
+%endmacro
+
 %macro  _fixnum? 0
         _tag
 %if FIXNUM_TAG = 0
@@ -40,10 +44,6 @@
         _lit FIXNUM_TAG
         _equal
 %endif
-%endmacro
-
-%macro  _tag 0                          ; object -- tag
-        and     rbx, (1 << TAG_BITS) - 1
 %endmacro
 
 %macro  _tag_fixnum 0
@@ -91,6 +91,10 @@
 
 %define TAG_BITS        0
 
+%macro  _tag 0                          ; object -- tag
+        mov     ebx, 0
+%endmacro
+
 %macro  _fixnum? 0
         mov     rbx, -1
 %endmacro
@@ -100,6 +104,8 @@
 
 %macro  _untag_fixnum 0
 %endmacro
+
+%define tagged_zero     0
 
 %define f_value 0
 
