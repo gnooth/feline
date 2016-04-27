@@ -112,7 +112,7 @@ code dot_object, '.object'              ; handle-or-object --
 
         _dup
         _ array?
-        _if .4
+        _tagged_if .4
         _ dot_array
         _ space
         _return
