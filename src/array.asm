@@ -24,11 +24,11 @@ code array?, 'array?'                   ; handle -- flag
         _dup_if .2
         _object_type                    ; -- object-type
         _lit OBJECT_TYPE_ARRAY
-        _equal
+        _feline_equal
+        _return
         _then .2
-        _else .1
-        xor     ebx, ebx
         _then .1
+        mov     ebx, f_value
         next
 endcode
 
