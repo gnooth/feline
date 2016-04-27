@@ -94,7 +94,7 @@ code dot_object, '.object'              ; handle-or-object --
 
         _dup
         _ sbuf?
-        _if .2
+        _tagged_if .2
         _dotq 'SBUF" '
         _ sbuf_from
         _ type
