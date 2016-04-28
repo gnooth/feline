@@ -393,7 +393,7 @@ code check_char, 'check-char'           ; char -- char
 endcode
 
 ; ### sbuf-append-char
-code sbuf_append_char, 'sbuf-append-char' ; sbuf char --
+code sbuf_append_char, 'sbuf-append-char' ; sbuf tagged-char --
 
 ; locals:
 %define this   local0
@@ -452,7 +452,7 @@ code sbuf_append_char, 'sbuf-append-char' ; sbuf char --
 endcode
 
 ; ### sbuf-append-chars
-code sbuf_append_chars, 'sbuf-append-chars' ; sbuf addr len --
+code sbuf_append_chars, 'sbuf-append-chars' ; sbuf untagged-addr untagged-len --
 
 ; locals:
 %define this   local0
