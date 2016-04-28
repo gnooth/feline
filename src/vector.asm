@@ -122,13 +122,7 @@ endcode
 ; ### <vector>
 code new_vector, '<vector>'             ; capacity -- handle
 
-%ifdef USE_TAGS
-        _dup
-        _fixnum?
-        _if .1
         _untag_fixnum
-        _then .1
-%endif
 
 new_vector_untagged:
         _lit 4
