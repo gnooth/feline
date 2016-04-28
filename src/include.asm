@@ -417,16 +417,30 @@ code resolve_include_filename, 'resolve-include-filename' ; c-addr u -- string
         _return
         _then .5                        ; -- string
 
-        ; Otherwise try appending the default extension.
+        ; Otherwise try appending the default extensions.
         _dup                            ; -- string string
-        _quote ".forth"
+        _quote ".feline"
         _ concat                        ; -- string1 string2
         _dup                            ; -- string1 string2 string2
         _ includable?                   ; -- string1 string2 flag
         _if .6
         _nip                            ; return string2
         _return
+        _else .6
+        _drop
         _then .6
+
+        _dup                            ; -- string string
+        _quote ".forth"
+        _ concat                        ; -- string1 string2
+        _dup                            ; -- string1 string2 string2
+        _ includable?                   ; -- string1 string2 flag
+        _if .7
+        _nip                            ; return string2
+        _return
+        _then .7
+
+        _drop
 
         next
 endcode
