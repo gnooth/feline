@@ -211,17 +211,11 @@ code feline_prompt, 'feline-prompt'     ; --
 endcode
 
 ; ### times
-code times_, 'times'                    ; n xt --
+code times_, 'times'                    ; tagged-fixnum xt --
 
-%ifdef USE_TAGS
-        _over
-        _fixnum?
-        _if .1
         _swap
         _untag_fixnum
         _swap
-        _then .1
-%endif
 
         push    r12
         mov     r12, [rbp]
@@ -242,17 +236,11 @@ code times_, 'times'                    ; n xt --
 endcode
 
 ; ### each-integer
-code each_integer, 'each-integer'       ; n xt --
+code each_integer, 'each-integer'       ; tagged-fixnum xt --
 
-%ifdef USE_TAGS
-        _over
-        _fixnum?
-        _if .1
         _swap
         _untag_fixnum
         _swap
-        _then .1
-%endif
 
         push    r12
         push    r13
