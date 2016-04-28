@@ -13,11 +13,15 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-forth!
+language: forth
+
+context: forth feline ;
+current: forth
 
 [defined] hidden 0= [if] vocabulary hidden [then]
 
-hidden definitions
+context: hidden forth feline ;
+current: hidden
 
 0 value buffer
 
@@ -52,7 +56,7 @@ hidden definitions
     dot len + bufsize <= if
         len 0 ?do
             buffer dot + i + c@
-            s i string-char untag-fixnum
+            s i tag-fixnum string-char untag-fixnum
             <> if
                 false to result
                 leave
@@ -142,10 +146,10 @@ hidden definitions
     ?cr filename $. ."  line " line# u.
 ;
 
-also forth definitions
+current: forth
 
 : view ( "<spaces>name" -- )
     ' (view)
 ;
 
-forth!
+context: forth feline ;
