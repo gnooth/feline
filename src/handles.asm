@@ -168,8 +168,8 @@ value nobjects, '#objects',  0
 ; ### #free
 value nfree, '#free', 0
 
-; ### check-handle-space
-code check_handle_space, 'check-handle-space'
+; ### handles
+code handles, 'handles'
         _zeroto nobjects
         _zeroto nfree
 
@@ -179,27 +179,12 @@ code check_handle_space, 'check-handle-space'
         _ handle_space_free
         _ult
         _while .1
-
-;         _ ?cr
-;         _dup
-;         _ hdot
-
         _dup
         _fetch
-
-;         _dup
-;         _ hdot
-
-        _?dup_if .2
-        _lit 1
-        _plusto nobjects
-
-;         _ dot_object
-        _drop
-
+        _if .2
+        _oneplusto nobjects
         _else .2
-        _lit 1
-        _plusto nfree
+        _oneplusto nfree
         _then .2
         _cellplus
         _repeat .1
@@ -211,15 +196,15 @@ code check_handle_space, 'check-handle-space'
         _minus
         _ cell
         _ slash
-        _ dot
+        _ decdot
         _dotq "handles "
 
         _ nobjects
-        _ dot
+        _ decdot
         _dotq "objects "
 
         _ nfree
-        _ dot
+        _ decdot
         _dotq "free"
 
         next
