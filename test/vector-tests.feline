@@ -201,4 +201,4 @@ test9
 
 empty
 
-?cr .( Reached end of vector-tests.forth )
+?cr .( Reached end of vector-tests )

@@ -188,4 +188,4 @@ test10
 
 empty
 
-cr .( Reached end of string-tests.forth )
+cr .( Reached end of string-tests )

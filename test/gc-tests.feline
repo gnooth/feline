@@ -15,7 +15,10 @@
 
 require-system-file test-framework
 
-[feline]
+language: feline
+
+context: feline forth ;
+current: feline
 
 \ data stack
 test: test1 ( -- )
@@ -50,4 +53,4 @@ test3
 
 empty
 
-?cr .( Reached end of gc-tests.forth )
+?cr .( Reached end of gc-tests )

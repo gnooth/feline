@@ -13,9 +13,12 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-feline!
-
 require-system-file test-framework
+
+language: feline
+
+context: feline forth ;
+current: feline
 
 0 value s
 
@@ -41,4 +44,4 @@ test3
 
 empty
 
-?cr .( Reached end of pathname-tests.forth )
+?cr .( Reached end of pathname-tests )
