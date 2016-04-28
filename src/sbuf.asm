@@ -88,19 +88,11 @@ code sbuf_capacity, 'sbuf-capacity'     ; sbuf -- capacity
 endcode
 
 ; ### make-sbuf-internal
-code make_sbuf_internal, 'make-sbuf-internal' ; capacity -- sbuf
+code make_sbuf_internal, 'make-sbuf-internal' ; untagged-capacity -- sbuf
 
 ; locals:
 %define capacity        local0
 %define sbuf            local1
-
-%ifdef USE_TAGS
-        _dup
-        _fixnum?
-        _if .1
-        _untag_fixnum
-        _then .1
-%endif
 
         _locals_enter
 
@@ -143,15 +135,9 @@ code make_sbuf_internal, 'make-sbuf-internal' ; capacity -- sbuf
 
 endcode
 
-; ### make-sbuf
-code make_sbuf, 'make-sbuf'             ; capacity -- handle
-        _ make_sbuf_internal
-        _ new_handle
-        next
-endcode
-
 ; ### <sbuf>
-code new_sbuf, '<sbuf>'                 ; capacity -- sbuf
+code new_sbuf, '<sbuf>'                 ; tagged-capacity -- sbuf
+        _untag_fixnum
         _ make_sbuf_internal            ; -- sbuf
         _dup
         _sbuf_data                      ; -- sbuf data-address
