@@ -104,7 +104,7 @@ code dot_object, '.object'              ; handle-or-object --
 
         _dup
         _ vector?
-        _if .3
+        _tagged_if .3
         _ dot_vector
         _ space
         _return
