@@ -15,14 +15,14 @@
 
 require test-framework
 
-include-tests local-tests.forth
-include-tests quotation-tests.forth
-include-tests string-tests.forth
-include-tests sbuf-tests.forth
-include-tests pathname-tests.forth
-include-tests array-tests.forth
-include-tests vector-tests.forth
-include-tests misc-tests.forth
-include-tests gc-tests.forth
+include-tests local-tests
+include-tests quotation-tests
+include-tests string-tests
+include-tests sbuf-tests
+include-tests pathname-tests
+include-tests array-tests
+include-tests vector-tests
+include-tests misc-tests
+include-tests gc-tests
 
-?cr .( Reached end of tests.forth )
+?cr .( Reached end of tests )
