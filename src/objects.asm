@@ -168,7 +168,17 @@ code untag_fixnum, 'untag-fixnum'       ; tagged -- n
         next
 endcode
 
-; %ifdef USE_TAGS
+; ### tag-char
+code tag_char, 'tag-char'               ; char -- tagged
+        _tag_char
+        next
+endcode
+
+; ### untag-char
+code untag_char, 'untag-char'           ; tagged -- char
+        _untag_char
+        next
+endcode
 
 ; ### tag
 code tag, 'tag'                         ; object -- tag
@@ -178,7 +188,7 @@ code tag, 'tag'                         ; object -- tag
 endcode
 
 ; ### fixnum?
-code fixnum?, 'fixnum?'                 ; x -- flag
+code fixnum?, 'fixnum?'                 ; x -- -1|0
         _fixnum?
         next
 endcode
@@ -266,5 +276,3 @@ code generic_multiply, '*'              ; n1 n2 -- n1*n2
         _tag_fixnum
         next
 endcode
-
-; %endif
