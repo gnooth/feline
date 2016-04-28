@@ -26,7 +26,7 @@ current: feline
     else
         "check failed" string>sbuf !> message
         2@ ?dup if
-            message bl sbuf-append-char
+            message bl tag-char sbuf-append-char
             message swap count sbuf-append-chars
             message " line " sbuf-append-string
             message swap (.) sbuf-append-chars
