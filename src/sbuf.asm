@@ -276,13 +276,9 @@ endcode
 ; ### sbuf-char
 code sbuf_char, 'sbuf-char'             ; handle index -- char
 ; REVIEW Return character at index, or 0 if index is out of range.
-%ifdef USE_TAGS
-        _dup
-        _fixnum?
-        _if .1
+
         _untag_fixnum
-        _then .1
-%endif
+
         _twodup
         _ sbuf_check_index
         _if .2
@@ -300,20 +296,12 @@ endcode
 
 ; ### sbuf-set-char
 code sbuf_set_char, 'sbuf-set-char'     ; handle index char --
-%ifdef USE_TAGS
-        _dup
-        _fixnum?
-        _if .1
-        _untag_fixnum
-        _then .1
+
+        _untag_char
         _swap
-        _dup
-        _fixnum?
-        _if .2
         _untag_fixnum
-        _then .2
         _swap
-%endif
+
         _ rrot                          ; char sbuf index
         _twodup
         _ sbuf_check_index
@@ -367,16 +355,12 @@ code sbuf_ensure_capacity, 'sbuf-ensure-capacity'   ; u sbuf --
 endcode
 
 ; ### sbuf-shorten
-code sbuf_shorten, 'sbuf-shorten'       ; u handle --
-%ifdef USE_TAGS
+code sbuf_shorten, 'sbuf-shorten'       ; fixnum handle --
+
         _swap
-        _dup
-        _fixnum?
-        _if .1
         _untag_fixnum
-        _then .1
         _swap
-%endif
+
         _ check_sbuf                    ; -- u sbuf
         _twodup
         _sbuf_length
@@ -416,13 +400,7 @@ code sbuf_append_char, 'sbuf-append-char' ; sbuf char --
 %define char   local1
 %define len    local2
 
-%ifdef USE_TAGS
-        _dup
-        _fixnum?
-        _if .1
-        _untag_fixnum
-        _then .1
-%endif
+        _untag_char
 
         _locals_enter
         _ check_char
@@ -538,20 +516,10 @@ code sbuf_insert_char, 'sbuf-insert-char' ; handle index char --
 %define index  local1
 %define char   local2
 
-%ifdef USE_TAGS
-        _dup
-        _fixnum?
-        _if .1
-        _untag_fixnum
-        _then .1
+        _untag_char
         _swap
-        _dup
-        _fixnum?
-        _if .2
         _untag_fixnum
-        _then .2
         _swap
-%endif
 
         _locals_enter
         _ check_char
@@ -608,13 +576,8 @@ endcode
 
 ; ### sbuf-delete-char
 code sbuf_delete_char, 'sbuf-delete-char' ; sbuf index --
-%ifdef USE_TAGS
-        _dup
-        _fixnum?
-        _if .1
+
         _untag_fixnum
-        _then .1
-%endif
 
 %define sbuf    local0
 %define index   local1
