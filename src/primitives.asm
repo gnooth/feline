@@ -250,6 +250,7 @@ code each_integer, 'each-integer'       ; tagged-fixnum xt --
         xor     r12, r12                ; loop index in r12
         mov     r13, [rbx]              ; code address in r13
         mov     r14, [rbp]              ; loop limit in r14
+        _2drop                          ; clean up the stack now!
         test    r14, r14
         jle     .2
 .1:
@@ -269,6 +270,5 @@ code each_integer, 'each-integer'       ; tagged-fixnum xt --
         pop     r14
         pop     r13
         pop     r12
-        _2drop
         next
 endcode
