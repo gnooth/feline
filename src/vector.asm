@@ -482,6 +482,37 @@ code vector_pop, 'vector-pop'           ; handle -- element
         next
 endcode
 
+; ### vector-equal?
+code vector_equal?, 'vector-equal?'     ; vector1 vector2 -- t|f
+        _ check_vector
+        _swap
+        _ check_vector                  ; -- v1 v2
+
+        _twodup
+        _vector_length
+        _swap
+        _vector_length
+        _notequal
+        _if .1
+        _2drop
+        _f
+        _return
+        _then .1                        ; -- v1 v2
+
+        _over
+        _vector_length
+        _tor
+        _vector_data
+        _swap
+        _vector_data
+        _rfrom
+        _cells
+        _ memequal
+        _tag_boolean
+
+        next
+endcode
+
 ; ### vector-each
 code vector_each, 'vector-each'         ; vector xt --
         _swap
