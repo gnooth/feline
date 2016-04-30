@@ -15,10 +15,10 @@
 
 require-system-file test-framework
 
-language: feline
+LANGUAGE: feline
 
-context: feline forth ;
-current: feline
+CONTEXT: feline forth ;
+CURRENT: feline
 
 test: test1 ( -- )
     100000 local #reps
@@ -198,6 +198,40 @@ test: test9
 ;
 
 test9
+
+\ V{ vector-equal?
+test: test10
+    V{ } !> v
+    v vector? t = check
+    v vector-length 0 = check
+    V{ 1 2 3 } !> v
+    v vector? t = check
+    v vector-length 3 = check
+    0 v vector-nth 1 = check
+    1 v vector-nth 2 = check
+    2 v vector-nth 3 = check
+    v V{ 1 2 3 } vector-equal? t = check
+    V{ 1 2 3 } v vector-equal? t = check
+    f !> v
+;
+
+test10
+
+: clone-vector ( old -- new )
+    dup vector-length <vector>          \ -- old new
+    swap                                \ -- new old
+    [ over vector-push ]                \ -- new old quot
+    vector-each                         \ -- new
+;
+
+test: test11
+    V{ } clone-vector
+    V{ } vector-equal? t = check
+    V{ 1 2 3 } clone-vector
+    V{ 1 2 3 } vector-equal? t = check
+;
+
+test11
 
 empty
 

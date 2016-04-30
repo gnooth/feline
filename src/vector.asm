@@ -548,19 +548,22 @@ endcode
 ; ### vector-each
 code vector_each, 'vector-each'         ; vector xt --
         _swap
-        _ check_vector
+        _ check_vector                  ; -- xt vector
 
         push    this_register
         mov     this_register, rbx
-        _vector_length
+        push    r12
+        mov     rax, [rbp]              ; xt in rax
+        _2drop                          ; adjust stack
+        mov     r12, [rax]              ; address to call in r12
+        _this_vector_length
         _zero
         _?do .1
         _i
-        _this_vector_nth_unsafe         ; -- xt element
-        _over                           ; -- xt element xt
-        _execute
-        _loop .1                        ; -- xt
-        _drop
+        _this_vector_nth_unsafe         ; -- element
+        call    r12
+        _loop .1
+        pop     r12
         pop     this_register
         next
 endcode
