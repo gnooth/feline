@@ -15,15 +15,8 @@
 
 file __FILE__
 
-; ### language:
-code language_colon, 'language:'
-        _ parse_name                    ; -- c-addr u
-
-        _twodup
-        _squote "forth"
-        _ strequal
-        _if .1
-        _2drop
+; ### forth-mode
+code forth_mode, 'forth-mode'
         _lit forth_interpret_xt
         _lit interpret_xt
         _tobody
@@ -32,14 +25,11 @@ code language_colon, 'language:'
         _lit prompt_xt
         _tobody
         _store
-        _return
-        _then .1
+        next
+endcode
 
-        _twodup
-        _squote "feline"
-        _ strequal
-        _if .2
-        _2drop
+; ### feline-mode
+code feline_mode, 'feline-mode'
         _lit feline_interpret_xt
         _lit interpret_xt
         _tobody
@@ -48,6 +38,28 @@ code language_colon, 'language:'
         _lit prompt_xt
         _tobody
         _store
+        next
+endcode
+
+; ### language:
+code language_colon, 'LANGUAGE:', IMMEDIATE
+        _ parse_name                    ; -- c-addr u
+
+        _twodup
+        _squote "forth"
+        _ strequal
+        _if .1
+        _2drop
+        _ forth_mode
+        _return
+        _then .1
+
+        _twodup
+        _squote "feline"
+        _ strequal
+        _if .2
+        _2drop
+        _ feline_mode
         _return
         _then .2
 
