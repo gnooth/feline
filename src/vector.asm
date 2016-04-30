@@ -152,6 +152,38 @@ new_vector_untagged:
         next
 endcode
 
+; ### parse-vector
+code parse_vector, 'V{', IMMEDIATE      ; -- handle
+        _lit 10
+        _ new_vector_untagged
+        _tor
+        _begin .1
+        _ blword                        ; -- $addr
+        _dup
+        _count
+        _squote "}"
+        _ strequal
+        _zeq
+        _while .1
+        _ feline_interpret_do_literal
+        _rfetch
+        _ vector_push
+        _repeat .1
+        _drop
+        _rfrom                          ; -- handle
+
+        _ statefetch
+        _if .2
+        ; Add the newly-created vector to gc-roots. This protects it from
+        ; being collected and also ensures that its children will be scanned.
+        _dup
+        _ gc_add_root
+        _ literal
+        _then .2
+
+        next
+endcode
+
 ; ### ~vector
 code destroy_vector, '~vector'          ; handle --
         _ check_vector                  ; -- vector|0
