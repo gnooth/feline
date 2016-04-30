@@ -161,6 +161,7 @@ test: test8 ( -- )
     \ element is index+1
     16 [ 1 + v vector-push ] each-integer
     v vector-length 16 = check
+    v V{ 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 } vector-equal? t = check
     v [ ( element index -- ) 1 + = check ] vector-each-index
     9 v vector-set-length
     v vector-length 9 = check

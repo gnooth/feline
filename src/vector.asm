@@ -571,22 +571,24 @@ endcode
 ; ### vector-each-index
 code vector_each_index, 'vector-each-index' ; vector quot: ( element index -- ) --
         _swap
-        _ check_vector
+        _ check_vector                  ; -- xt vector
 
         push    this_register
         mov     this_register, rbx
-        _vector_length
+        push    r12
+        mov     rax, [rbp]              ; xt in rax
+        _2drop                          ; adjust stack
+        mov     r12, [rax]              ; address to call in r12
+        _this_vector_length
         _zero
         _?do .1
-        _i                              ; -- xt i
-        _this_vector_nth_unsafe         ; -- xt element
-        _i                              ; -- xt element i
-        _tag_fixnum                     ; -- xt element index
-        _lit 2
-        _pick
-        _execute
-        _loop .1                        ; -- xt
-        _drop
+        _i                              ; -- i
+        _this_vector_nth_unsafe         ; -- element
+        _i                              ; -- element i
+        _tag_fixnum                     ; -- element index
+        call    r12
+        _loop .1                        ; --
+        pop     r12
         pop     this_register
         next
 endcode
