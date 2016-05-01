@@ -94,8 +94,8 @@ code lookup_vocab, 'lookup-vocab'       ; string -- wid
         next
 endcode
 
-; ### current:
-code current_colon, 'current:'
+; ### CURRENT:
+code current_colon, 'CURRENT:'
         _ parse_name
         _ copy_to_string
         _ lookup_vocab
@@ -108,8 +108,8 @@ code current_colon, 'current:'
         next
 endcode
 
-; ### context:
-code context_colon, 'context:'
+; ### CONTEXT:
+code context_colon, 'CONTEXT:'
         _lit 10
         _ new_vector_untagged           ; -- handle
         _tor
