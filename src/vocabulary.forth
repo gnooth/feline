@@ -13,10 +13,10 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-language: forth
+LANGUAGE: forth
 
-context: forth feline ;
-current: forth
+CONTEXT: forth feline ;
+CURRENT: forth
 
 : vocabulary
    wordlist
@@ -26,7 +26,7 @@ current: forth
    does>
       @ 0 context-vector vector-set-nth ;
 
-current: root
+CURRENT: root
 
 import forth
 import forth-wordlist
@@ -35,8 +35,8 @@ import order
 
 import feline
 
-import language:
-import context:
-import current:
+import LANGUAGE:
+import CONTEXT:
+import CURRENT:
 
-current: forth
+CURRENT: forth
