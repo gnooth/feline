@@ -15,6 +15,14 @@
 
 file __FILE__
 
+; ### forth-prompt
+code forth_prompt, 'forth-prompt'       ; --
+        _ green
+        _ foreground
+        _dotq "Forth> "
+        next
+endcode
+
 ; ### forth-mode
 code forth_mode, 'forth-mode'
         _lit forth_interpret_xt
@@ -25,6 +33,14 @@ code forth_mode, 'forth-mode'
         _lit prompt_xt
         _tobody
         _store
+        next
+endcode
+
+; ### feline-prompt
+code feline_prompt, 'feline-prompt'     ; --
+        _ green
+        _ foreground
+        _dotq "Feline> "
         next
 endcode
 
@@ -41,7 +57,7 @@ code feline_mode, 'feline-mode'
         next
 endcode
 
-; ### language:
+; ### LANGUAGE:
 code language_colon, 'LANGUAGE:', IMMEDIATE
         _ parse_name                    ; -- c-addr u
 

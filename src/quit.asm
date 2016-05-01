@@ -266,14 +266,7 @@ code do_error, 'do-error'               ; n --
         next
 endcode
 
-; ### forth-prompt
-code forth_prompt, 'forth-prompt'       ; --
-        _ green
-        _ foreground
-        _dotq "Forth> "
-        next
-endcode
-
+; ### prompt
 deferred prompt, 'prompt', forth_prompt
 
 ; ### forth-quit
@@ -303,6 +296,7 @@ code forth_quit, 'forth-quit'           ; --            r:  i*x --
         next                            ; for decompiler
 endcode
 
+; ### quit
 deferred quit, 'quit', forth_quit
 
 ; ### reset

@@ -204,14 +204,6 @@ code feline_interpret, 'feline-interpret' ; --
         next
 endcode
 
-; ### feline-prompt
-code feline_prompt, 'feline-prompt'     ; --
-        _ green
-        _ foreground
-        _dotq "Feline> "
-        next
-endcode
-
 ; ### times
 code times_, 'times'                    ; tagged-fixnum xt --
 
