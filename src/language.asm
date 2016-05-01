@@ -29,10 +29,18 @@ code forth_mode, 'forth-mode'
         _lit interpret_xt
         _tobody
         _store
+
         _lit forth_prompt_xt
         _lit prompt_xt
         _tobody
         _store
+
+        _ only
+        _ feline
+        _ also
+        _ forth
+        _ also
+        _ definitions
         next
 endcode
 
@@ -50,10 +58,19 @@ code feline_mode, 'feline-mode'
         _lit interpret_xt
         _tobody
         _store
+
         _lit feline_prompt_xt
         _lit prompt_xt
         _tobody
         _store
+
+        _ only
+        _ forth
+        _ also
+        _ feline
+        _ also
+        _ definitions
+
         next
 endcode
 
