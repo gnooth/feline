@@ -15,6 +15,19 @@
 
 file __FILE__
 
+; ### language
+value language, 'language', 0
+
+; ### .language
+code dot_language, '.language'
+        _ language
+        _?dup_if .1
+        _ dot_string
+        _ space
+        _then .1
+        next
+endcode
+
 ; ### forth-prompt
 code forth_prompt, 'forth-prompt'       ; --
         _ green
@@ -39,8 +52,11 @@ code forth_mode, 'forth-mode'
         _ feline
         _ also
         _ forth
-        _ also
         _ definitions
+
+        _quote "Forth"
+        _to language
+
         next
 endcode
 
@@ -68,8 +84,10 @@ code feline_mode, 'feline-mode'
         _ forth
         _ also
         _ feline
-        _ also
         _ definitions
+
+        _quote "Feline"
+        _to language
 
         next
 endcode
