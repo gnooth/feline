@@ -276,7 +276,7 @@ code quit, 'quit'                       ; --            r:  i*x --
         _begin .1
         mov     rsp, [rp0_data]
         _ ?cr
-        _ prompt
+;         _ prompt
         _ query
         _ tib
         _ ntib
