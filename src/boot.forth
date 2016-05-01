@@ -38,13 +38,13 @@ include-system-file see.forth
 
 include-system-file feline.forth
 
-forth!
+forth-mode
 
-: edit ( "<spaces>name" -- )
-    warning @ >r
-    warning off
-    s" editor.forth" system-file-pathname included
-    r> warning !
-    -5 >in +! ;
+\ : edit ( "<spaces>name" -- )
+\     warning @ >r
+\     warning off
+\     s" editor.forth" system-file-pathname included
+\     r> warning !
+\     -5 >in +! ;
 
 empty!

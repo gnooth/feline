@@ -189,6 +189,7 @@ code cold, 'cold'                       ; --
         _ initialize_vocabs
 
         _ initialize_task
+        _ forth_mode
         _squote "boot.forth"
         _ system_file_pathname
         _lit included_xt
