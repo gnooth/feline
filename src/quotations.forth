@@ -44,6 +44,7 @@ only forth definitions
     >r
     if
         ]
+        align-code
         postpone then
         r>
         postpone literal
