@@ -265,7 +265,7 @@ code set_order, 'set-order'             ; widn ... wid1 n --
         _dup
         _zeq_if .1
         ; "If n is zero, empty the search order."
-        _zero
+        ; -- 0
         _tag_fixnum
         _ context_vector
         _ vector_set_length
