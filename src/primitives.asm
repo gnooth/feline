@@ -198,24 +198,28 @@ endcode
 code times_, 'times'                    ; tagged-fixnum xt --
 
         _swap
-        _untag_fixnum
-        _swap
+        _untag_fixnum                   ; -- xt n
 
         push    r12
-        mov     r12, [rbp]
+        mov     r12, rbx                ; n in r12
+        push    r13
+        mov     rax, [rbp]              ; xt in rax
+        mov     r13, [rax]              ; address to call in r13
+        _2drop                          ; clean up the stack now!
+
         test    r12, r12
         jle     .3
 .1:
-        call    [rbx]
+        call    r13
         dec     r12
         jz      .3
-        call    [rbx]
+        call    r13
         dec     r12
         jnz     .1
 .3:
+        pop     r13
         pop     r12
 .2:
-        _2drop
         next
 endcode
 
