@@ -651,3 +651,19 @@ code dot_vector, '.vector'              ; vector --
         pop     this_register
         next
 endcode
+
+; ### vector-clone
+code vector_clone, 'vector-clone'       ; old -- new
+        _dup
+        _ vector_length
+        _ new_vector                    ; -- old new
+        _swap
+
+        _quotation .1
+        _over
+        _ vector_push
+        _end_quotation .1
+
+        _ vector_each
+        next
+endcode

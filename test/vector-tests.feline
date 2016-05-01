@@ -218,17 +218,10 @@ test: test10
 
 test10
 
-: clone-vector ( old -- new )
-    dup vector-length <vector>          \ -- old new
-    swap                                \ -- new old
-    [ over vector-push ]                \ -- new old quot
-    vector-each                         \ -- new
-;
-
 test: test11
-    V{ } clone-vector
+    V{ } vector-clone
     V{ } vector-equal? t = check
-    V{ 1 2 3 } clone-vector
+    V{ 1 2 3 } vector-clone
     V{ 1 2 3 } vector-equal? t = check
 ;
 
