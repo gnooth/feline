@@ -13,22 +13,25 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+LANGUAGE: forth
+
+CONTEXT: forth feline ;
+CURRENT: forth
+
 0 value empty-dp
 0 value empty-cp
 0 value empty-latest
 0 value empty-voclink
 0 value empty-current
 
-create empty-search-order #vocs cells allot
+0 global empty-search-order
 
-: save-search-order ( addr -- )
-\     context swap #vocs cells cmove
-    drop
+: get-search-order ( -- vector )
+    context-vector vector-clone
 ;
 
-: restore-search-order ( addr -- )
-\     context #vocs cells 2dup erase cmove
-    drop
+: set-search-order ( vector -- )
+    to context-vector
 ;
 
 : trim ( wid -- )
@@ -77,7 +80,8 @@ create empty-search-order #vocs cells allot
     last @ to empty-latest
     voclink @ to empty-voclink
     get-current to empty-current
-    empty-search-order save-search-order ;
+    get-search-order !> empty-search-order
+;
 
 \ restore state saved by EMPTY!
 : empty ( -- )
@@ -87,7 +91,7 @@ create empty-search-order #vocs cells allot
         empty-latest last !
         empty-voclink voclink !
         empty-current set-current
-        empty-search-order restore-search-order
+        empty-search-order set-search-order
         trim-vocs
         trim-gc-roots
         here limit over - erase
@@ -103,9 +107,8 @@ create empty-search-order #vocs cells allot
     voclink @ ,                         \ save voclink
     get-current ,                       \ save current
 
-    here
-    #vocs cells allot
-    save-search-order                   \ -- here
+    here gc-add-root
+    get-search-order ,
 
     create ,
     does>
@@ -115,7 +118,7 @@ create empty-search-order #vocs cells allot
         @+ last !                       \ -- addr
         @+ voclink !                    \ -- addr
         @+ set-current                  \ -- addr
-        restore-search-order            \ --
+        @ set-search-order              \ --
         trim-vocs
         trim-gc-roots
         here limit over - erase
