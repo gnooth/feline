@@ -15,9 +15,10 @@
 
 require-system-file test-framework
 
-[forth]
+LANGUAGE: forth
 
-only feline also forth also definitions
+CONTEXT: forth feline ;
+CURRENT: forth
 
 variable foo
 
