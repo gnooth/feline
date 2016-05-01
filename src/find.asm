@@ -362,23 +362,6 @@ code forth_order, 'forth!'
         next
 endcode
 
-; ### >forth
-code to_forth, '>forth'
-        _ forth_order
-
-        _lit forth_interpret_xt
-        _lit interpret_xt
-        _tobody
-        _store
-
-        _lit forth_prompt_xt
-        _lit prompt_xt
-        _tobody
-        _store
-
-        next
-endcode
-
 ; ### feline!
 code feline_order, 'feline!'
         _ only
@@ -387,23 +370,6 @@ code feline_order, 'feline!'
         _ feline
         _ also
         _ definitions
-        next
-endcode
-
-; ### >feline
-code to_feline, '>feline'
-        _ feline_order
-
-        _lit feline_interpret_xt
-        _lit interpret_xt
-        _tobody
-        _store
-
-        _lit feline_prompt_xt
-        _lit prompt_xt
-        _tobody
-        _store
-
         next
 endcode
 
