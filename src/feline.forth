@@ -13,10 +13,10 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-language: forth
+LANGUAGE: forth
 
-context: forth feline ;
-current: feline
+CONTEXT: forth feline ;
+CURRENT: feline
 
 import language:
 import context:
@@ -48,7 +48,6 @@ import include
 import require
 import include-system-file
 import empty
-import forth!
 
 import decimal
 
@@ -86,18 +85,6 @@ import .(
     postpone tag-fixnum
 ; immediate
 
-: [feline]
-    ['] feline-prompt is prompt
-    ['] feline-interpret is interpret
-; immediate
-
-import feline!
-
-: [forth]
-    ['] forth-prompt is prompt
-    ['] forth-interpret is interpret
-; immediate
-
 : file-contents ( path -- string )
     string> r/o open-file throw local fileid
     fileid file-size throw drop local filesize
@@ -107,7 +94,3 @@ import feline!
     buffer bufsize >string
     buffer -free
 ;
-
-current: forth
-
-import [feline]
