@@ -269,8 +269,8 @@ endcode
 ; ### prompt
 deferred prompt, 'prompt', forth_prompt
 
-; ### forth-quit
-code forth_quit, 'forth-quit'           ; --            r:  i*x --
+; ### quit
+code quit, 'quit'                       ; --            r:  i*x --
 ; CORE
         _ lbrack
         _begin .1
@@ -295,9 +295,6 @@ code forth_quit, 'forth-quit'           ; --            r:  i*x --
         _again .1
         next                            ; for decompiler
 endcode
-
-; ### quit
-deferred quit, 'quit', forth_quit
 
 ; ### reset
 code reset, 'reset'                     ; i*x --        r: j*x --
