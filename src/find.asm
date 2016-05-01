@@ -218,12 +218,16 @@ endcode
 code order, 'order'
 ; SEARCH EXT
         _ ?cr
-        _dotq "Context: "
+        _dotq "  Language: "
+        _ dot_language
+        _ cr
+        _dotq "   Context: "
         _ context_vector
         _lit dot_wid_xt
         _ vector_each
+        _dotq ";"
         _ cr
-        _dotq "Current: "
+        _dotq "   Current: "
         _ get_current
         _ dot_wid
         next
