@@ -807,3 +807,30 @@ section .text
         mov     local2, rbx
         poprbx
 %endmacro
+
+%macro _quotation 1
+        %push quotation
+        section .text
+        jmp     %1_end
+        align   DEFAULT_CODE_ALIGNMENT
+%1_code:
+%endmacro
+
+%macro _end_quotation 1
+%ifctx quotation
+        section .text
+        ret
+        section .data
+        align   DEFAULT_DATA_ALIGNMENT
+%1_xt:
+        dq      %1_code
+        section .text
+        align   DEFAULT_CODE_ALIGNMENT
+%1_end:
+        pushrbx
+        mov     rbx, %1_xt
+        %pop
+%else
+        %error  "not in a quotation"
+%endif
+%endmacro
