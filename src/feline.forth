@@ -18,9 +18,12 @@ LANGUAGE: forth
 CONTEXT: forth feline ;
 CURRENT: feline
 
-import language:
-import context:
-import current:
+import LANGUAGE:
+import CONTEXT:
+import CURRENT:
+
+import feline-mode
+import forth-mode
 
 import bye
 
