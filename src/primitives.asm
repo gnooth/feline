@@ -15,10 +15,6 @@
 
 file __FILE__
 
-; Feline primitives
-
-IN_FELINE
-
 ; ### t
 inline t, 't'                           ; -- t
         _t
@@ -146,12 +142,7 @@ code feline_compile_do_literal, 'feline-compile-do-literal' ; $addr --
         _ twoliteral
         _else .3
         _drop
-; %ifdef USE_TAGS
-;         _ use_tags?
-;         _if .4
         _tag_fixnum
-;         _then .4
-; %endif
         _ literal
         _then .3
         next
@@ -187,7 +178,6 @@ endcode
 
 ; ### feline-interpret
 code feline_interpret, 'feline-interpret' ; --
-; not in standard
         _begin .1
         _ ?stack
         _ blword
