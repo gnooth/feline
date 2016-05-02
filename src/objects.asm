@@ -25,15 +25,31 @@ endcode
 code object?, 'object?'                 ; x -- t|f
         _dup
         _ handle?
-        _if .0
+        _if .1
         _handle_to_object_unsafe
         _zne
         _tag_boolean
         _return
-        _then .0
+        _then .1
 
         ; Not allocated. Must be a string or not an object.
         _ string?
+        next
+endcode
+
+; ### object-type
+code object_type, 'object-type'         ; handle-or-object -- type
+        _dup
+        _ handle?
+        _if .1
+        _handle_to_object_unsafe
+        _object_type
+        _return
+        _then .1
+
+        ; Not allocated. Must be a string or not an object.
+        _ check_string                  ; -- string
+        _object_type
         next
 endcode
 
@@ -81,8 +97,19 @@ endcode
 ; ### .object
 code dot_object, '.object'              ; handle-or-object --
         _dup
+        _f
+        _equal
+        _if .1
+        _drop
+        _lit 'f'
+        _ emit
+        _ space
+        _return
+        _then .1
+
+        _dup
         _ string?
-        _tagged_if .1
+        _tagged_if .2
         _lit '"'
         _ emit
         _ dot_string
@@ -90,41 +117,41 @@ code dot_object, '.object'              ; handle-or-object --
         _ emit
         _ space
         _return
-        _then .1
+        _then .2
 
         _dup
         _ sbuf?
-        _tagged_if .2
+        _tagged_if .3
         _dotq 'SBUF" '
         _ sbuf_from
         _ type
         _dotq '" '
         _return
-        _then .2
-
-        _dup
-        _ vector?
-        _tagged_if .3
-        _ dot_vector
-        _ space
-        _return
         _then .3
 
         _dup
-        _ array?
+        _ vector?
         _tagged_if .4
-        _ dot_array
+        _ dot_vector
         _ space
         _return
         _then .4
 
         _dup
+        _ array?
+        _tagged_if .5
+        _ dot_array
+        _ space
+        _return
+        _then .5
+
+        _dup
         _fixnum?
-        _if .5
+        _if .6
         _untag_fixnum
         _ decdot
         _return
-        _then .5
+        _then .6
 
         ; give up
         _ hdot
