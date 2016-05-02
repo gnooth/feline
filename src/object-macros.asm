@@ -15,6 +15,17 @@
 
 file __FILE__
 
+; Object types
+OBJECT_TYPE_VECTOR              equ 1
+OBJECT_TYPE_STRING              equ 2
+OBJECT_TYPE_SBUF                equ 3
+OBJECT_TYPE_ARRAY               equ 4
+
+; Object flag bits.
+OBJECT_MARKED_BIT               equ 1
+OBJECT_TRANSIENT_BIT            equ 2
+OBJECT_ALLOCATED_BIT            equ 4
+
 %macro  _handle_to_object_unsafe 0
         _fetch
 %endmacro
