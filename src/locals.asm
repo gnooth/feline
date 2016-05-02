@@ -110,9 +110,8 @@ code find_local, 'find-local'           ; found:        $addr -- index true
         _count                          ; -- c-addr u
         _ copy_to_transient_string      ; -- string
         _ local_names                   ; -- string vector
-        _ vector_find_string            ; -- index flag
-        _untag_fixnum
-        _if .2
+        _ vector_find_string            ; -- index t|f
+        _tagged_if .2
         _untag_fixnum                   ; -- index
         _true                           ; -- index true
         _tag_fixnum
@@ -121,7 +120,7 @@ code find_local, 'find-local'           ; found:        $addr -- index true
         ; not found
         _drop                           ; --                    r: -- $addr
         _rfrom                          ; -- $addr              r: --
-        _zero                           ; -- $addr false
+        _false                          ; -- $addr false
         _then .2
 
         next

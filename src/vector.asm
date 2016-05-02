@@ -594,7 +594,7 @@ code vector_each_index, 'vector-each-index' ; vector quot: ( element index -- ) 
 endcode
 
 ; ### vector-find-string
-code vector_find_string, 'vector-find-string' ; string vector -- index flag
+code vector_find_string, 'vector-find-string' ; string vector -- index t|f
         _ check_vector
 
         push    this_register
@@ -606,15 +606,13 @@ code vector_find_string, 'vector-find-string' ; string vector -- index flag
         _i
         _this_vector_nth_unsafe         ; -- string element
         _over
-        _ string_equal?                 ; -- string flag
-        _untag_fixnum
-        _if .2
+        _ string_equal?                 ; -- string t|f
+        _tagged_if .2
         ; found it!
         _drop
         _i
         _tag_fixnum
-        _true
-        _tag_fixnum
+        _t
         _unloop
         jmp     .exit
         _then .2
