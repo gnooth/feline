@@ -113,15 +113,15 @@ code check_string, 'check-string'       ; x -- string
         next
 endcode
 
-%macro _string_length 0                 ; string -- length
+%macro _string_length 0                 ; string -- untagged-length
         _slot1
 %endmacro
 
-%macro _this_string_length 0            ; -- length
+%macro _this_string_length 0            ; -- untagged-length
         _this_slot1
 %endmacro
 
-%macro _this_string_set_length 0        ; -- length
+%macro _this_string_set_length 0        ; untagged-length --
         _this_set_slot1
 %endmacro
 
@@ -417,8 +417,14 @@ code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
         next
 endcode
 
-%macro  _string_nth_unsafe 0            ; index string -- char
+%macro  _string_nth_unsafe 0            ; untagged-index string -- untagged-char
         _string_data
+        _plus
+        _cfetch
+%endmacro
+
+%macro  _this_string_nth_unsafe 0       ; untagged-index string -- untagged-char
+        _this_string_data
         _plus
         _cfetch
 %endmacro
@@ -479,35 +485,36 @@ code string_last_char, 'string-last-char' ; string -- char
         next
 endcode
 
-; ### string-index-of
-code string_index_of, 'string-index-of' ; string tagged-char -- index | -1
-        _untag_char
-        _swap
+; ### string-find-char
+code string_find_char, 'string-find-char' ; tagged-char string -- tagged-index | f
+
         _ check_string
+
         push    this_register
-        popd    this_register           ; -- char
+        popd    this_register           ; -- tagged-char
+
+        _untag_char                     ; -- untagged-char
 
         _this_string_length
         _zero
         _?do .1
         _i
-        _this_string_data
-        _plus
-        _cfetch
+        _this_string_nth_unsafe
         _over
         _equal
         _if .2
         _drop
         _i
+        _tag_fixnum
         _unloop
         jmp     .exit
         _then .2
         _loop .1
+        ; not found
         _drop
-        _lit -1
+        _f
 .exit:
         pop     this_register
-        _tag_fixnum
         next
 endcode
 

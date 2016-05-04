@@ -146,12 +146,12 @@ test7
 
 test: test8
     "this is another test" to s1
-    s1 'x' string-index-of -1 = check
-    s1 's' string-index-of  3 = check
-    s1 'a' string-index-of  8 = check
-    s1 'n' string-index-of  9 = check
-    s1 't' string-index-of  0 = check
-    s1 'e' string-index-of 13 = check
+    'x' s1 string-find-char  f = check
+    's' s1 string-find-char  3 = check
+    'a' s1 string-find-char  8 = check
+    'n' s1 string-find-char  9 = check
+    't' s1 string-find-char  0 = check
+    'e' s1 string-find-char 13 = check
 
     \ can't destroy s1 because it's a static string
     s1 ~string
