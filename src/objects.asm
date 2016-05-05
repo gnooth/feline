@@ -38,16 +38,16 @@ code object?, 'object?'                 ; x -- t|f
 endcode
 
 ; ### vector
-constant vector, 'vector', OBJECT_TYPE_VECTOR
+constant vector, 'vector', tagged_fixnum(OBJECT_TYPE_VECTOR)
 
 ; ### string
-constant string, 'string', OBJECT_TYPE_STRING
+constant string, 'string', tagged_fixnum(OBJECT_TYPE_STRING)
 
 ; ### sbuf
-constant sbuf, 'sbuf', OBJECT_TYPE_SBUF
+constant sbuf, 'sbuf', tagged_fixnum(OBJECT_TYPE_SBUF)
 
 ; ### array
-constant array, 'array', OBJECT_TYPE_ARRAY
+constant array, 'array', tagged_fixnum(OBJECT_TYPE_ARRAY)
 
 ; ### object-type
 code object_type, 'object-type'         ; handle-or-object -- type
