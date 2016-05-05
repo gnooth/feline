@@ -57,6 +57,8 @@
         sar     rbx, TAG_BITS
 %endmacro
 
+%define tagged_fixnum(n)        ((n << TAG_BITS) + FIXNUM_TAG)
+
 %define tagged_zero     FIXNUM_TAG
 
 %define f_value BOOLEAN_TAG
