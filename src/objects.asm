@@ -50,18 +50,20 @@ constant sbuf, 'sbuf', tagged_fixnum(OBJECT_TYPE_SBUF)
 constant array, 'array', tagged_fixnum(OBJECT_TYPE_ARRAY)
 
 ; ### object-type
-code object_type, 'object-type'         ; handle-or-object -- type
+code object_type, 'object-type'         ; handle-or-object -- tagged-type-number
         _dup
         _ handle?
         _if .1
         _handle_to_object_unsafe
         _object_type
+        _tag_fixnum
         _return
         _then .1
 
         ; Not allocated. Must be a string or not an object.
         _ check_string                  ; -- string
         _object_type
+        _tag_fixnum
         next
 endcode
 
@@ -257,9 +259,14 @@ code generic_dot, '.'                   ; x --
         _dup
         _fixnum?
         _if .3
+        _dotq "fixnum "
         _untag_fixnum
-        _then .3
         _ dot
+        _return
+        _then .3
+
+        _dotq "untagged "
+        _ hdot
         next
 endcode
 
