@@ -15,10 +15,10 @@
 
 require-system-file test-framework
 
-language: feline
+LANGUAGE: feline
 
-context: feline forth ;
-current: feline
+CONTEXT: feline forth ;
+CURRENT: feline
 
 42 constant k1
 17 constant k2
@@ -47,7 +47,7 @@ current: feline
     x y -
     inner catch
     ?dup if
-        k3 = check
+        k3 untag-fixnum = check         \ REVIEW untag-fixnum
         2drop
     then
     depth 0= check
