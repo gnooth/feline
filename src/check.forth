@@ -13,10 +13,10 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-language: feline
+LANGUAGE: feline
 
-context: forth feline ;
-current: feline
+CONTEXT: feline forth ;
+CURRENT: feline
 
 : do-check ( flag addr -- )
     0 local message
@@ -44,6 +44,12 @@ current: feline
     source-line# ,
     postpone literal
     postpone do-check
+; immediate
+
+: check-t ( -- )
+    postpone t
+    postpone =
+    postpone check
 ; immediate
 
 : check-false ( -- )
