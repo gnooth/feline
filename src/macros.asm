@@ -404,8 +404,9 @@ section .data
         %pop inline
 %endmacro
 
-%macro  deferred 3                      ; label, name, action
-        head %1, %2, 0, 0, TYPE_DEFERRED
+%macro  deferred 3-4 0                  ; label, name, action, flags
+        ; head label, name, flags, inline size, type
+        head %1, %2, %4, 0, TYPE_DEFERRED
         section .data
         global %1_data
         align   DEFAULT_DATA_ALIGNMENT
