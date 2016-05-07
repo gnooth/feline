@@ -41,9 +41,6 @@ import [then]
 import (
 import \
 
-import u<
-import <
-
 import :
 import ;
 

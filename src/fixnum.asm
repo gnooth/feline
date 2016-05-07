@@ -22,12 +22,45 @@ code fixnum?, 'fixnum?'                 ; x -- t|f
         next
 endcode
 
+; ### error-not-fixnum
+code error_not_fixnum, 'error-not-fixnum' ; x --
+        ; REVIEW
+        _drop
+        _true
+        _abortq "not a fixnum"
+        next
+endcode
+
+; ### check-fixnum
+code check_fixnum, 'check-fixnum'       ; fixnum -- untagged-fixnum
+        _dup
+        _fixnum?
+        _if .1
+        _untag_fixnum
+        _else .1
+        _ error_not_fixnum
+        _then .1
+        next
+endcode
+
 ; ### fixnum<
 code fixnum_lt, 'fixnum<'               ; x y -- t|f
+; No type checking.
         mov     eax, t_value
         cmp     [rbp], rbx
         mov     ebx, f_value
         cmovl   ebx, eax
         lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
+; ### <
+code feline_lt, '<'                     ; x y -- t|f
+; FIXME optimize
+        _ check_fixnum
+        _swap
+        _ check_fixnum
+        _swap
+        _ fixnum_lt
         next
 endcode
