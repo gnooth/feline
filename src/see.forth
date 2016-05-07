@@ -796,6 +796,7 @@ initialize-setcc-mnemonic-table
 : .0f ( -- )
     next-byte local byte2
     byte2 $f0 and $40 = if
+        set-instruction-size
         byte2 cmovcc-mnemonic to mnemonic
         !modrm-byte
         modrm-mod 3 = if
