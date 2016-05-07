@@ -15,6 +15,7 @@
 
 require test-framework
 
+include-tests fixnum-tests
 include-tests local-tests
 include-tests quotation-tests
 include-tests string-tests

@@ -21,47 +21,55 @@ CONTEXT: feline forth ;
 CURRENT: feline
 
 test: test1 ( -- )
-    1 fixnum? check
-    2 fixnum? check
-    3 fixnum? check
-    1 2 + 3 = check
-    1 2 + fixnum? check
+    1 fixnum? check-t
+    2 fixnum? check-t
+    3 fixnum? check-t
+    1 2 + 3 = check-t
+    1 2 + fixnum? check-t
 ;
 
 test1
 
 test: test2 ( -- )
-    -1 fixnum? check
-    -2 fixnum? check
-    -3 fixnum? check
-    -1 -2 + -3 = check
+    -1 fixnum? check-t
+    -2 fixnum? check-t
+    -3 fixnum? check-t
+    -1 -2 + -3 = check-t
 ;
 
 test2
 
 test: test3 ( -- )
-    0 fixnum? check
-    0 0= check
+    0 fixnum? check-t
+    0 0= check-t
     1 0= check-false
     -1 0= check-false
-    1 -1 + 0= check
-    4 -4 + 0= check
+    1 -1 + 0= check-t
+    4 -4 + 0= check-t
 ;
 
 test3
 
 test: test4 ( -- )
-    1 2 u< check
-    1 2 < check
+    1 2 fixnum< check-t
+    1 2 < check-t
 ;
 
 test4
 
 test: test5 ( -- )
-    2 3 * 6 = check
+    1 2 fixnum- -1 = check-t
+    1 2 - -1 = check-t
 ;
 
 test5
+
+test: test6 ( -- )
+    2 3 fixnum* 6 = check-t
+    2 3 * 6 = check-t
+;
+
+test6
 
 empty
 
