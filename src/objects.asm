@@ -228,12 +228,6 @@ code tag, 'tag'                         ; object -- tag
         next
 endcode
 
-; ### fixnum?
-code fixnum?, 'fixnum?'                 ; x -- -1|0
-        _fixnum?
-        next
-endcode
-
 ; ### .
 code generic_dot, '.'                   ; x --
         _dup

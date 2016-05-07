@@ -15,6 +15,13 @@
 
 file __FILE__
 
+; ### fixnum?
+code fixnum?, 'fixnum?'                 ; x -- t|f
+        _fixnum?
+        _tag_boolean
+        next
+endcode
+
 ; ### fixnum<
 code fixnum_lt, 'fixnum<'               ; x y -- t|f
         mov     eax, t_value
