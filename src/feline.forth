@@ -59,11 +59,15 @@ import local
 
 import swap
 import dup
+import >r
+import r>
 
 \ REVIEW
 import execute
 import ?cr
 import .(
+
+: throw ( n -- ) untag-fixnum throw ;
 
 : depth ( -- n ) depth tag-fixnum ;
 
