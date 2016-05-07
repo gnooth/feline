@@ -318,8 +318,8 @@ code colonnoname, ':noname'
         next
 endcode
 
-; ### ;
-code semi, ';', IMMEDIATE
+; ### end-definition
+code end_definition, 'end-definition'
 ; CORE
         _ ?comp
         _ flush_compilation_queue
@@ -330,6 +330,9 @@ code semi, ';', IMMEDIATE
         _ reveal
         next
 endcode
+
+; ### ;
+deferred semi, ';', end_definition, IMMEDIATE
 
 ; ### synonym
 code synonym, 'synonym'                 ; "<spaces>newname" "<spaces>oldname" --
