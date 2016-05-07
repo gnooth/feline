@@ -264,24 +264,6 @@ code generic_dot, '.'                   ; x --
         next
 endcode
 
-code generic_subtract, '-'              ; n1 n2 -- n1-n2
-        _dup
-        _fixnum?
-        _if .1
-        _untag_fixnum
-        _then .1
-        _swap
-        _dup
-        _fixnum?
-        _if .2
-        _untag_fixnum
-        _then .2
-        sub     rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        _tag_fixnum
-        next
-endcode
-
 code generic_multiply, '*'              ; n1 n2 -- n1*n2
         _dup
         _fixnum?

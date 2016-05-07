@@ -85,3 +85,26 @@ code feline_plus, '+'                   ; x y -- x+y
         _tag_fixnum
         next
 endcode
+
+; ### fixnum-
+code fixnum_minus, 'fixnum-'            ; x y -- x-y
+; No type checking.
+        _untag_fixnum
+        _swap
+        _untag_fixnum
+        sub     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        _tag_fixnum
+        next
+endcode
+
+; ### -
+code feline_minus, '-'                  ; x y -- x-y
+        _ check_fixnum
+        _swap
+        _ check_fixnum
+        sub     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        _tag_fixnum
+        next
+endcode
