@@ -64,3 +64,24 @@ code feline_lt, '<'                     ; x y -- t|f
         _ fixnum_lt
         next
 endcode
+
+; ### fixnum+
+code fixnum_plus, 'fixnum+'             ; x y -- x+y
+; No type checking.
+        _untag_fixnum
+        _swap
+        _untag_fixnum
+        _plus
+        _tag_fixnum
+        next
+endcode
+
+; ### +
+code feline_plus, '+'                   ; x y -- x+y
+        _ check_fixnum
+        _swap
+        _ check_fixnum
+        _plus
+        _tag_fixnum
+        next
+endcode
