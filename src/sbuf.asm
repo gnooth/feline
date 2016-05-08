@@ -574,6 +574,45 @@ code sbuf_insert_char, 'sbuf-insert-char' ; handle index char --
 
 endcode
 
+; ### sbuf-remove-nth!
+code sbuf_remove_nth_destructive, 'sbuf-remove-nth!' ; tagged-index handle -- handle
+        _tuck                           ; -- handle tagged-index handle
+
+        _ check_sbuf                    ; -- handle tagged-index sbuf
+
+        push    this_register
+        popd    this_register           ; -- handle tagged-index
+
+        _untag_fixnum                   ; -- handle untagged-index
+
+        _dup
+        _this_sbuf_check_index          ; -- handle index -1|0
+        _zeq_if .1
+        _true
+        _abortq "index out of range"
+        _then .1                        ; -- handle index
+
+        _this_sbuf_data                 ; -- handle index data-address
+        _over                           ; -- handle index data-address index
+        _plus
+        _oneplus                        ; -- handle index src
+        _dup
+        _oneminus                       ; -- handle index src dest
+
+        _ rot                           ; -- handle src dest index
+        _this_sbuf_length               ; -- handle src dest index length
+        _swapminus
+        _oneminus
+        _ cmove                         ; -- handle
+
+        _this_sbuf_length
+        _oneminus
+        _this_sbuf_set_length
+
+        pop     this_register
+        next
+endcode
+
 ; ### sbuf-delete-char
 code sbuf_delete_char, 'sbuf-delete-char' ; sbuf index --
 

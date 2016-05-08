@@ -15,10 +15,10 @@
 
 require-system-file test-framework
 
-language: feline
+LANGUAGE: feline
 
-context: feline forth ;
-current: feline
+CONTEXT: feline forth ;
+CURRENT: feline
 
 0 value s1
 0 value s2
@@ -28,8 +28,8 @@ current: feline
 test: test1
     256 <sbuf> to s1
 \     s1 handle? check
-    s1 object? check
-    s1 sbuf? check
+    s1 object? check-t
+    s1 sbuf? check-t
     s1 string? check-false
     s1 ~sbuf
     s1 object? check-false
@@ -41,11 +41,11 @@ test1
 test: test2
     s" this is a test" >sbuf to s1
 \     s1 handle? check
-    s1 object? check
-    s1 sbuf? check
+    s1 object? check-t
+    s1 sbuf? check-t
     s1 string? check-false
-    s1 sbuf-length 14 = check
-    s1 sbuf-capacity 14 = check
+    s1 sbuf-length 14 = check-t
+    s1 sbuf-capacity 14 = check-t
     s1 ~sbuf
     s1 object? check-false
     s1 sbuf? check-false
@@ -56,13 +56,13 @@ test2
 test: test3
     s" this is a test " >sbuf to s1
 \     s1 handle? check
-    s1 object? check
-    s1 sbuf? check
+    s1 object? check-t
+    s1 sbuf? check-t
     s1 string? check-false
-    s1 sbuf-length 15 = check
-    s1 sbuf-capacity 15 = check
+    s1 sbuf-length 15 = check-t
+    s1 sbuf-capacity 15 = check-t
     s1 s" and this is another test" sbuf-append-chars
-    s1 sbuf>string "this is a test and this is another test" string= check
+    s1 sbuf>string "this is a test and this is another test" string= check-t
     s1 ~sbuf
     s1 object? check-false
     s1 sbuf? check-false
@@ -73,17 +73,17 @@ test3
 test: test4
     s" test" >sbuf to s1
 \     s1 handle? check
-    s1 object? check
-    s1 sbuf? check
+    s1 object? check-t
+    s1 sbuf? check-t
     s1 string? check-false
-    s1 sbuf-length 4 = check
-    s1 sbuf-capacity 4 = check
+    s1 sbuf-length 4 = check-t
+    s1 sbuf-capacity 4 = check-t
     s1 's' sbuf-append-char
-    s1 object? check
+    s1 object? check-t
 \     s1 handle? check
-    s1 sbuf-length 5 = check
-    s1 sbuf-capacity 5 >= check
-    s1 sbuf>string "tests" string= check
+    s1 sbuf-length 5 = check-t
+    s1 sbuf-capacity 5 >= check-t
+    s1 sbuf>string "tests" string= check-t
     s1 ~sbuf
     s1 object? check-false
     s1 sbuf? check-false
@@ -95,15 +95,15 @@ test4
 test: test5
     s" this is a test" >sbuf to s1
 \     s1 handle? check
-    s1 object? check
-    s1 sbuf? check
+    s1 object? check-t
+    s1 sbuf? check-t
     s1 string? check-false
-    s1 0 sbuf-char 't' = check
-    s1 1 sbuf-char 'h' = check
+    s1 0 sbuf-char 't' = check-t
+    s1 1 sbuf-char 'h' = check-t
 
     \ REVIEW index out of range returns 0
-    s1 -1 sbuf-char 0= check
-    s1 99 sbuf-char 0= check
+    s1 -1 sbuf-char 0= check-t
+    s1 99 sbuf-char 0= check-t
 
     s1 ~sbuf
     s1 object? check-false
@@ -116,21 +116,21 @@ test5
 test: test6
     s" this is a test" >sbuf to s1
 \     s1 handle? check
-    s1 object? check
-    s1 sbuf? check
+    s1 object? check-t
+    s1 sbuf? check-t
     s1 string? check-false
-    s1 sbuf-length 14 = check
+    s1 sbuf-length 14 = check-t
     s1 2 'a' sbuf-set-char
     s1 3 't' sbuf-set-char
-    s1 2 sbuf-char 'a' = check
-    s1 3 sbuf-char 't' = check
-    s1 sbuf>transient-string "that is a test" string= check
+    s1 2 sbuf-char 'a' = check-t
+    s1 3 sbuf-char 't' = check-t
+    s1 sbuf>transient-string "that is a test" string= check-t
 
     \ index out of range
-    s1 -1 'x' ['] sbuf-set-char catch 0<> check
-    depth 3 = check 3drop
-    s1 99 'x' ['] sbuf-set-char catch 0<> check
-    depth 3 = check 3drop
+    s1 -1 'x' ['] sbuf-set-char catch 0 = check-false
+    depth 3 = check-t 3drop
+    s1 99 'x' ['] sbuf-set-char catch 0 = check-false
+    depth 3 = check-t 3drop
 
     s1 ~sbuf
     s1 sbuf? check-false
@@ -142,11 +142,11 @@ test6
 test: test7
     s" this is a test" >sbuf to s1
 \     s1 handle? check
-    s1 object? check
-    s1 sbuf? check
+    s1 object? check-t
+    s1 sbuf? check-t
     s1 string? check-false
     s1 9 'x' sbuf-insert-char
-    s1 sbuf>transient-string "this is ax test" string= check
+    s1 sbuf>transient-string "this is ax test" string= check-t
 
     s1 ~sbuf
     s1 sbuf? check-false
@@ -154,26 +154,29 @@ test: test7
 
 test7
 
-\ sbuf-delete-char
+\ sbuf-remove-nth!
 test: test8
     s" this is a test" >sbuf to s1
 \     s1 handle? check
-    s1 object? check
-    s1 sbuf? check
+    s1 object? check-t
+    s1 sbuf? check-t
     s1 string? check-false
-    s1 sbuf-length 14 = check
-    s1 0 sbuf-delete-char
-    s1 sbuf>transient-string "his is a test" string= check
-    s1 sbuf-length 13 = check
-    s1 12 sbuf-delete-char
-    s1 sbuf>transient-string "his is a tes" string= check
-    s1 sbuf-length 12 = check
-    s1 4 sbuf-delete-char
-    s1 sbuf>transient-string "his s a tes" string= check
-    s1 sbuf-length 11 = check
+    s1 sbuf-length 14 = check-t
+\     s1 0 sbuf-delete-char
+    0 s1 sbuf-remove-nth! s1 = check-t
+    s1 sbuf>transient-string "his is a test" string= check-t
+    s1 sbuf-length 13 = check-t
+\     s1 12 sbuf-delete-char
+    12 s1 sbuf-remove-nth!
+    sbuf>transient-string "his is a tes" string= check-t
+    s1 sbuf-length 12 = check-t
+\     s1 4 sbuf-delete-char
+    4 s1 sbuf-remove-nth!
+    sbuf>transient-string "his s a tes" string= check-t
+    s1 sbuf-length 11 = check-t
 
 \     s1 handle? check
-    s1 sbuf? check
+    s1 sbuf? check-t
     s1 ~sbuf
     s1 sbuf? check-false
 ;
@@ -183,16 +186,16 @@ test8
 \ string>sbuf
 test: test9
     "this is a test" to s1
-    s1 string? check
+    s1 string? check-t
     s1 string>sbuf to s2
 \     s2 handle? check
-    s2 object? check
-    s2 sbuf? check
-    s2 sbuf>transient-string s1 string= check
+    s2 object? check-t
+    s2 sbuf? check-t
+    s2 sbuf>transient-string s1 string= check-t
 
     \ s1 is a static string and can't be destroyed
     s1 ~string
-    s1 string? check
+    s1 string? check-t
 
     s2 ~sbuf
     s2 sbuf? check-false
@@ -204,9 +207,9 @@ test9
 test: test10
     "this is a test" string> >sbuf to s1
 \     s1 handle? check
-    s1 object? check
-    s1 sbuf? check
-    s1 sbuf>transient-string "this is a test" string= check
+    s1 object? check-t
+    s1 sbuf? check-t
+    s1 sbuf>transient-string "this is a test" string= check-t
 
     s1 ~sbuf
     s1 sbuf? check-false
@@ -219,13 +222,13 @@ test10
 test: test11
     "this is a test" string>sbuf to s1
 \     s1 handle? check
-    s1 object? check
-    s1 sbuf? check
-    s1 sbuf-length 14 = check
-    s1 sbuf>transient-string "this is a test" string= check
+    s1 object? check-t
+    s1 sbuf? check-t
+    s1 sbuf-length 14 = check-t
+    s1 sbuf>transient-string "this is a test" string= check-t
     4 s1 sbuf-shorten
-    s1 sbuf-length 4 = check
-    s1 sbuf>transient-string "this" string= check
+    s1 sbuf-length 4 = check-t
+    s1 sbuf>transient-string "this" string= check-t
 
     s1 ~sbuf
     s1 sbuf? check-false
