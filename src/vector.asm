@@ -89,12 +89,11 @@ code vector_set_length, 'vector-set-length' ; tagged-new-length handle --
         _this_vector_length
         _ugt
         _if .2                          ; -- new-length
-        ; initialize new cells to 0
+        ; initialize new cells to f
         _dup
         _this_vector_length
         _?do .3
-        _lit 0
-        _tag_fixnum
+        _f
         _i
         _this_vector_set_nth_unsafe
         _loop .3

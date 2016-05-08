@@ -157,32 +157,32 @@ test7
 \ each-integer vector-each-index vector-set-length
 test: test8 ( -- )
     10 <vector> !> v
-    v vector-length 0 = check
+    v vector-length 0 = check-t
     \ element is index+1
     16 [ 1 + v vector-push ] each-integer
-    v vector-length 16 = check
-    v V{ 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 } vector-equal? t = check
+    v vector-length 16 = check-t
+    v V{ 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 } vector-equal? check-t
     v [ ( element index -- ) 1 + = check ] vector-each-index
     9 v vector-set-length
-    v vector-length 9 = check
+    v vector-length 9 = check-t
     v [ ( element index -- ) 1 + = check ] vector-each-index
     25 v vector-set-length
-    v vector-length 25 = check
+    v vector-length 25 = check-t
     9 0 do
-        i v vector-nth i 1 + = check
+        i v vector-nth i 1 + = check-t
     loop
     25 10 do
-        i v vector-nth 0 = check
+        i v vector-nth f = check-t
     loop
     0 v vector-set-length
-    v vector-length 0 = check
+    v vector-length 0 = check-t
     42 v vector-push
     87 v vector-push
     19 v vector-push
-    v vector-length 3 = check
-    0 v vector-nth 42 = check
-    1 v vector-nth 87 = check
-    2 v vector-nth 19 = check
+    v vector-length 3 = check-t
+    0 v vector-nth 42 = check-t
+    1 v vector-nth 87 = check-t
+    2 v vector-nth 19 = check-t
     0 !> v
 ;
 
