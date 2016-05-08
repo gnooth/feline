@@ -45,6 +45,7 @@ test: test2
     s1 sbuf? check-t
     s1 string? check-false
     s1 sbuf-length 14 = check-t
+    s1 sbuf-capacity fixnum? check-t
     s1 sbuf-capacity 14 = check-t
     s1 ~sbuf
     s1 object? check-false
@@ -78,7 +79,7 @@ test: test4
     s1 string? check-false
     s1 sbuf-length 4 = check-t
     s1 sbuf-capacity 4 = check-t
-    s1 's' sbuf-append-char
+    's' s1 sbuf-push
     s1 object? check-t
 \     s1 handle? check
     s1 sbuf-length 5 = check-t

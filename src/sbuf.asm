@@ -392,63 +392,38 @@ code check_char, 'check-char'           ; char -- char
         next
 endcode
 
+; ### sbuf-push-unchecked
+code sbuf_push_unchecked, 'sbuf-push-unchecked' ; untagged-char sbuf --
+        push    this_register           ; save callee-saved register
+        mov     this_register, rbx      ; sbuf in this_register
+        _sbuf_length                    ; -- char length
+        _dup                            ; -- char length length
+        _oneplus                        ; -- char length length+1
+        _dup                            ; -- char length length+1 length+1
+        _this                           ; -- char length length+1 length+1 this
+        _ sbuf_ensure_capacity          ; -- char length length+1
+        _this_sbuf_set_length           ; -- char length
+        _this_sbuf_set_nth_unsafe       ; --
+        pop     this_register           ; restore callee-saved register
+        next
+endcode
+
+; ### sbuf-push
+code sbuf_push, 'sbuf-push'             ; tagged-char handle --
+        _ check_sbuf
+        _swap
+        _untag_char
+        _ check_char
+        _swap
+        _ sbuf_push_unchecked
+        next
+endcode
+
 ; ### sbuf-append-char
 code sbuf_append_char, 'sbuf-append-char' ; sbuf tagged-char --
-
-; locals:
-%define this   local0
-%define char   local1
-%define len    local2
-
-        _untag_char
-
-        _locals_enter
-        _ check_char
-        popd    char
-        _ check_sbuf
-        popd    this                    ; --
-
-        ; this sbuf-length local len
-        pushd   this
-        _sbuf_length
-        popd    len
-
-        ; len 1+ this sbuf-ensure-capacity
-        pushd   len
-        _oneplus
-        pushd   this
-        _ sbuf_ensure_capacity
-
-        ; char this sbuf-data len + c!
-        pushd   char
-        pushd   this
-        _sbuf_data
-        pushd   len
-        _plus
-        _cstore
-
-        ; this len 1+ sbuf-set-length
-        pushd   this
-        pushd   len
-        _oneplus
-        _sbuf_set_length
-
-        ; 0 this sbuf-data len 1+ + c!
-        _zero
-        pushd   this
-        _sbuf_data
-        pushd   len
-        _oneplus
-        _plus
-        _cstore
-
-        _locals_leave
+        _swap
+        _ sbuf_push
         next
-
-%undef this
-%undef char
-%undef len
-
 endcode
 
 ; ### sbuf-append-chars

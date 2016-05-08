@@ -365,3 +365,9 @@ OBJECT_ALLOCATED_BIT            equ 4
         _plus
         _cstore
 %endmacro
+
+%macro  _this_sbuf_set_nth_unsafe 0     ; char index --
+        _this_sbuf_data
+        _plus
+        _cstore
+%endmacro
