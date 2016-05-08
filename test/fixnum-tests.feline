@@ -53,6 +53,8 @@ test3
 test: test4 ( -- )
     1 2 fixnum< check-t
     1 2 < check-t
+    2 1 fixnum>= check-t
+    2 1 >= check-t
 ;
 
 test4

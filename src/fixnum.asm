@@ -65,6 +65,28 @@ code feline_lt, '<'                     ; x y -- t|f
         next
 endcode
 
+; ### fixnum>=
+code fixnum_ge, 'fixnum>='              ; x y -- t|f
+; No type checking.
+        mov     eax, t_value
+        cmp     [rbp], rbx
+        mov     ebx, f_value
+        cmovge  ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
+; ### >=
+code feline_ge, '>='                    ; x y -- t|f
+; FIXME optimize
+        _ check_fixnum
+        _swap
+        _ check_fixnum
+        _swap
+        _ fixnum_ge
+        next
+endcode
+
 ; ### fixnum+
 code fixnum_plus, 'fixnum+'             ; x y -- x+y
 ; No type checking.
