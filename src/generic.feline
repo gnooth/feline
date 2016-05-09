@@ -1,0 +1,63 @@
+\ Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+
+\ This program is free software: you can redistribute it and/or modify
+\ it under the terms of the GNU General Public License as published by
+\ the Free Software Foundation, either version 3 of the License, or
+\ (at your option) any later version.
+
+\ This program is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+\ GNU General Public License for more details.
+
+\ You should have received a copy of the GNU General Public License
+\ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+LANGUAGE: feline
+
+CONTEXT: feline forth ;
+CURRENT: feline
+
+V{ "fixnum" "vector" "string" "sbuf" "array" } global classes
+
+: lookup-class ( string -- class )
+    classes vector-find-string          \ -- taggged-index t|f
+    [ -256 throw ] unless
+;
+
+: lookup-method ( object array -- xt )
+    >r
+    dup object-type
+    r>
+    array-nth
+;
+
+: GENERIC: ( -- )
+    create
+    5 f <array> ,
+    does> ( object -- ... )
+        @
+        lookup-method
+        execute
+;
+
+: M;
+    end-definition
+    ['] end-definition is ;
+    -rot array-set-nth
+; immediate
+
+: M: ( "<spaces>class-name" "<spaces>generic-name" -- )
+    parse-name >string                  \ -- string
+    lookup-class                        \ -- class
+    ' >body @                           \ -- class methods-array
+    ['] M; is ;
+    :noname                             \ -- class methods-array method-xt
+;
+
+GENERIC: length
+
+M: vector length vector-length ;
+M: string length string-length ;
+M: sbuf   length sbuf-length ;
+M: array  length array-length ;
