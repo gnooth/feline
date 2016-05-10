@@ -151,7 +151,7 @@ new_vector_untagged:
         next
 endcode
 
-; ### parse-vector
+; ### V{
 code parse_vector, 'V{', IMMEDIATE      ; -- handle
         _lit 10
         _ new_vector_untagged
