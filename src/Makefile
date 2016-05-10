@@ -92,6 +92,7 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	find.asm \
 	fixnum.asm \
 	gc.asm \
+	generic.asm \
 	global.asm \
 	handles.asm \
 	include.asm \

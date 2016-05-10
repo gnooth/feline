@@ -25,16 +25,9 @@ V{ "fixnum" "vector" "string" "sbuf" "array" } global classes
     [ -256 throw ] unless
 ;
 
-: lookup-method ( object array -- xt )
-    >r
-    dup object-type
-    r>
-    array-nth
-;
-
 : GENERIC: ( -- )
     create
-    5 f <array> ,
+    5 <vector> ,
     does> ( object -- ... )
         @
         lookup-method
@@ -44,20 +37,21 @@ V{ "fixnum" "vector" "string" "sbuf" "array" } global classes
 : M;
     end-definition
     ['] end-definition is ;
-    -rot array-set-nth
+    -rot
+    vector-set-nth
 ; immediate
 
 : M: ( "<spaces>class-name" "<spaces>generic-name" -- )
     parse-name >string                  \ -- string
-    lookup-class                        \ -- class
-    ' >body @                           \ -- class methods-array
+    lookup-class                        \ -- tagged-index
+    ' >body @                           \ -- tagged-index methods-vector
     ['] M; is ;
-    :noname                             \ -- class methods-array method-xt
+    :noname                             \ -- tagged-index methods-vector method-xt
 ;
 
-GENERIC: length
+\ GENERIC: length
 
-M: vector length vector-length ;
-M: string length string-length ;
-M: sbuf   length sbuf-length ;
-M: array  length array-length ;
+\ M: vector length vector-length ;
+\ M: string length string-length ;
+\ M: sbuf   length sbuf-length ;
+\ M: array  length array-length ;
