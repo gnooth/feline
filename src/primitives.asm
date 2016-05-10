@@ -258,3 +258,17 @@ code each_integer, 'each-integer'       ; tagged-fixnum xt --
         pop     r12
         next
 endcode
+
+; ### bi@
+code bi_fetch, 'bi@'                    ; x y quot --
+; Applies quotation to x, then to y.
+; Quotation must have stack effect ( obj -- ... ).
+        _tor
+        _swap
+        _rfetch
+        _execute
+        _swap
+        _rfrom
+        _execute
+        next
+endcode
