@@ -227,6 +227,18 @@ test: test11
 
 test11
 
+\ vector>array
+test: test12
+    V{ 1 2 3 } vector>array local a
+    a array? check-t
+    a array-length 3 = check-t
+    0 a array-nth 1 = check-t
+    1 a array-nth 2 = check-t
+    2 a array-nth 3 = check-t
+;
+
+test12
+
 empty
 
 ?cr .( Reached end of vector-tests )
