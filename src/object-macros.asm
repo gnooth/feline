@@ -360,6 +360,12 @@ OBJECT_ALLOCATED_BIT            equ 4
         _ult
 %endmacro
 
+%macro  _sbuf_nth_unsafe 0              ; index -- untagged-char
+        _sbuf_data
+        _plus
+        _cfetch
+%endmacro
+
 %macro  _sbuf_set_nth_unsafe 0          ; char index sbuf --
         _sbuf_data
         _plus

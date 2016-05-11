@@ -264,6 +264,31 @@ code destroy_sbuf_unchecked, '~sbuf-unchecked' ; sbuf --
         next
 endcode
 
+; ### sbuf-nth
+code sbuf_nth, 'sbuf-nth'               ; tagged-index handle -- tagged-char
+; Return character at index.
+
+        _ check_sbuf                    ; -- tagged-index sbuf
+
+        _swap
+        _untag_fixnum
+        _swap                           ; -- index sbuf
+
+        _twodup
+        _sbuf_length
+        _ult
+        _if .1
+        _sbuf_nth_unsafe
+        _tag_char
+        _else .1
+        _2drop
+        _true
+        _abortq "index out of bounds"
+        _then .1
+
+        next
+endcode
+
 ; ### sbuf-check-index
 code sbuf_check_index, 'sbuf-check-index' ; handle index -- flag
         _swap
@@ -337,6 +362,7 @@ endcode
 
 ; ### sbuf-ensure-capacity
 code sbuf_ensure_capacity, 'sbuf-ensure-capacity'   ; u sbuf --
+; Numeric argument is untagged.
         _twodup                         ; -- u sbuf u sbuf
         _sbuf_capacity                  ; -- u sbuf u capacity
         _ugt
