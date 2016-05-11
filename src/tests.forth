@@ -24,6 +24,7 @@ include-tests pathname-tests
 include-tests array-tests
 include-tests vector-tests
 include-tests misc-tests
+include-tests generic-tests
 include-tests gc-tests
 
 ?cr .( Reached end of tests )
