@@ -429,6 +429,31 @@ endcode
         _cfetch
 %endmacro
 
+; ### string-nth
+code string_nth, 'string-nth'           ; tagged-index handle-or-string -- tagged-char
+; Return character at index.
+
+        _ check_string                  ; -- tagged-index string
+
+        _swap
+        _untag_fixnum
+        _swap                           ; -- index string
+
+        _twodup
+        _string_length
+        _ult
+        _if .1
+        _string_nth_unsafe
+        _tag_char
+        _else .1
+        _2drop
+        _true
+        _abortq "index out of bounds"
+        _then .1
+
+        next
+endcode
+
 ; ### string-char
 code string_char, 'string-char'         ; string tagged-index -- char
 ; Return character at index, or 0 if index is out of range.
