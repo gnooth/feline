@@ -664,3 +664,23 @@ code vector_clone, 'vector-clone'       ; old -- new
         _ vector_each
         next
 endcode
+
+; ### vector>array
+code vector_to_array, 'vector>array'    ; vector -- array
+        _dup
+        _ vector_length
+        _f
+        _ new_array                     ; -- vector array
+        _swap                           ; -- array vector
+
+        _quotation .1
+        ; -- element index
+        _lit 2
+        _pick
+        ; -- element index array
+        _ array_set_nth
+        _end_quotation .1               ; -- array vector quotation
+
+        _ vector_each_index             ; -- array
+        next
+endcode
