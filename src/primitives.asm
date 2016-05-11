@@ -263,12 +263,13 @@ endcode
 code bi_fetch, 'bi@'                    ; x y quot --
 ; Applies quotation to x, then to y.
 ; Quotation must have stack effect ( obj -- ... ).
-        _tor
         _swap
-        _rfetch
+        _tor                            ; -- x quot             r: -- y
+        _duptor                         ; -- x quot             r: -- y quot
         _execute
-        _swap
         _rfrom
+        _rfrom
+        _swap
         _execute
         next
 endcode
