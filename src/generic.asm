@@ -70,6 +70,8 @@ code add_method, 'add-method'           ; -- method-xt untagged-type-number gene
 endcode
 
 generic length, 'length'
+generic push, 'push'
+generic nth, 'nth'
 
 ; ### initialize-generic-functions
 code initialize_generic_functions, 'initialize-generic-functions' ; --
@@ -81,9 +83,55 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _lit length_xt
         _ add_method
 
+        _lit sbuf_length_xt
+        _lit OBJECT_TYPE_SBUF
+        _lit length_xt
+        _ add_method
+
+        _lit array_length_xt
+        _lit OBJECT_TYPE_ARRAY
+        _lit length_xt
+        _ add_method
+
         _lit vector_length_xt
         _lit OBJECT_TYPE_VECTOR
         _lit length_xt
+        _ add_method
+
+        _lit push_xt
+        _ initialize_generic_function
+
+        _lit vector_push_xt
+        _lit OBJECT_TYPE_VECTOR
+        _lit push_xt
+        _ add_method
+
+        _lit sbuf_push_xt
+        _lit OBJECT_TYPE_SBUF
+        _lit push_xt
+        _ add_method
+
+        _lit nth_xt
+        _ initialize_generic_function
+
+        _lit array_nth_xt
+        _lit OBJECT_TYPE_ARRAY
+        _lit nth_xt
+        _ add_method
+
+        _lit vector_nth_xt
+        _lit OBJECT_TYPE_VECTOR
+        _lit nth_xt
+        _ add_method
+
+        _lit string_nth_xt
+        _lit OBJECT_TYPE_STRING
+        _lit nth_xt
+        _ add_method
+
+        _lit sbuf_nth_xt
+        _lit OBJECT_TYPE_SBUF
+        _lit nth_xt
         _ add_method
 
         next
