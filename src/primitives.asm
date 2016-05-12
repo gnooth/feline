@@ -273,3 +273,58 @@ code bi_fetch, 'bi@'                    ; x y quot --
         _execute
         next
 endcode
+
+; ### get-datastack
+code get_datastack, 'get-datastack'     ; -- array
+        push r12
+
+        _lit 10
+        _ new_vector_untagged
+        popd    r12
+
+        _ depth
+        mov     rcx, rbx
+        jrcxz   .2
+.1:
+        push    rcx
+        pushd   rcx
+        _pick
+        pushd   r12
+        _ vector_push
+        pop     rcx
+        loop    .1
+.2:
+        poprbx
+
+        pushd   r12                     ; -- vector
+        pop     r12
+
+        _ vector_to_array               ; -- array
+
+        next
+endcode
+
+; ### clear
+code clear, 'clear'
+; Clear the data stack.
+        mov     rbp, [sp0_data]
+        next
+endcode
+
+; ### .s
+code feline_dot_s, '.s'
+        _ get_datastack                 ; -- handle
+        _ check_array                   ; -- array
+        _dup
+        _array_length
+        _zero
+        _?do .1
+        _i
+        _over
+        _array_nth_unsafe
+        _ cr
+        _ dot_object
+        _loop .1
+        _drop
+        next
+endcode
