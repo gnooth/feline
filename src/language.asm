@@ -48,6 +48,11 @@ code forth_mode, 'forth-mode'
         _tobody
         _store
 
+        _lit forth_ok_xt
+        _lit ok_xt
+        _tobody
+        _store
+
         _ only
         _ feline
         _ also
@@ -68,6 +73,12 @@ code feline_prompt, 'feline-prompt'     ; --
         next
 endcode
 
+; ### feline-ok
+code feline_ok, 'feline-ok'             ; --
+        _ feline_dot_s
+        next
+endcode
+
 ; ### feline-mode
 code feline_mode, 'feline-mode'
         _lit feline_interpret_xt
@@ -77,6 +88,11 @@ code feline_mode, 'feline-mode'
 
         _lit feline_prompt_xt
         _lit prompt_xt
+        _tobody
+        _store
+
+        _lit feline_ok_xt
+        _lit ok_xt
         _tobody
         _store
 

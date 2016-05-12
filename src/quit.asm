@@ -18,8 +18,8 @@ file __FILE__
 ; ### line-input?
 value line_input, 'line-input?', -1
 
-; ### ok
-code ok, 'ok'
+; ### forth-ok
+code forth_ok, 'forth-ok'
         _ statefetch
         _zeq_if .1
         _ green
@@ -34,6 +34,8 @@ code ok, 'ok'
         _then .1
         next
 endcode
+
+deferred ok, 'ok', forth_ok
 
 ; ### accept-line
 code accept_line, 'accept-line'         ; c-addr +n1 -- +n2
