@@ -260,7 +260,7 @@ code each_integer, 'each-integer'       ; tagged-fixnum xt --
 endcode
 
 ; ### bi@
-code bi_fetch, 'bi@'                    ; x y quot --
+code bi_at, 'bi@'                       ; x y quot --
 ; Applies quotation to x, then to y.
 ; Quotation must have stack effect ( obj -- ... ).
         _swap
