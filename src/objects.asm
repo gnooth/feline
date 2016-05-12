@@ -113,13 +113,24 @@ code dot_object, '.object'              ; handle-or-object --
         _dup
         _f
         _equal
-        _if .1
+        _if .1a
         _drop
         _lit 'f'
         _ emit
         _ space
         _return
-        _then .1
+        _then .1a
+
+        _dup
+        _t
+        _equal
+        _if .1b
+        _drop
+        _lit 't'
+        _ emit
+        _ space
+        _return
+        _then .1b
 
         _dup
         _ string?
