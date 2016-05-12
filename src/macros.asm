@@ -228,6 +228,9 @@ section .data
 %define TYPE_CONSTANT   5
 %define TYPE_GLOBAL     6
 
+; Flag bits
+%define IMMEDIATE       $80
+
 %define forth_link      0
 
 %define feline_link     0

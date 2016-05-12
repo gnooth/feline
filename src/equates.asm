@@ -15,8 +15,6 @@
 
 BYTES_PER_CELL  equ     8
 
-IMMEDIATE       equ     $80
-
 TRUE            equ     -1
 FALSE           equ     0
 
