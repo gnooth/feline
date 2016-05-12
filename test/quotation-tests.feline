@@ -15,19 +15,19 @@
 
 require-system-file test-framework
 
-language: feline
+LANGUAGE: feline
 
-context: feline forth ;
-current: feline
+CONTEXT: feline forth ;
+CURRENT: feline
 
 test: test1 ( -- )
-    [ 42 ] execute 42  = check
+    [ 42 ] execute 42 = check-t
 ;
 
 test1
 
 test: test2 ( -- )
-    [ 42 local foo 87 local bar foo bar + ] execute 129 = check
+    [ 42 local foo 87 local bar foo bar + ] execute 129 = check-t
 ;
 
 test2
@@ -43,12 +43,20 @@ test2
 
 test: test3
     87 42 foo
-    45 = check
-    45 = check
-    45 = check
+    45 = check-t
+    45 = check-t
+    45 = check-t
 ;
 
 test3
+
+\ bi@
+test: test4
+    3 4 [ dup ] bi@ get-datastack V{ 3 3 4 4 } sequence= check-t
+    clear
+;
+
+test4
 
 empty
 
