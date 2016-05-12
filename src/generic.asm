@@ -136,3 +136,51 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
 
         next
 endcode
+
+; ### 2nth
+code two_nth, '2nth'                    ; n seq1 seq2 -- elt1 elt2
+; Numeric argument is tagged.
+        _tor                            ; -- n seq1             r: -- seq2
+        _dupd                           ; -- n n seq1
+        _ nth                           ; -- n elt1
+        _swap                           ; -- elt1 n
+        _rfrom                          ; -- elt1 n seq2
+        _ nth
+        next
+endcode
+
+; ### sequence=
+code sequence_equal, 'sequence='        ; seq1 seq2 -- t|f
+        _twodup
+        _lit length_xt
+        _ bi_at                         ; -- seq1 seq2 len1 len2
+        _equal
+        _zeq_if .1
+        _2drop
+        _f
+        _return
+        _then .1                        ; -- seq1 seq2
+        ; lengths match
+        _dup
+        _ length                        ; -- seq1 seq2 len
+        _untag_fixnum
+        _zero
+        _?do .2
+        _twodup                         ; -- seq1 seq2 seq1 seq2
+        _i
+        _tag_fixnum
+        _ rrot
+        _ two_nth                       ; -- seq1 seq2 elt1 elt2
+        _notequal
+        _if .3
+        _2drop
+        _unloop
+        _f
+        _return
+        _then .3
+        _loop .2
+        ; no mismatch
+        _2drop
+        _t
+        next
+endcode
