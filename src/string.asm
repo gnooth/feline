@@ -392,6 +392,13 @@ code destroy_string_unchecked, '~string-unchecked' ; string --
         next
 endcode
 
+; ### string-hashcode
+code string_hashcode, 'string-hashcode' ; handle-or-string -- tagged-fixnum
+        _ check_string
+        _string_hashcode
+        next
+endcode
+
 ; ### as-c-string
 code as_c_string, 'as-c-string'         ; c-addr u -- zaddr
 ; Arguments are untagged.
