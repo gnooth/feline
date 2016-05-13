@@ -207,8 +207,8 @@ code new_transient_string, '<transient-string>' ; capacity -- string
         pushd   capacity
         _ string_set_length             ; --
 
-        pushd   string
         _f
+        pushd   string
         _string_set_hashcode
 
         pushd   string                  ; -- string

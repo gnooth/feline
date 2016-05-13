@@ -138,7 +138,6 @@ new_vector_untagged:
         _cells
         _ iallocate                     ; -- capacity data-address              r: -- vector
         _rfetch                         ; -- capacity data-address vector       r: -- vector
-        _swap                           ; -- capacity vector data-address       r: -- vector
         _vector_set_data                ; -- capacity                           r: -- vector
         _rfetch                         ; -- capacity vector                    r: -- vector
         _swap                           ; -- vector capacity                    r: -- vector
@@ -225,6 +224,7 @@ code vector_resize, 'vector-resize'     ; vector new-capacity --
         _swap
         _vector_set_capacity            ; -- vector                             r: -- new-data-addr
         _rfrom                          ; -- vector new-data-addr
+        _swap                           ; -- new-data-addr vector
         _vector_set_data
         next
 endcode

@@ -117,9 +117,8 @@ code make_sbuf_internal, 'make-sbuf-internal' ; untagged-capacity -- sbuf
         pushd   capacity
         _oneplus                        ; terminal null byte
         _ iallocate
-        pushd   sbuf
-        _swap
-        _sbuf_set_data
+        pushd   sbuf                    ; -- data-address sbuf
+        _sbuf_set_data                  ; --
 
         pushd   sbuf
         pushd   capacity
@@ -356,6 +355,7 @@ code sbuf_resize, 'sbuf-resize'         ; sbuf new-capacity --
         _swap
         _sbuf_set_capacity              ; -- sbuf                       r: -- new-data-address
         _rfrom                          ; -- sbuf new-data-addr
+        _swap                           ; -- new-data-addr sbuf
         _sbuf_set_data
         next
 endcode
