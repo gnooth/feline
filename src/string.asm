@@ -119,6 +119,10 @@ endcode
         _slot1
 %endmacro
 
+%macro  _string_set_length 0            ; untagged-length string --
+        _set_slot1
+%endmacro
+
 %macro  _this_string_length 0           ; -- untagged-length
         _this_slot1
 %endmacro
@@ -149,12 +153,6 @@ code string_length, 'string-length'     ; string -- length
         _ check_string
         _string_length
         _tag_fixnum
-        next
-endcode
-
-; ### string-set-length
-code string_set_length, 'string-set-length' ; string length --
-        _set_slot1
         next
 endcode
 
@@ -203,9 +201,9 @@ code new_transient_string, '<transient-string>' ; capacity -- string
         _lit OBJECT_TRANSIENT_BIT
         _object_set_flags               ; --
 
-        pushd   string
         pushd   capacity
-        _ string_set_length             ; --
+        pushd   string
+        _string_set_length              ; --
 
         _f
         pushd   string

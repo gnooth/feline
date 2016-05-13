@@ -107,6 +107,7 @@ endcode
 code vector_delete_all, 'vector-delete-all' ; handle --
         _ check_vector
         _zero
+        _swap                           ; -- 0 vector
         _vector_set_length
         next
 endcode
@@ -388,14 +389,11 @@ code vector_insert_nth, 'vector-insert-nth' ; element n vector --
         _cells                          ; -- element n addr addr+8 #bytes
         _ cmoveup                       ; -- element n
 
-        _this                           ; -- element n vector
-        _dup                            ; -- element n vector vector
-        _vector_length                  ; -- element n vector length
-        _oneplus                        ; -- element n vector length+1
-        _vector_set_length              ; -- element n
+        _this_vector_length             ; -- element n length
+        _oneplus                        ; -- element n length+1
+        _this_vector_set_length         ; -- element n
 
-        _this                           ; -- element n vector
-        _vector_set_nth_unsafe          ; ---
+        _this_vector_set_nth_unsafe     ; ---
 
         pop     this_register
         next
@@ -440,20 +438,16 @@ code vector_remove_nth, 'vector-remove-nth' ; n handle --
         _ cmove
 
         _zero
-        _this
-        _vector_data
-        _this
-        _vector_length
+        _this_vector_data
+        _this_vector_length
         _oneminus
         _cells
         _plus
         _store
 
-        _this
-        _dup
-        _vector_length
+        _this_vector_length
         _oneminus
-        _vector_set_length
+        _this_vector_set_length
 
         pop     this_register
         next

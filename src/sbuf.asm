@@ -177,8 +177,8 @@ code copy_to_sbuf, '>sbuf'              ; c-addr u -- handle
         _plus
         _cstore
 
-        pushd   sbuf
         pushd   u
+        pushd   sbuf
         _sbuf_set_length
 
         pushd   sbuf
@@ -392,7 +392,6 @@ code sbuf_shorten, 'sbuf-shorten'       ; fixnum handle --
         _sbuf_length
         _ult
         _if .2
-        _swap
         _sbuf_set_length
         _else .2
         _2drop
@@ -485,6 +484,7 @@ code sbuf_append_chars, 'sbuf-append-chars' ; sbuf untagged-addr untagged-len --
         _sbuf_length
         pushd   len
         _plus
+        _swap
         _sbuf_set_length
         _zero
         pushd   this
@@ -558,6 +558,7 @@ code sbuf_insert_char, 'sbuf-insert-char' ; handle index char --
         _dup                            ; -- sbuf sbuf
         _sbuf_length                    ; -- sbuf length
         _oneplus                        ; -- sbuf length+1
+        _swap
         _sbuf_set_length
 
         ; char index sbuf sbuf-set-nth
