@@ -207,6 +207,10 @@ code new_transient_string, '<transient-string>' ; capacity -- string
         pushd   capacity
         _ string_set_length             ; --
 
+        pushd   string
+        _f
+        _string_set_hashcode
+
         pushd   string                  ; -- string
         _locals_leave
         next
@@ -234,6 +238,9 @@ code copy_to_string, '>string'          ; c-addr u -- handle
 
         _this_object_set_type OBJECT_TYPE_STRING
         _this_object_set_flags OBJECT_ALLOCATED_BIT
+
+        _f
+        _this_string_set_hashcode
 
         _dup
         _this_string_set_length         ; -- c-addr u
@@ -329,6 +336,9 @@ code copy_to_transient_string, '>transient-string' ; c-addr u -- string
         pushd   u
         _this_string_set_length
 
+        _f
+        _this_string_set_hashcode
+
         pushd   c_addr
         _this_string_data
         pushd   u
@@ -393,7 +403,7 @@ code destroy_string_unchecked, '~string-unchecked' ; string --
 endcode
 
 ; ### string-hashcode
-code string_hashcode, 'string-hashcode' ; handle-or-string -- tagged-fixnum
+code string_hashcode, 'string-hashcode' ; handle-or-string -- tagged-fixnum|f
         _ check_string
         _string_hashcode
         next
