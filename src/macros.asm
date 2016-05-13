@@ -528,6 +528,7 @@ section .data
         db      0                       ; not used
         dd      0                       ; not used
         dq      len                     ; length
+        dq      f_value                 ; hashcode
         db      %1                      ; string
         db      0                       ; null byte at end
 section .text

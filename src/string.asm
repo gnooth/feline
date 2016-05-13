@@ -15,7 +15,7 @@
 
 file __FILE__
 
-%define STRING_DATA_OFFSET      16
+%define STRING_DATA_OFFSET      24
 
 ; ### string?
 code string?, 'string?'                 ; x -- t|f
@@ -115,16 +115,32 @@ code check_string, 'check-string'       ; x -- string
         next
 endcode
 
-%macro _string_length 0                 ; string -- untagged-length
+%macro  _string_length 0                 ; string -- untagged-length
         _slot1
 %endmacro
 
-%macro _this_string_length 0            ; -- untagged-length
+%macro  _this_string_length 0           ; -- untagged-length
         _this_slot1
 %endmacro
 
-%macro _this_string_set_length 0        ; untagged-length --
+%macro  _this_string_set_length 0       ; untagged-length --
         _this_set_slot1
+%endmacro
+
+%macro  _string_hashcode 0              ; string -- tagged-fixnum
+        _slot2
+%endmacro
+
+%macro  _string_set_hashcode 0          ; tagged-fixnum string --
+        _set_slot2
+%endmacro
+
+%macro  _this_string_hashcode 0         ; -- tagged-fixnum
+        _this_slot2
+%endmacro
+
+%macro  _this_string_set_hashcode 0     ; tagged-fixnum --
+        _this_set_slot2
 %endmacro
 
 ; ### string-length
@@ -267,6 +283,10 @@ code copy_to_static_string, '>static-string' ; c-addr u -- string
         ; length
         _dup
         _ comma                         ; -- c-addr u
+
+        ; hashcode
+        _f
+        _ comma
 
         _ here                          ; -- c-addr u here
         _over                           ; -- c-addr u here u
