@@ -15,6 +15,8 @@
 
 file __FILE__
 
+%define STRING_DATA_OFFSET      16
+
 ; ### string?
 code string?, 'string?'                 ; x -- t|f
         _dup
@@ -140,14 +142,14 @@ code string_set_length, 'string-set-length' ; string length --
         next
 endcode
 
-; Strings store their character data inline starting at this + 16 bytes.
+; Strings store their character data inline starting at this + STRING_DATA_OFFSET bytes.
 %macro _string_data 0
-        lea     rbx, [rbx + BYTES_PER_CELL * 2]
+        lea     rbx, [rbx + STRING_DATA_OFFSET]
 %endmacro
 
 %macro _this_string_data 0
         pushrbx
-        lea     rbx, [this_register + BYTES_PER_CELL * 2]
+        lea     rbx, [this_register + STRING_DATA_OFFSET]
 %endmacro
 
 ; ### string-data
@@ -167,7 +169,7 @@ code new_transient_string, '<transient-string>' ; capacity -- string
         _locals_enter                   ; -- capacity
         popd    capacity                ; --
 
-        _lit 16
+        _lit STRING_DATA_OFFSET
         pushd capacity
         _oneplus                        ; terminal null byte
         _plus                           ; -- size
@@ -203,7 +205,7 @@ code copy_to_string, '>string'          ; c-addr u -- handle
 ; Arguments are untagged.
         push    this_register
 
-        _lit 16
+        _lit STRING_DATA_OFFSET
         _over
         _oneplus                        ; terminal null byte
         _plus                           ; -- c-addr u size
@@ -289,7 +291,7 @@ code copy_to_transient_string, '>transient-string' ; c-addr u -- string
         popd    u
         popd    c_addr                  ; --
 
-        _lit 16
+        _lit STRING_DATA_OFFSET
         pushd   u
         _oneplus                        ; terminal null byte
         _plus                           ; -- size
