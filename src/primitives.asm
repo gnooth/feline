@@ -263,14 +263,17 @@ endcode
 code bi_at, 'bi@'                       ; x y quot --
 ; Applies quotation to x, then to y.
 ; Quotation must have stack effect ( obj -- ... ).
-        _swap
-        _tor                            ; -- x quot             r: -- y
-        _duptor                         ; -- x quot             r: -- y quot
-        _execute
-        _rfrom
-        _rfrom
-        _swap
-        _execute
+        push    r12                     ; save non-volatile register
+        mov     r12, [rbx]              ; address to call in r12
+        mov     rax, [rbp]              ; y in rax
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2] ; -- x
+        push    rax                     ; save y
+        call    r12
+        pushrbx
+        pop     rbx                     ; -- y
+        call    r12
+        pop     r12
         next
 endcode
 
