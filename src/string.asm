@@ -173,6 +173,18 @@ code string_data, 'string-data'         ; string -- data-address
         next
 endcode
 
+%macro  _string_nth_unsafe 0            ; untagged-index string -- untagged-char
+        _string_data
+        _plus
+        _cfetch
+%endmacro
+
+%macro  _this_string_nth_unsafe 0       ; untagged-index string -- untagged-char
+        _this_string_data
+        _plus
+        _cfetch
+%endmacro
+
 ; ### <transient-string>
 code new_transient_string, '<transient-string>' ; capacity -- string
 
@@ -407,6 +419,50 @@ code string_hashcode, 'string-hashcode' ; handle-or-string -- tagged-fixnum|f
         next
 endcode
 
+; ### rehash-string
+code rehash_string, 'rehash-string'     ; string --
+        _ check_string                  ; -- string
+
+rehash_string_unchecked:
+        push    this_register
+        popd    this_register           ; --
+
+        _zero                           ; -- accumulator
+
+        _this_string_length
+        _zero
+        _?do .1
+        _i
+        _this_string_nth_unsafe         ; -- accum untagged-char
+        _plus                           ; -- accum
+        _loop .1
+
+        _tag_fixnum
+        _this_string_set_hashcode
+
+        pop     this_register
+        next
+endcode
+
+; ### force-hashcode
+code force_hashcode, 'force-hashcode'   ; handle-or-string -- hashcode
+        _ check_string
+        _dup
+        _string_hashcode
+        _dup
+        _f
+        _notequal
+        _if .1
+        _nip
+        _else .1
+        _drop
+        _dup
+        _ rehash_string_unchecked
+        _string_hashcode
+        _then .1
+        next
+endcode
+
 ; ### as-c-string
 code as_c_string, 'as-c-string'         ; c-addr u -- zaddr
 ; Arguments are untagged.
@@ -453,18 +509,6 @@ code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
         _ copy_to_transient_string
         next
 endcode
-
-%macro  _string_nth_unsafe 0            ; untagged-index string -- untagged-char
-        _string_data
-        _plus
-        _cfetch
-%endmacro
-
-%macro  _this_string_nth_unsafe 0       ; untagged-index string -- untagged-char
-        _this_string_data
-        _plus
-        _cfetch
-%endmacro
 
 ; ### string-nth
 code string_nth, 'string-nth'           ; tagged-index handle-or-string -- tagged-char
@@ -697,7 +741,20 @@ code string_equal?, 'string-equal?'     ; object1 object2 -- t|f
         _dup
         _ string?
         _tagged_if .2
+
         ; both objects are strings
+
+        _twodup
+        _lit force_hashcode_xt
+        _ bi_at                         ; -- seq1 seq2 hashcode1 hashcode2
+
+        _equal
+        _zeq_if .3
+        _2drop
+        _f
+        _return
+        _then .3
+
         _ stringequal
         _return
         _then .2
