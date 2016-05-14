@@ -132,7 +132,7 @@ code feline_minus, '-'                  ; x y -- x-y
 endcode
 
 ; ### fixnum*
-code fixnum_star, 'fixnum*'             ; x y -- x*y
+code fixnum_multiply, 'fixnum*'         ; x y -- x*y
 ; No type checking.
         _untag_fixnum
         _swap
@@ -144,7 +144,7 @@ code fixnum_star, 'fixnum*'             ; x y -- x*y
 endcode
 
 ; ### *
-code feline_star, '*'                   ; x y -- x*y
+code feline_multiply, '*'               ; x y -- x*y
         _ check_fixnum
         _swap
         _ check_fixnum
@@ -153,3 +153,67 @@ code feline_star, '*'                   ; x y -- x*y
         _tag_fixnum
         next
 endcode
+
+%macro _divide 0
+        mov     rax, [rbp]
+        cqo                             ; sign-extend rax into rdx:rax
+        idiv    rbx                     ; quotient in rax, remainder in rdx
+        mov     rbx, rax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
+; ### fixnum/i
+code fixnum_divide, 'fixnum/i'          ; n1 n2 -- n3
+        _untag_fixnum
+        _swap
+        _untag_fixnum
+        _swap
+        _divide
+        _tag_fixnum
+        next
+endcode
+
+; ### /
+code feline_divide, '/'
+        _ check_fixnum
+        _swap
+        _ check_fixnum
+        _swap
+        _divide
+        _tag_fixnum
+        next
+endcode
+
+%unmacro _divide 0
+
+%macro _mod 0
+        mov     rax, [rbp]
+        cqo                             ; sign-extend rax into rdx:rax
+        idiv    rbx                     ; quotient in rax, remainder in rdx
+        mov     rbx, rdx
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
+; ### fixnum-mod
+code fixnum_mod, 'fixnum-mod'           ; n1 n2 -- n3
+        _untag_fixnum
+        _swap
+        _untag_fixnum
+        _swap
+        _mod
+        _tag_fixnum
+        next
+endcode
+
+; ### mod
+code feline_mod, 'mod'                  ; n1 n2 -- n3
+        _ check_fixnum
+        _swap
+        _ check_fixnum
+        _swap
+        _mod
+        _tag_fixnum
+        next
+endcode
+
+%unmacro _mod 0

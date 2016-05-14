@@ -73,6 +73,24 @@ test: test6 ( -- )
 
 test6
 
+test: test7 ( -- )
+    8 3 fixnum/i 2 = check-t
+    8 3 / 2 = check-t
+    -8 3 fixnum/i -2 = check-t
+    -8 3 / -2 = check-t
+;
+
+test7
+
+test: test8 ( -- )
+    7 3 fixnum-mod 1 = check-t
+    7 3 mod 1 = check-t
+    -7 3 fixnum-mod -1 = check-t
+    -7 3 mod -1 = check-t
+;
+
+test8
+
 empty
 
 ?cr .( Reached end of fixnum-tests )
