@@ -91,6 +91,15 @@ test: test8 ( -- )
 
 test8
 
+\ fixnum-bitand, bitand
+test: test9 ( -- )
+    15 7 bitand 7 = check-t
+    15 $f0 bitand 0 = check-t
+    3 1 and 1 = check-t
+;
+
+test9
+
 empty
 
 ?cr .( Reached end of fixnum-tests )

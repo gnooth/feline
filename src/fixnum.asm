@@ -206,3 +206,21 @@ code feline_mod, 'mod'                  ; n1 n2 -- n3
 endcode
 
 %unmacro _mod 0
+
+; ### fixnum-bitand
+code fixnum_bitand, 'fixnum-bitand'     ; n1 n2 -- n3
+        _untag_2_fixnums
+        _and
+        _tag_fixnum
+        next
+endcode
+
+; ### bitand
+code bitand, 'bitand'
+        _ check_fixnum
+        _swap
+        _ check_fixnum
+        _and
+        _tag_fixnum
+        next
+endcode
