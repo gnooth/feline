@@ -90,9 +90,7 @@ endcode
 ; ### fixnum+
 code fixnum_plus, 'fixnum+'             ; x y -- x+y
 ; No type checking.
-        _untag_fixnum
-        _swap
-        _untag_fixnum
+        _untag_2_fixnums
         _plus
         _tag_fixnum
         next
@@ -111,10 +109,9 @@ endcode
 ; ### fixnum-
 code fixnum_minus, 'fixnum-'            ; x y -- x-y
 ; No type checking.
-        _untag_fixnum
-        _swap
-        _untag_fixnum
-        sub     rbx, [rbp]
+        _untag_2_fixnums
+        neg     rbx
+        add     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
         _tag_fixnum
         next
@@ -134,9 +131,7 @@ endcode
 ; ### fixnum*
 code fixnum_multiply, 'fixnum*'         ; x y -- x*y
 ; No type checking.
-        _untag_fixnum
-        _swap
-        _untag_fixnum
+        _untag_2_fixnums
         imul    rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
         _tag_fixnum
@@ -164,10 +159,7 @@ endcode
 
 ; ### fixnum/i
 code fixnum_divide, 'fixnum/i'          ; n1 n2 -- n3
-        _untag_fixnum
-        _swap
-        _untag_fixnum
-        _swap
+        _untag_2_fixnums
         _divide
         _tag_fixnum
         next
@@ -196,10 +188,7 @@ endcode
 
 ; ### fixnum-mod
 code fixnum_mod, 'fixnum-mod'           ; n1 n2 -- n3
-        _untag_fixnum
-        _swap
-        _untag_fixnum
-        _swap
+        _untag_2_fixnums
         _mod
         _tag_fixnum
         next

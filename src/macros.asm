@@ -57,6 +57,13 @@
         sar     rbx, TAG_BITS
 %endmacro
 
+%macro  _untag_2_fixnums 0
+        sar     rbx, TAG_BITS
+        mov     rax, [rbp]
+        sar     rax, TAG_BITS
+        mov     [rbp], rax
+%endmacro
+
 %define tagged_fixnum(n)        ((n << TAG_BITS) + FIXNUM_TAG)
 
 %define tagged_zero     FIXNUM_TAG
@@ -105,6 +112,9 @@
 %endmacro
 
 %macro  _untag_fixnum 0
+%endmacro
+
+%macro  _untag_2_fixnums 0
 %endmacro
 
 %define tagged_zero     0
