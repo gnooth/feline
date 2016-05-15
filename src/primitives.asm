@@ -259,6 +259,52 @@ code each_integer, 'each-integer'       ; tagged-fixnum xt --
         next
 endcode
 
+; ### find-integer
+code find_integer, 'find-integer'       ; tagged-fixnum xt -- i|f
+; Quotation must have stack effect ( ... i -- ... ? ).
+
+        _swap
+        _untag_fixnum
+        _swap
+
+        push    r12
+        push    r13
+        push    r14
+        xor     r12, r12                ; loop index in r12
+        mov     r13, [rbx]              ; code address in r13
+        mov     r14, [rbp]              ; loop limit in r14
+        _2drop                          ; clean up the stack now!
+        test    r14, r14
+        jle     .2
+.1:
+        pushd   r12
+        _tag_fixnum
+        call    r13
+        ; test flag returned by quotation
+        cmp     rbx, f_value
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        jne     .2
+        ; flag was f
+        ; keep going
+        inc     r12
+        cmp     r12, r14
+        jne     .1
+        ; reached end
+        ; return f
+        _f
+        jmp     .3
+.2:
+        ; return tagged index
+        pushd   r12
+        _tag_fixnum
+.3:
+        pop     r14
+        pop     r13
+        pop     r12
+        next
+endcode
+
 ; ### dip
 code dip, 'dip'                         ; x quot -- x
 ; Removes x, calls quot, restores x to top of stack after quot returns.
