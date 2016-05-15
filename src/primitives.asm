@@ -259,6 +259,16 @@ code each_integer, 'each-integer'       ; tagged-fixnum xt --
         next
 endcode
 
+; ### dip
+code dip, 'dip'                         ; x quot -- x
+; Removes x, calls quot, restores x to top of stack after quot returns.
+        _swap
+        _tor                            ; -- quot       r: -- x
+        _execute
+        _rfrom
+        next
+endcode
+
 ; ### bi@
 code bi_at, 'bi@'                       ; x y quot --
 ; Applies quotation to x, then to y.

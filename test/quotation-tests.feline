@@ -58,6 +58,12 @@ test: test4
 
 test4
 
+\ dip
+test: test5
+    42 17 [ dup ] dip get-datastack V{ 42 42 17 } sequence= check-t
+    clear
+;
+
 empty
 
 ?cr .( Reached end of quotation-tests )
