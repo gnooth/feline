@@ -178,6 +178,13 @@ code dot_object, '.object'              ; handle-or-object --
         _return
         _then .6
 
+        _dup
+        _ hashtable?
+        _tagged_if .7
+        _dotq "H{ } "
+        _return
+        _then .7
+
         ; give up
         _ hdot
 
