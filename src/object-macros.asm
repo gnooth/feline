@@ -20,6 +20,7 @@ OBJECT_TYPE_VECTOR              equ 1
 OBJECT_TYPE_STRING              equ 2
 OBJECT_TYPE_SBUF                equ 3
 OBJECT_TYPE_ARRAY               equ 4
+OBJECT_TYPE_HASHTABLE           equ 5
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
@@ -159,6 +160,25 @@ OBJECT_ALLOCATED_BIT            equ 4
 %macro  _this_slot3 0                   ; -- x
         pushrbx
         mov     rbx, [this_register + BYTES_PER_CELL * 3]
+%endmacro
+
+%macro  _this_set_slot3 0               ; x --
+        mov     [this_register + BYTES_PER_CELL * 3], rbx
+        poprbx
+%endmacro
+
+%macro  _slot4 0                        ; object -- x
+        mov     rbx, [rbx + BYTES_PER_CELL * 4]
+%endmacro
+
+%macro  _this_slot4 0
+        pushrbx
+        mov     rbx, [this_register + BYTES_PER_CELL * 4]
+%endmacro
+
+%macro  _this_set_slot4 0               ; x --
+        mov     [this_register + BYTES_PER_CELL * 4], rbx
+        poprbx
 %endmacro
 
 %macro  _string? 0
