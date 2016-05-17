@@ -67,6 +67,7 @@ IN_FELINE
 ; Objects
 %include "object-macros.asm"
 %include "primitives.asm"
+%include "hashtable.asm"
 %include "generic.asm"
 %include "fixnum.asm"
 %include "handles.asm"
