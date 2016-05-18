@@ -65,6 +65,24 @@ code mark_array, 'mark-array'           ; array --
         next
 endcode
 
+; ### mark-hashtable
+code mark_hashtable, 'mark-hashtable'   ; hashtable --
+        push    this_register
+        mov     this_register, rbx      ; -- hashtable
+        _hashtable_capacity             ; -- capacity
+        _zero
+        _?do .1
+        _i
+        _dup
+        _this_hashtable_nth_key
+        _ maybe_mark_handle
+        _this_hashtable_nth_value
+        _ maybe_mark_handle
+        _loop .1                        ; --
+        pop     this_register
+        next
+endcode
+
 ; ### mark-handle
 code mark_handle, 'mark-handle'         ; handle --
         _handle_to_object_unsafe        ; -- object|0
@@ -90,6 +108,16 @@ code mark_handle, 'mark-handle'         ; handle --
         _ mark_array
         _return
         _then .3
+
+        _dup
+        _object_type                    ; -- object object-type
+        _lit OBJECT_TYPE_HASHTABLE
+        _equal
+        _if .4
+        _ mark_hashtable
+        _return
+        _then .4
+
 .1:
         _drop
         next
