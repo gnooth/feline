@@ -342,7 +342,14 @@ code set_at, 'set-at'                   ; value key handle --
         mov     this_register, rbx      ; -- value key hashtable
         _twodup                         ; -- value key hashtable key hashtable
         _ find_index_for_key_unchecked  ; -- value key hashtable tagged-index t|f
-        _drop
+        _ not
+        _tagged_if .1
+        ; key was not found
+        ; we're adding an entry
+        _this_hashtable_count
+        _oneplus
+        _this_hashtable_set_count
+        _then .1                        ; -- value key hashtable tagged-index
         _nip                            ; -- value key tagged-index
         _untag_fixnum
         _this_hashtable_set_nth_pair
