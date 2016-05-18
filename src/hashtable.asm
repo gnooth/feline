@@ -35,6 +35,10 @@ file __FILE__
         _this_set_slot2
 %endmacro
 
+%macro  _hashtable_capacity 0           ; hashtable -- capacity
+        _slot3
+%endmacro
+
 %macro  _this_hashtable_capacity 0      ; -- capacity
         _this_slot3
 %endmacro
