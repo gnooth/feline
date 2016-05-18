@@ -188,6 +188,7 @@ code dot_object, '.object'              ; handle-or-object --
         _dup
         _ hashtable?
         _tagged_if .7
+        _drop
         _dotq "H{ } "
         _return
         _then .7
