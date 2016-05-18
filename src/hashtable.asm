@@ -15,6 +15,10 @@
 
 file __FILE__
 
+%macro  _hashtable_count 0              ; hashtable -- count
+        _slot1
+%endmacro
+
 %macro  _this_hashtable_count 0         ; -- count
         _this_slot1
 %endmacro
@@ -39,7 +43,7 @@ file __FILE__
         _this_set_slot3
 %endmacro
 
-%macro  _hashtable_data 0               ; hashtable --
+%macro  _hashtable_data 0               ; hashtable -- data-address
         _slot4
 %endmacro
 
@@ -130,6 +134,14 @@ code check_hashtable, 'check-hashtable' ; handle -- hashtable
         _then .1
 
         _ error_not_hashtable
+        next
+endcode
+
+; ### hashtable-count
+code hashtable_count, 'hashtable-count' ; hashtable -- count
+        _ check_hashtable
+        _hashtable_count
+        _tag_fixnum
         next
 endcode
 
@@ -331,7 +343,7 @@ endcode
 
 ; ### set-at
 code set_at, 'set-at'                   ; value key hashtable --
-        _twodup
+        _twodup                         ; -- value key hashtable key hashtable
         _ find_index_for_key            ; -- value key hashtable index t|f
         _drop
         _ hashtable_set_nth_pair
