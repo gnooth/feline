@@ -145,6 +145,53 @@ code hashtable_count, 'hashtable-count' ; hashtable -- count
         next
 endcode
 
+; ### hashtable-keys
+code hashtable_keys, 'hashtable-keys'   ; hashtable -- keys
+        _ check_hashtable               ; -- hashtable
+        push    this_register
+        mov     this_register, rbx
+        _hashtable_count
+        _ new_vector_untagged           ; -- handle-to-vector
+        _this_hashtable_capacity
+        _zero
+        _?do .1
+        _i
+        _this_hashtable_nth_key
+        _dup
+        _tagged_if .2
+        _over
+        _ vector_push
+        _else .2
+        _drop
+        _then .2
+        _loop .1
+        pop     this_register
+        next
+endcode
+
+; ### hashtable-values
+code hashtable_values, 'hashtable-values' ; hashtable -- values
+        _ check_hashtable               ; -- hashtable
+        push    this_register
+        mov     this_register, rbx
+        _hashtable_count
+        _ new_vector_untagged           ; -- handle-to-vector
+        _this_hashtable_capacity
+        _zero
+        _?do .1
+        _i
+        _this_hashtable_nth_key
+        _tagged_if .2
+        _i
+        _this_hashtable_nth_value
+        _over
+        _ vector_push
+        _then .2
+        _loop .1
+        pop     this_register
+        next
+endcode
+
 ; ### <hashtable>
 code new_hashtable, '<hashtable>'       ; fixnum -- hashtable
 
