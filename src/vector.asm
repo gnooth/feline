@@ -185,7 +185,7 @@ endcode
 
 ; ### ~vector
 code destroy_vector, '~vector'          ; handle --
-        _ check_vector                  ; -- vector|0
+        _ check_vector                  ; -- vector
         _ destroy_vector_unchecked
         next
 endcode

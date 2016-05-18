@@ -125,7 +125,7 @@ endcode
 
 ; ### ~array
 code destroy_array, '~array'            ; handle --
-        _ check_array                   ; -- array|0
+        _ check_array                   ; -- array
         _ destroy_array_unchecked
         next
 endcode
