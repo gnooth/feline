@@ -205,6 +205,12 @@ OBJECT_ALLOCATED_BIT            equ 4
         _equal
 %endmacro
 
+%macro  _hashtable? 0
+        _object_type
+        _lit OBJECT_TYPE_HASHTABLE
+        _equal
+%endmacro
+
 %macro _array_length 0                  ; array -- length
         _slot1
 %endmacro
