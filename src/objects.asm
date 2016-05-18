@@ -102,6 +102,13 @@ code destroy_object_unchecked, '~object-unchecked' ; object --
         _return
         _then .4
 
+        _dup
+        _hashtable?
+        _if .5
+        _ destroy_hashtable_unchecked
+        _return
+        _then .5
+
         ; REVIEW
         _true
         _abortq "unknown object"

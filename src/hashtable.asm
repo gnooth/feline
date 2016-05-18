@@ -39,6 +39,10 @@ file __FILE__
         _this_set_slot3
 %endmacro
 
+%macro  _hashtable_data 0               ; hashtable --
+        _slot4
+%endmacro
+
 %macro  _this_hashtable_data 0          ; -- data-address
         _this_slot4
 %endmacro
@@ -174,6 +178,35 @@ code new_hashtable, '<hashtable>'       ; fixnum -- hashtable
         _ new_handle                    ; -- handle
 
         pop     this_register
+        next
+endcode
+
+; ### ~hashtable
+code destroy_hashtable, '~hashtable'    ; handle --
+        _ check_hashtable               ; -- hashtable
+        _ destroy_hashtable_unchecked
+        next
+endcode
+
+; ### ~hashtable-unchecked
+code destroy_hashtable_unchecked, '~hashtable-unchecked' ; hashtable --
+        _dup
+        _hashtable_data
+        _ ifree                         ; -- hashtable
+
+        _ in_gc?
+        _zeq_if .1
+        _dup
+        _ release_handle_for_object
+        _then .1
+
+        ; Zero out the object header so it won't look like a valid object
+        ; after it has been destroyed.
+        xor     eax, eax
+        mov     [rbx], rax
+
+        _ ifree
+
         next
 endcode
 
