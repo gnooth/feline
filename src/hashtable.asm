@@ -253,9 +253,11 @@ endcode
 %endmacro
 
 ; ### find-index-for-key
-code find_index_for_key, 'find-index-for-key' ; key hashtable -- index t|f
+code find_index_for_key, 'find-index-for-key' ; key hashtable -- tagged-index t|f
 
         _ check_hashtable
+
+find_index_for_key_unchecked:
         push    this_register
         popd    this_register           ; -- key
         _dup
@@ -327,25 +329,23 @@ code at_start, 'at*'                    ; key hashtable -- value t|f
         next
 endcode
 
-; ### hashtable-set-nth-pair
-code hashtable_set_nth_pair, 'hashtable-set-nth-pair' ; value key hashtable n
-        _ check_fixnum
-        _swap
-        _ check_hashtable               ; -- value key n hashtable
-        push    this_register
-        popd    this_register           ; -- value key n
-        _tuck                           ; -- value n key n
-        _this_hashtable_set_nth_key     ; -- value n
-        _this_hashtable_set_nth_value   ; --
-        pop     this_register
-        next
-endcode
+%macro _this_hashtable_set_nth_pair 0   ; -- value key index
+        _tuck
+        _this_hashtable_set_nth_key
+        _this_hashtable_set_nth_value
+%endmacro
 
 ; ### set-at
-code set_at, 'set-at'                   ; value key hashtable --
+code set_at, 'set-at'                   ; value key handle --
+        _ check_hashtable               ; -- value key hashtable
+        push    this_register
+        mov     this_register, rbx      ; -- value key hashtable
         _twodup                         ; -- value key hashtable key hashtable
-        _ find_index_for_key            ; -- value key hashtable index t|f
+        _ find_index_for_key_unchecked  ; -- value key hashtable tagged-index t|f
         _drop
-        _ hashtable_set_nth_pair
+        _nip                            ; -- value key tagged-index
+        _untag_fixnum
+        _this_hashtable_set_nth_pair
+        pop     this_register
         next
 endcode
