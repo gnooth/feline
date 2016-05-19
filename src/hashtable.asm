@@ -149,6 +149,15 @@ code hashtable_count, 'hashtable-count' ; hashtable -- count
         next
 endcode
 
+; ### hashtable-capacity
+code hashtable_capacity, 'hashtable-capacity' ; hashtable -- capacity
+; Return value is tagged.
+        _ check_hashtable
+        _hashtable_capacity
+        _tag_fixnum
+        next
+endcode
+
 ; ### hashtable-keys
 code hashtable_keys, 'hashtable-keys'   ; hashtable -- keys
         _ check_hashtable               ; -- hashtable
