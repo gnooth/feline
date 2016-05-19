@@ -196,10 +196,27 @@ code hashtable_values, 'hashtable-values' ; hashtable -- values
         next
 endcode
 
+; ### next-power-of-2
+code next_power_of_2, 'next-power-of-2' ; m -- n
+; Argument and return value are tagged fixnums.
+        _ check_fixnum
+        _lit 2
+        _begin .1
+        _twodup
+        _ugt
+        _while .1
+        _twostar
+        _repeat .1
+        _nip
+        _tag_fixnum
+        next
+endcode
+
 ; ### <hashtable>
 code new_hashtable, '<hashtable>'       ; fixnum -- hashtable
 
-        _ check_fixnum                  ; -- n (untagged)
+        _ next_power_of_2               ; -- fixnum
+        _untag_fixnum
 
         ; 5 cells (object header, count, deleted, capacity, data address)
         _lit 5                          ; -- n 5
