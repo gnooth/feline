@@ -69,8 +69,13 @@ code add_method, 'add-method'           ; -- method-xt untagged-type-number gene
         next
 endcode
 
+; ### length
 generic length, 'length'
+
+; ### push
 generic push, 'push'
+
+; ### nth
 generic nth, 'nth'
 
 ; ### initialize-generic-functions
