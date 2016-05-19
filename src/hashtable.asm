@@ -161,6 +161,8 @@ endcode
 ; ### hashtable-keys
 code hashtable_keys, 'hashtable-keys'   ; hashtable -- keys
         _ check_hashtable               ; -- hashtable
+
+hashtable_keys_unchecked:
         push    this_register
         mov     this_register, rbx
         _hashtable_count
@@ -185,6 +187,8 @@ endcode
 ; ### hashtable-values
 code hashtable_values, 'hashtable-values' ; hashtable -- values
         _ check_hashtable               ; -- hashtable
+
+hashtable_values_unchecked:
         push    this_register
         mov     this_register, rbx
         _hashtable_count
@@ -414,22 +418,103 @@ endcode
 
 ; ### set-at
 code set_at, 'set-at'                   ; value key handle --
+
         _ check_hashtable               ; -- value key hashtable
+
+        _dup
+        _hashtable_count
+        _lit 3
+        _ star
+        _over
+        _hashtable_capacity
+        _twostar
+        _ugt
+        _if .1
+        _dup
+        _ hashtable_grow_unchecked
+        _then .1
+
+set_at_unchecked:
         push    this_register
         mov     this_register, rbx      ; -- value key hashtable
         _twodup                         ; -- value key hashtable key hashtable
         _ find_index_for_key_unchecked  ; -- value key hashtable tagged-index t|f
         _ not
-        _tagged_if .1
+        _tagged_if .2
         ; key was not found
         ; we're adding an entry
         _this_hashtable_count
         _oneplus
         _this_hashtable_set_count
-        _then .1                        ; -- value key hashtable tagged-index
+        _then .2                        ; -- value key hashtable tagged-index
         _nip                            ; -- value key tagged-index
         _untag_fixnum
         _this_hashtable_set_nth_pair
+        pop     this_register
+        next
+endcode
+
+; ### hashtable-grow
+code hashtable_grow, 'hashtable-grow'   ; hashtable --
+        _ check_hashtable               ; -- hashtable
+
+hashtable_grow_unchecked:
+        push    this_register
+        mov     this_register, rbx
+
+        _dup
+        _ hashtable_keys_unchecked
+        _swap
+        _ hashtable_values_unchecked    ; -- keys values
+
+        _this_hashtable_data
+        _ ifree
+
+        _this_hashtable_capacity        ; -- ... n
+        ; double existing capacity
+        _twostar
+        _dup
+        _this_hashtable_set_capacity
+        ; 16 bytes per entry
+        shl     rbx, 4                  ; -- ... n*16
+        _ iallocate
+        _this_hashtable_set_data        ; -- keys values
+
+        _this_hashtable_capacity
+        _twostar
+        _zero
+        _?do .1
+        _f
+        _this_hashtable_data
+        _i
+        _cells
+        _plus
+        _store
+        _loop .1
+
+        _this_hashtable_count           ; -- keys values count
+
+        _zero
+        _this_hashtable_set_count
+
+        _zero
+        _?do .2                         ; -- keys values
+        _twodup
+        _i                              ; -- keys values keys values i
+        _tag_fixnum
+        _swap
+        _ nth                           ; -- keys values keys nth-value
+        _swap                           ; -- keys values nth-value keys
+        _i
+        _tag_fixnum
+        _swap
+        _ nth                           ; -- keys values nth-value nth-key
+
+        _this
+        _ set_at_unchecked
+
+        _loop .2                        ; -- keys values
+        _2drop
         pop     this_register
         next
 endcode
