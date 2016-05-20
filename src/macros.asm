@@ -83,13 +83,10 @@
 %endmacro
 
 %macro  _tag_boolean 0
+        mov     eax, f_value
         test    rbx, rbx
-        jz      %%1
         mov     ebx, t_value
-        jmp     %%2
-%%1:
-        mov     ebx, f_value
-%%2:
+        cmovz   ebx, eax
 %endmacro
 
 %macro  _untag_boolean 0                ; t|f -- 1|0
