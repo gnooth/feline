@@ -387,3 +387,16 @@ code feline_dot_s, '.s'
         _drop
         next
 endcode
+
+; ### number>string
+code number_to_string, 'number>string'  ; n -- string
+        _ check_fixnum
+        _ basefetch
+        _tor
+        _ decimal
+        _ paren_dot
+        _ copy_to_string
+        _rfrom
+        _ basestore
+        next
+endcode
