@@ -232,28 +232,28 @@ code each_integer, 'each-integer'       ; tagged-fixnum xt --
 
         push    r12
         push    r13
-        push    r14
+        push    r15
         xor     r12, r12                ; loop index in r12
         mov     r13, [rbx]              ; code address in r13
-        mov     r14, [rbp]              ; loop limit in r14
+        mov     r15, [rbp]              ; loop limit in r15
         _2drop                          ; clean up the stack now!
-        test    r14, r14
+        test    r15, r15
         jle     .2
 .1:
         pushd   r12
         _tag_fixnum
         call    r13
         inc     r12
-        cmp     r12, r14
+        cmp     r12, r15
         je     .2
         pushd   r12
         _tag_fixnum
         call    r13
         inc     r12
-        cmp     r12, r14
+        cmp     r12, r15
         jne     .1
 .2:
-        pop     r14
+        pop     r15
         pop     r13
         pop     r12
         next
@@ -269,12 +269,12 @@ code find_integer, 'find-integer'       ; tagged-fixnum xt -- i|f
 
         push    r12
         push    r13
-        push    r14
+        push    r15
         xor     r12, r12                ; loop index in r12
         mov     r13, [rbx]              ; code address in r13
-        mov     r14, [rbp]              ; loop limit in r14
+        mov     r15, [rbp]              ; loop limit in r15
         _2drop                          ; clean up the stack now!
-        test    r14, r14
+        test    r15, r15
         jle     .2
 .1:
         pushd   r12
@@ -288,7 +288,7 @@ code find_integer, 'find-integer'       ; tagged-fixnum xt -- i|f
         ; flag was f
         ; keep going
         inc     r12
-        cmp     r12, r14
+        cmp     r12, r15
         jne     .1
         ; reached end
         ; return f
@@ -299,7 +299,7 @@ code find_integer, 'find-integer'       ; tagged-fixnum xt -- i|f
         pushd   r12
         _tag_fixnum
 .3:
-        pop     r14
+        pop     r15
         pop     r13
         pop     r12
         next
