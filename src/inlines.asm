@@ -301,6 +301,11 @@
         and     rbx, %1
 %endmacro
 
+%macro  _xor 0
+        xor     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
 %macro  _tuck 0                         ; x1 x2 -- x2 x1 x2
         mov     rax, [rbp]              ; x1 in rax, x2 in rbx
         mov     [rbp], rbx

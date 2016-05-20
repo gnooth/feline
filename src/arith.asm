@@ -464,8 +464,7 @@ endinline
 ; ### xor
 inline xor, 'xor'                       ; x1 x2 -- x3
 ; CORE
-        xor     rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _xor
 endinline
 
 ; ### invert
