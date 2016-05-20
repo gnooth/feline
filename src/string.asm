@@ -421,6 +421,8 @@ endcode
 
 ; ### rehash-string
 code rehash_string, 'rehash-string'     ; string --
+; Hash function adapted from SBCL.
+
         _ check_string                  ; -- string
 
 rehash_string_unchecked:
@@ -432,10 +434,35 @@ rehash_string_unchecked:
         _this_string_length
         _zero
         _?do .1
+
         _i
         _this_string_nth_unsafe         ; -- accum untagged-char
         _plus                           ; -- accum
+
+        mov     rax, rbx
+        shl     rax, 10
+        add     rbx, rax
+
+        mov     rax, rbx
+        shr     rax, 6
+        xor     rbx, rax
+
         _loop .1
+
+        mov     rax, rbx
+        shl     rax, 3
+        add     rbx, rax
+
+        mov     rax, rbx
+        shr     rax, 11
+        xor     rbx, rax
+
+        mov     rax, rbx
+        shl     rax, 15
+        xor     rbx, rax
+
+        _ most_positive_fixnum
+        _and
 
         _tag_fixnum
         _this_string_set_hashcode
