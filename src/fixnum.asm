@@ -126,13 +126,11 @@ code feline_ge, '>='                    ; x y -- t|f
 endcode
 
 ; ### fixnum+
-code fixnum_plus, 'fixnum+'             ; x y -- x+y
+inline fixnum_plus, 'fixnum+'           ; x y -- x+y
 ; No type checking.
-        _untag_2_fixnums
+        sub     rbx, FIXNUM_TAG
         _plus
-        _tag_fixnum
-        next
-endcode
+endinline
 
 ; ### +
 code feline_plus, '+'                   ; x y -- x+y
@@ -145,15 +143,14 @@ code feline_plus, '+'                   ; x y -- x+y
 endcode
 
 ; ### fixnum-
-code fixnum_minus, 'fixnum-'            ; x y -- x-y
+inline fixnum_minus, 'fixnum-'          ; x y -- x-y
 ; No type checking.
-        _untag_2_fixnums
-        neg     rbx
-        add     rbx, [rbp]
+        mov     rax, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
-        _tag_fixnum
-        next
-endcode
+        sub     rax, rbx
+        add     rax, FIXNUM_TAG
+        mov     rbx, rax
+endinline
 
 ; ### -
 code feline_minus, '-'                  ; x y -- x-y
