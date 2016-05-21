@@ -395,7 +395,7 @@ code hashtable_nth_value, 'hashtable-nth-value' ; n hashtable -- value
 endcode
 
 ; ### at*
-code at_start, 'at*'                    ; key hashtable -- value t|f
+code at_star, 'at*'                     ; key hashtable -- value t|f
         _tuck                           ; -- hashtable key hashtable
         _ find_index_for_key            ; -- hashtable index t|f
         _tagged_if .1
@@ -407,6 +407,13 @@ code at_start, 'at*'                    ; key hashtable -- value t|f
         _f
         _f
         _then .1
+        next
+endcode
+
+; ### at
+code at_, 'at'                           ; key hashtable -- value
+        _ at_star
+        _drop
         next
 endcode
 

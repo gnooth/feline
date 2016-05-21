@@ -36,6 +36,23 @@ test: test1 ( -- )
 
 test1
 
+test: test2 ( -- )
+    72 <hashtable> hashtable-capacity 128 = check-t
+;
+
+test2
+
+f global ht
+
+test: test3 ( -- )
+    16 <hashtable> !> ht
+    1000 [ dup number>string ht set-at ] each-integer
+    1000 [ dup number>string ht at = check-t ] each-integer
+    "charlie" ht at* check-false check-false
+;
+
+test3
+
 empty
 
 ?cr .( Reached end of hashtable-tests )
