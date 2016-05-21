@@ -55,18 +55,15 @@ inline not, 'not'
 endinline
 
 ; ### if-else
-code if_else, 'if-else'                 ; ? true false --
-        _ rot
-        _f
-        _equal
-        _if .1
-        _nip
-        _else .1
-        _drop
-        _then .1
-        _ execute
-        next
-endcode
+inline if_else, 'if-else'               ; ? true false --
+        mov     rax, [rbp + BYTES_PER_CELL] ; flag in rax
+        mov     rdx, [rbp]              ; true quotation in rdx, false quotation in rbx
+        cmp     rax, f_value
+        cmovne  rbx, rdx                ; if flag is not f, move true quotation into rbx
+        mov     rax, [rbx]
+        _3drop
+        call    rax
+endinline
 
 ; ### when
 code when, 'when'                       ; ? true --
