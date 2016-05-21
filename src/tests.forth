@@ -26,5 +26,6 @@ include-tests vector-tests
 include-tests misc-tests
 include-tests generic-tests
 include-tests gc-tests
+include-tests hashtable-tests
 
 ?cr .( Reached end of tests )
