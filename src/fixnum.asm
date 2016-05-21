@@ -82,15 +82,14 @@ code check_fixnum, 'check-fixnum'       ; fixnum -- untagged-fixnum
 endcode
 
 ; ### fixnum<
-code fixnum_lt, 'fixnum<'               ; x y -- t|f
+inline fixnum_lt, 'fixnum<'             ; x y -- t|f
 ; No type checking.
         mov     eax, t_value
         cmp     [rbp], rbx
         mov     ebx, f_value
         cmovl   ebx, eax
         lea     rbp, [rbp + BYTES_PER_CELL]
-        next
-endcode
+endinline
 
 ; ### <
 code feline_lt, '<'                     ; x y -- t|f

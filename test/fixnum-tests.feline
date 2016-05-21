@@ -50,8 +50,14 @@ test: test3 ( -- )
 
 test3
 
+\ fixnum<
 test: test4 ( -- )
     1 2 fixnum< check-t
+    2 1 fixnum< check-false
+    -2 -1 fixnum< check-t
+    -1 -2 fixnum< check-false
+    -2 1 fixnum< check-t
+    1 -2 fixnum< check-false
     1 2 < check-t
     2 1 fixnum>= check-t
     2 1 >= check-t
