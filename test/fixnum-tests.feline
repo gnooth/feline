@@ -100,6 +100,25 @@ test: test9 ( -- )
 
 test9
 
+\ fixnum+
+test: test10 ( -- )
+    42 87 fixnum+ 129 = check-t
+    -42 87 fixnum+ 45 = check-t
+    42 -87 fixnum+ -45 = check-t
+    -42 -87 fixnum+ -129 = check-t
+;
+
+test10
+
+test: test11 ( -- )
+    MOST_POSITIVE_FIXNUM tag-fixnum most-positive-fixnum = check-t
+    MOST_NEGATIVE_FIXNUM tag-fixnum most-negative-fixnum = check-t
+    most-positive-fixnum untag-fixnum MOST_POSITIVE_FIXNUM = check-t
+    most-negative-fixnum untag-fixnum MOST_NEGATIVE_FIXNUM = check-t
+;
+
+test11
+
 empty
 
 ?cr .( Reached end of fixnum-tests )
