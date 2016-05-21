@@ -13,20 +13,44 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require test-framework
+require-system-file test-framework
 
-include-tests boolean-tests
-include-tests fixnum-tests
-include-tests local-tests
-include-tests quotation-tests
-include-tests string-tests
-include-tests sbuf-tests
-include-tests pathname-tests
-include-tests array-tests
-include-tests vector-tests
-include-tests misc-tests
-include-tests generic-tests
-include-tests gc-tests
-include-tests hashtable-tests
+LANGUAGE: feline
 
-?cr .( Reached end of tests )
+CONTEXT: feline forth ;
+CURRENT: feline
+
+\ object?
+test: test1
+    42 object? check-false
+    10 <vector> object? check-t
+;
+
+test1
+
+\ string?
+test: test2
+    42 string? check-false
+    "test" string? check-t
+    s" test" >string string? check-t
+    s" test" >transient-string string? check-t
+;
+
+test2
+
+\ not
+test: test3
+    f not check-t
+    t not check-false
+    42 not check-false
+    0 not check-false
+
+    \ 0 is not false
+    0 check
+;
+
+test3
+
+empty
+
+?cr .( Reached end of boolean-tests )
