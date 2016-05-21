@@ -15,6 +15,23 @@
 
 file __FILE__
 
+; ### most-positive-fixnum
+code most_positive_fixnum, 'most-positive-fixnum'
+        _lit 1
+        _lit 63 - TAG_BITS
+        _ lshift
+        _oneminus
+        next
+endcode
+
+; ### most-negative-fixnum
+code most_negative_fixnum, 'most-negative-fixnum'
+        _lit 1
+        _lit 63 - TAG_BITS
+        _ lshift
+        next
+endcode
+
 ; ### fixnum?
 code fixnum?, 'fixnum?'                 ; x -- t|f
         _fixnum?
