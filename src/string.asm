@@ -461,7 +461,7 @@ rehash_string_unchecked:
         shl     rax, 15
         xor     rbx, rax
 
-        _ most_positive_fixnum
+        _ MOST_POSITIVE_FIXNUM
         _and
 
         _tag_fixnum

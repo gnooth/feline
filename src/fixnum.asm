@@ -15,8 +15,9 @@
 
 file __FILE__
 
-; ### most-positive-fixnum
-code most_positive_fixnum, 'most-positive-fixnum'
+; ### MOST_POSITIVE_FIXNUM
+code MOST_POSITIVE_FIXNUM, 'MOST_POSITIVE_FIXNUM'
+; Return value is untagged.
         _lit 1
         _lit 63 - TAG_BITS
         _ lshift
@@ -24,11 +25,31 @@ code most_positive_fixnum, 'most-positive-fixnum'
         next
 endcode
 
-; ### most-negative-fixnum
-code most_negative_fixnum, 'most-negative-fixnum'
+; ### MOST_NEGATIVE_FIXNUM
+code MOST_NEGATIVE_FIXNUM, 'MOST_NEGATIVE_FIXNUM'
+; Return value is untagged.
+        _ MOST_POSITIVE_FIXNUM
+        _oneplus
+        _negate
+        next
+endcode
+
+; ### most-positive-fixnum
+code most_positive_fixnum, 'most-positive-fixnum'
+; Returns tagged fixnum.
         _lit 1
         _lit 63 - TAG_BITS
         _ lshift
+        _oneminus
+        _tag_fixnum
+        next
+endcode
+
+; ### most-negative-fixnum
+code most_negative_fixnum, 'most-negative-fixnum'
+; Returns tagged fixnum.
+        _ MOST_NEGATIVE_FIXNUM
+        _tag_fixnum
         next
 endcode
 
