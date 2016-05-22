@@ -84,6 +84,16 @@ IN_FORTH
 
 file __FILE__
 
+; ### standard-forth?
+code standard_forth?, 'standard-forth?' ; -- -1|0
+%ifdef STANDARD_FORTH
+        _true
+%else
+        _false
+%endif
+        next
+endcode
+
 ; ### in-static-data-area?
 code in_static_data_area?, 'in-static-data-area?' ; addr -- flag
         cmp     rbx, static_data_area
