@@ -411,7 +411,11 @@ code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
         _rfetch                         ; -- c-addr u c-addr u nfa
         _oneplus                        ; -- c-addr u c-addr u nfa+1
         _swap                           ; -- c-addr u c-addr nfa+1 u
+%ifdef STANDARD_FORTH
         _ isequal                       ; -- c-addr u flag                      r: -- nfa
+%else
+        _ memequal                      ; -- c-addr u flag                      r: -- nfa
+%endif
         _if .4                          ; -- c-addr u                           r: -- nfa
         ; found it!
         _2drop                          ; --                                    r: -- nfa
