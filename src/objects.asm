@@ -193,6 +193,14 @@ code dot_object, '.object'              ; handle-or-object --
         _return
         _then .7
 
+        _dup
+        _ bignum?
+        _tagged_if .8
+        _ bignum_to_string
+        _ dot_string
+        _return
+        _then .8
+
         ; give up
         _ hdot
 
@@ -267,6 +275,15 @@ code generic_dot, '.'                   ; x --
         _ dot
         _return
         _then .3
+
+        _dup
+        _ bignum?
+        _if .4
+        _dotq "bignum "
+        _ bignum_to_string
+        _ dot_string
+        _return
+        _then .4
 
         _dotq "untagged "
         _ hdot
