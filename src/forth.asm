@@ -70,6 +70,7 @@ IN_FELINE
 %include "hashtable.asm"
 %include "generic.asm"
 %include "fixnum.asm"
+%include "bignum.asm"
 %include "handles.asm"
 %include "objects.asm"
 %include "array.asm"
