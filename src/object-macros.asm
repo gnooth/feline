@@ -21,6 +21,7 @@ OBJECT_TYPE_STRING              equ 2
 OBJECT_TYPE_SBUF                equ 3
 OBJECT_TYPE_ARRAY               equ 4
 OBJECT_TYPE_HASHTABLE           equ 5
+OBJECT_TYPE_BIGNUM              equ 6
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
@@ -208,6 +209,12 @@ OBJECT_ALLOCATED_BIT            equ 4
 %macro  _hashtable? 0
         _object_type
         _lit OBJECT_TYPE_HASHTABLE
+        _equal
+%endmacro
+
+%macro  _bignum? 0
+        _object_type
+        _lit OBJECT_TYPE_BIGNUM
         _equal
 %endmacro
 
