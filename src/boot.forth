@@ -17,7 +17,11 @@ include-system-file vocabulary.forth
 include-system-file bracket-if.forth
 include-system-file defer.forth
 include-system-file backtrace.forth
+
+standard-forth? [if]
 include-system-file locals.forth
+[then]
+
 include-system-file quotations.forth
 include-system-file escaped-strings.forth
 include-system-file case.forth
