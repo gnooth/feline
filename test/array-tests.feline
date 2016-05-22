@@ -15,10 +15,10 @@
 
 require-system-file test-framework
 
-language: feline
+LANGUAGE: feline
 
-context: feline forth ;
-current: feline
+CONTEXT: feline forth ;
+CURRENT: feline
 
 test: test1 ( -- )
     10 42 <array> local a

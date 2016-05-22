@@ -13,15 +13,15 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-language: forth
+LANGUAGE: forth
 
-context: forth feline ;
-current: forth
+CONTEXT: forth feline ;
+CURRENT: forth
 
 [defined] hidden 0= [if] vocabulary hidden [then]
 
-context: hidden forth feline ;
-current: hidden
+CONTEXT: hidden forth feline ;
+CURRENT: hidden
 
 0 value buffer
 
@@ -146,10 +146,10 @@ current: hidden
     ?cr filename $. ."  line " line# u.
 ;
 
-current: forth
+CURRENT: forth
 
 : view ( "<spaces>name" -- )
     ' (view)
 ;
 
-context: forth feline ;
+CONTEXT: forth feline ;

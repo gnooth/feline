@@ -15,10 +15,10 @@
 
 require-system-file test-framework
 
-language: feline
+LANGUAGE: feline
 
-context: feline forth ;
-current: feline
+CONTEXT: feline forth ;
+CURRENT: feline
 
 \ data stack
 test: test1 ( -- )

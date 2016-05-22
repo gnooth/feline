@@ -15,10 +15,10 @@
 
 require check
 
-language: feline
+LANGUAGE: feline
 
-context: feline forth ;
-current: feline
+CONTEXT: feline forth ;
+CURRENT: feline
 
 : .test-name
     postpone ?cr

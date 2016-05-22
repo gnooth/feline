@@ -13,10 +13,10 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-language: forth
+LANGUAGE: forth
 
-context: forth ;
-current: forth
+CONTEXT: forth ;
+CURRENT: forth
 
 : [else]  ( -- )
    1                                    \ -- level
