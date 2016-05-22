@@ -2,6 +2,10 @@
 #
 #       make WINDOWS_UI=1
 #
+# If you want support for standard Forth 200x:
+#
+#       make STANDARD_FORTH=1
+#
 # Otherwise just:
 #
 #       make
@@ -9,8 +13,12 @@
 # should do it, on both Windows and Linux.
 
 # Tested with GNU Make 4.0, gcc 5.2.1 and clang 3.6.2 on Linux (Ubuntu).
+# Tested with GNU Make 4.1, gcc 5.3.1 and clang 3.8.0 on Linux (Ubuntu).
+
 # Tested with GNU Make 3.81, gcc (tdm64-1) 5.1.0 and clang 3.7.1 on Windows 10.
-# NASM 2.11.08 on Windows, 2.11.05 on Linux.
+
+# NASM 2.11.08 on both Windows and Linux.
+
 # No support in this makefile for Microsoft tools.
 
 VERSION = `git describe --tags`
@@ -40,6 +48,10 @@ ifdef WINDOWS_UI
 	LINKFLAGS += -mwindows
 	OBJS += windows-ui.o winkey.o
 endif
+endif
+
+ifdef STANDARD_FORTH
+	ASMFLAGS += -DSTANDARD_FORTH
 endif
 
 $(FELINE_EXE):  $(OBJS)
