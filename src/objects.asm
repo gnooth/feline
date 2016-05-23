@@ -278,7 +278,7 @@ code generic_dot, '.'                   ; x --
 
         _dup
         _ bignum?
-        _if .4
+        _tagged_if .4
         _dotq "bignum "
         _ bignum_to_string
         _ dot_string
