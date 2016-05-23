@@ -91,6 +91,27 @@ code unless, 'unless'                   ; ? false --
         next
 endcode
 
+; ### until
+code feline_until, 'until'              ; pred body --
+        push    r12
+        push    r13
+        mov     r13, [rbx]              ; body call address in r13
+        mov     r12, [rbp]
+        mov     r12, [r12]              ; pred call address in r12
+        _2drop
+.1:
+        call    r12
+        cmp     rbx, f_value
+        poprbx
+        jne     .exit
+        call    r13
+        jmp     .1
+.exit:
+        pop     r13
+        pop     r12
+        next
+endcode
+
 ; ### feline-interpret-do-literal
 code feline_interpret_do_literal, 'feline-interpret-do-literal' ; $addr -- n | d
         _ character_literal?
