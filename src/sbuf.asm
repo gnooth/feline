@@ -576,6 +576,59 @@ code sbuf_insert_char, 'sbuf-insert-char' ; handle index char --
 
 endcode
 
+; ### sbuf-insert-nth!
+code sbuf_insert_nth_destructive, 'sbuf-insert-nth!' ; tagged-char tagged-index handle -- handle
+        _duptor
+
+        _ check_sbuf                    ; -- tagged-char tagged-index sbuf
+
+        push    this_register
+        popd    this_register           ; -- tagged-char tagged-index
+
+        _untag_fixnum
+        _swap
+        _untag_char
+        _swap                           ; -- char index
+
+        _dup
+        _this_sbuf_check_index          ; -- char index -1|0
+        _zeq_if .1
+        _true
+        _abortq "index out of range"
+        _then .1                        ; -- char index
+
+        _this_sbuf_length
+        _oneplus
+        _this
+        _ sbuf_ensure_capacity          ; -- char index
+
+        ; sbuf sbuf-data index +
+        _this_sbuf_data
+        _over
+        _plus                           ; -- char index source
+        _dup
+        _oneplus                        ; -- char index source dest
+
+        _this_sbuf_length
+        _lit 3
+        _pick
+        _minus                          ; -- char index source dest count
+
+        _ cmoveup                       ; -- char index
+
+        _this_sbuf_length
+        _oneplus
+        _this_sbuf_set_length           ; -- char index
+
+        _this_sbuf_set_nth_unsafe       ; --
+
+        pop     this_register
+
+        _rfrom                          ; -- handle
+
+        next
+endcode
+
 ; ### sbuf-remove-nth!
 code sbuf_remove_nth_destructive, 'sbuf-remove-nth!' ; tagged-index handle -- handle
         _tuck                           ; -- handle tagged-index handle
