@@ -28,12 +28,12 @@ CURRENT: feline
 s" this is a test" >transient-string to s1
 
 test: test1
-    s1 object? check
-    s1 string? check
-    s1 string-length 14 = check
-    s1 check-string string-length 14 = check
-    s1 string> s" this is a test" str= check
-    s1 check-string string> s" this is a test" str= check
+    s1 object? check-t
+    s1 string? check-t
+    s1 string-length 14 = check-t
+    s1 check-string string-length 14 = check-t
+    s1 string> s" this is a test" str= tag-boolean check-t
+    s1 check-string string> s" this is a test" str= tag-boolean check-t
 ;
 
 test1
@@ -41,12 +41,12 @@ test1
 s" another test" >transient-string to s2
 
 test: test2
-    s2 object? check
-    s2 string? check
-    s2 string-length 12 = check
-    s2 check-string string-length 12 = check
-    s2 string> s" another test" str= check
-    s2 check-string string> s" another test" str= check
+    s2 object? check-t
+    s2 string? check-t
+    s2 string-length 12 = check-t
+    s2 check-string string-length 12 = check-t
+    s2 string> s" another test" str= tag-boolean check-t
+    s2 check-string string> s" another test" str= tag-boolean check-t
 ;
 
 test2
@@ -58,12 +58,12 @@ s"  and " >transient-string to s3
 
 test: test3
     s1 s3 concat to s4
-    s4 object? check
-    s4 string? check
-    s4 string> s" this is a test and " str= check
+    s4 object? check-t
+    s4 string? check-t
+    s4 string> s" this is a test and " str= tag-boolean check-t
     s4 ~string
     0 to s4
-    s1 s3 concat s2 concat string> s" this is a test and another test" str= check
+    s1 s3 concat s2 concat string> s" this is a test and another test" str= tag-boolean check-t
 ;
 
 test3
@@ -74,9 +74,9 @@ test: test4
         s" another test" >transient-string to s2
         s"  and " >transient-string to s3
         s1 s3 concat s2 concat to s4
-        s4 object? check
-        s4 string? check
-        s4 string> s" this is a test and another test" str= check
+        s4 object? check-t
+        s4 string? check-t
+        s4 string> s" this is a test and another test" str= tag-boolean check-t
         s" x" >string s4 over concat ~string ~string
         s1 ~string
         s2 ~string
@@ -93,10 +93,10 @@ test4
 
 test: test5
     "this is a test" local s
-    s 0 string-char 't' = check
+    s 0 string-char 't' = check-t
     \ index out of range returns 0
-    s 42 string-char 0= check
-    s -1 string-char 0= check
+    s 42 string-char 0= check-t
+    s -1 string-char 0= check-t
 ;
 
 test5
@@ -104,16 +104,16 @@ test5
 test: test6
     "this is a test" local s1
     "this is a test" local s2
-    s1 s2 <> check
-    s1 s2 string= check
+    s1 s2 string-equal? check-t
+    s1 s2 string= check-t
     s" this is a test" >string local s3
-    s1 s3 string= check
+    s1 s3 string= check-t
     s3 ~string
     s3 string? check-false
     s" this is a test" >transient-string local s4
-    s1 s4 string= check
+    s1 s4 string= check-t
     s" this is a test" >string local s5
-    s1 s5 string= check
+    s1 s5 string= check-t
     s5 ~string
     s5 string? check-false
     "this is not a test" local s6
@@ -127,61 +127,61 @@ test6
 test: test7
     "this is a test" to s1
     s1 0 4 string-substring to s2
-    s2 string? check
-    s2 string-length 4 = check
-    s2 "this" string= check
+    s2 string? check-t
+    s2 string-length 4 = check-t
+    s2 "this" string= check-t
 
     \ s2 copies its data
-    s1 string-data s2 string-data <> check
+    s1 string-data s2 string-data = check-false
 
     \ can't destroy s1 because it's a static string
     s1 ~string
-    s1 string? check
+    s1 string? check-t
 
     s2 ~string
-    s2 string? f = check
+    s2 string? f = check-t
 ;
 
 test7
 
 test: test8
     "this is another test" to s1
-    'x' s1 string-find-char  f = check
-    's' s1 string-find-char  3 = check
-    'a' s1 string-find-char  8 = check
-    'n' s1 string-find-char  9 = check
-    't' s1 string-find-char  0 = check
-    'e' s1 string-find-char 13 = check
+    'x' s1 string-find-char  f = check-t
+    's' s1 string-find-char  3 = check-t
+    'a' s1 string-find-char  8 = check-t
+    'n' s1 string-find-char  9 = check-t
+    't' s1 string-find-char  0 = check-t
+    'e' s1 string-find-char 13 = check-t
 
     \ can't destroy s1 because it's a static string
     s1 ~string
-    s1 string? check
+    s1 string? check-t
 ;
 
 test8
 
 test: test9
     s" this is a test" >string to s1
-    s1 string? check
+    s1 string? check-t
 \     s1 handle? check
     s1 ~string
 \     s1 handle? check
-    s1 object? f = check
-    s1 string? f = check
+    s1 object? f = check-t
+    s1 string? f = check-t
 ;
 
 test9
 
 \ string-equal?
 test: test10
-    "test" "test" string-equal? t = check
-    "test" "text" string-equal? f = check
-    42 "test" string-equal? f = check
-    "test" 89 string-equal? f = check
-    42 17 string-equal? f = check
+    "test" "test" string-equal? t = check-t
+    "test" "text" string-equal? f = check-t
+    42 "test" string-equal? f = check-t
+    "test" 89 string-equal? f = check-t
+    42 17 string-equal? f = check-t
 
-    s" testing" >transient-string "testing" string-equal? t = check
-    s" testing" >transient-string s" testing" >string string-equal? t = check
+    s" testing" >transient-string "testing" string-equal? t = check-t
+    s" testing" >transient-string s" testing" >string string-equal? t = check-t
 ;
 
 test10
