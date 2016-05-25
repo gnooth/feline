@@ -32,6 +32,12 @@ f global dot
     'G' emit
 ;
 
+: clear-to-eol ( -- )
+    esc[
+    '0' emit
+    'K' emit
+;
+
 : prompt-string ( -- string )
     "Test> "
 ;
@@ -49,7 +55,7 @@ f global dot
     0 at-x
     prompt
     buffer sbuf> type
-    space 8 emit
+    clear-to-eol
     dot prompt-string length + at-x
 ;
 
@@ -108,7 +114,8 @@ f global dot
 : initialize-bindings ( -- )
     10 <vector> !> bindings
     3                   ['] bye         bind-key
-    127                 ['] do-bs       bind-key
+    127                 ['] do-bs       bind-key        \ Linux
+    8                   ['] do-bs       bind-key        \ Windows
     k-left tag-char     ['] do-left     bind-key
     k-right tag-char    ['] do-right    bind-key
     k-home tag-char     ['] do-home     bind-key
