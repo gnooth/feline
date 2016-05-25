@@ -1,0 +1,145 @@
+\ Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+
+\ This program is free software: you can redistribute it and/or modify
+\ it under the terms of the GNU General Public License as published by
+\ the Free Software Foundation, either version 3 of the License, or
+\ (at your option) any later version.
+
+\ This program is distributed in the hope that it will be useful,
+\ but WITHOUT ANY WARRANTY; without even the implied warranty of
+\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+\ GNU General Public License for more details.
+
+\ You should have received a copy of the GNU General Public License
+\ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+LANGUAGE: feline
+
+CONTEXT: feline forth ;
+CURRENT: feline
+
+f global buffer
+f global bindings
+f global dot
+
+: emit ( tagged-char -- )
+    untag-char emit
+;
+
+: at-x ( col -- )
+    esc[
+    untag-fixnum 1+ (u.) type
+    'G' emit
+;
+
+: prompt-string ( -- string )
+    "Test> "
+;
+
+: prompt ( -- )
+    green foreground prompt-string .string
+    yellow foreground
+;
+
+: backspaces ( tagged -- )
+    untag-fixnum backspaces
+;
+
+: redisplay ( -- )
+    0 at-x
+    prompt
+    buffer sbuf> type
+    space 8 emit
+    dot prompt-string length + at-x
+;
+
+: do-bs ( -- )
+    dot 0 >
+    [
+        dot 1 - !> dot
+        dot buffer sbuf-remove-nth! drop
+        redisplay
+    ]
+    when
+;
+
+: do-home ( -- )
+    prompt-string length at-x
+    0 !> dot
+;
+
+: do-end ( -- )
+    buffer length !> dot
+    prompt-string length dot + at-x
+;
+
+: do-right ( -- )
+    dot buffer length <
+    [ dot 1 + !> dot dot prompt-string length + at-x ]
+    when
+;
+
+: do-left ( -- )
+    dot 0 >
+    [ dot 1 - !> dot dot prompt-string length + at-x ]
+    when
+;
+
+: do-normal-char ( c -- )
+    dot buffer length <
+    [ dot buffer sbuf-insert-nth! drop dot 1 + !> dot redisplay ]
+    [
+        dup emit
+        dot 1 + !> dot
+        buffer push
+    ]
+    if-else
+;
+
+: bind-key ( key action -- )
+    2array bindings push
+;
+
+: lookup-key ( key -- action )
+    bindings length [ bindings nth array-first over = ] find-integer \ -- i|f
+    nip dup [ bindings nth array-second ] [ drop f ] if-else
+;
+
+: initialize-bindings ( -- )
+    10 <vector> !> bindings
+    3                   ['] bye         bind-key
+    127                 ['] do-bs       bind-key
+    k-left tag-char     ['] do-left     bind-key
+    k-right tag-char    ['] do-right    bind-key
+    k-home tag-char     ['] do-home     bind-key
+    k-end  tag-char     ['] do-end      bind-key
+;
+
+: accept-key ( -- tagged-char)
+    ekey tag-char
+;
+
+: process-key ( tagged-char -- )
+    dup lookup-key
+    dup
+    [ nip execute ]
+    [ drop do-normal-char ]
+    if-else
+;
+
+: terminator? ( tagged-char -- t|f )
+    dup 10 = swap 13 = or
+;
+
+: test ( -- string )
+    256 <sbuf> !> buffer
+    bindings [ initialize-bindings ] unless
+    ?cr
+    prompt
+    0 !> dot
+    [ accept-key dup terminator? ] [ process-key ] until
+    drop
+    white foreground
+    buffer sbuf>string
+    f !> buffer
+;
