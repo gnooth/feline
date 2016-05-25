@@ -1,4 +1,4 @@
-; Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -37,9 +37,6 @@ endcode
 
 ; ### foreground
 code foreground, 'foreground'           ; color --
-%ifdef WIN64
-        _drop
-%else
         _ color?
         _if .1
         _ ansi_escape
@@ -53,15 +50,11 @@ code foreground, 'foreground'           ; color --
         _else .1
         _drop
         _then .1
-%endif
         next
 endcode
 
 ; ### background
 code background, 'background'           ; color --
-%ifdef WIN64
-        _drop
-%else
         _ color?
         _if .1
         _ ansi_escape
@@ -75,7 +68,6 @@ code background, 'background'           ; color --
         _else .1
         _drop
         _then .1
-%endif
         next
 endcode
 
