@@ -126,7 +126,7 @@ test6
 
 test: test7
     "this is a test" to s1
-    s1 0 4 string-substring to s2
+    0 4 s1 string-substring to s2
     s2 string? check-t
     s2 string-length 4 = check-t
     s2 "this" string= check-t

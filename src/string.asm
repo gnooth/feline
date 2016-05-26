@@ -652,16 +652,15 @@ code string_find_char, 'string-find-char' ; tagged-char string -- tagged-index |
 endcode
 
 ; ### string-substring
-code string_substring, 'string-substring' ; string start-index end-index -- handle
-        _untag_fixnum
-        _swap
-        _untag_fixnum
-        _swap
+code string_substring, 'string-substring' ; from to string -- substring
 
-        _ rot
         _ check_string
+
+string_substring_unchecked:
         push    this_register
         popd    this_register           ; -- start-index end-index
+
+        _untag_2_fixnums
 
         _dup
         _this_string_length
@@ -793,46 +792,48 @@ code string_equal?, 'string-equal?'     ; object1 object2 -- t|f
 endcode
 
 ; ### path-get-extension
-code path_get_extension, 'path-get-extension' ; pathname -- extension | 0
-        _locals_enter
+code path_get_extension, 'path-get-extension' ; pathname -- extension | f
 
         _ check_string
-        _dup
-        _to_local0
+
+        push    this_register
+        mov     this_register, rbx
+
         _string_length
+
         _begin .1
         _dup
         _while .1
         _oneminus
         _dup
-        _local0
-        _string_nth_unsafe
+        _this_string_nth_unsafe
 
         ; If we find a path separator char before finding a '.', there is no
-        ; extension. Return 0.
+        ; extension. Return f.
         _dup
         _ path_separator_char?
         _if .2
         _2drop
-        _zero
-        _tag_fixnum
+        _f
         jmp     .exit
         _then .2
 
         _lit '.'
         _equal
         _if .3
-        _local0
-        _swap                           ; -- string1 index
-        _tag_fixnum
-        _local0
-        _ string_length                 ; -- string1 start-index end-index
-        _ string_substring              ; -- substring
+        _tag_fixnum                     ; -- from
+        _this_string_length
+        _tag_fixnum                     ; -- to
+        _this
+        _ string_substring_unchecked    ; -- substring
         jmp     .exit
         _then .3
         _repeat .1
-        _tag_fixnum
+
+        _drop
+        _f
+
 .exit:
-        _locals_leave
+        pop     this_register
         next
 endcode

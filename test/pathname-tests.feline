@@ -20,24 +20,25 @@ LANGUAGE: feline
 CONTEXT: feline forth ;
 CURRENT: feline
 
-0 value s
+f global s
 
 test: test1
-    "foo" path-get-extension 0= check
+    "foo" path-get-extension check-false
 ;
 
 test1
 
 test: test2
-    "foo.bar" path-get-extension to s
-    s string? check
-    s ".bar" string= check
+    "foo.bar" path-get-extension !> s
+    s string? check-t
+    s ".bar" string= check-t
+    f !> s
 ;
 
 test2
 
 test: test3
-    "foo.bar/zork" path-get-extension 0= check
+    "foo.bar/zork" path-get-extension check-false
 ;
 
 test3
