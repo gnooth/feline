@@ -21,6 +21,8 @@ CURRENT: feline
 f global buffer
 f global bindings
 f global dot
+f global history
+f global history-index
 
 : emit ( tagged-char -- )
     untag-char emit
@@ -102,6 +104,27 @@ f global dot
     if-else
 ;
 
+: do-previous ( -- )
+    history-index [ history length !> history-index ] unless
+    history-index zero?
+    [
+        history-index 1 - !> history-index
+        0 buffer sbuf-shorten
+        buffer history-index history nth sbuf-append-string
+        buffer length !> dot
+        redisplay
+    ]
+    unless
+;
+
+: history-file-pathname ( -- string )
+    user-home ".feline-history" path-append
+;
+
+: initialize-history ( -- )
+    history-file-pathname file-lines !> history
+;
+
 : bind-key ( key action -- )
     2array bindings push
 ;
@@ -116,10 +139,11 @@ f global dot
     3                   ['] bye         bind-key
     127                 ['] do-bs       bind-key        \ Linux
     8                   ['] do-bs       bind-key        \ Windows
-    k-left tag-char     ['] do-left     bind-key
+    k-left  tag-char    ['] do-left     bind-key
     k-right tag-char    ['] do-right    bind-key
-    k-home tag-char     ['] do-home     bind-key
-    k-end  tag-char     ['] do-end      bind-key
+    k-home  tag-char    ['] do-home     bind-key
+    k-end   tag-char    ['] do-end      bind-key
+    k-up    tag-char    ['] do-previous bind-key
 ;
 
 : accept-key ( -- tagged-char)
@@ -141,6 +165,7 @@ f global dot
 : test ( -- string )
     256 <sbuf> !> buffer
     bindings [ initialize-bindings ] unless
+    history  [ initialize-history  ] unless
     ?cr
     prompt
     0 !> dot
