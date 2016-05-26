@@ -244,4 +244,5 @@ code forth_interpret, 'forth-interpret' ; --
         next
 endcode
 
+; ### interpret
 deferred interpret, 'interpret', forth_interpret
