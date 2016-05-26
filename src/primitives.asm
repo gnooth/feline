@@ -46,6 +46,14 @@ inline feline_zeq, '0='
         cmovz   ebx, eax
 endinline
 
+; ### zero?
+inline zero?, 'zero?'
+        mov     eax, t_value
+        cmp     rbx, tagged_zero
+        mov     ebx, f_value
+        cmovz   ebx, eax
+endinline
+
 ; ### not
 inline not, 'not'
         mov     eax, t_value
