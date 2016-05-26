@@ -98,3 +98,20 @@ import .(
     buffer bufsize >string
     buffer -free
 ;
+
+: file-lines ( path -- string )
+    string> r/o open-file throw local fileid
+    1024 local bufsize
+    bufsize 2 + -allocate local buffer
+    256 <vector> local v
+    begin
+        buffer bufsize fileid read-line \ -- u2 flag ior
+        0= and
+    while                               \ -- u2
+        buffer swap >string v vector-push
+    repeat
+    drop
+    fileid close-file throw
+    buffer -free
+    v
+;
