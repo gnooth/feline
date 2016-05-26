@@ -35,6 +35,7 @@ code forth_ok, 'forth-ok'
         next
 endcode
 
+; ### ok
 deferred ok, 'ok', forth_ok
 
 ; ### accept-line
@@ -293,6 +294,10 @@ code quit, 'quit'                       ; --            r:  i*x --
         _ do_error
         _else .2
         _ ok
+
+        ; REVIEW
+        _ gc
+
         _then .2
         _again .1
         next                            ; for decompiler
