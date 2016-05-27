@@ -62,8 +62,8 @@ inline not, 'not'
         cmove   ebx, eax
 endinline
 
-; ### if-else
-inline if_else, 'if-else'               ; ? true false --
+; ### if
+inline feline_if, 'if'                  ; ? true false --
         mov     rax, [rbp + BYTES_PER_CELL] ; flag in rax
         mov     rdx, [rbp]              ; true quotation in rdx, false quotation in rbx
         cmp     rax, f_value
