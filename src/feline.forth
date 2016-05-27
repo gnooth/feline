@@ -89,6 +89,10 @@ import .(
     postpone tag-fixnum
 ; immediate
 
+: forth:if ( -- )
+    postpone if
+; immediate
+
 : file-contents ( path -- string )
     string> r/o open-file throw local fileid
     fileid file-size throw drop local filesize
