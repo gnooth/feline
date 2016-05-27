@@ -54,6 +54,13 @@ f global accepted-string
     dot prompt-string length + at-x
 ;
 
+: do-escape ( -- )
+    0 buffer sbuf-shorten
+    0 !> dot
+    f !> history-index
+    redisplay
+;
+
 : do-bs ( -- )
     dot 0 >
     [
@@ -130,6 +137,7 @@ f global accepted-string
 : initialize-bindings ( -- )
     10 <vector> !> bindings
     3                   ['] bye         bind-key
+    $1b                 ['] do-escape   bind-key
     127                 ['] do-bs       bind-key        \ Linux
     8                   ['] do-bs       bind-key        \ Windows
     k-left  tag-char    ['] do-left     bind-key
