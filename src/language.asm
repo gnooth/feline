@@ -18,6 +18,29 @@ file __FILE__
 ; ### language
 value language, 'language', 0
 
+; ### forth-prompt-string
+code forth_prompt_string, 'forth-prompt-string'
+        _quote "Forth> "
+        next
+endcode
+
+; ### feline-prompt-string
+code feline_prompt_string, 'feline-prompt-string'
+        _quote "Feline> "
+        next
+endcode
+
+deferred prompt_string, 'prompt-string', forth_prompt_string
+
+; ### prompt
+code prompt, 'prompt'                   ; --
+        _ green
+        _ foreground
+        _ prompt_string
+        _ dot_string
+        next
+endcode
+
 ; ### .language
 code dot_language, '.language'
         _ language
@@ -28,14 +51,6 @@ code dot_language, '.language'
         next
 endcode
 
-; ### forth-prompt
-code forth_prompt, 'forth-prompt'       ; --
-        _ green
-        _ foreground
-        _dotq "Forth> "
-        next
-endcode
-
 ; ### forth-mode
 code forth_mode, 'forth-mode'
         _lit forth_interpret_xt
@@ -43,8 +58,8 @@ code forth_mode, 'forth-mode'
         _tobody
         _store
 
-        _lit forth_prompt_xt
-        _lit prompt_xt
+        _lit forth_prompt_string_xt
+        _lit prompt_string_xt
         _tobody
         _store
 
@@ -65,14 +80,6 @@ code forth_mode, 'forth-mode'
         next
 endcode
 
-; ### feline-prompt
-code feline_prompt, 'feline-prompt'     ; --
-        _ green
-        _ foreground
-        _dotq "Feline> "
-        next
-endcode
-
 ; ### feline-ok
 code feline_ok, 'feline-ok'             ; --
         _ feline_dot_s
@@ -86,8 +93,8 @@ code feline_mode, 'feline-mode'
         _tobody
         _store
 
-        _lit feline_prompt_xt
-        _lit prompt_xt
+        _lit feline_prompt_string_xt
+        _lit prompt_string_xt
         _tobody
         _store
 

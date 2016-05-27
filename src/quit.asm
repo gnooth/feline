@@ -269,9 +269,6 @@ code do_error, 'do-error'               ; n --
         next
 endcode
 
-; ### prompt
-deferred prompt, 'prompt', forth_prompt
-
 ; ### quit
 code quit, 'quit'                       ; --            r:  i*x --
 ; CORE
