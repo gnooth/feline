@@ -74,12 +74,25 @@ inline feline_if, 'if'                  ; ? true false --
 endinline
 
 ; ### when
-code when, 'when'                       ; ? true --
+code when, 'when'                       ; ( ..a ? true: ( ..a -- ..a ) -- ..a )
         _swap
         _f
         _equal
         _if .1
         _drop
+        _else .1
+        _ execute
+        _then .1
+        next
+endcode
+
+; ### when*
+code when_star, 'when*'                 ; ( ..a ? true: ( ..a ? -- ..a ) -- ..a )
+        _over
+        _f
+        _equal
+        _if .1
+        _2drop
         _else .1
         _ execute
         _then .1
