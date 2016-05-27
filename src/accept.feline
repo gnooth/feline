@@ -149,7 +149,7 @@ f global history-index
 : process-key ( tagged-char -- )
     dup printable?
     [ do-normal-char ]
-    [ lookup-key dup [ execute ] [ drop ] if ]  \ REVIEW use if* or when*
+    [ lookup-key [ execute ] when* ]
     if
 ;
 
