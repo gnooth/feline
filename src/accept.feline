@@ -142,11 +142,14 @@ f global history-index
     ekey tag-char
 ;
 
+: printable? ( tagged-char -- t|f )
+    32 126 between tag-boolean
+;
+
 : process-key ( tagged-char -- )
-    dup lookup-key
-    dup
-    [ nip execute ]
-    [ drop do-normal-char ]
+    dup printable?
+    [ do-normal-char ]
+    [ lookup-key dup [ execute ] [ drop ] if-else ]     \ REVIEW use if* or when*
     if-else
 ;
 
