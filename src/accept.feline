@@ -23,6 +23,7 @@ f global bindings
 f global dot
 f global history
 f global history-index
+f global accepted-string
 
 : emit ( tagged-char -- )
     untag-char emit
@@ -157,21 +158,34 @@ f global history-index
     dup 10 = swap 13 = or
 ;
 
-: accept-string ( -- string )
+:noname ( -- string )
     256 <sbuf> !> buffer
     bindings [ initialize-bindings ] unless
     history  [ initialize-history  ] unless
     0 !> dot
+    yellow foreground
     [ accept-key dup terminator? ] [ process-key ] until
     drop
     white foreground
-    buffer sbuf>string dup history push
+    buffer sbuf>string
+    dup history push
+
+    \ gc protect
+    dup !> accepted-string
+
     f !> buffer
-;
+; is accept-string
 
 : test ( -- string )
     ?cr
     prompt
-    yellow foreground
     accept-string
 ;
+
+: install ( -- )
+    ['] feline-query is query
+;
+
+install
+
+empty!
