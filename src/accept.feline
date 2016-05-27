@@ -93,7 +93,7 @@ f global history-index
         dot 1 + !> dot
         buffer push
     ]
-    if-else
+    if
 ;
 
 : do-previous ( -- )
@@ -123,7 +123,7 @@ f global history-index
 
 : lookup-key ( key -- action|f )
     bindings length [ bindings nth array-first over = ] find-integer \ -- i|f
-    nip dup [ bindings nth array-second ] [ drop f ] if-else
+    nip dup [ bindings nth array-second ] [ drop f ] if
 ;
 
 : initialize-bindings ( -- )
@@ -149,8 +149,8 @@ f global history-index
 : process-key ( tagged-char -- )
     dup printable?
     [ do-normal-char ]
-    [ lookup-key dup [ execute ] [ drop ] if-else ]     \ REVIEW use if* or when*
-    if-else
+    [ lookup-key dup [ execute ] [ drop ] if ]  \ REVIEW use if* or when*
+    if
 ;
 
 : terminator? ( tagged-char -- t|f )
