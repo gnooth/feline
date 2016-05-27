@@ -156,8 +156,8 @@ endcode
 ; CORE
 variable toin, '>in', 0
 
-; ### query
-code query, 'query'                     ; --
+; ### forth-query
+code forth_query, 'forth-query'                     ; --
 ; CORE EXT in Forth 94 but removed in Forth 2012
         _ tib
         _lit 80
@@ -168,6 +168,9 @@ code query, 'query'                     ; --
         _ off
         next
 endcode
+
+; ### query
+deferred query, 'query', forth_query
 
 ; ### msg
 value msg, 'msg', 0
