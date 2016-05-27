@@ -21,11 +21,11 @@ CURRENT: feline
 : do-check ( flag addr -- )
     0 local message
     swap
-    f <> if
+    f <> forth:if
         drop
     else
         "check failed" string>sbuf !> message
-        2@ ?dup if
+        2@ ?dup forth:if
             message bl tag-char sbuf-append-char
             message swap count sbuf-append-chars
             message " line " sbuf-append-string

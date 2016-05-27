@@ -46,7 +46,7 @@ CURRENT: feline
     x y +
     x y -
     inner catch
-    ?dup if
+    ?dup forth:if
         k3 untag-fixnum = check         \ REVIEW untag-fixnum
         2drop
     then
