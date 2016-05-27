@@ -162,16 +162,20 @@ f global history-index
     dup 10 = swap 13 = or
 ;
 
-: test ( -- string )
+: accept-string ( -- string )
     256 <sbuf> !> buffer
     bindings [ initialize-bindings ] unless
     history  [ initialize-history  ] unless
-    ?cr
-    prompt
     0 !> dot
     [ accept-key dup terminator? ] [ process-key ] until
     drop
     white foreground
-    buffer sbuf>string
+    buffer sbuf>string dup history push
     f !> buffer
+;
+
+: test ( -- string )
+    ?cr
+    prompt
+    accept-string
 ;
