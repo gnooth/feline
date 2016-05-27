@@ -40,15 +40,6 @@ f global history-index
     'K' emit
 ;
 
-: prompt-string ( -- string )
-    "Test> "
-;
-
-: prompt ( -- )
-    green foreground prompt-string .string
-    yellow foreground
-;
-
 : backspaces ( tagged -- )
     untag-fixnum backspaces
 ;
@@ -56,6 +47,7 @@ f global history-index
 : redisplay ( -- )
     0 at-x
     prompt
+    yellow foreground
     buffer sbuf> type
     clear-to-eol
     dot prompt-string length + at-x
@@ -129,7 +121,7 @@ f global history-index
     2array bindings push
 ;
 
-: lookup-key ( key -- action )
+: lookup-key ( key -- action|f )
     bindings length [ bindings nth array-first over = ] find-integer \ -- i|f
     nip dup [ bindings nth array-second ] [ drop f ] if-else
 ;
@@ -177,5 +169,6 @@ f global history-index
 : test ( -- string )
     ?cr
     prompt
+    yellow foreground
     accept-string
 ;
