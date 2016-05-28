@@ -117,6 +117,22 @@ f global accepted-string
     unless
 ;
 
+: do-next ( -- )
+    history-index
+    [
+        history length 1 - <
+        [
+            history-index 1 + !> history-index
+            0 buffer sbuf-shorten
+            buffer history-index history nth sbuf-append-string
+            buffer length !> dot
+            redisplay
+        ]
+        when
+    ]
+    when*
+;
+
 : history-file-pathname ( -- string )
     user-home ".feline-history" path-append
 ;
@@ -145,6 +161,7 @@ f global accepted-string
     k-home  tag-char    ['] do-home     bind-key
     k-end   tag-char    ['] do-end      bind-key
     k-up    tag-char    ['] do-previous bind-key
+    k-down  tag-char    ['] do-next     bind-key
 ;
 
 : accept-key ( -- tagged-char)
