@@ -248,6 +248,16 @@ code vector_ensure_capacity, 'vector-ensure-capacity'   ; u vector --
         next
 endcode
 
+; ### vector-nth-unsafe
+code vector_nth_unsafe, 'vector-nth-unsafe' ; index handle -- element
+        _swap
+        _untag_fixnum
+        _swap
+        _handle_to_object_unsafe
+        _vector_nth_unsafe
+        next
+endcode
+
 ; ### vector-nth
 code vector_nth, 'vector-nth'           ; index handle -- element
 
