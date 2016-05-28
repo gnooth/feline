@@ -234,6 +234,29 @@ code array_second, 'array-second'       ; handle -- element
         next
 endcode
 
+; ### array-each
+code array_each, 'array-each'           ; array xt --
+        _swap
+        _ check_array                   ; -- xt array
+
+        push    this_register
+        mov     this_register, rbx
+        push    r12
+        mov     rax, [rbp]              ; xt in rax
+        _2drop                          ; adjust stack
+        mov     r12, [rax]              ; address to call in r12
+        _this_array_length
+        _zero
+        _?do .1
+        _i
+        _this_array_nth_unsafe          ; -- element
+        call    r12
+        _loop .1
+        pop     r12
+        pop     this_register
+        next
+endcode
+
 ; ### .array
 code dot_array, '.array'                ; array --
         _ check_array
