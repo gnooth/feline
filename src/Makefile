@@ -124,6 +124,7 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	parse.asm \
 	primitives.asm \
 	quit.asm \
+	sequences.asm \
 	sbuf.asm \
 	stack.asm \
 	store.asm \
