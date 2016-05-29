@@ -56,6 +56,7 @@ import local
 
 import swap
 import dup
+import drop
 import >r
 import r>
 
@@ -63,6 +64,7 @@ import r>
 import execute
 import ?cr
 import .(
+import time
 
 : throw ( n -- ) untag-fixnum throw ;
 
