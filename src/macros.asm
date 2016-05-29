@@ -28,12 +28,13 @@
 %ifdef USE_TAGS
 
 %define TAG_BITS        3
+%define TAG_MASK        (1 << TAG_BITS) - 1
 
 %define FIXNUM_TAG      1
 %define BOOLEAN_TAG     6
 
 %macro  _tag 0                          ; object -- tag
-        and     rbx, (1 << TAG_BITS) - 1
+        and     rbx, TAG_MASK
 %endmacro
 
 %macro  _fixnum? 0
