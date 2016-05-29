@@ -69,15 +69,17 @@ code error_not_fixnum, 'error-not-fixnum' ; x --
         next
 endcode
 
+%macro _check_fixnum 0
+        mov     eax, ebx
+        and     eax, TAG_MASK
+        cmp     eax, FIXNUM_TAG
+        jne     error_not_fixnum
+        _untag_fixnum
+%endmacro
+
 ; ### check-fixnum
 code check_fixnum, 'check-fixnum'       ; fixnum -- untagged-fixnum
-        _dup
-        _fixnum?
-        _if .1
-        _untag_fixnum
-        _else .1
-        _ error_not_fixnum
-        _then .1
+        _check_fixnum
         next
 endcode
 
@@ -94,9 +96,9 @@ endinline
 ; ### <
 code feline_lt, '<'                     ; x y -- t|f
 ; FIXME optimize
-        _ check_fixnum
+        _check_fixnum
         _swap
-        _ check_fixnum
+        _check_fixnum
         _swap
         _ fixnum_lt
         next
@@ -133,9 +135,9 @@ endinline
 
 ; ### +
 code feline_plus, '+'                   ; x y -- x+y
-        _ check_fixnum
+        _check_fixnum
         _swap
-        _ check_fixnum
+        _check_fixnum
         _plus
         _tag_fixnum
         next
@@ -153,9 +155,9 @@ endinline
 
 ; ### -
 code feline_minus, '-'                  ; x y -- x-y
-        _ check_fixnum
+        _check_fixnum
         _swap
-        _ check_fixnum
+        _check_fixnum
         sub     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
         _tag_fixnum
