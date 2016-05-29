@@ -78,6 +78,9 @@ generic push, 'push'
 ; ### nth
 generic nth, 'nth'
 
+; ### nth-unsafe
+generic nth_unsafe, 'nth-unsafe'
+
 ; ### initialize-generic-functions
 code initialize_generic_functions, 'initialize-generic-functions' ; --
         _lit length_xt
@@ -139,6 +142,14 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _lit nth_xt
         _ add_method
 
+        _lit nth_unsafe_xt
+        _ initialize_generic_function
+
+        _lit vector_nth_unsafe_xt
+        _lit OBJECT_TYPE_VECTOR
+        _lit nth_unsafe_xt
+        _ add_method
+
         next
 endcode
 
@@ -187,5 +198,27 @@ code sequence_equal, 'sequence='        ; seq1 seq2 -- t|f
         ; no mismatch
         _2drop
         _t
+        next
+endcode
+
+; ### each
+code each, 'each'                       ; seq xt --
+        push    r12
+        mov     r12, [rbx]              ; address to call in r12
+        poprbx                          ; -- seq
+        push    this_register
+        mov     this_register, rbx      ; handle to seq in this_register
+        _ length
+        _untag_fixnum
+        _zero
+        _?do .1
+        _i
+        _tag_fixnum
+        _this                           ; -- tagged-index handle
+        _ nth_unsafe                    ; -- element
+        call    r12
+        _loop .1
+        pop     this_register
+        pop     r12
         next
 endcode
