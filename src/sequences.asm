@@ -42,3 +42,28 @@ code two_nth_unsafe, '2nth-unsafe'      ; n seq1 seq2 -- elt1 elt2
         _ nth                           ; -- elt2 elt2
         next
 endcode
+
+; ### mismatch
+code mismatch, 'mismatch'               ; seq1 seq2 -- i|f
+        _twodup
+        _ min_length
+        _untag_fixnum
+        _zero
+        _?do .1
+        _i
+        _tag_fixnum
+        _ feline_2over
+        _ two_nth_unsafe
+        _notequal
+        _if .2
+        _2drop
+        _i
+        _tag_fixnum
+        _unloop
+        _return
+        _then .2
+        _loop .1
+        _2drop
+        _f
+        next
+endcode

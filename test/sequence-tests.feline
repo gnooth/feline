@@ -13,21 +13,27 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require test-framework
+require-system-file test-framework
 
-include-tests boolean-tests
-include-tests fixnum-tests
-include-tests local-tests
-include-tests quotation-tests
-include-tests string-tests
-include-tests sbuf-tests
-include-tests pathname-tests
-include-tests array-tests
-include-tests vector-tests
-include-tests misc-tests
-include-tests generic-tests
-include-tests gc-tests
-include-tests hashtable-tests
-include-tests sequence-tests
+LANGUAGE: feline
 
-?cr .( Reached end of tests )
+CONTEXT: feline forth ;
+CURRENT: feline
+
+\ mismatch
+test: test1 ( -- )
+    "test" "test" mismatch check-false
+    "test" "testing" mismatch check-false
+    "testing" "test" mismatch check-false
+    "test" "" mismatch check-false
+    "" "test" mismatch check-false
+    "" "" mismatch check-false
+    "test" "text" mismatch 2 = check-t
+
+;
+
+test1
+
+empty
+
+?cr .( Reached end of sequence-tests )
