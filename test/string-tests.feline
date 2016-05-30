@@ -93,10 +93,7 @@ test4
 
 test: test5
     "this is a test" local s
-    s 0 string-char 't' = check-t
-    \ index out of range returns 0
-    s 42 string-char 0= check-t
-    s -1 string-char 0= check-t
+    0 s string-nth 't' = check-t
 ;
 
 test5
