@@ -67,3 +67,19 @@ code mismatch, 'mismatch'               ; seq1 seq2 -- i|f
         _f
         next
 endcode
+
+; ### head?
+code head?, 'head?'                     ; seq begin -- ?
+        _twodup
+        _ shorter?
+        _quotation .1
+        _2drop
+        _f
+        _end_quotation .1
+        _quotation .2
+        _ mismatch
+        _ not
+        _end_quotation .2
+        _ feline_if
+        next
+endcode
