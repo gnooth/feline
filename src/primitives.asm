@@ -440,3 +440,19 @@ code number_to_string, 'number>string'  ; n -- string
         _ basestore
         next
 endcode
+
+; ### pick
+code feline_pick, 'pick'                ; x y z -- x y z x
+; Factor
+        mov     rax, [rbp + BYTES_PER_CELL]
+        pushd   rax
+        next
+endcode
+
+; ### 2over
+code feline_2over, '2over'              ; x y z -- x y z x y
+; Factor
+        _ feline_pick
+        _ feline_pick
+        next
+endcode
