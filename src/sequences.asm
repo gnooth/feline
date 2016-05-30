@@ -23,3 +23,22 @@ code shorter?, 'shorter?'               ; seq1 seq2 -- ?
         _ fixnum_lt
         next
 endcode
+
+; ### min-length
+code min_length, 'min-length'           ; seq1 seq2 -- n
+        _lit length_xt
+        _ bi_at
+        _ min
+        next
+endcode
+
+; ### 2nth-unsafe
+code two_nth_unsafe, '2nth-unsafe'      ; n seq1 seq2 -- elt1 elt2
+        _tor                            ; -- n seq1     r: -- seq2
+        _dupd                           ; -- n n seq1   r: -- seq2
+        _ nth                           ; -- n elt1     r: -- seq2
+        _swap                           ; -- elt1 n     r: -- seq2
+        _rfrom                          ; -- elt1 n seq2
+        _ nth                           ; -- elt2 elt2
+        next
+endcode

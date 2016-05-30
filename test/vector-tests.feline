@@ -239,6 +239,17 @@ test: test12
 
 test12
 
+\ 2nth-unsafe
+test: test13
+    V{  1  2  3 } local x
+    V{ 17 18 19 } local y
+    0 x y 2nth-unsafe 17 = check-t 1 = check-t
+    1 x y 2nth-unsafe 18 = check-t 2 = check-t
+    2 x y 2nth-unsafe 19 = check-t 3 = check-t
+;
+
+test13
+
 empty
 
 ?cr .( Reached end of vector-tests )
