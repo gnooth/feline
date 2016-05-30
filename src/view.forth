@@ -56,7 +56,7 @@ CURRENT: hidden
     dot len + bufsize <= if
         len 0 ?do
             buffer dot + i + c@
-            s i tag-fixnum string-char untag-fixnum
+            i tag-fixnum s string-nth untag-fixnum
             <> if
                 false to result
                 leave
