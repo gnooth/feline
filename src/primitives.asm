@@ -347,8 +347,9 @@ endcode
 ; ### dip
 code dip, 'dip'                         ; x quot -- x
 ; Removes x, calls quot, restores x to top of stack after quot returns.
-        _swap
-        _tor                            ; -- quot       r: -- x
+        mov     rax, [rbp]              ; x in rax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        push    rax
         _execute
         _rfrom
         next
