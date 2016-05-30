@@ -168,8 +168,8 @@ endcode
 code dmax, 'dmax'                       ; d1 d2 -- d3
 ; DOUBLE
 ; gforth
-        _ twoover
-        _ twoover
+        _ forth_2over
+        _ forth_2over
         _ dlt
         _if .1
         _ twoswap
@@ -182,8 +182,8 @@ endcode
 code dmin, 'dmin'                       ; d1 d2 -- d3
 ; DOUBLE
 ; gforth
-        _ twoover
-        _ twoover
+        _ forth_2over
+        _ forth_2over
         _ dgt
         _if .1
         _ twoswap

@@ -284,7 +284,7 @@
         poprbx
 %endmacro
 
-%macro  _twoover 0                      ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2
+%macro  _forth_2over 0                  ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2
         mov     rax, [rbp + BYTES_PER_CELL * 2]         ; x1
         mov     [rbp - BYTES_PER_CELL], rbx
         mov     [rbp - BYTES_PER_CELL * 2], rax

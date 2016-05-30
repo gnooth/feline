@@ -127,8 +127,9 @@ inline plusdup, '+dup'
 endinline
 
 ; ### 2over
-inline twoover, '2over'                  ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2
-        _twoover
+inline forth_2over, '2over'             ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2
+; CORE
+        _forth_2over
 endinline
 
 ; ### nip
