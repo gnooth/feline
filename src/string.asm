@@ -541,11 +541,13 @@ endcode
 code string_nth, 'string-nth'           ; tagged-index handle-or-string -- tagged-char
 ; Return character at index.
 
-        _ check_string                  ; -- tagged-index string
-
         _swap
         _untag_fixnum
         _swap                           ; -- index string
+
+string_nth_untagged:
+
+        _ check_string                  ; -- tagged-index string
 
         _twodup
         _string_length
@@ -562,42 +564,21 @@ code string_nth, 'string-nth'           ; tagged-index handle-or-string -- tagge
         next
 endcode
 
-; ### string-char
-code string_char, 'string-char'         ; string tagged-index -- char
-; Return character at index, or 0 if index is out of range.
-
-        _untag_fixnum
-
-string_char_untagged:
-        _swap
-        _ check_string                  ; -- index string
-
-        _twodup
-        _string_length
-        _ult
-        _if .1
-        _string_nth_unsafe
-        _else .1
-        _2drop
-        _zero
-        _then .1
-
-        _tag_char
-        next
-endcode
-
 ; ### string-first-char
 code string_first_char, 'string-first-char' ; string -- char
-; Returns first character of string (0 if the string is empty).
+; Returns first character of string.
+; Throws an error if the string is empty.
         _ coerce_to_string
         _zero
-        _ string_char_untagged
+        _swap
+        _ string_nth_untagged
         next
 endcode
 
 ; ### string-last-char
 code string_last_char, 'string-last-char' ; string -- char
-; Returns last character of string (0 if the string is empty).
+; Returns last character of string.
+; Throws an error if the string is empty.
         _ coerce_to_string
 
         _dup
@@ -605,7 +586,8 @@ code string_last_char, 'string-last-char' ; string -- char
         _dup
         _zeq_if .1
         _2drop
-        _zero
+        _true
+        _abortq "index out of bounds"
         _else .1
         _swap
         _string_data

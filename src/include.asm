@@ -338,9 +338,9 @@ code tilde_expand_filename, 'tilde-expand-filename' ; string1 -- string2
         _then .2
                                         ; -- string
         ; length <> 1
-        _dup
         _lit 1
-        _ string_char_untagged
+        _over
+        _ string_nth_untagged
         _untag_char
         _ path_separator_char?          ; "~/" or "~\"
         _if .3
