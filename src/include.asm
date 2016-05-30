@@ -565,7 +565,8 @@ code path_is_absolute?, 'path-is-absolute?' ; string -- flag
         _ ge
         _if .2                          ; -- string
         _lit 1
-        _ string_char_untagged
+        _swap
+        _ string_nth_untagged
         _untag_char
         _lit ':'
         _equal
