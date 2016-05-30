@@ -166,8 +166,8 @@ code rdepth, 'rdepth'
 endcode
 
 ; ### pick
-inline pick, 'pick'
-        _pick
+inline forth_pick, 'pick'
+        _forth_pick
 endinline
 
 ; ### roll
@@ -176,7 +176,7 @@ code roll, 'roll'                       ; n1 n2 ... nk k -- n2 n3 ... nk n1
 ; Win32Forth
 ; "Rotate k values on the stack, bringing the deepest to the top."
         _duptor
-        _ pick
+        _forth_pick
         _ spfetch
         _dup
         _cellplus
@@ -204,7 +204,7 @@ code dot_s, '.s'
 .1:
         push    rcx
         pushd   rcx
-        _pick
+        _forth_pick
         _ dot
         pop     rcx
         loop    .1
@@ -229,7 +229,7 @@ code hex_dot_s, 'hex.s'
 .1:
         push    rcx
         pushd   rcx
-        _pick
+        _forth_pick
         _ hdot
         pop     rcx
         loop    .1

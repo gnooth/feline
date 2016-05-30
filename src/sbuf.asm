@@ -611,7 +611,7 @@ code sbuf_insert_nth_destructive, 'sbuf-insert-nth!' ; tagged-char tagged-index 
 
         _this_sbuf_length
         _lit 3
-        _pick
+        _forth_pick
         _minus                          ; -- char index source dest count
 
         _ cmoveup                       ; -- char index

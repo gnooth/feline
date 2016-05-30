@@ -119,7 +119,7 @@
         lea     rbp, [rbp - BYTES_PER_CELL]
 %endmacro
 
-%macro  _pick 0                         ; pick
+%macro  _forth_pick 0                   ; pick
         mov     rbx, [rbp + rbx * BYTES_PER_CELL]
 %endmacro
 

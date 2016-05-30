@@ -718,7 +718,7 @@ code concat, 'concat'                   ; string1 string2 -- string3
         _ rot                           ; -- c-addr2 u2 s1
         _ string_from                   ; -- c-addr2 u2 c-addr1 u1
         _lit 2
-        _ pick                          ; -- c-addr2 u2 c-addr1 u1 u2
+        _forth_pick                     ; -- c-addr2 u2 c-addr1 u1 u2
         _overplus                       ; -- c-addr2 u2 c-addr1 u1 u2+u1
         _ new_transient_string          ; -- c-addr2 u2 c-addr1 u1 string3
         _to_local0                      ; -- c-addr2 u2 c-addr1 u1

@@ -150,7 +150,7 @@ code mark_data_stack, 'mark-data-stack' ; --
 .1:
         push    rcx
         pushd   rcx
-        _pick
+        _forth_pick
         _ maybe_mark_handle
         pop     rcx
         loop    .1

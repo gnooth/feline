@@ -387,7 +387,7 @@ code get_datastack, 'get-datastack'     ; -- array
 .1:
         push    rcx
         pushd   rcx
-        _pick
+        _forth_pick
         pushd   r12
         _ vector_push
         pop     rcx

@@ -680,7 +680,7 @@ code vector_to_array, 'vector>array'    ; vector -- array
         _quotation .1
         ; -- element index
         _lit 2
-        _pick
+        _forth_pick
         ; -- element index array
         _ array_set_nth
         _end_quotation .1               ; -- array vector quotation
