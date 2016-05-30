@@ -271,6 +271,15 @@ inline swap, 'swap'                     ; x1 x2 -- x2 x1
         _swap
 endinline
 
+; ### swapd
+code swapd, 'swapd'                     ; x y z -- y x z
+        mov     rax, [rbp]
+        mov     rdx, [rbp + BYTES_PER_CELL]
+        mov     [rbp + BYTES_PER_CELL], rax
+        mov     [rbp], rdx
+        next
+endcode
+
 ; ### 2swap
 code twoswap, '2swap'                   ; x1 x2 x3 x4 -- x3 x4 x1 x2
         mov     rax, [rbp]                              ; x3
