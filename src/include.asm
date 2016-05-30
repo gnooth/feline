@@ -318,6 +318,7 @@ code tilde_expand_filename, 'tilde-expand-filename' ; string1 -- string2
 
         _dup
         _ string_first_char
+        _untag_char
         _lit '~'
         _notequal
         _if .1
@@ -338,7 +339,8 @@ code tilde_expand_filename, 'tilde-expand-filename' ; string1 -- string2
         ; length <> 1
         _dup
         _lit 1
-        _ string_char
+        _ string_char_untagged
+        _untag_char
         _ path_separator_char?          ; "~/" or "~\"
         _if .3
         _ user_home
