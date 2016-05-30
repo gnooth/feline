@@ -327,6 +327,7 @@ code tilde_expand_filename, 'tilde-expand-filename' ; string1 -- string2
 
         _dup
         _ string_length
+        _untag_fixnum
         _lit 1
         _equal
         _if .2
