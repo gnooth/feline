@@ -145,6 +145,11 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _lit nth_unsafe_xt
         _ initialize_generic_function
 
+        _lit string_nth_unsafe_xt
+        _lit OBJECT_TYPE_STRING
+        _lit nth_unsafe_xt
+        _ add_method
+
         _lit vector_nth_unsafe_xt
         _lit OBJECT_TYPE_VECTOR
         _lit nth_unsafe_xt

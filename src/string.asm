@@ -537,6 +537,18 @@ code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
         next
 endcode
 
+; ### string-nth-unsafe
+code string_nth_unsafe, 'string-nth-unsafe' ; tagged-index handle-or-string -- tagged-char
+; No bounds check.
+        _swap
+        _untag_fixnum
+        _swap
+        _ check_string
+        _string_nth_unsafe
+        _tag_char
+        next
+endcode
+
 ; ### string-nth
 code string_nth, 'string-nth'           ; tagged-index handle-or-string -- tagged-char
 ; Return character at index.
