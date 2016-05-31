@@ -123,3 +123,51 @@ code map, 'map'                         ; seq quot -- newseq
 
         next
 endcode
+
+; ### filter
+code filter, 'filter'                   ; seq quot -- subseq
+;         _swap                           ; -- quot seq
+        _over
+        push    this_register
+        popd    this_register           ; -- quot
+        push    r12
+        popd    r12                     ; --
+        mov     r12, [r12]              ; call address in r12
+
+        _this
+        _ length
+        _untag_fixnum
+        _dup
+        _ new_vector_untagged           ; -- untagged-length vector
+        _swap
+        _zero
+        _?do .1
+
+        _i
+        _tag_fixnum
+        _this
+        _ nth_unsafe                    ; -- vector elt
+        _dup
+        call    r12                     ; -- vector elt t|f
+
+        _tagged_if .2
+        _over                           ; -- vector elt vector
+        _ vector_push                   ; -- vector
+        _else .2
+        _drop                           ; -- vector
+        _then .2
+
+        _loop .1
+
+        pop     r12
+        pop     this_register           ; -- seq vector
+
+        ; FIXME use new-sequence (support all sequence types)
+        _swap
+        _ array?
+        _if .3
+        _ vector_to_array
+        _then .3
+
+        next
+endcode
