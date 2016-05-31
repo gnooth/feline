@@ -83,3 +83,43 @@ code head?, 'head?'                     ; seq begin -- ?
         _ feline_if
         next
 endcode
+
+; ### map
+code map, 'map'                         ; seq quot -- newseq
+        _swap                           ; -- quot seq
+        push    this_register
+        popd    this_register           ; -- quot
+        push    r12
+        popd    r12                     ; --
+        mov     r12, [r12]              ; call address in r12
+
+        _this
+        _ length                        ; -- len
+        _this                           ; -- len seq
+        _ new_sequence                  ; -- newseq
+
+        _this
+        _ length
+        _untag_fixnum
+        _zero
+        _?do .1
+
+        _i
+        _tag_fixnum
+        _this
+        _ nth_unsafe                    ; -- newseq elt
+
+        call    r12                     ; -- newseq newelt
+
+        _i
+        _tag_fixnum                     ; -- newseq newelt i
+        _ feline_pick                   ; -- newseq newelt i newseq
+        _ set_nth                       ; -- newseq
+
+        _loop .1
+
+        pop     r12
+        pop     this_register
+
+        next
+endcode
