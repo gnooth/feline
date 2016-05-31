@@ -17,12 +17,19 @@ file __FILE__
 
 ; ### lookup-method
 code lookup_method, 'lookup-method'     ; object methods-vector -- object xt
-        _tor
+        _tor                            ; -- object
         _dup
-        _ object_type
-        _untag_fixnum
-        _rfrom
-        _ vector_nth_untagged
+        _ object_type                   ; -- object tagged-type-number
+        _rfrom                          ; -- object tagged-type-number vector
+        _twodup
+        _ vector_length
+        _ fixnum_lt
+        _tagged_if .1                   ; -- object n vector
+        _ vector_nth_unsafe             ; -- object method|f
+        _else .1
+        _2drop                          ; -- object
+        _f                              ; -- object f
+        _then .1
         next
 endcode
 
@@ -30,7 +37,13 @@ endcode
 code do_generic, 'do-generic'
         _fetch
         _ lookup_method
+        _dup
+        _tagged_if .1
         _execute
+        _else .1
+        _true
+        _abortq "no method"
+        _then .1
         next
 endcode
 
