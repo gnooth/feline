@@ -123,6 +123,14 @@ new_array_untagged:
         next
 endcode
 
+; ### array-new-sequence
+code array_new_sequence, 'array-new-sequence' ; len seq -- newseq
+        _drop
+        _f
+        _ new_array
+        next
+endcode
+
 ; ### ~array
 code destroy_array, '~array'            ; handle --
         _ check_array                   ; -- array

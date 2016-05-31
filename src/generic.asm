@@ -81,6 +81,9 @@ generic nth, 'nth'
 ; ### nth-unsafe
 generic nth_unsafe, 'nth-unsafe'
 
+; ### new-sequence
+generic new_sequence, 'new-sequence'    ; len seq -- newseq
+
 ; ### initialize-generic-functions
 code initialize_generic_functions, 'initialize-generic-functions' ; --
         _lit length_xt
@@ -153,6 +156,19 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _lit vector_nth_unsafe_xt
         _lit OBJECT_TYPE_VECTOR
         _lit nth_unsafe_xt
+        _ add_method
+
+        _lit new_sequence_xt
+        _ initialize_generic_function
+
+        _lit array_new_sequence_xt
+        _lit OBJECT_TYPE_ARRAY
+        _lit new_sequence_xt
+        _ add_method
+
+        _lit vector_new_sequence_xt
+        _lit OBJECT_TYPE_VECTOR
+        _lit new_sequence_xt
         _ add_method
 
         next

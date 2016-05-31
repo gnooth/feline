@@ -151,6 +151,13 @@ new_vector_untagged:
         next
 endcode
 
+; ### vector-new-sequence
+code vector_new_sequence, 'vector-new-sequence' ; len seq -- newseq
+        _drop
+        _ new_vector
+        next
+endcode
+
 ; ### V{
 code parse_vector, 'V{', IMMEDIATE      ; -- handle
         _lit 10
