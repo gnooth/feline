@@ -156,6 +156,16 @@ code destroy_array_unchecked, '~array-unchecked' ; array --
         next
 endcode
 
+; ### array-nth-unsafe
+code array_nth_unsafe, 'array-nth-unsafe' ; index handle -- element
+        _swap
+        _untag_fixnum
+        _swap
+        _handle_to_object_unsafe
+        _array_nth_unsafe
+        next
+endcode
+
 ; ### array-nth
 code array_nth, 'array-nth'             ; index handle -- element
 
