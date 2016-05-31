@@ -291,15 +291,6 @@ vector_nth_untagged:
         next
 endcode
 
-; ### vector-check-index
-code vector_check_index, 'vector-check-index' ; vector index -- flag
-        _swap
-        _ check_vector                  ; -- index vector
-        _vector_length                  ; -- index length
-        _ult                            ; -- flag
-        next
-endcode
-
 ; ### vector-set-nth
 code vector_set_nth, 'vector-set-nth'   ; element index vector --
 
