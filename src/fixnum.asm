@@ -260,3 +260,23 @@ code bitand, 'bitand'
         _tag_fixnum
         next
 endcode
+
+; ### odd?
+code odd?, 'odd?'                       ; n -- ?
+        _check_fixnum                   ; -- untagged
+        mov     eax, t_value
+        and     ebx, 1
+        mov     ebx, f_value
+        cmovnz  ebx, eax
+        next
+endcode
+
+; ### even?
+code even?, 'even?'                     ; n -- ?
+        _check_fixnum                   ; -- untagged
+        mov     eax, t_value
+        and     ebx, 1
+        mov     ebx, f_value
+        cmovz   ebx, eax
+        next
+endcode
