@@ -25,6 +25,7 @@ CURRENT: forth
 0 value empty-current
 
 0 global empty-search-order
+0 global empty-gc-roots
 
 : get-search-order ( -- vector )
     context-vector vector-clone
@@ -81,6 +82,7 @@ CURRENT: forth
     voclink @ to empty-voclink
     get-current to empty-current
     get-search-order !> empty-search-order
+    gc-roots vector-clone !> empty-gc-roots
 ;
 
 \ restore state saved by EMPTY!
@@ -93,7 +95,7 @@ CURRENT: forth
         empty-current set-current
         empty-search-order set-search-order
         trim-vocs
-        trim-gc-roots
+        empty-gc-roots to gc-roots
         here limit over - erase
         here-c limit-c over - erase
     then ;
