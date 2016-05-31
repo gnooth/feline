@@ -98,11 +98,8 @@ test4
 test: test5 ( -- )
     10 <vector> local v
     42 v vector-push
-    v vector-length 1 = check
-    v 0 vector-ref 42 = check
-
-    v -1 ['] vector-ref catch 0<> check 2drop
-    v 99 ['] vector-ref catch 0<> check 2drop
+    v vector-length 1 = check-t
+    0 v vector-nth 42 = check-t
     v ~vector
     v vector? check-false
 ;
@@ -111,16 +108,12 @@ test5
 
 test: test6 ( -- )
     10 <vector> local v
-    v vector-length 0= check
+    v vector-length zero? check-t
     13 v vector-push
-    v vector-length 1 = check
-    v 0 42 vector-set
-    v vector-length 1 = check
-    v 0 vector-ref 42 = check
-
-    v 1 87 ['] vector-set catch 0<> check 3drop
-    v 1 ['] vector-ref catch 0<> check 2drop
-
+    v vector-length 1 = check-t
+    42 0 v vector-set-nth
+    v vector-length 1 = check-t
+    0 v vector-nth 42 = check-t
     v ~vector
     v vector? check-false
 ;

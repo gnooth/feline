@@ -300,29 +300,6 @@ code vector_check_index, 'vector-check-index' ; vector index -- flag
         next
 endcode
 
-; ### vector-ref
-code vector_ref, 'vector-ref'           ; vector index -- element
-
-%ifdef USE_TAGS
-        _untag_fixnum
-%endif
-
-        _twodup
-        _ vector_check_index
-        _if .1
-        _swap
-        _ vector_data
-        _swap
-        _cells
-        _plus
-        _fetch
-        _else .1
-        _true
-        _abortq "vector-ref index out of range"
-        _then .1
-        next
-endcode
-
 ; ### vector-set-nth
 code vector_set_nth, 'vector-set-nth'   ; element index vector --
 
@@ -347,30 +324,6 @@ vector_set_nth_untagged:
         _this_vector_set_length
         _this_vector_set_nth_unsafe
         pop     this_register
-        next
-endcode
-
-; ### vector-set
-code vector_set, 'vector-set'           ; vector index element --
-        _ rrot                          ; -- element vector index
-
-%ifdef USE_TAGS
-        _untag_fixnum
-%endif
-
-        _ twodup
-        _ vector_check_index
-        _if .1                          ; -- element vector index
-        _ swap
-        _ vector_data
-        _ swap
-        _cells
-        _plus
-        _ store
-        _else .1
-        _true
-        _abortq "vector-set index out of range"
-        _then .1
         next
 endcode
 
