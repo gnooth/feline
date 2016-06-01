@@ -92,19 +92,18 @@ test: test4
 
 test4
 
-\ sbuf-char
+\ sbuf-nth, sbuf-nth-unsafe
 test: test5
     s" this is a test" >sbuf to s1
 \     s1 handle? check
     s1 object? check-t
     s1 sbuf? check-t
     s1 string? check-false
-    s1 0 sbuf-char 't' = check-t
-    s1 1 sbuf-char 'h' = check-t
-
-    \ REVIEW index out of range returns 0
-    s1 -1 sbuf-char 0= check-t
-    s1 99 sbuf-char 0= check-t
+    s1 sbuf-length 14 = check-t
+    0 s1 sbuf-nth 't' = check-t
+    1 s1 sbuf-nth 'h' = check-t
+    0 s1 sbuf-nth-unsafe 't' = check-t
+    1 s1 sbuf-nth-unsafe 'h' = check-t
 
     s1 ~sbuf
     s1 object? check-false
@@ -123,8 +122,10 @@ test: test6
     s1 sbuf-length 14 = check-t
     s1 2 'a' sbuf-set-char
     s1 3 't' sbuf-set-char
-    s1 2 sbuf-char 'a' = check-t
-    s1 3 sbuf-char 't' = check-t
+    2 s1 sbuf-nth 'a' = check-t
+    3 s1 sbuf-nth 't' = check-t
+    2 s1 sbuf-nth-unsafe 'a' = check-t
+    3 s1 sbuf-nth-unsafe 't' = check-t
     s1 sbuf>transient-string "that is a test" string= check-t
 
     \ index out of range
