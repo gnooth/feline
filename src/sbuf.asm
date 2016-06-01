@@ -263,6 +263,18 @@ code destroy_sbuf_unchecked, '~sbuf-unchecked' ; sbuf --
         next
 endcode
 
+; ### sbuf-nth-unsafe
+code sbuf_nth_unsafe, 'sbuf-nth-unsafe' ; tagged-index handle -- tagged-char
+; No bounds check.
+        _swap
+        _untag_fixnum
+        _swap
+        _ check_sbuf
+        _sbuf_nth_unsafe
+        _tag_char
+        next
+endcode
+
 ; ### sbuf-nth
 code sbuf_nth, 'sbuf-nth'               ; tagged-index handle -- tagged-char
 ; Return character at index.
