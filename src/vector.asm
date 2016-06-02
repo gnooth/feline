@@ -158,20 +158,37 @@ code vector_new_sequence, 'vector-new-sequence' ; len seq -- newseq
         next
 endcode
 
+; ### process-token
+code process_token, 'process-token'     ; string -- object
+        _ token_character_literal?
+        _tagged_if .1
+        _return
+        _then .1
+
+        _ token_string_literal?
+        _tagged_if .2
+        _return
+        _then .2
+
+        _ string_to_number
+
+        next
+endcode
+
 ; ### V{
 code parse_vector, 'V{', IMMEDIATE      ; -- handle
         _lit 10
         _ new_vector_untagged
         _tor
         _begin .1
-        _ blword                        ; -- $addr
+        _ parse_token                   ; -- string
         _dup
-        _count
-        _squote "}"
-        _ strequal
+        _quote "}"
+        _ string_equal?
+        _untag_boolean
         _zeq
         _while .1
-        _ feline_interpret_do_literal
+        _ process_token                 ; -- object
         _rfetch
         _ vector_push
         _repeat .1
