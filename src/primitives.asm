@@ -587,3 +587,23 @@ code feline_2over, '2over'              ; x y z -- x y z x y
         _ feline_pick
         next
 endcode
+
+; ### write1
+code write1, 'write1'                   ; tagged-char --
+        _untag_char
+        _ emit
+        next
+endcode
+
+; ### write
+code write, 'write'                     ; string-or-sbuf --
+        _ dot_string
+        next
+endcode
+
+; ### print
+code print, 'print'                     ; string-or-sbuf --
+        _ dot_string
+        _ cr
+        next
+endcode
