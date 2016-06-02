@@ -36,7 +36,7 @@ code bignum?, 'bignum?'                 ; handle -- t|f
         _dup_if .2
         _object_type                    ; -- object-type
         _lit OBJECT_TYPE_BIGNUM
-        _feline_equal
+        _eq?
         _return
         _then .2
         _then .1

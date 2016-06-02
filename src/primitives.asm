@@ -25,7 +25,7 @@ inline f, 'f'                           ; -- f
         _f
 endinline
 
-%macro _feline_equal 0                  ; n1 n2 -- t|f
+%macro _eq? 0                           ; n1 n2 -- t|f
         mov     eax, t_value
         cmp     rbx, [rbp]
         mov     ebx, f_value
@@ -35,7 +35,7 @@ endinline
 
 ; ### =
 inline feline_equal, '='                ; n1 n2 -- t|f
-        _feline_equal
+        _eq?
 endinline
 
 ; ### 0=
