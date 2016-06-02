@@ -133,6 +133,137 @@ code feline_until, 'until'              ; pred body --
         next
 endcode
 
+; ### parse-token
+code parse_token, 'parse-token'         ; -- string
+        _ parse_name
+        _ copy_to_string
+        next
+endcode
+
+; ### token-character-literal?
+code token_character_literal?, 'token-character-literal?' ; token -- char t | token f
+        _dup
+        _ string_length
+        _lit tagged_fixnum(3)
+        _equal
+        _zeq_if .1
+        _f
+        _return
+        _then .1
+
+        _lit tagged_zero
+        _over
+        _ string_nth
+        _lit $27
+        _tag_char
+        _equal
+        _zeq_if .2
+        _f
+        _return
+        _then .2
+
+        _lit tagged_fixnum(2)
+        _over
+        _ string_nth
+        _lit $27
+        _tag_char
+        _equal
+        _zeq_if .3
+        _f
+        _return
+        _then .3
+
+        _lit tagged_fixnum(1)
+        _swap
+        _ string_nth
+        _t
+        next
+endcode
+
+; ### token-string-literal?
+code token_string_literal?, 'token-string-literal?' ; token -- string t | token f
+        _dup
+        _ string_length
+        _lit tagged_fixnum(2)
+        _ feline_lt
+        _tagged_if .1
+        _f
+        _return
+        _then .1
+
+        _lit tagged_zero
+        _over
+        _ string_nth
+        _lit '"'
+        _tag_char
+        _equal
+        _zeq_if .2
+        _f
+        _return
+        _then .2
+
+        _dup
+        _ string_length
+        _lit tagged_fixnum(1)
+        _ fixnum_minus
+        _over
+        _ string_nth
+        _lit '"'
+        _tag_char
+        _equal
+        _zeq_if .3
+        _f
+        _return
+        _then .3
+
+        ; ok, it's a string
+        _ string_from                   ; -- untagged-addr untagged-len
+        _swap
+        _lit 1
+        _plus
+        _swap
+        _lit 2
+        _minus
+
+        _ copy_to_string
+
+        _t
+
+        next
+endcode
+
+; ### string>number
+code string_to_number, 'string>number'  ; token -- n
+        _duptor
+        _ string_from
+        _ basefetch
+        _tor
+        _ maybe_change_base             ; -- c-addr2 u2
+        _ number?                       ; -- d flag
+        _rfrom
+        _ basestore
+        _zeq_if .1
+        _rfrom
+
+        ; FIXME
+        _ missing                       ; doesn't return
+
+        _then .1
+        _rdrop
+        _ negative?
+        _if .2
+        _ dnegate
+        _then .2
+
+        ; REVIEW
+        _drop
+
+        ; FIXME check range
+        _tag_fixnum
+
+        next
+endcode
+
 ; ### feline-interpret-do-literal
 code feline_interpret_do_literal, 'feline-interpret-do-literal' ; $addr -- n | d
         _ character_literal?
