@@ -596,7 +596,7 @@ code write1, 'write1'                   ; tagged-char --
 endcode
 
 ; ### write
-code write, 'write'                     ; string-or-sbuf --
+code write_, 'write'                    ; string-or-sbuf --
         _ dot_string
         next
 endcode
