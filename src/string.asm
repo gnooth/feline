@@ -698,6 +698,7 @@ code dot_string, '.string'              ; string | sbuf | $addr --
         _rfrom
         ; FIXME inline
         _ sbuf_length
+        _untag_fixnum
         _ type
         _return
         _then .2
