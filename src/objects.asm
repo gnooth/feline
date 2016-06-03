@@ -109,9 +109,15 @@ code destroy_object_unchecked, '~object-unchecked' ; object --
         _return
         _then .5
 
-        ; REVIEW
-        _true
-        _abortq "unknown object"
+        ; Default behavior for objects with only one allocation.
+
+        ; Zero out the object header so it won't look like a valid object
+        ; after it has been freed.
+        xor     eax, eax
+        mov     [rbx], rax
+
+        _ ifree
+
         next
 endcode
 
