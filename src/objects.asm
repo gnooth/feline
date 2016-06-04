@@ -207,6 +207,15 @@ code dot_object, '.object'              ; handle-or-object --
         _return
         _then .8
 
+        _dup
+        _ symbol?
+        _tagged_if .9
+        _ symbol_name
+        _ dot_string
+        _ space
+        _return
+        _then .9
+
         ; give up
         _ hdot
 
