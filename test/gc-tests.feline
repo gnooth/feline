@@ -51,6 +51,20 @@ test: test3 ( -- )
 
 test3
 
+test: test4 ( -- )
+    42 fixnum>bignum bignum? check-t
+    gc
+;
+
+test4
+
+test: test5 ( -- )
+    "foo" "feline" <symbol> symbol? check-t
+    gc
+;
+
+test5
+
 empty
 
 ?cr .( Reached end of gc-tests )
