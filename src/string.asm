@@ -68,25 +68,8 @@ code error_not_string, 'error-not-string' ; x --
         next
 endcode
 
-; ### check-string
-code check_string, 'check-string'       ; x -- string
-        _dup
-        _ handle?
-        _if .1
-        _handle_to_object_unsafe        ; -- object|0
-        _dup_if .2
-        _dup
-        _object_type                    ; -- object object-type
-        _lit OBJECT_TYPE_STRING
-        _equal
-        _if .3
-        _return
-        _then .3
-        _then .2
-        _ error_not_string
-        _then .1
-
-        ; Not a handle. Make sure address is in a permissible range.
+code verify_unboxed_string, 'verify-unboxed-string' ; string -- string
+        ; Make sure address is in a permissible range.
         _dup                            ; -- x x
         _ in_transient_area?            ; -- x flag
         _zeq_if .4                      ; -- x
@@ -112,6 +95,55 @@ code check_string, 'check-string'       ; x -- string
         _then .7
 
         _ error_not_string
+        next
+endcode
+
+; ### check-string
+code check_string, 'check-string'       ; handle-or-string -- string
+        _dup
+        _ handle?
+        _if .1
+        _handle_to_object_unsafe        ; -- object|0
+        _dup_if .2
+        _dup
+        _object_type                    ; -- object object-type
+        _lit OBJECT_TYPE_STRING
+        _equal
+        _if .3
+        _return
+        _then .3
+        _then .2
+        _ error_not_string
+        _then .1
+
+        ; Not a handle.
+        _ verify_unboxed_string
+
+        next
+endcode
+
+; ### verify-string
+code verify_string, 'verify-string'     ; handle-or-string -- handle-or-string
+; Returns argument unchanged.
+        _dup
+        _ handle?
+        _if .1
+        _dup
+        _handle_to_object_unsafe        ; -- handle object|0
+        _dup_if .2
+        _object_type                    ; -- object object-type
+        _lit OBJECT_TYPE_STRING
+        _equal
+        _if .3
+        _return
+        _then .3
+        _then .2
+        _ error_not_string
+        _then .1
+
+        ; Not a handle.
+        _ verify_unboxed_string
+
         next
 endcode
 
