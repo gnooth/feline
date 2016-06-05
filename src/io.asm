@@ -273,7 +273,7 @@ extern os_file_is_directory
 
 ; ### path-is-directory?
 code path_is_directory?, 'path-is-directory?' ; string -- flag
-        _ check_string
+        _ verify_string
         _ string_data
 %ifdef WIN64
         mov     rcx, rbx
@@ -291,7 +291,6 @@ endcode
 
 ; ### path-file-exists?
 code path_file_exists?, 'path-file-exists?' ; string -- flag
-        _ check_string
         _ string_from
         _ file_status
         _nip
@@ -839,7 +838,7 @@ code canonical_path, 'canonical-path'   ; string1 -- string2
         pushd   rax                     ; -- zaddr2
         _dup
         _ zcount
-        _ copy_to_transient_string      ; -- string2
+        _ copy_to_string                ; -- string2
         _ swap
 %ifdef WIN64
         mov     rcx, rbx
