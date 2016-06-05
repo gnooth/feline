@@ -531,44 +531,6 @@ code as_c_string, 'as-c-string'         ; c-addr u -- zaddr
         next
 endcode
 
-; ### coerce-to-string
-; REVIEW transitional
-code coerce_to_string, 'coerce-to-string' ; c-addr u | string | $addr -- string
-        _dup
-        _ handle?
-        _if .1
-        _fetch
-        ; FIXME sbuf is ok too
-        _ check_string
-        _return
-        _then .1
-
-        _dup
-        _lit 256
-        _ ult
-        _if .2                          ; -- c-addr u
-        _ copy_to_transient_string
-        _return
-        _then .2
-
-        _dup
-        _ string?
-        _tagged_if .3                   ; -- string
-        _return
-        _then .3
-
-        _dup
-        _ sbuf?
-        _tagged_if .4                   ; -- sbuf
-        _ sbuf_to_transient_string      ; -- string
-        _return
-        _then .4
-                                        ; -- $addr
-        _count
-        _ copy_to_transient_string
-        next
-endcode
-
 ; ### string-nth-unsafe
 code string_nth_unsafe, 'string-nth-unsafe' ; tagged-index handle-or-string -- tagged-char
 ; No bounds check.
