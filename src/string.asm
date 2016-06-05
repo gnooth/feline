@@ -591,8 +591,7 @@ endcode
 code string_last_char, 'string-last-char' ; string -- char
 ; Returns last character of string.
 ; Throws an error if the string is empty.
-        _ coerce_to_string
-
+        _ check_string
         _dup
         _string_length
         _dup
