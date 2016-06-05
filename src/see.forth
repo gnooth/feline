@@ -330,7 +330,6 @@ init-reg64-names
     260 <sbuf> local buffer
 
     relative-size ?dup if
-        coerce-to-string
         buffer swap sbuf-append-string
         buffer $20 ( space ) sbuf-append-char
         0 to relative-size
