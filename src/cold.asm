@@ -190,6 +190,8 @@ code cold, 'cold'                       ; --
 
         _ initialize_vocabs
 
+        _ initialize_source_files
+
         _ initialize_task
         _ forth_mode
         _squote "boot.forth"

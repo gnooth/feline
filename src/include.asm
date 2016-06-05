@@ -235,28 +235,17 @@ code includable?, 'includable?'         ; string -- flag
         next
 endcode
 
-; ### link-file
-code link_file, 'link-file'             ; string -- nfa
-        _ check_string
+value source_files, 'source-files', 0
 
-        _ get_current
-        _tor
-        _ files_wordlist
-        _ set_current
-        _ warning
-        _fetch
-        _tor
-        _clear warning
-        _ string_from
-        _ create_word
-        _rfrom
-        _to warning
-        _zero
-        _ comma
-        _rfrom
-        _ set_current
-        _ last
-        _fetch
+; ### initialize-source-files
+code initialize_source_files, 'initialize-source-files'
+        _lit tagged_fixnum(64)
+        _ new_hashtable
+        _to source_files
+
+        _lit source_files_data
+        _ gc_add_root
+
         next
 endcode
 
@@ -288,7 +277,6 @@ endcode
 
 ; ### path-get-directory
 code path_get_directory, 'path-get-directory' ; string1 -- string2 | 0
-        _ check_string
         _ string_from                   ; -- c-addr u
         _begin .1
         _dup
@@ -303,7 +291,7 @@ code path_get_directory, 'path-get-directory' ; string1 -- string2 | 0
         _zeq_if .3
         _oneplus
         _then .3
-        _ copy_to_transient_string
+        _ copy_to_string
         _return
         _then .2
         _repeat .1
@@ -314,7 +302,7 @@ endcode
 
 ; ### tilde-expand-filename
 code tilde_expand_filename, 'tilde-expand-filename' ; string1 -- string2
-        _ check_string
+        _ verify_string
 
         _dup
         _ string_first_char
@@ -333,7 +321,7 @@ code tilde_expand_filename, 'tilde-expand-filename' ; string1 -- string2
         _if .2
         _drop
         _ user_home
-        _ coerce_to_string
+        _ verify_string
         _return
         _then .2
                                         ; -- string
@@ -378,7 +366,7 @@ endcode
 
 ; ### resolve-include-filename
 code resolve_include_filename, 'resolve-include-filename' ; c-addr u -- string
-        _ copy_to_transient_string      ; -- string
+        _ copy_to_string                ; -- string
         _ tilde_expand_filename         ; -- string
 
         ; If the argument after tilde expansion is not an absolute pathname,
@@ -388,18 +376,18 @@ code resolve_include_filename, 'resolve-include-filename' ; c-addr u -- string
         _zeq_if .1
         _ source_filename
         _?dup_if .2
-        _ coerce_to_string
+        _ verify_string
         _ path_get_directory
         _?dup_if .3                     ; -- string directory-string
-        _ check_string
+        _ verify_string
         _swap
-        _ check_string
+        _ verify_string
         _ path_append                   ; -- string
         _then .3
         _then .2
         _then .1
 
-        _ check_string
+        _ verify_string
         _ canonical_path                ; -- string
 
         _dup
@@ -456,7 +444,7 @@ code included, 'included'               ; i*x c-addr u -- j*x
         jz .1
 
         _ resolve_include_filename
-        _ check_string                  ; -- string
+        _ verify_string                 ; -- string
 
         ; Store the resolved filename in local0.
         _dup
@@ -476,45 +464,44 @@ code included, 'included'               ; i*x c-addr u -- j*x
         ; Store the fileid in local1.
         _to_local1
 
-        ; Store the old value of SOURCE-FILENAME in local2.
+        ; Store the old source filename in local2.
         _ source_filename
         _to_local2
 
-        ; Make an entry for the new filename in the FILES wordlist.
+        ; Store the new source filename in source-filename.
         _local0                         ; -- string
-        _ link_file                     ; -- nfa
-
+        _ verify_string
         _to source_filename             ; --
+
+        ; Include the file.
         _local1                         ; -- fileid
         _ include_file
         _local1                         ; -- fileid
         _ close_file                    ; -- ior
         _drop                           ; REVIEW safe to ignore ior?
 
-        ; Sanity check. The file that we just included might have called
-        ; EMPTY (or a marker word), and the entry for the latest filename
-        ; in the FILES wordlist might be adrift in the wilderness beyond
-        ; the current value of HERE. If that is the case, the pointers
-        ; associated with that dictionary entry may well have been over-
-        ; written, and there is no guarantee that NAME> >BODY below will
-        ; take us to a safe place (let alone the right place).
-        _from source_filename
-        _ here
-        _ult
-        _if .3
-        ; The filename entry is below HERE, which is what we were hoping for.
-        ; Store a true flag in the parameter field of the FILES wordlist entry
-        ; to indicate the file was included without error.
-        _true
-        _from source_filename
-        _namefrom
-        _tobody
-        _store                          ; --                    r: -- $old-source-filename
+        ; Add the source filename to the source-files hashtable.
+        _ source_filename
+        _ verify_string
+        _ string?
+        _tagged_if .3
+        _t
+        _ source_filename
+        ; make sure it's not a transient string!
+        _dup
+        _ transient?
+        _tagged_if .4
+        _ string_from
+        _ copy_to_string
+        _then .4
+        _ source_files
+        _ set_at
         _then .3
 
-        ; Restore the old value of SOURCE-FILENAME.
+        ; Restore the old value of source-filename.
         _local2
         _to source_filename
+
         jmp     .exit
 .1:
         _2drop
@@ -546,7 +533,7 @@ endcode
 
 ; ### path-is-absolute?
 code path_is_absolute?, 'path-is-absolute?' ; string -- flag
-        _ check_string
+        _ verify_string
 %ifdef WIN64
         _dup
         _ string_first_char
@@ -587,9 +574,9 @@ endcode
 
 ; ### path-append
 code path_append, 'path-append'         ; string1 string2 -- string3
-        _ check_string
+        _ verify_string
         _swap
-        _ check_string
+        _ verify_string
         _swap
 
         _dup
@@ -626,7 +613,7 @@ endcode
 ; ### system-file-pathname
 code system_file_pathname, 'system-file-pathname' ; c-addr1 u1 -- c-addr2 u2
 ; Returned values are untagged.
-        _ copy_to_transient_string
+        _ copy_to_string
         _ feline_home
         _quote "src"
         _ path_append
@@ -657,20 +644,17 @@ code required, 'required'               ; i*x c-addr u -- i*x
 ; FILE EXT
         _?dup_if .1
         _ resolve_include_filename
-        _ check_string
-        _ string_from
-        _twodup
-        _ files_wordlist
-        _ search_wordlist
-        _if .4
-        _tobody
-        _fetch
-        _if .5
-        _2drop
-        _return
-        _then .5
-        _then .4
+        _ verify_string
 
+        _dup
+        _ source_files
+        _ at_
+        _tagged_if .2
+        _drop
+        _return
+        _then .2
+
+        _ string_from
         _ included
 
         _else .1

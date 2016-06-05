@@ -51,7 +51,7 @@ code definitions, 'definitions'         ; --
 endcode
 
 ; ### voclink
-variable voclink, 'voclink', files_wid
+variable voclink, 'voclink', feline_wid
 
 ; ### wordlist
 code wordlist, 'wordlist'               ; -- wid
@@ -132,11 +132,6 @@ forth_wid:
 feline_wid:
         dq      0
 
-        dq      feline_wid              ; link
-        dq      files_nfa
-files_wid:
-        dq      0
-
 ; ### root-wordlist
 code root_wordlist, 'root-wordlist'     ; -- wid
         pushrbx
@@ -181,22 +176,6 @@ endcode
 ; ### feline
 code feline, 'feline'                   ; --
         _ feline_wordlist
-        _zero
-        _ context_vector
-        _ vector_set_nth_untagged
-        next
-endcode
-
-; ### files-wordlist
-code files_wordlist, 'files-wordlist'   ; -- wid
-        pushrbx
-        mov     rbx, files_wid
-        next
-endcode
-
-; ### files
-code files, 'files'
-        _ files_wordlist
         _zero
         _ context_vector
         _ vector_set_nth_untagged
