@@ -612,7 +612,7 @@ endcode
 code string_first_char, 'string-first-char' ; string -- char
 ; Returns first character of string.
 ; Throws an error if the string is empty.
-        _ coerce_to_string
+        _ verify_string
         _zero
         _swap
         _ string_nth_untagged
