@@ -724,7 +724,7 @@ code concat, 'concat'                   ; string1 string2 -- string3
         _ new_transient_string          ; -- c-addr2 u2 c-addr1 u1 string3
         _to_local0                      ; -- c-addr2 u2 c-addr1 u1
 
-        _ tuck                          ; -- c-addr2 u2 u1 c-addr1 u1
+        _tuck                           ; -- c-addr2 u2 u1 c-addr1 u1
 
         _local0
         _ string_data                   ; -- c-addr2 u2 u1 c-addr1 u1 data-address
@@ -737,6 +737,9 @@ code concat, 'concat'                   ; string1 string2 -- string3
         _ cmove
 
         _local0                         ; -- string
+
+        _ string_from
+        _ copy_to_string
 
         _locals_leave
         next
