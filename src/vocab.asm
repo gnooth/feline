@@ -130,6 +130,13 @@ code new_vocab, '<vocab>'               ;  name -- vocab
         next
 endcode
 
+; ### vocab-name
+code vocab_name, 'vocab-name'           ; vocab -- name
+        _ check_vocab
+        _vocab_name
+        next
+endcode
+
 ; ### vocab-wordlist
 code vocab_wordlist, 'vocab-wordlist'   ; vocab -- wordlist
 ; Returns untagged wid.
