@@ -79,6 +79,7 @@ IN_FELINE
 %include "sbuf.asm"
 %include "sequences.asm"
 %include "symbol.asm"
+%include "vocab.asm"
 %include "gc.asm"
 %include "global.asm"
 
