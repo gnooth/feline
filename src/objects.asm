@@ -227,6 +227,15 @@ code dot_object, '.object'              ; handle-or-object --
         _return
         _then .9
 
+        _dup
+        _ vocab?
+        _tagged_if .10
+        _drop
+        _dotq "~vocab~"
+        _ space
+        _return
+        _then .10
+
         ; give up
         _ hdot
 
@@ -322,6 +331,14 @@ code generic_dot, '.'                   ; x --
         _ dot_string
         _return
         _then .4
+
+        _dup
+        _ vocab?
+        _tagged_if .5
+        _drop
+        _dotq "~vocab~"
+        _return
+        _then .5
 
         _dotq "untagged "
         _ hdot
