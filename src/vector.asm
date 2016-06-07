@@ -308,6 +308,22 @@ vector_nth_untagged:
         next
 endcode
 
+; ### vector-first
+code vector_first, 'vector-first'       ; handle -- element
+        _zero
+        _swap
+        _ vector_nth_untagged
+        next
+endcode
+
+; ### vector-second
+code vector_second, 'vector-second'     ; handle -- element
+        _lit 1
+        _swap
+        _ vector_nth_untagged
+        next
+endcode
+
 ; ### vector-set-nth
 code vector_set_nth, 'vector-set-nth'   ; element index vector --
 
@@ -335,8 +351,8 @@ vector_set_nth_untagged:
         next
 endcode
 
-; ### vector-insert-nth
-code vector_insert_nth, 'vector-insert-nth' ; element n vector --
+; ### vector-insert-nth!
+code vector_insert_nth_destructive, 'vector-insert-nth!' ; element n vector --
         _ check_vector
 
         push    this_register
