@@ -33,9 +33,13 @@ endcode
 
 ; ### add-vocab
 code add_vocab, 'add-vocab'             ; wid --
-        _dup
-        _ wordlist_name
-        _swap
+        _dup                            ; -- wid wid
+        _ wordlist_name                 ; -- wid name
+        _tuck                           ; -- name wid name
+        _ new_vocab                     ; -- name wid vocab
+        _tuck                           ; -- name vocab wid vocab
+        _ vocab_set_wordlist            ; -- name vocab
+
         _ two_array
         _ vocabs
         _ vector_push
@@ -65,7 +69,8 @@ code initialize_vocabs, 'initialize-vocabs'
 endcode
 
 ; ### lookup-vocab
-code lookup_vocab, 'lookup-vocab'       ; string -- wid
+code lookup_vocab, 'lookup-vocab'       ; string -- vocab
+        _ verify_string
         _ vocabs
         _ vector_length
         _untag_fixnum
@@ -96,13 +101,13 @@ endcode
 
 ; ### CURRENT:
 code current_colon, 'CURRENT:'
-        _ parse_name
-        _ copy_to_string
+        _ parse_token
         _ lookup_vocab
         _dup
         _f
         _equal
         _abortq "can't find vocab"      ; FIXME
+        _ vocab_wordlist
         _ current
         _store
         next

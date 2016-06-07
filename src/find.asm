@@ -46,6 +46,11 @@ code definitions, 'definitions'         ; --
          _zero
          _ context_vector
          _ vector_nth_untagged
+         _dup
+         _ vocab?
+         _tagged_if .1
+         _ vocab_wordlist
+         _then .1
          _ set_current
          next
 endcode
@@ -101,6 +106,20 @@ code dot_wid, '.wid'                    ; wid --
         next
 endcode
 
+; ### .voc
+code dot_voc, '.voc'                    ; vocab-or-wid --
+        _dup
+        _ vocab?
+        _tagged_if .1
+        _ vocab_name
+        _ dot_string
+        _ space
+        _else .1
+        _ dot_wid
+        _then .1
+        next
+endcode
+
 ; ### vocs
 code vocs, 'vocs'
         _from voclink
@@ -141,7 +160,14 @@ endcode
 
 ; ### root
 code root, 'root'
-        _ root_wordlist
+        _quote "root"
+        _ lookup_vocab
+
+        _dup
+        _f
+        _equal
+        _abortq "no root vocab"
+
         _zero
         _ context_vector
         _ vector_set_nth_untagged
@@ -159,7 +185,14 @@ endcode
 ; ### forth
 code forth, 'forth'                     ; --
 ; SEARCH EXT
-        _ forth_wordlist
+        _quote "forth"
+        _ lookup_vocab
+
+        _dup
+        _f
+        _equal
+        _abortq "no forth vocab"
+
         _zero
         _ context_vector
         _ vector_set_nth_untagged
@@ -175,7 +208,14 @@ endcode
 
 ; ### feline
 code feline, 'feline'                   ; --
-        _ feline_wordlist
+        _quote "feline"
+        _ lookup_vocab
+
+        _dup
+        _f
+        _equal
+        _abortq "no feline vocab"
+
         _zero
         _ context_vector
         _ vector_set_nth_untagged
@@ -184,14 +224,6 @@ endcode
 
 ; ### context-vector
 value context_vector, 'context-vector', 0
-
-; ### get-context
-code get_context, 'get-context'
-        _zero
-        _ context_vector
-        _ vector_nth_untagged
-        next
-endcode
 
 ; ### order
 code order, 'order'
@@ -202,99 +234,23 @@ code order, 'order'
         _ cr
         _dotq "   Context: "
         _ context_vector
-        _lit dot_wid_xt
+        _lit dot_voc_xt
         _ vector_each
         _dotq ";"
         _ cr
         _dotq "   Current: "
         _ get_current
-        _ dot_wid
-        next
-endcode
-
-; ### get-order
-code get_order, 'get-order'             ; -- widn ... wid1 n
-; SEARCH
-; "wid1 identifies the word list that is searched first, and widn the word list
-; that is searched last."
-        _ context_vector
-        _ vector_length
-        _untag_fixnum
-        _zero
-        _?do .1
-        _ context_vector
-        _ vector_length
-        _untag_fixnum
-        _i
-        _minus
-        _oneminus
-        _ context_vector
-        _ vector_nth_untagged
-        _loop .1
-
-        _ context_vector
-        _ vector_length
-        _untag_fixnum
-
-        next
-endcode
-
-; ### set-order
-code set_order, 'set-order'             ; widn ... wid1 n --
-; SEARCH
-; "Set the search order to the word lists identified by widn ... wid1.
-; Subsequently, word list wid1 will be searched first, and word list widn
-; searched last."
-        _dup
-        _zeq_if .1
-        ; "If n is zero, empty the search order."
-        ; -- 0
-        _tag_fixnum
-        _ context_vector
-        _ vector_set_length
-        _return
-        _then .1
-
-        _dup
-        _lit -1
-        _equal
-        _if .2
-        ; "If n is minus one, set the search order to the implementation-
-        ; defined minimum search order."
-        _drop
-        _ only
-        _return
-        _then .2
-
-        _dup
-        _ nvocs
-        _ugt
-        _if .0
-        _cquote "Search-order overflow"
-        _to msg
-        _lit -49
-        _ throw
-        _then .0
-
-        _zero
-        _tag_fixnum
-        _ context_vector
-        _ vector_set_length
-
-        _zero
-        _?do .3
-        _ context_vector
-        _ vector_push
-        _loop .3
+        _ dot_voc
         next
 endcode
 
 ; ### also
 code also, 'also'
-        _ get_order
-        _dupd
-        _oneplus
-        _ set_order
+        _ context_vector
+        _ vector_first
+        _lit tagged_zero
+        _ context_vector
+        _ vector_insert_nth_destructive
         next
 endcode
 
@@ -303,10 +259,21 @@ code only, 'only'
 ; SEARCH EXT
 ; "Set the search order to the implementation-defined minimum search order. The
 ; minimum search order shall include the words FORTH-WORDLIST and SET-ORDER."
-        _ root_wordlist
+        _quote "root"
+        _ lookup_vocab
+
         _dup
-        _lit 2
-        _ set_order
+        _f
+        _equal
+        _abortq "no root vocab"
+
+        _lit tagged_zero
+        _ context_vector
+        _ vector_set_length
+
+        _ context_vector
+        _ vector_push
+
         next
 endcode
 
@@ -317,16 +284,17 @@ code previous, 'previous'
 ; (where wid1 is searched first) into widn, ... wid2. An ambiguous
 ; condition exists if the search order was empty before PREVIOUS
 ; was executed."
-        _ get_order                     ; -- widn ... wid1 n
-        _dup
+        _ context_vector
+        _ vector_length
+        _untag_fixnum
         _lit 1
         _ gt
         _if .1
-        _nip
-        _oneminus
-        _ set_order
+        _lit tagged_zero
+        _ context_vector
+        _ vector_remove_nth_destructive
         _else .1
-        _cquote "Search order underflow"
+        _quote "Search order underflow"
         _to msg
         _lit -50	                ; "search-order underflow"
         _ throw
@@ -431,7 +399,14 @@ code find, 'find'                       ; $addr -- $addr 0 | xt 1 | xt -1
         _count
         _i
         _ context_vector
-        _ vector_nth_untagged
+        _ vector_nth_untagged           ; -- vocab-or-wordlist
+
+        _dup
+        _ vocab?
+        _tagged_if .2
+        _ vocab_wordlist
+        _then .2
+
         _ search_wordlist
         _dup_if .3
         _ rot

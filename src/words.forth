@@ -52,7 +52,8 @@ forth!
 : (words) ( -- )
     0 to words-count
     cr
-    get-context
+\     get-context
+    0 context-vector vector-nth vocab-wordlist
     begin
         @
         ?dup

@@ -30,7 +30,7 @@ CURRENT: root
 
 import forth
 import forth-wordlist
-import set-order
+\ import set-order
 import order
 
 import feline

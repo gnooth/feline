@@ -176,19 +176,16 @@ code cold, 'cold'                       ; --
         _lit free_handles_data
         _ gc_add_root
 
+        _ initialize_vocabs
+
         _lit 16
         _ new_vector
         _to context_vector
-        _ forth_wordlist
-        _ context_vector
-        _ vector_push
-
         _lit context_vector_data
         _ gc_add_root
+        _ forth
 
         _ initialize_generic_functions
-
-        _ initialize_vocabs
 
         _ initialize_source_files
 
