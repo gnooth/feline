@@ -377,8 +377,8 @@ code vector_insert_nth, 'vector-insert-nth' ; element n vector --
         next
 endcode
 
-; ### vector-remove-nth
-code vector_remove_nth, 'vector-remove-nth' ; n handle --
+; ### vector-remove-nth!
+code vector_remove_nth_destructive, 'vector-remove-nth!' ; n handle --
 
 %ifdef USE_TAGS
         _swap

@@ -23,13 +23,13 @@ CURRENT: feline
 test: test1 ( -- )
     100000 local #reps
     10 <vector> local v
-    v vector? check
+    v vector? check-t
     #reps 0 do
         i v vector-push
     loop
-    v vector-length #reps = check
+    v vector-length #reps = check-t
     #reps 0 do
-        i v vector-nth i = check
+        i v vector-nth i = check-t
     loop
     v ~vector
     v vector? check-false
@@ -40,18 +40,19 @@ test1
 test: test2 ( -- )
     10000 local #reps
     10 <vector> local v
-    v vector? check
+    v vector? check-t
     #reps 0 ?do
         i v vector-push
     loop
-    v vector-length #reps = check
+    v vector-length #reps = check-t
     #reps 0 ?do
-        i v vector-nth i = check
+        i v vector-nth i = check-t
     loop
     #reps 0 ?do
-        0 v vector-nth i = check
-        0 v vector-remove-nth
+        0 v vector-nth i = check-t
+        0 v vector-remove-nth!
     loop
+    v vector-length 0 = check-t
     v ~vector
     v vector? check-false
 ;
@@ -61,15 +62,15 @@ test2
 test: test3 ( -- )
     10000 local #reps
     10 <vector> local v
-    v vector? check
+    v vector? check-t
     #reps 0 do
         i v vector-push
     loop
-    v vector-length #reps = check
+    v vector-length #reps = check-t
     #reps 0 do
-        v vector-length #reps i - = check
-        0 v vector-nth i = check
-        0 v vector-remove-nth
+        v vector-length #reps i - = check-t
+        0 v vector-nth i = check-t
+        0 v vector-remove-nth!
     loop
     v ~vector
     v vector? check-false
@@ -80,14 +81,14 @@ test3
 test: test4
     10000 local #reps
     10 <vector> local v
-    v vector? check
+    v vector? check-t
     #reps 0 do
         i v vector-push
     loop
-    v vector-length #reps = check
+    v vector-length #reps = check-t
     #reps 0 do
-        v vector-length #reps i - = check
-        v vector-length 1 - v vector-pop = check
+        v vector-length #reps i - = check-t
+        v vector-length 1 - v vector-pop = check-t
     loop
     v ~vector
     v vector? check-false
@@ -129,12 +130,12 @@ test: test7 ( -- )
     "baz" v vector-push
 
     "foo" v vector-find-string          \ -- index flag
-    check
-    0 = check
+    check-t
+    0 = check-t
 
     "baz" v vector-find-string
-    check
-    2 = check
+    check-t
+    2 = check-t
 
     "gazonk" v vector-find-string
     check-false
@@ -155,10 +156,10 @@ test: test8 ( -- )
     16 [ 1 + v vector-push ] each-integer
     v vector-length 16 = check-t
     v V{ 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 } vector-equal? check-t
-    v [ ( element index -- ) 1 + = check ] vector-each-index
+    v [ ( element index -- ) 1 + = check-t ] vector-each-index
     9 v vector-set-length
     v vector-length 9 = check-t
-    v [ ( element index -- ) 1 + = check ] vector-each-index
+    v [ ( element index -- ) 1 + = check-t ] vector-each-index
     25 v vector-set-length
     v vector-length 25 = check-t
     9 0 do
@@ -184,11 +185,11 @@ test8
 test: test9
     10 <vector> !> v
     42 0 v vector-set-nth
-    v vector-length 1 = check
-    0 v vector-nth 42 = check
+    v vector-length 1 = check-t
+    0 v vector-nth 42 = check-t
     87 12 v vector-set-nth
-    v vector-length 13 = check
-    12 v vector-nth 87 = check
+    v vector-length 13 = check-t
+    12 v vector-nth 87 = check-t
 ;
 
 test9
@@ -196,16 +197,16 @@ test9
 \ V{ vector-equal?
 test: test10
     V{ } !> v
-    v vector? t = check
-    v vector-length 0 = check
+    v vector? t = check-t
+    v vector-length 0 = check-t
     V{ 1 2 3 } !> v
-    v vector? t = check
-    v vector-length 3 = check
-    0 v vector-nth 1 = check
-    1 v vector-nth 2 = check
-    2 v vector-nth 3 = check
-    v V{ 1 2 3 } vector-equal? t = check
-    V{ 1 2 3 } v vector-equal? t = check
+    v vector? t = check-t
+    v vector-length 3 = check-t
+    0 v vector-nth 1 = check-t
+    1 v vector-nth 2 = check-t
+    2 v vector-nth 3 = check-t
+    v V{ 1 2 3 } vector-equal? t = check-t
+    V{ 1 2 3 } v vector-equal? t = check-t
     f !> v
 ;
 
@@ -213,9 +214,9 @@ test10
 
 test: test11
     V{ } vector-clone
-    V{ } vector-equal? t = check
+    V{ } vector-equal? t = check-t
     V{ 1 2 3 } vector-clone
-    V{ 1 2 3 } vector-equal? t = check
+    V{ 1 2 3 } vector-equal? t = check-t
 ;
 
 test11
