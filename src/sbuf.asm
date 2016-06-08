@@ -218,13 +218,6 @@ code sbuf_to_string, 'sbuf>string'      ; handle -- string
         next
 endcode
 
-; ### sbuf>transient-string
-code sbuf_to_transient_string, 'sbuf>transient-string' ; sbuf -- string
-        _ sbuf_from
-        _ copy_to_transient_string
-        next
-endcode
-
 ; ### ~sbuf
 code destroy_sbuf, '~sbuf'              ; handle --
         _ check_sbuf                    ; -- sbuf|0

@@ -126,7 +126,7 @@ test: test6
     3 s1 sbuf-nth 't' = check-t
     2 s1 sbuf-nth-unsafe 'a' = check-t
     3 s1 sbuf-nth-unsafe 't' = check-t
-    s1 sbuf>transient-string "that is a test" string= check-t
+    s1 sbuf>string "that is a test" string= check-t
 
     \ index out of range
     s1 -1 'x' ['] sbuf-set-char catch 0 = check-false
@@ -148,7 +148,7 @@ test: test7
     s1 sbuf? check-t
     s1 string? check-false
     s1 9 'x' sbuf-insert-char
-    s1 sbuf>transient-string "this is ax test" string= check-t
+    s1 sbuf>string "this is ax test" string= check-t
 
     s1 ~sbuf
     s1 sbuf? check-false
@@ -166,15 +166,15 @@ test: test8
     s1 sbuf-length 14 = check-t
 \     s1 0 sbuf-delete-char
     0 s1 sbuf-remove-nth! s1 = check-t
-    s1 sbuf>transient-string "his is a test" string= check-t
+    s1 sbuf>string "his is a test" string= check-t
     s1 sbuf-length 13 = check-t
 \     s1 12 sbuf-delete-char
     12 s1 sbuf-remove-nth!
-    sbuf>transient-string "his is a tes" string= check-t
+    sbuf>string "his is a tes" string= check-t
     s1 sbuf-length 12 = check-t
 \     s1 4 sbuf-delete-char
     4 s1 sbuf-remove-nth!
-    sbuf>transient-string "his s a tes" string= check-t
+    sbuf>string "his s a tes" string= check-t
     s1 sbuf-length 11 = check-t
 
 \     s1 handle? check
@@ -193,7 +193,7 @@ test: test9
 \     s2 handle? check
     s2 object? check-t
     s2 sbuf? check-t
-    s2 sbuf>transient-string s1 string= check-t
+    s2 sbuf>string s1 string= check-t
 
     \ s1 is a static string and can't be destroyed
     s1 ~string
@@ -211,7 +211,7 @@ test: test10
 \     s1 handle? check
     s1 object? check-t
     s1 sbuf? check-t
-    s1 sbuf>transient-string "this is a test" string= check-t
+    s1 sbuf>string "this is a test" string= check-t
 
     s1 ~sbuf
     s1 sbuf? check-false
@@ -227,10 +227,10 @@ test: test11
     s1 object? check-t
     s1 sbuf? check-t
     s1 sbuf-length 14 = check-t
-    s1 sbuf>transient-string "this is a test" string= check-t
+    s1 sbuf>string "this is a test" string= check-t
     4 s1 sbuf-shorten
     s1 sbuf-length 4 = check-t
-    s1 sbuf>transient-string "this" string= check-t
+    s1 sbuf>string "this" string= check-t
 
     s1 ~sbuf
     s1 sbuf? check-false
