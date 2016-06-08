@@ -108,7 +108,7 @@ code find_local, 'find-local'           ; found:        $addr -- index true
 
         _duptor                         ; -- $addr              r: -- $addr
         _count                          ; -- c-addr u
-        _ copy_to_transient_string      ; -- string
+        _ copy_to_string                ; -- string
         _ local_names                   ; -- string vector
         _ vector_find_string            ; -- index t|f
         _tagged_if .2
