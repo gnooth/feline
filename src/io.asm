@@ -760,7 +760,7 @@ code get_environment_variable, 'get-environment-variable' ; name -- value
 .1:
         xor     ebx, ebx
 .2:
-        _ copy_to_transient_string
+        _ copy_to_string
         next
 endcode
 
@@ -787,7 +787,7 @@ code current_directory, 'current-directory' ; -- string
         _lit 1024
         _ get_current_directory
         _ zcount                        ; -- c-addr u
-        _ copy_to_transient_string      ; -- string
+        _ copy_to_string                ; -- string
         next
 endcode
 
@@ -812,7 +812,7 @@ endcode
 code cd, 'cd'
         _ parse_name                    ; -- c-addr u
         _dup_if .1
-        _ copy_to_transient_string
+        _ copy_to_string
         _ tilde_expand_filename
         _ set_current_directory
         _drop                           ; REVIEW error message?
@@ -862,7 +862,7 @@ code errno_to_string, 'errno-to-string' ; n -- string
         xcall   os_strerror
         mov     rbx, rax
         _ zcount
-        _ copy_to_transient_string
+        _ copy_to_string
         next
 endcode
 
