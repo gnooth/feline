@@ -338,7 +338,7 @@ code tilde_expand_filename, 'tilde-expand-filename' ; string1 -- string2
         _ string_from
         _lit 1
         _slashstring
-        _ copy_to_transient_string
+        _ copy_to_string
         _ concat
         _return
         _then .3                        ; -- $addr1
