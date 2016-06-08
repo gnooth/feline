@@ -69,7 +69,7 @@ forth!
 : words ( -- )
 \ TOOLS
 \ "List the definition names in the first word list of the search order."
-    parse-name ?dup if >transient-string else drop 0 then to words-pattern
+    parse-name ?dup if >string else drop 0 then to words-pattern
     (words) ;
 
 only forth also root definitions

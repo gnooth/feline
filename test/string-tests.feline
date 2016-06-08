@@ -25,28 +25,26 @@ CURRENT: feline
 0 value s3
 0 value s4
 
-s" this is a test" >transient-string to s1
+s" this is a test" >string to s1
 
 test: test1
     s1 object? check-t
     s1 string? check-t
     s1 string-length 14 = check-t
-    s1 check-string string-length 14 = check-t
+    s1 string-length 14 = check-t
     s1 string> s" this is a test" str= tag-boolean check-t
-    s1 check-string string> s" this is a test" str= tag-boolean check-t
 ;
 
 test1
 
-s" another test" >transient-string to s2
+s" another test" >string to s2
 
 test: test2
     s2 object? check-t
     s2 string? check-t
     s2 string-length 12 = check-t
-    s2 check-string string-length 12 = check-t
+    s2 string-length 12 = check-t
     s2 string> s" another test" str= tag-boolean check-t
-    s2 check-string string> s" another test" str= tag-boolean check-t
 ;
 
 test2
@@ -54,7 +52,7 @@ test2
 \ make sure the second string doesn't disturb the first
 test1
 
-s"  and " >transient-string to s3
+s"  and " >string to s3
 
 test: test3
     s1 s3 concat to s4
@@ -70,9 +68,9 @@ test3
 
 test: test4
     10000 0 do
-        s" this is a test" >transient-string to s1
-        s" another test" >transient-string to s2
-        s"  and " >transient-string to s3
+        s" this is a test" >string to s1
+        s" another test" >string to s2
+        s"  and " >string to s3
         s1 s3 concat s2 concat to s4
         s4 object? check-t
         s4 string? check-t
@@ -107,7 +105,7 @@ test: test6
     s1 s3 string= check-t
     s3 ~string
     s3 string? check-false
-    s" this is a test" >transient-string local s4
+    s" this is a test" >string local s4
     s1 s4 string= check-t
     s" this is a test" >string local s5
     s1 s5 string= check-t
@@ -177,8 +175,8 @@ test: test10
     "test" 89 string-equal? f = check-t
     42 17 string-equal? f = check-t
 
-    s" testing" >transient-string "testing" string-equal? t = check-t
-    s" testing" >transient-string s" testing" >string string-equal? t = check-t
+    s" testing" >string "testing" string-equal? t = check-t
+    s" testing" >string s" testing" >string string-equal? t = check-t
 ;
 
 test10

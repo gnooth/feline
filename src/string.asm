@@ -347,62 +347,6 @@ code copy_to_static_string, '>static-string' ; c-addr u -- string
         next
 endcode
 
-; ### >transient-string
-code copy_to_transient_string, '>transient-string' ; c-addr u -- string
-; Arguments are untagged.
-
-; locals:
-%define u               local0
-%define c_addr          local1
-
-        push    this_register
-        _locals_enter                   ; -- c-addr u
-        popd    u
-        popd    c_addr                  ; --
-
-        _lit STRING_DATA_OFFSET
-        pushd   u
-        _oneplus                        ; terminal null byte
-        _plus                           ; -- size
-        _ transient_alloc               ; -- string
-
-        popd    this_register           ; --
-
-        ; Zero all bits of object header.
-        xor     eax, eax
-        mov     [this_register], rax
-
-        _this_object_set_type OBJECT_TYPE_STRING
-        _this_object_set_flags OBJECT_TRANSIENT_BIT
-
-        pushd   u
-        _this_string_set_length
-
-        _f
-        _this_string_set_hashcode
-
-        pushd   c_addr
-        _this_string_data
-        pushd   u
-        _ cmove                         ; --
-
-        _zero
-        _this_string_data
-        pushd   u
-        _plus
-        _cstore
-
-        _this
-
-        _locals_leave
-        pop     this_register
-        next
-
-%undef u
-%undef c_addr
-
-endcode
-
 ; ### ~string
 code destroy_string, '~string'          ; string --
         _ check_string

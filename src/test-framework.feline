@@ -38,7 +38,7 @@ CURRENT: feline
 
 : include-tests ( "name" -- )
     parse-name                          \ -- c-addr u
-    >transient-string local filename
+    >string local filename
     test-directory filename path-append to filename
     ?cr ." Including " filename .string
     ."  ... "

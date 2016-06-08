@@ -33,7 +33,7 @@ test: test2
     42 string? check-false
     "test" string? check-t
     s" test" >string string? check-t
-    s" test" >transient-string string? check-t
+    s" test" >string string? check-t
 ;
 
 test2
