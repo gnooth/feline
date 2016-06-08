@@ -796,7 +796,7 @@ extern os_chdir
 ; ### set-current-directory
 code set_current_directory, 'set-current-directory' ; string -- flag
 ; Return true on success, 0 on failure.
-        _ check_string
+        _ verify_string
         _ string_data
 %ifdef WIN64
         mov     rcx, rbx
