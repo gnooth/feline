@@ -525,9 +525,9 @@ endcode
 ; ### as-c-string
 code as_c_string, 'as-c-string'         ; c-addr u -- zaddr
 ; Arguments are untagged.
-; Returns a pointer to a null-terminated string in the transient string buffer.
-        _ copy_to_transient_string
-        _string_data
+; Returns a pointer to a null-terminated string.
+        _ copy_to_string
+        _ string_data
         next
 endcode
 
