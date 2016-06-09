@@ -106,8 +106,8 @@ code make_sbuf_internal, 'make-sbuf-internal' ; untagged-capacity -- sbuf
         pushd   sbuf
         _swap
         _ erase                         ; --
-        pushd   sbuf
         _lit OBJECT_TYPE_SBUF
+        pushd   sbuf
         _object_set_type                ; --
 
         pushd   sbuf

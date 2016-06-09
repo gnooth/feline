@@ -56,12 +56,11 @@ OBJECT_ALLOCATED_BIT            equ 4
 ; us 255 distinct object types (1-255) before we need to set any bits in the
 ; second byte.
 
-%macro  _object_type 0
+%macro  _object_type 0                  ; -- type
         _wfetch                         ; 16 bits
 %endmacro
 
-%macro  _object_set_type 0              ; object type --
-        _swap
+%macro  _object_set_type 0              ; type object --
         _wstore
 %endmacro
 

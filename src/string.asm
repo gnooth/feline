@@ -237,8 +237,8 @@ code new_transient_string, '<transient-string>' ; capacity -- string
         pushd   string                  ; -- size string
         _swap                           ; -- string size
         _ erase                         ; --
-        pushd   string
         _lit OBJECT_TYPE_STRING
+        pushd   string
         _object_set_type                ; --
 
         pushd   string

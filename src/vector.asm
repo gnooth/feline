@@ -132,8 +132,8 @@ new_vector_untagged:
         _lit 4
         _cells
         _ erase                         ; -- capacity                           r: -- vector
-        _rfetch
         _lit OBJECT_TYPE_VECTOR
+        _rfetch
         _object_set_type                ; -- capacity
         _dup                            ; -- capacity capacity                  r: -- vector
         _cells
