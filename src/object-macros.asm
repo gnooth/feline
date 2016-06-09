@@ -172,6 +172,12 @@ OBJECT_ALLOCATED_BIT            equ 4
         mov     rbx, [rbx + BYTES_PER_CELL * 4]
 %endmacro
 
+%macro  _set_slot4 0                    ; x object --
+        mov     rax, [rbp]              ; x in rax
+        mov     [rbx + BYTES_PER_CELL * 4], rax
+        _2drop
+%endmacro
+
 %macro  _this_slot4 0
         pushrbx
         mov     rbx, [this_register + BYTES_PER_CELL * 4]
