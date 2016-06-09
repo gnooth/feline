@@ -141,7 +141,6 @@ new_vector_untagged:
         _rfetch                         ; -- capacity data-address vector       r: -- vector
         _vector_set_data                ; -- capacity                           r: -- vector
         _rfetch                         ; -- capacity vector                    r: -- vector
-        _swap                           ; -- vector capacity                    r: -- vector
         _vector_set_capacity            ; --                                    r: -- vector
         _rfrom                          ; -- vector
 
@@ -246,7 +245,6 @@ code vector_resize, 'vector-resize'     ; vector new-capacity --
         _ throw                         ; -- vector new-capacity new-data-address
         _tor
         _over                           ; -- vector new-capacity vector         r: -- new-data-addr
-        _swap
         _vector_set_capacity            ; -- vector                             r: -- new-data-addr
         _rfrom                          ; -- vector new-data-addr
         _swap                           ; -- new-data-addr vector

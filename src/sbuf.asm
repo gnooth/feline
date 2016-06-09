@@ -120,8 +120,8 @@ code make_sbuf_internal, 'make-sbuf-internal' ; untagged-capacity -- sbuf
         pushd   sbuf                    ; -- data-address sbuf
         _sbuf_set_data                  ; --
 
-        pushd   sbuf
         pushd   capacity
+        pushd   sbuf                    ; -- capacity sbuf
         _sbuf_set_capacity              ; --
 
         pushd   sbuf
@@ -357,7 +357,6 @@ code sbuf_resize, 'sbuf-resize'         ; sbuf new-capacity --
         _ throw                         ; -- sbuf new-capacity new-data-address
         _tor
         _over                           ; -- sbuf new-capacity sbuf     r: -- new-data-address
-        _swap
         _sbuf_set_capacity              ; -- sbuf                       r: -- new-data-address
         _rfrom                          ; -- sbuf new-data-addr
         _swap                           ; -- new-data-addr sbuf

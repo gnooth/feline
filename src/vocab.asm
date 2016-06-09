@@ -44,7 +44,6 @@ file __FILE__
 %endmacro
 
 %macro  _vocab_set_wordlist 0           ; wordlist vocab --
-        _swap
         _set_slot3
 %endmacro
 

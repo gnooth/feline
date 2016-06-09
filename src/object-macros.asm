@@ -153,11 +153,10 @@ OBJECT_ALLOCATED_BIT            equ 4
         mov     rbx, [rbx + BYTES_PER_CELL * 3]
 %endmacro
 
-%macro  _set_slot3 0                    ; object x --
-        mov     rax, [rbp]
-        mov     [rax + BYTES_PER_CELL * 3], rbx
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+%macro  _set_slot3 0                    ; x object --
+        mov     rax, [rbp]              ; x in rax
+        mov     [rbx + BYTES_PER_CELL * 3], rax
+        _2drop
 %endmacro
 
 %macro  _this_slot3 0                   ; -- x
@@ -320,7 +319,7 @@ OBJECT_ALLOCATED_BIT            equ 4
         _slot3
 %endmacro
 
-%macro  _vector_set_capacity 0          ; vector capacity --
+%macro  _vector_set_capacity 0          ; capacity vector --
         _set_slot3
 %endmacro
 
@@ -390,7 +389,7 @@ OBJECT_ALLOCATED_BIT            equ 4
         _slot3
 %endmacro
 
-%macro  _sbuf_set_capacity 0
+%macro  _sbuf_set_capacity 0            ; capacity sbuf --
         _set_slot3
 %endmacro
 
