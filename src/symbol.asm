@@ -51,6 +51,10 @@ file __FILE__
         _slot4
 %endmacro
 
+%macro  _symbol_set_xt 0                ; xt symbol --
+        _set_slot4
+%endmacro
+
 %macro  _this_symbol_xt 0               ; -- xt
         _this_slot4
 %endmacro
@@ -142,5 +146,19 @@ endcode
 code symbol_name, 'symbol-name'         ; symbol -- name
         _ check_symbol
         _symbol_name
+        next
+endcode
+
+; ### symbol-xt
+code symbol_xt, 'symbol-xt'             ; symbol -- xt
+        _ check_symbol
+        _symbol_xt
+        next
+endcode
+
+; ### symbol-set-xt
+code symbol_set_xt, 'symbol-set-xt'     ; xt symbol --
+        _ check_symbol
+        _symbol_set_xt
         next
 endcode
