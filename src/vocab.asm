@@ -27,6 +27,10 @@ file __FILE__
         _this_set_slot1
 %endmacro
 
+%macro  _vocab_hashtable 0              ; vocab -- hashtable
+        _slot2
+%endmacro
+
 %macro  _this_vocab_hashtable 0         ; -- hashtable
         _this_slot2
 %endmacro
@@ -113,7 +117,8 @@ code new_vocab, '<vocab>'               ;  name -- vocab
 
         _this_vocab_set_name
 
-        _f
+        _lit tagged_fixnum(32)
+        _ new_hashtable
         _this_vocab_set_hashtable
 
         _f
@@ -136,6 +141,13 @@ code vocab_name, 'vocab-name'           ; vocab -- name
         next
 endcode
 
+; ### vocab-hashtable
+code vocab_hashtable, 'vocab-hashtable' ; vocab -- hashtable
+        _ check_vocab
+        _vocab_hashtable
+        next
+endcode
+
 ; ### vocab-wordlist
 code vocab_wordlist, 'vocab-wordlist'   ; vocab -- wordlist
 ; Returns untagged wid.
@@ -148,5 +160,50 @@ endcode
 code vocab_set_wordlist, 'vocab-set-wordlist' ; wordlist vocab --
         _ check_vocab
         _vocab_set_wordlist
+        next
+endcode
+
+; ### vocab-add-symbol
+code vocab_add_symbol, 'vocab-add-symbol' ; symbol vocab --
+        _tor
+        _dup
+        _ symbol_name                   ; -- symbol name        r: -- vocab
+        _rfrom
+        _ vocab_hashtable
+        _ set_at
+        next
+endcode
+
+; ### vocab-add-name
+code vocab_add_name, 'vocab-add-name'   ; nfa vocab ---
+        _tor
+        _dup
+        _namefrom                       ; -- nfa xt
+        _swap                           ; -- xt nfa
+        _count
+        _ copy_to_string                ; -- xt string
+        _rfetch                         ; -- xt string vocab
+        _ new_symbol                    ; -- xt symbol
+        _tuck                           ; -- symbol xt symbol
+        _ symbol_set_xt                 ; -- symbol
+        _rfrom
+        _ vocab_add_symbol
+        next
+endcode
+
+; ### hash-vocab
+code hash_vocab, 'hash-vocab'           ; vocab --
+        _duptor
+        _ vocab_wordlist
+        _begin .1
+        _fetch
+        _ ?dup
+        _while .1
+        _dup
+        _rfetch
+        _ vocab_add_name
+        _name_to_link
+        _repeat .1
+        _rdrop
         next
 endcode
