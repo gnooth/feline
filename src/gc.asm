@@ -83,6 +83,16 @@ code mark_hashtable, 'mark-hashtable'   ; hashtable --
         next
 endcode
 
+; ### mark-vocab
+code mark_vocab, 'mark-vocab'           ; vocab --
+        _dup
+        _vocab_name
+        _ maybe_mark_handle
+        _vocab_hashtable
+        _ maybe_mark_handle
+        next
+endcode
+
 ; ### mark-handle
 code mark_handle, 'mark-handle'         ; handle --
         _handle_to_object_unsafe        ; -- object|0
@@ -118,6 +128,14 @@ code mark_handle, 'mark-handle'         ; handle --
         _return
         _then .4
 
+        _dup
+        _object_type
+        _lit OBJECT_TYPE_VOCAB
+        _equal
+        _if .5
+        _ mark_vocab
+        _return
+        _then .5
 .1:
         _drop
         next
