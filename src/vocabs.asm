@@ -68,6 +68,17 @@ code initialize_vocabs, 'initialize-vocabs'
         next
 endcode
 
+; ### hash-vocabs
+code hash_vocabs, 'hash-vocabs'
+        _ vocabs
+        _quotation .1
+        _ array_second
+        _ hash_vocab
+        _end_quotation .1
+        _ vector_each
+        next
+endcode
+
 ; ### lookup-vocab
 code lookup_vocab, 'lookup-vocab'       ; string -- vocab
         _ verify_string
