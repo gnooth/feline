@@ -293,17 +293,16 @@ code feline_find, 'find'                ; seq xt -- i elt | f f
         _tag_fixnum
         _this                           ; -- tagged-index handle
         _ nth_unsafe                    ; -- element
-        _dup
         call    r12                     ; -- element t|f
         _tagged_if .2
         ; we're done
         _i
         _tag_fixnum
-        _swap
+        _dup
+        _this
+        _ nth_unsafe
         _unloop
         jmp     exit
-        _else .2
-        _drop
         _then .2
         _loop .1
         ; not found
