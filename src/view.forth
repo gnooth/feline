@@ -120,7 +120,11 @@ CURRENT: hidden
         exit
     then
 
-    filename count r/o open-file throw to fileid
+    filename string? untag-boolean 0= if
+        filename count >string to filename
+    then
+
+    filename string> r/o open-file throw to fileid
     fileid file-size throw drop to filesize
     filesize -allocate to buffer
     buffer filesize fileid read-file throw to bufsize
@@ -143,7 +147,7 @@ CURRENT: hidden
 
     finish-line
     buffer -free
-    ?cr filename $. ."  line " line# u.
+    ?cr filename write ."  line " line# u.
 ;
 
 CURRENT: forth
