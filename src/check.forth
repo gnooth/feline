@@ -26,8 +26,11 @@ CURRENT: feline
     else
         "check failed" string>sbuf !> message
         2@ ?dup forth:if
+            \ -- line# filename
+            \ make sure filename is a real string
+            dup string? [ count >string ] unless
             message bl tag-char sbuf-append-char
-            message swap count sbuf-append-chars
+            message swap sbuf-append-string
             message " line " sbuf-append-string
             message swap (.) sbuf-append-chars
         else
