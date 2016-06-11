@@ -277,3 +277,40 @@ code each, 'each'                       ; seq xt --
         pop     r12
         next
 endcode
+
+; ### find
+code feline_find, 'find'                ; seq xt -- i elt | f f
+        push    r12
+        mov     r12, [rbx]              ; address to call in r12
+        poprbx                          ; -- seq
+        push    this_register
+        mov     this_register, rbx      ; handle to seq in this_register
+        _ length
+        _untag_fixnum
+        _zero
+        _?do .1
+        _i
+        _tag_fixnum
+        _this                           ; -- tagged-index handle
+        _ nth_unsafe                    ; -- element
+        _dup
+        call    r12                     ; -- element t|f
+        _tagged_if .2
+        ; we're done
+        _i
+        _tag_fixnum
+        _swap
+        _unloop
+        jmp     exit
+        _else .2
+        _drop
+        _then .2
+        _loop .1
+        ; not found
+        _f
+        _dup
+exit:
+        pop     this_register
+        pop     r12
+        next
+endcode
