@@ -119,8 +119,7 @@ code current_colon, 'CURRENT:'
         _equal
         _abortq "can't find vocab"      ; FIXME
         _ vocab_wordlist
-        _ current
-        _store
+        _ set_current
         next
 endcode
 

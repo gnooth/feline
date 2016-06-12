@@ -374,8 +374,7 @@ code make_header, 'make-header'         ; c-addr u --
         _ comma
 
         ; link field
-        _ current
-        _ fetch                         ; -- c-addr u wid
+        _ get_current                   ; -- c-addr u wid
         _ fetch                         ; -- c-addr u link
         _ comma
 
@@ -385,8 +384,7 @@ code make_header, 'make-header'         ; c-addr u --
         _ store                         ; -- c-addr u
 
         _ here
-        _ current
-        _ fetch
+        _ get_current
         _ store
 
         _ here                          ; -- c-addr u here
