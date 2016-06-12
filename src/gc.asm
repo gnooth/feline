@@ -245,13 +245,27 @@ value in_gc?, 'in-gc?', 0
 ; ### gc-start-ticks
 value gc_start_ticks, 'gc-start-ticks', 0
 
+; ### gc-end-ticks
+value gc_end_ticks, 'gc-end-ticks', 0
+
+; ### gc-start-cycles
+value gc_start_cycles, 'gc-start-cycles', 0
+
+; ### gc-end-cycles
+value gc_end_cycles, 'gc-end-cycles', 0
+
 ; ### gc-verbose
 value gc_verbose, 'gc-verbose', 0
 
 ; ### gc
 code gc, 'gc'                           ; --
+        _ gc_verbose
+        _if .1
         _ ticks
         _to gc_start_ticks
+        _rdtsc
+        _to gc_start_cycles
+        _then .1
 
         _true
         _to in_gc?
@@ -277,14 +291,25 @@ code gc, 'gc'                           ; --
         _zeroto in_gc?
 
         _ gc_verbose
-        _if .1
+        _if .2
+        _rdtsc
+        _to gc_end_cycles
         _ ticks
+        _to gc_end_ticks
+
+        _ ?cr
+        _dotq "gc "
+        _ gc_end_ticks
         _ gc_start_ticks
         _minus
-        _ ?cr
         _ decdot
         _dotq "ms "
-        _then .1
+        _ gc_end_cycles
+        _ gc_start_cycles
+        _minus
+        _ decdot
+        _dotq "cycles "
+        _then .2
 
         next
 endcode
