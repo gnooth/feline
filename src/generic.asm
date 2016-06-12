@@ -187,6 +187,11 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _lit set_nth_xt
         _ initialize_generic_function
 
+        _lit array_set_nth_xt
+        _lit OBJECT_TYPE_ARRAY
+        _lit set_nth_xt
+        _ add_method
+
         _lit vector_set_nth_xt
         _lit OBJECT_TYPE_VECTOR
         _lit set_nth_xt
@@ -293,7 +298,7 @@ code feline_find, 'find'                ; seq xt -- i elt | f f
         _tag_fixnum
         _this                           ; -- tagged-index handle
         _ nth_unsafe                    ; -- element
-        call    r12                     ; -- element t|f
+        call    r12                     ; -- ?
         _tagged_if .2
         ; we're done
         _i
@@ -302,13 +307,51 @@ code feline_find, 'find'                ; seq xt -- i elt | f f
         _this
         _ nth_unsafe
         _unloop
-        jmp     exit
+        jmp     .exit
         _then .2
         _loop .1
         ; not found
         _f
         _dup
-exit:
+.exit:
+        pop     this_register
+        pop     r12
+        next
+endcode
+
+; ### map-find
+code map_find, 'map-find'               ; seq xt -- i elt | f f
+        push    r12
+        mov     r12, [rbx]              ; address to call in r12
+        poprbx                          ; -- seq
+        push    this_register
+        mov     this_register, rbx      ; handle to seq in this_register
+        _ length
+        _untag_fixnum
+        _zero
+        _?do .1
+        _i
+        _tag_fixnum
+        _this                           ; -- tagged-index handle
+        _ nth_unsafe                    ; -- element
+        call    r12                     ; -- result|f
+        _dup
+        _tagged_if .2
+        ; we're done
+        _i
+        _tag_fixnum
+        _this
+        _ nth_unsafe                    ; -- result elt
+        _unloop
+        jmp     .exit
+        _else .2
+        _drop
+        _then .2
+        _loop .1
+        ; not found
+        _f
+        _dup
+.exit:
         pop     this_register
         pop     r12
         next

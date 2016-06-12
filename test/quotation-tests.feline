@@ -95,6 +95,21 @@ test: test7
 
 test7
 
+\ map-find
+test: test8
+    V{ 1 2 3 4 5 6 } [ 3 = ] map-find
+    get-datastack t 3 2array sequence= check-t
+    clear
+    V{ 1 2 3 4 5 6 } [ 17 = ] map-find
+    get-datastack f f 2array sequence= check-t
+    clear
+    4 V{ 1 2 3 4 5 6 } [ dupd = ] map-find
+    get-datastack 3 4 <array> t 1 pick set-nth sequence= check-t
+    clear
+;
+
+test8
+
 empty
 
 ?cr .( Reached end of quotation-tests )
