@@ -24,7 +24,9 @@ CURRENT: forth
    latest over wid>name !
    add-vocab
    does>
-      @ 0 context-vector vector-set-nth ;
+      @ ( -- wid )
+      wid>name @ count >string lookup-vocab
+      0 context-vector vector-set-nth ;
 
 CURRENT: root
 

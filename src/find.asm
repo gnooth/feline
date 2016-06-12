@@ -15,9 +15,8 @@
 
 file __FILE__
 
-; ### current
-; not in standard
-variable current, 'current', forth_wid
+; ### current-vocab
+value current_vocab, 'current-vocab', f_value
 
 ; ### #vocs
 ; not in standard
@@ -27,16 +26,20 @@ constant nvocs, '#vocs', NVOCS          ; maximum number of word lists in search
 code get_current, 'get-current'         ; -- wid
 ; SEARCH
 ; Return the identifier of the compilation word list.
-        pushrbx
-        mov     rbx, [current_data]
+        _ current_vocab
+        _ vocab_wordlist
         next
 endcode
 
 ; ### set-current
 code set_current, 'set-current'         ; wid --
 ; SEARCH
-        mov     [current_data], rbx
-        poprbx
+        _ wid_to_name
+        _ fetch
+        _ count
+        _ copy_to_string
+        _ lookup_vocab
+        _to current_vocab
         next
 endcode
 
