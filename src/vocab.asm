@@ -102,6 +102,29 @@ code check_vocab, 'check-vocab'         ; handle -- vocab
         next
 endcode
 
+; ### verify-vocab
+code verify_vocab, 'verify-vocab'       ; handle-or-vocab -- handle-or-vocab
+; Returns argument unchanged.
+        _dup
+        _ handle?
+        _if .1
+        _dup
+        _handle_to_object_unsafe        ; -- handle object|0
+        _dup_if .2
+        _object_type                    ; -- object object-type
+        _lit OBJECT_TYPE_VOCAB
+        _equal
+        _if .3
+        _return
+        _then .3
+        _then .2
+        _then .1
+
+        _ error_not_vocab
+
+        next
+endcode
+
 ; ### <vocab>
 code new_vocab, '<vocab>'               ;  name -- vocab
         _lit 4                          ; -- name 4
@@ -205,5 +228,27 @@ code hash_vocab, 'hash-vocab'           ; vocab --
         _name_to_link
         _repeat .1
         _rdrop
+        next
+endcode
+
+; ### intern
+code intern, 'intern'                   ; name vocab -- symbol
+        _twodup
+        _ check_vocab
+        _vocab_hashtable
+        _ at_star
+        _tagged_if .1
+        _2nip
+        _return
+        _else .1
+        _drop
+        _then .1                        ; -- name vocab
+
+        _duptor                         ; -- name vocab         r: -- vocab
+        _ new_symbol                    ; -- symbol
+        _dup
+        _rfrom                          ; -- symbol symbol vocab
+        _ vocab_add_symbol              ; -- symbol
+
         next
 endcode
