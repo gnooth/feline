@@ -346,6 +346,9 @@ code noname_header, 'noname-header'     ; --
         next
 endcode
 
+; ### last-word
+value last_word, 'last-word', f
+
 ; ### make-header
 code make_header, 'make-header'         ; c-addr u --
         _ warning
@@ -430,6 +433,17 @@ code make_header, 'make-header'         ; c-addr u --
         _ here
         _rfrom                          ; addr-to-be-patched
         _ store
+
+        _ latest                        ; -- nfa
+        _count
+        _ copy_to_string
+        _ current_vocab
+        _ intern
+        _to last_word
+
+        _ latestxt
+        _ last_word
+        _ symbol_set_xt
 
         next
 endcode
