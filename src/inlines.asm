@@ -109,8 +109,12 @@
         mov     [rbp], rax
 %endmacro
 
-%macro  _nip 0                          ; NIP
+%macro  _nip 0                          ; nip
         lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
+%macro  _2nip 0                         ; 2nip
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
 
 %macro  _over 0                         ; OVER
