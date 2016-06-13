@@ -149,6 +149,13 @@ code symbol_name, 'symbol-name'         ; symbol -- name
         next
 endcode
 
+; ### symbol-vocab
+code symbol_vocab, 'symbol-vocab'         ; symbol -- vocab
+        _ check_symbol
+        _symbol_vocab
+        next
+endcode
+
 ; ### symbol-xt
 code symbol_xt, 'symbol-xt'             ; symbol -- xt
         _ check_symbol
