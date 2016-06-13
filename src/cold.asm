@@ -199,6 +199,9 @@ code cold, 'cold'                       ; --
         _if .3
         _ do_error
         _then .3
+
+        _ hash_vocabs
+
 ;         _ report_startup_time
 
         _ process_command_line
