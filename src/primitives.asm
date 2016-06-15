@@ -240,19 +240,29 @@ endcode
 code string_to_number, 'string>number'  ; token -- n
         _duptor
         _ string_from
+
+        _dup
+        _zeq_if .0
+        _lit -13
+        _ throw
+        _then .0
+
         _ basefetch
         _tor
         _ maybe_change_base             ; -- c-addr2 u2
         _ number?                       ; -- d flag
         _rfrom
         _ basestore
+
         _zeq_if .1
         _rfrom
 
         ; FIXME
-        _ missing                       ; doesn't return
+        _lit -13                        ; "undefined word" Forth 2012 Table 9.1
+        _ throw
 
         _then .1
+
         _rdrop
         _ negative?
         _if .2
