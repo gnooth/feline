@@ -134,9 +134,13 @@ code feline_until, 'until'              ; pred body --
 endcode
 
 ; ### parse-token
-code parse_token, 'parse-token'         ; -- string
-        _ parse_name
+code parse_token, 'parse-token'         ; -- string/f
+        _ parse_name                    ; -- addr len
+        _?dup_if .1
         _ copy_to_string
+        _else .1
+        mov     rbx, f_value
+        _then .1
         next
 endcode
 
