@@ -63,6 +63,22 @@ file __FILE__
         _this_set_slot4
 %endmacro
 
+%macro  _symbol_def 0                   ; symbol -- definition
+        _slot4
+%endmacro
+
+%macro  _symbol_set_def 0               ; definition symbol --
+        _set_slot4
+%endmacro
+
+%macro  _this_symbol_def 0              ; -- definition
+        _this_slot4
+%endmacro
+
+%macro  _this_symbol_set_def 0          ; definition --
+        _this_set_slot4
+%endmacro
+
 ; ### symbol?
 code symbol?, 'symbol?'                 ; handle -- t|f
         _dup
@@ -112,12 +128,13 @@ endcode
 
 ; ### <symbol>
 code new_symbol, '<symbol>'             ;  name vocab -- symbol
-        _lit 5                          ; -- name vocab 5
-        _cells                          ; -- name vocab 40
-        _dup                            ; -- name vocab 40 40
-        _ allocate_object               ; -- name vocab 40 object-address
+; 6 cells: object header, name, hashcode, vocab, xt, def
+        _lit 6                          ; -- name vocab 6
+        _cells                          ; -- name vocab 48
+        _dup                            ; -- name vocab 48 48
+        _ allocate_object               ; -- name vocab 48 object-address
         push    this_register
-        mov     this_register, rbx      ; -- name vocab 40 object-address
+        mov     this_register, rbx      ; -- name vocab 48 object-address
         _swap
         _ erase                         ; -- name vocab
 
@@ -131,6 +148,9 @@ code new_symbol, '<symbol>'             ;  name vocab -- symbol
 
         _f
         _this_symbol_set_xt
+
+        _f
+        _this_symbol_set_def
 
         pushrbx
         mov     rbx, this_register      ; -- symbol
@@ -167,5 +187,19 @@ endcode
 code symbol_set_xt, 'symbol-set-xt'     ; xt symbol --
         _ check_symbol
         _symbol_set_xt
+        next
+endcode
+
+; ### symbol-def
+code symbol_def, 'symbol-def'           ; symbol -- definition
+        _ check_symbol
+        _symbol_def
+        next
+endcode
+
+; ### symbol-set-def
+code symbol_set_def, 'symbol-set-def'   ; definition symbol --
+        _ check_symbol
+        _symbol_set_def
         next
 endcode
