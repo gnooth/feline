@@ -83,6 +83,7 @@ IN_FELINE
 %include "gc.asm"
 %include "global.asm"
 %include "combinators.asm"
+%include "repl.asm"
 
 IN_FORTH
 
