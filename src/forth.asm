@@ -84,6 +84,7 @@ IN_FELINE
 %include "global.asm"
 %include "combinators.asm"
 %include "repl.asm"
+%include "parsing-words.asm"
 
 IN_FORTH
 

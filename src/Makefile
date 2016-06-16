@@ -123,6 +123,7 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	objects.asm \
 	opt.asm \
 	parse.asm \
+	parsing-words.asm \
 	primitives.asm \
 	quit.asm \
 	repl.asm \
