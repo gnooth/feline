@@ -188,6 +188,26 @@ OBJECT_ALLOCATED_BIT            equ 4
         poprbx
 %endmacro
 
+%macro  _slot5 0                        ; object -- x
+        mov     rbx, [rbx + BYTES_PER_CELL * 5]
+%endmacro
+
+%macro  _set_slot5 0                    ; x object --
+        mov     rax, [rbp]              ; x in rax
+        mov     [rbx + BYTES_PER_CELL * 5], rax
+        _2drop
+%endmacro
+
+%macro  _this_slot5 0
+        pushrbx
+        mov     rbx, [this_register + BYTES_PER_CELL * 5]
+%endmacro
+
+%macro  _this_set_slot5 0               ; x --
+        mov     [this_register + BYTES_PER_CELL * 5], rbx
+        poprbx
+%endmacro
+
 %macro  _string? 0
         _object_type
         _lit OBJECT_TYPE_STRING
