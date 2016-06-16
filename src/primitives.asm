@@ -16,14 +16,16 @@
 file __FILE__
 
 ; ### t
-inline t, 't'                           ; -- t
+code t, 't', PARSING                    ; -- t
         _t
-endinline
+        next
+endcode
 
 ; ### f
-inline f, 'f'                           ; -- f
+code f, 'f', PARSING                    ; -- f
         _f
-endinline
+        next
+endcode
 
 %macro _eq? 0                           ; n1 n2 -- t|f
         mov     eax, t_value
