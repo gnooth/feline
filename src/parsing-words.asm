@@ -15,6 +15,18 @@
 
 file __FILE__
 
+; ### t
+code t, 't', PARSING                    ; -- t
+        _t
+        next
+endcode
+
+; ### f
+code f, 'f', PARSING                    ; -- f
+        _f
+        next
+endcode
+
 ; ### process-token
 code process_token, 'process-token'     ; string -- object
         _ token_character_literal?

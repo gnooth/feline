@@ -15,18 +15,6 @@
 
 file __FILE__
 
-; ### t
-code t, 't', PARSING                    ; -- t
-        _t
-        next
-endcode
-
-; ### f
-code f, 'f', PARSING                    ; -- f
-        _f
-        next
-endcode
-
 %macro _eq? 0                           ; n1 n2 -- t|f
         mov     eax, t_value
         cmp     rbx, [rbp]
