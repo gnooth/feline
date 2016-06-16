@@ -27,28 +27,44 @@ code process_token, 'process-token'     ; string -- object
         _return
         _then .2
 
+        _ find_string                   ; -- xt/string t/f
+        _tagged_if .3                   ; -- xt
+        _dup
+        _ flags                         ; -- xt flags
+        _and_literal PARSING
+        _if .4
+        _execute
+        _return
+        _else .4
+        ; FIXME return quoted symbol
+        _lit 13
+        _ throw
+        _then .4
+        _then .3
+
         _ string_to_number
 
         next
 endcode
 
 ; ### V{
-code parse_vector, 'V{', IMMEDIATE      ; -- handle
+code parse_vector, 'V{', IMMEDIATE|PARSING      ; -- handle
         _lit 10
         _ new_vector_untagged
         _tor
-        _begin .1
-        _ parse_token                   ; -- string
+.top:
+        _ parse_token                   ; -- string/f
         _dup
         _quote "}"
         _ string_equal?
-        _untag_boolean
-        _zeq
-        _while .1
+        cmp     rbx, f_value
+        poprbx
+        jne     .bottom
         _ process_token                 ; -- object
         _rfetch
         _ vector_push
-        _repeat .1
+        jmp     .top
+.bottom:
         _drop
         _rfrom                          ; -- handle
 

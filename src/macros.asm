@@ -238,6 +238,7 @@ section .data
 
 ; Flag bits
 %define IMMEDIATE       $80
+%define PARSING         $40
 
 %define forth_link      0
 
