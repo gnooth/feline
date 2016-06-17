@@ -27,6 +27,21 @@ code f, 'f', PARSING                    ; -- f
         next
 endcode
 
+; ### parsing-word?
+code parsing_word?, 'parsing-word?'     ; symbol -- ?
+        _ symbol_xt
+        _dup_if .1
+        _ flags
+        _and_literal PARSING
+        mov     ebx, f_value
+        mov     eax, t_value
+        cmovnz  ebx, eax
+        _else .1
+        mov     ebx, f_value
+        _then .1
+        next
+endcode
+
 ; ### process-token
 code process_token, 'process-token'     ; string -- object
         _ token_character_literal?
