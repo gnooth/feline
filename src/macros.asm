@@ -545,6 +545,12 @@ section .text
         mov     rbx, %%string
 %endmacro
 
+%macro  _error 1
+        _quote %1
+section .text
+        _ throw
+%endmacro
+
 %macro  _cquote 1                       ; -- c-addr
 section .data
 %strlen len     %1

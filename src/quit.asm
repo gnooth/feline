@@ -254,6 +254,15 @@ value exception, 'exception', 0
 
 ; ### do-error
 code do_error, 'do-error'               ; n --
+        _dup
+        _ string?
+        _tagged_if .0
+        _to msg
+        _ dotmsg
+        _ print_backtrace
+        _ reset
+        _then .0
+
         _to exception
 
         _ exception
