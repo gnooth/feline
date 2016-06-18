@@ -33,7 +33,7 @@ code compile_object, 'compile-object'   ; object --
 endcode
 
 ; ### compile-quotation
-code compile_quotation, 'compile_quotation' ;  quotation --
+code compile_quotation, 'compile-quotation' ;  quotation --
         _ ?cr
         _dotq "entering compile-quotation"
         _ cr
