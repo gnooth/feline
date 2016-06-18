@@ -95,6 +95,7 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	bye.asm \
 	cold.asm \
 	combinators.asm \
+	compile-word.asm \
 	compiler.asm \
 	constants.asm \
 	dictionary.asm \
