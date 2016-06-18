@@ -80,22 +80,18 @@ code eval, 'eval'                       ; --
         _ execute
         _else .3
         _ string_to_number
+        cmp     rbx, f_value
+        jz      .error
         _then .3
         _else .2
         _drop
         _return
         _then .2
         _again .1
-        next
-endcode
 
-; ### report-error
-code report_error, 'report-error'       ; n --
-        _ ?cr
-        _ red
-        _ foreground
-        _dotq "Error "
-        _ dot
+.error:
+        _error "undefined word"
+
         next
 endcode
 
@@ -120,7 +116,7 @@ code repl, 'repl'                       ; --
         _ catch
         _?dup_if .2
         ; THROW occurred
-        _ report_error
+        _ do_error
         _then .2
         _ white
         _ foreground
