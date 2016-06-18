@@ -227,15 +227,16 @@ code token_string_literal?, 'token-string-literal?' ; token -- string t | token 
 endcode
 
 ; ### string>number
-code string_to_number, 'string>number'  ; token -- n
-        _duptor
-        _ string_from
+code string_to_number, 'string>number'  ; string -- n/f
+        _ string_from                   ; -- c-addr u
 
         _dup
-        _zeq_if .0
-        _lit -13
-        _ throw
-        _then .0
+        _zeq_if .1
+        ; empty string
+        _2drop
+        _f
+        _return
+        _then .1
 
         _ basefetch
         _tor
@@ -244,20 +245,17 @@ code string_to_number, 'string>number'  ; token -- n
         _rfrom
         _ basestore
 
-        _zeq_if .1
-        _rfrom
-
-        ; FIXME
-        _lit -13                        ; "undefined word" Forth 2012 Table 9.1
-        _ throw
-
-        _then .1
-
-        _rdrop
-        _ negative?
-        _if .2
-        _ dnegate
+        _zeq_if .2                      ; -- d
+        ; conversion failed
+        _2drop
+        _f
+        _return
         _then .2
+
+        _ negative?
+        _if .3
+        _ dnegate
+        _then .3
 
         ; REVIEW
         _drop
