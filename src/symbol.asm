@@ -64,19 +64,19 @@ file __FILE__
 %endmacro
 
 %macro  _symbol_def 0                   ; symbol -- definition
-        _slot4
+        _slot5
 %endmacro
 
 %macro  _symbol_set_def 0               ; definition symbol --
-        _set_slot4
+        _set_slot5
 %endmacro
 
 %macro  _this_symbol_def 0              ; -- definition
-        _this_slot4
+        _this_slot5
 %endmacro
 
 %macro  _this_symbol_set_def 0          ; definition --
-        _this_set_slot4
+        _this_set_slot5
 %endmacro
 
 ; ### symbol?
