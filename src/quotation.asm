@@ -27,15 +27,19 @@ file __FILE__
         _this_set_slot1
 %endmacro
 
-%macro  _quotation_code 0               ; quotation -- code
+%macro  _quotation_code 0               ; quotation -- code-address
         _slot2
 %endmacro
 
-%macro  _this_quotation_code 0          ; -- code
+%macro  _this_quotation_code 0          ; -- code-address
         _this_slot2
 %endmacro
 
-%macro  _this_quotation_set_code 0      ; code --
+%macro  _quotation_set_code 0           ; code-address quotation --
+        _set_slot2
+%endmacro
+
+%macro  _this_quotation_set_code 0      ; code-address --
         _this_set_slot2
 %endmacro
 
@@ -119,5 +123,19 @@ endcode
 code quotation_array, 'quotation-array' ; quotation -- array
         _ check_quotation
         _quotation_array
+        next
+endcode
+
+; ### quotation-code
+code quotation_code, 'quotation-code'   ; quotation -- code-address
+        _ check_quotation
+        _quotation_code
+        next
+endcode
+
+; ### quotation-set-code
+code quotation_set_code, 'quotation-set-code' ; code-address quotation --
+        _ check_quotation
+        _quotation_set_code
         next
 endcode
