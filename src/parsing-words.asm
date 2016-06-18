@@ -44,6 +44,17 @@ endcode
 
 ; ### process-token
 code process_token, 'process-token'     ; string -- object
+        _ find_symbol                   ; -- symbol/string ?
+        _tagged_if .3                   ; -- symbol
+        _dup
+        _ parsing_word?
+        _tagged_if .4
+        _ symbol_xt
+        _execute
+        _then .4
+        _return
+        _then .3
+
         _ token_character_literal?
         _tagged_if .1
         _return
@@ -54,36 +65,31 @@ code process_token, 'process-token'     ; string -- object
         _return
         _then .2
 
-        _ find_string                   ; -- xt/string t/f
-        _tagged_if .3                   ; -- xt
-        _dup
-        _ flags                         ; -- xt flags
-        _and_literal PARSING
-        _if .4
-        _execute
-        _return
-        _else .4
-        ; FIXME return quoted symbol
-        _lit 13
-        _ throw
-        _then .4
-        _then .3
-
         _ string_to_number
+        cmp     rbx, f_value
+        je      .error
+        _return
+
+.error:
+        _error "undefined word"
 
         next
 endcode
 
-; ### V{
-code parse_vector, 'V{', IMMEDIATE|PARSING      ; -- handle
+; ### parse-until
+code parse_until, 'parse-until'         ; delimiter -- vector
+; REVIEW Delimiter is a string.
         _lit 10
         _ new_vector_untagged
-        _tor
+        _tor                            ; -- delimiter
 .top:
-        _ parse_token                   ; -- string/f
-        _dup
-        _quote "}"
-        _ string_equal?
+        _ parse_token                   ; -- delimiter string/f
+        cmp     rbx, f_value
+        jne     .1
+        _error "unexpected end of input"
+.1:                                     ; -- delimiter string
+        _twodup                         ; -- d s d s
+        _ string_equal?                 ; -- d s ?
         cmp     rbx, f_value
         poprbx
         jne     .bottom
@@ -92,8 +98,16 @@ code parse_vector, 'V{', IMMEDIATE|PARSING      ; -- handle
         _ vector_push
         jmp     .top
 .bottom:
-        _drop
+        _2drop
         _rfrom                          ; -- handle
+
+        next
+endcode
+
+; ### V{
+code parse_vector, 'V{', IMMEDIATE|PARSING      ; -- handle
+        _quote "}"
+        _ parse_until
 
         _ statefetch
         _if .2
@@ -106,3 +120,28 @@ code parse_vector, 'V{', IMMEDIATE|PARSING      ; -- handle
 
         next
 endcode
+
+; ### define
+code define, 'define'
+        _ parse_token
+        _ find_symbol
+        _ not
+        _tagged_if .1
+        _ current_vocab
+        _ new_symbol
+        _dup
+        _ current_vocab
+        _ vocab_add_symbol
+        _then .1                        ; -- symbol
+
+        _quote ";"
+        _ parse_until
+        _ vector_to_array
+        _ array_to_quotation            ; -- symbol quotation
+
+        _over
+        _ symbol_set_def                ; -- symbol
+
+        next
+endcode
+
