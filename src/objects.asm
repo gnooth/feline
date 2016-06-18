@@ -236,6 +236,17 @@ code dot_object, '.object'              ; handle-or-object --
         _return
         _then .10
 
+        _dup
+        _ quotation?
+        _tagged_if .11
+        _dotq "[ "
+        _ quotation_array
+        _lit dot_object_xt
+        _ each
+        _dotq "] "
+        _return
+        _then .11
+
         ; give up
         _ hdot
 
