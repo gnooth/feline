@@ -93,6 +93,22 @@ code mark_vocab, 'mark-vocab'           ; vocab --
         next
 endcode
 
+; ### mark-symbol
+code mark_symbol, 'mark-symbol'         ; symbol --
+        _symbol_def
+        _ maybe_mark_handle
+        ; REVIEW name vocab
+        next
+endcode
+
+; ### mark-quotation
+code mark_quotation, 'mark-quotation'   ; quotation --
+        _quotation_array
+        _ maybe_mark_handle
+        ; REVIEW code
+        next
+endcode
+
 ; ### mark-handle
 code mark_handle, 'mark-handle'         ; handle --
         _handle_to_object_unsafe        ; -- object|0
@@ -136,6 +152,25 @@ code mark_handle, 'mark-handle'         ; handle --
         _ mark_vocab
         _return
         _then .5
+
+        _dup
+        _object_type
+        _lit OBJECT_TYPE_SYMBOL
+        _equal
+        _if .6
+        _ mark_symbol
+        _return
+        _then .6
+
+        _dup
+        _object_type
+        _lit OBJECT_TYPE_QUOTATION
+        _equal
+        _if .7
+        _ mark_quotation
+        _return
+        _then .7
+
 .1:
         _drop
         next
