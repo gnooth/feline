@@ -24,6 +24,7 @@ OBJECT_TYPE_HASHTABLE           equ 5
 OBJECT_TYPE_BIGNUM              equ 6
 OBJECT_TYPE_SYMBOL              equ 7
 OBJECT_TYPE_VOCAB               equ 8
+OBJECT_TYPE_QUOTATION           equ 9
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
@@ -253,6 +254,12 @@ OBJECT_ALLOCATED_BIT            equ 4
 %macro  _vocab? 0
         _object_type
         _lit OBJECT_TYPE_VOCAB
+        _equal
+%endmacro
+
+%macro  _quotation? 0
+        _object_type
+        _lit OBJECT_TYPE_QUOTATION
         _equal
 %endmacro
 
