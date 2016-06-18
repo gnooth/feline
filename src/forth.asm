@@ -80,6 +80,7 @@ IN_FELINE
 %include "sequences.asm"
 %include "symbol.asm"
 %include "vocab.asm"
+%include "quotation.asm"
 %include "gc.asm"
 %include "global.asm"
 %include "combinators.asm"
