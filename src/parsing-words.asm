@@ -145,3 +145,10 @@ code define, 'define'
         next
 endcode
 
+; ### //
+code comment_to_eol, '//', IMMEDIATE|PARSING
+        _lit 10
+        _ parse
+        _2drop
+        next
+endcode
