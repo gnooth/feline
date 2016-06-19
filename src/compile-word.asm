@@ -28,7 +28,10 @@ code compile_object, 'compile-object'   ; object --
         _tagged_if .1
         _ symbol_xt
         _ inline_or_call_xt
+        _else .1
+        _ iliteral
         _then .1
+
         next
 endcode
 
