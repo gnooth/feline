@@ -139,3 +139,13 @@ code quotation_set_code, 'quotation-set-code' ; code-address quotation --
         _quotation_set_code
         next
 endcode
+
+; ### call
+code call_quotation, 'call'             ; quotation --
+        _ check_quotation
+        _quotation_code
+        mov     rax, rbx
+        poprbx
+        call    rax
+        next
+endcode
