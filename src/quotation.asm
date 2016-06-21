@@ -142,10 +142,37 @@ endcode
 
 ; ### call
 code call_quotation, 'call'             ; quotation --
-        _ check_quotation
+        _dup
+        _ quotation_code
+        _zeq_if .1
+        _dup
+        _ compile_quotation
+        _then .1
+
+        _handle_to_object_unsafe
         _quotation_code
         mov     rax, rbx
         poprbx
         call    rax
+        next
+endcode
+
+; ### callable-code-address
+code callable_code_address, 'callable-code-address' ; quotation-or-xt -- code-address
+        _dup
+        _ quotation?
+        _tagged_if .1
+        _dup
+        _ quotation_code
+        _zeq_if .2
+        _dup
+        _ compile_quotation
+        _then .2
+        _handle_to_object_unsafe
+        _quotation_code
+        _else .1
+        ; xt
+        _fetch
+        _then .1
         next
 endcode
