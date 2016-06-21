@@ -262,9 +262,10 @@ code sequence_equal, 'sequence='        ; seq1 seq2 -- t|f
 endcode
 
 ; ### each
-code each, 'each'                       ; seq xt --
+code each, 'each'                       ; seq quotation-or-xt --
+        _ callable_code_address         ; -- seq code-address
         push    r12
-        mov     r12, [rbx]              ; address to call in r12
+        mov     r12, rbx                ; code address in r12
         poprbx                          ; -- seq
         push    this_register
         mov     this_register, rbx      ; handle to seq in this_register
