@@ -43,10 +43,8 @@ code compile_quotation, 'compile-quotation' ;  quotation --
 
         _ align_code
 
-        ; FIXME transitional
         _ here_c
-        _ last_code
-        _store
+        _tor
 
         _dup
         _ quotation_array
@@ -54,8 +52,7 @@ code compile_quotation, 'compile-quotation' ;  quotation --
         _ each
         _ccommac $0c3
 
-        _ last_code
-        _fetch
+        _rfrom
         _swap
         _ quotation_set_code
 
