@@ -86,13 +86,12 @@ endcode
 
 ; ### map
 code map, 'map'                         ; seq quot -- newseq
-        _swap                           ; -- quot seq
+        _ callable_code_address
+        _swap                           ; -- code-address seq
         push    this_register
-        popd    this_register           ; -- quot
+        popd    this_register           ; -- code-address
         push    r12
-        popd    r12                     ; --
-        mov     r12, [r12]              ; call address in r12
-
+        popd    r12                     ; code address in r12
         _this
         _ length                        ; -- len
         _this                           ; -- len seq
