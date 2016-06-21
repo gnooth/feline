@@ -482,16 +482,18 @@ code vector_equal?, 'vector-equal?'     ; vector1 vector2 -- t|f
 endcode
 
 ; ### vector-each
-code vector_each, 'vector-each'         ; vector xt --
+code vector_each, 'vector-each'         ; vector quotation-or-xt --
+
+        _ callable_code_address         ; -- vector code-address
+
         _swap
-        _ check_vector                  ; -- xt vector
+        _ check_vector                  ; -- code-address vector
 
         push    this_register
         mov     this_register, rbx
         push    r12
-        mov     rax, [rbp]              ; xt in rax
+        mov     r12, [rbp]              ; code address in r12
         _2drop                          ; adjust stack
-        mov     r12, [rax]              ; address to call in r12
         _this_vector_length
         _zero
         _?do .1
@@ -505,16 +507,17 @@ code vector_each, 'vector-each'         ; vector xt --
 endcode
 
 ; ### vector-each-index
-code vector_each_index, 'vector-each-index' ; vector quot: ( element index -- ) --
+code vector_each_index, 'vector-each-index' ; vector quotation-or-xt --
+        _ callable_code_address         ; -- vector code-address
+
         _swap
-        _ check_vector                  ; -- xt vector
+        _ check_vector                  ; -- code-address vector
 
         push    this_register
         mov     this_register, rbx
         push    r12
-        mov     rax, [rbp]              ; xt in rax
+        mov     r12, [rbp]              ; code address in r12
         _2drop                          ; adjust stack
-        mov     r12, [rax]              ; address to call in r12
         _this_vector_length
         _zero
         _?do .1
