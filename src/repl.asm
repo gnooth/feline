@@ -67,6 +67,31 @@ code find_string, 'find-string'         ; string -- xt t | string f
         next
 endcode
 
+; ### execute-symbol
+code execute_symbol, 'execute-symbol'   ; symbol --
+        _dup
+        _ symbol_xt
+        _dup
+        _tagged_if .1
+        _nip
+        _execute
+        _return
+        _else .1
+        _drop
+        _then .1                        ; -- symbol
+
+        _ symbol_def
+        _dup
+        _tagged_if .2
+        _ call_quotation
+        _return
+        _then .2
+
+        _error "undefined word"
+
+        next
+endcode
+
 ; ### eval
 code eval, 'eval'                       ; --
         _begin .1
@@ -75,9 +100,9 @@ code eval, 'eval'                       ; --
         _dup
         _tagged_if .2
         _ verify_string
-        _ find_string
+        _ find_symbol
         _tagged_if .3
-        _ execute
+        _ execute_symbol
         _else .3
         _ string_to_number
         cmp     rbx, f_value
