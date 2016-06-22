@@ -121,8 +121,38 @@ code parse_vector, 'V{', IMMEDIATE|PARSING      ; -- handle
         next
 endcode
 
+; ### [[
+; transitional
+code parse_quotation, '[[', IMMEDIATE|PARSING ; -- quotation
+        _quote "]"
+        _ parse_until
+        _ vector_to_array
+        _ array_to_quotation
+        next
+endcode
+
+; ### \\
+; transitional
+code quote_symbol, '\\', IMMEDIATE|PARSING ; -- symbol
+        _ parse_token
+        _dup
+        _f
+        _eq?
+        _tagged_if .1
+        _return
+        _else .1
+        _ find_symbol
+        _tagged_if .2
+        _return
+        _else .2
+        _error "undefined word"
+        _then .2
+        _then .1
+        next
+endcode
+
 ; ### define
-code define, 'define'
+code define, 'define'                   ; --
         _ parse_token
         _ find_symbol
         _ not
@@ -139,8 +169,11 @@ code define, 'define'
         _ vector_to_array
         _ array_to_quotation            ; -- symbol quotation
 
-        _over
-        _ symbol_set_def                ; -- symbol
+        _dup
+        _ compile_quotation
+
+        _swap
+        _ symbol_set_def                ; --
 
         next
 endcode
