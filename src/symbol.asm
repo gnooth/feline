@@ -203,3 +203,35 @@ code symbol_set_def, 'symbol-set-def'   ; definition symbol --
         _symbol_set_def
         next
 endcode
+
+; ### symbol-code
+code symbol_code, 'symbol-code'         ; symbol -- code-address inline-size
+; REVIEW
+; Returned values are untagged.
+        _ check_symbol
+        _dup
+        _symbol_xt
+        _?dup_if .1
+        _nip
+        _dup
+        _tocode
+        _swap
+        _toinline
+        _cfetch
+        _return
+        _then .1
+
+        _symbol_def
+        _dup
+        _tagged_if .2
+        _ callable_code_address
+        _zero
+        _return
+        _else .2
+        _drop
+        _then .2
+
+        _error "undefined word"
+
+        next
+endcode
