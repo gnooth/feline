@@ -211,7 +211,8 @@ code symbol_code, 'symbol-code'         ; symbol -- code-address inline-size
         _ check_symbol
         _dup
         _symbol_xt
-        _?dup_if .1
+        _dup
+        _tagged_if .1
         _nip
         _dup
         _tocode
@@ -219,6 +220,8 @@ code symbol_code, 'symbol-code'         ; symbol -- code-address inline-size
         _toinline
         _cfetch
         _return
+        _else .1
+        _drop
         _then .1
 
         _symbol_def
