@@ -15,46 +15,154 @@
 
 file __FILE__
 
-; ### compile-object
-code compile_object, 'compile-object'   ; object --
-        _ ?cr
-        _dotq "compile-object "
-        _dup
-        _ dot_object
-        _ cr
+value pc, 'pc', 0
 
+; ### precompile-object
+code precompile_object, 'precompile-object' ; object -- pair
+; all values are untagged
         _dup
         _ symbol?
         _tagged_if .1
-        _ symbol_xt
-        _ inline_or_call_xt
+        _ symbol_code                   ; -- code-address inline-size
         _else .1
-        _ iliteral
+        _zero
+        _swap                           ; -- literal-value 0
+        _then .1
+        _ two_array
+        next
+endcode
+
+; ### add-code-size
+code add_code_size, 'add-code-size'     ; accum pair -- accum
+; FIXME arbitrary for now
+        _drop
+        _lit 20
+        _plus
+        next
+endcode
+
+; ### emit-byte
+code emit_byte, 'emit-byte'             ; byte --
+        _ pc
+        _store
+        _lit 1
+        _plusto pc
+        next
+endcode
+
+; ### emit-dword
+code emit_dword, 'emit-dword'           ; dword --
+        _ pc
+        _lstore
+        _lit 4
+        _plusto pc
+        next
+endcode
+
+; ### emit-qword
+code emit_qword, 'emit-qword'           ; qword --
+        _ pc
+        _store
+        _lit 8
+        _plusto pc
+        next
+endcode
+
+; ### compile-call
+code compile_call, 'compile-call'       ; addr --
+        _dup                            ; -- addr addr
+
+        _ pc
+        add     rbx, 5
+        _ min_int32
+        _plus                           ; -- addr addr low
+
+        _ pc
+        add     rbx, 5
+        _ max_int32
+        _plus                           ; -- addr addr low high
+
+        _ between                       ; -- addr -1/0
+
+        _if .1                          ; -- addr
+
+        _lit $0e8
+        _ emit_byte                     ; -- addr
+
+        _ pc
+        add     rbx, 4
+        _minus
+        _ emit_dword
+
+        _else .1
+
+        ; -- addr
+        _dup
+        _ max_int32
+        _ult
+        _if .2
+        _lit $0b8
+        _ emit_byte
+        _ emit_dword
+        _else .2
+        _lit $48
+        _ emit_byte
+        _lit $0b8
+        _ emit_byte
+        _ emit_qword
+        _then .2
+
+        _lit $0ff
+        _ emit_byte
+        _lit $0d0
+        _ emit_byte
+
         _then .1
 
         next
 endcode
 
+; ### compile-pair
+code compile_pair, 'compile-pair'       ; pair --
+        _ array_first
+        _dup_if .1
+        _ compile_call
+        _else .1
+        ; FIXME
+        _error "compile-pair needs code"
+        _then .1
+        next
+endcode
+
 ; ### compile-quotation
 code compile_quotation, 'compile-quotation' ;  quotation --
-        _ ?cr
-        _dotq "entering compile-quotation"
-        _ cr
-
-        _ align_code
-
-        _ here_c
-        _tor
-
         _dup
         _ quotation_array
-        _lit compile_object_xt
-        _ each
-        _ccommac $0c3
+        _lit precompile_object_xt
+        _ map
 
-        _rfrom
-        _swap
+        _zero
+        _over
+        _lit add_code_size_xt
+        _ each
+
+        ; add size of return instruction
+        _oneplus
+
+        _ iallocate
+
+        _to pc
+
+        _ swap
+        _ pc
+        _ swap
         _ quotation_set_code
+
+        _lit compile_pair_xt
+        _ each
+
+        _lit $0c3
+        _ emit_byte
 
         next
 endcode
