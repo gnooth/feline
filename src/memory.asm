@@ -154,6 +154,36 @@ code ifree, '-free'                     ; a-addr --
         next
 endcode
 
+extern os_allocate_executable
+
+; ### allocate-executable
+code allocate_executable, 'allocate-executable' ; size -- addr
+%ifdef WIN64
+        mov     rcx, rbx
+        xcall   os_allocate_executable
+%else
+        mov     rdi, rbx
+        xcall   os_allocate
+%endif
+        mov     rbx, rax                ; -- addr
+        next
+endcode
+
+extern os_free_executable
+
+; ### free-executable
+code free_executable, 'free-executable' ; addr --
+%ifdef WIN64
+        mov     rcx, rbx
+        xcall   os_free_executable
+%else
+        mov     rdi, rbx
+        xcall   os_free
+%endif
+        poprbx
+        next
+endcode
+
 ; ### report-allocations
 code report_allocations, 'report-allocations'
 %if DEBUG_MEMORY

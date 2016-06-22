@@ -149,7 +149,7 @@ code compile_quotation, 'compile-quotation' ;  quotation --
         ; add size of return instruction
         _oneplus
 
-        _ iallocate
+        _ allocate_executable
 
         _to pc
 

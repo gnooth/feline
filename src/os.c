@@ -47,6 +47,29 @@ void * os_resize(void *ptr, size_t size)
   return realloc(ptr, size);
 }
 
+#ifdef WIN64
+static HANDLE executable_heap;
+
+void * os_allocate_executable(size_t size)
+{
+  if (executable_heap == 0)
+    {
+      executable_heap = HeapCreate(HEAP_CREATE_ENABLE_EXECUTE, 0, 0);
+      if (executable_heap == NULL)
+        {
+          os_errno_data = GetLastError();
+          return NULL;
+        }
+    }
+  return HeapAlloc(executable_heap, 0, size);
+}
+
+void os_free_executable(void *ptr)
+{
+  HeapFree(executable_heap, 0, ptr);
+}
+#endif
+
 int os_file_status(char *path)
 {
   struct stat buf;
