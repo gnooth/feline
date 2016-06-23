@@ -67,6 +67,15 @@ code find_string, 'find-string'         ; string -- xt t | string f
         next
 endcode
 
+; ### undefined
+code undefined, 'undefined'             ; symbol --
+        _ symbol_name
+        _quote " ?"
+        _ concat
+        _ throw
+        next
+endcode
+
 ; ### execute-symbol
 code execute_symbol, 'execute-symbol'   ; symbol --
         _dup
@@ -80,14 +89,18 @@ code execute_symbol, 'execute-symbol'   ; symbol --
         _drop
         _then .1                        ; -- symbol
 
+        _dup
         _ symbol_def
         _dup
         _tagged_if .2
+        _nip
         _ call_quotation
         _return
+        _else .2
+        _drop
         _then .2
 
-        _error "undefined word"
+        _ undefined
 
         next
 endcode
