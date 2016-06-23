@@ -58,7 +58,8 @@ inline feline_if, 'if'                  ; ? true false --
         mov     rdx, [rbp]              ; true quotation in rdx, false quotation in rbx
         cmp     rax, f_value
         cmovne  rbx, rdx                ; if flag is not f, move true quotation into rbx
-        mov     rax, [rbx]
+        _ callable_code_address         ; code address in rbx
+        mov     rax, rbx
         _3drop
         call    rax
 endinline
