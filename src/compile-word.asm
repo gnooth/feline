@@ -122,14 +122,37 @@ code compile_call, 'compile-call'       ; addr --
         next
 endcode
 
+; ### compile-literal
+code compile_literal, 'compile-literal' ; literal --
+        _ pushrbx_bytes
+        _ emit_qword
+        _dup
+        _lit $100000000
+        _ult
+        _if .1
+        _lit $0bb
+        _ emit_byte
+        _ emit_dword
+        _else .1
+        _lit $48
+        _ emit_byte
+        _lit $0bb
+        _ emit_byte
+        _ emit_qword
+        _then .1
+        next
+endcode
+
 ; ### compile-pair
 code compile_pair, 'compile-pair'       ; pair --
+        _dup
         _ array_first
-        _dup_if .1
+        _?dup_if .1
+        _nip
         _ compile_call
         _else .1
-        ; FIXME
-        _error "compile-pair needs code"
+        _ array_second
+        _ compile_literal
         _then .1
         next
 endcode
