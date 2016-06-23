@@ -119,6 +119,37 @@ code array_to_quotation, 'array>quotation' ; array -- quotation
         next
 endcode
 
+; ### ~quotation
+code destroy_quotation, '~quotation'    ; handle --
+        _ check_quotation               ; -- quotation
+        _ destroy_quotation_unchecked
+        next
+endcode
+
+; ### ~quotation-unchecked
+code destroy_quotation_unchecked, '~quotation-unchecked' ; quotation --
+        _dup
+        _quotation_code
+        _?dup_if .1
+        _ free_executable
+        _then .1
+
+        _ in_gc?
+        _zeq_if .2
+        _dup
+        _ release_handle_for_object
+        _then .2
+
+        ; Zero out the object header so it won't look like a valid object
+        ; after it has been destroyed.
+        xor     eax, eax
+        mov     [rbx], rax
+
+        _ ifree
+
+        next
+endcode
+
 ; ### quotation-array
 code quotation_array, 'quotation-array' ; quotation -- array
         _ check_quotation
