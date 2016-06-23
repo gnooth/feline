@@ -441,10 +441,6 @@ code make_header, 'make-header'         ; c-addr u --
         _ intern
         _to last_word
 
-        _ latestxt
-        _ last_word
-        _ symbol_set_xt
-
         next
 endcode
 
