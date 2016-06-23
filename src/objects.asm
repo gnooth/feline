@@ -120,6 +120,13 @@ code destroy_object_unchecked, '~object-unchecked' ; object --
         _return
         _then .5
 
+        _dup
+        _quotation?
+        _if .6
+        _ destroy_quotation_unchecked
+        _return
+        _then .6
+
         ; Default behavior for objects with only one allocation.
 
         ; Zero out the object header so it won't look like a valid object
