@@ -208,9 +208,8 @@ endcode
 code symbol_code, 'symbol-code'         ; symbol -- code-address inline-size
 ; REVIEW
 ; Returned values are untagged.
-        _ check_symbol
         _dup
-        _symbol_xt
+        _ symbol_xt
         _dup
         _tagged_if .1
         _nip
@@ -224,7 +223,8 @@ code symbol_code, 'symbol-code'         ; symbol -- code-address inline-size
         _drop
         _then .1
 
-        _symbol_def
+        _dup
+        _ symbol_def
         _dup
         _tagged_if .2
         _ callable_code_address
@@ -234,7 +234,7 @@ code symbol_code, 'symbol-code'         ; symbol -- code-address inline-size
         _drop
         _then .2
 
-        _error "undefined word"
+        _ undefined
 
         next
 endcode
