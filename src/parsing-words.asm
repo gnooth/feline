@@ -30,7 +30,8 @@ endcode
 ; ### parsing-word?
 code parsing_word?, 'parsing-word?'     ; symbol -- ?
         _ symbol_xt
-        _dup_if .1
+        _dup
+        _tagged_if .1
         _ flags
         _and_literal PARSING
         mov     ebx, f_value
