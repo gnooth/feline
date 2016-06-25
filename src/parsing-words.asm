@@ -82,11 +82,16 @@ code parse_until, 'parse-until'         ; delimiter -- vector
 ; REVIEW Delimiter is a string.
         _lit 10
         _ new_vector_untagged
-        _tor                            ; -- delimiter
+        _tor                            ; -- delimiter          r: -- vector
 .top:
         _ parse_token                   ; -- delimiter string/f
         cmp     rbx, f_value
         jne     .1
+        poprbx
+        _ refill
+        _if .2
+        jmp     .top
+        _then .2
         _error "unexpected end of input"
 .1:                                     ; -- delimiter string
         _twodup                         ; -- d s d s
@@ -101,7 +106,6 @@ code parse_until, 'parse-until'         ; delimiter -- vector
 .bottom:
         _2drop
         _rfrom                          ; -- handle
-
         next
 endcode
 
@@ -155,15 +159,17 @@ endcode
 ; ### define
 code define, 'define'                   ; --
         _ parse_token
+        _dup
+        _tagged_if .1
         _ find_symbol
         _ not
-        _tagged_if .1
+        _tagged_if .2
         _ current_vocab
         _ new_symbol
         _dup
         _ current_vocab
         _ vocab_add_symbol
-        _then .1                        ; -- symbol
+        _then .2                        ; -- symbol
 
         _quote ";"
         _ parse_until
@@ -176,6 +182,9 @@ code define, 'define'                   ; --
         _swap
         _ symbol_set_def                ; --
 
+        _else .1
+        _error "attempt to use zero-length string as a name"
+        _then .1
         next
 endcode
 
