@@ -227,12 +227,13 @@ code symbol_code, 'symbol-code'         ; symbol -- code-address inline-size
         _ symbol_def
         _dup
         _tagged_if .2
+        _nip
         _ callable_code_address
         _zero
         _return
         _else .2
         _drop
-        _then .2
+        _then .2                        ; -- symbol
 
         _ undefined
 
