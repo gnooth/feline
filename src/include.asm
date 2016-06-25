@@ -130,8 +130,7 @@ endcode
 ; ### refill
 code refill, 'refill'                   ; -- flag
 ; CORE EXT  BLOCK EXT  FILE EXT
-; "When the input source is a text file, attempt to read the next line
-; from the text-input file."
+
         _ source_id
 
         ; "When the input source is a string from EVALUATE, return false
@@ -144,6 +143,26 @@ code refill, 'refill'                   ; -- flag
         _return
         _then .1
 
+        ; "When the input source is the user input device, attempt to
+        ; receive input into the terminal input buffer. If successful,
+        ; make the result the input buffer, set >in to zero, and return
+        ; true.
+        _dup
+        _zeq_if .2
+        ; terminal input
+        _drop
+        _ cr
+        _ query
+        _ ntib
+        _fetch
+        _ nsource
+        _store
+        _true
+        _return
+        _then .2
+
+        ; "When the input source is a text file, attempt to read the next
+        ; line from the text-input file."
         _ file_position                 ; -- ud ior
         _abortq "Bad fileid"
         _ drop                          ; -- u
@@ -152,13 +171,13 @@ code refill, 'refill'                   ; -- flag
         _ source_buffer_size
         _ source_id
         _ read_line                     ; -- len flag ior
-        _if .2
+        _if .3
         ; error
         _2drop
         _false
         _return
-        _then .2                        ; -- len flag
-        _if .3                          ; -- len
+        _then .3                        ; -- len flag
+        _if .4                          ; -- len
         _ nsource
         _ store
         _lit 1
@@ -166,12 +185,12 @@ code refill, 'refill'                   ; -- flag
         _ toin
         _ off
         _true
-        _else .3
+        _else .4
         ; end of file
 ;         _ drop
 ;         _ false
         xor     rbx, rbx
-        _then .3
+        _then .4
         next
 endcode
 
