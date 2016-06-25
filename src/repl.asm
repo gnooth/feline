@@ -68,8 +68,12 @@ code find_string, 'find-string'         ; string -- xt t | string f
 endcode
 
 ; ### undefined
-code undefined, 'undefined'             ; symbol --
+code undefined, 'undefined'             ; string/symbol --
+        _dup
+        _ symbol?
+        _tagged_if .1
         _ symbol_name
+        _then .1
         _quote " ?"
         _ concat
         _ throw
@@ -117,9 +121,23 @@ code eval, 'eval'                       ; --
         _tagged_if .3
         _ execute_symbol
         _else .3
+
+        _ token_character_literal?
+        _tagged_if .41
+        _return
+        _then .41
+
+        _ token_string_literal?
+        _tagged_if .42
+        _return
+        _then .42
+
+        _dup
         _ string_to_number
         cmp     rbx, f_value
-        jz      .error
+        je      .error
+        _nip
+
         _then .3
         _else .2
         _drop
@@ -128,13 +146,20 @@ code eval, 'eval'                       ; --
         _again .1
 
 .error:
-        _error "undefined word"
+        _drop
+        _ undefined
 
         next
 endcode
 
 ; ### repl
 code repl, 'repl'                       ; --
+
+        _lit eval_xt
+        _lit interpret_xt
+        _tobody
+        _store
+
         _begin .1
 
         ; REVIEW
