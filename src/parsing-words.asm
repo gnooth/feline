@@ -66,13 +66,16 @@ code process_token, 'process-token'     ; string -- object
         _return
         _then .2
 
+        _dup
         _ string_to_number
         cmp     rbx, f_value
         je      .error
+        _nip
         _return
 
 .error:
-        _error "undefined word"
+        _drop
+        _ undefined
 
         next
 endcode
