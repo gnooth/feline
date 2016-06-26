@@ -1,17 +1,17 @@
-\ Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
 
-\ This program is free software: you can redistribute it and/or modify
-\ it under the terms of the GNU General Public License as published by
-\ the Free Software Foundation, either version 3 of the License, or
-\ (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
-\ This program is distributed in the hope that it will be useful,
-\ but WITHOUT ANY WARRANTY; without even the implied warranty of
-\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-\ GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
-\ You should have received a copy of the GNU General Public License
-\ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require-system-file test-framework
 
@@ -27,7 +27,7 @@ CURRENT: feline
 
 test: test1
     256 <sbuf> to s1
-\     s1 handle? check
+//     s1 handle? check
     s1 object? check-t
     s1 sbuf? check-t
     s1 string? check-false
@@ -40,7 +40,7 @@ test1
 
 test: test2
     s" this is a test" >sbuf to s1
-\     s1 handle? check
+//     s1 handle? check
     s1 object? check-t
     s1 sbuf? check-t
     s1 string? check-false
@@ -56,7 +56,7 @@ test2
 
 test: test3
     s" this is a test " >sbuf to s1
-\     s1 handle? check
+//     s1 handle? check
     s1 object? check-t
     s1 sbuf? check-t
     s1 string? check-false
@@ -73,7 +73,7 @@ test3
 
 test: test4
     s" test" >sbuf to s1
-\     s1 handle? check
+//     s1 handle? check
     s1 object? check-t
     s1 sbuf? check-t
     s1 string? check-false
@@ -81,7 +81,7 @@ test: test4
     s1 sbuf-capacity 4 = check-t
     's' s1 sbuf-push
     s1 object? check-t
-\     s1 handle? check
+//     s1 handle? check
     s1 sbuf-length 5 = check-t
     s1 sbuf-capacity 5 >= check-t
     s1 sbuf>string "tests" string= check-t
@@ -92,10 +92,10 @@ test: test4
 
 test4
 
-\ sbuf-nth, sbuf-nth-unsafe
+// sbuf-nth, sbuf-nth-unsafe
 test: test5
     s" this is a test" >sbuf to s1
-\     s1 handle? check
+//     s1 handle? check
     s1 object? check-t
     s1 sbuf? check-t
     s1 string? check-false
@@ -112,10 +112,10 @@ test: test5
 
 test5
 
-\ sbuf-set-char
+// sbuf-set-char
 test: test6
     s" this is a test" >sbuf to s1
-\     s1 handle? check
+//     s1 handle? check
     s1 object? check-t
     s1 sbuf? check-t
     s1 string? check-false
@@ -128,7 +128,7 @@ test: test6
     3 s1 sbuf-nth-unsafe 't' = check-t
     s1 sbuf>string "that is a test" string= check-t
 
-    \ index out of range
+    // index out of range
     s1 -1 'x' ['] sbuf-set-char catch 0 = check-false
     depth 3 = check-t 3drop
     s1 99 'x' ['] sbuf-set-char catch 0 = check-false
@@ -140,10 +140,10 @@ test: test6
 
 test6
 
-\ sbuf-insert-char
+// sbuf-insert-char
 test: test7
     s" this is a test" >sbuf to s1
-\     s1 handle? check
+//     s1 handle? check
     s1 object? check-t
     s1 sbuf? check-t
     s1 string? check-false
@@ -156,28 +156,28 @@ test: test7
 
 test7
 
-\ sbuf-remove-nth!
+// sbuf-remove-nth!
 test: test8
     s" this is a test" >sbuf to s1
-\     s1 handle? check
+//     s1 handle? check
     s1 object? check-t
     s1 sbuf? check-t
     s1 string? check-false
     s1 sbuf-length 14 = check-t
-\     s1 0 sbuf-delete-char
+//     s1 0 sbuf-delete-char
     0 s1 sbuf-remove-nth! s1 = check-t
     s1 sbuf>string "his is a test" string= check-t
     s1 sbuf-length 13 = check-t
-\     s1 12 sbuf-delete-char
+//     s1 12 sbuf-delete-char
     12 s1 sbuf-remove-nth!
     sbuf>string "his is a tes" string= check-t
     s1 sbuf-length 12 = check-t
-\     s1 4 sbuf-delete-char
+//     s1 4 sbuf-delete-char
     4 s1 sbuf-remove-nth!
     sbuf>string "his s a tes" string= check-t
     s1 sbuf-length 11 = check-t
 
-\     s1 handle? check
+//     s1 handle? check
     s1 sbuf? check-t
     s1 ~sbuf
     s1 sbuf? check-false
@@ -185,17 +185,17 @@ test: test8
 
 test8
 
-\ string>sbuf
+// string>sbuf
 test: test9
     "this is a test" to s1
     s1 string? check-t
     s1 string>sbuf to s2
-\     s2 handle? check
+//     s2 handle? check
     s2 object? check-t
     s2 sbuf? check-t
     s2 sbuf>string s1 string= check-t
 
-    \ s1 is a static string and can't be destroyed
+    // s1 is a static string and can't be destroyed
     s1 ~string
     s1 string? check-t
 
@@ -205,10 +205,10 @@ test: test9
 
 test9
 
-\ sbuf>
+// sbuf>
 test: test10
     "this is a test" string> >sbuf to s1
-\     s1 handle? check
+//     s1 handle? check
     s1 object? check-t
     s1 sbuf? check-t
     s1 sbuf>string "this is a test" string= check-t
@@ -220,10 +220,10 @@ test: test10
 
 test10
 
-\ sbuf-shorten
+// sbuf-shorten
 test: test11
     "this is a test" string>sbuf to s1
-\     s1 handle? check
+//     s1 handle? check
     s1 object? check-t
     s1 sbuf? check-t
     s1 sbuf-length 14 = check-t

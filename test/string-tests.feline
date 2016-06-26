@@ -1,17 +1,17 @@
-\ Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
 
-\ This program is free software: you can redistribute it and/or modify
-\ it under the terms of the GNU General Public License as published by
-\ the Free Software Foundation, either version 3 of the License, or
-\ (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
-\ This program is distributed in the hope that it will be useful,
-\ but WITHOUT ANY WARRANTY; without even the implied warranty of
-\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-\ GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
-\ You should have received a copy of the GNU General Public License
-\ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require-system-file test-framework
 
@@ -49,7 +49,7 @@ test: test2
 
 test2
 
-\ make sure the second string doesn't disturb the first
+// make sure the second string doesn't disturb the first
 test1
 
 s"  and " >string to s3
@@ -126,10 +126,10 @@ test: test7
     s2 string-length 4 = check-t
     s2 "this" string= check-t
 
-    \ s2 copies its data
+    // s2 copies its data
     s1 string-data s2 string-data = check-false
 
-    \ can't destroy s1 because it's a static string
+    // can't destroy s1 because it's a static string
     s1 ~string
     s1 string? check-t
 
@@ -148,7 +148,7 @@ test: test8
     't' s1 string-find-char  0 = check-t
     'e' s1 string-find-char 13 = check-t
 
-    \ can't destroy s1 because it's a static string
+    // can't destroy s1 because it's a static string
     s1 ~string
     s1 string? check-t
 ;
@@ -158,16 +158,16 @@ test8
 test: test9
     s" this is a test" >string to s1
     s1 string? check-t
-\     s1 handle? check
+//     s1 handle? check
     s1 ~string
-\     s1 handle? check
+//     s1 handle? check
     s1 object? f = check-t
     s1 string? f = check-t
 ;
 
 test9
 
-\ string-equal?
+// string-equal?
 test: test10
     "test" "test" string-equal? t = check-t
     "test" "text" string-equal? f = check-t
