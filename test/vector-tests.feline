@@ -1,17 +1,17 @@
-\ Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
 
-\ This program is free software: you can redistribute it and/or modify
-\ it under the terms of the GNU General Public License as published by
-\ the Free Software Foundation, either version 3 of the License, or
-\ (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
-\ This program is distributed in the hope that it will be useful,
-\ but WITHOUT ANY WARRANTY; without even the implied warranty of
-\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-\ GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
-\ You should have received a copy of the GNU General Public License
-\ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require-system-file test-framework
 
@@ -129,7 +129,7 @@ test: test7 ( -- )
     "bar" v vector-push
     "baz" v vector-push
 
-    "foo" v vector-find-string          \ -- index flag
+    "foo" v vector-find-string          // -- index flag
     check-t
     0 = check-t
 
@@ -148,11 +148,11 @@ test: test7 ( -- )
 
 test7
 
-\ each-integer vector-each-index vector-set-length
+// each-integer vector-each-index vector-set-length
 test: test8 ( -- )
     10 <vector> !> v
     v vector-length 0 = check-t
-    \ element is index+1
+    // element is index+1
     16 [ 1 + v vector-push ] each-integer
     v vector-length 16 = check-t
     v V{ 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 } vector-equal? check-t
@@ -194,7 +194,7 @@ test: test9
 
 test9
 
-\ V{ vector-equal?
+// V{ vector-equal?
 test: test10
     V{ } !> v
     v vector? t = check-t
@@ -221,7 +221,7 @@ test: test11
 
 test11
 
-\ vector>array
+// vector>array
 test: test12
     V{ 1 2 3 } vector>array local a
     a array? check-t
@@ -233,7 +233,7 @@ test: test12
 
 test12
 
-\ 2nth-unsafe
+// 2nth-unsafe
 test: test13
     V{  1  2  3 } local x
     V{ 17 18 19 } local y

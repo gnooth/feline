@@ -1,17 +1,17 @@
-\ Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
 
-\ This program is free software: you can redistribute it and/or modify
-\ it under the terms of the GNU General Public License as published by
-\ the Free Software Foundation, either version 3 of the License, or
-\ (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
-\ This program is distributed in the hope that it will be useful,
-\ but WITHOUT ANY WARRANTY; without even the implied warranty of
-\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-\ GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
-\ You should have received a copy of the GNU General Public License
-\ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require-system-file test-framework
 
@@ -50,7 +50,7 @@ test: test3
 
 test3
 
-\ bi@
+// bi@
 test: test4
     3 4 [ dup ] bi@ get-datastack V{ 3 3 4 4 } sequence= check-t
     clear
@@ -58,7 +58,7 @@ test: test4
 
 test4
 
-\ dip
+// dip
 test: test5
     42 17 [ dup ] dip get-datastack V{ 42 42 17 } sequence= check-t
     clear
@@ -66,7 +66,7 @@ test: test5
 
 test5
 
-\ when when*
+// when when*
 test: test6
     42 [ 87 ] when get-datastack V{ 87 } sequence= check-t
     clear
@@ -80,7 +80,7 @@ test: test6
 
 test6
 
-\ find
+// find
 test: test7
     V{ 1 2 3 4 5 6 } [ 3 = ] find
     get-datastack V{ 2 3 } sequence= check-t
@@ -95,7 +95,7 @@ test: test7
 
 test7
 
-\ map-find
+// map-find
 test: test8
     V{ 1 2 3 4 5 6 } [ 3 = ] map-find
     get-datastack t 3 2array sequence= check-t
