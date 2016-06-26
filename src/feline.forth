@@ -38,9 +38,6 @@ import [undefined]
 import [if]
 import [then]
 
-import (
-import \
-
 import :
 import ;
 
