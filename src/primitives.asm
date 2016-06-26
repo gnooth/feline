@@ -96,7 +96,10 @@ code unless, 'unless'                   ; ? false --
         _f
         _equal
         _if .1
-        _ execute
+        _ callable_code_address
+        mov     rax, rbx
+        poprbx
+        call    rax
         _else .1
         _drop
         _then .1
