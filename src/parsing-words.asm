@@ -159,6 +159,29 @@ code quote_symbol, '\\', IMMEDIATE|PARSING ; -- symbol
         next
 endcode
 
+; ### SYMBOL:
+code parse_symbol, 'SYMBOL:', PARSING
+        _ parse_token                   ; -- string/f
+        _dup
+        _tagged_if .1
+        ; -- string
+        _ find_symbol
+        _tagged_if .2
+        _return
+        _else .2
+        _ current_vocab
+        _ new_symbol
+        _dup
+        _to last_word
+        _ current_vocab
+        _ vocab_add_symbol
+        _then .2                        ; -- symbol
+        _else .1
+        _error "attempt to use zero-length string as a name"
+        _then .1
+        next
+endcode
+
 ; ### define
 code define, 'define'                   ; --
         _ parse_token
