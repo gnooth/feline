@@ -15,6 +15,17 @@
 
 file __FILE__
 
+; ### parse-token
+code parse_token, 'parse-token'         ; -- string/f
+        _ parse_name                    ; -- addr len
+        _?dup_if .1
+        _ copy_to_string
+        _else .1
+        mov     rbx, f_value
+        _then .1
+        next
+endcode
+
 ; ### t
 code t, 't', PARSING                    ; -- t
         _t

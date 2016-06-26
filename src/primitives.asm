@@ -127,17 +127,6 @@ code feline_until, 'until'              ; pred body --
         next
 endcode
 
-; ### parse-token
-code parse_token, 'parse-token'         ; -- string/f
-        _ parse_name                    ; -- addr len
-        _?dup_if .1
-        _ copy_to_string
-        _else .1
-        mov     rbx, f_value
-        _then .1
-        next
-endcode
-
 ; ### token-character-literal?
 code token_character_literal?, 'token-character-literal?' ; token -- char t | token f
         _dup
