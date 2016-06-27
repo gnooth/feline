@@ -20,6 +20,25 @@ code parse_token, 'parse-token'         ; -- string/f
         _ parse_name                    ; -- addr len
         _?dup_if .1
         _ copy_to_string
+
+        _dup
+        _quote "("
+        _ stringequal
+        _tagged_if .2
+        _drop
+        _ paren
+        _ parse_token
+        _else .2
+        _dup
+        _quote "//"
+        _ stringequal
+        _tagged_if .3
+        _drop
+        _ comment_to_eol
+        _ parse_token
+        _then .3
+        _then .2
+
         _else .1
         mov     rbx, f_value
         _then .1
