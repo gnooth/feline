@@ -650,35 +650,12 @@ endcode
 
 ; ### concat
 code concat, 'concat'                   ; string1 string2 -- string3
-        _locals_enter
-
-        _ string_from                   ; -- s1 c-addr2 u2
-        _ rot                           ; -- c-addr2 u2 s1
-        _ string_from                   ; -- c-addr2 u2 c-addr1 u1
-        _lit 2
-        _forth_pick                     ; -- c-addr2 u2 c-addr1 u1 u2
-        _overplus                       ; -- c-addr2 u2 c-addr1 u1 u2+u1
-        _ new_transient_string          ; -- c-addr2 u2 c-addr1 u1 string3
-        _to_local0                      ; -- c-addr2 u2 c-addr1 u1
-
-        _tuck                           ; -- c-addr2 u2 u1 c-addr1 u1
-
-        _local0
-        _ string_data                   ; -- c-addr2 u2 u1 c-addr1 u1 data-address
-        _swap                           ; -- c-addr2 u2 u1 c-addr1 data-address u1
-        _ cmove                         ; -- c-addr2 u2 u1
-        _local0
-        _ string_data                   ; -- c-addr2 u2 u1 data-address
-        _plus
         _swap
-        _ cmove
-
-        _local0                         ; -- string
-
-        _ string_from
-        _ copy_to_string
-
-        _locals_leave
+        _ string_to_sbuf                ; -- string2 sbuf
+        _swap                           ; -- sbuf string2
+        _dupd
+        _ sbuf_append_string
+        _ sbuf_to_string
         next
 endcode
 
