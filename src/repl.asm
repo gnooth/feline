@@ -111,7 +111,7 @@ endcode
 
 ; ### eval
 code eval, 'eval'                       ; --
-        _begin .1
+.top:
         _ ?stack
         _ parse_token
         _dup
@@ -123,14 +123,14 @@ code eval, 'eval'                       ; --
         _else .3
 
         _ token_character_literal?
-        _tagged_if .41
-        _return
-        _then .41
+        _tagged_if .4
+        jmp     .top
+        _then .4
 
         _ token_string_literal?
-        _tagged_if .42
-        _return
-        _then .42
+        _tagged_if .5
+        jmp     .top
+        _then .5
 
         _dup
         _ string_to_number
@@ -143,7 +143,7 @@ code eval, 'eval'                       ; --
         _drop
         _return
         _then .2
-        _again .1
+        jmp     .top
 
 .error:
         _drop
