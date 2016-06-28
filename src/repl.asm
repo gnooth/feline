@@ -152,6 +152,72 @@ code eval, 'eval'                       ; --
         next
 endcode
 
+; ### feline-reset
+code feline_reset, 'feline-reset'
+        _ lp0
+        _?dup_if .1
+        _ lpstore
+        _then .1
+
+        ; REVIEW
+        _zeroto exception
+
+        ; REVIEW windows-ui
+        _ standard_output
+
+        jmp     repl
+        next                            ; for decompiler
+endcode
+
+; ### feline-do-error
+code feline_do_error, 'feline-do-error' ; string-or-number --
+        _dup
+        _ string?
+        _tagged_if .0
+        _to msg
+        _ dotmsg
+        _ print_backtrace
+        _ feline_reset
+        _then .0
+
+        _to exception
+
+        _ exception
+        _lit -1
+        _ equal
+        _if .1
+        _ feline_reset                  ; ABORT (no message)
+        _then .1
+
+        _ exception
+        _lit -2
+        _equal
+        _if .2
+        _ dotmsg                        ; ABORT"
+        _ print_backtrace
+        _ feline_reset
+        _then .2
+
+        ; otherwise...
+        _ dotmsg
+
+        _ where
+
+        ; automatically print a backtrace if it is likely to be useful
+        _ exception
+        _lit -13                        ; undefined word
+        _notequal
+        _ exception
+        _lit -4                         ; data stack underflow
+        _notequal
+        _ and
+        _if .4
+        _ print_backtrace
+        _then .4
+        _ feline_reset
+        next
+endcode
+
 ; ### repl
 code repl, 'repl'                       ; --
 
@@ -179,7 +245,7 @@ code repl, 'repl'                       ; --
         _ catch
         _?dup_if .2
         ; THROW occurred
-        _ do_error
+        _ feline_do_error
         _then .2
         _ white
         _ foreground
