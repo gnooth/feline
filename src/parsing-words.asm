@@ -15,12 +15,87 @@
 
 file __FILE__
 
-; ### parse-token
-code parse_token, 'parse-token'         ; -- string/f
-        _ parse_name                    ; -- addr len
-        _?dup_if .1
+; ### ?scan-token
+code maybe_scan_token, '?scan-token'    ; -- string/f
+
+        _ source                        ; -- source-addr source-length
+
+        _dup
+        _zeq_if .2
+        ; end of input
+        _2drop
+        _f
+        _return
+        _then .2
+
+        _ tuck                          ; -- source-length source-addr source-length
+        _from toin                      ; -- source-length source-addr source-length >in
+        _slashstring                    ; -- source-length addr1 #left
+
+        _dup
+        _zeq_if .22
+        ; end of input
+        _3drop
+        _f
+        _return
+        _then .22
+
+        _ skip_whitespace               ; -- source-length start-of-word #left
+
+        ; now looking at first non-whitespace char
+        _over
+        _cfetch
+        _lit '"'
+        _equal
+        _if .1                          ; -- source-length start-of-word #left
+
+        ; first char is "
+        _drop
+        _nip                            ; -- start-of-word
+
+        _ source
+        _drop
+        _minus
+        _oneplus                        ; skip past opening " char
+        _to toin
+        _lit '"'
+        _ parse                         ; -- addr len
+
+        _swap
+        _oneminus
+        _swap
+        _twoplus                        ; -- addr len
+
+        _ copy_to_string
+        _return
+        _then .1
+
+        _dupd                           ; -- source-length start-of-word start-of-word #left
+        _ scan_to_whitespace            ; -- source-length start-of-word end-of-word #left
+        _tor                            ; -- source-length start-of-word end-of-word                    r: #left
+        _over_minus                     ; -- source-length start-of-word word-length
+        _ rot                           ; -- start-of-word word-length source-length
+        _rfrom                          ; -- start-of-word word-length source-length #left              r: --
+        _dup                            ; -- start-of-word word-length source-length #left #left
+        _ zne                           ; -- start-of-word word-length source-length #left -1|0
+        _plus                           ; -- start-of-word word-length source-length #left-1|#left
+        _minus
+        _to toin
+
+        _twodup
+        _to parsed_name_length
+        _to parsed_name_start
+
         _ copy_to_string
 
+        next
+endcode
+
+; ### parse-token
+code parse_token, 'parse-token'         ; -- string/f
+        _ maybe_scan_token
+        _dup
+        _tagged_if .1
         _dup
         _quote "("
         _ stringequal
@@ -38,9 +113,6 @@ code parse_token, 'parse-token'         ; -- string/f
         _ parse_token
         _then .3
         _then .2
-
-        _else .1
-        mov     rbx, f_value
         _then .1
         next
 endcode
