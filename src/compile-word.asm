@@ -44,7 +44,7 @@ endcode
 ; ### emit-byte
 code emit_byte, 'emit-byte'             ; byte --
         _ pc
-        _store
+        _cstore
         _lit 1
         _plusto pc
         next
