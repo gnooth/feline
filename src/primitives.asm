@@ -23,6 +23,11 @@ file __FILE__
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
+; ### eq?                               ; obj1 obj2 -- ?
+inline eq?, 'eq?'
+        _eq?
+endinline
+
 ; ### =
 inline feline_equal, '='                ; n1 n2 -- t|f
         _eq?
