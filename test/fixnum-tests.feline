@@ -41,11 +41,11 @@ test2
 
 test: test3 ( -- )
     0 fixnum? check-t
-    0 0= check-t
-    1 0= check-false
-    -1 0= check-false
-    1 -1 + 0= check-t
-    4 -4 + 0= check-t
+    0 zero? check-t
+    1 zero? check-false
+    -1 zero? check-false
+    1 -1 + zero? check-t
+    4 -4 + zero? check-t
 ;
 
 test3
