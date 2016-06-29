@@ -33,14 +33,6 @@ inline feline_equal, '='                ; n1 n2 -- t|f
         _eq?
 endinline
 
-; ### 0=
-inline feline_zeq, '0='
-        mov     eax, t_value
-        cmp     rbx, tagged_zero
-        mov     ebx, f_value
-        cmovz   ebx, eax
-endinline
-
 ; ### zero?
 inline zero?, 'zero?'
         mov     eax, t_value
