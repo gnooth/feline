@@ -21,24 +21,24 @@ code maybe_scan_token, '?scan-token'    ; -- string/f
         _ source                        ; -- source-addr source-length
 
         _dup
-        _zeq_if .2
+        _zeq_if .1
         ; end of input
         _2drop
         _f
         _return
-        _then .2
+        _then .1
 
         _ tuck                          ; -- source-length source-addr source-length
         _from toin                      ; -- source-length source-addr source-length >in
         _slashstring                    ; -- source-length addr1 #left
 
         _dup
-        _zeq_if .22
+        _zeq_if .2
         ; end of input
         _3drop
         _f
         _return
-        _then .22
+        _then .2
 
         _ skip_whitespace               ; -- source-length start-of-word #left
 
@@ -47,7 +47,7 @@ code maybe_scan_token, '?scan-token'    ; -- string/f
         _cfetch
         _lit '"'
         _equal
-        _if .1                          ; -- source-length start-of-word #left
+        _if .3                          ; -- source-length start-of-word #left
 
         ; first char is "
         _drop
@@ -68,7 +68,7 @@ code maybe_scan_token, '?scan-token'    ; -- string/f
 
         _ copy_to_string
         _return
-        _then .1
+        _then .3
 
         _dupd                           ; -- source-length start-of-word start-of-word #left
         _ scan_to_whitespace            ; -- source-length start-of-word end-of-word #left
@@ -86,8 +86,11 @@ code maybe_scan_token, '?scan-token'    ; -- string/f
         _to parsed_name_length
         _to parsed_name_start
 
+        _?dup_if .4
         _ copy_to_string
-
+        _else .4
+        mov     rbx, f_value
+        _then .4
         next
 endcode
 
