@@ -234,9 +234,8 @@ code parse_vector, 'V{', IMMEDIATE|PARSING      ; -- handle
         next
 endcode
 
-; ### [[
-; transitional
-code parse_quotation, '[[', IMMEDIATE|PARSING ; -- quotation
+; ### [
+code parse_quotation, '[', IMMEDIATE|PARSING ; -- quotation
         _quote "]"
         _ parse_until
         _ vector_to_array
@@ -244,9 +243,8 @@ code parse_quotation, '[[', IMMEDIATE|PARSING ; -- quotation
         next
 endcode
 
-; ### \\
-; transitional
-code quote_symbol, '\\', IMMEDIATE|PARSING ; -- symbol
+; ### \
+code quote_symbol, '\', IMMEDIATE|PARSING ; -- symbol
         _ parse_token
         _dup
         _f
@@ -287,14 +285,20 @@ code parse_symbol, 'SYMBOL:', PARSING
         next
 endcode
 
-; ### define
-code define, 'define'                   ; --
+; ### :
+code define, ':'                        ; --
         _ parse_token
         _dup
         _tagged_if .1
         _ find_symbol
-        _ not
         _tagged_if .2
+        ; REVIEW
+        _ ?cr
+        _dotq "redefining "
+        _dup
+        _ symbol_name
+        _ write_
+        _else .2
         _ current_vocab
         _ new_symbol
         _dup
