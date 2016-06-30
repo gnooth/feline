@@ -88,7 +88,7 @@ endcode
 
 ; ### feline-mode
 code feline_mode, 'feline-mode'
-        _lit feline_interpret_xt
+        _lit eval_xt
         _lit interpret_xt
         _tobody
         _store
