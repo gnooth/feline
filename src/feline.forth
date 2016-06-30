@@ -32,14 +32,17 @@ import vocabulary
 import only
 import also
 import definitions
+import order
 
 import [defined]
 import [undefined]
 import [if]
 import [then]
 
-import :
-import ;
+\ import :
+\ import ;
+
+import see
 
 import include
 import require
