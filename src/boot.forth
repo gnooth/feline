@@ -22,7 +22,7 @@ standard-forth? [if]
 include-system-file locals.forth
 [then]
 
-include-system-file quotations.forth
+\ include-system-file quotations.forth
 include-system-file escaped-strings.forth
 include-system-file case.forth
 include-system-file dump.forth
