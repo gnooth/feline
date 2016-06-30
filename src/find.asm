@@ -242,7 +242,7 @@ code order, 'order'
         _dotq ";"
         _ cr
         _dotq "   Current: "
-        _ get_current
+        _ current_vocab
         _ dot_voc
         next
 endcode
