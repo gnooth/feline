@@ -15,10 +15,7 @@
 
 \ Based on the reference implementation from http://www.forth200x.org/escaped-strings.html.
 
-LANGUAGE: forth
-
-CONTEXT: forth ;
-CURRENT: forth
+only forth also definitions
 
 decimal
 
