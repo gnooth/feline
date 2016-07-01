@@ -232,9 +232,7 @@ code repl, 'repl'                       ; --
         mov     rsp, [rp0_data]
 
         _ ?cr
-        _ green
-        _ foreground
-        _dotq "> "
+        _ prompt
         _ query
         _ tib
         _ ntib
