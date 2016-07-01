@@ -24,7 +24,7 @@ constant magenta, 'magenta', 5
 constant cyan,    'cyan',    6
 constant white,   'white',   7
 
-value color?, 'color?', 0
+value color?, 'color?', -1
 
 ; ### esc[
 code ansi_escape, 'esc['
