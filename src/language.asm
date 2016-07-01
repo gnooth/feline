@@ -104,8 +104,6 @@ code feline_mode, 'feline-mode'
         _store
 
         _ only
-        _ forth
-        _ also
         _ feline
         _ definitions
 
