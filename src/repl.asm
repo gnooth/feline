@@ -40,33 +40,6 @@ code find_symbol, 'find-symbol'         ; string -- symbol/string ?
         next
 endcode
 
-; ### find-string
-code find_string, 'find-string'         ; string -- xt t | string f
-        _ context_vector
-        _ vector_length
-        _untag_fixnum
-        _zero
-        _?do .1
-        _dup                            ; -- string string
-        _i
-        _ context_vector
-        _ vector_nth_untagged           ; -- string string vocab
-        _ vocab_hashtable
-        _ at_                           ; -- string symbol|f
-        _dup
-        _tagged_if .2
-        _ symbol_xt                     ; -- string xt
-        _nip
-        _t
-        _unloop
-        _return
-        _then .2
-        _drop
-        _loop .1
-        _f
-        next
-endcode
-
 ; ### undefined
 code undefined, 'undefined'             ; string/symbol --
         _dup
