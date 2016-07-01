@@ -80,7 +80,7 @@ code hash_vocabs, 'hash-vocabs'
 endcode
 
 ; ### lookup-vocab
-code lookup_vocab, 'lookup-vocab'       ; string -- vocab
+code lookup_vocab, 'lookup-vocab'       ; string -- vocab/f
         _ verify_string
         _ vocabs
         _ vector_length
@@ -122,6 +122,39 @@ code current_colon, 'CURRENT:'
         next
 endcode
 
+; ### create-vocab
+code create_vocab, 'create-vocab'       ; string -- vocab
+        _ verify_string
+        _dup                            ; -- string string
+        _ lookup_vocab                  ; -- string vocab/f
+        _dup
+        _tagged_if .1                   ; -- string vocab
+        _nip                            ; -- vocab
+        _else .1                        ; -- string f
+        _drop
+        _dup
+        _ new_vocab                     ; -- string vocab
+        _tuck
+        _ two_array
+        _ vocabs
+        _ vector_push
+        _then .1
+        next
+endcode
+
+; ### in:
+code in_colon, 'in:'
+        _ parse_token                   ; -- string/f
+        _dup
+        _tagged_if .1
+        _ create_vocab                  ;
+        _to current_vocab
+        _else .1
+        _error "unexpected end of input"
+        _then .1
+        next
+endcode
+
 ; ### CONTEXT:
 code context_colon, 'CONTEXT:'
         _lit 10
@@ -146,5 +179,20 @@ code context_colon, 'CONTEXT:'
         _2drop
         _rfrom
         _to context_vector
+        next
+endcode
+
+; ### order
+code order, 'order'
+        _ ?cr
+        _dotq "using: "
+        _ context_vector
+        _lit dot_voc_xt
+        _ vector_each
+        _dotq ";"
+        _ cr
+        _dotq "in: "
+        _ current_vocab
+        _ dot_voc
         next
 endcode
