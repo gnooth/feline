@@ -222,9 +222,10 @@ code cold, 'cold'                       ; --
         _dotq "Meow!"
         _ cr
 
-        _ feline_mode
+;         _ feline_mode
 
-        jmp     repl
+;         jmp     repl
+        jmp     quit
 
         next
 endcode
