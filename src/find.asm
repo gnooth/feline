@@ -229,7 +229,7 @@ endcode
 value context_vector, 'context-vector', 0
 
 ; ### order
-code order, 'order'
+code forth_order, 'order'
 ; SEARCH EXT
         _ ?cr
         _dotq "  Language: "
@@ -306,7 +306,7 @@ code previous, 'previous'
 endcode
 
 ; ### forth!
-code forth_order, 'forth!'
+code set_forth_order, 'forth!'
         _ only
         _ feline
         _ also
@@ -317,7 +317,7 @@ code forth_order, 'forth!'
 endcode
 
 ; ### feline!
-code feline_order, 'feline!'
+code set_feline_order, 'feline!'
         _ only
         _ forth
         _ also
