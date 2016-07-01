@@ -29,10 +29,10 @@ import bye
 
 import vocabulary
 
-import only
-import also
-import definitions
-import order
+\ import only
+\ import also
+\ import definitions
+\ import order
 
 import [defined]
 import [undefined]
