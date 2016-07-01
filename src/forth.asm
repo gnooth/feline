@@ -60,11 +60,11 @@ static_data_area:
 %include "tools.asm"
 %include "transient-alloc.asm"
 %include "value.asm"
-%include "vocabs.asm"
 
 IN_FELINE
 
 ; Objects
+%include "vocabs.asm"
 %include "object-macros.asm"
 %include "primitives.asm"
 %include "hashtable.asm"
