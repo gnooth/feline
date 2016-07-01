@@ -43,6 +43,7 @@ import [then]
 \ import ;
 
 import see
+import view
 
 import include
 import require
