@@ -17,6 +17,18 @@ file __FILE__
 
 ; ### find-symbol
 code find_symbol, 'find-symbol'         ; string -- symbol/string ?
+        _dup
+        _ current_vocab
+        _ vocab_hashtable
+        _ at_star
+        _tagged_if .0
+        _nip
+        _t
+        _return
+        _else .0
+        _drop
+        _then .0
+
         _ context_vector
         _ vector_length
         _untag_fixnum
