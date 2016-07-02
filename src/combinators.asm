@@ -16,13 +16,16 @@
 file __FILE__
 
 ; ### keep
-code keep, 'keep'                       ; ..a x quot -- ..b x
+code keep, 'keep'                       ; .. x quot -- .. x
 ; Factor
 ; "Call a quotation with a value on the stack, restoring the value when
 ; the quotation returns."
-        mov     rax, [rbp]              ; x in rax
-        push    rax
-        _execute
-        _rfrom
+        _ callable_code_address         ; code address in rbx
+        mov     rax, rbx                ; code address in rax
+        poprbx
+        push    rbx
+        call    rax
+        pushrbx
+        pop     rbx
         next
 endcode
