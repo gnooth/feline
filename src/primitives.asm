@@ -469,40 +469,6 @@ code find_integer, 'find-integer'       ; tagged-fixnum xt -- i|f
         next
 endcode
 
-; ### dip
-code dip, 'dip'                         ; x quot -- x
-; Removes x, calls quot, restores x to top of stack after quot returns.
-        _ callable_code_address         ; code address in rbx
-        mov     rax, [rbp]              ; x in rax
-        push    rax
-        mov     rax, rbx
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
-        call    rax
-        pushrbx
-        pop     rbx
-        next
-endcode
-
-; ### bi@
-code bi_at, 'bi@'                       ; x y quot --
-; Applies quotation to x, then to y.
-; Quotation must have stack effect ( obj -- ... ).
-        push    r12                     ; save non-volatile register
-        _ callable_code_address
-        mov     r12, rbx                ; address to call in r12
-        mov     rax, [rbp]              ; y in rax
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2] ; -- x
-        push    rax                     ; save y
-        call    r12
-        pushrbx
-        pop     rbx                     ; -- y
-        call    r12
-        pop     r12
-        next
-endcode
-
 ; ### get-datastack
 code get_datastack, 'get-datastack'     ; -- array
         push r12
