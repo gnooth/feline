@@ -489,7 +489,8 @@ code bi_at, 'bi@'                       ; x y quot --
 ; Applies quotation to x, then to y.
 ; Quotation must have stack effect ( obj -- ... ).
         push    r12                     ; save non-volatile register
-        mov     r12, [rbx]              ; address to call in r12
+        _ callable_code_address
+        mov     r12, rbx                ; address to call in r12
         mov     rax, [rbp]              ; y in rax
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2] ; -- x
