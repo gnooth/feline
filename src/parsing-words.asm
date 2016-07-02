@@ -244,6 +244,11 @@ code parse_quotation, '[', IMMEDIATE|PARSING ; -- quotation
 endcode
 
 ; ### \
+; We need some additional comment text here so that NASM isn't
+; confused by the '\' in the explicit tag.
+; "NASM uses backslash (\) as the line continuation character;
+; if a line ends with backslash, the next line is considered to
+; be a part of the backslash-ended line."
 code quote_symbol, '\', IMMEDIATE|PARSING ; -- symbol
         _ parse_token
         _dup
