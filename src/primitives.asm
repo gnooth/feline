@@ -472,11 +472,15 @@ endcode
 ; ### dip
 code dip, 'dip'                         ; x quot -- x
 ; Removes x, calls quot, restores x to top of stack after quot returns.
+        _ callable_code_address         ; code address in rbx
         mov     rax, [rbp]              ; x in rax
-        lea     rbp, [rbp + BYTES_PER_CELL]
         push    rax
-        _execute
-        _rfrom
+        mov     rax, rbx
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        call    rax
+        pushrbx
+        pop     rbx
         next
 endcode
 
