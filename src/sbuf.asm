@@ -137,6 +137,7 @@ endcode
 ; ### <sbuf>
 code new_sbuf, '<sbuf>'                 ; tagged-capacity -- sbuf
         _untag_fixnum
+new_sbuf_untagged:
         _ make_sbuf_internal            ; -- sbuf
         _dup
         _sbuf_data                      ; -- sbuf data-address
