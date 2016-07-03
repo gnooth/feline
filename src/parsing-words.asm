@@ -15,6 +15,53 @@
 
 file __FILE__
 
+; ### parse-string
+code parse_string, 'parse-string'       ; -- string
+        _lit 128
+        _ new_sbuf_untagged             ; -- sbuf
+        _tor
+        _begin .1
+        _ slashsource
+        _lit '"'
+        _ scan
+        _nip
+        _if .2
+        _lit '"'
+        _ parse                         ; -- addr len
+        _rfetch                         ; -- addr len sbuf
+        _ rrot                          ; -- sbuf addr len
+        _ sbuf_append_chars             ; --
+
+        _lit '"'
+        _tag_char
+        _lit tagged_zero
+        _rfrom                          ; -- tagged-char tagged-index sbuf
+        _ sbuf_insert_nth_destructive   ; -- sbuf
+
+        _lit '"'
+        _tag_char
+        _over
+        _ sbuf_push
+        _ sbuf_to_string
+
+        _return
+        _then .2
+
+        _rfetch
+        _ slashsource
+        _ sbuf_append_chars
+
+        _lit $0a
+        _tag_char
+        _rfetch
+        _ sbuf_push
+
+        _ refill
+        _zeq
+        _until .1
+        next
+endcode
+
 ; ### ?scan-token
 code maybe_scan_token, '?scan-token'    ; -- string/f
 
@@ -48,25 +95,17 @@ code maybe_scan_token, '?scan-token'    ; -- string/f
         _lit '"'
         _equal
         _if .3                          ; -- source-length start-of-word #left
-
-        ; first char is "
+        ; first non-whitespace char is "
         _drop
         _nip                            ; -- start-of-word
-
+        ; update >in
         _ source
         _drop
         _minus
         _oneplus                        ; skip past opening " char
         _to toin
-        _lit '"'
-        _ parse                         ; -- addr len
-
-        _swap
-        _oneminus
-        _swap
-        _twoplus                        ; -- addr len
-
-        _ copy_to_string
+        ; return token
+        _quote '"'
         _return
         _then .3
 
@@ -99,6 +138,7 @@ code parse_token, 'parse-token'         ; -- string/f
         _ maybe_scan_token
         _dup
         _tagged_if .1
+
         _dup
         _quote "("
         _ stringequal
@@ -106,7 +146,9 @@ code parse_token, 'parse-token'         ; -- string/f
         _drop
         _ paren
         _ parse_token
-        _else .2
+        _return
+        _then .2
+
         _dup
         _quote "//"
         _ stringequal
@@ -114,8 +156,18 @@ code parse_token, 'parse-token'         ; -- string/f
         _drop
         _ comment_to_eol
         _ parse_token
+        _return
         _then .3
-        _then .2
+
+        _dup
+        _quote '"'
+        _ stringequal
+        _tagged_if .4
+        _drop
+        _ parse_string
+        _return
+        _then .4
+
         _then .1
         next
 endcode
