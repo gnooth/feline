@@ -24,6 +24,19 @@ V{ "this is a test" } length 1 = check-t
 
 V{ 1 2 3 } [ dup + ] map V{ 2 4 6 } sequence= check-t
 
+"this is a multiline
+string" length 26 = check-t
+
+clear
+
+: multiline-string-test-1 ( -- )
+    "this is
+a multiline string"
+    length 26 = check-t
+;
+
+multiline-string-test-1
+
 : fixnum-test-1 ( -- )
     1 fixnum? check-t
     2 fixnum? check-t
@@ -128,5 +141,45 @@ fixnum-test-10
 ;
 
 fixnum-test-11
+
+: dip-test-1 ( -- )
+    87 42 [ 3 * ] dip get-datastack V{ 261 42 } sequence= check-t
+    clear
+;
+
+dip-test-1
+
+: keep-test-1 ( -- )
+    42 [ dup ] keep get-datastack V{ 42 42 42 } sequence= check-t
+    clear
+;
+
+keep-test-1
+
+: bi@-test-1
+    3 4 [ dup ] bi@ get-datastack V{ 3 3 4 4 } sequence= check-t
+    clear
+;
+
+bi@-test-1
+
+: array-test-1 ( -- )
+    10 42 <array>
+    [ object? check-t ] keep
+    [ array? check-t ] keep
+    [ length 10 = check-t ] keep
+    10 [ over nth 42 eq? check-t ] each-integer
+    drop
+;
+
+array-test-1
+
+: array-test-2 ( -- )
+    10 f <array>
+    10 [ ( array index ) [ number>string ] keep pick set-nth ] each-integer
+    drop
+;
+
+array-test-2
 
 ?cr "Reached end of test.feline" write
