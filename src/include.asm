@@ -146,7 +146,7 @@ code refill, 'refill'                   ; -- flag
         ; "When the input source is the user input device, attempt to
         ; receive input into the terminal input buffer. If successful,
         ; make the result the input buffer, set >in to zero, and return
-        ; true.
+        ; true."
         _dup
         _zeq_if .2
         ; terminal input
