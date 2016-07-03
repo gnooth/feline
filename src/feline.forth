@@ -53,11 +53,13 @@ import empty
 import decimal
 
 import constant
-import local
+\ import local
 
 import swap
 import dup
+import over
 import drop
+import nip
 import >r
 import r>
 
