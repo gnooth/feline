@@ -234,6 +234,14 @@ code parse_vector, 'V{', IMMEDIATE|PARSING      ; -- handle
         next
 endcode
 
+; ### {
+code parse_array, '{', IMMEDIATE|PARSING ; -- handle
+        _quote "}"
+        _ parse_until
+        _ vector_to_array
+        next
+endcode
+
 ; ### [
 code parse_quotation, '[', IMMEDIATE|PARSING ; -- quotation
         _quote "]"
