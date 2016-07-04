@@ -15,6 +15,7 @@
 
 file __FILE__
 
+; ### pc
 value pc, 'pc', 0
 
 ; ### precompile-object
@@ -143,17 +144,40 @@ code compile_literal, 'compile-literal' ; literal --
         next
 endcode
 
+; ### compile-inline
+code compile_inline, 'compile-inline'   ; pair --
+        _dup
+        _ array_first
+        _swap
+        _ array_second                  ; -- addr len
+        _tuck                           ; -- len addr len
+        _ pc
+        _swap
+        _ cmove                         ; -- len
+        _plusto pc
+        next
+endcode
+
 ; ### compile-pair
 code compile_pair, 'compile-pair'       ; pair --
         _dup
         _ array_first
-        _?dup_if .1
-        _nip
-        _ compile_call
-        _else .1
+        _zeq_if .1
         _ array_second
         _ compile_literal
-        _then .1
+        _return
+        _then .1                        ; -- pair
+
+        _ dup
+        _ array_second
+        _if .2
+        _ compile_inline
+        _return
+        _then .2                        ; -- pair
+
+        _ array_first
+        _ compile_call
+
         next
 endcode
 
