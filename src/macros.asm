@@ -598,6 +598,19 @@ section .text
 %endif
 %endmacro
 
+%macro  _tagged_if_not 1
+%ifdef USE_TAGS
+        %push if
+        section .text
+        cmp     rbx, f_value
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        jnz     %1_ifnot
+%else
+        _zeq_if %1
+%endif
+%endmacro
+
 %macro  _zeq_if 1
         %push if
         section .text
