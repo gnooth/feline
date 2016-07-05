@@ -182,4 +182,13 @@ array-test-1
 
 array-test-2
 
+// vector-insert-nth!
+: vector-test-1 ( -- )
+    17 0 V{ 0 1 2 3 } [ vector-insert-nth! ] keep
+    V{ 17 0 1 2 3 } sequence= check-t
+    clear
+;
+
+vector-test-1
+
 ?cr "Reached end of test.feline" write
