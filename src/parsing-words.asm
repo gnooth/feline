@@ -202,6 +202,27 @@ endcode
 
 ; ### process-token
 code process_token, 'process-token'     ; string -- object
+        _ local_names
+        _if .1
+        _dup
+        _ local_names                   ; -- string string vector
+        _ vector_find_string            ; -- string index/f t|f
+        _tagged_if .2                   ; -- string index
+        _nip
+        _ accum
+        _ vector_push
+
+        ; FIXME search order dependency
+        _quote "local@"
+        _ find_symbol
+        _drop
+
+        _return
+        _else .2                        ; -- string f
+        _drop
+        _then .2
+        _then .1
+
         _ find_symbol                   ; -- symbol/string ?
         _tagged_if .3                   ; -- symbol
         _dup
@@ -214,14 +235,14 @@ code process_token, 'process-token'     ; string -- object
         _then .3
 
         _ token_character_literal?
-        _tagged_if .1
+        _tagged_if .5
         _return
-        _then .1
+        _then .5
 
         _ token_string_literal?
-        _tagged_if .2
+        _tagged_if .6
         _return
-        _then .2
+        _then .6
 
         _dup
         _ string_to_number
@@ -237,12 +258,24 @@ code process_token, 'process-token'     ; string -- object
         next
 endcode
 
+; ### accum
+value accum, 'accum', f_value
+; top level accumulator
+
 ; ### parse-until
 code parse_until, 'parse-until'         ; delimiter -- vector
 ; REVIEW Delimiter is a string.
+
         _lit 10
         _ new_vector_untagged
         _tor                            ; -- delimiter          r: -- vector
+
+        _ accum
+        _tagged_if_not .0
+        _rfetch
+        _to accum
+        _then .0
+
 .top:
         _ parse_token                   ; -- delimiter string/f
         cmp     rbx, f_value
@@ -265,7 +298,16 @@ code parse_until, 'parse-until'         ; delimiter -- vector
         jmp     .top
 .bottom:
         _2drop
-        _rfrom                          ; -- handle
+        _rfrom                          ; -- vector
+
+;         _dup
+;         _ accum
+;         _eq?
+;         _tagged_if .3
+;         _f
+;         _to accum
+;         _then .3
+
         next
 endcode
 
@@ -352,6 +394,11 @@ endcode
 
 ; ### :
 code define, ':'                        ; --
+        _f
+        _to accum
+
+        _zeroto using_locals?
+
         _ parse_token
         _dup
         _tagged_if .1
@@ -373,6 +420,20 @@ code define, ':'                        ; --
 
         _quote ";"
         _ parse_until
+
+        _ using_locals?
+        _if .3
+        ; FIXME search order dependency
+        _quote "locals-leave"
+        _ find_symbol
+        _drop
+        _ accum
+        _ vector_push
+        _then .3
+
+        _f
+        _to accum
+
         _ vector_to_array
         _ array_to_quotation            ; -- symbol quotation
 
@@ -381,6 +442,9 @@ code define, ':'                        ; --
 
         _swap
         _ symbol_set_def                ; --
+
+        _zeroto using_locals?
+        _zeroto local_names
 
         _else .1
         _error "attempt to use zero-length string as a name"
@@ -393,5 +457,45 @@ code comment_to_eol, '//', IMMEDIATE|PARSING
         _lit 10
         _ parse
         _2drop
+        next
+endcode
+
+; ### :>
+code define_local, ':>', IMMEDIATE|PARSING
+
+        _ using_locals?
+        _zeq_if .2
+        ; first local in this definition
+        _ initialize_local_names
+        ; FIXME search order dependency
+        _quote "locals-enter"
+        _ find_symbol
+        _drop
+        _lit tagged_zero
+        _ accum
+        _ vector_insert_nth_destructive
+        _then .2
+
+        ; FIXME verify that we're inside a named quotation
+
+        _ parse_token                   ; -- string
+
+        ; add name to quotation locals so it can be found
+        ; assign index
+        _ local_names
+        _ vector_push
+
+        ; add tagged index to quotation as literal
+        _ locals_defined
+        _oneminus
+        _tag_fixnum
+        _ accum
+        _ vector_push
+
+        ; add local! to quotation as symbol
+        _quote "local!"
+        _ find_symbol
+        _drop
+
         next
 endcode
