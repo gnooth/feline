@@ -304,13 +304,19 @@ endcode
 code vector_insert_nth_destructive, 'vector-insert-nth!' ; element n vector --
         _ check_vector
 
+        _swap
+        _untag_fixnum
+        _swap
+
         push    this_register
         mov     this_register, rbx      ; -- element n vector
 
         _twodup                         ; -- element n vector n vector
         _vector_length                  ; -- element n vector n length
         _ugt                            ; -- element n vector
-        _abortq "vector-insert-nth n > length"
+        _if .1
+        _error "vector-insert-nth! n > length"
+        _then .1
 
         _dup                            ; -- element n vector vector
         _vector_length                  ; -- element n vector length
