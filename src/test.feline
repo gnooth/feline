@@ -191,4 +191,15 @@ array-test-2
 
 vector-test-1
 
+: %local-test-1 ( -- )
+    42 :> foo
+    foo
+;
+
+: local-test-1 ( -- )
+    %local-test-1 42 eq? check-t
+;
+
+local-test-1
+
 ?cr "Reached end of test.feline" write
