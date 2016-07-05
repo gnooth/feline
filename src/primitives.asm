@@ -572,3 +572,23 @@ code print, 'print'                     ; string-or-sbuf --
         _ cr
         next
 endcode
+
+; ### local@
+code local_fetch, 'local@'              ; index -- value
+        _untag_fixnum
+        _cells
+        add     rbx, r14
+        mov     rbx, [rbx]
+        next
+endcode
+
+; ### local1
+code local_store, 'local!'              ; value index --
+        _untag_fixnum
+        _cells
+        add     rbx, r14
+        mov     rax, [rbp]
+        mov     [rbx], rax
+        _2drop
+        next
+endcode
