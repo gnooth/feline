@@ -55,6 +55,9 @@ import decimal
 import constant
 \ import local
 
+import locals-enter
+import locals-leave
+
 import swap
 import dup
 import over
