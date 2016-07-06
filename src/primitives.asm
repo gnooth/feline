@@ -62,14 +62,15 @@ inline feline_if, 'if'                  ; ? true false --
 endinline
 
 ; ### when
-code when, 'when'                       ; ( ..a ? true: ( ..a -- ..a ) -- ..a )
+code when, 'when'                       ; ? quot --
         _swap
-        _f
-        _equal
-        _if .1
-        _drop
+        _tagged_if .1
+        _ callable_code_address
+        mov     rax, rbx
+        poprbx
+        call    rax
         _else .1
-        _ execute
+        _drop
         _then .1
         next
 endcode
