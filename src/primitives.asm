@@ -63,6 +63,7 @@ endinline
 
 ; ### when
 code when, 'when'                       ; ? quot --
+; if conditional is not f, calls quot
         _swap
         _tagged_if .1
         _ callable_code_address
@@ -76,14 +77,17 @@ code when, 'when'                       ; ? quot --
 endcode
 
 ; ### when*
-code when_star, 'when*'                 ; ( ..a ? true: ( ..a ? -- ..a ) -- ..a )
+code when_star, 'when*'                 ; ? quot --
+; if conditional is not f, calls quot
+; conditional remains on the stack to be consumed (or not) by quot
         _over
-        _f
-        _equal
-        _if .1
-        _2drop
+        _tagged_if .1
+        _ callable_code_address
+        mov     rax, rbx
+        poprbx
+        call    rax
         _else .1
-        _ execute
+        _2drop
         _then .1
         next
 endcode
