@@ -50,7 +50,7 @@ inline not, 'not'
 endinline
 
 ; ### if
-inline feline_if, 'if'                  ; ? true false --
+code feline_if, 'if'                    ; ? true false --
         mov     rax, [rbp + BYTES_PER_CELL] ; flag in rax
         mov     rdx, [rbp]              ; true quotation in rdx, false quotation in rbx
         cmp     rax, f_value
@@ -59,7 +59,8 @@ inline feline_if, 'if'                  ; ? true false --
         mov     rax, rbx
         _3drop
         call    rax
-endinline
+        next
+endcode
 
 ; ### when
 code when, 'when'                       ; ? quot --
