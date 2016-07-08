@@ -219,11 +219,21 @@ code cold, 'cold'                       ; --
         _ do_error
         _then .4
 
+        ; start in Feline mode
+        _ feline_mode
+
+        _squote "boot.feline"
+        _ system_file_pathname
+        _lit included_xt
+        _ catch
+        _ ?dup
+        _if .5
+        _ feline_do_error
+        _then .5
+
         _dotq "Meow!"
         _ cr
 
-        ; start in Feline mode
-        _ feline_mode
         jmp     repl
 
         next
