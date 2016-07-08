@@ -51,14 +51,44 @@ endinline
 
 ; ### if
 code feline_if, 'if'                    ; ? true false --
-        mov     rax, [rbp + BYTES_PER_CELL] ; flag in rax
+        mov     rax, [rbp + BYTES_PER_CELL] ; condition in rax
         mov     rdx, [rbp]              ; true quotation in rdx, false quotation in rbx
         cmp     rax, f_value
-        cmovne  rbx, rdx                ; if flag is not f, move true quotation into rbx
+        cmovne  rbx, rdx                ; if condition is not f, move true quotation into rbx
         _ callable_code_address         ; code address in rbx
         mov     rax, rbx
         _3drop
         call    rax
+        next
+endcode
+
+; ### if*
+code if_star, 'if*'                     ; ? true false --
+; Factor
+; "If the condition is true, it is retained on the stack before the true
+; quotation is called. Otherwise, the condition is removed from the stack
+; and the false quotation is called."
+
+        mov     rax, [rbp + BYTES_PER_CELL] ; condition in rax
+        cmp     rax, f_value
+        jne     .1
+        ; condition is false
+        ; false quotation is already in rbx
+        _2nip
+        _ callable_code_address
+        mov     rax, rbx
+        poprbx
+        call    rax
+        _return
+.1:
+        ; condition is true
+        ; drop false quotation
+        poprbx                          ; true quotation is now in rbx
+        _ callable_code_address
+        mov     rax, rbx
+        poprbx
+        call    rax
+
         next
 endcode
 

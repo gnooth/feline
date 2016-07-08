@@ -7,11 +7,11 @@ CURRENT: feline
 ( this is another comment )
 
 : check-t ( x -- )
-    t = [ "failed" write ] unless
+    t = [ "failed" print ] unless
 ;
 
 : check-false ( x -- )
-    f = [ "failed" write ] unless
+    f = [ "failed" print ] unless
 ;
 
 1 2 + 3 = check-t
@@ -201,5 +201,25 @@ vector-test-1
 ;
 
 local-test-1
+
+: if-test-1 ( -- )
+    t [ 42 ] [ 17 ] if 42 eq? check-t
+    f [ 42 ] [ 17 ] if 17 eq? check-t
+    0 [ 42 ] [ 17 ] if 42 eq? check-t
+;
+
+if-test-1
+
+: if*-test-1 ( -- )
+    clear
+    t [ 42 ] [ 17 ] if* get-datastack { t 42 } sequence= check-t
+    clear
+    f [ 42 ] [ 17 ] if* get-datastack { 17 } sequence= check-t
+    clear
+    0 [ 42 ] [ 17 ] if* get-datastack { 0 42 } sequence= check-t
+    clear
+;
+
+if*-test-1
 
 ?cr "Reached end of test.feline" write
