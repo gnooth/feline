@@ -577,3 +577,13 @@ code define_local, ':>', IMMEDIATE|PARSING
 
         next
 endcode
+
+; ### <<
+code parse_immediate, '<<', IMMEDIATE|PARSING
+        _quote ">>"
+        _ parse_until
+        _ vector_to_array
+        _ array_to_quotation
+        _ call_quotation
+        next
+endcode
