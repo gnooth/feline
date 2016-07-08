@@ -270,12 +270,6 @@ code parse_until, 'parse-until'         ; delimiter -- vector
         _ new_vector_untagged
         _tor                            ; -- delimiter          r: -- vector
 
-        _ accum
-        _tagged_if_not .0
-        _rfetch
-        _to accum
-        _then .0
-
 .top:
         _ parse_token                   ; -- delimiter string/f
         cmp     rbx, f_value
@@ -299,14 +293,6 @@ code parse_until, 'parse-until'         ; delimiter -- vector
 .bottom:
         _2drop
         _rfrom                          ; -- vector
-
-;         _dup
-;         _ accum
-;         _eq?
-;         _tagged_if .3
-;         _f
-;         _to accum
-;         _then .3
 
         next
 endcode
@@ -392,6 +378,99 @@ code parse_symbol, 'SYMBOL:', PARSING
         next
 endcode
 
+; ### define-local-internal
+code define_local_internal, 'define-local-internal' ; vector --
+        _ using_locals?
+        _zeq_if .2
+        ; first local in this definition
+        _ initialize_local_names
+        ; FIXME search order dependency
+        _quote "locals-enter"
+        _ find_symbol
+        _drop
+        _lit tagged_zero
+        _ feline_pick
+        _ vector_insert_nth_destructive
+        _then .2                        ; -- vector
+
+        ; FIXME verify that we're inside a named quotation
+
+        _ parse_token                   ; -- vector string
+
+        ; add name to quotation locals so it can be found
+        ; assign index
+        _ local_names
+        _ vector_push
+
+        ; add tagged index to quotation as literal
+        _ locals_defined
+        _oneminus
+        _tag_fixnum
+        _ over
+        _ vector_push
+
+        ; add local! to quotation as symbol
+        _quote "local!"
+        _ find_symbol
+        _drop
+        _swap
+        _ vector_push
+
+        next
+endcode
+
+; ### parse-definition
+code parse_definition, 'parse-definition' ; -- vector
+        _lit 10
+        _ new_vector_untagged
+        _duptor
+        _to accum
+.top:
+        _ parse_token                   ; -- delimiter string/f
+        cmp     rbx, f_value
+        jne     .1
+        poprbx
+        _ refill
+        _if .2
+        jmp     .top
+        _then .2
+        _error "unexpected end of input"
+.1:                                     ; --  string
+        _dup                            ; --
+        _quote '"'
+        _ string_equal?                 ; -- s ?
+        cmp     rbx, f_value
+        poprbx
+        jne     .bottom
+
+        _dup
+        _quote ":>"
+        _ string_equal?
+        _tagged_if .3
+        _drop
+        _rfetch
+        _ define_local_internal
+        jmp     .top
+        _then .3
+
+        _dup
+        _quote ";"
+        _ string_equal?
+        _tagged_if .4
+        _drop
+        jmp     .bottom
+        _then .4
+
+        _ process_token                 ; -- object
+        _rfetch
+        _ vector_push
+        jmp     .top
+
+.bottom:
+        _rfrom                          ; -- vector
+        next
+endcode
+
 ; ### :
 code define, ':'                        ; --
         _f
@@ -418,8 +497,7 @@ code define, ':'                        ; --
         _ vocab_add_symbol
         _then .2                        ; -- symbol
 
-        _quote ";"
-        _ parse_until
+        _ parse_definition
 
         _ using_locals?
         _if .3
