@@ -42,7 +42,9 @@ import [then]
 \ import :
 \ import ;
 
-import see
+\ import see
+: forth:disasm disasm ;
+
 import view
 
 import include
