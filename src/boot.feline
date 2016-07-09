@@ -19,6 +19,6 @@ CURRENT: feline
 
 : see
     parse-token ( -- string/f )
-    [ find-symbol [ symbol-code drop forth:disasm ] when ]
+    [ find-symbol [ symbol-code drop forth:disasm ] [ undefined ] if ]
     when*
 ;
