@@ -78,6 +78,20 @@ code object_type, 'object-type'         ; handle-or-object -- tagged-type-number
         next
 endcode
 
+; ### type?
+code type?, 'type?'                     ; x type-number -- ?
+        _swap
+        _ deref                         ; -- type-number object-address/0
+        _?dup_if .1
+        _object_type
+        _eq?
+        _return
+        _then .1
+
+        mov     ebx, f_value
+        next
+endcode
+
 ; ### ~object-unchecked
 code destroy_object_unchecked, '~object-unchecked' ; object --
 ; The argument is known to be the address of a valid heap object, not a
