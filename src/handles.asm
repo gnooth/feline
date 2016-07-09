@@ -120,6 +120,21 @@ code check_handle, 'check-handle'       ; handle -- handle
         next
 endcode
 
+; ### deref
+code deref, 'deref'                     ; x -- object-address/0
+        _dup
+        _ handle?                       ; -- 1/0
+        _if .1
+        _handle_to_object_unsafe
+        _return
+        _then .1
+
+        ; -- x
+        ; drop 0
+        xor     ebx, ebx
+        next
+endcode
+
 ; ### find-handle
 code find_handle, 'find-handle'         ; object -- handle | 0
         _ handle_space                  ; -- object addr
