@@ -80,19 +80,9 @@ file __FILE__
 %endmacro
 
 ; ### symbol?
-code symbol?, 'symbol?'                 ; handle -- t|f
-        _dup
-        _ handle?
-        _if .1
-        _handle_to_object_unsafe        ; -- object
-        _dup_if .2
-        _object_type                    ; -- object-type
+code symbol?, 'symbol?'                 ; handle -- ?
         _lit OBJECT_TYPE_SYMBOL
-        _eq?
-        _return
-        _then .2
-        _then .1
-        mov     ebx, f_value
+        _ type?
         next
 endcode
 
