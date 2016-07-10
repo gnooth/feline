@@ -142,8 +142,8 @@ code create_vocab, 'create-vocab'       ; string -- vocab
         next
 endcode
 
-; ### in:
-code in_colon, 'in:'
+; ### IN:
+code in_colon, 'IN:'
         _ parse_token                   ; -- string/f
         _dup
         _tagged_if .1
@@ -155,8 +155,8 @@ code in_colon, 'in:'
         next
 endcode
 
-; ### CONTEXT:
-code context_colon, 'CONTEXT:'
+; ### USING:
+code using_colon, 'USING:'
         _lit 10
         _ new_vector_untagged           ; -- handle
         _tor
@@ -182,16 +182,22 @@ code context_colon, 'CONTEXT:'
         next
 endcode
 
+; ### CONTEXT:
+code context_colon, 'CONTEXT:'
+        _ using_colon
+        next
+endcode
+
 ; ### order
 code order, 'order'
         _ ?cr
-        _dotq "using: "
+        _dotq "USING: "
         _ context_vector
         _lit dot_voc_xt
         _ vector_each
         _dotq ";"
         _ cr
-        _dotq "in: "
+        _dotq "IN: "
         _ current_vocab
         _ dot_voc
         next
