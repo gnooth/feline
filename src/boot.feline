@@ -14,8 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 LANGUAGE: feline
-CONTEXT: feline ;
-CURRENT: feline
+
+USING: feline ;
+IN: feline
 
 : see
     parse-token ( -- string/f )
