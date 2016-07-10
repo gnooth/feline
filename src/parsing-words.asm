@@ -347,9 +347,10 @@ code quote_symbol, '\', IMMEDIATE|PARSING ; -- symbol
         _else .1
         _ find_symbol
         _tagged_if .2
+        _ new_wrapper
         _return
         _else .2
-        _error "undefined word"
+        _ undefined
         _then .2
         _then .1
         next
