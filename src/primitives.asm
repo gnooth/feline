@@ -264,6 +264,24 @@ code string_to_number, 'string>number'  ; string -- n/f
         _return
         _then .1
 
+        _dup
+        _lit 1
+        _equal
+        _if .2
+
+        ; 1-char string
+        _drop
+        _cfetch
+        _ digit
+        _if .3
+        _tag_fixnum
+        _else .3
+        _f
+        _then .3
+        _return
+
+        _then .2
+
         _ basefetch
         _tor
         _ maybe_change_base             ; -- c-addr2 u2
@@ -271,17 +289,17 @@ code string_to_number, 'string>number'  ; string -- n/f
         _rfrom
         _ basestore
 
-        _zeq_if .2                      ; -- d
+        _zeq_if .4                      ; -- d
         ; conversion failed
         _2drop
         _f
         _return
-        _then .2
+        _then .4
 
         _ negative?
-        _if .3
+        _if .5
         _ dnegate
-        _then .3
+        _then .5
 
         ; REVIEW
         _drop
