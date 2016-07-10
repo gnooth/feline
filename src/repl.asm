@@ -94,45 +94,94 @@ code execute_symbol, 'execute-symbol'   ; symbol --
         next
 endcode
 
+; ### read-object
+code read_object, 'read-object'         ; -- object ?
+
+        _ parse_token                   ; -- string/f
+
+        _dup
+        _f
+        _eq?
+        _tagged_if .1
+        _drop
+        _f
+        _f
+        _return
+        _then .1                        ; -- string
+
+        _ token_character_literal?
+        _tagged_if .2                   ; -- char
+        _t
+        _return
+        _then .2
+
+        _ token_string_literal?
+        _tagged_if .3                   ; -- string
+        _t
+        _return
+        _then .3
+
+        _dup
+        _ string_to_number              ; -- string n/f
+        _dup
+        _tagged_if .4                   ; -- string n
+        _nip
+        _t
+        _return
+        _else .4
+        _drop
+        _then .4                        ; -- string
+
+        _ find_symbol
+        _tagged_if .5                   ; -- symbol
+
+        _dup
+        _ parsing_word?
+        _tagged_if .6
+        _ symbol_xt
+        _execute
+        _then .6
+        _t
+        _return
+
+        _else .5
+        _ undefined
+        _then .5
+        next
+endcode
+
 ; ### eval
 code eval, 'eval'                       ; --
 .top:
         _ ?stack
-        _ parse_token
-        _dup
-        _tagged_if .2
-        _ verify_string
-        _ find_symbol
-        _tagged_if .3
-        _ execute_symbol
-        _else .3
 
-        _ token_character_literal?
-        _tagged_if .4
-        jmp     .top
-        _then .4
+        _ read_object                   ; -- object ?
 
-        _ token_string_literal?
-        _tagged_if .5
-        jmp     .top
-        _then .5
-
-        _dup
-        _ string_to_number
-        cmp     rbx, f_value
-        je      .error
-        _nip
-
-        _then .3
-        _else .2
+        _f
+        _eq?
+        _tagged_if .1
         _drop
         _return
-        _then .2
-        jmp     .top
+        _then .1
 
-.error:
-        _drop
-        _ undefined
+        _dup
+        _ symbol?
+        _tagged_if .2
+        _ execute_symbol
+        jmp     .top
+        _then .2
+
+        ; not a symbol
+
+        ; check for wrapper
+        _dup
+        _ wrapper?
+        _tagged_if .3
+        _ wrapped
+        _then .3
+
+        ; leave object on the stack
+        jmp     .top
 
         next
 endcode
