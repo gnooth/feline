@@ -6,12 +6,16 @@ CURRENT: feline
 // this is a comment
 ( this is another comment )
 
+: failed ( -- )
+    ?cr "failed" print
+;
+
 : check-t ( x -- )
-    t = [ "failed" print ] unless
+    t = [ failed ] unless
 ;
 
 : check-false ( x -- )
-    f = [ "failed" print ] unless
+    f = [ failed ] unless
 ;
 
 1 2 + 3 = check-t
@@ -221,5 +225,30 @@ if-test-1
 ;
 
 if*-test-1
+
+: symbol?-test-1 ( -- )
+    \ dup symbol? check-t
+    \ check-t symbol? check-t
+    42 symbol? check-false
+    -3 symbol? check-false
+    "test" symbol? check-false
+;
+
+symbol?-test-1
+
+: string>number-test-1 ( -- )
+    "." string>number check-false
+    "-" string>number check-false
+;
+
+string>number-test-1
+
+: \-test-1 ( -- )
+    [ \ dup ] call symbol? check-t
+    3 [ dup ] call get-datastack { 3 3 } sequence= check-t
+    clear
+;
+
+\-test-1
 
 ?cr "Reached end of test.feline" write
