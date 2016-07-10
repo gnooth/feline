@@ -125,22 +125,28 @@ endcode
 
 ; ### compile-literal
 code compile_literal, 'compile-literal' ; literal --
+        _dup
+        _ wrapper?
+        _tagged_if .1
+        _ wrapped
+        _then .1
+
         _ pushrbx_bytes
         _ emit_qword
         _dup
         _lit $100000000
         _ult
-        _if .1
+        _if .2
         _lit $0bb
         _ emit_byte
         _ emit_dword
-        _else .1
+        _else .2
         _lit $48
         _ emit_byte
         _lit $0bb
         _ emit_byte
         _ emit_qword
-        _then .1
+        _then .2
         next
 endcode
 
