@@ -268,6 +268,15 @@ code dot_object, '.object'              ; handle-or-object --
         _return
         _then .11
 
+        _dup
+        _ wrapper?
+        _tagged_if .12
+        _dotq "\ "
+        _ wrapped
+        _ dot_object
+        _return
+        _then .12
+
         ; give up
         _ hdot
 
