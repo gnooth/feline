@@ -125,23 +125,22 @@ code new_vector, '<vector>'             ; capacity -- handle
         _untag_fixnum
 
 new_vector_untagged:
+
         _lit 4
-        _cells
-        _ allocate_object
-        _duptor                         ; -- capacity vector                    r: -- vector
-        _lit 4
-        _cells
-        _ erase                         ; -- capacity                           r: -- vector
+        _ allocate_cells
+        _tor                            ; -- capacity                           r: -- vector
+
         _lit OBJECT_TYPE_VECTOR
         _rfetch
         _object_set_type                ; -- capacity
+
         _dup                            ; -- capacity capacity                  r: -- vector
-        _cells
-        _ iallocate                     ; -- capacity data-address              r: -- vector
+        _ allocate_cells                ; -- capacity data-address              r: -- vector
         _rfetch                         ; -- capacity data-address vector       r: -- vector
         _vector_set_data                ; -- capacity                           r: -- vector
         _rfetch                         ; -- capacity vector                    r: -- vector
         _vector_set_capacity            ; --                                    r: -- vector
+
         _rfrom                          ; -- vector
 
         ; return handle of allocated object

@@ -119,14 +119,13 @@ endcode
 ; ### <symbol>
 code new_symbol, '<symbol>'             ; name vocab -- symbol
 ; 6 cells: object header, name, hashcode, vocab, xt, def
-        _lit 6                          ; -- name vocab 6
-        _cells                          ; -- name vocab 48
-        _dup                            ; -- name vocab 48 48
-        _ allocate_object               ; -- name vocab 48 object-address
+
+        _lit 6
+        _ allocate_cells                ; -- object-address
+
         push    this_register
-        mov     this_register, rbx      ; -- name vocab 48 object-address
-        _swap
-        _ erase                         ; -- name vocab
+        mov     this_register, rbx
+        poprbx
 
         _this_object_set_type OBJECT_TYPE_SYMBOL
 

@@ -93,14 +93,13 @@ endcode
 ; ### array>quotation
 code array_to_quotation, 'array>quotation' ; array -- quotation
 ; 3 cells: object header, array, code
-        _lit 3                          ; -- array 3
-        _cells                          ; -- array 24
-        _dup                            ; -- array 24 24
-        _ allocate_object               ; -- array 24 object-address
+
+        _lit 3
+        _ allocate_cells
+
         push    this_register
-        mov     this_register, rbx      ; -- array 24 object-address
-        _swap
-        _ erase                         ; -- array
+        mov     this_register, rbx
+        poprbx
 
         _this_object_set_type OBJECT_TYPE_QUOTATION
 
