@@ -27,6 +27,10 @@ file __FILE__
         _this_set_slot1
 %endmacro
 
+%macro  _symbol_hashcode 0              ; symbol -- hashcode
+        _slot2
+%endmacro
+
 %macro  _this_symbol_hashcode 0         ; -- hashcode
         _this_slot2
 %endmacro
@@ -155,6 +159,13 @@ endcode
 code symbol_name, 'symbol-name'         ; symbol -- name
         _ check_symbol
         _symbol_name
+        next
+endcode
+
+; ### symbol-hashcode
+code symbol_hashcode, 'symbol-hashcode' ; symbol -- hashcode
+        _ check_symbol
+        _symbol_hashcode
         next
 endcode
 
