@@ -525,3 +525,32 @@ hashtable_grow_unchecked:
         pop     this_register
         next
 endcode
+
+; ### hash-combine
+code hash_combine, 'hash-combine'       ; hash1 hash2 -- newhash
+
+        sar     rbx, TAG_BITS           ; hash2 (untagged) in rbx
+        mov     rax, [rbp]
+        sar     rax, TAG_BITS           ; hash1 (untagged) in rax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+
+        mov     rdx, $9e3779b97f4a7800
+        add     rbx, rdx
+
+        mov     rdx, rax
+        shl     rdx, 6
+        add     rbx, rdx
+
+        mov     rdx, rax
+        sar     rdx, 2
+        add     rbx, rdx
+
+        xor     rbx, rax
+
+        _ MOST_POSITIVE_FIXNUM
+        _and
+
+        _tag_fixnum
+
+        next
+endcode
