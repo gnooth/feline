@@ -453,9 +453,7 @@ code force_hashcode, 'force-hashcode'   ; handle-or-string -- hashcode
         _dup
         _string_hashcode
         _dup
-        _f
-        _notequal
-        _if .1
+        _tagged_if .1
         _nip
         _else .1
         _drop
