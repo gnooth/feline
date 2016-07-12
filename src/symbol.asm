@@ -39,15 +39,15 @@ file __FILE__
         _this_set_slot2
 %endmacro
 
-%macro  _symbol_vocab 0                 ; symbol -- vocab
+%macro  _symbol_vocab_name 0            ; symbol -- vocab-name
         _slot3
 %endmacro
 
-%macro  _this_symbol_vocab 0            ; -- vocab
+%macro  _this_symbol_vocab_name 0       ; -- vocab-name
         _this_slot3
 %endmacro
 
-%macro  _this_symbol_set_vocab 0        ; vocab --
+%macro  _this_symbol_set_vocab_name 0   ; vocab-name --
         _this_set_slot3
 %endmacro
 
@@ -121,8 +121,8 @@ code check_symbol, 'check-symbol'       ; handle -- symbol
 endcode
 
 ; ### <symbol>
-code new_symbol, '<symbol>'             ; name vocab -- symbol
-; 6 cells: object header, name, hashcode, vocab, xt, def
+code new_symbol, '<symbol>'             ; name vocab-name -- symbol
+; 6 cells: object header, name, hashcode, vocab-name, xt, def
 
         _lit 6
         _ allocate_cells                ; -- object-address
@@ -133,7 +133,7 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
 
         _this_object_set_type OBJECT_TYPE_SYMBOL
 
-        _this_symbol_set_vocab
+        _this_symbol_set_vocab_name
         _this_symbol_set_name
 
         _f
@@ -170,9 +170,9 @@ code symbol_hashcode, 'symbol-hashcode' ; symbol -- hashcode
 endcode
 
 ; ### symbol-vocab
-code symbol_vocab, 'symbol-vocab'       ; symbol -- vocab
+code symbol_vocab_name, 'symbol-vocab-name' ; symbol -- vocab-name
         _ check_symbol
-        _symbol_vocab
+        _symbol_vocab_name
         next
 endcode
 
