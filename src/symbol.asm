@@ -121,7 +121,7 @@ code check_symbol, 'check-symbol'       ; handle -- symbol
 endcode
 
 ; ### <symbol>
-code new_symbol, '<symbol>'             ; name vocab-name -- symbol
+code new_symbol, '<symbol>'             ; name vocab -- symbol
 ; 6 cells: object header, name, vocab-name, hashcode, xt, def
 
         _lit 6
@@ -133,7 +133,9 @@ code new_symbol, '<symbol>'             ; name vocab-name -- symbol
 
         _this_object_set_type OBJECT_TYPE_SYMBOL
 
+        _ vocab_name
         _this_symbol_set_vocab_name
+
         _this_symbol_set_name
 
         _f
