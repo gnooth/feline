@@ -27,27 +27,27 @@ file __FILE__
         _this_set_slot1
 %endmacro
 
-%macro  _symbol_hashcode 0              ; symbol -- hashcode
+%macro  _symbol_vocab_name 0            ; symbol -- vocab-name
         _slot2
 %endmacro
 
-%macro  _this_symbol_hashcode 0         ; -- hashcode
+%macro  _this_symbol_vocab_name 0       ; -- vocab-name
         _this_slot2
 %endmacro
 
-%macro  _this_symbol_set_hashcode 0     ; hashcode --
+%macro  _this_symbol_set_vocab_name 0   ; vocab-name --
         _this_set_slot2
 %endmacro
 
-%macro  _symbol_vocab_name 0            ; symbol -- vocab-name
+%macro  _symbol_hashcode 0              ; symbol -- hashcode
         _slot3
 %endmacro
 
-%macro  _this_symbol_vocab_name 0       ; -- vocab-name
+%macro  _this_symbol_hashcode 0         ; -- hashcode
         _this_slot3
 %endmacro
 
-%macro  _this_symbol_set_vocab_name 0   ; vocab-name --
+%macro  _this_symbol_set_hashcode 0     ; hashcode --
         _this_set_slot3
 %endmacro
 
@@ -122,7 +122,7 @@ endcode
 
 ; ### <symbol>
 code new_symbol, '<symbol>'             ; name vocab-name -- symbol
-; 6 cells: object header, name, hashcode, vocab-name, xt, def
+; 6 cells: object header, name, vocab-name, hashcode, xt, def
 
         _lit 6
         _ allocate_cells                ; -- object-address
