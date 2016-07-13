@@ -126,6 +126,8 @@ static void args(int argc, char **argv)
   argv_data = (Cell) argv;
 }
 
+void * data_stack_base;
+
 static void initialize_forth()
 {
   extern Cell dp_data;
@@ -162,7 +164,8 @@ static void initialize_forth()
   // data stack
   stack_cells_data = 4096;
   size_t data_stack_size = stack_cells_data * sizeof(Cell);
-  sp0_data = (Cell) malloc(data_stack_size + 64) + data_stack_size;
+  data_stack_base = malloc(data_stack_size + 64);
+  sp0_data = (Cell) data_stack_base + data_stack_size;
 
   word_buffer_data = (Cell) malloc(260);
 }
