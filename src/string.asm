@@ -217,51 +217,6 @@ endcode
         _cfetch
 %endmacro
 
-; ### <transient-string>
-code new_transient_string, '<transient-string>' ; capacity -- string
-
-; locals:
-%define capacity        local0
-%define string          local1
-
-        _locals_enter                   ; -- capacity
-        popd    capacity                ; --
-
-        _lit STRING_DATA_OFFSET
-        pushd capacity
-        _oneplus                        ; terminal null byte
-        _plus                           ; -- size
-        _dup
-        _ transient_alloc               ; -- size string
-        popd    string                  ; -- size
-        pushd   string                  ; -- size string
-        _swap                           ; -- string size
-        _ erase                         ; --
-        _lit OBJECT_TYPE_STRING
-        pushd   string
-        _object_set_type                ; --
-
-        pushd   string
-        _lit OBJECT_TRANSIENT_BIT
-        _object_set_flags               ; --
-
-        pushd   capacity
-        pushd   string
-        _string_set_length              ; --
-
-        _f
-        pushd   string
-        _string_set_hashcode
-
-        pushd   string                  ; -- string
-        _locals_leave
-        next
-
-%undef capacity
-%undef string
-
-endcode
-
 ; ### >string
 code copy_to_string, '>string'          ; c-addr u -- handle
 ; Arguments are untagged.
