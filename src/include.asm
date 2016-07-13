@@ -489,13 +489,6 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _tagged_if .3
         _t
         _ source_filename
-        ; make sure it's not a transient string!
-        _dup
-        _ transient?
-        _tagged_if .4
-        _ string_from
-        _ copy_to_string
-        _then .4
         _ source_files
         _ set_at
         _then .3

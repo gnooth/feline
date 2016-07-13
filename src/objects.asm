@@ -49,17 +49,6 @@ code object?, 'object?'                 ; x -- t|f
         next
 endcode
 
-; ### transient?
-code transient?, 'transient?'           ; object -- t|f
-        _ check_string
-        _object_flags
-        and     ebx, OBJECT_TRANSIENT_BIT
-        mov     eax, t_value
-        mov     ebx, f_value
-        cmovnz  ebx, eax
-        next
-endcode
-
 ; ### vector
 constant vector, 'vector', tagged_fixnum(OBJECT_TYPE_VECTOR)
 

@@ -29,7 +29,6 @@ OBJECT_TYPE_WRAPPER             equ 10
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
-OBJECT_TRANSIENT_BIT            equ 2
 OBJECT_ALLOCATED_BIT            equ 4
 
 %macro  _handle_to_object_unsafe 0

@@ -312,34 +312,21 @@ endcode
 ; ### ~string-unchecked
 code destroy_string_unchecked, '~string-unchecked' ; string --
         _dup
-        _object_flags
-        and     ebx, OBJECT_TRANSIENT_BIT
-        _zne
-        _if .2
-        ; Zero out the object header so it won't look like a valid object
-        ; after it has been destroyed.
-        xor     eax, eax
-        mov     [rbx], rax
-        _drop
-        _return
-        _then .2
-
-        _dup
         _object_allocated?
-        _if .3
+        _if .1
         _ in_gc?
-        _zeq_if .4
+        _zeq_if .2
         _dup
         _ release_handle_for_object
-        _then .4
+        _then .2
         ; Zero out the object header so it won't look like a valid object
         ; after it has been destroyed.
         xor     eax, eax
         mov     [rbx], rax
         _ ifree
-        _else .3
+        _else .1
         _drop
-        _then .3
+        _then .1
         next
 endcode
 
