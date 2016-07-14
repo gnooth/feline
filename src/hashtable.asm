@@ -232,18 +232,14 @@ code new_hashtable, '<hashtable>'       ; fixnum -- hashtable
         _untag_fixnum
 
         ; 5 cells (object header, count, deleted, capacity, data address)
-        _lit 5                          ; -- n 5
-        _cells                          ; -- n 40
-        _dup                            ; -- n 40 40
-        _ allocate_object               ; -- n 40 object-address
+        _lit 5
+        _ allocate_cells
         push    this_register
-        mov     this_register, rbx      ; -- n 40 object-address
-        _swap
-        _ erase                         ; -- n
+        mov     this_register, rbx
+        poprbx
 
         _this_object_set_type OBJECT_TYPE_HASHTABLE
 
-        ; FIXME calculate capacity (must be power of 2)
         _dup
         _this_hashtable_set_capacity    ; -- n
 
