@@ -271,4 +271,13 @@ hashcode-test-1
 
 hashcode-test-2
 
+: length-test-1 ( -- )
+    "test" length 4 eq? check-t
+    "testing" string>sbuf length 7 eq? check-t
+    { 1 2 3 } length 3 eq? check-t
+    V{ 1 2 3 "test" } length 4 eq? check-t
+;
+
+length-test-1
+
 ?cr "Reached end of test.feline" write
