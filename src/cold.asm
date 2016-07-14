@@ -165,6 +165,8 @@ code cold, 'cold'                       ; --
         _ store
         _then .2
 
+        _ initialize_task
+
         _ initialize_handle_space
 
         _lit 256
@@ -189,7 +191,6 @@ code cold, 'cold'                       ; --
 
         _ initialize_source_files
 
-        _ initialize_task
         _ forth_mode
         _squote "boot.forth"
         _ system_file_pathname
