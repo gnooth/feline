@@ -251,4 +251,24 @@ string>number-test-1
 
 \-test-1
 
+: hashcode-test-1 ( -- )
+    "test"
+    [ string-hashcode check-false ] keep
+    [ hashcode dup fixnum? check-t ] keep
+    string-hashcode eq? check-t
+;
+
+hashcode-test-1
+
+: hashcode-test-2 ( -- )
+    \ dup
+    [ symbol-name "dup" string= check-t ] keep
+    [ symbol-vocab-name "feline" string= check-t ] keep
+    [ symbol-hashcode ] keep
+    [ symbol-name hashcode ] keep
+    symbol-vocab-name hashcode hash-combine eq? check-t
+;
+
+hashcode-test-2
+
 ?cr "Reached end of test.feline" write
