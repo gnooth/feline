@@ -82,6 +82,9 @@ code add_method, 'add-method'           ; -- method-xt untagged-type-number gene
         next
 endcode
 
+; ### hashcode
+generic hashcode, 'hashcode'
+
 ; ### length
 generic length, 'length'
 
@@ -102,6 +105,19 @@ generic new_sequence, 'new-sequence'    ; len seq -- newseq
 
 ; ### initialize-generic-functions
 code initialize_generic_functions, 'initialize-generic-functions' ; --
+        _lit hashcode_xt
+        _ initialize_generic_function
+
+        _lit force_hashcode_xt
+        _lit OBJECT_TYPE_STRING
+        _lit hashcode_xt
+        _ add_method
+
+        _lit symbol_hashcode_xt
+        _lit OBJECT_TYPE_SYMBOL
+        _lit hashcode_xt
+        _ add_method
+
         _lit length_xt
         _ initialize_generic_function
 
