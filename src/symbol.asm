@@ -138,7 +138,11 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
 
         _this_symbol_set_name
 
-        _f
+        _this_symbol_name
+        _ force_hashcode
+        _this_symbol_vocab_name
+        _ force_hashcode
+        _ hash_combine
         _this_symbol_set_hashcode
 
         _f
