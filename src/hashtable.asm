@@ -231,6 +231,8 @@ code new_hashtable, '<hashtable>'       ; fixnum -- hashtable
         _ next_power_of_2               ; -- fixnum
         _untag_fixnum
 
+new_hashtable_untagged:
+
         ; 5 cells (object header, count, deleted, capacity, data address)
         _lit 5
         _ allocate_cells

@@ -127,21 +127,19 @@ endcode
 
 ; ### <vocab>
 code new_vocab, '<vocab>'               ;  name -- vocab
-        _lit 4                          ; -- name 4
-        _cells                          ; -- name 32
-        _dup                            ; -- name 32 32
-        _ allocate_object               ; -- name 32 object-address
+; 4 cells (object header, name, hashtable, wordlist)
+        _lit 4
+        _ allocate_cells
         push    this_register
-        mov     this_register, rbx      ; -- name 32 object-address
-        _swap
-        _ erase                         ; -- name
+        mov     this_register, rbx
+        poprbx
 
         _this_object_set_type OBJECT_TYPE_VOCAB
 
         _this_vocab_set_name
 
-        _lit tagged_fixnum(32)
-        _ new_hashtable
+        _lit 32
+        _ new_hashtable_untagged
         _this_vocab_set_hashtable
 
         _f
