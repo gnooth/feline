@@ -68,6 +68,7 @@ code error_not_string, 'error-not-string' ; x --
         next
 endcode
 
+; ### verify-unboxed-string
 code verify_unboxed_string, 'verify-unboxed-string' ; string -- string
         ; Make sure address is in a permissible range.
         _dup                            ; -- x x
