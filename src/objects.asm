@@ -62,20 +62,37 @@ constant sbuf, 'sbuf', tagged_fixnum(OBJECT_TYPE_SBUF)
 constant array, 'array', tagged_fixnum(OBJECT_TYPE_ARRAY)
 
 ; ### object-type
-code object_type, 'object-type'         ; handle-or-object -- tagged-type-number
+code object_type, 'object-type'         ; handle-or-object -- n/f
+; Return value is tagged.
         _dup
-        _ handle?
+        _fixnum?
         _if .1
-        _handle_to_object_unsafe
-        _object_type
+        mov     ebx, OBJECT_TYPE_FIXNUM
         _tag_fixnum
         _return
         _then .1
 
-        ; Not allocated. Must be a string or not an object.
-        _ check_string                  ; -- string
+        _dup
+        _ handle?
+        _if .2
+        _handle_to_object_unsafe
         _object_type
         _tag_fixnum
+        _return
+        _then .2
+
+        ; Not allocated. Must be a string or not an object.
+        _dup
+        _ string?
+        _tagged_if .3
+        mov     ebx, OBJECT_TYPE_STRING
+        _tag_fixnum
+        _return
+        _then .3
+
+        ; Apparently not an object.
+        mov     ebx, f_value
+
         next
 endcode
 
