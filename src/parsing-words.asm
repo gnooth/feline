@@ -498,6 +498,9 @@ code define, ':'                        ; --
         _ vocab_add_symbol
         _then .2                        ; -- symbol
 
+        _dup
+        _ set_last_word
+
         _ parse_definition
 
         _ using_locals?

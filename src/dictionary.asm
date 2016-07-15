@@ -346,9 +346,6 @@ code noname_header, 'noname-header'     ; --
         next
 endcode
 
-; ### last-word
-value last_word, 'last-word', f
-
 ; ### make-header
 code make_header, 'make-header'         ; c-addr u --
         _ warning

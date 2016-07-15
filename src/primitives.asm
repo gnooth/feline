@@ -15,6 +15,15 @@
 
 file __FILE__
 
+; ### last-word
+value last_word, 'last-word', f
+
+; ### set-last-word
+code set_last_word, 'set-last-word'     ; word --
+        _to last_word
+        next
+endcode
+
 %macro _eq? 0                           ; n1 n2 -- t|f
         mov     eax, t_value
         cmp     rbx, [rbp]
