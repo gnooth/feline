@@ -83,8 +83,22 @@ code check_fixnum, 'check-fixnum'       ; fixnum -- untagged-fixnum
         next
 endcode
 
+; ### fixnum-equal?
+code fixnum_equal?, 'fixnum-equal?'     ; obj1 obj2 -- ?
+        _over
+        _ bignum?
+        _tagged_if .1
+        _ fixnum_to_bignum
+        _ bignum_equal
+        _else .1
+        _2drop
+        _f
+        _then .1
+        next
+endcode
+
 ; ### fixnum<
-inline fixnum_lt, 'fixnum<'             ; x y -- t|f
+inline fixnum_lt, 'fixnum<'             ; x y -- ?
 ; No type checking.
         mov     eax, t_value
         cmp     [rbp], rbx
@@ -94,7 +108,7 @@ inline fixnum_lt, 'fixnum<'             ; x y -- t|f
 endinline
 
 ; ### <
-code feline_lt, '<'                     ; x y -- t|f
+code feline_lt, '<'                     ; x y -- ?
 ; FIXME optimize
         _check_fixnum
         _swap
@@ -105,7 +119,7 @@ code feline_lt, '<'                     ; x y -- t|f
 endcode
 
 ; ### fixnum>=
-code fixnum_ge, 'fixnum>='              ; x y -- t|f
+code fixnum_ge, 'fixnum>='              ; x y -- ?
 ; No type checking.
         mov     eax, t_value
         cmp     [rbp], rbx
@@ -116,7 +130,7 @@ code fixnum_ge, 'fixnum>='              ; x y -- t|f
 endcode
 
 ; ### >=
-code feline_ge, '>='                    ; x y -- t|f
+code feline_ge, '>='                    ; x y -- ?
 ; FIXME optimize
         _ check_fixnum
         _swap
