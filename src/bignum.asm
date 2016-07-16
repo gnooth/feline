@@ -120,6 +120,18 @@ code bignum_to_string, 'bignum>string'  ; handle-to-bignum -- string
         next
 endcode
 
+; ### bignum=
+code bignum_equal, 'bignum='            ; x y -- ?
+        _ check_bignum
+        _bignum_value
+        _swap
+        _ check_bignum
+        _bignum_value
+        _equal
+        _tag_boolean
+        next
+endcode
+
 ; ### bignum+
 code bignum_plus, 'bignum+'             ; x y -- z
         _ check_bignum
