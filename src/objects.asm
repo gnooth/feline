@@ -73,22 +73,31 @@ code object_type, 'object-type'         ; handle-or-object -- n/f
         _then .1
 
         _dup
-        _ handle?
-        _if .2
-        _handle_to_object_unsafe
-        _object_type
+        _f
+        _eq?
+        _tagged_if .2
+        mov     ebx, OBJECT_TYPE_F
         _tag_fixnum
         _return
         _then .2
 
-        ; Not allocated. Must be a string or not an object.
         _dup
-        _ string?
-        _tagged_if .3
-        mov     ebx, OBJECT_TYPE_STRING
+        _ handle?
+        _if .3
+        _handle_to_object_unsafe
+        _object_type
         _tag_fixnum
         _return
         _then .3
+
+        ; Not allocated. Must be a string or not an object.
+        _dup
+        _ string?
+        _tagged_if .4
+        mov     ebx, OBJECT_TYPE_STRING
+        _tag_fixnum
+        _return
+        _then .4
 
         ; Apparently not an object.
         mov     ebx, f_value
