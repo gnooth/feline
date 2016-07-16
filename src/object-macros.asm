@@ -17,16 +17,17 @@ file __FILE__
 
 ; Object types
 OBJECT_TYPE_FIXNUM              equ  1
-OBJECT_TYPE_VECTOR              equ  2
-OBJECT_TYPE_STRING              equ  3
-OBJECT_TYPE_SBUF                equ  4
-OBJECT_TYPE_ARRAY               equ  5
-OBJECT_TYPE_HASHTABLE           equ  6
-OBJECT_TYPE_BIGNUM              equ  7
-OBJECT_TYPE_SYMBOL              equ  8
-OBJECT_TYPE_VOCAB               equ  9
-OBJECT_TYPE_QUOTATION           equ 10
-OBJECT_TYPE_WRAPPER             equ 11
+OBJECT_TYPE_F                   equ  2
+OBJECT_TYPE_VECTOR              equ  3
+OBJECT_TYPE_STRING              equ  4
+OBJECT_TYPE_SBUF                equ  5
+OBJECT_TYPE_ARRAY               equ  6
+OBJECT_TYPE_HASHTABLE           equ  7
+OBJECT_TYPE_BIGNUM              equ  8
+OBJECT_TYPE_SYMBOL              equ  9
+OBJECT_TYPE_VOCAB               equ 10
+OBJECT_TYPE_QUOTATION           equ 11
+OBJECT_TYPE_WRAPPER             equ 12
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
