@@ -20,16 +20,25 @@ code lookup_method, 'lookup-method'     ; object methods-vector -- object xt
         _tor                            ; -- object
         _dup
         _ object_type                   ; -- object tagged-type-number
+
+        _dup
+        _f
+        _eq?
+        _tagged_if .1
+        ; FIXME error message
+        _error "no object type"
+        _then .1
+
         _rfrom                          ; -- object tagged-type-number vector
         _twodup
         _ vector_length
         _ fixnum_lt
-        _tagged_if .1                   ; -- object n vector
+        _tagged_if .2                   ; -- object n vector
         _ vector_nth_unsafe             ; -- object method|f
-        _else .1
+        _else .2
         _2drop                          ; -- object
         _f                              ; -- object f
-        _then .1
+        _then .2
         next
 endcode
 
