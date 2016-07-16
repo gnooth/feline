@@ -94,6 +94,16 @@ endcode
 ; ### hashcode
 generic hashcode, 'hashcode'
 
+; ### equal?
+generic equal?, 'equal?'
+
+; ### f-equal?
+code f_equal?, 'f-equal?'
+        _2drop
+        _f
+        next
+endcode
+
 ; ### length
 generic length, 'length'
 
@@ -125,6 +135,29 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _lit symbol_hashcode_xt
         _lit OBJECT_TYPE_SYMBOL
         _lit hashcode_xt
+        _ add_method
+
+        _lit equal?_xt
+        _ initialize_generic_function
+
+        _lit fixnum_equal?_xt
+        _lit OBJECT_TYPE_FIXNUM
+        _lit equal?_xt
+        _ add_method
+
+        _lit string_equal?_xt
+        _lit OBJECT_TYPE_STRING
+        _lit equal?_xt
+        _ add_method
+
+        _lit symbol_equal?_xt
+        _lit OBJECT_TYPE_SYMBOL
+        _lit equal?_xt
+        _ add_method
+
+        _lit f_equal?_xt
+        _lit OBJECT_TYPE_F
+        _lit equal?_xt
         _ add_method
 
         _lit length_xt
