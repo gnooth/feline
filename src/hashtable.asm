@@ -351,7 +351,7 @@ find_index_for_key_unchecked:
 
         _this_hashtable_nth_key         ; -- key start-index key nth-key
 
-        _ equal?
+        _ feline_equal
         _tagged_if .2                   ; -- key start-index
         ; found key
         _nip
@@ -393,7 +393,7 @@ code hashtable_nth_value, 'hashtable-nth-value' ; n hashtable -- value
 endcode
 
 ; ### at*
-code at_star, 'at*'                     ; key hashtable -- value ?
+code at_star, 'at*'                     ; key hashtable -- value/f ?
         _tuck                           ; -- hashtable key hashtable
         _ find_index_for_key            ; -- hashtable index t|f
         _tagged_if .1
