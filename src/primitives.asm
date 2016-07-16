@@ -38,9 +38,17 @@ inline eq?, 'eq?'
 endinline
 
 ; ### =
-inline feline_equal, '='                ; n1 n2 -- t|f
+code feline_equal, '='                  ; n1 n2 -- ?
+        _twodup
         _eq?
-endinline
+        _tagged_if .1
+        _2drop
+        _t
+        _else .1
+        _ equal?
+        _then .1
+        next
+endcode
 
 ; ### zero?
 inline zero?, 'zero?'
