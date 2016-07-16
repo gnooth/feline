@@ -161,6 +161,13 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
         next
 endcode
 
+; ### symbol-equal?
+code symbol_equal?, 'symbol-equal?'
+        _2drop
+        _f
+        next
+endcode
+
 ; ### symbol-name
 code symbol_name, 'symbol-name'         ; symbol -- name
         _ check_symbol
