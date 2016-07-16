@@ -313,8 +313,7 @@ code hashtable_data_address, 'hashtable-data-address' ; ht -- data-address
 endcode
 
 %macro  _this_hashtable_hash_at 0       ; key -- start-index
-; For now, keys must be strings.
-        _ force_hashcode
+        _ hashcode
         _untag_fixnum
         _this_hashtable_mask
         _and
@@ -337,6 +336,7 @@ code find_index_for_key, 'find-index-for-key' ; key hashtable -- tagged-index t|
         _ check_hashtable
 
 find_index_for_key_unchecked:
+
         push    this_register
         popd    this_register           ; -- key
         _dup
@@ -351,7 +351,7 @@ find_index_for_key_unchecked:
 
         _this_hashtable_nth_key         ; -- key start-index key nth-key
 
-        _ string_equal?
+        _ equal?
         _tagged_if .2                   ; -- key start-index
         ; found key
         _nip
@@ -393,7 +393,7 @@ code hashtable_nth_value, 'hashtable-nth-value' ; n hashtable -- value
 endcode
 
 ; ### at*
-code at_star, 'at*'                     ; key hashtable -- value t|f
+code at_star, 'at*'                     ; key hashtable -- value ?
         _tuck                           ; -- hashtable key hashtable
         _ find_index_for_key            ; -- hashtable index t|f
         _tagged_if .1
