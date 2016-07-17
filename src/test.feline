@@ -11,15 +11,15 @@ CURRENT: feline
 ;
 
 : check-t ( x -- )
-    t = [ failed ] unless
+    t eq? [ failed ] unless
 ;
 
 : check-false ( x -- )
-    f = [ failed ] unless
+    f eq? [ failed ] unless
 ;
 
-1 2 + 3 = check-t
-1 2 + 4 = check-false
+1 2 + 3 eq? check-t
+1 2 + 4 eq? check-false
 
 "test" "test" eq? check-false
 
@@ -34,6 +34,7 @@ string" length 26 = check-t
 clear
 
 : multiline-string-test-1 ( -- )
+//     << last-word symbol-name >> ?cr write
     "this is
 a multiline string"
     length 26 = check-t
