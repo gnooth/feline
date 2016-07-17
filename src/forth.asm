@@ -84,6 +84,7 @@ IN_FELINE
 %include "quotation.asm"
 %include "gc.asm"
 %include "global.asm"
+%include "globals.asm"
 %include "combinators.asm"
 %include "repl.asm"
 %include "parsing-words.asm"

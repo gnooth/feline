@@ -178,6 +178,8 @@ code cold, 'cold'                       ; --
         _lit free_handles_data
         _ gc_add_root
 
+        _ initialize_globals
+
         _ initialize_vocabs
 
         _lit 16
