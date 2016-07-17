@@ -61,10 +61,7 @@ endcode
 
 ; ### error-not-string
 code error_not_string, 'error-not-string' ; x --
-        ; REVIEW
-        _drop
-        _true
-        _abortq "not a string"
+        _error "not a string"
         next
 endcode
 
