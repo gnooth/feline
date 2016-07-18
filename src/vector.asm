@@ -453,6 +453,31 @@ vector_pop_unchecked:
         next
 endcode
 
+; ### vector-pop*
+code vector_pop_star, 'vector-pop*'     ; handle --
+
+        _ check_vector                  ; -- vector
+
+        push    this_register
+        mov     this_register, rbx
+
+        _vector_length
+        _oneminus
+        _dup
+        _zge
+        _if .1
+        _this_vector_set_length
+        pop     this_register
+        _return
+        _then .1
+
+        _drop
+        pop     this_register
+        _error "vector-pop* vector is empty"
+
+        next
+endcode
+
 ; ### vector-equal?
 code vector_equal?, 'vector-equal?'     ; vector1 vector2 -- t|f
         _ check_vector
