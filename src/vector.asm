@@ -443,12 +443,12 @@ vector_pop_unchecked:
         _this_vector_set_length
         _this_vector_nth_unsafe         ; -- element
         pop     this_register
-        _else .1
+        _return
+        _then .1
+
         _drop
         pop     this_register
-        _true
-        _abortq "vector-pop-unchecked vector is empty"
-        _then .1
+        _error "vector-pop vector is empty"
 
         next
 endcode
