@@ -401,10 +401,16 @@ code vector_remove_nth_destructive, 'vector-remove-nth!' ; n handle --
         next
 endcode
 
-; ### vector-push-unchecked
-code vector_push_unchecked, 'vector-push-unchecked' ; element vector --
+; ### vector-push
+code vector_push, 'vector-push'         ; element handle --
+
+        _ check_vector
+
+vector_push_unchecked:
+
         push    this_register           ; save callee-saved register
         mov     this_register, rbx      ; vector in this_register
+
         _vector_length                  ; -- element length
         _dup                            ; -- element length length
         _oneplus                        ; -- element length length+1
@@ -413,19 +419,18 @@ code vector_push_unchecked, 'vector-push-unchecked' ; element vector --
         _ vector_ensure_capacity        ; -- element length length+1
         _this_vector_set_length         ; -- element length
         _this_vector_set_nth_unsafe     ; --
+
         pop     this_register           ; restore callee-saved register
         next
 endcode
 
-; ### vector-push
-code vector_push, 'vector-push'         ; element handle --
-        _ check_vector
-        _ vector_push_unchecked
-        next
-endcode
+; ### vector-pop
+code vector_pop, 'vector-pop'           ; handle -- element
 
-; ### vector-pop-unchecked              ; vector -- element
-code vector_pop_unchecked, 'vector-pop-unchecked'
+        _ check_vector                  ; -- vector
+
+vector_pop_unchecked:
+
         push    this_register
         mov     this_register, rbx
 
@@ -445,13 +450,6 @@ code vector_pop_unchecked, 'vector-pop-unchecked'
         _abortq "vector-pop-unchecked vector is empty"
         _then .1
 
-        next
-endcode
-
-; ### vector-pop
-code vector_pop, 'vector-pop'           ; handle -- element
-        _ check_vector                  ; -- vector
-        _ vector_pop_unchecked
         next
 endcode
 
