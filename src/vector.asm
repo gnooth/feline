@@ -272,6 +272,24 @@ code vector_second, 'vector-second'     ; handle -- element
         next
 endcode
 
+; ### vector-last
+code vector_last, 'vector-last'         ; handle -- element
+        _ check_vector
+        _dup
+        _vector_length                  ; -- vector untagged-length
+        _oneminus
+        _dup
+        _zge
+        _if .1
+        _swap
+        _vector_nth_unsafe
+        _else .1
+        _drop
+        _error "vector-last vector is empty"
+        _then .1
+        next
+endcode
+
 ; ### vector-set-nth
 code vector_set_nth, 'vector-set-nth'   ; element index vector --
 
