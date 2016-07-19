@@ -24,6 +24,11 @@ code set_last_word, 'set-last-word'     ; word --
         next
 endcode
 
+; ### dupd
+inline dupd, 'dupd'
+        _dupd
+endinline
+
 %macro _eq? 0                           ; n1 n2 -- t|f
         mov     eax, t_value
         cmp     rbx, [rbp]

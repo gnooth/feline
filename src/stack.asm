@@ -116,11 +116,6 @@ inline over_minus, 'over-'
         _over_minus
 endinline
 
-; ### dupd
-inline dupd, 'dupd'
-        _dupd
-endinline
-
 ; ### +dup
 inline plusdup, '+dup'
         _plusdup
