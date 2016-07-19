@@ -17,6 +17,8 @@ file __FILE__
 
 value globals, 'globals', 0
 
+value scopes, 'scopes', 0
+
 ; ### initialize-globals
 code initialize_globals, 'initialize-globals'
         _lit 16
@@ -24,6 +26,14 @@ code initialize_globals, 'initialize-globals'
         _to globals
         _lit globals_data
         _ gc_add_root
+        _lit 16
+        _ new_vector_untagged
+        _to scopes
+        _lit scopes_data
+        _ gc_add_root
+        _ globals
+        _ scopes
+        _ vector_push
         next
 endcode
 
@@ -38,5 +48,83 @@ endcode
 code get_global, 'get-global'           ; variable -- value
         _from globals
         _ at_
+        next
+endcode
+
+; ### scope
+code scope, 'scope'                     ; --
+        _lit 4
+        _ new_hashtable_untagged
+        _ scopes
+        _ vector_push
+        next
+endcode
+
+; ### end-scope
+code end_scope, 'end-scope'             ; --
+        _ scopes
+        _ vector_pop_star
+        next
+endcode
+
+; ### set
+code set, 'set'                         ; value variable --
+        _ scopes
+        _ vector_last
+        _ set_at
+        next
+endcode
+
+; ### find-in-scope
+code find_in_scope, 'find-in-scope'     ; variable scope -- value/f ?
+        _ at_star
+        next
+endcode
+
+; ### get
+code get, 'get'                         ; variable -- value
+        _tor
+        _ scopes
+
+        _dup
+        _ vector_length
+        _lit tagged_fixnum(1)
+        _ fixnum_minus                  ; -- scopes index
+        _dup
+        _lit tagged_zero
+        _ fixnum_lt
+        _tagged_if .1
+        _3drop
+        _rdrop
+        _f
+        _return
+        _then .1
+
+.top:                                   ; -- variable scopes index
+        _twodup
+        _swap
+        _ vector_nth_unsafe             ; -- scopes index
+        _rfetch
+        _swap                           ; -- scopes index variable scope
+        _ find_in_scope
+        _tagged_if .2
+        _2nip
+        _rdrop
+        _return
+        _then .2
+
+        _lit tagged_fixnum(1)
+        _ fixnum_minus
+        _dup
+        _lit tagged_zero
+        _ fixnum_lt
+        _tagged_if .3
+        _2drop
+        _rdrop
+        _return
+        _then .3
+
+        jmp     .top
+
         next
 endcode
