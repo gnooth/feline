@@ -34,7 +34,7 @@ string" length 26 = check-t
 clear
 
 : multiline-string-test-1 ( -- )
-//     << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?cr write
     "this is
 a multiline string"
     length 26 = check-t
@@ -189,6 +189,7 @@ array-test-2
 
 // vector-insert-nth!
 : vector-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
     17 0 V{ 0 1 2 3 } [ vector-insert-nth! ] keep
     V{ 17 0 1 2 3 } sequence= check-t
     clear
@@ -196,12 +197,56 @@ array-test-2
 
 vector-test-1
 
+: vector-test-2 ( -- )
+    << last-word symbol-name >> ?cr write
+    10 <vector> [ vector? check-t ] keep
+    10 [ dup pick vector-set-nth ] each-integer
+    [ [ eq? check-t ] vector-each-index ] keep
+    clear
+;
+
+vector-test-2
+
+: vector-test-3 ( -- )
+    << last-word symbol-name >> ?cr write
+    1 <vector> [ vector? check-t ] keep
+    10 [ over vector-push ] each-integer
+    10 [ dup pick vector-nth eq? check-t ] each-integer
+    10 [ 9 swap - over vector-pop eq? check-t ] each-integer
+    vector-length zero? check-t
+;
+
+vector-test-3
+
+// vector-pop*
+: vector-test-4 ( -- )
+    << last-word symbol-name >> ?cr write
+    V{ 1 2 3 } [ vector-pop* ] keep
+    [ length 2 = check-t ] keep
+    [ vector-pop* ] keep
+    [ length 1 = check-t ] keep
+    [ vector-pop* ] keep
+    [ length zero? check-t ]
+;
+
+vector-test-4
+
+// vector-last
+: vector-test-5 ( -- )
+    << last-word symbol-name >> ?cr write
+    clear
+    V{ 1 2 3 } vector-last get-datastack { 3 } sequence= check-t
+    clear
+    V{ "test" } vector-last "test" = check-t
+;
+
 : %local-test-1 ( -- )
     42 :> foo
     foo
 ;
 
 : local-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
     %local-test-1 42 eq? check-t
 ;
 
@@ -280,5 +325,17 @@ hashcode-test-2
 ;
 
 length-test-1
+
+: globals-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    clear
+    42 \ dup set-global get-datastack { } sequence= check-t
+    \ dup get-global get-datastack { 42 } sequence= check-t
+    clear
+    \ dup get get-datastack { 42 } sequence= check-t
+    clear
+;
+
+globals-test-1
 
 ?cr "Reached end of test.feline" write
