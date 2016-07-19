@@ -360,22 +360,31 @@ endcode
 code parse_symbol, 'SYMBOL:', PARSING
         _ parse_token                   ; -- string/f
         _dup
-        _tagged_if .1
-        ; -- string
-        _ find_symbol
-        _tagged_if .2
+        _tagged_if_not .1
+        _drop
+        _error "attempt to use zero-length string as a name"
         _return
-        _else .2
+        _then .1
+
+        ; -- string
+        _dup
+        _ current_vocab
+        _ vocab_hashtable
+        _ at_star                       ; -- string value/f ?
+        _tagged_if .2
+        ; -- string symbol
+        _2drop
+        _return
+        _then .2
+
+        ; -- string f
+        _drop
         _ current_vocab
         _ new_symbol
         _dup
         _to last_word
         _ current_vocab
         _ vocab_add_symbol
-        _then .2                        ; -- symbol
-        _else .1
-        _error "attempt to use zero-length string as a name"
-        _then .1
         next
 endcode
 
