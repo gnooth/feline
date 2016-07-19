@@ -379,9 +379,10 @@ code feline_find, 'find'                ; seq xt -- i elt | f f
 endcode
 
 ; ### map-find
-code map_find, 'map-find'               ; seq xt -- i elt | f f
+code map_find, 'map-find'               ; seq quot -- result elt
+        _ callable_code_address         ; -- seq code-address
         push    r12
-        mov     r12, [rbx]              ; address to call in r12
+        mov     r12, rbx                ; address to call in r12
         poprbx                          ; -- seq
         push    this_register
         mov     this_register, rbx      ; handle to seq in this_register
@@ -393,7 +394,7 @@ code map_find, 'map-find'               ; seq xt -- i elt | f f
         _tag_fixnum
         _this                           ; -- tagged-index handle
         _ nth_unsafe                    ; -- element
-        call    r12                     ; -- result|f
+        call    r12                     ; -- result/f
         _dup
         _tagged_if .2
         ; we're done
