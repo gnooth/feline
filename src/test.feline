@@ -351,13 +351,13 @@ globals-test-1
 
 map-find-test-1
 
-: lookup-symbol-test-1 ( -- )
+: ?lookup-symbol-test-1 ( -- )
     << last-word symbol-name >> ?cr write
-    "dup" "feline" lookup-symbol \ dup eq? check-t
-    "xxx" "feline" lookup-symbol check-false
-    "dup" "xxx" lookup-symbol check-false
+    "dup" "feline" ?lookup-symbol \ dup eq? check-t
+    "xxx" "feline" ?lookup-symbol check-false
+    "dup" "xxx" ?lookup-symbol check-false
 ;
 
-lookup-symbol-test-1
+?lookup-symbol-test-1
 
 ?cr "Reached end of test.feline" write
