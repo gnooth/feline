@@ -558,7 +558,7 @@ code local_fetch, 'local@'              ; index -- value
         next
 endcode
 
-; ### local1
+; ### local!
 code local_store, 'local!'              ; value index --
         _untag_fixnum
         _cells
