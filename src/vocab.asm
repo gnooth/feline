@@ -264,3 +264,14 @@ code ?lookup_symbol, '?lookup-symbol'   ; name vocab-name -- symbol/f
         _ at_
         next
 endcode
+
+; ### lookup-symbol
+code lookup_symbol, 'lookup-symbol'     ; name vocab-name -- symbol
+; Error if not found.
+        _ ?lookup_symbol
+        _dup
+        _tagged_if_not .1
+        _error "undefined symbol"
+        _then .1
+        next
+endcode
