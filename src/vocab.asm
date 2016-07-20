@@ -250,3 +250,17 @@ code intern, 'intern'                   ; name vocab -- symbol
 
         next
 endcode
+
+; ### lookup-symbol
+code lookup_symbol, 'lookup-symbol'     ; name vocab-name -- symbol/f
+        _ lookup_vocab
+        _dup
+        _tagged_if_not .1
+        _nip
+        _return
+        _then .1
+
+        _ vocab_hashtable
+        _ at_
+        next
+endcode
