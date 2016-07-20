@@ -212,10 +212,9 @@ code process_token, 'process-token'     ; string -- object
         _ accum
         _ vector_push
 
-        ; FIXME search order dependency
         _quote "local@"
-        _ find_symbol
-        _drop
+        _quote "feline"
+        _ lookup_symbol
 
         _return
         _else .2                        ; -- string f
@@ -394,10 +393,9 @@ code define_local_internal, 'define-local-internal' ; vector --
         _zeq_if .2
         ; first local in this definition
         _ initialize_local_names
-        ; FIXME search order dependency
         _quote "locals-enter"
-        _ find_symbol
-        _drop
+        _quote "feline"
+        _ lookup_symbol
         _lit tagged_zero
         _ feline_pick
         _ vector_insert_nth_destructive
@@ -421,8 +419,9 @@ code define_local_internal, 'define-local-internal' ; vector --
 
         ; add local! to quotation as symbol
         _quote "local!"
-        _ find_symbol
-        _drop
+        _quote "feline"
+        _ lookup_symbol
+
         _swap
         _ vector_push
 
@@ -514,10 +513,9 @@ code define, ':'                        ; --
 
         _ using_locals?
         _if .3
-        ; FIXME search order dependency
         _quote "locals-leave"
-        _ find_symbol
-        _drop
+        _quote "feline"
+        _ lookup_symbol
         _ accum
         _ vector_push
         _then .3
@@ -558,10 +556,9 @@ code define_local, ':>', IMMEDIATE|PARSING
         _zeq_if .2
         ; first local in this definition
         _ initialize_local_names
-        ; FIXME search order dependency
         _quote "locals-enter"
-        _ find_symbol
-        _drop
+        _quote "feline"
+        _ lookup_symbol
         _lit tagged_zero
         _ accum
         _ vector_insert_nth_destructive
@@ -585,8 +582,8 @@ code define_local, ':>', IMMEDIATE|PARSING
 
         ; add local! to quotation as symbol
         _quote "local!"
-        _ find_symbol
-        _drop
+        _quote "feline"
+        _ lookup_symbol
 
         next
 endcode
