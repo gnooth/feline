@@ -336,14 +336,14 @@ endcode
 ; "NASM uses backslash (\) as the line continuation character;
 ; if a line ends with backslash, the next line is considered to
 ; be a part of the backslash-ended line."
-code quote_symbol, '\', IMMEDIATE|PARSING ; -- symbol
+code quote_symbol, '\', PARSING         ; -- symbol
         _ parse_token
         _dup
-        _f
-        _eq?
-        _tagged_if .1
+        _tagged_if_not .1
+        _error "unexpected end of input"
         _return
-        _else .1
+        _then .1
+
         _ find_symbol
         _tagged_if .2
         _ new_wrapper
@@ -351,7 +351,7 @@ code quote_symbol, '\', IMMEDIATE|PARSING ; -- symbol
         _else .2
         _ undefined
         _then .2
-        _then .1
+
         next
 endcode
 
