@@ -133,7 +133,10 @@ code read_object, 'read-object'         ; -- object ?
         _then .4                        ; -- string
 
         _ find_symbol
-        _tagged_if .5                   ; -- symbol
+        _tagged_if_not .5
+        _ undefined
+        _return
+        _then .5                        ; -- symbol
 
         _dup
         _ parsing_word?
@@ -141,12 +144,15 @@ code read_object, 'read-object'         ; -- object ?
         _ symbol_xt
         _execute
         _then .6
+
+        cmp     rbx, nothing
+        jne     .7
+        poprbx
+        jmp     read_object
+.7:
         _t
         _return
 
-        _else .5
-        _ undefined
-        _then .5
         next
 endcode
 
