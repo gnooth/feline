@@ -1,7 +1,7 @@
 LANGUAGE: feline
 
-CONTEXT: feline ;
-CURRENT: feline
+USING: feline ;
+IN: feline
 
 // this is a comment
 ( this is another comment )
@@ -359,5 +359,13 @@ map-find-test-1
 ;
 
 ?lookup-symbol-test-1
+
+: parsing-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    V{ SYMBOL: dup } V{ } sequence= check-t
+    clear
+;
+
+parsing-test-1
 
 ?cr "Reached end of test.feline" write
