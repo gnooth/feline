@@ -31,7 +31,9 @@
 %define TAG_MASK        (1 << TAG_BITS) - 1
 
 %define FIXNUM_TAG      1
-%define BOOLEAN_TAG     6
+
+%define SPECIAL_TAG     6
+%define BOOLEAN_TAG     SPECIAL_TAG
 
 %macro  _tag 0                          ; object -- tag
         and     rbx, TAG_MASK
@@ -92,6 +94,13 @@
 
 %macro  _untag_boolean 0                ; t|f -- 1|0
         shr     rbx, TAG_BITS
+%endmacro
+
+%define nothing SPECIAL_TAG + (2 << TAG_BITS)
+
+%macro  _nothing 0
+        pushrbx
+        mov     ebx, nothing
 %endmacro
 
 %else ; not using tags
