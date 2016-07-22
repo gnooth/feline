@@ -285,7 +285,12 @@ code parse_until, 'parse-until'         ; delimiter -- vector
         cmp     rbx, f_value
         poprbx
         jne     .bottom
-        _ process_token                 ; -- object
+        _ process_token                 ; -- object/nothing
+        cmp     rbx, nothing
+        jne     .3
+        poprbx
+        jmp     .top
+.3:
         _rfetch
         _ vector_push
         jmp     .top
@@ -356,7 +361,7 @@ code quote_symbol, '\', PARSING         ; -- symbol
 endcode
 
 ; ### SYMBOL:
-code parse_symbol, 'SYMBOL:', PARSING
+code parse_symbol, 'SYMBOL:', PARSING   ; -- nothing
         _ parse_token                   ; -- string/f
         _dup
         _tagged_if_not .1
@@ -373,6 +378,7 @@ code parse_symbol, 'SYMBOL:', PARSING
         _tagged_if .2
         ; -- string symbol
         _2drop
+        _nothing
         _return
         _then .2
 
@@ -384,6 +390,7 @@ code parse_symbol, 'SYMBOL:', PARSING
         _to last_word
         _ current_vocab
         _ vocab_add_symbol
+        _nothing
         next
 endcode
 
