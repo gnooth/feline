@@ -368,4 +368,18 @@ map-find-test-1
 
 parsing-test-1
 
+: %parsing-test-2 ( -- )
+    SYMBOL: dup
+    42
+;
+
+: parsing-test-2 ( -- )
+    << last-word symbol-name >> ?cr write
+    clear
+    %parsing-test-2 get-datastack { 42 } sequence= check-t
+    clear
+;
+
+parsing-test-2
+
 ?cr "Reached end of test.feline" write
