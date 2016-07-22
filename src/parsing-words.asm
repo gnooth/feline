@@ -460,24 +460,21 @@ code parse_definition, 'parse-definition' ; -- vector
         jne     .bottom
 
         _dup
-        _quote ":>"
+        _quote ";"
         _ string_equal?
         _tagged_if .3
         _drop
-        _rfetch
-        _ define_local_internal
-        jmp     .top
+        jmp     .bottom
         _then .3
 
-        _dup
-        _quote ";"
-        _ string_equal?
-        _tagged_if .4
-        _drop
-        jmp     .bottom
-        _then .4
+        _ process_token                 ; -- object/nothing
 
-        _ process_token                 ; -- object
+        cmp     rbx, nothing
+        jne     .4
+        poprbx
+        jmp     .top
+.4:
+
         _rfetch
         _ vector_push
         jmp     .top
@@ -557,7 +554,7 @@ code comment_to_eol, '//', IMMEDIATE|PARSING
 endcode
 
 ; ### :>
-code define_local, ':>', IMMEDIATE|PARSING
+code define_local, ':>', PARSING
 
         _ using_locals?
         _zeq_if .2
@@ -591,7 +588,11 @@ code define_local, ':>', IMMEDIATE|PARSING
         _quote "local!"
         _quote "feline"
         _ lookup_symbol
+        _ accum
+        _ vector_push
 
+        ; return nothing
+        _nothing
         next
 endcode
 
