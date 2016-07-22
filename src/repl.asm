@@ -157,9 +157,7 @@ code eval, 'eval'                       ; --
 
         _ read_object                   ; -- object ?
 
-        _f
-        _eq?
-        _tagged_if .1
+        _tagged_if_not .1
         _drop
         _return
         _then .1
