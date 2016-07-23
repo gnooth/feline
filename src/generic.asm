@@ -16,16 +16,14 @@
 file __FILE__
 
 ; ### lookup-method
-code lookup_method, 'lookup-method'     ; object methods-vector -- object xt
+code lookup_method, 'lookup-method'     ; object methods-vector -- object xt/0
+; Returns untagged 0 if no method.
         _tor                            ; -- object
         _dup
         _ object_type                   ; -- object tagged-type-number
 
         _dup
-        _f
-        _eq?
-        _tagged_if .1
-        ; FIXME error message
+        _tagged_if_not .1
         _error "no object type"
         _then .1
 
@@ -34,10 +32,10 @@ code lookup_method, 'lookup-method'     ; object methods-vector -- object xt
         _ vector_length
         _ fixnum_lt
         _tagged_if .2                   ; -- object n vector
-        _ vector_nth_unsafe             ; -- object method|f
+        _ vector_nth_unsafe             ; -- object method/0
         _else .2
         _2drop                          ; -- object
-        _f                              ; -- object f
+        _zero                           ; -- object 0
         _then .2
         next
 endcode
@@ -45,9 +43,9 @@ endcode
 ; ### do-generic
 code do_generic, 'do-generic'
         _fetch
-        _ lookup_method
+        _ lookup_method                 ; -- xt/0
         _dup
-        _tagged_if .1
+        _if .1
         _execute
         _else .1
         _true
