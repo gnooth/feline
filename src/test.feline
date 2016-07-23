@@ -382,4 +382,23 @@ parsing-test-1
 
 parsing-test-2
 
+: sequence=-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    { "this is a test" } { "this is a test" } sequence= check-t
+;
+
+sequence=-test-1
+
+: symbol-props-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    clear
+    "foo" \ dup symbol-prop get-datastack { f } sequence= check-t
+    clear
+    "this is a test" "foo" \ dup symbol-set-prop
+    "foo" \ dup symbol-prop get-datastack { "this is a test" } sequence= check-t
+    clear
+;
+
+symbol-props-test-1
+
 ?cr "Reached end of test.feline" write
