@@ -83,6 +83,22 @@ file __FILE__
         _this_set_slot5
 %endmacro
 
+%macro  _symbol_props 0
+        _slot6
+%endmacro
+
+%macro  _symbol_set_props 0             ; props symbol --
+        _set_slot6
+%endmacro
+
+%macro  _this_symbol_props 0            ; -- props
+        _this_slot6
+%endmacro
+
+%macro  _this_symbol_set_props 0        ; props --
+        _this_set_slot6
+%endmacro
+
 ; ### symbol?
 code symbol?, 'symbol?'                 ; handle -- ?
         _lit OBJECT_TYPE_SYMBOL
@@ -122,9 +138,9 @@ endcode
 
 ; ### <symbol>
 code new_symbol, '<symbol>'             ; name vocab -- symbol
-; 6 cells: object header, name, vocab-name, hashcode, xt, def
+; 7 cells: object header, name, vocab-name, hashcode, xt, def, props
 
-        _lit 6
+        _lit 7
         _ allocate_cells                ; -- object-address
 
         push    this_register
@@ -150,6 +166,9 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
 
         _f
         _this_symbol_set_def
+
+        _f
+        _this_symbol_set_props
 
         pushrbx
         mov     rbx, this_register      ; -- symbol
@@ -214,6 +233,53 @@ endcode
 code symbol_set_def, 'symbol-set-def'   ; definition symbol --
         _ check_symbol
         _symbol_set_def
+        next
+endcode
+
+; ### symbol-props
+code symbol_props, 'symbol-props'       ; symbol -- props
+        _ check_symbol
+        _symbol_props
+        next
+endcode
+
+; ### symbol-prop
+code symbol_prop, 'symbol-prop'         ; key symbol -- value
+        _ check_symbol
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- key
+
+        _this_symbol_props
+        _dup
+        _tagged_if .1
+        _ at_
+        _else .1
+        _nip
+        _then .1
+
+        pop     this_register
+        next
+endcode
+
+; ### symbol-set-prop
+code symbol_set_prop, 'symbol-set-prop' ; value key symbol --
+        _ check_symbol
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- value key
+
+        _this_symbol_props
+        _tagged_if_not .1
+        _lit 2
+        _ new_hashtable_untagged
+        _this_symbol_set_props
+        _then .1
+
+        _this_symbol_props
+        _ set_at
+
+        pop     this_register
         next
 endcode
 
