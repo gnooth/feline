@@ -303,8 +303,8 @@ code sequence_equal, 'sequence='        ; seq1 seq2 -- t|f
         _tag_fixnum
         _ rrot
         _ two_nth                       ; -- seq1 seq2 elt1 elt2
-        _notequal
-        _if .3
+        _ feline_equal
+        _tagged_if_not .3
         _2drop
         _unloop
         _f
