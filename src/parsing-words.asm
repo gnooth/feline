@@ -605,3 +605,31 @@ code parse_immediate, '<<', IMMEDIATE|PARSING
         _ call_quotation
         next
 endcode
+
+; ### HELP:
+code parse_help, 'HELP:', PARSING       ; -- nothing
+        _ parse_token                   ; -- string/f
+        _dup
+        _tagged_if_not .1
+        _drop
+        _error "unexpected end of input after HELP:"
+        _return
+        _then .1                        ; -- string
+
+        _ find_symbol
+        _tagged_if_not .2
+        _ undefined
+        _return
+        _then .2                        ; -- symbol
+
+        _quote ";"
+        _ parse_until
+        _ vector_to_array               ; -- symbol array
+
+        _swap
+        _ symbol_set_help
+
+        ; return nothing
+        _nothing
+        next
+endcode
