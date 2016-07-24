@@ -283,6 +283,22 @@ code symbol_set_prop, 'symbol-set-prop' ; value key symbol --
         next
 endcode
 
+; ### symbol-help
+code symbol_help, 'symbol-help'         ; symbol -- content/f
+        _quote "help"
+        _swap
+        _ symbol_prop
+        next
+endcode
+
+; ### symbol-set-help
+code symbol_set_help, 'symbol-set-help' ; content symbol --
+        _quote "help"
+        _swap
+        _ symbol_set_prop
+        next
+endcode
+
 ; ### symbol-code
 code symbol_code, 'symbol-code'         ; symbol -- code-address inline-size
 ; REVIEW
