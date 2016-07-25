@@ -64,7 +64,9 @@ import swap
 import dup
 import over
 import drop
+import 2drop
 import nip
+
 import >r
 import r>
 
