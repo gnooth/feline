@@ -316,3 +316,11 @@ code map_find, 'map-find'               ; seq quot -- result elt
         pop     r12
         next
 endcode
+
+; ### first
+code first, 'first'                     ; seq -- first
+        _lit tagged_zero
+        _swap
+        _ nth
+        next
+endcode
