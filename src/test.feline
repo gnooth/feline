@@ -401,4 +401,11 @@ sequence=-test-1
 
 symbol-props-test-1
 
+: times-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    0 10 [ 1 + ] times 10 eq? check-t
+;
+
+times-test-1
+
 ?cr "Reached end of test.feline" write
