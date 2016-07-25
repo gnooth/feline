@@ -244,8 +244,9 @@ endcode
 
 ; ### find
 code feline_find, 'find'                ; seq xt -- i elt | f f
+        _ callable_code_address         ; -- seq code-address
         push    r12
-        mov     r12, [rbx]              ; address to call in r12
+        mov     r12, rbx                ; address to call in r12
         poprbx                          ; -- seq
         push    this_register
         mov     this_register, rbx      ; handle to seq in this_register
