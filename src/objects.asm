@@ -180,8 +180,8 @@ code destroy_object_unchecked, '~object-unchecked' ; object --
         next
 endcode
 
-; ### .object
-code dot_object, '.object'              ; handle-or-object --
+; ### .
+code dot_object, '.'                    ; handle-or-object --
         _dup
         _f
         _equal
