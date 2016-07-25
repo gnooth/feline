@@ -23,3 +23,34 @@ IN: feline
     [ find-symbol [ symbol-code drop forth:disasm ] [ undefined ] if ]
     when*
 ;
+
+: display-help ( content -- )
+    nl 4 [ bl ] times first write
+;
+
+: help ( symbol -- )
+    dup symbol-help dup                 // -- symbol content/f content/f
+    [ ?nl swap symbol-name write display-help ]
+    [ 2drop ]
+    if
+;
+
+HELP: drop
+    "( x -- )
+    Remove x from the stack."
+;
+
+HELP: dup
+    "( x -- x x )
+    Duplicate x." ;
+
+HELP: map
+    "( seq quot -- newseq )    quot: ( ... elt -- ... newelt )
+    Applies quot to each element of seq in order. The results are
+    collected in a new sequence of the same type as seq."
+;
+
+HELP: times
+    "( n quot -- )    quot: ( ... -- ... )
+    Calls quot n times."
+;
