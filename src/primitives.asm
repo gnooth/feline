@@ -569,3 +569,34 @@ code local_store, 'local!'              ; value index --
         _2drop
         next
 endcode
+
+; ### bl
+code bl_, 'bl'                          ; --
+; Name from Factor.
+        _lit ' '
+        _ emit
+        next
+endcode
+
+; ### nl
+code nl, 'nl'
+; Name from Factor.
+%ifdef WIN64
+        _lit 13
+        _ emit
+%endif
+        _lit 10
+        _ emit
+        next
+endcode
+
+; ### ?nl
+code ?nl, '?nl'
+; Name from Factor.
+        mov     rax, [nout_data]
+        test    rax, rax
+        jz     .1
+        _ nl
+.1:
+        next
+endcode
