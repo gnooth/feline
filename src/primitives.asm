@@ -335,14 +335,15 @@ endcode
 ; ### times
 code times_, 'times'                    ; tagged-fixnum xt --
 
+        _ callable_code_address         ; -- tagged-fixnum code-address
+
         _swap
-        _untag_fixnum                   ; -- xt n
+        _untag_fixnum                   ; -- code-address n
 
         push    r12
         mov     r12, rbx                ; n in r12
         push    r13
-        mov     rax, [rbp]              ; xt in rax
-        mov     r13, [rax]              ; address to call in r13
+        mov     r13, [rbp]              ; address to call in r13
         _2drop                          ; clean up the stack now!
 
         test    r12, r12
