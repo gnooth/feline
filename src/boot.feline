@@ -44,10 +44,41 @@ HELP: dup
     "( x -- x x )
     Duplicate x." ;
 
+HELP: dupd
+    "( x y -- x x y)
+    Duplicate the second stack item."
+;
+
+HELP: filter
+    "( seq quot -- subseq )    quot: ( ... elt -- ... ? )
+    Returns a new sequence containing the elements of the original
+    sequence for which the quotation returns a true value."
+;
+
 HELP: map
     "( seq quot -- newseq )    quot: ( ... elt -- ... newelt )
     Applies quot to each element of seq in order. The results are
     collected in a new sequence of the same type as seq."
+;
+
+HELP: over
+    "( x y -- x y x )
+    Place a copy of x on top of the stack."
+;
+
+HELP: rot
+    "( x y z -- z y x )
+    Rotate the top three stack entries."
+;
+
+HELP: swap
+    "( x y -- y x )
+    Exchange the top two stack items."
+;
+
+HELP: swapd
+    "( x y z -- y z x )
+    Exchange the second and third stack items."
 ;
 
 HELP: times
