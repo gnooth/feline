@@ -66,6 +66,7 @@ import over
 import drop
 import 2drop
 import nip
+import rot
 
 import >r
 import r>
