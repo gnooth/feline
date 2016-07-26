@@ -29,6 +29,15 @@ inline dupd, 'dupd'
         _dupd
 endinline
 
+; ### swapd
+code swapd, 'swapd'                     ; x y z -- y x z
+        mov     rax, [rbp]
+        mov     rdx, [rbp + BYTES_PER_CELL]
+        mov     [rbp + BYTES_PER_CELL], rax
+        mov     [rbp], rdx
+        next
+endcode
+
 %macro _eq? 0                           ; n1 n2 -- t|f
         mov     eax, t_value
         cmp     rbx, [rbp]
