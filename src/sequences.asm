@@ -125,19 +125,20 @@ endcode
 
 ; ### filter
 code filter, 'filter'                   ; seq quot -- subseq
-;         _swap                           ; -- quot seq
-        _over
+        _ callable_code_address         ; -- seq code-address
+        _over                           ; -- seq code-address seq
         push    this_register
-        popd    this_register           ; -- quot
+        popd    this_register           ; -- seq code-address
         push    r12
-        popd    r12                     ; --
-        mov     r12, [r12]              ; call address in r12
+        popd    r12                     ; -- seq
+
+        ; address to call is in r12
 
         _this
         _ length
         _untag_fixnum
         _dup
-        _ new_vector_untagged           ; -- untagged-length vector
+        _ new_vector_untagged           ; -- seq untagged-length vector
         _swap
         _zero
         _?do .1
@@ -145,15 +146,15 @@ code filter, 'filter'                   ; seq quot -- subseq
         _i
         _tag_fixnum
         _this
-        _ nth_unsafe                    ; -- vector elt
+        _ nth_unsafe                    ; -- seq vector elt
         _dup
-        call    r12                     ; -- vector elt t|f
+        call    r12                     ; -- seq vector elt ?
 
         _tagged_if .2
-        _over                           ; -- vector elt vector
-        _ vector_push                   ; -- vector
+        _over                           ; -- seq vector elt vector
+        _ vector_push                   ; -- seq vector
         _else .2
-        _drop                           ; -- vector
+        _drop                           ; -- seq vector
         _then .2
 
         _loop .1
@@ -164,7 +165,7 @@ code filter, 'filter'                   ; seq quot -- subseq
         ; FIXME use new-sequence (support all sequence types)
         _swap
         _ array?
-        _if .3
+        _tagged_if .3
         _ vector_to_array
         _then .3
 
