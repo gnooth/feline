@@ -423,4 +423,12 @@ symbol-props-test-1
 
 times-test-1
 
+: filter-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    V{ 1 2 3 4 } [ 3 < ] filter V{ 1 2 } sequence= check-t
+     { 1 2 3 4 } [ 3 < ] filter  { 1 2 } sequence= check-t
+;
+
+filter-test-1
+
 ?cr "Reached end of test.feline" write
