@@ -126,10 +126,15 @@ code dot_elapsed, '.elapsed'            ; --
 endcode
 
 ; ### time
-code time, 'time'                       ; xt --
+code time, 'time'                       ; quotation-or-xt --
+        _ callable_code_address
+        push    r12
+        mov     r12, rbx
+        poprbx
         _ start_timer
-        _execute
+        call    r12
         _ stop_timer
+        pop     r12
         _ dot_elapsed
         next
 endcode
