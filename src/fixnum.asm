@@ -294,3 +294,30 @@ code even?, 'even?'                     ; n -- ?
         cmovz   ebx, eax
         next
 endcode
+
+extern c_fixnum_to_string
+
+; ### fixnum>string
+code fixnum_to_string, 'fixnum>string'  ; fixnum -- string
+        _ check_fixnum                  ; -- untagged
+        _lit 256
+        _dup
+        _ iallocate                     ; -- untagged size buffer
+        _duptor
+%ifdef WIN64
+        popd    rdx                     ; buffer
+        popd    r8                      ; size
+        popd    rcx                     ; untagged
+%else
+        popd    rsi                     ; buffer
+        popd    rdx                     ; size
+        popd    rdi                     ; untagged
+%endif
+        xcall   c_fixnum_to_string      ; number of chars printed in rax
+        _rfetch                         ; -- buffer
+        pushd   rax                     ; -- buffer size
+        _ copy_to_string
+        _rfrom
+        _ ifree
+        next
+endcode

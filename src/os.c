@@ -462,3 +462,9 @@ void os_bye()
   free(data_stack_base);
   exit(0);
 }
+
+int c_fixnum_to_string(Cell n, char * buf, size_t size)
+{
+  // arguments are all untagged
+  return snprintf(buf, size, "%ld", n);
+}
