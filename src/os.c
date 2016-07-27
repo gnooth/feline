@@ -20,6 +20,7 @@
 #include <time.h>               // time, localtime_r
 #include <errno.h>
 #include <string.h>             // strerror
+#include <inttypes.h>           // PRId64
 #ifdef WIN64
 #include <windows.h>
 #include <io.h>                 // _chsize
@@ -466,5 +467,5 @@ void os_bye()
 int c_fixnum_to_string(Cell n, char * buf, size_t size)
 {
   // arguments are all untagged
-  return snprintf(buf, size, "%ld", n);
+  return snprintf(buf, size, "%" PRId64, n);
 }
