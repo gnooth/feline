@@ -326,3 +326,11 @@ code first, 'first'                     ; seq -- first
         _ nth
         next
 endcode
+
+; ### second
+code second, 'second'                   ; seq -- second
+        _lit tagged_fixnum(1)
+        _swap
+        _ nth
+        next
+endcode
