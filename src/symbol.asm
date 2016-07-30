@@ -99,6 +99,10 @@ file __FILE__
         _this_set_slot6
 %endmacro
 
+%macro  _this_symbol_set_value 0        ; value --
+        _this_set_slot 7
+%endmacro
+
 ; ### symbol?
 code symbol?, 'symbol?'                 ; handle -- ?
         _lit OBJECT_TYPE_SYMBOL
@@ -138,9 +142,9 @@ endcode
 
 ; ### <symbol>
 code new_symbol, '<symbol>'             ; name vocab -- symbol
-; 7 cells: object header, name, vocab-name, hashcode, xt, def, props
+; 8 cells: object header, name, vocab-name, hashcode, xt, def, props
 
-        _lit 7
+        _lit 8
         _ allocate_cells                ; -- object-address
 
         push    this_register
@@ -169,6 +173,9 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
 
         _f
         _this_symbol_set_props
+
+        _f
+        _this_symbol_set_value
 
         pushrbx
         mov     rbx, this_register      ; -- symbol
@@ -296,6 +303,20 @@ code symbol_set_help, 'symbol-set-help' ; content symbol --
         _quote "help"
         _swap
         _ symbol_set_prop
+        next
+endcode
+
+; ### symbol-value
+code symbol_value, 'symbol-value'       ; symbol -- value
+        _ check_symbol
+        _slot 7
+        next
+endcode
+
+; ### symbol-set-value
+code symbol_set_value, 'symbol-set-value' ; symbol value --
+        _ check_symbol
+        _set_slot 7
         next
 endcode
 
