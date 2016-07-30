@@ -111,24 +111,40 @@ OBJECT_ALLOCATED_BIT            equ 4
         movzx   ebx, bl
 %endmacro
 
-%macro  _slot1 0                        ; object -- x
-        mov     rbx, [rbx + BYTES_PER_CELL]
+%macro  _slot 1                        ; object -- x
+        mov     rbx, [rbx + BYTES_PER_CELL * %1]
 %endmacro
 
-%macro  _this_slot1 0                   ; -- x
+%macro  _this_slot 1                   ; -- x
         pushrbx
-        mov     rbx, [this_register + BYTES_PER_CELL]
+        mov     rbx, [this_register + BYTES_PER_CELL * %1]
 %endmacro
 
-%macro  _set_slot1 0                    ; x object --
+%macro  _set_slot 1                    ; x object --
         mov     rax, [rbp]
-        mov     [rbx + BYTES_PER_CELL], rax
+        mov     [rbx + BYTES_PER_CELL * %1], rax
         _2drop
 %endmacro
 
-%macro  _this_set_slot1 0               ; x --
-        mov     [this_register + BYTES_PER_CELL], rbx
+%macro  _this_set_slot 1               ; x --
+        mov     [this_register + BYTES_PER_CELL * %1], rbx
         poprbx
+%endmacro
+
+%macro  _slot1 0                        ; object -- x
+        _slot 1
+%endmacro
+
+%macro  _this_slot1 0                   ; -- x
+        _this_slot 1
+%endmacro
+
+%macro  _set_slot1 0                    ; x object --
+        _set_slot 1
+%endmacro
+
+%macro  _this_set_slot1 0               ; x --
+        _this_set_slot 1
 %endmacro
 
 %macro  _slot2 0                        ; object -- x
