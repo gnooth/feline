@@ -302,7 +302,7 @@ code parse_until, 'parse-until'         ; delimiter -- vector
 endcode
 
 ; ### V{
-code parse_vector, 'V{', IMMEDIATE|PARSING      ; -- handle
+code parse_vector, 'V{', PARSING        ; -- handle
         _quote "}"
         _ parse_until
 
@@ -319,7 +319,7 @@ code parse_vector, 'V{', IMMEDIATE|PARSING      ; -- handle
 endcode
 
 ; ### {
-code parse_array, '{', IMMEDIATE|PARSING ; -- handle
+code parse_array, '{', PARSING          ; -- handle
         _quote "}"
         _ parse_until
         _ vector_to_array
@@ -327,7 +327,7 @@ code parse_array, '{', IMMEDIATE|PARSING ; -- handle
 endcode
 
 ; ### [
-code parse_quotation, '[', IMMEDIATE|PARSING ; -- quotation
+code parse_quotation, '[', PARSING      ; -- quotation
         _quote "]"
         _ parse_until
         _ vector_to_array
@@ -366,7 +366,7 @@ code parse_symbol, 'SYMBOL:', PARSING   ; -- nothing
         _dup
         _tagged_if_not .1
         _drop
-        _error "attempt to use zero-length string as a name"
+        _error "unexpected end of input"
         _return
         _then .1
 
@@ -546,7 +546,7 @@ code define, ':'                        ; --
 endcode
 
 ; ### //
-code comment_to_eol, '//', IMMEDIATE|PARSING
+code comment_to_eol, '//', PARSING
         _lit 10
         _ parse
         _2drop
@@ -597,7 +597,7 @@ code define_local, ':>', PARSING
 endcode
 
 ; ### <<
-code parse_immediate, '<<', IMMEDIATE|PARSING
+code parse_immediate, '<<', PARSING
         _quote ">>"
         _ parse_until
         _ vector_to_array
