@@ -29,4 +29,8 @@ IN: feline
     [ t ] [ f ] if
 ;
 
+: blank? ( char -- ? )
+    { 9 10 13 32 } member?
+;
+
 include-system-file help.feline
