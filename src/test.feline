@@ -431,4 +431,14 @@ times-test-1
 
 filter-test-1
 
+: member?-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    17 { 1 2 3 } member? check-false
+    1  { 1 2 3 } member? check-t
+    f  { 1 2 3 } member? check-false
+    f  { 1 f 3 } member? check-t
+;
+
+member-test-1
+
 ?cr "Reached end of test.feline" write

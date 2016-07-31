@@ -24,4 +24,9 @@ IN: feline
     when*
 ;
 
+: member? ( elt seq -- ? )
+    [ over = ] find drop nip
+    [ t ] [ f ] if
+;
+
 include-system-file help.feline
