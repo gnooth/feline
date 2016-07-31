@@ -145,7 +145,7 @@ code verify_string, 'verify-string'     ; handle-or-string -- handle-or-string
         next
 endcode
 
-%macro  _string_length 0                 ; string -- untagged-length
+%macro  _string_length 0                ; string -- untagged-length
         _slot1
 %endmacro
 
