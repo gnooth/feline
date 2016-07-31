@@ -61,6 +61,11 @@ HELP: map
     collected in a new sequence of the same type as seq."
 ;
 
+HELP: 2nip
+    "( x y z -- z )
+    Remove x and y from the stack."
+;
+
 HELP: over
     "( x y -- x y x )
     Place a copy of x on top of the stack."

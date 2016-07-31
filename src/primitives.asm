@@ -38,6 +38,11 @@ code swapd, 'swapd'                     ; x y z -- y x z
         next
 endcode
 
+; ### 2nip
+inline twonip, '2nip'                   ; x y z -- z
+        _2nip
+endinline
+
 %macro _eq? 0                           ; n1 n2 -- t|f
         mov     eax, t_value
         cmp     rbx, [rbp]

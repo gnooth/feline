@@ -133,11 +133,6 @@ inline nip, 'nip'                       ; x1 x2 -- x2
         _nip
 endinline
 
-; ### 2nip
-inline twonip, '2nip'                   ; x y z -- z
-        _2nip
-endinline
-
 ; ### tuck
 code tuck, 'tuck'                       ; x1 x2 -- x2 x1 x2
 ; CORE EXT
