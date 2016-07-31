@@ -439,6 +439,6 @@ filter-test-1
     f  { 1 f 3 } member? check-t
 ;
 
-member-test-1
+member?-test-1
 
 ?cr "Reached end of test.feline" write
