@@ -99,6 +99,10 @@ file __FILE__
         _this_set_slot6
 %endmacro
 
+%macro  _symbol_value 0                 ; symbol -- value
+        _slot 7
+%endmacro
+
 %macro  _this_symbol_set_value 0        ; value --
         _this_set_slot 7
 %endmacro
