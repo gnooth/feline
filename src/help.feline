@@ -57,6 +57,11 @@ HELP: find
     both the index and the element."
 ;
 
+HELP: in-bounds?
+    "( n seq -- ? )
+    Returns true if n is within the bounds of seq."
+;
+
 HELP: map
     "( seq quot -- newseq )     quot: ( ... elt -- ... newelt )
     Applies quot to each element of seq in order. The results are

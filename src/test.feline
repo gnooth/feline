@@ -441,4 +441,16 @@ filter-test-1
 
 member?-test-1
 
+: in-bounds?-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    { 1 2 3 }
+    0 over in-bounds? check-t
+    1 over in-bounds? check-t
+    2 over in-bounds? check-t
+    3 over in-bounds? check-false
+    -1 swap in-bounds? check-false
+;
+
+in-bounds?-test-1
+
 ?cr "Reached end of test.feline" write

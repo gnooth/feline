@@ -334,3 +334,29 @@ code second, 'second'                   ; seq -- second
         _ nth
         next
 endcode
+
+; ### in-bounds?
+code in_bounds?, 'in-bounds?'           ; n seq -- ?
+; Factor bounds-check?
+        _over
+        _fixnum?
+        _zeq_if .1
+        _2drop
+        _f
+        _return
+        _then .1
+
+        _dupd
+        _ length
+        _ fixnum_lt
+        _tagged_if_not .2
+        _drop
+        _f
+        _return
+        _then .2
+
+        _untag_fixnum
+        _zge
+        _tag_boolean
+        next
+endcode
