@@ -342,7 +342,7 @@ code symbol_code_address, 'symbol-code-address' ; symbol -- code-address
         next
 endcode
 
-; ### symbol-set-value
+; ### symbol-set-code-address
 code symbol_set_code_address, 'symbol-set-code-address' ;  code-address symbol --
         _ check_symbol
         _set_slot 8
