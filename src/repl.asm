@@ -68,11 +68,13 @@ endcode
 ; ### execute-symbol
 code execute_symbol, 'execute-symbol'   ; symbol --
         _dup
-        _ symbol_xt
+        _ symbol_code_address
         _dup
         _tagged_if .1
         _nip
-        _execute
+        mov     rax, rbx
+        poprbx
+        call    rax
         _return
         _else .1
         _drop
