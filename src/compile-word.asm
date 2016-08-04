@@ -222,11 +222,16 @@ endcode
 
 ; ### compile-word
 code compile_word, 'compile-word'       ; symbol --
+        _dup
         _ symbol_def
         _dup
         _ quotation?
         _tagged_if .1
-        _ compile_quotation
+        _dup
+        _ compile_quotation             ; -- symbol quotation
+        _ quotation_code
+        _swap
+        _ symbol_set_code_address       ; --
         _else .1
         _error "not a quotation"
         _then .1
