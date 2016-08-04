@@ -206,7 +206,14 @@ code vocab_add_name, 'vocab-add-name'   ; nfa vocab ---
         _rfetch                         ; -- xt string vocab
         _ new_symbol                    ; -- xt symbol
         _tuck                           ; -- symbol xt symbol
-        _ symbol_set_xt                 ; -- symbol
+        _twodup
+        _ symbol_set_xt                 ; -- symbol xt symbol
+
+        _swap                           ; -- symbol symbol xt
+        _fetch                          ; -- symbol symbol code-address
+        _swap                           ; -- symbol code-address symbol
+        _ symbol_set_code_address       ; -- symbol
+
         _rfrom
         _ vocab_add_symbol
         next
@@ -218,7 +225,7 @@ code hash_vocab, 'hash-vocab'           ; vocab --
         _ vocab_wordlist
         _begin .1
         _fetch
-        _ ?dup
+        _?dup
         _while .1
         _dup
         _rfetch
