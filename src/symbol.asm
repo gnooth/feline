@@ -321,6 +321,14 @@ code symbol_set_help, 'symbol-set-help' ; content symbol --
         next
 endcode
 
+; ### symbol-primitive?
+code symbol_primitive?, 'symbol-primitive?' ; symbol -- ?
+        _quote "primitive"
+        _swap
+        _ symbol_prop
+        next
+endcode
+
 ; ### symbol-value
 code symbol_value, 'symbol-value'       ; symbol -- value
         _ check_symbol
