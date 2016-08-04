@@ -214,6 +214,11 @@ code vocab_add_name, 'vocab-add-name'   ; nfa vocab ---
         _swap                           ; -- symbol code-address symbol
         _ symbol_set_code_address       ; -- symbol
 
+        _t
+        _quote "primitive"
+        _ feline_pick
+        _ symbol_set_prop
+
         _rfrom
         _ vocab_add_symbol
         next
