@@ -240,6 +240,8 @@ vector-test-4
     V{ "test" } vector-last "test" = check-t
 ;
 
+vector-test-5
+
 : %local-test-1 ( -- )
     42 :> foo
     foo
@@ -316,6 +318,40 @@ hashcode-test-1
 ;
 
 hashcode-test-2
+
+: hashtable-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    16 <hashtable> :> ht
+    42 "parker" ht set-at
+    ht hashtable-count 1 = check-t
+    87 "penelope" ht set-at
+    ht hashtable-count 2 = check-t
+    "parker" ht at* check-t
+    42 = check-t
+    "penelope" ht at* check-t
+    87 = check-t
+    "cody may" ht at* check-false
+    check-false
+;
+
+hashtable-test-1
+
+: hashtable-test-2 ( -- )
+    << last-word symbol-name >> ?cr write
+    72 <hashtable> hashtable-capacity 128 = check-t
+;
+
+hashtable-test-2
+
+: hashtable-test-3 ( -- )
+    << last-word symbol-name >> ?cr write
+    16 <hashtable> :> ht
+    1000 [ dup number>string ht set-at ] each-integer
+    1000 [ dup number>string ht at = check-t ] each-integer
+    "charlie" ht at* check-false check-false
+;
+
+hashtable-test-3
 
 : length-test-1 ( -- )
     "test" length 4 eq? check-t
@@ -452,5 +488,28 @@ member?-test-1
 ;
 
 in-bounds?-test-1
+
+: %foo ( -- ) 42 ;
+
+: %bar ( -- ) %foo ;
+
+: redefinition-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    %foo 42 = check-t
+    %bar 42 = check-t
+;
+
+redefinition-test-1
+
+// redefine %foo
+: %foo ( -- ) 87 ;
+
+: redefinition-test-2 ( -- )
+    << last-word symbol-name >> ?cr write
+    %foo 87 = check-t
+    %bar 87 = check-t
+;
+
+redefinition-test-2
 
 ?cr "Reached end of test.feline" write
