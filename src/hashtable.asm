@@ -331,7 +331,7 @@ endcode
 %endmacro
 
 ; ### find-index-for-key
-code find_index_for_key, 'find-index-for-key' ; key hashtable -- tagged-index t|f
+code find_index_for_key, 'find-index-for-key' ; key hashtable -- tagged-index ?
 
         _ check_hashtable
 
@@ -358,7 +358,8 @@ find_index_for_key_unchecked:
         _compute_index
         _tag_fixnum
         _t
-        _leave
+        _unloop
+        jmp     .exit
         _then .2                        ; -- key start-index
 
         _dup
@@ -372,11 +373,18 @@ find_index_for_key_unchecked:
         _compute_index
         _tag_fixnum
         _f
-        _leave
+        _unloop
+        jmp     .exit
+
         _then .3
 
         _loop .1
 
+        _2drop
+        _f
+        _f
+
+.exit:
         pop     this_register
         next
 endcode
@@ -443,7 +451,7 @@ set_at_unchecked:
         push    this_register
         mov     this_register, rbx      ; -- value key hashtable
         _twodup                         ; -- value key hashtable key hashtable
-        _ find_index_for_key_unchecked  ; -- value key hashtable tagged-index t|f
+        _ find_index_for_key_unchecked  ; -- value key hashtable tagged-index ?
         _ not
         _tagged_if .2
         ; key was not found
