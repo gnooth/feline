@@ -24,10 +24,10 @@ code precompile_object, 'precompile-object' ; object -- pair
         _dup
         _ symbol?
         _tagged_if .1
-        _ symbol_code                   ; -- code-address inline-size
+        _zero                           ; -- symbol 0
         _else .1
         _zero
-        _swap                           ; -- literal-value 0
+        _swap                           ; -- 0 literal-value
         _then .1
         _ two_array
         next
@@ -37,7 +37,7 @@ endcode
 code add_code_size, 'add-code-size'     ; accum pair -- accum
 ; FIXME arbitrary for now
         _drop
-        _lit 20
+        _lit 25
         _plus
         next
 endcode
@@ -174,14 +174,22 @@ code compile_pair, 'compile-pair'       ; pair --
         _return
         _then .1                        ; -- pair
 
-        _ dup
-        _ array_second
-        _if .2
+        _ array_first                   ; -- symbol
+        _dup
+        _ symbol_primitive?
+        _tagged_if .2
+        _ symbol_code                   ; -- code-address inline-size
+        _?dup_if .3
+        _ two_array
         _ compile_inline
+        _else .3
+        _ compile_call
+        _then .3
         _return
-        _then .2                        ; -- pair
+        _then .2
 
-        _ array_first
+        _ compile_literal
+        _lit execute_symbol
         _ compile_call
 
         next
