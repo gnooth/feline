@@ -217,7 +217,18 @@ code vocab_add_name, 'vocab-add-name'   ; nfa vocab ---
         _t
         _quote "primitive"
         _ feline_pick
+        _ symbol_set_prop               ; -- symbol
+
+        _dup
+        _ symbol_xt
+        _ flags
+        _and_literal PARSING
+        _if .1
+        _t
+        _quote "parsing"
+        _ feline_pick
         _ symbol_set_prop
+        _then .1                        ; -- symbol
 
         _rfrom
         _ vocab_add_symbol
