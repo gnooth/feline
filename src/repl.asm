@@ -143,8 +143,7 @@ code read_object, 'read-object'         ; -- object ?
         _dup
         _ parsing_word?
         _tagged_if .6
-        _ symbol_xt
-        _execute
+        _ execute_symbol
         _then .6
 
         cmp     rbx, nothing
