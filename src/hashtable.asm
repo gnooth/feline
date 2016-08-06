@@ -35,15 +35,15 @@ file __FILE__
         _this_set_slot2
 %endmacro
 
-%macro  _hashtable_capacity 0           ; hashtable -- capacity
+%macro  _hashtable_capacity 0           ; hashtable -- untagged-capacity
         _slot3
 %endmacro
 
-%macro  _this_hashtable_capacity 0      ; -- capacity
+%macro  _this_hashtable_capacity 0      ; -- untagged-capacity
         _this_slot3
 %endmacro
 
-%macro  _this_hashtable_set_capacity 0  ; capacity --
+%macro  _this_hashtable_set_capacity 0  ; untagged-capacity --
         _this_set_slot3
 %endmacro
 
@@ -558,5 +558,39 @@ code hash_combine, 'hash-combine'       ; hash1 hash2 -- newhash
 
         _tag_fixnum
 
+        next
+endcode
+
+; ### .hashtable
+code dot_hashtable, '.hashtable'        ; hashtable --
+        _ check_hashtable
+
+        push    this_register
+        mov     this_register, rbx
+
+        _dotq "H{ "
+        _hashtable_capacity
+        _zero
+        _?do .1
+        _i
+        _this_hashtable_nth_key
+        _dup
+        _tagged_if .2
+        _ ?nl
+        _dotq "    { "
+        _ dot_object
+        _i
+        _this_hashtable_nth_value
+        _ dot_object
+        _dotq "} "
+        _ nl
+        _else .2
+        _drop
+        _then .2
+        _loop .1
+
+        _dotq "}"
+
+        pop     this_register
         next
 endcode

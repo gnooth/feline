@@ -253,8 +253,7 @@ code dot_object, '.'                    ; handle-or-object --
         _dup
         _ hashtable?
         _tagged_if .7
-        _drop
-        _dotq "H{ } "
+        _ dot_hashtable
         _return
         _then .7
 
