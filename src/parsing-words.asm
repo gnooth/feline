@@ -227,8 +227,7 @@ code process_token, 'process-token'     ; string -- object
         _dup
         _ parsing_word?
         _tagged_if .4
-        _ symbol_xt
-        _execute
+        _ execute_symbol
         _then .4
         _return
         _then .3
