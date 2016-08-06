@@ -185,17 +185,16 @@ code f, 'f', PARSING                    ; -- f
 endcode
 
 ; ### parsing-word?
-code parsing_word?, 'parsing-word?'     ; symbol -- ?
-        _ symbol_xt
+code parsing_word?, 'parsing-word?'     ; object -- ?
         _dup
+        _ symbol?
         _tagged_if .1
-        _ flags
-        _and_literal PARSING
-        mov     ebx, f_value
-        mov     eax, t_value
-        cmovnz  ebx, eax
+        _quote "parsing"
+        _swap
+        _ symbol_prop
         _else .1
-        mov     ebx, f_value
+        _drop
+        _f
         _then .1
         next
 endcode

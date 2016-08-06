@@ -411,6 +411,17 @@ map-find-test-1
 
 ?lookup-symbol-test-1
 
+: parsing-word?-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    \ SYMBOL: parsing-word? check-t
+    \ dup parsing-word? check-false
+    42 parsing-word? check-false
+    f parsing-word? check-false
+    \ f parsing-word? check-t
+;
+
+parsing-word?-test-1
+
 : parsing-test-1 ( -- )
     << last-word symbol-name >> ?cr write
     V{ SYMBOL: dup } V{ } sequence= check-t
