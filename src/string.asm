@@ -22,39 +22,34 @@ code string?, 'string?'                 ; x -- t|f
         _dup
         _ handle?
         _if .1
-        _handle_to_object_unsafe        ; -- object|0
-        _dup_if .2
+        _handle_to_object_unsafe        ; -- object/0
+        _?dup_if .2
         _object_type                    ; -- object-type
-        _lit OBJECT_TYPE_STRING
-        _equal
+        _eq?_literal OBJECT_TYPE_STRING
+        _return
         _then .2
-        _tag_boolean
+        ; Empty handle.
+        _f
         _return
         _then .1
 
         ; Not a handle. Make sure address is in a permissible range.
         _dup                            ; -- x x
-        _ in_transient_area?            ; -- x flag
-        _zeq_if .3                      ; -- x
-        _dup
         _ in_dictionary_space?          ; -- x flag
-        _zeq_if .4
+        _zeq_if .3
         _dup
         _ in_static_data_area?
-        _zeq_if .5
+        _zeq_if .4
         ; Address is not in a permissible range.
-        _drop                           ; --
-        _false
-        _tag_boolean
+        ; -- x
+        mov     ebx, f_value
         _return
-        _then .5
         _then .4
-        _then .3                        ; -- object
+        _then .3
 
+        ; -- object
         _object_type                    ; -- object-type
-        _lit OBJECT_TYPE_STRING
-        _equal
-        _tag_boolean
+        _eq?_literal OBJECT_TYPE_STRING
 
         next
 endcode
