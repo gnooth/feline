@@ -18,6 +18,9 @@ file __FILE__
 ; ### vocabs
 value vocabs, 'vocabs', 0
 
+; ### current-vocab
+value current_vocab, 'current-vocab', f_value
+
 ; ### wordlist-name
 code wordlist_name, 'wordlist-name'     ; wid -- string
         _ wid_to_name

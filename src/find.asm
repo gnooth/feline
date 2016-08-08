@@ -15,9 +15,6 @@
 
 file __FILE__
 
-; ### current-vocab
-value current_vocab, 'current-vocab', f_value
-
 ; ### #vocs
 ; not in standard
 constant nvocs, '#vocs', NVOCS          ; maximum number of word lists in search order
