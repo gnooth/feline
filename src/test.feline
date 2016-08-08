@@ -37,12 +37,27 @@ clear
     << last-word symbol-name >> ?cr write
     "this is
 a multiline string"
+    dup string? check-t
     length 26 = check-t
 ;
 
 multiline-string-test-1
 
+: string?-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    t string? check-false
+    f string? check-false
+    42 string? check-false
+    2000000 string? check-false
+    "test" string? check-t
+    \ dup string? check-false
+    \ dup symbol-name string? check-t
+;
+
+string?-test-1
+
 : fixnum-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
     1 fixnum? check-t
     2 fixnum? check-t
     3 fixnum? check-t
