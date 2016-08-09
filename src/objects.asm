@@ -180,6 +180,26 @@ code destroy_object_unchecked, '~object-unchecked' ; object --
         next
 endcode
 
+; ### slot@
+code slot, 'slot@'                      ; obj tagged-fixnum -- value
+        _untag_fixnum
+        _cells
+        _swap
+        _handle_to_object_unsafe
+        _fetch
+        next
+endcode
+
+; ### slot!
+code set_slot, 'slot!'                  ; value obj tagged-fixnum --
+        _untag_fixnum
+        _cells
+        _swap
+        _handle_to_object_unsafe
+        _store
+        next
+endcode
+
 ; ### .
 code dot_object, '.'                    ; handle-or-object --
         _dup
