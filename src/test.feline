@@ -538,4 +538,15 @@ redefinition-test-1
 
 redefinition-test-2
 
+: until-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    clear
+    1 [ dup 1 = ] [ 1 + ] until get-datastack { 1 } sequence= check-t
+    clear
+    1 [ dup 4 = ] [ 1 + ] until get-datastack { 4 } sequence= check-t
+    clear
+;
+
+until-test-1
+
 ?cr "Reached end of test.feline" write

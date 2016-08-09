@@ -186,10 +186,12 @@ endcode
 code feline_until, 'until'              ; pred body --
         push    r12
         push    r13
-        mov     r13, [rbx]              ; body call address in r13
-        mov     r12, [rbp]
-        mov     r12, [r12]              ; pred call address in r12
-        _2drop
+        _ callable_code_address
+        mov     r13, rbx
+        poprbx
+        _ callable_code_address
+        mov     r12, rbx
+        poprbx
 .1:
         call    r12
         cmp     rbx, f_value
