@@ -43,6 +43,11 @@ HELP: dupd
     Duplicate the second stack item."
 ;
 
+HELP: each
+    "( seq quot -- )            quot: ( ... elt -- ... )
+    Applies quot to each element of seq in order."
+;
+
 HELP: filter
     "( seq quot -- subseq )     quot: ( ... elt -- ... ? )
     Returns a new sequence containing the elements of the original
