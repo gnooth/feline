@@ -352,7 +352,7 @@ code import, 'import'                   ; "<spaces>name" --
         _dup
         _toname
         _count
-        _ create_word                   ; -- xt
+        _ create_forth_word             ; -- xt
         _ latest
         _set_xt
         next

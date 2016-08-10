@@ -487,7 +487,7 @@ code create, 'create'                   ; "<spaces>name" --
 endcode
 
 ; ### create-word
-code create_word, 'create-word'         ; c-addr u --
+code create_forth_word, 'create-forth-word' ; c-addr u --
         _ make_header
         _ paren_create
         next
