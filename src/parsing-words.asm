@@ -358,36 +358,6 @@ code quote_symbol, '\', PARSING         ; -- symbol
         next
 endcode
 
-; ### create-word
-code create_word, 'create-word'         ; name vocab-name -- symbol
-        _twodup
-        _ ?lookup_symbol
-        _dup
-        _tagged_if .1
-        _2nip
-        _return
-        _else .1
-        _drop
-        _then .1                        ; -- name vocab-name
-
-        _ lookup_vocab
-        _dup
-        _tagged_if_not .2
-        _2drop
-        _error "vocab not found"
-        _then .2                        ; -- name vocab
-
-        _tuck
-        _ new_symbol                    ; -- vocab symbol
-        _dup
-        _to last_word
-        _tuck                           ; -- symbol vocab symbol
-        _swap
-        _ vocab_add_symbol
-
-        next
-endcode
-
 ; ### SYMBOL:
 code parse_symbol, 'SYMBOL:', PARSING   ; -- nothing
         _ parse_token                   ; -- string/f
