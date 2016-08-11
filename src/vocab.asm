@@ -219,8 +219,8 @@ code vocab_create_symbol, 'vocab-create-symbol' ; name vocab -- symbol
         next
 endcode
 
-; ### create-word
-code create_word, 'create-word'         ; name vocab-name -- symbol
+; ### create-symbol
+code create_symbol, 'create-symbol'     ; name vocab-name -- symbol
         _twodup
         _ ?lookup_symbol
         _dup
