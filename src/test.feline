@@ -549,4 +549,13 @@ redefinition-test-2
 
 until-test-1
 
+: create-word-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    "foo" "feline" create-word dup symbol? check-t
+    "foo" "feline" create-word eq? check-t
+    \ dup "dup" "feline" create-word eq? check-t
+;
+
+create-word-test-1
+
 ?cr "Reached end of test.feline" write
