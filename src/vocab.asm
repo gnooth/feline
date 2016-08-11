@@ -195,6 +195,30 @@ code vocab_add_symbol, 'vocab-add-symbol' ; symbol vocab --
         next
 endcode
 
+; ### vocab-create-symbol
+code vocab_create_symbol, 'vocab-create-symbol' ; name vocab -- symbol
+        _twodup
+        _ vocab_hashtable
+        _ at_
+        _dup
+        _tagged_if .1
+        _2nip
+        _return
+        _else .1
+        _drop
+        _then .1                        ; -- name vocab
+
+        _tuck
+        _ new_symbol                    ; -- vocab symbol
+        _dup
+        _to last_word
+        _tuck                           ; -- symbol vocab symbol
+        _swap
+        _ vocab_add_symbol
+
+        next
+endcode
+
 ; ### vocab-add-name
 code vocab_add_name, 'vocab-add-name'   ; nfa vocab ---
         _tor
