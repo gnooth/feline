@@ -56,11 +56,26 @@ multiline-string-test-1
 
 string?-test-1
 
-: fixnum-test-1 ( -- )
+: fixnum?-test-1 ( -- )
     << last-word symbol-name >> ?cr write
+    most-negative-fixnum fixnum? check-t
+    -3 fixnum? check-t
+    -2 fixnum? check-t
+    -1 fixnum? check-t
+    0 fixnum? check-t
     1 fixnum? check-t
     2 fixnum? check-t
     3 fixnum? check-t
+    most-positive-fixnum fixnum? check-t
+    "test" fixnum? check-false
+    \ dup fixnum? check-false
+    { 1 2 3 } fixnum? check-false
+;
+
+fixnum?-test-1
+
+: fixnum-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
     1 2 + 3 = check-t
     1 2 + fixnum? check-t
 ;
@@ -68,9 +83,6 @@ string?-test-1
 fixnum-test-1
 
 : fixnum-test-2 ( -- )
-    -1 fixnum? check-t
-    -2 fixnum? check-t
-    -3 fixnum? check-t
     -1 -2 + -3 = check-t
 ;
 

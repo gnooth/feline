@@ -54,9 +54,12 @@ code most_negative_fixnum, 'most-negative-fixnum'
 endcode
 
 ; ### fixnum?
-code fixnum?, 'fixnum?'                 ; x -- t|f
-        _fixnum?
-        _tag_boolean
+code fixnum?, 'fixnum?'                 ; x -- ?
+        and     ebx, TAG_MASK
+        cmp     ebx, FIXNUM_TAG
+        mov     eax, t_value
+        mov     ebx, f_value
+        cmove   ebx, eax
         next
 endcode
 
