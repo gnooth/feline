@@ -99,14 +99,6 @@ new_array_untagged:
         _over                           ; -- length element length
         _this_array_set_length          ; -- length element
 
-;         _swap
-;         _zero
-;         _?do .1                         ; -- element
-;         _dup
-;         _i
-;         _this_array_set_nth_unsafe
-;         _loop .1
-
         popd    rax                     ; element in rax
         popd    rcx                     ; length in rcx
         mov     rdi, this_register
