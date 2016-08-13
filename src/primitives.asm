@@ -517,7 +517,7 @@ code feline_dot_s, '.s'
         _i
         _over
         _array_nth_unsafe
-        _ cr
+        _ nl
         _ dot_object
         _loop .1
         _drop
