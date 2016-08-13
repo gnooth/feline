@@ -186,6 +186,7 @@ code slot, 'slot@'                      ; obj tagged-fixnum -- value
         _cells
         _swap
         _handle_to_object_unsafe
+        _plus
         _fetch
         next
 endcode
@@ -196,6 +197,7 @@ code set_slot, 'slot!'                  ; value obj tagged-fixnum --
         _cells
         _swap
         _handle_to_object_unsafe
+        _plus
         _store
         next
 endcode
