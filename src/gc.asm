@@ -134,6 +134,9 @@ code mark_handle, 'mark-handle'         ; handle --
         test    rbx, rbx
         jz .1
 
+        _test_marked_bit
+        jnz .1
+
         _set_marked_bit
 
         _dup
@@ -280,7 +283,6 @@ code maybe_collect_handle, 'maybe-collect-handle' ; handle --
         _return
 .1:                                     ; -- handle object
         ; Is object marked?
-;         test    OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
         _test_marked_bit
         jz .2
         ; Object is marked.
