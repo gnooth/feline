@@ -28,6 +28,7 @@ OBJECT_TYPE_SYMBOL              equ  9
 OBJECT_TYPE_VOCAB               equ 10
 OBJECT_TYPE_QUOTATION           equ 11
 OBJECT_TYPE_WRAPPER             equ 12
+OBJECT_TYPE_TUPLE               equ 13
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
@@ -111,24 +112,30 @@ OBJECT_ALLOCATED_BIT            equ 4
         movzx   ebx, bl
 %endmacro
 
-%macro  _slot 1                        ; object -- x
+%macro  _slot 1                         ; object -- x
         mov     rbx, [rbx + BYTES_PER_CELL * %1]
 %endmacro
 
-%macro  _this_slot 1                   ; -- x
+%macro  _this_slot 1                    ; -- x
         pushrbx
         mov     rbx, [this_register + BYTES_PER_CELL * %1]
 %endmacro
 
-%macro  _set_slot 1                    ; x object --
+%macro  _set_slot 1                     ; x object --
         mov     rax, [rbp]
         mov     [rbx + BYTES_PER_CELL * %1], rax
         _2drop
 %endmacro
 
-%macro  _this_set_slot 1               ; x --
+%macro  _this_set_slot 1                ; x --
         mov     [this_register + BYTES_PER_CELL * %1], rbx
         poprbx
+%endmacro
+
+%macro  _this_nth_slot 0                ; n -- x
+        _cells
+        add     rbx, this_register
+        mov     rbx, [rbx]
 %endmacro
 
 %macro  _slot1 0                        ; object -- x
