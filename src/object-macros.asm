@@ -80,22 +80,6 @@ OBJECT_ALLOCATED_BIT            equ 4
         movzx   rbx, OBJECT_FLAGS_BYTE
 %endmacro
 
-%macro  _object_marked? 0               ; object -- 0|1
-        test    OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
-        setnz   bl
-        movzx   ebx, bl
-%endmacro
-
-%macro  _mark_object 0                  ; object --
-        or      OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
-        poprbx
-%endmacro
-
-%macro  _unmark_object 0                ; object --
-        and     OBJECT_FLAGS_BYTE, ~OBJECT_MARKED_BIT
-        poprbx
-%endmacro
-
 %macro  _object_set_flags 0             ; object flags --
         mov     rax, [rbp]              ; object in rax
         mov     [rax + 2], bl

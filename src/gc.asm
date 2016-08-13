@@ -34,6 +34,19 @@ code gc_add_root, 'gc-add-root'         ; address --
         next
 endcode
 
+%macro _set_marked_bit 0                ; object -- object
+        or      OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
+%endmacro
+
+%macro _test_marked_bit 0               ; object -- object
+        test    OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
+%endmacro
+
+%macro  _unmark_object 0                ; object --
+        and     OBJECT_FLAGS_BYTE, ~OBJECT_MARKED_BIT
+        poprbx
+%endmacro
+
 ; ### mark-vector
 code mark_vector, 'mark-vector'         ; vector --
         push    this_register
@@ -117,11 +130,11 @@ endcode
 
 ; ### mark-handle
 code mark_handle, 'mark-handle'         ; handle --
-        _handle_to_object_unsafe        ; -- object|0
+        _handle_to_object_unsafe        ; -- object/0
         test    rbx, rbx
         jz .1
-        ; Set the marked bit in the object header.
-        or      OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
+
+        _set_marked_bit
 
         _dup
         _object_type                    ; -- object object-type
@@ -267,7 +280,8 @@ code maybe_collect_handle, 'maybe-collect-handle' ; handle --
         _return
 .1:                                     ; -- handle object
         ; Is object marked?
-        test    OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
+;         test    OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
+        _test_marked_bit
         jz .2
         ; Object is marked.
         _nip                            ; -- object
