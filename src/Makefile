@@ -140,6 +140,7 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	time.asm \
 	tools.asm \
 	transient-alloc.asm \
+	tuple.asm \
 	value.asm \
 	vocab.asm \
 	vocabs.asm \

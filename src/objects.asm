@@ -325,6 +325,14 @@ code dot_object, '.'                    ; handle-or-object --
         _return
         _then .12
 
+        _dup
+        _ tuple?
+        _tagged_if .13
+        _ dot_tuple
+        _ space
+        _return
+        _then .13
+
         ; give up
         _ hdot
 
