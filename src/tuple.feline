@@ -41,6 +41,17 @@ IN: feline
     symbol-set-def
 ;
 
+: define-accessors ( class-symbol -- )
+    "slots" over symbol-prop            // class-symbol slots
+    [ symbol-name ] dip                 // class-name slots
+
+    2dup
+    [ [ dupd ] dip 2 + define-reader ] each-index
+    drop
+    [ [ dupd ] dip 2 + define-writer ] each-index
+    drop
+;
+
 : suffix! ( seq elt -- seq )
     over push
 ;
@@ -59,10 +70,12 @@ IN: feline
 
     [ "slots" swap symbol-prop length ] keep // -- size class-symbol
     [ swap 2array ] keep                // -- array class-symbol
-    "layout" swap symbol-set-prop
+    [ "layout" swap symbol-set-prop ] keep
+
+    define-accessors
 ;
 
-: tuple: ( -- )
+: TUPLE: ( -- )
     parse-token                         // -- string/f
     10 <vector>                         // -- string vector
 
