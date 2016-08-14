@@ -175,13 +175,25 @@ fixnum-test-10
 fixnum-test-11
 
 : dip-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
     87 42 [ 3 * ] dip get-datastack V{ 261 42 } sequence= check-t
     clear
 ;
 
 dip-test-1
 
+: each-index-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    clear
+    { "a" "b" "c" } [ 2array ] each-index get-datastack
+    { { "a" 0 } { "b" 1 } { "c" 2 } } sequence= check-t
+    clear
+;
+
+each-index-test-1
+
 : keep-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
     42 [ dup ] keep get-datastack V{ 42 42 42 } sequence= check-t
     clear
 ;
@@ -239,6 +251,7 @@ vector-test-2
     1 <vector> [ vector? check-t ] keep
     10 [ over vector-push ] each-integer
     10 [ dup pick vector-nth eq? check-t ] each-integer
+    [ [ eq? check-t ] each-index ] keep
     10 [ 9 swap - over vector-pop eq? check-t ] each-integer
     vector-length zero? check-t
 ;
@@ -570,4 +583,13 @@ until-test-1
 
 create-symbol-test-1
 
-?cr "Reached end of test.feline" write
+: bi-test-1 ( -- )
+    << last-word symbol-name >> ?cr write
+    clear
+    42 [ 1 + ] [ 2 + ] bi get-datastack { 43 44 } sequence= check-t
+    clear
+;
+
+bi-test-1
+
+?nl "Reached end of test.feline" write
