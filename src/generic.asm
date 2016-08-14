@@ -143,6 +143,11 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _lit equal?_xt
         _ add_method
 
+        _lit array_equal?_xt
+        _lit OBJECT_TYPE_ARRAY
+        _lit equal?_xt
+        _ add_method
+
         _lit string_equal?_xt
         _lit OBJECT_TYPE_STRING
         _lit equal?_xt
