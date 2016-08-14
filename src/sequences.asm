@@ -185,7 +185,7 @@ code two_nth, '2nth'                    ; n seq1 seq2 -- elt1 elt2
 endcode
 
 ; ### sequence=
-code sequence_equal, 'sequence='        ; seq1 seq2 -- t|f
+code sequence_equal, 'sequence='        ; seq1 seq2 -- ?
         _twodup
         _lit length_xt
         _ bi_at                         ; -- seq1 seq2 len1 len2
@@ -236,6 +236,31 @@ code each, 'each'                       ; seq quotation-or-xt --
         _tag_fixnum
         _this                           ; -- tagged-index handle
         _ nth_unsafe                    ; -- element
+        call    r12
+        _loop .1
+        pop     this_register
+        pop     r12
+        next
+endcode
+
+; ### each-index
+code each_index, 'each-index'           ; seq quotation-or-xt --
+        _ callable_code_address         ; -- seq code-address
+        push    r12
+        mov     r12, rbx                ; code address in r12
+        poprbx                          ; -- seq
+        push    this_register
+        mov     this_register, rbx      ; handle to seq in this_register
+        _ length
+        _untag_fixnum
+        _zero
+        _?do .1
+        _i
+        _tag_fixnum
+        _dup
+        _this                           ; -- index index handle
+        _ nth_unsafe                    ; -- index element
+        _swap                           ; -- element index
         call    r12
         _loop .1
         pop     this_register
