@@ -70,10 +70,16 @@ code tuple_layout, 'tuple-layout'       ; class-symbol -- layout
         next
 endcode
 
+; ### layout-of
+code layout_of, 'layout-of'             ; tuple -- layout
+        _lit tagged_fixnum(1)
+        _ slot
+        next
+endcode
+
 ; ### <tuple>
 code new_tuple, '<tuple>'               ; class-symbol -- handle
 
-;         _untag_fixnum                   ; -- untagged-length
         _ tuple_layout                  ; -- layout
 
         _dup
@@ -129,10 +135,6 @@ code dot_tuple, '.tuple'                ; tuple --
         _ first
         _ dot_object
 
-;         _quote "slots"
-;         _swap
-;         _ symbol_prop
-;         _ length
         _ second
         _untag_fixnum
         _zero
