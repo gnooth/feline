@@ -45,6 +45,17 @@ code keep, 'keep'                       ; .. x quot -- .. x
         next
 endcode
 
+; ### bi
+code bi, 'bi'                           ; x quot1 quot2 --
+; Applies quot1 to x, then applies quot2 to x.
+        _ callable_code_address
+        _tor
+        _ keep
+        pop     rax
+        call    rax
+        next
+endcode
+
 ; ### bi@
 code bi_at, 'bi@'                       ; x y quot --
 ; Applies quotation to x, then to y.
