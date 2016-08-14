@@ -29,6 +29,11 @@ IN: feline
     if
 ;
 
+HELP: bi
+    "( x quot1 quot2 -- )
+    Applies quot1 to x, then applies quot2 to x."
+;
+
 HELP: drop
     "( x -- )
     Remove x from the stack."
@@ -46,6 +51,12 @@ HELP: dupd
 HELP: each
     "( seq quot -- )            quot: ( ... elt -- ... )
     Applies quot to each element of seq in order."
+;
+
+HELP: each-index
+    "( seq quot -- )            quot: ( ... elt index -- ... )
+    Calls quot for each element of seq with both the element and
+    its index on the stack."
 ;
 
 HELP: filter
