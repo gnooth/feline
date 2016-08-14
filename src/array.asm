@@ -267,6 +267,28 @@ code array_each, 'array-each'           ; array xt --
         next
 endcode
 
+; ### array-equal?
+code array_equal?, 'array-equal?'       ; array1 array2 -- ?
+        _twodup
+
+        _ array?
+        _tagged_if_not .1
+        _3drop
+        _f
+        _return
+        _then .1
+
+        _ array?
+        _tagged_if_not .2
+        _2drop
+        _f
+        _return
+        _then .2
+
+        _ sequence_equal
+        next
+endcode
+
 ; ### .array
 code dot_array, '.array'                ; array --
         _ check_array
