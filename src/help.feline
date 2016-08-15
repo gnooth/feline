@@ -29,9 +29,31 @@ IN: feline
     if
 ;
 
+HELP: 2dip
+    "( x y quot -- x y )
+    Remove x and y from the stack, call quot, and restore x and y
+    to the top of the stack when quot returns."
+;
+
+HELP: 2nip
+    "( x y z -- z )
+    Remove x and y from the stack."
+;
+
+HELP: <vector>
+    "( n -- vector )
+    Create a new vector with an initial capacity of n elements."
+;
+
 HELP: bi
     "( x quot1 quot2 -- )
-    Applies quot1 to x, then applies quot2 to x."
+    Apply quot1 to x, then apply quot2 to x."
+;
+
+HELP: dip
+    "( x quot -- x )
+    Remove x from the stack, call quot, and restore x to the top
+    of the stack when quot returns."
 ;
 
 HELP: drop
@@ -45,53 +67,48 @@ HELP: dup
 
 HELP: dupd
     "( x y -- x x y)
-    Duplicate the second stack item."
+    Duplicate the second item on the stack."
 ;
 
 HELP: each
     "( seq quot -- )            quot: ( ... elt -- ... )
-    Applies quot to each element of seq in order."
+    Apply quot to each element of seq in order."
 ;
 
 HELP: each-index
     "( seq quot -- )            quot: ( ... elt index -- ... )
-    Calls quot for each element of seq with both the element and
+    Call quot for each element of seq with both the element and
     its index on the stack."
 ;
 
 HELP: filter
     "( seq quot -- subseq )     quot: ( ... elt -- ... ? )
-    Returns a new sequence containing the elements of the original
+    Return a new sequence containing the elements of the original
     sequence for which the quotation returns a true value."
 ;
 
 HELP: find
     "( seq quot -- i elt )      quot: ( ... elt -- ... ? )
-    Applies quot to each element of seq in order. If the quotation
-    returns a true value for some element, find returns the index of
-    that element and the element itself. Otherwise find returns f for
-    both the index and the element."
+    Apply quot to each element of seq in order. If the quotation
+    returns a true value for some element, return the index of that
+    element and the element itself. Otherwise return f for both the
+    index and the element."
 ;
 
 HELP: in-bounds?
     "( n seq -- ? )
-    Returns true if n is within the bounds of seq."
+    Return t if n is within the bounds of seq."
 ;
 
 HELP: map
     "( seq quot -- newseq )     quot: ( ... elt -- ... newelt )
-    Applies quot to each element of seq in order. The results are
-    collected in a new sequence of the same type as seq."
+    Apply quot to each element of seq in order. Collect the results
+    in a new sequence of the same type as seq."
 ;
 
 HELP: member?
     "( obj seq -- ? )
-    Returns true if seq contains an element equal to obj."
-;
-
-HELP: 2nip
-    "( x y z -- z )
-    Remove x and y from the stack."
+    Return t if seq contains an element equal to obj."
 ;
 
 HELP: over
@@ -116,5 +133,5 @@ HELP: swapd
 
 HELP: times
     "( n quot -- )    quot: ( ... -- ... )
-    Calls quot n times."
+    Call quot n times."
 ;
