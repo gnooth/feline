@@ -78,7 +78,12 @@ import ?cr
 import .(
 import time
 
-: throw ( n -- ) untag-fixnum throw ;
+: throw ( n -- )
+    dup fixnum? t = if
+        untag-fixnum
+    then
+    throw
+;
 
 : depth ( -- n ) depth tag-fixnum ;
 
