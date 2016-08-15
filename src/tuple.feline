@@ -18,6 +18,13 @@ LANGUAGE: feline
 USING: feline ;
 IN: feline
 
+: tuple-instance? ( object class -- ? )
+    over tuple?
+    [ swap layout-of first eq? ]
+    [ 2drop f ]
+    if
+;
+
 : define-reader ( class-name slot-name slot-offset )
     rot string>sbuf                     // -- slot-name slot-offset sbuf
     '-' over push                       // -- slot-name slot-offset sbuf
@@ -41,8 +48,8 @@ IN: feline
     symbol-set-def
 ;
 
-: define-accessors ( class-symbol -- )
-    "slots" over symbol-prop            // class-symbol slots
+: define-accessors ( class -- )
+    "slots" over symbol-prop            // class slots
     [ symbol-name ] dip                 // class-name slots
 
     2dup
@@ -56,23 +63,43 @@ IN: feline
     over push
 ;
 
-: define-class ( class-name -- class-symbol )
+: define-class ( class-name -- class )
     current-vocab vocab-create-symbol
     t "class" pick symbol-set-prop
 ;
 
+: define-tuple-predicate ( class -- )
+    dup symbol-name string>sbuf
+    '?' over push
+    sbuf>string current-vocab <symbol>
+    dup current-vocab vocab-add-symbol  // -- class symbol
+
+    swap                                // -- symbol class
+
+    // REVIEW literalize
+    <wrapper>
+
+    10 <vector>                         // -- symbol class vector
+    [ push ] keep                       // -- symbol vector
+    \ tuple-instance? suffix!           // -- symbol vector
+    vector>array array>quotation
+    swap symbol-set-def
+;
+
 : define-tuple-class ( class-name slot-names -- )
-    swap define-class                   // -- slot-names class-symbol
-    "slots"                             // -- slot-names class-symbol "slots"
-    swap                                // -- slot-names "slots" class-symbol
+    swap define-class                   // -- slot-names class
+    "slots"                             // -- slot-names class "slots"
+    swap                                // -- slot-names "slots" class
 
-    [ symbol-set-prop ] keep            // -- class-symbol
+    [ symbol-set-prop ] keep            // -- class
 
-    [ "slots" swap symbol-prop length ] keep // -- size class-symbol
-    [ swap 2array ] keep                // -- array class-symbol
+    [ "slots" swap symbol-prop length ] keep // -- size class
+    [ swap 2array ] keep                // -- array class
     [ "layout" swap symbol-set-prop ] keep
 
-    define-accessors
+    [ define-accessors ] keep           // -- class
+
+    define-tuple-predicate
 ;
 
 : TUPLE: ( -- )
