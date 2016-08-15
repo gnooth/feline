@@ -25,6 +25,13 @@ IN: feline
     if
 ;
 
+: require-type ( object class -- object )
+    over tuple?
+    [ over layout-of first eq? [ "type error" throw ] unless ]
+    [ "type error" throw ]
+    if
+;
+
 : define-reader ( class-name slot-name slot-offset )
     rot string>sbuf                     // -- slot-name slot-offset sbuf
     '-' over push                       // -- slot-name slot-offset sbuf
