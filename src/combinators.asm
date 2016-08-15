@@ -30,6 +30,21 @@ code dip, 'dip'                         ; x quot -- x
         next
 endcode
 
+; ### 2dip
+code twodip, '2dip'                     ; x y quot -- x y
+; Remove x and y, call quot, restore x and y to top of stack after
+; quot returns.
+        _ callable_code_address         ; code address in rbx
+        mov     rax, rbx                ; code address in rax
+        poprbx                          ; -- x y
+        _tor
+        _tor
+        call    rax
+        _rfrom
+        _rfrom
+        next
+endcode
+
 ; ### keep
 code keep, 'keep'                       ; .. x quot -- .. x
 ; Factor
