@@ -77,8 +77,8 @@ HELP: each
 
 HELP: each-index
     "( seq quot -- )            quot: ( ... elt index -- ... )
-    Call quot for each element of seq with both the element and
-    its index on the stack."
+    Call quot for each element of seq with both the element and its
+    index on the stack."
 ;
 
 HELP: filter
@@ -104,6 +104,13 @@ HELP: map
     "( seq quot -- newseq )     quot: ( ... elt -- ... newelt )
     Apply quot to each element of seq in order. Collect the results
     in a new sequence of the same type as seq."
+;
+
+HELP: map-index
+    "( seq quot -- newseq )     quot: ( ... elt index -- ...newelt )
+    Call quot for each element of seq with both the element and its
+    index on the stack. Collect the results in a new sequence of the
+    the same type as seq."
 ;
 
 HELP: member?
