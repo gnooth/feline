@@ -123,6 +123,48 @@ code map, 'map'                         ; seq quot -- newseq
         next
 endcode
 
+; ### map-index
+code map_index, 'map-index'             ; seq quot -- newseq
+        _ callable_code_address
+        _swap                           ; -- code-address seq
+        push    this_register
+        popd    this_register           ; -- code-address
+        push    r12
+        popd    r12                     ; code address in r12
+        _this
+        _ length                        ; -- len
+        _this                           ; -- len seq
+        _ new_sequence                  ; -- newseq
+
+        _this
+        _ length
+        _untag_fixnum
+        _zero
+        _?do .1
+
+        _i
+        _tag_fixnum
+        _dup
+        _this
+        _ nth_unsafe                    ; -- newseq tagged-index elt
+
+        _swap                           ; -- newseq elt tagged-index
+
+        call    r12                     ; -- newseq newelt
+
+        _i
+        _tag_fixnum                     ; -- newseq newelt i
+        _ feline_pick                   ; -- newseq newelt i newseq
+        _ set_nth                       ; -- newseq
+
+        _loop .1
+
+        pop     r12
+        pop     this_register
+
+        next
+endcode
+
 ; ### filter
 code filter, 'filter'                   ; seq quot -- subseq
         _ callable_code_address         ; -- seq code-address
