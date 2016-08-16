@@ -498,32 +498,23 @@ endcode
 
 ; ### vector-equal?
 code vector_equal?, 'vector-equal?'     ; vector1 vector2 -- t|f
-        _ check_vector
-        _swap
-        _ check_vector                  ; -- v1 v2
-
         _twodup
-        _vector_length
-        _swap
-        _vector_length
-        _notequal
-        _if .1
+
+        _ vector?
+        _tagged_if_not .1
+        _3drop
+        _f
+        _return
+        _then .1
+
+        _ vector?
+        _tagged_if_not .2
         _2drop
         _f
         _return
-        _then .1                        ; -- v1 v2
+        _then .2
 
-        _over
-        _vector_length
-        _tor
-        _vector_data
-        _swap
-        _vector_data
-        _rfrom
-        _cells
-        _ memequal
-        _tag_boolean
-
+        _ sequence_equal
         next
 endcode
 
