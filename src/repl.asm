@@ -270,7 +270,7 @@ code repl, 'repl'                       ; --
         ; REVIEW
         mov     rsp, [rp0_data]
 
-        _ ?cr
+        _ ?nl
         _ prompt
         _ query
         _ tib
@@ -284,9 +284,15 @@ code repl, 'repl'                       ; --
         ; THROW occurred
         _ feline_do_error
         _then .2
+        _ depth
+        _if .3
         _ white
         _ foreground
+        _ nl
+        _quote "--- Data stack:"
+        _ write_
         _ feline_dot_s
+        _then .3
 
         ; REVIEW
         _ gc
