@@ -36,6 +36,20 @@
         lea     rsp, [rsp + BYTES_PER_CELL]
 %endmacro
 
+%macro  _twotor 0
+        push    qword [rbp]
+        push    rbx
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+%endmacro
+
+%macro  _tworfrom 0
+        mov     [rbp - BYTES_PER_CELL], rbx
+        pop     rbx
+        pop     qword [rbp - BYTES_PER_CELL * 2]
+        lea     rbp, [rbp - BYTES_PER_CELL * 2]
+%endmacro
+
 %macro  _fetch 0                        ; @
         mov     rbx, [rbx]
 %endmacro

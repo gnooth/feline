@@ -343,10 +343,7 @@ code twotor, '2>r'                      ; x1 x2 --      r: -- x1 x2
 ; CORE EXT
 ; "Interpretation: Interpretation semantics for this word are undefined."
         pop     rax                     ; return address
-        push    qword [rbp]
-        push    rbx
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        _twotor
         jmp     rax
         next
 endcode
@@ -356,10 +353,7 @@ code tworfrom, '2r>'                    ; -- x1 x2      r: x1 x2 --
 ; CORE EXT
 ; "Interpretation: Interpretation semantics for this word are undefined."
         pop     rax                     ; return address
-        mov     [rbp - BYTES_PER_CELL], rbx
-        pop     rbx
-        pop     qword [rbp - BYTES_PER_CELL * 2]
-        lea     rbp, [rbp - BYTES_PER_CELL * 2]
+        _tworfrom
         jmp     rax
         next
 endcode
