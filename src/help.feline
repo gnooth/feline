@@ -35,6 +35,12 @@ HELP: 2dip
     to the top of the stack when quot returns."
 ;
 
+HELP: 2keep
+    "( x y quot -- x y )
+    Call quot with x and y on the stack. Restore x and y to the
+    top of the stack when quot returns."
+;
+
 HELP: 2nip
     "( x y z -- z )
     Remove x and y from the stack."
@@ -98,6 +104,12 @@ HELP: find
 HELP: in-bounds?
     "( n seq -- ? )
     Return t if n is within the bounds of seq."
+;
+
+HELP: keep
+    "( x quot -- x )
+    Call quot with x on the stack. Restore x to the top of the
+    stack when quot returns."
 ;
 
 HELP: map
