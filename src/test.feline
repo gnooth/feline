@@ -7,7 +7,8 @@ IN: feline
 ( this is another comment )
 
 : failed ( -- )
-    ?cr "failed" print
+//     ?nl "failed" print
+    "failed" throw
 ;
 
 : check-t ( x -- )
@@ -34,7 +35,7 @@ string" length 26 = check-t
 clear
 
 : multiline-string-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     "this is
 a multiline string"
     dup string? check-t
@@ -44,7 +45,7 @@ a multiline string"
 multiline-string-test-1
 
 : string?-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     t string? check-false
     f string? check-false
     42 string? check-false
@@ -57,7 +58,7 @@ multiline-string-test-1
 string?-test-1
 
 : fixnum?-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     most-negative-fixnum fixnum? check-t
     -3 fixnum? check-t
     -2 fixnum? check-t
@@ -75,7 +76,7 @@ string?-test-1
 fixnum?-test-1
 
 : fixnum-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     1 2 + 3 = check-t
     1 2 + fixnum? check-t
 ;
@@ -175,7 +176,7 @@ fixnum-test-10
 fixnum-test-11
 
 : dip-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     87 42 [ 3 * ] dip get-datastack V{ 261 42 } sequence= check-t
     clear
 ;
@@ -183,7 +184,7 @@ fixnum-test-11
 dip-test-1
 
 : 2dip-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     clear
     42 17 89 [ 1 + ] 2dip get-datastack { 43 17 89 } sequence= check-t
     clear
@@ -192,7 +193,7 @@ dip-test-1
 2dip-test-1
 
 : each-index-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     clear
     { "a" "b" "c" } [ 2array ] each-index get-datastack
     { { "a" 0 } { "b" 1 } { "c" 2 } } sequence= check-t
@@ -201,8 +202,21 @@ dip-test-1
 
 each-index-test-1
 
+: map-index-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    clear
+    { "a" "b" "c" } [ 2array ] map-index get-datastack
+    { { { "a" 0 } { "b" 1 } { "c" 2 } } } = check-t
+    clear
+    V{ "a" "b" "c" } [ 2array ] map-index get-datastack
+    { V{ { "a" 0 } { "b" 1 } { "c" 2 } } } = check-t
+    clear
+;
+
+map-index-test-1
+
 : keep-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     42 [ dup ] keep get-datastack V{ 42 42 42 } sequence= check-t
     clear
 ;
@@ -237,7 +251,7 @@ array-test-2
 
 // vector-insert-nth!
 : vector-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     17 0 V{ 0 1 2 3 } [ vector-insert-nth! ] keep
     V{ 17 0 1 2 3 } sequence= check-t
     clear
@@ -246,7 +260,7 @@ array-test-2
 vector-test-1
 
 : vector-test-2 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     10 <vector> [ vector? check-t ] keep
     10 [ dup pick vector-set-nth ] each-integer
     [ [ eq? check-t ] vector-each-index ] keep
@@ -256,7 +270,7 @@ vector-test-1
 vector-test-2
 
 : vector-test-3 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     1 <vector> [ vector? check-t ] keep
     10 [ over vector-push ] each-integer
     10 [ dup pick vector-nth eq? check-t ] each-integer
@@ -269,7 +283,7 @@ vector-test-3
 
 // vector-pop*
 : vector-test-4 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     V{ 1 2 3 } [ vector-pop* ] keep
     [ length 2 = check-t ] keep
     [ vector-pop* ] keep
@@ -282,7 +296,7 @@ vector-test-4
 
 // vector-last
 : vector-test-5 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     clear
     V{ 1 2 3 } vector-last get-datastack { 3 } sequence= check-t
     clear
@@ -297,7 +311,7 @@ vector-test-5
 ;
 
 : local-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     %local-test-1 42 eq? check-t
 ;
 
@@ -369,7 +383,7 @@ hashcode-test-1
 hashcode-test-2
 
 : hashtable-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     16 <hashtable> :> ht
     42 "parker" ht set-at
     ht hashtable-count 1 = check-t
@@ -386,14 +400,14 @@ hashcode-test-2
 hashtable-test-1
 
 : hashtable-test-2 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     72 <hashtable> hashtable-capacity 128 = check-t
 ;
 
 hashtable-test-2
 
 : hashtable-test-3 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     16 <hashtable> :> ht
     1000 [ dup number>string ht set-at ] each-integer
     1000 [ dup number>string ht at = check-t ] each-integer
@@ -412,7 +426,7 @@ hashtable-test-3
 length-test-1
 
 : globals-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     clear
     42 \ dup set-global get-datastack { } sequence= check-t
     \ dup get-global get-datastack { 42 } sequence= check-t
@@ -424,7 +438,7 @@ length-test-1
 globals-test-1
 
 : find-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     V{ 1 2 3 4 5 6 } [ 3 = ] find
     get-datastack V{ 2 3 } sequence= check-t
     clear
@@ -439,7 +453,7 @@ globals-test-1
 find-test-1
 
 : map-find-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     clear
     V{ 1 2 3 4 5 6 } [ 3 = ] map-find get-datastack { t 3 } sequence= check-t
     clear
@@ -452,7 +466,7 @@ find-test-1
 map-find-test-1
 
 : ?lookup-symbol-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     "dup" "feline" ?lookup-symbol \ dup eq? check-t
     "xxx" "feline" ?lookup-symbol check-false
     "dup" "xxx" ?lookup-symbol check-false
@@ -461,7 +475,7 @@ map-find-test-1
 ?lookup-symbol-test-1
 
 : parsing-word?-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     \ SYMBOL: parsing-word? check-t
     \ dup parsing-word? check-false
     42 parsing-word? check-false
@@ -472,7 +486,7 @@ map-find-test-1
 parsing-word?-test-1
 
 : parsing-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     V{ SYMBOL: dup } V{ } sequence= check-t
     clear
 ;
@@ -485,7 +499,7 @@ parsing-test-1
 ;
 
 : parsing-test-2 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     clear
     %parsing-test-2 get-datastack { 42 } sequence= check-t
     clear
@@ -494,14 +508,14 @@ parsing-test-1
 parsing-test-2
 
 : sequence=-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     { "this is a test" } { "this is a test" } sequence= check-t
 ;
 
 sequence=-test-1
 
 : symbol-props-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     clear
     "foo" \ dup symbol-prop get-datastack { f } sequence= check-t
     clear
@@ -513,14 +527,14 @@ sequence=-test-1
 symbol-props-test-1
 
 : times-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     0 10 [ 1 + ] times 10 eq? check-t
 ;
 
 times-test-1
 
 : filter-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     V{ 1 2 3 4 } [ 3 < ] filter V{ 1 2 } sequence= check-t
      { 1 2 3 4 } [ 3 < ] filter  { 1 2 } sequence= check-t
 ;
@@ -528,7 +542,7 @@ times-test-1
 filter-test-1
 
 : member?-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     17 { 1 2 3 } member? check-false
     1  { 1 2 3 } member? check-t
     f  { 1 2 3 } member? check-false
@@ -538,7 +552,7 @@ filter-test-1
 member?-test-1
 
 : in-bounds?-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     { 1 2 3 }
     0 over in-bounds? check-t
     1 over in-bounds? check-t
@@ -554,7 +568,7 @@ in-bounds?-test-1
 : %bar ( -- ) %foo ;
 
 : redefinition-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     %foo 42 = check-t
     %bar 42 = check-t
 ;
@@ -565,7 +579,7 @@ redefinition-test-1
 : %foo ( -- ) 87 ;
 
 : redefinition-test-2 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     %foo 87 = check-t
     %bar 87 = check-t
 ;
@@ -573,7 +587,7 @@ redefinition-test-1
 redefinition-test-2
 
 : until-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     clear
     1 [ dup 1 = ] [ 1 + ] until get-datastack { 1 } sequence= check-t
     clear
@@ -584,7 +598,7 @@ redefinition-test-2
 until-test-1
 
 : create-symbol-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     "foo" "feline" create-symbol dup symbol? check-t
     "foo" "feline" create-symbol eq? check-t
     \ dup "dup" "feline" create-symbol eq? check-t
@@ -593,12 +607,46 @@ until-test-1
 create-symbol-test-1
 
 : bi-test-1 ( -- )
-    << last-word symbol-name >> ?cr write
+    << last-word symbol-name >> ?nl write
     clear
     42 [ 1 + ] [ 2 + ] bi get-datastack { 43 44 } sequence= check-t
     clear
 ;
 
 bi-test-1
+
+: 2bi-test-1
+    << last-word symbol-name >> ?nl write
+    clear
+    1 2 3 4 [ dup ] [ + ] 2bi get-datastack { 1 2 3 4 4 7 } sequence= check-t
+    clear
+    1 2 3 4 [ nip ] [ + ] 2bi get-datastack { 1 2 4 7 } sequence= check-t
+    clear
+;
+
+2bi-test-1
+
+TUPLE: foo a b c ;
+
+: tuple-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    \ foo new
+    [ tuple? check-t ] keep
+    [ foo? check-t ] keep
+    \ foo require-type
+    [ foo-a check-false ] keep
+    [ foo-b check-false ] keep
+    [ foo-c check-false ] keep
+    42 over foo-a!
+    71 over foo-b!
+    "test" over foo-c!
+    [ foo-a 42 = check-t ] keep
+    [ foo-b 71 = check-t ] keep
+    [ foo-c "test" = check-t ] keep
+
+    drop
+;
+
+tuple-test-1
 
 ?nl "Reached end of test.feline" write
