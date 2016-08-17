@@ -74,7 +74,7 @@ endcode
 
 ; ### bi
 code bi, 'bi'                           ; x quot1 quot2 --
-; Applies quot1 to x, then applies quot2 to x.
+; Apply quot1 to x, then applys quot2 to x.
         _ callable_code_address
         _tor
         _ keep
@@ -83,9 +83,20 @@ code bi, 'bi'                           ; x quot1 quot2 --
         next
 endcode
 
+; ### 2bi
+code twobi, '2bi'                       ; x y quot1 quot2 --
+; Apply quot1 to x and y, then apply quot2 to x and y.
+        _ callable_code_address
+        _tor
+        _ twokeep
+        pop     rax
+        call    rax
+        next
+endcode
+
 ; ### bi@
 code bi_at, 'bi@'                       ; x y quot --
-; Applies quotation to x, then to y.
+; Apply quot to x, then to y.
 ; Quotation must have stack effect ( obj -- ... ).
         push    r12                     ; save non-volatile register
         _ callable_code_address
