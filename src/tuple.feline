@@ -32,26 +32,31 @@ IN: feline
     if
 ;
 
-: define-reader ( class-name slot-name slot-offset )
-    rot string>sbuf                     // -- slot-name slot-offset sbuf
-    '-' over push                       // -- slot-name slot-offset sbuf
-    rot 2dup sbuf-append-string drop    // -- slot-offset sbuf
-    sbuf>string current-vocab <symbol>
-    dup current-vocab vocab-add-symbol  // -- slot-offset symbol
+: suffix! ( seq elt -- seq )
+    over push
+;
 
-    [ \ slot@ 2array array>quotation ] dip
+: define-reader ( class-name slot-spec )
+    swap string>sbuf                    // -- slot-spec sbuf
+    '-' suffix!                         // -- slot-spec sbuf
+    [ over first sbuf-append-string ] keep
+
+    sbuf>string current-vocab <symbol>
+    dup current-vocab vocab-add-symbol  // -- slot-spec symbol
+
+    [ second \ slot@ 2array array>quotation ] dip
     symbol-set-def
 ;
 
-: define-writer ( class-name slot-name slot-offset )
-    rot string>sbuf                     // -- slot-name slot-offset sbuf
-    '-' over push                       // -- slot-name slot-offset sbuf
-    rot 2dup sbuf-append-string drop    // -- slot-offset sbuf
-    '!' over push
+: define-writer ( class-name slot-spec )
+    swap string>sbuf                    // -- slot-spec sbuf
+    '-' suffix!                         // -- slot-spec sbuf
+    [ over first sbuf-append-string ] keep
+    '!' suffix!
     sbuf>string current-vocab <symbol>
-    dup current-vocab vocab-add-symbol  // -- slot-offset symbol
+    dup current-vocab vocab-add-symbol  // -- slot-spec symbol
 
-    [ \ slot! 2array array>quotation ] dip
+    [ second \ slot! 2array array>quotation ] dip
     symbol-set-def
 ;
 
@@ -59,15 +64,9 @@ IN: feline
     "slots" over symbol-prop            // class slots
     [ symbol-name ] dip                 // class-name slots
 
-    2dup
-    [ [ dupd ] dip 2 + define-reader ] each-index
-    drop
-    [ [ dupd ] dip 2 + define-writer ] each-index
-    drop
-;
-
-: suffix! ( seq elt -- seq )
-    over push
+    [ [ dupd define-reader ] each drop ]
+    [ [ dupd define-writer ] each drop ]
+    2bi
 ;
 
 : define-class ( class-name -- class )
@@ -94,6 +93,8 @@ IN: feline
 ;
 
 : define-tuple-class ( class-name slot-names -- )
+    [ 2 + 2array ] map-index
+
     swap define-class                   // -- slot-names class
     "slots"                             // -- slot-names class "slots"
     swap                                // -- slot-names "slots" class
