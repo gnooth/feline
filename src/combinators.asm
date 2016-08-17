@@ -60,6 +60,18 @@ code keep, 'keep'                       ; .. x quot -- .. x
         next
 endcode
 
+; ### 2keep
+code twokeep, '2keep'                   ; .. x y quot -- .. x y
+        _ callable_code_address         ; code address in rbx
+        mov     rax, rbx                ; code address in rax
+        poprbx
+        push    qword [rbp]
+        push    rbx
+        call    rax
+        _tworfrom
+        next
+endcode
+
 ; ### bi
 code bi, 'bi'                           ; x quot1 quot2 --
 ; Applies quot1 to x, then applies quot2 to x.
