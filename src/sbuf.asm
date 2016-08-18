@@ -509,7 +509,9 @@ code sbuf_append_chars, 'sbuf-append-chars' ; sbuf untagged-addr untagged-len --
 endcode
 
 ; ### sbuf-append-string
-code sbuf_append_string, 'sbuf-append-string' ; sbuf string --
+code sbuf_append_string, 'sbuf-append-string' ; sbuf string -- sbuf
+; Modify sbuf by adding the characters of string to the end. Return sbuf.
+        _dupd
         _ string_from
         _ sbuf_append_chars
         next

@@ -36,10 +36,11 @@ IN: feline
     over push
 ;
 
-: define-reader ( class-name slot-spec )
+: define-reader ( class slot-spec -- )
+    [ symbol-name ] dip                 // -- class-name slot-spec
     swap string>sbuf                    // -- slot-spec sbuf
     '-' suffix!                         // -- slot-spec sbuf
-    [ over first sbuf-append-string ] keep
+    over first sbuf-append-string       // -- slot-spec sbuf
 
     sbuf>string current-vocab <symbol>
     dup current-vocab vocab-add-symbol  // -- slot-spec symbol
@@ -48,11 +49,13 @@ IN: feline
     symbol-set-def
 ;
 
-: define-writer ( class-name slot-spec )
+: define-writer ( class slot-spec -- )
+    [ symbol-name ] dip                 // -- class-name slot-spec
     swap string>sbuf                    // -- slot-spec sbuf
     '-' suffix!                         // -- slot-spec sbuf
-    [ over first sbuf-append-string ] keep
+    over first sbuf-append-string       // -- slot-spec sbuf
     '!' suffix!
+
     sbuf>string current-vocab <symbol>
     dup current-vocab vocab-add-symbol  // -- slot-spec symbol
 
@@ -62,8 +65,6 @@ IN: feline
 
 : define-accessors ( class -- )
     "slots" over symbol-prop            // class slots
-    [ symbol-name ] dip                 // class-name slots
-
     [ [ dupd define-reader ] each drop ]
     [ [ dupd define-writer ] each drop ]
     2bi

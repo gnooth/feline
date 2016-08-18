@@ -171,6 +171,12 @@ HELP: rot
     Rotate the top three stack entries."
 ;
 
+HELP: sbuf-append-string
+    "( sbuf string -- sbuf )
+    Modify sbuf by adding the characters of string to the end.
+    Return sbuf."
+;
+
 HELP: swap
     "( x y -- y x )
     Exchange the top two stack items."
