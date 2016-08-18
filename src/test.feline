@@ -249,6 +249,42 @@ array-test-1
 
 array-test-2
 
+: 1array-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    clear
+    71 1array get-datastack { { 71 } } sequence= check-t
+    clear
+;
+
+1array-test-1
+
+: 2array-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    clear
+    "test1" "test2" 2array get-datastack { { "test1" "test2" } } sequence= check-t
+    clear
+;
+
+2array-test-1
+
+: 3array-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    clear
+    1 2 3 3array get-datastack { { 1 2 3 } } sequence= check-t
+    clear
+;
+
+3array-test-1
+
+: 4array-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    clear
+    1 2 3 4 4array get-datastack { { 1 2 3 4 } } sequence= check-t
+    clear
+;
+
+4array-test-1
+
 // vector-insert-nth!
 : vector-test-1 ( -- )
     << last-word symbol-name >> ?nl write

@@ -29,6 +29,16 @@ IN: feline
     if
 ;
 
+HELP: 1array
+    "( x -- array )
+    Create a new array with one element: { x }."
+;
+
+HELP: 2array
+    "( x y -- array )
+    Create a new array with two elements: { x y }."
+;
+
 HELP: 2bi
     "( x y quot1 quot2 -- )
     Apply quot1 to x and y, then apply quot2 to x and y."
@@ -49,6 +59,22 @@ HELP: 2keep
 HELP: 2nip
     "( x y z -- z )
     Remove x and y from the stack."
+;
+
+HELP: 3array
+    "( x y z -- array )
+    Create a new array with three elements: { x y z }."
+;
+
+HELP: 4array
+    "( w x y z -- array )
+    Create a new array with four elements: { w x y z }."
+;
+
+HELP: <array>
+    "( n elt -- array )
+    Create a new array with length n and all elements initially
+    set to elt."
 ;
 
 HELP: <vector>

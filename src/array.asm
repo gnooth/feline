@@ -101,9 +101,14 @@ new_array_untagged:
 
         popd    rax                     ; element in rax
         popd    rcx                     ; length in rcx
-        mov     rdi, this_register
-        add     rdi, 16
+%ifdef WIN64
+        push    rdi
+%endif
+        lea     rdi, [this_register + ARRAY_DATA_OFFSET]
         rep     stosq
+%ifdef WIN64
+        pop     rdi
+%endif
 
         pushrbx
         mov     rbx, this_register      ; -- array
@@ -112,6 +117,86 @@ new_array_untagged:
         _ new_handle                    ; -- handle
 
         pop     this_register
+        next
+endcode
+
+; ### 1array
+code one_array, '1array'                ; x -- handle
+        _lit 1
+        _swap
+        _ new_array_untagged            ; -- handle
+        next
+endcode
+
+; ### 2array
+code two_array, '2array'                ; x y -- handle
+        _lit 2
+        _lit 0
+        _ new_array_untagged            ; -- x y handle
+        _duptor
+        _lit 1
+        _swap
+        _ array_set_nth_untagged
+        _lit 0
+        _rfetch
+        _ array_set_nth_untagged
+        _rfrom
+        next
+endcode
+
+; ### 3array
+code three_array, '3array'              ; x y z -- handle
+        _lit 3
+        _lit 0
+        _ new_array_untagged            ; -- x y z handle
+        _duptor
+        _handle_to_object_unsafe        ; -- x y z array
+        push    this_register
+        popd    this_register           ; -- x y z
+%ifdef WIN64
+        push    rdi
+%endif
+        lea     rdi, [this_register + ARRAY_DATA_OFFSET]
+        mov     rax, [rbp + BYTES_PER_CELL]
+        stosq
+        mov     rax, [rbp]
+        stosq
+        mov     [rdi], rbx
+%ifdef WIN64
+        pop     rdi
+%endif
+        _3drop
+        pop     this_register
+        _rfrom
+        next
+endcode
+
+; ### 4array
+code four_array, '4array'               ; w x y z -- handle
+        _lit 4
+        _lit 0
+        _ new_array_untagged            ; -- w x y z handle
+        _duptor
+        _handle_to_object_unsafe        ; -- w x y z array
+        push    this_register
+        popd    this_register           ; -- w x y z
+%ifdef WIN64
+        push    rdi
+%endif
+        lea     rdi, [this_register + ARRAY_DATA_OFFSET]
+        mov     rax, [rbp + BYTES_PER_CELL * 2]
+        stosq
+        mov     rax, [rbp + BYTES_PER_CELL]
+        stosq
+        mov     rax, [rbp]
+        stosq
+        mov     [rdi], rbx
+%ifdef WIN64
+        pop     rdi
+%endif
+        _4drop
+        pop     this_register
+        _rfrom
         next
 endcode
 
@@ -209,22 +294,6 @@ array_set_nth_untagged:
         _true
         _abortq "array-set-nth index out of range"
         _then .2
-        next
-endcode
-
-; ### 2array
-code two_array, '2array'                ; x y -- handle
-        _lit 2
-        _lit 0
-        _ new_array_untagged            ; -- x y handle
-        _duptor
-        _lit 1
-        _swap
-        _ array_set_nth_untagged
-        _lit 0
-        _rfetch
-        _ array_set_nth_untagged
-        _rfrom
         next
 endcode
 
