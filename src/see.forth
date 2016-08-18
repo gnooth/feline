@@ -1517,6 +1517,14 @@ latest-xt $99 install-handler
 
 latest-xt $aa install-handler
 
+: .ab ( -- )
+    prefix if "stosq" else "stosd" then to mnemonic
+    0 to #operands
+    .inst
+;
+
+latest-xt $ab install-handler
+
 : .b8  ( -- )
     \ source is imm32/64
     \ dest is r32/64
