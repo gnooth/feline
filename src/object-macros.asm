@@ -305,13 +305,15 @@ OBJECT_ALLOCATED_BIT            equ 4
 %endmacro
 
 ; Arrays store their data inline starting at this + 16 bytes.
+%define ARRAY_DATA_OFFSET       16
+
 %macro _array_data 0
-        lea     rbx, [rbx + BYTES_PER_CELL * 2]
+        lea     rbx, [rbx + ARRAY_DATA_OFFSET]
 %endmacro
 
 %macro _this_array_data 0
         pushrbx
-        lea     rbx, [this_register + BYTES_PER_CELL * 2]
+        lea     rbx, [this_register + ARRAY_DATA_OFFSET]
 %endmacro
 
 %macro  _array_nth_unsafe 0             ; index array -- element
