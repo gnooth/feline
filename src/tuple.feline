@@ -37,19 +37,27 @@ IN: feline
 ;
 
 : define-reader ( class slot-spec -- )
+    dupd
     [ symbol-name ] dip                 // -- class-name slot-spec
     swap string>sbuf                    // -- slot-spec sbuf
     '-' suffix!                         // -- slot-spec sbuf
     over first sbuf-append-string       // -- slot-spec sbuf
 
     sbuf>string current-vocab <symbol>
-    dup current-vocab vocab-add-symbol  // -- slot-spec symbol
+    dup current-vocab vocab-add-symbol  // -- class slot-spec symbol
 
-    [ second \ slot@ 2array array>quotation ] dip
+    [
+        [ <wrapper> ] dip
+        second
+        \ require-type swap
+        \ slot@
+        4array array>quotation
+    ] dip
     symbol-set-def
 ;
 
 : define-writer ( class slot-spec -- )
+    dupd
     [ symbol-name ] dip                 // -- class-name slot-spec
     swap string>sbuf                    // -- slot-spec sbuf
     '-' suffix!                         // -- slot-spec sbuf
@@ -59,7 +67,13 @@ IN: feline
     sbuf>string current-vocab <symbol>
     dup current-vocab vocab-add-symbol  // -- slot-spec symbol
 
-    [ second \ slot! 2array array>quotation ] dip
+    [
+        [ <wrapper> ] dip
+        second
+        \ require-type swap
+        \ slot!
+        4array array>quotation
+    ] dip
     symbol-set-def
 ;
 
