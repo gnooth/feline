@@ -194,18 +194,25 @@ code vocab_add_symbol, 'vocab-add-symbol' ; symbol vocab --
         next
 endcode
 
-; ### vocab-create-symbol
-code vocab_create_symbol, 'vocab-create-symbol' ; name vocab -- symbol
+; ### ensure-symbol
+code ensure_symbol, 'ensure-symbol'     ; name vocab-spec -- symbol
+        _ lookup_vocab
+        _dup
+        _tagged_if_not .1
+        _drop
+        _error "vocab not found"
+        _then .1
+
         _twodup
         _ vocab_hashtable
         _ at_
         _dup
-        _tagged_if .1
+        _tagged_if .2
         _2nip
         _return
-        _else .1
+        _else .2
         _drop
-        _then .1                        ; -- name vocab
+        _then .2                        ; -- name vocab
 
         _tuck
         _ new_symbol                    ; -- vocab symbol
@@ -215,19 +222,6 @@ code vocab_create_symbol, 'vocab-create-symbol' ; name vocab -- symbol
         _swap
         _ vocab_add_symbol
 
-        next
-endcode
-
-; ### create-symbol
-code create_symbol, 'create-symbol'     ; name vocab-name -- symbol
-        _ lookup_vocab
-        _dup
-        _tagged_if .1
-        _ vocab_create_symbol
-        _else .1
-        _2drop
-        _error "vocab not found"
-        _then .1
         next
 endcode
 
