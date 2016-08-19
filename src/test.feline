@@ -633,14 +633,14 @@ redefinition-test-2
 
 until-test-1
 
-: create-symbol-test-1 ( -- )
+: ensure-symbol-test-1 ( -- )
     << last-word symbol-name >> ?nl write
-    "foo" "feline" create-symbol dup symbol? check-t
-    "foo" "feline" create-symbol eq? check-t
-    \ dup "dup" "feline" create-symbol eq? check-t
+    "foo" "feline" ensure-symbol dup symbol? check-t
+    "foo" "feline" ensure-symbol eq? check-t
+    \ dup "dup" "feline" ensure-symbol eq? check-t
 ;
 
-create-symbol-test-1
+ensure-symbol-test-1
 
 : bi-test-1 ( -- )
     << last-word symbol-name >> ?nl write
@@ -684,5 +684,25 @@ TUPLE: foo a b c ;
 ;
 
 tuple-test-1
+
+: vocab?-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    42 vocab? check-false
+    "feline" vocab? check-false
+    "feline" lookup-vocab vocab? check-t
+;
+
+vocab?-test-1
+
+: lookup-vocab-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    "feline" lookup-vocab vocab? check-t
+    "feline" lookup-vocab ( vocab ) lookup-vocab vocab? check-t
+    "feline" lookup-vocab ( vocab ) dup lookup-vocab eq? check-t
+    current-vocab lookup-vocab vocab? check-t
+    "not a vocab" lookup-vocab vocab? check-false
+;
+
+lookup-vocab-test-1
 
 ?nl "Reached end of test.feline" write
