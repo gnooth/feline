@@ -56,15 +56,14 @@ file __FILE__
 %endmacro
 
 ; ### vocab?
-code vocab?, 'vocab?'                   ; handle -- t|f
+code vocab?, 'vocab?'                   ; handle -- ?
         _dup
         _ handle?
         _if .1
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_type                    ; -- object-type
-        _lit OBJECT_TYPE_VOCAB
-        _eq?
+        _eq?_literal OBJECT_TYPE_VOCAB
         _return
         _then .2
         _then .1
