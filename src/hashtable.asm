@@ -102,8 +102,7 @@ code hashtable?, 'hashtable?'           ; handle -- t|f
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_type                    ; -- object-type
-        _lit OBJECT_TYPE_HASHTABLE
-        _eq?
+        _eq?_literal OBJECT_TYPE_HASHTABLE
         _return
         _then .2
         _then .1
@@ -129,9 +128,8 @@ code check_hashtable, 'check-hashtable' ; handle -- hashtable
         _dup_if .2
         _dup
         _object_type                    ; -- object object-type
-        _lit OBJECT_TYPE_HASHTABLE
-        _equal
-        _if .3
+        _eq?_literal OBJECT_TYPE_HASHTABLE
+        _tagged_if .3
         _return
         _then .3
         _then .2
@@ -417,7 +415,7 @@ code at_star, 'at*'                     ; key hashtable -- value/f ?
 endcode
 
 ; ### at
-code at_, 'at'                           ; key hashtable -- value
+code at_, 'at'                          ; key hashtable -- value
         _ at_star
         _drop
         next
