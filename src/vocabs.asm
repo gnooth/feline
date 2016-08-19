@@ -83,13 +83,19 @@ code hash_vocabs, 'hash-vocabs'
 endcode
 
 ; ### lookup-vocab
-code lookup_vocab, 'lookup-vocab'       ; string -- vocab/f
+code lookup_vocab, 'lookup-vocab'       ; vocab-spec -- vocab/f
+        _dup
+        _ vocab?
+        _tagged_if .1
+        _return
+        _then .1
+
         _ verify_string
         _ vocabs
         _ vector_length
         _untag_fixnum
         _zero
-        _?do .1
+        _?do .2
         _i
         _ vocabs
         _ vector_nth_untagged           ; -- string 2array
@@ -97,7 +103,7 @@ code lookup_vocab, 'lookup-vocab'       ; string -- vocab/f
         _over
         _ stringequal
         _untag_fixnum
-        _if .2
+        _if .3
         ; found it
         _drop
         _i
@@ -106,8 +112,8 @@ code lookup_vocab, 'lookup-vocab'       ; string -- vocab/f
         _ array_second
         _unloop
         _return
-        _then .2
-        _loop .1
+        _then .3
+        _loop .2
         _drop
         _f
         next
