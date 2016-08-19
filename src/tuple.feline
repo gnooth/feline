@@ -85,7 +85,7 @@ IN: feline
 ;
 
 : define-class ( class-name -- class )
-    current-vocab vocab-create-symbol
+    current-vocab ensure-symbol
     t "class" pick symbol-set-prop
 ;
 
