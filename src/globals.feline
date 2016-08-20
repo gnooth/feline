@@ -18,21 +18,23 @@ LANGUAGE: feline
 USING: feline ;
 IN: feline
 
-: see
-    parse-token ( -- string/f )
-    [ find-symbol [ symbol-code drop forth:disasm ] [ undefined ] if ]
-    when*
+: define-global-reader ( symbol -- )
+    [ <wrapper> \ get 2array array>quotation ] keep symbol-set-def
 ;
 
-: member? ( elt seq -- ? )
-    [ over = ] find drop nip
-    [ t ] [ f ] if
+: define-global-writer ( symbol -- )
+    [
+        symbol-name string>sbuf '!' suffix! sbuf>string
+        current-vocab ensure-symbol
+    ] keep
+    <wrapper> \ set 2array array>quotation swap symbol-set-def
 ;
 
-: blank? ( char -- ? )
-    { 9 10 13 32 } member?
+: GLOBAL: ( -- )
+    parse-token [ "unexpected end of input" error ] unless*
+    current-vocab ensure-symbol
+    t "global" pick symbol-set-prop
+    [ define-global-reader ]
+    [ define-global-writer ]
+    bi
 ;
-
-include-system-file help.feline
-include-system-file tuple.feline
-include-system-file globals.feline

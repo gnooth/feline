@@ -718,4 +718,13 @@ lookup-vocab-test-1
 
 unless*-test-1
 
+GLOBAL: zork
+
+: global-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    42 zork! zork 42 eq? check-t
+;
+
+global-test-1
+
 ?nl "Reached end of test.feline" write
