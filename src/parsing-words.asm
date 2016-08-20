@@ -392,51 +392,6 @@ code parse_symbol, 'SYMBOL:', PARSING   ; -- nothing
         next
 endcode
 
-; ### GLOBAL:
-code parse_global, 'GLOBAL:', PARSING   ; -- nothing
-        _ parse_token                   ; -- string/f
-        _dup
-        _tagged_if_not .1
-        _drop
-        _error "unexpected end of input"
-        _return
-        _then .1
-
-        ; -- string
-        _dup
-        _ current_vocab
-        _ vocab_hashtable
-        _ at_star                       ; -- string value/f ?
-        _tagged_if .2
-        ; existing symbol
-                                        ; -- string symbol
-        _nip                            ; -- symbol
-        _t
-        _quote "global"
-        _ feline_pick
-        _ symbol_set_prop
-        _drop
-        _return
-        _then .2
-
-        ; -- string f
-        _drop
-        _ current_vocab
-        _ new_symbol                    ; -- symbol
-        _dup
-        _to last_word
-
-        _t
-        _quote "global"
-        _ feline_pick
-        _ symbol_set_prop               ; -- symbol
-
-        _ current_vocab
-        _ vocab_add_symbol
-        _nothing
-        next
-endcode
-
 ; ### define-local-internal
 code define_local_internal, 'define-local-internal' ; vector --
         _ using_locals?
