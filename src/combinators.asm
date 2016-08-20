@@ -74,7 +74,7 @@ endcode
 
 ; ### bi
 code bi, 'bi'                           ; x quot1 quot2 --
-; Apply quot1 to x, then applys quot2 to x.
+; Apply quot1 to x, then apply quot2 to x.
         _ callable_code_address
         _tor
         _ keep
