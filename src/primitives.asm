@@ -167,11 +167,28 @@ code when_star, 'when*'                 ; ? quot --
 endcode
 
 ; ### unless
-code unless, 'unless'                   ; ? false --
+code unless, 'unless'                   ; ? quot --
         _swap
         _f
         _equal
         _if .1
+        _ callable_code_address
+        mov     rax, rbx
+        poprbx
+        call    rax
+        _else .1
+        _drop
+        _then .1
+        next
+endcode
+
+; ### unless*
+code unless_star, 'unless*'             ; ? quot --
+        _over
+        _f
+        _equal
+        _if .1
+        _nip
         _ callable_code_address
         mov     rax, rbx
         poprbx

@@ -191,3 +191,15 @@ HELP: times
     "( n quot -- )    quot: ( ... -- ... )
     Call quot n times."
 ;
+
+HELP: unless
+    "( x quot -- )
+    If x is f, remove it from the stack and call quot.
+    Otherwise, just remove x from the stack."
+;
+
+HELP: unless*
+    "( x quot -- )
+    If x is f, remove it from the stack and call quot.
+    Otherwise, just leave x on the stack."
+;

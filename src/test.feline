@@ -705,4 +705,17 @@ vocab?-test-1
 
 lookup-vocab-test-1
 
+: unless*-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    clear
+    f [ 42 ] unless* get-datastack { 42 } = check-t
+    clear
+    t [ 42 ] unless* get-datastack { t } = check-t
+    clear
+    "test" [ 42 ] unless* get-datastack { "test" } = check-t
+    clear
+;
+
+unless*-test-1
+
 ?nl "Reached end of test.feline" write
