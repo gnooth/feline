@@ -131,8 +131,8 @@ code current_colon, 'CURRENT:'
         next
 endcode
 
-; ### create-vocab
-code create_vocab, 'create-vocab'       ; string -- vocab
+; ### ensure-vocab
+code ensure_vocab, 'ensure-vocab'       ; string -- vocab
         _ verify_string
         _dup                            ; -- string string
         _ lookup_vocab                  ; -- string vocab/f
@@ -156,7 +156,7 @@ code in_colon, 'IN:'
         _ parse_token                   ; -- string/f
         _dup
         _tagged_if .1
-        _ create_vocab                  ;
+        _ ensure_vocab                  ;
         _to current_vocab
         _else .1
         _error "unexpected end of input"
