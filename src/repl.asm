@@ -52,6 +52,12 @@ code find_symbol, 'find-symbol'         ; string -- symbol/string ?
         next
 endcode
 
+; ### error
+code error, 'error'                     ; string --
+        _ throw
+        next
+endcode
+
 ; ### undefined
 code undefined, 'undefined'             ; string/symbol --
         _dup
