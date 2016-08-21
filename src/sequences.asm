@@ -427,3 +427,41 @@ code in_bounds?, 'in-bounds?'           ; n seq -- ?
         _tag_boolean
         next
 endcode
+
+; ### index
+code index, 'index'                     ; obj seq -- n/f
+        push    this_register
+        mov     this_register, rbx      ; handle to seq in this_register
+        _ length
+        _untag_fixnum
+        _zero
+        _?do .1
+        _i
+        _tag_fixnum
+        _this
+        _ nth_unsafe
+        _over
+        _ feline_equal
+        _tagged_if .2
+        _drop
+        _i
+        _tag_fixnum
+        _unloop
+        jmp     .exit
+        _then .2
+        _loop .1
+        _drop
+        _f
+.exit:
+        pop     this_register
+        next
+endcode
+
+; ### member?
+code member?, 'member?'                 ; obj seq -- ?
+        _ index
+        mov     eax, t_value
+        cmp     rbx, f_value
+        cmovne  ebx, eax
+        next
+endcode

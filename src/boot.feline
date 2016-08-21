@@ -24,11 +24,6 @@ IN: feline
     when*
 ;
 
-: member? ( elt seq -- ? )
-    [ over = ] find drop nip
-    [ t ] [ f ] if
-;
-
 : blank? ( char -- ? )
     { 9 10 13 32 } member?
 ;
