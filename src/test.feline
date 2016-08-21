@@ -577,16 +577,6 @@ times-test-1
 
 filter-test-1
 
-: member?-test-1 ( -- )
-    << last-word symbol-name >> ?nl write
-    17 { 1 2 3 } member? check-false
-    1  { 1 2 3 } member? check-t
-    f  { 1 2 3 } member? check-false
-    f  { 1 f 3 } member? check-t
-;
-
-member?-test-1
-
 : in-bounds?-test-1 ( -- )
     << last-word symbol-name >> ?nl write
     { 1 2 3 }
@@ -739,6 +729,16 @@ index-test-1
 
 : member?-test-1 ( -- )
     << last-word symbol-name >> ?nl write
+    17 { 1 2 3 } member? check-false
+    1  { 1 2 3 } member? check-t
+    f  { 1 2 3 } member? check-false
+    f  { 1 f 3 } member? check-t
+;
+
+member?-test-1
+
+: member?-test-2 ( -- )
+    << last-word symbol-name >> ?nl write
     "bar" { "foo" "bar" "baz" } member? check-t
     "bag" { "foo" "bar" "baz" } member? check-false
     4 { 1 2 3 4 } member? check-t
@@ -747,6 +747,6 @@ index-test-1
     0 { 1 2 3 4 } member? check-false
 ;
 
-member?-test-1
+member?-test-2
 
 ?nl "Reached end of test.feline" write
