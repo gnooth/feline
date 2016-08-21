@@ -723,6 +723,7 @@ global-test-1
     99 { 1 2 3 4 } index check-false
     's' "this is a test" index 3 eq? check-t
     'a' "this is a test" index 8 eq? check-t
+    "bar" { "foo" "bar" "baz" } index 1 eq? check-t
 ;
 
 index-test-1
