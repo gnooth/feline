@@ -137,6 +137,12 @@ HELP: in-bounds?
     Return t if n is within the bounds of seq."
 ;
 
+HELP: index
+    "( obj seq -- n )
+    Return the index of the first element of seq that is = to obj.
+    Return f if there is no such element."
+;
+
 HELP: keep
     "( x quot -- x )
     Call quot with x on the stack. Restore x to the top of the
@@ -158,7 +164,7 @@ HELP: map-index
 
 HELP: member?
     "( obj seq -- ? )
-    Return t if seq contains an element equal to obj."
+    Return t if seq contains an element = to obj."
 ;
 
 HELP: over
