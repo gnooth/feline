@@ -15,8 +15,8 @@
 
 file __FILE__
 
-; ### find-symbol
-code find_symbol, 'find-symbol'         ; string -- symbol/string ?
+; ### find-name
+code find_name, 'find-name'             ; string -- symbol/string ?
         _dup
         _ current_vocab
         _ vocab_hashtable
@@ -140,7 +140,7 @@ code read_object, 'read-object'         ; -- object ?
         _drop
         _then .4                        ; -- string
 
-        _ find_symbol
+        _ find_name
         _tagged_if_not .5
         _ undefined
         _return

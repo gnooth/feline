@@ -221,7 +221,7 @@ code process_token, 'process-token'     ; string -- object
         _then .2
         _then .1
 
-        _ find_symbol                   ; -- symbol/string ?
+        _ find_name                     ; -- symbol/string ?
         _tagged_if .3                   ; -- symbol
         _dup
         _ parsing_word?
@@ -347,7 +347,7 @@ code quote_symbol, '\', PARSING         ; -- symbol
         _return
         _then .1
 
-        _ find_symbol
+        _ find_name
         _tagged_if .2
         _ new_wrapper
         _return
@@ -492,7 +492,7 @@ code define, ':'                        ; --
         _ parse_token
         _dup
         _tagged_if .1
-        _ find_symbol
+        _ find_name
         _tagged_if .2
         ; REVIEW
         _ ?cr
@@ -614,7 +614,7 @@ code parse_help, 'HELP:', PARSING       ; -- nothing
         _return
         _then .1                        ; -- string
 
-        _ find_symbol
+        _ find_name
         _tagged_if_not .2
         _ undefined
         _return

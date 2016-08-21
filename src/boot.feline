@@ -20,7 +20,7 @@ IN: feline
 
 : see
     parse-token ( -- string/f )
-    [ find-symbol [ symbol-code drop forth:disasm ] [ undefined ] if ]
+    [ find-name [ symbol-code drop forth:disasm ] [ undefined ] if ]
     when*
 ;
 
