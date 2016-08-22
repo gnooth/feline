@@ -223,7 +223,7 @@ code symbol_hashcode, 'symbol-hashcode' ; symbol -- hashcode
         next
 endcode
 
-; ### symbol-vocab
+; ### symbol-vocab-name
 code symbol_vocab_name, 'symbol-vocab-name' ; symbol -- vocab-name
         _ check_symbol
         _symbol_vocab_name
