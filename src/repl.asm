@@ -15,6 +15,57 @@
 
 file __FILE__
 
+; ### vocab-find-name
+code vocab_find_name, 'vocab-find-name' ; name vocab -- symbol/name ?
+        _ lookup_vocab
+        _dup
+        _tagged_if .1
+        _ vocab_hashtable
+        _ at_star
+        _then .1
+        next
+endcode
+
+; ### find-qualified-name               ; string -- symbol/string ?
+code find_qualified_name, 'find-qualified-name'
+        _lit ':'
+        _tag_char
+        _over
+        _ index                         ; -- string index/f
+        cmp     rbx, f_value
+        jnz     .1
+        _return
+.1:
+        ; -- string index
+        _dupd                           ; -- string string index
+
+        _quotation .2
+        _ string_head
+        _end_quotation .2
+
+        _quotation .3
+        _lit tagged_fixnum(1)
+        _ feline_plus
+        _ string_tail
+        _end_quotation .3
+
+        _ twobi                         ; -- string head tail
+
+        _swap
+
+        _ vocab_find_name               ; -- string symbol/string ?
+
+        _tagged_if .4
+        _nip
+        _t
+        _else .4
+        _drop
+        _f
+        _then .4
+
+        next
+endcode
+
 ; ### find-name
 code find_name, 'find-name'             ; string -- symbol/string ?
         _dup
@@ -48,7 +99,9 @@ code find_name, 'find-name'             ; string -- symbol/string ?
         _then .2
         _drop
         _loop .1
-        _f
+
+        _ find_qualified_name
+
         next
 endcode
 
@@ -304,5 +357,31 @@ code repl, 'repl'                       ; --
         _ gc
 
         _again .1
+        next
+endcode
+
+; ### break
+code break, 'break'                     ; --
+        _ ?nl
+        _ red
+        _ foreground
+        _quote "break called"
+        _ print
+        _ white
+        _ foreground
+        _quote "--- Data stack: "
+        _ write_
+        _ depth
+        _if .1
+        _ feline_dot_s
+        _else .1
+        _quote "Empty"
+        _ write_
+        _then .1
+        _ nl
+        _quote "Press any key to continue..."
+        _ print
+        _ key
+        _drop
         next
 endcode
