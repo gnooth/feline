@@ -545,6 +545,24 @@ string_substring_unchecked:
         next
 endcode
 
+; ### string-head
+code string_head, 'string-head'         ; string n -- substring
+        _lit tagged_zero
+        _swap
+        _ rot
+        _ string_substring
+        next
+endcode
+
+; ### string-tail
+code string_tail, 'string-tail'         ; string n -- substring
+        _over
+        _ string_length
+        _ rot
+        _ string_substring
+        next
+endcode
+
 ; ### .string
 code dot_string, '.string'              ; string | sbuf | $addr --
 ; REVIEW remove support for legacy strings
