@@ -221,6 +221,11 @@ code process_token, 'process-token'     ; string -- object
         _then .2
         _then .1
 
+        _ token_string_literal?
+        _tagged_if .6
+        _return
+        _then .6
+
         _ find_name                     ; -- symbol/string ?
         _tagged_if .3                   ; -- symbol
         _dup
@@ -235,11 +240,6 @@ code process_token, 'process-token'     ; string -- object
         _tagged_if .5
         _return
         _then .5
-
-        _ token_string_literal?
-        _tagged_if .6
-        _return
-        _then .6
 
         _dup
         _ string_to_number
