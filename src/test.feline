@@ -750,4 +750,30 @@ member?-test-1
 
 member?-test-2
 
+: string-head-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    "this is a test"
+    [ 4 string-head "this" = check-t ] keep
+
+    // FIXME "" confuses the parser Aug 22 2016 12:49 PM
+//     [ 0 string-head "" = check-t ] keep
+
+    [ 0 string-head [ string? check-t ] [ length zero? check-t ] bi ] keep
+    [ 14 string-head "this is a test" = check-t ] keep
+    drop
+;
+
+string-head-test-1
+
+: string-tail-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    "this is a test"
+    [ 10 string-tail "test" = check-t ] keep
+    [ 14 string-tail [ string? check-t ] [ length zero? check-t ] bi ] keep
+    [ 0 string-tail "this is a test" = check-t ] keep
+    drop
+;
+
+string-tail-test-1
+
 ?nl "Reached end of test.feline" write
