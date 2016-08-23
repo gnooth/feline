@@ -274,6 +274,7 @@ code feline_do_error, 'feline-do-error' ; string-or-number --
         _tagged_if .0
         _to msg
         _ dotmsg
+        _ where
         _ print_backtrace
         _ feline_reset
         _then .0
