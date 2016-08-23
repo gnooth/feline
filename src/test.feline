@@ -776,4 +776,13 @@ string-head-test-1
 
 string-tail-test-1
 
+CONSTANT: magenta 5
+
+: constant-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    magenta 5 eq? check-t
+;
+
+constant-test-1
+
 ?nl "Reached end of test.feline" write
