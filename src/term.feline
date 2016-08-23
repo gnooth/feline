@@ -48,9 +48,15 @@ CONSTANT: white   7
 
 : page ( -- )
     esc[
-    '2' write1
-    'J' write1
+    "2J" write
     esc[
-    $3b write1
+    "1;1H" write
+;
+
+: at-xy ( col row -- )
+    esc[
+    1 + number>string write
+    ';' write1
+    1 + number>string write
     'H' write1
 ;
