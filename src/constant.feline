@@ -18,17 +18,14 @@ LANGUAGE: feline
 USING: feline ;
 IN: feline
 
-: see
-    parse-token ( -- string/f )
-    [ find-name [ symbol-code drop forth:disasm ] [ undefined ] if ]
-    when*
-;
+: CONSTANT: ( -- )
+    parse-token                         // -- string/f
+    verify-string
+    current-vocab ensure-symbol         // -- symbol
+    read-object                         // -- symbol object ?
 
-: blank? ( char -- ? )
-    { 9 10 13 32 } member?
-;
+    // FIXME
+    drop                                // -- symbol object
 
-include-system-file help.feline
-include-system-file tuple.feline
-include-system-file globals.feline
-include-system-file constant.feline
+    1array array>quotation swap symbol-set-def
+;
