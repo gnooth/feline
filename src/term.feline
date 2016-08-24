@@ -60,3 +60,14 @@ CONSTANT: white   7
     1 + number>string write
     'H' write1
 ;
+
+: at-x ( col -- )
+    esc[
+    1 + number>string write
+    'G' write1
+;
+
+: clear-to-eol ( -- )
+    esc[
+    "0K" write
+;
