@@ -138,3 +138,18 @@ import time
     buffer -free
     v
 ;
+
+linux? [if]
+: ekey ( -- x )
+    key
+    dup $1b = if
+        begin
+            key?
+        while
+            8 lshift
+            key or
+        repeat
+    then
+    tag-fixnum
+;
+[then]
