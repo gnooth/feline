@@ -452,7 +452,8 @@ code find_integer, 'find-integer'       ; tagged-fixnum xt -- i|f
         push    r13
         push    r15
         xor     r12, r12                ; loop index in r12
-        mov     r13, [rbx]              ; code address in r13
+        _ callable_code_address
+        mov     r13, rbx                ; code address in r13
         mov     r15, [rbp]              ; loop limit in r15
         _2drop                          ; clean up the stack now!
         test    r15, r15
