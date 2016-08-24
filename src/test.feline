@@ -501,6 +501,15 @@ find-test-1
 
 map-find-test-1
 
+: find-integer-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    clear
+    10 [ 5 eq? ] find-integer get-datastack { 5 } = check-t
+    clear
+;
+
+find-integer-test-1
+
 : ?lookup-symbol-test-1 ( -- )
     << last-word symbol-name >> ?nl write
     "dup" "feline" ?lookup-symbol \ dup eq? check-t
