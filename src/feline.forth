@@ -37,6 +37,7 @@ import vocabulary
 import [defined]
 import [undefined]
 import [if]
+import [else]
 import [then]
 
 \ import :
@@ -139,7 +140,26 @@ import time
     v
 ;
 
-linux? [if]
+windows? [if]
+\ Windows console
+: ekey ( -- x )
+    key
+    dup 0= if
+        drop
+        key $8000 or tag-fixnum
+        exit
+    then
+    dup $80 u< if                       \ normal character
+        tag-fixnum
+        exit
+    then
+    dup $e0 = if
+        drop
+        key $8000 or tag-fixnum
+        exit
+    then
+;
+[else]
 : ekey ( -- x )
     key
     dup $1b = if
