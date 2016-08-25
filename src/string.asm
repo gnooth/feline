@@ -603,6 +603,46 @@ code string_skip_whitespace, 'string-skip-whitespace' ; start-index string -- in
         next
 endcode
 
+; ### string-skip-to-whitespace
+code string_skip_to_whitespace, 'string-skip-to-whitespace' ; start-index string -- index/f
+        _ check_string
+
+        push    this_register
+        popd    this_register           ; -- start-index
+
+        _ check_index                   ; -- untagged-start-index
+
+        _this_string_length
+        _twodup
+        _ ge
+        _if .1
+        _2drop
+        _f
+        jmp     .exit
+        _then .1                        ; -- untagged-start-index untagged-length
+
+        _swap
+        _do .2
+        _i
+        _this_string_nth_unsafe
+        _lit 33
+        _ult
+        _if .3
+        _i
+        _tag_fixnum
+        _unloop
+        jmp     .exit
+        _then .3
+        _loop .2
+
+        ; not found
+        _f
+
+.exit:
+        pop     this_register
+        next
+endcode
+
 ; ### .string
 code dot_string, '.string'              ; string | sbuf | $addr --
 ; REVIEW remove support for legacy strings
