@@ -567,6 +567,8 @@ sequence=-test-1
     "this is a test" "foo" \ dup symbol-set-prop
     "foo" \ dup symbol-prop get-datastack { "this is a test" } sequence= check-t
     clear
+    // clean up
+    f "foo" \ dup symbol-set-prop
 ;
 
 symbol-props-test-1
@@ -793,5 +795,24 @@ CONSTANT: magenta 5
 ;
 
 constant-test-1
+
+: string-skip-whitespace-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+        "   this is a test   "
+    [  0 swap string-skip-whitespace  3 eq? check-t ] keep
+    [  2 swap string-skip-whitespace  3 eq? check-t ] keep
+    [  3 swap string-skip-whitespace  3 eq? check-t ] keep
+    [  6 swap string-skip-whitespace  6 eq? check-t ] keep
+    [  7 swap string-skip-whitespace  8 eq? check-t ] keep
+    [ 16 swap string-skip-whitespace 16 eq? check-t ] keep
+    [ 17 swap string-skip-whitespace  f eq? check-t ] keep
+    [ 18 swap string-skip-whitespace  f eq? check-t ] keep
+    [ 19 swap string-skip-whitespace  f eq? check-t ] keep
+    [ 20 swap string-skip-whitespace  f eq? check-t ] keep
+    [ 99 swap string-skip-whitespace  f eq? check-t ] keep
+    drop
+;
+
+string-skip-whitespace-test-1
 
 ?nl "Reached end of test.feline" write
