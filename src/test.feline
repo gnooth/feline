@@ -815,6 +815,24 @@ constant-test-1
 
 string-skip-whitespace-test-1
 
+// multiline string
+: string-skip-whitespace-test-2 ( -- )
+    << last-word symbol-name >> ?nl write
+    "   this is
+a multiline string   "
+    [  0 swap string-skip-whitespace  3 eq? check-t ] keep
+    [  2 swap string-skip-whitespace  3 eq? check-t ] keep
+    [  3 swap string-skip-whitespace  3 eq? check-t ] keep
+    [  6 swap string-skip-whitespace  6 eq? check-t ] keep
+    [  7 swap string-skip-whitespace  8 eq? check-t ] keep
+    [ 10 swap string-skip-whitespace 11 eq? check-t ] keep
+    [ 11 swap string-skip-whitespace 11 eq? check-t ] keep
+    [ 12 swap string-skip-whitespace 13 eq? check-t ] keep
+    drop
+;
+
+string-skip-whitespace-test-2
+
 : string-skip-to-whitespace-test-1 ( -- )
     << last-word symbol-name >> ?nl write
     "   this is a test   "
@@ -834,5 +852,20 @@ string-skip-whitespace-test-1
 ;
 
 string-skip-to-whitespace-test-1
+
+// multiline string
+: string-skip-to-whitespace-test-2 ( -- )
+    << last-word symbol-name >> ?nl write
+    "   this is
+a multiline string   "
+    [  3 swap string-skip-to-whitespace  7 eq? check-t ] keep
+    [  7 swap string-skip-to-whitespace  7 eq? check-t ] keep
+    [  8 swap string-skip-to-whitespace 10 eq? check-t ] keep
+    [ 10 swap string-skip-to-whitespace 10 eq? check-t ] keep
+    [ 11 swap string-skip-to-whitespace 12 eq? check-t ] keep
+    drop
+;
+
+string-skip-to-whitespace-test-2
 
 ?nl "Reached end of test.feline" write
