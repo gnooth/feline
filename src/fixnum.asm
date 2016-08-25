@@ -66,9 +66,7 @@ endcode
 ; ### error-not-fixnum
 code error_not_fixnum, 'error-not-fixnum' ; x --
         ; REVIEW
-        _drop
-        _true
-        _abortq "not a fixnum"
+        _error "not a fixnum"
         next
 endcode
 
@@ -83,6 +81,21 @@ endcode
 ; ### check-fixnum
 code check_fixnum, 'check-fixnum'       ; fixnum -- untagged-fixnum
         _check_fixnum
+        next
+endcode
+
+; ### error-not-index
+code error_not_index, 'error-not-index' ; x --
+        ; REVIEW
+        _error "not a index"
+        next
+endcode
+
+; ### check-index
+code check_index, 'check-index'         ; non-negative-fixnum -- untagged-fixnum
+        _check_fixnum
+        test    rbx, rbx
+        js      error_not_index
         next
 endcode
 
