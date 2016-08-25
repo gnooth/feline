@@ -183,6 +183,20 @@ HELP: sbuf-append-string
     Return sbuf."
 ;
 
+HELP: string-skip-to-whitespace
+    "( start-index string -- index/f )
+    Return the index of the first whitespace character in string,
+    starting at start-index. Return f if no whitespace character
+    is found."
+;
+
+HELP: string-skip-whitespace
+    "( start-index string -- index/f )
+    Return the index of the first non-whitespace character in string,
+    starting at start-index. Return f if no non-whitespace character
+    is found."
+;
+
 HELP: swap
     "( x y -- y x )
     Exchange the top two stack items."
