@@ -118,6 +118,11 @@ HELP: each-index
     index on the stack."
 ;
 
+HELP: file-contents
+    "( path -- string )
+    Return the contents of the specified file as a string."
+;
+
 HELP: filter
     "( seq quot -- subseq )     quot: ( ... elt -- ... ? )
     Return a new sequence containing the elements of the original
