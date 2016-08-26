@@ -100,27 +100,33 @@ code get, 'get'                         ; variable -- value
         _return
         _then .1
 
-.top:                                   ; -- variable scopes index
+.top:                                   ; -- scopes index       r: -- variable
         _twodup
         _swap
-        _ vector_nth_unsafe             ; -- scopes index
+        _ vector_nth                    ; -- scopes index
         _rfetch
         _swap                           ; -- scopes index variable scope
-        _ find_in_scope
+        _ find_in_scope                 ; -- scopes index value/f ?
         _tagged_if .2
+        ; found
         _2nip
         _rdrop
         _return
-        _then .2
+        _then .2                        ; -- scopes index f
+
+        _drop                           ; -- scopes index
 
         _lit tagged_fixnum(1)
-        _ fixnum_minus
+        _ feline_minus                  ; -- scopes index-1
         _dup
         _lit tagged_zero
         _ fixnum_lt
         _tagged_if .3
         _2drop
         _rdrop
+
+        _f
+
         _return
         _then .3
 
