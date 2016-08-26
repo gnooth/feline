@@ -380,9 +380,15 @@ code break, 'break'                     ; --
         _ write_
         _then .1
         _ nl
-        _quote "Press any key to continue..."
+        _quote "Press c to continue..."
         _ print
+        _begin .2
         _ key
-        _drop
+        _lit 'c'
+        _equal
+        _if .3
+        _return
+        _then .3
+        _again .2
         next
 endcode
