@@ -276,6 +276,7 @@ code dot_object, '.'                    ; handle-or-object --
         _ hashtable?
         _tagged_if .7
         _ dot_hashtable
+        _ space
         _return
         _then .7
 
