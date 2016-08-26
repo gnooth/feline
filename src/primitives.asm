@@ -641,3 +641,30 @@ code ?nl, '?nl'
 .1:
         next
 endcode
+
+; ### file-contents
+code file_contents, 'file-contents'     ; path -- string
+        _ string_from                   ; -- addr u
+        _ readonly
+        _ open_file
+        _ throw                         ; -- fileid
+        _duptor
+        _ file_size
+        _ throw
+        _drop                           ; -- size
+        _dup
+        _ iallocate                     ; -- size buffer
+        _swap                           ; -- buffer size
+        _dupd                           ; -- buffer buffer size
+        _rfetch                         ; -- buffer buffer size fileid
+        _ read_file                     ; -- buffer ior size
+        _ throw                         ; -- buffer size
+        _rfrom
+        _ close_file
+        _ throw
+        _dupd
+        _ copy_to_string
+        _swap
+        _ ifree
+        next
+endcode
