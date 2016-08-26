@@ -112,3 +112,12 @@ code bi_at, 'bi@'                       ; x y quot --
         pop     r12
         next
 endcode
+
+; ### ?
+code question, '?'                      ; ? true false -- true/false
+        cmp     qword [rbp + BYTES_PER_CELL], f_value
+        mov     rax, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        cmovne  rbx, rax
+        next
+endcode
