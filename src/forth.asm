@@ -64,6 +64,7 @@ static_data_area:
 IN_FELINE
 
 ; Objects
+%include "key.asm"
 %include "vocabs.asm"
 %include "object-macros.asm"
 %include "primitives.asm"
