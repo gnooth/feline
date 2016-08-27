@@ -175,6 +175,20 @@ fixnum-test-10
 
 fixnum-test-11
 
+: fixnum-max-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    1 2 fixnum-max 2 eq? check-t
+    2 1 fixnum-max 2 eq? check-t
+    -1 2 fixnum-max 2 eq? check-t
+    2 -1 fixnum-max 2 eq? check-t
+    most-positive-fixnum 0 fixnum-max most-positive-fixnum eq? check-t
+    most-negative-fixnum 0 fixnum-max zero? check-t
+    0 most-positive-fixnum fixnum-max most-positive-fixnum eq? check-t
+    0 most-negative-fixnum fixnum-max zero? check-t
+;
+
+fixnum-max-test-1
+
 : dip-test-1 ( -- )
     << last-word symbol-name >> ?nl write
     87 42 [ 3 * ] dip get-datastack V{ 261 42 } sequence= check-t

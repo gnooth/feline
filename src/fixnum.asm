@@ -177,6 +177,31 @@ code feline_ge, '>='                    ; x y -- ?
         next
 endcode
 
+; ### fixnum-max
+code fixnum_max, 'fixnum-max'           ; x y -- z
+; No type checking.
+        _untag_2_fixnums
+        popd    rax
+        cmp     rax, rbx
+        cmovg   rbx, rax
+        _tag_fixnum
+        next
+endcode
+
+; ### max
+code feline_max, 'max'                  ; x y -- z
+        _check_fixnum
+        _swap
+        _check_fixnum
+        popd    rax
+        cmp     rax, rbx
+        jle     .1
+        mov     rbx, rax
+.1:
+        _tag_fixnum
+        next
+endcode
+
 ; ### fixnum+
 inline fixnum_plus, 'fixnum+'           ; x y -- x+y
 ; No type checking.
