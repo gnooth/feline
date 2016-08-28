@@ -128,6 +128,17 @@ code mark_quotation, 'mark-quotation'   ; quotation --
         next
 endcode
 
+; ### mark-curry
+code mark_curry, 'mark-curry'           ; curry --
+        _dup
+        _curry_object
+        _ maybe_mark_handle
+        _curry_callable
+        _ maybe_mark_handle
+        ; REVIEW code
+        next
+endcode
+
 ; ### mark-handle
 code mark_handle, 'mark-handle'         ; handle --
         _handle_to_object_unsafe        ; -- object/0
@@ -192,6 +203,15 @@ code mark_handle, 'mark-handle'         ; handle --
         _ mark_quotation
         _return
         _then .7
+
+        _dup
+        _object_type
+        _lit OBJECT_TYPE_CURRY
+        _equal
+        _if .8
+        _ mark_curry
+        _return
+        _then .8
 
 .1:
         _drop
