@@ -29,6 +29,7 @@ OBJECT_TYPE_VOCAB               equ 10
 OBJECT_TYPE_QUOTATION           equ 11
 OBJECT_TYPE_WRAPPER             equ 12
 OBJECT_TYPE_TUPLE               equ 13
+OBJECT_TYPE_CURRY               equ 14
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
@@ -289,6 +290,12 @@ OBJECT_ALLOCATED_BIT            equ 4
 %macro  _quotation? 0
         _object_type
         _lit OBJECT_TYPE_QUOTATION
+        _equal
+%endmacro
+
+%macro  _curry? 0
+        _object_type
+        _lit OBJECT_TYPE_CURRY
         _equal
 %endmacro
 
