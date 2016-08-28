@@ -334,6 +334,14 @@ code dot_object, '.'                    ; handle-or-object --
         _return
         _then .13
 
+        _dup
+        _ curry?
+        _tagged_if .14
+        _ dot_curry
+        _ space
+        _return
+        _then .14
+
         ; give up
         _ hdot
 
