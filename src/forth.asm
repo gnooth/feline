@@ -83,6 +83,7 @@ IN_FELINE
 %include "vocab.asm"
 %include "wrapper.asm"
 %include "quotation.asm"
+%include "curry.asm"
 %include "tuple.asm"
 %include "gc.asm"
 %include "global.asm"
