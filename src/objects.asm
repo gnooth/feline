@@ -168,6 +168,13 @@ code destroy_object_unchecked, '~object-unchecked' ; object --
         _return
         _then .6
 
+        _dup
+        _curry?
+        _if .7
+        _ destroy_curry_unchecked
+        _return
+        _then .7
+
         ; Default behavior for objects with only one allocation.
 
         ; Zero out the object header so it won't look like a valid object

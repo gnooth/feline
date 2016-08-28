@@ -189,6 +189,37 @@ code curry, 'curry'                     ; object callable -- curry
         next
 endcode
 
+; ### ~curry
+code destroy_curry, '~curry'            ; handle --
+        _ check_curry                   ; -- curry
+        _ destroy_curry_unchecked
+        next
+endcode
+
+; ### ~curry-unchecked
+code destroy_curry_unchecked, '~curry-unchecked' ; curry --
+        _dup
+        _curry_code_address
+        _?dup_if .1
+        _ free_executable
+        _then .1
+
+        _ in_gc?
+        _zeq_if .2
+        _dup
+        _ release_handle_for_object
+        _then .2
+
+        ; Zero out the object header so it won't look like a valid object
+        ; after it has been destroyed.
+        xor     eax, eax
+        mov     [rbx], rax
+
+        _ ifree
+
+        next
+endcode
+
 ; ### .curry-internal
 code dot_curry_internal, '.curry-internal'
         _ verify_curry
