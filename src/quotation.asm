@@ -173,11 +173,21 @@ endcode
 ; ### call
 code call_quotation, 'call'             ; quotation --
         _dup
+        _ curry?
+        _tagged_if .1
+        _ curry_code_address
+        mov     rax, rbx
+        poprbx
+        call    rax
+        _return
+        _then .1
+
+        _dup
         _ quotation_code
-        _zeq_if .1
+        _zeq_if .2
         _dup
         _ compile_quotation
-        _then .1
+        _then .2
 
         _handle_to_object_unsafe
         _quotation_code
@@ -188,7 +198,7 @@ code call_quotation, 'call'             ; quotation --
 endcode
 
 ; ### callable-code-address
-code callable_code_address, 'callable-code-address' ; quotation-or-xt -- code-address
+code callable_code_address, 'callable-code-address' ; callable -- code-address
         _dup
         _ quotation?
         _tagged_if .1
@@ -200,9 +210,17 @@ code callable_code_address, 'callable-code-address' ; quotation-or-xt -- code-ad
         _then .2
         _handle_to_object_unsafe
         _quotation_code
-        _else .1
+        _return
+        _then .1
+
+        _dup
+        _ curry?
+        _tagged_if .3
+        _ curry_code_address
+        _return
+        _then .3
+
         ; xt
         _fetch
-        _then .1
         next
 endcode
