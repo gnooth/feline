@@ -27,19 +27,15 @@ file __FILE__
         _this_set_slot1
 %endmacro
 
-%macro  _quotation_code 0               ; quotation -- code-address
+%macro  _quotation_code_address 0       ; quotation -- code-address
         _slot2
 %endmacro
 
-%macro  _this_quotation_code 0          ; -- code-address
-        _this_slot2
-%endmacro
-
-%macro  _quotation_set_code 0           ; code-address quotation --
+%macro  _quotation_set_code_address 0   ; code-address quotation --
         _set_slot2
 %endmacro
 
-%macro  _this_quotation_set_code 0      ; code-address --
+%macro  _this_quotation_set_code_address 0 ; code-address --
         _this_set_slot2
 %endmacro
 
@@ -92,7 +88,7 @@ endcode
 
 ; ### array>quotation
 code array_to_quotation, 'array>quotation' ; array -- quotation
-; 3 cells: object header, array, code
+; 3 cells: object header, array, code address
 
         _lit 3
         _ allocate_cells
@@ -106,7 +102,7 @@ code array_to_quotation, 'array>quotation' ; array -- quotation
         _this_quotation_set_array
 
         _zero
-        _this_quotation_set_code
+        _this_quotation_set_code_address
 
         pushrbx
         mov     rbx, this_register      ; -- quotation
@@ -128,7 +124,7 @@ endcode
 ; ### ~quotation-unchecked
 code destroy_quotation_unchecked, '~quotation-unchecked' ; quotation --
         _dup
-        _quotation_code
+        _quotation_code_address
         _?dup_if .1
         _ free_executable
         _then .1
@@ -159,14 +155,14 @@ endcode
 ; ### quotation-code
 code quotation_code, 'quotation-code'   ; quotation -- code-address
         _ check_quotation
-        _quotation_code
+        _quotation_code_address
         next
 endcode
 
 ; ### quotation-set-code
 code quotation_set_code, 'quotation-set-code' ; code-address quotation --
         _ check_quotation
-        _quotation_set_code
+        _quotation_set_code_address
         next
 endcode
 
@@ -190,7 +186,7 @@ code call_quotation, 'call'             ; quotation --
         _then .2
 
         _handle_to_object_unsafe
-        _quotation_code
+        _quotation_code_address
         mov     rax, rbx
         poprbx
         call    rax
@@ -209,7 +205,7 @@ code callable_code_address, 'callable-code-address' ; callable -- code-address
         _ compile_quotation
         _then .2
         _handle_to_object_unsafe
-        _quotation_code
+        _quotation_code_address
         _return
         _then .1
 
