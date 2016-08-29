@@ -124,31 +124,25 @@ endcode
 
 ; ### error-not-symbol
 code error_not_symbol, 'error-not-symbol' ; x --
-        ; REVIEW
-        _drop
-        _true
-        _abortq "not a symbol"
+        _error "not a symbol"
         next
 endcode
 
 ; ### check-symbol
 code check_symbol, 'check-symbol'       ; handle -- symbol
         _dup
-        _ handle?
-        _if .1
-        _handle_to_object_unsafe        ; -- object|0
-        _dup_if .2
+        _ handle?                       ; -- handle ?
+        test    rbx, rbx
+        poprbx
+        jz      error_not_symbol
+        _handle_to_object_unsafe        ; -- object/0
+        test    rbx, rbx
+        jz      error_not_symbol
         _dup
         _object_type                    ; -- object object-type
-        _lit OBJECT_TYPE_SYMBOL
-        _equal
-        _if .3
-        _return
-        _then .3
-        _then .2
-        _then .1
-
-        _ error_not_symbol
+        cmp     rbx, OBJECT_TYPE_SYMBOL
+        poprbx
+        jnz     error_not_symbol
         next
 endcode
 
