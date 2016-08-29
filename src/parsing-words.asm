@@ -231,7 +231,7 @@ code process_token, 'process-token'     ; string -- object
         _dup
         _ parsing_word?
         _tagged_if .4
-        _ execute_symbol
+        _ call_symbol
         _then .4
         _return
         _then .3
@@ -529,7 +529,7 @@ code define, ':'                        ; --
         _ array_to_quotation            ; -- symbol quotation
 
         _dup
-        _ compile_quotation
+        _ compile_quotation             ; -- symbol quotation
 
         _swap
         _ symbol_set_def                ; --

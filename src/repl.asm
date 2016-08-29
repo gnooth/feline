@@ -124,8 +124,8 @@ code undefined, 'undefined'             ; string/symbol --
         next
 endcode
 
-; ### execute-symbol
-code execute_symbol, 'execute-symbol'   ; symbol --
+; ### call-symbol
+code call_symbol, 'call-symbol'         ; symbol --
         _dup
         _ symbol_code_address
         _dup
@@ -202,7 +202,7 @@ code read_object, 'read-object'         ; -- object ?
         _dup
         _ parsing_word?
         _tagged_if .6
-        _ execute_symbol
+        _ call_symbol
         _then .6
 
         cmp     rbx, nothing
@@ -231,7 +231,7 @@ code eval, 'eval'                       ; --
         _dup
         _ symbol?
         _tagged_if .2
-        _ execute_symbol
+        _ call_symbol
         jmp     .top
         _then .2
 
