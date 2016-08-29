@@ -162,6 +162,7 @@ code curry, 'curry'                     ; object callable -- curry
         _ verify_callable
         _this_curry_set_callable
 
+        _ literalize
         _this_curry_set_object
 
         ; compile curry
