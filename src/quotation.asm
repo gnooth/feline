@@ -167,7 +167,7 @@ code quotation_set_code_address, 'quotation-set-code-address' ; code-address quo
 endcode
 
 ; ### call
-code call_quotation, 'call'             ; quotation --
+code call_quotation, 'call'             ; callable --
         _dup
         _ curry?
         _tagged_if .1
@@ -180,16 +180,16 @@ code call_quotation, 'call'             ; quotation --
 
         _dup
         _ quotation_code_address
-        _zeq_if .2
-        _dup
-        _ compile_quotation
+        _dup_if .2
+        _nip                            ; -- code-address
+        _else .2
+        _drop
+        _ compile_quotation             ; -- code-address
         _then .2
-
-        _handle_to_object_unsafe
-        _quotation_code_address
         mov     rax, rbx
         poprbx
         call    rax
+
         next
 endcode
 
@@ -199,13 +199,12 @@ code callable_code_address, 'callable-code-address' ; callable -- code-address
         _ quotation?
         _tagged_if .1
         _dup
-        _ quotation_code_address
-        _zeq_if .2
-        _dup
+        _ quotation_code_address        ; -- quotation code-address
+        _?dup_if .2
+        _nip
+        _else .2
         _ compile_quotation
         _then .2
-        _handle_to_object_unsafe
-        _quotation_code_address
         _return
         _then .1
 

@@ -509,7 +509,7 @@ code define, ':'                        ; --
         _then .2                        ; -- symbol
 
         _dup
-        _ set_last_word
+        _ set_last_word                 ; -- symbol
 
         _ parse_definition
 
@@ -523,14 +523,15 @@ code define, ':'                        ; --
         _then .3
 
         _f
-        _to accum
+        _to accum                       ; -- symbol vector
 
         _ vector_to_array
         _ array_to_quotation            ; -- symbol quotation
 
         _dup
-        _ compile_quotation             ; -- symbol quotation
-
+        _ compile_quotation             ; -- symbol quotation code-address
+        _ feline_pick
+        _ symbol_set_code_address       ; -- symbol quotation
         _swap
         _ symbol_set_def                ; --
 

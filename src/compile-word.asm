@@ -196,11 +196,11 @@ code compile_pair, 'compile-pair'       ; pair --
 endcode
 
 ; ### compile-quotation
-code compile_quotation, 'compile-quotation' ;  quotation --
+code compile_quotation, 'compile-quotation' ;  quotation -- code-address
         _dup
         _ quotation_array
         _lit precompile_object_xt
-        _ map
+        _ map                           ; -- quotation precompiled-array
 
         _zero
         _over
@@ -211,13 +211,8 @@ code compile_quotation, 'compile-quotation' ;  quotation --
         _oneplus
 
         _ allocate_executable
-
-        _to pc
-
-        _ swap
-        _ pc
-        _ swap
-        _ quotation_set_code_address
+        _duptor
+        _to pc                          ; -- quotation precompiled-array        r: -- code-address
 
         _lit compile_pair_xt
         _ each
@@ -225,23 +220,11 @@ code compile_quotation, 'compile-quotation' ;  quotation --
         _lit $0c3
         _ emit_byte
 
-        next
-endcode
-
-; ### compile-word
-code compile_word, 'compile-word'       ; symbol --
-        _dup
-        _ symbol_def
-        _dup
-        _ quotation?
-        _tagged_if .1
-        _dup
-        _ compile_quotation             ; -- symbol quotation
-        _ quotation_code_address
+        _rfetch                         ; -- quotation code-address
         _swap
-        _ symbol_set_code_address       ; --
-        _else .1
-        _error "not a quotation"
-        _then .1
+        _ quotation_set_code_address
+
+        _rfrom                          ; -- code-address
+
         next
 endcode
