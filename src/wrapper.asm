@@ -60,3 +60,23 @@ code wrapped, 'wrapped'                 ; wrapper -- wrapped
         _then .1
         next
 endcode
+
+; ### literalize
+code literalize, 'literalize'           ; obj -- wrapped
+        _dup
+        _ symbol?
+        _tagged_if .1
+        _ new_wrapper
+        _return
+        _then .1
+
+        _dup
+        _ wrapper?
+        _tagged_if .2
+        _ new_wrapper
+        _return
+        _then .2
+
+        ; no wrapper needed
+        next
+endcode
