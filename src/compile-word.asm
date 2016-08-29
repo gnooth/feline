@@ -217,7 +217,7 @@ code compile_quotation, 'compile-quotation' ;  quotation --
         _ swap
         _ pc
         _ swap
-        _ quotation_set_code
+        _ quotation_set_code_address
 
         _lit compile_pair_xt
         _ each
@@ -237,7 +237,7 @@ code compile_word, 'compile-word'       ; symbol --
         _tagged_if .1
         _dup
         _ compile_quotation             ; -- symbol quotation
-        _ quotation_code
+        _ quotation_code_address
         _swap
         _ symbol_set_code_address       ; --
         _else .1

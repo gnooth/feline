@@ -40,7 +40,7 @@ file __FILE__
 %endmacro
 
 ; ### quotation?
-code quotation?, 'quotation?'           ; handle -- t|f
+code quotation?, 'quotation?'           ; handle -- ?
         _dup
         _ handle?
         _if .1
@@ -152,15 +152,15 @@ code quotation_array, 'quotation-array' ; quotation -- array
         next
 endcode
 
-; ### quotation-code
-code quotation_code, 'quotation-code'   ; quotation -- code-address
+; ### quotation-code-address
+code quotation_code_address, 'quotation-code-address' ; quotation -- code-address
         _ check_quotation
         _quotation_code_address
         next
 endcode
 
-; ### quotation-set-code
-code quotation_set_code, 'quotation-set-code' ; code-address quotation --
+; ### quotation-set-code-address
+code quotation_set_code_address, 'quotation-set-code-address' ; code-address quotation --
         _ check_quotation
         _quotation_set_code_address
         next
@@ -179,7 +179,7 @@ code call_quotation, 'call'             ; quotation --
         _then .1
 
         _dup
-        _ quotation_code
+        _ quotation_code_address
         _zeq_if .2
         _dup
         _ compile_quotation
@@ -199,7 +199,7 @@ code callable_code_address, 'callable-code-address' ; callable -- code-address
         _ quotation?
         _tagged_if .1
         _dup
-        _ quotation_code
+        _ quotation_code_address
         _zeq_if .2
         _dup
         _ compile_quotation
