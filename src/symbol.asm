@@ -392,3 +392,34 @@ code symbol_code, 'symbol-code'         ; symbol -- code-address inline-size
 
         next
 endcode
+
+; ### call-symbol
+code call_symbol, 'call-symbol'         ; symbol --
+        _dup
+        _ symbol_code_address
+        _dup
+        _tagged_if .1
+        _nip
+        mov     rax, rbx
+        poprbx
+        call    rax
+        _return
+        _else .1
+        _drop
+        _then .1                        ; -- symbol
+
+        _dup
+        _ symbol_def
+        _dup
+        _tagged_if .2
+        _nip
+        _ call_quotation
+        _return
+        _else .2
+        _drop
+        _then .2
+
+        _ undefined
+
+        next
+endcode
