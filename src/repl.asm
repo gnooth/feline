@@ -300,8 +300,30 @@ code repl, 'repl'                       ; --
         mov     rsp, [rp0_data]
 
         _ ?nl
+
+        _quote "accept-string"          ; -- name
+        _quote "accept"                 ; -- name vocab-name
+        _ ?lookup_symbol                ; -- symbol/f
+        _dup
+        _tagged_if .2                   ; -- symbol
+        _ call_symbol                   ; -- string
+        _ string_from
+        _lit 80
+        _ min
+        _dup
+        _ ntib
+        _ store
+        _ tib
+        _ swap
+        _ cmove
+        _ toin
+        _ off
+        _else .2
+        _drop
         _ prompt
         _ query
+        _then .2
+
         _ tib
         _ ntib
         _fetch
@@ -309,19 +331,19 @@ code repl, 'repl'                       ; --
         _ set_input
         _lit eval_xt
         _ catch
-        _?dup_if .2
+        _?dup_if .3
         ; THROW occurred
         _ feline_do_error
-        _then .2
+        _then .3
         _ depth
-        _if .3
+        _if .4
         _ white
         _ foreground
         _ nl
         _quote "--- Data stack:"
         _ write_
         _ feline_dot_s
-        _then .3
+        _then .4
 
         ; REVIEW
         _ gc
