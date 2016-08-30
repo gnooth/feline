@@ -127,6 +127,10 @@ GLOBAL: prompt-string
     history-file-pathname file-lines history!
 ;
 
+: save-history ( -- )
+    history history-file-pathname set-file-lines
+;
+
 : bind-key ( key action -- )
     2array bindings push
 ;
@@ -181,5 +185,6 @@ GLOBAL: prompt-string
     white foreground
     buffer sbuf>string
     dup history push
+    save-history
     f buffer!
 ;
