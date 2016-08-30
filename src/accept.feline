@@ -1,70 +1,60 @@
-\ Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
 
-\ This program is free software: you can redistribute it and/or modify
-\ it under the terms of the GNU General Public License as published by
-\ the Free Software Foundation, either version 3 of the License, or
-\ (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
-\ This program is distributed in the hope that it will be useful,
-\ but WITHOUT ANY WARRANTY; without even the implied warranty of
-\ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-\ GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
-\ You should have received a copy of the GNU General Public License
-\ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 LANGUAGE: feline
 
-CONTEXT: feline forth ;
-CURRENT: feline
+include-system-file term.feline
 
-f global buffer
-f global bindings
-f global dot
-f global history
-f global history-index
-f global accepted-string
+USING: feline ;
+IN: accept
 
-: emit ( tagged-char -- )
-    untag-char emit
-;
+GLOBAL: buffer
+GLOBAL: bindings
+GLOBAL: dot
+GLOBAL: history
+GLOBAL: history-index
+GLOBAL: accepted-string
+GLOBAL: prompt-string
 
-: at-x ( col -- )
-    esc[
-    untag-fixnum 1+ (u.) type
-    'G' emit
-;
-
-: clear-to-eol ( -- )
-    esc[
-    '0' emit
-    'K' emit
-;
-
-: backspaces ( tagged -- )
-    untag-fixnum backspaces
+: prompt ( -- )
+    "IN: " current-vocab vocab-name concat
+    "> " concat
+    dup prompt-string!
+    green foreground write
 ;
 
 : redisplay ( -- )
     0 at-x
     prompt
     yellow foreground
-    buffer sbuf> type
+    buffer sbuf>string write
     clear-to-eol
     dot prompt-string length + at-x
 ;
 
 : do-escape ( -- )
     0 buffer sbuf-shorten
-    0 !> dot
-    f !> history-index
+    0 dot!
+    f history-index!
     redisplay
 ;
 
 : do-bs ( -- )
     dot 0 >
     [
-        dot 1 - !> dot
+        dot 1 - dot!
         dot buffer sbuf-remove-nth! drop
         redisplay
     ]
@@ -73,45 +63,41 @@ f global accepted-string
 
 : do-home ( -- )
     prompt-string length at-x
-    0 !> dot
+    0 dot!
 ;
 
 : do-end ( -- )
-    buffer length !> dot
+    buffer length dot!
     prompt-string length dot + at-x
 ;
 
 : do-right ( -- )
     dot buffer length <
-    [ dot 1 + !> dot dot prompt-string length + at-x ]
+    [ dot 1 + dot! dot prompt-string length + at-x ]
     when
 ;
 
 : do-left ( -- )
     dot 0 >
-    [ dot 1 - !> dot dot prompt-string length + at-x ]
+    [ dot 1 - dot! dot prompt-string length + at-x ]
     when
 ;
 
 : do-normal-char ( c -- )
     dot buffer length <
-    [ dot buffer sbuf-insert-nth! drop dot 1 + !> dot redisplay ]
-    [
-        dup emit
-        dot 1 + !> dot
-        buffer push
-    ]
+    [ dot buffer sbuf-insert-nth! drop dot 1 + dot! redisplay ]
+    [ dup write1 dot 1 + dot! buffer push ]
     if
 ;
 
 : do-previous ( -- )
-    history-index [ history length !> history-index ] unless
+    history-index [ history length history-index! ] unless
     history-index zero?
     [
-        history-index 1 - !> history-index
+        history-index 1 - history-index!
         0 buffer sbuf-shorten
-        buffer history-index history nth sbuf-append-string
-        buffer length !> dot
+        buffer history-index history nth sbuf-append-string ( -- buffer )
+        length dot!
         redisplay
     ]
     unless
@@ -122,10 +108,10 @@ f global accepted-string
     [
         history length 1 - <
         [
-            history-index 1 + !> history-index
+            history-index 1 + history-index!
             0 buffer sbuf-shorten
-            buffer history-index history nth sbuf-append-string
-            buffer length !> dot
+            buffer history-index history nth sbuf-append-string ( -- buffer )
+            length dot!
             redisplay
         ]
         when
@@ -134,11 +120,11 @@ f global accepted-string
 ;
 
 : history-file-pathname ( -- string )
-    user-home ".feline-history" path-append
+    forth:user-home ".feline-history" forth:path-append
 ;
 
 : initialize-history ( -- )
-    history-file-pathname file-lines !> history
+    history-file-pathname file-lines history!
 ;
 
 : bind-key ( key action -- )
@@ -146,71 +132,54 @@ f global accepted-string
 ;
 
 : lookup-key ( key -- action|f )
-    bindings length [ bindings nth array-first over = ] find-integer \ -- i|f
+    bindings length [ bindings nth array-first over = ] find-integer // -- n/f
     nip dup [ bindings nth array-second ] [ drop f ] if
 ;
 
 : initialize-bindings ( -- )
-    10 <vector> !> bindings
-    3                   ['] bye         bind-key
-    $1b                 ['] do-escape   bind-key
-    127                 ['] do-bs       bind-key        \ Linux
-    8                   ['] do-bs       bind-key        \ Windows
-    k-left  tag-char    ['] do-left     bind-key
-    k-right tag-char    ['] do-right    bind-key
-    k-home  tag-char    ['] do-home     bind-key
-    k-end   tag-char    ['] do-end      bind-key
-    k-up    tag-char    ['] do-previous bind-key
-    k-down  tag-char    ['] do-next     bind-key
+    10 <vector> bindings!
+    3                   \ bye         bind-key
+    $1b                 \ do-escape   bind-key
+    127                 \ do-bs       bind-key        // Linux
+    8                   \ do-bs       bind-key        // Windows
+    k-left              \ do-left     bind-key
+    k-right             \ do-right    bind-key
+    k-home              \ do-home     bind-key
+    k-end               \ do-end      bind-key
+    k-up                \ do-previous bind-key
+    k-down              \ do-next     bind-key
 ;
 
 : accept-key ( -- tagged-char)
-    ekey tag-char
+    ekey
 ;
 
-: printable? ( tagged-char -- t|f )
-    32 126 between tag-boolean
+: printable? ( tagged-char -- ? )
+    untag-fixnum 32 untag-fixnum 126 untag-fixnum forth:between tag-boolean
 ;
 
 : process-key ( tagged-char -- )
     dup printable?
     [ do-normal-char ]
-    [ lookup-key [ execute ] when* ]
+    [ lookup-key [ call-symbol ] when* ]
     if
 ;
 
-: terminator? ( tagged-char -- t|f )
-    dup 10 = swap 13 = or
+: terminator? ( tagged-char -- ? )
+    { 10 13 } member?
 ;
 
-:noname ( -- string )
-    256 <sbuf> !> buffer
+: accept-string ( -- string )
+    256 <sbuf> buffer!
     bindings [ initialize-bindings ] unless
     history  [ initialize-history  ] unless
-    0 !> dot
+    prompt
+    0 dot!
     yellow foreground
     [ accept-key dup terminator? ] [ process-key ] until
     drop
     white foreground
     buffer sbuf>string
     dup history push
-
-    \ gc protect
-    dup !> accepted-string
-
-    f !> buffer
-; is accept-string
-
-: test ( -- string )
-    ?cr
-    prompt
-    accept-string
+    f buffer!
 ;
-
-: install ( -- )
-    ['] feline-query is query
-;
-
-install
-
-empty!
