@@ -32,3 +32,7 @@ include-system-file help.feline
 include-system-file tuple.feline
 include-system-file globals.feline
 include-system-file constant.feline
+include-system-file accept.feline
+
+USING: feline ;
+IN: feline
