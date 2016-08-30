@@ -172,6 +172,12 @@ HELP: member?
     Return t if seq contains an element = to obj."
 ;
 
+HELP: new-sequence
+    "( len seq -- newseq )
+    Return a new sequence of length len which can hold the elements
+    of seq."
+;
+
 HELP: over
     "( x y -- x y x )
     Place a copy of x on top of the stack."
