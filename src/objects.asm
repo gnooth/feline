@@ -349,6 +349,14 @@ code dot_object, '.'                    ; handle-or-object --
         _return
         _then .14
 
+        _dup
+        _ slice?
+        _tagged_if .15
+        _ dot_slice
+        _ space
+        _return
+        _then .15
+
         ; give up
         _ hdot
 
