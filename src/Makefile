@@ -134,6 +134,7 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	repl.asm \
 	sequences.asm \
 	sbuf.asm \
+	slice.asm \
 	stack.asm \
 	store.asm \
 	string.asm \

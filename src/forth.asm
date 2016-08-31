@@ -78,6 +78,7 @@ IN_FELINE
 %include "vector.asm"
 %include "string.asm"
 %include "sbuf.asm"
+%include "slice.asm"
 %include "sequences.asm"
 %include "symbol.asm"
 %include "vocab.asm"
