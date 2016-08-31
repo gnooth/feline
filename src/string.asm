@@ -15,6 +15,11 @@
 
 file __FILE__
 
+; strings are immutable
+
+; 3 cells: object header, length, hashcode
+
+; character data starts at offset 24
 %define STRING_DATA_OFFSET      24
 
 ; ### string?

@@ -17,6 +17,8 @@ file __FILE__
 
 ; Stringbuffers
 
+; 4 cells: object header, length, data address, capacity
+
 ; ### sbuf?
 code sbuf?, 'sbuf?'                     ; object -- t|f
         _dup
