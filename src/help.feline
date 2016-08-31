@@ -118,6 +118,11 @@ HELP: each-index
     index on the stack."
 ;
 
+HELP: even?
+    "( n -- ? )
+    Return t if n is even."
+;
+
 HELP: file-contents
     "( path -- string )
     Return the contents of the specified file as a string."
@@ -178,6 +183,11 @@ HELP: new-sequence
     of seq."
 ;
 
+HELP: odd?
+    "( n -- ? )
+    Return t if n is odd."
+;
+
 HELP: over
     "( x y -- x y x )
     Place a copy of x on top of the stack."
@@ -216,6 +226,11 @@ HELP: swap
 HELP: swapd
     "( x y z -- y z x )
     Exchange the second and third stack items."
+;
+
+HELP: time
+    "( quot -- )
+    Run quot and report the total run time."
 ;
 
 HELP: times
