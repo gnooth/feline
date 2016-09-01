@@ -139,6 +139,14 @@ code mark_curry, 'mark-curry'           ; curry --
         next
 endcode
 
+; ### mark-slice
+code mark_slice, 'mark-slice'           ; slice --
+        _slice_seq
+        _ maybe_mark_handle
+        ; REVIEW code
+        next
+endcode
+
 ; ### mark-handle
 code mark_handle, 'mark-handle'         ; handle --
         _handle_to_object_unsafe        ; -- object/0
@@ -212,6 +220,15 @@ code mark_handle, 'mark-handle'         ; handle --
         _ mark_curry
         _return
         _then .8
+
+        _dup
+        _object_type
+        _lit OBJECT_TYPE_SLICE
+        _equal
+        _if .9
+        _ mark_slice
+        _return
+        _then .9
 
 .1:
         _drop
