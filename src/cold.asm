@@ -207,6 +207,9 @@ code cold, 'cold'                       ; --
 
 ;         _ report_startup_time
 
+        ; start in Feline mode
+        _ feline_mode
+
         _ process_command_line
 
         _true
@@ -221,9 +224,6 @@ code cold, 'cold'                       ; --
         _if .4
         _ do_error
         _then .4
-
-        ; start in Feline mode
-        _ feline_mode
 
         _squote "boot.feline"
         _ system_file_pathname

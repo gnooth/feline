@@ -42,7 +42,7 @@ include-system-file see.forth
 
 include-system-file feline.forth
 
-forth-mode
+\ forth-mode
 
 \ : edit ( "<spaces>name" -- )
 \     warning @ >r
@@ -51,4 +51,4 @@ forth-mode
 \     r> warning !
 \     -5 >in +! ;
 
-empty!
+\ empty!
