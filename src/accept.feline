@@ -128,7 +128,10 @@ GLOBAL: prompt-string
 ;
 
 : save-history ( -- )
-    history history-file-pathname set-file-lines
+    history
+    [ length dup 100 - 0 max swap ] keep
+    <slice>
+    history-file-pathname set-file-lines
 ;
 
 : bind-key ( key action -- )
