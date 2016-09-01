@@ -193,4 +193,6 @@ GLOBAL: prompt-string
     dup history push
     save-history
     f buffer!
+    f history-index!
+    nl
 ;
