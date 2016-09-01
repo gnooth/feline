@@ -124,7 +124,10 @@ GLOBAL: prompt-string
 ;
 
 : initialize-history ( -- )
-    history-file-pathname file-lines history!
+    history-file-pathname dup regular-file?
+    [ file-lines ]
+    [ drop 100 <vector> ]
+    if history!
 ;
 
 : save-history ( -- )
