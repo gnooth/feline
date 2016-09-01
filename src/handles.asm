@@ -15,6 +15,10 @@
 
 file __FILE__
 
+%macro  _handle_to_object_unsafe 0
+        _fetch
+%endmacro
+
 ; ### handle-space
 value handle_space, 'handle-space', 0
 
@@ -107,19 +111,6 @@ code handle?, 'handle?'                 ; x -- 1|0
         next
 endcode
 
-; ### check-handle
-code check_handle, 'check-handle'       ; handle -- handle
-        _dup
-        _ handle?
-        _if .1
-        _return
-        _then .1
-        _drop
-        _true
-        _abortq "not a handle"
-        next
-endcode
-
 ; ### deref
 code deref, 'deref'                     ; x -- object-address/0
         _dup
@@ -171,7 +162,7 @@ code release_handle_unsafe, 'release-handle-unsafe' ; handle --
 
         ; Add handle to free-handles vector.
         _from free_handles
-        _handle_to_object_unsafe        ; -- handle vectors
+        _handle_to_object_unsafe        ; -- handle vector
         _ vector_push_unchecked         ; --
 
         next

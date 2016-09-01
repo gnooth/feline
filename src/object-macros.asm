@@ -36,10 +36,6 @@ OBJECT_TYPE_SLICE               equ 15
 OBJECT_MARKED_BIT               equ 1
 OBJECT_ALLOCATED_BIT            equ 4
 
-%macro  _handle_to_object_unsafe 0
-        _fetch
-%endmacro
-
 ; Register reserved for 'this' pointer.
 %define this_register   r15
 
