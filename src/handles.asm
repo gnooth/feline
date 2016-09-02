@@ -148,9 +148,16 @@ code unhandle, 'unhandle'               ; handle -- object-address
 
         ; valid handle
         _handle_to_object_unsafe
+
+        test    rbx, rbx
+        jz      .2
+
         _return
 .1:
         _error "not a handle"
+        _return
+.2:
+        _error "empty handle"
         next
 endcode
 
