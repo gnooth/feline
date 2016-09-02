@@ -65,9 +65,7 @@ endcode
 
 ; ### check-quotation
 code check_quotation, 'check-quotation' ; handle -- quotation
-        _ unhandle                      ; -- object/0
-        test    rbx, rbx
-        jz      .error
+        _ unhandle                      ; -- object-address
         cmp     word [rbx], OBJECT_TYPE_QUOTATION
         jne     .error
         _return
