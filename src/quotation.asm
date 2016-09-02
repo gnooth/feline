@@ -41,17 +41,15 @@ file __FILE__
 
 ; ### quotation?
 code quotation?, 'quotation?'           ; handle -- ?
-        _dup
-        _ handle?
-        _if .1
-        _handle_to_object_unsafe        ; -- object
-        _dup_if .2
-        _object_type                    ; -- object-type
-        _lit OBJECT_TYPE_QUOTATION
-        _eq?
+        _ ?unhandle                     ; -- object/f
+        cmp     rbx, f_value
+        je      .exit
+        cmp     word [rbx], OBJECT_TYPE_QUOTATION
+        jne     .false
+        mov     ebx, t_value
+.exit:
         _return
-        _then .2
-        _then .1
+.false:
         mov     ebx, f_value
         next
 endcode
