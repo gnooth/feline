@@ -111,6 +111,29 @@ code handle?, 'handle?'                 ; x -- 1|0
         next
 endcode
 
+; ### ?unhandle
+code ?unhandle, '?unhandle'             ; handle -- object-address/f
+        cmp     rbx, [handle_space_data]
+        jb .1
+        cmp     rbx, [handle_space_free_data]
+        jae .1
+
+        ; must be aligned
+        test    bl, 7
+        jnz     .1
+
+        ; valid handle
+        _handle_to_object_unsafe
+
+        test    rbx, rbx
+        jz      .1
+
+        _return
+.1:
+        mov     ebx, f_value
+        next
+endcode
+
 ; ### unhandle
 code unhandle, 'unhandle'               ; handle -- object-address
 ; Error if argument is not a handle.
