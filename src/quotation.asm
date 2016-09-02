@@ -67,21 +67,13 @@ endcode
 
 ; ### check-quotation
 code check_quotation, 'check-quotation' ; handle -- quotation
-        _dup
-        _ handle?
-        _if .1
-        _handle_to_object_unsafe        ; -- object|0
-        _dup_if .2
-        _dup
-        _object_type                    ; -- object object-type
-        _lit OBJECT_TYPE_QUOTATION
-        _equal
-        _if .3
+        _ unhandle                      ; -- object/0
+        test    rbx, rbx
+        jz      .error
+        cmp     word [rbx], OBJECT_TYPE_QUOTATION
+        jne     .error
         _return
-        _then .3
-        _then .2
-        _then .1
-
+.error:
         _ error_not_quotation
         next
 endcode
