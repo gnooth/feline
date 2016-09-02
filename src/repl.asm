@@ -337,9 +337,9 @@ code repl, 'repl'                       ; --
         _then .3
         _ depth
         _if .4
+        _ ?nl
         _ white
         _ foreground
-        _ ?nl
         _quote "--- Data stack:"
         _ write_
         _ feline_dot_s
