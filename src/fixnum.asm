@@ -99,6 +99,21 @@ code check_index, 'check-index'         ; non-negative-fixnum -- untagged-fixnum
         next
 endcode
 
+; ### index?
+code index?, 'index?'                   ; x -- ?
+        mov     al, bl
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     .false
+        test    rbx, rbx
+        js      .false
+        mov     ebx, t_value
+        _return
+.false:
+        mov     ebx, f_value
+        next
+endcode
+
 ; ### fixnum-equal?
 code fixnum_equal?, 'fixnum-equal?'     ; obj1 obj2 -- ?
         _over
