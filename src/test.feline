@@ -382,6 +382,7 @@ vector-test-5
 local-test-1
 
 : if-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
     t [ 42 ] [ 17 ] if 42 eq? check-t
     f [ 42 ] [ 17 ] if 17 eq? check-t
     0 [ 42 ] [ 17 ] if 42 eq? check-t
@@ -390,6 +391,7 @@ local-test-1
 if-test-1
 
 : if*-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
     clear
     t [ 42 ] [ 17 ] if* get-datastack { t 42 } sequence= check-t
     clear
@@ -402,6 +404,7 @@ if-test-1
 if*-test-1
 
 : symbol?-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
     \ dup symbol? check-t
     \ check-t symbol? check-t
     42 symbol? check-false
@@ -412,6 +415,7 @@ if*-test-1
 symbol?-test-1
 
 : string>number-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
     "." string>number check-false
     "-" string>number check-false
 ;
@@ -930,5 +934,18 @@ string-skip-to-whitespace-test-2
 ;
 
 slice-test-1
+
+: index?-test-1
+    << last-word symbol-name >> ?nl write
+    0 index? check-t
+    1 index? check-t
+    most-positive-fixnum index? check-t
+    -1 index? check-false
+    most-negative-fixnum index? check-false
+    "test" index? check-false
+    { } index? check-false
+;
+
+index?-test-1
 
 ?nl "Reached end of test.feline" write
