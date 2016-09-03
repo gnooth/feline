@@ -130,19 +130,12 @@ endcode
 
 ; ### check-symbol
 code check_symbol, 'check-symbol'       ; handle -- symbol
-        _dup
-        _ handle?                       ; -- handle ?
-        test    rbx, rbx
-        poprbx
-        jz      error_not_symbol
-        _handle_to_object_unsafe        ; -- object/0
-        test    rbx, rbx
-        jz      error_not_symbol
-        _dup
-        _object_type                    ; -- object object-type
-        cmp     rbx, OBJECT_TYPE_SYMBOL
-        poprbx
-        jnz     error_not_symbol
+        _ unhandle                      ; -- object-address
+        cmp     word [rbx], OBJECT_TYPE_SYMBOL
+        jne     .error
+        _return
+.error:
+        _ error_not_symbol
         next
 endcode
 
