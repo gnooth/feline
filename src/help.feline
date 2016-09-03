@@ -118,6 +118,11 @@ HELP: each-index
     index on the stack."
 ;
 
+HELP: each-integer
+    "( n quot -- )              quot: ( ... i -- ... )
+    Call quot for each integer from 0 up to n, excluding n."
+;
+
 HELP: even?
     "( n -- ? )
     Return t if n is even."
@@ -151,6 +156,11 @@ HELP: index
     "( obj seq -- n )
     Return the index of the first element of seq that is = to obj.
     Return f if there is no such element."
+;
+
+HELP: index?
+    "( x -- ? )
+    Return t if x is a non-negative fixnum."
 ;
 
 HELP: keep
