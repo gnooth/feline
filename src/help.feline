@@ -29,6 +29,12 @@ IN: feline
     if
 ;
 
+: :h ( -- )
+    parse-token
+    [ find-name [ help ] [ drop ] if ]
+    when*
+;
+
 HELP: 1array
     "( x -- array )
     Create a new array with one element: { x }."
