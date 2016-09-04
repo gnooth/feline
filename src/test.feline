@@ -996,4 +996,18 @@ bounds-check?-test-1
 
 ?nth-test-2
 
+: and-test-1
+    << last-word symbol-name >> ?nl write
+    t f and check-false
+    f t and check-false
+    0 t and check-t
+    t 0 and 0 eq? check-t
+
+    f 71 and 71 eq? check-false
+    t 71 and 71 eq? check-t
+    "test" 42 and 42 eq? check-t
+;
+
+and-test-1
+
 ?nl "Reached end of test.feline" write

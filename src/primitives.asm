@@ -92,6 +92,19 @@ inline not, 'not'
         cmove   ebx, eax
 endinline
 
+; ### and
+code feline_and, 'and'                  ; obj1 obj2 -- ?
+        cmp     rbx, f_value
+        je      .exit
+        ; obj2 is not f
+        mov     rax, [rbp]
+        cmp     rax, f_value
+        cmove   rbx, rax
+.exit:
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
 ; ### if
 code feline_if, 'if'                    ; ? true false --
         mov     rax, [rbp + BYTES_PER_CELL] ; condition in rax

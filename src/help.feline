@@ -88,6 +88,12 @@ HELP: <vector>
     Create a new vector with an initial capacity of n elements."
 ;
 
+HELP: and
+    "( obj1 obj2 -- ? )
+    If both obj1 and obj2 are true (that is, not f), return obj2.
+    Otherwise return f."
+;
+
 HELP: bi
     "( x quot1 quot2 -- )
     Apply quot1 to x, then apply quot2 to x."
