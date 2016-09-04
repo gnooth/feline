@@ -60,6 +60,10 @@
         sar     rbx, TAG_BITS
 %endmacro
 
+%macro  _untag_fixnum 1
+        sar     %1, TAG_BITS
+%endmacro
+
 %macro  _untag_2_fixnums 0
         sar     rbx, TAG_BITS
         sar     qword [rbp], TAG_BITS
