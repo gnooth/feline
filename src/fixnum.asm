@@ -71,9 +71,9 @@ code error_not_fixnum, 'error-not-fixnum' ; x --
 endcode
 
 %macro _check_fixnum 0
-        mov     eax, ebx
-        and     eax, TAG_MASK
-        cmp     eax, FIXNUM_TAG
+        mov     al, bl
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
         jne     error_not_fixnum
         _untag_fixnum
 %endmacro
