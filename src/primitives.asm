@@ -403,11 +403,15 @@ code times_, 'times'                    ; tagged-fixnum xt --
 endcode
 
 ; ### each-integer
-code each_integer, 'each-integer'       ; tagged-fixnum xt --
+code each_integer, 'each-integer'       ; n quot --
+        ; check that n is a fixnum
+        mov     al, byte [rbp]
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     error_not_fixnum
 
-        _swap
-        _untag_fixnum
-        _swap
+        ; untag n
+        _untag_fixnum qword [rbp]
 
         _ callable_code_address         ; -- untagged-fixnum code-address
 
