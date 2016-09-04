@@ -105,6 +105,15 @@ code feline_and, 'and'                  ; obj1 obj2 -- ?
         next
 endcode
 
+; ### or, 'or'
+code feline_or, 'or'                    ; obj1 obj2 -- ?
+        mov     rax, [rbp]
+        cmp     rax, f_value
+        cmovne  rbx, rax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
 ; ### if
 code feline_if, 'if'                    ; ? true false --
         mov     rax, [rbp + BYTES_PER_CELL] ; condition in rax

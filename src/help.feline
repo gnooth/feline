@@ -90,8 +90,8 @@ HELP: <vector>
 
 HELP: and
     "( obj1 obj2 -- ? )
-    If both obj1 and obj2 are true (that is, not f), return obj2.
-    Otherwise return f."
+    Boolean and: if both obj1 and obj2 are true (that is, not f),
+    return obj2. Otherwise return f. (Bitwise and is bitand.)"
 ;
 
 HELP: bi
@@ -220,6 +220,13 @@ HELP: new-sequence
 HELP: odd?
     "( n -- ? )
     Return t if n is odd."
+;
+
+HELP: or
+    "( obj1 obj2 -- ? )
+    Boolean inclusive or: if both obj1 and obj2 are f, return f.
+    Otherwise return the first of obj1 and obj2 which is not f.
+    (Bitwise inclusive or is bitor.)"
 ;
 
 HELP: over

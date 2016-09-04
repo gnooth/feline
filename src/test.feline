@@ -1010,4 +1010,18 @@ bounds-check?-test-1
 
 and-test-1
 
+: or-test-1
+    << last-word symbol-name >> ?nl write
+    t f or check-t
+    f t or check-t
+    0 t or 0 eq? check-t
+    t 0 or check-t
+
+    f 71 or 71 eq? check-t
+    t 71 or check-t
+    "test" 42 or "test" = check-t
+;
+
+or-test-1
+
 ?nl "Reached end of test.feline" write
