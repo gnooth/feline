@@ -948,4 +948,52 @@ slice-test-1
 
 index?-test-1
 
+: bounds-check?-test-1
+    << last-word symbol-name >> ?nl write
+
+    4 { 0 1 2 3 } [ bounds-check? ] curry each-integer
+    get-datastack { t t t t } sequence= check-t
+    clear
+
+    { 0 1 2 3 }
+    -1 over bounds-check? check-false
+    4 over bounds-check? check-false
+    42  over bounds-check? check-false
+    drop
+;
+
+bounds-check?-test-1
+
+: ?nth-test-1
+    << last-word symbol-name >> ?nl write
+
+    4 { 0 1 2 3 } [ ?nth ] curry each-integer
+    get-datastack { 0 1 2 3 } sequence= check-t
+    clear
+
+    { 0 1 2 3 }
+    -1 over ?nth check-false
+    4 over ?nth check-false
+    42  over ?nth check-false
+    drop
+;
+
+?nth-test-1
+
+: ?nth-test-2
+    << last-word symbol-name >> ?nl write
+
+    4 V{ 0 1 2 3 } [ ?nth ] curry each-integer
+    get-datastack { 0 1 2 3 } sequence= check-t
+    clear
+
+    V{ 0 1 2 3 }
+    -1 over ?nth check-false
+    4 over ?nth check-false
+    42  over ?nth check-false
+    drop
+;
+
+?nth-test-2
+
 ?nl "Reached end of test.feline" write
