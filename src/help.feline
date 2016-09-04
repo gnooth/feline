@@ -187,6 +187,18 @@ HELP: member?
     Return t if seq contains an element = to obj."
 ;
 
+HELP: min-length
+    "( seq1 seq2 -- n )
+    Return the length of the shorter sequence."
+;
+
+HELP: mismatch
+    "( seq1 seq2 -- index/f )
+    Compare seq1 and seq2 up to the length of the shorter sequence.
+    Return the first index where the elements of the two sequences
+    are not equal, or f if there is no mismatch."
+;
+
 HELP: new-sequence
     "( len seq -- newseq )
     Return a new sequence of length len which can hold the elements
