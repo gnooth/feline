@@ -18,22 +18,12 @@ LANGUAGE: feline
 USING: feline ;
 IN: feline
 
-: see
-    parse-token ( -- string/f )
-    [ find-name [ symbol-code drop forth:disasm ] [ undefined ] if ]
-    when*
+// adapted from Factor
+: bounds-check? ( n seq -- ? )
+    over index? [ length < ] [ 2drop f ] if
 ;
 
-: blank? ( char -- ? )
-    { 9 10 13 32 } member?
+// Factor
+: ?nth ( n seq -- elt/f )
+    2dup bounds-check? [ nth-unsafe ] [ 2drop f ] if
 ;
-
-include-system-file help.feline
-include-system-file tuple.feline
-include-system-file globals.feline
-include-system-file constant.feline
-include-system-file sequences.feline
-include-system-file accept.feline
-
-USING: feline ;
-IN: feline
