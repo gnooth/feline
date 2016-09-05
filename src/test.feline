@@ -1024,4 +1024,11 @@ and-test-1
 
 or-test-1
 
+: sbuf-insert-nth!-test-1
+    << last-word symbol-name >> ?nl write
+    't' 0 "" string>sbuf sbuf-insert-nth! sbuf>string "t" string= check-t
+;
+
+sbuf-insert-nth!-test-1
+
 ?nl "Reached end of test.feline" write
