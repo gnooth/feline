@@ -19,7 +19,7 @@ file __FILE__
 
 ; 3 cells: object header, length, hashcode
 
-; character data starts at offset 24
+; character data (untagged) starts at offset 24
 %define STRING_DATA_OFFSET      24
 
 ; ### string?
@@ -642,6 +642,51 @@ code string_skip_to_whitespace, 'string-skip-to-whitespace' ; start-index string
 
         ; not found
         _f
+
+.exit:
+        pop     this_register
+        next
+endcode
+
+; ### string-index-from
+code string_index_from, 'string-index-from' ; char start-index string -- index
+
+        _ check_string
+
+        push    this_register
+        popd    this_register
+
+        _ check_index                   ; -- char untagged-start-index
+
+        _this_string_length
+        _twodup
+        _ ge
+        _if .1
+        _3drop
+        _f
+        jmp     .exit
+        _then .1                        ; -- char untagged-start-index untagged-length
+
+        _untag_char qword [rbp + BYTES_PER_CELL]
+
+        _swap
+        _do .2
+        _i
+        _this_string_nth_unsafe
+
+        cmp     bl, byte [rbp]
+        jne     .3
+        _2drop
+        _i
+        _tag_fixnum
+        _unloop
+        jmp     .exit
+.3:
+        _drop
+        _loop   .2
+
+        ; not found
+        mov     rbx, f_value
 
 .exit:
         pop     this_register
