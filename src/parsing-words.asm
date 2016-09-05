@@ -20,6 +20,12 @@ code parse_string, 'parse-string'       ; -- string
         _lit 128
         _ new_sbuf_untagged             ; -- sbuf
         _tor
+
+        _lit '"'
+        _tag_char
+        _rfetch
+        _ sbuf_push
+
         _begin .1
         _ slashsource
         _lit '"'
@@ -32,11 +38,7 @@ code parse_string, 'parse-string'       ; -- string
         _ rrot                          ; -- sbuf addr len
         _ sbuf_append_chars             ; --
 
-        _lit '"'
-        _tag_char
-        _lit tagged_zero
-        _rfrom                          ; -- tagged-char tagged-index sbuf
-        _ sbuf_insert_nth_destructive   ; -- sbuf
+        _rfrom
 
         _lit '"'
         _tag_char
