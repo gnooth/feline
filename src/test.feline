@@ -1031,4 +1031,16 @@ or-test-1
 
 sbuf-insert-nth!-test-1
 
+: string-index-from-test-1
+    << last-word symbol-name >> ?nl write
+    't' 0 "this is a test" string-index-from zero? check-t
+    'h' 0 "this is a test" string-index-from 1 eq? check-t
+    'h' 2 "this is a test" string-index-from check-false
+    't' 1 "this is a test" string-index-from 10 eq? check-t
+    'e' 4 "this is a test" string-index-from 11 eq? check-t
+    'x' 0 "this is a test" string-index-from check-false
+;
+
+string-index-from-test-1
+
 ?nl "Reached end of test.feline" write
