@@ -44,7 +44,7 @@ code two_nth_unsafe, '2nth-unsafe'      ; n seq1 seq2 -- elt1 elt2
 endcode
 
 ; ### mismatch
-code mismatch, 'mismatch'               ; seq1 seq2 -- i|f
+code mismatch, 'mismatch'               ; seq1 seq2 -- index/f
         _twodup
         _ min_length
         _untag_fixnum
@@ -311,7 +311,7 @@ code each_index, 'each-index'           ; seq quotation-or-xt --
 endcode
 
 ; ### find
-code feline_find, 'find'                ; seq xt -- i elt | f f
+code feline_find, 'find'                ; seq quot -- i elt | f f
         _ callable_code_address         ; -- seq code-address
         push    r12
         mov     r12, rbx                ; address to call in r12
@@ -406,25 +406,16 @@ endcode
 code in_bounds?, 'in-bounds?'           ; n seq -- ?
 ; Factor bounds-check?
         _over
-        _fixnum?
-        _zeq_if .1
-        _2drop
-        _f
+        _ index?
+        _tagged_if_not .1
+        _drop
+        mov     ebx, f_value
         _return
         _then .1
 
-        _dupd
+        ; -- n seq
         _ length
         _ fixnum_lt
-        _tagged_if_not .2
-        _drop
-        _f
-        _return
-        _then .2
-
-        _untag_fixnum
-        _zge
-        _tag_boolean
         next
 endcode
 
