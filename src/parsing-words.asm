@@ -491,11 +491,18 @@ code define, ':'                        ; --
 
         _zeroto using_locals?
 
-        _ parse_token
+        _ parse_token                   ; -- string/f
         _dup
         _tagged_if .1
-        _ find_name
+
+        ; check for redefinition in current vocab only!
+        _dup
+        _ current_vocab
+        _ vocab_hashtable
+        _ at_star                       ; -- string symbol/f ?
+
         _tagged_if .2
+        _nip
         ; REVIEW
         _ ?cr
         _dotq "redefining "
@@ -503,8 +510,9 @@ code define, ':'                        ; --
         _ symbol_name
         _ write_
         _else .2
+        _drop                           ; -- string
         _ current_vocab
-        _ new_symbol
+        _ new_symbol                    ; -- symbol
         _dup
         _ current_vocab
         _ vocab_add_symbol
