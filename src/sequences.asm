@@ -15,6 +15,34 @@
 
 file __FILE__
 
+; ### in-bounds?
+code in_bounds?, 'in-bounds?'           ; n seq -- ?
+; Factor bounds-check?
+        _over
+        _ index?
+        _tagged_if_not .1
+        _drop
+        mov     ebx, f_value
+        _return
+        _then .1
+
+        ; -- n seq
+        _ length
+        _ fixnum_lt
+        next
+endcode
+
+; ### check-bounds
+code check_bounds, 'check-bounds'       ; n seq -- n seq
+; Factor bounds-check
+        _twodup
+        _ in_bounds?
+        _tagged_if_not .1
+        _error "index out of bounds for sequence"
+        _then .1
+        next
+endcode
+
 ; ### shorter?
 code shorter?, 'shorter?'               ; seq1 seq2 -- ?
 ; Factor
@@ -347,6 +375,64 @@ code feline_find, 'find'                ; seq quot -- i elt | f f
         next
 endcode
 
+; ### find-last-from
+code find_last_from, 'find-last-from'   ; start-index seq quot -- i elt | f f
+        _tor
+        _ check_bounds
+        _rfrom
+
+        _ callable_code_address         ; -- seq code-address
+        push    r12
+        mov     r12, rbx                ; address to call in r12
+        poprbx                          ; -- seq
+
+        push    this_register
+        popd    this_register           ; handle to seq in this_register
+
+        ; -- start-index
+        _untag_fixnum
+
+        push    r13
+        mov     r13, rbx
+        inc     rbx
+
+        _zero
+        _?do .1
+        pushd   r13
+
+        _i
+        _minus
+        _tag_fixnum
+        _this                           ; -- tagged-index handle
+
+        _ nth_unsafe                    ; -- element
+        call    r12                     ; -- ?
+        _tagged_if .2
+
+        ; we're done
+        pushd   r13
+        _i
+        _minus
+        _tag_fixnum
+        _dup
+        _this
+        _ nth_unsafe
+        _unloop
+        jmp     .exit
+
+        _then .2
+        _loop .1
+
+        ; not found
+        _f
+        _dup
+.exit:
+        pop     r13
+        pop     this_register
+        pop     r12
+        next
+endcode
+
 ; ### map-find
 code map_find, 'map-find'               ; seq quot -- result elt
         _ callable_code_address         ; -- seq code-address
@@ -399,23 +485,6 @@ code second, 'second'                   ; seq -- second
         _lit tagged_fixnum(1)
         _swap
         _ nth
-        next
-endcode
-
-; ### in-bounds?
-code in_bounds?, 'in-bounds?'           ; n seq -- ?
-; Factor bounds-check?
-        _over
-        _ index?
-        _tagged_if_not .1
-        _drop
-        mov     ebx, f_value
-        _return
-        _then .1
-
-        ; -- n seq
-        _ length
-        _ fixnum_lt
         next
 endcode
 
