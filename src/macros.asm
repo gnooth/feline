@@ -158,6 +158,9 @@
         _untag_fixnum
 %endmacro
 
+%macro  _untag_char 1
+        _untag_fixnum %1
+%endmacro
 
 %define DEFAULT_DATA_ALIGNMENT  8
 
