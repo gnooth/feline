@@ -386,9 +386,14 @@ endcode
 
 ; ### find-last-from
 code find_last_from, 'find-last-from'   ; start-index seq quot -- index/f elt/f
-        _tor
-        _ check_bounds
-        _rfrom
+        _ feline_2over
+        _ in_bounds?
+        _tagged_if_not .1
+        _3drop
+        _f
+        _f
+        _return
+        _then .1
 
         _ callable_code_address         ; -- seq code-address
         push    r12
@@ -406,7 +411,7 @@ code find_last_from, 'find-last-from'   ; start-index seq quot -- index/f elt/f
         inc     rbx
 
         _zero
-        _?do .1
+        _?do .2
         pushd   r13
 
         _i
@@ -416,7 +421,7 @@ code find_last_from, 'find-last-from'   ; start-index seq quot -- index/f elt/f
 
         _ nth_unsafe                    ; -- element
         call    r12                     ; -- ?
-        _tagged_if .2
+        _tagged_if .3
 
         ; we're done
         pushd   r13
@@ -429,8 +434,8 @@ code find_last_from, 'find-last-from'   ; start-index seq quot -- index/f elt/f
         _unloop
         jmp     .exit
 
-        _then .2
-        _loop .1
+        _then .3
+        _loop .2
 
         ; not found
         _f

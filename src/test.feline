@@ -520,6 +520,27 @@ globals-test-1
 
 find-test-1
 
+: find-last-from-test-1
+    << last-word symbol-name >> ?nl write
+    13 "this is a test" [ 'e' = ] find-last-from
+    get-datastack { 11 'e' } sequence= check-t
+    clear
+    99 "this is a test" [ 'e' = ] find-last-from
+    get-datastack { f f } sequence= check-t
+    clear
+    -99 "this is a test" [ 'e' = ] find-last-from
+    get-datastack { f f } sequence= check-t
+    clear
+    4 V{ 1 2 3 4 5 3 } [ 3 = ] find-last-from
+    get-datastack { 2 3 } sequence= check-t
+    clear
+    3 4 V{ 1 2 3 4 5 3 } [ dupd = ] find-last-from
+    get-datastack { 3 2 3 } sequence= check-t
+    clear
+;
+
+find-last-from-test-1
+
 : map-find-test-1 ( -- )
     << last-word symbol-name >> ?nl write
     clear
