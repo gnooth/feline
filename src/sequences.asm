@@ -348,7 +348,7 @@ code each_index, 'each-index'           ; seq quotation-or-xt --
 endcode
 
 ; ### find
-code feline_find, 'find'                ; seq quot -- i elt | f f
+code feline_find, 'find'                ; seq quot -- index/f elt/f
         _ callable_code_address         ; -- seq code-address
         push    r12
         mov     r12, rbx                ; address to call in r12
@@ -384,8 +384,8 @@ code feline_find, 'find'                ; seq quot -- i elt | f f
         next
 endcode
 
-; ### find-last-from
-code find_last_from, 'find-last-from'   ; start-index seq quot -- index/f elt/f
+; ### find-from
+code find_from, 'find-from'             ; n seq quot -- index/f elt/f
         _ feline_2over
         _ in_bounds?
         _tagged_if_not .1
@@ -395,15 +395,63 @@ code find_last_from, 'find-last-from'   ; start-index seq quot -- index/f elt/f
         _return
         _then .1
 
-        _ callable_code_address         ; -- seq code-address
+        _ callable_code_address         ; -- n seq code-address
         push    r12
         mov     r12, rbx                ; address to call in r12
-        poprbx                          ; -- seq
+        poprbx                          ; -- n seq
+        push    this_register
+        mov     this_register, rbx      ; handle to seq in this_register
+
+        _ length                        ; -- n length
+        _untag_fixnum
+        _swap
+        _untag_fixnum                   ; -- untagged-length untagged-n
+        _?do .2
+        _i
+        _tag_fixnum
+        _this                           ; -- tagged-index handle
+        _ nth_unsafe                    ; -- element
+        call    r12                     ; -- ?
+        _tagged_if .3
+        ; we're done
+        _i
+        _tag_fixnum
+        _dup
+        _this
+        _ nth_unsafe
+        _unloop
+        jmp     .exit
+        _then .3
+        _loop .2
+        ; not found
+        _f
+        _dup
+.exit:
+        pop     this_register
+        pop     r12
+        next
+endcode
+
+; ### find-last-from
+code find_last_from, 'find-last-from'   ; n seq quot -- index/f elt/f
+        _ feline_2over
+        _ in_bounds?
+        _tagged_if_not .1
+        _3drop
+        _f
+        _f
+        _return
+        _then .1
+
+        _ callable_code_address         ; -- n seq code-address
+        push    r12
+        mov     r12, rbx                ; address to call in r12
+        poprbx                          ; -- n seq
 
         push    this_register
         popd    this_register           ; handle to seq in this_register
 
-        ; -- start-index
+        ; -- n
         _untag_fixnum
 
         push    r13
