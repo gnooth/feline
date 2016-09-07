@@ -152,11 +152,19 @@ HELP: filter
 ;
 
 HELP: find
-    "( seq quot -- i elt )      quot: ( ... elt -- ... ? )
+    "( seq quot -- index/f elt/f )      quot: ( ... elt -- ... ? )
     Apply quot to each element of seq in order. If the quotation
     returns a true value for some element, return the index of that
     element and the element itself. Otherwise return f for both the
     index and the element."
+;
+
+HELP: find-last-from
+    "( n seq quot -- index/f elt/f )    quot: ( ... elt -- ... ? )
+    Apply quot to each element of seq in reverse order, starting at
+    index n. If the quotation returns a true value for some element,
+    return the index of that element and the element itself. Otherwise
+    return f for both the index and the element."
 ;
 
 HELP: in-bounds?
