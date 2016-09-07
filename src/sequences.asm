@@ -52,6 +52,15 @@ code shorter?, 'shorter?'               ; seq1 seq2 -- ?
         next
 endcode
 
+; ### longer?
+code longer?, 'longer?'                 ; seq1 seq2 -- ?
+; Factor
+        _lit length_xt
+        _ bi_at
+        _ fixnum_gt
+        next
+endcode
+
 ; ### min-length
 code min_length, 'min-length'           ; seq1 seq2 -- n
         _lit length_xt
@@ -376,7 +385,7 @@ code feline_find, 'find'                ; seq quot -- i elt | f f
 endcode
 
 ; ### find-last-from
-code find_last_from, 'find-last-from'   ; start-index seq quot -- i elt | f f
+code find_last_from, 'find-last-from'   ; start-index seq quot -- index/f elt/f
         _tor
         _ check_bounds
         _rfrom
