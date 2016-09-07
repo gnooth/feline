@@ -20,10 +20,11 @@ IN: feline
 
 // adapted from Factor
 : bounds-check? ( n seq -- ? )
-    over index? [ length < ] [ 2drop f ] if
-;
+    over index? [ length < ] [ 2drop f ] if ;
 
 // Factor
 : ?nth ( n seq -- elt/f )
-    2dup bounds-check? [ nth-unsafe ] [ 2drop f ] if
-;
+    2dup bounds-check? [ nth-unsafe ] [ 2drop f ] if ;
+
+: empty? ( seq/f -- ? )
+    [ length zero? ] [ t ] if* ;
