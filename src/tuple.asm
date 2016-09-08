@@ -75,6 +75,14 @@ code layout_of, 'layout-of'             ; tuple -- layout
         next
 endcode
 
+; ### tuple-size
+code tuple_size, 'tuple-size'           ; tuple -- size
+; Return number of defined slots.
+        _ layout_of
+        _ array_second
+        next
+endcode
+
 ; ### <tuple>
 code new_tuple, '<tuple>'               ; class-symbol -- handle
 

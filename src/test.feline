@@ -742,6 +742,7 @@ TUPLE: foo a b c ;
     [ tuple? check-t ] keep
     [ foo? check-t ] keep
     \ foo require-type
+    [ tuple-size 3 = check-t ] keep
     [ foo-a check-false ] keep
     [ foo-b check-false ] keep
     [ foo-c check-false ] keep
