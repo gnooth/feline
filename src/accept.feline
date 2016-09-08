@@ -20,20 +20,22 @@ include-system-file term.feline
 USING: feline ;
 IN: accept
 
+GLOBAL: prompt-string
 GLOBAL: buffer
 GLOBAL: bindings
 GLOBAL: dot
 GLOBAL: history
 GLOBAL: history-index
-GLOBAL: accepted-string
-GLOBAL: prompt-string
+GLOBAL: pattern
+
+: reset-history ( -- )
+    f history-index! f pattern! ;
 
 : prompt ( -- )
     "IN: " current-vocab vocab-name concat
     "> " concat
     dup prompt-string!
-    green foreground write
-;
+    green foreground write ;
 
 : redisplay ( -- )
     0 at-x
@@ -41,158 +43,168 @@ GLOBAL: prompt-string
     yellow foreground
     buffer sbuf>string write
     clear-to-eol
-    dot prompt-string length + at-x
-;
+    dot prompt-string length + at-x ;
 
 : do-escape ( -- )
     0 buffer sbuf-shorten
     0 dot!
-    f history-index!
-    redisplay
-;
+    reset-history
+    redisplay ;
 
 : do-bs ( -- )
-    dot 0 >
-    [
+    dot 0 > [
         dot 1 - dot!
         dot buffer sbuf-remove-nth! drop
+        reset-history
         redisplay
-    ]
-    when
-;
+    ] when ;
 
 : do-home ( -- )
     prompt-string length at-x
     0 dot!
-;
+    reset-history ;
 
 : do-end ( -- )
     buffer length dot!
     prompt-string length dot + at-x
-;
+    reset-history ;
 
 : do-right ( -- )
     dot buffer length <
     [ dot 1 + dot! dot prompt-string length + at-x ]
     when
-;
+    reset-history ;
 
 : do-left ( -- )
-    dot 0 >
-    [ dot 1 - dot! dot prompt-string length + at-x ]
-    when
-;
+    dot 0 > [ dot 1 - dot! dot prompt-string length + at-x ] when
+    reset-history ;
 
 : do-normal-char ( c -- )
-    dot buffer length <
-    [ dot buffer sbuf-insert-nth! drop dot 1 + dot! redisplay ]
-    [ dup write1 dot 1 + dot! buffer push ]
-    if
-;
+    dot buffer length < [
+        dot buffer sbuf-insert-nth! drop dot 1 + dot! redisplay
+    ] [
+        dup write1 dot 1 + dot! buffer push
+    ] if
+    reset-history ;
 
 : do-previous ( -- )
     history-index [ history length history-index! ] unless
-    history-index zero?
-    [
+    history-index zero? [
         history-index 1 - history-index!
         0 buffer sbuf-shorten
         buffer history-index history nth sbuf-append-string ( -- buffer )
         length dot!
         redisplay
-    ]
-    unless
-;
+    ] unless ;
 
 : do-next ( -- )
-    history-index
-    [
-        history length 1 - <
-        [
+    history-index [
+        history length 1 - < [
             history-index 1 + history-index!
             0 buffer sbuf-shorten
             buffer history-index history nth sbuf-append-string ( -- buffer )
             length dot!
             redisplay
-        ]
-        when
-    ]
-    when*
+        ] when
+    ] when*
 ;
 
+: match? ( string -- ? )
+    pattern 2dup longer? [ mismatch not ] [ 2drop f ] if ;
+
+: do-previous-matching-input ( -- )
+    pattern [ buffer sbuf>string pattern! history length history-index! ] unless
+    history-index 1 -
+    history
+    [ match? ]
+    find-last-from ( -- index/f elt/f )
+    [
+        swap history-index!
+        0 buffer sbuf-shorten
+        buffer swap sbuf-append-string ( -- buffer )
+        length dot!
+        redisplay
+    ] [ drop ] if* ;
+
+: do-next-matching-input ( -- )
+    pattern [
+        history-index 1 +
+        history
+        [ match? ]
+        find-from ( -- index/f elt/f )
+        [
+            swap history-index!
+            0 buffer sbuf-shorten
+            buffer swap sbuf-append-string ( -- buffer )
+            length dot!
+            redisplay
+        ] [ drop ] if*
+    ] [ do-next ] if ;
+
 : history-file-pathname ( -- string )
-    forth:user-home ".feline-history" forth:path-append
-;
+    forth:user-home ".feline-history" forth:path-append ;
 
 : initialize-history ( -- )
     history-file-pathname dup regular-file?
-    [ file-lines ]
-    [ drop 100 <vector> ]
-    if history!
-;
+    [ file-lines ] [ drop 100 <vector> ] if history! ;
 
 : save-history ( -- )
     history
     [ length dup 100 - 0 max swap ] keep
     <slice>
-    history-file-pathname set-file-lines
-;
+    history-file-pathname set-file-lines ;
 
 : bind-key ( key action -- )
-    2array bindings push
-;
+    2array bindings push ;
 
 : lookup-key ( key -- action|f )
     bindings length [ bindings nth array-first over = ] find-integer // -- n/f
-    nip dup [ bindings nth array-second ] [ drop f ] if
-;
+    nip dup [ bindings nth array-second ] [ drop f ] if ;
 
 : initialize-bindings ( -- )
     10 <vector> bindings!
-    3                   \ bye         bind-key
-    $1b                 \ do-escape   bind-key
-    127                 \ do-bs       bind-key        // Linux
-    8                   \ do-bs       bind-key        // Windows
-    k-left              \ do-left     bind-key
-    k-right             \ do-right    bind-key
-    k-home              \ do-home     bind-key
-    k-end               \ do-end      bind-key
-    k-up                \ do-previous bind-key
-    k-down              \ do-next     bind-key
-;
+    3                   \ bye                        bind-key
+    $1b                 \ do-escape                  bind-key
+    127                 \ do-bs                      bind-key        // Linux
+    8                   \ do-bs                      bind-key        // Windows
+    k-left              \ do-left                    bind-key
+    k-right             \ do-right                   bind-key
+    k-home              \ do-home                    bind-key
+    k-end               \ do-end                     bind-key
+    k-up                \ do-previous                bind-key
+    k-down              \ do-next                    bind-key
+    $10                 \ do-previous-matching-input bind-key
+    $0e                 \ do-next-matching-input     bind-key ;
 
-: accept-key ( -- tagged-char)
-    ekey
-;
+: accept-key ( -- tagged-char) ekey ;
 
 : printable? ( tagged-char -- ? )
-    untag-fixnum 32 untag-fixnum 126 untag-fixnum forth:between tag-boolean
-;
+    untag-fixnum 32 untag-fixnum 126 untag-fixnum forth:between tag-boolean ;
 
 : process-key ( tagged-char -- )
     dup printable?
     [ do-normal-char ]
     [ lookup-key [ call-symbol ] when* ]
-    if
-;
+    if ;
 
 : terminator? ( tagged-char -- ? )
-    { 10 13 } member?
-;
+    { 10 13 } member? ;
 
 : accept-string ( -- string )
     256 <sbuf> buffer!
     bindings [ initialize-bindings ] unless
-    history  [ initialize-history  ] unless
+    history [ initialize-history ] unless
     prompt
     0 dot!
     yellow foreground
     [ accept-key dup terminator? ] [ process-key ] until
     drop
     white foreground
+
     buffer sbuf>string
-    dup history push
-    save-history
+
+    [ dup empty? [ drop ] [ history push save-history ] if ] keep
+
     f buffer!
     f history-index!
-    nl
-;
+    nl ;
