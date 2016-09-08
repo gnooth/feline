@@ -51,6 +51,13 @@ GLOBAL: pattern
     reset-history
     redisplay ;
 
+: do-delete-char ( -- )
+    dot buffer length < [
+        dot buffer sbuf-remove-nth! drop
+        reset-history
+        redisplay
+    ] when ;
+
 : do-bs ( -- )
     dot 0 > [
         dot 1 - dot!
@@ -157,7 +164,7 @@ GLOBAL: pattern
 : bind-key ( key action -- )
     2array bindings push ;
 
-: lookup-key ( key -- action|f )
+: lookup-key ( key -- symbol/f )
     bindings length [ bindings nth array-first over = ] find-integer // -- n/f
     nip dup [ bindings nth array-second ] [ drop f ] if ;
 
@@ -173,6 +180,7 @@ GLOBAL: pattern
     k-end               \ do-end                     bind-key
     k-up                \ do-previous                bind-key
     k-down              \ do-next                    bind-key
+    k-delete            \ do-delete-char             bind-key
     $10                 \ do-previous-matching-input bind-key
     $0e                 \ do-next-matching-input     bind-key ;
 
