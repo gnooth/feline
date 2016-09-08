@@ -35,9 +35,7 @@ endcode
 ; ### error-not-tuple
 code error_not_tuple, 'error-not-tuple' ; x --
         ; REVIEW
-        _drop
-        _true
-        _abortq "not a tuple"
+        _error "not a tuple"
         next
 endcode
 
