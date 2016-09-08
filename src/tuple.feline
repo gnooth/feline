@@ -50,7 +50,7 @@ IN: feline
         [ <wrapper> ] dip
         second
         \ require-type swap
-        \ slot@
+        \ slot
         4array array>quotation
     ] dip
     symbol-set-def

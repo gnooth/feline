@@ -187,8 +187,8 @@ code destroy_object_unchecked, '~object-unchecked' ; object --
         next
 endcode
 
-; ### slot@
-code slot, 'slot@'                      ; obj tagged-fixnum -- value
+; ### slot
+code slot, 'slot'                       ; obj tagged-fixnum -- value
         _untag_fixnum
         _cells
         _swap
