@@ -68,17 +68,23 @@ code tuple_layout, 'tuple-layout'       ; class-symbol -- layout
         next
 endcode
 
+%macro _tuple_layout_of 0               ; tuple -- layout
+        _slot 1
+%endmacro
+
 ; ### layout-of
 code layout_of, 'layout-of'             ; tuple -- layout
-        _lit tagged_fixnum(1)
-        _ slot
+        _ check_tuple
+        _tuple_layout_of
         next
 endcode
 
 ; ### tuple-size
 code tuple_size, 'tuple-size'           ; tuple -- size
 ; Return number of defined slots.
-        _ layout_of
+        _ check_tuple
+tuple_size_unchecked:
+        _tuple_layout_of
         _ array_second
         next
 endcode
