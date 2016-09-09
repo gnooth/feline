@@ -154,6 +154,18 @@ code quotation_set_code_address, 'quotation-set-code-address' ; code-address quo
         next
 endcode
 
+; ### callable?
+code callable?, 'callable?'             ; object -- ?
+        _dup
+        _ quotation?
+        _tagged_if .1
+        mov     ebx, t_value
+        _return
+        _then .1
+        _ curry?
+        next
+endcode
+
 ; ### call
 code call_quotation, 'call'             ; callable --
         _dup
