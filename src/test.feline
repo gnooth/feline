@@ -734,6 +734,8 @@ bi-test-1
 
 2bi-test-1
 
+GLOBAL: temp-string "test" temp-string!
+
 TUPLE: foo a b c ;
 
 : tuple-test-1 ( -- )
@@ -748,9 +750,14 @@ TUPLE: foo a b c ;
     [ foo-c check-false ] keep
     42 over foo-a!
     71 over foo-b!
-    "test" over foo-c!
+    temp-string over foo-c!
     [ foo-a 42 = check-t ] keep
     [ foo-b 71 = check-t ] keep
+    [ foo-c temp-string = check-t ] keep
+    [ foo-c "test" = check-t ] keep
+
+    f temp-string!
+    gc
     [ foo-c "test" = check-t ] keep
 
     drop
