@@ -385,7 +385,14 @@ code parse_symbol, 'SYMBOL:', PARSING   ; -- nothing
         ; -- string f
         _drop
         _ current_vocab
-        _ new_symbol
+        _ new_symbol                    ; -- symbol
+
+        _dup
+        _ new_wrapper
+        _ one_quotation
+        _over
+        _ symbol_set_def                ; -- handle
+
         _dup
         _to last_word
         _ current_vocab
