@@ -102,6 +102,13 @@ code array_to_quotation, 'array>quotation' ; array -- quotation
         next
 endcode
 
+; ### 1quotation
+code one_quotation, '1quotation'        ; object -- quotation
+        _ one_array
+        _ array_to_quotation
+        next
+endcode
+
 ; ### ~quotation
 code destroy_quotation, '~quotation'    ; handle --
         _ check_quotation               ; -- quotation
