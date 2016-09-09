@@ -147,6 +147,32 @@ code mark_slice, 'mark-slice'           ; slice --
         next
 endcode
 
+; ### mark-tuple
+code mark_tuple, 'mark-tuple'           ; tuple --
+        push    this_register
+        mov     this_register, rbx      ; -- tuple
+
+        _ tuple_size_unchecked          ; -- size
+        _untag_fixnum                   ; untagged size (number of defined slots) in rbx
+
+        ; slot 0 is object header
+        ; slot 1 is layout
+        ; slot 2 is first defined slot
+        ; so:
+        add     rbx, 2                  ; loop limit is size + 2
+        _lit 2                          ; loop start is 2
+
+        ; -- limit start
+        _?do .1
+        _i
+        _this_nth_slot
+        _ maybe_mark_handle
+        _loop .1
+
+        pop     this_register
+        next
+endcode
+
 ; ### mark-handle
 code mark_handle, 'mark-handle'         ; handle --
         _handle_to_object_unsafe        ; -- object/0
@@ -229,6 +255,15 @@ code mark_handle, 'mark-handle'         ; handle --
         _ mark_slice
         _return
         _then .9
+
+        _dup
+        _object_type
+        _lit OBJECT_TYPE_TUPLE
+        _equal
+        _if .10
+        _ mark_tuple
+        _return
+        _then .10
 
 .1:
         _drop
