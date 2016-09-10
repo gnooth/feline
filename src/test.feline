@@ -175,6 +175,17 @@ fixnum-test-10
 
 fixnum-test-11
 
+: number>string-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    -17 number>string "-17" = check-t
+    0 number>string "0" = check-t
+    42 number>string "42" = check-t
+    most-negative-fixnum number>string "-1152921504606846976" = check-t
+    most-positive-fixnum number>string "1152921504606846975" = check-t
+;
+
+number>string-test-1
+
 : fixnum-max-test-1 ( -- )
     << last-word symbol-name >> ?nl write
     1 2 fixnum-max 2 eq? check-t
