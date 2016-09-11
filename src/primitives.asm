@@ -570,14 +570,13 @@ endcode
 
 ; ### number>string
 code number_to_string, 'number>string'  ; n -- string
-        _ check_fixnum
-        _ basefetch
-        _tor
-        _ decimal
-        _ paren_dot
-        _ copy_to_string
-        _rfrom
-        _ basestore
+        _ fixnum_to_string
+        next
+endcode
+
+; ### >hex
+code to_hex, '>hex'                     ; n -- string
+        _ fixnum_to_hex
         next
 endcode
 
