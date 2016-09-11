@@ -464,8 +464,14 @@ void os_bye()
   exit(0);
 }
 
-int c_fixnum_to_string(Cell n, char * buf, size_t size)
+int c_fixnum_to_base(Cell n, Cell base, char * buf, size_t size)
 {
   // arguments are all untagged
-  return snprintf(buf, size, "%" PRId64, n);
+  if (base == 16)
+    // PRIX64 is defined in inttypes.h
+    return snprintf(buf, size, "%" PRIX64, n);
+  else
+    // FIXME it's an error if base is not 10 here
+    // PRId64 is defined in inttypes.h
+    return snprintf(buf, size, "%" PRId64, n);
 }

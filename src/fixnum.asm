@@ -372,29 +372,80 @@ code even?, 'even?'                     ; n -- ?
         next
 endcode
 
-extern c_fixnum_to_string
+extern c_fixnum_to_base
 
-; ### fixnum>string
-code fixnum_to_string, 'fixnum>string'  ; fixnum -- string
-        _ check_fixnum                  ; -- untagged
+; ### fixnum>base
+code fixnum_to_base, 'fixnum>base'      ; fixnum base -- string
+
+        _check_fixnum
+        _swap
+        _check_fixnum
+        _swap                           ; -- untagged-fixnum untagged-base
+
+; FIXME it's an error if base is not 10 or 16 here
+
+fixnum_to_base_untagged:
+
         _lit 256
         _dup
-        _ iallocate                     ; -- untagged size buffer
+        _ iallocate                     ; -- untagged-fixnum untagged-base size buffer
         _duptor
 %ifdef WIN64
-        popd    rdx                     ; buffer
-        popd    r8                      ; size
-        popd    rcx                     ; untagged
+        popd    r8                      ; buffer
+        popd    r9                      ; size
+        popd    rdx                     ; untagged-base
+        popd    rcx                     ; untagged-fixnum
 %else
-        popd    rsi                     ; buffer
-        popd    rdx                     ; size
-        popd    rdi                     ; untagged
+        popd    rdx                     ; buffer
+        popd    rcx                     ; size
+        popd    rsi                     ; untagged-base
+        popd    rdi                     ; untagged-fixnum
 %endif
-        xcall   c_fixnum_to_string      ; number of chars printed in rax
+        xcall   c_fixnum_to_base        ; number of chars printed in rax
         _rfetch                         ; -- buffer
         pushd   rax                     ; -- buffer size
         _ copy_to_string
         _rfrom
         _ ifree
+        next
+endcode
+
+; ### fixnum>string
+code fixnum_to_string, 'fixnum>string'  ; fixnum -- string
+        _check_fixnum
+        _lit 10
+        _ fixnum_to_base_untagged
+        next
+endcode
+
+; ### fixnum>hex
+code fixnum_to_hex, 'fixnum>hex'        ; fixnum -- string
+        _check_fixnum
+        _dup
+        _zge
+        _if .1
+        _lit 16
+        _ fixnum_to_base_untagged
+        _return
+        _then .1
+
+        ; < 0
+        ; REVIEW
+        _dup
+        _ MOST_NEGATIVE_FIXNUM
+        _equal
+        _if .2
+        _drop
+        _quote "-1000000000000000"
+        _return
+        _then .2
+
+        ; otherwise...
+        neg     rbx
+        _lit 16
+        _ fixnum_to_base_untagged
+        _quote "-"
+        _swap
+        _ concat
         next
 endcode
