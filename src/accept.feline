@@ -222,5 +222,5 @@ GLOBAL: pattern
     [ dup empty? [ drop ] [ history push save-history ] if ] keep
 
     f buffer!
-    f history-index!
+    reset-history
     nl ;
