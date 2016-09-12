@@ -196,6 +196,11 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _lit length_xt
         _ add_method
 
+        _lit range_length_xt
+        _lit OBJECT_TYPE_RANGE
+        _lit length_xt
+        _ add_method
+
         _lit push_xt
         _ initialize_generic_function
 
@@ -262,6 +267,11 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
 
         _lit slice_nth_unsafe_xt
         _lit OBJECT_TYPE_SLICE
+        _lit nth_unsafe_xt
+        _ add_method
+
+        _lit range_nth_unsafe_xt
+        _lit OBJECT_TYPE_RANGE
         _lit nth_unsafe_xt
         _ add_method
 
