@@ -83,6 +83,12 @@ HELP: <array>
     set to elt."
 ;
 
+HELP: <range>
+    "( start len -- range )
+    Create a new immutable virtual sequence containing the
+    integers from start to start+len-1."
+;
+
 HELP: <vector>
     "( n -- vector )
     Create a new vector with an initial capacity of n elements."
