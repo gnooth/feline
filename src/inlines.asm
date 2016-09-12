@@ -55,11 +55,11 @@
 %endmacro
 
 %macro  _cfetch 0                       ; C@
-        movzx   rbx, byte [rbx]
+        movzx   ebx, byte [rbx]
 %endmacro
 
 %macro  _wfetch 0                       ; W@
-        movzx   rbx, word [rbx]
+        movzx   ebx, word [rbx]
 %endmacro
 
 %macro  _lfetch 0                       ; L@
