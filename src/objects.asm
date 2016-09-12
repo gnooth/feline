@@ -357,6 +357,14 @@ code dot_object, '.'                    ; handle-or-object --
         _return
         _then .15
 
+        _dup
+        _ range?
+        _tagged_if .16
+        _ dot_range
+        _ space
+        _return
+        _then .16
+
         ; give up
         _ hdot
 
