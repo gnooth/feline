@@ -855,6 +855,7 @@ initialize-setcc-mnemonic-table
         modrm-mod 0= if
             modrm-rm register-rm to sbase
             modrm-reg register-reg to dreg
+            prefix if 64 else 32 then to dsize
             "byte" to relative-size
             .inst
             exit
@@ -886,6 +887,7 @@ initialize-setcc-mnemonic-table
         modrm-mod 0= if
             modrm-rm register-rm to sbase
             modrm-reg register-reg to dreg
+            prefix if 64 else 32 then to dsize
             "word" to relative-size
             .inst
             exit
