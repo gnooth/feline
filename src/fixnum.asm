@@ -70,11 +70,21 @@ code error_not_fixnum, 'error-not-fixnum' ; x --
         next
 endcode
 
-%macro _check_fixnum 0
+%macro _verify_fixnum 0
         mov     al, bl
         and     al, TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     error_not_fixnum
+%endmacro
+
+; ### verify-fixnum
+code verify_fixnum, 'verify-fixnum'     ; fixnum -- fixnum
+        _verify_fixnum
+        next
+endcode
+
+%macro _check_fixnum 0
+        _verify_fixnum
         _untag_fixnum
 %endmacro
 
