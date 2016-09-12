@@ -693,3 +693,11 @@ code file_contents, 'file-contents'     ; path -- string
         _ ifree
         next
 endcode
+
+; ### c@
+code feline_cfetch, 'c@'                ; tagged-fixnum-address -- tagged-fixnum-byte
+        _untag_fixnum
+        _cfetch
+        _tag_fixnum
+        next
+endcode
