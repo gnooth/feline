@@ -75,17 +75,13 @@ static void sig_winch(int signo)
 void prep_terminal()
 {
 #ifdef WIN64
-  extern Cell forth_stdin_data;
   extern Cell forth_stdout_data;
-  extern Cell forth_stderr_data;
   extern Cell nrows_data;
   extern Cell ncols_data;
   DWORD mode;
   console_input_handle = GetStdHandle(STD_INPUT_HANDLE);
 #ifdef WIN64_NATIVE
-  forth_stdin_data  = (Cell) console_input_handle;
   forth_stdout_data = (Cell) GetStdHandle(STD_OUTPUT_HANDLE);
-  forth_stderr_data = (Cell) GetStdHandle(STD_ERROR_HANDLE);
 #endif
   if (GetConsoleMode(console_input_handle, &mode))
     {

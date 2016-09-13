@@ -45,28 +45,22 @@ value ncols, '#cols', 0
 ; ### #out
 value nout, '#out', 0
 
-; For Windows, the Forth standard handles are initialized in prep_terminal().
-; The values here are correct for Linux.
-
-; ### stdin
-value forth_stdin,  'stdin',  0
+; For Windows, FORTH-STDOUT is initialized in prep_terminal().
+; The value here is correct for Linux.
 
 ; ### stdout
-value forth_stdout, 'stdout', 1
+value forth_stdout, 'forth-stdout', 1
 
-; ### stderr
-value forth_stderr, 'stderr', 2
+; For Windows, FORTH-OUTPUT-FILE is initialized by calling STANDARD-OUTPUT in COLD.
 
-; For Windows, OUTPUT-FILE is initialized by calling STANDARD-OUTPUT in COLD.
-
-; ### output-file
-value output_file, 'output-file', 1
+; ### forth-output-file
+value forth_output_file, 'forth-output-file', 1
 
 ; ### standard-output
 code standard_output, 'standard-output'
 %ifndef WINDOWS_UI
         _ forth_stdout
-        _to output_file
+        _to forth_output_file
 %endif
         next
 endcode
@@ -81,7 +75,7 @@ code iemit, '(emit)'
         xor     eax, eax
         mov     [nout_data], rax
 .2:
-        _ output_file
+        _ forth_output_file
         _ emit_file
         next
 endcode
@@ -119,7 +113,7 @@ endcode
 ; ### (type)
 code itype, '(type)'                    ; addr n --
         add     [nout_data], rbx
-        _ output_file
+        _ forth_output_file
         _ write_file
         _lit -75
         _ ?throw
