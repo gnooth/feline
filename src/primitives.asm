@@ -636,11 +636,20 @@ code local_store, 'local!'              ; value index --
         next
 endcode
 
-; ### bl
-code bl_, 'bl'                          ; --
-; Name from Factor.
+; ### space
+code feline_space, 'space'              ; --
         _lit ' '
-        _ emit
+        _ write1
+        next
+endcode
+
+; ### spaces
+code feline_spaces, 'spaces'            ; n --
+        _ check_index
+        _zero
+        _?do .1
+        _ feline_space
+        _loop .1
         next
 endcode
 

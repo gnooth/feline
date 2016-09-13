@@ -19,7 +19,7 @@ USING: feline ;
 IN: feline
 
 : display-help ( content -- )
-    nl 4 [ bl ] times first write
+    nl 4 spaces first write
 ;
 
 : help ( symbol -- )
