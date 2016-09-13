@@ -146,7 +146,7 @@ code cold, 'cold'                       ; --
         mov     rax, [cp_data]
         mov     [origin_c_data], rax
         _ initialize_locals_stack
-        _ standard_output
+        _ forth_standard_output
 
         _ forth_wordlist
         _fetch

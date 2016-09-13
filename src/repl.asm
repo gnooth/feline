@@ -230,7 +230,7 @@ code feline_reset, 'feline-reset'
         _zeroto exception
 
         ; REVIEW windows-ui
-        _ standard_output
+        _ forth_standard_output
 
         jmp     repl
         next                            ; for decompiler

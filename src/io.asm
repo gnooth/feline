@@ -56,8 +56,8 @@ value forth_stdout, 'forth-stdout', 1
 ; ### forth-output-file
 value forth_output_file, 'forth-output-file', 1
 
-; ### standard-output
-code standard_output, 'standard-output'
+; ### forth-standard-output
+code forth_standard_output, 'forth-standard-output'
 %ifndef WINDOWS_UI
         _ forth_stdout
         _to forth_output_file

@@ -348,7 +348,7 @@ code reset, 'reset'                     ; i*x --        r: j*x --
         _clear exception
 
         ; REVIEW windows-ui
-        _ standard_output
+        _ forth_standard_output
 
         jmp     quit
         next                            ; for decompiler
