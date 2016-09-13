@@ -28,22 +28,22 @@ CONSTANT: cyan    6
 CONSTANT: white   7
 
 : esc[ ( -- )
-    $1b write1
-    '[' write1
+    $1b write-char
+    '[' write-char
 ;
 
 : foreground ( color -- )
     esc[
-    '3' write1
-    '0' + write1
-    'm' write1
+    '3' write-char
+    '0' + write-char
+    'm' write-char
 ;
 
 : background ( color -- )
     esc[
-    '4' write1
-    '0' + write1
-    'm' write1
+    '4' write-char
+    '0' + write-char
+    'm' write-char
 ;
 
 : page ( -- )
@@ -56,15 +56,15 @@ CONSTANT: white   7
 : at-xy ( col row -- )
     esc[
     1 + number>string write
-    ';' write1
+    ';' write-char
     1 + number>string write
-    'H' write1
+    'H' write-char
 ;
 
 : at-x ( col -- )
     esc[
     1 + number>string write
-    'G' write1
+    'G' write-char
 ;
 
 : clear-to-eol ( -- )

@@ -97,7 +97,7 @@ GLOBAL: pattern
     dot buffer length < [
         dot buffer sbuf-insert-nth! drop dot 1 + dot! redisplay
     ] [
-        dup write1 dot 1 + dot! buffer push
+        dup write-char dot 1 + dot! buffer push
     ] if
     reset-history ;
 

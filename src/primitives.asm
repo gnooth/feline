@@ -596,8 +596,8 @@ code feline_2over, '2over'              ; x y z -- x y z x y
         next
 endcode
 
-; ### write1
-code write1, 'write1'                   ; tagged-char --
+; ### write-char
+code write_char, 'write-char'           ; tagged-char --
         _untag_char
         _ emit
         next
@@ -639,7 +639,7 @@ endcode
 ; ### space
 code feline_space, 'space'              ; --
         _lit ' '
-        _ write1
+        _ write_char
         next
 endcode
 
