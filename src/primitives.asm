@@ -639,6 +639,7 @@ endcode
 ; ### space
 code feline_space, 'space'              ; --
         _lit ' '
+        _tag_char
         _ write_char
         next
 endcode
