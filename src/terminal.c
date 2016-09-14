@@ -82,6 +82,8 @@ void prep_terminal()
   console_input_handle = GetStdHandle(STD_INPUT_HANDLE);
 #ifdef WIN64_NATIVE
   forth_stdout_data = (Cell) GetStdHandle(STD_OUTPUT_HANDLE);
+  extern Cell standard_output_handle;
+  standard_output_handle = (Cell) GetStdHandle(STD_OUTPUT_HANDLE);
 #endif
   if (GetConsoleMode(console_input_handle, &mode))
     {

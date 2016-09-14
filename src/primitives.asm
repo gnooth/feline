@@ -596,10 +596,26 @@ code feline_2over, '2over'              ; x y z -- x y z x y
         next
 endcode
 
+%ifdef WIN64_NATIVE
+global standard_output_handle
+section .data
+standard_output_handle:
+        dq      0
+%endif
+
 ; ### write-char
 code write_char, 'write-char'           ; tagged-char --
         _untag_char
-        _ emit
+%ifdef WIN64
+        ; args in rcx, rdx, r8, r9
+        popd    rcx
+        mov     rdx, [standard_output_handle]
+%else
+        ; args in rdi, rsi, rdx, rcx
+        popd    rdi
+        mov     esi, 1                  ; fd
+%endif
+        xcall   os_emit_file            ; void os_emit_file(int c, int fd)
         next
 endcode
 
