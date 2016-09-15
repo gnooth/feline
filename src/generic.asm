@@ -120,186 +120,75 @@ generic set_nth, 'set-nth'
 ; ### new-sequence
 generic new_sequence, 'new-sequence'    ; len seq -- newseq
 
+%macro _initialize_generic_function 1   ; generic-asm-name
+        _lit %1_xt
+        _ initialize_generic_function
+%endmacro
+
+%macro _add_method 3 ; generic-asm-name, object-type, method-asm-name
+        _lit %3_xt
+        _lit %2
+        _lit %1_xt
+        _ add_method
+%endmacro
+
 ; ### initialize-generic-functions
 code initialize_generic_functions, 'initialize-generic-functions' ; --
-        _lit hashcode_xt
-        _ initialize_generic_function
 
-        _lit force_hashcode_xt
-        _lit OBJECT_TYPE_STRING
-        _lit hashcode_xt
-        _ add_method
+        ; hashcode
+        _initialize_generic_function hashcode
+        _add_method hashcode, OBJECT_TYPE_STRING, force_hashcode
+        _add_method hashcode, OBJECT_TYPE_SYMBOL, symbol_hashcode
 
-        _lit symbol_hashcode_xt
-        _lit OBJECT_TYPE_SYMBOL
-        _lit hashcode_xt
-        _ add_method
+        ; equal?
+        _initialize_generic_function equal?
+        _add_method equal?, OBJECT_TYPE_FIXNUM, fixnum_equal?
+        _add_method equal?, OBJECT_TYPE_ARRAY, array_equal?
+        _add_method equal?, OBJECT_TYPE_VECTOR, vector_equal?
+        _add_method equal?, OBJECT_TYPE_STRING, string_equal?
+        _add_method equal?, OBJECT_TYPE_SYMBOL, symbol_equal?
+        _add_method equal?, OBJECT_TYPE_F, f_equal?
 
-        _lit equal?_xt
-        _ initialize_generic_function
+        ; length
+        _initialize_generic_function length
+        _add_method length, OBJECT_TYPE_STRING, string_length
+        _add_method length, OBJECT_TYPE_SBUF, sbuf_length
+        _add_method length, OBJECT_TYPE_ARRAY, array_length
+        _add_method length, OBJECT_TYPE_VECTOR, vector_length
+        _add_method length, OBJECT_TYPE_SLICE, slice_length
+        _add_method length, OBJECT_TYPE_RANGE, range_length
 
-        _lit fixnum_equal?_xt
-        _lit OBJECT_TYPE_FIXNUM
-        _lit equal?_xt
-        _ add_method
+        ; push
+        _initialize_generic_function push
+        _add_method push, OBJECT_TYPE_VECTOR, vector_push
+        _add_method push, OBJECT_TYPE_SBUF, sbuf_push
 
-        _lit array_equal?_xt
-        _lit OBJECT_TYPE_ARRAY
-        _lit equal?_xt
-        _ add_method
+        ; nth
+        _initialize_generic_function nth
+        _add_method nth, OBJECT_TYPE_ARRAY, array_nth
+        _add_method nth, OBJECT_TYPE_VECTOR, vector_nth
+        _add_method nth, OBJECT_TYPE_STRING, string_nth
+        _add_method nth, OBJECT_TYPE_SBUF, sbuf_nth
+        _add_method nth, OBJECT_TYPE_SLICE, slice_nth
 
-        _lit vector_equal?_xt
-        _lit OBJECT_TYPE_VECTOR
-        _lit equal?_xt
-        _ add_method
+        ; nth-unsafe
+        _initialize_generic_function nth_unsafe
+        _add_method nth_unsafe, OBJECT_TYPE_STRING, string_nth_unsafe
+        _add_method nth_unsafe, OBJECT_TYPE_SBUF, sbuf_nth_unsafe
+        _add_method nth_unsafe, OBJECT_TYPE_ARRAY, array_nth_unsafe
+        _add_method nth_unsafe, OBJECT_TYPE_VECTOR, vector_nth_unsafe
+        _add_method nth_unsafe, OBJECT_TYPE_SLICE, slice_nth_unsafe
+        _add_method nth_unsafe, OBJECT_TYPE_RANGE, range_nth_unsafe
 
-        _lit string_equal?_xt
-        _lit OBJECT_TYPE_STRING
-        _lit equal?_xt
-        _ add_method
+        ; set-nth
+        _initialize_generic_function set_nth
+        _add_method set_nth, OBJECT_TYPE_ARRAY, array_set_nth
+        _add_method set_nth, OBJECT_TYPE_VECTOR, vector_set_nth
 
-        _lit symbol_equal?_xt
-        _lit OBJECT_TYPE_SYMBOL
-        _lit equal?_xt
-        _ add_method
-
-        _lit f_equal?_xt
-        _lit OBJECT_TYPE_F
-        _lit equal?_xt
-        _ add_method
-
-        _lit length_xt
-        _ initialize_generic_function
-
-        _lit string_length_xt
-        _lit OBJECT_TYPE_STRING
-        _lit length_xt
-        _ add_method
-
-        _lit sbuf_length_xt
-        _lit OBJECT_TYPE_SBUF
-        _lit length_xt
-        _ add_method
-
-        _lit array_length_xt
-        _lit OBJECT_TYPE_ARRAY
-        _lit length_xt
-        _ add_method
-
-        _lit vector_length_xt
-        _lit OBJECT_TYPE_VECTOR
-        _lit length_xt
-        _ add_method
-
-        _lit slice_length_xt
-        _lit OBJECT_TYPE_SLICE
-        _lit length_xt
-        _ add_method
-
-        _lit range_length_xt
-        _lit OBJECT_TYPE_RANGE
-        _lit length_xt
-        _ add_method
-
-        _lit push_xt
-        _ initialize_generic_function
-
-        _lit vector_push_xt
-        _lit OBJECT_TYPE_VECTOR
-        _lit push_xt
-        _ add_method
-
-        _lit sbuf_push_xt
-        _lit OBJECT_TYPE_SBUF
-        _lit push_xt
-        _ add_method
-
-        _lit nth_xt
-        _ initialize_generic_function
-
-        _lit array_nth_xt
-        _lit OBJECT_TYPE_ARRAY
-        _lit nth_xt
-        _ add_method
-
-        _lit vector_nth_xt
-        _lit OBJECT_TYPE_VECTOR
-        _lit nth_xt
-        _ add_method
-
-        _lit string_nth_xt
-        _lit OBJECT_TYPE_STRING
-        _lit nth_xt
-        _ add_method
-
-        _lit sbuf_nth_xt
-        _lit OBJECT_TYPE_SBUF
-        _lit nth_xt
-        _ add_method
-
-        _lit slice_nth_xt
-        _lit OBJECT_TYPE_SLICE
-        _lit nth_xt
-        _ add_method
-
-        _lit nth_unsafe_xt
-        _ initialize_generic_function
-
-        _lit string_nth_unsafe_xt
-        _lit OBJECT_TYPE_STRING
-        _lit nth_unsafe_xt
-        _ add_method
-
-        _lit sbuf_nth_unsafe_xt
-        _lit OBJECT_TYPE_SBUF
-        _lit nth_unsafe_xt
-        _ add_method
-
-        _lit array_nth_unsafe_xt
-        _lit OBJECT_TYPE_ARRAY
-        _lit nth_unsafe_xt
-        _ add_method
-
-        _lit vector_nth_unsafe_xt
-        _lit OBJECT_TYPE_VECTOR
-        _lit nth_unsafe_xt
-        _ add_method
-
-        _lit slice_nth_unsafe_xt
-        _lit OBJECT_TYPE_SLICE
-        _lit nth_unsafe_xt
-        _ add_method
-
-        _lit range_nth_unsafe_xt
-        _lit OBJECT_TYPE_RANGE
-        _lit nth_unsafe_xt
-        _ add_method
-
-        _lit set_nth_xt
-        _ initialize_generic_function
-
-        _lit array_set_nth_xt
-        _lit OBJECT_TYPE_ARRAY
-        _lit set_nth_xt
-        _ add_method
-
-        _lit vector_set_nth_xt
-        _lit OBJECT_TYPE_VECTOR
-        _lit set_nth_xt
-        _ add_method
-
-        _lit new_sequence_xt
-        _ initialize_generic_function
-
-        _lit array_new_sequence_xt
-        _lit OBJECT_TYPE_ARRAY
-        _lit new_sequence_xt
-        _ add_method
-
-        _lit vector_new_sequence_xt
-        _lit OBJECT_TYPE_VECTOR
-        _lit new_sequence_xt
-        _ add_method
+        ; new-sequence
+        _initialize_generic_function new_sequence
+        _add_method new_sequence, OBJECT_TYPE_ARRAY, array_new_sequence
+        _add_method new_sequence, OBJECT_TYPE_VECTOR, vector_new_sequence
 
         next
 endcode
