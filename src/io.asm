@@ -397,8 +397,8 @@ code read_char, 'read-char'             ; fileid -- char | -1
         next
 endcode
 
-; ### last-char
-code last_char, 'last-char'             ; c-addr u -- char
+; ### read-line-last-char
+code read_line_last_char, 'read-line-last-char' ; c-addr u -- char
         test    rbx, rbx
         jz .1
         _plus
@@ -461,7 +461,7 @@ code read_line, 'read-line'             ; bufaddr bufsize fileid -- u flag ior
         ; check for cr preceding lf
         pushd bufaddr                   ; -- u bufaddr
         _over                           ; -- u bufaddr u
-        _ last_char                     ; -- u char
+        _ read_line_last_char           ; -- u char
         cmp     rbx, 13
         poprbx                          ; -- u
         jnz     .3
