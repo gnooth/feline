@@ -693,6 +693,45 @@ code string_index_from, 'string-index-from' ; char start-index string -- index
         next
 endcode
 
+; ### write-string
+code write_string, 'write-string'       ; string --
+        _ string_from                   ; -- addr len
+
+; this entry point is also used by write-sbuf
+write_chars:
+        ; test for zero length string
+        test    rbx, rbx
+        jz      .exit
+
+        ; store last char for ?nl
+        mov     rax, [rbp]
+        movzx   eax, byte [rax + rbx - 1]
+        mov     [last_char], rax
+
+        push    rbx                     ; save length
+%ifdef WIN64
+        ; args in rcx, rdx, r8, r9
+        mov     rcx, [standard_output_handle]
+        popd    r8
+        popd    rdx
+%else
+        ; args in rdi, rsi, rdx, rcx
+        mov     edi, 1
+        popd    rdx
+        popd    rsi
+%endif
+        xcall   os_write_file           ; Cell os_write_file(Cell fd, void *buf, size_t count)
+        ; os_write_file returns number of bytes written or -1 in rax
+        pop     rdx                     ; length
+        cmp     rdx, rax
+        jne     .error
+        _return
+.error:
+        _error "error writing to file"
+.exit:
+        next
+endcode
+
 ; ### .string
 code dot_string, '.string'              ; string | sbuf | $addr --
 ; REVIEW remove support for legacy strings
@@ -702,8 +741,7 @@ code dot_string, '.string'              ; string | sbuf | $addr --
         _dup
         _ string?
         _tagged_if .4
-        _ string_from
-        _ type
+        _ write_string
         _return
         _then .4
 
