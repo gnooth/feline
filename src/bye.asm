@@ -24,14 +24,12 @@ code bye, "bye"
         _ free_locals_stack
         _ free_history
 
-        _ ?cr
-        _ report_allocations
-
         _ interactive?
         _if .1
-        _ ?cr
-        _dotq 'Bye!'
-        _ cr
+        _ ?nl
+        _quote "Bye!"
+        _ write_string
+        _ nl
         _then .1
 
         jmp os_bye
