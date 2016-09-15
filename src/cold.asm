@@ -216,7 +216,7 @@ code cold, 'cold'                       ; --
         _to interactive?
 
         _ dot_version
-        _ cr
+        _ ?nl
 
         _lit process_init_file_xt
         _ catch
@@ -234,8 +234,9 @@ code cold, 'cold'                       ; --
         _ feline_do_error
         _then .5
 
-        _dotq "Meow!"
-        _ cr
+        _quote "Meow!"
+        _ write_string
+        _ nl
 
         jmp     repl
 
