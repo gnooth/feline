@@ -274,8 +274,9 @@ code dot_object, '.'                    ; handle-or-object --
         _dup
         _fixnum?
         _if .6
-        _untag_fixnum
-        _ decdot
+        _ fixnum_to_string
+        _ write_string
+        _ feline_space
         _return
         _then .6
 
