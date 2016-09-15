@@ -628,3 +628,10 @@ code sbuf_remove_nth_destructive, 'sbuf-remove-nth!' ; tagged-index handle -- ha
         pop     this_register
         next
 endcode
+
+; ### write-sbuf
+code write_sbuf, 'write-sbuf'           ; sbuf --
+        _ sbuf_from                     ; -- addr len
+        call    write_chars
+        next
+endcode
