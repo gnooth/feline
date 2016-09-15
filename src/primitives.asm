@@ -606,6 +606,7 @@ standard_output_handle:
 ; ### write-char
 code write_char, 'write-char'           ; tagged-char --
         _untag_char
+        mov     [last_char], rbx
 %ifdef WIN64
         ; args in rcx, rdx, r8, r9
         popd    rcx
@@ -675,19 +676,27 @@ code nl, 'nl'
 ; Name from Factor.
 %ifdef WIN64
         _lit 13
-        _ emit
+        _tag_char
+        _ write_char
 %endif
         _lit 10
-        _ emit
+        _tag_char
+        _ write_char
         next
 endcode
+
+global last_char
+section .data
+last_char:
+        dq      0
 
 ; ### ?nl
 code ?nl, '?nl'
 ; Name from Factor.
-        mov     rax, [nout_data]
-        test    rax, rax
-        jz     .1
+        mov     rax, [last_char]
+        ; was last char a newline?
+        cmp     rax, 10
+        je     .1
         _ nl
 .1:
         next
