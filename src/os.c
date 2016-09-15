@@ -197,11 +197,11 @@ Cell os_read_char(Cell fd)
 Cell os_write_file(Cell fd, void *buf, size_t count)
 {
 #ifdef WIN64_NATIVE
-  DWORD bytes_written;
+  DWORD bytes_written = 0;
   BOOL ret;
   ret = WriteFile((HANDLE)fd, buf, count, &bytes_written, NULL);
   if (ret)
-    return 0;
+    return (Cell) bytes_written;
   else
     return -1;
 #else
