@@ -729,6 +729,64 @@ code file_contents, 'file-contents'     ; path -- string
         next
 endcode
 
+; ### ?file-contents
+code file_contents_safe, '?file-contents' ; path -- string/f
+        _ string_from                   ; -- addr u
+        _ readonly
+        _ open_file                     ; -- fileid ior
+        _if .1
+        _drop
+        _f
+        _return
+        _then .1
+
+        ; -- fileid
+        _duptor
+        _ file_size                     ; -- ud ior
+        _if .2
+        _2drop
+        _f
+        _return
+        _then .2
+
+        ; -- ud
+        _drop                           ; -- size
+        _dup
+        _ allocate                      ; -- size buffer ior
+        _if .3
+        _2drop
+        _f
+        _return
+        _then .3
+
+        ; -- size buffer
+        _swap                           ; -- buffer size
+        _dupd                           ; -- buffer buffer size
+        _rfetch                         ; -- buffer buffer size fileid
+        _ read_file                     ; -- buffer size ior
+        _if .4
+        _2drop
+        _f
+        _return
+        _then .4
+
+        ; -- buffer size
+        _rfrom
+        _ close_file                    ; -- buffer size ior
+        _if .5
+        _2drop
+        _f
+        _return
+        _then .5
+
+        ; -- buffer size
+        _dupd
+        _ copy_to_string
+        _swap
+        _ ifree
+        next
+endcode
+
 ; ### c@
 code feline_cfetch, 'c@'                ; tagged-fixnum-address -- tagged-fixnum-byte
         _untag_fixnum
