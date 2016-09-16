@@ -27,6 +27,7 @@
 %define TAG_MASK        (1 << TAG_BITS) - 1
 
 %define FIXNUM_TAG      1
+%define CHAR_TAG        FIXNUM_TAG
 
 %define SPECIAL_TAG     6
 %define BOOLEAN_TAG     SPECIAL_TAG
