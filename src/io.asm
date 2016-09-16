@@ -158,7 +158,7 @@ code ?cr, '?cr'
 endcode
 
 ; ### space
-code space, 'space'                     ; --
+code forth_space, 'space'                     ; --
 ; CORE
         _lit ' '
         _ emit
@@ -187,7 +187,7 @@ code spaces, 'spaces'                   ; n --
         jle     .2
 .1:
         push    rcx
-        _ space
+        _ forth_space
         pop     rcx
         loop    .1
 .2:

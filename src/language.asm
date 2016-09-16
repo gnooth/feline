@@ -46,7 +46,7 @@ code dot_language, '.language'
         _ language
         _?dup_if .1
         _ dot_string
-        _ space
+        _ forth_space
         _then .1
         next
 endcode

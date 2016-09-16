@@ -150,7 +150,7 @@ endcode
 code dot, '.'
         _ paren_dot
         _ type
-        _ space
+        _ forth_space
         next
 endcode
 
@@ -180,7 +180,7 @@ endcode
 code udot, 'u.'
         _ paren_udot
         _ type
-        _ space
+        _ forth_space
         next
 endcode
 
@@ -217,7 +217,7 @@ endcode
 code hdot, 'h.'                         ; x --
         _ paren_hdot
         _ type
-        _ space
+        _ forth_space
         next
 endcode
 
@@ -266,7 +266,7 @@ endcode
 code uddot, 'ud.'                       ; ud --
         _ paren_uddot
         _ type
-        _ space
+        _ forth_space
         next
 endcode
 
@@ -294,7 +294,7 @@ code ddot, 'd.'                         ; d --
 ; DOUBLE
         _zero
         _ ddotr
-        _ space
+        _ forth_space
         next
 endcode
 

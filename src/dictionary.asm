@@ -598,7 +598,7 @@ code dot_id, '.id'                      ; nfa --
         and     rbx, $7f
 
         _ type
-        _ space
+        _ forth_space
         next
 endcode
 

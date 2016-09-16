@@ -107,7 +107,7 @@ out:
         _ drop
         pushrbx
         mov     rbx, rcx
-        _ space
+        _ forth_space
         next
 endcode
 
@@ -239,7 +239,7 @@ code where, 'where'                     ; --
         _ source_filename
         _?dup_if .3
         _ dot_string
-        _ space
+        _ forth_space
         _then .3
         _dotq "line "
         _ source_line_number

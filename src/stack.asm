@@ -192,7 +192,7 @@ code dot_s, '.s'
         _ type
         _lit '>'
         _ emit
-        _ space
+        _ forth_space
         _ depth
         mov     rcx, rbx
         jrcxz   .2
@@ -217,7 +217,7 @@ code hex_dot_s, 'hex.s'
         _ type
         _lit '>'
         _ emit
-        _ space
+        _ forth_space
         _ depth
         mov     rcx, rbx
         jrcxz   .2
@@ -242,7 +242,7 @@ code dot_rs, '.rs'
         _ type
         _lit '>'
         _ emit
-        _ space
+        _ forth_space
         _ rdepth
         mov     rcx, rbx                ; depth in RCX
         jrcxz   .2

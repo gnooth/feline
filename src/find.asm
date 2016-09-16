@@ -113,7 +113,7 @@ code dot_voc, '.voc'                    ; vocab-or-wid --
         _tagged_if .1
         _ vocab_name
         _ dot_string
-        _ space
+        _ forth_space
         _else .1
         _ dot_wid
         _then .1
