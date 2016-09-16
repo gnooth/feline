@@ -227,7 +227,7 @@ code where, 'where'                     ; --
         _ source
         _drop
         _minus
-        _ spaces
+        _ forth_spaces
         _lit '^'
         _ emit
         _ cr

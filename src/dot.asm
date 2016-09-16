@@ -162,7 +162,7 @@ code dotr, '.r'                         ; n width --
         _ rfrom
         _ over
         _ minus
-        _ spaces
+        _ forth_spaces
         _ type
         next
 endcode
@@ -192,7 +192,7 @@ code udotr, 'u.r'                       ; u width --
         _ rfrom
         _ over
         _ minus
-        _ spaces
+        _ forth_spaces
         _ type
         next
 endcode
@@ -228,7 +228,7 @@ code hdotr, 'h.r'                       ; x width --
         _ rfrom
         _ over
         _ minus
-        _ spaces
+        _ forth_spaces
         _ type
         next
 endcode
@@ -284,7 +284,7 @@ code ddotr, 'd.r'                       ;  d n --
         _ rfrom
         _ over
         _ minus
-        _ spaces
+        _ forth_spaces
         _ type
         next
 endcode

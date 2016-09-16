@@ -170,7 +170,7 @@ spaces_data:
         times 256 db ' '
 
 ; ### spaces
-code spaces, 'spaces'                   ; n --
+code forth_spaces, 'spaces'             ; n --
 ; CORE "If n is greater than zero, display n spaces."
         _dup
         _lit 256
@@ -215,7 +215,7 @@ code topos, '>pos'                      ; +n --
         _ minus
         _lit 1
         _ max
-        _ spaces
+        _ forth_spaces
         next
 endcode
 
