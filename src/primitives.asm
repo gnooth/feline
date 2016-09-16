@@ -654,7 +654,7 @@ code local_store, 'local!'              ; value index --
 endcode
 
 ; ### space
-code feline_space, 'space'              ; --
+code space, 'space'                     ; --
         _lit ' '
         _tag_char
         _ write_char
@@ -662,11 +662,11 @@ code feline_space, 'space'              ; --
 endcode
 
 ; ### spaces
-code feline_spaces, 'spaces'            ; n --
+code spaces, 'spaces'                   ; n --
         _ check_index
         _zero
         _?do .1
-        _ feline_space
+        _ space
         _loop .1
         next
 endcode
