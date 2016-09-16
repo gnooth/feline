@@ -120,16 +120,26 @@ code report_startup_time, 'report-startup-time' ; --
         next
 endcode
 
-deferred dot_build, '.build', noop
-
 ; ### .version
 code dot_version, '.version'            ; --
         _quote "Feline "
         _quote VERSION
         _ concat
         _ dot_string
-        _ space
-        _ dot_build
+
+        _ feline_home
+        _quote "build"
+        _ path_append
+        _ file_contents_safe
+        _dup
+        _tagged_if .1
+        _quote " built "
+        _ write_string
+        _ write_string
+        _else .1
+        _drop
+        _then .1
+
         next
 endcode
 

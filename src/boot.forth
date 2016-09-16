@@ -33,7 +33,6 @@ include-system-file accept.forth
 include-system-file search.forth
 include-system-file words.forth
 include-system-file args.forth
-include-system-file tools.forth
 include-system-file empty.forth
 include-system-file double.forth
 include-system-file environment.forth
