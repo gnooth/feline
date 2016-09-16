@@ -23,10 +23,6 @@
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
-%define USE_TAGS
-
-%ifdef USE_TAGS
-
 %define TAG_BITS        3
 %define TAG_MASK        (1 << TAG_BITS) - 1
 
@@ -94,7 +90,7 @@
         cmovz   ebx, eax
 %endmacro
 
-%macro  _untag_boolean 0                ; t|f -- 1|0
+%macro  _untag_boolean 0                ; t/f -- 1/0
         shr     rbx, TAG_BITS
 %endmacro
 
@@ -104,51 +100,6 @@
         pushrbx
         mov     ebx, nothing
 %endmacro
-
-%else ; not using tags
-
-%define TAG_BITS        0
-
-%macro  _tag 0                          ; object -- tag
-        mov     ebx, 0
-%endmacro
-
-%macro  _fixnum? 0
-        mov     rbx, -1
-%endmacro
-
-%macro  _tag_fixnum 0
-%endmacro
-
-%macro  _untag_fixnum 0
-%endmacro
-
-%macro  _untag_2_fixnums 0
-%endmacro
-
-%define tagged_zero     0
-
-%define f_value 0
-
-%define t_value -1
-
-%macro  _f 0
-        pushrbx
-        mov     ebx, f_value
-%endmacro
-
-%macro  _t 0
-        pushrbx
-        mov     rbx, t_value
-%endmacro
-
-%macro  _tag_boolean 0
-%endmacro
-
-%macro  _untag_boolean 0
-%endmacro
-
-%endif ; USE_TAGS
 
 %macro  _tag_char 0
         _tag_fixnum
@@ -600,29 +551,21 @@ section .text
 %endmacro
 
 %macro  _tagged_if 1
-%ifdef USE_TAGS
         %push if
         section .text
         cmp     rbx, f_value
         mov     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
         jz      %1_ifnot
-%else
-        _if %1
-%endif
 %endmacro
 
 %macro  _tagged_if_not 1
-%ifdef USE_TAGS
         %push if
         section .text
         cmp     rbx, f_value
         mov     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
         jnz     %1_ifnot
-%else
-        _zeq_if %1
-%endif
 %endmacro
 
 %macro  _zeq_if 1

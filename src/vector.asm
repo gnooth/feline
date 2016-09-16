@@ -233,11 +233,9 @@ endcode
 ; ### vector-nth
 code vector_nth, 'vector-nth'           ; index handle -- element
 
-%ifdef USE_TAGS
         _swap
         _untag_fixnum
         _swap
-%endif
 
 vector_nth_untagged:
         _ check_vector
@@ -293,11 +291,9 @@ endcode
 ; ### vector-set-nth
 code vector_set_nth, 'vector-set-nth'   ; element index vector --
 
-%ifdef USE_TAGS
         _swap
         _untag_fixnum
         _swap
-%endif
 
 vector_set_nth_untagged:
         _ check_vector
@@ -368,11 +364,9 @@ endcode
 ; ### vector-remove-nth!
 code vector_remove_nth_destructive, 'vector-remove-nth!' ; n handle --
 
-%ifdef USE_TAGS
         _swap
         _untag_fixnum
         _swap
-%endif
 
         _ check_vector
 

@@ -73,11 +73,9 @@ endcode
 ; ### <array>
 code new_array, '<array>'               ; length element -- handle
 
-%ifdef USE_TAGS
         _swap
         _untag_fixnum
         _swap
-%endif
 
 new_array_untagged:
         push    this_register
@@ -246,11 +244,9 @@ endcode
 ; ### array-nth
 code array_nth, 'array-nth'             ; index handle -- element
 
-%ifdef USE_TAGS
         _swap
         _untag_fixnum
         _swap
-%endif
 
 array_nth_untagged:
         _ check_array
@@ -272,11 +268,9 @@ endcode
 ; ### array-set-nth
 code array_set_nth, 'array-set-nth'     ; element index handle --
 
-%ifdef USE_TAGS
         _swap
         _untag_fixnum
         _swap
-%endif
 
 array_set_nth_untagged:
         _ check_array
