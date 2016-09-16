@@ -194,9 +194,6 @@ GLOBAL: pattern
 
 : accept-key ( -- tagged-char) ekey ;
 
-: printable? ( tagged-char -- ? )
-    untag-fixnum 32 untag-fixnum 126 untag-fixnum forth:between tag-boolean ;
-
 : process-key ( tagged-char -- )
     dup printable?
     [ do-normal-char ]

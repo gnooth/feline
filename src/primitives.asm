@@ -794,3 +794,48 @@ code feline_cfetch, 'c@'                ; tagged-fixnum-address -- tagged-fixnum
         _tag_fixnum
         next
 endcode
+
+; ### error-not-char
+code error_not_char, 'error-not-char'   ; x --
+        ; REVIEW
+        _error "not a char"
+        next
+endcode
+
+%macro _verify_char 0
+        mov     al, bl
+        and     al, TAG_MASK
+        cmp     al, CHAR_TAG
+        jne     error_not_char
+%endmacro
+
+; ### verify-char
+code verify_char, 'verify-char'         ; char -- char
+        _verify_char
+        next
+endcode
+
+%macro _check_char 0
+        _verify_char
+        _untag_char
+%endmacro
+
+; ### check-char
+code check_char, 'check-char'           ; char -- untagged-char
+        _check_char
+        next
+endcode
+
+; ### printable?
+code printable?, 'printable?'           ; char -- ?
+        _check_char
+        cmp     rbx, 32
+        jl      .1
+        cmp     rbx, 126
+        jg      .1
+        mov     ebx, t_value
+        _return
+.1:
+        mov     ebx, f_value
+        next
+endcode

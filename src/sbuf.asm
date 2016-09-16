@@ -406,24 +406,6 @@ code sbuf_shorten, 'sbuf-shorten'       ; fixnum handle --
         next
 endcode
 
-; ### check-char
-code check_char, 'check-char'           ; char -- char
-; REVIEW
-; This function does not consider 0 to be a char.
-        _dup
-        _lit 1
-        _lit 256
-        _ within
-        _if .1
-        _return
-        _then .1
-
-        _drop
-        _true
-        _abortq "not a char"
-        next
-endcode
-
 ; ### sbuf-push-unchecked
 code sbuf_push_unchecked, 'sbuf-push-unchecked' ; untagged-char sbuf --
         push    this_register           ; save callee-saved register
@@ -444,7 +426,6 @@ endcode
 code sbuf_push, 'sbuf-push'             ; tagged-char handle --
         _ check_sbuf
         _swap
-        _untag_char
         _ check_char
         _swap
         _ sbuf_push_unchecked
