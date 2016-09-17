@@ -847,6 +847,24 @@ GLOBAL: zork
 
 global-test-1
 
+: global-test-2 ( -- )
+    << last-word symbol-name >> ?nl write
+    87 \ zork set-global
+    \ zork get-global 87 eq? check-t
+    begin-scope
+    "test" dup zork! zork eq? check-t
+    \ zork get-global 87 eq? check-t
+    19 \ zork set-global
+    zork "test" = check-t
+    \ zork get-global 19 eq? check-t
+    end-scope
+    zork 19 eq? check-t
+    \ zork get 19 eq? check-t
+    \ zork get-global 19 eq? check-t
+;
+
+global-test-2
+
 : index-test-1 ( -- )
     << last-word symbol-name >> ?nl write
     3 { 1 2 3 4 } index 2 eq? check-t

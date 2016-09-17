@@ -39,14 +39,31 @@ inline set_namestack, 'set-namestack'   ; namestack --
         _set_namestack
 endinline
 
-value globals, 'globals', 0
+section .data
+global_namespace_data:
+        dq      0
+
+%macro _global_namespace 0
+        pushrbx
+        mov     rbx, [global_namespace_data]
+%endmacro
+
+; ### global
+inline global_namespace, 'global'       ; -- g
+        _global_namespace
+endinline
+
+%macro _set_global_namespace 0
+        mov     [global_namespace_data], rbx
+        poprbx
+%endmacro
 
 ; ### initialize-globals
 code initialize_globals, 'initialize-globals'
         _lit 16
         _ new_hashtable_untagged
-        _to globals
-        _lit globals_data
+        _set_global_namespace
+        _lit global_namespace_data
         _ gc_add_root
 
         _lit 16
@@ -55,7 +72,7 @@ code initialize_globals, 'initialize-globals'
         _lit namestack_data
         _ gc_add_root
 
-        _ globals
+        _global_namespace
         _get_namestack
         _ vector_push
         next
@@ -63,20 +80,20 @@ endcode
 
 ; ### set-global
 code set_global, 'set-global'           ; value variable --
-        _from globals
+        _global_namespace
         _ set_at
         next
 endcode
 
 ; ### get-global
 code get_global, 'get-global'           ; variable -- value
-        _from globals
+        _global_namespace
         _ at_
         next
 endcode
 
-; ### scope
-code scope, 'scope'                     ; --
+; ### begin-scope
+code begin_scope, 'begin-scope'         ; --
         _lit 4
         _ new_hashtable_untagged
         _get_namestack
