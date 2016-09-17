@@ -109,7 +109,6 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	fixnum.asm \
 	gc.asm \
 	generic.asm \
-	global.asm \
 	globals.asm \
 	handles.asm \
 	hashtable.asm \

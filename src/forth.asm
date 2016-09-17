@@ -88,7 +88,6 @@ IN_FELINE
 %include "curry.asm"
 %include "tuple.asm"
 %include "gc.asm"
-%include "global.asm"
 %include "globals.asm"
 %include "combinators.asm"
 %include "repl.asm"
