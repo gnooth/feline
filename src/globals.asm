@@ -15,9 +15,31 @@
 
 file __FILE__
 
-value globals, 'globals', 0
+section .data
+namestack_data:
+        dq      0
 
-value scopes, 'scopes', 0
+%macro _get_namestack 0
+        pushrbx
+        mov     rbx, [namestack_data]
+%endmacro
+
+; ### get-namestack
+inline get_namestack, 'get-namestack'   ; -- namestack
+        _get_namestack
+endinline
+
+%macro _set_namestack 0
+        mov     [namestack_data], rbx
+        poprbx
+%endmacro
+
+; ### set-namestack
+inline set_namestack, 'set-namestack'   ; namestack --
+        _set_namestack
+endinline
+
+value globals, 'globals', 0
 
 ; ### initialize-globals
 code initialize_globals, 'initialize-globals'
@@ -26,13 +48,15 @@ code initialize_globals, 'initialize-globals'
         _to globals
         _lit globals_data
         _ gc_add_root
+
         _lit 16
         _ new_vector_untagged
-        _to scopes
-        _lit scopes_data
+        _set_namestack
+        _lit namestack_data
         _ gc_add_root
+
         _ globals
-        _ scopes
+        _get_namestack
         _ vector_push
         next
 endcode
@@ -55,21 +79,21 @@ endcode
 code scope, 'scope'                     ; --
         _lit 4
         _ new_hashtable_untagged
-        _ scopes
+        _get_namestack
         _ vector_push
         next
 endcode
 
 ; ### end-scope
 code end_scope, 'end-scope'             ; --
-        _ scopes
+        _get_namestack
         _ vector_pop_star
         next
 endcode
 
 ; ### set
 code set, 'set'                         ; value variable --
-        _ scopes
+        _get_namestack
         _ vector_last
         _ set_at
         next
@@ -84,12 +108,12 @@ endcode
 ; ### get
 code get, 'get'                         ; variable -- value
         _tor
-        _ scopes
+        _get_namestack
 
         _dup
         _ vector_length
         _lit tagged_fixnum(1)
-        _ fixnum_minus                  ; -- scopes index
+        _ fixnum_minus                  ; -- namestack index
         _dup
         _lit tagged_zero
         _ fixnum_lt
@@ -100,24 +124,24 @@ code get, 'get'                         ; variable -- value
         _return
         _then .1
 
-.top:                                   ; -- scopes index       r: -- variable
+.top:                                   ; -- namestack index       r: -- variable
         _twodup
         _swap
-        _ vector_nth                    ; -- scopes index
+        _ vector_nth                    ; -- namestack index
         _rfetch
-        _swap                           ; -- scopes index variable scope
-        _ find_in_scope                 ; -- scopes index value/f ?
+        _swap                           ; -- namestack index variable scope
+        _ find_in_scope                 ; -- namestack index value/f ?
         _tagged_if .2
         ; found
         _2nip
         _rdrop
         _return
-        _then .2                        ; -- scopes index f
+        _then .2                        ; -- namestack index f
 
-        _drop                           ; -- scopes index
+        _drop                           ; -- namestack index
 
         _lit tagged_fixnum(1)
-        _ feline_minus                  ; -- scopes index-1
+        _ feline_minus                  ; -- namestack index-1
         _dup
         _lit tagged_zero
         _ fixnum_lt
