@@ -504,6 +504,15 @@ code parse_definition, 'parse-definition' ; -- vector
         jmp     .top
 
 .bottom:
+        _ using_locals?
+        _if .5
+        _quote "locals-leave"
+        _quote "feline"
+        _ lookup_symbol
+        _accum
+        _ vector_push
+        _then .5
+
         _accum                          ; -- vector
         next
 endcode
@@ -532,7 +541,7 @@ code define, ':'                        ; --
         _dotq "redefining "
         _dup
         _ symbol_name
-        _ write_
+        _ write_string
         _else .2
         _drop                           ; -- string
         _ current_vocab
@@ -546,15 +555,6 @@ code define, ':'                        ; --
         _ set_last_word                 ; -- symbol
 
         _ parse_definition
-
-        _ using_locals?
-        _if .3
-        _quote "locals-leave"
-        _quote "feline"
-        _ lookup_symbol
-        _accum
-        _ vector_push
-        _then .3
 
         _f
         _set_accum                      ; -- symbol vector
