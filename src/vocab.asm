@@ -324,7 +324,7 @@ code lookup_symbol, 'lookup-symbol'     ; name vocab-name -- symbol
         _ ?lookup_symbol
         _dup
         _tagged_if_not .1
-        _error "undefined symbol"
+        _error "symbol not found"
         _then .1
         next
 endcode
