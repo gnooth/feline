@@ -56,10 +56,7 @@ endcode
 
 ; ### error-not-quotation
 code error_not_quotation, 'error-not-quotation' ; x --
-        ; REVIEW
-        _drop
-        _true
-        _abortq "not a quotation"
+        _error "not a quotation"
         next
 endcode
 
