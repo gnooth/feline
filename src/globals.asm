@@ -25,9 +25,10 @@ namestack_data:
 %endmacro
 
 ; ### get-namestack
-inline get_namestack, 'get-namestack'   ; -- namestack
+code get_namestack, 'get-namestack'     ; -- namestack
         _get_namestack
-endinline
+        next
+endcode
 
 %macro _set_namestack 0
         mov     [namestack_data], rbx
@@ -35,9 +36,10 @@ endinline
 %endmacro
 
 ; ### set-namestack
-inline set_namestack, 'set-namestack'   ; namestack --
+code set_namestack, 'set-namestack'     ; namestack --
         _set_namestack
-endinline
+        next
+endcode
 
 section .data
 global_namespace_data:
@@ -49,9 +51,10 @@ global_namespace_data:
 %endmacro
 
 ; ### global
-inline global_namespace, 'global'       ; -- g
+code global_namespace, 'global'         ; -- namespace
         _global_namespace
-endinline
+        next
+endcode
 
 %macro _set_global_namespace 0
         mov     [global_namespace_data], rbx
