@@ -472,10 +472,9 @@ endcode
 code parse_definition, 'parse-definition' ; -- vector
         _lit 10
         _ new_vector_untagged
-        _duptor
         _set_accum
 .top:
-        _ parse_token                   ; -- delimiter string/f
+        _ parse_token                   ; -- string/f
         cmp     rbx, f_value
         jne     .1
         poprbx
@@ -485,13 +484,6 @@ code parse_definition, 'parse-definition' ; -- vector
         _then .2
         _error "unexpected end of input"
 .1:                                     ; --  string
-        _dup                            ; --
-        _quote '"'
-        _ string_equal?                 ; -- s ?
-        cmp     rbx, f_value
-        poprbx
-        jne     .bottom
-
         _dup
         _quote ";"
         _ string_equal?
@@ -507,13 +499,12 @@ code parse_definition, 'parse-definition' ; -- vector
         poprbx
         jmp     .top
 .4:
-
-        _rfetch
+        _accum
         _ vector_push
         jmp     .top
 
 .bottom:
-        _rfrom                          ; -- vector
+        _accum                          ; -- vector
         next
 endcode
 
