@@ -15,6 +15,44 @@
 
 file __FILE__
 
+section .data
+accum_data:
+        dq      0
+
+; ### initialize-parser
+code initialize_parser, 'initialize-parser' ; --
+        _quote "accum"
+        _quote "feline"
+        _ lookup_symbol
+        mov     [accum_data], rbx
+        poprbx
+        next
+endcode
+
+%macro _accum 0
+        pushrbx
+        mov     rbx, [accum_data]
+        _ get
+%endmacro
+
+; ### accum
+code accum, 'accum'                     ; -- vector/f
+        _accum
+        next
+endcode
+
+%macro _set_accum 0
+        pushrbx
+        mov     rbx, [accum_data]
+        _ set
+%endmacro
+
+; ### accum!
+code set_accum, 'accum!'                ; vector/f --
+        _set_accum
+        next
+endcode
+
 ; ### parse-string
 code parse_string, 'parse-string'       ; -- string
         _lit 128
@@ -257,10 +295,6 @@ code process_token, 'process-token'     ; string -- object
         next
 endcode
 
-; ### accum
-value accum, 'accum', f_value
-; top level accumulator
-
 ; ### parse-until
 code parse_until, 'parse-until'         ; delimiter -- vector
 ; REVIEW Delimiter is a string.
@@ -439,7 +473,7 @@ code parse_definition, 'parse-definition' ; -- vector
         _lit 10
         _ new_vector_untagged
         _duptor
-        _to accum
+        _set_accum
 .top:
         _ parse_token                   ; -- delimiter string/f
         cmp     rbx, f_value
@@ -486,7 +520,7 @@ endcode
 ; ### :
 code define, ':'                        ; --
         _f
-        _to accum
+        _set_accum
 
         _zeroto using_locals?
 
@@ -527,12 +561,12 @@ code define, ':'                        ; --
         _quote "locals-leave"
         _quote "feline"
         _ lookup_symbol
-        _ accum
+        _accum
         _ vector_push
         _then .3
 
         _f
-        _to accum                       ; -- symbol vector
+        _set_accum                      ; -- symbol vector
 
         _ vector_to_array
         _ array_to_quotation            ; -- symbol quotation
@@ -572,7 +606,7 @@ code define_local, ':>', PARSING
         _quote "feline"
         _ lookup_symbol
         _lit tagged_zero
-        _ accum
+        _accum
         _ vector_insert_nth_destructive
         _then .2
 
@@ -589,14 +623,14 @@ code define_local, ':>', PARSING
         _ locals_defined
         _oneminus
         _tag_fixnum
-        _ accum
+        _accum
         _ vector_push
 
         ; add local! to quotation as symbol
         _quote "local!"
         _quote "feline"
         _ lookup_symbol
-        _ accum
+        _accum
         _ vector_push
 
         ; return nothing

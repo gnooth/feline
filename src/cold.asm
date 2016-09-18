@@ -215,6 +215,8 @@ code cold, 'cold'                       ; --
 
         _ hash_vocabs
 
+        _ initialize_parser
+
 ;         _ report_startup_time
 
         ; start in Feline mode
