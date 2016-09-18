@@ -236,18 +236,66 @@ code feline_reset, 'feline-reset'
         next                            ; for decompiler
 endcode
 
+; ### feline-where
+code feline_where, 'feline-where'       ; --
+        ; Print source line.
+        _ ?nl
+        _ source                        ; -- addr len
+        _ copy_to_string
+        _ write_string
+
+        ; Put ^ on next line after last character of offending token.
+        _ nl
+        _ parsed_name_start
+        _ parsed_name_length
+        _plus
+        _ source
+        _drop
+        _minus
+        _tag_fixnum
+        _ spaces
+        _lit '^'
+        _tag_char
+        _ write_char
+        _ nl
+
+        _ source_id
+        _zgt
+        _if .2
+        _ ?nl
+        _ source_filename
+        _?dup_if .3
+        _ write_string
+        _ space
+        _then .3
+        _quote "line "
+        _ write_string
+        _ source_line_number
+        _tag_fixnum
+        _ number_to_string
+        _ nl
+        _then .2
+
+        next
+endcode
+
+
 ; ### feline-do-error
 code feline_do_error, 'feline-do-error' ; string-or-number --
         _dup
         _ string?
         _tagged_if .0
-        _to msg
-        _ dotmsg
-        _ where
+        _ ?nl
+        _ red
+        _ foreground
+        _ write_string
+        _ feline_where
         _ print_backtrace
+        _ nl
         _ feline_reset
         _then .0
 
+        ; code below this point is for Forth exceptions
         _to exception
 
         _ exception
