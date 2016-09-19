@@ -131,6 +131,7 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	quit.asm \
 	quotation.asm \
 	range.asm \
+	recover.asm \
 	repl.asm \
 	sequences.asm \
 	sbuf.asm \
