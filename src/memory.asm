@@ -84,7 +84,7 @@ code iallocate, '-allocate'             ; size -- a-addr
 .1:
         ; failed!
         mov     rbx, -59                ; Forth 2012 Table 9.1
-        _ throw
+        _ forth_throw
         ; not reached
         next
 endcode

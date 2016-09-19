@@ -232,7 +232,7 @@ code allot, 'allot'                     ; n --
         ret
 .1:
         _lit -8
-        _ throw
+        _ forth_throw
         next
 endcode
 
@@ -248,7 +248,7 @@ code allot_c, 'allot-c'                 ; n --
         ret
 .1:
         _lit -8
-        _ throw
+        _ forth_throw
         next
 endcode
 

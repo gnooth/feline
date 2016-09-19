@@ -359,6 +359,6 @@ code abort, 'abort'                     ; i*x --        r: j*x --
 ; This is the EXCEPTION EXT version of ABORT (9.6.2.0670).
 ; "Perform the function of -1 THROW."
         _lit -1
-        _ throw
+        _ forth_throw
         next                            ; for decompiler
 endcode

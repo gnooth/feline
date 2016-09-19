@@ -62,7 +62,7 @@ endcode
 ;    then ;
 
 ; ### throw
-code throw, 'throw'
+code forth_throw, 'throw'
         test    rbx, rbx
         jnz .1
         poprbx
@@ -93,7 +93,7 @@ code ?throw, '?throw'                   ; flag n --
 ; throw n if flag is nonzero
         _swap
         _if .1
-        _ throw
+        _ forth_throw
         _else .1
         _drop
         _then .1

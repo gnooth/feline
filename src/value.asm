@@ -102,7 +102,7 @@ code check_value_or_variable, 'check-value-or-variable' ; xt -- xt
         _cquote "Invalid name argument"
         _to msg
         _lit -32                        ; "invalid name argument" Forth 2012 Table 9.1
-        _ throw
+        _ forth_throw
 .1:
         _drop
         next

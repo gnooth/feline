@@ -514,7 +514,7 @@ section .text
 %macro  _error 1
         _quote %1
 section .text
-        _ throw
+        _ forth_throw
 %endmacro
 
 %macro  _cquote 1                       ; -- c-addr

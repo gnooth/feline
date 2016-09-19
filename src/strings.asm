@@ -217,7 +217,7 @@ code parenabortquote, '(abort")'        ; flag c-addr --
         _if .1
         _to msg
         _lit -2
-        _ throw
+        _ forth_throw
         _else .1
         _drop
         _then .1

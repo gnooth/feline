@@ -426,7 +426,7 @@ code read_line, 'read-line'             ; bufaddr bufsize fileid -- u flag ior
 
         pushd   fileid
         _ file_position
-        _ throw
+        _ forth_throw
         _dtos
         popd    filepos
 
@@ -434,7 +434,7 @@ code read_line, 'read-line'             ; bufaddr bufsize fileid -- u flag ior
         pushd   bufsize
         pushd   fileid
         _ read_file                     ; -- #bytes-read ior
-        _ throw                         ; -- #bytes-read
+        _ forth_throw                   ; -- #bytes-read
         test    rbx, rbx
         jnz .1
         ; rbx = 0, end of file
@@ -456,7 +456,7 @@ code read_line, 'read-line'             ; bufaddr bufsize fileid -- u flag ior
         _stod
         pushd   fileid
         _ reposition_file
-        _ throw                         ; -- u
+        _ forth_throw                   ; -- u
 
         ; check for cr preceding lf
         pushd bufaddr                   ; -- u bufaddr

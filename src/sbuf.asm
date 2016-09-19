@@ -357,7 +357,7 @@ code sbuf_resize, 'sbuf-resize'         ; sbuf new-capacity --
         _over                           ; -- sbuf new-capacity data-address new-capacity
         _oneplus                        ; terminal null byte
         _ resize                        ; -- sbuf new-capacity new-data-address ior
-        _ throw                         ; -- sbuf new-capacity new-data-address
+        _ forth_throw                   ; -- sbuf new-capacity new-data-address
         _tor
         _over                           ; -- sbuf new-capacity sbuf     r: -- new-data-address
         _sbuf_set_capacity              ; -- sbuf                       r: -- new-data-address

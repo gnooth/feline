@@ -297,7 +297,7 @@ code previous, 'previous'
         _quote "Search order underflow"
         _to msg
         _lit -50	                ; "search-order underflow"
-        _ throw
+        _ forth_throw
         _then .1
         next
 endcode

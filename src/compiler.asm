@@ -23,7 +23,7 @@ code ?comp, '?comp'
         _cquote "Attempt to interpret a compile-only word"
         _to msg
         _lit    -14                     ; "interpreting a compile-only word"
-        _ throw
+        _ forth_throw
 .1:
         next
 endcode
@@ -279,7 +279,7 @@ code ?csp, '?csp'
         _cquote "Control structure mismatch"
         _to msg
         _lit -22                        ; "control structure mismatch"
-        _ throw
+        _ forth_throw
 .1:
         next
 endcode

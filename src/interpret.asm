@@ -53,7 +53,7 @@ code ?stack, '?stack'
         _cquote "Error: data stack underflow"
         _to msg
         _lit -4
-        _ throw
+        _ forth_throw
         next
 endcode
 
@@ -66,7 +66,7 @@ code ?enough, '?enough'                 ; n --
         _cquote "Not enough parameters"
         _to msg
         _lit -4                         ; Forth 2012 Table 9.1 stack underflow
-        _ throw
+        _ forth_throw
         _then .1
         next
 endcode

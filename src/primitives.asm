@@ -707,10 +707,10 @@ code file_contents, 'file-contents'     ; path -- string
         _ string_from                   ; -- addr u
         _ readonly
         _ open_file
-        _ throw                         ; -- fileid
+        _ forth_throw                   ; -- fileid
         _duptor
         _ file_size
-        _ throw
+        _ forth_throw
         _drop                           ; -- size
         _dup
         _ iallocate                     ; -- size buffer
@@ -718,10 +718,10 @@ code file_contents, 'file-contents'     ; path -- string
         _dupd                           ; -- buffer buffer size
         _rfetch                         ; -- buffer buffer size fileid
         _ read_file                     ; -- buffer ior size
-        _ throw                         ; -- buffer size
+        _ forth_throw                   ; -- buffer size
         _rfrom
         _ close_file
-        _ throw
+        _ forth_throw
         _dupd
         _ copy_to_string
         _swap

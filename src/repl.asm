@@ -107,7 +107,7 @@ endcode
 
 ; ### error
 code error, 'error'                     ; string --
-        _ throw
+        _ forth_throw
         next
 endcode
 
@@ -120,7 +120,7 @@ code undefined, 'undefined'             ; string/symbol --
         _then .1
         _quote " ?"
         _ concat
-        _ throw
+        _ forth_throw
         next
 endcode
 

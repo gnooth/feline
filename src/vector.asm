@@ -192,7 +192,7 @@ code vector_resize, 'vector-resize'     ; vector new-capacity --
         _over                           ; -- vector new-capacity data-address new-capacity
         _cells
         _ resize                        ; -- vector new-capacity new-data-address ior
-        _ throw                         ; -- vector new-capacity new-data-address
+        _ forth_throw                   ; -- vector new-capacity new-data-address
         _tor
         _over                           ; -- vector new-capacity vector         r: -- new-data-addr
         _vector_set_capacity            ; -- vector                             r: -- new-data-addr

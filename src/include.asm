@@ -93,7 +93,7 @@ code restore_input, 'restore-input'
 ; CORE EXT
         _lit 7
         _notequal
-        _ throw                         ; REVIEW
+        _ forth_throw                   ; REVIEW
         _ toin
         _ store
         _to source_line_number
@@ -109,7 +109,7 @@ code restore_input, 'restore-input'
         _ reposition_file
         _if .2
         _lit -73                        ; REPOSITION-FILE exception (Forth 2012 Table 9.1)
-        _ throw
+        _ forth_throw
         _then .2
         _ source_buffer
         _ source_buffer_size
@@ -117,7 +117,7 @@ code restore_input, 'restore-input'
         _ read_line                     ; -- len flag ior
         _if .3
         _lit -71                        ; READ-LINE exception (Forth 2012 Table 9.1)
-        _ throw
+        _ forth_throw
         _then .3
         _drop                           ; -- len
         _ nsource
@@ -400,7 +400,7 @@ code resolve_include_filename, 'resolve-include-filename' ; c-addr u -- string
         _ concat
         _to msg
         _lit -37                        ; "file I/O exception"
-        _ throw
+        _ forth_throw
         _then .4
 
         ; If the path we've got at this point is includable, we're done.
@@ -512,7 +512,7 @@ code included, 'included'               ; i*x c-addr u -- j*x
         _ concat
         _to msg
         _lit -38                        ; "non-existent file" Forth 2012 Table 9.1
-        _ throw
+        _ forth_throw
 .exit:
         _locals_leave
         next
@@ -686,6 +686,6 @@ code evaluate, 'evaluate'               ; i*x c-addr u -- j*x
         _ nrfrom
         _ restore_input
         _ drop                          ; REVIEW
-        _ throw
+        _ forth_throw
         next
 endcode

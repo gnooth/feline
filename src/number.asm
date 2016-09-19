@@ -135,7 +135,7 @@ code missing, 'missing'                 ; $addr --
         _ concat
         _to msg
         _lit -13                        ; "undefined word" Forth 2012 Table 9.1
-        _ throw
+        _ forth_throw
         next
 endcode
 

@@ -217,7 +217,7 @@ code cq_first_data, 'cq-first-data'     ; -- x
         _fetch
         _else .1
         _lit 1000                       ; REVIEW
-        _ throw
+        _ forth_throw
         _then .1
         next
 endcode
