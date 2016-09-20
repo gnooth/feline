@@ -33,7 +33,7 @@ code set_feline_handler, 'feline-handler!' ; handler --
         next
 endcode
 
-; ### catch
+; ### feline-catch
 code feline_catch, 'feline-catch'
         _ spfetch
         _tor
@@ -44,7 +44,10 @@ code feline_catch, 'feline-catch'
         _ rpfetch
         _ set_feline_handler
 
-        _ call_quotation
+        _ callable_code_address
+        mov     rax, rbx
+        _drop
+        call    rax
 
         _rfrom
         _ set_feline_handler
@@ -117,6 +120,11 @@ code recover, 'recover'                 ; try-quot recover-quot --
         mov     qword [error_object_data], f_value
 
         _rfrom                          ; -- recover-quot
-        _ call_quotation
+
+        _ callable_code_address
+        mov     rax, rbx
+        _drop
+        call    rax
+
         next
 endcode
