@@ -78,6 +78,10 @@ code feline_throw, 'feline-throw'
         next
 endcode
 
+section .data
+error_object_data:
+        dq      f_value
+
 ; ### recover
 code recover, 'recover'                 ; try-quot recover-quot --
         _tor
@@ -89,12 +93,17 @@ code recover, 'recover'                 ; try-quot recover-quot --
         _ feline_catch
         test    rbx, rbx
         jnz     .error
+
+        ; no error
         poprbx
         _rdrop
         _rdrop
         _return
 
 .error:
+        ; error object is in rbx
+        mov     [error_object_data], rbx
+
         ; restore data stack
         _ clear
         _rfrom
@@ -102,6 +111,10 @@ code recover, 'recover'                 ; try-quot recover-quot --
         _ noop
         _end_quotation .1
         _ each
+
+        pushrbx
+        mov     rbx, [error_object_data]
+        mov     qword [error_object_data], f_value
 
         _rfrom                          ; -- recover-quot
         _ call_quotation
