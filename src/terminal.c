@@ -36,6 +36,7 @@ extern Cell line_input_data;
 
 #ifdef WIN64
 static HANDLE console_input_handle = INVALID_HANDLE_VALUE;
+static HANDLE console_output_handle = INVALID_HANDLE_VALUE;
 #else
 static int tty;
 static struct termios otio;
@@ -75,26 +76,35 @@ static void sig_winch(int signo)
 void prep_terminal()
 {
 #ifdef WIN64
-  extern Cell forth_stdout_data;
-  extern Cell nrows_data;
-  extern Cell ncols_data;
-  DWORD mode;
   console_input_handle = GetStdHandle(STD_INPUT_HANDLE);
+  console_output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
 #ifdef WIN64_NATIVE
-  forth_stdout_data = (Cell) GetStdHandle(STD_OUTPUT_HANDLE);
+  extern Cell forth_stdout_data;
+  forth_stdout_data = (Cell) console_output_handle;
   extern Cell standard_output_handle;
-  standard_output_handle = (Cell) GetStdHandle(STD_OUTPUT_HANDLE);
+  standard_output_handle = (Cell) console_output_handle;
 #endif
+  DWORD mode;
   if (GetConsoleMode(console_input_handle, &mode))
     {
       mode = (mode & ~ENABLE_ECHO_INPUT & ~ENABLE_LINE_INPUT & ~ENABLE_PROCESSED_INPUT);
       SetConsoleMode(console_input_handle, mode);
       get_terminal_size();
       COORD size;
+      extern Cell ncols_data;
       size.X = ncols_data;
+      extern Cell nrows_data;
       size.Y = nrows_data;
       SetConsoleScreenBufferSize(console_input_handle, size);
       line_input_data = 0;
+      if (GetConsoleMode(console_output_handle, &mode))
+        {
+#ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
+#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
+#endif
+          mode = (mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+          SetConsoleMode(console_output_handle, mode);
+        }
     }
   else
     {
