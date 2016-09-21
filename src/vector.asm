@@ -16,7 +16,7 @@
 file __FILE__
 
 ; ### vector?
-code vector?, 'vector?'                 ; handle -- t|f
+code vector?, 'vector?'                 ; handle -- ?
         _dup
         _ handle?
         _if .1
@@ -35,9 +35,7 @@ endcode
 ; ### error-not-vector
 code error_not_vector, 'error-not-vector' ; x --
         ; REVIEW
-        _drop
-        _true
-        _abortq "not a vector"
+        _error "not a vector"
         next
 endcode
 
@@ -46,7 +44,7 @@ code check_vector, 'check-vector'       ; handle -- vector
         _dup
         _ handle?
         _if .1
-        _handle_to_object_unsafe        ; -- object|0
+        _handle_to_object_unsafe        ; -- object/0
         _dup_if .2
         _dup
         _object_type                    ; -- object object-type
@@ -491,7 +489,7 @@ code vector_pop_star, 'vector-pop*'     ; handle --
 endcode
 
 ; ### vector-equal?
-code vector_equal?, 'vector-equal?'     ; vector1 vector2 -- t|f
+code vector_equal?, 'vector-equal?'     ; vector1 vector2 -- ?
         _twodup
 
         _ vector?
@@ -564,7 +562,7 @@ code vector_each_index, 'vector-each-index' ; vector quotation-or-xt --
 endcode
 
 ; ### vector-find-string
-code vector_find_string, 'vector-find-string' ; string vector -- index t|f
+code vector_find_string, 'vector-find-string' ; string vector -- index ?
         _ check_vector
 
         push    this_register
@@ -576,7 +574,7 @@ code vector_find_string, 'vector-find-string' ; string vector -- index t|f
         _i
         _this_vector_nth_unsafe         ; -- string element
         _over
-        _ string_equal?                 ; -- string t|f
+        _ string_equal?                 ; -- string ?
         _tagged_if .2
         ; found it!
         _drop
