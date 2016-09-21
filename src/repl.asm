@@ -107,7 +107,7 @@ endcode
 
 ; ### error
 code error, 'error'                     ; string --
-        _ forth_throw
+        _ feline_throw
         next
 endcode
 
@@ -120,7 +120,7 @@ code undefined, 'undefined'             ; string/symbol --
         _then .1
         _quote " ?"
         _ concat
-        _ forth_throw
+        _ error
         next
 endcode
 
@@ -377,12 +377,15 @@ code repl, 'repl'                       ; --
         _fetch
         _zero
         _ set_input
-        _lit eval_xt
-        _ catch
-        _?dup_if .3
-        ; THROW occurred
+
+        _quotation .1
+        _ eval
+        _end_quotation .1
+        _quotation .2
         _ feline_do_error
-        _then .3
+        _end_quotation .2
+        _ recover
+
         _ depth
         _if .4
         _ ?nl
