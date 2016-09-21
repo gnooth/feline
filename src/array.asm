@@ -16,7 +16,7 @@
 file __FILE__
 
 ; ### array?
-code array?, 'array?'                   ; handle -- t|f
+code array?, 'array?'                   ; handle -- ?
         _dup
         _ handle?
         _if .1
@@ -35,9 +35,7 @@ endcode
 ; ### error-not-array
 code error_not_array, 'error-not-array' ; x --
         ; REVIEW
-        _drop
-        _true
-        _abortq "not a array"
+        _error "not a array"
         next
 endcode
 
@@ -46,7 +44,7 @@ code check_array, 'check-array'         ; handle -- array
         _dup
         _ handle?
         _if .1
-        _handle_to_object_unsafe        ; -- object|0
+        _handle_to_object_unsafe        ; -- object/0
         _dup_if .2
         _dup
         _object_type                    ; -- object object-type
