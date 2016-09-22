@@ -839,3 +839,66 @@ code printable?, 'printable?'           ; char -- ?
         mov     ebx, f_value
         next
 endcode
+
+extern os_open_file
+
+; ### file-open-read
+code file_open_read, 'file-open-read'   ; string -- fd
+        _ string_data
+%ifdef WIN64
+        ; args in rcx, rdx, r8, r9
+        popd    rcx
+        mov     rdx, GENERIC_READ
+%else
+        ; args in rdi, rsi, rdx, rcx
+        popd    rdi
+        xor     esi, esi
+%endif
+        xcall   os_open_file
+        test    rax, rax
+        js      .1
+        pushd   rax                     ; -- fd
+        _return
+.1:
+        _error "unable to open file"
+        next
+endcode
+
+extern os_read_char
+
+; ### file-read-char
+code file_read_char, 'file-read-char'   ; fd -- char/f
+%ifdef WIN64
+        mov     rcx, rbx
+%else
+        mov     rdi, rbx
+%endif
+        ; REVIEW os_read_char returns -1 if error or end of file
+        xcall   os_read_char
+        test    rax, rax
+        js      .1
+        mov     ebx, eax
+        _tag_char
+        _return
+.1:
+        mov     ebx, f_value
+        next
+endcode
+
+extern os_close_file
+
+; ### file-close
+code file_close, 'file-close'           ; fd --
+%ifdef WIN64
+        popd    rcx
+%else
+        popd    rdi
+%endif
+        xcall   os_close_file
+        test    rax, rax
+        js      .1
+        _return
+.1:
+        _error "unable to close file"
+        next
+endcode
