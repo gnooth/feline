@@ -431,13 +431,6 @@ code make_header, 'make-header'         ; c-addr u --
         _rfrom                          ; addr-to-be-patched
         _ store
 
-        _ latest                        ; -- nfa
-        _count
-        _ copy_to_string
-        _ current_vocab
-        _ intern
-        _to last_word
-
         next
 endcode
 
