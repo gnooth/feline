@@ -1,14 +1,14 @@
 LANGUAGE: feline
 
 USING: feline ;
-IN: feline
+IN: test
 
 // this is a comment
 ( this is another comment )
 
 : failed ( -- )
 //     ?nl "failed" print
-    "failed" throw
+    "failed" error
 ;
 
 : check-t ( x -- )
@@ -630,6 +630,17 @@ find-integer-test-1
 
 ?lookup-symbol-test-1
 
+: create-symbol-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    "effluvia" "forth" ?lookup-symbol check-false
+    "effluvia" "forth" create-symbol
+    dup symbol? check-t
+    dup "effluvia" "forth" ?lookup-symbol eq? check-t
+    symbol-vocab-name "forth" = check-t
+;
+
+create-symbol-test-1
+
 : parsing-word?-test-1 ( -- )
     << last-word symbol-name >> ?nl write
     \ SYMBOL: parsing-word? check-t
@@ -643,14 +654,14 @@ parsing-word?-test-1
 
 : parsing-test-1 ( -- )
     << last-word symbol-name >> ?nl write
-    V{ SYMBOL: dup } V{ } sequence= check-t
+    V{ SYMBOL: this-is-a-new-symbol } V{ } sequence= check-t
     clear
 ;
 
 parsing-test-1
 
 : %parsing-test-2 ( -- )
-    SYMBOL: dup
+    SYMBOL: another-new-symbol
     42
 ;
 
@@ -748,7 +759,9 @@ until-test-1
 : ensure-symbol-test-1 ( -- )
     << last-word symbol-name >> ?nl write
     "foo" "feline" ensure-symbol dup symbol? check-t
+    dup "foo" "feline" ?lookup-symbol eq? check-t
     "foo" "feline" ensure-symbol eq? check-t
+    "foo" "feline" ensure-symbol symbol-vocab-name "feline" = check-t
     \ dup "dup" "feline" ensure-symbol eq? check-t
 ;
 
@@ -1149,5 +1162,7 @@ sbuf-insert-nth!-test-1
 ;
 
 string-index-from-test-1
+
+IN: feline
 
 ?nl "Reached end of test.feline" write
