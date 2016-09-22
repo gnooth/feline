@@ -144,18 +144,19 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
 ; 9 cells: object header, name, vocab-name, hashcode, xt, def, props, value, code address
 
         _lit 9
-        _ allocate_cells                ; -- object-address
+        _ allocate_cells                ; -- name vocab object-address
 
         push    this_register
         mov     this_register, rbx
-        poprbx
+        poprbx                          ; -- name vocab
 
         _this_object_set_type OBJECT_TYPE_SYMBOL
 
+        _tuck
         _ vocab_name
-        _this_symbol_set_vocab_name
+        _this_symbol_set_vocab_name     ; -- vocab name
 
-        _this_symbol_set_name
+        _this_symbol_set_name           ; -- vocab
 
         _this_symbol_name
         _ force_hashcode
@@ -180,12 +181,15 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
         _this_symbol_set_code_address
 
         pushrbx
-        mov     rbx, this_register      ; -- symbol
-
-        ; Return handle.
-        _ new_handle                    ; -- handle
-
+        mov     rbx, this_register      ; -- vocab symbol
         pop     this_register
+
+        _ new_handle                    ; -- vocab handle
+
+        _swap
+        _dupd                           ; -- handle handle vocab
+        _ vocab_add_symbol              ; -- handle
+
         next
 endcode
 
@@ -197,13 +201,9 @@ code create_symbol, 'create-symbol'     ; name vocab -- symbol
         _dup
         _tagged_if_not .1
         _error "no such vocab"
-        _then .1
+        _then .1                        ; -- name vocab
 
         _ new_symbol                    ; -- symbol
-
-        _dup
-        _ current_vocab
-        _ vocab_add_symbol
 
         _dup
         _ new_wrapper

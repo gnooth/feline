@@ -214,13 +214,10 @@ code ensure_symbol, 'ensure-symbol'     ; name vocab-spec -- symbol
         _drop
         _then .2                        ; -- name vocab
 
-        _tuck
-        _ new_symbol                    ; -- vocab symbol
+        _ new_symbol                    ; -- symbol
+
         _dup
         _to last_word
-        _tuck                           ; -- symbol vocab symbol
-        _swap
-        _ vocab_add_symbol
 
         next
 endcode
