@@ -282,28 +282,6 @@ code hash_vocab, 'hash-vocab'           ; vocab --
         next
 endcode
 
-; ### intern
-code intern, 'intern'                   ; name vocab -- symbol
-        _twodup
-        _ check_vocab
-        _vocab_hashtable
-        _ at_star
-        _tagged_if .1
-        _2nip
-        _return
-        _else .1
-        _drop
-        _then .1                        ; -- name vocab
-
-        _duptor                         ; -- name vocab         r: -- vocab
-        _ new_symbol                    ; -- symbol
-        _dup
-        _rfrom                          ; -- symbol symbol vocab
-        _ vocab_add_symbol              ; -- symbol
-
-        next
-endcode
-
 ; ### ?lookup-symbol
 code ?lookup_symbol, '?lookup-symbol'   ; name vocab-name -- symbol/f
         _ lookup_vocab
