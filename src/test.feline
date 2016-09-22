@@ -851,13 +851,15 @@ global-test-1
     << last-word symbol-name >> ?nl write
     87 \ zork set-global
     \ zork get-global 87 eq? check-t
-    begin-scope
-    "test" dup zork! zork eq? check-t
-    \ zork get-global 87 eq? check-t
-    19 \ zork set-global
-    zork "test" = check-t
-    \ zork get-global 19 eq? check-t
-    end-scope
+
+    [
+        "test" dup zork! zork eq? check-t
+        \ zork get-global 87 eq? check-t
+        19 \ zork set-global
+        zork "test" = check-t
+        \ zork get-global 19 eq? check-t
+    ] with-scope
+
     zork 19 eq? check-t
     \ zork get 19 eq? check-t
     \ zork get-global 19 eq? check-t
