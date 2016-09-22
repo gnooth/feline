@@ -546,9 +546,6 @@ code define, ':'                        ; --
         _drop                           ; -- string
         _ current_vocab
         _ new_symbol                    ; -- symbol
-        _dup
-        _ current_vocab
-        _ vocab_add_symbol
         _then .2                        ; -- symbol
 
         _dup
