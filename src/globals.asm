@@ -119,6 +119,17 @@ code set, 'set'                         ; value variable --
         next
 endcode
 
+; ### with-scope
+code with_scope, 'with-scope'           ; quot --
+        _ begin_scope
+        _ callable_code_address
+        mov     rax, rbx
+        poprbx
+        call    rax
+        _ end_scope
+        next
+endcode
+
 ; ### find-in-scope
 code find_in_scope, 'find-in-scope'     ; variable scope -- value/f ?
         _ at_star
