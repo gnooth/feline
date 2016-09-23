@@ -96,12 +96,12 @@ endcode
 ; ### initialize-task
 code initialize_task, 'initialize-task' ; --
         _ holdbufsize
-        _ allocate
+        _ forth_allocate
         _ drop                          ; REVIEW
         _ holdbufptr
         _ store
         _ padsize
-        _ allocate
+        _ forth_allocate
         _ drop                          ; REVIEW
         _ tickpad
         _ store

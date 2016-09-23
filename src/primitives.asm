@@ -751,7 +751,7 @@ code file_contents_safe, '?file-contents' ; path -- string/f
         ; -- ud
         _drop                           ; -- size
         _dup
-        _ allocate                      ; -- size buffer ior
+        _ forth_allocate                ; -- size buffer ior
         _if .3
         _2drop
         _f

@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2015 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ file __FILE__
 extern os_allocate
 
 ; ### allocate
-code allocate, 'allocate'               ; u -- a-addr ior
+code forth_allocate, 'allocate'         ; u -- a-addr ior
 ; MEMORY
 %ifdef WIN64
         mov     rcx, rbx
