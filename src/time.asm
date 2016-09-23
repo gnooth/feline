@@ -114,14 +114,20 @@ endcode
 
 ; ### .elapsed
 code dot_elapsed, '.elapsed'            ; --
-        _ ?cr
+        _ ?nl
         _ elapsed_ms
-        _ decdot
-        _dotq "ms "
-        _ cr
+        _tag_fixnum
+        _ fixnum_to_string
+        _ write_string
+        _quote " ms"
+        _ write_string
+        _ nl
         _ elapsed_cycles
-        _ decdot
-        _dotq "cycles"
+        _tag_fixnum
+        _ fixnum_to_string
+        _ write_string
+        _quote " cycles"
+        _ write_string
         next
 endcode
 
