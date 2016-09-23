@@ -30,7 +30,6 @@
 %define CHAR_TAG        FIXNUM_TAG
 
 %define SPECIAL_TAG     6
-%define BOOLEAN_TAG     SPECIAL_TAG
 
 %macro  _tag 0                          ; object -- tag
         and     rbx, TAG_MASK
@@ -70,9 +69,8 @@
 
 %define tagged_zero     FIXNUM_TAG
 
-%define f_value BOOLEAN_TAG
-
-%define t_value BOOLEAN_TAG + (1 << TAG_BITS)
+%define f_value SPECIAL_TAG
+%define t_value SPECIAL_TAG + (1 << TAG_BITS)
 
 %macro  _f 0
         pushrbx
