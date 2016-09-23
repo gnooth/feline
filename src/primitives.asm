@@ -65,14 +65,13 @@ endinline
 
 ; ### =
 code feline_equal, '='                  ; n1 n2 -- ?
-        _twodup
-        _eq?
-        _tagged_if .1
-        _2drop
-        _t
-        _else .1
+        cmp     rbx, [rbp]
+        jne     .1
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        mov     ebx, t_value
+        _return
+.1:
         _ equal?
-        _then .1
         next
 endcode
 
