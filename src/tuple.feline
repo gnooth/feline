@@ -32,10 +32,6 @@ IN: feline
     if
 ;
 
-: suffix! ( seq elt -- seq )
-    over push
-;
-
 : define-reader ( class slot-spec -- )
     dupd
     [ symbol-name ] dip                 // -- class-name slot-spec

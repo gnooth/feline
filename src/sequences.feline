@@ -28,3 +28,8 @@ IN: feline
 
 : empty? ( seq/f -- ? )
     [ length zero? ] [ t ] if* ;
+
+// Factor
+: suffix! ( seq elt -- seq )
+    over push
+;
