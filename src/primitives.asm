@@ -869,9 +869,9 @@ extern os_file_size
 code file_size, 'file-size'             ; fd -- tagged-size
 ; FILE
 %ifdef WIN64
-        popd    rcx
+        mov     rcx, rbx
 %else
-        popd    rdi
+        mov     rdi, rbx
 %endif
         xcall   os_file_size
         test    rax, rax
