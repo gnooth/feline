@@ -708,7 +708,7 @@ code file_contents, 'file-contents'     ; path -- string
         _ open_file
         _ forth_throw                   ; -- fileid
         _duptor
-        _ file_size
+        _ forth_file_size
         _ forth_throw
         _drop                           ; -- size
         _dup
@@ -741,7 +741,7 @@ code file_contents_safe, '?file-contents' ; path -- string/f
 
         ; -- fileid
         _duptor
-        _ file_size                     ; -- ud ior
+        _ forth_file_size               ; -- ud ior
         _if .2
         _2drop
         _f

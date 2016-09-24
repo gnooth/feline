@@ -547,7 +547,7 @@ endcode
 extern os_file_size
 
 ; ### file-size
-code file_size, 'file-size'             ; fileid -- ud ior
+code forth_file_size, 'file-size'       ; fileid -- ud ior
 ; FILE
 %ifdef WIN64
         popd    rcx
