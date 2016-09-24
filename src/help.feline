@@ -105,6 +105,13 @@ HELP: bi
     Apply quot1 to x, then apply quot2 to x."
 ;
 
+HELP: charpos
+    "( -- n )
+    Return the current output column.
+
+    See also: tab"
+;
+
 HELP: dip
     "( x quot -- x )
     Remove x from the stack, call quot, and restore x to the top
@@ -287,6 +294,14 @@ HELP: swap
 HELP: swapd
     "( x y z -- y z x )
     Exchange the second and third stack items."
+;
+
+HELP: tab
+    "( n -- )
+    Write enough space characters so that the next character will
+    be written in column n.
+
+    See also: charpos"
 ;
 
 HELP: time
