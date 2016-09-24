@@ -863,6 +863,27 @@ code file_open_read, 'file-open-read'   ; string -- fd
         next
 endcode
 
+extern os_file_size
+
+; ### file-size
+code file_size, 'file-size'             ; fd -- tagged-size
+; FILE
+%ifdef WIN64
+        popd    rcx
+%else
+        popd    rdi
+%endif
+        xcall   os_file_size
+        test    rax, rax
+        js      .1
+        mov     rbx, rax
+        _tag_fixnum
+        next
+.1:
+        _error "file size error"
+        next
+endcode
+
 extern os_read_char
 
 ; ### file-read-char
@@ -905,8 +926,12 @@ endcode
 extern os_allocate
 
 ; ### allocate
-code feline_allocate, 'allocate'        ; untagged-size -- addr
-; Argument and return value are untagged.
+code feline_allocate, 'allocate'        ; tagged-size -- addr
+
+        _ check_index
+
+feline_allocate_untagged:
+
 %ifdef WIN64
         mov     rcx, rbx
 %else
