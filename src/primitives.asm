@@ -703,86 +703,37 @@ endcode
 
 ; ### file-contents
 code file_contents, 'file-contents'     ; path -- string
-        _ string_from                   ; -- addr u
-        _ readonly
-        _ open_file
-        _ forth_throw                   ; -- fileid
+        _ file_open_read                ; -- fd
         _duptor
-        _ forth_file_size
-        _ forth_throw
-        _drop                           ; -- size
+        _ file_size                     ; -- tagged-size
         _dup
-        _ iallocate                     ; -- size buffer
-        _swap                           ; -- buffer size
+        _ feline_allocate               ; -- tagged-size buffer
+        _swap                           ; -- buffer tagged-size
         _dupd                           ; -- buffer buffer size
-        _rfetch                         ; -- buffer buffer size fileid
-        _ read_file                     ; -- buffer ior size
-        _ forth_throw                   ; -- buffer size
+        _rfetch                         ; -- buffer buffer size fd
+        _ file_read_unsafe              ; -- buffer tagged-size
         _rfrom
-        _ close_file
-        _ forth_throw
+        _ file_close                    ; -- buffer tagged-size
+
         _dupd
+        _untag_fixnum
         _ copy_to_string
         _swap
-        _ ifree
+        _ feline_free
         next
 endcode
 
 ; ### ?file-contents
 code file_contents_safe, '?file-contents' ; path -- string/f
-        _ string_from                   ; -- addr u
-        _ readonly
-        _ open_file                     ; -- fileid ior
-        _if .1
-        _drop
-        _f
-        _return
-        _then .1
-
-        ; -- fileid
-        _duptor
-        _ forth_file_size               ; -- ud ior
-        _if .2
+        _quotation .1
+        _ file_contents
+        _end_quotation .1
+        _quotation .2
+        ; -- path error
         _2drop
         _f
-        _return
-        _then .2
-
-        ; -- ud
-        _drop                           ; -- size
-        _dup
-        _ forth_allocate                ; -- size buffer ior
-        _if .3
-        _2drop
-        _f
-        _return
-        _then .3
-
-        ; -- size buffer
-        _swap                           ; -- buffer size
-        _dupd                           ; -- buffer buffer size
-        _rfetch                         ; -- buffer buffer size fileid
-        _ read_file                     ; -- buffer size ior
-        _if .4
-        _2drop
-        _f
-        _return
-        _then .4
-
-        ; -- buffer size
-        _rfrom
-        _ close_file                    ; -- buffer size ior
-        _if .5
-        _2drop
-        _f
-        _return
-        _then .5
-
-        ; -- buffer size
-        _dupd
-        _ copy_to_string
-        _swap
-        _ ifree
+        _end_quotation .2
+        _ recover
         next
 endcode
 
