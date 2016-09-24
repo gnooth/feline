@@ -905,6 +905,34 @@ code file_read_char, 'file-read-char'   ; fd -- char/f
         next
 endcode
 
+extern os_read_file
+
+; ### file-read-unsafe
+code file_read_unsafe, 'file-read-unsafe' ; addr tagged-size fd -- count
+; Address and fd are untagged.
+        _tor
+        _ check_index
+        _rfrom
+%ifdef WIN64
+        popd    rcx                     ; fd
+        popd    r8                      ; size
+        popd    rdx                     ; addr
+%else
+        popd    rdi
+        popd    rdx
+        popd    rsi
+%endif
+        xcall   os_read_file
+        test    rax, rax
+        js      .1
+        pushd   rax
+        _tag_fixnum                     ; -- count
+        _return
+.1:
+        _error "error reading from file"
+        next
+endcode
+
 extern os_close_file
 
 ; ### file-close
