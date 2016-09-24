@@ -602,10 +602,43 @@ standard_output_handle:
         dq      0
 %endif
 
+global last_char, output_column
+section .data
+last_char:
+        dq      0
+output_column:
+        dq      0
+
+; ### charpos
+code charpos, 'charpos'                 ; -- n
+        pushrbx
+        mov     rbx, [output_column]
+        _tag_fixnum
+        next
+endcode
+
+; ### tab
+code tab, 'tab'                         ; n --
+        _ charpos
+        _ feline_minus
+        _lit tagged_fixnum(1)
+        _ feline_max
+        _ spaces
+        next
+endcode
+
 ; ### write-char
 code write_char, 'write-char'           ; tagged-char --
         _untag_char
         mov     [last_char], rbx
+        cmp     rbx, 10
+        je      .1
+        inc     qword [output_column]
+        jmp     .2
+.1:
+        xor     eax, eax
+        mov     [output_column], rax
+.2:
 %ifdef WIN64
         ; args in rcx, rdx, r8, r9
         popd    rcx
@@ -683,11 +716,6 @@ code nl, 'nl'
         _ write_char
         next
 endcode
-
-global last_char
-section .data
-last_char:
-        dq      0
 
 ; ### ?nl
 code ?nl, '?nl'

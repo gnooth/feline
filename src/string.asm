@@ -703,6 +703,10 @@ write_chars:
         test    rbx, rbx
         jz      .exit
 
+        ; update output column
+        ; FIXME will not be correct if string contains a newline
+        add     [output_column], rbx
+
         ; store last char for ?nl
         mov     rax, [rbp]
         movzx   eax, byte [rax + rbx - 1]
