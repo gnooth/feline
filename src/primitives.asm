@@ -901,3 +901,38 @@ code file_close, 'file-close'           ; fd --
         _error "unable to close file"
         next
 endcode
+
+extern os_allocate
+
+; ### allocate
+code feline_allocate, 'allocate'        ; untagged-size -- addr
+; Argument and return value are untagged.
+%ifdef WIN64
+        mov     rcx, rbx
+%else
+        mov     rdi, rbx
+%endif
+        xcall   os_allocate
+        mov     rbx, rax                ; -- addr
+        test    rbx, rbx
+        jz .1
+        _return
+.1:
+        _error "memory allocation failed"
+        next
+endcode
+
+extern os_free
+
+; ### free
+code feline_free, 'free'                ; addr --
+; Argument is untagged.
+%ifdef WIN64
+        mov     rcx, rbx
+%else
+        mov     rdi, rbx
+%endif
+        poprbx
+        xcall   os_free                 ; "The free() function returns no value."
+        next
+endcode
