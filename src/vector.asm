@@ -643,10 +643,9 @@ code vector_to_array, 'vector>array'    ; vector -- array
         _swap                           ; -- array vector
 
         _quotation .1
-        ; -- element index
-        _lit 2
-        _forth_pick
-        ; -- element index array
+        ; -- array element index
+        _pick
+        ; -- array element index array
         _ array_set_nth
         _end_quotation .1               ; -- array vector quotation
 

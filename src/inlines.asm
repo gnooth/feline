@@ -137,6 +137,12 @@
         lea     rbp, [rbp - BYTES_PER_CELL]
 %endmacro
 
+; This is the Factor/Feline version of pick.
+%macro  _pick 0
+        pushrbx
+        mov     rbx, [rbp + BYTES_PER_CELL * 2]
+%endmacro
+
 %macro  _forth_pick 0                   ; pick
         mov     rbx, [rbp + rbx * BYTES_PER_CELL]
 %endmacro

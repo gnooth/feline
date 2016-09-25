@@ -596,16 +596,16 @@ code hexdot, 'hex.'                     ; n --
 endcode
 
 ; ### pick
-code feline_pick, 'pick'                ; x y z -- x y z x
-; Factor
-        mov     rax, [rbp + BYTES_PER_CELL]
-        pushd   rax
-        next
-endcode
+inline feline_pick, 'pick'              ; x y z -- x y z x
+; This is the Factor/Feline version of pick.
+; The Forth version is different.
+        _pick
+endinline
 
 ; ### 2over
 code feline_2over, '2over'              ; x y z -- x y z x y
-; Factor
+; This is the Factor/Feline version of 2over.
+; The Forth version is different.
         _ feline_pick
         _ feline_pick
         next
