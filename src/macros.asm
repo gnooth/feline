@@ -172,6 +172,15 @@
         pushd   %1
 %endmacro
 
+; asm-only global
+%macro  _global 1
+        global %1
+        section .data
+        align   DEFAULT_DATA_ALIGNMENT
+%1:
+        dq      0
+%endmacro
+
 %define current_file    0
 
 %macro  file    1

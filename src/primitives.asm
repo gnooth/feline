@@ -596,18 +596,11 @@ code feline_2over, '2over'              ; x y z -- x y z x y
 endcode
 
 %ifdef WIN64_NATIVE
-global standard_output_handle
-section .data
-standard_output_handle:
-        dq      0
+_global standard_output_handle
 %endif
 
-global last_char, output_column
-section .data
-last_char:
-        dq      0
-output_column:
-        dq      0
+_global last_char
+_global output_column
 
 ; ### charpos
 code charpos, 'charpos'                 ; -- n
