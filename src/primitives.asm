@@ -579,6 +579,15 @@ code to_hex, '>hex'                     ; n -- string
         next
 endcode
 
+; ### hex.
+code hexdot, 'hex.'                     ; n --
+        _ fixnum_to_hex
+        _lit tagged_fixnum('$')
+        _ write_char
+        _ write_string
+        next
+endcode
+
 ; ### pick
 code feline_pick, 'pick'                ; x y z -- x y z x
 ; Factor

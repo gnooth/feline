@@ -367,7 +367,8 @@ code dot_object, '.'                    ; handle-or-object --
         _then .16
 
         ; give up
-        _ hdot
+        _tag_fixnum
+        _ hexdot
 
         next
 endcode
