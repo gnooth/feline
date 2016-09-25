@@ -434,6 +434,9 @@ code each_integer, 'each-integer'       ; n quot --
         ; untag n
         _untag_fixnum qword [rbp]
 
+        ; protect quotation from gc
+        push    rbx
+
         _ callable_code_address         ; -- untagged-fixnum code-address
 
         push    r12
@@ -462,6 +465,10 @@ code each_integer, 'each-integer'       ; n quot --
         pop     r15
         pop     r13
         pop     r12
+
+        ; drop quotation
+        pop     rax
+
         next
 endcode
 
