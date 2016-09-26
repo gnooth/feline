@@ -396,6 +396,9 @@ endcode
 ; ### times
 code times_, 'times'                    ; tagged-fixnum xt --
 
+        ; protect quotation from gc
+        push    rbx
+
         _ callable_code_address         ; -- tagged-fixnum code-address
 
         _swap
@@ -408,18 +411,21 @@ code times_, 'times'                    ; tagged-fixnum xt --
         _2drop                          ; clean up the stack now!
 
         test    r12, r12
-        jle     .3
+        jle     .2
 .1:
         call    r13
         dec     r12
-        jz      .3
+        jz      .2
         call    r13
         dec     r12
         jnz     .1
-.3:
+.2:
         pop     r13
         pop     r12
-.2:
+
+        ; drop quotation
+        pop     rax
+
         next
 endcode
 
