@@ -15,6 +15,8 @@
 
 file __FILE__
 
+; http://www.intel.com/content/www/us/en/embedded/training/ia-32-ia-64-benchmark-code-execution-paper.html
+
 %macro _rdtsc 0                         ; -- u
 ; "The high-order 32 bits are loaded into EDX, and the low-order 32 bits are
 ; loaded into the EAX register. This instruction ignores operand size."
@@ -40,14 +42,8 @@ code ticks, 'ticks'                     ; -- u
 endcode
 
 %ifndef WIN64
-        global  user_microseconds
-        global  system_microseconds
-section .data
-        align   DEFAULT_DATA_ALIGNMENT
-user_microseconds:
-        dq      0
-system_microseconds:
-        dq      0
+_global user_microseconds
+_global system_microseconds
 
 extern os_cputime
 
@@ -64,51 +60,50 @@ code cputime, 'cputime'
 endcode
 %endif
 
-; ### start-ticks
-value start_ticks, 'start-ticks', 0
-
-; ### end-ticks
-value end_ticks, 'end-ticks', 0
+_global start_ticks
+_global end_ticks
 
 ; ### elapsed-ms
 code elapsed_ms, 'elapsed-ms'           ; -- ms
-        _ end_ticks
-        _ start_ticks
-        _minus
+        pushrbx
+        mov     rbx, [end_ticks]
+        sub     rbx, [start_ticks]
         next
 endcode
 
-; ### start-cycles
-value start_cycles, 'start-cycles', 0
-
-; ### end-cycles
-value end_cycles, 'end-cycles', 0
+_global start_cycles
+_global end_cycles
 
 ; ### elapsed-cycles
 code elapsed_cycles, 'elapsed-cycles'   ; -- cycles
-        _ end_cycles
-        _ start_cycles
-        _minus
+        pushrbx
+        mov     rbx, [end_cycles]
+        sub     rbx, [start_cycles]
         next
 endcode
 
 ; ### start-timer
 code start_timer, 'start-timer'         ; --
-        _clear end_ticks
-        _clear end_cycles
+        xor     eax, eax
+        mov     [end_ticks], rax
+        mov     [end_cycles], rax
         _ ticks
-        _to start_ticks
+        mov     [start_ticks], rbx
+        poprbx
         _rdtsc
-        _to start_cycles
+        mov     [start_cycles], rbx
+        poprbx
         next
 endcode
 
 ; ### stop-timer
 code stop_timer, 'stop-timer'           ; --
         _rdtsc
-        _to end_cycles
+        mov     [end_cycles], rbx
+        poprbx
         _ ticks
-        _to end_ticks
+        mov     [end_ticks], rbx
+        poprbx
         next
 endcode
 
