@@ -383,19 +383,24 @@ value gc_start_cycles, 'gc-start-cycles', 0
 ; ### gc-end-cycles
 value gc_end_cycles, 'gc-end-cycles', 0
 
-; ### gc-verbose
-value gc_verbose, 'gc-verbose', 0
+_global gc_verbose, f_value
+
+; gc-verbose!
+code set_gc_verbose, 'gc-verbose!'      ; ? --
+        mov     [gc_verbose], rbx
+        poprbx
+        next
+endcode
 
 ; ### gc
 code gc, 'gc'                           ; --
-        _ gc_verbose
-        _if .1
+        cmp     qword [gc_verbose], f_value
+        je .1
         _ ticks
         _to gc_start_ticks
         _rdtsc
         _to gc_start_cycles
-        _then .1
-
+.1:
         _true
         _to in_gc?
 
@@ -419,26 +424,33 @@ code gc, 'gc'                           ; --
 
         _zeroto in_gc?
 
-        _ gc_verbose
-        _if .2
+        cmp     qword [gc_verbose], f_value
+        je .2
         _rdtsc
         _to gc_end_cycles
         _ ticks
         _to gc_end_ticks
 
-        _ ?cr
-        _dotq "gc "
+        _ ?nl
+        _quote "gc "
+        _ write_string
         _ gc_end_ticks
         _ gc_start_ticks
         _minus
-        _ decdot
-        _dotq "ms "
+        _tag_fixnum
+        _ dot_object
+        _quote "ms "
+        _ write_string
+
         _ gc_end_cycles
         _ gc_start_cycles
         _minus
-        _ decdot
-        _dotq "cycles "
-        _then .2
+        _tag_fixnum
+        _ dot_object
+        _quote "cycles"
+        _ write_string
+        _ nl
 
+.2:
         next
 endcode

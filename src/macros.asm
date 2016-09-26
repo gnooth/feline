@@ -181,6 +181,14 @@
         dq      0
 %endmacro
 
+%macro  _global 2
+        global %1
+        section .data
+        align   DEFAULT_DATA_ALIGNMENT
+%1:
+        dq      %2
+%endmacro
+
 %define current_file    0
 
 %macro  file    1
