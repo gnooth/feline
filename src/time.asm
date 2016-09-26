@@ -123,12 +123,17 @@ code dot_elapsed, '.elapsed'            ; --
         _ write_string
         _quote " cycles"
         _ write_string
+        _ nl
         next
 endcode
 
 ; ### time
 code time, 'time'                       ; quotation-or-xt --
+        ; protect quotation from gc
+        push    rbx
+
         _ callable_code_address
+
         push    r12
         mov     r12, rbx
         poprbx
@@ -136,6 +141,10 @@ code time, 'time'                       ; quotation-or-xt --
         call    r12
         _ stop_timer
         pop     r12
+
+        ; drop quotation
+        pop     rax
+
         _ dot_elapsed
         next
 endcode
