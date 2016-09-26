@@ -57,6 +57,17 @@ multiline-string-test-1
 
 string?-test-1
 
+// Test for the Factor/Feline version of pick.
+// The Forth version is different.
+: pick-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    clear
+    1 2 3 pick get-datastack { 1 2 3 1 } sequence= check-t
+    clear
+;
+
+pick-test-1
+
 : fixnum?-test-1 ( -- )
     << last-word symbol-name >> ?nl write
     most-negative-fixnum fixnum? check-t
@@ -408,6 +419,16 @@ vector-test-4
 ;
 
 vector-test-5
+
+// vector>array
+: vector>array-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    V{ 1 2 3 } vector>array
+    [ array? check-t ] keep
+    { 1 2 3 } = check-t
+;
+
+vector>array-test-1
 
 : %local-test-1 ( -- )
     42 :> foo
@@ -1162,6 +1183,16 @@ sbuf-insert-nth!-test-1
 ;
 
 string-index-from-test-1
+
+// The followings test verify that the quotation remains valid through gc,
+// even if there is no other reference to it. These tests must not be in a
+// definition, since the symbol-def slot holds a reference to the quotation.
+
+"each-integer-gc-test-1" ?nl write
+10000000 [ number>string drop ] each-integer
+
+"times-gc-test-1" ?nl write
+10000000 [ most-positive-fixnum number>string drop ] times
 
 IN: feline
 
