@@ -564,19 +564,12 @@ endcode
 
 ; ### .s
 code feline_dot_s, '.s'
-        _ get_datastack                 ; -- handle
-        _ check_array                   ; -- array
-        _dup
-        _array_length
-        _zero
-        _?do .1
-        _i
-        _over
-        _array_nth_unsafe
+        _ get_datastack
+        _quotation .1
         _ nl
         _ dot_object
-        _loop .1
-        _drop
+        _end_quotation .1
+        _ each
         next
 endcode
 
@@ -924,6 +917,34 @@ code file_read_unsafe, 'file-read-unsafe' ; addr tagged-size fd -- count
         _return
 .1:
         _error "error reading from file"
+        next
+endcode
+
+; : file-read-line ( fd -- string )
+;     256 <sbuf> ( -- fd sbuf )
+;     [ over file-read-char dup 10 eq? ] [ suffix! ] until
+;     drop
+;     sbuf>string ;
+
+; ### file-read-line
+code file_read_line, 'file-read-line'   ; fd -- string
+        _lit 256
+        _ new_sbuf_untagged
+.1:
+        _over
+        _ file_read_char
+        _dup
+        _lit tagged_char(10)
+        _eq?
+        _tagged_if_not .2
+        _over
+        _ sbuf_push
+        jmp     .1
+        _then .2
+
+        _drop
+        _nip
+        _ sbuf_to_string
         next
 endcode
 
