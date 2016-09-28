@@ -537,8 +537,9 @@ code define, ':'                        ; --
         _tagged_if .2
         _nip
         ; REVIEW
-        _ ?cr
-        _dotq "redefining "
+        _ ?nl
+        _quote "redefining "
+        _ write_string
         _dup
         _ symbol_name
         _ write_string
