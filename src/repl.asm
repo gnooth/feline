@@ -226,6 +226,15 @@ code feline_reset, 'feline-reset'
         _ lpstore
         _then .1
 
+        _ get_namestack
+        _dup
+        _ vector?
+        _tagged_if .2
+        _lit tagged_fixnum(1)
+        _swap
+        _ vector_set_length
+        _then .2
+
         ; REVIEW
         _zeroto exception
 
