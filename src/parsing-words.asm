@@ -29,7 +29,7 @@ code initialize_parser, 'initialize-parser' ; --
         next
 endcode
 
-%macro _accum 0
+%macro _get_accum 0
         pushrbx
         mov     rbx, [accum_data]
         _ get
@@ -37,7 +37,7 @@ endcode
 
 ; ### accum
 code accum, 'accum'                     ; -- vector/f
-        _accum
+        _get_accum
         next
 endcode
 
@@ -242,7 +242,7 @@ code process_token, 'process-token'     ; string -- object
         _ vector_find_string            ; -- string index/f ?
         _tagged_if .2                   ; -- string index
         _nip
-        _accum
+        _get_accum
         _ vector_push
 
         _quote "local@"
@@ -493,7 +493,7 @@ code parse_definition, 'parse-definition' ; -- vector
         poprbx
         jmp     .top
 .4:
-        _accum
+        _get_accum
         _ vector_push
         jmp     .top
 
@@ -503,11 +503,11 @@ code parse_definition, 'parse-definition' ; -- vector
         _quote "locals-leave"
         _quote "feline"
         _ lookup_symbol
-        _accum
+        _get_accum
         _ vector_push
         _then .5
 
-        _accum                          ; -- vector
+        _get_accum                          ; -- vector
         next
 endcode
 
@@ -589,7 +589,7 @@ code define_local, ':>', PARSING
         _quote "feline"
         _ lookup_symbol
         _lit tagged_zero
-        _accum
+        _get_accum
         _ vector_insert_nth_destructive
         _then .2
 
@@ -606,14 +606,14 @@ code define_local, ':>', PARSING
         _ locals_defined
         _oneminus
         _tag_fixnum
-        _accum
+        _get_accum
         _ vector_push
 
         ; add local! to quotation as symbol
         _quote "local!"
         _quote "feline"
         _ lookup_symbol
-        _accum
+        _get_accum
         _ vector_push
 
         ; return nothing
