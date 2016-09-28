@@ -94,6 +94,7 @@ IN_FELINE
 %include "parsing-words.asm"
 %include "compile-word.asm"
 %include "recover.asm"
+%include "symbols.asm"
 
 IN_FORTH
 

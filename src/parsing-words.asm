@@ -15,35 +15,13 @@
 
 file __FILE__
 
-section .data
-accum_data:
-        dq      0
-
-; ### initialize-parser
-code initialize_parser, 'initialize-parser' ; --
-        _quote "accum"
-        _quote "feline"
-        _ lookup_symbol
-        mov     [accum_data], rbx
-        poprbx
-        next
-endcode
-
 %macro _get_accum 0
-        pushrbx
-        mov     rbx, [accum_data]
+        _ accum
         _ get
 %endmacro
 
-; ### accum
-code accum, 'accum'                     ; -- vector/f
-        _get_accum
-        next
-endcode
-
 %macro _set_accum 0
-        pushrbx
-        mov     rbx, [accum_data]
+        _ accum
         _ set
 %endmacro
 

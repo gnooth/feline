@@ -215,7 +215,7 @@ code cold, 'cold'                       ; --
 
         _ hash_vocabs
 
-        _ initialize_parser
+        _ initialize_symbols
 
 ;         _ report_startup_time
 
