@@ -271,9 +271,11 @@ endcode
 code parse_until, 'parse-until'         ; delimiter -- vector
 ; REVIEW Delimiter is a string.
 
+        _ begin_scope
+
         _lit 10
         _ new_vector_untagged
-        _tor                            ; -- delimiter          r: -- vector
+        _set_accum                      ; -- delimiter
 
 .top:
         _ parse_token                   ; -- delimiter string/f
@@ -297,12 +299,14 @@ code parse_until, 'parse-until'         ; delimiter -- vector
         poprbx
         jmp     .top
 .3:
-        _rfetch
+        _get_accum
         _ vector_push
         jmp     .top
 .bottom:
         _2drop
-        _rfrom                          ; -- vector
+        _get_accum                      ; -- vector
+
+        _ end_scope
 
         next
 endcode
