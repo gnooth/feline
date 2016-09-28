@@ -47,12 +47,6 @@ endcode
         _ set
 %endmacro
 
-; ### accum!
-code set_accum, 'accum!'                ; vector/f --
-        _set_accum
-        next
-endcode
-
 ; ### parse-string
 code parse_string, 'parse-string'       ; -- string
         _lit 128
@@ -245,10 +239,10 @@ code process_token, 'process-token'     ; string -- object
         _if .1
         _dup
         _ local_names                   ; -- string string vector
-        _ vector_find_string            ; -- string index/f t|f
+        _ vector_find_string            ; -- string index/f ?
         _tagged_if .2                   ; -- string index
         _nip
-        _ accum
+        _accum
         _ vector_push
 
         _quote "local@"
