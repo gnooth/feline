@@ -16,35 +16,25 @@
 LANGUAGE: feline
 
 USING: feline ;
-IN: feline
+IN: dump
 
-: see
-    parse-token ( -- string/f )
-    [ find-name [ symbol-code drop forth:disasm ] [ undefined ] if ]
-    when*
+: .2 ( ub -- )
+    >hex dup length 2 < [ '0' write-char ] when write ;
+
+: dump-line ( addr len -- )
+    ?nl
+    over >hex dup length 12 swap - spaces write-string 2 spaces
+    <range> [ [ c@ .2 space ] each ] keep
+    dup length 16 swap - 3 * 1 + spaces
+    [ c@ dup printable? [ drop '.' ] unless write-char ] each
 ;
 
-: blank? ( char -- ? )
-    { 9 10 13 32 } member?
-;
-
-// Factor
-: no-cond ( -- )
-    "fall-through in cond" error ;
-
-// Factor
-: cond ( assoc -- )
-    [ dup callable? [ drop t ] [ first call ] if ] find nip
-    [ dup callable? [ call ] [ second call ] if ] [ no-cond ]
-    if* ;
-
-include-system-file help.feline
-include-system-file sequences.feline
-include-system-file tuple.feline
-include-system-file globals.feline
-include-system-file constant.feline
-include-system-file accept.feline
-include-system-file dump.feline
-
-USING: feline ;
+USING: dump feline ;
 IN: feline
+
+: dump ( addr len -- )
+    ?nl 15 spaces
+    over 16 <range> [ 15 bitand >hex write 2 spaces ] each
+    [ dup 16 > not ] [ over 16 dump-line 16 - swap 16 + swap ] until
+    dump-line
+;
