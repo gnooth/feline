@@ -112,6 +112,8 @@
         _untag_fixnum %1
 %endmacro
 
+%define tagged_char(n)  ((n << TAG_BITS) + CHAR_TAG)
+
 %define DEFAULT_DATA_ALIGNMENT  8
 
 %define DEFAULT_CODE_ALIGNMENT 16
