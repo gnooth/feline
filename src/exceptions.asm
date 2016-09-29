@@ -32,7 +32,7 @@ variable handler, 'handler', 0
 ;    0 ;
 
 ; ### catch
-code catch, 'catch'
+code forth_catch, 'catch'
         _ spfetch
         _tor
         _ lpfetch

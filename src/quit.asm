@@ -317,7 +317,7 @@ code quit, 'quit'                       ; --            r:  i*x --
         _ set_input
         _zeroto source_filename
         _lit interpret_xt
-        _ catch
+        _ forth_catch
         _?dup_if .2
         ; THROW occurred
         _ do_error

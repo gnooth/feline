@@ -682,7 +682,7 @@ code evaluate, 'evaluate'               ; i*x c-addr u -- j*x
         _ toin
         _ off
         _lit interpret_xt
-        _ catch
+        _ forth_catch
         _ nrfrom
         _ restore_input
         _ drop                          ; REVIEW

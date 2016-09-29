@@ -207,7 +207,7 @@ code cold, 'cold'                       ; --
         _squote "boot.forth"
         _ system_file_pathname
         _lit included_xt
-        _ catch
+        _ forth_catch
         _ ?dup
         _if .3
         _ do_error
@@ -231,7 +231,7 @@ code cold, 'cold'                       ; --
         _ ?nl
 
         _lit process_init_file_xt
-        _ catch
+        _ forth_catch
         _ ?dup
         _if .4
         _ do_error
@@ -240,7 +240,7 @@ code cold, 'cold'                       ; --
         _squote "boot.feline"
         _ system_file_pathname
         _lit included_xt
-        _ catch
+        _ forth_catch
         _ ?dup
         _if .5
         _ feline_do_error
