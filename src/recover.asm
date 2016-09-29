@@ -81,9 +81,7 @@ code feline_throw, 'feline-throw'
         next
 endcode
 
-section .data
-error_object_data:
-        dq      f_value
+_global error_object, f_value
 
 ; ### recover
 code recover, 'recover'                 ; try-quot recover-quot --
@@ -105,7 +103,7 @@ code recover, 'recover'                 ; try-quot recover-quot --
 
 .error:
         ; error object is in rbx
-        mov     [error_object_data], rbx
+        mov     [error_object], rbx
 
         ; restore data stack
         _ clear
@@ -116,8 +114,8 @@ code recover, 'recover'                 ; try-quot recover-quot --
         _ each
 
         pushrbx
-        mov     rbx, [error_object_data]
-        mov     qword [error_object_data], f_value
+        mov     rbx, [error_object]
+        mov     qword [error_object], f_value
 
         _rfrom                          ; -- recover-quot
 
