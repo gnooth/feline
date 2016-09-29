@@ -901,6 +901,16 @@ global-test-1
 
 global-test-2
 
+: global-test-3 ( -- )
+    << last-word symbol-name >> ?nl write
+    f \ zork set-global
+    zork check-false
+    [ [ 71 zork! zork ] with-scope ] [ ] recover 71 eq? check-t
+    [ [ 71 zork! "error" error ] with-scope ] [ drop zork ] recover check-false
+;
+
+global-test-3
+
 : index-test-1 ( -- )
     << last-word symbol-name >> ?nl write
     3 { 1 2 3 4 } index 2 eq? check-t
@@ -1184,7 +1194,7 @@ sbuf-insert-nth!-test-1
 
 string-index-from-test-1
 
-// The followings test verify that the quotation remains valid through gc,
+// The followings tests verify that the quotation remains valid through gc,
 // even if there is no other reference to it. These tests must not be in a
 // definition, since the symbol-def slot holds a reference to the quotation.
 

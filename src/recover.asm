@@ -39,6 +39,18 @@ code feline_catch, 'feline-catch'
         _tor
         _ lpfetch
         _tor
+
+        _ get_namestack
+        _dup
+        _ vector?
+        _tagged_if .1
+        _ vector_length
+        _else .1
+        _ drop
+        _ f
+        _then .1
+        _tor
+
         _ feline_handler
         _tor
         _ rpfetch
@@ -51,8 +63,11 @@ code feline_catch, 'feline-catch'
 
         _rfrom
         _ set_feline_handler
-        lea     rsp, [rsp + BYTES_PER_CELL * 2] ; rdrop rdrop
+
+        lea     rsp, [rsp + BYTES_PER_CELL * 3]
+
         _zero
+
         next
 endcode
 
@@ -70,6 +85,16 @@ code feline_throw, 'feline-throw'
 
         _rfrom
         _ set_feline_handler
+
+        _rfrom
+        _dup
+        _tagged_if .2
+        _ get_namestack
+        _ vector_set_length
+        _else .2
+        _drop
+        _then .2
+
         _rfrom
         _ lpstore
         _rfrom
