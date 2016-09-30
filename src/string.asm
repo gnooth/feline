@@ -701,8 +701,10 @@ code write_string, 'write-string'       ; string --
 write_chars:
         ; test for zero length string
         test    rbx, rbx
-        jz      .exit
-
+        jnz     .1
+        _2drop
+        _return
+.1:
         ; update output column
         ; FIXME will not be correct if string contains a newline
         add     [output_column], rbx
