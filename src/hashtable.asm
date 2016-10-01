@@ -95,7 +95,7 @@ file __FILE__
 %endmacro
 
 ; ### hashtable?
-code hashtable?, 'hashtable?'           ; handle -- t|f
+code hashtable?, 'hashtable?'           ; handle -- ?
         _dup
         _ handle?
         _if .1
@@ -401,7 +401,7 @@ endcode
 ; ### at*
 code at_star, 'at*'                     ; key hashtable -- value/f ?
         _tuck                           ; -- hashtable key hashtable
-        _ find_index_for_key            ; -- hashtable index t|f
+        _ find_index_for_key            ; -- hashtable index ?
         _tagged_if .1
         _swap
         _ hashtable_nth_value
