@@ -25,6 +25,18 @@ file __FILE__
         _ set
 %endmacro
 
+; ### maybe-add
+code maybe_add, 'maybe-add'             ; x -- ???
+        _get_accum
+        _dup
+        _tagged_if .1
+        _ vector_push                   ; --
+        _else .1
+        _drop
+        _then .1                        ; -- x
+        next
+endcode
+
 ; ### parse-string
 code parse_string, 'parse-string'       ; -- string
         _lit 128
@@ -187,12 +199,14 @@ endcode
 ; ### t
 code t, 't', PARSING                    ; -- t
         _t
+        _ maybe_add
         next
 endcode
 
 ; ### f
 code f, 'f', PARSING                    ; -- f
         _f
+        _ maybe_add
         next
 endcode
 
@@ -212,7 +226,7 @@ code parsing_word?, 'parsing-word?'     ; object -- ?
 endcode
 
 ; ### process-token
-code process_token, 'process-token'     ; string -- object
+code process_token, 'process-token'     ; string -- ???
         _ local_names
         _if .1
         _dup
@@ -226,6 +240,8 @@ code process_token, 'process-token'     ; string -- object
         _quote "local@"
         _quote "feline"
         _ lookup_symbol
+        _get_accum
+        _ vector_push
 
         _return
         _else .2                        ; -- string f
@@ -235,6 +251,7 @@ code process_token, 'process-token'     ; string -- object
 
         _ token_string_literal?
         _tagged_if .6
+        _ maybe_add
         _return
         _then .6
 
@@ -244,12 +261,15 @@ code process_token, 'process-token'     ; string -- object
         _ parsing_word?
         _tagged_if .4
         _ call_symbol
+        _else .4
+        _ maybe_add
         _then .4
         _return
         _then .3
 
         _ token_character_literal?
         _tagged_if .5
+        _ maybe_add
         _return
         _then .5
 
@@ -258,6 +278,7 @@ code process_token, 'process-token'     ; string -- object
         cmp     rbx, f_value
         je      .error
         _nip
+        _ maybe_add
         _return
 
 .error:
@@ -293,14 +314,7 @@ code parse_until, 'parse-until'         ; delimiter -- vector
         cmp     rbx, f_value
         poprbx
         jne     .bottom
-        _ process_token                 ; -- object/nothing
-        cmp     rbx, nothing
-        jne     .3
-        poprbx
-        jmp     .top
-.3:
-        _get_accum
-        _ vector_push
+        _ process_token
         jmp     .top
 .bottom:
         _2drop
@@ -315,16 +329,7 @@ endcode
 code parse_vector, 'V{', PARSING        ; -- handle
         _quote "}"
         _ parse_until
-
-        _ statefetch
-        _if .2
-        ; Add the newly-created vector to gc-roots. This protects it from
-        ; being collected and also ensures that its children will be scanned.
-        _dup
-        _ gc_add_root
-        _ literal
-        _then .2
-
+        _ maybe_add
         next
 endcode
 
@@ -333,6 +338,7 @@ code parse_array, '{', PARSING          ; -- handle
         _quote "}"
         _ parse_until
         _ vector_to_array
+        _ maybe_add
         next
 endcode
 
@@ -342,6 +348,7 @@ code parse_quotation, '[', PARSING      ; -- quotation
         _ parse_until
         _ vector_to_array
         _ array_to_quotation
+        _ maybe_add
         next
 endcode
 
@@ -362,6 +369,7 @@ code quote_symbol, '\', PARSING         ; -- symbol
         _ find_name
         _tagged_if .2
         _ new_wrapper
+        _ maybe_add
         _return
         _else .2
         _ undefined
@@ -371,7 +379,7 @@ code quote_symbol, '\', PARSING         ; -- symbol
 endcode
 
 ; ### SYMBOL:
-code parse_symbol, 'SYMBOL:', PARSING   ; -- nothing
+code parse_symbol, 'SYMBOL:', PARSING   ; --
         _ parse_token                   ; -- string/f
         _dup
         _tagged_if_not .1
@@ -388,7 +396,6 @@ code parse_symbol, 'SYMBOL:', PARSING   ; -- nothing
         _tagged_if .2
         ; -- string symbol
         _2drop
-        _nothing
         _return
         _then .2
 
@@ -399,7 +406,6 @@ code parse_symbol, 'SYMBOL:', PARSING   ; -- nothing
 
         _to last_word
 
-        _nothing
         next
 endcode
 
@@ -446,6 +452,9 @@ endcode
 
 ; ### parse-definition
 code parse_definition, 'parse-definition' ; -- vector
+
+        _ begin_scope
+
         _lit 10
         _ new_vector_untagged
         _set_accum
@@ -468,15 +477,8 @@ code parse_definition, 'parse-definition' ; -- vector
         jmp     .bottom
         _then .3
 
-        _ process_token                 ; -- object/nothing
+        _ process_token
 
-        cmp     rbx, nothing
-        jne     .4
-        poprbx
-        jmp     .top
-.4:
-        _get_accum
-        _ vector_push
         jmp     .top
 
 .bottom:
@@ -490,14 +492,14 @@ code parse_definition, 'parse-definition' ; -- vector
         _then .5
 
         _get_accum                          ; -- vector
+
+        _ end_scope
+
         next
 endcode
 
 ; ### :
 code define, ':'                        ; --
-        _f
-        _set_accum
-
         _zeroto using_locals?
 
         _ parse_token                   ; -- string/f
@@ -529,9 +531,6 @@ code define, ':'                        ; --
         _ set_last_word                 ; -- symbol
 
         _ parse_definition
-
-        _f
-        _set_accum                      ; -- symbol vector
 
         _ vector_to_array
         _ array_to_quotation            ; -- symbol quotation
@@ -598,8 +597,6 @@ code define_local, ':>', PARSING
         _get_accum
         _ vector_push
 
-        ; return nothing
-        _nothing
         next
 endcode
 
@@ -610,11 +607,15 @@ code parse_immediate, '<<', PARSING
         _ vector_to_array
         _ array_to_quotation
         _ call_quotation
+
+        ; FIXME
+        _ maybe_add
+
         next
 endcode
 
 ; ### HELP:
-code parse_help, 'HELP:', PARSING       ; -- nothing
+code parse_help, 'HELP:', PARSING
         _ parse_token                   ; -- string/f
         _dup
         _tagged_if_not .1
@@ -636,7 +637,5 @@ code parse_help, 'HELP:', PARSING       ; -- nothing
         _swap
         _ symbol_set_help
 
-        ; return nothing
-        _nothing
         next
 endcode
