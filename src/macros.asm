@@ -95,11 +95,6 @@
 
 %define nothing SPECIAL_TAG + (2 << TAG_BITS)
 
-%macro  _nothing 0
-        pushrbx
-        mov     ebx, nothing
-%endmacro
-
 %macro  _tag_char 0
         _tag_fixnum
 %endmacro
