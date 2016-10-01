@@ -19,44 +19,17 @@ CONTEXT: forth feline ;
 CURRENT: feline
 
 import LANGUAGE:
-\ import CONTEXT:
-\ import CURRENT:
 
 import feline-mode
 import forth-mode
 
 import bye
 
-import vocabulary
-
-\ import only
-\ import also
-\ import definitions
-\ import order
-
-import [defined]
-import [undefined]
-import [if]
-import [else]
-import [then]
-
-\ import :
-\ import ;
-
-\ import see
-: forth:disasm disasm ;
-
 import view
 
 import include
 import require
 import include-system-file
-\ import empty
-
-import decimal
-
-import constant
-\ import local
 
 import locals-enter
 import locals-leave
@@ -73,10 +46,6 @@ import rot
 import >r
 import r>
 
-\ REVIEW
-import execute
-import ?cr
-import .(
 import time
 
 : throw ( n -- )
@@ -87,31 +56,6 @@ import time
 ;
 
 : depth ( -- n ) depth tag-fixnum ;
-
-: do ( n1 n2 -- )
-    postpone untag-fixnum
-    postpone swap
-    postpone untag-fixnum
-    postpone swap
-    postpone do
-; immediate
-
-: ?do ( n1 n2 -- )
-    postpone untag-fixnum
-    postpone swap
-    postpone untag-fixnum
-    postpone swap
-    postpone ?do
-; immediate
-
-: i ( -- index )
-    postpone i
-    postpone tag-fixnum
-; immediate
-
-: forth:if ( -- )
-    postpone if
-; immediate
 
 : file-lines ( path -- string )
     string> r/o open-file throw local fileid
