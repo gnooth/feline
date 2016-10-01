@@ -1194,16 +1194,6 @@ sbuf-insert-nth!-test-1
 
 string-index-from-test-1
 
-// The followings tests verify that the quotation remains valid through gc,
-// even if there is no other reference to it. These tests must not be in a
-// definition, since the symbol-def slot holds a reference to the quotation.
-
-"each-integer-gc-test-1" ?nl write
-10000000 [ number>string drop ] each-integer
-
-"times-gc-test-1" ?nl write
-10000000 [ most-positive-fixnum number>string drop ] times
-
 IN: feline
 
 ?nl "Reached end of test.feline" write
