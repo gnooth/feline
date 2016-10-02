@@ -371,6 +371,20 @@ code feline_query, 'feline-query'       ; --
         next
 endcode
 
+; ### print-datastack
+code print_datastack, 'print-datastack' ; --
+        _ depth
+        _if .1
+        _ ?nl
+        _ white
+        _ foreground
+        _quote "--- Data stack:"
+        _ write_
+        _ feline_dot_s
+        _then .1
+        next
+endcode
+
 ; ### repl
 code repl, 'repl'                       ; --
 
@@ -400,15 +414,7 @@ code repl, 'repl'                       ; --
         _end_quotation .2
         _ recover
 
-        _ depth
-        _if .4
-        _ ?nl
-        _ white
-        _ foreground
-        _quote "--- Data stack:"
-        _ write_
-        _ feline_dot_s
-        _then .4
+        _ print_datastack
 
         ; REVIEW
         _ gc
