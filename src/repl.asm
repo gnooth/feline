@@ -185,37 +185,64 @@ code read_object, 'read-object'         ; -- object ?
         next
 endcode
 
-; ### feline-interpret
-code feline_interpret, 'feline-interpret' ; --
-.top:
-        _ ?stack
-
-        _ read_object                   ; -- object ?
-
-        _tagged_if_not .1
-        _drop
+; ### literal?
+code literal?, 'literal?'               ; string -- literal/string ?
+        _ token_character_literal?
+        _tagged_if .1                   ; -- literal
+        _t
         _return
-        _then .1
+        _then .1                        ; -- string
+
+        _ token_string_literal?
+        _tagged_if .2                   ; -- literal
+        _t
+        _return
+        _then .2                        ; -- string
 
         _dup
-        _ symbol?
+        _ string_to_number              ; -- string n/f
+        _dup
+        _tagged_if .3                   ; -- string n
+        _nip
+        _t
+        _return
+        _else .3
+        _drop
+        _then .3                        ; -- string
+
+        _f
+
+        next
+endcode
+
+; ### feline-interpret1
+code feline_interpret1, 'feline-interpret1' ; string --
+        _ literal?
+        _tagged_if .1
+        _return
+        _then .1                        ; -- string
+
+        ; not a literal
+        _ find_name                     ; -- symbol/string ?
         _tagged_if .2
         _ call_symbol
-        jmp     .top
-        _then .2
+        _else .2
+        _ undefined
+        _then .2                        ; -- symbol
 
-        ; not a symbol
+        next
+endcode
 
-        ; check for wrapper
+; ### feline-interpret
+code feline_interpret, 'feline-interpret' ; --
+        _begin .1
+        _ ?stack
+        _ parse_token                   ; -- string/f
         _dup
-        _ wrapper?
-        _tagged_if .3
-        _ wrapped
-        _then .3
-
-        ; leave object on the stack
-        jmp     .top
-
+        _tagged_while .1
+        _ feline_interpret1
+        _repeat .1
+        _drop
         next
 endcode
 
