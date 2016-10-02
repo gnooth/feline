@@ -343,6 +343,34 @@ code feline_do_error, 'feline-do-error' ; string-or-number --
         next
 endcode
 
+; ### feline-query
+code feline_query, 'feline-query'       ; --
+        _ ?nl
+        _quote "accept-string"          ; -- name
+        _quote "accept"                 ; -- name vocab-name
+        _ ?lookup_symbol                ; -- symbol/f
+        _dup
+        _tagged_if .1                   ; -- symbol
+        _ call_symbol                   ; -- string
+        _ string_from                   ; -- c-addr u
+        _lit 80
+        _ min                           ; -- c-addr u
+        _dup
+        _ ntib
+        _ store
+        _ tib
+        _ swap
+        _ cmove
+        _ toin
+        _ off
+        _else .1
+        _drop
+        _ prompt
+        _ forth_query
+        _then .1
+        next
+endcode
+
 ; ### repl
 code repl, 'repl'                       ; --
 
@@ -356,30 +384,7 @@ code repl, 'repl'                       ; --
         ; REVIEW
         mov     rsp, [rp0_data]
 
-        _ ?nl
-
-        _quote "accept-string"          ; -- name
-        _quote "accept"                 ; -- name vocab-name
-        _ ?lookup_symbol                ; -- symbol/f
-        _dup
-        _tagged_if .2                   ; -- symbol
-        _ call_symbol                   ; -- string
-        _ string_from
-        _lit 80
-        _ min
-        _dup
-        _ ntib
-        _ store
-        _ tib
-        _ swap
-        _ cmove
-        _ toin
-        _ off
-        _else .2
-        _drop
-        _ prompt
-        _ forth_query
-        _then .2
+        _ feline_query
 
         _ tib
         _ ntib

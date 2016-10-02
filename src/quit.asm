@@ -169,26 +169,6 @@ code forth_query, 'forth-query'                     ; --
         next
 endcode
 
-; ### accept-string
-deferred accept_string, 'accept-string', noop
-
-; ### feline-query
-code feline_query, 'feline-query'
-        _ accept_string                 ; -- string
-        _ string_from                   ; -- c-addr u
-        _lit 80
-        _ min                           ; -- c-addr u
-        _dup
-        _ ntib
-        _ store
-        _ tib
-        _ swap
-        _ cmove
-        _ toin
-        _ off
-        next
-endcode
-
 ; ### msg
 value msg, 'msg', 0
 
