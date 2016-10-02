@@ -185,8 +185,8 @@ code read_object, 'read-object'         ; -- object ?
         next
 endcode
 
-; ### eval
-code eval, 'eval'                       ; --
+; ### feline-interpret
+code feline_interpret, 'feline-interpret' ; --
 .top:
         _ ?stack
 
@@ -388,7 +388,7 @@ endcode
 ; ### repl
 code repl, 'repl'                       ; --
 
-        _lit eval_xt
+        _lit feline_interpret_xt
         _lit interpret_xt
         _tobody
         _store
@@ -407,7 +407,7 @@ code repl, 'repl'                       ; --
         _ set_input
 
         _quotation .1
-        _ eval
+        _ feline_interpret
         _end_quotation .1
         _quotation .2
         _ feline_do_error
