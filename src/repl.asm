@@ -378,7 +378,7 @@ code repl, 'repl'                       ; --
         _else .2
         _drop
         _ prompt
-        _ query
+        _ forth_query
         _then .2
 
         _ tib

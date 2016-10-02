@@ -152,7 +152,7 @@ code refill, 'refill'                   ; -- flag
         ; terminal input
         _drop
         _ cr
-        _ query
+        _ forth_query
         _ ntib
         _fetch
         _ nsource

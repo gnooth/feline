@@ -189,9 +189,6 @@ code feline_query, 'feline-query'
         next
 endcode
 
-; ### query
-deferred query, 'query', forth_query
-
 ; ### msg
 value msg, 'msg', 0
 
@@ -309,7 +306,7 @@ code forth_quit, 'quit'                 ; --            r:  i*x --
         mov     rsp, [rp0_data]
         _ ?cr
         _ prompt
-        _ query
+        _ forth_query
         _ tib
         _ ntib
         _fetch
