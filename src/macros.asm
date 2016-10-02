@@ -647,6 +647,13 @@ section .text
         je      %1_end
 %endmacro
 
+%macro  _tagged_while 1
+        cmp     rbx, f_value
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        je      %1_end
+%endmacro
+
 %macro _repeat 1
 section .text
         jmp     %1_begin
