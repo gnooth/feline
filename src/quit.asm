@@ -302,7 +302,7 @@ code do_error, 'do-error'               ; n --
 endcode
 
 ; ### quit
-code quit, 'quit'                       ; --            r:  i*x --
+code forth_quit, 'quit'                 ; --            r:  i*x --
 ; CORE
         _ lbrack
         _begin .1
@@ -350,7 +350,7 @@ code reset, 'reset'                     ; i*x --        r: j*x --
         ; REVIEW windows-ui
         _ forth_standard_output
 
-        jmp     quit
+        jmp     forth_quit
         next                            ; for decompiler
 endcode
 
