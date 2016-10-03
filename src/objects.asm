@@ -26,7 +26,7 @@ code allocate_cells, 'allocate-cells'   ; n -- address
 ; Argument and return value are untagged.
         _cells
         _dup
-        _ iallocate                     ; -- bytes address
+        _ feline_allocate_untagged      ; -- bytes address
         _swap                           ; -- address bytes
         _dupd                           ; -- address address bytes
         _ erase                         ; -- address
