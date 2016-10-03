@@ -93,8 +93,6 @@
         shr     rbx, TAG_BITS
 %endmacro
 
-%define nothing SPECIAL_TAG + (2 << TAG_BITS)
-
 %macro  _tag_char 0
         _tag_fixnum
 %endmacro
