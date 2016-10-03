@@ -22,10 +22,11 @@ IN: feline
     parse-token                         // -- string/f
     verify-string
     current-vocab ensure-symbol         // -- symbol
-    read-object                         // -- symbol object ?
 
-    // FIXME
-    drop                                // -- symbol object
+    parse-token
+    literal? [
+        find-name [ literalize ] [ undefined ] if
+     ] unless
 
     1array array>quotation swap symbol-set-def
 ;
