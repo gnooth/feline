@@ -124,67 +124,6 @@ code undefined, 'undefined'             ; string/symbol --
         next
 endcode
 
-; ### read-object
-code read_object, 'read-object'         ; -- object ?
-
-        _ parse_token                   ; -- string/f
-
-        _dup
-        _f
-        _eq?
-        _tagged_if .1
-        _drop
-        _f
-        _f
-        _return
-        _then .1                        ; -- string
-
-        _ token_character_literal?
-        _tagged_if .2                   ; -- char
-        _t
-        _return
-        _then .2
-
-        _ token_string_literal?
-        _tagged_if .3                   ; -- string
-        _t
-        _return
-        _then .3
-
-        _dup
-        _ string_to_number              ; -- string n/f
-        _dup
-        _tagged_if .4                   ; -- string n
-        _nip
-        _t
-        _return
-        _else .4
-        _drop
-        _then .4                        ; -- string
-
-        _ find_name
-        _tagged_if_not .5
-        _ undefined
-        _return
-        _then .5                        ; -- symbol
-
-        _dup
-        _ parsing_word?
-        _tagged_if .6
-        _ call_symbol
-        _then .6
-
-        cmp     rbx, nothing
-        jne     .7
-        poprbx
-        jmp     read_object
-.7:
-        _t
-        _return
-
-        next
-endcode
-
 ; ### literal?
 code literal?, 'literal?'               ; string -- literal/string ?
         _ token_character_literal?
