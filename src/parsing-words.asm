@@ -367,10 +367,17 @@ code quote_symbol, '\', PARSING         ; -- symbol
         _then .1
 
         _ find_name
-        _tagged_if .2
+        _tagged_if .2                   ; -- symbol
+        _get_accum
+        _dup
+        _tagged_if .3
+        _swap
         _ new_wrapper
-        _ maybe_add
-        _return
+        _swap
+        _ vector_push                   ; --
+        _else .3
+        _drop
+        _then .3                        ; -- symbol
         _else .2
         _ undefined
         _then .2
