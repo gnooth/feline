@@ -112,19 +112,77 @@ fixnum-test-2
 fixnum-test-3
 
 // fixnum<
-: fixnum-test-4 ( -- )
+: fixnum<-test-1 ( -- )
+    0 0 fixnum< check-false
+    1 1 fixnum< check-false
     1 2 fixnum< check-t
     2 1 fixnum< check-false
     -2 -1 fixnum< check-t
     -1 -2 fixnum< check-false
     -2 1 fixnum< check-t
     1 -2 fixnum< check-false
-    1 2 < check-t
-    2 1 fixnum>= check-t
-    2 1 >= check-t
+    most-negative-fixnum 0 fixnum< check-t
+    most-negative-fixnum most-positive-fixnum fixnum< check-t
+    0 most-positive-fixnum fixnum< check-t
 ;
 
-fixnum-test-4
+fixnum<-test-1
+
+// fixnum<=
+: fixnum<=-test-1 ( -- )
+    0 0 fixnum<= check-t
+    1 1 fixnum<= check-t
+    1 2 fixnum<= check-t
+    2 1 fixnum<= check-false
+    -2 -1 fixnum<= check-t
+    -1 -2 fixnum<= check-false
+    -2 1 fixnum<= check-t
+    1 -2 fixnum<= check-false
+    most-negative-fixnum 0 fixnum<= check-t
+    most-negative-fixnum most-positive-fixnum fixnum<= check-t
+    most-negative-fixnum most-negative-fixnum fixnum<= check-t
+    most-positive-fixnum most-positive-fixnum fixnum<= check-t
+    0 most-positive-fixnum fixnum<= check-t
+;
+
+fixnum<=-test-1
+
+// fixnum>
+: fixnum>-test-1 ( -- )
+    0 0 fixnum> check-false
+    1 1 fixnum> check-false
+    1 2 fixnum> check-false
+    2 1 fixnum> check-t
+    -2 -1 fixnum> check-false
+    -1 -2 fixnum> check-t
+    -2 1 fixnum> check-false
+    1 -2 fixnum> check-t
+    most-negative-fixnum 0 fixnum> check-false
+    most-negative-fixnum most-positive-fixnum fixnum> check-false
+    most-positive-fixnum most-negative-fixnum fixnum> check-t
+    0 most-positive-fixnum fixnum> check-false
+;
+
+fixnum>-test-1
+
+// fixnum>=
+: fixnum>=-test-1 ( -- )
+    0 0 fixnum>= check-t
+    1 1 fixnum>= check-t
+    1 2 fixnum>= check-false
+    2 1 fixnum>= check-t
+    -2 -1 fixnum>= check-false
+    -1 -2 fixnum>= check-t
+    -2 1 fixnum>= check-false
+    1 -2 fixnum>= check-t
+    most-negative-fixnum 0 fixnum>= check-false
+    most-negative-fixnum most-positive-fixnum fixnum>= check-false
+    most-negative-fixnum most-negative-fixnum fixnum>= check-t
+    most-positive-fixnum most-positive-fixnum fixnum>= check-t
+    0 most-positive-fixnum fixnum>= check-false
+;
+
+fixnum>=-test-1
 
 : fixnum-test-5 ( -- )
     1 2 fixnum- -1 = check-t
@@ -253,6 +311,34 @@ fixnum-max-test-1
 ;
 
 max-test-1
+
+: fixnum-min-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    1 2 fixnum-min 1 eq? check-t
+    2 1 fixnum-min 1 eq? check-t
+    -1 2 fixnum-min -1 eq? check-t
+    2 -1 fixnum-min -1 eq? check-t
+    most-positive-fixnum 0 fixnum-min zero? check-t
+    most-negative-fixnum 0 fixnum-min most-negative-fixnum eq? check-t
+    0 most-positive-fixnum fixnum-min zero? check-t
+    0 most-negative-fixnum fixnum-min most-negative-fixnum eq? check-t
+;
+
+fixnum-min-test-1
+
+: min-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+    1 2 min 1 eq? check-t
+    2 1 min 1 eq? check-t
+    -1 2 min -1 eq? check-t
+    2 -1 min -1 eq? check-t
+    most-positive-fixnum 0 min zero? check-t
+    most-negative-fixnum 0 min most-negative-fixnum eq? check-t
+    0 most-positive-fixnum min zero? check-t
+    0 most-negative-fixnum min most-negative-fixnum eq? check-t
+;
+
+min-test-1
 
 : dip-test-1 ( -- )
     << last-word symbol-name >> ?nl write

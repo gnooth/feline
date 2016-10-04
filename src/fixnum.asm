@@ -169,6 +169,28 @@ inline fixnum_gt, 'fixnum>'             ; x y -- ?
         lea     rbp, [rbp + BYTES_PER_CELL]
 endinline
 
+; ### fixnum<=
+code fixnum_le, 'fixnum<='              ; x y -- ?
+; No type checking.
+        mov     eax, t_value
+        cmp     [rbp], rbx
+        mov     ebx, f_value
+        cmovle  ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
+; ### <=
+code feline_le, '<='                    ; x y -- ?
+; FIXME optimize
+        _ check_fixnum
+        _swap
+        _ check_fixnum
+        _swap
+        _ fixnum_le
+        next
+endcode
+
 ; ### >
 code feline_gt, '>'                     ; x y -- ?
 ; FIXME optimize
@@ -202,6 +224,17 @@ code feline_ge, '>='                    ; x y -- ?
         next
 endcode
 
+; ### fixnum-min
+code fixnum_min, 'fixnum-min'           ; x y -- z
+; No type checking.
+        _untag_2_fixnums
+        popd    rax
+        cmp     rax, rbx
+        cmovl   rbx, rax
+        _tag_fixnum
+        next
+endcode
+
 ; ### fixnum-max
 code fixnum_max, 'fixnum-max'           ; x y -- z
 ; No type checking.
@@ -209,6 +242,20 @@ code fixnum_max, 'fixnum-max'           ; x y -- z
         popd    rax
         cmp     rax, rbx
         cmovg   rbx, rax
+        _tag_fixnum
+        next
+endcode
+
+; ### min
+code feline_min, 'min'                  ; x y -- z
+        _check_fixnum
+        _swap
+        _check_fixnum
+        popd    rax
+        cmp     rax, rbx
+        jge     .1
+        mov     rbx, rax
+.1:
         _tag_fixnum
         next
 endcode
