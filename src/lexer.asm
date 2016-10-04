@@ -147,6 +147,8 @@ endcode
 code skip_blank, 'skip-blank'           ; lexer --
         _ check_lexer
 
+skip_blank_unchecked:
+
         push    this_register
         mov     this_register, rbx
         poprbx
@@ -180,6 +182,8 @@ endcode
 code skip_word, 'skip-word'             ; lexer --
         _ check_lexer
 
+skip_word_unchecked:
+
         push    this_register
         mov     this_register, rbx
         poprbx
@@ -199,6 +203,38 @@ code skip_word, 'skip-word'             ; lexer --
         _ string_length
         _untag_fixnum
         _this_lexer_set_index
+        _then .1
+
+        pop     this_register
+        next
+endcode
+
+; ### lexer-parse-token
+code lexer_parse_token, 'lexer-parse-token' ; lexer -- string
+        _ check_lexer
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+
+        _this
+        _ skip_blank_unchecked
+        _this_lexer_index
+        _tag_fixnum
+
+        _this
+        _ skip_word_unchecked
+        _this_lexer_index
+        _tag_fixnum
+
+        _twodup
+        _ eq?
+        _tagged_if .1
+        _2drop
+        _f
+        _else .1
+        _this_lexer_string
+        _ string_substring
         _then .1
 
         pop     this_register
