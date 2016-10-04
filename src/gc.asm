@@ -173,6 +173,13 @@ code mark_tuple, 'mark-tuple'           ; tuple --
         next
 endcode
 
+; ### mark-lexer
+code mark_lexer, 'mark-lexer'           ; lexer --
+        _lexer_string
+        _ maybe_mark_handle
+        next
+endcode
+
 ; ### mark-handle
 code mark_handle, 'mark-handle'         ; handle --
         _handle_to_object_unsafe        ; -- object/0
@@ -264,6 +271,15 @@ code mark_handle, 'mark-handle'         ; handle --
         _ mark_tuple
         _return
         _then .10
+
+        _dup
+        _object_type
+        _lit OBJECT_TYPE_LEXER
+        _equal
+        _if .11
+        _ mark_lexer
+        _return
+        _then .11
 
 .1:
         _drop
