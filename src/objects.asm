@@ -366,6 +366,14 @@ code dot_object, '.'                    ; handle-or-object --
         _return
         _then .16
 
+        _dup
+        _ lexer?
+        _tagged_if .17
+        _ dot_lexer
+        _ space
+        _return
+        _then .17
+
         ; give up
         _tag_fixnum
         _ hexdot
