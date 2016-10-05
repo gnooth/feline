@@ -15,6 +15,7 @@
 
 file __FILE__
 
+; set in constructor, read only thereafter
 %macro  _lexer_string 0                 ; lexer -- string
         _slot1
 %endmacro
@@ -27,6 +28,7 @@ file __FILE__
         _this_set_slot1
 %endmacro
 
+; untagged index of current character
 %macro  _lexer_index 0                  ; lexer -- index
         _slot2
 %endmacro
@@ -41,6 +43,46 @@ file __FILE__
 
 %macro  _this_lexer_set_index 0         ; index --
         _this_set_slot2
+%endmacro
+
+; untagged line number
+%macro  _lexer_line 0                   ; lexer -- line
+        _slot3
+%endmacro
+
+%macro  _this_lexer_line 0              ; -- line
+        _this_slot3
+%endmacro
+
+%macro  _lexer_set_line 0               ; line lexer --
+        _set_slot3
+%endmacro
+
+%macro  _this_lexer_set_line 0          ; line --
+        _this_set_slot3
+%endmacro
+
+; untagged index of first character of current line
+%macro  _lexer_line_start 0             ; lexer -- index
+        _slot4
+%endmacro
+
+%macro  _this_lexer_line_start 0        ; -- index
+        _this_slot4
+%endmacro
+
+%macro  _lexer_set_line_start 0         ; index lexer --
+        _set_slot4
+%endmacro
+
+%macro  _this_lexer_set_line_start 0    ; index --
+        _this_set_slot4
+%endmacro
+
+%macro  _this_lexer_string_nth_unsafe 0
+        _this_lexer_string              ; -- handle
+        _handle_to_object_unsafe        ; -- string
+        _string_nth_unsafe
 %endmacro
 
 ; ### lexer?
@@ -113,11 +155,21 @@ code lexer_index, 'lexer-index'         ; lexer -- index
         next
 endcode
 
+; ### lexer-set-index
+code lexer_set_index, 'lexer-set-index' ; index lexer --
+        _ check_lexer
+        _swap
+        _ check_index
+        _swap
+        _lexer_set_index
+        next
+endcode
+
 ; ### <lexer>
 code lexer, '<lexer>'                   ; string -- lexer
-; 3 cells: object header, string, index
+; 5 cells: object header, string, index
 
-        _lit 3
+        _lit 5
         _ allocate_cells
 
         push    this_register
@@ -279,9 +331,15 @@ code dot_lexer, '.lexer'                ; lexer --
 
         _then .1
 
-        _ space
-
         _this_lexer_index
+        _tag_fixnum
+        _ dot_object
+
+        _this_lexer_line
+        _tag_fixnum
+        _ dot_object
+
+        _this_lexer_line_start
         _tag_fixnum
         _ dot_object
 
