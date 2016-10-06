@@ -191,6 +191,73 @@ code lexer, '<lexer>'                   ; string -- lexer
         next
 endcode
 
+; ### lexer-string-skip-whitespace
+code lexer_string_skip_whitespace, 'lexer-string-skip-whitespace' ; lexer -- index/f
+
+        _ check_lexer
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+
+        _this_lexer_index
+        _this_lexer_string
+        _ string_length
+        _untag_fixnum
+        _twodup
+        _ ge
+        _if .1
+        _2drop
+        _f
+        jmp     .exit
+        _then .1                        ; -- untagged-start-index untagged-length
+
+        _swap
+        _do .2
+        _i
+        _this_lexer_string_nth_unsafe
+        _lit 32
+        _ugt
+        _if .3
+        _i
+        _tag_fixnum
+        _unloop
+        jmp     .exit
+        _then .3
+        _loop .2
+
+        _ break
+
+.exit:
+        pop     this_register
+        next
+endcode
+
+; ### lexer-skip-blank
+code lexer_skip_blank, 'lexer-skip-blank' ; lexer -- index/f
+        _dup
+        _ lexer_string_skip_whitespace
+
+        _duptor
+
+        _dup
+        _tagged_if .1
+        _swap
+        _ lexer_set_index
+        _else .1
+        _drop
+        _dup
+        _ lexer_string
+        _ string_length
+        _swap
+        _ lexer_set_index
+        _then .1
+
+        _rfrom
+
+        next
+endcode
+
 ; : skip-blank ( )
 ;     lexer-index lexer-string string-skip-whitespace ( -- index/f )
 ;     [ lexer-index! ] [ lexer-string length lexer-index! ] if* ;
@@ -231,7 +298,7 @@ endcode
 ;     [ lexer-index! ] [ lexer-string length lexer-index! ] if* ;
 
 ; ### skip-word
-code skip_word, 'skip-word'             ; lexer --
+code skip_word, 'skip-word'             ; lexer -- index
         _ check_lexer
 
 skip_word_unchecked:
@@ -257,39 +324,38 @@ skip_word_unchecked:
         _this_lexer_set_index
         _then .1
 
+        _this_lexer_index
+        _tag_fixnum
+
         pop     this_register
         next
 endcode
 
 ; ### lexer-parse-token
 code lexer_parse_token, 'lexer-parse-token' ; lexer -- string
-        _ check_lexer
+        _dup
+        _ lexer_skip_blank              ; -- lexer index/f
 
-        push    this_register
-        mov     this_register, rbx
-        poprbx
-
-        _this
-        _ skip_blank_unchecked
-        _this_lexer_index
-        _tag_fixnum
-
-        _this
-        _ skip_word_unchecked
-        _this_lexer_index
-        _tag_fixnum
-
-        _twodup
-        _ eq?
-        _tagged_if .1
+        _dup
+        _tagged_if_not .1
         _2drop
         _f
-        _else .1
-        _this_lexer_string
-        _ string_substring
+        _return
         _then .1
 
-        pop     this_register
+        _over
+        _ skip_word
+        _twodup
+        _ eq?
+        _tagged_if .2
+        _3drop
+        _f
+        _else .2
+        _ rot
+        _ lexer_string
+        _ string_substring
+        _then .2
+
         next
 endcode
 
