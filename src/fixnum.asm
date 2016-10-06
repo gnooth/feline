@@ -97,15 +97,23 @@ endcode
 ; ### error-not-index
 code error_not_index, 'error-not-index' ; x --
         ; REVIEW
-        _error "not a index"
+        _error "not an index"
         next
 endcode
 
+%macro _check_index 0
+        mov     al, bl
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     error_not_index
+        test    rbx, rbx
+        js      error_not_fixnum
+        _untag_fixnum
+%endmacro
+
 ; ### check-index
 code check_index, 'check-index'         ; non-negative-fixnum -- untagged-fixnum
-        _check_fixnum
-        test    rbx, rbx
-        js      error_not_index
+        _check_index
         next
 endcode
 
