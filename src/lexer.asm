@@ -165,6 +165,18 @@ code lexer_set_index, 'lexer-set-index' ; index lexer --
         next
 endcode
 
+; ### lexer-char
+code lexer_char, 'lexer-char'           ; lexer -- char
+        _ check_lexer
+        _dup
+        _lexer_index
+        _tag_fixnum
+        _swap
+        _lexer_string
+        _ string_nth
+        next
+endcode
+
 ; ### <lexer>
 code lexer, '<lexer>'                   ; string -- lexer
 ; 5 cells: object header, string, index
