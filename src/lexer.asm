@@ -82,7 +82,7 @@ file __FILE__
 %macro  _this_lexer_string_nth_unsafe 0
         _this_lexer_string              ; -- handle
         _handle_to_object_unsafe        ; -- string
-        _string_nth_unsafe
+        _string_nth_unsafe              ; -- untagged-char
 %endmacro
 
 ; ### lexer?
@@ -343,6 +343,52 @@ skip_word_unchecked:
         next
 endcode
 
+; ### lexer-skip-quoted-string
+code lexer_skip_quoted_string, 'lexer-skip-quoted-string' ; lexer --
+
+        _ check_lexer
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+
+        _this_lexer_index
+        _oneplus
+        _this_lexer_set_index
+
+        _this_lexer_index
+        _this_lexer_string
+        _ string_length
+        _untag_fixnum
+        _twodup
+        _ ge
+        _if .1
+        jmp     .error
+        _then .1                        ; -- untagged-start-index untagged-length
+
+        _swap
+        _do .2
+        _i
+        _this_lexer_string_nth_unsafe
+        _lit '"'
+        _equal
+        _if .3
+        _i
+        _oneplus
+        _this_lexer_set_index
+        _unloop
+        jmp     .exit
+        _then .3
+        _loop .2
+
+.error:
+        _error "unterminated string"
+
+.exit:
+        pop     this_register
+        next
+endcode
+
 ; ### lexer-parse-token
 code lexer_parse_token, 'lexer-parse-token' ; lexer -- string
         _dup
@@ -353,20 +399,35 @@ code lexer_parse_token, 'lexer-parse-token' ; lexer -- string
         _2drop
         _f
         _return
-        _then .1
+        _then .1                        ; -- lexer index
+
+        _over
+        _ lexer_char
+        _lit tagged_char('"')
+        _eq?
+        _tagged_if .2
+        _over
+        _ lexer_skip_quoted_string
+        _over
+        _ lexer_index                   ; -- lexer from to
+        _ rot
+        _ lexer_string
+        _ string_substring
+        _return
+        _then .2
 
         _over
         _ skip_word
         _twodup
         _ eq?
-        _tagged_if .2
+        _tagged_if .3
         _3drop
         _f
-        _else .2
+        _else .3
         _ rot
         _ lexer_string
         _ string_substring
-        _then .2
+        _then .3
 
         next
 endcode
