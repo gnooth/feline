@@ -226,7 +226,7 @@ code lexer_string_skip_whitespace, 'lexer-string-skip-whitespace' ; lexer -- ind
         _then .3
         _loop .2
 
-        _ break
+        _f
 
 .exit:
         pop     this_register
