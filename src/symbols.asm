@@ -20,6 +20,7 @@ file __FILE__
         section .data
         align   DEFAULT_DATA_ALIGNMENT
 %1_handle:
+        dq      0
         section .text
 %1:
         pushrbx
