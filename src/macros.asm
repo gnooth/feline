@@ -521,6 +521,11 @@ section .text
         mov     rbx, %%string
 %endmacro
 
+%macro  _write 1
+        _quote %1
+        _ write_string
+%endmacro
+
 %macro  _error 1
         _quote %1
 section .text
