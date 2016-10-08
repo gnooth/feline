@@ -99,6 +99,7 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	compiler.asm \
 	constants.asm \
 	curry.asm \
+	debug.asm \
 	dictionary.asm \
 	dot.asm \
 	double.asm \

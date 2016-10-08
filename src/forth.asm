@@ -63,7 +63,7 @@ static_data_area:
 
 IN_FELINE
 
-; Objects
+%include "debug.asm"
 %include "key.asm"
 %include "vocabs.asm"
 %include "object-macros.asm"
