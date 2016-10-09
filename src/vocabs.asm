@@ -169,23 +169,29 @@ code using_colon, 'USING:'
         _lit 10
         _ new_vector_untagged           ; -- handle
         _tor
-        _begin .2
-        _ parse_name
-        _twodup
-        _squote ";"
-        _ strequal
+        _begin .1
+        _ parse_token                   ; -- string/f
+        _dup
+        _tagged_if_not .2
+        _drop
+        _error "unexpected end of input"
+        _then .2
+        _dup
+        _quote ";"
+        _ stringequal
+        _untag_boolean
         _zeq
-        _while .2
-        _ copy_to_string
+        _while .1
         _ lookup_vocab
         _dup
-        _f
-        _equal
-        _abortq "can't find vocab"      ; FIXME
+        _tagged_if_not .3
+        _drop
+        _error "can't find vocab"
+        _then .3
         _rfetch
         _ vector_push
-        _repeat .2
-        _2drop
+        _repeat .1
+        _drop
         _rfrom
         _to context_vector
         next
