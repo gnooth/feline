@@ -159,40 +159,55 @@ endcode
 
 ; ### parse-token
 code parse_token, 'parse-token'         ; -- string/f
+
+        cmp     qword [symbols_initialized?], t_value
+        jne .1
+
+        _ lexer
+        _ get
+        _dup
+        _tagged_if .2
+        _ lexer_parse_token
+        _return
+        _else .2
+        _drop
+        _then .2
+
+.1:
         _ maybe_scan_token
         _dup
-        _tagged_if .1
+        _tagged_if .3
 
         _dup
         _quote "("
         _ stringequal
-        _tagged_if .2
+        _tagged_if .4
         _drop
         _ paren
         _ parse_token
         _return
-        _then .2
+        _then .4
 
         _dup
         _quote "//"
         _ stringequal
-        _tagged_if .3
+        _tagged_if .5
         _drop
         _ comment_to_eol
         _ parse_token
         _return
-        _then .3
+        _then .5
 
         _dup
         _quote '"'
         _ stringequal
-        _tagged_if .4
+        _tagged_if .6
         _drop
         _ parse_string
         _return
-        _then .4
+        _then .6
 
-        _then .1
+        _then .3
         next
 endcode
 
@@ -559,10 +574,66 @@ code define, ':'                        ; --
 endcode
 
 ; ### //
-code comment_to_eol, '//', PARSING
+code comment_to_eol, '//', PARSING      ; --
+        cmp     qword [symbols_initialized?], t_value
+        jne .1
+        _ lexer
+        _ get
+        _dup
+        _tagged_if .2
+        _ lexer_next_line
+        _return
+        _else .2
+        _drop
+        _then .2
+.1:
         _lit 10
         _ parse
         _2drop
+        next
+endcode
+
+; ### (
+code feline_paren, '(', PARSING
+        cmp     qword [symbols_initialized?], t_value
+        jne .1
+        _ lexer
+        _ get
+        _dup
+        _tagged_if .2
+
+        ; -- lexer
+        _dup
+        _ lexer_index
+        _over
+        _ lexer_string
+        _lit tagged_char(')')
+        _ rrot
+        _ string_index_from              ; -- lexer index/f
+
+        _dup
+        _tagged_if .3
+        ; found ')'
+        _lit tagged_fixnum(1)
+        _ fixnum_plus
+        _swap
+        _ lexer_set_index
+        _else .3
+        _drop
+        _dup
+        _ lexer_string
+        _ string_length
+        _swap
+        _ lexer_set_index
+        _then .3
+
+        _return
+
+        _else .2
+        _drop
+        _then .2
+.1:
+        _ paren
         next
 endcode
 
