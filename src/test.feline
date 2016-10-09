@@ -980,8 +980,6 @@ global-test-1
         \ zork get-global 19 eq? check-t
     ] with-scope
 
-    zork 19 eq? check-t
-    \ zork get 19 eq? check-t
     \ zork get-global 19 eq? check-t
 ;
 
@@ -989,7 +987,7 @@ global-test-2
 
 : global-test-3 ( -- )
     << last-word symbol-name >> ?nl write
-    f \ zork set-global
+    f zork!
     zork check-false
     [ [ 71 zork! zork ] with-scope ] [ ] recover 71 eq? check-t
     [ [ 71 zork! "error" error ] with-scope ] [ drop zork ] recover check-false
