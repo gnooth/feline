@@ -717,3 +717,30 @@ code parse_help, 'HELP:', PARSING
 
         next
 endcode
+
+; ### LANGUAGE:
+code parse_language, 'LANGUAGE:', PARSING
+        _ parse_token                   ; -- string/f
+
+        _dup
+        _quote "forth"
+        _ stringequal
+        _tagged_if .1
+        _drop
+        _ forth_mode
+        _return
+        _then .1
+
+        _dup
+        _quote "feline"
+        _ stringequal
+        _tagged_if .2
+        _drop
+        _ feline_mode
+        _return
+        _then .2
+
+        _error "unsupported language"
+
+        next
+endcode

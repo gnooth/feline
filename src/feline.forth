@@ -18,8 +18,6 @@ LANGUAGE: forth
 CONTEXT: forth feline ;
 CURRENT: feline
 
-import LANGUAGE:
-
 import feline-mode
 import forth-mode
 
