@@ -372,6 +372,16 @@ code repl, 'repl'                       ; --
         _zero
         _ set_input
 
+        _ tib
+        _ ntib
+        _fetch
+        _ copy_to_string
+        _ new_lexer
+
+        _ begin_scope
+        _ lexer
+        _ set
+
         _quotation .1
         _ feline_interpret
         _end_quotation .1
@@ -379,6 +389,8 @@ code repl, 'repl'                       ; --
         _ feline_do_error
         _end_quotation .2
         _ recover
+
+        _ end_scope
 
         _ print_datastack
 
