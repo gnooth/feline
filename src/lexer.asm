@@ -203,6 +203,54 @@ code new_lexer, '<lexer>'               ; string -- lexer
         next
 endcode
 
+; ### lexer-next-line
+code lexer_next_line, 'lexer-next-line' ; lexer -- index/f
+
+        _ check_lexer
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+
+        _this_lexer_index
+        _this_lexer_string
+        _ string_length
+        _untag_fixnum
+
+        _twodup
+        _ ge
+        _if .1
+        _2drop
+        _f
+        jmp     .exit
+        _then .1                        ; -- untagged-start-index untagged-length
+
+        _swap
+        _do .2
+        _i
+        _this_lexer_string_nth_unsafe
+        _lit 10
+        _equal
+        _if .3
+        _i
+        _oneplus
+        _this_lexer_set_index
+        _unloop
+        jmp     .exit
+        _then .3
+        _loop .2
+
+        ; reached end of string without finding a newline
+        _this_lexer_string
+        _ string_length
+        _untag_fixnum
+        _this_lexer_set_index
+
+.exit:
+        pop     this_register
+        next
+endcode
+
 ; ### lexer-string-skip-whitespace
 code lexer_string_skip_whitespace, 'lexer-string-skip-whitespace' ; lexer -- index/f
 
