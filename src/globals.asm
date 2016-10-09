@@ -122,10 +122,18 @@ endcode
 ; ### with-scope
 code with_scope, 'with-scope'           ; quot --
         _ begin_scope
+
+        ; protect quotation from gc
+        push    rbx
+
         _ callable_code_address
         mov     rax, rbx
         poprbx
         call    rax
+
+        ; drop quotation
+        pop     rax
+
         _ end_scope
         next
 endcode
