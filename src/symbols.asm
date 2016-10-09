@@ -30,6 +30,9 @@ file __FILE__
 %endmacro
 
 symbol accum, 'accum'
+symbol lexer, 'lexer'
+
+_global symbols_initialized?, f_value
 
 ; ### initialize-symbols
 code initialize_symbols, 'initialize-symbols' ; --
@@ -38,5 +41,14 @@ code initialize_symbols, 'initialize-symbols' ; --
         _ lookup_symbol
         mov     [accum_handle], rbx
         poprbx
+
+        _quote "lexer"
+        _quote "feline"
+        _ lookup_symbol
+        mov     [lexer_handle], rbx
+        poprbx
+
+        mov     qword [symbols_initialized?], t_value
+
         next
 endcode
