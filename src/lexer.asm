@@ -148,7 +148,7 @@ code lexer_string, 'lexer-string'       ; lexer -- string
 endcode
 
 ; ### lexer-index
-code lexer_index, 'lexer-index'         ; lexer -- index
+code lexer_index, 'lexer-index'         ; lexer -- tagged-index
         _ check_lexer
         _lexer_index
         _tag_fixnum
@@ -156,10 +156,10 @@ code lexer_index, 'lexer-index'         ; lexer -- index
 endcode
 
 ; ### lexer-set-index
-code lexer_set_index, 'lexer-set-index' ; index lexer --
+code lexer_set_index, 'lexer-set-index' ; tagged-index lexer --
         _ check_lexer
         _swap
-        _ check_index
+        _ check_index                   ; -- lexer untagged-index
         _swap
         _lexer_set_index
         next
@@ -178,7 +178,7 @@ code lexer_char, 'lexer-char'           ; lexer -- char
 endcode
 
 ; ### <lexer>
-code lexer, '<lexer>'                   ; string -- lexer
+code new_lexer, '<lexer>'               ; string -- lexer
 ; 5 cells: object header, string, index
 
         _lit 5
@@ -390,7 +390,7 @@ code lexer_skip_quoted_string, 'lexer-skip-quoted-string' ; lexer --
 endcode
 
 ; ### lexer-parse-token
-code lexer_parse_token, 'lexer-parse-token' ; lexer -- string
+code lexer_parse_token, 'lexer-parse-token' ; lexer -- string/f
         _dup
         _ lexer_skip_blank              ; -- lexer index/f
 
