@@ -649,7 +649,7 @@ code string_skip_to_whitespace, 'string-skip-to-whitespace' ; start-index string
 endcode
 
 ; ### string-index-from
-code string_index_from, 'string-index-from' ; char start-index string -- index
+code string_index_from, 'string-index-from' ; char start-index string -- index/f
 
         _ check_string
 
@@ -784,17 +784,17 @@ code concat, 'concat'                   ; string1 string2 -- string3
 endcode
 
 ; ### string=
-code stringequal, 'string='             ; string1 string2 -- t|f
+code stringequal, 'string='             ; string1 string2 -- ?
         _ string_from
         _ rot
         _ string_from
-        _ strequal                      ; -- -1|0
-        _tag_boolean                    ; -- t|f
+        _ strequal                      ; -- -1/0
+        _tag_boolean                    ; -- ?
         next
 endcode
 
 ; ### string-equal?
-code string_equal?, 'string-equal?'     ; object1 object2 -- t|f
+code string_equal?, 'string-equal?'     ; object1 object2 -- ?
 ; Returns true if both objects are strings and those strings are identical.
         _dup
         _ string?
