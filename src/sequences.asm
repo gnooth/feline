@@ -301,7 +301,12 @@ endcode
 
 ; ### each
 code each, 'each'                       ; seq quotation-or-xt --
+
+        ; protect quotation from gc
+        push    rbx
+
         _ callable_code_address         ; -- seq code-address
+
         push    r12
         mov     r12, rbx                ; code address in r12
         poprbx                          ; -- seq
@@ -319,12 +324,21 @@ code each, 'each'                       ; seq quotation-or-xt --
         _loop .1
         pop     this_register
         pop     r12
+
+        ; drop quotation
+        pop     rax
+
         next
 endcode
 
 ; ### each-index
 code each_index, 'each-index'           ; seq quotation-or-xt --
+
+        ; protect quotation from gc
+        push    rbx
+
         _ callable_code_address         ; -- seq code-address
+
         push    r12
         mov     r12, rbx                ; code address in r12
         poprbx                          ; -- seq
@@ -344,6 +358,10 @@ code each_index, 'each-index'           ; seq quotation-or-xt --
         _loop .1
         pop     this_register
         pop     r12
+
+        ; drop quotation
+        pop     rax
+
         next
 endcode
 
