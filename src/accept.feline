@@ -15,7 +15,7 @@
 
 LANGUAGE: feline
 
-include-system-file term.feline
+"term.feline" load-system-file
 
 USING: feline ;
 IN: accept

@@ -38,13 +38,13 @@ IN: feline
     [ dup callable? [ call ] [ second call ] if ] [ no-cond ]
     if* ;
 
-include-system-file help.feline
-include-system-file sequences.feline
-include-system-file tuple.feline
-include-system-file globals.feline
-include-system-file constant.feline
-include-system-file accept.feline
-include-system-file dump.feline
+"help.feline"           load-system-file
+"sequences.feline"      load-system-file
+"tuple.feline"          load-system-file
+"globals.feline"        load-system-file
+"constant.feline"       load-system-file
+"accept.feline"         load-system-file
+"dump.feline"           load-system-file
 
 USING: feline ;
 IN: feline
