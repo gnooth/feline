@@ -450,3 +450,14 @@ code load, 'load'                       ; path --
         _ end_scope
         next
 endcode
+
+; ### load-system-file
+code load_system_file, 'load-system-file' ; filename --
+        _ feline_home
+        _quote "src"
+        _ path_append
+        _swap
+        _ path_append
+        _ load
+        next
+endcode
