@@ -432,32 +432,3 @@ code break, 'break'                     ; --
         _again .2
         next
 endcode
-
-; ### load
-code load, 'load'                       ; path --
-        _ file_contents
-        _ new_lexer
-        _ begin_scope
-        _ lexer
-        _ set
-        _quotation .1
-        _ feline_interpret
-        _end_quotation .1
-        _quotation .2
-        _ feline_do_error
-        _end_quotation .2
-        _ recover
-        _ end_scope
-        next
-endcode
-
-; ### load-system-file
-code load_system_file, 'load-system-file' ; filename --
-        _ feline_home
-        _quote "src"
-        _ path_append
-        _swap
-        _ path_append
-        _ load
-        next
-endcode

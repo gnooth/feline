@@ -119,6 +119,7 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	key.asm \
 	language.asm \
 	lexer.asm \
+	load.asm \
 	locals.asm \
 	loop.asm \
 	memory.asm \

@@ -96,6 +96,7 @@ IN_FELINE
 %include "compile-word.asm"
 %include "recover.asm"
 %include "symbols.asm"
+%include "load.asm"
 
 IN_FORTH
 
