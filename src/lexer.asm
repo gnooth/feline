@@ -77,6 +77,10 @@ file __FILE__
         _set_slot4
 %endmacro
 
+%macro  _this_lexer_set_line_start 0    ; index --
+        _this_set_slot4
+%endmacro
+
 %macro  _lexer_file 0                   ; lexer -- file
         _slot5
 %endmacro
@@ -91,10 +95,6 @@ file __FILE__
 
 %macro  _this_lexer_set_file 0          ; file --
         _this_set_slot5
-%endmacro
-
-%macro  _this_lexer_set_line_start 0    ; index --
-        _this_set_slot4
 %endmacro
 
 %macro  _this_lexer_string_nth_unsafe 0
@@ -310,15 +310,33 @@ code lexer_string_skip_whitespace, 'lexer-string-skip-whitespace' ; lexer -- ind
         _swap
         _do .2
         _i
-        _this_lexer_string_nth_unsafe
+        _this_lexer_string_nth_unsafe   ; -- untagged-char
+
+        ; check for newline
+        cmp     rbx, 10
+        jne     .3
+
+        ; char is a newline
+        poprbx                          ; --
+        _this_lexer_line
+        _oneplus
+        _this_lexer_set_line
+        _i
+        _oneplus
+        _this_lexer_set_line_start
+        jmp     .4
+
+.3:
+        ; char is not a newline
         _lit 32
         _ugt
-        _if .3
+        _if .5
         _i
         _tag_fixnum
         _unloop
         jmp     .exit
-        _then .3
+        _then .5
+.4:
         _loop .2
 
         _f
