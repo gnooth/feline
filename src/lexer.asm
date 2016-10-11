@@ -15,6 +15,8 @@
 
 file __FILE__
 
+; 6 cells: object header, string, index, line, line start, file
+
 ; set in constructor, read only thereafter
 %macro  _lexer_string 0                 ; lexer -- string
         _slot1
@@ -73,6 +75,22 @@ file __FILE__
 
 %macro  _lexer_set_line_start 0         ; index lexer --
         _set_slot4
+%endmacro
+
+%macro  _lexer_file 0                   ; lexer -- file
+        _slot5
+%endmacro
+
+%macro  _lexer_set_file 0               ; file lexer --
+        _set_slot5
+%endmacro
+
+%macro  _this_lexer_file 0              ; -- file
+        _this_slot5
+%endmacro
+
+%macro  _this_lexer_set_file 0          ; file --
+        _this_set_slot5
 %endmacro
 
 %macro  _this_lexer_set_line_start 0    ; index --
@@ -177,11 +195,25 @@ code lexer_char, 'lexer-char'           ; lexer -- char
         next
 endcode
 
+; ### lexer-file
+code lexer_file, 'lexer-file'           ; lexer -- file
+        _ check_lexer
+        _lexer_file
+        next
+endcode
+
+; ### lexer-set-file
+code lexer_set_file, 'lexer-set-file'   ; file lexer --
+        _ check_lexer
+        _lexer_set_file
+        next
+endcode
+
 ; ### <lexer>
 code new_lexer, '<lexer>'               ; string -- lexer
-; 5 cells: object header, string, index
+; 6 cells: object header, string, index, line, line start, file
 
-        _lit 5
+        _lit 6
         _ allocate_cells
 
         push    this_register
@@ -192,6 +224,9 @@ code new_lexer, '<lexer>'               ; string -- lexer
 
         _ verify_string
         _this_lexer_set_string
+
+        _f
+        _this_lexer_set_file
 
         pushrbx
         mov     rbx, this_register      ; -- lexer
@@ -528,6 +563,9 @@ code dot_lexer, '.lexer'                ; lexer --
 
         _this_lexer_line_start
         _tag_fixnum
+        _ dot_object
+
+        _this_lexer_file
         _ dot_object
 
         _quote "}"
