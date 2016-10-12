@@ -17,11 +17,24 @@ file __FILE__
 
 ; ### load
 code load, 'load'                       ; path --
+        _ canonical_path
+        _dup
         _ file_contents
         _ new_lexer
+        _tuck
+        _ lexer_set_file
         _ begin_scope
         _ lexer
         _ set
+
+        _ ?nl
+        _write "Loading "
+        _ lexer
+        _ get
+        _ lexer_file
+        _ write_string
+        _ nl
+
         _quotation .1
         _ feline_interpret
         _end_quotation .1
