@@ -48,19 +48,19 @@ file __FILE__
 %endmacro
 
 ; untagged line number
-%macro  _lexer_line 0                   ; lexer -- line
+%macro  _lexer_line_number 0            ; lexer -- line-number
         _slot3
 %endmacro
 
-%macro  _this_lexer_line 0              ; -- line
+%macro  _this_lexer_line_number 0       ; -- line-number
         _this_slot3
 %endmacro
 
-%macro  _lexer_set_line 0               ; line lexer --
+%macro  _lexer_set_line_number 0        ; line-number lexer --
         _set_slot3
 %endmacro
 
-%macro  _this_lexer_set_line 0          ; line --
+%macro  _this_lexer_set_line_number 0   ; line-number --
         _this_set_slot3
 %endmacro
 
@@ -183,10 +183,10 @@ code lexer_set_index, 'lexer-set-index' ; tagged-index lexer --
         next
 endcode
 
-; ### lexer-line
-code lexer_line, 'lexer-line'           ; -- line
+; ### lexer-line-number
+code lexer_line_number, 'lexer-line-number' ; -- line
         _ check_lexer
-        _lexer_line
+        _lexer_line_number
         _tag_fixnum
         next
 endcode
@@ -282,9 +282,9 @@ code lexer_next_line, 'lexer-next-line' ; lexer --
         _lit 10
         _equal
         _if .3
-        _this_lexer_line
+        _this_lexer_line_number
         _oneplus
-        _this_lexer_set_line
+        _this_lexer_set_line_number
         _i
         _oneplus
         _dup
@@ -338,9 +338,9 @@ code lexer_string_skip_whitespace, 'lexer-string-skip-whitespace' ; lexer -- ind
 
         ; char is a newline
         poprbx                          ; --
-        _this_lexer_line
+        _this_lexer_line_number
         _oneplus
-        _this_lexer_set_line
+        _this_lexer_set_line_number
         _i
         _oneplus
         _this_lexer_set_line_start
@@ -595,7 +595,7 @@ code dot_lexer, '.lexer'                ; lexer --
         _tag_fixnum
         _ dot_object
 
-        _this_lexer_line
+        _this_lexer_line_number
         _tag_fixnum
         _ dot_object
 
