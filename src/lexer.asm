@@ -255,7 +255,7 @@ code new_lexer, '<lexer>'               ; string -- lexer
 endcode
 
 ; ### lexer-next-line
-code lexer_next_line, 'lexer-next-line' ; lexer -- index/f
+code lexer_next_line, 'lexer-next-line' ; lexer --
 
         _ check_lexer
 
@@ -272,7 +272,6 @@ code lexer_next_line, 'lexer-next-line' ; lexer -- index/f
         _ ge
         _if .1
         _2drop
-        _f
         jmp     .exit
         _then .1                        ; -- untagged-start-index untagged-length
 
