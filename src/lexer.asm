@@ -183,6 +183,22 @@ code lexer_set_index, 'lexer-set-index' ; tagged-index lexer --
         next
 endcode
 
+; ### lexer-line
+code lexer_line, 'lexer-line'           ; -- line
+        _ check_lexer
+        _lexer_line
+        _tag_fixnum
+        next
+endcode
+
+; ### lexer-line-start
+code lexer_line_start, 'lexer-line-start' ; -- tagged-index
+        _ check_lexer
+        _lexer_line_start
+        _tag_fixnum
+        next
+endcode
+
 ; ### lexer-char
 code lexer_char, 'lexer-char'           ; lexer -- char
         _ check_lexer
@@ -267,9 +283,14 @@ code lexer_next_line, 'lexer-next-line' ; lexer -- index/f
         _lit 10
         _equal
         _if .3
+        _this_lexer_line
+        _oneplus
+        _this_lexer_set_line
         _i
         _oneplus
+        _dup
         _this_lexer_set_index
+        _this_lexer_set_line_start
         _unloop
         jmp     .exit
         _then .3
