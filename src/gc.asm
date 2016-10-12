@@ -175,7 +175,10 @@ endcode
 
 ; ### mark-lexer
 code mark_lexer, 'mark-lexer'           ; lexer --
+        _dup
         _lexer_string
+        _ maybe_mark_handle
+        _lexer_file
         _ maybe_mark_handle
         next
 endcode
