@@ -254,6 +254,43 @@ code new_lexer, '<lexer>'               ; string -- lexer
         next
 endcode
 
+; ### lexer-line
+code lexer_line, 'lexer-line'           ; lexer -- string
+
+        _ check_lexer
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+
+        _lit tagged_char(10)
+        _this_lexer_line_start
+        _tag_fixnum
+        _this_lexer_string
+        _ string_index_from             ; -- index/f
+
+        _dup
+        _tagged_if .1
+        _this_lexer_line_start
+        _tag_fixnum
+        _swap
+        _this_lexer_string
+        _else .1
+        _drop
+        _this_lexer_line_start
+        _tag_fixnum
+        _this_lexer_string
+        _dup
+        _ string_length
+        _swap
+        _then .1
+
+        _ string_substring
+
+        pop     this_register
+        next
+endcode
+
 ; ### lexer-next-line
 code lexer_next_line, 'lexer-next-line' ; lexer --
 
@@ -490,16 +527,31 @@ code lexer_skip_quoted_string, 'lexer-skip-quoted-string' ; lexer --
         _swap
         _do .2
         _i
-        _this_lexer_string_nth_unsafe
+        _this_lexer_string_nth_unsafe   ; -- untagged-char
+        _dup
         _lit '"'
         _equal
         _if .3
+        _drop
         _i
         _oneplus
         _this_lexer_set_index
         _unloop
         jmp     .exit
         _then .3
+
+        ; check for newline
+        _lit 10
+        _equal
+        _if .4
+        _this_lexer_line_number
+        _oneplus
+        _this_lexer_set_line_number
+        _i
+        _oneplus
+        _this_lexer_set_line_start
+        _then .4
+
         _loop .2
 
 .error:
