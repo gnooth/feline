@@ -138,6 +138,92 @@ code file_read_line, 'file-read-line'   ; fd -- string/f
         next
 endcode
 
+extern os_create_file
+
+; ### file-create-write
+code file_create_write, 'file-create-write' ; string -- fd
+        _ string_data
+%ifdef WIN64
+        mov     rdx, GENERIC_WRITE
+        popd    rcx
+%else
+        mov     rsi, 1
+        popd    rdi
+%endif
+        xcall   os_create_file
+        test    rax, rax
+        js      .1
+        pushd   rax                     ; -- fd
+        _return
+.1:
+        _error "unable to create file"
+        next
+endcode
+
+extern os_write_file
+
+; ### file-write-char
+code file_write_char, 'file-write-char' ; tagged-char fd --
+        _swap
+        _untag_char
+        _swap
+%ifdef WIN64
+        ; args in rcx, rdx, r8, r9
+        popd    rdx
+        popd    rcx
+%else
+        ; args in rdi, rsi, rdx, rcx
+        popd    rsi
+        popd    rdi
+%endif
+        xcall   os_emit_file            ; void os_emit_file(int c, int fd)
+        next
+endcode
+
+; ### file-write-unsafe
+code file_write_unsafe, 'file-write-unsafe' ; addr tagged-size fd -- count
+; Address and fd are untagged.
+        _tor
+        _ check_index
+        _rfrom
+%ifdef WIN64
+        popd    rcx                     ; fd
+        popd    r8                      ; size
+        popd    rdx                     ; addr
+%else
+        popd    rdi
+        popd    rdx
+        popd    rsi
+%endif
+        xcall   os_write_file
+        test    rax, rax
+        jns     .1
+        _error "error writing to file"
+.1:
+        next
+endcode
+
+; ### file-write-line
+code file_write_line, 'file-write-line' ; string fd --
+        _tor
+        _dup
+        _ string_data
+        _swap
+        _ string_length
+        _rfetch
+        _ file_write_unsafe
+
+%ifdef WIN64
+        _lit tagged_char(13)
+        _rfetch
+        _ file_write_char
+%endif
+        _lit tagged_char(10)
+        _rfrom
+        _ file_write_char
+        next
+endcode
+
 extern os_close_file
 
 ; ### file-close
@@ -211,5 +297,18 @@ code file_lines, 'file-lines'           ; path -- vector
         _swap
         _ file_close
         _then .2
+        next
+endcode
+
+; ### set-file-lines
+code set_file_lines, 'set-file-lines'  ; seq path --
+        _ file_create_write             ; -- seq fd
+        _swap                           ; -- fd seq
+        _quotation .1
+        _over
+        _ file_write_line
+        _end_quotation .1
+        _ each
+        _ file_close
         next
 endcode

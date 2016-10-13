@@ -51,16 +51,6 @@ import time
 
 : depth ( -- n ) depth tag-fixnum ;
 
-: set-file-lines ( strings path -- )
-    string> w/o create-file throw local fileid
-    local strings
-    strings length untag-fixnum 0 ?do
-        i tag-fixnum strings nth
-        string> fileid write-line throw
-    loop
-    fileid close-file throw
-;
-
 : regular-file? ( path -- ? )
     dup path-is-directory?
     if
