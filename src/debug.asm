@@ -36,6 +36,22 @@ code debug_off, '-debug'
         next
 endcode
 
+; ### debug0
+code debug0, 'debug0'                   ; string --
+        cmp     qword [debug_enabled], f_value
+        je      .1
+        _ ?nl
+        _ write_string
+        _ nl
+.1:
+        next
+endcode
+
+%macro  _debug0 1
+        _quote %1
+        _ debug0
+%endmacro
+
 ; ### debug1
 code debug1, 'debug1'                   ; string --
         cmp     qword [debug_enabled], f_value
