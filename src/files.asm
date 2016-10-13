@@ -109,28 +109,29 @@ code file_read_unsafe, 'file-read-unsafe' ; addr tagged-size fd -- count
         next
 endcode
 
-; : file-read-line ( fd -- string )
-;     256 <sbuf> ( -- fd sbuf )
-;     [ over file-read-char dup 10 eq? ] [ suffix! ] until
-;     drop
-;     sbuf>string ;
-
 ; ### file-read-line
-code file_read_line, 'file-read-line'   ; fd -- string
+code file_read_line, 'file-read-line'   ; fd -- string/f
+        _dup
+        _ file_read_char                ; -- fd char/f
+        cmp     rbx, f_value
+        jne     .1
+        _nip
+        _return
+.1:                                     ; -- fd char
         _lit 256
-        _ new_sbuf_untagged
-.1:
+        _ new_sbuf_untagged             ; -- fd char sbuf
+        _swap                           ; -- fd sbuf char
+        jmp     .3
+.2:
         _over
         _ file_read_char
-        _dup
-        _lit tagged_char(10)
-        _eq?
-        _tagged_if_not .2
+.3:
+        cmp     rbx, tagged_char(10)
+        je      .4
         _over
         _ sbuf_push
-        jmp     .1
-        _then .2
-
+        jmp     .2
+.4:
         _drop
         _nip
         _ sbuf_to_string
@@ -188,5 +189,27 @@ code safe_file_contents, '?file-contents' ; path -- string/f
         _f
         _end_quotation .2
         _ recover
+        next
+endcode
+
+; ### file-lines
+code file_lines, 'file-lines'           ; path -- vector
+        _ file_open_read                ; -- fd
+        _lit 256
+        _ new_vector_untagged           ; -- fd vector
+.1:
+        _over
+        _ file_read_line                ; -- fd vector string/f
+        _dup
+        _tagged_if .2
+        _over
+        _ vector_push
+        jmp .1
+        _else .2
+        ; reached end of file
+        _drop
+        _swap
+        _ file_close
+        _then .2
         next
 endcode
