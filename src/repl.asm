@@ -213,47 +213,69 @@ endcode
 
 ; ### feline-where
 code feline_where, 'feline-where'       ; --
-        ; Print source line.
+        _ lexer
+        _ get
+        _dup
+        _tagged_if .1
+
         _ ?nl
-        _ source                        ; -- addr len
-        _ copy_to_string
+
+        _dup
+        _ lexer_file
+        _tagged_if .2                   ; -- lexer
+
+        ; Print source line.
+        _dup
+        _ lexer_line                    ; -- lexer string
         _ write_string
+        _ nl                            ; -- lexer
 
         ; Put ^ on next line after last character of offending token.
-        _ nl
-        _ parsed_name_start
-        _ parsed_name_length
-        _plus
-        _ source
-        _drop
-        _minus
-        _tag_fixnum
+        _dup
+        _ lexer_index
+        _over
+        _ lexer_line_start
+        _ fixnum_minus
         _ spaces
         _lit '^'
         _tag_char
         _ write_char
         _ nl
 
-        _ source_id
-        _zgt
-        _if .2
-        _ ?nl
-        _ source_filename
-        _?dup_if .3
+        ; Print source file and line number.
+        _dup
+        _ lexer_file
         _ write_string
-        _ space
-        _then .3
-        _quote "line "
+        _write " line "
+        _ lexer_line_number
+        _lit tagged_fixnum(1)
+        _ feline_plus
+        _ dot_object
+
+        _else .2                        ; -- lexer
+
+        ; No source file.
+
+        ; Print command line.
+        _dup
+        _ lexer_string
         _ write_string
-        _ source_line_number
-        _tag_fixnum
-        _ number_to_string
         _ nl
+
+        ; Put ^ on next line after last character of offending token.
+        _ lexer_index
+        _ spaces
+        _lit '^'
+        _tag_char
+        _ write_char
+
         _then .2
 
+        _ nl
+
+        _then .1
         next
 endcode
-
 
 ; ### feline-do-error
 code feline_do_error, 'feline-do-error' ; string-or-number --
