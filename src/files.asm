@@ -178,7 +178,7 @@ code file_contents, 'file-contents'     ; path -- string
 endcode
 
 ; ### ?file-contents
-code file_contents_safe, '?file-contents' ; path -- string/f
+code safe_file_contents, '?file-contents' ; path -- string/f
         _quotation .1
         _ file_contents
         _end_quotation .1

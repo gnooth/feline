@@ -130,7 +130,7 @@ code dot_version, '.version'            ; --
         _ feline_home
         _quote "build"
         _ path_append
-        _ file_contents_safe
+        _ safe_file_contents
         _dup
         _tagged_if .1
         _quote " built "
