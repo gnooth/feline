@@ -1266,6 +1266,14 @@ or-test-1
 
 sbuf-insert-nth!-test-1
 
+: sbuf-?last-test-1
+    << last-word symbol-name >> ?nl write
+    "testing" string>sbuf sbuf-?last 'g' eq? check-t
+    16 <sbuf> sbuf-?last check-false
+;
+
+sbuf-?last-test-1
+
 : string-index-from-test-1
     << last-word symbol-name >> ?nl write
     't' 0 "this is a test" string-index-from zero? check-t
