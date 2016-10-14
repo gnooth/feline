@@ -21,15 +21,8 @@ CURRENT: feline
 import feline-mode
 import forth-mode
 
-import bye
-
-import view
-
 import locals-enter
 import locals-leave
-
-import >r
-import r>
 
 : throw ( n -- )
     dup fixnum? t = if

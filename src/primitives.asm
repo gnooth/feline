@@ -911,3 +911,19 @@ code feline_free, 'free'                ; addr --
         xcall   os_free                 ; "The free() function returns no value."
         next
 endcode
+
+; ### bye
+code feline_bye, "bye"
+        _ free_locals_stack
+
+        _ interactive?
+        _if .1
+        _ ?nl
+        _quote "Bye!"
+        _ write_string
+        _ nl
+        _then .1
+
+        jmp os_bye
+        next
+endcode
