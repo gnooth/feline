@@ -40,8 +40,6 @@ import rot
 import >r
 import r>
 
-import time
-
 : throw ( n -- )
     dup fixnum? t = if
         untag-fixnum
