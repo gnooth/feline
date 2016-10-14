@@ -296,6 +296,25 @@ code sbuf_nth, 'sbuf-nth'               ; tagged-index handle -- tagged-char
         next
 endcode
 
+; ### sbuf-?last
+code sbuf_?last, 'sbuf-?last'           ; sbuf -- char/f
+        _dup
+        _ sbuf_length
+        _untag_fixnum
+        _oneminus
+        _dup
+        _zge
+        _if .1                          ; -- sbuf untagged-fixnum
+        _tag_fixnum
+        _swap
+        _ sbuf_nth_unsafe
+        _else .1
+        _2drop
+        _f
+        _then .1
+        next
+endcode
+
 ; ### sbuf-check-index
 code sbuf_check_index, 'sbuf-check-index' ; handle index -- flag
         _swap
