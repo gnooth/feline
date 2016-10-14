@@ -18,12 +18,6 @@ LANGUAGE: feline
 USING: feline ;
 IN: feline
 
-: see
-    parse-token ( -- string/f )
-    [ find-name [ symbol-code drop forth:disasm ] [ undefined ] if ]
-    when*
-;
-
 : blank? ( char -- ? )
     { 9 10 13 32 } member?
 ;
