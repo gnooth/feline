@@ -28,15 +28,6 @@ import view
 import locals-enter
 import locals-leave
 
-import swap
-import dup
-import 2dup
-import over
-import drop
-import 2drop
-import nip
-import rot
-
 import >r
 import r>
 

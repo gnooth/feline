@@ -31,79 +31,9 @@ code spstore, 'sp!'
         next
 endcode
 
-; ### drop
-inline drop, 'drop'
-        _drop
-endinline
-
-; ### 2drop
-inline twodrop, '2drop'
-        _2drop
-endinline
-
-; ### 3drop
-inline threedrop, '3drop'
-        _3drop
-endinline
-
-; ### 4drop
-inline fourdrop, '4drop'
-        mov     rbx, [rbp + BYTES_PER_CELL * 3]
-        lea     rbp, [rbp + BYTES_PER_CELL * 4]
-endinline
-
-; ### dup
-inline dup, 'dup'
-        _dup
-endinline
-
 ; ### ?dup
 inline ?dup, '?dup'
         _?dup
-endinline
-
-; ### 2dup
-inline twodup, '2dup'                   ; x1 x2 -- x1 x2 x1 x2
-; CORE
-        _twodup
-endinline
-
-; ### 3dup
-code threedup, '3dup'                   ; x1 x2 x3 -- x1 x2 x3 x1 x2 x3
-        lea     rbp, [rbp - BYTES_PER_CELL * 3]
-        mov     [rbp + BYTES_PER_CELL * 2], rbx
-        mov     rax, [rbp + BYTES_PER_CELL * 4]
-        mov     [rbp + BYTES_PER_CELL], rax
-        mov     rax, [rbp + BYTES_PER_CELL * 3]
-        mov     [rbp], rax
-        next
-endcode
-
-; ### rot
-code rot, 'rot'                         ; x1 x2 x3 -- x2 x3 x1
-; CORE
-        mov     rax, [rbp]                      ; x2 in RAX
-        mov     rdx, [rbp + BYTES_PER_CELL]     ; x1 in RDX
-        mov     [rbp + BYTES_PER_CELL], rax     ; x2
-        mov     [rbp], rbx                      ; x3
-        mov     rbx, rdx                        ; x1
-        next
-endcode
-
-; ### -rot
-code rrot, '-rot'                       ; x1 x2 x3 -- x3 x1 x2
-; not in standard
-        mov     rax, [rbp]                      ; x2 in RAX
-        mov     rdx, [rbp + BYTES_PER_CELL]     ; x1 in RDX
-        mov     [rbp + BYTES_PER_CELL], rbx     ; x3
-        mov     [rbp], rdx                      ; x1
-        mov     rbx, rax                        ; x2
-        next
-endcode
-
-; ### over
-inline over, 'over'
-        _over
 endinline
 
 ; ### over+
@@ -126,19 +56,6 @@ inline forth_2over, '2over'             ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2
 ; CORE
         _forth_2over
 endinline
-
-; ### nip
-inline nip, 'nip'                       ; x1 x2 -- x2
-; CORE EXT
-        _nip
-endinline
-
-; ### tuck
-code tuck, 'tuck'                       ; x1 x2 -- x2 x1 x2
-; CORE EXT
-        _tuck
-        next
-endcode
 
 ; ### depth
 code depth, 'depth'
@@ -261,11 +178,6 @@ code dot_rs, '.rs'
         poprbx
         next
 endcode
-
-; ### swap
-inline swap, 'swap'                     ; x1 x2 -- x2 x1
-        _swap
-endinline
 
 ; ### 2swap
 code twoswap, '2swap'                   ; x1 x2 x3 x4 -- x3 x4 x1 x2

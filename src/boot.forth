@@ -13,6 +13,25 @@
 \ You should have received a copy of the GNU General Public License
 \ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+LANGUAGE: forth
+
+CONTEXT: forth feline ;
+CURRENT: forth
+
+import swap
+import drop
+import 2drop
+import 3drop
+import 4drop
+import dup
+import 2dup
+import 3dup
+import rot
+import -rot
+import over
+import nip
+import tuck
+
 include-system-file vocabulary.forth
 include-system-file bracket-if.forth
 include-system-file defer.forth
