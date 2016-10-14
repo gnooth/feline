@@ -133,8 +133,24 @@ code file_read_line, 'file-read-line'   ; fd -- string/f
         jmp     .2
 .4:
         _drop
-        _nip
+        _nip                            ; -- sbuf
+
+        ; check for cr preceding nl
+        _dup
+        _ sbuf_?last
+        _lit tagged_char(13)
+        _eq?
+        _tagged_if .5
+        _dup
+        _ sbuf_length
+        _lit tagged_fixnum(1)
+        _ fixnum_minus
+        _over
+        _ sbuf_shorten
+        _then .5
+
         _ sbuf_to_string
+
         next
 endcode
 
