@@ -165,6 +165,6 @@ code handle_signal, 'handle-signal'
         _ ?cr
         _ print_exception
         _ print_saved_registers_and_backtrace
-        _ reset
+        _ feline_reset
         next
 endcode
