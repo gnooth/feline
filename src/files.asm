@@ -328,3 +328,24 @@ code set_file_lines, 'set-file-lines'  ; seq path --
         _ file_close
         next
 endcode
+
+; ### regular-file?
+code regular_file?, 'regular-file?'     ; path -- ?
+        _dup
+        _ path_is_directory?
+        _if .1
+        mov     rbx, f_value
+        _else .1
+        ; not a directory
+        _ path_file_exists?
+        _tag_boolean
+        _then .1
+        next
+endcode
+
+; ### directory?
+code directory?, 'directory?'           ; path -- ?
+        _ path_is_directory?
+        _tag_boolean
+        next
+endcode

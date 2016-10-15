@@ -32,18 +32,3 @@ import locals-leave
 ;
 
 : depth ( -- n ) depth tag-fixnum ;
-
-: regular-file? ( path -- ? )
-    dup path-is-directory?
-    if
-        drop f
-    else
-        \ not a directory
-        path-file-exists?
-        tag-boolean
-    then
-;
-
-: directory? ( path -- ? )
-    path-is-directory? tag-boolean
-;
