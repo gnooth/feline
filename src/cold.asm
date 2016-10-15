@@ -203,6 +203,7 @@ code cold, 'cold'                       ; --
 
         _ initialize_source_files
 
+%ifdef STANDARD_FORTH
         _ forth_mode
         _squote "boot.forth"
         _ system_file_pathname
@@ -212,6 +213,7 @@ code cold, 'cold'                       ; --
         _if .3
         _ do_error
         _then .3
+%endif
 
         _ hash_vocabs
 
