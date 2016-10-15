@@ -20,15 +20,3 @@ CURRENT: feline
 
 import feline-mode
 import forth-mode
-
-import locals-enter
-import locals-leave
-
-: throw ( n -- )
-    dup fixnum? t = if
-        untag-fixnum
-    then
-    throw
-;
-
-: depth ( -- n ) depth tag-fixnum ;

@@ -756,6 +756,16 @@ code print, 'print'                     ; string-or-sbuf --
         next
 endcode
 
+; ### locals-enter
+inline feline_locals_enter, 'locals-enter'
+        _locals_enter
+endinline
+
+; ### locals-leave
+inline feline_locals_leave, 'locals-leave'
+        _locals_leave
+endinline
+
 ; ### local@
 code local_fetch, 'local@'              ; index -- value
         _untag_fixnum
