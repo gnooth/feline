@@ -937,3 +937,9 @@ code feline_bye, "bye"
         jmp os_bye
         next
 endcode
+
+; ### forth-mode
+code feline_forth_mode, 'forth-mode'
+        _ forth_mode
+        next
+endcode
