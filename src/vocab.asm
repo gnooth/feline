@@ -183,6 +183,20 @@ code vocab_set_wordlist, 'vocab-set-wordlist' ; wordlist vocab --
         next
 endcode
 
+; ### vocab-words
+code vocab_words, 'vocab-words'         ; vocab-spec -- seq
+        _ lookup_vocab                  ; -- vocab/f
+        _dup
+        _tagged_if .1
+        _ vocab_hashtable
+        _ hashtable_values
+        _else .1
+        _drop
+        _error "not a vocabulary specifier"
+        _then .1
+        next
+endcode
+
 ; ### vocab-add-symbol
 code vocab_add_symbol, 'vocab-add-symbol' ; symbol vocab --
         _tor
