@@ -27,8 +27,8 @@ IN: feline
 
 : require-type ( object class -- object )
     over tuple?
-    [ over layout-of first eq? [ "type error" throw ] unless ]
-    [ "type error" throw ]
+    [ over layout-of first eq? [ "type error" error ] unless ]
+    [ "type error" error ]
     if
 ;
 

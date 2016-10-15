@@ -22,7 +22,7 @@ V{ "fixnum" "vector" "string" "sbuf" "array" } global classes
 
 : lookup-class ( string -- class )
     classes vector-find-string          \ -- taggged-index t|f
-    [ -256 throw ] unless
+    [ "no class" error ] unless
 ;
 
 : GENERIC: ( -- )
