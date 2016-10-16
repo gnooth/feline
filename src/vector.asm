@@ -60,6 +60,29 @@ code check_vector, 'check-vector'       ; handle -- vector
         next
 endcode
 
+; ### verify-vector
+code verify_vector, 'verify-vector'     ; handle -- handle
+; Returns argument unchanged.
+        _dup
+        _ handle?
+        _if .1
+        _dup
+        _handle_to_object_unsafe        ; -- handle object/0
+        _dup_if .2
+        _object_type                    ; -- object object-type
+        _lit OBJECT_TYPE_VECTOR
+        _equal
+        _if .3
+        _return
+        _then .3
+        _then .2
+        _then .1
+
+        _ error_not_vector
+
+        next
+endcode
+
 ; ### vector-length
 code vector_length, 'vector-length'     ; vector -- length
         _ check_vector
@@ -431,6 +454,19 @@ vector_push_unchecked:
         _this_vector_set_nth_unsafe     ; --
 
         pop     this_register           ; restore callee-saved register
+        next
+endcode
+
+; ### vector-push-all
+code vector_push_all, 'vector-push-all' ; seq vector --
+        _ verify_vector
+        _swap
+        _quotation .1
+        _over
+        _ vector_push
+        _end_quotation .1
+        _ each
+        _drop
         next
 endcode
 
