@@ -102,13 +102,13 @@ code check_vocab, 'check-vocab'         ; handle -- vocab
 endcode
 
 ; ### verify-vocab
-code verify_vocab, 'verify-vocab'       ; handle-or-vocab -- handle-or-vocab
+code verify_vocab, 'verify-vocab'       ; handle -- handle
 ; Returns argument unchanged.
         _dup
         _ handle?
         _if .1
         _dup
-        _handle_to_object_unsafe        ; -- handle object|0
+        _handle_to_object_unsafe        ; -- handle object/0
         _dup_if .2
         _object_type                    ; -- object object-type
         _lit OBJECT_TYPE_VOCAB
