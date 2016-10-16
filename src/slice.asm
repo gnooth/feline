@@ -97,7 +97,7 @@ code check_slice, 'check-slice' ; handle -- slice
         next
 endcode
 
-; ### new-slice
+; ### <slice>
 code new_slice, '<slice>'               ; from to seq -- slice
         _lit 4
         _ allocate_cells                ; -- from to seq object-address
