@@ -85,7 +85,7 @@ code check_range, 'check-range' ; handle -- range
         next
 endcode
 
-; ### new-range
+; ### <range>
 code new_range, '<range>'               ; start length -- range
         _ verify_fixnum
         _swap
