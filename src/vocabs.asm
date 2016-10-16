@@ -82,6 +82,21 @@ code hash_vocabs, 'hash-vocabs'
         next
 endcode
 
+; ### all-words
+code all_words, 'all-words'             ; -- seq
+        _lit 2048
+        _ new_vector_untagged
+        _ vocabs
+        _quotation .1
+        _ array_second
+        _ vocab_words
+        _over
+        _ vector_push_all
+        _end_quotation .1
+        _ each
+        next
+endcode
+
 ; ### lookup-vocab
 code lookup_vocab, 'lookup-vocab'       ; vocab-spec -- vocab/f
         _dup
