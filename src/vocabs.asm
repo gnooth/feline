@@ -52,7 +52,7 @@ endcode
 ; ### initialize-vocabs
 code initialize_vocabs, 'initialize-vocabs'
         _lit 16
-        _ new_vector
+        _ new_vector_untagged
         _to vocabs
 
         _lit vocabs_data

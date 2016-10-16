@@ -46,7 +46,7 @@ code initialize_handle_space, 'initialize-handle-space' ; --
         _to handle_space_limit
 
         _lit 256
-        _ new_vector
+        _ new_vector_untagged
         _to free_handles
 
         next

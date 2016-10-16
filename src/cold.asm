@@ -180,7 +180,7 @@ code cold, 'cold'                       ; --
         _ initialize_handle_space
 
         _lit 256
-        _ new_vector
+        _ new_vector_untagged
         _to gc_roots
         _lit gc_roots_data
         _ gc_add_root
@@ -193,7 +193,7 @@ code cold, 'cold'                       ; --
         _ initialize_vocabs
 
         _lit 16
-        _ new_vector
+        _ new_vector_untagged
         _to context_vector
         _lit context_vector_data
         _ gc_add_root
