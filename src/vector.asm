@@ -120,7 +120,7 @@ endcode
 ; ### <vector>
 code new_vector, '<vector>'             ; capacity -- handle
 
-        _untag_fixnum
+        _check_fixnum
 
 new_vector_untagged:
 
