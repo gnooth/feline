@@ -77,6 +77,13 @@ endcode
         jne     error_not_fixnum
 %endmacro
 
+%macro _verify_fixnum 1
+        mov     rax, %1
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     error_not_fixnum
+%endmacro
+
 ; ### verify-fixnum
 code verify_fixnum, 'verify-fixnum'     ; fixnum -- fixnum
         _verify_fixnum
