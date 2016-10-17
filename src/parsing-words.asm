@@ -327,47 +327,6 @@ code parse_symbol, 'SYMBOL:', PARSING   ; --
         next
 endcode
 
-; ### define-local-internal
-code define_local_internal, 'define-local-internal' ; vector --
-        _ using_locals?
-        _zeq_if .2
-        ; first local in this definition
-        _ initialize_local_names
-        _quote "locals-enter"
-        _quote "feline"
-        _ lookup_symbol
-        _lit tagged_zero
-        _ feline_pick
-        _ vector_insert_nth_destructive
-        _then .2                        ; -- vector
-
-        ; FIXME verify that we're inside a named quotation
-
-        _ parse_token                   ; -- vector string
-
-        ; add name to quotation locals so it can be found
-        ; assign index
-        _ local_names
-        _ vector_push
-
-        ; add tagged index to quotation as literal
-        _ locals_defined
-        _oneminus
-        _tag_fixnum
-        _ over
-        _ vector_push
-
-        ; add local! to quotation as symbol
-        _quote "local!"
-        _quote "feline"
-        _ lookup_symbol
-
-        _swap
-        _ vector_push
-
-        next
-endcode
-
 ; ### parse-definition
 code parse_definition, 'parse-definition' ; -- vector
 
