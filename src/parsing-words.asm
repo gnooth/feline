@@ -559,6 +559,7 @@ code define, ':'                        ; --
 
         _dup
         _ compile_quotation             ; -- symbol quotation code-address
+        _tag_fixnum
         _ feline_pick
         _ symbol_set_code_address       ; -- symbol quotation
         _swap

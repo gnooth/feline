@@ -252,6 +252,7 @@ code vocab_add_name, 'vocab-add-name'   ; nfa vocab ---
 
         _swap                           ; -- symbol symbol xt
         _fetch                          ; -- symbol symbol code-address
+        _tag_fixnum
         _swap                           ; -- symbol code-address symbol
         _ symbol_set_code_address       ; -- symbol
 

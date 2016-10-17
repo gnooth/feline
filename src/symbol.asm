@@ -111,6 +111,10 @@ file __FILE__
         _slot 8
 %endmacro
 
+%macro  _symbol_set_code_address 0      ; symbol code-address --
+        _set_slot 8
+%endmacro
+
 %macro  _this_symbol_set_code_address 0 ; code-address --
         _this_set_slot 8
 %endmacro
@@ -357,15 +361,18 @@ endcode
 
 ; ### symbol-code-address
 code symbol_code_address, 'symbol-code-address' ; symbol -- code-address
+; Symbol's code address is stored as a tagged fixnum.
         _ check_symbol
-        _slot 8
+        _symbol_code_address
         next
 endcode
 
 ; ### symbol-set-code-address
-code symbol_set_code_address, 'symbol-set-code-address' ;  code-address symbol --
+code symbol_set_code_address, 'symbol-set-code-address' ; code-address symbol --
+; Symbol's code address is stored as a tagged fixnum.
         _ check_symbol
-        _set_slot 8
+        _verify_fixnum [rbp]
+        _symbol_set_code_address
         next
 endcode
 
@@ -412,6 +419,10 @@ code call_symbol, 'call-symbol'         ; symbol --
         _dup
         _tagged_if .1
         _nip
+
+        ; REVIEW _untag_fixnum
+        _check_fixnum
+
         mov     rax, rbx
         poprbx
         call    rax
