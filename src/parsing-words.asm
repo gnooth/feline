@@ -86,80 +86,8 @@ code parse_string, 'parse-string'       ; -- string
         next
 endcode
 
-; ### ?scan-token
-code maybe_scan_token, '?scan-token'    ; -- string/f
-
-        _ source                        ; -- source-addr source-length
-
-        _dup
-        _zeq_if .1
-        ; end of input
-        _2drop
-        _f
-        _return
-        _then .1
-
-        _ tuck                          ; -- source-length source-addr source-length
-        _from toin                      ; -- source-length source-addr source-length >in
-        _slashstring                    ; -- source-length addr1 #left
-
-        _dup
-        _zeq_if .2
-        ; end of input
-        _3drop
-        _f
-        _return
-        _then .2
-
-        _ skip_whitespace               ; -- source-length start-of-word #left
-
-        ; now looking at first non-whitespace char
-        _over
-        _cfetch
-        _lit '"'
-        _equal
-        _if .3                          ; -- source-length start-of-word #left
-        ; first non-whitespace char is "
-        _drop
-        _nip                            ; -- start-of-word
-        ; update >in
-        _ source
-        _drop
-        _minus
-        _oneplus                        ; skip past opening " char
-        _to toin
-        ; return token
-        _quote '"'
-        _return
-        _then .3
-
-        _dupd                           ; -- source-length start-of-word start-of-word #left
-        _ scan_to_whitespace            ; -- source-length start-of-word end-of-word #left
-        _tor                            ; -- source-length start-of-word end-of-word                    r: #left
-        _over_minus                     ; -- source-length start-of-word word-length
-        _ rot                           ; -- start-of-word word-length source-length
-        _rfrom                          ; -- start-of-word word-length source-length #left              r: --
-        _dup                            ; -- start-of-word word-length source-length #left #left
-        _ zne                           ; -- start-of-word word-length source-length #left -1|0
-        _plus                           ; -- start-of-word word-length source-length #left-1|#left
-        _minus
-        _to toin
-
-        _twodup
-        _to parsed_name_length
-        _to parsed_name_start
-
-        _?dup_if .4
-        _ copy_to_string
-        _else .4
-        mov     rbx, f_value
-        _then .4
-        next
-endcode
-
 ; ### parse-token
 code parse_token, 'parse-token'         ; -- string/f
-
         cmp     qword [symbols_initialized?], t_value
         jne .1
 
@@ -168,46 +96,14 @@ code parse_token, 'parse-token'         ; -- string/f
         _dup
         _tagged_if .2
         _ lexer_parse_token
-        _return
         _else .2
         _drop
+        _error "no lexer"
         _then .2
+        _return
 
 .1:
-        _ maybe_scan_token
-        _dup
-        _tagged_if .3
-
-        _dup
-        _quote "("
-        _ stringequal
-        _tagged_if .4
-        _drop
-        _ paren
-        _ parse_token
-        _return
-        _then .4
-
-        _dup
-        _quote "//"
-        _ stringequal
-        _tagged_if .5
-        _drop
-        _ comment_to_eol
-        _ parse_token
-        _return
-        _then .5
-
-        _dup
-        _quote '"'
-        _ stringequal
-        _tagged_if .6
-        _drop
-        _ parse_string
-        _return
-        _then .6
-
-        _then .3
+        _error "symbols not initialized"
         next
 endcode
 
