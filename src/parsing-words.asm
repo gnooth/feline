@@ -493,8 +493,8 @@ code feline_paren, '(', PARSING
         next
 endcode
 
-; ### :>
-code define_local, ':>', PARSING
+; ### local:
+code declare_local, 'local:', PARSING
 
         _ using_locals?
         _zeq_if .2
@@ -517,10 +517,27 @@ code define_local, ':>', PARSING
         _ local_names
         _ vector_push
 
-        ; add tagged index to quotation as literal
-        _ locals_defined
-        _oneminus
-        _tag_fixnum
+        next
+endcode
+
+; ### ->
+code assign_to_local, '->', PARSING
+
+        ; FIXME verify that we're inside a named quotation
+
+        _ parse_token                   ; -- string
+
+        _ local_names
+        _zeq_if .1
+        _error "no locals"
+        _return
+        _then .1
+
+        _dup
+        _ local_names                   ; -- string string vector
+        _ vector_find_string            ; -- string index/f ?
+        _tagged_if .2                   ; -- string index
+        _nip
         _get_accum
         _ vector_push
 
@@ -530,6 +547,11 @@ code define_local, ':>', PARSING
         _ lookup_symbol
         _get_accum
         _ vector_push
+
+        _else .2
+        _drop
+        _error "not a local"
+        _then .2
 
         next
 endcode

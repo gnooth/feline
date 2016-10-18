@@ -517,7 +517,8 @@ vector-test-5
 vector>array-test-1
 
 : %local-test-1 ( -- )
-    42 :> foo
+    local: foo
+    42 -> foo
     foo
 ;
 
@@ -599,7 +600,8 @@ hashcode-test-2
 
 : hashtable-test-1 ( -- )
     << last-word symbol-name >> ?nl write
-    16 <hashtable> :> ht
+    local: ht
+    16 <hashtable> -> ht
     42 "parker" ht set-at
     ht hashtable-count 1 = check-t
     87 "penelope" ht set-at
@@ -623,7 +625,8 @@ hashtable-test-2
 
 : hashtable-test-3 ( -- )
     << last-word symbol-name >> ?nl write
-    16 <hashtable> :> ht
+    local: ht
+    16 <hashtable> -> ht
     1000 [ dup number>string ht set-at ] each-integer
     1000 [ dup number>string ht at = check-t ] each-integer
     "charlie" ht at* check-false check-false
