@@ -26,7 +26,7 @@ IN: feline
     parse-token
     literal? [
         find-name [ literalize ] [ undefined ] if
-     ] unless
+    ] unless
 
     1array array>quotation swap symbol-set-def
 ;
