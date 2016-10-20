@@ -13,13 +13,15 @@
 # should do it, on both Windows and Linux.
 
 # Tested with GNU Make 4.0, gcc 5.2.1 and clang 3.6.2 on Linux (Ubuntu).
-# Tested with GNU Make 4.1, gcc 5.3.1 and clang 3.8.0 on Linux (Ubuntu).
+# Tested with GNU Make 4.1, gcc 5.4.0 and clang 3.8.0 on Linux (Ubuntu).
+# Tested with GNU Make 4.1, gcc 6.2.0 and clang 3.8.1 on Linux (Ubuntu 16.10).
 
 # Tested with GNU Make 3.81, gcc (tdm64-1) 5.1.0 and clang 3.7.1 on Windows 10.
 
 # NASM 2.11.08 on both Windows and Linux.
+# NASM 2.12.01 on Linux.
 
-# No support in this makefile for Microsoft tools.
+# There is no support in this makefile for Microsoft tools.
 
 VERSION = `git describe --tags`
 
@@ -27,7 +29,13 @@ CC = clang
 
 CFLAGS = --std=c99 -D_GNU_SOURCE -g -m64
 ASMFLAGS = -Werror
+
+# clang
 LINKFLAGS = -m64
+
+# gcc
+# gcc 6.2.0 on Ubuntu 16.10 needs -no-pie
+# LINKFLAGS = -m64 -no-pie
 
 OBJS = main.o os.o terminal.o backtrace.o forth.o
 
