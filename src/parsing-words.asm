@@ -622,3 +622,35 @@ code parse_language, 'LANGUAGE:', PARSING
 
         next
 endcode
+
+; ### sh
+code sh, 'sh'
+        _ lexer
+        _ get
+        _dup
+        _tagged_if .1
+        _dup
+        _ lexer_line                    ; -- lexer string
+        _over
+        _ lexer_index                   ; -- lexer string index
+        _ string_tail                   ; -- lexer tail
+
+        _swap
+        _ lexer_next_line
+
+        _ string_data                   ; -- untagged-address
+
+%ifdef WIN64
+        popd    rcx
+%else
+        popd    rdi
+%endif
+        xcall   os_system
+
+        _else .1
+        _drop
+        _error "no lexer"
+        _then .1
+
+        next
+endcode
