@@ -272,6 +272,17 @@ code vocab_add_name, 'vocab-add-name'   ; nfa vocab ---
         _ symbol_set_prop
         _then .1                        ; -- symbol
 
+        _dup
+        _ symbol_xt
+        _ flags
+        _and_literal INLINE
+        _if .2
+        _t
+        _quote "inline"
+        _ feline_pick
+        _ symbol_set_prop
+        _then .2                        ; -- symbol
+
         _rfrom
         _ vocab_add_symbol
         next
