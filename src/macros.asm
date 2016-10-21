@@ -215,6 +215,7 @@ section .data
 ; Flag bits
 %define IMMEDIATE       $80
 %define PARSING         $40
+%define INLINE          $20
 
 %define forth_link      0
 
@@ -374,7 +375,7 @@ section .data
 %macro  inline 2-5 0, 0, 0
         %push inline
         %define in_inline
-        head %1, %2, 0, %$ret - %1
+        head %1, %2, INLINE, %$ret - %1
         section .text
         align   DEFAULT_CODE_ALIGNMENT
 %1:
