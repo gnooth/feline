@@ -206,7 +206,7 @@ code compile_pair, 'compile-pair'       ; pair --
 endcode
 
 ; ### compile-quotation
-code compile_quotation, 'compile-quotation' ;  quotation -- code-address
+code compile_quotation, 'compile-quotation' ;  quotation -- code-address code-size
         _dup
         _ quotation_array
         _lit precompile_object_xt
@@ -235,6 +235,16 @@ code compile_quotation, 'compile-quotation' ;  quotation -- code-address
         _ quotation_set_code_address
 
         _rfrom                          ; -- code-address
+
+        _ pc
+        _over
+        _minus                          ; -- code-address code-size
+
+        ; FIXME
+        _tag_fixnum
+        _swap
+        _tag_fixnum
+        _swap
 
         next
 endcode

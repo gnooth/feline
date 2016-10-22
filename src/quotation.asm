@@ -15,6 +15,8 @@
 
 file __FILE__
 
+; 3 cells: object header, array, code address
+
 %macro  _quotation_array 0              ; quotation -- array
         _slot1
 %endmacro
@@ -188,7 +190,9 @@ code call_quotation, 'call'             ; callable --
         _nip                            ; -- code-address
         _else .2
         _drop
-        _ compile_quotation             ; -- code-address
+        _ compile_quotation             ; -- code-address code-size
+        _drop
+        _untag_fixnum
         _then .2
         mov     rax, rbx
         poprbx
@@ -207,7 +211,9 @@ code callable_code_address, 'callable-code-address' ; callable -- code-address
         _?dup_if .2
         _nip
         _else .2
-        _ compile_quotation
+        _ compile_quotation             ; -- code-address code-size
+        _drop
+        _untag_fixnum
         _then .2
         _return
         _then .1

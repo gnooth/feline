@@ -413,8 +413,8 @@ code define, ':'                        ; --
         _ array_to_quotation            ; -- symbol quotation
 
         _dup
-        _ compile_quotation             ; -- symbol quotation code-address
-        _tag_fixnum
+        _ compile_quotation             ; -- symbol quotation code-address code-size
+        _drop
         _ feline_pick
         _ symbol_set_code_address       ; -- symbol quotation
         _swap
