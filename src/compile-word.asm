@@ -151,16 +151,31 @@ code compile_literal, 'compile-literal' ; literal --
 endcode
 
 ; ### compile-inline
-code compile_inline, 'compile-inline'   ; pair --
-        _dup
-        _ array_first
-        _swap
-        _ array_second                  ; -- addr len
-        _tuck                           ; -- len addr len
+code compile_inline, 'compile-inline'   ; tagged-code-address tagged-code-size --
+        _untag_2_fixnums                ; -- addr size
+        _tuck                           ; -- size addr size
         _ pc
         _swap
-        _ cmove                         ; -- len
+        _ cmove                         ; -- size
         _plusto pc
+        next
+endcode
+
+; ### compile-primitive
+code compile_primitive, 'compile-primitive' ; symbol --
+        _dup
+        _ symbol_inline?
+        _tagged_if .1
+        _dup
+        _ symbol_code_address
+        _swap
+        _ symbol_code_size
+        _ compile_inline
+        _else .1
+        _ symbol_code_address
+        _untag_fixnum
+        _ compile_call
+        _then .1
         next
 endcode
 
@@ -178,13 +193,7 @@ code compile_pair, 'compile-pair'       ; pair --
         _dup
         _ symbol_primitive?
         _tagged_if .2
-        _ symbol_code                   ; -- code-address inline-size
-        _?dup_if .3
-        _ two_array
-        _ compile_inline
-        _else .3
-        _ compile_call
-        _then .3
+        _ compile_primitive
         _return
         _then .2
 
