@@ -28,5 +28,5 @@ IN: feline
         find-name [ literalize ] [ undefined ] if
     ] unless
 
-    1array array>quotation swap symbol-set-def
+    1array array>quotation over symbol-set-def compile-word
 ;
