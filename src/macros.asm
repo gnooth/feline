@@ -355,7 +355,8 @@ section .data
 %endmacro
 
 %macro  code 2-5 0, 0, 0
-        head %1, %2, %3, %4, %5
+        %push code
+        head %1, %2, %3, %$end - %1, %5
         section .text
         align   DEFAULT_CODE_ALIGNMENT
 %1:
@@ -365,6 +366,9 @@ section .data
 %ifdef  in_inline
         %error "endcode in inline"
 %endif
+        section .text
+%$end:
+        %pop code
 %endmacro
 
 %macro  inline 2-5 0, 0, 0

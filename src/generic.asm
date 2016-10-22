@@ -66,6 +66,7 @@ endcode
         mov     ebx, %1_data            ; REVIEW assumes 32-bit address
         call    do_generic
         next
+        endcode
 %endmacro
 
 ; ### initialize-generic-function
