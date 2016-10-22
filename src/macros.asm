@@ -275,8 +275,7 @@ section .data
         dq      %1_pfa                  ; parameter field address
         dq      %1_nfa                  ; nfa
         db      %2                      ; flags
-        db      %3                      ; inline size
-        db      %4                      ; type
+        dq      %3                      ; inline size
         align   DEFAULT_DATA_ALIGNMENT
 %1_pfa:                                 ; define pfa (but don't reserve any space)
 %endmacro
@@ -333,7 +332,8 @@ section .data
 %endmacro
 
 %macro  _totype 0
-        add     rbx, BYTES_PER_CELL * 4 + 2
+;         add     rbx, BYTES_PER_CELL * 4 + 2
+        _error "_totype is obsolete"
 %endmacro
 
 %macro  _toview 0
