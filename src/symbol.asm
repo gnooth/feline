@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; 9 cells: object header, name, vocab-name, hashcode, xt, def, props, value, code address
+; 10 cells: object header, name, vocab-name, hashcode, xt, def, props, value, code address, code size
 
 %macro  _symbol_name 0                  ; symbol -- name
         _slot1
@@ -121,6 +121,18 @@ file __FILE__
         _this_set_slot 8
 %endmacro
 
+%macro  _symbol_code_size 0             ; symbol -- code-size
+        _slot 9
+%endmacro
+
+%macro  _symbol_set_code_size 0         ; symbol code-size --
+        _set_slot 9
+%endmacro
+
+%macro  _this_symbol_set_code_size 0    ; code-size --
+        _this_set_slot 9
+%endmacro
+
 ; ### symbol?
 code symbol?, 'symbol?'                 ; handle -- ?
         _lit OBJECT_TYPE_SYMBOL
@@ -147,9 +159,9 @@ endcode
 
 ; ### <symbol>
 code new_symbol, '<symbol>'             ; name vocab -- symbol
-; 9 cells: object header, name, vocab-name, hashcode, xt, def, props, value, code address
+; 10 cells: object header, name, vocab-name, hashcode, xt, def, props, value, code address, code size
 
-        _lit 9
+        _lit 10
         _ allocate_cells                ; -- name vocab object-address
 
         push    this_register
@@ -185,6 +197,9 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
 
         _f
         _this_symbol_set_code_address
+
+        _f
+        _this_symbol_set_code_size
 
         pushrbx
         mov     rbx, this_register      ; -- vocab symbol
@@ -348,7 +363,7 @@ code symbol_primitive?, 'symbol-primitive?' ; symbol -- ?
 endcode
 
 ; ### symbol-inline?
-code symbol_inline?, 'symbol-inline?' ; symbol -- ?
+code symbol_inline?, 'symbol-inline?'   ; symbol -- ?
         _quote "inline"
         _swap
         _ symbol_prop
@@ -371,7 +386,7 @@ endcode
 
 ; ### symbol-code-address
 code symbol_code_address, 'symbol-code-address' ; symbol -- code-address
-; Symbol's code address is stored as a tagged fixnum.
+; The code address is stored as a tagged fixnum.
         _ check_symbol
         _symbol_code_address
         next
@@ -379,10 +394,27 @@ endcode
 
 ; ### symbol-set-code-address
 code symbol_set_code_address, 'symbol-set-code-address' ; code-address symbol --
-; Symbol's code address is stored as a tagged fixnum.
+; The code address is stored as a tagged fixnum.
         _ check_symbol
         _verify_fixnum [rbp]
         _symbol_set_code_address
+        next
+endcode
+
+; ### symbol-code-size
+code symbol_code_size, 'symbol-code-size' ; symbol -- code-size
+; The code size is stored as a tagged fixnum.
+        _ check_symbol
+        _symbol_code_size
+        next
+endcode
+
+; ### symbol-set-code-size
+code symbol_set_code_size, 'symbol-set-code-size' ; code-size symbol --
+; The code size is stored as a tagged fixnum.
+        _ check_symbol
+        _verify_fixnum [rbp]
+        _symbol_set_code_size
         next
 endcode
 
