@@ -19,7 +19,9 @@ USING: feline ;
 IN: feline
 
 : define-global-reader ( symbol -- )
-    [ <wrapper> \ get 2array array>quotation ] keep symbol-set-def
+    [ <wrapper> \ get 2array array>quotation ] keep
+    [ symbol-set-def ] keep
+    compile-word
 ;
 
 : define-global-writer ( symbol -- )
@@ -27,7 +29,8 @@ IN: feline
         symbol-name string>sbuf '!' suffix! sbuf>string
         current-vocab ensure-symbol
     ] keep
-    <wrapper> \ set 2array array>quotation swap symbol-set-def
+    <wrapper> \ set 2array array>quotation swap [ symbol-set-def ] keep
+    compile-word
 ;
 
 : GLOBAL: ( -- )
