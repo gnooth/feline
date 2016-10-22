@@ -168,11 +168,6 @@ inline nametoflags, 'n>flags'
         _nametoflags
 endinline
 
-; ### n>type
-inline nametotype, 'n>type'
-        _nametotype
-endinline
-
 ; ### >code
 inline tocode, '>code'                  ; xt -- code-addr
         _tocode

@@ -354,11 +354,6 @@ section .data
         _toflags
 %endmacro
 
-%macro  _nametotype 0
-        _namefrom
-        _totype
-%endmacro
-
 %macro  code 2-5 0, 0, 0
         head %1, %2, %3, %4, %5
         section .text
