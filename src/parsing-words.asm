@@ -412,13 +412,9 @@ code define, ':'                        ; --
         _ vector_to_array
         _ array_to_quotation            ; -- symbol quotation
 
-        _dup
-        _ compile_quotation             ; -- symbol quotation code-address code-size
-        _drop
-        _ feline_pick
-        _ symbol_set_code_address       ; -- symbol quotation
-        _swap
-        _ symbol_set_def                ; --
+        _over
+        _ symbol_set_def                ; -- symbol
+        _ compile_word
 
         _zeroto using_locals?
         _zeroto local_names
