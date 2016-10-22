@@ -15,6 +15,8 @@
 
 file __FILE__
 
+; 9 cells: object header, name, vocab-name, hashcode, xt, def, props, value, code address
+
 %macro  _symbol_name 0                  ; symbol -- name
         _slot1
 %endmacro
@@ -340,6 +342,14 @@ endcode
 ; ### symbol-primitive?
 code symbol_primitive?, 'symbol-primitive?' ; symbol -- ?
         _quote "primitive"
+        _swap
+        _ symbol_prop
+        next
+endcode
+
+; ### symbol-inline?
+code symbol_inline?, 'symbol-inline?' ; symbol -- ?
+        _quote "inline"
         _swap
         _ symbol_prop
         next
