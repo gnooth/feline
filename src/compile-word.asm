@@ -153,6 +153,7 @@ endcode
 ; ### compile-inline
 code compile_inline, 'compile-inline'   ; tagged-code-address tagged-code-size --
         _untag_2_fixnums                ; -- addr size
+        _oneminus                       ; adjust size to exclude ret instruction
         _tuck                           ; -- size addr size
         _ pc
         _swap
