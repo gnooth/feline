@@ -250,11 +250,16 @@ code vocab_add_name, 'vocab-add-name'   ; nfa vocab ---
         _twodup
         _ symbol_set_xt                 ; -- symbol xt symbol
 
-        _swap                           ; -- symbol symbol xt
-        _fetch                          ; -- symbol symbol code-address
+        _over                           ; -- symbol xt symbol xt
+        _fetch                          ; -- symbol xt symbol code-address
         _tag_fixnum
-        _swap                           ; -- symbol code-address symbol
-        _ symbol_set_code_address       ; -- symbol
+        _swap                           ; -- symbol xt tagged-code-address symbol
+        _ symbol_set_code_address       ; -- symbol xt
+        _toinline
+        _fetch                          ; -- symbol code-size
+        _tag_fixnum                     ; -- symbol tagged-code-size
+        _over
+        _ symbol_set_code_size
 
         _t
         _quote "primitive"
