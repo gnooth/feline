@@ -248,3 +248,15 @@ code compile_quotation, 'compile-quotation' ;  quotation -- code-address code-si
 
         next
 endcode
+
+; ### compile-word
+code compile_word, 'compile-word'       ; symbol --
+        _dup
+        _ symbol_def
+        _ compile_quotation             ; -- symbol code-address code-size
+        _ feline_pick
+        _ symbol_set_code_size          ; -- symbol code-address
+        _swap
+        _ symbol_set_code_address       ; --
+        next
+endcode
