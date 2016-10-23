@@ -232,6 +232,9 @@ code create_symbol, 'create-symbol'     ; name vocab -- symbol
         _over
         _ symbol_set_def                ; -- handle
 
+        _dup
+        _ compile_word
+
         next
 endcode
 
