@@ -49,7 +49,8 @@ IN: feline
         \ slot
         4array array>quotation
     ] dip
-    symbol-set-def
+    [ symbol-set-def ] keep
+    compile-word
 ;
 
 : define-writer ( class slot-spec -- )
@@ -70,7 +71,8 @@ IN: feline
         \ slot!
         4array array>quotation
     ] dip
-    symbol-set-def
+    [ symbol-set-def ] keep
+    compile-word
 ;
 
 : define-accessors ( class -- )
@@ -81,8 +83,10 @@ IN: feline
 ;
 
 : define-class ( class-name -- class )
-    current-vocab ensure-symbol
-    t "class" pick symbol-set-prop
+    current-vocab 2dup ?lookup-symbol
+    [ 2nip ] [ create-symbol ] if*
+    [ t "class" pick symbol-set-prop ] keep
+    compile-word
 ;
 
 : define-tuple-predicate ( class -- )
@@ -99,8 +103,9 @@ IN: feline
     10 <vector>                         // -- symbol class vector
     [ push ] keep                       // -- symbol vector
     \ tuple-instance? suffix!           // -- symbol vector
-    vector>array array>quotation
-    swap symbol-set-def
+    vector>array array>quotation        // -- symbol quotation
+    swap [ symbol-set-def ] keep
+    compile-word
 ;
 
 : define-tuple-class ( class-name slot-names -- )
