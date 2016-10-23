@@ -228,7 +228,7 @@ code ensure_symbol, 'ensure-symbol'     ; name vocab-spec -- symbol
         _drop
         _then .2                        ; -- name vocab
 
-        _ new_symbol                    ; -- symbol
+        _ create_symbol                 ; -- symbol
 
         _dup
         _to last_word
@@ -311,7 +311,7 @@ code hash_vocab, 'hash-vocab'           ; vocab --
 endcode
 
 ; ### ?lookup-symbol
-code ?lookup_symbol, '?lookup-symbol'   ; name vocab-name -- symbol/f
+code ?lookup_symbol, '?lookup-symbol'   ; name vocab-spec -- symbol/f
         _ lookup_vocab
         _dup
         _tagged_if_not .1
@@ -325,7 +325,7 @@ code ?lookup_symbol, '?lookup-symbol'   ; name vocab-name -- symbol/f
 endcode
 
 ; ### lookup-symbol
-code lookup_symbol, 'lookup-symbol'     ; name vocab-name -- symbol
+code lookup_symbol, 'lookup-symbol'     ; name vocab-spec -- symbol
 ; Error if not found.
         _ ?lookup_symbol
         _dup
