@@ -33,13 +33,14 @@ IN: feline
     if* ;
 
 {
+    "backtrace.feline"
+    "dump.feline"
     "help.feline"
     "sequences.feline"
     "tuple.feline"
     "globals.feline"
     "constant.feline"
     "accept.feline"
-    "dump.feline"
 } [ load-system-file ] each
 
 USING: feline ;
