@@ -43,11 +43,28 @@ endcode
 
 
 ; ### get-saved-backtrace
-code get_saved_backtrace, 'get-saved-backtrace' ; -- addr u
+code get_saved_backtrace, 'get-saved-backtrace' ; -- vector
         xcall   c_get_saved_backtrace_array
         pushd   rax
         xcall   c_get_saved_backtrace_size
         pushd   rax
+
+        _dup
+        _ new_vector_untagged
+        _ rrot
+        _zero
+        _?do .1
+        _dup
+        _i
+        _cells
+        _plus
+        _fetch
+        _pick
+        _ vector_push
+        _loop .1
+
+        _drop
+
         next
 endcode
 
@@ -80,11 +97,36 @@ value saved_r15, 'saved-r15', 0
 value saved_rip, 'saved-rip', 0
 value saved_efl, 'saved-efl', 0
 
-; ### print-backtrace
-deferred print_backtrace, 'print-backtrace', noop
+; ### maybe-print-saved-registers
+code maybe_print_saved_registers, 'maybe-print-saved-registers' ; --
+        _quote "print-saved-registers"
+        _quote "feline"
+        _ ?lookup_symbol                ; -- symbol/f
+        _dup
+        _tagged_if .1                   ; -- symbol
+        _ call_symbol                   ; --
+        _then .1
+        next
+endcode
+
+; ### maybe-print-backtrace
+code maybe_print_backtrace, 'maybe-print-backtrace' ; --
+        _quote "print-backtrace"
+        _quote "feline"
+        _ ?lookup_symbol                ; -- symbol/f
+        _dup
+        _tagged_if .1                   ; -- symbol
+        _ call_symbol                   ; --
+        _then .1
+        next
+endcode
 
 ; ### print-saved-registers-and-backtrace
-deferred print_saved_registers_and_backtrace, 'print-saved-registers-and-backtrace', noop
+code print_saved_registers_and_backtrace, 'print-saved-registers-and-backtrace' ; --
+        _ maybe_print_saved_registers
+        _ maybe_print_backtrace
+        next
+endcode
 
 %ifdef WIN64
 ; ### exception-text
@@ -141,12 +183,14 @@ code print_exception, 'print-exception'
         _ saved_exception_address
         _ hdot
 %else
-        _dotq "Caught signal "
+        _quote "Caught signal "
+        _ write_string
         _ saved_signal
         _ decdot
         _dotq "at address "
         _ saved_signal_address
         _ hdot
+        _ nl
 %endif
         next
 endcode
@@ -162,9 +206,11 @@ code handle_signal, 'handle-signal'
         _ lpstore
         _then .1
 
-        _ ?cr
+        _ ?nl
         _ print_exception
         _ print_saved_registers_and_backtrace
+
         _ reset
+
         next
 endcode

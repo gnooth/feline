@@ -281,16 +281,16 @@ endcode
 code feline_do_error, 'feline-do-error' ; string-or-number --
         _dup
         _ string?
-        _tagged_if .0
+        _tagged_if .1
         _ ?nl
         _ red
         _ foreground
         _ write_string
         _ feline_where
-        _ print_backtrace
+        _ maybe_print_backtrace
         _ nl
         _ reset
-        _then .0
+        _then .1
 
         ; code below this point is for Forth exceptions
         _to exception
@@ -298,18 +298,18 @@ code feline_do_error, 'feline-do-error' ; string-or-number --
         _ exception
         _lit -1
         _ equal
-        _if .1
+        _if .2
         _ reset                         ; ABORT (no message)
-        _then .1
+        _then .2
 
         _ exception
         _lit -2
         _equal
-        _if .2
+        _if .3
         _ dotmsg                        ; ABORT"
-        _ print_backtrace
+        _ maybe_print_backtrace
         _ reset
-        _then .2
+        _then .3
 
         ; otherwise...
         _ dotmsg
@@ -325,7 +325,7 @@ code feline_do_error, 'feline-do-error' ; string-or-number --
         _notequal
         _ and
         _if .4
-        _ print_backtrace
+        _ maybe_print_backtrace
         _then .4
         _ reset
         next
