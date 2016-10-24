@@ -1,0 +1,67 @@
+// Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+LANGUAGE: feline
+
+USING: feline ;
+IN: feline
+
+: find-word-from-code-address ( tagged-code-address -- word )
+    local: x
+    -> x
+    all-words
+    [
+        dup symbol-code-address swap symbol-code-size
+        over + 1 -
+        x -rot between?
+    ]
+    find nip ;
+
+: print-reg ( string untagged -- )
+    swap write-string
+    '$' write-char
+    untagged>hex write-string ;
+
+: print-saved-registers ( -- )
+    ?nl
+    "Registers:" write-string nl
+    4 tab "RAX = " saved-rax print-reg 40 tab "R8  = " saved-r8  print-reg nl
+    4 tab "RBX = " saved-rbx print-reg 40 tab "R9  = " saved-r9  print-reg nl
+    4 tab "RCX = " saved-rcx print-reg 40 tab "R10 = " saved-r10 print-reg nl
+    4 tab "RDX = " saved-rdx print-reg 40 tab "R11 = " saved-r11 print-reg nl
+    4 tab "RSI = " saved-rsi print-reg 40 tab "R12 = " saved-r12 print-reg nl
+    4 tab "RDI = " saved-rdi print-reg 40 tab "R13 = " saved-r13 print-reg nl
+    4 tab "RBP = " saved-rbp print-reg 40 tab "R14 = " saved-r14 print-reg nl
+    4 tab "RSP = " saved-rsp print-reg 40 tab "R15 = " saved-r15 print-reg nl
+    4 tab "RIP = " saved-rip print-reg 40 tab "EFL = " saved-efl print-reg nl ;
+
+: format-address ( untagged -- )
+    untagged>hex dup length 16 swap - spaces
+    '$' write-char write-string ;
+
+: format-word ( tagged-code-address symbol -- )
+    dup symbol-name write-string
+    symbol-code-address -
+    space '+' write-char space fixnum>string write-string ;
+
+: print-backtrace ( -- )
+    ?nl "Backtrace:" write-string
+    get-saved-backtrace
+    nl
+    [
+        dup format-address space
+        tag-fixnum dup find-word-from-code-address [ format-word ] [ drop ] if*
+        nl
+    ] each ;
