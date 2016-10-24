@@ -236,44 +236,18 @@ code do_error, 'do-error'               ; n --
         _tagged_if .0
         _to msg
         _ dotmsg
-        _ print_backtrace
         _ forth_reset
         _then .0
 
-        _to exception
-
-        _ exception
         _lit -1
         _ equal
         _if .1
         _ forth_reset                   ; ABORT (no message)
         _then .1
 
-        _ exception
-        _lit -2
-        _equal
-        _if .2
-        _ dotmsg                        ; ABORT"
-        _ print_backtrace
-        _ forth_reset
-        _then .2
-
         ; otherwise...
         _ dotmsg
-
         _ where
-
-        ; automatically print a backtrace if it is likely to be useful
-        _ exception
-        _lit -13                        ; undefined word
-        _notequal
-        _ exception
-        _lit -4                         ; data stack underflow
-        _notequal
-        _ and
-        _if .4
-        _ print_backtrace
-        _then .4
         _ forth_reset
         next
 endcode
