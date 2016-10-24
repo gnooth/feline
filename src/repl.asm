@@ -185,8 +185,8 @@ code feline_interpret, 'feline-interpret' ; --
         next
 endcode
 
-; ### feline-reset
-code feline_reset, 'feline-reset'
+; ### reset
+code reset, 'reset'
         _ lp0
         _?dup_if .1
         _ lpstore
@@ -289,7 +289,7 @@ code feline_do_error, 'feline-do-error' ; string-or-number --
         _ feline_where
         _ print_backtrace
         _ nl
-        _ feline_reset
+        _ reset
         _then .0
 
         ; code below this point is for Forth exceptions
@@ -299,7 +299,7 @@ code feline_do_error, 'feline-do-error' ; string-or-number --
         _lit -1
         _ equal
         _if .1
-        _ feline_reset                  ; ABORT (no message)
+        _ reset                         ; ABORT (no message)
         _then .1
 
         _ exception
@@ -308,7 +308,7 @@ code feline_do_error, 'feline-do-error' ; string-or-number --
         _if .2
         _ dotmsg                        ; ABORT"
         _ print_backtrace
-        _ feline_reset
+        _ reset
         _then .2
 
         ; otherwise...
@@ -327,7 +327,7 @@ code feline_do_error, 'feline-do-error' ; string-or-number --
         _if .4
         _ print_backtrace
         _then .4
-        _ feline_reset
+        _ reset
         next
 endcode
 
