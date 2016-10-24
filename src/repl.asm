@@ -336,26 +336,8 @@ code feline_query, 'feline-query'       ; --
         _ ?nl
         _quote "accept-string"          ; -- name
         _quote "accept"                 ; -- name vocab-name
-        _ ?lookup_symbol                ; -- symbol/f
-        _dup
-        _tagged_if .1                   ; -- symbol
-        _ call_symbol                   ; -- string
-        _ string_from                   ; -- c-addr u
-        _lit 80
-        _ min                           ; -- c-addr u
-        _dup
-        _ ntib
-        _ store
-        _ tib
-        _ swap
-        _ cmove
-        _ toin
-        _ off
-        _else .1
-        _drop
-        _ prompt
-        _ forth_query
-        _then .1
+        _ lookup_symbol
+        _ call_symbol
         next
 endcode
 
@@ -376,40 +358,25 @@ endcode
 ; ### repl
 code repl, 'repl'                       ; --
 
-        _lit feline_interpret_xt
-        _lit interpret_xt
-        _tobody
-        _store
-
         _begin .1
 
         ; REVIEW
         mov     rsp, [rp0_data]
 
-        _ feline_query
-
-        _ tib
-        _ ntib
-        _fetch
-        _zero
-        _ set_input
-
-        _ tib
-        _ ntib
-        _fetch
-        _ copy_to_string
-        _ new_lexer
+        _ feline_query                  ; -- string
 
         _ begin_scope
+
+        _ new_lexer
         _ lexer
         _ set
 
-        _quotation .1
-        _ feline_interpret
-        _end_quotation .1
         _quotation .2
-        _ feline_do_error
+        _ feline_interpret
         _end_quotation .2
+        _quotation .3
+        _ feline_do_error
+        _end_quotation .3
         _ recover
 
         _ end_scope
