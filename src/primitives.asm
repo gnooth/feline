@@ -678,7 +678,7 @@ code hexdot, 'hex.'                     ; n --
 endcode
 
 ; ### pick
-inline feline_pick, 'pick'              ; x y z -- x y z x
+inline pick, 'pick'                     ; x y z -- x y z x
 ; This is the Factor/Feline version of pick.
 ; The Forth version is different.
         _pick
@@ -688,8 +688,8 @@ endinline
 code feline_2over, '2over'              ; x y z -- x y z x y
 ; This is the Factor/Feline version of 2over.
 ; The Forth version is different.
-        _ feline_pick
-        _ feline_pick
+        _pick
+        _pick
         next
 endcode
 

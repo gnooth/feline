@@ -149,7 +149,7 @@ code map, 'map'                         ; seq quot -- newseq
 
         _i
         _tag_fixnum                     ; -- newseq newelt i
-        _ feline_pick                   ; -- newseq newelt i newseq
+        _pick                           ; -- newseq newelt i newseq
         _ set_nth                       ; -- newseq
 
         _loop .1
@@ -191,7 +191,7 @@ code map_index, 'map-index'             ; seq quot -- newseq
 
         _i
         _tag_fixnum                     ; -- newseq newelt i
-        _ feline_pick                   ; -- newseq newelt i newseq
+        _pick                           ; -- newseq newelt i newseq
         _ set_nth                       ; -- newseq
 
         _loop .1

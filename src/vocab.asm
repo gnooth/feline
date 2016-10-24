@@ -263,7 +263,7 @@ code vocab_add_name, 'vocab-add-name'   ; nfa vocab ---
 
         _t
         _quote "primitive"
-        _ feline_pick
+        _pick
         _ symbol_set_prop               ; -- symbol
 
         _dup
@@ -273,7 +273,7 @@ code vocab_add_name, 'vocab-add-name'   ; nfa vocab ---
         _if .1
         _t
         _quote "parsing"
-        _ feline_pick
+        _pick
         _ symbol_set_prop
         _then .1                        ; -- symbol
 
@@ -284,7 +284,7 @@ code vocab_add_name, 'vocab-add-name'   ; nfa vocab ---
         _if .2
         _t
         _quote "inline"
-        _ feline_pick
+        _pick
         _ symbol_set_prop
         _then .2                        ; -- symbol
 
