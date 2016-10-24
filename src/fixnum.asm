@@ -456,7 +456,7 @@ code fixnum_to_base, 'fixnum>base'      ; fixnum base -- string
 
 ; FIXME it's an error if base is not 10 or 16 here
 
-fixnum_to_base_untagged:
+untagged_to_base:
 
         _lit 256
         _dup
@@ -482,11 +482,19 @@ fixnum_to_base_untagged:
         next
 endcode
 
+; REVIEW
+; ### untagged>hex
+code untagged_to_hex, 'untagged>hex'    ; untagged -- string
+        _lit 16
+        _ untagged_to_base
+        next
+endcode
+
 ; ### fixnum>string
 code fixnum_to_string, 'fixnum>string'  ; fixnum -- string
         _check_fixnum
         _lit 10
-        _ fixnum_to_base_untagged
+        _ untagged_to_base
         next
 endcode
 
@@ -497,7 +505,7 @@ code fixnum_to_hex, 'fixnum>hex'        ; fixnum -- string
         _zge
         _if .1
         _lit 16
-        _ fixnum_to_base_untagged
+        _ untagged_to_base
         _return
         _then .1
 
@@ -515,7 +523,7 @@ code fixnum_to_hex, 'fixnum>hex'        ; fixnum -- string
         ; otherwise...
         neg     rbx
         _lit 16
-        _ fixnum_to_base_untagged
+        _ untagged_to_base
         _quote "-"
         _swap
         _ concat
