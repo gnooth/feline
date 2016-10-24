@@ -237,7 +237,7 @@ code do_error, 'do-error'               ; n --
         _to msg
         _ dotmsg
         _ print_backtrace
-        _ reset
+        _ forth_reset
         _then .0
 
         _to exception
@@ -246,7 +246,7 @@ code do_error, 'do-error'               ; n --
         _lit -1
         _ equal
         _if .1
-        _ reset                         ; ABORT (no message)
+        _ forth_reset                   ; ABORT (no message)
         _then .1
 
         _ exception
@@ -255,7 +255,7 @@ code do_error, 'do-error'               ; n --
         _if .2
         _ dotmsg                        ; ABORT"
         _ print_backtrace
-        _ reset
+        _ forth_reset
         _then .2
 
         ; otherwise...
@@ -274,7 +274,7 @@ code do_error, 'do-error'               ; n --
         _if .4
         _ print_backtrace
         _then .4
-        _ reset
+        _ forth_reset
         next
 endcode
 
@@ -309,8 +309,8 @@ code forth_quit, 'quit'                 ; --            r:  i*x --
         next                            ; for decompiler
 endcode
 
-; ### reset
-code reset, 'reset'                     ; i*x --        r: j*x --
+; ### forth-reset
+code forth_reset, 'forth-reset'         ; i*x --        r: j*x --
 ; This is the CORE version of ABORT (6.1.0670).
 ; "Empty the data stack and perform the function of QUIT, which includes
 ; emptying the return stack, without displaying a message."
