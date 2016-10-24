@@ -289,6 +289,19 @@ code feline_max, 'max'                  ; x y -- z
         next
 endcode
 
+; ### between?
+code between?, 'between?'               ; n min max -- ?
+        _pick
+        _ feline_ge
+        _tagged_if .1
+        _ feline_ge
+        _else .1
+        _drop
+        mov     rbx, f_value
+        _then .1
+        next
+endcode
+
 ; ### fixnum+
 inline fixnum_plus, 'fixnum+'           ; x y -- x+y
 ; No type checking.
