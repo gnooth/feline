@@ -179,6 +179,12 @@ code in_colon, 'IN:'
         next
 endcode
 
+; ### in:
+code in_colon_alias, 'in:'
+        _ in_colon
+        next
+endcode
+
 ; ### USING:
 code using_colon, 'USING:'
         _lit 10
@@ -212,22 +218,22 @@ code using_colon, 'USING:'
         next
 endcode
 
-; ### CONTEXT:
-code context_colon, 'CONTEXT:'
+; ### using:
+code using_colon_alias, 'using:'
         _ using_colon
         next
 endcode
 
 ; ### order
 code order, 'order'
-        _ ?cr
-        _dotq "USING: "
+        _ ?nl
+        _write "using: "
         _ context_vector
         _lit dot_voc_xt
         _ vector_each
-        _dotq ";"
-        _ cr
-        _dotq "IN: "
+        _write ";"
+        _ nl
+        _write "in: "
         _ current_vocab
         _ dot_voc
         next
