@@ -594,30 +594,10 @@ endcode
 
 ; ### LANGUAGE:
 code parse_language, 'LANGUAGE:', PARSING
+; Deprecated.
         _ parse_token                   ; -- string/f
-%if 0
-        _dup
-        _quote "forth"
-        _ stringequal
-        _tagged_if .1
+        ; Do nothing.
         _drop
-        _ forth_mode
-        _return
-        _then .1
-
-        _dup
-        _quote "feline"
-        _ stringequal
-        _tagged_if .2
-        _drop
-        _ feline_mode
-        _return
-        _then .2
-
-        _error "unsupported language"
-%else
-        _drop
-%endif
         next
 endcode
 
