@@ -41,3 +41,5 @@ IN: feline
     [ define-global-writer ]
     bi
 ;
+
+: global: GLOBAL: ;

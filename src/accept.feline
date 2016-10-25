@@ -32,7 +32,7 @@ GLOBAL: pattern
     f history-index! f pattern! ;
 
 : prompt ( -- )
-    "IN: " current-vocab vocab-name concat
+    "in: " current-vocab vocab-name concat
     "> " concat
     dup prompt-string!
     green foreground write ;
