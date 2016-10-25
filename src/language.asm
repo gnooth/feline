@@ -51,40 +51,40 @@ code dot_language, '.language'
         next
 endcode
 
-; ### forth-mode
-code forth_mode, 'forth-mode'
-        _lit forth_interpret_xt
-        _lit interpret_xt
-        _tobody
-        _store
+; ; ### forth-mode
+; code forth_mode, 'forth-mode'
+;         _lit forth_interpret_xt
+;         _lit interpret_xt
+;         _tobody
+;         _store
 
-        _lit forth_prompt_string_xt
-        _lit prompt_string_xt
-        _tobody
-        _store
+;         _lit forth_prompt_string_xt
+;         _lit prompt_string_xt
+;         _tobody
+;         _store
 
-        _lit forth_ok_xt
-        _lit ok_xt
-        _tobody
-        _store
+;         _lit forth_ok_xt
+;         _lit ok_xt
+;         _tobody
+;         _store
 
-        _ only
-        _ feline
-        _ also
-        _ forth
-        _ definitions
+;         _ only
+;         _ feline
+;         _ also
+;         _ forth
+;         _ definitions
 
-        _quote "Forth"
-        _to language
+;         _quote "Forth"
+;         _to language
 
-        next
-endcode
+;         next
+; endcode
 
-; ### feline-ok
-code feline_ok, 'feline-ok'             ; --
-        _ feline_dot_s
-        next
-endcode
+; ; ### feline-ok
+; code feline_ok, 'feline-ok'             ; --
+;         _ feline_dot_s
+;         next
+; endcode
 
 ; ### feline-mode
 code feline_mode, 'feline-mode'
@@ -98,10 +98,10 @@ code feline_mode, 'feline-mode'
         _tobody
         _store
 
-        _lit feline_ok_xt
-        _lit ok_xt
-        _tobody
-        _store
+;         _lit feline_ok_xt
+;         _lit ok_xt
+;         _tobody
+;         _store
 
         _ only
         _ feline
@@ -110,33 +110,5 @@ code feline_mode, 'feline-mode'
         _quote "Feline"
         _to language
 
-        next
-endcode
-
-; ### LANGUAGE:
-code language_colon, 'LANGUAGE:', IMMEDIATE
-        _ parse_name                    ; -- c-addr u
-
-        _twodup
-        _squote "forth"
-        _ strequal
-        _if .1
-        _2drop
-        _ forth_mode
-        _return
-        _then .1
-
-        _twodup
-        _squote "feline"
-        _ strequal
-        _if .2
-        _2drop
-        _ feline_mode
-        _return
-        _then .2
-
-        _2drop
-        _true
-        _abortq "unsupported language"
         next
 endcode
