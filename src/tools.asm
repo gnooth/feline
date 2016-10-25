@@ -71,11 +71,16 @@ endcode
 ; %endif
 
 %ifdef WIN64
-value saved_exception_code, 'saved-exception-code', 0
-value saved_exception_address, 'saved-exception-address', 0
+
+; These values are set by the windows exception handler (in main.c).
+value saved_exception_code, 'saved-exception-code', 0 ; untagged
+value saved_exception_address, 'saved-exception-address', 0 ; untagged
+
 %else
+
 value saved_signal, 'saved-signal', 0
 value saved_signal_address, 'saved-signal-address', 0
+
 %endif
 
 value saved_rax, 'saved-rax', 0
@@ -129,8 +134,9 @@ code print_saved_registers_and_backtrace, 'print-saved-registers-and-backtrace' 
 endcode
 
 %ifdef WIN64
+
 ; ### exception-text
-code exception_text, 'exception-text'   ; n -- $addr
+code exception_text, 'exception-text'   ; n -- string/f
 ; The exception text should end with a space for compatibility with
 ; the string printed by h. when there is no exception text.
         _dup
@@ -138,50 +144,58 @@ code exception_text, 'exception-text'   ; n -- $addr
         _equal
         _if .1
         _drop
-        _cquote "memory access exception "
+        _quote "memory access exception "
         _return
         _then .1
+
         _dup
         _lit $0C0000094
         _equal
         _if .2
         _drop
-        _cquote "division by zero exception "
+        _quote "division by zero exception "
         _return
         _then .2
+
         _dup
         _lit $080000003
         _equal
         _if .3
         _drop
-        _cquote "breakpoint exception "
+        _quote "breakpoint exception "
         _return
         _then .3
+
         ; default
         _drop
-        _zero
+        _f
         next
 endcode
+
 %endif
 
 ; ### print-exception
 code print_exception, 'print-exception'
+
 %ifdef WIN64
         _ saved_exception_code
         _ exception_text
-        _?dup
-        _if .1
-        _dotq "Caught "
-        _ counttype
+        _dup
+        _tagged_if .1
+        _write "Caught "
+        _ write_string
         _else .1
         ; no text for this exception code
-        _dotq "Caught exception "
+        _drop
+        _write "Caught exception "
         _ saved_exception_code
-        _ hdot
+        _tag_fixnum
+        _ hexdot
         _then .1
-        _dotq "at address "
+        _write "at address "
         _ saved_exception_address
-        _ hdot
+        _tag_fixnum
+        _ hexdot
 %else
         _quote "Caught signal "
         _ write_string
@@ -192,6 +206,7 @@ code print_exception, 'print-exception'
         _ hdot
         _ nl
 %endif
+
         next
 endcode
 
