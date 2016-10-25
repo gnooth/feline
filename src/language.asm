@@ -51,41 +51,6 @@ code dot_language, '.language'
         next
 endcode
 
-; ; ### forth-mode
-; code forth_mode, 'forth-mode'
-;         _lit forth_interpret_xt
-;         _lit interpret_xt
-;         _tobody
-;         _store
-
-;         _lit forth_prompt_string_xt
-;         _lit prompt_string_xt
-;         _tobody
-;         _store
-
-;         _lit forth_ok_xt
-;         _lit ok_xt
-;         _tobody
-;         _store
-
-;         _ only
-;         _ feline
-;         _ also
-;         _ forth
-;         _ definitions
-
-;         _quote "Forth"
-;         _to language
-
-;         next
-; endcode
-
-; ; ### feline-ok
-; code feline_ok, 'feline-ok'             ; --
-;         _ feline_dot_s
-;         next
-; endcode
-
 ; ### feline-mode
 code feline_mode, 'feline-mode'
         _lit feline_interpret_xt
@@ -97,11 +62,6 @@ code feline_mode, 'feline-mode'
         _lit prompt_string_xt
         _tobody
         _store
-
-;         _lit feline_ok_xt
-;         _lit ok_xt
-;         _tobody
-;         _store
 
         _ only
         _ feline
