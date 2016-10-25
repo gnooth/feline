@@ -595,7 +595,7 @@ endcode
 ; ### LANGUAGE:
 code parse_language, 'LANGUAGE:', PARSING
         _ parse_token                   ; -- string/f
-
+%if 0
         _dup
         _quote "forth"
         _ stringequal
@@ -615,7 +615,9 @@ code parse_language, 'LANGUAGE:', PARSING
         _then .2
 
         _error "unsupported language"
-
+%else
+        _drop
+%endif
         next
 endcode
 
