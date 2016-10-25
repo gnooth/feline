@@ -72,14 +72,15 @@ endcode
 
 %ifdef WIN64
 
-; These values are set by the windows exception handler (in main.c).
+; These values are set by the Windows exception handler (in main.c).
 value saved_exception_code, 'saved-exception-code', 0 ; untagged
 value saved_exception_address, 'saved-exception-address', 0 ; untagged
 
 %else
 
-value saved_signal, 'saved-signal', 0
-value saved_signal_address, 'saved-signal-address', 0
+; These values are set by the signal handler in main.c.
+value saved_signal, 'saved-signal', 0 ; untagged
+value saved_signal_address, 'saved-signal-address', 0 ; untagged
 
 %endif
 
@@ -197,13 +198,14 @@ code print_exception, 'print-exception'
         _tag_fixnum
         _ hexdot
 %else
-        _quote "Caught signal "
-        _ write_string
+        _write "Caught signal "
         _ saved_signal
-        _ decdot
-        _dotq "at address "
+        _ untagged_to_hex
+        _ write_string
+        _write " at address "
         _ saved_signal_address
-        _ hdot
+        _ untagged_to_hex
+        _ write_string
         _ nl
 %endif
 
