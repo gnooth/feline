@@ -222,7 +222,8 @@ code cold, 'cold'                       ; --
 ;         _ report_startup_time
 
         ; start in Feline mode
-        _ feline_mode
+        _ feline
+        _ definitions
 
         _ process_command_line
 
