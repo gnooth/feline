@@ -497,69 +497,6 @@ code inline_latest, 'inline-latest'     ; --
         next
 endcode
 
-; ### variable
-code var, 'variable'
-        _ create
-        _zero
-        _ comma
-        _ inline_latest
-
-        _ tvar
-        _ latest
-        _namefrom
-        _totype
-        _ cstore
-
-        next
-endcode
-
-; ### 2variable
-code twovar, '2variable'
-        _ create
-        _zero
-        _ comma
-        _zero
-        _ comma
-        next
-endcode
-
-; ### constant
-code forth_constant, 'constant'         ; x "<spaces>name" --
-; CORE
-        _ header                        ; -- x
-        _ here_c
-        _ latest
-        _namefrom                       ; -- x xt
-        _duptor                         ; -- x xt       r: -- xt
-        _ store                         ; -- x          r: -- xt
-        _ iliteral
-        _ccommac $0c3
-
-        _ tconst
-        _rfrom                          ; -- xt
-        _totype
-        _ cstore
-
-        _ inline_latest
-
-        next
-endcode
-
-; ### 2constant
-code twoconstant, '2constant'           ; x1 x2 "<spaces>name" --
-; DOUBLE
-        _ header                        ; -- x1 x2
-        _ here_c
-        _ latest
-        _namefrom
-        _ store                         ; -- x1 x2
-        _swap
-        _ iliteral
-        _ iliteral
-        _ccommac $0c3
-        next
-endcode
-
 ; ### exit
 code exit_, 'exit', IMMEDIATE
 ; CORE
