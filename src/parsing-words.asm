@@ -384,11 +384,10 @@ code comment_to_eol, '//', PARSING      ; --
         _return
         _else .2
         _drop
+        _error "no lexer"
         _then .2
 .1:
-        _lit 10
-        _ parse
-        _2drop
+        _error "symbols not initialized"
         next
 endcode
 
@@ -430,9 +429,10 @@ code feline_paren, '(', PARSING
 
         _else .2
         _drop
+        _error "no lexer"
         _then .2
 .1:
-        _ paren
+        _error "symbols not initialized"
         next
 endcode
 
