@@ -166,7 +166,7 @@ code compile_do_literal, 'compile-do-literal' ; $addr --
 
         _ string_literal?
         _if .2                          ; -- c-addr u
-        _ copy_to_static_string         ; -- string
+        _ copy_to_string                ; -- string
         _ literal
         _return
         _then .2
