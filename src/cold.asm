@@ -71,25 +71,14 @@ code pad, 'pad'                         ; -- c-addr
         next
 endcode
 
-; ### user-home-string
-value user_home_string, 'user-home-string', 0
-
 ; ### user-home
 code user_home, 'user-home'             ; -- string
-        _ user_home_string
-        _zeq_if .1
 %ifdef WIN64
         _quote "USERPROFILE"
 %else
         _quote "HOME"
 %endif
         _ get_environment_variable      ; -- string
-        _ string_from
-        _ copy_to_static_string
-        _ check_string
-        _to user_home_string
-        _then .1
-        _ user_home_string
         next
 endcode
 
