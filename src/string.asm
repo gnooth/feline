@@ -272,34 +272,6 @@ code string_from, 'string>'             ; string -- c-addr u
         next
 endcode
 
-; ### >static-string
-code copy_to_static_string, '>static-string' ; c-addr u -- string
-; Arguments are untagged.
-        _ align_data
-        _ here                          ; this will be the address of the string
-        _tor
-
-        ; object header
-        _lit OBJECT_TYPE_STRING
-        _ comma
-        ; length
-        _dup
-        _ comma                         ; -- c-addr u
-
-        ; hashcode
-        _f
-        _ comma
-
-        _ here                          ; -- c-addr u here
-        _over                           ; -- c-addr u here u
-        _oneplus                        ; -- c-addr u here u+1
-        _ allot
-        _ zplace                        ; --
-
-        _rfrom                          ; -- string
-        next
-endcode
-
 ; ### ~string
 code destroy_string, '~string'          ; string --
         _ check_string
