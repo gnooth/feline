@@ -37,55 +37,6 @@ code maybe_add, 'maybe-add'             ; x -- ???
         next
 endcode
 
-; ### parse-string
-code parse_string, 'parse-string'       ; -- string
-        _lit 128
-        _ new_sbuf_untagged             ; -- sbuf
-        _tor
-
-        _lit '"'
-        _tag_char
-        _rfetch
-        _ sbuf_push
-
-        _begin .1
-        _ slashsource
-        _lit '"'
-        _ scan
-        _nip
-        _if .2
-        _lit '"'
-        _ parse                         ; -- addr len
-        _rfetch                         ; -- addr len sbuf
-        _ rrot                          ; -- sbuf addr len
-        _ sbuf_append_chars             ; --
-
-        _rfrom
-
-        _lit '"'
-        _tag_char
-        _over
-        _ sbuf_push
-        _ sbuf_to_string
-
-        _return
-        _then .2
-
-        _rfetch
-        _ slashsource
-        _ sbuf_append_chars
-
-        _lit $0a
-        _tag_char
-        _rfetch
-        _ sbuf_push
-
-        _ refill
-        _zeq
-        _until .1
-        next
-endcode
-
 ; ### parse-token
 code parse_token, 'parse-token'         ; -- string/f
         cmp     qword [symbols_initialized?], t_value
