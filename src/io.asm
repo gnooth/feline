@@ -723,7 +723,6 @@ extern os_getenv
 
 ; ### get-environment-variable
 code get_environment_variable, 'get-environment-variable' ; name -- value
-        _ check_string
         _ string_data
 %ifdef WIN64
         popd    rcx
