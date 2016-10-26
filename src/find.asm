@@ -189,13 +189,14 @@ code forth, 'forth'                     ; --
         _ lookup_vocab
 
         _dup
-        _f
-        _equal
-        _abortq "no forth vocab"
-
+        _tagged_if .1
         _zero
         _ context_vector
         _ vector_set_nth_untagged
+        _else .1
+        _drop
+        _error "no forth vocab"
+        _then .1
         next
 endcode
 
