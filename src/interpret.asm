@@ -43,20 +43,6 @@ code rbrack, ']'
         next
 endcode
 
-; ### ?stack
-code ?stack, '?stack'
-        cmp     rbp, [sp0_data]
-        ja      .1
-        next
-.1:
-        mov     rbp, [sp0_data]
-        _cquote "Error: data stack underflow"
-        _to msg
-        _lit -4
-        _ forth_throw
-        next
-endcode
-
 ; ### ?enough
 code ?enough, '?enough'                 ; n --
         _ depth

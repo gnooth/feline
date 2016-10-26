@@ -172,6 +172,17 @@ code feline_interpret1, 'feline-interpret1' ; string --
         next
 endcode
 
+; ### ?stack
+code ?stack, '?stack'
+        cmp     rbp, [sp0_data]
+        ja      .1
+        next
+.1:
+        mov     rbp, [sp0_data]
+        _error "data stack underflow"
+        next
+endcode
+
 ; ### feline-interpret
 code feline_interpret, 'feline-interpret' ; --
         _begin .1
