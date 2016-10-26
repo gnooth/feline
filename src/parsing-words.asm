@@ -213,11 +213,7 @@ code parse_until, 'parse-until'         ; delimiter -- vector
         _ parse_token                   ; -- delimiter string/f
         cmp     rbx, f_value
         jne     .1
-        poprbx
-        _ refill
-        _if .2
-        jmp     .top
-        _then .2
+        _2drop
         _error "unexpected end of input"
 .1:                                     ; -- delimiter string
         _twodup                         ; -- d s d s
