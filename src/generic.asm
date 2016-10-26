@@ -48,8 +48,8 @@ code do_generic, 'do-generic'
         _if .1
         _execute
         _else .1
-        _true
-        _abortq "no method"
+        _drop
+        _error "no method"
         _then .1
         next
 endcode
