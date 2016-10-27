@@ -19,7 +19,7 @@ file __FILE__
 code vector?, 'vector?'                 ; handle -- ?
         _dup
         _ handle?
-        _if .1
+        _tagged_if .1
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_type                    ; -- object-type
@@ -43,7 +43,7 @@ endcode
 code check_vector, 'check-vector'       ; handle -- vector
         _dup
         _ handle?
-        _if .1
+        _tagged_if .1
         _handle_to_object_unsafe        ; -- object/0
         _dup_if .2
         _dup
@@ -65,7 +65,7 @@ code verify_vector, 'verify-vector'     ; handle -- handle
 ; Returns argument unchanged.
         _dup
         _ handle?
-        _if .1
+        _tagged_if .1
         _dup
         _handle_to_object_unsafe        ; -- handle object/0
         _dup_if .2

@@ -26,7 +26,7 @@ file __FILE__
 code string?, 'string?'                 ; x -- t|f
         _dup
         _ handle?
-        _if .1
+        _tagged_if .1
         _handle_to_object_unsafe        ; -- object/0
         _?dup_if .2
         _object_type                    ; -- object-type
@@ -100,7 +100,7 @@ endcode
 code check_string, 'check-string'       ; handle-or-string -- string
         _dup
         _ handle?
-        _if .1
+        _tagged_if .1
         _handle_to_object_unsafe        ; -- object|0
         _dup_if .2
         _dup
@@ -125,7 +125,7 @@ code verify_string, 'verify-string'     ; handle-or-string -- handle-or-string
 ; Returns argument unchanged.
         _dup
         _ handle?
-        _if .1
+        _tagged_if .1
         _dup
         _handle_to_object_unsafe        ; -- handle object|0
         _dup_if .2

@@ -55,7 +55,7 @@ file __FILE__
 code curry?, 'curry?'                   ; handle -- ?
         _dup
         _ handle?
-        _if .1
+        _tagged_if .1
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_type                    ; -- object-type
@@ -90,7 +90,7 @@ endcode
 code check_curry, 'check-curry'         ; x -- curry
         _dup
         _ handle?
-        _if .1
+        _tagged_if .1
         _handle_to_object_unsafe        ; -- object/0
         _dup_if .2
         _dup

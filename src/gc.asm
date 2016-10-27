@@ -293,7 +293,7 @@ endcode
 code maybe_mark_handle, 'maybe-mark-handle' ; handle --
         _dup
         _ handle?
-        _if .1
+        _tagged_if .1
         _ mark_handle
         _else .1
         _drop

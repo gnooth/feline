@@ -37,7 +37,7 @@ endcode
 code object?, 'object?'                 ; x -- t|f
         _dup
         _ handle?
-        _if .1
+        _tagged_if .1
         _handle_to_object_unsafe
         _zne
         _tag_boolean
@@ -83,7 +83,7 @@ code object_type, 'object-type'         ; handle-or-object -- n/f
 
         _dup
         _ handle?
-        _if .3
+        _tagged_if .3
         _handle_to_object_unsafe
         _object_type
         _tag_fixnum

@@ -93,21 +93,21 @@ code new_handle, 'new-handle'           ; object -- handle
 endcode
 
 ; ### handle?
-code handle?, 'handle?'                 ; x -- 1|0
-; Argument is untagged.
-; Returned value is untagged.
+code handle?, 'handle?'                 ; x -- ?
+        ; tag bits must be 0
+        test    ebx, TAG_MASK
+        jnz     .1
+
         ; must point into handle space
         cmp     rbx, [handle_space_data]
         jb .1
         cmp     rbx, [handle_space_free_data]
         jae .1
 
-        ; must be aligned
-        and     ebx, 7
-        setz    bl
+        mov     ebx, t_value
         _return
 .1:
-        xor     ebx, ebx
+        mov     ebx, f_value
         next
 endcode
 
@@ -164,8 +164,8 @@ endcode
 ; ### deref
 code deref, 'deref'                     ; x -- object-address/0
         _dup
-        _ handle?                       ; -- 1/0
-        _if .1
+        _ handle?
+        _tagged_if .1
         _handle_to_object_unsafe
         _return
         _then .1

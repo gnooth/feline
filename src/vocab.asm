@@ -59,7 +59,7 @@ file __FILE__
 code vocab?, 'vocab?'                   ; handle -- ?
         _dup
         _ handle?
-        _if .1
+        _tagged_if .1
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_type                    ; -- object-type
@@ -84,7 +84,7 @@ endcode
 code check_vocab, 'check-vocab'         ; handle -- vocab
         _dup
         _ handle?
-        _if .1
+        _tagged_if .1
         _handle_to_object_unsafe        ; -- object|0
         _dup_if .2
         _dup
@@ -106,7 +106,7 @@ code verify_vocab, 'verify-vocab'       ; handle -- handle
 ; Returns argument unchanged.
         _dup
         _ handle?
-        _if .1
+        _tagged_if .1
         _dup
         _handle_to_object_unsafe        ; -- handle object/0
         _dup_if .2
