@@ -55,41 +55,6 @@ code compile_value_ref, 'compile-value-ref'     ; xt --
         next
 endcode
 
-; ### value
-code val, 'value'                       ; x "<spaces>name" --
-; CORE EXT
-        _ header
-        _ align_data
-        _ align_code
-        _ here_c
-        _ latest
-        _namefrom
-        _ store
-
-        _ latestxt
-        _ compile_value_ref
-
-        _ccommac $0c3                   ; -- x
-
-        _ comma                         ; --
-
-        _ tvalue
-        _ latest
-        _namefrom
-        _totype
-        _ cstore
-
-        ; inline by default
-        _ inline_latest
-
-        ; set compiler
-        _lit compile_value_ref_xt
-        _ latestxt
-        _ tocompstore
-
-        next
-endcode
-
 ; ### check-value-or-variable
 code check_value_or_variable, 'check-value-or-variable' ; xt -- xt
         _dup
