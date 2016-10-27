@@ -135,17 +135,6 @@ code lookup_vocab, 'lookup-vocab'       ; vocab-spec -- vocab/f
 endcode
 
 ; ### CURRENT:
-code current_colon, 'CURRENT:'
-        _ parse_token
-        _ lookup_vocab
-        _dup
-        _f
-        _equal
-        _abortq "can't find vocab"      ; FIXME
-        _to current_vocab
-        next
-endcode
-
 ; ### ensure-vocab
 code ensure_vocab, 'ensure-vocab'       ; string -- vocab
         _ verify_string
