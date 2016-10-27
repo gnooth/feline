@@ -763,11 +763,14 @@ endcode
 ; ### current-directory
 code current_directory, 'current-directory' ; -- string
         _lit 1024
-        _ transient_alloc               ; -- c-addr
+        _ feline_allocate_untagged
         _lit 1024
         _ get_current_directory
-        _ zcount                        ; -- c-addr u
-        _ copy_to_string                ; -- string
+        _dup
+        _ zcount
+        _ copy_to_string
+        _swap
+        _ feline_free
         next
 endcode
 
@@ -843,36 +846,5 @@ code errno_to_string, 'errno-to-string' ; n -- string
         mov     rbx, rax
         _ zcount
         _ copy_to_string
-        next
-endcode
-
-extern os_time_and_date
-
-; ### time&date
-code itime_and_date, 'time&date'
-; FACILITY EXT
-        _lit 1024
-        _ transient_alloc               ; -- buffer
-        _duptor
-%ifdef WIN64
-        popd    rcx
-%else
-        popd    rdi
-%endif
-        xcall os_time_and_date
-        _rfetch                         ; -- buffer
-        _lfetch                         ; -- sec
-        _rfetch
-        mov     ebx, [rbx + 4]          ; -- sec min
-        _rfetch
-        mov     ebx, [rbx + 8]          ; -- sec min hour
-        _rfetch
-        mov     ebx, [rbx + 12]         ; -- sec min hour day
-        _rfetch
-        mov     ebx, [rbx + 16]
-        add     ebx, 1                  ; -- sec min hour day month
-        _rfrom
-        mov     ebx, [rbx + 20]
-        add     ebx, 1900               ; -- sec min hour day month year
         next
 endcode
