@@ -68,29 +68,25 @@ endcode
 ; ### verify-unboxed-string
 code verify_unboxed_string, 'verify-unboxed-string' ; string -- string
         ; Make sure address is in a permissible range.
-        _dup                            ; -- x x
-        _ in_transient_area?            ; -- x flag
-        _zeq_if .4                      ; -- x
         _dup
         _ in_dictionary_space?          ; -- x flag
-        _zeq_if .5
+        _zeq_if .1
         _dup
         _ in_static_data_area?
-        _zeq_if .6
+        _zeq_if .2
         ; Address is not in a permissible range.
         _ error_not_string
         _return
-        _then .6
-        _then .5
-        _then .4                        ; -- object
+        _then .2
+        _then .1                        ; -- object
 
         _dup
         _object_type                    ; -- object object-type
         _lit OBJECT_TYPE_STRING
         _equal
-        _if .7
+        _if .3
         _return
-        _then .7
+        _then .3
 
         _ error_not_string
         next
