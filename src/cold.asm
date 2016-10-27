@@ -186,7 +186,6 @@ code cold, 'cold'                       ; --
         _to context_vector
         _lit context_vector_data
         _ gc_add_root
-        _ forth
 
         _ initialize_generic_functions
 
