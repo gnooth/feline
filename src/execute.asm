@@ -15,12 +15,6 @@
 
 file __FILE__
 
-%macro _execute 0
-        mov     rax, [rbx]
-        poprbx
-        call    rax
-%endmacro
-
 ; ### execute
 code execute, 'execute'                 ; i*x xt -- j*x
 ; CORE
