@@ -212,9 +212,6 @@ code reset, 'reset'
         _ vector_set_length
         _then .2
 
-        ; REVIEW
-        _zeroto exception
-
         ; REVIEW windows-ui
         _ forth_standard_output
 
