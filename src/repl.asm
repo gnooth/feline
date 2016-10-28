@@ -289,7 +289,7 @@ code feline_where, 'feline-where'       ; --
 endcode
 
 ; ### feline-do-error
-code feline_do_error, 'feline-do-error' ; string-or-number --
+code feline_do_error, 'feline-do-error' ; error --
         _dup
         _ string?
         _tagged_if .1
@@ -301,44 +301,17 @@ code feline_do_error, 'feline-do-error' ; string-or-number --
         _ maybe_print_backtrace
         _ nl
         _ reset
+        _else .1
+        ; error is not a string
+
+        ; REVIEW
+        _ red
+        _ foreground
+        _write "Error: "
+        _ dot_object
+        _ reset
+
         _then .1
-
-        ; code below this point is for Forth exceptions
-        _to exception
-
-        _ exception
-        _lit -1
-        _ equal
-        _if .2
-        _ reset                         ; ABORT (no message)
-        _then .2
-
-        _ exception
-        _lit -2
-        _equal
-        _if .3
-        _ dotmsg                        ; ABORT"
-        _ maybe_print_backtrace
-        _ reset
-        _then .3
-
-        ; otherwise...
-        _ dotmsg
-
-        _ where
-
-        ; automatically print a backtrace if it is likely to be useful
-        _ exception
-        _lit -13                        ; undefined word
-        _notequal
-        _ exception
-        _lit -4                         ; data stack underflow
-        _notequal
-        _ and
-        _if .4
-        _ maybe_print_backtrace
-        _then .4
-        _ reset
         next
 endcode
 
