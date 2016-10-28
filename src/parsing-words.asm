@@ -287,10 +287,6 @@ code parse_definition, 'parse-definition' ; -- vector
         cmp     rbx, f_value
         jne     .1
         poprbx
-        _ refill
-        _if .2
-        jmp     .top
-        _then .2
         _error "unexpected end of input"
 .1:                                     ; --  string
         _dup
