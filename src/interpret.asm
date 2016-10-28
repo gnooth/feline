@@ -19,10 +19,3 @@ file __FILE__
 ; "STATE is true when in compilation state, false otherwise. The true value
 ; in STATE is non-zero, but is otherwise implementation-defined."
 variable state, 'state', 0              ; CORE, TOOLS EXT
-
-; ### state@
-code statefetch, 'state@'
-        pushrbx
-        mov     rbx, [state_data]
-        next
-endcode

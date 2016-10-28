@@ -200,16 +200,6 @@ code xt_commacall, 'xt-,call'
         next
 endcode
 
-; ### ,jmp
-code commajmp, ',jmp'                   ; code --
-        _ccommac $0e9
-        _ here_c                        ; -- code here
-        add     rbx, 4                  ; -- code here+4
-        _ minus                         ; -- displacement
-        _ lcommac
-        next
-endcode
-
 ; ### inline-or-call-xt
 code inline_or_call_xt, 'inline-or-call-xt'     ; xt --
         _dup                            ; -- xt xt
@@ -223,26 +213,3 @@ code inline_or_call_xt, 'inline-or-call-xt'     ; xt --
         _then .1
         next
 endcode
-
-; ### compile-xt
-code compile_xt, 'compile-xt'           ; xt --
-        _ opt
-        _zeq_if .1
-        _ inline_or_call_xt
-        _return
-        _then .1
-
-        _ statefetch
-        _zeq_if .2
-        _ inline_or_call_xt
-        _return
-        _then .2
-
-        _ cq_add_xt
-        next
-endcode
-
-; ### compile,
-deferred compilecomma, 'compile,', compile_xt
-; CORE EXT
-; "Interpretation semantics for this word are undefined."

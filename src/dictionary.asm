@@ -104,15 +104,6 @@ inline tocode, '>code'                  ; xt -- code-addr
         _tocode
 endinline
 
-; ### immediate
-code immediate, 'immediate'
-        _ latest
-        _nametoflags                    ; -- flags-addr
-        or      byte [rbx], IMMEDIATE
-        poprbx
-        next
-endcode
-
 ; ### immediate?
 code immediate?, 'immediate?'           ; xt -- flag
         _ flags
@@ -126,22 +117,6 @@ code inline?, 'inline?'                 ; xt -- flag
         _toinline
         _cfetch
         _ zne
-        next
-endcode
-
-; ### hide
-code hide, 'hide'                       ; --
-        _ latest                        ; -- nfa
-        or      byte [rbx], $80
-        poprbx
-        next
-endcode
-
-; ### reveal
-code reveal, 'reveal'                   ; --
-        _ latest                        ; -- nfa
-        and     byte [rbx], $7f
-        poprbx
         next
 endcode
 
@@ -292,40 +267,6 @@ code latestxt, 'latest-xt'              ; -- xt
         _ last
         _fetch
         _namefrom
-        next
-endcode
-
-; REVIEW
-; ### mov-tos,
-code mov_tos_comma, 'mov-tos,'          ; compilation: x --
-        _lit $48
-        _ ccommac
-        _lit $0bb
-        _ ccommac
-        _ commac
-        next
-endcode
-
-; ### (2literal)
-code parentwoliteral, '(2literal)'      ; addr -- d
-        _ twofetch
-        next
-endcode
-
-; ### 2literal
-code twoliteral, '2literal', IMMEDIATE  ; compilation: x1 x2 --         run-time: -- x1 x2
-; DOUBLE
-; "Interpretation semantics for this word are undefined."
-        _ ?comp
-        _ flush_compilation_queue
-        _ here
-        _ rrot
-        _ comma
-        _ comma
-        _ compile_pushrbx
-        _ mov_tos_comma
-        _lit parentwoliteral
-        _ commacall
         next
 endcode
 
