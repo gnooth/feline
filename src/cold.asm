@@ -189,8 +189,6 @@ code cold, 'cold'                       ; --
 
         _ initialize_generic_functions
 
-        _ initialize_source_files
-
         _ hash_vocabs
 
         _ initialize_symbols
