@@ -134,50 +134,7 @@ code parse_name, 'parse-name'           ; <spaces>name -- c-addr u
         next
 endcode
 
-; ### char
-code char, 'char'                       ; "<spaces>name" -- char
-; 6.1.0895 CORE
-        _ parse_name                    ; -- addr len
-        _if .1
-        movzx   rbx, byte [rbx]
-        _else .1
-        xor     ebx, ebx
-        _then .1
-        next
-endcode
-
-; ### [char]
-code bracket_char, '[char]', IMMEDIATE
-; CORE
-; "Interpretation semantics for this word are undefined."
-        _ ?comp
-        _ flush_compilation_queue
-        _ char
-        _ iliteral
-        next
-endcode
-
 value word_buffer, 'word-buffer', 0     ; initialized in main()
-
-; ### word
-code forth_word, 'word'                 ; char "<chars>ccc<char>" -- c-addr
-; CORE
-; "WORD always skips leading delimiters."
-        _dup
-        _ blchar
-        _ equal
-        _if .1
-        _drop
-        _ parse_name
-        _else .1
-        ; BUG! PARSE does not skip leading delimiters!
-        _ parse                         ; -- addr len
-        _then .1
-        _ word_buffer
-        _ place
-        _ word_buffer
-        next
-endcode
 
 ; ### blword
 code blword, 'blword'                   ; "<chars>ccc<char>" -- c-addr
@@ -186,48 +143,5 @@ code blword, 'blword'                   ; "<chars>ccc<char>" -- c-addr
         _duptor
         _ place
         _rfrom
-        next
-endcode
-
-; ### (
-code paren, '(', IMMEDIATE
-        _begin .1
-        _ slashsource
-        _lit ')'
-        _ scan
-        _nip
-        _if .2
-        _lit ')'
-        _ parse
-        _2drop
-        _return
-        _then .2
-        _ refill
-        _zeq
-        _until .1
-        next
-endcode
-
-; ### \
-; We need some additional comment text here so that NASM isn't
-; confused by the '\' in the explicit tag.
-; "NASM uses backslash (\) as the line continuation character;
-; if a line ends with backslash, the next line is considered to
-; be a part of the backslash-ended line."
-code backslash, '\', IMMEDIATE
-        _lit 10
-        _ parse
-        _2drop
-        next
-endcode
-
-; ### .(
-code dotparen, '.(', IMMEDIATE
-; CORE EXT
-; ".( is an immediate word."
-        _ flush_compilation_queue
-        _lit ')'
-        _ parse
-        _ type
         next
 endcode
