@@ -41,7 +41,7 @@
 #endif
 
 extern void cold();
-extern void forth_reset();
+extern void reset();
 
 JMP_BUF main_jmp_buf;
 
@@ -210,7 +210,7 @@ int main(int argc, char **argv, char **env)
   if (SETJMP(main_jmp_buf) == 0)
     cold();
   else
-    forth_reset();
+    reset();
 
   return 0;
 }
