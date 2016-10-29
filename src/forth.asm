@@ -41,7 +41,6 @@ static_data_area:
 %include "find.asm"
 %include "include.asm"
 %include "io.asm"
-%include "locals.asm"
 %include "loop.asm"
 %include "memory.asm"
 %include "move.asm"
@@ -91,6 +90,7 @@ IN_FELINE
 %include "files.asm"
 %include "load.asm"
 %include "tools.asm"
+%include "locals.asm"
 
 IN_FORTH
 
