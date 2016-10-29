@@ -41,7 +41,6 @@ static_data_area:
 %include "fetch.asm"
 %include "find.asm"
 %include "include.asm"
-%include "interpret.asm"
 %include "io.asm"
 %include "locals.asm"
 %include "loop.asm"
