@@ -29,7 +29,6 @@ static_data_area:
 %include "align.asm"
 %include "ansi.asm"
 %include "arith.asm"
-%include "bye.asm"
 %include "cold.asm"
 %include "constants.asm"
 %include "dictionary.asm"

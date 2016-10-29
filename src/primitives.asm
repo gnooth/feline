@@ -927,6 +927,8 @@ code feline_free, 'free'                ; addr --
         next
 endcode
 
+extern os_bye
+
 ; ### bye
 code feline_bye, "bye"
         _ free_locals_stack
