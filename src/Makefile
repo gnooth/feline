@@ -99,7 +99,6 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	array.asm \
 	arith.asm \
 	bignum.asm \
-	branch.asm \
 	bye.asm \
 	cold.asm \
 	combinators.asm \
