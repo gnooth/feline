@@ -123,6 +123,9 @@ code compile_call, 'compile-call'       ; addr --
         next
 endcode
 
+; ### pushrbx-bytes
+constant pushrbx_bytes, 'pushrbx-bytes', $0f86d8d48f85d8948
+
 ; ### compile-literal
 code compile_literal, 'compile-literal' ; literal --
         _dup

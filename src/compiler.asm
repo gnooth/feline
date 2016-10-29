@@ -125,9 +125,6 @@ endcode
 ; So we check that HERE-C is not equal to LAST-BRANCH-TARGET (which is set
 ; by THEN).
 
-; ### pushrbx-bytes
-constant pushrbx_bytes, 'pushrbx-bytes', $0f86d8d48f85d8948
-
 ; ### poprbx-bytes
 constant poprbx_bytes, 'poprbx-bytes', $086d8d48005d8b48
 
