@@ -15,6 +15,11 @@
 
 file __FILE__
 
+; ### noop
+code noop, 'noop'
+        next
+endcode
+
 ; ### last-word
 value last_word, 'last-word', f
 

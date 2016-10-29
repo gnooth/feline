@@ -28,11 +28,6 @@ code ?comp, '?comp'
         next
 endcode
 
-; ### noop
-code noop, 'noop'
-        next
-endcode
-
 ; ### (literal)
 code iliteral, '(literal)'              ; n --
         _ compile_pushrbx
