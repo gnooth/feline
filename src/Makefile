@@ -104,7 +104,6 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	cold.asm \
 	combinators.asm \
 	compile-word.asm \
-	compiler.asm \
 	constants.asm \
 	curry.asm \
 	debug.asm \
@@ -135,7 +134,6 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	number.asm \
 	object-macros.asm \
 	objects.asm \
-	opt.asm \
 	parse.asm \
 	parsing-words.asm \
 	primitives.asm \

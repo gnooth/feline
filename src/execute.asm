@@ -21,10 +21,3 @@ code execute, 'execute'                 ; i*x xt -- j*x
         _execute
         next
 endcode
-
-; ### perform
-code perform, 'perform'                 ; i*x addr -- j*x
-        _fetch
-        _execute
-        next
-endcode
