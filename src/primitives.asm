@@ -657,6 +657,14 @@ code number_to_string, 'number>string'  ; n -- string
         next
 endcode
 
+; ### dec.
+code decimal_dot, 'dec.'                ; n --
+        _ fixnum_to_string
+        _ write_string
+        _ space
+        next
+endcode
+
 ; ### >hex
 code to_hex, '>hex'                     ; n -- string
         _ fixnum_to_hex

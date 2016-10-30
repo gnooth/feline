@@ -246,21 +246,24 @@ code handles, 'handles'
         _repeat .1
         _drop
 
-        _ ?cr
+        _ ?nl
         _ handle_space_free
         _ handle_space
         _minus
         _ cell
         _ slash
-        _ decdot
+        _tag_fixnum
+        _ decimal_dot
         _write "handles "
 
         _ nobjects
-        _ decdot
+        _tag_fixnum
+        _ decimal_dot
         _write "objects "
 
         _ nfree
-        _ decdot
+        _tag_fixnum
+        _ decimal_dot
         _write "free"
 
         next
