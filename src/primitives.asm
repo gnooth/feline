@@ -922,6 +922,43 @@ code check_char, 'check-char'           ; char -- untagged-char
         next
 endcode
 
+; ### char-upcase
+code char_upcase, 'char-upcase'
+        _check_char
+        cmp     rbx, 'a'
+        jl      .1
+        cmp     rbx, 'z'
+        jg      .1
+        sub     rbx, 'a' - 'A'
+.1:
+        _tag_char
+        next
+endcode
+
+; ### hex-digit?
+code hex_digit?, 'hex-digit?'           ; char -- n/f
+        _ char_upcase
+        _check_char
+        cmp     ebx, '0'
+        jl      .1
+        cmp     ebx, '9'
+        jg      .1
+        sub     ebx, '0'
+        _tag_fixnum
+        _return
+.1:
+        cmp     ebx, 'A'
+        jl      .2
+        cmp     ebx, 'F'
+        jg      .2
+        sub     ebx, 'A' - 10
+        _tag_fixnum
+        _return
+.2:
+        mov     ebx, f_value
+        next
+endcode
+
 ; ### digit?
 code digit?, 'digit?'                   ; char -- n/f
         _check_char
