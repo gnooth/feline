@@ -99,13 +99,14 @@ endcode
 
 ; ### report-startup-time
 code report_startup_time, 'report-startup-time' ; --
-        _dotq "Startup completed in "
+        _write "Startup completed in "
         _ ticks
         _ start_time_ticks
         _ minus
-        _ dot
-        _dotq "milliseconds."
-        _ cr
+        _tag_fixnum
+        _ decimal_dot
+        _write "milliseconds."
+        _ nl
         next
 endcode
 
