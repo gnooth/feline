@@ -197,9 +197,9 @@ code find_handle, 'find-handle'         ; object -- handle | 0
         _repeat .2
         _drop                           ; -- object
         ; not found
-        _ ?cr
-        _dotq "can't find handle for object at "
-        _ hdot
+        _ ?nl
+        _write "can't find handle for object at "
+        _ untagged_dot
         ; return false
         _zero
         next
@@ -253,29 +253,29 @@ code handles, 'handles'
         _ cell
         _ slash
         _ decdot
-        _dotq "handles "
+        _write "handles "
 
         _ nobjects
         _ decdot
-        _dotq "objects "
+        _write "objects "
 
         _ nfree
         _ decdot
-        _dotq "free"
+        _write "free"
 
         next
 endcode
 
 ; ### .handles
 code dot_handles, '.handles'
-        _ ?cr
+        _ ?nl
         _ handle_space_free
         _ handle_space
         _minus
         _ cell
         _ slash
         _ dot
-        _dotq "handles"
+        _write "handles"
 
         _ handle_space
         _begin .1
@@ -283,13 +283,13 @@ code dot_handles, '.handles'
         _ handle_space_free
         _ult
         _while .1
-        _ ?cr
+        _ ?nl
         _dup
-        _ hdot
+        _ untagged_dot
         _dup
         _fetch
         _dup
-        _ hdot
+        _ untagged_dot
         _if .2
         _dup
         _ dot_object
