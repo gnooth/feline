@@ -32,7 +32,6 @@ static_data_area:
 %include "cold.asm"
 %include "constants.asm"
 %include "dictionary.asm"
-%include "dot.asm"
 %include "double.asm"
 %include "exceptions.asm"
 %include "execute.asm"

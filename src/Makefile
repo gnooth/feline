@@ -106,7 +106,6 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	curry.asm \
 	debug.asm \
 	dictionary.asm \
-	dot.asm \
 	double.asm \
 	exceptions.asm \
 	execute.asm \
