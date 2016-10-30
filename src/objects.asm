@@ -248,10 +248,10 @@ code dot_object, '.'                    ; handle-or-object --
         _dup
         _ sbuf?
         _tagged_if .3
-        _dotq 'SBUF" '
+        _write 'SBUF" '
         _ sbuf_from
         _ type
-        _dotq '" '
+        _write '" '
         _return
         _then .3
 
@@ -309,7 +309,7 @@ code dot_object, '.'                    ; handle-or-object --
         _ vocab?
         _tagged_if .10
         _drop
-        _dotq "~vocab~"
+        _write "~vocab~"
         _ space
         _return
         _then .10
@@ -317,18 +317,18 @@ code dot_object, '.'                    ; handle-or-object --
         _dup
         _ quotation?
         _tagged_if .11
-        _dotq "[ "
+        _write "[ "
         _ quotation_array
         _lit dot_object_xt
         _ each
-        _dotq "] "
+        _write "] "
         _return
         _then .11
 
         _dup
         _ wrapper?
         _tagged_if .12
-        _dotq "\ "
+        _write "\ "
         _ wrapped
         _ dot_object
         _return
