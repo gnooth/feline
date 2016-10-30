@@ -423,64 +423,6 @@ code token_string_literal?, 'token-string-literal?' ; token -- string t | token 
         next
 endcode
 
-; ### string>number
-code string_to_number, 'string>number'  ; string -- n/f
-        _ string_from                   ; -- c-addr u
-
-        _dup
-        _zeq_if .1
-        ; empty string
-        _2drop
-        _f
-        _return
-        _then .1
-
-        _dup
-        _lit 1
-        _equal
-        _if .2
-
-        ; 1-char string
-        _drop
-        _cfetch
-        _ digit
-        _if .3
-        _tag_fixnum
-        _else .3
-        _f
-        _then .3
-        _return
-
-        _then .2
-
-        _ basefetch
-        _tor
-        _ maybe_change_base             ; -- c-addr2 u2
-        _ number?                       ; -- d flag
-        _rfrom
-        _ basestore
-
-        _zeq_if .4                      ; -- d
-        ; conversion failed
-        _2drop
-        _f
-        _return
-        _then .4
-
-        _ negative?
-        _if .5
-        _ dnegate
-        _then .5
-
-        ; REVIEW
-        _drop
-
-        ; FIXME check range
-        _tag_fixnum
-
-        next
-endcode
-
 ; ### times
 code times_, 'times'                    ; tagged-fixnum xt --
 
@@ -971,6 +913,177 @@ code digit?, 'digit?'                   ; char -- n/f
         _return
 .1:
         mov     ebx, f_value
+        next
+endcode
+
+; ### decimal>fixnum
+code decimal_to_fixnum, 'decimal>fixnum' ; string -- n/f
+        _dup
+        _ string_empty?
+        _tagged_if .1
+        mov     ebx, f_value
+        _return
+        _then .1
+
+        _lit tagged_fixnum(0)           ; -- string accumulator
+        _swap
+        _ string_from
+        _zero
+        _?do .2
+        _dup
+        _i
+        _plus
+        _cfetch
+        _tag_char
+        _ digit?
+        _dup
+        _tagged_if .3                   ; -- accumulator addr digit
+        _ rot
+        _lit tagged_fixnum(10)
+        _ feline_multiply
+        _ feline_plus
+        _swap
+        _else .3
+        _3drop
+        _f
+        _unloop
+        _return
+        _then .3
+        _loop .2
+        _drop
+        next
+endcode
+
+; ### signed-decimal>fixnum
+code signed_decimal_to_fixnum, 'signed-decimal>fixnum' ; string -- n/f
+        _dup
+        _ string_empty?
+        _tagged_if .1
+        mov     ebx, f_value
+        _return
+        _then .1
+
+        ; length > 0
+        _dup
+        _ string_first_char
+        _untag_char
+        cmp     rbx, '-'
+        poprbx
+        jne     .2
+        _lit tagged_fixnum(1)
+        _ string_tail
+        _ decimal_to_fixnum
+        _dup
+        _tagged_if .3
+        _untag_fixnum
+        _negate
+        _tag_fixnum
+        _then .3
+        _return
+.2:
+        _ decimal_to_fixnum
+
+        next
+endcode
+
+; ### hex>fixnum
+code hex_to_fixnum, 'hex>fixnum'        ; string -- n/f
+        _dup
+        _ string_empty?
+        _tagged_if .1
+        mov     ebx, f_value
+        _return
+        _then .1
+
+        _lit tagged_fixnum(0)
+        _swap
+        _ string_from                   ; -- addr len
+        _zero
+        _?do .2                         ; -- addr
+        _dup
+        _i
+        _plus
+        _cfetch
+        _tag_char
+        _ hex_digit?
+        _dup
+        _tagged_if .3                   ; -- accum addr digit
+        _ rot
+        _lit tagged_fixnum(16)
+        _ feline_multiply
+        _ feline_plus
+        _swap
+        _else .3
+        _3drop
+        _f
+        _unloop
+        _return
+        _then .3
+        _loop .2
+        _drop
+        next
+endcode
+
+; ### signed-hex>fixnum
+code signed_hex_to_fixnum, 'signed-hex>fixnum' ; string -- n/f
+        _dup
+        _ string_empty?
+        _tagged_if .1
+        _drop
+        mov     ebx, f_value
+        _return
+        _then .1
+
+        ; length > 0
+        _dup
+        _ string_first_char
+        _untag_char
+        _lit '-'
+        _equal
+        _if .2
+        _lit tagged_fixnum(1)
+        _ string_tail
+        _ hex_to_fixnum
+        _dup
+        _tagged_if .3
+        _untag_fixnum
+        _negate
+        _tag_fixnum
+        _then .3
+        _return
+        _then .2
+
+        _ hex_to_fixnum
+
+        next
+endcode
+
+; ### string>number
+code string_to_number, 'string>number'  ; string -- n/f
+        _dup
+        _ string_empty?
+        _tagged_if .1
+        mov     ebx, f_value
+        _return
+        _then .1
+
+        ; length > 0
+        _zero
+        _over
+        _ string_nth_untagged           ; -- string tagged-char
+        _untag_char
+
+        cmp     rbx, '$'
+        poprbx
+        je      .2
+        _ signed_decimal_to_fixnum
+        _return
+
+.2:
+        _lit tagged_fixnum(1)
+        _ string_tail
+        _ signed_hex_to_fixnum
+
         next
 endcode
 
