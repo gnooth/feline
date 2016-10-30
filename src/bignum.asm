@@ -110,13 +110,8 @@ endcode
 code bignum_to_string, 'bignum>string'  ; handle-to-bignum -- string
         _ check_bignum                  ; -- bignum
         _bignum_value
-        _ basefetch
-        _tor
-        _ decimal
-        _ paren_dot
-        _ copy_to_string
-        _rfrom
-        _ basestore
+        _lit 10
+        _ untagged_to_base
         next
 endcode
 
