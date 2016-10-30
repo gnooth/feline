@@ -200,12 +200,11 @@ code print_exception, 'print-exception'
 %else
         _write "Caught signal "
         _ saved_signal
-        _ untagged_to_hex
-        _ write_string
-        _write " at address "
+        _tag_fixnum
+        _ decimal_dot
+        _write "at address "
         _ saved_signal_address
-        _ untagged_to_hex
-        _ write_string
+        _ untagged_dot
         _ nl
 %endif
 
