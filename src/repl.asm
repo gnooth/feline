@@ -219,14 +219,17 @@ code reset, 'reset'
         next                            ; for decompiler
 endcode
 
-; ### feline-where
-code feline_where, 'feline-where'       ; --
+; ### where
+code where, 'where'                     ; --
         _ lexer
         _ get
         _dup
         _tagged_if .1
 
         _ ?nl
+
+        _ white
+        _ foreground
 
         _dup
         _ lexer_file
@@ -294,7 +297,7 @@ code feline_do_error, 'feline-do-error' ; error --
         _ red
         _ foreground
         _ write_string
-        _ feline_where
+        _ where
         _ maybe_print_backtrace
         _ nl
         _ reset
