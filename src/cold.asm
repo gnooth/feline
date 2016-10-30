@@ -82,21 +82,6 @@ code user_home, 'user-home'             ; -- string
         next
 endcode
 
-; ### initialize-task
-code initialize_task, 'initialize-task' ; --
-        _ holdbufsize
-        _ forth_allocate
-        _ drop                          ; REVIEW
-        _ holdbufptr
-        _ store
-        _ padsize
-        _ forth_allocate
-        _ drop                          ; REVIEW
-        _ tickpad
-        _ store
-        next
-endcode
-
 ; ### report-startup-time
 code report_startup_time, 'report-startup-time' ; --
         _write "Startup completed in "
@@ -164,8 +149,6 @@ code cold, 'cold'                       ; --
         _ feline_wordlist
         _ store
         _then .2
-
-        _ initialize_task
 
         _ initialize_handle_space
 
