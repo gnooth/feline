@@ -277,7 +277,8 @@ code dot_handles, '.handles'
         _minus
         _ cell
         _ slash
-        _ dot
+        _tag_fixnum
+        _ decimal_dot
         _write "handles"
 
         _ handle_space
