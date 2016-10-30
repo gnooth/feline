@@ -566,6 +566,54 @@ code each_integer, 'each-integer'       ; n quot --
         next
 endcode
 
+; ### all-integers?
+code all_integers?, 'all-integers?'     ; n quot -- ?
+        ; check that n is a fixnum
+        mov     al, byte [rbp]
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     error_not_fixnum
+
+        ; untag n
+        _untag_fixnum qword [rbp]
+
+        ; protect quotation from gc
+        push    rbx
+
+        _ callable_code_address         ; -- untagged-fixnum code-address
+
+        push    r12
+        push    r13
+        push    r15
+        xor     r12, r12                ; loop index in r12
+        mov     r13, rbx                ; code address in r13
+        mov     r15, [rbp]              ; loop limit in r15
+        _2drop                          ; clean up the stack now!
+        test    r15, r15
+        jle     .2
+.1:
+        pushd   r12
+        _tag_fixnum
+        call    r13
+        cmp     rbx, f_value
+        je      .2
+        poprbx
+        inc     r12
+        cmp     r12, r15
+        jne     .1
+        pushrbx
+        mov     rbx, t_value
+.2:
+        pop     r15
+        pop     r13
+        pop     r12
+
+        ; drop quotation
+        pop     rax
+
+        next
+endcode
+
 ; ### find-integer
 code find_integer, 'find-integer'       ; tagged-fixnum xt -- i|f
 ; Quotation must have stack effect ( ... i -- ... ? ).
@@ -871,6 +919,21 @@ endcode
 ; ### check-char
 code check_char, 'check-char'           ; char -- untagged-char
         _check_char
+        next
+endcode
+
+; ### digit?
+code digit?, 'digit?'                   ; char -- n/f
+        _check_char
+        cmp     ebx, '0'
+        jl      .1
+        cmp     ebx, '9'
+        jg      .1
+        sub     ebx, '0'
+        _tag_fixnum
+        _return
+.1:
+        mov     ebx, f_value
         next
 endcode
 
