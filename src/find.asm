@@ -98,10 +98,10 @@ code dot_wid, '.wid'                    ; wid --
         _nip
         _ dot_id
         _else .2
-        _ udot
+        _ untagged_dot
         _then .2
         _else .1
-        _ udot
+        _ untagged_dot
         _then .1
         next
 endcode
