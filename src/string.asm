@@ -182,6 +182,19 @@ code string_length, 'string-length'     ; string -- length
         next
 endcode
 
+; ### string-empty?
+code string_empty?, 'string-empty?'     ; string -- ?
+        _ check_string
+        _string_length
+        test    rbx, rbx
+        jz      .1
+        mov     ebx, f_value
+        _return
+.1:
+        mov     ebx, t_value
+        next
+endcode
+
 ; Strings store their character data inline starting at this + STRING_DATA_OFFSET bytes.
 %macro _string_data 0
         lea     rbx, [rbx + STRING_DATA_OFFSET]
