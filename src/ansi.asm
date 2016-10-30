@@ -117,15 +117,20 @@ code at_xy, 'at-xy'                     ; col row --
 ; Linux
         _ ansi_escape
         _oneplus                        ; ANSI values are 1-based
-        _ paren_udot                    ; -- col c-addr u
-        _ type
-        _lit ';'
-        _ emit
+        _tag_fixnum
+        _ fixnum_to_string
+        _ write_string
+
+        _lit tagged_char(';')
+        _ write_char
+
         _oneplus                        ; ANSI values are 1-based
-        _ paren_udot
-        _ type
-        _lit 'H'
-        _ emit
+        _tag_fixnum
+        _ fixnum_to_string
+        _ write_string
+
+        _lit tagged_char('H')
+        _ write_char
 %endif
         next
 endcode
