@@ -36,21 +36,6 @@ inline ?dup, '?dup'
         _?dup
 endinline
 
-; ### over+
-inline overplus, 'over+'
-        _overplus
-endinline
-
-; ### over-
-inline over_minus, 'over-'
-        _over_minus
-endinline
-
-; ### +dup
-inline plusdup, '+dup'
-        _plusdup
-endinline
-
 ; ### 2over
 inline forth_2over, '2over'             ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2
 ; CORE
@@ -74,108 +59,6 @@ code rdepth, 'rdepth'
         shr     rax, 3
         pushd   rax
         push    rcx
-        next
-endcode
-
-; ### pick
-inline forth_pick, 'pick'
-        _forth_pick
-endinline
-
-; ### roll
-code roll, 'roll'                       ; n1 n2 ... nk k -- n2 n3 ... nk n1
-; CORE EXT
-; Win32Forth
-; "Rotate k values on the stack, bringing the deepest to the top."
-        _duptor
-        _forth_pick
-        _ spfetch
-        _dup
-        _cellplus
-        _ rfrom
-        _cells
-        _cellplus
-        _ move
-        _drop
-        next
-endcode
-
-; ### .s
-code dot_s, '.s'
-        _lit '<'
-        _ emit
-        _ depth
-        _ paren_dot
-        _ type
-        _lit '>'
-        _ emit
-        _ forth_space
-        _ depth
-        mov     rcx, rbx
-        jrcxz   .2
-.1:
-        push    rcx
-        pushd   rcx
-        _forth_pick
-        _ dot
-        pop     rcx
-        loop    .1
-.2:
-        poprbx
-        next
-endcode
-
-; ### hex.s
-code hex_dot_s, 'hex.s'
-        _lit '<'
-        _ emit
-        _ depth
-        _ paren_dot
-        _ type
-        _lit '>'
-        _ emit
-        _ forth_space
-        _ depth
-        mov     rcx, rbx
-        jrcxz   .2
-.1:
-        push    rcx
-        pushd   rcx
-        _forth_pick
-        _ hdot
-        pop     rcx
-        loop    .1
-.2:
-        poprbx
-        next
-endcode
-
-; ### .rs
-code dot_rs, '.rs'
-        _lit '<'
-        _ emit
-        _ rdepth
-        _ paren_dot
-        _ type
-        _lit '>'
-        _ emit
-        _ forth_space
-        _ rdepth
-        mov     rcx, rbx                ; depth in RCX
-        jrcxz   .2
-.1:
-        mov     rax, rcx
-        shl     rax, 3
-        add     rax, rsp
-        pushrbx
-        mov     rbx, [rax]
-        push    rcx
-        _ dot
-        pop     rcx
-        dec     rcx
-        jnz     .1
-.2:
-        poprbx
         next
 endcode
 
@@ -329,10 +212,3 @@ code nrfrom, 'nr>'                      ; -- i*x +n     r: j*x +n --
         _ drop
         next
 endcode
-
-; ### 0-over
-inline zero_over, '0-over'              ; x -- x 0 x
-        lea     rbp, [rbp-16]
-        mov     [rbp+8], rbx
-        mov     qword [rbp], 0
-endinline
