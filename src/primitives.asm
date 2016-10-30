@@ -724,7 +724,7 @@ endcode
 ; ### hex.
 code hexdot, 'hex.'                     ; n --
         _ fixnum_to_hex
-        _lit tagged_fixnum('$')
+        _lit tagged_char('$')
         _ write_char
         _ write_string
         next
