@@ -344,19 +344,17 @@ endcode
 code fixnum_multiply, 'fixnum*'         ; x y -- x*y
 ; No type checking.
         _untag_2_fixnums
-        imul    rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _star
         _tag_fixnum
         next
 endcode
 
 ; ### *
 code feline_multiply, '*'               ; x y -- x*y
-        _ check_fixnum
+        _check_fixnum
         _swap
-        _ check_fixnum
-        imul    rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _check_fixnum
+        _star
         _tag_fixnum
         next
 endcode

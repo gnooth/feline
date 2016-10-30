@@ -175,6 +175,11 @@
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
+%macro  _star 0
+        imul    rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
 %macro  _twostar 0                      ; 2*
         shl     rbx, 1
 %endmacro

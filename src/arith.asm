@@ -87,8 +87,7 @@ endinline
 ; ### *
 code star, '*'                          ; n1 n2 -- n3
 ; CORE
-        imul    rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _star
         next
 endcode
 
