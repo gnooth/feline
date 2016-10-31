@@ -316,13 +316,31 @@ code do_error, 'do-error'               ; error --
         next
 endcode
 
+extern c_accept_string
+
 ; ### query
-code query, 'query'                     ; --
+code query, 'query'                     ; -- string/f
         _ ?nl
         _quote "accept-string"          ; -- name
         _quote "accept"                 ; -- name vocab-name
-        _ lookup_symbol
+        _ ?lookup_symbol
+        _dup
+        _tagged_if .1
         _ call_symbol
+        _else .1
+        _drop
+        _ ?nl
+        _write "> "
+        xcall   c_accept_string
+        pushrbx
+        mov     rbx, rax
+        _?dup_if .2
+        _ zcount
+        _ copy_to_string
+        _else .2
+        _f
+        _then .2
+        _then .1
         next
 endcode
 
@@ -348,7 +366,7 @@ code repl, 'repl'                       ; --
         ; REVIEW
         mov     rsp, [rp0_data]
 
-        _ query                  ; -- string
+        _ query                         ; -- string
 
         _ begin_scope
 

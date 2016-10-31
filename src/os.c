@@ -475,3 +475,9 @@ int c_fixnum_to_base(Cell n, Cell base, char * buf, size_t size)
     // PRId64 is defined in inttypes.h
     return snprintf(buf, size, "%" PRId64, n);
 }
+
+char *c_accept_string()
+{
+  char buf[260];
+  return fgets(buf, 256, stdin);
+}
