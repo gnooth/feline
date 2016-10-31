@@ -1,12 +1,4 @@
-# On Windows, to build with the experimental Windows UI (not recommended):
-#
-#       make WINDOWS_UI=1
-#
-# If you want support for standard Forth 200x:
-#
-#       make STANDARD_FORTH=1
-#
-# Otherwise just:
+# If you have the write tools installed (see below), just:
 #
 #       make
 #
@@ -56,10 +48,6 @@ ifdef WINDOWS_UI
 	LINKFLAGS += -mwindows
 	OBJS += windows-ui.o winkey.o
 endif
-endif
-
-ifdef STANDARD_FORTH
-	ASMFLAGS += -DSTANDARD_FORTH
 endif
 
 $(FELINE_EXE):  $(OBJS)
@@ -130,7 +118,6 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	number.asm \
 	object-macros.asm \
 	objects.asm \
-	parse.asm \
 	parsing-words.asm \
 	primitives.asm \
 	quit.asm \

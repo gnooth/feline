@@ -43,7 +43,6 @@ static_data_area:
 %include "memory.asm"
 %include "move.asm"
 %include "number.asm"
-%include "parse.asm"
 %include "quit.asm"
 %include "stack.asm"
 %include "store.asm"

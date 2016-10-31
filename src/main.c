@@ -123,7 +123,6 @@ static void initialize_forth()
   extern Cell tick_tib_data;
   extern Cell sp0_data;
   extern Cell stack_cells_data;
-  extern Cell word_buffer_data;
   Cell data_space_size = 8 * 1024 * 1024;
   Cell code_space_size = 1024 * 1024;
   void * data_space;
@@ -152,8 +151,6 @@ static void initialize_forth()
   size_t data_stack_size = stack_cells_data * sizeof(Cell);
   data_stack_base = malloc(data_stack_size + 64);
   sp0_data = (Cell) data_stack_base + data_stack_size;
-
-  word_buffer_data = (Cell) malloc(260);
 }
 
 #if defined WIN64 && defined WINDOWS_UI
