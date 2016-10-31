@@ -288,8 +288,8 @@ code where, 'where'                     ; --
         next
 endcode
 
-; ### feline-do-error
-code feline_do_error, 'feline-do-error' ; error --
+; ### do-error
+code do_error, 'do-error'               ; error --
         _dup
         _ string?
         _tagged_if .1
@@ -299,10 +299,10 @@ code feline_do_error, 'feline-do-error' ; error --
         _ write_string
         _ where
         _ maybe_print_backtrace
-        _ nl
         _ reset
         _else .1
-        ; error is not a string
+
+        ; not a string
 
         ; REVIEW
         _ red
@@ -312,6 +312,7 @@ code feline_do_error, 'feline-do-error' ; error --
         _ reset
 
         _then .1
+
         next
 endcode
 
@@ -359,7 +360,7 @@ code repl, 'repl'                       ; --
         _ feline_interpret
         _end_quotation .2
         _quotation .3
-        _ feline_do_error
+        _ do_error
         _end_quotation .3
         _ recover
 

@@ -195,7 +195,7 @@ code cold, 'cold'                       ; --
         _ feline_catch
         _ ?dup
         _if .4
-        _ feline_do_error
+        _ do_error
         _then .4
 
         _quote "boot.feline"
@@ -203,7 +203,7 @@ code cold, 'cold'                       ; --
         _ feline_catch
         _ ?dup
         _if .5
-        _ feline_do_error
+        _ do_error
         _then .5
 
         _quote "Meow!"
