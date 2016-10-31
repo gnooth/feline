@@ -791,22 +791,6 @@ code set_current_directory, 'set-current-directory' ; string -- flag
         next
 endcode
 
-; ### cd
-code cd, 'cd'
-        _ parse_name                    ; -- c-addr u
-        _dup_if .1
-        _ copy_to_string
-        _ tilde_expand_filename
-        _ set_current_directory
-        _drop                           ; REVIEW error message?
-        _else .1
-        _2drop
-        _ current_directory
-        _ dot_string
-        _then .1
-        next
-endcode
-
 extern os_realpath
 
 ; ### canonical-path

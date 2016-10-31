@@ -349,3 +349,19 @@ code directory?, 'directory?'           ; path -- ?
         _tag_boolean
         next
 endcode
+
+; ### cd
+code cd, 'cd'
+        _ parse_token
+        _dup
+        _tagged_if .1
+        _ tilde_expand_filename
+        _ set_current_directory
+        _drop                           ; REVIEW error message?
+        _else .1
+        _drop
+        _ current_directory
+        _ dot_string
+        _then .1
+        next
+endcode
