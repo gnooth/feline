@@ -316,8 +316,8 @@ code do_error, 'do-error'               ; error --
         next
 endcode
 
-; ### feline-query
-code feline_query, 'feline-query'       ; --
+; ### query
+code query, 'query'                     ; --
         _ ?nl
         _quote "accept-string"          ; -- name
         _quote "accept"                 ; -- name vocab-name
@@ -348,7 +348,7 @@ code repl, 'repl'                       ; --
         ; REVIEW
         mov     rsp, [rp0_data]
 
-        _ feline_query                  ; -- string
+        _ query                  ; -- string
 
         _ begin_scope
 
