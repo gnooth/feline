@@ -24,8 +24,8 @@ IN: feline
     all-words
     [
         dup symbol-code-address swap symbol-code-size
-        over + 1 -
-        x -rot between?
+        2dup and
+        [ over + 1 - x -rot between? ] [ 2drop f ] if
     ]
     find nip ;
 
