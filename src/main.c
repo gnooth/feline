@@ -16,7 +16,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>             // strlen
-#include <setjmp.h>
 #ifdef WIN64
 #include <windows.h>
 #else
@@ -30,20 +29,8 @@
 #include "windows-ui.h"
 #endif
 
-#ifdef WIN64
-#define JMP_BUF                 jmp_buf
-#define SETJMP(env)             setjmp(env)
-#define LONGJMP(env, val)       longjmp(env, val)
-#else
-#define JMP_BUF                 sigjmp_buf
-#define SETJMP(env)             sigsetjmp(env, 1)
-#define LONGJMP(env, val)       siglongjmp(env, val)
-#endif
-
 extern void cold();
 extern void reset();
-
-JMP_BUF main_jmp_buf;
 
 #ifdef WIN64
 LONG CALLBACK windows_exception_handler(EXCEPTION_POINTERS *exception_pointers)
@@ -112,7 +99,6 @@ static void signal_handler(int sig, siginfo_t *si, void * context)
 
   c_save_backtrace(saved_rip_data, saved_rsp_data);
 
-//   LONGJMP(main_jmp_buf, (unsigned long) si->si_addr);
   extern void handle_signal();
   handle_signal();
 }
@@ -207,10 +193,7 @@ int main(int argc, char **argv, char **env)
   sigaction(SIGTRAP, &sa, NULL);
 #endif
 
-  if (SETJMP(main_jmp_buf) == 0)
-    cold();
-  else
-    reset();
+  cold();
 
   return 0;
 }
