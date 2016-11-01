@@ -120,7 +120,6 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	objects.asm \
 	parsing-words.asm \
 	primitives.asm \
-	quit.asm \
 	quotation.asm \
 	range.asm \
 	recover.asm \
