@@ -318,6 +318,9 @@ endcode
 
 extern os_accept_string
 
+; ### line-input?
+value line_input, 'line-input?', -1
+
 ; ### query
 code query, 'query'                     ; -- string/f
         _ ?nl

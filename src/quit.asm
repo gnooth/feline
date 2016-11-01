@@ -15,9 +15,6 @@
 
 file __FILE__
 
-; ### line-input?
-value line_input, 'line-input?', -1
-
 ; ### accept-line
 code accept_line, 'accept-line'         ; c-addr +n1 -- +n2
         xor     ecx, ecx                ; counter in RCX
