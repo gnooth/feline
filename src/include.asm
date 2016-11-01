@@ -206,12 +206,8 @@ code resolve_include_filename, 'resolve-include-filename' ; c-addr u -- string
         _dup
         _ path_is_directory?
         _if .4
-        _quote "Is a directory: "
-        _swap
-        _ concat
-        _to msg
-        _lit -37                        ; "file I/O exception"
-        _ forth_throw
+        _drop
+        _error "file is a directory"
         _then .4
 
         ; If the path we've got at this point is includable, we're done.
