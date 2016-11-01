@@ -284,11 +284,12 @@ code path_is_directory?, 'path-is-directory?' ; string -- flag
 endcode
 
 ; ### path-file-exists?
-code path_file_exists?, 'path-file-exists?' ; string -- flag
+code path_file_exists?, 'path-file-exists?' ; string -- ?
         _ string_from
         _ file_status
         _nip
         _zeq
+        _tag_boolean
         next
 endcode
 

@@ -69,7 +69,7 @@ value source_filename, 'source-filename', 0
 code includable?, 'includable?'         ; string -- flag
         _dup
         _ path_file_exists?
-        _if .1
+        _tagged_if .1
         _ path_is_directory?
         _zeq
         _else .1

@@ -338,7 +338,6 @@ code regular_file?, 'regular-file?'     ; path -- ?
         _else .1
         ; not a directory
         _ path_file_exists?
-        _tag_boolean
         _then .1
         next
 endcode
