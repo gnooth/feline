@@ -181,5 +181,15 @@ int os_key()
 char *os_accept_string()
 {
   char buf[260];
+#ifdef WIN64
+  DWORD mode;
+  if (GetConsoleMode(console_input_handle, &mode))
+    {
+      mode = (mode | ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT);
+      SetConsoleMode(console_input_handle, mode);
+    }
+#else
+  deprep_terminal();
+#endif
   return fgets(buf, 256, stdin);
 }
