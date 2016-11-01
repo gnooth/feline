@@ -29,7 +29,7 @@ LINKFLAGS = -m64
 # gcc 6.2.0 on Ubuntu 16.10 needs -no-pie
 # LINKFLAGS = -m64 -no-pie
 
-OBJS = main.o os.o terminal.o backtrace.o forth.o
+OBJS = main.o os.o terminal.o backtrace.o feline.o
 
 ifeq ($(OS),Windows_NT)
 	CFLAGS += -DWIN64 -DWIN64_NATIVE
@@ -81,7 +81,7 @@ windows-ui.o: feline.h windows-ui.h windows-ui.c Makefile
 winkey.o: feline.h windows-ui.h winkey.c Makefile
 	$(CC) $(CFLAGS) -c -o winkey.o winkey.c
 
-ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlines.asm \
+ASM_SOURCES = feline.asm feline_home.asm version.asm equates.asm macros.asm inlines.asm \
 	align.asm \
 	ansi.asm \
 	array.asm \
@@ -142,18 +142,18 @@ ASM_SOURCES = forth.asm feline_home.asm version.asm equates.asm macros.asm inlin
 	wrapper.asm
 
 # -felf64 even on Windows
-forth.o: $(ASM_SOURCES) Makefile
-	nasm $(ASMFLAGS) -g -felf64 forth.asm
+feline.o: $(ASM_SOURCES) Makefile
+	nasm $(ASMFLAGS) -g -felf64 feline.asm
 
 # Microsoft compiler and linker
 # main.obj: main.c
 # 	cl -Zi -c $(CFLAGS) main.c
 
-# forth.obj: $(ASM_SOURCES)
-# 	nasm $(ASMFLAGS) -g -fwin64 forth.asm
+# feline.obj: $(ASM_SOURCES)
+# 	nasm $(ASMFLAGS) -g -fwin64 feline.asm
 
-# forth.exe: main.obj forth.obj
-# 	link /subsystem:console /machine:x64 /largeaddressaware:no forth.obj  main.obj /out:forth.exe
+# feline.exe: main.obj feline.obj
+# 	link /subsystem:console /machine:x64 /largeaddressaware:no feline.obj  main.obj /out:feline.exe
 
 clean:
 	-rm -f *.o *.obj
@@ -162,4 +162,4 @@ clean:
 
 zip:
 	-rm -f feline.zip
-	zip feline.zip *.c *.h *.asm *.forth benchmarks/*.forth benchmarks/*.c tests/*.forth Makefile
+	zip feline.zip *.c *.h *.asm *.feline benchmarks/*.feline benchmarks/*.c tests/*.feline Makefile
