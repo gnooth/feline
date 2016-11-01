@@ -321,17 +321,20 @@ extern os_accept_string
 ; ### query
 code query, 'query'                     ; -- string/f
         _ ?nl
+
         _quote "accept-string"          ; -- name
         _quote "accept"                 ; -- name vocab-name
         _ ?lookup_symbol
         _dup
         _tagged_if .1
         _ call_symbol
-        _else .1
+        _return
+        _then .1
+
         _drop
-        _ ?nl
+
         _write "> "
-        xcall   os_accept_string
+        xcall   os_accept_string        ; -- untagged
         pushrbx
         mov     rbx, rax
         _?dup_if .2
@@ -340,7 +343,11 @@ code query, 'query'                     ; -- string/f
         _else .2
         _f
         _then .2
-        _then .1
+
+        ; last char was a newline
+        mov     qword [last_char], 10
+        mov     qword [output_column], 0
+
         next
 endcode
 
