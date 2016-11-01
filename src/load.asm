@@ -27,6 +27,8 @@ code load, 'load'                       ; path --
         _ lexer
         _ set
 
+        _ interactive?
+        _tagged_if .1
         _ ?nl
         _write "Loading "
         _ lexer
@@ -34,13 +36,14 @@ code load, 'load'                       ; path --
         _ lexer_file
         _ write_string
         _ nl
+        _then .1
 
-        _quotation .1
-        _ feline_interpret
-        _end_quotation .1
         _quotation .2
-        _ do_error
+        _ feline_interpret
         _end_quotation .2
+        _quotation .3
+        _ do_error
+        _end_quotation .3
         _ recover
         _ end_scope
         next

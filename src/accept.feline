@@ -13,20 +13,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-LANGUAGE: feline
+using: feline ;
+in: accept
 
-"term.feline" load-system-file
-
-USING: feline ;
-IN: accept
-
-GLOBAL: prompt-string
-GLOBAL: buffer
-GLOBAL: bindings
-GLOBAL: dot
-GLOBAL: history
-GLOBAL: history-index
-GLOBAL: pattern
+global: prompt-string
+global: buffer
+global: bindings
+global: dot
+global: history
+global: history-index
+global: pattern
 
 : reset-history ( -- )
     f history-index! f pattern! ;

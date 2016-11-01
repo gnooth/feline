@@ -58,7 +58,19 @@ variable argv, 'argv', 0
 deferred process_command_line, 'process-command-line', noop
 
 ; ### process-init-file
-deferred process_init_file, 'process-init-file', noop
+code process_init_file, 'process-init-file' ; --
+        _ user_home
+        _quote ".init.feline"
+        _ path_append
+        _dup
+        _ path_file_exists?
+        _tagged_if .1
+        _ load
+        _else .1
+        _ drop
+        _then .1
+        next
+endcode        
 
 ; ### 'pad
 variable tickpad, "'pad", 0
@@ -100,7 +112,7 @@ code dot_version, '.version'            ; --
         _quote "Feline "
         _quote VERSION
         _ concat
-        _ dot_string
+        _ write_string
 
         _ feline_home
         _quote "build"
@@ -119,7 +131,7 @@ code dot_version, '.version'            ; --
 endcode
 
 ; ### interactive?
-value interactive?, 'interactive?', 0
+value interactive?, 'interactive?', f_value
 
 ; ### cold
 code cold, 'cold'                       ; --
@@ -177,16 +189,21 @@ code cold, 'cold'                       ; --
 
         _ initialize_symbols
 
-;         _ report_startup_time
-
         ; start in Feline mode
         _ feline
         _ definitions
 
-        _ process_command_line
+        _quote "boot.feline"
+        _lit load_system_file_xt
+        _ feline_catch
+        _ ?dup
+        _if .5
+        _ do_error
+        _then .5
 
-        _true
-        _to interactive?
+;         _ report_startup_time
+
+        _ process_command_line
 
         _ dot_version
         _ ?nl
@@ -198,13 +215,8 @@ code cold, 'cold'                       ; --
         _ do_error
         _then .4
 
-        _quote "boot.feline"
-        _lit load_system_file_xt
-        _ feline_catch
-        _ ?dup
-        _if .5
-        _ do_error
-        _then .5
+        _t
+        _to interactive?
 
         _quote "Meow!"
         _ write_string
