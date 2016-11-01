@@ -177,3 +177,9 @@ int os_key()
   return fgetc(stdin);
 #endif
 }
+
+char *os_accept_string()
+{
+  char buf[260];
+  return fgets(buf, 256, stdin);
+}

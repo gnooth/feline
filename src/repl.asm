@@ -316,7 +316,7 @@ code do_error, 'do-error'               ; error --
         next
 endcode
 
-extern c_accept_string
+extern os_accept_string
 
 ; ### query
 code query, 'query'                     ; -- string/f
@@ -331,7 +331,7 @@ code query, 'query'                     ; -- string/f
         _drop
         _ ?nl
         _write "> "
-        xcall   c_accept_string
+        xcall   os_accept_string
         pushrbx
         mov     rbx, rax
         _?dup_if .2
