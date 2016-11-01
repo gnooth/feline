@@ -27,7 +27,6 @@ section .data
 static_data_area:
 
 %include "align.asm"
-%include "ansi.asm"
 %include "arith.asm"
 %include "cold.asm"
 %include "constants.asm"
@@ -87,6 +86,7 @@ IN_FELINE
 %include "load.asm"
 %include "tools.asm"
 %include "locals.asm"
+%include "ansi.asm"
 
 IN_FORTH
 
