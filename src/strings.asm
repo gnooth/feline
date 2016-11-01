@@ -84,13 +84,10 @@ endcode
 
 ; ### (abort")
 code parenabortquote, '(abort")'        ; flag c-addr --
-        _swap
+        _drop
         _if .1
-        _to msg
         _lit -2
         _ forth_throw
-        _else .1
-        _drop
         _then .1
         next
 endcode
