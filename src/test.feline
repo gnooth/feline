@@ -1,7 +1,5 @@
-LANGUAGE: feline
-
-USING: feline ;
-IN: test
+using: feline ;
+in: test
 
 // this is a comment
 ( this is another comment )
@@ -988,15 +986,15 @@ global-test-1
 
 global-test-2
 
-: global-test-3 ( -- )
-    << last-word symbol-name >> ?nl write
-    f zork!
-    zork check-false
-    [ [ 71 zork! zork ] with-scope ] [ ] recover 71 eq? check-t
-    [ [ 71 zork! "error" error ] with-scope ] [ drop zork ] recover check-false
-;
+// : global-test-3 ( -- )
+//     << last-word symbol-name >> ?nl write
+//     f zork!
+//     zork check-false
+//     [ [ 71 zork! zork ] with-scope ] [ ] recover 71 eq? check-t
+//     [ [ 71 zork! "error" error ] with-scope ] [ drop zork ] recover check-false
+// ;
 
-global-test-3
+// global-test-3
 
 : index-test-1 ( -- )
     << last-word symbol-name >> ?nl write

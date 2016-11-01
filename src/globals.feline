@@ -13,13 +13,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-LANGUAGE: feline
-
-USING: feline ;
-IN: feline
+using: feline ;
+in: feline
 
 : define-global-reader ( symbol -- )
-    [ <wrapper> \ get 2array array>quotation ] keep
+
+//     [ <wrapper> \ get 2array array>quotation ] keep
+    [ <wrapper> \ symbol-value 2array array>quotation ] keep
+
     [ symbol-set-def ] keep
     compile-word
 ;
@@ -29,11 +30,14 @@ IN: feline
         symbol-name string>sbuf '!' suffix! sbuf>string
         current-vocab ensure-symbol
     ] keep
-    <wrapper> \ set 2array array>quotation swap [ symbol-set-def ] keep
+
+//     <wrapper> \ set 2array array>quotation swap [ symbol-set-def ] keep
+    <wrapper> \ symbol-set-value 2array array>quotation swap [ symbol-set-def ] keep
+
     compile-word
 ;
 
-: GLOBAL: ( -- )
+: global: ( -- )
     parse-token [ "unexpected end of input" error ] unless*
     current-vocab ensure-symbol
     t "global" pick symbol-set-prop
@@ -42,4 +46,4 @@ IN: feline
     bi
 ;
 
-: global: GLOBAL: ;
+: GLOBAL: global: ;
