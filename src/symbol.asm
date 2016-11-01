@@ -388,7 +388,7 @@ code symbol_set_value, 'symbol-set-value' ; value symbol --
 endcode
 
 ; ### symbol-code-address
-code symbol_code_address, 'symbol-code-address' ; symbol -- code-address
+code symbol_code_address, 'symbol-code-address' ; symbol -- code-address/f
 ; The code address is stored as a tagged fixnum.
         _ check_symbol
         _symbol_code_address
@@ -405,7 +405,7 @@ code symbol_set_code_address, 'symbol-set-code-address' ; code-address symbol --
 endcode
 
 ; ### symbol-code-size
-code symbol_code_size, 'symbol-code-size' ; symbol -- code-size
+code symbol_code_size, 'symbol-code-size' ; symbol -- code-size/f
 ; The code size is stored as a tagged fixnum.
         _ check_symbol
         _symbol_code_size
