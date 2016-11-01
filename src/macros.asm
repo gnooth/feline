@@ -167,6 +167,14 @@
         pushd   %1
 %endmacro
 
+%macro  _tagged_fixnum 1
+        pushd   tagged_fixnum(%1)
+%endmacro
+
+%macro  _tagged_char 1
+        pushd   tagged_char(%1)
+%endmacro
+
 ; asm-only global
 %macro  _global 1
         global %1
