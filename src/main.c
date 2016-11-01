@@ -120,7 +120,6 @@ static void initialize_forth()
   extern Cell cp_data;
   extern Cell limit_data;
   extern Cell limit_c_data;
-  extern Cell tick_tib_data;
   extern Cell sp0_data;
   extern Cell stack_cells_data;
   Cell data_space_size = 8 * 1024 * 1024;
@@ -143,8 +142,6 @@ static void initialize_forth()
   cp_data = (Cell) code_space;
   limit_data = (Cell) data_space + data_space_size;
   limit_c_data = (Cell) code_space + code_space_size;
-
-  tick_tib_data = (Cell) malloc(256);
 
   // data stack
   stack_cells_data = 4096;
