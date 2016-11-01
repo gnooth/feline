@@ -292,43 +292,6 @@ code path_file_exists?, 'path-file-exists?' ; string -- flag
         next
 endcode
 
-extern os_open_file
-
-; ### (open-file)
-code iopen_file, '(open-file)'          ; zaddr fam -- fileid ior
-%ifdef WIN64
-        popd    rdx                     ; fam in rdx
-        popd    rcx                     ; zaddr in rcx
-%else
-        popd    rsi                     ; fam in rsi
-        popd    rdi                     ; zaddr in rdi
-%endif
-        xcall   os_open_file
-        test    rax, rax
-        js      .1
-        pushd   rax                     ; fileid
-        pushd   0                       ; ior
-        next
-.1:
-        ; error
-        _ os_errno
-        _ errno_to_string
-        _to msg
-        _lit -1                         ; "fileid is undefined"
-        _lit -1                         ; error!
-        next
-endcode
-
-; ### open-file
-code open_file, 'open-file'             ; c-addr u fam -- fileid ior
-; FILE
-        _tor
-        _ as_c_string
-        _rfrom
-        _ iopen_file
-        next
-endcode
-
 extern os_create_file
 
 ; ### create-file
@@ -352,34 +315,6 @@ code create_file, 'create-file'         ; c-addr u fam -- fileid ior
 .1:
         _lit -1                         ; "fileid is undefined"
         _lit -1                         ; error!
-        next
-endcode
-
-extern os_read_file
-
-; ### read-file
-code read_file, 'read-file'             ; c-addr u1 fileid -- u2 ior
-%ifdef WIN64
-        popd    rcx                     ; fileid
-        popd    r8                      ; u1
-        popd    rdx                     ; c-addr
-%else
-        popd    rdi
-        popd    rdx
-        popd    rsi
-%endif
-        xcall   os_read_file
-        test    rax, rax
-        js      .1
-        pushd   rax                     ; u2
-        pushd   0                       ; ior
-        next
-.1:
-        _ os_errno
-        _ errno_to_string
-        _to msg
-        _lit -1
-        _lit -70                        ; error!
         next
 endcode
 
