@@ -114,8 +114,7 @@ endcode
 code error_not_hashtable, 'error-not-hashtable' ; x --
         ; REVIEW
         _drop
-        _true
-        _abortq "not a hashtable"
+        _error "not a hashtable"
         next
 endcode
 

@@ -270,8 +270,7 @@ vector_nth_untagged:
         _then .1
 
         _2drop
-        _true
-        _abortq "vector-nth index out of range"
+        _error "vector-nth index out of range"
         next
 endcode
 
@@ -399,8 +398,9 @@ code vector_remove_nth_destructive, 'vector-remove-nth!' ; n handle --
         _zero                           ; -- n vector n length 0
         _swap                           ; -- n vector n 0 length
         _ within                        ; -- n vector flag
-        _zeq
-        _abortq "vector-remove-nth n > length - 1" ; -- n vector
+        _zeq_if .1
+        _error "vector-remove-nth n > length - 1" ; -- n vector
+        _then .1
 
         _vector_data                    ; -- n addr
         _swap                           ; -- addr n

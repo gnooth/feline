@@ -426,8 +426,7 @@ string_nth_untagged:
         _tag_char
         _else .1
         _2drop
-        _true
-        _abortq "index out of bounds"
+        _error "index out of bounds"
         _then .1
 
         next
@@ -515,11 +514,15 @@ string_substring_unchecked:
         _dup
         _this_string_length
         _ugt
-        _abortq "end index out of range"
+        _if .1
+        _error "end index out of range"
+        _then .1
                                         ; -- start-index end-index
         _twodup                         ; -- start-index end-index start-index end-index
         _ugt
-        _abortq "start index > end index"
+        _if .2
+        _error "start index > end index"
+        _then .2
                                         ; -- start-index end-index
         _over
         _minus                          ; -- start-index length
