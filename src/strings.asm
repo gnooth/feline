@@ -82,16 +82,6 @@ code zcount, 'zcount'                   ; zaddr -- zaddr len
         next
 endcode
 
-; ### (abort")
-code parenabortquote, '(abort")'        ; flag c-addr --
-        _drop
-        _if .1
-        _lit -2
-        _ forth_throw
-        _then .1
-        next
-endcode
-
 ; ### fill
 code fill, 'fill'                       ; c-addr u char --
 ; CORE

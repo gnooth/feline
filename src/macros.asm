@@ -499,19 +499,6 @@ section .text
         call    counttype
 %endmacro
 
-%macro  _abortq 1
-section .data
-%strlen len     %1
-%%string:
-        db      len                     ; length byte
-        db      %1                      ; string
-        db      0                       ; null byte at end
-section .text
-        pushrbx
-        mov     rbx, %%string
-        call    parenabortquote
-%endmacro
-
 %macro  _quote 1                        ; -- string
 section .data
 %strlen len     %1
