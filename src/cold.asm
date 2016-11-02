@@ -70,17 +70,6 @@ code process_init_file, 'process-init-file' ; --
         _ drop
         _then .1
         next
-endcode        
-
-; ### 'pad
-variable tickpad, "'pad", 0
-
-; ### pad
-code pad, 'pad'                         ; -- c-addr
-; CORE EXT
-        _ tickpad
-        _fetch
-        next
 endcode
 
 ; ### user-home

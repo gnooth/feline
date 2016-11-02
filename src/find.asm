@@ -58,22 +58,6 @@ endcode
 ; ### voclink
 variable voclink, 'voclink', feline_wid
 
-; ### wordlist
-code wordlist, 'wordlist'               ; -- wid
-; SEARCH
-; "Create a new empty word list, returning its word list identifier wid."
-        _from voclink
-        _ comma                         ; link
-        _zero
-        _ comma                         ; pointer to vocabulary name
-        _ here                          ; this address will be the wid
-        _dup
-        _to voclink
-        _zero
-        _ comma                         ; pointer to name field of last word in this wordlist
-        next
-endcode
-
 ; ### wid>link
 code wid_to_link, 'wid>link'
         sub     rbx, BYTES_PER_CELL * 2
@@ -117,21 +101,6 @@ code dot_voc, '.voc'                    ; vocab-or-wid --
         _else .1
         _ dot_wid
         _then .1
-        next
-endcode
-
-; ### vocs
-code vocs, 'vocs'
-        _from voclink
-        _begin .1
-        _dup
-        _ dot_wid
-        _ wid_to_link
-        _fetch
-        _dup
-        _zeq
-        _until .1
-        _drop
         next
 endcode
 
@@ -225,99 +194,3 @@ endcode
 
 ; ### context-vector
 value context_vector, 'context-vector', 0
-
-; ### found
-code found, 'found'                     ; nfa -- xt 1  | xt -1
-        _namefrom                       ; -- xt
-        _dup                            ; -- xt xt
-        _ immediate?                    ; -- xt flag
-        _if .1
-        _lit 1                          ; -- xt 1
-        _else .1
-        _lit -1                         ; -- xt -1
-        _then .1
-        next
-endcode
-
-; ### search-wordlist
-code search_wordlist, 'search-wordlist' ; c-addr u wid -- 0 | xt 1 | xt -1
-; SEARCH
-; "If the definition is not found, return 0. If the definition is found,
-; return its execution token xt and 1 if the definition is immediate, -1
-; otherwise."
-        _fetch                          ; last link in wordlist
-        _dup
-        _if .1
-        _begin .2                       ; -- c-addr u nfa
-        _duptor                         ; -- c-addr u nfa                       r: -- nfa
-        ; do lengths match?
-        _cfetch                         ; -- c-addr u len                       r: -- nfa
-        _over                           ; -- c-addr u len u                     r: -- nfa
-        _equal                          ; -- c-addr u flag                      r: -- nfa
-        _if .3
-        ; lengths match
-        _twodup                         ; -- c-addr u c-addr u
-        _rfetch                         ; -- c-addr u c-addr u nfa
-        _oneplus                        ; -- c-addr u c-addr u nfa+1
-        _swap                           ; -- c-addr u c-addr nfa+1 u
-%ifdef STANDARD_FORTH
-        _ isequal                       ; -- c-addr u flag                      r: -- nfa
-%else
-        _ memequal                      ; -- c-addr u flag                      r: -- nfa
-%endif
-        _if .4                          ; -- c-addr u                           r: -- nfa
-        ; found it!
-        _2drop                          ; --                                    r: -- nfa
-        _rfrom                          ; -- nfa
-        _ found                         ; -- xt 1 | xt -1
-        _return
-        _then .4                        ; -- c-addr u                           r: -- nfa
-        _then .3
-        _rfrom                          ; -- c-addr u nfa
-        _name_to_link                   ; -- c-addr u lfa
-        _fetch                          ; -- c-addr u nfa
-        _dup                            ; -- c-addr u nfa nfa
-        _zeq
-        _until .2
-        _then .1
-        _3drop
-        _false
-        next
-endcode
-
-; ### find
-code find, 'find'                       ; $addr -- $addr 0 | xt 1 | xt -1
-; CORE, SEARCH
-; "Find the definition named in the counted string at c-addr. If the
-; definition is not found, return c-addr and 0. If the definition is
-; found, return its execution token xt. If the definition is immediate,
-; also return 1, otherwise also return -1."
-        _ context_vector
-        _ vector_length
-        _untag_fixnum
-        _zero
-        _?do .1
-        _dup
-        _count
-        _i
-        _ context_vector
-        _ vector_nth_untagged           ; -- vocab-or-wordlist
-
-        _dup
-        _ vocab?
-        _tagged_if .2
-        _ vocab_wordlist
-        _then .2
-
-        _ search_wordlist
-        _dup_if .3
-        _ rot
-        _drop
-        _unloop
-        _return
-        _then .3
-        _drop
-        _loop .1
-        _false
-        next
-endcode

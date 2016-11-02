@@ -55,18 +55,6 @@ constant max_int64, 'max-int64', $7fffffffffffffff
 ; ### min-int64
 constant min_int64, 'min-int64', $8000000000000000
 
-; ### /hold
-; "The size of the pictured numeric output string buffer shall be at least
-; (2 * n) + 2 characters, where n is the number of bits in a cell."
-; (Forth 2012 3.3.3.6)
-constant holdbufsize, '/hold', 256      ; minimum is 130 for 64-bit Forth
-
-; ### /pad
-; "The size of the scratch area whose address is returned by PAD shall be
-; at least 84 characters." (Forth 2012 3.3.3.6)
-constant padsize, '/pad', 84
-; "size of the scratch area pointed to by PAD, in characters"
-
 ; ### linux?
 code linux?, 'linux?'
         pushrbx
