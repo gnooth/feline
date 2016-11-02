@@ -106,11 +106,6 @@ endcode
 
 section .data
         dq      0                       ; link
-        dq      root_nfa
-root_wid:
-        dq      0
-
-        dq      root_wid                ; link
         dq      forth_nfa
 forth_wid:
         dq      0
@@ -119,29 +114,6 @@ forth_wid:
         dq      feline_nfa
 feline_wid:
         dq      0
-
-; ### root-wordlist
-code root_wordlist, 'root-wordlist'     ; -- wid
-        pushrbx
-        mov     rbx, root_wid
-        next
-endcode
-
-; ### root
-code root, 'root'
-        _quote "root"
-        _ lookup_vocab
-
-        _dup
-        _f
-        _equal
-        _abortq "no root vocab"
-
-        _zero
-        _ context_vector
-        _ vector_set_nth_untagged
-        next
-endcode
 
 ; ### forth-wordlist
 code forth_wordlist, 'forth-wordlist'   ; -- wid
