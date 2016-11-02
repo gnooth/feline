@@ -82,7 +82,6 @@ winkey.o: feline.h windows-ui.h winkey.c Makefile
 	$(CC) $(CFLAGS) -c -o winkey.o winkey.c
 
 ASM_SOURCES = feline.asm feline_home.asm version.asm equates.asm macros.asm inlines.asm \
-	align.asm \
 	ansi.asm \
 	array.asm \
 	arith.asm \

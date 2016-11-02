@@ -26,7 +26,6 @@ IN_FORTH
 section .data
 static_data_area:
 
-%include "align.asm"
 %include "arith.asm"
 %include "cold.asm"
 %include "constants.asm"
