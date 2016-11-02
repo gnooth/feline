@@ -48,8 +48,7 @@ endcode
 code error_not_bignum, 'error-not-bignum' ; x --
         ; REVIEW
         _drop
-        _true
-        _abortq "not a bignum"
+        _error "not a bignum"
         next
 endcode
 
@@ -58,7 +57,7 @@ code check_bignum, 'check-bignum'       ; handle -- bignum
         _dup
         _ handle?
         _tagged_if .1
-        _handle_to_object_unsafe        ; -- object|0
+        _handle_to_object_unsafe        ; -- object/0
         _dup_if .2
         _dup
         _object_type                    ; -- object object-type

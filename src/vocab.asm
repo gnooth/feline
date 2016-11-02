@@ -75,8 +75,7 @@ endcode
 code error_not_vocab, 'error-not-vocab' ; x --
         ; REVIEW
         _drop
-        _true
-        _abortq "not a vocab"
+        _error "not a vocab"
         next
 endcode
 

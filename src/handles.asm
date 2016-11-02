@@ -80,7 +80,9 @@ code new_handle, 'new-handle'           ; object -- handle
         _from handle_space_free
         _from handle_space_limit
         _ult
-        _abortq "out of handle space"
+        _if .4
+        _error "out of handle space"
+        _then .4
         _then .3
 
         _from handle_space_free

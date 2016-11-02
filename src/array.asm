@@ -258,8 +258,7 @@ array_nth_untagged:
         _then .2
 
         _2drop
-        _true
-        _abortq "array-nth index out of range"
+        _error "array-nth index out of range"
         next
 endcode
 
@@ -283,8 +282,7 @@ array_set_nth_untagged:
         _plus
         _store
         _else .2
-        _true
-        _abortq "array-set-nth index out of range"
+        _error "array-set-nth index out of range"
         _then .2
         next
 endcode

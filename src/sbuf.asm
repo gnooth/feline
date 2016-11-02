@@ -40,8 +40,7 @@ endcode
 code error_not_sbuf, 'error-not-sbuf'   ; x --
         ; REVIEW
         _drop
-        _true
-        _abortq "not an sbuf"
+        _error "not an sbuf"
         next
 endcode
 
@@ -289,8 +288,7 @@ code sbuf_nth, 'sbuf-nth'               ; tagged-index handle -- tagged-char
         _tag_char
         _else .1
         _2drop
-        _true
-        _abortq "index out of bounds"
+        _error "index out of bounds"
         _then .1
 
         next
@@ -363,8 +361,7 @@ code sbuf_set_char, 'sbuf-set-char'     ; handle index char --
         _cstore
         _else .3
         _3drop
-        _true
-        _abortq "index out of range"
+        _error "index out of range"
         _then .3
         next
 endcode
@@ -552,10 +549,9 @@ code sbuf_insert_nth_destructive, 'sbuf-insert-nth!' ; tagged-char tagged-index 
         _swap                           ; -- char index
 
         _dup
-        _this_sbuf_check_index          ; -- char index -1|0
+        _this_sbuf_check_index          ; -- char index -1/0
         _zeq_if .1
-        _true
-        _abortq "index out of range"
+        _error "index out of range"
         _then .1                        ; -- char index
 
         _this_sbuf_length
@@ -604,8 +600,7 @@ code sbuf_remove_nth_destructive, 'sbuf-remove-nth!' ; tagged-index handle -- ha
         _dup
         _this_sbuf_check_index          ; -- handle index -1|0
         _zeq_if .1
-        _true
-        _abortq "index out of range"
+        _error "index out of range"
         _then .1                        ; -- handle index
 
         _this_sbuf_data                 ; -- handle index data-address

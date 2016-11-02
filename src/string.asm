@@ -453,8 +453,7 @@ code string_last_char, 'string-last-char' ; string -- char
         _dup
         _zeq_if .1
         _2drop
-        _true
-        _abortq "index out of bounds"
+        _error "index out of bounds"
         _else .1
         _swap
         _string_data
