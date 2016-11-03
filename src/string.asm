@@ -39,17 +39,13 @@ code string?, 'string?'                 ; x -- t|f
         _then .1
 
         ; Not a handle. Make sure address is in a permissible range.
-        _dup                            ; -- x x
-        _ in_dictionary_space?          ; -- x flag
-        _zeq_if .3
         _dup
         _ in_static_data_area?
-        _zeq_if .4
+        _zeq_if .3
         ; Address is not in a permissible range.
         ; -- x
         mov     ebx, f_value
         _return
-        _then .4
         _then .3
 
         ; -- object
@@ -69,24 +65,20 @@ endcode
 code verify_unboxed_string, 'verify-unboxed-string' ; string -- string
         ; Make sure address is in a permissible range.
         _dup
-        _ in_dictionary_space?          ; -- x flag
-        _zeq_if .1
-        _dup
         _ in_static_data_area?
-        _zeq_if .2
+        _zeq_if .1
         ; Address is not in a permissible range.
         _ error_not_string
         _return
-        _then .2
-        _then .1                        ; -- object
+        _then .1
 
         _dup
         _object_type                    ; -- object object-type
         _lit OBJECT_TYPE_STRING
         _equal
-        _if .3
+        _if .2
         _return
-        _then .3
+        _then .2
 
         _ error_not_string
         next

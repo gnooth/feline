@@ -116,34 +116,9 @@ void * data_stack_base;
 
 static void initialize_forth()
 {
-  extern Cell dp_data;
-  extern Cell cp_data;
-  extern Cell limit_data;
-  extern Cell limit_c_data;
   extern Cell sp0_data;
   extern Cell stack_cells_data;
-  Cell data_space_size = 8 * 1024 * 1024;
-  Cell code_space_size = 1024 * 1024;
-  void * data_space;
-  void * code_space;
 
-#ifdef WIN64
-  data_space =
-    VirtualAlloc(0, data_space_size, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-  code_space =
-    VirtualAlloc(0, code_space_size, MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-#else
-  data_space =
-    mmap((void *)0x1000000, data_space_size, PROT_EXEC|PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE, -1, 0);
-  code_space =
-    mmap((void *)0x2000000, code_space_size, PROT_EXEC|PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE, -1, 0);
-#endif
-  dp_data = (Cell) data_space;
-  cp_data = (Cell) code_space;
-  limit_data = (Cell) data_space + data_space_size;
-  limit_c_data = (Cell) code_space + code_space_size;
-
-  // data stack
   stack_cells_data = 4096;
   size_t data_stack_size = stack_cells_data * sizeof(Cell);
   data_stack_base = malloc(data_stack_size + 64);

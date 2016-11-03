@@ -120,22 +120,6 @@ code inline?, 'inline?'                 ; xt -- flag
         next
 endcode
 
-; ### inline-latest
-code inline_latest, 'inline-latest'     ; --
-; make the most recent definition inline
-        _ latest
-        _namefrom
-        _dup
-        _tocode
-        _ here_c
-        _swapminus
-        _oneminus                       ; don't include final $c3
-        _ swap
-        _toinline
-        _ cstore
-        next
-endcode
-
 ; ### .id
 code dot_id, '.id'                      ; nfa --
         _ count
@@ -147,21 +131,6 @@ code dot_id, '.id'                      ; nfa --
 
         _ type
         _ forth_space
-        next
-endcode
-
-; ### here
-code here, 'here'                       ; -- addr
-; CORE
-        pushrbx
-        mov     rbx, [dp_data]
-        next
-endcode
-
-; ### here-c
-code here_c, 'here-c'
-        pushrbx
-        mov     rbx, [cp_data]
         next
 endcode
 
@@ -178,18 +147,5 @@ code latestxt, 'latest-xt'              ; -- xt
         _ last
         _fetch
         _namefrom
-        next
-endcode
-
-; ### in-dictionary-space?
-code in_dictionary_space?, 'in-dictionary-space?' ; addr -- flag
-        cmp     rbx, [origin_data]
-        jb .1
-        cmp     rbx, [dp_data]
-        jae .1
-        mov     ebx, 1
-        _return
-.1:
-        xor     ebx, ebx
         next
 endcode

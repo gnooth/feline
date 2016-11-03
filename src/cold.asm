@@ -30,24 +30,6 @@ value stack_cells, 'stack-cells', 0     ; initialized in main()
 ; ### cold-rbp
 variable cold_rbp, 'cold-rbp', 0
 
-; ### origin
-value origin, 'origin', 0
-
-; ### origin-c
-value origin_c, 'origin-c', 0
-
-; ### limit
-value limit, 'limit', 0                 ; initialized in main()
-
-; ### limit-c
-value limit_c, 'limit-c', 0             ; initialized in main()
-
-; ### dp
-variable dp, 'dp', 0                    ; initialized in main()
-
-; ### cp
-variable cp, 'cp', 0                    ; initialized in main()
-
 ; ### argc
 variable argc, 'argc', 0
 
@@ -127,10 +109,7 @@ code cold, 'cold'                       ; --
         mov     [rp0_data], rsp
         mov     [cold_rbp_data], rbp
         mov     rbp, [sp0_data]
-        mov     rax, [dp_data]
-        mov     [origin_data], rax
-        mov     rax, [cp_data]
-        mov     [origin_c_data], rax
+
         _ initialize_locals_stack
         _ forth_standard_output
 
