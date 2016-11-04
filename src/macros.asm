@@ -740,11 +740,6 @@ section .text
         _lit 0
 %endmacro
 
-%macro  _ccommac 1
-        _lit    %1
-        _ ccommac
-%endmacro
-
 %macro  _locals_enter 0
         push    r14
         lea     r14, [r14 - BYTES_PER_CELL * MAX_LOCALS];
@@ -757,38 +752,6 @@ section .text
 %define local0          [r14]
 %define local1          [r14 + BYTES_PER_CELL]
 %define local2          [r14 + BYTES_PER_CELL * 2]
-%define local3          [r14 + BYTES_PER_CELL * 3]
-%define local4          [r14 + BYTES_PER_CELL * 4]
-
-%macro  _local0 0
-        pushrbx
-        mov     rbx, local0
-%endmacro
-
-%macro  _to_local0 0
-        mov     local0, rbx
-        poprbx
-%endmacro
-
-%macro  _local1 0
-        pushrbx
-        mov     rbx, local1
-%endmacro
-
-%macro  _to_local1 0
-        mov     local1, rbx
-        poprbx
-%endmacro
-
-%macro  _local2 0
-        pushrbx
-        mov     rbx, local2
-%endmacro
-
-%macro  _to_local2 0
-        mov     local2, rbx
-        poprbx
-%endmacro
 
 %macro _quotation 1
         %push quotation
