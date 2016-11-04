@@ -15,13 +15,6 @@
 
 file __FILE__
 
-; ### $.
-code counttype, '$.'                    ; $addr --
-        _ count
-        _ type
-        next
-endcode
-
 ; ### zstrlen
 code zstrlen, 'zstrlen'                 ; zaddr -- len
         mov     rcx, rbx

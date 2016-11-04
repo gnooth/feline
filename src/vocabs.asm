@@ -134,7 +134,6 @@ code lookup_vocab, 'lookup-vocab'       ; vocab-spec -- vocab/f
         next
 endcode
 
-; ### CURRENT:
 ; ### ensure-vocab
 code ensure_vocab, 'ensure-vocab'       ; string -- vocab
         _ verify_string

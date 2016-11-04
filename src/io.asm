@@ -165,60 +165,6 @@ code forth_space, 'space'                     ; --
         next
 endcode
 
-section .data
-spaces_data:
-        times 256 db ' '
-
-; ### spaces
-code forth_spaces, 'spaces'             ; n --
-; CORE "If n is greater than zero, display n spaces."
-        _dup
-        _lit 256
-        _ ult
-        _if .0
-        pushd   spaces_data
-        _swap
-        _ type
-        _return
-        _then .0
-
-        popd    rcx
-        test    rcx, rcx
-        jle     .2
-.1:
-        push    rcx
-        _ forth_space
-        pop     rcx
-        loop    .1
-.2:
-        next
-endcode
-
-; ### backspaces
-code backspaces, 'backspaces'           ; n --
-        popd    rcx
-        test    rcx, rcx
-        jle     .2
-.1:
-        push    rcx
-        _lit 8
-        _ emit
-        pop     rcx
-        loop    .1
-.2:
-        next
-endcode
-
-; ### >pos
-code topos, '>pos'                      ; +n --
-        _ nout
-        _ minus
-        _lit 1
-        _ max
-        _ forth_spaces
-        next
-endcode
-
 %ifdef WINDOWS_UI
 extern c_repaint
 ; ### repaint
