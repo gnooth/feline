@@ -84,12 +84,12 @@ code verify_unboxed_string, 'verify-unboxed-string' ; string -- string
         next
 endcode
 
-; ### check-string
-code check_string, 'check-string'       ; handle-or-string -- string
+; ### check_string
+subroutine check_string                 ; handle-or-string -- unboxed-string
         _dup
         _ handle?
         _tagged_if .1
-        _handle_to_object_unsafe        ; -- object|0
+        _handle_to_object_unsafe        ; -- object/0
         _dup_if .2
         _dup
         _object_type                    ; -- object object-type
@@ -105,8 +105,8 @@ code check_string, 'check-string'       ; handle-or-string -- string
         ; Not a handle.
         _ verify_unboxed_string
 
-        next
-endcode
+        ret
+endsub
 
 ; ### verify-string
 code verify_string, 'verify-string'     ; handle-or-string -- handle-or-string
@@ -115,7 +115,7 @@ code verify_string, 'verify-string'     ; handle-or-string -- handle-or-string
         _ handle?
         _tagged_if .1
         _dup
-        _handle_to_object_unsafe        ; -- handle object|0
+        _handle_to_object_unsafe        ; -- handle object/0
         _dup_if .2
         _object_type                    ; -- object object-type
         _lit OBJECT_TYPE_STRING
@@ -216,8 +216,8 @@ endcode
         _cfetch
 %endmacro
 
-; ### >string
-code copy_to_string, '>string'          ; c-addr u -- handle
+; ### copy_to_string
+subroutine copy_to_string               ; addr len -- handle
 ; Arguments are untagged.
         push    this_register
 
@@ -259,19 +259,19 @@ code copy_to_string, '>string'          ; c-addr u -- handle
         _ new_handle                    ; -- handle
 
         pop     this_register
-        next
-endcode
+        ret
+endsub
 
-; ### string>
-code string_from, 'string>'             ; string -- c-addr u
+; ### string_from
+subroutine string_from                  ; string -- addr len
 ; Returned values are untagged.
         _ check_string
         _duptor
         _string_data
         _rfrom
         _string_length
-        next
-endcode
+        ret
+endsub
 
 ; ### ~string
 code destroy_string, '~string'          ; string --
