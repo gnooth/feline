@@ -140,7 +140,7 @@ code dot_tuple, '.tuple'                ; tuple --
         push    this_register
         popd    this_register
 
-        _dotq "T{ "
+        _write "T{ "
 
         _this_slot 1                    ; -- layout
         _dup
@@ -156,7 +156,7 @@ code dot_tuple, '.tuple'                ; tuple --
         _this_nth_slot
         _ dot_object
         _loop .1
-        _dotq "}"
+        _write "}"
 
         pop     this_register
         next

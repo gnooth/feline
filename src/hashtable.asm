@@ -565,7 +565,7 @@ code dot_hashtable, '.hashtable'        ; hashtable --
         push    this_register
         mov     this_register, rbx
 
-        _dotq "H{ "
+        _write "H{ "
         _hashtable_capacity
         _zero
         _?do .1
@@ -574,19 +574,19 @@ code dot_hashtable, '.hashtable'        ; hashtable --
         _dup
         _tagged_if .2
         _ ?nl
-        _dotq "    { "
+        _write "    { "
         _ dot_object
         _i
         _this_hashtable_nth_value
         _ dot_object
-        _dotq "} "
+        _write "} "
         _ nl
         _else .2
         _drop
         _then .2
         _loop .1
 
-        _dotq "}"
+        _write "}"
 
         pop     this_register
         next

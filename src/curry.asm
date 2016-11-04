@@ -243,8 +243,8 @@ endcode
 
 ; ### .curry
 code dot_curry, '.curry'                ; curry --
-        _dotq "[ "
+        _write "[ "
         _ dot_curry_internal
-        _dotq "]"
+        _write "]"
         next
 endcode

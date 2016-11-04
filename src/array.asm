@@ -355,7 +355,7 @@ code dot_array, '.array'                ; array --
         push    this_register
         mov     this_register, rbx
 
-        _dotq "{ "
+        _write "{ "
         _array_length
         _zero
         _?do .1
@@ -363,7 +363,7 @@ code dot_array, '.array'                ; array --
         _this_array_nth_unsafe
         _ dot_object
         _loop .1
-        _dotq "}"
+        _write "}"
 
         pop     this_register
         next

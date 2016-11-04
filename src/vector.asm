@@ -639,7 +639,7 @@ code dot_vector, '.vector'              ; vector --
         push    this_register
         mov     this_register, rbx
 
-        _dotq "V{ "
+        _write "V{ "
         _vector_length
         _zero
         _?do .1
@@ -648,7 +648,7 @@ code dot_vector, '.vector'              ; vector --
         _vector_nth_unsafe
         _ dot_object
         _loop .1
-        _dotq "}"
+        _write "}"
 
         pop     this_register
         next

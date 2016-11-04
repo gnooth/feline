@@ -486,19 +486,6 @@ section .data
         inc     qword [%1_data]
 %endmacro
 
-%macro  _dotq 1
-section .data
-%strlen len     %1
-%%string:
-        db      len                     ; length byte
-        db      %1                      ; string
-        db      0                       ; null byte at end
-section .text
-        pushrbx
-        mov     rbx, %%string
-        call    counttype
-%endmacro
-
 %macro  _quote 1                        ; -- string
 section .data
 %strlen len     %1
