@@ -218,12 +218,17 @@ code order, 'order'
         _ ?nl
         _write "using: "
         _ context_vector
-        _lit dot_voc_xt
+        _quotation .1
+        _ vocab_name
+        _ write_string
+        _ space
+        _end_quotation .1
         _ vector_each
         _write ";"
         _ nl
         _write "in: "
         _ current_vocab
-        _ dot_voc
+        _ vocab_name
+        _ write_string
         next
 endcode
