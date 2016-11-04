@@ -362,6 +362,15 @@ section .data
         _toflags
 %endmacro
 
+%macro  subroutine 1
+        %push subroutine
+%1:
+%endmacro
+
+%macro  endsub 0
+        %pop subroutine
+%endmacro
+
 %macro  code 2-5 0, 0, 0
         %push code
         head %1, %2, %3, %$end - %1, %5
