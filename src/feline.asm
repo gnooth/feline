@@ -27,7 +27,6 @@ section .data
 static_data_area:
 
 %include "arith.asm"
-%include "cold.asm"
 %include "constants.asm"
 %include "dictionary.asm"
 %include "double.asm"
@@ -47,6 +46,7 @@ static_data_area:
 
 IN_FELINE
 
+%include "cold.asm"
 %include "debug.asm"
 %include "key.asm"
 %include "vocabs.asm"
