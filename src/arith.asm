@@ -20,16 +20,6 @@ inline plus, '+'
         _plus
 endinline
 
-; ### 1+
-inline oneplus, '1+'
-        _oneplus
-endinline
-
-; ### 2+
-inline twoplus, '2+'
-        _twoplus
-endinline
-
 ; ### under+
 code underplus, 'under+'                ; n1 n2 n3 -- n1+n3 n2
         add     [rbp + BYTES_PER_CELL], rbx
@@ -37,51 +27,9 @@ code underplus, 'under+'                ; n1 n2 n3 -- n1+n3 n2
         next
 endcode
 
-; ### char+
-inline charplus, 'char+'                ; c-addr1 -- c-addr2
-; CORE 6.1.0897
-        _oneplus
-endinline
-
-; ### chars
-code chars, 'chars', IMMEDIATE          ; n1 -- n2
-; CORE 6.1.0898
-        ; nothing to do
-        next
-endcode
-
-; ### cell+
-inline cellplus, 'cell+'                ; a-addr1 -- a-addr2
-; CORE 6.1.0880
-        _cellplus
-endinline
-
-; ### cell-
-inline cellminus, 'cell-'               ; a-addr1 -- a-addr2
-; not in standard
-        _cellminus
-endinline
-
-; ### cells
-inline cells, 'cells'                   ; n1 -- n2
-; CORE 6.1.0890
-; "n2 is the size in address units of n1 cells"
-        _cells
-endinline
-
 ; ### -
 inline minus, '-'
         _minus
-endinline
-
-; ### swap-
-inline swapminus, 'swap-'
-        _swapminus
-endinline
-
-; ### 1-
-inline oneminus, '1-'
-        _oneminus
 endinline
 
 ; ### *
@@ -90,22 +38,6 @@ code star, '*'                          ; n1 n2 -- n3
         _star
         next
 endcode
-
-; ### m*
-code mstar, 'm*'                        ; n1 n2 -- d
-; CORE
-; "d is the signed product of n1 times n2."
-        mov     rax, rbx
-        imul    qword [rbp]
-        mov     [rbp], rax
-        mov     rbx, rdx
-        next
-endcode
-
-; ### 2*
-inline twostar, '2*'
-        _twostar
-endinline
 
 ; ### /
 code slash, '/'                         ; n1 n2 -- n3
@@ -117,176 +49,6 @@ code slash, '/'                         ; n1 n2 -- n3
         lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
-
-; ### mod
-code mod, 'mod'                          ; n1 n2 -- n3
-; CORE
-        mov     rax, [rbp]
-        cqo                             ; sign-extend rax into rdx:rax
-        idiv    rbx                     ; quotient in rax, remainder in rdx
-        mov     rbx, rdx
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        next
-endcode
-
-; ### /mod
-code slmod, '/mod'                      ; n1 n2 -- remainder quotient
-; CORE
-        mov     rax, [rbp]
-        cqo                             ; sign-extend rax into rdx:rax
-        idiv    rbx                     ; quotient in rax, remainder in rdx
-        mov     [rbp], rdx              ; remainder
-        mov     rbx, rax                ; quotient
-        next
-endcode
-
-; ### */mod
-code starslashmod, '*/mod'              ; n1 n2 n3 -- remainder quotient
-; CORE
-; "Multiply n1 by n2 producing the intermediate double-cell result d. Divide d
-; by n3 producing the single-cell remainder n4 and the single-cell quotient n5."
-        mov     rax, [rbp + BYTES_PER_CELL]
-        imul    qword [rbp]             ; result in rdx:rax
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        idiv    rbx                     ; quotient in rax, remainder in rdx
-        mov     rbx, rax                ; quotient in rbx
-        mov     [rbp], rdx              ; remainder in [rbp]
-        next
-endcode
-
-; ### */
-code starslash, '*/'                    ; n1 n2 n3 -- n4
-; CORE
-        _ starslashmod
-        _nip
-        next
-endcode
-
-; ### 2/
-code twoslash, '2/'
-        sar     rbx, 1
-        next
-endcode
-
-; ### um*
-code umstar, 'um*'                      ; u1 u2 -- ud
-; 6.1.2360 CORE
-; "Multiply u1 by u2, giving the unsigned double-cell product ud. All
-; values and arithmetic are unsigned."
-        mov     rax, rbx
-        mul     qword [rbp]
-        mov     [rbp], rax
-        mov     rbx, rdx
-        next
-endcode
-
-; ### um/mod
-code umslmod, 'um/mod'                  ; ud u1 -- u2 u3
-; 6.1.2370 CORE
-        mov     rdx, [rbp]
-        mov     rax, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        div     rbx                     ; remainder in RDX, quotient in RAX
-        mov     [rbp], rdx
-        mov     rbx, rax
-        next
-endcode
-
-; ### fm/mod
-code fmslmod, 'fm/mod'                  ; d1 n1 -- n2 n3
-; CORE n2 is remainder, n3 is quotient
-; gforth
-        _duptor
-        _ dup
-        _zlt
-        _if fmslmod1
-        _negate
-        _ tor
-        _ dnegate
-        _ rfrom
-        _then fmslmod1
-        _ over
-        _zlt
-        _if fmslmod2
-        _ tuck
-        _ plus
-        _ swap
-        _then fmslmod2
-        _ umslmod
-        _ rfrom
-        _zlt
-        _if fmslmod3
-        _ swap
-        _negate
-        _ swap
-        _then fmslmod3
-        next
-endcode
-
-; ### sm/rem
-code smslrem, 'sm/rem'                  ; d1 n1 -- n2 n3
-; CORE
-; gforth
-        _ over
-        _ tor
-        _ dup
-        _ tor
-        _ abs_
-        _ rrot
-        _ dabs
-        _ rot
-        _ umslmod
-        _ rfrom
-        _ rfetch
-        _ xor
-        _zlt
-        _if smslrem1
-        _negate
-        _then smslrem1
-        _ rfrom
-        _zlt
-        _if smslrem2
-        _ swap
-        _negate
-        _ swap
-        _then smslrem2
-        next
-endcode
-
-; ### mu/mod
-code muslmod, 'mu/mod'                  ; d n -- rem dquot
-        _ tor
-        _zero
-        _ rfetch
-        _ umslmod
-        _ rfrom
-        _ swap
-        _ tor
-        _ umslmod
-        _ rfrom
-        next
-endcode
-
-; ### abs
-code abs_, 'abs'
-        or      rbx, rbx
-        jns     abs1
-        neg     rbx
-abs1:
-        next
-endcode
-
-; ### =
-inline equal, '='                       ; x1 x2 -- flag
-; CORE
-        _equal
-endinline
-
-; ### <>
-inline notequal, '<>'                   ; x1 x2 -- flag
-; CORE EXT
-        _notequal
-endinline
 
 ; ### >
 inline gt, '>'                          ; n1 n2 -- flag
@@ -431,50 +193,9 @@ inline lshift, 'lshift'                 ; x1 u -- x2
         shl     rbx, cl
 endinline
 
-; ### rshift
-inline rshift, 'rshift'                 ; x1 u -- x2
-; CORE
-        mov     ecx, ebx
-        poprbx
-        shr     rbx, cl
-endinline
-
-; ### rol
-code rol, 'rol'
-        mov     ecx, ebx
-        poprbx
-        rol     rbx, cl
-        next
-endcode
-
-; ### and
-inline and, 'and'                       ; x1 x2 -- x3
-; CORE
-        _and
-endinline
-
 ; ### or
 inline or, 'or'                         ; x1 x2 -- x3
 ; CORE
         or      rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
-endinline
-
-; ### xor
-inline xor, 'xor'                       ; x1 x2 -- x3
-; CORE
-        _xor
-endinline
-
-; ### invert
-inline invert, 'invert'                 ; x1 -- x2
-; CORE
-; "Invert all bits of x1, giving its logical inverse x2."
-        not     rbx
-endinline
-
-; ### negate
-inline negate, 'negate'                 ; n1 -- n2
-; CORE
-        _negate
 endinline

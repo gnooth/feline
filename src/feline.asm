@@ -29,7 +29,6 @@ static_data_area:
 %include "arith.asm"
 %include "constants.asm"
 %include "dictionary.asm"
-%include "double.asm"
 %include "exceptions.asm"
 %include "execute.asm"
 %include "fetch.asm"
