@@ -113,14 +113,6 @@ code cold, 'cold'                       ; --
         _ initialize_locals_stack
         _ forth_standard_output
 
-        _ forth_wordlist
-        _fetch
-        _zeq_if .1
-        _ latest
-        _ forth_wordlist
-        _ store
-        _then .1
-
         _ feline_wordlist
         _fetch
         _zeq_if .2

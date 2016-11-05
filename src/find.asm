@@ -59,40 +59,9 @@ endcode
 
 section .data
         dq      0                       ; link
-        dq      forth_nfa
-forth_wid:
-        dq      0
-
-        dq      forth_wid               ; link
         dq      feline_nfa
 feline_wid:
         dq      0
-
-; ### forth-wordlist
-code forth_wordlist, 'forth-wordlist'   ; -- wid
-; SEARCH
-        pushrbx
-        mov     rbx, forth_wid
-        next
-endcode
-
-; ### forth
-code forth, 'forth'                     ; --
-; SEARCH EXT
-        _quote "forth"
-        _ lookup_vocab
-
-        _dup
-        _tagged_if .1
-        _zero
-        _ context_vector
-        _ vector_set_nth_untagged
-        _else .1
-        _drop
-        _error "no forth vocab"
-        _then .1
-        next
-endcode
 
 ; ### feline-wordlist
 code feline_wordlist, 'feline-wordlist' ; -- wid
