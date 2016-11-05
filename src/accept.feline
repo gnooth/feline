@@ -152,7 +152,7 @@ global: pattern
     ] [ do-next ] if ;
 
 : history-file-pathname ( -- string )
-    forth:user-home ".feline-history" forth:path-append ;
+    user-home ".feline-history" path-append ;
 
 : initialize-history ( -- )
     history-file-pathname dup regular-file?

@@ -58,16 +58,9 @@ code initialize_vocabs, 'initialize-vocabs'
         _lit vocabs_data
         _ gc_add_root
 
-        _from voclink                   ; -- wid
-        _begin .1
-        _dup
+        _ feline_wordlist
         _ add_vocab
-        _ wid_to_link
-        _fetch
-        _dup
-        _zeq
-        _until .1
-        _drop
+
         next
 endcode
 

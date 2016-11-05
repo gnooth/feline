@@ -286,44 +286,6 @@ code path_is_absolute?, 'path-is-absolute?' ; string -- flag
         next
 endcode
 
-; ### path-append
-code path_append, 'path-append'         ; string1 string2 -- string3
-        _ verify_string
-        _swap
-        _ verify_string
-        _swap
-
-        _dup
-        _ path_is_absolute?
-        _if .1
-        _nip
-        _return
-        _then .1
-
-        _swap                           ; -- filename path
-        _dup
-        _ string_last_char
-        _ path_separator_char
-        _notequal
-        _if .2
-%ifdef WIN64
-        _quote "\"
-%else
-        _quote "/"
-%endif
-        _ concat
-        _then .2
-        _swap
-        _ concat
-        next
-endcode
-
-; ### feline-home
-code feline_home, 'feline-home'         ; -- string
-        _quote FELINE_HOME
-        next
-endcode
-
 ; ### system-file-pathname
 code system_file_pathname, 'system-file-pathname' ; c-addr1 u1 -- c-addr2 u2
 ; Returned values are untagged.

@@ -740,11 +740,11 @@ find-integer-test-1
 
 : create-symbol-test-1 ( -- )
     << last-word symbol-name >> ?nl write
-    "effluvia" "forth" ?lookup-symbol check-false
-    "effluvia" "forth" create-symbol
+    "effluvia" "feline" ?lookup-symbol check-false
+    "effluvia" "feline" create-symbol
     dup symbol? check-t
-    dup "effluvia" "forth" ?lookup-symbol eq? check-t
-    symbol-vocab-name "forth" = check-t
+    dup "effluvia" "feline" ?lookup-symbol eq? check-t
+    symbol-vocab-name "feline" = check-t
 ;
 
 create-symbol-test-1
