@@ -87,13 +87,9 @@ endcode
 
 ; ### page
 code page, 'page'
-; FACILITY
+; Forth 2012
 ; "On a terminal, PAGE clears the screen and resets the cursor
 ; position to the upper left corner."
-%ifdef WIN64
-        _squote "cls"
-        _ system_
-%else
         _ ansi_escape
         _tagged_char '2'
         _ write_char
@@ -104,7 +100,6 @@ code page, 'page'
         _ write_char
         _tagged_char 'H'
         _ write_char
-%endif
         next
 endcode
 
