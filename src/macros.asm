@@ -523,31 +523,6 @@ section .text
         _ feline_throw
 %endmacro
 
-%macro  _cquote 1                       ; -- c-addr
-section .data
-%strlen len     %1
-%%string:
-        db      len                     ; length byte
-        db      %1                      ; string
-        db      0                       ; null byte at end
-section .text
-        pushrbx
-        mov     rbx, %%string
-%endmacro
-
-%macro  _squote 1                       ; -- c-addr u
-section .data
-%strlen len     %1
-%%string:
-        db      %1                      ; string
-        db      0                       ; null byte at end
-section .text
-        lea     rbp, [rbp - BYTES_PER_CELL * 2]
-        mov     [rbp + BYTES_PER_CELL], rbx
-        mov     qword [rbp], %%string
-        mov     rbx, len
-%endmacro
-
 %macro  _if 1
         %push if
         section .text
