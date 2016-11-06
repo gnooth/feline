@@ -389,34 +389,38 @@ endcode
 
 ; ### symbol-code-address
 code symbol_code_address, 'symbol-code-address' ; symbol -- code-address/f
-; The code address is stored as a tagged fixnum.
+; The code address is stored untagged.
         _ check_symbol
         _symbol_code_address
+        _tag_fixnum
         next
 endcode
 
 ; ### symbol-set-code-address
 code symbol_set_code_address, 'symbol-set-code-address' ; code-address symbol --
-; The code address is stored as a tagged fixnum.
+; The code address is stored untagged.
         _ check_symbol
         _verify_fixnum [rbp]
+        _untag_fixnum qword [rbp]
         _symbol_set_code_address
         next
 endcode
 
 ; ### symbol-code-size
 code symbol_code_size, 'symbol-code-size' ; symbol -- code-size/f
-; The code size is stored as a tagged fixnum.
+; The code size is stored untagged.
         _ check_symbol
         _symbol_code_size
+        _tag_fixnum
         next
 endcode
 
 ; ### symbol-set-code-size
 code symbol_set_code_size, 'symbol-set-code-size' ; code-size symbol --
-; The code size is stored as a tagged fixnum.
+; The code size is stored untagged.
         _ check_symbol
         _verify_fixnum [rbp]
+        _untag_fixnum qword [rbp]
         _symbol_set_code_size
         next
 endcode
