@@ -15,7 +15,7 @@
 
 file __FILE__
 
-%macro  symbol 2                        ; label, name
+%macro  _symbol 2                       ; label, name
         head    %1, %2, 0, %1_ret - %1
         section .data
         align   DEFAULT_DATA_ALIGNMENT
@@ -29,8 +29,8 @@ file __FILE__
         next
 %endmacro
 
-symbol accum, 'accum'
-symbol lexer, 'lexer'
+_symbol accum, 'accum'
+_symbol lexer, 'lexer'
 
 _global symbols_initialized?, f_value
 
