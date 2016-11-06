@@ -49,18 +49,6 @@ code object?, 'object?'                 ; x -- t|f
         next
 endcode
 
-; ### vector
-constant vector, 'vector', tagged_fixnum(OBJECT_TYPE_VECTOR)
-
-; ### string
-constant string, 'string', tagged_fixnum(OBJECT_TYPE_STRING)
-
-; ### sbuf
-constant sbuf, 'sbuf', tagged_fixnum(OBJECT_TYPE_SBUF)
-
-; ### array
-constant array, 'array', tagged_fixnum(OBJECT_TYPE_ARRAY)
-
 ; ### object-type
 code object_type, 'object-type'         ; handle-or-object -- n/f
 ; Return value is tagged.
