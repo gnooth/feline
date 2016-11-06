@@ -134,9 +134,35 @@ file __FILE__
 %endmacro
 
 ; ### symbol?
-code symbol?, 'symbol?'                 ; handle -- ?
-        _lit OBJECT_TYPE_SYMBOL
-        _ type?
+code symbol?, 'symbol?'                 ; x -- ?
+        _dup
+        _ handle?
+        _tagged_if .1
+        _handle_to_object_unsafe        ; -- object/0
+        _?dup_if .2
+        _object_type                    ; -- object-type
+        _eq?_literal OBJECT_TYPE_SYMBOL
+        _return
+        _then .2
+        ; Empty handle.
+        _f
+        _return
+        _then .1
+
+        ; Not a handle. Make sure address is in a permissible range.
+        _dup
+        _ in_static_data_area?
+        _zeq_if .3
+        ; Address is not in a permissible range.
+        ; -- x
+        mov     ebx, f_value
+        _return
+        _then .3
+
+        ; -- object
+        _object_type                    ; -- object-type
+        _eq?_literal OBJECT_TYPE_SYMBOL
+
         next
 endcode
 
@@ -146,16 +172,51 @@ code error_not_symbol, 'error-not-symbol' ; x --
         next
 endcode
 
-; ### check-symbol
-code check_symbol, 'check-symbol'       ; handle -- symbol
-        _ unhandle                      ; -- object-address
-        cmp     word [rbx], OBJECT_TYPE_SYMBOL
-        jne     .error
+; ### verify_unboxed_symbol
+subroutine verify_unboxed_symbol        ; symbol -- symbol
+        ; Make sure address is in a permissible range.
+        _dup
+        _ in_static_data_area?
+        _zeq_if .1
+        ; Address is not in a permissible range.
+        _ error_not_symbol
         _return
-.error:
+        _then .1
+
+        _dup
+        _object_type                    ; -- object object-type
+        cmp     rbx, OBJECT_TYPE_SYMBOL
+        poprbx
+        jne .2
+        _return
+.2:
         _ error_not_symbol
         next
-endcode
+endsub
+
+; ### check_symbol
+subroutine check_symbol                 ; handle-or-symbol -- unboxed-symbol
+        _dup
+        _ handle?
+        _tagged_if .1
+        _handle_to_object_unsafe        ; -- object/0
+        _dup_if .2
+        _dup
+        _object_type                    ; -- object object-type
+        _lit OBJECT_TYPE_SYMBOL
+        _equal
+        _if .3
+        _return
+        _then .3
+        _then .2
+        _ error_not_symbol
+        _then .1
+
+        ; Not a handle.
+        _ verify_unboxed_symbol
+
+        ret
+endsub
 
 ; ### <symbol>
 code new_symbol, '<symbol>'             ; name vocab -- symbol
