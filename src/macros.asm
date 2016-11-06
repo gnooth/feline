@@ -496,7 +496,8 @@ section .data
 %endmacro
 
 %macro  _quote 1                        ; -- string
-section .data
+        section .data
+        align   DEFAULT_DATA_ALIGNMENT
 %strlen len     %1
 %%string:
         dw      OBJECT_TYPE_STRING
@@ -507,9 +508,25 @@ section .data
         dq      f_value                 ; hashcode
         db      %1                      ; string
         db      0                       ; null byte at end
-section .text
+        section .text
+        align   DEFAULT_CODE_ALIGNMENT
         pushrbx
         mov     rbx, %%string
+%endmacro
+
+%macro  string 2                        ; label, string
+        section .data
+        align   DEFAULT_DATA_ALIGNMENT
+%strlen len     %2
+%1:
+        dw      OBJECT_TYPE_STRING
+        db      0                       ; flags byte
+        db      0                       ; not used
+        dd      0                       ; not used
+        dq      len                     ; length
+        dq      f_value                 ; hashcode
+        db      %2                      ; string
+        db      0                       ; null byte at end
 %endmacro
 
 %macro  _write 1
