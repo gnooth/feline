@@ -78,7 +78,7 @@ code object_type, 'object-type'         ; handle-or-object -- n/f
         _return
         _then .3
 
-        ; Not allocated. Must be a string or not an object.
+        ; Not allocated. Is it a static string or symbol?
         _dup
         _ string?
         _tagged_if .4
@@ -86,6 +86,14 @@ code object_type, 'object-type'         ; handle-or-object -- n/f
         _tag_fixnum
         _return
         _then .4
+
+        _dup
+        _ symbol?
+        _tagged_if .5
+        mov     ebx, OBJECT_TYPE_SYMBOL
+        _tag_fixnum
+        _return
+        _then .5
 
         ; Apparently not an object.
         mov     ebx, f_value
