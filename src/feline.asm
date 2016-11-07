@@ -26,6 +26,8 @@ IN_FORTH
 section .data
 static_data_area:
 
+string FELINE_VOCAB_NAME, 'feline'
+
 %include "arith.asm"
 %include "constants.asm"
 %include "dictionary.asm"

@@ -371,6 +371,67 @@ section .data
         %pop subroutine
 %endmacro
 
+; static string
+%macro  string 2                        ; label, string
+        section .data
+        align   DEFAULT_DATA_ALIGNMENT
+%strlen len     %2
+%1:
+        dw      OBJECT_TYPE_STRING
+        db      0                       ; flags byte
+        db      0                       ; not used
+        dd      0                       ; not used
+        dq      len                     ; length
+        dq      f_value                 ; hashcode
+        db      %2                      ; string
+        db      0                       ; null byte at end
+%endmacro
+
+%define symbol_link     0
+
+; static symbol
+%macro  symbol 2-4 0, 0                 ; label, name, code address, code size
+
+        string %%name, %2
+
+        section .data
+        align   DEFAULT_DATA_ALIGNMENT
+        dq      symbol_link
+%1:
+        ; object header
+        dw      OBJECT_TYPE_SYMBOL
+        db      0                       ; flags byte
+        db      0                       ; not used
+        dd      0                       ; not used
+
+        dq      %%name                  ; symbol name
+        dq      FELINE_VOCAB_NAME       ; vocab name
+        dq      f_value                 ; hashcode (link field)
+        dq      f_value                 ; xt
+        dq      f_value                 ; def
+        dq      f_value                 ; props
+        dq      f_value                 ; value
+        dq      %3                      ; untagged code address
+        dq      %4                      ; untagged code size (includes ret instruction)
+
+%define symbol_link     %1
+
+%endmacro
+
+%macro  special 2                       ; label, name
+
+        head    %1, %2, 0, %1_ret - %1
+
+        section .text
+        align   DEFAULT_CODE_ALIGNMENT
+%1:
+        pushrbx
+        mov     rbx, S_%1
+        ret
+%1_ret:
+
+%endmacro
+
 %macro  code 2-5 0, 0, 0
         %push code
         head %1, %2, %3, %$end - %1, %5
@@ -512,21 +573,6 @@ section .data
         align   DEFAULT_CODE_ALIGNMENT
         pushrbx
         mov     rbx, %%string
-%endmacro
-
-%macro  string 2                        ; label, string
-        section .data
-        align   DEFAULT_DATA_ALIGNMENT
-%strlen len     %2
-%1:
-        dw      OBJECT_TYPE_STRING
-        db      0                       ; flags byte
-        db      0                       ; not used
-        dd      0                       ; not used
-        dq      len                     ; length
-        dq      f_value                 ; hashcode
-        db      %2                      ; string
-        db      0                       ; null byte at end
 %endmacro
 
 %macro  _write 1
