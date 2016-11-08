@@ -765,7 +765,7 @@ endcode
 ; ### print
 code print, 'print'                     ; string-or-sbuf --
         _ dot_string
-        _ cr
+        _ nl
         next
 endcode
 
