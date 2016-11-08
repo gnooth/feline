@@ -15,22 +15,6 @@
 
 file __FILE__
 
-; ### feline?
-constant feline?, 'feline?', -1
-
-; Types
-
-; ### tvar
-constant tvar, 'tvar', TYPE_VARIABLE
-; ### tvalue
-constant tvalue, 'tvalue', TYPE_VALUE
-; ### t2value
-constant t2value, 't2value', TYPE_2VALUE
-; ### tdefer
-constant tdefer, 'tdefer', TYPE_DEFERRED
-; ### tconst
-constant tconst, 'tconst', TYPE_CONSTANT
-
 ; ### false
 constant false, 'false', 0              ; CORE EXT
 

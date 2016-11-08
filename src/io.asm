@@ -136,35 +136,6 @@ deferred type, 'type', wtype
 deferred type, 'type', itype
 %endif
 
-; ### cr
-code cr, 'cr'
-%ifdef WIN64
-        _lit 13
-        _ emit
-%endif
-        _lit 10
-        _ emit
-        next
-endcode
-
-; ### ?cr
-code ?cr, '?cr'
-        mov     rax, [nout_data]
-        test    rax, rax
-        jz     .1
-        _ cr
-.1:
-        next
-endcode
-
-; ### space
-code forth_space, 'space'                     ; --
-; CORE
-        _lit ' '
-        _ emit
-        next
-endcode
-
 %ifdef WINDOWS_UI
 extern c_repaint
 ; ### repaint
@@ -174,16 +145,6 @@ code repaint, 'repaint'
         next
 endcode
 %endif
-
-; ### bin
-code bin, 'bin', IMMEDIATE
-; FILE
-; "Modify the implementation-defined file access method fam1 to
-; additionally select a 'binary', i.e., not line oriented, file
-; access method, giving access method fam2."
-        ; nothing to do
-        next
-endcode
 
 extern os_file_status
 
