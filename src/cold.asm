@@ -70,7 +70,7 @@ code report_startup_time, 'report-startup-time' ; --
         _write "Startup completed in "
         _ ticks
         _ start_time_ticks
-        _ minus
+        _minus
         _tag_fixnum
         _ decimal_dot
         _write "milliseconds."
