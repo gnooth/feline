@@ -110,7 +110,6 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm equates.asm macros.asm inli
 	lexer.asm \
 	load.asm \
 	locals.asm \
-	loop.asm \
 	memory.asm \
 	move.asm \
 	number.asm \
