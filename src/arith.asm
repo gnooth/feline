@@ -22,11 +22,6 @@ code underplus, 'under+'                ; n1 n2 n3 -- n1+n3 n2
         next
 endcode
 
-; ### -
-inline minus, '-'
-        _minus
-endinline
-
 ; ### *
 code star, '*'                          ; n1 n2 -- n3
 ; CORE
@@ -58,16 +53,6 @@ endinline
 inline ge, '>='                         ; n1 n2 -- flag
         cmp     [rbp], rbx
         setge   bl
-        neg     bl
-        movsx   rbx, bl
-        lea     rbp, [rbp + BYTES_PER_CELL]
-endinline
-
-; ### <
-inline lt, '<'                          ; n1 n2 -- flag
-; CORE
-        cmp     [rbp], rbx
-        setl    bl
         neg     bl
         movsx   rbx, bl
         lea     rbp, [rbp + BYTES_PER_CELL]
