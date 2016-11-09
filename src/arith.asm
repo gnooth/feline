@@ -15,11 +15,6 @@
 
 file __FILE__
 
-; ### +
-inline plus, '+'
-        _plus
-endinline
-
 ; ### under+
 code underplus, 'under+'                ; n1 n2 n3 -- n1+n3 n2
         add     [rbp + BYTES_PER_CELL], rbx
