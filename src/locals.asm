@@ -49,10 +49,10 @@ code initialize_locals_stack, 'initialize-locals-stack'
         _then .1
 
         _lit    4096                    ; REVIEW
-        _ dup
+        _dup
         _ iallocate
-        _ plus
-        _ dup
+        _plus
+        _dup
         _to lp0
         _ lpstore
         next
@@ -62,10 +62,10 @@ endcode
 code free_locals_stack, 'free-locals-stack'
 ; called by BYE to make sure we're freeing all allocated memory
         _ lp0
-        _ ?dup
+        _?dup
         _if .1
         _lit 4096
-        _ minus
+        _minus
         _ ifree
         _then .1
         next
