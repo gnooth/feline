@@ -66,12 +66,44 @@ endcode
 
 ; ### hash-vocabs
 code hash_vocabs, 'hash-vocabs'
+%if 0
         _ vocabs
         _quotation .1
         _ array_second
         _ hash_vocab
         _end_quotation .1
         _ vector_each
+%else
+        _ last_symbol
+        _begin .1
+        _dup
+        _while .1                       ; -- symbol
+
+        _lit PRIMITIVE
+        _over
+        _ symbol_set_flags_bit
+
+        _dup
+        _ symbol_name
+        _ force_hashcode
+        _over
+        _ symbol_vocab_name
+        _ force_hashcode
+        _ hash_combine
+        _over
+        _ symbol_set_hashcode
+
+        _ dup
+        _quote "feline"
+        _ lookup_vocab
+        _ vocab_add_symbol
+
+        _cellminus
+        _fetch
+        _repeat .1
+
+        _drop
+%endif
         next
 endcode
 
