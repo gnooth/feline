@@ -252,8 +252,11 @@ code handles, 'handles'
         _ handle_space_free
         _ handle_space
         _minus
-        _ cell
-        _ slash
+
+;         _ cell
+;         _ slash
+        shr     rbx, 3
+
         _tag_fixnum
         _ decimal_dot
         _write "handles "
@@ -277,8 +280,11 @@ code dot_handles, '.handles'
         _ handle_space_free
         _ handle_space
         _minus
-        _ cell
-        _ slash
+
+;         _ cell
+;         _ slash
+        shr     rbx, 3
+
         _tag_fixnum
         _ decimal_dot
         _write "handles"
