@@ -121,5 +121,11 @@ variable feline_last, 'feline-last', feline_link
 ; the last word
 variable last, 'last', last_nfa
 
+subroutine last_symbol
+        pushrbx
+        mov     rbx, symbol_link
+        ret
+endsub
+
 section .data
 static_data_area_limit:
