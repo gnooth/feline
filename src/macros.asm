@@ -390,7 +390,7 @@ section .data
 %define symbol_link     0
 
 ; static symbol
-%macro  symbol 2-4 0, 0                 ; label, name, code address, code size
+%macro  symbol 2-5 0, 0, 0              ; label, name, code address, code size, flags
 
         string %%name, %2
 
@@ -399,8 +399,8 @@ section .data
         dq      symbol_link
 %1:
         ; object header
-        dw      OBJECT_TYPE_SYMBOL
-        db      0                       ; flags byte
+        dw      OBJECT_TYPE_SYMBOL      ; object type number
+        db      0                       ; object flags byte
         db      0                       ; not used
         dd      0                       ; not used
 
@@ -413,6 +413,7 @@ section .data
         dq      f_value                 ; value
         dq      %3                      ; untagged code address
         dq      %4                      ; untagged code size (includes ret instruction)
+        dq      %5                      ; untagged bit flags
 
 %define symbol_link     %1
 
