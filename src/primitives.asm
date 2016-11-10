@@ -192,7 +192,7 @@ code feline_and, 'and'                  ; obj1 obj2 -- ?
         next
 endcode
 
-; ### or, 'or'
+; ### or
 code feline_or, 'or'                    ; obj1 obj2 -- ?
         mov     rax, [rbp]
         cmp     rax, f_value
@@ -768,16 +768,6 @@ code print, 'print'                     ; string-or-sbuf --
         _ nl
         next
 endcode
-
-; ### locals-enter
-inline feline_locals_enter, 'locals-enter'
-        _locals_enter
-endinline
-
-; ### locals-leave
-inline feline_locals_leave, 'locals-leave'
-        _locals_leave
-endinline
 
 ; ### local@
 code local_fetch, 'local@'              ; index -- value
