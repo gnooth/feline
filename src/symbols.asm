@@ -15,40 +15,14 @@
 
 file __FILE__
 
-%macro  _symbol 2                       ; label, name
-        head    %1, %2, 0, %1_ret - %1
-        section .data
-        align   DEFAULT_DATA_ALIGNMENT
-%1_handle:
-        dq      0
-        section .text
-%1:
-        pushrbx
-        mov     rbx, [%1_handle]
-%1_ret:
-        next
-%endmacro
+special accum, 'accum'
 
-_symbol accum, 'accum'
-_symbol lexer, 'lexer'
+special lexer, 'lexer'
 
 _global symbols_initialized?, f_value
 
 ; ### initialize-symbols
 code initialize_symbols, 'initialize-symbols' ; --
-        _quote "accum"
-        _quote "feline"
-        _ lookup_symbol
-        mov     [accum_handle], rbx
-        poprbx
-
-        _quote "lexer"
-        _quote "feline"
-        _ lookup_symbol
-        mov     [lexer_handle], rbx
-        poprbx
-
         mov     qword [symbols_initialized?], t_value
-
         next
 endcode
