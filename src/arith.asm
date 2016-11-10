@@ -22,17 +22,6 @@ code underplus, 'under+'                ; n1 n2 n3 -- n1+n3 n2
         next
 endcode
 
-; ### /
-code slash, '/'                         ; n1 n2 -- n3
-; CORE
-        mov     rax, [rbp]
-        cqo                             ; sign-extend rax into rdx:rax
-        idiv    rbx                     ; quotient in rax, remainder in rdx
-        mov     rbx, rax
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        next
-endcode
-
 ; ### >
 inline gt, '>'                          ; n1 n2 -- flag
         cmp     [rbp], rbx
@@ -164,11 +153,4 @@ inline lshift, 'lshift'                 ; x1 u -- x2
         mov     ecx, ebx
         poprbx
         shl     rbx, cl
-endinline
-
-; ### or
-inline or, 'or'                         ; x1 x2 -- x3
-; CORE
-        or      rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
 endinline

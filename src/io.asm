@@ -282,7 +282,7 @@ code write_line, 'write-line'           ; c-addr u1 fileid -- ior
 %endif
         _ rfrom
         _ write_file                    ; -- ior ior'
-        _ or
+        _or
         next
 endcode
 

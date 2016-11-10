@@ -68,7 +68,7 @@ code ekey, 'ekey'                       ; -- fixnum
         _drop
         _ key
         _lit $8000
-        _ or
+        _or
         _tag_fixnum
         _return
         _then .1
@@ -86,7 +86,7 @@ code ekey, 'ekey'                       ; -- fixnum
         _drop
         _ key
         _lit $8000
-        _ or
+        _or
         _tag_fixnum
         _return
         _then .3
@@ -136,7 +136,7 @@ code ekey, 'ekey'                       ; -- fixnum
         _lit 8
         _ lshift
         _ key
-        _ or
+        _or
         _repeat .2
         _then .1
         _tag_fixnum

@@ -330,6 +330,11 @@
         and     rbx, %1
 %endmacro
 
+%macro  _or 0
+        or      rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
 %macro  _xor 0
         xor     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
