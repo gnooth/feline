@@ -113,7 +113,7 @@ file __FILE__
         _slot 8
 %endmacro
 
-%macro  _symbol_set_code_address 0      ; symbol code-address --
+%macro  _symbol_set_code_address 0      ; code-address symbol --
         _set_slot 8
 %endmacro
 
@@ -125,7 +125,7 @@ file __FILE__
         _slot 9
 %endmacro
 
-%macro  _symbol_set_code_size 0         ; symbol code-size --
+%macro  _symbol_set_code_size 0         ; code-size symbol --
         _set_slot 9
 %endmacro
 
