@@ -221,7 +221,7 @@ section .data
 %define TYPE_GLOBAL     6
 
 ; Flag bits
-%define IMMEDIATE       $80
+%define PRIMITIVE       $80
 %define PARSING         $40
 %define INLINE          $20
 
