@@ -15,7 +15,8 @@
 
 file __FILE__
 
-; 10 cells: object header, name, vocab-name, hashcode, xt, def, props, value, code address, code size
+; 11 cells: object header, name, vocab-name, hashcode, xt, def, props,
+; value, code address, code size, flags
 
 %macro  _symbol_name 0                  ; symbol -- name
         _slot1
@@ -133,6 +134,18 @@ file __FILE__
         _this_set_slot 9
 %endmacro
 
+%macro  _symbol_flags 0                 ; symbol -- flags
+        _slot 10
+%endmacro
+
+%macro  _symbol_set_flags 0             ; flags symbol --
+        _set_slot 10
+%endmacro
+
+%macro  _this_symbol_set_flags 0        ; flags --
+        _this_set_slot 10
+%endmacro
+
 ; ### symbol?
 code symbol?, 'symbol?'                 ; x -- ?
         _dup
@@ -220,9 +233,10 @@ endsub
 
 ; ### <symbol>
 code new_symbol, '<symbol>'             ; name vocab -- symbol
-; 10 cells: object header, name, vocab-name, hashcode, xt, def, props, value, code address, code size
+; 11 cells: object header, name, vocab-name, hashcode, xt, def, props,
+; value, code address, code size, flags
 
-        _lit 10
+        _lit 11
         _ allocate_cells                ; -- name vocab object-address
 
         push    this_register
@@ -261,6 +275,9 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
 
         _f
         _this_symbol_set_code_size
+
+        _zero
+        _this_symbol_set_flags
 
         pushrbx
         mov     rbx, this_register      ; -- vocab symbol
@@ -483,6 +500,41 @@ code symbol_set_code_size, 'symbol-set-code-size' ; code-size symbol --
         _verify_fixnum [rbp]
         _untag_fixnum qword [rbp]
         _symbol_set_code_size
+        next
+endcode
+
+subroutine symbol_flags                 ; symbol -- flags
+        _ check_symbol
+        _symbol_flags
+        ret
+endsub
+
+subroutine symbol_set_flags             ; flags symbol --
+        _ check_symbol
+        _symbol_set_flags
+        ret
+endsub
+
+subroutine symbol_set_flags_bit         ; bit symbol --
+        _ check_symbol
+        _dup
+        _symbol_flags                   ; -- bit symbol flags
+        _ rot                           ; -- symbol flags bit
+        or      rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        _swap
+        _symbol_set_flags
+        ret
+endsub
+
+; ### symbol-parsing-word?
+code symbol_parsing_word?, 'symbol-parsing-word?' ; symbol -- ?
+        _ check_symbol
+        _symbol_flags
+        mov     rax, t_value
+        and     rbx, PARSING
+        mov     rbx, f_value
+        cmovnz  rbx, rax
         next
 endcode
 
