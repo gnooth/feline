@@ -77,9 +77,7 @@ code parsing_word?, 'parsing-word?'     ; object -- ?
         _dup
         _ symbol?
         _tagged_if .1
-        _quote "parsing"
-        _swap
-        _ symbol_prop
+        _ symbol_parsing_word?
         _else .1
         _drop
         _f
