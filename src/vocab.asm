@@ -274,6 +274,11 @@ code vocab_add_name, 'vocab-add-name'   ; nfa vocab ---
         _quote "parsing"
         _pick
         _ symbol_set_prop
+
+        _lit PARSING
+        _over
+        _ symbol_set_flags_bit
+
         _then .1                        ; -- symbol
 
         _dup
@@ -285,6 +290,11 @@ code vocab_add_name, 'vocab-add-name'   ; nfa vocab ---
         _quote "inline"
         _pick
         _ symbol_set_prop
+
+        _lit INLINE
+        _over
+        _ symbol_set_flags_bit
+
         _then .2                        ; -- symbol
 
         _rfrom
