@@ -46,6 +46,10 @@ file __FILE__
         _slot3
 %endmacro
 
+%macro  _symbol_set_hashcode 0          ; hashcode symbol --
+        _set_slot3
+%endmacro
+
 %macro  _this_symbol_hashcode 0         ; -- hashcode
         _this_slot3
 %endmacro
@@ -337,6 +341,13 @@ code symbol_hashcode, 'symbol-hashcode' ; symbol -- hashcode
         next
 endcode
 
+; ### symbol-set-hashcode
+code symbol_set_hashcode, 'symbol-set-hashcode' ; hashcode symbol --
+        _ check_symbol
+        _symbol_set_hashcode
+        next
+endcode
+
 ; ### symbol-vocab-name
 code symbol_vocab_name, 'symbol-vocab-name' ; symbol -- vocab-name
         _ check_symbol
@@ -437,17 +448,23 @@ endcode
 
 ; ### symbol-primitive?
 code symbol_primitive?, 'symbol-primitive?' ; symbol -- ?
-        _quote "primitive"
-        _swap
-        _ symbol_prop
+        _ check_symbol
+        _symbol_flags
+        mov     eax, t_value
+        and     rbx, PRIMITIVE
+        mov     ebx, f_value
+        cmovnz  rbx, rax
         next
 endcode
 
 ; ### symbol-inline?
 code symbol_inline?, 'symbol-inline?'   ; symbol -- ?
-        _quote "inline"
-        _swap
-        _ symbol_prop
+        _ check_symbol
+        _symbol_flags
+        mov     eax, t_value
+        and     rbx, INLINE
+        mov     ebx, f_value
+        cmovnz  rbx, rax
         next
 endcode
 
@@ -531,9 +548,9 @@ endsub
 code symbol_parsing_word?, 'symbol-parsing-word?' ; symbol -- ?
         _ check_symbol
         _symbol_flags
-        mov     rax, t_value
+        mov     eax, t_value
         and     rbx, PARSING
-        mov     rbx, f_value
+        mov     ebx, f_value
         cmovnz  rbx, rax
         next
 endcode
