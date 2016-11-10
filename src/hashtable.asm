@@ -434,7 +434,7 @@ code set_at, 'set-at'                   ; value key handle --
         _dup
         _hashtable_count
         _lit 3
-        _ star
+        _star
         _over
         _hashtable_capacity
         _twostar
