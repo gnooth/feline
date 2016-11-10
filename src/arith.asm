@@ -22,13 +22,6 @@ code underplus, 'under+'                ; n1 n2 n3 -- n1+n3 n2
         next
 endcode
 
-; ### *
-code star, '*'                          ; n1 n2 -- n3
-; CORE
-        _star
-        next
-endcode
-
 ; ### /
 code slash, '/'                         ; n1 n2 -- n3
 ; CORE
