@@ -265,6 +265,10 @@ code vocab_add_name, 'vocab-add-name'   ; nfa vocab ---
         _pick
         _ symbol_set_prop               ; -- symbol
 
+        _lit PRIMITIVE
+        _over
+        _ symbol_set_flags_bit
+
         _dup
         _ symbol_xt
         _ flags
