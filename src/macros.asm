@@ -289,6 +289,9 @@ section .data
 %endmacro
 
 %macro  head 2-5 0, 0, 0                ; label, name, flags, inline size, type
+%ifdef in_feline
+        symbol S_%1, %2, %1, %4, %3
+%endif
         name_token %1, %2
         execution_token %1, %3, %4, %5
 %endmacro
