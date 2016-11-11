@@ -129,7 +129,6 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm equates.asm macros.asm inli
 	string.asm \
 	strings.asm \
 	symbol.asm \
-	symbols.asm \
 	time.asm \
 	tools.asm \
 	tuple.asm \

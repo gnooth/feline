@@ -80,7 +80,6 @@ IN_FELINE
 %include "parsing-words.asm"
 %include "compile-word.asm"
 %include "recover.asm"
-%include "symbols.asm"
 %include "files.asm"
 %include "load.asm"
 %include "tools.asm"

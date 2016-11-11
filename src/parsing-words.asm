@@ -15,6 +15,8 @@
 
 file __FILE__
 
+special accum, 'accum'
+
 %macro _get_accum 0
         _ accum
         _ get
@@ -36,6 +38,8 @@ code maybe_add, 'maybe-add'             ; x -- ???
         _then .1                        ; -- x
         next
 endcode
+
+special lexer, 'lexer'
 
 ; ### parse-token
 code parse_token, 'parse-token'         ; -- string/f
