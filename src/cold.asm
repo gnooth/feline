@@ -147,8 +147,6 @@ code cold, 'cold'                       ; --
 
         _ hash_vocabs
 
-        _ initialize_symbols
-
         ; start in Feline mode
         _ feline
         _ definitions

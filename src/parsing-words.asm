@@ -39,9 +39,6 @@ endcode
 
 ; ### parse-token
 code parse_token, 'parse-token'         ; -- string/f
-        cmp     qword [symbols_initialized?], t_value
-        jne .1
-
         _ lexer
         _ get
         _dup
@@ -51,10 +48,6 @@ code parse_token, 'parse-token'         ; -- string/f
         _drop
         _error "no lexer"
         _then .2
-        _return
-
-.1:
-        _error "symbols not initialized"
         next
 endcode
 
@@ -368,31 +361,24 @@ endcode
 
 ; ### //
 code comment_to_eol, '//', PARSING      ; --
-        cmp     qword [symbols_initialized?], t_value
-        jne .1
         _ lexer
         _ get
         _dup
-        _tagged_if .2
+        _tagged_if .1
         _ lexer_next_line
-        _return
-        _else .2
+        _else .1
         _drop
         _error "no lexer"
-        _then .2
-.1:
-        _error "symbols not initialized"
+        _then .1
         next
 endcode
 
 ; ### (
 code feline_paren, '(', PARSING
-        cmp     qword [symbols_initialized?], t_value
-        jne .1
         _ lexer
         _ get
         _dup
-        _tagged_if .2
+        _tagged_if .1
 
         ; -- lexer
         _dup
@@ -404,29 +390,28 @@ code feline_paren, '(', PARSING
         _ string_index_from              ; -- lexer index/f
 
         _dup
-        _tagged_if .3
+        _tagged_if .2
         ; found ')'
         _lit tagged_fixnum(1)
         _ fixnum_plus
         _swap
         _ lexer_set_index
-        _else .3
+        _else .2
         _drop
         _dup
         _ lexer_string
         _ string_length
         _swap
         _ lexer_set_index
-        _then .3
+        _then .2
 
         _return
 
-        _else .2
+        _else .1
         _drop
         _error "no lexer"
-        _then .2
-.1:
-        _error "symbols not initialized"
+        _then .1
+
         next
 endcode
 

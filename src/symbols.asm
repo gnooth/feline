@@ -18,11 +18,3 @@ file __FILE__
 special accum, 'accum'
 
 special lexer, 'lexer'
-
-_global symbols_initialized?, f_value
-
-; ### initialize-symbols
-code initialize_symbols, 'initialize-symbols' ; --
-        mov     qword [symbols_initialized?], t_value
-        next
-endcode
