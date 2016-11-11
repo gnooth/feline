@@ -120,7 +120,7 @@ variable feline_last, 'feline-last', feline_link
 ; the last word
 variable last, 'last', last_nfa
 
-subroutine last_symbol
+subroutine last_static_symbol
         pushrbx
         mov     rbx, symbol_link
         ret

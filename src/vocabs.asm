@@ -49,6 +49,9 @@ code add_vocab, 'add-vocab'             ; wid --
         next
 endcode
 
+; ### static-symbols
+value static_symbols, 'static-symbols', 0
+
 ; ### initialize-vocabs
 code initialize_vocabs, 'initialize-vocabs'
         _lit 16
@@ -74,7 +77,7 @@ code hash_vocabs, 'hash-vocabs'
         _end_quotation .1
         _ vector_each
 %else
-        _ last_symbol
+        _ last_static_symbol
         _begin .1
         _dup
         _while .1                       ; -- symbol
