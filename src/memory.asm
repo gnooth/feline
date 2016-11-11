@@ -17,26 +17,6 @@ file __FILE__
 
 extern os_allocate
 
-; ### allocate
-code forth_allocate, 'allocate'         ; u -- a-addr ior
-; MEMORY
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
-        xcall   os_allocate
-        mov     rbx, rax                ; -- a-addr
-        test    rbx, rbx
-        jz .1
-        _zero                           ; success
-        _return
-.1:
-        ; failed!
-        _lit -59                        ; THROW code (Forth 2012 Table 9.1)
-        next
-endcode
-
 extern os_resize
 
 ; ### resize
@@ -90,19 +70,6 @@ code iallocate, '-allocate'             ; size -- a-addr
 endcode
 
 extern os_free
-
-; ### free
-code forth_free, 'free'                 ; a-addr -- ior
-; MEMORY
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
-        xcall   os_free
-        xor     ebx, ebx                ; "The free() function returns no value."
-        next
-endcode
 
 ; ### -free
 code ifree, '-free'                     ; a-addr --
