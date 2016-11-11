@@ -797,11 +797,30 @@ sequence=-test-1
     "this is a test" "foo" \ dup symbol-set-prop
     "foo" \ dup symbol-prop get-datastack { "this is a test" } sequence= check-t
     clear
+
     // clean up
     f "foo" \ dup symbol-set-prop
 ;
 
 symbol-props-test-1
+
+: symbol-props-gc-test-1 ( -- )
+    << last-word symbol-name >> ?nl write
+
+    "this is a test" "foo" \ dup symbol-set-prop
+    "foo" \ dup symbol-prop get-datastack { "this is a test" } sequence= check-t
+    clear
+
+    gc
+
+    "foo" \ dup symbol-prop get-datastack { "this is a test" } sequence= check-t
+    clear
+
+    // clean up
+    f "foo" \ dup symbol-set-prop
+;
+
+symbol-props-gc-test-1
 
 : times-test-1 ( -- )
     << last-word symbol-name >> ?nl write

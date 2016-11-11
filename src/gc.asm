@@ -387,6 +387,21 @@ code maybe_collect_handle, 'maybe-collect-handle' ; handle --
         next
 endcode
 
+; ### mark-static-symbols
+code mark_static_symbols, 'mark-static-symbols'
+        _ last_static_symbol
+        _begin .1
+        _dup
+        _while .1                       ; -- symbol
+        _dup
+        _ mark_symbol
+        _cellminus
+        _fetch
+        _repeat .1
+        _drop
+        next
+endcode
+
 ; ### in-gc?
 value in_gc?, 'in-gc?', 0
 
@@ -431,6 +446,9 @@ code gc, 'gc'                           ; --
 
         ; locals stack
         _ mark_locals_stack
+
+        ; static symbols
+        _ mark_static_symbols
 
         ; explicit roots
         _ gc_roots
