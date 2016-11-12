@@ -791,9 +791,7 @@ endcode
 
 ; ### space
 code space, 'space'                     ; --
-        _lit ' '
-        _tag_char
-        _ write_char
+        _write_char 32
         next
 endcode
 
