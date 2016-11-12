@@ -373,7 +373,9 @@ code sbuf_resize, 'sbuf-resize'         ; sbuf new-capacity --
         _over                           ; -- sbuf new-capacity data-address new-capacity
         _oneplus                        ; terminal null byte
         _ resize                        ; -- sbuf new-capacity new-data-address ior
-        _ forth_throw                   ; -- sbuf new-capacity new-data-address
+        _if .1
+        _error "resize failed"
+        _then .1
         _tor
         _over                           ; -- sbuf new-capacity sbuf     r: -- new-data-address
         _sbuf_set_capacity              ; -- sbuf                       r: -- new-data-address
