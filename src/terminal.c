@@ -28,10 +28,6 @@
 
 #include "feline.h"
 
-#ifdef WINDOWS_UI
-#include "windows-ui.h"
-#endif
-
 extern Cell line_input_data;
 
 #ifdef WIN64
@@ -146,11 +142,7 @@ void deprep_terminal()
 Cell os_key_avail()
 {
 #ifdef WIN64
-#ifdef WINDOWS_UI
-  return c_key_avail();
-#else
   return _kbhit() ? (Cell) -1 : 0;
-#endif
 #else
   // Linux
   int chars_avail = 0;
@@ -164,14 +156,10 @@ Cell os_key_avail()
 int os_key()
 {
 #ifdef WIN64
-#ifdef WINDOWS_UI
-  return c_key();
-#else
   if (console_input_handle != INVALID_HANDLE_VALUE)
     return _getch();
   else
     return fgetc(stdin);
-#endif
 #else
   // Linux
   return fgetc(stdin);

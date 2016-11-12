@@ -25,10 +25,6 @@
 
 #include "feline.h"
 
-#ifdef WINDOWS_UI
-#include "windows-ui.h"
-#endif
-
 extern void cold();
 extern void reset();
 
@@ -125,20 +121,6 @@ static void initialize_forth()
   sp0_data = (Cell) data_stack_base + data_stack_size;
 }
 
-#if defined WIN64 && defined WINDOWS_UI
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow)
-{
-  start_time_ticks_data = os_ticks();
-  initialize_forth();
-  InitApplication(hInstance);
-  InitInstance(hInstance, nCmdShow);
-  cold();
-  return 0;
-}
-
-#else
-
 int main(int argc, char **argv, char **env)
 {
   start_time_ticks_data = os_ticks();
@@ -166,5 +148,3 @@ int main(int argc, char **argv, char **env)
 
   return 0;
 }
-
-#endif
