@@ -747,7 +747,7 @@ code string_equal?, 'string-equal?'     ; object1 object2 -- ?
         ; both objects are strings
 
         _twodup
-        _lit force_hashcode_xt
+        _lit S_force_hashcode
         _ bi_at                         ; -- seq1 seq2 hashcode1 hashcode2
 
         _equal
