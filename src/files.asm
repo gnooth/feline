@@ -398,7 +398,7 @@ code cd, 'cd'
         _else .1
         _drop
         _ current_directory
-        _ dot_string
+        _ write_string
         _then .1
         next
 endcode
