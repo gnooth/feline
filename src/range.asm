@@ -143,15 +143,13 @@ code dot_range, '.range'                ; range --
         mov     this_register, rbx
         poprbx
 
-        _quote "R{ "
-        _ write_
+        _write "R{ "
 
         _this_range_start
         _dup
         _ dot_object
 
-        _quote ".. "
-        _ write_
+        _write ".. "
 
         _this_range_length
         _ feline_plus
@@ -159,8 +157,7 @@ code dot_range, '.range'                ; range --
         _ feline_minus
         _ dot_object
 
-        _quote "}"
-        _ write_
+        _write_char '}'
 
         pop     this_register
         next
