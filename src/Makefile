@@ -66,7 +66,7 @@ terminal.o: feline.h terminal.c Makefile
 backtrace.o: feline.h backtrace.c Makefile
 	$(CC) $(CFLAGS) -c -o backtrace.o backtrace.c
 
-ASM_SOURCES = feline.asm feline_home.asm version.asm macros.asm inlines.asm \
+ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm macros.asm inlines.asm \
 	ansi.asm \
 	array.asm \
 	arith.asm \
