@@ -756,19 +756,6 @@ code write_char, 'write-char'           ; tagged-char --
         next
 endcode
 
-; ### write
-code write_, 'write'                    ; string-or-sbuf --
-        _ dot_string
-        next
-endcode
-
-; ### print
-code print, 'print'                     ; string-or-sbuf --
-        _ dot_string
-        _ nl
-        next
-endcode
-
 ; ### local@
 code local_fetch, 'local@'              ; index -- value
         _untag_fixnum
