@@ -78,7 +78,6 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm macros.asm inli
 	curry.asm \
 	debug.asm \
 	dictionary.asm \
-	exceptions.asm \
 	execute.asm \
 	fetch.asm \
 	files.asm \
