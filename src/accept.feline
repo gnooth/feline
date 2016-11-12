@@ -31,13 +31,13 @@ global: pattern
     "in: " current-vocab vocab-name concat
     "> " concat
     dup prompt-string!
-    green foreground write ;
+    green foreground write-string ;
 
 : redisplay ( -- )
     0 at-x
     prompt
     yellow foreground
-    buffer sbuf>string write
+    buffer write-sbuf
     clear-to-eol
     dot prompt-string length + at-x ;
 
