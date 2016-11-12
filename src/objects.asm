@@ -212,8 +212,7 @@ code dot_object, '.'                    ; handle-or-object --
         _equal
         _if .1a
         _drop
-        _lit 'f'
-        _ emit
+        _write_char 'f'
         _ space
         _return
         _then .1a
@@ -223,8 +222,7 @@ code dot_object, '.'                    ; handle-or-object --
         _equal
         _if .1b
         _drop
-        _lit 't'
-        _ emit
+        _write_char 't'
         _ space
         _return
         _then .1b
@@ -232,11 +230,11 @@ code dot_object, '.'                    ; handle-or-object --
         _dup
         _ string?
         _tagged_if .2
-        _lit '"'
-        _ emit
-        _ dot_string
-        _lit '"'
-        _ emit
+        _tagged_char '"'
+        _ write_char
+        _ write_string
+        _tagged_char '"'
+        _ write_char
         _ space
         _return
         _then .2
@@ -245,8 +243,7 @@ code dot_object, '.'                    ; handle-or-object --
         _ sbuf?
         _tagged_if .3
         _write 'SBUF" '
-        _ sbuf_from
-        _ type
+        _ write_sbuf
         _write '" '
         _return
         _then .3
@@ -288,7 +285,7 @@ code dot_object, '.'                    ; handle-or-object --
         _ bignum?
         _tagged_if .8
         _ bignum_to_string
-        _ dot_string
+        _ write_string
         _return
         _then .8
 
@@ -296,7 +293,7 @@ code dot_object, '.'                    ; handle-or-object --
         _ symbol?
         _tagged_if .9
         _ symbol_name
-        _ dot_string
+        _ write_string
         _ space
         _return
         _then .9
