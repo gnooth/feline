@@ -18,16 +18,12 @@ file __FILE__
 ; ### errno
 value os_errno, 'errno', 0
 
-extern os_key
-
 ; ### key
 code key, 'key'
         xcall   os_key
         pushd   rax
         next
 endcode
-
-extern os_key_avail
 
 ; ### key?
 code key?, 'key?'
@@ -65,38 +61,6 @@ code forth_standard_output, 'forth-standard-output'
         next
 endcode
 
-; ### (emit)
-code iemit, '(emit)'
-        cmp     rbx, 10
-        je      .1
-        inc     qword [nout_data]
-        jmp     .2
-.1:
-        xor     eax, eax
-        mov     [nout_data], rax
-.2:
-        _ forth_output_file
-        _ emit_file
-        next
-endcode
-
-%ifdef WINDOWS_UI
-extern c_emit
-; ### wemit
-code wemit, 'wemit'                     ; char --
-        popd    rcx
-        xcall   c_emit
-        next
-endcode
-; ### emit
-deferred emit, 'emit', wemit
-%else
-; ### emit
-deferred emit, 'emit', iemit
-%endif
-
-extern os_emit_file
-
 ; ### emit-file
 code emit_file, 'emit-file'             ; char fileid --
 %ifdef WIN64
@@ -109,44 +73,6 @@ code emit_file, 'emit-file'             ; char fileid --
         xcall   os_emit_file
         next
 endcode
-
-; ### (type)
-code itype, '(type)'                    ; addr n --
-        add     [nout_data], rbx
-        _ forth_output_file
-        _ write_file
-        _lit -75
-        _ ?throw
-        next
-endcode
-
-%ifdef WINDOWS_UI
-extern c_type
-; ### wtype
-code wtype, 'wtype'                     ; addr n --
-        popd    rdx
-        popd    rcx
-        xcall   c_type
-        next
-endcode
-; ### type
-deferred type, 'type', wtype
-%else
-; ### type
-deferred type, 'type', itype
-%endif
-
-%ifdef WINDOWS_UI
-extern c_repaint
-; ### repaint
-code repaint, 'repaint'
-        popd    rcx
-        xcall   c_repaint
-        next
-endcode
-%endif
-
-extern os_file_status
 
 ; ### file-status
 code file_status, 'file-status'         ; c-addr u -- x ior
@@ -169,8 +95,6 @@ code file_status, 'file-status'         ; c-addr u -- x ior
         _lit -1
         next
 endcode
-
-extern os_file_is_directory
 
 ; ### path-is-directory?
 code path_is_directory?, 'path-is-directory?' ; string -- flag
@@ -200,155 +124,6 @@ code path_file_exists?, 'path-file-exists?' ; string -- ?
         next
 endcode
 
-extern os_create_file
-
-; ### create-file
-code create_file, 'create-file'         ; c-addr u fam -- fileid ior
-        _tor
-        _ as_c_string
-        _rfrom
-%ifdef WIN64
-        popd    rdx                     ; fam in rdx
-        popd    rcx                     ; zaddr in rcx
-%else
-        popd    rsi                     ; fam in rsi
-        popd    rdi                     ; zaddr in rdi
-%endif
-        xcall   os_create_file
-        test    rax, rax
-        js      .1
-        pushd   rax                     ; fileid
-        pushd   0                       ; ior
-        next
-.1:
-        _lit -1                         ; "fileid is undefined"
-        _lit -1                         ; error!
-        next
-endcode
-
-extern os_read_char
-
-; ### read-char
-code read_char, 'read-char'             ; fileid -- char | -1
-%ifdef WIN64
-        mov     rcx, rbx                ; fileid
-%else
-        mov     rdi, rbx
-%endif
-        xcall   os_read_char
-        mov     rbx, rax
-        next
-endcode
-
-extern os_write_file
-
-; ### write-file
-code write_file, 'write-file'           ; c-addr u1 fileid -- ior
-%ifdef WIN64
-        popd    rcx                     ; fileid
-        popd    r8                      ; u1
-        popd    rdx                     ; c-addr
-%else
-        popd    rdi
-        popd    rdx
-        popd    rsi
-%endif
-        xcall   os_write_file
-        or      rax, rax
-        js      .1
-        pushd   0                       ; ior
-        next
-.1:
-        _lit -1                         ; error!
-        next
-endcode
-
-section .data
-crlf:
-        db      13
-lf:
-        db      10
-
-; ### write-line
-code write_line, 'write-line'           ; c-addr u1 fileid -- ior
-        _duptor
-        _ write_file                    ; -- ior        r: -- fileid
-%ifdef WIN64
-        _lit crlf
-        _lit 2
-%else
-        _lit lf
-        _lit 1
-%endif
-        _ rfrom
-        _ write_file                    ; -- ior ior'
-        _or
-        next
-endcode
-
-extern os_close_file
-
-; ### close-file
-code close_file, 'close-file'           ; fileid -- ior
-%ifdef WIN64
-        popd    rcx
-%else
-        popd    rdi
-%endif
-        xcall   os_close_file
-        pushd   rax
-        next
-endcode
-
-extern os_file_size
-
-; ### file-size
-code forth_file_size, 'file-size'       ; fileid -- ud ior
-; FILE
-%ifdef WIN64
-        popd    rcx
-%else
-        popd    rdi
-%endif
-        xcall   os_file_size
-        test    rax, rax
-        js      .1
-        pushd   rax                     ; ud
-        _ stod
-        pushd   0                       ; ior
-        next
-.1:
-        _lit -1                         ; "ud is undefined if ior is non-zero."
-        _ stod
-        _lit -1                         ; error!
-        next
-endcode
-
-extern os_file_position
-
-; ### file-position
-code file_position, 'file-position'     ; fileid -- ud ior
-; FILE
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
-        xcall   os_file_position
-        mov     rbx, rax
-        test    rbx, rbx
-        js      .1
-        _ stod                          ; -- ud
-        pushd   0                       ; -- ud ior
-        next
-.1:
-        _lit -1                         ; "ud is undefined if ior is non-zero"
-        _lit -1                         ; error!
-        next
-endcode
-
-extern os_reposition_file
-
 ; ### reposition-file
 code reposition_file, 'reposition-file' ; ud fileid -- ior
 ; We ignore the upper 64 bits of the 128-bit offset.
@@ -370,8 +145,6 @@ code reposition_file, 'reposition-file' ; ud fileid -- ior
         mov     rbx, -1                 ; error
         next
 endcode
-
-extern os_resize_file
 
 ; ### resize-file
 code resize_file, 'resize-file'         ; ud fileid -- ior
@@ -395,8 +168,6 @@ code resize_file, 'resize-file'         ; ud fileid -- ior
         next
 endcode
 
-extern os_delete_file
-
 ; ### delete-file
 code delete_file, 'delete-file'         ; c-addr u -- ior
         _ as_c_string
@@ -409,8 +180,6 @@ code delete_file, 'delete-file'         ; c-addr u -- ior
         mov     ebx, eax
         next
 endcode
-
-extern os_rename_file
 
 ; ### rename-file
 code rename_file, 'rename-file'         ; c-addr1 u1 c-addr2 u2 -- ior
@@ -432,8 +201,6 @@ code rename_file, 'rename-file'         ; c-addr1 u1 c-addr2 u2 -- ior
         next
 endcode
 
-extern os_flush_file
-
 ; ### flush-file
 code flush_file, 'flush-file'           ; fileid -- ior
 ; FILE EXT
@@ -447,8 +214,6 @@ code flush_file, 'flush-file'           ; fileid -- ior
         next
 endcode
 
-extern os_ms
-
 ; ### ms
 code ms, 'ms'
 ; FACILITY EXT
@@ -461,8 +226,6 @@ code ms, 'ms'
         next
 endcode
 
-extern os_system
-
 ; ### system
 code system_, 'system'                  ; c-addr u --
         _ as_c_string
@@ -474,8 +237,6 @@ code system_, 'system'                  ; c-addr u --
         xcall   os_system
         next
 endcode
-
-extern os_getenv
 
 ; ### get-environment-variable
 code get_environment_variable, 'get-environment-variable' ; name -- value
@@ -499,8 +260,6 @@ code get_environment_variable, 'get-environment-variable' ; name -- value
         _ copy_to_string
         next
 endcode
-
-extern os_getcwd
 
 ; ### get-current-directory
 code get_current_directory, 'get-current-directory' ; c-addr u -- c-addr
@@ -530,8 +289,6 @@ code current_directory, 'current-directory' ; -- string
         next
 endcode
 
-extern os_chdir
-
 ; ### set-current-directory
 code set_current_directory, 'set-current-directory' ; string -- flag
 ; Return true on success, 0 on failure.
@@ -546,8 +303,6 @@ code set_current_directory, 'set-current-directory' ; string -- flag
         mov     rbx, rax
         next
 endcode
-
-extern os_realpath
 
 ; ### canonical-path
 code canonical_path, 'canonical-path'   ; string1 -- string2
@@ -572,8 +327,6 @@ code canonical_path, 'canonical-path'   ; string1 -- string2
         poprbx
         next
 endcode
-
-extern os_strerror
 
 ; ### errno-to-string
 code errno_to_string, 'errno-to-string' ; n -- string
