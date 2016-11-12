@@ -17,7 +17,6 @@ default abs ; use absolute addresses by default
 
 %include "feline_home.asm"
 %include "version.asm"
-%include "equates.asm"
 %include "macros.asm"
 %include "inlines.asm"
 

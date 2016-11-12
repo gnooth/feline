@@ -13,6 +13,15 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+BYTES_PER_CELL  equ     8
+
+%ifdef WIN64_NATIVE
+GENERIC_READ    equ     $80000000       ; winnt.h
+GENERIC_WRITE   equ     $40000000
+%endif
+
+MAX_LOCALS      equ     16              ; maximum number of local variables in a definition
+
 %macro  pushrbx 0
         mov     [rbp - BYTES_PER_CELL], rbx
         lea     rbp, [rbp - BYTES_PER_CELL]
