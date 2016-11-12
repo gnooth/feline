@@ -225,6 +225,14 @@ code callable_code_address, 'callable-code-address' ; callable -- code-address
         _return
         _then .3
 
+        _dup
+        _ symbol?
+        _tagged_if .4
+        _ symbol_code_address
+        _check_fixnum
+        _return
+        _then .4
+
         ; xt
         _fetch
         next
