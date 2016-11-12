@@ -361,8 +361,7 @@ code print_datastack, 'print-datastack' ; --
         _ ?nl
         _ white
         _ foreground
-        _quote "--- Data stack:"
-        _ write_
+        _write "--- Data stack:"
         _ feline_dot_s
         _then .1
         next
@@ -408,22 +407,20 @@ code break, 'break'                     ; --
         _ ?nl
         _ red
         _ foreground
-        _quote "break called"
-        _ print
+        _write "break called"
+        _ nl
         _ white
         _ foreground
-        _quote "--- Data stack: "
-        _ write_
+        _write "--- Data stack: "
         _ depth
         _if .1
         _ feline_dot_s
         _else .1
-        _quote "Empty"
-        _ write_
+        _write "Empty"
         _then .1
         _ nl
-        _quote "Press c to continue..."
-        _ print
+        _write "Press c to continue..."
+        _ nl
         _begin .2
         _ key
         _lit 'c'
