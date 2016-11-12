@@ -579,6 +579,11 @@ section .data
         mov     rbx, %%string
 %endmacro
 
+%macro  _write_char 1
+        _tagged_char %1
+        _ write_char
+%endmacro
+
 %macro  _write 1
         _quote %1
         _ write_string
