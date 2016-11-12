@@ -713,41 +713,6 @@ write_chars:
         next
 endcode
 
-; ### .string
-code dot_string, '.string'              ; string | sbuf | $addr --
-; REVIEW remove support for legacy strings
-        _dup_if .1
-
-        ; REVIEW
-        _dup
-        _ string?
-        _tagged_if .4
-        _ write_string
-        _return
-        _then .4
-
-        _dup
-        _ sbuf?
-        _tagged_if .2
-        _duptor
-        ; FIXME inline
-        _ sbuf_data
-        _rfrom
-        ; FIXME inline
-        _ sbuf_length
-        _untag_fixnum
-        _ type
-        _return
-        _then .2
-
-        _ count
-        _ type
-        _else .1
-        _drop
-        _then .1
-        next
-endcode
-
 ; ### concat
 code concat, 'concat'                   ; string1 string2 -- string3
         _swap
