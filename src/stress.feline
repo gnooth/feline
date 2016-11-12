@@ -1,16 +1,14 @@
-LANGUAGE: feline
-
-USING: feline ;
-IN: stress
+using: feline ;
+in: stress
 
 // The followings tests verify that the quotation remains valid through gc,
 // even if there is no other reference to it. These tests must not be in a
 // definition, since the symbol-def slot holds a reference to the quotation.
 
-"each-integer-gc-test-1" ?nl write
+"each-integer-gc-test-1" ?nl write-string
 10000000 [ number>string drop ] each-integer
 
-"times-gc-test-1" ?nl write
+"times-gc-test-1" ?nl write-string
 10000000 [ most-positive-fixnum number>string drop ] times
 
-IN: feline
+in: feline

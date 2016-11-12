@@ -13,13 +13,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-LANGUAGE: feline
-
-USING: feline ;
-IN: dump
+using: feline ;
+in: dump
 
 : .2 ( ub -- )
-    >hex dup length 2 < [ '0' write-char ] when write ;
+    >hex dup length 2 < [ '0' write-char ] when write-string ;
 
 : dump-line ( addr len -- )
     ?nl
@@ -29,12 +27,12 @@ IN: dump
     [ c@ dup printable? [ drop '.' ] unless write-char ] each
 ;
 
-USING: dump feline ;
-IN: feline
+using: dump feline ;
+in: feline
 
 : dump ( addr len -- )
     ?nl 15 spaces
-    over 16 <range> [ 15 bitand >hex write 2 spaces ] each
+    over 16 <range> [ 15 bitand >hex write-string 2 spaces ] each
     [ dup 16 > not ] [ over 16 dump-line 16 - swap 16 + swap ] until
     dump-line
 ;

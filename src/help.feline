@@ -19,12 +19,12 @@ USING: feline ;
 IN: feline
 
 : display-help ( content -- )
-    nl 4 spaces first write
+    nl 4 spaces first write-string
 ;
 
 : help ( symbol -- )
     dup symbol-help dup                 // -- symbol content/f content/f
-    [ ?nl swap symbol-name write display-help ]
+    [ ?nl swap symbol-name write-string display-help ]
     [ 2drop ]
     if
 ;
