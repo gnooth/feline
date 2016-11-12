@@ -169,11 +169,9 @@ endcode
 
 ; ### .slice
 code dot_slice, '.slice'                ; slice --
-        _quote "{ "
-        _ write_
+        _write "{ "
         _lit dot_object_xt
         _ each
-        _quote "}"
-        _ write_
+        _write_char '}'
         next
 endcode
