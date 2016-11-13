@@ -33,8 +33,8 @@ code set_feline_handler, 'feline-handler!' ; handler --
         next
 endcode
 
-; ### feline-catch
-code feline_catch, 'feline-catch'
+; ### catch
+code catch, 'catch'
         _ spfetch
         _tor
         _ lpfetch
@@ -71,8 +71,8 @@ code feline_catch, 'feline-catch'
         next
 endcode
 
-; ### feline-throw
-code feline_throw, 'feline-throw'
+; ### throw
+code throw, 'throw'
         test    rbx, rbx
         jnz .1
         poprbx
@@ -116,7 +116,7 @@ code recover, 'recover'                 ; try-quot recover-quot --
         _rfrom                          ; -- datastack try-quot
         _swap
         _tor                            ; -- try-quot
-        _ feline_catch
+        _ catch
         test    rbx, rbx
         jnz     .error
 

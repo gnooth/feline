@@ -107,7 +107,7 @@ endcode
 
 ; ### error
 code error, 'error'                     ; string --
-        _ feline_throw
+        _ throw
         next
 endcode
 

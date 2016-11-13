@@ -153,7 +153,7 @@ code cold, 'cold'                       ; --
 
         _quote "boot.feline"
         _lit S_load_system_file
-        _ feline_catch
+        _ catch
         _ ?dup
         _if .5
         _ do_error
@@ -167,7 +167,7 @@ code cold, 'cold'                       ; --
         _ ?nl
 
         _lit S_process_init_file
-        _ feline_catch
+        _ catch
         _ ?dup
         _if .4
         _ do_error

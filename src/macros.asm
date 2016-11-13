@@ -601,7 +601,7 @@ section .data
 %macro  _error 1
         _quote %1
 section .text
-        _ feline_throw
+        _ throw
 %endmacro
 
 %macro  _if 1
