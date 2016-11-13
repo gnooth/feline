@@ -170,7 +170,7 @@ endcode
 ; ### .slice
 code dot_slice, '.slice'                ; slice --
         _write "{ "
-        _lit dot_object_xt
+        _lit S_dot_object
         _ each
         _write_char '}'
         next
