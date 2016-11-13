@@ -313,14 +313,6 @@ section .data
         mov     rbx, [rbx - BYTES_PER_CELL * 2]
 %endmacro
 
-%macro  _set_xt 0                       ; xt nfa --
-; stores xt in the xt pointer field of the name token
-        mov     rax, [rbp]              ; xt in rax
-        mov     [rbx - BYTES_PER_CELL * 2], rax
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
-%endmacro
-
 %macro  _tocode 0                       ; xt -- code-address
         mov     rbx, [rbx]
 %endmacro
@@ -332,11 +324,6 @@ section .data
 
 %macro  _tocomp 0                       ; xt -- comp-field
         add     rbx, BYTES_PER_CELL
-%endmacro
-
-%macro  _tolink 0                       ; xt -- lfa
-        _toname
-        sub     rbx, BYTES_PER_CELL
 %endmacro
 
 %macro  _tobody 0
@@ -351,11 +338,6 @@ section .data
         add     rbx, BYTES_PER_CELL * 4 + 1
 %endmacro
 
-%macro  _totype 0
-;         add     rbx, BYTES_PER_CELL * 4 + 2
-        _error "_totype is obsolete"
-%endmacro
-
 %macro  _toview 0
         _toname
         sub     rbx, BYTES_PER_CELL * 4
@@ -363,10 +345,6 @@ section .data
 
 %macro  _name_to_link 0
         sub     rbx, BYTES_PER_CELL
-%endmacro
-
-%macro  _ltoname 0
-        add     rbx, BYTES_PER_CELL
 %endmacro
 
 %macro  _nametoflags 0

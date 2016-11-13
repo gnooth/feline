@@ -37,16 +37,6 @@ inline name_to_code, 'name>code'
         _name_to_code
 endinline
 
-; ### l>name
-inline ltoname, 'l>name'
-        _ltoname
-endinline
-
-; ### >link
-inline tolink, '>link'
-        _tolink
-endinline
-
 ; ### >body
 inline tobody, '>body'                  ; xt -- a-addr
 ; CORE
@@ -72,11 +62,6 @@ endcode
 ; ### >inline
 inline toinline, '>inline'              ; xt -- addr
         _toinline
-endinline
-
-; ### >type
-inline totype, '>type'                  ; xt -- addr
-        _totype
 endinline
 
 ; ### >view
