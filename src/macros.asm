@@ -818,6 +818,7 @@ section .text
 %define local1          [r14 + BYTES_PER_CELL]
 %define local2          [r14 + BYTES_PER_CELL * 2]
 
+; static quotation
 %macro _quotation 1
         %push quotation
         section .text
@@ -832,13 +833,21 @@ section .text
         ret
         section .data
         align   DEFAULT_DATA_ALIGNMENT
-%1_xt:
-        dq      %1_code
+%1_quotation:
+        ; object header
+        dw      OBJECT_TYPE_QUOTATION   ; object type number
+        db      0                       ; object flags byte
+        db      0                       ; not used
+        dd      0                       ; not used
+
+        dq      f_value                 ; array
+        dq      %1_code                 ; code address
+
         section .text
         align   DEFAULT_CODE_ALIGNMENT
 %1_end:
         pushrbx
-        mov     rbx, %1_xt
+        mov     rbx, %1_quotation
         %pop
 %else
         %error  "not in a quotation"
