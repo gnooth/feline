@@ -212,12 +212,12 @@ endcode
 code compile_quotation, 'compile-quotation' ;  quotation -- code-address code-size
         _dup
         _ quotation_array
-        _lit precompile_object_xt
+        _lit S_precompile_object
         _ map                           ; -- quotation precompiled-array
 
         _zero
         _over
-        _lit add_code_size_xt
+        _lit S_add_code_size
         _ each
 
         ; add size of return instruction
@@ -227,7 +227,7 @@ code compile_quotation, 'compile-quotation' ;  quotation -- code-address code-si
         _duptor
         _to pc                          ; -- quotation precompiled-array        r: -- code-address
 
-        _lit compile_pair_xt
+        _lit S_compile_pair
         _ each
 
         _lit $0c3
