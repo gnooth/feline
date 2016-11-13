@@ -313,8 +313,11 @@ code dot_handles, '.handles'
 endcode
 
 ; ### each-handle
-code each_handle, 'each-handle'         ; xt --
-        _tor
+code each_handle, 'each-handle'         ; callable --
+        _ callable_code_address
+        push    r12
+        mov     r12, rbx                ; code address in r12
+        _drop                           ; --
         _from handle_space              ; -- addr
         _begin .1
         _dup
@@ -322,11 +325,10 @@ code each_handle, 'each-handle'         ; xt --
         _ult
         _while .1                       ; -- addr
         _dup
-        _rfetch
-        _execute
+        call    r12
         _cellplus
         _repeat .1
         _drop
-        _rdrop
+        pop     r12
         next
 endcode
