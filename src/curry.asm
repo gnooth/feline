@@ -222,7 +222,7 @@ code destroy_curry_unchecked, '~curry-unchecked' ; curry --
 endcode
 
 ; ### .curry-internal
-code dot_curry_internal, '.curry-internal'
+code dot_curry_internal, '.curry-internal' ; curry --
         _ verify_curry
         _dup
         _ curry_object
@@ -232,7 +232,7 @@ code dot_curry_internal, '.curry-internal'
         _ quotation?
         _tagged_if .1
         _ quotation_array
-        _lit dot_object_xt
+        _lit S_dot_object
         _ each
         _else .1
         ; must be a curry
