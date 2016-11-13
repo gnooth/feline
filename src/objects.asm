@@ -312,7 +312,7 @@ code dot_object, '.'                    ; handle-or-object --
         _tagged_if .11
         _write "[ "
         _ quotation_array
-        _lit dot_object_xt
+        _lit S_dot_object
         _ each
         _write "] "
         _return
