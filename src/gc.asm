@@ -452,11 +452,11 @@ code gc, 'gc'                           ; --
 
         ; explicit roots
         _ gc_roots
-        _lit maybe_mark_from_root_xt
+        _lit S_maybe_mark_from_root
         _ vector_each
 
         ; sweep
-        _lit maybe_collect_handle_xt
+        _lit S_maybe_collect_handle
         _ each_handle
 
         _zeroto in_gc?
@@ -469,23 +469,20 @@ code gc, 'gc'                           ; --
         _to gc_end_ticks
 
         _ ?nl
-        _quote "gc "
-        _ write_string
+        _write "gc "
         _ gc_end_ticks
         _ gc_start_ticks
         _minus
         _tag_fixnum
         _ dot_object
-        _quote "ms "
-        _ write_string
+        _write "ms "
 
         _ gc_end_cycles
         _ gc_start_cycles
         _minus
         _tag_fixnum
         _ dot_object
-        _quote "cycles"
-        _ write_string
+        _write "cycles"
         _ nl
 
 .2:
