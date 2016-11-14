@@ -266,6 +266,11 @@ HELP: sbuf-append-string
     Return sbuf."
 ;
 
+HELP: set-at
+    "( value key hashtable -- )
+    Associate value with key in hashtable."
+;
+
 HELP: string-index-from
     "( char start-index string -- index )
     Return the index of the first occurrence of char in string,
