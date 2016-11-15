@@ -81,7 +81,6 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm macros.asm inli
 	execute.asm \
 	fetch.asm \
 	files.asm \
-	find.asm \
 	fixnum.asm \
 	gc.asm \
 	generic.asm \

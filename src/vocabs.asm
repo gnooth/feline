@@ -30,6 +30,9 @@ endcode
 ; ### vocabs
 value vocabs, 'vocabs', 0
 
+; ### context-vector
+value context_vector, 'context-vector', f
+
 ; ### current-vocab
 value current_vocab, 'current-vocab', f_value
 

@@ -33,7 +33,6 @@ string FELINE_VOCAB_NAME, 'feline'
 %include "dictionary.asm"
 %include "execute.asm"
 %include "fetch.asm"
-%include "find.asm"
 %include "include.asm"
 %include "io.asm"
 %include "memory.asm"
