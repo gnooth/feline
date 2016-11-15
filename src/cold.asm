@@ -147,9 +147,12 @@ code cold, 'cold'                       ; --
 
         _ hash_vocabs
 
-        ; start in Feline mode
-        _ feline
-        _ definitions
+        _ feline_vocab
+        _dup
+        _zero
+        _ context_vector
+        _ vector_set_nth_untagged
+        _to current_vocab
 
         _quote "boot.feline"
         _lit S_load_system_file

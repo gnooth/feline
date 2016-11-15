@@ -15,6 +15,18 @@
 
 file __FILE__
 
+; ### feline-vocab
+code feline_vocab, 'feline-vocab'       ; --
+        _quote "feline"
+        _ lookup_vocab
+        _dup
+        _tagged_if .1
+        _return
+        _then .1
+        _error "no feline vocab"
+        next
+endcode
+
 ; ### vocabs
 value vocabs, 'vocabs', 0
 
@@ -49,9 +61,6 @@ code add_vocab, 'add-vocab'             ; wid --
         next
 endcode
 
-; ### static-symbols
-value static_symbols, 'static-symbols', 0
-
 ; ### initialize-vocabs
 code initialize_vocabs, 'initialize-vocabs'
         _lit 16
@@ -61,8 +70,12 @@ code initialize_vocabs, 'initialize-vocabs'
         _lit vocabs_data
         _ gc_add_root
 
-        _ feline_wordlist
-        _ add_vocab
+        _quote "feline"                 ; -- name
+        _dup
+        _ new_vocab                     ; -- name vocab
+        _ two_array
+        _ vocabs
+        _ vector_push
 
         next
 endcode
@@ -89,8 +102,7 @@ code hash_vocabs, 'hash-vocabs'
         _ symbol_set_hashcode
 
         _ dup
-        _quote "feline"
-        _ lookup_vocab
+        _ feline_vocab
         _ vocab_add_symbol
 
         _cellminus
