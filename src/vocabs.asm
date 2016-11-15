@@ -33,19 +33,6 @@ value vocabs, 'vocabs', 0
 ; ### current-vocab
 value current_vocab, 'current-vocab', f_value
 
-; ### wordlist-name
-code wordlist_name, 'wordlist-name'     ; wid -- string
-        _ wid_to_name
-        _fetch                          ; -- nfa|0
-        _?dup_if .1
-        _count
-        _ copy_to_string
-        _else .1
-        _f
-        _then .1
-        next
-endcode
-
 ; ### initialize-vocabs
 code initialize_vocabs, 'initialize-vocabs'
         _lit 16
