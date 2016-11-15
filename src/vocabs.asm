@@ -46,21 +46,6 @@ code wordlist_name, 'wordlist-name'     ; wid -- string
         next
 endcode
 
-; ### add-vocab
-code add_vocab, 'add-vocab'             ; wid --
-        _dup                            ; -- wid wid
-        _ wordlist_name                 ; -- wid name
-        _tuck                           ; -- name wid name
-        _ new_vocab                     ; -- name wid vocab
-        _tuck                           ; -- name vocab wid vocab
-        _ vocab_set_wordlist            ; -- name vocab
-
-        _ two_array
-        _ vocabs
-        _ vector_push
-        next
-endcode
-
 ; ### initialize-vocabs
 code initialize_vocabs, 'initialize-vocabs'
         _lit 16
