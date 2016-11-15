@@ -83,12 +83,7 @@ IN_FELINE
 %include "locals.asm"
 %include "ansi.asm"
 
-IN_FORTH
-
-file __FILE__
-
-; ### in-static-data-area?
-code in_static_data_area?, 'in-static-data-area?' ; addr -- flag
+subroutine in_static_data_area?         ; addr -- 1/0
         cmp     rbx, static_data_area
         jb .1
         cmp     rbx, static_data_area_limit
@@ -98,7 +93,7 @@ code in_static_data_area?, 'in-static-data-area?' ; addr -- flag
 .1:
         xor     ebx, ebx
         next
-endcode
+endsub
 
 subroutine last_static_symbol
         pushrbx
