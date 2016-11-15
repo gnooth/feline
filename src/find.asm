@@ -42,15 +42,6 @@ code definitions, 'definitions'         ; --
          next
 endcode
 
-; ### voclink
-variable voclink, 'voclink', feline_wid
-
-; ### wid>link
-code wid_to_link, 'wid>link'
-        sub     rbx, BYTES_PER_CELL * 2
-        next
-endcode
-
 ; ### wid>name
 code wid_to_name, 'wid>name'
         sub     rbx, BYTES_PER_CELL
