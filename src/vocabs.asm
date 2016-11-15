@@ -69,14 +69,6 @@ endcode
 
 ; ### hash-vocabs
 code hash_vocabs, 'hash-vocabs'
-%if 0
-        _ vocabs
-        _quotation .1
-        _ array_second
-        _ hash_vocab
-        _end_quotation .1
-        _ vector_each
-%else
         _ last_static_symbol
         _begin .1
         _dup
@@ -106,7 +98,7 @@ code hash_vocabs, 'hash-vocabs'
         _repeat .1
 
         _drop
-%endif
+
         next
 endcode
 

@@ -306,23 +306,6 @@ code vocab_add_name, 'vocab-add-name'   ; nfa vocab ---
         next
 endcode
 
-; ### hash-vocab
-code hash_vocab, 'hash-vocab'           ; vocab --
-        _duptor
-        _ vocab_wordlist
-        _begin .1
-        _fetch
-        _?dup
-        _while .1
-        _dup
-        _rfetch
-        _ vocab_add_name
-        _name_to_link
-        _repeat .1
-        _rdrop
-        next
-endcode
-
 ; ### ?lookup-symbol
 code ?lookup_symbol, '?lookup-symbol'   ; name vocab-spec -- symbol/f
         _ lookup_vocab
