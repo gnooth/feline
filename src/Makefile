@@ -96,7 +96,6 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm macros.asm inli
 	locals.asm \
 	memory.asm \
 	move.asm \
-	number.asm \
 	object-macros.asm \
 	objects.asm \
 	parsing-words.asm \
