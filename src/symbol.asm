@@ -451,7 +451,7 @@ code symbol_primitive?, 'symbol-primitive?' ; symbol -- ?
         _ check_symbol
         _symbol_flags
         mov     eax, t_value
-        and     rbx, PRIMITIVE
+        and     rbx, SYMBOL_PRIMITIVE
         mov     ebx, f_value
         cmovnz  rbx, rax
         next
@@ -462,7 +462,7 @@ code symbol_inline?, 'symbol-inline?'   ; symbol -- ?
         _ check_symbol
         _symbol_flags
         mov     eax, t_value
-        and     rbx, INLINE
+        and     rbx, SYMBOL_INLINE
         mov     ebx, f_value
         cmovnz  rbx, rax
         next
@@ -549,7 +549,7 @@ code symbol_parsing_word?, 'symbol-parsing-word?' ; symbol -- ?
         _ check_symbol
         _symbol_flags
         mov     eax, t_value
-        and     rbx, PARSING
+        and     rbx, SYMBOL_PARSING_WORD
         mov     ebx, f_value
         cmovnz  rbx, rax
         next

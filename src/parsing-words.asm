@@ -56,14 +56,14 @@ code parse_token, 'parse-token'         ; -- string/f
 endcode
 
 ; ### t
-code t, 't', PARSING                    ; -- t
+code t, 't', SYMBOL_PARSING_WORD        ; -- t
         _t
         _ maybe_add
         next
 endcode
 
 ; ### f
-code f, 'f', PARSING                    ; -- f
+code f, 'f', SYMBOL_PARSING_WORD        ; -- f
         _f
         _ maybe_add
         next
@@ -179,7 +179,7 @@ code parse_until, 'parse-until'         ; delimiter -- vector
 endcode
 
 ; ### V{
-code parse_vector, 'V{', PARSING        ; -- handle
+code parse_vector, 'V{', SYMBOL_PARSING_WORD ; -- handle
         _quote "}"
         _ parse_until
         _ maybe_add
@@ -187,7 +187,7 @@ code parse_vector, 'V{', PARSING        ; -- handle
 endcode
 
 ; ### {
-code parse_array, '{', PARSING          ; -- handle
+code parse_array, '{', SYMBOL_PARSING_WORD ; -- handle
         _quote "}"
         _ parse_until
         _ vector_to_array
@@ -196,7 +196,7 @@ code parse_array, '{', PARSING          ; -- handle
 endcode
 
 ; ### [
-code parse_quotation, '[', PARSING      ; -- quotation
+code parse_quotation, '[', SYMBOL_PARSING_WORD ; -- quotation
         _quote "]"
         _ parse_until
         _ vector_to_array
@@ -211,7 +211,7 @@ endcode
 ; "NASM uses backslash (\) as the line continuation character;
 ; if a line ends with backslash, the next line is considered to
 ; be a part of the backslash-ended line."
-code quote_symbol, '\', PARSING         ; -- symbol
+code quote_symbol, '\', SYMBOL_PARSING_WORD ; -- symbol
         _ parse_token
         _dup
         _tagged_if_not .1
@@ -239,7 +239,7 @@ code quote_symbol, '\', PARSING         ; -- symbol
 endcode
 
 ; ### SYMBOL:
-code parse_symbol, 'SYMBOL:', PARSING   ; --
+code parse_symbol, 'SYMBOL:', SYMBOL_PARSING_WORD ; --
         _ parse_token                   ; -- string/f
         _dup
         _tagged_if_not .1
@@ -364,7 +364,7 @@ code define, ':'                        ; --
 endcode
 
 ; ### //
-code comment_to_eol, '//', PARSING      ; --
+code comment_to_eol, '//', SYMBOL_PARSING_WORD ; --
         _ lexer
         _ get
         _dup
@@ -378,7 +378,7 @@ code comment_to_eol, '//', PARSING      ; --
 endcode
 
 ; ### --
-code comment_to_eol2, '--', PARSING      ; --
+code comment_to_eol2, '--', SYMBOL_PARSING_WORD ; --
         _ lexer
         _ get
         _dup
@@ -392,7 +392,7 @@ code comment_to_eol2, '--', PARSING      ; --
 endcode
 
 ; ### (
-code feline_paren, '(', PARSING
+code feline_paren, '(', SYMBOL_PARSING_WORD
         _ lexer
         _ get
         _dup
@@ -405,7 +405,7 @@ code feline_paren, '(', PARSING
         _ lexer_string
         _lit tagged_char(')')
         _ rrot
-        _ string_index_from              ; -- lexer index/f
+        _ string_index_from             ; -- lexer index/f
 
         _dup
         _tagged_if .2
@@ -434,7 +434,7 @@ code feline_paren, '(', PARSING
 endcode
 
 ; ### local:
-code declare_local, 'local:', PARSING
+code declare_local, 'local:', SYMBOL_PARSING_WORD
 
         _ using_locals?
         _zeq_if .2
@@ -461,7 +461,7 @@ code declare_local, 'local:', PARSING
 endcode
 
 ; ### ->
-code assign_to_local, '->', PARSING
+code assign_to_local, '->', SYMBOL_PARSING_WORD
 
         ; FIXME verify that we're inside a named quotation
 
@@ -495,7 +495,7 @@ code assign_to_local, '->', PARSING
 endcode
 
 ; ### <<
-code parse_immediate, '<<', PARSING
+code parse_immediate, '<<', SYMBOL_PARSING_WORD
         _quote ">>"
         _ parse_until
         _ vector_to_array
@@ -509,7 +509,7 @@ code parse_immediate, '<<', PARSING
 endcode
 
 ; ### HELP:
-code parse_help, 'HELP:', PARSING
+code parse_help, 'HELP:', SYMBOL_PARSING_WORD
         _ parse_token                   ; -- string/f
         _dup
         _tagged_if_not .1
@@ -535,7 +535,7 @@ code parse_help, 'HELP:', PARSING
 endcode
 
 ; ### LANGUAGE:
-code parse_language, 'LANGUAGE:', PARSING
+code parse_language, 'LANGUAGE:', SYMBOL_PARSING_WORD
 ; Deprecated.
         _ parse_token                   ; -- string/f
         ; Do nothing.

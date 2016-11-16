@@ -62,7 +62,7 @@ code hash_vocabs, 'hash-vocabs'
         _dup
         _while .1                       ; -- symbol
 
-        _lit PRIMITIVE
+        _lit SYMBOL_PRIMITIVE
         _over
         _ symbol_set_flags_bit
 

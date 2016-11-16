@@ -229,10 +229,12 @@ section .data
 %define TYPE_CONSTANT   5
 %define TYPE_GLOBAL     6
 
-; Flag bits
-%define PRIMITIVE       $80
-%define PARSING         $40
-%define INLINE          $20
+; Symbol bit flags
+%define SYMBOL_PRIMITIVE        $01
+%define SYMBOL_PARSING_WORD     $02
+%define SYMBOL_INLINE           $04
+%define SYMBOL_GLOBAL           $08
+%define SYMBOL_CONSTANT         $10
 
 %define forth_link      0
 
