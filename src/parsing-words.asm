@@ -468,9 +468,7 @@ code assign_to_local, '->', PARSING
         _ vector_push
 
         ; add local! to quotation as symbol
-        _quote "local!"
-        _quote "feline"
-        _ lookup_symbol
+        _lit S_local_store
         _get_accum
         _ vector_push
 
