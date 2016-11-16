@@ -461,35 +461,58 @@ code declare_local, 'local:', SYMBOL_PARSING_WORD
 endcode
 
 ; ### ->
-code assign_to_local, '->', SYMBOL_PARSING_WORD
-
-        ; FIXME verify that we're inside a named quotation
+code storeto, '->', SYMBOL_PARSING_WORD
 
         _ parse_token                   ; -- string
 
         _ local_names
-        _zeq_if .1
-        _error "no locals"
-        _return
-        _then .1
-
+        _if .1
         _dup
         _ local_names                   ; -- string string vector
         _ vector_find_string            ; -- string index/f ?
         _tagged_if .2                   ; -- string index
         _nip
+
+        ; add index to quotation
         _get_accum
         _ vector_push
 
-        ; add local! to quotation as symbol
+        ; add local! to quotation as a symbol
         _lit S_local_store
         _get_accum
         _ vector_push
 
+        _return
         _else .2
         _drop
-        _error "not a local"
         _then .2
+
+        _then .1
+
+        ; not a local
+        _ find_name
+
+        _tagged_if_not .3
+        _error "undefined symbol"
+        _then .3
+
+        _dup
+        _ symbol_global?
+        _tagged_if_not .4
+        _error "not a global"
+        _then .4
+
+        _get_accum
+        _tagged_if .5
+        _ new_wrapper
+        _get_accum
+        _ vector_push
+        _lit S_symbol_set_value
+        _get_accum
+        _ vector_push
+        _else .5
+        _ symbol_set_value
+        _then .5
 
         next
 endcode
