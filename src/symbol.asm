@@ -468,6 +468,17 @@ code symbol_inline?, 'symbol-inline?'   ; symbol -- ?
         next
 endcode
 
+; ### symbol-global?
+code symbol_global?, 'symbol-global?'   ; symbol -- ?
+        _ check_symbol
+        _symbol_flags
+        mov     eax, t_value
+        and     rbx, SYMBOL_GLOBAL
+        mov     ebx, f_value
+        cmovnz  rbx, rax
+        next
+endcode
+
 ; ### symbol-value
 code symbol_value, 'symbol-value'       ; symbol -- value
         _ check_symbol
