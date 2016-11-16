@@ -377,6 +377,20 @@ code comment_to_eol, '//', PARSING      ; --
         next
 endcode
 
+; ### --
+code comment_to_eol2, '--', PARSING      ; --
+        _ lexer
+        _ get
+        _dup
+        _tagged_if .1
+        _ lexer_next_line
+        _else .1
+        _drop
+        _error "no lexer"
+        _then .1
+        next
+endcode
+
 ; ### (
 code feline_paren, '(', PARSING
         _ lexer
