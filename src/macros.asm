@@ -184,7 +184,7 @@ MAX_LOCALS      equ     16              ; maximum number of local variables in a
         pushd   tagged_char(%1)
 %endmacro
 
-; asm-only global
+; asm-only globals
 %macro  _global 1
         global %1
         section .data
@@ -382,7 +382,7 @@ section .data
 %define symbol_link     0
 
 ; static symbol
-%macro  symbol 2-5 0, 0, 0              ; label, name, code address, code size, flags
+%macro  symbol 2-6 0, 0, 0, f_value     ; label, name, code address, code size, flags, value
 
         string %%name, %2
 
@@ -402,7 +402,8 @@ section .data
         dq      f_value                 ; xt
         dq      f_value                 ; def
         dq      f_value                 ; props
-        dq      f_value                 ; value
+%1_data:
+        dq      %6                      ; value
         dq      %3                      ; untagged code address
         dq      %4                      ; untagged code size (includes ret instruction)
         dq      %5                      ; untagged bit flags
@@ -508,6 +509,23 @@ section .data
         mov     rbx, [%1_data]
 %1_ret:
         next
+%endmacro
+
+%macro  feline_global 3                 ; label, name, value
+        symbol S_%1, %2, %1, %1_ret - %1, 0, %3
+
+        section .text
+        align DEFAULT_CODE_ALIGNMENT
+%1:
+        pushrbx
+        mov     rbx, [S_%1_data]
+%1_ret:
+        next
+%endmacro
+
+%macro  _to_global 1                    ; label
+        mov     [S_%1_data], rbx
+        poprbx
 %endmacro
 
 %macro  constant 3                      ; label, name, value
