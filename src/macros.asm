@@ -445,7 +445,7 @@ section .data
 %macro  inline 2-5 0, 0, 0
         %push inline
         %define in_inline
-        head %1, %2, INLINE, %$ret - %1 + 1 ; adjust size to include ret instruction
+        head %1, %2, SYMBOL_INLINE, %$ret - %1 + 1 ; adjust size to include ret instruction
         section .text
         align   DEFAULT_CODE_ALIGNMENT
 %1:
