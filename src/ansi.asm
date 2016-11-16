@@ -24,19 +24,20 @@ constant magenta, 'magenta', tagged_fixnum(5)
 constant cyan,    'cyan',    tagged_fixnum(6)
 constant white,   'white',   tagged_fixnum(7)
 
-value color?, 'color?', f_value
+; ### color?
+feline_global color?, 'color?', f_value
 
 ; ### +color
 code color_on, '+color'                 ; --
         _t
-        _to color?
+        _to_global color?
         next
 endcode
 
 ; ### -color
 code color_off, '-color'                ; --
         _f
-        _to color?
+        _to_global color?
         next
 endcode
 
