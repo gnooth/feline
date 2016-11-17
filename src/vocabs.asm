@@ -28,22 +28,19 @@ code feline_vocab, 'feline-vocab'       ; --
 endcode
 
 ; ### vocabs
-value vocabs, 'vocabs', 0
+feline_global vocabs, 'vocabs'
 
 ; ### context-vector
-value context_vector, 'context-vector', f
+feline_global context_vector, 'context-vector'
 
 ; ### current-vocab
-value current_vocab, 'current-vocab', f_value
+feline_global current_vocab, 'current-vocab'
 
 ; ### initialize-vocabs
 code initialize_vocabs, 'initialize-vocabs'
         _lit 16
         _ new_vector_untagged
-        _to vocabs
-
-        _lit vocabs_data
-        _ gc_add_root
+        _to_global vocabs
 
         _quote "feline"                 ; -- name
         _dup
@@ -167,7 +164,7 @@ code in_colon, 'IN:'
         _dup
         _tagged_if .1
         _ ensure_vocab                  ;
-        _to current_vocab
+        _to_global current_vocab
         _else .1
         _error "unexpected end of input"
         _then .1
@@ -209,7 +206,7 @@ code using_colon, 'USING:'
         _repeat .1
         _drop
         _rfrom
-        _to context_vector
+        _to_global context_vector
         next
 endcode
 

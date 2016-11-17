@@ -130,9 +130,7 @@ code cold, 'cold'                       ; --
 
         _lit 16
         _ new_vector_untagged
-        _to context_vector
-        _lit context_vector_data
-        _ gc_add_root
+        _to_global context_vector
 
         _ initialize_generic_functions
 
@@ -143,7 +141,7 @@ code cold, 'cold'                       ; --
         _zero
         _ context_vector
         _ vector_set_nth_untagged
-        _to current_vocab
+        _to_global current_vocab
 
         _quote "boot.feline"
         _lit S_load_system_file
