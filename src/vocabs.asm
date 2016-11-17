@@ -42,6 +42,10 @@ code initialize_vocabs, 'initialize-vocabs'
         _ new_vector_untagged
         _to_global vocabs
 
+        _lit 16
+        _ new_vector_untagged
+        _to_global context_vector
+
         _quote "feline"                 ; -- name
         _dup
         _ new_vocab                     ; -- name vocab

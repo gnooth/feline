@@ -128,10 +128,6 @@ code cold, 'cold'                       ; --
 
         _ initialize_vocabs
 
-        _lit 16
-        _ new_vector_untagged
-        _to_global context_vector
-
         _ initialize_generic_functions
 
         _ hash_vocabs
