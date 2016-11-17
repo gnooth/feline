@@ -512,7 +512,7 @@ section .data
 %endmacro
 
 %macro  feline_global 3                 ; label, name, value
-        symbol S_%1, %2, %1, %1_ret - %1, SYMBOL_GLOBAL, %3
+        symbol S_%1, %2, %1, %1_ret - %1 + 1, SYMBOL_GLOBAL, %3
         section .text
         align DEFAULT_CODE_ALIGNMENT
 %1:
@@ -520,6 +520,10 @@ section .data
         mov     rbx, [S_%1_data]
 %1_ret:
         next
+%endmacro
+
+%macro  feline_global 2                 ; label, name
+        feline_global %1, %2, f_value
 %endmacro
 
 %macro  _to_global 1                    ; label
