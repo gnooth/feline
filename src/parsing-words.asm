@@ -94,9 +94,7 @@ code process_token, 'process-token'     ; string -- ???
         _get_accum
         _ vector_push
 
-        _quote "local@"
-        _quote "feline"
-        _ lookup_symbol
+        _lit S_local_fetch
         _get_accum
         _ vector_push
 
@@ -299,9 +297,7 @@ code parse_definition, 'parse-definition' ; -- vector
 .bottom:
         _ using_locals?
         _if .5
-        _quote "locals-leave"
-        _quote "feline"
-        _ lookup_symbol
+        _lit S_locals_leave
         _get_accum
         _ vector_push
         _then .5
@@ -440,9 +436,7 @@ code declare_local, 'local:', SYMBOL_PARSING_WORD
         _zeq_if .2
         ; first local in this definition
         _ initialize_local_names
-        _quote "locals-enter"
-        _quote "feline"
-        _ lookup_symbol
+        _lit S_locals_enter
         _lit tagged_zero
         _get_accum
         _ vector_insert_nth_destructive
