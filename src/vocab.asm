@@ -39,22 +39,6 @@ file __FILE__
         _this_set_slot2
 %endmacro
 
-%macro  _vocab_wordlist 0               ; vocab -- wordlist
-        _slot3
-%endmacro
-
-%macro  _this_vocab_wordlist 0          ; -- wordlist
-        _this_slot3
-%endmacro
-
-%macro  _vocab_set_wordlist 0           ; wordlist vocab --
-        _set_slot3
-%endmacro
-
-%macro  _this_vocab_set_wordlist 0      ; wordlist --
-        _this_set_slot3
-%endmacro
-
 ; ### vocab?
 code vocab?, 'vocab?'                   ; handle -- ?
         _dup
@@ -125,8 +109,8 @@ endcode
 
 ; ### <vocab>
 code new_vocab, '<vocab>'               ;  name -- vocab
-; 4 cells (object header, name, hashtable, wordlist)
-        _lit 4
+; 3 cells (object header, name, hashtable)
+        _lit 3
         _ allocate_cells
         push    this_register
         mov     this_register, rbx
@@ -139,9 +123,6 @@ code new_vocab, '<vocab>'               ;  name -- vocab
         _lit 32
         _ new_hashtable_untagged
         _this_vocab_set_hashtable
-
-        _f
-        _this_vocab_set_wordlist
 
         pushrbx
         mov     rbx, this_register      ; -- vocab
@@ -164,21 +145,6 @@ endcode
 code vocab_hashtable, 'vocab-hashtable' ; vocab -- hashtable
         _ check_vocab
         _vocab_hashtable
-        next
-endcode
-
-; ### vocab-wordlist
-code vocab_wordlist, 'vocab-wordlist'   ; vocab -- wordlist
-; Returns untagged wid.
-        _ check_vocab
-        _vocab_wordlist
-        next
-endcode
-
-; ### vocab-set-wordlist
-code vocab_set_wordlist, 'vocab-set-wordlist' ; wordlist vocab --
-        _ check_vocab
-        _vocab_set_wordlist
         next
 endcode
 
