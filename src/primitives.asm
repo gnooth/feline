@@ -21,7 +21,7 @@ code noop, 'noop'
 endcode
 
 ; ### last-word
-feline_global last_word, 'last-word', f
+feline_global last_word, 'last-word'
 
 ; ### set-last-word
 code set_last_word, 'set-last-word'     ; word --
