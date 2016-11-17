@@ -264,7 +264,7 @@ code parse_symbol, 'SYMBOL:', SYMBOL_PARSING_WORD ; --
         _ current_vocab
         _ create_symbol
 
-        _to last_word
+        _to_global last_word
 
         next
 endcode
