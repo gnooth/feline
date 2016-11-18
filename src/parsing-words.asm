@@ -267,6 +267,23 @@ code parse_symbol, 'SYMBOL:', SYMBOL_PARSING_WORD ; --
         next
 endcode
 
+; ### global:
+code parse_global, 'global:', SYMBOL_PARSING_WORD ;  --
+        _ parse_token
+        _dup
+        _tagged_if_not .1
+        _drop
+        _error "unexpected end of input"
+        _return
+        _then .1
+
+        _ current_vocab
+        _ ensure_global
+        _drop
+
+        next
+endcode
+
 ; ### parse-definition
 code parse_definition, 'parse-definition' ; -- vector
 

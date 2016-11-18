@@ -38,7 +38,6 @@ IN: feline
     "help.feline"
     "sequences.feline"
     "tuple.feline"
-    "globals.feline"
     "constant.feline"
     "accept.feline"
 } [ load-system-file ] each

@@ -914,7 +914,7 @@ bi-test-1
 
 2bi-test-1
 
-GLOBAL: temp-string "test" temp-string!
+global: temp-string "test" -> temp-string
 
 TUPLE: foo a b c ;
 
@@ -936,7 +936,7 @@ TUPLE: foo a b c ;
     [ foo-c temp-string = check-t ] keep
     [ foo-c "test" = check-t ] keep
 
-    f temp-string!
+    f -> temp-string
     gc
     [ foo-c "test" = check-t ] keep
 
@@ -978,32 +978,32 @@ lookup-vocab-test-1
 
 unless*-test-1
 
-GLOBAL: zork
+global: zork
 
 : global-test-1 ( -- )
     << last-word symbol-name >> ?nl write-string
-    42 zork! zork 42 eq? check-t
+    42 -> zork zork 42 eq? check-t
 ;
 
 global-test-1
 
-: global-test-2 ( -- )
-    << last-word symbol-name >> ?nl write-string
-    87 \ zork set-global
-    \ zork get-global 87 eq? check-t
+// : global-test-2 ( -- )
+//     << last-word symbol-name >> ?nl write-string
+//     87 \ zork set-global
+//     \ zork get-global 87 eq? check-t
 
-    [
-        "test" dup zork! zork eq? check-t
-        \ zork get-global 87 eq? check-t
-        19 \ zork set-global
-        zork "test" = check-t
-        \ zork get-global 19 eq? check-t
-    ] with-scope
+//     [
+//         "test" dup zork! zork eq? check-t
+//         \ zork get-global 87 eq? check-t
+//         19 \ zork set-global
+//         zork "test" = check-t
+//         \ zork get-global 19 eq? check-t
+//     ] with-scope
 
-    \ zork get-global 19 eq? check-t
-;
+//     \ zork get-global 19 eq? check-t
+// ;
 
-global-test-2
+// global-test-2
 
 // : global-test-3 ( -- )
 //     << last-word symbol-name >> ?nl write-string
