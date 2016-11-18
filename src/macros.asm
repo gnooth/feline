@@ -221,14 +221,6 @@ section .data
 %define current_file    %%name
 %endmacro
 
-; Types
-%define TYPE_VARIABLE   1
-%define TYPE_VALUE      2
-%define TYPE_2VALUE     3
-%define TYPE_DEFERRED   4
-%define TYPE_CONSTANT   5
-%define TYPE_GLOBAL     6
-
 ; Symbol bit flags
 %define SYMBOL_PRIMITIVE        $01
 %define SYMBOL_PARSING_WORD     $02
@@ -284,7 +276,7 @@ section .data
 
 %endmacro
 
-%macro  execution_token 1-4             ; label, flags, inline size, type
+%macro  execution_token 1-3             ; label, flags, inline size
         global %1
         section .data
         align   DEFAULT_DATA_ALIGNMENT
@@ -299,12 +291,12 @@ section .data
 %1_pfa:                                 ; define pfa (but don't reserve any space)
 %endmacro
 
-%macro  head 2-5 0, 0, 0                ; label, name, flags, inline size, type
+%macro  head 2-5 0, 0                   ; label, name, flags, inline size
 %ifdef in_feline
         symbol S_%1, %2, %1, %4, %3
 %endif
         name_token %1, %2
-        execution_token %1, %3, %4, %5
+        execution_token %1, %3, %4
 %endmacro
 
 %macro  _toname 0                       ; xt -- nfa
@@ -466,7 +458,7 @@ section .data
 
 %macro  deferred 3-4 0                  ; label, name, action, flags
         ; head label, name, flags, inline size, type
-        head %1, %2, %4, 0, TYPE_DEFERRED
+        head %1, %2, %4, 0
         section .data
         global %1_data
         align   DEFAULT_DATA_ALIGNMENT
@@ -482,7 +474,7 @@ section .data
 %endmacro
 
 %macro  variable 3                      ; label, name, value
-        head    %1, %2, 0, %1_ret - %1, TYPE_VARIABLE
+        head    %1, %2, 0, %1_ret - %1
         section .data
         global %1_data
         align   DEFAULT_DATA_ALIGNMENT
@@ -497,7 +489,7 @@ section .data
 %endmacro
 
 %macro  value 3                         ; label, name, value
-        head    %1, %2, 0, %1_ret - %1, TYPE_VALUE
+        head    %1, %2, 0, %1_ret - %1
         section .data
         global %1_data
         align   DEFAULT_DATA_ALIGNMENT
@@ -532,7 +524,7 @@ section .data
 %endmacro
 
 %macro  constant 3                      ; label, name, value
-        head    %1, %2, 0, %1_ret - %1, TYPE_CONSTANT
+        head    %1, %2, 0, %1_ret - %1
         section .text
 %1:
         pushrbx
