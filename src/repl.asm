@@ -154,8 +154,8 @@ code literal?, 'literal?'               ; string -- literal/string ?
         next
 endcode
 
-; ### feline-interpret1
-code feline_interpret1, 'feline-interpret1' ; string --
+; ### interpret1
+code interpret1, 'interpret1'           ; string --
         _ literal?
         _tagged_if .1
         _return
@@ -183,14 +183,14 @@ code ?stack, '?stack'
         next
 endcode
 
-; ### feline-interpret
-code feline_interpret, 'feline-interpret' ; --
+; ### interpret
+code interpret, 'interpret'             ; --
         _begin .1
         _ ?stack
         _ parse_token                   ; -- string/f
         _dup
         _tagged_while .1
-        _ feline_interpret1
+        _ interpret1
         _repeat .1
         _drop
         next
@@ -384,7 +384,7 @@ code repl, 'repl'                       ; --
         _ set
 
         _quotation .2
-        _ feline_interpret
+        _ interpret
         _end_quotation .2
         _quotation .3
         _ do_error

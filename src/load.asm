@@ -39,7 +39,7 @@ code load, 'load'                       ; path --
         _then .1
 
         _quotation .2
-        _ feline_interpret
+        _ interpret
         _end_quotation .2
         _quotation .3
         _ do_error
