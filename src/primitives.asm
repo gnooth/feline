@@ -1140,10 +1140,9 @@ code feline_bye, "bye"
         _ free_locals_stack
 
         _ interactive?
-        _if .1
+        _tagged_if .1
         _ ?nl
-        _quote "Bye!"
-        _ write_string
+        _write "Bye!"
         _ nl
         _then .1
 

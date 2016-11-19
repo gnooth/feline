@@ -143,7 +143,7 @@ code dot_version, '.version'            ; --
 endcode
 
 ; ### interactive?
-value interactive?, 'interactive?', f_value
+feline_global interactive?, 'interactive?'
 
 ; ### cold
 code cold, 'cold'                       ; --
@@ -203,7 +203,7 @@ code cold, 'cold'                       ; --
         _then .4
 
         _t
-        _to interactive?
+        _to_global interactive?
 
         _quote "Meow!"
         _ write_string
