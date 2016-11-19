@@ -184,7 +184,7 @@ MAX_LOCALS      equ     16              ; maximum number of local variables in a
         pushd   tagged_char(%1)
 %endmacro
 
-; asm-only globals
+; DEPRECATED use asm_global
 %macro  _global 1
         global %1
         section .data
@@ -193,7 +193,25 @@ MAX_LOCALS      equ     16              ; maximum number of local variables in a
         dq      0
 %endmacro
 
+; DEPRECATED use asm_global
 %macro  _global 2
+        global %1
+        section .data
+        align   DEFAULT_DATA_ALIGNMENT
+%1:
+        dq      %2
+%endmacro
+
+; asm-only globals
+%macro  asm_global 1
+        global %1
+        section .data
+        align   DEFAULT_DATA_ALIGNMENT
+%1:
+        dq      0
+%endmacro
+
+%macro  asm_global 2
         global %1
         section .data
         align   DEFAULT_DATA_ALIGNMENT
