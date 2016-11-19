@@ -367,16 +367,8 @@ code print_datastack, 'print-datastack' ; --
         next
 endcode
 
-; ### repl
-code repl, 'repl'                       ; --
-
-        _begin .1
-
-        ; REVIEW
-        mov     rsp, [rp0_data]
-
-        _ query                         ; -- string
-
+; ### evaluate
+code evaluate, 'evaluate'               ; string --
         _ begin_scope
 
         _ new_lexer
@@ -392,7 +384,18 @@ code repl, 'repl'                       ; --
         _ recover
 
         _ end_scope
+        next
+endcode
 
+; ### repl
+code repl, 'repl'                       ; --
+        _begin .1
+
+        ; REVIEW
+        mov     rsp, [rp0_data]
+
+        _ query                         ; -- string
+        _ evaluate
         _ print_datastack
 
         ; REVIEW
