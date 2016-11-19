@@ -30,14 +30,55 @@ value stack_cells, 'stack-cells', 0     ; initialized in main()
 ; ### cold-rbp
 variable cold_rbp, 'cold-rbp', 0
 
-; ### argc
-variable argc, 'argc', 0
-
-; ### argv
-variable argv, 'argv', 0
+asm_global main_argc ; untagged
+asm_global main_argv ; untagged
 
 ; ### process-command-line
-deferred process_command_line, 'process-command-line', noop
+code process_command_line, 'process-command-line'
+
+; sudo sh -c 'echo 1 > /proc/sys/kernel/perf_event_paranoid'
+; perf record feline -e '"stress.feline" load bye'
+
+        pushrbx
+        mov     rbx, [main_argc]
+        _dup
+        _ new_vector_untagged   ; -- argc vector
+
+        _swap                   ; -- vector argc
+
+        _zero
+        _?do .1
+        pushrbx
+        mov     rbx, [main_argv]
+        _i
+        _cells
+        _plus
+        _fetch                  ; -- zstring
+        _ zcount
+        _ copy_to_string
+        _over
+        _ vector_push
+        _loop .1
+
+        _dup
+        _ vector_length
+        _tagged_fixnum 3
+        _ eq?
+        _tagged_if .2
+        _dup
+        _ second
+        _quote "-e"
+        _ equal?
+        _tagged_if .3
+        _dup
+        _ third
+        _ verify_string
+        _ evaluate
+        _then .3
+        _then .2
+
+        next
+endcode
 
 ; ### process-init-file
 code process_init_file, 'process-init-file' ; --

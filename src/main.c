@@ -102,10 +102,10 @@ static void signal_handler(int sig, siginfo_t *si, void * context)
 
 static void args(int argc, char **argv)
 {
-  extern Cell argc_data;
-  extern Cell argv_data;
-  argc_data = argc;
-  argv_data = (Cell) argv;
+  extern Cell main_argc;
+  extern Cell main_argv;
+  main_argc = argc;
+  main_argv = (Cell) argv;
 }
 
 void * data_stack_base;
