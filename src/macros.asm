@@ -474,23 +474,6 @@ section .data
         %pop inline
 %endmacro
 
-%macro  deferred 3-4 0                  ; label, name, action, flags
-        ; head label, name, flags, inline size, type
-        head %1, %2, %4, 0
-        section .data
-        global %1_data
-        align   DEFAULT_DATA_ALIGNMENT
-%1_data:
-        dq      %3_xt
-        section .text
-        align   DEFAULT_CODE_ALIGNMENT
-%1:
-        mov     rax, %1_data
-        mov     rax, [rax]
-        jmp     [rax]
-        ret                             ; for decompiler
-%endmacro
-
 %macro  variable 3                      ; label, name, value
         head    %1, %2, 0, %1_ret - %1
         section .data
