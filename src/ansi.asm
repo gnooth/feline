@@ -15,14 +15,14 @@
 
 file __FILE__
 
-constant black,   'black',   tagged_fixnum(0)
-constant red,     'red',     tagged_fixnum(1)
-constant green,   'green',   tagged_fixnum(2)
-constant yellow,  'yellow',  tagged_fixnum(3)
-constant blue,    'blue',    tagged_fixnum(4)
-constant magenta, 'magenta', tagged_fixnum(5)
-constant cyan,    'cyan',    tagged_fixnum(6)
-constant white,   'white',   tagged_fixnum(7)
+feline_constant black,   'black',   tagged_fixnum(0)
+feline_constant red,     'red',     tagged_fixnum(1)
+feline_constant green,   'green',   tagged_fixnum(2)
+feline_constant yellow,  'yellow',  tagged_fixnum(3)
+feline_constant blue,    'blue',    tagged_fixnum(4)
+feline_constant magenta, 'magenta', tagged_fixnum(5)
+feline_constant cyan,    'cyan',    tagged_fixnum(6)
+feline_constant white,   'white',   tagged_fixnum(7)
 
 ; ### color?
 feline_global color?, 'color?', f_value
