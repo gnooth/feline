@@ -32,8 +32,6 @@ inline read_time_stamp_counter, 'rdtsc' ; -- u
         _rdtsc
 endinline
 
-extern os_ticks
-
 ; ### ticks
 code ticks, 'ticks'                     ; -- u
         xcall   os_ticks
@@ -42,10 +40,8 @@ code ticks, 'ticks'                     ; -- u
 endcode
 
 %ifndef WIN64
-_global user_microseconds
-_global system_microseconds
-
-extern os_cputime
+asm_global user_microseconds
+asm_global system_microseconds
 
 ; ### cputime
 code cputime, 'cputime'
@@ -60,8 +56,8 @@ code cputime, 'cputime'
 endcode
 %endif
 
-_global start_ticks
-_global end_ticks
+asm_global start_ticks
+asm_global end_ticks
 
 ; ### elapsed-ms
 code elapsed_ms, 'elapsed-ms'           ; -- ms
@@ -71,8 +67,8 @@ code elapsed_ms, 'elapsed-ms'           ; -- ms
         next
 endcode
 
-_global start_cycles
-_global end_cycles
+asm_global start_cycles
+asm_global end_cycles
 
 ; ### elapsed-cycles
 code elapsed_cycles, 'elapsed-cycles'   ; -- cycles
