@@ -69,6 +69,12 @@ code emit_qword, 'emit-qword'           ; qword --
         next
 endcode
 
+; ### min-int32
+constant min_int32, 'min-int32', -2147483648
+
+; ### max-int32
+constant max_int32, 'max-int32', 2147483647
+
 ; ### compile-call
 code compile_call, 'compile-call'       ; addr --
         _dup                            ; -- addr addr

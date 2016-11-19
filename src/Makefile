@@ -74,7 +74,6 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm macros.asm inli
 	cold.asm \
 	combinators.asm \
 	compile-word.asm \
-	constants.asm \
 	curry.asm \
 	debug.asm \
 	dictionary.asm \
