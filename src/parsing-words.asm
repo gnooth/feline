@@ -276,11 +276,7 @@ code parse_global, 'global:', SYMBOL_PARSING_WORD ;  --
         _error "unexpected end of input"
         _return
         _then .1
-
-        _ current_vocab
         _ ensure_global
-        _drop
-
         next
 endcode
 

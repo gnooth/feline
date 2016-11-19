@@ -202,29 +202,26 @@ code ensure_symbol, 'ensure-symbol'     ; name vocab-spec -- symbol
 endcode
 
 ; ### ensure-global
-code ensure_global, 'ensure-global'     ; name vocab-spec -- symbol
-        _ lookup_vocab
-        _dup
-        _tagged_if_not .1
-        _drop
-        _error "vocab not found"
-        _then .1
+code ensure_global, 'ensure-global'     ; name --
+; Ensure that there is a global with the given name in the current vocab.
 
-        _twodup
-        _ vocab_hashtable
-        _ at_                           ; -- name vocab symbol/f
         _dup
-        _tagged_if .2
+        _ current_vocab
+        _ vocab_hashtable
+        _ at_                           ; -- name symbol/f
+        _dup
+        _tagged_if .2                   ; -- name symbol
         _dup
         _ symbol_global?
-        _tagged_if .3
-        _2nip
+        _tagged_if .3                   ; -- name symbol
+        _2drop
         _return
         _then .3
-        _then .2                        ; -- name vocab f
+        _then .2                        ; -- name f
 
         _drop
 
+        _ current_vocab
         _ new_symbol                    ; -- handle
 
         _dup
@@ -246,7 +243,6 @@ code ensure_global, 'ensure-global'     ; name vocab-spec -- symbol
         _dup
         _ compile_word
 
-        _dup
         _to_global last_word
 
         next
