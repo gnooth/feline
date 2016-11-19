@@ -77,6 +77,8 @@ code process_command_line, 'process-command-line'
         _then .3
         _then .2
 
+        _drop
+
         next
 endcode
 
