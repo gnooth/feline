@@ -562,7 +562,15 @@ endcode
 
 ; ### second
 code second, 'second'                   ; seq -- second
-        _lit tagged_fixnum(1)
+        _tagged_fixnum(1)
+        _swap
+        _ nth
+        next
+endcode
+
+; ### third
+code third, 'third'                     ; seq -- third
+        _tagged_fixnum(2)
         _swap
         _ nth
         next
