@@ -206,8 +206,8 @@ code destroy_vector_unchecked, '~vector-unchecked' ; vector --
         next
 endcode
 
-; ### vector-resize
-code vector_resize, 'vector-resize'     ; vector new-capacity --
+; ### vector_resize
+subroutine vector_resize                ; vector new-capacity --
         _over                           ; -- vector new-capacity vector
         _vector_data                    ; -- vector new-capacity data-address
         _over                           ; -- vector new-capacity data-address new-capacity
@@ -222,12 +222,12 @@ code vector_resize, 'vector-resize'     ; vector new-capacity --
         _rfrom                          ; -- vector new-data-addr
         _swap                           ; -- new-data-addr vector
         _vector_set_data
-        next
-endcode
+        ret
+endsub
 
-; ### vector-ensure-capacity
-code vector_ensure_capacity, 'vector-ensure-capacity'   ; u vector --
-        _ twodup                        ; -- u vector u vector
+; ### vector_ensure_capacity
+subroutine vector_ensure_capacity       ; u vector --
+        _twodup                         ; -- u vector u vector
         _vector_capacity                ; -- u vector u capacity
         _ugt
         _if .1                          ; -- u vector
@@ -240,8 +240,8 @@ code vector_ensure_capacity, 'vector-ensure-capacity'   ; u vector --
         _else .1
         _2drop
         _then .1
-        next
-endcode
+        ret
+endsub
 
 ; ### vector-nth-unsafe
 code vector_nth_unsafe, 'vector-nth-unsafe' ; index handle -- element
