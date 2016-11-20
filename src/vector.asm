@@ -208,17 +208,17 @@ endcode
 
 ; ### vector_resize
 subroutine vector_resize                ; vector new-capacity --
-        _over                           ; -- vector new-capacity vector
-        _vector_data                    ; -- vector new-capacity data-address
-        _over                           ; -- vector new-capacity data-address new-capacity
+        _swap
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- new-capacity
+        _this_vector_data               ; -- new-capacity data-address
+        _over                           ; -- new-capacity data-address new-capacity
         _cells
-        _ resize                        ; -- vector new-capacity new-data-address
-        _tor
-        _over                           ; -- vector new-capacity vector         r: -- new-data-addr
-        _vector_set_capacity            ; -- vector                             r: -- new-data-addr
-        _rfrom                          ; -- vector new-data-addr
-        _swap                           ; -- new-data-addr vector
-        _vector_set_data
+        _ resize                        ; -- new-capacity new-data-address
+        _this_vector_set_data
+        _this_vector_set_capacity
+        pop     this_register
         ret
 endsub
 

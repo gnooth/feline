@@ -386,7 +386,7 @@ OBJECT_ALLOCATED_BIT            equ 4
         _this_slot2
 %endmacro
 
-%macro  _this_vector_set_data 0         ; vector data-address --
+%macro  _this_vector_set_data 0         ; data-address --
         _this_set_slot2
 %endmacro
 
@@ -398,8 +398,12 @@ OBJECT_ALLOCATED_BIT            equ 4
         _set_slot3
 %endmacro
 
-%macro  _this_vector_capacity 0
+%macro  _this_vector_capacity 0         ; -- capacity
         _this_slot3
+%endmacro
+
+%macro  _this_vector_set_capacity 0     ; capacity --
+        _this_set_slot3
 %endmacro
 
 %macro  _vector_nth_unsafe 0            ; index vector -- element
