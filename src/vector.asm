@@ -646,9 +646,9 @@ code dot_vector, '.vector'              ; vector --
         _zero
         _?do .1
         _i
-        _this
-        _vector_nth_unsafe
+        _this_vector_nth_unsafe
         _ dot_object
+        _ space
         _loop .1
         _write "}"
 
