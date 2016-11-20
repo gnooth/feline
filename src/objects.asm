@@ -21,8 +21,8 @@ code allocate_object, 'allocate-object' ; size -- object
         next
 endcode
 
-; ### allocate-cells
-code allocate_cells, 'allocate-cells'   ; n -- address
+; ### allocate_cells
+subroutine allocate_cells               ; n -- address
 ; Argument and return value are untagged.
         _cells
         _dup
@@ -30,11 +30,11 @@ code allocate_cells, 'allocate-cells'   ; n -- address
         _swap                           ; -- address bytes
         _dupd                           ; -- address address bytes
         _ erase                         ; -- address
-        next
-endcode
+        ret
+endsub
 
 ; ### object?
-code object?, 'object?'                 ; x -- t|f
+code object?, 'object?'                 ; x -- ?
         _dup
         _ handle?
         _tagged_if .1
