@@ -15,35 +15,26 @@
 
 file __FILE__
 
-extern os_allocate
-
-extern os_resize
-
 ; ### resize
-code resize, 'resize'                   ; a-addr1 u -- a-addr2 ior
+subroutine resize                       ; addr size -- new-addr
 %ifdef WIN64
-        mov     rdx, rbx                ; u in rdx
-        mov     rcx, [rbp]              ; a-addr1 in rcx
-        push    rcx                     ; save a copy
+        mov     rdx, rbx                ; size in rdx
+        mov     rcx, [rbp]              ; addr in rcx
 %else
-        mov     rsi, rbx                ; u
-        mov     rdi, [rbp]              ; a-addr1
-        push    rdi                     ; save a copy
+        mov     rsi, rbx                ; size
+        mov     rdi, [rbp]              ; addr
 %endif
         lea     rbp, [rbp + BYTES_PER_CELL]
         xcall   os_resize
         mov     rbx, rax
-        pop     rdx                     ; copy of a-addr1 in rdx
         test    rbx, rbx
         jz .1
-        _zero                           ; success
-        _return
+        ret
 .1:
         ; failed!
-        mov     rbx, rdx                ; a-addr2 = a-addr1
-        _lit -61                        ; THROW code (Forth 2012 Table 9.1)
-        next
-endcode
+        _error "resize failed"
+        ret
+endsub
 
 ; ### -allocate
 code iallocate, '-allocate'             ; size -- a-addr
@@ -82,8 +73,6 @@ code ifree, '-free'                     ; a-addr --
         next
 endcode
 
-extern os_allocate_executable
-
 ; ### allocate-executable
 code allocate_executable, 'allocate-executable' ; size -- addr
 %ifdef WIN64
@@ -96,8 +85,6 @@ code allocate_executable, 'allocate-executable' ; size -- addr
         mov     rbx, rax                ; -- addr
         next
 endcode
-
-extern os_free_executable
 
 ; ### free-executable
 code free_executable, 'free-executable' ; addr --

@@ -366,27 +366,24 @@ code sbuf_set_char, 'sbuf-set-char'     ; handle index char --
         next
 endcode
 
-; ### sbuf-resize
-code sbuf_resize, 'sbuf-resize'         ; sbuf new-capacity --
+; ### sbuf_resize
+subroutine sbuf_resize                  ; sbuf new-capacity --
         _over                           ; -- sbuf new-capacity sbuf
         _sbuf_data                      ; -- sbuf new-capacity data-address
         _over                           ; -- sbuf new-capacity data-address new-capacity
         _oneplus                        ; terminal null byte
-        _ resize                        ; -- sbuf new-capacity new-data-address ior
-        _if .1
-        _error "resize failed"
-        _then .1
+        _ resize                        ; -- sbuf new-capacity new-data-address
         _tor
         _over                           ; -- sbuf new-capacity sbuf     r: -- new-data-address
         _sbuf_set_capacity              ; -- sbuf                       r: -- new-data-address
         _rfrom                          ; -- sbuf new-data-addr
         _swap                           ; -- new-data-addr sbuf
         _sbuf_set_data
-        next
-endcode
+        ret
+endsub
 
-; ### sbuf-ensure-capacity
-code sbuf_ensure_capacity, 'sbuf-ensure-capacity'   ; u sbuf --
+; ### sbuf_ensure_capacity
+subroutine sbuf_ensure_capacity         ; u sbuf --
 ; Numeric argument is untagged.
         _twodup                         ; -- u sbuf u sbuf
         _sbuf_capacity                  ; -- u sbuf u capacity
@@ -402,8 +399,8 @@ code sbuf_ensure_capacity, 'sbuf-ensure-capacity'   ; u sbuf --
         _else .1
         _2drop
         _then .1
-        next
-endcode
+        ret
+endsub
 
 ; ### sbuf-shorten
 code sbuf_shorten, 'sbuf-shorten'       ; fixnum handle --
