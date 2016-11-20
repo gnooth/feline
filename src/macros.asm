@@ -366,6 +366,8 @@ section .data
 
 %macro  subroutine 1
         %push subroutine
+        section .text
+        align   DEFAULT_CODE_ALIGNMENT
 %1:
 %endmacro
 
