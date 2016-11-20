@@ -607,7 +607,6 @@ section .data
 
 %macro  _error 1
         _quote %1
-section .text
         _ throw
 %endmacro
 
