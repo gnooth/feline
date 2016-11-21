@@ -310,24 +310,44 @@ endcode
 ; ### vector-set-nth
 code vector_set_nth, 'vector-set-nth'   ; element index vector --
 
-        _swap
-        _untag_fixnum
-        _swap
+        _verify_index qword [rbp]
+        _untag_fixnum qword [rbp]
 
 vector_set_nth_untagged:
+
         _ check_vector
+
         push    this_register
         mov     this_register, rbx
         poprbx                          ; -- element untagged-index
+
+        _this_vector_capacity
+        cmp     [rbp], rbx
+        poprbx
+        jl      .1
+
         _dup
         _this
         _ vector_ensure_capacity        ; -- element untagged-index
+
+        ; initialize new cells to f
+        _dup
+        _this_vector_length
+        _?do .2
+        _f
+        _i
+        _this_vector_set_nth_unsafe
+        _loop .2
+
+.1:
         _dup
         _oneplus
         _this_vector_length
         _ max
         _this_vector_set_length
+
         _this_vector_set_nth_unsafe
+
         pop     this_register
         next
 endcode
