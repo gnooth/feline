@@ -108,13 +108,26 @@ code error_not_index, 'error-not-index' ; x --
         next
 endcode
 
-%macro _check_index 0
+%macro _verify_index 0
+        test    rbx, rbx
+        js      error_not_index
         mov     al, bl
         and     al, TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     error_not_index
-        test    rbx, rbx
-        js      error_not_fixnum
+%endmacro
+
+%macro _verify_index 1
+        mov     rax, %1
+        test    rax, rax
+        js      error_not_index
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     error_not_index
+%endmacro
+
+%macro _check_index 0
+        _verify_index
         _untag_fixnum
 %endmacro
 
