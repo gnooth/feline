@@ -326,7 +326,12 @@ vector_set_nth_untagged:
         poprbx
         jl      .1
 
+        ; -- element untagged-index
         _dup
+
+        ; new capacity needs to be at least index + 1
+        _oneplus
+
         _this
         _ vector_ensure_capacity        ; -- element untagged-index
 
