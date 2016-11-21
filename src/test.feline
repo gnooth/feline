@@ -460,9 +460,17 @@ vector-test-1
 
 : vector-test-2 ( -- )
     << last-word symbol-name >> ?nl write-string
-    10 <vector> [ vector? check-t ] keep
-    10 [ dup pick vector-set-nth ] each-integer
+    1 <vector> [ vector? check-t ] keep
+    100 [ dup pick vector-set-nth ] each-integer
     [ [ eq? check-t ] vector-each-index ] keep
+    clear
+
+    1 <vector>
+    "test" [ 100 pick vector-set-nth ] keep
+    100 pick vector-nth eq? check-t
+
+    -- verify that new cells are initialized to f
+    100 [ over vector-nth check-false ] each-integer
     clear
 ;
 
