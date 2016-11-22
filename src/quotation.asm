@@ -286,7 +286,7 @@ code callable_code_address, 'callable-code-address' ; callable -- code-address
         _return
         _then .4
 
-        ; xt
-        _fetch
+        _error "not a callable"
+
         next
 endcode
