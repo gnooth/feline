@@ -547,11 +547,6 @@ section .data
         next
 %endmacro
 
-%macro  _from 1
-        pushrbx
-        mov     rbx, [%1_data]
-%endmacro
-
 %macro  _to 1                           ; label
         mov     [%1_data], rbx          ; REVIEW 32-bit address
         poprbx

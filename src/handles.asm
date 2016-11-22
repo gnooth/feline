@@ -57,13 +57,13 @@ value free_handles, 'free-handles', 0
 
 ; ### new-handle
 code new_handle, 'new-handle'           ; object -- handle
-        _from free_handles
+        _ free_handles
         _?dup_if .1
         _handle_to_object_unsafe
         _vector_length
         _zgt
         _if .2
-        _from free_handles
+        _ free_handles
         _handle_to_object_unsafe
         _ vector_pop_unchecked          ; -- object handle
         _tuck
@@ -72,22 +72,22 @@ code new_handle, 'new-handle'           ; object -- handle
         _then .2
         _then .1
 
-        _from handle_space_free
-        _from handle_space_limit
+        _ handle_space_free
+        _ handle_space_limit
         _ult
         _zeq_if .3
         _ gc
-        _from handle_space_free
-        _from handle_space_limit
+        _ handle_space_free
+        _ handle_space_limit
         _ult
         _if .4
         _error "out of handle space"
         _then .4
         _then .3
 
-        _from handle_space_free
+        _ handle_space_free
         _store
-        _from handle_space_free
+        _ handle_space_free
         _dup
         _cellplus
         _to handle_space_free
@@ -213,7 +213,7 @@ code release_handle_unsafe, 'release-handle-unsafe' ; handle --
         mov     qword [rbx], 0          ; -- handle
 
         ; Add handle to free-handles vector.
-        _from free_handles
+        _ free_handles
         _handle_to_object_unsafe        ; -- handle vector
         _ vector_push_unchecked         ; --
 
@@ -318,10 +318,10 @@ code each_handle, 'each-handle'         ; callable --
         push    r12
         mov     r12, rbx                ; code address in r12
         _drop                           ; --
-        _from handle_space              ; -- addr
+        _ handle_space                  ; -- addr
         _begin .1
         _dup
-        _from handle_space_free
+        _ handle_space_free
         _ult
         _while .1                       ; -- addr
         _dup
