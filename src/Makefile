@@ -98,10 +98,10 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm macros.asm inli
 	objects.asm \
 	parsing-words.asm \
 	primitives.asm \
+	quit.asm \
 	quotation.asm \
 	range.asm \
 	recover.asm \
-	repl.asm \
 	sequences.asm \
 	sbuf.asm \
 	slice.asm \

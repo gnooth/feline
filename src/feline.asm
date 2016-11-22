@@ -69,7 +69,7 @@ IN_FELINE
 %include "tuple.asm"
 %include "globals.asm"
 %include "combinators.asm"
-%include "repl.asm"
+%include "quit.asm"
 %include "lexer.asm"
 %include "time.asm"
 %include "gc.asm"
