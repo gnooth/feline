@@ -216,6 +216,8 @@ endcode
 
 ; ### compile-quotation
 code compile_quotation, 'compile-quotation' ;  quotation -- code-address code-size
+; Returned values are tagged.
+
         _dup
         _ quotation_array
         _lit S_precompile_object
@@ -239,15 +241,15 @@ code compile_quotation, 'compile-quotation' ;  quotation -- code-address code-si
         _lit $0c3
         _ emit_byte
 
-        _rfetch                         ; -- quotation code-address
+        _rfetch                         ; -- quotation raw-code-address
         _swap
-        _ quotation_set_code_address
+        _ quotation_set_raw_code_address
 
-        _rfrom                          ; -- code-address
+        _rfrom                          ; -- raw-code-address
 
         _ pc
         _over
-        _minus                          ; -- code-address code-size
+        _minus                          ; -- raw-code-address raw-code-size
 
         ; FIXME
         _tag_fixnum

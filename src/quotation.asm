@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; 3 cells: object header, array, code address
+; 3 cells: object header, array, raw code address
 
 %macro  _quotation_array 0              ; quotation -- array
         _slot1
@@ -29,15 +29,15 @@ file __FILE__
         _this_set_slot1
 %endmacro
 
-%macro  _quotation_code_address 0       ; quotation -- code-address
+%macro  _quotation_raw_code_address 0   ; quotation -- raw-code-address
         _slot2
 %endmacro
 
-%macro  _quotation_set_code_address 0   ; code-address quotation --
+%macro  _quotation_set_raw_code_address 0       ; raw-code-address quotation --
         _set_slot2
 %endmacro
 
-%macro  _this_quotation_set_code_address 0 ; code-address --
+%macro  _this_quotation_set_raw_code_address 0  ; raw-code-address --
         _this_set_slot2
 %endmacro
 
@@ -142,7 +142,7 @@ code array_to_quotation, 'array>quotation' ; array -- quotation
         _this_quotation_set_array
 
         _zero
-        _this_quotation_set_code_address
+        _this_quotation_set_raw_code_address
 
         pushrbx
         mov     rbx, this_register      ; -- quotation
@@ -171,7 +171,7 @@ endcode
 ; ### ~quotation-unchecked
 code destroy_quotation_unchecked, '~quotation-unchecked' ; quotation --
         _dup
-        _quotation_code_address
+        _quotation_raw_code_address
         _?dup_if .1
         _ free_executable
         _then .1
@@ -199,19 +199,19 @@ code quotation_array, 'quotation-array' ; quotation -- array
         next
 endcode
 
-; ### quotation-code-address
-code quotation_code_address, 'quotation-code-address' ; quotation -- code-address
+; ### quotation_raw_code_address
+subroutine quotation_raw_code_address   ; quotation -- raw-code-address
         _ check_quotation
-        _quotation_code_address
-        next
-endcode
+        _quotation_raw_code_address
+        ret
+endsub
 
-; ### quotation-set-code-address
-code quotation_set_code_address, 'quotation-set-code-address' ; code-address quotation --
+; ### quotation_set_raw_code_address
+subroutine quotation_set_raw_code_address       ; raw-code-address quotation --
         _ check_quotation
-        _quotation_set_code_address
-        next
-endcode
+        _quotation_set_raw_code_address
+        ret
+endsub
 
 ; ### callable?
 code callable?, 'callable?'             ; object -- ?
@@ -238,9 +238,9 @@ code call_quotation, 'call'             ; callable --
         _then .1
 
         _dup
-        _ quotation_code_address
+        _ quotation_raw_code_address
         _dup_if .2
-        _nip                            ; -- code-address
+        _nip                            ; -- raw-code-address
         _else .2
         _drop
         _ compile_quotation             ; -- code-address code-size
@@ -256,11 +256,12 @@ endcode
 
 ; ### callable-code-address
 code callable_code_address, 'callable-code-address' ; callable -- code-address
+; Returned value is untagged.
         _dup
         _ quotation?
         _tagged_if .1
         _dup
-        _ quotation_code_address        ; -- quotation code-address
+        _ quotation_raw_code_address    ; -- quotation raw-code-address
         _?dup_if .2
         _nip
         _else .2
