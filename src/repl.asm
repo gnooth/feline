@@ -215,7 +215,7 @@ code reset, 'reset'
         ; REVIEW windows-ui
         _ forth_standard_output
 
-        jmp     repl
+        jmp     quit
         next                            ; for decompiler
 endcode
 
@@ -387,8 +387,8 @@ code evaluate, 'evaluate'               ; string --
         next
 endcode
 
-; ### repl
-code repl, 'repl'                       ; --
+; ### quit
+code quit, 'quit'                       ; --
         _begin .1
 
         ; REVIEW

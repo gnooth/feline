@@ -211,7 +211,7 @@ code cold, 'cold'                       ; --
         _ write_string
         _ nl
 
-        jmp     repl
+        jmp     quit
 
         next
 endcode
