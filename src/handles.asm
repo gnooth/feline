@@ -55,42 +55,65 @@ endcode
 ; ### free-handles
 value free_handles, 'free-handles', 0
 
-; ### new-handle
-code new_handle, 'new-handle'           ; object -- handle
+; ### maybe-recycle-handle
+code maybe_recycle_handle, 'maybe-recycle-handle' ; object -- handle/0
         _ free_handles
         _?dup_if .1
-        _handle_to_object_unsafe
+        _handle_to_object_unsafe        ; -- object free-handles-vector
+        _dup
         _vector_length
         _zgt
         _if .2
-        _ free_handles
-        _handle_to_object_unsafe
         _ vector_pop_unchecked          ; -- object handle
         _tuck
-        _store
+        _store                          ; -- handle
         _return
+        _else .2
+        _drop                           ; -- object
         _then .2
         _then .1
 
-        _ handle_space_free
-        _ handle_space_limit
-        _ult
-        _zeq_if .3
-        _ gc
+        ; no free handles
+        ; return 0
+        xor     ebx, ebx
+
+        next
+endcode
+
+; ### new-handle
+code new_handle, 'new-handle'           ; object -- handle
+        _dup
+        _ maybe_recycle_handle          ; -- object handle/0
+        _?dup_if .1
+        _nip
+        _return
+        _then .1
+
+        ; no handles to recycle
+        ; -- object
         _ handle_space_free
         _ handle_space_limit
         _ult
         _if .4
-        _error "out of handle space"
-        _then .4
-        _then .3
-
         _ handle_space_free
         _store
         _ handle_space_free
         _dup
         _cellplus
         _to handle_space_free
+        _return
+        _then .4
+
+        ; no handles left in handle space
+        _ gc
+
+        _ maybe_recycle_handle
+        _?dup_if .3
+        _return
+        _then .3
+
+        _error "out of handles"
+
         next
 endcode
 
@@ -179,7 +202,7 @@ code deref, 'deref'                     ; x -- object-address/0
 endcode
 
 ; ### find-handle
-code find_handle, 'find-handle'         ; object -- handle | 0
+code find_handle, 'find-handle'         ; object -- handle/0
         _ handle_space                  ; -- object addr
         _begin .2
         _dup
