@@ -20,7 +20,7 @@ VERSION = `git describe --tags`
 CC = clang
 
 CFLAGS = --std=c99 -D_GNU_SOURCE -g -m64
-ASMFLAGS = -Werror
+ASMFLAGS =
 
 # clang
 LINKFLAGS = -m64
