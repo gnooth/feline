@@ -139,6 +139,8 @@ code array_to_quotation, 'array>quotation' ; array -- quotation
 
         _this_object_set_type OBJECT_TYPE_QUOTATION
 
+        _this_object_set_flags OBJECT_ALLOCATED_BIT
+
         _this_quotation_set_array
 
         _zero
@@ -209,7 +211,19 @@ endsub
 ; ### quotation_set_raw_code_address
 subroutine quotation_set_raw_code_address       ; raw-code-address quotation --
         _ check_quotation
+
+        _dup
+        _object_allocated?
+        _if .1
+        _dup
+        _quotation_raw_code_address
+        _?dup_if .2
+        _ free_executable
+        _then .2
+        _then .1
+
         _quotation_set_raw_code_address
+
         ret
 endsub
 
