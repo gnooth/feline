@@ -85,8 +85,7 @@ IN: feline
 : define-class ( class-name -- class )
     current-vocab 2dup ?lookup-symbol
     [ 2nip ] [ create-symbol ] if*
-    [ t "class" pick symbol-set-prop ] keep
-    compile-word
+    t "class" pick symbol-set-prop
 ;
 
 : define-tuple-predicate ( class -- )
