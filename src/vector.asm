@@ -525,6 +525,12 @@ vector_pop_unchecked:
         _dup
         _this_vector_set_length
         _this_vector_nth_unsafe         ; -- element
+
+        ; mark cell empty
+        _f
+        _this_vector_length
+        _this_vector_set_nth_unsafe
+
         pop     this_register
         _return
         _then .1
@@ -550,6 +556,12 @@ code vector_pop_star, 'vector-pop*'     ; handle --
         _zge
         _if .1
         _this_vector_set_length
+
+        ; mark cell empty
+        _f
+        _this_vector_length
+        _this_vector_set_nth_unsafe
+
         pop     this_register
         _return
         _then .1
