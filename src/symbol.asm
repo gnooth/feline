@@ -16,7 +16,7 @@
 file __FILE__
 
 ; 11 cells: object header, name, vocab-name, hashcode, xt, def, props,
-; value, code address, code size, flags
+; value, raw code address, raw code size, flags
 
 %macro  _symbol_name 0                  ; symbol -- name
         _slot1
@@ -114,27 +114,27 @@ file __FILE__
         _this_set_slot 7
 %endmacro
 
-%macro  _symbol_code_address 0          ; symbol -- code-address
+%macro  _symbol_raw_code_address 0      ; symbol -- raw-code-address
         _slot 8
 %endmacro
 
-%macro  _symbol_set_code_address 0      ; code-address symbol --
+%macro  _symbol_set_raw_code_address 0  ; raw-code-address symbol --
         _set_slot 8
 %endmacro
 
-%macro  _this_symbol_set_code_address 0 ; code-address --
+%macro  _this_symbol_set_raw_code_address 0     ; raw-code-address --
         _this_set_slot 8
 %endmacro
 
-%macro  _symbol_code_size 0             ; symbol -- code-size
+%macro  _symbol_raw_code_size 0         ; symbol -- raw-code-size
         _slot 9
 %endmacro
 
-%macro  _symbol_set_code_size 0         ; code-size symbol --
+%macro  _symbol_set_raw_code_size 0     ; raw-code-size symbol --
         _set_slot 9
 %endmacro
 
-%macro  _this_symbol_set_code_size 0    ; code-size --
+%macro  _this_symbol_set_raw_code_size 0        ; raw-code-size --
         _this_set_slot 9
 %endmacro
 
@@ -274,11 +274,11 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
         _f
         _this_symbol_set_value
 
-        _f
-        _this_symbol_set_code_address
+        _zero
+        _this_symbol_set_raw_code_address
 
-        _f
-        _this_symbol_set_code_size
+        _zero
+        _this_symbol_set_raw_code_size
 
         _zero
         _this_symbol_set_flags
@@ -497,37 +497,42 @@ endcode
 code symbol_code_address, 'symbol-code-address' ; symbol -- code-address/f
 ; The code address is stored untagged.
         _ check_symbol
-        _symbol_code_address
+        _symbol_raw_code_address
+        _?dup_if .1
         _tag_fixnum
+        _else .1
+        _f
+        _then .1
         next
 endcode
 
 ; ### symbol-set-code-address
-code symbol_set_code_address, 'symbol-set-code-address' ; code-address symbol --
-; The code address is stored untagged.
+code symbol_set_code_address, 'symbol-set-code-address' ; tagged-code-address symbol --
         _ check_symbol
         _verify_fixnum [rbp]
         _untag_fixnum qword [rbp]
-        _symbol_set_code_address
+        _symbol_set_raw_code_address
         next
 endcode
 
 ; ### symbol-code-size
 code symbol_code_size, 'symbol-code-size' ; symbol -- code-size/f
-; The code size is stored untagged.
         _ check_symbol
-        _symbol_code_size
+        _symbol_raw_code_size
+        _?dup_if .1
         _tag_fixnum
+        _else .1
+        _f
+        _then .1
         next
 endcode
 
 ; ### symbol-set-code-size
-code symbol_set_code_size, 'symbol-set-code-size' ; code-size symbol --
-; The code size is stored untagged.
+code symbol_set_code_size, 'symbol-set-code-size' ; tagged-code-size symbol --
         _ check_symbol
         _verify_fixnum [rbp]
         _untag_fixnum qword [rbp]
-        _symbol_set_code_size
+        _symbol_set_raw_code_size
         next
 endcode
 
