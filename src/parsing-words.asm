@@ -297,6 +297,41 @@ code parse_global, 'global:', SYMBOL_PARSING_WORD ;  --
         next
 endcode
 
+; ### parse-definition-name
+code parse_definition_name, 'parse-definition-name'     ; -- symbol
+        _ parse_token                   ; -- string/f
+
+        _dup
+        _tagged_if_not .1
+        _error "attempt to use zero-length string as a name"
+        _then .1
+
+        ; check for redefinition in current vocab only!
+        _dup
+        _ current_vocab
+        _ vocab_hashtable
+        _ at_star                       ; -- string symbol/f ?
+
+        _tagged_if .2
+        _nip
+        ; REVIEW
+        _ ?nl
+        _write "redefining "
+        _dup
+        _ symbol_name
+        _ write_string
+        _else .2
+        _drop                           ; -- string
+        _ current_vocab
+        _ new_symbol                    ; -- symbol
+        _then .2                        ; -- symbol
+
+        _dup
+        _ set_last_word                 ; -- symbol
+
+        next
+endcode
+
 ; ### parse-definition
 code parse_definition, 'parse-definition' ; -- vector
         _zeroto using_locals?
@@ -333,7 +368,7 @@ code parse_definition, 'parse-definition' ; -- vector
         _ vector_push
         _then .5
 
-        _get_accum                          ; -- vector
+        _get_accum                      ; -- vector
 
         _ end_scope
 
@@ -345,45 +380,13 @@ endcode
 
 ; ### :
 code define, ':'                        ; --
-        _ parse_token                   ; -- string/f
-
-        _dup
-        _tagged_if_not .1
-        _error "attempt to use zero-length string as a name"
-        _then .1
-
-        ; check for redefinition in current vocab only!
-        _dup
-        _ current_vocab
-        _ vocab_hashtable
-        _ at_star                       ; -- string symbol/f ?
-
-        _tagged_if .2
-        _nip
-        ; REVIEW
-        _ ?nl
-        _write "redefining "
-        _dup
-        _ symbol_name
-        _ write_string
-        _else .2
-        _drop                           ; -- string
-        _ current_vocab
-        _ new_symbol                    ; -- symbol
-        _then .2                        ; -- symbol
-
-        _dup
-        _ set_last_word                 ; -- symbol
-
-        _ parse_definition
-
+        _ parse_definition_name         ; -- symbol
+        _ parse_definition              ; -- symbol vector
         _ vector_to_array
         _ array_to_quotation            ; -- symbol quotation
-
         _over
         _ symbol_set_def                ; -- symbol
         _ compile_word
-
         next
 endcode
 
