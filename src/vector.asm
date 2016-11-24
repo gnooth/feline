@@ -149,24 +149,37 @@ new_vector_untagged:
 
         _lit 4
         _ allocate_cells
-        _tor                            ; -- capacity                           r: -- vector
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- capacity
+        _this_object_set_type OBJECT_TYPE_VECTOR
+        _this_object_set_flags OBJECT_ALLOCATED_BIT
+        _dup
+        _ allocate_cells                ; -- capacity data-address
+        _this_vector_set_data
+        _this_vector_set_capacity
 
-        _lit OBJECT_TYPE_VECTOR
-        _rfetch
-        _object_set_type                ; -- capacity
+        ; initialize all allocated cells to f
+        mov     rax, f_value            ; element in rax
+        _this_vector_capacity
+        popd    rcx                     ; capacity in rcx
+%ifdef WIN64
+        push    rdi
+%endif
+        _this_vector_data
+        popd    rdi
+        rep     stosq
+%ifdef WIN64
+        pop     rdi
+%endif
 
-        _dup                            ; -- capacity capacity                  r: -- vector
-        _ allocate_cells                ; -- capacity data-address              r: -- vector
-        _rfetch                         ; -- capacity data-address vector       r: -- vector
-        _vector_set_data                ; -- capacity                           r: -- vector
-        _rfetch                         ; -- capacity vector                    r: -- vector
-        _vector_set_capacity            ; --                                    r: -- vector
+        pushrbx
+        mov     rbx, this_register      ; -- vector
 
-        _rfrom                          ; -- vector
-
-        ; return handle of allocated object
+        ; return handle
         _ new_handle                    ; -- handle
 
+        pop     this_register
         next
 endcode
 
