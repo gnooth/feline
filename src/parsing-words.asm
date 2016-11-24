@@ -203,6 +203,23 @@ code parse_quotation, '[', SYMBOL_PARSING_WORD ; -- quotation
         next
 endcode
 
+; ### {-
+code begin_comment, '{-', SYMBOL_PARSING_WORD   ; --
+.top:
+        _ parse_token                   ; -- string/f
+        cmp     rbx, f_value
+        jne     .1
+        _drop
+        _error "unexpected end of input"
+.1:                                     ; -- string
+        _quote "-}"
+        _ string_equal?                 ; -- ?
+        cmp     rbx, f_value
+        poprbx
+        je      .top
+        next
+endcode
+
 ; ### \
 ; We need some additional comment text here so that NASM isn't
 ; confused by the '\' in the explicit tag.
