@@ -299,6 +299,7 @@ endcode
 
 ; ### parse-definition
 code parse_definition, 'parse-definition' ; -- vector
+        _zeroto using_locals?
 
         _ begin_scope
 
@@ -336,16 +337,20 @@ code parse_definition, 'parse-definition' ; -- vector
 
         _ end_scope
 
+        _zeroto using_locals?
+        _zeroto local_names
+
         next
 endcode
 
 ; ### :
 code define, ':'                        ; --
-        _zeroto using_locals?
-
         _ parse_token                   ; -- string/f
+
         _dup
-        _tagged_if .1
+        _tagged_if_not .1
+        _error "attempt to use zero-length string as a name"
+        _then .1
 
         ; check for redefinition in current vocab only!
         _dup
@@ -357,8 +362,7 @@ code define, ':'                        ; --
         _nip
         ; REVIEW
         _ ?nl
-        _quote "redefining "
-        _ write_string
+        _write "redefining "
         _dup
         _ symbol_name
         _ write_string
@@ -380,12 +384,6 @@ code define, ':'                        ; --
         _ symbol_set_def                ; -- symbol
         _ compile_word
 
-        _zeroto using_locals?
-        _zeroto local_names
-
-        _else .1
-        _error "attempt to use zero-length string as a name"
-        _then .1
         next
 endcode
 
