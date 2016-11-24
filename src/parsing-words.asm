@@ -390,6 +390,36 @@ code define, ':'                        ; --
         next
 endcode
 
+; ### test:
+code define_test, 'test:'               ; --
+        _ parse_definition_name         ; -- symbol
+        _ parse_definition              ; -- symbol vector
+
+        _lit S_?nl
+        _lit tagged_zero
+        _pick
+        _ vector_insert_nth_destructive
+
+        _over
+        _ symbol_name
+        _lit tagged_fixnum(1)
+        _pick
+        _ vector_insert_nth_destructive
+
+        _lit S_write_string
+        _lit tagged_fixnum(2)
+        _pick
+        _ vector_insert_nth_destructive
+
+        _ vector_to_array
+        _ array_to_quotation            ; -- symbol quotation
+        _over
+        _ symbol_set_def                ; -- symbol
+        _ compile_word
+        next
+endcode
+
+
 ; ### //
 code comment_to_eol, '//', SYMBOL_PARSING_WORD ; --
         _ lexer
