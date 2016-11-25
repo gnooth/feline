@@ -451,6 +451,16 @@ test: vector-test-2 ( -- )
     -- verify that new cells are initialized to f
     100 [ over vector-nth check-false ] each-integer
     clear
+
+    local: v
+    1 <vector> -> v
+    42 9 v set-nth
+    87 v push
+    v V{ f f f f f f f f f 42 87 } sequence= check-t
+
+    -- FIXME this fails Nov 25 2016 9:42 AM
+    -- 14 19 v set-nth
+    -- v V{ f f f f f f f f f 42 87 f f f f f f f f 14 } sequence= check-t
 ;
 
 vector-test-2
