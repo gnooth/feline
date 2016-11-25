@@ -374,9 +374,8 @@ endcode
 code vector_insert_nth_destructive, 'vector-insert-nth!' ; element n vector --
         _ check_vector
 
-        _swap
-        _untag_fixnum
-        _swap
+        _verify_index qword [rbp]
+        _untag_fixnum qword [rbp]
 
         push    this_register
         mov     this_register, rbx      ; -- element n vector
