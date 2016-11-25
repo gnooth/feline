@@ -297,6 +297,14 @@ code parse_global, 'global:', SYMBOL_PARSING_WORD ;  --
         next
 endcode
 
+; ### >global:
+code initialize_global, '>global:', SYMBOL_PARSING_WORD ;  --
+        _ parse_global
+        _ last_word
+        _ symbol_set_value
+        next
+endcode
+
 ; ### parse-definition-name
 code parse_definition_name, 'parse-definition-name'     ; -- symbol
         _ parse_token                   ; -- string/f
