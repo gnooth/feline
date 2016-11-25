@@ -83,6 +83,14 @@ code verify_vector, 'verify-vector'     ; handle -- handle
         next
 endcode
 
+; ### vector-capacity
+code vector_capacity, 'vector-capacity' ; vector -- capacity
+        _ check_vector
+        _vector_capacity
+        _tag_fixnum
+        next
+endcode
+
 ; ### vector-length
 code vector_length, 'vector-length'     ; vector -- length
         _ check_vector
