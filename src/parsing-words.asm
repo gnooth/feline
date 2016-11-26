@@ -620,15 +620,6 @@ code parse_help, 'HELP:', SYMBOL_IMMEDIATE
         next
 endcode
 
-; ### LANGUAGE:
-code parse_language, 'LANGUAGE:', SYMBOL_IMMEDIATE
-; Deprecated.
-        _ parse_token                   ; -- string/f
-        ; Do nothing.
-        _drop
-        next
-endcode
-
 ; ### sh
 code sh, 'sh'
         _ lexer

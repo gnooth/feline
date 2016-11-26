@@ -13,10 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-LANGUAGE: feline
-
-USING: feline ;
-IN: feline
+using: feline ;
+in: feline
 
 : blank? ( char -- ? )
     { 9 10 13 32 } member?
@@ -42,5 +40,5 @@ IN: feline
     "accept.feline"
 } [ load-system-file ] each
 
-USING: feline ;
-IN: feline
+using: feline ;
+in: feline
