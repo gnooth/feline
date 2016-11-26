@@ -246,10 +246,6 @@ section .data
 %define SYMBOL_GLOBAL           $08
 %define SYMBOL_CONSTANT         $10
 
-%define forth_link      0
-
-%define feline_link     0
-
 %macro  IN_FELINE 0
 %undef  in_forth
 %define in_feline
@@ -260,40 +256,6 @@ section .data
 %define in_forth
 %endmacro
 
-%macro  name_token 2                    ; label, name
-
-%strlen len     %2
-        section .data
-        align   DEFAULT_DATA_ALIGNMENT
-        dq      current_file
-        dq      __LINE__
-        dq      %1_xt                   ; xt pointer field
-
-%ifdef in_feline
-        dq      feline_link
-%elifdef in_forth
-        dq      forth_link              ; link field
-%else
-        %fatal "no vocabulary specified"
-%endif
-
-%1_nfa:
-        db      len
-        db      %2
-        db      0
-        align   DEFAULT_DATA_ALIGNMENT
-
-; Link field points to name field.
-%ifdef in_feline
-%define feline_link     %1_nfa
-%elifdef in_forth
-%define forth_link      %1_nfa
-%else
-        %fatal "no vocabulary specified"
-%endif
-
-%endmacro
-
 %macro  execution_token 1-3             ; label, flags, inline size
         global %1
         section .data
@@ -302,7 +264,6 @@ section .data
         dq      %1                      ; address of code
         dq      0                       ; comp field
         dq      %1_pfa                  ; parameter field address
-        dq      %1_nfa                  ; nfa
         db      %2                      ; flags
         dq      %3                      ; inline size
         align   DEFAULT_DATA_ALIGNMENT
@@ -313,7 +274,6 @@ section .data
 %ifdef in_feline
         symbol S_%1, %2, %1, %4, %3
 %endif
-        name_token %1, %2
         execution_token %1, %3, %4
 %endmacro
 
