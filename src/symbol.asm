@@ -456,14 +456,14 @@ endcode
 %endmacro
 
 ; ### symbol-primitive?
-code symbol_primitive?, 'symbol-primitive?' ; symbol -- ?
+code symbol_primitive?, 'symbol-primitive?'     ; symbol -- ?
         _symbol_flags_bit SYMBOL_PRIMITIVE
         next
 endcode
 
-; ### symbol-parsing-word?
-code symbol_parsing_word?, 'symbol-parsing-word?' ; symbol -- ?
-        _symbol_flags_bit SYMBOL_PARSING_WORD
+; ### symbol-immediate?
+code symbol_immediate?, 'symbol-immediate?'     ; symbol -- ?
+        _symbol_flags_bit SYMBOL_IMMEDIATE
         next
 endcode
 

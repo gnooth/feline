@@ -728,15 +728,15 @@ test: create-symbol-test-1 ( -- )
 
 create-symbol-test-1
 
-test: parsing-word?-test-1 ( -- )
-    \ SYMBOL: parsing-word? check-t
-    \ dup parsing-word? check-false
-    42 parsing-word? check-false
-    f parsing-word? check-false
-    \ f parsing-word? check-t
+test: immediate?-test-1 ( -- )
+    \ SYMBOL: immediate? check-t
+    \ dup immediate? check-false
+    42 immediate? check-false
+    f immediate? check-false
+    \ f immediate? check-t
 ;
 
-parsing-word?-test-1
+immediate?-test-1
 
 test: parsing-test-1 ( -- )
     V{ SYMBOL: this-is-a-new-symbol } V{ } sequence= check-t

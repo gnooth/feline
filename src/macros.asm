@@ -241,7 +241,7 @@ section .data
 
 ; Symbol bit flags
 %define SYMBOL_PRIMITIVE        $01
-%define SYMBOL_PARSING_WORD     $02
+%define SYMBOL_IMMEDIATE        $02
 %define SYMBOL_INLINE           $04
 %define SYMBOL_GLOBAL           $08
 %define SYMBOL_CONSTANT         $10
