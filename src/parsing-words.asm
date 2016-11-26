@@ -594,13 +594,13 @@ code parse_immediate, '<<', SYMBOL_IMMEDIATE
         next
 endcode
 
-; ### HELP:
-code parse_help, 'HELP:', SYMBOL_IMMEDIATE
+; ### help:
+code parse_help, 'help:', SYMBOL_IMMEDIATE
         _ parse_token                   ; -- string/f
         _dup
         _tagged_if_not .1
         _drop
-        _error "unexpected end of input after HELP:"
+        _error "unexpected end of input"
         _return
         _then .1                        ; -- string
 

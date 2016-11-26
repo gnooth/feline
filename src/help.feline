@@ -33,136 +33,136 @@ in: feline
     when*
 ;
 
-HELP: 1array
+help: 1array
     "( x -- array )
     Create a new array with one element: { x }."
 ;
 
-HELP: 2array
+help: 2array
     "( x y -- array )
     Create a new array with two elements: { x y }."
 ;
 
-HELP: 2bi
+help: 2bi
     "( x y quot1 quot2 -- )
     Apply quot1 to x and y, then apply quot2 to x and y."
 ;
 
-HELP: 2dip
+help: 2dip
     "( x y quot -- x y )
     Remove x and y from the stack, call quot, and restore x and y
     to the top of the stack when quot returns."
 ;
 
-HELP: 2keep
+help: 2keep
     "( x y quot -- x y )
     Call quot with x and y on the stack. Restore x and y to the
     top of the stack when quot returns."
 ;
 
-HELP: 2nip
+help: 2nip
     "( x y z -- z )
     Remove x and y from the stack."
 ;
 
-HELP: 3array
+help: 3array
     "( x y z -- array )
     Create a new array with three elements: { x y z }."
 ;
 
-HELP: 4array
+help: 4array
     "( w x y z -- array )
     Create a new array with four elements: { w x y z }."
 ;
 
-HELP: <array>
+help: <array>
     "( n elt -- array )
     Create a new array with length n and all elements initially
     set to elt."
 ;
 
-HELP: <range>
+help: <range>
     "( start len -- range )
     Create a new immutable virtual sequence containing the
     integers from start to start+len-1."
 ;
 
-HELP: <vector>
+help: <vector>
     "( n -- vector )
     Create a new vector with an initial capacity of n elements."
 ;
 
-HELP: and
+help: and
     "( obj1 obj2 -- ? )
     Boolean and: if both obj1 and obj2 are true (that is, not f),
     return obj2. Otherwise return f. (Bitwise and is bitand.)"
 ;
 
-HELP: bi
+help: bi
     "( x quot1 quot2 -- )
     Apply quot1 to x, then apply quot2 to x."
 ;
 
-HELP: charpos
+help: charpos
     "( -- n )
     Return the current output column.
 
     See also: tab"
 ;
 
-HELP: dip
+help: dip
     "( x quot -- x )
     Remove x from the stack, call quot, and restore x to the top
     of the stack when quot returns."
 ;
 
-HELP: drop
+help: drop
     "( x -- )
     Remove x from the stack."
 ;
 
-HELP: dup
+help: dup
     "( x -- x x )
     Duplicate x." ;
 
-HELP: dupd
+help: dupd
     "( x y -- x x y)
     Duplicate the second item on the stack."
 ;
 
-HELP: each
+help: each
     "( seq quot -- )            quot: ( ... elt -- ... )
     Apply quot to each element of seq in order."
 ;
 
-HELP: each-index
+help: each-index
     "( seq quot -- )            quot: ( ... elt index -- ... )
     Call quot for each element of seq with both the element and its
     index on the stack."
 ;
 
-HELP: each-integer
+help: each-integer
     "( n quot -- )              quot: ( ... i -- ... )
     Call quot for each integer from 0 up to n, excluding n."
 ;
 
-HELP: even?
+help: even?
     "( n -- ? )
     Return t if n is even."
 ;
 
-HELP: file-contents
+help: file-contents
     "( path -- string )
     Return the contents of the specified file as a string."
 ;
 
-HELP: filter
+help: filter
     "( seq quot -- subseq )     quot: ( ... elt -- ... ? )
     Return a new sequence containing the elements of the original
     sequence for which the quotation returns a true value."
 ;
 
-HELP: find
+help: find
     "( seq quot -- index/f elt/f )      quot: ( ... elt -- ... ? )
     Apply quot to each element of seq in order. If the quotation
     returns a true value for some element, return the index of that
@@ -170,7 +170,7 @@ HELP: find
     index and the element."
 ;
 
-HELP: find-last-from
+help: find-last-from
     "( n seq quot -- index/f elt/f )    quot: ( ... elt -- ... ? )
     Apply quot to each element of seq in reverse order, starting at
     index n. If the quotation returns a true value for some element,
@@ -178,128 +178,128 @@ HELP: find-last-from
     return f for both the index and the element."
 ;
 
-HELP: in-bounds?
+help: in-bounds?
     "( n seq -- ? )
     Return t if n is within the bounds of seq."
 ;
 
-HELP: index
+help: index
     "( obj seq -- n )
     Return the index of the first element of seq that is = to obj.
     Return f if there is no such element."
 ;
 
-HELP: index?
+help: index?
     "( x -- ? )
     Return t if x is a non-negative fixnum."
 ;
 
-HELP: keep
+help: keep
     "( x quot -- x )
     Call quot with x on the stack. Restore x to the top of the
     stack when quot returns."
 ;
 
-HELP: map
+help: map
     "( seq quot -- newseq )     quot: ( ... elt -- ... newelt )
     Apply quot to each element of seq in order. Collect the results
     in a new sequence of the same type as seq."
 ;
 
-HELP: map-index
+help: map-index
     "( seq quot -- newseq )     quot: ( ... elt index -- ...newelt )
     Call quot for each element of seq with both the element and its
     index on the stack. Collect the results in a new sequence of the
     the same type as seq."
 ;
 
-HELP: member?
+help: member?
     "( obj seq -- ? )
     Return t if seq contains an element = to obj."
 ;
 
-HELP: min-length
+help: min-length
     "( seq1 seq2 -- n )
     Return the length of the shorter sequence."
 ;
 
-HELP: mismatch
+help: mismatch
     "( seq1 seq2 -- index/f )
     Compare seq1 and seq2 up to the length of the shorter sequence.
     Return the first index where the elements of the two sequences
     are not equal, or f if there is no mismatch."
 ;
 
-HELP: new-sequence
+help: new-sequence
     "( len seq -- newseq )
     Return a new sequence of length len which can hold the elements
     of seq."
 ;
 
-HELP: odd?
+help: odd?
     "( n -- ? )
     Return t if n is odd."
 ;
 
-HELP: or
+help: or
     "( obj1 obj2 -- ? )
     Boolean inclusive or: if both obj1 and obj2 are f, return f.
     Otherwise return the first of obj1 and obj2 which is not f.
     (Bitwise inclusive or is bitor.)"
 ;
 
-HELP: over
+help: over
     "( x y -- x y x )
     Place a copy of x on top of the stack."
 ;
 
-HELP: rot
+help: rot
     "( x y z -- z y x )
     Rotate the top three stack entries."
 ;
 
-HELP: sbuf-append-string
+help: sbuf-append-string
     "( sbuf string -- sbuf )
     Modify sbuf by adding the characters of string to the end.
     Return sbuf."
 ;
 
-HELP: set-at
+help: set-at
     "( value key hashtable -- )
     Associate value with key in hashtable."
 ;
 
-HELP: string-index-from
+help: string-index-from
     "( char start-index string -- index )
     Return the index of the first occurrence of char in string,
     starting at start-index. Return f if char is not found."
 ;
 
-HELP: string-skip-to-whitespace
+help: string-skip-to-whitespace
     "( start-index string -- index/f )
     Return the index of the first whitespace character in string,
     starting at start-index. Return f if no whitespace character
     is found."
 ;
 
-HELP: string-skip-whitespace
+help: string-skip-whitespace
     "( start-index string -- index/f )
     Return the index of the first non-whitespace character in string,
     starting at start-index. Return f if no non-whitespace character
     is found."
 ;
 
-HELP: swap
+help: swap
     "( x y -- y x )
     Exchange the top two stack items."
 ;
 
-HELP: swapd
+help: swapd
     "( x y z -- y z x )
     Exchange the second and third stack items."
 ;
 
-HELP: tab
+help: tab
     "( n -- )
     Write enough space characters so that the next character will
     be written in column n.
@@ -307,23 +307,23 @@ HELP: tab
     See also: charpos"
 ;
 
-HELP: time
+help: time
     "( quot -- )
     Run quot and report the total run time."
 ;
 
-HELP: times
+help: times
     "( n quot -- )    quot: ( ... -- ... )
     Call quot n times."
 ;
 
-HELP: unless
+help: unless
     "( x quot -- )
     If x is f, remove it from the stack and call quot.
     Otherwise, just remove x from the stack."
 ;
 
-HELP: unless*
+help: unless*
     "( x quot -- )
     If x is f, remove it from the stack and call quot.
     Otherwise, just leave x on the stack."
