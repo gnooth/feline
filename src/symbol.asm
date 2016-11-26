@@ -446,36 +446,48 @@ code symbol_set_help, 'symbol-set-help' ; content symbol --
         next
 endcode
 
-; ### symbol-primitive?
-code symbol_primitive?, 'symbol-primitive?' ; symbol -- ?
+%macro _symbol_flags_bit 1      ; symbol -- ?
         _ check_symbol
         _symbol_flags
         mov     eax, t_value
-        and     rbx, SYMBOL_PRIMITIVE
+        and     rbx, %1
         mov     ebx, f_value
         cmovnz  rbx, rax
+%endmacro
+
+; ### symbol-primitive?
+code symbol_primitive?, 'symbol-primitive?' ; symbol -- ?
+        _symbol_flags_bit SYMBOL_PRIMITIVE
+        next
+endcode
+
+; ### symbol-parsing-word?
+code symbol_parsing_word?, 'symbol-parsing-word?' ; symbol -- ?
+        _symbol_flags_bit SYMBOL_PARSING_WORD
         next
 endcode
 
 ; ### symbol-inline?
 code symbol_inline?, 'symbol-inline?'   ; symbol -- ?
-        _ check_symbol
-        _symbol_flags
-        mov     eax, t_value
-        and     rbx, SYMBOL_INLINE
-        mov     ebx, f_value
-        cmovnz  rbx, rax
+        _symbol_flags_bit SYMBOL_INLINE
         next
 endcode
 
 ; ### symbol-global?
 code symbol_global?, 'symbol-global?'   ; symbol -- ?
-        _ check_symbol
-        _symbol_flags
-        mov     eax, t_value
-        and     rbx, SYMBOL_GLOBAL
-        mov     ebx, f_value
-        cmovnz  rbx, rax
+        _symbol_flags_bit SYMBOL_GLOBAL
+        next
+endcode
+
+; ### symbol-constant?
+code symbol_constant?, 'symbol-constant?'       ; symbol -- ?
+        _symbol_flags_bit SYMBOL_CONSTANT
+        next
+endcode
+
+; ### symbol-special?
+code symbol_special?, 'symbol-special?' ; symbol -- ?
+        _symbol_flags_bit SYMBOL_SPECIAL
         next
 endcode
 
@@ -487,7 +499,7 @@ code symbol_value, 'symbol-value'       ; symbol -- value
 endcode
 
 ; ### symbol-set-value
-code symbol_set_value, 'symbol-set-value' ; value symbol --
+code symbol_set_value, 'symbol-set-value'       ; value symbol --
         _ check_symbol
         _set_slot 7
         next
@@ -548,6 +560,7 @@ subroutine symbol_set_flags             ; flags symbol --
         ret
 endsub
 
+; ### symbol_set_flags_bit
 subroutine symbol_set_flags_bit         ; bit symbol --
         _ check_symbol
         _dup
@@ -559,17 +572,6 @@ subroutine symbol_set_flags_bit         ; bit symbol --
         _symbol_set_flags
         ret
 endsub
-
-; ### symbol-parsing-word?
-code symbol_parsing_word?, 'symbol-parsing-word?' ; symbol -- ?
-        _ check_symbol
-        _symbol_flags
-        mov     eax, t_value
-        and     rbx, SYMBOL_PARSING_WORD
-        mov     ebx, f_value
-        cmovnz  rbx, rax
-        next
-endcode
 
 ; ### call-symbol
 code call_symbol, 'call-symbol'         ; symbol --
