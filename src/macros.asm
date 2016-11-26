@@ -245,6 +245,7 @@ section .data
 %define SYMBOL_INLINE           $04
 %define SYMBOL_GLOBAL           $08
 %define SYMBOL_CONSTANT         $10
+%define SYMBOL_SPECIAL          $20
 
 %macro  IN_FELINE 0
 %undef  in_forth
@@ -386,7 +387,7 @@ section .data
 
 %macro  special 2                       ; label, name
 
-        head    %1, %2, 0, %1_ret - %1
+        head    %1, %2, SYMBOL_SPECIAL, %1_ret - %1
 
         section .text
         align   DEFAULT_CODE_ALIGNMENT
