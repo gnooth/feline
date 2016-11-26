@@ -19,6 +19,8 @@ in: test
     f eq? [ failed ] unless
 ;
 
+interactive? get check-false
+
 1 2 + 3 eq? check-t
 1 2 + 4 eq? check-false
 
