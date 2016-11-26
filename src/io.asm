@@ -32,15 +32,6 @@ code key?, 'key?'
         next
 endcode
 
-; ### #rows
-value nrows, '#rows', 0
-
-; ### #cols
-value ncols, '#cols', 0
-
-; ### #out
-value nout, '#out', 0
-
 ; For Windows, FORTH-STDOUT is initialized in prep_terminal().
 ; The value here is correct for Linux.
 
@@ -58,19 +49,6 @@ code forth_standard_output, 'forth-standard-output'
         _ forth_stdout
         _to forth_output_file
 %endif
-        next
-endcode
-
-; ### emit-file
-code emit_file, 'emit-file'             ; char fileid --
-%ifdef WIN64
-        popd    rdx
-        popd    rcx
-%else
-        popd    rsi
-        popd    rdi
-%endif
-        xcall   os_emit_file
         next
 endcode
 
