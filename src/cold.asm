@@ -145,7 +145,7 @@ code dot_version, '.version'            ; --
 endcode
 
 ; ### interactive?
-feline_global interactive?, 'interactive?'
+special interactive?, 'interactive?'
 
 ; ### cold
 code cold, 'cold'                       ; --
@@ -205,7 +205,8 @@ code cold, 'cold'                       ; --
         _then .4
 
         _t
-        _to_global interactive?
+        _ interactive?
+        _ set_global
 
         _quote "Meow!"
         _ write_string

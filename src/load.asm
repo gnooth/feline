@@ -23,11 +23,13 @@ code load, 'load'                       ; path --
         _ new_lexer
         _tuck
         _ lexer_set_file
+
         _ begin_scope
         _ lexer
         _ set
 
         _ interactive?
+        _ get
         _tagged_if .1
         _ ?nl
         _write "Loading "
@@ -37,6 +39,10 @@ code load, 'load'                       ; path --
         _ write_string
         _ nl
         _then .1
+
+        _f
+        _ interactive?
+        _ set
 
         _quotation .2
         _ interpret
