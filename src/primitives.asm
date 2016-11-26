@@ -1133,7 +1133,25 @@ code feline_free, 'free'                ; addr --
         next
 endcode
 
-extern os_bye
+asm_global nrows_data
+
+; ### #rows
+code nrows, '#rows'
+        pushrbx
+        mov     rbx, [nrows_data]
+        _tag_fixnum
+        next
+endcode
+
+asm_global ncols_data
+
+; ### #cols
+code ncols, '#cols'
+        pushrbx
+        mov     rbx, [ncols_data]
+        _tag_fixnum
+        next
+endcode
 
 ; ### bye
 code feline_bye, "bye"
