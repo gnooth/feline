@@ -505,9 +505,15 @@ code symbol_set_value, 'symbol-set-value'       ; value symbol --
         next
 endcode
 
+; ### symbol_raw_code_address
+subroutine symbol_raw_code_address      ; symbol -- raw-code-address/0
+        _ check_symbol
+        _symbol_raw_code_address
+        ret
+endsub
+
 ; ### symbol-code-address
 code symbol_code_address, 'symbol-code-address' ; symbol -- code-address/f
-; The code address is stored untagged.
         _ check_symbol
         _symbol_raw_code_address
         _?dup_if .1
@@ -528,7 +534,7 @@ code symbol_set_code_address, 'symbol-set-code-address' ; tagged-code-address sy
 endcode
 
 ; ### symbol-code-size
-code symbol_code_size, 'symbol-code-size' ; symbol -- code-size/f
+code symbol_code_size, 'symbol-code-size'       ; symbol -- code-size/f
         _ check_symbol
         _symbol_raw_code_size
         _?dup_if .1
@@ -540,7 +546,7 @@ code symbol_code_size, 'symbol-code-size' ; symbol -- code-size/f
 endcode
 
 ; ### symbol-set-code-size
-code symbol_set_code_size, 'symbol-set-code-size' ; tagged-code-size symbol --
+code symbol_set_code_size, 'symbol-set-code-size'       ; tagged-code-size symbol --
         _ check_symbol
         _verify_fixnum [rbp]
         _untag_fixnum qword [rbp]
