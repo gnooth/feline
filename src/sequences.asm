@@ -309,9 +309,9 @@ code sequence_equal, 'sequence='        ; seq1 seq2 -- ?
 endcode
 
 ; ### each
-code each, 'each'                       ; seq quotation-or-xt --
+code each, 'each'       ; seq callable --
 
-        ; protect quotation from gc
+        ; protect callable from gc
         push    rbx
 
         _ callable_code_address         ; -- seq code-address
@@ -334,16 +334,16 @@ code each, 'each'                       ; seq quotation-or-xt --
         pop     this_register
         pop     r12
 
-        ; drop quotation
+        ; drop callable
         pop     rax
 
         next
 endcode
 
 ; ### each-index
-code each_index, 'each-index'           ; seq quotation-or-xt --
+code each_index, 'each-index'           ; seq callable --
 
-        ; protect quotation from gc
+        ; protect callable from gc
         push    rbx
 
         _ callable_code_address         ; -- seq code-address
@@ -368,7 +368,7 @@ code each_index, 'each-index'           ; seq quotation-or-xt --
         pop     this_register
         pop     r12
 
-        ; drop quotation
+        ; drop callable
         pop     rax
 
         next
