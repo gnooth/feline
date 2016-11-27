@@ -122,9 +122,15 @@ code head?, 'head?'                     ; seq begin -- ?
 endcode
 
 ; ### map
-code map, 'map'                         ; seq quot -- newseq
+code map, 'map' ; seq callable -- new-seq
+
+        ; protect callable from gc
+        push    rbx
+
         _ callable_code_address
+
         _swap                           ; -- code-address seq
+
         push    this_register
         popd    this_register           ; -- code-address
         push    r12
@@ -132,7 +138,7 @@ code map, 'map'                         ; seq quot -- newseq
         _this
         _ length                        ; -- len
         _this                           ; -- len seq
-        _ new_sequence                  ; -- newseq
+        _ new_sequence                  ; -- new-seq
 
         _this
         _ length
@@ -143,19 +149,22 @@ code map, 'map'                         ; seq quot -- newseq
         _i
         _tag_fixnum
         _this
-        _ nth_unsafe                    ; -- newseq elt
+        _ nth_unsafe                    ; -- new-seq element
 
-        call    r12                     ; -- newseq newelt
+        call    r12                     ; -- new-seq new-element
 
         _i
-        _tag_fixnum                     ; -- newseq newelt i
-        _pick                           ; -- newseq newelt i newseq
-        _ set_nth                       ; -- newseq
+        _tag_fixnum                     ; -- new-seq new-element i
+        _pick                           ; -- new-seq new-element i new-seq
+        _ set_nth                       ; -- new-seq
 
         _loop .1
 
         pop     r12
         pop     this_register
+
+        ; drop callable
+        pop     rax
 
         next
 endcode
