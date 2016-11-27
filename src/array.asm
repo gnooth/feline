@@ -304,16 +304,22 @@ code array_second, 'array-second'       ; handle -- element
 endcode
 
 ; ### array-each
-code array_each, 'array-each'           ; array xt --
+code array_each, 'array-each'           ; array callable --
+
+        ; protect callable from gc
+        push    rbx
+
+        _ callable_code_address
+
         _swap
-        _ check_array                   ; -- xt array
+
+        _ check_array                   ; -- code-address array
 
         push    this_register
         mov     this_register, rbx
         push    r12
-        mov     rax, [rbp]              ; xt in rax
+        mov     r12, [rbp]              ; address to call in r12
         _2drop                          ; adjust stack
-        mov     r12, [rax]              ; address to call in r12
         _this_array_length
         _zero
         _?do .1
@@ -323,6 +329,54 @@ code array_each, 'array-each'           ; array xt --
         _loop .1
         pop     r12
         pop     this_register
+
+        ; drop callable
+        pop     rax
+
+        next
+endcode
+
+; ### map-array
+code map_array, 'map-array'             ; array callable -- new-array
+
+        ; protect callable from gc
+        push    rbx
+
+        _ callable_code_address
+
+        _swap                           ; -- code-address array
+
+        _ check_array
+
+        push    this_register
+        popd    this_register           ; -- code-address
+
+        push    r12
+        popd    r12                     ; code address in r12
+
+        _this_array_length
+        _f
+        _ new_array_untagged            ; -- new-array
+
+        _this_array_length
+        _zero
+        _?do .1
+        _i
+        _this_array_nth_unsafe
+        call    r12                     ; -- new-array new-element
+        _i
+        _tag_fixnum                     ; -- new-array new-element i
+        _pick                           ; -- new-array new-element i new-array
+        _ array_set_nth
+
+        _loop .1
+
+        pop     r12
+        pop     this_register
+
+        ; drop callable
+        pop     rax
+
         next
 endcode
 
