@@ -221,12 +221,12 @@ code compile_quotation, 'compile-quotation' ;  quotation -- code-address code-si
         _dup
         _ quotation_array
         _lit S_precompile_object
-        _ map                           ; -- quotation precompiled-array
+        _ map_array                     ; -- quotation precompiled-array
 
         _zero
         _over
         _lit S_add_code_size
-        _ each
+        _ array_each
 
         ; add size of return instruction
         _oneplus
@@ -236,7 +236,7 @@ code compile_quotation, 'compile-quotation' ;  quotation -- code-address code-si
         _to pc                          ; -- quotation precompiled-array        r: -- code-address
 
         _lit S_compile_pair
-        _ each
+        _ array_each
 
         _lit $0c3
         _ emit_byte
