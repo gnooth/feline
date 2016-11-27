@@ -17,7 +17,11 @@
 
 VERSION = `git describe --tags`
 
-CC = clang
+ifeq ($(OS),Windows_NT)
+	CC = gcc
+else
+	CC = clang
+endif
 
 CFLAGS = --std=c99 -D_GNU_SOURCE -g -m64
 ASMFLAGS =
