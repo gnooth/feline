@@ -41,12 +41,13 @@ code lookup_method, 'lookup-method'     ; object methods-vector -- object xt/0
 endcode
 
 ; ### do-generic
-code do_generic, 'do-generic'
-        _fetch
-        _ lookup_method                 ; -- xt/0
+code do_generic, 'do-generic'   ; methods-vector --
+        _ lookup_method         ; -- raw-code-address/0
         _dup
         _if .1
-        _execute
+        mov     rax, rbx
+        poprbx
+        call    rax
         _else .1
         _drop
         _error "no method"
@@ -56,36 +57,39 @@ endcode
 
 %macro generic 2
         code %1, %2
-        section .data
-        global  %1_data
-        align   DEFAULT_DATA_ALIGNMENT
-%1_data:
-        dq      0                       ; address of methods vector (will be patched)
-        section .text
-        pushrbx
-        mov     ebx, %1_data            ; REVIEW assumes 32-bit address
-        call    do_generic
+        ; REVIEW
+        ; We need to do something like this for calls from asm to work.
+        _lit S_%1
+        _ call_symbol
         next
         endcode
 %endmacro
 
 ; ### initialize-generic-function
-code initialize_generic_function, 'initialize-generic-function' ; xt --
-        _tobody
-        _tor
+code initialize_generic_function, 'initialize-generic-function' ; symbol --
         _lit 10
-        _ new_vector_untagged
-        _rfetch
-        _store
-        _rfrom
-        _ gc_add_root
+        _ new_vector_untagged   ; -- symbol methods-vector
+        _lit S_do_generic
+        _ two_array             ; -- symbol array
+        _ array_to_quotation    ; -- symbol quotation
+        _over
+        _ symbol_set_def        ; -- symbol
+        _ compile_word
         next
 endcode
 
 ; ### add-method
-code add_method, 'add-method'           ; -- method-xt untagged-type-number generic-xt
-        _tobody
-        _fetch                          ; -- method-xt untagged-type-number methods-vector
+code add_method, 'add-method'           ; method-xt untagged-type-number generic-symbol --
+        _ symbol_def
+        _ quotation_array
+        _ array_first                   ; -- method-symbol untagged-type-number methods-vector
+
+        _ verify_vector
+
+        _ rot
+        _ symbol_raw_code_address
+        _ rrot
+
         _ vector_set_nth_untagged
         next
 endcode
@@ -119,17 +123,17 @@ generic nth_unsafe, 'nth-unsafe'
 generic set_nth, 'set-nth'
 
 ; ### new-sequence
-generic new_sequence, 'new-sequence'    ; len seq -- newseq
+generic new_sequence, 'new-sequence'    ; len seq -- new-seq
 
-%macro _initialize_generic_function 1   ; generic-asm-name
-        _lit %1_xt
+%macro _initialize_generic_function 1   ; generic-asm-name --
+        _lit S_%1
         _ initialize_generic_function
 %endmacro
 
 %macro _add_method 3 ; generic-asm-name, object-type, method-asm-name
-        _lit %3_xt
+        _lit S_%3
         _lit %2
-        _lit %1_xt
+        _lit S_%1
         _ add_method
 %endmacro
 
