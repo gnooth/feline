@@ -257,72 +257,10 @@ section .data
 %define in_forth
 %endmacro
 
-%macro  execution_token 1-3             ; label, flags, inline size
-        global %1
-        section .data
-        align   DEFAULT_DATA_ALIGNMENT
-%1_xt:
-        dq      %1                      ; address of code
-        dq      0                       ; comp field
-        dq      %1_pfa                  ; parameter field address
-        db      %2                      ; flags
-        dq      %3                      ; inline size
-        align   DEFAULT_DATA_ALIGNMENT
-%1_pfa:                                 ; define pfa (but don't reserve any space)
-%endmacro
-
 %macro  head 2-5 0, 0                   ; label, name, flags, inline size
 %ifdef in_feline
         symbol S_%1, %2, %1, %4, %3
 %endif
-        execution_token %1, %3, %4
-%endmacro
-
-%macro  _toname 0                       ; xt -- nfa
-        mov     rbx, [rbx + BYTES_PER_CELL * 3]
-%endmacro
-
-%macro  _namefrom 0                     ; nt -- xt
-        mov     rbx, [rbx - BYTES_PER_CELL * 2]
-%endmacro
-
-%macro  _tocode 0                       ; xt -- code-address
-        mov     rbx, [rbx]
-%endmacro
-
-%macro  _name_to_code 0
-        _namefrom
-        _tocode
-%endmacro
-
-%macro  _tocomp 0                       ; xt -- comp-field
-        add     rbx, BYTES_PER_CELL
-%endmacro
-
-%macro  _tobody 0
-        mov     rbx, [rbx + BYTES_PER_CELL * 2]
-%endmacro
-
-%macro  _toflags 0
-        add     rbx, BYTES_PER_CELL * 4
-%endmacro
-
-%macro  _toinline 0
-        add     rbx, BYTES_PER_CELL * 4 + 1
-%endmacro
-
-%macro  _toview 0
-        _toname
-        sub     rbx, BYTES_PER_CELL * 4
-%endmacro
-
-%macro  _name_to_link 0
-        sub     rbx, BYTES_PER_CELL
-%endmacro
-
-%macro  _nametoflags 0
-        _namefrom
-        _toflags
 %endmacro
 
 %macro  subroutine 1
@@ -402,6 +340,7 @@ section .data
 %macro  code 2-5 0, 0, 0
         %push code
         head %1, %2, %3, %$end - %1, %5
+        global %1
         section .text
         align   DEFAULT_CODE_ALIGNMENT
 %1:
