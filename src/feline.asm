@@ -29,7 +29,6 @@ static_data_area:
 string FELINE_VOCAB_NAME, 'feline'
 
 %include "arith.asm"
-%include "execute.asm"
 %include "fetch.asm"
 %include "include.asm"
 %include "io.asm"

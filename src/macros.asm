@@ -754,9 +754,3 @@ section .text
         %error  "not in a quotation"
 %endif
 %endmacro
-
-%macro _execute 0
-        mov     rax, [rbx]
-        poprbx
-        call    rax
-%endmacro

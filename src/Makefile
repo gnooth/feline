@@ -76,7 +76,6 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm macros.asm inli
 	compile-word.asm \
 	curry.asm \
 	debug.asm \
-	execute.asm \
 	fetch.asm \
 	files.asm \
 	fixnum.asm \
