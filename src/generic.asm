@@ -16,7 +16,7 @@
 file __FILE__
 
 ; ### lookup-method
-code lookup_method, 'lookup-method'     ; object methods-vector -- object xt/0
+code lookup_method, 'lookup-method'     ; object methods-vector -- object raw-code-address/0
 ; Returns untagged 0 if no method.
         _tor                            ; -- object
         _dup
@@ -79,10 +79,10 @@ code initialize_generic_function, 'initialize-generic-function' ; symbol --
 endcode
 
 ; ### add-method
-code add_method, 'add-method'           ; method-xt untagged-type-number generic-symbol --
+code add_method, 'add-method'   ; method-symbol untagged-type-number generic-symbol --
         _ symbol_def
         _ quotation_array
-        _ array_first                   ; -- method-symbol untagged-type-number methods-vector
+        _ array_first           ; -- method-symbol untagged-type-number methods-vector
 
         _ verify_vector
 
