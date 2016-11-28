@@ -754,3 +754,18 @@ section .text
         %error  "not in a quotation"
 %endif
 %endmacro
+
+%macro  _eq? 0                          ; obj1 obj2 -- ?
+        mov     eax, t_value
+        cmp     rbx, [rbp]
+        mov     ebx, f_value
+        cmove   ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
+%macro  _eq?_literal 1                  ; obj -- ?
+        mov     eax, t_value
+        cmp     rbx, %1
+        mov     ebx, f_value
+        cmove   ebx, eax
+%endmacro
