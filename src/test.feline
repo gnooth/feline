@@ -729,7 +729,7 @@ test: create-symbol-test-1 ( -- )
 create-symbol-test-1
 
 test: immediate?-test-1 ( -- )
-    \ SYMBOL: immediate? check-t
+    \ symbol: immediate? check-t
     \ dup immediate? check-false
     42 immediate? check-false
     f immediate? check-false
@@ -739,14 +739,14 @@ test: immediate?-test-1 ( -- )
 immediate?-test-1
 
 test: parsing-test-1 ( -- )
-    V{ SYMBOL: this-is-a-new-symbol } V{ } sequence= check-t
+    V{ symbol: this-is-a-new-symbol } V{ } sequence= check-t
     clear
 ;
 
 parsing-test-1
 
 : %parsing-test-2 ( -- )
-    SYMBOL: another-new-symbol
+    symbol: another-new-symbol
     42
 ;
 

@@ -253,8 +253,8 @@ code quote_symbol, '\', SYMBOL_IMMEDIATE        ; -- symbol
         next
 endcode
 
-; ### SYMBOL:
-code parse_symbol, 'SYMBOL:', SYMBOL_IMMEDIATE  ; --
+; ### symbol:
+code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE  ; --
         _ parse_token                   ; -- string/f
         _dup
         _tagged_if_not .1
