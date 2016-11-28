@@ -27,8 +27,7 @@ code sbuf?, 'sbuf?'                     ; object -- t|f
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_type                    ; -- object-type
-        _lit OBJECT_TYPE_SBUF
-        _eq?
+        _eq? OBJECT_TYPE_SBUF
         _return
         _then .2
         _then .1
@@ -44,26 +43,25 @@ code error_not_sbuf, 'error-not-sbuf'   ; x --
         next
 endcode
 
-; ### check-sbuf
-code check_sbuf, 'check-sbuf'           ; handle -- sbuf
+; ### check_sbuf
+subroutine check_sbuf   ; handle -- sbuf
         _dup
         _ handle?
         _tagged_if .1
-        _handle_to_object_unsafe        ; -- object|0
+        _handle_to_object_unsafe        ; -- object/0
         _dup_if .2
         _dup
         _object_type                    ; -- object object-type
-        _lit OBJECT_TYPE_SBUF
-        _equal
-        _if .3
-        _return
+        _eq? OBJECT_TYPE_SBUF
+        _tagged_if .3
+        ret
         _then .3
         _then .2
         _then .1
 
         _ error_not_sbuf
-        next
-endcode
+        ret
+endsub
 
 ; ### sbuf-length
 code sbuf_length, 'sbuf-length'         ; handle -- length
