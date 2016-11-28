@@ -15,6 +15,32 @@
 
 file __FILE__
 
+feline_global reload_file, 'reload-file'
+
+; ### maybe-set-reload-file
+code maybe_set_reload_file, 'maybe-set-reload-file'     ; path --
+        _ reload_file
+        _tagged_if_not .1
+        _to_global reload_file
+        _else .1
+        _drop
+        _then .1
+        next
+endcode
+
+; ### reload
+code reload, 'reload'   ; --
+        _ reload_file
+        _dup
+        _tagged_if .1
+        _ load
+        _else .1
+        _drop
+        _write "nothing to reload"
+        _then .1
+        next
+endcode
+
 ; ### load
 code load, 'load'                       ; path --
         _ canonical_path
@@ -36,8 +62,10 @@ code load, 'load'                       ; path --
         _ lexer
         _ get
         _ lexer_file
+        _dup
         _ write_string
         _ nl
+        _ maybe_set_reload_file
         _then .1
 
         _f
