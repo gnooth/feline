@@ -419,8 +419,12 @@ code sbuf_shorten, 'sbuf-shorten'       ; fixnum handle --
         next
 endcode
 
-; ### sbuf-push-unchecked
-code sbuf_push_unchecked, 'sbuf-push-unchecked' ; untagged-char sbuf --
+; ### sbuf-push
+code sbuf_push, 'sbuf-push'             ; tagged-char sbuf --
+        _ check_sbuf
+        _verify_char [rbp]
+        _untag_char qword [rbp]
+
         push    this_register           ; save callee-saved register
         mov     this_register, rbx      ; sbuf in this_register
         _sbuf_length                    ; -- char length
@@ -432,23 +436,6 @@ code sbuf_push_unchecked, 'sbuf-push-unchecked' ; untagged-char sbuf --
         _this_sbuf_set_length           ; -- char length
         _this_sbuf_set_nth_unsafe       ; --
         pop     this_register           ; restore callee-saved register
-        next
-endcode
-
-; ### sbuf-push
-code sbuf_push, 'sbuf-push'             ; tagged-char handle --
-        _ check_sbuf
-        _swap
-        _ check_char
-        _swap
-        _ sbuf_push_unchecked
-        next
-endcode
-
-; ### sbuf-append-char
-code sbuf_append_char, 'sbuf-append-char' ; sbuf tagged-char --
-        _swap
-        _ sbuf_push
         next
 endcode
 

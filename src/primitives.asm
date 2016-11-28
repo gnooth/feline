@@ -825,22 +825,17 @@ endcode
         jne     error_not_char
 %endmacro
 
-; ### verify-char
-code verify_char, 'verify-char'         ; char -- char
-        _verify_char
-        next
-endcode
+%macro _verify_char 1
+        mov     rax, %1
+        and     al, TAG_MASK
+        cmp     al, CHAR_TAG
+        jne     error_not_char
+%endmacro
 
 %macro _check_char 0
         _verify_char
         _untag_char
 %endmacro
-
-; ### check-char
-code check_char, 'check-char'           ; char -- untagged-char
-        _check_char
-        next
-endcode
 
 ; ### char-upcase
 code char_upcase, 'char-upcase'
