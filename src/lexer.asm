@@ -111,7 +111,7 @@ code lexer?, 'lexer?'                   ; handle -- ?
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_type                    ; -- object-type
-        _eq?_literal OBJECT_TYPE_LEXER
+        _eq? OBJECT_TYPE_LEXER
         _return
         _then .2
         _then .1
@@ -147,7 +147,7 @@ code check_lexer, 'check-lexer'         ; x -- lexer
         _dup_if .2
         _dup
         _object_type                    ; -- object object-type
-        _eq?_literal OBJECT_TYPE_LEXER
+        _eq? OBJECT_TYPE_LEXER
         _tagged_if .3
         _return
         _then .3

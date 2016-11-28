@@ -47,7 +47,7 @@ code vocab?, 'vocab?'                   ; handle -- ?
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_type                    ; -- object-type
-        _eq?_literal OBJECT_TYPE_VOCAB
+        _eq? OBJECT_TYPE_VOCAB
         _return
         _then .2
         _then .1

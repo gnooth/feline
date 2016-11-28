@@ -158,7 +158,7 @@ code symbol?, 'symbol?'                 ; x -- ?
         _handle_to_object_unsafe        ; -- object/0
         _?dup_if .2
         _object_type                    ; -- object-type
-        _eq?_literal OBJECT_TYPE_SYMBOL
+        _eq? OBJECT_TYPE_SYMBOL
         _return
         _then .2
         ; Empty handle.
@@ -178,7 +178,7 @@ code symbol?, 'symbol?'                 ; x -- ?
 
         ; -- object
         _object_type                    ; -- object-type
-        _eq?_literal OBJECT_TYPE_SYMBOL
+        _eq? OBJECT_TYPE_SYMBOL
 
         next
 endcode

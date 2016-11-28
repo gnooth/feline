@@ -49,7 +49,7 @@ code quotation?, 'quotation?'                 ; x -- ?
         _handle_to_object_unsafe        ; -- object/0
         _?dup_if .2
         _object_type                    ; -- object-type
-        _eq?_literal OBJECT_TYPE_QUOTATION
+        _eq? OBJECT_TYPE_QUOTATION
         _return
         _then .2
         ; Empty handle.
@@ -69,7 +69,7 @@ code quotation?, 'quotation?'                 ; x -- ?
 
         ; -- object
         _object_type                    ; -- object-type
-        _eq?_literal OBJECT_TYPE_QUOTATION
+        _eq? OBJECT_TYPE_QUOTATION
 
         next
 endcode

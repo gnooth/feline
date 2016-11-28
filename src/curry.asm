@@ -59,7 +59,7 @@ code curry?, 'curry?'                   ; handle -- ?
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_type                    ; -- object-type
-        _eq?_literal OBJECT_TYPE_CURRY
+        _eq? OBJECT_TYPE_CURRY
         _return
         _then .2
         _then .1
@@ -95,7 +95,7 @@ code check_curry, 'check-curry'         ; x -- curry
         _dup_if .2
         _dup
         _object_type                    ; -- object object-type
-        _eq?_literal OBJECT_TYPE_CURRY
+        _eq? OBJECT_TYPE_CURRY
         _tagged_if .3
         _return
         _then .3

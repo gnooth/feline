@@ -30,7 +30,7 @@ code string?, 'string?'                 ; x -- t|f
         _handle_to_object_unsafe        ; -- object/0
         _?dup_if .2
         _object_type                    ; -- object-type
-        _eq?_literal OBJECT_TYPE_STRING
+        _eq? OBJECT_TYPE_STRING
         _return
         _then .2
         ; Empty handle.
@@ -50,7 +50,7 @@ code string?, 'string?'                 ; x -- t|f
 
         ; -- object
         _object_type                    ; -- object-type
-        _eq?_literal OBJECT_TYPE_STRING
+        _eq? OBJECT_TYPE_STRING
 
         next
 endcode
@@ -84,7 +84,7 @@ code verify_unboxed_string, 'verify-unboxed-string' ; string -- string
         next
 endcode
 
-; ### check_string
+; ### check-string
 subroutine check_string                 ; handle-or-string -- unboxed-string
         _dup
         _ handle?
