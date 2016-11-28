@@ -15,16 +15,20 @@
 
 file __FILE__
 
-%macro  _hashtable_count 0              ; hashtable -- count
+%macro  _hashtable_raw_count 0          ; hashtable -- count
         _slot1
 %endmacro
 
-%macro  _this_hashtable_count 0         ; -- count
+%macro  _this_hashtable_raw_count 0     ; -- count
         _this_slot1
 %endmacro
 
-%macro  _this_hashtable_set_count 0     ; count --
+%macro  _this_hashtable_set_raw_count 0 ; count --
         _this_set_slot1
+%endmacro
+
+%macro  _this_hashtable_increment_raw_count 0   ; --
+        add     qword [this_register + BYTES_PER_CELL * 1], 1
 %endmacro
 
 %macro  _this_hashtable_deleted 0       ; -- deleted
@@ -141,13 +145,13 @@ endcode
 ; ### hashtable-count
 code hashtable_count, 'hashtable-count' ; hashtable -- count
         _ check_hashtable
-        _hashtable_count
+        _hashtable_raw_count
         _tag_fixnum
         next
 endcode
 
 ; ### hashtable-capacity
-code hashtable_capacity, 'hashtable-capacity' ; hashtable -- capacity
+code hashtable_capacity, 'hashtable-capacity'   ; hashtable -- capacity
 ; Return value is tagged.
         _ check_hashtable
         _hashtable_capacity
@@ -162,7 +166,7 @@ code hashtable_keys, 'hashtable-keys'   ; hashtable -- keys
 hashtable_keys_unchecked:
         push    this_register
         mov     this_register, rbx
-        _hashtable_count
+        _hashtable_raw_count
         _ new_vector_untagged           ; -- handle-to-vector
         _this_hashtable_capacity
         _zero
@@ -188,7 +192,7 @@ code hashtable_values, 'hashtable-values' ; hashtable -- values
 hashtable_values_unchecked:
         push    this_register
         mov     this_register, rbx
-        _hashtable_count
+        _hashtable_raw_count
         _ new_vector_untagged           ; -- handle-to-vector
         _this_hashtable_capacity
         _zero
@@ -432,7 +436,7 @@ code set_at, 'set-at'                   ; value key handle --
         _ check_hashtable               ; -- value key hashtable
 
         _dup
-        _hashtable_count
+        _hashtable_raw_count
         _lit 3
         _star
         _over
@@ -449,13 +453,10 @@ set_at_unchecked:
         mov     this_register, rbx      ; -- value key hashtable
         _twodup                         ; -- value key hashtable key hashtable
         _ find_index_for_key_unchecked  ; -- value key hashtable tagged-index ?
-        _ not
-        _tagged_if .2
+        _tagged_if_not .2
         ; key was not found
         ; we're adding an entry
-        _this_hashtable_count
-        _oneplus
-        _this_hashtable_set_count
+        _this_hashtable_increment_raw_count
         _then .2                        ; -- value key hashtable tagged-index
         _nip                            ; -- value key tagged-index
         _untag_fixnum
@@ -502,10 +503,10 @@ hashtable_grow_unchecked:
         _store
         _loop .1
 
-        _this_hashtable_count           ; -- keys values count
+        _this_hashtable_raw_count       ; -- keys values count
 
         _zero
-        _this_hashtable_set_count
+        _this_hashtable_set_raw_count
 
         _zero
         _?do .2                         ; -- keys values
