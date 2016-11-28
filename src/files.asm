@@ -128,6 +128,8 @@ code file_read_line, 'file-read-line'   ; fd -- string/f
 .3:
         cmp     rbx, tagged_char(10)
         je      .4
+        cmp     rbx, f_value
+        je      .4
         _over
         _ sbuf_push
         jmp     .2
