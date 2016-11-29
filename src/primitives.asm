@@ -1133,6 +1133,15 @@ code ncols, '#cols'
         next
 endcode
 
+; ### random-32
+code random_32, 'random-32'     ; -- n
+        xcall   c_rand
+        pushrbx
+        mov     rbx, rax
+        _tag_fixnum
+        next
+endcode
+
 ; ### bye
 code feline_bye, "bye"
         _ free_locals_stack

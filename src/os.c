@@ -475,3 +475,16 @@ int c_fixnum_to_base(Cell n, Cell base, char * buf, size_t size)
     // PRId64 is defined in inttypes.h
     return snprintf(buf, size, "%" PRId64, n);
 }
+
+int c_rand()
+{
+  static int initialized;
+  if (!initialized)
+    {
+      struct timeval tv;
+      gettimeofday(&tv, NULL);
+      srand(tv.tv_usec * tv.tv_sec);
+      initialized = 1;
+    }
+  return rand();
+}
