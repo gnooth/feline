@@ -769,3 +769,13 @@ section .text
         mov     ebx, f_value
         cmove   ebx, eax
 %endmacro
+
+%macro _rdtsc 0                         ; -- uint64
+; "The high-order 32 bits are loaded into EDX, and the low-order 32 bits are
+; loaded into the EAX register. This instruction ignores operand size."
+        rdtsc
+        pushrbx
+        mov     ebx, eax
+        shl     rdx, 32
+        add     rbx, rdx
+%endmacro

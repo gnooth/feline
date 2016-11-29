@@ -17,16 +17,6 @@ file __FILE__
 
 ; http://www.intel.com/content/www/us/en/embedded/training/ia-32-ia-64-benchmark-code-execution-paper.html
 
-%macro _rdtsc 0                         ; -- u
-; "The high-order 32 bits are loaded into EDX, and the low-order 32 bits are
-; loaded into the EAX register. This instruction ignores operand size."
-        rdtsc
-        pushrbx
-        mov     ebx, eax
-        shl     rdx, 32
-        add     rbx, rdx
-%endmacro
-
 ; ### rdtsc
 inline read_time_stamp_counter, 'rdtsc' ; -- u
         _rdtsc
