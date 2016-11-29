@@ -82,7 +82,7 @@ endcode
 code mark_hashtable, 'mark-hashtable'   ; hashtable --
         push    this_register
         mov     this_register, rbx      ; -- hashtable
-        _hashtable_capacity             ; -- capacity
+        _hashtable_raw_capacity         ; -- capacity
         _zero
         _?do .1
         _i

@@ -39,15 +39,15 @@ file __FILE__
         _this_set_slot2
 %endmacro
 
-%macro  _hashtable_capacity 0           ; hashtable -- untagged-capacity
+%macro  _hashtable_raw_capacity 0       ; hashtable -- untagged-capacity
         _slot3
 %endmacro
 
-%macro  _this_hashtable_capacity 0      ; -- untagged-capacity
+%macro  _this_hashtable_raw_capacity 0  ; -- untagged-capacity
         _this_slot3
 %endmacro
 
-%macro  _this_hashtable_set_capacity 0  ; untagged-capacity --
+%macro  _this_hashtable_set_raw_capacity 0      ; untagged-capacity --
         _this_set_slot3
 %endmacro
 
@@ -60,7 +60,7 @@ file __FILE__
 %endmacro
 
 %macro  _this_hashtable_mask 0          ; -- mask
-        _this_hashtable_capacity
+        _this_hashtable_raw_capacity
         _oneminus
 %endmacro
 
@@ -154,7 +154,7 @@ endcode
 code hashtable_capacity, 'hashtable-capacity'   ; hashtable -- capacity
 ; Return value is tagged.
         _ check_hashtable
-        _hashtable_capacity
+        _hashtable_raw_capacity
         _tag_fixnum
         next
 endcode
@@ -168,7 +168,7 @@ hashtable_keys_unchecked:
         mov     this_register, rbx
         _hashtable_raw_count
         _ new_vector_untagged           ; -- handle-to-vector
-        _this_hashtable_capacity
+        _this_hashtable_raw_capacity
         _zero
         _?do .1
         _i
@@ -194,7 +194,7 @@ hashtable_values_unchecked:
         mov     this_register, rbx
         _hashtable_raw_count
         _ new_vector_untagged           ; -- handle-to-vector
-        _this_hashtable_capacity
+        _this_hashtable_raw_capacity
         _zero
         _?do .1
         _i
@@ -244,14 +244,14 @@ new_hashtable_untagged:
         _this_object_set_type OBJECT_TYPE_HASHTABLE
 
         _dup
-        _this_hashtable_set_capacity    ; -- n
+        _this_hashtable_set_raw_capacity        ; -- n
 
         ; each entry occupies two cells (key, value)
         shl     rbx, 4                  ; -- n*16
         _ iallocate                     ; -- data-address
         _this_hashtable_set_data        ; --
 
-        _this_hashtable_capacity
+        _this_hashtable_raw_capacity
         _twostar
         _zero
         _?do .1
@@ -343,7 +343,7 @@ find_index_for_key_unchecked:
         _dup
         _this_hashtable_hash_at         ; -- key start-index
 
-        _this_hashtable_capacity
+        _this_hashtable_raw_capacity
         _zero
         _?do .1
 
@@ -440,7 +440,7 @@ code set_at, 'set-at'                   ; value key handle --
         _lit 3
         _star
         _over
-        _hashtable_capacity
+        _hashtable_raw_capacity
         _twostar
         _ugt
         _if .1
@@ -481,17 +481,17 @@ hashtable_grow_unchecked:
         _this_hashtable_data
         _ ifree
 
-        _this_hashtable_capacity        ; -- ... n
+        _this_hashtable_raw_capacity        ; -- ... n
         ; double existing capacity
         _twostar
         _dup
-        _this_hashtable_set_capacity
+        _this_hashtable_set_raw_capacity
         ; 16 bytes per entry
         shl     rbx, 4                  ; -- ... n*16
         _ iallocate
         _this_hashtable_set_data        ; -- keys values
 
-        _this_hashtable_capacity
+        _this_hashtable_raw_capacity
         _twostar
         _zero
         _?do .1
@@ -567,7 +567,7 @@ code dot_hashtable, '.hashtable'        ; hashtable --
         mov     this_register, rbx
 
         _write "H{ "
-        _hashtable_capacity
+        _hashtable_raw_capacity
         _zero
         _?do .1
         _i
