@@ -35,7 +35,7 @@ endcode
 ; ### error-not-array
 code error_not_array, 'error-not-array' ; x --
         ; REVIEW
-        _error "not a array"
+        _error "not an array"
         next
 endcode
 
