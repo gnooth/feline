@@ -156,6 +156,8 @@ code cold, 'cold'                       ; --
         _ initialize_locals_stack
         _ forth_standard_output
 
+        _ seed_random
+
         _ initialize_handle_space
 
         _lit 256

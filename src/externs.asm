@@ -51,4 +51,6 @@ extern os_write_file
 extern c_fixnum_to_base
 extern c_get_saved_backtrace_array
 extern c_get_saved_backtrace_size
+extern c_random
 extern c_save_backtrace
+extern c_seed_random

@@ -1133,6 +1133,33 @@ code ncols, '#cols'
         next
 endcode
 
+; ### seed-random
+code seed_random, 'seed-random' ; --
+
+        ; REVIEW
+        _rdtsc
+
+%ifdef WIN64
+        mov     rcx, rbx
+%else
+        mov     rdi, rbx
+%endif
+        poprbx
+        xcall   c_seed_random
+        next
+endcode
+
+; ### random
+code random, 'random'   ; -- fixnum
+        xcall   c_random
+        mov     rdx, $0fffffffffffffff
+        and     rax, rdx
+        pushrbx
+        mov     rbx, rax
+        _tag_fixnum
+        next
+endcode
+
 ; ### bye
 code feline_bye, "bye"
         _ free_locals_stack
