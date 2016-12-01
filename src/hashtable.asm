@@ -159,6 +159,28 @@ code hashtable_capacity, 'hashtable-capacity'   ; hashtable -- capacity
         next
 endcode
 
+; ### empty-or-deleted?
+code empty_or_deleted?, 'empty-or-deleted?'     ; x -- ?
+        _dup
+        _tagged_if_not .1
+        ; empty
+        mov     rbx, t_value
+        _return
+        _then .1
+
+        _dup
+        _eq? S_deleted
+        _tagged_if .2
+        ; deleted
+        mov     rbx, t_value
+        _return
+        _then .2
+
+        ; none of the above
+        mov     rbx, f_value
+        next
+endcode
+
 ; ### hashtable-keys
 code hashtable_keys, 'hashtable-keys'   ; hashtable -- keys
         _ check_hashtable               ; -- hashtable
@@ -174,7 +196,8 @@ hashtable_keys_unchecked:
         _i
         _this_hashtable_nth_key
         _dup
-        _tagged_if .2
+        _ empty_or_deleted?
+        _tagged_if_not .2
         _over
         _ vector_push
         _else .2
@@ -186,7 +209,7 @@ hashtable_keys_unchecked:
 endcode
 
 ; ### hashtable-values
-code hashtable_values, 'hashtable-values' ; hashtable -- values
+code hashtable_values, 'hashtable-values'       ; hashtable -- values
         _ check_hashtable               ; -- hashtable
 
 hashtable_values_unchecked:
@@ -199,7 +222,8 @@ hashtable_values_unchecked:
         _?do .1
         _i
         _this_hashtable_nth_key
-        _tagged_if .2
+        _ empty_or_deleted?
+        _tagged_if_not .2
         _i
         _this_hashtable_nth_value
         _over
@@ -465,6 +489,7 @@ set_at_unchecked:
         next
 endcode
 
+; ### +deleted+
 feline_constant deleted, '+deleted+', S_deleted
 
 ; ### delete-at
