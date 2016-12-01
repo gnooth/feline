@@ -87,6 +87,12 @@ help: <range>
     integers from start to start+len-1."
 ;
 
+help: <sbuf>
+    "( n -- sbuf )
+    Create a new string buffer with a capacity of n characters
+    before resizing."
+;
+
 help: <vector>
     "( n -- vector )
     Create a new vector with an initial capacity of n elements."
