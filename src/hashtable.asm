@@ -332,7 +332,7 @@ endcode
 %endmacro
 
 ; ### find-index-for-key
-code find_index_for_key, 'find-index-for-key' ; key hashtable -- tagged-index ?
+code find_index_for_key, 'find-index-for-key'   ; key hashtable -- tagged-index/f ?
 
         _ check_hashtable
 
@@ -465,6 +465,38 @@ set_at_unchecked:
         next
 endcode
 
+feline_constant deleted, '+deleted+', S_deleted
+
+; ### delete-at
+code delete_at, 'delete-at'     ; key handle --
+
+        _ check_hashtable       ; -- key hashtable
+
+        push    this_register
+        mov     this_register, rbx      ; -- key hashtable
+
+        _ find_index_for_key_unchecked  ; -- tagged-index/f ?
+
+        _tagged_if .1
+
+        ; -- tagged-index
+        _ deleted
+        _ deleted
+        _ rot
+        _untag_fixnum
+        _this_hashtable_set_nth_pair
+
+        _else .1
+
+        ; not found
+        _drop
+
+        _then .1
+
+        pop     this_register
+        next
+endcode
+
 ; ### hashtable-grow
 code hashtable_grow, 'hashtable-grow'   ; hashtable --
         _ check_hashtable               ; -- hashtable
@@ -481,7 +513,7 @@ hashtable_grow_unchecked:
         _this_hashtable_data
         _ ifree
 
-        _this_hashtable_raw_capacity        ; -- ... n
+        _this_hashtable_raw_capacity    ; -- ... n
         ; double existing capacity
         _twostar
         _dup
