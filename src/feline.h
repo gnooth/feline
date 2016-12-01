@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef FORTH_H
-#define FORTH_H
+#ifndef FELINE_H
+#define FELINE_H
 
 #include <stdint.h>             // int64_t
 
@@ -60,10 +60,4 @@ extern Cell saved_r15_data;
 extern Cell saved_rip_data;
 extern Cell saved_efl_data;
 
-#define LF      '\n'
-#define CR      '\r'
-#define BS      '\b'
-#define BL      ' '
-#define ESC     0x1b
-
-#endif // FORTH_H
+#endif // FELINE_H
