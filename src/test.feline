@@ -619,6 +619,44 @@ test: hashtable-test-3 ( -- )
 
 hashtable-test-3
 
+global: ht
+
+constant: n1    100     -- total number of entries
+constant: n2     40     -- number of entries to delete
+
+test: hashtable-test-4 ( -- )
+    1 <hashtable> -> ht
+    n1 [ dup number>string ht set-at ] each-integer
+    n1 [ dup number>string ht at = check-t ] each-integer
+
+    -- delete first n2 entries
+    n2 [ number>string ht delete-at ] each-integer
+
+    -- verify remaining entries are findable
+    n1 n2 - [ n2 + dup number>string ht at = check-t ] each-integer
+
+    -- delete first n2 entries again (should make no difference)
+    n2 [ number>string ht delete-at ] each-integer
+
+    -- verify remaining entries are findable
+    n1 n2 - [ n2 + dup number>string ht at = check-t ] each-integer
+
+    -- add deleted entries back
+    n2 [ dup number>string ht set-at ] each-integer
+
+    -- verify all entries are findable
+    n1 [ dup number>string ht at = check-t ] each-integer
+
+    ht hashtable-keys length n1 eq? check-t
+    ht hashtable-keys [ string? check-t ] each
+    ht hashtable-values length n1 eq? check-t
+    ht hashtable-values [ fixnum? check-t ] each
+
+    f -> ht
+;
+
+hashtable-test-4
+
 test: length-test-1 ( -- )
     "test" length 4 eq? check-t
     "testing" string>sbuf length 7 eq? check-t
