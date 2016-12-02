@@ -16,16 +16,7 @@
 file __FILE__
 
 ; ### feline-vocab
-code feline_vocab, 'feline-vocab'       ; --
-        _quote "feline"
-        _ lookup_vocab
-        _dup
-        _tagged_if .1
-        _return
-        _then .1
-        _error "no feline vocab"
-        next
-endcode
+feline_global feline_vocab, 'feline-vocab'
 
 ; ### vocabs
 feline_global vocabs, 'vocabs'
@@ -49,6 +40,10 @@ code initialize_vocabs, 'initialize-vocabs'
         _quote "feline"                 ; -- name
         _dup
         _ new_vocab                     ; -- name vocab
+
+        _dup
+        _to_global feline_vocab
+
         _ two_array
         _ vocabs
         _ vector_push
