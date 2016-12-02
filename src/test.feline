@@ -1278,6 +1278,6 @@ test: string-index-from-test-1
 
 string-index-from-test-1
 
-IN: feline
+in: feline
 
 ?nl "Reached end of test.feline" write-string

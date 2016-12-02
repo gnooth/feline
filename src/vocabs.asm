@@ -168,12 +168,12 @@ code ensure_vocab, 'ensure-vocab'       ; string -- vocab
         next
 endcode
 
-; ### IN:
-code in_colon, 'IN:'
+; ### in:
+code in_colon, 'in:'
         _ parse_token                   ; -- string/f
         _dup
         _tagged_if .1
-        _ ensure_vocab                  ;
+        _ ensure_vocab
         _to_global current_vocab
         _else .1
         _error "unexpected end of input"
@@ -181,14 +181,8 @@ code in_colon, 'IN:'
         next
 endcode
 
-; ### in:
-code in_colon_alias, 'in:'
-        _ in_colon
-        next
-endcode
-
-; ### USING:
-code using_colon, 'USING:'
+; ### using:
+code using_colon, 'using:'
         _lit 10
         _ new_vector_untagged           ; -- handle
         _tor
@@ -217,12 +211,6 @@ code using_colon, 'USING:'
         _drop
         _rfrom
         _to_global context_vector
-        next
-endcode
-
-; ### using:
-code using_colon_alias, 'using:'
-        _ using_colon
         next
 endcode
 
