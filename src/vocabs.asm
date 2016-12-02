@@ -121,31 +121,26 @@ code lookup_vocab, 'lookup-vocab'       ; vocab-spec -- vocab/f
         _then .1
 
         _ verify_string
-        _ vocabs
-        _ vector_length
-        _untag_fixnum
-        _zero
-        _?do .2
-        _i
-        _ vocabs
-        _ vector_nth_untagged           ; -- string 2array
-        _ array_first                   ; -- string string2
-        _over
-        _ stringequal
-        _untag_fixnum
-        _if .3
-        ; found it
-        _drop
-        _i
-        _ vocabs
-        _ vector_nth_untagged
-        _ array_second
-        _unloop
+
+        _ dictionary
+        _dup
+        _tagged_if .2
+        _ at_
         _return
-        _then .3
-        _loop .2
+        _else .2
         _drop
+        _then .2
+
+        ; We haven't created the dictionary yet.
+        ; There is only the "feline" vocab.
+        _quote "feline"
+        _ stringequal
+        _tagged_if .3
+        _ feline_vocab
+        _else .3
         _f
+        _then .3
+
         next
 endcode
 
