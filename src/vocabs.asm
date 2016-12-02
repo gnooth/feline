@@ -101,9 +101,9 @@ endcode
 code all_words, 'all-words'             ; -- seq
         _lit 2048
         _ new_vector_untagged
-        _ vocabs
+        _ dictionary
+        _ hashtable_values
         _quotation .1
-        _ array_second
         _ vocab_words
         _over
         _ vector_push_all
