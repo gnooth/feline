@@ -18,9 +18,6 @@ file __FILE__
 ; ### feline-vocab
 feline_global feline_vocab, 'feline-vocab'
 
-; ### vocabs
-feline_global vocabs, 'vocabs'  ; -- vector
-
 ; ### dictionary
 feline_global dictionary, 'dictionary'  ; -- hashtable
 
@@ -34,22 +31,11 @@ feline_global current_vocab, 'current-vocab'
 code initialize_vocabs, 'initialize-vocabs'
         _lit 16
         _ new_vector_untagged
-        _to_global vocabs
-
-        _lit 16
-        _ new_vector_untagged
         _to_global context_vector
 
         _quote "feline"                 ; -- name
-        _dup
         _ new_vocab                     ; -- name vocab
-
-        _dup
         _to_global feline_vocab
-
-        _ two_array
-        _ vocabs
-        _ vector_push
 
         next
 endcode
@@ -157,10 +143,6 @@ code ensure_vocab, 'ensure-vocab'       ; string -- vocab
         _dup
         _ new_vocab                     ; -- string vocab
         _tuck
-        _twodup
-        _ two_array
-        _ vocabs
-        _ vector_push
         _swap
         _ dictionary
         _ set_at
