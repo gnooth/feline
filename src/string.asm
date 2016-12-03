@@ -301,13 +301,6 @@ code destroy_string_unchecked, '~string-unchecked' ; string --
         next
 endcode
 
-; ### string-hashcode
-code string_hashcode, 'string-hashcode' ; handle-or-string -- tagged-fixnum|f
-        _ check_string
-        _string_hashcode
-        next
-endcode
-
 ; ### rehash-string
 code rehash_string, 'rehash-string'     ; string --
 ; Hash function adapted from SBCL.
@@ -360,8 +353,8 @@ rehash_string_unchecked:
         next
 endcode
 
-; ### force-hashcode
-code force_hashcode, 'force-hashcode'   ; handle-or-string -- hashcode
+; ### string-hashcode
+code string_hashcode, 'string-hashcode' ; handle-or-string -- fixnum
         _ check_string
         _dup
         _string_hashcode
@@ -747,7 +740,7 @@ code string_equal?, 'string-equal?'     ; object1 object2 -- ?
         ; both objects are strings
 
         _twodup
-        _lit S_force_hashcode
+        _lit S_string_hashcode
         _ bi_at                         ; -- seq1 seq2 hashcode1 hashcode2
 
         _equal

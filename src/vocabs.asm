@@ -60,10 +60,10 @@ code hash_vocabs, 'hash-vocabs'
 
         _dup
         _ symbol_name
-        _ force_hashcode
+        _ string_hashcode
         _over
         _ symbol_vocab_name
-        _ force_hashcode
+        _ string_hashcode
         _ hash_combine
         _over
         _ symbol_set_hashcode

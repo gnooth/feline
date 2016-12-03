@@ -568,7 +568,7 @@ test: \-test-1 ( -- )
 
 test: hashcode-test-1 ( -- )
     "test"
-    [ string-hashcode check-false ] keep
+    [ string-hashcode fixnum? check-t ] keep
     [ hashcode dup fixnum? check-t ] keep
     string-hashcode eq? check-t
 ;

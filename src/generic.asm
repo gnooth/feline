@@ -142,7 +142,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
 
         ; hashcode
         _initialize_generic_function hashcode
-        _add_method hashcode, OBJECT_TYPE_STRING, force_hashcode
+        _add_method hashcode, OBJECT_TYPE_STRING, string_hashcode
         _add_method hashcode, OBJECT_TYPE_SYMBOL, symbol_hashcode
 
         ; equal?
