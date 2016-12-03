@@ -99,7 +99,7 @@ code all_words, 'all-words'             ; -- seq
 endcode
 
 ; ### lookup-vocab
-code lookup_vocab, 'lookup-vocab'       ; vocab-spec -- vocab/f
+code lookup_vocab, 'lookup-vocab'       ; vocab-specifier -- vocab/f
         _dup
         _ vocab?
         _tagged_if .1
@@ -126,6 +126,25 @@ code lookup_vocab, 'lookup-vocab'       ; vocab-spec -- vocab/f
         _else .3
         _f
         _then .3
+
+        next
+endcode
+
+; ### delete-vocab
+code delete_vocab, 'delete-vocab'       ; vocab-specifier --
+        _dup
+        _ vocab?
+        _tagged_if .1
+        _ vocab_name
+        _ dictionary
+        _ delete_at
+        _return
+        _then .1
+
+        _ verify_string
+
+        _ dictionary
+        _ delete_at
 
         next
 endcode
