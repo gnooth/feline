@@ -28,14 +28,21 @@ feline_global context_vector, 'context-vector'
 feline_global current_vocab, 'current-vocab'
 
 ; ### initialize-vocabs
-code initialize_vocabs, 'initialize-vocabs'
+code initialize_vocabs, 'initialize-vocabs'     ; --
+        _quote "feline"
+        _ new_vocab
+        _to_global feline_vocab
+
         _lit 16
         _ new_vector_untagged
         _to_global context_vector
 
-        _quote "feline"                 ; -- name
-        _ new_vocab                     ; -- name vocab
-        _to_global feline_vocab
+        _ feline_vocab
+        _ context_vector
+        _ vector_push
+
+        _ feline_vocab
+        _to_global current_vocab
 
         next
 endcode
