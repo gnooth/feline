@@ -757,11 +757,11 @@ test: ?lookup-symbol-test-1 ( -- )
 ?lookup-symbol-test-1
 
 test: create-symbol-test-1 ( -- )
-    "effluvia" "feline" ?lookup-symbol check-false
-    "effluvia" "feline" create-symbol
+    "effluvia" "test" ?lookup-symbol check-false
+    "effluvia" "test" create-symbol
     dup symbol? check-t
-    dup "effluvia" "feline" ?lookup-symbol eq? check-t
-    symbol-vocab-name "feline" = check-t
+    dup "effluvia" "test" ?lookup-symbol eq? check-t
+    symbol-vocab-name "test" = check-t
 ;
 
 create-symbol-test-1
