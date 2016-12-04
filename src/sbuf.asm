@@ -330,17 +330,23 @@ endcode
 
 ; ### sbuf_resize
 subroutine sbuf_resize                  ; sbuf new-capacity --
-        _over                           ; -- sbuf new-capacity sbuf
-        _sbuf_data                      ; -- sbuf new-capacity data-address
-        _over                           ; -- sbuf new-capacity data-address new-capacity
+
+        _swap
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- new-capacity
+
+        _this_sbuf_data                 ; -- new-capacity data-address
+
+        _over                           ; -- new-capacity data-address new-capacity
         _oneplus                        ; terminal null byte
-        _ resize                        ; -- sbuf new-capacity new-data-address
-        _tor
-        _over                           ; -- sbuf new-capacity sbuf     r: -- new-data-address
-        _sbuf_set_raw_capacity          ; -- sbuf                       r: -- new-data-address
-        _rfrom                          ; -- sbuf new-data-addr
-        _swap                           ; -- new-data-addr sbuf
-        _sbuf_set_data
+        _ resize                        ; -- new-capacity new-data-address
+
+        _this_sbuf_set_data
+        _this_sbuf_set_raw_capacity
+
+        pop     this_register
         ret
 endsub
 
