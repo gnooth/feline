@@ -87,51 +87,30 @@ code sbuf_capacity, 'sbuf-capacity'     ; sbuf -- capacity
 endcode
 
 ; ### make-sbuf-internal
-code make_sbuf_internal, 'make-sbuf-internal' ; untagged-capacity -- sbuf
+subroutine make_sbuf_internal   ; untagged-capacity -- sbuf
+        _lit 4
+        _ allocate_cells                ; -- capacity addr
 
-; locals:
-%define capacity        local0
-%define sbuf            local1
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- capacity
 
-        _locals_enter
+        _this_object_set_type OBJECT_TYPE_SBUF
+        _this_object_set_flags OBJECT_ALLOCATED_BIT
 
-        popd    capacity
-
-        _lit 32                         ; -- 32
         _dup
-        _ allocate_object               ; -- 32 sbuf
-
-        popd    sbuf                    ; -- 32
-        pushd   sbuf
-        _swap
-        _ erase                         ; --
-        _lit OBJECT_TYPE_SBUF
-        pushd   sbuf
-        _object_set_type                ; --
-
-        pushd   sbuf
-        _lit OBJECT_ALLOCATED_BIT
-        _object_set_flags               ; --
-
-        pushd   capacity
         _oneplus                        ; terminal null byte
         _ iallocate
-        pushd   sbuf                    ; -- data-address sbuf
-        _sbuf_set_data                  ; --
+        _this_sbuf_set_data             ; -- capacity
 
-        pushd   capacity
-        pushd   sbuf                    ; -- capacity sbuf
-        _sbuf_set_capacity              ; --
+        _this_sbuf_set_capacity
 
-        pushd   sbuf
+        pushrbx
+        mov     rbx, this_register      ; -- sbuf
 
-        _locals_leave
-        next
-
-%undef capacity
-%undef sbuf
-
-endcode
+        pop     this_register
+        ret
+endsub
 
 ; ### <sbuf>
 code new_sbuf, '<sbuf>'                 ; tagged-capacity -- sbuf
