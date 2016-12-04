@@ -464,12 +464,20 @@ OBJECT_ALLOCATED_BIT            equ 4
         _set_slot2
 %endmacro
 
+%macro  _this_sbuf_set_data 0           ; data-address --
+        _this_set_slot2
+%endmacro
+
 %macro  _sbuf_capacity 0
         _slot3
 %endmacro
 
 %macro  _sbuf_set_capacity 0            ; capacity sbuf --
         _set_slot3
+%endmacro
+
+%macro  _this_sbuf_set_capacity 0       ; capacity --
+        _this_set_slot3
 %endmacro
 
 %macro  _sbuf_check_index 0              ; sbuf index -- -1|0
