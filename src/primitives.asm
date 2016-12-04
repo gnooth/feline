@@ -804,8 +804,8 @@ code ?nl, '?nl'
 endcode
 
 ; ### c@
-code feline_cfetch, 'c@'                ; tagged-fixnum-address -- tagged-fixnum-byte
-        _untag_fixnum
+code cfetch, 'c@'       ; tagged-fixnum-address -- tagged-fixnum-byte
+        _check_fixnum
         _cfetch
         _tag_fixnum
         next

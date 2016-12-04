@@ -31,11 +31,6 @@ code fetchplus, '@+'                    ; a-addr1 -- a-addr2 x
         next
 endcode
 
-; ### c@
-inline cfetch, 'c@'
-        _cfetch
-endinline
-
 ; ### c@s
 inline cfetchs, 'c@s'                   ; c-addr -- n
         movsx   rbx, byte [rbx]         ; n is the sign-extended 8-bit value stored at c-addr
