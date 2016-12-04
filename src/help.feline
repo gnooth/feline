@@ -1,17 +1,19 @@
-// Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+{-
+  Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-}
 
 using: feline ;
 in: feline
@@ -21,7 +23,7 @@ in: feline
 ;
 
 : help ( symbol -- )
-    dup symbol-help dup                 // -- symbol content/f content/f
+    dup symbol-help dup                 -- symbol content/f content/f
     [ ?nl swap symbol-name write-string display-help ]
     [ 2drop ]
     if
@@ -319,7 +321,7 @@ help: time
 ;
 
 help: times
-    "( n quot -- )    quot: ( ... -- ... )
+    "( n quot -- )
     Call quot n times."
 ;
 
@@ -333,4 +335,10 @@ help: unless*
     "( x quot -- )
     If x is f, remove it from the stack and call quot.
     Otherwise, just leave x on the stack."
+;
+
+help: until
+    "( quot1 quot2 -- )
+    Call quot1. If quot1 returns f, call quot2. Repeat until quot1
+    returns a true value."
 ;
