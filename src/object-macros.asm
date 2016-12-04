@@ -468,15 +468,15 @@ OBJECT_ALLOCATED_BIT            equ 4
         _this_set_slot2
 %endmacro
 
-%macro  _sbuf_capacity 0
+%macro  _sbuf_raw_capacity 0            ; sbuf -- raw-capacity
         _slot3
 %endmacro
 
-%macro  _sbuf_set_capacity 0            ; capacity sbuf --
+%macro  _sbuf_set_raw_capacity 0        ; raw-capacity sbuf --
         _set_slot3
 %endmacro
 
-%macro  _this_sbuf_set_capacity 0       ; capacity --
+%macro  _this_sbuf_set_raw_capacity 0   ; raw-capacity --
         _this_set_slot3
 %endmacro
 

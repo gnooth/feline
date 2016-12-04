@@ -81,7 +81,7 @@ endcode
 ; ### sbuf-capacity
 code sbuf_capacity, 'sbuf-capacity'     ; sbuf -- capacity
         _ check_sbuf
-        _sbuf_capacity
+        _sbuf_raw_capacity
         _tag_fixnum
         next
 endcode
@@ -103,7 +103,7 @@ subroutine make_sbuf_internal   ; untagged-capacity -- sbuf
         _ iallocate
         _this_sbuf_set_data             ; -- capacity
 
-        _this_sbuf_set_capacity
+        _this_sbuf_set_raw_capacity
 
         pushrbx
         mov     rbx, this_register      ; -- sbuf
@@ -120,7 +120,7 @@ new_sbuf_untagged:
         _dup
         _sbuf_data                      ; -- sbuf data-address
         _over
-        _sbuf_capacity                  ; -- sbuf data-address capacity
+        _sbuf_raw_capacity              ; -- sbuf data-address capacity
         _oneplus
         _ erase                         ; -- sbuf
         _ new_handle
@@ -337,7 +337,7 @@ subroutine sbuf_resize                  ; sbuf new-capacity --
         _ resize                        ; -- sbuf new-capacity new-data-address
         _tor
         _over                           ; -- sbuf new-capacity sbuf     r: -- new-data-address
-        _sbuf_set_capacity              ; -- sbuf                       r: -- new-data-address
+        _sbuf_set_raw_capacity          ; -- sbuf                       r: -- new-data-address
         _rfrom                          ; -- sbuf new-data-addr
         _swap                           ; -- new-data-addr sbuf
         _sbuf_set_data
@@ -348,11 +348,11 @@ endsub
 subroutine sbuf_ensure_capacity         ; u sbuf --
 ; Numeric argument is untagged.
         _twodup                         ; -- u sbuf u sbuf
-        _sbuf_capacity                  ; -- u sbuf u capacity
+        _sbuf_raw_capacity              ; -- u sbuf u capacity
         _ugt
         _if .1                          ; -- u sbuf
         _dup                            ; -- u sbuf sbuf
-        _sbuf_capacity                  ; -- u sbuf capacity
+        _sbuf_raw_capacity              ; -- u sbuf capacity
         _twostar                        ; -- u sbuf capacity*2
         _oneplus                        ; -- u sbuf capacity*2+1
         _ rot                           ; -- sbuf capacity*2 u
@@ -386,6 +386,7 @@ endcode
 ; ### sbuf-push
 code sbuf_push, 'sbuf-push'             ; tagged-char sbuf --
         _ check_sbuf
+
         _verify_char [rbp]
         _untag_char qword [rbp]
 
