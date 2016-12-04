@@ -1,7 +1,7 @@
 using: feline ;
 in: test
 
-// this is a comment
+-- this is a comment
 ( this is another comment )
 
 {- yet another comment -}
@@ -57,8 +57,8 @@ test: string?-test-1 ( -- )
 
 string?-test-1
 
-// Test for the Factor/Feline version of pick.
-// The Forth version of pick is different.
+-- Test for the Factor/Feline version of pick.
+-- The Forth version of pick is different.
 test: pick-test-1 ( -- )
     clear
     1 2 3 pick get-datastack { 1 2 3 1 } sequence= check-t
@@ -108,7 +108,7 @@ test: fixnum-test-3 ( -- )
 
 fixnum-test-3
 
-// fixnum<
+-- fixnum<
 test: fixnum<-test-1 ( -- )
     0 0 fixnum< check-false
     1 1 fixnum< check-false
@@ -125,7 +125,7 @@ test: fixnum<-test-1 ( -- )
 
 fixnum<-test-1
 
-// fixnum<=
+-- fixnum<=
 test: fixnum<=-test-1 ( -- )
     0 0 fixnum<= check-t
     1 1 fixnum<= check-t
@@ -144,7 +144,7 @@ test: fixnum<=-test-1 ( -- )
 
 fixnum<=-test-1
 
-// fixnum>
+-- fixnum>
 test: fixnum>-test-1 ( -- )
     0 0 fixnum> check-false
     1 1 fixnum> check-false
@@ -162,7 +162,7 @@ test: fixnum>-test-1 ( -- )
 
 fixnum>-test-1
 
-// fixnum>=
+-- fixnum>=
 test: fixnum>=-test-1 ( -- )
     0 0 fixnum>= check-t
     1 1 fixnum>= check-t
@@ -213,7 +213,7 @@ test: fixnum-test-8 ( -- )
 
 fixnum-test-8
 
-// fixnum-bitand, bitand
+-- fixnum-bitand, bitand
 test: fixnum-test-9 ( -- )
     15 7 bitand 7 = check-t
     15 $f0 bitand 0 = check-t
@@ -222,7 +222,7 @@ test: fixnum-test-9 ( -- )
 
 fixnum-test-9
 
-// fixnum+
+-- fixnum+
 test: fixnum-test-10 ( -- )
     42 87 fixnum+ 129 = check-t
     -42 87 fixnum+ 45 = check-t
@@ -431,7 +431,7 @@ test: 4array-test-1 ( -- )
 
 4array-test-1
 
-// vector-insert-nth!
+-- vector-insert-nth!
 test: vector-test-1 ( -- )
     17 0 V{ 0 1 2 3 } [ vector-insert-nth! ] keep
     V{ 17 0 1 2 3 } sequence= check-t
@@ -478,7 +478,7 @@ test: vector-test-3 ( -- )
 
 vector-test-3
 
-// vector-pop*
+-- vector-pop*
 test: vector-test-4 ( -- )
     V{ 1 2 3 } [ vector-pop* ] keep
     [ length 2 = check-t ] keep
@@ -490,7 +490,7 @@ test: vector-test-4 ( -- )
 
 vector-test-4
 
-// vector-last
+-- vector-last
 test: vector-test-5 ( -- )
     clear
     V{ 1 2 3 } vector-last get-datastack { 3 } sequence= check-t
@@ -500,7 +500,7 @@ test: vector-test-5 ( -- )
 
 vector-test-5
 
-// vector>array
+-- vector>array
 test: vector>array-test-1 ( -- )
     V{ 1 2 3 } vector>array
     [ array? check-t ] keep
@@ -810,7 +810,7 @@ test: symbol-props-test-1 ( -- )
     "foo" \ dup symbol-prop get-datastack { "this is a test" } sequence= check-t
     clear
 
-    // clean up
+    -- clean up
     f "foo" \ dup symbol-set-prop
 ;
 
@@ -826,7 +826,7 @@ test: symbol-props-gc-test-1 ( -- )
     "foo" \ dup symbol-prop get-datastack { "this is a test" } sequence= check-t
     clear
 
-    // clean up
+    -- clean up
     f "foo" \ dup symbol-set-prop
 ;
 
@@ -867,7 +867,7 @@ test: redefinition-test-1 ( -- )
 
 redefinition-test-1
 
-// redefine %foo
+-- redefine %foo
 : %foo ( -- ) 87 ;
 
 test: redefinition-test-2 ( -- )
@@ -983,33 +983,33 @@ test: global-test-1 ( -- )
 
 global-test-1
 
-// : global-test-2 ( -- )
-//     << last-word symbol-name >> ?nl write-string
-//     87 \ zork set-global
-//     \ zork get-global 87 eq? check-t
+-- : global-test-2 ( -- )
+--     << last-word symbol-name >> ?nl write-string
+--     87 \ zork set-global
+--     \ zork get-global 87 eq? check-t
 
-//     [
-//         "test" dup zork! zork eq? check-t
-//         \ zork get-global 87 eq? check-t
-//         19 \ zork set-global
-//         zork "test" = check-t
-//         \ zork get-global 19 eq? check-t
-//     ] with-scope
+--     [
+--         "test" dup zork! zork eq? check-t
+--         \ zork get-global 87 eq? check-t
+--         19 \ zork set-global
+--         zork "test" = check-t
+--         \ zork get-global 19 eq? check-t
+--     ] with-scope
 
-//     \ zork get-global 19 eq? check-t
-// ;
+--     \ zork get-global 19 eq? check-t
+-- ;
 
-// global-test-2
+-- global-test-2
 
-// : global-test-3 ( -- )
-//     << last-word symbol-name >> ?nl write-string
-//     f zork!
-//     zork check-false
-//     [ [ 71 zork! zork ] with-scope ] [ ] recover 71 eq? check-t
-//     [ [ 71 zork! "error" error ] with-scope ] [ drop zork ] recover check-false
-// ;
+-- : global-test-3 ( -- )
+--     << last-word symbol-name >> ?nl write-string
+--     f zork!
+--     zork check-false
+--     [ [ 71 zork! zork ] with-scope ] [ ] recover 71 eq? check-t
+--     [ [ 71 zork! "error" error ] with-scope ] [ drop zork ] recover check-false
+-- ;
 
-// global-test-3
+-- global-test-3
 
 test: index-test-1 ( -- )
     3 { 1 2 3 4 } index 2 eq? check-t
@@ -1045,8 +1045,8 @@ test: string-head-test-1 ( -- )
     "this is a test"
     [ 4 string-head "this" = check-t ] keep
 
-    // FIXME "" confuses the parser Aug 22 2016 12:49 PM
-//     [ 0 string-head "" = check-t ] keep
+    -- FIXME "" confuses the parser Aug 22 2016 12:49 PM
+--     [ 0 string-head "" = check-t ] keep
 
     [ 0 string-head [ string? check-t ] [ length zero? check-t ] bi ] keep
     [ 14 string-head "this is a test" = check-t ] keep
@@ -1091,7 +1091,7 @@ test: string-skip-whitespace-test-1 ( -- )
 
 string-skip-whitespace-test-1
 
-// multiline string
+-- multiline string
 test: string-skip-whitespace-test-2 ( -- )
     "   this is
 a multiline string   "
@@ -1127,7 +1127,7 @@ test: string-skip-to-whitespace-test-1 ( -- )
 
 string-skip-to-whitespace-test-1
 
-// multiline string
+-- multiline string
 test: string-skip-to-whitespace-test-2 ( -- )
     "   this is
 a multiline string   "
