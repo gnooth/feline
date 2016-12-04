@@ -61,6 +61,10 @@ MAX_LOCALS      equ     16              ; maximum number of local variables in a
 %endif
 %endmacro
 
+%define tagged_fixnum(n)        ((n << TAG_BITS) + FIXNUM_TAG)
+
+%define tagged_zero     FIXNUM_TAG
+
 %macro  _untag_fixnum 0
         sar     rbx, TAG_BITS
 %endmacro
@@ -74,9 +78,24 @@ MAX_LOCALS      equ     16              ; maximum number of local variables in a
         sar     qword [rbp], TAG_BITS
 %endmacro
 
-%define tagged_fixnum(n)        ((n << TAG_BITS) + FIXNUM_TAG)
+%macro _verify_fixnum 0
+        mov     al, bl
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     error_not_fixnum
+%endmacro
 
-%define tagged_zero     FIXNUM_TAG
+%macro _verify_fixnum 1
+        mov     rax, %1
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     error_not_fixnum
+%endmacro
+
+%macro _check_fixnum 0
+        _verify_fixnum
+        _untag_fixnum
+%endmacro
 
 %define f_value SPECIAL_TAG
 %define t_value SPECIAL_TAG + (1 << TAG_BITS)
