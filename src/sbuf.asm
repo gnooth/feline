@@ -86,7 +86,7 @@ code sbuf_capacity, 'sbuf-capacity'     ; sbuf -- capacity
         next
 endcode
 
-; ### make-sbuf-internal
+; ### make_sbuf_internal
 subroutine make_sbuf_internal   ; untagged-capacity -- sbuf
         _lit 4
         _ allocate_cells                ; -- capacity addr
@@ -127,51 +127,36 @@ new_sbuf_untagged:
         next
 endcode
 
-; ### >sbuf
-code copy_to_sbuf, '>sbuf'              ; c-addr u -- handle
-
-; locals:
-%define u      local0
-%define c_addr local1
-%define sbuf   local2
-
-        _locals_enter
-        popd    u
-        popd    c_addr
-
-        pushd   u
+; ### copy_to_sbuf
+subroutine copy_to_sbuf ; from-addr length -- handle
+        _dup
         _ make_sbuf_internal
-        popd    sbuf
 
-        pushd   c_addr
-        pushd   sbuf
-        _sbuf_data
-        pushd   u                       ; -- c-addr data-address u
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- from-addr length
+
+        _dup
+        _this_sbuf_set_length
+
+        _this_sbuf_data                 ; -- from-addr length to-address
+        _swap
         _ cmove                         ; --
 
         _zero
-        pushd   sbuf
-        _sbuf_data
-        pushd   u
+        _this_sbuf_data
+        _this_sbuf_length
         _plus
         _cstore
 
-        pushd   u
-        pushd   sbuf
-        _sbuf_set_length
+        pushrbx
+        mov     rbx, this_register
 
-        pushd   sbuf
         _ new_handle
 
-        _locals_leave
-
-        next
-
-%undef u
-%undef c_addr
-%undef sbuf
-
-endcode
+        pop     this_register
+        ret
+endsub
 
 ; ### string>sbuf
 code string_to_sbuf, 'string>sbuf'      ; handle-or-string -- handle
