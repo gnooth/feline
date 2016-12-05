@@ -15,6 +15,8 @@
 
 file __FILE__
 
+; 5 cells (object header, count, deleted, capacity, data address)
+
 %macro  _hashtable_raw_count 0          ; hashtable -- count
         _slot1
 %endmacro
@@ -99,7 +101,7 @@ file __FILE__
 %endmacro
 
 ; ### hashtable?
-code hashtable?, 'hashtable?'           ; handle -- ?
+code hashtable?, 'hashtable?'   ; x -- ?
         _dup
         _ handle?
         _tagged_if .1
@@ -237,7 +239,7 @@ endcode
 ; ### next-power-of-2
 code next_power_of_2, 'next-power-of-2' ; m -- n
 ; Argument and return value are tagged fixnums.
-        _ check_fixnum
+        _check_fixnum
         _lit 2
         _begin .1
         _twodup
@@ -419,7 +421,7 @@ code hashtable_nth_value, 'hashtable-nth-value' ; n hashtable -- value
         _ check_hashtable               ; -- n hashtable
         push    this_register
         popd    this_register           ; -- n
-        _ check_fixnum
+        _check_fixnum
         _this_hashtable_nth_value
         pop     this_register
         next
