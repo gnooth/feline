@@ -291,7 +291,7 @@ code between?, 'between?'               ; n min max -- ?
         _ feline_ge
         _else .1
         _drop
-        mov     rbx, f_value
+        mov     ebx, f_value
         _then .1
         next
 endcode
