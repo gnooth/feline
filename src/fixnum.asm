@@ -89,7 +89,7 @@ code error_not_index, 'error-not-index' ; x --
         next
 endcode
 
-%macro _verify_index 0
+%macro  _verify_index 0
         test    rbx, rbx
         js      error_not_index
         mov     al, bl
@@ -98,7 +98,7 @@ endcode
         jne     error_not_index
 %endmacro
 
-%macro _verify_index 1
+%macro  _verify_index 1
         mov     rax, %1
         test    rax, rax
         js      error_not_index
@@ -107,7 +107,7 @@ endcode
         jne     error_not_index
 %endmacro
 
-%macro _check_index 0
+%macro  _check_index 0
         _verify_index
         _untag_fixnum
 %endmacro
@@ -211,25 +211,26 @@ code feline_gt, '>'                     ; x y -- ?
         next
 endcode
 
-; ### fixnum>=
-code fixnum_ge, 'fixnum>='              ; x y -- ?
-; No type checking.
+%macro  _fixnum_ge 0
         mov     eax, t_value
         cmp     [rbp], rbx
         mov     ebx, f_value
         cmovge  ebx, eax
         lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
+; ### fixnum>=
+code fixnum_ge, 'fixnum>='              ; x y -- ?
+; No type checking.
+        _fixnum_ge
         next
 endcode
 
 ; ### >=
 code feline_ge, '>='                    ; x y -- ?
-; FIXME optimize
-        _ check_fixnum
-        _swap
-        _ check_fixnum
-        _swap
-        _ fixnum_ge
+        _verify_fixnum qword [rbp]
+        _verify_fixnum
+        _fixnum_ge
         next
 endcode
 
