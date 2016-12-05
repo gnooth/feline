@@ -181,6 +181,25 @@ test: fixnum>=-test-1 ( -- )
 
 fixnum>=-test-1
 
+-- >=
+test: >=-test-1 ( -- )
+    0 0 >= check-t
+    1 1 >= check-t
+    1 2 >= check-false
+    2 1 >= check-t
+    -2 -1 >= check-false
+    -1 -2 >= check-t
+    -2 1 >= check-false
+    1 -2 >= check-t
+    most-negative-fixnum 0 >= check-false
+    most-negative-fixnum most-positive-fixnum >= check-false
+    most-negative-fixnum most-negative-fixnum >= check-t
+    most-positive-fixnum most-positive-fixnum >= check-t
+    0 most-positive-fixnum >= check-false
+;
+
+>=-test-1
+
 test: fixnum-test-5 ( -- )
     1 2 fixnum- -1 = check-t
     1 2 - -1 = check-t
