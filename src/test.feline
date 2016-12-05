@@ -509,7 +509,7 @@ test: vector>array-test-1 ( -- )
 
 vector>array-test-1
 
-: %local-test-1 ( -- )
+: %local-test-1 ( -- 42 )
     local: foo
     42 -> foo
     foo
@@ -520,6 +520,18 @@ test: local-test-1 ( -- )
 ;
 
 local-test-1
+
+: %local-test-2 ( -- )
+    42 >local: foo
+    17 >local: bar
+    foo bar -
+;
+
+test: local-test-2 ( -- )
+    %local-test-2 25 eq? check-t
+;
+
+local-test-2
 
 test: if-test-1 ( -- )
     t [ 42 ] [ 17 ] if 42 eq? check-t
