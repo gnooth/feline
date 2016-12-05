@@ -210,25 +210,27 @@ endcode
         _cfetch
 %endmacro
 
-%macro  _this_string_nth_unsafe 0       ; untagged-index string -- untagged-char
+%macro  _this_string_nth_unsafe 0       ; untagged-index -- untagged-char
         _this_string_data
         _plus
         _cfetch
 %endmacro
 
 ; ### copy_to_string
-subroutine copy_to_string               ; addr len -- handle
-; Arguments are untagged.
-        push    this_register
+subroutine copy_to_string       ; from-addr from-length -- handle
+; arguments are untagged
 
         _lit STRING_DATA_OFFSET
         _over
-        _oneplus                        ; terminal null byte
-        _plus                           ; -- c-addr u size
-        _ allocate_object               ; -- c-addr u string
-        popd    this_register           ; -- c-addr u
+        _oneplus                        ; +1 for terminal null byte
+        _plus                           ; -- from-addr from-length size
+        _ allocate_object               ; -- from-addr from-length string
 
-        ; Zero all bits of object header.
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- from-addr from-length
+
+        ; zero all bits of object header
         xor     eax, eax
         mov     [this_register], rax
 
@@ -238,24 +240,21 @@ subroutine copy_to_string               ; addr len -- handle
         _f
         _this_string_set_hashcode
 
-        _dup
-        _this_string_set_length         ; -- c-addr u
-
-        _tor                            ; -- c-addr             r: -- u
+        _this_string_set_length         ; -- from-addr
 
         _this_string_data
-        _rfetch
-        _ cmove                         ; --                    r: -- u
+        _this_string_length
+        _ cmove                         ; --
 
-        ; Store terminal null byte.
-        _this_string_data               ; -- data-address       r: -- u
-        pop     rax                     ;                       r: --
-        add     rbx, rax                ; -- data-address + u
-        mov     byte [rbx], 0           ; -- data-address + u
+        ; store terminal null byte
+        _this_string_data
+        _this_string_length
+        _plus
+        mov     byte [rbx], 0
 
         mov     rbx, this_register      ; -- string
 
-        ; Return handle of allocated string.
+        ; return handle of allocated string
         _ new_handle                    ; -- handle
 
         pop     this_register
