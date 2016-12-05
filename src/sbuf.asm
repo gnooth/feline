@@ -411,56 +411,45 @@ code sbuf_push, 'sbuf-push'             ; tagged-char sbuf --
 endcode
 
 ; ### sbuf-append-chars
-code sbuf_append_chars, 'sbuf-append-chars' ; sbuf untagged-addr untagged-len --
+subroutine sbuf_append_chars    ; sbuf from-addr from-len --
 
-; locals:
-%define this   local0
-%define len    local1
-%define addr   local2
-
-        _locals_enter
-        popd    len
-        popd    addr
+        _ rot
         _ check_sbuf
-        popd    this
 
-        pushd   this
-        _sbuf_length
-        pushd   len
-        _plus
-        pushd   this
-        _ sbuf_ensure_capacity
-        pushd   addr
-        pushd   this
-        _sbuf_data
-        pushd   this
-        _sbuf_length
-        _plus
-        pushd   len
-        _ cmove
-        pushd   this
-        _dup
-        _sbuf_length
-        pushd   len
-        _plus
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- from-addr from-length
+
+        _this_sbuf_length               ; -- from-addr from-length to-length
+
+        _over
+        _plus                           ; -- from-addr from-length total-length
+
+        _this
+        _ sbuf_ensure_capacity          ; -- from-addr from-length
+
+        _tuck                           ; -- from-length from-addr from-length
+
+        _this_sbuf_data
+        _this_sbuf_length
+        _plus                           ; -- from-length from-addr from-length to-addr
+
         _swap
-        _sbuf_set_length
+        _ cmove                         ; -- from-length
+
+        _this_sbuf_length
+        _plus                           ; -- total-length
+        _this_sbuf_set_length           ; --
+
         _zero
-        pushd   this
-        _sbuf_data
-        pushd   this
-        _sbuf_length
+        _this_sbuf_data
+        _this_sbuf_length
         _plus
         _cstore
 
-        _locals_leave
-        next
-
-%undef this
-%undef len
-%undef addr
-
-endcode
+        pop     this_register
+        ret
+endsub
 
 ; ### sbuf-append-string
 code sbuf_append_string, 'sbuf-append-string' ; sbuf string -- sbuf
