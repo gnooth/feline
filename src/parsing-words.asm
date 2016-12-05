@@ -498,9 +498,8 @@ code feline_paren, '(', SYMBOL_IMMEDIATE        ; --
         next
 endcode
 
-; ### local:
-code declare_local, 'local:', SYMBOL_IMMEDIATE  ; --
-
+; ### declare_local_internal
+subroutine declare_local_internal       ; --
         _ using_locals?
         _zeq_if .2
         ; first local in this definition
@@ -516,8 +515,36 @@ code declare_local, 'local:', SYMBOL_IMMEDIATE  ; --
         _ parse_token                   ; -- string
 
         ; add name to quotation locals so it can be found
-        ; assign index
         _ local_names
+        _ vector_push
+
+        ; return index of added name
+        _ local_names
+        _ vector_length
+        _lit tagged_fixnum(1)
+        _ fixnum_minus
+
+        ret
+endsub
+
+; ### local:
+code declare_local, 'local:', SYMBOL_IMMEDIATE  ; -- tagged-index
+        _ declare_local_internal
+        _drop
+        next
+endcode
+
+; ### >local:
+code assign_local, '>local:', SYMBOL_IMMEDIATE  ; x --
+        _ declare_local_internal        ; -- index
+
+        ; add index to quotation
+        _get_accum
+        _ vector_push
+
+        ; add local! to quotation as a symbol
+        _lit S_local_store
+        _get_accum
         _ vector_push
 
         next
