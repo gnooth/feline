@@ -20,7 +20,7 @@ code MOST_POSITIVE_FIXNUM, 'MOST_POSITIVE_FIXNUM'
 ; Return value is untagged.
         _lit 1
         _lit 63 - TAG_BITS
-        _ lshift
+        _lshift
         _oneminus
         next
 endcode
@@ -39,7 +39,7 @@ code most_positive_fixnum, 'most-positive-fixnum'
 ; Returns tagged fixnum.
         _lit 1
         _lit 63 - TAG_BITS
-        _ lshift
+        _lshift
         _oneminus
         _tag_fixnum
         next

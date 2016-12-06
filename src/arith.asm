@@ -146,11 +146,3 @@ code max, 'max'                         ; n1 n2 -- n3
 .1:
         next
 endcode
-
-; ### lshift
-inline lshift, 'lshift'                 ; x1 u -- x2
-; CORE
-        mov     ecx, ebx
-        poprbx
-        shl     rbx, cl
-endinline

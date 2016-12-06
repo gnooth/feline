@@ -134,7 +134,7 @@ code ekey, 'ekey'                       ; -- fixnum
         _ key?
         _while .2
         _lit 8
-        _ lshift
+        _lshift
         _ key
         _or
         _repeat .2

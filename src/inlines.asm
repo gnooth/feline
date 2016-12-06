@@ -346,3 +346,9 @@
         mov     [rbp - BYTES_PER_CELL], rax
         lea     rbp, [rbp - BYTES_PER_CELL]
 %endmacro
+
+%macro  _lshift 0                       ; x1 u
+        mov     ecx, ebx
+        poprbx
+        shl     rbx, cl
+%endmacro
