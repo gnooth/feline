@@ -102,6 +102,29 @@ MAX_LOCALS      equ     16              ; maximum number of local variables in a
         _untag_fixnum %1
 %endmacro
 
+%macro  _verify_index 0
+        test    rbx, rbx
+        js      error_not_index
+        mov     al, bl
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     error_not_index
+%endmacro
+
+%macro  _verify_index 1
+        mov     rax, %1
+        test    rax, rax
+        js      error_not_index
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     error_not_index
+%endmacro
+
+%macro  _check_index 0
+        _verify_index
+        _untag_fixnum
+%endmacro
+
 %define f_value SPECIAL_TAG
 %define t_value SPECIAL_TAG + (1 << TAG_BITS)
 
