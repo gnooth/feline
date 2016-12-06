@@ -589,6 +589,13 @@ test: string>number-test-1 ( -- )
 
 string>number-test-1
 
+test: string>number-test-2 ( -- )
+    "%11" string>number 3 eq? check-t
+    "%1100" string>number 12 eq? check-t
+;
+
+string>number-test-2
+
 test: \-test-1 ( -- )
     [ \ dup ] call symbol? check-t
     3 [ dup ] call get-datastack { 3 3 } sequence= check-t

@@ -850,6 +850,23 @@ code char_upcase, 'char-upcase'
         next
 endcode
 
+; ### binary-digit?
+code binary_digit?, 'binary-digit?'     ; char -- n/f
+        _check_char
+        cmp     ebx, '0'
+        jne     .1
+        mov     ebx, tagged_zero
+        _return
+.1:
+        cmp     ebx, '1'
+        jne     .2
+        mov     ebx, tagged_fixnum(1)
+        _return
+.2:
+        mov     ebx, f_value
+        next
+endcode
+
 ; ### hex-digit?
 code hex_digit?, 'hex-digit?'           ; char -- n/f
         _ char_upcase
@@ -886,6 +903,44 @@ code digit?, 'digit?'                   ; char -- n/f
         _return
 .1:
         mov     ebx, f_value
+        next
+endcode
+
+; ### binary>fixnum
+code binary_to_fixnum, 'binary>fixnum'  ; string -- n/f
+        _dup
+        _ string_empty?
+        _tagged_if .1
+        mov     ebx, f_value
+        _return
+        _then .1
+
+        _lit tagged_fixnum(0)           ; -- string accumulator
+        _swap
+        _ string_from
+        _zero
+        _?do .2
+        _dup
+        _i
+        _plus
+        _cfetch
+        _tag_char
+        _ binary_digit?
+        _dup
+        _tagged_if .3                   ; -- accumulator addr tagged-digit
+        _ rot
+        _lit tagged_fixnum(2)
+        _ feline_multiply
+        _ feline_plus
+        _swap
+        _else .3
+        _3drop
+        _f
+        _unloop
+        _return
+        _then .3
+        _loop .2
+        _drop
         next
 endcode
 
@@ -998,7 +1053,7 @@ code hex_to_fixnum, 'hex>fixnum'        ; string -- n/f
 endcode
 
 ; ### signed-hex>fixnum
-code signed_hex_to_fixnum, 'signed-hex>fixnum' ; string -- n/f
+code signed_hex_to_fixnum, 'signed-hex>fixnum'  ; string -- n/f
         _dup
         _ string_empty?
         _tagged_if .1
@@ -1046,16 +1101,28 @@ code string_to_number, 'string>number'  ; string -- n/f
         _ string_nth_untagged           ; -- string tagged-char
         _untag_char
 
-        cmp     rbx, '$'
-        poprbx
+        ; REVIEW do we want to support -$1f as well as $-1f?
+        cmp     ebx, '$'
         je      .2
+        cmp     ebx, '%'
+        je      .3
+        _drop
         _ signed_decimal_to_fixnum
         _return
 
 .2:
+        _drop
         _lit tagged_fixnum(1)
         _ string_tail
         _ signed_hex_to_fixnum
+        _return
+
+.3:
+        _drop
+        _lit tagged_fixnum(1)
+        _ string_tail
+        ; REVIEW signed_binary_to_fixnum
+        _ binary_to_fixnum
 
         next
 endcode
@@ -1073,8 +1140,6 @@ code printable?, 'printable?'           ; char -- ?
         mov     ebx, f_value
         next
 endcode
-
-extern os_allocate
 
 ; ### allocate
 code feline_allocate, 'allocate'        ; tagged-size -- addr
@@ -1097,8 +1162,6 @@ feline_allocate_untagged:
         _error "memory allocation failed"
         next
 endcode
-
-extern os_free
 
 ; ### free
 code feline_free, 'free'                ; addr --
