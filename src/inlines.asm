@@ -347,8 +347,14 @@
         lea     rbp, [rbp - BYTES_PER_CELL]
 %endmacro
 
-%macro  _lshift 0                       ; x1 u
+%macro  _lshift 0                       ; x1 u  -- x2
         mov     ecx, ebx
         poprbx
         shl     rbx, cl
+%endmacro
+
+%macro  _rshift 0                       ; x1 u  -- x2
+        mov     ecx, ebx
+        poprbx
+        shr     rbx, cl
 %endmacro
