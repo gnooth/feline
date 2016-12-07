@@ -545,6 +545,52 @@ code sbuf_remove_nth_destructive, 'sbuf-remove-nth!' ; tagged-index handle -- ha
         next
 endcode
 
+; ### sbuf-reverse
+code sbuf_reverse_in_place, 'sbuf-reverse!'     ; sbuf -- sbuf
+
+        _duptor
+
+        _ check_sbuf
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+
+        _this_sbuf_length
+
+        ; divide by 2
+        shr     rbx, 1
+
+        _lit 0
+        _?do .1
+
+        _i
+        _this_sbuf_nth_unsafe           ; -- char1
+
+        _this_sbuf_length
+        _oneminus
+        _i
+        _minus
+        _this_sbuf_nth_unsafe           ; -- char1 char2
+
+        _i
+        _this_sbuf_set_nth_unsafe
+
+        _this_sbuf_length
+        _oneminus
+        _i
+        _minus
+        _this_sbuf_set_nth_unsafe
+
+        _loop .1
+
+        pop     this_register
+
+        _rfrom
+
+        next
+endcode
+
 ; ### write-sbuf
 code write_sbuf, 'write-sbuf'           ; sbuf --
         _ sbuf_from                     ; -- addr len

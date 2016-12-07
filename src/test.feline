@@ -1305,6 +1305,15 @@ test: sbuf-?last-test-1
 
 sbuf-?last-test-1
 
+test: sbuf-reverse!-test-1
+    "12345678"  string>sbuf sbuf-reverse!  "87654321" sequence= check-t
+    "123456789" string>sbuf sbuf-reverse! "987654321" sequence= check-t
+    "1" string>sbuf sbuf-reverse! "1" sequence= check-t
+    "" string>sbuf sbuf-reverse! "" sequence= check-t
+;
+
+sbuf-reverse!-test-1
+
 test: string-index-from-test-1
     't' 0 "this is a test" string-index-from zero? check-t
     'h' 0 "this is a test" string-index-from 1 eq? check-t
