@@ -427,7 +427,43 @@ code even?, 'even?'                     ; n -- ?
         next
 endcode
 
-extern c_fixnum_to_base
+; ### fixnum>binary
+code fixnum_to_binary, 'fixnum>binary'  ; fixnum -- string
+
+        _check_fixnum
+
+        _lit 16
+        _ new_sbuf_untagged
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- n
+
+        _begin .1
+        test    bl, 1
+        jz      .2
+        _tagged_char('1')
+        _this
+        _ sbuf_push
+        jmp     .3
+.2:
+        _tagged_char('0')
+        _this
+        _ sbuf_push
+.3:
+        shr     rbx, 1
+        jz      .4
+        _again .1
+.4:
+        _drop
+
+        _this
+        _ sbuf_reverse_in_place
+        _ sbuf_to_string
+
+        pop     this_register
+        next
+endcode
 
 ; ### fixnum>base
 code fixnum_to_base, 'fixnum>base'      ; fixnum base -- string

@@ -665,6 +665,15 @@ code hexdot, 'hex.'                     ; n --
         next
 endcode
 
+; ### bin.
+code bindot, 'bin.'                     ; n --
+        _ fixnum_to_binary
+        _lit tagged_char('%')
+        _ write_char
+        _ write_string
+        next
+endcode
+
 ; ### untagged.
 code untagged_dot, 'untagged.'          ; x --
         _ untagged_to_hex
