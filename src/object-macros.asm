@@ -491,8 +491,14 @@ OBJECT_ALLOCATED_BIT            equ 4
         _ult
 %endmacro
 
-%macro  _sbuf_nth_unsafe 0              ; index -- untagged-char
+%macro  _sbuf_nth_unsafe 0              ; sbuf index -- untagged-char
         _sbuf_data
+        _plus
+        _cfetch
+%endmacro
+
+%macro  _this_sbuf_nth_unsafe 0         ; index -- untagged-char
+        _this_sbuf_data
         _plus
         _cfetch
 %endmacro
