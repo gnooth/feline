@@ -305,29 +305,6 @@ code sbuf_char, 'sbuf-char'             ; handle index -- char
         next
 endcode
 
-; ### sbuf-set-char
-code sbuf_set_char, 'sbuf-set-char'     ; handle index char --
-
-        _untag_char
-        _swap
-        _untag_fixnum
-        _swap
-
-        _ rrot                          ; char sbuf index
-        _twodup
-        _ sbuf_check_index
-        _if .3                          ; -- char sbuf index
-        _swap                           ; -- char index sbuf
-        _ sbuf_data                     ; -- char index data-address
-        _plus
-        _cstore
-        _else .3
-        _3drop
-        _error "index out of range"
-        _then .3
-        next
-endcode
-
 ; ### sbuf_resize
 subroutine sbuf_resize                  ; sbuf new-capacity --
 
