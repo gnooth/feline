@@ -31,11 +31,6 @@ code fetchplus, '@+'                    ; a-addr1 -- a-addr2 x
         next
 endcode
 
-; ### c@s
-inline cfetchs, 'c@s'                   ; c-addr -- n
-        movsx   rbx, byte [rbx]         ; n is the sign-extended 8-bit value stored at c-addr
-endinline
-
 ; ### c@+
 code cfetchplus, 'c@+'                  ; c-addr1 -- c-addr2 char
 ; iForth
