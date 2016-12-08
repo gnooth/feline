@@ -813,9 +813,17 @@ code ?nl, '?nl'
 endcode
 
 ; ### c@
-code cfetch, 'c@'       ; tagged-fixnum-address -- tagged-fixnum-byte
+code cfetch, 'c@'       ; address -- byte
         _check_fixnum
         _cfetch
+        _tag_fixnum
+        next
+endcode
+
+; ### c@s
+code cfetchs, 'c@s'     ; address -- signed-byte
+        _check_fixnum
+        movsx   rbx, byte [rbx]
         _tag_fixnum
         next
 endcode
