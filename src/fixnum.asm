@@ -389,6 +389,14 @@ endcode
 
 %unmacro _mod 0
 
+; ### negate
+code negate, 'negate'   ; n -- -n
+        _check_fixnum
+        neg     rbx
+        _tag_fixnum
+        next
+endcode
+
 ; ### fixnum-bitand
 code fixnum_bitand, 'fixnum-bitand'     ; n1 n2 -- n3
         _untag_2_fixnums
