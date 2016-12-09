@@ -274,9 +274,7 @@ endcode
 ; ### vector-nth
 code vector_nth, 'vector-nth'           ; index handle -- element
 
-        _swap
-        _untag_fixnum
-        _swap
+        _check_index qword [rbp]
 
 vector_nth_untagged:
         _ check_vector
