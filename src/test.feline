@@ -1,4 +1,8 @@
 using: feline ;
+in: user
+
+"test" delete-vocab
+
 in: test
 
 -- this is a comment
