@@ -562,19 +562,24 @@ hashtable_grow_unchecked:
         _store
         _loop .1
 
-        _this_hashtable_raw_count       ; -- keys values count
-
+        ; reset count
         _zero
         _this_hashtable_set_raw_count
 
+        _dup
+        _ vector_length
+        _untag_fixnum
         _zero
         _?do .2                         ; -- keys values
-        _twodup
-        _i                              ; -- keys values keys values i
+
+        ; value
+        _i
         _tag_fixnum
-        _swap
-        _ nth                           ; -- keys values keys nth-value
-        _swap                           ; -- keys values nth-value keys
+        _over
+        _ nth                           ; -- keys values nth-value
+
+        ; key
+        _pick                           ; -- keys values nth-value keys
         _i
         _tag_fixnum
         _swap
