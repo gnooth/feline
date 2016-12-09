@@ -418,7 +418,7 @@ endcode
 code bitor, 'bitor'     ; n1 n2 -- n3
         _check_fixnum
         _check_fixnum qword [rbp]
-        _and
+        _or
         _tag_fixnum
         next
 endcode
