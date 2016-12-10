@@ -45,7 +45,7 @@ code find_qualified_name, 'find-qualified-name'
 
         _quotation .3
         _lit tagged_fixnum(1)
-        _ feline_plus
+        _ plus
         _ string_tail
         _end_quotation .3
 
@@ -260,7 +260,7 @@ code where, 'where'                     ; --
         _write " line "
         _ lexer_line_number
         _lit tagged_fixnum(1)
-        _ feline_plus
+        _ plus
         _ dot_object
 
         _else .2                        ; -- lexer

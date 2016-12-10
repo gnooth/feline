@@ -947,7 +947,7 @@ code binary_to_fixnum, 'binary>fixnum'  ; string -- n/f
         _ rot
         _lit tagged_fixnum(2)
         _ feline_multiply
-        _ feline_plus
+        _ plus
         _swap
         _else .3
         _3drop
@@ -985,7 +985,7 @@ code decimal_to_fixnum, 'decimal>fixnum' ; string -- n/f
         _ rot
         _lit tagged_fixnum(10)
         _ feline_multiply
-        _ feline_plus
+        _ plus
         _swap
         _else .3
         _3drop
@@ -1055,7 +1055,7 @@ code hex_to_fixnum, 'hex>fixnum'        ; string -- n/f
         _ rot
         _lit tagged_fixnum(16)
         _ feline_multiply
-        _ feline_plus
+        _ plus
         _swap
         _else .3
         _3drop

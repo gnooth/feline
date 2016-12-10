@@ -288,7 +288,7 @@ inline fixnum_plus, 'fixnum+'           ; x y -- x+y
 endinline
 
 ; ### +
-code feline_plus, '+'   ; x y -- x+y
+code plus, '+'  ; x y -- z
         _check_fixnum
         _check_fixnum qword [rbp]
         _plus

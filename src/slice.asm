@@ -141,7 +141,7 @@ code slice_nth_unsafe, 'slice-nth-unsafe' ; n slice -- element
         _slice_seq                      ; -- n slice
         _tor
         _slice_start_index              ; -- n start-index
-        _ feline_plus
+        _ plus
         _rfrom
         _ nth
         next
@@ -158,7 +158,7 @@ code slice_nth, 'slice-nth'             ; n slice -- element
         _slice_seq                      ; -- n slice
         _tor
         _slice_start_index              ; -- n start-index
-        _ feline_plus
+        _ plus
         _rfrom
         _ nth
         _else .1
