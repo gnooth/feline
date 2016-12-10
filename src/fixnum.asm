@@ -89,6 +89,12 @@ code error_not_index, 'error-not-index' ; x --
         next
 endcode
 
+; ### verify-index
+code verify_index, 'verify-index'     ; index -- index
+        _verify_index
+        next
+endcode
+
 ; ### check-index
 code check_index, 'check-index'         ; non-negative-fixnum -- untagged-fixnum
         _check_index
