@@ -76,7 +76,7 @@ code two_nth_unsafe, '2nth-unsafe'      ; n seq1 seq2 -- elt1 elt2
         _ nth_unsafe                    ; -- n elt1     r: -- seq2
         _swap                           ; -- elt1 n     r: -- seq2
         _rfrom                          ; -- elt1 n seq2
-        _ nth                           ; -- elt2 elt2
+        _ nth_unsafe                    ; -- elt2 elt2
         next
 endcode
 
