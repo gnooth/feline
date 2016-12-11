@@ -812,7 +812,7 @@ code ?nl, '?nl'
 endcode
 
 ; ### c@
-code cfetch, 'c@'       ; address -- byte
+code cfetch, 'c@'       ; address -- unsigned-byte
         _check_fixnum
         _cfetch
         _tag_fixnum
@@ -823,6 +823,22 @@ endcode
 code cfetchs, 'c@s'     ; address -- signed-byte
         _check_fixnum
         movsx   rbx, byte [rbx]
+        _tag_fixnum
+        next
+endcode
+
+; ### l@
+code lfetch, 'l@'       ; address -- uint32
+        _check_fixnum
+        mov     ebx, [rbx]
+        _tag_fixnum
+        next
+endcode
+
+; ### l@s
+code lfetchs, 'l@s'     ; address -- int32
+        _check_fixnum
+        movsx   rbx, dword [rbx]
         _tag_fixnum
         next
 endcode
