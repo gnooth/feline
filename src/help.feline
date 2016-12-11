@@ -83,6 +83,11 @@ help: <array>
     set to elt."
 ;
 
+help: <hashtable>
+    "( n -- hashtable )
+    Create a new hashtable with an initial capacity of n key/value pairs."
+;
+
 help: <range>
     "( start len -- range )
     Create a new immutable virtual sequence containing the
