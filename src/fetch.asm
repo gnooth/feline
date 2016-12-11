@@ -52,24 +52,3 @@ endinline
 inline wfetchs, 'w@s'                   ; c-addr -- n
         movsx   rbx, word [rbx]         ; n is the sign-extended 16-bit value stored at c-addr
 endinline
-
-; ### l@
-inline lfetch, 'l@'                     ; 32-bit fetch
-        _lfetch
-endinline
-
-; ### l@s
-inline lfetchs, 'l@s'                   ; c-addr -- n
-        movsx   rbx, dword [rbx]        ; n is the sign-extended 32-bit value stored at c-addr
-endinline
-
-; ### 2@
-code twofetch, '2@'                     ; a-addr -- x1 x2
-; CORE
-; "x2 is stored at a-addr and x1 at the next consecutive cell."
-        mov     rax, [rbx + BYTES_PER_CELL]
-        mov     [rbp - BYTES_PER_CELL], rax
-        lea     rbp, [rbp - BYTES_PER_CELL]
-        mov     rbx, [rbx]
-        next
-endcode
