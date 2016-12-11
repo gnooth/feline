@@ -607,6 +607,12 @@ code storeto, '->', SYMBOL_IMMEDIATE    ; --
         next
 endcode
 
+; ### !>
+code storeto2, '!>', SYMBOL_IMMEDIATE
+        _ storeto
+        next
+endcode
+
 ; ### <<
 code parse_immediate, '<<', SYMBOL_IMMEDIATE
         _quote ">>"
