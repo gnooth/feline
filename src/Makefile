@@ -46,7 +46,7 @@ else
 endif
 
 $(FELINE_EXE):  $(OBJS)
-	$(CC) $(LINKFLAGS) $(OBJS) -o $(FELINE_EXE)
+	$(CC) $(LINKFLAGS) $(OBJS) ../gmp/.libs/libgmp.a -o $(FELINE_EXE)
 	date > ../build
 
 feline_home.asm: $(FELINE_HOME_EXE)
