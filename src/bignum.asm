@@ -95,6 +95,37 @@ subroutine unsigned_to_bignum   ; untagged -- bignum
         ret
 endsub
 
+; ### signed_to_bignum
+subroutine signed_to_bignum     ; untagged -- bignum
+
+        push    this_register
+
+        xcall   bignum_allocate         ; address of allocated object in rax
+        mov     this_register, rax
+
+        ; zero all bits of object header
+        xor     eax, eax
+        mov     [this_register], rax
+
+        _this_object_set_type OBJECT_TYPE_BIGNUM
+
+        mov     arg0_register, this_register
+        add     arg0_register, BIGNUM_DATA_OFFSET
+
+        mov     arg1_register, rbx
+        poprbx
+
+        xcall   bignum_init_set_si
+
+        ; return handle
+        _this                           ; -- bignum
+        _ new_handle                    ; -- handle
+
+        pop     this_register
+
+        ret
+endsub
+
 subroutine destroy_bignum_unchecked     ; bignum --
         mov     arg0_register, rbx
         add     arg0_register, BIGNUM_DATA_OFFSET
@@ -118,10 +149,7 @@ endsub
 ; ### fixnum>bignum
 code fixnum_to_bignum, 'fixnum>bignum'  ; x -- y
         _untag_fixnum
-
-        ; FIXME signed_to_bignum
-        _ unsigned_to_bignum
-
+        _ signed_to_bignum
         next
 endcode
 

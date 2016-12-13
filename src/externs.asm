@@ -60,5 +60,6 @@ extern bignum_allocate
 extern bignum_free
 extern bignum_init
 extern bignum_init_set_ui
+extern bignum_init_set_si
 extern bignum_sizeinbase
 extern bignum_get_str

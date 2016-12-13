@@ -41,6 +41,11 @@ void bignum_init_set_ui(mpz_t z, unsigned long int n)
   mpz_init_set_ui(z, n);
 }
 
+void bignum_init_set_si(mpz_t z, signed long int n)
+{
+  mpz_init_set_si(z, n);
+}
+
 size_t bignum_sizeinbase(const mpz_t z, int base)
 {
   return mpz_sizeinbase(z, base);
