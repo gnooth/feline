@@ -125,15 +125,3 @@ code bignum_equal, 'bignum='            ; x y -- ?
         _tag_boolean
         next
 endcode
-
-; ### bignum+
-code bignum_plus, 'bignum+'             ; x y -- z
-        _ check_bignum
-        _bignum_value
-        _swap
-        _ check_bignum
-        _bignum_value
-        _plus                           ; -- untagged-value
-        _ to_bignum
-        next
-endcode
