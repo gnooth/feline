@@ -220,6 +220,20 @@ MAX_LOCALS      equ     16              ; maximum number of local variables in a
 %define xcall   call
 %endif
 
+; argument registers for xcall
+%ifdef WIN64
+%define arg0_register   rcx
+%define arg1_register   rdx
+%define arg2_register   r8
+%define arg3_register   r9
+%else
+; Linux
+%define arg0_register   rdi
+%define arg1_register   rsi
+%define arg2_register   rdx
+%define arg3_register   rcx
+%endif
+
 %macro  _       1
         call    %1
 %endmacro
