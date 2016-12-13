@@ -26,6 +26,11 @@ void *bignum_allocate()
   return malloc(sizeof(mpz_t) + 8);
 }
 
+void bignum_free(mpz_t z)
+{
+  mpz_clear(z);
+}
+
 void bignum_init(mpz_t z)
 {
   mpz_init(z);

@@ -57,6 +57,7 @@ extern c_seed_random
 
 ; bignum.c
 extern bignum_allocate
+extern bignum_free
 extern bignum_init
 extern bignum_init_set_ui
 extern bignum_sizeinbase
