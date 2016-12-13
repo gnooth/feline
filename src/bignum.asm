@@ -15,20 +15,11 @@
 
 file __FILE__
 
-%macro  _bignum_value 0                 ; bignum -- untagged-value
-        _slot1
-%endmacro
-
-%macro  _bignum_set_value 0             ; untagged-value bignum --
-        _set_slot1
-%endmacro
-
-%macro  _this_bignum_set_value 0        ; untagged-value --
-        _this_set_slot1
-%endmacro
+; sizeof(mpz_t) is 16 bytes
+%define BIGNUM_DATA_OFFSET      8
 
 ; ### bignum?
-code bignum?, 'bignum?'                 ; handle -- t|f
+code bignum?, 'bignum?' ; handle -- ?
         _dup
         _ handle?
         _tagged_if .1
@@ -73,55 +64,98 @@ code check_bignum, 'check-bignum'       ; handle -- bignum
         next
 endcode
 
-; ### >bignum
-code to_bignum, '>bignum'               ; untagged -- x
+; ### unsigned_to_bignum
+subroutine unsigned_to_bignum   ; untagged -- bignum
+
         push    this_register
 
-        ; 2 cells (header, value)
-        _lit 16
-        _ allocate_object               ; -- x bignum
-        popd    this_register           ; -- x
+        xcall   bignum_allocate         ; address of allocated object in rax
+        mov     this_register, rax
 
-        ; Zero all bits of object header.
+        ; zero all bits of object header
         xor     eax, eax
         mov     [this_register], rax
 
         _this_object_set_type OBJECT_TYPE_BIGNUM
-        _this_bignum_set_value
 
+        mov     arg0_register, this_register
+        add     arg0_register, BIGNUM_DATA_OFFSET
+
+        mov     arg1_register, rbx
+        poprbx
+
+        xcall   bignum_init_set_ui
+
+        ; return handle
         _this                           ; -- bignum
-
-        ; Return handle of allocated string.
         _ new_handle                    ; -- handle
 
         pop     this_register
-        next
-endcode
+
+        ret
+endsub
 
 ; ### fixnum>bignum
 code fixnum_to_bignum, 'fixnum>bignum'  ; x -- y
         _untag_fixnum
-        _ to_bignum
+
+        ; FIXME signed_to_bignum
+        _ unsigned_to_bignum
+
         next
 endcode
 
 ; ### bignum>string
 code bignum_to_string, 'bignum>string'  ; handle-to-bignum -- string
+
         _ check_bignum                  ; -- bignum
-        _bignum_value
-        _lit 10
-        _ untagged_to_base
+
+        push    this_register
+
+        mov     this_register, rbx
+        poprbx                          ; --
+
+        mov     arg0_register, this_register
+        add     arg0_register, BIGNUM_DATA_OFFSET
+
+        mov     arg1_register, 10       ; base
+
+        xcall   bignum_sizeinbase
+
+        pushrbx
+        mov     rbx, rax
+
+        add     rbx, 2
+        _ iallocate                     ; -- buffer-address
+        _duptor
+
+        mov     arg0_register, rbx      ; buffer address
+        poprbx
+
+        mov     arg1_register, 10       ; base
+
+        mov     arg2_register, this_register
+        add     arg2_register, BIGNUM_DATA_OFFSET       ; mpz_t
+
+        xcall   bignum_get_str
+
+        pushrbx
+        mov     rbx, rax
+
+        _ zcount
+        _ copy_to_string
+
+        _rfrom
+        _ ifree
+
+        pop     this_register
+
         next
 endcode
 
 ; ### bignum=
 code bignum_equal, 'bignum='            ; x y -- ?
-        _ check_bignum
-        _bignum_value
-        _swap
-        _ check_bignum
-        _bignum_value
-        _equal
-        _tag_boolean
+        ; FIXME
+        _error "unimplemented"
         next
 endcode
