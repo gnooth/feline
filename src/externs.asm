@@ -54,3 +54,10 @@ extern c_get_saved_backtrace_size
 extern c_random
 extern c_save_backtrace
 extern c_seed_random
+
+; bignum.c
+extern bignum_allocate
+extern bignum_init
+extern bignum_init_set_ui
+extern bignum_sizeinbase
+extern bignum_get_str
