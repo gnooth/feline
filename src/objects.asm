@@ -115,8 +115,8 @@ code type?, 'type?'                     ; x type-number -- ?
         next
 endcode
 
-; ### ~object-unchecked
-code destroy_object_unchecked, '~object-unchecked' ; object --
+; ### destroy_object_unchecked
+subroutine destroy_object_unchecked     ; object --
 ; The argument is known to be the address of a valid heap object, not a
 ; handle or null. Called only by maybe-collect-handle during gc.
         _dup
@@ -171,6 +171,13 @@ code destroy_object_unchecked, '~object-unchecked' ; object --
         _return
         _then .7
 
+        _dup
+        _bignum?
+        _if .8
+        _ destroy_bignum_unchecked
+        _return
+        _then .8
+
         ; Default behavior for objects with only one allocation.
 
         ; Zero out the object header so it won't look like a valid object
@@ -180,8 +187,8 @@ code destroy_object_unchecked, '~object-unchecked' ; object --
 
         _ ifree
 
-        next
-endcode
+        ret
+endsub
 
 ; ### slot
 code slot, 'slot'                       ; obj tagged-fixnum -- value

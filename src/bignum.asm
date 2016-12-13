@@ -95,6 +95,26 @@ subroutine unsigned_to_bignum   ; untagged -- bignum
         ret
 endsub
 
+subroutine destroy_bignum_unchecked     ; bignum --
+        mov     arg0_register, rbx
+        add     arg0_register, BIGNUM_DATA_OFFSET
+        xcall   bignum_free
+
+        _ in_gc?
+        _zeq_if .1
+        _dup
+        _ release_handle_for_object
+        _then .1
+
+        ; zero out object header
+        xor     eax, eax
+        mov     [rbx], rax
+
+        _ ifree
+
+        ret
+endsub
+
 ; ### fixnum>bignum
 code fixnum_to_bignum, 'fixnum>bignum'  ; x -- y
         _untag_fixnum
