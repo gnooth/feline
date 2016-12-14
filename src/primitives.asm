@@ -849,6 +849,21 @@ code lfetchs, 'l@s'     ; address -- int32
         next
 endcode
 
+; ### @
+code fetch, '@'         ; address -- uint64
+        _check_fixnum
+        _fetch
+        _dup
+        _ MOST_POSITIVE_FIXNUM
+        _ugt
+        _if .1
+        _ unsigned_to_bignum
+        _else .1
+        _tag_fixnum
+        _then .1
+        next
+endcode
+
 ; ### error-not-char
 code error_not_char, 'error-not-char'   ; x --
         ; REVIEW
