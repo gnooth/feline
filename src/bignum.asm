@@ -153,20 +153,21 @@ code fixnum_to_bignum, 'fixnum>bignum'  ; x -- y
         next
 endcode
 
-; ### bignum>string
-code bignum_to_string, 'bignum>string'  ; handle-to-bignum -- string
-
-        _ check_bignum                  ; -- bignum
+; ### bignum>base
+code bignum_to_base, 'bignum>base'      ; bignum base -- string
+        _check_fixnum
+        _swap
+        _ check_bignum                  ; -- base bignum
 
         push    this_register
 
         mov     this_register, rbx
-        poprbx                          ; --
+        poprbx                          ; -- base
 
         mov     arg0_register, this_register
         add     arg0_register, BIGNUM_DATA_OFFSET
 
-        mov     arg1_register, 10       ; base
+        mov     arg1_register, rbx      ; base
 
         xcall   bignum_sizeinbase
 
@@ -174,13 +175,14 @@ code bignum_to_string, 'bignum>string'  ; handle-to-bignum -- string
         mov     rbx, rax
 
         add     rbx, 2
-        _ iallocate                     ; -- buffer-address
+        _ iallocate                     ; -- base buffer-address
         _duptor
 
         mov     arg0_register, rbx      ; buffer address
         poprbx
 
-        mov     arg1_register, 10       ; base
+        mov     arg1_register, rbx      ; base
+        poprbx
 
         mov     arg2_register, this_register
         add     arg2_register, BIGNUM_DATA_OFFSET       ; mpz_t
@@ -198,6 +200,20 @@ code bignum_to_string, 'bignum>string'  ; handle-to-bignum -- string
 
         pop     this_register
 
+        next
+endcode
+
+; ### bignum>string
+code bignum_to_string, 'bignum>string'  ; bignum -- string
+        _lit tagged_fixnum(10)
+        _ bignum_to_base
+        next
+endcode
+
+; ### bignum>hex
+code bignum_to_hex, 'bignum>hex'        ; bignum -- string
+        _lit tagged_fixnum(16)
+        _ bignum_to_base
         next
 endcode
 
