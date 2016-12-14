@@ -469,7 +469,7 @@ int c_fixnum_to_base(Cell n, Cell base, char * buf, size_t size)
   // arguments are all untagged
   if (base == 16)
     // PRIX64 is defined in inttypes.h
-    return snprintf(buf, size, "%" PRIX64, n);
+    return snprintf(buf, size, "%" PRIx64, n);
   else
     // FIXME it's an error if base is not 10 here
     // PRId64 is defined in inttypes.h
