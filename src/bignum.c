@@ -53,5 +53,5 @@ size_t bignum_sizeinbase(const mpz_t z, int base)
 
 char * bignum_get_str(char *buf, int base, const mpz_t z)
 {
-  return mpz_get_str(buf, 10, z);
+  return mpz_get_str(buf, base, z);
 }
