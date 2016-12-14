@@ -255,19 +255,11 @@ test: fixnum-test-10 ( -- )
 
 fixnum-test-10
 
-test: fixnum-test-11 ( -- )
-    MOST_POSITIVE_FIXNUM tag-fixnum most-positive-fixnum = check-t
-    MOST_NEGATIVE_FIXNUM tag-fixnum most-negative-fixnum = check-t
-    most-positive-fixnum untag-fixnum MOST_POSITIVE_FIXNUM = check-t
-    most-negative-fixnum untag-fixnum MOST_NEGATIVE_FIXNUM = check-t
-;
-
-fixnum-test-11
-
 test: fixnum>string-test-1 ( -- )
     -17 fixnum>string "-17" = check-t
     0 fixnum>string "0" = check-t
     42 fixnum>string "42" = check-t
+    tag-bits 3 = check-t
     most-negative-fixnum fixnum>string "-1152921504606846976" = check-t
     most-negative-fixnum 1 + fixnum>string "-1152921504606846975" = check-t
     most-negative-fixnum 2 + fixnum>string "-1152921504606846974" = check-t
@@ -280,6 +272,7 @@ test: fixnum>hex-test-1 ( -- )
     -17 fixnum>hex "-11" = check-t
     0 fixnum>hex "0" = check-t
     42 fixnum>hex "2a" = check-t
+    tag-bits 3 = check-t
     most-negative-fixnum fixnum>hex "-1000000000000000" = check-t
     most-negative-fixnum 1 + fixnum>hex "-fffffffffffffff" = check-t
     most-negative-fixnum 2 + fixnum>hex "-ffffffffffffffe" = check-t
@@ -295,6 +288,7 @@ test: number>string-test-1 ( -- )
     -17 number>string "-17" = check-t
     0 number>string "0" = check-t
     42 number>string "42" = check-t
+    tag-bits 3 = check-t
     most-negative-fixnum number>string "-1152921504606846976" = check-t
     most-positive-fixnum number>string "1152921504606846975" = check-t
 ;
