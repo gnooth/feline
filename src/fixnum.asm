@@ -15,40 +15,16 @@
 
 file __FILE__
 
-; ### MOST_POSITIVE_FIXNUM
-code MOST_POSITIVE_FIXNUM, 'MOST_POSITIVE_FIXNUM'
-; Return value is untagged.
-        _lit 1
-        _lit 63 - TAG_BITS
-        _lshift
-        _oneminus
-        next
-endcode
-
-; ### MOST_NEGATIVE_FIXNUM
-code MOST_NEGATIVE_FIXNUM, 'MOST_NEGATIVE_FIXNUM'
-; Return value is untagged.
-        _ MOST_POSITIVE_FIXNUM
-        _oneplus
-        _negate
-        next
-endcode
-
 ; ### most-positive-fixnum
 code most_positive_fixnum, 'most-positive-fixnum'
-; Returns tagged fixnum.
-        _lit 1
-        _lit 63 - TAG_BITS
-        _lshift
-        _oneminus
+        _lit MOST_POSITIVE_FIXNUM
         _tag_fixnum
         next
 endcode
 
 ; ### most-negative-fixnum
 code most_negative_fixnum, 'most-negative-fixnum'
-; Returns tagged fixnum.
-        _ MOST_NEGATIVE_FIXNUM
+        _lit MOST_NEGATIVE_FIXNUM
         _tag_fixnum
         next
 endcode
@@ -555,7 +531,7 @@ code fixnum_to_hex, 'fixnum>hex'        ; fixnum -- string
         ; < 0
         ; REVIEW
         _dup
-        _ MOST_NEGATIVE_FIXNUM
+        _lit MOST_NEGATIVE_FIXNUM
         _equal
         _if .2
         _drop

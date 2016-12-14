@@ -854,7 +854,7 @@ code fetch, '@'         ; address -- uint64
         _check_fixnum
         _fetch
         _dup
-        _ MOST_POSITIVE_FIXNUM
+        _lit MOST_POSITIVE_FIXNUM
         _ugt
         _if .1
         _ unsigned_to_bignum

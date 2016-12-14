@@ -35,6 +35,9 @@ MAX_LOCALS      equ     16              ; maximum number of local variables in a
 %define TAG_BITS        3
 %define TAG_MASK        (1 << TAG_BITS) - 1
 
+%define MOST_POSITIVE_FIXNUM          1152921504606846975
+%define MOST_NEGATIVE_FIXNUM         -1152921504606846976
+
 %define FIXNUM_TAG      1
 %define CHAR_TAG        FIXNUM_TAG
 

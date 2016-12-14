@@ -615,7 +615,7 @@ code hash_combine, 'hash-combine'       ; hash1 hash2 -- newhash
 
         xor     rbx, rax
 
-        _ MOST_POSITIVE_FIXNUM
+        _lit MOST_POSITIVE_FIXNUM
         _and
 
         _tag_fixnum
