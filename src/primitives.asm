@@ -657,7 +657,13 @@ endcode
 
 ; ### hex.
 code hexdot, 'hex.'                     ; n --
+        _dup
+        _fixnum?
+        _if .1
         _ fixnum_to_hex
+        _else .1
+        _ bignum_to_hex
+        _then .1
         _lit tagged_char('$')
         _ write_char
         _ write_string
