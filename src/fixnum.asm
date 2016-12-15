@@ -260,11 +260,33 @@ code between?, 'between?'               ; n min max -- ?
 endcode
 
 ; ### fixnum+
-inline fixnum_plus, 'fixnum+'           ; x y -- x+y
+inline fixnum_plus, 'fixnum+'           ; x y -- z
 ; No type checking.
         sub     rbx, FIXNUM_TAG
         _plus
 endinline
+
+; ### fixnum-fixnum+
+code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; x y -- z
+; no type checking
+; both arguments are assumed to be fixnums
+        _untag_fixnum
+        mov     rax, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        _untag_fixnum rax
+        add     rbx, rax
+        mov     rcx, MOST_POSITIVE_FIXNUM
+        cmp     rbx, rcx
+        jg      .1
+        mov     rdx, MOST_NEGATIVE_FIXNUM
+        cmp     rbx, rdx
+        jl      .1
+        _tag_fixnum
+        _return
+.1:
+        _ signed_to_bignum
+        next
+endcode
 
 ; ### +
 code plus, '+'  ; x y -- z
@@ -276,7 +298,7 @@ code plus, '+'  ; x y -- z
 endcode
 
 ; ### fixnum-
-inline fixnum_minus, 'fixnum-'          ; x y -- x-y
+inline fixnum_minus, 'fixnum-'          ; x y -- z
 ; No type checking.
         mov     rax, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
@@ -286,7 +308,7 @@ inline fixnum_minus, 'fixnum-'          ; x y -- x-y
 endinline
 
 ; ### -
-code feline_minus, '-'                  ; x y -- x-y
+code feline_minus, '-'                  ; x y -- z
         _check_fixnum
         _swap
         _check_fixnum
@@ -297,7 +319,7 @@ code feline_minus, '-'                  ; x y -- x-y
 endcode
 
 ; ### fixnum*
-code fixnum_multiply, 'fixnum*'         ; x y -- x*y
+code fixnum_multiply, 'fixnum*'         ; x y -- z
 ; No type checking.
         _untag_2_fixnums
         _star
@@ -306,7 +328,7 @@ code fixnum_multiply, 'fixnum*'         ; x y -- x*y
 endcode
 
 ; ### *
-code feline_multiply, '*'               ; x y -- x*y
+code feline_multiply, '*'               ; x y -- z
         _check_fixnum
         _swap
         _check_fixnum
