@@ -43,8 +43,8 @@ code error_not_bignum, 'error-not-bignum' ; x --
         next
 endcode
 
-; ### check-bignum
-code check_bignum, 'check-bignum'       ; handle -- bignum
+; ### check_bignum
+subroutine check_bignum         ; handle -- bignum
         _dup
         _ handle?
         _tagged_if .1
@@ -61,8 +61,8 @@ code check_bignum, 'check-bignum'       ; handle -- bignum
         _then .1
 
         _ error_not_bignum
-        next
-endcode
+        ret
+endsub
 
 ; ### unsigned_to_bignum
 subroutine unsigned_to_bignum   ; untagged -- bignum
@@ -126,6 +126,7 @@ subroutine signed_to_bignum     ; untagged -- bignum
         ret
 endsub
 
+; ### destroy_bignum_unchecked
 subroutine destroy_bignum_unchecked     ; bignum --
         mov     arg0_register, rbx
         add     arg0_register, BIGNUM_DATA_OFFSET
@@ -221,5 +222,36 @@ endcode
 code bignum_equal, 'bignum='            ; x y -- ?
         ; FIXME
         _error "unimplemented"
+        next
+endcode
+
+; ### bignum-add-fixnum
+code bignum_add_fixnum, 'bignum-add-fixnum'     ; x y -- z
+        _ check_bignum
+        _swap
+        _ check_fixnum          ; -- bignum fixnum
+
+        mov     arg1_register, rbx
+        poprbx
+        mov     arg0_register, rbx
+        poprbx
+
+        extern bignum_add
+        xcall   bignum_add
+
+        ; fixnum or object pointer in rax
+        pushrbx
+        mov     rbx, rax
+        and     eax, TAG_MASK
+        cmp     eax, FIXNUM_TAG
+        jne     .1
+        _return
+.1:
+        ; -- object-pointer
+        _lit OBJECT_TYPE_BIGNUM
+        _over
+        _object_set_type
+        _ new_handle
+
         next
 endcode
