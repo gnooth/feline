@@ -259,13 +259,6 @@ code between?, 'between?'               ; n min max -- ?
         next
 endcode
 
-; ### fixnum+
-inline fixnum_plus, 'fixnum+'           ; x y -- z
-; No type checking.
-        sub     rbx, FIXNUM_TAG
-        _plus
-endinline
-
 ; ### fixnum-fixnum+
 code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; x y -- z
 ; no type checking
@@ -285,6 +278,20 @@ code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; x y -- z
         _return
 .1:
         _ signed_to_bignum
+        next
+endcode
+
+; ### fixnum+
+code fixnum_plus, 'fixnum+'           ; x y -- z
+        _verify_fixnum
+        mov     al, byte [rbp]
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     .1
+        _ fixnum_fixnum_plus
+        _return
+.1:
+        _error "not a number"
         next
 endcode
 
