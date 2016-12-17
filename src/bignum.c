@@ -13,8 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h>     // malloc
 #include <string.h>     // memset
 
 #include "../gmp/gmp.h"
@@ -24,10 +23,10 @@
 #define MOST_POSITIVE_FIXNUM          1152921504606846975
 #define MOST_NEGATIVE_FIXNUM         -1152921504606846976
 
-struct bignum {
+typedef struct {
   Cell object_header;
   mpz_t z;
-};
+} bignum;
 
 void *bignum_allocate()
 {
@@ -35,10 +34,10 @@ void *bignum_allocate()
   return malloc(sizeof(mpz_t) + 8);
 }
 
-struct bignum *make_bignum(mpz_t z)
+bignum *make_bignum(mpz_t z)
 {
-  struct bignum *p = bignum_allocate();
-  memset(p, 0, sizeof(struct bignum));
+  bignum *p = bignum_allocate();
+  memset(p, 0, sizeof(bignum));
   mpz_init_set(p->z, z);
   return p;
 }
@@ -58,12 +57,26 @@ void bignum_init_set_ui(mpz_t z, unsigned long int n)
   mpz_init_set_ui(z, n);
 }
 
-void bignum_init_set_si(mpz_t z, signed long int n)
+void bignum_init_set_si(mpz_t z, Cell n)
 {
-  mpz_init_set_si(z, n);
+  if (sizeof(long) == 4)
+    {
+      long int lo = (n & 0xffffffff);
+      long int hi = (n >> 32);
+      if (hi != 0)
+        {
+          mpz_init_set_si(z, hi);
+          mpz_mul_2exp(z, z, 32);
+          mpz_add_ui(z, z, lo);
+        }
+      else
+        mpz_init_set_si(z, lo);
+    }
+  else
+    mpz_init_set_si(z, n);
 }
 
-void *bignum_add(struct bignum *b, long n)
+Cell bignum_add(bignum *b, long n)
 {
   mpz_t result;
   mpz_init_set(result, b->z);
@@ -77,10 +90,10 @@ void *bignum_add(struct bignum *b, long n)
       if (n >= MOST_NEGATIVE_FIXNUM && n <= MOST_POSITIVE_FIXNUM)
         {
           mpz_clear(result);
-          return (void *) ((n << 3) + 1);
+          return ((n << 3) + 1);
         }
     }
-  return make_bignum(result);
+  return (Cell) make_bignum(result);
 }
 
 size_t bignum_sizeinbase(const mpz_t z, int base)
