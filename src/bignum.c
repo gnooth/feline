@@ -24,7 +24,7 @@
 #define MOST_NEGATIVE_FIXNUM         -1152921504606846976
 
 typedef struct {
-  Cell object_header;
+  cell object_header;
   mpz_t z;
 } bignum;
 
@@ -57,7 +57,7 @@ void bignum_init_set_ui(mpz_t z, unsigned long int n)
   mpz_init_set_ui(z, n);
 }
 
-void bignum_init_set_si(mpz_t z, Cell n)
+void bignum_init_set_si(mpz_t z, cell n)
 {
   if (sizeof(long) == 4)
     {
@@ -76,7 +76,7 @@ void bignum_init_set_si(mpz_t z, Cell n)
     mpz_init_set_si(z, n);
 }
 
-Cell bignum_add(bignum *b, long n)
+cell bignum_add(bignum *b, long n)
 {
   mpz_t result;
   mpz_init_set(result, b->z);
@@ -93,7 +93,7 @@ Cell bignum_add(bignum *b, long n)
           return ((n << 3) + 1);
         }
     }
-  return (Cell) make_bignum(result);
+  return (cell) make_bignum(result);
 }
 
 size_t bignum_sizeinbase(const mpz_t z, int base)

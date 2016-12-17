@@ -95,7 +95,7 @@ int os_file_is_directory(char *path)
 #endif
 }
 
-Cell os_open_file(const char *filename, int flags)
+cell os_open_file(const char *filename, int flags)
 {
 #ifdef WIN64_NATIVE
   HANDLE h = CreateFile(filename,
@@ -108,7 +108,7 @@ Cell os_open_file(const char *filename, int flags)
                         );
   if (h == INVALID_HANDLE_VALUE)
     os_errno_data = GetLastError();
-  return (Cell) h;
+  return (cell) h;
 #else
   int ret;
 #ifdef WIN64
@@ -118,14 +118,14 @@ Cell os_open_file(const char *filename, int flags)
   if (ret < 0)
     {
       os_errno_data = errno;
-      return (Cell) -1;
+      return (cell) -1;
     }
   else
     return ret;
 #endif
 }
 
-Cell os_create_file(const char *filename, int flags)
+cell os_create_file(const char *filename, int flags)
 {
 #ifdef WIN64_NATIVE
   HANDLE h = CreateFile(filename,
@@ -136,7 +136,7 @@ Cell os_create_file(const char *filename, int flags)
                         FILE_ATTRIBUTE_NORMAL,
                         NULL // template file (ignored for existing file)
                         );
-  return (Cell) h;
+  return (cell) h;
 #else
   int ret;
 #ifdef WIN64
@@ -146,34 +146,34 @@ Cell os_create_file(const char *filename, int flags)
 #endif
   ret = open(filename, flags, 0644);
   if (ret < 0)
-    return (Cell) -1;
+    return (cell) -1;
   else
     return ret;
 #endif
 }
 
-Cell os_read_file(Cell fd, void *buf, size_t count)
+cell os_read_file(cell fd, void *buf, size_t count)
 {
 #ifdef WIN64_NATIVE
   DWORD bytes_read;
   BOOL ret = ReadFile((HANDLE)fd, buf, count, &bytes_read, NULL);
   if (ret)
-    return (Cell) bytes_read;
+    return (cell) bytes_read;
   else
-    return (Cell) -1;
+    return (cell) -1;
 #else
   int ret = read(fd, buf, count);
   if (ret < 0)
     {
       os_errno_data = errno;
-      return (Cell) -1;
+      return (cell) -1;
     }
   else
     return ret;
 #endif
 }
 
-Cell os_read_char(Cell fd)
+cell os_read_char(cell fd)
 {
 #ifdef WIN64_NATIVE
   DWORD bytes_read;
@@ -182,55 +182,55 @@ Cell os_read_char(Cell fd)
   // "When a synchronous read operation reaches the end of a file, ReadFile
   // returns TRUE and sets *lpNumberOfBytesRead to zero."
   if (ret && bytes_read == 1)
-    return (Cell) c;
+    return (cell) c;
   else
-    return (Cell) -1;
+    return (cell) -1;
 #else
   unsigned char c;
   int ret = read(fd, &c, 1);
   if (ret <= 0)
     return -1;
-  return (Cell) c;
+  return (cell) c;
 #endif
 }
 
-Cell os_write_file(Cell fd, void *buf, size_t count)
+cell os_write_file(cell fd, void *buf, size_t count)
 {
 #ifdef WIN64_NATIVE
   DWORD bytes_written = 0;
   BOOL ret;
   ret = WriteFile((HANDLE)fd, buf, count, &bytes_written, NULL);
   if (ret)
-    return (Cell) bytes_written;
+    return (cell) bytes_written;
   else
     return -1;
 #else
   int ret = write(fd, buf, count);
   if (ret < 0)
-    return (Cell) -1;
+    return (cell) -1;
   else
     return ret;
 #endif
 }
 
-Cell os_close_file(Cell fd)
+cell os_close_file(cell fd)
 {
 #ifdef WIN64_NATIVE
-  Cell ret = (Cell) CloseHandle((HANDLE)fd);
+  cell ret = (cell) CloseHandle((HANDLE)fd);
   if (ret)
     return 0;
   else
-    return (Cell) -1;
+    return (cell) -1;
 #else
   int ret = close(fd);
   if (ret < 0)
-    return (Cell) -1;
+    return (cell) -1;
   else
     return ret;
 #endif
 }
 
-Cell os_file_size(Cell fd)
+cell os_file_size(cell fd)
 {
 #ifdef WIN64_NATIVE
   DWORD current, end;
@@ -248,13 +248,13 @@ Cell os_file_size(Cell fd)
   end = lseek(fd, 0, SEEK_END);
   lseek(fd, current, SEEK_SET);
   if (end == (off_t) -1)
-    return (Cell) -1;
+    return (cell) -1;
   else
-    return (Cell) end;
+    return (cell) end;
 #endif
 }
 
-Cell os_file_position(Cell fd)
+cell os_file_position(cell fd)
 {
 #ifdef WIN64_NATIVE
   DWORD pos = SetFilePointer((HANDLE)fd, 0, NULL, FILE_CURRENT);
@@ -263,11 +263,11 @@ Cell os_file_position(Cell fd)
   else
     return pos;
 #else
-  return (Cell) lseek(fd, 0, SEEK_CUR);
+  return (cell) lseek(fd, 0, SEEK_CUR);
 #endif
 }
 
-Cell os_reposition_file(Cell fd, off_t offset)
+cell os_reposition_file(cell fd, off_t offset)
 {
 #ifdef WIN64_NATIVE
   DWORD pos = SetFilePointer((HANDLE)fd, offset, NULL, FILE_BEGIN);
@@ -276,11 +276,11 @@ Cell os_reposition_file(Cell fd, off_t offset)
   else
     return pos;
 #else
-  return (Cell) lseek(fd, offset, SEEK_SET);
+  return (cell) lseek(fd, offset, SEEK_SET);
 #endif
 }
 
-Cell os_resize_file(Cell fd, off_t offset)
+cell os_resize_file(cell fd, off_t offset)
 {
 #ifdef WIN64_NATIVE
   DWORD pos = SetFilePointer((HANDLE)fd, offset, NULL, FILE_BEGIN);
@@ -291,13 +291,13 @@ Cell os_resize_file(Cell fd, off_t offset)
   else
     return -1;
 #elif defined(WIN64)
-  return (Cell) _chsize(fd, offset);
+  return (cell) _chsize(fd, offset);
 #else
-  return (Cell) ftruncate(fd, offset);
+  return (cell) ftruncate(fd, offset);
 #endif
 }
 
-Cell os_delete_file(const char *filename)
+cell os_delete_file(const char *filename)
 {
 #ifdef WIN64_NATIVE
   return DeleteFile(filename) ? 0 : -1;
@@ -306,7 +306,7 @@ Cell os_delete_file(const char *filename)
 #endif
 }
 
-Cell os_rename_file(const char *oldpath, const char *newpath)
+cell os_rename_file(const char *oldpath, const char *newpath)
 {
 #ifdef WIN64_NATIVE
   return MoveFile(oldpath, newpath) ? 0 : -1;
@@ -315,7 +315,7 @@ Cell os_rename_file(const char *oldpath, const char *newpath)
 #endif
 }
 
-Cell os_flush_file(Cell fd)
+cell os_flush_file(cell fd)
 {
 #ifdef WIN64
 #ifdef WIN64_NATIVE
@@ -342,7 +342,7 @@ void os_emit_file(int c, int fd)
 #endif
 }
 
-Cell os_ticks()
+cell os_ticks()
 {
 #ifdef WIN64
   ULONGLONG WINAPI GetTickCount64(void);
@@ -371,8 +371,8 @@ void os_time_and_date(void * buf)
 }
 
 #ifndef WIN64
-extern Cell user_microseconds;
-extern Cell system_microseconds;
+extern cell user_microseconds;
+extern cell system_microseconds;
 
 void os_cputime()
 {
@@ -416,7 +416,7 @@ char *os_getcwd(char *buf, size_t size)
   return buf;
 }
 
-Cell os_chdir(const char *path)
+cell os_chdir(const char *path)
 {
   // REVIEW error handling
 #ifdef WIN64
@@ -464,7 +464,7 @@ void os_bye()
   exit(0);
 }
 
-int c_fixnum_to_base(Cell n, Cell base, char * buf, size_t size)
+int c_fixnum_to_base(cell n, cell base, char * buf, size_t size)
 {
   // arguments are all untagged
   if (base == 16)

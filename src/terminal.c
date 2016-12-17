@@ -28,7 +28,7 @@
 
 #include "feline.h"
 
-extern Cell line_input_data;
+extern cell line_input_data;
 
 #ifdef WIN64
 static HANDLE console_input_handle = INVALID_HANDLE_VALUE;
@@ -41,8 +41,8 @@ static int terminal_prepped = 0;
 
 static void get_terminal_size()
 {
-  extern Cell nrows_data;
-  extern Cell ncols_data;
+  extern cell nrows_data;
+  extern cell ncols_data;
 #ifdef WIN64
   CONSOLE_SCREEN_BUFFER_INFO info;
   if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info))
@@ -75,10 +75,10 @@ void prep_terminal()
   console_input_handle = GetStdHandle(STD_INPUT_HANDLE);
   console_output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
 #ifdef WIN64_NATIVE
-  extern Cell forth_stdout_data;
-  forth_stdout_data = (Cell) console_output_handle;
-  extern Cell standard_output_handle;
-  standard_output_handle = (Cell) console_output_handle;
+  extern cell forth_stdout_data;
+  forth_stdout_data = (cell) console_output_handle;
+  extern cell standard_output_handle;
+  standard_output_handle = (cell) console_output_handle;
 #endif
   DWORD mode;
   if (GetConsoleMode(console_input_handle, &mode))
@@ -87,9 +87,9 @@ void prep_terminal()
       SetConsoleMode(console_input_handle, mode);
       get_terminal_size();
       COORD size;
-      extern Cell ncols_data;
+      extern cell ncols_data;
       size.X = ncols_data;
-      extern Cell nrows_data;
+      extern cell nrows_data;
       size.Y = nrows_data;
       SetConsoleScreenBufferSize(console_input_handle, size);
       line_input_data = 0;
@@ -139,16 +139,16 @@ void deprep_terminal()
 #endif
 }
 
-Cell os_key_avail()
+cell os_key_avail()
 {
 #ifdef WIN64
-  return _kbhit() ? (Cell) -1 : 0;
+  return _kbhit() ? (cell) -1 : 0;
 #else
   // Linux
   int chars_avail = 0;
   int tty = fileno(stdin);
   if (ioctl(tty, FIONREAD, &chars_avail) == 0)
-    return chars_avail ? (Cell) -1 : 0;
+    return chars_avail ? (cell) -1 : 0;
   return 0;
 #endif
 }

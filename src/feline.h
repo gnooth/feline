@@ -18,46 +18,46 @@
 
 #include <stdint.h>             // int64_t
 
-typedef int64_t Cell;
+typedef int64_t cell;
 
 // os.c
-Cell os_ticks();
+cell os_ticks();
 
 // terminal.c
 void prep_terminal();
 void deprep_terminal();
 
 // backtrace.c
-void c_save_backtrace(Cell rip, Cell rsp);
+void c_save_backtrace(cell rip, cell rsp);
 
-extern Cell os_errno_data;
+extern cell os_errno_data;
 
-extern Cell start_time_ticks_data;
+extern cell start_time_ticks_data;
 
 #ifdef WIN64
-extern Cell saved_exception_code_data;
-extern Cell saved_exception_address_data;
+extern cell saved_exception_code_data;
+extern cell saved_exception_address_data;
 #else
-extern Cell saved_signal_data;
-extern Cell saved_signal_address_data;
+extern cell saved_signal_data;
+extern cell saved_signal_address_data;
 #endif
-extern Cell saved_rax_data;
-extern Cell saved_rbx_data;
-extern Cell saved_rcx_data;
-extern Cell saved_rdx_data;
-extern Cell saved_rsi_data;
-extern Cell saved_rdi_data;
-extern Cell saved_rbp_data;
-extern Cell saved_rsp_data;
-extern Cell saved_r8_data;
-extern Cell saved_r9_data;
-extern Cell saved_r10_data;
-extern Cell saved_r11_data;
-extern Cell saved_r12_data;
-extern Cell saved_r13_data;
-extern Cell saved_r14_data;
-extern Cell saved_r15_data;
-extern Cell saved_rip_data;
-extern Cell saved_efl_data;
+extern cell saved_rax_data;
+extern cell saved_rbx_data;
+extern cell saved_rcx_data;
+extern cell saved_rdx_data;
+extern cell saved_rsi_data;
+extern cell saved_rdi_data;
+extern cell saved_rbp_data;
+extern cell saved_rsp_data;
+extern cell saved_r8_data;
+extern cell saved_r9_data;
+extern cell saved_r10_data;
+extern cell saved_r11_data;
+extern cell saved_r12_data;
+extern cell saved_r13_data;
+extern cell saved_r14_data;
+extern cell saved_r15_data;
+extern cell saved_rip_data;
+extern cell saved_efl_data;
 
 #endif // FELINE_H

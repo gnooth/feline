@@ -33,28 +33,28 @@ LONG CALLBACK windows_exception_handler(EXCEPTION_POINTERS *exception_pointers)
 {
   EXCEPTION_RECORD *exception_record = exception_pointers->ExceptionRecord;
   saved_exception_code_data = exception_record->ExceptionCode;
-  saved_exception_address_data = (Cell) exception_record->ExceptionAddress;
+  saved_exception_address_data = (cell) exception_record->ExceptionAddress;
 
   CONTEXT *context = exception_pointers->ContextRecord;
 
-  saved_rax_data = (Cell) context->Rax;
-  saved_rbx_data = (Cell) context->Rbx;
-  saved_rcx_data = (Cell) context->Rcx;
-  saved_rdx_data = (Cell) context->Rdx;
-  saved_rsi_data = (Cell) context->Rsi;
-  saved_rdi_data = (Cell) context->Rdi;
-  saved_rbp_data = (Cell) context->Rbp;
-  saved_rsp_data = (Cell) context->Rsp;
-  saved_r8_data =  (Cell) context->R8;
-  saved_r9_data =  (Cell) context->R9;
-  saved_r10_data = (Cell) context->R10;
-  saved_r11_data = (Cell) context->R11;
-  saved_r12_data = (Cell) context->R12;
-  saved_r13_data = (Cell) context->R13;
-  saved_r14_data = (Cell) context->R14;
-  saved_r15_data = (Cell) context->R15;
-  saved_rip_data = (Cell) context->Rip;
-  saved_efl_data = (Cell) context->EFlags;
+  saved_rax_data = (cell) context->Rax;
+  saved_rbx_data = (cell) context->Rbx;
+  saved_rcx_data = (cell) context->Rcx;
+  saved_rdx_data = (cell) context->Rdx;
+  saved_rsi_data = (cell) context->Rsi;
+  saved_rdi_data = (cell) context->Rdi;
+  saved_rbp_data = (cell) context->Rbp;
+  saved_rsp_data = (cell) context->Rsp;
+  saved_r8_data =  (cell) context->R8;
+  saved_r9_data =  (cell) context->R9;
+  saved_r10_data = (cell) context->R10;
+  saved_r11_data = (cell) context->R11;
+  saved_r12_data = (cell) context->R12;
+  saved_r13_data = (cell) context->R13;
+  saved_r14_data = (cell) context->R14;
+  saved_r15_data = (cell) context->R15;
+  saved_rip_data = (cell) context->Rip;
+  saved_efl_data = (cell) context->EFlags;
 
   c_save_backtrace(context->Rip, context->Rsp);
 
@@ -70,28 +70,28 @@ LONG CALLBACK windows_exception_handler(EXCEPTION_POINTERS *exception_pointers)
 static void signal_handler(int sig, siginfo_t *si, void * context)
 {
   saved_signal_data = sig;
-  saved_signal_address_data = (Cell) si->si_addr;
+  saved_signal_address_data = (cell) si->si_addr;
 
   // see /usr/include/x86_64-linux-gnu/sys/ucontext.h
   ucontext_t * uc = (ucontext_t *) context;
-  saved_rax_data = (Cell) uc->uc_mcontext.gregs[REG_RAX];
-  saved_rbx_data = (Cell) uc->uc_mcontext.gregs[REG_RBX];
-  saved_rcx_data = (Cell) uc->uc_mcontext.gregs[REG_RCX];
-  saved_rdx_data = (Cell) uc->uc_mcontext.gregs[REG_RDX];
-  saved_rsi_data = (Cell) uc->uc_mcontext.gregs[REG_RSI];
-  saved_rdi_data = (Cell) uc->uc_mcontext.gregs[REG_RDI];
-  saved_rbp_data = (Cell) uc->uc_mcontext.gregs[REG_RBP];
-  saved_rsp_data = (Cell) uc->uc_mcontext.gregs[REG_RSP];
-  saved_r8_data =  (Cell) uc->uc_mcontext.gregs[REG_R8];
-  saved_r9_data =  (Cell) uc->uc_mcontext.gregs[REG_R9];
-  saved_r10_data = (Cell) uc->uc_mcontext.gregs[REG_R10];
-  saved_r11_data = (Cell) uc->uc_mcontext.gregs[REG_R11];
-  saved_r12_data = (Cell) uc->uc_mcontext.gregs[REG_R12];
-  saved_r13_data = (Cell) uc->uc_mcontext.gregs[REG_R13];
-  saved_r14_data = (Cell) uc->uc_mcontext.gregs[REG_R14];
-  saved_r15_data = (Cell) uc->uc_mcontext.gregs[REG_R15];
-  saved_rip_data = (Cell) uc->uc_mcontext.gregs[REG_RIP];
-  saved_efl_data = (Cell) uc->uc_mcontext.gregs[REG_EFL];
+  saved_rax_data = (cell) uc->uc_mcontext.gregs[REG_RAX];
+  saved_rbx_data = (cell) uc->uc_mcontext.gregs[REG_RBX];
+  saved_rcx_data = (cell) uc->uc_mcontext.gregs[REG_RCX];
+  saved_rdx_data = (cell) uc->uc_mcontext.gregs[REG_RDX];
+  saved_rsi_data = (cell) uc->uc_mcontext.gregs[REG_RSI];
+  saved_rdi_data = (cell) uc->uc_mcontext.gregs[REG_RDI];
+  saved_rbp_data = (cell) uc->uc_mcontext.gregs[REG_RBP];
+  saved_rsp_data = (cell) uc->uc_mcontext.gregs[REG_RSP];
+  saved_r8_data =  (cell) uc->uc_mcontext.gregs[REG_R8];
+  saved_r9_data =  (cell) uc->uc_mcontext.gregs[REG_R9];
+  saved_r10_data = (cell) uc->uc_mcontext.gregs[REG_R10];
+  saved_r11_data = (cell) uc->uc_mcontext.gregs[REG_R11];
+  saved_r12_data = (cell) uc->uc_mcontext.gregs[REG_R12];
+  saved_r13_data = (cell) uc->uc_mcontext.gregs[REG_R13];
+  saved_r14_data = (cell) uc->uc_mcontext.gregs[REG_R14];
+  saved_r15_data = (cell) uc->uc_mcontext.gregs[REG_R15];
+  saved_rip_data = (cell) uc->uc_mcontext.gregs[REG_RIP];
+  saved_efl_data = (cell) uc->uc_mcontext.gregs[REG_EFL];
 
   c_save_backtrace(saved_rip_data, saved_rsp_data);
 
@@ -102,23 +102,23 @@ static void signal_handler(int sig, siginfo_t *si, void * context)
 
 static void args(int argc, char **argv)
 {
-  extern Cell main_argc;
-  extern Cell main_argv;
+  extern cell main_argc;
+  extern cell main_argv;
   main_argc = argc;
-  main_argv = (Cell) argv;
+  main_argv = (cell) argv;
 }
 
 void * data_stack_base;
 
 static void initialize_forth()
 {
-  extern Cell sp0_data;
-  extern Cell stack_cells_data;
+  extern cell sp0_data;
+  extern cell stack_cells_data;
 
   stack_cells_data = 4096;
-  size_t data_stack_size = stack_cells_data * sizeof(Cell);
+  size_t data_stack_size = stack_cells_data * sizeof(cell);
   data_stack_base = malloc(data_stack_size + 64);
-  sp0_data = (Cell) data_stack_base + data_stack_size;
+  sp0_data = (cell) data_stack_base + data_stack_size;
 }
 
 int main(int argc, char **argv, char **env)

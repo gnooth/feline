@@ -17,29 +17,29 @@
 
 #include "feline.h"
 
-static Cell saved_backtrace_array[16];
-static Cell saved_backtrace_size;
+static cell saved_backtrace_array[16];
+static cell saved_backtrace_size;
 
-Cell * c_get_saved_backtrace_array()
+cell * c_get_saved_backtrace_array()
 {
   return saved_backtrace_array;
 }
 
-Cell c_get_saved_backtrace_size()
+cell c_get_saved_backtrace_size()
 {
   return saved_backtrace_size;
 }
 
-void c_save_backtrace(Cell rip, Cell rsp)
+void c_save_backtrace(cell rip, cell rsp)
 {
   memset(saved_backtrace_array, 0, sizeof(saved_backtrace_array));
   saved_backtrace_array[0] = rip;
   int i = 1;
-  extern Cell *rp0_data;
-  for (Cell * p = (Cell *)rsp; p < rp0_data; ++p)
+  extern cell *rp0_data;
+  for (cell * p = (cell *)rsp; p < rp0_data; ++p)
     {
       saved_backtrace_array[i++] = *p;
-      if (i >= sizeof(saved_backtrace_array) / sizeof(Cell))
+      if (i >= sizeof(saved_backtrace_array) / sizeof(cell))
         break;
     }
   saved_backtrace_size = i;
