@@ -375,8 +375,13 @@ code each_index, 'each-index'           ; seq callable --
 endcode
 
 ; ### find
-code feline_find, 'find'                ; seq quot -- index/f elt/f
+code find, 'find'       ; seq quot -- index/f elt/f
+
+        ; protect callable from gc
+        push    rbx
+
         _ callable_code_address         ; -- seq code-address
+
         push    r12
         mov     r12, rbx                ; address to call in r12
         poprbx                          ; -- seq
@@ -408,6 +413,10 @@ code feline_find, 'find'                ; seq quot -- index/f elt/f
 .exit:
         pop     this_register
         pop     r12
+
+        ; drop callable
+        pop     rax
+
         next
 endcode
 
