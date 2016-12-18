@@ -20,6 +20,12 @@
 
 #include "feline.h"
 
+#ifdef WIN64
+#define SIZEOF_LONG 4
+#else
+#define SIZEOF_LONG 8
+#endif
+
 #define MOST_POSITIVE_FIXNUM          1152921504606846975
 #define MOST_NEGATIVE_FIXNUM         -1152921504606846976
 
@@ -59,41 +65,62 @@ void bignum_init_set_ui(mpz_t z, unsigned long int n)
 
 void bignum_init_set_si(mpz_t z, cell n)
 {
-  if (sizeof(long) == 4)
+#if SIZEOF_LONG == 4
+  long int lo = (n & 0xffffffff);
+  long int hi = (n >> 32);
+  if (hi != 0)
     {
-      long int lo = (n & 0xffffffff);
-      long int hi = (n >> 32);
-      if (hi != 0)
-        {
-          mpz_init_set_si(z, hi);
-          mpz_mul_2exp(z, z, 32);
-          mpz_add_ui(z, z, lo);
-        }
-      else
-        mpz_init_set_si(z, lo);
+      mpz_init_set_si(z, hi);
+      mpz_mul_2exp(z, z, 32);
+      mpz_add_ui(z, z, lo);
     }
   else
-    mpz_init_set_si(z, n);
+    mpz_init_set_si(z, lo);
+#else
+  mpz_init_set_si(z, n);
+#endif
 }
 
-cell bignum_add(bignum *b, long n)
+cell normalize(mpz_t z)
+{
+  if (mpz_fits_slong_p(z))
+    {
+      long n = mpz_get_si(z);
+      if (n >= MOST_NEGATIVE_FIXNUM && n <= MOST_POSITIVE_FIXNUM)
+        {
+          mpz_clear(z);
+          return ((n << 3) + 1);
+        }
+    }
+  return (cell) make_bignum(z);
+}
+
+cell bignum_add_bignum (bignum *b1, bignum *b2)
+{
+  mpz_t result;
+  mpz_init_set(result, b1->z);
+  mpz_add(result, result, b2->z);
+  return normalize(result);
+}
+
+cell bignum_add(bignum *b, cell n)
 {
   mpz_t result;
   mpz_init_set(result, b->z);
+#if SIZEOF_LONG == 4
+  if (n < INT32_MIN || n > INT32_MAX)
+    {
+      mpz_t z;
+      bignum_init_set_si(z, n);
+      mpz_add(result, result, z);
+      return normalize(result);
+    }
+#endif
   if (n >= 0)
     mpz_add_ui(result, result, (unsigned long) n);
   else
     mpz_sub_ui(result, result, (unsigned long) -n);
-  if (mpz_fits_slong_p(result))
-    {
-      long n = mpz_get_si(result);
-      if (n >= MOST_NEGATIVE_FIXNUM && n <= MOST_POSITIVE_FIXNUM)
-        {
-          mpz_clear(result);
-          return ((n << 3) + 1);
-        }
-    }
-  return (cell) make_bignum(result);
+  return normalize(result);
 }
 
 size_t bignum_sizeinbase(const mpz_t z, int base)
