@@ -1323,11 +1323,26 @@ test: string-index-from-test-1
 
 string-index-from-test-1
 
+test: fixnum>bignum-test-1
+     0 fixnum>bignum bignum>string  "0" = check-t
+     1 fixnum>bignum bignum>string  "1" = check-t
+    -1 fixnum>bignum bignum>string "-1" = check-t
+    42 fixnum>bignum bignum>string "42" = check-t
+    most-positive-fixnum fixnum>bignum bignum>string
+    most-positive-fixnum fixnum>string = check-t
+;
+
+fixnum>bignum-test-1
+
 test: fixnum-fixnum+-test-1
-    1 2 fixnum-fixnum+ 3 eq? check-t
+    1  2 fixnum-fixnum+  3 eq? check-t
     1 -2 fixnum-fixnum+ -1 eq? check-t
-    most-positive-fixnum 0 fixnum-fixnum+ most-positive-fixnum eq? check-t
-    most-positive-fixnum 1 fixnum-fixnum+ bignum? check-t
+
+    most-positive-fixnum   0 fixnum-fixnum+ most-positive-fixnum eq? check-t
+    most-positive-fixnum   1 fixnum-fixnum+ bignum>string  "1152921504606846976" = check-t
+    most-negative-fixnum  -1 fixnum-fixnum+ bignum>string "-1152921504606846977" = check-t
+    most-positive-fixnum dup fixnum-fixnum+ bignum>string  "2305843009213693950" = check-t
+    most-negative-fixnum dup fixnum-fixnum+ bignum>string "-2305843009213693952" = check-t
 ;
 
 fixnum-fixnum+-test-1
