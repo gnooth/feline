@@ -29,6 +29,12 @@
 #define MOST_POSITIVE_FIXNUM          1152921504606846975
 #define MOST_NEGATIVE_FIXNUM         -1152921504606846976
 
+static inline cell make_fixnum(signed long int n)
+{
+  // see _tag_fixnum in macros.asm
+  return ((n << 3) + 1);
+}
+
 typedef struct {
   cell object_header;
   mpz_t z;
@@ -89,7 +95,7 @@ cell normalize(mpz_t z)
       if (n >= MOST_NEGATIVE_FIXNUM && n <= MOST_POSITIVE_FIXNUM)
         {
           mpz_clear(z);
-          return ((n << 3) + 1);
+          return make_fixnum(n);
         }
     }
   return (cell) make_bignum(z);
