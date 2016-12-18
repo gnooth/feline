@@ -188,30 +188,30 @@ code string_empty?, 'string-empty?'     ; string -- ?
 endcode
 
 ; Strings store their character data inline starting at this + STRING_DATA_OFFSET bytes.
-%macro _string_data 0
+%macro  _string_raw_data 0
         lea     rbx, [rbx + STRING_DATA_OFFSET]
 %endmacro
 
-%macro _this_string_data 0
+%macro  _this_string_raw_data 0
         pushrbx
         lea     rbx, [this_register + STRING_DATA_OFFSET]
 %endmacro
 
-; ### string-data
-code string_data, 'string-data'         ; string -- data-address
-        _ check_string                  ; -- string
-        _string_data
-        next
-endcode
+; ### string_data
+subroutine string_data  ; string -- data-address
+        _ check_string
+        _string_raw_data
+        ret
+endsub
 
 %macro  _string_nth_unsafe 0            ; untagged-index string -- untagged-char
-        _string_data
+        _string_raw_data
         _plus
         _cfetch
 %endmacro
 
 %macro  _this_string_nth_unsafe 0       ; untagged-index -- untagged-char
-        _this_string_data
+        _this_string_raw_data
         _plus
         _cfetch
 %endmacro
@@ -242,12 +242,12 @@ subroutine copy_to_string       ; from-addr from-length -- handle
 
         _this_string_set_length         ; -- from-addr
 
-        _this_string_data
+        _this_string_raw_data
         _this_string_length
         _ cmove                         ; --
 
         ; store terminal null byte
-        _this_string_data
+        _this_string_raw_data
         _this_string_length
         _plus
         mov     byte [rbx], 0
@@ -266,7 +266,7 @@ subroutine string_from                  ; string -- addr len
 ; Returned values are untagged.
         _ check_string
         _duptor
-        _string_data
+        _string_raw_data
         _rfrom
         _string_length
         ret
@@ -440,7 +440,7 @@ code string_last_char, 'string-last-char' ; string -- char
         _error "index out of bounds"
         _else .1
         _swap
-        _string_data
+        _string_raw_data
         _plus
         _oneminus
         _cfetch
@@ -509,7 +509,7 @@ string_substring_unchecked:
                                         ; -- start-index end-index
         _over
         _minus                          ; -- start-index length
-        _this_string_data
+        _this_string_raw_data
         _ underplus
         _ copy_to_string
 
