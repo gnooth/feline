@@ -193,7 +193,7 @@ code print_exception, 'print-exception'
         _tag_fixnum
         _ hexdot
         _then .1
-        _write "at address "
+        _write " at address "
         _ saved_exception_address
         _tag_fixnum
         _ hexdot
@@ -202,7 +202,7 @@ code print_exception, 'print-exception'
         _ saved_signal
         _tag_fixnum
         _ decimal_dot
-        _write "at address "
+        _write " at address "
         _ saved_signal_address
         _ untagged_dot
         _ nl
