@@ -155,19 +155,19 @@ code literal?, 'literal?'               ; string -- literal/string ?
 endcode
 
 ; ### interpret1
-code interpret1, 'interpret1'           ; string --
-        _ literal?
+code interpret1, 'interpret1'   ; string --
+        _ find_name             ; -- symbol/string ?
         _tagged_if .1
-        _return
-        _then .1                        ; -- string
-
-        ; not a literal
-        _ find_name                     ; -- symbol/string ?
-        _tagged_if .2
         _ call_symbol
-        _else .2
+        _return
+        _then .1
+
+        _ literal?
+        _tagged_if .2
+        _return
+        _then .2                ; -- string
+
         _ undefined
-        _then .2                        ; -- symbol
 
         next
 endcode
