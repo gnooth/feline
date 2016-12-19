@@ -30,8 +30,8 @@ value handle_space_limit, 'handle-space-limit', 0
 
 %define HANDLE_SPACE_SIZE 1024*1024*8   ; 8 mb
 
-; ### max-handles
-constant max_handles, 'max-handles', HANDLE_SPACE_SIZE / BYTES_PER_CELL
+; ; ### max-handles
+; constant max_handles, 'max-handles', HANDLE_SPACE_SIZE / BYTES_PER_CELL
 
 ; ### initialize-handle-space
 code initialize_handle_space, 'initialize-handle-space' ; --
@@ -120,7 +120,7 @@ endcode
 ; ### handle?
 code handle?, 'handle?'                 ; x -- ?
         ; tag bits must be 0
-        test    ebx, TAG_MASK
+        test    bl, TAG_MASK
         jnz     .1
 
         ; must point into handle space
