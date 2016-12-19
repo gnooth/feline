@@ -48,10 +48,10 @@ void *bignum_allocate()
 
 bignum *make_bignum(mpz_t z)
 {
-  bignum *p = bignum_allocate();
-  memset(p, 0, sizeof(bignum));
-  mpz_init_set(p->z, z);
-  return p;
+  bignum *b = bignum_allocate();
+  memset(b, 0, sizeof(bignum));
+  mpz_init_set(b->z, z);
+  return b;
 }
 
 void bignum_free(mpz_t z)
@@ -137,4 +137,40 @@ size_t bignum_sizeinbase(const mpz_t z, int base)
 char * bignum_get_str(char *buf, int base, const mpz_t z)
 {
   return mpz_get_str(buf, base, z);
+}
+
+cell decimal_to_integer(char *s)
+{
+  long n = strtol(s, NULL, 10);
+  if (n >= MOST_NEGATIVE_FIXNUM && n <= MOST_POSITIVE_FIXNUM)
+    return make_fixnum(n);
+
+  // "The strtol() function returns the result of the conversion, unless the
+  // value would underflow or overflow. If an underflow occurs, strtol()
+  // returns LONG_MIN. If an overflow occurs, strtol() returns LONG_MAX."
+  if (n > LONG_MIN && n < LONG_MAX)
+    {
+      // no overflow.
+      mpz_t z;
+      mpz_init_set_si(z, n);
+      bignum *b = make_bignum(z);
+      mpz_clear(z);
+      return (cell) b;
+    }
+
+  // mpz_init_set_str() doesn't like a leading '+'
+  if (*s == '+')
+    ++s;
+
+  mpz_t z;
+  int error = mpz_init_set_str(z, s, 10);
+  if (error)
+    {
+      mpz_clear(z);
+      return 0;
+    }
+  // conversion succeeded
+  bignum *b = make_bignum(z);
+  mpz_clear(z);
+  return (cell) b;
 }
