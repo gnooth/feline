@@ -49,6 +49,19 @@ code object?, 'object?'                 ; x -- ?
         next
 endcode
 
+; ### object-address
+code object_address, 'object-address'   ; handle -- tagged-address
+        _dup
+        _ handle?
+        _tagged_if .1
+        _handle_to_object_unsafe
+        _tag_fixnum
+        _else .1
+        mov     ebx, f_value
+        _then .1
+        next
+endcode
+
 ; ### object-type
 code object_type, 'object-type'         ; handle-or-object -- n/f
 ; Return value is tagged.
