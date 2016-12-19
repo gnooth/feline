@@ -63,3 +63,4 @@ extern bignum_init_set_ui
 extern bignum_init_set_si
 extern bignum_sizeinbase
 extern bignum_get_str
+extern decimal_to_integer

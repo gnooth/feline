@@ -1139,6 +1139,86 @@ code signed_hex_to_fixnum, 'signed-hex>fixnum'  ; string -- n/f
         next
 endcode
 
+; ### string>integer
+code string_to_integer, 'string>integer'        ; string -- n/f
+        _dup
+        _ string_empty?
+        _tagged_if .1
+        mov     ebx, f_value
+        _return
+        _then .1
+
+        _dup
+        _quotation .2
+        _ digit?
+        _ not
+        _end_quotation .2
+        _ find
+        _nip
+        _tagged_if .3
+        _drop
+        _f
+        _return
+        _then .3
+
+        _ string_data
+
+        mov     arg0_register, rbx
+        poprbx
+        xcall   decimal_to_integer
+        pushrbx
+        mov     rbx, rax
+
+        test    rbx, rbx
+        jnz     .4
+        mov     ebx, f_value
+        _return
+.4:
+        _dup
+        _fixnum?
+        _if .5
+        _return
+        _then .5
+
+        _lit OBJECT_TYPE_BIGNUM
+        _over
+        _object_set_type
+        _ new_handle
+        next
+endcode
+
+; ### signed-decimal>integer
+code signed_decimal_to_integer, 'signed-decimal>integer'        ; string -- n/f
+        _dup
+        _ string_empty?
+        _tagged_if .1
+        mov     ebx, f_value
+        _return
+        _then .1
+
+        ; length > 0
+        _dup
+        _ string_first_char
+        _untag_char
+        cmp     rbx, '-'
+        poprbx
+        jne     .2
+        _lit tagged_fixnum(1)
+        _ string_tail
+        _ string_to_integer
+        _dup
+        _tagged_if .3
+        _untag_fixnum
+        _negate
+        _tag_fixnum
+        _then .3
+        _return
+.2:
+        _ string_to_integer
+
+        next
+endcode
+
 ; ### string>number
 code string_to_number, 'string>number'  ; string -- n/f
         _dup
@@ -1160,7 +1240,7 @@ code string_to_number, 'string>number'  ; string -- n/f
         cmp     ebx, '%'
         je      .3
         _drop
-        _ signed_decimal_to_fixnum
+        _ signed_decimal_to_integer
         _return
 
 .2:
