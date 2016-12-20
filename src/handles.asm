@@ -117,6 +117,24 @@ code new_handle, 'new-handle'           ; object -- handle
         next
 endcode
 
+; ### get_handle_for_object
+subroutine get_handle_for_object        ; object -- handle
+; call with object in arg0_register
+; return handle in rax
+
+        push    rbp
+        push    rbx
+
+        mov     rbx, arg0_register
+        _ new_handle
+        mov     rax, rbx
+
+        pop     rbx
+        pop     rbp
+
+        ret
+endsub
+
 ; ### handle?
 code handle?, 'handle?'                 ; x -- ?
         ; tag bits must be 0
