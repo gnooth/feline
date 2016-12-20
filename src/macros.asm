@@ -334,6 +334,7 @@ section .data
 
 %macro  subroutine 1
         %push subroutine
+        global %1
         section .text
         align   DEFAULT_CODE_ALIGNMENT
 %1:
