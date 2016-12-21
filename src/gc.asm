@@ -420,13 +420,34 @@ value gc_end_cycles, 'gc-end-cycles', 0
 ; ### gc-verbose
 feline_global gc_verbose, 'gc-verbose'
 
-; ### inhibit-gc
-feline_global inhibit_gc, 'inhibit-gc'
+; ### gc-inhibit
+feline_global gc_inhibit, 'gc-inhibit'
+
+; ### gc-pending
+feline_global gc_pending, 'gc-pending'
+
+; ### gc-disable
+code gc_disable, 'gc-disable'
+        mov     qword [S_gc_inhibit_data], t_value
+        next
+endcode
+
+; ### gc-enable
+code gc_enable, 'gc-enable'
+        mov     qword [S_gc_inhibit_data], f_value
+        cmp     qword [S_gc_pending_data], f_value
+        je     .1
+        mov     qword [S_gc_pending_data], f_value
+        _ gc
+.1:
+        next
+endcode
 
 ; ### gc
 code gc, 'gc'                           ; --
-        cmp     qword [S_inhibit_gc_data], f_value
+        cmp     qword [S_gc_inhibit_data], f_value
         je .1
+        mov     qword [S_gc_pending_data], t_value
         _return
 .1:
         cmp     qword [S_gc_verbose_data], f_value
@@ -461,6 +482,8 @@ code gc, 'gc'                           ; --
         _ each_handle
 
         _zeroto in_gc?
+
+        mov     qword [S_gc_pending_data], f_value
 
         cmp     qword [S_gc_verbose_data], f_value
         je .3
