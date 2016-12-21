@@ -417,17 +417,25 @@ value gc_start_cycles, 'gc-start-cycles', 0
 ; ### gc-end-cycles
 value gc_end_cycles, 'gc-end-cycles', 0
 
+; ### gc-verbose
 feline_global gc_verbose, 'gc-verbose'
+
+; ### inhibit-gc
+feline_global inhibit_gc, 'inhibit-gc'
 
 ; ### gc
 code gc, 'gc'                           ; --
-        cmp     qword [S_gc_verbose_data], f_value
+        cmp     qword [S_inhibit_gc_data], f_value
         je .1
+        _return
+.1:
+        cmp     qword [S_gc_verbose_data], f_value
+        je .2
         _ ticks
         _to gc_start_ticks
         _rdtsc
         _to gc_start_cycles
-.1:
+.2:
         _true
         _to in_gc?
 
@@ -455,7 +463,7 @@ code gc, 'gc'                           ; --
         _zeroto in_gc?
 
         cmp     qword [S_gc_verbose_data], f_value
-        je .2
+        je .3
         _rdtsc
         _to gc_end_cycles
         _ ticks
@@ -478,6 +486,6 @@ code gc, 'gc'                           ; --
         _write "cycles"
         _ nl
 
-.2:
+.3:
         next
 endcode
