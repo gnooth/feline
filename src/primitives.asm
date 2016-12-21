@@ -1148,20 +1148,9 @@ code string_to_integer, 'string>integer'        ; string -- n/f
         _return
         _then .1
 
-        _dup
-        _quotation .2
-        _ digit?
-        _ not
-        _end_quotation .2
-        _ find
-        _nip
-        _tagged_if .3
-        _drop
-        _f
-        _return
-        _then .3
-
         _ string_data
+
+        _ gc_disable
 
         mov     arg0_register, rbx
         poprbx
@@ -1169,21 +1158,8 @@ code string_to_integer, 'string>integer'        ; string -- n/f
         pushrbx
         mov     rbx, rax
 
-        test    rbx, rbx
-        jnz     .4
-        mov     ebx, f_value
-        _return
-.4:
-        _dup
-        _fixnum?
-        _if .5
-        _return
-        _then .5
+        _ gc_enable
 
-        _lit OBJECT_TYPE_BIGNUM
-        _over
-        _object_set_type
-        _ new_handle
         next
 endcode
 

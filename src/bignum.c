@@ -29,6 +29,12 @@
 #define MOST_POSITIVE_FIXNUM          1152921504606846975
 #define MOST_NEGATIVE_FIXNUM         -1152921504606846976
 
+#define OBJECT_TYPE_BIGNUM      8
+
+#define F_VALUE                 6
+
+extern cell get_handle_for_object(cell);
+
 static inline cell make_fixnum(signed long int n)
 {
   // see _tag_fixnum in macros.asm
@@ -42,14 +48,15 @@ typedef struct {
 
 void *bignum_allocate()
 {
-  // + 8 for object header
-  return malloc(sizeof(mpz_t) + 8);
+  bignum *b = malloc(sizeof(bignum));
+  memset(b, 0, sizeof(bignum));
+  b->object_header = OBJECT_TYPE_BIGNUM;
+  return b;
 }
 
 bignum *make_bignum(mpz_t z)
 {
   bignum *b = bignum_allocate();
-  memset(b, 0, sizeof(bignum));
   mpz_init_set(b->z, z);
   return b;
 }
@@ -87,6 +94,20 @@ void bignum_init_set_si(mpz_t z, cell n)
 #endif
 }
 
+cell bignum_from_signed(cell n)
+{
+  bignum *b = bignum_allocate();
+  bignum_init_set_si(b->z, n);
+  return get_handle_for_object((cell)b);
+}
+
+cell bignum_from_unsigned(cell n)
+{
+  bignum *b = bignum_allocate();
+  bignum_init_set_ui(b->z, n);
+  return get_handle_for_object((cell)b);
+}
+
 cell normalize(mpz_t z)
 {
   if (mpz_fits_slong_p(z))
@@ -98,10 +119,11 @@ cell normalize(mpz_t z)
           return make_fixnum(n);
         }
     }
-  return (cell) make_bignum(z);
+  bignum *b = make_bignum(z);
+  return get_handle_for_object((cell)b);
 }
 
-cell bignum_add_bignum (bignum *b1, bignum *b2)
+cell bignum_add_bignum(bignum *b1, bignum *b2)
 {
   mpz_t result;
   mpz_init_set(result, b1->z);
@@ -141,7 +163,12 @@ char * bignum_get_str(char *buf, int base, const mpz_t z)
 
 cell decimal_to_integer(char *s)
 {
-  long n = strtol(s, NULL, 10);
+  char *endptr;
+  long n = strtol(s, &endptr, 10);
+
+  if (*endptr != '\0')
+    return F_VALUE;
+
   if (n >= MOST_NEGATIVE_FIXNUM && n <= MOST_POSITIVE_FIXNUM)
     return make_fixnum(n);
 
@@ -155,7 +182,7 @@ cell decimal_to_integer(char *s)
       mpz_init_set_si(z, n);
       bignum *b = make_bignum(z);
       mpz_clear(z);
-      return (cell) b;
+      return (cell) get_handle_for_object((cell)b);
     }
 
   // mpz_init_set_str() doesn't like a leading '+'
@@ -167,10 +194,10 @@ cell decimal_to_integer(char *s)
   if (error)
     {
       mpz_clear(z);
-      return 0;
+      return F_VALUE;
     }
   // conversion succeeded
   bignum *b = make_bignum(z);
   mpz_clear(z);
-  return (cell) b;
+  return (cell) get_handle_for_object((cell)b);
 }

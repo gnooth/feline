@@ -66,63 +66,25 @@ endsub
 
 ; ### unsigned_to_bignum
 subroutine unsigned_to_bignum   ; untagged -- bignum
-
-        push    this_register
-
-        xcall   bignum_allocate         ; address of allocated object in rax
-        mov     this_register, rax
-
-        ; zero all bits of object header
-        xor     eax, eax
-        mov     [this_register], rax
-
-        _this_object_set_type OBJECT_TYPE_BIGNUM
-
-        mov     arg0_register, this_register
-        add     arg0_register, BIGNUM_DATA_OFFSET
-
-        mov     arg1_register, rbx
+        _ gc_disable
+        mov     arg0_register, rbx
         poprbx
-
-        xcall   bignum_init_set_ui
-
-        ; return handle
-        _this                           ; -- bignum
-        _ new_handle                    ; -- handle
-
-        pop     this_register
-
+        xcall   bignum_from_unsigned
+        pushrbx
+        mov     rbx, rax
+        _ gc_enable
         ret
 endsub
 
 ; ### signed_to_bignum
 subroutine signed_to_bignum     ; untagged -- bignum
-
-        push    this_register
-
-        xcall   bignum_allocate         ; address of allocated object in rax
-        mov     this_register, rax
-
-        ; zero all bits of object header
-        xor     eax, eax
-        mov     [this_register], rax
-
-        _this_object_set_type OBJECT_TYPE_BIGNUM
-
-        mov     arg0_register, this_register
-        add     arg0_register, BIGNUM_DATA_OFFSET
-
-        mov     arg1_register, rbx
+        _ gc_disable
+        mov     arg0_register, rbx
         poprbx
-
-        xcall   bignum_init_set_si
-
-        ; return handle
-        _this                           ; -- bignum
-        _ new_handle                    ; -- handle
-
-        pop     this_register
-
+        xcall   bignum_from_signed
+        pushrbx
+        mov     rbx, rax
+        _ gc_enable
         ret
 endsub
 
@@ -226,32 +188,24 @@ code bignum_equal, 'bignum='            ; x y -- ?
 endcode
 
 ; ### bignum-add-fixnum
-code bignum_add_fixnum, 'bignum-add-fixnum'     ; x y -- z
+code bignum_add_fixnum, 'bignum-add-fixnum'     ; fixnum bignum -- sum
         _ check_bignum
         _swap
         _ check_fixnum          ; -- bignum fixnum
+
+        _ gc_disable
 
         mov     arg1_register, rbx
         poprbx
         mov     arg0_register, rbx
         poprbx
 
-        extern bignum_add
         xcall   bignum_add
 
         ; fixnum or object pointer in rax
         pushrbx
         mov     rbx, rax
-        and     eax, TAG_MASK
-        cmp     eax, FIXNUM_TAG
-        jne     .1
-        _return
-.1:
-        ; -- object-pointer
-        _lit OBJECT_TYPE_BIGNUM
-        _over
-        _object_set_type
-        _ new_handle
 
+        _ gc_enable
         next
 endcode

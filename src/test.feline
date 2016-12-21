@@ -1334,6 +1334,13 @@ test: fixnum>bignum-test-1
 
 fixnum>bignum-test-1
 
+test: string>integer-test-1
+    most-positive-fixnum fixnum>string string>integer most-positive-fixnum eq? check-t
+    most-negative-fixnum fixnum>string string>integer most-negative-fixnum eq? check-t
+;
+
+string>integer-test-1
+
 test: fixnum-fixnum+-test-1
     1  2 fixnum-fixnum+  3 eq? check-t
     1 -2 fixnum-fixnum+ -1 eq? check-t

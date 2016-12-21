@@ -56,11 +56,14 @@ extern c_save_backtrace
 extern c_seed_random
 
 ; bignum.c
+extern bignum_add
 extern bignum_allocate
 extern bignum_free
-extern bignum_init
-extern bignum_init_set_ui
-extern bignum_init_set_si
-extern bignum_sizeinbase
+extern bignum_from_signed
+extern bignum_from_unsigned
 extern bignum_get_str
+extern bignum_init
+extern bignum_init_set_si
+extern bignum_init_set_ui
+extern bignum_sizeinbase
 extern decimal_to_integer
