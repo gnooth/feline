@@ -30,8 +30,15 @@ value handle_space_limit, 'handle-space-limit', 0
 
 %define HANDLE_SPACE_SIZE 1024*1024*8   ; 8 mb
 
-; ; ### max-handles
-; constant max_handles, 'max-handles', HANDLE_SPACE_SIZE / BYTES_PER_CELL
+asm_global unused, 1024*1024
+
+; ### unused-handles
+code   unused_handles, 'unused-handles' ; -- n
+        pushrbx
+        mov     rbx, [unused]
+        _tag_fixnum
+        next
+endcode
 
 ; ### initialize-handle-space
 code initialize_handle_space, 'initialize-handle-space' ; --
@@ -80,37 +87,54 @@ code maybe_recycle_handle, 'maybe-recycle-handle' ; object -- handle/0
         next
 endcode
 
+; ### maybe-gc
+code maybe_gc, 'maybe-gc'       ; --
+        _ free_handles
+        _handle_to_object_unsafe
+        _vector_length
+        _lit 10
+        _ult
+        _if .7
+        _ gc
+        _then .7
+        next
+endcode
+
 ; ### new-handle
 code new_handle, 'new-handle'           ; object -- handle
         _dup
         _ maybe_recycle_handle          ; -- object handle/0
         _?dup_if .1
         _nip
+        _ maybe_gc
         _return
         _then .1
 
         ; no handles to recycle
         ; -- object
+        cmp     qword [unused], 0
+        jz .2
         _ handle_space_free
         _ handle_space_limit
         _ult
-        _if .4
+        _if .3
         _ handle_space_free
         _store
         _ handle_space_free
         _dup
         _cellplus
         _to handle_space_free
+        sub     qword [unused], 1
         _return
-        _then .4
-
-        ; no handles left in handle space
+        _then .3
+.2:
+        ; no unused handles left in handle space
         _ gc
 
         _ maybe_recycle_handle
-        _?dup_if .3
+        _?dup_if .4
         _return
-        _then .3
+        _then .4
 
         _error "out of handles"
 
@@ -122,15 +146,22 @@ subroutine get_handle_for_object        ; object -- handle
 ; call with object in arg0_register
 ; return handle in rax
 
-        push    rbp
         push    rbx
+        push    rbp
+
+        ; REVIEW
+        ; 16 cells for data stack (arbitrary)
+        mov     rbp, rsp
+        sub     rsp, 256
 
         mov     rbx, arg0_register
         _ new_handle
         mov     rax, rbx
 
-        pop     rbx
+        add     rsp, 256
+
         pop     rbp
+        pop     rbx
 
         ret
 endsub
@@ -300,17 +331,17 @@ code handles, 'handles'
 
         _tag_fixnum
         _ decimal_dot
-        _write "handles "
+        _write " handles "
 
         _ nobjects
         _tag_fixnum
         _ decimal_dot
-        _write "objects "
+        _write " objects "
 
         _ nfree
         _tag_fixnum
         _ decimal_dot
-        _write "free"
+        _write " free"
 
         next
 endcode
