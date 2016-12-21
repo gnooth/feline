@@ -110,7 +110,7 @@ static void args(int argc, char **argv)
 
 void * data_stack_base;
 
-static void initialize_forth()
+static void initialize_data_stack()
 {
   extern cell sp0_data;
   extern cell stack_cells_data;
@@ -129,7 +129,7 @@ int main(int argc, char **argv, char **env)
 
   prep_terminal();
 
-  initialize_forth();
+  initialize_data_stack();
 
 #ifdef WIN64
   AddVectoredExceptionHandler(1, windows_exception_handler);
