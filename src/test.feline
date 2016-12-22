@@ -270,16 +270,16 @@ fixnum>string-test-1
 
 test: fixnum>hex-test-1 ( -- )
     -17 fixnum>hex "-11" = check-t
-    0 fixnum>hex "0" = check-t
-    42 fixnum>hex "2a" = check-t
+      0 fixnum>hex   "0" = check-t
+     42 fixnum>hex  "2a" = check-t
     tag-bits 3 = check-t
-    most-negative-fixnum fixnum>hex "-1000000000000000" = check-t
-    most-negative-fixnum 1 + fixnum>hex "-fffffffffffffff" = check-t
-    most-negative-fixnum 2 + fixnum>hex "-ffffffffffffffe" = check-t
-    most-positive-fixnum fixnum>hex "fffffffffffffff" = check-t
+    most-negative-fixnum     fixnum>hex "-1000000000000000" = check-t
+    most-negative-fixnum 1 + fixnum>hex  "-fffffffffffffff" = check-t
+    most-negative-fixnum 2 + fixnum>hex  "-ffffffffffffffe" = check-t
+    most-positive-fixnum     fixnum>hex   "fffffffffffffff" = check-t
 
     -576460752303423488 fixnum>hex "-800000000000000" = check-t
-    576460752303423487 fixnum>hex "7ffffffffffffff" = check-t
+     576460752303423487 fixnum>hex  "7ffffffffffffff" = check-t
 ;
 
 fixnum>hex-test-1
@@ -1335,8 +1335,8 @@ test: fixnum>bignum-test-1
 fixnum>bignum-test-1
 
 test: string>integer-test-1
-    most-positive-fixnum fixnum>string string>integer most-positive-fixnum eq? check-t
-    most-negative-fixnum fixnum>string string>integer most-negative-fixnum eq? check-t
+    most-positive-fixnum fixnum>string string>integer most-positive-fixnum = check-t
+    most-negative-fixnum fixnum>string string>integer most-negative-fixnum = check-t
 ;
 
 string>integer-test-1
