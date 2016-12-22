@@ -153,6 +153,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method equal?, OBJECT_TYPE_STRING, string_equal?
         _add_method equal?, OBJECT_TYPE_SYMBOL, symbol_equal?
         _add_method equal?, OBJECT_TYPE_F, f_equal?
+        _add_method equal?, OBJECT_TYPE_BIGNUM, bignum_equal?
 
         ; length
         _initialize_generic_function length
