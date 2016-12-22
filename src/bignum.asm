@@ -180,10 +180,51 @@ code bignum_to_hex, 'bignum>hex'        ; bignum -- string
         next
 endcode
 
-; ### bignum=
-code bignum_equal, 'bignum='            ; x y -- ?
-        ; FIXME
-        _error "unimplemented"
+; ### bignum-equal?
+code bignum_equal?, 'bignum-equal?'     ; x y -- ?
+        _dup
+        _ bignum?
+        _tagged_if .1
+        _handle_to_object_unsafe
+        _else .1
+        _2drop
+        _f
+        _return
+        _then .1
+
+        _over
+        _ bignum?
+        _tagged_if .2
+        mov     arg0_register, rbx
+        poprbx
+        _handle_to_object_unsafe
+        mov     arg1_register, rbx
+        poprbx
+        xcall   bignum_equal
+        pushrbx
+        mov     rbx, rax
+        _return
+        _then .2
+
+        _over
+        _fixnum?
+        _tagged_if .3
+        _swap
+        _ fixnum_to_bignum
+        _ check_bignum
+        mov     arg0_register, rbx
+        poprbx
+        mov     arg1_register, rbx
+        poprbx
+        xcall   bignum_equal
+        pushrbx
+        mov     rbx, rax
+        _return
+        _then .3
+
+        _2drop
+        _f
+
         next
 endcode
 

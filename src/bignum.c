@@ -31,6 +31,7 @@
 
 #define OBJECT_TYPE_BIGNUM      8
 
+#define T_VALUE                14
 #define F_VALUE                 6
 
 extern cell get_handle_for_object(cell);
@@ -200,4 +201,9 @@ cell decimal_to_integer(char *s)
   bignum *b = make_bignum(z);
   mpz_clear(z);
   return (cell) get_handle_for_object((cell)b);
+}
+
+cell bignum_equal(bignum *b1, bignum *b2)
+{
+  return (mpz_cmp(b1->z, b2->z) == 0) ? T_VALUE : F_VALUE;
 }

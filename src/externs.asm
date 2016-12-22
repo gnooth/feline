@@ -58,6 +58,7 @@ extern c_seed_random
 ; bignum.c
 extern bignum_add
 extern bignum_allocate
+extern bignum_equal
 extern bignum_free
 extern bignum_from_signed
 extern bignum_from_unsigned

@@ -98,7 +98,7 @@ code fixnum_equal?, 'fixnum-equal?'     ; obj1 obj2 -- ?
         _ bignum?
         _tagged_if .1
         _ fixnum_to_bignum
-        _ bignum_equal
+        _ bignum_equal?
         _else .1
         _2drop
         _f
