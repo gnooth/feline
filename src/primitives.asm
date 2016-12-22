@@ -651,7 +651,22 @@ endcode
 
 ; ### >hex
 code to_hex, '>hex'                     ; n -- string
+        _dup
+        _fixnum?
+        _if .1
         _ fixnum_to_hex
+        _return
+        _then .1
+
+        _dup
+        _ bignum?
+        _tagged_if .2
+        _ bignum_to_hex
+        _return
+        _then .2
+
+        _error "not a number"
+
         next
 endcode
 

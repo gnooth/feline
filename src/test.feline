@@ -278,8 +278,8 @@ test: fixnum>hex-test-1 ( -- )
     most-negative-fixnum 2 + fixnum>hex  "-ffffffffffffffe" = check-t
     most-positive-fixnum     fixnum>hex   "fffffffffffffff" = check-t
 
-    -576460752303423488 fixnum>hex "-800000000000000" = check-t
-     576460752303423487 fixnum>hex  "7ffffffffffffff" = check-t
+    -576460752303423488 >hex "-800000000000000" = check-t
+     576460752303423487 >hex  "7ffffffffffffff" = check-t
 ;
 
 fixnum>hex-test-1
