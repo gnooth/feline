@@ -1214,9 +1214,7 @@ code signed_decimal_to_integer, 'signed-decimal>integer'        ; string -- n/f
         _ string_to_integer
         _dup
         _tagged_if .3
-        _untag_fixnum
-        _negate
-        _tag_fixnum
+        _ negate
         _then .3
         _return
 .2:
