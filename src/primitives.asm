@@ -638,7 +638,22 @@ endcode
 
 ; ### number>string
 code number_to_string, 'number>string'  ; n -- string
+        _dup
+        _fixnum?
+        _if .1
         _ fixnum_to_string
+        _return
+        _then .1
+
+        _dup
+        _ bignum?
+        _if .2
+        _ bignum_to_string
+        _return
+        _then .2
+
+        _error "not a number"
+
         next
 endcode
 
