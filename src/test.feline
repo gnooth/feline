@@ -1354,6 +1354,17 @@ test: fixnum-fixnum+-test-1
 
 fixnum-fixnum+-test-1
 
+test: negate-test-1
+    0 negate zero? check-t
+    42 negate -42 eq? check-t
+    most-positive-fixnum negate number>string "-1152921504606846975" = check-t
+    most-positive-fixnum dup fixnum-fixnum+ negate number>string  "-2305843009213693950" = check-t
+    most-negative-fixnum negate number>string "1152921504606846976" = check-t
+    most-negative-fixnum dup fixnum-fixnum+ negate number>string "2305843009213693952" = check-t
+;
+
+negate-test-1
+
 in: feline
 
 ?nl "Reached end of test.feline" write-string
