@@ -69,7 +69,7 @@ subroutine unsigned_to_bignum   ; untagged -- bignum
         _ gc_disable
         mov     arg0_register, rbx
         poprbx
-        xcall   bignum_from_unsigned
+        xcall   c_bignum_from_unsigned
         pushrbx
         mov     rbx, rax
         _ gc_enable
@@ -81,7 +81,7 @@ subroutine signed_to_bignum     ; untagged -- bignum
         _ gc_disable
         mov     arg0_register, rbx
         poprbx
-        xcall   bignum_from_signed
+        xcall   c_bignum_from_signed
         pushrbx
         mov     rbx, rax
         _ gc_enable
@@ -92,7 +92,7 @@ endsub
 subroutine destroy_bignum_unchecked     ; bignum --
         mov     arg0_register, rbx
         add     arg0_register, BIGNUM_DATA_OFFSET
-        xcall   bignum_free
+        xcall   c_bignum_free
 
         _ in_gc?
         _zeq_if .1
@@ -132,7 +132,7 @@ code bignum_to_base, 'bignum>base'      ; bignum base -- string
 
         mov     arg1_register, rbx      ; base
 
-        xcall   bignum_sizeinbase
+        xcall   c_bignum_sizeinbase
 
         pushrbx
         mov     rbx, rax
@@ -150,7 +150,7 @@ code bignum_to_base, 'bignum>base'      ; bignum base -- string
         mov     arg2_register, this_register
         add     arg2_register, BIGNUM_DATA_OFFSET       ; mpz_t
 
-        xcall   bignum_get_str
+        xcall   c_bignum_get_str
 
         pushrbx
         mov     rbx, rax
@@ -200,7 +200,7 @@ code bignum_equal?, 'bignum-equal?'     ; x y -- ?
         _handle_to_object_unsafe
         mov     arg1_register, rbx
         poprbx
-        xcall   bignum_equal
+        xcall   c_bignum_equal
         pushrbx
         mov     rbx, rax
         _return
@@ -216,7 +216,7 @@ code bignum_equal?, 'bignum-equal?'     ; x y -- ?
         poprbx
         mov     arg1_register, rbx
         poprbx
-        xcall   bignum_equal
+        xcall   c_bignum_equal
         pushrbx
         mov     rbx, rax
         _return
@@ -241,7 +241,7 @@ code bignum_add_fixnum, 'bignum-add-fixnum'     ; fixnum bignum -- sum
         mov     arg0_register, rbx
         poprbx
 
-        xcall   bignum_add
+        xcall   c_bignum_add
 
         ; fixnum or object pointer in rax
         pushrbx
@@ -258,7 +258,7 @@ code negate_bignum, 'negate-bignum'     ; n -- -n
         mov     arg0_register, rbx
         poprbx
         _ gc_disable
-        xcall   bignum_negate
+        xcall   c_bignum_negate
         pushrbx
         mov     rbx, rax
         _ gc_enable

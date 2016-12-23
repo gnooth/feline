@@ -47,7 +47,7 @@ typedef struct {
   mpz_t z;
 } bignum;
 
-void *bignum_allocate()
+void *c_bignum_allocate()
 {
   bignum *b = malloc(sizeof(bignum));
   memset(b, 0, sizeof(bignum));
@@ -55,29 +55,29 @@ void *bignum_allocate()
   return b;
 }
 
-bignum *make_bignum(mpz_t z)
+bignum *c_make_bignum(mpz_t z)
 {
-  bignum *b = bignum_allocate();
+  bignum *b = c_bignum_allocate();
   mpz_init_set(b->z, z);
   return b;
 }
 
-void bignum_free(mpz_t z)
+void c_bignum_free(mpz_t z)
 {
   mpz_clear(z);
 }
 
-void bignum_init(mpz_t z)
+void c_bignum_init(mpz_t z)
 {
   mpz_init(z);
 }
 
-void bignum_init_set_ui(mpz_t z, unsigned long int n)
+void c_bignum_init_set_ui(mpz_t z, unsigned long int n)
 {
   mpz_init_set_ui(z, n);
 }
 
-void bignum_init_set_si(mpz_t z, cell n)
+void c_bignum_init_set_si(mpz_t z, cell n)
 {
 #if SIZEOF_LONG == 4
   long int lo = (n & 0xffffffff);
@@ -95,21 +95,21 @@ void bignum_init_set_si(mpz_t z, cell n)
 #endif
 }
 
-cell bignum_from_signed(cell n)
+cell c_bignum_from_signed(cell n)
 {
-  bignum *b = bignum_allocate();
-  bignum_init_set_si(b->z, n);
+  bignum *b = c_bignum_allocate();
+  c_bignum_init_set_si(b->z, n);
   return get_handle_for_object((cell)b);
 }
 
-cell bignum_from_unsigned(cell n)
+cell c_bignum_from_unsigned(cell n)
 {
-  bignum *b = bignum_allocate();
-  bignum_init_set_ui(b->z, n);
+  bignum *b = c_bignum_allocate();
+  c_bignum_init_set_ui(b->z, n);
   return get_handle_for_object((cell)b);
 }
 
-cell normalize(mpz_t z)
+static cell normalize(mpz_t z)
 {
   if (mpz_fits_slong_p(z))
     {
@@ -120,11 +120,11 @@ cell normalize(mpz_t z)
           return make_fixnum(n);
         }
     }
-  bignum *b = make_bignum(z);
+  bignum *b = c_make_bignum(z);
   return get_handle_for_object((cell)b);
 }
 
-cell bignum_add_bignum(bignum *b1, bignum *b2)
+cell c_bignum_add_bignum(bignum *b1, bignum *b2)
 {
   mpz_t result;
   mpz_init_set(result, b1->z);
@@ -132,7 +132,7 @@ cell bignum_add_bignum(bignum *b1, bignum *b2)
   return normalize(result);
 }
 
-cell bignum_add(bignum *b, cell n)
+cell c_bignum_add(bignum *b, cell n)
 {
   mpz_t result;
   mpz_init_set(result, b->z);
@@ -140,7 +140,7 @@ cell bignum_add(bignum *b, cell n)
   if (n < INT32_MIN || n > INT32_MAX)
     {
       mpz_t z;
-      bignum_init_set_si(z, n);
+      c_bignum_init_set_si(z, n);
       mpz_add(result, result, z);
       return normalize(result);
     }
@@ -152,17 +152,17 @@ cell bignum_add(bignum *b, cell n)
   return normalize(result);
 }
 
-size_t bignum_sizeinbase(const mpz_t z, int base)
+size_t c_bignum_sizeinbase(const mpz_t z, int base)
 {
   return mpz_sizeinbase(z, base);
 }
 
-char * bignum_get_str(char *buf, int base, const mpz_t z)
+char * c_bignum_get_str(char *buf, int base, const mpz_t z)
 {
   return mpz_get_str(buf, base, z);
 }
 
-cell decimal_to_integer(char *s)
+cell c_decimal_to_integer(char *s)
 {
   char *endptr;
   long n = strtol(s, &endptr, 10);
@@ -187,7 +187,7 @@ cell decimal_to_integer(char *s)
 #endif
       mpz_t z;
       mpz_init_set_si(z, n);
-      bignum *b = make_bignum(z);
+      bignum *b = c_make_bignum(z);
       mpz_clear(z);
       return get_handle_for_object((cell)b);
     }
@@ -204,22 +204,22 @@ cell decimal_to_integer(char *s)
       return F_VALUE;
     }
   // conversion succeeded
-  bignum *b = make_bignum(z);
+  bignum *b = c_make_bignum(z);
   mpz_clear(z);
   return get_handle_for_object((cell)b);
 }
 
-cell bignum_equal(bignum *b1, bignum *b2)
+cell c_bignum_equal(bignum *b1, bignum *b2)
 {
   return (mpz_cmp(b1->z, b2->z) == 0) ? T_VALUE : F_VALUE;
 }
 
-cell bignum_negate(bignum *b)
+cell c_bignum_negate(bignum *b)
 {
   mpz_t z;
   mpz_init(z);
   mpz_neg(z, b->z);
-  bignum *ret = make_bignum(z);
+  bignum *ret = c_make_bignum(z);
   mpz_clear(z);
   return get_handle_for_object((cell)ret);
 }

@@ -1184,7 +1184,7 @@ code string_to_integer, 'string>integer'        ; string -- n/f
 
         mov     arg0_register, rbx
         poprbx
-        xcall   decimal_to_integer
+        xcall   c_decimal_to_integer
         pushrbx
         mov     rbx, rax
 
