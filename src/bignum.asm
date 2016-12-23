@@ -250,3 +250,17 @@ code bignum_add_fixnum, 'bignum-add-fixnum'     ; fixnum bignum -- sum
         _ gc_enable
         next
 endcode
+
+; ### negate-bignum
+code negate_bignum, 'negate-bignum'     ; n -- -n
+; no type checking
+        _handle_to_object_unsafe
+        mov     arg0_register, rbx
+        poprbx
+        _ gc_disable
+        xcall   bignum_negate
+        pushrbx
+        mov     rbx, rax
+        _ gc_enable
+        next
+endcode

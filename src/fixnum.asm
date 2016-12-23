@@ -402,11 +402,41 @@ endcode
 
 %unmacro _mod 0
 
+; ### negate-fixnum
+code negate_fixnum, 'negate-fixnum'     ; n -- -n
+; no type checking
+        _dup
+        _ most_negative_fixnum
+        _eq?
+        _tagged_if .1
+        _ fixnum_to_bignum
+        _ negate_bignum
+        _else .1
+        _untag_fixnum
+        _negate
+        _tag_fixnum
+        _then .1
+        next
+endcode
+
 ; ### negate
 code negate, 'negate'   ; n -- -n
-        _check_fixnum
-        neg     rbx
-        _tag_fixnum
+        _dup
+        _fixnum?
+        _if .1
+        _ negate_fixnum
+        _return
+        _then .1
+
+        _dup
+        _ bignum?
+        _tagged_if .2
+        _ negate_bignum
+        _return
+        _then .2
+
+        _error "not a number"
+
         next
 endcode
 
