@@ -170,8 +170,10 @@ cell decimal_to_integer(char *s)
   if (*endptr != '\0')
     return F_VALUE;
 
+#if SIZEOF_LONG == 8
   if (n >= MOST_NEGATIVE_FIXNUM && n <= MOST_POSITIVE_FIXNUM)
     return make_fixnum(n);
+#endif
 
   // "The strtol() function returns the result of the conversion, unless the
   // value would underflow or overflow. If an underflow occurs, strtol()
@@ -179,6 +181,10 @@ cell decimal_to_integer(char *s)
   if (n > LONG_MIN && n < LONG_MAX)
     {
       // no overflow.
+#if SIZEOF_LONG == 4
+      if (n >= MOST_NEGATIVE_FIXNUM && n <= MOST_POSITIVE_FIXNUM)
+        return make_fixnum(n);
+#endif
       mpz_t z;
       mpz_init_set_si(z, n);
       bignum *b = make_bignum(z);
