@@ -183,7 +183,7 @@ cell decimal_to_integer(char *s)
       mpz_init_set_si(z, n);
       bignum *b = make_bignum(z);
       mpz_clear(z);
-      return (cell) get_handle_for_object((cell)b);
+      return get_handle_for_object((cell)b);
     }
 
   // mpz_init_set_str() doesn't like a leading '+'
@@ -200,10 +200,20 @@ cell decimal_to_integer(char *s)
   // conversion succeeded
   bignum *b = make_bignum(z);
   mpz_clear(z);
-  return (cell) get_handle_for_object((cell)b);
+  return get_handle_for_object((cell)b);
 }
 
 cell bignum_equal(bignum *b1, bignum *b2)
 {
   return (mpz_cmp(b1->z, b2->z) == 0) ? T_VALUE : F_VALUE;
+}
+
+cell bignum_negate(bignum *b)
+{
+  mpz_t z;
+  mpz_init(z);
+  mpz_neg(z, b->z);
+  bignum *ret = make_bignum(z);
+  mpz_clear(z);
+  return get_handle_for_object((cell)ret);
 }
