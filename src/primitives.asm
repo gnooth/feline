@@ -659,7 +659,7 @@ endcode
 
 ; ### dec.
 code decimal_dot, 'dec.'                ; n --
-        _ fixnum_to_string
+        _ number_to_string
         _ write_string
         next
 endcode
