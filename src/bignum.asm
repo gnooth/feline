@@ -228,6 +228,29 @@ code bignum_equal?, 'bignum-equal?'     ; x y -- ?
         next
 endcode
 
+; ### bignum-bignum+
+code bignum_bignum_plus, 'bignum-bignum+'       ; bignum bignum -- sum
+        _ check_bignum
+        _swap
+        _ check_bignum
+
+        _ gc_disable
+
+        mov     arg0_register, rbx
+        poprbx
+        mov     arg1_register, rbx
+        poprbx
+
+        xcall c_bignum_add_bignum
+
+        pushrbx
+        mov     rbx, rax
+
+        _ gc_enable
+
+        next
+endcode
+
 ; ### bignum-add-fixnum
 code bignum_add_fixnum, 'bignum-add-fixnum'     ; fixnum bignum -- sum
         _ check_bignum
