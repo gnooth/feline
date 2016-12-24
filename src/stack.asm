@@ -36,12 +36,6 @@ inline ?dup, '?dup'
         _?dup
 endinline
 
-; ### 2over
-inline forth_2over, '2over'             ; x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2
-; CORE
-        _forth_2over
-endinline
-
 ; ### depth
 code depth, 'depth'
         mov     rax, [sp0_data]
