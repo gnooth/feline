@@ -260,7 +260,7 @@ code between?, 'between?'               ; n min max -- ?
 endcode
 
 ; ### fixnum-fixnum+
-code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; x y -- z
+code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; fixnum fixnum -- sum
 ; no type checking
 ; both arguments are assumed to be fixnums
         _untag_fixnum
@@ -281,16 +281,41 @@ code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; x y -- z
         next
 endcode
 
+; ### fixnum-bignum+
+code fixnum_bignum_plus, 'fixnum-bignum+'       ; bignum fixnum -- sum
+        _ verify_fixnum
+        _ fixnum_to_bignum
+        _over
+        _ bignum?
+        _tagged_if .1
+        _ bignum_bignum_plus
+        _return
+        _then .1
+
+        _error "not a bignum"
+
+        next
+endcode
+
 ; ### fixnum+
 code fixnum_plus, 'fixnum+'           ; x y -- z
         _verify_fixnum
+
         mov     al, byte [rbp]
         and     al, TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     .1
         _ fixnum_fixnum_plus
         _return
+
 .1:
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ fixnum_bignum_plus
+        _return
+        _then .2
+
         _error "not a number"
         next
 endcode
