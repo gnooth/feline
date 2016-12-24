@@ -71,6 +71,16 @@ test: pick-test-1 ( -- )
 
 pick-test-1
 
+-- Test for the Factor/Feline version of 2over.
+-- The Forth version of 2over is different.
+test: 2over-test-1 ( -- )
+    clear
+    1 2 3 2over get-datastack { 1 2 3 1 2 } sequence= check-t
+    clear
+;
+
+2over-test-1
+
 test: fixnum?-test-1 ( -- )
     most-negative-fixnum fixnum? check-t
     -3 fixnum? check-t

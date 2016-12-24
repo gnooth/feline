@@ -730,8 +730,11 @@ endinline
 code feline_2over, '2over'              ; x y z -- x y z x y
 ; This is the Factor/Feline version of 2over.
 ; The Forth version is different.
-        _pick
-        _pick
+        mov     [rbp - BYTES_PER_CELL], rbx     ; z
+        mov     rax, [rbp + BYTES_PER_CELL]     ; x
+        mov     rbx, [rbp]                      ; y
+        mov     [rbp - BYTES_PER_CELL * 2], rax
+        lea     rbp, [rbp - BYTES_PER_CELL * 2]
         next
 endcode
 
