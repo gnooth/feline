@@ -36,10 +36,22 @@ code bignum?, 'bignum?' ; handle -- ?
 endcode
 
 ; ### error-not-bignum
-code error_not_bignum, 'error-not-bignum' ; x --
+code error_not_bignum, 'error-not-bignum'       ; x --
         ; REVIEW
         _drop
         _error "not a bignum"
+        next
+endcode
+
+; ### verify-bignum
+code verify_bignum, 'verify-bignum'     ; handle -- handle
+        _dup
+        _ bignum?
+        _tagged_if .1
+        _return
+        _then .1
+
+        _ error_not_bignum
         next
 endcode
 
@@ -251,8 +263,8 @@ code bignum_bignum_plus, 'bignum-bignum+'       ; bignum bignum -- sum
         next
 endcode
 
-; ### bignum-add-fixnum
-code bignum_add_fixnum, 'bignum-add-fixnum'     ; fixnum bignum -- sum
+; ### bignum-fixnum+
+code bignum_fixnum_plus, 'bignum-fixnum+'       ; fixnum bignum -- sum
         _ check_bignum
         _swap
         _ check_fixnum          ; -- bignum fixnum
@@ -271,6 +283,30 @@ code bignum_add_fixnum, 'bignum-add-fixnum'     ; fixnum bignum -- sum
         mov     rbx, rax
 
         _ gc_enable
+
+        next
+endcode
+
+; ### bignum+
+code bignum_plus, 'bignum+'     ; x y -- z
+        _ verify_bignum
+
+        _over
+        _fixnum?
+        _if .1
+        _ bignum_fixnum_plus
+        _return
+        _then .1
+
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_bignum_plus
+        _return
+        _then .2
+
+        _error "not a number"
+
         next
 endcode
 
