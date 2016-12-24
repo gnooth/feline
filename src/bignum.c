@@ -142,6 +142,7 @@ cell c_bignum_add(bignum *b, cell n)
       mpz_t z;
       c_bignum_init_set_si(z, n);
       mpz_add(result, result, z);
+      mpz_clear(z);
       return normalize(result);
     }
 #endif
@@ -149,7 +150,9 @@ cell c_bignum_add(bignum *b, cell n)
     mpz_add_ui(result, result, (unsigned long) n);
   else
     mpz_sub_ui(result, result, (unsigned long) -n);
-  return normalize(result);
+  cell ret = normalize(result);
+  mpz_clear(result);
+  return ret;
 }
 
 size_t c_bignum_sizeinbase(const mpz_t z, int base)
