@@ -125,6 +125,9 @@ generic set_nth, 'set-nth'
 ; ### new-sequence
 generic new_sequence, 'new-sequence'    ; len seq -- new-seq
 
+; ### +
+generic plus, '+'       ; x y -- z
+
 %macro _initialize_generic_function 1   ; generic-asm-name --
         _lit S_%1
         _ initialize_generic_function
@@ -195,6 +198,11 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _initialize_generic_function new_sequence
         _add_method new_sequence, OBJECT_TYPE_ARRAY, array_new_sequence
         _add_method new_sequence, OBJECT_TYPE_VECTOR, vector_new_sequence
+
+        ; +
+        _initialize_generic_function plus
+        _add_method plus, OBJECT_TYPE_FIXNUM, fixnum_plus
+        _add_method plus, OBJECT_TYPE_BIGNUM, bignum_plus
 
         next
 endcode

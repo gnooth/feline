@@ -320,15 +320,6 @@ code fixnum_plus, 'fixnum+'           ; x y -- z
         next
 endcode
 
-; ### +
-code plus, '+'  ; x y -- z
-        _check_fixnum
-        _check_fixnum qword [rbp]
-        _plus
-        _tag_fixnum
-        next
-endcode
-
 ; ### fixnum-
 inline fixnum_minus, 'fixnum-'          ; x y -- z
 ; No type checking.
