@@ -1385,6 +1385,23 @@ code rshift, 'rshift'   ; x n -- y
         next
 endcode
 
+; ### expt
+code expt, 'expt'       ; base power -- result
+; FIXME incomplete
+        _check_index
+        _check_fixnum qword [rbp]
+        _ gc_disable
+        mov     arg1_register, rbx
+        poprbx
+        mov     arg0_register, rbx
+        poprbx
+        xcall   c_expt
+        pushrbx
+        mov     rbx, rax
+        _ gc_enable
+        next
+endcode
+
 ; ### bye
 code feline_bye, "bye"
         _ free_locals_stack

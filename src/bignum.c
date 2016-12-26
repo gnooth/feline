@@ -226,3 +226,14 @@ cell c_bignum_negate(bignum *b)
   mpz_clear(z);
   return get_handle_for_object((cell)ret);
 }
+
+// FIXME incomplete
+cell c_expt(cell base, cell power)
+{
+  mpz_t z;
+  mpz_init(z);
+  mpz_ui_pow_ui(z, (unsigned long int)base, (unsigned long int)power);
+  bignum *ret = c_make_bignum(z);
+  mpz_clear(z);
+  return get_handle_for_object((cell)ret);
+}

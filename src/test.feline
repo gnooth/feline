@@ -1375,6 +1375,15 @@ test: negate-test-1
 
 negate-test-1
 
+test: expt-test-1
+    2 64 expt 18446744073709551616 = check-t
+    2 128 expt 340282366920938463463374607431768211456 = check-t
+    7 17 expt 232630513987207 = check-t
+    17 50 expt 33300140732146818380750772381422989832214186835186851059977249 = check-t
+;
+
+expt-test-1
+
 in: feline
 
 ?nl "Reached end of test.feline" write-string

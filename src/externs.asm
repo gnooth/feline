@@ -70,3 +70,4 @@ extern c_bignum_init_set_ui
 extern c_bignum_negate
 extern c_bignum_sizeinbase
 extern c_decimal_to_integer
+extern c_expt
