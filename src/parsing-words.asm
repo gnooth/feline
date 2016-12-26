@@ -340,8 +340,13 @@ code parse_definition_name, 'parse-definition-name'     ; -- symbol
         next
 endcode
 
+feline_global in_definition?, 'in-definition?'
+
 ; ### parse-definition
 code parse_definition, 'parse-definition' ; -- vector
+        _t
+        _to_global in_definition?
+
         _zeroto using_locals?
 
         _ begin_scope
@@ -382,6 +387,9 @@ code parse_definition, 'parse-definition' ; -- vector
 
         _zeroto using_locals?
         _zeroto local_names
+
+        _f
+        _to_global in_definition?
 
         next
 endcode

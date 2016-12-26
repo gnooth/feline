@@ -215,6 +215,9 @@ code reset, 'reset'
         ; REVIEW windows-ui
         _ forth_standard_output
 
+        _f
+        _to_global in_definition?
+
         jmp     quit
         next                            ; for decompiler
 endcode
