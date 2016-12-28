@@ -222,6 +222,9 @@ code reset, 'reset'
         next                            ; for decompiler
 endcode
 
+; ### error-location
+feline_global error_location, 'error-location'
+
 ; ### where
 code where, 'where'                     ; --
         _ lexer
