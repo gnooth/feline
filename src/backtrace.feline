@@ -63,3 +63,7 @@ in: feline
         tag-fixnum dup find-word-from-code-address [ format-word ] [ drop ] if*
         nl
     ] each ;
+
+: :bt ( -- ) print-backtrace ;
+
+: bt ( -- ) print-backtrace ;
