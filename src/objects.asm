@@ -56,9 +56,27 @@ code object_address, 'object-address'   ; handle -- tagged-address
         _tagged_if .1
         _handle_to_object_unsafe
         _tag_fixnum
-        _else .1
-        mov     ebx, f_value
+        _return
         _then .1
+
+        ; not allocated
+        _dup
+        _ string?
+        _tagged_if .2
+        _tag_fixnum
+        _return
+        _then .2
+
+        _dup
+        _ symbol?
+        _tagged_if .3
+        _tag_fixnum
+        _return
+        _then .3
+
+        ; apparently not an object
+        mov     ebx, f_value
+
         next
 endcode
 
