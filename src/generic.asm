@@ -44,7 +44,7 @@ endcode
 code do_generic, 'do-generic'   ; methods-vector --
         _ lookup_method         ; -- raw-code-address/0
         _dup
-        _if .1
+        _tagged_if .1
         mov     rax, rbx
         poprbx
         call    rax
