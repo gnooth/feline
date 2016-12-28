@@ -166,6 +166,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method length, OBJECT_TYPE_VECTOR, vector_length
         _add_method length, OBJECT_TYPE_SLICE, slice_length
         _add_method length, OBJECT_TYPE_RANGE, range_length
+        _add_method length, OBJECT_TYPE_QUOTATION, quotation_length
 
         ; push
         _initialize_generic_function push
@@ -179,6 +180,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method nth, OBJECT_TYPE_STRING, string_nth
         _add_method nth, OBJECT_TYPE_SBUF, sbuf_nth
         _add_method nth, OBJECT_TYPE_SLICE, slice_nth
+        _add_method nth, OBJECT_TYPE_QUOTATION, quotation_nth
 
         ; nth-unsafe
         _initialize_generic_function nth_unsafe
