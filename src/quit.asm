@@ -304,7 +304,6 @@ code do_error, 'do-error'               ; error --
         _ foreground
         _ write_string
         _ where
-        _ maybe_print_backtrace
         _ reset
         _else .1
 
