@@ -201,6 +201,14 @@ code quotation_array, 'quotation-array' ; quotation -- array
         next
 endcode
 
+; ### quotation-length
+code quotation_length, 'quotation-length'       ; quotation -- length
+        _ check_quotation
+        _quotation_array
+        _ array_length
+        next
+endcode
+
 ; ### quotation-nth
 code quotation_nth, 'quotation-nth'     ; quotation -- element
         _ check_quotation
