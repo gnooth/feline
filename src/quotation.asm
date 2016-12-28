@@ -201,6 +201,14 @@ code quotation_array, 'quotation-array' ; quotation -- array
         next
 endcode
 
+; ### quotation-nth
+code quotation_nth, 'quotation-nth'     ; quotation -- element
+        _ check_quotation
+        _quotation_array
+        _ array_nth
+        next
+endcode
+
 ; ### quotation_raw_code_address
 subroutine quotation_raw_code_address   ; quotation -- raw-code-address
         _ check_quotation
