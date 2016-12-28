@@ -225,6 +225,24 @@ code lexer_set_file, 'lexer-set-file'   ; file lexer --
         next
 endcode
 
+; ### lexer-location
+code lexer_location, 'lexer-location'   ; lexer -- location
+        _ check_lexer
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+        _this_lexer_file
+        _this_lexer_line_number
+        _tag_fixnum
+        _this_lexer_index
+        _this_lexer_line_start
+        _minus
+        _tag_fixnum
+        _ three_array
+        pop     this_register
+        next
+endcode
+
 ; ### <lexer>
 code new_lexer, '<lexer>'               ; string -- lexer
 ; 6 cells: object header, string, index, line, line start, file
