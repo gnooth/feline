@@ -128,6 +128,9 @@ generic new_sequence, 'new-sequence'    ; len seq -- new-seq
 ; ### +
 generic plus, '+'       ; x y -- z
 
+; ### write
+generic generic_write, 'write'          ; string/sbuf --
+
 %macro _initialize_generic_function 1   ; generic-asm-name --
         _lit S_%1
         _ initialize_generic_function
@@ -205,6 +208,11 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _initialize_generic_function plus
         _add_method plus, OBJECT_TYPE_FIXNUM, fixnum_plus
         _add_method plus, OBJECT_TYPE_BIGNUM, bignum_plus
+
+        ; write
+        _initialize_generic_function generic_write
+        _add_method generic_write, OBJECT_TYPE_STRING, write_string
+        _add_method generic_write, OBJECT_TYPE_SBUF, write_sbuf
 
         next
 endcode
