@@ -10,53 +10,40 @@ in: test
 
 {- yet another comment -}
 
-: failed ( -- )
-    -- ?nl "failed" print
-    "failed" error
-;
+interactive? get assert-false
 
-: check-t ( x -- )
-    t eq? [ failed ] unless
-;
+1 2 + 3 eq? assert-true
+1 2 + 4 eq? assert-false
 
-: check-false ( x -- )
-    f eq? [ failed ] unless
-;
+"test" "test" eq? assert-false
 
-interactive? get check-false
+V{ 1 2 3 } length 3 assert=
+V{ "this is a test" } length 1 assert=
 
-1 2 + 3 eq? check-t
-1 2 + 4 eq? check-false
-
-"test" "test" eq? check-false
-
-V{ 1 2 3 } length 3 = check-t
-V{ "this is a test" } length 1 = check-t
-
-V{ 1 2 3 } [ dup + ] map V{ 2 4 6 } sequence= check-t
+V{ 1 2 3 } [ dup + ] map V{ 2 4 6 } sequence= assert-true
 
 "this is a multiline
-string" length 26 = check-t
+string" length 26 assert=
 
 clear
 
 test: multiline-string-test-1 ( -- )
     "this is
 a multiline string"
-    dup string? check-t
-    length 26 = check-t
+    dup string? assert-true
+    length 26 assert=
 ;
 
 multiline-string-test-1
 
 test: string?-test-1 ( -- )
-    t string? check-false
-    f string? check-false
-    42 string? check-false
-    2000000 string? check-false
-    "test" string? check-t
-    \ dup string? check-false
-    \ dup symbol-name string? check-t
+    t string? assert-false
+    f string? assert-false
+    42 string? assert-false
+    2000000 string? assert-false
+    "test" string? assert-true
+    \ dup string? assert-false
+    \ dup symbol-name string? assert-true
 ;
 
 string?-test-1
@@ -65,7 +52,7 @@ string?-test-1
 -- The Forth version of pick is different.
 test: pick-test-1 ( -- )
     clear
-    1 2 3 pick get-datastack { 1 2 3 1 } sequence= check-t
+    1 2 3 pick get-datastack { 1 2 3 1 } sequence= assert-true
     clear
 ;
 
@@ -75,290 +62,290 @@ pick-test-1
 -- The Forth version of 2over is different.
 test: 2over-test-1 ( -- )
     clear
-    1 2 3 2over get-datastack { 1 2 3 1 2 } sequence= check-t
+    1 2 3 2over get-datastack { 1 2 3 1 2 } sequence= assert-true
     clear
 ;
 
 2over-test-1
 
 test: fixnum?-test-1 ( -- )
-    most-negative-fixnum fixnum? check-t
-    -3 fixnum? check-t
-    -2 fixnum? check-t
-    -1 fixnum? check-t
-    0 fixnum? check-t
-    1 fixnum? check-t
-    2 fixnum? check-t
-    3 fixnum? check-t
-    most-positive-fixnum fixnum? check-t
-    "test" fixnum? check-false
-    \ dup fixnum? check-false
-    { 1 2 3 } fixnum? check-false
+    most-negative-fixnum fixnum? assert-true
+    -3 fixnum? assert-true
+    -2 fixnum? assert-true
+    -1 fixnum? assert-true
+    0 fixnum? assert-true
+    1 fixnum? assert-true
+    2 fixnum? assert-true
+    3 fixnum? assert-true
+    most-positive-fixnum fixnum? assert-true
+    "test" fixnum? assert-false
+    \ dup fixnum? assert-false
+    { 1 2 3 } fixnum? assert-false
 ;
 
 fixnum?-test-1
 
 test: fixnum-test-1 ( -- )
-    1 2 + 3 = check-t
-    1 2 + fixnum? check-t
+    1 2 + 3 assert=
+    1 2 + fixnum? assert-true
 ;
 
 fixnum-test-1
 
 test: fixnum-test-2 ( -- )
-    -1 -2 + -3 = check-t
+    -1 -2 + -3 assert=
 ;
 
 fixnum-test-2
 
 test: fixnum-test-3 ( -- )
-    0 fixnum? check-t
-    0 0 = check-t
-    1 0 = check-false
-    -1 0 = check-false
-    1 -1 + 0 = check-t
-    4 -4 + 0 = check-t
+    0 fixnum? assert-true
+    0 0 assert=
+    1 0 = assert-false
+    -1 0 = assert-false
+    1 -1 + 0 assert=
+    4 -4 + 0 assert=
 ;
 
 fixnum-test-3
 
 -- fixnum<
 test: fixnum<-test-1 ( -- )
-    0 0 fixnum< check-false
-    1 1 fixnum< check-false
-    1 2 fixnum< check-t
-    2 1 fixnum< check-false
-    -2 -1 fixnum< check-t
-    -1 -2 fixnum< check-false
-    -2 1 fixnum< check-t
-    1 -2 fixnum< check-false
-    most-negative-fixnum 0 fixnum< check-t
-    most-negative-fixnum most-positive-fixnum fixnum< check-t
-    0 most-positive-fixnum fixnum< check-t
+    0 0 fixnum< assert-false
+    1 1 fixnum< assert-false
+    1 2 fixnum< assert-true
+    2 1 fixnum< assert-false
+    -2 -1 fixnum< assert-true
+    -1 -2 fixnum< assert-false
+    -2 1 fixnum< assert-true
+    1 -2 fixnum< assert-false
+    most-negative-fixnum 0 fixnum< assert-true
+    most-negative-fixnum most-positive-fixnum fixnum< assert-true
+    0 most-positive-fixnum fixnum< assert-true
 ;
 
 fixnum<-test-1
 
 -- fixnum<=
 test: fixnum<=-test-1 ( -- )
-    0 0 fixnum<= check-t
-    1 1 fixnum<= check-t
-    1 2 fixnum<= check-t
-    2 1 fixnum<= check-false
-    -2 -1 fixnum<= check-t
-    -1 -2 fixnum<= check-false
-    -2 1 fixnum<= check-t
-    1 -2 fixnum<= check-false
-    most-negative-fixnum 0 fixnum<= check-t
-    most-negative-fixnum most-positive-fixnum fixnum<= check-t
-    most-negative-fixnum most-negative-fixnum fixnum<= check-t
-    most-positive-fixnum most-positive-fixnum fixnum<= check-t
-    0 most-positive-fixnum fixnum<= check-t
+    0 0 fixnum<= assert-true
+    1 1 fixnum<= assert-true
+    1 2 fixnum<= assert-true
+    2 1 fixnum<= assert-false
+    -2 -1 fixnum<= assert-true
+    -1 -2 fixnum<= assert-false
+    -2 1 fixnum<= assert-true
+    1 -2 fixnum<= assert-false
+    most-negative-fixnum 0 fixnum<= assert-true
+    most-negative-fixnum most-positive-fixnum fixnum<= assert-true
+    most-negative-fixnum most-negative-fixnum fixnum<= assert-true
+    most-positive-fixnum most-positive-fixnum fixnum<= assert-true
+    0 most-positive-fixnum fixnum<= assert-true
 ;
 
 fixnum<=-test-1
 
 -- fixnum>
 test: fixnum>-test-1 ( -- )
-    0 0 fixnum> check-false
-    1 1 fixnum> check-false
-    1 2 fixnum> check-false
-    2 1 fixnum> check-t
-    -2 -1 fixnum> check-false
-    -1 -2 fixnum> check-t
-    -2 1 fixnum> check-false
-    1 -2 fixnum> check-t
-    most-negative-fixnum 0 fixnum> check-false
-    most-negative-fixnum most-positive-fixnum fixnum> check-false
-    most-positive-fixnum most-negative-fixnum fixnum> check-t
-    0 most-positive-fixnum fixnum> check-false
+    0 0 fixnum> assert-false
+    1 1 fixnum> assert-false
+    1 2 fixnum> assert-false
+    2 1 fixnum> assert-true
+    -2 -1 fixnum> assert-false
+    -1 -2 fixnum> assert-true
+    -2 1 fixnum> assert-false
+    1 -2 fixnum> assert-true
+    most-negative-fixnum 0 fixnum> assert-false
+    most-negative-fixnum most-positive-fixnum fixnum> assert-false
+    most-positive-fixnum most-negative-fixnum fixnum> assert-true
+    0 most-positive-fixnum fixnum> assert-false
 ;
 
 fixnum>-test-1
 
 -- fixnum>=
 test: fixnum>=-test-1 ( -- )
-    0 0 fixnum>= check-t
-    1 1 fixnum>= check-t
-    1 2 fixnum>= check-false
-    2 1 fixnum>= check-t
-    -2 -1 fixnum>= check-false
-    -1 -2 fixnum>= check-t
-    -2 1 fixnum>= check-false
-    1 -2 fixnum>= check-t
-    most-negative-fixnum 0 fixnum>= check-false
-    most-negative-fixnum most-positive-fixnum fixnum>= check-false
-    most-negative-fixnum most-negative-fixnum fixnum>= check-t
-    most-positive-fixnum most-positive-fixnum fixnum>= check-t
-    0 most-positive-fixnum fixnum>= check-false
+    0 0 fixnum>= assert-true
+    1 1 fixnum>= assert-true
+    1 2 fixnum>= assert-false
+    2 1 fixnum>= assert-true
+    -2 -1 fixnum>= assert-false
+    -1 -2 fixnum>= assert-true
+    -2 1 fixnum>= assert-false
+    1 -2 fixnum>= assert-true
+    most-negative-fixnum 0 fixnum>= assert-false
+    most-negative-fixnum most-positive-fixnum fixnum>= assert-false
+    most-negative-fixnum most-negative-fixnum fixnum>= assert-true
+    most-positive-fixnum most-positive-fixnum fixnum>= assert-true
+    0 most-positive-fixnum fixnum>= assert-false
 ;
 
 fixnum>=-test-1
 
 -- >=
 test: >=-test-1 ( -- )
-    0 0 >= check-t
-    1 1 >= check-t
-    1 2 >= check-false
-    2 1 >= check-t
-    -2 -1 >= check-false
-    -1 -2 >= check-t
-    -2 1 >= check-false
-    1 -2 >= check-t
-    most-negative-fixnum 0 >= check-false
-    most-negative-fixnum most-positive-fixnum >= check-false
-    most-negative-fixnum most-negative-fixnum >= check-t
-    most-positive-fixnum most-positive-fixnum >= check-t
-    0 most-positive-fixnum >= check-false
+    0 0 >= assert-true
+    1 1 >= assert-true
+    1 2 >= assert-false
+    2 1 >= assert-true
+    -2 -1 >= assert-false
+    -1 -2 >= assert-true
+    -2 1 >= assert-false
+    1 -2 >= assert-true
+    most-negative-fixnum 0 >= assert-false
+    most-negative-fixnum most-positive-fixnum >= assert-false
+    most-negative-fixnum most-negative-fixnum >= assert-true
+    most-positive-fixnum most-positive-fixnum >= assert-true
+    0 most-positive-fixnum >= assert-false
 ;
 
 >=-test-1
 
 test: fixnum-test-5 ( -- )
-    1 2 fixnum- -1 = check-t
-    1 2 - -1 = check-t
+    1 2 fixnum- -1 assert=
+    1 2 - -1 assert=
 ;
 
 fixnum-test-5
 
 test: fixnum-test-6 ( -- )
-    2 3 fixnum* 6 = check-t
-    2 3 * 6 = check-t
+    2 3 fixnum* 6 assert=
+    2 3 * 6 assert=
 ;
 
 fixnum-test-6
 
 test: fixnum-test-7 ( -- )
-    8 3 fixnum/i 2 = check-t
-    8 3 / 2 = check-t
-    -8 3 fixnum/i -2 = check-t
-    -8 3 / -2 = check-t
+    8 3 fixnum/i 2 assert=
+    8 3 / 2 assert=
+    -8 3 fixnum/i -2 assert=
+    -8 3 / -2 assert=
 ;
 
 fixnum-test-7
 
 test: fixnum-test-8 ( -- )
-    7 3 fixnum-mod 1 = check-t
-    7 3 mod 1 = check-t
-    -7 3 fixnum-mod -1 = check-t
-    -7 3 mod -1 = check-t
+    7 3 fixnum-mod 1 assert=
+    7 3 mod 1 assert=
+    -7 3 fixnum-mod -1 assert=
+    -7 3 mod -1 assert=
 ;
 
 fixnum-test-8
 
 -- fixnum-bitand, bitand
 test: fixnum-test-9 ( -- )
-    15 7 bitand 7 = check-t
-    15 $f0 bitand 0 = check-t
-    3 1 bitand 1 = check-t
+    15 7 bitand 7 assert=
+    15 $f0 bitand 0 assert=
+    3 1 bitand 1 assert=
 ;
 
 fixnum-test-9
 
 -- fixnum+
 test: fixnum-test-10 ( -- )
-    42 87 fixnum+ 129 = check-t
-    -42 87 fixnum+ 45 = check-t
-    42 -87 fixnum+ -45 = check-t
-    -42 -87 fixnum+ -129 = check-t
+    42 87 fixnum+ 129 assert=
+    -42 87 fixnum+ 45 assert=
+    42 -87 fixnum+ -45 assert=
+    -42 -87 fixnum+ -129 assert=
 ;
 
 fixnum-test-10
 
 test: fixnum>string-test-1 ( -- )
-    -17 fixnum>string "-17" = check-t
-    0 fixnum>string "0" = check-t
-    42 fixnum>string "42" = check-t
-    tag-bits 3 = check-t
-    most-negative-fixnum fixnum>string "-1152921504606846976" = check-t
-    most-negative-fixnum 1 + fixnum>string "-1152921504606846975" = check-t
-    most-negative-fixnum 2 + fixnum>string "-1152921504606846974" = check-t
-    most-positive-fixnum fixnum>string "1152921504606846975" = check-t
+    -17 fixnum>string "-17" assert=
+    0 fixnum>string "0" assert=
+    42 fixnum>string "42" assert=
+    tag-bits 3 assert=
+    most-negative-fixnum fixnum>string "-1152921504606846976" assert=
+    most-negative-fixnum 1 + fixnum>string "-1152921504606846975" assert=
+    most-negative-fixnum 2 + fixnum>string "-1152921504606846974" assert=
+    most-positive-fixnum fixnum>string "1152921504606846975" assert=
 ;
 
 fixnum>string-test-1
 
 test: fixnum>hex-test-1 ( -- )
-    -17 fixnum>hex "-11" = check-t
-      0 fixnum>hex   "0" = check-t
-     42 fixnum>hex  "2a" = check-t
-    tag-bits 3 = check-t
-    most-negative-fixnum     fixnum>hex "-1000000000000000" = check-t
-    most-negative-fixnum 1 + fixnum>hex  "-fffffffffffffff" = check-t
-    most-negative-fixnum 2 + fixnum>hex  "-ffffffffffffffe" = check-t
-    most-positive-fixnum     fixnum>hex   "fffffffffffffff" = check-t
+    -17 fixnum>hex "-11" assert=
+      0 fixnum>hex   "0" assert=
+     42 fixnum>hex  "2a" assert=
+    tag-bits 3 assert=
+    most-negative-fixnum     fixnum>hex "-1000000000000000" assert=
+    most-negative-fixnum 1 + fixnum>hex  "-fffffffffffffff" assert=
+    most-negative-fixnum 2 + fixnum>hex  "-ffffffffffffffe" assert=
+    most-positive-fixnum     fixnum>hex   "fffffffffffffff" assert=
 
-    -576460752303423488 >hex "-800000000000000" = check-t
-     576460752303423487 >hex  "7ffffffffffffff" = check-t
+    -576460752303423488 >hex "-800000000000000" assert=
+     576460752303423487 >hex  "7ffffffffffffff" assert=
 ;
 
 fixnum>hex-test-1
 
 test: number>string-test-1 ( -- )
-    -17 number>string "-17" = check-t
-    0 number>string "0" = check-t
-    42 number>string "42" = check-t
-    tag-bits 3 = check-t
-    most-negative-fixnum number>string "-1152921504606846976" = check-t
-    most-positive-fixnum number>string "1152921504606846975" = check-t
+    -17 number>string "-17" assert=
+    0 number>string "0" assert=
+    42 number>string "42" assert=
+    tag-bits 3 assert=
+    most-negative-fixnum number>string "-1152921504606846976" assert=
+    most-positive-fixnum number>string "1152921504606846975" assert=
 ;
 
 number>string-test-1
 
 test: fixnum-max-test-1 ( -- )
-    1 2 fixnum-max 2 eq? check-t
-    2 1 fixnum-max 2 eq? check-t
-    -1 2 fixnum-max 2 eq? check-t
-    2 -1 fixnum-max 2 eq? check-t
-    most-positive-fixnum 0 fixnum-max most-positive-fixnum eq? check-t
-    most-negative-fixnum 0 fixnum-max zero? check-t
-    0 most-positive-fixnum fixnum-max most-positive-fixnum eq? check-t
-    0 most-negative-fixnum fixnum-max zero? check-t
+    1 2 fixnum-max 2 eq? assert-true
+    2 1 fixnum-max 2 eq? assert-true
+    -1 2 fixnum-max 2 eq? assert-true
+    2 -1 fixnum-max 2 eq? assert-true
+    most-positive-fixnum 0 fixnum-max most-positive-fixnum eq? assert-true
+    most-negative-fixnum 0 fixnum-max zero? assert-true
+    0 most-positive-fixnum fixnum-max most-positive-fixnum eq? assert-true
+    0 most-negative-fixnum fixnum-max zero? assert-true
 ;
 
 fixnum-max-test-1
 
 test: max-test-1 ( -- )
-    1 2 max 2 eq? check-t
-    2 1 max 2 eq? check-t
-    -1 2 max 2 eq? check-t
-    2 -1 max 2 eq? check-t
-    most-positive-fixnum 0 max most-positive-fixnum eq? check-t
-    most-negative-fixnum 0 max zero? check-t
-    0 most-positive-fixnum max most-positive-fixnum eq? check-t
-    0 most-negative-fixnum max zero? check-t
+    1 2 max 2 eq? assert-true
+    2 1 max 2 eq? assert-true
+    -1 2 max 2 eq? assert-true
+    2 -1 max 2 eq? assert-true
+    most-positive-fixnum 0 max most-positive-fixnum eq? assert-true
+    most-negative-fixnum 0 max zero? assert-true
+    0 most-positive-fixnum max most-positive-fixnum eq? assert-true
+    0 most-negative-fixnum max zero? assert-true
 ;
 
 max-test-1
 
 test: fixnum-min-test-1 ( -- )
-    1 2 fixnum-min 1 eq? check-t
-    2 1 fixnum-min 1 eq? check-t
-    -1 2 fixnum-min -1 eq? check-t
-    2 -1 fixnum-min -1 eq? check-t
-    most-positive-fixnum 0 fixnum-min zero? check-t
-    most-negative-fixnum 0 fixnum-min most-negative-fixnum eq? check-t
-    0 most-positive-fixnum fixnum-min zero? check-t
-    0 most-negative-fixnum fixnum-min most-negative-fixnum eq? check-t
+    1 2 fixnum-min 1 eq? assert-true
+    2 1 fixnum-min 1 eq? assert-true
+    -1 2 fixnum-min -1 eq? assert-true
+    2 -1 fixnum-min -1 eq? assert-true
+    most-positive-fixnum 0 fixnum-min zero? assert-true
+    most-negative-fixnum 0 fixnum-min most-negative-fixnum eq? assert-true
+    0 most-positive-fixnum fixnum-min zero? assert-true
+    0 most-negative-fixnum fixnum-min most-negative-fixnum eq? assert-true
 ;
 
 fixnum-min-test-1
 
 test: min-test-1 ( -- )
-    1 2 min 1 eq? check-t
-    2 1 min 1 eq? check-t
-    -1 2 min -1 eq? check-t
-    2 -1 min -1 eq? check-t
-    most-positive-fixnum 0 min zero? check-t
-    most-negative-fixnum 0 min most-negative-fixnum eq? check-t
-    0 most-positive-fixnum min zero? check-t
-    0 most-negative-fixnum min most-negative-fixnum eq? check-t
+    1 2 min 1 eq? assert-true
+    2 1 min 1 eq? assert-true
+    -1 2 min -1 eq? assert-true
+    2 -1 min -1 eq? assert-true
+    most-positive-fixnum 0 min zero? assert-true
+    most-negative-fixnum 0 min most-negative-fixnum eq? assert-true
+    0 most-positive-fixnum min zero? assert-true
+    0 most-negative-fixnum min most-negative-fixnum eq? assert-true
 ;
 
 min-test-1
 
 test: dip-test-1 ( -- )
-    87 42 [ 3 * ] dip get-datastack V{ 261 42 } sequence= check-t
+    87 42 [ 3 * ] dip get-datastack V{ 261 42 } sequence= assert-true
     clear
 ;
 
@@ -366,7 +353,7 @@ dip-test-1
 
 test: 2dip-test-1 ( -- )
     clear
-    42 17 89 [ 1 + ] 2dip get-datastack { 43 17 89 } sequence= check-t
+    42 17 89 [ 1 + ] 2dip get-datastack { 43 17 89 } sequence= assert-true
     clear
 ;
 
@@ -375,7 +362,7 @@ test: 2dip-test-1 ( -- )
 test: each-index-test-1 ( -- )
     clear
     { "a" "b" "c" } [ 2array ] each-index get-datastack
-    { { "a" 0 } { "b" 1 } { "c" 2 } } sequence= check-t
+    { { "a" 0 } { "b" 1 } { "c" 2 } } sequence= assert-true
     clear
 ;
 
@@ -384,24 +371,24 @@ each-index-test-1
 test: map-index-test-1 ( -- )
     clear
     { "a" "b" "c" } [ 2array ] map-index get-datastack
-    { { { "a" 0 } { "b" 1 } { "c" 2 } } } = check-t
+    { { { "a" 0 } { "b" 1 } { "c" 2 } } } assert=
     clear
     V{ "a" "b" "c" } [ 2array ] map-index get-datastack
-    { V{ { "a" 0 } { "b" 1 } { "c" 2 } } } = check-t
+    { V{ { "a" 0 } { "b" 1 } { "c" 2 } } } assert=
     clear
 ;
 
 map-index-test-1
 
 test: keep-test-1 ( -- )
-    42 [ dup ] keep get-datastack V{ 42 42 42 } sequence= check-t
+    42 [ dup ] keep get-datastack V{ 42 42 42 } sequence= assert-true
     clear
 ;
 
 keep-test-1
 
 test: bi@-test-1
-    3 4 [ dup ] bi@ get-datastack V{ 3 3 4 4 } sequence= check-t
+    3 4 [ dup ] bi@ get-datastack V{ 3 3 4 4 } sequence= assert-true
     clear
 ;
 
@@ -409,10 +396,10 @@ bi@-test-1
 
 test: array-test-1 ( -- )
     10 42 <array>
-    [ object? check-t ] keep
-    [ array? check-t ] keep
-    [ length 10 = check-t ] keep
-    10 [ over nth 42 eq? check-t ] each-integer
+    [ object? assert-true ] keep
+    [ array? assert-true ] keep
+    [ length 10 assert= ] keep
+    10 [ over nth 42 eq? assert-true ] each-integer
     drop
 ;
 
@@ -428,7 +415,7 @@ array-test-2
 
 test: 1array-test-1 ( -- )
     clear
-    71 1array get-datastack { { 71 } } sequence= check-t
+    71 1array get-datastack { { 71 } } sequence= assert-true
     clear
 ;
 
@@ -436,7 +423,7 @@ test: 1array-test-1 ( -- )
 
 test: 2array-test-1 ( -- )
     clear
-    "test1" "test2" 2array get-datastack { { "test1" "test2" } } sequence= check-t
+    "test1" "test2" 2array get-datastack { { "test1" "test2" } } sequence= assert-true
     clear
 ;
 
@@ -444,7 +431,7 @@ test: 2array-test-1 ( -- )
 
 test: 3array-test-1 ( -- )
     clear
-    1 2 3 3array get-datastack { { 1 2 3 } } sequence= check-t
+    1 2 3 3array get-datastack { { 1 2 3 } } sequence= assert-true
     clear
 ;
 
@@ -452,7 +439,7 @@ test: 3array-test-1 ( -- )
 
 test: 4array-test-1 ( -- )
     clear
-    1 2 3 4 4array get-datastack { { 1 2 3 4 } } sequence= check-t
+    1 2 3 4 4array get-datastack { { 1 2 3 4 } } sequence= assert-true
     clear
 ;
 
@@ -461,46 +448,46 @@ test: 4array-test-1 ( -- )
 -- vector-insert-nth!
 test: vector-test-1 ( -- )
     17 0 V{ 0 1 2 3 } [ vector-insert-nth! ] keep
-    V{ 17 0 1 2 3 } sequence= check-t
+    V{ 17 0 1 2 3 } sequence= assert-true
     clear
 ;
 
 vector-test-1
 
 test: vector-test-2 ( -- )
-    1 <vector> [ vector? check-t ] keep
+    1 <vector> [ vector? assert-true ] keep
     100 [ dup pick vector-set-nth ] each-integer
-    [ [ eq? check-t ] vector-each-index ] keep
+    [ [ eq? assert-true ] vector-each-index ] keep
     clear
 
     1 <vector>
     "test" [ 100 pick vector-set-nth ] keep
-    100 pick vector-nth eq? check-t
+    100 pick vector-nth eq? assert-true
 
     -- verify that new cells are initialized to f
-    100 [ over vector-nth check-false ] each-integer
+    100 [ over vector-nth assert-false ] each-integer
     clear
 
     local: v
     1 <vector> -> v
     42 9 v set-nth
     87 v push
-    v V{ f f f f f f f f f 42 87 } sequence= check-t
+    v V{ f f f f f f f f f 42 87 } sequence= assert-true
 
     -- FIXME this fails Nov 25 2016 9:42 AM
     -- 14 19 v set-nth
-    -- v V{ f f f f f f f f f 42 87 f f f f f f f f 14 } sequence= check-t
+    -- v V{ f f f f f f f f f 42 87 f f f f f f f f 14 } sequence= assert-true
 ;
 
 vector-test-2
 
 test: vector-test-3 ( -- )
-    1 <vector> [ vector? check-t ] keep
+    1 <vector> [ vector? assert-true ] keep
     10 [ over vector-push ] each-integer
-    10 [ dup pick vector-nth eq? check-t ] each-integer
-    [ [ eq? check-t ] each-index ] keep
-    10 [ 9 swap - over vector-pop eq? check-t ] each-integer
-    vector-length zero? check-t
+    10 [ dup pick vector-nth eq? assert-true ] each-integer
+    [ [ eq? assert-true ] each-index ] keep
+    10 [ 9 swap - over vector-pop eq? assert-true ] each-integer
+    vector-length zero? assert-true
 ;
 
 vector-test-3
@@ -508,11 +495,11 @@ vector-test-3
 -- vector-pop*
 test: vector-test-4 ( -- )
     V{ 1 2 3 } [ vector-pop* ] keep
-    [ length 2 = check-t ] keep
+    [ length 2 assert= ] keep
     [ vector-pop* ] keep
-    [ length 1 = check-t ] keep
+    [ length 1 assert= ] keep
     [ vector-pop* ] keep
-    [ length zero? check-t ]
+    [ length zero? assert-true ]
 ;
 
 vector-test-4
@@ -520,9 +507,9 @@ vector-test-4
 -- vector-last
 test: vector-test-5 ( -- )
     clear
-    V{ 1 2 3 } vector-last get-datastack { 3 } sequence= check-t
+    V{ 1 2 3 } vector-last get-datastack { 3 } sequence= assert-true
     clear
-    V{ "test" } vector-last "test" = check-t
+    V{ "test" } vector-last "test" assert=
 ;
 
 vector-test-5
@@ -530,8 +517,8 @@ vector-test-5
 -- vector>array
 test: vector>array-test-1 ( -- )
     V{ 1 2 3 } vector>array
-    [ array? check-t ] keep
-    { 1 2 3 } = check-t
+    [ array? assert-true ] keep
+    { 1 2 3 } assert=
 ;
 
 vector>array-test-1
@@ -543,7 +530,7 @@ vector>array-test-1
 ;
 
 test: local-test-1 ( -- )
-    %local-test-1 42 eq? check-t
+    %local-test-1 42 eq? assert-true
 ;
 
 local-test-1
@@ -555,58 +542,58 @@ local-test-1
 ;
 
 test: local-test-2 ( -- )
-    %local-test-2 25 eq? check-t
+    %local-test-2 25 eq? assert-true
 ;
 
 local-test-2
 
 test: if-test-1 ( -- )
-    t [ 42 ] [ 17 ] if 42 eq? check-t
-    f [ 42 ] [ 17 ] if 17 eq? check-t
-    0 [ 42 ] [ 17 ] if 42 eq? check-t
+    t [ 42 ] [ 17 ] if 42 eq? assert-true
+    f [ 42 ] [ 17 ] if 17 eq? assert-true
+    0 [ 42 ] [ 17 ] if 42 eq? assert-true
 ;
 
 if-test-1
 
 test: if*-test-1 ( -- )
     clear
-    t [ 42 ] [ 17 ] if* get-datastack { t 42 } sequence= check-t
+    t [ 42 ] [ 17 ] if* get-datastack { t 42 } sequence= assert-true
     clear
-    f [ 42 ] [ 17 ] if* get-datastack { 17 } sequence= check-t
+    f [ 42 ] [ 17 ] if* get-datastack { 17 } sequence= assert-true
     clear
-    0 [ 42 ] [ 17 ] if* get-datastack { 0 42 } sequence= check-t
+    0 [ 42 ] [ 17 ] if* get-datastack { 0 42 } sequence= assert-true
     clear
 ;
 
 if*-test-1
 
 test: symbol?-test-1 ( -- )
-    \ dup symbol? check-t
-    \ check-t symbol? check-t
-    42 symbol? check-false
-    -3 symbol? check-false
-    "test" symbol? check-false
+    \ dup symbol? assert-true
+    \ assert-true symbol? assert-true
+    42 symbol? assert-false
+    -3 symbol? assert-false
+    "test" symbol? assert-false
 ;
 
 symbol?-test-1
 
 test: string>number-test-1 ( -- )
-    "." string>number check-false
-    "-" string>number check-false
+    "." string>number assert-false
+    "-" string>number assert-false
 ;
 
 string>number-test-1
 
 test: string>number-test-2 ( -- )
-    "%11" string>number 3 eq? check-t
-    "%1100" string>number 12 eq? check-t
+    "%11" string>number 3 eq? assert-true
+    "%1100" string>number 12 eq? assert-true
 ;
 
 string>number-test-2
 
 test: \-test-1 ( -- )
-    [ \ dup ] call symbol? check-t
-    3 [ dup ] call get-datastack { 3 3 } sequence= check-t
+    [ \ dup ] call symbol? assert-true
+    3 [ dup ] call get-datastack { 3 3 } sequence= assert-true
     clear
 ;
 
@@ -614,20 +601,20 @@ test: \-test-1 ( -- )
 
 test: hashcode-test-1 ( -- )
     "test"
-    [ string-hashcode fixnum? check-t ] keep
-    [ hashcode dup fixnum? check-t ] keep
-    string-hashcode eq? check-t
+    [ string-hashcode fixnum? assert-true ] keep
+    [ hashcode dup fixnum? assert-true ] keep
+    string-hashcode eq? assert-true
 ;
 
 hashcode-test-1
 
 test: hashcode-test-2 ( -- )
     \ dup
-    [ symbol-name "dup" string= check-t ] keep
-    [ symbol-vocab-name "feline" string= check-t ] keep
+    [ symbol-name "dup" string= assert-true ] keep
+    [ symbol-vocab-name "feline" string= assert-true ] keep
     [ symbol-hashcode ] keep
     [ symbol-name hashcode ] keep
-    symbol-vocab-name hashcode hash-combine eq? check-t
+    symbol-vocab-name hashcode hash-combine eq? assert-true
 ;
 
 hashcode-test-2
@@ -636,21 +623,21 @@ test: hashtable-test-1 ( -- )
     local: ht
     16 <hashtable> -> ht
     42 "parker" ht set-at
-    ht hashtable-count 1 = check-t
+    ht hashtable-count 1 assert=
     87 "penelope" ht set-at
-    ht hashtable-count 2 = check-t
-    "parker" ht at* check-t
-    42 = check-t
-    "penelope" ht at* check-t
-    87 = check-t
-    "cody may" ht at* check-false
-    check-false
+    ht hashtable-count 2 assert=
+    "parker" ht at* assert-true
+    42 assert=
+    "penelope" ht at* assert-true
+    87 assert=
+    "cody may" ht at* assert-false
+    assert-false
 ;
 
 hashtable-test-1
 
 test: hashtable-test-2 ( -- )
-    72 <hashtable> hashtable-capacity 128 = check-t
+    72 <hashtable> hashtable-capacity 128 assert=
 ;
 
 hashtable-test-2
@@ -659,8 +646,8 @@ test: hashtable-test-3 ( -- )
     local: ht
     16 <hashtable> -> ht
     1000 [ dup number>string ht set-at ] each-integer
-    1000 [ dup number>string ht at = check-t ] each-integer
-    "charlie" ht at* check-false check-false
+    1000 [ dup number>string ht at assert= ] each-integer
+    "charlie" ht at* assert-false assert-false
 ;
 
 hashtable-test-3
@@ -673,30 +660,30 @@ constant: n2     40     -- number of entries to delete
 test: hashtable-test-4 ( -- )
     1 <hashtable> -> ht
     n1 [ dup number>string ht set-at ] each-integer
-    n1 [ dup number>string ht at = check-t ] each-integer
+    n1 [ dup number>string ht at assert= ] each-integer
 
     -- delete first n2 entries
     n2 [ number>string ht delete-at ] each-integer
 
     -- verify remaining entries are findable
-    n1 n2 - [ n2 + dup number>string ht at = check-t ] each-integer
+    n1 n2 - [ n2 + dup number>string ht at assert= ] each-integer
 
     -- delete first n2 entries again (should make no difference)
     n2 [ number>string ht delete-at ] each-integer
 
     -- verify remaining entries are findable
-    n1 n2 - [ n2 + dup number>string ht at = check-t ] each-integer
+    n1 n2 - [ n2 + dup number>string ht at assert= ] each-integer
 
     -- add deleted entries back
     n2 [ dup number>string ht set-at ] each-integer
 
     -- verify all entries are findable
-    n1 [ dup number>string ht at = check-t ] each-integer
+    n1 [ dup number>string ht at assert= ] each-integer
 
-    ht hashtable-keys length n1 eq? check-t
-    ht hashtable-keys [ string? check-t ] each
-    ht hashtable-values length n1 eq? check-t
-    ht hashtable-values [ fixnum? check-t ] each
+    ht hashtable-keys length n1 eq? assert-true
+    ht hashtable-keys [ string? assert-true ] each
+    ht hashtable-values length n1 eq? assert-true
+    ht hashtable-values [ fixnum? assert-true ] each
 
     f -> ht
 ;
@@ -704,20 +691,20 @@ test: hashtable-test-4 ( -- )
 hashtable-test-4
 
 test: length-test-1 ( -- )
-    "test" length 4 eq? check-t
-    "testing" string>sbuf length 7 eq? check-t
-    { 1 2 3 } length 3 eq? check-t
-    V{ 1 2 3 "test" } length 4 eq? check-t
+    "test" length 4 eq? assert-true
+    "testing" string>sbuf length 7 eq? assert-true
+    { 1 2 3 } length 3 eq? assert-true
+    V{ 1 2 3 "test" } length 4 eq? assert-true
 ;
 
 length-test-1
 
 test: globals-test-1 ( -- )
     clear
-    42 \ dup set-global get-datastack { } sequence= check-t
-    \ dup get-global get-datastack { 42 } sequence= check-t
+    42 \ dup set-global get-datastack { } sequence= assert-true
+    \ dup get-global get-datastack { 42 } sequence= assert-true
     clear
-    \ dup get get-datastack { 42 } sequence= check-t
+    \ dup get get-datastack { 42 } sequence= assert-true
     clear
 ;
 
@@ -725,13 +712,13 @@ globals-test-1
 
 test: find-test-1 ( -- )
     V{ 1 2 3 4 5 6 } [ 3 = ] find
-    get-datastack V{ 2 3 } sequence= check-t
+    get-datastack V{ 2 3 } sequence= assert-true
     clear
     V{ 1 2 3 4 5 6 } [ 17 = ] find
-    get-datastack f f 2array sequence= check-t
+    get-datastack f f 2array sequence= assert-true
     clear
     4 V{ 1 2 3 4 5 6 } [ dupd = ] find
-    get-datastack V{ 4 3 4 } sequence= check-t
+    get-datastack V{ 4 3 4 } sequence= assert-true
     clear
 ;
 
@@ -739,16 +726,16 @@ find-test-1
 
 test: find-from-test-1 ( -- )
     4 "this is a test" [ 'e' = ] find-from
-    get-datastack { 11 'e' } sequence= check-t
+    get-datastack { 11 'e' } sequence= assert-true
     clear
     0 "this is a test" [ 's' = ] find-from
-    get-datastack { 3 's' } sequence= check-t
+    get-datastack { 3 's' } sequence= assert-true
     clear
     99 "this is a test" [ 'e' = ] find-from
-    get-datastack { f f } sequence= check-t
+    get-datastack { f f } sequence= assert-true
     clear
     -1 "this is a test" [ 'e' = ] find-from
-    get-datastack { f f } sequence= check-t
+    get-datastack { f f } sequence= assert-true
     clear
 ;
 
@@ -756,19 +743,19 @@ find-from-test-1
 
 test: find-last-from-test-1
     13 "this is a test" [ 'e' = ] find-last-from
-    get-datastack { 11 'e' } sequence= check-t
+    get-datastack { 11 'e' } sequence= assert-true
     clear
     99 "this is a test" [ 'e' = ] find-last-from
-    get-datastack { f f } sequence= check-t
+    get-datastack { f f } sequence= assert-true
     clear
     -99 "this is a test" [ 'e' = ] find-last-from
-    get-datastack { f f } sequence= check-t
+    get-datastack { f f } sequence= assert-true
     clear
     4 V{ 1 2 3 4 5 3 } [ 3 = ] find-last-from
-    get-datastack { 2 3 } sequence= check-t
+    get-datastack { 2 3 } sequence= assert-true
     clear
     3 4 V{ 1 2 3 4 5 3 } [ dupd = ] find-last-from
-    get-datastack { 3 2 3 } sequence= check-t
+    get-datastack { 3 2 3 } sequence= assert-true
     clear
 ;
 
@@ -776,11 +763,11 @@ find-last-from-test-1
 
 test: map-find-test-1 ( -- )
     clear
-    V{ 1 2 3 4 5 6 } [ 3 = ] map-find get-datastack { t 3 } sequence= check-t
+    V{ 1 2 3 4 5 6 } [ 3 = ] map-find get-datastack { t 3 } sequence= assert-true
     clear
-    V{ 1 2 3 4 5 6 } [ 17 = ] map-find get-datastack { f f } sequence= check-t
+    V{ 1 2 3 4 5 6 } [ 17 = ] map-find get-datastack { f f } sequence= assert-true
     clear
-    4 V{ 1 2 3 4 5 6 } [ dupd = ] map-find get-datastack { 4 t 4 } sequence= check-t
+    4 V{ 1 2 3 4 5 6 } [ dupd = ] map-find get-datastack { 4 t 4 } sequence= assert-true
     clear
 ;
 
@@ -788,42 +775,42 @@ map-find-test-1
 
 test: find-integer-test-1 ( -- )
     clear
-    10 [ 5 eq? ] find-integer get-datastack { 5 } = check-t
+    10 [ 5 eq? ] find-integer get-datastack { 5 } assert=
     clear
 ;
 
 find-integer-test-1
 
 test: ?lookup-symbol-test-1 ( -- )
-    "dup" "feline" ?lookup-symbol \ dup eq? check-t
-    "xxx" "feline" ?lookup-symbol check-false
-    "dup" "xxx" ?lookup-symbol check-false
+    "dup" "feline" ?lookup-symbol \ dup eq? assert-true
+    "xxx" "feline" ?lookup-symbol assert-false
+    "dup" "xxx" ?lookup-symbol assert-false
 ;
 
 ?lookup-symbol-test-1
 
 test: create-symbol-test-1 ( -- )
-    "effluvia" "test" ?lookup-symbol check-false
+    "effluvia" "test" ?lookup-symbol assert-false
     "effluvia" "test" create-symbol
-    dup symbol? check-t
-    dup "effluvia" "test" ?lookup-symbol eq? check-t
-    symbol-vocab-name "test" = check-t
+    dup symbol? assert-true
+    dup "effluvia" "test" ?lookup-symbol eq? assert-true
+    symbol-vocab-name "test" assert=
 ;
 
 create-symbol-test-1
 
 test: immediate?-test-1 ( -- )
-    \ symbol: immediate? check-t
-    \ dup immediate? check-false
-    42 immediate? check-false
-    f immediate? check-false
-    \ f immediate? check-t
+    \ symbol: immediate? assert-true
+    \ dup immediate? assert-false
+    42 immediate? assert-false
+    f immediate? assert-false
+    \ f immediate? assert-true
 ;
 
 immediate?-test-1
 
 test: parsing-test-1 ( -- )
-    V{ symbol: this-is-a-new-symbol } V{ } sequence= check-t
+    V{ symbol: this-is-a-new-symbol } V{ } sequence= assert-true
     clear
 ;
 
@@ -836,24 +823,24 @@ parsing-test-1
 
 test: parsing-test-2 ( -- )
     clear
-    %parsing-test-2 get-datastack { 42 } sequence= check-t
+    %parsing-test-2 get-datastack { 42 } sequence= assert-true
     clear
 ;
 
 parsing-test-2
 
 test: sequence=-test-1 ( -- )
-    { "this is a test" } { "this is a test" } sequence= check-t
+    { "this is a test" } { "this is a test" } sequence= assert-true
 ;
 
 sequence=-test-1
 
 test: symbol-props-test-1 ( -- )
     clear
-    "foo" \ dup symbol-prop get-datastack { f } sequence= check-t
+    "foo" \ dup symbol-prop get-datastack { f } sequence= assert-true
     clear
     "this is a test" "foo" \ dup symbol-set-prop
-    "foo" \ dup symbol-prop get-datastack { "this is a test" } sequence= check-t
+    "foo" \ dup symbol-prop get-datastack { "this is a test" } sequence= assert-true
     clear
 
     -- clean up
@@ -864,12 +851,12 @@ symbol-props-test-1
 
 test: symbol-props-gc-test-1 ( -- )
     "this is a test" "foo" \ dup symbol-set-prop
-    "foo" \ dup symbol-prop get-datastack { "this is a test" } sequence= check-t
+    "foo" \ dup symbol-prop get-datastack { "this is a test" } sequence= assert-true
     clear
 
     gc
 
-    "foo" \ dup symbol-prop get-datastack { "this is a test" } sequence= check-t
+    "foo" \ dup symbol-prop get-datastack { "this is a test" } sequence= assert-true
     clear
 
     -- clean up
@@ -879,25 +866,25 @@ test: symbol-props-gc-test-1 ( -- )
 symbol-props-gc-test-1
 
 test: times-test-1 ( -- )
-    0 10 [ 1 + ] times 10 eq? check-t
+    0 10 [ 1 + ] times 10 eq? assert-true
 ;
 
 times-test-1
 
 test: filter-test-1 ( -- )
-    V{ 1 2 3 4 } [ 3 < ] filter V{ 1 2 } sequence= check-t
-     { 1 2 3 4 } [ 3 < ] filter  { 1 2 } sequence= check-t
+    V{ 1 2 3 4 } [ 3 < ] filter V{ 1 2 } sequence= assert-true
+     { 1 2 3 4 } [ 3 < ] filter  { 1 2 } sequence= assert-true
 ;
 
 filter-test-1
 
 test: in-bounds?-test-1 ( -- )
     { 1 2 3 }
-    0 over in-bounds? check-t
-    1 over in-bounds? check-t
-    2 over in-bounds? check-t
-    3 over in-bounds? check-false
-    -1 swap in-bounds? check-false
+    0 over in-bounds? assert-true
+    1 over in-bounds? assert-true
+    2 over in-bounds? assert-true
+    3 over in-bounds? assert-false
+    -1 swap in-bounds? assert-false
 ;
 
 in-bounds?-test-1
@@ -907,8 +894,8 @@ in-bounds?-test-1
 : %bar ( -- ) %foo ;
 
 test: redefinition-test-1 ( -- )
-    %foo 42 = check-t
-    %bar 42 = check-t
+    %foo 42 assert=
+    %bar 42 assert=
 ;
 
 redefinition-test-1
@@ -917,35 +904,35 @@ redefinition-test-1
 : %foo ( -- ) 87 ;
 
 test: redefinition-test-2 ( -- )
-    %foo 87 = check-t
-    %bar 87 = check-t
+    %foo 87 assert=
+    %bar 87 assert=
 ;
 
 redefinition-test-2
 
 test: until-test-1 ( -- )
     clear
-    1 [ dup 1 = ] [ 1 + ] until get-datastack { 1 } sequence= check-t
+    1 [ dup 1 = ] [ 1 + ] until get-datastack { 1 } sequence= assert-true
     clear
-    1 [ dup 4 = ] [ 1 + ] until get-datastack { 4 } sequence= check-t
+    1 [ dup 4 = ] [ 1 + ] until get-datastack { 4 } sequence= assert-true
     clear
 ;
 
 until-test-1
 
 test: ensure-symbol-test-1 ( -- )
-    "foo" "feline" ensure-symbol dup symbol? check-t
-    dup "foo" "feline" ?lookup-symbol eq? check-t
-    "foo" "feline" ensure-symbol eq? check-t
-    "foo" "feline" ensure-symbol symbol-vocab-name "feline" = check-t
-    \ dup "dup" "feline" ensure-symbol eq? check-t
+    "foo" "feline" ensure-symbol dup symbol? assert-true
+    dup "foo" "feline" ?lookup-symbol eq? assert-true
+    "foo" "feline" ensure-symbol eq? assert-true
+    "foo" "feline" ensure-symbol symbol-vocab-name "feline" assert=
+    \ dup "dup" "feline" ensure-symbol eq? assert-true
 ;
 
 ensure-symbol-test-1
 
 test: bi-test-1 ( -- )
     clear
-    42 [ 1 + ] [ 2 + ] bi get-datastack { 43 44 } sequence= check-t
+    42 [ 1 + ] [ 2 + ] bi get-datastack { 43 44 } sequence= assert-true
     clear
 ;
 
@@ -953,9 +940,9 @@ bi-test-1
 
 test: 2bi-test-1
     clear
-    1 2 3 4 [ dup ] [ + ] 2bi get-datastack { 1 2 3 4 4 7 } sequence= check-t
+    1 2 3 4 [ dup ] [ + ] 2bi get-datastack { 1 2 3 4 4 7 } sequence= assert-true
     clear
-    1 2 3 4 [ nip ] [ + ] 2bi get-datastack { 1 2 4 7 } sequence= check-t
+    1 2 3 4 [ nip ] [ + ] 2bi get-datastack { 1 2 4 7 } sequence= assert-true
     clear
 ;
 
@@ -967,24 +954,24 @@ TUPLE: foo a b c ;
 
 test: tuple-test-1 ( -- )
     \ foo new
-    [ tuple? check-t ] keep
-    [ foo? check-t ] keep
+    [ tuple? assert-true ] keep
+    [ foo? assert-true ] keep
     \ foo require-type
-    [ tuple-size 3 = check-t ] keep
-    [ foo-a check-false ] keep
-    [ foo-b check-false ] keep
-    [ foo-c check-false ] keep
+    [ tuple-size 3 assert= ] keep
+    [ foo-a assert-false ] keep
+    [ foo-b assert-false ] keep
+    [ foo-c assert-false ] keep
     42 over foo-a!
     71 over foo-b!
     temp-string over foo-c!
-    [ foo-a 42 = check-t ] keep
-    [ foo-b 71 = check-t ] keep
-    [ foo-c temp-string = check-t ] keep
-    [ foo-c "test" = check-t ] keep
+    [ foo-a 42 assert= ] keep
+    [ foo-b 71 assert= ] keep
+    [ foo-c temp-string assert= ] keep
+    [ foo-c "test" assert= ] keep
 
     f -> temp-string
     gc
-    [ foo-c "test" = check-t ] keep
+    [ foo-c "test" assert= ] keep
 
     drop
 ;
@@ -992,30 +979,30 @@ test: tuple-test-1 ( -- )
 tuple-test-1
 
 test: vocab?-test-1 ( -- )
-    42 vocab? check-false
-    "feline" vocab? check-false
-    "feline" lookup-vocab vocab? check-t
+    42 vocab? assert-false
+    "feline" vocab? assert-false
+    "feline" lookup-vocab vocab? assert-true
 ;
 
 vocab?-test-1
 
 test: lookup-vocab-test-1 ( -- )
-    "feline" lookup-vocab vocab? check-t
-    "feline" lookup-vocab ( vocab ) lookup-vocab vocab? check-t
-    "feline" lookup-vocab ( vocab ) dup lookup-vocab eq? check-t
-    current-vocab lookup-vocab vocab? check-t
-    "not a vocab" lookup-vocab vocab? check-false
+    "feline" lookup-vocab vocab? assert-true
+    "feline" lookup-vocab ( vocab ) lookup-vocab vocab? assert-true
+    "feline" lookup-vocab ( vocab ) dup lookup-vocab eq? assert-true
+    current-vocab lookup-vocab vocab? assert-true
+    "not a vocab" lookup-vocab vocab? assert-false
 ;
 
 lookup-vocab-test-1
 
 test: unless*-test-1 ( -- )
     clear
-    f [ 42 ] unless* get-datastack { 42 } = check-t
+    f [ 42 ] unless* get-datastack { 42 } assert=
     clear
-    t [ 42 ] unless* get-datastack { t } = check-t
+    t [ 42 ] unless* get-datastack { t } assert=
     clear
-    "test" [ 42 ] unless* get-datastack { "test" } = check-t
+    "test" [ 42 ] unless* get-datastack { "test" } assert=
     clear
 ;
 
@@ -1024,7 +1011,7 @@ unless*-test-1
 global: zork
 
 test: global-test-1 ( -- )
-    42 -> zork zork 42 eq? check-t
+    42 -> zork zork 42 eq? assert-true
 ;
 
 global-test-1
@@ -1032,17 +1019,17 @@ global-test-1
 -- : global-test-2 ( -- )
 --     << last-word symbol-name >> ?nl write-string
 --     87 \ zork set-global
---     \ zork get-global 87 eq? check-t
+--     \ zork get-global 87 eq? assert-true
 
 --     [
---         "test" dup zork! zork eq? check-t
---         \ zork get-global 87 eq? check-t
+--         "test" dup zork! zork eq? assert-true
+--         \ zork get-global 87 eq? assert-true
 --         19 \ zork set-global
---         zork "test" = check-t
---         \ zork get-global 19 eq? check-t
+--         zork "test" assert=
+--         \ zork get-global 19 eq? assert-true
 --     ] with-scope
 
---     \ zork get-global 19 eq? check-t
+--     \ zork get-global 19 eq? assert-true
 -- ;
 
 -- global-test-2
@@ -1050,52 +1037,52 @@ global-test-1
 -- : global-test-3 ( -- )
 --     << last-word symbol-name >> ?nl write-string
 --     f zork!
---     zork check-false
---     [ [ 71 zork! zork ] with-scope ] [ ] recover 71 eq? check-t
---     [ [ 71 zork! "error" error ] with-scope ] [ drop zork ] recover check-false
+--     zork assert-false
+--     [ [ 71 zork! zork ] with-scope ] [ ] recover 71 eq? assert-true
+--     [ [ 71 zork! "error" error ] with-scope ] [ drop zork ] recover assert-false
 -- ;
 
 -- global-test-3
 
 test: index-test-1 ( -- )
-    3 { 1 2 3 4 } index 2 eq? check-t
-    99 { 1 2 3 4 } index check-false
-    's' "this is a test" index 3 eq? check-t
-    'a' "this is a test" index 8 eq? check-t
-    "bar" { "foo" "bar" "baz" } index 1 eq? check-t
+    3 { 1 2 3 4 } index 2 eq? assert-true
+    99 { 1 2 3 4 } index assert-false
+    's' "this is a test" index 3 eq? assert-true
+    'a' "this is a test" index 8 eq? assert-true
+    "bar" { "foo" "bar" "baz" } index 1 eq? assert-true
 ;
 
 index-test-1
 
 test: member?-test-1 ( -- )
-    17 { 1 2 3 } member? check-false
-    1  { 1 2 3 } member? check-t
-    f  { 1 2 3 } member? check-false
-    f  { 1 f 3 } member? check-t
+    17 { 1 2 3 } member? assert-false
+    1  { 1 2 3 } member? assert-true
+    f  { 1 2 3 } member? assert-false
+    f  { 1 f 3 } member? assert-true
 ;
 
 member?-test-1
 
 test: member?-test-2 ( -- )
-    "bar" { "foo" "bar" "baz" } member? check-t
-    "bag" { "foo" "bar" "baz" } member? check-false
-    4 { 1 2 3 4 } member? check-t
-    1 { 1 2 3 4 } member? check-t
-    "test" { 1 2 3 4 } member? check-false
-    0 { 1 2 3 4 } member? check-false
+    "bar" { "foo" "bar" "baz" } member? assert-true
+    "bag" { "foo" "bar" "baz" } member? assert-false
+    4 { 1 2 3 4 } member? assert-true
+    1 { 1 2 3 4 } member? assert-true
+    "test" { 1 2 3 4 } member? assert-false
+    0 { 1 2 3 4 } member? assert-false
 ;
 
 member?-test-2
 
 test: string-head-test-1 ( -- )
     "this is a test"
-    [ 4 string-head "this" = check-t ] keep
+    [ 4 string-head "this" assert= ] keep
 
     -- FIXME "" confuses the parser Aug 22 2016 12:49 PM
---     [ 0 string-head "" = check-t ] keep
+--     [ 0 string-head "" assert= ] keep
 
-    [ 0 string-head [ string? check-t ] [ length zero? check-t ] bi ] keep
-    [ 14 string-head "this is a test" = check-t ] keep
+    [ 0 string-head [ string? assert-true ] [ length zero? assert-true ] bi ] keep
+    [ 14 string-head "this is a test" assert= ] keep
     drop
 ;
 
@@ -1103,9 +1090,9 @@ string-head-test-1
 
 test: string-tail-test-1 ( -- )
     "this is a test"
-    [ 10 string-tail "test" = check-t ] keep
-    [ 14 string-tail [ string? check-t ] [ length zero? check-t ] bi ] keep
-    [ 0 string-tail "this is a test" = check-t ] keep
+    [ 10 string-tail "test" assert= ] keep
+    [ 14 string-tail [ string? assert-true ] [ length zero? assert-true ] bi ] keep
+    [ 0 string-tail "this is a test" assert= ] keep
     drop
 ;
 
@@ -1114,24 +1101,24 @@ string-tail-test-1
 constant: magenta 5
 
 test: constant-test-1 ( -- )
-    magenta 5 eq? check-t
+    magenta 5 eq? assert-true
 ;
 
 constant-test-1
 
 test: string-skip-whitespace-test-1 ( -- )
     "   this is a test   "
-    [  0 swap string-skip-whitespace  3 eq? check-t ] keep
-    [  2 swap string-skip-whitespace  3 eq? check-t ] keep
-    [  3 swap string-skip-whitespace  3 eq? check-t ] keep
-    [  6 swap string-skip-whitespace  6 eq? check-t ] keep
-    [  7 swap string-skip-whitespace  8 eq? check-t ] keep
-    [ 16 swap string-skip-whitespace 16 eq? check-t ] keep
-    [ 17 swap string-skip-whitespace  f eq? check-t ] keep
-    [ 18 swap string-skip-whitespace  f eq? check-t ] keep
-    [ 19 swap string-skip-whitespace  f eq? check-t ] keep
-    [ 20 swap string-skip-whitespace  f eq? check-t ] keep
-    [ 99 swap string-skip-whitespace  f eq? check-t ] keep
+    [  0 swap string-skip-whitespace  3 eq? assert-true ] keep
+    [  2 swap string-skip-whitespace  3 eq? assert-true ] keep
+    [  3 swap string-skip-whitespace  3 eq? assert-true ] keep
+    [  6 swap string-skip-whitespace  6 eq? assert-true ] keep
+    [  7 swap string-skip-whitespace  8 eq? assert-true ] keep
+    [ 16 swap string-skip-whitespace 16 eq? assert-true ] keep
+    [ 17 swap string-skip-whitespace  f eq? assert-true ] keep
+    [ 18 swap string-skip-whitespace  f eq? assert-true ] keep
+    [ 19 swap string-skip-whitespace  f eq? assert-true ] keep
+    [ 20 swap string-skip-whitespace  f eq? assert-true ] keep
+    [ 99 swap string-skip-whitespace  f eq? assert-true ] keep
     drop
 ;
 
@@ -1141,14 +1128,14 @@ string-skip-whitespace-test-1
 test: string-skip-whitespace-test-2 ( -- )
     "   this is
 a multiline string   "
-    [  0 swap string-skip-whitespace  3 eq? check-t ] keep
-    [  2 swap string-skip-whitespace  3 eq? check-t ] keep
-    [  3 swap string-skip-whitespace  3 eq? check-t ] keep
-    [  6 swap string-skip-whitespace  6 eq? check-t ] keep
-    [  7 swap string-skip-whitespace  8 eq? check-t ] keep
-    [ 10 swap string-skip-whitespace 11 eq? check-t ] keep
-    [ 11 swap string-skip-whitespace 11 eq? check-t ] keep
-    [ 12 swap string-skip-whitespace 13 eq? check-t ] keep
+    [  0 swap string-skip-whitespace  3 eq? assert-true ] keep
+    [  2 swap string-skip-whitespace  3 eq? assert-true ] keep
+    [  3 swap string-skip-whitespace  3 eq? assert-true ] keep
+    [  6 swap string-skip-whitespace  6 eq? assert-true ] keep
+    [  7 swap string-skip-whitespace  8 eq? assert-true ] keep
+    [ 10 swap string-skip-whitespace 11 eq? assert-true ] keep
+    [ 11 swap string-skip-whitespace 11 eq? assert-true ] keep
+    [ 12 swap string-skip-whitespace 13 eq? assert-true ] keep
     drop
 ;
 
@@ -1156,18 +1143,18 @@ string-skip-whitespace-test-2
 
 test: string-skip-to-whitespace-test-1 ( -- )
     "   this is a test   "
-    [  0 swap string-skip-to-whitespace  0 eq? check-t ] keep
-    [  2 swap string-skip-to-whitespace  2 eq? check-t ] keep
-    [  3 swap string-skip-to-whitespace  7 eq? check-t ] keep
-    [  6 swap string-skip-to-whitespace  7 eq? check-t ] keep
-    [  7 swap string-skip-to-whitespace  7 eq? check-t ] keep
-    [  8 swap string-skip-to-whitespace 10 eq? check-t ] keep
-    [ 16 swap string-skip-to-whitespace 17 eq? check-t ] keep
-    [ 17 swap string-skip-to-whitespace 17 eq? check-t ] keep
-    [ 18 swap string-skip-to-whitespace 18 eq? check-t ] keep
-    [ 19 swap string-skip-to-whitespace 19 eq? check-t ] keep
-    [ 20 swap string-skip-to-whitespace  f eq? check-t ] keep
-    [ 99 swap string-skip-to-whitespace  f eq? check-t ] keep
+    [  0 swap string-skip-to-whitespace  0 eq? assert-true ] keep
+    [  2 swap string-skip-to-whitespace  2 eq? assert-true ] keep
+    [  3 swap string-skip-to-whitespace  7 eq? assert-true ] keep
+    [  6 swap string-skip-to-whitespace  7 eq? assert-true ] keep
+    [  7 swap string-skip-to-whitespace  7 eq? assert-true ] keep
+    [  8 swap string-skip-to-whitespace 10 eq? assert-true ] keep
+    [ 16 swap string-skip-to-whitespace 17 eq? assert-true ] keep
+    [ 17 swap string-skip-to-whitespace 17 eq? assert-true ] keep
+    [ 18 swap string-skip-to-whitespace 18 eq? assert-true ] keep
+    [ 19 swap string-skip-to-whitespace 19 eq? assert-true ] keep
+    [ 20 swap string-skip-to-whitespace  f eq? assert-true ] keep
+    [ 99 swap string-skip-to-whitespace  f eq? assert-true ] keep
     drop
 ;
 
@@ -1177,43 +1164,43 @@ string-skip-to-whitespace-test-1
 test: string-skip-to-whitespace-test-2 ( -- )
     "   this is
 a multiline string   "
-    [  3 swap string-skip-to-whitespace  7 eq? check-t ] keep
-    [  7 swap string-skip-to-whitespace  7 eq? check-t ] keep
-    [  8 swap string-skip-to-whitespace 10 eq? check-t ] keep
-    [ 10 swap string-skip-to-whitespace 10 eq? check-t ] keep
-    [ 11 swap string-skip-to-whitespace 12 eq? check-t ] keep
+    [  3 swap string-skip-to-whitespace  7 eq? assert-true ] keep
+    [  7 swap string-skip-to-whitespace  7 eq? assert-true ] keep
+    [  8 swap string-skip-to-whitespace 10 eq? assert-true ] keep
+    [ 10 swap string-skip-to-whitespace 10 eq? assert-true ] keep
+    [ 11 swap string-skip-to-whitespace 12 eq? assert-true ] keep
     drop
 ;
 
 string-skip-to-whitespace-test-2
 
 test: ?-test-1 ( -- )
-    t "yes" "no" ? "yes" = check-t
-    f "yes" "no" ? "no"  = check-t
-    0 "yes" "no" ? "yes" = check-t
+    t "yes" "no" ? "yes" assert=
+    f "yes" "no" ? "no"  assert=
+    0 "yes" "no" ? "yes" assert=
 ;
 
 ?-test-1
 
 test: slice-test-1
-    2 5 { 11 12 13 14 15 16 17 17 } <slice>    { 13 14 15 } sequence= check-t
-    2 5 { 11 12 13 14 15 16 17 17 } <slice> gc { 13 14 15 } sequence= check-t
+    2 5 { 11 12 13 14 15 16 17 17 } <slice>    { 13 14 15 } sequence= assert-true
+    2 5 { 11 12 13 14 15 16 17 17 } <slice> gc { 13 14 15 } sequence= assert-true
 
-    2 5 { 11 12 13 14 15 16 17 17 } <slice> dup slice? check-t
+    2 5 { 11 12 13 14 15 16 17 17 } <slice> dup slice? assert-true
 
-    [ slice-length      3 eq? check-t ] keep
-    [ 0 swap slice-nth 13 eq? check-t ] keep
-    [ 1 swap slice-nth 14 eq? check-t ] keep
-    [ 2 swap slice-nth 15 eq? check-t ] keep
+    [ slice-length      3 eq? assert-true ] keep
+    [ 0 swap slice-nth 13 eq? assert-true ] keep
+    [ 1 swap slice-nth 14 eq? assert-true ] keep
+    [ 2 swap slice-nth 15 eq? assert-true ] keep
 
-    [ 0 swap slice-nth-unsafe 13 eq? check-t ] keep
-    [ 1 swap slice-nth-unsafe 14 eq? check-t ] keep
-    [ 2 swap slice-nth-unsafe 15 eq? check-t ] keep
+    [ 0 swap slice-nth-unsafe 13 eq? assert-true ] keep
+    [ 1 swap slice-nth-unsafe 14 eq? assert-true ] keep
+    [ 2 swap slice-nth-unsafe 15 eq? assert-true ] keep
 
-    [ length      3 eq? check-t ] keep
-    [ 0 swap nth 13 eq? check-t ] keep
-    [ 1 swap nth 14 eq? check-t ] keep
-    [ 2 swap nth 15 eq? check-t ] keep
+    [ length      3 eq? assert-true ] keep
+    [ 0 swap nth 13 eq? assert-true ] keep
+    [ 1 swap nth 14 eq? assert-true ] keep
+    [ 2 swap nth 15 eq? assert-true ] keep
 
     drop
 ;
@@ -1221,26 +1208,26 @@ test: slice-test-1
 slice-test-1
 
 test: index?-test-1
-    0 index? check-t
-    1 index? check-t
-    most-positive-fixnum index? check-t
-    -1 index? check-false
-    most-negative-fixnum index? check-false
-    "test" index? check-false
-    { } index? check-false
+    0 index? assert-true
+    1 index? assert-true
+    most-positive-fixnum index? assert-true
+    -1 index? assert-false
+    most-negative-fixnum index? assert-false
+    "test" index? assert-false
+    { } index? assert-false
 ;
 
 index?-test-1
 
 test: bounds-check?-test-1
     4 { 0 1 2 3 } [ bounds-check? ] curry each-integer
-    get-datastack { t t t t } sequence= check-t
+    get-datastack { t t t t } sequence= assert-true
     clear
 
     { 0 1 2 3 }
-    -1 over bounds-check? check-false
-    4 over bounds-check? check-false
-    42  over bounds-check? check-false
+    -1 over bounds-check? assert-false
+    4 over bounds-check? assert-false
+    42  over bounds-check? assert-false
     drop
 ;
 
@@ -1248,13 +1235,13 @@ bounds-check?-test-1
 
 test: ?nth-test-1
     4 { 0 1 2 3 } [ ?nth ] curry each-integer
-    get-datastack { 0 1 2 3 } sequence= check-t
+    get-datastack { 0 1 2 3 } sequence= assert-true
     clear
 
     { 0 1 2 3 }
-    -1 over ?nth check-false
-    4 over ?nth check-false
-    42  over ?nth check-false
+    -1 over ?nth assert-false
+    4 over ?nth assert-false
+    42  over ?nth assert-false
     drop
 ;
 
@@ -1262,124 +1249,124 @@ test: ?nth-test-1
 
 test: ?nth-test-2
     4 V{ 0 1 2 3 } [ ?nth ] curry each-integer
-    get-datastack { 0 1 2 3 } sequence= check-t
+    get-datastack { 0 1 2 3 } sequence= assert-true
     clear
 
     V{ 0 1 2 3 }
-    -1 over ?nth check-false
-    4 over ?nth check-false
-    42  over ?nth check-false
+    -1 over ?nth assert-false
+    4 over ?nth assert-false
+    42  over ?nth assert-false
     drop
 ;
 
 ?nth-test-2
 
 test: and-test-1
-    t f and check-false
-    f t and check-false
-    0 t and check-t
-    t 0 and 0 eq? check-t
+    t f and assert-false
+    f t and assert-false
+    0 t and assert-true
+    t 0 and 0 eq? assert-true
 
-    f 71 and 71 eq? check-false
-    t 71 and 71 eq? check-t
-    "test" 42 and 42 eq? check-t
+    f 71 and 71 eq? assert-false
+    t 71 and 71 eq? assert-true
+    "test" 42 and 42 eq? assert-true
 ;
 
 and-test-1
 
 test: or-test-1
-    t f or check-t
-    f t or check-t
-    0 t or 0 eq? check-t
-    t 0 or check-t
+    t f or assert-true
+    f t or assert-true
+    0 t or 0 eq? assert-true
+    t 0 or assert-true
 
-    f 71 or 71 eq? check-t
-    t 71 or check-t
-    "test" 42 or "test" = check-t
+    f 71 or 71 eq? assert-true
+    t 71 or assert-true
+    "test" 42 or "test" assert=
 ;
 
 or-test-1
 
 test: sbuf-insert-nth!-test-1
-    't' 0 "" string>sbuf sbuf-insert-nth! sbuf>string "t" string= check-t
+    't' 0 "" string>sbuf sbuf-insert-nth! sbuf>string "t" string= assert-true
 ;
 
 sbuf-insert-nth!-test-1
 
 test: sbuf-?last-test-1
-    "testing" string>sbuf sbuf-?last 'g' eq? check-t
-    16 <sbuf> sbuf-?last check-false
+    "testing" string>sbuf sbuf-?last 'g' eq? assert-true
+    16 <sbuf> sbuf-?last assert-false
 ;
 
 sbuf-?last-test-1
 
 test: sbuf-reverse!-test-1
-    "12345678"  string>sbuf sbuf-reverse!  "87654321" sequence= check-t
-    "123456789" string>sbuf sbuf-reverse! "987654321" sequence= check-t
-    "1" string>sbuf sbuf-reverse! "1" sequence= check-t
-    "" string>sbuf sbuf-reverse! "" sequence= check-t
+    "12345678"  string>sbuf sbuf-reverse!  "87654321" sequence= assert-true
+    "123456789" string>sbuf sbuf-reverse! "987654321" sequence= assert-true
+    "1" string>sbuf sbuf-reverse! "1" sequence= assert-true
+    "" string>sbuf sbuf-reverse! "" sequence= assert-true
 ;
 
 sbuf-reverse!-test-1
 
 test: string-index-from-test-1
-    't' 0 "this is a test" string-index-from zero? check-t
-    'h' 0 "this is a test" string-index-from 1 eq? check-t
-    'h' 2 "this is a test" string-index-from check-false
-    't' 1 "this is a test" string-index-from 10 eq? check-t
-    'e' 4 "this is a test" string-index-from 11 eq? check-t
-    'x' 0 "this is a test" string-index-from check-false
+    't' 0 "this is a test" string-index-from zero? assert-true
+    'h' 0 "this is a test" string-index-from 1 eq? assert-true
+    'h' 2 "this is a test" string-index-from assert-false
+    't' 1 "this is a test" string-index-from 10 eq? assert-true
+    'e' 4 "this is a test" string-index-from 11 eq? assert-true
+    'x' 0 "this is a test" string-index-from assert-false
 ;
 
 string-index-from-test-1
 
 test: fixnum>bignum-test-1
-     0 fixnum>bignum bignum>string  "0" = check-t
-     1 fixnum>bignum bignum>string  "1" = check-t
-    -1 fixnum>bignum bignum>string "-1" = check-t
-    42 fixnum>bignum bignum>string "42" = check-t
+     0 fixnum>bignum bignum>string  "0" assert=
+     1 fixnum>bignum bignum>string  "1" assert=
+    -1 fixnum>bignum bignum>string "-1" assert=
+    42 fixnum>bignum bignum>string "42" assert=
     most-positive-fixnum fixnum>bignum bignum>string
-    most-positive-fixnum fixnum>string = check-t
+    most-positive-fixnum fixnum>string assert=
 ;
 
 fixnum>bignum-test-1
 
 test: string>integer-test-1
-    most-positive-fixnum fixnum>string string>integer most-positive-fixnum = check-t
-    most-negative-fixnum fixnum>string string>integer most-negative-fixnum = check-t
+    most-positive-fixnum fixnum>string string>integer most-positive-fixnum assert=
+    most-negative-fixnum fixnum>string string>integer most-negative-fixnum assert=
 ;
 
 string>integer-test-1
 
 test: fixnum-fixnum+-test-1
-    1  2 fixnum-fixnum+  3 eq? check-t
-    1 -2 fixnum-fixnum+ -1 eq? check-t
+    1  2 fixnum-fixnum+  3 eq? assert-true
+    1 -2 fixnum-fixnum+ -1 eq? assert-true
 
-    most-positive-fixnum   0 fixnum-fixnum+ most-positive-fixnum eq? check-t
-    most-positive-fixnum   1 fixnum-fixnum+ bignum>string  "1152921504606846976" = check-t
-    most-negative-fixnum  -1 fixnum-fixnum+ bignum>string "-1152921504606846977" = check-t
-    most-positive-fixnum dup fixnum-fixnum+ bignum>string  "2305843009213693950" = check-t
-    most-negative-fixnum dup fixnum-fixnum+ bignum>string "-2305843009213693952" = check-t
+    most-positive-fixnum   0 fixnum-fixnum+ most-positive-fixnum eq? assert-true
+    most-positive-fixnum   1 fixnum-fixnum+ bignum>string  "1152921504606846976" assert=
+    most-negative-fixnum  -1 fixnum-fixnum+ bignum>string "-1152921504606846977" assert=
+    most-positive-fixnum dup fixnum-fixnum+ bignum>string  "2305843009213693950" assert=
+    most-negative-fixnum dup fixnum-fixnum+ bignum>string "-2305843009213693952" assert=
 ;
 
 fixnum-fixnum+-test-1
 
 test: negate-test-1
-    0 negate zero? check-t
-    42 negate -42 eq? check-t
-    most-positive-fixnum negate number>string "-1152921504606846975" = check-t
-    most-positive-fixnum dup fixnum-fixnum+ negate number>string  "-2305843009213693950" = check-t
-    most-negative-fixnum negate number>string "1152921504606846976" = check-t
-    most-negative-fixnum dup fixnum-fixnum+ negate number>string "2305843009213693952" = check-t
+    0 negate zero? assert-true
+    42 negate -42 eq? assert-true
+    most-positive-fixnum negate number>string "-1152921504606846975" assert=
+    most-positive-fixnum dup fixnum-fixnum+ negate number>string  "-2305843009213693950" assert=
+    most-negative-fixnum negate number>string "1152921504606846976" assert=
+    most-negative-fixnum dup fixnum-fixnum+ negate number>string "2305843009213693952" assert=
 ;
 
 negate-test-1
 
 test: expt-test-1
-    2 64 expt 18446744073709551616 = check-t
-    2 128 expt 340282366920938463463374607431768211456 = check-t
-    7 17 expt 232630513987207 = check-t
-    17 50 expt 33300140732146818380750772381422989832214186835186851059977249 = check-t
+    2 64 expt 18446744073709551616 assert=
+    2 128 expt 340282366920938463463374607431768211456 assert=
+    7 17 expt 232630513987207 assert=
+    17 50 expt 33300140732146818380750772381422989832214186835186851059977249 assert=
 ;
 
 expt-test-1
