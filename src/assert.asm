@@ -71,20 +71,6 @@ code check_assert_equal, 'check-assert='   ; x y location --
         next
 endcode
 
-; ### location
-code location, 'location'       ; -- array/f
-        _ lexer
-        _ get
-        _dup
-        _tagged_if .1
-        _ lexer_location
-        _else .1
-        _drop
-        _f
-        _then .1
-        next
-endcode
-
 ; ### accum-push
 code accum_push, 'accum-push'   ; object --
         _ accum

@@ -226,7 +226,7 @@ code lexer_set_file, 'lexer-set-file'   ; file lexer --
 endcode
 
 ; ### lexer-location
-code lexer_location, 'lexer-location'   ; lexer -- location
+code lexer_location, 'lexer-location'   ; lexer -- 3array/f
         _ check_lexer
         push    this_register
         mov     this_register, rbx
@@ -240,6 +240,20 @@ code lexer_location, 'lexer-location'   ; lexer -- location
         _tag_fixnum
         _ three_array
         pop     this_register
+        next
+endcode
+
+; ### location
+code location, 'location'       ; -- 3array/f
+        _ lexer
+        _ get
+        _dup
+        _tagged_if .1
+        _ lexer_location
+        _else .1
+        _drop
+        _f
+        _then .1
         next
 endcode
 
