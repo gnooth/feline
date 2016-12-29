@@ -119,6 +119,11 @@ help: and
     return obj2. Otherwise return f. (Bitwise and is bitand.)"
 ;
 
+help: between?
+    "( n min max -- ? )
+    Return t if n >= min and n <= max."
+;
+
 help: bi
     "( x quot1 quot2 -- )
     Apply quot1 to x, then apply quot2 to x."
