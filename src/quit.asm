@@ -225,72 +225,92 @@ endcode
 ; ### error-location
 feline_global error_location, 'error-location'
 
-; ### where
-code where, 'where'                     ; --
-        _ lexer
-        _ get
+; ### print-source-line
+code print_source_line, 'print-source-line'     ; path line-number --
+        _swap
+        _ file_lines
+        _ nth
+        _ write_string
+        next
+endcode
+
+; ### mark-error-location
+code mark_error_location, 'mark-error-location'         ; --
+        _ error_location
         _dup
         _tagged_if .1
+        _ nl
+        _ third
+        _ spaces
+        _lit '^'
+        _tag_char
+        _ write_char
+        _ nl
+        _else .1
+        _drop
+        _then .1
+        next
+endcode
+
+; ### print-error-location
+code print_error_location, 'print-error-location'       ; --
+        _ error_location
+        _dup
+        _ array_first           ; path
+        _dup
+        _tagged_if .1
+        _ write_string
+        _else .1
+        _2drop
+        _return
+        _then .1
+        _ array_second          ; line number
+        _dup
+        _tagged_if .2
+        _write " line "
+        _lit tagged_fixnum(1)
+        _ plus
+        _ decimal_dot
+        _else .2
+        _drop
+        _then .2
+        next
+endcode
+
+; ### where
+code where, 'where'             ; --
+        _ error_location
+        _tagged_if_not .1
+        _ location
+        _to_global error_location
+        _then .1
 
         _ ?nl
-
         _ white
         _ foreground
 
+        _ error_location
+        _ first
         _dup
-        _ lexer_file
-        _tagged_if .2                   ; -- lexer
-
-        ; Print source line.
-        _dup
-        _ lexer_line                    ; -- lexer string
-        _ write_string
-        _ nl                            ; -- lexer
-
-        ; Put ^ on next line after last character of offending token.
-        _dup
-        _ lexer_index
-        _over
-        _ lexer_line_start
-        _ fixnum_minus
-        _ spaces
-        _lit '^'
-        _tag_char
-        _ write_char
-        _ nl
-
-        ; Print source file and line number.
-        _dup
-        _ lexer_file
-        _ write_string
-        _write " line "
-        _ lexer_line_number
-        _lit tagged_fixnum(1)
-        _ plus
-        _ dot_object
-
-        _else .2                        ; -- lexer
-
-        ; No source file.
-
-        ; Print command line.
-        _dup
+        _tagged_if .2
+        _ error_location
+        _ second
+        _ print_source_line
+        _ mark_error_location
+        _else .2
+        _drop
+        _ lexer
+        _ get
         _ lexer_string
         _ write_string
-        _ nl
-
-        ; Put ^ on next line after last character of offending token.
-        _ lexer_index
-        _ spaces
-        _lit '^'
-        _tag_char
-        _ write_char
-
+        _ mark_error_location
         _then .2
 
-        _ nl
+        _ print_error_location
 
-        _then .1
+        _f
+        _to_global error_location
+
         next
 endcode
 
@@ -320,8 +340,6 @@ code do_error, 'do-error'               ; error --
 
         next
 endcode
-
-extern os_accept_string
 
 ; ### line-input?
 value line_input, 'line-input?', -1
