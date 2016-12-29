@@ -165,6 +165,16 @@ endcode
         _this_set_slot2
 %endmacro
 
+%macro  _this_string_substring_unsafe 0 ; from to -- substring
+; no bounds checking
+        sub     rbx, qword [rbp]        ; length (in rbx) = from - to
+        push    rbx                     ; save length
+        lea     rbx, [this_register + STRING_DATA_OFFSET]       ; raw data address in rbx
+        add     qword [rbp], rbx        ; start of substring = from + raw data address
+        pop     rbx                     ; -- c-addr u
+        _ copy_to_string
+%endmacro
+
 ; ### string-length
 code string_length, 'string-length'     ; string -- length
 ; Returns a tagged fixnum.
@@ -505,13 +515,9 @@ string_substring_unchecked:
         _ugt
         _if .2
         _error "start index > end index"
-        _then .2
-                                        ; -- start-index end-index
-        _over
-        _minus                          ; -- start-index length
-        _this_string_raw_data
-        _ underplus
-        _ copy_to_string
+        _then .2                        ; -- start-index end-index
+
+        _this_string_substring_unsafe
 
         pop     this_register
         next
@@ -789,11 +795,8 @@ code path_get_extension, 'path-get-extension' ; pathname -- extension | f
         _lit '.'
         _equal
         _if .3
-        _tag_fixnum                     ; -- from
         _this_string_length
-        _tag_fixnum                     ; -- to
-        _this
-        _ string_substring_unchecked    ; -- substring
+        _this_string_substring_unsafe
         jmp     .exit
         _then .3
         _repeat .1
