@@ -165,15 +165,14 @@ code string_to_sbuf, 'string>sbuf'      ; handle-or-string -- handle
         next
 endcode
 
-; ### sbuf>
-code sbuf_from, 'sbuf>'                 ; handle -- c-addr u
+subroutine sbuf_from    ; handle -- c-addr u
         _ check_sbuf
         _duptor
         _sbuf_data
         _rfrom
         _sbuf_length
-        next
-endcode
+        ret
+endsub
 
 ; ### sbuf>string
 code sbuf_to_string, 'sbuf>string'      ; handle -- string
