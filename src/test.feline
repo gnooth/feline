@@ -1371,6 +1371,21 @@ test: expt-test-1
 
 expt-test-1
 
+test: string-substring-test-1
+    "this is a test"
+     0  4 pick string-substring "this"  assert=
+    10 14 pick string-substring "test"  assert=
+     5 10 pick string-substring "is a " assert=
+    13 14 pick string-substring "t"     assert=
+
+    0 0 pick string-substring "" assert=
+    4 4 pick string-substring "" assert=
+
+    0 14 rot string-substring "this is a test" assert=
+;
+
+string-substring-test-1
+
 in: feline
 
 ?nl "Reached end of test.feline" write-string
