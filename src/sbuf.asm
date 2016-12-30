@@ -15,9 +15,88 @@
 
 file __FILE__
 
-; Stringbuffers
+; Mutable (and growable) strings
 
 ; 4 cells: object header, length, data address, capacity
+
+%macro _sbuf_length 0                   ; sbuf -- length
+        _slot1
+%endmacro
+
+%macro  _this_sbuf_length 0             ; -- length
+        _this_slot1
+%endmacro
+
+%macro  _sbuf_set_length 0              ; length sbuf --
+        _set_slot1
+%endmacro
+
+%macro  _this_sbuf_set_length 0         ; length --
+        _this_set_slot1
+%endmacro
+
+%macro  _sbuf_data 0                    ; sbuf -- data-address
+        _slot2
+%endmacro
+
+%macro  _this_sbuf_data 0               ; -- data-address
+        _this_slot2
+%endmacro
+
+%macro  _sbuf_set_data 0                ; data-address sbuf --
+        _set_slot2
+%endmacro
+
+%macro  _this_sbuf_set_data 0           ; data-address --
+        _this_set_slot2
+%endmacro
+
+%macro  _sbuf_raw_capacity 0            ; sbuf -- raw-capacity
+        _slot3
+%endmacro
+
+%macro  _sbuf_set_raw_capacity 0        ; raw-capacity sbuf --
+        _set_slot3
+%endmacro
+
+%macro  _this_sbuf_set_raw_capacity 0   ; raw-capacity --
+        _this_set_slot3
+%endmacro
+
+%macro  _sbuf_check_index 0              ; sbuf index -- -1|0
+        _swap
+        _sbuf_length                    ; -- index length
+        _ult                            ; -- flag
+%endmacro
+
+%macro  _this_sbuf_check_index 0        ; index -- -1|0
+        _this_sbuf_length
+        _ult
+%endmacro
+
+%macro  _sbuf_nth_unsafe 0              ; sbuf index -- untagged-char
+        _sbuf_data
+        _plus
+        _cfetch
+%endmacro
+
+%macro  _this_sbuf_nth_unsafe 0         ; index -- untagged-char
+        _this_sbuf_data
+        _plus
+        _cfetch
+%endmacro
+
+%macro  _sbuf_set_nth_unsafe 0          ; char index sbuf --
+        _sbuf_data
+        _plus
+        _cstore
+%endmacro
+
+%macro  _this_sbuf_set_nth_unsafe 0     ; char index --
+        _this_sbuf_data
+        _plus
+        _cstore
+%endmacro
 
 ; ### sbuf?
 code sbuf?, 'sbuf?'                     ; object -- t|f
