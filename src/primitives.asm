@@ -904,25 +904,6 @@ code error_not_char, 'error-not-char'   ; x --
         next
 endcode
 
-%macro _verify_char 0
-        mov     al, bl
-        and     al, TAG_MASK
-        cmp     al, CHAR_TAG
-        jne     error_not_char
-%endmacro
-
-%macro _verify_char 1
-        mov     rax, %1
-        and     al, TAG_MASK
-        cmp     al, CHAR_TAG
-        jne     error_not_char
-%endmacro
-
-%macro _check_char 0
-        _verify_char
-        _untag_char
-%endmacro
-
 ; ### char-upcase
 code char_upcase, 'char-upcase'
         _check_char

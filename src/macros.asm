@@ -169,6 +169,30 @@ MAX_LOCALS      equ     16              ; maximum number of local variables in a
         _untag_fixnum %1
 %endmacro
 
+%macro  _verify_char 0
+        mov     al, bl
+        and     al, TAG_MASK
+        cmp     al, CHAR_TAG
+        jne     error_not_char
+%endmacro
+
+%macro  _verify_char 1
+        mov     rax, %1
+        and     al, TAG_MASK
+        cmp     al, CHAR_TAG
+        jne     error_not_char
+%endmacro
+
+%macro  _check_char 0
+        _verify_char
+        _untag_char
+%endmacro
+
+%macro  _check_char 1
+        _verify_char %1
+        _untag_char %1
+%endmacro
+
 %define tagged_char(n)  ((n << TAG_BITS) + CHAR_TAG)
 
 %define DEFAULT_DATA_ALIGNMENT  8
