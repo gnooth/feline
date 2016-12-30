@@ -221,10 +221,8 @@ endcode
 
 ; ### sbuf-nth-unsafe
 code sbuf_nth_unsafe, 'sbuf-nth-unsafe' ; tagged-index handle -- tagged-char
-; No bounds check.
-        _swap
-        _untag_fixnum
-        _swap
+; no bounds check
+        _check_index qword [rbp]
         _ check_sbuf
         _sbuf_nth_unsafe
         _tag_char
@@ -232,14 +230,11 @@ code sbuf_nth_unsafe, 'sbuf-nth-unsafe' ; tagged-index handle -- tagged-char
 endcode
 
 ; ### sbuf-nth
-code sbuf_nth, 'sbuf-nth'               ; tagged-index handle -- tagged-char
+code sbuf_nth, 'sbuf-nth'               ; index sbuf -- char
 ; Return character at index.
 
-        _ check_sbuf                    ; -- tagged-index sbuf
-
-        _swap
-        _untag_fixnum
-        _swap                           ; -- index sbuf
+        _ check_sbuf
+        _check_index qword [rbp]
 
         _twodup
         _sbuf_length
