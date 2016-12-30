@@ -1386,6 +1386,21 @@ test: string-substring-test-1
 
 string-substring-test-1
 
+test: sbuf-substring-test-1
+    "this is a test" string>sbuf
+     0  4 pick sbuf-substring "this"  assert=
+    10 14 pick sbuf-substring "test"  assert=
+     5 10 pick sbuf-substring "is a " assert=
+    13 14 pick sbuf-substring "t"     assert=
+
+    0 0 pick sbuf-substring "" assert=
+    4 4 pick sbuf-substring "" assert=
+
+    0 14 rot sbuf-substring "this is a test" assert=
+;
+
+sbuf-substring-test-1
+
 in: feline
 
 ?nl "Reached end of test.feline" write-string
