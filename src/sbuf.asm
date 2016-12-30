@@ -19,6 +19,8 @@ file __FILE__
 
 ; 4 cells: object header, length, data address, capacity
 
+%define SBUF_DATA_ADDRESS_OFFSET        16
+
 %macro _sbuf_length 0                   ; sbuf -- length
         _slot1
 %endmacro
@@ -649,3 +651,38 @@ code write_sbuf, 'write-sbuf'           ; sbuf --
         call    write_chars
         next
 endcode
+
+; ### sbuf-substring
+code sbuf_substring, 'sbuf-substring'   ; from to sbuf -- substring
+
+        _ check_sbuf
+
+        push    this_register
+        popd    this_register           ; -- from to
+
+        _check_index qword [rbp]
+        _check_index
+
+        _dup
+        _this_sbuf_length
+        _ugt
+        _if .1
+        _error "end index out of range"
+        _then .1
+                                        ; -- from to
+        _twodup
+        _ugt
+        _if .2
+        _error "start index > end index"
+        _then .2                        ; -- from to
+
+        sub     rbx, qword [rbp]        ; length (in rbx) = to - from
+        mov     rax, [this_register + SBUF_DATA_ADDRESS_OFFSET]
+        add     qword [rbp], rax        ; address of start of substring
+        ; -- c-addr u
+        _ copy_to_string
+
+        pop     this_register
+        next
+endcode
+
