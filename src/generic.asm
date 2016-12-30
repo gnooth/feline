@@ -131,6 +131,9 @@ generic plus, '+'       ; x y -- z
 ; ### write
 generic generic_write, 'write'          ; string/sbuf --
 
+; ### substring
+generic substring, 'substring'          ; from to string/sbuf -- substring
+
 %macro _initialize_generic_function 1   ; generic-asm-name --
         _lit S_%1
         _ initialize_generic_function
@@ -213,6 +216,11 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _initialize_generic_function generic_write
         _add_method generic_write, OBJECT_TYPE_STRING, write_string
         _add_method generic_write, OBJECT_TYPE_SBUF, write_sbuf
+
+        ; substring
+        _initialize_generic_function substring
+        _add_method substring, OBJECT_TYPE_STRING, string_substring
+        _add_method substring, OBJECT_TYPE_SBUF, sbuf_substring
 
         next
 endcode
