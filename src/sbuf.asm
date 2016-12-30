@@ -19,6 +19,8 @@ file __FILE__
 
 ; 4 cells: object header, length, data address, capacity
 
+%define SBUF_LENGTH_OFFSET              8
+
 %define SBUF_DATA_ADDRESS_OFFSET        16
 
 %macro _sbuf_length 0                   ; sbuf -- length
@@ -492,36 +494,15 @@ code sbuf_append_string, 'sbuf-append-string' ; sbuf string -- sbuf
 endcode
 
 ; ### sbuf-insert-nth!
-code sbuf_insert_nth_destructive, 'sbuf-insert-nth!' ; tagged-char tagged-index handle -- handle
+code sbuf_insert_nth, 'sbuf-insert-nth!'        ; char index sbuf --
 
-        _duptor
-
-        ; REVIEW
-        ; Handle the special case of inserting a character at offset 0
-        ; in a 0-length string.
-        _dup
-        _ sbuf_length
-        _ zero?
-        _tagged_if .0
-        _over
-        _ zero?
-        _tagged_if .00
-        _nip
-        _ sbuf_push
-        _rfrom
-        _return
-        _then .00
-        _then .0
-
-        _ check_sbuf                    ; -- tagged-char tagged-index sbuf
+        _ check_sbuf
 
         push    this_register
-        popd    this_register           ; -- tagged-char tagged-index
+        popd    this_register           ; -- char index
 
-        _untag_fixnum
-        _swap
-        _untag_char
-        _swap                           ; -- char index
+        _check_char qword [rbp]
+        _check_index
 
         _dup
         _this_sbuf_check_index          ; -- char index -1/0
@@ -534,29 +515,24 @@ code sbuf_insert_nth_destructive, 'sbuf-insert-nth!' ; tagged-char tagged-index 
         _this
         _ sbuf_ensure_capacity          ; -- char index
 
-        ; sbuf sbuf-data index +
-        _this_sbuf_data
-        _over
-        _plus                           ; -- char index source
+        mov     rax, qword [this_register + SBUF_LENGTH_OFFSET] ; length in rax
+        sub     rax, rbx                ; subtract index to get count in rax
+
+        _this_sbuf_data                 ; -- char index data-address
+        add     rbx, qword [rbp]        ; -- char index source
         _dup
         _oneplus                        ; -- char index source dest
 
-        _this_sbuf_length
-        _lit 3
-        _forth_pick
-        _minus                          ; -- char index source dest count
+        pushrbx
+        mov     rbx, rax                ; -- char index source dest count
 
         _ cmoveup                       ; -- char index
 
-        _this_sbuf_length
-        _oneplus
-        _this_sbuf_set_length           ; -- char index
+        inc     qword [this_register + SBUF_LENGTH_OFFSET]      ; length = length + 1
 
         _this_sbuf_set_nth_unsafe       ; --
 
         pop     this_register
-
-        _rfrom                          ; -- handle
 
         next
 endcode

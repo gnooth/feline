@@ -1288,7 +1288,11 @@ test: or-test-1
 or-test-1
 
 test: sbuf-insert-nth!-test-1
-    't' 0 "" string>sbuf sbuf-insert-nth! sbuf>string "t" string= assert-true
+    "oat" string>sbuf >local: sb
+    'b' 0 sb sbuf-insert-nth!
+    sb "boat" sequence= assert-true
+    's' 3 sb sbuf-insert-nth!
+    sb "boast" sequence= assert-true
 ;
 
 sbuf-insert-nth!-test-1

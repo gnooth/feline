@@ -91,7 +91,7 @@ global: pattern
 
 : do-normal-char ( c -- )
     dot buffer length < [
-        dot buffer sbuf-insert-nth! drop dot 1 + -> dot redisplay
+        dot buffer sbuf-insert-nth! dot 1 + -> dot redisplay
     ] [
         dup write-char dot 1 + -> dot buffer push
     ] if
