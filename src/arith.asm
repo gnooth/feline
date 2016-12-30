@@ -15,13 +15,6 @@
 
 file __FILE__
 
-; ### under+
-code underplus, 'under+'                ; n1 n2 n3 -- n1+n3 n2
-        add     [rbp + BYTES_PER_CELL], rbx
-        poprbx
-        next
-endcode
-
 ; ### >
 inline gt, '>'                          ; n1 n2 -- flag
         cmp     [rbp], rbx
