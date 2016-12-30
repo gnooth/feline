@@ -1,17 +1,17 @@
-// Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
 
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
 in: accept
@@ -25,12 +25,12 @@ global: history-index
 global: pattern
 
 : reset-history ( -- )
-    f -> history-index f -> pattern ;
+    f !> history-index f !> pattern ;
 
 : prompt ( -- )
     "in: " current-vocab vocab-name concat
     "> " concat
-    dup -> prompt-string
+    dup !> prompt-string
     green foreground write-string ;
 
 : redisplay ( -- )
@@ -43,7 +43,7 @@ global: pattern
 
 : do-escape ( -- )
     0 buffer sbuf-shorten
-    0 -> dot
+    0 !> dot
     reset-history
     redisplay ;
 
@@ -63,7 +63,7 @@ global: pattern
 
 : do-bs ( -- )
     dot 0 > [
-        dot 1 - -> dot
+        dot 1 - !> dot
         dot buffer sbuf-remove-nth! drop
         reset-history
         redisplay
@@ -71,49 +71,49 @@ global: pattern
 
 : do-home ( -- )
     prompt-string length at-x
-    0 -> dot
+    0 !> dot
     reset-history ;
 
 : do-end ( -- )
-    buffer length -> dot
+    buffer length !> dot
     prompt-string length dot + at-x
     reset-history ;
 
 : do-right ( -- )
     dot buffer length <
-    [ dot 1 + -> dot dot prompt-string length + at-x ]
+    [ dot 1 + !> dot dot prompt-string length + at-x ]
     when
     reset-history ;
 
 : do-left ( -- )
-    dot 0 > [ dot 1 - -> dot dot prompt-string length + at-x ] when
+    dot 0 > [ dot 1 - !> dot dot prompt-string length + at-x ] when
     reset-history ;
 
 : do-normal-char ( c -- )
     dot buffer length < [
-        dot buffer sbuf-insert-nth! dot 1 + -> dot redisplay
+        dot buffer sbuf-insert-nth! dot 1 + !> dot redisplay
     ] [
-        dup write-char dot 1 + -> dot buffer push
+        dup write-char dot 1 + !> dot buffer push
     ] if
     reset-history ;
 
 : do-previous ( -- )
-    history-index [ history length -> history-index ] unless
+    history-index [ history length !> history-index ] unless
     history-index zero? [
-        history-index 1 - -> history-index
+        history-index 1 - !> history-index
         0 buffer sbuf-shorten
         buffer history-index history nth sbuf-append-string ( -- buffer )
-        length -> dot
+        length !> dot
         redisplay
     ] unless ;
 
 : do-next ( -- )
     history-index [
         history length 1 - < [
-            history-index 1 + -> history-index
+            history-index 1 + !> history-index
             0 buffer sbuf-shorten
             buffer history-index history nth sbuf-append-string ( -- buffer )
-            length -> dot
+            length !> dot
             redisplay
         ] when
     ] when*
@@ -124,18 +124,18 @@ global: pattern
 
 : do-previous-matching-input ( -- )
     pattern [
-        buffer sbuf>string -> pattern
-        history length -> history-index
+        buffer sbuf>string !> pattern
+        history length !> history-index
     ] unless
     history-index 1 -
     history
     [ match? ]
     find-last-from ( -- index/f elt/f )
     [
-        swap -> history-index
+        swap !> history-index
         0 buffer sbuf-shorten
         buffer swap sbuf-append-string ( -- buffer )
-        length -> dot
+        length !> dot
         redisplay
     ] [ drop ] if* ;
 
@@ -146,10 +146,10 @@ global: pattern
         [ match? ]
         find-from ( -- index/f elt/f )
         [
-            swap -> history-index
+            swap !> history-index
             0 buffer sbuf-shorten
             buffer swap sbuf-append-string ( -- buffer )
-            length -> dot
+            length !> dot
             redisplay
         ] [ drop ] if*
     ] [ do-next ] if ;
@@ -159,7 +159,7 @@ global: pattern
 
 : initialize-history ( -- )
     history-file-pathname dup regular-file?
-    [ file-lines ] [ drop 100 <vector> ] if -> history ;
+    [ file-lines ] [ drop 100 <vector> ] if !> history ;
 
 : save-history ( -- )
     history
@@ -175,7 +175,7 @@ global: pattern
     nip dup [ bindings nth array-second ] [ drop f ] if ;
 
 : initialize-bindings ( -- )
-    10 <vector> -> bindings
+    10 <vector> !> bindings
     3                   \ bye                        bind-key
     $1b                 \ do-escape                  bind-key
     127                 \ do-bs                      bind-key        // Linux
@@ -203,11 +203,11 @@ global: pattern
     { 10 13 } member? ;
 
 : accept-string ( -- string )
-    256 <sbuf> -> buffer
+    256 <sbuf> !> buffer
     bindings [ initialize-bindings ] unless
     history [ initialize-history ] unless
     prompt
-    0 -> dot
+    0 !> dot
     yellow foreground
     [ accept-key dup terminator? ] [ process-key ] until
     drop
@@ -223,6 +223,6 @@ global: pattern
         } cond
     ] keep
 
-    f -> buffer
+    f !> buffer
     reset-history
     nl ;
