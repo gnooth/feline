@@ -167,11 +167,9 @@ endcode
 
 %macro  _this_string_substring_unsafe 0 ; from to -- substring
 ; no bounds checking
-        sub     rbx, qword [rbp]        ; length (in rbx) = from - to
-        push    rbx                     ; save length
-        lea     rbx, [this_register + STRING_DATA_OFFSET]       ; raw data address in rbx
-        add     qword [rbp], rbx        ; start of substring = from + raw data address
-        pop     rbx                     ; -- c-addr u
+        sub     rbx, qword [rbp]        ; length (in rbx) = to - from
+        lea     rax, [this_register + STRING_DATA_OFFSET]       ; raw data address in rax
+        add     qword [rbp], rax        ; start of substring = from + raw data address
         _ copy_to_string
 %endmacro
 
@@ -494,7 +492,7 @@ code string_find_char, 'string-find-char' ; tagged-char string -- tagged-index |
 endcode
 
 ; ### string-substring
-code string_substring, 'string-substring' ; from to string -- substring
+code string_substring, 'string-substring'       ; from to string -- substring
 
         _ check_string
 
@@ -502,7 +500,8 @@ string_substring_unchecked:
         push    this_register
         popd    this_register           ; -- start-index end-index
 
-        _untag_2_fixnums
+        _check_index qword [rbp]
+        _check_index
 
         _dup
         _this_string_length
