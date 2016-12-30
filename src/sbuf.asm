@@ -183,7 +183,7 @@ endcode
 
 ; ### ~sbuf
 code destroy_sbuf, '~sbuf'              ; handle --
-        _ check_sbuf                    ; -- sbuf|0
+        _ check_sbuf
         _ destroy_sbuf_unchecked
         next
 endcode
@@ -280,27 +280,6 @@ code sbuf_check_index, 'sbuf-check-index' ; handle index -- flag
         _ check_sbuf                    ; -- index sbuf
         _swap
         _sbuf_check_index
-        next
-endcode
-
-; ### sbuf-char
-code sbuf_char, 'sbuf-char'             ; handle index -- char
-; REVIEW Return character at index, or 0 if index is out of range.
-
-        _untag_fixnum
-
-        _twodup
-        _ sbuf_check_index
-        _if .2
-        _swap                           ; -- index sbuf
-        _ sbuf_data                     ; -- index data-address
-        _plus
-        _cfetch
-        _else .2
-        _2drop
-        _zero
-        _then .2
-        _tag_char
         next
 endcode
 
