@@ -790,7 +790,7 @@ endcode
 
 ; ### local@
 code local_fetch, 'local@'              ; index -- value
-        _untag_fixnum
+        _check_index
         _cells
         add     rbx, r14
         mov     rbx, [rbx]
@@ -799,12 +799,42 @@ endcode
 
 ; ### local!
 code local_store, 'local!'              ; value index --
-        _untag_fixnum
+        _check_index
         _cells
         add     rbx, r14
         mov     rax, [rbp]
         mov     [rbx], rax
         _2drop
+        next
+endcode
+
+; ### local-inc
+code local_inc, 'local-inc'     ; index --
+        _check_index
+        _cells
+        add     rbx, r14
+        mov     rdx, rbx        ; address
+        mov     rbx, [rbx]
+        _check_fixnum
+        add     rbx, 1
+        _tag_fixnum
+        mov     [rdx], rbx
+        _drop
+        next
+endcode
+
+; ### local-dec
+code local_dec, 'local-dec'     ; index --
+        _check_index
+        _cells
+        add     rbx, r14
+        mov     rdx, rbx        ; address
+        mov     rbx, [rbx]
+        _check_fixnum
+        sub     rbx, 1
+        _tag_fixnum
+        mov     [rdx], rbx
+        _drop
         next
 endcode
 
