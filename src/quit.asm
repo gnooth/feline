@@ -124,6 +124,15 @@ code undefined, 'undefined'             ; string/symbol --
         next
 endcode
 
+; ### must-find-name
+code must_find_name, 'must-find-name'   ; string -- symbol
+        _ find_name
+        _tagged_if_not .1
+        _ undefined
+        _then .1
+        next
+endcode
+
 ; ### literal?
 code literal?, 'literal?'               ; string -- literal/string ?
         _ token_character_literal?
