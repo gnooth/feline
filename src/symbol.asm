@@ -515,6 +515,17 @@ code error_not_global, 'error-not-global'       ; x --
         next
 endcode
 
+; ### verify-global
+code verify_global, 'verify-global'     ; global -- global
+        _dup
+        _ check_symbol
+        _symbol_flags
+        and     rbx, SYMBOL_GLOBAL
+        poprbx
+        jz      error_not_global
+        next
+endcode
+
 ; ### check_global
 subroutine check_global         ; x -- unboxed-symbol
         _ check_symbol
