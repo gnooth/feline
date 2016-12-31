@@ -110,6 +110,10 @@ file __FILE__
         _slot 7
 %endmacro
 
+%macro  _symbol_set_value 0             ; value symbol --
+        _set_slot 7
+%endmacro
+
 %macro  _this_symbol_set_value 0        ; value --
         _this_set_slot 7
 %endmacro
@@ -212,7 +216,7 @@ subroutine verify_unboxed_symbol        ; symbol -- symbol
 endsub
 
 ; ### check_symbol
-subroutine check_symbol                 ; handle-or-symbol -- unboxed-symbol
+subroutine check_symbol         ; x -- unboxed-symbol
         _dup
         _ handle?
         _tagged_if .1
@@ -494,14 +498,57 @@ endcode
 ; ### symbol-value
 code symbol_value, 'symbol-value'       ; symbol -- value
         _ check_symbol
-        _slot 7
+        _symbol_value
         next
 endcode
 
 ; ### symbol-set-value
 code symbol_set_value, 'symbol-set-value'       ; value symbol --
         _ check_symbol
-        _set_slot 7
+        _symbol_set_value
+        next
+endcode
+
+; ### error-not-global
+code error_not_global, 'error-not-global'       ; x --
+        _error "not a symbol"
+        next
+endcode
+
+; ### check_global
+subroutine check_global         ; x -- unboxed-symbol
+        _ check_symbol
+        _dup
+        _symbol_flags
+        and     rbx, SYMBOL_GLOBAL
+        poprbx
+        jz      error_not_global
+        ret
+endsub
+
+; ### global-inc
+code global_inc, 'global-inc'   ; symbol --
+        _ check_global
+        _dup
+        _symbol_value
+        _check_fixnum
+        _oneplus
+        _tag_fixnum
+        _swap
+        _symbol_set_value
+        next
+endcode
+
+; ### global-dec
+code global_dec, 'global-dec'   ; symbol --
+        _ check_global
+        _dup
+        _symbol_value
+        _check_fixnum
+        _oneminus
+        _tag_fixnum
+        _swap
+        _symbol_set_value
         next
 endcode
 
