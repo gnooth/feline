@@ -511,7 +511,7 @@ endcode
 
 ; ### error-not-global
 code error_not_global, 'error-not-global'       ; x --
-        _error "not a symbol"
+        _error "not a global"
         next
 endcode
 
