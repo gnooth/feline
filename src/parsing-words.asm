@@ -588,17 +588,9 @@ code storeto, '->', SYMBOL_IMMEDIATE    ; --
         _then .1
 
         ; not a local
-        _ find_name
+        _ must_find_name
 
-        _tagged_if_not .3
-        _error "undefined symbol"
-        _then .3
-
-        _dup
-        _ symbol_global?
-        _tagged_if_not .4
-        _error "not a global"
-        _then .4
+        _ verify_global
 
         _get_accum
         _tagged_if .5
