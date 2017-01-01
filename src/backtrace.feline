@@ -17,8 +17,7 @@ using: feline ;
 in: feline
 
 : find-word-from-code-address ( tagged-code-address -- word )
-    local: x
-    -> x
+    >local: x
     all-words
     [
         dup symbol-code-address swap symbol-code-size
