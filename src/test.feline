@@ -469,7 +469,7 @@ test: vector-test-2 ( -- )
     clear
 
     local: v
-    1 <vector> -> v
+    1 <vector> !> v
     42 9 v set-nth
     87 v push
     v V{ f f f f f f f f f 42 87 } sequence= assert-true
@@ -525,7 +525,7 @@ vector>array-test-1
 
 : %local-test-1 ( -- 42 )
     local: foo
-    42 -> foo
+    42 !> foo
     foo
 ;
 
@@ -621,7 +621,7 @@ hashcode-test-2
 
 test: hashtable-test-1 ( -- )
     local: ht
-    16 <hashtable> -> ht
+    16 <hashtable> !> ht
     42 "parker" ht set-at
     ht hashtable-count 1 assert=
     87 "penelope" ht set-at
@@ -644,7 +644,7 @@ hashtable-test-2
 
 test: hashtable-test-3 ( -- )
     local: ht
-    16 <hashtable> -> ht
+    16 <hashtable> !> ht
     1000 [ dup number>string ht set-at ] each-integer
     1000 [ dup number>string ht at assert= ] each-integer
     "charlie" ht at* assert-false assert-false
@@ -658,7 +658,7 @@ constant: n1    100     -- total number of entries
 constant: n2     40     -- number of entries to delete
 
 test: hashtable-test-4 ( -- )
-    1 <hashtable> -> ht
+    1 <hashtable> !> ht
     n1 [ dup number>string ht set-at ] each-integer
     n1 [ dup number>string ht at assert= ] each-integer
 
@@ -685,7 +685,7 @@ test: hashtable-test-4 ( -- )
     ht hashtable-values length n1 eq? assert-true
     ht hashtable-values [ fixnum? assert-true ] each
 
-    f -> ht
+    f !> ht
 ;
 
 hashtable-test-4
@@ -948,7 +948,7 @@ test: 2bi-test-1
 
 2bi-test-1
 
-global: temp-string "test" -> temp-string
+global: temp-string "test" !> temp-string
 
 TUPLE: foo a b c ;
 
@@ -969,7 +969,7 @@ test: tuple-test-1 ( -- )
     [ foo-c temp-string assert= ] keep
     [ foo-c "test" assert= ] keep
 
-    f -> temp-string
+    f !> temp-string
     gc
     [ foo-c "test" assert= ] keep
 
@@ -1011,7 +1011,7 @@ unless*-test-1
 global: zork
 
 test: global-test-1 ( -- )
-    42 -> zork zork 42 eq? assert-true
+    42 !> zork zork 42 eq? assert-true
 ;
 
 global-test-1
