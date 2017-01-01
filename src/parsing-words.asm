@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -52,6 +52,17 @@ code parse_token, 'parse-token'         ; -- string/f
         _drop
         _error "no lexer"
         _then .2
+        next
+endcode
+
+; ### must-parse-token
+code must_parse_token, 'must-parse-token'       ; -- string
+        _ parse_token
+        _dup
+        _tagged_if_not .1
+        _drop
+        _error "unexpected end of input"
+        _then .1
         next
 endcode
 
@@ -623,23 +634,12 @@ endcode
 
 ; ### help:
 code parse_help, 'help:', SYMBOL_IMMEDIATE
-        _ parse_token                   ; -- string/f
-        _dup
-        _tagged_if_not .1
-        _drop
-        _error "unexpected end of input"
-        _return
-        _then .1                        ; -- string
-
-        _ find_name
-        _tagged_if_not .2
-        _ undefined
-        _return
-        _then .2                        ; -- symbol
+        _ must_parse_token      ; -- string
+        _ must_find_name        ; -- symbol
 
         _quote ";"
         _ parse_until
-        _ vector_to_array               ; -- symbol array
+        _ vector_to_array       ; -- symbol array
 
         _swap
         _ symbol_set_help
