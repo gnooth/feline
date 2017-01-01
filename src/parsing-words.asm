@@ -558,8 +558,8 @@ code assign_local, '>local:', SYMBOL_IMMEDIATE  ; x --
         next
 endcode
 
-; ### ->
-code storeto, '->', SYMBOL_IMMEDIATE    ; --
+; ### !>
+code storeto, '!>', SYMBOL_IMMEDIATE    ; --
 
         _ parse_token                   ; -- string
 
@@ -604,12 +604,6 @@ code storeto, '->', SYMBOL_IMMEDIATE    ; --
         _ symbol_set_value
         _then .5
 
-        next
-endcode
-
-; ### !>
-code storeto2, '!>', SYMBOL_IMMEDIATE
-        _ storeto
         next
 endcode
 
