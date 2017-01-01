@@ -97,35 +97,6 @@ code locals_defined, 'locals-defined'   ; -- n
         next
 endcode
 
-; ### find-local
-code find_local, 'find-local'           ; found:        $addr -- index true
-                                        ; not found:    $addr -- $addr false
-        _ using_locals?
-        _zeq_if .1
-        _false
-        _return
-        _then .1
-
-        _duptor                         ; -- $addr              r: -- $addr
-        _count                          ; -- c-addr u
-        _ copy_to_string                ; -- string
-        _ local_names                   ; -- string vector
-        _ vector_find_string            ; -- index t|f
-        _tagged_if .2
-        _untag_fixnum                   ; -- index
-        _true                           ; -- index true
-        _tag_fixnum
-        _rdrop
-        _else .2
-        ; not found
-        _drop                           ; --                    r: -- $addr
-        _rfrom                          ; -- $addr              r: --
-        _false                          ; -- $addr false
-        _then .2
-
-        next
-endcode
-
 ; ### initialize-local-names
 code initialize_local_names, 'initialize-local-names'
         ; allow for maximum number of locals

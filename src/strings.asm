@@ -86,9 +86,3 @@ code strequal, 'str='                   ; addr1 len1 addr2 len2 -- flag
         _ memequal
         next
 endcode
-
-; ### count
-inline count, 'count'                   ; c-addr -- c-addr+1 u
-; CORE 6.1.0980
-        _count
-endinline

@@ -300,13 +300,6 @@
         _zlt
 %endmacro
 
-%macro  _count 0                        ; count
-        mov     al, [rbx]
-        inc     rbx
-        pushrbx
-        movzx   rbx, al
-%endmacro
-
 %macro  _slashstring 0                  ; /string
         sub     [rbp], rbx
         add     [rbp + BYTES_PER_CELL], rbx
