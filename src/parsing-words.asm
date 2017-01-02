@@ -27,6 +27,13 @@ special accum, 'accum'
         _ set
 %endmacro
 
+; ### add-to-definition
+code add_to_definition, 'add-to-definition'     ; x --
+        _get_accum
+        _ vector_push
+        next
+endcode
+
 ; ### maybe-add
 code maybe_add, 'maybe-add'             ; x -- ???
         _get_accum
@@ -590,34 +597,36 @@ code storeto, '!>', SYMBOL_IMMEDIATE    ; --
 
         _ must_parse_token              ; -- string
 
+        _ in_definition?
+        _tagged_if .1
+
         _ find_local_name       ; -- index/string ?
-        _tagged_if .1           ; -- index
-        ; add index to quotation
-        _get_accum
-        _ vector_push
-        ; add local-store to quotation as a symbol
+        _tagged_if .2           ; -- index
+
+        _ add_to_definition
+
         _lit S_local_store
-        _get_accum
-        _ vector_push
-        _return
-        _then .1
+        _ add_to_definition
+
+        _else .2
 
         ; not a local
-        _ must_find_name
-
-        _ verify_global
-
-        _get_accum
-        _tagged_if .2
+        _ must_find_global
         _ new_wrapper
-        _get_accum
-        _ vector_push
+        _ add_to_definition
+
         _lit S_symbol_set_value
-        _get_accum
-        _ vector_push
-        _else .2
-        _ symbol_set_value
+        _ add_to_definition
+
         _then .2
+
+        _else .1
+
+        ; not in a definition
+        _ must_find_global
+        _ symbol_set_value
+
+        _then .1
 
         next
 endcode
