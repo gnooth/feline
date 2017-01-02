@@ -323,6 +323,13 @@ help: string-skip-whitespace
     is found."
 ;
 
+help: substring
+    "( start-index end-index string/sbuf -- substring )
+    Return a new string consisting of the characters of the given
+    string or sbuf starting at start-index up to but not including
+    end-index."
+;
+
 help: swap
     "( x y -- y x )
     Exchange the top two stack items."
