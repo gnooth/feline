@@ -133,6 +133,17 @@ code must_find_name, 'must-find-name'   ; string -- symbol
         next
 endcode
 
+; ### must-find-global
+code must_find_global, 'must-find-global'       ; string -- global
+        _ find_name
+        _tagged_if .1
+        _ verify_global
+        _else .1
+        _ undefined
+        _then .1
+        next
+endcode
+
 ; ### literal?
 code literal?, 'literal?'               ; string -- literal/string ?
         _ token_character_literal?
