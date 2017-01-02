@@ -351,6 +351,7 @@ code parse_definition_name, 'parse-definition-name'     ; -- symbol
         next
 endcode
 
+; ### in-definition?
 feline_global in_definition?, 'in-definition?'
 
 ; ### parse-definition
@@ -569,33 +570,36 @@ code assign_local, '>local:', SYMBOL_IMMEDIATE  ; x --
         next
 endcode
 
+; ### find-local-name
+code find_local_name, 'find-local-name'         ; string -- index/string ?
+
+        _ local_names
+        _zeq_if .1
+        _f                      ; -- string f
+        _return
+        _then .1                ; -- string
+
+        _ local_names           ; -- string string vector
+        _ vector_find_string    ; -- string index/string ?
+
+        next
+endcode
+
 ; ### !>
 code storeto, '!>', SYMBOL_IMMEDIATE    ; --
 
-        _ parse_token                   ; -- string
+        _ must_parse_token              ; -- string
 
-        _ local_names
-        _if .1
-        _dup
-        _ local_names                   ; -- string string vector
-        _ vector_find_string            ; -- string index/f ?
-        _tagged_if .2                   ; -- string index
-        _nip
-
+        _ find_local_name       ; -- index/string ?
+        _tagged_if .1           ; -- index
         ; add index to quotation
         _get_accum
         _ vector_push
-
-        ; add local! to quotation as a symbol
+        ; add local-store to quotation as a symbol
         _lit S_local_store
         _get_accum
         _ vector_push
-
         _return
-        _else .2
-        _drop
-        _then .2
-
         _then .1
 
         ; not a local
@@ -604,16 +608,53 @@ code storeto, '!>', SYMBOL_IMMEDIATE    ; --
         _ verify_global
 
         _get_accum
-        _tagged_if .5
+        _tagged_if .2
         _ new_wrapper
         _get_accum
         _ vector_push
         _lit S_symbol_set_value
         _get_accum
         _ vector_push
-        _else .5
+        _else .2
         _ symbol_set_value
-        _then .5
+        _then .2
+
+        next
+endcode
+
+; ### 1+!>
+code oneplusstoreto, '1+!>', SYMBOL_IMMEDIATE   ; --
+
+        _ must_parse_token              ; -- string
+
+        _ find_local_name       ; -- index/string ?
+        _tagged_if .1           ; -- index
+        ; add index to quotation
+        _get_accum
+        _ vector_push
+        ; add local-inc to quotation as a symbol
+        _lit S_local_inc
+        _get_accum
+        _ vector_push
+        _return
+        _then .1
+
+        ; not a local
+        _ must_find_name
+
+        _ verify_global
+
+        _get_accum
+        _tagged_if .2
+        _ new_wrapper
+        _get_accum
+        _ vector_push
+        _lit S_global_inc
+        _get_accum
+        _ vector_push
+        _else .2
+        _ global_inc
+        _then .2
 
         next
 endcode
