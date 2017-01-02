@@ -1432,6 +1432,18 @@ test: substring-test-1
 
 substring-test-1
 
+test: vector-find-string-test-1 ( -- )
+    V{ "foo" "bar" "baz" "zork" } >local: v
+    "foo"  v vector-find-string assert-true 0 assert=
+    "zork" v vector-find-string assert-true 3 assert=
+    "baz"  v vector-find-string assert-true 2 assert=
+    "bar"  v vector-find-string assert-true 1 assert=
+
+    "cat"  v vector-find-string assert-false "cat" assert=
+;
+
+vector-find-string-test-1
+
 in: feline
 
 ?nl "Reached end of test.feline" write-string

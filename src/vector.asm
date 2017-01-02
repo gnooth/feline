@@ -650,7 +650,7 @@ code vector_each_index, 'vector-each-index' ; vector quotation-or-xt --
 endcode
 
 ; ### vector-find-string
-code vector_find_string, 'vector-find-string' ; string vector -- index ?
+code vector_find_string, 'vector-find-string' ; string vector -- index/string ?
         _ check_vector
 
         push    this_register
@@ -665,19 +665,17 @@ code vector_find_string, 'vector-find-string' ; string vector -- index ?
         _ string_equal?                 ; -- string ?
         _tagged_if .2
         ; found it!
-        _drop
+        _drop                           ; --
         _i
         _tag_fixnum
-        _t
+        _t                              ; -- index t
         _unloop
         jmp     .exit
         _then .2
-        _loop .1
+        _loop .1                        ; -- string
 
         ; not found
-        _drop
-        _f
-        _f
+        _f                              ; -- string f
 
 .exit:
         pop     this_register
