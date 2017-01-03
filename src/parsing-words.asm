@@ -592,10 +592,8 @@ code find_local_name, 'find-local-name'         ; string -- index/string ?
         next
 endcode
 
-; ### !>
-code storeto, '!>', SYMBOL_IMMEDIATE    ; --
-
-        _ must_parse_token              ; -- string
+%macro define_prefix_operator 2         ; local global
+        _ must_parse_token      ; -- string
 
         _ in_definition?
         _tagged_if .1
@@ -605,7 +603,7 @@ code storeto, '!>', SYMBOL_IMMEDIATE    ; --
 
         _ add_to_definition
 
-        _lit S_local_store
+        _lit S_%1
         _ add_to_definition
 
         _else .2
@@ -615,7 +613,7 @@ code storeto, '!>', SYMBOL_IMMEDIATE    ; --
         _ new_wrapper
         _ add_to_definition
 
-        _lit S_symbol_set_value
+        _lit S_%2
         _ add_to_definition
 
         _then .2
@@ -624,47 +622,20 @@ code storeto, '!>', SYMBOL_IMMEDIATE    ; --
 
         ; not in a definition
         _ must_find_global
-        _ symbol_set_value
+        _ %2
 
         _then .1
+%endmacro
 
+; ### !>
+code storeto, '!>', SYMBOL_IMMEDIATE    ; --
+        define_prefix_operator local_store, symbol_set_value
         next
 endcode
 
 ; ### 1+!>
 code oneplusstoreto, '1+!>', SYMBOL_IMMEDIATE   ; --
-
-        _ must_parse_token              ; -- string
-
-        _ find_local_name       ; -- index/string ?
-        _tagged_if .1           ; -- index
-        ; add index to quotation
-        _get_accum
-        _ vector_push
-        ; add local-inc to quotation as a symbol
-        _lit S_local_inc
-        _get_accum
-        _ vector_push
-        _return
-        _then .1
-
-        ; not a local
-        _ must_find_name
-
-        _ verify_global
-
-        _get_accum
-        _tagged_if .2
-        _ new_wrapper
-        _get_accum
-        _ vector_push
-        _lit S_global_inc
-        _get_accum
-        _ vector_push
-        _else .2
-        _ global_inc
-        _then .2
-
+        define_prefix_operator local_inc, global_inc
         next
 endcode
 
