@@ -639,6 +639,12 @@ code oneplusstoreto, '1+!>', SYMBOL_IMMEDIATE   ; --
         next
 endcode
 
+; ### 1-!>
+code oneminusstoreto, '1-!>', SYMBOL_IMMEDIATE  ; --
+        define_prefix_operator local_dec, global_dec
+        next
+endcode
+
 ; ### <<
 code parse_immediate, '<<', SYMBOL_IMMEDIATE
         _quote ">>"
