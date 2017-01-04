@@ -33,6 +33,8 @@ variable cold_rbp, 'cold-rbp', 0
 asm_global main_argc ; untagged
 asm_global main_argv ; untagged
 
+feline_global args, 'args'
+
 ; ### process-command-line
 code process_command_line, 'process-command-line'
 
@@ -59,6 +61,9 @@ code process_command_line, 'process-command-line'
         _over
         _ vector_push
         _loop .1
+
+        _dup
+        _to_global args
 
         _dup
         _ vector_length
