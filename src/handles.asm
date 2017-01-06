@@ -94,9 +94,9 @@ code maybe_gc, 'maybe-gc'       ; --
         _vector_length
         _lit 10
         _ult
-        _if .7
+        _if .1
         _ gc
-        _then .7
+        _then .1
         next
 endcode
 
