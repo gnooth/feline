@@ -103,7 +103,7 @@ endcode
 ; ### process-token
 code process_token, 'process-token'     ; string -- ???
         _ local_names
-        _if .1
+        _tagged_if .1
         _dup
         _ local_names                   ; -- string string vector
         _ vector_find_string            ; -- string index/f ?
@@ -405,7 +405,9 @@ code parse_definition, 'parse-definition' ; -- vector
         _ end_scope
 
         _zeroto using_locals?
-        _zeroto local_names
+
+        _f
+        _to_global local_names
 
         _f
         _to_global in_definition?
@@ -578,16 +580,16 @@ code assign_local, '>local:', SYMBOL_IMMEDIATE  ; x --
 endcode
 
 ; ### find-local-name
-code find_local_name, 'find-local-name'         ; string -- index/string ?
+code find_local_name, 'find-local-name' ; string -- index/string ?
 
         _ local_names
-        _zeq_if .1
+        _tagged_if_not .1
         _f                      ; -- string f
         _return
         _then .1                ; -- string
 
-        _ local_names           ; -- string string vector
-        _ vector_find_string    ; -- string index/string ?
+        _ local_names           ; -- string vector
+        _ vector_find_string    ; -- index/string ?
 
         next
 endcode

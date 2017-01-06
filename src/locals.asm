@@ -82,13 +82,14 @@ inline locals_leave, 'locals-leave'
 endinline
 
 ; ### local-names
-value local_names, 'local-names', 0
+feline_global local_names, 'local-names'
 
 ; ### locals-defined
 code locals_defined, 'locals-defined'   ; -- n
-; Returned value is untagged.
+; return value is untagged
         _ local_names
-        _?dup_if .1
+        _tagged_if .1
+        _ local_names
         _ vector_length
         _untag_fixnum
         _else .1
@@ -102,7 +103,7 @@ code initialize_local_names, 'initialize-local-names'
         ; allow for maximum number of locals
         _ nlocals
         _ new_vector_untagged
-        _to local_names
+        _to_global local_names
 
         _true
         _to using_locals?
@@ -111,6 +112,7 @@ endcode
 
 ; ### delete-local-names
 code delete_local_names, 'delete-local-names'
-        _zeroto local_names
+        _f
+        _to_global local_names
         next
 endcode
