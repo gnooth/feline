@@ -1313,6 +1313,19 @@ test: sbuf-reverse!-test-1
 
 sbuf-reverse!-test-1
 
+test: sbuf-shorten-1
+    "12345678" string>sbuf >local: sb
+    sb sbuf-validate
+    16 sb sbuf-shorten
+    sb sbuf-validate
+    sb "12345678" sequence= assert-true
+    4 sb sbuf-shorten
+    sb sbuf-validate
+    sb "1234" sequence= assert-true
+;
+
+sbuf-shorten-1
+
 test: string-index-from-test-1
     't' 0 "this is a test" string-index-from zero? assert-true
     'h' 0 "this is a test" string-index-from 1 eq? assert-true

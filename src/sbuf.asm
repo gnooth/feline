@@ -411,12 +411,12 @@ code sbuf_validate, 'sbuf-validate'     ; sbuf --
         push    this_register
         mov     this_register, rbx      ; -- sbuf
         _sbuf_data                      ; -- data-address
-        add     rbx, qword [this_register + SBUF_LENGTH_OFFSET] ; add length to data-address
+        add     rbx, qword [this_register + SBUF_LENGTH_OFFSET] ; add length to data address
         mov     al, [rbx]               ; char in al should be 0
         poprbx
         test    al, al
         jz      .1
-        _error "sbuf not 0-terminated"
+        _error "sbuf not null-terminated"
 .1:
         pop     this_register
         next
@@ -425,19 +425,30 @@ endcode
 ; ### sbuf-shorten
 code sbuf_shorten, 'sbuf-shorten'       ; fixnum handle --
 
-        _swap
-        _untag_fixnum
-        _swap
-
+        _check_fixnum qword [rbp]
         _ check_sbuf                    ; -- u sbuf
+
         _twodup
         _sbuf_length
         _ult
-        _if .2
+        _if .1
+
+        push    this_register
+        mov     this_register, rbx
+
         _sbuf_set_length
-        _else .2
+
+        ; store terminal null byte
+        mov     rax, qword [this_register + SBUF_DATA_ADDRESS_OFFSET]
+        add     rax, qword [this_register + SBUF_LENGTH_OFFSET]
+        mov     byte [rax], 0
+
+        pop     this_register
+
+        _else .1
         _2drop
-        _then .2
+        _then .1
+
         next
 endcode
 
