@@ -403,6 +403,25 @@ subroutine sbuf_ensure_capacity         ; u sbuf --
         ret
 endsub
 
+; ### sbuf-validate
+code sbuf_validate, 'sbuf-validate'     ; sbuf --
+
+        _ check_sbuf
+
+        push    this_register
+        mov     this_register, rbx      ; -- sbuf
+        _sbuf_data                      ; -- data-address
+        add     rbx, qword [this_register + SBUF_LENGTH_OFFSET] ; add length to data-address
+        mov     al, [rbx]               ; char in al should be 0
+        poprbx
+        test    al, al
+        jz      .1
+        _error "sbuf not 0-terminated"
+.1:
+        pop     this_register
+        next
+endcode
+
 ; ### sbuf-shorten
 code sbuf_shorten, 'sbuf-shorten'       ; fixnum handle --
 
