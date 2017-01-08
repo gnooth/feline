@@ -16,8 +16,8 @@
 file __FILE__
 
 ; ### lookup-method
-code lookup_method, 'lookup-method'     ; object methods-vector -- object raw-code-address/0
-; Returns untagged 0 if no method.
+code lookup_method, 'lookup-method'     ; object methods-vector -- object raw-code-address/f
+; return f if no method
         _tor                            ; -- object
         _dup
         _ object_type                   ; -- object tagged-type-number
@@ -32,17 +32,17 @@ code lookup_method, 'lookup-method'     ; object methods-vector -- object raw-co
         _ vector_length
         _ fixnum_lt
         _tagged_if .2                   ; -- object n vector
-        _ vector_nth_unsafe             ; -- object method/0
+        _ vector_nth_unsafe             ; -- object method/f
         _else .2
         _2drop                          ; -- object
-        _zero                           ; -- object 0
+        _f                              ; -- object f
         _then .2
         next
 endcode
 
 ; ### do-generic
 code do_generic, 'do-generic'   ; methods-vector --
-        _ lookup_method         ; -- raw-code-address/0
+        _ lookup_method         ; -- raw-code-address/f
         _dup
         _tagged_if .1
         mov     rax, rbx
