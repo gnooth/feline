@@ -431,7 +431,7 @@ section .data
 
 %endmacro
 
-%macro  code 2-5 0, 0, 0
+%macro  code 2-5 SYMBOL_PRIMITIVE, 0, 0
         %push code
         head %1, %2, %3, %$end - %1, %5
         global %1
