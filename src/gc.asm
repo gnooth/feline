@@ -417,6 +417,16 @@ value gc_start_cycles, 'gc-start-cycles', 0
 ; ### gc-end-cycles
 value gc_end_cycles, 'gc-end-cycles', 0
 
+asm_global gc_count_value, 0
+
+; ### gc-count
+code gc_count, 'gc-count'       ; -- n
+        pushrbx
+        mov     rbx, [gc_count_value]
+        _tag_fixnum
+        next
+endcode
+
 ; ### gc-verbose
 feline_global gc_verbose, 'gc-verbose'
 
@@ -480,6 +490,8 @@ code gc, 'gc'                           ; --
         ; sweep
         _lit S_maybe_collect_handle
         _ each_handle
+
+        inc     qword [gc_count_value]
 
         _zeroto in_gc?
 
