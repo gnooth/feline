@@ -650,8 +650,7 @@ code call_symbol, 'call-symbol'         ; symbol --
 
         mov     rax, rbx
         poprbx
-        call    rax
-        _return
+        jmp     rax
         _else .1
         _drop
         _then .1                        ; -- symbol
