@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -93,18 +93,18 @@ code ekey, 'ekey'                       ; -- fixnum
         next
 endcode
 
-constant k_right,     'k-right',     tagged_fixnum($804d)
-constant k_left,      'k-left',      tagged_fixnum($804b)
-constant k_up,        'k-up',        tagged_fixnum($8048)
-constant k_down,      'k-down',      tagged_fixnum($8050)
-constant k_home,      'k-home',      tagged_fixnum($8047)
-constant k_end,       'k-end',       tagged_fixnum($804f)
-constant k_delete,    'k-delete',    tagged_fixnum($8053)
-constant k_prior,     'k-prior',     tagged_fixnum($8049)
-constant k_next,      'k-next',      tagged_fixnum($8051)
+feline_constant k_right,     'k-right',     tagged_fixnum($804d)
+feline_constant k_left,      'k-left',      tagged_fixnum($804b)
+feline_constant k_up,        'k-up',        tagged_fixnum($8048)
+feline_constant k_down,      'k-down',      tagged_fixnum($8050)
+feline_constant k_home,      'k-home',      tagged_fixnum($8047)
+feline_constant k_end,       'k-end',       tagged_fixnum($804f)
+feline_constant k_delete,    'k-delete',    tagged_fixnum($8053)
+feline_constant k_prior,     'k-prior',     tagged_fixnum($8049)
+feline_constant k_next,      'k-next',      tagged_fixnum($8051)
 
-constant k_ctrl_home, 'k-ctrl-home', tagged_fixnum($8077)
-constant k_ctrl_end,  'k-ctrl-end',  tagged_fixnum($8075)
+feline_constant k_ctrl_home, 'k-ctrl-home', tagged_fixnum($8077)
+feline_constant k_ctrl_end,  'k-ctrl-end',  tagged_fixnum($8075)
 
 %else
 
@@ -143,17 +143,17 @@ code ekey, 'ekey'                       ; -- fixnum
         next
 endcode
 
-constant k_right,     'k-right',     tagged_fixnum($1b5b43)
-constant k_left,      'k-left',      tagged_fixnum($1b5b44)
-constant k_up,        'k-up',        tagged_fixnum($1b5b41)
-constant k_down,      'k-down',      tagged_fixnum($1b5b42)
-constant k_home,      'k-home',      tagged_fixnum($1b5b48)
-constant k_end,       'k-end',       tagged_fixnum($1b5b46)
-constant k_delete,    'k-delete',    tagged_fixnum($1b5b337e)
-constant k_prior,     'k-prior',     tagged_fixnum($1b5b357e)
-constant k_next,      'k-next',      tagged_fixnum($1b5b367e)
+feline_constant k_right,     'k-right',     tagged_fixnum($1b5b43)
+feline_constant k_left,      'k-left',      tagged_fixnum($1b5b44)
+feline_constant k_up,        'k-up',        tagged_fixnum($1b5b41)
+feline_constant k_down,      'k-down',      tagged_fixnum($1b5b42)
+feline_constant k_home,      'k-home',      tagged_fixnum($1b5b48)
+feline_constant k_end,       'k-end',       tagged_fixnum($1b5b46)
+feline_constant k_delete,    'k-delete',    tagged_fixnum($1b5b337e)
+feline_constant k_prior,     'k-prior',     tagged_fixnum($1b5b357e)
+feline_constant k_next,      'k-next',      tagged_fixnum($1b5b367e)
 
-constant k_ctrl_home, 'k-ctrl-home', tagged_fixnum($1b5b313b3548)
-constant k_ctrl_end,  'k-ctrl-end',  tagged_fixnum($1b5b313b3546)
+feline_constant k_ctrl_home, 'k-ctrl-home', tagged_fixnum($1b5b313b3548)
+feline_constant k_ctrl_end,  'k-ctrl-end',  tagged_fixnum($1b5b313b3546)
 
 %endif
