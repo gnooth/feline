@@ -42,11 +42,11 @@ code process_command_line, 'process-command-line'
 ; perf record feline -e '"stress.feline" load bye'
 
         pushrbx
-        mov     rbx, [main_argc]
+        mov     rbx, [main_argc]        ; -- argc
+
         _dup
         _ new_vector_untagged   ; -- argc vector
-
-        _swap                   ; -- vector argc
+        _to_global args         ; -- argc
 
         _zero
         _?do .1
@@ -58,31 +58,37 @@ code process_command_line, 'process-command-line'
         _fetch                  ; -- zstring
         _ zcount
         _ copy_to_string
-        _over
+        _ args
         _ vector_push
         _loop .1
 
-        _dup
-        _to_global args
-
-        _dup
+        _ args
         _ vector_length
         _tagged_fixnum 3
         _ eq?
         _tagged_if .2
-        _dup
+        _ args
         _ second
         _quote "-e"
         _ equal?
         _tagged_if .3
-        _dup
+        _ args
         _ third
         _ verify_string
         _ evaluate
+        _return
         _then .3
         _then .2
 
-        _drop
+        _ args
+        _ vector_length
+        _tagged_fixnum 2
+        _ feline_ge
+        _tagged_if .4
+        _ args
+        _ second
+        _ load
+        _then .4
 
         next
 endcode
