@@ -1,0 +1,344 @@
+-- Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline ;
+in: user
+
+"editor" delete-vocab
+
+in: editor
+
+global: editor-filename
+global: lines
+global: top-line#
+global: cursor-x
+global: cursor-y
+global: repaint?
+global: cursor-line-changed?
+global: bindings
+global: done?
+
+0 >global: goal
+
+: hide-cursor ( -- ) esc[ "?25l" write-string ;
+
+: show-cursor ( -- ) esc[ "?25h" write-string ;
+
+: #lines ( -- n ) lines length ;
+
+: cursor-line# ( -- n ) top-line# cursor-y + ;
+
+: cursor-line ( -- string ) cursor-line# lines vector-nth ;
+
+: cursor-line-length ( -- n ) cursor-line length ;
+
+: page-#lines ( -- n ) #rows 1 - ;
+
+: .cursor ( -- ) cursor-x cursor-y at-xy ;
+
+: .line ( n -- )
+    0 over at-xy
+    top-line# + lines vector-nth
+    dup length #cols < [
+        dup write
+        length #cols swap - spaces
+    ] [
+        0 #cols rot substring write
+    ] if
+;
+
+: redisplay-line ( y -- )
+    >local: y
+    top-line# y + #lines < [
+        y .line
+    ] [
+        0 y at-xy #cols spaces
+    ] if
+;
+
+: status ( -- )
+    #cols 20 - #rows at-xy
+    "Line " write top-line# cursor-y + 1 + dec.
+    " Col " write cursor-x 1 + dec.
+    clear-to-eol
+;
+
+: write-status ( string -- ) 0 #rows at-xy write-string ;
+
+: clear-status-line ( -- ) 0 #rows at-xy clear-to-eol ;
+
+: update-display ( -- )
+    hide-cursor
+    repaint? [
+        0 0 at-xy
+        page-#lines [ redisplay-line ] each-integer
+        f !> repaint?
+    ] [
+        cursor-line-changed? [
+            cursor-y redisplay-line
+            f !> cursor-line-changed?
+        ] when
+    ] if
+    status
+    .cursor
+    show-cursor
+;
+
+: adjust-cursor-x ( -- )
+    goal !> cursor-x
+    cursor-x cursor-line-length > [
+        cursor-line-length !> cursor-x
+    ] when
+;
+
+: set-cursor ( x y -- )
+    2dup !> cursor-y !> cursor-x
+    at-xy
+;
+
+: beginning-of-buffer ( -- )
+    0 !> top-line#
+    0 0 set-cursor
+    0 !> goal
+    t !> repaint?
+;
+
+: end-of-buffer ( -- )
+    #lines page-#lines 1 - - 0 max !> top-line#
+    page-#lines 1 - !> cursor-y
+    0 !> cursor-x
+    cursor-x !> goal
+    t !> repaint?
+;
+
+: do-home ( -- )
+    0 !> cursor-x
+    0 !> goal
+;
+
+: end-of-line ( -- )
+    cursor-line length !> cursor-x
+    cursor-x !> goal
+;
+
+: do-left ( -- )
+    cursor-x 0 > [
+        1-!> cursor-x
+    ] [
+        cursor-line# 0 > [
+            cursor-y 0 > [ 1-!> cursor-y ] [ 1-!> top-line# ] if
+            cursor-line-length !> cursor-x
+            t !> repaint?
+        ] when
+    ] if
+    cursor-x !> goal
+;
+
+: do-right ( -- )
+    cursor-x cursor-line length < [
+        1+!> cursor-x
+        cursor-x !> goal
+    ] when ;
+
+: do-down ( -- )
+    cursor-line# #lines < [
+        cursor-y page-#lines 1 - < [
+            1+!> cursor-y
+        ] [
+            1+!> top-line#
+            t !> repaint?
+        ] if
+        adjust-cursor-x
+    ] when
+;
+
+: do-up ( -- )
+    cursor-line# 0 > [
+        cursor-y 0 > [
+            1-!> cursor-y
+        ] [
+            1-!> top-line#
+            t !> repaint?
+        ] if
+    ] when
+    adjust-cursor-x
+;
+
+: do-page-down
+    top-line# page-#lines + dup #lines <
+    [ !> top-line# t !> repaint? ] [ drop ] if
+    adjust-cursor-x
+;
+
+: do-page-up
+    top-line# page-#lines > [
+        top-line# page-#lines - !> top-line#
+    ] [
+        0 !> top-line# 0 !> cursor-y
+    ] if
+    t !> repaint?
+    adjust-cursor-x
+;
+
+: insert-line-separator ( -- )
+    cursor-x cursor-line length <= [
+        cursor-x cursor-line length
+        cursor-line substring
+        cursor-line# 1 + lines vector-insert-nth!
+        cursor-line cursor-x string-head cursor-line# lines vector-set-nth
+        cursor-y 1 + !> cursor-y
+        0 !> cursor-x
+        t !> repaint?
+    ] when
+;
+
+: delete-normal-char ( -- )
+    cursor-line cursor-x string-head
+    cursor-x 1  + cursor-line-length < [
+        cursor-line cursor-x 1 + string-tail concat
+    ] when
+    cursor-line# lines vector-set-nth
+    t !> cursor-line-changed?
+;
+
+: delete-line-separator ( -- )
+    cursor-line# #lines 1 - < [
+        cursor-x cursor-line-length = [
+            cursor-line# 1 + lines vector-nth
+            cursor-line swap concat cursor-line# lines vector-set-nth
+            cursor-line# 1 + lines vector-remove-nth!
+            t !> repaint?
+        ] when
+    ] when
+;
+
+: do-delete ( -- )
+    cursor-x cursor-line-length < [
+        delete-normal-char
+    ] [
+        delete-line-separator
+    ] if
+;
+
+: do-bs ( -- )
+    cursor-x 0 > cursor-line# 0 > or [
+        do-left do-delete
+    ] when
+;
+
+: do-normal-char ( char -- )
+    cursor-line dup cursor-x string-head >local: head
+    cursor-x string-tail >local: tail
+    head string>sbuf >local: sb
+    sb sbuf-push
+    sb tail sbuf-append-string
+    sbuf>string cursor-line# lines set-nth
+    1+!> cursor-x
+    t !> cursor-line-changed?
+;
+
+: copy-file ( src dest -- )
+    -- REVIEW file-contents set-file-contents
+    swap file-lines swap set-file-lines ;
+
+: make-backup ( -- ) editor-filename dup "~" concat copy-file ;
+
+: do-save ( -- )
+    "Saving..." write-status
+    make-backup
+    lines editor-filename set-file-lines
+    "Saving...done" write-status
+;
+
+: do-quit ( -- ) t !> done? ;
+
+: bind-key ( key action -- ) 2array bindings push ;
+
+: lookup-key ( key -- symbol/f )
+    bindings length [ bindings nth array-first over = ] find-integer    -- n/f
+    nip dup [ bindings nth array-second ] [ drop f ] if ;
+
+: initialize-bindings ( -- )
+    10 <vector> !> bindings
+    127                    \ do-bs                      bind-key        -- Linux
+    8                      \ do-bs                      bind-key        -- Windows
+    k-delete               \ do-delete                  bind-key
+    k-home                 \ do-home                    bind-key
+    k-end                  \ end-of-line                bind-key
+    k-left                 \ do-left                    bind-key
+    k-right                \ do-right                   bind-key
+    k-up                   \ do-up                      bind-key
+    k-down                 \ do-down                    bind-key
+    k-prior                \ do-page-up                 bind-key
+    k-next                 \ do-page-down               bind-key
+    k-ctrl-home            \ beginning-of-buffer        bind-key
+    k-ctrl-end             \ end-of-buffer              bind-key
+    $11 ( control q )      \ do-quit                    bind-key
+    $13 ( control s )      \ do-save                    bind-key
+    k-enter                \ insert-line-separator      bind-key
+;
+
+: do-command ( -- )
+    lookup-key [ call-symbol ] when* ;
+
+: dispatch ( key -- )
+    dup 32 126 between? [ do-normal-char ] [ do-command ] if ;
+
+: edit-loop ( -- )
+    f !> done?
+    [ done? ] [
+        update-display
+        ekey
+        dispatch
+    ] until
+;
+
+: edit1 ( -- )
+    editor-filename file-lines verify-vector !> lines
+    page
+    t !> repaint?
+    edit-loop
+    clear-status-line
+    0 page-#lines at-xy
+    show-cursor
+;
+
+: initialize-editor ( -- )
+    initialize-bindings
+    0 !> cursor-x
+    0 !> cursor-y
+    0 !> top-line#
+;
+
+: edit ( -- )
+    parse-token !> editor-filename
+    initialize-editor
+    edit1
+;
+
+: ed ( -- )
+    edit1
+;
+
+: edit-file ( path -- )
+    !> editor-filename
+    initialize-editor
+    edit1
+;
+
+using: editor feline ;
+in: feline
+
+: edit editor:edit ;
