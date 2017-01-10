@@ -106,6 +106,8 @@ feline_constant k_next,      'k-next',      tagged_fixnum($8051)
 feline_constant k_ctrl_home, 'k-ctrl-home', tagged_fixnum($8077)
 feline_constant k_ctrl_end,  'k-ctrl-end',  tagged_fixnum($8075)
 
+feline_constant k_enter,     'k-enter',     tagged_fixnum($0d)
+
 %else
 
 ; Linux
@@ -155,5 +157,7 @@ feline_constant k_next,      'k-next',      tagged_fixnum($1b5b367e)
 
 feline_constant k_ctrl_home, 'k-ctrl-home', tagged_fixnum($1b5b313b3548)
 feline_constant k_ctrl_end,  'k-ctrl-end',  tagged_fixnum($1b5b313b3546)
+
+feline_constant k_enter,     'k-enter',     tagged_fixnum($0a)
 
 %endif
