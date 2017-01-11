@@ -245,29 +245,18 @@ endcode
 ; if a line ends with backslash, the next line is considered to
 ; be a part of the backslash-ended line."
 code quote_symbol, '\', SYMBOL_IMMEDIATE        ; -- symbol
-        _ parse_token
-        _dup
-        _tagged_if_not .1
-        _error "unexpected end of input"
-        _return
-        _then .1
-
-        _ find_name
-        _tagged_if .2                   ; -- symbol
+        _ must_parse_token
+        _ must_find_name
         _get_accum
         _dup
-        _tagged_if .3
+        _tagged_if .1
         _swap
         _ new_wrapper
         _swap
-        _ vector_push                   ; --
-        _else .3
+        _ vector_push
+        _else .1
         _drop
-        _then .3                        ; -- symbol
-        _else .2
-        _ undefined
-        _then .2
-
+        _then .1
         next
 endcode
 
