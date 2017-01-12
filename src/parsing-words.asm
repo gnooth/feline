@@ -260,6 +260,12 @@ code quote_symbol, '\', SYMBOL_IMMEDIATE        ; -- symbol
         next
 endcode
 
+; ### '
+code tick, "'", SYMBOL_IMMEDIATE                ; symbol
+        _ quote_symbol
+        next
+endcode
+
 ; ### symbol:
 code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE  ; --
         _ parse_token                   ; -- string/f
