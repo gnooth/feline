@@ -1529,6 +1529,27 @@ test: 1+!>-test-3 ( -- )
 
 1+!>-test-3
 
+: %case-test-1 ( x -- y )
+    {
+        { 1 [ "one" ] }
+        { 2 [ "two" ] }
+        { 3 [ "three" ] }
+        { 4 [ "four" ] }
+        [ drop "not found" ]
+    } case ;
+
+test: case-test-1
+    clear
+
+    7 %case-test-1 get-datastack { "not found" } assert= clear
+    2 %case-test-1 get-datastack { "two" }       assert= clear
+    4 %case-test-1 get-datastack { "four" }      assert= clear
+    1 %case-test-1 get-datastack { "one" }       assert= clear
+    3 %case-test-1 get-datastack { "three" }     assert= clear
+;
+
+case-test-1
+
 in: feline
 
 ?nl "Reached end of test.feline" write-string
