@@ -1572,6 +1572,19 @@ test: case-test-2
 
 case-test-2
 
+test: case-test-3
+    3 {
+        { 1 [ "one" ] }
+        { 2 [ "two" ] }
+        [ drop "early" ]
+        { 3 [ "three" ] }
+        { 4 [ "four" ] }
+    } case
+    "early" assert=
+;
+
+case-test-3
+
 in: feline
 
 ?nl "Reached end of test.feline" write-string
