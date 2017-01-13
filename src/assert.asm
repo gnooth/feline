@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ code check_assert_false, 'check-assert-false'   ; x location --
 endcode
 
 ; ### check-assert=
-code check_assert_equal, 'check-assert='   ; x y location --
+code check_assert_equal, 'check-assert='        ; x y location --
         _ rrot
         _ feline_equal
         _tagged_if .1
@@ -68,6 +68,27 @@ code check_assert_equal, 'check-assert='   ; x y location --
         _else .1
         _ assertion_failed
         _then .1
+        next
+endcode
+
+; ### +failed+
+feline_constant failed, '+failed+', S_failed
+
+; ### check-assert-must-fail
+code check_assert_must_fail, 'check-assert-must-fail'   ; quotation location --
+        _swap
+        _quotation .1
+        _drop
+        _lit S_failed
+        _end_quotation .1
+        _ recover
+        _lit S_failed
+        _eq?
+        _tagged_if .2
+        _drop
+        _else .2
+        _ assertion_failed
+        _then .2
         next
 endcode
 
@@ -139,6 +160,22 @@ code assert_equal, 'assert=', SYMBOL_IMMEDIATE
         ; top level assertion
         _ location
         _ check_assert_equal
+        _then .1
+        next
+endcode
+
+; ### assert-must-fail
+code assert_must_fail, 'assert-must-fail', SYMBOL_IMMEDIATE
+        _ in_definition?
+        _tagged_if .1
+        _ location
+        _ accum_push
+        _lit S_check_assert_must_fail
+        _ accum_push
+        _else .1
+        ; top level assertion
+        _ location
+        _ check_assert_must_fail
         _then .1
         next
 endcode

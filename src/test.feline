@@ -1550,6 +1550,28 @@ test: case-test-1
 
 case-test-1
 
+: %case-test-2 ( x -- y )
+    {
+        { 1 [ "one" ] }
+        { 2 [ "two" ] }
+        { 3 [ "three" ] }
+        { 4 [ "four" ] }
+        -- no default
+    } case ;
+
+test: case-test-2
+    clear
+
+    [ 7 %case-test-2 ] assert-must-fail
+
+    2 %case-test-2 get-datastack { "two" }       assert= clear
+    4 %case-test-2 get-datastack { "four" }      assert= clear
+    1 %case-test-2 get-datastack { "one" }       assert= clear
+    3 %case-test-2 get-datastack { "three" }     assert= clear
+;
+
+case-test-2
+
 in: feline
 
 ?nl "Reached end of test.feline" write-string
