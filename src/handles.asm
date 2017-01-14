@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -182,56 +182,6 @@ code handle?, 'handle?'                 ; x -- ?
         _return
 .1:
         mov     ebx, f_value
-        next
-endcode
-
-; ### ?unhandle
-code ?unhandle, '?unhandle'             ; handle -- object-address/f
-        cmp     rbx, [handle_space_data]
-        jb .1
-        cmp     rbx, [handle_space_free_data]
-        jae .1
-
-        ; must be aligned
-        test    bl, 7
-        jnz     .1
-
-        ; valid handle
-        _handle_to_object_unsafe
-
-        test    rbx, rbx
-        jz      .1
-
-        _return
-.1:
-        mov     ebx, f_value
-        next
-endcode
-
-; ### unhandle
-code unhandle, 'unhandle'               ; handle -- object-address
-; Error if argument is not a handle.
-        cmp     rbx, [handle_space_data]
-        jb .1
-        cmp     rbx, [handle_space_free_data]
-        jae .1
-
-        ; must be aligned
-        test    bl, 7
-        jnz     .1
-
-        ; valid handle
-        _handle_to_object_unsafe
-
-        test    rbx, rbx
-        jz      .2
-
-        _return
-.1:
-        _error "not a handle"
-        _return
-.2:
-        _error "empty handle"
         next
 endcode
 
