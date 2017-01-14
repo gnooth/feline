@@ -29,18 +29,6 @@ in: feline
     [ dup callable? [ call ] [ second call ] if ] [ no-cond ]
     if* ;
 
-: case-find ( x assoc -- y )
-    [
-        dup array? [ first over eq? ] [ quotation? ] if
-    ] find nip ;
-
-: case ( x assoc -- )
-    case-find {
-        { [ dup array? ] [ nip second call ] }
-        { [ dup quotation? ] [ call ] }
-        { [ dup not ] [ "no case" error ] }
-    } cond ;
-
 {
     "backtrace.feline"
     "dump.feline"

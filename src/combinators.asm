@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -128,5 +128,52 @@ code question, '?'                      ; ? true false -- true/false
         mov     rax, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
         cmovne  rbx, rax
+        next
+endcode
+
+; ### case
+code case, 'case'               ; x array --
+        _ check_array
+        push    this_register
+        mov     this_register, rbx
+        poprbx                  ; -- x
+
+        _this_array_length
+        _zero
+        _?do .1
+        _i
+        _this_array_nth_unsafe  ; -- x quotation-or-2array
+
+        _dup
+        _ quotation?
+        _tagged_if .2
+        _ call_quotation
+        _unloop
+        jmp     .exit
+        _then .2
+
+        ; not a quotation
+        ; must be a 2array
+        _dup
+        _ array_first           ; -- x array element
+        _pick                   ; -- x array element x
+        _eq?
+        _tagged_if .3           ; -- x array
+        _nip
+        _ array_second
+        _ call_quotation
+        _unloop
+        jmp     .exit
+        _else .3
+        _drop
+        _then .3
+
+        _loop .1
+
+        ; not found
+        _error "no case"
+
+.exit:
+        pop     this_register
         next
 endcode
