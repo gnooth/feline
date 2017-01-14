@@ -186,14 +186,22 @@ code handle?, 'handle?'                 ; x -- ?
 endcode
 
 ; ### deref
-code deref, 'deref'                     ; x -- object-address/0
-        _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe
-        _return
-        _then .1
+code deref, 'deref'     ; x -- object-address/0
+        ; tag bits must be 0
+        test    bl, TAG_MASK
+        jnz     .1
 
+        ; must point into handle space
+        cmp     rbx, [handle_space_data]
+        jb .1
+        cmp     rbx, [handle_space_free_data]
+        jae .1
+
+        ; valid handle
+        mov     rbx, [rbx]      ; -- object-address/0
+        _return
+
+.1:
         ; -- x
         ; drop 0
         xor     ebx, ebx
