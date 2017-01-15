@@ -219,9 +219,7 @@ endcode
 
 ; ### array-nth-unsafe
 code array_nth_unsafe, 'array-nth-unsafe' ; index handle -- element
-        _swap
-        _untag_fixnum
-        _swap
+        _untag_fixnum qword [rbp]
         _handle_to_object_unsafe
         _array_nth_unsafe
         next
@@ -230,9 +228,7 @@ endcode
 ; ### array-nth
 code array_nth, 'array-nth'             ; index handle -- element
 
-        _swap
-        _untag_fixnum
-        _swap
+        _untag_fixnum qword [rbp]
 
 array_nth_untagged:
         _ check_array
@@ -253,9 +249,7 @@ endcode
 ; ### array-set-nth
 code array_set_nth, 'array-set-nth'     ; element index handle --
 
-        _swap
-        _untag_fixnum
-        _swap
+        _untag_fixnum qword [rbp]
 
 array_set_nth_untagged:
         _ check_array
