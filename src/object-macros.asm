@@ -337,9 +337,7 @@ OBJECT_ALLOCATED_BIT            equ 4
 
 %macro  _this_array_nth_unsafe 0        ; index -- element
         _cells
-        _this_array_data
-        _plus
-        _fetch
+        mov     rbx, [this_register + rbx + ARRAY_DATA_OFFSET]
 %endmacro
 
 %macro  _array_set_nth_unsafe 0         ; element index array --
