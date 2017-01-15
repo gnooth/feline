@@ -41,13 +41,10 @@ endcode
 code check_array, 'check-array'         ; handle -- array
         _ deref
         test    rbx, rbx
-        jz      .1
+        jz      error_not_array
         movzx   eax, word [rbx]
         cmp     eax, OBJECT_TYPE_ARRAY
-        jne     .1
-        _return
-.1:
-        _ error_not_array
+        jne     error_not_array
         next
 endcode
 
