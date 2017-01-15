@@ -145,15 +145,9 @@ code case, 'case'               ; x array --
         _this_array_nth_unsafe  ; -- x quotation-or-2array
 
         _dup
-        _ quotation?
+        _ array?
         _tagged_if .2
-        _ call_quotation
-        _unloop
-        jmp     .exit
-        _then .2
 
-        ; not a quotation
-        ; must be a 2array
         _dup
         _ array_first           ; -- x array element
         _pick                   ; -- x array element x
@@ -167,6 +161,14 @@ code case, 'case'               ; x array --
         _else .3
         _drop
         _then .3
+
+        _else .2
+        ; not an array
+        ; must be a quotation
+        _ call_quotation
+        _unloop
+        jmp     .exit
+        _then .2
 
         _loop .1
 
