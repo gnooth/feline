@@ -17,17 +17,15 @@ file __FILE__
 
 ; ### array?
 code array?, 'array?'                   ; handle -- ?
-        _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe        ; -- object
-        _dup_if .2
-        _object_type                    ; -- object-type
-        _lit OBJECT_TYPE_ARRAY
-        _eq?
+        _ deref                         ; -- array/0
+        test    rbx, rbx
+        jz      .1
+        movzx   eax, word [rbx]
+        cmp     eax, OBJECT_TYPE_ARRAY
+        jne     .1
+        mov     ebx, t_value
         _return
-        _then .2
-        _then .1
+.1:
         mov     ebx, f_value
         next
 endcode
