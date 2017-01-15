@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -329,11 +329,10 @@ OBJECT_ALLOCATED_BIT            equ 4
 %endmacro
 
 %macro  _array_nth_unsafe 0             ; index array -- element
-        _array_data
-        _swap
-        _cells
-        _plus
-        _fetch
+        mov     rax, [rbp]              ; untagged index in rax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        shl     rax, 3                  ; convert cells to bytes
+        mov     rbx, [rbx + rax + ARRAY_DATA_OFFSET]
 %endmacro
 
 %macro  _this_array_nth_unsafe 0        ; index -- element
