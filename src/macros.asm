@@ -579,7 +579,6 @@ section .data
         db      %1                      ; string
         db      0                       ; null byte at end
         section .text
-        align   DEFAULT_CODE_ALIGNMENT
         pushrbx
         mov     rbx, %%string
 %endmacro
