@@ -405,10 +405,13 @@ test: array-test-1 ( -- )
 
 array-test-1
 
-test: array-test-2 ( -- )
-    10 f <array>
-    10 [ ( array index ) [ number>string ] keep pick set-nth ] each-integer
-    drop
+test: array-test-2
+    10 f <array> >local: a
+    10 [ [ number>string ] keep a array-set-nth ] each-integer
+    a [ number>string assert= ] each-index
+    [ -1 a array-nth ] assert-must-fail
+    [ 10 a array-nth ] assert-must-fail
+    [ "test" a array-nth ] assert-must-fail
 ;
 
 array-test-2
