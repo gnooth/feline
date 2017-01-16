@@ -228,20 +228,20 @@ endcode
 ; ### array-nth
 code array_nth, 'array-nth'             ; index handle -- element
 
-        _untag_fixnum qword [rbp]
+        _check_fixnum qword [rbp]       ; -- untagged-index handle
 
 array_nth_untagged:
-        _ check_array
-
-        _twodup
-        _array_length
-        _ult
-        _if .2
-        _array_nth_unsafe
+        _ check_array                   ; -- untagged-index array
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- untagged-index
+        cmp     rbx, [this_register + ARRAY_LENGTH_OFFSET]
+        jae     .error
+        _this_array_nth_unsafe
+        pop     this_register
         _return
-        _then .2
-
-        _2drop
+.error:
+        pop     this_register
         _error "array-nth index out of range"
         next
 endcode
