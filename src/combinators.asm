@@ -151,7 +151,7 @@ code case, 'case'               ; x array --
         _dup
         _ array_first           ; -- x array element
         _pick                   ; -- x array element x
-        _eq?
+        _ feline_equal
         _tagged_if .3           ; -- x array
         _nip
         _ array_second

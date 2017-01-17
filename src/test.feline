@@ -1603,6 +1603,25 @@ test: case-test-3
 
 case-test-3
 
+: %case-test-4 ( x -- y )
+    {
+        { "fee"  [ 1 ] }
+        { "fie"  [ 2 ] }
+        { "pho"  [ 3 ] }
+        { "phum" [ 4 ] }
+    } case
+;
+
+test: case-test-4
+    "pho"  %case-test-4 3 assert=
+    "fee"  %case-test-4 1 assert=
+    "phum" %case-test-4 4 assert=
+    "fie"  %case-test-4 2 assert=
+    [ "effluvia" %case-test-4 ] assert-must-fail
+;
+
+case-test-4
+
 : %cond-test-1 ( x -- y )
     {
         { [ dup 1 = ] [ drop "one" ] }
