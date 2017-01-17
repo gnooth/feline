@@ -193,13 +193,13 @@ code error_not_symbol, 'error-not-symbol' ; x --
         next
 endcode
 
-; ### verify_unboxed_symbol
-subroutine verify_unboxed_symbol        ; symbol -- symbol
-        ; Make sure address is in a permissible range.
+; ### verify-unboxed-symbol
+code verify_unboxed_symbol, 'verify-unboxed-symbol'     ; symbol -- symbol
+        ; make sure address is in a permissible range
         _dup
         _ in_static_data_area?
         _zeq_if .1
-        ; Address is not in a permissible range.
+        ; address is not in a permissible range
         _ error_not_symbol
         _return
         _then .1
@@ -213,31 +213,27 @@ subroutine verify_unboxed_symbol        ; symbol -- symbol
 .2:
         _ error_not_symbol
         next
-endsub
+endcode
 
-; ### check_symbol
-subroutine check_symbol         ; x -- unboxed-symbol
+; ### check-symbol
+code check_symbol, 'check-symbol'       ; x -- unboxed-symbol
         _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe        ; -- object/0
-        _dup_if .2
-        _dup
-        _object_type                    ; -- object object-type
-        _lit OBJECT_TYPE_SYMBOL
-        _equal
-        _if .3
+        _ deref                         ; -- x object/0
+        test    rbx, rbx
+        jz      .1
+        movzx   eax, word [rbx]
+        cmp     eax, OBJECT_TYPE_SYMBOL
+        jne     .2
+        _nip
         _return
-        _then .3
-        _then .2
-        _ error_not_symbol
-        _then .1
-
-        ; Not a handle.
+.1:
+        _drop
         _ verify_unboxed_symbol
-
-        ret
-endsub
+        _return
+.2:
+        _ error_not_symbol
+        next
+endcode
 
 ; ### <symbol>
 code new_symbol, '<symbol>'             ; name vocab -- symbol
