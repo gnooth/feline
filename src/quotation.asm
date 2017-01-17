@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -80,13 +80,13 @@ code error_not_quotation, 'error-not-quotation' ; x --
         next
 endcode
 
-; ### verify_unboxed_quotation
-subroutine verify_unboxed_quotation     ; quotation -- quotation
-        ; Make sure address is in a permissible range.
+; ### verify-unboxed-quotation
+code verify_unboxed_quotation, 'verify-unboxed-quotation'       ; quotation -- quotation
+        ; make sure address is in a permissible range
         _dup
         _ in_static_data_area?
         _zeq_if .1
-        ; Address is not in a permissible range.
+        ; address is not in a permissible range
         _ error_not_quotation
         _return
         _then .1
@@ -100,31 +100,27 @@ subroutine verify_unboxed_quotation     ; quotation -- quotation
 .2:
         _ error_not_quotation
         next
-endsub
+endcode
 
-; ### check_quotation
-subroutine check_quotation              ; handle-or-quotation -- unboxed-quotation
+; ### check-quotation
+code check_quotation, 'check-quotation' ; handle-or-quotation -- unboxed-quotation
         _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe        ; -- object/0
-        _dup_if .2
-        _dup
-        _object_type                    ; -- object object-type
-        _lit OBJECT_TYPE_QUOTATION
-        _equal
-        _if .3
+        _ deref                         ; -- x object/0
+        test    rbx, rbx
+        jz      .1
+        movzx   eax, word [rbx]
+        cmp     eax, OBJECT_TYPE_QUOTATION
+        jne     .2
+        _nip
         _return
-        _then .3
-        _then .2
-        _ error_not_quotation
-        _then .1
-
-        ; Not a handle.
+.1:
+        _drop
         _ verify_unboxed_quotation
-
-        ret
-endsub
+        _return
+.2:
+        _ error_not_quotation
+        next
+endcode
 
 ; ### array>quotation
 code array_to_quotation, 'array>quotation' ; array -- quotation
