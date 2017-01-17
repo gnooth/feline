@@ -304,6 +304,8 @@ OBJECT_ALLOCATED_BIT            equ 4
         _equal
 %endmacro
 
+%define ARRAY_LENGTH_OFFSET     8
+
 %macro _array_length 0                  ; array -- length
         _slot1
 %endmacro
