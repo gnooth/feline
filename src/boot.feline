@@ -19,16 +19,6 @@ in: feline
 : blank? ( char -- ? )
     { 9 10 13 32 } member? ;
 
--- Factor
-: no-cond ( -- )
-    "fall-through in cond" error ;
-
--- Factor
-: cond ( assoc -- )
-    [ dup callable? [ drop t ] [ first call ] if ] find nip
-    [ dup callable? [ call ] [ second call ] if ] [ no-cond ]
-    if* ;
-
 {
     "backtrace.feline"
     "dump.feline"

@@ -179,3 +179,51 @@ code case, 'case'               ; x array --
         pop     this_register
         next
 endcode
+
+; ### cond
+code cond, 'cond'               ; array --
+        _ check_array
+        push    this_register
+        mov     this_register, rbx
+        poprbx                  ; --
+
+        _this_array_length
+        _zero
+        _?do .1
+        _i
+        _this_array_nth_unsafe  ; -- 2array-or-quotation
+
+        _dup
+        _ array?
+        _tagged_if .2           ; -- 2array
+
+        _duptor
+        _ array_first           ; -- quotation
+        _ call_quotation
+        _tagged_if .3           ; --
+        _rfrom
+        _ array_second
+        _ call_quotation
+        _unloop
+        jmp     .exit
+        _else .3
+        _rdrop
+        _then .3
+
+        _else .2
+        ; not an array
+        ; must be a quotation
+        _ call_quotation
+        _unloop
+        jmp     .exit
+        _then .2
+
+        _loop .1
+
+        ; not found
+        _error "no cond"
+
+.exit:
+        pop     this_register
+        next
+endcode

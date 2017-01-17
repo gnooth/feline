@@ -1603,6 +1603,63 @@ test: case-test-3
 
 case-test-3
 
+: %cond-test-1 ( x -- y )
+    {
+        { [ dup 1 = ] [ drop "one" ] }
+        { [ dup 2 = ] [ drop "two" ] }
+        { [ dup 3 = ] [ drop "three" ] }
+        { [ dup 4 = ] [ drop "four" ] }
+        -- no default
+    } cond ;
+
+test: cond-test-1
+    3 %cond-test-1 "three" assert=
+    1 %cond-test-1 "one" assert=
+    4 %cond-test-1 "four" assert=
+    2 %cond-test-1 "two" assert=
+    [ 17 %cond-test-1 ] assert-must-fail
+;
+
+cond-test-1
+
+: %cond-test-2 ( x -- y )
+    {
+        { [ dup 1 = ] [ drop "one" ] }
+        { [ dup 2 = ] [ drop "two" ] }
+        { [ dup 3 = ] [ drop "three" ] }
+        { [ dup 4 = ] [ drop "four" ] }
+        [ drop "something else" ]
+    } cond ;
+
+test: cond-test-2
+    3 %cond-test-2 "three" assert=
+    1 %cond-test-2 "one" assert=
+    4 %cond-test-2 "four" assert=
+    2 %cond-test-2 "two" assert=
+    9 %cond-test-2 "something else" assert=
+;
+
+cond-test-2
+
+test: cond-test-3
+    3 {
+        { [ dup 1 = ] [ drop "one" ] }
+        [ drop "early" ]
+        { [ dup 2 = ] [ drop "two" ] }
+        { [ dup 3 = ] [ drop "three" ] }
+        { [ dup 4 = ] [ drop "four" ] }
+    } cond
+    "early" assert=
+;
+
+cond-test-3
+
+test: cond-test-4
+    [ { } cond ] assert-must-fail
+;
+
+cond-test-4
+
 in: feline
 
 ?nl "Reached end of test.feline" write-string
