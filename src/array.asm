@@ -271,9 +271,14 @@ endcode
 
 ; ### array-first
 code array_first, 'array-first'         ; handle -- element
-        _zero
-        _swap
-        _ array_nth_untagged
+        _ check_array
+        mov     rax, [rbx + ARRAY_LENGTH_OFFSET]
+        test    rax, rax
+        jng     .error
+        mov     rbx, [rbx + ARRAY_DATA_OFFSET]
+        _return
+.error:
+        _error "array-first empty array"
         next
 endcode
 
