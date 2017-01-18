@@ -39,22 +39,12 @@ endcode
 
 ; ### check-vector
 code check_vector, 'check-vector'       ; handle -- vector
-        _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe        ; -- object/0
-        _dup_if .2
-        _dup
-        _object_type                    ; -- object object-type
-        _lit OBJECT_TYPE_VECTOR
-        _equal
-        _if .3
-        _return
-        _then .3
-        _then .2
-        _then .1
-
-        _ error_not_vector
+        _ deref
+        test    rbx, rbx
+        jz      error_not_vector
+        movzx   eax, word [rbx]
+        cmp     eax, OBJECT_TYPE_VECTOR
+        jne     error_not_vector
         next
 endcode
 
