@@ -129,13 +129,6 @@ code vector_delete_all, 'vector-delete-all' ; handle --
         next
 endcode
 
-; ### vector-data
-code vector_data, 'vector-data'         ; vector -- data-address
-        _ check_vector
-        _vector_data
-        next
-endcode
-
 ; ### <vector>
 code new_vector, '<vector>'             ; capacity -- handle
 
