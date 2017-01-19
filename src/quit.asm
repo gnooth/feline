@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -399,7 +399,7 @@ endcode
 
 ; ### print-datastack
 code print_datastack, 'print-datastack' ; --
-        _ depth
+        _depth
         _if .1
         _ ?nl
         _ white
@@ -458,7 +458,7 @@ code break, 'break'                     ; --
         _ white
         _ foreground
         _write "--- Data stack: "
-        _ depth
+        _depth
         _if .1
         _ feline_dot_s
         _else .1

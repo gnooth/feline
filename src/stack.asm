@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -36,14 +36,12 @@ inline ?dup, '?dup'
         _?dup
 endinline
 
-; ### depth
-code depth, 'depth'
+%macro  _depth 0
         mov     rax, [sp0_data]
         sub     rax, rbp
         shr     rax, 3
         pushd   rax
-        next
-endcode
+%endmacro
 
 ; ### rdepth
 code rdepth, 'rdepth'
