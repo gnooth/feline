@@ -588,6 +588,13 @@ code find_integer, 'find-integer'       ; tagged-fixnum xt -- i|f
         next
 endcode
 
+; ### depth
+code depth, 'depth'                     ; -- fixnum
+        _depth
+        _tag_fixnum
+        next
+endcode
+
 ; ### get-datastack
 code get_datastack, 'get-datastack'     ; -- array
         push r12
