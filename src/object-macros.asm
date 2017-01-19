@@ -406,11 +406,11 @@ OBJECT_ALLOCATED_BIT            equ 4
 %endmacro
 
 %macro  _vector_nth_unsafe 0            ; index vector -- element
+        mov     rax, [rbp]              ; untagged index in rax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        shl     rax, 3                  ; convert cells to bytes
         _vector_data
-        _swap
-        _cells
-        _plus
-        _fetch
+        mov     rbx, [rbx + rax]
 %endmacro
 
 %macro  _this_vector_nth_unsafe 0       ; index -- element
