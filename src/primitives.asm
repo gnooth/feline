@@ -903,6 +903,14 @@ code cfetchs, 'c@s'     ; address -- signed-byte
         next
 endcode
 
+; ### w@
+code wfetch, 'w@'       ; address -- uint16
+        _check_fixnum
+        _wfetch
+        _tag_fixnum
+        next
+endcode
+
 ; ### l@
 code lfetch, 'l@'       ; address -- uint32
         _check_fixnum
