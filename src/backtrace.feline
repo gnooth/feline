@@ -1,4 +1,4 @@
--- Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 using: feline ;
 in: feline
 
-: find-word-from-code-address ( tagged-code-address -- word )
+: find-word-from-code-address ( tagged-code-address -- word/f )
     >local: x
     all-words
     [
@@ -62,7 +62,5 @@ in: feline
         tag-fixnum dup find-word-from-code-address [ format-word ] [ drop ] if*
         nl
     ] each ;
-
-: :bt ( -- ) print-backtrace ;
 
 : bt ( -- ) print-backtrace ;
