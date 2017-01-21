@@ -1,0 +1,1373 @@
+-- Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline ;
+in: user
+
+"disassembler" delete-vocab
+
+in: disassembler
+
+-- "0 = default operand size   1 = 64-bit operand size"
+constant: rex.w 8
+
+-- "1-bit (high) extension of the ModRM reg field, thus permitting access to 16 registers."
+constant: rex.r 4
+
+-- "1-bit (high) extension of the SIB index field, thus permitting access to 16 registers."
+constant: rex.x 2
+
+-- "1-bit (high) extension of the ModRM r/m field, SIB base field, or opcode reg field,
+-- thus permitting access to 16 registers."
+constant: rex.b 1
+
+global: start-address
+global: stop-address
+global: #insts
+global: instruction-start
+global: ip
+global: prefix
+global: operand-size-prefix
+global: opcode
+global: byte2                   -- second byte of two-byte opcode
+global: modrm-byte
+global: sib-byte
+
+global: mnemonic
+
+global: immediate-operand?
+global: immediate-operand
+global: signed?
+
+global: register-direct?
+global: memory-operand?
+global: sreg                    -- source register
+global: ssize                   -- source operand size
+global: sbase                   -- source base register
+global: sindex                  -- source index register
+global: sscale                  -- source scaling factor
+global: sdisp                   -- source displacement
+global: dreg                    -- destination register
+global: dsize                   -- destination operand size
+global: dbase                   -- destination base register
+global: dindex                  -- destination index register
+global: dscale                  -- destination scaling factor
+global: ddisp                   -- destination displacement
+
+global: #operands
+
+global: relative-size
+
+: reset-disassembler ( -- )
+    0 !> prefix
+    0 !> byte2
+    0 !> operand-size-prefix
+
+    ip !> instruction-start
+    0 !> mnemonic
+
+    f !> immediate-operand?
+    f !> signed?
+    f !> register-direct?
+    f !> memory-operand?
+
+    f !> sreg
+    f !> dreg
+    64 !> ssize
+    64 !> dsize
+    f !> sbase
+    f !> dbase
+    f !> sindex
+    f !> dindex
+    0 !> sscale
+    0 !> dscale
+    0 !> sdisp
+    0 !> ddisp
+
+    2 !> #operands
+    f !> relative-size ;
+
+: reg64-name ( register-number -- string )
+    { "rax" "rcx" "rdx" "rbx" "rsp" "rbp" "rsi" "rdi"
+      "r8"  "r9"  "r10" "r11" "r12" "r13" "r14" "r15" } array-nth ;
+
+: reg32-name ( register-number -- string )
+    { "eax" "ecx" "edx" "ebx" "esp" "ebp" "esi" "edi" } array-nth ;
+
+: reg8-name ( register-number -- string )
+    { "al" "cl" "dl" "bl" } array-nth ;
+
+: .register-name ( register-number size -- )
+    >local: size
+    >local: n
+    {
+        { [ size 64 = ] [ n reg64-name write-string ] }
+        { [ size 32 = ] [ n reg32-name write-string ] }
+        { [ size  8 = ] [ n  reg8-name write-string ] }
+    } cond ;
+
+: .reg64  ( +n -- ) reg64-name write-string ;
+
+: .relative ( base index scale disp -- )
+    >local: disp
+    >local: scale
+    >local: index
+    >local: base
+
+    relative-size [
+        write-string space
+        f !> relative-size
+    ] when*
+
+    "[" write-string
+    base .reg64
+    index [ "+" write-string index .reg64 ] when
+    disp 0 = [
+        disp 0 > [ "+" write-string ] [ "-" write-string disp negate !> disp ] if
+        disp dec.
+    ] unless
+    "]" write-string ;
+
+: .memory-operand ( disp -- )
+    relative-size string? [
+        relative-size write-string space
+        f !> relative-size
+    ] when
+    "[" write-string hex. "]" write-string ;
+
+: .ip ( -- ) ?nl ip hex. space ;
+
+: ++ip ( -- ) 1+!> ip ;
+
+: .mnemonic ( -- ) mnemonic [ 40 tab write-string ] when* ;
+
+: .hexbyte ( unsigned-byte -- )
+    >hex dup length 2 < [ '0' write-char ] when write-string ;
+
+: .bytes ( u -- )
+    [ instruction-start + c@ .hexbyte space ] each-integer ;
+
+: .instruction-bytes ( -- )  ip instruction-start - .bytes ;
+
+: .dest ( -- )
+    48 tab
+    {
+        { [ dreg ] [ dreg dsize .register-name ] }
+        { [ dbase ] [ dbase dindex dscale ddisp .relative ]  }
+        { [ memory-operand? ] [ ddisp .memory-operand f !> memory-operand? ] }
+        [ ".dest" error ]
+    } cond ;
+
+: .sep  ( -- )  ", " write-string ;
+
+: .immediate-operand ( ) immediate-operand signed? [ dec. ] [ hex. ] if ;
+
+: .source ( -- )
+    {
+        { [ immediate-operand? ] [ .sep .immediate-operand ] }
+        { [ sbase ] [ .sep sbase sindex sscale sdisp .relative ] }
+        { [ memory-operand? ] [ .sep sdisp .memory-operand ] }
+        { [ sreg ] [ .sep sreg ssize .register-name ] }
+        [ ".source" error ]
+    } cond ;
+
+: .inst ( -- )
+    .instruction-bytes
+    .mnemonic
+    #operands 0 > [ .dest ] when
+    #operands 1 > [ .source ] when ;
+
+256 f <array> >global: handlers
+
+: install-handler ( handler opcode -- ) handlers array-set-nth ;
+
+: handler ( opcode -- handler ) handlers array-nth ;
+
+: execute-handler ( handler -- )
+    [ call-symbol ] [ "no handler" error ] if* ;
+
+: next-byte ( -- byte ) ip c@ ++ip ;
+
+: next-signed-byte ( -- signed-byte ) ip c@s ++ip ;
+
+: next-int32 ( -- int32 ) ip l@s ip 4 + !> ip ;
+
+: next-uint32 ( -- uint32 ) ip l@ ip 4 + !> ip ;
+
+: next-uint64 ( -- uint64 ) ip @ ip 8 + !> ip ;
+
+: next-uint16 ( -- int16 ) ip w@ ip 2 + !> ip ;
+
+: (modrm-mod) ( modrm-byte -- mod ) %11000000 bitand 6 rshift ;
+: (modrm-reg) ( modrm-byte -- reg ) %00111000 bitand 3 rshift ;
+: (modrm-rm)  ( modrm-byte -- rm  ) %00000111 bitand ;
+
+global: modrm-mod
+global: modrm-reg
+global: modrm-rm
+
+-- regop is a synonym of modrm-reg
+global: regop   -- REGister or OPcode extension (depending on the instruction)
+
+: !modrm-byte ( -- )
+    next-byte dup !> modrm-byte
+    dup (modrm-mod) !> modrm-mod
+    dup (modrm-reg) !> modrm-reg
+    (modrm-rm) !> modrm-rm
+    modrm-reg !> regop ;
+
+: register-reg ( n1 -- n2 )
+    prefix 4 rshift $4 = [
+        prefix rex.r bitand zero? not [
+            8 bitor
+        ] when
+    ] when ;
+
+: register-rm ( n1 -- n2 )
+    prefix 4 rshift $4 = [
+        prefix rex.b bitand zero? not [
+            8 bitor
+        ] when
+    ] when ;
+
+: .2 ( ub -- ) fixnum>binary dup length 2 <      [ '0' write-char ] when  write-string ;
+: .3 ( ub -- ) fixnum>binary dup length 3 swap - [ '0' write-char ] times write-string ;
+
+: .modrm ( modrm-byte -- )
+   ?nl " mod: " write-string dup (modrm-mod) .2
+   nl  " reg: " write-string dup (modrm-reg) .3
+   nl  "  rm: " write-string     (modrm-rm)  .3 ;
+
+: !sib-byte ( -- ) next-byte !> sib-byte ;
+
+: (sib-scale) ( sib -- scale ) %11000000 bitand 6 rshift ;
+: (sib-index) ( sib -- index ) %00111000 bitand 3 rshift ;
+: (sib-base)  ( sib -- base  ) %00000111 bitand ;
+
+: sib-scale ( -- scale ) sib-byte (sib-scale) ;
+: sib-index ( -- index ) sib-byte (sib-index) ;
+: sib-base  ( -- base  ) sib-byte (sib-base)  ;
+
+: .sib  ( sib -- )
+   ?nl " scale: " write-string dup (sib-scale) .2
+   nl  " index: " write-string dup (sib-index) .3
+   nl  "  base: " write-string     (sib-base)  .3 ;
+
+: register-index ( n1 -- n2 )
+    prefix 4 rshift $4 = [
+        prefix rex.x bitand zero? not [
+            8 bitor
+        ] when
+    ] when ;
+
+: unsupported ( -- )
+    ?nl "unsupported instruction at " write-string instruction-start hex.
+    instruction-start 16 dump
+    "unsupported instruction" error ;
+
+: set-instruction-size ( -- )
+    operand-size-prefix $66 eq? [
+        16 dup !> dsize !> ssize
+    ] [
+        prefix $40 bitand 0 = 32 64 ? dup !> dsize !> ssize
+    ] if ;
+
+: /r-r/m-reg
+    -- /r
+    -- source is r32/64
+    -- dest is r/m32/64
+    set-instruction-size
+    !modrm-byte
+    modrm-reg register-reg !> sreg
+    modrm-mod {
+        { 0 [
+            modrm-rm {
+                { 4 [
+                    !sib-byte
+                    sib-base {
+                        { 5 [
+                            next-int32 !> ddisp
+                            t !> memory-operand?
+                        ] }
+                    } case
+                ] }
+                [
+                    -- default case
+                    drop
+                    modrm-rm register-rm !> dbase
+                ]
+            } case
+        ] }
+        { 1 [
+            next-signed-byte !> ddisp
+            modrm-rm register-rm !> dbase
+        ] }
+        { 3 [ modrm-rm register-rm !> dreg ] }
+    } case
+    .inst ;
+
+: al,imm8 ( mnemonic -- )
+    !> mnemonic
+    set-instruction-size
+    next-byte
+    .instruction-bytes
+    .mnemonic
+    48 tab "al, " write-string hex. ;
+
+: jcc-rel32 ( mnemonic -- )
+    !> mnemonic
+    next-int32 ip + >local: jump-target
+
+    .instruction-bytes
+    .mnemonic
+    48 tab jump-target hex. ;
+
+: regop-mnemonic ( -- string )
+    {
+        {
+            [ opcode $80 $83 between? ]
+            [ regop { "add" "or" "adc" "sbb" "and" "sub" "xor" "cmp" } nth ]
+        }
+        {
+            [ opcode $c0 $c1 between? opcode $d0 $d3 between? or ]
+            [ regop { "rol" "ror" "rcl" "rcr" "shl" "shr" "shl" "sar" } nth ]
+        }
+        {
+            [ opcode $f6 $f7 between? ]
+            [ regop { "test" "test" "not" "neg" "mul" "imul" "div" "idiv" } nth ]
+        }
+    } cond ;
+
+: /r-reg-r/m ( -- )
+    -- /r
+    -- source is r/m32/64
+    -- dest is r32/64
+    !modrm-byte
+    modrm-reg register-reg !> dreg
+    modrm-mod {
+        { 0 [
+            modrm-rm 4 = [
+                !sib-byte
+                {
+                    { [ sib-base 4 = sib-byte $24 = and ] [ sib-base !> sbase ] }
+                    { [ sib-base 5 = ] [ next-int32 !> sdisp t !> memory-operand? ] }
+                    [
+                        sib-base register-rm !> sbase
+                        sib-index register-index !> sindex
+                    ]
+                } cond
+            ] [
+                modrm-rm register-rm !> sbase
+            ] if
+        ] }
+        { 1 [
+            modrm-rm 4 = [
+                !sib-byte
+                next-signed-byte !> sdisp
+                sib-byte $24 = [
+                    sib-base  !> sbase
+                ] [
+                    sib-base register-rm !> sbase
+                    sib-index register-index !> sindex
+                    sib-scale !> sscale
+                ] if
+            ] [
+                modrm-rm register-rm !> sbase
+                next-signed-byte !> sdisp
+                "qword" !> relative-size
+            ] if
+        ] }
+    } case
+    .inst ;
+
+: .push  ( -- )
+    "push" !> mnemonic
+    opcode $50 - register-rm !> dreg
+    1 !> #operands
+    .inst ;
+
+8 [ $50 + ' .push swap install-handler ] each-integer
+
+: .pop  ( -- )
+    "pop" !> mnemonic
+    opcode $58 - register-rm !> dreg
+    1 !> #operands
+    .inst ;
+
+8 [ $58 + ' .pop swap install-handler ] each-integer
+
+: .01
+    -- /r
+    -- source is r32/64
+    -- dest is r/m32/64
+    "add" !> mnemonic
+    /r-r/m-reg ;
+
+last-word $01 install-handler
+
+: .03
+    -- /r
+    -- source is r/m32/64
+    -- dest is r32/64
+    "add" !> mnemonic
+    /r-reg-r/m ;
+
+last-word $03 install-handler
+
+: .0b
+    -- /r
+    -- ModR/M byte contains both a register and an r/m operand
+    -- source is r/m32/64
+    -- dest is r32/64
+    "or" !> mnemonic
+    /r-reg-r/m ;
+
+last-word $0b install-handler
+
+: .19 "sbb" !> mnemonic /r-r/m-reg ;
+
+last-word $19 install-handler
+
+: .21
+    -- /r
+    -- source is r32/64
+    -- dest is r/m32/64
+    "and" !> mnemonic
+    /r-r/m-reg ;
+
+last-word $21 install-handler
+
+: .23
+    -- /r
+    -- source is r/m32/64
+    -- dest is r32/64
+    "and" !> mnemonic
+    /r-reg-r/m ;
+
+last-word $23 install-handler
+
+: .24 "and" al,imm8 ;
+
+last-word $24 install-handler
+
+: .29 "sub" !> mnemonic /r-r/m-reg ;
+
+last-word $29 install-handler
+
+: .2b
+    -- /r
+    -- dest is r32/64
+    -- source is r/m32/64
+    "sub" !> mnemonic
+    /r-reg-r/m ;
+
+last-word $2b install-handler
+
+: .31
+    set-instruction-size
+   "xor" !> mnemonic
+   /r-r/m-reg ;
+
+last-word $31 install-handler
+
+: .39
+    -- /r
+    -- dest is r/m32/64
+    -- source is r32/64
+    set-instruction-size
+    "cmp" !> mnemonic
+    /r-r/m-reg ;
+
+last-word $39 install-handler
+
+: .3a
+    "cmp" !> mnemonic
+    8 dup !> ssize !> dsize
+    !modrm-byte
+    modrm-mod {
+        { 1 [
+            modrm-rm register-rm !> sbase
+            next-signed-byte !> sdisp
+            "byte" !> relative-size
+            modrm-reg register-reg !> dreg
+        ] }
+        [ unsupported ]
+    } case
+    .inst ;
+
+last-word $3a install-handler
+
+: .3b
+    "cmp" !> mnemonic
+    -- /r
+    -- source is r/m32/64
+    -- dest is r32/64
+    /r-reg-r/m ;
+
+last-word $3b install-handler
+
+: .3c "cmp" al,imm8 ;
+
+last-word $3c install-handler
+
+: .63
+    -- /r
+    -- source is r/m32
+    -- dest is r32/64
+    "movsx" !> mnemonic
+    !modrm-byte
+    modrm-reg register-reg !> dreg
+    modrm-rm  register-rm  !> sbase
+    "dword" !> relative-size
+    .inst ;
+
+last-word $63 install-handler
+
+: jmp/jcc-rel8 ( mnemonic -- )
+    !> mnemonic
+    next-signed-byte ip + >local: jump-target
+    .instruction-bytes
+    .mnemonic
+    48 tab jump-target hex.
+
+    jump-target start-address stop-address between? [
+        jump-target find-word-from-code-address [
+            64 tab symbol-name write
+        ] when*
+    ] unless ;
+
+: .70 ( -- ) "jo"  jmp/jcc-rel8 ; last-word $70 install-handler
+: .71 ( -- ) "jno" jmp/jcc-rel8 ; last-word $71 install-handler
+: .72 ( -- ) "jc"  jmp/jcc-rel8 ; last-word $72 install-handler
+: .73 ( -- ) "jnc" jmp/jcc-rel8 ; last-word $73 install-handler
+: .74 ( -- ) "jz"  jmp/jcc-rel8 ; last-word $74 install-handler
+: .75 ( -- ) "jne" jmp/jcc-rel8 ; last-word $75 install-handler
+: .76 ( -- ) "jna" jmp/jcc-rel8 ; last-word $76 install-handler
+: .77 ( -- ) "ja"  jmp/jcc-rel8 ; last-word $77 install-handler
+: .78 ( -- ) "js"  jmp/jcc-rel8 ; last-word $78 install-handler
+: .79 ( -- ) "jns" jmp/jcc-rel8 ; last-word $79 install-handler
+: .7a ( -- ) "jpe" jmp/jcc-rel8 ; last-word $7a install-handler
+: .7b ( -- ) "jpo" jmp/jcc-rel8 ; last-word $7b install-handler
+: .7c ( -- ) "jl"  jmp/jcc-rel8 ; last-word $7c install-handler
+: .7d ( -- ) "jge" jmp/jcc-rel8 ; last-word $7d install-handler
+: .7e ( -- ) "jle" jmp/jcc-rel8 ; last-word $7e install-handler
+: .7f ( -- ) "jg"  jmp/jcc-rel8 ; last-word $7f install-handler
+
+: .80 ( -- )
+    -- modrm-reg encodes opcode extension
+    -- source is imm8
+    -- dest is r/m8
+    !modrm-byte
+    regop-mnemonic !> mnemonic
+    modrm-mod {
+        { 0 [
+            modrm-rm register-rm !> dbase
+            "byte" !> relative-size
+            next-byte !> immediate-operand
+            t !> immediate-operand?
+        ] }
+        { 1  [
+            modrm-rm {
+                { 4 [
+                    !sib-byte
+                    sib-index 4 = not
+                    sib-base 5 = not and [
+                        sib-scale zero? [
+                            sib-base !> dbase
+                            sib-index !> dindex
+                            next-signed-byte !> ddisp
+                            next-byte !> immediate-operand
+                            t !> immediate-operand?
+                        ] [ unsupported ] if
+                    ] [ unsupported ] if
+                ] }
+                [
+                    -- default case
+                    drop
+                    modrm-rm register-rm !> dbase
+                    next-signed-byte !> ddisp
+                    "byte" !> relative-size
+                    next-byte !> immediate-operand
+                    t !> immediate-operand?
+                ]
+            } case
+        ] }
+        { 3  [
+            -- register-direct
+            modrm-rm !> dreg
+            8 !> dsize
+            next-byte !> immediate-operand
+            t !> immediate-operand?
+        ] }
+        [ unsupported ]
+    } case
+    .inst ;
+
+last-word $80 install-handler
+
+: .81
+    -- modrm-reg encodes opcode extension
+    -- source is imm32
+    -- dest is r/m32/64
+    set-instruction-size
+    !modrm-byte
+    regop-mnemonic !> mnemonic
+    modrm-mod {
+        { 3 [
+            -- register-direct addressing mode
+            modrm-rm register-rm !> dreg
+            next-int32 !> immediate-operand
+            t !> immediate-operand?
+            t !> signed?
+        ] }
+        [ unsupported ]
+    } case
+    .inst ;
+
+last-word $81 install-handler
+
+: .83 ( -- )
+    -- modrm-reg encodes opcode extension
+    -- source is imm8
+    -- dest is r/m32/64
+    set-instruction-size
+    !modrm-byte
+    regop-mnemonic !> mnemonic
+    modrm-mod {
+        { 0 [
+            modrm-rm {
+                { 4 [
+                    !sib-byte
+                    sib-base {
+                        { 5 [
+                            next-int32 !> ddisp
+                            t !> memory-operand?
+                        ] }
+                    } case
+                    -- source is imm8
+                    t !> immediate-operand?
+                    next-byte !> immediate-operand
+                ] }
+                [
+                    -- default case
+                    drop modrm-rm register-rm !> dbase
+                ]
+            } case
+        ] }
+        { 1 [
+            -- register-indirect addressing mode
+            modrm-rm register-rm !> dbase
+            next-signed-byte !> ddisp
+            "qword" !> relative-size
+            t !> immediate-operand?
+            next-byte !> immediate-operand
+        ] }
+        { 3 [
+            -- register-direct addressing mode
+            modrm-rm register-rm !> dreg
+            next-signed-byte !> immediate-operand
+            t !> immediate-operand?
+            t !> signed?
+        ] }
+        [ unsupported ]
+    } case
+    .inst ;
+
+last-word $83 install-handler
+
+: .84
+    -- /r
+    -- source is r8
+    -- dest is r/m8
+    "test" !> mnemonic
+    !modrm-byte
+    modrm-mod {
+        { 3 [
+            t !> register-direct?
+            modrm-reg !> sreg
+            8 !> ssize
+            modrm-rm !> dreg
+            8 !> dsize
+        ] }
+        [ unsupported ]
+    } case
+    .inst ;
+
+last-word $84 install-handler
+
+: .85
+    -- /r
+    -- source is r32/64
+    -- dest is r/m32/64
+    "test" !> mnemonic
+    /r-r/m-reg ;
+
+last-word $85 install-handler
+
+: .88
+    -- /r
+    "mov" !> mnemonic
+    !modrm-byte
+    modrm-reg !> sreg
+    8 !> ssize
+    {
+        { [ modrm-mod 0 = ] [ modrm-rm !> dbase 8 !> dsize .inst ] }
+        { [ modrm-mod 3 = ] [ modrm-rm !> dreg  8 !> dsize modrm-reg !> sreg .inst ] }
+        [ unsupported ]
+    } cond ;
+
+last-word $88 install-handler
+
+: .89
+    -- /r
+    -- source is r32/64
+    -- dest is r/m32/64
+    "mov" !> mnemonic
+    /r-r/m-reg ;
+
+last-word $89 install-handler
+
+: .8a
+    -- /r
+    -- source is r/m8
+    -- dest is r8
+    "mov" !> mnemonic
+    !modrm-byte
+    modrm-reg !> dreg
+    8 !> dsize
+    modrm-mod {
+        { 0 [
+            modrm-rm register-rm !> sbase
+        ] }
+        { 1 [
+            modrm-rm register-rm !> sbase
+            next-signed-byte !> sdisp
+        ] }
+        [ unsupported ]
+    } case
+    .inst ;
+
+last-word $8a install-handler
+
+: .8b
+    -- /r
+    -- source is r/m32/64
+    -- dest is r32/64
+    "mov" !> mnemonic
+    /r-reg-r/m ;
+
+last-word $8b install-handler
+
+: .8d
+    "lea" !> mnemonic
+    !modrm-byte
+    modrm-reg register-reg !> dreg
+
+    modrm-rm 4 = [ !sib-byte ] when
+
+    modrm-mod {
+        { 1 [
+            -- 1-byte displacement
+            modrm-reg register-reg !> dreg
+            modrm-rm register-rm !> sbase
+            next-signed-byte !> sdisp
+        ] }
+        { 2 [
+            -- disp32
+            modrm-rm {
+                { 4 [
+                    sib-index 4 =
+                    sib-base 4 = and
+                    sib-scale 0 = and [
+                        sib-base register-rm !> sbase
+                        ip l@s !> sdisp
+                        ip 4 + !> ip
+                    ] [ unsupported ] if
+                ] }
+            } case
+        ] }
+        [ unsupported ]
+    } case
+    .inst ;
+
+last-word $8d install-handler
+
+: .8f
+    "pop" !> mnemonic
+    1 !> #operands
+    !modrm-byte
+    regop zero? [ unsupported ] unless
+    modrm-mod {
+        { 0 [
+            modrm-rm {
+                { 4 [
+                    !sib-byte
+                    sib-index 4 =
+                    sib-base 5 = or [
+                        -- [disp32]
+                        next-int32 !> ddisp
+                        t !> memory-operand?
+                    ] [ unsupported ] if
+                ] }
+            } case
+        ] }
+        { 1 [
+            modrm-rm register-rm !> dbase
+            next-signed-byte !> ddisp
+            "qword" !> relative-size  -- REVIEW
+        ] }
+    } case
+    .inst ;
+
+last-word $8f install-handler
+
+: .90
+   "nop" !> mnemonic
+   0 !> #operands
+   .inst ;
+
+last-word $90 install-handler
+
+: .99
+    prefix zero? "cqd" "cqo" ? !> mnemonic
+    0 !> #operands
+    .inst ;
+
+last-word $99 install-handler
+
+: .ab
+    prefix zero? "stosd" "stosq" ? !> mnemonic
+    0 !> #operands
+    .inst ;
+
+last-word $ab install-handler
+
+: .b8
+    -- source is imm32/64
+    -- dest is r32/64
+    "mov" !> mnemonic
+    opcode $b8 - !> dreg
+    prefix zero? [
+        next-uint32
+        32 !> dsize
+    ] [
+        next-uint64
+    ] if
+    !> immediate-operand
+    t !> immediate-operand?
+    .inst ;
+
+8 [ $b8 + ' .b8 swap install-handler ] each-integer
+
+: .c1
+    -- modrm-reg encodes opcode extension
+    -- source is imm8
+    -- dest is r/m32/64
+    !modrm-byte
+    t !> immediate-operand?
+    regop-mnemonic !> mnemonic
+    modrm-mod {
+        { 1 [
+            -- dest is [r/m + disp8]
+            modrm-rm register-rm !> dbase
+            next-signed-byte !> ddisp
+            "qword" !> relative-size
+            next-signed-byte !> immediate-operand
+        ] }
+        { 3 [
+            -- direct-mode register addressing
+            t !> register-direct?
+            modrm-rm register-rm !> dreg
+            next-signed-byte !> immediate-operand
+        ] }
+        [ unsupported ]
+    } case
+    .inst ;
+
+last-word $c1 install-handler
+
+: .c3
+   "ret" !> mnemonic
+   0 !> #operands
+   .inst ;
+
+last-word $c3 install-handler
+
+: .c6
+    -- /0
+    -- source is imm8
+    -- dest is r/m8
+    !modrm-byte
+    "mov" !> mnemonic
+    modrm-reg {
+        { 0 [
+            modrm-mod {
+                { 0 [
+                    modrm-rm register-rm !> dbase
+                    "byte" !> relative-size
+                    next-byte !> immediate-operand
+                    t !> immediate-operand?
+                ] }
+                { 1 [
+                    -- [r/m + disp8]
+                    modrm-rm register-rm !> dbase
+                    "byte" !> relative-size
+                    next-signed-byte !> ddisp
+                    next-byte !> immediate-operand
+                    t !> immediate-operand?
+                ] }
+                [ unsupported ]
+            } case
+        ] }
+        [ unsupported ]
+    } case
+    .inst ;
+
+last-word $c6 install-handler
+
+: .c7
+    -- /0
+    -- Move a 32-bit signed immediate value to a 64-bit register
+    -- or memory operand.
+    !modrm-byte
+    regop zero? [ unsupported ] unless
+    "mov" !> mnemonic
+    modrm-mod {
+        { 0 [
+            modrm-rm {
+                { 4 [
+                    !sib-byte
+                    sib-base {
+                        { 5 [
+                            next-int32 !> ddisp
+                            t !> memory-operand?
+                            "qword" !> relative-size
+                            next-uint32 !> immediate-operand
+                            t !> immediate-operand?
+                        ] }
+                    } case
+                ] }
+                [
+                    -- default case
+                    drop
+                    modrm-rm register-rm !> dbase
+                    operand-size-prefix $66 = [
+                        "word" !> relative-size
+                        next-uint16 !> immediate-operand
+                    ] [
+                        "qword" !> relative-size
+                        next-int32 !> immediate-operand
+                    ] if
+                    t !> immediate-operand?
+                ]
+            } case
+        ] }
+        { 3 [
+            modrm-rm register-rm !> dreg
+            next-int32 !> immediate-operand
+            t !> immediate-operand?
+        ] }
+        [ unsupported ]
+    } case
+    .inst ;
+
+last-word $c7 install-handler
+
+: .cc
+    "int3" !> mnemonic
+    0 !> #operands
+    .inst ;
+
+last-word $cc install-handler
+
+: .d1 ( -- )
+    !modrm-byte
+    regop-mnemonic !> mnemonic
+    modrm-mod {
+        { 1 [
+            -- 1-byte displacement
+            modrm-rm register-rm !> dbase
+            next-signed-byte !> ddisp
+            "qword" !> relative-size
+            1 !> immediate-operand
+            t !> immediate-operand?
+        ] }
+        { 3 [
+            -- register-direct
+            modrm-rm register-rm !> dreg
+            1 !> immediate-operand
+            t !> immediate-operand?
+        ] }
+    } case
+    .inst ;
+
+last-word $d1 install-handler
+
+: .d3
+    -- dest is r/m32/64
+    -- source is cl register
+    !modrm-byte
+    regop-mnemonic !> mnemonic
+    modrm-mod 3 = [
+        -- register-direct
+        modrm-rm register-rm !> dreg
+        1 ( cl ) !> sreg
+        8 !> ssize
+        .inst
+    ] [ unsupported ] if ;
+
+last-word $d3 install-handler
+
+: .e2 ( -- )
+   "loop" !> mnemonic
+   next-signed-byte ip + >local: code-address
+   .instruction-bytes
+   .mnemonic
+   48 tab code-address hex. ;
+
+last-word $e2 install-handler
+
+: .e3
+    -- jump short if rcx == 0
+    "jrcxz" !> mnemonic
+    next-signed-byte ip + >local: target
+    ip instruction-start - .bytes
+    .instruction-bytes
+    .mnemonic
+    48 tab target hex. ;
+
+last-word $e3 install-handler
+
+: .eb ( -- ) "jmp" jmp/jcc-rel8 ; last-word $eb install-handler
+
+: .e8 ( -- )
+   "call" !> mnemonic
+   next-int32 ip + >local: code-address
+   .instruction-bytes
+   .mnemonic
+   48 tab
+   code-address dup hex.
+   find-word-from-code-address [ 64 tab symbol-name write ] when* ;
+
+last-word $e8 install-handler
+
+: .e9  ( -- )
+   "jmp" !> mnemonic
+   next-int32 ip + >local: jump-target
+   .instruction-bytes
+   .mnemonic
+   48 tab
+   jump-target hex. ;
+
+last-word $e9 install-handler
+
+: .f3
+    "rep" !> mnemonic
+    0 !> #operands
+    .inst ;
+
+last-word $f3 install-handler
+
+: .f6
+    !modrm-byte
+    regop-mnemonic !> mnemonic
+    regop {
+        { 0 [
+            modrm-mod {
+                { 1 [ modrm-rm register-rm !> dbase next-signed-byte !> ddisp ] }
+                { 3 [ modrm-rm !> dreg ] }
+            } case
+            next-byte !> immediate-operand
+            t !> immediate-operand?
+            8 !> dsize
+        ] }
+        [
+            -- default case
+            drop
+            modrm-rm !> dreg
+            8 !> dsize
+            1 !> #operands
+        ]
+    } case
+    .inst ;
+
+last-word $f6 install-handler
+
+: .f7
+    set-instruction-size
+    !modrm-byte
+    regop-mnemonic !> mnemonic
+    regop {
+        { 0 [
+            modrm-mod {
+                { 1 [ modrm-rm register-rm !> dbase next-signed-byte !> ddisp ] }
+                { 3 [ modrm-rm !> dreg ] }
+            } case
+            next-byte !> immediate-operand
+            t !> immediate-operand?
+        ] }
+        [
+            -- default case
+            drop
+            modrm-rm !> dreg
+            1 !> #operands
+        ]
+    } case
+    .inst ;
+
+last-word $f7 install-handler
+
+: .ff ( -- )
+    !modrm-byte
+    regop { "inc" "dec" "call" "callf" "jmp" "jmpf" "push" } nth !> mnemonic
+    1 !> #operands
+    modrm-mod {
+        { 0 [
+            modrm-rm 4 = [
+                !sib-byte
+                sib-index 4 = [
+                    sib-base {
+                        { 4 [ modrm-rm register-rm !> dbase ] }
+                        { 5 [ next-int32 !> ddisp t !> memory-operand? ] }
+                    } case
+                ] when
+            ] [
+                modrm-rm register-rm !> dbase
+            ] if
+        ] }
+        { 1 [
+            modrm-rm register-rm !> dbase
+            next-signed-byte !> ddisp
+            "qword" !> relative-size
+        ] }
+        { 3 [ modrm-rm register-rm !> dreg ] }
+    } case
+    .inst ;
+
+last-word $ff install-handler
+
+-- Two-byte opcodes beginning with $0f
+
+256 f <array> >global: $0f-handlers
+
+: install-$0f-handler ( handler opcode -- ) $0f-handlers array-set-nth ;
+
+: $0f-handler ( opcode -- handler ) $0f-handlers array-nth ;
+
+: .0f ( -- )
+    next-byte dup !> byte2 $0f-handler
+    [ execute-handler ] [ unsupported ] if* ;
+
+last-word $0f install-handler
+
+: .0f-31
+    "rdtsc" !> mnemonic
+    0 !> #operands
+    .inst ;
+
+last-word $31 install-$0f-handler
+
+: cmovcc-mnemonic ( byte2 -- )
+    $0f bitand {
+        "cmovo" "cmovno" "cmovc"  "cmovnc" "cmovz" "cmovnz" "cmovna" "cmova"
+        "cmovs" "cmovns" "cmovpe" "cmovpo" "cmovl" "cmovge" "cmovle" "cmovg"
+    } array-nth ;
+
+: .0f-4x ( -- )
+    set-instruction-size
+    $44 cmovcc-mnemonic !> mnemonic
+    !modrm-byte
+    modrm-reg register-reg !> dreg
+    modrm-mod {
+        { 3 [
+            -- register-direct addressing mode
+            modrm-rm register-rm !> sreg
+        ] }
+        [ unsupported ]
+    } case
+    .inst ;
+
+16 [ $40 + ' .0f-4x swap install-$0f-handler ] each-integer
+
+: .0f-81 ( -- ) "jno" jcc-rel32 ; last-word $81 install-$0f-handler
+: .0f-84 ( -- ) "jz"  jcc-rel32 ; last-word $84 install-$0f-handler
+: .0f-85 ( -- ) "jne" jcc-rel32 ; last-word $85 install-$0f-handler
+: .0f-88 ( -- ) "js"  jcc-rel32 ; last-word $88 install-$0f-handler
+: .0f-8c ( -- ) "jl"  jcc-rel32 ; last-word $8c install-$0f-handler
+
+: setcc-mnemonic ( byte -- string )
+    $0f bitand {
+        "seto" "setno" "setc"  "setnc" "setz" "setnz" "setna" "seta"
+        "sets" "setns" "setpe" "setpo" "setl" "setge" "setle" "setg"
+    } array-nth ;
+
+: .0f-9x
+    byte2 setcc-mnemonic !> mnemonic
+    !modrm-byte
+    modrm-mod {
+        { 3 [ modrm-rm !> dreg 8 !> dsize 1 !> #operands ] }
+        [ unsupported ]
+    } case
+    .inst ;
+
+16 [ $90 + ' .0f-9x swap install-$0f-handler ] each-integer
+
+: .0f-af
+    "imul" !> mnemonic
+    /r-reg-r/m ;
+
+last-word $af install-$0f-handler
+
+: .0f-b6
+    -- ModR/M byte contains both a register and an r/m operand
+    -- source is r/m8
+    -- dest is r32/64
+    set-instruction-size
+    "movzx" !> mnemonic
+    !modrm-byte
+    modrm-reg register-reg !> dreg
+    modrm-mod {
+        { 0 [
+            modrm-rm register-rm !> sbase
+            prefix 64 32 ? !> dsize
+            "byte" !> relative-size
+        ] }
+        { 1 [
+            modrm-rm 4 = [
+                !sib-byte
+                next-signed-byte !> sdisp
+                sib-byte $24 = [
+                    sib-base  !> sbase
+                ] [
+                    sib-base register-rm !> sbase
+                    sib-index register-index !> sindex
+                    sib-scale !> sscale
+                ] if
+            ] [
+                modrm-rm register-rm !> sbase
+                next-signed-byte !> sdisp
+                "byte" !> relative-size
+            ] if
+        ] }
+        { 3 [
+            t !> register-direct?
+            modrm-rm register-rm !> sreg
+            8 !> ssize
+            prefix 64 32 ? !> dsize
+        ] }
+        [ unsupported ]
+    } case
+    .inst ;
+
+last-word $b6 install-$0f-handler
+
+: .0f-b7
+    -- ModR/M byte contains both a register and an r/m operand
+    -- source is r/m16
+    -- dest is r32/64
+    set-instruction-size
+    "movzx" !> mnemonic
+    !modrm-byte
+    modrm-reg register-reg !> dreg
+    modrm-mod {
+        { 0 [
+            modrm-rm register-rm !> sbase
+            "word" !> relative-size
+        ] }
+        { 1 [
+            modrm-rm register-rm !> sbase
+            next-signed-byte !> sdisp
+            "word" !> relative-size
+        ] }
+        { 3 [
+            t !> register-direct?
+            modrm-rm register-rm !> sreg
+            16 !> ssize
+        ] }
+        [ unsupported ]
+    } case
+    .inst ;
+
+last-word $b7 install-$0f-handler
+
+: .0f-be
+    "movsx" !> mnemonic
+    !modrm-byte
+    modrm-rm register-rm !> dreg
+    modrm-mod {
+        { 0 [
+            modrm-rm register-rm !> sbase
+            8 !> ssize
+            "byte" !> relative-size
+        ] }
+        [
+            -- default case
+            drop
+            modrm-reg !> sreg
+            8 !> ssize
+        ]
+    } case
+    .inst ;
+
+last-word $be install-$0f-handler
+
+: .opcode
+    opcode handler [ execute-handler ] [ unsupported ] if* ;
+
+: decode
+    depth 0 assert=
+    reset-disassembler
+    .ip
+    ip c@ >local: byte
+    byte $66 eq? [
+        byte !> operand-size-prefix
+        ++ip
+        ip c@ !> byte
+    ] when
+    byte $40 $4f between? [
+        byte !> prefix
+        ip 1 + c@ !> opcode
+        ip 2 + !> ip
+    ] [
+        byte !> opcode
+        0 !> prefix
+        ++ip
+    ] if
+    .opcode
+    1+!> #insts ;
+
+: disasm ( code-address code-size -- )
+    over !> start-address
+    + !> stop-address
+
+    start-address !> ip
+    0 !> #insts
+
+    [ ip stop-address >= ] [ decode ] until
+
+    ?nl
+    #insts dec. " instructions " write-string
+    ip start-address - dec. " bytes" write-string ;
+
+: disassemble ( symbol -- )
+    [ symbol-code-address ] [ symbol-code-size ] bi disasm ;
+
+: dis
+    must-parse-token
+    must-find-name              -- symbol
+    disassemble ;
+
+using: feline disassembler ;
+in: feline
