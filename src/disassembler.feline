@@ -1111,12 +1111,16 @@ last-word $f6 install-handler
     regop-mnemonic !> mnemonic
     regop {
         { 0 [
+            -- source is imm32/64
+            -- dest is r/m32/64
             modrm-mod {
-                { 1 [ modrm-rm register-rm !> dbase next-signed-byte !> ddisp ] }
-                { 3 [ modrm-rm !> dreg ] }
+                { 3 [
+                    modrm-rm register-rm !> dreg
+                    next-int32 !> immediate-operand
+                    t !> immediate-operand?
+                ] }
+                [ unsupported ]
             } case
-            next-byte !> immediate-operand
-            t !> immediate-operand?
         ] }
         [
             -- default case
