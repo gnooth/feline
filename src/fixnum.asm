@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -407,10 +407,8 @@ endcode
 
 ; ### mod
 code feline_mod, 'mod'                  ; n1 n2 -- n3
-        _ check_fixnum
-        _swap
-        _ check_fixnum
-        _swap
+        _check_fixnum qword [rbp]
+        _check_fixnum
         _mod
         _tag_fixnum
         next
