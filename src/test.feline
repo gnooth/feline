@@ -1470,11 +1470,30 @@ test: string-has-prefix?-test-1
     "0x" "0" string-has-prefix? assert-false
     "0x" "0x0" string-has-prefix? assert-true
 
+    "" "foo" string-has-prefix? assert-true
+    "foo" "" string-has-prefix? assert-false
+    "" "" string-has-prefix? assert-true
+
     [ 42 "test" string-has-prefix? ] assert-must-fail
     [ "test" 42 string-has-prefix? ] assert-must-fail
 ;
 
 string-has-prefix?-test-1
+
+test: string-has-suffix?-test-1
+    "bar" "foobar" string-has-suffix? assert-true
+    "foobar" "bar" string-has-suffix? assert-false
+    "foo" "foo" string-has-suffix? assert-true
+
+    "" "foo" string-has-suffix? assert-true
+    "foo" "" string-has-suffix? assert-false
+    "" "" string-has-suffix? assert-true
+
+    [ 42 "test" string-has-suffix? ] assert-must-fail
+    [ "test" 42 string-has-suffix? ] assert-must-fail
+;
+
+string-has-suffix?-test-1
 
 test: vector-find-string-test-1
     V{ "foo" "bar" "baz" "zork" } >local: v

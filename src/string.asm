@@ -556,6 +556,25 @@ code string_has_prefix?, 'string-has-prefix?'   ; prefix string -- ?
         next
 endcode
 
+; ### string-has-suffix?
+code string_has_suffix?, 'string-has-suffix?'   ; suffix string -- ?
+        _twodup
+        _lit S_string_length
+        _ bi_at                 ; -- suffix string len1 len2
+        _twodup
+        _ fixnum_le
+        _tagged_if .1
+        _swap
+        _ fixnum_minus
+        _ string_tail
+        _ stringequal
+        _else .1
+        _4drop
+        _f
+        _then .1
+        next
+endcode
+
 ; ### string-skip-whitespace
 code string_skip_whitespace, 'string-skip-whitespace' ; start-index string -- index/f
         _ check_string
