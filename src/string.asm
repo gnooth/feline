@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -537,6 +537,22 @@ code string_tail, 'string-tail'         ; string n -- substring
         _ string_length
         _ rot
         _ string_substring
+        next
+endcode
+
+; ### string-has-prefix?
+code string_has_prefix?, 'string-has-prefix?'   ; prefix string -- ?
+        _twodup
+        _lit S_string_length
+        _ bi_at
+        _ fixnum_le
+        _tagged_if .1
+        _ mismatch
+        _ not
+        _else .1
+        _2drop
+        _f
+        _then .1
         next
 endcode
 

@@ -1463,7 +1463,20 @@ test: substring-test-1
 
 substring-test-1
 
-test: vector-find-string-test-1 ( -- )
+test: string-has-prefix?-test-1
+    "foo" "foobar" string-has-prefix? assert-true
+    "foobar" "foo" string-has-prefix? assert-false
+    "foo" "foo" string-has-prefix? assert-true
+    "0x" "0" string-has-prefix? assert-false
+    "0x" "0x0" string-has-prefix? assert-true
+
+    [ 42 "test" string-has-prefix? ] assert-must-fail
+    [ "test" 42 string-has-prefix? ] assert-must-fail
+;
+
+string-has-prefix?-test-1
+
+test: vector-find-string-test-1
     V{ "foo" "bar" "baz" "zork" } >local: v
     "foo"  v vector-find-string assert-true 0 assert=
     "zork" v vector-find-string assert-true 3 assert=
