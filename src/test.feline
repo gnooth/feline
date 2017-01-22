@@ -1439,26 +1439,26 @@ sbuf-substring-test-1
 -- generic
 test: substring-test-1
     "this is a test"
-     0  4 pick string-substring "this"  assert=
-    10 14 pick string-substring "test"  assert=
-     5 10 pick string-substring "is a " assert=
-    13 14 pick string-substring "t"     assert=
+     0  4 pick substring "this"  assert=
+    10 14 pick substring "test"  assert=
+     5 10 pick substring "is a " assert=
+    13 14 pick substring "t"     assert=
 
-    0 0 pick string-substring "" assert=
-    4 4 pick string-substring "" assert=
+    0 0 pick substring "" assert=
+    4 4 pick substring "" assert=
 
-    0 14 pick string-substring "this is a test" assert=
+    0 14 pick substring "this is a test" assert=
 
     string>sbuf
-     0  4 pick sbuf-substring "this"  assert=
-    10 14 pick sbuf-substring "test"  assert=
-     5 10 pick sbuf-substring "is a " assert=
-    13 14 pick sbuf-substring "t"     assert=
+     0  4 pick substring "this"  assert=
+    10 14 pick substring "test"  assert=
+     5 10 pick substring "is a " assert=
+    13 14 pick substring "t"     assert=
 
-    0 0 pick sbuf-substring "" assert=
-    4 4 pick sbuf-substring "" assert=
+    0 0 pick substring "" assert=
+    4 4 pick substring "" assert=
 
-    0 14 rot sbuf-substring "this is a test" assert=
+    0 14 rot substring "this is a test" assert=
 ;
 
 substring-test-1
