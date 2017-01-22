@@ -1,72 +1,65 @@
-// Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
 
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
 in: feline
 
 : tuple-instance? ( object class -- ? )
-    over tuple?
-    [ swap layout-of first eq? ]
-    [ 2drop f ]
-    if
-;
+    over tuple? [ swap layout-of first eq? ] [ 2drop f ] if ;
 
 : require-type ( object class -- object )
     over tuple?
     [ over layout-of first eq? [ "type error" error ] unless ]
-    [ "type error" error ]
-    if
-;
+    [ "type error" error ] if ;
 
 : define-reader ( class slot-spec -- )
     dupd
-    [ symbol-name ] dip                 // -- class-name slot-spec
-    swap string>sbuf                    // -- slot-spec sbuf
-    '-' suffix!                         // -- slot-spec sbuf
-    over first sbuf-append-string       // -- slot-spec sbuf
+    [ symbol-name ] dip                 -- class-name slot-spec
+    swap string>sbuf                    -- slot-spec sbuf
+    '-' suffix!                         -- slot-spec sbuf
+    over first sbuf-append-string       -- slot-spec sbuf
 
     sbuf>string current-vocab <symbol>
-    dup current-vocab vocab-add-symbol  // -- class slot-spec symbol
+    dup current-vocab vocab-add-symbol  -- class slot-spec symbol
 
     [
         [ <wrapper> ] dip
         second
-        \ require-type swap
-        \ slot
+        ' require-type swap
+        ' slot
         4array array>quotation
     ] dip
     [ symbol-set-def ] keep
-    compile-word
-;
+    compile-word ;
 
 : define-writer ( class slot-spec -- )
     dupd
-    [ symbol-name ] dip                 // -- class-name slot-spec
-    swap string>sbuf                    // -- slot-spec sbuf
-    '-' suffix!                         // -- slot-spec sbuf
-    over first sbuf-append-string       // -- slot-spec sbuf
+    [ symbol-name ] dip                 -- class-name slot-spec
+    swap string>sbuf                    -- slot-spec sbuf
+    '-' suffix!                         -- slot-spec sbuf
+    over first sbuf-append-string       -- slot-spec sbuf
     '!' suffix!
 
     sbuf>string current-vocab <symbol>
-    dup current-vocab vocab-add-symbol  // -- slot-spec symbol
+    dup current-vocab vocab-add-symbol  -- slot-spec symbol
 
     [
         [ <wrapper> ] dip
         second
-        \ require-type swap
-        \ slot!
+        ' require-type swap
+        ' slot!
         4array array>quotation
     ] dip
     [ symbol-set-def ] keep
@@ -74,7 +67,7 @@ in: feline
 ;
 
 : define-accessors ( class -- )
-    "slots" over symbol-prop            // class slots
+    "slots" over symbol-prop            -- class slots
     [ [ dupd define-reader ] each drop ]
     [ [ dupd define-writer ] each drop ]
     2bi
@@ -90,17 +83,17 @@ in: feline
     dup symbol-name string>sbuf
     '?' over push
     sbuf>string current-vocab <symbol>
-    dup current-vocab vocab-add-symbol  // -- class symbol
+    dup current-vocab vocab-add-symbol  -- class symbol
 
-    swap                                // -- symbol class
+    swap                                -- symbol class
 
-    // REVIEW literalize
+    -- REVIEW literalize
     <wrapper>
 
-    10 <vector>                         // -- symbol class vector
-    [ push ] keep                       // -- symbol vector
-    \ tuple-instance? suffix!           // -- symbol vector
-    vector>array array>quotation        // -- symbol quotation
+    10 <vector>                         -- symbol class vector
+    [ push ] keep                       -- symbol vector
+    ' tuple-instance? suffix!           -- symbol vector
+    vector>array array>quotation        -- symbol quotation
     swap [ symbol-set-def ] keep
     compile-word
 ;
@@ -108,28 +101,28 @@ in: feline
 : define-tuple-class ( class-name slot-names -- )
     [ 2 + 2array ] map-index
 
-    swap define-class                   // -- slot-names class
-    "slots"                             // -- slot-names class "slots"
-    swap                                // -- slot-names "slots" class
+    swap define-class                   -- slot-names class
+    "slots"                             -- slot-names class "slots"
+    swap                                -- slot-names "slots" class
 
-    [ symbol-set-prop ] keep            // -- class
+    [ symbol-set-prop ] keep            -- class
 
-    [ "slots" swap symbol-prop length ] keep // -- size class
-    [ swap 2array ] keep                // -- array class
+    [ "slots" swap symbol-prop length ] keep    -- size class
+    [ swap 2array ] keep                        -- array class
     [ "layout" swap symbol-set-prop ] keep
 
-    [ define-accessors ] keep           // -- class
+    [ define-accessors ] keep           -- class
 
     define-tuple-predicate
 ;
 
 : TUPLE: ( -- )
-    parse-token                         // -- string/f
-    10 <vector>                         // -- string vector
+    parse-token                         -- string/f
+    10 <vector>                         -- string vector
 
     [ parse-token dup ";" string= ] [ suffix! ] until
     drop
     vector>array
-    // -- class-name slot-names
+    -- class-name slot-names
     define-tuple-class
 ;
