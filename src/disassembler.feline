@@ -21,17 +21,17 @@ in: user
 in: disassembler
 
 -- "0 = default operand size   1 = 64-bit operand size"
-constant: rex.w 8
+8 >constant: rex.w
 
 -- "1-bit (high) extension of the ModRM reg field, thus permitting access to 16 registers."
-constant: rex.r 4
+4 >constant: rex.r
 
 -- "1-bit (high) extension of the SIB index field, thus permitting access to 16 registers."
-constant: rex.x 2
+2 >constant: rex.x
 
 -- "1-bit (high) extension of the ModRM r/m field, SIB base field, or opcode reg field,
 -- thus permitting access to 16 registers."
-constant: rex.b 1
+1 >constant: rex.b
 
 global: start-address
 global: stop-address
