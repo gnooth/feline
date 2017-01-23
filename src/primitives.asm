@@ -293,7 +293,13 @@ code unless_star, 'unless*'             ; ? quot --
 endcode
 
 ; ### until
-code feline_until, 'until'              ; pred body --
+code until, 'until'             ; pred body --
+; call body until pred returns t
+
+        ; protect quotations from gc
+        push    rbx
+        push    qword [rbp]
+
         push    r12
         push    r13
         _ callable_code_address
@@ -312,6 +318,43 @@ code feline_until, 'until'              ; pred body --
 .exit:
         pop     r13
         pop     r12
+
+        ; drop quotations
+        lea     rsp, [rsp + BYTES_PER_CELL * 2]
+
+        next
+endcode
+
+; ### while
+code while, 'while'             ; pred body --
+; call body until pred returns f
+
+        ; protect quotations from gc
+        push    rbx
+        push    qword [rbp]
+
+        push    r12
+        push    r13
+        _ callable_code_address
+        mov     r13, rbx        ; body
+        poprbx
+        _ callable_code_address
+        mov     r12, rbx        ; pred
+        poprbx
+.1:
+        call    r12
+        cmp     rbx, f_value
+        poprbx
+        je      .exit
+        call    r13
+        jmp     .1
+.exit:
+        pop     r13
+        pop     r12
+
+        ; drop quotations
+        lea     rsp, [rsp + BYTES_PER_CELL * 2]
+
         next
 endcode
 
