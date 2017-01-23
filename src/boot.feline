@@ -22,11 +22,11 @@ in: feline
 {
     "backtrace.feline"
     "dump.feline"
-    "help.feline"
     "sequences.feline"
     "tuple.feline"
     "constant.feline"
     "accept.feline"
+    "help.feline"
 } [ load-system-file ] each
 
 using: feline ;
