@@ -16,19 +16,6 @@
 using: feline ;
 in: feline
 
-: constant: ( -- )
-    parse-token                         -- string/f
-    verify-string
-    current-vocab ensure-symbol         -- symbol
-
-    parse-token
-    literal? [
-        find-name [ literalize ] [ undefined ] if
-    ] unless
-
-    1array array>quotation over symbol-set-def compile-word
-;
-
 : >constant: ( x -- )
     must-parse-token
     current-vocab ensure-symbol         -- x symbol

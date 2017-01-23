@@ -672,8 +672,8 @@ hashtable-test-3
 
 global: ht
 
-constant: n1    100     -- total number of entries
-constant: n2     40     -- number of entries to delete
+100 >constant: n1       -- total number of entries
+40  >constant: n2       -- number of entries to delete
 
 test: hashtable-test-4 ( -- )
     1 <hashtable> !> ht
@@ -1116,10 +1116,10 @@ test: string-tail-test-1 ( -- )
 
 string-tail-test-1
 
-constant: magenta 5
+magenta >constant: test-magenta
 
 test: constant-test-1 ( -- )
-    magenta 5 eq? assert-true
+    test-magenta 5 eq? assert-true
 ;
 
 constant-test-1
