@@ -919,26 +919,52 @@ test: redefinition-test-1 ( -- )
 redefinition-test-1
 
 -- redefine %foo
-: %foo ( -- ) 87 ;
+: %foo 87 ;
 
-test: redefinition-test-2 ( -- )
+test: redefinition-test-2
     %foo 87 assert=
     %bar 87 assert=
 ;
 
 redefinition-test-2
 
-test: until-test-1 ( -- )
+test: empty?-test-1
+    { } empty? assert-true
+    { 1 } empty? assert-false
+    V{ } empty? assert-true
+    V{ 1 } empty? assert-false
+
+    f empty? assert-true
+    [ 42 empty? ] assert-must-fail
+;
+
+empty?-test-1
+
+test: until-test-1
     clear
     1 [ dup 1 = ] [ 1 + ] until get-datastack { 1 } sequence= assert-true
     clear
     1 [ dup 4 = ] [ 1 + ] until get-datastack { 4 } sequence= assert-true
     clear
+    [ t ] [ 42 ] until get-datastack empty? assert-true
+    clear
 ;
 
 until-test-1
 
-test: ensure-symbol-test-1 ( -- )
+test: while-test-1
+    clear
+    1 [ dup 1 = ] [ 1 + ] while get-datastack { 2 } sequence= assert-true
+    clear
+    1 [ dup 4 = ] [ 1 + ] while get-datastack { 1 } sequence= assert-true
+    clear
+    [ f ] [ 42 ] while get-datastack empty? assert-true
+    clear
+;
+
+while-test-1
+
+test: ensure-symbol-test-1
     "foo" "feline" ensure-symbol dup symbol? assert-true
     dup "foo" "feline" ?lookup-symbol eq? assert-true
     "foo" "feline" ensure-symbol eq? assert-true
