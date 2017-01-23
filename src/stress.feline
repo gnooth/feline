@@ -11,4 +11,10 @@ in: stress
 "times-gc-test-1" ?nl write-string
 10000000 [ most-positive-fixnum number>string drop ] times
 
+"until-gc-test-1" ?nl write-string
+10000000 [ dup zero? ] [ dup number>string drop 1 - ] until drop
+
+"while-gc-test-1" ?nl write-string
+10000000 [ dup zero? not ] [ dup number>string drop 1 - ] while drop
+
 in: feline
