@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -80,6 +80,12 @@ code object_address, 'object-address'   ; handle -- tagged-address
         next
 endcode
 
+; ### error-empty-handle
+code error_empty_handle, 'error-empty-handle'
+        _error "empty handle"
+        next
+endcode
+
 ; ### object-type
 code object_type, 'object-type'         ; handle-or-object -- n/f
 ; Return value is tagged.
@@ -104,6 +110,8 @@ code object_type, 'object-type'         ; handle-or-object -- n/f
         _ handle?
         _tagged_if .3
         _handle_to_object_unsafe
+        test    rbx, rbx
+        jz error_empty_handle
         _object_type
         _tag_fixnum
         _return
