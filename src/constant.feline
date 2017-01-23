@@ -28,3 +28,8 @@ in: feline
 
     1array array>quotation over symbol-set-def compile-word
 ;
+
+: >constant: ( x -- )
+    must-parse-token
+    current-vocab ensure-symbol         -- x symbol
+    swap 1array array>quotation over symbol-set-def compile-word ;
