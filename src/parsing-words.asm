@@ -320,18 +320,13 @@ endcode
 
 ; ### parse-definition-name
 code parse_definition_name, 'parse-definition-name'     ; -- symbol
-        _ parse_token                   ; -- string/f
-
-        _dup
-        _tagged_if_not .1
-        _error "attempt to use zero-length string as a name"
-        _then .1
+        _ must_parse_token      ; -- string
 
         ; check for redefinition in current vocab only!
         _dup
         _ current_vocab
         _ vocab_hashtable
-        _ at_star                       ; -- string symbol/f ?
+        _ at_star               ; -- string symbol/f ?
 
         _tagged_if .2
         _nip
@@ -342,13 +337,13 @@ code parse_definition_name, 'parse-definition-name'     ; -- symbol
         _ symbol_name
         _ write_string
         _else .2
-        _drop                           ; -- string
+        _drop                   ; -- string
         _ current_vocab
-        _ new_symbol                    ; -- symbol
-        _then .2                        ; -- symbol
+        _ new_symbol            ; -- symbol
+        _then .2                ; -- symbol
 
         _dup
-        _ set_last_word                 ; -- symbol
+        _ set_last_word         ; -- symbol
 
         next
 endcode
