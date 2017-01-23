@@ -968,7 +968,7 @@ test: 2bi-test-1
 
 global: temp-string "test" !> temp-string
 
-TUPLE: foo a b c ;
+tuple: foo a b c ;
 
 test: tuple-test-1 ( -- )
     \ foo new

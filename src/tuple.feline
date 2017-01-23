@@ -116,7 +116,7 @@ in: feline
     define-tuple-predicate
 ;
 
-: TUPLE: ( -- )
+: tuple:
     parse-token                         -- string/f
     10 <vector>                         -- string vector
 
