@@ -99,15 +99,10 @@ code interactive_load, 'l', SYMBOL_IMMEDIATE   ; --
         _ interactive?
         _ get
         _tagged_if .1
-        _ parse_token   ; -- string/f
-        _dup
-        _tagged_if .2
+        _ must_parse_token      ; -- string
         _quote ".feline"
         _ concat
         _ load
-        _else .2
-        _error "unexpected end of input"
-        _then .2
         _else .1
         _error "interactive only"
         _then .1
