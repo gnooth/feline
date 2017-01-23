@@ -404,7 +404,6 @@ section .data
         dq      %%name                  ; symbol name
         dq      FELINE_VOCAB_NAME       ; vocab name
         dq      f_value                 ; hashcode (link field)
-        dq      f_value                 ; xt
         dq      f_value                 ; def
         dq      f_value                 ; props
 %1_data:

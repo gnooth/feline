@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; 11 cells: object header, name, vocab-name, hashcode, xt, def, props,
+; 10 cells: object header, name, vocab-name, hashcode, def, props,
 ; value, raw code address, raw code size, flags
 
 %macro  _symbol_name 0                  ; symbol -- name
@@ -58,100 +58,84 @@ file __FILE__
         _this_set_slot3
 %endmacro
 
-%macro  _symbol_xt 0                    ; symbol -- xt
+%macro  _symbol_def 0                   ; symbol -- definition
         _slot4
 %endmacro
 
-%macro  _symbol_set_xt 0                ; xt symbol --
+%macro  _symbol_set_def 0               ; definition symbol --
         _set_slot4
 %endmacro
 
-%macro  _this_symbol_xt 0               ; -- xt
+%macro  _this_symbol_def 0              ; -- definition
         _this_slot4
 %endmacro
 
-%macro  _this_symbol_set_xt 0           ; xt --
+%macro  _this_symbol_set_def 0          ; definition --
         _this_set_slot4
 %endmacro
 
-%macro  _symbol_def 0                   ; symbol -- definition
+%macro  _symbol_props 0
         _slot5
 %endmacro
 
-%macro  _symbol_set_def 0               ; definition symbol --
+%macro  _symbol_set_props 0             ; props symbol --
         _set_slot5
 %endmacro
 
-%macro  _this_symbol_def 0              ; -- definition
+%macro  _this_symbol_props 0            ; -- props
         _this_slot5
 %endmacro
 
-%macro  _this_symbol_set_def 0          ; definition --
+%macro  _this_symbol_set_props 0        ; props --
         _this_set_slot5
 %endmacro
 
-%macro  _symbol_props 0
-        _slot6
-%endmacro
-
-%macro  _symbol_set_props 0             ; props symbol --
-        _set_slot6
-%endmacro
-
-%macro  _this_symbol_props 0            ; -- props
-        _this_slot6
-%endmacro
-
-%macro  _this_symbol_set_props 0        ; props --
-        _this_set_slot6
-%endmacro
-
 %macro  _symbol_value 0                 ; symbol -- value
-        _slot 7
+        _slot 6
 %endmacro
 
 %macro  _symbol_set_value 0             ; value symbol --
-        _set_slot 7
+        _set_slot 6
 %endmacro
 
 %macro  _this_symbol_set_value 0        ; value --
-        _this_set_slot 7
+        _this_set_slot 6
 %endmacro
 
 %macro  _symbol_raw_code_address 0      ; symbol -- raw-code-address
-        _slot 8
+        _slot 7
 %endmacro
 
 %macro  _symbol_set_raw_code_address 0  ; raw-code-address symbol --
-        _set_slot 8
+        _set_slot 7
 %endmacro
 
 %macro  _this_symbol_set_raw_code_address 0     ; raw-code-address --
-        _this_set_slot 8
+        _this_set_slot 7
 %endmacro
 
 %macro  _symbol_raw_code_size 0         ; symbol -- raw-code-size
-        _slot 9
+        _slot 8
 %endmacro
 
 %macro  _symbol_set_raw_code_size 0     ; raw-code-size symbol --
-        _set_slot 9
+        _set_slot 8
 %endmacro
 
 %macro  _this_symbol_set_raw_code_size 0        ; raw-code-size --
-        _this_set_slot 9
+        _this_set_slot 8
 %endmacro
 
 %macro  _symbol_flags 0                 ; symbol -- flags
-        _slot 10
+        _slot 9
 %endmacro
 
 %macro  _symbol_set_flags 0             ; flags symbol --
-        _set_slot 10
+        _set_slot 9
 %endmacro
 
 %macro  _this_symbol_set_flags 0        ; flags --
-        _this_set_slot 10
+        _this_set_slot 9
 %endmacro
 
 ; ### symbol?
@@ -237,10 +221,10 @@ endcode
 
 ; ### <symbol>
 code new_symbol, '<symbol>'             ; name vocab -- symbol
-; 11 cells: object header, name, vocab-name, hashcode, xt, def, props,
+; 10 cells: object header, name, vocab-name, hashcode, def, props,
 ; value, code address, code size, flags
 
-        _lit 11
+        _lit 10
         _ allocate_cells                ; -- name vocab object-address
 
         push    this_register
@@ -261,9 +245,6 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
         _ string_hashcode
         _ hash_combine
         _this_symbol_set_hashcode
-
-        _f
-        _this_symbol_set_xt
 
         _f
         _this_symbol_set_def
@@ -352,20 +333,6 @@ endcode
 code symbol_vocab_name, 'symbol-vocab-name' ; symbol -- vocab-name
         _ check_symbol
         _symbol_vocab_name
-        next
-endcode
-
-; ### symbol-xt
-code symbol_xt, 'symbol-xt'             ; symbol -- xt
-        _ check_symbol
-        _symbol_xt
-        next
-endcode
-
-; ### symbol-set-xt
-code symbol_set_xt, 'symbol-set-xt'     ; xt symbol --
-        _ check_symbol
-        _symbol_set_xt
         next
 endcode
 
