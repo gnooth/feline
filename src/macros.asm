@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -312,24 +312,37 @@ MAX_LOCALS      equ     16              ; maximum number of local variables in a
         dq      %2
 %endmacro
 
+; static string
+%macro  string 2                        ; label, string
+        section .data
+        align   DEFAULT_DATA_ALIGNMENT
+%strlen len     %2
+%1:
+        dw      OBJECT_TYPE_STRING
+        db      0                       ; flags byte
+        db      0                       ; not used
+        dd      0                       ; not used
+        dq      len                     ; length
+        dq      f_value                 ; hashcode
+        db      %2                      ; string
+        db      0                       ; null byte at end
+%endmacro
+
+%ifdef WIN64
+%define PATH_SEPARATOR_CHAR     '\'
+%else
+%define PATH_SEPARATOR_CHAR     '/'
+%endif
+
 %define current_file    0
 
 %macro  file    1
-%strlen len1    %1
-%strlen len2    FELINE_SOURCE_DIR
+%strcat str     FELINE_SOURCE_DIR, PATH_SEPARATOR_CHAR, %1
 section .data
         align   DEFAULT_DATA_ALIGNMENT
-%%name:
-        db      len1 + len2 + 1
-        db      FELINE_SOURCE_DIR
-%ifdef WIN64
-        db      '\'
-%else
-        db      '/'
-%endif
-        db      %1
-        db      0
-%define current_file    %%name
+%%label:
+        string  %%path, str
+%define current_file    %%label
 %endmacro
 
 ; Symbol bit flags
@@ -368,22 +381,6 @@ section .data
         %pop subroutine
 %endmacro
 
-; static string
-%macro  string 2                        ; label, string
-        section .data
-        align   DEFAULT_DATA_ALIGNMENT
-%strlen len     %2
-%1:
-        dw      OBJECT_TYPE_STRING
-        db      0                       ; flags byte
-        db      0                       ; not used
-        dd      0                       ; not used
-        dq      len                     ; length
-        dq      f_value                 ; hashcode
-        db      %2                      ; string
-        db      0                       ; null byte at end
-%endmacro
-
 %define symbol_link     0
 
 ; static symbol
@@ -411,6 +408,8 @@ section .data
         dq      %3                      ; untagged code address
         dq      %4                      ; untagged code size (includes ret instruction)
         dq      %5                      ; untagged bit flags
+        dq      current_file            ; file
+        dq      __LINE__                ; line number
 
 %define symbol_link     %1
 
