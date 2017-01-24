@@ -15,8 +15,8 @@
 
 file __FILE__
 
-; 10 cells: object header, name, vocab-name, hashcode, def, props,
-; value, raw code address, raw code size, flags
+; 12 slots: object header, name, vocab name, hashcode, def, props,
+; value, raw code address, raw code size, flags, file, line number
 
 %macro  _symbol_name 0                  ; symbol -- name
         _slot1
@@ -138,6 +138,30 @@ file __FILE__
         _this_set_slot 9
 %endmacro
 
+%macro  _symbol_file 0                  ; symbol -- file
+        _slot 10
+%endmacro
+
+%macro  _symbol_set_file 0              ; file symbol --
+        _set_slot 10
+%endmacro
+
+%macro  _this_symbol_set_file 0         ; file --
+        _this_set_slot 10
+%endmacro
+
+%macro  _symbol_line_number 0           ; symbol -- line-number
+        _slot 11
+%endmacro
+
+%macro  _symbol_set_line_number 0       ; line_number symbol --
+        _set_slot 11
+%endmacro
+
+%macro  _this_symbol_set_line_number 0  ; line_number --
+        _this_set_slot 11
+%endmacro
+
 ; ### symbol?
 code symbol?, 'symbol?'                 ; x -- ?
         _dup
@@ -221,10 +245,10 @@ endcode
 
 ; ### <symbol>
 code new_symbol, '<symbol>'             ; name vocab -- symbol
-; 10 cells: object header, name, vocab-name, hashcode, def, props,
-; value, code address, code size, flags
+; 12 slots: object header, name, vocab name, hashcode, def, props,
+; value, code address, code size, flags, file, line number
 
-        _lit 10
+        _lit 12
         _ allocate_cells                ; -- name vocab object-address
 
         push    this_register
@@ -263,6 +287,12 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
 
         _zero
         _this_symbol_set_flags
+
+        _f
+        _this_symbol_set_file
+
+        _f
+        _this_symbol_set_line_number
 
         pushrbx
         mov     rbx, this_register      ; -- vocab symbol
@@ -599,6 +629,17 @@ subroutine symbol_set_flags_bit         ; bit symbol --
         _symbol_set_flags
         ret
 endsub
+
+; ### symbol-location
+code symbol_location, 'symbol-location' ; -- location
+        _ check_symbol
+        _dup
+        _symbol_file
+        _swap
+        _symbol_line_number
+        _tag_fixnum
+        next
+endcode
 
 ; ### call-symbol
 code call_symbol, 'call-symbol'         ; symbol --
