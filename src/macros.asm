@@ -806,10 +806,6 @@ section .text
         pop     r14
 %endmacro
 
-%define local0          [r14]
-%define local1          [r14 + BYTES_PER_CELL]
-%define local2          [r14 + BYTES_PER_CELL * 2]
-
 ; static quotation
 %macro _quotation 1
         %push quotation
