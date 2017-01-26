@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -605,7 +605,7 @@ code sbuf_remove_nth_destructive, 'sbuf-remove-nth!' ; tagged-index handle -- ha
         next
 endcode
 
-; ### sbuf-reverse
+; ### sbuf-reverse!
 code sbuf_reverse_in_place, 'sbuf-reverse!'     ; sbuf -- sbuf
 
         _duptor
