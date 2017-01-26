@@ -15,7 +15,8 @@
 
 file __FILE__
 
-MAX_LOCALS      equ     16              ; maximum number of local variables in a definition
+; maximum number of local variables in a definition
+%define MAX_LOCALS      16
 
 %macro  _locals_enter 0
         push    r14
@@ -26,24 +27,26 @@ MAX_LOCALS      equ     16              ; maximum number of local variables in a
         pop     r14
 %endmacro
 
-; ### #locals
-; maximum number of local variables in a definition
-; "A system implementing the Locals word set shall support the
-; declaration of at least sixteen locals in a definition."
-constant nlocals, '#locals', MAX_LOCALS
-
 ; ### lp0
 value lp0, 'lp0', 0
 
+%macro  _lpstore 0
+        popd    r14
+%endmacro
+
+%macro  _lpfetch 0
+        pushd   r14
+%endmacro
+
 ; ### lp!
 code lpstore, 'lp!'
-        popd    r14
+        _lpstore
         next
 endcode
 
 ; ### lp@
 code lpfetch, 'lp@'
-        pushd   r14
+        _lpfetch
         next
 endcode
 
@@ -65,7 +68,7 @@ code initialize_locals_stack, 'initialize-locals-stack'
         _plus
         _dup
         _to lp0
-        _ lpstore
+        _lpstore
         next
 endcode
 
@@ -112,7 +115,7 @@ endcode
 ; ### initialize-local-names
 code initialize_local_names, 'initialize-local-names'
         ; allow for maximum number of locals
-        _ nlocals
+        _lit MAX_LOCALS
         _ new_vector_untagged
         _to_global local_names
 
