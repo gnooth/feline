@@ -53,7 +53,7 @@ code catch, 'catch'
 
         _ feline_handler
         _tor
-        _ rpfetch
+        _rpfetch
         _ set_feline_handler
 
         _ callable_code_address
@@ -81,7 +81,7 @@ code throw, 'throw'
         _ save_backtrace
         _dup
         _ feline_handler
-        _ rpstore
+        _rpstore
 
         _rfrom
         _ set_feline_handler

@@ -109,18 +109,12 @@ code rdrop, 'rdrop'
         next
 endcode
 
-; ### rp@
-code rpfetch, 'rp@'
+%macro  _rpfetch 0
         pushrbx
         mov     rbx, rsp
-        add     rbx, BYTES_PER_CELL
-        next
-endcode
+%endmacro
 
-; ### rp!
-code rpstore, 'rp!'
-        pop     rax                     ; return address
+%macro _rpstore 0
         mov     rsp, rbx
         poprbx
-        jmp     rax
-endcode
+%endmacro
