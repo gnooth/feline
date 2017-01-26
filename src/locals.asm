@@ -38,15 +38,10 @@ value lp0, 'lp0', 0
         pushd   r14
 %endmacro
 
-; ### lp!
-code lpstore, 'lp!'
-        _lpstore
-        next
-endcode
-
 ; ### lp@
-code lpfetch, 'lp@'
+code lpfetch, 'lp@'     ; -- tagged-address
         _lpfetch
+        _tag_fixnum
         next
 endcode
 
