@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -118,9 +118,9 @@ code new_slice, '<slice>'               ; from to seq -- slice
         _this_slice_set_length
 
         pushrbx
-        mov     rbx, this_register      ; -- symbol
+        mov     rbx, this_register      ; -- slice
 
-        ; Return handle.
+        ; return handle
         _ new_handle                    ; -- handle
 
         pop     this_register
