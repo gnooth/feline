@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -216,7 +216,7 @@ code handle_signal, 'handle-signal'
         mov     rbp, [sp0_data]
         mov     rsp, [rp0_data]
 
-        _ lp0
+        _lp0
         _?dup
         _if .1
         _lpstore

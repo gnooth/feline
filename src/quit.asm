@@ -218,7 +218,7 @@ endcode
 
 ; ### reset
 code reset, 'reset'
-        _ lp0
+        _lp0
         _?dup_if .1
         _lpstore
         _then .1

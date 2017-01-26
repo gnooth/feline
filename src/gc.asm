@@ -351,7 +351,7 @@ code mark_locals_stack, 'mark-locals-stack' ; --
         _lpfetch
         _begin .3
         _dup
-        _ lp0
+        _lp0
         _ult
         _while .3
         _dup

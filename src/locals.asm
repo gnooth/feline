@@ -27,8 +27,19 @@ file __FILE__
         pop     r14
 %endmacro
 
+asm_global lp0_value, 0
+
+%macro _lp0 0
+        pushrbx
+        mov     rbx, [lp0_value]
+%endmacro
+
 ; ### lp0
-value lp0, 'lp0', 0
+code lp0, 'lp0'         ; -- tagged-address
+        _lp0
+        _tag_fixnum
+        next
+endcode
 
 %macro  _lpstore 0
         popd    r14
@@ -52,7 +63,7 @@ value using_locals?, 'using-locals?', 0
 ; ### initialize-locals-stack
 code initialize_locals_stack, 'initialize-locals-stack'
         ; idempotent
-        _ lp0
+        _lp0
         _if .1
         _return
         _then .1
@@ -61,8 +72,7 @@ code initialize_locals_stack, 'initialize-locals-stack'
         _dup
         _ iallocate
         _plus
-        _dup
-        _to lp0
+        mov     [lp0_value], rbx
         _lpstore
         next
 endcode
@@ -70,7 +80,7 @@ endcode
 ; ### free-locals-stack
 code free_locals_stack, 'free-locals-stack'
 ; called by BYE to make sure we're freeing all allocated memory
-        _ lp0
+        _lp0
         _?dup
         _if .1
         _lit 4096
