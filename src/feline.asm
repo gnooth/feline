@@ -45,6 +45,7 @@ IN_FELINE
 %include "vocabs.asm"
 %include "object-macros.asm"
 %include "handles.asm"
+%include "locals.asm"
 %include "primitives.asm"
 %include "hashtable.asm"
 %include "generic.asm"
@@ -77,7 +78,6 @@ IN_FELINE
 %include "files.asm"
 %include "load.asm"
 %include "tools.asm"
-%include "locals.asm"
 %include "ansi.asm"
 
 subroutine in_static_data_area?         ; addr -- 1/0

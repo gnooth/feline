@@ -20,8 +20,6 @@ GENERIC_READ    equ     $80000000       ; winnt.h
 GENERIC_WRITE   equ     $40000000
 %endif
 
-MAX_LOCALS      equ     16              ; maximum number of local variables in a definition
-
 %macro  pushrbx 0
         mov     [rbp - BYTES_PER_CELL], rbx
         lea     rbp, [rbp - BYTES_PER_CELL]
@@ -795,15 +793,6 @@ section .text
 
 %macro  _false 0
         _lit 0
-%endmacro
-
-%macro  _locals_enter 0
-        push    r14
-        lea     r14, [r14 - BYTES_PER_CELL * MAX_LOCALS];
-%endmacro
-
-%macro  _locals_leave 0
-        pop     r14
 %endmacro
 
 ; static quotation
