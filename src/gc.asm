@@ -348,7 +348,7 @@ endcode
 
 ; ### mark-locals-stack
 code mark_locals_stack, 'mark-locals-stack' ; --
-        _ lpfetch
+        _lpfetch
         _begin .3
         _dup
         _ lp0

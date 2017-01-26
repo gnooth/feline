@@ -219,7 +219,7 @@ code handle_signal, 'handle-signal'
         _ lp0
         _?dup
         _if .1
-        _ lpstore
+        _lpstore
         _then .1
 
         _ ?nl

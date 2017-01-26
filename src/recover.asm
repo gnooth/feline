@@ -37,7 +37,7 @@ endcode
 code catch, 'catch'
         _ spfetch
         _tor
-        _ lpfetch
+        _lpfetch
         _tor
 
         _ get_namestack
@@ -96,7 +96,7 @@ code throw, 'throw'
         _then .2
 
         _rfrom
-        _ lpstore
+        _lpstore
         _rfrom
         _swap
         _tor

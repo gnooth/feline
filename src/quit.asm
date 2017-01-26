@@ -220,7 +220,7 @@ endcode
 code reset, 'reset'
         _ lp0
         _?dup_if .1
-        _ lpstore
+        _lpstore
         _then .1
 
         _ get_namestack
