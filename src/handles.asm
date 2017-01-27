@@ -62,20 +62,6 @@ endcode
 ; ### free-handles
 value free_handles, 'free-handles', 0
 
-; ### empty-handles
-code empty_handles, 'empty-handles'     ; -- tagged-fixnum
-        _ free_handles
-        _?dup_if .1
-        _handle_to_object_unsafe
-        _vector_length
-        _else .1
-        _zero
-        _then .1
-        add     rbx, qword [unused]
-        _tag_fixnum
-        next
-endcode
-
 ; ### maybe-recycle-handle
 code maybe_recycle_handle, 'maybe-recycle-handle' ; object -- handle/0
         _ free_handles
@@ -103,76 +89,19 @@ endcode
 
 ; ### maybe-gc
 code maybe_gc, 'maybe-gc'       ; --
-;         _ free_handles
-;         _handle_to_object_unsafe
-;         _vector_length
-        _ empty_handles
-        _tagged_fixnum 10
-        _ fixnum_lt
-        _tagged_if .1
+        _ free_handles
+        _handle_to_object_unsafe
+        _vector_length
+        _lit 10
+        _ult
+        _if .1
         _ gc
         _then .1
         next
 endcode
 
-; ### gc-status
-code gc_status, 'gc-status'             ; --
-        _ unused_handles
-        _ free_handles
-        _ vector_length
-        _ empty_handles
-        _ ?nl
-        _ rot
-        _ decimal_dot
-        _write " unused + "
-        _swap
-        _ decimal_dot
-        _write " recycled = "
-        _ decimal_dot
-        _ nl
-        next
-endcode
-
-; ### get-empty-handle
-code get_empty_handle, 'get-empty-handle'       ; -- handle/0
-        _ free_handles
-        _?dup_if .1
-        _handle_to_object_unsafe        ; -- vector
-        _dup
-        _vector_length
-        _zgt
-        _if .2
-        _ vector_pop_unchecked          ; -- handle
-        _return
-        _then .2
-        _drop                   ; --
-        _then .1
-
-        cmp     qword [unused], 0
-        jz .3
-        _ handle_space_free
-        _ handle_space_limit
-        _ult
-        _if .4
-        _ handle_space_free     ; address of handle to be returned
-;         _store
-;         _ handle_space_free
-        _dup
-        _cellplus
-        _to handle_space_free
-        sub     qword [unused], 1
-        _return
-        _then .4
-
-.3:
-        pushrbx
-        xor     ebx, ebx
-        next
-endcode
-
 ; ### new-handle
 code new_handle, 'new-handle'           ; object -- handle
-%if 0
         _dup
         _ maybe_recycle_handle          ; -- object handle/0
         _?dup_if .1
@@ -206,32 +135,15 @@ code new_handle, 'new-handle'           ; object -- handle
         _?dup_if .4
         _return
         _then .4
-%endif
-        _ get_empty_handle      ; -- object handle/0
-        test    rbx, rbx
-        jz     .1
-        _tuck
-        _store
-        _return
-.1:                             ; -- object 0
-        _drop
 
-        _ gc
-
-        _ get_empty_handle
-        test    rbx, rbx
-        jz     .2
-        _tuck
-        _store
-        _return
-.2:
         _error "out of handles"
+
         next
 endcode
 
 ; ### get_handle_for_object
 subroutine get_handle_for_object        ; object -- handle
-; called from C with object in arg0_register
+; call with object in arg0_register
 ; return handle in rax
 
         push    rbx
