@@ -438,6 +438,7 @@ feline_global gc_pending, 'gc-pending'
 
 ; ### gc-disable
 code gc_disable, 'gc-disable'
+        _ maybe_gc
         mov     qword [S_gc_inhibit_data], t_value
         next
 endcode
