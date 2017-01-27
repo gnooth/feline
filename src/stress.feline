@@ -1,9 +1,20 @@
 using: feline ;
+in: user
+
+"stress" delete-vocab
+
 in: stress
+
+test: bignum-number>string-test-1
+    10000000 [ 2 72 expt number>string drop ] times
+;
+
+bignum-number>string-test-1
 
 -- The followings tests verify that the quotation remains valid through gc,
 -- even if there is no other reference to it. These tests must not be in a
--- definition, since the symbol-def slot holds a reference to the quotation.
+-- definition, since in that case the symbol-def slot would hold a reference
+-- to the quotation.
 
 "each-integer-gc-test-1" ?nl write-string
 10000000 [ number>string drop ] each-integer
