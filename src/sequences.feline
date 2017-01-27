@@ -24,6 +24,9 @@ in: feline
 : ?nth ( n seq -- elt/f )
     2dup bounds-check? [ nth-unsafe ] [ 2drop f ] if ;
 
+-- Factor
+: ?first ( seq -- elt/f ) 0 swap ?nth ;
+
 : empty? ( seq/f -- ? )
     [ length zero? ] [ t ] if* ;
 
