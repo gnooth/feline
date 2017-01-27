@@ -1,4 +1,4 @@
--- Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -171,25 +171,25 @@ global: pattern
     2array bindings push ;
 
 : lookup-key ( key -- symbol/f )
-    bindings length [ bindings nth array-first over = ] find-integer // -- n/f
+    bindings length [ bindings nth array-first over = ] find-integer    -- n/f
     nip dup [ bindings nth array-second ] [ drop f ] if ;
 
 : initialize-bindings ( -- )
     10 <vector> !> bindings
-    3                   \ bye                        bind-key
-    $1b                 \ do-escape                  bind-key
-    127                 \ do-bs                      bind-key        // Linux
-    8                   \ do-bs                      bind-key        // Windows
-    k-left              \ do-left                    bind-key
-    k-right             \ do-right                   bind-key
-    k-home              \ do-home                    bind-key
-    k-end               \ do-end                     bind-key
-    k-up                \ do-previous                bind-key
-    k-down              \ do-next                    bind-key
-    k-delete            \ do-delete-char             bind-key
-    $0b ( control k )   \ do-kill-line               bind-key
-    $10 ( control p )   \ do-previous-matching-input bind-key
-    $0e ( control n )   \ do-next-matching-input     bind-key ;
+    3                   ' bye                        bind-key
+    $1b                 ' do-escape                  bind-key
+    127                 ' do-bs                      bind-key   -- Linux
+    8                   ' do-bs                      bind-key   -- Windows
+    k-left              ' do-left                    bind-key
+    k-right             ' do-right                   bind-key
+    k-home              ' do-home                    bind-key
+    k-end               ' do-end                     bind-key
+    k-up                ' do-previous                bind-key
+    k-down              ' do-next                    bind-key
+    k-delete            ' do-delete-char             bind-key
+    $0b ( control k )   ' do-kill-line               bind-key
+    $10 ( control p )   ' do-previous-matching-input bind-key
+    $0e ( control n )   ' do-next-matching-input     bind-key ;
 
 : accept-key ( -- tagged-char) ekey ;
 
