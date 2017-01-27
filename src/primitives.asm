@@ -292,6 +292,33 @@ code unless_star, 'unless*'             ; ? quot --
         next
 endcode
 
+; ### return-if-no-locals
+code return_if_no_locals, 'return-if-no-locals' ; ? quot --
+        cmp    qword [rbp], f_value
+        je      .1
+        _nip
+        _ call_quotation
+        lea     rsp, [rsp + BYTES_PER_CELL]
+        _return
+.1:
+        _2drop
+        next
+endcode
+
+; ### return-if-locals
+code return_if_locals, 'return-if-locals'       ; ? quot --
+        cmp    qword [rbp], f_value
+        je      .1
+        _nip
+        _ call_quotation
+        lea     rsp, [rsp + BYTES_PER_CELL]
+        _locals_leave
+        _return
+.1:
+        _2drop
+        next
+endcode
+
 ; ### until
 code until, 'until'             ; pred body --
 ; call body until pred returns t

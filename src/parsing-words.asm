@@ -517,17 +517,50 @@ code feline_paren, '(', SYMBOL_IMMEDIATE        ; --
         next
 endcode
 
-; ### declare_local_internal
-subroutine declare_local_internal       ; --
+; ### return-if
+code return_if, 'return-if', SYMBOL_IMMEDIATE
         _ using_locals?
-        _zeq_if .2
+        _if .1
+        _lit S_return_if_locals
+        _else .1
+        _lit S_return_if_no_locals
+        _then .1
+        _get_accum
+        _ vector_push
+        next
+endcode
+
+; ### declare-local-internal
+code declare_local_internal, 'declare-local-internal'   ; --
+        _ using_locals?
+        _zeq_if .1
         ; first local in this definition
         _ initialize_local_names
         _lit S_locals_enter
         _lit tagged_zero
         _get_accum
         _ vector_insert_nth_destructive
-        _then .2
+
+        ; check for return-if-no-locals
+        ; if found, replace with return-if-locals
+        _get_accum
+        _quotation .2
+        ; -- elt index
+        _swap
+        _lit S_return_if_no_locals
+        _eq?
+        _tagged_if .3
+        _lit S_return_if_locals
+        _swap
+        _get_accum
+        _ vector_set_nth
+        _else .3
+        _drop
+        _then .3
+        _end_quotation .2
+        _ vector_each_index
+
+        _then .1
 
         ; FIXME verify that we're inside a named quotation
 
@@ -543,8 +576,8 @@ subroutine declare_local_internal       ; --
         _lit tagged_fixnum(1)
         _ fixnum_minus
 
-        ret
-endsub
+        next
+endcode
 
 ; ### local:
 code declare_local, 'local:', SYMBOL_IMMEDIATE  ; -- tagged-index

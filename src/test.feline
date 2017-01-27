@@ -1737,6 +1737,80 @@ test: cond-test-4
 
 cond-test-4
 
+: %return-if-test-1 ( arg -- "yes"/"no" )
+    [ "yes" ] return-if
+    "no" ;
+
+test: return-if-test-1
+    clear
+    t %return-if-test-1 get-datastack { "yes" } assert=
+    clear
+    f %return-if-test-1 get-datastack { "no"  } assert=
+    clear
+    0 %return-if-test-1 get-datastack { "yes" } assert=
+    clear
+
+    lp@
+    t %return-if-test-1 "yes" assert=
+    lp@ assert=
+
+    lp@
+    f %return-if-test-1 "no"  assert=
+    lp@ assert=
+
+    depth zero? assert ;
+
+return-if-test-1
+
+: %return-if-test-2
+    >local: arg
+
+    arg [ arg ] return-if
+    arg ;
+
+test: return-if-test-2
+    clear
+    "foo" dup %return-if-test-2 eq? assert
+    depth zero? assert
+
+    f %return-if-test-2 assert-false
+    depth zero? assert
+
+    lp@
+    "foo" dup %return-if-test-2 eq? assert
+    lp@ assert=
+
+    lp@
+    f %return-if-test-2 assert-false
+    lp@ assert=
+
+    depth zero? assert ;
+
+return-if-test-2
+
+-- return-if before first local
+: %return-if-test-3
+    dup 3 = [ drop 47 ] return-if
+    >local: arg
+    arg 9 = [ arg 1 + ] return-if
+    arg ;
+
+global: saved-lp
+
+test: return-if-test-3
+    clear
+    lp@ !> saved-lp
+    3 %return-if-test-3 get-datastack { 47 } assert=
+    clear
+    9 %return-if-test-3 get-datastack { 10 } assert=
+    clear
+    5 %return-if-test-3 get-datastack {  5 } assert=
+    clear
+    lp@ saved-lp assert=
+;
+
+return-if-test-3
+
 in: feline
 
 ?nl "Reached end of test.feline" write-string
