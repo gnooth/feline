@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ static void signal_handler(int sig, siginfo_t *si, void * context)
   c_save_backtrace(saved_rip_data, saved_rsp_data);
 
   extern void handle_signal();
-  handle_signal();
+  uc->uc_mcontext.gregs[REG_RIP] = (cell) handle_signal;
 }
 #endif
 
