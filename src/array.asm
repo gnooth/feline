@@ -403,6 +403,7 @@ code dot_array, '.array'                ; array --
         _i
         _this_array_nth_unsafe
         _ dot_object
+        _ space
         _loop .1
         _write "}"
 
