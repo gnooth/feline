@@ -373,7 +373,11 @@ code query, 'query'                     ; -- string/f
         _ ?lookup_symbol
         _dup
         _tagged_if .1
-        _ call_symbol
+        _ catch
+        _ ?dup
+        _if .2
+        _ do_error
+        _then .2
         _return
         _then .1
 
@@ -383,12 +387,12 @@ code query, 'query'                     ; -- string/f
         xcall   os_accept_string        ; -- untagged
         pushrbx
         mov     rbx, rax
-        _?dup_if .2
+        _?dup_if .3
         _ zcount
         _ copy_to_string
-        _else .2
+        _else .3
         _f
-        _then .2
+        _then .3
 
         ; last char was a newline
         mov     qword [last_char], 10
