@@ -23,6 +23,7 @@ global: dot
 global: history
 global: history-index
 global: pattern
+global: done?
 
 : reset-history ( -- )
     f !> history-index f !> pattern ;
@@ -89,14 +90,6 @@ global: pattern
     dot 0 > [ dot 1 - !> dot dot prompt-string length + at-x ] when
     reset-history ;
 
-: do-normal-char ( c -- )
-    dot buffer length < [
-        dot buffer sbuf-insert-nth! dot 1 + !> dot redisplay
-    ] [
-        dup write-char dot 1 + !> dot buffer push
-    ] if
-    reset-history ;
-
 : do-previous ( -- )
     history-index [ history length !> history-index ] unless
     history-index zero? [
@@ -154,6 +147,65 @@ global: pattern
         ] [ drop ] if*
     ] [ do-next ] if ;
 
+global: completion-prefix
+global: completions
+global: completion-index
+
+: reset-completion ( -- ) f !> completions ;
+
+: complete-first ( prefix -- symbol/f )
+    !> completion-prefix
+    all-words [ symbol-name completion-prefix swap string-has-prefix? ] filter !> completions
+    0 !> completion-index
+    completions ?first ;
+
+: complete-next ( -- symbol/f )
+    completion-index completions length 1 - < [
+        1+!> completion-index
+        completion-index completions nth
+    ] [ f ] if ;
+
+: complete-prev ( -- symbol/f )
+    completion-index 0 > [
+        1-!> completion-index
+        completion-index completions nth
+    ] [ f ] if ;
+
+global: prefix-offset
+
+: complete1 ( symbol -- )
+    symbol-name
+    verify-string
+    prefix-offset buffer sbuf-shorten
+    buffer swap sbuf-append-string drop
+    buffer length !> dot
+    redisplay ;
+
+: do-tab ( -- )
+    completions [
+        complete-next [ complete1 ] when*
+    ] [
+        dot 1 < [ ] return-if
+
+        -- get word before dot
+        dot 1 - buffer [ 32 = ] find-last-from  -- index/f elt/f
+        [ 1 + ] [ drop 0 ] if !> prefix-offset
+
+        prefix-offset dot buffer sbuf-substring -- prefix
+        complete-first [ complete1 ] when*
+    ] if ;
+
+-- FIXME need value for k-shift-tab on Windows
+$1b5b5a >constant: k-shift-tab  -- Linux
+
+: do-shift-tab ( -- )
+    completions [
+        complete-prev
+        [ complete1 ] when*
+    ] when ;
+
+: do-enter ( -- ) reset-completion t !> done? ;
+
 : history-file-pathname ( -- string )
     user-home ".feline-history" path-append ;
 
@@ -176,7 +228,9 @@ global: pattern
 
 : initialize-bindings ( -- )
     10 <vector> !> bindings
-    3                   ' bye                        bind-key
+    10                  ' do-enter                   bind-key
+    13                  ' do-enter                   bind-key
+    3 ( control c )     ' bye                        bind-key
     $1b                 ' do-escape                  bind-key
     127                 ' do-bs                      bind-key   -- Linux
     8                   ' do-bs                      bind-key   -- Windows
@@ -189,9 +243,18 @@ global: pattern
     k-delete            ' do-delete-char             bind-key
     $0b ( control k )   ' do-kill-line               bind-key
     $10 ( control p )   ' do-previous-matching-input bind-key
-    $0e ( control n )   ' do-next-matching-input     bind-key ;
+    $0e ( control n )   ' do-next-matching-input     bind-key
+    9                   ' do-tab                     bind-key
+    k-shift-tab         ' do-shift-tab               bind-key ;
 
-: accept-key ( -- tagged-char) ekey ;
+: do-normal-char ( c -- )
+    dot buffer length < [
+        dot buffer sbuf-insert-nth! dot 1 + !> dot redisplay
+    ] [
+        dup write-char dot 1 + !> dot buffer push
+    ] if
+    reset-history
+    reset-completion ;
 
 : process-key ( tagged-char -- )
     dup printable?
@@ -199,8 +262,7 @@ global: pattern
     [ lookup-key [ call-symbol ] when* ]
     if ;
 
-: terminator? ( tagged-char -- ? )
-    { 10 13 } member? ;
+: accept-key ( -- tagged-char) ekey ;
 
 : accept-string ( -- string )
     256 <sbuf> !> buffer
@@ -208,14 +270,12 @@ global: pattern
     history [ initialize-history ] unless
     prompt
     0 !> dot
+    f !> done?
     yellow foreground
-    [ accept-key dup terminator? ] [ process-key ] until
-    drop
+    [ done? ] [ accept-key process-key ] until
     white foreground
 
-    buffer sbuf>string
-
-    [
+    buffer sbuf>string [
         {
             { [ dup empty? ] [ drop ] }
             { [ dup "bye" string= ] [ drop ] }
