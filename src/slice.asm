@@ -170,8 +170,19 @@ endcode
 ; ### .slice
 code dot_slice, '.slice'                ; slice --
         _write "{ "
-        _lit S_dot_object
-        _ each
+        _dup
+        _ slice_length
+        _untag_fixnum
+        _zero
+        _?do .1
+        _i
+        _tag_fixnum
+        _over
+        _ slice_nth_unsafe
+        _ dot_object
+        _ space
+        _loop .1
+        _drop
         _write_char '}'
         next
 endcode
