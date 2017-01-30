@@ -85,7 +85,7 @@ code verify_unboxed_string, 'verify-unboxed-string' ; string -- string
 endcode
 
 ; ### check-string
-subroutine check_string                 ; handle-or-string -- unboxed-string
+code check_string, 'check-string'       ; handle-or-string -- unboxed-string
         _dup
         _ handle?
         _tagged_if .1
@@ -105,8 +105,8 @@ subroutine check_string                 ; handle-or-string -- unboxed-string
         ; Not a handle.
         _ verify_unboxed_string
 
-        ret
-endsub
+        next
+endcode
 
 ; ### verify-string
 code verify_string, 'verify-string'     ; handle-or-string -- handle-or-string
@@ -270,15 +270,15 @@ subroutine copy_to_string       ; from-addr from-length -- handle
 endsub
 
 ; ### string_from
-subroutine string_from                  ; string -- addr len
+code string_from, 'string>'     ; string -- addr len
 ; Returned values are untagged.
         _ check_string
         _duptor
         _string_raw_data
         _rfrom
         _string_length
-        ret
-endsub
+        next
+endcode
 
 ; ### ~string
 code destroy_string, '~string'          ; string --
