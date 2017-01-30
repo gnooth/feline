@@ -847,6 +847,13 @@ last-word $90 install-handler
 
 last-word $99 install-handler
 
+: .a6
+    "cmpsb" !> mnemonic
+    0 !> #operands
+    .inst ;
+
+last-word $a6 install-handler
+
 : .ab
     prefix zero? "stosd" "stosq" ? !> mnemonic
     0 !> #operands
@@ -1072,6 +1079,13 @@ last-word $e8 install-handler
    jump-target hex. ;
 
 last-word $e9 install-handler
+
+: .f2
+    "repne" !> mnemonic
+    0 !> #operands
+    .inst ;
+
+last-word $f2 install-handler
 
 : .f3
     "rep" !> mnemonic
