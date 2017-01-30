@@ -482,6 +482,25 @@ last-word $2b install-handler
 
 last-word $31 install-handler
 
+: .38
+    -- /r
+    -- dest is r/m8
+    -- source is r8
+    "cmp" !> mnemonic
+    8 dup !> ssize !> dsize
+    !modrm-byte
+    modrm-mod {
+        { 3 [
+            modrm-rm register-reg !> sreg
+            modrm-rm register-rm !> dreg
+        ] }
+        [ unsupported ]
+    } case
+    .inst
+;
+
+last-word $38 install-handler
+
 : .39
     -- /r
     -- dest is r/m32/64
