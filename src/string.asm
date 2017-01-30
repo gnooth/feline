@@ -755,13 +755,53 @@ code concat, 'concat'                   ; string1 string2 -- string3
         next
 endcode
 
+; ### unsafe-raw-mem=
+code unsafe_raw_memequal, 'unsafe-raw-mem='     ; addr1 addr2 len -- ?
+        push    rdi
+        push    rsi
+        mov     rcx, rbx
+        mov     rdi, [rbp]
+        mov     rsi, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        jrcxz   .1
+.3:
+        movzx   eax, byte [rdi]
+        movzx   edx, byte [rsi]
+        cmp     al, dl
+        jne     .2
+        add     rdi, 1
+        add     rsi, 1
+        sub     rcx, 1
+        jnz     .3
+.1:
+        mov     ebx, t_value
+        pop     rsi
+        pop     rdi
+        next
+.2:
+        mov     ebx, f_value
+        pop     rsi
+        pop     rdi
+        next
+endcode
+
 ; ### string=
 code stringequal, 'string='             ; string1 string2 -- ?
+        _tor
         _ string_from
-        _ rot
+        _rfrom
         _ string_from
-        _ strequal                      ; -- -1/0
-        _tag_boolean                    ; -- ?
+
+        cmp     rbx, [rbp + BYTES_PER_CELL]
+        jz      .1
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+        mov     ebx, f_value
+        next
+.1:
+        ; lengths match                 ; -- addr1 len1 addr2 len2
+        _dropswap                       ; -- addr1 addr2 len1
+        _ unsafe_raw_memequal
+
         next
 endcode
 

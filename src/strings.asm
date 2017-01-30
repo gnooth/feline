@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -53,36 +53,5 @@ code erase, 'erase'                     ; addr u --
 %ifdef WIN64
         pop     rdi
 %endif
-        next
-endcode
-
-; ### mem=
-code memequal, 'mem='                   ; addr1 addr2 len -- flag
-        mov     rcx, rbx
-        mov     rdi, [rbp]
-        mov     rsi, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
-        jrcxz   .1
-        repe    cmpsb
-        jne     .2
-.1:
-        mov     rbx, -1
-        next
-.2:
-        xor     ebx, ebx
-        next
-endcode
-
-; ### str=
-code strequal, 'str='                   ; addr1 len1 addr2 len2 -- flag
-        cmp     rbx, [rbp + BYTES_PER_CELL]
-        jz      .1
-        lea     rbp, [rbp + BYTES_PER_CELL * 3]
-        xor     ebx, ebx
-        next
-.1:
-        ; lengths match                 ; -- addr1 len1 addr2 len2
-        _dropswap                       ; -- addr1 addr2 len1
-        _ memequal
         next
 endcode
