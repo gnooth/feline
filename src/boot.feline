@@ -31,3 +31,10 @@ in: feline
 
 using: feline ;
 in: feline
+
+: dis ( -- )
+    [
+        f load-verbose? set
+        "disassembler.feline" load-system-file
+    ] with-scope
+    "dis" "disassembler" vocab-find-name [ call-symbol ] when ;
