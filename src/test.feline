@@ -344,6 +344,14 @@ test: min-test-1 ( -- )
 
 min-test-1
 
+test: min-length-test-1
+    "test"     "this is a test" min-length 4 assert=
+    ""         "effluvia"       min-length 0 assert=
+    { 1 2 3 }  { 4 }            min-length 1 assert=
+    V{ 1 2 3 } ""               min-length 0 assert= ;
+
+min-length-test-1
+
 test: dip-test-1 ( -- )
     87 42 [ 3 * ] dip get-datastack V{ 261 42 } sequence= assert-true
     clear
