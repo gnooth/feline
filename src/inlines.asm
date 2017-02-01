@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -34,13 +34,6 @@
 
 %macro  _rdrop 0                        ; RDROP
         lea     rsp, [rsp + BYTES_PER_CELL]
-%endmacro
-
-%macro  _twotor 0
-        push    qword [rbp]
-        push    rbx
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
 
 %macro  _tworfrom 0
@@ -103,11 +96,6 @@
         lea     rbp, [rbp - BYTES_PER_CELL * 2]
         mov     [rbp], rax
         mov     [rbp + BYTES_PER_CELL], rbx
-%endmacro
-
-%macro  _dupcfetch 0                    ; DUP C@
-        _dup
-        _cfetch
 %endmacro
 
 %macro  _?dup 0
@@ -182,11 +170,6 @@
 
 %macro  _twostar 0                      ; 2*
         shl     rbx, 1
-%endmacro
-
-%macro  _cell 0                         ; CELL
-        pushrbx
-        mov     rbx, BYTES_PER_CELL
 %endmacro
 
 %macro  _cells 0                        ; CELLS
@@ -265,14 +248,6 @@
         neg     rbx
 %endmacro
 
-%macro  _overplus 0                     ; OVER +
-        add     rbx, [rbp]
-%endmacro
-
-%macro  _over_minus 0                   ; over -
-        sub     rbx, [rbp]
-%endmacro
-
 %macro  _dupd 0                         ; dupd
         mov     rax, [rbp]
         mov     [rbp - BYTES_PER_CELL], rax
@@ -284,20 +259,6 @@
         mov     rbx, [rbp + BYTES_PER_CELL]
         mov     [rbp + BYTES_PER_CELL], rax
         lea     rbp, [rbp + BYTES_PER_CELL]
-%endmacro
-
-%macro  _plusdup 0                      ; + DUP
-        add     rbx, [rbp]
-        mov     [rbp], rbx
-%endmacro
-
-%macro  _dtos 0                         ; D>S
-        _drop
-%endmacro
-
-%macro  _stod 0                         ; S>D
-        _dup
-        _zlt
 %endmacro
 
 %macro  _slashstring 0                  ; /string
@@ -317,11 +278,6 @@
 
 %macro  _or 0
         or      rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
-%endmacro
-
-%macro  _xor 0
-        xor     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 

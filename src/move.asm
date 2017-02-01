@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -44,20 +44,5 @@ code cmoveup, 'cmove>'                  ; c-addr1 c-addr2 u --
         rep     movsb
         cld
 .1:
-        next
-endcode
-
-; ### move
-code move, 'move'                       ; addr1 addr2 u --
-        _tor
-        _twodup
-        _ ult
-        _if .1
-        _rfrom
-        _ cmoveup
-        _else .1
-        _rfrom
-        _ cmove
-        _then .1
         next
 endcode

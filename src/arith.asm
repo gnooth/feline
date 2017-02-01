@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -81,52 +81,6 @@ code between, 'between'                 ; n min max -- flag
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
         sub     rdx, rbx
         sbb     rbx, rbx
-        next
-endcode
-
-; ### 0=
-inline zeq, '0='
-; CORE
-        _zeq
-endinline
-
-; ### 0<>
-inline zne, '0<>'
-; CORE EXT
-        _zne
-endinline
-
-; ### 0>
-inline zgt, '0>'
-; CORE EXT
-        _zgt
-endinline
-
-; ### 0>=
-code zge, '0>='
-        _zge
-        next
-endcode
-
-; ### 0<
-inline zlt, '0<'
-; CORE
-        _zlt
-endinline
-
-; ### s>d
-inline stod, 's>d'                      ; n -- d
-; CORE
-        _stod
-endinline
-
-; ### min
-code min, 'min'                         ; n1 n2 -- n3
-        popd    rax
-        cmp     rax, rbx
-        jge     .1
-        mov     rbx, rax
-.1:
         next
 endcode
 
