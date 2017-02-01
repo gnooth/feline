@@ -15,7 +15,6 @@
 
 file __FILE__
 
-; ### reload-file
 feline_global reload_file, 'reload-file'
 
 ; ### maybe-set-reload-file
@@ -52,11 +51,10 @@ code load, 'load'                       ; path --
         _ lexer_set_file
 
         _ begin_scope
-
         _ lexer
         _ set
 
-        _ load_verbose?
+        _ interactive?
         _ get
         _tagged_if .1
         _ ?nl
@@ -64,33 +62,24 @@ code load, 'load'                       ; path --
         _ lexer
         _ get
         _ lexer_file
+        _dup
         _ write_string
         _ nl
-        _then .1
-
-        _ interactive?
-        _ get
-        _tagged_if .2
-        _ lexer
-        _ get
-        _ lexer_file
         _ maybe_set_reload_file
-        _then .2
+        _then .1
 
         _f
         _ interactive?
         _ set
 
-        _quotation .3
+        _quotation .2
         _ interpret
-        _end_quotation .3
-        _quotation .4
+        _end_quotation .2
+        _quotation .3
         _ do_error
-        _end_quotation .4
+        _end_quotation .3
         _ recover
-
         _ end_scope
-
         next
 endcode
 
