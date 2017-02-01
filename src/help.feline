@@ -14,362 +14,345 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
+in: user
+
+"help" delete-vocab
+
+in: help
+
+   96 >constant: backquote
+
+  red >constant: fg-title
+ cyan >constant: fg-parameter
+white >constant: fg-default
+
+: format-string ( string -- )
+    >local: s
+    f >local: in-quote?
+    backquote s index >local: i
+    [ i ] [
+        s i string-head write-string
+        1+!> i
+        s i string-tail !> s
+        in-quote? not !> in-quote?
+        in-quote? fg-parameter fg-default ? foreground
+        backquote s index !> i
+    ] while
+    s write-string ;
+
+: format-title ( string -- )
+    fg-title foreground
+    write-string
+    fg-default foreground ;
+
+: format-help ( symbol content -- )
+    ?nl swap symbol-name format-title
+    nl 4 spaces first format-string ;
+
+: help ( symbol -- ) dup symbol-help [ format-help ] [ drop ] if* ;
+
+using: help feline ;
 in: feline
 
-: display-help ( content -- )
-    nl 4 spaces first write-string
-;
-
-: help ( symbol -- )
-    dup symbol-help dup                 -- symbol content/f content/f
-    [ ?nl swap symbol-name write-string display-help ]
-    [ 2drop ]
-    if
-;
-
 : h ( -- )
-    parse-token
-    [ find-name [ help ] [ drop ] if ]
-    when*
-;
+    parse-token [ find-name [ help ] [ drop ] if ] when* ;
+
+in: help
 
 help: 1array
     "( x -- array )
-    Create a new array with one element: { x }."
-;
+    Create a new array with one element: `{ x }`." ;
 
 help: 2array
     "( x y -- array )
-    Create a new array with two elements: { x y }."
-;
+    Create a new array with two elements: `{ x y }`." ;
 
 help: 2bi
     "( x y quot1 quot2 -- )
-    Apply quot1 to x and y, then apply quot2 to x and y."
-;
+    Apply `quot1` to `x` and `y`, then apply `quot2` to `x` and `y`." ;
 
 help: 2dip
     "( x y quot -- x y )
-    Remove x and y from the stack, call quot, and restore x and y
-    to the top of the stack when quot returns."
-;
+    Remove `x` and `y` from the stack and call `quot`. Restore `x` and `y`
+    to the top of the stack when `quot` returns." ;
 
 help: 2keep
     "( x y quot -- x y )
-    Call quot with x and y on the stack. Restore x and y to the
-    top of the stack when quot returns."
-;
+    Call `quot` with `x` and `y` on the stack. Restore `x` and `y` to the
+    top of the stack when `quot` returns." ;
 
 help: 2nip
     "( x y z -- z )
-    Remove x and y from the stack."
-;
+    Remove `x` and `y` from the stack." ;
 
 help: 2over
     "( x y z -- x y z x y )
-    Copy x and y over z to the top of the stack.
+    Copy `x` and `y` over `z` to the top of the stack.
 
-    (Feline uses Factor's definition of 2over. The Forth definition
-    is different.)"
-;
+    (Feline uses Factor's definition of `2over`. The Forth definition
+    is different.)" ;
 
 help: 3array
     "( x y z -- array )
-    Create a new array with three elements: { x y z }."
-;
+    Create a new array with three elements: `{ x y z }`." ;
 
 help: 4array
     "( w x y z -- array )
-    Create a new array with four elements: { w x y z }."
-;
+    Create a new array with four elements: `{ w x y z }`." ;
 
 help: <array>
-    "( n elt -- array )
-    Create a new array with length n and all elements initially
-    set to elt."
-;
+    "( n element -- array )
+    Create a new array with length `n` and all elements initially
+    set to `element`." ;
 
 help: <hashtable>
     "( n -- hashtable )
-    Create a new hashtable with an initial capacity of n key/value pairs."
-;
+    Create a new hashtable with an initial capacity of `n` key/value pairs." ;
 
 help: <range>
     "( start len -- range )
     Create a new immutable virtual sequence containing the
-    integers from start to start+len-1."
-;
+    integers from `start` to `start+len-1`." ;
 
 help: <sbuf>
     "( n -- sbuf )
-    Create a new string buffer with a capacity of n characters
-    before resizing."
-;
+    Create a new string buffer with an initial capacity of `n` characters." ;
 
 help: <vector>
     "( n -- vector )
-    Create a new vector with an initial capacity of n elements."
-;
+    Create a new vector with an initial capacity of `n` elements." ;
+
+help: =
+    "( obj1 obj2 -- ? )
+    Returns `t` if `obj1` and `obj2` are equal." ;
 
 help: and
     "( obj1 obj2 -- ? )
-    Boolean and: if both obj1 and obj2 are true (that is, not f),
-    return obj2. Otherwise return f. (Bitwise and is bitand.)"
-;
+    Boolean `and`: if both `obj1` and `obj2` are true (that is, not `f`),
+    return `obj2`. Otherwise return `f`. (Bitwise `and` is `bitand`.)" ;
 
 help: between?
     "( n min max -- ? )
-    Return t if n >= min and n <= max."
-;
+    Return `t` if `n` >= `min` and `n` <= `max`." ;
 
 help: bi
     "( x quot1 quot2 -- )
-    Apply quot1 to x, then apply quot2 to x."
-;
+    Apply `quot1` to `x`, then apply `quot2` to `x`." ;
 
 help: charpos
     "( -- n )
     Return the current output column.
 
-    See also: tab"
-;
+    See also: `tab`" ;
 
 help: dip
     "( x quot -- x )
-    Remove x from the stack, call quot, and restore x to the top
-    of the stack when quot returns."
-;
+    Remove `x` from the stack, call `quot`, and restore `x` to the top
+    of the stack when `quot` returns.";
 
 help: drop
     "( x -- )
-    Remove x from the stack."
-;
+    Remove `x` from the stack." ;
 
 help: dup
     "( x -- x x )
-    Duplicate x." ;
+    Duplicate `x`." ;
 
 help: dupd
     "( x y -- x x y)
-    Duplicate the second item on the stack."
-;
+    Duplicate the second item on the stack." ;
 
 help: each
-    "( seq quot -- )            quot: ( ... elt -- ... )
-    Apply quot to each element of seq in order."
-;
+    "( seq quot -- )            quot: ( element -- )
+    Apply `quot` to each element of `seq` in order." ;
 
 help: each-index
-    "( seq quot -- )            quot: ( ... elt index -- ... )
-    Call quot for each element of seq with both the element and its
-    index on the stack."
-;
+    "( seq quot -- )            quot: ( element index -- )
+    Call `quot` for each element of `seq` with both the element and its
+    index on the stack." ;
 
 help: each-integer
-    "( n quot -- )              quot: ( ... i -- ... )
-    Call quot for each integer from 0 up to n, excluding n."
-;
+    "( n quot -- )              quot: ( i -- )
+    Call `quot` for each integer from 0 up to `n`, excluding `n`." ;
 
 help: even?
     "( n -- ? )
-    Return t if n is even."
-;
+    Return `t` if `n` is even." ;
 
 help: file-contents
     "( path -- string )
-    Return the contents of the specified file as a string."
-;
+    Return the contents of the specified file as a string." ;
 
 help: filter
-    "( seq quot -- subseq )     quot: ( ... elt -- ... ? )
-    Return a new sequence containing the elements of the original
-    sequence for which the quotation returns a true value."
-;
+    "( seq quot -- subseq )     quot: ( element -- ? )
+    Return a new sequence containing the elements of `seq` for which
+    `quot` returns a true value." ;
 
 help: find
-    "( seq quot -- index/f elt/f )      quot: ( ... elt -- ... ? )
-    Apply quot to each element of seq in order. If the quotation
-    returns a true value for some element, return the index of that
-    element and the element itself. Otherwise return f for both the
-    index and the element."
-;
+    "( seq quot -- index/f element/f )  quot: ( element -- ? )
+    Apply `quot` to each element of `seq` in order. If `quot` returns a
+    true value for some element, return the index of that element and
+    the element itself. Otherwise return `f` for both the index and
+    the element." ;
 
 help: find-last-from
-    "( n seq quot -- index/f elt/f )    quot: ( ... elt -- ... ? )
-    Apply quot to each element of seq in reverse order, starting at
-    index n. If the quotation returns a true value for some element,
+    "( n seq quot -- index/f element/f )        quot: ( element -- ? )
+    Apply `quot` to each element of `seq` in reverse order, starting at
+    index `n`. If the quotation returns a true value for some element,
     return the index of that element and the element itself. Otherwise
-    return f for both the index and the element."
-;
+    return `f` for both the index and the element." ;
 
 help: in-bounds?
     "( n seq -- ? )
-    Return t if n is within the bounds of seq."
-;
+    Return `t` if `n` is within the bounds of `seq`." ;
 
 help: index
     "( obj seq -- n )
-    Return the index of the first element of seq that is = to obj.
-    Return f if there is no such element."
-;
+    Return the index of the first element of `seq` that is equal to `obj`.
+    Return `f` if there is no such element." ;
 
 help: index?
     "( x -- ? )
-    Return t if x is a non-negative fixnum."
-;
+    Return `t` if `x` is a non-negative fixnum." ;
 
 help: keep
     "( x quot -- x )
-    Call quot with x on the stack. Restore x to the top of the
-    stack when quot returns."
-;
+    Call `quot` with `x` on the stack. Restore `x` to the top of the
+    stack when `quot` returns." ;
+
+help: length
+    "( seq -- n )
+    Return the length of `seq`." ;
 
 help: map
-    "( seq quot -- newseq )     quot: ( ... elt -- ... newelt )
-    Apply quot to each element of seq in order. Collect the results
-    in a new sequence of the same type as seq."
-;
+    "( seq quot -- newseq )     quot: ( element -- newelt )
+    Apply `quot` to each element of `seq` in order. Collect the results
+    in a new sequence of the same type as `seq`." ;
 
 help: map-index
-    "( seq quot -- newseq )     quot: ( ... elt index -- ...newelt )
-    Call quot for each element of seq with both the element and its
+    "( seq quot -- newseq )     quot: ( element index -- newelt )
+    Call `quot` for each element of `seq` with both the element and its
     index on the stack. Collect the results in a new sequence of the
-    the same type as seq."
-;
+    the same type as `seq`." ;
 
 help: member?
     "( obj seq -- ? )
-    Return t if seq contains an element = to obj."
-;
+    Return `t` if `seq` contains an element equal to `obj`." ;
 
 help: min-length
     "( seq1 seq2 -- n )
-    Return the length of the shorter sequence."
-;
+    Return the length of the shorter sequence." ;
 
 help: mismatch
     "( seq1 seq2 -- index/f )
-    Compare seq1 and seq2 up to the length of the shorter sequence.
+    Compare `seq1` and `seq2` up to the length of the shorter sequence.
     Return the first index where the elements of the two sequences
-    are not equal, or f if there is no mismatch."
-;
+    are not equal, or `f` if there is no mismatch." ;
 
 help: new-sequence
     "( len seq -- newseq )
-    Return a new sequence of length len which can hold the elements
-    of seq."
-;
+    Return a new sequence of length `len` which can hold the elements
+    of `seq`." ;
 
 help: odd?
     "( n -- ? )
-    Return t if n is odd."
-;
+    Return `t` if `n` is odd." ;
 
 help: or
     "( obj1 obj2 -- ? )
-    Boolean inclusive or: if both obj1 and obj2 are f, return f.
-    Otherwise return the first of obj1 and obj2 which is not f.
-    (Bitwise inclusive or is bitor.)"
-;
+    Boolean inclusive `or`: if both `obj1` and `obj2` are `f`, return `f`.
+    Otherwise return the first of `obj1` and `obj2` which is not `f`.
+    (For bitwise inclusive `or`, see `bitor`.)" ;
 
 help: over
     "( x y -- x y x )
-    Place a copy of x on top of the stack."
-;
+    Place a copy of `x` on top of the stack." ;
 
 help: pick
     "( x y z -- x y z x )
-    Place a copy of x on top of the stack.
+    Place a copy of `x` on top of the stack.
 
-    (Feline uses Factor's definition of pick. The Forth definition
-    is different.)"
-;
+    (Feline uses Factor's definition of `pick`. The Forth definition
+    is different.)" ;
 
 help: rot
-    "( x y z -- z y x )
-    Rotate the top three stack entries."
-;
+    "( x y z -- y z x )
+    Rotate the third entry to the top of the stack." ;
 
 help: sbuf-append-string
     "( sbuf string -- sbuf )
-    Modify sbuf by adding the characters of string to the end.
-    Return sbuf."
-;
+    Modify `sbuf` by adding the characters of `string` to the end.
+    Return `sbuf`." ;
+
+help: sbuf-shorten
+    "( n sbuf -- )
+    Shorten `sbuf` to be `n` characters long." ;
 
 help: set-at
     "( value key hashtable -- )
-    Associate value with key in hashtable."
-;
+    Associate `value` with `key` in `hashtable`." ;
+
+help: set-nth
+    "( element n seq -- )
+    Set `element` to be the `n`th element of `seq`." ;
 
 help: string-index-from
     "( char start-index string -- index )
-    Return the index of the first occurrence of char in string,
-    starting at start-index. Return f if char is not found."
-;
+    Return the index of the first occurrence of `char` in `string`,
+    starting at `start-index`. Return `f` if `char` is not found." ;
 
 help: string-skip-to-whitespace
     "( start-index string -- index/f )
-    Return the index of the first whitespace character in string,
-    starting at start-index. Return f if no whitespace character
-    is found."
-;
+    Return the index of the first whitespace character in `string`,
+    starting at `start-index`. Return `f` if no whitespace character
+    is found." ;
 
 help: string-skip-whitespace
     "( start-index string -- index/f )
-    Return the index of the first non-whitespace character in string,
-    starting at start-index. Return f if no non-whitespace character
-    is found."
-;
+    Return the index of the first non-whitespace character in `string`,
+    starting at `start-index`. Return `f` if no non-whitespace character
+    is found." ;
 
 help: substring
     "( start-index end-index string/sbuf -- substring )
     Return a new string consisting of the characters of the given
-    string or sbuf starting at start-index up to but not including
-    end-index."
-;
+    string or sbuf starting at `start-index` up to but not including
+    `end-index`." ;
 
 help: swap
     "( x y -- y x )
-    Exchange the top two stack items."
-;
+    Exchange the top two stack items." ;
 
 help: swapd
-    "( x y z -- y z x )
-    Exchange the second and third stack items."
-;
+    "( x y z -- y x z )
+    Exchange the second and third stack items." ;
 
 help: tab
     "( n -- )
     Write enough space characters so that the next character will
-    be written in column n.
+    be written in column `n`.
 
-    See also: charpos"
-;
+    See also: `charpos`" ;
 
 help: time
     "( quot -- )
-    Run quot and report the total run time."
-;
+    Run `quot` and report the total run time." ;
 
 help: times
     "( n quot -- )
-    Call quot n times."
-;
+    Call `quot` `n` times." ;
 
 help: unless
     "( x quot -- )
-    If x is f, remove it from the stack and call quot.
-    Otherwise, just remove x from the stack."
-;
+    If `x` is `f`, remove it from the stack and call `quot`.
+    Otherwise, just remove `x` from the stack." ;
 
 help: unless*
     "( x quot -- )
-    If x is f, remove it from the stack and call quot.
-    Otherwise, just leave x on the stack."
-;
+    If `x` is `f`, remove it from the stack and call `quot`.
+    Otherwise, just leave `x` on the stack." ;
 
 help: until
     "( quot1 quot2 -- )
-    Call quot1. If quot1 returns f, call quot2. Repeat until quot1
-    returns a true value."
-;
+    Call `quot1`. If `quot1` returns `f`, call `quot2`. Repeat until `quot1`
+    returns a true value." ;
