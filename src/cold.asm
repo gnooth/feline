@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -158,6 +158,9 @@ endcode
 ; ### interactive?
 special interactive?, 'interactive?'
 
+; ### load-verbose?
+special load_verbose?, 'load-verbose?'
+
 ; ### cold
 code cold, 'cold'                       ; --
         mov     [rp0_data], rsp
@@ -192,13 +195,18 @@ code cold, 'cold'                       ; --
         _lit S_load_system_file
         _ catch
         _ ?dup
-        _if .5
+        _if .1
         _ do_error
-        _then .5
+        _then .1
 
 ;         _ report_startup_time
 
-        _ process_command_line
+        _lit S_process_command_line
+        _ catch
+        _ ?dup
+        _if .2
+        _ do_error
+        _then .2
 
         _ dot_version
         _ ?nl
@@ -206,12 +214,16 @@ code cold, 'cold'                       ; --
         _lit S_process_init_file
         _ catch
         _ ?dup
-        _if .4
+        _if .3
         _ do_error
-        _then .4
+        _then .3
 
         _t
         _ interactive?
+        _ set_global
+
+        _t
+        _ load_verbose?
         _ set_global
 
         _quote "Meow!"
