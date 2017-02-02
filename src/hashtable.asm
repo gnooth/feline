@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -630,7 +630,7 @@ code dot_hashtable, '.hashtable'        ; hashtable --
         push    this_register
         mov     this_register, rbx
 
-        _write "H{ "
+        _write "H{"
         _hashtable_raw_capacity
         _zero
         _?do .1
@@ -638,20 +638,19 @@ code dot_hashtable, '.hashtable'        ; hashtable --
         _this_hashtable_nth_key
         _dup
         _tagged_if .2
-        _ ?nl
-        _write "    { "
+        _write " { "
         _ dot_object
+        _ space
         _i
         _this_hashtable_nth_value
         _ dot_object
-        _write "} "
-        _ nl
+        _ space
+        _write "}"
         _else .2
         _drop
         _then .2
         _loop .1
-
-        _write "}"
+        _write " }"
 
         pop     this_register
         next
