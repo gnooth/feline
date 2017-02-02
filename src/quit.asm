@@ -334,16 +334,22 @@ code where, 'where'             ; --
         next
 endcode
 
-; ### do-error
-code do_error, 'do-error'               ; error --
-        _dup
-        _ string?
-        _tagged_if .1
+; ### do-error1
+code do_error1, 'do-error1'             ; string --
         _ ?nl
         _ red
         _ foreground
         _ write_string
         _ where
+        next
+endcode
+
+; ### do-error
+code do_error, 'do-error'               ; error --
+        _dup
+        _ string?
+        _tagged_if .1
+        _ do_error1
         _ reset
         _else .1
 
