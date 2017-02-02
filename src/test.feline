@@ -1819,6 +1819,4 @@ test: return-if-test-3
 
 return-if-test-3
 
-in: feline
-
 ?nl "Reached end of test.feline" write-string
