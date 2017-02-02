@@ -42,6 +42,35 @@ code reload, 'reload'   ; --
         next
 endcode
 
+; ### saved-current-vocab
+special saved_current_vocab, 'saved-current-vocab'
+
+; ### saved-context-vector
+special saved_context_vector, 'saved-context-vector'
+
+; ### save-search-order
+code save_search_order, 'save-search-order'
+        _ current_vocab
+        _ saved_current_vocab
+        _ set
+        _ context_vector
+        _ vector_clone
+        _ saved_context_vector
+        _ set
+        next
+endcode
+
+; ### restore-search-order
+code restore_search_order, 'restore-search-order'
+        _ saved_current_vocab
+        _ get
+        _to_global current_vocab
+        _ saved_context_vector
+        _ get
+        _to_global context_vector
+        next
+endcode
+
 ; ### load
 code load, 'load'                       ; path --
         _ canonical_path
@@ -81,13 +110,17 @@ code load, 'load'                       ; path --
         _ interactive?
         _ set
 
+        _ save_search_order
+
         _quotation .3
         _ interpret
         _end_quotation .3
         _quotation .4
-        _ do_error
+        _ do_error1
         _end_quotation .4
         _ recover
+
+        _ restore_search_order
 
         _ end_scope
 
