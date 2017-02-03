@@ -512,14 +512,14 @@ code gc, 'gc'                           ; --
         _minus
         _tag_fixnum
         _ dot_object
-        _write "ms "
+        _write " ms "
 
         _ gc_end_cycles
         _ gc_start_cycles
         _minus
         _tag_fixnum
         _ dot_object
-        _write "cycles"
+        _write " cycles"
         _ nl
 
 .3:
