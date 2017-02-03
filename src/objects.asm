@@ -347,12 +347,7 @@ code dot_object, '.'                    ; handle-or-object --
         _dup
         _ quotation?
         _tagged_if .11
-        _write "[ "
-        _ quotation_array
-        _lit S_dot_object
-        _ space
-        _ each
-        _write "]"
+        _ dot_quotation
         _return
         _then .11
 

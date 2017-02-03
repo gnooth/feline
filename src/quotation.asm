@@ -145,7 +145,7 @@ code array_to_quotation, 'array>quotation' ; array -- quotation
         pushrbx
         mov     rbx, this_register      ; -- quotation
 
-        ; Return handle.
+        ; return handle
         _ new_handle                    ; -- handle
 
         pop     this_register
@@ -315,5 +315,29 @@ code callable_code_address, 'callable-code-address' ; callable -- code-address
 
         _error "not a callable"
 
+        next
+endcode
+
+; ### .quotation
+code dot_quotation, '.quotation'        ; quotation --
+        _ quotation_array
+
+        _ check_array
+
+        push    this_register
+        mov     this_register, rbx
+
+        _write "[ "
+        _array_length
+        _zero
+        _?do .1
+        _i
+        _this_array_nth_unsafe
+        _ dot_object
+        _ space
+        _loop .1
+        _write "]"
+
+        pop     this_register
         next
 endcode
