@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -18,6 +18,9 @@ file __FILE__
 ; ### feline-vocab
 feline_global feline_vocab, 'feline-vocab'
 
+; ### user-vocab
+feline_global user_vocab, 'user-vocab'
+
 ; ### dictionary
 feline_global dictionary, 'dictionary'  ; -- hashtable
 
@@ -32,6 +35,10 @@ code initialize_vocabs, 'initialize-vocabs'     ; --
         _quote "feline"
         _ new_vocab
         _to_global feline_vocab
+
+        _quote "user"
+        _ new_vocab
+        _to_global user_vocab
 
         _lit 16
         _ new_vector_untagged
@@ -84,6 +91,11 @@ code hash_vocabs, 'hash-vocabs'
 
         _ feline_vocab
         _quote "feline"
+        _ dictionary
+        _ set_at
+
+        _ user_vocab
+        _quote "user"
         _ dictionary
         _ set_at
 
