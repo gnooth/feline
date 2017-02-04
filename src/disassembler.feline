@@ -133,7 +133,11 @@ global: relative-size
 
     "[" write-string
     base .reg64
-    index [ "+" write-string index .reg64 ] when
+    index [
+        "+" write-string
+        scale zero? [ 1 scale lshift dec. "*" write-string ] unless
+        index .reg64
+    ] when
     disp 0 = [
         disp 0 > [ "+" write-string ] [ "-" write-string disp negate !> disp ] if
         disp dec.
