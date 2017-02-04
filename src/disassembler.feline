@@ -1364,7 +1364,6 @@ last-word $be install-$0f-handler
     opcode handler [ execute-handler ] [ unsupported ] if* ;
 
 : decode
-    depth 0 assert=
     reset-disassembler
     .ip
     ip c@ >local: byte
