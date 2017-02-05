@@ -330,16 +330,14 @@ OBJECT_ALLOCATED_BIT            equ 4
         lea     rbx, [this_register + ARRAY_DATA_OFFSET]
 %endmacro
 
-%macro  _array_nth_unsafe 0             ; index array -- element
+%macro  _array_nth_unsafe 0             ; untagged-index array -- element
         mov     rax, [rbp]              ; untagged index in rax
         lea     rbp, [rbp + BYTES_PER_CELL]
-        shl     rax, 3                  ; convert cells to bytes
-        mov     rbx, [rbx + rax + ARRAY_DATA_OFFSET]
+        mov     rbx, [rbx + BYTES_PER_CELL*rax + ARRAY_DATA_OFFSET]
 %endmacro
 
-%macro  _this_array_nth_unsafe 0        ; index -- element
-        _cells
-        mov     rbx, [this_register + rbx + ARRAY_DATA_OFFSET]
+%macro  _this_array_nth_unsafe 0        ; untagged-index -- element
+        mov     rbx, [this_register + BYTES_PER_CELL*rbx + ARRAY_DATA_OFFSET]
 %endmacro
 
 %macro  _array_set_nth_unsafe 0         ; element index array --
