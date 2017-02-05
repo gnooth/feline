@@ -497,7 +497,7 @@ section .data
 %endmacro
 
 %macro  feline_global 3                 ; label, name, value
-        symbol S_%1, %2, %1, %1_ret - %1 + 1, SYMBOL_GLOBAL, %3
+        symbol S_%1, %2, %1, %1_ret - %1 + 1, SYMBOL_GLOBAL | SYMBOL_INLINE, %3
         section .text
         align DEFAULT_CODE_ALIGNMENT
 %1:
