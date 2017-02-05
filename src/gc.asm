@@ -183,6 +183,71 @@ code mark_lexer, 'mark-lexer'           ; lexer --
         next
 endcode
 
+; ### gc-dispatch-table
+feline_global gc_dispatch_table, 'gc-dispatch-table'
+
+%macro _gc_dispatch_table 0
+        pushrbx
+        mov     rbx, [S_gc_dispatch_table_data]
+%endmacro
+
+; ### initialize-gc-dispatch-table
+code initialize_gc_dispatch_table, 'initialize-gc-dispatch-table'
+        _lit 32
+        _lit 0
+        _ new_array_untagged
+        _dup
+        _to_global gc_dispatch_table
+
+        _handle_to_object_unsafe
+
+        push    this_register
+        popd    this_register
+
+        _lit mark_vector
+        _lit OBJECT_TYPE_VECTOR
+        _this_array_set_nth_unsafe
+
+        _lit mark_array
+        _lit OBJECT_TYPE_ARRAY
+        _this_array_set_nth_unsafe
+
+        _lit mark_hashtable
+        _lit OBJECT_TYPE_HASHTABLE
+        _this_array_set_nth_unsafe
+
+        _lit mark_vocab
+        _lit OBJECT_TYPE_VOCAB
+        _this_array_set_nth_unsafe
+
+        _lit mark_symbol
+        _lit OBJECT_TYPE_SYMBOL
+        _this_array_set_nth_unsafe
+
+        _lit mark_quotation
+        _lit OBJECT_TYPE_QUOTATION
+        _this_array_set_nth_unsafe
+
+        _lit mark_curry
+        _lit OBJECT_TYPE_CURRY
+        _this_array_set_nth_unsafe
+
+        _lit mark_slice
+        _lit OBJECT_TYPE_SLICE
+        _this_array_set_nth_unsafe
+
+        _lit mark_tuple
+        _lit OBJECT_TYPE_TUPLE
+        _this_array_set_nth_unsafe
+
+        _lit mark_lexer
+        _lit OBJECT_TYPE_LEXER
+        _this_array_set_nth_unsafe
+
+        pop     this_register
+        next
+endcode
+
 ; ### mark-handle
 code mark_handle, 'mark-handle'         ; handle --
         _handle_to_object_unsafe        ; -- object/0
