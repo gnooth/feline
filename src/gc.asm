@@ -260,94 +260,20 @@ code mark_handle, 'mark-handle'         ; handle --
         _set_marked_bit
 
         _dup
-        _object_type                    ; -- object object-type
-        _lit OBJECT_TYPE_VECTOR
-        _equal
-        _if .2
-        _ mark_vector
-        _return
-        _then .2
-
-        _dup
-        _object_type                    ; -- object object-type
-        _lit OBJECT_TYPE_ARRAY
-        _equal
-        _if .3
-        _ mark_array
-        _return
-        _then .3
-
-        _dup
-        _object_type                    ; -- object object-type
-        _lit OBJECT_TYPE_HASHTABLE
-        _equal
-        _if .4
-        _ mark_hashtable
-        _return
-        _then .4
-
-        _dup
         _object_type
-        _lit OBJECT_TYPE_VOCAB
-        _equal
-        _if .5
-        _ mark_vocab
+        _gc_dispatch_table
+        _handle_to_object_unsafe
+        _array_nth_unsafe
+        test    rbx, rbx
+        jz .2
+        mov     rax, rbx
+        poprbx                          ; -- object
+        call    rax
         _return
-        _then .5
 
-        _dup
-        _object_type
-        _lit OBJECT_TYPE_SYMBOL
-        _equal
-        _if .6
-        _ mark_symbol
+.2:
+        _2drop
         _return
-        _then .6
-
-        _dup
-        _object_type
-        _lit OBJECT_TYPE_QUOTATION
-        _equal
-        _if .7
-        _ mark_quotation
-        _return
-        _then .7
-
-        _dup
-        _object_type
-        _lit OBJECT_TYPE_CURRY
-        _equal
-        _if .8
-        _ mark_curry
-        _return
-        _then .8
-
-        _dup
-        _object_type
-        _lit OBJECT_TYPE_SLICE
-        _equal
-        _if .9
-        _ mark_slice
-        _return
-        _then .9
-
-        _dup
-        _object_type
-        _lit OBJECT_TYPE_TUPLE
-        _equal
-        _if .10
-        _ mark_tuple
-        _return
-        _then .10
-
-        _dup
-        _object_type
-        _lit OBJECT_TYPE_LEXER
-        _equal
-        _if .11
-        _ mark_lexer
-        _return
-        _then .11
 
 .1:
         _drop
