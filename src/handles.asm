@@ -262,10 +262,11 @@ endcode
 
 ; ### release-handle-unsafe
 code release_handle_unsafe, 'release-handle-unsafe' ; handle --
-        ; Zero out the stored address.
-        mov     qword [rbx], 0          ; -- handle
+        ; zero out the stored address
+        xor     eax, eax
+        mov     qword [rbx], rax
 
-        ; Add handle to free-handles vector.
+        ; add handle to free-handles vector
         _ free_handles
         _handle_to_object_unsafe        ; -- handle vector
         _ vector_push_unchecked         ; --
