@@ -516,6 +516,11 @@ section .data
         poprbx
 %endmacro
 
+%macro  _from_global 1                  ; label
+        pushrbx
+        mov     rbx, [S_%1_data]
+%endmacro
+
 %macro  feline_constant 3               ; label, name, value
         symbol S_%1, %2, %1, %1_ret - %1 + 1, SYMBOL_CONSTANT, %3
         section .text
