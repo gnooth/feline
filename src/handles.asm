@@ -123,7 +123,7 @@ code get_empty_handle, 'get-empty-handle'       ; -- handle/0
         cmp     qword [unused], 0
         jz .3
         _ handle_space_free
-        _ handle_space_limit
+        _from_global handle_space_limit
         _ult
         _if .4
         _ handle_space_free     ; address of handle to be returned
