@@ -23,7 +23,7 @@ file __FILE__
 value handle_space, 'handle-space', 0
 
 ; ### handle-space-free
-value handle_space_free, 'handle-space-free', 0
+feline_global handle_space_free, 'handle-space-free', 0
 
 ; ### handle-space-limit
 feline_global handle_space_limit, 'handle-space-limit', 0
@@ -48,7 +48,7 @@ code initialize_handle_space, 'initialize-handle-space' ; --
         _dup
         _to handle_space
         _dup
-        _to handle_space_free
+        _to_global handle_space_free
         _plus
         _to_global handle_space_limit
 
@@ -122,14 +122,14 @@ code get_empty_handle, 'get-empty-handle'       ; -- handle/0
 
         cmp     qword [unused], 0
         jz .3
-        _ handle_space_free
+        _from_global handle_space_free
         _from_global handle_space_limit
         _ult
         _if .4
-        _ handle_space_free     ; address of handle to be returned
+        _from_global handle_space_free  ; address of handle to be returned
         _dup
         _cellplus
-        _to handle_space_free
+        _to_global handle_space_free
         sub     qword [unused], 1
         _return
         _then .4
@@ -198,7 +198,7 @@ code handle?, 'handle?'                 ; x -- ?
         ; must point into handle space
         cmp     rbx, [handle_space_data]
         jb .1
-        cmp     rbx, [handle_space_free_data]
+        cmp     rbx, [S_handle_space_free_symbol_value]
         jae .1
 
         mov     ebx, t_value
@@ -217,7 +217,7 @@ code deref, 'deref'     ; x -- object-address/0
         ; must point into handle space
         cmp     rbx, [handle_space_data]
         jb .1
-        cmp     rbx, [handle_space_free_data]
+        cmp     rbx, [S_handle_space_free_symbol_value]
         jae .1
 
         ; valid handle
@@ -236,7 +236,7 @@ code find_handle, 'find-handle'         ; object -- handle/0
         _ handle_space                  ; -- object addr
         _begin .2
         _dup
-        _ handle_space_free
+        _from_global handle_space_free
         _ult
         _while .2                       ; -- object addr
         _twodup                         ; -- object addr object handle
@@ -288,7 +288,7 @@ code handles, 'handles'
         _ handle_space
         _begin .1
         _dup
-        _ handle_space_free
+        _from_global handle_space_free
         _ult
         _while .1
         _dup
@@ -303,7 +303,7 @@ code handles, 'handles'
         _drop
 
         _ ?nl
-        _ handle_space_free
+        _from_global handle_space_free
         _ handle_space
         _minus
 
@@ -331,7 +331,7 @@ endcode
 ; ### .handles
 code dot_handles, '.handles'
         _ ?nl
-        _ handle_space_free
+        _from_global handle_space_free
         _ handle_space
         _minus
 
@@ -346,7 +346,7 @@ code dot_handles, '.handles'
         _ handle_space
         _begin .1
         _dup
-        _ handle_space_free
+        _from_global handle_space_free
         _ult
         _while .1
         _ ?nl
@@ -375,7 +375,7 @@ code each_handle, 'each-handle'         ; callable --
         _ handle_space                  ; -- addr
         _begin .1
         _dup
-        _ handle_space_free
+        _from_global handle_space_free
         _ult
         _while .1                       ; -- addr
         _dup
