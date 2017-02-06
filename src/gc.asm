@@ -186,11 +186,6 @@ endcode
 ; ### gc-dispatch-table
 feline_global gc_dispatch_table, 'gc-dispatch-table'
 
-%macro _gc_dispatch_table 0
-        pushrbx
-        mov     rbx, [S_gc_dispatch_table_data]
-%endmacro
-
 ; ### initialize-gc-dispatch-table
 code initialize_gc_dispatch_table, 'initialize-gc-dispatch-table'
         _lit 32
@@ -261,7 +256,7 @@ code mark_handle, 'mark-handle'         ; handle --
 
         _dup
         _object_type
-        _gc_dispatch_table
+        _from_global gc_dispatch_table
         _handle_to_object_unsafe
         _array_nth_unsafe
         test    rbx, rbx
