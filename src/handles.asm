@@ -20,7 +20,7 @@ file __FILE__
 %endmacro
 
 ; ### handle-space
-value handle_space, 'handle-space', 0
+feline_global handle_space, 'handle-space', 0
 
 ; ### handle-space-free
 feline_global handle_space_free, 'handle-space-free', 0
@@ -46,7 +46,7 @@ code initialize_handle_space, 'initialize-handle-space' ; --
         _dup
         _ iallocate
         _dup
-        _to handle_space
+        _to_global handle_space
         _dup
         _to_global handle_space_free
         _plus
@@ -196,7 +196,7 @@ code handle?, 'handle?'                 ; x -- ?
         jnz     .1
 
         ; must point into handle space
-        cmp     rbx, [handle_space_data]
+        cmp     rbx, [S_handle_space_symbol_value]
         jb .1
         cmp     rbx, [S_handle_space_free_symbol_value]
         jae .1
@@ -215,7 +215,7 @@ code deref, 'deref'     ; x -- object-address/0
         jnz     .1
 
         ; must point into handle space
-        cmp     rbx, [handle_space_data]
+        cmp     rbx, [S_handle_space_symbol_value]
         jb .1
         cmp     rbx, [S_handle_space_free_symbol_value]
         jae .1
@@ -233,7 +233,7 @@ endcode
 
 ; ### find-handle
 code find_handle, 'find-handle'         ; object -- handle/0
-        _ handle_space                  ; -- object addr
+        _from_global handle_space       ; -- object addr
         _begin .2
         _dup
         _from_global handle_space_free
@@ -285,7 +285,7 @@ code handles, 'handles'
         _zeroto nobjects
         _zeroto nfree
 
-        _ handle_space
+        _from_global handle_space
         _begin .1
         _dup
         _from_global handle_space_free
@@ -304,7 +304,7 @@ code handles, 'handles'
 
         _ ?nl
         _from_global handle_space_free
-        _ handle_space
+        _from_global handle_space
         _minus
 
 ;         _ cell
@@ -332,7 +332,7 @@ endcode
 code dot_handles, '.handles'
         _ ?nl
         _from_global handle_space_free
-        _ handle_space
+        _from_global handle_space
         _minus
 
 ;         _ cell
@@ -343,7 +343,7 @@ code dot_handles, '.handles'
         _ decimal_dot
         _write "handles"
 
-        _ handle_space
+        _from_global handle_space
         _begin .1
         _dup
         _from_global handle_space_free
@@ -372,7 +372,7 @@ code each_handle, 'each-handle'         ; callable --
         push    r12
         mov     r12, rbx                ; code address in r12
         _drop                           ; --
-        _ handle_space                  ; -- addr
+        _from_global handle_space       ; -- addr
         _begin .1
         _dup
         _from_global handle_space_free
