@@ -26,9 +26,9 @@ value handle_space, 'handle-space', 0
 value handle_space_free, 'handle-space-free', 0
 
 ; ### handle-space-limit
-value handle_space_limit, 'handle-space-limit', 0
+feline_global handle_space_limit, 'handle-space-limit', 0
 
-%define HANDLE_SPACE_SIZE 1024*1024*8   ; 8 mb
+%define HANDLE_SPACE_SIZE 1024*1024*8   ; 8 mb (1048576 handles)
 
 asm_global unused, 1024*1024
 
@@ -50,7 +50,7 @@ code initialize_handle_space, 'initialize-handle-space' ; --
         _dup
         _to handle_space_free
         _plus
-        _to handle_space_limit
+        _to_global handle_space_limit
 
         _lit 256
         _ new_vector_untagged
