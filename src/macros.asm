@@ -401,7 +401,7 @@ section .data
         dq      f_value                 ; hashcode (link field)
         dq      f_value                 ; def
         dq      f_value                 ; props
-%1_data:
+%1_symbol_value:
         dq      %6                      ; value
         dq      %3                      ; untagged code address
         dq      %4                      ; untagged code size (includes ret instruction)
@@ -502,7 +502,7 @@ section .data
         align DEFAULT_CODE_ALIGNMENT
 %1:
         pushrbx
-        mov     rbx, [S_%1_data]
+        mov     rbx, [S_%1_symbol_value]
 %1_ret:
         next
 %endmacro
@@ -512,13 +512,13 @@ section .data
 %endmacro
 
 %macro  _to_global 1                    ; label
-        mov     [S_%1_data], rbx
+        mov     [S_%1_symbol_value], rbx
         poprbx
 %endmacro
 
 %macro  _from_global 1                  ; label
         pushrbx
-        mov     rbx, [S_%1_data]
+        mov     rbx, [S_%1_symbol_value]
 %endmacro
 
 %macro  feline_constant 3               ; label, name, value

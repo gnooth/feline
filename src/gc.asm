@@ -425,16 +425,16 @@ feline_global gc_pending, 'gc-pending'
 ; ### gc-disable
 code gc_disable, 'gc-disable'
         _ maybe_gc
-        mov     qword [S_gc_inhibit_data], t_value
+        mov     qword [S_gc_inhibit_symbol_value], t_value
         next
 endcode
 
 ; ### gc-enable
 code gc_enable, 'gc-enable'
-        mov     qword [S_gc_inhibit_data], f_value
-        cmp     qword [S_gc_pending_data], f_value
+        mov     qword [S_gc_inhibit_symbol_value], f_value
+        cmp     qword [S_gc_pending_symbol_value], f_value
         je     .1
-        mov     qword [S_gc_pending_data], f_value
+        mov     qword [S_gc_pending_symbol_value], f_value
         _ gc
 .1:
         next
@@ -442,12 +442,12 @@ endcode
 
 ; ### gc
 code gc, 'gc'                           ; --
-        cmp     qword [S_gc_inhibit_data], f_value
+        cmp     qword [S_gc_inhibit_symbol_value], f_value
         je .1
-        mov     qword [S_gc_pending_data], t_value
+        mov     qword [S_gc_pending_symbol_value], t_value
         _return
 .1:
-        cmp     qword [S_gc_verbose_data], f_value
+        cmp     qword [S_gc_verbose_symbol_value], f_value
         je .2
         _ ticks
         _to gc_start_ticks
@@ -482,9 +482,9 @@ code gc, 'gc'                           ; --
 
         _zeroto in_gc?
 
-        mov     qword [S_gc_pending_data], f_value
+        mov     qword [S_gc_pending_symbol_value], f_value
 
-        cmp     qword [S_gc_verbose_data], f_value
+        cmp     qword [S_gc_verbose_symbol_value], f_value
         je .3
         _rdtsc
         _to gc_end_cycles
