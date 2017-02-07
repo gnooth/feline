@@ -401,6 +401,9 @@ section .data
         dq      f_value                 ; hashcode (link field)
         dq      f_value                 ; def
         dq      f_value                 ; props
+
+        global %1_symbol_value
+
 %1_symbol_value:
         dq      %6                      ; value
         dq      %3                      ; untagged code address
