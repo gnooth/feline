@@ -493,18 +493,28 @@ code gc, 'gc'                           ; --
 
         _ ?nl
         _write "gc "
+        _from_global recent_allocations
+        _ decimal_dot
+        _write " allocations since last gc"
+        _ nl
+
+        _lit tagged_zero
+        _to_global recent_allocations
+
+        _ ?nl
+        _write "gc "
         _ gc_end_ticks
         _ gc_start_ticks
         _minus
         _tag_fixnum
-        _ dot_object
+        _ decimal_dot
         _write " ms "
 
         _ gc_end_cycles
         _ gc_start_cycles
         _minus
         _tag_fixnum
-        _ dot_object
+        _ decimal_dot
         _write " cycles"
         _ nl
 
