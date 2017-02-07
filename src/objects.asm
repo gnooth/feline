@@ -87,8 +87,9 @@ code error_empty_handle, 'error-empty-handle'
 endcode
 
 ; ### object-type
-code object_type, 'object-type'         ; handle-or-object -- n/f
-; Return value is tagged.
+code object_type, 'object-type'         ; handle-or-object -- n
+; return value is tagged
+; error if argument is not an object
         _dup
         _fixnum?
         _if .1
@@ -134,8 +135,7 @@ code object_type, 'object-type'         ; handle-or-object -- n/f
         _return
         _then .5
 
-        ; Apparently not an object.
-        mov     ebx, f_value
+        _error "not an object"
 
         next
 endcode
