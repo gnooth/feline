@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -18,25 +18,15 @@ file __FILE__
 ; ### lookup-method
 code lookup_method, 'lookup-method'     ; object methods-vector -- object raw-code-address/f
 ; return f if no method
-        _tor                            ; -- object
-        _dup
-        _ object_type                   ; -- object tagged-type-number
-
-        _dup
-        _tagged_if_not .1
-        _error "no object type"
-        _then .1
-
-        _rfrom                          ; -- object tagged-type-number vector
-        _twodup
-        _ vector_length
-        _ fixnum_lt
-        _tagged_if .2                   ; -- object n vector
-        _ vector_nth_unsafe             ; -- object method/f
-        _else .2
-        _2drop                          ; -- object
-        _f                              ; -- object f
-        _then .2
+; no error checking
+        _handle_to_object_unsafe        ; -- object raw-vector
+        push    this_register
+        mov     this_register, rbx
+        mov     rbx, [rbp]              ; -- object object
+        _ object_type
+        _untag_fixnum                   ; -- object untagged-index
+        _this_vector_nth_unsafe         ; -- raw-code-address/f
+        pop     this_register
         next
 endcode
 
