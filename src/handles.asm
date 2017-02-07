@@ -140,6 +140,18 @@ code get_empty_handle, 'get-empty-handle'       ; -- handle/0
         next
 endcode
 
+; ### total-allocations
+feline_global total_allocations, 'total-allocations', tagged_zero
+
+; ### recent-allocations
+; number of allocations since last gc
+feline_global recent_allocations, 'recent-allocations', tagged_zero
+
+%macro _increment_allocation_count 0
+        add qword [S_total_allocations_symbol_value], 1 << TAG_BITS
+        add qword [S_recent_allocations_symbol_value], 1 << TAG_BITS
+%endmacro
+
 ; ### new-handle
 code new_handle, 'new-handle'   ; object -- handle
         _ get_empty_handle      ; -- object handle/0
@@ -147,6 +159,7 @@ code new_handle, 'new-handle'   ; object -- handle
         jz     .1
         _tuck
         _store
+        _increment_allocation_count
         _return
 .1:                             ; -- object 0
         _drop
@@ -158,6 +171,7 @@ code new_handle, 'new-handle'   ; object -- handle
         jz     .2
         _tuck
         _store
+        _increment_allocation_count
         _return
 .2:
         _error "out of handles"
