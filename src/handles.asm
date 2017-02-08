@@ -42,6 +42,29 @@ endcode
 
 ; ### initialize-handle-space
 code initialize_handle_space, 'initialize-handle-space' ; --
+        _from_global handle_space
+
+        test    rbx, rbx
+        jz      .1
+
+        ; handle space was reserved in main.c
+        _dup
+        _to_global handle_space_free
+        _lit HANDLE_SPACE_SIZE
+        shl     rbx, 1          ; soft limit is HANDLE_SPACE_SIZE * 2
+
+        _dup
+        shr     rbx, 3          ; convert bytes to handles
+        mov     [unused], rbx
+        poprbx
+
+        _plus
+        _to_global handle_space_limit
+
+        jmp     .2
+
+.1:
+        ; no handle space was reserved
         _lit HANDLE_SPACE_SIZE
         _dup
         _ iallocate
@@ -52,6 +75,7 @@ code initialize_handle_space, 'initialize-handle-space' ; --
         _plus
         _to_global handle_space_limit
 
+.2:
         _lit 256
         _ new_vector_untagged
         _to free_handles

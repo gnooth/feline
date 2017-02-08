@@ -129,6 +129,18 @@ int main(int argc, char **argv, char **env)
 
   prep_terminal();
 
+#ifndef WIN64
+  extern cell S_handle_space_symbol_value;
+
+  S_handle_space_symbol_value =
+    (cell) mmap((void *)0x1000000,      // addr
+                1024*1024*100,          // length
+                PROT_READ|PROT_WRITE,   // prot
+                MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE,        // flags
+                -1,                     // fd
+                0);                     // offset
+#endif
+
   initialize_data_stack();
 
 #ifdef WIN64
