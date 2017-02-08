@@ -129,9 +129,15 @@ int main(int argc, char **argv, char **env)
 
   prep_terminal();
 
-#ifndef WIN64
   extern cell S_handle_space_symbol_value;
 
+#ifdef WIN64
+  S_handle_space_symbol_value =
+    (cell) VirtualAlloc(0,              // addr
+                        1024*1024*100,  // length
+                        MEM_COMMIT|MEM_RESERVE,                 // allocation type
+                        PAGE_READWRITE);                        // prot
+#else
   S_handle_space_symbol_value =
     (cell) mmap((void *)0x1000000,      // addr
                 1024*1024*100,          // length
