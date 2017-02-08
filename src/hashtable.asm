@@ -126,21 +126,12 @@ endcode
 
 ; ### check-hashtable
 code check_hashtable, 'check-hashtable' ; handle -- hashtable
-        _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe        ; -- object|0
-        _dup_if .2
-        _dup
-        _object_type                    ; -- object object-type
-        _eq? OBJECT_TYPE_HASHTABLE
-        _tagged_if .3
-        _return
-        _then .3
-        _then .2
-        _then .1
-
-        _ error_not_hashtable
+        _ deref
+        test    rbx, rbx
+        jz      error_not_hashtable
+        movzx   eax, word [rbx]
+        cmp     eax, OBJECT_TYPE_HASHTABLE
+        jne     error_not_hashtable
         next
 endcode
 
