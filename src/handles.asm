@@ -64,6 +64,8 @@ code initialize_handle_space, 'initialize-handle-space' ; --
         jmp     .2
 
 .1:
+        _drop
+
         ; no handle space was reserved
         _lit HANDLE_SPACE_SIZE
         _dup
