@@ -336,7 +336,13 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
 
     .instruction-bytes
     .mnemonic
-    48 tab jump-target hex. ;
+    48 tab jump-target hex.
+
+    jump-target start-address stop-address between? [
+        jump-target find-word-from-code-address [
+            64 tab symbol-name write
+        ] when*
+    ] unless ;
 
 : regop-mnemonic ( -- string )
     {
