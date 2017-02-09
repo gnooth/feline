@@ -23,8 +23,7 @@ code lookup_method, 'lookup-method'     ; object methods-vector -- object raw-co
         push    this_register
         mov     this_register, rbx
         mov     rbx, [rbp]              ; -- object object
-        _ object_type
-        _untag_fixnum                   ; -- object untagged-index
+        _ object_raw_type               ; -- object raw-type-number
         _this_vector_nth_unsafe         ; -- raw-code-address/f
         pop     this_register
         next
