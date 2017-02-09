@@ -855,7 +855,7 @@ last-word $8d install-handler
         { 1 [
             modrm-rm register-rm !> dbase
             next-signed-byte !> ddisp
-            "qword" !> relative-size  -- REVIEW
+            "qword" !> relative-size            -- REVIEW
         ] }
     } case
     .inst ;
@@ -1195,9 +1195,21 @@ last-word $f7 install-handler
             ] if
         ] }
         { 1 [
-            modrm-rm register-rm !> dbase
-            next-signed-byte !> ddisp
-            "qword" !> relative-size
+            modrm-rm 4 = [
+                !sib-byte
+                next-signed-byte !> ddisp
+                sib-byte $24 = [
+                    sib-base  !> dbase
+                ] [
+                    sib-base register-rm !> dbase
+                    sib-index register-index !> dindex
+                    sib-scale !> dscale
+                ] if
+            ] [
+                modrm-rm register-rm !> dbase
+                next-signed-byte !> ddisp
+                "qword" !> relative-size        -- REVIEW
+            ] if
         ] }
         { 3 [ modrm-rm register-rm !> dreg ] }
     } case
