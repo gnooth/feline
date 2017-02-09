@@ -86,15 +86,12 @@ code error_empty_handle, 'error-empty-handle'
         next
 endcode
 
-; ### object-type
-code object_type, 'object-type'         ; handle-or-object -- n
-; return value is tagged
-; error if argument is not an object
+; ### object-raw-type
+code object_raw_type, 'object-raw-type'         ; x -- raw-type-number
         _dup
         _fixnum?
         _if .1
         mov     ebx, OBJECT_TYPE_FIXNUM
-        _tag_fixnum
         _return
         _then .1
 
@@ -103,7 +100,6 @@ code object_type, 'object-type'         ; handle-or-object -- n
         _eq?
         _tagged_if .2
         mov     ebx, OBJECT_TYPE_F
-        _tag_fixnum
         _return
         _then .2
 
@@ -114,7 +110,6 @@ code object_type, 'object-type'         ; handle-or-object -- n
         test    rbx, rbx
         jz error_empty_handle
         _object_type
-        _tag_fixnum
         _return
         _then .3
 
@@ -123,7 +118,6 @@ code object_type, 'object-type'         ; handle-or-object -- n
         _ string?
         _tagged_if .4
         mov     ebx, OBJECT_TYPE_STRING
-        _tag_fixnum
         _return
         _then .4
 
@@ -131,12 +125,20 @@ code object_type, 'object-type'         ; handle-or-object -- n
         _ symbol?
         _tagged_if .5
         mov     ebx, OBJECT_TYPE_SYMBOL
-        _tag_fixnum
         _return
         _then .5
 
         _error "not an object"
 
+        next
+endcode
+
+; ### object-type
+code object_type, 'object-type'         ; x -- type-number
+; return value is tagged
+; error if x is not an object
+        _ object_raw_type
+        _tag_fixnum
         next
 endcode
 
