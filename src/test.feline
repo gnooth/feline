@@ -1814,9 +1814,16 @@ test: return-if-test-3
     clear
     5 %return-if-test-3 get-datastack {  5 } assert=
     clear
-    lp@ saved-lp assert=
-;
+    lp@ saved-lp assert= ;
 
 return-if-test-3
+
+test: @-test-1
+    ' dup symbol-code-address @
+    [ bignum? assert-true ] keep
+    [ 17901119438411630920 assert= ] keep
+    bignum>hex "f86d8d48f85d8948" assert= ;
+
+@-test-1
 
 ?nl "Reached end of test.feline" write-string
