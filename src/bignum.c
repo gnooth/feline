@@ -1,4 +1,4 @@
-// Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -72,9 +72,22 @@ void c_bignum_init(mpz_t z)
   mpz_init(z);
 }
 
-void c_bignum_init_set_ui(mpz_t z, unsigned long int n)
+void c_bignum_init_set_ui(mpz_t z, cell n)
 {
+#if SIZEOF_LONG == 4
+  long int lo = (n & 0xffffffff);
+  long int hi = (n >> 32);
+  if (hi != 0)
+    {
+      mpz_init_set_ui(z, hi);
+      mpz_mul_2exp(z, z, 32);
+      mpz_add_ui(z, z, lo);
+    }
+  else
+    mpz_init_set_ui(z, lo);
+#else
   mpz_init_set_ui(z, n);
+#endif
 }
 
 void c_bignum_init_set_si(mpz_t z, cell n)
