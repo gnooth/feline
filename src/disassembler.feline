@@ -176,7 +176,13 @@ global: relative-size
 
 : .sep  ( -- )  ", " write-string ;
 
-: .immediate-operand ( ) immediate-operand signed? [ dec. ] [ hex. ] if ;
+: .immediate-operand ( -- )
+    immediate-operand {
+        { [ signed? ]     [ dec. ] }
+        { [ dup bignum? ] [ hex. ] }
+        { [ dup 10 < ]    [ dec. ] }
+        [ hex. ]
+    } cond ;
 
 : .source ( -- )
     {
