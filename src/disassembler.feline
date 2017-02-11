@@ -951,6 +951,7 @@ last-word $c3 install-handler
     -- /0
     -- source is imm8
     -- dest is r/m8
+    8 dup !> dsize !> ssize
     !modrm-byte
     "mov" !> mnemonic
     modrm-reg {
