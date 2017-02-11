@@ -190,14 +190,9 @@ endcode
 
 ; ### in:
 code in_colon, 'in:'
-        _ parse_token                   ; -- string/f
-        _dup
-        _tagged_if .1
+        _ must_parse_token              ; -- string/f
         _ ensure_vocab
         _to_global current_vocab
-        _else .1
-        _error "unexpected end of input"
-        _then .1
         next
 endcode
 
