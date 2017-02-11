@@ -776,12 +776,6 @@ section .text
         add     rbx, [rsp + BYTES_PER_CELL]
 %endmacro
 
-%macro  _i_plus 0
-        mov     rax, [rsp]
-        add     rax, [rsp + BYTES_PER_CELL]
-        add     rbx, rax
-%endmacro
-
 %macro  _leave 0
         add     rsp, BYTES_PER_CELL * 2
         ret                             ; same as jumping to %1_exit
