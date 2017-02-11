@@ -1375,31 +1375,19 @@ last-word $af install-$0f-handler
 last-word $b6 install-$0f-handler
 
 : .0f-b7
-    -- ModR/M byte contains both a register and an r/m operand
     -- source is r/m16
+    16 !> ssize
     -- dest is r32/64
-    set-instruction-size
+    instruction-operand-size !> dsize
     "movzx" !> mnemonic
     !modrm-byte
     modrm-reg register-reg !> dreg
     modrm-mod {
-        { 0 [
-            modrm-rm register-rm !> sbase
-            "word" !> relative-size
-        ] }
-        { 1 [
-            modrm-rm register-rm !> sbase
-            next-signed-byte !> sdisp
-            "word" !> relative-size
-        ] }
-        { 3 [
-            t !> register-direct?
-            modrm-rm register-rm !> sreg
-            16 !> ssize
-        ] }
+        { 0 [ modrm-rm register-rm !> sbase ] }
+        { 1 [ modrm-rm register-rm !> sbase next-signed-byte !> sdisp ] }
+        { 3 [ t !> register-direct? modrm-rm register-rm !> sreg ] }
         [ unsupported ]
-    } case
-    .inst ;
+    } case .inst ;
 
 last-word $b7 install-$0f-handler
 
