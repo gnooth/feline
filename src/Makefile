@@ -76,7 +76,8 @@ random.o: random.c
 bignum.o: bignum.c
 	$(CC) $(CFLAGS) -c -o bignum.o bignum.c
 
-ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm macros.asm inlines.asm \
+ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
+	macros.asm loop-macros.asm inlines.asm \
 	ansi.asm \
 	array.asm \
 	arith.asm \
