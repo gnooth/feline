@@ -981,8 +981,9 @@ last-word $c6 install-handler
 
 : .c7
     -- /0
-    -- Move a 32-bit signed immediate value to a 64-bit register
-    -- or memory operand.
+    -- source is imm16/32
+    -- dest is r/m16/32/64
+    set-instruction-size
     !modrm-byte
     regop zero? [ unsupported ] unless
     "mov" !> mnemonic
