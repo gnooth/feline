@@ -120,6 +120,15 @@ global: relative-size
 
 : .reg64  ( +n -- ) reg64-name write-string ;
 
+: .size ( -- )
+    {
+        {  8 [ "byte"  ] }
+        { 16 [ "word"  ] }
+        { 32 [ "dword" ] }
+        { 64 [ "qword" ] }
+    } case
+    write-string space ;
+
 : .relative ( base index scale disp size -- )
     >local: size
     >local: disp
@@ -127,10 +136,7 @@ global: relative-size
     >local: index
     >local: base
 
-    relative-size [
-        write-string space
-        f !> relative-size
-    ] when*
+    mnemonic "lea" = [ size .size ] unless
 
     "[" write-string
     base .reg64
