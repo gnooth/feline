@@ -335,11 +335,10 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
 
 : al,imm8 ( mnemonic -- )
     !> mnemonic
-    set-instruction-size
-    next-byte
+    next-byte !> immediate-operand
     .instruction-bytes
     .mnemonic
-    48 tab "al, " write-string hex. ;
+    48 tab "al, " write-string .immediate-operand ;
 
 : jcc-rel32 ( mnemonic -- )
     !> mnemonic
