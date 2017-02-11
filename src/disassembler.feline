@@ -120,7 +120,8 @@ global: relative-size
 
 : .reg64  ( +n -- ) reg64-name write-string ;
 
-: .relative ( base index scale disp -- )
+: .relative ( base index scale disp size -- )
+    >local: size
     >local: disp
     >local: scale
     >local: index
@@ -169,7 +170,7 @@ global: relative-size
     48 tab
     {
         { [ dreg ] [ dreg dsize .register-name ] }
-        { [ dbase ] [ dbase dindex dscale ddisp .relative ]  }
+        { [ dbase ] [ dbase dindex dscale ddisp dsize .relative ]  }
         { [ memory-operand? ] [ ddisp .memory-operand f !> memory-operand? ] }
         [ ".dest" error ]
     } cond ;
@@ -187,7 +188,7 @@ global: relative-size
 : .source ( -- )
     {
         { [ immediate-operand? ] [ .sep .immediate-operand ] }
-        { [ sbase ] [ .sep sbase sindex sscale sdisp .relative ] }
+        { [ sbase ] [ .sep sbase sindex sscale sdisp ssize .relative ] }
         { [ memory-operand? ] [ .sep sdisp .memory-operand ] }
         { [ sreg ] [ .sep sreg ssize .register-name ] }
         [ ".source" error ]
