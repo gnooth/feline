@@ -676,7 +676,7 @@ last-word $81 install-handler
 : .83 ( -- )
     -- modrm-reg encodes opcode extension
     -- source is imm8
-    -- dest is r/m32/64
+    -- dest is r/m16/32/64
     set-instruction-size
     !modrm-byte
     regop-mnemonic !> mnemonic
@@ -686,10 +686,18 @@ last-word $81 install-handler
                 { 4 [
                     !sib-byte
                     sib-base {
+                        { 4 [
+                            sib-index 4 eq? sib-scale zero? and [
+                                sib-base !> dbase
+                            ] [
+                                unsupported
+                            ] if
+                        ] }
                         { 5 [
                             next-int32 !> ddisp
                             t !> memory-operand?
                         ] }
+                        [ unsupported ]
                     } case
                     -- source is imm8
                     t !> immediate-operand?
@@ -702,10 +710,31 @@ last-word $81 install-handler
             } case
         ] }
         { 1 [
-            -- register-indirect addressing mode
-            modrm-rm register-rm !> dbase
-            next-signed-byte !> ddisp
+            -- register-indirect addressing mode, 8-bit displacement
+            modrm-rm {
+                { 4 [
+                    !sib-byte
+                    next-signed-byte !> ddisp
+                    sib-base {
+                        { 4 [
+                            sib-index 4 eq? sib-scale zero? and [
+                                sib-base !> dbase
+                            ] [
+                                unsupported
+                            ] if
+                        ] }
+                        [ unsupported ]
+                    } case
+                ] }
+                [
+                    -- default case
+                    drop
+                    modrm-rm register-rm !> dbase
+                    next-signed-byte !> ddisp
+                ]
+            } case
             "qword" !> relative-size
+            -- source is imm8
             t !> immediate-operand?
             next-byte !> immediate-operand
         ] }
