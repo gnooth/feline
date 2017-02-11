@@ -287,12 +287,10 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
     instruction-start 16 dump
     "unsupported instruction" error ;
 
-: set-instruction-size ( -- )
-    operand-size-prefix $66 eq? [
-        16 dup !> dsize !> ssize
-    ] [
-        prefix $40 bitand 0 = 32 64 ? dup !> dsize !> ssize
-    ] if ;
+: instruction-operand-size ( -- n )
+    operand-size-prefix $66 eq? [ 16 ] [ prefix $40 bitand 0 = 32 64 ? ] if ;
+
+: set-instruction-size ( -- ) instruction-operand-size dup !> dsize !> ssize ;
 
 : /r-r/m-reg
     -- /r
