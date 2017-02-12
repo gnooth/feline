@@ -13,53 +13,42 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%macro  _do_common 0
-        mov     rdx, [rbp]              ; limit in rdx
-        mov     rax, $8000000000000000  ; offset loop limit by $8000000000000000
-        add     rdx, rax
-        push    rdx                     ; r: -- leave-addr limit
-        sub     rbx, rdx                ; subtract modified limit from index
-        push    rbx                     ; r: -- leave-addr limit index
+%macro  _?do 1
+        mov     rax, [rbp]              ; limit in rax, start index in rbx
+        sub     rax, rbx                ; number of iterations in rax
+        ja      %1_ok
         _2drop
+        jmp     %1_exit
+%1_ok:
+        push    rax                     ; r: -- limit
+        push    rbx                     ; r: -- limit start-index
+        _2drop
+        align   DEFAULT_CODE_ALIGNMENT
+%1_top:
 %endmacro
 
 %macro  _do 1
-        mov     rax, %1_exit            ; leave-addr in rax
-        push    rax                     ; r: -- leave-addr
-        _do_common
-%1_top:
-%endmacro
-
-%macro  _?do 1
-        mov     rax, %1_exit            ; leave-addr in rax
-        push    rax                     ; r: -- leave-addr
-        cmp     rbx, [rbp]
-        jne     %1_ok
-        _2drop
-        ret                             ; same as jumping to %1_exit
-%1_ok:
-        _do_common
-%1_top:
+        _?do    %1
 %endmacro
 
 %macro  _loop 1
-        inc     qword [rsp]
-        jno     %1_top
-        add     rsp, BYTES_PER_CELL * 3
+        add     qword [rsp], 1
+        sub     qword [rsp + BYTES_PER_CELL], 1
+        jnz     %1_top
+        add     rsp, BYTES_PER_CELL * 2
 %1_exit:
 %endmacro
 
 %macro  _i 0
         pushrbx
         mov     rbx, [rsp]
-        add     rbx, [rsp + BYTES_PER_CELL]
 %endmacro
 
 %macro  _leave 0
         add     rsp, BYTES_PER_CELL * 2
-        ret                             ; same as jumping to %1_exit
+        jmp     %1_exit
 %endmacro
 
 %macro  _unloop 0
-        add     rsp, BYTES_PER_CELL * 3
+        add     rsp, BYTES_PER_CELL * 2
 %endmacro
