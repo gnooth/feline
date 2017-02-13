@@ -13,10 +13,74 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%macro  _?do 1
+%macro  _register_do_range 1            ; limit start-index --
+        %define count_register  r12
+        %define index_register  r13
+        mov     rax, [rbp]
+        sub     rax, rbx                ; count in rax
+        jg      %1_ok
+        ; not ok
+        _2drop
+        jmp     %1_exit2
+%1_ok:
+        push    count_register
+        push    index_register
+        mov     count_register, rax
+        mov     index_register, rbx
+        _2drop
+        align   DEFAULT_CODE_ALIGNMENT
+%1_top:
+%endmacro
+
+%macro  _register_do_times 1            ; count --
+        %define count_register  r12
+        %define index_register  r13
+        test    rbx, rbx
+        jg      %1_ok                   ; count must be > 0
+        ; not ok
+        _drop
+        jmp     %1_exit2
+%1_ok:
+        push    count_register
+        push    index_register
+        mov     count_register, rbx
+        xor     index_register, index_register
+        _drop
+        align   DEFAULT_CODE_ALIGNMENT
+%1_top:
+%endmacro
+
+%macro  _register_loop 1
+        add     index_register, 1
+        sub     count_register, 1
+        jnz     %1_top
+%1_exit:
+        pop     index_register
+        pop     count_register
+%1_exit2:
+        %undef  count_register
+        %undef  index_register
+%endmacro
+
+%macro  _register_loop_index 0          ; -- untagged-index
+        pushrbx
+        mov     rbx, index_register
+%endmacro
+
+%macro  _register_loop_leave 1
+        jmp     %1_exit
+%endmacro
+
+%macro  _register_loop_unloop 0
+        pop     index_register
+        pop     count_register
+%endmacro
+
+
+%macro  _?do 1                          ; limit start-index --
         mov     rax, [rbp]              ; limit in rax, start index in rbx
         sub     rax, rbx                ; number of iterations in rax
-        ja      %1_ok
+        jg      %1_ok
         _2drop
         jmp     %1_exit
 %1_ok:
@@ -27,28 +91,44 @@
 %1_top:
 %endmacro
 
-%macro  _do 1
+%macro  _do 1           ; limit start-index --
         _?do    %1
 %endmacro
 
 %macro  _loop 1
+%ifdef index_register
+        _register_loop  %1
+%else
         add     qword [rsp], 1
         sub     qword [rsp + BYTES_PER_CELL], 1
         jnz     %1_top
         add     rsp, BYTES_PER_CELL * 2
 %1_exit:
+%endif
 %endmacro
 
-%macro  _i 0
+%macro  _i 0                            ; -- untagged-index
+%ifdef index_register
+        _register_loop_index
+%else
         pushrbx
         mov     rbx, [rsp]
+%endif
 %endmacro
 
 %macro  _leave 0
+%ifdef index_register
+        _register_loop_leave
+%else
         add     rsp, BYTES_PER_CELL * 2
         jmp     %1_exit
+%endif
 %endmacro
 
 %macro  _unloop 0
+%ifdef index_register
+        _register_loop_unloop
+%else
         add     rsp, BYTES_PER_CELL * 2
+%endif
 %endmacro
