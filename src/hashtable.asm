@@ -184,8 +184,7 @@ hashtable_keys_unchecked:
         _hashtable_raw_count
         _ new_vector_untagged           ; -- handle-to-vector
         _this_hashtable_raw_capacity
-        _zero
-        _?do .1
+        _register_do_times .1
         _i
         _this_hashtable_nth_key
         _dup
@@ -211,8 +210,7 @@ hashtable_values_unchecked:
         _hashtable_raw_count
         _ new_vector_untagged           ; -- handle-to-vector
         _this_hashtable_raw_capacity
-        _zero
-        _?do .1
+        _register_do_times .1
         _i
         _this_hashtable_nth_key
         _ empty_or_deleted?
@@ -270,8 +268,7 @@ new_hashtable_untagged:
 
         _this_hashtable_raw_capacity
         _twostar
-        _zero
-        _?do .1
+        _register_do_times .1
         _f
         _this_hashtable_data
         _i
@@ -361,8 +358,7 @@ find_index_for_key_unchecked:
         _this_hashtable_hash_at         ; -- key start-index
 
         _this_hashtable_raw_capacity
-        _zero
-        _?do .1
+        _register_do_times .1
 
         _twodup                         ; -- key start-index key start-index
         _compute_index                  ; -- key start-index key computed-index
@@ -543,8 +539,7 @@ hashtable_grow_unchecked:
 
         _this_hashtable_raw_capacity
         _twostar
-        _zero
-        _?do .1
+        _register_do_times .1
         _f
         _this_hashtable_data
         _i
@@ -560,8 +555,7 @@ hashtable_grow_unchecked:
         _dup
         _ vector_length
         _untag_fixnum
-        _zero
-        _?do .2                         ; -- keys values
+        _register_do_times .2
 
         ; value
         _i
@@ -623,8 +617,7 @@ code dot_hashtable, '.hashtable'        ; hashtable --
 
         _write "H{"
         _hashtable_raw_capacity
-        _zero
-        _?do .1
+        _register_do_times .1
         _i
         _this_hashtable_nth_key
         _dup
