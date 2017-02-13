@@ -451,9 +451,6 @@ code quit, 'quit'                       ; --
         _ evaluate
         _ print_datastack
 
-        ; REVIEW
-        _ gc
-
         _again .1
         next
 endcode
