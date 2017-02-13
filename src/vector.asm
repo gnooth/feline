@@ -109,7 +109,7 @@ code vector_set_length, 'vector-set-length' ; tagged-new-length handle --
         ; initialize new cells to f
         _dup
         _this_vector_length
-        _?do .3
+        _register_do_range .3
         _f
         _i
         _this_vector_set_nth_unsafe
@@ -336,7 +336,7 @@ vector_set_nth_untagged:
         ; initialize new cells to f
         _dup
         _this_vector_length
-        _?do .2
+        _register_do_range .2
         _f
         _i
         _this_vector_set_nth_unsafe
@@ -638,8 +638,7 @@ code vector_find_string, 'vector-find-string' ; string vector -- index/string ?
         mov     this_register, rbx
 
         _vector_length
-        _zero
-        _?do .1
+        _register_do_times .1
         _i
         _this_vector_nth_unsafe         ; -- string element
         _over
@@ -672,8 +671,7 @@ code dot_vector, '.vector'              ; vector --
 
         _write "V{ "
         _vector_length
-        _zero
-        _?do .1
+        _register_do_times .1
         _i
         _this_vector_nth_unsafe
         _ dot_object
