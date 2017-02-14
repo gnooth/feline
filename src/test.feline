@@ -8,8 +8,6 @@ in: test
 -- this is a comment
 ( this is another comment )
 
-{- yet another comment -}
-
 interactive? get assert-false
 
 1 2 + 3 eq? assert-true
