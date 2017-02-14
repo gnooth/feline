@@ -120,7 +120,7 @@ global: relative-size
 
 : .reg64  ( +n -- ) reg64-name write-string ;
 
-: .size ( -- )
+: .size ( n -- )
     {
         {  8 [ "byte"  ] }
         { 16 [ "word"  ] }
@@ -151,12 +151,8 @@ global: relative-size
     ] unless
     "]" write-string ;
 
-: .memory-operand ( disp -- )
-    relative-size string? [
-        relative-size write-string space
-        f !> relative-size
-    ] when
-    "[" write-string hex. "]" write-string ;
+: .memory-operand ( disp size -- )
+    .size " [" write-string hex. "]" write-string ;
 
 : .ip ( -- ) ?nl ip hex. space ;
 
@@ -177,7 +173,7 @@ global: relative-size
     {
         { [ dreg ] [ dreg dsize .register-name ] }
         { [ dbase ] [ dbase dindex dscale ddisp dsize .relative ]  }
-        { [ memory-operand? ] [ ddisp .memory-operand f !> memory-operand? ] }
+        { [ memory-operand? ] [ ddisp dsize .memory-operand f !> memory-operand? ] }
         [ ".dest" error ]
     } cond ;
 
@@ -195,7 +191,7 @@ global: relative-size
     {
         { [ immediate-operand? ] [ .sep .immediate-operand ] }
         { [ sbase ] [ .sep sbase sindex sscale sdisp ssize .relative ] }
-        { [ memory-operand? ] [ .sep sdisp .memory-operand ] }
+        { [ memory-operand? ] [ .sep sdisp ssize .memory-operand ] }
         { [ sreg ] [ .sep sreg ssize .register-name ] }
         [ ".source" error ]
     } cond ;
