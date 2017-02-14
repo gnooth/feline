@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -69,11 +69,15 @@ code emit_qword, 'emit-qword'           ; qword --
         next
 endcode
 
+%define MIN_INT32       -2147483648
+
+%define MAX_INT32       2147483647
+
 ; ### min-int32
-constant min_int32, 'min-int32', -2147483648
+feline_constant min_int32, 'min-int32', tagged_fixnum(MIN_INT32)
 
 ; ### max-int32
-constant max_int32, 'max-int32', 2147483647
+feline_constant max_int32, 'max-int32', tagged_fixnum(MAX_INT32)
 
 ; ### compile-call
 code compile_call, 'compile-call'       ; addr --
@@ -81,13 +85,11 @@ code compile_call, 'compile-call'       ; addr --
 
         _ pc
         add     rbx, 5
-        _ min_int32
-        _plus                           ; -- addr addr low
+        add     rbx, MIN_INT32          ; -- addr addr low
 
         _ pc
         add     rbx, 5
-        _ max_int32
-        _plus                           ; -- addr addr low high
+        add     rbx, MAX_INT32          ; -- addr addr low high
 
         _ between                       ; -- addr -1/0
 
@@ -105,7 +107,7 @@ code compile_call, 'compile-call'       ; addr --
 
         ; -- addr
         _dup
-        _ max_int32
+        _lit MAX_INT32
         _ult
         _if .2
         _lit $0b8
