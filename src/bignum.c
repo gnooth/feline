@@ -178,10 +178,10 @@ char * c_bignum_get_str(char *buf, int base, const mpz_t z)
   return mpz_get_str(buf, base, z);
 }
 
-cell c_decimal_to_integer(char *s)
+cell c_string_to_integer(char *s, int base)
 {
   char *endptr;
-  long n = strtol(s, &endptr, 10);
+  long n = strtol(s, &endptr, base);
 
   if (*endptr != '\0')
     return F_VALUE;
@@ -213,7 +213,7 @@ cell c_decimal_to_integer(char *s)
     ++s;
 
   mpz_t z;
-  int error = mpz_init_set_str(z, s, 10);
+  int error = mpz_init_set_str(z, s, base);
   if (error)
     {
       mpz_clear(z);
@@ -223,6 +223,11 @@ cell c_decimal_to_integer(char *s)
   bignum *b = c_make_bignum(z);
   mpz_clear(z);
   return get_handle_for_object((cell)b);
+}
+
+cell c_decimal_to_integer(char *s)
+{
+  return c_string_to_integer(s, 10);
 }
 
 cell c_bignum_equal(bignum *b1, bignum *b2)
