@@ -225,11 +225,6 @@ cell c_string_to_integer(char *s, int base)
   return get_handle_for_object((cell)b);
 }
 
-cell c_decimal_to_integer(char *s)
-{
-  return c_string_to_integer(s, 10);
-}
-
 cell c_bignum_equal(bignum *b1, bignum *b2)
 {
   return (mpz_cmp(b1->z, b2->z) == 0) ? T_VALUE : F_VALUE;
