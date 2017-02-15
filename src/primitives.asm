@@ -1087,202 +1087,27 @@ code digit?, 'digit?'                   ; char -- n/f
         next
 endcode
 
-; ### binary>fixnum
-code binary_to_fixnum, 'binary>fixnum'  ; string -- n/f
-        _dup
+; ### base>integer
+code base_to_integer, 'base>integer'    ; string base -- n/f
+        _check_fixnum
+
+        _over
         _ string_empty?
         _tagged_if .1
+        _nip
         mov     ebx, f_value
         _return
         _then .1
 
-        _lit tagged_fixnum(0)           ; -- string accumulator
         _swap
-        _ string_from
-        _zero
-        _?do .2
-        _dup
-        _i
-        _plus
-        _cfetch
-        _tag_char
-        _ binary_digit?
-        _dup
-        _tagged_if .3                   ; -- accumulator addr tagged-digit
-        _ rot
-        _lit tagged_fixnum(2)
-        _ feline_multiply
-        _ plus
-        _swap
-        _else .3
-        _3drop
-        _f
-        _unloop
-        _return
-        _then .3
-        _loop .2
-        _drop
-        next
-endcode
-
-; ### decimal>fixnum
-code decimal_to_fixnum, 'decimal>fixnum' ; string -- n/f
-        _dup
-        _ string_empty?
-        _tagged_if .1
-        mov     ebx, f_value
-        _return
-        _then .1
-
-        _lit tagged_fixnum(0)           ; -- string accumulator
-        _swap
-        _ string_from
-        _zero
-        _?do .2
-        _dup
-        _i
-        _plus
-        _cfetch
-        _tag_char
-        _ digit?
-        _dup
-        _tagged_if .3                   ; -- accumulator addr digit
-        _ rot
-        _lit tagged_fixnum(10)
-        _ feline_multiply
-        _ plus
-        _swap
-        _else .3
-        _3drop
-        _f
-        _unloop
-        _return
-        _then .3
-        _loop .2
-        _drop
-        next
-endcode
-
-; ### signed-decimal>fixnum
-code signed_decimal_to_fixnum, 'signed-decimal>fixnum' ; string -- n/f
-        _dup
-        _ string_empty?
-        _tagged_if .1
-        mov     ebx, f_value
-        _return
-        _then .1
-
-        ; length > 0
-        _dup
-        _ string_first_char
-        _untag_char
-        cmp     rbx, '-'
-        poprbx
-        jne     .2
-        _lit tagged_fixnum(1)
-        _ string_tail
-        _ decimal_to_fixnum
-        _dup
-        _tagged_if .3
-        _untag_fixnum
-        _negate
-        _tag_fixnum
-        _then .3
-        _return
-.2:
-        _ decimal_to_fixnum
-
-        next
-endcode
-
-; ### hex>fixnum
-code hex_to_fixnum, 'hex>fixnum'        ; string -- n/f
-        _dup
-        _ string_empty?
-        _tagged_if .1
-        mov     ebx, f_value
-        _return
-        _then .1
-
-        _lit tagged_fixnum(0)
-        _swap
-        _ string_from                   ; -- addr len
-        _zero
-        _?do .2                         ; -- addr
-        _dup
-        _i
-        _plus
-        _cfetch
-        _tag_char
-        _ hex_digit?
-        _dup
-        _tagged_if .3                   ; -- accum addr digit
-        _ rot
-        _lit tagged_fixnum(16)
-        _ feline_multiply
-        _ plus
-        _swap
-        _else .3
-        _3drop
-        _f
-        _unloop
-        _return
-        _then .3
-        _loop .2
-        _drop
-        next
-endcode
-
-; ### signed-hex>fixnum
-code signed_hex_to_fixnum, 'signed-hex>fixnum'  ; string -- n/f
-        _dup
-        _ string_empty?
-        _tagged_if .1
-        _drop
-        mov     ebx, f_value
-        _return
-        _then .1
-
-        ; length > 0
-        _dup
-        _ string_first_char
-        _untag_char
-        _lit '-'
-        _equal
-        _if .2
-        _lit tagged_fixnum(1)
-        _ string_tail
-        _ hex_to_fixnum
-        _dup
-        _tagged_if .3
-        _untag_fixnum
-        _negate
-        _tag_fixnum
-        _then .3
-        _return
-        _then .2
-
-        _ hex_to_fixnum
-
-        next
-endcode
-
-; ### string>integer
-code string_to_integer, 'string>integer'        ; string -- n/f
-        _dup
-        _ string_empty?
-        _tagged_if .1
-        mov     ebx, f_value
-        _return
-        _then .1
-
         _ string_data
 
         _ gc_disable
 
         mov     arg0_register, rbx
-        poprbx
-        xcall   c_decimal_to_integer
+        mov     arg1_register, qword [rbp]
+        _2drop
+        xcall   c_string_to_integer
         pushrbx
         mov     rbx, rax
 
@@ -1291,33 +1116,24 @@ code string_to_integer, 'string>integer'        ; string -- n/f
         next
 endcode
 
-; ### signed-decimal>integer
-code signed_decimal_to_integer, 'signed-decimal>integer'        ; string -- n/f
-        _dup
-        _ string_empty?
-        _tagged_if .1
-        mov     ebx, f_value
-        _return
-        _then .1
+; ### decimal>integer
+code decimal_to_integer, 'decimal>integer'      ; string -- n/f
+        _lit tagged_fixnum(10)
+        _ base_to_integer
+        next
+endcode
 
-        ; length > 0
-        _dup
-        _ string_first_char
-        _untag_char
-        cmp     rbx, '-'
-        poprbx
-        jne     .2
-        _lit tagged_fixnum(1)
-        _ string_tail
-        _ string_to_integer
-        _dup
-        _tagged_if .3
-        _ negate
-        _then .3
-        _return
-.2:
-        _ string_to_integer
+; ### hex>integer
+code hex_to_integer, 'hex>integer'              ; string -- n/f
+        _lit tagged_fixnum(16)
+        _ base_to_integer
+        next
+endcode
 
+; ### binary>integer
+code binary_to_integer, 'binary>integer'        ; string -- n/f
+        _lit tagged_fixnum(2)
+        _ base_to_integer
         next
 endcode
 
@@ -1341,23 +1157,23 @@ code string_to_number, 'string>number'  ; string -- n/f
         je      .2
         cmp     ebx, '%'
         je      .3
+
         _drop
-        _ signed_decimal_to_integer
+        _ decimal_to_integer
         _return
 
 .2:
         _drop
         _lit tagged_fixnum(1)
         _ string_tail
-        _ signed_hex_to_fixnum
+        _ hex_to_integer
         _return
 
 .3:
         _drop
         _lit tagged_fixnum(1)
         _ string_tail
-        ; REVIEW signed_binary_to_fixnum
-        _ binary_to_fixnum
+        _ binary_to_integer
 
         next
 endcode
