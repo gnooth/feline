@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -146,15 +146,16 @@ code dot_tuple, '.tuple'                ; tuple --
         _dup
         _ first
         _ dot_object
+        _ space
 
         _ second
         _untag_fixnum
-        _zero
-        _?do .1
+        _register_do_times .1
         _i
         add     rbx, 2
         _this_nth_slot
         _ dot_object
+        _ space
         _loop .1
         _write "}"
 
