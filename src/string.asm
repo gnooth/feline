@@ -85,26 +85,23 @@ code verify_unboxed_string, 'verify-unboxed-string' ; string -- string
 endcode
 
 ; ### check-string
-code check_string, 'check-string'       ; handle-or-string -- unboxed-string
+code check_string, 'check-string'       ; x -- unboxed-string
         _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe        ; -- object/0
-        _dup_if .2
-        _dup
-        _object_type                    ; -- object object-type
-        _lit OBJECT_TYPE_STRING
-        _equal
-        _if .3
+        _ deref                         ; -- x object/0
+        test    rbx, rbx
+        jz      .1
+        movzx   eax, word [rbx]
+        cmp     eax, OBJECT_TYPE_STRING
+        jne     .2
+        _nip
         _return
-        _then .3
-        _then .2
-        _ error_not_string
-        _then .1
-
-        ; Not a handle.
+.1:
+        ; not a handle
+        _drop
         _ verify_unboxed_string
-
+        _return
+.2:
+        _ error_not_string
         next
 endcode
 
