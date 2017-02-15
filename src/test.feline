@@ -601,19 +601,42 @@ test: symbol?-test-1 ( -- )
 
 symbol?-test-1
 
-test: string>number-test-1 ( -- )
+test: string>number-test-1
     "." string>number assert-false
     "-" string>number assert-false
 ;
 
 string>number-test-1
 
-test: string>number-test-2 ( -- )
+test: string>number-test-2
     "%11" string>number 3 eq? assert-true
     "%1100" string>number 12 eq? assert-true
 ;
 
 string>number-test-2
+
+test: string>number-test-3
+    17 50 expt bignum>string dup
+    "33300140732146818380750772381422989832214186835186851059977249"
+    assert=
+    string>number
+    33300140732146818380750772381422989832214186835186851059977249
+    assert=
+;
+
+string>number-test-3
+
+test: string>number-test-4
+    17 50 expt bignum>hex
+    "14b904bb5dfc5746304ec45356cee38afa6c6d0414d2dae9cc21"
+    assert=
+    "$14b904bb5dfc5746304ec45356cee38afa6c6d0414d2dae9cc21"
+    string>number
+    $14b904bb5dfc5746304ec45356cee38afa6c6d0414d2dae9cc21
+    assert=
+;
+
+string>number-test-4
 
 test: \-test-1 ( -- )
     [ ' dup ] call symbol? assert-true
@@ -1398,12 +1421,12 @@ test: fixnum>bignum-test-1
 
 fixnum>bignum-test-1
 
-test: string>integer-test-1
-    most-positive-fixnum fixnum>string string>integer most-positive-fixnum assert=
-    most-negative-fixnum fixnum>string string>integer most-negative-fixnum assert=
+test: decimal>integer-test-1
+    most-positive-fixnum fixnum>string decimal>integer most-positive-fixnum assert=
+    most-negative-fixnum fixnum>string decimal>integer most-negative-fixnum assert=
 ;
 
-string>integer-test-1
+decimal>integer-test-1
 
 test: fixnum-fixnum+-test-1
     1  2 fixnum-fixnum+  3 eq? assert-true
@@ -1820,6 +1843,7 @@ test: @-test-1
     ' dup symbol-code-address @
     [ bignum? assert-true ] keep
     [ 17901119438411630920 assert= ] keep
+    [ $f86d8d48f85d8948 assert= ] keep
     bignum>hex "f86d8d48f85d8948" assert= ;
 
 @-test-1
