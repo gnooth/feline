@@ -134,17 +134,15 @@ endcode
 ; ### get-empty-handle
 code get_empty_handle, 'get-empty-handle'       ; -- handle/0
         _ recycled_handles_vector
-        _?dup_if .1
-        _handle_to_object_unsafe        ; -- vector
+        test    rbx, rbx
+        jz      .1
+        _ ?vector_pop
         _dup
-        _vector_length
-        _zgt
-        _if .2
-        _ vector_pop_unchecked          ; -- handle
+        _tagged_if .2
         _return
         _then .2
+.1:
         _drop                   ; --
-        _then .1
 
         cmp     qword [unused], 0
         jz .3
