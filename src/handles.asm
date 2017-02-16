@@ -40,6 +40,9 @@ code   unused_handles, 'unused-handles' ; -- n
         next
 endcode
 
+; ### recycled-handles-vector
+value recycled_handles_vector, 'recycled-handles-vector', 0
+
 ; ### initialize-handle-space
 code initialize_handle_space, 'initialize-handle-space' ; --
         _from_global handle_space
@@ -80,17 +83,14 @@ code initialize_handle_space, 'initialize-handle-space' ; --
 .2:
         _lit 256
         _ new_vector_untagged
-        _to free_handles
+        _to recycled_handles_vector
 
         next
 endcode
 
-; ### free-handles
-value free_handles, 'free-handles', 0
-
 ; ### empty-handles
 code empty_handles, 'empty-handles'     ; -- tagged-fixnum
-        _ free_handles
+        _ recycled_handles_vector
         _?dup_if .1
         _handle_to_object_unsafe
         _vector_length
@@ -116,7 +116,7 @@ endcode
 ; ### gc-status
 code gc_status, 'gc-status'     ; --
         _ unused_handles
-        _ free_handles
+        _ recycled_handles_vector
         _ vector_length
         _ empty_handles
         _ ?nl
@@ -133,7 +133,7 @@ endcode
 
 ; ### get-empty-handle
 code get_empty_handle, 'get-empty-handle'       ; -- handle/0
-        _ free_handles
+        _ recycled_handles_vector
         _?dup_if .1
         _handle_to_object_unsafe        ; -- vector
         _dup
@@ -307,7 +307,7 @@ code release_handle_unsafe, 'release-handle-unsafe' ; handle --
         mov     qword [rbx], rax
 
         ; add handle to free-handles vector
-        _ free_handles
+        _ recycled_handles_vector
         _handle_to_object_unsafe        ; -- handle vector
         _ vector_push_unchecked         ; --
 
