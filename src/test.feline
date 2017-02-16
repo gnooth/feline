@@ -1848,4 +1848,13 @@ test: @-test-1
 
 @-test-1
 
+test: ?vector-pop-test-1
+    V{ 1 2 }
+    [ ?vector-pop 2 assert= ] keep
+    [ ?vector-pop 1 assert= ] keep
+    [ empty? assert-true ] keep
+    ?vector-pop assert-false ;
+
+?vector-pop-test-1
+
 ?nl "Reached end of test.feline" write-string

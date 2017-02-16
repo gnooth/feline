@@ -526,6 +526,37 @@ vector_pop_unchecked:
         next
 endcode
 
+; ### ?vector-pop
+code ?vector_pop, '?vector-pop'         ; handle -- element/f
+
+        _ check_vector                  ; -- vector
+
+?vector_pop_unchecked:
+
+        push    this_register
+        mov     this_register, rbx
+
+        _vector_length
+        test    rbx, rbx
+        jz      .1
+        _oneminus
+        _dup
+        _this_vector_set_length
+        _this_vector_nth_unsafe         ; -- element
+
+        ; mark cell empty
+        _f
+        _this_vector_length
+        _this_vector_set_nth_unsafe
+
+        pop     this_register
+        _return
+.1:
+        mov     ebx, f_value
+        pop     this_register
+        next
+endcode
+
 ; ### vector-pop*
 code vector_pop_star, 'vector-pop*'     ; handle --
 
