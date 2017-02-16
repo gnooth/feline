@@ -305,13 +305,13 @@ code destroy_string_unchecked, '~string-unchecked' ; string --
         next
 endcode
 
-; ### rehash-string
-code rehash_string, 'rehash-string'     ; string --
+; ### hash-string
+code hash_string, 'hash-string'         ; string --
 ; Hash function adapted from SBCL.
 
         _ check_string                  ; -- string
 
-rehash_string_unchecked:
+hash_string_unchecked:
         push    this_register
         popd    this_register           ; --
 
@@ -368,7 +368,7 @@ code string_hashcode, 'string-hashcode' ; handle-or-string -- fixnum
         _else .1
         _drop
         _dup
-        _ rehash_string_unchecked
+        _ hash_string_unchecked
         _string_hashcode
         _then .1
         next
