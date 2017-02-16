@@ -49,7 +49,10 @@ endcode
         ; REVIEW
         ; We need to do something like this for calls from asm to work.
         _lit S_%1
-        _ call_symbol
+        _ symbol_raw_code_address
+        mov     rax, rbx
+        poprbx
+        jmp     rax
         next
         endcode
 %endmacro

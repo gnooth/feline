@@ -556,12 +556,12 @@ code global_dec, 'global-dec'   ; symbol --
         next
 endcode
 
-; ### symbol_raw_code_address
-subroutine symbol_raw_code_address      ; symbol -- raw-code-address/0
+; ### symbol-raw-code-address
+code symbol_raw_code_address, 'symbol-raw-code-address' ; symbol -- raw-code-address/0
         _ check_symbol
         _symbol_raw_code_address
-        ret
-endsub
+        next
+endcode
 
 ; ### symbol-code-address
 code symbol_code_address, 'symbol-code-address' ; symbol -- code-address/f
