@@ -180,7 +180,7 @@ code cold, 'cold'                       ; --
         _lit gc_roots_data
         _ gc_add_root
 
-        _lit free_handles_data
+        _lit recycled_handles_vector_data
         _ gc_add_root
 
         _ initialize_gc_dispatch_table
