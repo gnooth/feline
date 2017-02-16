@@ -41,7 +41,7 @@ code   unused_handles, 'unused-handles' ; -- n
 endcode
 
 ; ### recycled-handles-vector
-value recycled_handles_vector, 'recycled-handles-vector', 0
+feline_global recycled_handles_vector, 'recycled-handles-vector', 0
 
 ; ### initialize-handle-space
 code initialize_handle_space, 'initialize-handle-space' ; --
@@ -83,7 +83,7 @@ code initialize_handle_space, 'initialize-handle-space' ; --
 .2:
         _lit 256
         _ new_vector_untagged
-        _to recycled_handles_vector
+        _to_global recycled_handles_vector
 
         next
 endcode
