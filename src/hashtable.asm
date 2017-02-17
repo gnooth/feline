@@ -410,30 +410,23 @@ find_index_for_key_unchecked:
         next
 endcode
 
-; ### hashtable-nth-value
-code hashtable_nth_value, 'hashtable-nth-value' ; n hashtable -- value
-        _ check_hashtable               ; -- n hashtable
-        push    this_register
-        popd    this_register           ; -- n
-        _check_fixnum
-        _this_hashtable_nth_value
-        pop     this_register
-        next
-endcode
-
 ; ### at*
 code at_star, 'at*'                     ; key hashtable -- value/f ?
-        _tuck                           ; -- hashtable key hashtable
-        _ find_index_for_key            ; -- hashtable index ?
+        _ check_hashtable
+        push    this_register
+        mov     this_register, rbx
+        poprbx                                  ; -- key
+        _ this_hashtable_find_index_for_key     ; -- tagged-index/f ?
         _tagged_if .1
-        _swap
-        _ hashtable_nth_value
+        _untag_fixnum
+        _this_hashtable_nth_value
         _t
         _else .1
-        _2drop
+        _drop
         _f
         _f
         _then .1
+        pop     this_register
         next
 endcode
 
@@ -469,19 +462,21 @@ code set_at, 'set-at'                   ; value key handle --
         _then .1
 
 set_at_unchecked:
+
         push    this_register
         mov     this_register, rbx      ; -- value key hashtable
-        _twodup                         ; -- value key hashtable key hashtable
-        _ find_index_for_key_unchecked  ; -- value key hashtable tagged-index ?
+        poprbx                          ; -- value key
+        _dup
+        _ this_hashtable_find_index_for_key     ; -- value key tagged-index ?
         _tagged_if_not .2
         ; key was not found
         ; we're adding an entry
         _this_hashtable_increment_raw_count
-        _then .2                        ; -- value key hashtable tagged-index
-        _nip                            ; -- value key tagged-index
+        _then .2                        ; -- value key tagged-index
         _untag_fixnum
         _this_hashtable_set_nth_pair
         pop     this_register
+
         next
 endcode
 
