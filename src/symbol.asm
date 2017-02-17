@@ -488,6 +488,12 @@ code symbol_special?, 'symbol-special?' ; symbol -- ?
         next
 endcode
 
+; ### symbol-private?
+code symbol_private?, 'symbol-private?' ; symbol -- ?
+        _symbol_flags_bit SYMBOL_PRIVATE
+        next
+endcode
+
 ; ### symbol-value
 code symbol_value, 'symbol-value'       ; symbol -- value
         _ check_symbol
