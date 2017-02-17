@@ -341,17 +341,11 @@ endcode
         _and
 %endmacro
 
-; ### find-index-for-key
-code find_index_for_key, 'find-index-for-key'   ; key hashtable -- tagged-index/f ?
+; ### this-hashtable-find-index-for-key
+code this_hashtable_find_index_for_key, 'this-hashtable-find-index-for-key', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; key -- tagged-index/f ?
 
-        _ check_hashtable
-
-find_index_for_key_unchecked:
-
-        push    this_register
-
-        mov     this_register, rbx
-        poprbx                          ; -- key
+; Must be called with the address of the raw hashtable object in this_register (r15).
 
         _dup
         _this_hashtable_hash_at         ; -- key start-index
@@ -372,7 +366,7 @@ find_index_for_key_unchecked:
         _tag_fixnum
         _t
         _unloop
-        jmp     .exit
+        _return
         _then .2                        ; -- key start-index
 
         _dup
@@ -387,7 +381,7 @@ find_index_for_key_unchecked:
         _tag_fixnum
         _f
         _unloop
-        jmp     .exit
+        _return
 
         _then .3
 
@@ -397,8 +391,22 @@ find_index_for_key_unchecked:
         _f
         _f
 
-.exit:
+        next
+endcode
+
+; ### find-index-for-key
+code find_index_for_key, 'find-index-for-key'   ; key hashtable -- tagged-index/f ?
+
+        _ check_hashtable               ; -- key raw-hashtable
+
+find_index_for_key_unchecked:
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- key
+        _ this_hashtable_find_index_for_key
         pop     this_register
+
         next
 endcode
 
