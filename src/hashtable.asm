@@ -61,11 +61,6 @@ file __FILE__
         _this_slot4
 %endmacro
 
-%macro  _this_hashtable_mask 0          ; -- mask
-        _this_hashtable_raw_capacity
-        _oneminus
-%endmacro
-
 %macro  _this_hashtable_set_data 0      ; data-address --
         _this_set_slot4
 %endmacro
@@ -327,6 +322,11 @@ code hashtable_data_address, 'hashtable-data-address' ; ht -- data-address
         next
 endcode
 
+%macro  _this_hashtable_mask 0          ; -- mask
+        _this_hashtable_raw_capacity
+        _oneminus
+%endmacro
+
 %macro  _this_hashtable_hash_at 0       ; key -- start-index
         _ hashcode
         _untag_fixnum
@@ -334,15 +334,11 @@ endcode
         _and
 %endmacro
 
-%macro  _wrap 0
-        _this_hashtable_mask
-        _and
-%endmacro
-
 %macro  _compute_index 0                ; start-index -- computed-index
         _i
         _plus
-        _wrap
+        _this_hashtable_mask
+        _and
 %endmacro
 
 ; ### find-index-for-key
@@ -353,7 +349,10 @@ code find_index_for_key, 'find-index-for-key'   ; key hashtable -- tagged-index/
 find_index_for_key_unchecked:
 
         push    this_register
-        popd    this_register           ; -- key
+
+        mov     this_register, rbx
+        poprbx                          ; -- key
+
         _dup
         _this_hashtable_hash_at         ; -- key start-index
 
