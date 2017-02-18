@@ -57,6 +57,8 @@ file __FILE__
         _slot4
 %endmacro
 
+%define this_hashtable_data_address     this_slot4
+
 %macro  _this_hashtable_data 0          ; -- data-address
         _this_slot4
 %endmacro
@@ -67,9 +69,8 @@ file __FILE__
 
 %macro  _this_hashtable_nth_key 0       ; n -- key
         shl     rbx, 4                  ; convert index to byte offset
-        _this_hashtable_data            ; -- offset data-address
-        _plus
-        _fetch
+        mov     rax, this_hashtable_data_address
+        mov     rbx, [rax + rbx]
 %endmacro
 
 %macro  _this_hashtable_set_nth_key 0   ; key n --
