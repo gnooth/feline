@@ -188,13 +188,15 @@ OBJECT_ALLOCATED_BIT            equ 4
         _2drop
 %endmacro
 
+%define this_slot4      qword [this_register + BYTES_PER_CELL * 4]
+
 %macro  _this_slot4 0
         pushrbx
-        mov     rbx, [this_register + BYTES_PER_CELL * 4]
+        mov     rbx, this_slot4
 %endmacro
 
 %macro  _this_set_slot4 0               ; x --
-        mov     [this_register + BYTES_PER_CELL * 4], rbx
+        mov     this_slot4, rbx
         poprbx
 %endmacro
 
