@@ -45,6 +45,8 @@ file __FILE__
         _slot3
 %endmacro
 
+%define this_hashtable_raw_capacity     this_slot3
+
 %macro  _this_hashtable_raw_capacity 0  ; -- untagged-capacity
         _this_slot3
 %endmacro
@@ -323,23 +325,19 @@ code hashtable_data_address, 'hashtable-data-address' ; ht -- data-address
         next
 endcode
 
-%macro  _this_hashtable_mask 0          ; -- mask
-        _this_hashtable_raw_capacity
-        _oneminus
-%endmacro
-
 %macro  _this_hashtable_hash_at 0       ; key -- start-index
         _ hashcode
         _untag_fixnum
-        _this_hashtable_mask
-        _and
+        mov     rax, this_hashtable_raw_capacity
+        sub     rax, 1
+        and     rbx, rax
 %endmacro
 
 %macro  _compute_index 0                ; start-index -- computed-index
-        _i
-        _plus
-        _this_hashtable_mask
-        _and
+        add     rbx, index_register
+        mov     rax, this_hashtable_raw_capacity
+        sub     rax, 1
+        and     rbx, rax
 %endmacro
 
 ; ### this-hashtable-find-index-for-key
