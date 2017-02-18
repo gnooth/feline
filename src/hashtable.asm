@@ -359,8 +359,19 @@ code this_hashtable_find_index_for_key, 'this-hashtable-find-index-for-key', SYM
 
         _this_hashtable_nth_key         ; -- key start-index key nth-key
 
+        cmp     rbx, f_value
+        jne     .2
+        ; found empty slot
+        _2drop
+        _nip
+        _compute_index
+        _tag_fixnum
+        _f
+        _unloop
+        _return
+.2:
         _ feline_equal
-        _tagged_if .2                   ; -- key start-index
+        _tagged_if .3                   ; -- key start-index
         ; found key
         _nip
         _compute_index
@@ -368,23 +379,7 @@ code this_hashtable_find_index_for_key, 'this-hashtable-find-index-for-key', SYM
         _t
         _unloop
         _return
-        _then .2                        ; -- key start-index
-
-        _dup
-        _compute_index
-        _this_hashtable_nth_key
-        _f
-        _equal
-        _if .3
-        ; found empty slot
-        _nip
-        _compute_index
-        _tag_fixnum
-        _f
-        _unloop
-        _return
-
-        _then .3
+        _then .3                        ; -- key start-index
 
         _loop .1
 
