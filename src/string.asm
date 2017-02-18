@@ -216,9 +216,7 @@ endsub
 %endmacro
 
 %macro  _this_string_nth_unsafe 0       ; untagged-index -- untagged-char
-        _this_string_raw_data
-        _plus
-        _cfetch
+        movzx   ebx, byte [rbx + this_register + STRING_DATA_OFFSET]
 %endmacro
 
 ; ### copy_to_string
