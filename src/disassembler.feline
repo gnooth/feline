@@ -291,7 +291,7 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
     "unsupported instruction" error ;
 
 : instruction-operand-size ( -- n )
-    operand-size-prefix $66 eq? [ 16 ] [ prefix $40 bitand 0 = 32 64 ? ] if ;
+    operand-size-prefix $66 eq? [ 16 ] [ prefix $48 bitand $48 = 64 32 ? ] if ;
 
 : set-instruction-size ( -- ) instruction-operand-size dup !> dsize !> ssize ;
 
@@ -1332,13 +1332,13 @@ last-word $af install-$0f-handler
     -- dest is r32/64
     set-instruction-size
     "movzx" !> mnemonic
+    8 !> ssize
     !modrm-byte
     modrm-reg register-reg !> dreg
     modrm-mod {
         { 0 [
             modrm-rm register-rm !> sbase
             prefix 64 32 ? !> dsize
-            "byte" !> relative-size
         ] }
         { 1 [
             modrm-rm 4 = [
@@ -1354,13 +1354,11 @@ last-word $af install-$0f-handler
             ] [
                 modrm-rm register-rm !> sbase
                 next-signed-byte !> sdisp
-                "byte" !> relative-size
             ] if
         ] }
         { 3 [
             t !> register-direct?
             modrm-rm register-rm !> sreg
-            8 !> ssize
             prefix 64 32 ? !> dsize
         ] }
         [ unsupported ]
