@@ -152,7 +152,7 @@ global: relative-size
     "]" write-string ;
 
 : .memory-operand ( disp size -- )
-    .size " [" write-string hex. "]" write-string ;
+    .size "[" write-string hex. "]" write-string ;
 
 : .ip ( -- ) ?nl ip hex. space ;
 
