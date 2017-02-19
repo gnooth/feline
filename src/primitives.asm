@@ -1100,7 +1100,7 @@ code base_to_integer, 'base>integer'    ; string base -- n/f
         _then .1
 
         _swap
-        _ string_data
+        _ string_raw_data_address
 
         _ gc_disable
 

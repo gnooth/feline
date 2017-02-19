@@ -77,7 +77,7 @@ endcode
 ; ### path-is-directory?
 code path_is_directory?, 'path-is-directory?' ; string -- flag
         _ verify_string
-        _ string_data
+        _ string_raw_data_address
 %ifdef WIN64
         mov     rcx, rbx
 %else
@@ -218,7 +218,7 @@ endcode
 
 ; ### get-environment-variable
 code get_environment_variable, 'get-environment-variable' ; name -- value
-        _ string_data
+        _ string_raw_data_address
 %ifdef WIN64
         popd    rcx
 %else
@@ -271,7 +271,7 @@ endcode
 code set_current_directory, 'set-current-directory' ; string -- flag
 ; Return true on success, 0 on failure.
         _ verify_string
-        _ string_data
+        _ string_raw_data_address
 %ifdef WIN64
         mov     rcx, rbx
 %else
@@ -284,7 +284,7 @@ endcode
 
 ; ### canonical-path
 code canonical_path, 'canonical-path'   ; string1 -- string2
-        _ string_data                   ; -- zaddr1
+        _ string_raw_data_address       ; -- zaddr1
 %ifdef WIN64
         popd    rcx
 %else

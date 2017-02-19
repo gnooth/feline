@@ -130,7 +130,7 @@ code verify_string, 'verify-string'     ; handle-or-string -- handle-or-string
         next
 endcode
 
-%macro  _string_length 0                ; string -- untagged-length
+%macro  _string_raw_length 0            ; string -- untagged-length
         _slot1
 %endmacro
 
@@ -172,9 +172,8 @@ endcode
 
 ; ### string-length
 code string_length, 'string-length'     ; string -- length
-; Returns a tagged fixnum.
         _ check_string
-        _string_length
+        _string_raw_length
         _tag_fixnum
         next
 endcode
@@ -182,7 +181,7 @@ endcode
 ; ### string-empty?
 code string_empty?, 'string-empty?'     ; string -- ?
         _ check_string
-        _string_length
+        _string_raw_length
         test    rbx, rbx
         jz      .1
         mov     ebx, f_value
@@ -202,12 +201,13 @@ endcode
         lea     rbx, [this_register + STRING_RAW_DATA_OFFSET]
 %endmacro
 
-; ### string_data
-subroutine string_data  ; string -- data-address
+; ### string-raw-data-address
+code string_raw_data_address, 'string-raw-data-address', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; string -- raw-data-address
         _ check_string
         _string_raw_data_address
-        ret
-endsub
+        next
+endcode
 
 %macro  _string_nth_unsafe 0            ; untagged-index string -- untagged-char
         _string_raw_data_address
@@ -267,12 +267,11 @@ endcode
 
 ; ### string_from
 code string_from, 'string>'     ; string -- addr len
-; Returned values are untagged.
         _ check_string
         _duptor
         _string_raw_data_address
         _rfrom
-        _string_length
+        _string_raw_length
         next
 endcode
 
@@ -378,7 +377,7 @@ code as_c_string, 'as-c-string'         ; c-addr u -- zaddr
 ; Arguments are untagged.
 ; Returns a pointer to a null-terminated string.
         _ copy_to_string
-        _ string_data
+        _ string_raw_data_address
         next
 endcode
 
@@ -407,7 +406,7 @@ string_nth_untagged:
         _ check_string                  ; -- tagged-index string
 
         _twodup
-        _string_length
+        _string_raw_length
         _ult
         _if .1
         _string_nth_unsafe
@@ -437,7 +436,7 @@ code string_last_char, 'string-last-char' ; string -- char
 ; Throws an error if the string is empty.
         _ check_string
         _dup
-        _string_length
+        _string_raw_length
         _dup
         _zeq_if .1
         _2drop
@@ -836,14 +835,14 @@ code string_equal?, 'string-equal?'     ; object1 object2 -- ?
 endcode
 
 ; ### path-get-extension
-code path_get_extension, 'path-get-extension' ; pathname -- extension | f
+code path_get_extension, 'path-get-extension'   ; pathname -- extension/f
 
         _ check_string
 
         push    this_register
         mov     this_register, rbx
 
-        _string_length
+        _string_raw_length
 
         _begin .1
         _dup

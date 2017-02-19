@@ -19,7 +19,7 @@ extern os_open_file
 
 ; ### file-open-read
 code file_open_read, 'file-open-read'   ; string -- fd
-        _ string_data
+        _ string_raw_data_address
 %ifdef WIN64
         ; args in rcx, rdx, r8, r9
         popd    rcx
@@ -160,7 +160,7 @@ extern os_create_file
 
 ; ### file-create-write
 code file_create_write, 'file-create-write' ; string -- fd
-        _ string_data
+        _ string_raw_data_address
 %ifdef WIN64
         mov     rdx, GENERIC_WRITE
         popd    rcx
@@ -225,7 +225,7 @@ endcode
 code file_write_line, 'file-write-line' ; string fd --
         _tor
         _dup
-        _ string_data
+        _ string_raw_data_address
         _swap
         _ string_length
         _rfetch

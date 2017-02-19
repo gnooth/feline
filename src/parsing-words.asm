@@ -697,7 +697,7 @@ code sh, 'sh'
         _swap
         _ lexer_next_line
 
-        _ string_data                   ; -- untagged-address
+        _ string_raw_data_address       ; -- untagged-address
 
 %ifdef WIN64
         popd    rcx
