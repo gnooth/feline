@@ -170,6 +170,14 @@ endcode
         _ copy_to_string
 %endmacro
 
+; ### string-raw-length
+code string_raw_length, 'string-raw-length', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; string -- raw-length
+        _ check_string
+        _string_raw_length
+        next
+endcode
+
 ; ### string-length
 code string_length, 'string-length'     ; string -- length
         _ check_string
