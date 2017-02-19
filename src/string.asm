@@ -20,10 +20,10 @@ file __FILE__
 ; 3 cells: object header, length, hashcode
 
 ; character data (untagged) starts at offset 24
-%define STRING_DATA_OFFSET      24
+%define STRING_RAW_DATA_OFFSET  24
 
 ; ### string?
-code string?, 'string?'                 ; x -- t|f
+code string?, 'string?'                 ; x -- ?
         _dup
         _ handle?
         _tagged_if .1
@@ -165,7 +165,7 @@ endcode
 %macro  _this_string_substring_unsafe 0 ; from to -- substring
 ; no bounds checking
         sub     rbx, qword [rbp]        ; length (in rbx) = to - from
-        lea     rax, [this_register + STRING_DATA_OFFSET]       ; raw data address in rax
+        lea     rax, [this_register + STRING_RAW_DATA_OFFSET]   ; raw data address in rax
         add     qword [rbp], rax        ; start of substring = from + raw data address
         _ copy_to_string
 %endmacro
@@ -192,38 +192,38 @@ code string_empty?, 'string-empty?'     ; string -- ?
         next
 endcode
 
-; Strings store their character data inline starting at this + STRING_DATA_OFFSET bytes.
-%macro  _string_raw_data 0
-        lea     rbx, [rbx + STRING_DATA_OFFSET]
+; Strings store their character data inline starting at this + STRING_RAW_DATA_OFFSET bytes.
+%macro  _string_raw_data_address 0
+        lea     rbx, [rbx + STRING_RAW_DATA_OFFSET]
 %endmacro
 
-%macro  _this_string_raw_data 0
+%macro  _this_string_raw_data_address 0
         pushrbx
-        lea     rbx, [this_register + STRING_DATA_OFFSET]
+        lea     rbx, [this_register + STRING_RAW_DATA_OFFSET]
 %endmacro
 
 ; ### string_data
 subroutine string_data  ; string -- data-address
         _ check_string
-        _string_raw_data
+        _string_raw_data_address
         ret
 endsub
 
 %macro  _string_nth_unsafe 0            ; untagged-index string -- untagged-char
-        _string_raw_data
+        _string_raw_data_address
         _plus
         _cfetch
 %endmacro
 
 %macro  _this_string_nth_unsafe 0       ; untagged-index -- untagged-char
-        movzx   ebx, byte [rbx + this_register + STRING_DATA_OFFSET]
+        movzx   ebx, byte [rbx + this_register + STRING_RAW_DATA_OFFSET]
 %endmacro
 
 ; ### copy_to_string
 subroutine copy_to_string       ; from-addr from-length -- handle
 ; arguments are untagged
 
-        _lit STRING_DATA_OFFSET
+        _lit STRING_RAW_DATA_OFFSET
         _over
         _oneplus                        ; +1 for terminal null byte
         _plus                           ; -- from-addr from-length size
@@ -245,12 +245,12 @@ subroutine copy_to_string       ; from-addr from-length -- handle
 
         _this_string_set_length         ; -- from-addr
 
-        _this_string_raw_data
+        _this_string_raw_data_address
         _this_string_length
         _ cmove                         ; --
 
         ; store terminal null byte
-        _this_string_raw_data
+        _this_string_raw_data_address
         _this_string_length
         _plus
         mov     byte [rbx], 0
@@ -269,7 +269,7 @@ code string_from, 'string>'     ; string -- addr len
 ; Returned values are untagged.
         _ check_string
         _duptor
-        _string_raw_data
+        _string_raw_data_address
         _rfrom
         _string_length
         next
@@ -443,7 +443,7 @@ code string_last_char, 'string-last-char' ; string -- char
         _error "index out of bounds"
         _else .1
         _swap
-        _string_raw_data
+        _string_raw_data_address
         _plus
         _oneminus
         _cfetch
