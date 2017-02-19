@@ -198,21 +198,17 @@ code file_write_char, 'file-write-char' ; tagged-char fd --
         next
 endcode
 
-; ### file-write-unsafe
-code file_write_unsafe, 'file-write-unsafe' ; addr tagged-size fd -- count
-; Address and fd are untagged.
+; ### file-write-string
+code file_write_string, 'file-write-string'     ; string fd --
         _tor
-        _ check_index
+        _dup
+        _ string_raw_data_address
+        _swap
+        _ string_raw_length
         _rfrom
-%ifdef WIN64
-        popd    rcx                     ; fd
-        popd    r8                      ; size
-        popd    rdx                     ; addr
-%else
-        popd    rdi
-        popd    rdx
-        popd    rsi
-%endif
+        popd    arg0_register
+        popd    arg2_register
+        popd    arg1_register
         xcall   os_write_file
         test    rax, rax
         jns     .1
@@ -223,14 +219,8 @@ endcode
 
 ; ### file-write-line
 code file_write_line, 'file-write-line' ; string fd --
-        _tor
-        _dup
-        _ string_raw_data_address
-        _swap
-        _ string_length
-        _rfetch
-        _ file_write_unsafe
-
+        _duptor
+        _ file_write_string
 %ifdef WIN64
         _lit tagged_char(13)
         _rfetch
