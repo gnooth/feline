@@ -219,8 +219,9 @@ endsub
         movzx   ebx, byte [rbx + this_register + STRING_RAW_DATA_OFFSET]
 %endmacro
 
-; ### copy_to_string
-subroutine copy_to_string       ; from-addr from-length -- handle
+; ### copy-to-string
+code copy_to_string, 'copy-to-string', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; from-addr from-length -- handle
 ; arguments are untagged
 
         _lit STRING_RAW_DATA_OFFSET
@@ -261,8 +262,8 @@ subroutine copy_to_string       ; from-addr from-length -- handle
         _ new_handle                    ; -- handle
 
         pop     this_register
-        ret
-endsub
+        next
+endcode
 
 ; ### string_from
 code string_from, 'string>'     ; string -- addr len
