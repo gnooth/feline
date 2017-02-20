@@ -324,8 +324,7 @@ hash_string_unchecked:
         _zero                           ; -- accumulator
 
         _this_string_length
-        _zero
-        _?do .1
+        _register_do_times .1
 
         _i
         _this_string_nth_unsafe         ; -- accum untagged-char
