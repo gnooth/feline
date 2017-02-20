@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -14,7 +14,6 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 extern os_accept_string
-extern os_allocate
 extern os_allocate_executable
 extern os_bye
 extern os_chdir
@@ -34,6 +33,7 @@ extern os_getcwd
 extern os_getenv
 extern os_key
 extern os_key_avail
+extern os_malloc
 extern os_ms
 extern os_open_file
 extern os_read_char

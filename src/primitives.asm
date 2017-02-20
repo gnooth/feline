@@ -1204,7 +1204,7 @@ feline_allocate_untagged:
 %else
         mov     rdi, rbx
 %endif
-        xcall   os_allocate
+        xcall   os_malloc
         mov     rbx, rax                ; -- addr
         test    rbx, rbx
         jz .1

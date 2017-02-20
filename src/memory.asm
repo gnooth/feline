@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ code iallocate, '-allocate'             ; size -- a-addr
 %else
         mov     rdi, rbx
 %endif
-        xcall   os_allocate
+        xcall   os_malloc
         test    rax, rax
         jz .1
         ; allocation succeeded
@@ -80,7 +80,7 @@ code allocate_executable, 'allocate-executable' ; size -- addr
         xcall   os_allocate_executable
 %else
         mov     rdi, rbx
-        xcall   os_allocate
+        xcall   os_malloc
 %endif
         mov     rbx, rax                ; -- addr
         next

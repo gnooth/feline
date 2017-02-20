@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@
 
 #include "feline.h"
 
-void * os_allocate(size_t size)
+void * os_malloc(size_t size)
 {
   return malloc(size);
 }
