@@ -148,13 +148,15 @@ OBJECT_ALLOCATED_BIT            equ 4
         _2drop
 %endmacro
 
+%define this_slot2      qword [this_register + BYTES_PER_CELL * 2]
+
 %macro  _this_slot2 0                   ; -- x
         pushrbx
-        mov     rbx, [this_register + BYTES_PER_CELL * 2]
+        mov     rbx, this_slot2
 %endmacro
 
 %macro  _this_set_slot2 0               ; x --
-        mov     [this_register + BYTES_PER_CELL * 2], rbx
+        mov     this_slot2, rbx
         poprbx
 %endmacro
 
@@ -383,6 +385,8 @@ OBJECT_ALLOCATED_BIT            equ 4
         _set_slot2
 %endmacro
 
+%define this_vector_data        this_slot2
+
 %macro  _this_vector_data 0
         _this_slot2
 %endmacro
@@ -416,10 +420,8 @@ OBJECT_ALLOCATED_BIT            equ 4
 %endmacro
 
 %macro  _this_vector_nth_unsafe 0       ; index -- element
-        _cells
-        _this_vector_data
-        _plus
-        _fetch
+        mov     rax, this_vector_data
+        mov     rbx, [rax + 8*rbx]
 %endmacro
 
 %macro  _vector_set_nth_unsafe 0        ; element index vector --
