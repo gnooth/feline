@@ -382,6 +382,7 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
                     [
                         sib-base register-rm !> sbase
                         sib-index register-index !> sindex
+                        sib-scale !> sscale
                     ]
                 } cond
             ] [
