@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -14,8 +14,6 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 file __FILE__
-
-extern os_open_file
 
 ; ### file-open-read
 code file_open_read, 'file-open-read'   ; string -- fd
@@ -39,11 +37,8 @@ code file_open_read, 'file-open-read'   ; string -- fd
         next
 endcode
 
-extern os_file_size
-
 ; ### file-size
 code file_size, 'file-size'             ; fd -- tagged-size
-; FILE
 %ifdef WIN64
         mov     rcx, rbx
 %else
@@ -59,8 +54,6 @@ code file_size, 'file-size'             ; fd -- tagged-size
         _error "file size error"
         next
 endcode
-
-extern os_read_char
 
 ; ### file-read-char
 code file_read_char, 'file-read-char'   ; fd -- char/f
@@ -80,8 +73,6 @@ code file_read_char, 'file-read-char'   ; fd -- char/f
         mov     ebx, f_value
         next
 endcode
-
-extern os_read_file
 
 ; ### file-read-unsafe
 code file_read_unsafe, 'file-read-unsafe' ; addr tagged-size fd -- count
@@ -156,8 +147,6 @@ code file_read_line, 'file-read-line'   ; fd -- string/f
         next
 endcode
 
-extern os_create_file
-
 ; ### file-create-write
 code file_create_write, 'file-create-write' ; string -- fd
         _ string_raw_data_address
@@ -177,8 +166,6 @@ code file_create_write, 'file-create-write' ; string -- fd
         _error "unable to create file"
         next
 endcode
-
-extern os_write_file
 
 ; ### file-write-char
 code file_write_char, 'file-write-char' ; tagged-char fd --
@@ -231,8 +218,6 @@ code file_write_line, 'file-write-line' ; string fd --
         _ file_write_char
         next
 endcode
-
-extern os_close_file
 
 ; ### file-close
 code file_close, 'file-close'           ; fd --
@@ -309,7 +294,7 @@ code file_lines, 'file-lines'           ; path -- vector
 endcode
 
 ; ### set-file-lines
-code set_file_lines, 'set-file-lines'  ; seq path --
+code set_file_lines, 'set-file-lines'   ; seq path --
         _ file_create_write             ; -- seq fd
         _swap                           ; -- fd seq
         _quotation .1
