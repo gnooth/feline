@@ -72,3 +72,6 @@ extern c_bignum_sizeinbase
 extern c_decimal_to_integer
 extern c_string_to_integer
 extern c_expt
+
+; socket.c
+extern c_make_socket
