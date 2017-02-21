@@ -1328,3 +1328,24 @@ code feline_bye, "bye"
         jmp os_bye
         next
 endcode
+
+%ifndef WIN64
+; ### make-socket
+code make_socket, 'make-socket'         ; host port -- fd
+
+        _check_fixnum
+        mov     arg1_register, rbx
+        poprbx
+
+        _ string_raw_data_address
+        mov     arg0_register, rbx
+        poprbx
+
+        xcall   c_make_socket
+
+        pushrbx
+        mov     rbx, rax
+
+        next
+endcode
+%endif
