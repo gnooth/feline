@@ -123,6 +123,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	sequences.asm \
 	sbuf.asm \
 	slice.asm \
+	socket.asm \
 	stack.asm \
 	store.asm \
 	string.asm \

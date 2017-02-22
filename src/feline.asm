@@ -80,6 +80,7 @@ IN_FELINE
 %include "load.asm"
 %include "tools.asm"
 %include "ansi.asm"
+%include "socket.asm"
 
 subroutine in_static_data_area?         ; addr -- 1/0
         cmp     rbx, static_data_area
