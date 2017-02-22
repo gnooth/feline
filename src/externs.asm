@@ -75,3 +75,7 @@ extern c_expt
 
 ; socket.c
 extern c_make_socket
+extern c_socket_close
+extern c_socket_read_char
+extern c_socket_write
+extern c_socket_write_char
