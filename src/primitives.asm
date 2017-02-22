@@ -1329,7 +1329,6 @@ code feline_bye, "bye"
         next
 endcode
 
-%ifndef WIN64
 ; ### make-socket
 code make_socket, 'make-socket'         ; host port -- fd
 
@@ -1348,4 +1347,57 @@ code make_socket, 'make-socket'         ; host port -- fd
 
         next
 endcode
-%endif
+
+; ### socket-read-char
+code socket_read_char, 'socket-read-char'       ; fd -- char/f
+        mov     arg0_register, rbx
+        xcall   c_socket_read_char
+        test    rax, rax
+        js      .1
+        mov     ebx, eax
+        _tag_char
+        _return
+.1:
+        mov     ebx, f_value
+        next
+endcode
+
+; ### socket-write-char
+code socket_write_char, 'socket-write-char'     ; tagged-char fd --
+        _untag_char qword [rbp]
+        popd    arg1_register
+        popd    arg0_register
+        xcall   c_socket_write_char
+        next
+endcode
+
+; ### socket-write-string
+code socket_write_string, 'socket-write-string' ; string fd --
+        _tor
+        _dup
+        _ string_raw_data_address
+        _swap
+        _ string_raw_length
+        _rfrom                  ; -- buf count fd
+        popd    arg0_register
+        popd    arg2_register
+        popd    arg1_register
+        xcall   c_socket_write
+        test    rax, rax
+        jns     .1
+        _error "error writing to socket"
+.1:
+        next
+endcode
+
+; ### socket-close
+code socket_close, 'socket-close'           ; fd --
+        popd    arg0_register
+        xcall   c_socket_close
+        test    rax, rax
+        js      .1
+        _return
+.1:
+        _error "unable to close socket"
+        next
+endcode
