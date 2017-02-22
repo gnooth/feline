@@ -15,8 +15,11 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>     // write
 
-#ifndef WIN64
+#ifdef WIN64
+#include <winsock2.h>
+#else
 #include <netdb.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -27,7 +30,15 @@
 
 cell c_make_socket(char *hostname, int port)
 {
-#ifndef WIN64
+#ifdef WIN64
+  WSADATA wsaData;
+  if (WSAStartup(MAKEWORD(2, 2), &wsaData ) != 0)
+    {
+      printf("WSAStartup() error");
+      return (cell) -1;
+    }
+  // FIXME we need to call WSACleanup() somewhere
+#endif
   struct hostent * host = gethostbyname(hostname);
   if (host == NULL)
     {
@@ -50,5 +61,47 @@ cell c_make_socket(char *hostname, int port)
       return (cell) -1;
     }
   return fd;
+}
+
+cell c_socket_read_char(cell fd)
+{
+  char c;
+  int n = recv(fd, (char *) &c, 1, 0);
+  if (n == 0)
+    return -1;
+  else
+    return c;
+}
+
+cell c_socket_write(cell fd, void *buf, size_t count)
+{
+#ifdef WIN64
+  if (send(fd, buf, count, 0) != count)
+    {
+      printf("WSAGetLastError() = %d\n", WSAGetLastError());
+      fflush(stdout);
+      return -1;
+    }
+  return count;
+#else
+  return os_write_file(fd, buf, count);
+#endif
+}
+
+void c_socket_write_char(int c, int fd)
+{
+#ifdef WIN64
+  c_socket_write(fd, &c, 1);
+#else
+  write(fd, &c, 1);
+#endif
+}
+
+cell c_socket_close(cell fd)
+{
+#ifdef WIN64
+  return closesocket(fd);
+#else
+  return os_close_file(fd);
 #endif
 }
