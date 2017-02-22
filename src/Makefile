@@ -1,4 +1,4 @@
-# If you have the write tools installed (see below), just:
+# If you have the right tools installed (see below), just:
 #
 #       make
 #
@@ -64,16 +64,16 @@ $(FELINE_HOME_EXE): feline_home.c
 version.asm:
 	echo "%define VERSION \"$(VERSION)\"" > version.asm
 
-main.o:	feline.h main.c Makefile
+main.o:	feline.h main.c
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
-os.o:	feline.h os.c Makefile
+os.o:	feline.h os.c
 	$(CC) $(CFLAGS) -c -o os.o os.c
 
-terminal.o: feline.h terminal.c Makefile
+terminal.o: feline.h terminal.c
 	$(CC) $(CFLAGS) -c -o terminal.o terminal.c
 
-backtrace.o: feline.h backtrace.c Makefile
+backtrace.o: feline.h backtrace.c
 	$(CC) $(CFLAGS) -c -o backtrace.o backtrace.c
 
 random.o: random.c
@@ -138,7 +138,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	wrapper.asm
 
 # -felf64 even on Windows
-feline.o: $(ASM_SOURCES) Makefile
+feline.o: $(ASM_SOURCES)
 	nasm $(ASMFLAGS) -g -felf64 feline.asm
 
 # Microsoft compiler and linker
