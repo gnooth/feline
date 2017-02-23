@@ -63,6 +63,49 @@ cell c_make_socket(char *hostname, int port)
   return fd;
 }
 
+cell c_make_server_socket(int port)
+{
+  int fd = socket(PF_INET, SOCK_STREAM, 0);
+  if (fd < 0)
+    {
+      printf("unable to create socket\n");
+      return (cell) -1;
+    }
+  int i = 1;
+  setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &i, sizeof(i));
+  struct sockaddr_in address;
+  address.sin_family = AF_INET;
+  address.sin_port = htons(port);
+  memset(&address.sin_addr, 0, sizeof(address.sin_addr));
+  if (bind(fd, (struct sockaddr *) &address, sizeof(address)))
+    {
+      printf("unable to bind\n");
+      return (cell) -1;
+    }
+  socklen_t addr_length = sizeof(struct sockaddr_in);
+  getsockname(fd, (struct sockaddr *) &address, &addr_length);
+  if (listen(fd, 5))
+    {
+      printf("unable to listen\n");
+      return (cell) -1;
+    }
+  return fd;
+}
+
+cell c_accept_connection(cell fd_listen)
+{
+  struct sockaddr_in address;
+  memset(&address, 0, sizeof(struct sockaddr_in));
+  socklen_t addr_length = sizeof(struct sockaddr_in);
+  int fd = accept(fd_listen, (struct sockaddr *) &address, &addr_length);
+  if (fd < 0)
+    {
+      printf("unable to accept connection\n");
+      return (cell) -1;
+    }
+  return (cell) fd;
+}
+
 cell c_socket_read_char(cell fd)
 {
   char c;

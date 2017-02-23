@@ -74,6 +74,8 @@ extern c_string_to_integer
 extern c_expt
 
 ; socket.c
+extern c_accept_connection
+extern c_make_server_socket
 extern c_make_socket
 extern c_socket_close
 extern c_socket_read_char
