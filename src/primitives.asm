@@ -1321,8 +1321,7 @@ code feline_bye, "bye"
         _ get
         _tagged_if .1
         _ ?nl
-        _write "Bye!"
-        _ nl
+        _write `Bye!\n`
         _then .1
 
         jmp os_bye
