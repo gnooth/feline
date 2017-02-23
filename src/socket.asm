@@ -34,6 +34,27 @@ code make_socket, 'make-socket'         ; host port -- fd
         next
 endcode
 
+; ### make-server-socket
+code make_server_socket, 'make-server-socket'   ; port -- fd
+        _check_fixnum
+        mov     arg0_register, rbx
+        poprbx
+        xcall   c_make_server_socket
+        pushrbx
+        mov     rbx, rax
+        next
+endcode
+
+; ### accept-connection
+code accept_connection, 'accept-connection'     ; fd-listen -- fd-connect
+        mov     arg0_register, rbx
+        poprbx
+        xcall   c_accept_connection
+        pushrbx
+        mov     rbx, rax
+        next
+endcode
+
 ; ### socket-read-char
 code socket_read_char, 'socket-read-char'       ; fd -- char/f
         mov     arg0_register, rbx
