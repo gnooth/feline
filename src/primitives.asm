@@ -1324,6 +1324,7 @@ code feline_bye, "bye"
         _write `Bye!\n`
         _then .1
 
-        jmp os_bye
+        xcall os_bye
+
         next
 endcode
