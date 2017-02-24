@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdio.h>
-#include <string.h>
+#include <string.h>     // memcpy, memset
 #include <unistd.h>     // write
 
 #ifdef WIN64
@@ -28,16 +28,26 @@
 
 #include "feline.h"
 
+#ifdef WIN64
+int winsock_initialized = 0;
+
+static void initialize_winsock()
+{
+  if (!winsock_initialized)
+    {
+      WSADATA wsaData;
+      if (WSAStartup(MAKEWORD(2, 2), &wsaData ) != 0)
+        printf("WSAStartup() error\n");
+      else
+        winsock_initialized = 1;
+    }
+}
+#endif
+
 cell c_make_socket(char *hostname, int port)
 {
 #ifdef WIN64
-  WSADATA wsaData;
-  if (WSAStartup(MAKEWORD(2, 2), &wsaData ) != 0)
-    {
-      printf("WSAStartup() error");
-      return (cell) -1;
-    }
-  // FIXME we need to call WSACleanup() somewhere
+  initialize_winsock();
 #endif
   struct hostent * host = gethostbyname(hostname);
   if (host == NULL)
@@ -65,14 +75,19 @@ cell c_make_socket(char *hostname, int port)
 
 cell c_make_server_socket(int port)
 {
+#ifdef WIN64
+  initialize_winsock();
+#endif
   int fd = socket(PF_INET, SOCK_STREAM, 0);
   if (fd < 0)
     {
       printf("unable to create socket\n");
       return (cell) -1;
     }
+#ifndef WIN64
   int i = 1;
   setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &i, sizeof(i));
+#endif
   struct sockaddr_in address;
   address.sin_family = AF_INET;
   address.sin_port = htons(port);
@@ -82,8 +97,10 @@ cell c_make_server_socket(int port)
       printf("unable to bind\n");
       return (cell) -1;
     }
+#ifndef WIN64
   socklen_t addr_length = sizeof(struct sockaddr_in);
   getsockname(fd, (struct sockaddr *) &address, &addr_length);
+#endif
   if (listen(fd, 5))
     {
       printf("unable to listen\n");
@@ -94,10 +111,14 @@ cell c_make_server_socket(int port)
 
 cell c_accept_connection(cell fd_listen)
 {
+#ifdef WIN64
+  int fd = accept(fd_listen, NULL, NULL);
+#else
   struct sockaddr_in address;
   memset(&address, 0, sizeof(struct sockaddr_in));
   socklen_t addr_length = sizeof(struct sockaddr_in);
   int fd = accept(fd_listen, (struct sockaddr *) &address, &addr_length);
+#endif
   if (fd < 0)
     {
       printf("unable to accept connection\n");
