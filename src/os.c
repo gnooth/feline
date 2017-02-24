@@ -457,8 +457,13 @@ void os_set_console_cursor_position(SHORT x, SHORT y)
 
 void os_bye()
 {
-  extern void * data_stack_base;
+#ifdef WIN64
+  extern int winsock_initialized;
+  if (winsock_initialized)
+    WSACleanup();
+#endif
 
+  extern void * data_stack_base;
   deprep_terminal();
   free(data_stack_base);
   exit(0);
