@@ -51,12 +51,16 @@ special saved_context_vector, 'saved-context-vector'
 ; ### save-search-order
 code save_search_order, 'save-search-order'
         _ current_vocab
+        _ vocab_name
         _ saved_current_vocab
         _ set
+
         _ context_vector
-        _ vector_clone
+        _lit S_vocab_name
+        _ map
         _ saved_context_vector
         _ set
+
         next
 endcode
 
@@ -64,10 +68,33 @@ endcode
 code restore_search_order, 'restore-search-order'
         _ saved_current_vocab
         _ get
+        _ lookup_vocab
+        _dup
+        _tagged_if_not .1
+        _drop
+        _ user_vocab
+        _then .1
         _to_global current_vocab
+
+        _lit tagged_zero
+        _ context_vector
+        _ vector_set_length
+
         _ saved_context_vector
         _ get
-        _to_global context_vector
+        _quotation .2
+        _ maybe_use_vocab
+        _end_quotation .2
+        _ each
+
+        _ context_vector
+        _ length
+        _ zero?
+        _tagged_if .3
+        _ feline_vocab
+        _ use_vocab
+        _then .3
+
         next
 endcode
 
