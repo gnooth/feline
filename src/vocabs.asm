@@ -267,29 +267,17 @@ endcode
 
 ; ### using:
 code using_colon, 'using:'
-        _lit 10
-        _ new_vector_untagged           ; -- handle
-        _tor
         _begin .1
         _ must_parse_token
         _dup
         _quote ";"
         _ stringequal
-        _untag_boolean
-        _zeq
-        _while .1
-        _ lookup_vocab
-        _dup
-        _tagged_if_not .3
+        _tagged_if .2
         _drop
-        _error "can't find vocab"
-        _then .3
-        _rfetch
-        _ vector_push
-        _repeat .1
-        _drop
-        _rfrom
-        _to_global context_vector
+        _return
+        _then .2
+        _ use_vocab
+        _again .1
         next
 endcode
 
