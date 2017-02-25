@@ -1129,18 +1129,18 @@ index-test-1
 
 test: member?-test-1 ( -- )
     17 { 1 2 3 } member? assert-false
-    1  { 1 2 3 } member? assert-true
+    1  { 1 2 3 } member? 0 assert=
     f  { 1 2 3 } member? assert-false
-    f  { 1 f 3 } member? assert-true
+    f  { 1 f 3 } member? 1 assert=
 ;
 
 member?-test-1
 
 test: member?-test-2 ( -- )
-    "bar" { "foo" "bar" "baz" } member? assert-true
+    "bar" { "foo" "bar" "baz" } member? 1 assert=
     "bag" { "foo" "bar" "baz" } member? assert-false
-    4 { 1 2 3 4 } member? assert-true
-    1 { 1 2 3 4 } member? assert-true
+    4 { 1 2 3 4 } member? 3 assert=
+    1 { 1 2 3 4 } member? 0 assert=
     "test" { 1 2 3 4 } member? assert-false
     0 { 1 2 3 4 } member? assert-false
 ;
@@ -1150,15 +1150,16 @@ member?-test-2
 test: member-eq?-test-1
     { 1 2 3 4 } >local: a
     0 a member-eq? assert-false
-    1 a member-eq? assert-true
-    2 a member-eq? assert-true
+    1 a member-eq? 0 assert=
+    2 a member-eq? 1 assert=
     "test" >local: s
     s a member-eq? assert-false
     V{ 1 2 3 4 } >local: v
-    a [ v member-eq? assert-true ] each
+    a [ v member-eq? assert ] each
+    v [ a member-eq? assert ] each
     s v member-eq? assert-false
     s v push
-    s v member-eq? assert-true ;
+    s v member-eq? 4 assert= ;
 
 member-eq?-test-1
 

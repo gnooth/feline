@@ -595,7 +595,7 @@ code third, 'third'                     ; seq -- third
 endcode
 
 ; ### index
-code index, 'index'                     ; obj seq -- n/f
+code index, 'index'                     ; obj seq -- index/f
         push    this_register
         mov     this_register, rbx      ; handle to seq in this_register
         _ length
@@ -624,16 +624,13 @@ code index, 'index'                     ; obj seq -- n/f
 endcode
 
 ; ### member?
-code member?, 'member?'                 ; obj seq -- ?
+code member?, 'member?'                 ; obj seq -- index/f
         _ index
-        mov     eax, t_value
-        cmp     rbx, f_value
-        cmovne  ebx, eax
         next
 endcode
 
 ; ### member-eq?
-code member_eq?, 'member-eq?'           ; obj seq -- n/f
+code member_eq?, 'member-eq?'           ; obj seq -- index/f
         push    this_register
         mov     this_register, rbx      ; handle to seq in this_register
         _ length
@@ -646,7 +643,8 @@ code member_eq?, 'member-eq?'           ; obj seq -- n/f
         cmp     rbx, [rbp]
         poprbx
         jne     .2
-        mov     rbx, t_value
+        mov     rbx, index_register
+        _tag_fixnum
         _unloop
         jmp     .exit
 .2:
