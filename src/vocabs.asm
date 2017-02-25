@@ -207,6 +207,64 @@ code using_vocab?, 'using-vocab?'       ; vocab-specifier -- ?
         next
 endcode
 
+; ### use-vocab
+code use_vocab, 'use-vocab'             ; vocab-specifier --
+        _dup
+        _ using_vocab?
+        _tagged_if .1
+        _drop
+        _return
+        _then .1
+
+        _ lookup_vocab
+        _dup
+        _tagged_if_not .2
+        _drop
+        _error "can't find vocab"
+        _return
+        _then .2
+
+        _ context_vector
+        _ vector_push
+        next
+endcode
+
+; ### use:
+code use_colon, 'use:'
+        _ must_parse_token
+        _ use_vocab
+        next
+endcode
+
+; ### unuse-vocab
+code unuse_vocab, 'unuse-vocab'         ; vocab-specifier --
+        _ lookup_vocab
+        _dup
+        _tagged_if_not .1
+        _drop
+        _return
+        _then .1
+
+        _ context_vector
+        _ member_eq?                    ; -- index/f
+        _dup
+        _tagged_if_not .2
+        _drop
+        _return
+        _then .2
+
+        _ context_vector
+        _ vector_remove_nth_destructive
+        next
+endcode
+
+; ### unuse:
+code unuse_colon, 'unuse:'
+        _ must_parse_token              ; -- string
+        _ unuse_vocab
+        next
+endcode
+
 ; ### using:
 code using_colon, 'using:'
         _lit 10
