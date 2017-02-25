@@ -196,18 +196,24 @@ code in_colon, 'in:'
         next
 endcode
 
+; ### using-vocab?
+code using_vocab?, 'using-vocab?'       ; vocab-specifier -- ?
+        _ lookup_vocab
+        _dup
+        _tagged_if .1
+        _ context_vector
+        _ member_eq?
+        _then .1
+        next
+endcode
+
 ; ### using:
 code using_colon, 'using:'
         _lit 10
         _ new_vector_untagged           ; -- handle
         _tor
         _begin .1
-        _ parse_token                   ; -- string/f
-        _dup
-        _tagged_if_not .2
-        _drop
-        _error "unexpected end of input"
-        _then .2
+        _ must_parse_token
         _dup
         _quote ";"
         _ stringequal
