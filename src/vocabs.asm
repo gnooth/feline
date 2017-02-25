@@ -229,6 +229,26 @@ code use_vocab, 'use-vocab'             ; vocab-specifier --
         next
 endcode
 
+; ### maybe-use-vocab
+code maybe_use_vocab, 'maybe-use-vocab' ; vocab-specifier --
+        _dup
+        _ using_vocab?
+        _tagged_if .1
+        _drop
+        _return
+        _then .1
+
+        _ lookup_vocab
+        _dup
+        _tagged_if .2
+        _ context_vector
+        _ vector_push
+        _else .2
+        _drop
+        _then .2
+        next
+endcode
+
 ; ### use:
 code use_colon, 'use:'
         _ must_parse_token
