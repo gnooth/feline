@@ -1147,6 +1147,21 @@ test: member?-test-2 ( -- )
 
 member?-test-2
 
+test: member-eq?-test-1
+    { 1 2 3 4 } >local: a
+    0 a member-eq? assert-false
+    1 a member-eq? assert-true
+    2 a member-eq? assert-true
+    "test" >local: s
+    s a member-eq? assert-false
+    V{ 1 2 3 4 } >local: v
+    a [ v member-eq? assert-true ] each
+    s v member-eq? assert-false
+    s v push
+    s v member-eq? assert-true ;
+
+member-eq?-test-1
+
 test: string-head-test-1 ( -- )
     "this is a test"
     [ 4 string-head "this" assert= ] keep

@@ -631,3 +631,28 @@ code member?, 'member?'                 ; obj seq -- ?
         cmovne  ebx, eax
         next
 endcode
+
+; ### member-eq?
+code member_eq?, 'member-eq?'           ; obj seq -- n/f
+        push    this_register
+        mov     this_register, rbx      ; handle to seq in this_register
+        _ length
+        _untag_fixnum
+        _register_do_times .1
+        _i
+        _tag_fixnum
+        _this
+        _ nth_unsafe                    ; -- obj elt
+        cmp     rbx, [rbp]
+        poprbx
+        jne     .2
+        mov     rbx, t_value
+        _unloop
+        jmp     .exit
+.2:
+        _loop .1
+        mov     rbx, f_value
+.exit:
+        pop     this_register
+        next
+endcode
