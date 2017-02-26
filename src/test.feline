@@ -1873,6 +1873,23 @@ test: ?vector-pop-test-1
 
 ?vector-pop-test-1
 
+test: vector-reverse!-test-1
+    V{ 1 2 3 4 5 } >local: v
+    v vector-reverse! v eq? assert-true
+    v V{ 5 4 3 2 1 } sequence= assert
+    V{ 1 2 3 4 } !> v
+    v vector-reverse! v eq? assert-true
+    v V{ 4 3 2 1 } sequence= assert
+    V{ 17 } !> v
+    v vector-reverse! v eq? assert-true
+    v V{ 17 } sequence= assert
+    V{ } !> v
+    v vector-reverse! v eq? assert-true
+    v V{ } sequence= assert
+;
+
+vector-reverse!-test-1
+
 test: count-test-1
     V{ 1 2 3 4 5 }
     dup ' odd?   count 3 assert=

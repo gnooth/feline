@@ -610,6 +610,47 @@ code vector_equal?, 'vector-equal?'     ; vector1 vector2 -- ?
         next
 endcode
 
+; ### vector-reverse!
+code vector_reverse_in_place, 'vector-reverse!'         ; vector -- vector
+        _duptor
+        _ check_vector
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+
+        _this_vector_length
+
+        ; divide by 2
+        shr     rbx, 1
+
+        _register_do_times .1
+
+        _i
+        _this_vector_nth_unsafe         ; -- char1
+
+        _this_vector_length
+        _oneminus
+        _i
+        _minus
+        _this_vector_nth_unsafe         ; -- char1 char2
+
+        _i
+        _this_vector_set_nth_unsafe
+
+        _this_vector_length
+        _oneminus
+        _i
+        _minus
+        _this_vector_set_nth_unsafe
+
+        _loop .1
+
+        pop     this_register
+        _rfrom
+        next
+endcode
+
 ; ### vector-each
 code vector_each, 'vector-each'         ; vector quotation-or-xt --
 
