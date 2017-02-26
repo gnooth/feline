@@ -308,6 +308,53 @@ code sequence_equal, 'sequence='        ; seq1 seq2 -- ?
         next
 endcode
 
+; ### count
+code count, 'count'     ; seq callable -- n
+; callable: elt -- ?
+
+        ; protect callable from gc
+        push    rbx
+
+        _ callable_code_address         ; -- seq code-address
+
+        push    r13                     ; counter
+        xor     r13, r13
+
+        push    r12
+        mov     r12, rbx                ; code address in r12
+        poprbx                          ; -- seq
+        push    this_register
+        mov     this_register, rbx      ; handle to seq in this_register
+        _ length
+        _untag_fixnum
+        _zero
+        _?do .1
+        _i
+        _tag_fixnum
+        _this                           ; -- tagged-index handle
+        _ nth_unsafe                    ; -- element
+        call    r12                     ; -- ?
+
+        cmp     rbx, f_value
+        poprbx
+        je      .2
+        add     r13, 1
+.2:
+        _loop .1
+        pop     this_register
+        pop     r12
+
+        pushrbx
+        mov     rbx, r13
+        _tag_fixnum
+        pop     r13
+
+        ; drop callable
+        pop     rax
+
+        next
+endcode
+
 ; ### each
 code each, 'each'       ; seq callable --
 

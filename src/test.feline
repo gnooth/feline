@@ -1873,4 +1873,13 @@ test: ?vector-pop-test-1
 
 ?vector-pop-test-1
 
+test: count-test-1
+    V{ 1 2 3 4 5 }
+    dup ' odd?   count 3 assert=
+    dup ' even?  count 2 assert=
+    dup [ odd? ] count 3 assert=
+    [ even? ]    count 2 assert= ;
+
+count-test-1
+
 ?nl "Reached end of test.feline" write-string
