@@ -31,19 +31,19 @@ file __FILE__
 %endmacro
 
 ; untagged index of current character
-%macro  _lexer_index 0                  ; lexer -- index
+%macro  _lexer_raw_index 0              ; lexer -- index
         _slot2
 %endmacro
 
-%macro  _this_lexer_index 0             ; -- index
+%macro  _this_lexer_raw_index 0         ; -- index
         _this_slot2
 %endmacro
 
-%macro  _lexer_set_index 0              ; index lexer --
+%macro  _lexer_set_raw_index 0          ; index lexer --
         _set_slot2
 %endmacro
 
-%macro  _this_lexer_set_index 0         ; index --
+%macro  _this_lexer_set_raw_index 0     ; index --
         _this_set_slot2
 %endmacro
 
@@ -159,7 +159,7 @@ endcode
 ; ### lexer-index
 code lexer_index, 'lexer-index'         ; lexer -- tagged-index
         _ check_lexer
-        _lexer_index
+        _lexer_raw_index
         _tag_fixnum
         next
 endcode
@@ -170,7 +170,7 @@ code lexer_set_index, 'lexer-set-index' ; tagged-index lexer --
         _swap
         _ check_index                   ; -- lexer untagged-index
         _swap
-        _lexer_set_index
+        _lexer_set_raw_index
         next
 endcode
 
@@ -205,7 +205,7 @@ endcode
 code lexer_char, 'lexer-char'           ; lexer -- char
         _ check_lexer
         _dup
-        _lexer_index
+        _lexer_raw_index
         _tag_fixnum
         _swap
         _lexer_string
@@ -236,7 +236,7 @@ code lexer_location, 'lexer-location'   ; lexer -- 3array/f
         _this_lexer_file
         _this_lexer_line_number
         _tag_fixnum
-        _this_lexer_index
+        _this_lexer_raw_index
         _this_lexer_line_start
         _minus
         _tag_fixnum
@@ -334,7 +334,7 @@ code lexer_next_line, 'lexer-next-line' ; lexer --
         mov     this_register, rbx
         poprbx
 
-        _this_lexer_index
+        _this_lexer_raw_index
         _this_lexer_string
         _ string_length
         _untag_fixnum
@@ -359,7 +359,7 @@ code lexer_next_line, 'lexer-next-line' ; lexer --
         _i
         _oneplus
         _dup
-        _this_lexer_set_index
+        _this_lexer_set_raw_index
         _this_lexer_set_line_start
         _unloop
         jmp     .exit
@@ -370,7 +370,7 @@ code lexer_next_line, 'lexer-next-line' ; lexer --
         _this_lexer_string
         _ string_length
         _untag_fixnum
-        _this_lexer_set_index
+        _this_lexer_set_raw_index
 
 .exit:
         pop     this_register
@@ -386,7 +386,7 @@ code lexer_string_skip_whitespace, 'lexer-string-skip-whitespace' ; lexer -- ind
         mov     this_register, rbx
         poprbx
 
-        _this_lexer_index
+        _this_lexer_raw_index
         _this_lexer_string
         _ string_length
         _untag_fixnum
@@ -476,7 +476,7 @@ skip_blank_unchecked:
         mov     this_register, rbx
         poprbx
 
-        _this_lexer_index
+        _this_lexer_raw_index
         _tag_fixnum
         _this_lexer_string
         _ string_skip_whitespace        ; -- index/f
@@ -484,13 +484,13 @@ skip_blank_unchecked:
         _dup
         _tagged_if .1
         _untag_fixnum
-        _this_lexer_set_index
+        _this_lexer_set_raw_index
         _else .1
         _drop
         _this_lexer_string
         _ string_length
         _untag_fixnum
-        _this_lexer_set_index
+        _this_lexer_set_raw_index
         _then .1
 
         pop     this_register
@@ -511,7 +511,7 @@ skip_word_unchecked:
         mov     this_register, rbx
         poprbx
 
-        _this_lexer_index
+        _this_lexer_raw_index
         _tag_fixnum
         _this_lexer_string
         _ string_skip_to_whitespace     ; -- index/f
@@ -519,16 +519,16 @@ skip_word_unchecked:
         _dup
         _tagged_if .1
         _untag_fixnum
-        _this_lexer_set_index
+        _this_lexer_set_raw_index
         _else .1
         _drop
         _this_lexer_string
         _ string_length
         _untag_fixnum
-        _this_lexer_set_index
+        _this_lexer_set_raw_index
         _then .1
 
-        _this_lexer_index
+        _this_lexer_raw_index
         _tag_fixnum
 
         pop     this_register
@@ -544,11 +544,11 @@ code lexer_skip_quoted_string, 'lexer-skip-quoted-string' ; lexer --
         mov     this_register, rbx
         poprbx
 
-        _this_lexer_index
+        _this_lexer_raw_index
         _oneplus
-        _this_lexer_set_index
+        _this_lexer_set_raw_index
 
-        _this_lexer_index
+        _this_lexer_raw_index
         _this_lexer_string
         _ string_length
         _untag_fixnum
@@ -569,7 +569,7 @@ code lexer_skip_quoted_string, 'lexer-skip-quoted-string' ; lexer --
         _drop
         _i
         _oneplus
-        _this_lexer_set_index
+        _this_lexer_set_raw_index
         _unloop
         jmp     .exit
         _then .3
@@ -679,7 +679,7 @@ code dot_lexer, '.lexer'                ; lexer --
 
         _ space
 
-        _this_lexer_index
+        _this_lexer_raw_index
         _tag_fixnum
         _ dot_object
         _ space
