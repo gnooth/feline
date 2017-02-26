@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -140,21 +140,12 @@ endcode
 
 ; ### check-lexer
 code check_lexer, 'check-lexer'         ; x -- lexer
-        _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe        ; -- object/0
-        _dup_if .2
-        _dup
-        _object_type                    ; -- object object-type
-        _eq? OBJECT_TYPE_LEXER
-        _tagged_if .3
-        _return
-        _then .3
-        _then .2
-        _then .1
-
-        _ error_not_lexer
+        _ deref
+        test    rbx, rbx
+        jz      error_not_lexer
+        movzx   eax, word [rbx]
+        cmp     eax, OBJECT_TYPE_LEXER
+        jne     error_not_lexer
         next
 endcode
 
