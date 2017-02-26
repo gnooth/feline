@@ -174,6 +174,17 @@ code lexer_set_index, 'lexer-set-index' ; tagged-index lexer --
         next
 endcode
 
+; ### lexer-at-end?
+code lexer_at_end?, 'lexer-at-end?'     ; lexer -- ?
+        _dup
+        _ lexer_index
+        _swap
+        _ lexer_string
+        _ string_length
+        _fixnum_ge
+        next
+endcode
+
 ; ### lexer-line-number
 code lexer_line_number, 'lexer-line-number' ; -- line
         _ check_lexer
