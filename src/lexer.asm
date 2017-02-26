@@ -666,23 +666,27 @@ code dot_lexer, '.lexer'                ; lexer --
 
         _then .1
 
+        _ space
+
         _this_lexer_index
         _tag_fixnum
         _ dot_object
+        _ space
 
         _this_lexer_line_number
         _tag_fixnum
         _ dot_object
+        _ space
 
         _this_lexer_line_start
         _tag_fixnum
         _ dot_object
+        _ space
 
         _this_lexer_file
         _ dot_object
 
-        _quote "}"
-        _ write_string
+        _write " }"
 
         pop     this_register
         next
