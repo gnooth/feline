@@ -62,7 +62,7 @@
         %undef  index_register
 %endmacro
 
-%macro  _register_loop_index 0          ; -- untagged-index
+%macro  _register_raw_loop_index 0      ; -- untagged-index
         pushrbx
         mov     rbx, index_register
 %endmacro
@@ -107,9 +107,24 @@
 %endif
 %endmacro
 
+%macro  _raw_loop_index 0               ; -- untagged-index
+%ifdef index_register
+        _register_raw_loop_index
+%else
+        pushrbx
+        mov     rbx, [rsp]
+%endif
+%endmacro
+
+%macro  _tagged_loop_index 0            ; -- tagged-index
+        _raw_loop_index
+        _tag_fixnum
+%endmacro
+
+; DEPRECATED
 %macro  _i 0                            ; -- untagged-index
 %ifdef index_register
-        _register_loop_index
+        _register_raw_loop_index
 %else
         pushrbx
         mov     rbx, [rsp]
