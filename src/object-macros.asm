@@ -361,19 +361,19 @@ OBJECT_ALLOCATED_BIT            equ 4
         _store
 %endmacro
 
-%macro  _vector_length 0                ; vector -- length
+%macro  _vector_raw_length 0            ; vector -- untagged-length
         _slot1
 %endmacro
 
-%macro  _vector_set_length 0            ; length vector --
+%macro  _vector_set_raw_length 0        ; untagged-length vector --
         _set_slot1
 %endmacro
 
-%macro  _this_vector_length 0           ; -- length
+%macro  _this_vector_raw_length 0       ; -- untagged-length
         _this_slot1
 %endmacro
 
-%macro  _this_vector_set_length 0       ; length --
+%macro  _this_vector_set_raw_length 0   ; untagged-length --
         _this_set_slot1
 %endmacro
 

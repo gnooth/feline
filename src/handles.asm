@@ -93,7 +93,7 @@ code empty_handles, 'empty-handles'     ; -- tagged-fixnum
         _ recycled_handles_vector
         _?dup_if .1
         _handle_to_object_unsafe
-        _vector_length
+        _vector_raw_length
         _else .1
         _zero
         _then .1

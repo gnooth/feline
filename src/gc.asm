@@ -51,7 +51,7 @@ endcode
 code mark_vector, 'mark-vector'         ; vector --
         push    this_register
         mov     this_register, rbx
-        _vector_length
+        _vector_raw_length
         _zero
         _?do .1
         _i

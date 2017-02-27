@@ -83,14 +83,14 @@ endcode
 code vector_raw_length, 'vector-raw-length', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; vector -- raw-length
         _ check_vector
-        _vector_length
+        _vector_raw_length
         next
 endcode
 
 ; ### vector-length
 code vector_length, 'vector-length'     ; vector -- length
         _ check_vector
-        _vector_length
+        _vector_raw_length
         _tag_fixnum
         next
 endcode
@@ -111,19 +111,19 @@ code vector_set_length, 'vector-set-length' ; tagged-new-length handle --
         _ vector_ensure_capacity
         _then .1                        ; -- new-length
         _dup
-        _this_vector_length
+        _this_vector_raw_length
         _ugt
         _if .2                          ; -- new-length
         ; initialize new cells to f
         _dup
-        _this_vector_length
+        _this_vector_raw_length
         _register_do_range .3
         _f
         _i
         _this_vector_set_nth_unsafe
         _loop .3
         _then .2
-        _this_vector_set_length
+        _this_vector_set_raw_length
         pop     this_register
         next
 endcode
@@ -133,7 +133,7 @@ code vector_delete_all, 'vector-delete-all' ; handle --
         _ check_vector
         _zero
         _swap                           ; -- 0 vector
-        _vector_set_length
+        _vector_set_raw_length
         next
 endcode
 
@@ -267,7 +267,7 @@ vector_nth_untagged:
         _ check_vector
 
         _twodup
-        _vector_length
+        _vector_raw_length
         _ult
         _if .1
         _vector_nth_unsafe
@@ -299,7 +299,7 @@ endcode
 code vector_last, 'vector-last'         ; handle -- element
         _ check_vector
         _dup
-        _vector_length                  ; -- vector untagged-length
+        _vector_raw_length              ; -- vector untagged-length
         _oneminus
         _dup
         _zge
@@ -343,7 +343,7 @@ vector_set_nth_untagged:
 
         ; initialize new cells to f
         _dup
-        _this_vector_length
+        _this_vector_raw_length
         _register_do_range .2
         _f
         _i
@@ -353,9 +353,9 @@ vector_set_nth_untagged:
 .1:
         _dup
         _oneplus
-        _this_vector_length
+        _this_vector_raw_length
         _ max
-        _this_vector_set_length
+        _this_vector_set_raw_length
 
         _this_vector_set_nth_unsafe
 
@@ -374,14 +374,14 @@ code vector_insert_nth_destructive, 'vector-insert-nth!' ; element n vector --
         mov     this_register, rbx      ; -- element n vector
 
         _twodup                         ; -- element n vector n vector
-        _vector_length                  ; -- element n vector n length
+        _vector_raw_length              ; -- element n vector n length
         _ugt                            ; -- element n vector
         _if .1
         _error "vector-insert-nth! n > length"
         _then .1
 
         _dup                            ; -- element n vector vector
-        _vector_length                  ; -- element n vector length
+        _vector_raw_length              ; -- element n vector length
         _oneplus                        ; -- element n vector length+1
         _over                           ; -- element n vector length+1 vector
         _ vector_ensure_capacity        ; -- element n vector
@@ -394,15 +394,15 @@ code vector_insert_nth_destructive, 'vector-insert-nth!' ; element n vector --
         _dup
         _cellplus                       ; -- element n addr addr+8
         _this
-        _vector_length
+        _vector_raw_length
         _rfrom
         _minus
         _cells                          ; -- element n addr addr+8 #bytes
         _ cmoveup                       ; -- element n
 
-        _this_vector_length             ; -- element n length
+        _this_vector_raw_length         ; -- element n length
         _oneplus                        ; -- element n length+1
-        _this_vector_set_length         ; -- element n
+        _this_vector_set_raw_length     ; -- element n
 
         _this_vector_set_nth_unsafe     ; ---
 
@@ -423,7 +423,7 @@ code vector_remove_nth_destructive, 'vector-remove-nth!' ; n handle --
         mov     this_register, rbx
 
         _twodup
-        _vector_length                  ; -- n vector n length
+        _vector_raw_length              ; -- n vector n length
         _zero                           ; -- n vector n length 0
         _swap                           ; -- n vector n 0 length
         _ within                        ; -- n vector flag
@@ -440,7 +440,7 @@ code vector_remove_nth_destructive, 'vector-remove-nth!' ; n handle --
         _dup                            ; -- addr2 addr2
         _cellminus                      ; -- addr2 addr2-8
         _this
-        _vector_length
+        _vector_raw_length
         _oneminus                       ; -- addr2 addr2-8 len-1        r: -- n
         _rfrom                          ; -- addr2 addr2-8 len-1 n
         _minus                          ; -- addr2 addr2-8 len-1-n
@@ -449,15 +449,15 @@ code vector_remove_nth_destructive, 'vector-remove-nth!' ; n handle --
 
         _zero
         _this_vector_data
-        _this_vector_length
+        _this_vector_raw_length
         _oneminus
         _cells
         _plus
         _store
 
-        _this_vector_length
+        _this_vector_raw_length
         _oneminus
-        _this_vector_set_length
+        _this_vector_set_raw_length
 
         pop     this_register
         next
@@ -473,13 +473,13 @@ vector_push_unchecked:
         push    this_register           ; save callee-saved register
         mov     this_register, rbx      ; vector in this_register
 
-        _vector_length                  ; -- element length
+        _vector_raw_length              ; -- element length
         _dup                            ; -- element length length
         _oneplus                        ; -- element length length+1
         _dup                            ; -- element length length+1 length+1
         _this                           ; -- element length length+1 length+1 this
         _ vector_ensure_capacity        ; -- element length length+1
-        _this_vector_set_length         ; -- element length
+        _this_vector_set_raw_length     ; -- element length
         _this_vector_set_nth_unsafe     ; --
 
         pop     this_register           ; restore callee-saved register
@@ -509,18 +509,18 @@ vector_pop_unchecked:
         push    this_register
         mov     this_register, rbx
 
-        _vector_length
+        _vector_raw_length
         _oneminus
         _dup
         _zge
         _if .1
         _dup
-        _this_vector_set_length
+        _this_vector_set_raw_length
         _this_vector_nth_unsafe         ; -- element
 
         ; mark cell empty
         _f
-        _this_vector_length
+        _this_vector_raw_length
         _this_vector_set_nth_unsafe
 
         pop     this_register
@@ -544,17 +544,17 @@ code ?vector_pop, '?vector-pop'         ; handle -- element/f
         push    this_register
         mov     this_register, rbx
 
-        _vector_length
+        _vector_raw_length
         test    rbx, rbx
         jz      .1
         _oneminus
         _dup
-        _this_vector_set_length
+        _this_vector_set_raw_length
         _this_vector_nth_unsafe         ; -- element
 
         ; mark cell empty
         _f
-        _this_vector_length
+        _this_vector_raw_length
         _this_vector_set_nth_unsafe
 
         pop     this_register
@@ -573,16 +573,16 @@ code vector_pop_star, 'vector-pop*'     ; handle --
         push    this_register
         mov     this_register, rbx
 
-        _vector_length
+        _vector_raw_length
         _oneminus
         _dup
         _zge
         _if .1
-        _this_vector_set_length
+        _this_vector_set_raw_length
 
         ; mark cell empty
         _f
-        _this_vector_length
+        _this_vector_raw_length
         _this_vector_set_nth_unsafe
 
         pop     this_register
@@ -627,7 +627,7 @@ code vector_reverse_in_place, 'vector-reverse!'         ; vector -- vector
         mov     this_register, rbx
         poprbx
 
-        _this_vector_length
+        _this_vector_raw_length
 
         ; divide by 2
         shr     rbx, 1
@@ -637,7 +637,7 @@ code vector_reverse_in_place, 'vector-reverse!'         ; vector -- vector
         _i
         _this_vector_nth_unsafe         ; -- char1
 
-        _this_vector_length
+        _this_vector_raw_length
         _oneminus
         _i
         _minus
@@ -646,7 +646,7 @@ code vector_reverse_in_place, 'vector-reverse!'         ; vector -- vector
         _i
         _this_vector_set_nth_unsafe
 
-        _this_vector_length
+        _this_vector_raw_length
         _oneminus
         _i
         _minus
@@ -675,7 +675,7 @@ code vector_each, 'vector-each'         ; vector callable --
         push    r12
         mov     r12, [rbp]              ; code address in r12
         _2drop                          ; adjust stack
-        _this_vector_length
+        _this_vector_raw_length
         _zero
         _?do .1
         _i
@@ -703,7 +703,7 @@ code vector_each_index, 'vector-each-index' ; vector quotation-or-xt --
         push    r12
         mov     r12, [rbp]              ; code address in r12
         _2drop                          ; adjust stack
-        _this_vector_length
+        _this_vector_raw_length
         _zero
         _?do .1
         _i                              ; -- i
@@ -724,7 +724,7 @@ code vector_find_string, 'vector-find-string' ; string vector -- index/string ?
         push    this_register
         mov     this_register, rbx
 
-        _vector_length
+        _vector_raw_length
         _register_do_times .1
         _i
         _this_vector_nth_unsafe         ; -- string element
@@ -757,7 +757,7 @@ code dot_vector, '.vector'              ; vector --
         mov     this_register, rbx
 
         _write "V{ "
-        _vector_length
+        _vector_raw_length
         _register_do_times .1
         _i
         _this_vector_nth_unsafe
