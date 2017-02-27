@@ -723,7 +723,7 @@ code number_to_string, 'number>string'  ; n -- string
 
         _dup
         _ bignum?
-        _if .2
+        _tagged_if .2
         _ bignum_to_string
         _return
         _then .2
