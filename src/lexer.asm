@@ -66,7 +66,7 @@ file __FILE__
         _this_set_slot3
 %endmacro
 
-; untagged index of first character of current line
+; index of first character of current line
 %macro  _lexer_raw_line_start 0         ; lexer -- untagged-index
         _slot4
 %endmacro
@@ -77,6 +77,11 @@ file __FILE__
 
 %macro  _this_lexer_set_raw_line_start 0        ; untagged-index --
         _this_set_slot4
+%endmacro
+
+%macro  _this_lexer_line_start 0        ; -- tagged-index
+        _this_lexer_raw_line_start
+        _tag_fixnum
 %endmacro
 
 %macro  _lexer_file 0                   ; lexer -- file
@@ -296,21 +301,18 @@ code lexer_line, 'lexer-line'           ; lexer -- string
         poprbx
 
         _lit tagged_char(10)
-        _this_lexer_raw_line_start
-        _tag_fixnum
+        _this_lexer_line_start
         _this_lexer_string
         _ string_index_from             ; -- index/f
 
         _dup
         _tagged_if .1
-        _this_lexer_raw_line_start
-        _tag_fixnum
+        _this_lexer_line_start
         _swap
         _this_lexer_string
         _else .1
         _drop
-        _this_lexer_raw_line_start
-        _tag_fixnum
+        _this_lexer_line_start
         _this_lexer_string
         _dup
         _ string_length
@@ -687,8 +689,7 @@ code dot_lexer, '.lexer'                ; lexer --
         _ dot_object
         _ space
 
-        _this_lexer_raw_line_start
-        _tag_fixnum
+        _this_lexer_line_start
         _ dot_object
         _ space
 
