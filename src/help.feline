@@ -22,9 +22,12 @@ in: help
 
    96 >constant: backquote
 
-  red >constant: fg-title
+white >constant: fg-title
  cyan >constant: fg-parameter
 white >constant: fg-default
+
+: bold   ( -- ) esc[ "1m" write-string ;
+: normal ( -- ) esc[ "0m" write-string ;
 
 : format-string ( string -- )
     >local: s
@@ -41,8 +44,10 @@ white >constant: fg-default
     s write-string ;
 
 : format-title ( string -- )
+    bold
     fg-title foreground
     write-string
+    normal
     fg-default foreground ;
 
 : format-help ( symbol content -- )
@@ -301,7 +306,7 @@ help: set-nth
     Set `element` to be the `n`th element of `seq`." ;
 
 help: string-index-from
-    "( char start-index string -- index )
+    "( char start-index string -- index/f )
     Return the index of the first occurrence of `char` in `string`,
     starting at `start-index`. Return `f` if `char` is not found." ;
 
