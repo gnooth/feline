@@ -79,6 +79,14 @@ code vector_capacity, 'vector-capacity' ; vector -- capacity
         next
 endcode
 
+; ### vector-raw-length
+code vector_raw_length, 'vector-raw-length', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; vector -- raw-length
+        _ check_vector
+        _vector_length
+        next
+endcode
+
 ; ### vector-length
 code vector_length, 'vector-length'     ; vector -- length
         _ check_vector
