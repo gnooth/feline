@@ -99,6 +99,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	debug.asm \
 	files.asm \
 	fixnum.asm \
+	format.asm \
 	gc.asm \
 	generic.asm \
 	globals.asm \

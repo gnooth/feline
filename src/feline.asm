@@ -70,6 +70,7 @@ IN_FELINE
 %include "combinators.asm"
 %include "quit.asm"
 %include "lexer.asm"
+%include "format.asm"
 %include "time.asm"
 %include "gc.asm"
 %include "parsing-words.asm"

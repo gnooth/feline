@@ -1899,4 +1899,11 @@ test: count-test-1
 
 count-test-1
 
+test: format-test-1
+    1 2 3 4 "the numbers %d, %d, %d and %d" format
+    "the numbers 1, 2, 3 and 4" assert=
+;
+
+format-test-1
+
 ?nl "Reached end of test.feline" write-string
