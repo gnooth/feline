@@ -67,19 +67,15 @@ file __FILE__
 %endmacro
 
 ; untagged index of first character of current line
-%macro  _lexer_line_start 0             ; lexer -- index
+%macro  _lexer_raw_line_start 0         ; lexer -- untagged-index
         _slot4
 %endmacro
 
-%macro  _this_lexer_line_start 0        ; -- index
+%macro  _this_lexer_raw_line_start 0    ; -- untagged-index
         _this_slot4
 %endmacro
 
-%macro  _lexer_set_line_start 0         ; index lexer --
-        _set_slot4
-%endmacro
-
-%macro  _this_lexer_set_line_start 0    ; index --
+%macro  _this_lexer_set_raw_line_start 0        ; untagged-index --
         _this_set_slot4
 %endmacro
 
@@ -198,7 +194,7 @@ endcode
 ; ### lexer-line-start
 code lexer_line_start, 'lexer-line-start' ; -- tagged-index
         _ check_lexer
-        _lexer_line_start
+        _lexer_raw_line_start
         _tag_fixnum
         next
 endcode
@@ -239,7 +235,7 @@ code lexer_location, 'lexer-location'   ; lexer -- 3array/f
         _this_lexer_line_number
         _tag_fixnum
         _this_lexer_raw_index
-        _this_lexer_line_start
+        _this_lexer_raw_line_start
         _minus
         _tag_fixnum
         _ three_array
@@ -300,20 +296,20 @@ code lexer_line, 'lexer-line'           ; lexer -- string
         poprbx
 
         _lit tagged_char(10)
-        _this_lexer_line_start
+        _this_lexer_raw_line_start
         _tag_fixnum
         _this_lexer_string
         _ string_index_from             ; -- index/f
 
         _dup
         _tagged_if .1
-        _this_lexer_line_start
+        _this_lexer_raw_line_start
         _tag_fixnum
         _swap
         _this_lexer_string
         _else .1
         _drop
-        _this_lexer_line_start
+        _this_lexer_raw_line_start
         _tag_fixnum
         _this_lexer_string
         _dup
@@ -362,7 +358,7 @@ code lexer_next_line, 'lexer-next-line' ; lexer --
         _oneplus
         _dup
         _this_lexer_set_raw_index
-        _this_lexer_set_line_start
+        _this_lexer_set_raw_line_start
         _unloop
         jmp     .exit
         _then .3
@@ -416,7 +412,7 @@ code lexer_string_skip_whitespace, 'lexer-string-skip-whitespace' ; lexer -- ind
         _this_lexer_set_line_number
         _i
         _oneplus
-        _this_lexer_set_line_start
+        _this_lexer_set_raw_line_start
         jmp     .4
 
 .3:
@@ -585,7 +581,7 @@ code lexer_skip_quoted_string, 'lexer-skip-quoted-string' ; lexer --
         _this_lexer_set_line_number
         _i
         _oneplus
-        _this_lexer_set_line_start
+        _this_lexer_set_raw_line_start
         _then .4
 
         _loop .2
@@ -691,7 +687,7 @@ code dot_lexer, '.lexer'                ; lexer --
         _ dot_object
         _ space
 
-        _this_lexer_line_start
+        _this_lexer_raw_line_start
         _tag_fixnum
         _ dot_object
         _ space
