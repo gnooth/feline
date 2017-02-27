@@ -134,15 +134,11 @@ endcode
         _slot1
 %endmacro
 
-%macro  _string_set_length 0            ; untagged-length string --
-        _set_slot1
-%endmacro
-
-%macro  _this_string_length 0           ; -- untagged-length
+%macro  _this_string_raw_length 0       ; -- untagged-length
         _this_slot1
 %endmacro
 
-%macro  _this_string_set_length 0       ; untagged-length --
+%macro  _this_string_set_raw_length 0   ; untagged-length --
         _this_set_slot1
 %endmacro
 
@@ -252,15 +248,15 @@ code copy_to_string, 'copy-to-string', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         _f
         _this_string_set_hashcode
 
-        _this_string_set_length         ; -- from-addr
+        _this_string_set_raw_length     ; -- from-addr
 
         _this_string_raw_data_address
-        _this_string_length
+        _this_string_raw_length
         _ cmove                         ; --
 
         ; store terminal null byte
         _this_string_raw_data_address
-        _this_string_length
+        _this_string_raw_length
         _plus
         mov     byte [rbx], 0
 
@@ -323,7 +319,7 @@ hash_string_unchecked:
 
         _zero                           ; -- accumulator
 
-        _this_string_length
+        _this_string_raw_length
         _register_do_times .1
 
         _i
@@ -470,7 +466,7 @@ code string_find_char, 'string-find-char' ; tagged-char string -- tagged-index |
 
         _untag_char                     ; -- untagged-char
 
-        _this_string_length
+        _this_string_raw_length
         _zero
         _?do .1
         _i
@@ -506,7 +502,7 @@ string_substring_unchecked:
         _check_index
 
         _dup
-        _this_string_length
+        _this_string_raw_length
         _ugt
         _if .1
         _error "end index out of range"
@@ -586,7 +582,7 @@ code string_skip_whitespace, 'string-skip-whitespace' ; start-index string -- in
 
         _ check_index                   ; -- untagged-start-index
 
-        _this_string_length
+        _this_string_raw_length
         _twodup
         _ ge
         _if .1
@@ -626,7 +622,7 @@ code string_skip_to_whitespace, 'string-skip-to-whitespace' ; start-index string
 
         _ check_index                   ; -- untagged-start-index
 
-        _this_string_length
+        _this_string_raw_length
         _twodup
         _ ge
         _if .1
@@ -667,7 +663,7 @@ code string_index_from, 'string-index-from' ; char start-index string -- index/f
 
         _ check_index                   ; -- char untagged-start-index
 
-        _this_string_length
+        _this_string_raw_length
         _twodup
         _ ge
         _if .1
@@ -871,7 +867,7 @@ code path_get_extension, 'path-get-extension'   ; pathname -- extension/f
         _lit '.'
         _equal
         _if .3
-        _this_string_length
+        _this_string_raw_length
         _this_string_substring_unsafe
         jmp     .exit
         _then .3
