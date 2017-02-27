@@ -660,7 +660,10 @@ code vector_reverse_in_place, 'vector-reverse!'         ; vector -- vector
 endcode
 
 ; ### vector-each
-code vector_each, 'vector-each'         ; vector quotation-or-xt --
+code vector_each, 'vector-each'         ; vector callable --
+
+        ; protect callable from gc
+        push    rbx
 
         _ callable_code_address         ; -- vector code-address
 
@@ -681,6 +684,10 @@ code vector_each, 'vector-each'         ; vector quotation-or-xt --
         _loop .1
         pop     r12
         pop     this_register
+
+        ; drop callable
+        pop     rax
+
         next
 endcode
 
