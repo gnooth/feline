@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; 6 cells: object header, string, index, line, line start, file
+; 6 cells: object header, string, raw index, line, line start, file
 
 ; set in constructor, read only thereafter
 %macro  _lexer_string 0                 ; lexer -- string
@@ -34,6 +34,8 @@ file __FILE__
 %macro  _lexer_raw_index 0              ; lexer -- index
         _slot2
 %endmacro
+
+%define this_lexer_raw_index    this_slot2
 
 %macro  _this_lexer_raw_index 0         ; -- index
         _this_slot2
@@ -261,7 +263,7 @@ endcode
 
 ; ### <lexer>
 code new_lexer, '<lexer>'               ; string -- lexer
-; 6 cells: object header, string, index, line, line start, file
+; 6 cells: object header, string, raw index, line, line start, file
 
         _lit 6
         _ allocate_cells
