@@ -243,8 +243,8 @@ global: done?
     cursor-x string-tail >local: tail
     head string>sbuf >local: sb
     sb sbuf-push
-    sb tail sbuf-append-string
-    sbuf>string cursor-line# lines set-nth
+    tail sb sbuf-append-string
+    sb sbuf>string cursor-line# lines set-nth
     1+!> cursor-x
     t !> cursor-line-changed?
 ;

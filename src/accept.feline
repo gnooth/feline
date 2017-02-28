@@ -95,8 +95,8 @@ global: done?
     history-index zero? [
         history-index 1 - !> history-index
         0 buffer sbuf-shorten
-        buffer history-index history nth sbuf-append-string ( -- buffer )
-        length !> dot
+        history-index history nth buffer sbuf-append-string
+        buffer length !> dot
         redisplay
     ] unless ;
 
@@ -105,8 +105,8 @@ global: done?
         history length 1 - < [
             history-index 1 + !> history-index
             0 buffer sbuf-shorten
-            buffer history-index history nth sbuf-append-string ( -- buffer )
-            length !> dot
+            history-index history nth buffer sbuf-append-string
+            buffer length !> dot
             redisplay
         ] when
     ] when*
@@ -127,8 +127,8 @@ global: done?
     [
         swap !> history-index
         0 buffer sbuf-shorten
-        buffer swap sbuf-append-string ( -- buffer )
-        length !> dot
+        buffer sbuf-append-string
+        buffer length !> dot
         redisplay
     ] [ drop ] if* ;
 
@@ -141,8 +141,8 @@ global: done?
         [
             swap !> history-index
             0 buffer sbuf-shorten
-            buffer swap sbuf-append-string ( -- buffer )
-            length !> dot
+            buffer sbuf-append-string
+            buffer length !> dot
             redisplay
         ] [ drop ] if*
     ] [ do-next ] if ;
@@ -177,7 +177,7 @@ global: prefix-offset
     symbol-name
     verify-string
     prefix-offset buffer sbuf-shorten
-    buffer swap sbuf-append-string drop
+    buffer sbuf-append-string
     buffer length !> dot
     redisplay ;
 

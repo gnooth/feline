@@ -222,7 +222,10 @@ code format, 'format'           ; ... arg format-string -- output-string
 
         _swap                   ; -- sbuf vector
 
-        _lit S_sbuf_append_string
+        _quotation .3
+        _over
+        _ sbuf_append_string
+        _end_quotation .3
         _ vector_each
 
         _ sbuf_to_string

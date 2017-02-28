@@ -515,9 +515,9 @@ subroutine sbuf_append_chars    ; sbuf from-addr from-len --
 endsub
 
 ; ### sbuf-append-string
-code sbuf_append_string, 'sbuf-append-string' ; sbuf string -- sbuf
-; Modify sbuf by adding the characters of string to the end. Return sbuf.
-        _dupd
+code sbuf_append_string, 'sbuf-append-string'   ; string sbuf --
+; Modify sbuf by adding the characters of string to the end.
+        _swap
         _ string_from
         _ sbuf_append_chars
         next

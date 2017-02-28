@@ -747,7 +747,7 @@ endcode
 code concat, 'concat'                   ; string1 string2 -- string3
         _swap
         _ string_to_sbuf                ; -- string2 sbuf
-        _swap                           ; -- sbuf string2
+        _tuck
         _ sbuf_append_string
         _ sbuf_to_string
         next

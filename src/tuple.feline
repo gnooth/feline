@@ -28,10 +28,11 @@ in: feline
     dupd
     [ symbol-name ] dip                 -- class-name slot-spec
     swap string>sbuf                    -- slot-spec sbuf
-    '-' suffix!                         -- slot-spec sbuf
-    over first sbuf-append-string       -- slot-spec sbuf
+    >local: sb                          -- slot-spec
+    '-' sb sbuf-push                    -- slot-spec
+    dup first sb sbuf-append-string     -- slot-spec
 
-    sbuf>string current-vocab <symbol>
+    sb sbuf>string current-vocab <symbol>
     dup current-vocab vocab-add-symbol  -- class slot-spec symbol
 
     [
@@ -48,11 +49,12 @@ in: feline
     dupd
     [ symbol-name ] dip                 -- class-name slot-spec
     swap string>sbuf                    -- slot-spec sbuf
-    '-' suffix!                         -- slot-spec sbuf
-    over first sbuf-append-string       -- slot-spec sbuf
-    '!' suffix!
+    >local: sb                          -- slot-spec
+    '-' sb sbuf-push                    -- slot-spec
+    dup first sb sbuf-append-string     -- slot-spec
+    '!' sb push
 
-    sbuf>string current-vocab <symbol>
+    sb sbuf>string current-vocab <symbol>
     dup current-vocab vocab-add-symbol  -- slot-spec symbol
 
     [
