@@ -638,13 +638,13 @@ test: string>number-test-4
 
 string>number-test-4
 
-test: \-test-1 ( -- )
+test: '-test-1 ( -- )
     [ ' dup ] call symbol? assert-true
     3 [ dup ] call get-datastack { 3 3 } sequence= assert-true
     clear
 ;
 
-\-test-1
+'-test-1
 
 test: hashcode-test-1 ( -- )
     "test"
