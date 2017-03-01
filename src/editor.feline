@@ -272,22 +272,22 @@ global: done?
 
 : initialize-bindings ( -- )
     10 <vector> !> bindings
-    127                    \ do-bs                      bind-key        -- Linux
-    8                      \ do-bs                      bind-key        -- Windows
-    k-delete               \ do-delete                  bind-key
-    k-home                 \ do-home                    bind-key
-    k-end                  \ end-of-line                bind-key
-    k-left                 \ do-left                    bind-key
-    k-right                \ do-right                   bind-key
-    k-up                   \ do-up                      bind-key
-    k-down                 \ do-down                    bind-key
-    k-prior                \ do-page-up                 bind-key
-    k-next                 \ do-page-down               bind-key
-    k-ctrl-home            \ beginning-of-buffer        bind-key
-    k-ctrl-end             \ end-of-buffer              bind-key
-    $11 ( control q )      \ do-quit                    bind-key
-    $13 ( control s )      \ do-save                    bind-key
-    k-enter                \ insert-line-separator      bind-key
+    127                    ' do-bs                      bind-key        -- Linux
+    8                      ' do-bs                      bind-key        -- Windows
+    k-delete               ' do-delete                  bind-key
+    k-home                 ' do-home                    bind-key
+    k-end                  ' end-of-line                bind-key
+    k-left                 ' do-left                    bind-key
+    k-right                ' do-right                   bind-key
+    k-up                   ' do-up                      bind-key
+    k-down                 ' do-down                    bind-key
+    k-prior                ' do-page-up                 bind-key
+    k-next                 ' do-page-down               bind-key
+    k-ctrl-home            ' beginning-of-buffer        bind-key
+    k-ctrl-end             ' end-of-buffer              bind-key
+    $11 ( control q )      ' do-quit                    bind-key
+    $13 ( control s )      ' do-save                    bind-key
+    k-enter                ' insert-line-separator      bind-key
 ;
 
 : do-command ( -- )
