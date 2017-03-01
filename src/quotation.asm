@@ -318,6 +318,30 @@ code callable_code_address, 'callable-code-address' ; callable -- code-address
         next
 endcode
 
+; ### quotation>string
+code quotation_to_string, 'quotation>string'    ; quotation -- string
+        _ quotation_array
+
+        _quote "[ "
+        _ string_to_sbuf
+        _swap
+        _quotation .1
+        _ object_to_string
+        _over
+        _ sbuf_append_string
+        _lit tagged_char(32)
+        _over
+        _ sbuf_push
+        _end_quotation .1
+        _ array_each
+        _tagged_char(']')
+        _over
+        _ sbuf_push
+        _ sbuf_to_string
+
+        next
+endcode
+
 ; ### .quotation
 code dot_quotation, '.quotation'        ; quotation --
         _ quotation_array

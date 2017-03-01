@@ -254,6 +254,119 @@ code set_slot, 'slot!'                  ; value obj tagged-fixnum --
         next
 endcode
 
+; ### object>string
+code object_to_string, 'object>string'  ; object -- string
+        cmp     rbx, f_value
+        jnz     .1
+        _drop
+        _quote "f"
+        _return
+
+.1:
+        cmp     rbx, t_value
+        jnz     .2
+        _drop
+        _quote "t"
+        _return
+
+.2:
+        _dup
+        _ string?
+        _tagged_if .3
+        _ string_to_sbuf        ; -- sbuf
+        _tagged_char '"'
+        _lit tagged_zero
+        _pick
+        _ sbuf_insert_nth       ; -- sbuf
+        _tagged_char '"'
+        _over
+        _ sbuf_push
+        _ sbuf_to_string
+        _return
+        _then .3
+
+        _dup
+        _ sbuf?
+        _tagged_if .4
+        _quote 'SBUF" '
+        _ string_to_sbuf
+        _swap
+        _ sbuf_to_string
+        _over
+        _ sbuf_append_string
+        _tagged_char '"'
+        _over
+        _ sbuf_push
+        _ sbuf_to_string
+        _return
+        _then .4
+
+        _dup
+        _ vector?
+        _tagged_if .5
+        _ vector_to_string
+        _return
+        _then .5
+
+        _dup
+        _ array?
+        _tagged_if .6
+        _ array_to_string
+        _return
+        _then .6
+
+        _dup
+        _fixnum?
+        _if .7
+        _ fixnum_to_string
+        _return
+        _then .7
+
+        _dup
+        _ bignum?
+        _tagged_if .8
+        _ bignum_to_string
+        _return
+        _then .8
+
+        _dup
+        _ hashtable?
+        _tagged_if .9
+        _ hashtable_to_string
+        _return
+        _then .9
+
+        _dup
+        _ symbol?
+        _tagged_if .10
+        _ symbol_name
+        _return
+        _then .10
+
+        _dup
+        _ vocab?
+        _tagged_if .11
+        ; REVIEW
+        _ vocab_name
+        _return
+        _then .11
+
+        _dup
+        _ quotation?
+        _tagged_if .12
+        _ quotation_to_string
+        _return
+        _then .12
+
+        ; FIXME incomplete
+
+        ; give up
+        _tag_fixnum
+        _ hexdot
+
+        next
+endcode
+
 ; ### .
 code dot_object, '.'                    ; handle-or-object --
         _dup

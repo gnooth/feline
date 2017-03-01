@@ -749,6 +749,27 @@ code vector_find_string, 'vector-find-string' ; string vector -- index/string ?
         next
 endcode
 
+; ### vector>string
+code vector_to_string, 'vector>string'  ; vector -- string
+        _quote "V{ "
+        _ string_to_sbuf        ; -- vector sbuf
+        _swap                   ; -- sbuf vector
+        _quotation .1
+        _ object_to_string
+        _over
+        _ sbuf_append_string
+        _lit tagged_char(32)
+        _over
+        _ sbuf_push
+        _end_quotation .1
+        _ vector_each
+        _tagged_char('}')
+        _over
+        _ sbuf_push
+        _ sbuf_to_string
+        next
+endcode
+
 ; ### .vector
 code dot_vector, '.vector'              ; vector --
         _ check_vector

@@ -604,6 +604,57 @@ code hash_combine, 'hash-combine'       ; hash1 hash2 -- newhash
         next
 endcode
 
+; ### hashtable>string
+code hashtable_to_string, 'hashtable>string'    ; hashtable -- string
+        _ check_hashtable
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+
+        _quote "H{"
+        _ string_to_sbuf
+        _this_hashtable_raw_capacity
+
+        _register_do_times .1
+
+        _raw_loop_index
+        _this_hashtable_nth_key
+        _dup
+        _tagged_if .2
+        _quote " { "
+        _pick
+        _ sbuf_append_string
+        _ object_to_string
+        _over
+        _ sbuf_append_string
+        _lit tagged_char(32)
+        _over
+        _ sbuf_push
+        _raw_loop_index
+        _this_hashtable_nth_value
+        _ object_to_string
+        _over
+        _ sbuf_append_string
+        _quote " }"
+        _over
+        _ sbuf_append_string
+        _else .2
+        _drop
+        _then .2
+
+        _loop .1
+
+        pop     this_register
+
+        _quote " }"
+        _over
+        _ sbuf_append_string
+        _ sbuf_to_string
+
+        next
+endcode
+
 ; ### .hashtable
 code dot_hashtable, '.hashtable'        ; hashtable --
         _ check_hashtable

@@ -389,6 +389,27 @@ code array_equal?, 'array-equal?'       ; array1 array2 -- ?
         next
 endcode
 
+; ### array>string
+code array_to_string, 'array>string'    ; array -- string
+        _quote "{ "
+        _ string_to_sbuf
+        _swap
+        _quotation .1
+        _ object_to_string
+        _over
+        _ sbuf_append_string
+        _lit tagged_char(32)
+        _over
+        _ sbuf_push
+        _end_quotation .1
+        _ array_each
+        _tagged_char('}')
+        _over
+        _ sbuf_push
+        _ sbuf_to_string
+        next
+endcode
+
 ; ### .array
 code dot_array, '.array'                ; array --
         _ check_array
