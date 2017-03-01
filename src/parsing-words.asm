@@ -221,13 +221,8 @@ code parse_quotation, '[', SYMBOL_IMMEDIATE     ; -- quotation
         next
 endcode
 
-; ### \
-; We need some additional comment text here so that NASM isn't
-; confused by the '\' in the explicit tag.
-; "NASM uses backslash (\) as the line continuation character;
-; if a line ends with backslash, the next line is considered to
-; be a part of the backslash-ended line."
-code quote_symbol, '\', SYMBOL_IMMEDIATE        ; -- symbol
+; ### '
+code tick, "'", SYMBOL_IMMEDIATE                ; symbol
         _ must_parse_token
         _ must_find_name
         _get_accum
@@ -240,12 +235,6 @@ code quote_symbol, '\', SYMBOL_IMMEDIATE        ; -- symbol
         _else .1
         _drop
         _then .1
-        next
-endcode
-
-; ### '
-code tick, "'", SYMBOL_IMMEDIATE                ; symbol
-        _ quote_symbol
         next
 endcode
 
@@ -430,22 +419,8 @@ code define_test, 'test:'               ; --
 endcode
 
 
-; ### //
-code comment_to_eol, '//', SYMBOL_IMMEDIATE     ; --
-        _ lexer
-        _ get
-        _dup
-        _tagged_if .1
-        _ lexer_next_line
-        _else .1
-        _drop
-        _error "no lexer"
-        _then .1
-        next
-endcode
-
 ; ### --
-code comment_to_eol2, '--', SYMBOL_IMMEDIATE    ; --
+code comment_to_eol, '--', SYMBOL_IMMEDIATE     ; --
         _ lexer
         _ get
         _dup
@@ -650,20 +625,6 @@ endcode
 ; ### 1-!>
 code oneminusstoreto, '1-!>', SYMBOL_IMMEDIATE  ; --
         define_prefix_operator local_dec, global_dec
-        next
-endcode
-
-; ### <<
-code parse_immediate, '<<', SYMBOL_IMMEDIATE
-        _quote ">>"
-        _ parse_until
-        _ vector_to_array
-        _ array_to_quotation
-        _ call_quotation
-
-        ; FIXME
-        _ maybe_add
-
         next
 endcode
 
