@@ -133,6 +133,54 @@ code new, 'new'                         ; class-symbol -- tuple
         next
 endcode
 
+; ### tuple>string
+code tuple_to_string, 'tuple>string'    ; tuple --
+        _ check_tuple
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; --
+
+        _quote "T{ "
+        _ string_to_sbuf
+
+        _this_slot 1                    ; -- layout
+        _dup
+        _ first
+        _ object_to_string
+        _pick
+        _ sbuf_append_string
+        _tagged_char(32)
+        _pick
+        _ sbuf_push
+
+        _ second
+        _untag_fixnum
+
+        _register_do_times .1
+
+        _raw_loop_index
+        add     rbx, 2
+        _this_nth_slot
+        _ object_to_string
+        _over
+        _ sbuf_append_string
+        _tagged_char(32)
+        _over
+        _ sbuf_push
+
+        _loop .1
+
+        pop     this_register
+
+        _tagged_char('}')
+        _over
+        _ sbuf_push
+        _ sbuf_to_string
+
+        next
+endcode
+
 ; ### .tuple
 code dot_tuple, '.tuple'                ; tuple --
         _ check_tuple
