@@ -256,6 +256,8 @@ endcode
 
 ; ### object>string
 code object_to_string, 'object>string'  ; object -- string
+; FIXME make this a generic word
+
         cmp     rbx, f_value
         jnz     .1
         _drop
@@ -357,6 +359,22 @@ code object_to_string, 'object>string'  ; object -- string
         _ quotation_to_string
         _return
         _then .12
+
+        ; FIXME incomplete
+
+        _dup
+        _ wrapper?
+        _tagged_if .13
+        _ wrapper_to_string
+        _return
+        _then .13
+
+        _dup
+        _ tuple?
+        _tagged_if .14
+        _ tuple_to_string
+        _return
+        _then .14
 
         ; FIXME incomplete
 
