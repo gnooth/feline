@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -78,5 +78,18 @@ code literalize, 'literalize'           ; obj -- wrapped
         _then .2
 
         ; no wrapper needed
+        next
+endcode
+
+; ### wrapper>string
+code wrapper_to_string, 'wrapper>string'        ; wrapper -- string
+        _quote "' "
+        _ string_to_sbuf
+        _swap
+        _ wrapped
+        _ object_to_string
+        _over
+        _ sbuf_append_string
+        _ sbuf_to_string
         next
 endcode
