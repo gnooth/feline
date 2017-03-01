@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -227,12 +227,16 @@ code dot_curry_internal, '.curry-internal' ; curry --
         _dup
         _ curry_object
         _ dot_object
+        _ space
         _ curry_callable
         _dup
         _ quotation?
         _tagged_if .1
         _ quotation_array
-        _lit S_dot_object
+        _quotation .2
+        _ dot_object
+        _ space
+        _end_quotation .2
         _ each
         _else .1
         ; must be a curry
