@@ -138,7 +138,7 @@ code case, 'case'               ; x array --
         mov     this_register, rbx
         poprbx                  ; -- x
 
-        _this_array_length
+        _this_array_raw_length
         _zero
         _?do .1
         _i
@@ -187,7 +187,7 @@ code cond, 'cond'               ; array --
         mov     this_register, rbx
         poprbx                  ; --
 
-        _this_array_length
+        _this_array_raw_length
         _zero
         _?do .1
         _i

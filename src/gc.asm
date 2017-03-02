@@ -67,7 +67,7 @@ endcode
 code mark_array, 'mark-array'           ; array --
         push    this_register
         mov     this_register, rbx
-        _array_length
+        _array_raw_length
         _zero
         _?do .1
         _i

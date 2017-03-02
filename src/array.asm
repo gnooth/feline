@@ -17,15 +17,15 @@ file __FILE__
 
 %define ARRAY_LENGTH_OFFSET     8
 
-%macro _array_length 0                  ; array -- length
+%macro  _array_raw_length 0             ; array -- untagged-length
         _slot1
 %endmacro
 
-%macro _this_array_length 0             ; -- length
+%macro  _this_array_raw_length 0        ; -- untagged-length
         _this_slot1
 %endmacro
 
-%macro _this_array_set_length 0         ; -- length
+%macro  _this_array_set_raw_length 0    ; untagged-length --
         _this_set_slot1
 %endmacro
 
@@ -102,7 +102,7 @@ endcode
 ; ### array-length
 code array_length, 'array-length'       ; array -- length
         _ check_array
-        _array_length
+        _array_raw_length
         _tag_fixnum
         next
 endcode
@@ -132,7 +132,7 @@ new_array_untagged:
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 
         _over                           ; -- length element length
-        _this_array_set_length          ; -- length element
+        _this_array_set_raw_length      ; -- length element
 
         popd    rax                     ; element in rax
         popd    rcx                     ; length in rcx
@@ -306,7 +306,7 @@ array_set_nth_untagged:
         _ check_array
 
         _twodup
-        _array_length
+        _array_raw_length
         _ult
         _if .2
         _array_data
@@ -358,7 +358,7 @@ code array_each, 'array-each'           ; array callable --
         push    r12
         mov     r12, [rbp]              ; address to call in r12
         _2drop                          ; adjust stack
-        _this_array_length
+        _this_array_raw_length
         _zero
         _?do .1
         _i
@@ -392,11 +392,11 @@ code map_array, 'map-array'             ; array callable -- new-array
         push    r12
         popd    r12                     ; code address in r12
 
-        _this_array_length
+        _this_array_raw_length
         _f
         _ new_array_untagged            ; -- new-array
 
-        _this_array_length
+        _this_array_raw_length
         _zero
         _?do .1
         _i
@@ -469,7 +469,7 @@ code dot_array, '.array'                ; array --
         mov     this_register, rbx
 
         _write "{ "
-        _array_length
+        _array_raw_length
         _zero
         _?do .1
         _i

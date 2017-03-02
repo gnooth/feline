@@ -352,7 +352,7 @@ code dot_quotation, '.quotation'        ; quotation --
         mov     this_register, rbx
 
         _write "[ "
-        _array_length
+        _array_raw_length
         _zero
         _?do .1
         _i
