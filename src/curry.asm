@@ -285,6 +285,34 @@ code curry_nth, 'curry-nth'             ; index curry -- element
         next
 endcode
 
+; ### curry>string
+code curry_to_string, 'curry>string'            ; curry -- string
+        _ verify_curry
+        _quote "[ "
+        _ string_to_sbuf
+        _swap                           ; -- sbuf curry
+        _dup
+        _ curry_length
+        _untag_fixnum
+        _register_do_times .1
+        _tagged_loop_index
+        _over
+        _ curry_nth_unsafe
+        _ object_to_string
+        _pick
+        _ sbuf_append_string
+        _lit tagged_char(32)
+        _pick
+        _ sbuf_push
+        _loop .1
+        _drop
+        _lit tagged_char(']')
+        _over
+        _ sbuf_push
+        _ sbuf_to_string
+        next
+endcode
+
 ; ### .curry-internal
 code dot_curry_internal, '.curry-internal'      ; curry --
         _ verify_curry
