@@ -206,10 +206,19 @@ code quotation_length, 'quotation-length'       ; quotation -- length
 endcode
 
 ; ### quotation-nth
-code quotation_nth, 'quotation-nth'     ; quotation -- element
+code quotation_nth, 'quotation-nth'     ; index quotation -- element
         _ check_quotation
         _quotation_array
         _ array_nth
+        next
+endcode
+
+; ### quotation-nth-unsafe
+code quotation_nth_unsafe, 'quotation-nth-unsafe'
+; index quotation -- element
+        _handle_to_object_unsafe
+        _quotation_array
+        _ array_nth_unsafe
         next
 endcode
 
