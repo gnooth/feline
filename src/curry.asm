@@ -246,6 +246,25 @@ code curry_length, 'curry-length'       ; curry -- length
         next
 endcode
 
+; ### curry-nth-unsafe
+code curry_nth_unsafe, 'curry-nth-unsafe'       ; index curry -- element
+        _handle_to_object_unsafe
+        cmp     qword [rbp], tagged_zero
+        jne     .1
+        _nip
+        _curry_object
+        _return
+.1:
+        ; non-zero index
+        _swap
+        _lit tagged_fixnum(1)
+        _ fixnum_minus
+        _swap
+        _curry_callable
+        _ nth_unsafe
+        next
+endcode
+
 ; ### curry-nth
 code curry_nth, 'curry-nth'             ; index curry -- element
         _verify_index qword [rbp]
