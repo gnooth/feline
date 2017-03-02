@@ -236,13 +236,33 @@ code destroy_curry_unchecked, '~curry-unchecked' ; curry --
 endcode
 
 ; ### curry-length
-code curry_length, 'curry-length'       ; -- curry
+code curry_length, 'curry-length'       ; curry -- length
         _ check_curry
         _curry_callable
         _ length
         _untag_fixnum
         add     rbx, 1
         _tag_fixnum
+        next
+endcode
+
+; ### curry-nth
+code curry_nth, 'curry-nth'             ; index curry -- element
+        _verify_index qword [rbp]
+        _ check_curry
+        cmp     qword [rbp], tagged_zero
+        jne     .1
+        _nip
+        _curry_object
+        _return
+.1:
+        ; non-zero index
+        _swap
+        _lit tagged_fixnum(1)
+        _ fixnum_minus
+        _swap
+        _curry_callable
+        _ nth
         next
 endcode
 

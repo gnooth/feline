@@ -180,6 +180,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method nth, OBJECT_TYPE_SBUF, sbuf_nth
         _add_method nth, OBJECT_TYPE_SLICE, slice_nth
         _add_method nth, OBJECT_TYPE_QUOTATION, quotation_nth
+        _add_method nth, OBJECT_TYPE_CURRY, curry_nth
 
         ; nth-unsafe
         _initialize_generic_function nth_unsafe
