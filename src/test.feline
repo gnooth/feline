@@ -1336,6 +1336,17 @@ test: curry-nth-test-1
 
 curry-nth-test-1
 
+test: curry-nth-unsafe-test-1
+    3 [ + ] curry
+    0 over curry-nth-unsafe 3 eq? assert-true
+    1 over curry-nth-unsafe ' + eq? assert-true
+    0 over nth-unsafe 3 eq? assert-true
+    1 over nth-unsafe ' + eq? assert-true
+    clear
+;
+
+curry-nth-unsafe-test-1
+
 test: ?nth-test-1
     4 { 0 1 2 3 } [ ?nth ] curry each-integer
     get-datastack { 0 1 2 3 } sequence= assert-true
