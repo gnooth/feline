@@ -141,6 +141,12 @@ code verify_callable, 'verify-callable' ; callable -- callable
         _return
         _then .2
 
+        _dup
+        _ symbol?
+        _tagged_if .3
+        _return
+        _then .3
+
         _error "not a callable"
 
         next
@@ -160,6 +166,14 @@ code curry, 'curry'                     ; object callable -- curry
         _this_object_set_type OBJECT_TYPE_CURRY
 
         _ verify_callable
+
+        _dup
+        _ symbol?
+        _tagged_if .1
+        _ one_array
+        _ array_to_quotation
+        _then .1
+
         _this_curry_set_callable
 
         _ literalize
@@ -182,11 +196,11 @@ code curry, 'curry'                     ; object callable -- curry
 
         pushrbx
         mov     rbx, this_register      ; -- curry
+        pop     this_register
 
-        ; Return handle.
+        ; return handle
         _ new_handle                    ; -- handle
 
-        pop     this_register
         next
 endcode
 
