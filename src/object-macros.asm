@@ -310,57 +310,6 @@ OBJECT_ALLOCATED_BIT            equ 4
         _equal
 %endmacro
 
-%define ARRAY_LENGTH_OFFSET     8
-
-%macro _array_length 0                  ; array -- length
-        _slot1
-%endmacro
-
-%macro _this_array_length 0             ; -- length
-        _this_slot1
-%endmacro
-
-%macro _this_array_set_length 0         ; -- length
-        _this_set_slot1
-%endmacro
-
-; Arrays store their data inline starting at this + 16 bytes.
-%define ARRAY_DATA_OFFSET       16
-
-%macro _array_data 0
-        lea     rbx, [rbx + ARRAY_DATA_OFFSET]
-%endmacro
-
-%macro _this_array_data 0
-        pushrbx
-        lea     rbx, [this_register + ARRAY_DATA_OFFSET]
-%endmacro
-
-%macro  _array_nth_unsafe 0             ; untagged-index array -- element
-        mov     rax, [rbp]              ; untagged index in rax
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        mov     rbx, [rbx + BYTES_PER_CELL*rax + ARRAY_DATA_OFFSET]
-%endmacro
-
-%macro  _this_array_nth_unsafe 0        ; untagged-index -- element
-        mov     rbx, [this_register + BYTES_PER_CELL*rbx + ARRAY_DATA_OFFSET]
-%endmacro
-
-%macro  _array_set_nth_unsafe 0         ; element index array --
-        _array_data
-        _swap
-        _cells
-        _plus
-        _store
-%endmacro
-
-%macro  _this_array_set_nth_unsafe 0    ; element index --
-        _cells
-        _this_array_data
-        _plus
-        _store
-%endmacro
-
 %macro  _vector_raw_length 0            ; vector -- untagged-length
         _slot1
 %endmacro
