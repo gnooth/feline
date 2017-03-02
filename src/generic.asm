@@ -190,6 +190,8 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method nth_unsafe, OBJECT_TYPE_VECTOR, vector_nth_unsafe
         _add_method nth_unsafe, OBJECT_TYPE_SLICE, slice_nth_unsafe
         _add_method nth_unsafe, OBJECT_TYPE_RANGE, range_nth_unsafe
+        _add_method nth_unsafe, OBJECT_TYPE_QUOTATION, quotation_nth_unsafe
+        _add_method nth_unsafe, OBJECT_TYPE_CURRY, curry_nth_unsafe
 
         ; set-nth
         _initialize_generic_function set_nth
