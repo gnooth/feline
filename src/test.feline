@@ -742,6 +742,9 @@ test: length-test-1 ( -- )
     "testing" string>sbuf length 7 eq? assert-true
     { 1 2 3 } length 3 eq? assert-true
     V{ 1 2 3 "test" } length 4 eq? assert-true
+    [ dup + ] length 2 eq? assert-true
+    3 [ + ] curry length 2 eq? assert-true
+    3 ' + curry length 2 eq? assert-true
 ;
 
 length-test-1

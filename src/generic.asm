@@ -165,6 +165,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method length, OBJECT_TYPE_SLICE, slice_length
         _add_method length, OBJECT_TYPE_RANGE, range_length
         _add_method length, OBJECT_TYPE_QUOTATION, quotation_length
+        _add_method length, OBJECT_TYPE_CURRY, curry_length
 
         ; push
         _initialize_generic_function push

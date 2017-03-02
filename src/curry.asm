@@ -235,8 +235,19 @@ code destroy_curry_unchecked, '~curry-unchecked' ; curry --
         next
 endcode
 
+; ### curry-length
+code curry_length, 'curry-length'       ; -- curry
+        _ check_curry
+        _curry_callable
+        _ length
+        _untag_fixnum
+        add     rbx, 1
+        _tag_fixnum
+        next
+endcode
+
 ; ### .curry-internal
-code dot_curry_internal, '.curry-internal' ; curry --
+code dot_curry_internal, '.curry-internal'      ; curry --
         _ verify_curry
         _dup
         _ curry_object
