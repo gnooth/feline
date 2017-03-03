@@ -728,7 +728,7 @@ code number_to_string, 'number>string'  ; n -- string
         _return
         _then .2
 
-        _error "not a number"
+        _ error_not_number
 
         next
 endcode
@@ -756,7 +756,7 @@ code to_hex, '>hex'                     ; n -- string
         _return
         _then .2
 
-        _error "not a number"
+        _ error_not_number
 
         next
 endcode

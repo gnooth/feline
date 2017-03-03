@@ -316,7 +316,7 @@ code fixnum_plus, 'fixnum+'           ; x y -- z
         _return
         _then .2
 
-        _error "not a number"
+        _ error_not_number
         next
 endcode
 
@@ -449,7 +449,7 @@ code negate, 'negate'   ; n -- -n
         _return
         _then .2
 
-        _error "not a number"
+        _ error_not_number
 
         next
 endcode
