@@ -639,6 +639,29 @@ code lexer_parse_token, 'lexer-parse-token' ; lexer -- string/f
         next
 endcode
 
+; ### lexer>string
+code lexer_to_string, 'lexer>string'    ; lexer -- string
+        _ verify_lexer
+
+        _quote "lexer{ "
+        _ string_to_sbuf
+
+        _swap                   ; -- sbuf lexer
+        _ lexer_string
+        _ limit_string
+        _ object_to_string
+        _over
+        _ sbuf_append_string
+
+        _quote " }"
+        _over
+        _ sbuf_append_string
+
+        _ sbuf_to_string
+
+        next
+endcode
+
 ; ### .lexer
 code dot_lexer, '.lexer'                ; lexer --
         _ check_lexer
