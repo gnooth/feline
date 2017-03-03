@@ -520,6 +520,26 @@ string_substring_unchecked:
         next
 endcode
 
+; ### string-limit
+feline_global string_limit, 'string-limit', tagged_fixnum(40)
+
+; ### limit-string
+code limit_string, 'limit-string'       ; string limit -- limited-string
+        _dup
+        _ string_length
+        _ string_limit
+        _fixnum_gt
+        _tagged_if .1
+        _lit tagged_zero
+        _ string_limit
+        _ rot
+        _ string_substring
+        _quote "..."
+        _ concat
+        _then .1
+        next
+endcode
+
 ; ### string-head
 code string_head, 'string-head'         ; string n -- substring
         _lit tagged_zero
