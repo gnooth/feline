@@ -360,8 +360,6 @@ code object_to_string, 'object>string'  ; object -- string
         _return
         _then .12
 
-        ; FIXME incomplete
-
         _dup
         _ wrapper?
         _tagged_if .13
@@ -376,7 +374,33 @@ code object_to_string, 'object>string'  ; object -- string
         _return
         _then .14
 
-        ; FIXME incomplete
+        _dup
+        _ curry?
+        _tagged_if .15
+        _ curry_to_string
+        _return
+        _then .15
+
+        _dup
+        _ slice?
+        _tagged_if .16
+        _ slice_to_string
+        _return
+        _then .16
+
+        _dup
+        _ range?
+        _tagged_if .17
+        _ range_to_string
+        _return
+        _then .17
+
+        _dup
+        _ lexer?
+        _tagged_if .18
+        _ lexer_to_string
+        _return
+        _then .18
 
         ; give up
         _tag_fixnum
