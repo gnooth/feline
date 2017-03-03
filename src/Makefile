@@ -97,6 +97,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	compile-word.asm \
 	curry.asm \
 	debug.asm \
+	errors.asm \
 	files.asm \
 	fixnum.asm \
 	format.asm \

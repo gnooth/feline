@@ -79,6 +79,7 @@ IN_FELINE
 %include "recover.asm"
 %include "files.asm"
 %include "load.asm"
+%include "errors.asm"
 %include "tools.asm"
 %include "ansi.asm"
 %include "socket.asm"
