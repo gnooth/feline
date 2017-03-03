@@ -751,7 +751,7 @@ endcode
 
 ; ### vector>string
 code vector_to_string, 'vector>string'  ; vector -- string
-        _quote "V{ "
+        _quote "vector{ "
         _ string_to_sbuf        ; -- vector sbuf
         _swap                   ; -- sbuf vector
         _quotation .1
@@ -772,22 +772,9 @@ endcode
 
 ; ### .vector
 code dot_vector, '.vector'              ; vector --
-        _ check_vector
-
-        push    this_register
-        mov     this_register, rbx
-
-        _write "V{ "
-        _vector_raw_length
-        _register_do_times .1
-        _i
-        _this_vector_nth_unsafe
-        _ dot_object
-        _ space
-        _loop .1
-        _write "}"
-
-        pop     this_register
+        _ verify_vector
+        _ vector_to_string
+        _ write_string
         next
 endcode
 
