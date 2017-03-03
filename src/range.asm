@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -134,6 +134,43 @@ code range_nth_unsafe, 'range-nth-unsafe' ; n seq -- elt
         next
 endcode
 
+; ### range>string
+code range_to_string, 'range>string'    ; range -- string
+        _ check_range
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx                  ; --
+
+        _quote "range{ "
+        _ string_to_sbuf        ; -- sbuf
+
+        _this_range_start
+        _dup
+        _ object_to_string
+        _pick
+        _ sbuf_append_string
+
+        _quote " .. "
+        _pick
+        _ sbuf_append_string
+
+        _this_range_length
+        _ plus
+        _lit tagged_fixnum(1)
+        _ feline_minus
+        _ object_to_string
+        _over
+        _ sbuf_append_string
+
+        _quote " }"
+        _over
+        _ sbuf_append_string
+        _ sbuf_to_string
+
+        pop     this_register
+        next
+endcode
 
 ; ### .range
 code dot_range, '.range'                ; range --
@@ -143,13 +180,13 @@ code dot_range, '.range'                ; range --
         mov     this_register, rbx
         poprbx
 
-        _write "R{ "
+        _write "range{ "
 
         _this_range_start
         _dup
         _ dot_object
 
-        _write ".. "
+        _write " .. "
 
         _this_range_length
         _ plus
@@ -157,7 +194,7 @@ code dot_range, '.range'                ; range --
         _ feline_minus
         _ dot_object
 
-        _write_char '}'
+        _write " }"
 
         pop     this_register
         next
