@@ -166,15 +166,24 @@ endcode
 ; ### format-object
 code format_object, 'format-object'     ; object format-specifier -- string
         _ verify_string
+
         _dup
         _quote "%d"
         _ stringequal
         _tagged_if .1
         _drop
-        _verify_fixnum
         _ number_to_string
         _return
         _then .1
+
+        _dup
+        _quote "%s"
+        _ stringequal
+        _tagged_if .2
+        _drop
+        _ object_to_string
+        _return
+        _then .2
 
         ; FIXME support more format specifiers
         _error "unsupported"
