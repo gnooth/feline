@@ -76,6 +76,18 @@ code error_not_slice, 'error-not-slice' ; x --
         next
 endcode
 
+; ### verify-slice
+code verify_slice, 'verify-slice'       ; handle -- handle
+        _dup
+        _ slice?
+        _tagged_if .1
+        _return
+        _then .1
+
+        _ error_not_slice
+        next
+endcode
+
 ; ### check-slice
 code check_slice, 'check-slice' ; handle -- slice
         _dup
@@ -164,6 +176,36 @@ code slice_nth, 'slice-nth'             ; n slice -- element
         _else .1
         _error "slice-nth index out of range"
         _then .1
+        next
+endcode
+
+; ### slice>string
+code slice_to_string, 'slice>string'    ; slice -- string
+
+        _ verify_slice
+        _quote "{ "
+        _ string_to_sbuf
+        _swap                           ; -- sbuf slice
+        _dup
+        _ slice_length
+        _untag_fixnum
+        _register_do_times .1
+        _tagged_loop_index
+        _over
+        _ slice_nth_unsafe
+        _ object_to_string
+        _pick
+        _ sbuf_append_string
+        _lit tagged_char(32)
+        _pick
+        _ sbuf_push
+        _loop .1
+        _drop
+        _lit tagged_char('}')
+        _over
+        _ sbuf_push
+        _ sbuf_to_string
+
         next
 endcode
 
