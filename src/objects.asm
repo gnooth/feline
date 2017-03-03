@@ -404,7 +404,10 @@ code object_to_string, 'object>string'  ; object -- string
 
         ; give up
         _tag_fixnum
-        _ hexdot
+        _ fixnum_to_hex
+        _quote "$"
+        _swap
+        _ concat
 
         next
 endcode
