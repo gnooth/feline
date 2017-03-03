@@ -316,6 +316,7 @@ code fixnum_plus, 'fixnum+'           ; x y -- z
         _return
         _then .2
 
+        _drop
         _ error_not_number
         next
 endcode
