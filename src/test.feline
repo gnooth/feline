@@ -10,7 +10,7 @@ in: test
 
 interactive? get assert-false
 
-1 2 + 3 eq? assert-true
+1 2 + 3 assert-eq
 1 2 + 4 eq? assert-false
 
 "test" "test" eq? assert-false
@@ -291,53 +291,53 @@ test: number>string-test-1 ( -- )
 number>string-test-1
 
 test: fixnum-max-test-1 ( -- )
-    1 2 fixnum-max 2 eq? assert-true
-    2 1 fixnum-max 2 eq? assert-true
-    -1 2 fixnum-max 2 eq? assert-true
-    2 -1 fixnum-max 2 eq? assert-true
-    most-positive-fixnum 0 fixnum-max most-positive-fixnum eq? assert-true
+    1 2 fixnum-max 2 assert-eq
+    2 1 fixnum-max 2 assert-eq
+    -1 2 fixnum-max 2 assert-eq
+    2 -1 fixnum-max 2 assert-eq
+    most-positive-fixnum 0 fixnum-max most-positive-fixnum assert-eq
     most-negative-fixnum 0 fixnum-max zero? assert-true
-    0 most-positive-fixnum fixnum-max most-positive-fixnum eq? assert-true
+    0 most-positive-fixnum fixnum-max most-positive-fixnum assert-eq
     0 most-negative-fixnum fixnum-max zero? assert-true
 ;
 
 fixnum-max-test-1
 
 test: max-test-1 ( -- )
-    1 2 max 2 eq? assert-true
-    2 1 max 2 eq? assert-true
-    -1 2 max 2 eq? assert-true
-    2 -1 max 2 eq? assert-true
-    most-positive-fixnum 0 max most-positive-fixnum eq? assert-true
+    1 2 max 2 assert-eq
+    2 1 max 2 assert-eq
+    -1 2 max 2 assert-eq
+    2 -1 max 2 assert-eq
+    most-positive-fixnum 0 max most-positive-fixnum assert-eq
     most-negative-fixnum 0 max zero? assert-true
-    0 most-positive-fixnum max most-positive-fixnum eq? assert-true
+    0 most-positive-fixnum max most-positive-fixnum assert-eq
     0 most-negative-fixnum max zero? assert-true
 ;
 
 max-test-1
 
 test: fixnum-min-test-1 ( -- )
-    1 2 fixnum-min 1 eq? assert-true
-    2 1 fixnum-min 1 eq? assert-true
-    -1 2 fixnum-min -1 eq? assert-true
-    2 -1 fixnum-min -1 eq? assert-true
+    1 2 fixnum-min 1 assert-eq
+    2 1 fixnum-min 1 assert-eq
+    -1 2 fixnum-min -1 assert-eq
+    2 -1 fixnum-min -1 assert-eq
     most-positive-fixnum 0 fixnum-min zero? assert-true
-    most-negative-fixnum 0 fixnum-min most-negative-fixnum eq? assert-true
+    most-negative-fixnum 0 fixnum-min most-negative-fixnum assert-eq
     0 most-positive-fixnum fixnum-min zero? assert-true
-    0 most-negative-fixnum fixnum-min most-negative-fixnum eq? assert-true
+    0 most-negative-fixnum fixnum-min most-negative-fixnum assert-eq
 ;
 
 fixnum-min-test-1
 
 test: min-test-1 ( -- )
-    1 2 min 1 eq? assert-true
-    2 1 min 1 eq? assert-true
-    -1 2 min -1 eq? assert-true
-    2 -1 min -1 eq? assert-true
+    1 2 min 1 assert-eq
+    2 1 min 1 assert-eq
+    -1 2 min -1 assert-eq
+    2 -1 min -1 assert-eq
     most-positive-fixnum 0 min zero? assert-true
-    most-negative-fixnum 0 min most-negative-fixnum eq? assert-true
+    most-negative-fixnum 0 min most-negative-fixnum assert-eq
     0 most-positive-fixnum min zero? assert-true
-    0 most-negative-fixnum min most-negative-fixnum eq? assert-true
+    0 most-negative-fixnum min most-negative-fixnum assert-eq
 ;
 
 min-test-1
@@ -405,7 +405,7 @@ test: array-test-1 ( -- )
     [ object? assert-true ] keep
     [ array? assert-true ] keep
     [ length 10 assert= ] keep
-    10 [ over nth 42 eq? assert-true ] each-integer
+    10 [ over nth 42 assert-eq ] each-integer
     drop
 ;
 
@@ -481,12 +481,12 @@ vector-test-1
 test: vector-test-2 ( -- )
     1 <vector> [ vector? assert-true ] keep
     100 [ dup pick vector-set-nth ] each-integer
-    [ [ eq? assert-true ] vector-each-index ] keep
+    [ [ assert-eq ] vector-each-index ] keep
     clear
 
     1 <vector>
     "test" [ 100 pick vector-set-nth ] keep
-    100 pick vector-nth eq? assert-true
+    100 pick vector-nth assert-eq
 
     -- verify that new cells are initialized to f
     100 [ over vector-nth assert-false ] each-integer
@@ -508,9 +508,9 @@ vector-test-2
 test: vector-test-3 ( -- )
     1 <vector> [ vector? assert-true ] keep
     10 [ over vector-push ] each-integer
-    10 [ dup pick vector-nth eq? assert-true ] each-integer
-    [ [ eq? assert-true ] each-index ] keep
-    10 [ 9 swap - over vector-pop eq? assert-true ] each-integer
+    10 [ dup pick vector-nth assert-eq ] each-integer
+    [ [ assert-eq ] each-index ] keep
+    10 [ 9 swap - over vector-pop assert-eq ] each-integer
     vector-length zero? assert-true
 ;
 
@@ -554,7 +554,7 @@ vector>array-test-1
 ;
 
 test: local-test-1 ( -- )
-    %local-test-1 42 eq? assert-true
+    %local-test-1 42 assert-eq
 ;
 
 local-test-1
@@ -566,15 +566,15 @@ local-test-1
 ;
 
 test: local-test-2 ( -- )
-    %local-test-2 25 eq? assert-true
+    %local-test-2 25 assert-eq
 ;
 
 local-test-2
 
 test: if-test-1 ( -- )
-    t [ 42 ] [ 17 ] if 42 eq? assert-true
-    f [ 42 ] [ 17 ] if 17 eq? assert-true
-    0 [ 42 ] [ 17 ] if 42 eq? assert-true
+    t [ 42 ] [ 17 ] if 42 assert-eq
+    f [ 42 ] [ 17 ] if 17 assert-eq
+    0 [ 42 ] [ 17 ] if 42 assert-eq
 ;
 
 if-test-1
@@ -609,8 +609,8 @@ test: string>number-test-1
 string>number-test-1
 
 test: string>number-test-2
-    "%11" string>number 3 eq? assert-true
-    "%1100" string>number 12 eq? assert-true
+    "%11" string>number 3 assert-eq
+    "%1100" string>number 12 assert-eq
 ;
 
 string>number-test-2
@@ -650,7 +650,7 @@ test: hashcode-test-1 ( -- )
     "test"
     [ string-hashcode fixnum? assert-true ] keep
     [ hashcode dup fixnum? assert-true ] keep
-    string-hashcode eq? assert-true
+    string-hashcode assert-eq
 ;
 
 hashcode-test-1
@@ -661,7 +661,7 @@ test: hashcode-test-2 ( -- )
     [ symbol-vocab-name "feline" string= assert-true ] keep
     [ symbol-hashcode ] keep
     [ symbol-name hashcode ] keep
-    symbol-vocab-name hashcode hash-combine eq? assert-true
+    symbol-vocab-name hashcode hash-combine assert-eq
 ;
 
 hashcode-test-2
@@ -727,9 +727,9 @@ test: hashtable-test-4 ( -- )
     -- verify all entries are findable
     n1 [ dup number>string ht at assert= ] each-integer
 
-    ht hashtable-keys length n1 eq? assert-true
+    ht hashtable-keys length n1 assert-eq
     ht hashtable-keys [ string? assert-true ] each
-    ht hashtable-values length n1 eq? assert-true
+    ht hashtable-values length n1 assert-eq
     ht hashtable-values [ fixnum? assert-true ] each
 
     f !> ht
@@ -738,13 +738,13 @@ test: hashtable-test-4 ( -- )
 hashtable-test-4
 
 test: length-test-1 ( -- )
-    "test" length 4 eq? assert-true
-    "testing" string>sbuf length 7 eq? assert-true
-    { 1 2 3 } length 3 eq? assert-true
-    V{ 1 2 3 "test" } length 4 eq? assert-true
-    [ dup + ] length 2 eq? assert-true
-    3 [ + ] curry length 2 eq? assert-true
-    3 ' + curry length 2 eq? assert-true
+    "test" length 4 assert-eq
+    "testing" string>sbuf length 7 assert-eq
+    { 1 2 3 } length 3 assert-eq
+    V{ 1 2 3 "test" } length 4 assert-eq
+    [ dup + ] length 2 assert-eq
+    3 [ + ] curry length 2 assert-eq
+    3 ' + curry length 2 assert-eq
 ;
 
 length-test-1
@@ -832,7 +832,7 @@ test: find-integer-test-1 ( -- )
 find-integer-test-1
 
 test: ?lookup-symbol-test-1 ( -- )
-    "dup" "feline" ?lookup-symbol ' dup eq? assert-true
+    "dup" "feline" ?lookup-symbol ' dup assert-eq
     "xxx" "feline" ?lookup-symbol assert-false
     "dup" "xxx" ?lookup-symbol assert-false
 ;
@@ -843,7 +843,7 @@ test: create-symbol-test-1 ( -- )
     "effluvia" "test" ?lookup-symbol assert-false
     "effluvia" "test" create-symbol
     dup symbol? assert-true
-    dup "effluvia" "test" ?lookup-symbol eq? assert-true
+    dup "effluvia" "test" ?lookup-symbol assert-eq
     symbol-vocab-name "test" assert=
 ;
 
@@ -916,7 +916,7 @@ test: symbol-props-gc-test-1 ( -- )
 symbol-props-gc-test-1
 
 test: times-test-1 ( -- )
-    0 10 [ 1 + ] times 10 eq? assert-true
+    0 10 [ 1 + ] times 10 assert-eq
 ;
 
 times-test-1
@@ -998,10 +998,10 @@ while-test-1
 
 test: ensure-symbol-test-1
     "foo" "feline" ensure-symbol dup symbol? assert-true
-    dup "foo" "feline" ?lookup-symbol eq? assert-true
-    "foo" "feline" ensure-symbol eq? assert-true
+    dup "foo" "feline" ?lookup-symbol assert-eq
+    "foo" "feline" ensure-symbol assert-eq
     "foo" "feline" ensure-symbol symbol-vocab-name "feline" assert=
-    ' dup "dup" "feline" ensure-symbol eq? assert-true
+    ' dup "dup" "feline" ensure-symbol assert-eq
 ;
 
 ensure-symbol-test-1
@@ -1065,7 +1065,7 @@ vocab?-test-1
 test: lookup-vocab-test-1 ( -- )
     "feline" lookup-vocab vocab? assert-true
     "feline" lookup-vocab ( vocab ) lookup-vocab vocab? assert-true
-    "feline" lookup-vocab ( vocab ) dup lookup-vocab eq? assert-true
+    "feline" lookup-vocab ( vocab ) dup lookup-vocab assert-eq
     current-vocab lookup-vocab vocab? assert-true
     "not a vocab" lookup-vocab vocab? assert-false
 ;
@@ -1087,7 +1087,7 @@ unless*-test-1
 global: zork
 
 test: global-test-1 ( -- )
-    42 !> zork zork 42 eq? assert-true
+    42 !> zork zork 42 assert-eq
 ;
 
 global-test-1
@@ -1121,11 +1121,11 @@ global-test-1
 -- global-test-3
 
 test: index-test-1 ( -- )
-    3 { 1 2 3 4 } index 2 eq? assert-true
+    3 { 1 2 3 4 } index 2 assert-eq
     99 { 1 2 3 4 } index assert-false
-    's' "this is a test" index 3 eq? assert-true
-    'a' "this is a test" index 8 eq? assert-true
-    "bar" { "foo" "bar" "baz" } index 1 eq? assert-true
+    's' "this is a test" index 3 assert-eq
+    'a' "this is a test" index 8 assert-eq
+    "bar" { "foo" "bar" "baz" } index 1 assert-eq
 ;
 
 index-test-1
@@ -1193,24 +1193,24 @@ string-tail-test-1
 magenta >constant: test-magenta
 
 test: constant-test-1 ( -- )
-    test-magenta 5 eq? assert-true
+    test-magenta 5 assert-eq
 ;
 
 constant-test-1
 
 test: string-skip-whitespace-test-1 ( -- )
     "   this is a test   "
-    [  0 swap string-skip-whitespace  3 eq? assert-true ] keep
-    [  2 swap string-skip-whitespace  3 eq? assert-true ] keep
-    [  3 swap string-skip-whitespace  3 eq? assert-true ] keep
-    [  6 swap string-skip-whitespace  6 eq? assert-true ] keep
-    [  7 swap string-skip-whitespace  8 eq? assert-true ] keep
-    [ 16 swap string-skip-whitespace 16 eq? assert-true ] keep
-    [ 17 swap string-skip-whitespace  f eq? assert-true ] keep
-    [ 18 swap string-skip-whitespace  f eq? assert-true ] keep
-    [ 19 swap string-skip-whitespace  f eq? assert-true ] keep
-    [ 20 swap string-skip-whitespace  f eq? assert-true ] keep
-    [ 99 swap string-skip-whitespace  f eq? assert-true ] keep
+    [  0 swap string-skip-whitespace  3 assert-eq ] keep
+    [  2 swap string-skip-whitespace  3 assert-eq ] keep
+    [  3 swap string-skip-whitespace  3 assert-eq ] keep
+    [  6 swap string-skip-whitespace  6 assert-eq ] keep
+    [  7 swap string-skip-whitespace  8 assert-eq ] keep
+    [ 16 swap string-skip-whitespace 16 assert-eq ] keep
+    [ 17 swap string-skip-whitespace  f assert-eq ] keep
+    [ 18 swap string-skip-whitespace  f assert-eq ] keep
+    [ 19 swap string-skip-whitespace  f assert-eq ] keep
+    [ 20 swap string-skip-whitespace  f assert-eq ] keep
+    [ 99 swap string-skip-whitespace  f assert-eq ] keep
     drop
 ;
 
@@ -1220,14 +1220,14 @@ string-skip-whitespace-test-1
 test: string-skip-whitespace-test-2 ( -- )
     "   this is
 a multiline string   "
-    [  0 swap string-skip-whitespace  3 eq? assert-true ] keep
-    [  2 swap string-skip-whitespace  3 eq? assert-true ] keep
-    [  3 swap string-skip-whitespace  3 eq? assert-true ] keep
-    [  6 swap string-skip-whitespace  6 eq? assert-true ] keep
-    [  7 swap string-skip-whitespace  8 eq? assert-true ] keep
-    [ 10 swap string-skip-whitespace 11 eq? assert-true ] keep
-    [ 11 swap string-skip-whitespace 11 eq? assert-true ] keep
-    [ 12 swap string-skip-whitespace 13 eq? assert-true ] keep
+    [  0 swap string-skip-whitespace  3 assert-eq ] keep
+    [  2 swap string-skip-whitespace  3 assert-eq ] keep
+    [  3 swap string-skip-whitespace  3 assert-eq ] keep
+    [  6 swap string-skip-whitespace  6 assert-eq ] keep
+    [  7 swap string-skip-whitespace  8 assert-eq ] keep
+    [ 10 swap string-skip-whitespace 11 assert-eq ] keep
+    [ 11 swap string-skip-whitespace 11 assert-eq ] keep
+    [ 12 swap string-skip-whitespace 13 assert-eq ] keep
     drop
 ;
 
@@ -1235,18 +1235,18 @@ string-skip-whitespace-test-2
 
 test: string-skip-to-whitespace-test-1 ( -- )
     "   this is a test   "
-    [  0 swap string-skip-to-whitespace  0 eq? assert-true ] keep
-    [  2 swap string-skip-to-whitespace  2 eq? assert-true ] keep
-    [  3 swap string-skip-to-whitespace  7 eq? assert-true ] keep
-    [  6 swap string-skip-to-whitespace  7 eq? assert-true ] keep
-    [  7 swap string-skip-to-whitespace  7 eq? assert-true ] keep
-    [  8 swap string-skip-to-whitespace 10 eq? assert-true ] keep
-    [ 16 swap string-skip-to-whitespace 17 eq? assert-true ] keep
-    [ 17 swap string-skip-to-whitespace 17 eq? assert-true ] keep
-    [ 18 swap string-skip-to-whitespace 18 eq? assert-true ] keep
-    [ 19 swap string-skip-to-whitespace 19 eq? assert-true ] keep
-    [ 20 swap string-skip-to-whitespace  f eq? assert-true ] keep
-    [ 99 swap string-skip-to-whitespace  f eq? assert-true ] keep
+    [  0 swap string-skip-to-whitespace  0 assert-eq ] keep
+    [  2 swap string-skip-to-whitespace  2 assert-eq ] keep
+    [  3 swap string-skip-to-whitespace  7 assert-eq ] keep
+    [  6 swap string-skip-to-whitespace  7 assert-eq ] keep
+    [  7 swap string-skip-to-whitespace  7 assert-eq ] keep
+    [  8 swap string-skip-to-whitespace 10 assert-eq ] keep
+    [ 16 swap string-skip-to-whitespace 17 assert-eq ] keep
+    [ 17 swap string-skip-to-whitespace 17 assert-eq ] keep
+    [ 18 swap string-skip-to-whitespace 18 assert-eq ] keep
+    [ 19 swap string-skip-to-whitespace 19 assert-eq ] keep
+    [ 20 swap string-skip-to-whitespace  f assert-eq ] keep
+    [ 99 swap string-skip-to-whitespace  f assert-eq ] keep
     drop
 ;
 
@@ -1256,11 +1256,11 @@ string-skip-to-whitespace-test-1
 test: string-skip-to-whitespace-test-2 ( -- )
     "   this is
 a multiline string   "
-    [  3 swap string-skip-to-whitespace  7 eq? assert-true ] keep
-    [  7 swap string-skip-to-whitespace  7 eq? assert-true ] keep
-    [  8 swap string-skip-to-whitespace 10 eq? assert-true ] keep
-    [ 10 swap string-skip-to-whitespace 10 eq? assert-true ] keep
-    [ 11 swap string-skip-to-whitespace 12 eq? assert-true ] keep
+    [  3 swap string-skip-to-whitespace  7 assert-eq ] keep
+    [  7 swap string-skip-to-whitespace  7 assert-eq ] keep
+    [  8 swap string-skip-to-whitespace 10 assert-eq ] keep
+    [ 10 swap string-skip-to-whitespace 10 assert-eq ] keep
+    [ 11 swap string-skip-to-whitespace 12 assert-eq ] keep
     drop
 ;
 
@@ -1275,24 +1275,24 @@ test: ?-test-1 ( -- )
 ?-test-1
 
 test: slice-test-1
-    2 5 { 11 12 13 14 15 16 17 17 } <slice>    { 13 14 15 } sequence= assert-true
-    2 5 { 11 12 13 14 15 16 17 17 } <slice> gc { 13 14 15 } sequence= assert-true
+    2 5 { 11 12 13 14 15 16 17 18 } <slice>    { 13 14 15 } sequence= assert-true
+    2 5 { 11 12 13 14 15 16 17 18 } <slice> gc { 13 14 15 } sequence= assert-true
 
-    2 5 { 11 12 13 14 15 16 17 17 } <slice> dup slice? assert-true
+    2 5 { 11 12 13 14 15 16 17 18 } <slice> dup slice? assert-true
 
-    [ slice-length      3 eq? assert-true ] keep
-    [ 0 swap slice-nth 13 eq? assert-true ] keep
-    [ 1 swap slice-nth 14 eq? assert-true ] keep
-    [ 2 swap slice-nth 15 eq? assert-true ] keep
+    [ slice-length      3 assert-eq ] keep
+    [ 0 swap slice-nth 13 assert-eq ] keep
+    [ 1 swap slice-nth 14 assert-eq ] keep
+    [ 2 swap slice-nth 15 assert-eq ] keep
 
-    [ 0 swap slice-nth-unsafe 13 eq? assert-true ] keep
-    [ 1 swap slice-nth-unsafe 14 eq? assert-true ] keep
-    [ 2 swap slice-nth-unsafe 15 eq? assert-true ] keep
+    [ 0 swap slice-nth-unsafe 13 assert-eq ] keep
+    [ 1 swap slice-nth-unsafe 14 assert-eq ] keep
+    [ 2 swap slice-nth-unsafe 15 assert-eq ] keep
 
-    [ length      3 eq? assert-true ] keep
-    [ 0 swap nth 13 eq? assert-true ] keep
-    [ 1 swap nth 14 eq? assert-true ] keep
-    [ 2 swap nth 15 eq? assert-true ] keep
+    [ length      3 assert-eq ] keep
+    [ 0 swap nth 13 assert-eq ] keep
+    [ 1 swap nth 14 assert-eq ] keep
+    [ 2 swap nth 15 assert-eq ] keep
 
     drop
 ;
@@ -1327,10 +1327,10 @@ bounds-check?-test-1
 
 test: curry-nth-test-1
     3 [ + ] curry
-    0 over curry-nth 3 eq? assert-true
-    1 over curry-nth ' + eq? assert-true
-    0 over nth 3 eq? assert-true
-    1 over nth ' + eq? assert-true
+    0 over curry-nth 3 assert-eq
+    1 over curry-nth ' + assert-eq
+    0 over nth 3 assert-eq
+    1 over nth ' + assert-eq
     clear
 ;
 
@@ -1338,10 +1338,10 @@ curry-nth-test-1
 
 test: curry-nth-unsafe-test-1
     3 [ + ] curry
-    0 over curry-nth-unsafe 3 eq? assert-true
-    1 over curry-nth-unsafe ' + eq? assert-true
-    0 over nth-unsafe 3 eq? assert-true
-    1 over nth-unsafe ' + eq? assert-true
+    0 over curry-nth-unsafe 3 assert-eq
+    1 over curry-nth-unsafe ' + assert-eq
+    0 over nth-unsafe 3 assert-eq
+    1 over nth-unsafe ' + assert-eq
     clear
 ;
 
@@ -1379,11 +1379,11 @@ test: and-test-1
     t f and assert-false
     f t and assert-false
     0 t and assert-true
-    t 0 and 0 eq? assert-true
+    t 0 and 0 assert-eq
 
     f 71 and 71 eq? assert-false
-    t 71 and 71 eq? assert-true
-    "test" 42 and 42 eq? assert-true
+    t 71 and 71 assert-eq
+    "test" 42 and 42 assert-eq
 ;
 
 and-test-1
@@ -1391,10 +1391,10 @@ and-test-1
 test: or-test-1
     t f or assert-true
     f t or assert-true
-    0 t or 0 eq? assert-true
+    0 t or 0 assert-eq
     t 0 or assert-true
 
-    f 71 or 71 eq? assert-true
+    f 71 or 71 assert-eq
     t 71 or assert-true
     "test" 42 or "test" assert=
 ;
@@ -1412,7 +1412,7 @@ test: sbuf-insert-nth!-test-1
 sbuf-insert-nth!-test-1
 
 test: sbuf-?last-test-1
-    "testing" string>sbuf sbuf-?last 'g' eq? assert-true
+    "testing" string>sbuf sbuf-?last 'g' assert-eq
     16 <sbuf> sbuf-?last assert-false
 ;
 
@@ -1442,10 +1442,10 @@ sbuf-shorten-1
 
 test: string-index-from-test-1
     't' 0 "this is a test" string-index-from zero? assert-true
-    'h' 0 "this is a test" string-index-from 1 eq? assert-true
+    'h' 0 "this is a test" string-index-from 1 assert-eq
     'h' 2 "this is a test" string-index-from assert-false
-    't' 1 "this is a test" string-index-from 10 eq? assert-true
-    'e' 4 "this is a test" string-index-from 11 eq? assert-true
+    't' 1 "this is a test" string-index-from 10 assert-eq
+    'e' 4 "this is a test" string-index-from 11 assert-eq
     'x' 0 "this is a test" string-index-from assert-false
 ;
 
@@ -1470,10 +1470,10 @@ test: decimal>integer-test-1
 decimal>integer-test-1
 
 test: fixnum-fixnum+-test-1
-    1  2 fixnum-fixnum+  3 eq? assert-true
-    1 -2 fixnum-fixnum+ -1 eq? assert-true
+    1  2 fixnum-fixnum+  3 assert-eq
+    1 -2 fixnum-fixnum+ -1 assert-eq
 
-    most-positive-fixnum   0 fixnum-fixnum+ most-positive-fixnum eq? assert-true
+    most-positive-fixnum   0 fixnum-fixnum+ most-positive-fixnum assert-eq
     most-positive-fixnum   1 fixnum-fixnum+ bignum>string  "1152921504606846976" assert=
     most-negative-fixnum  -1 fixnum-fixnum+ bignum>string "-1152921504606846977" assert=
     most-positive-fixnum dup fixnum-fixnum+ bignum>string  "2305843009213693950" assert=
@@ -1484,7 +1484,7 @@ fixnum-fixnum+-test-1
 
 test: negate-test-1
     0 negate zero? assert-true
-    42 negate -42 eq? assert-true
+    42 negate -42 assert-eq
     most-positive-fixnum negate number>string "-1152921504606846975" assert=
     most-positive-fixnum dup fixnum-fixnum+ negate number>string  "-2305843009213693950" assert=
     most-negative-fixnum negate number>string "1152921504606846976" assert=
@@ -1653,7 +1653,7 @@ test: 1-!>-test-2 ( -- )
 
 test: 1+!>-test-3 ( -- )
     ' bar symbol-global? assert-true
-    ' test:bar ' bar eq? assert
+    ' test:bar ' bar assert-eq
 
     42 !> bar
     bar 42 assert=
@@ -1840,14 +1840,14 @@ return-if-test-1
 
 test: return-if-test-2
     clear
-    "foo" dup %return-if-test-2 eq? assert
+    "foo" dup %return-if-test-2 assert-eq
     depth zero? assert
 
     f %return-if-test-2 assert-false
     depth zero? assert
 
     lp@
-    "foo" dup %return-if-test-2 eq? assert
+    "foo" dup %return-if-test-2 assert-eq
     lp@ assert=
 
     lp@
@@ -1900,16 +1900,16 @@ test: ?vector-pop-test-1
 
 test: vector-reverse!-test-1
     V{ 1 2 3 4 5 } >local: v
-    v vector-reverse! v eq? assert-true
+    v vector-reverse! v assert-eq
     v V{ 5 4 3 2 1 } sequence= assert
     V{ 1 2 3 4 } !> v
-    v vector-reverse! v eq? assert-true
+    v vector-reverse! v assert-eq
     v V{ 4 3 2 1 } sequence= assert
     V{ 17 } !> v
-    v vector-reverse! v eq? assert-true
+    v vector-reverse! v assert-eq
     v V{ 17 } sequence= assert
     V{ } !> v
-    v vector-reverse! v eq? assert-true
+    v vector-reverse! v assert-eq
     v V{ } sequence= assert
 ;
 

@@ -59,6 +59,18 @@ code check_assert_false, 'check-assert-false'   ; x location --
         next
 endcode
 
+; ### check-assert-eq
+code check_assert_eq, 'check-assert-eq'         ; x y location --
+        _ rrot
+        _eq?
+        _tagged_if .1
+        _drop
+        _else .1
+        _ assertion_failed
+        _then .1
+        next
+endcode
+
 ; ### check-assert=
 code check_assert_equal, 'check-assert='        ; x y location --
         _ rrot
@@ -144,6 +156,22 @@ code assert_false, 'assert-false', SYMBOL_IMMEDIATE
         ; top level assertion
         _ location
         _ check_assert_false
+        _then .1
+        next
+endcode
+
+; ### assert-eq
+code assert_eq, 'assert-eq', SYMBOL_IMMEDIATE
+        _ in_definition?
+        _tagged_if .1
+        _ location
+        _ accum_push
+        _lit S_check_assert_eq
+        _ accum_push
+        _else .1
+        ; top level assertion
+        _ location
+        _ check_assert_eq
         _then .1
         next
 endcode
