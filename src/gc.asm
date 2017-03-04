@@ -312,9 +312,9 @@ code mark_data_stack, 'mark-data-stack' ; --
 endcode
 
 ; ### mark-return-stack
-code mark_return_stack, 'mark-return-stack' ; --
-        _ rdepth
-        mov     rcx, rbx                ; depth in rcx
+code mark_return_stack, 'mark-return-stack'     ; --
+        _rdepth
+        mov     rcx, rbx                        ; depth in rcx
         jrcxz   .2
 .1:
         mov     rax, rcx

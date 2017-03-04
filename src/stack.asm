@@ -43,16 +43,12 @@ endinline
         pushd   rax
 %endmacro
 
-; ### rdepth
-code rdepth, 'rdepth'
-        pop     rcx                     ; return address
+%macro  _rdepth 0
         mov     rax, [rp0_data]
         sub     rax, rsp
         shr     rax, 3
         pushd   rax
-        push    rcx
-        next
-endcode
+%endmacro
 
 ; ### 2swap
 code twoswap, '2swap'                   ; x1 x2 x3 x4 -- x3 x4 x1 x2
