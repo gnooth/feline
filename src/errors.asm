@@ -24,8 +24,9 @@ code error_not_number, 'error-not-number'       ; x --
 endcode
 
 ; ### error-not-fixnum
-code error_not_fixnum, 'error-not-fixnum' ; x --
-        ; REVIEW
-        _error "not a fixnum"
+code error_not_fixnum, 'error-not-fixnum'       ; x --
+        _quote "The value %s is not a fixnum."
+        _ format
+        _ error
         next
 endcode
