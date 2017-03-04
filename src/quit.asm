@@ -407,15 +407,26 @@ code query, 'query'                     ; -- string/f
         next
 endcode
 
-; ### print-datastack
-code print_datastack, 'print-datastack' ; --
-        _depth
-        _if .1
+; ### print-data-stack
+code print_data_stack, 'print-data-stack'       ; --
         _ ?nl
         _ white
         _ foreground
-        _write "--- Data stack:"
+        _write "-- Data stack: "
+        _depth
+        _if .1
         _ feline_dot_s
+        _else .1
+        _write "Empty"
+        _then .1
+        next
+endcode
+
+; ### maybe-print-data-stack
+code maybe_print_data_stack, 'maybe-print-data-stack'   ; --
+        _depth
+        _if .1
+        _ print_data_stack
         _then .1
         next
 endcode
@@ -449,7 +460,7 @@ code quit, 'quit'                       ; --
 
         _ query                         ; -- string
         _ evaluate
-        _ print_datastack
+        _ maybe_print_data_stack
 
         _again .1
         next
@@ -461,16 +472,7 @@ code break, 'break'                     ; --
         _ red
         _ foreground
         _write "break called"
-        _ nl
-        _ white
-        _ foreground
-        _write "--- Data stack: "
-        _depth
-        _if .1
-        _ feline_dot_s
-        _else .1
-        _write "Empty"
-        _then .1
+        _ print_data_stack
         _ nl
         _write "Press c to continue..."
         _ nl
