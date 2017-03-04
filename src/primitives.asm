@@ -664,8 +664,8 @@ code depth, 'depth'                     ; -- fixnum
         next
 endcode
 
-; ### get-datastack
-code get_datastack, 'get-datastack'     ; -- array
+; ### get-data-stack
+code get_data_stack, 'get-data-stack'   ; -- array
         push r12
 
         _lit 10
@@ -703,7 +703,7 @@ endcode
 
 ; ### .s
 code feline_dot_s, '.s'
-        _ get_datastack
+        _ get_data_stack
         _quotation .1
         _ nl
         _ dot_object

@@ -50,7 +50,7 @@ string?-test-1
 -- The Forth version of pick is different.
 test: pick-test-1 ( -- )
     clear
-    1 2 3 pick get-datastack { 1 2 3 1 } sequence= assert-true
+    1 2 3 pick get-data-stack { 1 2 3 1 } sequence= assert-true
     clear
 ;
 
@@ -60,7 +60,7 @@ pick-test-1
 -- The Forth version of 2over is different.
 test: 2over-test-1 ( -- )
     clear
-    1 2 3 2over get-datastack { 1 2 3 1 2 } sequence= assert-true
+    1 2 3 2over get-data-stack { 1 2 3 1 2 } sequence= assert-true
     clear
 ;
 
@@ -351,7 +351,7 @@ test: min-length-test-1
 min-length-test-1
 
 test: dip-test-1 ( -- )
-    87 42 [ 3 * ] dip get-datastack V{ 261 42 } sequence= assert-true
+    87 42 [ 3 * ] dip get-data-stack V{ 261 42 } sequence= assert-true
     clear
 ;
 
@@ -359,7 +359,7 @@ dip-test-1
 
 test: 2dip-test-1 ( -- )
     clear
-    42 17 89 [ 1 + ] 2dip get-datastack { 43 17 89 } sequence= assert-true
+    42 17 89 [ 1 + ] 2dip get-data-stack { 43 17 89 } sequence= assert-true
     clear
 ;
 
@@ -367,7 +367,7 @@ test: 2dip-test-1 ( -- )
 
 test: each-index-test-1 ( -- )
     clear
-    { "a" "b" "c" } [ 2array ] each-index get-datastack
+    { "a" "b" "c" } [ 2array ] each-index get-data-stack
     { { "a" 0 } { "b" 1 } { "c" 2 } } sequence= assert-true
     clear
 ;
@@ -376,10 +376,10 @@ each-index-test-1
 
 test: map-index-test-1 ( -- )
     clear
-    { "a" "b" "c" } [ 2array ] map-index get-datastack
+    { "a" "b" "c" } [ 2array ] map-index get-data-stack
     { { { "a" 0 } { "b" 1 } { "c" 2 } } } assert=
     clear
-    V{ "a" "b" "c" } [ 2array ] map-index get-datastack
+    V{ "a" "b" "c" } [ 2array ] map-index get-data-stack
     { V{ { "a" 0 } { "b" 1 } { "c" 2 } } } assert=
     clear
 ;
@@ -387,14 +387,14 @@ test: map-index-test-1 ( -- )
 map-index-test-1
 
 test: keep-test-1 ( -- )
-    42 [ dup ] keep get-datastack V{ 42 42 42 } sequence= assert-true
+    42 [ dup ] keep get-data-stack V{ 42 42 42 } sequence= assert-true
     clear
 ;
 
 keep-test-1
 
 test: bi@-test-1
-    3 4 [ dup ] bi@ get-datastack V{ 3 3 4 4 } sequence= assert-true
+    3 4 [ dup ] bi@ get-data-stack V{ 3 3 4 4 } sequence= assert-true
     clear
 ;
 
@@ -433,7 +433,7 @@ array-test-3
 
 test: 1array-test-1 ( -- )
     clear
-    71 1array get-datastack { { 71 } } sequence= assert-true
+    71 1array get-data-stack { { 71 } } sequence= assert-true
     clear
     "test" 1array [ array? assert-true ] [ array-first "test" assert= ] bi
 ;
@@ -442,7 +442,7 @@ test: 1array-test-1 ( -- )
 
 test: 2array-test-1 ( -- )
     clear
-    "test1" "test2" 2array get-datastack { { "test1" "test2" } } sequence= assert-true
+    "test1" "test2" 2array get-data-stack { { "test1" "test2" } } sequence= assert-true
     clear
     "test1" "test2" 2array [ array? assert-true ] [ array-first "test1" assert= ] bi
 ;
@@ -451,7 +451,7 @@ test: 2array-test-1 ( -- )
 
 test: 3array-test-1 ( -- )
     clear
-    1 2 3 3array get-datastack { { 1 2 3 } } sequence= assert-true
+    1 2 3 3array get-data-stack { { 1 2 3 } } sequence= assert-true
     clear
     "ready" "steady" "go!" 3array
     [ array? assert-true ] [ array-first "ready" assert= ] bi
@@ -461,7 +461,7 @@ test: 3array-test-1 ( -- )
 
 test: 4array-test-1 ( -- )
     clear
-    1 2 3 4 4array get-datastack { { 1 2 3 4 } } sequence= assert-true
+    1 2 3 4 4array get-data-stack { { 1 2 3 4 } } sequence= assert-true
     clear
     "fee" "fie" "fo" "fum" 4array
     [ array? assert-true ] [ array-first "fee" assert= ] bi
@@ -531,7 +531,7 @@ vector-test-4
 -- vector-last
 test: vector-test-5 ( -- )
     clear
-    V{ 1 2 3 } vector-last get-datastack { 3 } sequence= assert-true
+    V{ 1 2 3 } vector-last get-data-stack { 3 } sequence= assert-true
     clear
     V{ "test" } vector-last "test" assert=
 ;
@@ -581,11 +581,11 @@ if-test-1
 
 test: if*-test-1 ( -- )
     clear
-    t [ 42 ] [ 17 ] if* get-datastack { t 42 } sequence= assert-true
+    t [ 42 ] [ 17 ] if* get-data-stack { t 42 } sequence= assert-true
     clear
-    f [ 42 ] [ 17 ] if* get-datastack { 17 } sequence= assert-true
+    f [ 42 ] [ 17 ] if* get-data-stack { 17 } sequence= assert-true
     clear
-    0 [ 42 ] [ 17 ] if* get-datastack { 0 42 } sequence= assert-true
+    0 [ 42 ] [ 17 ] if* get-data-stack { 0 42 } sequence= assert-true
     clear
 ;
 
@@ -640,7 +640,7 @@ string>number-test-4
 
 test: '-test-1 ( -- )
     [ ' dup ] call symbol? assert-true
-    3 [ dup ] call get-datastack { 3 3 } sequence= assert-true
+    3 [ dup ] call get-data-stack { 3 3 } sequence= assert-true
     clear
 ;
 
@@ -751,10 +751,10 @@ length-test-1
 
 test: globals-test-1 ( -- )
     clear
-    42 ' dup set-global get-datastack { } sequence= assert-true
-    ' dup get-global get-datastack { 42 } sequence= assert-true
+    42 ' dup set-global get-data-stack { } sequence= assert-true
+    ' dup get-global get-data-stack { 42 } sequence= assert-true
     clear
-    ' dup get get-datastack { 42 } sequence= assert-true
+    ' dup get get-data-stack { 42 } sequence= assert-true
     clear
 ;
 
@@ -762,13 +762,13 @@ globals-test-1
 
 test: find-test-1 ( -- )
     V{ 1 2 3 4 5 6 } [ 3 = ] find
-    get-datastack V{ 2 3 } sequence= assert-true
+    get-data-stack V{ 2 3 } sequence= assert-true
     clear
     V{ 1 2 3 4 5 6 } [ 17 = ] find
-    get-datastack f f 2array sequence= assert-true
+    get-data-stack f f 2array sequence= assert-true
     clear
     4 V{ 1 2 3 4 5 6 } [ dupd = ] find
-    get-datastack V{ 4 3 4 } sequence= assert-true
+    get-data-stack V{ 4 3 4 } sequence= assert-true
     clear
 ;
 
@@ -776,16 +776,16 @@ find-test-1
 
 test: find-from-test-1 ( -- )
     4 "this is a test" [ 'e' = ] find-from
-    get-datastack { 11 'e' } sequence= assert-true
+    get-data-stack { 11 'e' } sequence= assert-true
     clear
     0 "this is a test" [ 's' = ] find-from
-    get-datastack { 3 's' } sequence= assert-true
+    get-data-stack { 3 's' } sequence= assert-true
     clear
     99 "this is a test" [ 'e' = ] find-from
-    get-datastack { f f } sequence= assert-true
+    get-data-stack { f f } sequence= assert-true
     clear
     -1 "this is a test" [ 'e' = ] find-from
-    get-datastack { f f } sequence= assert-true
+    get-data-stack { f f } sequence= assert-true
     clear
 ;
 
@@ -793,19 +793,19 @@ find-from-test-1
 
 test: find-last-from-test-1
     13 "this is a test" [ 'e' = ] find-last-from
-    get-datastack { 11 'e' } sequence= assert-true
+    get-data-stack { 11 'e' } sequence= assert-true
     clear
     99 "this is a test" [ 'e' = ] find-last-from
-    get-datastack { f f } sequence= assert-true
+    get-data-stack { f f } sequence= assert-true
     clear
     -99 "this is a test" [ 'e' = ] find-last-from
-    get-datastack { f f } sequence= assert-true
+    get-data-stack { f f } sequence= assert-true
     clear
     4 V{ 1 2 3 4 5 3 } [ 3 = ] find-last-from
-    get-datastack { 2 3 } sequence= assert-true
+    get-data-stack { 2 3 } sequence= assert-true
     clear
     3 4 V{ 1 2 3 4 5 3 } [ dupd = ] find-last-from
-    get-datastack { 3 2 3 } sequence= assert-true
+    get-data-stack { 3 2 3 } sequence= assert-true
     clear
 ;
 
@@ -813,11 +813,11 @@ find-last-from-test-1
 
 test: map-find-test-1 ( -- )
     clear
-    V{ 1 2 3 4 5 6 } [ 3 = ] map-find get-datastack { t 3 } sequence= assert-true
+    V{ 1 2 3 4 5 6 } [ 3 = ] map-find get-data-stack { t 3 } sequence= assert-true
     clear
-    V{ 1 2 3 4 5 6 } [ 17 = ] map-find get-datastack { f f } sequence= assert-true
+    V{ 1 2 3 4 5 6 } [ 17 = ] map-find get-data-stack { f f } sequence= assert-true
     clear
-    4 V{ 1 2 3 4 5 6 } [ dupd = ] map-find get-datastack { 4 t 4 } sequence= assert-true
+    4 V{ 1 2 3 4 5 6 } [ dupd = ] map-find get-data-stack { 4 t 4 } sequence= assert-true
     clear
 ;
 
@@ -825,7 +825,7 @@ map-find-test-1
 
 test: find-integer-test-1 ( -- )
     clear
-    10 [ 5 eq? ] find-integer get-datastack { 5 } assert=
+    10 [ 5 eq? ] find-integer get-data-stack { 5 } assert=
     clear
 ;
 
@@ -873,7 +873,7 @@ parsing-test-1
 
 test: parsing-test-2 ( -- )
     clear
-    %parsing-test-2 get-datastack { 42 } sequence= assert-true
+    %parsing-test-2 get-data-stack { 42 } sequence= assert-true
     clear
 ;
 
@@ -887,10 +887,10 @@ sequence=-test-1
 
 test: symbol-props-test-1 ( -- )
     clear
-    "foo" ' dup symbol-prop get-datastack { f } sequence= assert-true
+    "foo" ' dup symbol-prop get-data-stack { f } sequence= assert-true
     clear
     "this is a test" "foo" ' dup symbol-set-prop
-    "foo" ' dup symbol-prop get-datastack { "this is a test" } sequence= assert-true
+    "foo" ' dup symbol-prop get-data-stack { "this is a test" } sequence= assert-true
     clear
 
     -- clean up
@@ -901,12 +901,12 @@ symbol-props-test-1
 
 test: symbol-props-gc-test-1 ( -- )
     "this is a test" "foo" ' dup symbol-set-prop
-    "foo" ' dup symbol-prop get-datastack { "this is a test" } sequence= assert-true
+    "foo" ' dup symbol-prop get-data-stack { "this is a test" } sequence= assert-true
     clear
 
     gc
 
-    "foo" ' dup symbol-prop get-datastack { "this is a test" } sequence= assert-true
+    "foo" ' dup symbol-prop get-data-stack { "this is a test" } sequence= assert-true
     clear
 
     -- clean up
@@ -974,11 +974,11 @@ empty?-test-1
 
 test: until-test-1
     clear
-    1 [ dup 1 = ] [ 1 + ] until get-datastack { 1 } sequence= assert-true
+    1 [ dup 1 = ] [ 1 + ] until get-data-stack { 1 } sequence= assert-true
     clear
-    1 [ dup 4 = ] [ 1 + ] until get-datastack { 4 } sequence= assert-true
+    1 [ dup 4 = ] [ 1 + ] until get-data-stack { 4 } sequence= assert-true
     clear
-    [ t ] [ 42 ] until get-datastack empty? assert-true
+    [ t ] [ 42 ] until get-data-stack empty? assert-true
     clear
 ;
 
@@ -986,11 +986,11 @@ until-test-1
 
 test: while-test-1
     clear
-    1 [ dup 1 = ] [ 1 + ] while get-datastack { 2 } sequence= assert-true
+    1 [ dup 1 = ] [ 1 + ] while get-data-stack { 2 } sequence= assert-true
     clear
-    1 [ dup 4 = ] [ 1 + ] while get-datastack { 1 } sequence= assert-true
+    1 [ dup 4 = ] [ 1 + ] while get-data-stack { 1 } sequence= assert-true
     clear
-    [ f ] [ 42 ] while get-datastack empty? assert-true
+    [ f ] [ 42 ] while get-data-stack empty? assert-true
     clear
 ;
 
@@ -1008,7 +1008,7 @@ ensure-symbol-test-1
 
 test: bi-test-1 ( -- )
     clear
-    42 [ 1 + ] [ 2 + ] bi get-datastack { 43 44 } sequence= assert-true
+    42 [ 1 + ] [ 2 + ] bi get-data-stack { 43 44 } sequence= assert-true
     clear
 ;
 
@@ -1016,9 +1016,9 @@ bi-test-1
 
 test: 2bi-test-1
     clear
-    1 2 3 4 [ dup ] [ + ] 2bi get-datastack { 1 2 3 4 4 7 } sequence= assert-true
+    1 2 3 4 [ dup ] [ + ] 2bi get-data-stack { 1 2 3 4 4 7 } sequence= assert-true
     clear
-    1 2 3 4 [ nip ] [ + ] 2bi get-datastack { 1 2 4 7 } sequence= assert-true
+    1 2 3 4 [ nip ] [ + ] 2bi get-data-stack { 1 2 4 7 } sequence= assert-true
     clear
 ;
 
@@ -1074,11 +1074,11 @@ lookup-vocab-test-1
 
 test: unless*-test-1 ( -- )
     clear
-    f [ 42 ] unless* get-datastack { 42 } assert=
+    f [ 42 ] unless* get-data-stack { 42 } assert=
     clear
-    t [ 42 ] unless* get-datastack { t } assert=
+    t [ 42 ] unless* get-data-stack { t } assert=
     clear
-    "test" [ 42 ] unless* get-datastack { "test" } assert=
+    "test" [ 42 ] unless* get-data-stack { "test" } assert=
     clear
 ;
 
@@ -1313,7 +1313,7 @@ index?-test-1
 
 test: bounds-check?-test-1
     4 { 0 1 2 3 } [ bounds-check? ] curry each-integer
-    get-datastack { t t t t } sequence= assert-true
+    get-data-stack { t t t t } sequence= assert-true
     clear
 
     { 0 1 2 3 }
@@ -1349,7 +1349,7 @@ curry-nth-unsafe-test-1
 
 test: ?nth-test-1
     4 { 0 1 2 3 } [ ?nth ] curry each-integer
-    get-datastack { 0 1 2 3 } sequence= assert-true
+    get-data-stack { 0 1 2 3 } sequence= assert-true
     clear
 
     { 0 1 2 3 }
@@ -1363,7 +1363,7 @@ test: ?nth-test-1
 
 test: ?nth-test-2
     4 V{ 0 1 2 3 } [ ?nth ] curry each-integer
-    get-datastack { 0 1 2 3 } sequence= assert-true
+    get-data-stack { 0 1 2 3 } sequence= assert-true
     clear
 
     V{ 0 1 2 3 }
@@ -1687,11 +1687,11 @@ test: 1+!>-test-3 ( -- )
 test: case-test-1
     clear
 
-    7 %case-test-1 get-datastack { "not found" } assert= clear
-    2 %case-test-1 get-datastack { "two" }       assert= clear
-    4 %case-test-1 get-datastack { "four" }      assert= clear
-    1 %case-test-1 get-datastack { "one" }       assert= clear
-    3 %case-test-1 get-datastack { "three" }     assert= clear
+    7 %case-test-1 get-data-stack { "not found" } assert= clear
+    2 %case-test-1 get-data-stack { "two" }       assert= clear
+    4 %case-test-1 get-data-stack { "four" }      assert= clear
+    1 %case-test-1 get-data-stack { "one" }       assert= clear
+    3 %case-test-1 get-data-stack { "three" }     assert= clear
 ;
 
 case-test-1
@@ -1710,10 +1710,10 @@ test: case-test-2
 
     [ 7 %case-test-2 ] assert-must-fail
 
-    2 %case-test-2 get-datastack { "two" }       assert= clear
-    4 %case-test-2 get-datastack { "four" }      assert= clear
-    1 %case-test-2 get-datastack { "one" }       assert= clear
-    3 %case-test-2 get-datastack { "three" }     assert= clear
+    2 %case-test-2 get-data-stack { "two" }     assert= clear
+    4 %case-test-2 get-data-stack { "four" }    assert= clear
+    1 %case-test-2 get-data-stack { "one" }     assert= clear
+    3 %case-test-2 get-data-stack { "three" }   assert= clear
 ;
 
 case-test-2
@@ -1813,11 +1813,11 @@ cond-test-4
 
 test: return-if-test-1
     clear
-    t %return-if-test-1 get-datastack { "yes" } assert=
+    t %return-if-test-1 get-data-stack { "yes" } assert=
     clear
-    f %return-if-test-1 get-datastack { "no"  } assert=
+    f %return-if-test-1 get-data-stack { "no"  } assert=
     clear
-    0 %return-if-test-1 get-datastack { "yes" } assert=
+    0 %return-if-test-1 get-data-stack { "yes" } assert=
     clear
 
     lp@
@@ -1870,11 +1870,11 @@ global: saved-lp
 test: return-if-test-3
     clear
     lp@ !> saved-lp
-    3 %return-if-test-3 get-datastack { 47 } assert=
+    3 %return-if-test-3 get-data-stack { 47 } assert=
     clear
-    9 %return-if-test-3 get-datastack { 10 } assert=
+    9 %return-if-test-3 get-data-stack { 10 } assert=
     clear
-    5 %return-if-test-3 get-datastack {  5 } assert=
+    5 %return-if-test-3 get-data-stack {  5 } assert=
     clear
     lp@ saved-lp assert= ;
 

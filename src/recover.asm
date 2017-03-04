@@ -112,8 +112,8 @@ _global error_object, f_value
 code recover, 'recover'                 ; try-quot recover-quot --
         _tor
         _tor                            ; --            r: -- recover-quot try-quot
-        _ get_datastack                 ; -- datastack
-        _rfrom                          ; -- datastack try-quot
+        _ get_data_stack                ; -- data-stack
+        _rfrom                          ; -- data-stack try-quot
         _swap
         _tor                            ; -- try-quot
         _ catch
