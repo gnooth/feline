@@ -39,13 +39,6 @@ code fixnum?, 'fixnum?'                 ; x -- ?
         next
 endcode
 
-; ### error-not-fixnum
-code error_not_fixnum, 'error-not-fixnum' ; x --
-        ; REVIEW
-        _error "not a fixnum"
-        next
-endcode
-
 ; ### verify-fixnum
 code verify_fixnum, 'verify-fixnum'     ; fixnum -- fixnum
         _verify_fixnum

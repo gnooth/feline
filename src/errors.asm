@@ -22,3 +22,10 @@ code error_not_number, 'error-not-number'       ; x --
         _ error
         next
 endcode
+
+; ### error-not-fixnum
+code error_not_fixnum, 'error-not-fixnum' ; x --
+        ; REVIEW
+        _error "not a fixnum"
+        next
+endcode
