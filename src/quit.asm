@@ -475,7 +475,7 @@ code break, 'break'                     ; --
         _write "Press c to continue..."
         _ nl
         _begin .2
-        _ key
+        _ raw_key
         _lit 'c'
         _equal
         _if .3

@@ -15,10 +15,23 @@
 
 file __FILE__
 
-extern os_key
+; ### raw-key
+code raw_key, 'raw-key'         ; -- untagged-char
+        xcall   os_key
+        pushd   rax
+        next
+endcode
+
+; ### raw-key?
+code raw_key?, 'raw-key?'       ; -- -1/0
+; return value is untagged
+        xcall   os_key_avail
+        pushd   rax
+        next
+endcode
 
 ; ### key
-code feline_key, 'key'                  ; -- tagged-char
+code feline_key, 'key'          ; -- tagged-char
         xcall   os_key
         pushd   rax
         _tag_char
@@ -28,7 +41,7 @@ endcode
 extern os_key_avail
 
 ; ### key?
-code feline_key?, 'key?'                ; -- ?
+code feline_key?, 'key?'        ; -- ?
         xcall   os_key_avail
         pushrbx
         mov     ebx, f_value
@@ -62,11 +75,11 @@ endcode
 
 ; ### ekey
 code ekey, 'ekey'                       ; -- fixnum
-        _ key
+        _ raw_key
         _dup
         _zeq_if .1
         _drop
-        _ key
+        _ raw_key
         _lit $8000
         _or
         _tag_fixnum
@@ -84,7 +97,7 @@ code ekey, 'ekey'                       ; -- fixnum
         _equal
         _if .3
         _drop
-        _ key
+        _ raw_key
         _lit $8000
         _or
         _tag_fixnum
@@ -127,17 +140,17 @@ feline_constant k_enter,     'k-enter',     tagged_fixnum($0d)
 
 ; ### ekey
 code ekey, 'ekey'                       ; -- fixnum
-        _ key
+        _ raw_key
         _dup
         _lit $1b
         _equal
         _if .1
         _begin .2
-        _ key?
+        _ raw_key?
         _while .2
         _lit 8
         _lshift
-        _ key
+        _ raw_key
         _or
         _repeat .2
         _then .1

@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -17,20 +17,6 @@ file __FILE__
 
 ; ### errno
 value os_errno, 'errno', 0
-
-; ### key
-code key, 'key'
-        xcall   os_key
-        pushd   rax
-        next
-endcode
-
-; ### key?
-code key?, 'key?'
-        xcall   os_key_avail
-        pushd   rax
-        next
-endcode
 
 ; For Windows, FORTH-STDOUT is initialized in prep_terminal().
 ; The value here is correct for Linux.
