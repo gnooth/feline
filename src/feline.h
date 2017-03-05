@@ -18,6 +18,9 @@
 
 #include <stdint.h>             // int64_t
 
+// This must be kept in sync with the object types in object-macros.asm.
+#define OBJECT_TYPE_FLOAT 18
+
 typedef int64_t cell;
 
 // os.c
