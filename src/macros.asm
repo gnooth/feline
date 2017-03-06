@@ -224,6 +224,7 @@ GENERIC_WRITE   equ     $40000000
 %endmacro
 
 %ifdef WIN64
+
 %macro  xcall   1
         push    rbp
         mov     rbp, [cold_rbp_data]
@@ -240,9 +241,22 @@ GENERIC_WRITE   equ     $40000000
         add     rsp, 32
         pop     rbp
 %endmacro
+
 %else
+
 ; Linux
-%define xcall   call
+%macro  xcall   1
+        test    rsp, 0x0f
+        jnz     %%fixstack
+        call    %1
+        jmp     %%out
+%%fixstack:
+        sub     rsp, 8
+        call    %1
+        add     rsp, 8
+%%out:
+%endmacro
+
 %endif
 
 ; argument registers for xcall
