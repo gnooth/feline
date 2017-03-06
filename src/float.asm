@@ -15,6 +15,8 @@
 
 file __FILE__
 
+; 2 cells: object header, raw value
+
 ; ### float?
 code float?, 'float?'                   ; handle -- ?
         _ deref                         ; -- raw-object/0
@@ -38,6 +40,44 @@ code check_float, 'check-float'       ; handle -- raw-float
         movzx   eax, word [rbx]
         cmp     eax, OBJECT_TYPE_FLOAT
         jne     error_not_float
+        next
+endcode
+
+%macro _float_raw_value 0               ; raw-float -- raw-value
+        _slot1
+%endmacro
+
+; ### float-raw-value
+code float_raw_value, 'float-raw-value', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; float -- raw-value
+        _ check_float
+        _float_raw_value
+        next
+endcode
+
+; ### float-equal?
+code float_equal?, 'float-equal?'       ; x float -- ?
+        _ check_float
+
+        _over
+        _ float?
+        _tagged_if_not .1
+        _nip
+        mov     ebx, f_value
+        _return
+        _then .1
+
+        _float_raw_value
+
+        _swap
+        _handle_to_object_unsafe
+        _float_raw_value
+
+        mov     eax, t_value
+        cmp     [rbp], rbx
+        mov     ebx, f_value
+        cmove   ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
