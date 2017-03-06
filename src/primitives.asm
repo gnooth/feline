@@ -1152,7 +1152,15 @@ code string_to_number, 'string>number'  ; string -- n/f
         je      .3
 
         _drop
+
+        _tagged_char '.'
+        _over
+        _ string_find_char
+        _tagged_if .4
+        _ string_to_float
+        _else .4
         _ decimal_to_integer
+        _then .4
         _return
 
 .2:
