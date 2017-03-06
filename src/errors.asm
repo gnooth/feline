@@ -38,3 +38,11 @@ code error_not_float, 'error-not-float'         ; x --
         _ error
         next
 endcode
+
+; ### error-not-char
+code error_not_char, 'error-not-char'           ; x --
+        _quote "The value %s is not a character."
+        _ format
+        _ error
+        next
+endcode

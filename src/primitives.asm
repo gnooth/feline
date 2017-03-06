@@ -1011,13 +1011,6 @@ code fetch, '@'         ; address -- uint64
         next
 endcode
 
-; ### error-not-char
-code error_not_char, 'error-not-char'   ; x --
-        ; REVIEW
-        _error "not a char"
-        next
-endcode
-
 ; ### char-upcase
 code char_upcase, 'char-upcase'
         _check_char
