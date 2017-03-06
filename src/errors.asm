@@ -30,3 +30,11 @@ code error_not_fixnum, 'error-not-fixnum'       ; x --
         _ error
         next
 endcode
+
+; ### error-not-float
+code error_not_float, 'error-not-float'         ; x --
+        _quote "The value %s is not a float."
+        _ format
+        _ error
+        next
+endcode

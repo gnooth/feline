@@ -73,6 +73,11 @@ extern c_decimal_to_integer
 extern c_string_to_integer
 extern c_expt
 
+; float.c
+extern c_string_to_float
+extern c_float_to_string
+extern c_pi
+
 ; socket.c
 extern c_accept_connection
 extern c_make_server_socket

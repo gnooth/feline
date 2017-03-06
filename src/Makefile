@@ -33,7 +33,7 @@ LINKFLAGS = -m64
 # gcc 6.2.0 on Ubuntu 16.10 needs -no-pie
 # LINKFLAGS = -m64 -no-pie
 
-OBJS = main.o os.o terminal.o backtrace.o random.o bignum.o socket.o feline.o
+OBJS = main.o os.o terminal.o backtrace.o random.o bignum.o float.o socket.o feline.o
 
 ifeq ($(OS),Windows_NT)
 	CFLAGS += -DWIN64 -DWIN64_NATIVE
@@ -82,6 +82,9 @@ random.o: random.c
 bignum.o: feline.h bignum.c
 	$(CC) $(CFLAGS) -c -o bignum.o bignum.c
 
+float.o: feline.h float.c
+	$(CC) $(CFLAGS) -c -o float.o float.c
+
 socket.o: feline.h socket.c
 	$(CC) $(CFLAGS) -c -o socket.o socket.c
 
@@ -100,6 +103,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	errors.asm \
 	files.asm \
 	fixnum.asm \
+	float.asm \
 	format.asm \
 	gc.asm \
 	generic.asm \
