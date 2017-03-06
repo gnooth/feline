@@ -19,13 +19,21 @@
 
 #include "feline.h"
 
-struct double_float
+typedef struct
 {
   cell header;
   double d;
-};
+} FLOAT;
 
-cell c_float_to_string(char *buf, size_t size, struct double_float *p)
+static FLOAT *make_float(double d)
+{
+  FLOAT *p = malloc(sizeof(FLOAT));
+  p->header = OBJECT_TYPE_FLOAT;
+  p->d = d;
+  return p;
+}
+
+cell c_float_to_string(char *buf, size_t size, FLOAT *p)
 {
   // FIXME "3.14" string>float float>string -> "3.1400000000000001"
   snprintf(buf, size, "%.17g", p->d);
@@ -35,16 +43,15 @@ cell c_float_to_string(char *buf, size_t size, struct double_float *p)
 cell c_string_to_float(char *s)
 {
   double d = strtod(s, NULL);
-  struct double_float *p = malloc(sizeof(struct double_float));
-  p->header = OBJECT_TYPE_FLOAT;
-  p->d = d;
-  return (cell) p;
+  return (cell) make_float(d);
 }
 
 cell c_pi()
 {
-  struct double_float *p = malloc(sizeof(struct double_float));
-  p->header = OBJECT_TYPE_FLOAT;
-  p->d = M_PI;
-  return (cell) p;
+  return (cell) make_float(M_PI);
+}
+
+cell c_float_add_float(FLOAT *p1, FLOAT *p2)
+{
+  return (cell) make_float(p1->d + p2->d);
 }

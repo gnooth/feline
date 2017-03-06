@@ -94,3 +94,19 @@ code pi, 'pi'                   ; -- float
         _ new_handle
         next
 endcode
+
+; ### float-float+
+code float_float_plus, 'float-float+'   ; float1 float2 -- sum
+        _ check_float
+        _swap
+        _ check_float
+        mov     arg0_register, rbx
+        poprbx
+        mov     arg1_register, rbx
+        poprbx
+        xcall   c_float_add_float
+        pushrbx
+        mov     rbx, rax
+        _ new_handle
+        next
+endcode
