@@ -16,6 +16,7 @@
 #include <stdlib.h>     // malloc
 #include <stdio.h>      // snprintf
 #include <math.h>       // M_PI
+#include <errno.h>      // errno
 
 #include "feline.h"
 
@@ -36,14 +37,19 @@ static FLOAT *make_float(double d)
 cell c_float_to_string(char *buf, size_t size, FLOAT *p)
 {
   // FIXME "3.14" string>float float>string -> "3.1400000000000001"
-  snprintf(buf, size, "%.17g", p->d);
+  snprintf(buf, size, "%.16g", p->d);
   return (cell) buf;
 }
 
 cell c_string_to_float(char *s)
 {
-  double d = strtod(s, NULL);
-  return (cell) make_float(d);
+  errno = 0;
+  char *endptr;
+  double d = strtod(s, &endptr);
+  if (endptr != s && errno == 0)
+    return (cell) make_float(d);
+
+  return 0;
 }
 
 cell c_pi()
