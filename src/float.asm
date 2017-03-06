@@ -42,14 +42,20 @@ code check_float, 'check-float'       ; handle -- raw-float
 endcode
 
 ; ### string>float
-code string_to_float, 'string>float'    ; string -- float
+code string_to_float, 'string>float'    ; string -- float/f
         _ string_raw_data_address
         mov     arg0_register, rbx
         poprbx
         xcall   c_string_to_float
+        test    rax, rax
+        jz      .error
         pushrbx
         mov     rbx, rax                ; -- raw-float
         _ new_handle
+        next
+.error:
+        pushrbx
+        mov     rbx, f_value
         next
 endcode
 
