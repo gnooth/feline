@@ -264,18 +264,46 @@ code vector_nth, 'vector-nth'           ; index handle -- element
         _check_index qword [rbp]
 
 vector_nth_untagged:
+
         _ check_vector
 
-        _twodup
-        _vector_raw_length
-        _ult
-        _if .1
-        _vector_nth_unsafe
-        _return
-        _then .1
+        push    this_register
+        mov     this_register, rbx      ; -- raw-index raw_vector
 
-        _2drop
+        _vector_raw_length              ; -- raw-index raw-length
+        cmp     [rbp], rbx
+        poprbx                          ; -- raw-index
+        jnl .1
+        _this_vector_nth_unsafe
+        pop     this_register
+        next
+.1:
+        _drop
+        pop     this_register
         _error "vector-nth index out of range"
+        next
+endcode
+
+; ### vector-?nth
+code vector_?nth, 'vector-?nth'         ; index handle -- element/f
+
+        _check_index qword [rbp]
+
+        _ check_vector
+
+        push    this_register
+        mov     this_register, rbx      ; -- raw-index raw_vector
+
+        _vector_raw_length              ; -- raw-index raw-length
+        cmp     [rbp], rbx
+        poprbx                          ; -- raw-index
+        jnl .1
+        _this_vector_nth_unsafe
+        pop     this_register
+        next
+.1:
+        mov     rbx, f_value
+        pop     this_register
         next
 endcode
 
