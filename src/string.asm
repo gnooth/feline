@@ -457,26 +457,24 @@ code string_last_char, 'string-last-char' ; string -- char
 endcode
 
 ; ### string-find-char
-code string_find_char, 'string-find-char' ; tagged-char string -- tagged-index | f
+code string_find_char, 'string-find-char'       ; char string -- index/f
 
         _ check_string
 
         push    this_register
         popd    this_register           ; -- tagged-char
 
-        _untag_char                     ; -- untagged-char
+        _check_char                     ; -- untagged-char
 
         _this_string_raw_length
-        _zero
-        _?do .1
-        _i
+        _register_do_times .1
+        _raw_loop_index
         _this_string_nth_unsafe
         _over
-        _equal
-        _if .2
+        _eq?
+        _tagged_if .2
         _drop
-        _i
-        _tag_fixnum
+        _tagged_loop_index
         _unloop
         jmp     .exit
         _then .2
