@@ -18,14 +18,10 @@ file __FILE__
 ; ### lookup-method
 code lookup_method, 'lookup-method'     ; object methods-vector -- object raw-code-address/f
 ; return f if no method
-; no error checking
-        _handle_to_object_unsafe        ; -- object raw-vector
-        push    this_register
-        mov     this_register, rbx
-        mov     rbx, [rbp]              ; -- object object
-        _ object_raw_type               ; -- object raw-type-number
-        _this_vector_nth_unsafe         ; -- raw-code-address/f
-        pop     this_register
+        _over
+        _ object_type
+        _swap
+        _ vector_?nth           ; -- raw-code-address/f
         next
 endcode
 
