@@ -27,7 +27,7 @@ code string?, 'string?'                 ; x -- ?
         _dup
         _ handle?
         _tagged_if .1
-        _handle_to_object_unsafe        ; -- object/0
+        _handle_to_object_unsafe        ; -- raw-object/0
         _?dup_if .2
         _object_type                    ; -- object-type
         _eq? OBJECT_TYPE_STRING
@@ -300,7 +300,7 @@ code destroy_string_unchecked, '~string-unchecked' ; string --
         ; after it has been destroyed.
         xor     eax, eax
         mov     [rbx], rax
-        _ ifree
+        _ raw_free
         _else .1
         _drop
         _then .1

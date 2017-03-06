@@ -261,7 +261,7 @@ new_hashtable_untagged:
 
         ; each entry occupies two cells (key, value)
         shl     rbx, 4                  ; -- n*16
-        _ iallocate                     ; -- data-address
+        _ raw_allocate                  ; -- data-address
         _this_hashtable_set_data        ; --
 
         _this_hashtable_raw_capacity
@@ -293,10 +293,10 @@ code destroy_hashtable, '~hashtable'    ; handle --
 endcode
 
 ; ### ~hashtable-unchecked
-code destroy_hashtable_unchecked, '~hashtable-unchecked' ; hashtable --
+code destroy_hashtable_unchecked, '~hashtable-unchecked'        ; hashtable --
         _dup
         _hashtable_data
-        _ ifree                         ; -- hashtable
+        _ raw_free                      ; -- hashtable
 
         _ in_gc?
         _zeq_if .1
@@ -309,7 +309,7 @@ code destroy_hashtable_unchecked, '~hashtable-unchecked' ; hashtable --
         xor     eax, eax
         mov     [rbx], rax
 
-        _ ifree
+        _ raw_free
 
         next
 endcode
@@ -521,7 +521,7 @@ hashtable_grow_unchecked:
         _ hashtable_values_unchecked    ; -- keys values
 
         _this_hashtable_data
-        _ ifree
+        _ raw_free
 
         _this_hashtable_raw_capacity    ; -- ... n
         ; double existing capacity
@@ -530,7 +530,7 @@ hashtable_grow_unchecked:
         _this_hashtable_set_raw_capacity
         ; 16 bytes per entry
         shl     rbx, 4                  ; -- ... n*16
-        _ iallocate
+        _ raw_allocate
         _this_hashtable_set_data        ; -- keys values
 
         _this_hashtable_raw_capacity

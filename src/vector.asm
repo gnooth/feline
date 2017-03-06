@@ -17,7 +17,7 @@ file __FILE__
 
 ; ### vector?
 code vector?, 'vector?'                 ; handle -- ?
-        _ deref                         ; -- array/0
+        _ deref                         ; -- raw-object/0
         test    rbx, rbx
         jz      .1
         movzx   eax, word [rbx]
@@ -198,7 +198,7 @@ endcode
 code destroy_vector_unchecked, '~vector-unchecked' ; vector --
         _dup
         _vector_data
-        _ ifree                         ; -- vector
+        _ raw_free                      ; -- vector
 
         _ in_gc?
         _zeq_if .1
@@ -211,7 +211,7 @@ code destroy_vector_unchecked, '~vector-unchecked' ; vector --
         xor     eax, eax
         mov     [rbx], rax
 
-        _ ifree
+        _ raw_free
 
         next
 endcode

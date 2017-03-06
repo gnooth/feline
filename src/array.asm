@@ -89,7 +89,7 @@ code error_not_array, 'error-not-array' ; x --
 endcode
 
 ; ### check-array
-code check_array, 'check-array'         ; handle -- array
+code check_array, 'check-array'         ; handle -- raw-array
         _ deref
         test    rbx, rbx
         jz      error_not_array
@@ -263,7 +263,7 @@ code destroy_array_unchecked, '~array-unchecked' ; array --
         xor     eax, eax
         mov     [rbx], rax
 
-        _ ifree
+        _ raw_free
 
         next
 endcode

@@ -36,21 +36,14 @@ subroutine resize                       ; addr size -- new-addr
         ret
 endsub
 
-; ### -allocate
-code iallocate, '-allocate'             ; size -- a-addr
-; A version of ALLOCATE that returns the address of the allocated space if
-; the allocation is successful and otherwise calls THROW with the numeric
-; code specified by Forth 2012.
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
+; ### raw-allocate
+code raw_allocate, 'raw-allocate'       ; raw-size -- raw-address
+        mov     arg0_register, rbx
         xcall   os_malloc
         test    rax, rax
         jz .1
         ; allocation succeeded
-        mov     rbx, rax                ; -- a-addr
+        mov     rbx, rax
         _return
 .1:
         ; failed!
@@ -58,16 +51,9 @@ code iallocate, '-allocate'             ; size -- a-addr
         next
 endcode
 
-extern os_free
-
-; ### -free
-code ifree, '-free'                     ; a-addr --
-; a version of FREE that doesn't return the meaningless ior
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
+; ### raw-free
+code raw_free, 'raw-free'               ; raw-address --
+        mov     arg0_register, rbx
         xcall   os_free                 ; "The free() function returns no value."
         poprbx
         next

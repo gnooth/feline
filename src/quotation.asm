@@ -185,7 +185,7 @@ code destroy_quotation_unchecked, '~quotation-unchecked' ; quotation --
         xor     eax, eax
         mov     [rbx], rax
 
-        _ ifree
+        _ raw_free
 
         next
 endcode

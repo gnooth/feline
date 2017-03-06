@@ -183,7 +183,7 @@ subroutine make_sbuf_internal   ; untagged-capacity -- sbuf
 
         _dup
         _oneplus                        ; terminal null byte
-        _ iallocate
+        _ raw_allocate
         _this_sbuf_set_data             ; -- capacity
 
         _this_sbuf_set_raw_capacity
@@ -284,7 +284,7 @@ code destroy_sbuf_unchecked, '~sbuf-unchecked' ; sbuf --
         _if .2
         _dup
         _sbuf_data
-        _ ifree
+        _ raw_free
 
         _ in_gc?
         _zeq_if .4
@@ -295,7 +295,7 @@ code destroy_sbuf_unchecked, '~sbuf-unchecked' ; sbuf --
         ; after it has been freed.
         xor     eax, eax
         mov     [rbx], rax
-        _ ifree
+        _ raw_free
         _else .2
         _drop
         _then .2

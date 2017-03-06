@@ -546,7 +546,7 @@ untagged_to_base:
 
         _lit 256
         _dup
-        _ iallocate                     ; -- untagged-fixnum untagged-base size buffer
+        _ raw_allocate                  ; -- untagged-fixnum untagged-base size buffer
         _duptor
 %ifdef WIN64
         popd    r8                      ; buffer
@@ -564,7 +564,7 @@ untagged_to_base:
         pushd   rax                     ; -- buffer size
         _ copy_to_string
         _rfrom
-        _ ifree
+        _ raw_free
         next
 endcode
 

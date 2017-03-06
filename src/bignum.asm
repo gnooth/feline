@@ -116,7 +116,7 @@ subroutine destroy_bignum_unchecked     ; bignum --
         xor     eax, eax
         mov     [rbx], rax
 
-        _ ifree
+        _ raw_free
 
         ret
 endsub
@@ -150,7 +150,7 @@ code bignum_to_base, 'bignum>base'      ; bignum base -- string
         mov     rbx, rax
 
         add     rbx, 2
-        _ iallocate                     ; -- base buffer-address
+        _ raw_allocate                  ; -- base buffer-address
         _duptor
 
         mov     arg0_register, rbx      ; buffer address
@@ -171,7 +171,7 @@ code bignum_to_base, 'bignum>base'      ; bignum base -- string
         _ copy_to_string
 
         _rfrom
-        _ ifree
+        _ raw_free
 
         pop     this_register
 

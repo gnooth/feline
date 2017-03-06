@@ -70,7 +70,7 @@ code initialize_locals_stack, 'initialize-locals-stack'
 
         _lit    4096                    ; REVIEW
         _dup
-        _ iallocate
+        _ raw_allocate
         _plus
         mov     [lp0_value], rbx
         _lpstore
@@ -85,7 +85,7 @@ code free_locals_stack, 'free-locals-stack'
         _if .1
         _lit 4096
         _minus
-        _ ifree
+        _ raw_free
         _then .1
         next
 endcode

@@ -72,7 +72,7 @@ code initialize_handle_space, 'initialize-handle-space' ; --
         ; no handle space was reserved
         _lit HANDLE_SPACE_SIZE
         _dup
-        _ iallocate
+        _ raw_allocate
         _dup
         _to_global handle_space
         _dup

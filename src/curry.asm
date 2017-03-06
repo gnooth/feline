@@ -91,10 +91,10 @@ code check_curry, 'check-curry'         ; x -- curry
         _dup
         _ handle?
         _tagged_if .1
-        _handle_to_object_unsafe        ; -- object/0
+        _handle_to_object_unsafe        ; -- raw-object/0
         _dup_if .2
         _dup
-        _object_type                    ; -- object object-type
+        _object_type                    ; -- raw-object object-type
         _eq? OBJECT_TYPE_CURRY
         _tagged_if .3
         _return
@@ -230,7 +230,7 @@ code destroy_curry_unchecked, '~curry-unchecked' ; curry --
         xor     eax, eax
         mov     [rbx], rax
 
-        _ ifree
+        _ raw_free
 
         next
 endcode

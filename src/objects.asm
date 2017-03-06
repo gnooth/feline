@@ -17,7 +17,7 @@ file __FILE__
 
 ; ### allocate-object
 code allocate_object, 'allocate-object' ; size -- object
-        _ iallocate
+        _ raw_allocate
         next
 endcode
 
@@ -227,7 +227,7 @@ subroutine destroy_object_unchecked     ; object --
         xor     eax, eax
         mov     [rbx], rax
 
-        _ ifree
+        _ raw_free
 
         ret
 endsub
