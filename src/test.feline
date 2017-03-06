@@ -15,10 +15,10 @@ interactive? get assert-false
 
 "test" "test" eq? assert-false
 
-V{ 1 2 3 } length 3 assert=
-V{ "this is a test" } length 1 assert=
+vector{ 1 2 3 } length 3 assert=
+vector{ "this is a test" } length 1 assert=
 
-V{ 1 2 3 } [ dup + ] map V{ 2 4 6 } sequence= assert-true
+vector{ 1 2 3 } [ dup + ] map vector{ 2 4 6 } sequence= assert-true
 
 "this is a multiline
 string" length 26 assert=
@@ -346,12 +346,12 @@ test: min-length-test-1
     "test"     "this is a test" min-length 4 assert=
     ""         "effluvia"       min-length 0 assert=
     { 1 2 3 }  { 4 }            min-length 1 assert=
-    V{ 1 2 3 } ""               min-length 0 assert= ;
+    vector{ 1 2 3 } ""          min-length 0 assert= ;
 
 min-length-test-1
 
 test: dip-test-1 ( -- )
-    87 42 [ 3 * ] dip get-data-stack V{ 261 42 } sequence= assert-true
+    87 42 [ 3 * ] dip get-data-stack vector{ 261 42 } sequence= assert-true
     clear
 ;
 
@@ -379,22 +379,22 @@ test: map-index-test-1 ( -- )
     { "a" "b" "c" } [ 2array ] map-index get-data-stack
     { { { "a" 0 } { "b" 1 } { "c" 2 } } } assert=
     clear
-    V{ "a" "b" "c" } [ 2array ] map-index get-data-stack
-    { V{ { "a" 0 } { "b" 1 } { "c" 2 } } } assert=
+    vector{ "a" "b" "c" } [ 2array ] map-index get-data-stack
+    { vector{ { "a" 0 } { "b" 1 } { "c" 2 } } } assert=
     clear
 ;
 
 map-index-test-1
 
 test: keep-test-1 ( -- )
-    42 [ dup ] keep get-data-stack V{ 42 42 42 } sequence= assert-true
+    42 [ dup ] keep get-data-stack vector{ 42 42 42 } sequence= assert-true
     clear
 ;
 
 keep-test-1
 
 test: bi@-test-1
-    3 4 [ dup ] bi@ get-data-stack V{ 3 3 4 4 } sequence= assert-true
+    3 4 [ dup ] bi@ get-data-stack vector{ 3 3 4 4 } sequence= assert-true
     clear
 ;
 
@@ -471,8 +471,8 @@ test: 4array-test-1 ( -- )
 
 -- vector-insert-nth!
 test: vector-test-1 ( -- )
-    17 0 V{ 0 1 2 3 } [ vector-insert-nth! ] keep
-    V{ 17 0 1 2 3 } sequence= assert-true
+    17 0 vector{ 0 1 2 3 } [ vector-insert-nth! ] keep
+    vector{ 17 0 1 2 3 } sequence= assert-true
     clear
 ;
 
@@ -496,11 +496,11 @@ test: vector-test-2 ( -- )
     1 <vector> !> v
     42 9 v set-nth
     87 v push
-    v V{ f f f f f f f f f 42 87 } sequence= assert-true
+    v vector{ f f f f f f f f f 42 87 } sequence= assert-true
 
     -- FIXME this fails Nov 25 2016 9:42 AM
     -- 14 19 v set-nth
-    -- v V{ f f f f f f f f f 42 87 f f f f f f f f 14 } sequence= assert-true
+    -- v vector{ f f f f f f f f f 42 87 f f f f f f f f 14 } sequence= assert-true
 ;
 
 vector-test-2
@@ -518,7 +518,7 @@ vector-test-3
 
 -- vector-pop*
 test: vector-test-4 ( -- )
-    V{ 1 2 3 } [ vector-pop* ] keep
+    vector{ 1 2 3 } [ vector-pop* ] keep
     [ length 2 assert= ] keep
     [ vector-pop* ] keep
     [ length 1 assert= ] keep
@@ -531,16 +531,16 @@ vector-test-4
 -- vector-last
 test: vector-test-5 ( -- )
     clear
-    V{ 1 2 3 } vector-last get-data-stack { 3 } sequence= assert-true
+    vector{ 1 2 3 } vector-last get-data-stack { 3 } sequence= assert-true
     clear
-    V{ "test" } vector-last "test" assert=
+    vector{ "test" } vector-last "test" assert=
 ;
 
 vector-test-5
 
 -- vector>array
 test: vector>array-test-1 ( -- )
-    V{ 1 2 3 } vector>array
+    vector{ 1 2 3 } vector>array
     [ array? assert-true ] keep
     { 1 2 3 } assert=
 ;
@@ -741,7 +741,7 @@ test: length-test-1 ( -- )
     "test" length 4 assert-eq
     "testing" string>sbuf length 7 assert-eq
     { 1 2 3 } length 3 assert-eq
-    V{ 1 2 3 "test" } length 4 assert-eq
+    vector{ 1 2 3 "test" } length 4 assert-eq
     [ dup + ] length 2 assert-eq
     3 [ + ] curry length 2 assert-eq
     3 ' + curry length 2 assert-eq
@@ -761,14 +761,14 @@ test: globals-test-1 ( -- )
 globals-test-1
 
 test: find-test-1 ( -- )
-    V{ 1 2 3 4 5 6 } [ 3 = ] find
-    get-data-stack V{ 2 3 } sequence= assert-true
+    vector{ 1 2 3 4 5 6 } [ 3 = ] find
+    get-data-stack vector{ 2 3 } sequence= assert-true
     clear
-    V{ 1 2 3 4 5 6 } [ 17 = ] find
+    vector{ 1 2 3 4 5 6 } [ 17 = ] find
     get-data-stack f f 2array sequence= assert-true
     clear
-    4 V{ 1 2 3 4 5 6 } [ dupd = ] find
-    get-data-stack V{ 4 3 4 } sequence= assert-true
+    4 vector{ 1 2 3 4 5 6 } [ dupd = ] find
+    get-data-stack vector{ 4 3 4 } sequence= assert-true
     clear
 ;
 
@@ -801,10 +801,10 @@ test: find-last-from-test-1
     -99 "this is a test" [ 'e' = ] find-last-from
     get-data-stack { f f } sequence= assert-true
     clear
-    4 V{ 1 2 3 4 5 3 } [ 3 = ] find-last-from
+    4 vector{ 1 2 3 4 5 3 } [ 3 = ] find-last-from
     get-data-stack { 2 3 } sequence= assert-true
     clear
-    3 4 V{ 1 2 3 4 5 3 } [ dupd = ] find-last-from
+    3 4 vector{ 1 2 3 4 5 3 } [ dupd = ] find-last-from
     get-data-stack { 3 2 3 } sequence= assert-true
     clear
 ;
@@ -813,11 +813,11 @@ find-last-from-test-1
 
 test: map-find-test-1 ( -- )
     clear
-    V{ 1 2 3 4 5 6 } [ 3 = ] map-find get-data-stack { t 3 } sequence= assert-true
+    vector{ 1 2 3 4 5 6 } [ 3 = ] map-find get-data-stack { t 3 } sequence= assert-true
     clear
-    V{ 1 2 3 4 5 6 } [ 17 = ] map-find get-data-stack { f f } sequence= assert-true
+    vector{ 1 2 3 4 5 6 } [ 17 = ] map-find get-data-stack { f f } sequence= assert-true
     clear
-    4 V{ 1 2 3 4 5 6 } [ dupd = ] map-find get-data-stack { 4 t 4 } sequence= assert-true
+    4 vector{ 1 2 3 4 5 6 } [ dupd = ] map-find get-data-stack { 4 t 4 } sequence= assert-true
     clear
 ;
 
@@ -860,7 +860,7 @@ test: immediate?-test-1 ( -- )
 immediate?-test-1
 
 test: parsing-test-1 ( -- )
-    V{ symbol: this-is-a-new-symbol } V{ } sequence= assert-true
+    vector{ symbol: this-is-a-new-symbol } vector{ } sequence= assert-true
     clear
 ;
 
@@ -922,7 +922,7 @@ test: times-test-1 ( -- )
 times-test-1
 
 test: filter-test-1 ( -- )
-    V{ 1 2 3 4 } [ 3 < ] filter V{ 1 2 } sequence= assert-true
+    vector{ 1 2 3 4 } [ 3 < ] filter vector{ 1 2 } sequence= assert-true
      { 1 2 3 4 } [ 3 < ] filter  { 1 2 } sequence= assert-true
 ;
 
@@ -963,8 +963,8 @@ redefinition-test-2
 test: empty?-test-1
     { } empty? assert-true
     { 1 } empty? assert-false
-    V{ } empty? assert-true
-    V{ 1 } empty? assert-false
+    vector{ } empty? assert-true
+    vector{ 1 } empty? assert-false
 
     f empty? assert-true
     [ 42 empty? ] assert-must-fail
@@ -1157,7 +1157,7 @@ test: member-eq?-test-1
     2 a member-eq? 1 assert=
     "test" >local: s
     s a member-eq? assert-false
-    V{ 1 2 3 4 } >local: v
+    vector{ 1 2 3 4 } >local: v
     a [ v member-eq? assert ] each
     v [ a member-eq? assert ] each
     s v member-eq? assert-false
@@ -1362,11 +1362,11 @@ test: ?nth-test-1
 ?nth-test-1
 
 test: ?nth-test-2
-    4 V{ 0 1 2 3 } [ ?nth ] curry each-integer
+    4 vector{ 0 1 2 3 } [ ?nth ] curry each-integer
     get-data-stack { 0 1 2 3 } sequence= assert-true
     clear
 
-    V{ 0 1 2 3 }
+    vector{ 0 1 2 3 }
     -1 over ?nth assert-false
     4 over ?nth assert-false
     42  over ?nth assert-false
@@ -1592,7 +1592,7 @@ test: string-has-suffix?-test-1
 string-has-suffix?-test-1
 
 test: vector-find-string-test-1
-    V{ "foo" "bar" "baz" "zork" } >local: v
+    vector{ "foo" "bar" "baz" "zork" } >local: v
     "foo"  v vector-find-string assert-true 0 assert=
     "zork" v vector-find-string assert-true 3 assert=
     "baz"  v vector-find-string assert-true 2 assert=
@@ -1890,7 +1890,7 @@ test: @-test-1
 @-test-1
 
 test: ?vector-pop-test-1
-    V{ 1 2 }
+    vector{ 1 2 }
     [ ?vector-pop 2 assert= ] keep
     [ ?vector-pop 1 assert= ] keep
     [ empty? assert-true ] keep
@@ -1899,24 +1899,24 @@ test: ?vector-pop-test-1
 ?vector-pop-test-1
 
 test: vector-reverse!-test-1
-    V{ 1 2 3 4 5 } >local: v
+    vector{ 1 2 3 4 5 } >local: v
     v vector-reverse! v assert-eq
-    v V{ 5 4 3 2 1 } sequence= assert
-    V{ 1 2 3 4 } !> v
+    v vector{ 5 4 3 2 1 } sequence= assert
+    vector{ 1 2 3 4 } !> v
     v vector-reverse! v assert-eq
-    v V{ 4 3 2 1 } sequence= assert
-    V{ 17 } !> v
+    v vector{ 4 3 2 1 } sequence= assert
+    vector{ 17 } !> v
     v vector-reverse! v assert-eq
-    v V{ 17 } sequence= assert
-    V{ } !> v
+    v vector{ 17 } sequence= assert
+    vector{ } !> v
     v vector-reverse! v assert-eq
-    v V{ } sequence= assert
+    v vector{ } sequence= assert
 ;
 
 vector-reverse!-test-1
 
 test: count-test-1
-    V{ 1 2 3 4 5 }
+    vector{ 1 2 3 4 5 }
     dup ' odd?   count 3 assert=
     dup ' even?  count 2 assert=
     dup [ odd? ] count 3 assert=
