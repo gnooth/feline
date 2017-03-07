@@ -32,14 +32,37 @@ code float?, 'float?'                   ; handle -- ?
         next
 endcode
 
-; ### check-float
-code check_float, 'check-float'       ; handle -- raw-float
+; ### verify-float
+code verify_float, 'verify-float'       ; x -- x
+        _dup
         _ deref
         test    rbx, rbx
-        jz      error_not_float
+        jz      .error
         movzx   eax, word [rbx]
         cmp     eax, OBJECT_TYPE_FLOAT
-        jne     error_not_float
+        jne     .error
+        _drop
+        _return
+.error:
+        _drop                           ; -- x
+        jmp     error_not_float
+        next
+endcode
+
+; ### check-float
+code check_float, 'check-float'         ; x -- raw-float
+        _dup
+        _ deref
+        test    rbx, rbx
+        jz      .error
+        movzx   eax, word [rbx]
+        cmp     eax, OBJECT_TYPE_FLOAT
+        jne     .error
+        _nip
+        _return
+.error:
+        _drop                           ; -- x
+        jmp     error_not_float
         next
 endcode
 
@@ -172,5 +195,31 @@ code float_float_plus, 'float-float+'   ; float1 float2 -- sum
         pushrbx
         mov     rbx, rax
         _ new_handle
+        next
+endcode
+
+; ### float+
+code float_plus, 'float+'       ; number float -- sum
+        _ verify_float
+
+        _over
+        _ float?
+        _tagged_if .1
+        _ float_float_plus
+        _return
+        _then .1
+
+        _over
+        _ fixnum?
+        _tagged_if .2
+        _swap
+        _ fixnum_to_float
+        _ float_float_plus
+        _return
+        _then .2
+
+        ; FIXME bignums
+        _error "unsupported"
+
         next
 endcode
