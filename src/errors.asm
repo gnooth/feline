@@ -31,9 +31,17 @@ code error_not_fixnum, 'error-not-fixnum'       ; x --
         next
 endcode
 
+; ### error-not-bignum
+code error_not_bignum, 'error-not-bignum'       ; x --
+        _quote "Type error: the value %s is not a bignum."
+        _ format
+        _ error
+        next
+endcode
+
 ; ### error-not-float
 code error_not_float, 'error-not-float'         ; x --
-        _quote "The value %s is not a float."
+        _quote "Type error: the value %s is not a float."
         _ format
         _ error
         next
