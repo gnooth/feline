@@ -29,13 +29,13 @@ typedef struct
 {
   cell object_header;
   mpz_t z;
-} BIGNUM;
+} Bignum;
 
 typedef struct
 {
   cell header;
   double d;
-} FLOAT;
+} Float;
 
 // os.c
 cell os_ticks();

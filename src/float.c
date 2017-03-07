@@ -20,9 +20,9 @@
 
 #include "feline.h"
 
-static FLOAT *make_float(double d)
+static Float *make_float(double d)
 {
-  FLOAT *p = malloc(sizeof(FLOAT));
+  Float *p = malloc(sizeof(Float));
   p->header = OBJECT_TYPE_FLOAT;
   p->d = d;
   return p;
@@ -34,9 +34,8 @@ cell c_coerce_fixnum_to_float(int n)
   return (cell) make_float(d);
 }
 
-cell c_float_to_string(char *buf, size_t size, FLOAT *p)
+cell c_float_to_string(char *buf, size_t size, Float *p)
 {
-  // FIXME "3.14" string>float float>string -> "3.1400000000000001"
   snprintf(buf, size, "%.16g", p->d);
   return (cell) buf;
 }
@@ -57,7 +56,7 @@ cell c_pi()
   return (cell) make_float(M_PI);
 }
 
-cell c_float_add_float(FLOAT *p1, FLOAT *p2)
+cell c_float_add_float(Float *p1, Float *p2)
 {
   return (cell) make_float(p1->d + p2->d);
 }
