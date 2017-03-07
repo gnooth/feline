@@ -204,6 +204,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _initialize_generic_function generic_plus
         _add_method generic_plus, OBJECT_TYPE_FIXNUM, fixnum_plus
         _add_method generic_plus, OBJECT_TYPE_BIGNUM, bignum_plus
+        _add_method generic_plus, OBJECT_TYPE_FLOAT, float_plus
 
         ; write
         _initialize_generic_function generic_write
