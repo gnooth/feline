@@ -18,10 +18,18 @@
 
 #include <stdint.h>             // int64_t
 
+#include "../gmp/gmp.h"
+
 // This must be kept in sync with the object types in object-macros.asm.
 #define OBJECT_TYPE_FLOAT 18
 
 typedef int64_t cell;
+
+typedef struct
+{
+  cell object_header;
+  mpz_t z;
+} BIGNUM;
 
 typedef struct
 {

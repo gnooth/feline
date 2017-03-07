@@ -16,8 +16,6 @@
 #include <stdlib.h>     // malloc
 #include <string.h>     // memset
 
-#include "../gmp/gmp.h"
-
 #include "feline.h"
 
 #ifdef WIN64
@@ -41,12 +39,6 @@ static inline cell make_fixnum(signed long int n)
   // see _tag_fixnum in macros.asm
   return ((n << 3) + 1);
 }
-
-typedef struct
-{
-  cell object_header;
-  mpz_t z;
-} BIGNUM;
 
 void *c_bignum_allocate()
 {
