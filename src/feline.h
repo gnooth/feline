@@ -23,6 +23,12 @@
 
 typedef int64_t cell;
 
+typedef struct
+{
+  cell header;
+  double d;
+} FLOAT;
+
 // os.c
 cell os_ticks();
 cell os_close_file(cell fd);

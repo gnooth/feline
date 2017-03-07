@@ -20,12 +20,6 @@
 
 #include "feline.h"
 
-typedef struct
-{
-  cell header;
-  double d;
-} FLOAT;
-
 static FLOAT *make_float(double d)
 {
   FLOAT *p = malloc(sizeof(FLOAT));
