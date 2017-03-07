@@ -129,7 +129,7 @@ code range_nth_unsafe, 'range-nth-unsafe' ; n seq -- elt
         poprbx                          ; -- n
         _verify_fixnum
         _this_range_start
-        _ plus
+        _ generic_plus
         pop     this_register
         next
 endcode
@@ -156,7 +156,7 @@ code range_to_string, 'range>string'    ; range -- string
         _ sbuf_append_string
 
         _this_range_length
-        _ plus
+        _ generic_plus
         _lit tagged_fixnum(1)
         _ feline_minus
         _ object_to_string
@@ -189,7 +189,7 @@ code dot_range, '.range'                ; range --
         _write " .. "
 
         _this_range_length
-        _ plus
+        _ generic_plus
         _lit tagged_fixnum(1)
         _ feline_minus
         _ dot_object

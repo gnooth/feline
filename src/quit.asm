@@ -45,7 +45,7 @@ code find_qualified_name, 'find-qualified-name'
 
         _quotation .3
         _lit tagged_fixnum(1)
-        _ plus
+        _ generic_plus
         _ string_tail
         _end_quotation .3
 
@@ -289,7 +289,7 @@ code print_error_location, 'print-error-location'       ; --
         _tagged_if .2
         _write " line "
         _lit tagged_fixnum(1)
-        _ plus
+        _ generic_plus
         _ decimal_dot
         _else .2
         _drop
