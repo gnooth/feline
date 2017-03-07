@@ -28,9 +28,19 @@ static Float *make_float(double d)
   return p;
 }
 
-cell c_coerce_fixnum_to_float(int n)
+cell c_coerce_fixnum_to_float(long n)
 {
   double d = n;
+  return (cell) make_float(d);
+}
+
+cell c_coerce_bignum_to_float(Bignum *b)
+{
+  mpf_t f;
+  mpf_init(f);
+  mpf_set_z(f, b->z);
+  double d = mpf_get_d(f);
+  mpf_clear(f);
   return (cell) make_float(d);
 }
 

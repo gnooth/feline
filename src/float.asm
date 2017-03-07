@@ -173,6 +173,16 @@ code fixnum_to_float, 'fixnum>float'
         next
 endcode
 
+; ### bignum>float
+code bignum_to_float, 'bignum>float'
+        _ check_bignum
+        mov     arg0_register, rbx
+        xcall   c_coerce_bignum_to_float
+        mov     rbx, rax
+        _ new_handle
+        next
+endcode
+
 ; ### pi
 code pi, 'pi'                   ; -- float
         pushrbx
