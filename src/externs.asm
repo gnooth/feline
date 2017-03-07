@@ -74,6 +74,7 @@ extern c_string_to_integer
 extern c_expt
 
 ; float.c
+extern c_coerce_fixnum_to_float
 extern c_string_to_float
 extern c_float_to_string
 extern c_pi

@@ -129,6 +129,24 @@ code float_to_string, 'float>string'    ; float -- string
         _rfrom
         _ raw_free
 
+        _tagged_char '.'
+        _over
+        _ string_find_char
+        _tagged_if_not .1
+        _quote ".0"
+        _ concat
+        _then .1
+
+        next
+endcode
+
+; ### fixnum>float
+code fixnum_to_float, 'fixnum>float'
+        _check_fixnum
+        mov     arg0_register, rbx
+        xcall   c_coerce_fixnum_to_float
+        mov     rbx, rax
+        _ new_handle
         next
 endcode
 

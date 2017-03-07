@@ -34,6 +34,12 @@ static FLOAT *make_float(double d)
   return p;
 }
 
+cell c_coerce_fixnum_to_float(int n)
+{
+  double d = n;
+  return (cell) make_float(d);
+}
+
 cell c_float_to_string(char *buf, size_t size, FLOAT *p)
 {
   // FIXME "3.14" string>float float>string -> "3.1400000000000001"
