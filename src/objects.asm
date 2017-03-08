@@ -157,8 +157,9 @@ code type?, 'type?'                     ; x type-number -- ?
         next
 endcode
 
-; ### destroy_object_unchecked
-subroutine destroy_object_unchecked     ; object --
+; ### destroy-object-unchecked
+code destroy_object_unchecked, 'destroy-object-unchecked', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; object --
 ; The argument is known to be the address of a valid heap object, not a
 ; handle or null. Called only by maybe-collect-handle during gc.
         _dup
@@ -229,8 +230,8 @@ subroutine destroy_object_unchecked     ; object --
 
         _ raw_free
 
-        ret
-endsub
+        next
+endcode
 
 ; ### slot
 code slot, 'slot'                       ; obj tagged-fixnum -- value
