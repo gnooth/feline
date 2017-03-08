@@ -176,14 +176,29 @@ code format_object, 'format-object'     ; object format-specifier -- string
         _return
         _then .1
 
+        ; %S print quoted
         _dup
-        _quote "%s"
+        _quote "%S"
         _ stringequal
         _tagged_if .2
         _drop
         _ object_to_string
         _return
         _then .2
+
+        ; %s print without quoting
+        _dup
+        _quote "%s"
+        _ stringequal
+        _tagged_if .3
+        _drop
+        _dup
+        _ string?
+        _tagged_if_not .4
+        _ object_to_string
+        _then .4
+        _return
+        _then .3
 
         ; FIXME support more format specifiers
         _error "unsupported"
