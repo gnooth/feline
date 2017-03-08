@@ -70,3 +70,8 @@ cell c_float_add_float(Float *p1, Float *p2)
 {
   return (cell) make_float(p1->d + p2->d);
 }
+
+cell c_float_subtract_float(Float *p1, Float *p2)
+{
+  return (cell) make_float(p1->d - p2->d);
+}

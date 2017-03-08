@@ -233,3 +233,36 @@ code float_plus, 'float+'       ; number float -- sum
 
         next
 endcode
+
+; ### float-float-
+code float_float_minus, 'float-float-'   ; float1 float2 -- difference
+        _ check_float
+        _swap
+        _ check_float
+        mov     arg0_register, rbx
+        poprbx
+        mov     arg1_register, rbx
+        poprbx
+        xcall   c_float_subtract_float
+        pushrbx
+        mov     rbx, rax
+        _ new_handle
+        next
+endcode
+
+; ### float-
+code float_minus, 'float-'              ; number float -- difference
+        _ verify_float
+
+        _over
+        _ float?
+        _tagged_if .1
+        _ float_float_minus
+        _return
+        _then .1
+
+        ; FIXME
+        _error "unsupported"
+
+        next
+endcode

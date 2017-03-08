@@ -77,6 +77,7 @@ extern c_expt
 extern c_coerce_bignum_to_float
 extern c_coerce_fixnum_to_float
 extern c_float_add_float
+extern c_float_subtract_float
 extern c_float_to_string
 extern c_pi
 extern c_string_to_float
