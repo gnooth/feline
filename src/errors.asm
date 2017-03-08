@@ -15,42 +15,47 @@
 
 file __FILE__
 
-; ### error-not-number
-code error_not_number, 'error-not-number'       ; x --
-        _quote "The value %s is not a number."
+; ### format-type-error
+code format_type_error, 'format-type-error'     ; object expected-type -- string
+        _quote "ERROR: the value %S is not %s."
         _ format
         _ error
+        next
+endcode
+
+; ### error-not-number
+code error_not_number, 'error-not-number'       ; x --
+        _quote "a number"
+        _ format_type_error
         next
 endcode
 
 ; ### error-not-fixnum
 code error_not_fixnum, 'error-not-fixnum'       ; x --
-        _quote "The value %s is not a fixnum."
-        _ format
-        _ error
+        _quote "a fixnum"
+        _ format_type_error
         next
 endcode
 
 ; ### error-not-bignum
 code error_not_bignum, 'error-not-bignum'       ; x --
-        _quote "Type error: the value %s is not a bignum."
-        _ format
-        _ error
+        _quote "a bignum"
+        _ format_type_error
         next
 endcode
 
 ; ### error-not-float
 code error_not_float, 'error-not-float'         ; x --
-        _quote "Type error: the value %s is not a float."
-        _ format
+        _quote "a float"
+        _ format_type_error
         _ error
         next
 endcode
 
 ; ### error-not-char
 code error_not_char, 'error-not-char'           ; x --
-        _quote "The value %s is not a character."
-        _ format
+        _quote "a character"
+        _ format_type_error
         _ error
         next
 endcode
