@@ -228,8 +228,17 @@ code float_plus, 'float+'       ; number float -- sum
         _return
         _then .2
 
-        ; FIXME bignums
-        _error "unsupported"
+        _over
+        _ bignum?
+        _tagged_if .3
+        _swap
+        _ bignum_to_float
+        _ float_float_plus
+        _return
+        _then .3
+
+        _drop
+        _ error_not_number
 
         next
 endcode
@@ -261,8 +270,28 @@ code float_minus, 'float-'              ; number float -- difference
         _return
         _then .1
 
-        ; FIXME
-        _error "unsupported"
+        _over
+        _ fixnum?
+        _tagged_if .2
+        _swap
+        _ fixnum_to_float
+        _swap
+        _ float_float_minus
+        _return
+        _then .2
+
+        _over
+        _ bignum?
+        _tagged_if .3
+        _swap
+        _ bignum_to_float
+        _swap
+        _ float_float_minus
+        _return
+        _then .3
+
+        _drop
+        _ error_not_number
 
         next
 endcode
