@@ -122,6 +122,9 @@ generic generic_write, 'write'          ; string/sbuf --
 ; ### substring
 generic substring, 'substring'          ; from to string/sbuf -- substring
 
+; ### >float
+generic generic_coerce_to_float, '>float'
+
 %macro _initialize_generic_function 1   ; generic-asm-name --
         _lit S_%1
         _ initialize_generic_function
@@ -215,6 +218,12 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _initialize_generic_function substring
         _add_method substring, OBJECT_TYPE_STRING, string_substring
         _add_method substring, OBJECT_TYPE_SBUF, sbuf_substring
+
+        ; >float
+        _initialize_generic_function generic_coerce_to_float
+        _add_method generic_coerce_to_float, OBJECT_TYPE_FIXNUM, fixnum_to_float
+        _add_method generic_coerce_to_float, OBJECT_TYPE_BIGNUM, bignum_to_float
+        _add_method generic_coerce_to_float, OBJECT_TYPE_STRING, string_to_float
 
         next
 endcode
