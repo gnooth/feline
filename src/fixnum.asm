@@ -253,14 +253,12 @@ code between?, 'between?'               ; n min max -- ?
 endcode
 
 ; ### fixnum-fixnum+
-code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; fixnum fixnum -- sum
-; no type checking
-; both arguments are assumed to be fixnums
-        _untag_fixnum
-        mov     rax, [rbp]
+code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; fixnum1 fixnum2 -- sum
+        _check_fixnum
+        _swap
+        _check_fixnum
+        add     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
-        _untag_fixnum rax
-        add     rbx, rax
         mov     rcx, MOST_POSITIVE_FIXNUM
         cmp     rbx, rcx
         jg      .1
@@ -281,7 +279,16 @@ code fixnum_fixnum_minus, 'fixnum-fixnum-'      ; fixnum1 fixnum2 -- difference
         _check_fixnum
         sub     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
+        mov     rcx, MOST_POSITIVE_FIXNUM
+        cmp     rbx, rcx
+        jg      .1
+        mov     rdx, MOST_NEGATIVE_FIXNUM
+        cmp     rbx, rdx
+        jl      .1
         _tag_fixnum
+        _return
+.1:
+        _ signed_to_bignum
         next
 endcode
 
