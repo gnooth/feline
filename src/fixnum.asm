@@ -274,6 +274,17 @@ code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; fixnum fixnum -- sum
         next
 endcode
 
+; ### fixnum-fixnum-
+code fixnum_fixnum_minus, 'fixnum-fixnum-'      ; fixnum1 fixnum2 -- difference
+        _check_fixnum
+        _swap
+        _check_fixnum
+        sub     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        _tag_fixnum
+        next
+endcode
+
 ; ### bignum-fixnum+
 code bignum_fixnum_plus, 'fixnum-bignum+'       ; bignum fixnum -- sum
 
