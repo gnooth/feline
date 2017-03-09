@@ -64,7 +64,6 @@ code check_bignum, 'check-bignum'        ; x -- raw-bignum
         next
 endcode
 
-
 ; ### unsigned_to_bignum
 subroutine unsigned_to_bignum   ; untagged -- bignum
         _ gc_disable
@@ -252,9 +251,13 @@ code bignum_bignum_plus, 'bignum-bignum+'       ; bignum bignum -- sum
         next
 endcode
 
-; ### bignum-fixnum+
-code bignum_fixnum_plus, 'bignum-fixnum+'       ; fixnum bignum -- sum
+; ### fixnum-bignum+
+code fixnum_bignum_plus, 'fixnum-bignum+'       ; fixnum bignum -- sum
+
+        ; second arg must be bignum
         _ check_bignum
+
+        ; first arg must be a fixnum
         _swap
         _ check_fixnum          ; -- bignum fixnum
 
@@ -277,13 +280,16 @@ code bignum_fixnum_plus, 'bignum-fixnum+'       ; fixnum bignum -- sum
 endcode
 
 ; ### bignum+
-code bignum_plus, 'bignum+'     ; x y -- z
+code bignum_plus, 'bignum+'     ; number bignum -- sum
+
+        ; second arg must be a bignum
         _ verify_bignum
 
+        ; dispatch on type of first arg
         _over
         _fixnum?
         _if .1
-        _ bignum_fixnum_plus
+        _ fixnum_bignum_plus
         _return
         _then .1
 

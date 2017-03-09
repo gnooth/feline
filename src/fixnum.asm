@@ -274,10 +274,14 @@ code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; fixnum fixnum -- sum
         next
 endcode
 
-; ### fixnum-bignum+
-code fixnum_bignum_plus, 'fixnum-bignum+'       ; bignum fixnum -- sum
+; ### bignum-fixnum+
+code bignum_fixnum_plus, 'fixnum-bignum+'       ; bignum fixnum -- sum
+
+        ; second arg must be a fixnum
         _ verify_fixnum
         _ fixnum_to_bignum
+
+        ; first arg must be a bignum
         _over
         _ bignum?
         _tagged_if .1
@@ -291,9 +295,12 @@ code fixnum_bignum_plus, 'fixnum-bignum+'       ; bignum fixnum -- sum
 endcode
 
 ; ### fixnum+
-code fixnum_plus, 'fixnum+'           ; x y -- z
+code fixnum_plus, 'fixnum+'           ; number fixnum -- sum
+
+        ; second arg must be a fixnum
         _verify_fixnum
 
+        ; dispatch on type of first arg
         mov     al, byte [rbp]
         and     al, TAG_MASK
         cmp     al, FIXNUM_TAG
@@ -305,7 +312,7 @@ code fixnum_plus, 'fixnum+'           ; x y -- z
         _over
         _ bignum?
         _tagged_if .2
-        _ fixnum_bignum_plus
+        _ bignum_fixnum_plus
         _return
         _then .2
 
