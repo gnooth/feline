@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -180,7 +180,7 @@ code get, 'get'                         ; variable -- value
         _drop                           ; -- namestack index
 
         _lit tagged_fixnum(1)
-        _ feline_minus                  ; -- namestack index-1
+        _ generic_minus                 ; -- namestack index-1
         _dup
         _lit tagged_zero
         _ fixnum_lt

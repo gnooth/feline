@@ -116,6 +116,9 @@ generic new_sequence, 'new-sequence'    ; len seq -- new-seq
 ; ### +
 generic generic_plus, '+'       ; x y -- z
 
+; ### -
+generic generic_minus, '-'      ; x y -- z
+
 ; ### write
 generic generic_write, 'write'          ; string/sbuf --
 
@@ -208,6 +211,10 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method generic_plus, OBJECT_TYPE_FIXNUM, fixnum_plus
         _add_method generic_plus, OBJECT_TYPE_BIGNUM, bignum_plus
         _add_method generic_plus, OBJECT_TYPE_FLOAT, float_plus
+
+        ; -
+        _initialize_generic_function generic_minus
+        _add_method generic_minus, OBJECT_TYPE_FIXNUM, fixnum_fixnum_minus
 
         ; write
         _initialize_generic_function generic_write

@@ -832,7 +832,7 @@ endcode
 ; ### tab
 code tab, 'tab'                         ; n --
         _ charpos
-        _ feline_minus
+        _ generic_minus
         _lit tagged_fixnum(1)
         _ feline_max
         _ spaces

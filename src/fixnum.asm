@@ -343,17 +343,6 @@ code fixnum_minus, 'fixnum-'            ; x y -- z
         next
 endcode
 
-; ### -
-code feline_minus, '-'                  ; x y -- z
-        _check_fixnum
-        _swap
-        _check_fixnum
-        sub     rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        _tag_fixnum
-        next
-endcode
-
 ; ### fixnum*
 code fixnum_multiply, 'fixnum*'         ; x y -- z
 ; No type checking.

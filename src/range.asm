@@ -158,7 +158,7 @@ code range_to_string, 'range>string'    ; range -- string
         _this_range_length
         _ generic_plus
         _lit tagged_fixnum(1)
-        _ feline_minus
+        _ generic_minus
         _ object_to_string
         _over
         _ sbuf_append_string
@@ -191,7 +191,7 @@ code dot_range, '.range'                ; range --
         _this_range_length
         _ generic_plus
         _lit tagged_fixnum(1)
-        _ feline_minus
+        _ generic_minus
         _ dot_object
 
         _write " }"

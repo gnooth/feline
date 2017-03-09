@@ -126,7 +126,7 @@ code new_slice, '<slice>'               ; from to seq -- slice
         _this_slice_set_start_index     ; -- from to
 
         _swap
-        _ feline_minus
+        _ generic_minus
         _this_slice_set_length
 
         pushrbx
