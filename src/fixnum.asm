@@ -333,14 +333,15 @@ code fixnum_plus, 'fixnum+'           ; number fixnum -- sum
 endcode
 
 ; ### fixnum-
-inline fixnum_minus, 'fixnum-'          ; x y -- z
+code fixnum_minus, 'fixnum-'            ; x y -- z
 ; No type checking.
         mov     rax, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
         sub     rax, rbx
         add     rax, FIXNUM_TAG
         mov     rbx, rax
-endinline
+        next
+endcode
 
 ; ### -
 code feline_minus, '-'                  ; x y -- z
