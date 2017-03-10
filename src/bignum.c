@@ -138,6 +138,14 @@ cell c_bignum_bignum_plus(Bignum *b1, Bignum *b2)
   return normalize(result);
 }
 
+cell c_bignum_bignum_minus(Bignum *b1, Bignum *b2)
+{
+  mpz_t result;
+  mpz_init_set(result, b1->z);
+  mpz_sub(result, result, b2->z);
+  return normalize(result);
+}
+
 cell c_bignum_add(Bignum *b, cell n)
 {
   mpz_t result;

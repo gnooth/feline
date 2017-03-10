@@ -251,6 +251,29 @@ code bignum_bignum_plus, 'bignum-bignum+'       ; bignum bignum -- sum
         next
 endcode
 
+; ### bignum-bignum-
+code bignum_bignum_minus, 'bignum-bignum-'      ; bignum1 bignum2 -- difference
+        _ check_bignum
+        _swap
+        _ check_bignum          ; -- raw-bignum2 raw-bignum1
+
+        _ gc_disable
+
+        mov     arg1_register, rbx
+        poprbx
+        mov     arg0_register, rbx
+        poprbx
+
+        xcall c_bignum_bignum_minus
+
+        pushrbx
+        mov     rbx, rax
+
+        _ gc_enable
+
+        next
+endcode
+
 ; ### fixnum-bignum+
 code fixnum_bignum_plus, 'fixnum-bignum+'       ; fixnum bignum -- sum
 
