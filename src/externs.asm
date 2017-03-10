@@ -57,8 +57,8 @@ extern c_seed_random
 
 ; bignum.c
 extern c_bignum_add
-extern c_bignum_add_bignum
 extern c_bignum_allocate
+extern c_bignum_bignum_plus
 extern c_bignum_equal
 extern c_bignum_free
 extern c_bignum_from_signed
@@ -70,8 +70,8 @@ extern c_bignum_init_set_ui
 extern c_bignum_negate
 extern c_bignum_sizeinbase
 extern c_decimal_to_integer
-extern c_string_to_integer
 extern c_expt
+extern c_string_to_integer
 
 ; float.c
 extern c_coerce_bignum_to_float

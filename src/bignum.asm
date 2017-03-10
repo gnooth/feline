@@ -241,7 +241,7 @@ code bignum_bignum_plus, 'bignum-bignum+'       ; bignum bignum -- sum
         mov     arg1_register, rbx
         poprbx
 
-        xcall c_bignum_add_bignum
+        xcall c_bignum_bignum_plus
 
         pushrbx
         mov     rbx, rax

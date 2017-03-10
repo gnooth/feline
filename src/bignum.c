@@ -130,7 +130,7 @@ static cell normalize(mpz_t z)
   return get_handle_for_object((cell)b);
 }
 
-cell c_bignum_add_bignum(Bignum *b1, Bignum *b2)
+cell c_bignum_bignum_plus(Bignum *b1, Bignum *b2)
 {
   mpz_t result;
   mpz_init_set(result, b1->z);
