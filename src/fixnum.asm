@@ -306,6 +306,20 @@ code bignum_fixnum_plus, 'bignum-fixnum+'       ; bignum fixnum -- sum
         next
 endcode
 
+; ### bignum-fixnum-
+code bignum_fixnum_minus, 'bignum-fixnum-'      ; bignum fixnum -- difference
+        ; second arg must be a fixnum
+        _ verify_fixnum
+        _ fixnum_to_bignum
+
+        ; first arg must be a bignum
+        _swap
+        _ verify_bignum
+
+        _ bignum_bignum_minus
+        next
+endcode
+
 ; ### fixnum+
 code fixnum_plus, 'fixnum+'           ; number fixnum -- sum
 
