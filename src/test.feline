@@ -1942,4 +1942,34 @@ test: string>float-test-1
 
 string>float-test-1
 
+test: addition-test-1
+    4 1 fixnum-fixnum+ 5 assert-eq
+    4 -1 fixnum-fixnum+ 3 assert-eq
+    most-positive-fixnum 1152921504606846975 assert-eq
+    most-negative-fixnum -1152921504606846976 assert-eq
+    most-positive-fixnum 1 fixnum-fixnum+ 1152921504606846976 assert=
+    most-negative-fixnum -1 fixnum-fixnum+ -1152921504606846977 assert=
+    most-positive-fixnum dup fixnum-fixnum+ 2305843009213693950 assert=
+    2305843009213693950 dup bignum-bignum+ 4611686018427387900 assert=
+
+    17 50 expt 1 bignum-fixnum+
+    33300140732146818380750772381422989832214186835186851059977250
+    assert=
+
+    17 50 expt 1 fixnum+
+    33300140732146818380750772381422989832214186835186851059977250
+    assert=
+;
+
+addition-test-1
+
+test: subtraction-test-1
+    4 1 fixnum-fixnum- 3 assert-eq
+    4 -1 fixnum-fixnum- 5 assert-eq
+    most-negative-fixnum fixnum>bignum 1 bignum-fixnum- -1152921504606846977 assert=
+    most-negative-fixnum 1 - -1152921504606846977 assert=
+;
+
+subtraction-test-1
+
 ?nl "Reached end of test.feline" write-string
