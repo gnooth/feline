@@ -348,13 +348,29 @@ code fixnum_plus, 'fixnum+'           ; number fixnum -- sum
 endcode
 
 ; ### fixnum-
-code fixnum_minus, 'fixnum-'            ; x y -- z
-; No type checking.
-        mov     rax, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        sub     rax, rbx
-        add     rax, FIXNUM_TAG
-        mov     rbx, rax
+code fixnum_minus, 'fixnum-'            ; number fixnum -- difference
+
+        ; second arg must be a fixnum
+        _verify_fixnum
+
+        ; dispatch on type of first arg
+        mov     al, byte [rbp]
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     .1
+        _ fixnum_fixnum_minus
+        _return
+
+.1:
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_fixnum_minus
+        _return
+        _then .2
+
+        _drop
+        _ error_not_number
         next
 endcode
 
