@@ -293,22 +293,16 @@ code fixnum_fixnum_minus, 'fixnum-fixnum-'      ; fixnum1 fixnum2 -- difference
 endcode
 
 ; ### bignum-fixnum+
-code bignum_fixnum_plus, 'fixnum-bignum+'       ; bignum fixnum -- sum
-
+code bignum_fixnum_plus, 'bignum-fixnum+'       ; bignum fixnum -- sum
         ; second arg must be a fixnum
         _ verify_fixnum
         _ fixnum_to_bignum
 
         ; first arg must be a bignum
-        _over
-        _ bignum?
-        _tagged_if .1
+        _swap
+        _ verify_bignum
+
         _ bignum_bignum_plus
-        _return
-        _then .1
-
-        _error "not a bignum"
-
         next
 endcode
 
