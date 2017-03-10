@@ -236,9 +236,7 @@ cell c_bignum_negate(Bignum *b)
   mpz_t z;
   mpz_init(z);
   mpz_neg(z, b->z);
-  Bignum *ret = c_make_bignum(z);
-  mpz_clear(z);
-  return get_handle_for_object((cell)ret);
+  return normalize(z);
 }
 
 // FIXME incomplete
@@ -247,7 +245,5 @@ cell c_expt(cell base, cell power)
   mpz_t z;
   mpz_init(z);
   mpz_ui_pow_ui(z, (unsigned long int)base, (unsigned long int)power);
-  Bignum *ret = c_make_bignum(z);
-  mpz_clear(z);
-  return get_handle_for_object((cell)ret);
+  return normalize(z);
 }
