@@ -214,7 +214,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
 
         ; -
         _initialize_generic_function generic_minus
-        _add_method generic_minus, OBJECT_TYPE_FIXNUM, fixnum_fixnum_minus
+        _add_method generic_minus, OBJECT_TYPE_FIXNUM, fixnum_minus
 
         ; write
         _initialize_generic_function generic_write
