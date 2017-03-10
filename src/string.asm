@@ -55,12 +55,6 @@ code string?, 'string?'                 ; x -- ?
         next
 endcode
 
-; ### error-not-string
-code error_not_string, 'error-not-string' ; x --
-        _error "not a string"
-        next
-endcode
-
 ; ### verify-unboxed-string
 code verify_unboxed_string, 'verify-unboxed-string' ; string -- string
         ; Make sure address is in a permissible range.
