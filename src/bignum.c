@@ -24,8 +24,8 @@
 #define SIZEOF_LONG 8
 #endif
 
-#define MOST_POSITIVE_FIXNUM          1152921504606846975
-#define MOST_NEGATIVE_FIXNUM         -1152921504606846976
+const cell MOST_POSITIVE_FIXNUM =  1152921504606846975;
+const cell MOST_NEGATIVE_FIXNUM = -1152921504606846976;
 
 #define OBJECT_TYPE_BIGNUM      8
 
@@ -34,7 +34,7 @@
 
 extern cell get_handle_for_object(cell);
 
-static inline cell make_fixnum(signed long int n)
+static inline cell make_fixnum(cell n)
 {
   // see _tag_fixnum in macros.asm
   return ((n << 3) + 1);
@@ -117,6 +117,7 @@ cell c_bignum_from_unsigned(cell n)
 
 static cell normalize(mpz_t z)
 {
+#if SIZEOF_LONG == 8
   if (mpz_fits_slong_p(z))
     {
       long n = mpz_get_si(z);
@@ -126,7 +127,36 @@ static cell normalize(mpz_t z)
           return make_fixnum(n);
         }
     }
+#else
+  size_t size = mpz_size(z);
+
+  if (size == 0)
+    return make_fixnum(0);
+
+  if (size == 1)
+    {
+      int sign = mpz_sgn(z);
+      mp_limb_t n = mpz_getlimbn(z, 0);
+      if (sign == 1)
+        {
+          if (n <= MOST_POSITIVE_FIXNUM)
+            {
+              mpz_clear(z);
+              return make_fixnum(n);
+            }
+        }
+      else if (sign == -1)
+        {
+          if (n <= -MOST_NEGATIVE_FIXNUM)
+            {
+              mpz_clear(z);
+              return make_fixnum(-n);
+            }
+        }
+    }
+#endif
   Bignum *b = c_make_bignum(z);
+  mpz_clear(z);
   return get_handle_for_object((cell)b);
 }
 
@@ -221,9 +251,7 @@ cell c_string_to_integer(char *s, int base)
       return F_VALUE;
     }
   // conversion succeeded
-  Bignum *b = c_make_bignum(z);
-  mpz_clear(z);
-  return get_handle_for_object((cell)b);
+  return normalize(z);
 }
 
 cell c_bignum_equal(Bignum *b1, Bignum *b2)
