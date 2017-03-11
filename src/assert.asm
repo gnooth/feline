@@ -73,12 +73,15 @@ endcode
 
 ; ### check-assert=
 code check_assert_equal, 'check-assert='        ; x y location --
-        _ rrot
+        _ feline_2over
         _ feline_equal
         _tagged_if .1
-        _drop
+        _3drop
         _else .1
-        _ assertion_failed
+        _to_global error_location
+        _quote "Assertion failed: %s %s ="
+        _ format
+        _ error
         _then .1
         next
 endcode
