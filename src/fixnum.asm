@@ -315,6 +315,7 @@ code bignum_fixnum_minus, 'bignum-fixnum-'      ; bignum fixnum -- difference
         ; first arg must be a bignum
         _swap
         _ verify_bignum
+        _swap
 
         _ bignum_bignum_minus
         next
