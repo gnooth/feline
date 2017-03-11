@@ -176,7 +176,7 @@ cell c_bignum_bignum_minus(Bignum *b1, Bignum *b2)
   return normalize(result);
 }
 
-cell c_bignum_add(Bignum *b, cell n)
+cell c_bignum_fixnum_plus(Bignum *b, cell n)
 {
   mpz_t result;
   mpz_init_set(result, b->z);

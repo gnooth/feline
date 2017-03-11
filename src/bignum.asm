@@ -291,7 +291,7 @@ code fixnum_bignum_plus, 'fixnum-bignum+'       ; fixnum bignum -- sum
         mov     arg0_register, rbx
         poprbx
 
-        xcall   c_bignum_add
+        xcall   c_bignum_fixnum_plus
 
         ; fixnum or object pointer in rax
         pushrbx
