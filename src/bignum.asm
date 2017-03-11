@@ -259,9 +259,9 @@ code bignum_bignum_minus, 'bignum-bignum-'      ; bignum1 bignum2 -- difference
 
         _ gc_disable
 
-        mov     arg1_register, rbx
-        poprbx
         mov     arg0_register, rbx
+        poprbx
+        mov     arg1_register, rbx
         poprbx
 
         xcall c_bignum_bignum_minus
@@ -320,6 +320,34 @@ code bignum_plus, 'bignum+'     ; number bignum -- sum
         _ bignum?
         _tagged_if .2
         _ bignum_bignum_plus
+        _return
+        _then .2
+
+        _over
+        _ error_not_number
+
+        next
+endcode
+
+; ### bignum-
+code bignum_minus, 'bignum-'    ; number bignum -- sum
+
+        ; second arg must be a bignum
+        _ verify_bignum
+
+        ; dispatch on type of first arg
+        _over
+        _fixnum?
+        _if .1
+        _ negate_bignum
+        _ fixnum_bignum_plus
+        _return
+        _then .1
+
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_bignum_minus
         _return
         _then .2
 
