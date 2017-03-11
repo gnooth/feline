@@ -194,9 +194,7 @@ cell c_bignum_add(Bignum *b, cell n)
     mpz_add_ui(result, result, (unsigned long) n);
   else
     mpz_sub_ui(result, result, (unsigned long) -n);
-  cell ret = normalize(result);
-  mpz_clear(result);
-  return ret;
+  return normalize(result);
 }
 
 size_t c_bignum_sizeinbase(const mpz_t z, int base)
