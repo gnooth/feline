@@ -322,6 +322,21 @@ code parse_definition_name, 'parse-definition-name'     ; -- symbol
         _ new_symbol            ; -- symbol
         _then .2                ; -- symbol
 
+        _ location              ; -- symbol 3array/f
+        _dup
+        _tagged_if .3           ; -- symbol 3array
+        _dup
+        _ array_first
+        _swap
+        _ array_second          ; -- symbol file line-number
+        _lit tagged_fixnum(1)
+        _ generic_plus
+        _pick
+        _ symbol_set_location
+        _else .3
+        _drop
+        _then .3                ; -- symbol
+
         _dup
         _ set_last_word         ; -- symbol
 
