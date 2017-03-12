@@ -49,7 +49,7 @@ file __FILE__
         _this_set_slot2
 %endmacro
 
-; untagged line number
+; raw line number (0-based)
 %macro  _lexer_raw_line_number 0        ; lexer -- raw-line-number
         _slot3
 %endmacro
@@ -238,6 +238,7 @@ code lexer_location, 'lexer-location'   ; lexer -- 3array
         poprbx
         _this_lexer_file
         _this_lexer_raw_line_number
+        _oneplus
         _tag_fixnum
         _this_lexer_raw_index
         _this_lexer_raw_line_start
