@@ -150,15 +150,12 @@ file __FILE__
         _this_set_slot 10
 %endmacro
 
+; The line number is 1-based and stored as a tagged fixnum.
 %macro  _symbol_line_number 0           ; symbol -- line-number
         _slot 11
 %endmacro
 
-%macro  _symbol_set_line_number 0       ; line_number symbol --
-        _set_slot 11
-%endmacro
-
-%macro  _this_symbol_set_line_number 0  ; line_number --
+%macro  _this_symbol_set_line_number 0  ; line-number --
         _this_set_slot 11
 %endmacro
 
@@ -637,7 +634,6 @@ code symbol_location, 'symbol-location' ; -- file line-number
         _symbol_file
         _swap
         _symbol_line_number
-        _tag_fixnum
         next
 endcode
 
@@ -647,7 +643,7 @@ code symbol_set_location, 'symbol-set-location' ; file line-number symbol --
         push    this_register
         mov     this_register, rbx
         poprbx
-        _check_index
+        _verify_index
         _this_symbol_set_line_number
         _ verify_string
         _this_symbol_set_file
