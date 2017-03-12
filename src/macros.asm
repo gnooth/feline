@@ -425,7 +425,7 @@ section .data
         dq      %4                      ; untagged code size (includes ret instruction)
         dq      %5                      ; untagged bit flags
         dq      current_file            ; file
-        dq      __LINE__                ; line number
+        dq      tagged_fixnum(__LINE__) ; line number
 
 %define symbol_link     %1
 
