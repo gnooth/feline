@@ -329,8 +329,6 @@ code parse_definition_name, 'parse-definition-name'     ; -- symbol
         _ array_first
         _swap
         _ array_second          ; -- symbol file line-number
-        _lit tagged_fixnum(1)
-        _ generic_plus
         _pick
         _ symbol_set_location
         _else .3
