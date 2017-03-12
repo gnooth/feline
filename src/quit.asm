@@ -247,6 +247,9 @@ feline_global error_location, 'error-location'
 
 ; ### print-source-line
 code print_source_line, 'print-source-line'     ; path line-number --
+        ; convert 1-based line number to 0-based index into file-lines vector
+        _lit tagged_fixnum(1)
+        _ generic_minus
         _swap
         _ file_lines
         _ nth
@@ -288,8 +291,6 @@ code print_error_location, 'print-error-location'       ; --
         _dup
         _tagged_if .2
         _write " line "
-        _lit tagged_fixnum(1)
-        _ generic_plus
         _ decimal_dot
         _else .2
         _drop
