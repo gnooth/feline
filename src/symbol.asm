@@ -631,13 +631,27 @@ subroutine symbol_set_flags_bit         ; bit symbol --
 endsub
 
 ; ### symbol-location
-code symbol_location, 'symbol-location' ; -- location
+code symbol_location, 'symbol-location' ; -- file line-number
         _ check_symbol
         _dup
         _symbol_file
         _swap
         _symbol_line_number
         _tag_fixnum
+        next
+endcode
+
+; ### symbol-set-location
+code symbol_set_location, 'symbol-set-location' ; file line-number symbol --
+        _ check_symbol
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+        _check_index
+        _this_symbol_set_line_number
+        _ verify_string
+        _this_symbol_set_file
+        pop     this_register
         next
 endcode
 
