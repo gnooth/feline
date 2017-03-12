@@ -195,12 +195,6 @@ code symbol?, 'symbol?'                 ; x -- ?
         next
 endcode
 
-; ### error-not-symbol
-code error_not_symbol, 'error-not-symbol' ; x --
-        _error "not a symbol"
-        next
-endcode
-
 ; ### verify-unboxed-symbol
 code verify_unboxed_symbol, 'verify-unboxed-symbol'     ; symbol -- symbol
         ; make sure address is in a permissible range

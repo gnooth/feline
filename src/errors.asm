@@ -61,8 +61,16 @@ code error_not_char, 'error-not-char'           ; x --
 endcode
 
 ; ### error-not-string
-code error_not_string, 'error-not-string' ; x --
+code error_not_string, 'error-not-string'       ; x --
         _quote "a string"
+        _ format_type_error
+        _ error
+        next
+endcode
+
+; ### error-not-symbol
+code error_not_symbol, 'error-not-symbol'       ; x --
+        _quote "a symbol"
         _ format_type_error
         _ error
         next
