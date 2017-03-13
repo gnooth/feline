@@ -40,7 +40,7 @@ static inline cell make_fixnum(cell n)
   return ((n << 3) + 1);
 }
 
-void *c_bignum_allocate()
+static void *c_bignum_allocate()
 {
   Bignum *b = malloc(sizeof(Bignum));
   memset(b, 0, sizeof(Bignum));
@@ -48,7 +48,7 @@ void *c_bignum_allocate()
   return b;
 }
 
-Bignum *c_make_bignum(mpz_t z)
+static Bignum *c_make_bignum(mpz_t z)
 {
   Bignum *b = c_bignum_allocate();
   mpz_init_set(b->z, z);
@@ -174,6 +174,11 @@ cell c_bignum_bignum_minus(Bignum *b1, Bignum *b2)
   mpz_init_set(result, b1->z);
   mpz_sub(result, result, b2->z);
   return normalize(result);
+}
+
+cell c_bignum_bignum_lt(Bignum *b1, Bignum *b2)
+{
+  return mpz_cmp(b1->z, b2->z) < 0 ? T_VALUE : F_VALUE;
 }
 
 cell c_bignum_fixnum_plus(Bignum *b, cell n)

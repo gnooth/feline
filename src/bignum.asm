@@ -228,6 +228,26 @@ code bignum_equal?, 'bignum-equal?'     ; x y -- ?
         next
 endcode
 
+; ### bignum-bignum<
+code bignum_bignum_lt, 'bignum-bignum<'         ; bignum1 bignum2 -- ?
+        _ check_bignum
+        _swap
+        _ check_bignum
+        _swap
+
+        mov     arg1_register, rbx
+        poprbx
+        mov     arg0_register, rbx
+        poprbx
+
+        xcall c_bignum_bignum_lt
+
+        pushrbx
+        mov     rbx, rax
+
+        next
+endcode
+
 ; ### bignum-bignum+
 code bignum_bignum_plus, 'bignum-bignum+'       ; bignum bignum -- sum
         _ check_bignum

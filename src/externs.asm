@@ -56,7 +56,7 @@ extern c_save_backtrace
 extern c_seed_random
 
 ; bignum.c
-extern c_bignum_allocate
+extern c_bignum_bignum_lt
 extern c_bignum_bignum_minus
 extern c_bignum_bignum_plus
 extern c_bignum_equal
@@ -65,7 +65,6 @@ extern c_bignum_free
 extern c_bignum_from_signed
 extern c_bignum_from_unsigned
 extern c_bignum_get_str
-extern c_bignum_init
 extern c_bignum_init_set_si
 extern c_bignum_init_set_ui
 extern c_bignum_negate
