@@ -99,6 +99,28 @@ code fixnum_equal?, 'fixnum-equal?'     ; obj1 obj2 -- ?
         next
 endcode
 
+; ### fixnum-fixnum<
+code fixnum_fixnum_lt, 'fixnum-fixnum<' ; fixnum1 fixnum2 -- ?
+        _check_fixnum
+        _swap
+        _check_fixnum
+        _swap
+
+        mov     eax, t_value
+        cmp     [rbp], rbx
+        mov     ebx, f_value
+        cmovl   ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
+; ### bignum-fixnum<
+code bignum_fixnum_lt, 'bignum-fixnum<' ; bignum fixnum -- ?
+        _ fixnum_to_bignum
+        _ bignum_bignum_lt
+        next
+endcode
+
 ; ### fixnum<
 inline fixnum_lt, 'fixnum<'             ; x y -- ?
 ; No type checking.
