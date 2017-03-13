@@ -53,6 +53,7 @@ IN_FELINE
 %include "fixnum.asm"
 %include "bignum.asm"
 %include "float.asm"
+%include "numbers.asm"
 %include "objects.asm"
 %include "array.asm"
 %include "vector.asm"
