@@ -248,6 +248,16 @@ code bignum_bignum_lt, 'bignum-bignum<'         ; bignum1 bignum2 -- ?
         next
 endcode
 
+; ### fixnum-bignum<
+code fixnum_bignum_lt, 'fixnum-bignum<'         ; fixnum bignum -- ?
+        _ verify_bignum
+        _swap
+        _ fixnum_to_bignum
+        _swap
+        _ bignum_bignum_lt
+        next
+endcode
+
 ; ### bignum-bignum+
 code bignum_bignum_plus, 'bignum-bignum+'       ; bignum bignum -- sum
         _ check_bignum
