@@ -1966,10 +1966,44 @@ addition-test-1
 test: subtraction-test-1
     4 1 fixnum-fixnum- 3 assert-eq
     4 -1 fixnum-fixnum- 5 assert-eq
+    most-positive-fixnum 1152921504606846975 assert-eq
+    2 60 expt 1 - most-positive-fixnum assert-eq
+    2 60 expt negate most-negative-fixnum assert-eq
+    most-negative-fixnum -1152921504606846976 assert-eq
     most-negative-fixnum fixnum>bignum 1 bignum-fixnum- -1152921504606846977 assert=
     most-negative-fixnum 1 - -1152921504606846977 assert=
 ;
 
 subtraction-test-1
+
+test: bignum-fixnum<-test-1
+    42 fixnum>bignum 43 bignum-fixnum< assert-true
+    43 fixnum>bignum 42 bignum-fixnum< assert-false
+;
+
+bignum-fixnum<-test-1
+
+test: fixnum-bignum<-test-1
+    42 43 fixnum>bignum fixnum-bignum< assert-true
+    43 42 fixnum>bignum fixnum-bignum< assert-false
+;
+
+fixnum-bignum<-test-1
+
+test: fixnum<-test-1
+    42 43 fixnum< assert-true
+    43 42 fixnum< assert-false
+    most-negative-fixnum 1 - most-negative-fixnum fixnum< assert-true
+;
+
+fixnum<-test-1
+
+test: bignum<-test-1
+    42 43 fixnum>bignum bignum< assert-true
+    most-negative-fixnum dup 10 - bignum< assert-false
+    -43 -42 fixnum>bignum bignum< assert-true
+;
+
+bignum<-test-1
 
 ?nl "Reached end of test.feline" write-string
