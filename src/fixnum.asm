@@ -122,22 +122,34 @@ code bignum_fixnum_lt, 'bignum-fixnum<' ; bignum fixnum -- ?
 endcode
 
 ; ### fixnum<
-inline fixnum_lt, 'fixnum<'             ; x y -- ?
-; No type checking.
-        mov     eax, t_value
-        cmp     [rbp], rbx
-        mov     ebx, f_value
-        cmovl   ebx, eax
-        lea     rbp, [rbp + BYTES_PER_CELL]
-endinline
+code fixnum_lt, 'fixnum<'               ; number fixnum -- ?
+
+        ; second arg must be a fixnum
+        _verify_fixnum
+
+        ; dispatch on type of first arg
+        mov     al, byte [rbp]
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     .1
+        _ fixnum_fixnum_lt
+        _return
+
+.1:
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_fixnum_lt
+        _return
+        _then .2
+
+        _drop
+        _ error_not_number
+        next
+endcode
 
 ; ### <
 code feline_lt, '<'                     ; x y -- ?
-; FIXME optimize
-        _check_fixnum
-        _swap
-        _check_fixnum
-        _swap
         _ fixnum_lt
         next
 endcode
