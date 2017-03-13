@@ -85,20 +85,6 @@ code index?, 'index?'                   ; x -- ?
         next
 endcode
 
-; ### fixnum-equal?
-code fixnum_equal?, 'fixnum-equal?'     ; obj1 obj2 -- ?
-        _over
-        _ bignum?
-        _tagged_if .1
-        _ fixnum_to_bignum
-        _ bignum_equal?
-        _else .1
-        _2drop
-        _f
-        _then .1
-        next
-endcode
-
 ; ### fixnum<=
 code fixnum_le, 'fixnum<='              ; x y -- ?
 ; No type checking.

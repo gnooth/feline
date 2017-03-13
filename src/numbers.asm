@@ -15,6 +15,20 @@
 
 file __FILE__
 
+; ### fixnum-equal?
+code fixnum_equal?, 'fixnum-equal?'     ; x y -- ?
+        _over
+        _ bignum?
+        _tagged_if .1
+        _ fixnum_to_bignum
+        _ bignum_equal?
+        _else .1
+        _2drop
+        _f
+        _then .1
+        next
+endcode
+
 ; ### bignum-equal?
 code bignum_equal?, 'bignum-equal?'     ; x y -- ?
         _dup
