@@ -15,6 +15,54 @@
 
 file __FILE__
 
+; ### bignum-equal?
+code bignum_equal?, 'bignum-equal?'     ; x y -- ?
+        _dup
+        _ bignum?
+        _tagged_if .1
+        _handle_to_object_unsafe
+        _else .1
+        _2drop
+        _f
+        _return
+        _then .1
+
+        _over
+        _ bignum?
+        _tagged_if .2
+        mov     arg0_register, rbx
+        poprbx
+        _handle_to_object_unsafe
+        mov     arg1_register, rbx
+        poprbx
+        xcall   c_bignum_equal
+        pushrbx
+        mov     rbx, rax
+        _return
+        _then .2
+
+        _over
+        _fixnum?
+        _tagged_if .3
+        _swap
+        _ fixnum_to_bignum
+        _ check_bignum
+        mov     arg0_register, rbx
+        poprbx
+        mov     arg1_register, rbx
+        poprbx
+        xcall   c_bignum_equal
+        pushrbx
+        mov     rbx, rax
+        _return
+        _then .3
+
+        _2drop
+        _f
+
+        next
+endcode
+
 ; ### fixnum-fixnum<
 code fixnum_fixnum_lt, 'fixnum-fixnum<' ; fixnum1 fixnum2 -- ?
         _check_fixnum
@@ -56,6 +104,63 @@ code fixnum_lt, 'fixnum<'               ; number fixnum -- ?
         _ bignum?
         _tagged_if .2
         _ bignum_fixnum_lt
+        _return
+        _then .2
+
+        _drop
+        _ error_not_number
+        next
+endcode
+
+; ### bignum-bignum<
+code bignum_bignum_lt, 'bignum-bignum<'         ; bignum1 bignum2 -- ?
+        _ check_bignum
+        _swap
+        _ check_bignum
+        _swap
+
+        mov     arg1_register, rbx
+        poprbx
+        mov     arg0_register, rbx
+        poprbx
+
+        xcall c_bignum_bignum_lt
+
+        pushrbx
+        mov     rbx, rax
+
+        next
+endcode
+
+; ### fixnum-bignum<
+code fixnum_bignum_lt, 'fixnum-bignum<'         ; fixnum bignum -- ?
+        _ verify_bignum
+        _swap
+        _ fixnum_to_bignum
+        _swap
+        _ bignum_bignum_lt
+        next
+endcode
+
+; ### bignum<
+code bignum_lt, 'bignum<'               ; number bignum -- ?
+
+        ; second arg must be a bignum
+        _ verify_bignum
+
+        ; dispatch on type of first arg
+        mov     al, byte [rbp]
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     .1
+        _ fixnum_bignum_lt
+        _return
+
+.1:
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_bignum_lt
         _return
         _then .2
 
