@@ -430,7 +430,7 @@ code token_string_literal?, 'token-string-literal?' ; token -- string t | token 
         _dup
         _ string_length
         _lit tagged_fixnum(2)
-        _ feline_lt
+        _ fixnum_fixnum_lt
         _tagged_if .1
         _f
         _return
