@@ -2006,4 +2006,39 @@ test: bignum<-test-1
 
 bignum<-test-1
 
+test: fixnum-fixnum<=-test-1
+    1 2 fixnum-fixnum<= assert-true
+    2 2 fixnum-fixnum<= assert-true
+    2 1 fixnum-fixnum<= assert-false
+    -1 0 fixnum-fixnum<= assert-true
+    0 -1 fixnum-fixnum<= assert-false
+    0 0 fixnum-fixnum<= assert-true
+    -1 -1 fixnum-fixnum<= assert-true
+    -1 0 fixnum-fixnum<= assert-true
+;
+
+fixnum-fixnum<=-test-1
+
+test: <=-test-1
+    1 2 <= assert-true
+    2 2 <= assert-true
+    2 1 <= assert-false
+    -1 0 <= assert-true
+    0 -1 <= assert-false
+    0 0 <= assert-true
+    -1 -1 <= assert-true
+    -1 0 <= assert-true
+
+    most-negative-fixnum most-positive-fixnum <= assert-true
+    most-positive-fixnum most-negative-fixnum <= assert-false
+
+    most-negative-fixnum 10 - dup <= assert-true
+    most-negative-fixnum 10 - dup 5 + <= assert-true
+
+    most-positive-fixnum 10 + dup <= assert-true
+    most-positive-fixnum 10 + dup 5 + <= assert-true
+;
+
+<=-test-1
+
 ?nl "Reached end of test.feline" write-string
