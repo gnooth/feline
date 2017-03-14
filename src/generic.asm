@@ -119,6 +119,9 @@ generic generic_plus, '+'       ; x y -- z
 ; ### -
 generic generic_minus, '-'      ; x y -- z
 
+; ### <
+generic generic_lt, '<'         ; x y -- ?
+
 ; ### write
 generic generic_write, 'write'          ; string/sbuf --
 
@@ -216,6 +219,11 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _initialize_generic_function generic_minus
         _add_method generic_minus, OBJECT_TYPE_FIXNUM, fixnum_minus
         _add_method generic_minus, OBJECT_TYPE_BIGNUM, bignum_minus
+
+        ; <
+        _initialize_generic_function generic_lt
+        _add_method generic_lt, OBJECT_TYPE_FIXNUM, fixnum_lt
+        _add_method generic_lt, OBJECT_TYPE_BIGNUM, bignum_lt
 
         ; write
         _initialize_generic_function generic_write

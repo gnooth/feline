@@ -182,9 +182,3 @@ code bignum_lt, 'bignum<'               ; number bignum -- ?
         _ error_not_number
         next
 endcode
-
-; ### <
-code feline_lt, '<'                     ; x y -- ?
-        _ fixnum_lt
-        next
-endcode
