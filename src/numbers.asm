@@ -182,3 +182,82 @@ code bignum_lt, 'bignum<'               ; number bignum -- ?
         _ error_not_number
         next
 endcode
+
+; ### fixnum-fixnum<=
+code fixnum_fixnum_le, 'fixnum-fixnum<='        ; fixnum1 fixnum2 -- ?
+        _check_fixnum
+        _swap
+        _check_fixnum
+        _swap
+
+        mov     eax, t_value
+        cmp     [rbp], rbx
+        mov     ebx, f_value
+        cmovle  ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
+; ### bignum-bignum<=
+code bignum_bignum_le, 'bignum-bignum<='        ; bignum1 bignum2 -- ?
+        _ check_bignum
+        _swap
+        _ check_bignum
+        _swap
+
+        mov     arg1_register, rbx
+        poprbx
+        mov     arg0_register, rbx
+        poprbx
+
+        xcall c_bignum_bignum_le
+
+        pushrbx
+        mov     rbx, rax
+
+        next
+endcode
+
+; ### bignum-fixnum<=
+code bignum_fixnum_le, 'bignum-fixnum<='        ; bignum fixnum -- ?
+        _ fixnum_to_bignum
+        _ bignum_bignum_le
+        next
+endcode
+
+; ### fixnum-bignum<=
+code fixnum_bignum_le, 'bignum-fixnum<='        ; fixnum bignum -- ?
+        _ verify_bignum
+        _swap
+        _ fixnum_to_bignum
+        _swap
+        _ bignum_bignum_le
+        next
+endcode
+
+; ### bignum<=
+code bignum_le, 'bignum<='              ; number bignum -- ?
+
+        ; second arg must be a bignum
+        _ verify_bignum
+
+        ; dispatch on type of first arg
+        mov     al, byte [rbp]
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     .1
+        _ fixnum_bignum_le
+        _return
+
+.1:
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_bignum_le
+        _return
+        _then .2
+
+        _drop
+        _ error_not_number
+        next
+endcode
