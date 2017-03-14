@@ -555,7 +555,7 @@ code string_has_prefix?, 'string-has-prefix?'   ; prefix string -- ?
         _twodup
         _lit S_string_length
         _ bi_at
-        _ fixnum_le
+        _ fixnum_fixnum_le
         _tagged_if .1
         _ mismatch
         _ not
@@ -572,7 +572,7 @@ code string_has_suffix?, 'string-has-suffix?'   ; suffix string -- ?
         _lit S_string_length
         _ bi_at                 ; -- suffix string len1 len2
         _twodup
-        _ fixnum_le
+        _ fixnum_fixnum_le
         _tagged_if .1
         _swap
         _ fixnum_minus

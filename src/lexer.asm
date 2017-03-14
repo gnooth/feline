@@ -677,7 +677,7 @@ code dot_lexer, '.lexer'                ; lexer --
         _this_lexer_string
         _ string_length
         _lit tagged_fixnum(40)
-        _ fixnum_le
+        _ fixnum_fixnum_le
         _tagged_if .1
 
         _this_lexer_string
