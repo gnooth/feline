@@ -85,28 +85,6 @@ code index?, 'index?'                   ; x -- ?
         next
 endcode
 
-; ### fixnum<=
-code fixnum_le, 'fixnum<='              ; x y -- ?
-; No type checking.
-        mov     eax, t_value
-        cmp     [rbp], rbx
-        mov     ebx, f_value
-        cmovle  ebx, eax
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        next
-endcode
-
-; ### <=
-code feline_le, '<='                    ; x y -- ?
-; FIXME optimize
-        _ check_fixnum
-        _swap
-        _ check_fixnum
-        _swap
-        _ fixnum_le
-        next
-endcode
-
 %macro _fixnum_gt 0
         _untag_fixnum
         _untag_fixnum qword [rbp]

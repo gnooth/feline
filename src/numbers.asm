@@ -235,6 +235,33 @@ code fixnum_bignum_le, 'bignum-fixnum<='        ; fixnum bignum -- ?
         next
 endcode
 
+; ### fixnum<=
+code fixnum_le, 'fixnum<='      ; number fixnum -- ?
+
+        ; second arg must be a fixnum
+        _verify_fixnum
+
+        ; dispatch on type of first arg
+        mov     al, byte [rbp]
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     .1
+        _ fixnum_fixnum_le
+        _return
+
+.1:
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_fixnum_le
+        _return
+        _then .2
+
+        _drop
+        _ error_not_number
+        next
+endcode
+
 ; ### bignum<=
 code bignum_le, 'bignum<='              ; number bignum -- ?
 
