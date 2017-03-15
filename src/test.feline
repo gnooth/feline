@@ -638,6 +638,26 @@ test: string>number-test-4
 
 string>number-test-4
 
+test: string>number-test-5
+    most-positive-fixnum number>string string>number
+    dup fixnum? assert-true
+    most-positive-fixnum assert-eq
+
+    most-positive-fixnum 1 + number>string string>number
+    dup bignum? assert-true
+    most-positive-fixnum 1 + assert=
+
+    most-negative-fixnum number>string string>number
+    dup fixnum? assert-true
+    most-negative-fixnum assert-eq
+
+    most-negative-fixnum 1 - number>string string>number
+    dup bignum? assert-true
+    most-negative-fixnum 1 - assert=
+;
+
+string>number-test-5
+
 test: '-test-1 ( -- )
     [ ' dup ] call symbol? assert-true
     3 [ dup ] call get-data-stack { 3 3 } sequence= assert-true
