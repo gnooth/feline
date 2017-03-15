@@ -451,3 +451,18 @@ code bignum_ge, 'bignum>='              ; number bignum -- ?
         _ error_not_number
         next
 endcode
+
+; ### fixnum-fixnum>=
+code fixnum_fixnum_ge, 'fixnum-fixnum>='        ; fixnum1 fixnum2 -- ?
+        _check_fixnum
+        _swap
+        _check_fixnum
+        _swap
+
+        mov     eax, t_value
+        cmp     [rbp], rbx
+        mov     ebx, f_value
+        cmovge  ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode

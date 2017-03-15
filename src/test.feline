@@ -2102,4 +2102,19 @@ test: bignum>=-test-1
 
 bignum>=-test-1
 
+test: fixnum-fixnum>=-test-1
+    43 42 fixnum-fixnum>= assert-true
+    43 43 fixnum-fixnum>= assert-true
+    42 43 fixnum-fixnum>= assert-false
+    -1 1 fixnum-fixnum>= assert-false
+    1 -1 fixnum-fixnum>= assert-true
+    most-negative-fixnum most-positive-fixnum fixnum-fixnum>= assert-false
+    most-positive-fixnum most-negative-fixnum fixnum-fixnum>= assert-true
+    most-positive-fixnum dup fixnum-fixnum>= assert-true
+    most-negative-fixnum dup fixnum-fixnum>= assert-true
+    0 0 fixnum-fixnum>= assert-true
+;
+
+fixnum-fixnum>=-test-1
+
 ?nl "Reached end of test.feline" write-string
