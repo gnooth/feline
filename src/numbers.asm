@@ -394,3 +394,60 @@ code bignum_gt, 'bignum>'               ; number bignum -- ?
         _ error_not_number
         next
 endcode
+
+; ### bignum-bignum>=
+code bignum_bignum_ge, 'bignum-bignum>='        ; bignum1 bignum2 -- ?
+        _ check_bignum
+        _swap
+        _ check_bignum
+        _swap
+
+        mov     arg1_register, rbx
+        poprbx
+        mov     arg0_register, rbx
+        poprbx
+
+        xcall c_bignum_bignum_ge
+
+        pushrbx
+        mov     rbx, rax
+
+        next
+endcode
+
+; ### fixnum-bignum>=
+code fixnum_bignum_ge, 'fixnum-bignum>='        ; fixnum bignum -- ?
+        _ verify_bignum
+        _swap
+        _ fixnum_to_bignum
+        _swap
+        _ bignum_bignum_ge
+        next
+endcode
+
+; ### bignum>=
+code bignum_ge, 'bignum>='              ; number bignum -- ?
+
+        ; second arg must be a bignum
+        _ verify_bignum
+
+        ; dispatch on type of first arg
+        mov     al, byte [rbp]
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     .1
+        _ fixnum_bignum_ge
+        _return
+
+.1:
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_bignum_ge
+        _return
+        _then .2
+
+        _drop
+        _ error_not_number
+        next
+endcode
