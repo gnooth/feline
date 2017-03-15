@@ -186,6 +186,16 @@ cell c_bignum_bignum_le(Bignum *b1, Bignum *b2)
   return mpz_cmp(b1->z, b2->z) <= 0 ? T_VALUE : F_VALUE;
 }
 
+cell c_bignum_bignum_gt(Bignum *b1, Bignum *b2)
+{
+  return mpz_cmp(b1->z, b2->z) > 0 ? T_VALUE : F_VALUE;
+}
+
+cell c_bignum_bignum_ge(Bignum *b1, Bignum *b2)
+{
+  return mpz_cmp(b1->z, b2->z) >= 0 ? T_VALUE : F_VALUE;
+}
+
 cell c_bignum_fixnum_plus(Bignum *b, cell n)
 {
   mpz_t result;
