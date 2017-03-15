@@ -95,20 +95,6 @@ endcode
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
-; ### fixnum>
-inline fixnum_gt, 'fixnum>'             ; x y -- ?
-; No type checking.
-        _fixnum_gt
-endinline
-
-; ### >
-code feline_gt, '>'                     ; x y -- ?
-        _verify_fixnum
-        _verify_fixnum qword [rbp]
-        _fixnum_gt
-        next
-endcode
-
 %macro  _fixnum_ge 0
         mov     eax, t_value
         cmp     [rbp], rbx

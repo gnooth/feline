@@ -122,6 +122,9 @@ generic generic_minus, '-'      ; x y -- z
 ; ### <
 generic generic_lt, '<'         ; x y -- ?
 
+; ### >
+generic generic_gt, '>'         ; x y -- ?
+
 ; ### <=
 generic generic_le, '<='        ; x y -- ?
 
@@ -227,6 +230,11 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _initialize_generic_function generic_lt
         _add_method generic_lt, OBJECT_TYPE_FIXNUM, fixnum_lt
         _add_method generic_lt, OBJECT_TYPE_BIGNUM, bignum_lt
+
+        ; >
+        _initialize_generic_function generic_gt
+        _add_method generic_gt, OBJECT_TYPE_FIXNUM, fixnum_gt
+        _add_method generic_gt, OBJECT_TYPE_BIGNUM, bignum_gt
 
         ; <=
         _initialize_generic_function generic_le

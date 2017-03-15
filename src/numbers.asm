@@ -311,6 +311,33 @@ code bignum_fixnum_gt, 'bignum-fixnum>' ; bignum fixnum -- ?
         next
 endcode
 
+; ### fixnum>
+code fixnum_gt, 'fixnum>'               ; number fixnum -- ?
+
+        ; second arg must be a fixnum
+        _verify_fixnum
+
+        ; dispatch on type of first arg
+        mov     al, byte [rbp]
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     .1
+        _ fixnum_fixnum_gt
+        _return
+
+.1:
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_fixnum_gt
+        _return
+        _then .2
+
+        _drop
+        _ error_not_number
+        next
+endcode
+
 ; ### bignum-bignum>
 code bignum_bignum_gt, 'bignum-bignum>'         ; bignum1 bignum2 -- ?
         _ check_bignum
