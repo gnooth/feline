@@ -520,7 +520,7 @@ code limit_string, 'limit-string'       ; string limit -- limited-string
         _dup
         _ string_length
         _ string_limit
-        _fixnum_gt
+        _ fixnum_fixnum_gt
         _tagged_if .1
         _lit tagged_zero
         _ string_limit
