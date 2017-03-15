@@ -2041,4 +2041,34 @@ test: <=-test-1
 
 <=-test-1
 
+test: bignum-fixnum>-test-1
+    43 fixnum>bignum 42 bignum-fixnum> assert-true
+    42 fixnum>bignum 43 bignum-fixnum> assert-false
+;
+
+bignum-fixnum>-test-1
+
+test: fixnum-bignum>-test-1
+    43 42 fixnum>bignum fixnum-bignum> assert-true
+    42 43 fixnum>bignum fixnum-bignum> assert-false
+;
+
+fixnum-bignum>-test-1
+
+test: fixnum>-test-1
+    43 42 fixnum> assert-true
+    42 43 fixnum> assert-false
+    most-positive-fixnum 1 + most-positive-fixnum fixnum> assert-true
+;
+
+fixnum>-test-1
+
+test: bignum>-test-1
+    43 42 fixnum>bignum bignum> assert-true
+    most-negative-fixnum 10 - most-negative-fixnum 5 - bignum> assert-false
+    -42 -43 fixnum>bignum bignum> assert-true
+;
+
+bignum>-test-1
+
 ?nl "Reached end of test.feline" write-string
