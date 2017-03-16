@@ -51,13 +51,6 @@ code check_fixnum, 'check-fixnum'       ; fixnum -- untagged-fixnum
         next
 endcode
 
-; ### error-not-index
-code error_not_index, 'error-not-index' ; x --
-        ; REVIEW
-        _error "not an index"
-        next
-endcode
-
 ; ### verify-index
 code verify_index, 'verify-index'     ; index -- index
         _verify_index

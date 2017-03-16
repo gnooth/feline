@@ -75,3 +75,11 @@ code error_not_symbol, 'error-not-symbol'       ; x --
         _ error
         next
 endcode
+
+; ### error-not-index
+code error_not_index, 'error-not-index'         ; x --
+        _quote "an index"
+        _ format_type_error
+        _ error
+        next
+endcode
