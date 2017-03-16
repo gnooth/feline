@@ -395,7 +395,7 @@ code string_nth, 'string-nth'           ; tagged-index handle-or-string -- tagge
 ; Return character at index.
 
         _swap
-        _untag_fixnum
+        _check_index
         _swap                           ; -- index string
 
 string_nth_untagged:
@@ -404,8 +404,7 @@ string_nth_untagged:
 
         _twodup
         _string_raw_length
-        _ult
-        _if .1
+        _ult_if .1
         _string_nth_unsafe
         _tag_char
         _else .1
@@ -644,14 +643,12 @@ code string_skip_to_whitespace, 'string-skip-to-whitespace' ; start-index string
         _then .1                        ; -- untagged-start-index untagged-length
 
         _swap
-        _do .2
-        _i
+        _register_do_range .2
+        _raw_loop_index
         _this_string_nth_unsafe
         _lit 33
-        _ult
-        _if .3
-        _i
-        _tag_fixnum
+        _ult_if .3
+        _tagged_loop_index
         _unloop
         jmp     .exit
         _then .3
