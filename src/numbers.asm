@@ -466,3 +466,37 @@ code fixnum_fixnum_ge, 'fixnum-fixnum>='        ; fixnum1 fixnum2 -- ?
         lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
+
+; ### bignum-fixnum>=
+code bignum_fixnum_ge, 'bignum-fixnum>='        ; bignum fixnum -- ?
+        _ fixnum_to_bignum
+        _ bignum_bignum_ge
+        next
+endcode
+
+; ### fixnum>=
+code fixnum_ge, 'fixnum>='              ; number fixnum -- ?
+
+        ; second arg must be a fixnum
+        _verify_fixnum
+
+        ; dispatch on type of first arg
+        mov     al, byte [rbp]
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     .1
+        _ fixnum_fixnum_ge
+        _return
+
+.1:
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_fixnum_ge
+        _return
+        _then .2
+
+        _drop
+        _ error_not_number
+        next
+endcode

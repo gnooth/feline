@@ -85,29 +85,6 @@ code index?, 'index?'                   ; x -- ?
         next
 endcode
 
-%macro  _fixnum_ge 0
-        mov     eax, t_value
-        cmp     [rbp], rbx
-        mov     ebx, f_value
-        cmovge  ebx, eax
-        lea     rbp, [rbp + BYTES_PER_CELL]
-%endmacro
-
-; ### fixnum>=
-code fixnum_ge, 'fixnum>='              ; x y -- ?
-; No type checking.
-        _fixnum_ge
-        next
-endcode
-
-; ### >=
-code feline_ge, '>='                    ; x y -- ?
-        _verify_fixnum qword [rbp]
-        _verify_fixnum
-        _fixnum_ge
-        next
-endcode
-
 ; ### fixnum-min
 code fixnum_min, 'fixnum-min'           ; x y -- z
 ; No type checking.
@@ -161,9 +138,9 @@ endcode
 ; ### between?
 code between?, 'between?'               ; n min max -- ?
         _pick
-        _ feline_ge
+        _ generic_ge
         _tagged_if .1
-        _ feline_ge
+        _ generic_ge
         _else .1
         _drop
         mov     ebx, f_value
