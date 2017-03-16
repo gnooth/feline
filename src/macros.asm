@@ -653,6 +653,15 @@ section .data
         jnz      %1_ifnot
 %endmacro
 
+%macro  _ult_if 1
+        %push if
+        section .text
+        cmp     [rbp], rbx
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        jnc     %1_ifnot
+%endmacro
+
 %macro  _dup_if 1
         %push if
         section .text
