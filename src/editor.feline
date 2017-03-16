@@ -21,6 +21,7 @@ in: user
 in: editor
 
 global: editor-filename
+global: mod-count
 global: lines
 global: top-line#
 global: cursor-x
@@ -36,6 +37,16 @@ global: done?
 
 : show-cursor ( -- ) esc[ "?25h" write-string ;
 
+: reverse ( -- ) esc[ "7m" write-string ;
+
+: normal ( -- ) esc[ "m" write-string ;
+
+: modified? ( -- ) mod-count zero? not ;
+
+: modified ( -- ) 1+!> mod-count ;
+
+: unmodified ( -- ) 0 !> mod-count ;
+
 : #lines ( -- n ) lines length ;
 
 : cursor-line# ( -- n ) top-line# cursor-y + ;
@@ -44,7 +55,7 @@ global: done?
 
 : cursor-line-length ( -- n ) cursor-line length ;
 
-: page-#lines ( -- n ) #rows 1 - ;
+: page-#lines ( -- n ) #rows 2 - ;
 
 : .cursor ( -- ) cursor-x cursor-y at-xy ;
 
@@ -68,16 +79,29 @@ global: done?
     ] if
 ;
 
+: status-y ( -- n ) #rows 2 - ;
+
 : status ( -- )
-    #cols 20 - #rows at-xy
-    "Line " write top-line# cursor-y + 1 + dec.
-    " Col " write cursor-x 1 + dec.
-    clear-to-eol
+    reverse
+    0 status-y at-xy
+    modified? [ '*' write-char ] [ space ] if
+    editor-filename write-string
+    cursor-line# 1 +
+    cursor-x 1 +
+    "Line %d Col %d " format
+    #cols over length - >local: x
+    x editor-filename length 1 + - 1 max spaces
+    write-string
+    normal
 ;
 
-: write-status ( string -- ) 0 #rows at-xy write-string ;
+: clear-status-line ( -- ) 0 status-y at-xy clear-to-eol ;
 
-: clear-status-line ( -- ) 0 #rows at-xy clear-to-eol ;
+: message-y ( -- n ) status-y 1 + ;
+
+: message ( string -- ) 0 message-y at-xy write-string ;
+
+: clear-message-line ( -- ) 0 message-y at-xy clear-to-eol ;
 
 : update-display ( -- )
     hide-cursor
@@ -116,7 +140,7 @@ global: done?
 ;
 
 : end-of-buffer ( -- )
-    #lines page-#lines 1 - - 0 max !> top-line#
+    #lines page-#lines - 0 max !> top-line#
     page-#lines 1 - !> cursor-y
     0 !> cursor-x
     cursor-x !> goal
@@ -153,7 +177,7 @@ global: done?
     ] when ;
 
 : do-down ( -- )
-    cursor-line# #lines < [
+    cursor-line# #lines 1 - < [
         cursor-y page-#lines 1 - < [
             1+!> cursor-y
         ] [
@@ -230,6 +254,7 @@ global: done?
     ] [
         delete-line-separator
     ] if
+    modified
 ;
 
 : do-bs ( -- )
@@ -247,6 +272,7 @@ global: done?
     sb sbuf>string cursor-line# lines set-nth
     1+!> cursor-x
     t !> cursor-line-changed?
+    modified
 ;
 
 : copy-file ( src dest -- )
@@ -256,13 +282,45 @@ global: done?
 : make-backup ( -- ) editor-filename dup "~" concat copy-file ;
 
 : do-save ( -- )
-    "Saving..." write-status
+    "Saving..." message
     make-backup
     lines editor-filename set-file-lines
-    "Saving...done" write-status
+    unmodified
+    "Saving...done" message
 ;
 
-: do-quit ( -- ) t !> done? ;
+: accept-string ( x y -- string )
+    >local: y
+    >local: x
+
+    10 <sbuf> >local: sb
+
+    [ key dup { 10 13 } member? ] [
+        dup write-char sb push
+    ] until
+
+    drop
+    sb sbuf>string
+;
+
+: do-quit ( -- )
+    t !> done?
+
+    modified? [
+        0 message-y at-xy "Save file? (y or n) " write-string
+        key 'y' eq? [ do-save ] when
+    ] when
+
+    local: response
+
+    modified? [
+        0 message-y at-xy "Abandon changes? (yes or no) " write-string
+        19 message-y accept-string !> response
+        response "yes" = [ f !> done? ] unless
+    ] when
+
+    clear-message-line
+;
 
 : bind-key ( key action -- ) 2array bindings push ;
 
@@ -301,16 +359,25 @@ global: done?
     [ done? ] [
         update-display
         ekey
+        clear-message-line
         dispatch
     ] until
 ;
 
 : edit1 ( -- )
     editor-filename file-lines verify-vector !> lines
+    lines vector-last [
+        length zero? [
+            "" lines vector-push
+        ] unless
+    ] when*
+    unmodified
     page
+    normal
     t !> repaint?
     edit-loop
     clear-status-line
+    clear-message-line
     0 page-#lines at-xy
     show-cursor
 ;
