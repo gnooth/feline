@@ -184,7 +184,7 @@ code lexer_at_end?, 'lexer-at-end?'     ; lexer -- ?
         _swap
         _ lexer_string
         _ string_length
-        _fixnum_ge
+        _ fixnum_fixnum_ge
         next
 endcode
 
