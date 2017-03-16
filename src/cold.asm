@@ -83,7 +83,7 @@ code process_command_line, 'process-command-line'
         _ args
         _ vector_length
         _tagged_fixnum 2
-        _ feline_ge
+        _ fixnum_fixnum_ge
         _tagged_if .4
         _ args
         _ second
