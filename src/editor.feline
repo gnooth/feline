@@ -23,8 +23,8 @@ in: editor
 global: editor-filename
 global: mod-count
 global: lines
-global: top-line#
-global: cursor-x
+global: top-line        -- 0-based line number
+global: dot
 global: cursor-y
 global: repaint?
 global: cursor-line-changed?
@@ -32,6 +32,20 @@ global: bindings
 global: done?
 
 0 >global: goal
+
+tuple: position line offset ;
+
+: dot-line ( -- line-number ) dot position-line ;
+
+: dot-line! ( line-number -- ) dot position-line! ;
+
+: dot-offset ( -- ) dot position-offset ;
+
+: dot-offset! ( n -- ) dot position-offset! ;
+
+: cursor-x ( -- n ) dot position-offset ;
+
+: set-cursor-x ( n -- ) dot position-offset! ;
 
 : hide-cursor ( -- ) esc[ "?25l" write-string ;
 
@@ -47,21 +61,21 @@ global: done?
 
 : unmodified ( -- ) 0 !> mod-count ;
 
-: #lines ( -- n ) lines length ;
+: buffer-line-count ( -- n ) lines length ;
 
-: cursor-line# ( -- n ) top-line# cursor-y + ;
+: cursor-line# ( -- n ) top-line cursor-y + ;
 
 : cursor-line ( -- string ) cursor-line# lines vector-nth ;
 
 : cursor-line-length ( -- n ) cursor-line length ;
 
-: page-#lines ( -- n ) #rows 2 - ;
+: lines-per-page ( -- n ) #rows 2 - ;
 
 : .cursor ( -- ) cursor-x cursor-y at-xy ;
 
-: .line ( n -- )
+: .line ( y -- )
     0 over at-xy
-    top-line# + lines vector-nth
+    top-line + lines vector-nth
     dup length #cols < [
         dup write
         length #cols swap - spaces
@@ -72,7 +86,7 @@ global: done?
 
 : redisplay-line ( y -- )
     >local: y
-    top-line# y + #lines < [
+    top-line y + buffer-line-count < [
         y .line
     ] [
         0 y at-xy #cols spaces
@@ -107,7 +121,7 @@ global: done?
     hide-cursor
     repaint? [
         0 0 at-xy
-        page-#lines [ redisplay-line ] each-integer
+        lines-per-page [ redisplay-line ] each-integer
         f !> repaint?
     ] [
         cursor-line-changed? [
@@ -121,49 +135,50 @@ global: done?
 ;
 
 : adjust-cursor-x ( -- )
-    goal !> cursor-x
+    goal set-cursor-x
     cursor-x cursor-line-length > [
-        cursor-line-length !> cursor-x
+        cursor-line-length set-cursor-x
     ] when
 ;
 
 : set-cursor ( x y -- )
-    2dup !> cursor-y !> cursor-x
+    2dup !> cursor-y set-cursor-x
     at-xy
 ;
 
 : beginning-of-buffer ( -- )
-    0 !> top-line#
+    0 !> top-line
     0 0 set-cursor
     0 !> goal
     t !> repaint?
 ;
 
 : end-of-buffer ( -- )
-    #lines page-#lines - 0 max !> top-line#
-    page-#lines 1 - !> cursor-y
-    0 !> cursor-x
+    buffer-line-count lines-per-page - 0 max !> top-line
+    lines-per-page 1 - !> cursor-y
+    0 set-cursor-x
     cursor-x !> goal
     t !> repaint?
 ;
 
 : do-home ( -- )
-    0 !> cursor-x
+    0 set-cursor-x
     0 !> goal
 ;
 
 : end-of-line ( -- )
-    cursor-line length !> cursor-x
+    cursor-line length set-cursor-x
     cursor-x !> goal
 ;
 
 : do-left ( -- )
     cursor-x 0 > [
-        1-!> cursor-x
+--         1-!> cursor-x
+        cursor-x 1 - set-cursor-x
     ] [
         cursor-line# 0 > [
-            cursor-y 0 > [ 1-!> cursor-y ] [ 1-!> top-line# ] if
-            cursor-line-length !> cursor-x
+            cursor-y 0 > [ 1-!> cursor-y ] [ 1-!> top-line ] if
+            cursor-line-length set-cursor-x
             t !> repaint?
         ] when
     ] if
@@ -172,16 +187,16 @@ global: done?
 
 : do-right ( -- )
     cursor-x cursor-line length < [
-        1+!> cursor-x
+        cursor-x 1 + set-cursor-x
         cursor-x !> goal
     ] when ;
 
 : do-down ( -- )
-    cursor-line# #lines 1 - < [
-        cursor-y page-#lines 1 - < [
+    cursor-line# buffer-line-count 1 - < [
+        cursor-y lines-per-page 1 - < [
             1+!> cursor-y
         ] [
-            1+!> top-line#
+            1+!> top-line
             t !> repaint?
         ] if
         adjust-cursor-x
@@ -193,7 +208,7 @@ global: done?
         cursor-y 0 > [
             1-!> cursor-y
         ] [
-            1-!> top-line#
+            1-!> top-line
             t !> repaint?
         ] if
     ] when
@@ -201,16 +216,16 @@ global: done?
 ;
 
 : do-page-down
-    top-line# page-#lines + dup #lines <
-    [ !> top-line# t !> repaint? ] [ drop ] if
+    top-line lines-per-page + dup buffer-line-count <
+    [ !> top-line t !> repaint? ] [ drop ] if
     adjust-cursor-x
 ;
 
 : do-page-up
-    top-line# page-#lines > [
-        top-line# page-#lines - !> top-line#
+    top-line lines-per-page > [
+        top-line lines-per-page - !> top-line
     ] [
-        0 !> top-line# 0 !> cursor-y
+        0 !> top-line 0 !> cursor-y
     ] if
     t !> repaint?
     adjust-cursor-x
@@ -223,7 +238,7 @@ global: done?
         cursor-line# 1 + lines vector-insert-nth!
         cursor-line cursor-x string-head cursor-line# lines vector-set-nth
         cursor-y 1 + !> cursor-y
-        0 !> cursor-x
+        0 set-cursor-x
         t !> repaint?
     ] when
 ;
@@ -238,7 +253,7 @@ global: done?
 ;
 
 : delete-line-separator ( -- )
-    cursor-line# #lines 1 - < [
+    cursor-line# buffer-line-count 1 - < [
         cursor-x cursor-line-length = [
             cursor-line# 1 + lines vector-nth
             cursor-line swap concat cursor-line# lines vector-set-nth
@@ -270,7 +285,7 @@ global: done?
     sb sbuf-push
     tail sb sbuf-append-string
     sb sbuf>string cursor-line# lines set-nth
-    1+!> cursor-x
+    cursor-x 1 + set-cursor-x
     t !> cursor-line-changed?
     modified
 ;
@@ -378,15 +393,18 @@ global: done?
     edit-loop
     clear-status-line
     clear-message-line
-    0 page-#lines at-xy
+    0 lines-per-page at-xy
     show-cursor
 ;
 
 : initialize-editor ( -- )
     initialize-bindings
-    0 !> cursor-x
+
+    ' position new !> dot
+
+    0 set-cursor-x
     0 !> cursor-y
-    0 !> top-line#
+    0 !> top-line
 ;
 
 : edit ( -- )
