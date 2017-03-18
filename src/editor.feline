@@ -22,30 +22,25 @@ in: editor
 
 global: editor-filename
 global: mod-count
-global: lines
-global: top-line        -- 0-based line number
+global: buffer-lines
+global: top-line-number
 global: dot
-global: cursor-y
 global: repaint?
-global: cursor-line-changed?
+global: dot-line-changed?
 global: bindings
 global: done?
 
-0 >global: goal
+0 >global: goal-x
 
-tuple: position line offset ;
+tuple: position line-number offset ;
 
-: dot-line ( -- line-number ) dot position-line ;
+: dot-line-number ( -- line-number ) dot position-line-number ;
 
-: dot-line! ( line-number -- ) dot position-line! ;
+: dot-line-number! ( line-number -- ) dot position-line-number! ;
 
 : dot-offset ( -- ) dot position-offset ;
 
 : dot-offset! ( n -- ) dot position-offset! ;
-
-: cursor-x ( -- n ) dot position-offset ;
-
-: set-cursor-x ( n -- ) dot position-offset! ;
 
 : hide-cursor ( -- ) esc[ "?25l" write-string ;
 
@@ -61,21 +56,27 @@ tuple: position line offset ;
 
 : unmodified ( -- ) 0 !> mod-count ;
 
-: buffer-line-count ( -- n ) lines length ;
+: buffer-line-count ( -- n ) buffer-lines length ;
 
-: cursor-line# ( -- n ) top-line cursor-y + ;
+: dot-line ( -- string ) dot-line-number buffer-lines vector-nth ;
 
-: cursor-line ( -- string ) cursor-line# lines vector-nth ;
-
-: cursor-line-length ( -- n ) cursor-line length ;
+: dot-line-length ( -- n ) dot-line string-length ;
 
 : lines-per-page ( -- n ) #rows 2 - ;
 
-: .cursor ( -- ) cursor-x cursor-y at-xy ;
+: .cursor ( -- )
+    dot-offset
+    dot-line-number top-line-number -
+    dup 0 >= assert-true
+    at-xy ;
+
+: dot-y ( -- )
+    dot-line-number top-line-number -
+    dup 0 >= assert-true ;
 
 : .line ( y -- )
     0 over at-xy
-    top-line + lines vector-nth
+    top-line-number + buffer-lines vector-nth
     dup length #cols < [
         dup write
         length #cols swap - spaces
@@ -86,7 +87,7 @@ tuple: position line offset ;
 
 : redisplay-line ( y -- )
     >local: y
-    top-line y + buffer-line-count < [
+    top-line-number y + buffer-line-count < [
         y .line
     ] [
         0 y at-xy #cols spaces
@@ -100,8 +101,8 @@ tuple: position line offset ;
     0 status-y at-xy
     modified? [ '*' write-char ] [ space ] if
     editor-filename write-string
-    cursor-line# 1 +
-    cursor-x 1 +
+    dot-line-number 1 +
+    dot-offset 1 +
     "Line %d Col %d " format
     #cols over length - >local: x
     x editor-filename length 1 + - 1 max spaces
@@ -124,9 +125,9 @@ tuple: position line offset ;
         lines-per-page [ redisplay-line ] each-integer
         f !> repaint?
     ] [
-        cursor-line-changed? [
-            cursor-y redisplay-line
-            f !> cursor-line-changed?
+        dot-line-changed? [
+            dot-y redisplay-line
+            f !> dot-line-changed?
         ] when
     ] if
     status
@@ -135,136 +136,168 @@ tuple: position line offset ;
 ;
 
 : adjust-cursor-x ( -- )
-    goal set-cursor-x
-    cursor-x cursor-line-length > [
-        cursor-line-length set-cursor-x
+    goal-x dot-offset!
+    dot-offset dot-line-length > [
+        dot-line-length dot-offset!
     ] when
 ;
 
-: set-cursor ( x y -- )
-    2dup !> cursor-y set-cursor-x
-    at-xy
+: reframe? ( -- ? )
+    dot-line-number
+    top-line-number
+    dup lines-per-page 1 - +
+    between? not ;
+
+: reframe ( -- )
+    dot-line-number
+    lines-per-page 2 / verify-index
+    - 0 max !> top-line-number
+    t !> repaint?
 ;
 
+: maybe-reframe ( -- ) reframe? [ reframe ] when ;
+
 : beginning-of-buffer ( -- )
-    0 !> top-line
-    0 0 set-cursor
-    0 !> goal
+    0 dot-line-number!
+    0 dot-offset!
+
+    0 !> top-line-number
+    0 !> goal-x
     t !> repaint?
 ;
 
 : end-of-buffer ( -- )
-    buffer-line-count lines-per-page - 0 max !> top-line
-    lines-per-page 1 - !> cursor-y
-    0 set-cursor-x
-    cursor-x !> goal
+    buffer-line-count 1 - 0 max dot-line-number!
+    buffer-line-count lines-per-page - 0 max !> top-line-number
+    0 dot-offset!
+    dot-offset !> goal-x
     t !> repaint?
 ;
 
 : do-home ( -- )
-    0 set-cursor-x
-    0 !> goal
+    0 dot-offset!
+    0 !> goal-x
 ;
 
 : end-of-line ( -- )
-    cursor-line length set-cursor-x
-    cursor-x !> goal
+    dot-line length dot-offset!
+    dot-offset !> goal-x
 ;
 
 : do-left ( -- )
-    cursor-x 0 > [
---         1-!> cursor-x
-        cursor-x 1 - set-cursor-x
+    dot-offset 0 > [
+        dot-offset 1 - dot-offset!
+        dot-offset !> goal-x
     ] [
-        cursor-line# 0 > [
-            cursor-y 0 > [ 1-!> cursor-y ] [ 1-!> top-line ] if
-            cursor-line-length set-cursor-x
-            t !> repaint?
+        dot-line-number 0 > [
+            dot-line-number 1 - dot-line-number!
+            dot-line-length dot-offset!
+            dot-offset !> goal-x
+            reframe? [
+                dot-line-number !> top-line-number
+                t !> repaint?
+            ] when
         ] when
     ] if
-    cursor-x !> goal
 ;
 
 : do-right ( -- )
-    cursor-x cursor-line length < [
-        cursor-x 1 + set-cursor-x
-        cursor-x !> goal
-    ] when ;
+    dot-offset dot-line length < [
+        dot-offset 1 + dot-offset!
+        dot-offset !> goal-x
+    ] [
+        dot-line-number buffer-line-count 1 - < [
+            dot-line-number 1 + dot-line-number!
+            0 dot-offset!
+            dot-offset !> goal-x
+            reframe? [
+                dot-line-number lines-per-page 1 - - !> top-line-number
+                t !> repaint?
+            ] when
+        ] when
+    ] if
+;
 
 : do-down ( -- )
-    cursor-line# buffer-line-count 1 - < [
-        cursor-y lines-per-page 1 - < [
-            1+!> cursor-y
-        ] [
-            1+!> top-line
+    dot-line-number buffer-line-count 1 - < [
+        dot-line-number 1 + dot-line-number!
+        reframe? [
+            dot-line-number lines-per-page 1 - - !> top-line-number
             t !> repaint?
-        ] if
+        ] when
         adjust-cursor-x
     ] when
 ;
 
 : do-up ( -- )
-    cursor-line# 0 > [
-        cursor-y 0 > [
-            1-!> cursor-y
-        ] [
-            1-!> top-line
+    dot-line-number 0 > [
+        dot-line-number 1 - dot-line-number!
+        reframe? [
+            dot-line-number !> top-line-number
             t !> repaint?
-        ] if
+        ] when
+        adjust-cursor-x
     ] when
-    adjust-cursor-x
 ;
 
 : do-page-down
-    top-line lines-per-page + dup buffer-line-count <
-    [ !> top-line t !> repaint? ] [ drop ] if
+    dot-y >local: goal-y
+
+    dot-line-number lines-per-page +
+    buffer-line-count 1 - min
+    dot-line-number!
+
+    dot-line-number goal-y - 0 max !> top-line-number
+    t !> repaint?
     adjust-cursor-x
 ;
 
 : do-page-up
-    top-line lines-per-page > [
-        top-line lines-per-page - !> top-line
-    ] [
-        0 !> top-line 0 !> cursor-y
-    ] if
+    dot-y >local: goal-y
+
+    dot-line-number lines-per-page - 0 max dot-line-number!
+
+    dot-line-number goal-y - 0 max !> top-line-number
     t !> repaint?
     adjust-cursor-x
 ;
 
 : insert-line-separator ( -- )
-    cursor-x cursor-line length <= [
-        cursor-x cursor-line length
-        cursor-line substring
-        cursor-line# 1 + lines vector-insert-nth!
-        cursor-line cursor-x string-head cursor-line# lines vector-set-nth
-        cursor-y 1 + !> cursor-y
-        0 set-cursor-x
+    dot-offset dot-line-length <= [
+        dot-offset dot-line-length
+        dot-line substring
+        dot-line-number 1 + buffer-lines vector-insert-nth!
+        dot-line dot-offset string-head dot-line-number buffer-lines vector-set-nth
+        dot-line-number 1 + dot-line-number!
+        0 dot-offset!
+        0 !> goal-x
+        modified
         t !> repaint?
     ] when
 ;
 
 : delete-normal-char ( -- )
-    cursor-line cursor-x string-head
-    cursor-x 1  + cursor-line-length < [
-        cursor-line cursor-x 1 + string-tail concat
+    dot-line dot-offset string-head
+    dot-offset 1  + dot-line-length < [
+        dot-line dot-offset 1 + string-tail concat
     ] when
-    cursor-line# lines vector-set-nth
-    t !> cursor-line-changed?
+    dot-line-number buffer-lines vector-set-nth
+    t !> dot-line-changed?
 ;
 
 : delete-line-separator ( -- )
-    cursor-line# buffer-line-count 1 - < [
-        cursor-x cursor-line-length = [
-            cursor-line# 1 + lines vector-nth
-            cursor-line swap concat cursor-line# lines vector-set-nth
-            cursor-line# 1 + lines vector-remove-nth!
+    dot-line-number buffer-line-count 1 - < [
+        dot-offset dot-line-length = [
+            dot-line-number 1 + buffer-lines vector-nth
+            dot-line swap concat dot-line-number buffer-lines vector-set-nth
+            dot-line-number 1 + buffer-lines vector-remove-nth!
             t !> repaint?
         ] when
     ] when
 ;
 
 : do-delete ( -- )
-    cursor-x cursor-line-length < [
+    dot-offset dot-line-length < [
         delete-normal-char
     ] [
         delete-line-separator
@@ -273,20 +306,20 @@ tuple: position line offset ;
 ;
 
 : do-bs ( -- )
-    cursor-x 0 > cursor-line# 0 > or [
+    dot-offset 0 > dot-line-number 0 > or [
         do-left do-delete
     ] when
 ;
 
 : do-normal-char ( char -- )
-    cursor-line dup cursor-x string-head >local: head
-    cursor-x string-tail >local: tail
+    dot-line dup dot-offset string-head >local: head
+    dot-offset string-tail >local: tail
     head string>sbuf >local: sb
     sb sbuf-push
     tail sb sbuf-append-string
-    sb sbuf>string cursor-line# lines set-nth
-    cursor-x 1 + set-cursor-x
-    t !> cursor-line-changed?
+    sb sbuf>string dot-line-number buffer-lines set-nth
+    dot-offset 1 + dot-offset!
+    t !> dot-line-changed?
     modified
 ;
 
@@ -299,7 +332,7 @@ tuple: position line offset ;
 : do-save ( -- )
     "Saving..." message
     make-backup
-    lines editor-filename set-file-lines
+    buffer-lines editor-filename set-file-lines
     unmodified
     "Saving...done" message
 ;
@@ -380,10 +413,10 @@ tuple: position line offset ;
 ;
 
 : edit1 ( -- )
-    editor-filename file-lines verify-vector !> lines
-    lines vector-last [
+    editor-filename file-lines verify-vector !> buffer-lines
+    buffer-lines vector-last [
         length zero? [
-            "" lines vector-push
+            "" buffer-lines vector-push
         ] unless
     ] when*
     unmodified
@@ -402,9 +435,10 @@ tuple: position line offset ;
 
     ' position new !> dot
 
-    0 set-cursor-x
-    0 !> cursor-y
-    0 !> top-line
+
+    0 dot-offset!
+    0 dot-line-number!
+    0 !> top-line-number
 ;
 
 : edit ( -- )
@@ -422,8 +456,3 @@ tuple: position line offset ;
     initialize-editor
     edit1
 ;
-
-using: editor feline ;
-in: feline
-
-: edit editor:edit ;
