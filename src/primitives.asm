@@ -611,12 +611,15 @@ code all_integers?, 'all-integers?'     ; n quot -- ?
 endcode
 
 ; ### find-integer
-code find_integer, 'find-integer'       ; tagged-fixnum xt -- i|f
-; Quotation must have stack effect ( ... i -- ... ? ).
+code find_integer, 'find-integer'       ; tagged-fixnum callable -- i/f
+; callable must have stack effect ( i -- ? )
 
         _swap
-        _untag_fixnum
+        _check_fixnum
         _swap
+
+        ; protect callable from gc
+        push    rbx
 
         push    r12
         push    r13
@@ -654,6 +657,10 @@ code find_integer, 'find-integer'       ; tagged-fixnum xt -- i|f
         pop     r15
         pop     r13
         pop     r12
+
+        ; drop quotation
+        pop     rax
+
         next
 endcode
 
