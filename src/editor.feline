@@ -323,10 +323,6 @@ tuple: position line-number offset ;
     modified
 ;
 
-: copy-file ( src dest -- )
-    -- REVIEW file-contents set-file-contents
-    swap file-lines swap set-file-lines ;
-
 : make-backup ( -- ) editor-filename dup "~" concat copy-file ;
 
 : do-save ( -- )
