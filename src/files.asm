@@ -279,6 +279,15 @@ code set_file_contents, 'set-file-contents'     ; string path --
         next
 endcode
 
+; ### copy-file
+code copy_file, 'copy-file'     ; from to --
+        _swap
+        _ file_contents
+        _swap
+        _ set_file_contents
+        next
+endcode
+
 ; ### file-lines
 code file_lines, 'file-lines'           ; path -- vector
         _ file_open_read                ; -- fd
