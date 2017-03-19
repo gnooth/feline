@@ -640,6 +640,8 @@ endcode
 ; ### symbol-set-location
 code symbol_set_location, 'symbol-set-location' ; file line-number symbol --
         _ check_symbol
+        _pick
+        _tagged_if .1
         push    this_register
         mov     this_register, rbx
         poprbx
@@ -648,6 +650,9 @@ code symbol_set_location, 'symbol-set-location' ; file line-number symbol --
         _ verify_string
         _this_symbol_set_file
         pop     this_register
+        _else .1
+        _3drop
+        _then .1
         next
 endcode
 
