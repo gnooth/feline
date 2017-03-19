@@ -17,6 +17,7 @@ file __FILE__
 
 ; ### file-open-read
 code file_open_read, 'file-open-read'   ; string -- fd
+        _dup
         _ string_raw_data_address
 %ifdef WIN64
         ; args in rcx, rdx, r8, r9
@@ -30,10 +31,12 @@ code file_open_read, 'file-open-read'   ; string -- fd
         xcall   os_open_file
         test    rax, rax
         js      .1
-        pushd   rax                     ; -- fd
+        mov     rbx, rax
         _return
 .1:
-        _error "unable to open file"
+        _quote "ERROR: unable to open file %S."
+        _ format
+        _ error
         next
 endcode
 
