@@ -224,11 +224,7 @@ endcode
 
 ; ### file-close
 code file_close, 'file-close'           ; fd --
-%ifdef WIN64
-        popd    rcx
-%else
-        popd    rdi
-%endif
+        popd    arg0_register
         xcall   os_close_file
         test    rax, rax
         js      .1
@@ -261,7 +257,7 @@ code file_contents, 'file-contents'     ; path -- string
 endcode
 
 ; ### ?file-contents
-code safe_file_contents, '?file-contents' ; path -- string/f
+code safe_file_contents, '?file-contents'       ; path -- string/f
         _quotation .1
         _ file_contents
         _end_quotation .1
@@ -271,6 +267,15 @@ code safe_file_contents, '?file-contents' ; path -- string/f
         _f
         _end_quotation .2
         _ recover
+        next
+endcode
+
+; ### set-file-contents
+code set_file_contents, 'set-file-contents'     ; string path --
+        _ file_create_write
+        _tuck
+        _ file_write_string
+        _ file_close
         next
 endcode
 
