@@ -114,7 +114,10 @@ code mark_symbol, 'mark-symbol'         ; symbol --
         _dup
         _symbol_props
         _ maybe_mark_handle
+        _dup
         _symbol_value
+        _ maybe_mark_handle
+        _symbol_file
         _ maybe_mark_handle
         ; REVIEW name vocab
         next
