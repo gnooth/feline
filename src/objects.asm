@@ -301,15 +301,7 @@ code object_to_string, 'object>string'  ; object -- string
         _dup
         _ string?
         _tagged_if .3
-        _ string_to_sbuf        ; -- sbuf
-        _tagged_char '"'
-        _lit tagged_zero
-        _pick
-        _ sbuf_insert_nth       ; -- sbuf
-        _tagged_char '"'
-        _over
-        _ sbuf_push
-        _ sbuf_to_string
+        _ quote_string
         _return
         _then .3
 
