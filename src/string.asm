@@ -515,7 +515,7 @@ endcode
 feline_global string_limit, 'string-limit', tagged_fixnum(40)
 
 ; ### limit-string
-code limit_string, 'limit-string'       ; string limit -- limited-string
+code limit_string, 'limit-string'       ; string -- limited-string
         _dup
         _ string_length
         _ string_limit
@@ -528,6 +528,25 @@ code limit_string, 'limit-string'       ; string limit -- limited-string
         _quote "..."
         _ concat
         _then .1
+        next
+endcode
+
+; ### quote-string
+code quote_string, 'quote-string'       ; string -- quoted-string
+        _dup
+        _ string_length
+        _tagged_fixnum 2
+        _ fixnum_plus
+        _ new_sbuf
+        _tagged_char '"'
+        _over
+        _ sbuf_push
+        _tuck
+        _ sbuf_append_string
+        _tagged_char '"'
+        _over
+        _ sbuf_push
+        _ sbuf_to_string
         next
 endcode
 
@@ -887,5 +906,45 @@ code path_get_extension, 'path-get-extension'   ; pathname -- extension/f
 
 .exit:
         pop     this_register
+        next
+endcode
+
+; ### string-lines
+code string_lines, 'string-lines'       ; string -- lines
+        _ check_string
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; --
+
+        _lit 10
+        _ new_vector_untagged           ; -- vector
+
+        _zero
+
+        _this_string_raw_length
+        _register_do_times .1
+
+        ; check for lf
+        _raw_loop_index
+        _this_string_nth_unsafe
+        _eq? 10
+        _tagged_if .2
+        _raw_loop_index
+        _this_string_substring_unsafe   ; -- vector string
+        _over
+        _ vector_push                   ; -- vector
+
+        _raw_loop_index
+        _oneplus                        ; start of next line
+
+        _then .2
+
+        _loop .1
+
+        _drop
+
+        pop     this_register
+
         next
 endcode
