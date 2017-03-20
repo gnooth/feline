@@ -140,7 +140,7 @@ endcode
 ; ### <vector>
 code new_vector, '<vector>'             ; capacity -- handle
 
-        _check_fixnum
+        _check_index
 
 new_vector_untagged:
 
