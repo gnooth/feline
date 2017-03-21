@@ -913,6 +913,9 @@ endcode
 code string_lines, 'string-lines'       ; string -- lines
         _ check_string
 
+        push    r14
+        mov     r14, 0
+
         push    this_register
         mov     this_register, rbx
         poprbx                          ; --
@@ -920,7 +923,7 @@ code string_lines, 'string-lines'       ; string -- lines
         _lit 10
         _ new_vector_untagged           ; -- vector
 
-        _zero
+        _zero                           ; raw index of start of first line
 
         _this_string_raw_length
         _register_do_times .1
@@ -928,9 +931,16 @@ code string_lines, 'string-lines'       ; string -- lines
         ; check for lf
         _raw_loop_index
         _this_string_nth_unsafe
+        _dup
         _eq? 10
         _tagged_if .2
-        _raw_loop_index
+        ; looking at lf
+        _drop
+        _raw_loop_index                 ; -- vector from to
+
+        sub     rbx, r14                ; adjust for preceding cr if necessary
+        mov     r14, 0
+
         _this_string_substring_unsafe   ; -- vector string
         _over
         _ vector_push                   ; -- vector
@@ -938,6 +948,17 @@ code string_lines, 'string-lines'       ; string -- lines
         _raw_loop_index
         _oneplus                        ; start of next line
 
+        _else .2
+        ; not lf
+        _eq? 13
+        _tagged_if .3
+        ; looking at cr
+        ; set up adjustment
+        mov     r14, 1
+        _else .3
+        ; no adjustment necessary
+        mov     r14, 0
+        _then .3
         _then .2
 
         _loop .1
@@ -945,6 +966,8 @@ code string_lines, 'string-lines'       ; string -- lines
         _drop
 
         pop     this_register
+
+        pop     r14
 
         next
 endcode
