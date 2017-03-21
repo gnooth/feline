@@ -169,7 +169,7 @@ tuple: position line-number offset ;
 : end-of-buffer ( -- )
     buffer-line-count 1 - 0 max dot-line-number!
     buffer-line-count lines-per-page - 0 max !> top-line-number
-    0 dot-offset!
+    dot-line-length dot-offset!
     dot-offset !> goal-x
     t !> repaint?
 ;
@@ -410,11 +410,6 @@ tuple: position line-number offset ;
 
 : edit1 ( -- )
     editor-filename file-lines verify-vector !> buffer-lines
-    buffer-lines vector-last [
-        length zero? [
-            "" buffer-lines vector-push
-        ] unless
-    ] when*
     unmodified
     page
     normal
