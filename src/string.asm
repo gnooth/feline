@@ -961,9 +961,17 @@ code string_lines, 'string-lines'       ; string -- lines
         _then .3
         _then .2
 
-        _loop .1
+        _loop .1                        ; -- from
 
-        _drop
+        _this_string_raw_length         ; -- from to
+        _twodup
+        _ult_if .4
+        _this_string_substring_unsafe
+        _over
+        _ vector_push
+        _else .4
+        _2drop
+        _then .4
 
         pop     this_register
 
