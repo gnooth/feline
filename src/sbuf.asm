@@ -197,7 +197,7 @@ endsub
 
 ; ### <sbuf>
 code new_sbuf, '<sbuf>'                 ; tagged-capacity -- sbuf
-        _untag_fixnum
+        _check_index
 new_sbuf_untagged:
         _ make_sbuf_internal            ; -- sbuf
         _dup
