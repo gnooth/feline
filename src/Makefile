@@ -112,6 +112,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	hashtable.asm \
 	include.asm \
 	io.asm \
+	iterator.asm \
 	key.asm \
 	lexer.asm \
 	load.asm \
