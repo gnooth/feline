@@ -308,15 +308,16 @@ code object_to_string, 'object>string'  ; object -- string
         _dup
         _ sbuf?
         _tagged_if .4
-        _quote 'SBUF" '
+        _quote "sbuf{ "
         _ string_to_sbuf
         _swap
         _ sbuf_to_string
+        _ quote_string
         _over
         _ sbuf_append_string
-        _tagged_char '"'
+        _quote " }"
         _over
-        _ sbuf_push
+        _ sbuf_append_string
         _ sbuf_to_string
         _return
         _then .4
