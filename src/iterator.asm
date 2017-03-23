@@ -171,15 +171,19 @@ code iterator_to_string, 'iterator>string'      ; iterator -- string
         _ verify_iterator
 
         _quote "iterator{ "
-        _ string_to_sbuf        ; -- iterator sbuf
+        _ string_to_sbuf
 
-        _over                   ; -- iterator sbuf iterator
+        _over
         _ iterator_sequence
         _ object_to_string
         _over
-        _ sbuf_append_string    ; -- iterator sbuf
+        _ sbuf_append_string
 
+        _lit tagged_char(32)
         _over
+        _ sbuf_push
+
+        _swap
         _ iterator_index
         _ fixnum_to_string
         _over
