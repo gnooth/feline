@@ -427,6 +427,13 @@ code object_to_string, 'object>string'  ; object -- string
         _return
         _then .19
 
+        _dup
+        _ iterator?
+        _tagged_if .20
+        _ iterator_to_string
+        _return
+        _then .20
+
         ; give up
         _tag_fixnum
         _ fixnum_to_hex
