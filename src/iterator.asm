@@ -89,7 +89,7 @@ code check_iterator, 'check-iterator'   ; x -- raw-iterator
         jz      error_not_iterator
         movzx   eax, word [rbx]
         cmp     eax, OBJECT_TYPE_ITERATOR
-        jne     error_not_lexer
+        jne     error_not_iterator
         next
 endcode
 
