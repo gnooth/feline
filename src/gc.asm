@@ -186,6 +186,13 @@ code mark_lexer, 'mark-lexer'           ; lexer --
         next
 endcode
 
+; ### mark-iterator
+code mark_iterator, 'mark-iterator'     ; iterator --
+        _iterator_sequence
+        _ maybe_mark_handle
+        next
+endcode
+
 ; ### gc-dispatch-table
 feline_global gc_dispatch_table, 'gc-dispatch-table'
 
@@ -240,6 +247,10 @@ code initialize_gc_dispatch_table, 'initialize-gc-dispatch-table'
 
         _lit mark_lexer
         _lit OBJECT_TYPE_LEXER
+        _this_array_set_nth_unsafe
+
+        _lit mark_iterator
+        _lit OBJECT_TYPE_ITERATOR
         _this_array_set_nth_unsafe
 
         pop     this_register
