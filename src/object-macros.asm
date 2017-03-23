@@ -34,6 +34,7 @@ OBJECT_TYPE_SLICE               equ 15
 OBJECT_TYPE_RANGE               equ 16
 OBJECT_TYPE_LEXER               equ 17
 OBJECT_TYPE_FLOAT               equ 18
+OBJECT_TYPE_ITERATOR            equ 19
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
