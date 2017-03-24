@@ -272,7 +272,7 @@ code new_lexer, '<lexer>'               ; string -- lexer
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -- object callable
+        poprbx                          ; -- string
 
         _this_object_set_type OBJECT_TYPE_LEXER
 
@@ -285,7 +285,7 @@ code new_lexer, '<lexer>'               ; string -- lexer
         pushrbx
         mov     rbx, this_register      ; -- lexer
 
-        ; Return handle.
+        ; return handle
         _ new_handle                    ; -- handle
 
         pop     this_register
@@ -337,8 +337,7 @@ code lexer_next_line, 'lexer-next-line' ; lexer --
 
         _this_lexer_raw_index
         _this_lexer_string
-        _ string_length
-        _untag_fixnum
+        _ string_raw_length
 
         _twodup
         _ ge
@@ -369,8 +368,7 @@ code lexer_next_line, 'lexer-next-line' ; lexer --
 
         ; reached end of string without finding a newline
         _this_lexer_string
-        _ string_length
-        _untag_fixnum
+        _ string_raw_length
         _this_lexer_set_raw_index
 
 .exit:
@@ -389,8 +387,7 @@ code lexer_string_skip_whitespace, 'lexer-string-skip-whitespace' ; lexer -- ind
 
         _this_lexer_raw_index
         _this_lexer_string
-        _ string_length
-        _untag_fixnum
+        _ string_raw_length
         _twodup
         _ ge
         _if .1
@@ -489,8 +486,7 @@ skip_blank_unchecked:
         _else .1
         _drop
         _this_lexer_string
-        _ string_length
-        _untag_fixnum
+        _ string_raw_length
         _this_lexer_set_raw_index
         _then .1
 
@@ -524,8 +520,7 @@ skip_word_unchecked:
         _else .1
         _drop
         _this_lexer_string
-        _ string_length
-        _untag_fixnum
+        _ string_raw_length
         _this_lexer_set_raw_index
         _then .1
 
@@ -551,8 +546,7 @@ code lexer_skip_quoted_string, 'lexer-skip-quoted-string' ; lexer --
 
         _this_lexer_raw_index
         _this_lexer_string
-        _ string_length
-        _untag_fixnum
+        _ string_raw_length
         _twodup
         _ ge
         _if .1
