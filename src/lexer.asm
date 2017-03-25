@@ -542,7 +542,7 @@ skip_word_unchecked:
 endcode
 
 ; ### lexer-skip-quoted-string
-code lexer_skip_quoted_string, 'lexer-skip-quoted-string' ; lexer --
+code lexer_skip_quoted_string, 'lexer-skip-quoted-string'       ; lexer --
 
         _ check_lexer
 
@@ -555,10 +555,7 @@ code lexer_skip_quoted_string, 'lexer-skip-quoted-string' ; lexer --
         _this_lexer_raw_index
         _this_lexer_string_raw_length
         _twodup
-        _ ge
-        _if .1
-        jmp     .error
-        _then .1                        ; -- untagged-start-index untagged-length
+        _ult_if .1
 
         _swap
         _register_do_range .2
@@ -588,8 +585,9 @@ code lexer_skip_quoted_string, 'lexer-skip-quoted-string' ; lexer --
 
         _loop .2
 
-.error:
+        _else .1
         _error "unterminated string"
+        _then .1
 
 .exit:
         pop     this_register
