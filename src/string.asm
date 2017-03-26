@@ -726,6 +726,14 @@ code string_index_from, 'string-index-from' ; char start-index string -- index/f
         next
 endcode
 
+; ### string-index
+code string_index, 'string-index'       ; char string -- index/f
+        _lit tagged_zero
+        _swap
+        _ string_index_from
+        next
+endcode
+
 ; ### write-string
 code write_string, 'write-string'       ; string --
         _ string_from                   ; -- addr len
