@@ -619,6 +619,21 @@ code lexer_next_char, 'lexer-next-char' ; lexer -- char/f
         next
 endcode
 
+; ### unescape-char
+code unescape_char, 'unescape-char'     ; char1 -- char2
+        _verify_char
+        _ escaped
+        _ string_index
+        _dup
+        _tagged_if .1
+        _ unescaped
+        _ string_nth
+        _else .1
+        _error "bad escape"
+        _then .1
+        next
+endcode
+
 ; ### lexer-parse-token
 code lexer_parse_token, 'lexer-parse-token' ; lexer -- string/f
         _dup
