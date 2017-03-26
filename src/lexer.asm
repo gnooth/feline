@@ -594,6 +594,31 @@ code lexer_skip_quoted_string, 'lexer-skip-quoted-string'       ; lexer --
         next
 endcode
 
+; ### lexer-next-char
+code lexer_next_char, 'lexer-next-char' ; lexer -- char/f
+
+        _ check_lexer
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+
+        _this_lexer_raw_index
+        _this_lexer_string_raw_length
+        _ult_if .1
+        _this_lexer_index
+        _this_lexer_string
+        _ string_nth_unsafe
+        _this_lexer_increment_raw_index
+        _else .1
+        _f
+        _then .1
+
+        pop     this_register
+
+        next
+endcode
+
 ; ### lexer-parse-token
 code lexer_parse_token, 'lexer-parse-token' ; lexer -- string/f
         _dup
