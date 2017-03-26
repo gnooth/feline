@@ -531,22 +531,78 @@ code limit_string, 'limit-string'       ; string limit -- limited-string
         next
 endcode
 
+; ### escaped
+code escaped, 'escaped'                 ; -- string
+        _quote 'nr"\'
+        next
+endcode
+
+; ### unescaped
+code unescaped, 'unescaped'             ; -- string
+        _quote `\n\r\"\\`
+        next
+endcode
+
 ; ### quote-string
 code quote_string, 'quote-string'       ; string -- quoted-string
         _dup
-        _ string_length
-        _tagged_fixnum 2
-        _ fixnum_plus
-        _ new_sbuf
+        _ string_raw_length
+        add     rbx, 16
+        _ new_sbuf_untagged             ; -- string sbuf
+        _tor                            ; -- string
+
         _tagged_char '"'
-        _over
+        _rfetch
+        _ sbuf_push                     ; -- string
+
+        _ new_iterator                  ; -- iterator
+
+        _begin .1
+        _dup
+        _ iterator_next                 ; -- iterator char/f
+        _dup
+        _tagged_if .2                   ; -- iterator char
+
+        _dup
+        _ unescaped
+        _ string_index                  ; -- iterator char index/f
+        _dup
+        _tagged_if .3                   ; -- iterator char index
+
+        _nip                            ; -- iterator index
+
+        _tagged_char '\'
+        _rfetch
         _ sbuf_push
-        _tuck
-        _ sbuf_append_string
+
+        _ escaped
+        _ string_nth
+        _rfetch
+        _ sbuf_push
+
+        _else .3                        ; -- iterator char f
+
+        _drop
+
+        _rfetch
+        _ sbuf_push
+
+        _then .3
+
+        _else .2                        ; -- iterator f
+        _2drop
+
         _tagged_char '"'
-        _over
+        _rfetch
         _ sbuf_push
+
+        _rfrom
         _ sbuf_to_string
+
+        _return
+        _then .2
+        _again .1
+
         next
 endcode
 
