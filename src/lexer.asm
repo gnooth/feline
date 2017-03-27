@@ -541,59 +541,6 @@ skip_word_unchecked:
         next
 endcode
 
-; ### lexer-skip-quoted-string
-code lexer_skip_quoted_string, 'lexer-skip-quoted-string'       ; lexer --
-
-        _ check_lexer
-
-        push    this_register
-        mov     this_register, rbx
-        poprbx
-
-        _this_lexer_increment_raw_index
-
-        _this_lexer_raw_index
-        _this_lexer_string_raw_length
-        _twodup
-        _ult_if .1
-
-        _swap
-        _register_do_range .2
-        _raw_loop_index
-        _this_lexer_string_nth_unsafe   ; -- untagged-char
-        _dup
-        _lit '"'
-        _equal
-        _if .3
-        _drop
-        _raw_loop_index
-        _oneplus
-        _this_lexer_set_raw_index
-        _unloop
-        jmp     .exit
-        _then .3
-
-        ; check for newline
-        _lit 10
-        _equal
-        _if .4
-        _this_lexer_increment_raw_line_number
-        _raw_loop_index
-        _oneplus
-        _this_lexer_set_raw_line_start
-        _then .4
-
-        _loop .2
-
-        _else .1
-        _error "unterminated string"
-        _then .1
-
-.exit:
-        pop     this_register
-        next
-endcode
-
 ; ### lexer-next-char
 code lexer_next_char, 'lexer-next-char' ; lexer -- char/f
 
