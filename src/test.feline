@@ -25,14 +25,21 @@ string" length 26 assert=
 
 clear
 
-test: multiline-string-test-1 ( -- )
+test: multiline-string-test-1
     "this is
 a multiline string"
     dup string? assert-true
-    length 26 assert=
+    dup length 26 assert=
+    "this is\na multiline string" assert=
 ;
 
 multiline-string-test-1
+
+test: string-literal-escapes-test-1
+    "this is a \"test\"!\n" string-length 18 assert-eq
+;
+
+string-literal-escapes-test-1
 
 test: string?-test-1 ( -- )
     t string? assert-false
