@@ -634,6 +634,56 @@ code unescape_char, 'unescape-char'     ; char1 -- char2
         next
 endcode
 
+; ### lexer-parse-quoted-string
+code lexer_parse_quoted_string, 'lexer-parse-quoted-string' ; lexer -- string
+
+        _ verify_lexer
+
+        ; skip quote character
+        _dup
+        _ lexer_next_char
+        _drop
+
+        _lit 64
+        _ new_sbuf_untagged             ; -- lexer sbuf
+
+        _begin .1
+
+        _over
+        _ lexer_next_char
+        _dup
+        _tagged_if_not .2
+        _3drop
+        _error "unterminated string"
+        _return
+        _then .2
+
+        _dup
+        _eq? tagged_char('"')
+        _tagged_if .3
+        _drop
+        _nip
+        _ sbuf_to_string
+        _return
+        _then .3
+
+        _dup
+        _eq? tagged_char('\')
+        _tagged_if .4
+        _drop
+        _over
+        _ lexer_next_char
+        _ unescape_char
+        _then .4
+
+        _over
+        _ sbuf_push
+
+        _again .1
+
+        next
+endcode
+
 ; ### lexer-parse-token
 code lexer_parse_token, 'lexer-parse-token' ; lexer -- string/f
         _dup
