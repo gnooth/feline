@@ -685,7 +685,7 @@ code lexer_parse_quoted_string, 'lexer-parse-quoted-string' ; lexer -- string
 endcode
 
 ; ### lexer-parse-token
-code lexer_parse_token, 'lexer-parse-token' ; lexer -- string/f
+code lexer_parse_token, 'lexer-parse-token'     ; lexer -- string/f
         _dup
         _ lexer_skip_blank              ; -- lexer index/f
 
@@ -701,14 +701,17 @@ code lexer_parse_token, 'lexer-parse-token' ; lexer -- string/f
         _lit tagged_char('"')
         _eq?
         _tagged_if .2
-        _over
-        _ lexer_skip_quoted_string
-        _over
-        _ lexer_index                   ; -- lexer from to
-        _ rot
-        _ lexer_string
-        _ string_substring
+        _drop                           ; -- lexer
+        _ lexer_parse_quoted_string
+
+        _quote '"'
+        _swap
+        _ concat
+        _quote '"'
+        _ concat
+
         _return
+
         _then .2
 
         _over
