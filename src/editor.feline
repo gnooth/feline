@@ -20,6 +20,7 @@ in: user
 
 in: editor
 
+global: current-buffer
 global: editor-filename
 global: mod-count
 global: buffer-lines
@@ -31,6 +32,16 @@ global: bindings
 global: done?
 
 0 >global: goal-x
+
+"\n"   >constant: LF
+"\r\n" >constant: CR+LF
+
+tuple: buffer filename autosave-filename eol ;
+
+: create-buffer ( filename -- buffer )
+    ' buffer new
+    [ buffer-filename! ] keep
+;
 
 tuple: position line-number offset ;
 
@@ -328,7 +339,12 @@ tuple: position line-number offset ;
 : do-save ( -- )
     "Saving..." message
     make-backup
-    buffer-lines editor-filename set-file-lines
+
+    current-buffer buffer-filename file-create-write >local: fd
+    current-buffer buffer-eol >local: eol
+    buffer-lines [ fd file-write-string eol fd file-write-string ] each
+    fd file-close
+
     unmodified
     "Saving...done" message
 ;
@@ -390,6 +406,7 @@ tuple: position line-number offset ;
     $11 ( control q )      ' do-quit                    bind-key
     $13 ( control s )      ' do-save                    bind-key
     k-enter                ' insert-line-separator      bind-key
+    $1b ( escape )         ' quit                       bind-key
 ;
 
 : do-command ( -- )
@@ -409,7 +426,13 @@ tuple: position line-number offset ;
 ;
 
 : edit1 ( -- )
-    editor-filename file-lines verify-vector !> buffer-lines
+    editor-filename create-buffer !> current-buffer
+
+    current-buffer buffer-filename file-contents
+
+    13 over string-index CR+LF LF ? current-buffer buffer-eol!
+
+    string-lines verify-vector !> buffer-lines
     unmodified
     page
     normal
@@ -439,7 +462,14 @@ tuple: position line-number offset ;
 ;
 
 : ed ( -- )
-    edit1
+    page
+    normal
+    t !> repaint?
+    edit-loop
+    clear-status-line
+    clear-message-line
+    0 lines-per-page at-xy
+    show-cursor
 ;
 
 : edit-file ( path -- )
