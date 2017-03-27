@@ -54,7 +54,7 @@ file __FILE__
         _this_set_slot2
 %endmacro
 
-%macro  _this_lexer_increment_raw_index 0       ; --
+%macro  _this_lexer_increment_index 0       ; --
         add     this_lexer_raw_index, 1
 %endmacro
 
@@ -87,7 +87,7 @@ file __FILE__
         _this_set_slot3
 %endmacro
 
-%macro  _this_lexer_increment_raw_line_number 0 ; --
+%macro  _this_lexer_increment_line_number 0 ; --
         add     this_lexer_raw_line_number, 1
 %endmacro
 
@@ -375,7 +375,7 @@ code lexer_next_line, 'lexer-next-line' ; lexer --
         _lit 10
         _equal
         _if .3
-        _this_lexer_increment_raw_line_number
+        _this_lexer_increment_line_number
         _raw_loop_index
         _oneplus
         _dup
@@ -425,7 +425,7 @@ code lexer_string_skip_whitespace, 'lexer-string-skip-whitespace' ; lexer -- ind
 
         ; char is a newline
         poprbx                          ; --
-        _this_lexer_increment_raw_line_number
+        _this_lexer_increment_line_number
         _raw_loop_index
         _oneplus
         _this_lexer_set_raw_line_start
@@ -556,7 +556,7 @@ code lexer_next_char, 'lexer-next-char' ; lexer -- char/f
         _this_lexer_index
         _this_lexer_string
         _ string_nth_unsafe
-        _this_lexer_increment_raw_index
+        _this_lexer_increment_index
         _else .1
         _f
         _then .1
