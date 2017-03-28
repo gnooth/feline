@@ -20,8 +20,21 @@ in: user
 
 in: editor
 
+: accept-string ( x y -- string )
+    >local: y
+    >local: x
+
+    10 <sbuf> >local: sb
+
+    [ key dup { 10 13 } member? ] [
+        dup write-char sb push
+    ] until
+
+    drop
+    sb sbuf>string
+;
+
 global: current-buffer
-global: editor-filename
 global: mod-count
 global: buffer-lines
 global: top-line-number
@@ -42,6 +55,8 @@ tuple: buffer filename autosave-filename eol ;
     ' buffer new
     [ buffer-filename! ] keep
 ;
+
+: editor-filename ( -- filename ) current-buffer buffer-filename ;
 
 tuple: position line-number offset ;
 
@@ -183,6 +198,16 @@ tuple: position line-number offset ;
     dot-line-length dot-offset!
     dot-offset !> goal-x
     t !> repaint?
+;
+
+: gotoline ( -- )
+    0 message-y at-xy "Line number: " write-string
+    13 message-y accept-string >local: response
+    clear-message-line
+    response string>number 1 - 0 max buffer-line-count 1 - min
+    dot-line-number!
+    0 dot-offset!
+    maybe-reframe
 ;
 
 : do-home ( -- )
@@ -349,20 +374,6 @@ tuple: position line-number offset ;
     "Saving...done" message
 ;
 
-: accept-string ( x y -- string )
-    >local: y
-    >local: x
-
-    10 <sbuf> >local: sb
-
-    [ key dup { 10 13 } member? ] [
-        dup write-char sb push
-    ] until
-
-    drop
-    sb sbuf>string
-;
-
 : do-quit ( -- )
     t !> done?
 
@@ -403,6 +414,7 @@ tuple: position line-number offset ;
     k-next                 ' do-page-down               bind-key
     k-ctrl-home            ' beginning-of-buffer        bind-key
     k-ctrl-end             ' end-of-buffer              bind-key
+    7 ( control g )        ' gotoline                   bind-key
     $11 ( control q )      ' do-quit                    bind-key
     $13 ( control s )      ' do-save                    bind-key
     k-enter                ' insert-line-separator      bind-key
@@ -425,40 +437,60 @@ tuple: position line-number offset ;
     ] until
 ;
 
-: edit1 ( -- )
-    editor-filename create-buffer !> current-buffer
+: initialize-editor ( -- )
+    bindings [ initialize-bindings ] unless
+;
+
+: initialize-buffer ( filename line-number -- )
+    verify-index  >local: line-number
+    verify-string >local: filename
+
+    filename create-buffer !> current-buffer
 
     current-buffer buffer-filename file-contents
 
+    -- detect eol
     13 over string-index CR+LF LF ? current-buffer buffer-eol!
 
     string-lines verify-vector !> buffer-lines
+
+    ' position new !> dot
+
+    0 dot-offset!
+    line-number 1 - 0 max buffer-line-count 1 - min dot-line-number!
+
+    0 !> top-line-number
     unmodified
+;
+
+: edit1 ( -- )
     page
     normal
+    maybe-reframe
     t !> repaint?
+
     edit-loop
+
     clear-status-line
     clear-message-line
     0 lines-per-page at-xy
     show-cursor
 ;
 
-: initialize-editor ( -- )
-    initialize-bindings
+: edit-file ( path -- )
+    initialize-editor
+    0 initialize-buffer
+    edit1
+;
 
-    ' position new !> dot
-
-
-    0 dot-offset!
-    0 dot-line-number!
-    0 !> top-line-number
+: edit-definition ( symbol -- )
+    initialize-editor
+    symbol-location 2dup and
+    [ initialize-buffer edit1 ] [ 2drop ] if
 ;
 
 : edit ( -- )
-    parse-token !> editor-filename
-    initialize-editor
-    edit1
+    parse-token find-name [ edit-definition ] [ edit-file ] if
 ;
 
 : ed ( -- )
@@ -470,10 +502,4 @@ tuple: position line-number offset ;
     clear-message-line
     0 lines-per-page at-xy
     show-cursor
-;
-
-: edit-file ( path -- )
-    !> editor-filename
-    initialize-editor
-    edit1
 ;
