@@ -764,6 +764,17 @@ test: hashtable-test-4 ( -- )
 
 hashtable-test-4
 
+test: hashtable-test-5
+    local: ht
+    16 <hashtable> !> ht
+    -- fixnum keys
+    1000 [ dup ht set-at ] each-integer
+    1000 [ dup ht at assert= ] each-integer
+    "charlie" ht at* assert-false assert-false
+;
+
+hashtable-test-5
+
 test: length-test-1 ( -- )
     "test" length 4 assert-eq
     "testing" string>sbuf length 7 assert-eq
