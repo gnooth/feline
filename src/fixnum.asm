@@ -51,8 +51,14 @@ code check_fixnum, 'check-fixnum'       ; fixnum -- untagged-fixnum
         next
 endcode
 
+; ### fixnum-hashcode
+code fixnum_hashcode, 'fixnum-hashcode' ; fixnum -- hashcode
+        _verify_fixnum
+        next
+endcode
+
 ; ### verify-index
-code verify_index, 'verify-index'     ; index -- index
+code verify_index, 'verify-index'       ; index -- index
         _verify_index
         next
 endcode
