@@ -654,7 +654,7 @@ endcode
 ; ### write-sbuf
 code write_sbuf, 'write-sbuf'           ; sbuf --
         _ sbuf_from                     ; -- addr len
-        call    write_chars
+        call    unsafe_raw_write_chars
         next
 endcode
 

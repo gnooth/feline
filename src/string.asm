@@ -790,12 +790,7 @@ code string_index, 'string-index'       ; char string -- index/f
         next
 endcode
 
-; ### write-string
-code write_string, 'write-string'       ; string --
-        _ string_from                   ; -- addr len
-
-; this entry point is also used by write-sbuf
-write_chars:
+code unsafe_raw_write_chars, 'unsafe-raw-write-chars'   ; raw-address raw-count --
         ; test for zero length string
         test    rbx, rbx
         jnz     .1
@@ -832,6 +827,13 @@ write_chars:
 .error:
         _error "error writing to file"
 .exit:
+        next
+endcode
+
+; ### write-string
+code write_string, 'write-string'       ; string --
+        _ string_from                   ; -- addr len
+        _ unsafe_raw_write_chars
         next
 endcode
 
