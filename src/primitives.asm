@@ -929,12 +929,31 @@ endcode
 
 ; ### spaces
 code spaces, 'spaces'                   ; n --
+
+%define spaces_count    256
+
         _ check_index
-        _zero
-        _?do .1
+
+        cmp     rbx, spaces_count
+        ja      .1
+        pushd   spaces_data
+        _swap
+        _ unsafe_raw_write_chars
+        _return
+
+.1:
+        _register_do_times .2
         _ space
-        _loop .1
-        next
+        _loop .2
+        _return
+
+        section .data
+        align   DEFAULT_DATA_ALIGNMENT
+spaces_data:
+        times spaces_count db ' '
+
+%undef spaces_count
+
 endcode
 
 ; ### nl
