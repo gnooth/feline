@@ -326,7 +326,7 @@ code hashtable_data_address, 'hashtable-data-address' ; ht -- data-address
 endcode
 
 %macro  _this_hashtable_hash_at 0       ; key -- start-index
-        _ hashcode
+        _ generic_hashcode
         _untag_fixnum
         mov     rax, this_hashtable_raw_capacity
         sub     rax, 1

@@ -83,7 +83,7 @@ code add_method, 'add-method'   ; method-symbol untagged-type-number generic-sym
 endcode
 
 ; ### hashcode
-generic hashcode, 'hashcode'
+generic generic_hashcode, 'hashcode'
 
 ; ### equal?
 generic equal?, 'equal?'
@@ -156,10 +156,10 @@ generic generic_coerce_to_float, '>float'
 code initialize_generic_functions, 'initialize-generic-functions' ; --
 
         ; hashcode
-        _initialize_generic_function hashcode
-        _add_method hashcode, OBJECT_TYPE_FIXNUM, fixnum_hashcode
-        _add_method hashcode, OBJECT_TYPE_STRING, string_hashcode
-        _add_method hashcode, OBJECT_TYPE_SYMBOL, symbol_hashcode
+        _initialize_generic_function generic_hashcode
+        _add_method generic_hashcode, OBJECT_TYPE_FIXNUM, fixnum_hashcode
+        _add_method generic_hashcode, OBJECT_TYPE_STRING, string_hashcode
+        _add_method generic_hashcode, OBJECT_TYPE_SYMBOL, symbol_hashcode
 
         ; equal?
         _initialize_generic_function equal?
