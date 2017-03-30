@@ -32,18 +32,24 @@ endcode
 
 ; ### check-vector
 code check_vector, 'check-vector'       ; handle -- vector
+        _dup
         _ deref
         test    rbx, rbx
-        jz      error_not_vector
+        jz      .error
         movzx   eax, word [rbx]
         cmp     eax, OBJECT_TYPE_VECTOR
-        jne     error_not_vector
+        jne     .error
+        _nip
+        next
+.error:
+        _drop
+        _ error_not_vector
         next
 endcode
 
 ; ### verify-vector
 code verify_vector, 'verify-vector'     ; handle -- handle
-; Returns argument unchanged.
+; returns argument unchanged
         _dup
         _ handle?
         _tagged_if .1
