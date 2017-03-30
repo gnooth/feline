@@ -545,6 +545,22 @@ test: vector-test-5 ( -- )
 
 vector-test-5
 
+test: vector-?nth-test-1
+    vector{ 0 1 2 3 } >local: v
+    0 v vector-?nth 0 assert=
+    1 v vector-?nth 1 assert=
+    2 v vector-?nth 2 assert=
+    3 v vector-?nth 3 assert=
+    4 v vector-?nth assert-false
+
+    most-positive-fixnum v vector-?nth assert-false
+
+    -- -1 is not an index
+    [ -1 v vector-?nth ] assert-must-fail
+;
+
+vector-?nth-test-1
+
 -- vector>array
 test: vector>array-test-1 ( -- )
     vector{ 1 2 3 } vector>array
