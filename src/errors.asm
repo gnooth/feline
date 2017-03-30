@@ -83,3 +83,11 @@ code error_not_index, 'error-not-index'         ; x --
         _ error
         next
 endcode
+
+; ### error-not-vector
+code error_not_vector, 'error-not-vector'       ; x --
+        _quote "a vector"
+        _ format_type_error
+        _ error
+        next
+endcode

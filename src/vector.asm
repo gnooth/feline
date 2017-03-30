@@ -30,13 +30,6 @@ code vector?, 'vector?'                 ; handle -- ?
         next
 endcode
 
-; ### error-not-vector
-code error_not_vector, 'error-not-vector' ; x --
-        ; REVIEW
-        _error "not a vector"
-        next
-endcode
-
 ; ### check-vector
 code check_vector, 'check-vector'       ; handle -- vector
         _ deref
