@@ -284,16 +284,17 @@ vector_nth_untagged:
 endcode
 
 ; ### vector-?nth
-code vector_?nth, 'vector-?nth'         ; index handle -- element/f
-
-        _check_index qword [rbp]
+code vector_?nth, 'vector-?nth'         ; index vector -- element/f
 
         _ check_vector
 
         push    this_register
-        mov     this_register, rbx      ; -- raw-index raw_vector
+        mov     this_register, rbx
+        poprbx                          ; -- index
 
-        _vector_raw_length              ; -- raw-index raw-length
+        _check_index                    ; -- raw-index
+
+        _this_vector_raw_length         ; -- raw-index raw-length
         cmp     [rbp], rbx
         poprbx                          ; -- raw-index
         jnl .1
