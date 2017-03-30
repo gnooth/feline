@@ -556,6 +556,15 @@ code lexer_next_char, 'lexer-next-char' ; lexer -- char/f
         _this_lexer_index
         _this_lexer_string
         _ string_nth_unsafe
+
+        ; check for newline
+        cmp     rbx, tagged_char(10)
+        jne     .2
+        _this_lexer_increment_line_number
+        _this_lexer_raw_index
+        _oneplus
+        _this_lexer_set_raw_line_start
+.2:
         _this_lexer_increment_index
         _else .1
         _f
