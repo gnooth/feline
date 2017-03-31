@@ -104,7 +104,8 @@ global: relative-size
       "r8"  "r9"  "r10" "r11" "r12" "r13" "r14" "r15" } array-nth ;
 
 : reg32-name ( register-number -- string )
-    { "eax" "ecx" "edx" "ebx" "esp" "ebp" "esi" "edi" } array-nth ;
+    { "eax"  "ecx"  "edx"  "ebx"  "esp"  "ebp"  "esi"  "edi"
+      "r8d"  "r9d"  "r10d" "r11d" "r12d" "r13d" "r14d" "r15d" } array-nth ;
 
 : reg8-name ( register-number -- string )
     { "al" "cl" "dl" "bl" } array-nth ;
@@ -930,8 +931,8 @@ last-word $ab install-handler
     -- source is imm32/64
     -- dest is r32/64
     "mov" !> mnemonic
-    opcode $b8 - !> dreg
-    prefix zero? [
+    opcode $b8 - register-rm !> dreg
+    prefix rex.w bitand zero? [
         next-uint32
         32 !> dsize
     ] [
