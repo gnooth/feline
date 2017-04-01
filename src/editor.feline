@@ -100,9 +100,32 @@ tuple: position line-number offset ;
     dot-line-number top-line-number -
     dup 0 >= assert-true ;
 
+: detab ( string -- string' )
+    >local: s
+    9 s string-index >local: i
+    i f eq? [ s ] return-if
+
+    256 <sbuf> >local: sb
+
+    s [
+        dup 9 eq? [
+            drop
+            32 sb sbuf-push
+            [ sb sbuf-length 8 mod 0 eq? ] [ 32 sb sbuf-push ] until
+        ] [
+            sb sbuf-push
+        ] if
+    ] each
+
+    sb sbuf>string
+;
+
 : .line ( y -- )
     0 over at-xy
     top-line-number + buffer-lines vector-nth
+
+    detab
+
     dup length #cols < [
         dup write
         length #cols swap - spaces
