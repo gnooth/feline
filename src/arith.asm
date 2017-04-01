@@ -15,15 +15,6 @@
 
 file __FILE__
 
-; ### >
-inline gt, '>'                          ; n1 n2 -- flag
-        cmp     [rbp], rbx
-        setg    bl
-        neg     bl
-        movsx   rbx, bl
-        lea     rbp, [rbp + BYTES_PER_CELL]
-endinline
-
 ; ### >=
 inline ge, '>='                         ; n1 n2 -- flag
         cmp     [rbp], rbx
@@ -31,27 +22,6 @@ inline ge, '>='                         ; n1 n2 -- flag
         neg     bl
         movsx   rbx, bl
         lea     rbp, [rbp + BYTES_PER_CELL]
-endinline
-
-; ### <=
-inline le, '<='                         ; n1 n2 -- flag
-        cmp     [rbp], rbx
-        setle   bl
-        neg     bl
-        movsx   rbx, bl
-        lea     rbp, [rbp + BYTES_PER_CELL]
-endinline
-
-; ### u<
-inline ult, 'u<'
-; CORE
-        _ult
-endinline
-
-; ### u>
-inline ugt, 'u>'
-; CORE EXT
-        _ugt
 endinline
 
 ; ### within
