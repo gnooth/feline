@@ -40,13 +40,9 @@ endcode
 
 %macro generic 2
         code %1, %2
-        ; REVIEW
-        ; We need to do something like this for calls from asm to work.
-        _lit S_%1
-        _ symbol_raw_code_address
-        mov     rax, rbx
-        poprbx
-        jmp     rax
+        pushrbx
+        mov     rbx, [S_%1_symbol_value]
+        jmp     do_generic
         next
         endcode
 %endmacro
@@ -55,21 +51,14 @@ endcode
 code initialize_generic_function, 'initialize-generic-function' ; symbol --
         _lit 10
         _ new_vector_untagged   ; -- symbol methods-vector
-        _lit S_do_generic
-        _ two_array             ; -- symbol array
-        _ array_to_quotation    ; -- symbol quotation
-        _over
-        _ symbol_set_def        ; -- symbol
-        _ compile_word
+        _swap
+        _ symbol_set_value      ; --
         next
 endcode
 
 ; ### add-method
 code add_method, 'add-method'   ; method-symbol untagged-type-number generic-symbol --
-        _ symbol_def
-        _ quotation_array
-        _ array_first           ; -- method-symbol untagged-type-number methods-vector
-
+        _ symbol_value          ; -- method-symbol untagged-type-number methods-vector
         _ verify_vector
 
         _ rot
