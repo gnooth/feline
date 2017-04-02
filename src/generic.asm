@@ -26,17 +26,15 @@ code lookup_method, 'lookup-method'     ; object methods-vector -- object raw-co
 endcode
 
 ; ### do-generic
-code do_generic, 'do-generic'   ; methods-vector --
-        _ lookup_method         ; -- raw-code-address/f
-        _dup
-        _tagged_if .1
+code do_generic, 'do-generic'   ; object methods-vector --
+        _ lookup_method         ; -- object raw-code-address/f
+        cmp     rbx, f_value
+        je      .1
         mov     rax, rbx
         poprbx
-        call    rax
-        _else .1
-        _drop
+        jmp     rax
+.1:
         _error "no method"
-        _then .1
         next
 endcode
 
