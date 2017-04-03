@@ -15,7 +15,8 @@
 
 file __FILE__
 
-; 5 cells (object header, count, deleted, capacity, data address)
+; 7 cells (object header, count, deleted, capacity, data address,
+; hash function, test function)
 
 %macro  _hashtable_raw_count 0          ; hashtable -- count
         _slot1
@@ -98,6 +99,32 @@ file __FILE__
         _store
 %endmacro
 
+%define this_hashtable_hash_function    this_slot5
+
+%macro  _this_hashtable_hash_function 0
+        _this_slot5
+%endmacro
+
+%macro  _hashtable_set_hash_function 0
+        _set_slot5
+%endmacro
+
+%macro  _this_hashtable_set_hash_function 0
+        _this_set_slot5
+%endmacro
+
+%macro  _hashtable_set_test_function 0
+        _set_slot6
+%endmacro
+
+%macro  _this_hashtable_test_function 0
+        _this_slot6
+%endmacro
+
+%macro  _this_hashtable_set_test_function 0
+        _this_slot6
+%endmacro
+
 ; ### hashtable?
 code hashtable?, 'hashtable?'   ; x -- ?
         _dup
@@ -147,6 +174,20 @@ code hashtable_capacity, 'hashtable-capacity'   ; hashtable -- capacity
         _ check_hashtable
         _hashtable_raw_capacity
         _tag_fixnum
+        next
+endcode
+
+; ### hashtable-set-hash-function
+code hashtable_set_hash_function, 'hashtable-set-hash-function' ; hash-function hashtable --
+        _ check_hashtable
+        _hashtable_set_hash_function
+        next
+endcode
+
+; ### hashtable-set-test-function
+code hashtable_set_test_function, 'hashtable-set-test-function' ; test-function hashtable --
+        _ check_hashtable
+        _hashtable_set_test_function
         next
 endcode
 
@@ -247,8 +288,9 @@ code new_hashtable, '<hashtable>'       ; fixnum -- hashtable
 
 new_hashtable_untagged:
 
-        ; 5 cells (object header, count, deleted, capacity, data address)
-        _lit 5
+        ; 7 cells (object header, count, deleted, capacity, data address,
+        ; hash function, test function)
+        _lit 7
         _ allocate_cells
         push    this_register
         mov     this_register, rbx
@@ -275,10 +317,14 @@ new_hashtable_untagged:
         _store
         _loop .1
 
+        _lit S_generic_hashcode
+        _ symbol_raw_code_address
+        _this_hashtable_set_hash_function
+
         pushrbx
         mov     rbx, this_register      ; -- hashtable
 
-        ; Return handle.
+        ; return handle
         _ new_handle                    ; -- handle
 
         pop     this_register
@@ -326,7 +372,8 @@ code hashtable_data_address, 'hashtable-data-address' ; ht -- data-address
 endcode
 
 %macro  _this_hashtable_hash_at 0       ; key -- start-index
-        _ generic_hashcode
+        mov     rax, this_hashtable_hash_function
+        call    rax
         _untag_fixnum
         mov     rax, this_hashtable_raw_capacity
         sub     rax, 1
