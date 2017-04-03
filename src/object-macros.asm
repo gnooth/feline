@@ -216,6 +216,8 @@ OBJECT_ALLOCATED_BIT            equ 4
         _2drop
 %endmacro
 
+%define this_slot5      qword [this_register + BYTES_PER_CELL * 5]
+
 %macro  _this_slot5 0
         pushrbx
         mov     rbx, [this_register + BYTES_PER_CELL * 5]
@@ -235,6 +237,8 @@ OBJECT_ALLOCATED_BIT            equ 4
         mov     [rbx + BYTES_PER_CELL * 6], rax
         _2drop
 %endmacro
+
+%define this_slot6      qword [this_register + BYTES_PER_CELL * 6]
 
 %macro  _this_slot6 0
         pushrbx
