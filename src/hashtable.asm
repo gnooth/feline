@@ -113,6 +113,8 @@ file __FILE__
         _this_set_slot5
 %endmacro
 
+%define this_hashtable_test_function    this_slot6
+
 %macro  _hashtable_set_test_function 0
         _set_slot6
 %endmacro
@@ -122,7 +124,7 @@ file __FILE__
 %endmacro
 
 %macro  _this_hashtable_set_test_function 0
-        _this_slot6
+        _this_set_slot6
 %endmacro
 
 ; ### hashtable?
@@ -321,6 +323,10 @@ new_hashtable_untagged:
         _ symbol_raw_code_address
         _this_hashtable_set_hash_function
 
+        _lit S_feline_equal
+        _ symbol_raw_code_address
+        _this_hashtable_set_test_function
+
         pushrbx
         mov     rbx, this_register      ; -- hashtable
 
@@ -415,7 +421,9 @@ code this_hashtable_find_index_for_key, 'this-hashtable-find-index-for-key', SYM
         _unloop
         _return
 .2:
-        _ feline_equal
+        mov     rax, this_hashtable_test_function
+        call    rax
+
         _tagged_if .3                   ; -- key start-index
         ; found key
         _nip
