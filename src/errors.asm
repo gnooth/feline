@@ -91,3 +91,11 @@ code error_not_vector, 'error-not-vector'       ; x --
         _ error
         next
 endcode
+
+; ### error-not-hashtable
+code error_not_hashtable, 'error-not-hashtable' ; x --
+        _quote "a hashtable"
+        _ format_type_error
+        _ error
+        next
+endcode

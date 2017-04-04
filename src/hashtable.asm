@@ -143,14 +143,6 @@ code hashtable?, 'hashtable?'   ; x -- ?
         next
 endcode
 
-; ### error-not-hashtable
-code error_not_hashtable, 'error-not-hashtable' ; x --
-        ; REVIEW
-        _drop
-        _error "not a hashtable"
-        next
-endcode
-
 ; ### check-hashtable
 code check_hashtable, 'check-hashtable' ; handle -- hashtable
         _ deref
