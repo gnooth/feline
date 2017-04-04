@@ -124,6 +124,16 @@ code new_vocab, '<vocab>'               ;  name -- vocab
         _ new_hashtable_untagged
         _this_vocab_set_hashtable
 
+        _lit S_string_hashcode
+        _ symbol_raw_code_address
+        _this_vocab_hashtable
+        _ hashtable_set_hash_function
+
+        _lit S_stringequal
+        _ symbol_raw_code_address
+        _this_vocab_hashtable
+        _ hashtable_set_test_function
+
         pushrbx
         mov     rbx, this_register      ; -- vocab
 
