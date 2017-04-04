@@ -624,17 +624,15 @@ hashtable_grow_unchecked:
         _register_do_times .2
 
         ; value
-        _i
-        _tag_fixnum
+        _tagged_loop_index
         _over
-        _ nth                           ; -- keys values nth-value
+        _ vector_nth                    ; -- keys values nth-value
 
         ; key
         _pick                           ; -- keys values nth-value keys
-        _i
-        _tag_fixnum
+        _tagged_loop_index
         _swap
-        _ nth                           ; -- keys values nth-value nth-key
+        _ vector_nth                    ; -- keys values nth-value nth-key
 
         _this
         _ set_at_unchecked
