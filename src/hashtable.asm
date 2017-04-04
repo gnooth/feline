@@ -160,6 +160,22 @@ code check_hashtable, 'check-hashtable'         ; handle -- hashtable
         next
 endcode
 
+; ### verify-hashtable
+code verify_hashtable, 'verify-hashtable'       ; handle -- handle
+        _dup
+        _ deref
+        test    rbx, rbx
+        jz      .error
+        movzx   eax, word [rbx]
+        cmp     eax, OBJECT_TYPE_HASHTABLE
+        jne     .error
+        _drop
+        next
+.error:
+        _drop
+        _ error_not_hashtable
+        next
+endcode
 
 ; ### hashtable-count
 code hashtable_count, 'hashtable-count' ; hashtable -- count
