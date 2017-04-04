@@ -144,15 +144,22 @@ code hashtable?, 'hashtable?'   ; x -- ?
 endcode
 
 ; ### check-hashtable
-code check_hashtable, 'check-hashtable' ; handle -- hashtable
+code check_hashtable, 'check-hashtable'         ; handle -- hashtable
+        _dup
         _ deref
         test    rbx, rbx
-        jz      error_not_hashtable
+        jz      .error
         movzx   eax, word [rbx]
         cmp     eax, OBJECT_TYPE_HASHTABLE
-        jne     error_not_hashtable
+        jne     .error
+        _nip
+        next
+.error:
+        _drop
+        _ error_not_hashtable
         next
 endcode
+
 
 ; ### hashtable-count
 code hashtable_count, 'hashtable-count' ; hashtable -- count
