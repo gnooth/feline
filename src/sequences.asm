@@ -667,6 +667,34 @@ code index, 'index'                     ; obj seq -- index/f
         next
 endcode
 
+; ### index-from
+code index_from, 'index-from'           ; obj start-index seq -- index/f
+        push    this_register
+        mov     this_register, rbx      ; handle to seq in this_register
+        _ length
+        _untag_fixnum
+        _swap
+        _check_index
+        _register_do_range .1
+        _tagged_loop_index
+        _this
+        _ nth_unsafe
+        _over
+        _ feline_equal
+        _tagged_if .2
+        _drop
+        _tagged_loop_index
+        _unloop
+        jmp     .exit
+        _then .2
+        _loop .1
+        _drop
+        _f
+.exit:
+        pop     this_register
+        next
+endcode
+
 ; ### member?
 code member?, 'member?'                 ; obj seq -- index/f
         _ index
