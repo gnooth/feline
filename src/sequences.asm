@@ -647,18 +647,15 @@ code index, 'index'                     ; obj seq -- index/f
         mov     this_register, rbx      ; handle to seq in this_register
         _ length
         _untag_fixnum
-        _zero
-        _?do .1
-        _i
-        _tag_fixnum
+        _register_do_times .1
+        _tagged_loop_index
         _this
         _ nth_unsafe
         _over
         _ feline_equal
         _tagged_if .2
         _drop
-        _i
-        _tag_fixnum
+        _tagged_loop_index
         _unloop
         jmp     .exit
         _then .2
