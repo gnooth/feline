@@ -496,8 +496,22 @@ endcode
 
 ; ### at
 code at_, 'at'                          ; key hashtable -- value
-        _ at_star
+        _ check_hashtable
+        push    this_register
+        mov     this_register, rbx
+        poprbx                                  ; -- key
+        _ this_hashtable_find_index_for_key     ; -- tagged-index/f ?
+        cmp     rbx, f_value
+        jz      .1
         _drop
+        _untag_fixnum
+        _this_hashtable_nth_value
+        pop     this_register
+        _return
+.1:
+        _2drop
+        _f
+        pop     this_register
         next
 endcode
 
