@@ -72,33 +72,31 @@ code find_name, 'find-name'             ; string -- symbol/string ?
         _ current_vocab
         _ vocab_hashtable
         _ at_star
-        _tagged_if .0
+        _tagged_if .1
         _nip
         _t
         _return
-        _else .0
+        _else .1
         _drop
-        _then .0
+        _then .1
 
         _ context_vector
-        _ vector_length
-        _untag_fixnum
-        _zero
-        _?do .1
+        _ vector_raw_length
+        _register_do_times .2
         _dup                            ; -- string string
-        _i
+        _raw_loop_index
         _ context_vector
         _ vector_nth_untagged           ; -- string string vocab
         _ vocab_hashtable
         _ at_star                       ; -- string symbol/f ?
-        _tagged_if .2
+        _tagged_if .3
         _nip
         _t
         _unloop
         _return
-        _then .2
+        _then .3
         _drop
-        _loop .1
+        _loop .2
 
         _ find_qualified_name
 
