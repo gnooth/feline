@@ -434,13 +434,22 @@ code symbol_set_help, 'symbol-set-help' ; content symbol --
         next
 endcode
 
-%macro _symbol_flags_bit 1      ; symbol -- ?
+%macro  _symbol_flags_bit 1             ; symbol -- ?
         _ check_symbol
         _symbol_flags
         mov     eax, t_value
         and     rbx, %1
         mov     ebx, f_value
         cmovnz  rbx, rax
+%endmacro
+
+%macro  _symbol_set_flags_bit 1         ; symbol --
+        _ check_symbol
+        _dup
+        _symbol_flags
+        or      rbx, %1
+        _swap
+        _symbol_set_flags
 %endmacro
 
 ; ### symbol-primitive?
@@ -456,13 +465,13 @@ code symbol_immediate?, 'symbol-immediate?'     ; symbol -- ?
 endcode
 
 ; ### symbol-inline?
-code symbol_inline?, 'symbol-inline?'   ; symbol -- ?
+code symbol_inline?, 'symbol-inline?'           ; symbol -- ?
         _symbol_flags_bit SYMBOL_INLINE
         next
 endcode
 
 ; ### symbol-global?
-code symbol_global?, 'symbol-global?'   ; symbol -- ?
+code symbol_global?, 'symbol-global?'           ; symbol -- ?
         _symbol_flags_bit SYMBOL_GLOBAL
         next
 endcode
@@ -474,19 +483,25 @@ code symbol_constant?, 'symbol-constant?'       ; symbol -- ?
 endcode
 
 ; ### symbol-special?
-code symbol_special?, 'symbol-special?' ; symbol -- ?
+code symbol_special?, 'symbol-special?'         ; symbol -- ?
         _symbol_flags_bit SYMBOL_SPECIAL
         next
 endcode
 
 ; ### symbol-private?
-code symbol_private?, 'symbol-private?' ; symbol -- ?
+code symbol_private?, 'symbol-private?'         ; symbol -- ?
         _symbol_flags_bit SYMBOL_PRIVATE
         next
 endcode
 
+code private, 'private'                         ; --
+        _ last_word
+        _symbol_set_flags_bit SYMBOL_PRIVATE
+        next
+endcode
+
 ; ### symbol-value
-code symbol_value, 'symbol-value'       ; symbol -- value
+code symbol_value, 'symbol-value'               ; symbol -- value
         _ check_symbol
         _symbol_value
         next
