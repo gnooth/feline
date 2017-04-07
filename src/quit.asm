@@ -66,6 +66,27 @@ code find_qualified_name, 'find-qualified-name'
         next
 endcode
 
+; ### find-name-in-context-vocab
+code find_name_in_context_vocab, 'find-name-in-context-vocab'
+; string vocab --  symbol/f ?
+        _ vocab_hashtable
+        _ at_star                       ; -- symbol/f ?
+        _tagged_if .1
+        _dup
+        _ symbol_private?
+        _tagged_if .2
+        _drop
+        _f
+        _f
+        _else .2
+        _t
+        _then .2
+        _else .1
+        _f
+        _then .1
+        next
+endcode
+
 ; ### find-name
 code find_name, 'find-name'             ; string -- symbol/string ?
         _dup
@@ -87,8 +108,7 @@ code find_name, 'find-name'             ; string -- symbol/string ?
         _raw_loop_index
         _ context_vector
         _ vector_nth_untagged           ; -- string string vocab
-        _ vocab_hashtable
-        _ at_star                       ; -- string symbol/f ?
+        _ find_name_in_context_vocab
         _tagged_if .3
         _nip
         _t
