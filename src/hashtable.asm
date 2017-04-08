@@ -76,19 +76,17 @@ file __FILE__
         mov     rbx, [rax + rbx]
 %endmacro
 
+%macro  _this_hashtable_nth_value 0     ; n -- value
+        shl     rbx, 4                  ; convert index to byte offset
+        mov     rax, this_hashtable_data_address
+        mov     rbx, [rax + rbx + BYTES_PER_CELL]
+%endmacro
+
 %macro  _this_hashtable_set_nth_key 0   ; key n --
         shl     rbx, 4                  ; convert index to byte offset
         _this_hashtable_data            ; -- key offset data-address
         _plus
         _store
-%endmacro
-
-%macro  _this_hashtable_nth_value 0     ; n -- value
-        shl     rbx, 4                  ; convert index to byte offset
-        _this_hashtable_data            ; -- offset data-address
-        _plus
-        add     rbx, BYTES_PER_CELL
-        _fetch
 %endmacro
 
 %macro  _this_hashtable_set_nth_value 0 ; value n --
