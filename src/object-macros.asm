@@ -250,6 +250,22 @@ OBJECT_ALLOCATED_BIT            equ 4
         poprbx
 %endmacro
 
+%macro  _slot7 0                        ; object -- x
+        mov     rbx, [rbx + BYTES_PER_CELL * 7]
+%endmacro
+
+%define this_slot7      qword [this_register + BYTES_PER_CELL * 7]
+
+%macro  _this_slot7 0
+        pushrbx
+        mov     rbx, [this_register + BYTES_PER_CELL * 7]
+%endmacro
+
+%macro  _this_set_slot7 0               ; x --
+        mov     [this_register + BYTES_PER_CELL * 7], rbx
+        poprbx
+%endmacro
+
 %macro  _string? 0
         _object_type
         _lit OBJECT_TYPE_STRING
