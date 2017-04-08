@@ -15,8 +15,8 @@
 
 file __FILE__
 
-; 7 cells (object header, count, deleted, capacity, data address,
-; hash function, test function)
+; 8 cells (object header, count, deleted, capacity, data address,
+; hash function, test function, raw mask)
 
 %macro  _hashtable_raw_count 0          ; hashtable -- count
         _slot1
@@ -123,6 +123,16 @@ file __FILE__
 
 %macro  _this_hashtable_set_test_function 0
         _this_set_slot6
+%endmacro
+
+%define this_hashtable_raw_mask         this_slot7
+
+%macro  _hashtable_raw_mask 0           ; -- raw-mask
+        _slot7
+%endmacro
+
+%macro  _this_hashtable_set_raw_mask 0  ; raw-mask --
+        _this_set_slot7
 %endmacro
 
 ; ### hashtable?
@@ -303,9 +313,9 @@ code new_hashtable, '<hashtable>'       ; fixnum -- hashtable
 
 new_hashtable_untagged:
 
-        ; 7 cells (object header, count, deleted, capacity, data address,
-        ; hash function, test function)
-        _lit 7
+        ; 8 cells (object header, count, deleted, capacity, data address,
+        ; hash function, test function, raw mask)
+        _lit 8
         _ allocate_cells
         push    this_register
         mov     this_register, rbx
@@ -315,6 +325,10 @@ new_hashtable_untagged:
 
         _dup
         _this_hashtable_set_raw_capacity        ; -- n
+
+        _dup
+        _oneminus
+        _this_hashtable_set_raw_mask
 
         ; each entry occupies two cells (key, value)
         shl     rbx, 4                  ; -- n*16
@@ -390,57 +404,51 @@ code hashtable_data_address, 'hashtable-data-address' ; ht -- data-address
         next
 endcode
 
-%macro  _this_hashtable_hash_at 0       ; key -- start-index
-        mov     rax, this_hashtable_hash_function
-        call    rax
-        _untag_fixnum
-        mov     rax, this_hashtable_raw_capacity
-        sub     rax, 1
-        and     rbx, rax
+%macro  _mask_index 0
+        and     rbx, this_hashtable_raw_mask
 %endmacro
 
-%macro  _compute_index 0                ; start-index -- computed-index
-        add     rbx, index_register
-        mov     rax, this_hashtable_raw_capacity
-        sub     rax, 1
-        and     rbx, rax
+%macro  _this_hashtable_raw_start_index_for_key 0       ; key -- start-index
+        call    this_hashtable_hash_function
+        _untag_fixnum
+        _mask_index
 %endmacro
 
 ; ### this-hashtable-find-index-for-key
 code this_hashtable_find_index_for_key, 'this-hashtable-find-index-for-key', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; key -- tagged-index/f ?
-
-; Must be called with the address of the raw hashtable object in this_register (r15).
+; must be called with the raw address of the hashtable in this_register (r15)
 
         _dup
-        _this_hashtable_hash_at         ; -- key start-index
+        _this_hashtable_raw_start_index_for_key ; -- key raw-start-index
+        _dup                                    ; -- key raw-start-index raw-start-index
+        mov     rax, this_hashtable_raw_capacity
+        add     qword [rbp], rax                ; -- key raw-end-index raw-start-index
 
-        _this_hashtable_raw_capacity
-        _register_do_times .1
+        _register_do_range .1           ; -- key
 
-        _twodup                         ; -- key start-index key start-index
-        _compute_index                  ; -- key start-index key computed-index
-
-        _this_hashtable_nth_key         ; -- key start-index key nth-key
+        _raw_loop_index
+        _mask_index
+        _this_hashtable_nth_key         ; -- key nth-key
 
         cmp     rbx, f_value
         jne     .2
         ; found empty slot
         _2drop
-        _nip
-        _compute_index
+        _raw_loop_index
+        _mask_index
         _tag_fixnum
         _f
         _unloop
         _return
 .2:
-        mov     rax, this_hashtable_test_function
-        call    rax
+        _over                           ; -- key nth-key key
+        call    this_hashtable_test_function    ; -- key ?
 
-        _tagged_if .3                   ; -- key start-index
+        _tagged_if .3                   ; -- key
         ; found key
-        _nip
-        _compute_index
+        mov     rbx, index_register
+        _mask_index
         _tag_fixnum
         _t
         _unloop
@@ -610,6 +618,9 @@ hashtable_grow_unchecked:
         _twostar
         _dup
         _this_hashtable_set_raw_capacity
+        _dup
+        _oneminus
+        _this_hashtable_set_raw_mask
         ; 16 bytes per entry
         shl     rbx, 4                  ; -- ... n*16
         _ raw_allocate
