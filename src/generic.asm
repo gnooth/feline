@@ -15,19 +15,23 @@
 
 file __FILE__
 
-; ### lookup-method
-code lookup_method, 'lookup-method'     ; object methods-vector -- object raw-code-address/f
+%macro  _lookup_method 0        ; object dispatch-table -- object raw-code-address/f
 ; return f if no method
         _over
         _ object_type
-        _swap
-        _ vector_?nth           ; -- raw-code-address/f
+        _swap                   ; -- object object-type dispatch-table
+        _ at_                   ; -- object raw-code-address/f
+%endmacro
+
+; ### lookup-method
+code lookup_method, 'lookup-method'     ; object dispatch-table -- object raw-code-address/f
+        _lookup_method
         next
 endcode
 
 ; ### do-generic
-code do_generic, 'do-generic'   ; object methods-vector --
-        _ lookup_method         ; -- object raw-code-address/f
+code do_generic, 'do-generic'   ; object dispatch-table --
+        _lookup_method
         cmp     rbx, f_value
         je      .1
         mov     rax, rbx
@@ -49,25 +53,48 @@ endcode
 
 ; ### initialize-generic-function
 code initialize_generic_function, 'initialize-generic-function' ; symbol --
-        _lit 10
-        _ new_vector_untagged   ; -- symbol methods-vector
+        ; REVIEW 8?
+        _lit 8
+        _ new_hashtable_untagged        ; -- symbol dispatch-table
+
+        _lit S_fixnum_hashcode
+        _ symbol_raw_code_address
+        _over
+        _ hashtable_set_hash_function
+
+        _lit S_eq?
+        _ symbol_raw_code_address
+        _over
+        _ hashtable_set_test_function   ; -- symbol dispatch-table
+
+        ; the dispatch table lives in the generic symbol's value slot
         _swap
-        _ symbol_set_value      ; --
+        _ symbol_set_value              ; --
         next
 endcode
+
+%macro _initialize_generic_function 1   ; generic-asm-name --
+        _lit S_%1
+        _ initialize_generic_function
+%endmacro
 
 ; ### add-method
-code add_method, 'add-method'   ; method-symbol untagged-type-number generic-symbol --
-        _ symbol_value          ; -- method-symbol untagged-type-number methods-vector
-        _ verify_vector
-
-        _ rot
-        _ symbol_raw_code_address
-        _ rrot
-
-        _ vector_set_nth_untagged
+code add_method, 'add-method'   ; method-raw-code-address tagged-type-number generic-symbol --
+        ; the dispatch table lives in the generic symbol's value slot
+        _ symbol_value          ; -- method-raw-code-address tagged-type-number dispatch-table
+        _ verify_hashtable
+        _ set_at
         next
 endcode
+
+%macro _add_method 3            ; generic-asm-name, raw-object-type, method-asm-name
+        _lit S_%3                       ; -- method-symbol
+        _ symbol_raw_code_address       ; -- method-raw-code-address
+        _lit %2                         ; -- raw-object-type
+        _tag_fixnum                     ; -- tagged-object-type
+        _lit S_%1                       ; -- generic-symbol
+        _ add_method
+%endmacro
 
 ; ### hashcode
 generic generic_hashcode, 'hashcode'
@@ -126,18 +153,6 @@ generic substring, 'substring'          ; from to string/sbuf -- substring
 
 ; ### >float
 generic generic_coerce_to_float, '>float'
-
-%macro _initialize_generic_function 1   ; generic-asm-name --
-        _lit S_%1
-        _ initialize_generic_function
-%endmacro
-
-%macro _add_method 3 ; generic-asm-name, object-type, method-asm-name
-        _lit S_%3
-        _lit %2
-        _lit S_%1
-        _ add_method
-%endmacro
 
 ; ### initialize-generic-functions
 code initialize_generic_functions, 'initialize-generic-functions' ; --
