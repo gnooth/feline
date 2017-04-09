@@ -89,21 +89,20 @@ endcode
 
 ; ### object-raw-type
 code object_raw_type, 'object-raw-type'         ; x -- raw-type-number
-        _dup
-        _fixnum?
-        _if .1
+        mov     eax, ebx
+        and     eax, TAG_MASK
+        cmp     eax, FIXNUM_TAG
+        jnz     .1
         mov     ebx, OBJECT_TYPE_FIXNUM
         _return
-        _then .1
 
-        _dup
-        _f
-        _eq?
-        _tagged_if .2
+.1:
+        cmp     rbx, f_value
+        jnz     .2
         mov     ebx, OBJECT_TYPE_F
         _return
-        _then .2
 
+.2:
         _dup
         _ handle?
         _tagged_if .3
