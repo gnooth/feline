@@ -111,7 +111,7 @@ endsub
 
 ; ### fixnum>bignum
 code fixnum_to_bignum, 'fixnum>bignum'  ; x -- y
-        _untag_fixnum
+        _check_fixnum
         _ signed_to_bignum
         next
 endcode
