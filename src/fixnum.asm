@@ -308,12 +308,48 @@ code fixnum_fixnum_multiply, 'fixnum-fixnum*'   ; x y -- z
         next
 endcode
 
+; ### bignum-fixnum*
+code bignum_fixnum_multiply, 'bignum-fixnum*'   ; x y -- z
+        _check_fixnum
+        _ signed_to_bignum
+        _swap
+        _ verify_bignum
+        _ bignum_bignum_multiply
+        next
+endcode
+
 ; ### fixnum*
 code fixnum_multiply, 'fixnum*'         ; x y -- z
-; No type checking.
-        _untag_2_fixnums
-        _star
-        _tag_fixnum
+
+        ; second arg must be a fixnum
+        _verify_fixnum
+
+        ; dispatch on type of first arg
+        mov     al, byte [rbp]
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     .1
+        _ fixnum_fixnum_multiply
+        _return
+
+.1:
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_fixnum_multiply
+        _return
+        _then .2
+
+        _over
+        _ float?
+        _tagged_if .3
+        _ fixnum_to_float
+        _ float_float_multiply
+        _return
+        _then .3
+
+        _drop
+        _ error_not_number
         next
 endcode
 
