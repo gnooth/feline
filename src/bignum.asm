@@ -308,6 +308,29 @@ code bignum_minus, 'bignum-'    ; number bignum -- sum
         next
 endcode
 
+; ### bignum-bignum*
+code bignum_bignum_multiply, 'bignum-bignum*'       ; bignum bignum -- sum
+        _ check_bignum
+        _swap
+        _ check_bignum
+
+        _ gc_disable
+
+        mov     arg0_register, rbx
+        poprbx
+        mov     arg1_register, rbx
+        poprbx
+
+        xcall c_bignum_bignum_multiply
+
+        pushrbx
+        mov     rbx, rax
+
+        _ gc_enable
+
+        next
+endcode
+
 ; ### negate-bignum
 code negate_bignum, 'negate-bignum'     ; n -- -n
 ; no type checking
