@@ -295,3 +295,19 @@ code float_minus, 'float-'              ; number float -- difference
 
         next
 endcode
+
+; ### float-float*
+code float_float_multiply, 'float-float*'       ; x y -- z
+        _ check_float
+        _swap
+        _ check_float
+        mov     arg0_register, rbx
+        poprbx
+        mov     arg1_register, rbx
+        poprbx
+        xcall   c_float_float_multiply
+        pushrbx
+        mov     rbx, rax
+        _ new_handle
+        next
+endcode
