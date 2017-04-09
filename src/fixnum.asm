@@ -270,6 +270,36 @@ code fixnum_minus, 'fixnum-'            ; number fixnum -- difference
         next
 endcode
 
+; ### fixnum-fixnum*
+code fixnum_fixnum_multiply, 'fixnum-fixnum*'   ; x y -- z
+        _check_fixnum
+        _swap
+        _check_fixnum
+        mov     rax, rbx
+        imul    rbx, [rbp]
+        jo      .1
+        mov     rcx, MOST_POSITIVE_FIXNUM
+        cmp     rbx, rcx
+        jg      .2
+        mov     rdx, MOST_NEGATIVE_FIXNUM
+        cmp     rbx, rdx
+        jl      .2
+        _tag_fixnum
+        _nip
+        _return
+.2:
+        _ signed_to_bignum
+        _nip
+        _return
+.1:
+        mov     rbx, rax
+        _ signed_to_bignum
+        _swap
+        _ signed_to_bignum
+        _ bignum_bignum_multiply
+        next
+endcode
+
 ; ### fixnum*
 code fixnum_multiply, 'fixnum*'         ; x y -- z
 ; No type checking.
