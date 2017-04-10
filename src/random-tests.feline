@@ -33,6 +33,9 @@ in: random-tests
 : random-integer ( -- integer )
     t/f? ' random-bignum ' random-fixnum if ;
 
+: random-float ( -- float)
+    random-integer >float ;
+
 test: test-1
     10 [ random-bignum bignum? assert-true ] times ;
 
@@ -117,6 +120,20 @@ test: test-6
     #reps ' %test-6 times ;
 
 test-6
+
+: %test-7
+    random-integer !> x
+    random-float !> y
+    ?echo
+    x y + y x + assert=
+    x y - y x - negate assert=
+    x y - negate y x - assert=
+;
+
+test: test-7
+    #reps ' %test-7 times ;
+
+test-7
 
 f !> x
 f !> y
