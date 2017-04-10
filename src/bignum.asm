@@ -317,6 +317,15 @@ code bignum_minus, 'bignum-'    ; number bignum -- sum
         _return
         _then .2
 
+        _over
+        _ float?
+        _tagged_if .3
+        _ bignum_to_float
+        _ float_float_minus
+        _return
+        _then .3
+
+        _drop
         _ error_not_number
 
         next
