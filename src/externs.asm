@@ -82,6 +82,7 @@ extern c_bignum_to_float
 extern c_fixnum_to_float
 extern c_float_add_float
 extern c_float_float_multiply
+extern c_float_negate
 extern c_float_subtract_float
 extern c_float_to_string
 extern c_pi

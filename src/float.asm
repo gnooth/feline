@@ -311,3 +311,15 @@ code float_float_multiply, 'float-float*'       ; x y -- z
         _ new_handle
         next
 endcode
+
+; ### float-negate
+code float_negate, 'float-negate'               ; n -- -n
+        _ check_float
+        mov     arg0_register, rbx
+        poprbx
+        xcall   c_float_negate
+        pushrbx
+        mov     rbx, rax
+        _ new_handle
+        next
+endcode
