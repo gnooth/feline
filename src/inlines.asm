@@ -244,10 +244,6 @@
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
-%macro  _negate 0                       ; NEGATE
-        neg     rbx
-%endmacro
-
 %macro  _dupd 0                         ; dupd
         mov     rax, [rbp]
         mov     [rbp - BYTES_PER_CELL], rax

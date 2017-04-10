@@ -419,9 +419,8 @@ endcode
 
 %unmacro _mod 0
 
-; ### negate-fixnum
-code negate_fixnum, 'negate-fixnum'     ; n -- -n
-; no type checking
+; ### fixnum-negate
+code fixnum_negate, 'fixnum-negate'     ; n -- -n
         _dup
         _ most_negative_fixnum
         _eq?
@@ -430,7 +429,7 @@ code negate_fixnum, 'negate-fixnum'     ; n -- -n
         _ negate_bignum
         _else .1
         _untag_fixnum
-        _negate
+        neg     rbx
         _tag_fixnum
         _then .1
         next
@@ -441,7 +440,7 @@ code negate, 'negate'   ; n -- -n
         _dup
         _fixnum?
         _if .1
-        _ negate_fixnum
+        _ fixnum_negate
         _return
         _then .1
 
