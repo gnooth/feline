@@ -273,6 +273,14 @@ code fixnum_minus, 'fixnum-'            ; number fixnum -- difference
         _return
         _then .2
 
+        _over
+        _ float?
+        _tagged_if .3
+        _ fixnum_to_float
+        _ float_float_minus
+        _return
+        _then .3
+
         _drop
         _ error_not_number
         next
