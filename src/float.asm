@@ -167,7 +167,7 @@ endcode
 code fixnum_to_float, 'fixnum>float'
         _check_fixnum
         mov     arg0_register, rbx
-        xcall   c_coerce_fixnum_to_float
+        xcall   c_fixnum_to_float
         mov     rbx, rax
         _ new_handle
         next
@@ -177,7 +177,7 @@ endcode
 code bignum_to_float, 'bignum>float'
         _ check_bignum
         mov     arg0_register, rbx
-        xcall   c_coerce_bignum_to_float
+        xcall   c_bignum_to_float
         mov     rbx, rax
         _ new_handle
         next

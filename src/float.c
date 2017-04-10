@@ -28,13 +28,13 @@ static Float *make_float(double d)
   return p;
 }
 
-cell c_coerce_fixnum_to_float(int64_t n)
+cell c_fixnum_to_float(int64_t n)
 {
   double d = n;
   return (cell) make_float(d);
 }
 
-cell c_coerce_bignum_to_float(Bignum *b)
+cell c_bignum_to_float(Bignum *b)
 {
   mpf_t f;
   mpf_init(f);
