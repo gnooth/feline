@@ -435,27 +435,6 @@ code fixnum_negate, 'fixnum-negate'     ; n -- -n
         next
 endcode
 
-; ### negate
-code negate, 'negate'   ; n -- -n
-        _dup
-        _fixnum?
-        _if .1
-        _ fixnum_negate
-        _return
-        _then .1
-
-        _dup
-        _ bignum?
-        _tagged_if .2
-        _ bignum_negate
-        _return
-        _then .2
-
-        _ error_not_number
-
-        next
-endcode
-
 ; ### fixnum-bitand
 code fixnum_bitand, 'fixnum-bitand'     ; n1 n2 -- n3
         _untag_2_fixnums

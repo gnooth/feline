@@ -128,22 +128,25 @@ generic set_nth, 'set-nth'
 generic new_sequence, 'new-sequence'    ; len seq -- new-seq
 
 ; ### +
-generic generic_plus, '+'       ; x y -- z
+generic generic_plus, '+'               ; x y -- z
 
 ; ### -
-generic generic_minus, '-'      ; x y -- z
+generic generic_minus, '-'              ; x y -- z
+
+; ### negate
+generic generic_negate, 'negate'        ; n -- -n
 
 ; ### <
-generic generic_lt, '<'         ; x y -- ?
+generic generic_lt, '<'                 ; x y -- ?
 
 ; ### >
-generic generic_gt, '>'         ; x y -- ?
+generic generic_gt, '>'                 ; x y -- ?
 
 ; ### <=
-generic generic_le, '<='        ; x y -- ?
+generic generic_le, '<='                ; x y -- ?
 
 ; ### >=
-generic generic_ge, '>='        ; x y -- ?
+generic generic_ge, '>='                ; x y -- ?
 
 ; ### write
 generic generic_write, 'write'          ; string/sbuf --
@@ -232,6 +235,12 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method generic_minus, OBJECT_TYPE_FIXNUM, fixnum_minus
         _add_method generic_minus, OBJECT_TYPE_BIGNUM, bignum_minus
         _add_method generic_minus, OBJECT_TYPE_FLOAT, float_minus
+
+        ; negate
+        _initialize_generic_function generic_negate
+        _add_method generic_negate, OBJECT_TYPE_FIXNUM, fixnum_negate
+        _add_method generic_negate, OBJECT_TYPE_BIGNUM, bignum_negate
+        _add_method generic_negate, OBJECT_TYPE_FLOAT, float_negate
 
         ; <
         _initialize_generic_function generic_lt
