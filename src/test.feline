@@ -1536,19 +1536,6 @@ test: decimal>integer-test-1
 
 decimal>integer-test-1
 
-test: fixnum-fixnum+-test-1
-    1  2 fixnum-fixnum+  3 assert-eq
-    1 -2 fixnum-fixnum+ -1 assert-eq
-
-    most-positive-fixnum   0 fixnum-fixnum+ most-positive-fixnum assert-eq
-    most-positive-fixnum   1 fixnum-fixnum+ bignum>string  "1152921504606846976" assert=
-    most-negative-fixnum  -1 fixnum-fixnum+ bignum>string "-1152921504606846977" assert=
-    most-positive-fixnum dup fixnum-fixnum+ bignum>string  "2305843009213693950" assert=
-    most-negative-fixnum dup fixnum-fixnum+ bignum>string "-2305843009213693952" assert=
-;
-
-fixnum-fixnum+-test-1
-
 test: negate-test-1
     0 negate zero? assert-true
     42 negate -42 assert-eq
@@ -2194,5 +2181,43 @@ test: iterator-test-1
 ;
 
 iterator-test-1
+
+test: fixnum-fixnum+-test-1
+    1  2 fixnum-fixnum+  3 assert-eq
+    1 -2 fixnum-fixnum+ -1 assert-eq
+
+    most-positive-fixnum   0 fixnum-fixnum+ most-positive-fixnum assert-eq
+    most-positive-fixnum   1 fixnum-fixnum+ bignum>string  "1152921504606846976" assert=
+    most-negative-fixnum  -1 fixnum-fixnum+ bignum>string "-1152921504606846977" assert=
+    most-positive-fixnum dup fixnum-fixnum+ bignum>string  "2305843009213693950" assert=
+    most-negative-fixnum dup fixnum-fixnum+ bignum>string "-2305843009213693952" assert=
+;
+
+fixnum-fixnum+-test-1
+
+test: fixnum-fixnum*-test-1
+    most-positive-fixnum 1 fixnum-fixnum* 1152921504606846975 assert=
+    most-positive-fixnum 2 fixnum-fixnum* 2305843009213693950 assert=
+    most-positive-fixnum 3 fixnum-fixnum* 3458764513820540925 assert=
+
+    most-positive-fixnum dup fixnum-fixnum* 1329227995784915870597964051066650625 assert=
+    most-positive-fixnum dup fixnum-fixnum* most-positive-fixnum 2 expt assert=
+
+    most-negative-fixnum 1 fixnum-fixnum* -1152921504606846976 assert=
+
+    most-positive-fixnum most-negative-fixnum fixnum-fixnum*
+    -1329227995784915871750885555673497600 assert=
+;
+
+fixnum-fixnum*-test-1
+
+test: bignum-bignum*-test-1
+    42 fixnum>bignum dup bignum-bignum* dup fixnum? assert 1764 assert=
+
+    most-positive-fixnum dup fixnum-fixnum* dup bignum-bignum*
+    most-positive-fixnum 4 expt assert=
+;
+
+bignum-bignum*-test-1
 
 ?nl "Reached end of test.feline" write-string
