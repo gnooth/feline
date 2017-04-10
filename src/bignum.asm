@@ -305,7 +305,7 @@ code bignum_minus, 'bignum-'    ; number bignum -- sum
         _over
         _fixnum?
         _if .1
-        _ negate_bignum
+        _ bignum_negate
         _ fixnum_bignum_plus
         _return
         _then .1
@@ -354,8 +354,8 @@ code bignum_bignum_multiply, 'bignum-bignum*'       ; bignum bignum -- sum
         next
 endcode
 
-; ### negate-bignum
-code negate_bignum, 'negate-bignum'     ; n -- -n
+; ### bignum-negate
+code bignum_negate, 'bignum-negate'     ; n -- -n
 ; no type checking
         _handle_to_object_unsafe
         mov     arg0_register, rbx

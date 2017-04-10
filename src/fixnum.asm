@@ -426,7 +426,7 @@ code fixnum_negate, 'fixnum-negate'     ; n -- -n
         _eq?
         _tagged_if .1
         _ fixnum_to_bignum
-        _ negate_bignum
+        _ bignum_negate
         _else .1
         _untag_fixnum
         neg     rbx
@@ -447,7 +447,7 @@ code negate, 'negate'   ; n -- -n
         _dup
         _ bignum?
         _tagged_if .2
-        _ negate_bignum
+        _ bignum_negate
         _return
         _then .2
 
