@@ -105,6 +105,19 @@ test: test-5
 
 test-5
 
+: %test-6
+    random-fixnum !> x
+    random-fixnum !> y
+    ?echo
+    x y fixnum-fixnum* y x fixnum-fixnum* assert=
+    x fixnum>bignum y fixnum>bignum 2dup bignum-bignum*
+    -rot bignum-bignum* assert= ;
+
+test: test-6
+    #reps ' %test-6 times ;
+
+test-6
+
 f !> x
 f !> y
 
