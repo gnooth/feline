@@ -254,6 +254,13 @@ code fixnum_bignum_plus, 'fixnum-bignum+'       ; fixnum bignum -- sum
         next
 endcode
 
+; ### float-bignum+
+code float_bignum_plus, 'float-bignum+' ; float bignum -- sum
+        _ bignum_to_float
+        _ float_float_plus
+        next
+endcode
+
 ; ### bignum+
 code bignum_plus, 'bignum+'     ; number bignum -- sum
 
@@ -276,6 +283,13 @@ code bignum_plus, 'bignum+'     ; number bignum -- sum
         _then .2
 
         _over
+        _ float?
+        _tagged_if .3
+        _ float_bignum_plus
+        _return
+        _then .3
+
+        _drop
         _ error_not_number
 
         next
