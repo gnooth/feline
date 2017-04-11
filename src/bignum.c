@@ -294,10 +294,18 @@ cell c_bignum_negate(Bignum *b)
 }
 
 // FIXME incomplete
-cell c_expt(cell base, cell power)
+cell c_fixnum_expt(cell base, cell power)
 {
   mpz_t z;
   mpz_init(z);
   mpz_ui_pow_ui(z, (unsigned long int)base, (unsigned long int)power);
+  return normalize(z);
+}
+
+cell c_bignum_expt(Bignum *b, cell power)
+{
+  mpz_t z;
+  mpz_init(z);
+  mpz_pow_ui(z, b->z, (unsigned long int)power);
   return normalize(z);
 }

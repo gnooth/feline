@@ -64,6 +64,7 @@ extern c_bignum_bignum_minus
 extern c_bignum_bignum_multiply
 extern c_bignum_bignum_plus
 extern c_bignum_equal
+extern c_bignum_expt
 extern c_bignum_fixnum_plus
 extern c_bignum_free
 extern c_bignum_from_signed
@@ -74,7 +75,7 @@ extern c_bignum_init_set_ui
 extern c_bignum_negate
 extern c_bignum_sizeinbase
 extern c_decimal_to_integer
-extern c_expt
+extern c_fixnum_expt
 extern c_string_to_integer
 
 ; float.c
