@@ -377,6 +377,30 @@ code fixnum_divide, 'fixnum/i'          ; n1 n2 -- n3
         next
 endcode
 
+; ### fixnum-fixnum/i
+code fixnum_fixnum_divide_truncate, 'fixnum-fixnum/i'   ; x y -- z
+        _check_fixnum
+        _swap
+        _check_fixnum
+        _swap
+
+        mov     rax, [rbp]
+        cqo                             ; sign-extend rax into rdx:rax
+        idiv    rbx                     ; quotient in rax, remainder in rdx
+        mov     rbx, rax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+
+        mov     rax, -MOST_NEGATIVE_FIXNUM
+        cmp     rbx, rax
+        jne     .1
+        _ signed_to_bignum
+        _return
+
+.1:
+        _tag_fixnum
+        next
+endcode
+
 ; ### /
 code feline_divide, '/'
         _ check_fixnum
