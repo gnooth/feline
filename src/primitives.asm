@@ -1327,16 +1327,39 @@ endcode
 code expt, 'expt'       ; base power -- result
 ; FIXME incomplete
         _check_index
-        _check_fixnum qword [rbp]
+
+        _over
+        _fixnum?
+        _tagged_if .1
         _ gc_disable
         mov     arg1_register, rbx
         poprbx
+        _untag_fixnum
         mov     arg0_register, rbx
         poprbx
-        xcall   c_expt
+        xcall   c_fixnum_expt
         pushrbx
         mov     rbx, rax
         _ gc_enable
+        _return
+        _then .1
+
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ gc_disable
+        mov     arg1_register, rbx
+        poprbx
+        _handle_to_object_unsafe
+        mov     arg0_register, rbx
+        poprbx
+        xcall   c_bignum_expt
+        pushrbx
+        mov     rbx, rax
+        _ gc_enable
+        _return
+        _then .2
+
         next
 endcode
 
