@@ -1331,6 +1331,12 @@ code expt, 'expt'       ; base power -- result
         _over
         _fixnum?
         _tagged_if .1
+%ifdef WIN64
+        _swap
+        _untag_fixnum
+        _ signed_to_bignum
+        _swap
+%else
         _ gc_disable
         mov     arg1_register, rbx
         poprbx
@@ -1342,6 +1348,7 @@ code expt, 'expt'       ; base power -- result
         mov     rbx, rax
         _ gc_enable
         _return
+%endif
         _then .1
 
         _over
