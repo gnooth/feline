@@ -354,6 +354,51 @@ code bignum_bignum_multiply, 'bignum-bignum*'       ; bignum bignum -- sum
         next
 endcode
 
+; ### fixnum-bignum*
+code fixnum_bignum_multiply, 'fixnum-bignum*'   ; x y -- z
+        _ verify_bignum
+        _swap
+        _check_fixnum
+        _ signed_to_bignum
+        _ bignum_bignum_multiply
+        next
+endcode
+
+; ### bignum*
+code bignum_multiply, 'bignum*'         ; x y -- z
+
+        ; second arg must be a bignum
+        _ verify_bignum
+
+        ; dispatch on type of first arg
+        _over
+        _fixnum?
+        _if .1
+        _ fixnum_bignum_multiply
+        _return
+        _then .1
+
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_bignum_multiply
+        _return
+        _then .2
+
+        _over
+        _ float?
+        _tagged_if .3
+        _ bignum_to_float
+        _ float_float_multiply
+        _return
+        _then .3
+
+        _drop
+        _ error_not_number
+
+        next
+endcode
+
 ; ### bignum-negate
 code bignum_negate, 'bignum-negate'     ; n -- -n
 ; no type checking

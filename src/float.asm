@@ -312,6 +312,42 @@ code float_float_multiply, 'float-float*'       ; x y -- z
         next
 endcode
 
+; ### float*
+code float_multiply, 'float*'          ; x y -- z
+        _ verify_float
+
+        _over
+        _ float?
+        _tagged_if .1
+        _ float_float_multiply
+        _return
+        _then .1
+
+        _over
+        _ fixnum?
+        _tagged_if .2
+        _swap
+        _ fixnum_to_float
+        _ float_float_multiply
+        _return
+        _then .2
+
+        _over
+        _ bignum?
+        _tagged_if .3
+        _swap
+        _ bignum_to_float
+        _swap
+        _ float_float_multiply
+        _return
+        _then .3
+
+        _drop
+        _ error_not_number
+
+        next
+endcode
+
 ; ### float-negate
 code float_negate, 'float-negate'               ; n -- -n
         _ check_float
