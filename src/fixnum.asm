@@ -361,16 +361,6 @@ code fixnum_multiply, 'fixnum*'         ; x y -- z
         next
 endcode
 
-; ### *
-code feline_multiply, '*'               ; x y -- z
-        _check_fixnum
-        _swap
-        _check_fixnum
-        _star
-        _tag_fixnum
-        next
-endcode
-
 %macro _divide 0
         mov     rax, [rbp]
         cqo                             ; sign-extend rax into rdx:rax

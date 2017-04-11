@@ -133,6 +133,9 @@ generic generic_plus, '+'               ; x y -- z
 ; ### -
 generic generic_minus, '-'              ; x y -- z
 
+; ### *
+generic generic_multiply, '*'           ; x y -- z
+
 ; ### negate
 generic generic_negate, 'negate'        ; n -- -n
 
@@ -235,6 +238,12 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method generic_minus, OBJECT_TYPE_FIXNUM, fixnum_minus
         _add_method generic_minus, OBJECT_TYPE_BIGNUM, bignum_minus
         _add_method generic_minus, OBJECT_TYPE_FLOAT, float_minus
+
+        ; *
+        _initialize_generic_function generic_multiply
+        _add_method generic_multiply, OBJECT_TYPE_FIXNUM, fixnum_multiply
+        _add_method generic_multiply, OBJECT_TYPE_BIGNUM, bignum_multiply
+        _add_method generic_multiply, OBJECT_TYPE_FLOAT, float_multiply
 
         ; negate
         _initialize_generic_function generic_negate
