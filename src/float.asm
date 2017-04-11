@@ -348,6 +348,22 @@ code float_multiply, 'float*'          ; x y -- z
         next
 endcode
 
+; float-float/f
+code float_float_divide, 'float-float/f'        ; x y -- z
+        _ check_float
+        _swap
+        _ check_float
+        mov     arg0_register, rbx
+        poprbx
+        mov     arg1_register, rbx
+        poprbx
+        xcall   c_float_float_divide
+        pushrbx
+        mov     rbx, rax
+        _ new_handle
+        next
+endcode
+
 ; ### float-negate
 code float_negate, 'float-negate'               ; n -- -n
         _ check_float

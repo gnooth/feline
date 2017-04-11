@@ -2229,4 +2229,12 @@ test: fixnum-fixnum/i-test-1
 
 fixnum-fixnum/i-test-1
 
+test: float-float/f-test-1
+    15.0 4.0 float-float/f 3.75 assert=
+    56323.0 4000.0 float-float/f 14.08075 assert=
+    -17.67 7.2 float-float/f -2.454166666666667 assert=
+;
+
+float-float/f-test-1
+
 ?nl "Reached end of test.feline" write-string
