@@ -135,6 +135,20 @@ test: test-7
 
 test-7
 
+: %test-8
+    random-integer !> x
+    random-float !> y
+    ?echo
+    x y * y x * assert=
+    x negate y * y negate x * assert=
+    x y negate * x y * negate assert=
+;
+
+test: test-8
+    #reps ' %test-8 times ;
+
+test-8
+
 f !> x
 f !> y
 
