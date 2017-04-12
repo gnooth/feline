@@ -56,6 +56,7 @@ extern c_save_backtrace
 extern c_seed_random
 
 ; bignum.c
+extern c_bignum_bignum_divide_truncate
 extern c_bignum_bignum_ge
 extern c_bignum_bignum_gt
 extern c_bignum_bignum_le

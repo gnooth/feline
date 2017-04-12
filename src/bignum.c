@@ -184,6 +184,14 @@ cell c_bignum_bignum_multiply(Bignum *b1, Bignum *b2)
   return normalize(result);
 }
 
+cell c_bignum_bignum_divide_truncate(Bignum *b1, Bignum *b2)
+{
+  mpz_t result;
+  mpz_init_set(result, b1->z);
+  mpz_tdiv_q(result, result, b2->z);
+  return normalize(result);
+}
+
 cell c_bignum_bignum_lt(Bignum *b1, Bignum *b2)
 {
   return mpz_cmp(b1->z, b2->z) < 0 ? T_VALUE : F_VALUE;
