@@ -86,6 +86,7 @@ extern c_float_float_multiply
 extern c_float_float_plus
 extern c_float_negate
 extern c_float_to_string
+extern c_float_truncate
 extern c_pi
 extern c_string_to_float
 

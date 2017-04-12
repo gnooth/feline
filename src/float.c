@@ -86,6 +86,21 @@ cell c_float_float_divide(Float *p1, Float *p2)
   return (cell) make_float(p1->d / p2->d);
 }
 
+cell c_float_truncate(Float *p)
+{
+  mpq_t q;
+  mpq_init(q);
+  mpq_set_d(q, p->d);
+
+  mpz_t result;
+  mpz_init_set(result, mpq_numref(q));
+  mpz_tdiv_q(result, result, mpq_denref(q));
+
+  mpq_clear(q);
+
+  return normalize(result);
+}
+
 cell c_float_negate(Float *p)
 {
   return (cell) make_float(-p->d);
