@@ -401,6 +401,16 @@ code fixnum_fixnum_divide_truncate, 'fixnum-fixnum/i'   ; x y -- z
         next
 endcode
 
+; ### fixnum-fixnum/f
+code fixnum_fixnum_divide_float, 'fixnum-fixnum/f'      ; x y -- z
+        _ fixnum_to_float
+        _swap
+        _ fixnum_to_float
+        _swap
+        _ float_float_divide
+        next
+endcode
+
 ; ### /
 code feline_divide, '/'
         _ check_fixnum
