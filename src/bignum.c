@@ -115,7 +115,7 @@ cell c_bignum_from_unsigned(cell n)
   return get_handle_for_object((cell)b);
 }
 
-static cell normalize(mpz_t z)
+cell normalize(mpz_t z)
 {
 #if SIZEOF_LONG == 8
   if (mpz_fits_slong_p(z))
@@ -290,22 +290,5 @@ cell c_bignum_negate(Bignum *b)
   mpz_t z;
   mpz_init(z);
   mpz_neg(z, b->z);
-  return normalize(z);
-}
-
-// FIXME incomplete
-cell c_fixnum_expt(cell base, cell power)
-{
-  mpz_t z;
-  mpz_init(z);
-  mpz_ui_pow_ui(z, (unsigned long int)base, (unsigned long int)power);
-  return normalize(z);
-}
-
-cell c_bignum_expt(Bignum *b, cell power)
-{
-  mpz_t z;
-  mpz_init(z);
-  mpz_pow_ui(z, b->z, (unsigned long int)power);
   return normalize(z);
 }

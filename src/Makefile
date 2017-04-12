@@ -33,7 +33,7 @@ LINKFLAGS = -m64
 # gcc 6.2.0 on Ubuntu 16.10 needs -no-pie
 # LINKFLAGS = -m64 -no-pie
 
-OBJS = main.o os.o terminal.o backtrace.o random.o bignum.o float.o socket.o feline.o
+OBJS = main.o os.o terminal.o backtrace.o random.o bignum.o float.o math.o socket.o feline.o
 
 ifeq ($(OS),Windows_NT)
 	CFLAGS += -DWIN64 -DWIN64_NATIVE
@@ -84,6 +84,9 @@ bignum.o: feline.h bignum.c
 
 float.o: feline.h float.c
 	$(CC) $(CFLAGS) -c -o float.o float.c
+
+math.o: feline.h math.c
+	$(CC) $(CFLAGS) -c -o math.o math.c
 
 socket.o: feline.h socket.c
 	$(CC) $(CFLAGS) -c -o socket.o socket.c

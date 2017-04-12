@@ -37,6 +37,8 @@ typedef struct
   double d;
 } Float;
 
+cell normalize(mpz_t z);
+
 // os.c
 cell os_ticks();
 cell os_close_file(cell fd);
