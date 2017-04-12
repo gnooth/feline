@@ -411,6 +411,47 @@ code fixnum_fixnum_divide_float, 'fixnum-fixnum/f'      ; x y -- z
         next
 endcode
 
+; ### bignum-fixnum/f
+code bignum_fixnum_divide_float, 'bignum-fixnum/f'      ; x y -- z
+        _ fixnum_to_float
+        _swap
+        _ bignum_to_float
+        _swap
+        _ float_float_divide
+        next
+endcode
+
+; ### fixnum/f
+code fixnum_divide_float, 'fixnum/f'    ; x y -- z
+        _ verify_fixnum
+
+        _over
+        _ fixnum?
+        _tagged_if .1
+        _ fixnum_fixnum_divide_float
+        _return
+        _then .1
+
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_fixnum_divide_float
+        _return
+        _then .2
+
+        _over
+        _ float?
+        _tagged_if .3
+        _ float_float_divide
+        _return
+        _then .3
+
+        _drop
+        _ error_not_number
+
+        next
+endcode
+
 ; ### /
 code feline_divide, '/'
         _ check_fixnum
