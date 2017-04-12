@@ -401,6 +401,16 @@ code fixnum_fixnum_divide_truncate, 'fixnum-fixnum/i'   ; x y -- z
         next
 endcode
 
+; ### bignum-fixnum/i
+code bignum_fixnum_divide_truncate, 'bignum-fixnum/i'   ; x y -- z
+        _ fixnum_to_bignum
+        _swap
+        _ verify_bignum
+        _swap
+        _ bignum_bignum_divide_truncate
+        next
+endcode
+
 ; ### fixnum-fixnum/f
 code fixnum_fixnum_divide_float, 'fixnum-fixnum/f'      ; x y -- z
         _ fixnum_to_float
