@@ -410,6 +410,13 @@ code float_divide, 'float/f'            ; x y -- z
         next
 endcode
 
+; ### float/i
+code float_divide_truncate, 'float/i'           ; x y -- z
+        _ float_divide
+        _ float_to_integer
+        next
+endcode
+
 ; ### float-negate
 code float_negate, 'float-negate'               ; n -- -n
         _ check_float
