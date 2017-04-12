@@ -399,6 +399,29 @@ code bignum_multiply, 'bignum*'         ; x y -- z
         next
 endcode
 
+; ### bignum-bignum/i
+code bignum_bignum_divide_truncate, 'bignum-bignum/i'   ; x y -- z
+        _ check_bignum
+        _swap
+        _ check_bignum
+
+        _ gc_disable
+
+        mov     arg0_register, rbx
+        poprbx
+        mov     arg1_register, rbx
+        poprbx
+
+        xcall c_bignum_bignum_divide_truncate
+
+        pushrbx
+        mov     rbx, rax
+
+        _ gc_enable
+
+        next
+endcode
+
 ; ### bignum-negate
 code bignum_negate, 'bignum-negate'     ; n -- -n
 ; no type checking
