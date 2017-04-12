@@ -183,6 +183,15 @@ code bignum_to_float, 'bignum>float'
         next
 endcode
 
+; ### float>integer
+code float_to_integer, 'float>integer'
+        _ check_float
+        mov     arg0_register, rbx
+        xcall   c_float_truncate
+        mov     rbx, rax
+        next
+endcode
+
 ; ### pi
 code pi, 'pi'                   ; -- float
         pushrbx
