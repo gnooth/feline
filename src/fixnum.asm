@@ -369,14 +369,6 @@ endcode
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
-; ### fixnum/i
-code fixnum_divide, 'fixnum/i'          ; n1 n2 -- n3
-        _untag_2_fixnums
-        _divide
-        _tag_fixnum
-        next
-endcode
-
 ; ### fixnum-fixnum/i
 code fixnum_fixnum_divide_truncate, 'fixnum-fixnum/i'   ; x y -- z
         _check_fixnum
@@ -408,6 +400,39 @@ code bignum_fixnum_divide_truncate, 'bignum-fixnum/i'   ; x y -- z
         _ verify_bignum
         _swap
         _ bignum_bignum_divide_truncate
+        next
+endcode
+
+; ### fixnum/i
+code fixnum_divide_truncate, 'fixnum/i' ; x y -- z
+        _ verify_fixnum
+
+        _over
+        _ fixnum?
+        _tagged_if .1
+        _ fixnum_fixnum_divide_truncate
+        _return
+        _then .1
+
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_fixnum_divide_truncate
+        _return
+        _then .2
+
+        _over
+        _ float?
+        _tagged_if .3
+        _ fixnum_to_float
+        _ float_float_divide
+        _ float_to_integer
+        _return
+        _then .3
+
+        _drop
+        _ error_not_number
+
         next
 endcode
 
