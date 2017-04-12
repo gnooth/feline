@@ -201,7 +201,7 @@ code float_float_plus, 'float-float+'   ; float1 float2 -- sum
         poprbx
         mov     arg1_register, rbx
         poprbx
-        xcall   c_float_add_float
+        xcall   c_float_float_plus
         pushrbx
         mov     rbx, rax
         _ new_handle
@@ -252,7 +252,7 @@ code float_float_minus, 'float-float-'   ; float1 float2 -- difference
         poprbx
         mov     arg1_register, rbx
         poprbx
-        xcall   c_float_subtract_float
+        xcall   c_float_float_minus
         pushrbx
         mov     rbx, rax
         _ new_handle

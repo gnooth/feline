@@ -64,7 +64,6 @@ extern c_bignum_bignum_minus
 extern c_bignum_bignum_multiply
 extern c_bignum_bignum_plus
 extern c_bignum_equal
-extern c_bignum_expt
 extern c_bignum_fixnum_plus
 extern c_bignum_free
 extern c_bignum_from_signed
@@ -75,20 +74,23 @@ extern c_bignum_init_set_ui
 extern c_bignum_negate
 extern c_bignum_sizeinbase
 extern c_decimal_to_integer
-extern c_fixnum_expt
 extern c_string_to_integer
 
 ; float.c
 extern c_bignum_to_float
 extern c_fixnum_to_float
-extern c_float_add_float
 extern c_float_float_divide
+extern c_float_float_minus
 extern c_float_float_multiply
+extern c_float_float_plus
 extern c_float_negate
-extern c_float_subtract_float
 extern c_float_to_string
 extern c_pi
 extern c_string_to_float
+
+; math.c
+extern c_bignum_expt
+extern c_fixnum_expt
 
 ; socket.c
 extern c_accept_connection
