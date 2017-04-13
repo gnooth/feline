@@ -500,21 +500,17 @@ endcode
 
 %unmacro _divide 0
 
-%macro _mod 0
-        mov     rax, [rbp]
-        cqo                             ; sign-extend rax into rdx:rax
-        idiv    rbx                     ; quotient in rax, remainder in rdx
-        mov     rbx, rdx
-        lea     rbp, [rbp + BYTES_PER_CELL]
-%endmacro
-
 ; ### fixnum-fixnum-mod
 code fixnum_fixnum_mod, 'fixnum-fixnum-mod'     ; x y -- z
         _check_fixnum
         _swap
         _check_fixnum
         _swap
-        _mod
+        mov     rax, [rbp]
+        cqo                             ; sign-extend rax into rdx:rax
+        idiv    rbx                     ; quotient in rax, remainder in rdx
+        mov     rbx, rdx
+        lea     rbp, [rbp + BYTES_PER_CELL]
         _tag_fixnum
         next
 endcode
@@ -552,17 +548,6 @@ code fixnum_mod, 'fixnum-mod'                   ; x y -- z
 
         next
 endcode
-
-; ### mod
-code feline_mod, 'mod'                  ; n1 n2 -- n3
-        _check_fixnum qword [rbp]
-        _check_fixnum
-        _mod
-        _tag_fixnum
-        next
-endcode
-
-%unmacro _mod 0
 
 ; ### fixnum-negate
 code fixnum_negate, 'fixnum-negate'     ; n -- -n
