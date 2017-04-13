@@ -534,7 +534,7 @@ code fixnum_mod, 'fixnum-mod'                   ; x y -- z
         _verify_fixnum
 
         _over
-        _fixnum?
+        _ fixnum?
         _tagged_if .1
         _ fixnum_fixnum_mod
         _return
