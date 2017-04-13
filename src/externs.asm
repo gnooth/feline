@@ -62,6 +62,7 @@ extern c_bignum_bignum_gt
 extern c_bignum_bignum_le
 extern c_bignum_bignum_lt
 extern c_bignum_bignum_minus
+extern c_bignum_bignum_mod
 extern c_bignum_bignum_multiply
 extern c_bignum_bignum_plus
 extern c_bignum_equal
