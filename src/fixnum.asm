@@ -508,11 +508,48 @@ endcode
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
-; ### fixnum-mod
-code fixnum_mod, 'fixnum-mod'           ; n1 n2 -- n3
-        _untag_2_fixnums
+; ### fixnum-fixnum-mod
+code fixnum_fixnum_mod, 'fixnum-fixnum-mod'     ; x y -- z
+        _check_fixnum
+        _swap
+        _check_fixnum
+        _swap
         _mod
         _tag_fixnum
+        next
+endcode
+
+; ### bignum-fixnum-mod
+code bignum_fixnum_mod, 'bignum-fixnum-mod'     ; x y -- z
+        _ fixnum_to_bignum
+        _swap
+        _ verify_bignum
+        _swap
+        _ bignum_bignum_mod
+        next
+endcode
+
+; ### fixnum-mod
+code fixnum_mod, 'fixnum-mod'                   ; x y -- z
+        _verify_fixnum
+
+        _over
+        _fixnum?
+        _tagged_if .1
+        _ fixnum_fixnum_mod
+        _return
+        _then .1
+
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_fixnum_mod
+        _return
+        _then .2
+
+        _drop
+        _ error_not_number
+
         next
 endcode
 
