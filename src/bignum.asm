@@ -481,8 +481,42 @@ code bignum_bignum_mod, 'bignum-bignum-mod'     ; x y -- z
         next
 endcode
 
+; ### fixnum-bignum-mod
+code fixnum_bignum_mod, 'fixnum-bignum-mod'     ; x y -- z
+        _ verify_bignum
+        _swap
+        _ fixnum_to_bignum
+        _swap
+        _ bignum_bignum_mod
+        next
+endcode
+
+; ### bignum-mod
+code bignum_mod, 'bignum-mod'                   ; x y -- z
+        _ verify_bignum
+
+        _over
+        _ fixnum?
+        _tagged_if .1
+        _ fixnum_bignum_mod
+        _return
+        _then .1
+
+        _over
+        _ bignum?
+        _tagged_if .2
+        _ bignum_bignum_mod
+        _return
+        _then .2
+
+        _drop
+        _ error_not_number
+
+        next
+endcode
+
 ; ### bignum-negate
-code bignum_negate, 'bignum-negate'     ; n -- -n
+code bignum_negate, 'bignum-negate'             ; n -- -n
 ; no type checking
         _handle_to_object_unsafe
         mov     arg0_register, rbx
