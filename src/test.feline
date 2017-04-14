@@ -229,14 +229,27 @@ test: fixnum-test-7 ( -- )
 
 fixnum-test-7
 
-test: fixnum-test-8 ( -- )
-    7 3 fixnum-mod 1 assert=
+test: mod-test-1 ( -- )
     7 3 mod 1 assert=
-    -7 3 fixnum-mod -1 assert=
+    7 -3 mod 1 assert=
     -7 3 mod -1 assert=
+
+    7 3 fixnum>bignum mod 1 assert=
+    7 -3 fixnum>bignum mod 1 assert=
+    -7 3 fixnum>bignum mod -1 assert=
+
+    most-positive-fixnum 17 mod 15 assert=
+    most-positive-fixnum 1 + dup bignum? assert 17 mod 16 assert=
+    most-positive-fixnum 2 + dup bignum? assert 17 mod 0 assert=
+    most-positive-fixnum 3 + dup bignum? assert 17 mod 1 assert=
+
+    most-positive-fixnum 17 mod 15 fixnum>bignum assert=
+    most-positive-fixnum 1 + 17 fixnum>bignum mod 16 assert=
+    most-positive-fixnum 2 + 17 fixnum>bignum mod 0 assert=
+    most-positive-fixnum 3 + 17 fixnum>bignum mod 1 assert=
 ;
 
-fixnum-test-8
+mod-test-1
 
 -- fixnum-bitand, bitand
 test: fixnum-test-9 ( -- )
