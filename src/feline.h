@@ -20,6 +20,9 @@
 
 #include "../gmp/gmp.h"
 
+#define T_VALUE                14
+#define F_VALUE                 6
+
 // This must be kept in sync with the object types in object-macros.asm.
 #define OBJECT_TYPE_FLOAT 18
 

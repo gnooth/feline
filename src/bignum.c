@@ -29,9 +29,6 @@ const cell MOST_NEGATIVE_FIXNUM = -1152921504606846976;
 
 #define OBJECT_TYPE_BIGNUM      8
 
-#define T_VALUE                14
-#define F_VALUE                 6
-
 extern cell get_handle_for_object(cell);
 
 static inline cell make_fixnum(cell n)
