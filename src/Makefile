@@ -23,7 +23,7 @@ else
 	CC = clang
 endif
 
-CFLAGS = --std=c99 -D_GNU_SOURCE -g -m64
+CFLAGS = --std=c99 -D_GNU_SOURCE -O1 -g -m64
 ASMFLAGS =
 
 # clang
