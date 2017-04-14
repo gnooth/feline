@@ -82,6 +82,10 @@ extern c_string_to_integer
 extern c_bignum_to_float
 extern c_fixnum_to_float
 extern c_float_float_divide
+extern c_float_float_ge
+extern c_float_float_gt
+extern c_float_float_le
+extern c_float_float_lt
 extern c_float_float_minus
 extern c_float_float_multiply
 extern c_float_float_plus

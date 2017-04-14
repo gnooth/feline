@@ -66,6 +66,26 @@ cell c_pi()
   return (cell) make_float(M_PI);
 }
 
+cell c_float_float_lt(Float *p1, Float *p2)
+{
+  return p1->d < p2->d ? T_VALUE : F_VALUE;
+}
+
+cell c_float_float_le(Float *p1, Float *p2)
+{
+  return p1->d <= p2->d ? T_VALUE : F_VALUE;
+}
+
+cell c_float_float_gt(Float *p1, Float *p2)
+{
+  return p1->d > p2->d ? T_VALUE : F_VALUE;
+}
+
+cell c_float_float_ge(Float *p1, Float *p2)
+{
+  return p1->d >= p2->d ? T_VALUE : F_VALUE;
+}
+
 cell c_float_float_plus(Float *p1, Float *p2)
 {
   return (cell) make_float(p1->d + p2->d);
