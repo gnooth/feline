@@ -2250,4 +2250,48 @@ test: float-float/f-test-1
 
 float-float/f-test-1
 
+test: float-float<-test-1
+    3.0 4.0 float-float< assert-true
+    4.0 3.0 float-float< assert-false
+    -3.0 -4.0 float-float< assert-false
+    -4.0 -3.0 float-float< assert-true
+    3.0 3.0 float-float< assert-false
+    -3.0 -3.0 float-float< assert-false
+;
+
+float-float<-test-1
+
+test: float-float<=-test-1
+    3.0 4.0 float-float<= assert-true
+    4.0 3.0 float-float<= assert-false
+    -3.0 -4.0 float-float<= assert-false
+    -4.0 -3.0 float-float<= assert-true
+    3.0 3.0 float-float<= assert-true
+    -3.0 -3.0 float-float<= assert-true
+;
+
+float-float<=-test-1
+
+test: float-float>-test-1
+    3.0 4.0 float-float> assert-false
+    4.0 3.0 float-float> assert-true
+    -3.0 -4.0 float-float> assert-true
+    -4.0 -3.0 float-float> assert-false
+    3.0 3.0 float-float> assert-false
+    -3.0 -3.0 float-float> assert-false
+;
+
+float-float>-test-1
+
+test: float-float>=-test-1
+    3.0 4.0 float-float>= assert-false
+    4.0 3.0 float-float>= assert-true
+    -3.0 -4.0 float-float>= assert-true
+    -4.0 -3.0 float-float>= assert-false
+    3.0 3.0 float-float>= assert-true
+    -3.0 -3.0 float-float>= assert-true
+;
+
+float-float>=-test-1
+
 ?nl "Reached end of test.feline" write-string
