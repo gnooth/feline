@@ -183,6 +183,26 @@ code bignum_lt, 'bignum<'               ; number bignum -- ?
         next
 endcode
 
+; ### float-float<
+code float_float_lt, 'float-float<'             ; float1 float2 -- ?
+        _ check_float
+        _swap
+        _ check_float
+        _swap
+
+        mov     arg1_register, rbx
+        poprbx
+        mov     arg0_register, rbx
+        poprbx
+
+        xcall c_float_float_lt
+
+        pushrbx
+        mov     rbx, rax
+
+        next
+endcode
+
 ; ### fixnum-fixnum<=
 code fixnum_fixnum_le, 'fixnum-fixnum<='        ; fixnum1 fixnum2 -- ?
         _check_fixnum
@@ -232,6 +252,26 @@ code fixnum_bignum_le, 'bignum-fixnum<='        ; fixnum bignum -- ?
         _ fixnum_to_bignum
         _swap
         _ bignum_bignum_le
+        next
+endcode
+
+; ### float-float<=
+code float_float_le, 'float-float<='            ; float1 float2 -- ?
+        _ check_float
+        _swap
+        _ check_float
+        _swap
+
+        mov     arg1_register, rbx
+        poprbx
+        mov     arg0_register, rbx
+        poprbx
+
+        xcall c_float_float_le
+
+        pushrbx
+        mov     rbx, rax
+
         next
 endcode
 
@@ -308,6 +348,26 @@ endcode
 code bignum_fixnum_gt, 'bignum-fixnum>' ; bignum fixnum -- ?
         _ fixnum_to_bignum
         _ bignum_bignum_gt
+        next
+endcode
+
+; ### float-float>
+code float_float_gt, 'float-float>'             ; float1 float2 -- ?
+        _ check_float
+        _swap
+        _ check_float
+        _swap
+
+        mov     arg1_register, rbx
+        poprbx
+        mov     arg0_register, rbx
+        poprbx
+
+        xcall c_float_float_gt
+
+        pushrbx
+        mov     rbx, rax
+
         next
 endcode
 
@@ -464,6 +524,26 @@ code fixnum_fixnum_ge, 'fixnum-fixnum>='        ; fixnum1 fixnum2 -- ?
         mov     ebx, f_value
         cmovge  ebx, eax
         lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
+; ### float-float>=
+code float_float_ge, 'float-float>='            ; float1 float2 -- ?
+        _ check_float
+        _swap
+        _ check_float
+        _swap
+
+        mov     arg1_register, rbx
+        poprbx
+        mov     arg0_register, rbx
+        poprbx
+
+        xcall c_float_float_ge
+
+        pushrbx
+        mov     rbx, rax
+
         next
 endcode
 
