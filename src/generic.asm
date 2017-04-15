@@ -272,6 +272,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _initialize_generic_function generic_lt
         _add_method generic_lt, OBJECT_TYPE_FIXNUM, fixnum_lt
         _add_method generic_lt, OBJECT_TYPE_BIGNUM, bignum_lt
+        _add_method generic_lt, OBJECT_TYPE_FLOAT, float_lt
 
         ; >
         _initialize_generic_function generic_gt
