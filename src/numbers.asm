@@ -554,8 +554,15 @@ code bignum_fixnum_ge, 'bignum-fixnum>='        ; bignum fixnum -- ?
         next
 endcode
 
+; ### float-fixnum>=
+code float_fixnum_ge, 'float-fixnum>='          ; bignum fixnum -- ?
+        _ fixnum_to_float
+        _ float_float_ge
+        next
+endcode
+
 ; ### fixnum>=
-code fixnum_ge, 'fixnum>='              ; number fixnum -- ?
+code fixnum_ge, 'fixnum>='                      ; number fixnum -- ?
 
         ; second arg must be a fixnum
         _verify_fixnum
@@ -575,6 +582,13 @@ code fixnum_ge, 'fixnum>='              ; number fixnum -- ?
         _ bignum_fixnum_ge
         _return
         _then .2
+
+        _over
+        _ float?
+        _tagged_if .3
+        _ float_fixnum_ge
+        _return
+        _then .3
 
         _drop
         _ error_not_number
