@@ -99,6 +99,13 @@ code bignum_fixnum_lt, 'bignum-fixnum<' ; bignum fixnum -- ?
         next
 endcode
 
+; ### float-fixnum<
+code float_fixnum_lt, 'float-fixnum<'   ; float fixnum -- ?
+        _ fixnum_to_float
+        _ float_float_lt
+        next
+endcode
+
 ; ### fixnum<
 code fixnum_lt, 'fixnum<'               ; number fixnum -- ?
 
@@ -120,6 +127,13 @@ code fixnum_lt, 'fixnum<'               ; number fixnum -- ?
         _ bignum_fixnum_lt
         _return
         _then .2
+
+        _over
+        _ float?
+        _tagged_if .3
+        _ float_fixnum_lt
+        _return
+        _then .3
 
         _drop
         _ error_not_number
@@ -200,6 +214,54 @@ code float_float_lt, 'float-float<'             ; float1 float2 -- ?
         pushrbx
         mov     rbx, rax
 
+        next
+endcode
+
+; ### fixnum-float<
+code fixnum_float_lt, 'fixnum-float<'           ; fixnum float -- ?
+        _swap
+        _ fixnum_to_float
+        _swap
+        _ float_float_lt
+        next
+endcode
+
+; ### bignum-float<
+code bignum_float_lt, 'bignum-float<'           ; bignum float -- ?
+        _swap
+        _ bignum_to_float
+        _swap
+        _ float_float_lt
+        next
+endcode
+
+; ### float<
+code float_lt, 'float<'                         ; number float -- ?
+        _ verify_float
+
+        _over
+        _ float?
+        _tagged_if .1
+        _ float_float_lt
+        _return
+        _then .1
+
+        _over
+        _ fixnum?
+        _tagged_if .2
+        _ fixnum_float_lt
+        _return
+        _then .2
+
+        _over
+        _ bignum?
+        _tagged_if .3
+        _ bignum_float_lt
+        _return
+        _then .3
+
+        _drop
+        _ error_not_number
         next
 endcode
 
@@ -507,6 +569,13 @@ code bignum_ge, 'bignum>='              ; number bignum -- ?
         _return
         _then .2
 
+        _over
+        _ float?
+        _tagged_if .3
+        _ float_bignum_ge
+        _return
+        _then .3
+
         _drop
         _ error_not_number
         next
@@ -544,6 +613,13 @@ code float_float_ge, 'float-float>='            ; float1 float2 -- ?
         pushrbx
         mov     rbx, rax
 
+        next
+endcode
+
+; ### float-bignum>=
+code float_bignum_ge, 'float-bignum>='  ; float bignum -- ?
+        _ bignum_to_float
+        _ float_float_ge
         next
 endcode
 
