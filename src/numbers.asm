@@ -433,6 +433,13 @@ code float_float_gt, 'float-float>'             ; float1 float2 -- ?
         next
 endcode
 
+; ### float-fixnum>
+code float_fixnum_gt, 'float-fixnum>'   ; float fixnum -- ?
+        _ fixnum_to_float
+        _ float_float_gt
+        next
+endcode
+
 ; ### fixnum>
 code fixnum_gt, 'fixnum>'               ; number fixnum -- ?
 
@@ -454,6 +461,13 @@ code fixnum_gt, 'fixnum>'               ; number fixnum -- ?
         _ bignum_fixnum_gt
         _return
         _then .2
+
+        _over
+        _ float?
+        _tagged_if .3
+        _ float_fixnum_gt
+        _return
+        _then .3
 
         _drop
         _ error_not_number
@@ -491,7 +505,7 @@ code fixnum_bignum_gt, 'fixnum-bignum>'         ; fixnum bignum -- ?
 endcode
 
 ; ### bignum>
-code bignum_gt, 'bignum>'               ; number bignum -- ?
+code bignum_gt, 'bignum>'                       ; number bignum -- ?
 
         ; second arg must be a bignum
         _ verify_bignum
@@ -511,6 +525,54 @@ code bignum_gt, 'bignum>'               ; number bignum -- ?
         _ bignum_bignum_gt
         _return
         _then .2
+
+        _drop
+        _ error_not_number
+        next
+endcode
+
+; ### fixnum-float>
+code fixnum_float_gt, 'fixnum-float>'           ; fixnum float -- ?
+        _swap
+        _ fixnum_to_float
+        _swap
+        _ float_float_gt
+        next
+endcode
+
+; ### bignum-float>
+code bignum_float_gt, 'bignum-float>'           ; bignum float -- ?
+        _swap
+        _ bignum_to_float
+        _swap
+        _ float_float_gt
+        next
+endcode
+
+; ### float>
+code float_gt, 'float>'                         ; number float -- ?
+        _ verify_float
+
+        _over
+        _ float?
+        _tagged_if .1
+        _ float_float_gt
+        _return
+        _then .1
+
+        _over
+        _ fixnum?
+        _tagged_if .2
+        _ fixnum_float_gt
+        _return
+        _then .2
+
+        _over
+        _ bignum?
+        _tagged_if .3
+        _ bignum_float_gt
+        _return
+        _then .3
 
         _drop
         _ error_not_number
