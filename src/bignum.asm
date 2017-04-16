@@ -269,8 +269,7 @@ code bignum_plus, 'bignum+'     ; number bignum -- sum
 
         ; dispatch on type of first arg
         _over
-        _fixnum?
-        _if .1
+        _fixnum?_if .1
         _ fixnum_bignum_plus
         _return
         _then .1
@@ -296,15 +295,14 @@ code bignum_plus, 'bignum+'     ; number bignum -- sum
 endcode
 
 ; ### bignum-
-code bignum_minus, 'bignum-'    ; number bignum -- sum
+code bignum_minus, 'bignum-'    ; number bignum -- difference
 
         ; second arg must be a bignum
         _ verify_bignum
 
         ; dispatch on type of first arg
         _over
-        _fixnum?
-        _if .1
+        _fixnum?_if .1
         _ bignum_negate
         _ fixnum_bignum_plus
         _return
@@ -372,8 +370,7 @@ code bignum_multiply, 'bignum*'         ; x y -- z
 
         ; dispatch on type of first arg
         _over
-        _fixnum?
-        _if .1
+        _fixnum?_if .1
         _ fixnum_bignum_multiply
         _return
         _then .1
