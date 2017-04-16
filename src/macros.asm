@@ -644,6 +644,16 @@ section .data
         jnz     %1_ifnot
 %endmacro
 
+%macro  _fixnum?_if 1
+        %push if
+        section .text
+        and     ebx, TAG_MASK
+        cmp     ebx, FIXNUM_TAG
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        jne      %1_ifnot
+%endmacro
+
 %macro  _zeq_if 1
         %push if
         section .text
