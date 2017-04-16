@@ -160,6 +160,13 @@ code bignum_bignum_lt, 'bignum-bignum<'         ; bignum1 bignum2 -- ?
         next
 endcode
 
+; ### float-bignum<
+code float_bignum_lt, 'float-bignum<'           ; float bignum -- ?
+        _ bignum_to_float
+        _ float_float_lt
+        next
+endcode
+
 ; ### fixnum-bignum<
 code fixnum_bignum_lt, 'fixnum-bignum<'         ; fixnum bignum -- ?
         _ verify_bignum
@@ -191,6 +198,13 @@ code bignum_lt, 'bignum<'               ; number bignum -- ?
         _ bignum_bignum_lt
         _return
         _then .2
+
+        _over
+        _ float?
+        _tagged_if .3
+        _ float_bignum_lt
+        _return
+        _then .3
 
         _drop
         _ error_not_number
@@ -307,6 +321,13 @@ code bignum_fixnum_le, 'bignum-fixnum<='        ; bignum fixnum -- ?
         next
 endcode
 
+; ### float-fixnum<=
+code float_fixnum_le, 'float-fixnum<='          ; float fixnum -- ?
+        _ fixnum_to_float
+        _ float_float_le
+        next
+endcode
+
 ; ### fixnum-bignum<=
 code fixnum_bignum_le, 'bignum-fixnum<='        ; fixnum bignum -- ?
         _ verify_bignum
@@ -359,6 +380,13 @@ code fixnum_le, 'fixnum<='      ; number fixnum -- ?
         _return
         _then .2
 
+        _over
+        _ float?
+        _tagged_if .3
+        _ float_fixnum_le
+        _return
+        _then .3
+
         _drop
         _ error_not_number
         next
@@ -385,6 +413,54 @@ code bignum_le, 'bignum<='              ; number bignum -- ?
         _ bignum_bignum_le
         _return
         _then .2
+
+        _drop
+        _ error_not_number
+        next
+endcode
+
+; ### fixnum-float<=
+code fixnum_float_le, 'fixnum-float<='          ; fixnum float -- ?
+        _swap
+        _ fixnum_to_float
+        _swap
+        _ float_float_le
+        next
+endcode
+
+; ### bignum-float<=
+code bignum_float_le, 'bignum-float<='          ; bignum float -- ?
+        _swap
+        _ bignum_to_float
+        _swap
+        _ float_float_le
+        next
+endcode
+
+; ### float<=
+code float_le, 'float<='                        ; number float -- ?
+        _ verify_float
+
+        _over
+        _ float?
+        _tagged_if .1
+        _ float_float_le
+        _return
+        _then .1
+
+        _over
+        _ fixnum?
+        _tagged_if .2
+        _ fixnum_float_le
+        _return
+        _then .2
+
+        _over
+        _ bignum?
+        _tagged_if .3
+        _ bignum_float_le
+        _return
+        _then .3
 
         _drop
         _ error_not_number
@@ -494,6 +570,13 @@ code bignum_bignum_gt, 'bignum-bignum>'         ; bignum1 bignum2 -- ?
         next
 endcode
 
+; ### float-bignum>
+code float_bignum_gt, 'float-bignum>'         ; float bignum -- ?
+        _ bignum_to_float
+        _ float_float_gt
+        next
+endcode
+
 ; ### fixnum-bignum>
 code fixnum_bignum_gt, 'fixnum-bignum>'         ; fixnum bignum -- ?
         _ verify_bignum
@@ -525,6 +608,13 @@ code bignum_gt, 'bignum>'                       ; number bignum -- ?
         _ bignum_bignum_gt
         _return
         _then .2
+
+        _over
+        _ float?
+        _tagged_if .3
+        _ float_bignum_gt
+        _return
+        _then .3
 
         _drop
         _ error_not_number
@@ -725,6 +815,54 @@ code fixnum_ge, 'fixnum>='                      ; number fixnum -- ?
         _ float?
         _tagged_if .3
         _ float_fixnum_ge
+        _return
+        _then .3
+
+        _drop
+        _ error_not_number
+        next
+endcode
+
+; ### fixnum-float>=
+code fixnum_float_ge, 'fixnum-float>='          ; fixnum float -- ?
+        _swap
+        _ fixnum_to_float
+        _swap
+        _ float_float_ge
+        next
+endcode
+
+; ### bignum-float>=
+code bignum_float_ge, 'bignum-float>='          ; bignum float -- ?
+        _swap
+        _ bignum_to_float
+        _swap
+        _ float_float_ge
+        next
+endcode
+
+; ### float>=
+code float_ge, 'float>='                        ; number float -- ?
+        _ verify_float
+
+        _over
+        _ float?
+        _tagged_if .1
+        _ float_float_ge
+        _return
+        _then .1
+
+        _over
+        _ fixnum?
+        _tagged_if .2
+        _ fixnum_float_ge
+        _return
+        _then .2
+
+        _over
+        _ bignum?
+        _tagged_if .3
+        _ bignum_float_ge
         _return
         _then .3
 
