@@ -176,6 +176,22 @@ test: test-10
 
 test-10
 
+: %test-11
+    random-integer !> x
+    random-float !> y
+    ?echo
+    x y < [ x y > assert-false ] when
+    x y > [ x y < assert-false ] when
+    y x < [ y x > assert-false ] when
+    y x > [ y x < assert-false ] when
+    y x = [ y x < assert-false y x > assert-false ] when
+;
+
+test: test-11
+    #reps ' %test-11 times ;
+
+test-11
+
 f !> x
 f !> y
 
