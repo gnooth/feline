@@ -56,7 +56,7 @@ code bignum_equal?, 'bignum-equal?'     ; x y -- ?
         _then .2
 
         _over
-        _fixnum?
+        _ fixnum?
         _tagged_if .3
         _swap
         _ fixnum_to_bignum
