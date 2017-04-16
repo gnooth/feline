@@ -284,11 +284,13 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _initialize_generic_function generic_le
         _add_method generic_le, OBJECT_TYPE_FIXNUM, fixnum_le
         _add_method generic_le, OBJECT_TYPE_BIGNUM, bignum_le
+        _add_method generic_le, OBJECT_TYPE_FLOAT, float_le
 
         ; >=
         _initialize_generic_function generic_ge
         _add_method generic_ge, OBJECT_TYPE_FIXNUM, fixnum_ge
         _add_method generic_ge, OBJECT_TYPE_BIGNUM, bignum_ge
+        _add_method generic_ge, OBJECT_TYPE_FLOAT, float_ge
 
         ; write
         _initialize_generic_function generic_write
