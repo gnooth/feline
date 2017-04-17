@@ -228,9 +228,7 @@ code float_plus, 'float+'       ; number float -- sum
         _return
         _then .1
 
-        _over
-        _ fixnum?
-        _tagged_if .2
+        _over_fixnum?_if .2
         _swap
         _ fixnum_to_float
         _ float_float_plus
@@ -279,9 +277,7 @@ code float_minus, 'float-'              ; number float -- difference
         _return
         _then .1
 
-        _over
-        _ fixnum?
-        _tagged_if .2
+        _over_fixnum?_if .2
         _swap
         _ fixnum_to_float
         _swap
@@ -332,9 +328,7 @@ code float_multiply, 'float*'          ; x y -- z
         _return
         _then .1
 
-        _over
-        _ fixnum?
-        _tagged_if .2
+        _over_fixnum?_if .2
         _swap
         _ fixnum_to_float
         _ float_float_multiply
@@ -384,9 +378,7 @@ code float_divide, 'float/f'            ; x y -- z
         _return
         _then .1
 
-        _over
-        _ fixnum?
-        _tagged_if .2
+        _over_fixnum?_if .2
         _swap
         _ fixnum_to_float
         _swap
