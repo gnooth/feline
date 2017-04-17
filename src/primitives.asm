@@ -768,9 +768,7 @@ endcode
 
 ; ### hex.
 code hexdot, 'hex.'                     ; n --
-        _dup
-        _fixnum?
-        _if .1
+        _dup_fixnum?_if .1
         _ fixnum_to_hex
         _else .1
         _ bignum_to_hex
@@ -1327,8 +1325,7 @@ code expt, 'expt'       ; base power -- result
         _check_index
 
         _over
-        _fixnum?
-        _tagged_if .1
+        _fixnum?_if .1
 %ifdef WIN64
         _swap
         _untag_fixnum
