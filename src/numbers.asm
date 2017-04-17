@@ -30,9 +30,7 @@ code fixnum_equal?, 'fixnum-equal?'     ; x y -- ?
         _tagged_if .2
         _swap
         _ float_to_integer
-        _dup
-        _ fixnum?
-        _tagged_if .3
+        _dup_fixnum?_if .3
         _eq?
         _else .3
         _ bignum_equal?
@@ -71,9 +69,7 @@ code bignum_equal?, 'bignum-equal?'     ; x y -- ?
         _return
         _then .2
 
-        _over
-        _ fixnum?
-        _tagged_if .3
+        _over_fixnum?_if .3
         _swap
         _ fixnum_to_bignum
         _ check_bignum
@@ -286,9 +282,7 @@ code float_lt, 'float<'                         ; number float -- ?
         _return
         _then .1
 
-        _over
-        _ fixnum?
-        _tagged_if .2
+        _over_fixnum?_if .2
         _ fixnum_float_lt
         _return
         _then .2
@@ -474,9 +468,7 @@ code float_le, 'float<='                        ; number float -- ?
         _return
         _then .1
 
-        _over
-        _ fixnum?
-        _tagged_if .2
+        _over_fixnum?_if .2
         _ fixnum_float_le
         _return
         _then .2
@@ -676,9 +668,7 @@ code float_gt, 'float>'                         ; number float -- ?
         _return
         _then .1
 
-        _over
-        _ fixnum?
-        _tagged_if .2
+        _over_fixnum?_if .2
         _ fixnum_float_gt
         _return
         _then .2
@@ -878,9 +868,7 @@ code float_ge, 'float>='                        ; number float -- ?
         _return
         _then .1
 
-        _over
-        _ fixnum?
-        _tagged_if .2
+        _over_fixnum?_if .2
         _ fixnum_float_ge
         _return
         _then .2
