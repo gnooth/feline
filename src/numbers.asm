@@ -22,10 +22,26 @@ code fixnum_equal?, 'fixnum-equal?'     ; x y -- ?
         _tagged_if .1
         _ fixnum_to_bignum
         _ bignum_equal?
-        _else .1
+        _return
+        _then .1
+
+        _over
+        _ float?
+        _tagged_if .2
+        _swap
+        _ float_to_integer
+        _dup
+        _ fixnum?
+        _tagged_if .3
+        _eq?
+        _else .3
+        _ bignum_equal?
+        _then .3
+        _return
+        _then .2
+
         _2drop
         _f
-        _then .1
         next
 endcode
 
