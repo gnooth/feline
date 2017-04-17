@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -113,7 +113,7 @@ code tilde_expand_filename, 'tilde-expand-filename' ; string1 -- string2
         _ path_separator_char?          ; "~/" or "~\"
         _if .3
         _ user_home
-        _ check_string
+        _ verify_string
         _swap
         _ string_from
         _lit 1
