@@ -335,9 +335,7 @@ code object_to_string, 'object>string'  ; object -- string
         _return
         _then .6
 
-        _dup
-        _fixnum?
-        _if .7
+        _dup_fixnum?_if .7
         _ fixnum_to_string
         _return
         _then .7
