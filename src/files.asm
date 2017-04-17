@@ -381,6 +381,53 @@ code directory?, 'directory?'           ; path -- ?
         next
 endcode
 
+; ### tilde-expand-filename
+code tilde_expand_filename, 'tilde-expand-filename'     ; string1 -- string2
+        _ verify_string
+
+        _dup
+        _ string_first_char
+        _untag_char
+        _lit '~'
+        _notequal
+        _if .1
+        _return
+        _then .1
+
+        _dup
+        _ string_length
+        _untag_fixnum
+        _lit 1
+        _equal
+        _if .2
+        _drop
+        _ user_home
+        _ verify_string
+        _return
+        _then .2
+                                        ; -- string
+        ; length <> 1
+        _lit 1
+        _over
+        _ string_nth_untagged
+        _untag_char
+        _ path_separator_char?          ; "~/" or "~\"
+        _if .3
+        _ user_home
+        _ verify_string
+        _swap
+        _ string_from
+        _lit 1
+        _slashstring
+        _ copy_to_string
+        _ concat
+        _return
+        _then .3
+
+        ; return original string
+        next
+endcode
+
 ; ### cd
 code cd, 'cd'
         _ parse_token
