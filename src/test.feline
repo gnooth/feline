@@ -2294,4 +2294,13 @@ test: float-float>=-test-1
 
 float-float>=-test-1
 
+test: fixnum-equal?-test-1
+    42 42 fixnum-equal? assert-true
+    42 dup fixnum>bignum swap fixnum-equal? assert-true
+    42 dup >float swap fixnum-equal? assert-true
+    "test" 42 fixnum-equal? assert-false
+;
+
+fixnum-equal?-test-1
+
 ?nl "Reached end of test.feline" write-string

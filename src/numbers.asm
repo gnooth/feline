@@ -17,29 +17,36 @@ file __FILE__
 
 ; ### fixnum-equal?
 code fixnum_equal?, 'fixnum-equal?'     ; x y -- ?
+        cmp     rbx, [rbp]
+        jne     .1
+        _nip
+        mov     ebx, t_value
+        _return
+
+.1:
         _over
         _ bignum?
-        _tagged_if .1
+        _tagged_if .2
         _ fixnum_to_bignum
         _ bignum_equal?
         _return
-        _then .1
+        _then .2
 
         _over
         _ float?
-        _tagged_if .2
+        _tagged_if .3
         _swap
         _ float_to_integer
-        _dup_fixnum?_if .3
+        _dup_fixnum?_if .4
         _eq?
-        _else .3
+        _else .4
         _ bignum_equal?
-        _then .3
+        _then .4
         _return
-        _then .2
+        _then .3
 
-        _2drop
-        _f
+        _nip
+        mov     ebx, f_value
         next
 endcode
 
