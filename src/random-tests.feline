@@ -184,13 +184,32 @@ test-10
     x y > [ x y < assert-false ] when
     y x < [ y x > assert-false ] when
     y x > [ y x < assert-false ] when
-    y x = [ y x < assert-false y x > assert-false ] when
+    y x = [
+        x y assert=
+        y x < assert-false
+        y x > assert-false
+    ] when
 ;
 
 test: test-11
     #reps ' %test-11 times ;
 
 test-11
+
+: %test-12
+    random-integer !> x
+    x >float !> y
+    ?echo
+    y float? assert
+    x y = [
+        x y float>integer assert=
+    ] when
+;
+
+test: test-12
+    #reps ' %test-12 times ;
+
+test-12
 
 f !> x
 f !> y
