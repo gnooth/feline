@@ -654,6 +654,15 @@ section .data
         jne      %1_ifnot
 %endmacro
 
+%macro  _dup_fixnum?_if 1
+        %push if
+        section .text
+        mov     eax, ebx
+        and     eax, TAG_MASK
+        cmp     eax, FIXNUM_TAG
+        jne      %1_ifnot
+%endmacro
+
 %macro  _zeq_if 1
         %push if
         section .text
