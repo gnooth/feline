@@ -663,6 +663,15 @@ section .data
         jne      %1_ifnot
 %endmacro
 
+%macro  _over_fixnum?_if 1
+        %push if
+        section .text
+        mov     rax, qword [rbp]
+        and     eax, TAG_MASK
+        cmp     eax, FIXNUM_TAG
+        jne      %1_ifnot
+%endmacro
+
 %macro  _zeq_if 1
         %push if
         section .text

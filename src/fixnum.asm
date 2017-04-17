@@ -407,9 +407,7 @@ endcode
 code fixnum_divide_truncate, 'fixnum/i' ; x y -- z
         _ verify_fixnum
 
-        _over
-        _ fixnum?
-        _tagged_if .1
+        _over_fixnum?_if .1
         _ fixnum_fixnum_divide_truncate
         _return
         _then .1
@@ -460,9 +458,7 @@ endcode
 code fixnum_divide_float, 'fixnum/f'    ; x y -- z
         _ verify_fixnum
 
-        _over
-        _ fixnum?
-        _tagged_if .1
+        _over_fixnum?_if .1
         _ fixnum_fixnum_divide_float
         _return
         _then .1
@@ -529,9 +525,7 @@ endcode
 code fixnum_mod, 'fixnum-mod'                   ; x y -- z
         _verify_fixnum
 
-        _over
-        _ fixnum?
-        _tagged_if .1
+        _over_fixnum?_if .1
         _ fixnum_fixnum_mod
         _return
         _then .1
