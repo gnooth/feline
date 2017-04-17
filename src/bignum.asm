@@ -423,9 +423,7 @@ endcode
 code bignum_divide_truncate, 'bignum/i' ; x y -- z
         _ verify_bignum
 
-        _over
-        _ fixnum?
-        _tagged_if .1
+        _over_fixnum?_if .1
         _swap
         _ fixnum_to_bignum
         _swap
@@ -492,9 +490,7 @@ endcode
 code bignum_mod, 'bignum-mod'                   ; x y -- z
         _ verify_bignum
 
-        _over
-        _ fixnum?
-        _tagged_if .1
+        _over_fixnum?_if .1
         _ fixnum_bignum_mod
         _return
         _then .1
