@@ -87,6 +87,16 @@ code bignum_equal?, 'bignum-equal?'     ; x y -- ?
         _return
         _then .3
 
+        _over
+        _ float?
+        _tagged_if .4
+        _swap
+        _ float_to_integer
+        _swap
+        _ bignum_equal?
+        _return
+        _then .4
+
         _2drop
         _f
 
