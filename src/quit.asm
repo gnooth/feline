@@ -477,6 +477,10 @@ code quit, 'quit'                       ; --
         ; REVIEW
         mov     rsp, [rp0_data]
 
+        _t
+        _ interactive?
+        _ set
+
         _ query                         ; -- string
         _ evaluate
         _ maybe_print_data_stack
