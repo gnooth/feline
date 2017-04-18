@@ -46,7 +46,7 @@ cell c_bignum_to_float(Bignum *b)
 
 cell c_float_to_string(char *buf, size_t size, Float *p)
 {
-  snprintf(buf, size, "%.16g", p->d);
+  snprintf(buf, size, "%.17g", p->d);
   return (cell) buf;
 }
 
