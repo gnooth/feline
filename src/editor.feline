@@ -199,7 +199,7 @@ tuple: position line-number offset ;
 
 : reframe ( -- )
     dot-line-number
-    lines-per-page 2 / verify-index
+    lines-per-page 2 /i verify-index
     - 0 max !> top-line-number
     t !> repaint?
 ;
