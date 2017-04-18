@@ -453,6 +453,45 @@ code bignum_divide_truncate, 'bignum/i' ; x y -- z
         next
 endcode
 
+; ### bignum/f
+code bignum_divide_float, 'bignum/f'            ; x y -- z
+        _ verify_bignum
+
+        _over_fixnum?_if .1
+        _swap
+        _ fixnum_to_float
+        _swap
+        _ bignum_to_float
+        _ float_float_divide
+        _return
+        _then .1
+
+        _over
+        _ bignum?
+        _tagged_if .2
+        _swap
+        _ bignum_to_float
+        _swap
+        _ bignum_to_float
+        _ float_float_divide
+        _return
+        _then .2
+
+        _over
+        _ float?
+        _tagged_if .3
+        _ bignum_to_float
+        _ float_float_divide
+        _ float_to_integer
+        _return
+        _then .3
+
+        _drop
+        _ error_not_number
+
+        next
+endcode
+
 ; ### bignum-bignum-mod
 code bignum_bignum_mod, 'bignum-bignum-mod'     ; x y -- z
         _ check_bignum

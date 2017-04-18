@@ -361,14 +361,6 @@ code fixnum_multiply, 'fixnum*'         ; x y -- z
         next
 endcode
 
-%macro _divide 0
-        mov     rax, [rbp]
-        cqo                             ; sign-extend rax into rdx:rax
-        idiv    rbx                     ; quotient in rax, remainder in rdx
-        mov     rbx, rax
-        lea     rbp, [rbp + BYTES_PER_CELL]
-%endmacro
-
 ; ### fixnum-fixnum/i
 code fixnum_fixnum_divide_truncate, 'fixnum-fixnum/i'   ; x y -- z
         _check_fixnum
@@ -482,19 +474,6 @@ code fixnum_divide_float, 'fixnum/f'    ; x y -- z
 
         next
 endcode
-
-; ### /
-code feline_divide, '/'
-        _ check_fixnum
-        _swap
-        _ check_fixnum
-        _swap
-        _divide
-        _tag_fixnum
-        next
-endcode
-
-%unmacro _divide 0
 
 ; ### fixnum-fixnum-mod
 code fixnum_fixnum_mod, 'fixnum-fixnum-mod'     ; x y -- z

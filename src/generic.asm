@@ -136,6 +136,9 @@ generic generic_minus, '-'              ; x y -- z
 ; ### *
 generic generic_multiply, '*'           ; x y -- z
 
+; ### /
+generic generic_divide, '/'             ; x y -- z
+
 ; ### /i
 generic generic_divide_truncate, '/i'   ; x y -- z
 
@@ -250,6 +253,12 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method generic_multiply, OBJECT_TYPE_FIXNUM, fixnum_multiply
         _add_method generic_multiply, OBJECT_TYPE_BIGNUM, bignum_multiply
         _add_method generic_multiply, OBJECT_TYPE_FLOAT, float_multiply
+
+        ; /
+        _initialize_generic_function generic_divide
+        _add_method generic_divide, OBJECT_TYPE_FIXNUM, fixnum_divide_float
+        _add_method generic_divide, OBJECT_TYPE_BIGNUM, bignum_divide_float
+        _add_method generic_divide, OBJECT_TYPE_FLOAT, float_divide
 
         ; /i
         _initialize_generic_function generic_divide_truncate
