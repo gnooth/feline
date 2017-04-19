@@ -166,9 +166,8 @@ test-9
     random-float !> x
     random-float !> y
     ?echo
-    x y < [ x y > assert-false ] when
-    x y > [ x y < assert-false ] when
-    x y = [ x y < assert-false x y > assert-false ] when
+    x y < [ x y > assert-false x y = assert-false y x = assert-false ] when
+    x y > [ x y < assert-false x y = assert-false y x = assert-false ] when
 ;
 
 test: test-10
@@ -180,15 +179,10 @@ test-10
     random-integer !> x
     random-float !> y
     ?echo
-    x y < [ x y > assert-false ] when
-    x y > [ x y < assert-false ] when
-    y x < [ y x > assert-false ] when
-    y x > [ y x < assert-false ] when
-    y x = [
-        x y assert=
-        y x < assert-false
-        y x > assert-false
-    ] when
+    x y < [ x y > assert-false x y = assert-false y x = assert-false ] when
+    x y > [ x y < assert-false x y = assert-false y x = assert-false ] when
+    y x < [ y x > assert-false x y = assert-false y x = assert-false ] when
+    y x > [ y x < assert-false x y = assert-false y x = assert-false ] when
 ;
 
 test: test-11
@@ -201,9 +195,8 @@ test-11
     x >float !> y
     ?echo
     y float? assert
-    x y = [
-        x y float>integer assert=
-    ] when
+    x y assert=
+    y x assert=
 ;
 
 test: test-12
