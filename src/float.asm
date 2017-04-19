@@ -81,26 +81,40 @@ endcode
 ; ### float-equal?
 code float_equal?, 'float-equal?'       ; x float -- ?
         _ check_float
+        _float_raw_value                ; -- x raw-double
 
-        _over
-        _ float?
-        _tagged_if_not .1
-        _nip
-        mov     ebx, f_value
+        _over_fixnum?_if .1
+        _swap
+        _ fixnum_to_float
+        _handle_to_object_unsafe
+        _float_raw_value
+        _eq?
         _return
         _then .1
 
+        _over
+        _ bignum?
+        _tagged_if .2
+        _swap
+        _ bignum_to_float
+        _handle_to_object_unsafe
         _float_raw_value
+        _eq?
+        _return
+        _then .2
 
+        _over
+        _ float?
+        _tagged_if .3
         _swap
         _handle_to_object_unsafe
         _float_raw_value
+        _eq?
+        _return
+        _then .3
 
-        mov     eax, t_value
-        cmp     [rbp], rbx
+        _nip
         mov     ebx, f_value
-        cmove   ebx, eax
-        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
