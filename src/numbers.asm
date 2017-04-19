@@ -62,57 +62,32 @@ endcode
 
 ; ### bignum-equal?
 code bignum_equal?, 'bignum-equal?'                     ; x y -- ?
-        _dup
-        _ bignum?
-        _tagged_if .1
-        _handle_to_object_unsafe
-        _else .1
-        _2drop
-        _f
+        _ verify_bignum
+
+        _over_fixnum?_if .1
+        _swap
+        _ fixnum_to_bignum
+        _ bignum_bignum_equal?
         _return
         _then .1
 
         _over
         _ bignum?
         _tagged_if .2
-        mov     arg0_register, rbx
-        poprbx
-        _handle_to_object_unsafe
-        mov     arg1_register, rbx
-        poprbx
-        xcall   c_bignum_bignum_equal
-        pushrbx
-        mov     rbx, rax
+        _ bignum_bignum_equal?
         _return
         _then .2
 
-        _over_fixnum?_if .3
-        _swap
-        _ fixnum_to_bignum
-        _ check_bignum
-        mov     arg0_register, rbx
-        poprbx
-        mov     arg1_register, rbx
-        poprbx
-        xcall   c_bignum_bignum_equal
-        pushrbx
-        mov     rbx, rax
+        _over
+        _ float?
+        _tagged_if .3
+        _ bignum_to_float
+        _ float_equal?
         _return
         _then .3
 
-        _over
-        _ float?
-        _tagged_if .4
-        _swap
-        _ float_to_integer
-        _swap
-        _ bignum_equal?
-        _return
-        _then .4
-
         _2drop
         _f
-
         next
 endcode
 
