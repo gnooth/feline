@@ -222,9 +222,13 @@ fixnum-test-6
 
 test: fixnum-test-7 ( -- )
     8 3 fixnum/i 2 assert=
-    8 3 / 2 assert=
+    8 3 / float? assert
+    8 3 / 2 = assert-false
+    8 3 / 2 swap = assert-false
+    8 3 / 2 equal? assert-false
+    8 3 / 2 swap equal? assert-false
     -8 3 fixnum/i -2 assert=
-    -8 3 / -2 assert=
+    -8 3 / -2 = assert-false
 ;
 
 fixnum-test-7
