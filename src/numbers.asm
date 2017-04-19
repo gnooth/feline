@@ -67,7 +67,7 @@ code bignum_equal?, 'bignum-equal?'     ; x y -- ?
         _handle_to_object_unsafe
         mov     arg1_register, rbx
         poprbx
-        xcall   c_bignum_equal
+        xcall   c_bignum_bignum_equal
         pushrbx
         mov     rbx, rax
         _return
@@ -81,7 +81,7 @@ code bignum_equal?, 'bignum-equal?'     ; x y -- ?
         poprbx
         mov     arg1_register, rbx
         poprbx
-        xcall   c_bignum_equal
+        xcall   c_bignum_bignum_equal
         pushrbx
         mov     rbx, rax
         _return

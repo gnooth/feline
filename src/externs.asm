@@ -57,6 +57,7 @@ extern c_seed_random
 
 ; bignum.c
 extern c_bignum_bignum_divide_truncate
+extern c_bignum_bignum_equal
 extern c_bignum_bignum_ge
 extern c_bignum_bignum_gt
 extern c_bignum_bignum_le
@@ -65,7 +66,6 @@ extern c_bignum_bignum_minus
 extern c_bignum_bignum_mod
 extern c_bignum_bignum_multiply
 extern c_bignum_bignum_plus
-extern c_bignum_equal
 extern c_bignum_fixnum_plus
 extern c_bignum_free
 extern c_bignum_from_signed

@@ -197,6 +197,11 @@ cell c_bignum_bignum_mod(Bignum *b1, Bignum *b2)
   return normalize(result);
 }
 
+cell c_bignum_bignum_equal(Bignum *b1, Bignum *b2)
+{
+  return (mpz_cmp(b1->z, b2->z) == 0) ? T_VALUE : F_VALUE;
+}
+
 cell c_bignum_bignum_lt(Bignum *b1, Bignum *b2)
 {
   return mpz_cmp(b1->z, b2->z) < 0 ? T_VALUE : F_VALUE;
@@ -291,11 +296,6 @@ cell c_string_to_integer(char *s, int base)
     }
   // conversion succeeded
   return normalize(z);
-}
-
-cell c_bignum_equal(Bignum *b1, Bignum *b2)
-{
-  return (mpz_cmp(b1->z, b2->z) == 0) ? T_VALUE : F_VALUE;
 }
 
 cell c_bignum_negate(Bignum *b)
