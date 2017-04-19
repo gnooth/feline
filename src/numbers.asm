@@ -47,8 +47,21 @@ code fixnum_equal?, 'fixnum-equal?'     ; x y -- ?
         next
 endcode
 
+; ### bignum-bignum-equal?
+code bignum_bignum_equal?, 'bignum-bignum-equal?'       ; x y -- ?
+        _ check_bignum
+        _swap
+        _ check_bignum
+        mov     arg0_register, rbx
+        poprbx
+        mov     arg1_register, rbx
+        xcall   c_bignum_bignum_equal
+        mov     rbx, rax
+        next
+endcode
+
 ; ### bignum-equal?
-code bignum_equal?, 'bignum-equal?'     ; x y -- ?
+code bignum_equal?, 'bignum-equal?'                     ; x y -- ?
         _dup
         _ bignum?
         _tagged_if .1
