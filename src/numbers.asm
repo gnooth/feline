@@ -17,6 +17,8 @@ file __FILE__
 
 ; ### fixnum-equal?
 code fixnum_equal?, 'fixnum-equal?'     ; x y -- ?
+        _verify_fixnum
+
         cmp     rbx, [rbp]
         jne     .1
         _nip
@@ -35,13 +37,8 @@ code fixnum_equal?, 'fixnum-equal?'     ; x y -- ?
         _over
         _ float?
         _tagged_if .3
-        _swap
-        _ float_to_integer
-        _dup_fixnum?_if .4
-        _eq?
-        _else .4
-        _ bignum_equal?
-        _then .4
+        _ fixnum_to_float
+        _ float_equal?
         _return
         _then .3
 
