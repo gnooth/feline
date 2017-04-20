@@ -16,25 +16,23 @@
 file __FILE__
 
 ; ### allocate-executable
-code allocate_executable, 'allocate-executable' ; size -- addr
+code allocate_executable, 'allocate-executable' ; raw-size -- raw-address
+        mov     arg0_register, rbx
 %ifdef WIN64
-        mov     rcx, rbx
         xcall   os_allocate_executable
 %else
-        mov     rdi, rbx
         xcall   os_malloc
 %endif
-        mov     rbx, rax                ; -- addr
+        mov     rbx, rax
         next
 endcode
 
 ; ### free-executable
-code free_executable, 'free-executable' ; addr --
+code free_executable, 'free-executable'         ; raw-address --
+        mov     arg0_register, rbx
 %ifdef WIN64
-        mov     rcx, rbx
         xcall   os_free_executable
 %else
-        mov     rdi, rbx
         xcall   os_free
 %endif
         poprbx
