@@ -130,13 +130,30 @@ static void initialize_dynamic_code_space()
 #define DYNAMIC_CODE_SPACE_RESERVED_SIZE 1024*1024*2    // 2 mb
 
 #ifdef WIN64
-  code_space_ =
-    (cell) VirtualAlloc((void *)0x1000000,                      // starting address
-                        DYNAMIC_CODE_SPACE_RESERVED_SIZE,       // size
-                        MEM_COMMIT|MEM_RESERVE,                 // allocation type
-                        PAGE_EXECUTE_READWRITE);                // protection
+  void *address = (void *)0x80000000;
 
+  for (int i = 0; i < 3; i++)
+    {
+      code_space_ =
+        (cell) VirtualAlloc(address,                            // starting address
+                            DYNAMIC_CODE_SPACE_RESERVED_SIZE,   // size
+                            MEM_COMMIT|MEM_RESERVE,             // allocation type
+                            PAGE_EXECUTE_READWRITE);            // protection
+      if (code_space_)
+        break;
+      address += 0x100000;
+    }
 
+  if (!code_space_)
+    {
+      // give up
+      code_space_ =
+        (cell) VirtualAlloc(NULL,                               // starting address
+                            DYNAMIC_CODE_SPACE_RESERVED_SIZE,   // size
+                            MEM_COMMIT|MEM_RESERVE,             // allocation type
+                            PAGE_EXECUTE_READWRITE);            // protection
+
+    }
 #else
   // Linux
   code_space_ =
