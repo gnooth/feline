@@ -15,8 +15,56 @@
 
 file __FILE__
 
+asm_global code_space_, 0
+asm_global code_space_free_, 0
+asm_global code_space_limit_, 0
+
+; ### code-space
+code code_space, 'code-space'
+        pushrbx
+        mov     rbx, [code_space_]
+        _tag_fixnum
+        next
+endcode
+
+; ### code-space-free
+code code_space_free, 'code-space-free'
+        pushrbx
+        mov     rbx, [code_space_free_]
+        _tag_fixnum
+        next
+endcode
+
+; ### code-space-limit
+code code_space_limit, 'code-space-limit'
+        pushrbx
+        mov     rbx, [code_space_limit_]
+        _tag_fixnum
+        next
+endcode
+
 ; ### allocate-executable
 code allocate_executable, 'allocate-executable' ; raw-size -- raw-address
+
+        mov     rax, [code_space_free_]
+        test    rax, rax
+        jz      .1
+
+        add     rbx, rax
+
+        ; REVIEW
+        ; 16-byte alignment
+        add     rbx, 16
+        mov     edx, 15
+        not     rdx
+        and     rbx, rdx
+
+        mov     [code_space_free_], rbx
+
+        mov     rbx, rax
+        _return
+
+.1:
         mov     arg0_register, rbx
 %ifdef WIN64
         xcall   os_allocate_executable
@@ -29,6 +77,14 @@ endcode
 
 ; ### free-executable
 code free_executable, 'free-executable'         ; raw-address --
+        mov     rax, [code_space_]
+        test    rax, rax
+        jz      .1
+        ; FIXME
+        ; for now, do nothing
+        _drop
+        _return
+.1:
         mov     arg0_register, rbx
 %ifdef WIN64
         xcall   os_free_executable
@@ -241,8 +297,8 @@ code compile_pair, 'compile-pair'       ; pair --
 endcode
 
 ; ### compile-quotation
-code compile_quotation, 'compile-quotation' ;  quotation -- code-address code-size
-; Returned values are tagged.
+code compile_quotation, 'compile-quotation'     ;  quotation -- code-address code-size
+; return values are tagged
 
         _dup
         _ quotation_array

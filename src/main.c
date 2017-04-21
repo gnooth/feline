@@ -121,6 +121,60 @@ static void initialize_data_stack()
   sp0_data = (cell) data_stack_base + data_stack_size;
 }
 
+static void initialize_dynamic_code_space()
+{
+  extern cell code_space_;
+  extern cell code_space_free_;
+  extern cell code_space_limit_;
+
+#define DYNAMIC_CODE_SPACE_RESERVED_SIZE 1024*1024*2    // 2 mb
+
+#ifdef WIN64
+  code_space_ =
+    (cell) VirtualAlloc((void *)0x1000000,                      // starting address
+                        DYNAMIC_CODE_SPACE_RESERVED_SIZE,       // size
+                        MEM_COMMIT|MEM_RESERVE,                 // allocation type
+                        PAGE_EXECUTE_READWRITE);                // protection
+
+
+#else
+  // Linux
+  code_space_ =
+    (cell) mmap((void *)0x1000000,                              // starting address
+                DYNAMIC_CODE_SPACE_RESERVED_SIZE,               // size
+                PROT_READ|PROT_WRITE|PROT_EXEC,                 // protection
+                MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE,        // flags
+                -1,                                             // fd
+                0);                                             // offset
+#endif
+
+  code_space_free_  = code_space_;
+  code_space_limit_ = code_space_ + DYNAMIC_CODE_SPACE_RESERVED_SIZE;
+}
+
+static void reserve_handle_space()
+{
+  extern cell S_handle_space_symbol_value;
+
+#define HANDLE_SPACE_RESERVED_SIZE 1024*1024*100        // 100 mb
+
+#ifdef WIN64
+  S_handle_space_symbol_value =
+    (cell) VirtualAlloc(0,                                      // starting address
+                        HANDLE_SPACE_RESERVED_SIZE,             // size
+                        MEM_COMMIT|MEM_RESERVE,                 // allocation type
+                        PAGE_READWRITE);                        // protection
+#else
+  S_handle_space_symbol_value =
+    (cell) mmap((void *)0x2000000,                              // address
+                HANDLE_SPACE_RESERVED_SIZE,                     // size
+                PROT_READ|PROT_WRITE,                           // protection
+                MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE,        // flags
+                -1,                                             // fd
+                0);                                             // offset
+#endif
+}
+
 int main(int argc, char **argv, char **env)
 {
   start_time_ticks_data = os_ticks();
@@ -129,23 +183,9 @@ int main(int argc, char **argv, char **env)
 
   prep_terminal();
 
-  extern cell S_handle_space_symbol_value;
+  initialize_dynamic_code_space();
 
-#ifdef WIN64
-  S_handle_space_symbol_value =
-    (cell) VirtualAlloc(0,              // addr
-                        1024*1024*100,  // length
-                        MEM_COMMIT|MEM_RESERVE,                 // allocation type
-                        PAGE_READWRITE);                        // prot
-#else
-  S_handle_space_symbol_value =
-    (cell) mmap((void *)0x1000000,      // addr
-                1024*1024*100,          // length
-                PROT_READ|PROT_WRITE,   // prot
-                MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE,        // flags
-                -1,                     // fd
-                0);                     // offset
-#endif
+  reserve_handle_space();
 
   initialize_data_stack();
 
