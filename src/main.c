@@ -171,18 +171,18 @@ static void initialize_dynamic_code_space()
 
 static void reserve_handle_space()
 {
-  extern cell S_handle_space_symbol_value;
+  extern cell handle_space_;
 
 #define HANDLE_SPACE_RESERVED_SIZE 1024*1024*100        // 100 mb
 
 #ifdef WIN64
-  S_handle_space_symbol_value =
+  handle_space_ =
     (cell) VirtualAlloc(0,                                      // starting address
                         HANDLE_SPACE_RESERVED_SIZE,             // size
                         MEM_COMMIT|MEM_RESERVE,                 // allocation type
                         PAGE_READWRITE);                        // protection
 #else
-  S_handle_space_symbol_value =
+  handle_space_ =
     (cell) mmap((void *)0x2000000,                              // address
                 HANDLE_SPACE_RESERVED_SIZE,                     // size
                 PROT_READ|PROT_WRITE,                           // protection
