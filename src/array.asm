@@ -128,7 +128,7 @@ new_array_untagged:
         xor     eax, eax
         mov     [this_register], rax
 
-        _this_object_set_type OBJECT_TYPE_ARRAY
+        _this_object_set_raw_type_number OBJECT_TYPE_ARRAY
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 
         _over                           ; -- length element length

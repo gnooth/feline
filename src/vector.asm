@@ -56,7 +56,7 @@ code verify_vector, 'verify-vector'     ; handle -- handle
         _dup
         _handle_to_object_unsafe        ; -- handle object/0
         _dup_if .2
-        _object_type                    ; -- object object-type
+        _object_raw_type_number
         _lit OBJECT_TYPE_VECTOR
         _equal
         _if .3
@@ -148,7 +148,7 @@ new_vector_untagged:
         push    this_register
         mov     this_register, rbx
         poprbx                          ; -- capacity
-        _this_object_set_type OBJECT_TYPE_VECTOR
+        _this_object_set_raw_type_number OBJECT_TYPE_VECTOR
         _this_object_set_flags OBJECT_ALLOCATED_BIT
         _dup
         _ allocate_cells                ; -- capacity data-address

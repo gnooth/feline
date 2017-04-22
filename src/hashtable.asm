@@ -142,7 +142,7 @@ code hashtable?, 'hashtable?'   ; x -- ?
         _tagged_if .1
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
-        _object_type                    ; -- object-type
+        _object_raw_type_number
         _eq? OBJECT_TYPE_HASHTABLE
         _return
         _then .2
@@ -321,7 +321,7 @@ new_hashtable_untagged:
         mov     this_register, rbx
         poprbx
 
-        _this_object_set_type OBJECT_TYPE_HASHTABLE
+        _this_object_set_raw_type_number OBJECT_TYPE_HASHTABLE
 
         _dup
         _this_hashtable_set_raw_capacity        ; -- n

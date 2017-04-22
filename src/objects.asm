@@ -108,8 +108,8 @@ code object_raw_type, 'object-raw-type'         ; x -- raw-type-number
         _tagged_if .3
         _handle_to_object_unsafe
         test    rbx, rbx
-        jz error_empty_handle
-        _object_type
+        jz      error_empty_handle
+        _object_raw_type_number
         _return
         _then .3
 
@@ -172,7 +172,7 @@ code type?, 'type?'                     ; x type-number -- ?
         _swap
         _ deref                         ; -- type-number object-address/0
         _?dup_if .1
-        _object_type
+        _object_raw_type_number
         _eq?
         _return
         _then .1

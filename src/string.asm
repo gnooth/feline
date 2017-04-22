@@ -29,7 +29,7 @@ code string?, 'string?'                 ; x -- ?
         _tagged_if .1
         _handle_to_object_unsafe        ; -- raw-object/0
         _?dup_if .2
-        _object_type                    ; -- object-type
+        _object_raw_type_number                    ; -- object-type
         _eq? OBJECT_TYPE_STRING
         _return
         _then .2
@@ -49,7 +49,7 @@ code string?, 'string?'                 ; x -- ?
         _then .3
 
         ; -- object
-        _object_type                    ; -- object-type
+        _object_raw_type_number                    ; -- object-type
         _eq? OBJECT_TYPE_STRING
 
         next
@@ -67,7 +67,7 @@ code verify_unboxed_string, 'verify-unboxed-string' ; string -- string
         _then .1
 
         _dup
-        _object_type                    ; -- object object-type
+        _object_raw_type_number                    ; -- object object-type
         _lit OBJECT_TYPE_STRING
         _equal
         _if .2
@@ -108,7 +108,7 @@ code verify_string, 'verify-string'     ; handle-or-string -- handle-or-string
         _dup
         _handle_to_object_unsafe        ; -- handle object/0
         _dup_if .2
-        _object_type                    ; -- object object-type
+        _object_raw_type_number                    ; -- object object-type
         _lit OBJECT_TYPE_STRING
         _equal
         _if .3
@@ -236,7 +236,7 @@ code copy_to_string, 'copy-to-string', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         xor     eax, eax
         mov     [this_register], rax
 
-        _this_object_set_type OBJECT_TYPE_STRING
+        _this_object_set_raw_type_number OBJECT_TYPE_STRING
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 
         _f

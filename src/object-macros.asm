@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; Object types
+; Object type numbers
 OBJECT_TYPE_FIXNUM              equ  1
 OBJECT_TYPE_F                   equ  2
 OBJECT_TYPE_VECTOR              equ  3
@@ -53,24 +53,17 @@ OBJECT_ALLOCATED_BIT            equ 4
 
 ; Slot 0 is the object header.
 
-; The first word (16 bits) of the object header is the object type.
+; The object's raw type number is stored in the first two bytes of the object header.
 
-; Use the first word here and not just the first byte so that the header is
-; less likely to be mistaken for the start of a legacy counted string. The
-; first byte of a counted string might take on any value at all, but normally
-; the second byte won't be zero unless the first byte is also zero. This gives
-; us 255 distinct object types (1-255) before we need to set any bits in the
-; second byte.
-
-%macro  _object_type 0                  ; -- type
+%macro  _object_raw_type_number 0       ; -- raw-type-number
         _wfetch                         ; 16 bits
 %endmacro
 
-%macro  _object_set_type 0              ; type object --
+%macro  _object_set_raw_type_number 0   ; raw-type-number object --
         _wstore
 %endmacro
 
-%macro  _this_object_set_type 1
+%macro  _this_object_set_raw_type_number 1
         mov     word [this_register], %1
 %endmacro
 
@@ -92,7 +85,7 @@ OBJECT_ALLOCATED_BIT            equ 4
         mov     byte [this_register + 2], %1
 %endmacro
 
-%macro  _object_allocated? 0            ; object -- 0|1
+%macro  _object_allocated? 0            ; object -- 0/1
         test    OBJECT_FLAGS_BYTE, OBJECT_ALLOCATED_BIT
         setnz   bl
         movzx   ebx, bl
@@ -267,67 +260,67 @@ OBJECT_ALLOCATED_BIT            equ 4
 %endmacro
 
 %macro  _string? 0
-        _object_type
+        _object_raw_type_number
         _lit OBJECT_TYPE_STRING
         _equal
 %endmacro
 
 %macro  _sbuf? 0
-        _object_type
+        _object_raw_type_number
         _lit OBJECT_TYPE_SBUF
         _equal
 %endmacro
 
 %macro  _vector? 0
-        _object_type
+        _object_raw_type_number
         _lit OBJECT_TYPE_VECTOR
         _equal
 %endmacro
 
 %macro  _array? 0
-        _object_type
+        _object_raw_type_number
         _lit OBJECT_TYPE_ARRAY
         _equal
 %endmacro
 
 %macro  _hashtable? 0
-        _object_type
+        _object_raw_type_number
         _lit OBJECT_TYPE_HASHTABLE
         _equal
 %endmacro
 
 %macro  _bignum? 0
-        _object_type
+        _object_raw_type_number
         _lit OBJECT_TYPE_BIGNUM
         _equal
 %endmacro
 
 %macro  _symbol? 0
-        _object_type
+        _object_raw_type_number
         _lit OBJECT_TYPE_SYMBOL
         _equal
 %endmacro
 
 %macro  _vocab? 0
-        _object_type
+        _object_raw_type_number
         _lit OBJECT_TYPE_VOCAB
         _equal
 %endmacro
 
 %macro  _quotation? 0
-        _object_type
+        _object_raw_type_number
         _lit OBJECT_TYPE_QUOTATION
         _equal
 %endmacro
 
 %macro  _curry? 0
-        _object_type
+        _object_raw_type_number
         _lit OBJECT_TYPE_CURRY
         _equal
 %endmacro
 
 %macro  _slice? 0
-        _object_type
+        _object_raw_type_number
         _lit OBJECT_TYPE_SLICE
         _equal
 %endmacro

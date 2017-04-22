@@ -138,7 +138,7 @@ code lexer?, 'lexer?'                   ; handle -- ?
         _tagged_if .1
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
-        _object_type                    ; -- object-type
+        _object_raw_type_number
         _eq? OBJECT_TYPE_LEXER
         _return
         _then .2
@@ -297,7 +297,7 @@ code new_lexer, '<lexer>'               ; string -- lexer
         mov     this_register, rbx
         poprbx                          ; -- string
 
-        _this_object_set_type OBJECT_TYPE_LEXER
+        _this_object_set_raw_type_number OBJECT_TYPE_LEXER
 
         _ verify_string
         _this_lexer_set_string
