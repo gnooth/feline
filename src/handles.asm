@@ -20,9 +20,7 @@ file __FILE__
 %endmacro
 
 asm_global handle_space_, 0
-
-; ### handle-space-free
-feline_global handle_space_free, 'handle-space-free', 0
+asm_global handle_space_free_, 0
 
 ; ### handle-space-limit
 feline_global handle_space_limit, 'handle-space-limit', 0
@@ -52,8 +50,7 @@ code initialize_handle_space, 'initialize-handle-space' ; --
         jz      .1
 
         ; handle space was reserved in main.c
-        _dup
-        _to_global handle_space_free
+        mov     [handle_space_free_], rbx
         _lit HANDLE_SPACE_SIZE
         shl     rbx, 1          ; soft limit is HANDLE_SPACE_SIZE * 2
 
@@ -75,8 +72,7 @@ code initialize_handle_space, 'initialize-handle-space' ; --
         _dup
         _ raw_allocate
         mov     [handle_space_], rbx
-        _dup
-        _to_global handle_space_free
+        mov     [handle_space_free_], rbx
         _plus
         _to_global handle_space_limit
 
@@ -146,14 +142,17 @@ code get_empty_handle, 'get-empty-handle'       ; -- handle/0
 
         cmp     qword [unused], 0
         jz .3
-        _from_global handle_space_free
+        pushrbx
+        mov     rbx, [handle_space_free_]
         _from_global handle_space_limit
         _ult
         _if .4
-        _from_global handle_space_free  ; address of handle to be returned
+        pushrbx
+        mov     rbx, [handle_space_free_]       ; address of handle to be returned
         _dup
         _cellplus
-        _to_global handle_space_free
+        mov     [handle_space_free_], rbx
+        poprbx
         sub     qword [unused], 1
         _return
         _then .4
@@ -236,7 +235,7 @@ code handle?, 'handle?'                 ; x -- ?
         ; must point into handle space
         cmp     rbx, [handle_space_]
         jb .1
-        cmp     rbx, [S_handle_space_free_symbol_value]
+        cmp     rbx, [handle_space_free_]
         jae .1
 
         mov     ebx, t_value
@@ -255,7 +254,7 @@ code deref, 'deref'     ; x -- object-address/0
         ; must point into handle space
         cmp     rbx, [handle_space_]
         jb .1
-        cmp     rbx, [S_handle_space_free_symbol_value]
+        cmp     rbx, [handle_space_free_]
         jae .1
 
         ; valid handle
@@ -275,7 +274,8 @@ code find_handle, 'find-handle'         ; object -- handle/0
         mov     rbx, [handle_space_]
         _begin .2
         _dup
-        _from_global handle_space_free
+        pushrbx
+        mov     rbx, [handle_space_free_]
         _ult
         _while .2                       ; -- object addr
         _twodup                         ; -- object addr object handle
@@ -328,7 +328,8 @@ code handles, 'handles'
         mov     rbx, [handle_space_]
         _begin .1
         _dup
-        _from_global handle_space_free
+        pushrbx
+        mov     rbx, [handle_space_free_]
         _ult
         _while .1
         _dup
@@ -343,7 +344,8 @@ code handles, 'handles'
         _drop
 
         _ ?nl
-        _from_global handle_space_free
+        pushrbx
+        mov     rbx, [handle_space_free_]
         pushrbx
         mov     rbx, [handle_space_]
         _minus
@@ -372,7 +374,8 @@ endcode
 ; ### .handles
 code dot_handles, '.handles'
         _ ?nl
-        _from_global handle_space_free
+        pushrbx
+        mov     rbx, [handle_space_free_]
         pushrbx
         mov     rbx, [handle_space_]
         _minus
@@ -389,7 +392,8 @@ code dot_handles, '.handles'
         mov     rbx, [handle_space_]
         _begin .1
         _dup
-        _from_global handle_space_free
+        pushrbx
+        mov     rbx, [handle_space_free_]
         _ult
         _while .1
         _ ?nl
@@ -419,7 +423,8 @@ code each_handle, 'each-handle'         ; callable --
         mov     rbx, [handle_space_]
         _begin .1
         _dup
-        _from_global handle_space_free
+        pushrbx
+        mov     rbx, [handle_space_free_]
         _ult
         _while .1                       ; -- addr
         _dup
