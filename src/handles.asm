@@ -21,16 +21,14 @@ file __FILE__
 
 asm_global handle_space_, 0
 asm_global handle_space_free_, 0
-
-; ### handle-space-limit
-feline_global handle_space_limit, 'handle-space-limit', 0
+asm_global handle_space_limit_, 0
 
 %define HANDLE_SPACE_SIZE 1024*1024*8   ; 8 mb (1048576 handles)
 
 asm_global unused, 1024*1024
 
 ; ### unused-handles
-code   unused_handles, 'unused-handles' ; -- n
+code unused_handles, 'unused-handles'   ; -- n
         pushrbx
         mov     rbx, [unused]
         _tag_fixnum
@@ -60,7 +58,8 @@ code initialize_handle_space, 'initialize-handle-space' ; --
         poprbx
 
         _plus
-        _to_global handle_space_limit
+        mov     [handle_space_limit_], rbx
+        poprbx
 
         jmp     .2
 
@@ -74,7 +73,8 @@ code initialize_handle_space, 'initialize-handle-space' ; --
         mov     [handle_space_], rbx
         mov     [handle_space_free_], rbx
         _plus
-        _to_global handle_space_limit
+        mov     [handle_space_limit_], rbx
+        poprbx
 
 .2:
         _lit 256
@@ -144,7 +144,8 @@ code get_empty_handle, 'get-empty-handle'       ; -- handle/0
         jz .3
         pushrbx
         mov     rbx, [handle_space_free_]
-        _from_global handle_space_limit
+        pushrbx
+        mov     rbx, [handle_space_limit_]
         _ult
         _if .4
         pushrbx
