@@ -465,6 +465,7 @@ code fixnum_divide_float, 'fixnum/f'    ; x y -- z
         _over
         _ float?
         _tagged_if .3
+        _ fixnum_to_float
         _ float_float_divide
         _return
         _then .3
