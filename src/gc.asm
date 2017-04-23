@@ -512,9 +512,6 @@ code gc, 'gc'                           ; --
         _write " allocations since last gc"
         _ nl
 
-        _lit tagged_zero
-        _to_global recent_allocations
-
         _ ?nl
         _write "gc "
         _ gc_end_ticks
@@ -533,5 +530,8 @@ code gc, 'gc'                           ; --
         _ nl
 
 .3:
+        _lit tagged_zero
+        _to_global recent_allocations
+
         next
 endcode
