@@ -125,3 +125,8 @@ cell c_float_negate(Float *p)
 {
   return (cell) make_float(-p->d);
 }
+
+cell c_float_sqrt(Float *p)
+{
+  return (cell) make_float(sqrt(p->d));
+}

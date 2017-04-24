@@ -90,6 +90,7 @@ extern c_float_float_minus
 extern c_float_float_multiply
 extern c_float_float_plus
 extern c_float_negate
+extern c_float_sqrt
 extern c_float_to_string
 extern c_float_truncate
 extern c_pi
