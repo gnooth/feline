@@ -27,7 +27,7 @@ CFLAGS = --std=c99 -D_GNU_SOURCE -O1 -g -m64
 ASMFLAGS =
 
 # clang
-LINKFLAGS = -m64
+LINKFLAGS = -m64 -lm
 
 # gcc
 # gcc 6.2.0 on Ubuntu 16.10 needs -no-pie
