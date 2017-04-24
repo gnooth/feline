@@ -434,3 +434,13 @@ code float_negate, 'float-negate'               ; n -- -n
         _ new_handle
         next
 endcode
+
+; ### float-sqrt
+code float_sqrt, 'float-sqrt'                   ; x -- y
+        _ check_float
+        mov     arg0_register, rbx
+        xcall   c_float_sqrt
+        mov     rbx, rax
+        _ new_handle
+        next
+endcode

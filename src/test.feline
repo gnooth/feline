@@ -2307,4 +2307,12 @@ test: fixnum-equal?-test-1
 
 fixnum-equal?-test-1
 
+test: float-sqrt-test-1
+    2.0 float-sqrt 1.4142135623730951 assert =
+    most-positive-fixnum >float float-sqrt 1073741824.0 assert=
+    2 53 expt >float float-sqrt 94906265.624251559 assert=
+;
+
+float-sqrt-test-1
+
 ?nl "Reached end of test.feline" write-string
