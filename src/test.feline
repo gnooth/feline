@@ -2315,4 +2315,15 @@ test: float-sqrt-test-1
 
 float-sqrt-test-1
 
+test: sqrt-test-1
+    2 sqrt 1.4142135623730951 assert =
+    most-positive-fixnum sqrt 1073741824.0 assert=
+    2 53 expt sqrt 94906265.624251559 assert=
+    pi sqrt 1.7724538509055159 assert=
+    0 sqrt 0.0 assert=
+    [ -1 sqrt ] assert-must-fail
+;
+
+sqrt-test-1
+
 ?nl "Reached end of test.feline" write-string
