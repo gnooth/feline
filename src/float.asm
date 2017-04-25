@@ -435,12 +435,57 @@ code float_negate, 'float-negate'               ; n -- -n
         next
 endcode
 
+; ### float-neg?
+code float_neg?, 'float-neg?'                   ; x -- ?
+        _ check_float
+        _slot1
+        test    rbx, rbx
+        mov     ebx, f_value
+        mov     eax, t_value
+        cmovs   ebx, eax
+        next
+endcode
+
 ; ### float-sqrt
 code float_sqrt, 'float-sqrt'                   ; x -- y
-        _ check_float
+        _dup
+        _ float_neg?
+        _tagged_if .1
+        _error "ERROR: sqrt is not yet implemented for negative numbers."
+        _return
+        _then .1
+
+        _handle_to_object_unsafe
         mov     arg0_register, rbx
         xcall   c_float_sqrt
         mov     rbx, rax
         _ new_handle
+        next
+endcode
+
+; ### sqrt
+code sqrt, 'sqrt'                               ; x -- y
+        _dup_fixnum?_if .1
+        _ fixnum_to_float
+        _ float_sqrt
+        _return
+        _then .1
+
+        _dup
+        _ float?
+        _tagged_if .2
+        _ float_sqrt
+        _return
+        _then .2
+
+        _dup
+        _ bignum?
+        _tagged_if .3
+        _ bignum_to_float
+        _ float_sqrt
+        _return
+        _then .3
+
+        _ error_not_number
         next
 endcode
