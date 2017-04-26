@@ -1,4 +1,4 @@
-; Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -116,7 +116,19 @@ code recover, 'recover'                 ; try-quot recover-quot --
         _rfrom                          ; -- data-stack try-quot
         _swap
         _tor                            ; -- try-quot
+
+        push    r12
+        push    r13
+        push    r14
+        push    r15
+
         _ catch
+
+        pop     r15
+        pop     r14
+        pop     r13
+        pop     r12
+
         test    rbx, rbx
         jnz     .error
 
