@@ -43,12 +43,20 @@ code code_space_limit, 'code-space-limit'
         next
 endcode
 
-; ### allocate-executable
-code allocate_executable, 'allocate-executable' ; raw-size -- raw-address
+%define USE_XALLOC 1
 
+%ifdef USE_XALLOC
+
+; ### xalloc
+code xalloc, 'xalloc'                           ; raw-size -- raw-address
         mov     rax, [code_space_free_]
         test    rax, rax
         jz      .1
+
+        mov     rcx, rax
+        add     rcx, rbx
+        cmp     rcx, [code_space_limit_]
+        jae     .1
 
         add     rbx, rax
 
@@ -65,6 +73,33 @@ code allocate_executable, 'allocate-executable' ; raw-size -- raw-address
         _return
 
 .1:
+        _ ?nl
+        _write "FATAL ERROR: no code space"
+        _ nl
+        xcall os_bye
+
+        next
+endcode
+
+; ### xfree
+code xfree, 'xfree'                             ; raw-address --
+        ; for now, do nothing
+        _drop
+
+        next
+endcode
+
+%endif
+
+; ### allocate-executable
+code allocate_executable, 'allocate-executable' ; raw-size -- raw-address
+
+%ifdef USE_XALLOC
+
+        _ xalloc
+
+%else
+
         mov     arg0_register, rbx
 %ifdef WIN64
         xcall   os_allocate_executable
@@ -72,19 +107,21 @@ code allocate_executable, 'allocate-executable' ; raw-size -- raw-address
         xcall   os_malloc
 %endif
         mov     rbx, rax
+
+%endif
+
         next
 endcode
 
 ; ### free-executable
 code free_executable, 'free-executable'         ; raw-address --
-        mov     rax, [code_space_]
-        test    rax, rax
-        jz      .1
-        ; FIXME
-        ; for now, do nothing
-        _drop
-        _return
-.1:
+
+%ifdef USE_XALLOC
+
+        _ xfree
+
+%else
+
         mov     arg0_register, rbx
 %ifdef WIN64
         xcall   os_free_executable
@@ -92,6 +129,9 @@ code free_executable, 'free-executable'         ; raw-address --
         xcall   os_free
 %endif
         poprbx
+
+%endif
+
         next
 endcode
 
