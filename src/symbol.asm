@@ -579,11 +579,12 @@ endcode
 code symbol_code_address, 'symbol-code-address' ; symbol -- code-address/f
         _ check_symbol
         _symbol_raw_code_address
-        _?dup_if .1
+        test    rbx, rbx
+        jz      .1
         _tag_fixnum
-        _else .1
-        _f
-        _then .1
+        _return
+.1:
+        mov     ebx, f_value
         next
 endcode
 
