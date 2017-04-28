@@ -304,8 +304,7 @@ code compile_primitive, 'compile-primitive' ; symbol --
         _ symbol_code_size
         _ compile_inline
         _else .1
-        _ symbol_code_address
-        _untag_fixnum
+        _ symbol_raw_code_address
         _ compile_call
         _then .1
         next
