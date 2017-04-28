@@ -269,6 +269,24 @@ code deref, 'deref'     ; x -- object-address/0
         next
 endcode
 
+; ### maybe-deref
+code maybe_deref, 'maybe-deref' ; x -- object-address
+        ; tag bits must be 0
+        test    bl, TAG_MASK
+        jnz     .1
+
+        ; must point into handle space
+        cmp     rbx, [handle_space_]
+        jb .1
+        cmp     rbx, [handle_space_free_]
+        jae .1
+
+        ; valid handle
+        mov     rbx, [rbx]      ; -- object-address
+.1:
+        next
+endcode
+
 ; ### find-handle
 code find_handle, 'find-handle'         ; object -- handle/0
         pushrbx
