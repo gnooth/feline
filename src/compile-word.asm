@@ -329,7 +329,7 @@ code compile_pair, 'compile-pair'       ; pair --
         _then .2
 
         _ compile_literal
-        _lit call_symbol
+        _lit unchecked_call_symbol
         _ compile_call
 
         next
