@@ -240,24 +240,18 @@ endcode
 
 ; ### symbol:
 code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE  ; --
-        _ parse_token                   ; -- string/f
-        _dup
-        _tagged_if_not .1
-        _drop
-        _error "unexpected end of input"
-        _return
-        _then .1
+        _ must_parse_token
 
         ; -- string
         _dup
         _ current_vocab
         _ vocab_hashtable
         _ at_star                       ; -- string value/f ?
-        _tagged_if .2
+        _tagged_if .1
         ; -- string symbol
         _2drop
         _return
-        _then .2
+        _then .1
 
         ; -- string f
         _drop
@@ -271,13 +265,7 @@ endcode
 
 ; ### global:
 code parse_global, 'global:', SYMBOL_IMMEDIATE  ;  --
-        _ parse_token
-        _dup
-        _tagged_if_not .1
-        _drop
-        _error "unexpected end of input"
-        _return
-        _then .1
+        _ must_parse_token
         _ ensure_global
         next
 endcode
