@@ -102,6 +102,8 @@ file __FILE__
         _this_set_slot 6
 %endmacro
 
+%define SYMBOL_RAW_CODE_ADDRESS_OFFSET  BYTES_PER_CELL * 7
+
 %macro  _symbol_raw_code_address 0      ; symbol -- raw-code-address
         _slot 7
 %endmacro
@@ -674,34 +676,9 @@ endcode
 
 ; ### call-symbol
 code call_symbol, 'call-symbol'         ; symbol --
-        _dup
-        _ symbol_code_address
-        _dup
-        _tagged_if .1
-        _nip
-
-        ; REVIEW _untag_fixnum
-        _check_fixnum
-
-        mov     rax, rbx
+        _ check_symbol
+        mov rax, [rbx + SYMBOL_RAW_CODE_ADDRESS_OFFSET]
         poprbx
         jmp     rax
-        _else .1
-        _drop
-        _then .1                        ; -- symbol
-
-        _dup
-        _ symbol_def
-        _dup
-        _tagged_if .2
-        _nip
-        _ call_quotation
-        _return
-        _else .2
-        _drop
-        _then .2
-
-        _ undefined
-
         next
 endcode
