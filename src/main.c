@@ -127,7 +127,7 @@ static void initialize_dynamic_code_space()
   extern cell code_space_free_;
   extern cell code_space_limit_;
 
-#define DYNAMIC_CODE_SPACE_RESERVED_SIZE 1024*1024*2    // 2 mb
+#define DYNAMIC_CODE_SPACE_RESERVED_SIZE 1024*1024*8    // 8 mb
 
 #ifdef WIN64
   void *address = (void *)0x80000000;
