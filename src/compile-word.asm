@@ -135,8 +135,12 @@ code free_executable, 'free-executable'         ; raw-address --
         next
 endcode
 
-; ### pc
-value pc, 'pc', 0
+asm_global pc_, 0
+
+%macro _pc 0
+        pushrbx
+        mov     rbx, [pc_]
+%endmacro
 
 ; ### precompile-object
 code precompile_object, 'precompile-object' ; object -- pair
@@ -164,28 +168,25 @@ endcode
 
 ; ### emit-byte
 code emit_byte, 'emit-byte'             ; byte --
-        _ pc
+        _pc
         _cstore
-        _lit 1
-        _plusto pc
+        add     qword [pc_], 1
         next
 endcode
 
 ; ### emit-dword
 code emit_dword, 'emit-dword'           ; dword --
-        _ pc
+        _pc
         _lstore
-        _lit 4
-        _plusto pc
+        add     qword [pc_], 4
         next
 endcode
 
 ; ### emit-qword
 code emit_qword, 'emit-qword'           ; qword --
-        _ pc
+        _pc
         _store
-        _lit 8
-        _plusto pc
+        add     qword [pc_], 8
         next
 endcode
 
@@ -203,11 +204,11 @@ feline_constant max_int32, 'max-int32', tagged_fixnum(MAX_INT32)
 code compile_call, 'compile-call'       ; addr --
         _dup                            ; -- addr addr
 
-        _ pc
+        _pc
         add     rbx, 5
         add     rbx, MIN_INT32          ; -- addr addr low
 
-        _ pc
+        _pc
         add     rbx, 5
         add     rbx, MAX_INT32          ; -- addr addr low high
 
@@ -218,7 +219,7 @@ code compile_call, 'compile-call'       ; addr --
         _lit $0e8
         _ emit_byte                     ; -- addr
 
-        _ pc
+        _pc
         add     rbx, 4
         _minus
         _ emit_dword
@@ -286,10 +287,11 @@ code compile_inline, 'compile-inline'   ; tagged-code-address tagged-code-size -
         _untag_2_fixnums                ; -- addr size
         _oneminus                       ; adjust size to exclude ret instruction
         _tuck                           ; -- size addr size
-        _ pc
+        _pc
         _swap
         _ cmove                         ; -- size
-        _plusto pc
+        add     qword [pc_], rbx
+        poprbx
         next
 endcode
 
@@ -354,7 +356,8 @@ code compile_quotation, 'compile-quotation'     ;  quotation -- code-address cod
 
         _ allocate_executable
         _duptor
-        _to pc                          ; -- quotation precompiled-array        r: -- code-address
+        mov     [pc_], rbx
+        poprbx                          ; -- quotation precompiled-array        r: -- code-address
 
         _lit S_compile_pair
         _ array_each
@@ -368,7 +371,7 @@ code compile_quotation, 'compile-quotation'     ;  quotation -- code-address cod
 
         _rfrom                          ; -- raw-code-address
 
-        _ pc
+        _pc
         _over
         _minus                          ; -- raw-code-address raw-code-size
 

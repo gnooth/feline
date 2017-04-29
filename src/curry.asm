@@ -184,7 +184,8 @@ code curry, 'curry'                     ; object callable -- curry
         _ allocate_executable
         _dup
         _this_curry_set_code_address
-        _to pc
+        mov     [pc_], rbx
+        poprbx
         _this_curry_object
         _ compile_literal
         _this_curry_callable
