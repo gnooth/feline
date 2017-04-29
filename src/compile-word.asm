@@ -200,6 +200,30 @@ feline_constant min_int32, 'min-int32', tagged_fixnum(MIN_INT32)
 ; ### max-int32
 feline_constant max_int32, 'max-int32', tagged_fixnum(MAX_INT32)
 
+; ### raw-int32?
+code raw_int32?, 'raw_int32?'           ; untagged-fixnum -- ?
+        cmp     rbx, MIN_INT32
+        jl      .1
+        cmp     rbx, MAX_INT32
+        jg      .1
+        mov     ebx, t_value
+        _return
+.1:
+        mov     ebx, f_value
+        next
+endcode
+
+; ### int32?
+code int32?, 'int32?'                   ; tagged-fixnum -- ?
+        _dup_fixnum?_if .1
+        _untag_fixnum
+        _ raw_int32?
+        _else .1
+        mov     ebx, f_value
+        _then .1
+        next
+endcode
+
 ; ### compile-call
 code compile_call, 'compile-call'       ; addr --
         _dup                            ; -- addr addr
