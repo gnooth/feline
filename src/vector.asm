@@ -439,27 +439,19 @@ code vector_insert_nth_destructive, 'vector-insert-nth!' ; element n vector --
 endcode
 
 ; ### vector-remove-nth!
-code vector_remove_nth_destructive, 'vector-remove-nth!' ; n handle --
+code vector_remove_nth_mutating, 'vector-remove-nth!'   ; n vector --
 
-        _swap
-        _untag_fixnum
-        _swap
+        _ check_bounds
 
         _ check_vector
 
         push    this_register
         mov     this_register, rbx
+        poprbx
 
-        _twodup
-        _vector_raw_length              ; -- n vector n length
-        _zero                           ; -- n vector n length 0
-        _swap                           ; -- n vector n 0 length
-        _ within                        ; -- n vector flag
-        _zeq_if .1
-        _error "vector-remove-nth n > length - 1" ; -- n vector
-        _then .1
+        _untag_fixnum
 
-        _vector_data                    ; -- n addr
+        _this_vector_data               ; -- n addr
         _swap                           ; -- addr n
         _duptor                         ; -- addr n                     r: -- n
         _oneplus
@@ -467,8 +459,7 @@ code vector_remove_nth_destructive, 'vector-remove-nth!' ; n handle --
         _plus                           ; -- addr2
         _dup                            ; -- addr2 addr2
         _cellminus                      ; -- addr2 addr2-8
-        _this
-        _vector_raw_length
+        _this_vector_raw_length
         _oneminus                       ; -- addr2 addr2-8 len-1        r: -- n
         _rfrom                          ; -- addr2 addr2-8 len-1 n
         _minus                          ; -- addr2 addr2-8 len-1-n
@@ -483,9 +474,7 @@ code vector_remove_nth_destructive, 'vector-remove-nth!' ; n handle --
         _plus
         _store
 
-        _this_vector_raw_length
-        _oneminus
-        _this_vector_set_raw_length
+        sub     this_vector_raw_length, 1
 
         pop     this_register
         next

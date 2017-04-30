@@ -274,7 +274,7 @@ code unuse_vocab, 'unuse-vocab'         ; vocab-specifier --
         _then .2
 
         _ context_vector
-        _ vector_remove_nth_destructive
+        _ vector_remove_nth_mutating
         next
 endcode
 
