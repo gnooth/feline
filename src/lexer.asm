@@ -362,7 +362,7 @@ code lexer_next_line, 'lexer-next-line' ; lexer --
         _this_lexer_string_raw_length
 
         _twodup
-        _ ge
+        _ge
         _if .1
         _2drop
         jmp     .exit
@@ -407,7 +407,7 @@ code lexer_string_skip_whitespace, 'lexer-string-skip-whitespace' ; lexer -- ind
         _this_lexer_raw_index
         _this_lexer_string_raw_length
         _twodup
-        _ ge
+        _ge
         _if .1
         _2drop
         _f

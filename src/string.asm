@@ -670,7 +670,7 @@ code string_skip_whitespace, 'string-skip-whitespace' ; start-index string -- in
 
         _this_string_raw_length
         _twodup
-        _ ge
+        _ge
         _if .1
         _2drop
         _f
@@ -710,7 +710,7 @@ code string_skip_to_whitespace, 'string-skip-to-whitespace' ; start-index string
 
         _this_string_raw_length
         _twodup
-        _ ge
+        _ge
         _if .1
         _2drop
         _f
@@ -749,7 +749,7 @@ code string_index_from, 'string-index-from' ; char start-index string -- index/f
 
         _this_string_raw_length
         _twodup
-        _ ge
+        _ge
         _if .1
         _3drop
         _f

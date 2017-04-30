@@ -204,6 +204,14 @@
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
+%macro  _ge 0                           ; >=
+        cmp     [rbp], rbx
+        setge   bl
+        neg     bl
+        movsx   rbx, bl
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
 %macro  _zne 0                          ; 0<>
 ; Win32Forth
         cmp     rbx, 1
