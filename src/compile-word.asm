@@ -43,7 +43,7 @@ code code_space_limit, 'code-space-limit'
         next
 endcode
 
-%define USE_XALLOC 1
+%define USE_XALLOC
 
 %ifdef USE_XALLOC
 
@@ -225,32 +225,23 @@ code int32?, 'int32?'                   ; tagged-fixnum -- ?
 endcode
 
 ; ### compile-call
-code compile_call, 'compile-call'       ; addr --
-        _dup                            ; -- addr addr
-
+code compile_call, 'compile-call'       ; raw-address --
+        _dup
         _pc
         add     rbx, 5
-        add     rbx, MIN_INT32          ; -- addr addr low
-
-        _pc
-        add     rbx, 5
-        add     rbx, MAX_INT32          ; -- addr addr low high
-
-        _ between                       ; -- addr -1/0
-
-        _if .1                          ; -- addr
-
+        _minus
+        _ raw_int32?
+        _tagged_if .1
         _lit $0e8
-        _ emit_byte                     ; -- addr
-
+        _ emit_byte                     ; -- raw-address
         _pc
         add     rbx, 4
         _minus
         _ emit_dword
+        _return
+        _then .1
 
-        _else .1
-
-        ; -- addr
+        ; -- raw-address
         _dup
         _lit MAX_INT32
         _ult
@@ -270,8 +261,6 @@ code compile_call, 'compile-call'       ; addr --
         _ emit_byte
         _lit $0d0
         _ emit_byte
-
-        _then .1
 
         next
 endcode
