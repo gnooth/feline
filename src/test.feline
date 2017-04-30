@@ -502,6 +502,16 @@ test: vector-test-1 ( -- )
 
 vector-test-1
 
+test: vector-remove-nth!-test-1
+    3 vector{ 0 1 2 3 4 5 } [ vector-remove-nth! ] keep
+    [ length 5 assert-eq ] keep
+    vector{ 0 1 2 4 5 } assert=
+
+    [ 17 vector{ 0 1 2 3 4 5 } vector-remove-nth! ] assert-must-fail
+;
+
+vector-remove-nth!-test-1
+
 test: vector-test-2 ( -- )
     1 <vector> [ vector? assert-true ] keep
     100 [ dup pick vector-set-nth ] each-integer
