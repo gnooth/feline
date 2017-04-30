@@ -121,16 +121,20 @@ OBJECT_ALLOCATED_BIT            equ 4
         _slot 1
 %endmacro
 
-%macro  _this_slot1 0                   ; -- x
-        _this_slot 1
-%endmacro
-
 %macro  _set_slot1 0                    ; x object --
         _set_slot 1
 %endmacro
 
+%define this_slot1      qword [this_register + BYTES_PER_CELL * 1]
+
+%macro  _this_slot1 0                   ; -- x
+        pushrbx
+        mov     rbx, this_slot1
+%endmacro
+
 %macro  _this_set_slot1 0               ; x --
-        _this_set_slot 1
+        mov     this_slot1, rbx
+        poprbx
 %endmacro
 
 %macro  _slot2 0                        ; object -- x
@@ -332,6 +336,8 @@ OBJECT_ALLOCATED_BIT            equ 4
 %macro  _vector_set_raw_length 0        ; untagged-length vector --
         _set_slot1
 %endmacro
+
+%define this_vector_raw_length  this_slot1
 
 %macro  _this_vector_raw_length 0       ; -- untagged-length
         _this_slot1
