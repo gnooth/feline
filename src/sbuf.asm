@@ -395,7 +395,7 @@ subroutine sbuf_ensure_capacity         ; u sbuf --
         _twostar                        ; -- u sbuf capacity*2
         _oneplus                        ; -- u sbuf capacity*2+1
         _ rot                           ; -- sbuf capacity*2 u
-        _ max                           ; -- sbuf new-capacity
+        _max                            ; -- sbuf new-capacity
         _ sbuf_resize
         _else .1
         _2drop

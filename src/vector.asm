@@ -241,7 +241,7 @@ subroutine vector_ensure_capacity       ; u vector --
         _vector_capacity                ; -- u vector capacity
         _twostar                        ; -- u vector capacity*2
         _ rot                           ; -- vector capacity*2 u
-        _ max                           ; -- vector new-capacity
+        _max                            ; -- vector new-capacity
         _ vector_resize
         _else .1
         _2drop
@@ -382,7 +382,7 @@ vector_set_nth_untagged:
         _dup
         _oneplus
         _this_vector_raw_length
-        _ max
+        _max
         _this_vector_set_raw_length
 
         _this_vector_set_nth_unsafe

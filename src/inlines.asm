@@ -244,6 +244,13 @@
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
+%macro  _max 0                          ; n1 n2 -- n
+        mov     rax, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        cmp     rax, rbx
+        cmovge  rbx, rax
+%endmacro
+
 %macro  _dupd 0                         ; dupd
         mov     rax, [rbp]
         mov     [rbp - BYTES_PER_CELL], rax
