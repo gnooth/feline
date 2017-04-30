@@ -95,7 +95,6 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	macros.asm loop-macros.asm inlines.asm \
 	ansi.asm \
 	array.asm \
-	arith.asm \
 	assert.asm \
 	bignum.asm \
 	cold.asm \
