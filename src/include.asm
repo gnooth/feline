@@ -98,7 +98,7 @@ code path_is_absolute?, 'path-is-absolute?' ; string -- flag
         _ string_length                 ; -- string length
         _untag_fixnum
         _lit 2
-        _ ge
+        _ge
         _if .2                          ; -- string
         _lit 1
         _swap
