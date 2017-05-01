@@ -73,7 +73,7 @@ endcode
 ; ### vector-capacity
 code vector_capacity, 'vector-capacity' ; vector -- capacity
         _ check_vector
-        _vector_capacity
+        _vector_raw_capacity
         _tag_fixnum
         next
 endcode
@@ -102,7 +102,7 @@ code vector_set_length, 'vector-set-length' ; tagged-new-length handle --
         poprbx                          ; -- tagged-new-length
         _untag_fixnum                   ; -- new-length
         _dup
-        _this_vector_capacity
+        _this_vector_raw_capacity
         _ugt
         _if .1                          ; -- new-length
         _dup
@@ -153,11 +153,11 @@ new_vector_untagged:
         _dup
         _ allocate_cells                ; -- capacity data-address
         _this_vector_set_data
-        _this_vector_set_capacity
+        _this_vector_set_raw_capacity
 
         ; initialize all allocated cells to f
         mov     rax, f_value            ; element in rax
-        _this_vector_capacity
+        _this_vector_raw_capacity
         popd    rcx                     ; capacity in rcx
 %ifdef WIN64
         push    rdi
@@ -226,7 +226,7 @@ subroutine vector_resize                ; vector new-capacity --
         _cells
         _ resize                        ; -- new-capacity new-data-address
         _this_vector_set_data
-        _this_vector_set_capacity
+        _this_vector_set_raw_capacity
         pop     this_register
         ret
 endsub
@@ -234,11 +234,11 @@ endsub
 ; ### vector_ensure_capacity
 subroutine vector_ensure_capacity       ; u vector --
         _twodup                         ; -- u vector u vector
-        _vector_capacity                ; -- u vector u capacity
+        _vector_raw_capacity            ; -- u vector u capacity
         _ugt
         _if .1                          ; -- u vector
         _dup                            ; -- u vector vector
-        _vector_capacity                ; -- u vector capacity
+        _vector_raw_capacity            ; -- u vector capacity
         _twostar                        ; -- u vector capacity*2
         _ rot                           ; -- vector capacity*2 u
         _max                            ; -- vector new-capacity
@@ -355,7 +355,7 @@ vector_set_nth_untagged:
         mov     this_register, rbx
         poprbx                          ; -- element untagged-index
 
-        _this_vector_capacity
+        _this_vector_raw_capacity
         cmp     [rbp], rbx
         poprbx
         jl      .1

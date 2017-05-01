@@ -365,19 +365,19 @@ OBJECT_ALLOCATED_BIT            equ 4
         _this_set_slot2
 %endmacro
 
-%macro  _vector_capacity 0              ; vector -- capacity
+%macro  _vector_raw_capacity 0          ; vector -- raw-capacity
         _slot3
 %endmacro
 
-%macro  _vector_set_capacity 0          ; capacity vector --
+%macro  _vector_set_raw_capacity 0      ; raw-capacity vector --
         _set_slot3
 %endmacro
 
-%macro  _this_vector_capacity 0         ; -- capacity
+%macro  _this_vector_raw_capacity 0     ; -- raw-capacity
         _this_slot3
 %endmacro
 
-%macro  _this_vector_set_capacity 0     ; capacity --
+%macro  _this_vector_set_raw_capacity 0 ; raw-capacity --
         _this_set_slot3
 %endmacro
 
