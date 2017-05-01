@@ -313,6 +313,13 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
                             next-int32 !> ddisp
                             t !> memory-operand?
                         ] }
+                        [
+                            -- default case
+                            drop
+                            sib-base register-rm !> dbase
+                            sib-index register-index !> dindex
+                            sib-scale !> dscale
+                        ]
                     } case
                 ] }
                 [
