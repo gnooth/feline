@@ -487,19 +487,35 @@ code vector_push, 'vector-push'         ; element handle --
 
 vector_push_unchecked:
 
-        push    this_register           ; save callee-saved register
-        mov     this_register, rbx      ; vector in this_register
+        push    this_register
+        mov     this_register, rbx
 
-        _vector_raw_length              ; -- element length
-        _dup                            ; -- element length length
-        _oneplus                        ; -- element length length+1
-        _dup                            ; -- element length length+1 length+1
-        _this                           ; -- element length length+1 length+1 this
-        _ vector_ensure_capacity        ; -- element length length+1
-        _this_vector_set_raw_length     ; -- element length
-        _this_vector_set_nth_unsafe     ; --
+        _vector_raw_length
+        _this_vector_raw_capacity
+        _ult_if .1
 
-        pop     this_register           ; restore callee-saved register
+        _this_vector_raw_length
+        _this_vector_set_nth_unsafe
+
+        add     this_vector_raw_length, 1
+
+        pop     this_register
+        _return
+
+        _then .1
+
+        ; need to grow capacity
+        _this_vector_raw_length
+        _oneplus
+        _this
+        _ vector_ensure_capacity
+
+        _this_vector_raw_length
+        _this_vector_set_nth_unsafe
+
+        add     this_vector_raw_length, 1
+
+        pop     this_register
         next
 endcode
 
