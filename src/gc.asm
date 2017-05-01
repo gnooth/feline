@@ -52,11 +52,9 @@ code mark_vector, 'mark-vector'         ; vector --
         push    this_register
         mov     this_register, rbx
         _vector_raw_length
-        _zero
-        _?do .1
-        _i
-        _this
-        _vector_nth_unsafe              ; -- element
+        _register_do_times .1
+        _raw_loop_index
+        _this_vector_nth_unsafe         ; -- element
         _ maybe_mark_handle
         _loop .1                        ; --
         pop     this_register
