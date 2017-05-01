@@ -255,12 +255,8 @@ code initialize_gc_dispatch_table, 'initialize-gc-dispatch-table'
         next
 endcode
 
-; ### mark-handle
-code mark_handle, 'mark-handle'         ; handle --
-        _handle_to_object_unsafe        ; -- object/0
-        test    rbx, rbx
-        jz .1
-
+; ### mark-raw-object
+code mark_raw_object, 'mark-raw-object'         ; raw-object --
         _test_marked_bit
         jnz .1
 
@@ -288,14 +284,14 @@ code mark_handle, 'mark-handle'         ; handle --
 endcode
 
 ; ### maybe-mark-handle
-code maybe_mark_handle, 'maybe-mark-handle' ; handle --
-        _dup
-        _ handle?
-        _tagged_if .1
-        _ mark_handle
-        _else .1
+code maybe_mark_handle, 'maybe-mark-handle'     ; handle --
+        _ deref                 ; -- raw-object/0
+        test    rbx, rbx
+        jz      .1
+        _ mark_raw_object
+        _return
+.1:
         _drop
-        _then .1
         next
 endcode
 
