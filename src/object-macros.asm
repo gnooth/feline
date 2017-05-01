@@ -403,8 +403,8 @@ OBJECT_ALLOCATED_BIT            equ 4
 %endmacro
 
 %macro  _this_vector_set_nth_unsafe 0   ; element index --
-        _cells
-        _this_vector_data
-        _plus
-        _store
+        mov     rdx, [rbp]
+        mov     rax, this_vector_data
+        mov     [rax + BYTES_PER_CELL * rbx], rdx
+        _2drop
 %endmacro
