@@ -391,7 +391,7 @@ OBJECT_ALLOCATED_BIT            equ 4
 
 %macro  _this_vector_nth_unsafe 0       ; index -- element
         mov     rax, this_vector_data
-        mov     rbx, [rax + 8*rbx]
+        mov     rbx, [rax + BYTES_PER_CELL * rbx]
 %endmacro
 
 %macro  _vector_set_nth_unsafe 0        ; element index vector --
