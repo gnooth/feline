@@ -580,9 +580,8 @@ code ?vector_pop, '?vector-pop'         ; handle -- element/f
         _vector_raw_length
         test    rbx, rbx
         jz      .1
-        _oneminus
-        _dup
-        _this_vector_set_raw_length
+        sub     rbx, 1
+        mov     this_vector_raw_length, rbx
         _this_vector_nth_unsafe         ; -- element
 
         ; mark cell empty
