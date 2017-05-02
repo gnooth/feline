@@ -139,12 +139,8 @@ code load, 'load'                       ; path --
 
         _ save_search_order
 
-        _quotation .3
-        _ interpret
-        _end_quotation .3
-        _quotation .4
-        _ do_error1
-        _end_quotation .4
+        _lit S_interpret        ; try
+        _lit S_do_error1        ; recover
         _ recover
 
         _ restore_search_order
