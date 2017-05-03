@@ -128,6 +128,8 @@ endcode
         _slot1
 %endmacro
 
+%define this_string_raw_length this_slot1
+
 %macro  _this_string_raw_length 0       ; -- untagged-length
         _this_slot1
 %endmacro
@@ -249,11 +251,11 @@ code copy_to_string, 'copy-to-string', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         _ cmove                         ; --
 
         ; store terminal null byte
-        _this_string_raw_data_address
-        _this_string_raw_length
-        _plus
-        mov     byte [rbx], 0
+        mov     rdx, this_string_raw_length
+        lea     rax, [this_register + STRING_RAW_DATA_OFFSET]
+        mov     byte [rax + rdx], 0
 
+        pushrbx
         mov     rbx, this_register      ; -- string
 
         ; return handle of allocated string
