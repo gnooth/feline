@@ -82,18 +82,16 @@ code restore_search_order, 'restore-search-order'
 
         _ saved_context_vector
         _ get
-        _quotation .2
-        _ maybe_use_vocab
-        _end_quotation .2
+        _lit S_maybe_use_vocab
         _ each
 
         _ context_vector
-        _ length
+        _ vector_length
         _ zero?
-        _tagged_if .3
+        _tagged_if .2
         _ feline_vocab
         _ use_vocab
-        _then .3
+        _then .2
 
         next
 endcode
