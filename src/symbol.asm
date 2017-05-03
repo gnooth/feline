@@ -454,6 +454,15 @@ endcode
         _symbol_set_flags
 %endmacro
 
+%macro  _symbol_clear_flags_bit 1       ; symbol --
+        _ check_symbol
+        _dup
+        _symbol_flags
+        and     rbx, ~%1
+        _swap
+        _symbol_set_flags
+%endmacro
+
 ; ### symbol-primitive?
 code symbol_primitive?, 'symbol-primitive?'     ; symbol -- ?
         _symbol_flags_bit SYMBOL_PRIMITIVE
@@ -496,9 +505,17 @@ code symbol_private?, 'symbol-private?'         ; symbol -- ?
         next
 endcode
 
+; ### private
 code private, 'private'                         ; --
         _ last_word
         _symbol_set_flags_bit SYMBOL_PRIVATE
+        next
+endcode
+
+; ### public
+code public, 'public'                           ; --
+        _ last_word
+        _symbol_clear_flags_bit SYMBOL_PRIVATE
         next
 endcode
 
