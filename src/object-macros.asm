@@ -337,7 +337,7 @@ OBJECT_ALLOCATED_BIT            equ 4
         _set_slot1
 %endmacro
 
-%define this_vector_raw_length  this_slot1
+%define this_vector_raw_length this_slot1
 
 %macro  _this_vector_raw_length 0       ; -- untagged-length
         _this_slot1
@@ -355,7 +355,7 @@ OBJECT_ALLOCATED_BIT            equ 4
         _set_slot2
 %endmacro
 
-%define this_vector_data        this_slot2
+%define this_vector_data this_slot2
 
 %macro  _this_vector_data 0
         _this_slot2
@@ -372,6 +372,8 @@ OBJECT_ALLOCATED_BIT            equ 4
 %macro  _vector_set_raw_capacity 0      ; raw-capacity vector --
         _set_slot3
 %endmacro
+
+%define this_vector_raw_capacity this_slot3
 
 %macro  _this_vector_raw_capacity 0     ; -- raw-capacity
         _this_slot3
