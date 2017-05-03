@@ -491,8 +491,9 @@ vector_push_unchecked:
         mov     this_register, rbx
 
         _vector_raw_length
-        _this_vector_raw_capacity
-        _ult_if .1
+        cmp     rbx, this_vector_raw_capacity
+        poprbx
+        jnc     .1
 
         _this_vector_raw_length
         _this_vector_set_nth_unsafe
@@ -502,8 +503,7 @@ vector_push_unchecked:
         pop     this_register
         _return
 
-        _then .1
-
+.1:
         ; need to grow capacity
         _this_vector_raw_length
         _oneplus
