@@ -458,12 +458,8 @@ code evaluate, 'evaluate'               ; string --
         _ lexer
         _ set
 
-        _quotation .2
-        _ interpret
-        _end_quotation .2
-        _quotation .3
-        _ do_error
-        _end_quotation .3
+        _lit S_interpret        ; try
+        _lit S_do_error         ; recover
         _ recover
 
         _ end_scope
