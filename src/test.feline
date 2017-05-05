@@ -5,6 +5,10 @@ in: user
 
 in: test
 
+default-visibility get "public" "feline" lookup-symbol assert=
+
+public
+
 -- this is a comment
 ( this is another comment )
 
@@ -2354,5 +2358,22 @@ test: int32?-test-1
 ;
 
 int32?-test-1
+
+public
+
+: this-is-a-public-word ;
+
+private
+
+: this-is-a-private-word ;
+
+public
+
+test: visibility-test-1
+    ' this-is-a-public-word symbol-private? assert-false
+    ' this-is-a-private-word symbol-private? assert-true
+;
+
+visibility-test-1
 
 ?nl "Reached end of test.feline" write-string

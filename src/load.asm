@@ -96,6 +96,24 @@ code restore_search_order, 'restore-search-order'
         next
 endcode
 
+special default_visibility, 'default-visibility'
+
+; ### private
+code private, 'private'                         ; --
+        _lit S_private
+        _ default_visibility
+        _ set
+        next
+endcode
+
+; ### public
+code public, 'public'                           ; --
+        _lit S_public
+        _ default_visibility
+        _ set
+        next
+endcode
+
 ; ### load
 code load, 'load'                       ; path --
         _ canonical_path
@@ -103,11 +121,15 @@ code load, 'load'                       ; path --
         _ file_contents
         _ new_lexer
         _tuck
-        _ lexer_set_file
+        _ lexer_set_file                ; -- lexer
 
         _ begin_scope
 
         _ lexer
+        _ set                           ; --
+
+        _lit S_public
+        _ default_visibility
         _ set
 
         _ load_verbose?
