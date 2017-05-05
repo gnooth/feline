@@ -136,8 +136,45 @@ file __FILE__
         _set_slot 9
 %endmacro
 
+%macro  _this_symbol_flags 0            ; -- flags
+        _this_slot 9
+%endmacro
+
 %macro  _this_symbol_set_flags 0        ; flags --
         _this_set_slot 9
+%endmacro
+
+%macro  _symbol_flags_bit 1             ; symbol -- ?
+        _ check_symbol
+        _symbol_flags
+        mov     eax, t_value
+        and     rbx, %1
+        mov     ebx, f_value
+        cmovnz  rbx, rax
+%endmacro
+
+%macro  _symbol_set_flags_bit 1         ; symbol --
+        _ check_symbol
+        _dup
+        _symbol_flags
+        or      rbx, %1
+        _swap
+        _symbol_set_flags
+%endmacro
+
+%macro  _this_symbol_set_flags_bit 1    ; --
+        _this_symbol_flags
+        or      rbx, %1
+        _this_symbol_set_flags
+%endmacro
+
+%macro  _symbol_clear_flags_bit 1       ; symbol --
+        _ check_symbol
+        _dup
+        _symbol_flags
+        and     rbx, ~%1
+        _swap
+        _symbol_set_flags
 %endmacro
 
 %macro  _symbol_file 0                  ; symbol -- file
@@ -287,6 +324,13 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
         _f
         _this_symbol_set_line_number
 
+        _ default_visibility
+        _ get
+        _eq? S_private
+        _tagged_if .1
+        _this_symbol_set_flags_bit SYMBOL_PRIVATE
+        _then .1
+
         pushrbx
         mov     rbx, this_register      ; -- vocab symbol
         pop     this_register
@@ -435,33 +479,6 @@ code symbol_set_help, 'symbol-set-help' ; content symbol --
         _ symbol_set_prop
         next
 endcode
-
-%macro  _symbol_flags_bit 1             ; symbol -- ?
-        _ check_symbol
-        _symbol_flags
-        mov     eax, t_value
-        and     rbx, %1
-        mov     ebx, f_value
-        cmovnz  rbx, rax
-%endmacro
-
-%macro  _symbol_set_flags_bit 1         ; symbol --
-        _ check_symbol
-        _dup
-        _symbol_flags
-        or      rbx, %1
-        _swap
-        _symbol_set_flags
-%endmacro
-
-%macro  _symbol_clear_flags_bit 1       ; symbol --
-        _ check_symbol
-        _dup
-        _symbol_flags
-        and     rbx, ~%1
-        _swap
-        _symbol_set_flags
-%endmacro
 
 ; ### symbol-primitive?
 code symbol_primitive?, 'symbol-primitive?'     ; symbol -- ?
