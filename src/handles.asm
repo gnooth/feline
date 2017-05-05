@@ -35,8 +35,12 @@ code unused_handles, 'unused-handles'   ; -- n
         next
 endcode
 
-; ### recycled-handles-vector
-feline_global recycled_handles_vector, 'recycled-handles-vector', 0
+asm_global recycled_handles_vector_, 0
+
+%macro _recycled_handles_vector 0       ; -- raw-vector
+        pushrbx
+        mov     rbx, [recycled_handles_vector_]
+%endmacro
 
 ; ### initialize-handle-space
 code initialize_handle_space, 'initialize-handle-space' ; --
@@ -78,17 +82,25 @@ code initialize_handle_space, 'initialize-handle-space' ; --
 
 .2:
         _lit 256
-        _ new_vector_untagged
-        _to_global recycled_handles_vector
+        _ new_vector_untagged                           ; -- handle
+
+        _dup
+        _handle_to_object_unsafe                        ; -- handle raw-vector
+
+        ; store address of raw vector in recycled_handles_vector_ asm global
+        mov     [recycled_handles_vector_], rbx         ; -- handle raw_vector
+        poprbx                                          ; -- handle
+
+        ; and release its handle
+        _ release_handle_unsafe                         ; --
 
         next
 endcode
 
 ; ### empty-handles
 code empty_handles, 'empty-handles'     ; -- tagged-fixnum
-        _ recycled_handles_vector
+        _recycled_handles_vector
         _?dup_if .1
-        _handle_to_object_unsafe
         _vector_raw_length
         _else .1
         _zero
@@ -112,8 +124,9 @@ endcode
 ; ### gc-status
 code gc_status, 'gc-status'     ; --
         _ unused_handles
-        _ recycled_handles_vector
-        _ vector_length
+        _recycled_handles_vector
+        _vector_raw_length
+        _tag_fixnum
         _ empty_handles
         _ ?nl
         _ decimal_dot
@@ -129,10 +142,10 @@ endcode
 
 ; ### get-empty-handle
 code get_empty_handle, 'get-empty-handle'       ; -- handle/0
-        _ recycled_handles_vector
+        _recycled_handles_vector
         test    rbx, rbx
         jz      .1
-        _ ?vector_pop
+        _ ?vector_pop_unchecked
         _dup
         _tagged_if .2
         _return
@@ -325,8 +338,7 @@ code release_handle_unsafe, 'release-handle-unsafe' ; handle --
         mov     qword [rbx], rax
 
         ; add handle to free-handles vector
-        _ recycled_handles_vector
-        _handle_to_object_unsafe        ; -- handle vector
+        _recycled_handles_vector
         _ vector_push_unchecked         ; --
 
         next
