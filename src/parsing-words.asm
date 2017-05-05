@@ -278,11 +278,21 @@ code initialize_global, '>global:', SYMBOL_IMMEDIATE    ;  --
         next
 endcode
 
+; ### note-redefinition
+code note_redefinition, 'note_redefinition'   ; symbol -- symbol
+        _ ?nl
+        _write "redefining "
+        _dup
+        _ symbol_name
+        _ write_string
+        next
+endcode
+
 ; ### parse-definition-name
 code parse_definition_name, 'parse-definition-name'     ; -- symbol
         _ must_parse_token      ; -- string
 
-        ; check for redefinition in current vocab only!
+        ; check for redefinition
         _dup
         _ current_vocab
         _ vocab_hashtable
@@ -290,12 +300,7 @@ code parse_definition_name, 'parse-definition-name'     ; -- symbol
 
         _tagged_if .2
         _nip
-        ; REVIEW
-        _ ?nl
-        _write "redefining "
-        _dup
-        _ symbol_name
-        _ write_string
+        _ note_redefinition
         _else .2
         _drop                   ; -- string
         _ current_vocab
