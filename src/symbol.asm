@@ -505,20 +505,6 @@ code symbol_private?, 'symbol-private?'         ; symbol -- ?
         next
 endcode
 
-; ### private
-code private, 'private'                         ; --
-        _ last_word
-        _symbol_set_flags_bit SYMBOL_PRIVATE
-        next
-endcode
-
-; ### public
-code public, 'public'                           ; --
-        _ last_word
-        _symbol_clear_flags_bit SYMBOL_PRIVATE
-        next
-endcode
-
 ; ### symbol-value
 code symbol_value, 'symbol-value'               ; symbol -- value
         _ check_symbol
