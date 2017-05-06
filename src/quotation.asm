@@ -289,9 +289,9 @@ code call_quotation, 'call'             ; callable --
         next
 endcode
 
-; ### callable-code-address
-code callable_code_address, 'callable-code-address' ; callable -- code-address
-; Returned value is untagged.
+; ### callable-raw-code-address
+code callable_raw_code_address, 'callable-raw-code-address'
+; callable -- raw-code-address
         _dup
         _ quotation?
         _tagged_if .1

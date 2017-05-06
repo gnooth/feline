@@ -446,7 +446,7 @@ endcode
 
 ; ### each-handle
 code each_handle, 'each-handle'         ; callable --
-        _ callable_code_address
+        _ callable_raw_code_address
         push    r12
         mov     r12, rbx                ; code address in r12
         _drop                           ; --

@@ -127,7 +127,7 @@ code map, 'map' ; seq callable -- new-seq
         ; protect callable from gc
         push    rbx
 
-        _ callable_code_address
+        _ callable_raw_code_address
 
         _swap                           ; -- code-address seq
 
@@ -171,7 +171,7 @@ endcode
 
 ; ### map-index
 code map_index, 'map-index'             ; seq quot -- newseq
-        _ callable_code_address
+        _ callable_raw_code_address
         _swap                           ; -- code-address seq
         push    this_register
         popd    this_register           ; -- code-address
@@ -213,7 +213,7 @@ endcode
 
 ; ### filter
 code filter, 'filter'                   ; seq quot -- subseq
-        _ callable_code_address         ; -- seq code-address
+        _ callable_raw_code_address     ; -- seq code-address
         _over                           ; -- seq code-address seq
         push    this_register
         popd    this_register           ; -- seq code-address
@@ -315,7 +315,7 @@ code count, 'count'     ; seq callable -- n
         ; protect callable from gc
         push    rbx
 
-        _ callable_code_address         ; -- seq code-address
+        _ callable_raw_code_address     ; -- seq code-address
 
         push    r13                     ; counter
         xor     r13, r13
@@ -361,7 +361,7 @@ code each, 'each'       ; seq callable --
         ; protect callable from gc
         push    rbx
 
-        _ callable_code_address         ; -- seq code-address
+        _ callable_raw_code_address     ; -- seq code-address
 
         push    r12
         mov     r12, rbx                ; code address in r12
@@ -393,7 +393,7 @@ code each_index, 'each-index'           ; seq callable --
         ; protect callable from gc
         push    rbx
 
-        _ callable_code_address         ; -- seq code-address
+        _ callable_raw_code_address     ; -- seq code-address
 
         push    r12
         mov     r12, rbx                ; code address in r12
@@ -427,7 +427,7 @@ code find, 'find'       ; seq quot -- index/f elt/f
         ; protect callable from gc
         push    rbx
 
-        _ callable_code_address         ; -- seq code-address
+        _ callable_raw_code_address     ; -- seq code-address
 
         push    r12
         mov     r12, rbx                ; address to call in r12
@@ -478,7 +478,7 @@ code find_from, 'find-from'             ; n seq quot -- index/f elt/f
         _return
         _then .1
 
-        _ callable_code_address         ; -- n seq code-address
+        _ callable_raw_code_address     ; -- n seq code-address
         push    r12
         mov     r12, rbx                ; address to call in r12
         poprbx                          ; -- n seq
@@ -526,7 +526,7 @@ code find_last_from, 'find-last-from'   ; n seq quot -- index/f elt/f
         _return
         _then .1
 
-        _ callable_code_address         ; -- n seq code-address
+        _ callable_raw_code_address     ; -- n seq code-address
         push    r12
         mov     r12, rbx                ; address to call in r12
         poprbx                          ; -- n seq
@@ -580,7 +580,7 @@ endcode
 
 ; ### map-find
 code map_find, 'map-find'               ; seq quot -- result elt
-        _ callable_code_address         ; -- seq code-address
+        _ callable_raw_code_address     ; -- seq code-address
         push    r12
         mov     r12, rbx                ; address to call in r12
         poprbx                          ; -- seq

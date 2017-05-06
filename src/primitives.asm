@@ -191,7 +191,7 @@ code feline_if, 'if'                    ; ? true false --
         mov     rdx, [rbp]              ; true quotation in rdx, false quotation in rbx
         cmp     rax, f_value
         cmovne  rbx, rdx                ; if condition is not f, move true quotation into rbx
-        _ callable_code_address         ; code address in rbx
+        _ callable_raw_code_address     ; code address in rbx
         mov     rax, rbx
         _3drop
         call    rax
@@ -211,7 +211,7 @@ code if_star, 'if*'                     ; ? true false --
         ; condition is false
         ; false quotation is already in rbx
         _2nip
-        _ callable_code_address
+        _ callable_raw_code_address
         mov     rax, rbx
         poprbx
         call    rax
@@ -220,7 +220,7 @@ code if_star, 'if*'                     ; ? true false --
         ; condition is true
         ; drop false quotation
         poprbx                          ; true quotation is now in rbx
-        _ callable_code_address
+        _ callable_raw_code_address
         mov     rax, rbx
         poprbx
         call    rax
@@ -233,7 +233,7 @@ code when, 'when'                       ; ? quot --
 ; if conditional is not f, calls quot
         _swap
         _tagged_if .1
-        _ callable_code_address
+        _ callable_raw_code_address
         mov     rax, rbx
         poprbx
         call    rax
@@ -249,7 +249,7 @@ code when_star, 'when*'                 ; ? quot --
 ; conditional remains on the stack to be consumed (or not) by quot
         _over
         _tagged_if .1
-        _ callable_code_address
+        _ callable_raw_code_address
         mov     rax, rbx
         poprbx
         call    rax
@@ -265,7 +265,7 @@ code unless, 'unless'                   ; ? quot --
         _f
         _equal
         _if .1
-        _ callable_code_address
+        _ callable_raw_code_address
         mov     rax, rbx
         poprbx
         call    rax
@@ -282,7 +282,7 @@ code unless_star, 'unless*'             ; ? quot --
         _equal
         _if .1
         _nip
-        _ callable_code_address
+        _ callable_raw_code_address
         mov     rax, rbx
         poprbx
         call    rax
@@ -329,10 +329,10 @@ code until, 'until'             ; pred body --
 
         push    r12
         push    r13
-        _ callable_code_address
+        _ callable_raw_code_address
         mov     r13, rbx
         poprbx
-        _ callable_code_address
+        _ callable_raw_code_address
         mov     r12, rbx
         poprbx
 .1:
@@ -362,10 +362,10 @@ code while, 'while'             ; pred body --
 
         push    r12
         push    r13
-        _ callable_code_address
+        _ callable_raw_code_address
         mov     r13, rbx        ; body
         poprbx
-        _ callable_code_address
+        _ callable_raw_code_address
         mov     r12, rbx        ; pred
         poprbx
 .1:
@@ -483,7 +483,7 @@ code times_, 'times'                    ; tagged-fixnum xt --
         ; protect quotation from gc
         push    rbx
 
-        _ callable_code_address         ; -- tagged-fixnum code-address
+        _ callable_raw_code_address     ; -- tagged-fixnum code-address
 
         _swap
         _untag_fixnum                   ; -- code-address n
@@ -527,7 +527,7 @@ code each_integer, 'each-integer'       ; n quot --
         ; protect quotation from gc
         push    rbx
 
-        _ callable_code_address         ; -- untagged-fixnum code-address
+        _ callable_raw_code_address     ; -- untagged-fixnum code-address
 
         push    r12
         push    r13
@@ -576,7 +576,7 @@ code all_integers?, 'all-integers?'     ; n quot -- ?
         ; protect quotation from gc
         push    rbx
 
-        _ callable_code_address         ; -- untagged-fixnum code-address
+        _ callable_raw_code_address     ; -- untagged-fixnum code-address
 
         push    r12
         push    r13
@@ -625,7 +625,7 @@ code find_integer, 'find-integer'       ; tagged-fixnum callable -- i/f
         push    r13
         push    r15
         xor     r12, r12                ; loop index in r12
-        _ callable_code_address
+        _ callable_raw_code_address
         mov     r13, rbx                ; code address in r13
         mov     r15, [rbp]              ; loop limit in r15
         _2drop                          ; clean up the stack now!

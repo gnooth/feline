@@ -347,7 +347,7 @@ code array_each, 'array-each'           ; array callable --
         ; protect callable from gc
         push    rbx
 
-        _ callable_code_address
+        _ callable_raw_code_address
 
         _swap
 
@@ -380,7 +380,7 @@ code map_array, 'map-array'             ; array callable -- new-array
         ; protect callable from gc
         push    rbx
 
-        _ callable_code_address
+        _ callable_raw_code_address
 
         _swap                           ; -- code-address array
 

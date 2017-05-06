@@ -18,7 +18,7 @@ file __FILE__
 ; ### dip
 code dip, 'dip'                         ; x quot -- x
 ; Removes x, calls quot, restores x to top of stack after quot returns.
-        _ callable_code_address         ; code address in rbx
+        _ callable_raw_code_address     ; code address in rbx
         mov     rax, [rbp]              ; x in rax
         push    rax
         mov     rax, rbx
@@ -34,7 +34,7 @@ endcode
 code twodip, '2dip'                     ; x y quot -- x y
 ; Remove x and y, call quot, restore x and y to top of stack after
 ; quot returns.
-        _ callable_code_address         ; code address in rbx
+        _ callable_raw_code_address     ; code address in rbx
         mov     rax, rbx                ; code address in rax
         poprbx                          ; -- x y
         _tor
@@ -50,7 +50,7 @@ code keep, 'keep'                       ; .. x quot -- .. x
 ; Factor
 ; "Call a quotation with a value on the stack, restoring the value when
 ; the quotation returns."
-        _ callable_code_address         ; code address in rbx
+        _ callable_raw_code_address     ; code address in rbx
         mov     rax, rbx                ; code address in rax
         poprbx
         push    rbx
@@ -62,7 +62,7 @@ endcode
 
 ; ### 2keep
 code twokeep, '2keep'                   ; .. x y quot -- .. x y
-        _ callable_code_address         ; code address in rbx
+        _ callable_raw_code_address     ; code address in rbx
         mov     rax, rbx                ; code address in rax
         poprbx
         push    qword [rbp]
@@ -75,7 +75,7 @@ endcode
 ; ### bi
 code bi, 'bi'                           ; x quot1 quot2 --
 ; Apply quot1 to x, then apply quot2 to x.
-        _ callable_code_address
+        _ callable_raw_code_address
         _tor
         _ keep
         pop     rax
@@ -86,7 +86,7 @@ endcode
 ; ### 2bi
 code twobi, '2bi'                       ; x y quot1 quot2 --
 ; Apply quot1 to x and y, then apply quot2 to x and y.
-        _ callable_code_address
+        _ callable_raw_code_address
         _tor
         _ twokeep
         pop     rax
@@ -102,7 +102,7 @@ code bi_at, 'bi@'                       ; x y quot --
         ; protect callable from gc
         push    rbx
 
-        _ callable_code_address
+        _ callable_raw_code_address
 
         push    r12                     ; save non-volatile register
         mov     r12, rbx                ; address to call in r12

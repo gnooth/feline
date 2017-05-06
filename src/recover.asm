@@ -56,7 +56,7 @@ code catch, 'catch'
         _rpfetch
         _ set_feline_handler
 
-        _ callable_code_address
+        _ callable_raw_code_address
         mov     rax, rbx
         _drop
         call    rax
@@ -156,7 +156,7 @@ code recover, 'recover'                 ; try-quot recover-quot --
 
         _rfrom                          ; -- recover-quot
 
-        _ callable_code_address
+        _ callable_raw_code_address
         mov     rax, rbx
         _drop
         call    rax

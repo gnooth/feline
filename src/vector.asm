@@ -697,7 +697,7 @@ code vector_each, 'vector-each'         ; vector callable --
         ; protect callable from gc
         push    rbx
 
-        _ callable_code_address         ; -- vector code-address
+        _ callable_raw_code_address     ; -- vector code-address
 
         _swap
         _ check_vector                  ; -- code-address vector
@@ -725,7 +725,7 @@ endcode
 
 ; ### vector-each-index
 code vector_each_index, 'vector-each-index' ; vector quotation-or-xt --
-        _ callable_code_address         ; -- vector code-address
+        _ callable_raw_code_address     ; -- vector code-address
 
         _swap
         _ check_vector                  ; -- code-address vector

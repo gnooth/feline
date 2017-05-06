@@ -118,7 +118,7 @@ code time, 'time'                       ; quotation-or-xt --
         ; protect quotation from gc
         push    rbx
 
-        _ callable_code_address
+        _ callable_raw_code_address
 
         push    r12
         mov     r12, rbx

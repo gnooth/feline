@@ -126,7 +126,7 @@ code with_scope, 'with-scope'           ; quot --
         ; protect quotation from gc
         push    rbx
 
-        _ callable_code_address
+        _ callable_raw_code_address
         mov     rax, rbx
         poprbx
         call    rax
