@@ -1,0 +1,301 @@
+-- Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline ;
+in: user
+
+"xaccept" delete-vocab
+
+in: xaccept
+
+private
+
+global: prompt-string
+global: buffer
+global: bindings
+global: dot
+global: history
+global: history-index
+global: pattern
+global: done?
+
+: reset-history ( -- )
+    f !> history-index f !> pattern ;
+
+: prompt ( -- )
+--     "in: " current-vocab vocab-name concat
+--     "> " concat
+--     dup !> prompt-string
+--     green foreground write-string
+    prompt-string write
+;
+
+: redisplay ( -- )
+    0 at-x
+    prompt
+--     yellow foreground
+    buffer write-sbuf
+    clear-to-eol
+    dot prompt-string length + at-x ;
+
+: do-escape ( -- )
+    0 buffer sbuf-shorten
+    0 !> dot
+    reset-history
+    redisplay ;
+
+: do-kill-line ( -- )
+    dot buffer length < [
+        dot buffer sbuf-shorten
+        reset-history
+        redisplay
+    ] when ;
+
+: do-delete-char ( -- )
+    dot buffer length < [
+        dot buffer sbuf-remove-nth! drop
+        reset-history
+        redisplay
+    ] when ;
+
+: do-bs ( -- )
+    dot 0 > [
+        dot 1 - !> dot
+        dot buffer sbuf-remove-nth! drop
+        reset-history
+        redisplay
+    ] when ;
+
+: do-home ( -- )
+    prompt-string length at-x
+    0 !> dot
+    reset-history ;
+
+: do-end ( -- )
+    buffer length !> dot
+    prompt-string length dot + at-x
+    reset-history ;
+
+: do-right ( -- )
+    dot buffer length <
+    [ dot 1 + !> dot dot prompt-string length + at-x ]
+    when
+    reset-history ;
+
+: do-left ( -- )
+    dot 0 > [ dot 1 - !> dot dot prompt-string length + at-x ] when
+    reset-history ;
+
+: do-previous ( -- )
+    history-index [ history length !> history-index ] unless
+    history-index zero? [
+        history-index 1 - !> history-index
+        0 buffer sbuf-shorten
+        history-index history nth buffer sbuf-append-string
+        buffer length !> dot
+        redisplay
+    ] unless ;
+
+: do-next ( -- )
+    history-index [
+        history length 1 - < [
+            history-index 1 + !> history-index
+            0 buffer sbuf-shorten
+            history-index history nth buffer sbuf-append-string
+            buffer length !> dot
+            redisplay
+        ] when
+    ] when*
+;
+
+: match? ( string -- ? )
+    pattern 2dup longer? [ mismatch not ] [ 2drop f ] if ;
+
+: do-previous-matching-input ( -- )
+    pattern [
+        buffer sbuf>string !> pattern
+        history length !> history-index
+    ] unless
+    history-index 1 -
+    history
+    [ match? ]
+    find-last-from ( -- index/f elt/f )
+    [
+        swap !> history-index
+        0 buffer sbuf-shorten
+        buffer sbuf-append-string
+        buffer length !> dot
+        redisplay
+    ] [ drop ] if* ;
+
+: do-next-matching-input ( -- )
+    pattern [
+        history-index 1 +
+        history
+        [ match? ]
+        find-from ( -- index/f elt/f )
+        [
+            swap !> history-index
+            0 buffer sbuf-shorten
+            buffer sbuf-append-string
+            buffer length !> dot
+            redisplay
+        ] [ drop ] if*
+    ] [ do-next ] if ;
+
+global: completion-prefix
+global: completions
+global: completion-index
+
+: reset-completion ( -- ) f !> completions ;
+
+: complete-first ( prefix -- symbol/f )
+    !> completion-prefix
+    all-words [ symbol-name completion-prefix swap string-has-prefix? ] filter !> completions
+    0 !> completion-index
+    completions ?first ;
+
+: complete-next ( -- symbol/f )
+    completion-index completions length 1 - < [
+        1+!> completion-index
+        completion-index completions nth
+    ] [ f ] if ;
+
+: complete-prev ( -- symbol/f )
+    completion-index 0 > [
+        1-!> completion-index
+        completion-index completions nth
+    ] [ f ] if ;
+
+global: prefix-offset
+
+: complete1 ( symbol -- )
+    symbol-name
+    verify-string
+    prefix-offset buffer sbuf-shorten
+    buffer sbuf-append-string
+    buffer length !> dot
+    redisplay ;
+
+: do-tab ( -- )
+    completions [
+        complete-next [ complete1 ] when*
+    ] [
+        dot 1 < [ ] return-if
+
+        -- get word before dot
+        dot 1 - buffer [ 32 = ] find-last-from  -- index/f elt/f
+        [ 1 + ] [ drop 0 ] if !> prefix-offset
+
+        prefix-offset dot buffer sbuf-substring -- prefix
+        complete-first [ complete1 ] when*
+    ] if ;
+
+-- FIXME need value for k-shift-tab on Windows
+$1b5b5a >constant: k-shift-tab  -- Linux
+
+: do-shift-tab ( -- )
+    completions [
+        complete-prev
+        [ complete1 ] when*
+    ] when ;
+
+: do-enter ( -- ) reset-completion t !> done? ;
+
+: history-file-pathname ( -- string )
+    user-home ".feline-history" path-append ;
+
+: initialize-history ( -- )
+    history-file-pathname dup regular-file?
+    [ file-lines ] [ drop 100 <vector> ] if !> history ;
+
+: save-history ( -- )
+--     history
+--     [ length dup 100 - 0 max swap ] keep
+--     <slice>
+--     history-file-pathname set-file-lines
+;
+
+: bind-key ( key action -- )
+    2array bindings push ;
+
+: lookup-key ( key -- symbol/f )
+    bindings length [ bindings nth array-first over = ] find-integer    -- n/f
+    nip dup [ bindings nth array-second ] [ drop f ] if ;
+
+: initialize-bindings ( -- )
+    10 <vector> !> bindings
+    10                  ' do-enter                   bind-key
+    13                  ' do-enter                   bind-key
+    3 ( control c )     ' bye                        bind-key
+    $1b                 ' do-escape                  bind-key
+    127                 ' do-bs                      bind-key   -- Linux
+    8                   ' do-bs                      bind-key   -- Windows
+    k-left              ' do-left                    bind-key
+    k-right             ' do-right                   bind-key
+    k-home              ' do-home                    bind-key
+    k-end               ' do-end                     bind-key
+    k-up                ' do-previous                bind-key
+    k-down              ' do-next                    bind-key
+    k-delete            ' do-delete-char             bind-key
+    $0b ( control k )   ' do-kill-line               bind-key
+    $10 ( control p )   ' do-previous-matching-input bind-key
+    $0e ( control n )   ' do-next-matching-input     bind-key
+    9                   ' do-tab                     bind-key
+    k-shift-tab         ' do-shift-tab               bind-key ;
+
+: do-normal-char ( c -- )
+    dot buffer length < [
+        dot buffer sbuf-insert-nth! dot 1 + !> dot redisplay
+    ] [
+        dup write-char dot 1 + !> dot buffer push
+    ] if
+    reset-history
+    reset-completion ;
+
+: process-key ( tagged-char -- )
+    dup printable?
+    [ do-normal-char ]
+    [ lookup-key [ call-symbol ] when* ]
+    if ;
+
+: xaccept-key ( -- tagged-char) ekey ;
+
+public
+
+: xaccept-string ( -- string )
+    256 <sbuf> !> buffer
+    bindings [ initialize-bindings ] unless
+--     history [ initialize-history ] unless
+    prompt
+    0 !> dot
+    f !> done?
+--     yellow foreground
+    [ done? ] [ xaccept-key process-key ] until
+    white foreground
+
+--     buffer sbuf>string [
+--         {
+--             { [ dup empty? ] [ drop ] }
+--             { [ dup "bye" string= ] [ drop ] }
+--             [ history push save-history ]
+--         } cond
+--     ] keep
+    buffer sbuf>string
+
+    f !> buffer
+    reset-history
+--     nl
+;
