@@ -16,9 +16,15 @@
 using: feline ;
 in: user
 
+"xaccept.feline" load-system-file
+
+use: xaccept
+
 "editor" delete-vocab
 
 in: editor
+
+private
 
 : accept-string ( x y -- string )
     >local: y
@@ -233,6 +239,54 @@ tuple: position line-number offset ;
     maybe-reframe
 ;
 
+global: pattern
+
+: find-pattern ( start-index string -- index/f )
+    >local: string
+    >local: start-index
+
+    0 >local: index
+
+    string length pattern length - 1 + 0 max [
+        !> index
+        index start-index >= [
+            index string length string substring
+            pattern
+            mismatch not
+        ] [ f ] if
+    ] find-integer
+;
+
+: find-pattern-in-current-line ( -- index/f )
+    dot-offset dot-line find-pattern
+;
+
+: do-find ( -- )
+    "Find: " !> xaccept:prompt-string
+    0 message-y at-xy xaccept-string !> pattern
+    clear-message-line
+
+    find-pattern-in-current-line [
+        dot-offset! dot-offset !> goal-x
+    ] [
+        dot-line-number 1 + buffer-lines [
+            0 swap find-pattern
+            depth 1 assert=
+            dup [ dot-offset! dot-offset !> goal-x ] when*
+        ] find-from -- index/f element/f
+
+        depth 2 assert=
+
+        [
+            dot-line-number!
+            maybe-reframe
+        ] [
+            drop
+            "Not found" message
+        ] if
+    ] if*
+;
+
 : do-home ( -- )
     0 dot-offset!
     0 !> goal-x
@@ -408,8 +462,11 @@ tuple: position line-number offset ;
     local: response
 
     modified? [
-        0 message-y at-xy "Abandon changes? (yes or no) " write-string
-        19 message-y accept-string !> response
+        0 message-y at-xy
+--         "Abandon changes? (yes or no) " write-string
+        "Abandon changes? (yes or no) " !> xaccept:prompt-string
+--         19 message-y
+        xaccept-string !> response
         response "yes" = [ f !> done? ] unless
     ] when
 
@@ -435,6 +492,7 @@ tuple: position line-number offset ;
     k-next                 ' do-page-down               bind-key
     k-ctrl-home            ' beginning-of-buffer        bind-key
     k-ctrl-end             ' end-of-buffer              bind-key
+    6 ( control f )        ' do-find                    bind-key
     7 ( control g )        ' gotoline                   bind-key
     $11 ( control q )      ' do-quit                    bind-key
     $13 ( control s )      ' do-save                    bind-key
@@ -508,6 +566,8 @@ tuple: position line-number offset ;
     symbol-location 2dup and
     [ initialize-buffer edit1 ] [ 2drop ] if
 ;
+
+public
 
 : edit ( -- )
     parse-token find-name [ edit-definition ] [ edit-file ] if
