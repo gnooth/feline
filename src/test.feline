@@ -908,7 +908,7 @@ test: map-find-test-1 ( -- )
 
 map-find-test-1
 
-test: find-integer-test-1 ( -- )
+test: find-integer-test-1
     clear
     10 [ 5 eq? ] find-integer get-data-stack { 5 } assert=
     clear
@@ -916,7 +916,17 @@ test: find-integer-test-1 ( -- )
 
 find-integer-test-1
 
-test: ?lookup-symbol-test-1 ( -- )
+test: find-integer-test-2
+    clear
+    0 [ "shouldn't happen!" error ] find-integer get-data-stack { f } assert=
+    clear
+    -7 [ "shouldn't happen!" error ] find-integer get-data-stack { f } assert=
+    clear
+;
+
+find-integer-test-2
+
+test: ?lookup-symbol-test-1
     "dup" "feline" ?lookup-symbol ' dup assert-eq
     "xxx" "feline" ?lookup-symbol assert-false
     "dup" "xxx" ?lookup-symbol assert-false

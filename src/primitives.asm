@@ -616,6 +616,14 @@ code find_integer, 'find-integer'       ; tagged-fixnum callable -- i/f
 
         _swap
         _check_fixnum
+
+        test    rbx, rbx
+        jg      .1
+        _2drop
+        _f
+        _return
+.1:
+
         _swap
 
         ; protect callable from gc
@@ -630,8 +638,8 @@ code find_integer, 'find-integer'       ; tagged-fixnum callable -- i/f
         mov     r15, [rbp]              ; loop limit in r15
         _2drop                          ; clean up the stack now!
         test    r15, r15
-        jle     .2
-.1:
+        jle     .3
+.2:
         pushd   r12
         _tag_fixnum
         call    r13
@@ -639,21 +647,21 @@ code find_integer, 'find-integer'       ; tagged-fixnum callable -- i/f
         cmp     rbx, f_value
         mov     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
-        jne     .2
+        jne     .3
         ; flag was f
         ; keep going
         inc     r12
         cmp     r12, r15
-        jne     .1
+        jne     .2
         ; reached end
         ; return f
         _f
-        jmp     .3
-.2:
+        jmp     .4
+.3:
         ; return tagged index
         pushd   r12
         _tag_fixnum
-.3:
+.4:
         pop     r15
         pop     r13
         pop     r12
