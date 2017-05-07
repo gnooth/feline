@@ -989,28 +989,38 @@ last-word $c3 install-handler
     -- /0
     -- source is imm8
     -- dest is r/m8
-    8 dup !> dsize !> ssize
     !modrm-byte
+    regop zero? [ unsupported ] unless
     "mov" !> mnemonic
-    modrm-reg {
+    8 dup !> dsize !> ssize
+    t !> immediate-operand?
+    modrm-mod {
         { 0 [
-            modrm-mod {
-                { 0 [
+            modrm-rm {
+                { 4 [
+                    !sib-byte
+
+                    sib-base register-rm !> dbase
+                    sib-index register-index !> dindex
+                    sib-scale !> dscale
+
+                    next-byte !> immediate-operand
+                ] }
+                [
+                    -- default case
+                    drop
                     modrm-rm register-rm !> dbase
                     "byte" !> relative-size
                     next-byte !> immediate-operand
-                    t !> immediate-operand?
-                ] }
-                { 1 [
-                    -- [r/m + disp8]
-                    modrm-rm register-rm !> dbase
-                    "byte" !> relative-size
-                    next-signed-byte !> ddisp
-                    next-byte !> immediate-operand
-                    t !> immediate-operand?
-                ] }
-                [ unsupported ]
+                ]
             } case
+        ] }
+        { 1 [
+            -- [r/m + disp8]
+            modrm-rm register-rm !> dbase
+            "byte" !> relative-size
+            next-signed-byte !> ddisp
+            next-byte !> immediate-operand
         ] }
         [ unsupported ]
     } case
