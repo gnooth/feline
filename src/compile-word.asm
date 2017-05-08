@@ -351,13 +351,19 @@ code compile_pair, 'compile-pair'       ; pair --
 endcode
 
 ; ### compile-quotation
-code compile_quotation, 'compile-quotation'     ;  quotation -- code-address code-size
+code compile_quotation, 'compile-quotation'
+; quotation -- code-address code-size
 ; return values are tagged
 
-        _dup
-        _ quotation_array
+        _ check_quotation
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; --
+
+        _this_quotation_array
         _lit S_precompile_object
-        _ map_array                     ; -- quotation precompiled-array
+        _ map_array                     ; -- precompiled-array
 
         _zero
         _over
@@ -370,7 +376,7 @@ code compile_quotation, 'compile-quotation'     ;  quotation -- code-address cod
         _ allocate_executable
         _duptor
         mov     [pc_], rbx
-        poprbx                          ; -- quotation precompiled-array        r: -- code-address
+        poprbx                          ; -- precompiled-array          r: -- raw-code-address
 
         _lit S_compile_pair
         _ array_each
@@ -378,9 +384,8 @@ code compile_quotation, 'compile-quotation'     ;  quotation -- code-address cod
         _lit $0c3
         _ emit_byte
 
-        _rfetch                         ; -- quotation raw-code-address
-        _swap
-        _ quotation_set_raw_code_address
+        _rfetch                         ; -- raw-code-address
+        _this_quotation_set_raw_code_address
 
         _rfrom                          ; -- raw-code-address
 
@@ -393,6 +398,8 @@ code compile_quotation, 'compile-quotation'     ;  quotation -- code-address cod
         _swap
         _tag_fixnum
         _swap
+
+        pop     this_register
 
         next
 endcode
