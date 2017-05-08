@@ -878,9 +878,7 @@ endcode
 ; ### local@
 code local_fetch, 'local@'              ; index -- value
         _check_index
-        _cells
-        add     rbx, r14
-        mov     rbx, [rbx]
+        mov     rbx, [r14 + rbx * BYTES_PER_CELL]
         next
 endcode
 
