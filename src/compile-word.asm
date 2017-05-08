@@ -393,6 +393,9 @@ code compile_quotation, 'compile-quotation'
         _over
         _minus                          ; -- raw-code-address raw-code-size
 
+        _dup
+        _this_quotation_set_raw_code_size
+
         ; FIXME
         _tag_fixnum
         _swap
