@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; 3 cells: object header, array, raw code address
+; 4 cells: object header, array, raw code address, raw code size
 
 %macro  _quotation_array 0              ; quotation -- array
         _slot1
@@ -39,6 +39,18 @@ file __FILE__
 
 %macro  _this_quotation_set_raw_code_address 0  ; raw-code-address --
         _this_set_slot2
+%endmacro
+
+%macro  _quotation_raw_code_size 0              ; quotation -- raw-code-size
+        _slot3
+%endmacro
+
+%macro  _quotation_set_raw_code_size 0          ; raw-code-size quotation --
+        _set_slot3
+%endmacro
+
+%macro  _this_quotation_set_raw_code_size 0     ; raw-code-size --
+        _this_set_slot3
 %endmacro
 
 ; ### quotation?
@@ -123,10 +135,10 @@ code check_quotation, 'check-quotation' ; handle-or-quotation -- unboxed-quotati
 endcode
 
 ; ### array>quotation
-code array_to_quotation, 'array>quotation' ; array -- quotation
-; 3 cells: object header, array, code address
+code array_to_quotation, 'array>quotation'      ; array -- quotation
+; 4 cells: object header, array, raw code address, raw code size
 
-        _lit 3
+        _lit 4
         _ allocate_cells
 
         push    this_register
@@ -141,6 +153,9 @@ code array_to_quotation, 'array>quotation' ; array -- quotation
 
         _zero
         _this_quotation_set_raw_code_address
+
+        _zero
+        _this_quotation_set_raw_code_size
 
         pushrbx
         mov     rbx, this_register      ; -- quotation
@@ -222,15 +237,18 @@ code quotation_nth_unsafe, 'quotation-nth-unsafe'
         next
 endcode
 
-; ### quotation_raw_code_address
-subroutine quotation_raw_code_address   ; quotation -- raw-code-address
+; ### quotation-raw-code-address
+code quotation_raw_code_address, 'quotation-raw-code-address'
+; quotation -- raw-code-address
         _ check_quotation
         _quotation_raw_code_address
-        ret
-endsub
+        next
+endcode
 
-; ### quotation_set_raw_code_address
-subroutine quotation_set_raw_code_address       ; raw-code-address quotation --
+; ### quotation-set-raw-code-address
+code quotation_set_raw_code_address, 'quotation-set-raw-code-address'
+; raw-code-address quotation --
+
         _ check_quotation
 
         _dup
@@ -245,8 +263,33 @@ subroutine quotation_set_raw_code_address       ; raw-code-address quotation --
 
         _quotation_set_raw_code_address
 
-        ret
-endsub
+        next
+endcode
+
+; ### quotation-raw-code-size
+code quotation_raw_code_size, 'quotation-raw-code-size'
+; quotation -- raw-code-size
+        _ check_quotation
+        _quotation_raw_code_size
+        next
+endcode
+
+; ### quotation-code-size
+code quotation_code_size, 'quotation-code-size'
+; quotation -- code-size
+        _ check_quotation
+        _quotation_raw_code_size
+        _tag_fixnum
+        next
+endcode
+
+; ### quotation-set-raw-code-size
+code quotation_set_raw_code_size, 'quotation-set-raw-code-size'
+; raw-code-size quotation --
+        _ check_quotation
+        _quotation_set_raw_code_size
+        next
+endcode
 
 ; ### callable?
 code callable?, 'callable?'             ; object -- ?
