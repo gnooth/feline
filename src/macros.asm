@@ -209,7 +209,16 @@ GENERIC_WRITE   equ     $40000000
 %ifndef in_inline
         ret
 %else
-        %error "_return in inline"
+        %error "return in inline"
+%endif
+%endmacro
+
+%macro  _rep_return 0
+%ifndef in_inline
+        rep
+        ret
+%else
+        %error "return in inline"
 %endif
 %endmacro
 
