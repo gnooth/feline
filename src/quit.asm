@@ -151,10 +151,10 @@ endcode
 ; ### must-find-name
 code must_find_name, 'must-find-name'   ; string -- symbol
         _ find_name
-        _tagged_if_not .1
-        _ undefined
-        _then .1
-        next
+        cmp     ebx, f_value
+        poprbx
+        je      undefined
+        _rep_return
 endcode
 
 ; ### must-find-global
