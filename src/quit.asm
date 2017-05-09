@@ -69,22 +69,28 @@ endcode
 ; ### find-name-in-context-vocab
 code find_name_in_context_vocab, 'find-name-in-context-vocab'
 ; string vocab --  symbol/f ?
+
         _ vocab_hashtable
         _ at_star                       ; -- symbol/f ?
-        _tagged_if .1
-        _dup
-        _ symbol_private?
-        _tagged_if .2
-        _drop
-        _f
-        _f
-        _else .2
-        _t
-        _then .2
-        _else .1
-        _f
-        _then .1
-        next
+
+        cmp     ebx, f_value
+        jne     .1
+        ; not found
+        _rep_return
+
+.1:
+        mov     rbx, [rbp]              ; -- symbol symbol
+        _ symbol_private?               ; -- symbol ?
+        cmp     ebx, f_value
+        jne     .2
+        mov     ebx, t_value
+        _return
+
+.2:
+        ; symbol is private
+        mov     ebx, f_value
+        mov     [rbp], rbx
+        _return
 endcode
 
 ; ### find-name
