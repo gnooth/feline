@@ -750,36 +750,34 @@ code string_index_from, 'string-index-from' ; char start-index string -- index/f
         _ check_index                   ; -- char untagged-start-index
 
         _this_string_raw_length
-        _twodup
-        _ge
-        _if .1
-        _3drop
-        _f
-        jmp     .exit
-        _then .1                        ; -- char untagged-start-index untagged-length
+        cmp     rbx, [rbp]
+        jnc     .1
 
-        _untag_char qword [rbp + BYTES_PER_CELL]
-
-        _swap
-        _do .2
-        _i
-        _this_string_nth_unsafe
-
-        cmp     bl, byte [rbp]
-        jne     .3
         _2drop
-        _i
+        jmp     .4
+
+.1:                                     ; -- char untagged-start-index untagged-length
+        _untag_char qword [rbp + BYTES_PER_CELL]
+        _swap
+
+        _register_do_range .2
+        _raw_loop_index
+        _this_string_nth_unsafe
+        cmp     bl, byte [rbp]
+        _drop
+        jne     .3
+        mov     rbx, index_register
         _tag_fixnum
         _unloop
-        jmp     .exit
+        jmp     .5
 .3:
-        _drop
         _loop   .2
 
+.4:
         ; not found
-        mov     rbx, f_value
+        mov     ebx, f_value
 
-.exit:
+.5:
         pop     this_register
         next
 endcode
