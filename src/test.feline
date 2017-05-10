@@ -1555,6 +1555,8 @@ test: string-index-from-test-1
     't' 1 "this is a test" string-index-from 10 assert-eq
     'e' 4 "this is a test" string-index-from 11 assert-eq
     'x' 0 "this is a test" string-index-from assert-false
+
+    't' most-positive-fixnum "this is a test" string-index-from assert-false
 ;
 
 string-index-from-test-1
