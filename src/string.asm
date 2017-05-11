@@ -209,6 +209,15 @@ code string_raw_data_address, 'string-raw-data-address', SYMBOL_PRIMITIVE | SYMB
         next
 endcode
 
+; ### string-data-address
+code string_data_address, 'string-data-address', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; string -- data-address
+        _ check_string
+        _string_raw_data_address
+        _tag_fixnum
+        next
+endcode
+
 %macro  _string_nth_unsafe 0            ; untagged-index string -- untagged-char
         _string_raw_data_address
         _plus
