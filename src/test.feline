@@ -1688,6 +1688,17 @@ test: string-has-suffix?-test-1
 
 string-has-suffix?-test-1
 
+test: substring-start-test-1
+    "test" "this is a test" substring-start 10 assert=
+    "test" "testing" substring-start 0 assert=
+    "test" "test" substring-start 0 assert=
+
+    "test" "no match" substring-start assert-false
+    "this string is too long" "test" substring-start assert-false
+;
+
+substring-start-test-1
+
 test: vector-find-string-test-1
     vector{ "foo" "bar" "baz" "zork" } >local: v
     "foo"  v vector-find-string assert-true 0 assert=

@@ -651,6 +651,60 @@ code string_has_prefix?, 'string-has-prefix?'   ; prefix string -- ?
         next
 endcode
 
+; ### substring-start
+code substring_start, 'substring-start'         ; pattern string -- index/f
+        _ check_string
+
+        push    this_register
+        popd    this_register                   ; -- pattern
+
+        _ check_string
+
+        ; return right away if pattern is longer than string
+        _dup
+        _string_raw_length
+        _this_string_raw_length
+        cmp     rbx, [rbp]
+        _2drop
+        jnc     .1
+        mov     ebx, f_value
+        pop     this_register
+        _return
+
+.1:
+        _dup
+        _string_raw_data_address                ; -- pattern-raw-data-address
+        _swap
+        _string_raw_length                      ; -- pattern-raw-data-address pattern-raw-length
+
+        _this_string_raw_length
+        _over
+        _minus
+        _oneplus
+
+        _register_do_times .2
+
+        _this_string_raw_data_address
+        add rbx, index_register
+        _ feline_2over
+        _ unsafe_raw_memequal
+        _tagged_if .3
+        _tagged_loop_index
+        _unloop
+        _2nip
+        jmp     .exit
+        _then .3
+
+        _loop .2
+
+        _2drop
+        _f
+
+.exit:
+        pop     this_register
+        next
+endcode
+
 ; ### string-has-suffix?
 code string_has_suffix?, 'string-has-suffix?'   ; suffix string -- ?
         _twodup
