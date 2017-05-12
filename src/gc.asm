@@ -81,9 +81,8 @@ code mark_hashtable, 'mark-hashtable'   ; hashtable --
         push    this_register
         mov     this_register, rbx      ; -- hashtable
         _hashtable_raw_capacity         ; -- capacity
-        _zero
-        _?do .1
-        _i
+        _register_do_times .1
+        _raw_loop_index
         _dup
         _this_hashtable_nth_key
         _ maybe_mark_handle
