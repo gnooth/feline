@@ -1017,8 +1017,11 @@ test: times-test-1 ( -- )
 times-test-1
 
 test: filter-test-1 ( -- )
-    vector{ 1 2 3 4 } [ 3 < ] filter vector{ 1 2 } sequence= assert-true
-     { 1 2 3 4 } [ 3 < ] filter  { 1 2 } sequence= assert-true
+    vector{ 1 2 3 4 } [ 3 < ] filter vector{ 1 2 } assert=
+    { 1 2 3 4 } [ 3 < ] filter { 1 2 } assert=
+
+    3 vector{ 1 2 3 4 } [ over = ] filter nip vector{ 3 } assert=
+    3 { 1 2 3 4 } [ over = ] filter nip { 3 } assert=
 ;
 
 filter-test-1

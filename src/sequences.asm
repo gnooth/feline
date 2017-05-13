@@ -211,52 +211,92 @@ code map_index, 'map-index'             ; seq quot -- newseq
         next
 endcode
 
-; ### filter
-code filter, 'filter'                   ; seq quot -- subseq
-        _ callable_raw_code_address     ; -- seq code-address
-        _over                           ; -- seq code-address seq
-        push    this_register
-        popd    this_register           ; -- seq code-address
-        push    r12
-        popd    r12                     ; -- seq
+; ### filter-as-vector
+code filter_as_vector, 'filter-as-vector'       ; seq callable -- vector
 
-        ; address to call is in r12
+        ; protect callable from gc
+        push    rbx
+
+        _ callable_raw_code_address     ; -- seq raw-code-address
+
+        push    r12
+        push    r13
+        push    this_register
+
+        mov     r12, rbx                ; raw code address in r12
+        poprbx                          ; -- seq
+
+        mov     this_register, rbx
+        poprbx                          ; --
 
         _this
         _ length
         _untag_fixnum
         _dup
-        _ new_vector_untagged           ; -- seq untagged-length vector
-        _swap
-        _zero
+        _ new_vector_untagged           ; -- untagged-length accumulator
+
+        ; protect accumulator from gc
+        push    rbx
+
+        ; save accumulator in r13
+        mov     r13, rbx
+        poprbx                          ; -- untagged-length
+
+        ; We're using r12 and r13 inside the loop so we can't use
+        ; _register_do_times or _register_do_range here.
+        _lit 0
         _?do .1
 
-        _i
-        _tag_fixnum
+        _tagged_loop_index
         _this
-        _ nth_unsafe                    ; -- seq vector elt
-        _dup
-        call    r12                     ; -- seq vector elt ?
+        _ nth_unsafe                    ; -- element
+
+        ; save element on return stack
+        push    rbx
+
+        ; call callable
+        call    r12                     ; -- ?
+
+        ; retrieve element from return stack
+        pop     rax
 
         _tagged_if .2
-        _over                           ; -- seq vector elt vector
-        _ vector_push                   ; -- seq vector
-        _else .2
-        _drop                           ; -- seq vector
+        ; get element from rax
+        pushrbx
+        mov     rbx, rax                ; -- element
+        ; get accumulator from r13
+        pushrbx
+        mov     rbx, r13                ; -- element vector
+        _ vector_push
         _then .2
 
         _loop .1
 
-        pop     r12
+        pushrbx
+        mov     rbx, r13
+
+        ; drop accumulator
+        pop     rax
+
         pop     this_register           ; -- seq vector
+        pop     r13
+        pop     r12
 
-        ; FIXME use new-sequence (support all sequence types)
-        _swap
+        ; drop callable
+        pop     rax
+
+        next
+endcode
+
+; ### filter
+code filter, 'filter'                   ; seq callable -- newseq
+        push    qword [rbp]
+        _ filter_as_vector              ; -- vector
+        _rfrom
         _ array?
-        _tagged_if .3
+        _tagged_if .1
         _ vector_to_array
-        _then .3
-
+        _then .1
         next
 endcode
 
