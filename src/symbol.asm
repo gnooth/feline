@@ -382,6 +382,23 @@ code symbol_name, 'symbol-name'         ; symbol -- name
         next
 endcode
 
+; ### symbol-qualified-name
+code symbol_qualified_name, 'symbol-qualified-name'     ; symbol -- qualified-name
+        _ check_symbol
+        _dup
+        _symbol_vocab_name
+        _ string_to_sbuf
+        _lit tagged_char(':')
+        _over
+        _ sbuf_push
+        _swap
+        _symbol_name
+        _over
+        _ sbuf_append_string
+        _ sbuf_to_string
+        next
+endcode
+
 ; ### symbol-hashcode
 code symbol_hashcode, 'symbol-hashcode' ; symbol -- hashcode
         _ check_symbol
