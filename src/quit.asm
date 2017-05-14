@@ -499,15 +499,20 @@ code break, 'break'                     ; --
         _write "break called"
         _ print_data_stack
         _ nl
-        _write "Press c to continue..."
+        _write "Press c to continue or q to quit..."
         _ nl
-        _begin .2
+        _begin .1
         _ raw_key
-        _lit 'c'
-        _equal
-        _if .3
+        cmp     rbx, 'c'
+        jne     .2
+        _drop
         _return
-        _then .3
-        _again .2
+.2:
+        cmp     rbx, 'q'
+        jne     .3
+        _drop
+        _ quit
+.3:
+        _again .1
         next
 endcode
