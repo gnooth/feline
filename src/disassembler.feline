@@ -1465,9 +1465,22 @@ last-word $be install-$0f-handler
     [ symbol-code-address ] [ symbol-code-size ] bi disasm ;
 
 : dis
-    must-parse-token
-    must-find-name              -- symbol
-    disassemble ;
+    must-parse-token            -- string
+    find-qualified-name [
+        disassemble
+    ] [
+        all-words [ symbol-name over = ] filter nip
+        dup length {
+            { 0 [ drop ] }
+            { 1 [ first disassemble ] }
+            [
+                -- more than 1 match
+                drop
+                [ symbol-qualified-name write-string nl ] each
+            ]
+        } case
+    ] if
+;
 
 : test-all
     all-words [ nl nl dec. space dup . disassemble ] each-index ;
