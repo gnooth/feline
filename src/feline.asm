@@ -100,11 +100,11 @@ code in_static_data_area?, 'in-static-data-area?', SYMBOL_PRIMITIVE | SYMBOL_PRI
         next
 endcode
 
-subroutine last_static_symbol
+code last_static_symbol, 'last-static-symbol', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         pushrbx
         mov     rbx, symbol_link
-        ret
-endsub
+        next
+endcode
 
 section .data
 static_data_area_limit:
