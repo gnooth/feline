@@ -38,11 +38,12 @@ code string?, 'string?'                 ; x -- ?
         _return
         _then .1
 
-        ; Not a handle. Make sure address is in a permissible range.
+        ; not a handle
+        ; make sure address is in the permissible range
         _dup
         _ in_static_data_area?
-        _zeq_if .3
-        ; Address is not in a permissible range.
+        _tagged_if_not .3
+        ; address is not in the permissible range
         ; -- x
         mov     ebx, f_value
         _return
@@ -57,11 +58,11 @@ endcode
 
 ; ### verify-unboxed-string
 code verify_unboxed_string, 'verify-unboxed-string' ; string -- string
-        ; Make sure address is in a permissible range.
+        ; make sure address is in the permissible range
         _dup
         _ in_static_data_area?
-        _zeq_if .1
-        ; Address is not in a permissible range.
+        _tagged_if_not .1
+        ; address is not in the permissible range
         _ error_not_string
         _return
         _then .1

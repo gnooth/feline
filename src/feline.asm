@@ -86,17 +86,19 @@ IN_FELINE
 %include "ansi.asm"
 %include "socket.asm"
 
-subroutine in_static_data_area?         ; addr -- 1/0
+; in-static-data-area?
+code in_static_data_area?, 'in-static-data-area?', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; addr -- ?
         cmp     rbx, static_data_area
         jb .1
         cmp     rbx, static_data_area_limit
         jae .1
-        mov     ebx, 1
+        mov     ebx, t_value
         _return
 .1:
-        xor     ebx, ebx
+        mov     ebx, f_value
         next
-endsub
+endcode
 
 subroutine last_static_symbol
         pushrbx

@@ -214,11 +214,12 @@ code symbol?, 'symbol?'                 ; x -- ?
         _return
         _then .1
 
-        ; Not a handle. Make sure address is in a permissible range.
+        ; not a handle
+        ; make sure address is in the permissible range
         _dup
         _ in_static_data_area?
-        _zeq_if .3
-        ; Address is not in a permissible range.
+        _tagged_if_not .3
+        ; address is not in the permissible range
         ; -- x
         mov     ebx, f_value
         _return
@@ -233,11 +234,11 @@ endcode
 
 ; ### verify-unboxed-symbol
 code verify_unboxed_symbol, 'verify-unboxed-symbol'     ; symbol -- symbol
-        ; make sure address is in a permissible range
+        ; make sure address is in the permissible range
         _dup
         _ in_static_data_area?
-        _zeq_if .1
-        ; address is not in a permissible range
+        _tagged_if_not .1
+        ; address is not in the permissible range
         _ error_not_symbol
         _return
         _then .1
