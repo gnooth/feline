@@ -55,6 +55,8 @@ OBJECT_ALLOCATED_BIT            equ 4
 
 ; The object's raw type number is stored in the first two bytes of the object header.
 
+%define OBJECT_TYPE_NUMBER_WORD word [rbx]
+
 %macro  _object_raw_type_number 0       ; -- raw-type-number
         _wfetch                         ; 16 bits
 %endmacro
