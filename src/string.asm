@@ -61,21 +61,14 @@ code verify_unboxed_string, 'verify-unboxed-string' ; string -- string
         ; make sure address is in the permissible range
         _dup
         _ in_static_data_area?
-        _tagged_if_not .1
-        ; address is not in the permissible range
-        _ error_not_string
-        _return
-        _then .1
+        cmp     ebx, f_value
+        poprbx
+        je      error_not_string
 
-        _dup
-        _object_raw_type_number                    ; -- object object-type
-        _lit OBJECT_TYPE_STRING
-        _equal
-        _if .2
-        _return
-        _then .2
+        movzx   eax, OBJECT_TYPE_NUMBER_WORD
+        cmp     eax, OBJECT_TYPE_STRING
+        jne     error_not_string
 
-        _ error_not_string
         next
 endcode
 
