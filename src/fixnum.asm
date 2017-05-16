@@ -639,17 +639,11 @@ untagged_to_base:
         _dup
         _ raw_allocate                  ; -- untagged-fixnum untagged-base size buffer
         _duptor
-%ifdef WIN64
-        popd    r8                      ; buffer
-        popd    r9                      ; size
-        popd    rdx                     ; untagged-base
-        popd    rcx                     ; untagged-fixnum
-%else
-        popd    rdx                     ; buffer
-        popd    rcx                     ; size
-        popd    rsi                     ; untagged-base
-        popd    rdi                     ; untagged-fixnum
-%endif
+        mov     arg2_register, rbx                              ; buffer
+        mov     arg3_register, [rbp]                            ; size
+        mov     arg1_register, [rbp + BYTES_PER_CELL]           ; untagged base
+        mov     arg0_register, [rbp + BYTES_PER_CELL * 2]       ; untagged fixnum
+        _4drop
         xcall   c_fixnum_to_base        ; number of chars printed in rax
         _rfetch                         ; -- buffer
         pushd   rax                     ; -- buffer size
