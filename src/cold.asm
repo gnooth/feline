@@ -25,8 +25,7 @@ asm_global sp0_, 0                      ; initialized in main()
 ; ### stack-cells                       ; environment query
 value stack_cells, 'stack-cells', 0     ; initialized in main()
 
-; ### cold-rbp
-variable cold_rbp, 'cold-rbp', 0
+asm_global cold_rbp_, 0
 
 asm_global main_argc ; untagged
 asm_global main_argv ; untagged
@@ -162,7 +161,7 @@ special load_verbose?, 'load-verbose?'
 ; ### cold
 code cold, 'cold'                       ; --
         mov     [rp0_], rsp
-        mov     [cold_rbp_data], rbp
+        mov     [cold_rbp_], rbp
         mov     rbp, [sp0_]
 
         _ initialize_locals_stack

@@ -236,7 +236,7 @@ GENERIC_WRITE   equ     $40000000
 
 %macro  xcall   1
         push    rbp
-        mov     rbp, [cold_rbp_data]
+        mov     rbp, [cold_rbp_]
         sub     rsp, 32
         test    rsp, 0x0f
         jnz     %%fixstack
