@@ -493,21 +493,6 @@ section .data
         %pop inline
 %endmacro
 
-%macro  variable 3                      ; label, name, value
-        head    %1, %2, 0, %1_ret - %1
-        section .data
-        global %1_data
-        align   DEFAULT_DATA_ALIGNMENT
-%1_data:
-        dq      %3
-        section .text
-%1:
-        pushrbx
-        mov     ebx, %1_data            ; REVIEW assumes 32-bit address
-%1_ret:
-        next
-%endmacro
-
 %macro  value 3                         ; label, name, value
         head    %1, %2, 0, %1_ret - %1
         section .data
