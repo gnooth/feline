@@ -213,7 +213,7 @@ endcode
 
 ; ### handle-signal
 code handle_signal, 'handle-signal'
-        mov     rbp, [sp0_data]
+        mov     rbp, [sp0_]
         mov     rsp, [rp0_]
 
         _lp0

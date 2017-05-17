@@ -712,7 +712,7 @@ endcode
 ; ### clear
 code clear, 'clear'
 ; Clear the data stack.
-        mov     rbp, [sp0_data]
+        mov     rbp, [sp0_]
         next
 endcode
 

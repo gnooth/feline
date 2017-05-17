@@ -37,7 +37,7 @@ inline ?dup, '?dup'
 endinline
 
 %macro  _depth 0
-        mov     rax, [sp0_data]
+        mov     rax, [sp0_]
         sub     rax, rbp
         shr     rax, 3
         pushd   rax

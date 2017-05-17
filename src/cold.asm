@@ -20,8 +20,7 @@ value start_time_ticks, 'start-time-ticks', 0
 
 asm_global rp0_, 0
 
-; ### sp0
-variable sp0, 'sp0', 0                  ; initialized in main()
+asm_global sp0_, 0                      ; initialized in main()
 
 ; ### stack-cells                       ; environment query
 value stack_cells, 'stack-cells', 0     ; initialized in main()
@@ -164,7 +163,7 @@ special load_verbose?, 'load-verbose?'
 code cold, 'cold'                       ; --
         mov     [rp0_], rsp
         mov     [cold_rbp_data], rbp
-        mov     rbp, [sp0_data]
+        mov     rbp, [sp0_]
 
         _ initialize_locals_stack
         _ forth_standard_output
