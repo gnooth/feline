@@ -729,8 +729,7 @@ endcode
 
 ; ### number>string
 code number_to_string, 'number>string'  ; n -- string
-        _dup
-        _fixnum?_if .1
+        _dup_fixnum?_if .1
         _ fixnum_to_string
         _return
         _then .1
