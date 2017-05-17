@@ -214,7 +214,7 @@ endcode
 ; ### handle-signal
 code handle_signal, 'handle-signal'
         mov     rbp, [sp0_data]
-        mov     rsp, [rp0_data]
+        mov     rsp, [rp0_]
 
         _lp0
         _?dup

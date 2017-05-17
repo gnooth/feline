@@ -477,7 +477,7 @@ code quit, 'quit'                       ; --
         _begin .1
 
         ; REVIEW
-        mov     rsp, [rp0_data]
+        mov     rsp, [rp0_]
 
         _t
         _ interactive?

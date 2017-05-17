@@ -44,7 +44,7 @@ endinline
 %endmacro
 
 %macro  _rdepth 0
-        mov     rax, [rp0_data]
+        mov     rax, [rp0_]
         sub     rax, rsp
         shr     rax, 3
         pushd   rax

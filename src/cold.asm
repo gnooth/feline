@@ -18,8 +18,7 @@ file __FILE__
 ; ### start-time-ticks
 value start_time_ticks, 'start-time-ticks', 0
 
-; ### rp0
-variable rp0, 'rp0', 0
+asm_global rp0_, 0
 
 ; ### sp0
 variable sp0, 'sp0', 0                  ; initialized in main()
@@ -163,7 +162,7 @@ special load_verbose?, 'load-verbose?'
 
 ; ### cold
 code cold, 'cold'                       ; --
-        mov     [rp0_data], rsp
+        mov     [rp0_], rsp
         mov     [cold_rbp_data], rbp
         mov     rbp, [sp0_data]
 
