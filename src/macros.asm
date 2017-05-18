@@ -374,6 +374,7 @@ section .data
 %define SYMBOL_CONSTANT         $10
 %define SYMBOL_SPECIAL          $20
 %define SYMBOL_PRIVATE          $40
+%define SYMBOL_GENERIC          $80
 
 %macro  IN_FELINE 0
 %undef  in_forth

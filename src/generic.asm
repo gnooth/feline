@@ -43,7 +43,7 @@ code do_generic, 'do-generic'   ; object dispatch-table --
 endcode
 
 %macro generic 2
-        code %1, %2
+        code %1, %2, SYMBOL_GENERIC
         pushrbx
         mov     rbx, [S_%1_symbol_value]
         jmp     do_generic

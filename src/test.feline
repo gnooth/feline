@@ -2402,4 +2402,11 @@ test: visibility-test-1
 
 visibility-test-1
 
+test: generic?-test-1
+    ' length generic? assert-true
+    ' dup generic? assert-false
+;
+
+generic?-test-1
+
 ?nl "Reached end of test.feline" write-string

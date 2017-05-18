@@ -540,6 +540,12 @@ code symbol_private?, 'symbol-private?'         ; symbol -- ?
         next
 endcode
 
+; ### generic?
+code generic?, 'generic?'                       ; symbol -- ?
+        _symbol_flags_bit SYMBOL_GENERIC
+        next
+endcode
+
 ; ### symbol-value
 code symbol_value, 'symbol-value'               ; symbol -- value
         _ check_symbol
