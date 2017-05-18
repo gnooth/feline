@@ -124,7 +124,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	numbers.asm \
 	object-macros.asm \
 	objects.asm \
-	parsing-words.asm \
+	syntax.asm \
 	primitives.asm \
 	quit.asm \
 	quotation.asm \

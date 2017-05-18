@@ -75,7 +75,7 @@ IN_FELINE
 %include "format.asm"
 %include "time.asm"
 %include "gc.asm"
-%include "parsing-words.asm"
+%include "syntax.asm"
 %include "assert.asm"
 %include "compile-word.asm"
 %include "recover.asm"
