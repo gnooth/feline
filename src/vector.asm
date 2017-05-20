@@ -33,21 +33,21 @@ file __FILE__
         _this_set_slot1
 %endmacro
 
-%macro  _vector_data 0
+%macro  _vector_raw_data_address 0      ; vector -- raw-data-address
         _slot2
 %endmacro
 
-%macro  _vector_set_data 0              ; data-address vector --
+%macro  _vector_set_raw_data_address 0  ; raw-data-address vector --
         _set_slot2
 %endmacro
 
-%define this_vector_data this_slot2
+%define this_vector_raw_data_address this_slot2
 
-%macro  _this_vector_data 0
+%macro  _this_vector_raw_data_address 0 ; -- raw-data-address
         _this_slot2
 %endmacro
 
-%macro  _this_vector_set_data 0         ; data-address --
+%macro  _this_vector_set_raw_data_address 0     ; raw-data-address --
         _this_set_slot2
 %endmacro
 
@@ -73,17 +73,17 @@ file __FILE__
         mov     rax, [rbp]              ; untagged index in rax
         lea     rbp, [rbp + BYTES_PER_CELL]
         shl     rax, 3                  ; convert cells to bytes
-        _vector_data
+        _vector_raw_data_address
         mov     rbx, [rbx + rax]
 %endmacro
 
 %macro  _this_vector_nth_unsafe 0       ; index -- element
-        mov     rax, this_vector_data
+        mov     rax, this_vector_raw_data_address
         mov     rbx, [rax + BYTES_PER_CELL * rbx]
 %endmacro
 
 %macro  _vector_set_nth_unsafe 0        ; element index vector --
-        _vector_data
+        _vector_raw_data_address
         _swap
         _cells
         _plus
@@ -92,7 +92,7 @@ file __FILE__
 
 %macro  _this_vector_set_nth_unsafe 0   ; element index --
         mov     rdx, [rbp]
-        mov     rax, this_vector_data
+        mov     rax, this_vector_raw_data_address
         mov     [rax + BYTES_PER_CELL * rbx], rdx
         _2drop
 %endmacro
@@ -221,7 +221,7 @@ endcode
 ; ### <vector>
 code new_vector, '<vector>'             ; capacity -- handle
 
-        _check_index
+        _check_index                    ; -- raw-capacity
 
 new_vector_untagged:
 
@@ -229,13 +229,13 @@ new_vector_untagged:
         _ allocate_cells
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -- capacity
+        poprbx                          ; -- raw-capacity
         _this_object_set_raw_type_number OBJECT_TYPE_VECTOR
         _this_object_set_flags OBJECT_ALLOCATED_BIT
         _dup
-        _ allocate_cells                ; -- capacity data-address
-        _this_vector_set_data
-        _this_vector_set_raw_capacity
+        _ allocate_cells                ; -- raw-capacity raw-data-address
+        _this_vector_set_raw_data_address
+        _this_vector_set_raw_capacity   ; --
 
         ; initialize all allocated cells to f
         mov     rax, f_value            ; element in rax
@@ -244,7 +244,7 @@ new_vector_untagged:
 %ifdef WIN64
         push    rdi
 %endif
-        _this_vector_data
+        _this_vector_raw_data_address
         popd    rdi
         rep     stosq
 %ifdef WIN64
@@ -278,7 +278,7 @@ endcode
 ; ### ~vector-unchecked
 code destroy_vector_unchecked, '~vector-unchecked' ; vector --
         _dup
-        _vector_data
+        _vector_raw_data_address
         _ raw_free                      ; -- vector
 
         _ in_gc?
@@ -299,16 +299,16 @@ endcode
 
 ; ### vector-resize
 code vector_resize, 'vector-resize', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; vector new-capacity --
+; vector new-raw-capacity --
         _swap
         push    this_register
         mov     this_register, rbx
         poprbx                          ; -- new-capacity
-        _this_vector_data               ; -- new-capacity data-address
-        _over                           ; -- new-capacity data-address new-capacity
+        _this_vector_raw_data_address   ; -- new-capacity raw-data-address
+        _over                           ; -- new-capacity raw-data-address new-capacity
         _cells
-        _ raw_realloc                   ; -- new-capacity new-data-address
-        _this_vector_set_data
+        _ raw_realloc                   ; -- new-capacity new-raw-data-address
+        _this_vector_set_raw_data_address
         _this_vector_set_raw_capacity
         pop     this_register
         next
@@ -498,9 +498,9 @@ code vector_insert_nth_destructive, 'vector-insert-nth!' ; element n vector --
         _over                           ; -- element n vector length+1 vector
         _ vector_ensure_capacity        ; -- element n vector
 
-        _vector_data                    ; -- element n data-address
-        _over                           ; -- element n data-address n
-        _duptor                         ; -- element n data-address n           r: -- n
+        _vector_raw_data_address        ; -- element n raw-data-address
+        _over                           ; -- element n raw-data-address n
+        _duptor                         ; -- element n raw-data-address n           r: -- n
         _cells
         _plus                           ; -- element n addr
         _dup
@@ -535,7 +535,7 @@ code vector_remove_nth_mutating, 'vector-remove-nth!'   ; n vector --
 
         _untag_fixnum
 
-        _this_vector_data               ; -- n addr
+        _this_vector_raw_data_address   ; -- n addr
         _swap                           ; -- addr n
         _duptor                         ; -- addr n                     r: -- n
         _oneplus
@@ -551,7 +551,7 @@ code vector_remove_nth_mutating, 'vector-remove-nth!'   ; n vector --
         _ cmove
 
         _zero
-        _this_vector_data
+        _this_vector_raw_data_address
         _this_vector_raw_length
         _oneminus
         _cells
