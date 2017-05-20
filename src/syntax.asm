@@ -424,6 +424,26 @@ code define_test, 'test:'               ; --
         next
 endcode
 
+; ### generic:
+code define_generic, 'generic:', SYMBOL_IMMEDIATE       ; --
+        _ parse_definition_name         ; -- symbol
+
+        _dup
+        _ initialize_generic_function   ; -- symbol
+
+        _dup
+        _ new_wrapper
+        _lit S_symbol_value
+        _lit S_do_generic
+        _ three_array
+        _ array_to_quotation
+        _over
+        _ symbol_set_def                ; -- symbol
+
+        _ compile_word                  ; --
+
+        next
+endcode
 
 ; ### --
 code comment_to_eol, '--', SYMBOL_IMMEDIATE     ; --
