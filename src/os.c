@@ -43,7 +43,7 @@ void os_free(void *ptr)
   free(ptr);
 }
 
-void * os_resize(void *ptr, size_t size)
+void * os_realloc(void *ptr, size_t size)
 {
   return realloc(ptr, size);
 }

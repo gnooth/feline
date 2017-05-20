@@ -25,7 +25,7 @@ subroutine resize                       ; addr size -- new-addr
         mov     rdi, [rbp]              ; addr
 %endif
         lea     rbp, [rbp + BYTES_PER_CELL]
-        xcall   os_resize
+        xcall   os_realloc
         mov     rbx, rax
         test    rbx, rbx
         jz .1

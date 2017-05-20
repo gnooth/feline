@@ -38,10 +38,10 @@ extern os_ms
 extern os_open_file
 extern os_read_char
 extern os_read_file
+extern os_realloc
 extern os_realpath
 extern os_rename_file
 extern os_reposition_file
-extern os_resize
 extern os_resize_file
 extern os_strerror
 extern os_system
