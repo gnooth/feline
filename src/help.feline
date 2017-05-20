@@ -280,6 +280,11 @@ help: pick
     (Feline uses Factor's definition of `pick`. The Forth definition
     is different.)" ;
 
+help: vector-remove
+    "( element vector -- new-vector )
+    Return a new vector containing all the elements of `vector` except
+    those equal to `element`." ;
+
 help: rot
     "( x y z -- y z x )
     Rotate the third entry to the top of the stack." ;

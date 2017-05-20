@@ -564,6 +564,39 @@ code vector_remove_nth_mutating, 'vector-remove-nth!'   ; n vector --
         next
 endcode
 
+; ### vector-remove
+code vector_remove, 'vector-remove'     ; element vector -- new-vector
+        _ check_vector
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- element
+
+        _lit 16
+        _ new_vector_untagged
+        _swap                           ; -- new-vector element
+
+        _this_vector_raw_length
+        _register_do_times .1
+        _raw_loop_index
+        _this_vector_nth_unsafe
+        _twodup
+        _ feline_equal
+        _tagged_if_not .2
+        _pick
+        _ vector_push
+        _else .2
+        _drop
+        _then .2
+
+        _loop .1
+
+        _drop                           ; -- new-vector
+
+        pop     this_register
+        next
+endcode
+
 ; ### vector-push
 code vector_push, 'vector-push'         ; element handle --
 
