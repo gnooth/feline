@@ -15,6 +15,10 @@
 
 file __FILE__
 
+%macro  _handle_to_object_unsafe 0
+        _fetch
+%endmacro
+
 ; Object type numbers
 OBJECT_TYPE_FIXNUM              equ  1
 OBJECT_TYPE_F                   equ  2

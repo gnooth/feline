@@ -15,10 +15,6 @@
 
 file __FILE__
 
-%macro  _handle_to_object_unsafe 0
-        _fetch
-%endmacro
-
 asm_global handle_space_, 0
 asm_global handle_space_free_, 0
 asm_global handle_space_limit_, 0
