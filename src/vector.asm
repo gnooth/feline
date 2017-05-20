@@ -297,8 +297,9 @@ code destroy_vector_unchecked, '~vector-unchecked' ; vector --
         next
 endcode
 
-; ### vector_resize
-subroutine vector_resize                ; vector new-capacity --
+; ### vector-resize
+code vector_resize, 'vector-resize', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; vector new-capacity --
         _swap
         push    this_register
         mov     this_register, rbx
@@ -310,11 +311,12 @@ subroutine vector_resize                ; vector new-capacity --
         _this_vector_set_data
         _this_vector_set_raw_capacity
         pop     this_register
-        ret
-endsub
+        next
+endcode
 
-; ### vector_ensure_capacity
-subroutine vector_ensure_capacity       ; u vector --
+; ### vector-ensure-capacity
+code vector_ensure_capacity, 'vector-ensure-capacity', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; u vector --
         _twodup                         ; -- u vector u vector
         _vector_raw_capacity            ; -- u vector u capacity
         _ugt
@@ -328,8 +330,8 @@ subroutine vector_ensure_capacity       ; u vector --
         _else .1
         _2drop
         _then .1
-        ret
-endsub
+        next
+endcode
 
 ; ### vector-nth-unsafe
 code vector_nth_unsafe, 'vector-nth-unsafe' ; index handle -- element
