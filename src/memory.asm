@@ -15,38 +15,30 @@
 
 file __FILE__
 
-; ### resize
-subroutine resize                       ; addr size -- new-addr
-%ifdef WIN64
-        mov     rdx, rbx                ; size in rdx
-        mov     rcx, [rbp]              ; addr in rcx
-%else
-        mov     rsi, rbx                ; size
-        mov     rdi, [rbp]              ; addr
-%endif
+; ### raw-realloc
+code raw_realloc, 'raw-realloc'         ; addr size -- new-addr
+        mov     arg1_register, rbx
+        mov     arg0_register, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
         xcall   os_realloc
+        test    rax, rax
         mov     rbx, rax
-        test    rbx, rbx
         jz .1
-        ret
+        _return
 .1:
-        ; failed!
         _error "resize failed"
-        ret
-endsub
+        next
+endcode
 
 ; ### raw-allocate
 code raw_allocate, 'raw-allocate'       ; raw-size -- raw-address
         mov     arg0_register, rbx
         xcall   os_malloc
         test    rax, rax
-        jz .1
-        ; allocation succeeded
         mov     rbx, rax
+        jz .1
         _return
 .1:
-        ; failed!
         _error "allocation failed"
         next
 endcode
@@ -54,7 +46,7 @@ endcode
 ; ### raw-free
 code raw_free, 'raw-free'               ; raw-address --
         mov     arg0_register, rbx
-        xcall   os_free                 ; "The free() function returns no value."
         poprbx
+        xcall   os_free
         next
 endcode

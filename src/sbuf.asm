@@ -374,7 +374,7 @@ subroutine sbuf_resize                  ; sbuf new-capacity --
 
         _over                           ; -- new-capacity data-address new-capacity
         _oneplus                        ; terminal null byte
-        _ resize                        ; -- new-capacity new-data-address
+        _ raw_realloc                   ; -- new-capacity new-data-address
 
         _this_sbuf_set_data
         _this_sbuf_set_raw_capacity

@@ -307,7 +307,7 @@ code vector_resize, 'vector-resize', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         _this_vector_data               ; -- new-capacity data-address
         _over                           ; -- new-capacity data-address new-capacity
         _cells
-        _ resize                        ; -- new-capacity new-data-address
+        _ raw_realloc                   ; -- new-capacity new-data-address
         _this_vector_set_data
         _this_vector_set_raw_capacity
         pop     this_register
