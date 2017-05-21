@@ -285,6 +285,11 @@ help: vector-remove
     Return a new vector containing all the elements of `vector` except
     those equal to `element`." ;
 
+help: vector-remove!
+    "( element vector -- vector )
+    Remove all elements of `vector` equal to `element` and return the
+    modified vector." ;
+
 help: rot
     "( x y z -- y z x )
     Rotate the third entry to the top of the stack." ;

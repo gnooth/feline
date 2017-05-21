@@ -597,6 +597,56 @@ code vector_remove, 'vector-remove'     ; element vector -- new-vector
         next
 endcode
 
+; ### vector-remove!
+code vector_remove_mutating, 'vector-remove!'   ; element vector -- vector
+        ; save handle
+        _duptor
+
+        _ check_vector
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- element-to-be-removed
+
+        _lit 0                          ; -- element-to-be-removed count
+        _swap                           ; -- count element-to-be-removed
+
+        _this_vector_raw_length
+        _register_do_times .1
+        _raw_loop_index
+        _this_vector_nth_unsafe         ; -- count element-to-be-removed current-element
+
+        _twodup
+        _ feline_equal
+        _tagged_if .2
+
+        ; remove current element
+        _drop
+
+        _else .2
+
+        ; keep current element
+        _pick                           ; -- count element-to-be-removed current-element count
+        _this_vector_set_nth_unsafe     ; -- count element-to-be-removed
+
+        ; increment count
+        add     qword [rbp], 1
+
+        _then .2
+
+        _loop .1                        ; -- count element-to-be-removed
+
+        _drop                           ; -- count
+        _this_vector_set_raw_length
+
+        pop     this_register
+
+        ; return handle
+        _rfrom
+
+        next
+endcode
+
 ; ### vector-push
 code vector_push, 'vector-push'         ; element handle --
 
