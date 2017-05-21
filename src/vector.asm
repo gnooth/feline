@@ -647,6 +647,14 @@ code vector_remove_mutating, 'vector-remove!'   ; element vector -- vector
         next
 endcode
 
+; ### vector-adjoin
+code vector_adjoin, 'vector-adjoin'     ; element set --
+        _dupd
+        _ vector_remove_mutating
+        _ vector_push
+        next
+endcode
+
 ; ### vector-push
 code vector_push, 'vector-push'         ; element handle --
 

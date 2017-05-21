@@ -280,16 +280,6 @@ help: pick
     (Feline uses Factor's definition of `pick`. The Forth definition
     is different.)" ;
 
-help: vector-remove
-    "( element vector -- new-vector )
-    Return a new vector containing all the elements of `vector` except
-    those equal to `element`." ;
-
-help: vector-remove!
-    "( element vector -- vector )
-    Remove all elements of `vector` equal to `element` and return the
-    modified vector." ;
-
 help: rot
     "( x y z -- y z x )
     Rotate the third entry to the top of the stack." ;
@@ -374,3 +364,18 @@ help: until
     "( quot1 quot2 -- )
     Call `quot1`. If `quot1` returns `f`, call `quot2`. Repeat until `quot1`
     returns a true value." ;
+
+help: vector-adjoin
+    "( element vector -- )
+    Make `element` the last element of `vector`, adding it if necessary and
+    removing any other elements that are equal to it." ;
+
+help: vector-remove
+    "( element vector -- new-vector )
+    Return a new vector containing all the elements of `vector` except
+    those equal to `element`." ;
+
+help: vector-remove!
+    "( element vector -- vector )
+    Remove all elements of `vector` equal to `element` and return the
+    modified vector." ;
