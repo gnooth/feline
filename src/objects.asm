@@ -463,10 +463,9 @@ code tag_fixnum, 'tag-fixnum'           ; n -- tagged
 endcode
 
 ; ### untag-fixnum
-code untag_fixnum, 'untag-fixnum'       ; tagged -- n
+inline untag_fixnum, 'untag-fixnum'     ; tagged -- n
         _untag_fixnum
-        next
-endcode
+endinline
 
 ; ### tag-char
 code tag_char, 'tag-char'               ; char -- tagged
