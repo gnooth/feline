@@ -35,23 +35,3 @@ code zcount, 'zcount'                   ; zaddr -- zaddr len
         _ zstrlen
         next
 endcode
-
-; ### erase
-code erase, 'erase'                     ; addr u --
-; CORE EXT
-%ifdef WIN64
-        push    rdi                     ; rdi is callee-saved on Windows
-%endif
-        xor     al, al                  ; 0 in al
-        mov     rcx, rbx                ; count in rcx
-        mov     rdi, [rbp]
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
-        jrcxz   .1                      ; do nothing if count = 0
-        rep     stosb
-.1:
-%ifdef WIN64
-        pop     rdi
-%endif
-        next
-endcode
