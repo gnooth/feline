@@ -316,7 +316,7 @@ new_hashtable_untagged:
         ; 8 cells (object header, count, deleted, capacity, data address,
         ; hash function, test function, raw mask)
         _lit 8
-        _ allocate_cells
+        _ raw_allocate_cells
         push    this_register
         mov     this_register, rbx
         poprbx

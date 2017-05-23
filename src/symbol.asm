@@ -280,7 +280,7 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
 ; value, code address, code size, flags, file, line number
 
         _lit 12
-        _ allocate_cells                ; -- name vocab object-address
+        _ raw_allocate_cells            ; -- name vocab object-address
 
         push    this_register
         mov     this_register, rbx

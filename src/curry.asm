@@ -157,7 +157,7 @@ code curry, 'curry'                     ; object callable -- curry
 ; 4 cells: object header, object, callable, code address
 
         _lit 4
-        _ allocate_cells
+        _ raw_allocate_cells
 
         push    this_register
         mov     this_register, rbx

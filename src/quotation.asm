@@ -140,7 +140,7 @@ code array_to_quotation, 'array>quotation'      ; array -- quotation
 ; 4 cells: object header, array, raw code address, raw code size
 
         _lit 4
-        _ allocate_cells
+        _ raw_allocate_cells
 
         push    this_register
         mov     this_register, rbx

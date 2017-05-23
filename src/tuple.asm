@@ -100,7 +100,7 @@ code new_tuple, '<tuple>'               ; class-symbol -- handle
         _dup
         ; Slot 0 is object header, slot 1 is class.
         add     rbx, 2
-        _ allocate_cells                ; -- layout untagged-size tuple
+        _ raw_allocate_cells            ; -- layout untagged-size tuple
 
         push    this_register
         popd    this_register           ; -- layout untagged-size

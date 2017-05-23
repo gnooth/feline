@@ -111,7 +111,7 @@ endcode
 code new_vocab, '<vocab>'               ;  name -- vocab
 ; 3 cells (object header, name, hashtable)
         _lit 3
-        _ allocate_cells
+        _ raw_allocate_cells
         push    this_register
         mov     this_register, rbx
         poprbx

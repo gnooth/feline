@@ -112,7 +112,7 @@ endcode
 ; ### <slice>
 code new_slice, '<slice>'               ; from to seq -- slice
         _lit 4
-        _ allocate_cells                ; -- from to seq object-address
+        _ raw_allocate_cells            ; -- from to seq object-address
 
         push    this_register
         mov     this_register, rbx

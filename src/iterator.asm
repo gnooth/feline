@@ -112,7 +112,7 @@ code new_iterator, '<iterator>'         ; sequence -- iterator
 ; 3 cells: object header, string, raw index, line, line start, file
 
         _lit 3
-        _ allocate_cells
+        _ raw_allocate_cells
 
         push    this_register
         mov     this_register, rbx

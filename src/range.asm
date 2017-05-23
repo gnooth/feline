@@ -92,7 +92,7 @@ code new_range, '<range>'               ; start length -- range
         _ verify_fixnum                 ; -- length start
 
         _lit 3
-        _ allocate_cells                ; -- length start object-address
+        _ raw_allocate_cells            ; -- length start object-address
 
         push    this_register
         mov     this_register, rbx

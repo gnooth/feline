@@ -172,7 +172,7 @@ endcode
 ; ### make_sbuf_internal
 subroutine make_sbuf_internal   ; untagged-capacity -- sbuf
         _lit 4
-        _ allocate_cells                ; -- capacity addr
+        _ raw_allocate_cells            ; -- capacity addr
 
         push    this_register
         mov     this_register, rbx

@@ -226,14 +226,14 @@ code new_vector, '<vector>'             ; capacity -- handle
 new_vector_untagged:
 
         _lit 4
-        _ allocate_cells
+        _ raw_allocate_cells
         push    this_register
         mov     this_register, rbx
         poprbx                          ; -- raw-capacity
         _this_object_set_raw_type_number OBJECT_TYPE_VECTOR
         _this_object_set_flags OBJECT_ALLOCATED_BIT
         _dup
-        _ allocate_cells                ; -- raw-capacity raw-data-address
+        _ raw_allocate_cells            ; -- raw-capacity raw-data-address
         _this_vector_set_raw_data_address
         _this_vector_set_raw_capacity   ; --
 

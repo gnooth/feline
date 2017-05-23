@@ -291,7 +291,7 @@ code new_lexer, '<lexer>'               ; string -- lexer
 ; 6 cells: object header, string, raw index, line, line start, file
 
         _lit 6
-        _ allocate_cells
+        _ raw_allocate_cells
 
         push    this_register
         mov     this_register, rbx

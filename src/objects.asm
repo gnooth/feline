@@ -21,8 +21,8 @@ code allocate_object, 'allocate-object' ; size -- object
         next
 endcode
 
-; ### allocate-cells
-code allocate_cells, 'allocate-cells', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; ### raw-allocate-cells
+code raw_allocate_cells, 'raw-allocate-cells', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; n -- address
 ; Argument and return value are untagged.
         _dup
