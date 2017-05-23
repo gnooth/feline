@@ -25,13 +25,13 @@ endcode
 code allocate_cells, 'allocate-cells', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; n -- address
 ; Argument and return value are untagged.
-        _cells
         _dup
-        _ feline_allocate_untagged      ; -- bytes address
-        _swap                           ; -- address bytes
-        _dupd                           ; -- address address bytes
-        _ erase                         ; -- address
-        ret
+        _cells                          ; -- cells bytes
+        _ raw_allocate
+        _swap                           ; -- address cells
+        _dupd                           ; -- address address cells
+        _ raw_erase_cells
+        next
 endcode
 
 ; ### object?
