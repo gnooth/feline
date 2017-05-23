@@ -70,3 +70,38 @@ code erase, 'erase'                     ; addr u --
 %endif
         next
 endcode
+
+; ### raw-erase-cells
+code raw_erase_cells, 'raw-erase-cells' ; raw-address raw-count --
+%ifdef WIN64
+        push    rdi                     ; rdi is callee-saved on Windows
+%endif
+        xor     eax, eax                ; 0 in rax
+        mov     rcx, rbx                ; count in rcx
+        mov     rdi, [rbp]
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        jrcxz   .1                      ; do nothing if count = 0
+
+        align   DEFAULT_CODE_ALIGNMENT
+.2:
+        mov     [rdi], rax
+        sub     rcx, 1
+        jz      .1
+        mov     [rdi + BYTES_PER_CELL], rax
+        sub     rcx, 1
+        jz      .1
+        mov     [rdi + BYTES_PER_CELL * 2], rax
+        sub     rcx, 1
+        jz      .1
+        mov     [rdi + BYTES_PER_CELL * 3], rax
+        add     rdi, BYTES_PER_CELL * 4
+        sub     rcx, 1
+        jz      .1
+        jmp     .2
+.1:
+%ifdef WIN64
+        pop     rdi
+%endif
+        next
+endcode
