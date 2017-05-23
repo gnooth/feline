@@ -405,15 +405,13 @@ code lexer_string_skip_whitespace, 'lexer-string-skip-whitespace' ; lexer -- ind
         poprbx
 
         _this_lexer_raw_index
-        _this_lexer_string_raw_length
-        _twodup
-        _ge
-        _if .1
-        _2drop
-        _f
+        _this_lexer_string_raw_length   ; -- untagged-index untagged-length
+        cmp     rbx, [rbp]
+        ja      .1
+        _drop
+        mov     ebx, f_value
         jmp     .exit
-        _then .1                        ; -- untagged-start-index untagged-length
-
+.1:
         _swap
         _register_do_range .2
         _raw_loop_index
@@ -433,13 +431,13 @@ code lexer_string_skip_whitespace, 'lexer-string-skip-whitespace' ; lexer -- ind
 
 .3:
         ; char is not a newline
-        _lit 32
-        _ugt
-        _if .5
+        cmp     rbx, 32
+        poprbx
+        jna     .4
         _tagged_loop_index
         _unloop
         jmp     .exit
-        _then .5
+
 .4:
         _loop .2
 
