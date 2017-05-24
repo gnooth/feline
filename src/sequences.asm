@@ -700,8 +700,7 @@ code index, 'index'                     ; obj seq -- index/f
         jmp     .exit
         _then .2
         _loop .1
-        _drop
-        _f
+        mov     ebx, f_value
 .exit:
         pop     this_register
         next
@@ -728,8 +727,7 @@ code index_from, 'index-from'           ; obj start-index seq -- index/f
         jmp     .exit
         _then .2
         _loop .1
-        _drop
-        _f
+        mov     ebx, f_value
 .exit:
         pop     this_register
         next
@@ -761,7 +759,7 @@ code member_eq?, 'member-eq?'           ; obj seq -- index/f
         jmp     .exit
 .2:
         _loop .1
-        mov     rbx, f_value
+        mov     ebx, f_value
 .exit:
         pop     this_register
         next
