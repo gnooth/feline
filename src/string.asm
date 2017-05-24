@@ -396,27 +396,30 @@ code string_nth_unsafe, 'string-nth-unsafe' ; tagged-index handle-or-string -- t
 endcode
 
 ; ### string-nth
-code string_nth, 'string-nth'           ; tagged-index handle-or-string -- tagged-char
+code string_nth, 'string-nth'   ; tagged-index string -- tagged-char
 ; Return character at index.
 
-        _swap
+        _tor
         _check_index
-        _swap                           ; -- index string
+        _rfrom                          ; -- raw-index string
 
 string_nth_untagged:
 
-        _ check_string                  ; -- tagged-index string
+        _ check_string
 
-        _twodup
-        _string_raw_length
-        _ult_if .1
-        _string_nth_unsafe
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -- raw-index
+        cmp     rbx, this_string_raw_length
+        jnb     .1
+        _this_string_nth_unsafe
         _tag_char
-        _else .1
-        _2drop
-        _error "index out of bounds"
-        _then .1
+        pop     this_register
+        _return
 
+.1:
+        pop     this_register
+        _error "index out of bounds"
         next
 endcode
 

@@ -2452,4 +2452,16 @@ test: vector-adjoin-test-1
 
 vector-adjoin-test-1
 
+test: string-nth-test-1
+    "this is a test" >local: s
+    0 s string-nth 't' assert-eq
+    1 s string-nth 'h' assert-eq
+    13 s string-nth 't' assert-eq
+
+    [ -1 s string-nth ] assert-must-fail
+    [ 14 s string-nth ] assert-must-fail
+;
+
+string-nth-test-1
+
 ?nl "Reached end of test.feline" write-string
