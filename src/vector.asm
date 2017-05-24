@@ -82,14 +82,6 @@ file __FILE__
         mov     rbx, [rax + BYTES_PER_CELL * rbx]
 %endmacro
 
-%macro  _vector_set_nth_unsafe 0        ; element index vector --
-        _vector_raw_data_address
-        _swap
-        _cells
-        _plus
-        _store
-%endmacro
-
 %macro  _this_vector_set_nth_unsafe 0   ; element index --
         mov     rdx, [rbp]
         mov     rax, this_vector_raw_data_address
