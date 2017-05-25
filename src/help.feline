@@ -379,3 +379,8 @@ help: vector-remove!
     "( element vector -- vector )
     Remove all elements of `vector` equal to `element` and return the
     modified vector." ;
+
+help: while
+    "( pred body -- )
+    Call `pred`. If `pred` returns true (that is, not `f`), call `body`.
+    Repeat until `pred` returns `f`." ;
