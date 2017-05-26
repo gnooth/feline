@@ -395,7 +395,7 @@ code mark_static_symbols, 'mark-static-symbols'
         next
 endcode
 
-asm_global in_gc?_
+asm_global in_gc?_, f_value
 
 ; ### in-gc?
 code in_gc?, 'in-gc?'                   ; -- ?
