@@ -395,8 +395,14 @@ code mark_static_symbols, 'mark-static-symbols'
         next
 endcode
 
+asm_global in_gc?_
+
 ; ### in-gc?
-value in_gc?, 'in-gc?', 0
+code in_gc?, 'in-gc?'                   ; -- ?
+        pushrbx
+        mov     rbx, [in_gc?_]
+        next
+endcode
 
 ; ### gc-start-ticks
 value gc_start_ticks, 'gc-start-ticks', 0
@@ -461,8 +467,7 @@ code gc, 'gc'                           ; --
         _rdtsc
         _to gc_start_cycles
 .2:
-        _true
-        _to in_gc?
+        mov     qword [in_gc?_], t_value
 
         ; data stack
         _ mark_data_stack
@@ -487,7 +492,7 @@ code gc, 'gc'                           ; --
 
         inc     qword [gc_count_value]
 
-        _zeroto in_gc?
+        mov     qword [in_gc?_], f_value
 
         mov     qword [S_gc_pending_symbol_value], f_value
 

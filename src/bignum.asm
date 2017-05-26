@@ -95,7 +95,7 @@ subroutine destroy_bignum_unchecked     ; bignum --
         xcall   c_bignum_free
 
         _ in_gc?
-        _zeq_if .1
+        _tagged_if_not .1
         _dup
         _ release_handle_for_object
         _then .1

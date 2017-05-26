@@ -291,7 +291,7 @@ code destroy_string_unchecked, '~string-unchecked' ; string --
         _object_allocated?
         _if .1
         _ in_gc?
-        _zeq_if .2
+        _tagged_if_not .2
         _dup
         _ release_handle_for_object
         _then .2

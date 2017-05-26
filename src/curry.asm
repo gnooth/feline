@@ -221,7 +221,7 @@ code destroy_curry_unchecked, '~curry-unchecked' ; curry --
         _then .1
 
         _ in_gc?
-        _zeq_if .2
+        _tagged_if_not .2
         _dup
         _ release_handle_for_object
         _then .2

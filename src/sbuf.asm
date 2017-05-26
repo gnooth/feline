@@ -287,7 +287,7 @@ code destroy_sbuf_unchecked, '~sbuf-unchecked' ; sbuf --
         _ raw_free
 
         _ in_gc?
-        _zeq_if .4
+        _tagged_if_not .4
         _dup
         _ release_handle_for_object
         _then .4

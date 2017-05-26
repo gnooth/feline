@@ -378,7 +378,7 @@ code destroy_hashtable_unchecked, '~hashtable-unchecked'        ; hashtable --
         _ raw_free                      ; -- hashtable
 
         _ in_gc?
-        _zeq_if .1
+        _tagged_if_not .1
         _dup
         _ release_handle_for_object
         _then .1

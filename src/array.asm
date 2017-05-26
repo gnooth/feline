@@ -253,7 +253,7 @@ endcode
 ; ### ~array-unchecked
 code destroy_array_unchecked, '~array-unchecked' ; array --
         _ in_gc?
-        _zeq_if .1
+        _tagged_if_not .1
         _dup
         _ release_handle_for_object
         _then .1

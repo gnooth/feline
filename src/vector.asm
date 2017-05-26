@@ -274,7 +274,7 @@ code destroy_vector_unchecked, '~vector-unchecked' ; vector --
         _ raw_free                      ; -- vector
 
         _ in_gc?
-        _zeq_if .1
+        _tagged_if_not .1
         _dup
         _ release_handle_for_object
         _then .1
