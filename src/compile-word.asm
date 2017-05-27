@@ -296,8 +296,7 @@ code compile_literal, 'compile-literal' ; literal --
 endcode
 
 ; ### compile-inline
-code compile_inline, 'compile-inline'   ; tagged-code-address tagged-code-size --
-        _untag_2_fixnums                ; -- addr size
+code compile_inline, 'compile-inline'   ; raw-code-address raw-code-size --
         _oneminus                       ; adjust size to exclude ret instruction
         _tuck                           ; -- size addr size
         _pc
@@ -314,9 +313,9 @@ code compile_primitive, 'compile-primitive' ; symbol --
         _ symbol_inline?
         _tagged_if .1
         _dup
-        _ symbol_code_address
+        _ symbol_raw_code_address
         _swap
-        _ symbol_code_size
+        _ symbol_raw_code_size
         _ compile_inline
         _else .1
         _ symbol_raw_code_address
