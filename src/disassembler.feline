@@ -500,6 +500,25 @@ last-word $29 install-handler
 
 last-word $2b install-handler
 
+: .30
+    -- /r
+    -- dest is r/m8
+    -- source is r8
+    "xor" !> mnemonic
+    8 dup !> ssize !> dsize
+    !modrm-byte
+    modrm-mod {
+        { 3 [
+            modrm-rm register-reg !> sreg
+            modrm-rm register-rm !> dreg
+        ] }
+        [ unsupported ]
+    } case
+    .inst
+;
+
+last-word $30 install-handler
+
 : .31
     set-instruction-size
    "xor" !> mnemonic
@@ -926,6 +945,13 @@ last-word $99 install-handler
     .inst ;
 
 last-word $a6 install-handler
+
+: .aa
+    "stosb" !> mnemonic
+    0 !> #operands
+    .inst ;
+
+last-word $aa install-handler
 
 : .ab
     prefix zero? "stosd" "stosq" ? !> mnemonic
