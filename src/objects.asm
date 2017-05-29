@@ -142,31 +142,6 @@ code object_type, 'object-type'         ; x -- type-number
         next
 endcode
 
-; ### type
-code type, 'type'                       ; object -- object
-        _dup
-        _ object_raw_type
-
-        _dup
-        _eq? OBJECT_TYPE_FIXNUM
-        _tagged_if .1
-        _write "fixnum"
-        _drop
-        _return
-        _then .1
-
-        _dup
-        _eq? OBJECT_TYPE_BIGNUM
-        _tagged_if .2
-        _drop
-        _write "bignum"
-        _return
-        _then .2
-
-        _drop
-        next
-endcode
-
 ; ### destroy-object-unchecked
 code destroy_object_unchecked, 'destroy-object-unchecked', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; object --
