@@ -81,7 +81,7 @@ code check_type, 'check-type'           ; handle -- type
         next
 endcode
 
-; make-type
+; ### make-type
 code make_type, 'make-type', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; name typecode -- type
         _lit 3
@@ -121,7 +121,7 @@ feline_global types, 'types'
         _ vector_set_nth_untagged
 %endmacro
 
-; initialize-types
+; ### initialize-types
 code initialize_types, 'initialize-types', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE    ; --
         _lit 64
         _ new_vector_untagged
@@ -151,7 +151,7 @@ code initialize_types, 'initialize-types', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE    
         next
 endcode
 
-; type>string
+; ### type>string
 code type_to_string, 'type>string'      ; type --string
         _ check_type
         _type_name
