@@ -167,20 +167,6 @@ code type, 'type'                       ; object -- object
         next
 endcode
 
-; ### type?
-code type?, 'type?'                     ; x type-number -- ?
-        _swap
-        _ deref                         ; -- type-number object-address/0
-        _?dup_if .1
-        _object_raw_type_number
-        _eq?
-        _return
-        _then .1
-
-        mov     ebx, f_value
-        next
-endcode
-
 ; ### destroy-object-unchecked
 code destroy_object_unchecked, 'destroy-object-unchecked', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; object --
