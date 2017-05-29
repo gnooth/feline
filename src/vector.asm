@@ -969,14 +969,6 @@ code vector_to_string, 'vector>string'  ; vector -- string
         next
 endcode
 
-; ### .vector
-code dot_vector, '.vector'              ; vector --
-        _ verify_vector
-        _ vector_to_string
-        _ write_string
-        next
-endcode
-
 ; ### vector-clone
 code vector_clone, 'vector-clone'       ; old -- new
         _dup
