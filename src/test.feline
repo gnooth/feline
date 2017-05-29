@@ -1037,27 +1037,6 @@ test: in-bounds?-test-1 ( -- )
 
 in-bounds?-test-1
 
-: %foo ( -- ) 42 ;
-
-: %bar ( -- ) %foo ;
-
-test: redefinition-test-1 ( -- )
-    %foo 42 assert=
-    %bar 42 assert=
-;
-
-redefinition-test-1
-
--- redefine %foo
-: %foo 87 ;
-
-test: redefinition-test-2
-    %foo 87 assert=
-    %bar 87 assert=
-;
-
-redefinition-test-2
-
 test: empty?-test-1
     { } empty? assert-true
     { 1 } empty? assert-false
