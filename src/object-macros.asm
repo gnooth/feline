@@ -20,6 +20,7 @@ file __FILE__
 %endmacro
 
 ; Object type numbers
+OBJECT_TYPE_TYPE                equ  0
 OBJECT_TYPE_FIXNUM              equ  1
 OBJECT_TYPE_F                   equ  2
 OBJECT_TYPE_VECTOR              equ  3

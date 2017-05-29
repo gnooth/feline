@@ -142,6 +142,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	time.asm \
 	tools.asm \
 	tuple.asm \
+	type.asm \
 	vocab.asm \
 	vocabs.asm \
 	vector.asm \

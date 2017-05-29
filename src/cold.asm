@@ -179,6 +179,8 @@ code cold, 'cold'                       ; --
 
         _ initialize_gc_dispatch_table
 
+        _ initialize_types
+
         _ initialize_globals
 
         _ initialize_vocabs

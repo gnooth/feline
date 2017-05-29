@@ -44,6 +44,7 @@ IN_FELINE
 %include "key.asm"
 %include "vocabs.asm"
 %include "object-macros.asm"
+%include "type.asm"
 %include "vector.asm"
 %include "handles.asm"
 %include "locals.asm"

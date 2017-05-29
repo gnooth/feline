@@ -99,3 +99,11 @@ code error_not_hashtable, 'error-not-hashtable' ; x --
         _ error
         next
 endcode
+
+; ### error-not-type
+code error_not_type, 'error-not-type'           ; x --
+        _quote "not a type"
+        _ format_type_error
+        _ error
+        next
+endcode

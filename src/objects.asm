@@ -142,6 +142,14 @@ code object_type, 'object-type'         ; x -- type-number
         next
 endcode
 
+; ### type-of
+code type_of, 'type-of'         ; object -- type
+        _ object_raw_type
+        _ types
+        _ vector_nth_untagged
+        next
+endcode
+
 ; ### destroy-object-unchecked
 code destroy_object_unchecked, 'destroy-object-unchecked', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; object --
@@ -392,6 +400,13 @@ code object_to_string, 'object>string'  ; object -- string
         _ iterator_to_string
         _return
         _then .20
+
+        _dup
+        _ type?
+        _tagged_if .21
+        _ type_to_string
+        _return
+        _then .21
 
         ; give up
         _tag_fixnum
