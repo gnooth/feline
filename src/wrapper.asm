@@ -17,7 +17,7 @@ file __FILE__
 
 ; ### <wrapper>
 code new_wrapper, '<wrapper>'           ; obj -- wrapper
-; 2 cells: object header, wrapped
+; 2 cells: object header, wrapped object
         _lit 2
         _cells
         _dup
@@ -34,7 +34,7 @@ code new_wrapper, '<wrapper>'           ; obj -- wrapper
         pushrbx
         mov     rbx, this_register      ; -- wrapper
 
-        ; Return handle.
+        ; return handle
         _ new_handle                    ; -- handle
 
         pop     this_register
@@ -43,16 +43,24 @@ endcode
 
 ; ### wrapper?
 code wrapper?, 'wrapper?'               ; handle -- ?
-        _lit OBJECT_TYPE_WRAPPER
-        _ type?
+        _ deref                         ; -- raw-object/0
+        test    rbx, rbx
+        jz      .1
+        movzx   eax, word [rbx]
+        cmp     eax, OBJECT_TYPE_WRAPPER
+        jne     .1
+        mov     ebx, t_value
+        _return
+.1:
+        mov     ebx, f_value
         next
 endcode
 
 ; ### wrapped
-code wrapped, 'wrapped'                 ; wrapper -- wrapped
+code wrapped, 'wrapped'                 ; wrapper -- wrapped-object
         _dup
         _ wrapper?
-        _if .1
+        _tagged_if .1
         _handle_to_object_unsafe
         _slot1
         _else .1
