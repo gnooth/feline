@@ -65,7 +65,7 @@ code verify_unboxed_string, 'verify-unboxed-string' ; string -- string
         poprbx
         je      error_not_string
 
-        movzx   eax, OBJECT_TYPE_NUMBER_WORD
+        movzx   eax, word [rbx]
         cmp     eax, OBJECT_TYPE_STRING
         jne     error_not_string
 

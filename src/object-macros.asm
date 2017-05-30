@@ -58,9 +58,7 @@ OBJECT_ALLOCATED_BIT            equ 4
 
 ; Slot 0 is the object header.
 
-; The object's raw type number is stored in the first two bytes of the object header.
-
-%define OBJECT_TYPE_NUMBER_WORD word [rbx]
+; The object's raw typecode is stored in the first two bytes of the object header.
 
 %macro  _object_raw_type_number 0       ; -- raw-type-number
         _wfetch                         ; 16 bits
