@@ -60,7 +60,7 @@ code quotation?, 'quotation?'                 ; x -- ?
         _tagged_if .1
         _handle_to_object_unsafe        ; -- object/0
         _?dup_if .2
-        _object_raw_type_number
+        _object_raw_typecode
         _eq? OBJECT_TYPE_QUOTATION
         _return
         _then .2
@@ -81,7 +81,7 @@ code quotation?, 'quotation?'                 ; x -- ?
         _then .3
 
         ; -- object
-        _object_raw_type_number
+        _object_raw_typecode
         _eq? OBJECT_TYPE_QUOTATION
 
         next
@@ -105,7 +105,7 @@ code verify_unboxed_quotation, 'verify-unboxed-quotation'       ; quotation -- q
         _then .1
 
         _dup
-        _object_raw_type_number
+        _object_raw_typecode
         cmp     rbx, OBJECT_TYPE_QUOTATION
         poprbx
         jne .2
@@ -146,7 +146,7 @@ code array_to_quotation, 'array>quotation'      ; array -- quotation
         mov     this_register, rbx
         poprbx
 
-        _this_object_set_raw_type_number OBJECT_TYPE_QUOTATION
+        _this_object_set_raw_typecode OBJECT_TYPE_QUOTATION
 
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 

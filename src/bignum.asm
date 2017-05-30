@@ -25,7 +25,7 @@ code bignum?, 'bignum?' ; handle -- ?
         _tagged_if .1
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
-        _object_raw_type_number
+        _object_raw_typecode
         _lit OBJECT_TYPE_BIGNUM
         _eq?
         _return

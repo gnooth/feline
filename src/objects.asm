@@ -109,7 +109,7 @@ code object_raw_typecode, 'object-raw-typecode' ; x -- raw-typecode
         _handle_to_object_unsafe
         test    rbx, rbx
         jz      error_empty_handle
-        _object_raw_type_number
+        _object_raw_typecode
         _return
         _then .3
 

@@ -46,7 +46,7 @@ code vocab?, 'vocab?'                   ; handle -- ?
         _tagged_if .1
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
-        _object_raw_type_number
+        _object_raw_typecode
         _eq? OBJECT_TYPE_VOCAB
         _return
         _then .2
@@ -71,7 +71,7 @@ code check_vocab, 'check-vocab'         ; handle -- vocab
         _handle_to_object_unsafe        ; -- object/0
         _dup_if .2
         _dup
-        _object_raw_type_number
+        _object_raw_typecode
         _lit OBJECT_TYPE_VOCAB
         _equal
         _if .3
@@ -93,7 +93,7 @@ code verify_vocab, 'verify-vocab'       ; handle -- handle
         _dup
         _handle_to_object_unsafe        ; -- handle object/0
         _dup_if .2
-        _object_raw_type_number
+        _object_raw_typecode
         _lit OBJECT_TYPE_VOCAB
         _equal
         _if .3
@@ -116,7 +116,7 @@ code new_vocab, '<vocab>'               ;  name -- vocab
         mov     this_register, rbx
         poprbx
 
-        _this_object_set_raw_type_number OBJECT_TYPE_VOCAB
+        _this_object_set_raw_typecode OBJECT_TYPE_VOCAB
 
         _this_vocab_set_name
 

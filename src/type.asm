@@ -91,7 +91,7 @@ code make_type, 'make-type', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         mov     this_register, rbx
         poprbx                          ; -- name typecode
 
-        _this_object_set_raw_type_number OBJECT_TYPE_TYPE
+        _this_object_set_raw_typecode OBJECT_TYPE_TYPE
 
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 

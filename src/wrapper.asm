@@ -27,7 +27,7 @@ code new_wrapper, '<wrapper>'           ; obj -- wrapper
         _swap
         _ erase
 
-        _this_object_set_raw_type_number OBJECT_TYPE_WRAPPER
+        _this_object_set_raw_typecode OBJECT_TYPE_WRAPPER
 
         _this_set_slot1
 

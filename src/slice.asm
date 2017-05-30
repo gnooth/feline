@@ -60,7 +60,7 @@ code slice?, 'slice?'                   ; handle -- ?
         _tagged_if .1
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
-        _object_raw_type_number
+        _object_raw_typecode
         _lit OBJECT_TYPE_SLICE
         _eq?
         _return
@@ -96,7 +96,7 @@ code check_slice, 'check-slice' ; handle -- slice
         _handle_to_object_unsafe        ; -- object/0
         _dup_if .2
         _dup
-        _object_raw_type_number
+        _object_raw_typecode
         _lit OBJECT_TYPE_SLICE
         _equal
         _if .3
@@ -118,7 +118,7 @@ code new_slice, '<slice>'               ; from to seq -- slice
         mov     this_register, rbx
         poprbx                          ; -- from to seq
 
-        _this_object_set_raw_type_number OBJECT_TYPE_SLICE
+        _this_object_set_raw_typecode OBJECT_TYPE_SLICE
 
         _this_slice_set_seq             ; -- from to
 

@@ -54,7 +54,7 @@ code iterator?, 'iterator?'             ; handle -- ?
         _tagged_if .1
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
-        _object_raw_type_number
+        _object_raw_typecode
         _eq? OBJECT_TYPE_ITERATOR
         _return
         _then .2
@@ -118,7 +118,7 @@ code new_iterator, '<iterator>'         ; sequence -- iterator
         mov     this_register, rbx
         poprbx
 
-        _this_object_set_raw_type_number OBJECT_TYPE_ITERATOR
+        _this_object_set_raw_typecode OBJECT_TYPE_ITERATOR
 
         _this_iterator_set_sequence
 

@@ -262,7 +262,7 @@ code mark_raw_object, 'mark-raw-object'         ; raw-object --
         _set_marked_bit
 
         _dup
-        _object_raw_type_number
+        _object_raw_typecode
         _from_global gc_dispatch_table
         _handle_to_object_unsafe
         _array_nth_unsafe
