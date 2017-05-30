@@ -150,6 +150,14 @@ code type_of, 'type-of'         ; object -- type
         next
 endcode
 
+; ### .t
+code dot_t, '.t'                ; object -- object
+        _dup
+        _ type_of
+        _ dot_object
+        next
+endcode
+
 ; ### destroy-object-unchecked
 code destroy_object_unchecked, 'destroy-object-unchecked', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; object --
