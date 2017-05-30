@@ -326,13 +326,19 @@ code parse_definition_name, 'parse-definition-name'     ; -- symbol
         next
 endcode
 
+asm_global in_definition?_, f_value
+
 ; ### in-definition?
-feline_global in_definition?, 'in-definition?'
+code in_definition?, 'in-definition?'   ; -- ?
+        pushrbx
+        mov     rbx, [in_definition?_]
+        next
+endcode
 
 ; ### parse-definition
-code parse_definition, 'parse-definition' ; -- vector
-        _t
-        _to_global in_definition?
+code parse_definition, 'parse-definition'       ; -- vector
+
+        mov     qword [in_definition?_], t_value
 
         _zeroto using_locals?
 
@@ -377,8 +383,7 @@ code parse_definition, 'parse-definition' ; -- vector
         _f
         _to_global local_names
 
-        _f
-        _to_global in_definition?
+        mov     qword [in_definition?_], f_value
 
         next
 endcode
