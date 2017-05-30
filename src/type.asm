@@ -127,26 +127,26 @@ code initialize_types, 'initialize-types', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE    
         _ new_vector_untagged
         _to_global types
 
-        _add_type "Type", OBJECT_TYPE_TYPE
-        _add_type "Fixnum", OBJECT_TYPE_FIXNUM
-        _add_type "Boolean", OBJECT_TYPE_F
-        _add_type "Vector", OBJECT_TYPE_VECTOR
-        _add_type "String", OBJECT_TYPE_STRING
-        _add_type "Sbuf", OBJECT_TYPE_SBUF
-        _add_type "Array", OBJECT_TYPE_ARRAY
-        _add_type "Hashtable", OBJECT_TYPE_HASHTABLE
-        _add_type "Bignum", OBJECT_TYPE_BIGNUM
-        _add_type "Symbol", OBJECT_TYPE_SYMBOL
-        _add_type "Vocab", OBJECT_TYPE_VOCAB
-        _add_type "Quotation", OBJECT_TYPE_QUOTATION
-        _add_type "Wrapper", OBJECT_TYPE_WRAPPER
-        _add_type "Tuple", OBJECT_TYPE_TUPLE
-        _add_type "Curry", OBJECT_TYPE_CURRY
-        _add_type "Slice", OBJECT_TYPE_SLICE
-        _add_type "Range", OBJECT_TYPE_RANGE
-        _add_type "Lexer", OBJECT_TYPE_LEXER
-        _add_type "Float", OBJECT_TYPE_FLOAT
-        _add_type "Iterator", OBJECT_TYPE_ITERATOR
+        _add_type "type", OBJECT_TYPE_TYPE
+        _add_type "fixnum", OBJECT_TYPE_FIXNUM
+        _add_type "boolean", OBJECT_TYPE_F
+        _add_type "vector", OBJECT_TYPE_VECTOR
+        _add_type "string", OBJECT_TYPE_STRING
+        _add_type "sbuf", OBJECT_TYPE_SBUF
+        _add_type "array", OBJECT_TYPE_ARRAY
+        _add_type "hashtable", OBJECT_TYPE_HASHTABLE
+        _add_type "bignum", OBJECT_TYPE_BIGNUM
+        _add_type "symbol", OBJECT_TYPE_SYMBOL
+        _add_type "vocab", OBJECT_TYPE_VOCAB
+        _add_type "quotation", OBJECT_TYPE_QUOTATION
+        _add_type "wrapper", OBJECT_TYPE_WRAPPER
+        _add_type "tuple", OBJECT_TYPE_TUPLE
+        _add_type "curry", OBJECT_TYPE_CURRY
+        _add_type "slice", OBJECT_TYPE_SLICE
+        _add_type "range", OBJECT_TYPE_RANGE
+        _add_type "lexer", OBJECT_TYPE_LEXER
+        _add_type "float", OBJECT_TYPE_FLOAT
+        _add_type "iterator", OBJECT_TYPE_ITERATOR
 
         next
 endcode
@@ -157,19 +157,12 @@ code make_type_symbol, 'make-type-symbol'       ; type --
         _ check_type
         _type_name
         _ feline_vocab
-        _ new_symbol                    ; type symbol --
-        _tuck
-        _ symbol_set_value              ; symbol --
+        _ ensure_symbol                 ; type symbol --
 
-        _dup
-        _ new_wrapper
-        _lit S_symbol_value
-        _ two_array
-        _ array_to_quotation
-        _over
-        _ symbol_set_def
+        _quote "type"
+        _ swap                          ; type "type" symbol --
+        _ symbol_set_prop
 
-        _ compile_word
         next
 endcode
 
@@ -178,6 +171,25 @@ code initialize_type_symbols, 'initialize-type-symbols'
         _ types
         _lit S_make_type_symbol
         _ vector_each
+        next
+endcode
+
+; ### find-type
+code find_type, 'find-type'             ; string -- type/f
+        _ find_name
+        _tagged_if .1
+        _quote "type"
+        _swap
+        _ symbol_prop
+        _dup
+        _ type?
+        _tagged_if .2
+        _return
+        _then .2
+        _then .1
+
+        _error "can't find type"
+
         next
 endcode
 
