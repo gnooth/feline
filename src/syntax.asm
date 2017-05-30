@@ -400,6 +400,13 @@ code define, ':'                        ; --
         next
 endcode
 
+; ### immediate
+code immediate, 'immediate'             ; --
+        _ last_word
+        _ symbol_set_immediate
+        next
+endcode
+
 ; ### test:
 code define_test, 'test:'               ; --
         _ parse_definition_name         ; -- symbol

@@ -510,6 +510,13 @@ code symbol_immediate?, 'symbol-immediate?'     ; symbol -- ?
         next
 endcode
 
+; ### symbol-set-immediate
+code symbol_set_immediate, 'symbol-set-immediate', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; symbol --
+        _symbol_set_flags_bit SYMBOL_IMMEDIATE
+        next
+endcode
+
 ; ### symbol-inline?
 code symbol_inline?, 'symbol-inline?'           ; symbol -- ?
         _symbol_flags_bit SYMBOL_INLINE
