@@ -207,6 +207,11 @@ help: find-last-from
     return the index of that element and the element itself. Otherwise
     return `f` for both the index and the element." ;
 
+help: find-name
+    "( string -- symbol/string ? )
+    Find `string` in the current vocabulary search order. If successful,
+    return the matching symbol and `t`; otherwise, return `string` and `f`." ;
+
 help: in-bounds?
     "( n seq -- ? )
     Return `t` if `n` is within the bounds of `seq`." ;
