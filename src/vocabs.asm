@@ -118,7 +118,7 @@ code all_words, 'all-words'             ; -- seq
 endcode
 
 ; ### apropos
-code apropos, 'apropos'                 ; pattern -- seq
+code apropos, 'apropos'                 ; pattern --
         _ all_words
         _quotation .1
         _ symbol_name
