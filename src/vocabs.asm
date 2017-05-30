@@ -117,6 +117,32 @@ code all_words, 'all-words'             ; -- seq
         next
 endcode
 
+; ### apropos
+code apropos, 'apropos'                 ; pattern -- seq
+        _ all_words
+        _quotation .1
+        _ symbol_name
+        _over
+        _swap
+        _ substring_start
+        _end_quotation .1
+        _ filter
+        _nip
+        _quotation .2
+        _ dot_object
+        _ nl
+        _end_quotation .2
+        _ vector_each
+        next
+endcode
+
+; ### ap
+code ap, 'ap'                           ; --
+        _ must_parse_token
+        _ apropos
+        next
+endcode
+
 ; ### lookup-vocab
 code lookup_vocab, 'lookup-vocab'       ; vocab-specifier -- vocab/f
         _dup
