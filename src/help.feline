@@ -335,6 +335,16 @@ help: swapd
     "( x y z -- y x z )
     Exchange the second and third stack items." ;
 
+help: symbol-prop
+    "( key symbol -- value )
+    Return the value of the symbol property with the given key.
+    The key is usually a string." ;
+
+help: symbol-set-prop
+    "( value key symbol -- )
+    Store a key/value pair as a property of `symbol`.
+    The key is usually a string." ;
+
 help: tab
     "( n -- )
     Write enough space characters so that the next character will
