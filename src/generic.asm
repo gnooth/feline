@@ -18,7 +18,7 @@ file __FILE__
 %macro  _lookup_method 0        ; object dispatch-table -- object raw-code-address/f
 ; return f if no method
         _over
-        _ object_type
+        _ object_typecode
         _swap                   ; -- object object-type dispatch-table
         _ at_                   ; -- object raw-code-address/f
 %endmacro

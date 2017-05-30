@@ -87,8 +87,8 @@ code error_empty_handle, 'error-empty-handle'
         next
 endcode
 
-; ### object-raw-type
-code object_raw_type, 'object-raw-type'         ; x -- raw-type-number
+; ### object-raw-typecode
+code object_raw_typecode, 'object-raw-typecode' ; x -- raw-typecode
         mov     eax, ebx
         and     eax, TAG_MASK
         cmp     eax, FIXNUM_TAG
@@ -133,18 +133,18 @@ code object_raw_type, 'object-raw-type'         ; x -- raw-type-number
         next
 endcode
 
-; ### object-type
-code object_type, 'object-type'         ; x -- type-number
+; ### object-typecode
+code object_typecode, 'object-typecode' ; x -- typecode
 ; return value is tagged
 ; error if x is not an object
-        _ object_raw_type
+        _ object_raw_typecode
         _tag_fixnum
         next
 endcode
 
 ; ### type-of
 code type_of, 'type-of'         ; object -- type
-        _ object_raw_type
+        _ object_raw_typecode
         _ types
         _ vector_nth_untagged
         next
