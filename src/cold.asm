@@ -189,6 +189,8 @@ code cold, 'cold'                       ; --
 
         _ hash_vocabs
 
+        _ initialize_type_symbols
+
         _quote "boot.feline"
         _lit S_load_system_file
         _ catch
