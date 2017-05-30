@@ -666,14 +666,35 @@ code oneminusstoreto, '1-!>', SYMBOL_IMMEDIATE  ; --
         next
 endcode
 
+; ### toplevel-only
+code toplevel_only, 'toplevel-only'     ; word --
+        _ in_definition?
+        _tagged_if .1
+        _quote "ERROR: the word `%s` may not appear inside a definition."
+        _ format
+        _ error
+        _else .1
+        _drop
+        _then .1
+        next
+endcode
+
 ; ### help:
-code parse_help, 'help:', SYMBOL_IMMEDIATE
+code help_colon, 'help:', SYMBOL_IMMEDIATE
+
+        _lit S_help_colon
+        _ toplevel_only
+
         _ must_parse_token      ; -- string
         _ must_find_name        ; -- symbol
+
+        mov     qword [in_definition?_], t_value
 
         _quote ";"
         _ parse_until
         _ vector_to_array       ; -- symbol array
+
+        mov     qword [in_definition?_], f_value
 
         _swap
         _ symbol_set_help
