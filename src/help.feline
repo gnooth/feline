@@ -144,6 +144,15 @@ help: bi
     "( x quot1 quot2 -- )
     Apply `quot1` to `x`, then apply `quot2` to `x`." ;
 
+help: boolean-equal?
+    "( x y -- ? )
+    Return `t` if `x` and `y` are the same boolean. Otherwise return `f`,
+    even if neither argument is a boolean." ;
+
+help: boolean?
+    "( x -- ? )
+    Return `t` if `x` is a boolean (either `t` or `f`). Otherwise return `f`." ;
+
 help: charpos
     "( -- n )
     Return the current output column.
@@ -339,6 +348,11 @@ help: swap
 help: swapd
     "( x y z -- y x z )
     Exchange the second and third stack items." ;
+
+help: symbol-equal?
+    "( x y -- ? )
+    Return `t` if `x` and `y` are the same symbol. Otherwise return `f`,
+    even if neither argument is a symbol." ;
 
 help: symbol-prop
     "( key symbol -- value )
