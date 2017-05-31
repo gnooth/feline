@@ -91,14 +91,15 @@ endcode
 code object_raw_typecode, 'object-raw-typecode' ; x -- raw-typecode
         mov     eax, ebx
         and     eax, TAG_MASK
+
         cmp     eax, FIXNUM_TAG
-        jnz     .1
+        jne     .1
         mov     ebx, TYPECODE_FIXNUM
         _return
 
 .1:
-        cmp     rbx, f_value
-        jnz     .2
+        cmp     eax, BOOLEAN_TAG
+        jne     .2
         mov     ebx, TYPECODE_BOOLEAN
         _return
 
@@ -113,7 +114,7 @@ code object_raw_typecode, 'object-raw-typecode' ; x -- raw-typecode
         _return
         _then .3
 
-        ; Not allocated. Is it a static string or symbol?
+        ; Not heap-allocated. Is it a static string or symbol?
         _dup
         _ string?
         _tagged_if .4

@@ -2443,4 +2443,37 @@ test: string-nth-test-1
 
 string-nth-test-1
 
+test: type-of-test-1
+    "test" type-of "string" find-type assert-eq
+    "test" string>sbuf type-of "sbuf" find-type assert-eq
+    "test" type-of type-of "type" find-type assert-eq
+    42 type-of "fixnum" find-type assert-eq
+    t type-of "boolean" find-type assert-eq
+    f type-of "boolean" find-type assert-eq
+    vector{ 1 2 3 } type-of "vector" find-type assert-eq
+    { 1 2 3 } type-of "array" find-type assert-eq
+    16 <hashtable> type-of "hashtable" find-type assert-eq
+    most-positive-fixnum 1 + type-of "bignum"  find-type assert-eq
+    ' dup type-of "symbol" find-type assert-eq
+    current-vocab type-of "vocab" find-type assert-eq
+    [ dup + ] type-of "quotation" find-type assert-eq
+    ' dup <wrapper> dup wrapper? assert-true
+    type-of "wrapper" find-type assert-eq
+    ' foo new dup tuple? assert-true
+    type-of "tuple" find-type assert-eq
+    3 [ + ] curry dup curry? assert-true
+    type-of "curry" find-type assert-eq
+    2 5 { 11 12 13 14 15 16 17 18 } <slice> dup slice? assert-true
+    type-of "slice" find-type assert-eq
+    3 5 <range> dup range? assert-true
+    type-of "range" find-type assert-eq
+    "this is a test" <lexer> dup lexer? assert-true
+    type-of "lexer" find-type assert-eq
+    pi type-of "float" find-type assert-eq
+    "test" <iterator> dup iterator? assert-true
+    type-of "iterator" find-type assert-eq
+;
+
+type-of-test-1
+
 ?nl "Reached end of test.feline" write-string
