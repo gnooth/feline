@@ -2476,4 +2476,13 @@ test: type-of-test-1
 
 type-of-test-1
 
+test: symbol-equal?-test-1
+    ' dup dup symbol-equal? assert-true
+    42 ' dup symbol-equal? assert-false
+    ' dup 42 symbol-equal? assert-false
+    42 42 symbol-equal? assert-false
+;
+
+symbol-equal?-test-1
+
 ?nl "Reached end of test.feline" write-string

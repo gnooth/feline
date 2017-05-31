@@ -370,9 +370,17 @@ code create_symbol, 'create-symbol'     ; name vocab -- symbol
 endcode
 
 ; ### symbol-equal?
-code symbol_equal?, 'symbol-equal?'
-        _2drop
-        _f
+code symbol_equal?, 'symbol-equal?'     ; x y -- ?
+        _dup
+        _ symbol?
+        _tagged_if .1
+        _eq?
+        _return
+        _then .1
+
+        _drop
+        mov     ebx, f_value
+
         next
 endcode
 
