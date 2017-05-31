@@ -39,7 +39,7 @@ GENERIC_WRITE   equ     $40000000
 %define FIXNUM_TAG      1
 %define CHAR_TAG        FIXNUM_TAG
 
-%define SPECIAL_TAG     6
+%define BOOLEAN_TAG     6
 
 %macro  _tag 0                          ; object -- tag
         and     rbx, TAG_MASK
@@ -131,8 +131,8 @@ GENERIC_WRITE   equ     $40000000
         _untag_fixnum %1
 %endmacro
 
-%define f_value SPECIAL_TAG
-%define t_value SPECIAL_TAG + (1 << TAG_BITS)
+%define f_value BOOLEAN_TAG
+%define t_value BOOLEAN_TAG + (1 << TAG_BITS)
 
 %macro  _f 0
         pushrbx
