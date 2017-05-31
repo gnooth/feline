@@ -97,6 +97,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	array.asm \
 	assert.asm \
 	bignum.asm \
+	boolean.asm \
 	cold.asm \
 	combinators.asm \
 	compile-word.asm \
