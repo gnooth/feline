@@ -129,7 +129,7 @@ code initialize_types, 'initialize-types', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE    
 
         _add_type "type", TYPECODE_TYPE
         _add_type "fixnum", TYPECODE_FIXNUM
-        _add_type "boolean", TYPECODE_F
+        _add_type "boolean", TYPECODE_BOOLEAN
         _add_type "vector", TYPECODE_VECTOR
         _add_type "string", TYPECODE_STRING
         _add_type "sbuf", TYPECODE_SBUF

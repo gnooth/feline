@@ -99,7 +99,7 @@ code object_raw_typecode, 'object-raw-typecode' ; x -- raw-typecode
 .1:
         cmp     rbx, f_value
         jnz     .2
-        mov     ebx, TYPECODE_F
+        mov     ebx, TYPECODE_BOOLEAN
         _return
 
 .2:

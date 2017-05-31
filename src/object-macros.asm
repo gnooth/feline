@@ -22,7 +22,7 @@ file __FILE__
 ; typecodes
 TYPECODE_TYPE           equ  0
 TYPECODE_FIXNUM         equ  1
-TYPECODE_F              equ  2
+TYPECODE_BOOLEAN        equ  2
 TYPECODE_VECTOR         equ  3
 TYPECODE_STRING         equ  4
 TYPECODE_SBUF           equ  5

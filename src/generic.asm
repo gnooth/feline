@@ -185,7 +185,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method equal?, TYPECODE_VECTOR, vector_equal?
         _add_method equal?, TYPECODE_STRING, string_equal?
         _add_method equal?, TYPECODE_SYMBOL, symbol_equal?
-        _add_method equal?, TYPECODE_F, f_equal?
+        _add_method equal?, TYPECODE_BOOLEAN, f_equal?
         _add_method equal?, TYPECODE_BIGNUM, bignum_equal?
         _add_method equal?, TYPECODE_FLOAT, float_equal?
 
