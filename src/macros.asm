@@ -45,16 +45,6 @@ GENERIC_WRITE   equ     $40000000
         and     rbx, TAG_MASK
 %endmacro
 
-%macro  _fixnum? 0
-        _tag
-%if FIXNUM_TAG = 0
-        _zeq
-%else
-        _lit FIXNUM_TAG
-        _equal
-%endif
-%endmacro
-
 %macro  _tag_fixnum 0
         shl     rbx, TAG_BITS
 %if FIXNUM_TAG <> 0
@@ -844,7 +834,7 @@ section .text
         cmove   ebx, eax
 %endmacro
 
-%macro _rdtsc 0                         ; -- uint64
+%macro  _rdtsc 0                        ; -- uint64
 ; "The high-order 32 bits are loaded into EDX, and the low-order 32 bits are
 ; loaded into the EAX register. This instruction ignores operand size."
         rdtsc
