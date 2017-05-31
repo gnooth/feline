@@ -2478,11 +2478,61 @@ type-of-test-1
 
 test: symbol-equal?-test-1
     ' dup dup symbol-equal? assert-true
+    ' drop ' dup symbol-equal? assert-false
+
     42 ' dup symbol-equal? assert-false
     ' dup 42 symbol-equal? assert-false
+
     42 42 symbol-equal? assert-false
+
+    -- generic
+    ' dup dup equal? assert-true
+    ' drop ' dup equal? assert-false
 ;
 
 symbol-equal?-test-1
+
+test: boolean-equal?-test-1
+    t t boolean-equal? assert-true
+    f f boolean-equal? assert-true
+    t f boolean-equal? assert-false
+    f t boolean-equal? assert-false
+
+    0 t boolean-equal? assert-false
+    t 0 boolean-equal? assert-false
+    0 f boolean-equal? assert-false
+    f 0 boolean-equal? assert-false
+
+    1 t boolean-equal? assert-false
+    t 1 boolean-equal? assert-false
+    1 f boolean-equal? assert-false
+    f 1 boolean-equal? assert-false
+
+    -1 t boolean-equal? assert-false
+    t -1 boolean-equal? assert-false
+    -1 f boolean-equal? assert-false
+    f -1 boolean-equal? assert-false
+
+    "test" "test" boolean-equal? assert-false
+    "test" 42 boolean-equal? assert-false
+
+    -- generic
+    t t equal? assert-true
+    f f equal? assert-true
+    t f equal? assert-false
+    f t equal? assert-false
+;
+
+boolean-equal?-test-1
+
+test: boolean?-test-1
+    t boolean? assert-true
+    f boolean? assert-true
+    0 boolean? assert-false
+    1 boolean? assert-false
+    -1 boolean? assert-false
+;
+
+boolean?-test-1
 
 ?nl "Reached end of test.feline" write-string
