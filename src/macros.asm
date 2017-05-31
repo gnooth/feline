@@ -339,7 +339,7 @@ GENERIC_WRITE   equ     $40000000
         align   DEFAULT_DATA_ALIGNMENT
 %strlen len     %2
 %1:
-        dw      OBJECT_TYPE_STRING
+        dw      TYPECODE_STRING
         db      0                       ; flags byte
         db      0                       ; not used
         dd      0                       ; not used
@@ -416,7 +416,7 @@ section .data
         dq      symbol_link
 %1:
         ; object header
-        dw      OBJECT_TYPE_SYMBOL      ; object type number
+        dw      TYPECODE_SYMBOL         ; object typecode
         db      0                       ; object flags byte
         db      0                       ; not used
         dd      0                       ; not used
@@ -584,7 +584,7 @@ section .data
         align   DEFAULT_DATA_ALIGNMENT
 %strlen len     %1
 %%string:
-        dw      OBJECT_TYPE_STRING
+        dw      TYPECODE_STRING
         db      0                       ; flags byte
         db      0                       ; not used
         dd      0                       ; not used
@@ -810,7 +810,7 @@ section .text
         align   DEFAULT_DATA_ALIGNMENT
 %1_quotation:
         ; object header
-        dw      OBJECT_TYPE_QUOTATION   ; object type number
+        dw      TYPECODE_QUOTATION      ; object typecode
         db      0                       ; object flags byte
         db      0                       ; not used
         dd      0                       ; not used

@@ -72,7 +72,7 @@ code array?, 'array?'                   ; handle -- ?
         test    rbx, rbx
         jz      .1
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_ARRAY
+        cmp     eax, TYPECODE_ARRAY
         jne     .1
         mov     ebx, t_value
         _return
@@ -94,7 +94,7 @@ code check_array, 'check-array'         ; handle -- raw-array
         test    rbx, rbx
         jz      error_not_array
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_ARRAY
+        cmp     eax, TYPECODE_ARRAY
         jne     error_not_array
         next
 endcode
@@ -128,7 +128,7 @@ new_array_untagged:
         xor     eax, eax
         mov     [this_register], rax
 
-        _this_object_set_raw_typecode OBJECT_TYPE_ARRAY
+        _this_object_set_raw_typecode TYPECODE_ARRAY
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 
         _over                           ; -- length element length

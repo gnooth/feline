@@ -27,7 +27,7 @@ code new_wrapper, '<wrapper>'           ; obj -- wrapper
         _swap
         _ erase
 
-        _this_object_set_raw_typecode OBJECT_TYPE_WRAPPER
+        _this_object_set_raw_typecode TYPECODE_WRAPPER
 
         _this_set_slot1
 
@@ -47,7 +47,7 @@ code wrapper?, 'wrapper?'               ; handle -- ?
         test    rbx, rbx
         jz      .1
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_WRAPPER
+        cmp     eax, TYPECODE_WRAPPER
         jne     .1
         mov     ebx, t_value
         _return

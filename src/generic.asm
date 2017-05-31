@@ -174,148 +174,148 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
 
         ; hashcode
         _initialize_generic_function generic_hashcode
-        _add_method generic_hashcode, OBJECT_TYPE_FIXNUM, fixnum_hashcode
-        _add_method generic_hashcode, OBJECT_TYPE_STRING, string_hashcode
-        _add_method generic_hashcode, OBJECT_TYPE_SYMBOL, symbol_hashcode
+        _add_method generic_hashcode, TYPECODE_FIXNUM, fixnum_hashcode
+        _add_method generic_hashcode, TYPECODE_STRING, string_hashcode
+        _add_method generic_hashcode, TYPECODE_SYMBOL, symbol_hashcode
 
         ; equal?
         _initialize_generic_function equal?
-        _add_method equal?, OBJECT_TYPE_FIXNUM, fixnum_equal?
-        _add_method equal?, OBJECT_TYPE_ARRAY, array_equal?
-        _add_method equal?, OBJECT_TYPE_VECTOR, vector_equal?
-        _add_method equal?, OBJECT_TYPE_STRING, string_equal?
-        _add_method equal?, OBJECT_TYPE_SYMBOL, symbol_equal?
-        _add_method equal?, OBJECT_TYPE_F, f_equal?
-        _add_method equal?, OBJECT_TYPE_BIGNUM, bignum_equal?
-        _add_method equal?, OBJECT_TYPE_FLOAT, float_equal?
+        _add_method equal?, TYPECODE_FIXNUM, fixnum_equal?
+        _add_method equal?, TYPECODE_ARRAY, array_equal?
+        _add_method equal?, TYPECODE_VECTOR, vector_equal?
+        _add_method equal?, TYPECODE_STRING, string_equal?
+        _add_method equal?, TYPECODE_SYMBOL, symbol_equal?
+        _add_method equal?, TYPECODE_F, f_equal?
+        _add_method equal?, TYPECODE_BIGNUM, bignum_equal?
+        _add_method equal?, TYPECODE_FLOAT, float_equal?
 
         ; length
         _initialize_generic_function length
-        _add_method length, OBJECT_TYPE_STRING, string_length
-        _add_method length, OBJECT_TYPE_SBUF, sbuf_length
-        _add_method length, OBJECT_TYPE_ARRAY, array_length
-        _add_method length, OBJECT_TYPE_VECTOR, vector_length
-        _add_method length, OBJECT_TYPE_SLICE, slice_length
-        _add_method length, OBJECT_TYPE_RANGE, range_length
-        _add_method length, OBJECT_TYPE_QUOTATION, quotation_length
-        _add_method length, OBJECT_TYPE_CURRY, curry_length
+        _add_method length, TYPECODE_STRING, string_length
+        _add_method length, TYPECODE_SBUF, sbuf_length
+        _add_method length, TYPECODE_ARRAY, array_length
+        _add_method length, TYPECODE_VECTOR, vector_length
+        _add_method length, TYPECODE_SLICE, slice_length
+        _add_method length, TYPECODE_RANGE, range_length
+        _add_method length, TYPECODE_QUOTATION, quotation_length
+        _add_method length, TYPECODE_CURRY, curry_length
 
         ; push
         _initialize_generic_function push
-        _add_method push, OBJECT_TYPE_VECTOR, vector_push
-        _add_method push, OBJECT_TYPE_SBUF, sbuf_push
+        _add_method push, TYPECODE_VECTOR, vector_push
+        _add_method push, TYPECODE_SBUF, sbuf_push
 
         ; nth
         _initialize_generic_function nth
-        _add_method nth, OBJECT_TYPE_ARRAY, array_nth
-        _add_method nth, OBJECT_TYPE_VECTOR, vector_nth
-        _add_method nth, OBJECT_TYPE_STRING, string_nth
-        _add_method nth, OBJECT_TYPE_SBUF, sbuf_nth
-        _add_method nth, OBJECT_TYPE_SLICE, slice_nth
-        _add_method nth, OBJECT_TYPE_QUOTATION, quotation_nth
-        _add_method nth, OBJECT_TYPE_CURRY, curry_nth
+        _add_method nth, TYPECODE_ARRAY, array_nth
+        _add_method nth, TYPECODE_VECTOR, vector_nth
+        _add_method nth, TYPECODE_STRING, string_nth
+        _add_method nth, TYPECODE_SBUF, sbuf_nth
+        _add_method nth, TYPECODE_SLICE, slice_nth
+        _add_method nth, TYPECODE_QUOTATION, quotation_nth
+        _add_method nth, TYPECODE_CURRY, curry_nth
 
         ; nth-unsafe
         _initialize_generic_function nth_unsafe
-        _add_method nth_unsafe, OBJECT_TYPE_STRING, string_nth_unsafe
-        _add_method nth_unsafe, OBJECT_TYPE_SBUF, sbuf_nth_unsafe
-        _add_method nth_unsafe, OBJECT_TYPE_ARRAY, array_nth_unsafe
-        _add_method nth_unsafe, OBJECT_TYPE_VECTOR, vector_nth_unsafe
-        _add_method nth_unsafe, OBJECT_TYPE_SLICE, slice_nth_unsafe
-        _add_method nth_unsafe, OBJECT_TYPE_RANGE, range_nth_unsafe
-        _add_method nth_unsafe, OBJECT_TYPE_QUOTATION, quotation_nth_unsafe
-        _add_method nth_unsafe, OBJECT_TYPE_CURRY, curry_nth_unsafe
+        _add_method nth_unsafe, TYPECODE_STRING, string_nth_unsafe
+        _add_method nth_unsafe, TYPECODE_SBUF, sbuf_nth_unsafe
+        _add_method nth_unsafe, TYPECODE_ARRAY, array_nth_unsafe
+        _add_method nth_unsafe, TYPECODE_VECTOR, vector_nth_unsafe
+        _add_method nth_unsafe, TYPECODE_SLICE, slice_nth_unsafe
+        _add_method nth_unsafe, TYPECODE_RANGE, range_nth_unsafe
+        _add_method nth_unsafe, TYPECODE_QUOTATION, quotation_nth_unsafe
+        _add_method nth_unsafe, TYPECODE_CURRY, curry_nth_unsafe
 
         ; set-nth
         _initialize_generic_function set_nth
-        _add_method set_nth, OBJECT_TYPE_ARRAY, array_set_nth
-        _add_method set_nth, OBJECT_TYPE_VECTOR, vector_set_nth
+        _add_method set_nth, TYPECODE_ARRAY, array_set_nth
+        _add_method set_nth, TYPECODE_VECTOR, vector_set_nth
 
         ; new-sequence
         _initialize_generic_function new_sequence
-        _add_method new_sequence, OBJECT_TYPE_ARRAY, array_new_sequence
-        _add_method new_sequence, OBJECT_TYPE_VECTOR, vector_new_sequence
+        _add_method new_sequence, TYPECODE_ARRAY, array_new_sequence
+        _add_method new_sequence, TYPECODE_VECTOR, vector_new_sequence
 
         ; +
         _initialize_generic_function generic_plus
-        _add_method generic_plus, OBJECT_TYPE_FIXNUM, fixnum_plus
-        _add_method generic_plus, OBJECT_TYPE_BIGNUM, bignum_plus
-        _add_method generic_plus, OBJECT_TYPE_FLOAT, float_plus
+        _add_method generic_plus, TYPECODE_FIXNUM, fixnum_plus
+        _add_method generic_plus, TYPECODE_BIGNUM, bignum_plus
+        _add_method generic_plus, TYPECODE_FLOAT, float_plus
 
         ; -
         _initialize_generic_function generic_minus
-        _add_method generic_minus, OBJECT_TYPE_FIXNUM, fixnum_minus
-        _add_method generic_minus, OBJECT_TYPE_BIGNUM, bignum_minus
-        _add_method generic_minus, OBJECT_TYPE_FLOAT, float_minus
+        _add_method generic_minus, TYPECODE_FIXNUM, fixnum_minus
+        _add_method generic_minus, TYPECODE_BIGNUM, bignum_minus
+        _add_method generic_minus, TYPECODE_FLOAT, float_minus
 
         ; *
         _initialize_generic_function generic_multiply
-        _add_method generic_multiply, OBJECT_TYPE_FIXNUM, fixnum_multiply
-        _add_method generic_multiply, OBJECT_TYPE_BIGNUM, bignum_multiply
-        _add_method generic_multiply, OBJECT_TYPE_FLOAT, float_multiply
+        _add_method generic_multiply, TYPECODE_FIXNUM, fixnum_multiply
+        _add_method generic_multiply, TYPECODE_BIGNUM, bignum_multiply
+        _add_method generic_multiply, TYPECODE_FLOAT, float_multiply
 
         ; /
         _initialize_generic_function generic_divide
-        _add_method generic_divide, OBJECT_TYPE_FIXNUM, fixnum_divide_float
-        _add_method generic_divide, OBJECT_TYPE_BIGNUM, bignum_divide_float
-        _add_method generic_divide, OBJECT_TYPE_FLOAT, float_divide
+        _add_method generic_divide, TYPECODE_FIXNUM, fixnum_divide_float
+        _add_method generic_divide, TYPECODE_BIGNUM, bignum_divide_float
+        _add_method generic_divide, TYPECODE_FLOAT, float_divide
 
         ; /i
         _initialize_generic_function generic_divide_truncate
-        _add_method generic_divide_truncate, OBJECT_TYPE_FIXNUM, fixnum_divide_truncate
-        _add_method generic_divide_truncate, OBJECT_TYPE_BIGNUM, bignum_divide_truncate
-        _add_method generic_divide_truncate, OBJECT_TYPE_FLOAT, float_divide_truncate
+        _add_method generic_divide_truncate, TYPECODE_FIXNUM, fixnum_divide_truncate
+        _add_method generic_divide_truncate, TYPECODE_BIGNUM, bignum_divide_truncate
+        _add_method generic_divide_truncate, TYPECODE_FLOAT, float_divide_truncate
 
         ; mod
         _initialize_generic_function generic_mod
-        _add_method generic_mod, OBJECT_TYPE_FIXNUM, fixnum_mod
-        _add_method generic_mod, OBJECT_TYPE_BIGNUM, bignum_mod
+        _add_method generic_mod, TYPECODE_FIXNUM, fixnum_mod
+        _add_method generic_mod, TYPECODE_BIGNUM, bignum_mod
 
         ; negate
         _initialize_generic_function generic_negate
-        _add_method generic_negate, OBJECT_TYPE_FIXNUM, fixnum_negate
-        _add_method generic_negate, OBJECT_TYPE_BIGNUM, bignum_negate
-        _add_method generic_negate, OBJECT_TYPE_FLOAT, float_negate
+        _add_method generic_negate, TYPECODE_FIXNUM, fixnum_negate
+        _add_method generic_negate, TYPECODE_BIGNUM, bignum_negate
+        _add_method generic_negate, TYPECODE_FLOAT, float_negate
 
         ; <
         _initialize_generic_function generic_lt
-        _add_method generic_lt, OBJECT_TYPE_FIXNUM, fixnum_lt
-        _add_method generic_lt, OBJECT_TYPE_BIGNUM, bignum_lt
-        _add_method generic_lt, OBJECT_TYPE_FLOAT, float_lt
+        _add_method generic_lt, TYPECODE_FIXNUM, fixnum_lt
+        _add_method generic_lt, TYPECODE_BIGNUM, bignum_lt
+        _add_method generic_lt, TYPECODE_FLOAT, float_lt
 
         ; >
         _initialize_generic_function generic_gt
-        _add_method generic_gt, OBJECT_TYPE_FIXNUM, fixnum_gt
-        _add_method generic_gt, OBJECT_TYPE_BIGNUM, bignum_gt
-        _add_method generic_gt, OBJECT_TYPE_FLOAT, float_gt
+        _add_method generic_gt, TYPECODE_FIXNUM, fixnum_gt
+        _add_method generic_gt, TYPECODE_BIGNUM, bignum_gt
+        _add_method generic_gt, TYPECODE_FLOAT, float_gt
 
         ; <=
         _initialize_generic_function generic_le
-        _add_method generic_le, OBJECT_TYPE_FIXNUM, fixnum_le
-        _add_method generic_le, OBJECT_TYPE_BIGNUM, bignum_le
-        _add_method generic_le, OBJECT_TYPE_FLOAT, float_le
+        _add_method generic_le, TYPECODE_FIXNUM, fixnum_le
+        _add_method generic_le, TYPECODE_BIGNUM, bignum_le
+        _add_method generic_le, TYPECODE_FLOAT, float_le
 
         ; >=
         _initialize_generic_function generic_ge
-        _add_method generic_ge, OBJECT_TYPE_FIXNUM, fixnum_ge
-        _add_method generic_ge, OBJECT_TYPE_BIGNUM, bignum_ge
-        _add_method generic_ge, OBJECT_TYPE_FLOAT, float_ge
+        _add_method generic_ge, TYPECODE_FIXNUM, fixnum_ge
+        _add_method generic_ge, TYPECODE_BIGNUM, bignum_ge
+        _add_method generic_ge, TYPECODE_FLOAT, float_ge
 
         ; write
         _initialize_generic_function generic_write
-        _add_method generic_write, OBJECT_TYPE_STRING, write_string
-        _add_method generic_write, OBJECT_TYPE_SBUF, write_sbuf
+        _add_method generic_write, TYPECODE_STRING, write_string
+        _add_method generic_write, TYPECODE_SBUF, write_sbuf
 
         ; substring
         _initialize_generic_function substring
-        _add_method substring, OBJECT_TYPE_STRING, string_substring
-        _add_method substring, OBJECT_TYPE_SBUF, sbuf_substring
+        _add_method substring, TYPECODE_STRING, string_substring
+        _add_method substring, TYPECODE_SBUF, sbuf_substring
 
         ; >float
         _initialize_generic_function generic_coerce_to_float
-        _add_method generic_coerce_to_float, OBJECT_TYPE_FIXNUM, fixnum_to_float
-        _add_method generic_coerce_to_float, OBJECT_TYPE_BIGNUM, bignum_to_float
-        _add_method generic_coerce_to_float, OBJECT_TYPE_STRING, string_to_float
+        _add_method generic_coerce_to_float, TYPECODE_FIXNUM, fixnum_to_float
+        _add_method generic_coerce_to_float, TYPECODE_BIGNUM, bignum_to_float
+        _add_method generic_coerce_to_float, TYPECODE_STRING, string_to_float
 
         next
 endcode

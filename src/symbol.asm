@@ -206,7 +206,7 @@ code symbol?, 'symbol?'                 ; x -- ?
         _handle_to_object_unsafe        ; -- object/0
         _?dup_if .2
         _object_raw_typecode
-        _eq? OBJECT_TYPE_SYMBOL
+        _eq? TYPECODE_SYMBOL
         _return
         _then .2
         ; Empty handle.
@@ -227,7 +227,7 @@ code symbol?, 'symbol?'                 ; x -- ?
 
         ; -- object
         _object_raw_typecode
-        _eq? OBJECT_TYPE_SYMBOL
+        _eq? TYPECODE_SYMBOL
 
         next
 endcode
@@ -245,7 +245,7 @@ code verify_unboxed_symbol, 'verify-unboxed-symbol'     ; symbol -- symbol
 
         _dup
         _object_raw_typecode
-        cmp     rbx, OBJECT_TYPE_SYMBOL
+        cmp     rbx, TYPECODE_SYMBOL
         poprbx
         jne .2
         _return
@@ -261,7 +261,7 @@ code check_symbol, 'check-symbol'       ; x -- unboxed-symbol
         test    rbx, rbx
         jz      .1
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_SYMBOL
+        cmp     eax, TYPECODE_SYMBOL
         jne     .2
         _nip
         _return
@@ -286,7 +286,7 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
         mov     this_register, rbx
         poprbx                          ; -- name vocab
 
-        _this_object_set_raw_typecode OBJECT_TYPE_SYMBOL
+        _this_object_set_raw_typecode TYPECODE_SYMBOL
 
         _tuck
         _ vocab_name

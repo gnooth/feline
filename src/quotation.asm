@@ -61,7 +61,7 @@ code quotation?, 'quotation?'                 ; x -- ?
         _handle_to_object_unsafe        ; -- object/0
         _?dup_if .2
         _object_raw_typecode
-        _eq? OBJECT_TYPE_QUOTATION
+        _eq? TYPECODE_QUOTATION
         _return
         _then .2
         ; Empty handle.
@@ -82,7 +82,7 @@ code quotation?, 'quotation?'                 ; x -- ?
 
         ; -- object
         _object_raw_typecode
-        _eq? OBJECT_TYPE_QUOTATION
+        _eq? TYPECODE_QUOTATION
 
         next
 endcode
@@ -106,7 +106,7 @@ code verify_unboxed_quotation, 'verify-unboxed-quotation'       ; quotation -- q
 
         _dup
         _object_raw_typecode
-        cmp     rbx, OBJECT_TYPE_QUOTATION
+        cmp     rbx, TYPECODE_QUOTATION
         poprbx
         jne .2
         _return
@@ -122,7 +122,7 @@ code check_quotation, 'check-quotation' ; handle-or-quotation -- unboxed-quotati
         test    rbx, rbx
         jz      .1
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_QUOTATION
+        cmp     eax, TYPECODE_QUOTATION
         jne     .2
         _nip
         _return
@@ -146,7 +146,7 @@ code array_to_quotation, 'array>quotation'      ; array -- quotation
         mov     this_register, rbx
         poprbx
 
-        _this_object_set_raw_typecode OBJECT_TYPE_QUOTATION
+        _this_object_set_raw_typecode TYPECODE_QUOTATION
 
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 

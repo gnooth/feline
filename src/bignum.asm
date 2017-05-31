@@ -26,7 +26,7 @@ code bignum?, 'bignum?' ; handle -- ?
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_raw_typecode
-        _lit OBJECT_TYPE_BIGNUM
+        _lit TYPECODE_BIGNUM
         _eq?
         _return
         _then .2
@@ -54,7 +54,7 @@ code check_bignum, 'check-bignum'        ; x -- raw-bignum
         test    rbx, rbx
         jz      .error
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_BIGNUM
+        cmp     eax, TYPECODE_BIGNUM
         jne     .error
         _nip
         _return

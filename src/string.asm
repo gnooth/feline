@@ -30,7 +30,7 @@ code string?, 'string?'                 ; x -- ?
         _handle_to_object_unsafe        ; -- raw-object/0
         _?dup_if .2
         _object_raw_typecode            ; -- raw-typecode
-        _eq? OBJECT_TYPE_STRING
+        _eq? TYPECODE_STRING
         _return
         _then .2
         ; Empty handle.
@@ -51,7 +51,7 @@ code string?, 'string?'                 ; x -- ?
 
         ; -- object
         _object_raw_typecode            ; -- raw-typecode
-        _eq? OBJECT_TYPE_STRING
+        _eq? TYPECODE_STRING
 
         next
 endcode
@@ -66,7 +66,7 @@ code verify_unboxed_string, 'verify-unboxed-string' ; string -- string
         je      error_not_string
 
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_STRING
+        cmp     eax, TYPECODE_STRING
         jne     error_not_string
 
         next
@@ -79,7 +79,7 @@ code check_string, 'check-string'       ; x -- unboxed-string
         test    rbx, rbx
         jz      .1
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_STRING
+        cmp     eax, TYPECODE_STRING
         jne     .2
         _nip
         _return
@@ -103,7 +103,7 @@ code verify_string, 'verify-string'     ; handle-or-string -- handle-or-string
         _handle_to_object_unsafe        ; -- handle object/0
         _dup_if .2
         _object_raw_typecode            ; -- object raw-typecode
-        _lit OBJECT_TYPE_STRING
+        _lit TYPECODE_STRING
         _equal
         _if .3
         _return
@@ -241,7 +241,7 @@ code copy_to_string, 'copy-to-string', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         xor     eax, eax
         mov     [this_register], rax
 
-        _this_object_set_raw_typecode OBJECT_TYPE_STRING
+        _this_object_set_raw_typecode TYPECODE_STRING
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 
         _f

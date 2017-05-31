@@ -143,7 +143,7 @@ code hashtable?, 'hashtable?'   ; x -- ?
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_raw_typecode
-        _eq? OBJECT_TYPE_HASHTABLE
+        _eq? TYPECODE_HASHTABLE
         _return
         _then .2
         _then .1
@@ -158,7 +158,7 @@ code check_hashtable, 'check-hashtable'         ; handle -- hashtable
         test    rbx, rbx
         jz      .error
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_HASHTABLE
+        cmp     eax, TYPECODE_HASHTABLE
         jne     .error
         _nip
         next
@@ -175,7 +175,7 @@ code verify_hashtable, 'verify-hashtable'       ; handle -- handle
         test    rbx, rbx
         jz      .error
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_HASHTABLE
+        cmp     eax, TYPECODE_HASHTABLE
         jne     .error
         _drop
         next
@@ -321,7 +321,7 @@ new_hashtable_untagged:
         mov     this_register, rbx
         poprbx
 
-        _this_object_set_raw_typecode OBJECT_TYPE_HASHTABLE
+        _this_object_set_raw_typecode TYPECODE_HASHTABLE
 
         _dup
         _this_hashtable_set_raw_capacity        ; -- n

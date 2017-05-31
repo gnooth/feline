@@ -23,7 +23,7 @@ code tuple?, 'tuple?'                   ; handle -- ?
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_raw_typecode
-        _lit OBJECT_TYPE_TUPLE
+        _lit TYPECODE_TUPLE
         _eq?
         _return
         _then .2
@@ -48,7 +48,7 @@ code check_tuple, 'check-tuple'         ; handle -- tuple
         _dup_if .2
         _dup
         _object_raw_typecode
-        _lit OBJECT_TYPE_TUPLE
+        _lit TYPECODE_TUPLE
         _equal
         _if .3
         _return
@@ -105,7 +105,7 @@ code new_tuple, '<tuple>'               ; class-symbol -- handle
         push    this_register
         popd    this_register           ; -- layout untagged-size
 
-        _this_object_set_raw_typecode OBJECT_TYPE_TUPLE
+        _this_object_set_raw_typecode TYPECODE_TUPLE
 
         ; Initialize slots to f.
         mov     rax, f_value

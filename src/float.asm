@@ -23,7 +23,7 @@ code float?, 'float?'                   ; handle -- ?
         test    rbx, rbx
         jz      .1
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_FLOAT
+        cmp     eax, TYPECODE_FLOAT
         jne     .1
         mov     ebx, t_value
         _return
@@ -39,7 +39,7 @@ code verify_float, 'verify-float'       ; x -- x
         test    rbx, rbx
         jz      .error
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_FLOAT
+        cmp     eax, TYPECODE_FLOAT
         jne     .error
         _drop
         _return
@@ -56,7 +56,7 @@ code check_float, 'check-float'         ; x -- raw-float
         test    rbx, rbx
         jz      .error
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_FLOAT
+        cmp     eax, TYPECODE_FLOAT
         jne     .error
         _nip
         _return

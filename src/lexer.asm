@@ -139,7 +139,7 @@ code lexer?, 'lexer?'                   ; handle -- ?
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_raw_typecode
-        _eq? OBJECT_TYPE_LEXER
+        _eq? TYPECODE_LEXER
         _return
         _then .2
         _then .1
@@ -172,7 +172,7 @@ code check_lexer, 'check-lexer'         ; x -- lexer
         test    rbx, rbx
         jz      error_not_lexer
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_LEXER
+        cmp     eax, TYPECODE_LEXER
         jne     error_not_lexer
         next
 endcode
@@ -297,7 +297,7 @@ code new_lexer, '<lexer>'               ; string -- lexer
         mov     this_register, rbx
         poprbx                          ; -- string
 
-        _this_object_set_raw_typecode OBJECT_TYPE_LEXER
+        _this_object_set_raw_typecode TYPECODE_LEXER
 
         _ verify_string
         _this_lexer_set_string

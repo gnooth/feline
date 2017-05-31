@@ -49,7 +49,7 @@ code range?, 'range?'                   ; handle -- ?
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_raw_typecode
-        _lit OBJECT_TYPE_RANGE
+        _lit TYPECODE_RANGE
         _eq?
         _return
         _then .2
@@ -73,7 +73,7 @@ code check_range, 'check-range' ; handle -- range
         _dup_if .2
         _dup
         _object_raw_typecode
-        _lit OBJECT_TYPE_RANGE
+        _lit TYPECODE_RANGE
         _equal
         _if .3
         _return
@@ -98,7 +98,7 @@ code new_range, '<range>'               ; start length -- range
         mov     this_register, rbx
         poprbx                          ; -- length start
 
-        _this_object_set_raw_typecode OBJECT_TYPE_RANGE
+        _this_object_set_raw_typecode TYPECODE_RANGE
 
         _this_range_set_start           ; -- length
 

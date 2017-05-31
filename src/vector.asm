@@ -95,7 +95,7 @@ code vector?, 'vector?'                 ; handle -- ?
         test    rbx, rbx
         jz      .1
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_VECTOR
+        cmp     eax, TYPECODE_VECTOR
         jne     .1
         mov     ebx, t_value
         _return
@@ -111,7 +111,7 @@ code check_vector, 'check-vector'       ; handle -- vector
         test    rbx, rbx
         jz      .error
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_VECTOR
+        cmp     eax, TYPECODE_VECTOR
         jne     .error
         _nip
         next
@@ -131,7 +131,7 @@ code verify_vector, 'verify-vector'     ; handle -- handle
         _handle_to_object_unsafe        ; -- handle object/0
         _dup_if .2
         _object_raw_typecode
-        _lit OBJECT_TYPE_VECTOR
+        _lit TYPECODE_VECTOR
         _equal
         _if .3
         _return
@@ -222,7 +222,7 @@ new_vector_untagged:
         push    this_register
         mov     this_register, rbx
         poprbx                          ; -- raw-capacity
-        _this_object_set_raw_typecode OBJECT_TYPE_VECTOR
+        _this_object_set_raw_typecode TYPECODE_VECTOR
         _this_object_set_flags OBJECT_ALLOCATED_BIT
         _dup
         _ raw_allocate_cells            ; -- raw-capacity raw-data-address

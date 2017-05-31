@@ -55,7 +55,7 @@ code type?, 'type?'                     ; handle -- ?
         test    rbx, rbx
         jz      .1
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_TYPE
+        cmp     eax, TYPECODE_TYPE
         jne     .1
         mov     ebx, t_value
         _return
@@ -71,7 +71,7 @@ code check_type, 'check-type'           ; handle -- type
         test    rbx, rbx
         jz      .error
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_TYPE
+        cmp     eax, TYPECODE_TYPE
         jne     .error
         _nip
         next
@@ -91,7 +91,7 @@ code make_type, 'make-type', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         mov     this_register, rbx
         poprbx                          ; -- name typecode
 
-        _this_object_set_raw_typecode OBJECT_TYPE_TYPE
+        _this_object_set_raw_typecode TYPECODE_TYPE
 
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 
@@ -127,26 +127,26 @@ code initialize_types, 'initialize-types', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE    
         _ new_vector_untagged
         _to_global types
 
-        _add_type "type", OBJECT_TYPE_TYPE
-        _add_type "fixnum", OBJECT_TYPE_FIXNUM
-        _add_type "boolean", OBJECT_TYPE_F
-        _add_type "vector", OBJECT_TYPE_VECTOR
-        _add_type "string", OBJECT_TYPE_STRING
-        _add_type "sbuf", OBJECT_TYPE_SBUF
-        _add_type "array", OBJECT_TYPE_ARRAY
-        _add_type "hashtable", OBJECT_TYPE_HASHTABLE
-        _add_type "bignum", OBJECT_TYPE_BIGNUM
-        _add_type "symbol", OBJECT_TYPE_SYMBOL
-        _add_type "vocab", OBJECT_TYPE_VOCAB
-        _add_type "quotation", OBJECT_TYPE_QUOTATION
-        _add_type "wrapper", OBJECT_TYPE_WRAPPER
-        _add_type "tuple", OBJECT_TYPE_TUPLE
-        _add_type "curry", OBJECT_TYPE_CURRY
-        _add_type "slice", OBJECT_TYPE_SLICE
-        _add_type "range", OBJECT_TYPE_RANGE
-        _add_type "lexer", OBJECT_TYPE_LEXER
-        _add_type "float", OBJECT_TYPE_FLOAT
-        _add_type "iterator", OBJECT_TYPE_ITERATOR
+        _add_type "type", TYPECODE_TYPE
+        _add_type "fixnum", TYPECODE_FIXNUM
+        _add_type "boolean", TYPECODE_F
+        _add_type "vector", TYPECODE_VECTOR
+        _add_type "string", TYPECODE_STRING
+        _add_type "sbuf", TYPECODE_SBUF
+        _add_type "array", TYPECODE_ARRAY
+        _add_type "hashtable", TYPECODE_HASHTABLE
+        _add_type "bignum", TYPECODE_BIGNUM
+        _add_type "symbol", TYPECODE_SYMBOL
+        _add_type "vocab", TYPECODE_VOCAB
+        _add_type "quotation", TYPECODE_QUOTATION
+        _add_type "wrapper", TYPECODE_WRAPPER
+        _add_type "tuple", TYPECODE_TUPLE
+        _add_type "curry", TYPECODE_CURRY
+        _add_type "slice", TYPECODE_SLICE
+        _add_type "range", TYPECODE_RANGE
+        _add_type "lexer", TYPECODE_LEXER
+        _add_type "float", TYPECODE_FLOAT
+        _add_type "iterator", TYPECODE_ITERATOR
 
         next
 endcode

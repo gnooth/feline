@@ -55,7 +55,7 @@ code iterator?, 'iterator?'             ; handle -- ?
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_raw_typecode
-        _eq? OBJECT_TYPE_ITERATOR
+        _eq? TYPECODE_ITERATOR
         _return
         _then .2
         _then .1
@@ -88,7 +88,7 @@ code check_iterator, 'check-iterator'   ; x -- raw-iterator
         test    rbx, rbx
         jz      error_not_iterator
         movzx   eax, word [rbx]
-        cmp     eax, OBJECT_TYPE_ITERATOR
+        cmp     eax, TYPECODE_ITERATOR
         jne     error_not_iterator
         next
 endcode
@@ -118,7 +118,7 @@ code new_iterator, '<iterator>'         ; sequence -- iterator
         mov     this_register, rbx
         poprbx
 
-        _this_object_set_raw_typecode OBJECT_TYPE_ITERATOR
+        _this_object_set_raw_typecode TYPECODE_ITERATOR
 
         _this_iterator_set_sequence
 

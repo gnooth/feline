@@ -207,47 +207,47 @@ code initialize_gc_dispatch_table, 'initialize-gc-dispatch-table'
         popd    this_register
 
         _lit mark_vector
-        _lit OBJECT_TYPE_VECTOR
+        _lit TYPECODE_VECTOR
         _this_array_set_nth_unsafe
 
         _lit mark_array
-        _lit OBJECT_TYPE_ARRAY
+        _lit TYPECODE_ARRAY
         _this_array_set_nth_unsafe
 
         _lit mark_hashtable
-        _lit OBJECT_TYPE_HASHTABLE
+        _lit TYPECODE_HASHTABLE
         _this_array_set_nth_unsafe
 
         _lit mark_vocab
-        _lit OBJECT_TYPE_VOCAB
+        _lit TYPECODE_VOCAB
         _this_array_set_nth_unsafe
 
         _lit mark_symbol
-        _lit OBJECT_TYPE_SYMBOL
+        _lit TYPECODE_SYMBOL
         _this_array_set_nth_unsafe
 
         _lit mark_quotation
-        _lit OBJECT_TYPE_QUOTATION
+        _lit TYPECODE_QUOTATION
         _this_array_set_nth_unsafe
 
         _lit mark_curry
-        _lit OBJECT_TYPE_CURRY
+        _lit TYPECODE_CURRY
         _this_array_set_nth_unsafe
 
         _lit mark_slice
-        _lit OBJECT_TYPE_SLICE
+        _lit TYPECODE_SLICE
         _this_array_set_nth_unsafe
 
         _lit mark_tuple
-        _lit OBJECT_TYPE_TUPLE
+        _lit TYPECODE_TUPLE
         _this_array_set_nth_unsafe
 
         _lit mark_lexer
-        _lit OBJECT_TYPE_LEXER
+        _lit TYPECODE_LEXER
         _this_array_set_nth_unsafe
 
         _lit mark_iterator
-        _lit OBJECT_TYPE_ITERATOR
+        _lit TYPECODE_ITERATOR
         _this_array_set_nth_unsafe
 
         pop     this_register

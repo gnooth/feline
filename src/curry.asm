@@ -59,7 +59,7 @@ code curry?, 'curry?'                   ; handle -- ?
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_raw_typecode
-        _eq? OBJECT_TYPE_CURRY
+        _eq? TYPECODE_CURRY
         _return
         _then .2
         _then .1
@@ -95,7 +95,7 @@ code check_curry, 'check-curry'         ; x -- curry
         _dup_if .2
         _dup
         _object_raw_typecode
-        _eq? OBJECT_TYPE_CURRY
+        _eq? TYPECODE_CURRY
         _tagged_if .3
         _return
         _then .3
@@ -163,7 +163,7 @@ code curry, 'curry'                     ; object callable -- curry
         mov     this_register, rbx
         poprbx                          ; -- object callable
 
-        _this_object_set_raw_typecode OBJECT_TYPE_CURRY
+        _this_object_set_raw_typecode TYPECODE_CURRY
 
         _ verify_callable
 

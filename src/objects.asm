@@ -93,13 +93,13 @@ code object_raw_typecode, 'object-raw-typecode' ; x -- raw-typecode
         and     eax, TAG_MASK
         cmp     eax, FIXNUM_TAG
         jnz     .1
-        mov     ebx, OBJECT_TYPE_FIXNUM
+        mov     ebx, TYPECODE_FIXNUM
         _return
 
 .1:
         cmp     rbx, f_value
         jnz     .2
-        mov     ebx, OBJECT_TYPE_F
+        mov     ebx, TYPECODE_F
         _return
 
 .2:
@@ -117,14 +117,14 @@ code object_raw_typecode, 'object-raw-typecode' ; x -- raw-typecode
         _dup
         _ string?
         _tagged_if .4
-        mov     ebx, OBJECT_TYPE_STRING
+        mov     ebx, TYPECODE_STRING
         _return
         _then .4
 
         _dup
         _ symbol?
         _tagged_if .5
-        mov     ebx, OBJECT_TYPE_SYMBOL
+        mov     ebx, TYPECODE_SYMBOL
         _return
         _then .5
 

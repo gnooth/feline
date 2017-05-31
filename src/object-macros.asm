@@ -19,27 +19,27 @@ file __FILE__
         _fetch
 %endmacro
 
-; Object type numbers
-OBJECT_TYPE_TYPE                equ  0
-OBJECT_TYPE_FIXNUM              equ  1
-OBJECT_TYPE_F                   equ  2
-OBJECT_TYPE_VECTOR              equ  3
-OBJECT_TYPE_STRING              equ  4
-OBJECT_TYPE_SBUF                equ  5
-OBJECT_TYPE_ARRAY               equ  6
-OBJECT_TYPE_HASHTABLE           equ  7
-OBJECT_TYPE_BIGNUM              equ  8
-OBJECT_TYPE_SYMBOL              equ  9
-OBJECT_TYPE_VOCAB               equ 10
-OBJECT_TYPE_QUOTATION           equ 11
-OBJECT_TYPE_WRAPPER             equ 12
-OBJECT_TYPE_TUPLE               equ 13
-OBJECT_TYPE_CURRY               equ 14
-OBJECT_TYPE_SLICE               equ 15
-OBJECT_TYPE_RANGE               equ 16
-OBJECT_TYPE_LEXER               equ 17
-OBJECT_TYPE_FLOAT               equ 18
-OBJECT_TYPE_ITERATOR            equ 19
+; typecodes
+TYPECODE_TYPE           equ  0
+TYPECODE_FIXNUM         equ  1
+TYPECODE_F              equ  2
+TYPECODE_VECTOR         equ  3
+TYPECODE_STRING         equ  4
+TYPECODE_SBUF           equ  5
+TYPECODE_ARRAY          equ  6
+TYPECODE_HASHTABLE      equ  7
+TYPECODE_BIGNUM         equ  8
+TYPECODE_SYMBOL         equ  9
+TYPECODE_VOCAB          equ 10
+TYPECODE_QUOTATION      equ 11
+TYPECODE_WRAPPER        equ 12
+TYPECODE_TUPLE          equ 13
+TYPECODE_CURRY          equ 14
+TYPECODE_SLICE          equ 15
+TYPECODE_RANGE          equ 16
+TYPECODE_LEXER          equ 17
+TYPECODE_FLOAT          equ 18
+TYPECODE_ITERATOR       equ 19
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
@@ -266,66 +266,66 @@ OBJECT_ALLOCATED_BIT            equ 4
 
 %macro  _string? 0
         _object_raw_typecode
-        _lit OBJECT_TYPE_STRING
+        _lit TYPECODE_STRING
         _equal
 %endmacro
 
 %macro  _sbuf? 0
         _object_raw_typecode
-        _lit OBJECT_TYPE_SBUF
+        _lit TYPECODE_SBUF
         _equal
 %endmacro
 
 %macro  _vector? 0
         _object_raw_typecode
-        _lit OBJECT_TYPE_VECTOR
+        _lit TYPECODE_VECTOR
         _equal
 %endmacro
 
 %macro  _array? 0
         _object_raw_typecode
-        _lit OBJECT_TYPE_ARRAY
+        _lit TYPECODE_ARRAY
         _equal
 %endmacro
 
 %macro  _hashtable? 0
         _object_raw_typecode
-        _lit OBJECT_TYPE_HASHTABLE
+        _lit TYPECODE_HASHTABLE
         _equal
 %endmacro
 
 %macro  _bignum? 0
         _object_raw_typecode
-        _lit OBJECT_TYPE_BIGNUM
+        _lit TYPECODE_BIGNUM
         _equal
 %endmacro
 
 %macro  _symbol? 0
         _object_raw_typecode
-        _lit OBJECT_TYPE_SYMBOL
+        _lit TYPECODE_SYMBOL
         _equal
 %endmacro
 
 %macro  _vocab? 0
         _object_raw_typecode
-        _lit OBJECT_TYPE_VOCAB
+        _lit TYPECODE_VOCAB
         _equal
 %endmacro
 
 %macro  _quotation? 0
         _object_raw_typecode
-        _lit OBJECT_TYPE_QUOTATION
+        _lit TYPECODE_QUOTATION
         _equal
 %endmacro
 
 %macro  _curry? 0
         _object_raw_typecode
-        _lit OBJECT_TYPE_CURRY
+        _lit TYPECODE_CURRY
         _equal
 %endmacro
 
 %macro  _slice? 0
         _object_raw_typecode
-        _lit OBJECT_TYPE_SLICE
+        _lit TYPECODE_SLICE
         _equal
 %endmacro

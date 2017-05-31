@@ -110,7 +110,7 @@ code sbuf?, 'sbuf?'                     ; object -- t|f
         _handle_to_object_unsafe        ; -- object
         _dup_if .2
         _object_raw_typecode
-        _eq? OBJECT_TYPE_SBUF
+        _eq? TYPECODE_SBUF
         _return
         _then .2
         _then .1
@@ -135,7 +135,7 @@ subroutine check_sbuf   ; handle -- sbuf
         _dup_if .2
         _dup
         _object_raw_typecode
-        _eq? OBJECT_TYPE_SBUF
+        _eq? TYPECODE_SBUF
         _tagged_if .3
         ret
         _then .3
@@ -178,7 +178,7 @@ subroutine make_sbuf_internal   ; untagged-capacity -- sbuf
         mov     this_register, rbx
         poprbx                          ; -- capacity
 
-        _this_object_set_raw_typecode OBJECT_TYPE_SBUF
+        _this_object_set_raw_typecode TYPECODE_SBUF
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 
         _dup
