@@ -84,14 +84,14 @@ endcode
 ; ### set-global
 code set_global, 'set-global'           ; value variable --
         _global_namespace
-        _ set_at
+        _ hashtable_set_at
         next
 endcode
 
 ; ### get-global
 code get_global, 'get-global'           ; variable -- value
         _global_namespace
-        _ at_
+        _ hashtable_at
         next
 endcode
 
@@ -115,7 +115,7 @@ endcode
 code set, 'set'                         ; value variable --
         _get_namestack
         _ vector_last
-        _ set_at
+        _ hashtable_set_at
         next
 endcode
 
@@ -140,7 +140,7 @@ endcode
 
 ; ### find-in-scope
 code find_in_scope, 'find-in-scope'     ; variable scope -- value/f ?
-        _ at_star
+        _ hashtable_at_star
         next
 endcode
 

@@ -21,7 +21,7 @@ code vocab_find_name, 'vocab-find-name' ; name vocab -- symbol/name ?
         _dup
         _tagged_if .1
         _ vocab_hashtable
-        _ at_star
+        _ hashtable_at_star
         _then .1
         next
 endcode
@@ -71,7 +71,7 @@ code find_name_in_context_vocab, 'find-name-in-context-vocab'
 ; string vocab --  symbol/f ?
 
         _ vocab_hashtable
-        _ at_star                       ; -- symbol/f ?
+        _ hashtable_at_star             ; -- symbol/f ?
 
         cmp     ebx, f_value
         jne     .1
@@ -98,7 +98,7 @@ code find_name, 'find-name'             ; string -- symbol/string ?
         _dup
         _ current_vocab
         _ vocab_hashtable
-        _ at_star
+        _ hashtable_at_star
         _tagged_if .1
         _nip
         _t

@@ -179,7 +179,7 @@ code vocab_add_symbol, 'vocab-add-symbol' ; symbol vocab --
         _ symbol_name                   ; -- symbol name        r: -- vocab
         _rfrom
         _ vocab_hashtable
-        _ set_at
+        _ hashtable_set_at
         next
 endcode
 
@@ -194,7 +194,7 @@ code ensure_symbol, 'ensure-symbol'     ; name vocab-spec -- symbol
 
         _twodup
         _ vocab_hashtable
-        _ at_
+        _ hashtable_at
         _dup
         _tagged_if .2
         _2nip
@@ -218,7 +218,7 @@ code ensure_global, 'ensure-global'     ; name --
         _dup
         _ current_vocab
         _ vocab_hashtable
-        _ at_                           ; -- name symbol/f
+        _ hashtable_at                  ; -- name symbol/f
         _dup
         _tagged_if .2                   ; -- name symbol
         _dup
@@ -268,7 +268,7 @@ code ?lookup_symbol, '?lookup-symbol'   ; name vocab-spec -- symbol/f
         _then .1
 
         _ vocab_hashtable
-        _ at_
+        _ hashtable_at
         next
 endcode
 

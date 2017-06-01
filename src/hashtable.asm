@@ -481,7 +481,7 @@ find_index_for_key_unchecked:
 endcode
 
 ; ### at*
-code at_star, 'at*'                     ; key hashtable -- value/f ?
+code hashtable_at_star, 'at*'           ; key hashtable -- value/f ?
         _ check_hashtable
         push    this_register
         mov     this_register, rbx
@@ -501,7 +501,7 @@ code at_star, 'at*'                     ; key hashtable -- value/f ?
 endcode
 
 ; ### at
-code at_, 'at'                          ; key hashtable -- value
+code hashtable_at, 'at'                  ; key hashtable -- value
         _ check_hashtable
         push    this_register
         mov     this_register, rbx
@@ -528,7 +528,7 @@ endcode
 %endmacro
 
 ; ### set-at
-code set_at, 'set-at'                   ; value key handle --
+code hashtable_set_at, 'set-at'         ; value key handle --
 
         _ check_hashtable               ; -- value key hashtable
 
@@ -545,7 +545,7 @@ code set_at, 'set-at'                   ; value key handle --
         _ hashtable_grow_unchecked
         _then .1
 
-set_at_unchecked:
+hashtable_set_at_unchecked:
 
         push    this_register
         mov     this_register, rbx      ; -- value key hashtable
@@ -658,7 +658,7 @@ hashtable_grow_unchecked:
         _ vector_nth                    ; -- keys values nth-value nth-key
 
         _this
-        _ set_at_unchecked
+        _ hashtable_set_at_unchecked
 
         _loop .2                        ; -- keys values
         _2drop

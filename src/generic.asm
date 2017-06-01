@@ -20,7 +20,7 @@ file __FILE__
         _over
         _ object_typecode
         _swap                   ; -- object object-type dispatch-table
-        _ at_                   ; -- object raw-code-address/f
+        _ hashtable_at          ; -- object raw-code-address/f
 %endmacro
 
 ; ### lookup-method
@@ -83,7 +83,7 @@ code add_method, 'add-method'   ; method-raw-code-address tagged-typecode generi
         ; the dispatch table lives in the generic symbol's value slot
         _ symbol_value          ; -- method-raw-code-address tagged-typecode dispatch-table
         _ verify_hashtable
-        _ set_at
+        _ hashtable_set_at
         next
 endcode
 

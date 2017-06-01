@@ -460,7 +460,7 @@ code symbol_prop, 'symbol-prop'         ; key symbol -- value
         _this_symbol_props
         _dup
         _tagged_if .1
-        _ at_
+        _ hashtable_at
         _else .1
         _nip
         _then .1
@@ -484,7 +484,7 @@ code symbol_set_prop, 'symbol-set-prop' ; value key symbol --
         _then .1
 
         _this_symbol_props
-        _ set_at
+        _ hashtable_set_at
 
         pop     this_register
         next

@@ -246,7 +246,7 @@ code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE  ; --
         _dup
         _ current_vocab
         _ vocab_hashtable
-        _ at_star                       ; -- string value/f ?
+        _ hashtable_at_star             ; -- string value/f ?
         _tagged_if .1
         ; -- string symbol
         _2drop
@@ -296,7 +296,7 @@ code parse_definition_name, 'parse-definition-name'     ; -- symbol
         _dup
         _ current_vocab
         _ vocab_hashtable
-        _ at_star               ; -- string symbol/f ?
+        _ hashtable_at_star     ; -- string symbol/f ?
 
         _tagged_if .2
         _nip

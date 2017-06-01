@@ -92,12 +92,12 @@ code hash_vocabs, 'hash-vocabs'
         _ feline_vocab
         _quote "feline"
         _ dictionary
-        _ set_at
+        _ hashtable_set_at
 
         _ user_vocab
         _quote "user"
         _ dictionary
-        _ set_at
+        _ hashtable_set_at
 
         next
 endcode
@@ -156,7 +156,7 @@ code lookup_vocab, 'lookup-vocab'       ; vocab-specifier -- vocab/f
         _ dictionary
         _dup
         _tagged_if .2
-        _ at_
+        _ hashtable_at
         _return
         _else .2
         _drop
@@ -209,7 +209,7 @@ code ensure_vocab, 'ensure-vocab'       ; string -- vocab
         _tuck
         _swap
         _ dictionary
-        _ set_at
+        _ hashtable_set_at
         _then .1
         next
 endcode
