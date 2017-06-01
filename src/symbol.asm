@@ -561,6 +561,13 @@ code generic?, 'generic?'                       ; symbol -- ?
         next
 endcode
 
+; ### symbol-set-generic
+code symbol_set_generic, 'symbol-set-generic', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; symbol --
+        _symbol_set_flags_bit SYMBOL_GENERIC
+        next
+endcode
+
 ; ### symbol-value
 code symbol_value, 'symbol-value'               ; symbol -- value
         _ check_symbol
