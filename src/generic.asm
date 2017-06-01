@@ -79,19 +79,19 @@ endcode
 %endmacro
 
 ; ### add-method
-code add_method, 'add-method'   ; method-raw-code-address tagged-type-number generic-symbol --
+code add_method, 'add-method'   ; method-raw-code-address tagged-typecode generic-symbol --
         ; the dispatch table lives in the generic symbol's value slot
-        _ symbol_value          ; -- method-raw-code-address tagged-type-number dispatch-table
+        _ symbol_value          ; -- method-raw-code-address tagged-typecode dispatch-table
         _ verify_hashtable
         _ set_at
         next
 endcode
 
-%macro _add_method 3            ; generic-asm-name, raw-object-type, method-asm-name
+%macro _add_method 3            ; generic-asm-name, raw-typecode, method-asm-name
         _lit S_%3                       ; -- method-symbol
         _ symbol_raw_code_address       ; -- method-raw-code-address
-        _lit %2                         ; -- raw-object-type
-        _tag_fixnum                     ; -- tagged-object-type
+        _lit %2                         ; -- raw-typecde
+        _tag_fixnum                     ; -- tagged-typecode
         _lit S_%1                       ; -- generic-symbol
         _ add_method
 %endmacro
