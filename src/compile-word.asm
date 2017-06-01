@@ -342,8 +342,8 @@ code compile_pair, 'compile-pair'       ; pair --
         _return
         _then .2
 
-        _ compile_literal
-        _lit unchecked_call_symbol
+        ; not a primitive
+        _ symbol_raw_code_address
         _ compile_call
 
         next
