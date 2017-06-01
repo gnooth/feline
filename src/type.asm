@@ -34,19 +34,19 @@ file __FILE__
 %endmacro
 
 %macro  _type_typecode 0                ; type -- typecode
-        _slot1
+        _slot2
 %endmacro
 
 %macro  _type_set_typecode 0            ; typecode type --
-        _set_slot1
+        _set_slot2
 %endmacro
 
 %macro  _this_type_typecode 0           ; -- typecode
-        _this_slot1
+        _this_slot2
 %endmacro
 
 %macro  _this_type_set_typecode 0       ; typecode --
-        _this_set_slot1
+        _this_set_slot2
 %endmacro
 
 ; ### type?
@@ -175,7 +175,7 @@ code initialize_type_symbols, 'initialize-type-symbols'
 endcode
 
 ; ### find-type
-code find_type, 'find-type'             ; string -- type/f
+code find_type, 'find-type'             ; string -- type
         _ find_name
         _tagged_if .1
         _quote "type"
@@ -190,6 +190,14 @@ code find_type, 'find-type'             ; string -- type/f
 
         _error "can't find type"
 
+        next
+endcode
+
+; ### type-typecode
+code type_typecode, 'type-typecode'     ; type -- typecode
+        _ check_type
+        _type_typecode
+        _tag_fixnum
         next
 endcode
 
