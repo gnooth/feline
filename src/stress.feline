@@ -5,8 +5,10 @@ in: user
 
 in: stress
 
+4000000 >constant: limit
+
 test: bignum-number>string-test-1
-    10000000 [ 2 72 expt number>string drop ] times
+    limit [ 2 72 expt number>string drop ] times
 ;
 
 bignum-number>string-test-1
@@ -17,18 +19,18 @@ bignum-number>string-test-1
 -- to the quotation.
 
 "each-integer-gc-test-1" ?nl write-string
-10000000 [ number>string drop ] each-integer
+limit [ number>string drop ] each-integer
 
 "find-integer-gc-test-1" ?nl write-string
-10000000 [ number>string "9999999" string= ] find-integer drop
+limit [ number>string "9999999" string= ] find-integer drop
 
 "times-gc-test-1" ?nl write-string
-10000000 [ most-positive-fixnum number>string drop ] times
+limit [ most-positive-fixnum number>string drop ] times
 
 "until-gc-test-1" ?nl write-string
-10000000 [ dup zero? ] [ dup number>string drop 1 - ] until drop
+limit [ dup zero? ] [ dup number>string drop 1 - ] until drop
 
 "while-gc-test-1" ?nl write-string
-10000000 [ dup zero? not ] [ dup number>string drop 1 - ] while drop
+limit [ dup zero? not ] [ dup number>string drop 1 - ] while drop
 
 in: feline
