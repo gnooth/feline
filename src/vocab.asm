@@ -206,7 +206,7 @@ code ensure_symbol, 'ensure-symbol'     ; name vocab-spec -- symbol
         _ create_symbol                 ; -- symbol
 
         _dup
-        _to_global last_word
+        _ set_last_word
 
         next
 endcode
@@ -253,7 +253,7 @@ code ensure_global, 'ensure-global'     ; name --
         _dup
         _ compile_word
 
-        _to_global last_word
+        _ set_last_word
 
         next
 endcode

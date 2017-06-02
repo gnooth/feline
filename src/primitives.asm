@@ -20,12 +20,19 @@ code noop, 'noop'
         next
 endcode
 
+asm_global last_word_, f_value
+
 ; ### last-word
-feline_global last_word, 'last-word'
+code last_word, 'last-word'             ; -- word
+        pushrbx
+        mov     rbx, [last_word_]
+        next
+endcode
 
 ; ### set-last-word
 code set_last_word, 'set-last-word'     ; word --
-        _to_global last_word
+        mov     [last_word_], rbx
+        poprbx
         next
 endcode
 
