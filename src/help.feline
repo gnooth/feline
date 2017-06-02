@@ -189,6 +189,10 @@ help: each-integer
     "( n quot -- )              quot: ( i -- )
     Call `quot` for each integer from 0 up to `n`, excluding `n`." ;
 
+help: ensure-symbol
+    "( name vocab -- symbol )
+    Return the symbol named `name` in `vocab`, creating it if necessary." ;
+
 help: even?
     "( n -- ? )
     Return `t` if `n` is even." ;
