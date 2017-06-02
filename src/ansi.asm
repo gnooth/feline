@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2017 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -24,20 +24,24 @@ feline_constant magenta, 'magenta', tagged_fixnum(5)
 feline_constant cyan,    'cyan',    tagged_fixnum(6)
 feline_constant white,   'white',   tagged_fixnum(7)
 
+asm_global color?_, f_value
+
 ; ### color?
-feline_global color?, 'color?', f_value
+code color?, 'color?'                   ; -- ?
+        pushrbx
+        mov     rbx, [color?_]
+        next
+endcode
 
 ; ### +color
 code color_on, '+color'                 ; --
-        _t
-        _to_global color?
+        mov     qword [color?_], t_value
         next
 endcode
 
 ; ### -color
 code color_off, '-color'                ; --
-        _f
-        _to_global color?
+        mov     qword [color?_], f_value
         next
 endcode
 
