@@ -17,19 +17,19 @@ file __FILE__
 
 ; 3 cells: object header, name, typecode
 
-%macro  _type_name 0                    ; type -- name
+%macro  _type_symbol 0                  ; type -- symbol
         _slot1
 %endmacro
 
-%macro  _type_set_name 0                ; name type --
+%macro  _type_set_symbol 0              ; symbol type --
         _set_slot1
 %endmacro
 
-%macro  _this_type_name 0               ; -- name
+%macro  _this_type_symbol 0             ; -- symbol
         _this_slot1
 %endmacro
 
-%macro  _this_type_set_name 0           ; name --
+%macro  _this_type_set_symbol 0         ; symbol --
         _this_set_slot1
 %endmacro
 
@@ -83,42 +83,61 @@ endcode
 
 ; ### make-type
 code make_type, 'make-type', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; name typecode -- type
+; symbol raw-typecode -- type
         _lit 3
         _ raw_allocate_cells
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -- name typecode
+        poprbx                          ; -- symbol typecode
 
         _this_object_set_raw_typecode TYPECODE_TYPE
 
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 
-        _this_type_set_typecode
+        _this_type_set_typecode         ; -- symbol
 
-        _this_type_set_name
+        _dup
+        _this_type_set_symbol
 
         pushrbx
-        mov     rbx, this_register      ; -- type
+        mov     rbx, this_register      ; -- symbol raw-object-address
 
         ; return handle
-        _ new_handle                    ; -- handle
+        _ new_handle                    ; -- symbol type
 
         pop     this_register
+
+        ; set type object as value of type symbol's "type" property
+        _tuck
+        _quote "type"
+        _ rot
+        _ symbol_set_prop               ; -- type
 
         next
 endcode
 
 feline_global types, 'types'
 
-%macro _add_type 2      ; name, raw typecode
-        _quote %1
-        _lit %2
-        _ make_type     ; -- type
-        _lit %2
+; ### add-builtin-type
+code add_builtin_type, 'add-builtin-type'       ; name raw-typecode --
+        _tor                    ; -- name               r: -- raw-typecode
+        _ feline_vocab          ; -- name vocab
+        _ ensure_symbol         ; -- symbol
+        _rfetch                 ; -- symbol raw-typecode
+
+        _ make_type             ; -- type
+
+        _rfrom                  ; -- type raw-typecode  r: --
         _ types
         _ vector_set_nth_untagged
+        next
+endcode
+
+%macro  _add_type 2     ; name raw-typecode --
+        _quote %1
+        _lit %2
+        _ add_builtin_type
 %endmacro
 
 ; ### initialize-types
@@ -151,26 +170,18 @@ code initialize_types, 'initialize-types', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE    
         next
 endcode
 
-; ### make-type-symbol
-code make_type_symbol, 'make-type-symbol'       ; type --
-        _dup
+; ### type-symbol
+code type_symbol, 'type-symbol'         ; type -- symbol
         _ check_type
-        _type_name
-        _ feline_vocab
-        _ ensure_symbol                 ; type symbol --
-
-        _quote "type"
-        _ swap                          ; type "type" symbol --
-        _ symbol_set_prop
-
+        _type_symbol
         next
 endcode
 
-; ### initialize-type-symbols
-code initialize_type_symbols, 'initialize-type-symbols'
-        _ types
-        _lit S_make_type_symbol
-        _ vector_each
+; ### type-typecode
+code type_typecode, 'type-typecode'     ; type -- typecode
+        _ check_type
+        _type_typecode
+        _tag_fixnum
         next
 endcode
 
@@ -193,17 +204,10 @@ code find_type, 'find-type'             ; string -- type
         next
 endcode
 
-; ### type-typecode
-code type_typecode, 'type-typecode'     ; type -- typecode
-        _ check_type
-        _type_typecode
-        _tag_fixnum
-        next
-endcode
-
 ; ### type>string
-code type_to_string, 'type>string'      ; type --string
+code type_to_string, 'type>string'      ; type -- string
         _ check_type
-        _type_name
+        _type_symbol
+        _ symbol_name
         next
 endcode

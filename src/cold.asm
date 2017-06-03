@@ -179,8 +179,6 @@ code cold, 'cold'                       ; --
 
         _ initialize_gc_dispatch_table
 
-        _ initialize_types
-
         _ initialize_globals
 
         _ initialize_vocabs
@@ -189,7 +187,7 @@ code cold, 'cold'                       ; --
 
         _ hash_vocabs
 
-        _ initialize_type_symbols
+        _ initialize_types
 
         _quote "boot.feline"
         _lit S_load_system_file
