@@ -45,6 +45,10 @@ else
 	FELINE_HOME_EXE = feline_home
 endif
 
+ifdef DEBUG
+	ASMFLAGS += -DDEBUG
+endif
+
 ifeq ($(OS),Windows_NT)
 $(FELINE_EXE):  $(OBJS)
 	$(CC) $(LINKFLAGS) $(OBJS) -l ws2_32 ../gmp/.libs/libgmp.a -o $(FELINE_EXE)
