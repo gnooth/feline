@@ -525,6 +525,12 @@ code symbol_set_immediate, 'symbol-set-immediate', SYMBOL_PRIMITIVE | SYMBOL_PRI
         next
 endcode
 
+; ### symbol-always-inline?
+code symbol_always_inline?, 'symbol-always-inline?'     ; symbol -- ?
+        _symbol_flags_bit SYMBOL_ALWAYS_INLINE
+        next
+endcode
+
 ; ### symbol-inline?
 code symbol_inline?, 'symbol-inline?'           ; symbol -- ?
         _symbol_flags_bit SYMBOL_INLINE
