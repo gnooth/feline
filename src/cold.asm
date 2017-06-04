@@ -136,6 +136,11 @@ code dot_version, '.version'            ; --
         _ concat
         _ write_string
 
+%ifdef DEBUG
+        _quote "-DEBUG"
+        _ write_string
+%endif
+
         _ feline_home
         _quote "build"
         _ path_append
