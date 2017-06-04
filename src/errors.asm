@@ -107,3 +107,20 @@ code error_not_type, 'error-not-type'           ; x --
         _ error
         next
 endcode
+
+; ### error-not-enough-parameters
+code error_not_enough_parameters, 'error-not-enough-parameters'         ; --
+        _quote "ERROR: not enough parameters."
+        _ error
+        next
+endcode
+
+; ### error-data-stack-underflow
+code error_data_stack_underflow, 'error-data-stack-underflow'         ; --
+        ; fix underflow before going any further
+        mov     rbp, [sp0_]
+
+        _quote "ERROR: data stack underflow."
+        _ error
+        next
+endcode
