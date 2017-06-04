@@ -1345,6 +1345,7 @@ last-word $31 install-$0f-handler
 : .0f-81 ( -- ) "jno" jcc-rel32 ; last-word $81 install-$0f-handler
 : .0f-84 ( -- ) "jz"  jcc-rel32 ; last-word $84 install-$0f-handler
 : .0f-85 ( -- ) "jne" jcc-rel32 ; last-word $85 install-$0f-handler
+: .0f-87 ( -- ) "ja"  jcc-rel32 ; last-word $87 install-$0f-handler
 : .0f-88 ( -- ) "js"  jcc-rel32 ; last-word $88 install-$0f-handler
 : .0f-8c ( -- ) "jl"  jcc-rel32 ; last-word $8c install-$0f-handler
 
