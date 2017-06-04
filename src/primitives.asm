@@ -43,6 +43,7 @@ endinline
 
 ; ### drop
 inline drop, 'drop'
+        _debug_?enough 1
         _drop
 endinline
 
@@ -63,6 +64,7 @@ endinline
 
 ; ### dup
 inline dup, 'dup'
+        _debug_?enough 1
         _dup
 endinline
 
