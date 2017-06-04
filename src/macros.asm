@@ -859,3 +859,10 @@ section .text
         shl     rdx, 32
         add     rbx, rdx
 %endmacro
+
+%macro  _debug_?enough 1                ; minimum-number-of-parameters --
+%ifdef  DEBUG
+        _lit tagged_fixnum(%1)
+        _ ?enough
+%endif
+%endmacro
