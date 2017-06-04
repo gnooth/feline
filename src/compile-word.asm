@@ -310,7 +310,11 @@ endcode
 ; ### compile-primitive
 code compile_primitive, 'compile-primitive' ; symbol --
         _dup
+%ifdef DEBUG
+        _ symbol_always_inline?
+%else
         _ symbol_inline?
+%endif
         _tagged_if .1
         _dup
         _ symbol_raw_code_address
