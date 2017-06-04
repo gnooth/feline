@@ -219,11 +219,7 @@ endcode
 ; ### ?stack
 code ?stack, '?stack'
         cmp     rbp, [sp0_]
-        ja      .1
-        next
-.1:
-        mov     rbp, [sp0_]
-        _error "data stack underflow"
+        ja      error_data_stack_underflow
         next
 endcode
 
