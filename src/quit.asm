@@ -223,6 +223,32 @@ code ?stack, '?stack'
         next
 endcode
 
+; ### ?enough
+code ?enough, '?enough'                 ; fixnum --
+
+        _verify_fixnum
+
+        test    rbx, rbx
+        js      .1
+
+        cmp     rbp, [sp0_]
+        ja      error_data_stack_underflow
+
+        mov     rax, [sp0_]
+        sub     rax, rbx
+        cmp     rbp, rax
+        jg      error_not_enough_parameters
+        poprbx
+        next
+
+.1:
+        _quote "ERROR: the value %S is not a non-negative fixnum."
+        _ format
+        _ error
+
+        next
+endcode
+
 ; ### interpret
 code interpret, 'interpret'             ; --
         _begin .1
