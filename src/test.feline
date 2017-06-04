@@ -1970,14 +1970,14 @@ test: return-if-test-3
 
 return-if-test-3
 
-test: @-test-1
-    ' dup symbol-code-address @
-    [ bignum? assert-true ] keep
-    [ 17901119438411630920 assert= ] keep
-    [ $f86d8d48f85d8948 assert= ] keep
-    bignum>hex "f86d8d48f85d8948" assert= ;
+-- test: @-test-1
+--     ' dup symbol-code-address @
+--     [ bignum? assert-true ] keep
+--     [ 17901119438411630920 assert= ] keep
+--     [ $f86d8d48f85d8948 assert= ] keep
+--     bignum>hex "f86d8d48f85d8948" assert= ;
 
-@-test-1
+-- @-test-1
 
 test: ?vector-pop-test-1
     vector{ 1 2 }
