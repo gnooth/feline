@@ -91,12 +91,12 @@ code free_locals_stack, 'free-locals-stack'
 endcode
 
 ; ### locals-enter
-inline locals_enter, 'locals-enter'
+always_inline locals_enter, 'locals-enter'
         _locals_enter
 endinline
 
 ; ### locals-leave
-inline locals_leave, 'locals-leave'
+always_inline locals_leave, 'locals-leave'
         _locals_leave
 endinline
 
