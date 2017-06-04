@@ -357,14 +357,15 @@ section .data
 %endmacro
 
 ; Symbol bit flags
-%define SYMBOL_PRIMITIVE        $01
-%define SYMBOL_IMMEDIATE        $02
-%define SYMBOL_INLINE           $04
-%define SYMBOL_GLOBAL           $08
-%define SYMBOL_CONSTANT         $10
-%define SYMBOL_SPECIAL          $20
-%define SYMBOL_PRIVATE          $40
-%define SYMBOL_GENERIC          $80
+%define SYMBOL_PRIMITIVE        $0001
+%define SYMBOL_IMMEDIATE        $0002
+%define SYMBOL_INLINE           $0004
+%define SYMBOL_GLOBAL           $0008
+%define SYMBOL_CONSTANT         $0010
+%define SYMBOL_SPECIAL          $0020
+%define SYMBOL_PRIVATE          $0040
+%define SYMBOL_GENERIC          $0080
+%define SYMBOL_ALWAYS_INLINE    $0100
 
 %macro  IN_FELINE 0
 %undef  in_forth
@@ -466,7 +467,22 @@ section .data
 %macro  inline 2-5 0, 0, 0
         %push inline
         %define in_inline
-        head %1, %2, SYMBOL_INLINE, %$ret - %1 + 1 ; adjust size to include ret instruction
+
+        ; adjust size to include ret instruction
+        head %1, %2, SYMBOL_INLINE, %$ret - %1 + 1
+
+        section .text
+        align   DEFAULT_CODE_ALIGNMENT
+%1:
+%endmacro
+
+%macro  always_inline 2-5 0, 0, 0
+        %push inline
+        %define in_inline
+
+        ; adjust size to include ret instruction
+        head %1, %2, SYMBOL_INLINE | SYMBOL_ALWAYS_INLINE, %$ret - %1 + 1
+
         section .text
         align   DEFAULT_CODE_ALIGNMENT
 %1:
