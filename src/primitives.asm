@@ -38,6 +38,7 @@ endcode
 
 ; ### swap
 inline swap, 'swap'                     ; x1 x2 -- x2 x1
+        _debug_?enough 2
         _swap
 endinline
 
@@ -49,16 +50,19 @@ endinline
 
 ; ### 2drop
 inline twodrop, '2drop'
+        _debug_?enough 2
         _2drop
 endinline
 
 ; ### 3drop
 inline threedrop, '3drop'
+        _debug_?enough 3
         _3drop
 endinline
 
 ; ### 4drop
 inline fourdrop, '4drop'
+        _debug_?enough 4
         _4drop
 endinline
 
@@ -70,16 +74,19 @@ endinline
 
 ; ### dupd
 inline dupd, 'dupd'
+        _debug_?enough 2
         _dupd
 endinline
 
 ; ### 2dup
 inline twodup, '2dup'                   ; x1 x2 -- x1 x2 x1 x2
+        _debug_?enough 2
         _twodup
 endinline
 
 ; ### 3dup
 code threedup, '3dup'                   ; x1 x2 x3 -- x1 x2 x3 x1 x2 x3
+        _debug_?enough 3
         lea     rbp, [rbp - BYTES_PER_CELL * 3]
         mov     [rbp + BYTES_PER_CELL * 2], rbx
         mov     rax, [rbp + BYTES_PER_CELL * 4]
@@ -91,6 +98,7 @@ endcode
 
 ; ### rot
 code rot, 'rot'                         ; x1 x2 x3 -- x2 x3 x1
+        _debug_?enough 3
         mov     rax, [rbp]                      ; x2 in RAX
         mov     rdx, [rbp + BYTES_PER_CELL]     ; x1 in RDX
         mov     [rbp + BYTES_PER_CELL], rax     ; x2
@@ -101,6 +109,7 @@ endcode
 
 ; ### -rot
 code rrot, '-rot'                       ; x1 x2 x3 -- x3 x1 x2
+        _debug_?enough 3
         mov     rax, [rbp]                      ; x2 in RAX
         mov     rdx, [rbp + BYTES_PER_CELL]     ; x1 in RDX
         mov     [rbp + BYTES_PER_CELL], rbx     ; x3
@@ -111,22 +120,26 @@ endcode
 
 ; ### over
 inline over, 'over'
+        _debug_?enough 2
         _over
 endinline
 
 ; ### nip
 inline nip, 'nip'                       ; x1 x2 -- x2
+        _debug_?enough 2
         _nip
 endinline
 
 ; ### tuck
 code tuck, 'tuck'                       ; x1 x2 -- x2 x1 x2
+        _debug_?enough 2
         _tuck
         next
 endcode
 
 ; ### swapd
 code swapd, 'swapd'                     ; x y z -- y x z
+        _debug_?enough 3
         mov     rax, [rbp]
         mov     rdx, [rbp + BYTES_PER_CELL]
         mov     [rbp + BYTES_PER_CELL], rax
@@ -136,6 +149,7 @@ endcode
 
 ; ### 2nip
 inline twonip, '2nip'                   ; x y z -- z
+        _debug_?enough 3
         _2nip
 endinline
 
