@@ -40,6 +40,7 @@ TYPECODE_RANGE          equ 16
 TYPECODE_LEXER          equ 17
 TYPECODE_FLOAT          equ 18
 TYPECODE_ITERATOR       equ 19
+TYPECODE_METHOD         equ 20
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
