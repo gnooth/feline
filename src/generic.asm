@@ -87,13 +87,29 @@ code add_method, 'add-method'   ; method-raw-code-address tagged-typecode generi
         next
 endcode
 
+; ### install-method
+code install_method, 'install-method'   ; method --
+        _dup
+        _ method_callable
+        _ callable_raw_code_address     ; -- method method-raw-code-address
+        _swap                           ; -- method-raw-code-address method
+        _dup
+        _ method_typecode               ; -- method-raw-code-address method typecode
+        _swap
+        _ method_generic                ; -- method-raw-code-address tagged-typecode generic-symbol
+        _ add_method
+        next
+endcode
+
 %macro _add_method 3            ; generic-asm-name, raw-typecode, method-asm-name
-        _lit S_%3                       ; -- method-symbol
-        _ symbol_raw_code_address       ; -- method-raw-code-address
         _lit %2                         ; -- raw-typecde
         _tag_fixnum                     ; -- tagged-typecode
-        _lit S_%1                       ; -- generic-symbol
-        _ add_method
+        _lit S_%1                       ; -- tagged-typecode generic-symbol
+        _ new_method                    ; -- method
+        _lit S_%3                       ; -- method method-symbol
+        _over
+        _ method_set_callable           ; -- method
+        _ install_method                ; --
 %endmacro
 
 ; ### hashcode
