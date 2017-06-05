@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; 3 cells: object header, name, typecode
+; 3 cells: object header, type symbol, tagged typecode
 
 %macro  _type_symbol 0                  ; type -- symbol
         _slot1
@@ -166,6 +166,7 @@ code initialize_types, 'initialize-types', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE    
         _add_type "lexer", TYPECODE_LEXER
         _add_type "float", TYPECODE_FLOAT
         _add_type "iterator", TYPECODE_ITERATOR
+        _add_type "method", TYPECODE_METHOD
 
         next
 endcode
@@ -178,10 +179,17 @@ code type_symbol, 'type-symbol'         ; type -- symbol
 endcode
 
 ; ### type-typecode
-code type_typecode, 'type-typecode'     ; type -- typecode
+code type_typecode, 'type-typecode'     ; type -- tagged-typecode
         _ check_type
         _type_typecode
         _tag_fixnum
+        next
+endcode
+
+; ### raw-typecode>type
+code raw_typecode_to_type, 'raw-typecode>type'  ; typecode -- type
+        _ types
+        _ vector_nth_untagged
         next
 endcode
 
