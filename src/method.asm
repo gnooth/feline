@@ -111,9 +111,15 @@ code new_method, '<method>'             ; tagged-typecode generic-symbol -- meth
 
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 
+        _dup
+        _ generic?
+        _tagged_if_not .1
+        _error "not a generic"
+        _then .1
+
         _this_method_set_generic        ; -- typecode
 
-        _check_fixnum
+        _check_index
         _this_method_set_raw_typecode   ; --
 
         pushrbx
@@ -123,6 +129,38 @@ code new_method, '<method>'             ; tagged-typecode generic-symbol -- meth
 
         pop     this_register
 
+        next
+endcode
+
+; ### method-typecode
+code method_typecode, 'method-typecode' ; method -- typecode
+        _ check_method
+        _method_raw_typecode
+        _tag_fixnum
+        next
+endcode
+
+; ### method-generic
+code method_generic, 'method-generic'   ; method -- generic-symbol
+        _ check_method
+        _method_generic
+        next
+endcode
+
+; ### method-callable
+code method_callable, 'method-callable' ; method -- callable
+        _ check_method
+        _method_callable
+        next
+endcode
+
+; ### method-set-callable
+code method_set_callable, 'method-set-callable' ; callable method --
+        _ check_method
+        _swap
+        _ verify_callable
+        _swap
+        _method_set_callable
         next
 endcode
 
