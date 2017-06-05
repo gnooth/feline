@@ -468,14 +468,14 @@ code method_colon, 'method:', SYMBOL_IMMEDIATE  ; --
 
         _ must_parse_token              ; -- string
         _ find_type                     ; -- type
-        _ type_typecode                 ; -- typecode
+        _ type_typecode                 ; -- tagged-typecode
 
         _ must_parse_token              ; -- typecode string
         _ find_name                     ; -- typecode symbol/string ?
         _tagged_if_not .1
         _error "can't find generic word"
         _return
-        _then .1                        ; -- typecode symbol
+        _then .1                        ; -- typecode generic-symbol
 
         _dup
         _ generic?
@@ -484,13 +484,13 @@ code method_colon, 'method:', SYMBOL_IMMEDIATE  ; --
         _return
         _then .2
 
-        _ parse_definition              ; -- typecode symbol vector
+        _ parse_definition              ; -- typecode generic-symbol vector
         _ vector_to_array
-        _ array_to_quotation            ; -- typecode symbol quotation
-        _ compile_quotation             ; -- typecode symbol code-address code-size
+        _ array_to_quotation            ; -- typecode generic-symbol quotation
+        _ compile_quotation             ; -- typecode generic-symbol code-address code-size
 
-        _drop                           ; -- typecode symbol code-address
-        _untag_fixnum                   ; -- typecode symbol raw-code-address
+        _drop                           ; -- typecode generic-symbol code-address
+        _untag_fixnum                   ; -- typecode generic-symbol raw-code-address
 
         _ rrot
         _ add_method                    ; --
