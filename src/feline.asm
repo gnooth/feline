@@ -52,6 +52,7 @@ IN_FELINE
 %include "primitives.asm"
 %include "hashtable.asm"
 %include "generic.asm"
+%include "method.asm"
 %include "fixnum.asm"
 %include "bignum.asm"
 %include "float.asm"
