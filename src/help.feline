@@ -20,27 +20,31 @@ in: user
 
 in: help
 
+private
+
    96 >constant: backquote
 
 white >constant: fg-title
  cyan >constant: fg-parameter
 white >constant: fg-default
 
-: bold   ( -- ) esc[ "1m" write-string ;
-: normal ( -- ) esc[ "0m" write-string ;
+: bold   ( -- ) color? [ esc[ "1m" write-string ] when ;
+: normal ( -- ) color? [ esc[ "0m" write-string ] when ;
 
 : format-string ( string -- )
     >local: s
-    f >local: in-quote?
-    backquote s index >local: i
-    [ i ] [
-        s i string-head write-string
-        1+!> i
-        s i string-tail !> s
-        in-quote? not !> in-quote?
-        in-quote? fg-parameter fg-default ? foreground
-        backquote s index !> i
-    ] while
+    color? [
+        f >local: in-quote?
+        backquote s index >local: i
+        [ i ] [
+            s i string-head write-string
+            1+!> i
+            s i string-tail !> s
+            in-quote? not !> in-quote?
+            in-quote? fg-parameter fg-default ? foreground
+            backquote s index !> i
+        ] while
+    ] when
     s write-string ;
 
 : format-title ( string -- )
@@ -53,6 +57,8 @@ white >constant: fg-default
 : format-help ( symbol content -- )
     ?nl swap symbol-name format-title
     nl 4 spaces first format-string ;
+
+public
 
 : help ( symbol -- ) dup symbol-help [ format-help ] [ drop ] if* ;
 
