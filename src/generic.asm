@@ -51,11 +51,12 @@ endcode
         endcode
 %endmacro
 
-; ### initialize-generic-function
-code initialize_generic_function, 'initialize-generic-function' ; symbol --
-        ; REVIEW 8?
-        _lit 8
-        _ new_hashtable_untagged        ; -- symbol dispatch-table
+; ### make-fixnum-hashtable
+code make_fixnum_hashtable, 'make-fixnum-hashtable'     ; -- hashtable
+; Return a new hashtable with hash and test functions suitable for fixnum keys.
+
+        _lit 2
+        _ new_hashtable_untagged
 
         _lit S_fixnum_hashcode
         _ symbol_raw_code_address
@@ -65,7 +66,15 @@ code initialize_generic_function, 'initialize-generic-function' ; symbol --
         _lit S_eq?
         _ symbol_raw_code_address
         _over
-        _ hashtable_set_test_function   ; -- symbol dispatch-table
+        _ hashtable_set_test_function
+
+        next
+endcode
+
+; ### initialize-generic-function
+code initialize_generic_function, 'initialize-generic-function' ; symbol --
+
+        _ make_fixnum_hashtable
 
         ; the dispatch table lives in the generic symbol's value slot
         _swap
