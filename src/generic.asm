@@ -51,6 +51,42 @@ endcode
         endcode
 %endmacro
 
+; ### verify-generic
+code verify_generic, 'verify-generic'   ; generic-symbol -- generic-symbol
+        _dup
+        _ generic?
+        _tagged_if .1
+        _return
+        _then .1
+
+        _error "symbol not generic"
+
+        next
+endcode
+
+; ### generic-function-methods
+code generic_function_methods, 'generic-function-methods'
+; generic-symbol -- methods
+        _ verify_generic
+        _ symbol_def
+        _ hashtable_values
+%ifdef DEBUG
+        _ verify_vector
+%endif
+        next
+endcode
+
+; ### generic-function-dispatch-table
+code generic_function_dispatch_table, 'generic-function-dispatch-table'
+; generic-symbol -- hashtable
+        _ verify_generic
+        _ symbol_value
+%ifdef DEBUG
+        _ verify_hashtable
+%endif
+        next
+endcode
+
 ; ### make-fixnum-hashtable
 code make_fixnum_hashtable, 'make-fixnum-hashtable'     ; -- hashtable
 ; Return a new hashtable with hash and test functions suitable for fixnum keys.
@@ -74,11 +110,16 @@ endcode
 ; ### initialize-generic-function
 code initialize_generic_function, 'initialize-generic-function' ; symbol --
 
+        ; methods hashtable
         _ make_fixnum_hashtable
+        _over
+        _ symbol_set_def
 
-        ; the dispatch table lives in the generic symbol's value slot
+        ; dispatch table
+        _ make_fixnum_hashtable
         _swap
         _ symbol_set_value              ; --
+
         next
 endcode
 
