@@ -128,8 +128,9 @@ endcode
         _ initialize_generic_function
 %endmacro
 
-; ### add-method
-code add_method, 'add-method'   ; method-raw-code-address tagged-typecode generic-symbol --
+; ### add-method-to-dispatch-table
+code add_method_to_dispatch_table, 'add-method-to-dispatch-table'
+; method-raw-code-address tagged-typecode generic-symbol --
         ; the dispatch table lives in the generic symbol's value slot
         _ symbol_value          ; -- method-raw-code-address tagged-typecode dispatch-table
         _ verify_hashtable
@@ -147,7 +148,7 @@ code install_method, 'install-method'   ; method --
         _ method_typecode               ; -- method-raw-code-address method typecode
         _swap
         _ method_generic                ; -- method-raw-code-address tagged-typecode generic-symbol
-        _ add_method
+        _ add_method_to_dispatch_table
         next
 endcode
 

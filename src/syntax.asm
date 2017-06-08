@@ -493,7 +493,7 @@ code method_colon, 'method:', SYMBOL_IMMEDIATE  ; --
         _untag_fixnum                   ; -- typecode generic-symbol raw-code-address
 
         _ rrot
-        _ add_method                    ; --
+        _ add_method_to_dispatch_table  ; --
 
         next
 endcode
