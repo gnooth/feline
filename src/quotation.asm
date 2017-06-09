@@ -246,6 +246,15 @@ code quotation_raw_code_address, 'quotation-raw-code-address'
         next
 endcode
 
+; ### quotation-code-address
+code quotation_code_address, 'quotation-code-address'
+; quotation -- code-address
+        _ check_quotation
+        _quotation_raw_code_address
+        _tag_fixnum
+        next
+endcode
+
 ; ### quotation-set-raw-code-address
 code quotation_set_raw_code_address, 'quotation-set-raw-code-address'
 ; raw-code-address quotation --
