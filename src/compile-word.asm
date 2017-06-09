@@ -353,10 +353,8 @@ code compile_pair, 'compile-pair'       ; pair --
         next
 endcode
 
-; ### compile-quotation
-code compile_quotation, 'compile-quotation'
-; quotation -- code-address code-size
-; return values are tagged
+; ### compile-quotation-internal
+code compile_quotation_internal, 'compile-quotation-internal'     ; quotation --
 
         _ check_quotation
 
@@ -390,23 +388,21 @@ code compile_quotation, 'compile-quotation'
         _rfetch                         ; -- raw-code-address
         _this_quotation_set_raw_code_address
 
-        _rfrom                          ; -- raw-code-address
-
         _pc
-        _over
-        _minus                          ; -- raw-code-address raw-code-size
-
-        _dup
+        _rfrom
+        _minus
         _this_quotation_set_raw_code_size
-
-        ; FIXME
-        _tag_fixnum
-        _swap
-        _tag_fixnum
-        _swap
 
         pop     this_register
 
+        next
+endcode
+
+; ### compile-quotation
+code compile_quotation, 'compile-quotation'     ; quotation -- quotation
+        _duptor
+        _ compile_quotation_internal
+        _rfrom
         next
 endcode
 
@@ -414,10 +410,16 @@ endcode
 code compile_word, 'compile-word'       ; symbol --
         _dup
         _ symbol_def
-        _ compile_quotation             ; -- symbol code-address code-size
+        _ compile_quotation             ; -- symbol quotation
+
+        _dup
+        _ quotation_code_address
         _pick
-        _ symbol_set_code_size          ; -- symbol code-address
+        _ symbol_set_code_address
+
+        _ quotation_code_size
         _swap
-        _ symbol_set_code_address       ; --
+        _ symbol_set_code_size
+
         next
 endcode

@@ -330,10 +330,9 @@ code call_quotation, 'call'             ; callable --
         _dup_if .2
         _nip                            ; -- raw-code-address
         _else .2
-        _drop
-        _ compile_quotation             ; -- code-address code-size
-        _drop
-        _untag_fixnum
+        _drop                           ; -- quotation
+        _ compile_quotation             ; -- quotation
+        _ quotation_raw_code_address
         _then .2
         mov     rax, rbx
         poprbx
@@ -353,9 +352,8 @@ code callable_raw_code_address, 'callable-raw-code-address'
         _?dup_if .2
         _nip
         _else .2
-        _ compile_quotation             ; -- code-address code-size
-        _drop
-        _untag_fixnum
+        _ compile_quotation             ; -- quotation
+        _ quotation_raw_code_address
         _then .2
         _return
         _then .1

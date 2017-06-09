@@ -487,10 +487,8 @@ code method_colon, 'method:', SYMBOL_IMMEDIATE  ; --
         _ parse_definition              ; -- typecode generic-symbol vector
         _ vector_to_array
         _ array_to_quotation            ; -- typecode generic-symbol quotation
-        _ compile_quotation             ; -- typecode generic-symbol code-address code-size
-
-        _drop                           ; -- typecode generic-symbol code-address
-        _untag_fixnum                   ; -- typecode generic-symbol raw-code-address
+        _ compile_quotation             ; -- typecode generic-symbol quotation
+        _ quotation_raw_code_address    ; -- typecode generic-symbol raw-code-address
 
         _ rrot
         _ add_method_to_dispatch_table  ; --
