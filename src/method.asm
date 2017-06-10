@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; 4 slots: object header, raw typecode, generic symbol, quotation/callable
+; 4 slots: object header, raw typecode, generic symbol, callable
 ; REVIEW might want to add: code-address, code-size
 
 %macro  _method_raw_typecode 0          ; method -- raw-typecode
@@ -99,7 +99,7 @@ code check_method, 'check-method'       ; handle -- method
 endcode
 
 ; ### <method>
-code new_method, '<method>'             ; tagged-typecode generic-symbol -- method
+code new_method, '<method>'     ; tagged-typecode generic-symbol callable -- method
         _lit 4
         _ raw_allocate_cells
 
@@ -112,10 +112,18 @@ code new_method, '<method>'             ; tagged-typecode generic-symbol -- meth
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 
         _dup
-        _ generic?
+        _ callable?
         _tagged_if_not .1
-        _error "not a generic"
+        _error "not a callable"
         _then .1
+
+        _this_method_set_callable
+
+        _dup
+        _ generic?
+        _tagged_if_not .2
+        _error "not a generic"
+        _then .2
 
         _this_method_set_generic        ; -- typecode
 

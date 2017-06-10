@@ -153,13 +153,11 @@ code install_method, 'install-method'   ; method --
 endcode
 
 %macro _add_method 3            ; generic-asm-name, raw-typecode, method-asm-name
-        _lit %2                         ; -- raw-typecde
+        _lit %2                         ; -- raw-typecode
         _tag_fixnum                     ; -- tagged-typecode
         _lit S_%1                       ; -- tagged-typecode generic-symbol
+        _lit S_%3                       ; -- tagged-typecode generic-symbol callable
         _ new_method                    ; -- method
-        _lit S_%3                       ; -- method method-symbol
-        _over
-        _ method_set_callable           ; -- method
         _ install_method                ; --
 %endmacro
 
