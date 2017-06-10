@@ -303,13 +303,22 @@ endcode
 
 ; ### callable?
 code callable?, 'callable?'             ; object -- ?
-        _dup
-        _ quotation?
-        _tagged_if .1
+        _ object_raw_typecode
+
+        cmp     ebx, TYPECODE_QUOTATION
+        je      .1
+
+        cmp     ebx, TYPECODE_SYMBOL
+        je      .1
+
+        cmp     ebx, TYPECODE_CURRY
+        je      .1
+
+        mov     ebx, f_value
+        next
+
+.1:
         mov     ebx, t_value
-        _return
-        _then .1
-        _ curry?
         next
 endcode
 
