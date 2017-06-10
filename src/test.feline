@@ -2535,4 +2535,18 @@ test: boolean?-test-1
 
 boolean?-test-1
 
+test: callable?-test-1
+    ' dup callable? assert-true
+    ' callable?-test-1 callable? assert-true
+
+    [ dup ] callable? assert-true
+
+    3 [ + ] curry dup curry? assert-true callable? assert-true
+
+    42 callable? assert-false
+    "test" callable? assert-false
+;
+
+callable?-test-1
+
 ?nl "Reached end of test.feline" write-string
