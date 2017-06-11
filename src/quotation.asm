@@ -55,35 +55,8 @@ file __FILE__
 
 ; ### quotation?
 code quotation?, 'quotation?'                 ; x -- ?
-        _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe        ; -- object/0
-        _?dup_if .2
-        _object_raw_typecode
+        _ object_raw_typecode
         _eq? TYPECODE_QUOTATION
-        _return
-        _then .2
-        ; Empty handle.
-        _f
-        _return
-        _then .1
-
-        ; not a handle
-        ; make sure address is in the permissible range
-        _dup
-        _ in_static_data_area?
-        _tagged_if_not .3
-        ; address is not in the permissible range
-        ; -- x
-        mov     ebx, f_value
-        _return
-        _then .3
-
-        ; -- object
-        _object_raw_typecode
-        _eq? TYPECODE_QUOTATION
-
         next
 endcode
 
