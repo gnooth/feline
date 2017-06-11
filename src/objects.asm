@@ -114,20 +114,12 @@ code object_raw_typecode, 'object-raw-typecode' ; x -- raw-typecode
         _return
         _then .3
 
-        ; Not heap-allocated. Is it a static string or symbol?
         _dup
-        _ string?
+        _ in_static_data_area?
         _tagged_if .4
-        mov     ebx, TYPECODE_STRING
+        _object_raw_typecode
         _return
         _then .4
-
-        _dup
-        _ symbol?
-        _tagged_if .5
-        mov     ebx, TYPECODE_SYMBOL
-        _return
-        _then .5
 
         _error "not an object"
 
