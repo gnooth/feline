@@ -91,6 +91,7 @@ endcode
 code object_raw_typecode, 'object-raw-typecode' ; x -- raw-typecode
         mov     eax, ebx
         and     eax, TAG_MASK
+        jz      .2
 
         cmp     eax, FIXNUM_TAG
         jne     .1
@@ -99,28 +100,30 @@ code object_raw_typecode, 'object-raw-typecode' ; x -- raw-typecode
 
 .1:
         cmp     eax, BOOLEAN_TAG
-        jne     .2
+        jne     .4
         mov     ebx, TYPECODE_BOOLEAN
         _return
 
 .2:
-        _dup
-        _ handle?
-        _tagged_if .3
+        cmp     rbx, [handle_space_]
+        jb .3
+        cmp     rbx, [handle_space_free_]
+        jae .3
         _handle_to_object_unsafe
         test    rbx, rbx
         jz      error_empty_handle
         _object_raw_typecode
         _return
-        _then .3
 
-        _dup
-        _ in_static_data_area?
-        _tagged_if .4
+.3:
+        cmp     rbx, static_data_area
+        jb .4
+        cmp     rbx, static_data_area_limit
+        jae .4
         _object_raw_typecode
         _return
-        _then .4
 
+.4:
         _error "not an object"
 
         next
