@@ -89,7 +89,7 @@ IN_FELINE
 %include "ansi.asm"
 %include "socket.asm"
 
-; in-static-data-area?
+; ### in-static-data-area?
 code in_static_data_area?, 'in-static-data-area?', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; addr -- ?
         cmp     rbx, static_data_area
