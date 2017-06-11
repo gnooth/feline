@@ -173,16 +173,34 @@ code get_empty_handle, 'get-empty-handle'       ; -- handle/0
         next
 endcode
 
+asm_global total_allocations_, 0
+
 ; ### total-allocations
-feline_global total_allocations, 'total-allocations', tagged_zero
+code total_allocations, 'total-allocations'     ; -- n
+        pushrbx
+        mov     rbx, [total_allocations_]
+        _tag_fixnum
+        next
+endcode
+
+asm_global recent_allocations_, 0
 
 ; ### recent-allocations
 ; number of allocations since last gc
-feline_global recent_allocations, 'recent-allocations', tagged_zero
+code recent_allocations, 'recent-allocations'   ; -- n
+        pushrbx
+        mov     rbx, [recent_allocations_]
+        _tag_fixnum
+        next
+endcode
 
-%macro _increment_allocation_count 0
-        add qword [S_total_allocations_symbol_value], 1 << TAG_BITS
-        add qword [S_recent_allocations_symbol_value], 1 << TAG_BITS
+%macro  _reset_recent_allocations 0
+        mov     qword [recent_allocations_], 0
+%endmacro
+
+%macro  _increment_allocation_count 0
+        add qword [total_allocations_], 1
+        add qword [recent_allocations_], 1
 %endmacro
 
 ; ### new-handle

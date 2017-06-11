@@ -505,7 +505,7 @@ code gc, 'gc'                           ; --
 
         _ ?nl
         _write "gc "
-        _from_global recent_allocations
+        _ recent_allocations
         _ decimal_dot
         _write " allocations since last gc"
         _ nl
@@ -528,8 +528,7 @@ code gc, 'gc'                           ; --
         _ nl
 
 .3:
-        _lit tagged_zero
-        _to_global recent_allocations
+        _reset_recent_allocations
 
         next
 endcode
