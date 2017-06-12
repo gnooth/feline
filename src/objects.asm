@@ -34,22 +34,6 @@ code raw_allocate_cells, 'raw-allocate-cells', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
-; ### object?
-code object?, 'object?'                 ; x -- ?
-        _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe
-        _zne
-        _tag_boolean
-        _return
-        _then .1
-
-        ; Not allocated. Must be a string or not an object.
-        _ string?
-        next
-endcode
-
 ; ### object-address
 code object_address, 'object-address'   ; handle -- tagged-address
         _dup

@@ -430,7 +430,6 @@ bi@-test-1
 
 test: array-test-1 ( -- )
     10 42 <array>
-    [ object? assert-true ] keep
     [ array? assert-true ] keep
     [ length 10 assert= ] keep
     10 [ over nth 42 assert-eq ] each-integer
