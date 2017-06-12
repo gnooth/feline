@@ -56,19 +56,15 @@ code string?, 'string?'                 ; x -- ?
         next
 endcode
 
-; ### verify-unboxed-string
-code verify_unboxed_string, 'verify-unboxed-string' ; string -- string
-        ; make sure address is in the permissible range
-        _dup
-        _ in_static_data_area?
-        cmp     ebx, f_value
-        poprbx
-        je      error_not_string
-
+; ### verify-static-string
+code verify_static_string, 'verify-static-string'       ; string -- string
+        cmp     rbx, static_data_area
+        jb      error_not_string
+        cmp     rbx, static_data_area_limit
+        jae     error_not_string
         movzx   eax, word [rbx]
         cmp     eax, TYPECODE_STRING
         jne     error_not_string
-
         next
 endcode
 
@@ -86,7 +82,7 @@ code check_string, 'check-string'       ; x -- unboxed-string
 .1:
         ; not a handle
         _drop
-        _ verify_unboxed_string
+        _ verify_static_string
         _return
 .2:
         _ error_not_string
@@ -95,7 +91,7 @@ endcode
 
 ; ### verify-string
 code verify_string, 'verify-string'     ; handle-or-string -- handle-or-string
-; Returns argument unchanged.
+; returns argument unchanged
         _dup
         _ handle?
         _tagged_if .1
@@ -112,8 +108,8 @@ code verify_string, 'verify-string'     ; handle-or-string -- handle-or-string
         _ error_not_string
         _then .1
 
-        ; Not a handle.
-        _ verify_unboxed_string
+        ; not a handle
+        _ verify_static_string
 
         next
 endcode
