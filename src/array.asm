@@ -111,7 +111,7 @@ endcode
 code new_array, '<array>'               ; length element -- handle
 
         _swap
-        _untag_fixnum
+        _check_index
         _swap
 
 new_array_untagged:
