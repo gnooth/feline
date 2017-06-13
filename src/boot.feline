@@ -29,19 +29,31 @@ in: feline
     "help.feline"
 } [ load-system-file ] each
 
-using: feline ;
-in: feline
-
-: dis ( -- )
+: dis
     [
         f load-verbose? set
         "disassembler.feline" load-system-file
     ] with-scope
     "dis" "disassembler" vocab-find-name [ call-symbol ] when ;
 
-: edit ( -- )
+: edit
     [
         f load-verbose? set
         "editor.feline" load-system-file
     ] with-scope
     "edit" "editor" vocab-find-name [ call-symbol ] when ;
+
+: run-tests
+    [
+        t load-verbose? set
+
+        {
+            "test.feline"
+            "random-tests.feline"
+            "clisp-tests.feline"
+            "stress.feline"
+        } [ load-system-file nl nl ] each
+
+        .version
+
+    ] with-scope ;
