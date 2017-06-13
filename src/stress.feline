@@ -33,4 +33,4 @@ limit [ dup zero? ] [ dup number>string drop 1 - ] until drop
 "while-gc-test-1" ?nl write-string
 limit [ dup zero? not ] [ dup number>string drop 1 - ] while drop
 
-in: feline
+?nl "Reached end of stress.feline" write-string
