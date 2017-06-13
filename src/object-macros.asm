@@ -20,27 +20,28 @@ file __FILE__
 %endmacro
 
 ; typecodes
-TYPECODE_TYPE           equ  0
-TYPECODE_FIXNUM         equ  1
-TYPECODE_BOOLEAN        equ  2
-TYPECODE_VECTOR         equ  3
-TYPECODE_STRING         equ  4
-TYPECODE_SBUF           equ  5
-TYPECODE_ARRAY          equ  6
-TYPECODE_HASHTABLE      equ  7
-TYPECODE_BIGNUM         equ  8
-TYPECODE_SYMBOL         equ  9
-TYPECODE_VOCAB          equ 10
-TYPECODE_QUOTATION      equ 11
-TYPECODE_WRAPPER        equ 12
-TYPECODE_TUPLE          equ 13
-TYPECODE_CURRY          equ 14
-TYPECODE_SLICE          equ 15
-TYPECODE_RANGE          equ 16
-TYPECODE_LEXER          equ 17
-TYPECODE_FLOAT          equ 18
-TYPECODE_ITERATOR       equ 19
-TYPECODE_METHOD         equ 20
+TYPECODE_TYPE                   equ  0
+TYPECODE_FIXNUM                 equ  1
+TYPECODE_BOOLEAN                equ  2
+TYPECODE_VECTOR                 equ  3
+TYPECODE_STRING                 equ  4
+TYPECODE_SBUF                   equ  5
+TYPECODE_ARRAY                  equ  6
+TYPECODE_HASHTABLE              equ  7
+TYPECODE_BIGNUM                 equ  8
+TYPECODE_SYMBOL                 equ  9
+TYPECODE_VOCAB                  equ 10
+TYPECODE_QUOTATION              equ 11
+TYPECODE_WRAPPER                equ 12
+TYPECODE_TUPLE                  equ 13
+TYPECODE_CURRY                  equ 14
+TYPECODE_SLICE                  equ 15
+TYPECODE_RANGE                  equ 16
+TYPECODE_LEXER                  equ 17
+TYPECODE_FLOAT                  equ 18
+TYPECODE_ITERATOR               equ 19
+TYPECODE_METHOD                 equ 20
+TYPECODE_GENERIC_FUNCTION       equ 21
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
