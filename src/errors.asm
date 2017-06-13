@@ -132,3 +132,11 @@ code error_not_method, 'error-not-method'       ; x --
         _ error
         next
 endcode
+
+; ### error-not-generic-function
+code error_not_generic_function, 'error-not-generic-function'   ; x --
+        _quote "not a generic function"
+        _ format_type_error
+        _ error
+        next
+endcode
