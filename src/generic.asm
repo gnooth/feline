@@ -15,6 +15,141 @@
 
 file __FILE__
 
+; 6 slots: object header, raw code address, raw code size, symbol, methods, dispatch
+
+%macro  _gf_raw_code_address 0          ; gf -- raw-code-address
+        _slot1
+%endmacro
+
+%macro  _gf_set_raw_code_address 0      ; raw-code-address gf --
+        _set_slot1
+%endmacro
+
+%macro  _this_gf_set_raw_code_address 0 ; raw-code-address --
+        _this_set_slot1
+%endmacro
+
+%macro  _gf_raw_code_size 0             ; gf -- raw-code-size
+        _slot2
+%endmacro
+
+%macro  _gf_set_raw_code_size 0         ; raw-code-size gf --
+        _set_slot2
+%endmacro
+
+%macro  _this_gf_set_raw_code_size 0    ; raw-code-size --
+        _this_set_slot2
+%endmacro
+
+%macro  _gf_symbol 0                    ; gf -- symbol
+        _slot3
+%endmacro
+
+%macro  _gf_set_symbol 0                ; symbol gf --
+        _set_slot3
+%endmacro
+
+%macro  _this_gf_set_symbol 0           ; symbol --
+        _this_set_slot3
+%endmacro
+
+%macro  _gf_methods 0                   ; gf -- methods
+        _slot4
+%endmacro
+
+%macro  _gf_set_methods 0               ; methods gf --
+        _set_slot4
+%endmacro
+
+%macro  _this_gf_set_methods 0          ; methods --
+        _this_set_slot4
+%endmacro
+
+%macro  _gf_dispatch 0                  ; gf -- dispatch
+        _slot5
+%endmacro
+
+%macro  _gf_set_dispatch 0              ; dispatch gf --
+        _set_slot5
+%endmacro
+
+%macro  _this_gf_set_dispatch 0         ; dispatch --
+        _this_set_slot5
+%endmacro
+
+; ### generic-function?
+code generic_function?, 'generic-function?'     ; handle -- ?
+        _ deref                         ; -- raw-object/0
+        test    rbx, rbx
+        jz      .1
+        movzx   eax, word [rbx]
+        cmp     eax, TYPECODE_GENERIC_FUNCTION
+        jne     .1
+        mov     ebx, t_value
+        _return
+.1:
+        mov     ebx, f_value
+        next
+endcode
+
+; ### check-generic-function
+code check_generic_function, 'check-generic-function'   ; handle -- gf
+        _dup
+        _ deref
+        test    rbx, rbx
+        jz      .error
+        movzx   eax, word [rbx]
+        cmp     eax, TYPECODE_GENERIC_FUNCTION
+        jne     .error
+        _nip
+        next
+.error:
+        _drop
+        _ error_not_generic_function
+        next
+endcode
+
+; ### <generic_function>
+code new_generic_function, '<generic-function>' ; symbol -- gf
+; 6 slots: object header, raw code address, raw code size, symbol, methods, dispatch
+
+        _lit 6
+        _ raw_allocate_cells
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+
+        _this_object_set_raw_typecode TYPECODE_GENERIC_FUNCTION
+
+        _this_gf_set_symbol
+
+        _f
+        _this_gf_set_methods
+
+        _f
+        _this_gf_set_dispatch
+
+        pushrbx
+        mov     rbx, this_register
+        pop     this_register
+
+        _ new_handle
+
+        next
+endcode
+
+; ### generic-function>string
+code generic_function_to_string, 'generic-function>string'      ; gf -- string
+        _ check_generic_function
+        _gf_symbol
+        _ symbol_name
+        _quote "#'"
+        _swap
+        _ concat
+        next
+endcode
+
 %macro  _lookup_method 0        ; object dispatch-table -- object raw-code-address/f
 ; return f if no method
         _over
