@@ -403,6 +403,13 @@ code object_to_string, 'object>string'  ; object -- string
         _return
         _then .22
 
+        _dup
+        _ generic_function?
+        _tagged_if .23
+        _ generic_function_to_string
+        _return
+        _then .23
+
         ; give up
         _tag_fixnum
         _ fixnum_to_hex
