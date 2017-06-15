@@ -109,6 +109,18 @@ code check_generic_function, 'check-generic-function'   ; handle -- gf
         next
 endcode
 
+; ### verify-generic-function
+code verify_generic_function, 'verify-generic-function' ; handle -- handle
+        _dup
+        _ generic_function?
+        _tagged_if .1
+        _return
+        _then .1
+
+        _ error_not_generic_function
+        next
+endcode
+
 ; ### <generic_function>
 code new_generic_function, '<generic-function>' ; symbol -- gf
 ; 6 slots: object header, raw code address, raw code size, symbol, methods, dispatch
@@ -136,6 +148,41 @@ code new_generic_function, '<generic-function>' ; symbol -- gf
 
         _ new_handle
 
+        next
+endcode
+
+; ### generic-function-symbol
+code generic_function_symbol, 'generic-function-symbol' ; gf -- symbol
+        _ check_generic_function
+        _gf_symbol
+        next
+endcode
+
+; ### generic-function-methods
+code generic_function_methods, 'generic-function-methods'       ; gf -- methods
+        _ check_generic_function
+        _gf_methods
+        next
+endcode
+
+; ### generic-function-set-methods
+code generic_function_set_methods, 'generic-function-set-methods'       ; methods gf --
+        _ check_generic_function
+        _gf_set_methods
+        next
+endcode
+
+; ### generic-function-dispatch
+code generic_function_dispatch, 'generic-function-dispatch'     ; gf -- dispatch
+        _ check_generic_function
+        _gf_dispatch
+        next
+endcode
+
+; ### generic-function-set-dispatch
+code generic_function_set_dispatch, 'generic-function-set-dispatch'     ; dispatch gf --
+        _ check_generic_function
+        _gf_set_dispatch
         next
 endcode
 
