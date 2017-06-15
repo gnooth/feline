@@ -34,19 +34,19 @@ file __FILE__
         _this_set_slot1
 %endmacro
 
-%macro  _method_generic 0               ; method -- generic
+%macro  _method_generic_function 0      ; method -- generic-function
         _slot2
 %endmacro
 
-%macro  _method_set_generic 0           ; generic method --
+%macro  _method_set_generic_function 0  ; generic-function method --
         _set_slot2
 %endmacro
 
-%macro  _this_method_generic 0          ; -- generic
+%macro  _this_method_generic_function 0 ; -- generic-function
         _this_slot2
 %endmacro
 
-%macro  _this_method_set_generic 0      ; generic --
+%macro  _this_method_set_generic_function 0     ; generic-function --
         _this_set_slot2
 %endmacro
 
@@ -99,13 +99,13 @@ code check_method, 'check-method'       ; handle -- method
 endcode
 
 ; ### <method>
-code new_method, '<method>'     ; tagged-typecode generic-symbol callable -- method
+code new_method, '<method>'     ; tagged-typecode generic-function callable -- method
         _lit 4
         _ raw_allocate_cells
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -- typecode symbol
+        poprbx                          ; -- typecode gf callable
 
         _this_object_set_raw_typecode TYPECODE_METHOD
 
@@ -117,15 +117,10 @@ code new_method, '<method>'     ; tagged-typecode generic-symbol callable -- met
         _error "not a callable"
         _then .1
 
-        _this_method_set_callable
+        _this_method_set_callable       ; -- typecode gf
 
-        _dup
-        _ generic?
-        _tagged_if_not .2
-        _error "not a generic"
-        _then .2
-
-        _this_method_set_generic        ; -- typecode
+        _ verify_generic_function
+        _this_method_set_generic_function
 
         _check_index
         _this_method_set_raw_typecode   ; --
@@ -148,10 +143,10 @@ code method_typecode, 'method-typecode' ; method -- typecode
         next
 endcode
 
-; ### method-generic
-code method_generic, 'method-generic'   ; method -- generic-symbol
+; ### method-generic-function
+code method_generic_function, 'method-generic-function' ; method -- generic-function
         _ check_method
-        _method_generic
+        _method_generic_function
         next
 endcode
 
@@ -182,7 +177,8 @@ code method_to_string, 'method>string'  ; method -- string
         _quote "."
         _ concat
         _ swap
-        _method_generic
+        _method_generic_function
+        _ generic_function_symbol
         _ symbol_name
         _ concat
         next

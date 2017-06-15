@@ -254,17 +254,28 @@ code make_fixnum_hashtable, 'make-fixnum-hashtable'     ; -- hashtable
 endcode
 
 ; ### initialize-generic-function
-code initialize_generic_function, 'initialize-generic-function' ; symbol --
+code initialize_generic_function, 'initialize-generic-function' ; generic-symbol --
 
-        ; methods hashtable
+        _dup
+        _ new_generic_function          ; -- symbol gf
+
+        ; methods
         _ make_fixnum_hashtable
         _over
-        _ symbol_set_def
+        _ generic_function_set_methods
 
-        ; dispatch table
+        ; dispatch
         _ make_fixnum_hashtable
+        _over
+        _ generic_function_set_dispatch ; -- symbol gf
+
+        _dup
+        _ generic_function_dispatch
+        _pick
+        _ symbol_set_value
+
         _swap
-        _ symbol_set_value              ; --
+        _ symbol_set_def                ; --
 
         next
 endcode
@@ -293,8 +304,13 @@ code install_method, 'install-method'   ; method --
         _dup
         _ method_typecode               ; -- method-raw-code-address method typecode
         _swap
-        _ method_generic                ; -- method-raw-code-address tagged-typecode generic-symbol
-        _ add_method_to_dispatch_table
+
+        _ method_generic_function       ; -- method-raw-code-address tagged-typecode gf
+
+        _ generic_function_dispatch
+        _ verify_hashtable
+        _ hashtable_set_at
+
         next
 endcode
 
@@ -302,7 +318,11 @@ endcode
         _lit %2                         ; -- raw-typecode
         _tag_fixnum                     ; -- tagged-typecode
         _lit S_%1                       ; -- tagged-typecode generic-symbol
-        _lit S_%3                       ; -- tagged-typecode generic-symbol callable
+        _ symbol_def                    ; -- tagged-typecode generic-function
+%ifdef DEBUG
+        _ verify_generic_function
+%endif
+        _lit S_%3                       ; -- tagged-typecode generic-function callable
         _ new_method                    ; -- method
         _ install_method                ; --
 %endmacro
