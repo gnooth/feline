@@ -125,22 +125,17 @@ endcode
 code verify_vector, 'verify-vector'     ; handle -- handle
 ; returns argument unchanged
         _dup
-        _ handle?
-        _tagged_if .1
-        _dup
-        _handle_to_object_unsafe        ; -- handle object/0
-        _dup_if .2
-        _object_raw_typecode
-        _lit TYPECODE_VECTOR
-        _equal
-        _if .3
-        _return
-        _then .3
-        _then .2
-        _then .1
-
+        _ deref
+        test    rbx, rbx
+        jz      .error
+        movzx   eax, word [rbx]
+        cmp     eax, TYPECODE_VECTOR
+        jne     .error
+        _drop
+        next
+.error:
+        _drop
         _ error_not_vector
-
         next
 endcode
 
