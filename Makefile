@@ -9,11 +9,19 @@ all: FELINE_EXE
 FELINE_EXE: ./gmp/.libs/libgmp.a
 	cd src && $(MAKE)
 
+ifeq ($(OS),Windows_NT)
+./gmp/.libs/libgmp.a:
+	if [ ! -f gmp/Makefile ]; then \
+	  cd gmp && ./configure --disable-assembly ; \
+	fi
+	cd gmp && $(MAKE)
+else
 ./gmp/.libs/libgmp.a:
 	if [ ! -f gmp/Makefile ]; then \
 	  cd gmp && ./configure; \
 	fi
 	cd gmp && $(MAKE)
+endif
 
 clean:
 	-rm -f feline feline.exe build
