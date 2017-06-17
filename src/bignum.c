@@ -134,23 +134,28 @@ cell normalize(mpz_t z)
     {
       int sign = mpz_sgn(z);
 
-      cell n = (cell) mpz_getlimbn(z, 1);
-      n = (n << 32) + (cell) mpz_getlimbn(z, 0);
+      uint64_t u = (uint64_t) mpz_getlimbn(z, 1);
 
-      if (sign == 1)
+      // high 32 bits must be zero!
+      if (u <= 0xffffffff)
         {
-          if (n <= MOST_POSITIVE_FIXNUM)
+          u = (u << 32) + (uint64_t) mpz_getlimbn(z, 0);
+
+          if (sign == 1)
             {
-              mpz_clear(z);
-              return make_fixnum(n);
+              if (u <= MOST_POSITIVE_FIXNUM)
+                {
+                  mpz_clear(z);
+                  return make_fixnum(u);
+                }
             }
-        }
-      else if (sign == -1)
-        {
-          if (n <= -MOST_NEGATIVE_FIXNUM)
+          else if (sign == -1)
             {
-              mpz_clear(z);
-              return make_fixnum(-n);
+              if (u <= -MOST_NEGATIVE_FIXNUM)
+                {
+                  mpz_clear(z);
+                  return make_fixnum(-u);
+                }
             }
         }
     }
