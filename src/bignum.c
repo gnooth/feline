@@ -130,10 +130,13 @@ cell normalize(mpz_t z)
   if (size == 0)
     return make_fixnum(0);
 
-  if (size == 1)
+  if (size <= 2)
     {
       int sign = mpz_sgn(z);
-      mp_limb_t n = mpz_getlimbn(z, 0);
+
+      cell n = (cell) mpz_getlimbn(z, 1);
+      n = (n << 32) + (cell) mpz_getlimbn(z, 0);
+
       if (sign == 1)
         {
           if (n <= MOST_POSITIVE_FIXNUM)
