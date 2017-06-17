@@ -23,7 +23,7 @@ else
 	CC = clang
 endif
 
-CFLAGS = --std=c99 -D_GNU_SOURCE -O1 -g -m64
+CFLAGS = --std=c99 -D_GNU_SOURCE -g -m64
 ASMFLAGS =
 
 # clang
@@ -47,6 +47,8 @@ endif
 
 ifdef DEBUG
 	ASMFLAGS += -DDEBUG
+else
+	CFLAGS += -O1
 endif
 
 ifeq ($(OS),Windows_NT)
