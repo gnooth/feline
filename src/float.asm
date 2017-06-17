@@ -464,7 +464,7 @@ code float_sqrt, 'float-sqrt'                   ; x -- y
 endcode
 
 ; ### sqrt
-code sqrt, 'sqrt'                               ; x -- y
+code generic_sqrt, 'sqrt'                       ; x -- y
         _dup_fixnum?_if .1
         _ fixnum_to_float
         _ float_sqrt
