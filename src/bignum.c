@@ -136,26 +136,22 @@ cell normalize(mpz_t z)
 
       uint64_t u = (uint64_t) mpz_getlimbn(z, 1);
 
-      // high 32 bits must be zero!
-      if (u <= 0xffffffff)
-        {
-          u = (u << 32) + (uint64_t) mpz_getlimbn(z, 0);
+      u = (u << 32) + (uint64_t) mpz_getlimbn(z, 0);
 
-          if (sign == 1)
+      if (sign == 1)
+        {
+          if (u <= MOST_POSITIVE_FIXNUM)
             {
-              if (u <= MOST_POSITIVE_FIXNUM)
-                {
-                  mpz_clear(z);
-                  return make_fixnum(u);
-                }
+              mpz_clear(z);
+              return make_fixnum(u);
             }
-          else if (sign == -1)
+        }
+      else if (sign == -1)
+        {
+          if (u <= -MOST_NEGATIVE_FIXNUM)
             {
-              if (u <= -MOST_NEGATIVE_FIXNUM)
-                {
-                  mpz_clear(z);
-                  return make_fixnum(-u);
-                }
+              mpz_clear(z);
+              return make_fixnum(-u);
             }
         }
     }
