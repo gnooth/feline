@@ -772,3 +772,50 @@ code sh, 'sh'
 
         next
 endcode
+
+; ### #if:
+code sharp_if_colon, '#if:', SYMBOL_PRIMITIVE | SYMBOL_IMMEDIATE
+        cmp     rbx, f_value
+        poprbx
+        jne     .1
+.2:
+        _ must_parse_token
+
+        _dup
+        _quote "#endif"
+        _ string_equal?
+        _tagged_if .3
+        _drop
+        _return
+        _then .3
+
+        _quote "#else:"
+        _ string_equal?
+        _tagged_if .4
+        _return
+        _then .4
+
+        jmp .2
+.1:
+        next
+endcode
+
+; ### #else:
+code sharp_else_colon, '#else:', SYMBOL_PRIMITIVE | SYMBOL_IMMEDIATE
+.1:
+        _ must_parse_token
+        _quote "#endif"
+        _ string_equal?
+        _tagged_if .2
+        _return
+        _then .2
+        jmp .1
+
+        next
+endcode
+
+; ### #endif
+code sharp_endif, '#endif', SYMBOL_PRIMITIVE | SYMBOL_IMMEDIATE
+        next
+endcode
+
