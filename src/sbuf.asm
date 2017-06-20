@@ -23,19 +23,19 @@ file __FILE__
 
 %define SBUF_DATA_ADDRESS_OFFSET        16
 
-%macro _sbuf_length 0                   ; sbuf -- length
+%macro  _sbuf_raw_length 0              ; sbuf -- length
         _slot1
 %endmacro
 
-%macro  _this_sbuf_length 0             ; -- length
+%macro  _this_sbuf_raw_length 0         ; -- length
         _this_slot1
 %endmacro
 
-%macro  _sbuf_set_length 0              ; length sbuf --
+%macro  _sbuf_set_raw_length 0          ; length sbuf --
         _set_slot1
 %endmacro
 
-%macro  _this_sbuf_set_length 0         ; length --
+%macro  _this_sbuf_set_raw_length 0     ; length --
         _this_set_slot1
 %endmacro
 
@@ -67,14 +67,14 @@ file __FILE__
         _this_set_slot3
 %endmacro
 
-%macro  _sbuf_check_index 0              ; sbuf index -- -1|0
+%macro  _sbuf_check_index 0             ; sbuf index -- -1/0
         _swap
-        _sbuf_length                    ; -- index length
+        _sbuf_raw_length                ; -- index length
         _ult                            ; -- flag
 %endmacro
 
-%macro  _this_sbuf_check_index 0        ; index -- -1|0
-        _this_sbuf_length
+%macro  _this_sbuf_check_index 0        ; index -- -1/0
+        _this_sbuf_raw_length
         _ult
 %endmacro
 
@@ -103,7 +103,7 @@ file __FILE__
 %endmacro
 
 ; ### sbuf?
-code sbuf?, 'sbuf?'                     ; object -- t|f
+code sbuf?, 'sbuf?'                     ; object -- ?
         _dup
         _ handle?
         _tagged_if .1
@@ -149,7 +149,7 @@ endsub
 ; ### sbuf-length
 code sbuf_length, 'sbuf-length'         ; handle -- length
         _ check_sbuf
-        _sbuf_length
+        _sbuf_raw_length
         _tag_fixnum
         next
 endcode
@@ -220,7 +220,7 @@ subroutine copy_to_sbuf ; from-addr length -- handle
         poprbx                          ; -- from-addr length
 
         _dup
-        _this_sbuf_set_length
+        _this_sbuf_set_raw_length
 
         _this_sbuf_data                 ; -- from-addr length to-address
         _swap
@@ -228,7 +228,7 @@ subroutine copy_to_sbuf ; from-addr length -- handle
 
         _zero
         _this_sbuf_data
-        _this_sbuf_length
+        _this_sbuf_raw_length
         _plus
         _cstore
 
@@ -248,12 +248,12 @@ code string_to_sbuf, 'string>sbuf'      ; handle-or-string -- handle
         next
 endcode
 
-subroutine sbuf_from    ; handle -- c-addr u
+subroutine sbuf_from                    ; handle -- c-addr u
         _ check_sbuf
         _duptor
         _sbuf_data
         _rfrom
-        _sbuf_length
+        _sbuf_raw_length
         ret
 endsub
 
@@ -272,7 +272,7 @@ code destroy_sbuf, '~sbuf'              ; handle --
 endcode
 
 ; ### ~sbuf-unchecked
-code destroy_sbuf_unchecked, '~sbuf-unchecked' ; sbuf --
+code destroy_sbuf_unchecked, '~sbuf-unchecked'  ; sbuf --
         _dup
         _zeq_if .1
         _drop
@@ -320,7 +320,7 @@ code sbuf_nth, 'sbuf-nth'               ; index sbuf -- char
         _check_index qword [rbp]
 
         _twodup
-        _sbuf_length
+        _sbuf_raw_length
         _ult
         _if .1
         _sbuf_nth_unsafe
@@ -353,7 +353,7 @@ code sbuf_?last, 'sbuf-?last'           ; sbuf -- char/f
 endcode
 
 ; ### sbuf-check-index
-code sbuf_check_index, 'sbuf-check-index' ; handle index -- flag
+code sbuf_check_index, 'sbuf-check-index'       ; handle index -- flag
         _swap
         _ check_sbuf                    ; -- index sbuf
         _swap
@@ -429,14 +429,14 @@ code sbuf_shorten, 'sbuf-shorten'       ; fixnum handle --
         _ check_sbuf                    ; -- u sbuf
 
         _twodup
-        _sbuf_length
+        _sbuf_raw_length
         _ult
         _if .1
 
         push    this_register
         mov     this_register, rbx
 
-        _sbuf_set_length
+        _sbuf_set_raw_length
 
         ; store terminal null byte
         mov     rax, qword [this_register + SBUF_DATA_ADDRESS_OFFSET]
@@ -461,13 +461,13 @@ code sbuf_push, 'sbuf-push'             ; tagged-char sbuf --
 
         push    this_register           ; save callee-saved register
         mov     this_register, rbx      ; sbuf in this_register
-        _sbuf_length                    ; -- char length
+        _sbuf_raw_length                ; -- char length
         _dup                            ; -- char length length
         _oneplus                        ; -- char length length+1
         _dup                            ; -- char length length+1 length+1
         _this                           ; -- char length length+1 length+1 this
         _ sbuf_ensure_capacity          ; -- char length length+1
-        _this_sbuf_set_length           ; -- char length
+        _this_sbuf_set_raw_length       ; -- char length
         _this_sbuf_set_nth_unsafe       ; --
         pop     this_register           ; restore callee-saved register
         next
@@ -483,7 +483,7 @@ subroutine sbuf_append_chars    ; sbuf from-addr from-len --
         mov     this_register, rbx
         poprbx                          ; -- from-addr from-length
 
-        _this_sbuf_length               ; -- from-addr from-length to-length
+        _this_sbuf_raw_length           ; -- from-addr from-length to-length
 
         _over
         _plus                           ; -- from-addr from-length total-length
@@ -494,19 +494,19 @@ subroutine sbuf_append_chars    ; sbuf from-addr from-len --
         _tuck                           ; -- from-length from-addr from-length
 
         _this_sbuf_data
-        _this_sbuf_length
+        _this_sbuf_raw_length
         _plus                           ; -- from-length from-addr from-length to-addr
 
         _swap
         _ cmove                         ; -- from-length
 
-        _this_sbuf_length
+        _this_sbuf_raw_length
         _plus                           ; -- total-length
-        _this_sbuf_set_length           ; --
+        _this_sbuf_set_raw_length       ; --
 
         _zero
         _this_sbuf_data
-        _this_sbuf_length
+        _this_sbuf_raw_length
         _plus
         _cstore
 
@@ -540,7 +540,7 @@ code sbuf_insert_nth, 'sbuf-insert-nth!'        ; char index sbuf --
         _error "index out of range"
         _then .1                        ; -- char index
 
-        _this_sbuf_length
+        _this_sbuf_raw_length
         _oneplus
         _this
         _ sbuf_ensure_capacity          ; -- char index
@@ -579,7 +579,7 @@ code sbuf_remove_nth_destructive, 'sbuf-remove-nth!' ; tagged-index handle -- ha
         _untag_fixnum                   ; -- handle untagged-index
 
         _dup
-        _this_sbuf_check_index          ; -- handle index -1|0
+        _this_sbuf_check_index          ; -- handle index -1/0
         _zeq_if .1
         _error "index out of range"
         _then .1                        ; -- handle index
@@ -592,14 +592,14 @@ code sbuf_remove_nth_destructive, 'sbuf-remove-nth!' ; tagged-index handle -- ha
         _oneminus                       ; -- handle index src dest
 
         _ rot                           ; -- handle src dest index
-        _this_sbuf_length               ; -- handle src dest index length
+        _this_sbuf_raw_length           ; -- handle src dest index length
         _swapminus
         _oneminus
         _ cmove                         ; -- handle
 
-        _this_sbuf_length
+        _this_sbuf_raw_length
         _oneminus
-        _this_sbuf_set_length
+        _this_sbuf_set_raw_length
 
         pop     this_register
         next
@@ -616,7 +616,7 @@ code sbuf_reverse_in_place, 'sbuf-reverse!'     ; sbuf -- sbuf
         mov     this_register, rbx
         poprbx
 
-        _this_sbuf_length
+        _this_sbuf_raw_length
 
         ; divide by 2
         shr     rbx, 1
@@ -627,7 +627,7 @@ code sbuf_reverse_in_place, 'sbuf-reverse!'     ; sbuf -- sbuf
         _i
         _this_sbuf_nth_unsafe           ; -- char1
 
-        _this_sbuf_length
+        _this_sbuf_raw_length
         _oneminus
         _i
         _minus
@@ -636,7 +636,7 @@ code sbuf_reverse_in_place, 'sbuf-reverse!'     ; sbuf -- sbuf
         _i
         _this_sbuf_set_nth_unsafe
 
-        _this_sbuf_length
+        _this_sbuf_raw_length
         _oneminus
         _i
         _minus
@@ -670,7 +670,7 @@ code sbuf_substring, 'sbuf-substring'   ; from to sbuf -- substring
         _check_index
 
         _dup
-        _this_sbuf_length
+        _this_sbuf_raw_length
         _ugt
         _if .1
         _error "end index out of range"
@@ -691,4 +691,3 @@ code sbuf_substring, 'sbuf-substring'   ; from to sbuf -- substring
         pop     this_register
         next
 endcode
-
