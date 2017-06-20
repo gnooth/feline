@@ -122,14 +122,6 @@ code sbuf?, 'sbuf?'                     ; object -- ?
         next
 endcode
 
-; ### error-not-sbuf
-code error_not_sbuf, 'error-not-sbuf'   ; x --
-        ; REVIEW
-        _drop
-        _error "not an sbuf"
-        next
-endcode
-
 ; ### check_sbuf
 code check_sbuf, 'check-sbuf'           ; handle -- sbuf
         _dup

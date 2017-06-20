@@ -102,7 +102,7 @@ endcode
 
 ; ### error-not-type
 code error_not_type, 'error-not-type'           ; x --
-        _quote "not a type"
+        _quote "a type"
         _ format_type_error
         _ error
         next
@@ -116,7 +116,7 @@ code error_not_enough_parameters, 'error-not-enough-parameters'         ; --
 endcode
 
 ; ### error-data-stack-underflow
-code error_data_stack_underflow, 'error-data-stack-underflow'         ; --
+code error_data_stack_underflow, 'error-data-stack-underflow'           ; --
         ; fix underflow before going any further
         mov     rbp, [sp0_]
 
@@ -127,7 +127,7 @@ endcode
 
 ; ### error-not-method
 code error_not_method, 'error-not-method'       ; x --
-        _quote "not a method"
+        _quote "a method"
         _ format_type_error
         _ error
         next
@@ -135,7 +135,15 @@ endcode
 
 ; ### error-not-generic-function
 code error_not_generic_function, 'error-not-generic-function'   ; x --
-        _quote "not a generic function"
+        _quote "a generic function"
+        _ format_type_error
+        _ error
+        next
+endcode
+
+; ### error-not-sbuf
+code error_not_sbuf, 'error-not-sbuf'   ; x --
+        _quote "a string buffer"
         _ format_type_error
         _ error
         next
