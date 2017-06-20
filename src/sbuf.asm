@@ -131,24 +131,21 @@ code error_not_sbuf, 'error-not-sbuf'   ; x --
 endcode
 
 ; ### check_sbuf
-subroutine check_sbuf   ; handle -- sbuf
+code check_sbuf, 'check-sbuf'           ; handle -- sbuf
         _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe        ; -- object/0
-        _dup_if .2
-        _dup
-        _object_raw_typecode
-        _eq? TYPECODE_SBUF
-        _tagged_if .3
-        ret
-        _then .3
-        _then .2
-        _then .1
-
+        _ deref
+        test    rbx, rbx
+        jz      .error
+        movzx   eax, word [rbx]
+        cmp     eax, TYPECODE_SBUF
+        jne     .error
+        _nip
+        next
+.error:
+        _drop
         _ error_not_sbuf
-        ret
-endsub
+        next
+endcode
 
 ; ### sbuf-length
 code sbuf_length, 'sbuf-length'         ; handle -- length
