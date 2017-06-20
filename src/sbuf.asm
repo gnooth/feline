@@ -27,12 +27,14 @@ file __FILE__
         _slot1
 %endmacro
 
-%macro  _this_sbuf_raw_length 0         ; -- length
-        _this_slot1
-%endmacro
-
 %macro  _sbuf_set_raw_length 0          ; length sbuf --
         _set_slot1
+%endmacro
+
+%define this_sbuf_raw_length this_slot1
+
+%macro  _this_sbuf_raw_length 0         ; -- length
+        _this_slot1
 %endmacro
 
 %macro  _this_sbuf_set_raw_length 0     ; length --
@@ -62,6 +64,8 @@ file __FILE__
 %macro  _sbuf_set_raw_capacity 0        ; raw-capacity sbuf --
         _set_slot3
 %endmacro
+
+%define this_sbuf_raw_capacity this_slot3
 
 %macro  _this_sbuf_set_raw_capacity 0   ; raw-capacity --
         _this_set_slot3
@@ -461,7 +465,19 @@ code sbuf_push, 'sbuf-push'             ; tagged-char sbuf --
 
         push    this_register           ; save callee-saved register
         mov     this_register, rbx      ; sbuf in this_register
+
         _sbuf_raw_length                ; -- char length
+        cmp     rbx, this_sbuf_raw_capacity
+        jnc     .1
+
+        _this_sbuf_set_nth_unsafe
+
+        add     this_sbuf_raw_length, 1
+
+        pop     this_register
+        _return
+
+.1:
         _dup                            ; -- char length length
         _oneplus                        ; -- char length length+1
         _dup                            ; -- char length length+1 length+1
@@ -469,7 +485,8 @@ code sbuf_push, 'sbuf-push'             ; tagged-char sbuf --
         _ sbuf_ensure_capacity          ; -- char length length+1
         _this_sbuf_set_raw_length       ; -- char length
         _this_sbuf_set_nth_unsafe       ; --
-        pop     this_register           ; restore callee-saved register
+
+        pop     this_register
         next
 endcode
 
