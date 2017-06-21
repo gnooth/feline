@@ -611,16 +611,8 @@ code sbuf_remove_nth_destructive, 'sbuf-remove-nth!' ; tagged-index handle -- ha
         next
 endcode
 
-; ### sbuf-reverse!
-code sbuf_reverse_in_place, 'sbuf-reverse!'     ; sbuf -- sbuf
-
-        _duptor
-
-        _ check_sbuf
-
-        push    this_register
-        mov     this_register, rbx
-        poprbx
+; ### this_sbuf_reverse
+code this_sbuf_reverse, 'this_sbuf_reverse', SYMBOL_INTERNAL
 
         _this_sbuf_raw_length
 
@@ -649,6 +641,22 @@ code sbuf_reverse_in_place, 'sbuf-reverse!'     ; sbuf -- sbuf
         _this_sbuf_set_nth_unsafe
 
         _loop .1
+
+        next
+endcode
+
+; ### sbuf-reverse!
+code sbuf_reverse_in_place, 'sbuf-reverse!'     ; sbuf -- sbuf
+
+        _duptor
+
+        _ check_sbuf
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+
+        _ this_sbuf_reverse
 
         pop     this_register
 
