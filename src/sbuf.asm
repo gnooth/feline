@@ -45,12 +45,14 @@ file __FILE__
         _slot2
 %endmacro
 
-%macro  _this_sbuf_data 0               ; -- data-address
-        _this_slot2
-%endmacro
-
 %macro  _sbuf_set_data 0                ; data-address sbuf --
         _set_slot2
+%endmacro
+
+%define __this_sbuf_raw_data_address this_slot2
+
+%macro  _this_sbuf_data 0               ; -- data-address
+        _this_slot2
 %endmacro
 
 %macro  _this_sbuf_set_data 0           ; data-address --
@@ -89,21 +91,15 @@ file __FILE__
 %endmacro
 
 %macro  _this_sbuf_nth_unsafe 0         ; index -- untagged-char
-        _this_sbuf_data
-        _plus
-        _cfetch
-%endmacro
-
-%macro  _sbuf_set_nth_unsafe 0          ; char index sbuf --
-        _sbuf_data
-        _plus
-        _cstore
+        mov     rdx, __this_sbuf_raw_data_address
+        movzx   rbx, byte [rdx + rbx]
 %endmacro
 
 %macro  _this_sbuf_set_nth_unsafe 0     ; char index --
-        _this_sbuf_data
-        _plus
-        _cstore
+        mov     rdx, __this_sbuf_raw_data_address
+        mov     al, [rbp]
+        mov     [rdx + rbx], al
+        _2drop
 %endmacro
 
 ; ### sbuf?
@@ -651,25 +647,22 @@ code this_sbuf_reverse, 'this_sbuf_reverse', SYMBOL_INTERNAL
         ; divide by 2
         shr     rbx, 1
 
-        _lit 0
-        _?do .1
+        _register_do_times .1
 
-        _i
+        _raw_loop_index
         _this_sbuf_nth_unsafe           ; -- char1
 
         _this_sbuf_raw_length
-        _oneminus
-        _i
-        _minus
+        sub     rbx, 1
+        sub     rbx, index_register
         _this_sbuf_nth_unsafe           ; -- char1 char2
 
-        _i
+        _raw_loop_index
         _this_sbuf_set_nth_unsafe
 
         _this_sbuf_raw_length
-        _oneminus
-        _i
-        _minus
+        sub     rbx, 1
+        sub     rbx, index_register
         _this_sbuf_set_nth_unsafe
 
         _loop .1
