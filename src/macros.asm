@@ -366,6 +366,7 @@ section .data
 %define SYMBOL_PRIVATE          $0040
 %define SYMBOL_GENERIC          $0080
 %define SYMBOL_ALWAYS_INLINE    $0100
+%define SYMBOL_INTERNAL         $0200
 
 %macro  IN_FELINE 0
 %undef  in_forth
