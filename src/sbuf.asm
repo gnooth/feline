@@ -31,7 +31,7 @@ file __FILE__
         _set_slot1
 %endmacro
 
-%define this_sbuf_raw_length this_slot1
+%define __this_sbuf_raw_length this_slot1
 
 %macro  _this_sbuf_raw_length 0         ; -- length
         _this_slot1
@@ -250,6 +250,14 @@ subroutine sbuf_from                    ; handle -- c-addr u
         ret
 endsub
 
+; ### this_sbuf_to_string
+code this_sbuf_to_string, 'this_sbuf_to_string', SYMBOL_INTERNAL        ; -- string
+        _this_sbuf_data
+        _this_sbuf_raw_length
+        _ copy_to_string
+        next
+endcode
+
 ; ### sbuf>string
 code sbuf_to_string, 'sbuf>string'      ; handle -- string
         _ sbuf_from
@@ -445,6 +453,30 @@ code sbuf_shorten, 'sbuf-shorten'       ; fixnum handle --
         next
 endcode
 
+; ### this_sbuf_push_unsafe
+code this_sbuf_push_unsafe, 'this_sbuf_push_unsafe', SYMBOL_INTERNAL    ; tagged-char --
+        _check_char
+        _this_sbuf_raw_length
+        _this_sbuf_set_nth_unsafe
+        add     __this_sbuf_raw_length, 1
+        next
+endcode
+
+; ### sbuf-push-unsafe
+code sbuf_push_unsafe, 'sbuf-push-unsafe', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; tagged-char sbuf --
+        _ check_sbuf
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+
+        _ this_sbuf_push_unsafe
+
+        pop     this_register
+        next
+endcode
+
 ; ### sbuf-push
 code sbuf_push, 'sbuf-push'             ; tagged-char sbuf --
         _ check_sbuf
@@ -461,7 +493,7 @@ code sbuf_push, 'sbuf-push'             ; tagged-char sbuf --
 
         _this_sbuf_set_nth_unsafe
 
-        add     this_sbuf_raw_length, 1
+        add     __this_sbuf_raw_length, 1
 
         pop     this_register
         _return
