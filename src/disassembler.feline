@@ -810,13 +810,33 @@ last-word $85 install-handler
 
 : .88
     -- /r
+    -- source is r8
+    -- dest is r/m8
     "mov" !> mnemonic
     !modrm-byte
     modrm-reg !> sreg
     8 !> ssize
+    8 !> dsize
     {
-        { [ modrm-mod 0 = ] [ modrm-rm !> dbase 8 !> dsize .inst ] }
-        { [ modrm-mod 3 = ] [ modrm-rm !> dreg  8 !> dsize modrm-reg !> sreg .inst ] }
+        { [ modrm-rm 4 = ] [
+            !sib-byte
+            sib-base {
+                { 5 [
+                    next-int32 !> ddisp
+                    t !> memory-operand?
+                ] }
+                [
+                    -- default case
+                    drop
+                    sib-base register-rm !> dbase
+                    sib-index register-index !> dindex
+                    sib-scale !> dscale
+                ]
+            } case
+            .inst
+        ] }
+        { [ modrm-mod 0 = ] [ modrm-rm !> dbase .inst ] }
+        { [ modrm-mod 3 = ] [ modrm-rm !> dreg  .inst ] }
         [ unsupported ]
     } cond ;
 
@@ -838,6 +858,7 @@ last-word $89 install-handler
     "mov" !> mnemonic
     !modrm-byte
     modrm-reg !> dreg
+    8 !> ssize
     8 !> dsize
     modrm-mod {
         { 0 [
@@ -1368,6 +1389,13 @@ last-word $31 install-$0f-handler
     .inst ;
 
 16 [ $90 + ' .0f-9x swap install-$0f-handler ] each-integer
+
+: .0f-a2
+    "cpuid" !> mnemonic
+    0 !> #operands
+    .inst ;
+
+last-word $a2 install-$0f-handler
 
 : .0f-af
     "imul" !> mnemonic
