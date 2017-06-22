@@ -623,6 +623,72 @@ code fixnum_to_binary, 'fixnum>binary'  ; fixnum -- string
         next
 endcode
 
+; ### raw_int64_to_decimal
+code raw_int64_to_decimal, 'raw_int64_to_decimal', SYMBOL_INTERNAL      ; int64 -- string
+
+        _lit 128
+        _ new_sbuf_untagged             ; handle
+
+        push    r12
+        push    this_register
+
+        mov     this_register, [rbx]    ; raw address
+        poprbx                          ; -- int64
+
+        mov     rax, rbx                ; int64 in rax
+
+        xor     r12, r12
+        test    rax, rax
+        jns     .1
+        mov     r12, 1
+        neg     rax
+.1:
+        _begin .2
+
+        cqo                             ; sign-extend rax into rdx:rax
+        mov     ecx, 10
+        idiv    rcx                     ; quotient in rax, remainder in rdx
+
+        push    rax
+
+        add     rdx, '0'
+        pushrbx
+        mov     rbx, rdx
+
+        _ this_sbuf_push_raw_unsafe
+
+        pop     rax
+
+        test    rax, rax
+        jz      .3
+        _again .2
+
+.3:
+        _drop
+
+        test    r12, r12
+        jz      .4
+        pushrbx
+        mov     ebx, '-'
+        _ this_sbuf_push_raw_unsafe
+.4:
+
+        _ this_sbuf_reverse
+        _ this_sbuf_to_string
+
+        pop     this_register
+        pop     r12
+
+        next
+endcode
+
+; ### fixnum>decimal
+code fixnum_to_decimal, 'fixnum>decimal'        ; fixnum -- string
+        _check_fixnum
+        _ raw_int64_to_decimal
+        next
+endcode
+
 ; ### fixnum>base
 code fixnum_to_base, 'fixnum>base'      ; fixnum base -- string
 
