@@ -449,9 +449,9 @@ code sbuf_shorten, 'sbuf-shorten'       ; fixnum handle --
         next
 endcode
 
-; ### this_sbuf_push_unsafe
-code this_sbuf_push_unsafe, 'this_sbuf_push_unsafe', SYMBOL_INTERNAL    ; tagged-char --
-        _check_char
+; ### this_sbuf_push_raw_unsafe
+code this_sbuf_push_raw_unsafe, 'this_sbuf_push_raw_unsafe', SYMBOL_INTERNAL
+; untagged-char --
         _this_sbuf_raw_length
         _this_sbuf_set_nth_unsafe
         add     __this_sbuf_raw_length, 1
@@ -467,7 +467,8 @@ code sbuf_push_unsafe, 'sbuf-push-unsafe', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         mov     this_register, rbx
         poprbx
 
-        _ this_sbuf_push_unsafe
+        _check_char
+        _ this_sbuf_push_raw_unsafe
 
         pop     this_register
         next
