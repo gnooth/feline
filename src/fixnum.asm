@@ -565,6 +565,14 @@ code bitor, 'bitor'     ; n1 n2 -- n3
         next
 endcode
 
+; ### bitnot
+code bitnot, 'bitnot'   ; x -- y
+        _check_fixnum
+        not     rbx
+        _tag_fixnum
+        next
+endcode
+
 ; ### odd?
 code odd?, 'odd?'                       ; n -- ?
         _check_fixnum                   ; -- untagged
