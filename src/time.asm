@@ -33,6 +33,13 @@ code ticks, 'ticks'                     ; -- u
         next
 endcode
 
+; ### nano_count
+code nano_count, 'nano_count', SYMBOL_INTERNAL  ; -- uint64
+        xcall   os_nano_count
+        pushd   rax
+        next
+endcode
+
 %ifndef WIN64
 asm_global user_microseconds
 asm_global system_microseconds
