@@ -383,6 +383,36 @@ void os_cputime()
 }
 #endif
 
+uint64_t os_nano_count()
+{
+  // adapted from Factor
+  // FIXME error handling
+#ifdef WIN64
+  static double scale;
+
+  uint64_t hi, lo;
+
+  LARGE_INTEGER count;
+  QueryPerformanceCounter(&count);
+
+  if (scale == 0.0)
+    {
+      LARGE_INTEGER frequency;
+      QueryPerformanceFrequency(&frequency);
+      scale = 1000000000.0 / frequency.QuadPart;
+    }
+
+  hi = count.HighPart;
+  lo = count.LowPart;
+
+  return ((hi << 32) | lo) * scale;
+#else
+  struct timespec t;
+  clock_gettime(CLOCK_MONOTONIC, &t);
+  return (uint64_t)t.tv_sec * 1000000000 + t.tv_nsec;
+#endif
+}
+
 #ifdef WIN64
 void os_ms(DWORD ms)
 {

@@ -35,6 +35,7 @@ extern os_key
 extern os_key_avail
 extern os_malloc
 extern os_ms
+extern os_nano_count
 extern os_open_file
 extern os_read_char
 extern os_read_file
