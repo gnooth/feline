@@ -650,36 +650,35 @@ code raw_int64_to_decimal, 'raw_int64_to_decimal', SYMBOL_INTERNAL      ; int64 
         jns     .1
         mov     r12, 1
         neg     rax
-.1:
-        _begin .2
 
-        cqo                             ; sign-extend rax into rdx:rax
+        align   DEFAULT_CODE_ALIGNMENT
+.1:
+        xor     edx, edx                ; zero-extend rax into rdx:rax
+
         mov     ecx, 10
         idiv    rcx                     ; quotient in rax, remainder in rdx
 
         push    rax
 
-        add     rdx, '0'
+        add     edx, '0'
         pushrbx
-        mov     rbx, rdx
+        mov     ebx, edx
 
         _ this_sbuf_push_raw_unsafe
 
         pop     rax
 
         test    rax, rax
-        jz      .3
-        _again .2
+        jnz     .1
 
-.3:
         _drop
 
         test    r12, r12
-        jz      .4
+        jz      .2
         pushrbx
         mov     ebx, '-'
         _ this_sbuf_push_raw_unsafe
-.4:
+.2:
 
         _ this_sbuf_reverse
         _ this_sbuf_to_string
