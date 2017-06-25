@@ -368,7 +368,7 @@ code vector_?nth, 'vector-?nth'         ; index vector -- element/f
         _this_vector_raw_length         ; -- raw-index raw-length
         cmp     [rbp], rbx
         poprbx                          ; -- raw-index
-        jnl .1
+        jae .1                          ; branch if index >= length (unsigned comparison)
         _this_vector_nth_unsafe
         pop     this_register
         next
