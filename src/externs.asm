@@ -18,7 +18,6 @@ extern os_allocate_executable
 extern os_bye
 extern os_chdir
 extern os_close_file
-extern os_cputime
 extern os_create_file
 extern os_delete_file
 extern os_emit_file

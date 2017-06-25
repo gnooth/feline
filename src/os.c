@@ -370,19 +370,6 @@ void os_time_and_date(void * buf)
 #endif
 }
 
-#ifndef WIN64
-extern cell user_microseconds;
-extern cell system_microseconds;
-
-void os_cputime()
-{
-  struct rusage rusage;
-  getrusage(RUSAGE_SELF, &rusage);
-  user_microseconds = rusage.ru_utime.tv_sec * 1000000 + rusage.ru_utime.tv_usec;
-  system_microseconds = rusage.ru_stime.tv_sec * 1000000 + rusage.ru_stime.tv_usec;
-}
-#endif
-
 uint64_t os_nano_count()
 {
   // adapted from Factor
