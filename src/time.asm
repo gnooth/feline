@@ -33,99 +33,16 @@ code ticks, 'ticks'                     ; -- u
         next
 endcode
 
-; ### nano_count
-code nano_count, 'nano_count', SYMBOL_INTERNAL  ; -- uint64
+; ### raw_nano_count
+code raw_nano_count, 'raw_nano_count', SYMBOL_INTERNAL  ; -- raw-uint64
         xcall   os_nano_count
         pushd   rax
         next
 endcode
 
-%ifndef WIN64
-asm_global user_microseconds
-asm_global system_microseconds
+; ### elapsed
+code elapsed, 'elapsed'                 ; callable -- ns cycles
 
-; ### cputime
-code cputime, 'cputime'
-        xcall   os_cputime
-        mov     rax, [user_microseconds]
-        pushd   rax
-        pushd   0
-        mov     rax, [system_microseconds]
-        pushd   rax
-        pushd   0
-        next
-endcode
-%endif
-
-asm_global start_ticks
-asm_global end_ticks
-
-; ### elapsed-ms
-code elapsed_ms, 'elapsed-ms'           ; -- ms
-        pushrbx
-        mov     rbx, [end_ticks]
-        sub     rbx, [start_ticks]
-        next
-endcode
-
-asm_global start_cycles
-asm_global end_cycles
-
-; ### elapsed-cycles
-code elapsed_cycles, 'elapsed-cycles'   ; -- cycles
-        pushrbx
-        mov     rbx, [end_cycles]
-        sub     rbx, [start_cycles]
-        next
-endcode
-
-; ### start-timer
-code start_timer, 'start-timer'         ; --
-        xor     eax, eax
-        mov     [end_ticks], rax
-        mov     [end_cycles], rax
-        _ ticks
-        mov     [start_ticks], rbx
-        poprbx
-        _rdtsc
-        mov     [start_cycles], rbx
-        poprbx
-        next
-endcode
-
-; ### stop-timer
-code stop_timer, 'stop-timer'           ; --
-        _rdtsc
-        mov     [end_cycles], rbx
-        poprbx
-        _ ticks
-        mov     [end_ticks], rbx
-        poprbx
-        next
-endcode
-
-; ### .elapsed
-code dot_elapsed, '.elapsed'            ; --
-        _ ?nl
-        _ elapsed_ms
-        _tag_fixnum
-        _ fixnum_to_string
-        _ write_string
-        _quote " ms"
-        _ write_string
-        _ nl
-        _ elapsed_cycles
-        _tag_fixnum
-        _ fixnum_to_string
-        _ write_string
-        _quote " cycles"
-        _ write_string
-        _ nl
-        next
-endcode
-
-; ### time
-code time, 'time'                       ; quotation-or-xt --
         ; protect quotation from gc
         push    rbx
 
@@ -134,14 +51,58 @@ code time, 'time'                       ; quotation-or-xt --
         push    r12
         mov     r12, rbx
         poprbx
-        _ start_timer
+
+        _ raw_nano_count
+        _tor
+        _rdtsc
+        _tor
+
         call    r12
-        _ stop_timer
+
+        _rdtsc
+        _ raw_nano_count
+
+        _swap
+        _rfrom
+        _minus
+        _tag_fixnum
+        _swap
+        _rfrom
+        _minus
+        _tag_fixnum
+        _swap                           ; -- ns cycles
+
         pop     r12
 
         ; drop quotation
         pop     rax
 
-        _ dot_elapsed
+        next
+endcode
+
+; ### time
+code time, 'time'                       ; callable --
+
+        _ elapsed                       ; -- ns cycles
+
+        _swap                           ; -- cycles ns
+
+        _ fixnum_to_float
+        _lit tagged_fixnum(1000000)
+        _ fixnum_to_float
+        _ float_float_divide
+        _ float_to_string
+        _ write_string
+        _quote " ms"
+        _ write_string
+        _ nl                            ; -- cycles
+
+        _tag_fixnum
+        _ fixnum_to_string
+        _ write_string
+        _quote " cycles"
+        _ write_string
+        _ nl
+
         next
 endcode
