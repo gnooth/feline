@@ -2471,6 +2471,8 @@ test: type-of-test-1
     pi type-of "float" find-type assert-eq
     "test" <iterator> dup iterator? assert-true
     type-of "iterator" find-type assert-eq
+    ' length symbol-def type-of "generic-function" find-type assert-eq
+    max-uint64 type-of "uint64" find-type assert-eq
 ;
 
 type-of-test-1

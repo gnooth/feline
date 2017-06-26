@@ -167,6 +167,8 @@ code initialize_types, 'initialize-types', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE    
         _add_type "float", TYPECODE_FLOAT
         _add_type "iterator", TYPECODE_ITERATOR
         _add_type "method", TYPECODE_METHOD
+        _add_type "generic-function", TYPECODE_GENERIC_FUNCTION
+        _add_type "uint64", TYPECODE_UINT64
 
         next
 endcode
