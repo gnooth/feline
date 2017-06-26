@@ -71,8 +71,10 @@ code error_empty_handle, 'error-empty-handle'
         next
 endcode
 
-; ### object-raw-typecode
-code object_raw_typecode, 'object-raw-typecode' ; x -- raw-typecode
+; ### object_raw_typecode
+code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL
+; x -- raw-typecode
+
         mov     eax, ebx
         and     eax, TAG_MASK
         jz      .2
@@ -142,9 +144,9 @@ code dot_t, '.t'                ; object -- object
 endcode
 
 ; ### destroy-object-unchecked
-code destroy_object_unchecked, 'destroy-object-unchecked', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; object --
-; The argument is known to be the address of a valid heap object, not a
+code destroy_object_unchecked, 'destroy_object_unchecked', SYMBOL_INTERNAL
+; raw-object-address --
+; The argument is known to be the raw address of a valid heap object, not a
 ; handle or null. Called only by maybe-collect-handle during gc.
         _dup
 
