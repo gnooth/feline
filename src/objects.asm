@@ -413,6 +413,13 @@ code object_to_string, 'object>string'  ; object -- string
         _return
         _then .23
 
+        _dup
+        _ uint64?
+        _tagged_if .24
+        _ uint64_to_string
+        _return
+        _then .24
+
         ; give up
         _tag_fixnum
         _ fixnum_to_hex
