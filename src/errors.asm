@@ -148,3 +148,11 @@ code error_not_sbuf, 'error-not-sbuf'   ; x --
         _ error
         next
 endcode
+
+; ### error-not-uint64
+code error_not_uint64, 'error-not-uint64'       ; x --
+        _quote "a uint64"
+        _ format_type_error
+        _ error
+        next
+endcode

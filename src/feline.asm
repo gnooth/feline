@@ -54,6 +54,7 @@ IN_FELINE
 %include "generic.asm"
 %include "method.asm"
 %include "fixnum.asm"
+%include "uint64.asm"
 %include "bignum.asm"
 %include "float.asm"
 %include "numbers.asm"
