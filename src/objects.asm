@@ -108,7 +108,10 @@ code object_raw_typecode, 'object-raw-typecode' ; x -- raw-typecode
         _return
 
 .4:
-        _error "not an object"
+        ; not an object
+        ; return -1
+        xor     ebx, ebx
+        not     rbx
 
         next
 endcode
