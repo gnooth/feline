@@ -159,7 +159,7 @@ inline eq?, 'eq?'
 endinline
 
 ; ### =
-code feline_equal, '='                  ; n1 n2 -- ?
+code feline_equal, '='                  ; obj1 obj2 -- ?
         cmp     rbx, [rbp]
         jne     .1
         lea     rbp, [rbp + BYTES_PER_CELL]
@@ -170,20 +170,37 @@ code feline_equal, '='                  ; n1 n2 -- ?
         next
 endcode
 
+%macro  _not 0
+        mov     eax, t_value
+        cmp     rbx, f_value
+        mov     ebx, f_value
+        cmove   ebx, eax
+%endmacro
+
+; ### not
+inline not, 'not'
+        _not
+endinline
+
+; ### <>
+code not_equal, '<>'                    ; obj1 obj2 -- ?
+        cmp     rbx, [rbp]
+        jne     .1
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        mov     ebx, f_value
+        _return
+.1:
+        _ equal?
+        _not
+        next
+endcode
+
 ; ### zero?
 inline zero?, 'zero?'
         mov     eax, t_value
         cmp     rbx, tagged_zero
         mov     ebx, f_value
         cmovz   ebx, eax
-endinline
-
-; ### not
-inline not, 'not'
-        mov     eax, t_value
-        cmp     rbx, f_value
-        mov     ebx, f_value
-        cmove   ebx, eax
 endinline
 
 ; ### and
