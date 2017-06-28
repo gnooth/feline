@@ -1316,25 +1316,21 @@ code ncols, '#cols'
 endcode
 
 ; ### seed-random
-code seed_random, 'seed-random' ; --
+code seed_random, 'seed-random'         ; --
 
         ; REVIEW
         _rdtsc
 
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
+        mov     arg0_register, rbx
         poprbx
         xcall   c_seed_random
         next
 endcode
 
 ; ### random
-code random, 'random'   ; -- fixnum
+code random, 'random'                   ; -- fixnum
         xcall   c_random
-        mov     rdx, $0fffffffffffffff
+        mov     rdx, MOST_POSITIVE_FIXNUM
         and     rax, rdx
         pushrbx
         mov     rbx, rax
