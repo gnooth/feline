@@ -180,17 +180,7 @@ code raw_uint64_to_hex, 'raw_uint64_to_hex', SYMBOL_INTERNAL    ; raw-uint64 -- 
         movzx   ebx, dl
         _ this_sbuf_push_raw_unsafe
 
-        mov     edx, r12d
-        shr     edx, 4
-        and     edx, 0xf
-
-        mov     rcx, hexchars
-        mov     dl, [rcx + rdx]
-        pushrbx
-        movzx   ebx, dl
-        _ this_sbuf_push_raw_unsafe
-
-        shr     r12, 8
+        shr     r12, 4
 
         test    r12, r12
         jnz     .1
