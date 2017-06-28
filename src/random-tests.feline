@@ -204,6 +204,21 @@ test: test-12
 
 test-12
 
+: %test-13
+    random !> x
+    x fixnum? assert
+    x 0 >= assert
+    x fixnum>uint64 !> y
+    y uint64? assert
+    x fixnum>string y uint64>string = assert
+    x fixnum>hex y uint64>hex = assert
+;
+
+test: test-13
+    #reps ' %test-13 times ;
+
+test-13
+
 f !> x
 f !> y
 
