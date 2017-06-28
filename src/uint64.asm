@@ -204,6 +204,13 @@ code uint64_to_string, 'uint64>string'  ; uint64 -- string
         next
 endcode
 
+; ### uint64>hex
+code uint64_to_hex, 'uint64>hex'        ; uint64 -- string
+        _ check_uint64
+        _ raw_uint64_to_hex
+        next
+endcode
+
 ; ### max-uint64
 code max_uint64, 'max-uint64'           ; -- uint64
         pushrbx
