@@ -140,6 +140,63 @@ code raw_uint64_to_decimal, 'raw_uint64_to_decimal', SYMBOL_INTERNAL    ; raw-ui
         next
 endcode
 
+section .data
+        align   DEFAULT_DATA_ALIGNMENT
+hexchars:
+        db      '0123456789abcdef'
+
+
+; ### raw_uint64_to_hex
+code raw_uint64_to_hex, 'raw_uint64_to_hex', SYMBOL_INTERNAL    ; raw-uint64 -- string
+
+        _lit 32
+        _ new_sbuf_untagged             ; handle
+
+        push    r12
+        push    this_register
+
+        mov     this_register, [rbx]    ; raw address of string buffer
+        poprbx                          ; -- uint64
+
+        mov     r12, rbx                ; raw uint64 in r12
+        poprbx                          ; --
+
+        align   DEFAULT_CODE_ALIGNMENT
+.1:
+        mov     edx, r12d
+        and     edx, 0xf
+
+        mov     rcx, hexchars
+        mov     dl, [rcx + rdx]
+
+        pushrbx
+        movzx   ebx, dl
+        _ this_sbuf_push_raw_unsafe
+
+        mov     edx, r12d
+        shr     edx, 4
+        and     edx, 0xf
+
+        mov     rcx, hexchars
+        mov     dl, [rcx + rdx]
+        pushrbx
+        movzx   ebx, dl
+        _ this_sbuf_push_raw_unsafe
+
+        shr     r12, 8
+
+        test    r12, r12
+        jnz     .1
+
+        _ this_sbuf_reverse
+        _ this_sbuf_to_string
+
+        pop     this_register
+        pop     r12
+
+        next
+endcode
+
 ; ### uint64>string
 code uint64_to_string, 'uint64>string'  ; uint64 -- string
         _ check_uint64
