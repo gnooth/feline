@@ -1089,17 +1089,10 @@ code lfetchs, 'l@s'     ; address -- int32
 endcode
 
 ; ### @
-code fetch, '@'         ; address -- uint64
+code fetch, '@'                         ; address -- uint64
         _check_fixnum
         _fetch
-        _dup
-        _lit MOST_POSITIVE_FIXNUM
-        _ugt
-        _if .1
-        _ unsigned_to_bignum
-        _else .1
-        _tag_fixnum
-        _then .1
+        _ new_uint64
         next
 endcode
 

@@ -183,7 +183,7 @@ global: relative-size
 : .immediate-operand ( -- )
     immediate-operand {
         { [ signed? ]     [ dec. ] }
-        { [ dup bignum? ] [ hex. ] }
+        { [ dup uint64? ] [ hex. ] }
         { [ dup 10 < ]    [ dec. ] }
         [ hex. ]
     } cond ;
