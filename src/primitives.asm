@@ -814,15 +814,40 @@ code to_hex, '>hex'                     ; n -- string
 endcode
 
 ; ### hex.
-code hexdot, 'hex.'                     ; n --
-        _dup_fixnum?_if .1
+code hexdot, 'hex.'                     ; x --
+
+        mov     eax, ebx
+        and     eax, TAG_MASK
+        cmp     eax, FIXNUM_TAG
+        jne     .1
         _ fixnum_to_hex
-        _else .1
+        jmp     .4
+
+.1:
+        _dup
+        _ uint64?
+        _tagged_if .2
+        _ uint64_to_hex
+        jmp     .4
+        _then .2
+
+%ifdef FELINE_FEATURE_BIGNUMS
+        _dup
+        _ bignum?
+        _tagged_if .3
         _ bignum_to_hex
-        _then .1
+        jmp     .4
+        _then .3
+%endif
+
+        _error "unsupported"
+        _return
+
+.4:
         _lit tagged_char('$')
         _ write_char
         _ write_string
+
         next
 endcode
 
