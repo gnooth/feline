@@ -28,7 +28,11 @@ TYPECODE_STRING                 equ  4
 TYPECODE_SBUF                   equ  5
 TYPECODE_ARRAY                  equ  6
 TYPECODE_HASHTABLE              equ  7
+
+%ifdef FELINE_FEATURE_BIGNUMS
 TYPECODE_BIGNUM                 equ  8
+%endif
+
 TYPECODE_SYMBOL                 equ  9
 TYPECODE_VOCAB                  equ 10
 TYPECODE_QUOTATION              equ 11
@@ -297,11 +301,13 @@ OBJECT_ALLOCATED_BIT            equ 4
         _equal
 %endmacro
 
+%ifdef FELINE_FEATURE_BIGNUMS
 %macro  _bignum? 0
         _object_raw_typecode
         _lit TYPECODE_BIGNUM
         _equal
 %endmacro
+%endif
 
 %macro  _symbol? 0
         _object_raw_typecode
