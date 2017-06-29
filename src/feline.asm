@@ -15,6 +15,8 @@
 
 default abs ; use absolute addresses by default
 
+%define FELINE_FEATURE_BIGNUMS
+
 %include "feline_home.asm"
 %include "version.asm"
 %include "externs.asm"
@@ -55,7 +57,11 @@ IN_FELINE
 %include "method.asm"
 %include "fixnum.asm"
 %include "uint64.asm"
+
+%ifdef FELINE_FEATURE_BIGNUMS
 %include "bignum.asm"
+%endif
+
 %include "float.asm"
 %include "numbers.asm"
 %include "objects.asm"
