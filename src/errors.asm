@@ -37,12 +37,14 @@ code error_not_fixnum, 'error-not-fixnum'       ; x --
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### error-not-bignum
 code error_not_bignum, 'error-not-bignum'       ; x --
         _quote "a bignum"
         _ format_type_error
         next
 endcode
+%endif
 
 ; ### error-not-float
 code error_not_float, 'error-not-float'         ; x --

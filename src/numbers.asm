@@ -26,6 +26,8 @@ code fixnum_equal?, 'fixnum-equal?'     ; x y -- ?
         _return
 
 .1:
+
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .2
@@ -33,6 +35,7 @@ code fixnum_equal?, 'fixnum-equal?'     ; x y -- ?
         _ bignum_equal?
         _return
         _then .2
+%endif
 
         _over
         _ float?
@@ -47,6 +50,7 @@ code fixnum_equal?, 'fixnum-equal?'     ; x y -- ?
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-bignum-equal?
 code bignum_bignum_equal?, 'bignum-bignum-equal?'       ; x y -- ?
         _ check_bignum
@@ -90,6 +94,7 @@ code bignum_equal?, 'bignum-equal?'                     ; x y -- ?
         _f
         next
 endcode
+%endif
 
 ; ### fixnum-fixnum<
 code fixnum_fixnum_lt, 'fixnum-fixnum<' ; fixnum1 fixnum2 -- ?
@@ -106,12 +111,14 @@ code fixnum_fixnum_lt, 'fixnum-fixnum<' ; fixnum1 fixnum2 -- ?
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-fixnum<
 code bignum_fixnum_lt, 'bignum-fixnum<' ; bignum fixnum -- ?
         _ fixnum_to_bignum
         _ bignum_bignum_lt
         next
 endcode
+%endif
 
 ; ### float-fixnum<
 code float_fixnum_lt, 'float-fixnum<'   ; float fixnum -- ?
@@ -135,12 +142,15 @@ code fixnum_lt, 'fixnum<'               ; number fixnum -- ?
         _return
 
 .1:
+
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .2
         _ bignum_fixnum_lt
         _return
         _then .2
+%endif
 
         _over
         _ float?
@@ -154,6 +164,7 @@ code fixnum_lt, 'fixnum<'               ; number fixnum -- ?
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-bignum<
 code bignum_bignum_lt, 'bignum-bignum<'         ; bignum1 bignum2 -- ?
         _ check_bignum
@@ -224,6 +235,7 @@ code bignum_lt, 'bignum<'               ; number bignum -- ?
         _ error_not_number
         next
 endcode
+%endif
 
 ; ### float-float<
 code float_float_lt, 'float-float<'             ; float1 float2 -- ?
@@ -254,6 +266,7 @@ code fixnum_float_lt, 'fixnum-float<'           ; fixnum float -- ?
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-float<
 code bignum_float_lt, 'bignum-float<'           ; bignum float -- ?
         _swap
@@ -262,6 +275,7 @@ code bignum_float_lt, 'bignum-float<'           ; bignum float -- ?
         _ float_float_lt
         next
 endcode
+%endif
 
 ; ### float<
 code float_lt, 'float<'                         ; number float -- ?
@@ -279,12 +293,14 @@ code float_lt, 'float<'                         ; number float -- ?
         _return
         _then .2
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .3
         _ bignum_float_lt
         _return
         _then .3
+%endif
 
         _drop
         _ error_not_number
@@ -306,6 +322,7 @@ code fixnum_fixnum_le, 'fixnum-fixnum<='        ; fixnum1 fixnum2 -- ?
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-bignum<=
 code bignum_bignum_le, 'bignum-bignum<='        ; bignum1 bignum2 -- ?
         _ check_bignum
@@ -332,6 +349,7 @@ code bignum_fixnum_le, 'bignum-fixnum<='        ; bignum fixnum -- ?
         _ bignum_bignum_le
         next
 endcode
+%endif
 
 ; ### float-fixnum<=
 code float_fixnum_le, 'float-fixnum<='          ; float fixnum -- ?
@@ -340,6 +358,7 @@ code float_fixnum_le, 'float-fixnum<='          ; float fixnum -- ?
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### fixnum-bignum<=
 code fixnum_bignum_le, 'bignum-fixnum<='        ; fixnum bignum -- ?
         _ verify_bignum
@@ -349,6 +368,7 @@ code fixnum_bignum_le, 'bignum-fixnum<='        ; fixnum bignum -- ?
         _ bignum_bignum_le
         next
 endcode
+%endif
 
 ; ### float-float<=
 code float_float_le, 'float-float<='            ; float1 float2 -- ?
@@ -385,12 +405,15 @@ code fixnum_le, 'fixnum<='      ; number fixnum -- ?
         _return
 
 .1:
+
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .2
         _ bignum_fixnum_le
         _return
         _then .2
+%endif
 
         _over
         _ float?
@@ -404,6 +427,7 @@ code fixnum_le, 'fixnum<='      ; number fixnum -- ?
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum<=
 code bignum_le, 'bignum<='              ; number bignum -- ?
 
@@ -430,6 +454,7 @@ code bignum_le, 'bignum<='              ; number bignum -- ?
         _ error_not_number
         next
 endcode
+%endif
 
 ; ### fixnum-float<=
 code fixnum_float_le, 'fixnum-float<='          ; fixnum float -- ?
@@ -440,6 +465,7 @@ code fixnum_float_le, 'fixnum-float<='          ; fixnum float -- ?
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-float<=
 code bignum_float_le, 'bignum-float<='          ; bignum float -- ?
         _swap
@@ -448,6 +474,7 @@ code bignum_float_le, 'bignum-float<='          ; bignum float -- ?
         _ float_float_le
         next
 endcode
+%endif
 
 ; ### float<=
 code float_le, 'float<='                        ; number float -- ?
@@ -465,12 +492,14 @@ code float_le, 'float<='                        ; number float -- ?
         _return
         _then .2
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .3
         _ bignum_float_le
         _return
         _then .3
+%endif
 
         _drop
         _ error_not_number
@@ -492,12 +521,14 @@ code fixnum_fixnum_gt, 'fixnum-fixnum>' ; fixnum1 fixnum2 -- ?
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-fixnum>
 code bignum_fixnum_gt, 'bignum-fixnum>' ; bignum fixnum -- ?
         _ fixnum_to_bignum
         _ bignum_bignum_gt
         next
 endcode
+%endif
 
 ; ### float-float>
 code float_float_gt, 'float-float>'             ; float1 float2 -- ?
@@ -541,12 +572,15 @@ code fixnum_gt, 'fixnum>'               ; number fixnum -- ?
         _return
 
 .1:
+
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .2
         _ bignum_fixnum_gt
         _return
         _then .2
+%endif
 
         _over
         _ float?
@@ -560,6 +594,7 @@ code fixnum_gt, 'fixnum>'               ; number fixnum -- ?
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-bignum>
 code bignum_bignum_gt, 'bignum-bignum>'         ; bignum1 bignum2 -- ?
         _ check_bignum
@@ -630,6 +665,7 @@ code bignum_gt, 'bignum>'                       ; number bignum -- ?
         _ error_not_number
         next
 endcode
+%endif
 
 ; ### fixnum-float>
 code fixnum_float_gt, 'fixnum-float>'           ; fixnum float -- ?
@@ -640,6 +676,7 @@ code fixnum_float_gt, 'fixnum-float>'           ; fixnum float -- ?
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-float>
 code bignum_float_gt, 'bignum-float>'           ; bignum float -- ?
         _swap
@@ -648,6 +685,7 @@ code bignum_float_gt, 'bignum-float>'           ; bignum float -- ?
         _ float_float_gt
         next
 endcode
+%endif
 
 ; ### float>
 code float_gt, 'float>'                         ; number float -- ?
@@ -665,18 +703,21 @@ code float_gt, 'float>'                         ; number float -- ?
         _return
         _then .2
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .3
         _ bignum_float_gt
         _return
         _then .3
+%endif
 
         _drop
         _ error_not_number
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-bignum>=
 code bignum_bignum_ge, 'bignum-bignum>='        ; bignum1 bignum2 -- ?
         _ check_bignum
@@ -740,6 +781,7 @@ code bignum_ge, 'bignum>='              ; number bignum -- ?
         _ error_not_number
         next
 endcode
+%endif
 
 ; ### fixnum-fixnum>=
 code fixnum_fixnum_ge, 'fixnum-fixnum>='        ; fixnum1 fixnum2 -- ?
@@ -776,6 +818,7 @@ code float_float_ge, 'float-float>='            ; float1 float2 -- ?
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### float-bignum>=
 code float_bignum_ge, 'float-bignum>='  ; float bignum -- ?
         _ bignum_to_float
@@ -789,6 +832,7 @@ code bignum_fixnum_ge, 'bignum-fixnum>='        ; bignum fixnum -- ?
         _ bignum_bignum_ge
         next
 endcode
+%endif
 
 ; ### float-fixnum>=
 code float_fixnum_ge, 'float-fixnum>='          ; bignum fixnum -- ?
@@ -812,12 +856,15 @@ code fixnum_ge, 'fixnum>='                      ; number fixnum -- ?
         _return
 
 .1:
+
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .2
         _ bignum_fixnum_ge
         _return
         _then .2
+%endif
 
         _over
         _ float?
@@ -840,6 +887,7 @@ code fixnum_float_ge, 'fixnum-float>='          ; fixnum float -- ?
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-float>=
 code bignum_float_ge, 'bignum-float>='          ; bignum float -- ?
         _swap
@@ -848,6 +896,7 @@ code bignum_float_ge, 'bignum-float>='          ; bignum float -- ?
         _ float_float_ge
         next
 endcode
+%endif
 
 ; ### float>=
 code float_ge, 'float>='                        ; number float -- ?
@@ -865,12 +914,14 @@ code float_ge, 'float>='                        ; number float -- ?
         _return
         _then .2
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .3
         _ bignum_float_ge
         _return
         _then .3
+%endif
 
         _drop
         _ error_not_number

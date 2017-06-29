@@ -92,6 +92,7 @@ code float_equal?, 'float-equal?'       ; x float -- ?
         _return
         _then .1
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .2
@@ -102,6 +103,7 @@ code float_equal?, 'float-equal?'       ; x float -- ?
         _eq?
         _return
         _then .2
+%endif
 
         _over
         _ float?
@@ -187,6 +189,7 @@ code fixnum_to_float, 'fixnum>float'
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum>float
 code bignum_to_float, 'bignum>float'
         _ check_bignum
@@ -196,6 +199,7 @@ code bignum_to_float, 'bignum>float'
         _ new_handle
         next
 endcode
+%endif
 
 ; ### float>integer
 code float_to_integer, 'float>integer'
@@ -249,6 +253,7 @@ code float_plus, 'float+'       ; number float -- sum
         _return
         _then .2
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .3
@@ -257,6 +262,7 @@ code float_plus, 'float+'       ; number float -- sum
         _ float_float_plus
         _return
         _then .3
+%endif
 
         _drop
         _ error_not_number
@@ -299,6 +305,7 @@ code float_minus, 'float-'              ; number float -- difference
         _return
         _then .2
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .3
@@ -308,6 +315,7 @@ code float_minus, 'float-'              ; number float -- difference
         _ float_float_minus
         _return
         _then .3
+%endif
 
         _drop
         _ error_not_number
@@ -349,6 +357,7 @@ code float_multiply, 'float*'          ; x y -- z
         _return
         _then .2
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .3
@@ -358,6 +367,7 @@ code float_multiply, 'float*'          ; x y -- z
         _ float_float_multiply
         _return
         _then .3
+%endif
 
         _drop
         _ error_not_number
@@ -400,6 +410,7 @@ code float_divide, 'float/f'            ; x y -- z
         _return
         _then .2
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .3
@@ -409,6 +420,7 @@ code float_divide, 'float/f'            ; x y -- z
         _ float_float_divide
         _return
         _then .3
+%endif
 
         _drop
         _ error_not_number
@@ -478,6 +490,7 @@ code generic_sqrt, 'sqrt'                       ; x -- y
         _return
         _then .2
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _dup
         _ bignum?
         _tagged_if .3
@@ -485,7 +498,7 @@ code generic_sqrt, 'sqrt'                       ; x -- y
         _ float_sqrt
         _return
         _then .3
-
+%endif
         _ error_not_number
         next
 endcode

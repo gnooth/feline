@@ -774,12 +774,14 @@ code number_to_string, 'number>string'  ; n -- string
         _return
         _then .1
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _dup
         _ bignum?
         _tagged_if .2
         _ bignum_to_string
         _return
         _then .2
+%endif
 
         _ error_not_number
 
@@ -801,12 +803,14 @@ code to_hex, '>hex'                     ; n -- string
         _return
         _then .1
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _dup
         _ bignum?
         _tagged_if .2
         _ bignum_to_hex
         _return
         _then .2
+%endif
 
         _ error_not_number
 
@@ -1405,6 +1409,7 @@ code expt, 'expt'       ; base power -- result
 %endif
         _then .1
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .2
@@ -1420,6 +1425,7 @@ code expt, 'expt'       ; base power -- result
         _ gc_enable
         _return
         _then .2
+%endif
 
         next
 endcode

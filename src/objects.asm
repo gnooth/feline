@@ -200,12 +200,14 @@ code destroy_object_unchecked, 'destroy_object_unchecked', SYMBOL_INTERNAL
         _return
         _then .7
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _dup
         _bignum?
         _if .8
         _ destroy_bignum_unchecked
         _return
         _then .8
+%endif
 
         ; Default behavior for objects with only one allocation.
 
@@ -302,12 +304,14 @@ code object_to_string, 'object>string'  ; object -- string
         _return
         _then .7
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _dup
         _ bignum?
         _tagged_if .8
         _ bignum_to_string
         _return
         _then .8
+%endif
 
         _dup
         _ hashtable?

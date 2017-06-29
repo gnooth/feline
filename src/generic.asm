@@ -410,7 +410,9 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method equal?, TYPECODE_STRING, string_equal?
         _add_method equal?, TYPECODE_SYMBOL, symbol_equal?
         _add_method equal?, TYPECODE_BOOLEAN, boolean_equal?
+%ifdef FELINE_FEATURE_BIGNUMS
         _add_method equal?, TYPECODE_BIGNUM, bignum_equal?
+%endif
         _add_method equal?, TYPECODE_FLOAT, float_equal?
 
         ; length
@@ -463,66 +465,88 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         ; +
         _initialize_generic_function generic_plus
         _add_method generic_plus, TYPECODE_FIXNUM, fixnum_plus
+%ifdef FELINE_FEATURE_BIGNUMS
         _add_method generic_plus, TYPECODE_BIGNUM, bignum_plus
+%endif
         _add_method generic_plus, TYPECODE_FLOAT, float_plus
 
         ; -
         _initialize_generic_function generic_minus
         _add_method generic_minus, TYPECODE_FIXNUM, fixnum_minus
+%ifdef FELINE_FEATURE_BIGNUMS
         _add_method generic_minus, TYPECODE_BIGNUM, bignum_minus
+%endif
         _add_method generic_minus, TYPECODE_FLOAT, float_minus
 
         ; *
         _initialize_generic_function generic_multiply
         _add_method generic_multiply, TYPECODE_FIXNUM, fixnum_multiply
+%ifdef FELINE_FEATURE_BIGNUMS
         _add_method generic_multiply, TYPECODE_BIGNUM, bignum_multiply
+%endif
         _add_method generic_multiply, TYPECODE_FLOAT, float_multiply
 
         ; /
         _initialize_generic_function generic_divide
         _add_method generic_divide, TYPECODE_FIXNUM, fixnum_divide_float
+%ifdef FELINE_FEATURE_BIGNUMS
         _add_method generic_divide, TYPECODE_BIGNUM, bignum_divide_float
+%endif
         _add_method generic_divide, TYPECODE_FLOAT, float_divide
 
         ; /i
         _initialize_generic_function generic_divide_truncate
         _add_method generic_divide_truncate, TYPECODE_FIXNUM, fixnum_divide_truncate
+%ifdef FELINE_FEATURE_BIGNUMS
         _add_method generic_divide_truncate, TYPECODE_BIGNUM, bignum_divide_truncate
+%endif
         _add_method generic_divide_truncate, TYPECODE_FLOAT, float_divide_truncate
 
         ; mod
         _initialize_generic_function generic_mod
         _add_method generic_mod, TYPECODE_FIXNUM, fixnum_mod
+%ifdef FELINE_FEATURE_BIGNUMS
         _add_method generic_mod, TYPECODE_BIGNUM, bignum_mod
+%endif
 
         ; negate
         _initialize_generic_function generic_negate
         _add_method generic_negate, TYPECODE_FIXNUM, fixnum_negate
+%ifdef FELINE_FEATURE_BIGNUMS
         _add_method generic_negate, TYPECODE_BIGNUM, bignum_negate
+%endif
         _add_method generic_negate, TYPECODE_FLOAT, float_negate
 
         ; <
         _initialize_generic_function generic_lt
         _add_method generic_lt, TYPECODE_FIXNUM, fixnum_lt
+%ifdef FELINE_FEATURE_BIGNUMS
         _add_method generic_lt, TYPECODE_BIGNUM, bignum_lt
+%endif
         _add_method generic_lt, TYPECODE_FLOAT, float_lt
 
         ; >
         _initialize_generic_function generic_gt
         _add_method generic_gt, TYPECODE_FIXNUM, fixnum_gt
+%ifdef FELINE_FEATURE_BIGNUMS
         _add_method generic_gt, TYPECODE_BIGNUM, bignum_gt
+%endif
         _add_method generic_gt, TYPECODE_FLOAT, float_gt
 
         ; <=
         _initialize_generic_function generic_le
         _add_method generic_le, TYPECODE_FIXNUM, fixnum_le
+%ifdef FELINE_FEATURE_BIGNUMS
         _add_method generic_le, TYPECODE_BIGNUM, bignum_le
+%endif
         _add_method generic_le, TYPECODE_FLOAT, float_le
 
         ; >=
         _initialize_generic_function generic_ge
         _add_method generic_ge, TYPECODE_FIXNUM, fixnum_ge
+%ifdef FELINE_FEATURE_BIGNUMS
         _add_method generic_ge, TYPECODE_BIGNUM, bignum_ge
+%endif
         _add_method generic_ge, TYPECODE_FLOAT, float_ge
 
         ; write
@@ -538,7 +562,9 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         ; >float
         _initialize_generic_function generic_coerce_to_float
         _add_method generic_coerce_to_float, TYPECODE_FIXNUM, fixnum_to_float
+%ifdef FELINE_FEATURE_BIGNUMS
         _add_method generic_coerce_to_float, TYPECODE_BIGNUM, bignum_to_float
+%endif
         _add_method generic_coerce_to_float, TYPECODE_STRING, string_to_float
 
         next
