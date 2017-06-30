@@ -163,7 +163,13 @@ code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; fixnum1 fixnum2 -- sum
         _tag_fixnum
         _return
 .1:
+
+%ifdef FELINE_FEATURE_BIGNUMS
         _ signed_to_bignum
+%else
+        _ raw_int64_to_float
+%endif
+
         next
 endcode
 
@@ -183,7 +189,13 @@ code fixnum_fixnum_minus, 'fixnum-fixnum-'      ; fixnum1 fixnum2 -- difference
         _tag_fixnum
         _return
 .1:
+
+%ifdef FELINE_FEATURE_BIGNUMS
         _ signed_to_bignum
+%else
+        _ raw_int64_to_float
+%endif
+
         next
 endcode
 
@@ -390,7 +402,13 @@ code fixnum_fixnum_divide_truncate, 'fixnum-fixnum/i'   ; x y -- z
         mov     rax, -MOST_NEGATIVE_FIXNUM
         cmp     rbx, rax
         jne     .1
+
+%ifdef FELINE_FEATURE_BIGNUMS
         _ signed_to_bignum
+%else
+        _ raw_int64_to_float
+%endif
+
         _return
 
 .1:
