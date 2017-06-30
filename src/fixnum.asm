@@ -187,6 +187,7 @@ code fixnum_fixnum_minus, 'fixnum-fixnum-'      ; fixnum1 fixnum2 -- difference
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-fixnum+
 code bignum_fixnum_plus, 'bignum-fixnum+'       ; bignum fixnum -- sum
         ; second arg must be a fixnum
@@ -215,6 +216,7 @@ code bignum_fixnum_minus, 'bignum-fixnum-'      ; bignum fixnum -- difference
         _ bignum_bignum_minus
         next
 endcode
+%endif
 
 ; ### fixnum+
 code fixnum_plus, 'fixnum+'           ; number fixnum -- sum
@@ -231,12 +233,15 @@ code fixnum_plus, 'fixnum+'           ; number fixnum -- sum
         _return
 
 .1:
+
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .2
         _ bignum_fixnum_plus
         _return
         _then .2
+%endif
 
         _over
         _ float?
@@ -266,12 +271,15 @@ code fixnum_minus, 'fixnum-'            ; number fixnum -- difference
         _return
 
 .1:
+
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .2
         _ bignum_fixnum_minus
         _return
         _then .2
+%endif
 
         _over
         _ float?
@@ -316,6 +324,7 @@ code fixnum_fixnum_multiply, 'fixnum-fixnum*'   ; x y -- z
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-fixnum*
 code bignum_fixnum_multiply, 'bignum-fixnum*'   ; x y -- z
         _check_fixnum
@@ -325,6 +334,7 @@ code bignum_fixnum_multiply, 'bignum-fixnum*'   ; x y -- z
         _ bignum_bignum_multiply
         next
 endcode
+%endif
 
 ; ### fixnum*
 code fixnum_multiply, 'fixnum*'         ; x y -- z
@@ -341,12 +351,15 @@ code fixnum_multiply, 'fixnum*'         ; x y -- z
         _return
 
 .1:
+
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .2
         _ bignum_fixnum_multiply
         _return
         _then .2
+%endif
 
         _over
         _ float?
@@ -385,6 +398,7 @@ code fixnum_fixnum_divide_truncate, 'fixnum-fixnum/i'   ; x y -- z
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-fixnum/i
 code bignum_fixnum_divide_truncate, 'bignum-fixnum/i'   ; x y -- z
         _ fixnum_to_bignum
@@ -394,6 +408,7 @@ code bignum_fixnum_divide_truncate, 'bignum-fixnum/i'   ; x y -- z
         _ bignum_bignum_divide_truncate
         next
 endcode
+%endif
 
 ; ### fixnum/i
 code fixnum_divide_truncate, 'fixnum/i' ; x y -- z
@@ -404,12 +419,14 @@ code fixnum_divide_truncate, 'fixnum/i' ; x y -- z
         _return
         _then .1
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .2
         _ bignum_fixnum_divide_truncate
         _return
         _then .2
+%endif
 
         _over
         _ float?
@@ -436,6 +453,7 @@ code fixnum_fixnum_divide_float, 'fixnum-fixnum/f'      ; x y -- z
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-fixnum/f
 code bignum_fixnum_divide_float, 'bignum-fixnum/f'      ; x y -- z
         _ fixnum_to_float
@@ -445,6 +463,7 @@ code bignum_fixnum_divide_float, 'bignum-fixnum/f'      ; x y -- z
         _ float_float_divide
         next
 endcode
+%endif
 
 ; ### fixnum/f
 code fixnum_divide_float, 'fixnum/f'    ; x y -- z
@@ -455,12 +474,14 @@ code fixnum_divide_float, 'fixnum/f'    ; x y -- z
         _return
         _then .1
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .2
         _ bignum_fixnum_divide_float
         _return
         _then .2
+%endif
 
         _over
         _ float?
@@ -491,6 +512,7 @@ code fixnum_fixnum_mod, 'fixnum-fixnum-mod'     ; x y -- z
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-fixnum-mod
 code bignum_fixnum_mod, 'bignum-fixnum-mod'     ; x y -- z
         _ fixnum_to_bignum
@@ -500,6 +522,7 @@ code bignum_fixnum_mod, 'bignum-fixnum-mod'     ; x y -- z
         _ bignum_bignum_mod
         next
 endcode
+%endif
 
 ; ### fixnum-mod
 code fixnum_mod, 'fixnum-mod'                   ; x y -- z
@@ -510,12 +533,14 @@ code fixnum_mod, 'fixnum-mod'                   ; x y -- z
         _return
         _then .1
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .2
         _ bignum_fixnum_mod
         _return
         _then .2
+%endif
 
         _drop
         _ error_not_number
