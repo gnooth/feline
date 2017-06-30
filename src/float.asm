@@ -183,7 +183,7 @@ endcode
 code fixnum_to_float, 'fixnum>float'
         _check_fixnum
         mov     arg0_register, rbx
-        xcall   c_fixnum_to_float
+        xcall   c_raw_int64_to_float
         mov     rbx, rax
         _ new_handle
         next

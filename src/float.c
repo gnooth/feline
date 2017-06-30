@@ -28,7 +28,7 @@ static Float *make_float(double d)
   return p;
 }
 
-cell c_fixnum_to_float(int64_t n)
+cell c_raw_int64_to_float(int64_t n)
 {
   double d = n;
   return (cell) make_float(d);

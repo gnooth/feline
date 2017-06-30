@@ -80,7 +80,6 @@ extern c_string_to_integer
 
 ; float.c
 extern c_bignum_to_float
-extern c_fixnum_to_float
 extern c_float_float_divide
 extern c_float_float_ge
 extern c_float_float_gt
@@ -94,6 +93,7 @@ extern c_float_sqrt
 extern c_float_to_string
 extern c_float_truncate
 extern c_pi
+extern c_raw_int64_to_float
 extern c_string_to_float
 
 ; math.c
