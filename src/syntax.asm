@@ -328,6 +328,18 @@ endcode
 
 asm_global in_definition?_, f_value
 
+; ### in-definition
+code in_definition, 'in_definition', SYMBOL_INTERNAL    ; --
+        mov     qword [in_definition?_], t_value
+        next
+endcode
+
+; ### not-in-definition
+code not_in_definition, 'not_in_definition', SYMBOL_INTERNAL    ; --
+        mov     qword [in_definition?_], f_value
+        next
+endcode
+
 ; ### in-definition?
 code in_definition?, 'in-definition?'   ; -- ?
         pushrbx
@@ -338,7 +350,7 @@ endcode
 ; ### parse-definition
 code parse_definition, 'parse-definition'       ; -- vector
 
-        mov     qword [in_definition?_], t_value
+        _ in_definition
 
         _zeroto using_locals?
 
@@ -383,7 +395,7 @@ code parse_definition, 'parse-definition'       ; -- vector
         _f
         _to_global local_names
 
-        mov     qword [in_definition?_], f_value
+        _ not_in_definition
 
         next
 endcode
@@ -727,13 +739,13 @@ code help_colon, 'help:', SYMBOL_IMMEDIATE
         _ must_parse_token      ; -- string
         _ must_find_name        ; -- symbol
 
-        mov     qword [in_definition?_], t_value
+        _ in_definition
 
         _quote ";"
         _ parse_until
         _ vector_to_array       ; -- symbol array
 
-        mov     qword [in_definition?_], f_value
+        _ not_in_definition
 
         _swap
         _ symbol_set_help

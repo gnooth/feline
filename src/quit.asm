@@ -281,7 +281,7 @@ code reset, 'reset'
         ; REVIEW windows-ui
         _ forth_standard_output
 
-        mov     qword [in_definition?_], f_value
+        _ not_in_definition
 
         jmp     quit
         next                            ; for decompiler
