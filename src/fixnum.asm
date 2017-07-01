@@ -323,6 +323,9 @@ code fixnum_fixnum_multiply, 'fixnum-fixnum*'   ; x y -- z
         _tag_fixnum
         _nip
         _return
+
+%ifdef FELINE_FEATURE_BIGNUMS
+
 .2:
         _ signed_to_bignum
         _nip
@@ -333,6 +336,22 @@ code fixnum_fixnum_multiply, 'fixnum-fixnum*'   ; x y -- z
         _swap
         _ signed_to_bignum
         _ bignum_bignum_multiply
+
+%else
+
+.2:
+        _ raw_int64_to_float
+        _nip
+        _return
+.1:
+        mov     rbx, rax
+        _ raw_int64_to_float
+        _swap
+        _ raw_int64_to_float
+        _ float_float_multiply
+
+%endif
+
         next
 endcode
 
@@ -572,8 +591,15 @@ code fixnum_negate, 'fixnum-negate'     ; n -- -n
         _ most_negative_fixnum
         _eq?
         _tagged_if .1
+%ifdef FELINE_FEATURE_BIGNUMS
         _ fixnum_to_bignum
         _ bignum_negate
+%else
+        ; REVIEW
+        mov     rbx, MOST_NEGATIVE_FIXNUM
+        neg     rbx
+        _ raw_int64_to_float
+%endif
         _else .1
         _untag_fixnum
         neg     rbx
