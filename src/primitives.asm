@@ -1382,6 +1382,7 @@ code rshift, 'rshift'   ; x n -- y
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### expt
 code expt, 'expt'       ; base power -- result
 ; FIXME incomplete
@@ -1409,7 +1410,6 @@ code expt, 'expt'       ; base power -- result
 %endif
         _then .1
 
-%ifdef FELINE_FEATURE_BIGNUMS
         _over
         _ bignum?
         _tagged_if .2
@@ -1425,10 +1425,10 @@ code expt, 'expt'       ; base power -- result
         _ gc_enable
         _return
         _then .2
-%endif
 
         next
 endcode
+%endif
 
 ; ### bye
 code feline_bye, "bye"
