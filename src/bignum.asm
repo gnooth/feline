@@ -15,6 +15,9 @@
 
 file __FILE__
 
+; ### HAVE_BIGNUMS
+symbol HAVE_BIGNUMS, 'HAVE_BIGNUMS'
+
 ; sizeof(mpz_t) is 16 bytes
 %define BIGNUM_DATA_OFFSET      8
 
