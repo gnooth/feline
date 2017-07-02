@@ -728,9 +728,23 @@ endcode
 
 ; ### call-symbol
 code call_symbol, 'call-symbol'         ; symbol --
+        _dup
         _ check_symbol
         mov rax, [rbx + SYMBOL_RAW_CODE_ADDRESS_OFFSET]
-        poprbx
+
+        ; check for null code address
+        test    rax, rax
+        jz      .error
+
+        _2drop
         jmp     rax
+
+.error:
+        _drop
+
+        _quote "ERROR: the symbol `%S` needs code."
+        _ format
+        _ error
+
         next
 endcode
