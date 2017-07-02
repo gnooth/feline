@@ -378,7 +378,7 @@ section .data
 %define in_forth
 %endmacro
 
-%macro  head 2-5 0, 0                   ; label, name, flags, inline size
+%macro  head 2-4 0, 0                   ; label, name, flags, inline size
 %ifdef in_feline
         symbol S_%1, %2, %1, %4, %3
 %endif
@@ -447,9 +447,9 @@ section .data
 
 %endmacro
 
-%macro  code 2-5 SYMBOL_PRIMITIVE, 0, 0
+%macro  code 2-4 SYMBOL_PRIMITIVE, 0
         %push code
-        head %1, %2, %3, %$end - %1, %5
+        head %1, %2, %3, %$end - %1
         global %1
         section .text
         align   DEFAULT_CODE_ALIGNMENT
