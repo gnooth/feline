@@ -734,12 +734,3 @@ code call_symbol, 'call-symbol'         ; symbol --
         jmp     rax
         next
 endcode
-
-; ### unchecked-call-symbol
-code unchecked_call_symbol, 'unchecked-call-symbol'     ; symbol --
-        _ maybe_deref
-        mov rax, [rbx + SYMBOL_RAW_CODE_ADDRESS_OFFSET]
-        poprbx
-        jmp     rax
-        next
-endcode
