@@ -785,8 +785,8 @@ code sh, 'sh'
         next
 endcode
 
-; ### #if:
-code sharp_if_colon, '#if:', SYMBOL_PRIMITIVE | SYMBOL_IMMEDIATE
+; ### #if
+code sharp_if, '#if', SYMBOL_PRIMITIVE | SYMBOL_IMMEDIATE
         cmp     rbx, f_value
         poprbx
         jne     .1
@@ -812,8 +812,17 @@ code sharp_if_colon, '#if:', SYMBOL_PRIMITIVE | SYMBOL_IMMEDIATE
         next
 endcode
 
-; ### #else:
-code sharp_else_colon, '#else:', SYMBOL_PRIMITIVE | SYMBOL_IMMEDIATE
+; ### #ifdef
+code sharp_ifdef, '#ifdef', SYMBOL_PRIMITIVE | SYMBOL_IMMEDIATE
+        _ must_parse_token
+        _ find_name
+        _nip
+        _ sharp_if
+        next
+endcode
+
+; ### #else
+code sharp_else, '#else', SYMBOL_PRIMITIVE | SYMBOL_IMMEDIATE
 .1:
         _ must_parse_token
         _quote "#endif"
