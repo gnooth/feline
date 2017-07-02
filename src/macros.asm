@@ -378,12 +378,6 @@ section .data
 %define in_forth
 %endmacro
 
-%macro  head 2-4 0, 0                   ; label, name, flags, inline size
-%ifdef in_feline
-        symbol S_%1, %2, %1, %4, %3
-%endif
-%endmacro
-
 %macro  subroutine 1
         %push subroutine
         global %1
@@ -401,7 +395,7 @@ section .data
 ; static symbol
 %macro  symbol 2-6 0, 0, 0, f_value     ; label, name, code address, code size, flags, value
 
-        string %%name, %2
+        string  %%name, %2
 
         section .data
         align   DEFAULT_DATA_ALIGNMENT
@@ -419,18 +413,24 @@ section .data
         dq      f_value                 ; def
         dq      f_value                 ; props
 
-        global %1_symbol_value
+        global  %1_symbol_value
 
 %1_symbol_value:
         dq      %6                      ; value
-        dq      %3                      ; untagged code address
-        dq      %4                      ; untagged code size (includes ret instruction)
-        dq      %5                      ; untagged bit flags
+        dq      %3                      ; raw code address
+        dq      %4                      ; raw code size (includes ret instruction)
+        dq      %5                      ; raw bit flags
         dq      current_file            ; file
-        dq      tagged_fixnum(__LINE__) ; line number
+        dq      tagged_fixnum(__LINE__) ; tagged line number
 
 %define symbol_link     %1
 
+%endmacro
+
+%macro  head 2-4 0, 0                   ; label, name, flags, inline size
+%ifdef in_feline
+        symbol S_%1, %2, %1, %4, %3
+%endif
 %endmacro
 
 %macro  special 2                       ; label, name
