@@ -222,7 +222,7 @@ code parse_quotation, '[', SYMBOL_IMMEDIATE     ; -- quotation
 endcode
 
 ; ### '
-code tick, "'", SYMBOL_IMMEDIATE                ; symbol
+code tick, "'", SYMBOL_IMMEDIATE        ; symbol
         _ must_parse_token
         _ must_find_name
         _get_accum
@@ -240,20 +240,19 @@ endcode
 
 ; ### symbol:
 code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE  ; --
-        _ must_parse_token
 
-        ; -- string
+        _ must_parse_token              ; -- string
+
         _dup
         _ current_vocab
         _ vocab_hashtable
         _ hashtable_at_star             ; -- string value/f ?
-        _tagged_if .1
-        ; -- string symbol
+
+        _tagged_if .1                   ; -- string symbol
         _2drop
         _return
-        _then .1
+        _then .1                        ; -- string f
 
-        ; -- string f
         _drop
         _ current_vocab
         _ create_symbol
@@ -279,7 +278,7 @@ code initialize_global, '>global:', SYMBOL_IMMEDIATE    ;  --
 endcode
 
 ; ### note-redefinition
-code note_redefinition, 'note_redefinition'   ; symbol -- symbol
+code note_redefinition, 'note_redefinition'     ; symbol -- symbol
         _ ?nl
         _write "redefining "
         _dup
