@@ -2229,20 +2229,28 @@ test: iterator-test-1
 
 iterator-test-1
 
-#ifdef HAVE_BIGNUMS
 test: fixnum-fixnum+-test-1
     1  2 fixnum-fixnum+  3 assert-eq
     1 -2 fixnum-fixnum+ -1 assert-eq
 
     most-positive-fixnum   0 fixnum-fixnum+ most-positive-fixnum assert-eq
+
+#ifdef HAVE_BIGNUMS
     most-positive-fixnum   1 fixnum-fixnum+ bignum>string  "1152921504606846976" assert=
     most-negative-fixnum  -1 fixnum-fixnum+ bignum>string "-1152921504606846977" assert=
     most-positive-fixnum dup fixnum-fixnum+ bignum>string  "2305843009213693950" assert=
     most-negative-fixnum dup fixnum-fixnum+ bignum>string "-2305843009213693952" assert=
+#else
+    most-positive-fixnum   1 fixnum-fixnum+ float>string  "1152921504606846976" string>float assert=
+    most-negative-fixnum  -1 fixnum-fixnum+ float>string "-1152921504606846977" string>float assert=
+    most-positive-fixnum dup fixnum-fixnum+ float>string  "2305843009213693950" string>float assert=
+    most-negative-fixnum dup fixnum-fixnum+ float>string "-2305843009213693952" string>float assert=
+#endif
 ;
 
 fixnum-fixnum+-test-1
 
+#ifdef HAVE_BIGNUMS
 test: fixnum-fixnum*-test-1
     most-positive-fixnum 1 fixnum-fixnum* 1152921504606846975 assert=
     most-positive-fixnum 2 fixnum-fixnum* 2305843009213693950 assert=
