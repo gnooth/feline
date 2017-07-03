@@ -80,6 +80,7 @@ extern c_string_to_integer
 
 ; float.c
 extern c_bignum_to_float
+extern c_float_expt
 extern c_float_float_divide
 extern c_float_float_ge
 extern c_float_float_gt
