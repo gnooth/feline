@@ -2241,10 +2241,10 @@ test: fixnum-fixnum+-test-1
     most-positive-fixnum dup fixnum-fixnum+ bignum>string  "2305843009213693950" assert=
     most-negative-fixnum dup fixnum-fixnum+ bignum>string "-2305843009213693952" assert=
 #else
-    most-positive-fixnum   1 fixnum-fixnum+ float>string  "1152921504606846976" string>float assert=
-    most-negative-fixnum  -1 fixnum-fixnum+ float>string "-1152921504606846977" string>float assert=
-    most-positive-fixnum dup fixnum-fixnum+ float>string  "2305843009213693950" string>float assert=
-    most-negative-fixnum dup fixnum-fixnum+ float>string "-2305843009213693952" string>float assert=
+    most-positive-fixnum   1 fixnum-fixnum+  "1152921504606846976" string>float assert=
+    most-negative-fixnum  -1 fixnum-fixnum+ "-1152921504606846977" string>float assert=
+    most-positive-fixnum dup fixnum-fixnum+  "2305843009213693950" string>float assert=
+    most-negative-fixnum dup fixnum-fixnum+ "-2305843009213693952" string>float assert=
 #endif
 ;
 
