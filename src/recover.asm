@@ -146,7 +146,7 @@ code recover, 'recover'                 ; try-quot recover-quot --
         _ clear
         _rfrom
         _quotation .1
-        _ noop
+        _ identity
         _end_quotation .1
         _ each
 

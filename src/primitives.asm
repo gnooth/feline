@@ -15,8 +15,8 @@
 
 file __FILE__
 
-; ### noop
-code noop, 'noop'
+; ### identity
+code identity, 'identity'
         next
 endcode
 
