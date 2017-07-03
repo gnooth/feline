@@ -800,7 +800,7 @@ code sharp_if, '#if', SYMBOL_PRIMITIVE | SYMBOL_IMMEDIATE
         _return
         _then .3
 
-        _quote "#else:"
+        _quote "#else"
         _ string_equal?
         _tagged_if .4
         _return
