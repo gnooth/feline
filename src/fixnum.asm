@@ -609,7 +609,7 @@ code fixnum_negate, 'fixnum-negate'     ; n -- -n
 endcode
 
 ; ### fixnum-bitand
-code fixnum_bitand, 'fixnum-bitand'     ; n1 n2 -- n3
+code fixnum_bitand, 'fixnum-bitand'     ; x y -- z
         _untag_2_fixnums
         _and
         _tag_fixnum
@@ -617,7 +617,7 @@ code fixnum_bitand, 'fixnum-bitand'     ; n1 n2 -- n3
 endcode
 
 ; ### bitand
-code bitand, 'bitand'   ; n1 n2 -- n3
+code bitand, 'bitand'                   ; x y -- z
         _check_fixnum
         _check_fixnum qword [rbp]
         _and
@@ -626,7 +626,7 @@ code bitand, 'bitand'   ; n1 n2 -- n3
 endcode
 
 ; ### bitor
-code bitor, 'bitor'     ; n1 n2 -- n3
+code bitor, 'bitor'                     ; x y -- z
         _check_fixnum
         _check_fixnum qword [rbp]
         _or
@@ -634,8 +634,18 @@ code bitor, 'bitor'     ; n1 n2 -- n3
         next
 endcode
 
+; ### bitxor
+code bitxor, 'bitxor'                   ; x y -- z
+        _check_fixnum
+        _check_fixnum qword [rbp]
+        xor     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        _tag_fixnum
+        next
+endcode
+
 ; ### bitnot
-code bitnot, 'bitnot'   ; x -- y
+code bitnot, 'bitnot'                   ; x -- y
         _check_fixnum
         not     rbx
         _tag_fixnum
