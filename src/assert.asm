@@ -24,6 +24,7 @@ endcode
 
 ; ### check-assert
 code check_assert, 'check-assert'       ; x location --
+        _debug_?enough 2
         _swap
         _tagged_if .1
         _drop
@@ -35,6 +36,7 @@ endcode
 
 ; ### check-assert-true
 code check_assert_true, 'check-assert-true'     ; x location --
+        _debug_?enough 2
         _swap
         _t
         _eq?
@@ -48,6 +50,7 @@ endcode
 
 ; ### check-assert-false
 code check_assert_false, 'check-assert-false'   ; x location --
+        _debug_?enough 2
         _swap
         _f
         _eq?
@@ -61,6 +64,7 @@ endcode
 
 ; ### check-assert-eq
 code check_assert_eq, 'check-assert-eq'         ; x y location --
+        _debug_?enough 3
         _ rrot
         _eq?
         _tagged_if .1
@@ -73,6 +77,7 @@ endcode
 
 ; ### check-assert=
 code check_assert_equal, 'check-assert='        ; x y location --
+        _debug_?enough 3
         _ feline_2over
         _ feline_equal
         _tagged_if .1
@@ -91,6 +96,7 @@ feline_constant failed, '+failed+', S_failed
 
 ; ### check-assert-must-fail
 code check_assert_must_fail, 'check-assert-must-fail'   ; quotation location --
+        _debug_?enough 2
         _swap
         _quotation .1
         _drop
