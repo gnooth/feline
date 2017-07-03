@@ -565,6 +565,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
 %ifdef FELINE_FEATURE_BIGNUMS
         _add_method generic_coerce_to_float, TYPECODE_BIGNUM, bignum_to_float
 %endif
+        _add_method generic_coerce_to_float, TYPECODE_FLOAT, identity
         _add_method generic_coerce_to_float, TYPECODE_STRING, string_to_float
 
         next
