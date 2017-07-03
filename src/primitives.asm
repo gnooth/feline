@@ -1382,10 +1382,13 @@ code rshift, 'rshift'   ; x n -- y
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
 ; ### expt
-code expt, 'expt'       ; base power -- result
-; FIXME incomplete
+code expt, 'expt'                       ; base power -- result
+
+%ifdef FELINE_FEATURE_BIGNUMS
+
+        ; FIXME incomplete
+
         _check_index
 
         _over
@@ -1426,9 +1429,32 @@ code expt, 'expt'       ; base power -- result
         _return
         _then .2
 
+%else
+
+        ; no bignums
+        _dup_fixnum?_if .1
+        _ fixnum_to_float
+        _then .1
+        _ check_float
+
+        _swap
+
+        _dup_fixnum?_if .2
+        _ fixnum_to_float
+        _then .2
+        _ check_float                   ; -- power base
+
+        mov     arg0_register, rbx
+        mov     arg1_register, [rbp]
+        poprbx
+        xcall   c_float_expt
+        mov     rbx, rax
+
+        _ new_handle
+%endif
+
         next
 endcode
-%endif
 
 ; ### bye
 code feline_bye, "bye"

@@ -670,18 +670,25 @@ test: string>number-test-2
 
 string>number-test-2
 
-#ifdef HAVE_BIGNUMS
 test: string>number-test-3
+#ifdef HAVE_BIGNUMS
     17 50 expt bignum>string dup
     "33300140732146818380750772381422989832214186835186851059977249"
     assert=
     string>number
     33300140732146818380750772381422989832214186835186851059977249
     assert=
+#else
+    17   50   expt 3.3300140732146817e+61 assert=
+    17.0 50   expt 3.3300140732146817e+61 assert=
+    17   50.0 expt 3.3300140732146817e+61 assert=
+    17.0 50.0 expt 3.3300140732146817e+61 assert=
+#endif
 ;
 
 string>number-test-3
 
+#ifdef HAVE_BIGNUMS
 test: string>number-test-4
     17 50 expt bignum>hex
     "14b904bb5dfc5746304ec45356cee38afa6c6d0414d2dae9cc21"
