@@ -783,6 +783,13 @@ code number_to_string, 'number>string'  ; n -- string
         _then .2
 %endif
 
+        _dup
+        _ float?
+        _tagged_if .3
+        _ float_to_string
+        _return
+        _then .3
+
         _ error_not_number
 
         next
