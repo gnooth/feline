@@ -508,3 +508,61 @@ code generic_sqrt, 'sqrt'                       ; x -- y
         _ error_not_number
         next
 endcode
+
+; ### float-significand
+code float_significand, 'float-significand'     ; float -- fixnum
+        _ check_float
+        _float_raw_value
+
+        ; mask off fraction bits
+        mov     rax, $0fffffffffffff
+        and     rbx, rax
+
+        ; add implicit leading bit
+        add     rax, 1                  ; rax = $10000000000000
+        or      rbx, rax
+
+        _tag_fixnum
+        next
+endcode
+
+; ### float_raw_exponent
+code float_raw_exponent, 'float_raw_exponent', SYMBOL_INTERNAL
+; float -- raw-exponent
+
+        _ check_float
+        _float_raw_value
+
+        shr     rbx, 52
+        and     rbx, 0b011111111111
+
+        next
+endcode
+
+; ### float-sign
+code float_sign, 'float-sign'           ; float -- +1/-1
+        _debug_?enough 1
+        _ check_float
+        _float_raw_value
+
+        mov     eax, 1
+        shr     rbx, 63                 ; rbx = 0 if positive, 1 if negative
+        neg     rbx                     ; rbx = 0 if positive, -1 if negative
+        cmovns  rbx, rax
+
+        _tag_fixnum
+        next
+endcode
+
+; ### integer-decode-float
+code integer_decode_float, 'integer-decode-float'       ; float -- significand exponent sign
+        _duptor
+        _ float_significand
+        _rfetch
+        _ float_raw_exponent
+        sub     rbx, 1075
+        _tag_fixnum
+        _rfrom
+        _ float_sign
+        next
+endcode
