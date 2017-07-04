@@ -237,12 +237,12 @@ test: fixnum-test-7 ( -- )
 
 fixnum-test-7
 
-#ifdef HAVE_BIGNUMS
 test: mod-test-1 ( -- )
     7 3 mod 1 assert=
     7 -3 mod 1 assert=
     -7 3 mod -1 assert=
 
+#ifdef HAVE_BIGNUMS
     7 3 fixnum>bignum mod 1 assert=
     7 -3 fixnum>bignum mod 1 assert=
     -7 3 fixnum>bignum mod -1 assert=
@@ -256,10 +256,10 @@ test: mod-test-1 ( -- )
     most-positive-fixnum 1 + 17 fixnum>bignum mod 16 assert=
     most-positive-fixnum 2 + 17 fixnum>bignum mod 0 assert=
     most-positive-fixnum 3 + 17 fixnum>bignum mod 1 assert=
+#endif
 ;
 
 mod-test-1
-#endif
 
 -- fixnum-bitand, bitand
 test: fixnum-test-9 ( -- )
@@ -700,27 +700,29 @@ test: string>number-test-4
 ;
 
 string>number-test-4
+#endif
 
 test: string>number-test-5
     most-positive-fixnum number>string string>number
     dup fixnum? assert-true
     most-positive-fixnum assert-eq
 
-    most-positive-fixnum 1 + number>string string>number
-    dup bignum? assert-true
-    most-positive-fixnum 1 + assert=
-
     most-negative-fixnum number>string string>number
     dup fixnum? assert-true
     most-negative-fixnum assert-eq
 
+#ifdef HAVE_BIGNUMS
+    most-positive-fixnum 1 + number>string string>number
+    dup bignum? assert-true
+    most-positive-fixnum 1 + assert=
+
     most-negative-fixnum 1 - number>string string>number
     dup bignum? assert-true
     most-negative-fixnum 1 - assert=
+#endif
 ;
 
 string>number-test-5
-#endif
 
 test: '-test-1 ( -- )
     [ ' dup ] call symbol? assert-true
@@ -1573,18 +1575,25 @@ test: decimal>integer-test-1
 
 decimal>integer-test-1
 
-#ifdef HAVE_BIGNUMS
 test: negate-test-1
     0 negate zero? assert-true
     42 negate -42 assert-eq
     most-positive-fixnum negate number>string "-1152921504606846975" assert=
+
+#ifdef HAVE_BIGNUMS
     most-positive-fixnum dup fixnum-fixnum+ negate number>string  "-2305843009213693950" assert=
     most-negative-fixnum negate number>string "1152921504606846976" assert=
     most-negative-fixnum dup fixnum-fixnum+ negate number>string "2305843009213693952" assert=
+#else
+    most-positive-fixnum dup fixnum-fixnum+ negate -2.305843009213694e+18 assert=
+    most-negative-fixnum negate 1.152921504606847e+18 assert=
+    most-negative-fixnum dup fixnum-fixnum+ negate 2.305843009213694e+18 assert=
+#endif
 ;
 
 negate-test-1
 
+#ifdef HAVE_BIGNUMS
 test: expt-test-1
     2 64 expt 18446744073709551616 assert=
     2 128 expt 340282366920938463463374607431768211456 assert=
@@ -2345,10 +2354,11 @@ test: float-float>=-test-1
 
 float-float>=-test-1
 
-#ifdef HAVE_BIGNUMS
 test: fixnum-equal?-test-1
     42 42 fixnum-equal? assert-true
+#ifdef HAVE_BIGNUMS
     42 dup fixnum>bignum swap fixnum-equal? assert-true
+#endif
     42 dup >float swap fixnum-equal? assert-true
     "test" 42 fixnum-equal? assert-false
 ;
@@ -2373,7 +2383,6 @@ test: sqrt-test-1
 ;
 
 sqrt-test-1
-#endif
 
 test: int32?-test-1
     most-negative-fixnum int32? assert-false
