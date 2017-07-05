@@ -164,8 +164,8 @@ endcode
         lea     rbx, [this_register + STRING_RAW_DATA_OFFSET]
 %endmacro
 
-; ### string-raw-data-address
-code string_raw_data_address, 'string-raw-data-address', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; ### string_raw_data_address
+code string_raw_data_address, 'string_raw_data_address', SYMBOL_INTERNAL
 ; string -- raw-data-address
         _ check_string
         _string_raw_data_address
