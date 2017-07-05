@@ -28,6 +28,8 @@
 
 typedef int64_t cell;
 
+#define make_fixnum(n)  (((cell)n << 3) + 1)
+
 typedef struct
 {
   cell object_header;

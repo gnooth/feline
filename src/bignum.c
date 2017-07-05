@@ -31,12 +31,6 @@ const cell MOST_NEGATIVE_FIXNUM = -1152921504606846976;
 
 extern cell get_handle_for_object(cell);
 
-static inline cell make_fixnum(cell n)
-{
-  // see _tag_fixnum in macros.asm
-  return ((n << 3) + 1);
-}
-
 static void *c_bignum_allocate()
 {
   Bignum *b = malloc(sizeof(Bignum));
