@@ -23,7 +23,7 @@
 static Float *make_float(double d)
 {
   Float *p = malloc(sizeof(Float));
-  p->header = OBJECT_TYPE_FLOAT;
+  p->header = TYPECODE_FLOAT;
   p->d = d;
   return p;
 }

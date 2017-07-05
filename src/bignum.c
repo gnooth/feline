@@ -24,16 +24,11 @@
 #define SIZEOF_LONG 8
 #endif
 
-const cell MOST_POSITIVE_FIXNUM =  1152921504606846975;
-const cell MOST_NEGATIVE_FIXNUM = -1152921504606846976;
-
-#define OBJECT_TYPE_BIGNUM      8
-
 static void *c_bignum_allocate()
 {
   Bignum *b = malloc(sizeof(Bignum));
   memset(b, 0, sizeof(Bignum));
-  b->object_header = OBJECT_TYPE_BIGNUM;
+  b->object_header = TYPECODE_BIGNUM;
   return b;
 }
 

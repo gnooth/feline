@@ -20,15 +20,19 @@
 
 #include "../gmp/gmp.h"
 
+typedef int64_t cell;
+
+// These #defines must be kept in sync with macros.asm and object-macros.asm.
 #define T_VALUE                14
 #define F_VALUE                 6
 
-// This must be kept in sync with the object types in object-macros.asm.
-#define OBJECT_TYPE_FLOAT 18
-
-typedef int64_t cell;
-
 #define make_fixnum(n)  (((cell)n << 3) + 1)
+
+#define TYPECODE_BIGNUM         8
+#define TYPECODE_FLOAT         18
+
+#define MOST_POSITIVE_FIXNUM    ((cell)  1152921504606846975)
+#define MOST_NEGATIVE_FIXNUM    ((cell) -1152921504606846976)
 
 typedef struct
 {
