@@ -56,6 +56,9 @@ void deprep_terminal();
 // backtrace.c
 void c_save_backtrace(cell rip, cell rsp);
 
+// handles.asm
+cell get_handle_for_object(cell);
+
 extern cell os_errno_data;
 
 extern cell start_time_ticks_data;

@@ -29,8 +29,6 @@ const cell MOST_NEGATIVE_FIXNUM = -1152921504606846976;
 
 #define OBJECT_TYPE_BIGNUM      8
 
-extern cell get_handle_for_object(cell);
-
 static void *c_bignum_allocate()
 {
   Bignum *b = malloc(sizeof(Bignum));
