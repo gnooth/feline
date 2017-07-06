@@ -1275,6 +1275,29 @@ code string_to_number, 'string>number'  ; string -- n/f
         next
 endcode
 
+; ### decimal>number
+code decimal_to_number, 'decimal>number'        ; string -- n/f
+
+        _ string_from                   ; -- raw-data-address raw-length
+
+        mov     arg1_register, rbx      ; length
+        mov     arg0_register, [rbp]    ; address
+        _nip
+
+        xcall   c_string_to_number
+
+        mov     rbx, rax
+        cmp     rax, f_value
+        je      .1
+
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     new_handle
+
+.1:
+        _rep_return
+endcode
+
 ; ### printable?
 code printable?, 'printable?'           ; char -- ?
         _check_char
