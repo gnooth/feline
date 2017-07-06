@@ -238,7 +238,8 @@ code copy_to_string, 'copy-to-string', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 endcode
 
 ; ### string_from
-code string_from, 'string>'     ; string -- addr len
+code string_from, 'string_from', SYMBOL_INTERNAL
+; string -- raw-data-address raw-length
         _ check_string
         _duptor
         _string_raw_data_address
