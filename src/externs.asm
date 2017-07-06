@@ -96,6 +96,7 @@ extern c_float_truncate
 extern c_pi
 extern c_raw_int64_to_float
 extern c_string_to_float
+extern c_string_to_number
 
 ; math.c
 extern c_bignum_expt

@@ -68,6 +68,46 @@ cell c_string_to_float(char *s, size_t length)
   return (cell) make_float(d);
 }
 
+cell c_string_to_number(char *s, size_t length)
+{
+  // Return a tagged fixnum or the raw pointer returned by make_float
+  // if conversion is successful. Otherwise, return F_VALUE.
+
+  if (length == 0)
+    return F_VALUE;
+
+  int maybe_integer = 1;
+
+  for (int i = length; i-- > 0;)
+    {
+      unsigned char c = s[i];
+      if (c < '0' || c > '9')
+        {
+          if (i > 0 || length == 1 || (c != '-' && c != '+'))
+            {
+              maybe_integer = 0;
+              break;
+            }
+        }
+    }
+#ifdef WIN64
+  if (maybe_integer != 0)
+    {
+      errno = 0;
+      cell n = _atoi64(s);
+      if (errno == ERANGE)
+        return c_string_to_float(s, length);
+      if (errno != 0)
+        return F_VALUE;
+      if (n >= -1152921504606846976 && n <= 1152921504606846975)
+        return make_fixnum(n);
+    }
+  return c_string_to_float(s,  length);
+#else
+  // FIXME
+#endif
+}
+
 cell c_pi()
 {
   return (cell) make_float(M_PI);
