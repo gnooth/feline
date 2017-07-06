@@ -16,6 +16,7 @@
 #include <stdlib.h>     // malloc
 #include <stdio.h>      // snprintf
 #include <math.h>       // M_PI
+#include <string.h>     // strlen
 #include <errno.h>      // errno
 
 #include "feline.h"
@@ -55,10 +56,10 @@ cell c_string_to_float(char *s)
   errno = 0;
   char *endptr;
   double d = strtod(s, &endptr);
-  if (endptr != s && errno == 0)
-    return (cell) make_float(d);
+  if (errno != 0 || endptr != s + strlen(s))
+    return 0;   // error
 
-  return 0;
+  return (cell) make_float(d);
 }
 
 cell c_pi()
