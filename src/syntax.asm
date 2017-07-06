@@ -820,6 +820,16 @@ code sharp_ifdef, '#ifdef', SYMBOL_PRIMITIVE | SYMBOL_IMMEDIATE
         next
 endcode
 
+; ### #ifndef
+code sharp_ifndef, '#ifndef', SYMBOL_PRIMITIVE | SYMBOL_IMMEDIATE
+        _ must_parse_token
+        _ find_name
+        _nip
+        _not
+        _ sharp_if
+        next
+endcode
+
 ; ### #else
 code sharp_else, '#else', SYMBOL_PRIMITIVE | SYMBOL_IMMEDIATE
 .1:
