@@ -104,7 +104,19 @@ cell c_string_to_number(char *s, size_t length)
     }
   return c_string_to_float(s,  length);
 #else
-  // FIXME
+  if (maybe_integer != 0)
+    {
+      errno = 0;
+      char *endptr;
+      cell n = strtol(s, &endptr, 10);
+      if (errno == ERANGE)
+        return c_string_to_float(s, length);
+      if (errno != 0 || endptr != s + length)
+        return F_VALUE;   // error
+      if (n >= -1152921504606846976 && n <= 1152921504606846975)
+        return make_fixnum(n);
+    }
+  return c_string_to_float(s,  length);
 #endif
 }
 
