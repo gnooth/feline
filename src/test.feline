@@ -1575,6 +1575,24 @@ test: decimal>integer-test-1
 
 decimal>integer-test-1
 
+test: decimal>number-test-1
+    "0" decimal>number 0 assert-eq
+    "-0" decimal>number 0 assert-eq
+    "1" decimal>number 1 assert-eq
+    "-1" decimal>number -1 assert-eq
+    "0.0" decimal>number 0.0 assert=
+    "-0.0" decimal>number -0.0 assert=
+    most-positive-fixnum fixnum>string decimal>number most-positive-fixnum assert-eq
+    most-negative-fixnum fixnum>string decimal>number most-negative-fixnum assert-eq
+#ifndef HAVE_BIGNUMS
+    most-positive-fixnum dup +
+    dup float? assert-true
+    dup number>string decimal>number assert=
+#endif
+;
+
+decimal>number-test-1
+
 test: negate-test-1
     0 negate zero? assert-true
     42 negate -42 assert-eq
