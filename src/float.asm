@@ -124,18 +124,11 @@ endcode
 code string_to_float, 'string>float'    ; string -- float/f
         _ string_raw_data_address
         mov     arg0_register, rbx
-        poprbx
         xcall   c_string_to_float
-        test    rax, rax
-        jz      .error
-        pushrbx
-        mov     rbx, rax                ; -- raw-float
-        _ new_handle
-        next
-.error:
-        pushrbx
-        mov     rbx, f_value
-        next
+        cmp     rax, f_value
+        mov     rbx, rax
+        jnz     new_handle
+        _rep_return
 endcode
 
 ; ### float>string

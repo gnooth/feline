@@ -53,11 +53,13 @@ cell c_float_to_string(char *buf, size_t size, Float *p)
 
 cell c_string_to_float(char *s)
 {
+  // Return the raw pointer returned by make_float if conversion is
+  // successful. Otherwise, return F_VALUE.
   errno = 0;
   char *endptr;
   double d = strtod(s, &endptr);
   if (errno != 0 || endptr != s + strlen(s))
-    return 0;   // error
+    return F_VALUE;   // error
 
   return (cell) make_float(d);
 }
