@@ -122,12 +122,19 @@ endcode
 
 ; ### string>float
 code string_to_float, 'string>float'    ; string -- float/f
-        _ string_raw_data_address
-        mov     arg0_register, rbx
+
+        _ string_from                   ; -- raw-data-address raw-length
+
+        mov     arg1_register, rbx      ; length
+        mov     arg0_register, [rbp]    ; address
+        _nip
+
         xcall   c_string_to_float
+
         cmp     rax, f_value
         mov     rbx, rax
         jnz     new_handle
+
         _rep_return
 endcode
 
