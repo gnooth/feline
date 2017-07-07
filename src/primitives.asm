@@ -1176,6 +1176,27 @@ code digit?, 'digit?'                   ; char -- n/f
         next
 endcode
 
+; ### base>fixnum
+code base_to_fixnum, 'base>fixnum'      ; string base -- n/f
+
+        _check_fixnum           ; -- string raw-base
+
+        _swap
+        _ string_from           ; -- raw-base raw-data-address raw-length
+
+        mov     arg0_register, [rbp]                    ; raw data address
+        mov     arg1_register, rbx                      ; raw length
+        mov     arg2_register, [rbp + BYTES_PER_CELL]   ; raw base
+
+        _2nip
+
+        xcall   c_string_to_fixnum
+
+        mov     rbx, rax
+
+        next
+endcode
+
 ; ### base>integer
 code base_to_integer, 'base>integer'    ; string base -- n/f
         _check_fixnum
