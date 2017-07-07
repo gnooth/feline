@@ -68,6 +68,32 @@ cell c_string_to_float(char *s, size_t length)
   return (cell) make_float(d);
 }
 
+cell c_string_to_fixnum(char *s, size_t length, int base)
+{
+  // Return a tagged fixnum if conversion is successful. Otherwise,
+  // return F_VALUE.
+
+  if (length == 0)
+    return F_VALUE;
+
+  errno = 0;
+  char *endptr;
+
+#ifdef WIN64
+  long long int n = strtoll(s, &endptr, base);
+#else
+  long n = strtol(s, &endptr, base);
+#endif
+
+  if (errno != 0 || endptr != s + length)
+    return F_VALUE;   // error
+
+  if (n >= -1152921504606846976 && n <= 1152921504606846975)
+    return make_fixnum(n);
+
+  return F_VALUE;
+}
+
 cell c_string_to_number(char *s, size_t length)
 {
   // Return a tagged fixnum or the raw pointer returned by make_float
