@@ -1236,14 +1236,22 @@ endcode
 ; ### hex>integer
 code hex_to_integer, 'hex>integer'              ; string -- n/f
         _lit tagged_fixnum(16)
+%ifdef FELINE_FEATURE_BIGNUMS
         _ base_to_integer
+%else
+        _ base_to_fixnum
+%endif
         next
 endcode
 
 ; ### binary>integer
 code binary_to_integer, 'binary>integer'        ; string -- n/f
         _lit tagged_fixnum(2)
+%ifdef FELINE_FEATURE_BIGNUMS
         _ base_to_integer
+%else
+        _ base_to_fixnum
+%endif
         next
 endcode
 
@@ -1270,6 +1278,7 @@ code string_to_number, 'string>number'  ; string -- n/f
 
         _drop
 
+%ifdef FELINE_FEATURE_BIGNUMS
         _tagged_char '.'
         _over
         _ string_find_char
@@ -1278,6 +1287,9 @@ code string_to_number, 'string>number'  ; string -- n/f
         _else .4
         _ decimal_to_integer
         _then .4
+%else
+        _ decimal_to_number
+%endif
         _return
 
 .2:
