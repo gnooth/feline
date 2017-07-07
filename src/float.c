@@ -90,25 +90,16 @@ cell c_string_to_number(char *s, size_t length)
             }
         }
     }
-#ifdef WIN64
-  if (maybe_integer != 0)
-    {
-      errno = 0;
-      cell n = _atoi64(s);
-      if (errno == ERANGE)
-        return c_string_to_float(s, length);
-      if (errno != 0)
-        return F_VALUE;
-      if (n >= -1152921504606846976 && n <= 1152921504606846975)
-        return make_fixnum(n);
-    }
-  return c_string_to_float(s,  length);
-#else
-  if (maybe_integer != 0)
+
+  if (maybe_integer)
     {
       errno = 0;
       char *endptr;
-      cell n = strtol(s, &endptr, 10);
+#ifdef WIN64
+      long long int n = strtoll(s, &endptr, 10);
+#else
+      long n = strtol(s, &endptr, 10);
+#endif
       if (errno == ERANGE)
         return c_string_to_float(s, length);
       if (errno != 0 || endptr != s + length)
@@ -116,8 +107,8 @@ cell c_string_to_number(char *s, size_t length)
       if (n >= -1152921504606846976 && n <= 1152921504606846975)
         return make_fixnum(n);
     }
+
   return c_string_to_float(s,  length);
-#endif
 }
 
 cell c_pi()
