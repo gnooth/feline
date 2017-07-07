@@ -24,22 +24,30 @@ in: random-tests
 
 : random-sign ( -- +1/-1 ) t/f? 1 -1 ? ;
 
+#ifdef HAVE_BIGNUMS
 : random-bignum ( -- bignum )
     random t/f? [ most-positive-fixnum + ] [ most-negative-fixnum - ] if ;
+#endif
 
 : random-fixnum ( -- fixnum )
     random t/f? [ negate ] when ;
 
+#ifdef HAVE_BIGNUMS
 : random-integer ( -- integer )
     t/f? ' random-bignum ' random-fixnum if ;
+#else
+: random-integer ( -- integer ) random-fixnum ;
+#endif
 
 : random-float ( -- float)
     random-integer >float ;
 
+#ifdef HAVE_BIGNUMS
 test: test-1
     10 [ random-bignum bignum? assert-true ] times ;
 
 test-1
+#endif
 
 global: x
 global: y
@@ -62,6 +70,7 @@ test: test-2
 
 test-2
 
+#ifdef HAVE_BIGNUMS
 : %test-3
     random-integer !> x
     random-integer !> y
@@ -73,6 +82,7 @@ test: test-3
     #reps ' %test-3 times ;
 
 test-3
+#endif
 
 : %test-4
     random-integer !> x
@@ -113,8 +123,11 @@ test-5
     random-fixnum !> y
     ?echo
     x y fixnum-fixnum* y x fixnum-fixnum* assert=
+#ifdef HAVE_BIGNUMS
     x fixnum>bignum y fixnum>bignum 2dup bignum-bignum*
-    -rot bignum-bignum* assert= ;
+    -rot bignum-bignum* assert=
+#endif
+;
 
 test: test-6
     #reps ' %test-6 times ;
