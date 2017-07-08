@@ -470,7 +470,9 @@ code fixnum_divide_truncate, 'fixnum/i' ; x y -- z
         _tagged_if .3
         _ fixnum_to_float
         _ float_float_divide
+%ifdef FELINE_FEATURE_BIGNUMS
         _ float_to_integer
+%endif
         _return
         _then .3
 
