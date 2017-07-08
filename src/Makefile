@@ -33,7 +33,7 @@ LINKFLAGS = -m64 -lm
 # gcc 6.2.0 on Ubuntu 16.10 needs -no-pie
 # LINKFLAGS = -m64 -no-pie
 
-OBJS = main.o os.o terminal.o backtrace.o random.o bignum.o float.o math.o socket.o feline.o
+OBJS = main.o os.o terminal.o backtrace.o random.o float.o socket.o feline.o
 
 ifeq ($(OS),Windows_NT)
 	CFLAGS += -DWIN64 -DWIN64_NATIVE
@@ -53,11 +53,11 @@ endif
 
 ifeq ($(OS),Windows_NT)
 $(FELINE_EXE):  $(OBJS)
-	$(CC) $(LINKFLAGS) $(OBJS) -l ws2_32 ../gmp/.libs/libgmp.a -o $(FELINE_EXE)
+	$(CC) $(LINKFLAGS) $(OBJS) -l ws2_32 -o $(FELINE_EXE)
 	date > ../build
 else
 $(FELINE_EXE):  $(OBJS)
-	$(CC) $(LINKFLAGS) $(OBJS) ../gmp/.libs/libgmp.a -o $(FELINE_EXE)
+	$(CC) $(LINKFLAGS) $(OBJS) -o $(FELINE_EXE)
 	date > ../build
 endif
 
@@ -85,14 +85,8 @@ backtrace.o: feline.h backtrace.c
 random.o: random.c
 	$(CC) $(CFLAGS) -c -o random.o random.c
 
-bignum.o: feline.h bignum.c
-	$(CC) $(CFLAGS) -c -o bignum.o bignum.c
-
 float.o: feline.h float.c
 	$(CC) $(CFLAGS) -c -o float.o float.c
-
-math.o: feline.h math.c
-	$(CC) $(CFLAGS) -c -o math.o math.c
 
 socket.o: feline.h socket.c
 	$(CC) $(CFLAGS) -c -o socket.o socket.c

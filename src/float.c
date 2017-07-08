@@ -35,6 +35,7 @@ cell c_raw_int64_to_float(int64_t n)
   return (cell) make_float(d);
 }
 
+#if 0
 cell c_bignum_to_float(Bignum *b)
 {
   mpf_t f;
@@ -44,6 +45,7 @@ cell c_bignum_to_float(Bignum *b)
   mpf_clear(f);
   return (cell) make_float(d);
 }
+#endif
 
 cell c_float_to_string(char *buf, size_t size, Float *p)
 {
@@ -182,6 +184,7 @@ cell c_float_float_divide(Float *p1, Float *p2)
   return (cell) make_float(p1->d / p2->d);
 }
 
+#if 0
 cell c_float_truncate(Float *p)
 {
   mpq_t q;
@@ -196,6 +199,7 @@ cell c_float_truncate(Float *p)
 
   return normalize(result);
 }
+#endif
 
 cell c_float_negate(Float *p)
 {

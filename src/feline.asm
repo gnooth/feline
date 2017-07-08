@@ -15,8 +15,6 @@
 
 default abs ; use absolute addresses by default
 
-%define FELINE_FEATURE_BIGNUMS
-
 %include "feline_home.asm"
 %include "version.asm"
 %include "externs.asm"
