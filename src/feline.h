@@ -18,8 +18,6 @@
 
 #include <stdint.h>             // int64_t
 
-#include "../gmp/gmp.h"
-
 typedef int64_t cell;
 
 // These #defines must be kept in sync with macros.asm and object-macros.asm.
@@ -36,17 +34,9 @@ typedef int64_t cell;
 
 typedef struct
 {
-  cell object_header;
-  mpz_t z;
-} Bignum;
-
-typedef struct
-{
   cell header;
   double d;
 } Float;
-
-cell normalize(mpz_t z);
 
 // os.c
 cell os_ticks();
