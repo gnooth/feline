@@ -1568,12 +1568,14 @@ test: fixnum>bignum-test-1
 fixnum>bignum-test-1
 #endif
 
+#ifdef HAVE_BIGNUMS
 test: decimal>integer-test-1
     most-positive-fixnum fixnum>string decimal>integer most-positive-fixnum assert=
     most-negative-fixnum fixnum>string decimal>integer most-negative-fixnum assert=
 ;
 
 decimal>integer-test-1
+#endif
 
 test: decimal>number-test-1
     "0" decimal>number 0 assert-eq

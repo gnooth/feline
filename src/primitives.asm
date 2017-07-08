@@ -1197,6 +1197,7 @@ code base_to_fixnum, 'base>fixnum'      ; string base -- n/f
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### base>integer
 code base_to_integer, 'base>integer'    ; string base -- n/f
         _check_fixnum
@@ -1232,6 +1233,7 @@ code decimal_to_integer, 'decimal>integer'      ; string -- n/f
         _ base_to_integer
         next
 endcode
+%endif
 
 ; ### hex>integer
 code hex_to_integer, 'hex>integer'              ; string -- n/f
