@@ -207,6 +207,7 @@ code bignum_to_float, 'bignum>float'
 endcode
 %endif
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### float>integer
 code float_to_integer, 'float>integer'
         _ check_float
@@ -215,6 +216,7 @@ code float_to_integer, 'float>integer'
         mov     rbx, rax
         next
 endcode
+%endif
 
 ; ### pi
 code pi, 'pi'                   ; -- float
@@ -437,7 +439,9 @@ endcode
 ; ### float/i
 code float_divide_truncate, 'float/i'           ; x y -- z
         _ float_divide
+%ifdef FELINE_FEATURE_BIGNUMS
         _ float_to_integer
+%endif
         next
 endcode
 
