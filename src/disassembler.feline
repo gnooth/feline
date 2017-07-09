@@ -243,14 +243,14 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
     modrm-reg !> regop ;
 
 : register-reg ( n1 -- n2 )
-    prefix 4 rshift $4 = [
+    prefix 4 rshift 4 = [
         prefix rex.r bitand zero? not [
             8 bitor
         ] when
     ] when ;
 
 : register-rm ( n1 -- n2 )
-    prefix 4 rshift $4 = [
+    prefix 4 rshift 4 = [
         prefix rex.b bitand zero? not [
             8 bitor
         ] when
@@ -280,7 +280,7 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
    nl  "  base: " write-string     (sib-base)  .3 ;
 
 : register-index ( n1 -- n2 )
-    prefix 4 rshift $4 = [
+    prefix 4 rshift 4 = [
         prefix rex.x bitand zero? not [
             8 bitor
         ] when
@@ -292,7 +292,7 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
     "unsupported instruction" error ;
 
 : instruction-operand-size ( -- n )
-    operand-size-prefix $66 eq? [ 16 ] [ prefix $48 bitand $48 = 64 32 ? ] if ;
+    operand-size-prefix 0x66 eq? [ 16 ] [ prefix 0x48 bitand 0x48 = 64 32 ? ] if ;
 
 : set-instruction-size ( -- ) instruction-operand-size dup !> dsize !> ssize ;
 
@@ -361,15 +361,15 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
 : regop-mnemonic ( -- string )
     {
         {
-            [ opcode $80 $83 between? ]
+            [ opcode 0x80 0x83 between? ]
             [ regop { "add" "or" "adc" "sbb" "and" "sub" "xor" "cmp" } nth ]
         }
         {
-            [ opcode $c0 $c1 between? opcode $d0 $d3 between? or ]
+            [ opcode 0xc0 0xc1 between? opcode 0xd0 0xd3 between? or ]
             [ regop { "rol" "ror" "rcl" "rcr" "shl" "shr" "shl" "sar" } nth ]
         }
         {
-            [ opcode $f6 $f7 between? ]
+            [ opcode 0xf6 0xf7 between? ]
             [ regop { "test" "test" "not" "neg" "mul" "imul" "div" "idiv" } nth ]
         }
     } cond ;
@@ -385,7 +385,7 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
             modrm-rm 4 = [
                 !sib-byte
                 {
-                    { [ sib-base 4 = sib-byte $24 = and ] [ sib-base !> sbase ] }
+                    { [ sib-base 4 = sib-byte 0x24 = and ] [ sib-base !> sbase ] }
                     { [ sib-base 5 = ] [ next-int32 !> sdisp t !> memory-operand? ] }
                     [
                         sib-base register-rm !> sbase
@@ -401,7 +401,7 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
             modrm-rm 4 = [
                 !sib-byte
                 next-signed-byte !> sdisp
-                sib-byte $24 = [
+                sib-byte 0x24 = [
                     sib-base  !> sbase
                 ] [
                     sib-base register-rm !> sbase
@@ -419,19 +419,19 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
 
 : .push  ( -- )
     "push" !> mnemonic
-    opcode $50 - register-rm !> dreg
+    opcode 0x50 - register-rm !> dreg
     1 !> #operands
     .inst ;
 
-8 [ $50 + ' .push swap install-handler ] each-integer
+8 [ 0x50 + ' .push swap install-handler ] each-integer
 
 : .pop  ( -- )
     "pop" !> mnemonic
-    opcode $58 - register-rm !> dreg
+    opcode 0x58 - register-rm !> dreg
     1 !> #operands
     .inst ;
 
-8 [ $58 + ' .pop swap install-handler ] each-integer
+8 [ 0x58 + ' .pop swap install-handler ] each-integer
 
 : .01
     -- /r
@@ -440,7 +440,7 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
     "add" !> mnemonic
     /r-r/m-reg ;
 
-last-word $01 install-handler
+last-word 0x01 install-handler
 
 : .03
     -- /r
@@ -449,7 +449,7 @@ last-word $01 install-handler
     "add" !> mnemonic
     /r-reg-r/m ;
 
-last-word $03 install-handler
+last-word 0x03 install-handler
 
 : .0b
     -- /r
@@ -459,11 +459,11 @@ last-word $03 install-handler
     "or" !> mnemonic
     /r-reg-r/m ;
 
-last-word $0b install-handler
+last-word 0x0b install-handler
 
 : .19 "sbb" !> mnemonic /r-r/m-reg ;
 
-last-word $19 install-handler
+last-word 0x19 install-handler
 
 : .21
     -- /r
@@ -472,7 +472,7 @@ last-word $19 install-handler
     "and" !> mnemonic
     /r-r/m-reg ;
 
-last-word $21 install-handler
+last-word 0x21 install-handler
 
 : .23
     -- /r
@@ -481,15 +481,15 @@ last-word $21 install-handler
     "and" !> mnemonic
     /r-reg-r/m ;
 
-last-word $23 install-handler
+last-word 0x23 install-handler
 
 : .24 "and" al,imm8 ;
 
-last-word $24 install-handler
+last-word 0x24 install-handler
 
 : .29 "sub" !> mnemonic /r-r/m-reg ;
 
-last-word $29 install-handler
+last-word 0x29 install-handler
 
 : .2b
     -- /r
@@ -498,7 +498,7 @@ last-word $29 install-handler
     "sub" !> mnemonic
     /r-reg-r/m ;
 
-last-word $2b install-handler
+last-word 0x2b install-handler
 
 : .30
     -- /r
@@ -517,14 +517,14 @@ last-word $2b install-handler
     .inst
 ;
 
-last-word $30 install-handler
+last-word 0x30 install-handler
 
 : .31
     set-instruction-size
    "xor" !> mnemonic
    /r-r/m-reg ;
 
-last-word $31 install-handler
+last-word 0x31 install-handler
 
 : .38
     -- /r
@@ -543,7 +543,7 @@ last-word $31 install-handler
     .inst
 ;
 
-last-word $38 install-handler
+last-word 0x38 install-handler
 
 : .39
     -- /r
@@ -553,7 +553,7 @@ last-word $38 install-handler
     "cmp" !> mnemonic
     /r-r/m-reg ;
 
-last-word $39 install-handler
+last-word 0x39 install-handler
 
 : .3a
     "cmp" !> mnemonic
@@ -570,7 +570,7 @@ last-word $39 install-handler
     } case
     .inst ;
 
-last-word $3a install-handler
+last-word 0x3a install-handler
 
 : .3b
     "cmp" !> mnemonic
@@ -579,11 +579,11 @@ last-word $3a install-handler
     -- dest is r32/64
     /r-reg-r/m ;
 
-last-word $3b install-handler
+last-word 0x3b install-handler
 
 : .3c "cmp" al,imm8 ;
 
-last-word $3c install-handler
+last-word 0x3c install-handler
 
 : .63
     -- /r
@@ -596,7 +596,7 @@ last-word $3c install-handler
     "dword" !> relative-size
     .inst ;
 
-last-word $63 install-handler
+last-word 0x63 install-handler
 
 : jmp/jcc-rel8 ( mnemonic -- )
     !> mnemonic
@@ -611,22 +611,22 @@ last-word $63 install-handler
         ] when*
     ] unless ;
 
-: .70 ( -- ) "jo"  jmp/jcc-rel8 ; last-word $70 install-handler
-: .71 ( -- ) "jno" jmp/jcc-rel8 ; last-word $71 install-handler
-: .72 ( -- ) "jc"  jmp/jcc-rel8 ; last-word $72 install-handler
-: .73 ( -- ) "jnc" jmp/jcc-rel8 ; last-word $73 install-handler
-: .74 ( -- ) "jz"  jmp/jcc-rel8 ; last-word $74 install-handler
-: .75 ( -- ) "jne" jmp/jcc-rel8 ; last-word $75 install-handler
-: .76 ( -- ) "jna" jmp/jcc-rel8 ; last-word $76 install-handler
-: .77 ( -- ) "ja"  jmp/jcc-rel8 ; last-word $77 install-handler
-: .78 ( -- ) "js"  jmp/jcc-rel8 ; last-word $78 install-handler
-: .79 ( -- ) "jns" jmp/jcc-rel8 ; last-word $79 install-handler
-: .7a ( -- ) "jpe" jmp/jcc-rel8 ; last-word $7a install-handler
-: .7b ( -- ) "jpo" jmp/jcc-rel8 ; last-word $7b install-handler
-: .7c ( -- ) "jl"  jmp/jcc-rel8 ; last-word $7c install-handler
-: .7d ( -- ) "jge" jmp/jcc-rel8 ; last-word $7d install-handler
-: .7e ( -- ) "jle" jmp/jcc-rel8 ; last-word $7e install-handler
-: .7f ( -- ) "jg"  jmp/jcc-rel8 ; last-word $7f install-handler
+: .70 ( -- ) "jo"  jmp/jcc-rel8 ; last-word 0x70 install-handler
+: .71 ( -- ) "jno" jmp/jcc-rel8 ; last-word 0x71 install-handler
+: .72 ( -- ) "jc"  jmp/jcc-rel8 ; last-word 0x72 install-handler
+: .73 ( -- ) "jnc" jmp/jcc-rel8 ; last-word 0x73 install-handler
+: .74 ( -- ) "jz"  jmp/jcc-rel8 ; last-word 0x74 install-handler
+: .75 ( -- ) "jne" jmp/jcc-rel8 ; last-word 0x75 install-handler
+: .76 ( -- ) "jna" jmp/jcc-rel8 ; last-word 0x76 install-handler
+: .77 ( -- ) "ja"  jmp/jcc-rel8 ; last-word 0x77 install-handler
+: .78 ( -- ) "js"  jmp/jcc-rel8 ; last-word 0x78 install-handler
+: .79 ( -- ) "jns" jmp/jcc-rel8 ; last-word 0x79 install-handler
+: .7a ( -- ) "jpe" jmp/jcc-rel8 ; last-word 0x7a install-handler
+: .7b ( -- ) "jpo" jmp/jcc-rel8 ; last-word 0x7b install-handler
+: .7c ( -- ) "jl"  jmp/jcc-rel8 ; last-word 0x7c install-handler
+: .7d ( -- ) "jge" jmp/jcc-rel8 ; last-word 0x7d install-handler
+: .7e ( -- ) "jle" jmp/jcc-rel8 ; last-word 0x7e install-handler
+: .7f ( -- ) "jg"  jmp/jcc-rel8 ; last-word 0x7f install-handler
 
 : .80 ( -- )
     -- modrm-reg encodes opcode extension
@@ -678,7 +678,7 @@ last-word $63 install-handler
     } case
     .inst ;
 
-last-word $80 install-handler
+last-word 0x80 install-handler
 
 : .81
     -- modrm-reg encodes opcode extension
@@ -699,7 +699,7 @@ last-word $80 install-handler
     } case
     .inst ;
 
-last-word $81 install-handler
+last-word 0x81 install-handler
 
 : .83 ( -- )
     -- modrm-reg encodes opcode extension
@@ -777,7 +777,7 @@ last-word $81 install-handler
     } case
     .inst ;
 
-last-word $83 install-handler
+last-word 0x83 install-handler
 
 : .84
     -- /r
@@ -797,7 +797,7 @@ last-word $83 install-handler
     } case
     .inst ;
 
-last-word $84 install-handler
+last-word 0x84 install-handler
 
 : .85
     -- /r
@@ -806,7 +806,7 @@ last-word $84 install-handler
     "test" !> mnemonic
     /r-r/m-reg ;
 
-last-word $85 install-handler
+last-word 0x85 install-handler
 
 : .88
     -- /r
@@ -840,7 +840,7 @@ last-word $85 install-handler
         [ unsupported ]
     } cond ;
 
-last-word $88 install-handler
+last-word 0x88 install-handler
 
 : .89
     -- /r
@@ -849,7 +849,7 @@ last-word $88 install-handler
     "mov" !> mnemonic
     /r-r/m-reg ;
 
-last-word $89 install-handler
+last-word 0x89 install-handler
 
 : .8a
     -- /r
@@ -884,7 +884,7 @@ last-word $89 install-handler
     } cond
     .inst ;
 
-last-word $8a install-handler
+last-word 0x8a install-handler
 
 : .8b
     -- /r
@@ -893,7 +893,7 @@ last-word $8a install-handler
     "mov" !> mnemonic
     /r-reg-r/m ;
 
-last-word $8b install-handler
+last-word 0x8b install-handler
 
 : .8d
     "lea" !> mnemonic
@@ -927,7 +927,7 @@ last-word $8b install-handler
     } case
     .inst ;
 
-last-word $8d install-handler
+last-word 0x8d install-handler
 
 : .8f
     "pop" !> mnemonic
@@ -956,48 +956,48 @@ last-word $8d install-handler
     } case
     .inst ;
 
-last-word $8f install-handler
+last-word 0x8f install-handler
 
 : .90
    "nop" !> mnemonic
    0 !> #operands
    .inst ;
 
-last-word $90 install-handler
+last-word 0x90 install-handler
 
 : .99
     prefix zero? "cqd" "cqo" ? !> mnemonic
     0 !> #operands
     .inst ;
 
-last-word $99 install-handler
+last-word 0x99 install-handler
 
 : .a6
     "cmpsb" !> mnemonic
     0 !> #operands
     .inst ;
 
-last-word $a6 install-handler
+last-word 0xa6 install-handler
 
 : .aa
     "stosb" !> mnemonic
     0 !> #operands
     .inst ;
 
-last-word $aa install-handler
+last-word 0xaa install-handler
 
 : .ab
     prefix zero? "stosd" "stosq" ? !> mnemonic
     0 !> #operands
     .inst ;
 
-last-word $ab install-handler
+last-word 0xab install-handler
 
 : .b8
     -- source is imm32/64
     -- dest is r32/64
     "mov" !> mnemonic
-    opcode $b8 - register-rm !> dreg
+    opcode 0xb8 - register-rm !> dreg
     prefix rex.w bitand zero? [
         next-uint32
         32 !> dsize
@@ -1008,7 +1008,7 @@ last-word $ab install-handler
     t !> immediate-operand?
     .inst ;
 
-8 [ $b8 + ' .b8 swap install-handler ] each-integer
+8 [ 0xb8 + ' .b8 swap install-handler ] each-integer
 
 : .c1
     -- modrm-reg encodes opcode extension
@@ -1035,14 +1035,14 @@ last-word $ab install-handler
     } case
     .inst ;
 
-last-word $c1 install-handler
+last-word 0xc1 install-handler
 
 : .c3
    "ret" !> mnemonic
    0 !> #operands
    .inst ;
 
-last-word $c3 install-handler
+last-word 0xc3 install-handler
 
 : .c6
     -- /0
@@ -1085,7 +1085,7 @@ last-word $c3 install-handler
     } case
     .inst ;
 
-last-word $c6 install-handler
+last-word 0xc6 install-handler
 
 : .c7
     -- /0
@@ -1114,7 +1114,7 @@ last-word $c6 install-handler
                     -- default case
                     drop
                     modrm-rm register-rm !> dbase
-                    operand-size-prefix $66 = [
+                    operand-size-prefix 0x66 = [
                         "word" !> relative-size
                         next-uint16 !> immediate-operand
                     ] [
@@ -1134,14 +1134,14 @@ last-word $c6 install-handler
     } case
     .inst ;
 
-last-word $c7 install-handler
+last-word 0xc7 install-handler
 
 : .cc
     "int3" !> mnemonic
     0 !> #operands
     .inst ;
 
-last-word $cc install-handler
+last-word 0xcc install-handler
 
 : .d1 ( -- )
     !modrm-byte
@@ -1164,7 +1164,7 @@ last-word $cc install-handler
     } case
     .inst ;
 
-last-word $d1 install-handler
+last-word 0xd1 install-handler
 
 : .d3
     -- dest is r/m32/64
@@ -1179,7 +1179,7 @@ last-word $d1 install-handler
         .inst
     ] [ unsupported ] if ;
 
-last-word $d3 install-handler
+last-word 0xd3 install-handler
 
 : .e2 ( -- )
    "loop" !> mnemonic
@@ -1188,7 +1188,7 @@ last-word $d3 install-handler
    .mnemonic
    48 tab code-address hex. ;
 
-last-word $e2 install-handler
+last-word 0xe2 install-handler
 
 : .e3
     -- jump short if rcx == 0
@@ -1199,9 +1199,9 @@ last-word $e2 install-handler
     .mnemonic
     48 tab target hex. ;
 
-last-word $e3 install-handler
+last-word 0xe3 install-handler
 
-: .eb ( -- ) "jmp" jmp/jcc-rel8 ; last-word $eb install-handler
+: .eb ( -- ) "jmp" jmp/jcc-rel8 ; last-word 0xeb install-handler
 
 : .e8 ( -- )
    "call" !> mnemonic
@@ -1212,7 +1212,7 @@ last-word $e3 install-handler
    code-address dup hex.
    find-word-from-code-address [ 64 tab symbol-name write ] when* ;
 
-last-word $e8 install-handler
+last-word 0xe8 install-handler
 
 : .e9  ( -- )
    "jmp" !> mnemonic
@@ -1222,21 +1222,21 @@ last-word $e8 install-handler
    48 tab
    jump-target hex. ;
 
-last-word $e9 install-handler
+last-word 0xe9 install-handler
 
 : .f2
     "repne" !> mnemonic
     0 !> #operands
     .inst ;
 
-last-word $f2 install-handler
+last-word 0xf2 install-handler
 
 : .f3
     "rep" !> mnemonic
     0 !> #operands
     .inst ;
 
-last-word $f3 install-handler
+last-word 0xf3 install-handler
 
 : .f6
     !modrm-byte
@@ -1261,7 +1261,7 @@ last-word $f3 install-handler
     } case
     .inst ;
 
-last-word $f6 install-handler
+last-word 0xf6 install-handler
 
 : .f7
     set-instruction-size
@@ -1289,7 +1289,7 @@ last-word $f6 install-handler
     } case
     .inst ;
 
-last-word $f7 install-handler
+last-word 0xf7 install-handler
 
 : .ff ( -- )
     !modrm-byte
@@ -1313,7 +1313,7 @@ last-word $f7 install-handler
             modrm-rm 4 = [
                 !sib-byte
                 next-signed-byte !> ddisp
-                sib-byte $24 = [
+                sib-byte 0x24 = [
                     sib-base  !> dbase
                 ] [
                     sib-base register-rm !> dbase
@@ -1330,38 +1330,38 @@ last-word $f7 install-handler
     } case
     .inst ;
 
-last-word $ff install-handler
+last-word 0xff install-handler
 
--- Two-byte opcodes beginning with $0f
+-- Two-byte opcodes beginning with 0x0f
 
-256 f <array> >global: $0f-handlers
+256 f <array> >global: 0x0f-handlers
 
-: install-$0f-handler ( handler opcode -- ) $0f-handlers array-set-nth ;
+: install-0x0f-handler ( handler opcode -- ) 0x0f-handlers array-set-nth ;
 
-: $0f-handler ( opcode -- handler ) $0f-handlers array-nth ;
+: 0x0f-handler ( opcode -- handler ) 0x0f-handlers array-nth ;
 
 : .0f ( -- )
-    next-byte dup !> byte2 $0f-handler
+    next-byte dup !> byte2 0x0f-handler
     [ execute-handler ] [ unsupported ] if* ;
 
-last-word $0f install-handler
+last-word 0x0f install-handler
 
 : .0f-31
     "rdtsc" !> mnemonic
     0 !> #operands
     .inst ;
 
-last-word $31 install-$0f-handler
+last-word 0x31 install-0x0f-handler
 
 : cmovcc-mnemonic ( byte2 -- )
-    $0f bitand {
+    0x0f bitand {
         "cmovo" "cmovno" "cmovc"  "cmovnc" "cmovz" "cmovnz" "cmovna" "cmova"
         "cmovs" "cmovns" "cmovpe" "cmovpo" "cmovl" "cmovge" "cmovle" "cmovg"
     } array-nth ;
 
 : .0f-4x ( -- )
     set-instruction-size
-    $44 cmovcc-mnemonic !> mnemonic
+    0x44 cmovcc-mnemonic !> mnemonic
     !modrm-byte
     modrm-reg register-reg !> dreg
     modrm-mod {
@@ -1373,20 +1373,20 @@ last-word $31 install-$0f-handler
     } case
     .inst ;
 
-16 [ $40 + ' .0f-4x swap install-$0f-handler ] each-integer
+16 [ 0x40 + ' .0f-4x swap install-0x0f-handler ] each-integer
 
-: .0f-81 ( -- ) "jno" jcc-rel32 ; last-word $81 install-$0f-handler
-: .0f-82 ( -- ) "jc"  jcc-rel32 ; last-word $82 install-$0f-handler
-: .0f-83 ( -- ) "jnc" jcc-rel32 ; last-word $83 install-$0f-handler
-: .0f-84 ( -- ) "jz"  jcc-rel32 ; last-word $84 install-$0f-handler
-: .0f-85 ( -- ) "jne" jcc-rel32 ; last-word $85 install-$0f-handler
-: .0f-87 ( -- ) "ja"  jcc-rel32 ; last-word $87 install-$0f-handler
-: .0f-88 ( -- ) "js"  jcc-rel32 ; last-word $88 install-$0f-handler
-: .0f-8c ( -- ) "jl"  jcc-rel32 ; last-word $8c install-$0f-handler
-: .0f-8f ( -- ) "jg"  jcc-rel32 ; last-word $8f install-$0f-handler
+: .0f-81 ( -- ) "jno" jcc-rel32 ; last-word 0x81 install-0x0f-handler
+: .0f-82 ( -- ) "jc"  jcc-rel32 ; last-word 0x82 install-0x0f-handler
+: .0f-83 ( -- ) "jnc" jcc-rel32 ; last-word 0x83 install-0x0f-handler
+: .0f-84 ( -- ) "jz"  jcc-rel32 ; last-word 0x84 install-0x0f-handler
+: .0f-85 ( -- ) "jne" jcc-rel32 ; last-word 0x85 install-0x0f-handler
+: .0f-87 ( -- ) "ja"  jcc-rel32 ; last-word 0x87 install-0x0f-handler
+: .0f-88 ( -- ) "js"  jcc-rel32 ; last-word 0x88 install-0x0f-handler
+: .0f-8c ( -- ) "jl"  jcc-rel32 ; last-word 0x8c install-0x0f-handler
+: .0f-8f ( -- ) "jg"  jcc-rel32 ; last-word 0x8f install-0x0f-handler
 
 : setcc-mnemonic ( byte -- string )
-    $0f bitand {
+    0x0f bitand {
         "seto" "setno" "setc"  "setnc" "setz" "setnz" "setna" "seta"
         "sets" "setns" "setpe" "setpo" "setl" "setge" "setle" "setg"
     } array-nth ;
@@ -1400,20 +1400,20 @@ last-word $31 install-$0f-handler
     } case
     .inst ;
 
-16 [ $90 + ' .0f-9x swap install-$0f-handler ] each-integer
+16 [ 0x90 + ' .0f-9x swap install-0x0f-handler ] each-integer
 
 : .0f-a2
     "cpuid" !> mnemonic
     0 !> #operands
     .inst ;
 
-last-word $a2 install-$0f-handler
+last-word 0xa2 install-0x0f-handler
 
 : .0f-af
     "imul" !> mnemonic
     /r-reg-r/m ;
 
-last-word $af install-$0f-handler
+last-word 0xaf install-0x0f-handler
 
 : .0f-b6
     -- ModR/M byte contains both a register and an r/m operand
@@ -1440,7 +1440,7 @@ last-word $af install-$0f-handler
             modrm-rm 4 = [
                 !sib-byte
                 next-signed-byte !> sdisp
-                sib-byte $24 = [
+                sib-byte 0x24 = [
                     sib-base !> sbase
                 ] [
                     sib-base register-rm !> sbase
@@ -1460,7 +1460,7 @@ last-word $af install-$0f-handler
     } case
     .inst ;
 
-last-word $b6 install-$0f-handler
+last-word 0xb6 install-0x0f-handler
 
 : .0f-b7
     -- source is r/m16
@@ -1477,7 +1477,7 @@ last-word $b6 install-$0f-handler
         [ unsupported ]
     } case .inst ;
 
-last-word $b7 install-$0f-handler
+last-word 0xb7 install-0x0f-handler
 
 : .0f-be
     "movsx" !> mnemonic
@@ -1498,7 +1498,7 @@ last-word $b7 install-$0f-handler
     } case
     .inst ;
 
-last-word $be install-$0f-handler
+last-word 0xbe install-0x0f-handler
 
 : .opcode
     opcode handler [ execute-handler ] [ unsupported ] if* ;
@@ -1507,12 +1507,12 @@ last-word $be install-$0f-handler
     reset-disassembler
     .ip
     ip c@ >local: byte
-    byte $66 eq? [
+    byte 0x66 eq? [
         byte !> operand-size-prefix
         ++ip
         ip c@ !> byte
     ] when
-    byte $40 $4f between? [
+    byte 0x40 0x4f between? [
         byte !> prefix
         ip 1 + c@ !> opcode
         ip 2 + !> ip
