@@ -1278,20 +1278,27 @@ code string_to_number, 'string>number'  ; string -- n/f
         cmp     ebx, '%'
         je      .3
 
-        _drop
+        _drop                           ; -- string
 
-%ifdef FELINE_FEATURE_BIGNUMS
-        _tagged_char '.'
+        _quote "0x"
         _over
-        _ string_find_char
+        _ string_has_prefix?
         _tagged_if .4
-        _ string_to_float
-        _else .4
-        _ decimal_to_integer
+        _ hex_to_integer
+        _return
         _then .4
-%else
+
+        _quote "0b"
+        _over
+        _ string_has_prefix?
+        _tagged_if .5
+        _lit tagged_fixnum(2)
+        _ string_tail
+        _ binary_to_integer
+        _return
+        _then .5
+
         _ decimal_to_number
-%endif
         _return
 
 .2:
