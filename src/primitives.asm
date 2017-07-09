@@ -855,8 +855,8 @@ code hexdot, 'hex.'                     ; x --
         _return
 
 .4:
-        _lit tagged_char('$')
-        _ write_char
+        _quote "0x"
+        _ write_string
         _ write_string
 
         next
