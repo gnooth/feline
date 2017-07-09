@@ -451,6 +451,16 @@ last-word 0x01 install-handler
 
 last-word 0x03 install-handler
 
+: .09
+    -- /r
+    -- ModR/M byte contains both a register and an r/m operand
+    -- source is r32/64
+    -- dest is r/m32/64
+    "or" !> mnemonic
+    /r-r/m-reg ;
+
+last-word 0x09 install-handler
+
 : .0b
     -- /r
     -- ModR/M byte contains both a register and an r/m operand
