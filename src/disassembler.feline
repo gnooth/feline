@@ -536,6 +536,13 @@ last-word 0x30 install-handler
 
 last-word 0x31 install-handler
 
+: .33
+    set-instruction-size
+   "xor" !> mnemonic
+   /r-reg-r/m ;
+
+last-word 0x33 install-handler
+
 : .38
     -- /r
     -- dest is r/m8
