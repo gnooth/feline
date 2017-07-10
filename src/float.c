@@ -35,18 +35,6 @@ cell c_raw_int64_to_float(int64_t n)
   return (cell) make_float(d);
 }
 
-#if 0
-cell c_bignum_to_float(Bignum *b)
-{
-  mpf_t f;
-  mpf_init(f);
-  mpf_set_z(f, b->z);
-  double d = mpf_get_d(f);
-  mpf_clear(f);
-  return (cell) make_float(d);
-}
-#endif
-
 cell c_float_to_string(char *buf, size_t size, Float *p)
 {
   snprintf(buf, size, "%.17g", p->d);
@@ -183,23 +171,6 @@ cell c_float_float_divide(Float *p1, Float *p2)
 {
   return (cell) make_float(p1->d / p2->d);
 }
-
-#if 0
-cell c_float_truncate(Float *p)
-{
-  mpq_t q;
-  mpq_init(q);
-  mpq_set_d(q, p->d);
-
-  mpz_t result;
-  mpz_init_set(result, mpq_numref(q));
-  mpz_tdiv_q(result, result, mpq_denref(q));
-
-  mpq_clear(q);
-
-  return normalize(result);
-}
-#endif
 
 cell c_float_negate(Float *p)
 {
