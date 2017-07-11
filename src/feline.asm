@@ -55,6 +55,7 @@ IN_FELINE
 %include "method.asm"
 %include "fixnum.asm"
 %include "uint64.asm"
+%include "int64.asm"
 
 %ifdef FELINE_FEATURE_BIGNUMS
 %include "bignum.asm"
