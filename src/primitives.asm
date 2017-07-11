@@ -1197,44 +1197,6 @@ code base_to_fixnum, 'base>fixnum'      ; string base -- n/f
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### base>integer
-code base_to_integer, 'base>integer'    ; string base -- n/f
-        _check_fixnum
-
-        _over
-        _ string_empty?
-        _tagged_if .1
-        _nip
-        mov     ebx, f_value
-        _return
-        _then .1
-
-        _swap
-        _ string_raw_data_address
-
-        _ gc_disable
-
-        mov     arg0_register, rbx
-        mov     arg1_register, qword [rbp]
-        _2drop
-        xcall   c_string_to_integer
-        pushrbx
-        mov     rbx, rax
-
-        _ gc_enable
-
-        next
-endcode
-
-; ### decimal>integer
-code decimal_to_integer, 'decimal>integer'      ; string -- n/f
-        _lit tagged_fixnum(10)
-        _ base_to_integer
-        next
-endcode
-%endif
-
 ; ### hex>integer
 code hex_to_integer, 'hex>integer'              ; string -- n/f
         _lit tagged_fixnum(16)
