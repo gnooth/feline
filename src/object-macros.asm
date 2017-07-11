@@ -47,6 +47,7 @@ TYPECODE_ITERATOR               equ 19
 TYPECODE_METHOD                 equ 20
 TYPECODE_GENERIC_FUNCTION       equ 21
 TYPECODE_UINT64                 equ 22
+TYPECODE_INT64                  equ 23
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
