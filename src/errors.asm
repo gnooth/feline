@@ -158,3 +158,11 @@ code error_not_uint64, 'error-not-uint64'       ; x --
         _ error
         next
 endcode
+
+; ### error-not-int64
+code error_not_int64, 'error-not-int64' ; x --
+        _quote "an int64"
+        _ format_type_error
+        _ error
+        next
+endcode
