@@ -29,6 +29,13 @@ static Float *make_float(double d)
   return p;
 }
 
+static Int64 *make_int64(int64_t n)
+{
+  Int64 *p = malloc(sizeof(Int64));
+  p->header = TYPECODE_INT64;
+  p->n = n;
+}
+
 cell c_raw_int64_to_float(int64_t n)
 {
   double d = n;
@@ -82,6 +89,29 @@ cell c_string_to_fixnum(char *s, size_t length, int base)
     return make_fixnum(n);
 
   return F_VALUE;
+}
+
+cell c_string_to_int64(char *s, size_t length, int base)
+{
+  // Return the raw pointer returned by make_int64 if conversion is
+  // successful. Otherwise, return F_VALUE.
+
+  if (length == 0)
+    return F_VALUE;
+
+  errno = 0;
+  char *endptr;
+
+#ifdef WIN64
+  long long int n = strtoll(s, &endptr, base);
+#else
+  long n = strtol(s, &endptr, base);
+#endif
+
+  if (errno != 0 || endptr != s + length)
+    return F_VALUE;   // error
+
+  return (cell) make_int64(n);
 }
 
 cell c_string_to_number(char *s, size_t length)
