@@ -28,9 +28,16 @@ typedef int64_t cell;
 
 #define TYPECODE_BIGNUM         8
 #define TYPECODE_FLOAT         18
+#define TYPECODE_INT64         23
 
 #define MOST_POSITIVE_FIXNUM    ((cell)  1152921504606846975)
 #define MOST_NEGATIVE_FIXNUM    ((cell) -1152921504606846976)
+
+typedef struct
+{
+  cell header;
+  int64_t n;
+} Int64;
 
 typedef struct
 {
