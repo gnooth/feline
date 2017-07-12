@@ -34,6 +34,7 @@ static Int64 *make_int64(int64_t n)
   Int64 *p = malloc(sizeof(Int64));
   p->header = TYPECODE_INT64;
   p->n = n;
+  return p;
 }
 
 cell c_raw_int64_to_float(int64_t n)
