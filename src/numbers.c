@@ -141,10 +141,10 @@ cell c_string_to_integer(char *s, size_t length, int base)
   return (cell) make_int64(n);
 }
 
-cell c_string_to_number(char *s, size_t length)
+cell c_decimal_to_number(char *s, size_t length)
 {
-  // Return a tagged fixnum or the raw pointer returned by make_float
-  // if conversion is successful. Otherwise, return F_VALUE.
+  // Return a tagged fixnum or the raw pointer returned by make_float or
+  // make_int64 if conversion is successful. Otherwise, return F_VALUE.
 
   if (length == 0)
     return F_VALUE;
@@ -179,6 +179,8 @@ cell c_string_to_number(char *s, size_t length)
         return F_VALUE;   // error
       if (n >= -1152921504606846976 && n <= 1152921504606846975)
         return make_fixnum(n);
+
+      return (cell) make_int64(n);
     }
 
   return c_string_to_float(s,  length);

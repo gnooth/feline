@@ -1314,7 +1314,7 @@ code decimal_to_number, 'decimal>number'        ; string -- n/f
         mov     arg0_register, [rbp]    ; address
         _nip
 
-        xcall   c_string_to_number
+        xcall   c_decimal_to_number
 
         mov     rbx, rax
         cmp     rax, f_value

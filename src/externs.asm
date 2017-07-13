@@ -78,7 +78,7 @@ extern c_bignum_sizeinbase
 extern c_decimal_to_integer
 extern c_string_to_integer
 
-; float.c
+; numbers.c
 extern c_bignum_to_float
 extern c_float_expt
 extern c_float_float_divide
@@ -97,7 +97,7 @@ extern c_pi
 extern c_raw_int64_to_float
 extern c_string_to_fixnum
 extern c_string_to_float
-extern c_string_to_number
+extern c_decimal_to_number
 
 ; math.c
 extern c_bignum_expt
