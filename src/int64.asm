@@ -68,8 +68,8 @@ code check_int64, 'check_int64'         ; handle -- raw-int64
         next
 endcode
 
-; ### <int64>
-code new_int64, '<int64>'               ; raw-int64 -- int64
+; ### new_int64
+code new_int64, 'new_int64', SYMBOL_INTERNAL    ; raw-int64 -- int64
 ; 2 cells: object header, raw value
         _lit 2
         _cells
