@@ -414,6 +414,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method equal?, TYPECODE_BIGNUM, bignum_equal?
 %endif
         _add_method equal?, TYPECODE_FLOAT, float_equal?
+        _add_method equal?, TYPECODE_INT64, int64_equal?
 
         ; length
         _initialize_generic_function length

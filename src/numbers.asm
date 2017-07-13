@@ -50,6 +50,21 @@ code fixnum_equal?, 'fixnum-equal?'     ; x y -- ?
         next
 endcode
 
+; ### int64-equal?
+code int64_equal?, 'int64-equal?'       ; x y -- ?
+        _ check_int64
+        _swap
+        _ check_int64
+        cmp     rbx, [rbp]
+        _drop
+        jne     .1
+        mov     ebx, t_value
+        _return
+.1:
+        mov     ebx, f_value
+        next
+endcode
+
 %ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-bignum-equal?
 code bignum_bignum_equal?, 'bignum-bignum-equal?'       ; x y -- ?
