@@ -42,6 +42,18 @@ code reload, 'reload'   ; --
         next
 endcode
 
+; ### r
+code interactive_reload, 'r', SYMBOL_IMMEDIATE  ; --
+        _ interactive?
+        _ get
+        _tagged_if .1
+        _ reload
+        _else .1
+        _error "interactive only"
+        _then .1
+        next
+endcode
+
 ; ### saved-current-vocab
 special saved_current_vocab, 'saved-current-vocab'
 
