@@ -1197,6 +1197,34 @@ code base_to_fixnum, 'base>fixnum'      ; string base -- n/f
         next
 endcode
 
+; ### base>integer
+code base_to_integer, 'base>integer'    ; string base -- n/f
+
+        _check_fixnum           ; -- string raw-base
+
+        _swap
+        _ string_from           ; -- raw-base raw-data-address raw-length
+
+        mov     arg0_register, [rbp]                    ; raw data address
+        mov     arg1_register, rbx                      ; raw length
+        mov     arg2_register, [rbp + BYTES_PER_CELL]   ; raw base
+
+        _2nip
+
+        xcall   c_string_to_integer
+
+        mov     rbx, rax
+        cmp     rax, f_value
+        je      .1
+
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     new_handle
+
+.1:
+        _rep_return
+endcode
+
 ; ### hex>integer
 code hex_to_integer, 'hex>integer'              ; string -- n/f
         _lit tagged_fixnum(16)
