@@ -774,14 +774,12 @@ code number_to_string, 'number>string'  ; n -- string
         _return
         _then .1
 
-%ifdef FELINE_FEATURE_BIGNUMS
         _dup
-        _ bignum?
+        _ int64?
         _tagged_if .2
-        _ bignum_to_string
+        _ int64_to_string
         _return
         _then .2
-%endif
 
         _dup
         _ float?
