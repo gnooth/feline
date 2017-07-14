@@ -17,7 +17,7 @@
 
 #include "feline.h"
 
-static cell saved_backtrace_array[16];
+static cell saved_backtrace_array[32];
 static cell saved_backtrace_size;
 
 cell * c_get_saved_backtrace_array()
