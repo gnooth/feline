@@ -508,8 +508,9 @@ code sbuf_push, 'sbuf-push'             ; tagged-char sbuf --
         next
 endcode
 
-; ### sbuf-append-chars
-subroutine sbuf_append_chars    ; sbuf from-addr from-len --
+; ### sbuf_append_chars
+code sbuf_append_chars, 'sbuf_append_chars', SYMBOL_INTERNAL
+; sbuf raw-address raw-length --
 
         _ rot
         _ check_sbuf
@@ -546,8 +547,8 @@ subroutine sbuf_append_chars    ; sbuf from-addr from-len --
         _cstore
 
         pop     this_register
-        ret
-endsub
+        next
+endcode
 
 ; ### sbuf-append-string
 code sbuf_append_string, 'sbuf-append-string'   ; string sbuf --
