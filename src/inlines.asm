@@ -105,21 +105,25 @@
 %%skip:
 %endmacro
 
-%macro  _swap 0                         ; SWAP
+%macro  _swap 0
         mov     rax, rbx
         mov     rbx, [rbp]
         mov     [rbp], rax
 %endmacro
 
-%macro  _nip 0                          ; nip
+%macro  _nip 0
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
-%macro  _2nip 0                         ; 2nip
+%macro  _2nip 0
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
 
-%macro  _over 0                         ; OVER
+%macro  _3nip 0
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+%endmacro
+
+%macro  _over 0
         mov     [rbp - BYTES_PER_CELL], rbx
         mov     rbx, [rbp]
         lea     rbp, [rbp - BYTES_PER_CELL]
