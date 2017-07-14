@@ -50,6 +50,23 @@ code int64?, 'int64?'                   ; handle -- ?
         next
 endcode
 
+; ### verify-int64
+code verify_int64, 'verify-int64'       ; x -- x
+        _dup
+        _ deref
+        test    rbx, rbx
+        jz      .error
+        movzx   eax, word [rbx]
+        cmp     eax, TYPECODE_INT64
+        jne     .error
+        _drop
+        _return
+.error:
+        _drop                           ; -- x
+        jmp     error_not_int64
+        next
+endcode
+
 ; ### check_int64
 code check_int64, 'check_int64'         ; handle -- raw-int64
         _dup
