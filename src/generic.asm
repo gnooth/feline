@@ -542,6 +542,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method generic_le, TYPECODE_BIGNUM, bignum_le
 %endif
         _add_method generic_le, TYPECODE_FLOAT, float_le
+        _add_method generic_le, TYPECODE_INT64, int64_le
 
         ; >=
         _initialize_generic_function generic_ge

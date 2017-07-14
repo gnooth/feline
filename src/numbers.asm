@@ -337,6 +337,21 @@ code fixnum_fixnum_le, 'fixnum-fixnum<='        ; fixnum1 fixnum2 -- ?
         next
 endcode
 
+; ### int64-int64<=
+code int64_int64_le, 'int64-int64<='    ; x y -- ?
+        _ check_int64
+        _swap
+        _ check_int64
+        _swap
+
+        mov     eax, t_value
+        cmp     [rbp], rbx
+        mov     ebx, f_value
+        cmovle  ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
 %ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-bignum<=
 code bignum_bignum_le, 'bignum-bignum<='        ; bignum1 bignum2 -- ?
@@ -384,6 +399,20 @@ code fixnum_bignum_le, 'bignum-fixnum<='        ; fixnum bignum -- ?
         next
 endcode
 %endif
+
+; ### fixnum-int64<=
+code fixnum_int64_le, 'fixnum-int64<='          ; fixnum int64 -- ?
+        _ check_int64
+        _swap
+        _ check_fixnum
+        _swap
+        mov     eax, t_value
+        cmp     [rbp], rbx
+        mov     ebx, f_value
+        cmovle  ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
 
 ; ### float-float<=
 code float_float_le, 'float-float<='            ; float1 float2 -- ?
@@ -470,6 +499,33 @@ code bignum_le, 'bignum<='              ; number bignum -- ?
         next
 endcode
 %endif
+
+; ### int64<=
+code int64_le, 'int64<='                ; number int64 -- ?
+
+        ; second arg must be int64
+        _ verify_int64
+
+        ; dispatch on type of first arg
+        _over
+        _ fixnum?
+        _tagged_if .1
+        _ fixnum_int64_le
+        _return
+        _then .1
+
+        _over
+        _ int64?
+        _tagged_if .2
+        _ int64_int64_le
+        _return
+        _then .2
+
+        _drop
+        _ error_not_number
+
+        next
+endcode
 
 ; ### fixnum-float<=
 code fixnum_float_le, 'fixnum-float<='          ; fixnum float -- ?
