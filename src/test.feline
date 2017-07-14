@@ -1568,6 +1568,19 @@ test: fixnum>bignum-test-1
 fixnum>bignum-test-1
 #endif
 
+test: base>integer-test-1
+      "0" 10 base>integer   0 assert-eq
+     "42" 10 base>integer  42 assert-eq
+    "-42" 10 base>integer -42 assert-eq
+
+     "1152921504606846975" 10 base>integer most-positive-fixnum assert-eq
+    "-1152921504606846976" 10 base>integer most-negative-fixnum assert-eq
+
+     "2305843009213693950" 10 base>integer most-positive-fixnum dup + assert=
+;
+
+base>integer-test-1
+
 #ifdef HAVE_BIGNUMS
 test: decimal>integer-test-1
     most-positive-fixnum fixnum>string decimal>integer most-positive-fixnum assert=
@@ -1588,7 +1601,7 @@ test: decimal>number-test-1
     most-negative-fixnum fixnum>string decimal>number most-negative-fixnum assert-eq
 #ifndef HAVE_BIGNUMS
     most-positive-fixnum dup +
-    dup float? assert-true
+    dup int64? assert-true
     dup number>string decimal>number assert=
 #endif
 ;
@@ -1596,19 +1609,20 @@ test: decimal>number-test-1
 decimal>number-test-1
 
 test: negate-test-1
-    0 negate zero? assert-true
+    0 negate 0 assert-eq
     42 negate -42 assert-eq
-    most-positive-fixnum negate number>string "-1152921504606846975" assert=
 
-#ifdef HAVE_BIGNUMS
+    most-positive-fixnum negate number>string "-1152921504606846975" assert=
+    most-positive-fixnum negate -1152921504606846975 assert-eq
+
     most-positive-fixnum dup fixnum-fixnum+ negate number>string  "-2305843009213693950" assert=
+    most-positive-fixnum dup fixnum-fixnum+ negate -2305843009213693950 assert=
+
     most-negative-fixnum negate number>string "1152921504606846976" assert=
+    most-negative-fixnum negate 1152921504606846976 assert=
+
     most-negative-fixnum dup fixnum-fixnum+ negate number>string "2305843009213693952" assert=
-#else
-    most-positive-fixnum dup fixnum-fixnum+ negate -2.305843009213694e+18 assert=
-    most-negative-fixnum negate 1.152921504606847e+18 assert=
-    most-negative-fixnum dup fixnum-fixnum+ negate 2.305843009213694e+18 assert=
-#endif
+    most-negative-fixnum dup fixnum-fixnum+ negate 2305843009213693952 assert=
 ;
 
 negate-test-1
