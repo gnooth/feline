@@ -587,15 +587,9 @@ code fixnum_negate, 'fixnum-negate'     ; n -- -n
         _ most_negative_fixnum
         _eq?
         _tagged_if .1
-%ifdef FELINE_FEATURE_BIGNUMS
-        _ fixnum_to_bignum
-        _ bignum_negate
-%else
-        ; REVIEW
         mov     rbx, MOST_NEGATIVE_FIXNUM
         neg     rbx
-        _ raw_int64_to_float
-%endif
+        _ new_int64
         _else .1
         _untag_fixnum
         neg     rbx

@@ -97,8 +97,16 @@ code new_int64, 'new_int64', SYMBOL_INTERNAL    ; raw-int64 -- int64
 endcode
 
 ; ### fixnum>int64
-code fixnum_to_int64, 'fixnum>int64'  ; fixnum -- int64
+code fixnum_to_int64, 'fixnum>int64'    ; fixnum -- int64
         _check_fixnum
+        _ new_int64
+        next
+endcode
+
+; ### int64-negate
+code int64_negate, 'int64-negate'       ; n -- -n
+        _ check_int64
+        neg     rbx
         _ new_int64
         next
 endcode
