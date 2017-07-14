@@ -183,13 +183,7 @@ code fixnum_fixnum_minus, 'fixnum-fixnum-'      ; fixnum1 fixnum2 -- difference
         _tag_fixnum
         _return
 .1:
-
-%ifdef FELINE_FEATURE_BIGNUMS
-        _ signed_to_bignum
-%else
-        _ raw_int64_to_float
-%endif
-
+        _ new_int64
         next
 endcode
 
