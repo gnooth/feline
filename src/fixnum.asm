@@ -251,7 +251,7 @@ endcode
 %endif
 
 ; ### fixnum+
-code fixnum_plus, 'fixnum+'           ; number fixnum -- sum
+code fixnum_plus, 'fixnum+'             ; number fixnum -- sum
 
         ; second arg must be a fixnum
         _verify_fixnum
@@ -265,15 +265,12 @@ code fixnum_plus, 'fixnum+'           ; number fixnum -- sum
         _return
 
 .1:
-
-%ifdef FELINE_FEATURE_BIGNUMS
         _over
-        _ bignum?
+        _ int64?
         _tagged_if .2
-        _ bignum_fixnum_plus
+        _ int64_fixnum_plus
         _return
         _then .2
-%endif
 
         _over
         _ float?
