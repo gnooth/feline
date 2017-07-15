@@ -536,6 +536,15 @@ code fixnum_float_le, 'fixnum-float<='          ; fixnum float -- ?
         next
 endcode
 
+; ### int64-float<=
+code int64_float_le, 'int64-float<='            ; int64 float -- ?
+        _swap
+        _ int64_to_float
+        _swap
+        _ float_float_le
+        next
+endcode
+
 %ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum-float<=
 code bignum_float_le, 'bignum-float<='          ; bignum float -- ?
