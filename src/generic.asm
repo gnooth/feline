@@ -218,7 +218,12 @@ code do_generic, 'do-generic'   ; object dispatch-table --
         je      .1
         mov     rax, rbx
         poprbx
+%ifdef DEBUG
+        call    rax
+        _return
+%else
         jmp     rax
+%endif
 .1:
         _error "no method"
         next
@@ -228,7 +233,12 @@ endcode
         code %1, %2, SYMBOL_GENERIC
         pushrbx
         mov     rbx, [S_%1_symbol_value]
+%ifdef DEBUG
+        call    do_generic
+        _return
+%else
         jmp     do_generic
+%endif
         next
         endcode
 %endmacro
