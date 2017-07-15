@@ -167,6 +167,38 @@ code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; fixnum1 fixnum2 -- sum
         next
 endcode
 
+; ### int64-fixnum+
+code int64_fixnum_plus, 'int64-fixnum+'         ; int64 fixnum -- sum
+
+        _debug_?enough 2
+
+        _check_fixnum
+        _swap
+        _ check_int64
+        _twodup
+        add     rbx, [rbp]
+        jo      .1
+        _3nip
+        mov     rcx, MOST_POSITIVE_FIXNUM
+        cmp     rbx, rcx
+        jg      .2
+        mov     rdx, MOST_NEGATIVE_FIXNUM
+        cmp     rbx, rdx
+        jl      .2
+        _tag_fixnum
+        _return
+.2:
+        _ new_int64
+        _return
+.1:
+        _2drop
+        _ raw_int64_to_float
+        _swap
+        _ raw_int64_to_float
+        _ float_float_plus
+        next
+endcode
+
 ; ### fixnum-fixnum-
 code fixnum_fixnum_minus, 'fixnum-fixnum-'      ; fixnum1 fixnum2 -- difference
         _check_fixnum
