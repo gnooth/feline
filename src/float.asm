@@ -195,6 +195,13 @@ code fixnum_to_float, 'fixnum>float'
         next
 endcode
 
+; ### int64>float
+code int64_to_float, 'int64>float'
+        _ check_int64
+        _ raw_int64_to_float
+        next
+endcode
+
 %ifdef FELINE_FEATURE_BIGNUMS
 ; ### bignum>float
 code bignum_to_float, 'bignum>float'
