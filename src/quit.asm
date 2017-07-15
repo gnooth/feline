@@ -234,12 +234,32 @@ code ?enough, '?enough'                 ; fixnum --
         cmp     rbp, [sp0_]
         ja      error_data_stack_underflow
 
+        ; save expected number of parameters in rdx
+        mov     rdx, rbx
+
         mov     rax, [sp0_]
         sub     rax, rbx
         cmp     rbp, rax
-        jg      error_not_enough_parameters
+        jng     .2
+
+        ; not enough parameters
+
+        ; retrieve expected number of parameters
+        pushrbx
+        mov     rbx, rdx
+
+        _depth
+        sub     rbx, 1
+        _tag_fixnum
+
+        _quote "ERROR: not enough parameters (expected %d, got %d)."
+        _ format
+        _ error
+        _return
+
+.2:
         poprbx
-        next
+        _return
 
 .1:
         _quote "ERROR: the value %S is not a non-negative fixnum."
