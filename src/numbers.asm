@@ -558,6 +558,9 @@ endcode
 
 ; ### float<=
 code float_le, 'float<='                        ; number float -- ?
+
+        _debug_?enough 2
+
         _ verify_float
 
         _over
@@ -572,14 +575,12 @@ code float_le, 'float<='                        ; number float -- ?
         _return
         _then .2
 
-%ifdef FELINE_FEATURE_BIGNUMS
         _over
-        _ bignum?
+        _ int64?
         _tagged_if .3
-        _ bignum_float_le
+        _ int64_float_le
         _return
         _then .3
-%endif
 
         _drop
         _ error_not_number
