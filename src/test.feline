@@ -2155,6 +2155,28 @@ test: bignum<-test-1
 bignum<-test-1
 #endif
 
+test: int64>float-test-1
+    42 fixnum>int64 int64>float 42.0 assert=
+
+    most-positive-fixnum dup + dup int64? assert-true
+    int64>float 2.305843009213694e+18 assert=
+;
+
+int64>float-test-1
+
+test: int64-fixnum+-test-1
+    42 fixnum>int64 87 int64-fixnum+ 129 assert-eq
+
+    most-positive-fixnum 10 + dup int64? assert-true
+    5 + dup int64? assert-true
+    1152921504606846990 assert=
+
+    "0x7fffffffffffffff" 16 base>integer most-positive-fixnum int64-fixnum+
+    1.0376293541461623e+19 assert=
+;
+
+int64-fixnum+-test-1
+
 test: fixnum-fixnum<=-test-1
     1 2 fixnum-fixnum<= assert-true
     2 2 fixnum-fixnum<= assert-true
