@@ -864,6 +864,62 @@ code bignum_ge, 'bignum>='              ; number bignum -- ?
 endcode
 %endif
 
+; ### fixnum-int64>=
+code fixnum_int64_ge, 'fixnum-int64>='          ; fixnum int64 -- ?
+        _ check_int64
+        _swap
+        _ check_fixnum
+        _swap
+        mov     eax, t_value
+        cmp     [rbp], rbx
+        mov     ebx, f_value
+        cmovge  ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
+; ### int64-int64>=
+code int64_int64_ge, 'int64-int64>='    ; x y -- ?
+        _ check_int64
+        _swap
+        _ check_int64
+        _swap
+
+        mov     eax, t_value
+        cmp     [rbp], rbx
+        mov     ebx, f_value
+        cmovge  ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
+; ### int64>=
+code int64_ge, 'int64>='                ; number int64 -- ?
+
+        ; second arg must be int64
+        _ verify_int64
+
+        ; dispatch on type of first arg
+        _over
+        _ fixnum?
+        _tagged_if .1
+        _ fixnum_int64_ge
+        _return
+        _then .1
+
+        _over
+        _ int64?
+        _tagged_if .2
+        _ int64_int64_ge
+        _return
+        _then .2
+
+        _drop
+        _ error_not_number
+
+        next
+endcode
+
 ; ### fixnum-fixnum>=
 code fixnum_fixnum_ge, 'fixnum-fixnum>='        ; fixnum1 fixnum2 -- ?
         _check_fixnum
