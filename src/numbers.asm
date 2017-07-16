@@ -363,14 +363,14 @@ code bignum_bignum_le, 'bignum-bignum<='        ; bignum1 bignum2 -- ?
 
         next
 endcode
+%endif
 
-; ### bignum-fixnum<=
-code bignum_fixnum_le, 'bignum-fixnum<='        ; bignum fixnum -- ?
-        _ fixnum_to_bignum
-        _ bignum_bignum_le
+; ### int64-fixnum<=
+code int64_fixnum_le, 'int64-fixnum<='          ; int64 fixnum -- ?
+        _ fixnum_to_int64
+        _ int64_int64_le
         next
 endcode
-%endif
 
 ; ### float-fixnum<=
 code float_fixnum_le, 'float-fixnum<='          ; float fixnum -- ?
@@ -441,14 +441,12 @@ code fixnum_le, 'fixnum<='      ; number fixnum -- ?
 
 .1:
 
-%ifdef FELINE_FEATURE_BIGNUMS
         _over
-        _ bignum?
+        _ int64?
         _tagged_if .2
-        _ bignum_fixnum_le
+        _ int64_fixnum_le
         _return
         _then .2
-%endif
 
         _over
         _ float?
