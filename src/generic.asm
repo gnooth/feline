@@ -560,6 +560,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method generic_ge, TYPECODE_BIGNUM, bignum_ge
 %endif
         _add_method generic_ge, TYPECODE_FLOAT, float_ge
+        _add_method generic_ge, TYPECODE_INT64, int64_ge
 
         ; write
         _initialize_generic_function generic_write
