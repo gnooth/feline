@@ -201,7 +201,7 @@ endcode
 ; return f if no method
         _over
         _ object_typecode
-        _swap                   ; -- object object-type dispatch-table
+        _swap                   ; -- object typecode dispatch-table
         _ hashtable_at          ; -- object raw-code-address/f
 %endmacro
 
