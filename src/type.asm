@@ -193,8 +193,17 @@ code type_typecode, 'type-typecode'     ; type -- tagged-typecode
         next
 endcode
 
-; ### raw-typecode>type
-code raw_typecode_to_type, 'raw-typecode>type'  ; typecode -- type
+; ### raw_typecode_to_type
+code raw_typecode_to_type, 'raw_typecode_to_type', SYMBOL_INTERNAL
+; raw-typecode -- type
+        _ types
+        _ vector_nth_untagged
+        next
+endcode
+
+; ### typecode>type
+code typecode_to_type, 'typecode>type'  ; typecode -- type
+        _check_index
         _ types
         _ vector_nth_untagged
         next
