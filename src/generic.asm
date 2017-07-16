@@ -235,7 +235,6 @@ endcode
         mov     rbx, [S_%1_symbol_value]
 %ifdef DEBUG
         call    do_generic
-        _return
 %else
         jmp     do_generic
 %endif
