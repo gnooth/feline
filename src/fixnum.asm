@@ -439,12 +439,12 @@ code fixnum_fixnum_divide_truncate, 'fixnum-fixnum/i'   ; x y -- z
         cmp     rbx, rax
         jne     .1
 
-%ifdef FELINE_FEATURE_BIGNUMS
-        _ signed_to_bignum
-%else
-        _ raw_int64_to_float
-%endif
-
+; %ifdef FELINE_FEATURE_BIGNUMS
+;         _ signed_to_bignum
+; %else
+;         _ raw_int64_to_float
+; %endif
+        _ new_int64
         _return
 
 .1:
