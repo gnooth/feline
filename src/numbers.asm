@@ -126,14 +126,12 @@ code fixnum_fixnum_lt, 'fixnum-fixnum<' ; fixnum1 fixnum2 -- ?
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum-fixnum<
-code bignum_fixnum_lt, 'bignum-fixnum<' ; bignum fixnum -- ?
-        _ fixnum_to_bignum
-        _ bignum_bignum_lt
+; ### int64-fixnum<
+code int64_fixnum_lt, 'int64-fixnum<'   ; int64 fixnum -- ?
+        _ fixnum_to_int64
+        _ int64_int64_lt
         next
 endcode
-%endif
 
 ; ### float-fixnum<
 code float_fixnum_lt, 'float-fixnum<'   ; float fixnum -- ?
@@ -158,14 +156,12 @@ code fixnum_lt, 'fixnum<'               ; number fixnum -- ?
 
 .1:
 
-%ifdef FELINE_FEATURE_BIGNUMS
         _over
-        _ bignum?
+        _ int64?
         _tagged_if .2
-        _ bignum_fixnum_lt
+        _ int64_fixnum_lt
         _return
         _then .2
-%endif
 
         _over
         _ float?
@@ -179,27 +175,22 @@ code fixnum_lt, 'fixnum<'               ; number fixnum -- ?
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum-bignum<
-code bignum_bignum_lt, 'bignum-bignum<'         ; bignum1 bignum2 -- ?
-        _ check_bignum
+; ### int64-int64<
+code int64_int64_lt, 'int64-int64<'     ; x y -- ?
+        _ check_int64
         _swap
-        _ check_bignum
+        _ check_int64
         _swap
 
-        mov     arg1_register, rbx
-        poprbx
-        mov     arg0_register, rbx
-        poprbx
-
-        xcall c_bignum_bignum_lt
-
-        pushrbx
-        mov     rbx, rax
-
+        mov     eax, t_value
+        cmp     [rbp], rbx
+        mov     ebx, f_value
+        cmovl   ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
         next
 endcode
 
+%ifdef FELINE_FEATURE_BIGNUMS
 ; ### float-bignum<
 code float_bignum_lt, 'float-bignum<'           ; float bignum -- ?
         _ bignum_to_float
