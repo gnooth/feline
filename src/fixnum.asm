@@ -548,8 +548,23 @@ code bignum_fixnum_mod, 'bignum-fixnum-mod'     ; x y -- z
 endcode
 %endif
 
+; ### int64-fixnum-mod
+code int64_fixnum_mod, 'int64-fixnum-mod'       ; x y -- z
+        _check_fixnum
+        _swap
+        _ check_int64
+        _swap
+        mov     rax, [rbp]
+        cqo                             ; sign-extend rax into rdx:rax
+        idiv    rbx                     ; quotient in rax, remainder in rdx
+        mov     rbx, rdx
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        _tag_fixnum
+        next
+endcode
+
 ; ### fixnum-mod
-code fixnum_mod, 'fixnum-mod'                   ; x y -- z
+code fixnum_mod, 'fixnum-mod'           ; x y -- z
         _verify_fixnum
 
         _over_fixnum?_if .1
@@ -557,14 +572,12 @@ code fixnum_mod, 'fixnum-mod'                   ; x y -- z
         _return
         _then .1
 
-%ifdef FELINE_FEATURE_BIGNUMS
         _over
-        _ bignum?
+        _ int64?
         _tagged_if .2
-        _ bignum_fixnum_mod
+        _ int64_fixnum_mod
         _return
         _then .2
-%endif
 
         _drop
         _ error_not_number
