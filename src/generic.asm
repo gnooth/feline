@@ -515,9 +515,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         ; mod
         _initialize_generic_function generic_mod
         _add_method generic_mod, TYPECODE_FIXNUM, fixnum_mod
-%ifdef FELINE_FEATURE_BIGNUMS
-        _add_method generic_mod, TYPECODE_BIGNUM, bignum_mod
-%endif
+        _add_method generic_mod, TYPECODE_INT64, int64_mod
 
         ; negate
         _initialize_generic_function generic_negate
