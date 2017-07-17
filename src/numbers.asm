@@ -54,13 +54,19 @@ endcode
 code int64_equal?, 'int64-equal?'       ; x y -- ?
         _ check_int64
         _swap
+
+        _dup_fixnum?_if .1
+        _untag_fixnum
+        _else .1
         _ check_int64
+        _then .1
+
         cmp     rbx, [rbp]
         _drop
-        jne     .1
+        jne     .2
         mov     ebx, t_value
         _return
-.1:
+.2:
         mov     ebx, f_value
         next
 endcode
