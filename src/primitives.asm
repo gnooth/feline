@@ -829,7 +829,8 @@ code hexdot, 'hex.'                     ; x --
         and     eax, TAG_MASK
         cmp     eax, FIXNUM_TAG
         jne     .1
-        _ fixnum_to_hex
+        _untag_fixnum
+        _ raw_int64_to_hex
         jmp     .4
 
 .1:
@@ -840,14 +841,12 @@ code hexdot, 'hex.'                     ; x --
         jmp     .4
         _then .2
 
-%ifdef FELINE_FEATURE_BIGNUMS
         _dup
-        _ bignum?
+        _ int64?
         _tagged_if .3
-        _ bignum_to_hex
+        _ int64_to_hex
         jmp     .4
         _then .3
-%endif
 
         _error "unsupported"
         _return
