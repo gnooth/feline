@@ -113,6 +113,18 @@ code new_int64, 'new_int64', SYMBOL_INTERNAL    ; raw-int64 -- int64
         next
 endcode
 
+; ### normalize
+code normalize, 'normalize', SYMBOL_INTERNAL    ; raw-int64 -- fixnum-or-int64
+        mov     rcx, MOST_POSITIVE_FIXNUM
+        cmp     rbx, rcx
+        jg      new_int64
+        mov     rdx, MOST_NEGATIVE_FIXNUM
+        cmp     rbx, rdx
+        jl      new_int64
+        _tag_fixnum
+        next
+endcode
+
 ; ### fixnum>int64
 code fixnum_to_int64, 'fixnum>int64'    ; fixnum -- int64
         _check_fixnum
