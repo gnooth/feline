@@ -154,16 +154,7 @@ code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; fixnum1 fixnum2 -- sum
         _check_fixnum
         add     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
-        mov     rcx, MOST_POSITIVE_FIXNUM
-        cmp     rbx, rcx
-        jg      .1
-        mov     rdx, MOST_NEGATIVE_FIXNUM
-        cmp     rbx, rdx
-        jl      .1
-        _tag_fixnum
-        _return
-.1:
-        _ new_int64
+        _ normalize
         next
 endcode
 
@@ -179,16 +170,7 @@ code int64_fixnum_plus, 'int64-fixnum+'         ; int64 fixnum -- sum
         add     rbx, [rbp]
         jo      .1
         _3nip
-        mov     rcx, MOST_POSITIVE_FIXNUM
-        cmp     rbx, rcx
-        jg      .2
-        mov     rdx, MOST_NEGATIVE_FIXNUM
-        cmp     rbx, rdx
-        jl      .2
-        _tag_fixnum
-        _return
-.2:
-        _ new_int64
+        _ normalize
         _return
 .1:
         _2drop
@@ -206,16 +188,7 @@ code fixnum_fixnum_minus, 'fixnum-fixnum-'      ; fixnum1 fixnum2 -- difference
         _check_fixnum
         sub     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
-        mov     rcx, MOST_POSITIVE_FIXNUM
-        cmp     rbx, rcx
-        jg      .1
-        mov     rdx, MOST_NEGATIVE_FIXNUM
-        cmp     rbx, rdx
-        jl      .1
-        _tag_fixnum
-        _return
-.1:
-        _ new_int64
+        _ normalize
         next
 endcode
 
