@@ -140,6 +140,58 @@ code int64_negate, 'int64-negate'       ; n -- -n
         next
 endcode
 
+; ### fixnum-int64-mod
+code fixnum_int64_mod, 'fixnum-int64-mod'       ; x y -- z
+        _ check_int64
+        _swap
+        _check_fixnum
+        _swap
+        mov     rax, [rbp]
+        cqo                             ; sign-extend rax into rdx:rax
+        idiv    rbx                     ; quotient in rax, remainder in rdx
+        mov     rbx, rdx
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        _ normalize
+        next
+endcode
+
+; ### int64-int64-mod
+code int64_int64_mod, 'int64-int64-mod' ; x y -- z
+        _ check_int64
+        _swap
+        _ check_int64
+        _swap
+        mov     rax, [rbp]
+        cqo                             ; sign-extend rax into rdx:rax
+        idiv    rbx                     ; quotient in rax, remainder in rdx
+        mov     rbx, rdx
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        _ normalize
+        next
+endcode
+
+; ### int64-mod
+code int64_mod, 'int64-mod'             ; x y -- z
+        _ verify_int64
+
+        _over_fixnum?_if .1
+        _ fixnum_int64_mod
+        _return
+        _then .1
+
+        _over
+        _ int64?
+        _tagged_if .2
+        _ int64_int64_mod
+        _return
+        _then .2
+
+        _drop
+        _ error_not_number
+
+        next
+endcode
+
 ; ### raw_int64_to_hex
 code raw_int64_to_hex, 'raw_int64_to_hex', SYMBOL_INTERNAL      ; raw-int64 -- string
 
