@@ -155,8 +155,11 @@ endcode
 
 ; ### int64-fixnum<
 code int64_fixnum_lt, 'int64-fixnum<'   ; int64 fixnum -- ?
-        _ fixnum_to_int64
-        _ int64_int64_lt
+        _check_fixnum
+        _swap
+        _ check_int64
+        _swap
+        _ raw_int64_int64_lt
         next
 endcode
 
