@@ -531,9 +531,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         ; >
         _initialize_generic_function generic_gt
         _add_method generic_gt, TYPECODE_FIXNUM, fixnum_gt
-%ifdef FELINE_FEATURE_BIGNUMS
-        _add_method generic_gt, TYPECODE_BIGNUM, bignum_gt
-%endif
+        _add_method generic_gt, TYPECODE_INT64, int64_gt
         _add_method generic_gt, TYPECODE_FLOAT, float_gt
 
         ; <=

@@ -658,23 +658,19 @@ code fixnum_fixnum_gt, 'fixnum-fixnum>' ; fixnum1 fixnum2 -- ?
         _swap
         _check_fixnum
         _swap
-
-        mov     eax, t_value
-        cmp     [rbp], rbx
-        mov     ebx, f_value
-        cmovg   ebx, eax
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _ raw_int64_int64_gt
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum-fixnum>
-code bignum_fixnum_gt, 'bignum-fixnum>' ; bignum fixnum -- ?
-        _ fixnum_to_bignum
-        _ bignum_bignum_gt
+; ### int64-fixnum>
+code int64_fixnum_gt, 'int64-fixnum>'   ; int64 fixnum -- ?
+        _check_fixnum
+        _swap
+        _ check_int64
+        _swap
+        _ raw_int64_int64_gt
         next
 endcode
-%endif
 
 ; ### float-float>
 code float_float_gt, 'float-float>'             ; float1 float2 -- ?
@@ -710,33 +706,86 @@ code fixnum_gt, 'fixnum>'               ; number fixnum -- ?
         _verify_fixnum
 
         ; dispatch on type of first arg
-        mov     al, byte [rbp]
-        and     al, TAG_MASK
-        cmp     al, FIXNUM_TAG
+        _over
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx                          ; -- x y
+
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_fixnum_gt
+
+        cmp     rax, TYPECODE_INT64
+        je      int64_fixnum_gt
+
+        cmp     rax, TYPECODE_FLOAT
         jne     .1
-        _ fixnum_fixnum_gt
-        _return
+        _ fixnum_to_float
+        jmp     float_float_gt
 
 .1:
-
-%ifdef FELINE_FEATURE_BIGNUMS
-        _over
-        _ bignum?
-        _tagged_if .2
-        _ bignum_fixnum_gt
-        _return
-        _then .2
-%endif
-
-        _over
-        _ float?
-        _tagged_if .3
-        _ float_fixnum_gt
-        _return
-        _then .3
-
         _drop
         _ error_not_number
+        next
+endcode
+
+; ### raw_int64_int64_gt
+code raw_int64_int64_gt, 'raw_int64_int64_gt', SYMBOL_INTERNAL
+; x y -- ?
+        mov     eax, t_value
+        cmp     [rbp], rbx
+        mov     ebx, f_value
+        cmovg   ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
+; ### fixnum-int64>
+code fixnum_int64_gt, 'fixnum-int64>'   ; x y -- ?
+        _ check_int64
+        _swap
+        _check_fixnum
+        _swap
+        _ raw_int64_int64_gt
+        next
+endcode
+
+; ### int64-int64>
+code int64_int64_gt, 'int64-int64>'     ; x y -- ?
+        _ check_int64
+        _swap
+        _ check_int64
+        _swap
+        _ raw_int64_int64_gt
+        next
+endcode
+
+; ### int64>
+code int64_gt, 'int64>'                 ; x y -- ?
+
+        ; second arg must be int64
+        _ verify_int64
+
+        ; dispatch on type of first arg
+        _over
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx                          ; -- x y
+
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_int64_gt
+
+        cmp     rax, TYPECODE_INT64
+        je      int64_int64_gt
+
+        cmp     rax, TYPECODE_FLOAT
+        jne     .1
+        _ int64_to_float
+        jmp     float_float_gt
+
+.1:
+        _drop
+        _ error_not_number
+
         next
 endcode
 
