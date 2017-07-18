@@ -199,6 +199,76 @@ code int64_plus, 'int64+'               ; x y -- z
         next
 endcode
 
+; ### raw_int64_int64_minus
+code raw_int64_int64_minus, 'raw_int64_int64_minus', SYMBOL_INTERNAL
+; x y -- z
+        _twodup
+        neg     rbx
+        add     rbx, [rbp]
+        jo      .1
+        _3nip
+        _ normalize
+        _return
+.1:
+        _2drop
+        _ raw_int64_to_float
+        _swap
+        _ raw_int64_to_float
+        _swap
+        _ float_float_minus
+        next
+endcode
+
+; ### fixnum-int64-
+code fixnum_int64_minus, 'fixnum-int64-'        ; x y -- z
+        _ check_int64
+        _swap
+        _check_fixnum
+        _swap
+        _ raw_int64_int64_minus
+        next
+endcode
+
+; ### int64-int64-
+code int64_int64_minus, 'int64-int64-'  ; x y -- z
+        _ check_int64
+        _swap
+        _ check_int64
+        _swap
+        _ raw_int64_int64_minus
+        next
+endcode
+
+; ### int64-
+code int64_minus, 'int64-'              ; x y -- z
+
+        ; second arg must be int64
+        _ verify_int64
+
+        ; dispatch on type of first arg
+        _over
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx                          ; -- x y
+
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_int64_minus
+
+        cmp     rax, TYPECODE_INT64
+        je      int64_int64_minus
+
+        cmp     rax, TYPECODE_FLOAT
+        jne     .1
+        _ int64_to_float
+        jmp     float_float_minus
+
+.1:
+        _drop
+        _ error_not_number
+
+        next
+endcode
+
 ; ### fixnum>int64
 code fixnum_to_int64, 'fixnum>int64'    ; fixnum -- int64
         _check_fixnum

@@ -481,9 +481,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         ; -
         _initialize_generic_function generic_minus
         _add_method generic_minus, TYPECODE_FIXNUM, fixnum_minus
-%ifdef FELINE_FEATURE_BIGNUMS
-        _add_method generic_minus, TYPECODE_BIGNUM, bignum_minus
-%endif
+        _add_method generic_minus, TYPECODE_INT64, int64_minus
         _add_method generic_minus, TYPECODE_FLOAT, float_minus
 
         ; *
