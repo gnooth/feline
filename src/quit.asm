@@ -224,7 +224,7 @@ code ?stack, '?stack'
 endcode
 
 ; ### ?enough
-code ?enough, '?enough'                 ; fixnum --
+code ?enough, '?enough'                 ; n --
 
         _verify_fixnum
 
@@ -237,11 +237,24 @@ code ?enough, '?enough'                 ; fixnum --
         ; save expected number of parameters in rdx
         mov     rdx, rbx
 
+        _untag_fixnum
+
+        ; adjust for n on stack
+        add     rbx, 1
+
+        ; convert cells to bytes
+        _cells
+
         mov     rax, [sp0_]
         sub     rax, rbx
         cmp     rbp, rax
-        jng     .2
+        ja      .2
 
+        ; ok
+        poprbx
+        _return
+
+.2:
         ; not enough parameters
 
         ; retrieve expected number of parameters
@@ -249,16 +262,12 @@ code ?enough, '?enough'                 ; fixnum --
         mov     rbx, rdx
 
         _depth
-        sub     rbx, 1
+        sub     rbx, 2
         _tag_fixnum
 
         _quote "ERROR: not enough parameters (expected %d, got %d)."
         _ format
         _ error
-        _return
-
-.2:
-        poprbx
         _return
 
 .1:
