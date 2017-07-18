@@ -216,6 +216,16 @@ code raw_int64_int64_lt, 'raw_int64_int64_lt', SYMBOL_INTERNAL
         next
 endcode
 
+; ### fixnum-int64<
+code fixnum_int64_lt, 'fixnum-int64<'   ; x y -- ?
+        _ check_int64
+        _swap
+        _check_fixnum
+        _swap
+        _ raw_int64_int64_lt
+        next
+endcode
+
 ; ### int64-int64<
 code int64_int64_lt, 'int64-int64<'     ; x y -- ?
         _ check_int64
@@ -223,6 +233,36 @@ code int64_int64_lt, 'int64-int64<'     ; x y -- ?
         _ check_int64
         _swap
         _ raw_int64_int64_lt
+        next
+endcode
+
+; ### int64<
+code int64_lt, 'int64<'                 ; x y -- ?
+
+        ; second arg must be int64
+        _ verify_int64
+
+        ; dispatch on type of first arg
+        _over
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx                          ; -- x y
+
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_int64_lt
+
+        cmp     rax, TYPECODE_INT64
+        je      int64_int64_lt
+
+        cmp     rax, TYPECODE_FLOAT
+        jne     .1
+        _ int64_to_float
+        jmp     float_float_lt
+
+.1:
+        _drop
+        _ error_not_number
+
         next
 endcode
 
