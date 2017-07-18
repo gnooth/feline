@@ -1034,18 +1034,24 @@ code int64_ge, 'int64>='                ; number int64 -- ?
         next
 endcode
 
+; ### raw_int64_int64_ge
+code raw_int64_int64_ge, 'raw_int64_int64_ge', SYMBOL_INTERNAL
+; x y -- ?
+        mov     eax, t_value
+        cmp     [rbp], rbx
+        mov     ebx, f_value
+        cmovge  ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
 ; ### fixnum-fixnum>=
 code fixnum_fixnum_ge, 'fixnum-fixnum>='        ; fixnum1 fixnum2 -- ?
         _check_fixnum
         _swap
         _check_fixnum
         _swap
-
-        mov     eax, t_value
-        cmp     [rbp], rbx
-        mov     ebx, f_value
-        cmovge  ebx, eax
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _ raw_int64_int64_ge
         next
 endcode
 
@@ -1076,14 +1082,17 @@ code float_bignum_ge, 'float-bignum>='  ; float bignum -- ?
         _ float_float_ge
         next
 endcode
+%endif
 
-; ### bignum-fixnum>=
-code bignum_fixnum_ge, 'bignum-fixnum>='        ; bignum fixnum -- ?
-        _ fixnum_to_bignum
-        _ bignum_bignum_ge
+; ### int64-fixnum>=
+code int64_fixnum_ge, 'int64-fixnum>='  ; x y -- ?
+        _check_fixnum
+        _swap
+        _ check_int64
+        _swap
+        _ raw_int64_int64_ge
         next
 endcode
-%endif
 
 ; ### float-fixnum>=
 code float_fixnum_ge, 'float-fixnum>='          ; bignum fixnum -- ?
@@ -1099,31 +1108,23 @@ code fixnum_ge, 'fixnum>='                      ; number fixnum -- ?
         _verify_fixnum
 
         ; dispatch on type of first arg
-        mov     al, byte [rbp]
-        and     al, TAG_MASK
-        cmp     al, FIXNUM_TAG
+        _over
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx                          ; -- x y
+
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_fixnum_ge
+
+        cmp     rax, TYPECODE_INT64
+        je      int64_fixnum_ge
+
+        cmp     rax, TYPECODE_FLOAT
         jne     .1
-        _ fixnum_fixnum_ge
-        _return
+        _ fixnum_to_float
+        jmp     float_float_ge
 
 .1:
-
-%ifdef FELINE_FEATURE_BIGNUMS
-        _over
-        _ bignum?
-        _tagged_if .2
-        _ bignum_fixnum_ge
-        _return
-        _then .2
-%endif
-
-        _over
-        _ float?
-        _tagged_if .3
-        _ float_fixnum_ge
-        _return
-        _then .3
-
         _drop
         _ error_not_number
         next
