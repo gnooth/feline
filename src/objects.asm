@@ -137,6 +137,8 @@ endcode
 
 ; ### .t
 code dot_t, '.t'                ; object -- object
+        _lit tagged_fixnum(1)
+        _ ?enough
         _dup
         _ type_of
         _ dot_object
