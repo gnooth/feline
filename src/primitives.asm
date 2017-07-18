@@ -1408,14 +1408,30 @@ code seed_random, 'seed-random'         ; --
         next
 endcode
 
-; ### random
-code random, 'random'                   ; -- fixnum
+; ### random-fixnum
+code random_fixnum, 'random-fixnum'     ; -- fixnum
         xcall   c_random
-        mov     rdx, MOST_POSITIVE_FIXNUM
-        and     rax, rdx
         pushrbx
         mov     rbx, rax
         _tag_fixnum
+        next
+endcode
+
+; ### random-int64
+code random_int64, 'random-int64'       ; -- int64
+        xcall   c_random
+        pushrbx
+        mov     rbx, rax
+        _ new_int64
+        next
+endcode
+
+; ### random-uint64
+code random_uint64, 'random-uint64'     ; -- uint64
+        xcall   c_random
+        pushrbx
+        mov     rbx, rax
+        _ new_uint64
         next
 endcode
 
