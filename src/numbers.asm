@@ -202,18 +202,24 @@ code fixnum_lt, 'fixnum<'               ; number fixnum -- ?
         next
 endcode
 
+; ### raw_int64_int64_lt
+code raw_int64_int64_lt, 'raw_int64_int64_lt', SYMBOL_INTERNAL
+; x y -- ?
+        mov     eax, t_value
+        cmp     [rbp], rbx
+        mov     ebx, f_value
+        cmovl   ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
 ; ### int64-int64<
 code int64_int64_lt, 'int64-int64<'     ; x y -- ?
         _ check_int64
         _swap
         _ check_int64
         _swap
-
-        mov     eax, t_value
-        cmp     [rbp], rbx
-        mov     ebx, f_value
-        cmovl   ebx, eax
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        _ raw_int64_int64_lt
         next
 endcode
 
