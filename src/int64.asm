@@ -85,6 +85,14 @@ code check_int64, 'check_int64'         ; handle -- raw-int64
         next
 endcode
 
+; ### int64_raw_value
+code int64_raw_value, 'int64_raw_value', SYMBOL_INTERNAL
+; handle -- raw-int64
+        _ deref
+        _int64_raw_value
+        next
+endcode
+
 ; ### new_int64
 code new_int64, 'new_int64', SYMBOL_INTERNAL    ; raw-int64 -- int64
 ; 2 cells: object header, raw value
@@ -122,6 +130,72 @@ code normalize, 'normalize', SYMBOL_INTERNAL    ; raw-int64 -- fixnum-or-int64
         cmp     rbx, rdx
         jl      new_int64
         _tag_fixnum
+        next
+endcode
+
+; ### raw_int64_int64_plus
+code raw_int64_int64_plus, 'raw_int64_int64_plus', SYMBOL_INTERNAL
+; x y -- z
+        _twodup
+        add     rbx, [rbp]
+        jo      .1
+        _3nip
+        _ normalize
+        _return
+.1:
+        _2drop
+        _ raw_int64_to_float
+        _swap
+        _ raw_int64_to_float
+        _ float_float_plus
+        next
+endcode
+
+; ### fixnum-int64+
+code fixnum_int64_plus, 'fixnum-int64+' ; x y -- z
+        _ check_int64
+        _swap
+        _check_fixnum
+        _ raw_int64_int64_plus
+        next
+endcode
+
+; ### int64-int64+
+code int64_int64_plus, 'int64-int64+'   ; x y -- z
+        _ check_int64
+        _swap
+        _ check_int64
+        _ raw_int64_int64_plus
+        next
+endcode
+
+; ### int64+
+code int64_plus, 'int64+'               ; x y -- z
+
+        ; second arg must be int64
+        _ verify_int64
+
+        ; dispatch on type of first arg
+        _over
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx                          ; -- x y
+
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_int64_plus
+
+        cmp     rax, TYPECODE_INT64
+        je      int64_int64_plus
+
+        cmp     rax, TYPECODE_FLOAT
+        jne     .1
+        _ int64_to_float
+        jmp     float_float_plus
+
+.1:
+        _drop
+        _ error_not_number
+
         next
 endcode
 
