@@ -206,22 +206,17 @@ code bignum_fixnum_plus, 'bignum-fixnum+'       ; bignum fixnum -- sum
         _ bignum_bignum_plus
         next
 endcode
+%endif
 
-; ### bignum-fixnum-
-code bignum_fixnum_minus, 'bignum-fixnum-'      ; bignum fixnum -- difference
-        ; second arg must be a fixnum
-        _ verify_fixnum
-        _ fixnum_to_bignum
-
-        ; first arg must be a bignum
+; ### int64-fixnum-
+code int64_fixnum_minus, 'int64-fixnum-'        ; int64 fixnum -- difference
+        _check_fixnum
         _swap
-        _ verify_bignum
+        _ check_int64
         _swap
-
-        _ bignum_bignum_minus
+        _ raw_int64_int64_minus
         next
 endcode
-%endif
 
 ; ### fixnum+
 code fixnum_plus, 'fixnum+'             ; number fixnum -- sum
@@ -265,32 +260,23 @@ code fixnum_minus, 'fixnum-'            ; number fixnum -- difference
         _verify_fixnum
 
         ; dispatch on type of first arg
-        mov     al, byte [rbp]
-        and     al, TAG_MASK
-        cmp     al, FIXNUM_TAG
+        _over
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx                          ; -- x y
+
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_fixnum_minus
+
+        cmp     rax, TYPECODE_INT64
+        je      int64_fixnum_minus
+
+        cmp     rax, TYPECODE_FLOAT
         jne     .1
-        _ fixnum_fixnum_minus
-        _return
+        _ fixnum_to_float
+        jmp     float_float_minus
 
 .1:
-
-%ifdef FELINE_FEATURE_BIGNUMS
-        _over
-        _ bignum?
-        _tagged_if .2
-        _ bignum_fixnum_minus
-        _return
-        _then .2
-%endif
-
-        _over
-        _ float?
-        _tagged_if .3
-        _ fixnum_to_float
-        _ float_float_minus
-        _return
-        _then .3
-
         _drop
         _ error_not_number
         next
