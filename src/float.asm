@@ -269,7 +269,7 @@ endcode
 ; ### float+
 code float_plus, 'float+'               ; number float -- sum
 
-        ; second arg must be a fixnum
+        ; second arg must be a float
         _ verify_float
 
         ; dispatch on type of first arg
@@ -329,7 +329,7 @@ endcode
 ; ### float-
 code float_minus, 'float-'              ; number float -- difference
 
-        ; second arg must be a fixnum
+        ; second arg must be a float
         _ verify_float
 
         ; dispatch on type of first arg
@@ -368,35 +368,42 @@ code float_float_multiply, 'float-float*'       ; x y -- z
         next
 endcode
 
-; ### float*
-code float_multiply, 'float*'          ; x y -- z
-        _ verify_float
-
-        _over
-        _ float?
-        _tagged_if .1
-        _ float_float_multiply
-        _return
-        _then .1
-
-        _over_fixnum?_if .2
+; ### fixnum-float*
+code fixnum_float_multiply, 'fixnum-float*'     ; x y -- z
         _swap
         _ fixnum_to_float
         _ float_float_multiply
-        _return
-        _then .2
+        next
+endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-        _over
-        _ bignum?
-        _tagged_if .3
+; ### int64-float*
+code int64_float_multiply, 'int64-float*'       ; x y -- z
         _swap
-        _ bignum_to_float
-        _swap
+        _ int64_to_float
         _ float_float_multiply
-        _return
-        _then .3
-%endif
+        next
+endcode
+
+; ### float*
+code float_multiply, 'float*'          ; x y -- z
+
+        ; second arg must be a float
+        _ verify_float
+
+        ; dispatch on type of first arg
+        _over
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx
+
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_float_multiply
+
+        cmp     rax, TYPECODE_INT64
+        je      int64_float_multiply
+
+        cmp     rax, TYPECODE_FLOAT
+        je      float_float_multiply
 
         _drop
         _ error_not_number
