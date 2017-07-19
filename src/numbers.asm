@@ -320,7 +320,7 @@ endcode
 %endif
 
 ; ### float-float<
-code float_float_lt, 'float-float<'             ; float1 float2 -- ?
+code float_float_lt, 'float-float<'     ; float1 float2 -- ?
         _ check_float
         _swap
         _ check_float
@@ -340,7 +340,7 @@ code float_float_lt, 'float-float<'             ; float1 float2 -- ?
 endcode
 
 ; ### fixnum-float<
-code fixnum_float_lt, 'fixnum-float<'           ; fixnum float -- ?
+code fixnum_float_lt, 'fixnum-float<'   ; fixnum float -- ?
         _swap
         _ fixnum_to_float
         _swap
@@ -348,44 +348,39 @@ code fixnum_float_lt, 'fixnum-float<'           ; fixnum float -- ?
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum-float<
-code bignum_float_lt, 'bignum-float<'           ; bignum float -- ?
+; ### int64-float<
+code int64_float_lt, 'int64-float<'     ; int64 float -- ?
         _swap
-        _ bignum_to_float
+        _ int64_to_float
         _swap
         _ float_float_lt
         next
 endcode
-%endif
 
 ; ### float<
-code float_lt, 'float<'                         ; number float -- ?
+code float_lt, 'float<'                 ; x y -- ?
+
+        ; second arg must be float
         _ verify_float
 
+        ; dispatch on type of first arg
         _over
-        _ float?
-        _tagged_if .1
-        _ float_float_lt
-        _return
-        _then .1
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx                          ; -- x y
 
-        _over_fixnum?_if .2
-        _ fixnum_float_lt
-        _return
-        _then .2
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_float_lt
 
-%ifdef FELINE_FEATURE_BIGNUMS
-        _over
-        _ bignum?
-        _tagged_if .3
-        _ bignum_float_lt
-        _return
-        _then .3
-%endif
+        cmp     rax, TYPECODE_INT64
+        je      int64_float_lt
+
+        cmp     rax, TYPECODE_FLOAT
+        je      float_float_lt
 
         _drop
         _ error_not_number
+
         next
 endcode
 
