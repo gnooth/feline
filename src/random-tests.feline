@@ -20,34 +20,35 @@ in: user
 
 in: random-tests
 
-: t/f? ( -- ? ) random 1 bitand zero? ;
+: t/f? ( -- ? ) random-fixnum 1 bitand zero? ;
 
-: random-sign ( -- +1/-1 ) t/f? 1 -1 ? ;
+-- : random-sign ( -- +1/-1 ) t/f? 1 -1 ? ;
 
 #ifdef HAVE_BIGNUMS
 : random-bignum ( -- bignum )
     random t/f? [ most-positive-fixnum + ] [ most-negative-fixnum - ] if ;
 #endif
 
-: random-fixnum ( -- fixnum )
-    random t/f? [ negate ] when ;
+-- : random-fixnum ( -- fixnum )
+--     random t/f? [ negate ] when ;
 
 #ifdef HAVE_BIGNUMS
 : random-integer ( -- integer )
     t/f? ' random-bignum ' random-fixnum if ;
 #else
-: random-integer ( -- integer ) random-fixnum ;
+-- : random-integer ( -- integer ) random-fixnum ;
+: random-integer ( -- integer ) t/f? ' random-int64 ' random-fixnum if ;
 #endif
 
 : random-float ( -- float)
-    random-integer >float ;
+--     random-integer >float
+    random-fixnum >float
+;
 
-#ifdef HAVE_BIGNUMS
 test: test-1
-    10 [ random-bignum bignum? assert-true ] times ;
+    10 [ random-int64 int64? assert-true ] times ;
 
 test-1
-#endif
 
 global: x
 global: y
@@ -70,10 +71,9 @@ test: test-2
 
 test-2
 
-#ifdef HAVE_BIGNUMS
 : %test-3
-    random-integer !> x
-    random-integer !> y
+    random-fixnum !> x
+    random-fixnum !> y
     ?echo
     x y - y x - negate assert=
     x y - y + x assert= ;
@@ -82,7 +82,6 @@ test: test-3
     #reps ' %test-3 times ;
 
 test-3
-#endif
 
 : %test-4
     random-integer !> x
@@ -162,6 +161,7 @@ test: test-8
 
 test-8
 
+f #if
 : %test-9
     random-integer !> x
     random-integer !> y
@@ -174,6 +174,7 @@ test: test-9
     #reps ' %test-9 times ;
 
 test-9
+#endif
 
 : %test-10
     random-float !> x
@@ -203,6 +204,7 @@ test: test-11
 
 test-11
 
+f #if
 : %test-12
     random-integer !> x
     x >float !> y
@@ -231,6 +233,7 @@ test: test-13
     #reps ' %test-13 times ;
 
 test-13
+#endif
 
 f !> x
 f !> y
