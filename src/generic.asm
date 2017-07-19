@@ -487,9 +487,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         ; *
         _initialize_generic_function generic_multiply
         _add_method generic_multiply, TYPECODE_FIXNUM, fixnum_multiply
-%ifdef FELINE_FEATURE_BIGNUMS
-        _add_method generic_multiply, TYPECODE_BIGNUM, bignum_multiply
-%endif
+        _add_method generic_multiply, TYPECODE_INT64, int64_multiply
         _add_method generic_multiply, TYPECODE_FLOAT, float_multiply
 
         ; /
