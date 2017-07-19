@@ -250,38 +250,45 @@ code float_float_plus, 'float-float+'   ; float1 float2 -- sum
         next
 endcode
 
-; ### float+
-code float_plus, 'float+'       ; number float -- sum
-        _ verify_float
-
-        _over
-        _ float?
-        _tagged_if .1
-        _ float_float_plus
-        _return
-        _then .1
-
-        _over_fixnum?_if .2
+; ### fixnum-float+
+code fixnum_float_plus, 'fixnum-float+' ; fixnum float -- sum
         _swap
         _ fixnum_to_float
         _ float_float_plus
-        _return
-        _then .2
+        next
+endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-        _over
-        _ bignum?
-        _tagged_if .3
+; ### int64-float+
+code int64_float_plus, 'int64-float+'   ; int64 float -- sum
         _swap
-        _ bignum_to_float
+        _ int64_to_float
         _ float_float_plus
-        _return
-        _then .3
-%endif
+        next
+endcode
+
+; ### float+
+code float_plus, 'float+'               ; number float -- sum
+
+        ; second arg must be a fixnum
+        _ verify_float
+
+        ; dispatch on type of first arg
+        _over
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx                          ; -- x y
+
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_float_plus
+
+        cmp     rax, TYPECODE_INT64
+        je      int64_float_plus
+
+        cmp     rax, TYPECODE_FLOAT
+        je      float_float_plus
 
         _drop
         _ error_not_number
-
         next
 endcode
 
