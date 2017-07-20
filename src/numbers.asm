@@ -15,45 +15,10 @@
 
 file __FILE__
 
-; ### fixnum-equal?
-code fixnum_equal?, 'fixnum-equal?'     ; x y -- ?
-        _verify_fixnum
+; ### raw_int64_equal?
+code raw_int64_equal?, 'raw_int64_equal?', SYMBOL_INTERNAL      ; number raw-int64 -- ?
 
-        cmp     rbx, [rbp]
-        jne     .1
-        _nip
-        mov     ebx, t_value
-        _return
-
-.1:
-
-%ifdef FELINE_FEATURE_BIGNUMS
-        _over
-        _ bignum?
-        _tagged_if .2
-        _ fixnum_to_bignum
-        _ bignum_equal?
-        _return
-        _then .2
-%endif
-
-        _over
-        _ float?
-        _tagged_if .3
-        _ fixnum_to_float
-        _ float_equal?
-        _return
-        _then .3
-
-        _nip
-        mov     ebx, f_value
-        next
-endcode
-
-; ### int64-equal?
-code int64_equal?, 'int64-equal?'       ; x y -- ?
-        _ check_int64
-        _swap
+        _swap                           ; -- raw-int64 number
 
         _dup
         _ object_raw_typecode
@@ -88,55 +53,22 @@ code int64_equal?, 'int64-equal?'       ; x y -- ?
         _swap
         _ raw_int64_to_float
         _ float_equal?
-
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum-bignum-equal?
-code bignum_bignum_equal?, 'bignum-bignum-equal?'       ; x y -- ?
-        _ check_bignum
-        _swap
-        _ check_bignum
-        mov     arg0_register, rbx
-        poprbx
-        mov     arg1_register, rbx
-        xcall   c_bignum_bignum_equal
-        mov     rbx, rax
+; ### fixnum-equal?
+code fixnum_equal?, 'fixnum-equal?'     ; x y -- ?
+        _ check_fixnum
+        _ raw_int64_equal?
         next
 endcode
 
-; ### bignum-equal?
-code bignum_equal?, 'bignum-equal?'                     ; x y -- ?
-        _ verify_bignum
-
-        _over_fixnum?_if .1
-        _swap
-        _ fixnum_to_bignum
-        _ bignum_bignum_equal?
-        _return
-        _then .1
-
-        _over
-        _ bignum?
-        _tagged_if .2
-        _ bignum_bignum_equal?
-        _return
-        _then .2
-
-        _over
-        _ float?
-        _tagged_if .3
-        _ bignum_to_float
-        _ float_equal?
-        _return
-        _then .3
-
-        _2drop
-        _f
+; ### int64-equal?
+code int64_equal?, 'int64-equal?'       ; x y -- ?
+        _ check_int64
+        _ raw_int64_equal?
         next
 endcode
-%endif
 
 ; ### fixnum-fixnum<
 code fixnum_fixnum_lt, 'fixnum-fixnum<' ; fixnum1 fixnum2 -- ?
