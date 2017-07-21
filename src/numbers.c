@@ -231,6 +231,11 @@ cell c_float_float_divide(Float *p1, Float *p2)
   return (cell) make_float(p1->d / p2->d);
 }
 
+cell c_float_truncate(Float *p)
+{
+  return (cell) make_float(trunc(p->d));
+}
+
 cell c_float_negate(Float *p)
 {
   return (cell) make_float(-p->d);

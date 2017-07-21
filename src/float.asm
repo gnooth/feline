@@ -422,12 +422,20 @@ code float_divide, 'float/f'            ; x y -- z
         next
 endcode
 
+; ### float-truncate
+code float_truncate, 'float-truncate'   ; x -- y
+        _ check_float
+        mov     arg0_register, rbx
+        xcall   c_float_truncate
+        mov     rbx, rax
+        _ new_handle
+        next
+endcode
+
 ; ### float/i
 code float_divide_truncate, 'float/i'           ; x y -- z
         _ float_divide
-%ifdef FELINE_FEATURE_BIGNUMS
-        _ float_to_integer
-%endif
+        _ float_truncate
         next
 endcode
 
