@@ -204,7 +204,6 @@ test: test-11
 
 test-11
 
-f #if
 : %test-12
     random-integer !> x
     x >float !> y
@@ -219,6 +218,7 @@ test: test-12
 
 test-12
 
+f #if
 : %test-13
     random !> x
     x fixnum? assert
