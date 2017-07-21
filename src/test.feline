@@ -2641,4 +2641,11 @@ test: callable?-test-1
 
 callable?-test-1
 
+test: float-truncate-test-1
+     42.7 float-truncate  42.0 assert=
+    -42.7 float-truncate -42.0 assert=
+;
+
+float-truncate-test-1
+
 ?nl "Reached end of test.feline" write-string
