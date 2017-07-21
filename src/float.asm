@@ -71,52 +71,58 @@ endcode
 %endmacro
 
 ; ### float-raw-value
-code float_raw_value, 'float-raw-value', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+code float_raw_value, 'float_raw_value', SYMBOL_INTERNAL
 ; float -- raw-value
         _ check_float
         _float_raw_value
         next
 endcode
 
+; ### float-float-equal?
+code float_float_equal?, 'float-float-equal?'   ; x y -- ?
+        _ float_raw_value
+        _swap
+        _ float_raw_value
+        _eq?
+        next
+endcode
+
 ; ### float-equal?
 code float_equal?, 'float-equal?'       ; x float -- ?
-        _ check_float
-        _float_raw_value                ; -- x raw-double
-
-        _over_fixnum?_if .1
+        _ verify_float
         _swap
-        _ fixnum_to_float
-        _handle_to_object_unsafe
-        _float_raw_value
-        _eq?
-        _return
-        _then .1
 
-%ifdef FELINE_FEATURE_BIGNUMS
-        _over
-        _ bignum?
-        _tagged_if .2
-        _swap
-        _ bignum_to_float
-        _handle_to_object_unsafe
-        _float_raw_value
-        _eq?
-        _return
-        _then .2
-%endif
+        _dup
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx
 
-        _over
-        _ float?
-        _tagged_if .3
-        _swap
-        _handle_to_object_unsafe
-        _float_raw_value
-        _eq?
-        _return
-        _then .3
+        cmp     rax, TYPECODE_FIXNUM
+        je      .1
+        cmp     rax, TYPECODE_INT64
+        je      .2
+        cmp     rax, TYPECODE_FLOAT
+        je      .3
 
         _nip
         mov     ebx, f_value
+        _return
+
+.1:
+        ; fixnum
+        _ fixnum_to_float
+        _ float_float_equal?
+        _return
+
+.2:
+        ; int64
+        _ int64_to_float
+        _ float_float_equal?
+        _return
+
+.3:
+        ; float
+        _ float_float_equal?
         next
 endcode
 
