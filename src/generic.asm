@@ -498,9 +498,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         ; /i
         _initialize_generic_function generic_divide_truncate
         _add_method generic_divide_truncate, TYPECODE_FIXNUM, fixnum_divide_truncate
-%ifdef FELINE_FEATURE_BIGNUMS
-        _add_method generic_divide_truncate, TYPECODE_BIGNUM, bignum_divide_truncate
-%endif
+        _add_method generic_divide_truncate, TYPECODE_INT64, int64_divide_truncate
         _add_method generic_divide_truncate, TYPECODE_FLOAT, float_divide_truncate
 
         ; mod
