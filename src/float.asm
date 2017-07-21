@@ -78,54 +78,6 @@ code float_raw_value, 'float_raw_value', SYMBOL_INTERNAL
         next
 endcode
 
-; ### float-float-equal?
-code float_float_equal?, 'float-float-equal?'   ; x y -- ?
-        _ float_raw_value
-        _swap
-        _ float_raw_value
-        _eq?
-        next
-endcode
-
-; ### float-equal?
-code float_equal?, 'float-equal?'       ; x float -- ?
-        _ verify_float
-        _swap
-
-        _dup
-        _ object_raw_typecode
-        mov     rax, rbx
-        poprbx
-
-        cmp     rax, TYPECODE_FIXNUM
-        je      .1
-        cmp     rax, TYPECODE_INT64
-        je      .2
-        cmp     rax, TYPECODE_FLOAT
-        je      .3
-
-        _nip
-        mov     ebx, f_value
-        _return
-
-.1:
-        ; fixnum
-        _ fixnum_to_float
-        _ float_float_equal?
-        _return
-
-.2:
-        ; int64
-        _ int64_to_float
-        _ float_float_equal?
-        _return
-
-.3:
-        ; float
-        _ float_float_equal?
-        next
-endcode
-
 ; ### string>float
 code string_to_float, 'string>float'    ; string -- float/f
 
