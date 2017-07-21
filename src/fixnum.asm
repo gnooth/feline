@@ -381,13 +381,9 @@ code fixnum_multiply, 'fixnum*'         ; x y -- z
         next
 endcode
 
-; ### fixnum-fixnum/i
-code fixnum_fixnum_divide_truncate, 'fixnum-fixnum/i'   ; x y -- z
-        _check_fixnum
-        _swap
-        _check_fixnum
-        _swap
-
+; ### raw_int64_divide_truncate
+code raw_int64_divide_truncate, 'raw_int64_divide_truncate', SYMBOL_INTERNAL
+; x y -- z
         mov     rax, [rbp]
         cqo                             ; sign-extend rax into rdx:rax
         idiv    rbx                     ; quotient in rax, remainder in rdx
@@ -406,50 +402,53 @@ code fixnum_fixnum_divide_truncate, 'fixnum-fixnum/i'   ; x y -- z
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum-fixnum/i
-code bignum_fixnum_divide_truncate, 'bignum-fixnum/i'   ; x y -- z
-        _ fixnum_to_bignum
+; ### fixnum-fixnum/i
+code fixnum_fixnum_divide_truncate, 'fixnum-fixnum/i'   ; x y -- z
+        _check_fixnum
         _swap
-        _ verify_bignum
+        _check_fixnum
         _swap
-        _ bignum_bignum_divide_truncate
+        _ raw_int64_divide_truncate
         next
 endcode
-%endif
+
+; ### int64-fixnum/i
+code int64_fixnum_divide_truncate, 'int64-fixnum/i'     ; x y -- z
+        _check_fixnum
+        _swap
+        _ check_int64
+        _swap
+        _ raw_int64_divide_truncate
+        next
+endcode
 
 ; ### fixnum/i
 code fixnum_divide_truncate, 'fixnum/i' ; x y -- z
-        _ verify_fixnum
 
-        _over_fixnum?_if .1
-        _ fixnum_fixnum_divide_truncate
-        _return
-        _then .1
+        ; second arg must be a fixnum
+        _verify_fixnum
 
-%ifdef FELINE_FEATURE_BIGNUMS
+        ; dispatch on type of first arg
         _over
-        _ bignum?
-        _tagged_if .2
-        _ bignum_fixnum_divide_truncate
-        _return
-        _then .2
-%endif
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx                          ; -- x y
 
-        _over
-        _ float?
-        _tagged_if .3
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_fixnum_divide_truncate
+
+        cmp     rax, TYPECODE_INT64
+        je      int64_fixnum_divide_truncate
+
+        cmp     rax, TYPECODE_FLOAT
+        jne     .1
         _ fixnum_to_float
-        _ float_float_divide
-%ifdef FELINE_FEATURE_BIGNUMS
-        _ float_to_integer
-%endif
+        _ float_divide_truncate
         _return
-        _then .3
 
+.1:
         _drop
         _ error_not_number
-
         next
 endcode
 
