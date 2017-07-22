@@ -161,20 +161,21 @@ test: test-8
 
 test-8
 
-f #if
 : %test-9
     random-integer !> x
     random-integer !> y
     ?echo
-    x y /i y * x y mod + x assert=
-    x y /i y * x y mod + x assert=
+    x y /i y * x y mod + x 2dup = [
+        2drop
+    ] [
+        ' >float bi@ float-distance 1 <= assert
+    ] if
 ;
 
 test: test-9
     #reps ' %test-9 times ;
 
 test-9
-#endif
 
 : %test-10
     random-float !> x
