@@ -564,3 +564,22 @@ code integer_decode_float, 'integer-decode-float'       ; float -- significand e
         _ float_sign
         next
 endcode
+
+; ### float-distance
+code float_distance, 'float-distance'   ; float1 float2 -- distance
+        _ float_raw_value
+        _swap
+        _ float_raw_value
+        sub     rbx, [rbp]
+        _nip
+
+        ; return absolute value
+        test    rbx, rbx
+        jns     .1
+        neg     rbx
+
+.1:
+        _ normalize
+
+        next
+endcode
