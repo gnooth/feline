@@ -238,23 +238,23 @@ test: fixnum-test-7 ( -- )
 fixnum-test-7
 
 test: mod-test-1 ( -- )
-    7 3 mod 1 assert=
-    7 -3 mod 1 assert=
-    -7 3 mod -1 assert=
+     7  3 mod  1 assert=
+     7 -3 mod  1 assert=
+    -7  3 mod -1 assert=
 
-    7 3 fixnum>int64 mod 1 assert=
-    7 -3 fixnum>int64 mod 1 assert=
-    -7 3 fixnum>int64 mod -1 assert=
+     7  3 fixnum>int64 mod  1 assert=
+     7 -3 fixnum>int64 mod  1 assert=
+    -7  3 fixnum>int64 mod -1 assert=
 
     most-positive-fixnum 17 mod 15 assert=
     most-positive-fixnum 1 + dup int64? assert 17 mod 16 assert=
-    most-positive-fixnum 2 + dup int64? assert 17 mod 0 assert=
-    most-positive-fixnum 3 + dup int64? assert 17 mod 1 assert=
+    most-positive-fixnum 2 + dup int64? assert 17 mod  0 assert=
+    most-positive-fixnum 3 + dup int64? assert 17 mod  1 assert=
 
     most-positive-fixnum 17 mod 15 fixnum>int64 assert=
     most-positive-fixnum 1 + 17 fixnum>int64 mod 16 assert=
-    most-positive-fixnum 2 + 17 fixnum>int64 mod 0 assert=
-    most-positive-fixnum 3 + 17 fixnum>int64 mod 1 assert=
+    most-positive-fixnum 2 + 17 fixnum>int64 mod  0 assert=
+    most-positive-fixnum 3 + 17 fixnum>int64 mod  1 assert=
 ;
 
 mod-test-1
@@ -270,19 +270,29 @@ fixnum-test-9
 
 -- fixnum+
 test: fixnum-test-10 ( -- )
-    42 87 fixnum+ 129 assert=
-    -42 87 fixnum+ 45 assert=
-    42 -87 fixnum+ -45 assert=
+     42  87 fixnum+  129 assert=
+    -42  87 fixnum+   45 assert=
+     42 -87 fixnum+  -45 assert=
     -42 -87 fixnum+ -129 assert=
+
+    most-positive-fixnum 1152921504606846975 assert-eq
+    most-positive-fixnum 1 - 1152921504606846974 assert-eq
+    most-positive-fixnum 1 + dup int64? assert 1152921504606846976 assert=
+
+    most-negative-fixnum -1152921504606846976 assert-eq
+    most-negative-fixnum 1 + -1152921504606846975 assert-eq
+    most-negative-fixnum 1 - dup int64? assert -1152921504606846977 assert=
 ;
 
 fixnum-test-10
 
 test: fixnum>string-test-1 ( -- )
     -17 fixnum>string "-17" assert=
-    0 fixnum>string "0" assert=
-    42 fixnum>string "42" assert=
+      0 fixnum>string   "0" assert=
+     42 fixnum>string  "42" assert=
+
     tag-bits 3 assert=
+
     most-negative-fixnum fixnum>string "-1152921504606846976" assert=
     most-negative-fixnum 1 + fixnum>string "-1152921504606846975" assert=
     most-negative-fixnum 2 + fixnum>string "-1152921504606846974" assert=
