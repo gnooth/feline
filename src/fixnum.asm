@@ -17,15 +17,13 @@ file __FILE__
 
 ; ### most-positive-fixnum
 code most_positive_fixnum, 'most-positive-fixnum'
-        _lit MOST_POSITIVE_FIXNUM
-        _tag_fixnum
+        _lit tagged_fixnum(MOST_POSITIVE_FIXNUM)
         next
 endcode
 
 ; ### most-negative-fixnum
 code most_negative_fixnum, 'most-negative-fixnum'
-        _lit MOST_NEGATIVE_FIXNUM
-        _tag_fixnum
+        _lit tagged_fixnum(MOST_NEGATIVE_FIXNUM)
         next
 endcode
 
