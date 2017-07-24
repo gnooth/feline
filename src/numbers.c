@@ -61,32 +61,9 @@ cell c_string_to_float(char *s, size_t length)
   char *endptr;
   double d = strtod(s, &endptr);
   if (errno != 0 || endptr != s + length)
-    return F_VALUE;   // error
+    return F_VALUE;     // error
 
   return (cell) make_float(d);
-}
-
-cell c_string_to_int64(char *s, size_t length, int base)
-{
-  // Return the raw pointer returned by make_int64 if conversion is
-  // successful. Otherwise, return F_VALUE.
-
-  if (length == 0)
-    return F_VALUE;
-
-  errno = 0;
-  char *endptr;
-
-#ifdef WIN64
-  long long int n = strtoll(s, &endptr, base);
-#else
-  long n = strtol(s, &endptr, base);
-#endif
-
-  if (errno != 0 || endptr != s + length)
-    return F_VALUE;   // error
-
-  return (cell) make_int64(n);
 }
 
 cell c_string_to_integer(char *s, size_t length, int base)
@@ -157,7 +134,7 @@ cell c_decimal_to_number(char *s, size_t length)
       return (cell) make_int64(n);
     }
 
-  return c_string_to_float(s,  length);
+  return c_string_to_float(s, length);
 }
 
 cell c_pi()
