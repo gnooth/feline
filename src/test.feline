@@ -262,7 +262,7 @@ mod-test-1
 -- fixnum-bitand, bitand
 test: fixnum-test-9 ( -- )
     15 7 bitand 7 assert=
-    15 $f0 bitand 0 assert=
+    15 0xf0 bitand 0 assert=
     3 1 bitand 1 assert=
 ;
 
@@ -672,8 +672,8 @@ test: string>number-test-1
 string>number-test-1
 
 test: string>number-test-2
-    "%11" string>number 3 assert-eq
-    "%1100" string>number 12 assert-eq
+    "0b11" string>number 3 assert-eq
+    "0b1100" string>number 12 assert-eq
 ;
 
 string>number-test-2
