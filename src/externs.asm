@@ -95,7 +95,6 @@ extern c_float_to_string
 extern c_float_truncate
 extern c_pi
 extern c_raw_int64_to_float
-extern c_string_to_fixnum
 extern c_string_to_float
 extern c_decimal_to_number
 
