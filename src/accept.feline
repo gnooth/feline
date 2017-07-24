@@ -196,7 +196,7 @@ global: prefix-offset
     ] if ;
 
 -- FIXME need value for k-shift-tab on Windows
-$1b5b5a >constant: k-shift-tab  -- Linux
+0x1b5b5a >constant: k-shift-tab -- Linux
 
 : do-shift-tab ( -- )
     completions [
@@ -231,7 +231,7 @@ $1b5b5a >constant: k-shift-tab  -- Linux
     10                  ' do-enter                   bind-key
     13                  ' do-enter                   bind-key
     3 ( control c )     ' bye                        bind-key
-    $1b                 ' do-escape                  bind-key
+    0x1b                ' do-escape                  bind-key
     127                 ' do-bs                      bind-key   -- Linux
     8                   ' do-bs                      bind-key   -- Windows
     k-left              ' do-left                    bind-key
@@ -241,9 +241,9 @@ $1b5b5a >constant: k-shift-tab  -- Linux
     k-up                ' do-previous                bind-key
     k-down              ' do-next                    bind-key
     k-delete            ' do-delete-char             bind-key
-    $0b ( control k )   ' do-kill-line               bind-key
-    $10 ( control p )   ' do-previous-matching-input bind-key
-    $0e ( control n )   ' do-next-matching-input     bind-key
+    0x0b ( control k )  ' do-kill-line               bind-key
+    0x10 ( control p )  ' do-previous-matching-input bind-key
+    0x0e ( control n )  ' do-next-matching-input     bind-key
     9                   ' do-tab                     bind-key
     k-shift-tab         ' do-shift-tab               bind-key ;
 
