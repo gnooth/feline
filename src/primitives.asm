@@ -1224,53 +1224,25 @@ code string_to_number, 'string>number'  ; string -- n/f
         _return
         _then .1
 
-        ; length > 0
-        _zero
-        _over
-        _ string_nth_untagged           ; -- string tagged-char
-        _untag_char
-
-        ; REVIEW do we want to support -$1f as well as $-1f?
-        cmp     ebx, '$'
-        je      .2
-        cmp     ebx, '%'
-        je      .3
-
-        _drop                           ; -- string
-
         _quote "0x"
         _over
         _ string_has_prefix?
-        _tagged_if .4
+        _tagged_if .2
         _ hex_to_integer
         _return
-        _then .4
+        _then .2
 
         _quote "0b"
         _over
         _ string_has_prefix?
-        _tagged_if .5
+        _tagged_if .3
         _lit tagged_fixnum(2)
         _ string_tail
         _ binary_to_integer
         _return
-        _then .5
+        _then .3
 
         _ decimal_to_number
-        _return
-
-.2:
-        _drop
-        _lit tagged_fixnum(1)
-        _ string_tail
-        _ hex_to_integer
-        _return
-
-.3:
-        _drop
-        _lit tagged_fixnum(1)
-        _ string_tail
-        _ binary_to_integer
 
         next
 endcode
