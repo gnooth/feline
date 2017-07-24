@@ -28,7 +28,7 @@ in: feline
 
 : print-reg ( string untagged -- )
     swap write-string
-    '$' write-char
+    "0x" write-string
     untagged>hex write-string ;
 
 : print-saved-registers ( -- )
@@ -46,7 +46,8 @@ in: feline
 
 : format-address ( untagged -- )
     untagged>hex dup length 16 swap - spaces
-    '$' write-char write-string ;
+    "0x" write-string
+    write-string ;
 
 : format-word ( tagged-code-address symbol -- )
     dup symbol-name write-string
