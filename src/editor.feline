@@ -436,10 +436,10 @@ tuple: position line-number offset ;
     k-ctrl-home            ' beginning-of-buffer        bind-key
     k-ctrl-end             ' end-of-buffer              bind-key
     7 ( control g )        ' gotoline                   bind-key
-    $11 ( control q )      ' do-quit                    bind-key
-    $13 ( control s )      ' do-save                    bind-key
+    0x11 ( control q )     ' do-quit                    bind-key
+    0x13 ( control s )     ' do-save                    bind-key
     k-enter                ' insert-line-separator      bind-key
-    $1b ( escape )         ' quit                       bind-key
+    0x1b ( escape )        ' quit                       bind-key
 ;
 
 : do-command ( -- ) lookup-key [ call-symbol ] when* ;
