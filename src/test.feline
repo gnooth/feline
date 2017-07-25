@@ -2641,8 +2641,8 @@ test: callable?-test-1
 callable?-test-1
 
 test: float-truncate-test-1
-     42.7 float-truncate  42.0 assert=
-    -42.7 float-truncate -42.0 assert=
+     42.7 float-truncate  42 assert-eq
+    -42.7 float-truncate -42 assert-eq
 ;
 
 float-truncate-test-1
