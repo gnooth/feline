@@ -428,12 +428,14 @@ code float_truncate, 'float-truncate'   ; x -- y
         mov     arg0_register, rbx
         xcall   c_float_truncate
         mov     rbx, rax
-        _ new_handle
-        next
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     new_handle
+        _rep_return
 endcode
 
 ; ### float/i
-code float_divide_truncate, 'float/i'           ; x y -- z
+code float_divide_truncate, 'float/i'   ; x y -- z
         _ float_divide
         _ float_truncate
         next
