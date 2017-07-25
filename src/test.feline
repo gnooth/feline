@@ -679,19 +679,10 @@ test: string>number-test-2
 string>number-test-2
 
 test: string>number-test-3
-#ifdef HAVE_BIGNUMS
-    17 50 expt bignum>string dup
-    "33300140732146818380750772381422989832214186835186851059977249"
-    assert=
-    string>number
-    33300140732146818380750772381422989832214186835186851059977249
-    assert=
-#else
     17   50   expt 3.3300140732146817e+61 assert=
     17.0 50   expt 3.3300140732146817e+61 assert=
     17   50.0 expt 3.3300140732146817e+61 assert=
     17.0 50.0 expt 3.3300140732146817e+61 assert=
-#endif
 ;
 
 string>number-test-3
@@ -719,15 +710,13 @@ test: string>number-test-5
     dup fixnum? assert-true
     most-negative-fixnum assert-eq
 
-#ifdef HAVE_BIGNUMS
     most-positive-fixnum 1 + number>string string>number
-    dup bignum? assert-true
+    dup int64? assert-true
     most-positive-fixnum 1 + assert=
 
     most-negative-fixnum 1 - number>string string>number
-    dup bignum? assert-true
+    dup int64? assert-true
     most-negative-fixnum 1 - assert=
-#endif
 ;
 
 string>number-test-5
