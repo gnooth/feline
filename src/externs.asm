@@ -55,29 +55,6 @@ extern c_random
 extern c_save_backtrace
 extern c_seed_random
 
-; bignum.c
-extern c_bignum_bignum_divide_truncate
-extern c_bignum_bignum_equal
-extern c_bignum_bignum_ge
-extern c_bignum_bignum_gt
-extern c_bignum_bignum_le
-extern c_bignum_bignum_lt
-extern c_bignum_bignum_minus
-extern c_bignum_bignum_mod
-extern c_bignum_bignum_multiply
-extern c_bignum_bignum_plus
-extern c_bignum_fixnum_plus
-extern c_bignum_free
-extern c_bignum_from_signed
-extern c_bignum_from_unsigned
-extern c_bignum_get_str
-extern c_bignum_init_set_si
-extern c_bignum_init_set_ui
-extern c_bignum_negate
-extern c_bignum_sizeinbase
-extern c_decimal_to_integer
-extern c_string_to_integer
-
 ; numbers.c
 extern c_bignum_to_float
 extern c_float_expt
@@ -96,6 +73,7 @@ extern c_float_truncate
 extern c_pi
 extern c_raw_int64_to_float
 extern c_string_to_float
+extern c_string_to_integer
 extern c_decimal_to_number
 
 ; math.c

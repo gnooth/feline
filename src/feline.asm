@@ -56,11 +56,6 @@ IN_FELINE
 %include "fixnum.asm"
 %include "uint64.asm"
 %include "int64.asm"
-
-%ifdef FELINE_FEATURE_BIGNUMS
-%include "bignum.asm"
-%endif
-
 %include "float.asm"
 %include "numbers.asm"
 %include "objects.asm"
