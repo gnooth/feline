@@ -508,11 +508,16 @@ code int64_to_hex, 'int64>hex'          ; int64 -- string
         next
 endcode
 
-; ### max-int64
-code max_int64, 'max-int64'             ; -- int64
-        pushrbx
-        xor     ebx, ebx
-        sub     rbx, 1
+; ### most-positive-int64
+code most_positive_int64, 'most-positive-int64'
+        _lit 9223372036854775807
+        _ new_int64
+        next
+endcode
+
+; ### most-negative-int64
+code most_negative_int64, 'most-negative-int64'
+        _lit 0x8000000000000000
         _ new_int64
         next
 endcode
