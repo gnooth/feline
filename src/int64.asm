@@ -510,14 +510,14 @@ endcode
 
 ; ### most-positive-int64
 code most_positive_int64, 'most-positive-int64'
-        _lit 9223372036854775807
+        _lit MOST_POSITIVE_INT64
         _ new_int64
         next
 endcode
 
 ; ### most-negative-int64
 code most_negative_int64, 'most-negative-int64'
-        _lit 0x8000000000000000
+        _lit MOST_NEGATIVE_INT64
         _ new_int64
         next
 endcode
