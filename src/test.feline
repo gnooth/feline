@@ -672,8 +672,11 @@ test: string>number-test-1
 string>number-test-1
 
 test: string>number-test-2
-    "0b11" string>number 3 assert-eq
-    "0b1100" string>number 12 assert-eq
+    "0b11"    string>number   3 assert-eq
+    "0b1100"  string>number  12 assert-eq
+
+    "-0b11"   string>number  -3 assert-eq
+    "-0b1100" string>number -12 assert-eq
 ;
 
 string>number-test-2
@@ -687,19 +690,12 @@ test: string>number-test-3
 
 string>number-test-3
 
-#ifdef HAVE_BIGNUMS
 test: string>number-test-4
-    17 50 expt bignum>hex
-    "14b904bb5dfc5746304ec45356cee38afa6c6d0414d2dae9cc21"
-    assert=
-    "$14b904bb5dfc5746304ec45356cee38afa6c6d0414d2dae9cc21"
-    string>number
-    $14b904bb5dfc5746304ec45356cee38afa6c6d0414d2dae9cc21
-    assert=
+     "0x7fffffffffffffff" string>number most-positive-int64 assert=
+    "-0x8000000000000000" string>number most-negative-int64 assert=
 ;
 
 string>number-test-4
-#endif
 
 test: string>number-test-5
     most-positive-fixnum number>string string>number
