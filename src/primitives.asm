@@ -1227,18 +1227,35 @@ code string_to_number, 'string>number'  ; string -- n/f
         _quote "0x"
         _over
         _ string_has_prefix?
-        _tagged_if .2
-        _ hex_to_integer
-        _return
-        _then .2
+        cmp     rbx, f_value
+        poprbx
+        jne     hex_to_integer
+
+        _quote "-0x"
+        _over
+        _ string_has_prefix?
+        cmp     rbx, f_value
+        poprbx
+        jne     hex_to_integer
 
         _quote "0b"
         _over
         _ string_has_prefix?
-        _tagged_if .3
+        _tagged_if .2
         _lit tagged_fixnum(2)
         _ string_tail
         _ binary_to_integer
+        _return
+        _then .2
+
+        _quote "-0b"
+        _over
+        _ string_has_prefix?
+        _tagged_if .3
+        _lit tagged_fixnum(3)
+        _ string_tail
+        _ binary_to_integer
+        _ generic_negate
         _return
         _then .3
 
