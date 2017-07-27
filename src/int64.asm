@@ -396,8 +396,15 @@ endcode
 ; ### int64-negate
 code int64_negate, 'int64-negate'       ; n -- -n
         _ check_int64
+        mov     rax, MOST_NEGATIVE_INT64
+        cmp     rbx, rax
+        je      .1
         neg     rbx
         _ new_int64
+        _return
+.1:
+        mov     rbx, MOST_POSITIVE_INT64
+        _ raw_int64_to_float
         next
 endcode
 
