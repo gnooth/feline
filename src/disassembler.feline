@@ -224,9 +224,9 @@ global: relative-size
 
 : next-uint16 ( -- int16 ) ip w@ ip 2 + !> ip ;
 
-: (modrm-mod) ( modrm-byte -- mod ) %11000000 bitand 6 rshift ;
-: (modrm-reg) ( modrm-byte -- reg ) %00111000 bitand 3 rshift ;
-: (modrm-rm)  ( modrm-byte -- rm  ) %00000111 bitand ;
+: (modrm-mod) ( modrm-byte -- mod ) 0b11000000 bitand 6 rshift ;
+: (modrm-reg) ( modrm-byte -- reg ) 0b00111000 bitand 3 rshift ;
+: (modrm-rm)  ( modrm-byte -- rm  ) 0b00000111 bitand ;
 
 global: modrm-mod
 global: modrm-reg
@@ -266,9 +266,9 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
 
 : !sib-byte ( -- ) next-byte !> sib-byte ;
 
-: (sib-scale) ( sib -- scale ) %11000000 bitand 6 rshift ;
-: (sib-index) ( sib -- index ) %00111000 bitand 3 rshift ;
-: (sib-base)  ( sib -- base  ) %00000111 bitand ;
+: (sib-scale) ( sib -- scale ) 0b11000000 bitand 6 rshift ;
+: (sib-index) ( sib -- index ) 0b00111000 bitand 3 rshift ;
+: (sib-base)  ( sib -- base  ) 0b00000111 bitand ;
 
 : sib-scale ( -- scale ) sib-byte (sib-scale) ;
 : sib-index ( -- index ) sib-byte (sib-index) ;
