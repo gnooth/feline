@@ -259,6 +259,19 @@ test: mod-test-1 ( -- )
 
 mod-test-1
 
+test: fixnum-abs-test-1
+     17 fixnum-abs 17 assert-eq
+    -17 fixnum-abs 17 assert-eq
+
+    most-positive-fixnum dup fixnum-abs assert-eq
+    most-positive-fixnum 1 - dup fixnum-abs assert-eq
+
+    most-negative-fixnum 1 + fixnum-abs most-positive-fixnum assert-eq
+    most-negative-fixnum fixnum-abs dup int64? assert most-positive-fixnum 1 + assert=
+;
+
+fixnum-abs-test-1
+
 -- fixnum-bitand, bitand
 test: fixnum-test-9 ( -- )
     15 7 bitand 7 assert=
@@ -388,7 +401,8 @@ test: min-length-test-1
 
 min-length-test-1
 
-test: dip-test-1 ( -- )
+test: dip-test-1
+    clear
     87 42 [ 3 * ] dip get-data-stack vector{ 261 42 } sequence= assert-true
     clear
 ;

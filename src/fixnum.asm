@@ -568,6 +568,24 @@ code fixnum_mod, 'fixnum-mod'           ; x y -- z
         next
 endcode
 
+; ### fixnum-abs
+code fixnum_abs, 'fixnum-abs'           ; x -- y
+        _check_fixnum
+        mov     rax, MOST_NEGATIVE_FIXNUM
+        cmp     rbx, rax
+        je      .1
+        mov     rax, rbx
+        sar     rax, 63
+        xor     rbx, rax
+        sub     rbx, rax
+        _tag_fixnum
+        _return
+.1:
+        neg     rbx
+        _ new_int64
+        next
+endcode
+
 ; ### fixnum-negate
 code fixnum_negate, 'fixnum-negate'     ; n -- -n
         _dup
