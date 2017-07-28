@@ -17,6 +17,7 @@
 #define FELINE_H
 
 #include <stdint.h>             // int64_t
+#include <stdlib.h>
 
 typedef int64_t cell;
 
