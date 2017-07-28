@@ -56,7 +56,6 @@ extern c_save_backtrace
 extern c_seed_random
 
 ; numbers.c
-extern c_bignum_to_float
 extern c_float_expt
 extern c_float_float_divide
 extern c_float_float_ge
@@ -77,8 +76,7 @@ extern c_string_to_integer
 extern c_decimal_to_number
 
 ; math.c
-extern c_bignum_expt
-extern c_fixnum_expt
+extern c_sin
 
 ; socket.c
 extern c_accept_connection

@@ -26,7 +26,6 @@ typedef int64_t cell;
 
 #define make_fixnum(n)  (((cell)n << 3) + 1)
 
-#define TYPECODE_BIGNUM         8
 #define TYPECODE_FLOAT         18
 #define TYPECODE_INT64         23
 
@@ -44,6 +43,9 @@ typedef struct
   cell header;
   double d;
 } Float;
+
+// numbers.c
+Float *make_float(double d);
 
 // os.c
 cell os_ticks();

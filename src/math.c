@@ -13,20 +13,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <math.h>
+
 #include "feline.h"
 
-cell c_fixnum_expt(cell base, cell power)
+cell c_sin(Float *p)
 {
-  mpz_t z;
-  mpz_init(z);
-  mpz_ui_pow_ui(z, (unsigned long int)base, (unsigned long int)power);
-  return normalize(z);
-}
-
-cell c_bignum_expt(Bignum *b, cell power)
-{
-  mpz_t z;
-  mpz_init(z);
-  mpz_pow_ui(z, b->z, (unsigned long int)power);
-  return normalize(z);
+  return (cell) make_float(sin(p->d));
 }

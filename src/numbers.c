@@ -21,7 +21,7 @@
 
 #include "feline.h"
 
-static Float *make_float(double d)
+Float *make_float(double d)
 {
   Float *p = malloc(sizeof(Float));
   p->header = TYPECODE_FLOAT;
