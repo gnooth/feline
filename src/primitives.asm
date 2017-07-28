@@ -526,7 +526,7 @@ code times_, 'times'                    ; tagged-fixnum xt --
         _ callable_raw_code_address     ; -- tagged-fixnum code-address
 
         _swap
-        _untag_fixnum                   ; -- code-address n
+        _check_fixnum                   ; -- code-address n
 
         push    r12
         mov     r12, rbx                ; n in r12
