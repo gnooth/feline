@@ -76,7 +76,7 @@ extern c_string_to_integer
 extern c_decimal_to_number
 
 ; math.c
-extern c_sin
+extern c_float_sin
 
 ; socket.c
 extern c_accept_connection

@@ -17,7 +17,7 @@
 
 #include "feline.h"
 
-cell c_sin(Float *p)
+cell c_float_sin(Float *p)
 {
   return (cell) make_float(sin(p->d));
 }
