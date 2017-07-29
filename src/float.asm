@@ -70,7 +70,7 @@ endcode
         _slot1
 %endmacro
 
-; ### float-raw-value
+; ### float_raw_value
 code float_raw_value, 'float_raw_value', SYMBOL_INTERNAL
 ; float -- raw-value
         _ check_float
