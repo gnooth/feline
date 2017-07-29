@@ -58,6 +58,7 @@ IN_FELINE
 %include "int64.asm"
 %include "float.asm"
 %include "numbers.asm"
+%include "math.asm"
 %include "objects.asm"
 %include "array.asm"
 %include "string.asm"
