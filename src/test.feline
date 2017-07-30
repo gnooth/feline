@@ -2650,13 +2650,6 @@ test: callable?-test-1
 
 callable?-test-1
 
-test: float-truncate-test-1
-     42.7 float-truncate  42 assert-eq
-    -42.7 float-truncate -42 assert-eq
-;
-
-float-truncate-test-1
-
 test: abs-test-1
       0 abs  0 assert-eq
 
@@ -2680,5 +2673,25 @@ test: abs-test-1
 ;
 
 abs-test-1
+
+test: floor-test-1
+    0.0 float-floor 0 assert-eq
+
+    pi float-floor 3 assert-eq
+    pi negate float-floor -4 assert-eq
+
+    most-positive-int64 dup int64-int64+ float-floor 1.8446744073709552e+19 assert=
+;
+
+floor-test-1
+
+test: float-truncate-test-1
+     42.7 float-truncate  42 assert-eq
+    -42.7 float-truncate -42 assert-eq
+
+    most-positive-int64 dup int64-int64+ float-truncate 1.8446744073709552e+19 assert=
+;
+
+float-truncate-test-1
 
 ?nl "Reached end of test.feline" write-string

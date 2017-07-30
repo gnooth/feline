@@ -422,11 +422,47 @@ code float_divide, 'float/f'            ; x y -- z
         next
 endcode
 
+; ### float-floor
+code float_floor, 'float-floor'         ; x -- y
+        _dup                            ; -- handle handle
+        _ check_float                   ; -- handle pointer
+
+        mov     arg0_register, rbx
+        xcall   c_float_floor
+
+        ; If c_float_floor returns its argument (a pointer) here, return x,
+        ; which is already a valid handle wrapping that pointer. If we wrap
+        ; the pointer again here, we'll run into a double free in gc later.
+        cmp     rbx, rax
+        poprbx
+        jne      .1
+        _rep_return
+
+.1:
+        mov     rbx, rax
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     new_handle
+        _rep_return
+endcode
+
 ; ### float-truncate
 code float_truncate, 'float-truncate'   ; x -- y
+        _dup
         _ check_float
+
         mov     arg0_register, rbx
         xcall   c_float_truncate
+
+        ; If c_float_truncate returns its argument (a pointer) here, return x,
+        ; which is already a valid handle wrapping that pointer. If we wrap
+        ; the pointer again here, we'll run into a double free in gc later.
+        cmp     rbx, rax
+        poprbx
+        jne     .1
+        _rep_return
+
+.1:
         mov     rbx, rax
         and     al, TAG_MASK
         cmp     al, FIXNUM_TAG
