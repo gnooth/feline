@@ -454,13 +454,22 @@ code float_negate, 'float-negate'               ; n -- -n
 endcode
 
 ; ### float-neg?
-code float_neg?, 'float-neg?'                   ; x -- ?
-        _ check_float
-        _slot1
+code float_neg?, 'float-neg?'           ; x -- ?
+        _ float_raw_value
         test    rbx, rbx
         mov     ebx, f_value
         mov     eax, t_value
         cmovs   ebx, eax
+        next
+endcode
+
+; ### float-abs
+code float_abs, 'float-abs'             ; x -- y
+        _dup
+        _ float_neg?
+        _tagged_if .1
+        _ float_negate
+        _then .1
         next
 endcode
 

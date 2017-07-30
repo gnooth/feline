@@ -460,6 +460,24 @@ code int64_mod, 'int64-mod'             ; x y -- z
         next
 endcode
 
+; ### int64-abs
+code int64_abs, 'int64-abs'             ; x -- y
+        _ check_int64
+        mov     rax, MOST_NEGATIVE_INT64
+        cmp     rbx, rax
+        je      .1
+        mov     rax, rbx
+        sar     rax, 63
+        xor     rbx, rax
+        sub     rbx, rax
+        _ new_int64
+        _return
+.1:
+        _ int64_to_float
+        _ float_negate
+        next
+endcode
+
 ; ### raw_int64_to_hex
 code raw_int64_to_hex, 'raw_int64_to_hex', SYMBOL_INTERNAL      ; raw-int64 -- string
 
