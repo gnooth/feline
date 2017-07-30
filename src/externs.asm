@@ -56,6 +56,7 @@ extern c_save_backtrace
 extern c_seed_random
 
 ; numbers.c
+extern c_decimal_to_number
 extern c_float_expt
 extern c_float_float_divide
 extern c_float_float_ge
@@ -65,6 +66,7 @@ extern c_float_float_lt
 extern c_float_float_minus
 extern c_float_float_multiply
 extern c_float_float_plus
+extern c_float_floor
 extern c_float_negate
 extern c_float_sqrt
 extern c_float_to_string
@@ -73,7 +75,6 @@ extern c_pi
 extern c_raw_int64_to_float
 extern c_string_to_float
 extern c_string_to_integer
-extern c_decimal_to_number
 
 ; math.c
 extern c_float_sin

@@ -182,6 +182,20 @@ cell c_float_float_divide(Float *p1, Float *p2)
   return (cell) make_float(p1->d / p2->d);
 }
 
+cell c_float_floor(Float *p)
+{
+  // Return a tagged fixnum or the raw pointer returned by make_int64 if
+  // no overflow. Otherwise, return p.
+
+  double d = floor(p->d);
+  int64_t n = (int64_t) d;
+  if (n >= MOST_NEGATIVE_FIXNUM && n <= MOST_POSITIVE_FIXNUM)
+    return make_fixnum(n);
+  if (n > INT64_MIN && n < INT64_MAX)
+    return (cell) make_int64(n);
+  return (cell) p;
+}
+
 cell c_float_truncate(Float *p)
 {
   // Return a tagged fixnum or the raw pointer returned by make_int64 if
