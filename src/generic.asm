@@ -375,6 +375,9 @@ generic generic_divide, '/'             ; x y -- z
 ; ### /i
 generic generic_divide_truncate, '/i'   ; x y -- z
 
+; ### abs
+generic generic_abs, 'abs'              ; x -- y
+
 ; ### mod
 generic generic_mod, 'mod'              ; x y -- z
 
@@ -500,6 +503,12 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method generic_divide_truncate, TYPECODE_FIXNUM, fixnum_divide_truncate
         _add_method generic_divide_truncate, TYPECODE_INT64, int64_divide_truncate
         _add_method generic_divide_truncate, TYPECODE_FLOAT, float_divide_truncate
+
+        ; abs
+        _initialize_generic_function generic_abs
+        _add_method generic_abs, TYPECODE_FIXNUM, fixnum_abs
+        _add_method generic_abs, TYPECODE_INT64, int64_abs
+        _add_method generic_abs, TYPECODE_FLOAT, float_abs
 
         ; mod
         _initialize_generic_function generic_mod
