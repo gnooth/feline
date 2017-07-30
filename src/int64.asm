@@ -473,8 +473,8 @@ code int64_abs, 'int64-abs'             ; x -- y
         _ new_int64
         _return
 .1:
-        _ int64_to_float
-        _ float_negate
+        mov     rbx, MOST_POSITIVE_INT64
+        _ raw_int64_to_float
         next
 endcode
 
