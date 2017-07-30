@@ -2657,4 +2657,28 @@ test: float-truncate-test-1
 
 float-truncate-test-1
 
+test: abs-test-1
+      0 abs  0 assert-eq
+
+     42 abs 42 assert-eq
+    -42 abs 42 assert-eq
+
+    most-positive-fixnum dup abs assert-eq
+    most-positive-fixnum dup negate abs assert-eq
+
+    most-negative-fixnum abs int64? assert
+    most-negative-fixnum abs most-negative-fixnum negate assert=
+
+    most-positive-int64 dup abs assert=
+    most-positive-int64 dup negate abs assert=
+
+    most-negative-int64 abs float? assert
+    most-negative-int64 abs most-positive-int64 assert=
+
+    pi dup abs assert-eq
+    pi dup negate abs assert=
+;
+
+abs-test-1
+
 ?nl "Reached end of test.feline" write-string
