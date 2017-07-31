@@ -386,6 +386,56 @@ code int64_divide_truncate, 'int64/i'   ; x y -- z
         next
 endcode
 
+; ### fixnum-int64/f
+code fixnum_int64_divide_float, 'fixnum-int64/f'        ; x y -- z
+        _ int64_to_float
+        _swap
+        _ fixnum_to_float
+        _swap
+        _ float_float_divide
+        next
+endcode
+
+; ### int64-int64/f
+code int64_int64_divide_float, 'int64-int64/f'  ; x y -- z
+        _ int64_to_float
+        _swap
+        _ int64_to_float
+        _swap
+        _ float_float_divide
+        next
+endcode
+
+; ### int64/f
+code int64_divide_float, 'int64/f'      ; x y -- z
+
+        ; second arg must be int64
+        _ verify_int64
+
+        ; dispatch on type of first arg
+        _over
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx
+
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_int64_divide_float
+
+        cmp     rax, TYPECODE_INT64
+        je      int64_int64_divide_float
+
+        cmp     rax, TYPECODE_FLOAT
+        jne     .1
+        _ int64_to_float
+        _ float_float_divide
+        _return
+
+.1:
+        _drop
+        _ error_not_number
+        next
+endcode
+
 ; ### fixnum>int64
 code fixnum_to_int64, 'fixnum>int64'    ; fixnum -- int64
         _check_fixnum
