@@ -493,9 +493,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         ; /
         _initialize_generic_function generic_divide
         _add_method generic_divide, TYPECODE_FIXNUM, fixnum_divide_float
-%ifdef FELINE_FEATURE_BIGNUMS
-        _add_method generic_divide, TYPECODE_BIGNUM, bignum_divide_float
-%endif
+        _add_method generic_divide, TYPECODE_INT64, int64_divide_float
         _add_method generic_divide, TYPECODE_FLOAT, float_divide
 
         ; /i
