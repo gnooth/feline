@@ -460,47 +460,42 @@ code fixnum_fixnum_divide_float, 'fixnum-fixnum/f'      ; x y -- z
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum-fixnum/f
-code bignum_fixnum_divide_float, 'bignum-fixnum/f'      ; x y -- z
+; ### int64-fixnum/f
+code int64_fixnum_divide_float, 'int64-fixnum/f'        ; x y -- z
         _ fixnum_to_float
         _swap
-        _ bignum_to_float
+        _ int64_to_float
         _swap
         _ float_float_divide
         next
 endcode
-%endif
 
 ; ### fixnum/f
 code fixnum_divide_float, 'fixnum/f'    ; x y -- z
+        ; second arg must be int64
         _ verify_fixnum
 
-        _over_fixnum?_if .1
-        _ fixnum_fixnum_divide_float
-        _return
-        _then .1
-
-%ifdef FELINE_FEATURE_BIGNUMS
+        ; dispatch on type of first arg
         _over
-        _ bignum?
-        _tagged_if .2
-        _ bignum_fixnum_divide_float
-        _return
-        _then .2
-%endif
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx
 
-        _over
-        _ float?
-        _tagged_if .3
-        _ fixnum_to_float
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_fixnum_divide_float
+
+        cmp     rax, TYPECODE_INT64
+        je      int64_fixnum_divide_float
+
+        cmp     rax, TYPECODE_FLOAT
+        jne     .1
+        _ int64_to_float
         _ float_float_divide
         _return
-        _then .3
 
+.1:
         _drop
         _ error_not_number
-
         next
 endcode
 
