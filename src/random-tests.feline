@@ -236,6 +236,22 @@ test: test-13
 test-13
 #endif
 
+: %test-14
+    random-integer !> x
+    random-integer !> y
+    ?echo
+    x y / y * x 2dup = [
+        2drop
+    ] [
+        ' >float bi@ float-distance 1 <= assert
+    ] if
+;
+
+test: test-14
+    #reps ' %test-14 times ;
+
+test-14
+
 f !> x
 f !> y
 
