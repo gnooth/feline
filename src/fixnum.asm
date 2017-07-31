@@ -190,22 +190,6 @@ code fixnum_fixnum_minus, 'fixnum-fixnum-'      ; fixnum1 fixnum2 -- difference
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum-fixnum+
-code bignum_fixnum_plus, 'bignum-fixnum+'       ; bignum fixnum -- sum
-        ; second arg must be a fixnum
-        _ verify_fixnum
-        _ fixnum_to_bignum
-
-        ; first arg must be a bignum
-        _swap
-        _ verify_bignum
-
-        _ bignum_bignum_plus
-        next
-endcode
-%endif
-
 ; ### int64-fixnum-
 code int64_fixnum_minus, 'int64-fixnum-'        ; int64 fixnum -- difference
         _check_fixnum
@@ -298,48 +282,19 @@ code fixnum_fixnum_multiply, 'fixnum-fixnum*'   ; x y -- z
         _nip
         _return
 
-%ifdef FELINE_FEATURE_BIGNUMS
-
-.2:
-        _ signed_to_bignum
-        _nip
-        _return
-.1:
-        mov     rbx, rax
-        _ signed_to_bignum
-        _swap
-        _ signed_to_bignum
-        _ bignum_bignum_multiply
-
-%else
-
 .2:
         _ raw_int64_to_float
         _nip
         _return
+
 .1:
         mov     rbx, rax
         _ raw_int64_to_float
         _swap
         _ raw_int64_to_float
         _ float_float_multiply
-
-%endif
-
         next
 endcode
-
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum-fixnum*
-code bignum_fixnum_multiply, 'bignum-fixnum*'   ; x y -- z
-        _check_fixnum
-        _ signed_to_bignum
-        _swap
-        _ verify_bignum
-        _ bignum_bignum_multiply
-        next
-endcode
-%endif
 
 ; ### fixnum*
 code fixnum_multiply, 'fixnum*'         ; x y -- z
@@ -513,18 +468,6 @@ code fixnum_fixnum_mod, 'fixnum-fixnum-mod'     ; x y -- z
         _tag_fixnum
         next
 endcode
-
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum-fixnum-mod
-code bignum_fixnum_mod, 'bignum-fixnum-mod'     ; x y -- z
-        _ fixnum_to_bignum
-        _swap
-        _ verify_bignum
-        _swap
-        _ bignum_bignum_mod
-        next
-endcode
-%endif
 
 ; ### int64-fixnum-mod
 code int64_fixnum_mod, 'int64-fixnum-mod'       ; x y -- z
