@@ -283,12 +283,45 @@ code fixnum_fixnum_multiply, 'fixnum-fixnum*'   ; x y -- z
         _return
 
 .2:
-        _ raw_int64_to_float
+        _ new_int64
         _nip
         _return
 
 .1:
         mov     rbx, rax
+        _ raw_int64_to_float
+        _swap
+        _ raw_int64_to_float
+        _ float_float_multiply
+        next
+endcode
+
+; ### int64-fixnum*
+code int64_fixnum_multiply, 'int64-fixnum*'     ; x y -- z
+        _check_fixnum
+        _swap
+        _ check_int64
+        mov     rax, rbx
+        imul    qword [rbp]             ; product in rdx:rax
+        jo      .1
+        mov     rcx, MOST_POSITIVE_FIXNUM
+        cmp     rax, rcx
+        jg      .2
+        mov     rdx, MOST_NEGATIVE_FIXNUM
+        cmp     rax, rdx
+        jl      .2
+        mov     rbx, rax
+        _tag_fixnum
+        _nip
+        _return
+
+.2:
+        mov     rbx, rax
+        _ new_int64
+        _nip
+        _return
+
+.1:
         _ raw_int64_to_float
         _swap
         _ raw_int64_to_float
@@ -303,32 +336,23 @@ code fixnum_multiply, 'fixnum*'         ; x y -- z
         _verify_fixnum
 
         ; dispatch on type of first arg
-        mov     al, byte [rbp]
-        and     al, TAG_MASK
-        cmp     al, FIXNUM_TAG
+        _over
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx                          ; -- x y
+
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_fixnum_multiply
+
+        cmp     rax, TYPECODE_INT64
+        je      int64_fixnum_multiply
+
+        cmp     rax, TYPECODE_FLOAT
         jne     .1
-        _ fixnum_fixnum_multiply
-        _return
+        _ fixnum_to_float
+        jmp     float_float_multiply
 
 .1:
-
-%ifdef FELINE_FEATURE_BIGNUMS
-        _over
-        _ bignum?
-        _tagged_if .2
-        _ bignum_fixnum_multiply
-        _return
-        _then .2
-%endif
-
-        _over
-        _ float?
-        _tagged_if .3
-        _ fixnum_to_float
-        _ float_float_multiply
-        _return
-        _then .3
-
         _drop
         _ error_not_number
         next
