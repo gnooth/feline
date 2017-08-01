@@ -298,7 +298,7 @@ code fixnum_int64_multiply, 'fixnum-int64*'     ; x y -- z
 endcode
 
 ; ### int64-int64*
-code int64_int64_multiply, 'int64_int64*'       ; x y -- z
+code int64_int64_multiply, 'int64-int64*'       ; x y -- z
         _ check_int64
         _swap
         _ check_int64
@@ -307,7 +307,7 @@ code int64_int64_multiply, 'int64_int64*'       ; x y -- z
 endcode
 
 ; ### int64*
-code int64_multiply, 'int64*'              ; x y -- z
+code int64_multiply, 'int64*'           ; x y -- z
 
         ; second arg must be int64
         _ verify_int64
