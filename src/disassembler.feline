@@ -1297,6 +1297,16 @@ last-word 0xf6 install-handler
                 [ unsupported ]
             } case
         ] }
+        { 5 [
+            modrm-mod {
+                { 1 [
+                    modrm-rm register-rm !> dbase
+                    next-signed-byte !> ddisp
+                ] }
+                [ unsupported ]
+            } case
+            1 !> #operands
+        ] }
         [
             -- default case
             drop
