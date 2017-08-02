@@ -161,7 +161,6 @@ endcode
 ; ### vocab-words
 code vocab_words, 'vocab-words'         ; vocab-spec -- seq
         _ lookup_vocab                  ; -- vocab/f
-        _dup
         _tagged_if .1
         _ vocab_hashtable
         _ hashtable_values
@@ -186,7 +185,6 @@ endcode
 ; ### ensure-symbol
 code ensure_symbol, 'ensure-symbol'     ; name vocab-spec -- symbol
         _ lookup_vocab
-        _dup
         _tagged_if_not .1
         _drop
         _error "vocab not found"
@@ -261,7 +259,6 @@ endcode
 ; ### ?lookup-symbol
 code ?lookup_symbol, '?lookup-symbol'   ; name vocab-spec -- symbol/f
         _ lookup_vocab
-        _dup
         _tagged_if_not .1
         _nip
         _return

@@ -144,10 +144,11 @@ code ap, 'ap'                           ; --
 endcode
 
 ; ### lookup-vocab
-code lookup_vocab, 'lookup-vocab'       ; vocab-specifier -- vocab/f
+code lookup_vocab, 'lookup-vocab'       ; vocab-specifier -- vocab/f ?
         _dup
         _ vocab?
         _tagged_if .1
+        _t
         _return
         _then .1
 
@@ -156,7 +157,7 @@ code lookup_vocab, 'lookup-vocab'       ; vocab-specifier -- vocab/f
         _ dictionary
         _dup
         _tagged_if .2
-        _ hashtable_at
+        _ hashtable_at_star
         _return
         _else .2
         _drop
@@ -168,7 +169,9 @@ code lookup_vocab, 'lookup-vocab'       ; vocab-specifier -- vocab/f
         _ stringequal
         _tagged_if .3
         _ feline_vocab
+        _t
         _else .3
+        _f
         _f
         _then .3
 
@@ -198,8 +201,7 @@ endcode
 code ensure_vocab, 'ensure-vocab'       ; string -- vocab
         _ verify_string
         _dup                            ; -- string string
-        _ lookup_vocab                  ; -- string vocab/f
-        _dup
+        _ lookup_vocab                  ; -- string vocab/f ?
         _tagged_if .1                   ; -- string vocab
         _nip                            ; -- vocab
         _else .1                        ; -- string f
@@ -225,7 +227,6 @@ endcode
 ; ### using-vocab?
 code using_vocab?, 'using-vocab?'       ; vocab-specifier -- ?
         _ lookup_vocab
-        _dup
         _tagged_if .1
         _ context_vector
         _ member_eq?
@@ -243,7 +244,6 @@ code use_vocab, 'use-vocab'             ; vocab-specifier --
         _then .1
 
         _ lookup_vocab
-        _dup
         _tagged_if_not .2
         _drop
         _error "can't find vocab"
@@ -265,7 +265,6 @@ code maybe_use_vocab, 'maybe-use-vocab' ; vocab-specifier --
         _then .1
 
         _ lookup_vocab
-        _dup
         _tagged_if .2
         _ context_vector
         _ vector_push
@@ -285,7 +284,6 @@ endcode
 ; ### unuse-vocab
 code unuse_vocab, 'unuse-vocab'         ; vocab-specifier --
         _ lookup_vocab
-        _dup
         _tagged_if_not .1
         _drop
         _return

@@ -81,7 +81,6 @@ code restore_search_order, 'restore-search-order'
         _ saved_current_vocab
         _ get
         _ lookup_vocab
-        _dup
         _tagged_if_not .1
         _drop
         _ user_vocab

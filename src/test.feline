@@ -1150,20 +1150,20 @@ test: tuple-test-1 ( -- )
 
 tuple-test-1
 
-test: vocab?-test-1 ( -- )
+test: vocab?-test-1
     42 vocab? assert-false
     "feline" vocab? assert-false
-    "feline" lookup-vocab vocab? assert-true
+    "feline" lookup-vocab ( vocab ? ) assert-true vocab? assert-true
 ;
 
 vocab?-test-1
 
-test: lookup-vocab-test-1 ( -- )
-    "feline" lookup-vocab vocab? assert-true
-    "feline" lookup-vocab ( vocab ) lookup-vocab vocab? assert-true
-    "feline" lookup-vocab ( vocab ) dup lookup-vocab assert-eq
-    current-vocab lookup-vocab vocab? assert-true
-    "not a vocab" lookup-vocab vocab? assert-false
+test: lookup-vocab-test-1
+    "feline" lookup-vocab ( vocab ? ) assert-true vocab? assert-true
+    "feline" lookup-vocab ( vocab ? ) assert-true ( vocab ) lookup-vocab assert-true vocab? assert-true
+    "feline" lookup-vocab ( vocab ? ) assert-true ( vocab ) dup lookup-vocab assert-true assert-eq
+    current-vocab lookup-vocab assert-true vocab? assert-true
+    "not a vocab" lookup-vocab assert-false vocab? assert-false
 ;
 
 lookup-vocab-test-1

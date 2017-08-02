@@ -323,7 +323,6 @@ code create_symbol, 'create-symbol'     ; name vocab -- symbol
 ; REVIEW does not check for redefinition
 
         _ lookup_vocab
-        _dup
         _tagged_if_not .1
         _error "no such vocab"
         _then .1                        ; -- name vocab
