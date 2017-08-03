@@ -243,16 +243,33 @@ code use_vocab, 'use-vocab'             ; vocab-specifier --
         _return
         _then .1
 
+        _dup
         _ lookup_vocab
-        _tagged_if_not .2
-        _drop
-        _error "can't find vocab"
+        _tagged_if .2
+        _nip
+        _ context_vector
+        _ vector_push
         _return
         _then .2
 
+        _drop
+
+        _dup
+        _ verify_string
+        _quote ".feline"
+        _ concat
+        _ load_system_file
+
+        _ lookup_vocab
+        _tagged_if .3
         _ context_vector
         _ vector_push
-        next
+        _return
+        _then .3
+
+        _error "can't find vocab"
+
+         next
 endcode
 
 ; ### maybe-use-vocab
