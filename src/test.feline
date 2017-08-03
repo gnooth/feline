@@ -2692,4 +2692,16 @@ test: float-truncate-test-1
 
 float-truncate-test-1
 
+test: fixnum/f-test-1
+    42 4 fixnum/f 10.5 assert=
+    42 fixnum>int64 dup int64? assert-true 4 fixnum/f 10.5 assert=
+    42.0 4 fixnum/f 10.5 assert=
+
+    most-positive-fixnum 1 + 2 fixnum/f 5.7646075230342349e+17 assert=
+
+    most-negative-fixnum 2 fixnum/f -5.7646075230342349e+17 assert=
+;
+
+fixnum/f-test-1
+
 ?nl "Reached end of test.feline" write-string

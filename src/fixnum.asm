@@ -451,7 +451,8 @@ endcode
 
 ; ### fixnum/f
 code fixnum_divide_float, 'fixnum/f'    ; x y -- z
-        ; second arg must be int64
+
+        ; second arg must be a fixnum
         _ verify_fixnum
 
         ; dispatch on type of first arg
@@ -468,7 +469,7 @@ code fixnum_divide_float, 'fixnum/f'    ; x y -- z
 
         cmp     rax, TYPECODE_FLOAT
         jne     .1
-        _ int64_to_float
+        _ fixnum_to_float
         _ float_float_divide
         _return
 
