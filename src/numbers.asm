@@ -246,59 +246,6 @@ code int64_lt, 'int64<'                 ; x y -- ?
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### float-bignum<
-code float_bignum_lt, 'float-bignum<'           ; float bignum -- ?
-        _ bignum_to_float
-        _ float_float_lt
-        next
-endcode
-
-; ### fixnum-bignum<
-code fixnum_bignum_lt, 'fixnum-bignum<'         ; fixnum bignum -- ?
-        _ verify_bignum
-        _swap
-        _ fixnum_to_bignum
-        _swap
-        _ bignum_bignum_lt
-        next
-endcode
-
-; ### bignum<
-code bignum_lt, 'bignum<'               ; number bignum -- ?
-
-        ; second arg must be a bignum
-        _ verify_bignum
-
-        ; dispatch on type of first arg
-        mov     al, byte [rbp]
-        and     al, TAG_MASK
-        cmp     al, FIXNUM_TAG
-        jne     .1
-        _ fixnum_bignum_lt
-        _return
-
-.1:
-        _over
-        _ bignum?
-        _tagged_if .2
-        _ bignum_bignum_lt
-        _return
-        _then .2
-
-        _over
-        _ float?
-        _tagged_if .3
-        _ float_bignum_lt
-        _return
-        _then .3
-
-        _drop
-        _ error_not_number
-        next
-endcode
-%endif
-
 ; ### float-float<
 code float_float_lt, 'float-float<'     ; float1 float2 -- ?
         _ check_float
@@ -394,28 +341,6 @@ code int64_int64_le, 'int64-int64<='    ; x y -- ?
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum-bignum<=
-code bignum_bignum_le, 'bignum-bignum<='        ; bignum1 bignum2 -- ?
-        _ check_bignum
-        _swap
-        _ check_bignum
-        _swap
-
-        mov     arg1_register, rbx
-        poprbx
-        mov     arg0_register, rbx
-        poprbx
-
-        xcall c_bignum_bignum_le
-
-        pushrbx
-        mov     rbx, rax
-
-        next
-endcode
-%endif
-
 ; ### int64-fixnum<=
 code int64_fixnum_le, 'int64-fixnum<='          ; int64 fixnum -- ?
         _ fixnum_to_int64
@@ -429,18 +354,6 @@ code float_fixnum_le, 'float-fixnum<='          ; float fixnum -- ?
         _ float_float_le
         next
 endcode
-
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### fixnum-bignum<=
-code fixnum_bignum_le, 'bignum-fixnum<='        ; fixnum bignum -- ?
-        _ verify_bignum
-        _swap
-        _ fixnum_to_bignum
-        _swap
-        _ bignum_bignum_le
-        next
-endcode
-%endif
 
 ; ### fixnum-int64<=
 code fixnum_int64_le, 'fixnum-int64<='          ; fixnum int64 -- ?
@@ -511,35 +424,6 @@ code fixnum_le, 'fixnum<='      ; number fixnum -- ?
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum<=
-code bignum_le, 'bignum<='              ; number bignum -- ?
-
-        ; second arg must be a bignum
-        _ verify_bignum
-
-        ; dispatch on type of first arg
-        mov     al, byte [rbp]
-        and     al, TAG_MASK
-        cmp     al, FIXNUM_TAG
-        jne     .1
-        _ fixnum_bignum_le
-        _return
-
-.1:
-        _over
-        _ bignum?
-        _tagged_if .2
-        _ bignum_bignum_le
-        _return
-        _then .2
-
-        _drop
-        _ error_not_number
-        next
-endcode
-%endif
-
 ; ### int64<=
 code int64_le, 'int64<='                ; number int64 -- ?
 
@@ -584,17 +468,6 @@ code int64_float_le, 'int64-float<='            ; int64 float -- ?
         _ float_float_le
         next
 endcode
-
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum-float<=
-code bignum_float_le, 'bignum-float<='          ; bignum float -- ?
-        _swap
-        _ bignum_to_float
-        _swap
-        _ float_float_le
-        next
-endcode
-%endif
 
 ; ### float<=
 code float_le, 'float<='                        ; number float -- ?
@@ -764,79 +637,6 @@ code int64_gt, 'int64>'                 ; x y -- ?
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum-bignum>
-code bignum_bignum_gt, 'bignum-bignum>'         ; bignum1 bignum2 -- ?
-        _ check_bignum
-        _swap
-        _ check_bignum
-        _swap
-
-        mov     arg1_register, rbx
-        poprbx
-        mov     arg0_register, rbx
-        poprbx
-
-        xcall c_bignum_bignum_gt
-
-        pushrbx
-        mov     rbx, rax
-
-        next
-endcode
-
-; ### float-bignum>
-code float_bignum_gt, 'float-bignum>'         ; float bignum -- ?
-        _ bignum_to_float
-        _ float_float_gt
-        next
-endcode
-
-; ### fixnum-bignum>
-code fixnum_bignum_gt, 'fixnum-bignum>'         ; fixnum bignum -- ?
-        _ verify_bignum
-        _swap
-        _ fixnum_to_bignum
-        _swap
-        _ bignum_bignum_gt
-        next
-endcode
-
-; ### bignum>
-code bignum_gt, 'bignum>'                       ; number bignum -- ?
-
-        ; second arg must be a bignum
-        _ verify_bignum
-
-        ; dispatch on type of first arg
-        mov     al, byte [rbp]
-        and     al, TAG_MASK
-        cmp     al, FIXNUM_TAG
-        jne     .1
-        _ fixnum_bignum_gt
-        _return
-
-.1:
-        _over
-        _ bignum?
-        _tagged_if .2
-        _ bignum_bignum_gt
-        _return
-        _then .2
-
-        _over
-        _ float?
-        _tagged_if .3
-        _ float_bignum_gt
-        _return
-        _then .3
-
-        _drop
-        _ error_not_number
-        next
-endcode
-%endif
-
 ; ### fixnum-float>
 code fixnum_float_gt, 'fixnum-float>'   ; fixnum float -- ?
         _swap
@@ -881,72 +681,6 @@ code float_gt, 'float>'                 ; x y -- ?
 
         next
 endcode
-
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum-bignum>=
-code bignum_bignum_ge, 'bignum-bignum>='        ; bignum1 bignum2 -- ?
-        _ check_bignum
-        _swap
-        _ check_bignum
-        _swap
-
-        mov     arg1_register, rbx
-        poprbx
-        mov     arg0_register, rbx
-        poprbx
-
-        xcall c_bignum_bignum_ge
-
-        pushrbx
-        mov     rbx, rax
-
-        next
-endcode
-
-; ### fixnum-bignum>=
-code fixnum_bignum_ge, 'fixnum-bignum>='        ; fixnum bignum -- ?
-        _ verify_bignum
-        _swap
-        _ fixnum_to_bignum
-        _swap
-        _ bignum_bignum_ge
-        next
-endcode
-
-; ### bignum>=
-code bignum_ge, 'bignum>='              ; number bignum -- ?
-
-        ; second arg must be a bignum
-        _ verify_bignum
-
-        ; dispatch on type of first arg
-        mov     al, byte [rbp]
-        and     al, TAG_MASK
-        cmp     al, FIXNUM_TAG
-        jne     .1
-        _ fixnum_bignum_ge
-        _return
-
-.1:
-        _over
-        _ bignum?
-        _tagged_if .2
-        _ bignum_bignum_ge
-        _return
-        _then .2
-
-        _over
-        _ float?
-        _tagged_if .3
-        _ float_bignum_ge
-        _return
-        _then .3
-
-        _drop
-        _ error_not_number
-        next
-endcode
-%endif
 
 ; ### fixnum-int64>=
 code fixnum_int64_ge, 'fixnum-int64>='          ; fixnum int64 -- ?
@@ -1045,15 +779,6 @@ code float_float_ge, 'float-float>='            ; float1 float2 -- ?
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### float-bignum>=
-code float_bignum_ge, 'float-bignum>='  ; float bignum -- ?
-        _ bignum_to_float
-        _ float_float_ge
-        next
-endcode
-%endif
-
 ; ### int64-fixnum>=
 code int64_fixnum_ge, 'int64-fixnum>='  ; x y -- ?
         _check_fixnum
@@ -1065,7 +790,7 @@ code int64_fixnum_ge, 'int64-fixnum>='  ; x y -- ?
 endcode
 
 ; ### float-fixnum>=
-code float_fixnum_ge, 'float-fixnum>='          ; bignum fixnum -- ?
+code float_fixnum_ge, 'float-fixnum>='          ; float fixnum -- ?
         _ fixnum_to_float
         _ float_float_ge
         next
@@ -1109,17 +834,6 @@ code fixnum_float_ge, 'fixnum-float>='          ; fixnum float -- ?
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum-float>=
-code bignum_float_ge, 'bignum-float>='          ; bignum float -- ?
-        _swap
-        _ bignum_to_float
-        _swap
-        _ float_float_ge
-        next
-endcode
-%endif
-
 ; ### float>=
 code float_ge, 'float>='                        ; number float -- ?
         _ verify_float
@@ -1135,15 +849,6 @@ code float_ge, 'float>='                        ; number float -- ?
         _ fixnum_float_ge
         _return
         _then .2
-
-%ifdef FELINE_FEATURE_BIGNUMS
-        _over
-        _ bignum?
-        _tagged_if .3
-        _ bignum_float_ge
-        _return
-        _then .3
-%endif
 
         _drop
         _ error_not_number
