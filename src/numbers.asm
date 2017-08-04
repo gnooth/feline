@@ -773,26 +773,6 @@ code fixnum_fixnum_ge, 'fixnum-fixnum>='        ; fixnum1 fixnum2 -- ?
         next
 endcode
 
-; ### float-float>=
-code float_float_ge, 'float-float>='            ; float1 float2 -- ?
-        _ check_float
-        _swap
-        _ check_float
-        _swap
-
-        mov     arg1_register, rbx
-        poprbx
-        mov     arg0_register, rbx
-        poprbx
-
-        xcall c_float_float_ge
-
-        pushrbx
-        mov     rbx, rax
-
-        next
-endcode
-
 ; ### int64-fixnum>=
 code int64_fixnum_ge, 'int64-fixnum>='  ; x y -- ?
         _check_fixnum
@@ -840,7 +820,7 @@ code fixnum_ge, 'fixnum>='                      ; number fixnum -- ?
 endcode
 
 ; ### fixnum-float>=
-code fixnum_float_ge, 'fixnum-float>='          ; fixnum float -- ?
+code fixnum_float_ge, 'fixnum-float>='  ; fixnum float -- ?
         _swap
         _ fixnum_to_float
         _swap
@@ -848,21 +828,55 @@ code fixnum_float_ge, 'fixnum-float>='          ; fixnum float -- ?
         next
 endcode
 
+; ### int64-float>=
+code int64_float_ge, 'int64-float>='    ; int64 float -- ?
+        _swap
+        _ int64_to_float
+        _swap
+        _ float_float_ge
+        next
+endcode
+
+; ### float-float>=
+code float_float_ge, 'float-float>='            ; float1 float2 -- ?
+        _ check_float
+        _swap
+        _ check_float
+        _swap
+
+        mov     arg1_register, rbx
+        poprbx
+        mov     arg0_register, rbx
+        poprbx
+
+        xcall c_float_float_ge
+
+        pushrbx
+        mov     rbx, rax
+
+        next
+endcode
+
 ; ### float>=
-code float_ge, 'float>='                        ; number float -- ?
+code float_ge, 'float>='                ; number float -- ?
+
+        ; second arg must be a float
         _ verify_float
 
+        ; dispatch on type of first arg
         _over
-        _ float?
-        _tagged_if .1
-        _ float_float_ge
-        _return
-        _then .1
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx                          ; -- x y
 
-        _over_fixnum?_if .2
-        _ fixnum_float_ge
-        _return
-        _then .2
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_float_ge
+
+        cmp     rax, TYPECODE_INT64
+        je      int64_float_ge
+
+        cmp     rax, TYPECODE_FLOAT
+        je      float_float_ge
 
         _drop
         _ error_not_number
