@@ -22,23 +22,7 @@ in: random-tests
 
 : t/f? ( -- ? ) random-fixnum 1 bitand zero? ;
 
--- : random-sign ( -- +1/-1 ) t/f? 1 -1 ? ;
-
-#ifdef HAVE_BIGNUMS
-: random-bignum ( -- bignum )
-    random t/f? [ most-positive-fixnum + ] [ most-negative-fixnum - ] if ;
-#endif
-
--- : random-fixnum ( -- fixnum )
---     random t/f? [ negate ] when ;
-
-#ifdef HAVE_BIGNUMS
-: random-integer ( -- integer )
-    t/f? ' random-bignum ' random-fixnum if ;
-#else
--- : random-integer ( -- integer ) random-fixnum ;
 : random-integer ( -- integer ) t/f? ' random-int64 ' random-fixnum if ;
-#endif
 
 : random-float ( -- float)
 --     random-integer >float
@@ -251,6 +235,21 @@ test: test-14
     #reps ' %test-14 times ;
 
 test-14
+
+: %test-15
+    random-integer !> x
+    random-float !> y
+    ?echo
+    x y <= [ x y > assert-false ] when
+    x y >= [ x y < assert-false ] when
+    y x <= [ y x > assert-false ] when
+    y x >= [ y x < assert-false ] when
+;
+
+test: test-15
+    #reps ' %test-15 times ;
+
+test-15
 
 f !> x
 f !> y
