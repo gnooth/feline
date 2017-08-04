@@ -193,19 +193,25 @@ fixnum>=-test-1
 
 -- >=
 test: >=-test-1 ( -- )
-    0 0 >= assert-true
-    1 1 >= assert-true
-    1 2 >= assert-false
-    2 1 >= assert-true
+     0  0 >= assert-true
+     1  1 >= assert-true
+     1  2 >= assert-false
+     2  1 >= assert-true
     -2 -1 >= assert-false
     -1 -2 >= assert-true
-    -2 1 >= assert-false
-    1 -2 >= assert-true
+    -2  1 >= assert-false
+     1 -2 >= assert-true
+
     most-negative-fixnum 0 >= assert-false
+    0 most-positive-fixnum >= assert-false
+
     most-negative-fixnum most-positive-fixnum >= assert-false
     most-negative-fixnum most-negative-fixnum >= assert-true
     most-positive-fixnum most-positive-fixnum >= assert-true
-    0 most-positive-fixnum >= assert-false
+    most-positive-fixnum most-negative-fixnum >= assert-true
+
+    most-positive-int64 0.0 >= assert-true
+    most-negative-int64 0.0 >= assert-false
 ;
 
 >=-test-1
