@@ -718,6 +718,13 @@ code int64_int64_ge, 'int64-int64>='    ; x y -- ?
         next
 endcode
 
+; ### float-int64>=
+code float_int64_ge, 'float-int64>='    ; float int64 -- ?
+        _ int64_to_float
+        _ float_float_ge
+        next
+endcode
+
 ; ### int64>=
 code int64_ge, 'int64>='                ; number int64 -- ?
 
@@ -726,18 +733,18 @@ code int64_ge, 'int64>='                ; number int64 -- ?
 
         ; dispatch on type of first arg
         _over
-        _ fixnum?
-        _tagged_if .1
-        _ fixnum_int64_ge
-        _return
-        _then .1
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx                          ; -- x y
 
-        _over
-        _ int64?
-        _tagged_if .2
-        _ int64_int64_ge
-        _return
-        _then .2
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_int64_ge
+
+        cmp     rax, TYPECODE_INT64
+        je      int64_int64_ge
+
+        cmp     rax, TYPECODE_FLOAT
+        je      float_int64_ge
 
         _drop
         _ error_not_number
