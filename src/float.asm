@@ -369,6 +369,24 @@ code float_multiply, 'float*'          ; x y -- z
         next
 endcode
 
+; ### fixnum-float/f
+code fixnum_float_divide, 'fixnum-float/f'      ; x y -- z
+        _swap
+        _ fixnum_to_float
+        _swap
+        _ float_float_divide
+        next
+endcode
+
+; ### int64-float/f
+code int64_float_divide, 'int64-float/f'        ; x y -- z
+        _swap
+        _ int64_to_float
+        _swap
+        _ float_float_divide
+        next
+endcode
+
 ; ### float-float/f
 code float_float_divide, 'float-float/f'        ; x y -- z
         _ check_float
@@ -387,34 +405,24 @@ endcode
 
 ; ### float/f
 code float_divide, 'float/f'            ; x y -- z
+
+        ; second arg must be a float
         _ verify_float
 
+        ; dispatch on type of first arg
         _over
-        _ float?
-        _tagged_if .1
-        _ float_float_divide
-        _return
-        _then .1
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx
 
-        _over_fixnum?_if .2
-        _swap
-        _ fixnum_to_float
-        _swap
-        _ float_float_divide
-        _return
-        _then .2
+        cmp     rax, TYPECODE_FIXNUM
+        je      fixnum_float_divide
 
-%ifdef FELINE_FEATURE_BIGNUMS
-        _over
-        _ bignum?
-        _tagged_if .3
-        _swap
-        _ bignum_to_float
-        _swap
-        _ float_float_divide
-        _return
-        _then .3
-%endif
+        cmp     rax, TYPECODE_INT64
+        je      int64_float_divide
+
+        cmp     rax, TYPECODE_FLOAT
+        je      float_float_divide
 
         _drop
         _ error_not_number
