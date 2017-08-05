@@ -284,7 +284,7 @@ code raw_int64_int64_multiply, 'raw_int64_int64_multiply', SYMBOL_INTERNAL
         _ raw_int64_to_float
         _swap
         _ raw_int64_to_float
-        _ float_float_plus
+        _ float_float_multiply
         next
 endcode
 
