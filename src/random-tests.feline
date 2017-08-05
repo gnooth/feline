@@ -25,8 +25,15 @@ in: random-tests
 : random-integer ( -- integer ) t/f? ' random-int64 ' random-fixnum if ;
 
 : random-float ( -- float)
---     random-integer >float
-    random-fixnum >float
+    random-integer >float
+;
+
+: random-real
+    random-fixnum abs 3 mod {
+        { 0 [ random-fixnum ] }
+        { 1 [ random-int64 ] }
+        { 2 [ random-float ] }
+    } case
 ;
 
 test: test-1
@@ -250,6 +257,25 @@ test: test-15
     #reps ' %test-15 times ;
 
 test-15
+
+: %test-16
+    random-real !> x
+    random-real !> y
+    x y + y x + assert=
+    x y - y x - negate assert=
+    x y * y x * assert=
+    x y / float? assert-true
+    x y / y * x 2dup = [
+        2drop
+    ] [
+        ' >float bi@ float-distance 1 <= assert
+    ] if
+;
+
+test: test-16
+    #reps ' %test-16 times ;
+
+test-16
 
 f !> x
 f !> y
