@@ -106,29 +106,25 @@ endcode
 
 ; ### min
 code feline_min, 'min'                  ; x y -- z
-        _check_fixnum
-        _swap
-        _check_fixnum
-        popd    rax
-        cmp     rax, rbx
-        jge     .1
-        mov     rbx, rax
-.1:
-        _tag_fixnum
+        _twodup
+        _ generic_le
+        _tagged_if .1
+        _drop
+        _else .1
+        _nip
+        _then .1
         next
 endcode
 
 ; ### max
 code feline_max, 'max'                  ; x y -- z
-        _check_fixnum
-        _swap
-        _check_fixnum
-        popd    rax
-        cmp     rax, rbx
-        jle     .1
-        mov     rbx, rax
-.1:
-        _tag_fixnum
+        _twodup
+        _ generic_ge
+        _tagged_if .1
+        _drop
+        _else .1
+        _nip
+        _then .1
         next
 endcode
 
