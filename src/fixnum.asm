@@ -105,7 +105,7 @@ code fixnum_max, 'fixnum-max'           ; x y -- z
 endcode
 
 ; ### min
-code feline_min, 'min'                  ; x y -- z
+code generic_min, 'min'                 ; x y -- z
         _twodup
         _ generic_le
         _tagged_if .1
@@ -117,7 +117,7 @@ code feline_min, 'min'                  ; x y -- z
 endcode
 
 ; ### max
-code feline_max, 'max'                  ; x y -- z
+code generic_max, 'max'                 ; x y -- z
         _twodup
         _ generic_ge
         _tagged_if .1

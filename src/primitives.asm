@@ -917,7 +917,7 @@ code tab, 'tab'                         ; n --
         _ charpos
         _ generic_minus
         _lit tagged_fixnum(1)
-        _ feline_max
+        _ generic_max
         _ spaces
         next
 endcode
