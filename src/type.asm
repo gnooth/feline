@@ -154,11 +154,6 @@ code initialize_types, 'initialize-types', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE    
         _add_type "sbuf", TYPECODE_SBUF
         _add_type "array", TYPECODE_ARRAY
         _add_type "hashtable", TYPECODE_HASHTABLE
-
-%ifdef FELINE_FEATURE_BIGNUMS
-        _add_type "bignum", TYPECODE_BIGNUM
-%endif
-
         _add_type "symbol", TYPECODE_SYMBOL
         _add_type "vocab", TYPECODE_VOCAB
         _add_type "quotation", TYPECODE_QUOTATION
