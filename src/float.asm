@@ -160,29 +160,6 @@ code int64_to_float, 'int64>float'
         next
 endcode
 
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### bignum>float
-code bignum_to_float, 'bignum>float'
-        _ check_bignum
-        mov     arg0_register, rbx
-        xcall   c_bignum_to_float
-        mov     rbx, rax
-        _ new_handle
-        next
-endcode
-%endif
-
-%ifdef FELINE_FEATURE_BIGNUMS
-; ### float>integer
-code float_to_integer, 'float>integer'
-        _ check_float
-        mov     arg0_register, rbx
-        xcall   c_float_truncate
-        mov     rbx, rax
-        next
-endcode
-%endif
-
 ; ### pi
 code pi, 'pi'                   ; -- float
         pushrbx
@@ -518,7 +495,7 @@ code float_abs, 'float-abs'             ; x -- y
 endcode
 
 ; ### float-sqrt
-code float_sqrt, 'float-sqrt'                   ; x -- y
+code float_sqrt, 'float-sqrt'           ; x -- y
         _dup
         _ float_neg?
         _tagged_if .1
@@ -535,7 +512,7 @@ code float_sqrt, 'float-sqrt'                   ; x -- y
 endcode
 
 ; ### sqrt
-code generic_sqrt, 'sqrt'                       ; x -- y
+code generic_sqrt, 'sqrt'               ; x -- y
         _dup_fixnum?_if .1
         _ fixnum_to_float
         _ float_sqrt
@@ -549,15 +526,14 @@ code generic_sqrt, 'sqrt'                       ; x -- y
         _return
         _then .2
 
-%ifdef FELINE_FEATURE_BIGNUMS
         _dup
-        _ bignum?
+        _ int64?
         _tagged_if .3
-        _ bignum_to_float
+        _ int64_to_float
         _ float_sqrt
         _return
         _then .3
-%endif
+
         _ error_not_number
         next
 endcode
