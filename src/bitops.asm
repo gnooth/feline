@@ -58,3 +58,25 @@ code bitnot, 'bitnot'                   ; x -- y
         _tag_fixnum
         next
 endcode
+
+; ### lshift
+code lshift, 'lshift'                   ; x n -- y
+; shifts fixnum x to the left by n bits
+; n must be >= 0
+        _check_index
+        _check_fixnum qword [rbp]
+        _lshift
+        _tag_fixnum
+        next
+endcode
+
+; ### rshift
+code rshift, 'rshift'                   ; x n -- y
+; shifts fixnum x to the right by n bits
+; n must be >= 0
+        _check_index
+        _check_fixnum qword [rbp]
+        _rshift
+        _tag_fixnum
+        next
+endcode
