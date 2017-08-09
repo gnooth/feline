@@ -157,3 +157,11 @@ code error_not_int64, 'error-not-int64' ; x --
         _ error
         next
 endcode
+
+; ### error-not-integer
+code error_not_integer, 'error-not-integer'     ; x --
+        _quote "an integer"
+        _ format_type_error
+        _ error
+        next
+endcode
