@@ -103,6 +103,13 @@ code fixnum_to_uint64, 'fixnum>uint64'  ; fixnum -- uint64
         next
 endcode
 
+; ### int64>uint64
+code int64_to_uint64, 'int64>uint64'    ; int64 -- uint64
+        _ check_int64
+        _ new_uint64
+        next
+endcode
+
 ; ### raw_uint64_to_decimal
 code raw_uint64_to_decimal, 'raw_uint64_to_decimal', SYMBOL_INTERNAL    ; raw-uint64 -- string
 
