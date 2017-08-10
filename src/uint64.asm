@@ -68,6 +68,13 @@ code check_uint64, 'check_uint64'       ; handle -- raw-uint64
         next
 endcode
 
+; ### uint64_raw_value
+code uint64_raw_value, 'uint64_raw_value', SYMBOL_INTERNAL      ; handle -- raw-uint64
+        _ deref
+        _uint64_raw_value
+        next
+endcode
+
 ; ### new_uint64
 code new_uint64, 'new_uint64', SYMBOL_INTERNAL  ; raw-uint64 -- uint64
 ; 2 cells: object header, raw value
@@ -93,6 +100,15 @@ code new_uint64, 'new_uint64', SYMBOL_INTERNAL  ; raw-uint64 -- uint64
         ; return handle
         _ new_handle                    ; -- handle
 
+        next
+endcode
+
+; ### normalize_unsigned
+code normalize_unsigned, 'normalize_unsigned', SYMBOL_INTERNAL  ; raw-int64 -- fixnum-or-uint64
+        mov     rcx, MOST_POSITIVE_FIXNUM
+        cmp     rbx, rcx
+        ja      new_uint64
+        _tag_fixnum
         next
 endcode
 
