@@ -2710,4 +2710,13 @@ test: fixnum/f-test-1
 
 fixnum/f-test-1
 
+test: lshift-test-1
+    1 1 lshift 2 assert-eq
+    1 2 lshift 4 assert-eq
+    1 63 lshift uint64>string "9223372036854775808" assert=
+    most-positive-fixnum 1 lshift dup uint64? assert-true most-positive-fixnum dup + assert=
+;
+
+lshift-test-1
+
 ?nl "Reached end of test.feline" write-string
