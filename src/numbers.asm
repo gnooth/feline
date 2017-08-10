@@ -29,8 +29,10 @@ code raw_int64_equal?, 'raw_int64_equal?', SYMBOL_INTERNAL      ; number raw-int
         je      .1
         cmp     rax, TYPECODE_INT64
         je      .2
-        cmp     rax, TYPECODE_FLOAT
+        cmp     rax, TYPECODE_UINT64
         je      .3
+        cmp     rax, TYPECODE_FLOAT
+        je      .4
 
         _nip
         mov     ebx, f_value
@@ -49,6 +51,12 @@ code raw_int64_equal?, 'raw_int64_equal?', SYMBOL_INTERNAL      ; number raw-int
         _return
 
 .3:
+        ; uint64
+        _ uint64_raw_value
+        _eq?
+        _return
+
+.4:
         ; float
         _swap
         _ raw_int64_to_float
