@@ -32,6 +32,33 @@ code bitand, 'bitand'                   ; x y -- z
         next
 endcode
 
+; ### integer_to_raw_bits
+code integer_to_raw_bits, 'integer_to_raw_bits', SYMBOL_INTERNAL        ; x -- y
+        _dup
+        _ fixnum?
+        _tagged_if .1
+        _untag_fixnum
+        _return
+        _then .1
+
+        _dup
+        _ int64?
+        _tagged_if .2
+        _ int64_raw_value
+        _return
+        _then .2
+
+        _dup
+        _ uint64?
+        _tagged_if .3
+        _ uint64_raw_value
+        _return
+        _then .3
+
+        _ error_not_integer
+        next
+endcode
+
 ; ### bitor
 code bitor, 'bitor'                     ; x y -- z
         _check_fixnum
@@ -43,11 +70,12 @@ endcode
 
 ; ### bitxor
 code bitxor, 'bitxor'                   ; x y -- z
-        _check_fixnum
-        _check_fixnum qword [rbp]
+        _ integer_to_raw_bits
+        _swap
+        _ integer_to_raw_bits
         xor     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
-        _tag_fixnum
+        _ normalize_unsigned
         next
 endcode
 
@@ -64,9 +92,13 @@ code lshift, 'lshift'                   ; x n -- y
 ; shifts fixnum x to the left by n bits
 ; n must be >= 0
         _check_index
-        _check_fixnum qword [rbp]
-        _lshift
-        _tag_fixnum
+        _swap
+        _ integer_to_raw_bits
+        _swap
+        mov     ecx, ebx
+        poprbx
+        shl     rbx, cl
+        _ normalize_unsigned
         next
 endcode
 
@@ -75,8 +107,12 @@ code rshift, 'rshift'                   ; x n -- y
 ; shifts fixnum x to the right by n bits
 ; n must be >= 0
         _check_index
-        _check_fixnum qword [rbp]
-        _rshift
-        _tag_fixnum
+        _swap
+        _ integer_to_raw_bits
+        _swap
+        mov     ecx, ebx
+        poprbx
+        shr     rbx, cl
+        _ normalize_unsigned
         next
 endcode
