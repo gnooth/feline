@@ -954,6 +954,18 @@ code local_fetch, 'local@'              ; index -- value
         next
 endcode
 
+; ### local_0_fetch
+inline local_0_fetch, 'local_0_fetch', SYMBOL_INTERNAL  ; -- value
+        pushrbx
+        mov     rbx, [r14]
+endinline
+
+; ### local_1_fetch
+inline local_1_fetch, 'local_1_fetch', SYMBOL_INTERNAL  ; -- value
+        pushrbx
+        mov     rbx, [r14 + BYTES_PER_CELL]
+endinline
+
 ; ### local!
 code local_store, 'local!'              ; value index --
         _check_index
