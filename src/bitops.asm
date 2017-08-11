@@ -34,28 +34,42 @@ endcode
 
 ; ### integer_to_raw_bits
 code integer_to_raw_bits, 'integer_to_raw_bits', SYMBOL_INTERNAL        ; x -- y
-        _dup
-        _ fixnum?
-        _tagged_if .1
+
+        mov     al, bl
+        and     al, TAG_MASK
+        cmp     al, FIXNUM_TAG
+        jne     .1
         _untag_fixnum
         _return
-        _then .1
 
-        _dup
-        _ int64?
-        _tagged_if .2
-        _ int64_raw_value
-        _return
-        _then .2
+.1:
+        ; not a fixnum
+        cmp     rbx, [handle_space_]
+        jb      error_not_integer
+        cmp     rbx, [handle_space_free_]
+        jnb     error_not_integer
 
-        _dup
-        _ uint64?
-        _tagged_if .3
-        _ uint64_raw_value
-        _return
-        _then .3
+        _handle_to_object_unsafe
+
+        test    rbx, rbx
+        jz      error_empty_handle
+
+        _object_raw_typecode_eax
+
+        cmp     eax, TYPECODE_INT64
+        je      .2
+        cmp     eax, TYPECODE_UINT64
+        je      .3
 
         _ error_not_integer
+        _return
+
+.2:
+        _int64_raw_value
+        _return
+
+.3:
+        _uint64_raw_value
         next
 endcode
 
