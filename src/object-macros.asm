@@ -72,6 +72,10 @@ OBJECT_ALLOCATED_BIT            equ 4
         _wfetch                         ; 16 bits
 %endmacro
 
+%macro  _object_raw_typecode_eax 0
+        movzx   eax, word [rbx]
+%endmacro
+
 %macro  _this_object_set_raw_typecode 1
         mov     word [this_register], %1
 %endmacro
