@@ -100,6 +100,42 @@ code immediate?, 'immediate?'   ; object -- ?
         next
 endcode
 
+; ### process_local_fetch
+code process_local_fetch, 'process_local_fetch', SYMBOL_INTERNAL        ; tagged-index --
+        _dup
+        _lit tagged_zero
+        _eq?
+        _tagged_if .1
+        _drop
+        _lit S_local_0_fetch
+        _get_accum
+        _ vector_push
+        _return
+        _then .1
+
+        _dup
+        _tagged_fixnum 1
+        _eq?
+        _tagged_if .2
+        _drop
+        _lit S_local_1_fetch
+        _get_accum
+        _ vector_push
+        _return
+        _then .2
+
+        ; push index
+        _get_accum
+        _ vector_push                   ; --
+
+        ; push local@
+        _lit S_local_fetch
+        _get_accum
+        _ vector_push
+
+        next
+endcode
+
 ; ### process-token
 code process_token, 'process-token'     ; string -- ???
         _ local_names
@@ -109,13 +145,7 @@ code process_token, 'process-token'     ; string -- ???
         _ vector_find_string            ; -- string index/f ?
         _tagged_if .2                   ; -- string index
         _nip
-        _get_accum
-        _ vector_push
-
-        _lit S_local_fetch
-        _get_accum
-        _ vector_push
-
+        _ process_local_fetch
         _return
         _else .2                        ; -- string f
         _drop
