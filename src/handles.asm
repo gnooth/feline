@@ -204,15 +204,15 @@ endcode
 %endmacro
 
 ; ### new-handle
-code new_handle, 'new-handle'   ; object -- handle
-        _ get_empty_handle      ; -- object handle/0
+code new_handle, 'new-handle'           ; object -- handle
+        _ get_empty_handle              ; -- object handle/0
         test    rbx, rbx
         jz     .1
         _tuck
         _store
         _increment_allocation_count
         _return
-.1:                             ; -- object 0
+.1:                                     ; -- object 0
         _drop
 
         _ gc
@@ -228,31 +228,6 @@ code new_handle, 'new-handle'   ; object -- handle
         _error "out of handles"
         next
 endcode
-
-; ### get_handle_for_object
-subroutine get_handle_for_object        ; object -- handle
-; called from C with object in arg0_register
-; return handle in rax
-
-        push    rbx
-        push    rbp
-
-        ; REVIEW
-        ; 16 cells for data stack (arbitrary)
-        mov     rbp, rsp
-        sub     rsp, 256
-
-        mov     rbx, arg0_register
-        _ new_handle
-        mov     rax, rbx
-
-        add     rsp, 256
-
-        pop     rbp
-        pop     rbx
-
-        ret
-endsub
 
 ; ### handle?
 code handle?, 'handle?'                 ; x -- ?
@@ -274,7 +249,7 @@ code handle?, 'handle?'                 ; x -- ?
 endcode
 
 ; ### deref
-code deref, 'deref'     ; x -- object-address/0
+code deref, 'deref'                     ; x -- object-address/0
         ; tag bits must be 0
         test    bl, TAG_MASK
         jnz     .1
@@ -286,7 +261,7 @@ code deref, 'deref'     ; x -- object-address/0
         jae .1
 
         ; valid handle
-        mov     rbx, [rbx]      ; -- object-address/0
+        mov     rbx, [rbx]              ; -- object-address/0
         _return
 
 .1:
@@ -297,7 +272,7 @@ code deref, 'deref'     ; x -- object-address/0
 endcode
 
 ; ### maybe-deref
-code maybe_deref, 'maybe-deref' ; x -- object-address
+code maybe_deref, 'maybe-deref'         ; x -- object-address
         ; tag bits must be 0
         test    bl, TAG_MASK
         jnz     .1
