@@ -145,71 +145,28 @@ code dot_t, '.t'                ; object -- object
         next
 endcode
 
-; ### destroy-object-unchecked
-code destroy_object_unchecked, 'destroy_object_unchecked', SYMBOL_INTERNAL
-; raw-object-address --
+; ### destroy_object_unchecked
+code destroy_object_unchecked, 'destroy_object_unchecked', SYMBOL_INTERNAL      ; raw-object-address --
+
 ; The argument is known to be the raw address of a valid heap object, not a
 ; handle or null. Called only by maybe-collect-handle during gc.
-        _dup
 
-        ; Macro is OK here since we have a valid object address.
-        _string?
+        _object_raw_typecode_eax
 
-        _if .1
-        _ destroy_string_unchecked
-        _return
-        _then .1
-
-        _dup
-        _sbuf?
-        _if .2
-        _ destroy_sbuf_unchecked
-        _return
-        _then .2
-
-        _dup
-        _vector?
-        _if .3
-        _ destroy_vector_unchecked
-        _return
-        _then .3
-
-        _dup
-        _array?
-        _if .4
-        _ destroy_array_unchecked
-        _return
-        _then .4
-
-        _dup
-        _hashtable?
-        _if .5
-        _ destroy_hashtable_unchecked
-        _return
-        _then .5
-
-        _dup
-        _quotation?
-        _if .6
-        _ destroy_quotation_unchecked
-        _return
-        _then .6
-
-        _dup
-        _curry?
-        _if .7
-        _ destroy_curry_unchecked
-        _return
-        _then .7
-
-%ifdef FELINE_FEATURE_BIGNUMS
-        _dup
-        _bignum?
-        _if .8
-        _ destroy_bignum_unchecked
-        _return
-        _then .8
-%endif
+        cmp     eax, TYPECODE_STRING
+        je      destroy_string_unchecked
+        cmp     eax, TYPECODE_SBUF
+        je      destroy_sbuf_unchecked
+        cmp     eax, TYPECODE_VECTOR
+        je      destroy_vector_unchecked
+        cmp     eax, TYPECODE_ARRAY
+        je      destroy_array_unchecked
+        cmp     eax, TYPECODE_HASHTABLE
+        je      destroy_hashtable_unchecked
+        cmp     eax, TYPECODE_QUOTATION
+        je      destroy_quotation_unchecked
+        cmp     eax, TYPECODE_CURRY
+        je      destroy_curry_unchecked
 
         ; Default behavior for objects with only one allocation.
 
