@@ -345,13 +345,13 @@ code find_handle, 'find-handle'         ; object -- handle/0
         next
 endcode
 
-; ### release-handle-unsafe
-code release_handle_unsafe, 'release-handle-unsafe' ; handle --
+; ### release_handle_unsafe
+code release_handle_unsafe, 'release-handle-unsafe', SYMBOL_INTERNAL    ; handle --
         ; zero out the stored address
         xor     eax, eax
         mov     qword [rbx], rax
 
-        ; add handle to free-handles vector
+        ; add handle to recycled handles vector
         _recycled_handles_vector
         _ vector_push_unchecked         ; --
 
