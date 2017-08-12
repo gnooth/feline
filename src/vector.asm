@@ -729,12 +729,12 @@ vector_pop_unchecked:
         next
 endcode
 
-; ### ?vector-pop
-code ?vector_pop, '?vector-pop'         ; handle -- element/f
+; ### vector-?pop
+code vector_?pop, 'vector-?pop'         ; handle -- element/f
 
         _ check_vector                  ; -- vector
 
-?vector_pop_unchecked:
+vector_?pop_unchecked:
 
         push    this_register
         mov     this_register, rbx

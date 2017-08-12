@@ -2049,14 +2049,14 @@ return-if-test-3
 
 -- @-test-1
 
-test: ?vector-pop-test-1
+test: vector-?pop-test-1
     vector{ 1 2 }
-    [ ?vector-pop 2 assert= ] keep
-    [ ?vector-pop 1 assert= ] keep
+    [ vector-?pop 2 assert= ] keep
+    [ vector-?pop 1 assert= ] keep
     [ empty? assert-true ] keep
-    ?vector-pop assert-false ;
+    vector-?pop assert-false ;
 
-?vector-pop-test-1
+vector-?pop-test-1
 
 test: vector-reverse!-test-1
     vector{ 1 2 3 4 5 } >local: v

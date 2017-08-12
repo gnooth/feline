@@ -141,7 +141,7 @@ code get_empty_handle, 'get-empty-handle'       ; -- handle/0
         _recycled_handles_vector
         test    rbx, rbx
         jz      .1
-        _ ?vector_pop_unchecked
+        _ vector_?pop_unchecked
         _dup
         _tagged_if .2
         _return
