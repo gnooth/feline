@@ -136,16 +136,16 @@ code gc_status, 'gc-status'     ; --
         next
 endcode
 
-; ### get-empty-handle
-code get_empty_handle, 'get-empty-handle'       ; -- handle/0
+; ### get_empty_handle
+code get_empty_handle, 'get_empty_handle', SYMBOL_INTERNAL      ; -- handle/0
         _recycled_handles_vector
         test    rbx, rbx
         jz      .1
         _ vector_?pop_unchecked
-        _dup
-        _tagged_if .2
-        _return
-        _then .2
+        cmp     rbx, f_value
+        je      .1
+        _rep_return
+
 .1:
         _drop                   ; --
 
