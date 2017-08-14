@@ -116,6 +116,21 @@ code lshift, 'lshift'                   ; x n -- y
         next
 endcode
 
+; ### lshift-signed
+code lshift_signed, 'lshift-signed'     ; x n -- y
+; shifts fixnum x to the left by n bits
+; n must be >= 0
+        _check_index
+        _swap
+        _ integer_to_raw_bits
+        _swap
+        mov     ecx, ebx
+        poprbx
+        shl     rbx, cl
+        _ normalize
+        next
+endcode
+
 ; ### rshift
 code rshift, 'rshift'                   ; x n -- y
 ; shifts fixnum x to the right by n bits
