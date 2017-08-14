@@ -453,8 +453,8 @@ code int64_negate, 'int64-negate'       ; n -- -n
         _ new_int64
         _return
 .1:
-        mov     rbx, MOST_POSITIVE_INT64
-        _ raw_int64_to_float
+        neg     rbx
+        _ new_uint64
         next
 endcode
 
