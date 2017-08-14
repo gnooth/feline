@@ -126,6 +126,22 @@ code int64_to_uint64, 'int64>uint64'    ; int64 -- uint64
         next
 endcode
 
+; ### uint64-negate
+code uint64_negate, 'uint64-negate'     ; n -- -n
+        _ check_uint64
+        mov     rax, MOST_POSITIVE_INT64
+        add     rax, 1
+        cmp     rbx, rax
+        ja      .1
+        neg     rbx
+        _ normalize
+        _return
+.1:
+        _ raw_uint64_to_float
+        _ float_negate
+        next
+endcode
+
 ; ### raw_uint64_to_decimal
 code raw_uint64_to_decimal, 'raw_uint64_to_decimal', SYMBOL_INTERNAL    ; raw-uint64 -- string
 

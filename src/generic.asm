@@ -518,6 +518,7 @@ code initialize_generic_functions, 'initialize-generic-functions' ; --
         _add_method generic_negate, TYPECODE_FIXNUM, fixnum_negate
         _add_method generic_negate, TYPECODE_FLOAT, float_negate
         _add_method generic_negate, TYPECODE_INT64, int64_negate
+        _add_method generic_negate, TYPECODE_UINT64, uint64_negate
 
         ; <
         _initialize_generic_function generic_lt
