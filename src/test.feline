@@ -1636,6 +1636,9 @@ test: negate-test-1
 
     most-negative-fixnum dup fixnum-fixnum+ negate number>string "2305843009213693952" assert=
     most-negative-fixnum dup fixnum-fixnum+ negate 2305843009213693952 assert=
+
+    most-positive-int64 9223372036854775807 assert=
+    most-positive-int64 negate -9223372036854775807 assert=
 ;
 
 negate-test-1
@@ -2713,10 +2716,30 @@ fixnum/f-test-1
 test: lshift-test-1
     1 1 lshift 2 assert-eq
     1 2 lshift 4 assert-eq
+
+    1 60 lshift-signed 1152921504606846976 2dup assert=
+    swap assert=
+
     1 63 lshift uint64>string "9223372036854775808" assert=
-    most-positive-fixnum 1 lshift dup uint64? assert-true most-positive-fixnum dup + assert=
+
+    most-positive-fixnum 1 lshift dup uint64? assert-true
+    most-positive-fixnum dup + assert=
+
+    most-positive-fixnum 1 lshift-signed dup int64? assert-true
+    most-positive-fixnum dup + assert=
 ;
 
 lshift-test-1
+
+test: bitnot-test-1
+      0 bitnot   -1 assert-eq
+     -1 bitnot    0 assert-eq
+
+    123 bitnot -124 assert-eq
+
+    63 [ 1 swap lshift-signed dup bitnot swap negate 1 - assert= ] each-integer
+;
+
+bitnot-test-1
 
 ?nl "Reached end of test.feline" write-string
