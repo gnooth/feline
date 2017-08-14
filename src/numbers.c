@@ -43,6 +43,12 @@ cell c_raw_int64_to_float(int64_t n)
   return (cell) make_float(d);
 }
 
+cell c_raw_uint64_to_float(uint64_t n)
+{
+  double d = n;
+  return (cell) make_float(d);
+}
+
 cell c_float_to_string(char *buf, size_t size, Float *p)
 {
   snprintf(buf, size, "%.17g", p->d);
