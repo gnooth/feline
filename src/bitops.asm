@@ -95,9 +95,9 @@ endcode
 
 ; ### bitnot
 code bitnot, 'bitnot'                   ; x -- y
-        _ integer_to_raw_bits
+        _check_fixnum
         not     rbx
-        _ normalize
+        _tag_fixnum
         next
 endcode
 
@@ -113,21 +113,6 @@ code lshift, 'lshift'                   ; x n -- y
         poprbx
         shl     rbx, cl
         _ normalize_unsigned
-        next
-endcode
-
-; ### lshift-signed
-code lshift_signed, 'lshift-signed'     ; x n -- y
-; shifts fixnum x to the left by n bits
-; n must be >= 0
-        _check_index
-        _swap
-        _ integer_to_raw_bits
-        _swap
-        mov     ecx, ebx
-        poprbx
-        shl     rbx, cl
-        _ normalize
         next
 endcode
 
