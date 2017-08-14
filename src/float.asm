@@ -146,6 +146,15 @@ code raw_int64_to_float, 'raw_int64_to_float', SYMBOL_INTERNAL
         next
 endcode
 
+; ### raw_uint64_to_float
+code raw_uint64_to_float, 'raw_uint64_to_float', SYMBOL_INTERNAL
+        mov     arg0_register, rbx
+        xcall   c_raw_uint64_to_float
+        mov     rbx, rax
+        _ new_handle
+        next
+endcode
+
 ; ### fixnum>float
 code fixnum_to_float, 'fixnum>float'
         _check_fixnum
