@@ -95,9 +95,9 @@ endcode
 
 ; ### bitnot
 code bitnot, 'bitnot'                   ; x -- y
-        _check_fixnum
+        _ integer_to_raw_bits
         not     rbx
-        _tag_fixnum
+        _ normalize
         next
 endcode
 
