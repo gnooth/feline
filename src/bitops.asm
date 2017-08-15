@@ -106,11 +106,9 @@ code lshift, 'lshift'                   ; x n -- y
 ; shifts fixnum x to the left by n bits
 ; n must be >= 0
         _check_index
-        _swap
-        _ integer_to_raw_bits
-        _swap
         mov     ecx, ebx
         poprbx
+        _ integer_to_raw_bits
         shl     rbx, cl
         _ normalize_unsigned
         next
@@ -136,11 +134,9 @@ code rshift, 'rshift'                   ; x n -- y
 ; shifts fixnum x to the right by n bits
 ; n must be >= 0
         _check_index
-        _swap
-        _ integer_to_raw_bits
-        _swap
         mov     ecx, ebx
         poprbx
+        _ integer_to_raw_bits
         shr     rbx, cl
         _ normalize_unsigned
         next
