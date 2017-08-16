@@ -669,9 +669,9 @@ endcode
 ; ### hash-combine
 code hash_combine, 'hash-combine'       ; hash1 hash2 -- newhash
 
-        sar     rbx, TAG_BITS           ; hash2 (untagged) in rbx
+        sar     rbx, FIXNUM_TAG_BITS    ; hash2 (untagged) in rbx
         mov     rax, [rbp]
-        sar     rax, TAG_BITS           ; hash1 (untagged) in rax
+        sar     rax, FIXNUM_TAG_BITS    ; hash1 (untagged) in rax
         lea     rbp, [rbp + BYTES_PER_CELL]
 
         mov     rdx, $9e3779b97f4a7800

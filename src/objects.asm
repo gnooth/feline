@@ -409,9 +409,9 @@ code dot_object, '.'                    ; handle-or-object --
         next
 endcode
 
-; ### tag-bits
-code tag_bits, 'tag-bits'
-        _lit TAG_BITS
+; ### fixnum-tag-bits
+code fixnum_tag_bits, 'fixnum-tag-bits'
+        _lit FIXNUM_TAG_BITS
         _tag_fixnum
         next
 endcode

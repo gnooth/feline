@@ -310,7 +310,7 @@ test: fixnum>string-test-1 ( -- )
       0 fixnum>string   "0" assert=
      42 fixnum>string  "42" assert=
 
-    tag-bits 3 assert=
+    fixnum-tag-bits 3 assert=
 
     most-negative-fixnum fixnum>string "-1152921504606846976" assert=
     most-negative-fixnum 1 + fixnum>string "-1152921504606846975" assert=
@@ -324,7 +324,7 @@ test: fixnum>hex-test-1 ( -- )
     -17 fixnum>hex "-11" assert=
       0 fixnum>hex   "0" assert=
      42 fixnum>hex  "2a" assert=
-    tag-bits 3 assert=
+    fixnum-tag-bits 3 assert=
     most-negative-fixnum     fixnum>hex "-1000000000000000" assert=
     most-negative-fixnum 1 + fixnum>hex  "-fffffffffffffff" assert=
     most-negative-fixnum 2 + fixnum>hex  "-ffffffffffffffe" assert=
@@ -340,7 +340,7 @@ test: number>string-test-1 ( -- )
     -17 number>string "-17" assert=
     0 number>string "0" assert=
     42 number>string "42" assert=
-    tag-bits 3 assert=
+    fixnum-tag-bits 3 assert=
     most-negative-fixnum number>string "-1152921504606846976" assert=
     most-positive-fixnum number>string "1152921504606846975" assert=
 ;
