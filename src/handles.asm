@@ -231,8 +231,8 @@ endcode
 
 ; ### handle?
 code handle?, 'handle?'                 ; x -- ?
-        ; tag bits must be 0
-        test    bl, TAG_MASK
+        ; handles are 8-byte aligned
+        test    bl, 7
         jnz     .1
 
         ; must point into handle space
@@ -250,8 +250,8 @@ endcode
 
 ; ### deref
 code deref, 'deref'                     ; x -- object-address/0
-        ; tag bits must be 0
-        test    bl, TAG_MASK
+        ; handles are 8-byte aligned
+        test    bl, 7
         jnz     .1
 
         ; must point into handle space
@@ -273,8 +273,8 @@ endcode
 
 ; ### maybe-deref
 code maybe_deref, 'maybe-deref'         ; x -- object-address
-        ; tag bits must be 0
-        test    bl, TAG_MASK
+        ; handles are 8-byte aligned
+        test    bl, 7
         jnz     .1
 
         ; must point into handle space
