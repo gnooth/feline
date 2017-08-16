@@ -421,20 +421,3 @@ code tag_fixnum, 'tag-fixnum'           ; n -- tagged
         _tag_fixnum
         next
 endcode
-
-; ### untag-fixnum
-inline untag_fixnum, 'untag-fixnum'     ; tagged -- n
-        _untag_fixnum
-endinline
-
-; ### tag-char
-code tag_char, 'tag-char'               ; char -- tagged
-        _tag_char
-        next
-endcode
-
-; ### untag-char
-code untag_char, 'untag-char'           ; tagged -- char
-        _untag_char
-        next
-endcode
