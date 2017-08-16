@@ -30,6 +30,10 @@ GENERIC_WRITE   equ     $40000000
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
+%define LOWTAG_BITS     3
+%define LOWTAG_MASK     7
+
+; DEPRECATED
 %define TAG_BITS        3
 %define TAG_MASK        (1 << TAG_BITS) - 1
 
@@ -45,6 +49,7 @@ GENERIC_WRITE   equ     $40000000
 %define FIXNUM_TAG      1
 
 %define CHAR_TAG        FIXNUM_TAG
+%define CHAR_TAG_BITS   FIXNUM_TAG_BITS
 %define CHAR_TAG_MASK   FIXNUM_TAG_MASK
 
 %define BOOLEAN_TAG_BITS        3
@@ -53,27 +58,27 @@ GENERIC_WRITE   equ     $40000000
 %define BOOLEAN_TAG     6
 
 %macro  _tag_fixnum 0
-        shl     rbx, TAG_BITS
+        shl     rbx, FIXNUM_TAG_BITS
 %if FIXNUM_TAG <> 0
         or      rbx, FIXNUM_TAG
 %endif
 %endmacro
 
-%define tagged_fixnum(n)        ((n << TAG_BITS) + FIXNUM_TAG)
+%define tagged_fixnum(n)        ((n << FIXNUM_TAG_BITS) + FIXNUM_TAG)
 
 %define tagged_zero     FIXNUM_TAG
 
 %macro  _untag_fixnum 0
-        sar     rbx, TAG_BITS
+        sar     rbx, FIXNUM_TAG_BITS
 %endmacro
 
 %macro  _untag_fixnum 1
-        sar     %1, TAG_BITS
+        sar     %1, FIXNUM_TAG_BITS
 %endmacro
 
 %macro  _untag_2_fixnums 0
-        sar     rbx, TAG_BITS
-        sar     qword [rbp], TAG_BITS
+        sar     rbx, FIXNUM_TAG_BITS
+        sar     qword [rbp], FIXNUM_TAG_BITS
 %endmacro
 
 %macro  _verify_fixnum 0
@@ -129,7 +134,7 @@ GENERIC_WRITE   equ     $40000000
 %endmacro
 
 %define f_value BOOLEAN_TAG
-%define t_value BOOLEAN_TAG + (1 << TAG_BITS)
+%define t_value BOOLEAN_TAG + (1 << LOWTAG_BITS)
 
 %macro  _f 0
         pushrbx
@@ -184,7 +189,7 @@ GENERIC_WRITE   equ     $40000000
         _untag_char %1
 %endmacro
 
-%define tagged_char(n)  ((n << TAG_BITS) + CHAR_TAG)
+%define tagged_char(n)  ((n << CHAR_TAG_BITS) + CHAR_TAG)
 
 %define DEFAULT_DATA_ALIGNMENT  8
 
