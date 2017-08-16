@@ -62,7 +62,7 @@ code foreground, 'foreground'           ; color --
         _tagged_char '3'
         _ write_char
         _tagged_char '0'
-        _plus
+        _ fixnum_fixnum_plus
         _ write_char
         _tagged_char 'm'
         _ write_char
@@ -80,7 +80,7 @@ code background, 'background'           ; color --
         _tagged_char '4'
         _ write_char
         _tagged_char '0'
-        _plus
+        _ fixnum_fixnum_plus
         _ write_char
         _tagged_char 'm'
         _ write_char
