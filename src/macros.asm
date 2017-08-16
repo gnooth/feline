@@ -80,14 +80,14 @@ GENERIC_WRITE   equ     $40000000
 
 %macro  _verify_fixnum 0
         mov     al, bl
-        and     al, TAG_MASK
+        and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     error_not_fixnum
 %endmacro
 
 %macro  _verify_fixnum 1
         mov     rax, %1
-        and     al, TAG_MASK
+        and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     error_not_fixnum
 %endmacro
@@ -106,7 +106,7 @@ GENERIC_WRITE   equ     $40000000
         test    rbx, rbx
         js      error_not_index
         mov     al, bl
-        and     al, TAG_MASK
+        and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     error_not_index
 %endmacro
@@ -115,7 +115,7 @@ GENERIC_WRITE   equ     $40000000
         mov     rax, %1
         test    rax, rax
         js      error_not_index
-        and     al, TAG_MASK
+        and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     error_not_index
 %endmacro
@@ -654,7 +654,7 @@ section .data
 %macro  _fixnum?_if 1
         %push if
         section .text
-        and     ebx, TAG_MASK
+        and     ebx, FIXNUM_TAG_MASK
         cmp     ebx, FIXNUM_TAG
         mov     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
@@ -665,7 +665,7 @@ section .data
         %push if
         section .text
         mov     eax, ebx
-        and     eax, TAG_MASK
+        and     eax, FIXNUM_TAG_MASK
         cmp     eax, FIXNUM_TAG
         jne      %1_ifnot
 %endmacro
@@ -674,7 +674,7 @@ section .data
         %push if
         section .text
         mov     rax, qword [rbp]
-        and     eax, TAG_MASK
+        and     eax, FIXNUM_TAG_MASK
         cmp     eax, FIXNUM_TAG
         jne      %1_ifnot
 %endmacro
