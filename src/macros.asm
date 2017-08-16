@@ -43,16 +43,14 @@ GENERIC_WRITE   equ     $40000000
 %define FIXNUM_TAG_MASK         (1 << FIXNUM_TAG_BITS) - 1
 
 %define FIXNUM_TAG      1
+
 %define CHAR_TAG        FIXNUM_TAG
+%define CHAR_TAG_MASK   FIXNUM_TAG_MASK
 
 %define BOOLEAN_TAG_BITS        3
 %define BOOLEAN_TAG_MASK        (1 << BOOLEAN_TAG_BITS) - 1
 
 %define BOOLEAN_TAG     6
-
-%macro  _tag 0                          ; object -- tag
-        and     rbx, TAG_MASK
-%endmacro
 
 %macro  _tag_fixnum 0
         shl     rbx, TAG_BITS
@@ -164,14 +162,14 @@ GENERIC_WRITE   equ     $40000000
 
 %macro  _verify_char 0
         mov     al, bl
-        and     al, TAG_MASK
+        and     al, CHAR_TAG_MASK
         cmp     al, CHAR_TAG
         jne     error_not_char
 %endmacro
 
 %macro  _verify_char 1
         mov     rax, %1
-        and     al, TAG_MASK
+        and     al, CHAR_TAG_MASK
         cmp     al, CHAR_TAG
         jne     error_not_char
 %endmacro
