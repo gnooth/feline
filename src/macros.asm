@@ -144,10 +144,6 @@ GENERIC_WRITE   equ     $40000000
         cmovz   ebx, eax
 %endmacro
 
-%macro  _untag_boolean 0                ; t/f -- 1/0
-        shr     rbx, TAG_BITS
-%endmacro
-
 %macro  _tag_char 0
         _tag_fixnum
 %endmacro
