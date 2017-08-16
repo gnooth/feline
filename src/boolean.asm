@@ -16,7 +16,7 @@
 file __FILE__
 
 %macro  _boolean? 0                     ; x -- ?
-        and     ebx, TAG_MASK
+        and     ebx, BOOLEAN_TAG_MASK
         mov     eax, t_value
         cmp     ebx, BOOLEAN_TAG
         mov     ebx, f_value

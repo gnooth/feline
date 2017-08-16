@@ -45,6 +45,9 @@ GENERIC_WRITE   equ     $40000000
 %define FIXNUM_TAG      1
 %define CHAR_TAG        FIXNUM_TAG
 
+%define BOOLEAN_TAG_BITS        3
+%define BOOLEAN_TAG_MASK        (1 << BOOLEAN_TAG_BITS) - 1
+
 %define BOOLEAN_TAG     6
 
 %macro  _tag 0                          ; object -- tag
