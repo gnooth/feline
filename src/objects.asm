@@ -438,22 +438,3 @@ code untag_char, 'untag-char'           ; tagged -- char
         _untag_char
         next
 endcode
-
-; ### tag-boolean
-code tag_boolean, 'tag-boolean'         ; -1|0 -- t|f
-        _tag_boolean
-        next
-endcode
-
-; ### untag-boolean
-code untag_boolean, 'untag-boolean'     ; t|f -- 1|0
-        _untag_boolean
-        next
-endcode
-
-; ### tag
-code tag, 'tag'                         ; object -- tag
-        _tag
-        _tag_fixnum
-        next
-endcode
