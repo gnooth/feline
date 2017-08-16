@@ -924,7 +924,7 @@ endcode
 
 ; ### write-char
 code write_char, 'write-char'           ; tagged-char --
-        _untag_char
+        _check_char
         mov     [last_char], rbx
         cmp     rbx, 10
         je      .1
