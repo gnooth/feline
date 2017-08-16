@@ -75,16 +75,19 @@ endcode
 code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL
 ; x -- raw-typecode
 
-        mov     eax, ebx
-        and     eax, TAG_MASK
+        test    ebx, TAG_MASK
         jz      .2
 
+        mov     eax, ebx
+        and     eax, FIXNUM_TAG_MASK
         cmp     eax, FIXNUM_TAG
         jne     .1
         mov     ebx, TYPECODE_FIXNUM
         _return
 
 .1:
+        mov     eax, ebx
+        and     eax, BOOLEAN_TAG_MASK
         cmp     eax, BOOLEAN_TAG
         jne     .4
         mov     ebx, TYPECODE_BOOLEAN
