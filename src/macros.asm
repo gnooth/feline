@@ -33,7 +33,7 @@ GENERIC_WRITE   equ     $40000000
 %define LOWTAG_BITS     3
 %define LOWTAG_MASK     7
 
-%define FIXNUM_TAG_BITS         3
+%define FIXNUM_TAG_BITS         1
 %define FIXNUM_TAG_MASK         (1 << FIXNUM_TAG_BITS) - 1
 
 %define FIXNUM_TAG      1

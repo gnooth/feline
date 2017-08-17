@@ -28,7 +28,7 @@ typedef int64_t cell;
 #define TYPECODE_FLOAT         18
 #define TYPECODE_INT64         23
 
-#define FIXNUM_TAG_BITS         3
+#define FIXNUM_TAG_BITS         1
 
 #if FIXNUM_TAG_BITS == 1
 #define make_fixnum(n)          (((cell)n << 1) + 1)
