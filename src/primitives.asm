@@ -557,7 +557,7 @@ endcode
 code each_integer, 'each-integer'       ; n quot --
         ; check that n is a fixnum
         mov     al, byte [rbp]
-        and     al, TAG_MASK
+        and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     error_not_fixnum
 
@@ -606,7 +606,7 @@ endcode
 code all_integers?, 'all-integers?'     ; n quot -- ?
         ; check that n is a fixnum
         mov     al, byte [rbp]
-        and     al, TAG_MASK
+        and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     error_not_fixnum
 
@@ -826,7 +826,7 @@ endcode
 code hexdot, 'hex.'                     ; x --
 
         mov     eax, ebx
-        and     eax, TAG_MASK
+        and     eax, FIXNUM_TAG_MASK
         cmp     eax, FIXNUM_TAG
         jne     .1
         _untag_fixnum
@@ -1205,7 +1205,7 @@ code base_to_integer, 'base>integer'    ; string base -- n/f
         cmp     rax, f_value
         je      .1
 
-        and     al, TAG_MASK
+        and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     new_handle
 
@@ -1291,7 +1291,7 @@ code decimal_to_number, 'decimal>number'        ; string -- n/f
         cmp     rax, f_value
         je      .1
 
-        and     al, TAG_MASK
+        and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     new_handle
 

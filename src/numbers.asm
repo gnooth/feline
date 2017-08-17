@@ -166,7 +166,7 @@ code fixnum_lt, 'fixnum<'               ; number fixnum -- ?
 
         ; dispatch on type of first arg
         mov     al, byte [rbp]
-        and     al, TAG_MASK
+        and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     .1
         _ fixnum_fixnum_lt
@@ -405,7 +405,7 @@ code fixnum_le, 'fixnum<='      ; number fixnum -- ?
 
         ; dispatch on type of first arg
         mov     al, byte [rbp]
-        and     al, TAG_MASK
+        and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     .1
         _ fixnum_fixnum_le

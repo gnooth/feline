@@ -36,7 +36,7 @@ endcode
 code integer_to_raw_bits, 'integer_to_raw_bits', SYMBOL_INTERNAL        ; x -- y
 
         mov     al, bl
-        and     al, TAG_MASK
+        and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     .1
         _untag_fixnum

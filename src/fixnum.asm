@@ -29,7 +29,7 @@ endcode
 
 ; ### fixnum?
 code fixnum?, 'fixnum?'                 ; x -- ?
-        and     ebx, TAG_MASK
+        and     ebx, FIXNUM_TAG_MASK
         cmp     ebx, FIXNUM_TAG
         mov     eax, t_value
         mov     ebx, f_value
@@ -70,7 +70,7 @@ endcode
 ; ### index?
 code index?, 'index?'                   ; x -- ?
         mov     al, bl
-        and     al, TAG_MASK
+        and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     .false
         test    rbx, rbx
@@ -204,7 +204,7 @@ code fixnum_plus, 'fixnum+'             ; number fixnum -- sum
 
         ; dispatch on type of first arg
         mov     al, byte [rbp]
-        and     al, TAG_MASK
+        and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     .1
         _ fixnum_fixnum_plus

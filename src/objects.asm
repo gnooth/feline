@@ -75,7 +75,7 @@ endcode
 code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL
 ; x -- raw-typecode
 
-        test    ebx, TAG_MASK
+        test    ebx, LOWTAG_MASK
         jz      .2
 
         mov     eax, ebx

@@ -434,7 +434,7 @@ code float_floor, 'float-floor'         ; x -- y
 
 .1:
         mov     rbx, rax
-        and     al, TAG_MASK
+        and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     new_handle
         _rep_return
@@ -458,7 +458,7 @@ code float_truncate, 'float-truncate'   ; x -- y
 
 .1:
         mov     rbx, rax
-        and     al, TAG_MASK
+        and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     new_handle
         _rep_return
