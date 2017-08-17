@@ -134,7 +134,7 @@ cell c_decimal_to_number(char *s, size_t length)
         return c_string_to_float(s, length);
       if (errno != 0 || endptr != s + length)
         return F_VALUE;   // error
-      if (n >= -1152921504606846976 && n <= 1152921504606846975)
+      if (n >= MOST_NEGATIVE_FIXNUM && n <= MOST_POSITIVE_FIXNUM)
         return make_fixnum(n);
 
       return (cell) make_int64(n);
