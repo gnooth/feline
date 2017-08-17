@@ -25,13 +25,20 @@ typedef int64_t cell;
 #define T_VALUE                14
 #define F_VALUE                 6
 
-#define make_fixnum(n)  (((cell)n << 3) + 1)
-
 #define TYPECODE_FLOAT         18
 #define TYPECODE_INT64         23
 
+#define FIXNUM_TAG_BITS         3
+
+#if FIXNUM_TAG_BITS == 1
+#define make_fixnum(n)          (((cell)n << 1) + 1)
+#define MOST_POSITIVE_FIXNUM    ((cell)  4611686018427387903)
+#define MOST_NEGATIVE_FIXNUM    ((cell) -4611686018427387904)
+#elif FIXNUM_TAG_BITS == 3
+#define make_fixnum(n)          (((cell)n << 3) + 1)
 #define MOST_POSITIVE_FIXNUM    ((cell)  1152921504606846975)
 #define MOST_NEGATIVE_FIXNUM    ((cell) -1152921504606846976)
+#endif
 
 typedef struct
 {
