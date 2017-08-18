@@ -72,10 +72,15 @@ GENERIC_WRITE   equ     $40000000
 %endmacro
 
 %macro  _verify_fixnum 0
+%if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
+        test    ebx, 1
+        jz      error_not_fixnum
+%else
         mov     al, bl
         and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     error_not_fixnum
+%endif
 %endmacro
 
 %macro  _verify_fixnum 1
@@ -98,10 +103,15 @@ GENERIC_WRITE   equ     $40000000
 %macro  _verify_index 0
         test    rbx, rbx
         js      error_not_index
+%if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
+        test    ebx, 1
+        jz      error_not_index
+%else
         mov     al, bl
         and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     error_not_index
+%endif
 %endmacro
 
 %macro  _verify_index 1
