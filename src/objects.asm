@@ -78,10 +78,15 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL
         test    ebx, LOWTAG_MASK
         jz      .2
 
+%if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
+        test    ebx, FIXNUM_TAG
+        jz      .1
+%else
         mov     eax, ebx
         and     eax, FIXNUM_TAG_MASK
         cmp     eax, FIXNUM_TAG
         jne     .1
+%endif
         mov     ebx, TYPECODE_FIXNUM
         _return
 
