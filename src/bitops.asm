@@ -35,10 +35,15 @@ endcode
 ; ### integer_to_raw_bits
 code integer_to_raw_bits, 'integer_to_raw_bits', SYMBOL_INTERNAL        ; x -- y
 
+%if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
+        test    ebx, 1
+        jz      .1
+%else
         mov     al, bl
         and     al, FIXNUM_TAG_MASK
         cmp     al, FIXNUM_TAG
         jne     .1
+%endif
         _untag_fixnum
         _return
 
