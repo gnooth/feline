@@ -405,8 +405,8 @@ generic substring, 'substring'          ; from to string/sbuf -- substring
 ; ### >float
 generic to_float, '>float'
 
-; ### initialize-generic-functions
-code initialize_generic_functions, 'initialize-generic-functions' ; --
+; ### initialize_generic_functions
+code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERNAL      ; --
 
         ; hashcode
         _initialize_generic_function generic_hashcode
