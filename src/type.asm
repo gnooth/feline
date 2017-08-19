@@ -140,8 +140,8 @@ endcode
         _ add_builtin_type
 %endmacro
 
-; ### initialize-types
-code initialize_types, 'initialize-types', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE    ; --
+; ### initialize_types
+code initialize_types, 'initialize_types', SYMBOL_INTERNAL      ; --
         _lit 64
         _ new_vector_untagged
         _to_global types
