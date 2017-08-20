@@ -64,6 +64,64 @@ code raw_int64_equal?, 'raw_int64_equal?', SYMBOL_INTERNAL      ; number raw-int
         next
 endcode
 
+; ### raw_uint64_equal?
+code raw_uint64_equal?, 'raw_uint64_equal?', SYMBOL_INTERNAL    ; number raw-int64 -- ?
+
+        _swap                           ; -- raw-uint64 number
+
+        _dup
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx
+
+        cmp     rax, TYPECODE_FIXNUM
+        je      .1
+        cmp     rax, TYPECODE_INT64
+        je      .2
+        cmp     rax, TYPECODE_UINT64
+        je      .3
+        cmp     rax, TYPECODE_FLOAT
+        je      .4
+
+        _nip
+        mov     ebx, f_value
+        _return
+
+.1:
+        ; fixnum
+        _untag_fixnum
+        test    rbx, rbx
+        js      .5
+        _eq?
+        _return
+
+.2:
+        ; int64
+        _ int64_raw_value
+        test    rbx, rbx
+        js      .5
+        _eq?
+        _return
+
+.3:
+        ; uint64
+        _ uint64_raw_value
+        _eq?
+        _return
+
+.4:
+        ; float
+        _swap
+        _ raw_uint64_to_float
+        _ float_equal?
+        _return
+
+.5:
+        _nip
+        mov     rbx, f_value
+        next
+endcode
+
 ; ### fixnum-equal?
 code fixnum_equal?, 'fixnum-equal?'     ; x y -- ?
         _ check_fixnum
@@ -75,6 +133,13 @@ endcode
 code int64_equal?, 'int64-equal?'       ; x y -- ?
         _ check_int64
         _ raw_int64_equal?
+        next
+endcode
+
+; ### uint64-equal?
+code uint64_equal?, 'uint64-equal?'     ; x y -- ?
+        _ check_uint64
+        _ raw_uint64_equal?
         next
 endcode
 

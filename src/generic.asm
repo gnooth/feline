@@ -424,6 +424,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method equal?, TYPECODE_BOOLEAN, boolean_equal?
         _add_method equal?, TYPECODE_FLOAT, float_equal?
         _add_method equal?, TYPECODE_INT64, int64_equal?
+        _add_method equal?, TYPECODE_UINT64, uint64_equal?
 
         ; length
         _initialize_generic_function length
