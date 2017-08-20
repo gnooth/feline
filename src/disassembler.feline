@@ -344,6 +344,12 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
     .mnemonic
     48 tab "al, " write-string .immediate-operand ;
 
+: find-word-from-exact-code-address ( tagged-code-address -- word/f )
+    >local: x
+    all-words [
+        symbol-code-address x =
+    ] find nip ;
+
 : jcc-rel32 ( mnemonic -- )
     !> mnemonic
     next-int32 ip + >local: jump-target
@@ -352,11 +358,9 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
     .mnemonic
     48 tab jump-target hex.
 
-    jump-target start-address stop-address between? [
-        jump-target find-word-from-code-address [
-            64 tab symbol-name write
-        ] when*
-    ] unless ;
+    jump-target find-word-from-exact-code-address [
+        64 tab symbol-name write
+    ] when* ;
 
 : regop-mnemonic ( -- string )
     {
@@ -622,11 +626,9 @@ last-word 0x63 install-handler
     .mnemonic
     48 tab jump-target hex.
 
-    jump-target start-address stop-address between? [
-        jump-target find-word-from-code-address [
-            64 tab symbol-name write
-        ] when*
-    ] unless ;
+    jump-target find-word-from-exact-code-address [
+        64 tab symbol-name write
+    ] when* ;
 
 : .70 ( -- ) "jo"  jmp/jcc-rel8 ; last-word 0x70 install-handler
 : .71 ( -- ) "jno" jmp/jcc-rel8 ; last-word 0x71 install-handler
@@ -1218,7 +1220,9 @@ last-word 0xe2 install-handler
 
 last-word 0xe3 install-handler
 
-: .eb ( -- ) "jmp" jmp/jcc-rel8 ; last-word 0xeb install-handler
+: .eb ( -- ) "jmp" jmp/jcc-rel8 ;
+
+last-word 0xeb install-handler
 
 : .e8 ( -- )
    "call" !> mnemonic
@@ -1227,7 +1231,7 @@ last-word 0xe3 install-handler
    .mnemonic
    48 tab
    code-address dup hex.
-   find-word-from-code-address [ 64 tab symbol-name write ] when* ;
+   find-word-from-exact-code-address [ 64 tab symbol-name write ] when* ;
 
 last-word 0xe8 install-handler
 
@@ -1237,7 +1241,8 @@ last-word 0xe8 install-handler
    .instruction-bytes
    .mnemonic
    48 tab
-   jump-target hex. ;
+   jump-target dup hex.
+   find-word-from-exact-code-address [ 64 tab symbol-name write ] when* ;
 
 last-word 0xe9 install-handler
 
