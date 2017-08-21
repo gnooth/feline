@@ -306,6 +306,17 @@ endcode
 
 ; ### install-method
 code install_method, 'install-method'   ; method --
+
+        _dup
+        _ method_callable
+        _over
+        _ method_typecode
+        _pick
+        _ method_generic_function       ; -- method callable typecode gf
+        _ generic_function_methods
+        _ verify_hashtable
+        _ hashtable_set_at
+
         _dup
         _ method_callable
         _ callable_raw_code_address     ; -- method method-raw-code-address
@@ -314,7 +325,7 @@ code install_method, 'install-method'   ; method --
         _ method_typecode               ; -- method-raw-code-address method typecode
         _swap
 
-        _ method_generic_function       ; -- method-raw-code-address tagged-typecode gf
+        _ method_generic_function       ; -- method-raw-code-address typecode gf
 
         _ generic_function_dispatch
         _ verify_hashtable
