@@ -166,24 +166,24 @@ code add_code_size, 'add-code-size'     ; accum pair -- accum
         next
 endcode
 
-; ### emit-byte
-code emit_byte, 'emit-byte'             ; byte --
+; ### emit_byte
+code emit_byte, 'emit_byte', SYMBOL_INTERNAL    ; byte --
         _pc
         _cstore
         add     qword [pc_], 1
         next
 endcode
 
-; ### emit-dword
-code emit_dword, 'emit-dword'           ; dword --
+; ### emit_dword
+code emit_dword, 'emit_dword', SYMBOL_INTERNAL  ; dword --
         _pc
         _lstore
         add     qword [pc_], 4
         next
 endcode
 
-; ### emit-qword
-code emit_qword, 'emit-qword'           ; qword --
+; ### emit_qword
+code emit_qword, 'emit_qword', SYMBOL_INTERNAL  ; qword --
         _pc
         _store
         add     qword [pc_], 8
@@ -200,7 +200,7 @@ feline_constant min_int32, 'min-int32', tagged_fixnum(MIN_INT32)
 ; ### max-int32
 feline_constant max_int32, 'max-int32', tagged_fixnum(MAX_INT32)
 
-; ### raw-int32?
+; ### raw_int32?
 code raw_int32?, 'raw_int32?'           ; untagged-fixnum -- ?
         cmp     rbx, MIN_INT32
         jl      .1
