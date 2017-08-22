@@ -289,6 +289,43 @@ code initialize_generic_function, 'initialize-generic-function' ; generic-symbol
         next
 endcode
 
+; ### find-method
+code find_method, 'find-method'         ; symbol-or-type symbol-or-gf -- method
+
+        _debug_?enough 2
+
+        _dup
+        _ symbol?
+        _tagged_if .1
+        _dup
+        _ generic?
+        _tagged_if .2
+        _ symbol_def
+        _else .2
+        _ error_not_generic_function
+        _return
+        _then .2
+        _then .1
+
+        _debug_?enough 2
+
+        _swap
+        _dup
+        _ symbol?
+        _tagged_if .3
+        _ symbol_name
+        _ find_type
+        _then .3
+        _ type_typecode
+        _swap
+
+        _ generic_function_methods
+        _ verify_hashtable
+        _ hashtable_at
+
+        next
+endcode
+
 %macro _initialize_generic_function 1   ; generic-asm-name --
         _lit S_%1
         _ initialize_generic_function
