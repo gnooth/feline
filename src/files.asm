@@ -451,13 +451,14 @@ code get_current_directory, 'get-current-directory'     ; -- string
 endcode
 
 ; ### set-current-directory
-code set_current_directory, 'set-current-directory'     ; string -- flag
+code set_current_directory, 'set-current-directory'     ; string -- ?
 ; Return true on success, 0 on failure.
         _ verify_string
         _ string_raw_data_address
         mov     arg0_register, rbx
         xcall   os_chdir
         mov     rbx, rax
+        _tag_boolean
         next
 endcode
 

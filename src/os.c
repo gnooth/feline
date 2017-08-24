@@ -435,12 +435,11 @@ char *os_getcwd(char *buf, size_t size)
 
 cell os_chdir(const char *path)
 {
-  // REVIEW error handling
+  // Returns 1 if successful, otherwise 0.
 #ifdef WIN64
-  BOOL ret = SetCurrentDirectory(path);
-  return ret ? -1 : 0;
+  return SetCurrentDirectory(path);
 #else
-  return chdir(path) ? 0 : -1;
+  return chdir(path) ? 0 : 1;
 #endif
 }
 
