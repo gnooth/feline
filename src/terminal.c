@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2016 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -75,8 +75,6 @@ void prep_terminal()
   console_input_handle = GetStdHandle(STD_INPUT_HANDLE);
   console_output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
 #ifdef WIN64_NATIVE
-  extern cell forth_stdout_data;
-  forth_stdout_data = (cell) console_output_handle;
   extern cell standard_output_handle;
   standard_output_handle = (cell) console_output_handle;
 #endif

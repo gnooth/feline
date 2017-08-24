@@ -306,9 +306,6 @@ code reset, 'reset'
         _ vector_set_length
         _then .2
 
-        ; REVIEW windows-ui
-        _ forth_standard_output
-
         _ not_in_definition
 
         jmp     quit

@@ -18,26 +18,6 @@ file __FILE__
 ; ### errno
 value os_errno, 'errno', 0
 
-; For Windows, FORTH-STDOUT is initialized in prep_terminal().
-; The value here is correct for Linux.
-
-; ### stdout
-value forth_stdout, 'forth-stdout', 1
-
-; For Windows, FORTH-OUTPUT-FILE is initialized by calling STANDARD-OUTPUT in COLD.
-
-; ### forth-output-file
-value forth_output_file, 'forth-output-file', 1
-
-; ### forth-standard-output
-code forth_standard_output, 'forth-standard-output'
-%ifndef WINDOWS_UI
-        _ forth_stdout
-        _to forth_output_file
-%endif
-        next
-endcode
-
 ; ### file-status
 code file_status, 'file-status'         ; c-addr u -- x ior
 ; FILE EXT

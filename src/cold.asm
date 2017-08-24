@@ -170,7 +170,6 @@ code cold, 'cold'                       ; --
         mov     rbp, [sp0_]
 
         _ initialize_locals_stack
-        _ forth_standard_output
 
         _ seed_random
 
