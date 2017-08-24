@@ -561,7 +561,7 @@ section .data
 %endmacro
 
 %macro  feline_constant 3               ; label, name, value
-        symbol S_%1, %2, %1, %1_ret - %1 + 1, SYMBOL_CONSTANT, %3
+        symbol S_%1, %2, %1, %1_ret - %1 + 1, SYMBOL_CONSTANT | SYMBOL_INLINE, %3
         section .text
         align DEFAULT_CODE_ALIGNMENT
 %1:
