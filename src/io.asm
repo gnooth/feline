@@ -205,49 +205,6 @@ code get_environment_variable, 'get-environment-variable' ; name -- value
         next
 endcode
 
-; ### get-current-directory
-code get_current_directory, 'get-current-directory' ; c-addr u -- c-addr
-%ifdef WIN64
-        popd    rdx
-        popd    rcx
-%else
-        popd    rsi
-        popd    rdi
-%endif
-        xcall   os_getcwd
-        pushd   rax
-        next
-endcode
-
-; ### current-directory
-code current_directory, 'current-directory' ; -- string
-        _lit 1024
-        _ feline_allocate_untagged
-        _lit 1024
-        _ get_current_directory
-        _dup
-        _ zcount
-        _ copy_to_string
-        _swap
-        _ feline_free
-        next
-endcode
-
-; ### set-current-directory
-code set_current_directory, 'set-current-directory' ; string -- flag
-; Return true on success, 0 on failure.
-        _ verify_string
-        _ string_raw_data_address
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
-        xcall   os_chdir
-        mov     rbx, rax
-        next
-endcode
-
 ; ### canonical-path
 code canonical_path, 'canonical-path'   ; string1 -- string2
         _ string_raw_data_address       ; -- zaddr1
