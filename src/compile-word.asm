@@ -265,8 +265,7 @@ code compile_call, 'compile-call'       ; raw-address --
         next
 endcode
 
-; ### pushrbx-bytes
-constant pushrbx_bytes, 'pushrbx-bytes', $0f86d8d48f85d8948
+%define PUSHRBX_BYTES   $0f86d8d48f85d8948
 
 ; ### compile-literal
 code compile_literal, 'compile-literal' ; literal --
@@ -276,7 +275,7 @@ code compile_literal, 'compile-literal' ; literal --
         _ wrapped
         _then .1
 
-        _ pushrbx_bytes
+        _lit PUSHRBX_BYTES
         _ emit_qword
         _dup
         _lit $100000000
