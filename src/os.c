@@ -447,8 +447,14 @@ char *os_realpath(const char *path)
 {
 #ifdef WIN64
   char *buf = malloc(MAX_PATH);
-  GetFullPathName(path, MAX_PATH, buf, NULL);
-  return buf;
+  DWORD ret = GetFullPathName(path, MAX_PATH, buf, NULL);
+  if (ret > 0 && ret <= MAX_PATH)
+    return buf;
+  else
+    {
+      free(buf);
+      return NULL;
+    }
 #else
   return realpath(path, NULL);
 #endif
