@@ -2784,7 +2784,11 @@ bitnot-test-1
 
 test: canonical-path-test-1
     "." canonical-path string? assert-true
-    "..." canonical-path assert-false
+
+    " " canonical-path assert-false
+    "" canonical-path assert-false
+
+    windows? [ "..." canonical-path assert-false ] unless
 ;
 
 canonical-path-test-1
