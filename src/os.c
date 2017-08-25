@@ -448,11 +448,10 @@ char *os_realpath(const char *path)
 #ifdef WIN64
   char *buf = malloc(MAX_PATH);
   GetFullPathName(path, MAX_PATH, buf, NULL);
-#else
-  char *buf = malloc(PATH_MAX);
-  realpath(path, buf);
-#endif
   return buf;
+#else
+  return realpath(path, NULL);
+#endif
 }
 
 char *os_strerror(int errnum)
