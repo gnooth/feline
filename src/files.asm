@@ -430,25 +430,27 @@ endcode
 
 ; ### canonical-path
 code canonical_path, 'canonical-path'   ; string1 -- string2
+
         _ string_raw_data_address       ; -- zaddr1
-%ifdef WIN64
-        popd    rcx
-%else
-        popd    rdi
-%endif
+
+        mov     arg0_register, rbx
         xcall   os_realpath
-        pushd   rax                     ; -- zaddr2
+
+        test    rax, rax
+        jz      .1
+
+        mov     rbx, rax                ; -- zaddr2
         _dup
         _ zcount
-        _ copy_to_string                ; -- string2
-        _ swap
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
+        _ copy_to_string                ; -- zaddr2 string2
+        mov     arg0_register, [rbp]
         xcall   os_free
-        poprbx
+        _nip
+        _return
+
+.1:
+        ; error
+        mov     rbx, f_value
         next
 endcode
 
