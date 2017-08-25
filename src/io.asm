@@ -205,30 +205,6 @@ code get_environment_variable, 'get-environment-variable' ; name -- value
         next
 endcode
 
-; ### canonical-path
-code canonical_path, 'canonical-path'   ; string1 -- string2
-        _ string_raw_data_address       ; -- zaddr1
-%ifdef WIN64
-        popd    rcx
-%else
-        popd    rdi
-%endif
-        xcall   os_realpath
-        pushd   rax                     ; -- zaddr2
-        _dup
-        _ zcount
-        _ copy_to_string                ; -- string2
-        _ swap
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
-        xcall   os_free
-        poprbx
-        next
-endcode
-
 ; ### errno-to-string
 code errno_to_string, 'errno-to-string' ; n -- string
 %ifdef WIN64

@@ -428,6 +428,30 @@ code tilde_expand_filename, 'tilde-expand-filename'     ; string1 -- string2
         next
 endcode
 
+; ### canonical-path
+code canonical_path, 'canonical-path'   ; string1 -- string2
+        _ string_raw_data_address       ; -- zaddr1
+%ifdef WIN64
+        popd    rcx
+%else
+        popd    rdi
+%endif
+        xcall   os_realpath
+        pushd   rax                     ; -- zaddr2
+        _dup
+        _ zcount
+        _ copy_to_string                ; -- string2
+        _ swap
+%ifdef WIN64
+        mov     rcx, rbx
+%else
+        mov     rdi, rbx
+%endif
+        xcall   os_free
+        poprbx
+        next
+endcode
+
 ; ### get-current-directory
 code get_current_directory, 'get-current-directory'     ; -- string
 
