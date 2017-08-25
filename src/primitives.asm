@@ -1481,6 +1481,26 @@ code expt, 'expt'                       ; base power -- result
         next
 endcode
 
+; ### windows?
+code windows?, 'windows?'               ; -- ?
+%ifdef WIN64
+        _t
+%else
+        _f
+%endif
+        next
+endcode
+
+; ### linux?
+code linux?, 'linux?'                   ; -- ?
+%ifdef WIN64
+        _f
+%else
+        _t
+%endif
+        next
+endcode
+
 ; ### bye
 code feline_bye, "bye"
         _ free_locals_stack
