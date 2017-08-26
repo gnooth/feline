@@ -20,14 +20,12 @@ VERSION = `git describe --tags`
 ifeq ($(OS),Windows_NT)
 	CC = gcc
 else
-	CC = clang
+# 	CC = clang
+	CC = gcc -no-pie
 endif
 
-CFLAGS = --std=c99 -D_GNU_SOURCE -g -m64
+CFLAGS = -std=c99 -D_GNU_SOURCE -g -m64
 ASMFLAGS =
-
-# clang
-LINKFLAGS = -m64 -lm
 
 # gcc
 # gcc 6.2.0 on Ubuntu 16.10 needs -no-pie
@@ -53,11 +51,11 @@ endif
 
 ifeq ($(OS),Windows_NT)
 $(FELINE_EXE):  $(OBJS)
-	$(CC) $(LINKFLAGS) $(OBJS) -l ws2_32 -o $(FELINE_EXE)
+	$(CC) $(LINKFLAGS) $(OBJS) -lm -l ws2_32 -o $(FELINE_EXE)
 	date > ../build
 else
 $(FELINE_EXE):  $(OBJS)
-	$(CC) $(LINKFLAGS) $(OBJS) -o $(FELINE_EXE)
+	$(CC) $(LINKFLAGS) $(OBJS) -lm -o $(FELINE_EXE)
 	date > ../build
 endif
 
