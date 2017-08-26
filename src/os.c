@@ -333,12 +333,12 @@ cell os_flush_file(cell fd)
 #endif
 }
 
-void os_emit_file(int c, int fd)
+cell os_emit_file(int c, int fd)
 {
 #ifdef WIN64
-  os_write_file (fd, &c, 1);
+  return os_write_file (fd, &c, 1);
 #else
-  write(fd, &c, 1);
+  return write(fd, &c, 1);
 #endif
 }
 
