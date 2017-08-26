@@ -198,18 +198,12 @@ cell os_write_file(cell fd, void *buf, size_t count)
 {
 #ifdef WIN64_NATIVE
   DWORD bytes_written = 0;
-  BOOL ret;
-  ret = WriteFile((HANDLE)fd, buf, count, &bytes_written, NULL);
-  if (ret)
-    return (cell) bytes_written;
+  if (WriteFile((HANDLE)fd, buf, count, &bytes_written, NULL))
+    return bytes_written;
   else
     return -1;
 #else
-  int ret = write(fd, buf, count);
-  if (ret < 0)
-    return (cell) -1;
-  else
-    return ret;
+  return write(fd, buf, count);
 #endif
 }
 
