@@ -148,16 +148,16 @@ cell c_socket_write(cell fd, void *buf, size_t count)
     }
   return count;
 #else
-  return os_write_file(fd, buf, count);
+  return write(fd, buf, count);
 #endif
 }
 
-void c_socket_write_char(int c, int fd)
+cell c_socket_write_char(int c, int fd)
 {
 #ifdef WIN64
-  c_socket_write(fd, &c, 1);
+  return c_socket_write(fd, &c, 1);
 #else
-  write(fd, &c, 1);
+  return write(fd, &c, 1);
 #endif
 }
 
