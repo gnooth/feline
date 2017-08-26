@@ -456,29 +456,31 @@ endcode
 
 ; ### get-current-directory
 code get_current_directory, 'get-current-directory'     ; -- string
-
         _lit 1024
-        _ feline_allocate_untagged
-        _lit 1024
-
-        mov     arg1_register, rbx
-        mov     arg0_register, [rbp]
-        _nip
+        _ feline_allocate_untagged      ; address in rbx
+        mov     arg1_register, 1024
+        mov     arg0_register, rbx      ; address
         xcall   os_getcwd
+        test    rax, rax
+        jz      .1
         mov     rbx, rax
-
         _dup
         _ zcount
         _ copy_to_string
         _swap
         _ feline_free
+        _return
 
+.1:
+        ; error
+        mov     arg0_register, rbx
+        xcall   os_free
+        mov     rbx, f_value
         next
 endcode
 
 ; ### set-current-directory
 code set_current_directory, 'set-current-directory'     ; string -- ?
-; Return true on success, 0 on failure.
         _ verify_string
         _ string_raw_data_address
         mov     arg0_register, rbx
