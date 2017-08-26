@@ -426,11 +426,22 @@ char *os_getcwd(char *buf, size_t size)
 {
   // REVIEW error handling
 #ifdef WIN64
-  GetCurrentDirectory(size, buf);
+  int ret = GetCurrentDirectory(size, buf);
+  if (ret)
+    {
+      // "If the function succeeds, the return value specifies the number of
+      // characters that are written to the buffer, not including the terminating
+      // null character."
+       return buf;
+    }
+  else
+    {
+      // "If the function fails, the return value is zero."
+      return NULL;
+    }
 #else
-  getcwd(buf, size);
+  return getcwd(buf, size);
 #endif
-  return buf;
 }
 
 cell os_chdir(const char *path)
