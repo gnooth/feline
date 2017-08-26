@@ -412,9 +412,9 @@ void os_ms(unsigned int ms)
 }
 #endif
 
-void os_system(const char *filename)
+cell os_system(const char *filename)
 {
-  system(filename);
+  return system(filename);
 }
 
 char *os_getenv(const char *name)
