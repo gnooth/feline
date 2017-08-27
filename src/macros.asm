@@ -244,8 +244,6 @@ GENERIC_WRITE   equ     $40000000
 %ifdef WIN64
 
 %macro  xcall   1
-        push    rbp
-        mov     rbp, [cold_rbp_]
         sub     rsp, 32
         test    rsp, 0x0f
         jnz     %%fixstack
@@ -257,7 +255,6 @@ GENERIC_WRITE   equ     $40000000
         add     rsp, 8
 %%out:
         add     rsp, 32
-        pop     rbp
 %endmacro
 
 %else
