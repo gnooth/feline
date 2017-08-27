@@ -15,39 +15,39 @@
 
 file __FILE__
 
-; ### raw-realloc
-code raw_realloc, 'raw-realloc'         ; addr size -- new-addr
-        mov     arg1_register, rbx
-        mov     arg0_register, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        xcall   os_realloc
+; ### raw-allocate
+code raw_allocate, 'raw_allocate', SYMBOL_INTERNAL      ; raw-size -- raw-address
+        mov     arg0_register, rbx
+        xcall   malloc
         test    rax, rax
         mov     rbx, rax
         jz .1
         _return
 .1:
-        _error "resize failed"
+        _error "malloc failed"
         next
 endcode
 
-; ### raw-allocate
-code raw_allocate, 'raw-allocate'       ; raw-size -- raw-address
-        mov     arg0_register, rbx
-        xcall   os_malloc
+; ### raw-realloc
+code raw_realloc, 'raw_realloc', SYMBOL_INTERNAL        ; raw-address raw-size -- new-raw-address
+        mov     arg1_register, rbx
+        mov     arg0_register, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        xcall   realloc
         test    rax, rax
         mov     rbx, rax
         jz .1
         _return
 .1:
-        _error "allocation failed"
+        _error "realloc failed"
         next
 endcode
 
 ; ### raw-free
-code raw_free, 'raw-free'               ; raw-address --
+code raw_free, 'raw_free', SYMBOL_INTERNAL      ; raw-address --
         mov     arg0_register, rbx
         poprbx
-        xcall   os_free
+        xcall   free
         next
 endcode
 
