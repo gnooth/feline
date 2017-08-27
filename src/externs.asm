@@ -13,6 +13,10 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+extern malloc
+extern realloc
+extern free
+
 extern os_accept_string
 extern os_allocate_executable
 extern os_bye
