@@ -243,18 +243,19 @@ GENERIC_WRITE   equ     $40000000
 
 %ifdef WIN64
 
+; Windows
 %macro  xcall   1
-        sub     rsp, 32
         test    rsp, 0x0f
         jnz     %%fixstack
+        sub     rsp, 32
         call    %1
+        add     rsp, 32
         jmp     %%out
 %%fixstack:
-        sub     rsp, 8
+        sub     rsp, 40
         call    %1
-        add     rsp, 8
+        add     rsp, 40
 %%out:
-        add     rsp, 32
 %endmacro
 
 %else
