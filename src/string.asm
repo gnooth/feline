@@ -248,34 +248,6 @@ code string_from, 'string_from', SYMBOL_INTERNAL
         next
 endcode
 
-; ### ~string
-code destroy_string, '~string'          ; string --
-        _ check_string
-        _ destroy_string_unchecked
-        next
-endcode
-
-; ### ~string-unchecked
-code destroy_string_unchecked, '~string-unchecked' ; string --
-        _dup
-        _object_allocated?
-        _if .1
-        _ in_gc?
-        _tagged_if_not .2
-        _dup
-        _ release_handle_for_object
-        _then .2
-        ; Zero out the object header so it won't look like a valid object
-        ; after it has been destroyed.
-        xor     eax, eax
-        mov     [rbx], rax
-        _ raw_free
-        _else .1
-        _drop
-        _then .1
-        next
-endcode
-
 ; ### hash-string
 code hash_string, 'hash-string'         ; string --
 ; Hash function adapted from SBCL.

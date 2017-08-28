@@ -161,14 +161,10 @@ code destroy_object_unchecked, 'destroy_object_unchecked', SYMBOL_INTERNAL      
 
         _object_raw_typecode_eax
 
-        cmp     eax, TYPECODE_STRING
-        je      destroy_string_unchecked
         cmp     eax, TYPECODE_SBUF
         je      destroy_sbuf_unchecked
         cmp     eax, TYPECODE_VECTOR
         je      destroy_vector_unchecked
-        cmp     eax, TYPECODE_ARRAY
-        je      destroy_array_unchecked
         cmp     eax, TYPECODE_HASHTABLE
         je      destroy_hashtable_unchecked
         cmp     eax, TYPECODE_QUOTATION

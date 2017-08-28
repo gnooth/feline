@@ -243,25 +243,6 @@ code array_new_sequence, 'array-new-sequence' ; len seq -- newseq
         next
 endcode
 
-; ### ~array
-code destroy_array, '~array'            ; handle --
-        _ check_array                   ; -- array
-        _ destroy_array_unchecked
-        next
-endcode
-
-; ### destroy_array_unchecked
-code destroy_array_unchecked, 'destroy_array_unchecked', SYMBOL_INTERNAL
-; array --
-
-        ; zero out object header
-        xor     eax, eax
-        mov     [rbx], rax
-
-        _ raw_free
-        next
-endcode
-
 ; ### array-nth-unsafe
 code array_nth_unsafe, 'array-nth-unsafe' ; index handle -- element
         _untag_fixnum qword [rbp]
