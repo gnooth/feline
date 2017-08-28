@@ -15,15 +15,6 @@
 
 file __FILE__
 
-; ### release-handle-for-object
-code release_handle_for_object, 'release-handle-for-object' ; object --
-        _ find_handle
-        _?dup_if .1
-        _ release_handle_unsafe
-        _then .1
-        next
-endcode
-
 ; ### gc-roots
 value gc_roots, 'gc-roots', 0           ; initialized in cold
 
