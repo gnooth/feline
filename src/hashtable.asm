@@ -371,36 +371,19 @@ code destroy_hashtable, '~hashtable'    ; handle --
         next
 endcode
 
-; ### ~hashtable-unchecked
-code destroy_hashtable_unchecked, '~hashtable-unchecked'        ; hashtable --
+; ### destroy_hashtable_unchecked
+code destroy_hashtable_unchecked, 'destroy_hashtable_unchecked', SYMBOL_INTERNAL
+; hashtable --
+
         _dup
         _hashtable_data
         _ raw_free                      ; -- hashtable
 
-        _ in_gc?
-        _tagged_if_not .1
-        _dup
-        _ release_handle_for_object
-        _then .1
-
-        ; Zero out the object header so it won't look like a valid object
-        ; after it has been destroyed.
+        ; zero out object header
         xor     eax, eax
         mov     [rbx], rax
 
         _ raw_free
-
-        next
-endcode
-
-; ### hashtable-data-address
-code hashtable_data_address, 'hashtable-data-address' ; ht -- data-address
-; Return value is untagged.
-        _ check_hashtable
-        push    this_register
-        popd    this_register
-        _this_hashtable_data
-        pop     this_register
         next
 endcode
 

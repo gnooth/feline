@@ -250,21 +250,15 @@ code destroy_array, '~array'            ; handle --
         next
 endcode
 
-; ### ~array-unchecked
-code destroy_array_unchecked, '~array-unchecked' ; array --
-        _ in_gc?
-        _tagged_if_not .1
-        _dup
-        _ release_handle_for_object
-        _then .1
+; ### destroy_array_unchecked
+code destroy_array_unchecked, 'destroy_array_unchecked', SYMBOL_INTERNAL
+; array --
 
-        ; Zero out the object header so it won't look like a valid object
-        ; after it has been destroyed.
+        ; zero out object header
         xor     eax, eax
         mov     [rbx], rax
 
         _ raw_free
-
         next
 endcode
 
