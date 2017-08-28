@@ -75,6 +75,7 @@ code uint64_raw_value, 'uint64_raw_value', SYMBOL_INTERNAL      ; handle -- raw-
         next
 endcode
 
+%if 0
 ; ### new_uint64
 code new_uint64, 'new_uint64', SYMBOL_INTERNAL  ; raw-uint64 -- uint64
 ; 2 cells: object header, raw value
@@ -99,6 +100,25 @@ code new_uint64, 'new_uint64', SYMBOL_INTERNAL  ; raw-uint64 -- uint64
 
         ; return handle
         _ new_handle                    ; -- handle
+
+        next
+endcode
+%endif
+
+; ### new_uint64
+code new_uint64, 'new_uint64', SYMBOL_INTERNAL  ; raw-uint64 -- uint64
+
+        ; 2 cells: object header, raw value
+        mov     arg0_register, 2 * BYTES_PER_CELL
+
+        call    __raw_allocate
+
+        mov     qword [rax], TYPECODE_UINT64
+        mov     [rax + BYTES_PER_CELL], rbx
+
+        ; return handle
+        mov     rbx, rax
+        _ new_handle
 
         next
 endcode
