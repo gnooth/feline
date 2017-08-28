@@ -148,34 +148,21 @@ code one_quotation, '1quotation'        ; object -- quotation
         next
 endcode
 
-; ### ~quotation
-code destroy_quotation, '~quotation'    ; handle --
-        _ check_quotation               ; -- quotation
-        _ destroy_quotation_unchecked
-        next
-endcode
+; ### destroy_quotation_unchecked
+code destroy_quotation_unchecked, 'destroy_quotation_unchecked', SYMBOL_INTERNAL
+; quotation --
 
-; ### ~quotation-unchecked
-code destroy_quotation_unchecked, '~quotation-unchecked' ; quotation --
         _dup
         _quotation_raw_code_address
         _?dup_if .1
         _ free_executable
         _then .1
 
-        _ in_gc?
-        _tagged_if_not .2
-        _dup
-        _ release_handle_for_object
-        _then .2
-
-        ; Zero out the object header so it won't look like a valid object
-        ; after it has been destroyed.
+        ; zero out object header
         xor     eax, eax
         mov     [rbx], rax
 
         _ raw_free
-
         next
 endcode
 
