@@ -261,41 +261,19 @@ code sbuf_to_string, 'sbuf>string'      ; handle -- string
         next
 endcode
 
-; ### ~sbuf
-code destroy_sbuf, '~sbuf'              ; handle --
-        _ check_sbuf
-        _ destroy_sbuf_unchecked
-        next
-endcode
+; ### destroy_sbuf_unchecked
+code destroy_sbuf_unchecked, 'destroy_sbuf_unchecked', SYMBOL_INTERNAL
+; sbuf --
 
-; ### ~sbuf-unchecked
-code destroy_sbuf_unchecked, '~sbuf-unchecked'  ; sbuf --
-        _dup
-        _zeq_if .1
-        _drop
-        _return
-        _then .1
-
-        _dup
-        _object_allocated?
-        _if .2
         _dup
         _sbuf_data
         _ raw_free
 
-        _ in_gc?
-        _tagged_if_not .4
-        _dup
-        _ release_handle_for_object
-        _then .4
-        ; Zero out the object header so it won't look like a valid object
-        ; after it has been freed.
+        ; zero out object header
         xor     eax, eax
         mov     [rbx], rax
+
         _ raw_free
-        _else .2
-        _drop
-        _then .2
         next
 endcode
 
