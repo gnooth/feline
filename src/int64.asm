@@ -95,28 +95,18 @@ endcode
 
 ; ### new_int64
 code new_int64, 'new_int64', SYMBOL_INTERNAL    ; raw-int64 -- int64
-; 2 cells: object header, raw value
-        _lit 2
-        _cells
-        _ raw_allocate
 
-        push    this_register
-        mov     this_register, rbx
-        poprbx
+        ; 2 cells: object header, raw value
+        mov     arg0_register, 2 * BYTES_PER_CELL
 
-        xor     eax, eax
-        mov     [this_register], rax
+        call    __raw_allocate
 
-        _this_object_set_raw_typecode TYPECODE_INT64
-
-        _this_int64_set_raw_value
-
-        pushrbx
-        mov     rbx, this_register      ; -- int64
-        pop     this_register
+        mov     qword [rax], TYPECODE_INT64
+        mov     [rax + BYTES_PER_CELL], rbx
 
         ; return handle
-        _ new_handle                    ; -- handle
+        mov     rbx, rax
+        _ new_handle
 
         next
 endcode
