@@ -15,20 +15,17 @@
 
 file __FILE__
 
-; ### raw-allocate
+; ### raw_allocate
 code raw_allocate, 'raw_allocate', SYMBOL_INTERNAL      ; raw-size -- raw-address
         mov     arg0_register, rbx
         xcall   malloc
         test    rax, rax
         mov     rbx, rax
-        jz .1
-        _return
-.1:
-        _error "malloc failed"
+        jz      error_out_of_memory
         next
 endcode
 
-; ### raw-realloc
+; ### raw_realloc
 code raw_realloc, 'raw_realloc', SYMBOL_INTERNAL        ; raw-address raw-size -- new-raw-address
         mov     arg1_register, rbx
         mov     arg0_register, [rbp]
@@ -36,14 +33,11 @@ code raw_realloc, 'raw_realloc', SYMBOL_INTERNAL        ; raw-address raw-size -
         xcall   realloc
         test    rax, rax
         mov     rbx, rax
-        jz .1
-        _return
-.1:
-        _error "realloc failed"
+        jz      error_out_of_memory
         next
 endcode
 
-; ### raw-free
+; ### raw_free
 code raw_free, 'raw_free', SYMBOL_INTERNAL      ; raw-address --
         mov     arg0_register, rbx
         poprbx

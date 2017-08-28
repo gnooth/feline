@@ -15,6 +15,13 @@
 
 file __FILE__
 
+; ### error_out_of_memory
+code error_out_of_memory, 'error-out-of-memory' ; --
+        _quote "ERROR: out of memory."
+        _ error
+        next
+endcode
+
 ; ### format-type-error
 code format_type_error, 'format-type-error'     ; object expected-type -- string
         _quote "ERROR: the value %S is not %s."
