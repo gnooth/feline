@@ -255,32 +255,19 @@ code vector_new_sequence, 'vector-new-sequence' ; len seq -- newseq
         next
 endcode
 
-; ### ~vector
-code destroy_vector, '~vector'          ; handle --
-        _ check_vector                  ; -- vector
-        _ destroy_vector_unchecked
-        next
-endcode
+; ### destroy_vector_unchecked
+code destroy_vector_unchecked, 'destroy_vector_unchecked', SYMBOL_INTERNAL
+; vector --
 
-; ### ~vector-unchecked
-code destroy_vector_unchecked, '~vector-unchecked' ; vector --
         _dup
         _vector_raw_data_address
-        _ raw_free                      ; -- vector
+        _ raw_free
 
-        _ in_gc?
-        _tagged_if_not .1
-        _dup
-        _ release_handle_for_object
-        _then .1
-
-        ; Zero out the object header so it won't look like a valid object
-        ; after it has been destroyed.
+        ; zero out object header
         xor     eax, eax
         mov     [rbx], rax
 
         _ raw_free
-
         next
 endcode
 
