@@ -295,37 +295,6 @@ code maybe_deref, 'maybe-deref'         ; x -- object-address
         next
 endcode
 
-; ### find-handle
-code find_handle, 'find-handle'         ; object -- handle/0
-        pushrbx
-        mov     rbx, [handle_space_]
-        _begin .2
-        _dup
-        pushrbx
-        mov     rbx, [handle_space_free_]
-        _ult
-        _while .2                       ; -- object addr
-        _twodup                         ; -- object addr object handle
-        _fetch                          ; -- object addr object object2
-        _equal
-        _if .3
-        ; found it!
-        _nip
-        _return
-        _then .3                        ; -- object addr
-
-        _cellplus
-        _repeat .2
-        _drop                           ; -- object
-        ; not found
-        _ ?nl
-        _write "can't find handle for object at "
-        _ untagged_dot
-        ; return false
-        _zero
-        next
-endcode
-
 ; ### release_handle_unsafe
 code release_handle_unsafe, 'release_handle_unsafe', SYMBOL_INTERNAL    ; handle --
         ; zero out the stored address
