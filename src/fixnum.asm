@@ -621,18 +621,19 @@ code fixnum_to_binary, 'fixnum>binary'  ; fixnum -- string
 endcode
 
 ; ### raw_int64_to_decimal
-code raw_int64_to_decimal, 'raw_int64_to_decimal', SYMBOL_INTERNAL      ; int64 -- string
-
-        _lit 128
-        _ new_sbuf_untagged             ; handle
+code raw_int64_to_decimal, 'raw_int64_to_decimal', SYMBOL_INTERNAL      ; raw-int64 -- string
 
         push    r12
         push    this_register
 
-        mov     this_register, [rbx]    ; raw address
-        poprbx                          ; -- int64
+        _lit 128
+        _ new_sbuf_untagged             ; -- raw-int64 handle
+        _handle_to_object_unsafe        ; -- raw-int64 sbuf
 
-        mov     rax, rbx                ; int64 in rax
+        mov     this_register, rbx
+        poprbx                          ; -- raw-int64
+
+        mov     rax, rbx                ; raw-int64 in rax
 
         xor     r12, r12
         test    rax, rax
