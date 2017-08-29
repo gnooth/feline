@@ -49,11 +49,15 @@ code integer_to_raw_bits, 'integer_to_raw_bits', SYMBOL_INTERNAL        ; x -- y
 
 .1:
         ; not a fixnum
+%ifdef TAGGED_HANDLES
+        cmp     bl, HANDLE_TAG
+        jne     error_not_integer
+%else
         cmp     rbx, [handle_space_]
         jb      error_not_integer
         cmp     rbx, [handle_space_free_]
         jnb     error_not_integer
-
+%endif
         _handle_to_object_unsafe
 
         test    rbx, rbx
