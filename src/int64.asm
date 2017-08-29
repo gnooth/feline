@@ -521,14 +521,15 @@ endcode
 ; ### raw_int64_to_hex
 code raw_int64_to_hex, 'raw_int64_to_hex', SYMBOL_INTERNAL      ; raw-int64 -- string
 
-        _lit 32
-        _ new_sbuf_untagged             ; handle
-
         push    r12
         push    this_register
 
-        mov     this_register, [rbx]    ; raw address of string buffer
-        poprbx                          ; -- int64
+        _lit 32
+        _ new_sbuf_untagged             ; -- raw-int64 handle
+        _handle_to_object_unsafe        ; -- raw-int64 sbuf
+
+        mov     this_register, rbx
+        poprbx                          ; -- raw-int64
 
         mov     r12, rbx                ; raw int64 in r12
         poprbx                          ; --
