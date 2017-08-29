@@ -267,31 +267,13 @@ code deref, 'deref'                     ; x -- object-address/0
         jae .1
 
         ; valid handle
-        mov     rbx, [rbx]              ; -- object-address/0
+        _handle_to_object_unsafe        ; -- object-address/0
         _return
 
 .1:
         ; -- x
         ; drop 0
         xor     ebx, ebx
-        next
-endcode
-
-; ### maybe-deref
-code maybe_deref, 'maybe-deref'         ; x -- object-address
-        ; handles are 8-byte aligned
-        test    bl, 7
-        jnz     .1
-
-        ; must point into handle space
-        cmp     rbx, [handle_space_]
-        jb .1
-        cmp     rbx, [handle_space_free_]
-        jae .1
-
-        ; valid handle
-        mov     rbx, [rbx]      ; -- object-address
-.1:
         next
 endcode
 
