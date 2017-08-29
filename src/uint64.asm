@@ -165,15 +165,16 @@ endcode
 ; ### raw_uint64_to_decimal
 code raw_uint64_to_decimal, 'raw_uint64_to_decimal', SYMBOL_INTERNAL    ; raw-uint64 -- string
 
-        _lit 32
-        _ new_sbuf_untagged             ; handle
-
         push    this_register
 
-        mov     this_register, [rbx]    ; raw address of string buffer
-        poprbx                          ; -- uint64
+        _lit 32
+        _ new_sbuf_untagged             ; -- raw-uint64 handle
+        _handle_to_object_unsafe        ; -- raw-uint64 sbuf
 
-        mov     rax, rbx                ; raw uint64 in rax
+        mov     this_register, rbx
+        poprbx                          ; -- raw-uint64
+
+        mov     rax, rbx                ; raw-uint64 in rax
 
         align   DEFAULT_CODE_ALIGNMENT
 .1:
@@ -215,16 +216,17 @@ hexchars:
 ; ### raw_uint64_to_hex
 code raw_uint64_to_hex, 'raw_uint64_to_hex', SYMBOL_INTERNAL    ; raw-uint64 -- string
 
-        _lit 32
-        _ new_sbuf_untagged             ; handle
-
         push    r12
         push    this_register
 
-        mov     this_register, [rbx]    ; raw address of string buffer
-        poprbx                          ; -- uint64
+       _lit 32
+        _ new_sbuf_untagged             ; -- raw-uint64 handle
+        _handle_to_object_unsafe        ; -- raw-uint64 sbuf
 
-        mov     r12, rbx                ; raw uint64 in r12
+        mov     this_register, rbx
+        poprbx                          ; -- raw-uint64
+
+        mov     r12, rbx                ; raw-uint64 in r12
         poprbx                          ; --
 
         align   DEFAULT_CODE_ALIGNMENT
