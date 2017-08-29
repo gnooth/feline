@@ -16,7 +16,11 @@
 file __FILE__
 
 %macro  _handle_to_object_unsafe 0
-        _fetch
+%ifdef TAGGED_HANDLES
+        shr     rbx, HANDLE_TAG_BITS
+        ; fall through
+%endif
+        mov     rbx, [rbx]
 %endmacro
 
 ; typecodes
