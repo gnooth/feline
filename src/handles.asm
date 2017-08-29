@@ -203,13 +203,16 @@ endcode
         add qword [recent_allocations_], 1
 %endmacro
 
-; ### new-handle
-code new_handle, 'new-handle'           ; object -- handle
+; ### new_handle
+code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
         _ get_empty_handle              ; -- object handle/0
         test    rbx, rbx
         jz     .1
-        _tuck
-        _store
+
+        mov     rax, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        mov     [rbx], rax
+
         _increment_allocation_count
         _return
 .1:                                     ; -- object 0
@@ -220,8 +223,11 @@ code new_handle, 'new-handle'           ; object -- handle
         _ get_empty_handle
         test    rbx, rbx
         jz     .2
-        _tuck
-        _store
+
+        mov     rax, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        mov     [rbx], rax
+
         _increment_allocation_count
         _return
 .2:
@@ -321,7 +327,7 @@ code find_handle, 'find-handle'         ; object -- handle/0
 endcode
 
 ; ### release_handle_unsafe
-code release_handle_unsafe, 'release-handle-unsafe', SYMBOL_INTERNAL    ; handle --
+code release_handle_unsafe, 'release_handle_unsafe', SYMBOL_INTERNAL    ; handle --
         ; zero out the stored address
         xor     eax, eax
         mov     qword [rbx], rax
