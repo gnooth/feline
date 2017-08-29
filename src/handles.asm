@@ -38,8 +38,9 @@ asm_global recycled_handles_vector_, 0
         mov     rbx, [recycled_handles_vector_]
 %endmacro
 
-; ### initialize-handle-space
-code initialize_handle_space, 'initialize-handle-space' ; --
+; ### initialize_handle_space
+code initialize_handle_space, 'initialize_handle_space', SYMBOL_INTERNAL
+; --
 
         pushrbx
         mov     rbx, [handle_space_]
@@ -88,6 +89,9 @@ code initialize_handle_space, 'initialize-handle-space' ; --
         poprbx                                          ; -- handle
 
         ; and release its handle
+%ifdef TAGGED_HANDLES
+        _untag_handle
+%endif
         _ release_handle_unsafe                         ; --
 
         next
@@ -213,8 +217,13 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
         lea     rbp, [rbp + BYTES_PER_CELL]
         mov     [rbx], rax
 
+%ifdef TAGGED_HANDLES
+        _tag_handle
+%endif
+
         _increment_allocation_count
         _return
+
 .1:                                     ; -- object 0
         _drop
 
@@ -228,6 +237,10 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
         lea     rbp, [rbp + BYTES_PER_CELL]
         mov     [rbx], rax
 
+%ifdef TAGGED_HANDLES
+        _tag_handle
+%endif
+
         _increment_allocation_count
         _return
 .2:
@@ -237,6 +250,10 @@ endcode
 
 ; ### handle?
 code handle?, 'handle?'                 ; x -- ?
+%ifdef TAGGED_HANDLES
+        cmp     bl, HANDLE_TAG
+        jne     .1
+%else
         ; handles are 8-byte aligned
         test    bl, 7
         jnz     .1
@@ -246,7 +263,7 @@ code handle?, 'handle?'                 ; x -- ?
         jb .1
         cmp     rbx, [handle_space_free_]
         jae .1
-
+%endif
         mov     ebx, t_value
         _return
 .1:
@@ -256,6 +273,10 @@ endcode
 
 ; ### deref
 code deref, 'deref'                     ; x -- object-address/0
+%ifdef TAGGED_HANDLES
+        cmp     bl, HANDLE_TAG
+        jne     .1
+%else
         ; handles are 8-byte aligned
         test    bl, 7
         jnz     .1
@@ -265,7 +286,7 @@ code deref, 'deref'                     ; x -- object-address/0
         jb .1
         cmp     rbx, [handle_space_free_]
         jae .1
-
+%endif
         ; valid handle
         _handle_to_object_unsafe        ; -- object-address/0
         _return
