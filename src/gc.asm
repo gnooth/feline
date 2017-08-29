@@ -346,28 +346,35 @@ code mark_locals_stack, 'mark-locals-stack' ; --
         next
 endcode
 
-; ### maybe-collect-handle
-code maybe_collect_handle, 'maybe-collect-handle' ; handle --
-        _dup                            ; -- handle handle
-        _handle_to_object_unsafe        ; -- handle object|0
-        ; Check for null object address.
+; ### maybe_collect_handle
+code maybe_collect_handle, 'maybe_collect_handle', SYMBOL_INTERNAL
+; untagged-handle --
+
+        _dup
+        mov     rbx, [rbx]              ; -- untagged-handle raw-object/0
+
+        ; check for null object address
         test    rbx, rbx
-        jnz     .1
-        ; Null object address, nothing to do.
-        _2drop
-        _return
-.1:                                     ; -- handle object
-        ; Is object marked?
+        jz      .1
+
+        ; is object marked?
         _test_marked_bit
         jz .2
-        ; Object is marked.
+
+        ; object is marked
         _nip                            ; -- object
         _unmark_object
         _return
-.2:                                     ; -- handle object
-        ; Object is not marked.
-        _ destroy_object_unchecked      ; -- handle
+
+.2:                                     ; -- untagged-handle object
+        ; object is not marked
+        _ destroy_object_unchecked      ; -- untagged-handle
         _ release_handle_unsafe
+        _return
+
+.1:
+        ; null object address, nothing to do
+        _2drop
         next
 endcode
 
