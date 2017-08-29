@@ -75,8 +75,16 @@ endcode
 code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL
 ; x -- raw-typecode
 
+%ifdef TAGGED_HANDLES
+        cmp     bl, HANDLE_TAG
+        je      .2
+        ; not a handle
+        test    ebx, LOWTAG_MASK
+        jz      .3
+%else
         test    ebx, LOWTAG_MASK
         jz      .2
+%endif
 
 %if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
         test    ebx, FIXNUM_TAG
@@ -99,10 +107,12 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL
         _return
 
 .2:
+%ifndef TAGGED_HANDLES
         cmp     rbx, [handle_space_]
-        jb .3
+        jb      .3
         cmp     rbx, [handle_space_free_]
-        jae .3
+        jae     .3
+%endif
         _handle_to_object_unsafe
         test    rbx, rbx
         jz      error_empty_handle
@@ -111,9 +121,9 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL
 
 .3:
         cmp     rbx, static_data_area
-        jb .4
+        jb      .4
         cmp     rbx, static_data_area_limit
-        jae .4
+        jae     .4
         _object_raw_typecode
         _return
 
