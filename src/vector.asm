@@ -15,6 +15,8 @@
 
 file __FILE__
 
+%define vector_raw_length_slot  qword [rbx + BYTES_PER_CELL]
+
 %macro  _vector_raw_length 0            ; vector -- untagged-length
         _slot1
 %endmacro
@@ -32,6 +34,8 @@ file __FILE__
 %macro  _this_vector_set_raw_length 0   ; untagged-length --
         _this_set_slot1
 %endmacro
+
+%define vector_raw_data_address_slot    qword [rbx + BYTES_PER_CELL * 2]
 
 %macro  _vector_raw_data_address 0      ; vector -- raw-data-address
         _slot2
@@ -723,26 +727,17 @@ code vector_?pop, 'vector-?pop'         ; handle -- element/f
 
 vector_?pop_unchecked:
 
-        push    this_register
-        mov     this_register, rbx
-
-        _vector_raw_length
-        test    rbx, rbx
+        mov     rax, vector_raw_length_slot
+        test    rax, rax
         jz      .1
-        sub     rbx, 1
-        mov     this_vector_raw_length, rbx
-        _this_vector_nth_unsafe         ; -- element
-
-        ; mark cell empty
-        _f
-        _this_vector_raw_length
-        _this_vector_set_nth_unsafe
-
-        pop     this_register
+        sub     rax, 1
+        mov     vector_raw_length_slot, rax
+        mov     rdx, vector_raw_data_address_slot
+        mov     rbx, qword [rdx + rax * BYTES_PER_CELL]
+        mov     qword [rdx + rax * BYTES_PER_CELL], f_value
         _return
 .1:
         mov     ebx, f_value
-        pop     this_register
         next
 endcode
 
