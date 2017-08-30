@@ -83,6 +83,23 @@ code bi, 'bi'                           ; x quot1 quot2 --
         next
 endcode
 
+; ### 2tri
+code twotri, '2tri'                     ; x y quot1 quot2 quot3 --
+; Apply quot1 to x and y, then apply quot2 to x and y, and finally apply
+; quot3 to x and y.
+        _tor
+        _tor
+        _ twokeep
+        _rfrom
+        _ twokeep
+        _rfrom
+        _ callable_raw_code_address
+        mov     rax, rbx
+        poprbx
+        call    rax
+        next
+endcode
+
 ; ### 2bi
 code twobi, '2bi'                       ; x y quot1 quot2 --
 ; Apply quot1 to x and y, then apply quot2 to x and y.

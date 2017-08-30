@@ -2793,4 +2793,13 @@ test: canonical-path-test-1
 
 canonical-path-test-1
 
+test: 2tri-test-1
+    clear
+    10 20 [ 1 + ] [ 2 + ] [ 3 + ] 2tri
+    get-data-stack { 10 21 10 22 10 23 } assert=
+    clear
+;
+
+2tri-test-1
+
 ?nl "Reached end of test.feline" write-string
