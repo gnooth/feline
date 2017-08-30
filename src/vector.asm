@@ -55,6 +55,8 @@ file __FILE__
         _this_set_slot2
 %endmacro
 
+%define vector_raw_capacity_slot        qword [rbx + BYTES_PER_CELL * 3]
+
 %macro  _vector_raw_capacity 0          ; vector -- raw-capacity
         _slot3
 %endmacro
@@ -636,39 +638,33 @@ endcode
 ; ### vector-push
 code vector_push, 'vector-push'         ; element handle --
 
-        _ check_vector
+        _ check_vector                  ; -- element vector
 
 vector_push_unchecked:
 
-        push    this_register
-        mov     this_register, rbx
-
-        _vector_raw_length
-        cmp     rbx, this_vector_raw_capacity
-        poprbx
+        mov     rax, vector_raw_length_slot     ; raw length in rax
+        cmp     rax, vector_raw_capacity_slot
         jnc     .1
-
-        _this_vector_raw_length
-        _this_vector_set_nth_unsafe
-
-        add     this_vector_raw_length, 1
-
-        pop     this_register
+        mov     rdx, [rbp]                      ; element in rdx
+        mov     rcx, vector_raw_data_address_slot
+        mov     [rcx + BYTES_PER_CELL * rax], rdx
+        add     vector_raw_length_slot, 1
+        _2drop
         _return
-
 .1:
         ; need to grow capacity
-        _this_vector_raw_length
+        _dup
+        _vector_raw_length
         _oneplus
-        _this
+        _over
         _ vector_ensure_capacity
 
-        _this_vector_raw_length
-        _this_vector_set_nth_unsafe
-
-        add     this_vector_raw_length, 1
-
-        pop     this_register
+        mov     rax, vector_raw_length_slot     ; raw length in rax
+        mov     rdx, [rbp]                      ; element in rdx
+        mov     rcx, vector_raw_data_address_slot
+        mov     [rcx + BYTES_PER_CELL * rax], rdx
+        add     vector_raw_length_slot, 1
+        _2drop
         next
 endcode
 
