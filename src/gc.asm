@@ -317,24 +317,71 @@ endcode
         pushd   rax
 %endmacro
 
-; ### mark-return-stack
-code mark_return_stack, 'mark-return-stack'     ; --
+; ### mark_return_stack
+code mark_return_stack, 'mark_return_stack', SYMBOL_INTERNAL    ; --
+
+        push    r12
         _rdepth
-        mov     rcx, rbx                        ; depth in rcx
-        jrcxz   .2
+        mov     r12, rbx                ; depth in r12
+        test    r12, r12
+        jz      .2
 .1:
-        mov     rax, rcx
-        shl     rax, 3
-        add     rax, rsp
+        mov     rax, [rsp + r12 * BYTES_PER_CELL]
+
+%ifdef TAGGED_HANDLES
+        cmp     al, HANDLE_TAG
+        jne     .3
+
+        ; tag byte is ok, but the return stack is a jungle
+        ; see x_test_mark_return_stack below
+
+        ; make a copy in rdx (maybe_mark_handle expects a tagged handle)
+        mov     rdx, rax
+
+        shr     rdx, HANDLE_TAG_BITS
+
+        ; handles are 8-byte aligned
+        test    dl, 7
+        jnz     .3
+
+        ; must be in handle space
+        cmp     rdx, [handle_space_]
+        jb      .3
+        cmp     rdx, [handle_space_free_]
+        jae     .3
+%else
+        test    eax, LOWTAG_MASK
+        jnz     .3
+%endif
+
         pushrbx
-        mov     rbx, [rax]
-        push    rcx
+        mov     rbx, rax
         _ maybe_mark_handle
-        pop     rcx
-        dec     rcx
+.3:
+        dec     r12
         jnz     .1
 .2:
         poprbx
+        pop     r12
+        next
+endcode
+
+; ### x_test_mark_return_stack
+; A test to verify that mark_return_stack is not confused by some arbitrary
+; return address with a low byte matching HANDLE_TAG.
+code x_test_mark_return_stack, 'x_test_mark_return_stack', SYMBOL_INTERNAL      ; -- 0xf2
+%ifdef HANDLE_TAG
+        mov     eax, HANDLE_TAG
+%else
+        ; HANDLE_TAG is 0xf2
+        mov     eax, 0xf2
+%endif
+        push    rax
+        _ gc
+        pop     rax
+        pushrbx
+        mov     rbx, rax
+        _tag_fixnum
         next
 endcode
 
