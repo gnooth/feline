@@ -15,10 +15,46 @@
 
 file __FILE__
 
-; ### error_out_of_memory
+; ### error-out-of-memory
 code error_out_of_memory, 'error-out-of-memory' ; --
         _quote "ERROR: out of memory."
         _ error
+        next
+endcode
+
+; ### find-generic-from-return-address
+code find_generic_from_return_address, 'find-generic-from-return-address'
+; address -- symbol/f
+
+        _quote "find-word-from-code-address"
+        _ feline_vocab
+        _ vocab_find_name               ; -- address symbol/string ?
+        _tagged_if .1
+        _ call_symbol                   ; -- symbol/f
+        _return
+        _then .1                        ; -- address string
+
+        _drop
+        mov     ebx, f_value
+        next
+endcode
+
+; ### error-no-method
+code error_no_method, 'error-no-method' ; object return-address --
+
+        _ find_generic_from_return_address
+        _dup
+        _tagged_if .1
+        _swap
+        _quote "ERROR: the generic function `%S` has no method for the value %S."
+        _else .1
+        _drop
+        _quote "ERROR: the generic function has no method for the value %S."
+        _then .1
+
+        _ format
+        _ error
+
         next
 endcode
 

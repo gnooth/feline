@@ -212,8 +212,8 @@ code lookup_method, 'lookup-method'     ; object dispatch-table -- object raw-co
 endcode
 
 ; ### do-generic
-code do_generic, 'do-generic'   ; object dispatch-table --
-        _lookup_method
+code do_generic, 'do-generic'           ; object dispatch-table --
+        _lookup_method                  ; -- object raw-code-address/f
         cmp     rbx, f_value
         je      .1
         mov     rax, rbx
@@ -224,12 +224,14 @@ code do_generic, 'do-generic'   ; object dispatch-table --
 %else
         jmp     rax
 %endif
-.1:
-        _error "no method"
+.1:                                     ; -- object f
+        mov     rbx, [rsp]
+        _tag_fixnum                     ; -- object return-address
+        _ error_no_method
         next
 endcode
 
-%macro generic 2
+%macro  generic 2
         code %1, %2, SYMBOL_GENERIC
         pushrbx
         mov     rbx, [S_%1_symbol_value]
