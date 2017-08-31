@@ -998,6 +998,18 @@ last-word 0x99 install-handler
 
 last-word 0xa6 install-handler
 
+: .a9
+    -- source is imm16/32
+    -- dest is ax/eax/rax
+    set-instruction-size
+    "test" !> mnemonic
+    0 !> dreg   -- ax/eax/rax
+    next-int32 !> immediate-operand
+    t !> immediate-operand?
+    .inst ;
+
+last-word 0xa9 install-handler
+
 : .aa
     "stosb" !> mnemonic
     0 !> #operands
