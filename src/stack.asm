@@ -43,13 +43,6 @@ endinline
         pushd   rax
 %endmacro
 
-%macro  _rdepth 0
-        mov     rax, [rp0_]
-        sub     rax, rsp
-        shr     rax, 3
-        pushd   rax
-%endmacro
-
 ; ### 2swap
 code twoswap, '2swap'                   ; x1 x2 x3 x4 -- x3 x4 x1 x2
         mov     rax, [rbp]                              ; x3

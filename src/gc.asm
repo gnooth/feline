@@ -309,6 +309,13 @@ code mark_data_stack, 'mark-data-stack' ; --
         next
 endcode
 
+%macro  _rdepth 0
+        mov     rax, [rp0_]
+        sub     rax, rsp
+        shr     rax, 3
+        pushd   rax
+%endmacro
+
 ; ### mark-return-stack
 code mark_return_stack, 'mark-return-stack'     ; --
         _rdepth
