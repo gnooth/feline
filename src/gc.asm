@@ -273,9 +273,9 @@ code mark_raw_object, 'mark-raw-object'         ; raw-object --
         next
 endcode
 
-; ### maybe-mark-handle
-code maybe_mark_handle, 'maybe-mark-handle'     ; handle --
-        _ deref                 ; -- raw-object/0
+; ### maybe_mark_handle
+code maybe_mark_handle, 'maybe_mark_handle', SYMBOL_INTERNAL    ; handle --
+        _ deref                         ; -- raw-object/0
         test    rbx, rbx
         jz      .1
         _ mark_raw_object
@@ -285,8 +285,9 @@ code maybe_mark_handle, 'maybe-mark-handle'     ; handle --
         next
 endcode
 
-; ### maybe-mark-from-root
-code maybe_mark_from_root, 'maybe-mark-from-root' ; root --
+; ### maybe_mark_from_root
+code maybe_mark_from_root, 'maybe_mark_from_root', SYMBOL_INTERNAL
+; root --
         _fetch
         _ maybe_mark_handle
         next

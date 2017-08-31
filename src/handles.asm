@@ -272,7 +272,7 @@ code handle?, 'handle?'                 ; x -- ?
 endcode
 
 ; ### deref
-code deref, 'deref'                     ; x -- object-address/0
+code deref, 'deref', SYMBOL_INTERNAL    ; x -- object-address/0
 %ifdef TAGGED_HANDLES
         cmp     bl, HANDLE_TAG
         jne     .1
