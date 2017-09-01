@@ -36,6 +36,8 @@ in: feline
     ] with-scope
     "dis" "disassembler" vocab-find-name [ call-symbol ] when ;
 
+: d dis ;
+
 : edit
     [
         f load-verbose? set
