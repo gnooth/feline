@@ -41,16 +41,15 @@ file __FILE__
 
 ; ### vocab?
 code vocab?, 'vocab?'                   ; handle -- ?
-        _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe        ; -- object
-        _dup_if .2
-        _object_raw_typecode
-        _eq? TYPECODE_VOCAB
+        _ deref                         ; -- raw-object/0
+        test    rbx, rbx
+        jz      .1
+        _object_raw_typecode_eax
+        cmp     eax, TYPECODE_VOCAB
+        jne     .1
+        mov     ebx, t_value
         _return
-        _then .2
-        _then .1
+.1:
         mov     ebx, f_value
         next
 endcode
