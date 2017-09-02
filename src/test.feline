@@ -1181,6 +1181,19 @@ test: lookup-vocab-test-1
 
 lookup-vocab-test-1
 
+test: vocab-empty?-test-1
+    feline-vocab vocab-empty? assert-false
+    "asdf" dup delete-vocab ensure-vocab vocab-empty? assert-true
+;
+
+vocab-empty?-test-1
+
+test: set-current-vocab-test-1
+    [ 42 set-current-vocab ] assert-must-fail
+;
+
+set-current-vocab-test-1
+
 test: unless*-test-1 ( -- )
     clear
     f [ 42 ] unless* get-data-stack { 42 } assert=
