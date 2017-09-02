@@ -54,6 +54,24 @@ code vocab?, 'vocab?'                   ; handle -- ?
         next
 endcode
 
+; ### verify_vocab
+code verify_vocab, 'verify_vocab'       ; handle -- handle
+; returns argument unchanged
+        _dup
+        _ deref
+        test    rbx, rbx
+        jz      .error
+        _object_raw_typecode_eax
+        cmp     eax, TYPECODE_VOCAB
+        jne     .error
+        _drop
+        next
+.error:
+        _drop
+        _ error_not_vocab
+        next
+endcode
+
 ; ### check_vocab
 code check_vocab, 'check_vocab', SYMBOL_INTERNAL        ; handle -- vocab
         _dup
@@ -128,6 +146,20 @@ code vocab_words, 'vocab-words'         ; vocab-spec -- seq
         _tagged_if .1
         _ vocab_hashtable
         _ hashtable_values
+        _else .1
+        _drop
+        _error "not a vocabulary specifier"
+        _then .1
+        next
+endcode
+
+; ### vocab-empty?
+code vocab_empty?, 'vocab-empty?'       ; vocab-spec -- ?
+        _ lookup_vocab                  ; -- vocab/f
+        _tagged_if .1
+        _ vocab_hashtable
+        _ hashtable_count
+        _ zero?
         _else .1
         _drop
         _error "not a vocabulary specifier"
