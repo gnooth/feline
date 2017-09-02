@@ -7,12 +7,6 @@ in: stress
 
 4000000 >constant: limit
 
-test: bignum-number>string-test-1
-    limit [ 2 72 expt number>string drop ] times
-;
-
-bignum-number>string-test-1
-
 -- The followings tests verify that the quotation remains valid through gc,
 -- even if there is no other reference to it. These tests must not be in a
 -- definition, since in that case the symbol-def slot would hold a reference
