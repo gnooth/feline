@@ -110,13 +110,13 @@ code vector?, 'vector?'                 ; handle -- ?
         next
 endcode
 
-; ### check-vector
-code check_vector, 'check-vector'       ; handle -- vector
+; ### check_vector
+code check_vector, 'check_vector', SYMBOL_INTERNAL      ; handle -- vector
         _dup
         _ deref
         test    rbx, rbx
         jz      .error
-        movzx   eax, word [rbx]
+        _object_raw_typecode_eax
         cmp     eax, TYPECODE_VECTOR
         jne     .error
         _nip
@@ -134,7 +134,7 @@ code verify_vector, 'verify-vector'     ; handle -- handle
         _ deref
         test    rbx, rbx
         jz      .error
-        movzx   eax, word [rbx]
+        _object_raw_typecode_eax
         cmp     eax, TYPECODE_VECTOR
         jne     .error
         _drop
