@@ -55,55 +55,20 @@ code vocab?, 'vocab?'                   ; handle -- ?
         next
 endcode
 
-; ### error-not-vocab
-code error_not_vocab, 'error-not-vocab' ; x --
-        ; REVIEW
+; ### check_vocab
+code check_vocab, 'check_vocab', SYMBOL_INTERNAL        ; handle -- vocab
+        _dup
+        _ deref
+        test    rbx, rbx
+        jz      .error
+        _object_raw_typecode_eax
+        cmp     eax, TYPECODE_VOCAB
+        jne     .error
+        _nip
+        next
+.error:
         _drop
-        _error "not a vocab"
-        next
-endcode
-
-; ### check-vocab
-code check_vocab, 'check-vocab'         ; handle -- vocab
-        _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe        ; -- object/0
-        _dup_if .2
-        _dup
-        _object_raw_typecode
-        _lit TYPECODE_VOCAB
-        _equal
-        _if .3
-        _return
-        _then .3
-        _then .2
-        _then .1
-
         _ error_not_vocab
-        next
-endcode
-
-; ### verify-vocab
-code verify_vocab, 'verify-vocab'       ; handle -- handle
-; Returns argument unchanged.
-        _dup
-        _ handle?
-        _tagged_if .1
-        _dup
-        _handle_to_object_unsafe        ; -- handle object/0
-        _dup_if .2
-        _object_raw_typecode
-        _lit TYPECODE_VOCAB
-        _equal
-        _if .3
-        _return
-        _then .3
-        _then .2
-        _then .1
-
-        _ error_not_vocab
-
         next
 endcode
 
