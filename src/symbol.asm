@@ -227,13 +227,13 @@ code verify_unboxed_symbol, 'verify-unboxed-symbol'     ; symbol -- symbol
         next
 endcode
 
-; ### check-symbol
-code check_symbol, 'check-symbol'       ; x -- unboxed-symbol
+; ### check_symbol
+code check_symbol, 'check_symbol'       ; x -- unboxed-symbol
         _dup
         _ deref                         ; -- x object/0
         test    rbx, rbx
         jz      .1
-        movzx   eax, word [rbx]
+        _object_raw_typecode_eax
         cmp     eax, TYPECODE_SYMBOL
         jne     .2
         _nip
