@@ -136,7 +136,7 @@ file __FILE__
 %endmacro
 
 ; ### hashtable?
-code hashtable?, 'hashtable?'   ; x -- ?
+code hashtable?, 'hashtable?'           ; x -- ?
         _dup
         _ handle?
         _tagged_if .1
@@ -151,13 +151,13 @@ code hashtable?, 'hashtable?'   ; x -- ?
         next
 endcode
 
-; ### check-hashtable
-code check_hashtable, 'check-hashtable'         ; handle -- hashtable
+; ### check_hashtable
+code check_hashtable, 'check_hashtable'         ; handle -- hashtable
         _dup
         _ deref
         test    rbx, rbx
         jz      .error
-        movzx   eax, word [rbx]
+        _object_raw_typecode_eax
         cmp     eax, TYPECODE_HASHTABLE
         jne     .error
         _nip
@@ -174,7 +174,7 @@ code verify_hashtable, 'verify-hashtable'       ; handle -- handle
         _ deref
         test    rbx, rbx
         jz      .error
-        movzx   eax, word [rbx]
+        _object_raw_typecode_eax
         cmp     eax, TYPECODE_HASHTABLE
         jne     .error
         _drop
@@ -186,7 +186,7 @@ code verify_hashtable, 'verify-hashtable'       ; handle -- handle
 endcode
 
 ; ### hashtable-count
-code hashtable_count, 'hashtable-count' ; hashtable -- count
+code hashtable_count, 'hashtable-count'         ; hashtable -- count
         _ check_hashtable
         _hashtable_raw_count
         _tag_fixnum
