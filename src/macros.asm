@@ -826,6 +826,13 @@ section .text
         lea     rbp, [rbp + BYTES_PER_CELL * 4]
 %endmacro
 
+%macro  _fixnum_zero? 0
+        mov     eax, t_value
+        cmp     rbx, tagged_zero
+        mov     ebx, f_value
+        cmovz   ebx, eax
+%endmacro
+
 %macro  _zero 0
         _lit 0
 %endmacro

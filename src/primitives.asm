@@ -197,10 +197,7 @@ endcode
 
 ; ### zero?
 inline zero?, 'zero?'
-        mov     eax, t_value
-        cmp     rbx, tagged_zero
-        mov     ebx, f_value
-        cmovz   ebx, eax
+        _fixnum_zero?
 endinline
 
 ; ### and
