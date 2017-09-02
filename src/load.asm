@@ -85,7 +85,7 @@ code restore_search_order, 'restore-search-order'
         _drop
         _ user_vocab
         _then .1
-        _to_global current_vocab
+        _ set_current_vocab
 
         _lit tagged_zero
         _ context_vector

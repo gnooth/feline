@@ -27,11 +27,26 @@ feline_global dictionary, 'dictionary'  ; -- hashtable
 ; ### context-vector
 feline_global context_vector, 'context-vector'
 
-; ### current-vocab
-feline_global current_vocab, 'current-vocab'
+; ; ### current-vocab
+asm_global current_vocab_
 
-; ### initialize-vocabs
-code initialize_vocabs, 'initialize-vocabs'     ; --
+; ### current-vocab
+code current_vocab, 'current-vocab'
+        pushrbx
+        mov     rbx, [current_vocab_]
+        next
+endcode
+
+; ### set-current-vocab
+code set_current_vocab, 'set-current-vocab'     ; vocab --
+        _ verify_vocab
+        mov     [current_vocab_], rbx
+        poprbx
+        next
+endcode
+
+; ### initialize_vocabs
+code initialize_vocabs, 'initialize_vocabs', SYMBOL_INTERNAL    ; --
         _quote "feline"
         _ new_vocab
         _to_global feline_vocab
@@ -49,7 +64,7 @@ code initialize_vocabs, 'initialize-vocabs'     ; --
         _ vector_push
 
         _ feline_vocab
-        _to_global current_vocab
+        _ set_current_vocab
 
         next
 endcode
@@ -220,7 +235,26 @@ endcode
 code in_colon, 'in:'
         _ must_parse_token              ; -- string/f
         _ ensure_vocab
-        _to_global current_vocab
+        _ set_current_vocab
+        next
+endcode
+
+; ### empty
+code empty, 'empty'                     ; --
+        _ current_vocab
+        _dup
+        _ vocab_empty?
+        _tagged_if .1
+        _drop
+        _return
+        _then .1                        ; -- vocab
+
+        _dup
+        _ vocab_name
+        _swap
+        _ delete_vocab
+        _ ensure_vocab
+        _ set_current_vocab
         next
 endcode
 

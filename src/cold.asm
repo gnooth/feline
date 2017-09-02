@@ -201,7 +201,7 @@ code cold, 'cold'                       ; --
 ;         _ report_startup_time
 
         _ user_vocab
-        _to_global current_vocab
+        _ set_current_vocab
 
         _lit S_process_command_line
         _ catch

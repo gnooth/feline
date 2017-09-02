@@ -1,9 +1,7 @@
 using: feline ;
-in: user
-
-"test" delete-vocab
-
 in: test
+
+empty
 
 default-visibility get "public" "feline" lookup-symbol assert=
 
