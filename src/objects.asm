@@ -163,11 +163,12 @@ code dot_t, '.t'                ; object -- object
         next
 endcode
 
-; ### destroy_object_unchecked
-code destroy_object_unchecked, 'destroy_object_unchecked', SYMBOL_INTERNAL      ; raw-object-address --
+; ### destroy_heap_object
+code destroy_heap_object, 'destroy_heap_object', SYMBOL_INTERNAL
+; raw-object-address --
 
 ; The argument is known to be the raw address of a valid heap object, not a
-; handle or null. Called only by maybe-collect-handle during gc.
+; handle or null. Called only by maybe_collect_handle during gc.
 
         _object_raw_typecode_eax
 

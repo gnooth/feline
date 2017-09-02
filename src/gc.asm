@@ -423,7 +423,7 @@ code maybe_collect_handle, 'maybe_collect_handle', SYMBOL_INTERNAL
 
 .2:                                     ; -- untagged-handle object
         ; object is not marked
-        _ destroy_object_unchecked      ; -- untagged-handle
+        _ destroy_heap_object           ; -- untagged-handle
         _ release_handle_unsafe
         _return
 

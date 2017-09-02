@@ -364,13 +364,6 @@ new_hashtable_untagged:
         next
 endcode
 
-; ### ~hashtable
-code destroy_hashtable, '~hashtable'    ; handle --
-        _ check_hashtable               ; -- hashtable
-        _ destroy_hashtable_unchecked
-        next
-endcode
-
 ; ### destroy_hashtable_unchecked
 code destroy_hashtable_unchecked, 'destroy_hashtable_unchecked', SYMBOL_INTERNAL
 ; hashtable --
