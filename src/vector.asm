@@ -100,7 +100,7 @@ code vector?, 'vector?'                 ; handle -- ?
         _ deref                         ; -- raw-object/0
         test    rbx, rbx
         jz      .1
-        movzx   eax, word [rbx]
+        _object_raw_typecode_eax
         cmp     eax, TYPECODE_VECTOR
         jne     .1
         mov     ebx, t_value
