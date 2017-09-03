@@ -2804,6 +2804,18 @@ test: canonical-path-test-1
 
 canonical-path-test-1
 
+test: path-is-absolute?-test-1
+    windows? [
+        "" path-is-absolute? assert-false
+        "foo" path-is-absolute? assert-false
+        "\\foo" path-is-absolute? assert-true
+        "foo\\bar" path-is-absolute? assert-false
+        "\\foo\\bar" path-is-absolute? assert-true
+    ] when
+;
+
+path-is-absolute?-test-1
+
 test: 2tri-test-1
     clear
     10 20 [ 1 + ] [ 2 + ] [ 3 + ] 2tri
