@@ -121,8 +121,8 @@ endcode
         _ copy_to_string
 %endmacro
 
-; ### string-raw-length
-code string_raw_length, 'string-raw-length', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; ### string_raw_length
+code string_raw_length, 'string_raw_length', SYMBOL_INTERNAL
 ; string -- raw-length
         _ check_string
         _string_raw_length
