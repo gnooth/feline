@@ -29,13 +29,13 @@ code string?, 'string?'                 ; x -- ?
         next
 endcode
 
-; ### verify-static-string
-code verify_static_string, 'verify-static-string'       ; string -- string
+; ### verify_static_string
+code verify_static_string, 'verify_static_string'       ; string -- string
         cmp     rbx, static_data_area
         jb      error_not_string
         cmp     rbx, static_data_area_limit
         jae     error_not_string
-        movzx   eax, word [rbx]
+        _object_raw_typecode_eax
         cmp     eax, TYPECODE_STRING
         jne     error_not_string
         next
@@ -66,24 +66,20 @@ endcode
 code verify_string, 'verify-string'     ; handle-or-string -- handle-or-string
 ; returns argument unchanged
         _dup
-        _ handle?
-        _tagged_if .1
-        _dup
-        _handle_to_object_unsafe        ; -- handle object/0
-        _dup_if .2
-        _object_raw_typecode            ; -- object raw-typecode
-        _lit TYPECODE_STRING
-        _equal
-        _if .3
+        _ deref
+        test    rbx, rbx
+        jz      .1
+        _object_raw_typecode_eax
+        cmp     eax, TYPECODE_STRING
+        jne     .2
+        _drop
         _return
-        _then .3
-        _then .2
-        _ error_not_string
-        _then .1
-
-        ; not a handle
+.1:
+        _drop
         _ verify_static_string
-
+        _return
+.2:
+        _ error_not_string
         next
 endcode
 
