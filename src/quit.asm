@@ -15,16 +15,6 @@
 
 file __FILE__
 
-; ### vocab-find-name
-code vocab_find_name, 'vocab-find-name' ; name vocab -- symbol/name ?
-        _ lookup_vocab
-        _tagged_if .1
-        _ vocab_hashtable
-        _ hashtable_at_star
-        _then .1
-        next
-endcode
-
 ; ### find-qualified-name               ; string -- symbol/string ?
 code find_qualified_name, 'find-qualified-name'
         _lit ':'

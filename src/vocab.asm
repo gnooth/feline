@@ -252,6 +252,16 @@ code ensure_global, 'ensure-global'     ; name --
         next
 endcode
 
+; ### vocab-find-name
+code vocab_find_name, 'vocab-find-name' ; name vocab -- symbol/name ?
+        _ lookup_vocab
+        _tagged_if .1
+        _ vocab_hashtable
+        _ hashtable_at_star
+        _then .1
+        next
+endcode
+
 ; ### ?lookup-symbol
 code ?lookup_symbol, '?lookup-symbol'   ; name vocab-spec -- symbol/f
         _ lookup_vocab
@@ -262,16 +272,5 @@ code ?lookup_symbol, '?lookup-symbol'   ; name vocab-spec -- symbol/f
 
         _ vocab_hashtable
         _ hashtable_at
-        next
-endcode
-
-; ### lookup-symbol
-code lookup_symbol, 'lookup-symbol'     ; name vocab-spec -- symbol
-; Error if not found.
-        _ ?lookup_symbol
-        _dup
-        _tagged_if_not .1
-        _error "symbol not found"
-        _then .1
         next
 endcode
