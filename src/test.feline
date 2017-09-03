@@ -3,7 +3,7 @@ in: test
 
 empty
 
-default-visibility get "public" "feline" lookup-symbol assert=
+default-visibility get ' feline:public assert-eq
 
 public
 
