@@ -173,7 +173,7 @@ code destroy_heap_object, 'destroy_heap_object', SYMBOL_INTERNAL
         _object_raw_typecode_eax
 
         cmp     eax, TYPECODE_SBUF
-        je      destroy_sbuf_unchecked
+        je      destroy_sbuf
         cmp     eax, TYPECODE_VECTOR
         je      destroy_vector_unchecked
         cmp     eax, TYPECODE_HASHTABLE

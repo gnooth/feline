@@ -143,13 +143,6 @@ code sbuf_length, 'sbuf-length'         ; handle -- length
         next
 endcode
 
-; ### sbuf-data
-code sbuf_data, 'sbuf-data'             ; sbuf -- data-address
-        _ check_sbuf
-        _sbuf_data
-        next
-endcode
-
 ; ### sbuf-capacity
 code sbuf_capacity, 'sbuf-capacity'     ; sbuf -- capacity
         _ check_sbuf
@@ -261,8 +254,8 @@ code sbuf_to_string, 'sbuf>string'      ; handle -- string
         next
 endcode
 
-; ### destroy_sbuf_unchecked
-code destroy_sbuf_unchecked, 'destroy_sbuf_unchecked', SYMBOL_INTERNAL
+; ### destroy_sbuf
+code destroy_sbuf, 'destroy_sbuf', SYMBOL_INTERNAL
 ; sbuf --
 
         _dup

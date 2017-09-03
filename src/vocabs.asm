@@ -27,7 +27,6 @@ feline_global dictionary, 'dictionary'  ; -- hashtable
 ; ### context-vector
 feline_global context_vector, 'context-vector'
 
-; ; ### current-vocab
 asm_global current_vocab_
 
 ; ### current-vocab
