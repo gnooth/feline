@@ -41,13 +41,13 @@ code verify_static_string, 'verify-static-string'       ; string -- string
         next
 endcode
 
-; ### check-string
-code check_string, 'check-string'       ; x -- unboxed-string
+; ### check_string
+code check_string, 'check_string'       ; x -- unboxed-string
         _dup
         _ deref                         ; -- x object/0
         test    rbx, rbx
         jz      .1
-        movzx   eax, word [rbx]
+        _object_raw_typecode_eax
         cmp     eax, TYPECODE_STRING
         jne     .2
         _nip
