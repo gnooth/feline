@@ -336,6 +336,47 @@ code regular_file?, 'regular-file?'     ; path -- ?
         next
 endcode
 
+; ### path-is-absolute?
+code path_is_absolute?, 'path-is-absolute?' ; string -- flag
+        _ verify_string
+%ifdef WIN64
+        _dup
+        _ string_first_char
+        _untag_char
+        _ path_separator_char
+        _equal
+        _if .1                          ; -- string
+        mov     rbx, -1
+        _return
+        _then .1
+
+        _dup
+        _ string_length                 ; -- string length
+        _untag_fixnum
+        _lit 2
+        _ge
+        _if .2                          ; -- string
+        _lit 1
+        _swap
+        _ string_nth_untagged
+        _untag_char
+        _lit ':'
+        _equal
+        _return
+        _then .2
+
+        ; otherwise...
+        _false
+%else
+        ; Linux
+        _ string_first_char
+        _untag_char
+        _ path_separator_char
+        _equal
+%endif
+        next
+endcode
+
 ; ### path-append
 code path_append, 'path-append'         ; string1 string2 -- string3
         _ verify_string
