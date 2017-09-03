@@ -2812,6 +2812,14 @@ test: path-is-absolute?-test-1
         "foo\\bar" path-is-absolute? assert-false
         "\\foo\\bar" path-is-absolute? assert-true
     ] when
+
+    linux? [
+        "" path-is-absolute? assert-false
+        "foo" path-is-absolute? assert-false
+        "/foo" path-is-absolute? assert-true
+        "foo/bar" path-is-absolute? assert-false
+        "/foo/bar" path-is-absolute? assert-true
+    ] when
 ;
 
 path-is-absolute?-test-1
