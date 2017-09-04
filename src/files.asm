@@ -372,12 +372,10 @@ code path_is_absolute?, 'path-is-absolute?'     ; string -- ?
         mov     ebx, f_value
 
 %else
+
         ; Linux
         _ string_first_char
-        _untag_char
-        _ path_separator_char
-        _equal
-        _tag_boolean
+        _eq? tagged_char(PATH_SEPARATOR_CHAR)
 
 %endif
 
