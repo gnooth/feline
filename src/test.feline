@@ -2805,12 +2805,15 @@ test: canonical-path-test-1
 canonical-path-test-1
 
 test: path-is-absolute?-test-1
+    clear
+
     windows? [
         "" path-is-absolute? assert-false
         "foo" path-is-absolute? assert-false
         "\\foo" path-is-absolute? assert-true
         "foo\\bar" path-is-absolute? assert-false
         "\\foo\\bar" path-is-absolute? assert-true
+        "c" path-is-absolute? assert-false
     ] when
 
     linux? [
@@ -2820,6 +2823,8 @@ test: path-is-absolute?-test-1
         "foo/bar" path-is-absolute? assert-false
         "/foo/bar" path-is-absolute? assert-true
     ] when
+
+    depth zero? assert-true
 ;
 
 path-is-absolute?-test-1
