@@ -32,6 +32,28 @@ code in_bounds?, 'in-bounds?'           ; n seq -- ?
         next
 endcode
 
+; ### ?bounds
+code qbounds, '?bounds'                 ; n seq -- n/f seq/f
+        _over
+        _ index?
+        cmp     rbx, f_value
+        poprbx
+        je      .3
+
+        _twodup
+        _ length                        ; -- n seq n length
+
+        cmp     [rbp], rbx
+        _2drop
+        jnl     .3
+        _rep_return
+
+.3:
+        mov     ebx, f_value
+        mov     qword [rbp], rbx
+        next
+endcode
+
 ; ### check-bounds
 code check_bounds, 'check-bounds'       ; n seq -- n seq
 ; Factor bounds-check

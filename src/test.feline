@@ -2838,4 +2838,29 @@ test: 2tri-test-1
 
 2tri-test-1
 
+test: ?bounds-test-1
+    clear
+
+    0 "test" ?bounds get-data-stack { 0 "test" } assert=
+    clear
+    1 "test" ?bounds get-data-stack { 1 "test" } assert=
+    clear
+    2 "test" ?bounds get-data-stack { 2 "test" } assert=
+    clear
+    3 "test" ?bounds get-data-stack { 3 "test" } assert=
+    clear
+
+    4 "test" ?bounds get-data-stack { f f } assert=
+    clear
+
+    -1 "test" ?bounds get-data-stack { f f } assert=
+    clear
+    most-negative-fixnum "test" ?bounds get-data-stack { f f } assert=
+    clear
+    most-positive-fixnum "test" ?bounds get-data-stack { f f } assert=
+    clear
+;
+
+?bounds-test-1
+
 ?nl "Reached end of test.feline" write-string
