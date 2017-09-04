@@ -155,7 +155,7 @@ static void initialize_dynamic_code_space()
 
     }
 
-  if (code_space_ == NULL)
+  if (code_space_ == (cell) NULL)
     exit(EXIT_FAILURE);
 #else
   // Linux
