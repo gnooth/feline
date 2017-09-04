@@ -347,34 +347,30 @@ code path_is_absolute?, 'path-is-absolute?'     ; string -- ?
         _then .1
 
 %ifdef WIN64
+
         _dup
         _ string_first_char
-        _untag_char
-        _ path_separator_char
-        _equal
-        _if .2                          ; -- string
+        _eq? tagged_char(PATH_SEPARATOR_CHAR)
+        _tagged_if .2
         mov     ebx, t_value
         _return
         _then .2
 
+        ; is second char ':'?
         _dup
-        _ string_length                 ; -- string length
-        _untag_fixnum
-        _lit 2
-        _ge
-        _if .3                          ; -- string
-        _lit 1
+        _ string_raw_length
+        cmp     rbx, 2
+        poprbx
+        jb      .3
+        _lit tagged_fixnum(1)
         _swap
-        _ string_nth_untagged
-        _untag_char
-        _lit ':'
-        _equal
-        _tag_boolean
+        _ string_nth_unsafe
+        _eq? tagged_char(':')
         _return
-        _then .3
 
-        ; otherwise...
-        _f
+.3:
+        mov     ebx, f_value
+
 %else
         ; Linux
         _ string_first_char
@@ -382,7 +378,9 @@ code path_is_absolute?, 'path-is-absolute?'     ; string -- ?
         _ path_separator_char
         _equal
         _tag_boolean
+
 %endif
+
         next
 endcode
 
