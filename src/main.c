@@ -154,6 +154,9 @@ static void initialize_dynamic_code_space()
                             PAGE_EXECUTE_READWRITE);            // protection
 
     }
+
+  if (code_space_ == NULL)
+    exit(EXIT_FAILURE);
 #else
   // Linux
   code_space_ =
@@ -163,6 +166,9 @@ static void initialize_dynamic_code_space()
                 MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE,        // flags
                 -1,                                             // fd
                 0);                                             // offset
+
+  if (code_space_ == (cell) MAP_FAILED)
+    exit(EXIT_FAILURE);
 #endif
 
   code_space_free_  = code_space_;
