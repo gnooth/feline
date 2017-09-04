@@ -15,6 +15,7 @@
 
 file __FILE__
 
+; initialized in initialize_dynamic_code_space (in main.c)
 asm_global code_space_, 0
 asm_global code_space_free_, 0
 asm_global code_space_limit_, 0
@@ -50,22 +51,15 @@ endcode
 ; ### xalloc
 code xalloc, 'xalloc'                           ; raw-size -- raw-address
         mov     rax, [code_space_free_]
-        test    rax, rax
-        jz      .1
-
-        mov     rcx, rax
-        add     rcx, rbx
-        cmp     rcx, [code_space_limit_]
-        jae     .1
 
         add     rbx, rax
+        cmp     rbx, [code_space_limit_]
+        jae     .1
 
         ; REVIEW
         ; 16-byte alignment
-        add     rbx, 16
-        mov     edx, 15
-        not     rdx
-        and     rbx, rdx
+        add     rbx, 0x0f
+        and     bl, 0xf0
 
         mov     [code_space_free_], rbx
 
