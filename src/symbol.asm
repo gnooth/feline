@@ -205,45 +205,37 @@ code symbol?, 'symbol?'                 ; x -- ?
         next
 endcode
 
-; ### verify-unboxed-symbol
-code verify_unboxed_symbol, 'verify-unboxed-symbol'     ; symbol -- symbol
-        ; make sure address is in the permissible range
-        _dup
-        _ in_static_data_area?
-        _tagged_if_not .1
-        ; address is not in the permissible range
-        _ error_not_symbol
-        _return
-        _then .1
-
-        _dup
-        _object_raw_typecode
-        cmp     rbx, TYPECODE_SYMBOL
-        poprbx
-        jne .2
-        _return
-.2:
+; ### verify_static_symbol
+code verify_static_symbol, 'verify_static_symbol', SYMBOL_INTERNAL
+; symbol -- symbol
+        cmp     rbx, static_data_area
+        jb      .1
+        cmp     rbx, static_data_area_limit
+        jae     .1
+        _object_raw_typecode_eax
+        cmp     eax, TYPECODE_SYMBOL
+        jne     .1
+        next
+.1:
         _ error_not_symbol
         next
 endcode
 
 ; ### check_symbol
-code check_symbol, 'check_symbol'       ; x -- unboxed-symbol
+code check_symbol, 'check_symbol', SYMBOL_INTERNAL
+; x -- unboxed-symbol
         _dup
         _ deref                         ; -- x object/0
         test    rbx, rbx
         jz      .1
         _object_raw_typecode_eax
         cmp     eax, TYPECODE_SYMBOL
-        jne     .2
+        jne     error_not_symbol
         _nip
         _return
 .1:
         _drop
-        _ verify_unboxed_symbol
-        _return
-.2:
-        _ error_not_symbol
+        _ verify_static_symbol
         next
 endcode
 
@@ -614,8 +606,9 @@ code global_dec, 'global-dec'   ; symbol --
         next
 endcode
 
-; ### symbol-raw-code-address
-code symbol_raw_code_address, 'symbol-raw-code-address' ; symbol -- raw-code-address/0
+; ### symbol_raw_code_address
+code symbol_raw_code_address, 'symbol_raw_code_address', SYMBOL_INTERNAL
+; symbol -- raw-code-address/0
         _ check_symbol
         _symbol_raw_code_address
         next
