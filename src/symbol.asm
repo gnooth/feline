@@ -222,20 +222,52 @@ code verify_static_symbol, 'verify_static_symbol', SYMBOL_INTERNAL
 endcode
 
 ; ### check_symbol
-code check_symbol, 'check_symbol', SYMBOL_INTERNAL
-; x -- unboxed-symbol
-        _dup
-        _ deref                         ; -- x object/0
+code check_symbol, 'check_symbol', SYMBOL_INTERNAL      ; x -- symbol
+
+%ifdef TAGGED_HANDLES
+
+        cmp     bl, HANDLE_TAG
+        jne     verify_static_symbol
+
+        ; save original argument in rdx
+        mov     rdx, rbx
+
+        _handle_to_object_unsafe
+
         test    rbx, rbx
         jz      .1
         _object_raw_typecode_eax
         cmp     eax, TYPECODE_SYMBOL
-        jne     error_not_symbol
+        jne     .1
+        _return
+
+.1:
+        ; restore original argument for error message
+        mov     rbx, rdx
+        jmp     error_not_symbol
+
+%else
+
+        _dup
+        _ deref                         ; -- x object/0
+
+        test    rbx, rbx
+        jz      .1
+        _object_raw_typecode_eax
+        cmp     eax, TYPECODE_SYMBOL
+        jne     .2
         _nip
         _return
+
 .1:
         _drop
-        _ verify_static_symbol
+        jmp     verify_static_symbol
+
+.2:
+        _drop
+        jmp     error_not_symbol
+%endif
+
         next
 endcode
 
