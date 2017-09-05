@@ -310,8 +310,8 @@ code call_quotation, 'call'             ; callable --
         next
 endcode
 
-; ### callable-raw-code-address
-code callable_raw_code_address, 'callable-raw-code-address'
+; ### callable_raw_code_address
+code callable_raw_code_address, 'callable_raw_code_address', SYMBOL_INTERNAL
 ; callable -- raw-code-address
         _dup
         _ quotation?
