@@ -284,15 +284,16 @@ endcode
 code when_star, 'when*'                 ; ? quot --
 ; if conditional is not f, calls quot
 ; conditional remains on the stack to be consumed (or not) by quot
-        _over
-        _tagged_if .1
+
+        cmp     qword [rbp], f_value
+        je      .1
         _ callable_raw_code_address
         mov     rax, rbx
         poprbx
-        call    rax
-        _else .1
+        jmp     rax
+
+.1:
         _2drop
-        _then .1
         next
 endcode
 
