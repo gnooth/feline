@@ -198,8 +198,8 @@ code quotation_nth_unsafe, 'quotation-nth-unsafe'
         next
 endcode
 
-; ### quotation-raw-code-address
-code quotation_raw_code_address, 'quotation-raw-code-address'
+; ### quotation_raw_code_address
+code quotation_raw_code_address, 'quotation_raw_code_address', SYMBOL_INTERNAL
 ; quotation -- raw-code-address
         _ check_quotation
         _quotation_raw_code_address
@@ -215,8 +215,8 @@ code quotation_code_address, 'quotation-code-address'
         next
 endcode
 
-; ### quotation-set-raw-code-address
-code quotation_set_raw_code_address, 'quotation-set-raw-code-address'
+; ### quotation_set_raw_code_address
+code quotation_set_raw_code_address, 'quotation_set_raw_code_address', SYMBOL_INTERNAL
 ; raw-code-address quotation --
 
         _ check_quotation
@@ -236,8 +236,8 @@ code quotation_set_raw_code_address, 'quotation-set-raw-code-address'
         next
 endcode
 
-; ### quotation-raw-code-size
-code quotation_raw_code_size, 'quotation-raw-code-size'
+; ### quotation_raw_code_size
+code quotation_raw_code_size, 'quotation_raw_code_size', SYMBOL_INTERNAL
 ; quotation -- raw-code-size
         _ check_quotation
         _quotation_raw_code_size
@@ -253,8 +253,8 @@ code quotation_code_size, 'quotation-code-size'
         next
 endcode
 
-; ### quotation-set-raw-code-size
-code quotation_set_raw_code_size, 'quotation-set-raw-code-size'
+; ### quotation_set_raw_code_size
+code quotation_set_raw_code_size, 'quotation_set_raw_code_size', SYMBOL_INTERNAL
 ; raw-code-size quotation --
         _ check_quotation
         _quotation_set_raw_code_size
