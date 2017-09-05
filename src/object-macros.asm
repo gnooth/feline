@@ -72,7 +72,7 @@ OBJECT_ALLOCATED_BIT            equ 4
 
 ; The object's raw typecode is stored in the first two bytes of the object header.
 
-%macro  _object_raw_typecode 0          ; -- raw-typecode
+%macro  _object_raw_typecode 0          ; object -- raw-typecode
         _wfetch                         ; 16 bits
 %endmacro
 
