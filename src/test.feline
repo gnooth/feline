@@ -2829,6 +2829,24 @@ test: path-is-absolute?-test-1
 
 path-is-absolute?-test-1
 
+test: path-extension-test-1
+    "test.feline" path-extension ".feline" assert=
+    "test" path-extension assert-false
+
+    "foo.bar/test.feline" path-extension ".feline" assert=
+    "foo.bar/test" path-extension assert-false
+;
+
+path-extension-test-1
+
+test: ensure-feline-extension-test-1
+    clear
+    "test.feline" ensure-feline-extension "test.feline" assert=
+    "test" ensure-feline-extension "test.feline" assert=
+;
+
+ensure-feline-extension-test-1
+
 test: 2tri-test-1
     clear
     10 20 [ 1 + ] [ 2 + ] [ 3 + ] 2tri

@@ -125,8 +125,28 @@ code public, 'public'                           ; --
         next
 endcode
 
+; ### feline-extension
+code feline_extension, 'feline-extension'       ; -- string
+        _quote ".feline"
+        next
+endcode
+
+; ### ensure-feline-extension
+code ensure_feline_extension, 'ensure-feline-extension'        ; path -- path
+        _dup
+        _ path_extension
+        _ feline_extension
+        _ string_equal?
+        _tagged_if_not .1
+        _ feline_extension
+        _ concat
+        _then .1
+        next
+endcode
+
 ; ### load
 code load, 'load'                       ; path --
+        _ ensure_feline_extension
         _ canonical_path
         _dup
         _ file_contents
@@ -184,7 +204,7 @@ code load, 'load'                       ; path --
 endcode
 
 ; ### load-system-file
-code load_system_file, 'load-system-file' ; filename --
+code load_system_file, 'load-system-file'       ; filename --
         _ feline_home
         _quote "src"
         _ path_append
@@ -195,7 +215,7 @@ code load_system_file, 'load-system-file' ; filename --
 endcode
 
 ; ### l
-code interactive_load, 'l', SYMBOL_IMMEDIATE   ; --
+code interactive_load, 'l', SYMBOL_IMMEDIATE    ; --
         _ interactive?
         _ get
         _tagged_if .1
