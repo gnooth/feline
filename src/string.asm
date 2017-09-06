@@ -929,50 +929,6 @@ code string_equal?, 'string-equal?'     ; object1 object2 -- ?
         next
 endcode
 
-; ### path-get-extension
-code path_get_extension, 'path-get-extension'   ; pathname -- extension/f
-
-        _ check_string
-
-        push    this_register
-        mov     this_register, rbx
-
-        _string_raw_length
-
-        _begin .1
-        _dup
-        _while .1
-        _oneminus
-        _dup
-        _this_string_nth_unsafe
-
-        ; If we find a path separator char before finding a '.', there is no
-        ; extension. Return f.
-        _dup
-        _ path_separator_char?
-        _if .2
-        _2drop
-        _f
-        jmp     .exit
-        _then .2
-
-        _lit '.'
-        _equal
-        _if .3
-        _this_string_raw_length
-        _this_string_substring_unsafe
-        jmp     .exit
-        _then .3
-        _repeat .1
-
-        _drop
-        _f
-
-.exit:
-        pop     this_register
-        next
-endcode
-
 ; ### string-lines
 code string_lines, 'string-lines'       ; string -- lines
         _ check_string
