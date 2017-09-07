@@ -306,21 +306,6 @@ code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE  ; --
         next
 endcode
 
-; ### global:
-code parse_global, 'global:', SYMBOL_IMMEDIATE  ;  --
-        _ must_parse_token
-        _ ensure_global
-        next
-endcode
-
-; ### >global:
-code initialize_global, '>global:', SYMBOL_IMMEDIATE    ;  --
-        _ parse_global
-        _ last_word
-        _ symbol_set_value
-        next
-endcode
-
 ; ### note-redefinition
 code note_redefinition, 'note_redefinition'     ; symbol -- symbol
         _ ?nl

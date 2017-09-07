@@ -20,6 +20,7 @@ in: feline
     { 9 10 13 32 } member? ;
 
 {
+    "syntax.feline"
     "backtrace.feline"
     "dump.feline"
     "sequences.feline"
