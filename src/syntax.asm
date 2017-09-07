@@ -268,6 +268,20 @@ code tick, "'", SYMBOL_IMMEDIATE        ; symbol
         next
 endcode
 
+; ### postpone:
+code postpone, 'postpone:', SYMBOL_IMMEDIATE
+        _ must_parse_token
+        _ must_find_name
+        _get_accum
+        _dup
+        _tagged_if .1
+        _ vector_push
+        _else .1
+        _drop
+        _then .1
+        next
+endcode
+
 ; ### symbol:
 code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE  ; --
 
@@ -445,6 +459,13 @@ endcode
 code immediate, 'immediate'             ; --
         _ last_word
         _ symbol_set_immediate
+        next
+endcode
+
+; ### syntax:
+code syntax, 'syntax:', SYMBOL_IMMEDIATE
+        _ define
+        _ immediate
         next
 endcode
 
