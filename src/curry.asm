@@ -43,11 +43,11 @@ file __FILE__
         _this_set_slot2
 %endmacro
 
-%macro  _curry_code_address 0           ; curry -- code-address
+%macro  _curry_raw_code_address 0       ; curry -- raw-code-address
         _slot3
 %endmacro
 
-%macro  _this_curry_set_code_address 0  ; code-address --
+%macro  _this_curry_set_raw_code_address 0      ; raw-code-address --
         _this_set_slot3
 %endmacro
 
@@ -120,10 +120,11 @@ code curry_callable, 'curry-callable'   ; curry -- callable
         next
 endcode
 
-; ### curry-code-address
-code curry_code_address, 'curry-code-address' ; curry -- code-address
+; ### curry_raw_code_address
+code curry_raw_code_address, 'curry_raw_code_address', SYMBOL_INTERNAL
+; curry -- raw-code-address
         _ check_curry
-        _curry_code_address
+        _curry_raw_code_address
         next
 endcode
 
@@ -183,7 +184,7 @@ code curry, 'curry'                     ; object callable -- curry
         _lit 64
         _ allocate_executable
         _dup
-        _this_curry_set_code_address
+        _this_curry_set_raw_code_address
         mov     [pc_], rbx
         poprbx
         _this_curry_object
@@ -210,7 +211,7 @@ code destroy_curry_unchecked, 'destroy_curry_unchecked', SYMBOL_INTERNAL
 ; curry --
 
         _dup
-        _curry_code_address
+        _curry_raw_code_address
         _?dup_if .1
         _ free_executable
         _then .1

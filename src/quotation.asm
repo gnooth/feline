@@ -287,7 +287,7 @@ code call_quotation, 'call'             ; callable --
         _dup
         _ curry?
         _tagged_if .1
-        _ curry_code_address
+        _ curry_raw_code_address
         mov     rax, rbx
         poprbx
         call    rax
@@ -330,7 +330,7 @@ code callable_raw_code_address, 'callable_raw_code_address', SYMBOL_INTERNAL
         _dup
         _ curry?
         _tagged_if .3
-        _ curry_code_address
+        _ curry_raw_code_address
         _return
         _then .3
 
