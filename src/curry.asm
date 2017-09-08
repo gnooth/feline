@@ -194,7 +194,7 @@ code curry, 'curry'                     ; object callable -- curry
         _lit call_quotation
         _ compile_call
         _lit $0c3
-        _ emit_byte
+        _ emit_raw_byte
 
         pushrbx
         mov     rbx, this_register      ; -- curry

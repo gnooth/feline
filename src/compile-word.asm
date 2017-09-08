@@ -178,24 +178,24 @@ code add_code_size, 'add-code-size'     ; accum pair -- accum
         next
 endcode
 
-; ### emit_byte
-code emit_byte, 'emit_byte', SYMBOL_INTERNAL    ; byte --
+; ### emit_raw_byte
+code emit_raw_byte, 'emit_raw_byte', SYMBOL_INTERNAL    ; byte --
         _pc
         _cstore
         add     qword [pc_], 1
         next
 endcode
 
-; ### emit_dword
-code emit_dword, 'emit_dword', SYMBOL_INTERNAL  ; dword --
+; ### emit_raw_dword
+code emit_raw_dword, 'emit_raw_dword', SYMBOL_INTERNAL  ; dword --
         _pc
         _lstore
         add     qword [pc_], 4
         next
 endcode
 
-; ### emit_qword
-code emit_qword, 'emit_qword', SYMBOL_INTERNAL  ; qword --
+; ### emit_raw_qword
+code emit_raw_qword, 'emit_raw_qword', SYMBOL_INTERNAL  ; qword --
         _pc
         _store
         add     qword [pc_], 8
@@ -245,11 +245,11 @@ code compile_call, 'compile-call'       ; raw-address --
         _ raw_int32?
         _tagged_if .1
         _lit $0e8
-        _ emit_byte                     ; -- raw-address
+        _ emit_raw_byte                 ; -- raw-address
         _pc
         add     rbx, 4
         _minus
-        _ emit_dword
+        _ emit_raw_dword
         _return
         _then .1
 
@@ -259,20 +259,20 @@ code compile_call, 'compile-call'       ; raw-address --
         _ult
         _if .2
         _lit $0b8
-        _ emit_byte
-        _ emit_dword
+        _ emit_raw_byte
+        _ emit_raw_dword
         _else .2
         _lit $48
-        _ emit_byte
+        _ emit_raw_byte
         _lit $0b8
-        _ emit_byte
-        _ emit_qword
+        _ emit_raw_byte
+        _ emit_raw_qword
         _then .2
 
         _lit $0ff
-        _ emit_byte
+        _ emit_raw_byte
         _lit $0d0
-        _ emit_byte
+        _ emit_raw_byte
 
         next
 endcode
@@ -288,20 +288,20 @@ code compile_literal, 'compile-literal' ; literal --
         _then .1
 
         _lit PUSHRBX_BYTES
-        _ emit_qword
+        _ emit_raw_qword
         _dup
         _lit $100000000
         _ult
         _if .2
         _lit $0bb
-        _ emit_byte
-        _ emit_dword
+        _ emit_raw_byte
+        _ emit_raw_dword
         _else .2
         _lit $48
-        _ emit_byte
+        _ emit_raw_byte
         _lit $0bb
-        _ emit_byte
-        _ emit_qword
+        _ emit_raw_byte
+        _ emit_raw_qword
         _then .2
         next
 endcode
@@ -395,7 +395,7 @@ code compile_quotation_internal, 'compile-quotation-internal'     ; quotation --
         _ array_each
 
         _lit $0c3
-        _ emit_byte
+        _ emit_raw_byte
 
         _rfetch                         ; -- raw-code-address
         _this_quotation_set_raw_code_address
