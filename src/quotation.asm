@@ -155,7 +155,7 @@ code destroy_quotation_unchecked, 'destroy_quotation_unchecked', SYMBOL_INTERNAL
         _dup
         _quotation_raw_code_address
         _?dup_if .1
-        _ free_executable
+        _ raw_free_executable
         _then .1
 
         ; zero out object header
@@ -227,7 +227,7 @@ code quotation_set_raw_code_address, 'quotation_set_raw_code_address', SYMBOL_IN
         _dup
         _quotation_raw_code_address
         _?dup_if .2
-        _ free_executable
+        _ raw_free_executable
         _then .2
         _then .1
 

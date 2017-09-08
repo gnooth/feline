@@ -182,7 +182,7 @@ code curry, 'curry'                     ; object callable -- curry
 
         ; compile curry
         _lit 64
-        _ allocate_executable
+        _ raw_allocate_executable
         _dup
         _this_curry_set_raw_code_address
         mov     [pc_], rbx
@@ -213,7 +213,7 @@ code destroy_curry_unchecked, 'destroy_curry_unchecked', SYMBOL_INTERNAL
         _dup
         _curry_raw_code_address
         _?dup_if .1
-        _ free_executable
+        _ raw_free_executable
         _then .1
 
         ; zero out object header

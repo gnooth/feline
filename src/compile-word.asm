@@ -85,8 +85,9 @@ endcode
 
 %endif
 
-; ### allocate-executable
-code allocate_executable, 'allocate-executable' ; raw-size -- raw-address
+; ### raw_allocate_executable
+code raw_allocate_executable, 'raw_allocate_executable', SYMBOL_INTERNAL
+; raw-size -- raw-address
 
 %ifdef USE_XALLOC
 
@@ -107,8 +108,9 @@ code allocate_executable, 'allocate-executable' ; raw-size -- raw-address
         next
 endcode
 
-; ### free-executable
-code free_executable, 'free-executable'         ; raw-address --
+; ### raw_free_executable
+code raw_free_executable, 'raw_free_executable', SYMBOL_INTERNAL
+; raw-address --
 
 %ifdef USE_XALLOC
 
@@ -367,7 +369,7 @@ code compile_quotation_internal, 'compile-quotation-internal'     ; quotation --
         ; add size of return instruction
         _oneplus
 
-        _ allocate_executable
+        _ raw_allocate_executable
         _duptor
         mov     [pc_], rbx
         poprbx                          ; -- precompiled-array          r: -- raw-code-address
