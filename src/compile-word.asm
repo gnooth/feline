@@ -138,6 +138,22 @@ asm_global pc_, 0
         mov     rbx, [pc_]
 %endmacro
 
+; ### pc
+code pc, 'pc'                           ; -- pc
+        _pc
+        _tag_fixnum
+        next
+endcode
+
+; ### initialize-code-block
+code initialize_code_block, 'initialize-code-block' ; tagged-size --
+        _check_fixnum
+        _ raw_allocate_executable       ; -- raw-address
+        mov     [pc_], rbx
+        poprbx
+        next
+endcode
+
 ; ### precompile-object
 code precompile_object, 'precompile-object' ; object -- pair
 ; all values are untagged
@@ -367,12 +383,13 @@ code compile_quotation_internal, 'compile-quotation-internal'     ; quotation --
         _ array_each
 
         ; add size of return instruction
-        _oneplus
+        _oneplus                        ; -- raw-size
+        _tag_fixnum
 
-        _ raw_allocate_executable
-        _duptor
-        mov     [pc_], rbx
-        poprbx                          ; -- precompiled-array          r: -- raw-code-address
+        _ initialize_code_block
+
+        _pc
+        _tor
 
         _lit S_compile_pair
         _ array_each
