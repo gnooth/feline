@@ -337,8 +337,7 @@ code callable_raw_code_address, 'callable_raw_code_address', SYMBOL_INTERNAL
         _dup
         _ symbol?
         _tagged_if .4
-        _ symbol_code_address
-        _check_fixnum
+        _ symbol_raw_code_address
         _return
         _then .4
 
