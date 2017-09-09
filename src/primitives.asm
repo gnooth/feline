@@ -1114,6 +1114,19 @@ code fetch, '@'                         ; address -- uint64
         next
 endcode
 
+; ### c!
+code cstore, 'c!'                       ; byte address --
+        _check_index
+        _swap
+        _check_fixnum
+        _swap
+        mov     al, [rbp]
+        mov     [rbx], al
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        next
+endcode
+
 ; ### char-upcase
 code char_upcase, 'char-upcase'
         _check_char
