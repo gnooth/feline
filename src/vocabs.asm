@@ -272,8 +272,31 @@ code using_vocab?, 'using-vocab?'       ; vocab-specifier -- ?
         next
 endcode
 
+; ### load-vocab
+code load_vocab, 'load-vocab'           ; string -- vocab/f
+        _dup
+        _ lookup_vocab
+        _tagged_if .1
+        _nip
+        _return
+        _then .1                        ; -- string f
+
+        _drop
+
+        _dup
+        _quote ".feline"
+        _ concat
+        _ load_system_file
+
+        _ lookup_vocab
+        _drop
+
+        next
+endcode
+
 ; ### use-vocab
 code use_vocab, 'use-vocab'             ; vocab-specifier --
+
         _dup
         _ using_vocab?
         _tagged_if .1
@@ -281,7 +304,7 @@ code use_vocab, 'use-vocab'             ; vocab-specifier --
         _return
         _then .1
 
-        _dup
+        _dup                            ; -- string
         _ lookup_vocab
         _tagged_if .2
         _nip
@@ -290,10 +313,9 @@ code use_vocab, 'use-vocab'             ; vocab-specifier --
         _return
         _then .2
 
-        _drop
+        _drop                           ; -- string
 
         _dup
-        _ verify_string
         _quote ".feline"
         _ concat
         _ load_system_file
@@ -366,18 +388,37 @@ endcode
 
 ; ### using:
 code using_colon, 'using:'
+
+        _lit 16
+        _ new_vector_untagged
+
         _begin .1
         _ must_parse_token
         _dup
         _quote ";"
         _ stringequal
-        _tagged_if .2
-        _drop
-        _return
-        _then .2
-        _ use_vocab
-        _again .1
+        _ not
+        _tagged_while .1
+        _over
+        _ vector_push
+        _repeat .1
+
+        _drop                           ; -- vector
+
+        ; Verify that we can load all of the specified vocabs before we touch
+        ; the context vector.
+        _lit S_load_vocab
+        _ map
+
+        _lit tagged_zero
+        _ context_vector
+        _ vector_set_length
+
+        _lit S_use_vocab
+        _ vector_each
+
         next
+
 endcode
 
 ; ### order
