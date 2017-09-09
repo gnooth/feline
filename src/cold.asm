@@ -174,8 +174,9 @@ code cold, 'cold'                       ; --
 
         _lit 256
         _ new_vector_untagged
-        _to gc_roots
-        _lit gc_roots_data
+        mov     [gc_roots_], rbx
+        poprbx
+        _lit gc_roots_
         _ gc_add_root
 
         _ initialize_gc_dispatch_table

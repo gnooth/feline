@@ -15,11 +15,17 @@
 
 file __FILE__
 
-; ### gc-roots
-value gc_roots, 'gc-roots', 0           ; initialized in cold
+asm_global gc_roots_                    ; initialized in cold
 
-; ### gc-add-root
-code gc_add_root, 'gc-add-root'         ; address --
+; ### gc_roots
+code gc_roots, 'gc_roots', SYMBOL_INTERNAL      ; -- vector
+        pushrbx
+        mov     rbx, [gc_roots_]
+        next
+endcode
+
+; ### gc_add_root
+code gc_add_root, 'gc_add_root', SYMBOL_INTERNAL        ; raw-address --
         _ gc_roots
         _ vector_push
         next
@@ -287,7 +293,7 @@ endcode
 
 ; ### maybe_mark_from_root
 code maybe_mark_from_root, 'maybe_mark_from_root', SYMBOL_INTERNAL
-; root --
+; raw-address --
         _fetch
         _ maybe_mark_handle
         next
