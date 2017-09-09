@@ -24,13 +24,20 @@ feline_global user_vocab, 'user-vocab'
 ; ### dictionary
 feline_global dictionary, 'dictionary'  ; -- hashtable
 
+asm_global context_vector_
+
 ; ### context-vector
-feline_global context_vector, 'context-vector'
+code context_vector, 'context-vector', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; -- vector
+        pushrbx
+        mov     rbx, [context_vector_]
+        next
+endcode
 
 asm_global current_vocab_
 
 ; ### current-vocab
-code current_vocab, 'current-vocab'
+code current_vocab, 'current-vocab'     ; -- vocab
         pushrbx
         mov     rbx, [current_vocab_]
         next
@@ -54,9 +61,13 @@ code initialize_vocabs, 'initialize_vocabs', SYMBOL_INTERNAL    ; --
         _ new_vocab
         _to_global user_vocab
 
+        _lit context_vector_
+        _ gc_add_root
+
         _lit 16
         _ new_vector_untagged
-        _to_global context_vector
+        mov     [context_vector_], rbx
+        poprbx
 
         _ feline_vocab
         _ context_vector
