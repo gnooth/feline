@@ -800,13 +800,6 @@ section .text
 %1_end:
 %endmacro
 
-%macro  _until 1
-        test    rbx, rbx
-        mov     rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        jz      %1_begin
-%endmacro
-
 %macro _drop 0
         poprbx
 %endmacro
