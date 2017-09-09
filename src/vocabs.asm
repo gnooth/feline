@@ -256,15 +256,9 @@ code empty, 'empty'                     ; --
         _ vocab_empty?
         _tagged_if .1
         _drop
-        _return
-        _then .1                        ; -- vocab
-
-        _dup
-        _ vocab_name
-        _swap
-        _ delete_vocab
-        _ ensure_vocab
-        _ set_current_vocab
+        _else .1
+        _ vocab_empty
+        _then .1
         next
 endcode
 
