@@ -33,7 +33,6 @@ string FELINE_VOCAB_NAME, 'feline'
 %include "io.asm"
 %include "move.asm"
 %include "stack.asm"
-%include "store.asm"
 %include "strings.asm"
 
 IN_FELINE
