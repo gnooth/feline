@@ -35,6 +35,10 @@ file __FILE__
         _this_slot2
 %endmacro
 
+%macro  _vocab_set_hashtable 0          ; hashtable vocab --
+        _set_slot2
+%endmacro
+
 %macro  _this_vocab_set_hashtable 0     ; hashtable --
         _this_set_slot2
 %endmacro
@@ -140,6 +144,17 @@ code vocab_hashtable, 'vocab-hashtable' ; vocab -- hashtable
         next
 endcode
 
+; ### vocab-set-hashtable
+code vocab_set_hashtable, 'vocab-set-hashtable', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; hashtable vocab --
+        _ check_vocab
+        _swap
+        _ verify_hashtable
+        _swap
+        _vocab_set_hashtable
+        next
+endcode
+
 ; ### vocab-words
 code vocab_words, 'vocab-words'         ; vocab-spec -- seq
         _ lookup_vocab                  ; -- vocab/f
@@ -164,6 +179,27 @@ code vocab_empty?, 'vocab-empty?'       ; vocab-spec -- ?
         _drop
         _error "not a vocabulary specifier"
         _then .1
+        next
+endcode
+
+; ### vocab-empty
+code vocab_empty, 'vocab-empty'         ; vocab --
+        _lit 32
+        _ new_hashtable_untagged        ; -- vocab hashtable
+
+        _lit S_string_hashcode
+        _ symbol_raw_code_address
+        _over
+        _ hashtable_set_hash_function
+
+        _lit S_stringequal
+        _ symbol_raw_code_address
+        _over
+        _ hashtable_set_test_function
+
+        _swap
+        _ vocab_set_hashtable
+
         next
 endcode
 
