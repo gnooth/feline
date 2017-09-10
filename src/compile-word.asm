@@ -147,7 +147,8 @@ code initialize_code_block, 'initialize-code-block' ; tagged-size -- tagged-addr
 endcode
 
 ; ### precompile-object
-code precompile_object, 'precompile-object' ; object -- pair
+code precompile_object, 'precompile-object', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; object -- pair
 ; all values are untagged
         _dup
         _ symbol?
@@ -162,7 +163,8 @@ code precompile_object, 'precompile-object' ; object -- pair
 endcode
 
 ; ### add-code-size
-code add_code_size, 'add-code-size'     ; accum pair -- accum
+code add_code_size, 'add-code-size', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; accum pair -- accum
 ; FIXME arbitrary for now
         _drop
         _lit 25
@@ -229,7 +231,8 @@ code int32?, 'int32?'                   ; tagged-fixnum -- ?
 endcode
 
 ; ### compile-call
-code compile_call, 'compile-call'       ; raw-address --
+code compile_call, 'compile-call', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; raw-address --
         _dup
         _pc
         add     rbx, 5
@@ -272,7 +275,8 @@ endcode
 %define PUSHRBX_BYTES   $0f86d8d48f85d8948
 
 ; ### compile-literal
-code compile_literal, 'compile-literal' ; literal --
+code compile_literal, 'compile-literal', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; literal --
         _dup
         _ wrapper?
         _tagged_if .1
@@ -299,7 +303,8 @@ code compile_literal, 'compile-literal' ; literal --
 endcode
 
 ; ### compile-inline
-code compile_inline, 'compile-inline'   ; raw-code-address raw-code-size --
+code compile_inline, 'compile-inline', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; raw-code-address raw-code-size --
         _oneminus                       ; adjust size to exclude ret instruction
         _tuck                           ; -- size addr size
         _pc
@@ -311,7 +316,8 @@ code compile_inline, 'compile-inline'   ; raw-code-address raw-code-size --
 endcode
 
 ; ### compile-primitive
-code compile_primitive, 'compile-primitive' ; symbol --
+code compile_primitive, 'compile-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; symbol --
         _dup
 %ifdef DEBUG
         _ symbol_always_inline?
@@ -332,7 +338,8 @@ code compile_primitive, 'compile-primitive' ; symbol --
 endcode
 
 ; ### compile-pair
-code compile_pair, 'compile-pair'       ; pair --
+code compile_pair, 'compile-pair', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; pair --
         _dup
         _ array_first
         _zeq_if .1
@@ -357,7 +364,8 @@ code compile_pair, 'compile-pair'       ; pair --
 endcode
 
 ; ### compile-quotation-internal
-code compile_quotation_internal, 'compile-quotation-internal'     ; quotation --
+code compile_quotation_internal, 'compile-quotation-internal', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; quotation --
 
         _ check_quotation
 
@@ -407,7 +415,8 @@ code compile_quotation_internal, 'compile-quotation-internal'     ; quotation --
 endcode
 
 ; ### compile-quotation
-code compile_quotation, 'compile-quotation'     ; quotation -- quotation
+code compile_quotation, 'compile-quotation', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; quotation -- quotation
         _duptor
         _ compile_quotation_internal
         _rfrom
@@ -415,7 +424,8 @@ code compile_quotation, 'compile-quotation'     ; quotation -- quotation
 endcode
 
 ; ### compile-word
-code compile_word, 'compile-word'       ; symbol --
+code compile_word, 'compile-word', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; symbol --
         _dup
         _ symbol_def
         _ compile_quotation             ; -- symbol quotation
