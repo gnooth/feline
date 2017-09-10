@@ -382,6 +382,7 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
     -- /r
     -- source is r/m32/64
     -- dest is r32/64
+    set-instruction-size
     !modrm-byte
     modrm-reg register-reg !> dreg
     modrm-mod {
