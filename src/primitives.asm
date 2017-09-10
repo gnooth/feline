@@ -1127,6 +1127,32 @@ code cstore, 'c!'                       ; byte address --
         next
 endcode
 
+; ### l!
+code lstore, 'l!'                       ; dword tagged-address --
+        _check_index
+        _swap
+        _ integer_to_raw_bits
+        _swap
+        mov     eax, [rbp]
+        mov     [rbx], eax
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        next
+endcode
+
+; ### !
+code store, '!'                         ; qword tagged-address --
+        _check_index
+        _swap
+        _ integer_to_raw_bits
+        _swap
+        mov     rax, [rbp]
+        mov     [rbx], rax
+        mov     rbx, [rbp + BYTES_PER_CELL]
+        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        next
+endcode
+
 ; ### char-upcase
 code char_upcase, 'char-upcase'
         _check_char
