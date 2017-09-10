@@ -436,3 +436,9 @@ code tag_fixnum, 'tag-fixnum'           ; n -- tagged
         _tag_fixnum
         next
 endcode
+
+; ### object>uint64
+code object_to_uint64, 'object>uint64'  ; object -- uint64
+        _ new_uint64
+        next
+endcode
