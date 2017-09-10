@@ -236,6 +236,16 @@ code quotation_set_raw_code_address, 'quotation_set_raw_code_address', SYMBOL_IN
         next
 endcode
 
+; ### quotation-set-code-address
+code quotation_set_code_address, 'quotation-set-code-address'
+; tagged-address quotation --
+        _swap
+        _check_fixnum
+        _swap
+        _ quotation_set_raw_code_address
+        next
+endcode
+
 ; ### quotation_raw_code_size
 code quotation_raw_code_size, 'quotation_raw_code_size', SYMBOL_INTERNAL
 ; quotation -- raw-code-size
@@ -257,6 +267,17 @@ endcode
 code quotation_set_raw_code_size, 'quotation_set_raw_code_size', SYMBOL_INTERNAL
 ; raw-code-size quotation --
         _ check_quotation
+        _quotation_set_raw_code_size
+        next
+endcode
+
+; ### quotation-set-code-size
+code quotation_set_code_size, 'quotation-set-code-size'
+; tagged-size quotation --
+        _ check_quotation
+        _swap
+        _check_fixnum
+        _swap
         _quotation_set_raw_code_size
         next
 endcode
