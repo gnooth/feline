@@ -138,19 +138,11 @@ asm_global pc_, 0
         mov     rbx, [pc_]
 %endmacro
 
-; ### pc
-code pc, 'pc'                           ; -- pc
-        _pc
-        _tag_fixnum
-        next
-endcode
-
 ; ### initialize-code-block
-code initialize_code_block, 'initialize-code-block' ; tagged-size --
+code initialize_code_block, 'initialize-code-block' ; tagged-size -- tagged-address
         _check_fixnum
         _ raw_allocate_executable       ; -- raw-address
-        mov     [pc_], rbx
-        poprbx
+        _tag_fixnum
         next
 endcode
 
@@ -386,7 +378,11 @@ code compile_quotation_internal, 'compile-quotation-internal'     ; quotation --
         _oneplus                        ; -- raw-size
         _tag_fixnum
 
-        _ initialize_code_block
+        _ initialize_code_block         ; -- tagged-address
+
+        _check_fixnum
+        mov     [pc_], rbx
+        poprbx
 
         _pc
         _tor
