@@ -159,7 +159,13 @@ global: relative-size
 
 : ++ip ( -- ) 1+!> ip ;
 
-: .mnemonic ( -- ) mnemonic [ 40 tab write-string ] when* ;
+: mnemonic-col ( -- ) 42 tab ;
+
+: dest-col     ( -- ) 50 tab ;
+
+: comment-col  ( -- ) 64 tab ;
+
+: .mnemonic ( -- ) mnemonic [ mnemonic-col write-string ] when* ;
 
 : .hexbyte ( unsigned-byte -- )
     >hex dup length 2 < [ '0' write-char ] when write-string ;
@@ -170,7 +176,7 @@ global: relative-size
 : .instruction-bytes ( -- )  ip instruction-start - .bytes ;
 
 : .dest ( -- )
-    48 tab
+    dest-col
     {
         { [ dreg ] [ dreg dsize .register-name ] }
         { [ dbase ] [ dbase dindex dscale ddisp dsize .relative ]  }
@@ -342,7 +348,7 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
     next-byte !> immediate-operand
     .instruction-bytes
     .mnemonic
-    48 tab "al, " write-string .immediate-operand ;
+    dest-col "al, " write-string .immediate-operand ;
 
 : find-word-from-exact-code-address ( tagged-code-address -- word/f )
     >local: x
@@ -356,10 +362,10 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
 
     .instruction-bytes
     .mnemonic
-    48 tab jump-target hex.
+    dest-col jump-target hex.
 
     jump-target find-word-from-exact-code-address [
-        64 tab symbol-name write
+        comment-col symbol-name write
     ] when* ;
 
 : regop-mnemonic ( -- string )
@@ -625,10 +631,10 @@ last-word 0x63 install-handler
     next-signed-byte ip + >local: jump-target
     .instruction-bytes
     .mnemonic
-    48 tab jump-target hex.
+    dest-col jump-target hex.
 
     jump-target find-word-from-exact-code-address [
-        64 tab symbol-name write
+        comment-col symbol-name write
     ] when* ;
 
 : .70 ( -- ) "jo"  jmp/jcc-rel8 ; last-word 0x70 install-handler
@@ -1225,7 +1231,7 @@ last-word 0xd3 install-handler
    next-signed-byte ip + >local: code-address
    .instruction-bytes
    .mnemonic
-   48 tab code-address hex. ;
+   dest-col code-address hex. ;
 
 last-word 0xe2 install-handler
 
@@ -1236,7 +1242,7 @@ last-word 0xe2 install-handler
     ip instruction-start - .bytes
     .instruction-bytes
     .mnemonic
-    48 tab target hex. ;
+    dest-col target hex. ;
 
 last-word 0xe3 install-handler
 
@@ -1249,9 +1255,9 @@ last-word 0xeb install-handler
    next-int32 ip + >local: code-address
    .instruction-bytes
    .mnemonic
-   48 tab
+   dest-col
    code-address dup hex.
-   find-word-from-exact-code-address [ 64 tab symbol-name write ] when* ;
+   find-word-from-exact-code-address [ comment-col symbol-name write ] when* ;
 
 last-word 0xe8 install-handler
 
@@ -1260,9 +1266,9 @@ last-word 0xe8 install-handler
    next-int32 ip + >local: jump-target
    .instruction-bytes
    .mnemonic
-   48 tab
+   dest-col
    jump-target dup hex.
-   find-word-from-exact-code-address [ 64 tab symbol-name write ] when* ;
+   find-word-from-exact-code-address [ comment-col symbol-name write ] when* ;
 
 last-word 0xe9 install-handler
 
