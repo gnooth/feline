@@ -243,7 +243,7 @@ endcode
 
 ; ### ensure-global
 code ensure_global, 'ensure-global'     ; name --
-; Ensure that there is a global with the given name in the current vocab.
+; Ensure that there is a global with the specified name in the current vocab.
 
         _dup
         _ current_vocab
@@ -265,12 +265,7 @@ code ensure_global, 'ensure-global'     ; name --
         _ new_symbol                    ; -- handle
 
         _dup
-        _handle_to_object_unsafe
-        _dup
-        _symbol_flags
-        or      rbx, SYMBOL_GLOBAL
-        _swap
-        _symbol_set_flags               ; -- handle
+        _ symbol_set_global
 
         _dup
         _ new_wrapper
