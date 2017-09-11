@@ -714,6 +714,12 @@ last-word 0x80 install-handler
     !modrm-byte
     regop-mnemonic !> mnemonic
     modrm-mod {
+        { 1 [
+            modrm-rm register-rm !> dbase
+            next-signed-byte !> ddisp
+            next-int32 !> immediate-operand
+            t !> immediate-operand?
+        ] }
         { 3 [
             -- register-direct addressing mode
             modrm-rm register-rm !> dreg
