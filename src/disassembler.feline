@@ -1311,9 +1311,16 @@ last-word 0xf6 install-handler
     regop-mnemonic !> mnemonic
     regop {
         { 0 [
-            -- source is imm32/64
-            -- dest is r/m32/64
+            -- test
+            -- source is imm16/32
+            -- dest is r/m16/32/64
             modrm-mod {
+                { 1 [
+                    modrm-rm register-rm !> dbase
+                    next-signed-byte !> ddisp
+                    next-int32 !> immediate-operand
+                    t !> immediate-operand?
+                ] }
                 { 3 [
                     modrm-rm register-rm !> dreg
                     next-int32 !> immediate-operand
@@ -1323,6 +1330,7 @@ last-word 0xf6 install-handler
             } case
         ] }
         { 5 [
+            -- imul
             modrm-mod {
                 { 1 [
                     modrm-rm register-rm !> dbase
