@@ -1421,7 +1421,7 @@ last-word 0x31 install-0x0f-handler
 
 : .0f-4x ( -- )
     set-instruction-size
-    0x44 cmovcc-mnemonic !> mnemonic
+    byte2 cmovcc-mnemonic !> mnemonic
     !modrm-byte
     modrm-reg register-reg !> dreg
     modrm-mod {
