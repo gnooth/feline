@@ -302,9 +302,23 @@ code compile_literal, 'compile-literal', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
-; ### compile-inline
-code compile_inline, 'compile-inline', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; raw-code-address raw-code-size --
+; ### inline-primitive
+code inline_primitive, 'inline-primitive'       ; symbol --
+
+%ifdef DEBUG
+        _dup
+        _ symbol_inline?
+        _tagged_if_not .1
+        _error "symbol not inline"
+        _return
+        _then .1
+%endif
+
+        _dup
+        _ symbol_raw_code_address
+        _swap
+        _ symbol_raw_code_size          ; -- raw-code-address raw-code-size
+
         _oneminus                       ; adjust size to exclude ret instruction
         _tuck                           ; -- size addr size
         _pc
@@ -325,11 +339,7 @@ code compile_primitive, 'compile-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         _ symbol_inline?
 %endif
         _tagged_if .1
-        _dup
-        _ symbol_raw_code_address
-        _swap
-        _ symbol_raw_code_size
-        _ compile_inline
+        _ inline_primitive
         _else .1
         _ symbol_raw_code_address
         _ compile_call
