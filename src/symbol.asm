@@ -140,21 +140,16 @@ file __FILE__
         _set_slot 9
 %endmacro
 
-%macro  _this_symbol_flags 0            ; -- flags
-        _this_slot 9
-%endmacro
-
 %macro  _this_symbol_set_flags 0        ; flags --
         _this_set_slot 9
 %endmacro
 
 %macro  _symbol_flags_bit 1             ; symbol -- ?
         _ check_symbol
-        _symbol_flags
         mov     eax, t_value
-        and     rbx, %1
+        test    symbol_flags_slot, %1
         mov     ebx, f_value
-        cmovnz  rbx, rax
+        cmovnz  ebx, eax
 %endmacro
 
 %macro  _symbol_set_flags_bit 1         ; symbol --
@@ -692,18 +687,6 @@ code symbol_set_code_size, 'symbol-set-code-size'       ; tagged-code-size symbo
         _symbol_set_raw_code_size
         next
 endcode
-
-subroutine symbol_flags                 ; symbol -- flags
-        _ check_symbol
-        _symbol_flags
-        ret
-endsub
-
-subroutine symbol_set_flags             ; flags symbol --
-        _ check_symbol
-        _symbol_set_flags
-        ret
-endsub
 
 ; ### symbol_set_flags_bit
 subroutine symbol_set_flags_bit         ; bit symbol --
