@@ -128,6 +128,10 @@ file __FILE__
         _this_set_slot 8
 %endmacro
 
+%define symbol_flags_slot       qword [rbx + BYTES_PER_CELL * 9]
+
+%define this_symbol_flags_slot  qword [this_register + BYTES_PER_CELL * 9]
+
 %macro  _symbol_flags 0                 ; symbol -- flags
         _slot 9
 %endmacro
@@ -155,26 +159,12 @@ file __FILE__
 
 %macro  _symbol_set_flags_bit 1         ; symbol --
         _ check_symbol
-        _dup
-        _symbol_flags
-        or      rbx, %1
-        _swap
-        _symbol_set_flags
+        or      symbol_flags_slot, %1
+        poprbx
 %endmacro
 
 %macro  _this_symbol_set_flags_bit 1    ; --
-        _this_symbol_flags
-        or      rbx, %1
-        _this_symbol_set_flags
-%endmacro
-
-%macro  _symbol_clear_flags_bit 1       ; symbol --
-        _ check_symbol
-        _dup
-        _symbol_flags
-        and     rbx, ~%1
-        _swap
-        _symbol_set_flags
+        or      this_symbol_flags_slot, %1
 %endmacro
 
 %macro  _symbol_file 0                  ; symbol -- file
@@ -536,6 +526,13 @@ endcode
 ; ### symbol-global?
 code symbol_global?, 'symbol-global?'           ; symbol -- ?
         _symbol_flags_bit SYMBOL_GLOBAL
+        next
+endcode
+
+; ### symbol-set-global
+code symbol_set_global, 'symbol-set-global', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; symbol --
+        _symbol_set_flags_bit SYMBOL_GLOBAL
         next
 endcode
 
