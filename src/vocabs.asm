@@ -86,9 +86,8 @@ code hash_vocabs, 'hash-vocabs'
         _dup
         _while .1                       ; -- symbol
 
-        _lit SYMBOL_PRIMITIVE
-        _over
-        _ symbol_set_flags_bit
+        _dup
+        _ symbol_set_primitive
 
         _dup
         _ symbol_name

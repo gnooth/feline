@@ -493,6 +493,13 @@ code symbol_primitive?, 'symbol-primitive?'     ; symbol -- ?
         next
 endcode
 
+; ### symbol-set-primitive
+code symbol_set_primitive, 'symbol-set-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; symbol --
+        _symbol_set_flags_bit SYMBOL_PRIMITIVE
+        next
+endcode
+
 ; ### symbol-immediate?
 code symbol_immediate?, 'symbol-immediate?'     ; symbol -- ?
         _symbol_flags_bit SYMBOL_IMMEDIATE
@@ -687,19 +694,6 @@ code symbol_set_code_size, 'symbol-set-code-size'       ; tagged-code-size symbo
         _symbol_set_raw_code_size
         next
 endcode
-
-; ### symbol_set_flags_bit
-subroutine symbol_set_flags_bit         ; bit symbol --
-        _ check_symbol
-        _dup
-        _symbol_flags                   ; -- bit symbol flags
-        _ rot                           ; -- symbol flags bit
-        or      rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        _swap
-        _symbol_set_flags
-        ret
-endsub
 
 ; ### symbol-location
 code symbol_location, 'symbol-location' ; -- file line-number
