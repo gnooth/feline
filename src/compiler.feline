@@ -77,7 +77,11 @@ global: pc
     ] if ;
 
 : compile-primitive ( symbol -- )
-    dup symbol-inline? [ inline-primitive ] [ compile-call ] if ;
+    dup debug? [
+        symbol-always-inline? [ inline-primitive ] [ compile-call ] if
+    ] [
+        symbol-inline? [ inline-primitive ] [ compile-call ] if
+    ] if ;
 
 : compile-symbol ( symbol -- )
     dup symbol-primitive? [ compile-primitive ] [ compile-call ] if ;
