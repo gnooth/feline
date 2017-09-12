@@ -17,13 +17,6 @@ file __FILE__
 
 asm_global debug_enabled, t_value
 
-; ### debug?
-code debug?, 'debug?'                   ; -- ?
-        pushrbx
-        mov     rbx, [debug_enabled]
-        next
-endcode
-
 ; ### +debug
 code debug_on, '+debug'
         mov     qword [debug_enabled], t_value

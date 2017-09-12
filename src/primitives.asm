@@ -1572,6 +1572,16 @@ code linux?, 'linux?'                   ; -- ?
         next
 endcode
 
+; ### debug?
+code debug?, 'debug?'                   ; -- ?
+%ifdef DEBUG
+        _t
+%else
+        _f
+%endif
+        next
+endcode
+
 ; ### bye
 code feline_bye, "bye"
         _ free_locals_stack
