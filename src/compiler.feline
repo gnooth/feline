@@ -1,0 +1,113 @@
+-- Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline ;
+in: compiler
+
+empty
+
+global: origin
+global: pc
+
+: origin! ( fixnum -> )
+    verify-fixnum
+    !> origin ;
+
+: pc! ( fixnum -> )
+    verify-fixnum
+    !> pc ;
+
+: emit-byte ( byte -> )
+    pc c!
+    pc 1 + pc! ;
+
+: emit-dword ( dword -> )
+    pc l!
+    pc 4 + pc! ;
+
+: emit-qword ( qword -> )
+    pc !
+    pc 8 + pc! ;
+
+: precompile-object ( object -> pair )
+    dup symbol? [ 0 ] [ 0 swap ] if
+    2array ;
+
+: compile-pushrbx ( -> )
+    { 0x48 0x89 0x5d 0xf8 0x48 0x8d 0x6d 0xf8 } ' emit-byte each ;
+
+: compile-literal ( x -> )
+    dup wrapper? [ wrapped ] when
+
+    compile-pushrbx
+    object>uint64
+    dup 32 rshift 0 = [
+        0xbb emit-byte emit-dword
+    ] [
+        0x48 emit-byte 0xbb emit-byte emit-qword
+    ] if ;
+
+: inline-primitive
+    dup symbol-code-address
+    swap symbol-code-size               -- address size
+    1 -                                 -- adjust size to exclude ret instruction
+    pc swap [ copy-bytes ] keep         -- size
+    pc + pc! ;
+
+: compile-call ( symbol -> )
+    symbol-code-address
+    dup pc 5 + -                        -- tagged-address tagged-displacement
+    int32? [
+        0xe8 emit-byte                  -- tagged-address
+        pc 4 + - emit-dword
+    ] [
+        "unsupported" error
+    ] if ;
+
+: compile-primitive ( symbol -- )
+    dup symbol-inline? [ inline-primitive ] [ compile-call ] if ;
+
+: compile-symbol ( symbol -- )
+    dup symbol-primitive? [ compile-primitive ] [ compile-call ] if ;
+
+: compile-pair ( pair -> )
+    >local: pair
+    {
+        { [ pair first zero? ] [ pair second compile-literal ] }
+        { [ pair first symbol? ] [ pair first compile-symbol ] }
+        [ "unsupported" error ]
+    } cond ;
+
+: compile-quotation-internal ( quotation -> )
+    dup quotation-array ' precompile-object map-array ( array )
+    dup length 32 * initialize-code-block dup pc! origin!
+    ' compile-pair each
+    0xc3 emit-byte
+
+    origin pc over -                    -- quotation code-address code-size
+    pick quotation-set-code-size
+    swap quotation-set-code-address ;
+
+: compile-quotation ( quotation -> quotation )
+    ' compile-quotation-internal keep ;
+
+: compile-word ( symbol -> )
+    dup symbol-def compile-quotation ( symbol quotation )
+    dup quotation-code-address pick symbol-set-code-address
+    quotation-code-size swap symbol-set-code-size ;
+
+: opt ( ->  )
+    postpone: '
+    compile-word ;
