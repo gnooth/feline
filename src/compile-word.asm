@@ -373,8 +373,8 @@ code compile_pair, 'compile-pair', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
-; ### compile-quotation-internal
-code compile_quotation_internal, 'compile-quotation-internal', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; ### primitive-compile-quotation
+code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; quotation --
 
         _ check_quotation
@@ -428,7 +428,7 @@ endcode
 code compile_quotation, 'compile-quotation', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; quotation -- quotation
         _duptor
-        _ compile_quotation_internal
+        _ primitive_compile_quotation
         _rfrom
         next
 endcode
