@@ -15,6 +15,27 @@
 
 file __FILE__
 
+asm_global compile_verbose_, f_value
+
+; ### +v
+code verbose_on, '+v'
+        mov     qword [compile_verbose_], t_value
+        next
+endcode
+
+; ### -v
+code verbose_off, '-v'
+        mov     qword [compile_verbose_], f_value
+        next
+endcode
+
+; ### compile-verbose?
+code compile_verbose?, 'compile-verbose?'       ; -- ?
+        pushrbx
+        mov     rbx, [compile_verbose_]
+        next
+endcode
+
 ; initialized in initialize_dynamic_code_space (in main.c)
 asm_global code_space_, 0
 asm_global code_space_free_, 0
@@ -377,6 +398,16 @@ endcode
 code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; quotation --
 
+        _ compile_verbose?
+        _tagged_if .1
+        _ ?nl
+        _quote "primitive-compile-quotation "
+        _ write_string
+        _dup
+        _ dot_object
+        _ nl
+        _then .1
+
         _ check_quotation
 
         push    this_register
@@ -386,6 +417,14 @@ code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIV
         _this_quotation_array
         _lit S_precompile_object
         _ map_array                     ; -- precompiled-array
+
+        _ compile_verbose?
+        _tagged_if .2
+        _ ?nl
+        _dup
+        _ dot_object
+        _ nl
+        _then .2
 
         _zero
         _over
