@@ -1153,6 +1153,40 @@ code store, '!'                         ; qword tagged-address --
         next
 endcode
 
+; ### copy-bytes
+code copy_bytes, 'copy-bytes'           ; source destination count --
+; FIXME inefficient, does not support overlapping moves
+
+        _check_fixnum
+        _ rrot
+        _check_fixnum
+        _ rrot
+        _check_fixnum
+        _ rrot                          ; -- source destination count
+
+%ifdef WIN64
+        push    rdi
+        push    rsi
+%endif
+
+        mov     rcx, rbx                        ; count
+        mov     rdi, [rbp]                      ; destination
+        mov     rsi, [rbp + BYTES_PER_CELL]     ; source
+        mov     rbx, [rbp + BYTES_PER_CELL * 2]
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+        jrcxz   .1
+        rep     movsb
+
+.1:
+
+%ifdef WIN64
+        pop     rsi
+        pop     rdi
+%endif
+
+        next
+endcode
+
 ; ### char-upcase
 code char_upcase, 'char-upcase'
         _check_char
