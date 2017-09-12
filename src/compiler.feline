@@ -18,6 +18,12 @@ in: compiler
 
 empty
 
+-- These definitions shadow the ones in compile-word.asm. Turning on
+-- verbosity in this vocabulary only affects the optimizing compiler.
+global: compile-verbose?
+: +v t !> compile-verbose? ;
+: -v f !> compile-verbose? ;
+
 global: origin
 global: pc
 
@@ -96,6 +102,9 @@ global: pc
 
 : compile-quotation-internal ( quotation -> )
     dup quotation-array ' precompile-object map-array ( array )
+
+    compile-verbose? [ ?nl dup . nl ] when
+
     dup length 32 * initialize-code-block dup pc! origin!
     ' compile-pair each
     0xc3 emit-byte
@@ -105,6 +114,7 @@ global: pc
     swap quotation-set-code-address ;
 
 : compile-quotation ( quotation -> quotation )
+    compile-verbose? [ ?nl "compiler:compile-quotation " write dup . nl ] when
     ' compile-quotation-internal keep ;
 
 : compile-word ( symbol -> )
