@@ -975,6 +975,18 @@ code local_store, 'local!'              ; value index --
         next
 endcode
 
+; ### local_0_store
+inline local_0_store, 'local_0_store', SYMBOL_INTERNAL  ; value --
+        mov     [r14], rbx
+        poprbx
+endinline
+
+; ### local_1_store
+inline local_1_store, 'local_1_store', SYMBOL_INTERNAL  ; value --
+        mov     [r14 + BYTES_PER_CELL], rbx
+        poprbx
+endinline
+
 ; ### local-inc
 code local_inc, 'local-inc'     ; index --
         _check_index
