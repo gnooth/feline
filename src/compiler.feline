@@ -47,9 +47,20 @@ global: pc
     pc !
     pc 8 + pc! ;
 
+tuple: instruction %op %param ;
+
+: make-instruction ( x y -> instruction )
+    ' instruction new
+    [ instruction-%param! ] keep
+    [ instruction-%op! ] keep ;
+
+: op instruction-%op ;
+
+: param instruction-%param ;
+
 : precompile-object ( object -> pair )
-    dup symbol? [ 0 ] [ 0 swap ] if
-    2array ;
+    dup symbol? [ f ] [ f swap ] if
+    make-instruction ;
 
 : compile-pushrbx ( -> )
     { 0x48 0x89 0x5d 0xf8 0x48 0x8d 0x6d 0xf8 } ' emit-byte each ;
@@ -92,13 +103,8 @@ global: pc
 : compile-symbol ( symbol -- )
     dup symbol-primitive? [ compile-primitive ] [ compile-call ] if ;
 
-: compile-pair ( pair -> )
-    >local: pair
-    {
-        { [ pair first zero? ] [ pair second compile-literal ] }
-        { [ pair first symbol? ] [ pair first compile-symbol ] }
-        [ "unsupported" error ]
-    } cond ;
+: compile-instruction ( instruction -> )
+    dup op [ op compile-symbol ] [ param compile-literal ] if ;
 
 : compile-quotation-internal ( quotation -> )
     dup quotation-array ' precompile-object map-array ( array )
@@ -106,7 +112,9 @@ global: pc
     compile-verbose? [ ?nl dup . nl ] when
 
     dup length 32 * initialize-code-block dup pc! origin!
-    ' compile-pair each
+
+    ' compile-instruction each
+
     0xc3 emit-byte
 
     origin pc over -                    -- quotation code-address code-size
