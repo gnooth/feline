@@ -58,6 +58,19 @@ tuple: instruction %op %param ;
 
 : param instruction-%param ;
 
+: literal? ( instruction -- ? )
+    op f eq? ;
+
+: inst. ( instruction -- )
+    ?nl
+    dup literal? [
+        "literal: " write-string
+        param .
+    ] [
+        " symbol: " write-string
+        op .
+    ] if ;
+
 : precompile-object ( object -> pair )
     dup symbol? [ f ] [ f swap ] if
     make-instruction ;
@@ -109,7 +122,9 @@ tuple: instruction %op %param ;
 : compile-quotation-internal ( quotation -> )
     dup quotation-array ' precompile-object map-array ( array )
 
-    compile-verbose? [ ?nl dup . nl ] when
+    compile-verbose? [
+        ?nl dup [ inst. ] each
+    ] when
 
     dup length 32 * initialize-code-block dup pc! origin!
 
