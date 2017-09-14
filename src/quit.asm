@@ -157,8 +157,8 @@ code must_find_global, 'must-find-global'       ; string -- global
         next
 endcode
 
-; ### literal?
-code literal?, 'literal?'               ; string -- literal/string ?
+; ### token-literal?
+code token_literal?, 'token-literal?'   ; string -- literal/string ?
         _ token_character_literal?
         _tagged_if .1                   ; -- literal
         _t
@@ -188,17 +188,17 @@ code literal?, 'literal?'               ; string -- literal/string ?
 endcode
 
 ; ### interpret1
-code interpret1, 'interpret1'   ; string --
-        _ find_name             ; -- symbol/string ?
+code interpret1, 'interpret1'           ; string --
+        _ find_name                     ; -- symbol/string ?
         _tagged_if .1
         _ call_symbol
         _return
         _then .1
 
-        _ literal?
+        _ token_literal?
         _tagged_if .2
         _return
-        _then .2                ; -- string
+        _then .2                        ; -- string
 
         _ undefined
 
