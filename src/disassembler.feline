@@ -1176,6 +1176,14 @@ last-word 0xc6 install-handler
                 ]
             } case
         ] }
+        { 1 [
+            -- [r/m + disp8]
+            modrm-rm register-rm !> dbase
+            "byte" !> relative-size
+            next-signed-byte !> ddisp
+            next-int32 !> immediate-operand
+            t !> immediate-operand?
+        ] }
         { 3 [
             modrm-rm register-rm !> dreg
             next-int32 !> immediate-operand
