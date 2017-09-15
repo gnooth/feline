@@ -307,49 +307,53 @@ code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE  ; --
 endcode
 
 ; ### note-redefinition
-code note_redefinition, 'note_redefinition'     ; symbol -- symbol
+code note_redefinition, 'note_redefinition'     ; symbol --
         _ ?nl
         _write "redefining "
-        _dup
         _ symbol_name
         _ write_string
         next
 endcode
 
-; ### parse-definition-name
-code parse_definition_name, 'parse-definition-name'     ; -- symbol
-        _ must_parse_token      ; -- string
-
-        ; check for redefinition
-        _dup
+; ### maybe-note-redefinition
+code maybe_note_redefinition, 'maybe-note-redefinition' ; string --
         _ current_vocab
         _ vocab_hashtable
-        _ hashtable_at_star     ; -- string symbol/f ?
-
-        _tagged_if .2
-        _nip
+        _ hashtable_at_star             ; -- symbol/f ?
+        _tagged_if .1
         _ note_redefinition
-        _else .2
-        _drop                   ; -- string
-        _ current_vocab
-        _ new_symbol            ; -- symbol
-        _then .2                ; -- symbol
+        _else .1
+        _drop
+        _then .1
+        next
+endcode
 
-        _ location              ; -- symbol 3array/f
+; ### parse-definition-name
+code parse_definition_name, 'parse-definition-name'     ; -- symbol
+
+        _ must_parse_token              ; -- string
+
         _dup
-        _tagged_if .3           ; -- symbol 3array
+        _ maybe_note_redefinition
+
+        _ current_vocab
+        _ new_symbol
+
+        _ location                      ; -- symbol 3array/f
+        _dup
+        _tagged_if .3                   ; -- symbol 3array
         _dup
         _ array_first
         _swap
-        _ array_second          ; -- symbol file line-number
+        _ array_second                  ; -- symbol file line-number
         _pick
         _ symbol_set_location
         _else .3
         _drop
-        _then .3                ; -- symbol
+        _then .3                        ; -- symbol
 
         _dup
-        _ set_last_word         ; -- symbol
+        _ set_last_word                 ; -- symbol
 
         next
 endcode

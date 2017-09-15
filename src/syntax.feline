@@ -16,9 +16,18 @@
 using: feline ;
 in: feline
 
+: make-global ( string -> )
+    current-vocab <symbol>              -- symbol
+    dup symbol-set-global
+    dup <wrapper> ' symbol-value 2array array>quotation over symbol-set-def
+    dup compile-word
+    set-last-word
+;
+
 syntax: global:
     must-parse-token
-    ensure-global
+    dup maybe-note-redefinition
+    make-global
 ;
 
 syntax: >global:
