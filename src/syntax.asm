@@ -328,16 +328,21 @@ code maybe_note_redefinition, 'maybe-note-redefinition' ; string --
         next
 endcode
 
+; ### new-symbol-in-current-vocab
+code new_symbol_in_current_vocab, 'new-symbol-in-current-vocab', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; string --
+        _dup
+        _ maybe_note_redefinition
+        _ current_vocab
+        _ new_symbol
+        next
+endcode
+
 ; ### parse-definition-name
 code parse_definition_name, 'parse-definition-name'     ; -- symbol
 
         _ must_parse_token              ; -- string
-
-        _dup
-        _ maybe_note_redefinition
-
-        _ current_vocab
-        _ new_symbol
+        _ new_symbol_in_current_vocab   ; -- symbol
 
         _ location                      ; -- symbol 3array/f
         _dup
