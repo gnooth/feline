@@ -16,21 +16,24 @@
 using: feline ;
 in: feline
 
-: make-global ( string -> )
-    current-vocab <symbol>              -- symbol
+: make-global ( string -> global )
+    new-symbol-in-current-vocab
     dup symbol-set-global
     dup <wrapper> ' symbol-value 2array array>quotation over symbol-set-def
-    dup compile-word
-    set-last-word
-;
+    dup compile-word ;
+
+: define-global-setter ( global -> )
+    [ symbol-name "!" concat new-symbol-in-current-vocab ] keep -- setter global
+    <wrapper> ' symbol-set-value 2array array>quotation over symbol-set-def
+    compile-word ;
 
 syntax: global:
     must-parse-token
-    dup maybe-note-redefinition
     make-global
-;
+    define-global-setter ;
 
 syntax: >global:
-    postpone: global:
-    last-word symbol-set-value
-;
+    must-parse-token
+    make-global
+    dup define-global-setter
+    symbol-set-value ;
