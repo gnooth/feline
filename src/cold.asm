@@ -223,11 +223,11 @@ code cold, 'cold'                       ; --
 
         _t
         _ interactive?
-        _ set_global
+        _ set
 
         _t
         _ load_verbose?
-        _ set_global
+        _ set
 
         _quote "Meow!"
         _ write_string
