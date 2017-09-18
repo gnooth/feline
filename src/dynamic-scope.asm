@@ -41,37 +41,39 @@ code set_namestack, 'set-namestack'     ; namestack --
         next
 endcode
 
-section .data
-global_namespace_data:
-        dq      0
+asm_global primordial_bindings_, f_value
 
-%macro _global_namespace 0
+%macro _primordial_bindings 0
         pushrbx
-        mov     rbx, [global_namespace_data]
+        mov     rbx, [primordial_bindings_]
 %endmacro
 
-%macro _set_global_namespace 0
-        mov     [global_namespace_data], rbx
+%macro _set_primordial_bindings 0
+        mov     [primordial_bindings_], rbx
         poprbx
 %endmacro
 
 ; ### initialize-globals
 code initialize_globals, 'initialize-globals'
+
         _lit 16
         _ new_hashtable_untagged
-        _set_global_namespace
-        _lit global_namespace_data
+        _set_primordial_bindings
+
+        _lit primordial_bindings_
         _ gc_add_root
 
         _lit 16
         _ new_vector_untagged
         _set_namestack
+
         _lit namestack_data
         _ gc_add_root
 
-        _global_namespace
+        _primordial_bindings
         _get_namestack
         _ vector_push
+
         next
 endcode
 
