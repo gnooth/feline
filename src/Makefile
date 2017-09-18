@@ -104,6 +104,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	compile-word.asm \
 	curry.asm \
 	debug.asm \
+	dynamic-scope.asm \
 	errors.asm \
 	files.asm \
 	fixnum.asm \
@@ -111,7 +112,6 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	format.asm \
 	gc.asm \
 	generic.asm \
-	globals.asm \
 	handles.asm \
 	hashtable.asm \
 	include.asm \
