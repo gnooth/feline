@@ -50,12 +50,6 @@ global_namespace_data:
         mov     rbx, [global_namespace_data]
 %endmacro
 
-; ### global
-code global_namespace, 'global'         ; -- namespace
-        _global_namespace
-        next
-endcode
-
 %macro _set_global_namespace 0
         mov     [global_namespace_data], rbx
         poprbx
@@ -78,20 +72,6 @@ code initialize_globals, 'initialize-globals'
         _global_namespace
         _get_namestack
         _ vector_push
-        next
-endcode
-
-; ### set-global
-code set_global, 'set-global'           ; value variable --
-        _global_namespace
-        _ hashtable_set_at
-        next
-endcode
-
-; ### get-global
-code get_global, 'get-global'           ; variable -- value
-        _global_namespace
-        _ hashtable_at
         next
 endcode
 
