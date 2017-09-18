@@ -21,8 +21,14 @@ feline_global feline_vocab, 'feline-vocab'
 ; ### user-vocab
 feline_global user_vocab, 'user-vocab'
 
+asm_global dictionary_, f_value
+
 ; ### dictionary
-feline_global dictionary, 'dictionary'  ; -- hashtable
+code dictionary, 'dictionary'           ; -- hashtable
+        pushrbx
+        mov     rbx, [dictionary_]
+        next
+endcode
 
 asm_global context_vector_
 
@@ -111,7 +117,10 @@ code hash_vocabs, 'hash-vocabs'
 
         _lit 16
         _ new_hashtable_untagged
-        _to_global dictionary
+        mov     [dictionary_], rbx
+        poprbx
+        _lit dictionary_
+        _ gc_add_root
 
         _ feline_vocab
         _quote "feline"
