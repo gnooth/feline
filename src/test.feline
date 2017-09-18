@@ -866,17 +866,6 @@ test: length-test-1 ( -- )
 
 length-test-1
 
-test: globals-test-1 ( -- )
-    clear
-    42 ' dup set-global get-data-stack { } sequence= assert-true
-    ' dup get-global get-data-stack { 42 } sequence= assert-true
-    clear
-    ' dup get get-data-stack { 42 } sequence= assert-true
-    clear
-;
-
-globals-test-1
-
 test: find-test-1 ( -- )
     vector{ 1 2 3 4 5 6 } [ 3 = ] find
     get-data-stack vector{ 2 3 } sequence= assert-true
@@ -985,26 +974,6 @@ test: immediate?-test-1 ( -- )
 ;
 
 immediate?-test-1
-
-test: parsing-test-1 ( -- )
-    vector{ symbol: this-is-a-new-symbol } vector{ } sequence= assert-true
-    clear
-;
-
-parsing-test-1
-
-: %parsing-test-2 ( -- )
-    symbol: another-new-symbol
-    42
-;
-
-test: parsing-test-2 ( -- )
-    clear
-    %parsing-test-2 get-data-stack { 42 } sequence= assert-true
-    clear
-;
-
-parsing-test-2
 
 test: sequence=-test-1 ( -- )
     { "this is a test" } { "this is a test" } sequence= assert-true
