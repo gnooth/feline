@@ -51,8 +51,8 @@ asm_global primordial_bindings_, f_value
         poprbx
 %endmacro
 
-; ### initialize-globals
-code initialize_globals, 'initialize-globals'
+; ### initialize_dynamic_scope
+code initialize_dynamic_scope, 'initialize_dynamic_scope', SYMBOL_INTERNAL
 
         _lit 16
         _ new_hashtable_untagged
