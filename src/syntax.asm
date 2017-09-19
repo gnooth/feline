@@ -284,25 +284,15 @@ endcode
 
 ; ### symbol:
 code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE  ; --
-
         _ must_parse_token              ; -- string
-
+        _ new_symbol_in_current_vocab   ; -- symbol
         _dup
-        _ current_vocab
-        _ vocab_hashtable
-        _ hashtable_at_star             ; -- string value/f ?
-
-        _tagged_if .1                   ; -- string symbol
-        _2drop
-        _return
-        _then .1                        ; -- string f
-
-        _drop
-        _ current_vocab
-        _ create_symbol
-
-        _ set_last_word
-
+        _ new_wrapper
+        _ one_quotation
+        _over
+        _ symbol_set_def                ; -- handle
+        _dup
+        _ compile_word
         next
 endcode
 
