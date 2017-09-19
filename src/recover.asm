@@ -40,7 +40,7 @@ code catch, 'catch'
         _lpfetch
         _tor
 
-        _ get_namestack
+        _ get_dynamic_scope
         _dup
         _ vector?
         _tagged_if .1
@@ -89,7 +89,7 @@ code throw, 'throw'
         _rfrom
         _dup
         _tagged_if .2
-        _ get_namestack
+        _ get_dynamic_scope
         _ vector_set_length
         _else .2
         _drop

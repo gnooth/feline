@@ -287,7 +287,7 @@ code reset, 'reset'
         _lpstore
         _then .1
 
-        _ get_namestack
+        _ get_dynamic_scope
         _dup
         _ vector?
         _tagged_if .2
