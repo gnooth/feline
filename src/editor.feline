@@ -484,9 +484,8 @@ tuple: position line-number offset ;
 ;
 
 : edit1 ( -- )
-    windows? [
-        esc[ "?1049h" write-string
-    ] when
+    -- use alternate screen buffer
+    esc[ "?1049h" write-string
 
     page
     normal
@@ -500,9 +499,8 @@ tuple: position line-number offset ;
     0 lines-per-page at-xy
     show-cursor
 
-    windows? [
-        esc[ "?1049l" write-string
-    ] when
+    -- return to main screen buffer
+    esc[ "?1049l" write-string
 ;
 
 : edit-file ( path -- )
