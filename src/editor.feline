@@ -484,6 +484,10 @@ tuple: position line-number offset ;
 ;
 
 : edit1 ( -- )
+    windows? [
+        esc[ "?1049h" write-string
+    ] when
+
     page
     normal
     maybe-reframe
@@ -495,6 +499,10 @@ tuple: position line-number offset ;
     clear-message-line
     0 lines-per-page at-xy
     show-cursor
+
+    windows? [
+        esc[ "?1049l" write-string
+    ] when
 ;
 
 : edit-file ( path -- )
