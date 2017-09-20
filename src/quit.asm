@@ -296,9 +296,8 @@ code reset, 'reset'
         _ vector_set_length
         _then .2
 
-        _ not_in_definition
-
         jmp     quit
+
         next                            ; for decompiler
 endcode
 
