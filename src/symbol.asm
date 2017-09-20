@@ -531,8 +531,8 @@ code symbol_global?, 'symbol-global?'           ; symbol -- ?
         next
 endcode
 
-; ### symbol-set-global
-code symbol_set_global, 'symbol-set-global', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; ### symbol-set-global-bit
+code symbol_set_global_bit, 'symbol-set-global-bit', SYMBOL_PRIVATE
 ; symbol --
         _symbol_set_flags_bit SYMBOL_GLOBAL
         next

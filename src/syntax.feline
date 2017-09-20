@@ -18,7 +18,7 @@ in: feline
 
 : make-global ( string -> global )
     new-symbol-in-current-vocab
-    dup symbol-set-global
+    dup symbol-set-global-bit
     dup <wrapper> ' symbol-value 2array array>quotation over symbol-set-def
     dup compile-word ;
 
