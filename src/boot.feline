@@ -37,13 +37,19 @@ in: feline
     ] with-scope
     "dis" "disassembler" vocab-find-name [ call-symbol ] when ;
 
-: d dis ;
+: d
+    "disassembler" use-vocab
+    "dis" "disassembler" vocab-find-name [ call-symbol ] when ;
 
 : edit
     [
         f load-verbose? set
         "editor.feline" load-system-file
     ] with-scope
+    "edit" "editor" vocab-find-name [ call-symbol ] when ;
+
+: e
+    "editor" use-vocab
     "edit" "editor" vocab-find-name [ call-symbol ] when ;
 
 : help help:help ;
