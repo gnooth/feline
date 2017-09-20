@@ -124,6 +124,7 @@ endcode
 ; ### assert
 code assert, 'assert', SYMBOL_IMMEDIATE
         _ in_definition?
+        _ get
         _tagged_if .1
         _ location
         _ accum_push
@@ -140,6 +141,7 @@ endcode
 ; ### assert-true
 code assert_true, 'assert-true', SYMBOL_IMMEDIATE
         _ in_definition?
+        _ get
         _tagged_if .1
         _ location
         _ accum_push
@@ -156,6 +158,7 @@ endcode
 ; ### assert-false
 code assert_false, 'assert-false', SYMBOL_IMMEDIATE
         _ in_definition?
+        _ get
         _tagged_if .1
         _ location
         _ accum_push
@@ -172,6 +175,7 @@ endcode
 ; ### assert-eq
 code assert_eq, 'assert-eq', SYMBOL_IMMEDIATE
         _ in_definition?
+        _ get
         _tagged_if .1
         _ location
         _ accum_push
@@ -188,6 +192,7 @@ endcode
 ; ### assert=
 code assert_equal, 'assert=', SYMBOL_IMMEDIATE
         _ in_definition?
+        _ get
         _tagged_if .1
         _ location
         _ accum_push
@@ -204,6 +209,7 @@ endcode
 ; ### assert-must-fail
 code assert_must_fail, 'assert-must-fail', SYMBOL_IMMEDIATE
         _ in_definition?
+        _ get
         _tagged_if .1
         _ location
         _ accum_push

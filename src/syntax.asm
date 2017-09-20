@@ -15,6 +15,8 @@
 
 file __FILE__
 
+special in_definition?, 'in-definition?'
+
 special accum, 'accum'
 
 %macro _get_accum 0
@@ -197,6 +199,10 @@ code parse_until, 'parse-until'         ; delimiter -- vector
 
         _ begin_scope
 
+        _t
+        _ in_definition?
+        _ set
+
         _lit 10
         _ new_vector_untagged
         _set_accum                      ; -- delimiter
@@ -353,35 +359,16 @@ code parse_definition_name, 'parse-definition-name'     ; -- symbol
         next
 endcode
 
-asm_global in_definition?_, f_value
-
-; ### in-definition
-code in_definition, 'in_definition', SYMBOL_INTERNAL    ; --
-        mov     qword [in_definition?_], t_value
-        next
-endcode
-
-; ### not-in-definition
-code not_in_definition, 'not_in_definition', SYMBOL_INTERNAL    ; --
-        mov     qword [in_definition?_], f_value
-        next
-endcode
-
-; ### in-definition?
-code in_definition?, 'in-definition?'   ; -- ?
-        pushrbx
-        mov     rbx, [in_definition?_]
-        next
-endcode
-
 ; ### parse-definition
 code parse_definition, 'parse-definition'       ; -- vector
-
-        _ in_definition
 
         _zeroto using_locals?
 
         _ begin_scope
+
+        _t
+        _ in_definition?
+        _ set
 
         _lit 10
         _ new_vector_untagged
@@ -422,13 +409,15 @@ code parse_definition, 'parse-definition'       ; -- vector
         _f
         _to_global local_names
 
-        _ not_in_definition
-
         next
 endcode
 
 ; ### :
-code define, ':'                        ; --
+code define, ':', SYMBOL_IMMEDIATE      ; --
+
+        _lit S_define
+        _ top_level_only
+
         _ parse_definition_name         ; -- symbol
         _ parse_definition              ; -- symbol vector
         _ vector_to_array
@@ -510,7 +499,7 @@ endcode
 code method_colon, 'method:', SYMBOL_IMMEDIATE  ; --
 
         _lit S_method_colon
-        _ toplevel_only
+        _ top_level_only
 
         _ must_parse_token              ; -- string
         _ find_type                     ; -- type
@@ -702,6 +691,7 @@ endcode
         _ must_parse_token      ; -- string
 
         _ in_definition?
+        _ get
         _tagged_if .1
 
         _ find_local_name       ; -- index/string ?
@@ -751,11 +741,12 @@ code oneminusstoreto, '1-!>', SYMBOL_IMMEDIATE  ; --
         next
 endcode
 
-; ### toplevel-only
-code toplevel_only, 'toplevel-only'     ; word --
+; ### top-level-only
+code top_level_only, 'top-level-only'   ; word --
         _ in_definition?
+        _ get
         _tagged_if .1
-        _quote "ERROR: the word `%s` may not appear inside a definition."
+        _quote "ERROR: `%s` may only appear at top level."
         _ format
         _ error
         _else .1
@@ -768,18 +759,14 @@ endcode
 code help_colon, 'help:', SYMBOL_IMMEDIATE
 
         _lit S_help_colon
-        _ toplevel_only
+        _ top_level_only
 
         _ must_parse_token      ; -- string
         _ must_find_name        ; -- symbol
 
-        _ in_definition
-
         _quote ";"
         _ parse_until
         _ vector_to_array       ; -- symbol array
-
-        _ not_in_definition
 
         _swap
         _ symbol_set_help
