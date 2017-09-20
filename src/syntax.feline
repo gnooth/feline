@@ -23,7 +23,13 @@ in: feline
     dup compile-word ;
 
 : define-global-setter ( global -> )
-    [ symbol-name "!" concat new-symbol-in-current-vocab ] keep -- setter global
+    [
+        symbol-name
+        dup string-last-char '?' eq? [
+            dup string-length 1 - string-head
+        ] when
+        "!" concat new-symbol-in-current-vocab
+    ] keep -- setter global
     <wrapper> ' symbol-set-value 2array array>quotation over symbol-set-def
     compile-word ;
 
