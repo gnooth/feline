@@ -194,8 +194,6 @@ code load, 'load'                       ; path --
         _lit S_do_error1        ; recover
         _ recover
 
-        _ not_in_definition
-
         _ restore_search_order
 
         _ end_scope
