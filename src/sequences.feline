@@ -16,20 +16,10 @@
 using: feline ;
 in: feline
 
--- adapted from Factor
-: bounds-check? ( n seq -- ? )
-    over index? [ length < ] [ 2drop f ] if ;
+: ?nth ( n seq -- elt/f ) ?bounds [ nth-unsafe ] when* ;
 
--- Factor
-: ?nth ( n seq -- elt/f )
-    2dup bounds-check? [ nth-unsafe ] [ 2drop f ] if ;
-
--- Factor
 : ?first ( seq -- elt/f ) 0 swap ?nth ;
 
-: empty? ( seq/f -- ? )
-    [ length zero? ] [ t ] if* ;
+: empty? ( seq/f -- ? ) [ length zero? ] [ t ] if* ;
 
--- Factor
-: suffix! ( seq elt -- seq )
-    over push ;
+: suffix! ( seq elt -- seq ) over push ;

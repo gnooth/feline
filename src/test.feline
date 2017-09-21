@@ -1415,20 +1415,6 @@ test: index?-test-1
 
 index?-test-1
 
-test: bounds-check?-test-1
-    4 { 0 1 2 3 } [ bounds-check? ] curry each-integer
-    get-data-stack { t t t t } sequence= assert-true
-    clear
-
-    { 0 1 2 3 }
-    -1 over bounds-check? assert-false
-    4 over bounds-check? assert-false
-    42  over bounds-check? assert-false
-    drop
-;
-
-bounds-check?-test-1
-
 test: curry-nth-test-1
     3 [ + ] curry
     0 over curry-nth 3 assert-eq
