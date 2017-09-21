@@ -2836,4 +2836,22 @@ test: ?bounds-test-1
 
 ?bounds-test-1
 
+generic: %method-test-1
+
+method: string %method-test-1
+    string-length ;
+
+method: fixnum %method-test-1
+    dup + ;
+
+test: method-test-1
+    clear
+    "testing" %method-test-1 get-data-stack { 7 } assert=
+    clear
+    87 %method-test-1 get-data-stack { 174 } assert=
+    clear
+;
+
+method-test-1
+
 ?nl "Reached end of test.feline" write-string
