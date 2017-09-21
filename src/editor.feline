@@ -14,11 +14,9 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
-in: user
-
-"editor" delete-vocab
-
 in: editor
+
+empty
 
 : accept-string ( x y -- string )
     >local: y
@@ -206,7 +204,29 @@ tuple: position line-number offset ;
 
 : maybe-reframe ( -- ) reframe? [ reframe ] when ;
 
+global: undo-stack
+
+: add-undo-move ( line-number offset -- )
+    2array undo-stack vector-push
+;
+
+: undo-move ( -- )
+    undo-stack vector-pop
+    dup first dot-line-number!
+    second dot-offset!
+;
+
+: undo ( -- )
+    undo-stack empty? [
+        "Nothing to undo" message
+    ] [
+        undo-move
+    ] if
+;
+
 : beginning-of-buffer ( -- )
+    dot-line-number dot-offset add-undo-move
+
     0 dot-line-number!
     0 dot-offset!
 
@@ -216,6 +236,8 @@ tuple: position line-number offset ;
 ;
 
 : end-of-buffer ( -- )
+    dot-line-number dot-offset add-undo-move
+
     buffer-line-count 1 - 0 max dot-line-number!
     buffer-line-count lines-per-page - 0 max !> top-line-number
     dot-line-length dot-offset!
@@ -234,16 +256,22 @@ tuple: position line-number offset ;
 ;
 
 : do-home ( -- )
+    dot-line-number dot-offset add-undo-move
+
     0 dot-offset!
     0 !> goal-x
 ;
 
 : end-of-line ( -- )
+    dot-line-number dot-offset add-undo-move
+
     dot-line length dot-offset!
     dot-offset !> goal-x
 ;
 
 : do-left ( -- )
+    dot-line-number dot-offset add-undo-move
+
     dot-offset 0 > [
         dot-offset 1 - dot-offset!
         dot-offset !> goal-x
@@ -261,6 +289,8 @@ tuple: position line-number offset ;
 ;
 
 : do-right ( -- )
+    dot-line-number dot-offset add-undo-move
+
     dot-offset dot-line length < [
         dot-offset 1 + dot-offset!
         dot-offset !> goal-x
@@ -278,6 +308,8 @@ tuple: position line-number offset ;
 ;
 
 : do-down ( -- )
+    dot-line-number dot-offset add-undo-move
+
     dot-line-number buffer-line-count 1 - < [
         dot-line-number 1 + dot-line-number!
         reframe? [
@@ -289,6 +321,8 @@ tuple: position line-number offset ;
 ;
 
 : do-up ( -- )
+    dot-line-number dot-offset add-undo-move
+
     dot-line-number 0 > [
         dot-line-number 1 - dot-line-number!
         reframe? [
@@ -439,6 +473,7 @@ tuple: position line-number offset ;
     0x11 ( control q )     ' do-quit                    bind-key
     0x13 ( control s )     ' do-save                    bind-key
     k-enter                ' insert-line-separator      bind-key
+    0x1a ( control z )     ' undo                       bind-key
     0x1b ( escape )        ' quit                       bind-key
 ;
 
@@ -459,6 +494,7 @@ tuple: position line-number offset ;
 
 : initialize-editor ( -- )
     bindings [ initialize-bindings ] unless
+    100 <vector> undo-stack!
 ;
 
 : initialize-buffer ( filename line-number -- )
