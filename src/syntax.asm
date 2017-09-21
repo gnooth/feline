@@ -297,7 +297,6 @@ code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE  ; --
         _ one_quotation
         _over
         _ symbol_set_def                ; -- handle
-        _dup
         _ compile_word
         next
 endcode
