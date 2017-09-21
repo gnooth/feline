@@ -190,10 +190,15 @@ code load, 'load'                       ; path --
 
         _ save_search_order
 
-        _lit S_interpret        ; try
-        _lit S_do_error1        ; recover
+        _lit S_interpret                ; try
+        _quotation .3                   ; recover
+        _ do_error1
+        _ restore_search_order
+        _ reset
+        _end_quotation .3
         _ recover
 
+        ; no error
         _ restore_search_order
 
         _ end_scope
