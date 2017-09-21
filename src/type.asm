@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; 3 cells: object header, type symbol, tagged typecode
+; 3 cells: object header, type symbol, raw typecode
 
 %macro  _type_symbol 0                  ; type -- symbol
         _slot1
@@ -33,19 +33,19 @@ file __FILE__
         _this_set_slot1
 %endmacro
 
-%macro  _type_typecode 0                ; type -- typecode
+%macro  _type_raw_typecode 0            ; type -- raw-typecode
         _slot2
 %endmacro
 
-%macro  _type_set_typecode 0            ; typecode type --
+%macro  _type_set_raw_typecode 0        ; raw-typecode type --
         _set_slot2
 %endmacro
 
-%macro  _this_type_typecode 0           ; -- typecode
+%macro  _this_type_raw_typecode 0       ; -- raw-typecode
         _this_slot2
 %endmacro
 
-%macro  _this_type_set_typecode 0       ; typecode --
+%macro  _this_type_set_raw_typecode 0   ; raw-typecode --
         _this_set_slot2
 %endmacro
 
@@ -95,7 +95,7 @@ code make_type, 'make-type', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 
-        _this_type_set_typecode         ; -- symbol
+        _this_type_set_raw_typecode     ; -- symbol
 
         _dup
         _this_type_set_symbol
@@ -183,7 +183,7 @@ endcode
 ; ### type-typecode
 code type_typecode, 'type-typecode'     ; type -- tagged-typecode
         _ check_type
-        _type_typecode
+        _type_raw_typecode
         _tag_fixnum
         next
 endcode
