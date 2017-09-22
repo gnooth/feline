@@ -204,28 +204,76 @@ tuple: position line-number offset ;
 
 : maybe-reframe ( -- ) reframe? [ reframe ] when ;
 
+tuple: undo-record action dot data ;
+
+symbol: +move+
+
+symbol: +line-edit+
+
 global: undo-stack
 
-: add-undo-move ( line-number offset -- )
-    2array undo-stack vector-push
+: push-undo ( undo-record -- ) undo-stack vector-push ;
+
+: pop-undo ( -- undo-record ) undo-stack vector-pop ;
+
+: reset-undo ( -- ) 0 undo-stack vector-set-length ;
+
+: copy-dot ( -- position )
+    dot [ position-line-number ] [ position-offset ] bi
+    position new
+    [ position-offset! ] keep
+    [ position-line-number! ] keep
 ;
 
-: undo-move ( -- )
-    undo-stack vector-pop
-    dup first dot-line-number!
-    second dot-offset!
+: new-undo-record ( -- undo-record )
+    undo-record new
+    copy-dot
+    over undo-record-dot!
+;
+
+: add-undo-move ( -- )
+    new-undo-record
+    +move+ over undo-record-action!
+    undo-stack vector-push
+;
+
+: undo-move ( undo-record -- )
+    undo-record-dot dot!
+;
+
+: add-undo-line-edit ( -- )
+    new-undo-record
+    +line-edit+ over undo-record-action!
+    dot-line over undo-record-data!
+    undo-stack vector-push
+;
+
+: undo-line-edit ( undo-record -- )
+    dup undo-record-dot dot!
+    undo-record-data dot-line-number buffer-lines set-nth
+    t dot-line-changed!
+;
+
+: undo1 ( -- )
+    pop-undo dup undo-record-action
+    {
+        { +move+ [ undo-move ] }
+        { +line-edit+ [ undo-line-edit ] }
+        [ error "unsupported" ]
+    } case
+    maybe-reframe
 ;
 
 : undo ( -- )
     undo-stack empty? [
         "Nothing to undo" message
     ] [
-        undo-move
+        undo1
     ] if
 ;
 
 : beginning-of-buffer ( -- )
-    dot-line-number dot-offset add-undo-move
+    add-undo-move
 
     0 dot-line-number!
     0 dot-offset!
@@ -236,7 +284,7 @@ global: undo-stack
 ;
 
 : end-of-buffer ( -- )
-    dot-line-number dot-offset add-undo-move
+    add-undo-move
 
     buffer-line-count 1 - 0 max dot-line-number!
     buffer-line-count lines-per-page - 0 max !> top-line-number
@@ -250,27 +298,30 @@ global: undo-stack
     13 message-y accept-string >local: response
     clear-message-line
     response string>number 1 - 0 max buffer-line-count 1 - min
+
+    dup dot-line-number <> [ add-undo-move ] when
+
     dot-line-number!
     0 dot-offset!
     maybe-reframe
 ;
 
 : do-home ( -- )
-    dot-line-number dot-offset add-undo-move
+    add-undo-move
 
     0 dot-offset!
     0 !> goal-x
 ;
 
 : end-of-line ( -- )
-    dot-line-number dot-offset add-undo-move
+    add-undo-move
 
     dot-line length dot-offset!
     dot-offset !> goal-x
 ;
 
 : do-left ( -- )
-    dot-line-number dot-offset add-undo-move
+    add-undo-move
 
     dot-offset 0 > [
         dot-offset 1 - dot-offset!
@@ -289,7 +340,7 @@ global: undo-stack
 ;
 
 : do-right ( -- )
-    dot-line-number dot-offset add-undo-move
+    add-undo-move
 
     dot-offset dot-line length < [
         dot-offset 1 + dot-offset!
@@ -308,7 +359,7 @@ global: undo-stack
 ;
 
 : do-down ( -- )
-    dot-line-number dot-offset add-undo-move
+    add-undo-move
 
     dot-line-number buffer-line-count 1 - < [
         dot-line-number 1 + dot-line-number!
@@ -321,7 +372,7 @@ global: undo-stack
 ;
 
 : do-up ( -- )
-    dot-line-number dot-offset add-undo-move
+    add-undo-move
 
     dot-line-number 0 > [
         dot-line-number 1 - dot-line-number!
@@ -334,6 +385,8 @@ global: undo-stack
 ;
 
 : do-page-down
+    add-undo-move
+
     dot-y >local: goal-y
 
     dot-line-number lines-per-page +
@@ -346,6 +399,8 @@ global: undo-stack
 ;
 
 : do-page-up
+    add-undo-move
+
     dot-y >local: goal-y
 
     dot-line-number lines-per-page - 0 max dot-line-number!
@@ -356,6 +411,9 @@ global: undo-stack
 ;
 
 : insert-line-separator ( -- )
+    -- FIXME
+    reset-undo
+
     dot-offset dot-line-length <= [
         dot-offset dot-line-length
         dot-line substring
@@ -370,15 +428,20 @@ global: undo-stack
 ;
 
 : delete-normal-char ( -- )
+    add-undo-line-edit
+
     dot-line dot-offset string-head
     dot-offset 1  + dot-line-length < [
         dot-line dot-offset 1 + string-tail concat
     ] when
     dot-line-number buffer-lines vector-set-nth
-    t !> dot-line-changed?
+    t dot-line-changed!
 ;
 
 : delete-line-separator ( -- )
+    -- FIXME
+    reset-undo
+
     dot-line-number buffer-line-count 1 - < [
         dot-offset dot-line-length = [
             dot-line-number 1 + buffer-lines vector-nth
@@ -405,14 +468,19 @@ global: undo-stack
 ;
 
 : do-normal-char ( char -- )
+    add-undo-line-edit
+
     dot-line dup dot-offset string-head >local: head
     dot-offset string-tail >local: tail
     head string>sbuf >local: sb
+
+    -- char
     sb sbuf-push
+
     tail sb sbuf-append-string
     sb sbuf>string dot-line-number buffer-lines set-nth
     dot-offset 1 + dot-offset!
-    t !> dot-line-changed?
+    t dot-line-changed!
     modified
 ;
 
