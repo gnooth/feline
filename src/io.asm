@@ -145,31 +145,6 @@ code rename_file, 'rename-file'         ; c-addr1 u1 c-addr2 u2 -- ior
         next
 endcode
 
-; ### flush-file
-code flush_file, 'flush-file'           ; fileid -- ior
-; FILE EXT
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
-        xcall   os_flush_file
-        mov     rbx, rax
-        next
-endcode
-
-; ### ms
-code ms, 'ms'
-; FACILITY EXT
-%ifdef WIN64
-        popd    rcx
-%else
-        popd    rdi
-%endif
-        xcall   os_ms
-        next
-endcode
-
 ; ### system
 code system_, 'system'                  ; c-addr u --
         _ as_c_string
