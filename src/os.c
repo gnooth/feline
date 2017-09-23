@@ -479,6 +479,14 @@ void os_set_console_cursor_position(SHORT x, SHORT y)
   coord.Y = y;
   SetConsoleCursorPosition(h, coord);
 }
+
+cell os_get_console_character_attributes()
+{
+  HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+  CONSOLE_SCREEN_BUFFER_INFO info;
+  GetConsoleScreenBufferInfo(h, &info);
+  return info.wAttributes;
+}
 #endif
 
 void os_bye()

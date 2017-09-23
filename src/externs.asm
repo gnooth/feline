@@ -52,6 +52,10 @@ extern os_system
 extern os_ticks
 extern os_write_file
 
+%ifdef WIN64
+extern os_get_console_character_attributes
+%endif
+
 extern c_fixnum_to_base
 extern c_get_saved_backtrace_array
 extern c_get_saved_backtrace_size
