@@ -424,6 +424,23 @@ code dot_object, '.'                    ; handle-or-object --
         next
 endcode
 
+; ### short.
+code short_dot, 'short.'                ; handle-or-object --
+        _ object_to_string
+        _dup
+        _ string_length
+        _lit tagged_fixnum(40)
+        _ fixnum_fixnum_gt
+        _tagged_if .1
+        _lit tagged_fixnum(40)
+        _ string_head
+        _quote '...'
+        _ concat
+        _then .1
+        _ write_string
+        next
+endcode
+
 ; ### fixnum-tag-bits
 code fixnum_tag_bits, 'fixnum-tag-bits'
         _lit FIXNUM_TAG_BITS
