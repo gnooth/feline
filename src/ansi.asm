@@ -153,3 +153,37 @@ code clear_to_eol, 'clear-to-eol'       ; --
         _write "0K"
         next
 endcode
+
+%ifdef WIN64
+
+; emacs/src/w32console.c get-screen-color
+; emacs/lisp/term/w32console.el
+
+; ### get-console-character-attributes
+code get_console_character_attributes, 'get-console-character-attributes'
+; -- attributes
+        xcall   os_get_console_character_attributes
+        pushrbx
+        mov     rbx, rax
+        _tag_fixnum
+        next
+endcode
+
+; ### get-console-background
+code get_console_background, 'get-console-background'   ; -- bg
+        _ get_console_character_attributes
+        _lit tagged_fixnum(4)
+        _ rshift
+        _lit tagged_fixnum(15)
+        _ bitand
+        next
+endcode
+
+; ### get-console-foreground
+code get_console_foreground, 'get-console-foreground'   ; -- fg
+        _ get_console_character_attributes
+        _lit tagged_fixnum(15)
+        _ bitand
+        next
+endcode
+%endif
