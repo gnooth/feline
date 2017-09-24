@@ -84,6 +84,8 @@ tuple: position line-number offset ;
 
 : dot-line ( -- string ) dot-line-number buffer-lines vector-nth ;
 
+: dot-line! ( string -- ) dot-line-number buffer-lines vector-set-nth ;
+
 : dot-line-length ( -- n ) dot-line string-length ;
 
 : lines-per-page ( -- n ) #rows 2 - ;
@@ -417,8 +419,8 @@ global: undo-stack
     dot-offset dot-line-length <= [
         dot-offset dot-line-length
         dot-line substring
-        dot-line-number 1 + buffer-lines vector-insert-nth!
-        dot-line dot-offset string-head dot-line-number buffer-lines vector-set-nth
+        dot-line-number 1 + buffer-lines vector-insert-nth
+        dot-line dot-offset string-head dot-line!
         dot-line-number 1 + dot-line-number!
         0 dot-offset!
         0 !> goal-x
@@ -434,7 +436,7 @@ global: undo-stack
     dot-offset 1  + dot-line-length < [
         dot-line dot-offset 1 + string-tail concat
     ] when
-    dot-line-number buffer-lines vector-set-nth
+    dot-line!
     t dot-line-changed!
 ;
 
@@ -445,7 +447,7 @@ global: undo-stack
     dot-line-number buffer-line-count 1 - < [
         dot-offset dot-line-length = [
             dot-line-number 1 + buffer-lines vector-nth
-            dot-line swap concat dot-line-number buffer-lines vector-set-nth
+            dot-line swap concat dot-line!
             dot-line-number 1 + buffer-lines vector-remove-nth!
             t !> repaint?
         ] when
