@@ -449,18 +449,18 @@ code define_test, 'test:'               ; --
         _lit S_?nl
         _lit tagged_zero
         _pick
-        _ vector_insert_nth_destructive
+        _ vector_insert_nth
 
         _over
         _ symbol_name
         _lit tagged_fixnum(1)
         _pick
-        _ vector_insert_nth_destructive
+        _ vector_insert_nth
 
         _lit S_write_string
         _lit tagged_fixnum(2)
         _pick
-        _ vector_insert_nth_destructive
+        _ vector_insert_nth
 
         _ vector_to_array
         _ array_to_quotation            ; -- symbol quotation
@@ -608,7 +608,7 @@ code declare_local_internal, 'declare-local-internal'   ; --
         _lit S_locals_enter
         _lit tagged_zero
         _get_accum
-        _ vector_insert_nth_destructive
+        _ vector_insert_nth
 
         ; check for return-if-no-locals
         ; if found, replace with return-if-locals

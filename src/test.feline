@@ -533,9 +533,9 @@ test: 4array-test-1 ( -- )
 
 4array-test-1
 
--- vector-insert-nth!
+-- vector-insert-nth
 test: vector-test-1 ( -- )
-    17 0 vector{ 0 1 2 3 } [ vector-insert-nth! ] keep
+    17 0 vector{ 0 1 2 3 } [ vector-insert-nth ] keep
     vector{ 17 0 1 2 3 } sequence= assert-true
     clear
 ;

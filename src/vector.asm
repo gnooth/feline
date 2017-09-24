@@ -455,8 +455,8 @@ vector_set_nth_untagged:
         next
 endcode
 
-; ### vector-insert-nth!
-code vector_insert_nth_destructive, 'vector-insert-nth!' ; element n vector --
+; ### vector-insert-nth
+code vector_insert_nth, 'vector-insert-nth'     ; element n vector --
         _ check_vector
 
         _verify_index qword [rbp]
