@@ -212,6 +212,8 @@ symbol: +move+
 
 symbol: +line-edit+
 
+symbol: +delete-line-separator+
+
 global: undo-stack
 
 : push-undo ( undo-record -- ) undo-stack vector-push ;
@@ -256,11 +258,29 @@ global: undo-stack
     t dot-line-changed!
 ;
 
+: undo-delete-line-separator ( undo-record -- )
+    dup undo-record-dot dot!
+    undo-record-data ( 2array ) dup array-first dot-line-number buffer-lines set-nth
+    array-second dot-line-number 1 + buffer-lines vector-insert-nth
+    t repaint!
+;
+
+: add-undo-delete-line-separator ( -- )
+    new-undo-record
+    +delete-line-separator+ over undo-record-action!
+    dot-line
+    dot-line-number 1 + buffer-lines vector-nth
+    2array
+    over undo-record-data!
+    push-undo
+;
+
 : undo1 ( -- )
     pop-undo dup undo-record-action
     {
         { +move+ [ undo-move ] }
         { +line-edit+ [ undo-line-edit ] }
+        { +delete-line-separator+ [ undo-delete-line-separator ] }
         [ error "unsupported" ]
     } case
     maybe-reframe
@@ -441,11 +461,9 @@ global: undo-stack
 ;
 
 : delete-line-separator ( -- )
-    -- FIXME
-    reset-undo
-
     dot-line-number buffer-line-count 1 - < [
         dot-offset dot-line-length = [
+            add-undo-delete-line-separator
             dot-line-number 1 + buffer-lines vector-nth
             dot-line swap concat dot-line!
             dot-line-number 1 + buffer-lines vector-remove-nth!
