@@ -577,6 +577,7 @@ global: undo-stack
     0x13 ( control s )     ' do-save                    bind-key
     k-enter                ' insert-line-separator      bind-key
     0x1a ( control z )     ' undo                       bind-key
+    0x15 ( control u )     ' undo                       bind-key
     0x1b ( escape )        ' quit                       bind-key
 ;
 
