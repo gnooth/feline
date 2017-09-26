@@ -20,6 +20,7 @@
 #include <windows.h>
 #else
 #include <signal.h>
+#include <sys/ioctl.h>
 #include <sys/mman.h>
 #endif
 
@@ -97,6 +98,12 @@ static void signal_handler(int sig, siginfo_t *si, void * context)
 
   extern void handle_signal();
   uc->uc_mcontext.gregs[REG_RIP] = (cell) handle_signal;
+}
+
+static void sigtstp_handler(int sig, siginfo_t * si, void * context)
+{
+  char c = 0x15;
+  ioctl(0, TIOCSTI, &c);
 }
 #endif
 
@@ -218,11 +225,15 @@ int main(int argc, char **argv, char **env)
   struct sigaction sa;
   sa.sa_flags = SA_SIGINFO;
   sigemptyset(&sa.sa_mask);
+
   sa.sa_sigaction = signal_handler;
   sigaction(SIGSEGV, &sa, NULL);
   sigaction(SIGABRT, &sa, NULL);
   sigaction(SIGFPE,  &sa, NULL);
   sigaction(SIGTRAP, &sa, NULL);
+
+  sa.sa_sigaction = sigtstp_handler;
+  sigaction(SIGTSTP, &sa, NULL);
 #endif
 
   cold();
