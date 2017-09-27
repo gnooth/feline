@@ -16,7 +16,7 @@
 file __FILE__
 
 ; ### file-exists?
-code file_exists?, 'file-exists?'       ; string -- ?
+code file_exists?, 'file-exists?'       ; path -- ?
         _ string_raw_data_address
         mov     arg0_register, rbx
         xcall   os_file_status          ; returns 0 if file exists
@@ -24,6 +24,31 @@ code file_exists?, 'file-exists?'       ; string -- ?
         mov     eax, f_value
         mov     ebx, t_value
         cmovnz  ebx, eax
+        next
+endcode
+
+; ### directory?
+code directory?, 'directory?'           ; path -- ?
+        _ string_raw_data_address
+        mov     arg0_register, rbx
+        xcall   os_file_is_directory
+        test    rax, rax
+        mov     eax, t_value
+        mov     ebx, f_value
+        cmovnz  ebx, eax
+        next
+endcode
+
+; ### regular-file?
+code regular_file?, 'regular-file?'     ; path -- ?
+        _dup
+        _ directory?
+        _tagged_if .1
+        mov     ebx, f_value
+        _else .1
+        ; not a directory
+        _ file_exists?
+        _then .1
         next
 endcode
 
@@ -335,19 +360,6 @@ code set_file_lines, 'set-file-lines'   ; seq path --
         next
 endcode
 
-; ### regular-file?
-code regular_file?, 'regular-file?'     ; path -- ?
-        _dup
-        _ path_is_directory?
-        _if .1
-        mov     rbx, f_value
-        _else .1
-        ; not a directory
-        _ file_exists?
-        _then .1
-        next
-endcode
-
 ; ### path-is-absolute?
 code path_is_absolute?, 'path-is-absolute?'     ; string -- ?
 
@@ -473,13 +485,6 @@ endcode
 ; ### feline-home
 code feline_home, 'feline-home'         ; -- string
         _quote FELINE_HOME
-        next
-endcode
-
-; ### directory?
-code directory?, 'directory?'           ; path -- ?
-        _ path_is_directory?
-        _tag_boolean
         next
 endcode
 

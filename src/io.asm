@@ -40,24 +40,6 @@ code file_status, 'file-status'         ; c-addr u -- x ior
         next
 endcode
 
-; ### path-is-directory?
-code path_is_directory?, 'path-is-directory?' ; string -- flag
-        _ verify_string
-        _ string_raw_data_address
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
-        xcall   os_file_is_directory
-        test    rax, rax
-        jz      .1
-        mov     rax, -1
-.1:
-        mov     rbx, rax
-        next
-endcode
-
 ; ### reposition-file
 code reposition_file, 'reposition-file' ; ud fileid -- ior
 ; We ignore the upper 64 bits of the 128-bit offset.

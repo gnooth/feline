@@ -2863,4 +2863,20 @@ test: tri-test-1
 
 tri-test-1
 
+test: file-attributes-test-1
+    windows? "c:/windows" "/home" ?
+    [ file-exists? assert-true ]
+    [ directory? assert-true ]
+    [ regular-file? assert-false ]
+    tri
+
+    feline-home "src/test.feline" path-append
+    [ file-exists? assert-true ]
+    [ directory? assert-false ]
+    [ regular-file? assert-true ]
+    tri
+;
+
+file-attributes-test-1
+
 ?nl "Reached end of test.feline" write-string
