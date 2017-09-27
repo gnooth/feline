@@ -2854,4 +2854,13 @@ test: method-test-1
 
 method-test-1
 
+test: tri-test-1
+    clear
+    42 [ 1 + ] [ 2 + ] [ 3 + ] tri
+    get-data-stack { 43 44 45 } assert=
+    clear
+;
+
+tri-test-1
+
 ?nl "Reached end of test.feline" write-string
