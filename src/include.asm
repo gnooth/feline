@@ -15,20 +15,6 @@
 
 file __FILE__
 
-; ### includable?
-code includable?, 'includable?'         ; string -- flag
-        _dup
-        _ file_exists?
-        _tagged_if .1
-        _ path_is_directory?
-        _zeq
-        _else .1
-        _drop
-        _false
-        _then .1
-        next
-endcode
-
 ; ### path-separator-char
 %ifdef WIN64
 constant path_separator_char, 'path-separator-char', '\'
