@@ -94,7 +94,7 @@ code process_init_file, 'process-init-file' ; --
         _quote ".init.feline"
         _ path_append
         _dup
-        _ path_file_exists?
+        _ file_exists?
         _tagged_if .1
         _ load
         _else .1

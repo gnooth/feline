@@ -15,6 +15,18 @@
 
 file __FILE__
 
+; ### file-exists?
+code file_exists?, 'file-exists?'       ; string -- ?
+        _ string_raw_data_address
+        mov     arg0_register, rbx
+        xcall   os_file_status          ; returns 0 if file exists
+        test    rax, rax
+        mov     eax, f_value
+        mov     ebx, t_value
+        cmovnz  ebx, eax
+        next
+endcode
+
 ; ### file-open-read
 code file_open_read, 'file-open-read'   ; string -- fd
         _dup
@@ -331,7 +343,7 @@ code regular_file?, 'regular-file?'     ; path -- ?
         mov     rbx, f_value
         _else .1
         ; not a directory
-        _ path_file_exists?
+        _ file_exists?
         _then .1
         next
 endcode

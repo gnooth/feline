@@ -58,16 +58,6 @@ code path_is_directory?, 'path-is-directory?' ; string -- flag
         next
 endcode
 
-; ### path-file-exists?
-code path_file_exists?, 'path-file-exists?' ; string -- ?
-        _ string_from
-        _ file_status
-        _nip
-        _zeq
-        _tag_boolean
-        next
-endcode
-
 ; ### reposition-file
 code reposition_file, 'reposition-file' ; ud fileid -- ior
 ; We ignore the upper 64 bits of the 128-bit offset.

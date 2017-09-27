@@ -18,7 +18,7 @@ file __FILE__
 ; ### includable?
 code includable?, 'includable?'         ; string -- flag
         _dup
-        _ path_file_exists?
+        _ file_exists?
         _tagged_if .1
         _ path_is_directory?
         _zeq
