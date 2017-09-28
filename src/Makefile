@@ -100,6 +100,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	bitops.asm \
 	boolean.asm \
 	cold.asm \
+	color.asm \
 	combinators.asm \
 	compile-word.asm \
 	curry.asm \

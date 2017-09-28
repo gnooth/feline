@@ -89,6 +89,7 @@ IN_FELINE
 %include "errors.asm"
 %include "tools.asm"
 %include "ansi.asm"
+%include "color.asm"
 %include "socket.asm"
 
 ; ### in-static-data-area?
