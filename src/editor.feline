@@ -49,6 +49,10 @@ global: done?
 
 tuple: buffer filename autosave-filename eol ;
 
+: new-buffer ( -- )
+    ' buffer new
+;
+
 : create-buffer ( filename -- buffer )
     ' buffer new
     [ buffer-filename! ] keep
@@ -519,7 +523,10 @@ global: undo-stack
     modified
 ;
 
-: make-backup ( -- ) editor-filename dup "~" concat copy-file ;
+: make-backup ( -- )
+    editor-filename dup file-exists?
+    [ dup "~" concat copy-file ] [ drop ] if
+;
 
 : do-save ( -- )
     "Saving..." message
@@ -601,6 +608,18 @@ global: undo-stack
     100 <vector> undo-stack!
 ;
 
+: initialize-empty-buffer ( -- )
+    "untitled" create-buffer current-buffer!
+    LF current-buffer buffer-eol!
+    64 <vector> buffer-lines!
+    "" buffer-lines vector-push
+    position new dot!
+    0 dot-offset!
+    0 dot-line-number!
+    0 top-line-number!
+    unmodified
+;
+
 : initialize-buffer ( filename line-number -- )
     verify-index  >local: line-number
     verify-string >local: filename
@@ -655,8 +674,18 @@ global: undo-stack
     [ initialize-buffer edit1 ] [ 2drop ] if
 ;
 
+: edit-new ( -- )
+    initialize-editor
+    initialize-empty-buffer
+    edit1
+;
+
 : edit ( -- )
-    parse-token find-name [ edit-definition ] [ edit-file ] if
+    parse-token dup [
+        find-name [ edit-definition ] [ edit-file ] if
+    ] [
+        drop edit-new
+    ] if
 ;
 
 : ed ( -- )
