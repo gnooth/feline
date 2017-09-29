@@ -366,8 +366,7 @@ code where, 'where'             ; --
         _then .1
 
         _ ?nl
-        _ white
-        _ foreground
+        _ output_style
 
         _ error_location
         _ first
@@ -397,8 +396,7 @@ endcode
 ; ### do-error1
 code do_error1, 'do-error1'             ; string --
         _ ?nl
-        _ red
-        _ foreground
+        _ error_style
         _ write_string
         _ where
         next
@@ -416,8 +414,7 @@ code do_error, 'do-error'               ; error --
         ; not a string
 
         ; REVIEW
-        _ red
-        _ foreground
+        _ error_style
         _write "Error: "
         _ dot_object
         _ reset
@@ -529,8 +526,7 @@ endcode
 ; ### break
 code break, 'break'                     ; --
         _ ?nl
-        _ red
-        _ foreground
+        _ error_style
         _write "break called"
         _ print_data_stack
         _ nl
