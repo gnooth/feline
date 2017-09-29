@@ -37,11 +37,10 @@ code color_off, '-color'                ; --
 endcode
 
 ; ### esc[
-code ansi_escape, 'esc['
-        _tagged_char $1b
-        _ write_char
-        _tagged_char '['
-        _ write_char
+code ansi_csi, 'esc['                   ; --
+; control sequence introducer
+        _quote `\e[`
+        _ write_string
         next
 endcode
 
@@ -49,7 +48,7 @@ endcode
 code foreground, 'foreground'           ; color --
         _ color?
         _tagged_if .1
-        _ ansi_escape
+        _ ansi_csi
         _tagged_char '3'
         _ write_char
         _tagged_char '0'
@@ -67,7 +66,7 @@ endcode
 code background, 'background'           ; color --
         _ color?
         _tagged_if .1
-        _ ansi_escape
+        _ ansi_csi
         _tagged_char '4'
         _ write_char
         _tagged_char '0'
@@ -86,12 +85,12 @@ code page, 'page'
 ; Forth 2012
 ; "On a terminal, PAGE clears the screen and resets the cursor
 ; position to the upper left corner."
-        _ ansi_escape
+        _ ansi_csi
         _tagged_char '2'
         _ write_char
         _tagged_char 'J'
         _ write_char
-        _ ansi_escape
+        _ ansi_csi
         _tagged_char $3b
         _ write_char
         _tagged_char 'H'
@@ -106,7 +105,7 @@ code at_xy, 'at-xy'                     ; col row --
         _check_fixnum
         _swap
 
-        _ ansi_escape
+        _ ansi_csi
         _oneplus                        ; ANSI values are 1-based
         _tag_fixnum
         _ fixnum_to_string
@@ -128,7 +127,7 @@ endcode
 ; ### at-x
 code at_x, 'at-x'                       ; col --
         _check_fixnum
-        _ ansi_escape
+        _ ansi_csi
         _oneplus
         _tag_fixnum
         _ fixnum_to_string
@@ -140,7 +139,7 @@ endcode
 
 ; ### clear-to-eol
 code clear_to_eol, 'clear-to-eol'       ; --
-        _ ansi_escape
+        _ ansi_csi
         _write "0K"
         next
 endcode
