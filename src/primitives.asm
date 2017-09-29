@@ -749,19 +749,8 @@ endcode
 
 ; ### clear
 code clear, 'clear'
-; Clear the data stack.
+; clear the data stack
         mov     rbp, [sp0_]
-        next
-endcode
-
-; ### .s
-code feline_dot_s, '.s'
-        _ get_data_stack
-        _quotation .1
-        _ nl
-        _ dot_object
-        _end_quotation .1
-        _ each
         next
 endcode
 

@@ -469,16 +469,35 @@ code query, 'query'                     ; -- string/f
         next
 endcode
 
+code print_data_stack1, 'print-data-stack1'     ; x --
+        _ nl
+        _lit tagged_fixnum(4)
+        _ tab
+        _ output_style
+        _ dup
+        _ short_dot
+        _ comment_style
+        _quote " ( "
+        _ write_string
+        _ type_of
+        _ dot_object
+        _quote " )"
+        _ write_string
+        next
+endcode
+
 ; ### print-data-stack
 code print_data_stack, 'print-data-stack'       ; --
         _ ?nl
-        _ white
-        _ foreground
+        _ comment_style
         _write "-- Data stack: "
         _depth
         _if .1
-        _ feline_dot_s
+        _ get_data_stack
+        _lit S_print_data_stack1
+        _ each
         _else .1
+        _ output_style
         _write "Empty"
         _then .1
         next
