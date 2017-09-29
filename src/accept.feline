@@ -32,12 +32,13 @@ global: done?
     "in: " current-vocab vocab-name concat
     "> " concat
     dup !> prompt-string
-    green foreground write-string ;
+    prompt-style
+    write-string ;
 
 : redisplay ( -- )
     0 at-x
     prompt
-    yellow foreground
+    input-style
     buffer write-sbuf
     clear-to-eol
     dot prompt-string length + at-x ;
@@ -271,9 +272,9 @@ global: prefix-offset
     prompt
     0 !> dot
     f !> done?
-    yellow foreground
+    input-style
     [ done? ] [ accept-key process-key ] until
-    white foreground
+    output-style
 
     buffer sbuf>string [
         {
