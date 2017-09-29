@@ -25,6 +25,9 @@ global: history-index
 global: pattern
 global: done?
 
+: history. ( -- )
+    history [ write-string nl ] each ;
+
 : reset-history ( -- )
     f !> history-index f !> pattern ;
 
@@ -280,7 +283,7 @@ global: prefix-offset
         {
             { [ dup empty? ] [ drop ] }
             { [ dup "bye" string= ] [ drop ] }
-            [ history push save-history ]
+            [ history vector-adjoin save-history ]
         } cond
     ] keep
 
