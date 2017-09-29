@@ -296,6 +296,11 @@ code reset, 'reset'
         _ vector_set_length
         _then .2
 
+        ; return to main screen buffer
+        _ ansi_csi
+        _quote "?1049l"
+        _ write_string
+
         jmp     quit
 
         next                            ; for decompiler
