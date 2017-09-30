@@ -86,9 +86,13 @@ tuple: position line-number offset ;
 
 : buffer-line-count ( -- n ) buffer-lines length ;
 
-: dot-line ( -- string ) dot-line-number buffer-lines vector-nth ;
+: buffer-nth-line ( n -- string ) buffer-lines vector-nth ;
 
-: dot-line! ( string -- ) dot-line-number buffer-lines vector-set-nth ;
+: buffer-nth-line! ( string n -- ) buffer-lines vector-set-nth ;
+
+: dot-line ( -- string ) dot-line-number buffer-nth-line ;
+
+: dot-line! ( string -- ) dot-line-number buffer-nth-line! ;
 
 : dot-line-length ( -- n ) dot-line string-length ;
 
@@ -126,7 +130,7 @@ tuple: position line-number offset ;
 
 : .line ( y -- )
     0 over at-xy
-    top-line-number + buffer-lines vector-nth
+    top-line-number + buffer-nth-line
 
     detab
 
