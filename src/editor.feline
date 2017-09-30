@@ -521,10 +521,33 @@ global: undo-stack
     sb sbuf-push
 
     tail sb sbuf-append-string
-    sb sbuf>string dot-line-number buffer-lines set-nth
+    sb sbuf>string dot-line!
     dot-offset 1 + dot-offset!
     t dot-line-changed!
     modified
+;
+
+: insert-spaces ( n -- )
+    -- no undo
+
+    >local: n
+
+    dot-line dup dot-offset string-head >local: head
+    dot-offset string-tail >local: tail
+    head string>sbuf >local: sb
+
+    n [ 32 sb sbuf-push ] times
+
+    tail sb sbuf-append-string
+    sb sbuf>string dot-line!
+    dot-offset n + dot-offset!
+    t dot-line-changed!
+    modified
+;
+
+: do-tab ( -- )
+    add-undo-line-edit
+    4 dot-offset 4 mod - insert-spaces
 ;
 
 : make-backup ( -- )
@@ -587,6 +610,7 @@ global: undo-stack
     0x11 ( control q )     ' do-quit                    bind-key
     0x13 ( control s )     ' do-save                    bind-key
     k-enter                ' insert-line-separator      bind-key
+    0x09 ( tab )           ' do-tab                     bind-key
     0x1a ( control z )     ' undo                       bind-key
     0x15 ( control u )     ' undo                       bind-key
     0x1b ( escape )        ' quit                       bind-key
