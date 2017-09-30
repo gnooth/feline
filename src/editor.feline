@@ -96,6 +96,10 @@ tuple: position line-number offset ;
 
 : dot-line-length ( -- n ) dot-line string-length ;
 
+: dot-line-head ( -- string ) dot-line dot-offset string-head ;
+
+: dot-line-tail ( -- string ) dot-line dot-offset string-tail ;
+
 : lines-per-page ( -- n ) #rows 2 - ;
 
 : .cursor ( -- )
@@ -513,14 +517,9 @@ global: undo-stack
 : do-normal-char ( char -- )
     add-undo-line-edit
 
-    dot-line dup dot-offset string-head >local: head
-    dot-offset string-tail >local: tail
-    head string>sbuf >local: sb
-
-    -- char
+    dot-line-head string>sbuf >local: sb
     sb sbuf-push
-
-    tail sb sbuf-append-string
+    dot-line-tail sb sbuf-append-string
     sb sbuf>string dot-line!
     dot-offset 1 + dot-offset!
     t dot-line-changed!
@@ -531,14 +530,9 @@ global: undo-stack
     -- no undo
 
     >local: n
-
-    dot-line dup dot-offset string-head >local: head
-    dot-offset string-tail >local: tail
-    head string>sbuf >local: sb
-
+    dot-line-head string>sbuf >local: sb
     n [ 32 sb sbuf-push ] times
-
-    tail sb sbuf-append-string
+    dot-line-tail sb sbuf-append-string
     sb sbuf>string dot-line!
     dot-offset n + dot-offset!
     t dot-line-changed!
