@@ -544,6 +544,17 @@ global: undo-stack
     4 dot-offset 4 mod - insert-spaces
 ;
 
+: kill-line ( -- )
+    dot-line-tail length zero? [
+        delete-line-separator
+    ] [
+        add-undo-line-edit
+        dot-line-head dot-line!
+        t dot-line-changed!
+        modified
+    ] if
+;
+
 : make-backup ( -- )
     editor-filename dup file-exists?
     [ dup "~" concat copy-file ] [ drop ] if
@@ -605,6 +616,7 @@ global: undo-stack
     0x13 ( control s )     ' do-save                    bind-key
     k-enter                ' insert-line-separator      bind-key
     0x09 ( tab )           ' do-tab                     bind-key
+    0x0b ( control k )     ' kill-line                  bind-key
     0x1a ( control z )     ' undo                       bind-key
     0x15 ( control u )     ' undo                       bind-key
     0x1b ( escape )        ' quit                       bind-key
