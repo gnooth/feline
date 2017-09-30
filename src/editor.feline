@@ -90,6 +90,8 @@ tuple: position line-number offset ;
 
 : buffer-nth-line! ( string n -- ) buffer-lines vector-set-nth ;
 
+: buffer-insert-nth-line ( string n -- ) buffer-lines vector-insert-nth ;
+
 : dot-line ( -- string ) dot-line-number buffer-nth-line ;
 
 : dot-line! ( string -- ) dot-line-number buffer-nth-line! ;
@@ -285,7 +287,7 @@ global: undo-stack
 : undo-delete-line-separator ( undo-record -- )
     dup undo-record-dot dot!
     undo-record-data ( 2array ) dup array-first dot-line!
-    array-second dot-line-number 1 + buffer-lines vector-insert-nth
+    array-second dot-line-number 1 + buffer-insert-nth-line
     t repaint!
 ;
 
@@ -464,10 +466,8 @@ global: undo-stack
 : insert-line-separator ( -- )
     dot-offset dot-line-length <= [
         add-undo-insert-line-separator
-        dot-offset dot-line-length
-        dot-line substring
-        dot-line-number 1 + buffer-lines vector-insert-nth
-        dot-line dot-offset string-head dot-line!
+        dot-line-tail dot-line-number 1 + buffer-insert-nth-line
+        dot-line-head dot-line!
         dot-line-number 1 + dot-line-number!
         0 dot-offset!
         0 !> goal-x
