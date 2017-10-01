@@ -56,12 +56,13 @@ endcode
 
 ; ### check-bounds
 code check_bounds, 'check-bounds'       ; n seq -- n seq
-; Factor bounds-check
-        _twodup
-        _ in_bounds?
-        _tagged_if_not .1
+        _ qbounds
+        cmp     rbx, f_value
+        je      .1
+        next
+.1:
+        _2drop
         _error "index out of bounds for sequence"
-        _then .1
         next
 endcode
 
