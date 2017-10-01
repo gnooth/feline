@@ -222,16 +222,28 @@ tuple: position line-number offset ;
 tuple: undo-record mod-count action dot data ;
 
 symbol: +move+
-
 symbol: +line-edit+
-
 symbol: +delete-line-separator+
-
 symbol: +insert-line-separator+
+
+tuple: compound-undo records ( vector ) ;
+
+: new-compound-undo ( -- compound-undo )
+    compound-undo new
+    4 <vector> over compound-undo-records!
+;
+
+: add-undo ( undo-record compound-undo -- )
+    compound-undo-records vector-push
+;
 
 global: undo-stack
 
-: push-undo ( undo-record -- ) undo-stack vector-push ;
+-- special
+symbol: +compound-undo+
+
+: push-undo ( undo-record -- )
+    +compound-undo+ get [ add-undo ] [ undo-stack vector-push ] if* ;
 
 : pop-undo ( -- undo-record ) undo-stack vector-pop ;
 
@@ -315,8 +327,8 @@ global: undo-stack
     t repaint!
 ;
 
-: undo1 ( -- )
-    pop-undo dup undo-record-action
+: undo1 ( undo-record -- )
+    dup undo-record-action
     {
         { +move+ [ undo-move ] }
         { +line-edit+ [ undo-line-edit ] }
@@ -331,7 +343,11 @@ global: undo-stack
     undo-stack empty? [
         "Nothing to undo" message
     ] [
-        undo1
+        pop-undo dup compound-undo? [
+            compound-undo-records vector-reverse! ' undo1 each
+        ] [
+            undo1
+        ] if
     ] if
 ;
 
@@ -540,8 +556,13 @@ global: undo-stack
         {
             [ dot-line-number 0 > ]
             [
-                do-left
-                delete-line-separator
+                [
+                    new-compound-undo +compound-undo+ set
+                    do-left
+                    delete-line-separator
+                    +compound-undo+ get
+                ] with-scope
+                push-undo
             ]
         }
         -- do nothing if dot is at beginning of buffer
@@ -690,6 +711,7 @@ global: undo-stack
     0 top-line-number!
 
     0 mod-count! 0 mod-count-last-save!
+    0 goal-x!
 ;
 
 : initialize-buffer ( filename line-number -- )
@@ -713,6 +735,7 @@ global: undo-stack
     0 !> top-line-number
 
     0 mod-count! 0 mod-count-last-save!
+    0 goal-x!
 ;
 
 : edit1 ( -- )
