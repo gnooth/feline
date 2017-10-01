@@ -153,13 +153,22 @@ inline twonip, '2nip'                   ; x y z -- z
         _2nip
 endinline
 
-; ### eq?                               ; obj1 obj2 -- ?
+; ### eq?                               ; x y -- ?
 inline eq?, 'eq?'
         _eq?
 endinline
 
+; ### neq?
+inline neq?, 'neq?'                     ; x y -- ?
+        mov     eax, t_value
+        cmp     rbx, [rbp]
+        mov     ebx, f_value
+        cmovne  ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+endinline
+
 ; ### =
-code feline_equal, '='                  ; obj1 obj2 -- ?
+code feline_equal, '='                  ; x y -- ?
         cmp     rbx, [rbp]
         jne     .1
         lea     rbp, [rbp + BYTES_PER_CELL]
@@ -183,7 +192,7 @@ inline not, 'not'
 endinline
 
 ; ### <>
-code not_equal, '<>'                    ; obj1 obj2 -- ?
+code not_equal, '<>'                    ; x y -- ?
         cmp     rbx, [rbp]
         jne     .1
         lea     rbp, [rbp + BYTES_PER_CELL]
