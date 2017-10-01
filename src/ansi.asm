@@ -177,3 +177,38 @@ code get_console_foreground, 'get-console-foreground'   ; -- fg
         next
 endcode
 %endif
+
+asm_global using_alternate_screen_buffer_, f_value
+
+; ### use-default-screen-buffer
+code use_default_screen_buffer, 'use-default-screen-buffer'
+        cmp     qword [using_alternate_screen_buffer_], f_value
+        jne .1
+        _return
+.1:
+        _ ansi_csi
+        _quote "?1049l"
+        _ write_string
+        mov     qword [using_alternate_screen_buffer_], f_value
+        next
+endcode
+
+; ### use-alternate-screen-buffer
+code use_alternate_screen_buffer, 'use-alternate-screen-buffer'
+        cmp     qword [using_alternate_screen_buffer_], f_value
+        je .1
+        _return
+.1:
+        _ ansi_csi
+        _quote "?1049h"
+        _ write_string
+        mov     qword [using_alternate_screen_buffer_], t_value
+        next
+endcode
+
+; ### using-alternate-screen-buffer?
+code using_alternate_screen_buffer, 'using-alternate-screen-buffer?'    ; -- ?
+        pushrbx
+        mov     rbx, [using_alternate_screen_buffer_]
+        next
+endcode
