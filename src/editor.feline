@@ -34,6 +34,7 @@ empty
 
 global: current-buffer
 global: mod-count
+global: mod-count-last-save
 global: buffer-lines
 global: top-line-number
 global: dot
@@ -78,11 +79,9 @@ tuple: position line-number offset ;
 
 : normal ( -- ) esc[ "m" write-string ;
 
-: modified? ( -- ) mod-count zero? not ;
+: modified? ( -- ) mod-count mod-count-last-save neq? ;
 
-: modified ( -- ) 1+!> mod-count ;
-
-: unmodified ( -- ) 0 !> mod-count ;
+: modified ( -- ) mod-count 1 + mod-count! ;
 
 : buffer-line-count ( -- n ) buffer-lines length ;
 
@@ -562,6 +561,7 @@ global: undo-stack
 
 : do-save ( -- )
     "Saving..." message
+
     make-backup
 
     current-buffer buffer-filename file-create-write >local: fd
@@ -569,7 +569,8 @@ global: undo-stack
     buffer-lines [ fd file-write-string eol fd file-write-string ] each
     fd file-close
 
-    unmodified
+    mod-count mod-count-last-save!
+
     "Saving...done" message
 ;
 
@@ -651,7 +652,8 @@ global: undo-stack
     0 dot-offset!
     0 dot-line-number!
     0 top-line-number!
-    unmodified
+
+    0 mod-count! 0 mod-count-last-save!
 ;
 
 : initialize-buffer ( filename line-number -- )
@@ -673,7 +675,8 @@ global: undo-stack
     line-number 1 - 0 max buffer-line-count 1 - min dot-line-number!
 
     0 !> top-line-number
-    unmodified
+
+    0 mod-count! 0 mod-count-last-save!
 ;
 
 : edit1 ( -- )
