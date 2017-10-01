@@ -739,8 +739,7 @@ symbol: +compound-undo+
 ;
 
 : edit1 ( -- )
-    -- use alternate screen buffer
-    esc[ "?1049h" write-string
+    use-alternate-screen-buffer
 
     page
     normal
@@ -754,8 +753,7 @@ symbol: +compound-undo+
     0 lines-per-page at-xy
     show-cursor
 
-    -- return to main screen buffer
-    esc[ "?1049l" write-string
+    use-default-screen-buffer
 ;
 
 : edit-file ( path -- )
