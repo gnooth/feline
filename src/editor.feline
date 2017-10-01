@@ -219,7 +219,7 @@ tuple: position line-number offset ;
 
 : maybe-reframe ( -- ) reframe? [ reframe ] when ;
 
-tuple: undo-record action dot data ;
+tuple: undo-record mod-count action dot data ;
 
 symbol: +move+
 
@@ -246,8 +246,8 @@ global: undo-stack
 
 : new-undo-record ( -- undo-record )
     undo-record new
-    copy-dot
-    over undo-record-dot!
+    mod-count over undo-record-mod-count!
+    copy-dot over undo-record-dot!
 ;
 
 : add-undo-move ( -- )
@@ -257,7 +257,9 @@ global: undo-stack
 ;
 
 : undo-move ( undo-record -- )
-    undo-record-dot dot!
+    [ undo-record-mod-count mod-count! ]
+    [ undo-record-dot dot! ]
+    bi
 ;
 
 : add-undo-line-edit ( -- )
@@ -268,8 +270,11 @@ global: undo-stack
 ;
 
 : undo-line-edit ( undo-record -- )
-    dup undo-record-dot dot!
-    undo-record-data dot-line!
+    [ undo-record-mod-count mod-count! ]
+    [ undo-record-dot dot! ]
+    [ undo-record-data dot-line! ]
+    tri
+
     t dot-line-changed!
 ;
 
@@ -277,15 +282,19 @@ global: undo-stack
     new-undo-record
     +delete-line-separator+ over undo-record-action!
     dot-line
-    dot-line-number 1 + buffer-lines vector-nth
+    dot-line-number 1 + buffer-nth-line
     2array
     over undo-record-data!
     push-undo
 ;
 
 : undo-delete-line-separator ( undo-record -- )
-    dup undo-record-dot dot!
-    undo-record-data ( 2array ) dup array-first dot-line!
+    dup
+    [ undo-record-mod-count mod-count! ]
+    [ undo-record-dot dot! ]
+    bi
+    undo-record-data ( 2array )
+    dup array-first dot-line!
     array-second dot-line-number 1 + buffer-insert-nth-line
     t repaint!
 ;
@@ -298,8 +307,10 @@ global: undo-stack
 ;
 
 : undo-insert-line-separator ( undo-record -- )
-    dup undo-record-dot dot!
-    undo-record-data ( string ) dot-line!
+    [ undo-record-mod-count mod-count! ]
+    [ undo-record-dot dot! ]
+    [ undo-record-data dot-line! ]
+    tri
     dot-line-number 1 + buffer-lines vector-remove-nth!
     t repaint!
 ;
