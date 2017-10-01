@@ -580,6 +580,7 @@ symbol: +compound-undo+
     dot-offset 1 + dot-offset!
     t dot-line-changed!
     modified
+    dot-offset goal-x!
 ;
 
 : insert-spaces ( n -- )
