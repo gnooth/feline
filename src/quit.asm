@@ -296,11 +296,6 @@ code reset, 'reset'
         _ vector_set_length
         _then .2
 
-        ; return to main screen buffer
-        _ ansi_csi
-        _quote "?1049l"
-        _ write_string
-
         jmp     quit
 
         next                            ; for decompiler
@@ -409,6 +404,9 @@ endcode
 
 ; ### do-error
 code do_error, 'do-error'               ; error --
+
+        _ use_default_screen_buffer
+
         _dup
         _ string?
         _tagged_if .1
@@ -530,9 +528,10 @@ endcode
 
 ; ### quit
 code quit, 'quit'                       ; --
+        _ use_default_screen_buffer
+
         _begin .1
 
-        ; REVIEW
         mov     rsp, [rp0_]
 
         _t
@@ -544,6 +543,7 @@ code quit, 'quit'                       ; --
         _ maybe_print_data_stack
 
         _again .1
+
         next
 endcode
 
