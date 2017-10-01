@@ -486,14 +486,22 @@ global: undo-stack
     ] when
 ;
 
+: string-remove-nth ( n string -- string' )
+    check-bounds
+
+    >local: s
+    >local: n
+
+    s n string-head
+    n 1 + s string-length < [
+        s n 1 + string-tail concat
+    ] when
+;
+
 : delete-normal-char ( -- )
     add-undo-line-edit
 
-    dot-line dot-offset string-head
-    dot-offset 1  + dot-line-length < [
-        dot-line dot-offset 1 + string-tail concat
-    ] when
-    dot-line!
+    dot-offset dot-line string-remove-nth dot-line!
     t dot-line-changed!
 ;
 
