@@ -1004,6 +1004,13 @@ last-word 0x90 install-handler
 
 last-word 0x99 install-handler
 
+: .a4
+    "movsb" !> mnemonic
+    0 !> #operands
+    .inst ;
+
+last-word 0xa4 install-handler
+
 : .a6
     "cmpsb" !> mnemonic
     0 !> #operands
