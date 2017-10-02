@@ -91,6 +91,8 @@ tuple: position line-number offset ;
 
 : buffer-insert-nth-line ( string n -- ) buffer-lines vector-insert-nth ;
 
+: buffer-last-line ( -- string ) buffer-lines vector-last ;
+
 : dot-line ( -- string ) dot-line-number buffer-nth-line ;
 
 : dot-line! ( string -- ) dot-line-number buffer-nth-line! ;
@@ -624,7 +626,16 @@ symbol: +compound-undo+
 
     current-buffer buffer-filename file-create-write >local: fd
     current-buffer buffer-eol >local: eol
-    buffer-lines [ fd file-write-string eol fd file-write-string ] each
+
+    -- write out all lines but the last followed by eol
+    buffer-line-count 1 - [
+        buffer-nth-line fd file-write-string
+        eol fd file-write-string
+    ] each-integer
+
+    -- write out last line, no eol
+    buffer-last-line fd file-write-string
+
     fd file-close
 
     mod-count mod-count-last-save!
@@ -726,7 +737,9 @@ symbol: +compound-undo+
     -- detect eol
     13 over string-index CR+LF LF ? current-buffer buffer-eol!
 
-    string-lines verify-vector !> buffer-lines
+    dup string-lines verify-vector buffer-lines!
+
+    string-last-char 10 eq? [ "" buffer-lines vector-push ] when
 
     ' position new !> dot
 
