@@ -15,11 +15,23 @@
 
 file __FILE__
 
+asm_global feline_vocab_, f_value
+
 ; ### feline-vocab
-feline_global feline_vocab, 'feline-vocab'
+code feline_vocab, 'feline-vocab'       ; -- vocab
+        pushrbx
+        mov     rbx, [feline_vocab_]
+        next
+endcode
+
+asm_global user_vocab_, f_value
 
 ; ### user-vocab
-feline_global user_vocab, 'user-vocab'
+code user_vocab, 'user-vocab'           ; -- vocab
+        pushrbx
+        mov     rbx, [user_vocab_]
+        next
+endcode
 
 asm_global dictionary_, f_value
 
@@ -40,7 +52,7 @@ code context_vector, 'context-vector', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
-asm_global current_vocab_
+asm_global current_vocab_, f_value
 
 ; ### current-vocab
 code current_vocab, 'current-vocab'     ; -- vocab
@@ -59,21 +71,30 @@ endcode
 
 ; ### initialize_vocabs
 code initialize_vocabs, 'initialize_vocabs', SYMBOL_INTERNAL    ; --
+
         _quote "feline"
         _ new_vocab
-        _to_global feline_vocab
+        mov     [feline_vocab_], rbx
+        poprbx
+
+        _lit feline_vocab_
+        _ gc_add_root
 
         _quote "user"
         _ new_vocab
-        _to_global user_vocab
+        mov     [user_vocab_], rbx
+        poprbx
 
-        _lit context_vector_
+        _lit user_vocab_
         _ gc_add_root
 
         _lit 16
         _ new_vector_untagged
         mov     [context_vector_], rbx
         poprbx
+
+        _lit context_vector_
+        _ gc_add_root
 
         _ feline_vocab
         _ context_vector
@@ -86,7 +107,8 @@ code initialize_vocabs, 'initialize_vocabs', SYMBOL_INTERNAL    ; --
 endcode
 
 ; ### hash-vocabs
-code hash_vocabs, 'hash-vocabs'
+code hash_vocabs, 'hash_vocabs', SYMBOL_INTERNAL        ; --
+
         _ last_static_symbol
         _begin .1
         _dup
