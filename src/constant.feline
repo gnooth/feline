@@ -18,5 +18,5 @@ in: feline
 
 : >constant: ( x -- )
     must-parse-token
-    current-vocab ensure-symbol         -- x symbol
+    new-symbol-in-current-vocab         -- x symbol
     swap 1array array>quotation over symbol-set-def compile-word ;
