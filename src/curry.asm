@@ -154,7 +154,7 @@ code verify_callable, 'verify-callable' ; callable -- callable
 endcode
 
 ; ### curry
-code curry, 'curry'                     ; object callable -- curry
+code new_curry, '<curry>'               ; object callable -- curry
 ; 4 cells: object header, object, callable, code address
 
         _lit 4
