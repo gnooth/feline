@@ -1074,16 +1074,6 @@ test: while-test-1
 
 while-test-1
 
-test: ensure-symbol-test-1
-    "foo" "feline" ensure-symbol dup symbol? assert-true
-    dup "foo" "feline" ?lookup-symbol assert-eq
-    "foo" "feline" ensure-symbol assert-eq
-    "foo" "feline" ensure-symbol symbol-vocab-name "feline" assert=
-    ' dup "dup" "feline" ensure-symbol assert-eq
-;
-
-ensure-symbol-test-1
-
 test: bi-test-1 ( -- )
     clear
     42 [ 1 + ] [ 2 + ] bi get-data-stack { 43 44 } sequence= assert-true

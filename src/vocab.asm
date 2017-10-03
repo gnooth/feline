@@ -214,33 +214,6 @@ code vocab_add_symbol, 'vocab-add-symbol' ; symbol vocab --
         next
 endcode
 
-; ### ensure-symbol
-code ensure_symbol, 'ensure-symbol'     ; name vocab-spec -- symbol
-        _ lookup_vocab
-        _tagged_if_not .1
-        _drop
-        _error "vocab not found"
-        _then .1
-
-        _twodup
-        _ vocab_hashtable
-        _ hashtable_at
-        _dup
-        _tagged_if .2
-        _2nip
-        _return
-        _else .2
-        _drop
-        _then .2                        ; -- name vocab
-
-        _ create_symbol                 ; -- symbol
-
-        _dup
-        _ set_last_word
-
-        next
-endcode
-
 ; ### vocab-find-name
 code vocab_find_name, 'vocab-find-name' ; name vocab -- symbol/name ?
         _ lookup_vocab
