@@ -82,8 +82,8 @@ code check_type, 'check-type'           ; handle -- type
 endcode
 
 ; ### make-type
-code make_type, 'make-type', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; symbol raw-typecode -- type
+code make_type, 'make-type', SYMBOL_PRIVATE     ; symbol raw-typecode -- type
+
         _lit 3
         _ raw_allocate_cells
 
@@ -122,14 +122,22 @@ feline_global types, 'types'
 ; ### add_builtin_type
 code add_builtin_type, 'add_builtin_type', SYMBOL_INTERNAL      ; name raw-typecode --
 
-        _tor                            ; -- name               r: -- raw-typecode
+        _tor                            ; -- name       r: -- raw-typecode
 
-        _ new_symbol_in_current_vocab
+        _ new_symbol_in_current_vocab   ; -- symbol
 
-        _rfetch                         ; -- symbol raw-typecode
-        _ make_type                     ; -- type
+        _dup
+        _rfetch
+        _ make_type                     ; -- symbol type
 
-        _rfrom                          ; -- type raw-typecode  r: --
+        _dup
+        _ one_quotation
+        _pick
+        _ symbol_set_def
+        _swap
+        _ compile_word                  ; -- type       r: -- raw-typecode
+
+        _rfrom                          ; -- type raw-typecode          r: --
         _ types
         _ vector_set_nth_untagged
 
