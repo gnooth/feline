@@ -119,18 +119,20 @@ endcode
 
 feline_global types, 'types'
 
-; ### add-builtin-type
-code add_builtin_type, 'add-builtin-type'       ; name raw-typecode --
-        _tor                    ; -- name               r: -- raw-typecode
-        _ feline_vocab          ; -- name vocab
-        _ ensure_symbol         ; -- symbol
-        _rfetch                 ; -- symbol raw-typecode
+; ### add_builtin_type
+code add_builtin_type, 'add_builtin_type', SYMBOL_INTERNAL      ; name raw-typecode --
 
-        _ make_type             ; -- type
+        _tor                            ; -- name               r: -- raw-typecode
 
-        _rfrom                  ; -- type raw-typecode  r: --
+        _ new_symbol_in_current_vocab
+
+        _rfetch                         ; -- symbol raw-typecode
+        _ make_type                     ; -- type
+
+        _rfrom                          ; -- type raw-typecode  r: --
         _ types
         _ vector_set_nth_untagged
+
         next
 endcode
 
