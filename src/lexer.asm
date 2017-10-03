@@ -274,7 +274,7 @@ endcode
 
 ; ### location
 code location, 'location'       ; -- 3array/f
-        _ lexer
+        _ current_lexer
         _ get
         _dup
         _tagged_if .1

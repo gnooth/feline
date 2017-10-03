@@ -48,11 +48,11 @@ code maybe_add, 'maybe-add'             ; x -- ???
         next
 endcode
 
-special lexer, 'lexer'
+special current_lexer, 'current-lexer'
 
 ; ### parse-token
 code parse_token, 'parse-token'         ; -- string/f
-        _ lexer
+        _ current_lexer
         _ get
         _dup
         _tagged_if .2
@@ -325,7 +325,7 @@ endcode
 
 ; ### new-symbol-in-current-vocab
 code new_symbol_in_current_vocab, 'new-symbol-in-current-vocab', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; string --
+; string -- symbol
         _dup
         _ maybe_note_redefinition
         _ current_vocab
@@ -532,7 +532,7 @@ endcode
 
 ; ### --
 code comment_to_eol, '--', SYMBOL_IMMEDIATE     ; --
-        _ lexer
+        _ current_lexer
         _ get
         _dup
         _tagged_if .1
@@ -546,7 +546,7 @@ endcode
 
 ; ### (
 code feline_paren, '(', SYMBOL_IMMEDIATE        ; --
-        _ lexer
+        _ current_lexer
         _ get
         _dup
         _tagged_if .1
@@ -775,7 +775,7 @@ endcode
 
 ; ### sh
 code sh, 'sh'
-        _ lexer
+        _ current_lexer
         _ get
         _dup
         _tagged_if .1

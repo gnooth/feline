@@ -156,7 +156,7 @@ code load, 'load'                       ; path --
 
         _ begin_scope
 
-        _ lexer
+        _ current_lexer
         _ set                           ; --
 
         _lit S_public
@@ -168,7 +168,7 @@ code load, 'load'                       ; path --
         _tagged_if .1
         _ ?nl
         _write "Loading "
-        _ lexer
+        _ current_lexer
         _ get
         _ lexer_file
         _ write_string
@@ -178,7 +178,7 @@ code load, 'load'                       ; path --
         _ interactive?
         _ get
         _tagged_if .2
-        _ lexer
+        _ current_lexer
         _ get
         _ lexer_file
         _ maybe_set_reload_file

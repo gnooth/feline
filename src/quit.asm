@@ -378,7 +378,7 @@ code where, 'where'             ; --
         _ mark_error_location
         _else .2
         _drop
-        _ lexer
+        _ current_lexer
         _ get
         _ lexer_string
         _ write_string
@@ -515,7 +515,7 @@ code evaluate, 'evaluate'               ; string --
         _ begin_scope
 
         _ new_lexer
-        _ lexer
+        _ current_lexer
         _ set
 
         _lit S_interpret        ; try
