@@ -119,7 +119,7 @@ in: feline
 ;
 
 : tuple:
-    parse-token                         -- string/f
+    must-parse-token                    -- string
     10 <vector>                         -- string vector
 
     [ parse-token dup ";" string= ] [ suffix! ] until
