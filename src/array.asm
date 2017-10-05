@@ -316,6 +316,14 @@ code array_second, 'array-second'       ; handle -- element
         next
 endcode
 
+; ### array-third
+code array_third, 'array-third'         ; handle -- element
+        _lit 2
+        _swap
+        _ array_nth_untagged
+        next
+endcode
+
 ; ### array-each
 code array_each, 'array-each'           ; array callable --
 
