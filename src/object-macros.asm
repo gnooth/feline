@@ -53,6 +53,8 @@ TYPECODE_GENERIC_FUNCTION       equ 21
 TYPECODE_UINT64                 equ 22
 TYPECODE_INT64                  equ 23
 
+LAST_BUILTIN_TYPECODE           equ 23
+
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
 OBJECT_ALLOCATED_BIT            equ 4
