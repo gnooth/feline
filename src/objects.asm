@@ -21,10 +21,10 @@ code allocate_object, 'allocate-object' ; size -- object
         next
 endcode
 
-; ### raw-allocate-cells
-code raw_allocate_cells, 'raw-allocate-cells', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; ### raw_allocate_cells
+code raw_allocate_cells, 'raw_allocate_cells', SYMBOL_INTERNAL
 ; n -- address
-; Argument and return value are untagged.
+; argument and return value are untagged
         _dup
         _cells                          ; -- cells bytes
         _ raw_allocate
