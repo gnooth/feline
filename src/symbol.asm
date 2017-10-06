@@ -190,6 +190,16 @@ code symbol?, 'symbol?'                 ; x -- ?
         next
 endcode
 
+; ### verify-symbol
+code verify_symbol, 'verify-symbol'     ; symbol -- symbol
+        _dup
+        _ symbol?
+        _tagged_if_not .1
+        _ error_not_symbol
+        _then .1
+        next
+endcode
+
 ; ### verify_static_symbol
 code verify_static_symbol, 'verify_static_symbol', SYMBOL_INTERNAL
 ; symbol -- symbol
