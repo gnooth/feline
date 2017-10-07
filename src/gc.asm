@@ -187,16 +187,16 @@ code mark_iterator, 'mark-iterator'     ; iterator --
         next
 endcode
 
-; ### gc-dispatch-table
-feline_global gc_dispatch_table, 'gc-dispatch-table'
+asm_global gc_dispatch_table_
 
 ; ### initialize-gc-dispatch-table
 code initialize_gc_dispatch_table, 'initialize-gc-dispatch-table'
         _lit 32
         _lit 0
         _ new_array_untagged
-        _dup
-        _to_global gc_dispatch_table
+        mov     [gc_dispatch_table_], rbx
+        _lit gc_dispatch_table_
+        _ gc_add_root
 
         _handle_to_object_unsafe
 
@@ -260,7 +260,10 @@ code mark_raw_object, 'mark-raw-object'         ; raw-object --
 
         _dup
         _object_raw_typecode
-        _from_global gc_dispatch_table
+
+        pushrbx
+        mov     rbx, [gc_dispatch_table_]
+
         _handle_to_object_unsafe
         _array_nth_unsafe
         test    rbx, rbx
