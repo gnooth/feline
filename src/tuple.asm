@@ -60,6 +60,39 @@ code check_tuple, 'check-tuple'         ; handle -- tuple
         next
 endcode
 
+; ### tuple-instance?
+code tuple_instance?, 'tuple-instance?' ; x -- ?
+        _ deref
+        test    rbx, rbx
+        jz      .1
+        _object_raw_typecode_eax
+        cmp     eax, LAST_BUILTIN_TYPECODE
+        jbe     .1
+        mov     ebx, t_value
+        next
+.1:
+        mov     ebx, f_value
+        next
+endcode
+
+; ### check_tuple_instance
+code check_tuple_instance, 'check_tuple_instance', SYMBOL_INTERNAL
+; handle -- raw-tuple-instance
+        _dup
+        _ deref
+        test    rbx, rbx
+        jz      .error
+        _object_raw_typecode_eax
+        cmp     eax, LAST_BUILTIN_TYPECODE
+        jbe     .error
+        _nip
+        next
+.error:
+        _drop
+        _ error_not_tuple
+        next
+endcode
+
 ; ### tuple-layout
 code tuple_layout, 'tuple-layout'       ; class-symbol -- layout
         _quote "layout"
@@ -81,11 +114,15 @@ endcode
 
 ; ### tuple-size
 code tuple_size, 'tuple-size'           ; tuple -- size
-; Return number of defined slots.
-        _ check_tuple
+; return number of named slots
+
+        _ check_tuple_instance
+
 tuple_size_unchecked:
+
         _tuple_layout_of
         _ array_second
+
         next
 endcode
 
