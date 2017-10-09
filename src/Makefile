@@ -146,6 +146,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	time.asm \
 	tools.asm \
 	tuple.asm \
+	tuple-class.asm \
 	type.asm \
 	uint64.asm \
 	int64.asm \

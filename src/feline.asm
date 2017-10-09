@@ -72,6 +72,7 @@ IN_FELINE
 %include "quotation.asm"
 %include "curry.asm"
 %include "tuple.asm"
+%include "tuple-class.asm"
 %include "dynamic-scope.asm"
 %include "combinators.asm"
 %include "quit.asm"
