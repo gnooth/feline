@@ -217,6 +217,19 @@ code set_slot, 'slot!'                  ; value obj tagged-fixnum --
         next
 endcode
 
+; ### verify-typecode
+code verify_typecode, 'verify-typecode' ; object typecode -- object
+        _over
+        _ object_typecode
+        cmp     rbx, [rbp]
+        jne     .1
+        _2drop
+        _return
+.1:
+        _error "type error"
+        next
+endcode
+
 ; ### object>string
 code object_to_string, 'object>string'  ; object -- string
 ; FIXME make this a generic word
