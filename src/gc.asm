@@ -170,6 +170,19 @@ code mark_tuple, 'mark-tuple'           ; tuple --
         next
 endcode
 
+; ### mark_tuple_class
+code mark_tuple_class, 'mark_tuple_class'       ; tuple-class --
+        _dup
+        _tuple_class_name
+        _ maybe_mark_handle
+        _dup
+        _tuple_class_slots
+        _ maybe_mark_handle
+        _tuple_class_layout
+        _ maybe_mark_handle
+        next
+endcode
+
 ; ### mark-lexer
 code mark_lexer, 'mark-lexer'           ; lexer --
         _dup
@@ -247,6 +260,10 @@ code initialize_gc_dispatch_table, 'initialize-gc-dispatch-table'
         _lit TYPECODE_ITERATOR
         _this_array_set_nth_unsafe
 
+        _lit mark_tuple_class
+        _lit TYPECODE_TUPLE_CLASS
+        _this_array_set_nth_unsafe
+
         pop     this_register
         next
 endcode
@@ -261,20 +278,28 @@ code mark_raw_object, 'mark-raw-object'         ; raw-object --
         _dup
         _object_raw_typecode
 
+        cmp     rbx, LAST_BUILTIN_TYPECODE
+        ja      .2
+
         pushrbx
         mov     rbx, [gc_dispatch_table_]
 
         _handle_to_object_unsafe
         _array_nth_unsafe
         test    rbx, rbx
-        jz .2
+        jz .3
         mov     rax, rbx
         poprbx                          ; -- object
         call    rax
         _return
 
-.2:
+.3:
         _2drop
+        _return
+
+.2:
+        _drop
+        _ mark_tuple
         _return
 
 .1:
