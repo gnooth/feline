@@ -50,12 +50,10 @@ global: done?
 
 tuple: buffer filename autosave-filename eol ;
 
-: new-buffer ( -- )
-    ' buffer new
-;
+: new-buffer ( -- ) buffer make-instance ;
 
 : create-buffer ( filename -- buffer )
-    ' buffer new
+    buffer make-instance
     [ buffer-filename! ] keep
 ;
 
@@ -231,7 +229,7 @@ symbol: +insert-line-separator+
 tuple: compound-undo records ( vector ) ;
 
 : new-compound-undo ( -- compound-undo )
-    compound-undo new
+    compound-undo make-instance
     4 <vector> over compound-undo-records!
 ;
 
@@ -253,13 +251,13 @@ symbol: +compound-undo+
 
 : copy-dot ( -- position )
     dot [ position-line-number ] [ position-offset ] bi
-    position new
+    position make-instance
     [ position-offset! ] keep
     [ position-line-number! ] keep
 ;
 
 : new-undo-record ( -- undo-record )
-    undo-record new
+    undo-record make-instance
     mod-count over undo-record-mod-count!
     copy-dot over undo-record-dot!
 ;
@@ -717,7 +715,7 @@ symbol: +compound-undo+
     LF current-buffer buffer-eol!
     64 <vector> buffer-lines!
     "" buffer-lines vector-push
-    position new dot!
+    position make-instance dot!
     0 dot-offset!
     0 dot-line-number!
     0 top-line-number!
@@ -741,7 +739,7 @@ symbol: +compound-undo+
 
     string-last-char 10 eq? [ "" buffer-lines vector-push ] when
 
-    ' position new !> dot
+    position make-instance !> dot
 
     0 dot-offset!
     line-number 1 - 0 max buffer-line-count 1 - min dot-line-number!
