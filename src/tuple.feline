@@ -14,109 +14,98 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
-in: feline
+in: tuple
 
-: tuple-instance? ( object class -- ? )
-    over tuple? [ swap layout-of first eq? ] [ 2drop f ] if ;
+private
 
-: require-type ( object class -- object )
-    over tuple?
-    [ over layout-of first eq? [ "type error" error ] unless ]
-    [ "type error" error ] if ;
+global: class
 
-: define-reader ( class slot-spec -- )
-    dupd
-    [ symbol-name ] dip                 -- class-name slot-spec
-    swap string>sbuf                    -- slot-spec sbuf
-    >local: sb                          -- slot-spec
-    '-' sb sbuf-push                    -- slot-spec
-    dup first sb sbuf-append-string     -- slot-spec
+global: accessor-prefix
 
-    sb sbuf>string current-vocab <symbol>
-    dup current-vocab vocab-add-symbol  -- class slot-spec symbol
+global: class-name ( string )
 
+global: slot-names ( vector )
+
+global: class-symbol ( symbol )
+
+: define-reader ( slot-name index -- )
     [
-        [ <wrapper> ] dip
-        second
-        ' require-type swap
-        ' slot
-        4array array>quotation
-    ] dip
-    [ symbol-set-def ] keep
-    compile-word ;
+        accessor-prefix
+        swap
+        concat
+        feline:new-symbol-in-current-vocab
+    ] dip                               -- symbol index
 
-: define-writer ( class slot-spec -- )
-    dupd
-    [ symbol-name ] dip                 -- class-name slot-spec
-    swap string>sbuf                    -- slot-spec sbuf
-    >local: sb                          -- slot-spec
-    '-' sb sbuf-push                    -- slot-spec
-    dup first sb sbuf-append-string     -- slot-spec
-    '!' sb push
+    class tuple-class-typecode
+    ' verify-typecode
+    rot 2 +
+    ' slot
+    4array array>quotation
 
-    sb sbuf>string current-vocab <symbol>
-    dup current-vocab vocab-add-symbol  -- slot-spec symbol
+    over symbol-set-def
+    feline:compile-word
+;
 
+: define-writer ( slot-name index -- )
     [
-        [ <wrapper> ] dip
-        second
-        ' require-type swap
-        ' slot!
-        4array array>quotation
-    ] dip
-    [ symbol-set-def ] keep
-    compile-word
+        accessor-prefix
+        swap
+        concat
+        "!" concat
+        feline:new-symbol-in-current-vocab
+    ] dip                               -- symbol index
+
+    class tuple-class-typecode
+    ' verify-typecode
+    rot 2 +
+    ' slot!
+    4array array>quotation
+
+    over symbol-set-def
+    feline:compile-word
 ;
 
-: define-accessors ( class -- )
-    "slots" over symbol-prop            -- class slots
-    [ [ dupd define-reader ] each drop ]
-    [ [ dupd define-writer ] each drop ]
-    2bi
+: define-accessors ( -- )
+    class-name "-" concat accessor-prefix!
+    slot-names [ define-reader ] each-index
+    slot-names [ define-writer ] each-index
 ;
 
-: define-class ( class-name -- class )
-    current-vocab 2dup ?lookup-symbol
-    [ 2nip ] [ create-symbol ] if*
-    t "class" pick symbol-set-prop
+: define-class-symbol ( -- )
+    class-name feline:new-symbol-in-current-vocab class-symbol!
+
+    class-symbol <wrapper> 1quotation class-symbol symbol-set-def
+    class-symbol feline:compile-word
 ;
 
-: define-tuple-predicate ( class -- )
-    dup symbol-name string>sbuf
-    '?' over push
-    sbuf>string current-vocab <symbol>
-    dup current-vocab vocab-add-symbol  -- class symbol
+: define-tuple-predicate ( -- )
+    class-name "?" concat
+    feline:new-symbol-in-current-vocab  -- symbol
 
-    swap                                -- symbol class
+    ' object-typecode
+    class tuple-class-typecode
+    ' eq?
+    3array array>quotation
 
-    -- REVIEW literalize
-    <wrapper>
-
-    10 <vector>                         -- symbol class vector
-    [ push ] keep                       -- symbol vector
-    ' tuple-instance? suffix!           -- symbol vector
-    vector>array array>quotation        -- symbol quotation
-    swap [ symbol-set-def ] keep
-    compile-word
+    over symbol-set-def
+    feline:compile-word
 ;
 
-: define-tuple-class ( class-name slot-names -- )
-    [ 2 + 2array ] map-index
+: define-tuple-class ( -- )
 
-    swap define-class                   -- slot-names class
-    "slots"                             -- slot-names class "slots"
-    swap                                -- slot-names "slots" class
+    define-class-symbol
 
-    [ symbol-set-prop ] keep            -- class
+    class-symbol slot-names make-tuple-class class!
 
-    [ "slots" swap symbol-prop length ] keep    -- size class
-    [ swap 2array ] keep                        -- array class
-    [ "layout" swap symbol-set-prop ] keep
+    class 1quotation class-symbol symbol-set-def
+    class-symbol feline:compile-word
 
-    [ define-accessors ] keep           -- class
+    define-accessors
 
     define-tuple-predicate
 ;
+
+public
 
 : tuple:
     must-parse-token                    -- string
@@ -124,7 +113,13 @@ in: feline
 
     [ parse-token dup ";" string= ] [ suffix! ] until
     drop
-    vector>array
-    -- class-name slot-names
-    define-tuple-class
+    vector>array                        -- class-name slot-names
+
+    slot-names! class-name!
+
+    tuple:define-tuple-class
 ;
+
+in: feline
+
+: tuple: tuple:tuple: ;
