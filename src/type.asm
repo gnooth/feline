@@ -179,6 +179,7 @@ code initialize_types, 'initialize_types', SYMBOL_INTERNAL      ; --
         _add_type "generic-function", TYPECODE_GENERIC_FUNCTION
         _add_type "uint64", TYPECODE_UINT64
         _add_type "int64", TYPECODE_INT64
+        _add_type "tuple-class", TYPECODE_TUPLE_CLASS
 
         next
 endcode
