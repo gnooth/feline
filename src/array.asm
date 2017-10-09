@@ -99,6 +99,13 @@ code check_array, 'check-array'         ; handle -- raw-array
         next
 endcode
 
+; ### array_raw_length
+code array_raw_length, 'array_raw_length'       ; array -- raw-length
+        _ check_array
+        _array_raw_length
+        next
+endcode
+
 ; ### array-length
 code array_length, 'array-length'       ; array -- length
         _ check_array
