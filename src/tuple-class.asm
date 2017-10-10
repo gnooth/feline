@@ -18,8 +18,8 @@ file __FILE__
 ; 5 cells: object header, class name (a symbol), raw typecode, slots, layout
 
 ; tuple: foo a b c ;
-; layout is the 2array { foo 3 } where `foo` is the class symbol and
-; 3 is the number of named slots
+; layout is the 2array { foo 3 } where `foo` is the tuple class and 3 is the
+; number of named slots
 
 %macro  _tuple_class_name 0             ; class -- symbol
         _slot1
@@ -150,20 +150,21 @@ code make_tuple_class, 'make-tuple-class'
         _ next_raw_typecode
         _this_tuple_class_set_raw_typecode      ; -- name slots
 
-        _twodup
-        _ array_length
-        _ two_array
-        _this_tuple_class_set_layout    ; -- name slots
-
         _this_tuple_class_set_slots     ; -- name
 
         _this_tuple_class_set_name      ; --
 
         pushrbx
-        mov     rbx, this_register      ; -- raw-object-address
+        mov     rbx, this_register      ; raw address in rbx
 
-        ; return handle
-        _ new_handle
+        _ new_handle                    ; handle in rbx
+
+        ; layout is the 2-array { tuple-class number-of-named-slots }
+        _dup
+        _this_tuple_class_slots
+        _ array_length
+        _ two_array
+        _this_tuple_class_set_layout
 
         pop     this_register
 
