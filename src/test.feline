@@ -2893,6 +2893,24 @@ test: method-test-1
 
 method-test-1
 
+tuple: tuple-1 ;
+tuple: tuple-2 ;
+
+generic: %method-test-2
+
+method: tuple-1 %method-test-2 drop 42 ;
+method: tuple-2 %method-test-2 drop 87 ;
+
+test: method-test-2
+    clear
+    tuple-1 make-instance %method-test-2 get-data-stack { 42 } assert=
+    clear
+    tuple-2 make-instance %method-test-2 get-data-stack { 87 } assert=
+    clear
+;
+
+method-test-2
+
 test: tri-test-1
     clear
     42 [ 1 + ] [ 2 + ] [ 3 + ] tri
