@@ -501,22 +501,30 @@ code method_colon, 'method:', SYMBOL_IMMEDIATE  ; --
         _ top_level_only
 
         _ must_parse_token              ; -- string
-        _ find_type                     ; -- type
+        _ must_find_name                ; -- symbol
+        _ call_symbol                   ; -- class
+
+        _dup
+        _ tuple_class?
+        _tagged_if .1
+        _ tuple_class_typecode
+        _else .1
         _ type_typecode                 ; -- tagged-typecode
+        _then .1
 
         _ must_parse_token              ; -- typecode string
         _ find_name                     ; -- typecode symbol/string ?
-        _tagged_if_not .1
+        _tagged_if_not .2
         _error "can't find generic word"
         _return
-        _then .1                        ; -- typecode generic-symbol
+        _then .2                        ; -- typecode generic-symbol
 
         _dup
         _ generic?
-        _tagged_if_not .2
+        _tagged_if_not .3
         _error "not a generic word"
         _return
-        _then .2
+        _then .3
 
         _ parse_definition              ; -- typecode generic-symbol vector
         _ vector_to_array
