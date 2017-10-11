@@ -172,13 +172,13 @@ endcode
 
 ; ### tuple>string
 code tuple_to_string, 'tuple>string'    ; tuple --
-        _ check_tuple
+        _ check_tuple_instance
 
         push    this_register
         mov     this_register, rbx
         poprbx                          ; --
 
-        _quote "T{ "
+        _quote "tuple{ "
         _ string_to_sbuf
 
         _this_slot 1                    ; -- layout

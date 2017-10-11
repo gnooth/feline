@@ -146,15 +146,29 @@ code object_typecode, 'object-typecode' ; x -- typecode
 endcode
 
 ; ### type-of
-code type_of, 'type-of'         ; object -- type
+code type_of, 'type-of'                 ; object -- type
+        _dup
         _ object_raw_typecode
+        cmp     rbx, LAST_BUILTIN_TYPECODE
+        ja .1
+
+        ; builtin
+        _nip
         _ types
         _ vector_nth_untagged
+        _return
+
+.1:
+        ; tuple
+        _drop
+        _lit tagged_fixnum(1)
+        _ slot                          ; -- layout
+        _ array_first
         next
 endcode
 
 ; ### .t
-code dot_t, '.t'                ; object -- object
+code dot_t, '.t'                        ; object -- object
         _lit tagged_fixnum(1)
         _ ?enough
         _dup
@@ -337,13 +351,6 @@ code object_to_string, 'object>string'  ; object -- string
         _then .13
 
         _dup
-        _ tuple?
-        _tagged_if .14
-        _ tuple_to_string
-        _return
-        _then .14
-
-        _dup
         _ curry?
         _tagged_if .15
         _ curry_to_string
@@ -419,6 +426,20 @@ code object_to_string, 'object>string'  ; object -- string
         _ int64_to_string
         _return
         _then .25
+
+        _dup
+        _ tuple_class?
+        _tagged_if .26
+        _ tuple_class_to_string
+        _return
+        _then .26
+
+        _dup
+        _ tuple_instance?
+        _tagged_if .27
+        _ tuple_to_string
+        _return
+        _then .27
 
         ; give up
         _tag_fixnum
