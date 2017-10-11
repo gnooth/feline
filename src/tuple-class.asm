@@ -243,6 +243,8 @@ code make_instance, 'make-instance'     ; class -- instance
         mov     rcx, rbx                ; number of slots in rcx
         poprbx
 
+        jrcxz   .2
+
         mov     eax, f_value
 
         _rfetch
@@ -257,6 +259,7 @@ code make_instance, 'make-instance'     ; class -- instance
         dec     rcx
         jnz     .1
 
+.2:
         _rfrom
 
         _ new_handle
