@@ -279,15 +279,12 @@ GENERIC_WRITE   equ     $40000000
 
 ; Linux
 %macro  xcall   1
-        test    rsp, 0x0f
-        jnz     %%fixstack
+        push    rbp
+        mov     rbp, rsp
+        and     rsp, ~8
         call    %1
-        jmp     %%out
-%%fixstack:
-        sub     rsp, 8
-        call    %1
-        add     rsp, 8
-%%out:
+        mov     rsp, rbp
+        pop     rbp
 %endmacro
 
 %endif
