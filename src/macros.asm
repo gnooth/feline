@@ -266,17 +266,13 @@ GENERIC_WRITE   equ     $40000000
 
 ; Windows
 %macro  xcall   1
-        test    rsp, 0x0f
-        jnz     %%fixstack
+        push    rbp
+        mov     rbp, rsp
         sub     rsp, 32
+        and     rsp, ~8
         call    %1
-        add     rsp, 32
-        jmp     %%out
-%%fixstack:
-        sub     rsp, 40
-        call    %1
-        add     rsp, 40
-%%out:
+        mov     rsp, rbp
+        pop     rbp
 %endmacro
 
 %else
