@@ -18,10 +18,7 @@ in: editor
 
 empty
 
-: accept-string ( x y -- string )
-    >local: y
-    >local: x
-
+: accept-string ( -- string )
     10 <sbuf> >local: sb
 
     [ key dup { 10 13 } member? ] [
@@ -374,7 +371,7 @@ symbol: +compound-undo+
 
 : gotoline ( -- )
     0 message-y at-xy "Line number: " write-string
-    13 message-y accept-string >local: response
+    accept-string >local: response
     clear-message-line
     response string>number 1 - 0 max buffer-line-count 1 - min
 
@@ -653,11 +650,47 @@ symbol: +compound-undo+
 
     modified? [
         0 message-y at-xy "Abandon changes? (yes or no) " write-string
-        19 message-y accept-string !> response
+        accept-string !> response
         response "yes" = [ f !> done? ] unless
     ] when
 
     clear-message-line
+;
+
+: do-find ( -- )
+    0 message-y at-xy "Find: " write-string
+    accept-string >local: pattern
+
+    dot-line dot-offset string-tail >local: string
+
+    pattern string substring-start >local: index
+
+    f >local: found?
+
+    index [
+        add-undo-move
+        dot-offset + dot-offset!
+        maybe-reframe
+        t !> found?
+    ] when*
+
+    found? [
+
+        dot-line-number 1 + buffer-lines [
+            pattern swap substring-start dup !> index
+        ] find-from !> found?
+
+        found? [
+            dot-line-number!
+            index dot-offset!
+            maybe-reframe
+        ] when
+
+    ] unless
+;
+
+: do-find-again ( -- )
+    "do-find-again" message
 ;
 
 : bind-key ( key symbol -- ) swap bindings set-at ;
@@ -683,6 +716,8 @@ symbol: +compound-undo+
     0x11 ( control q )     ' do-quit                    bind-key
     0x13 ( control s )     ' do-save                    bind-key
     k-enter                ' insert-line-separator      bind-key
+    0x06 ( control f )     ' do-find                    bind-key
+    0x803d ( F3 )          ' do-find-again              bind-key
     0x09 ( tab )           ' do-tab                     bind-key
     0x0b ( control k )     ' kill-line                  bind-key
     0x1a ( control z )     ' undo                       bind-key
