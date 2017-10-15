@@ -717,7 +717,8 @@ symbol: +compound-undo+
     0x13 ( control s )     ' do-save                    bind-key
     k-enter                ' insert-line-separator      bind-key
     0x06 ( control f )     ' do-find                    bind-key
-    0x803d ( F3 )          ' do-find-again              bind-key
+    0x803d ( F3 )          ' do-find-again              bind-key    -- Windows
+    0x1b4f52 ( F3 )        ' do-find-again              bind-key    -- Linux
     0x09 ( tab )           ' do-tab                     bind-key
     0x0b ( control k )     ' kill-line                  bind-key
     0x1a ( control z )     ' undo                       bind-key
