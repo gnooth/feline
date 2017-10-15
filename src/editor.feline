@@ -14,20 +14,82 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
-in: editor
+in: accept-string
 
 empty
 
-: accept-string ( -- string )
-    10 <sbuf> >local: sb
+private
 
-    [ key dup { 10 13 } member? ] [
-        dup write-char sb push
-    ] until
+global: dot
+global: bindings
+global: sb
+global: done?
+global: prompt-string
 
-    drop
-    sb sbuf>string
+: prompt ( -- )
+    prompt-style
+    prompt-string write-string ;
+
+: redisplay ( -- )
+    0 at-x
+    prompt
+    input-style
+    sb write-sbuf
+    clear-to-eol
+    dot prompt-string length + at-x ;
+
+: bind-key ( key symbol -- ) swap bindings set-at ;
+
+: lookup-key ( key -- symbol/f ) bindings at ;
+
+: do-enter ( -- )
+    t !> done? ;
+
+: do-bs ( -- )
+    dot 0 > [
+        dot 1 - !> dot
+        dot sb sbuf-remove-nth! drop
+        redisplay
+    ] when ;
+
+: do-normal-char ( char -- )
+    dup write-char dot 1 + !> dot sb push ;
+
+: initialize-bindings ( -- )
+    32 <hashtable> !> bindings
+    10                  ' do-enter                      bind-key
+    13                  ' do-enter                      bind-key
+    127                 ' do-bs                         bind-key        -- Linux
+    8                   ' do-bs                         bind-key        -- Windows
 ;
+
+: process-key ( tagged-char -- )
+    dup printable?
+    [ do-normal-char ]
+    [ lookup-key [ call-symbol ] when* ]
+    if ;
+
+public
+
+: accept-string ( prompt-string -- string )
+    1 ?enough
+    verify-string !> prompt-string
+    initialize-bindings
+    128 <sbuf> !> sb
+    0 !> dot
+    f !> done?
+    prompt
+    input-style
+    [ done? ] [ ekey process-key ] until
+    sb sbuf>string
+    output-style ;
+
+--
+
+using: accept-string feline ;
+in: editor
+
+empty
 
 global: current-buffer
 global: mod-count
@@ -370,16 +432,20 @@ symbol: +compound-undo+
 ;
 
 : gotoline ( -- )
-    0 message-y at-xy "Line number: " write-string
-    accept-string >local: response
+    0 message-y at-xy
+    "Line number: " accept-string >local: response
     clear-message-line
-    response string>number 1 - 0 max buffer-line-count 1 - min
-
-    dup dot-line-number <> [ add-undo-move ] when
-
-    dot-line-number!
-    0 dot-offset!
-    maybe-reframe
+    response string>number [
+        1 - 0 max buffer-line-count 1 - min
+        dup dot-line-number <> [
+            add-undo-move
+            dot-line-number!
+            0 dot-offset!
+            maybe-reframe
+        ] [
+            drop
+        ] if
+    ] when*
 ;
 
 : do-home ( -- )
@@ -649,8 +715,8 @@ symbol: +compound-undo+
     local: response
 
     modified? [
-        0 message-y at-xy "Abandon changes? (yes or no) " write-string
-        accept-string !> response
+        0 message-y at-xy
+        "Abandon changes? (yes or no) " accept-string !> response
         response "yes" = [ f !> done? ] unless
     ] when
 
@@ -658,33 +724,37 @@ symbol: +compound-undo+
 ;
 
 : do-find ( -- )
-    0 message-y at-xy "Find: " write-string
-    accept-string >local: pattern
+    0 message-y at-xy "Find: " accept-string >local: pattern
+    clear-message-line
+
+    f >local: found?
 
     dot-line dot-offset string-tail >local: string
 
     pattern string substring-start >local: index
 
-    f >local: found?
-
     index [
         add-undo-move
-        dot-offset + dot-offset!
+        dot-offset index + dot-offset!
         maybe-reframe
         t !> found?
-    ] when*
+    ] when
 
     found? [
 
         dot-line-number 1 + buffer-lines [
             pattern swap substring-start dup !> index
-        ] find-from !> found?
+        ] find-from ( index/f element/f ) !> found?
 
         found? [
+            add-undo-move
             dot-line-number!
             index dot-offset!
             maybe-reframe
-        ] when
+        ] [
+            drop
+            0 message-y at-xy error-style "Not found" write-string output-style
+        ] if
 
     ] unless
 ;
@@ -699,31 +769,31 @@ symbol: +compound-undo+
 
 : initialize-bindings ( -- )
     32 <hashtable> !> bindings
-    127                    ' do-bs                      bind-key        -- Linux
-    8                      ' do-bs                      bind-key        -- Windows
-    k-delete               ' do-delete                  bind-key
-    k-home                 ' do-home                    bind-key
-    k-end                  ' end-of-line                bind-key
-    k-left                 ' do-left                    bind-key
-    k-right                ' do-right                   bind-key
-    k-up                   ' do-up                      bind-key
-    k-down                 ' do-down                    bind-key
-    k-prior                ' do-page-up                 bind-key
-    k-next                 ' do-page-down               bind-key
-    k-ctrl-home            ' beginning-of-buffer        bind-key
-    k-ctrl-end             ' end-of-buffer              bind-key
-    7 ( control g )        ' gotoline                   bind-key
-    0x11 ( control q )     ' do-quit                    bind-key
-    0x13 ( control s )     ' do-save                    bind-key
-    k-enter                ' insert-line-separator      bind-key
-    0x06 ( control f )     ' do-find                    bind-key
-    0x803d ( F3 )          ' do-find-again              bind-key    -- Windows
-    0x1b4f52 ( F3 )        ' do-find-again              bind-key    -- Linux
-    0x09 ( tab )           ' do-tab                     bind-key
-    0x0b ( control k )     ' kill-line                  bind-key
-    0x1a ( control z )     ' undo                       bind-key
-    0x15 ( control u )     ' undo                       bind-key
-    0x1b ( escape )        ' quit                       bind-key
+    127                 ' do-bs                         bind-key        -- Linux
+    8                   ' do-bs                         bind-key        -- Windows
+    k-delete            ' do-delete                     bind-key
+    k-home              ' do-home                       bind-key
+    k-end               ' end-of-line                   bind-key
+    k-left              ' do-left                       bind-key
+    k-right             ' do-right                      bind-key
+    k-up                ' do-up                         bind-key
+    k-down              ' do-down                       bind-key
+    k-prior             ' do-page-up                    bind-key
+    k-next              ' do-page-down                  bind-key
+    k-ctrl-home         ' beginning-of-buffer           bind-key
+    k-ctrl-end          ' end-of-buffer                 bind-key
+    7 ( control g )     ' gotoline                      bind-key
+    0x11 ( control q )  ' do-quit                       bind-key
+    0x13 ( control s )  ' do-save                       bind-key
+    k-enter             ' insert-line-separator         bind-key
+    0x06 ( control f )  ' do-find                       bind-key
+    0x803d ( F3 )       ' do-find-again                 bind-key        -- Windows
+    0x1b4f52 ( F3 )     ' do-find-again                 bind-key        -- Linux
+    0x09 ( tab )        ' do-tab                        bind-key
+    0x0b ( control k )  ' kill-line                     bind-key
+    0x1a ( control z )  ' undo                          bind-key
+    0x15 ( control u )  ' undo                          bind-key
+    0x1b ( escape )     ' quit                          bind-key
 ;
 
 : do-command ( -- ) lookup-key [ call-symbol ] when* ;
