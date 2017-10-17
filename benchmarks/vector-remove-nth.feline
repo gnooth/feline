@@ -21,9 +21,17 @@ global: v
 -- 2283 ms      cmove
 -- 2512 ms      move_cells_down no rep movsq
 -- 2284 ms      move_cells_down rep movsq
+-- 460 ms       0.0.0.23-43-g564d5767
+
+-- lenny (ubuntu)
+-- 433 ms       0.0.0.23-43-g564d5767
 
 -- cosmo
 -- 8989 ms      cmove
 -- 5663 ms      move_cells_down no rep movsq
 -- 5151 ms      move_cells_down rep movsq
 -- 1327 ms      move_cells_up rep movsq
+
+-- arch
+-- 3139 ms      cmove 0.0.0.23-40-gbe58ebf9
+-- 853 ms       0.0.0.23-43-g564d5767
