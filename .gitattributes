@@ -1,1 +1,4 @@
 * text eol=lf
+*.asm text
+*.c text
+*.feline text
