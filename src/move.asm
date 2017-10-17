@@ -46,3 +46,59 @@ code cmoveup, 'cmove>'                  ; c-addr1 c-addr2 u --
 .1:
         next
 endcode
+
+; ### move_cells_down
+code move_cells_down, 'move_cells_down', SYMBOL_INTERNAL
+; source destination count --
+%ifdef WIN64
+        push    rdi
+        push    rsi
+%endif
+        mov     rcx, rbx                        ; count
+        mov     rdi, [rbp]                      ; destination
+        mov     rsi, [rbp + BYTES_PER_CELL]     ; source
+        mov     rbx, [rbp + BYTES_PER_CELL * 2]
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+        jrcxz   .1
+
+        rep     movsq
+
+.1:
+%ifdef WIN64
+        pop     rsi
+        pop     rdi
+%endif
+        next
+endcode
+
+; ### move_cells_up
+code move_cells_up, 'move_cells_up', SYMBOL_INTERNAL
+; source destination count --
+%ifdef WIN64
+        push    rdi
+        push    rsi
+%endif
+        mov     rcx, rbx                        ; count
+        mov     rdi, [rbp]                      ; destination
+        mov     rsi, [rbp + BYTES_PER_CELL]     ; source
+        mov     rbx, [rbp + BYTES_PER_CELL * 2]
+        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+        jrcxz   .1
+
+        mov     rdx, rcx
+        dec     rdx
+        shl     rdx, 3
+        add     rdi, rdx
+        add     rsi, rdx
+
+        std
+        rep     movsq
+        cld
+
+.1:
+%ifdef WIN64
+        pop     rsi
+        pop     rdi
+%endif
+        next
+endcode
