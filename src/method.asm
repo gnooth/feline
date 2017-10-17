@@ -178,7 +178,7 @@ code method_to_string, 'method>string'  ; method -- string
         _ concat
         _ swap
         _method_generic_function
-        _ generic_function_symbol
+        _ generic_function_name
         _ symbol_name
         _ concat
         next

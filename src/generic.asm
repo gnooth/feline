@@ -41,15 +41,11 @@ file __FILE__
         _this_set_slot2
 %endmacro
 
-%macro  _gf_symbol 0                    ; gf -- symbol
+%macro  _gf_name 0                      ; gf -- symbol
         _slot3
 %endmacro
 
-%macro  _gf_set_symbol 0                ; symbol gf --
-        _set_slot3
-%endmacro
-
-%macro  _this_gf_set_symbol 0           ; symbol --
+%macro  _this_gf_set_name 0             ; symbol --
         _this_set_slot3
 %endmacro
 
@@ -134,7 +130,7 @@ code new_generic_function, '<generic-function>' ; symbol -- gf
 
         _this_object_set_raw_typecode TYPECODE_GENERIC_FUNCTION
 
-        _this_gf_set_symbol
+        _this_gf_set_name
 
         _f
         _this_gf_set_methods
@@ -151,10 +147,10 @@ code new_generic_function, '<generic-function>' ; symbol -- gf
         next
 endcode
 
-; ### generic-function-symbol
-code generic_function_symbol, 'generic-function-symbol' ; gf -- symbol
+; ### generic-function-name
+code generic_function_name, 'generic-function-name'     ; gf -- symbol
         _ check_generic_function
-        _gf_symbol
+        _gf_name
         next
 endcode
 
@@ -189,7 +185,7 @@ endcode
 ; ### generic-function>string
 code generic_function_to_string, 'generic-function>string'      ; gf -- string
         _ check_generic_function
-        _gf_symbol
+        _gf_name
         _ symbol_name
         _quote "#'"
         _swap
