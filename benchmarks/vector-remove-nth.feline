@@ -1,0 +1,29 @@
+using: feline ;
+in: user
+
+1000 >global: n
+
+global: v
+
+: test1
+    100 v vector-remove-nth!
+    100 100 v vector-insert-nth
+;
+
+: test
+    n <vector> !> v
+    n [ v vector-push ] each-integer
+    gc
+    [ 1000000 ' test1 times ] time
+;
+
+-- lenny (windows)
+-- 2283 ms      cmove
+-- 2512 ms      move_cells_down no rep movsq
+-- 2284 ms      move_cells_down rep movsq
+
+-- cosmo
+-- 8989 ms      cmove
+-- 5663 ms      move_cells_down no rep movsq
+-- 5151 ms      move_cells_down rep movsq
+-- 1327 ms      move_cells_up rep movsq
