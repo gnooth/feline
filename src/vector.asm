@@ -153,8 +153,8 @@ code vector_capacity, 'vector-capacity' ; vector -- capacity
         next
 endcode
 
-; ### vector-raw-length
-code vector_raw_length, 'vector-raw-length', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; ### vector_raw_length
+code vector_raw_length, 'vector_raw_length', SYMBOL_INTERNAL
 ; vector -- raw-length
         _ check_vector
         _vector_raw_length
@@ -277,9 +277,9 @@ code destroy_vector_unchecked, 'destroy_vector_unchecked', SYMBOL_INTERNAL
         next
 endcode
 
-; ### vector-resize
-code vector_resize, 'vector-resize', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; vector new-raw-capacity --
+; ### vector_resize
+code vector_resize, 'vector_resize', SYMBOL_INTERNAL
+; raw-vector raw-capacity --
         _swap
         push    this_register
         mov     this_register, rbx
@@ -294,9 +294,9 @@ code vector_resize, 'vector-resize', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
-; ### vector-ensure-capacity
-code vector_ensure_capacity, 'vector-ensure-capacity', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; u vector --
+; ### vector_ensure_capacity
+code vector_ensure_capacity, 'vector_ensure_capacity', SYMBOL_INTERNAL
+; raw-capacity raw-vector --
         _twodup                         ; -- u vector u vector
         _vector_raw_capacity            ; -- u vector u capacity
         _ugt
