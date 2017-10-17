@@ -124,6 +124,8 @@ tuple: position line-number offset ;
 
 : dot-line-number! ( line-number -- ) dot position-line-number! ;
 
+: next-line-number ( -- line-number ) dot-line-number 1 + ;
+
 : dot-offset ( -- ) dot position-offset ;
 
 : dot-offset! ( n -- ) dot position-offset! ;
@@ -614,6 +616,7 @@ symbol: +compound-undo+
                 dot-offset 1 -
                 [ dot-line string-remove-nth dot-line! ] [ dot-offset! ] bi
                 t dot-line-changed!
+                modified
             ]
         }
         {
@@ -623,6 +626,7 @@ symbol: +compound-undo+
                     new-compound-undo +compound-undo+ set
                     do-left
                     delete-line-separator
+                    modified
                     +compound-undo+ get
                 ] with-scope
                 push-undo
@@ -708,7 +712,7 @@ symbol: +compound-undo+
     t !> done?
 
     modified? [
-        0 message-y at-xy "Save file? (y or n) " write-string
+        0 message-y at-xy prompt-style "Save file? (y or n) " write-string
         key 'y' eq? [ do-save ] when
     ] when
 
