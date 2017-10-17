@@ -488,9 +488,8 @@ code vector_insert_nth, 'vector-insert-nth'     ; element n vector --
         _this
         _vector_raw_length
         _rfrom
-        _minus
-        _cells                          ; -- element n addr addr+8 #bytes
-        _ cmoveup                       ; -- element n
+        _minus                          ; -- element n addr addr+8 #cells
+        _ move_cells_up
 
         _this_vector_raw_length         ; -- element n length
         _oneplus                        ; -- element n length+1
@@ -527,8 +526,7 @@ code vector_remove_nth_mutating, 'vector-remove-nth!'   ; n vector --
         _oneminus                       ; -- addr2 addr2-8 len-1        r: -- n
         _rfrom                          ; -- addr2 addr2-8 len-1 n
         _minus                          ; -- addr2 addr2-8 len-1-n
-        _cells                          ; -- addr2 addr2-8 #bytes
-        _ cmove
+        _ move_cells_down
 
         _zero
         _this_vector_raw_data_address
