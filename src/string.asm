@@ -845,10 +845,13 @@ code concat, 'concat'                   ; string1 string2 -- string3
         next
 endcode
 
-; ### unsafe-raw-mem=
-code unsafe_raw_memequal, 'unsafe-raw-mem='     ; addr1 addr2 len -- ?
+; ### unsafe_raw_memequal
+code unsafe_raw_memequal, 'unsafe_raw_memequal', SYMBOL_INTERNAL
+; addr1 addr2 len -- ?
+%ifdef WIN64
         push    rdi
         push    rsi
+%endif
         mov     rcx, rbx
         mov     rdi, [rbp]
         mov     rsi, [rbp + BYTES_PER_CELL]
@@ -865,13 +868,17 @@ code unsafe_raw_memequal, 'unsafe-raw-mem='     ; addr1 addr2 len -- ?
         jnz     .3
 .1:
         mov     ebx, t_value
+%ifdef WIN64
         pop     rsi
         pop     rdi
+%endif
         next
 .2:
         mov     ebx, f_value
+%ifdef WIN64
         pop     rsi
         pop     rdi
+%endif
         next
 endcode
 
