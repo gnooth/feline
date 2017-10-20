@@ -132,7 +132,7 @@ code feline_extension, 'feline-extension'       ; -- string
 endcode
 
 ; ### ensure-feline-extension
-code ensure_feline_extension, 'ensure-feline-extension'        ; path -- path
+code ensure_feline_extension, 'ensure-feline-extension'         ; path -- path
         _dup
         _ path_extension
         _ feline_extension
@@ -223,8 +223,7 @@ code interactive_load, 'l', SYMBOL_IMMEDIATE    ; --
         _ get
         _tagged_if .1
         _ must_parse_token      ; -- string
-        _quote ".feline"
-        _ concat
+        _ ensure_feline_extension
         _ load
         _else .1
         _error "interactive only"
