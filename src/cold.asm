@@ -191,6 +191,8 @@ code cold, 'cold'                       ; --
 
         _ initialize_types
 
+        _ initialize_source_path
+
         _quote "boot.feline"
         _lit S_load_system_file
         _ catch

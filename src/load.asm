@@ -144,8 +144,36 @@ code ensure_feline_extension, 'ensure-feline-extension'         ; path -- path
         next
 endcode
 
+asm_global source_path_, f_value
+
+; ### source-path
+code source_path, 'source-path'         ; -- vector
+        pushrbx
+        mov     rbx, [source_path_]
+        next
+endcode
+
+; ### initialize_source_path
+code initialize_source_path, 'initialize_source_path'   ; --
+        _lit 8
+        _ new_vector_untagged
+        mov     [source_path_], rbx
+        poprbx
+        _lit source_path_
+        _ gc_add_root
+        next
+endcode
+
+; ### add-source-directory
+code add_source_directory, 'add-source-directory'       ; path --
+        _ verify_string
+        _ source_path
+        _ vector_push
+        next
+endcode
+
 ; ### load
-code load, 'load'                       ; path --
+code load, 'load'                       ; string --
         _ ensure_feline_extension
         _ canonical_path
         _dup
