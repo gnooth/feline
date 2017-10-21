@@ -224,3 +224,11 @@ code error_not_integer, 'error-not-integer'     ; x --
         _ error
         next
 endcode
+
+; ### error-file-not-found
+code error_file_not_found, 'error-file-not-found'
+        _quote "ERROR: the file %S does not exist."
+        _ format
+        _ error
+        next
+endcode
