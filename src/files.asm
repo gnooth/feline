@@ -71,9 +71,7 @@ code file_open_read, 'file-open-read'   ; string -- fd
         mov     rbx, rax
         _return
 .1:
-        _quote "ERROR: unable to open file %S."
-        _ format
-        _ error
+        _ error_file_not_found
         next
 endcode
 
