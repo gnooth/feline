@@ -454,17 +454,7 @@ endcode
 code path_append, 'path-append'         ; string1 string2 -- string3
         _ verify_string
         _swap
-        _ verify_string
-        _swap
-
-        _dup
-        _ path_is_absolute?
-        _tagged_if .1
-        _nip
-        _return
-        _then .1
-
-        _swap                           ; -- filename path
+        _ verify_string                 ; -- filename path
         _dup
         _ string_last_char
         _ path_separator_char
