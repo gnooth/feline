@@ -154,7 +154,7 @@ code source_path, 'source-path'         ; -- vector
 endcode
 
 ; ### initialize_source_path
-code initialize_source_path, 'initialize_source_path'   ; --
+code initialize_source_path, 'initialize_source_path', SYMBOL_INTERNAL  ; --
         _lit 8
         _ new_vector_untagged
         mov     [source_path_], rbx
