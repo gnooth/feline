@@ -172,6 +172,62 @@ code add_source_directory, 'add-source-directory'       ; path --
         next
 endcode
 
+; ### find-file-in-source-path
+code find_file_in_source_path, 'find-file-in-source-path'       ; string -- path
+
+        _ source_path
+        _quotation .3
+        _ over
+        _ path_append
+        _ regular_file?
+        _end_quotation .3
+        _ map_find                      ; -- string boolean directory
+
+        _swap
+        _tagged_if .4
+        _swap
+        _ path_append
+        _ canonical_path
+        _else .4
+        _2drop
+        _f
+        _then .4
+
+        next
+endcode
+
+; ### find-file
+code find_file, 'find-file'             ; string -- path
+
+        _duptor
+
+        _dup
+        _ path_is_absolute?
+        _tagged_if .1
+        _ canonical_path
+        _rdrop
+        _return
+        _then .1
+
+        _dup
+        _ canonical_path
+        _dup
+        _ regular_file?
+        _tagged_if .2
+        _nip
+        _rdrop
+        _return
+        _then .2
+
+        _2drop
+
+        _rfrom                          ; -- string
+
+        _ find_file_in_source_path
+
+        next
+endcode
+
 ; ### load
 code load, 'load'                       ; string --
         _ ensure_feline_extension
