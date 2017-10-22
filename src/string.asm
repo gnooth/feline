@@ -322,14 +322,22 @@ code as_c_string, 'as-c-string'         ; c-addr u -- zaddr
 endcode
 
 ; ### string-nth-unsafe
-code string_nth_unsafe, 'string-nth-unsafe' ; tagged-index handle-or-string -- tagged-char
-; No bounds check.
-        _swap
-        _untag_fixnum
-        _swap
-        _ check_string
-        _string_nth_unsafe
+code string_nth_unsafe, 'string-nth-unsafe'
+; tagged-index handle-or-raw-string -- tagged-char
+
+        ; no type checking
+        ; no bounds checking
+
+        cmp     bl, HANDLE_TAG
+        jne     .1
+        _handle_to_object_unsafe
+.1:
+        mov     rax, [rbp]
+        _nip
+        _untag_fixnum rax
+        movzx   ebx, byte [rax + rbx + STRING_RAW_DATA_OFFSET]
         _tag_char
+
         next
 endcode
 
