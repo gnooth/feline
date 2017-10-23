@@ -22,24 +22,12 @@ in: feline
     dup <wrapper> ' symbol-value 2array array>quotation over symbol-set-def
     dup compile-word ;
 
-: define-global-setter ( global -> )
-    [
-        symbol-name
-        dup string-last-char '?' eq? [
-            dup string-length 1 - string-head
-        ] when
-        "!" concat new-symbol-in-current-vocab
-    ] keep -- setter global
-    <wrapper> ' symbol-set-value 2array array>quotation over symbol-set-def
-    compile-word ;
-
 syntax: global:
     must-parse-token
     make-global
-    define-global-setter ;
+    drop ;
 
 syntax: >global:
     must-parse-token
     make-global
-    dup define-global-setter
     symbol-set-value ;
