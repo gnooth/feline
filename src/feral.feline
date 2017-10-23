@@ -16,10 +16,7 @@
 using: feline ;
 in: feral
 
-"editor.feline" load-system-file
-
-using: feline ;
-in: feral
+"../feral/editor.feline" load-system-file
 
 : go
     args length 3 = [ args third editor:edit-file bye ] when
