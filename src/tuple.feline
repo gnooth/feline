@@ -66,13 +66,13 @@ global: class-symbol ( symbol )
 ;
 
 : define-accessors ( -- )
-    class-name "-" concat accessor-prefix!
+    class-name "-" concat !> accessor-prefix
     slot-names [ define-reader ] each-index
     slot-names [ define-writer ] each-index
 ;
 
 : define-class-symbol ( -- )
-    class-name feline:new-symbol-in-current-vocab class-symbol!
+    class-name feline:new-symbol-in-current-vocab !> class-symbol
 
     class-symbol <wrapper> 1quotation class-symbol symbol-set-def
     class-symbol feline:compile-word
@@ -95,7 +95,7 @@ global: class-symbol ( symbol )
 
     define-class-symbol
 
-    class-symbol slot-names make-tuple-class class!
+    class-symbol slot-names make-tuple-class !> class
 
     class 1quotation class-symbol symbol-set-def
     class-symbol feline:compile-word
@@ -115,7 +115,7 @@ public
     drop
     vector>array                        -- class-name slot-names
 
-    slot-names! class-name!
+    !> slot-names !> class-name
 
     tuple:define-tuple-class
 ;
