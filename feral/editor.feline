@@ -140,7 +140,7 @@ tuple: position line-number offset ;
 
 : modified? ( -- ) mod-count mod-count-last-save neq? ;
 
-: modified ( -- ) mod-count 1 + mod-count! ;
+: modified ( -- ) mod-count 1 + !> mod-count ;
 
 : buffer-line-count ( -- n ) buffer-lines length ;
 
@@ -330,8 +330,8 @@ symbol: +compound-undo+
 ;
 
 : undo-move ( undo-record -- )
-    [ undo-record-mod-count mod-count! ]
-    [ undo-record-dot dot! ]
+    [ undo-record-mod-count !> mod-count ]
+    [ undo-record-dot !> dot ]
     bi
 ;
 
@@ -343,12 +343,12 @@ symbol: +compound-undo+
 ;
 
 : undo-line-edit ( undo-record -- )
-    [ undo-record-mod-count mod-count! ]
-    [ undo-record-dot dot! ]
+    [ undo-record-mod-count !> mod-count ]
+    [ undo-record-dot !> dot ]
     [ undo-record-data dot-line! ]
     tri
 
-    t dot-line-changed!
+    t !> dot-line-changed?
 ;
 
 : add-undo-delete-line-separator ( -- )
@@ -363,13 +363,13 @@ symbol: +compound-undo+
 
 : undo-delete-line-separator ( undo-record -- )
     dup
-    [ undo-record-mod-count mod-count! ]
-    [ undo-record-dot dot! ]
+    [ undo-record-mod-count !> mod-count ]
+    [ undo-record-dot !> dot ]
     bi
     undo-record-data ( 2array )
     dup array-first dot-line!
     array-second dot-line-number 1 + buffer-insert-nth-line
-    t repaint!
+    t !> repaint?
 ;
 
 : add-undo-insert-line-separator ( -- )
@@ -380,12 +380,12 @@ symbol: +compound-undo+
 ;
 
 : undo-insert-line-separator ( undo-record -- )
-    [ undo-record-mod-count mod-count! ]
-    [ undo-record-dot dot! ]
+    [ undo-record-mod-count !> mod-count ]
+    [ undo-record-dot !> dot ]
     [ undo-record-data dot-line! ]
     tri
     dot-line-number 1 + buffer-lines vector-remove-nth!
-    t repaint!
+    t t !> repaint?
 ;
 
 : undo1 ( undo-record -- )
@@ -583,7 +583,7 @@ symbol: +compound-undo+
     add-undo-line-edit
 
     dot-offset dot-line string-remove-nth dot-line!
-    t dot-line-changed!
+    t !> dot-line-changed?
 ;
 
 : delete-line-separator ( -- )
@@ -615,7 +615,7 @@ symbol: +compound-undo+
                 add-undo-line-edit
                 dot-offset 1 -
                 [ dot-line string-remove-nth dot-line! ] [ dot-offset! ] bi
-                t dot-line-changed!
+                t !> dot-line-changed?
                 modified
             ]
         }
@@ -645,9 +645,9 @@ symbol: +compound-undo+
     dot-line-tail sb sbuf-append-string
     sb sbuf>string dot-line!
     dot-offset 1 + dot-offset!
-    t dot-line-changed!
+    t !> dot-line-changed?
     modified
-    dot-offset goal-x!
+    dot-offset !> goal-x
 ;
 
 : insert-spaces ( n -- )
@@ -659,7 +659,7 @@ symbol: +compound-undo+
     dot-line-tail sb sbuf-append-string
     sb sbuf>string dot-line!
     dot-offset n + dot-offset!
-    t dot-line-changed!
+    t !> dot-line-changed?
     modified
 ;
 
@@ -674,7 +674,7 @@ symbol: +compound-undo+
     ] [
         add-undo-line-edit
         dot-line-head dot-line!
-        t dot-line-changed!
+        t !> dot-line-changed?
         modified
     ] if
 ;
@@ -703,7 +703,7 @@ symbol: +compound-undo+
 
     fd file-close
 
-    mod-count mod-count-last-save!
+    mod-count !> mod-count-last-save
 
     "Saving...done" message
 ;
@@ -875,21 +875,21 @@ in: editor
 
 : initialize-editor ( -- )
     bindings [ initialize-bindings ] unless
-    100 <vector> undo-stack!
+    100 <vector> !> undo-stack
 ;
 
 : initialize-empty-buffer ( -- )
-    "untitled" create-buffer current-buffer!
+    "untitled" create-buffer !> current-buffer
     LF current-buffer buffer-eol!
-    64 <vector> buffer-lines!
+    64 <vector> !> buffer-lines
     "" buffer-lines vector-push
-    position make-instance dot!
+    position make-instance !> dot
     0 dot-offset!
     0 dot-line-number!
-    0 top-line-number!
+    0 !> top-line-number
 
-    0 mod-count! 0 mod-count-last-save!
-    0 goal-x!
+    0 !> mod-count 0 !> mod-count-last-save
+    0 !> goal-x
 ;
 
 : initialize-buffer ( filename line-number -- )
@@ -903,7 +903,7 @@ in: editor
     -- detect eol
     13 over string-index CR+LF LF ? current-buffer buffer-eol!
 
-    dup string-lines verify-vector buffer-lines!
+    dup string-lines verify-vector !> buffer-lines
 
     string-last-char 10 eq? [ "" buffer-lines vector-push ] when
 
@@ -914,8 +914,8 @@ in: editor
 
     0 !> top-line-number
 
-    0 mod-count! 0 mod-count-last-save!
-    0 goal-x!
+    0 !> mod-count 0 !> mod-count-last-save
+    0 !> goal-x
 ;
 
 : edit1 ( -- )
