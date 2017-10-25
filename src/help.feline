@@ -52,10 +52,6 @@ white >constant: fg-default
     normal
     fg-default foreground ;
 
-: format-help ( symbol content -- )
-    ?nl swap symbol-name format-title
-    nl 4 spaces first format-string ;
-
 public
 
 : help ( symbol -- )
@@ -66,34 +62,34 @@ public
     glossary [ name swap string-has-prefix? ] find    -- index/f element/f
 
     >local: line
-    >local: i
+    >local: line-number
 
     local: v
 
     line [
         8 <vector> !> v
         [
-            i 1 + !> i
-            i glossary length >=
+            line-number 1 + !> line-number
+            line-number glossary vector-length >=
         ] [
-            i glossary vector-nth ( string )
+            line-number glossary vector-nth ( string )
             dup "    " over string-has-prefix? swap empty? or [
                 v vector-push
             ] [
-                drop glossary length !> i
+                drop glossary vector-length !> line-number
             ] if
         ] until
+
+        v empty? [
+            v vector-last empty? [ v vector-pop* ] when
+        ] unless
+
+        name format-title nl
+
+        256 <sbuf> >local: sb
+        v [ sb sbuf-append-string 10 sb sbuf-push ] each
+        sb sbuf>string format-string
     ] when
-
-    v empty? [
-        v vector-last empty? [ v vector-pop* ] when
-    ] unless
-
-    name help:format-title nl
-
-    256 <sbuf> >local: sb
-    v [ sb sbuf-append-string 10 sb sbuf-push ] each
-    sb sbuf>string help:format-string
 
     f !> glossary
     gc
