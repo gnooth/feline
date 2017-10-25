@@ -1,0 +1,412 @@
+!>
+    name ( x -- )
+    Parse `name` from the input stream. Store `x` in `name`.
+
+    `name` must be the name of a global variable (defined by
+    `global:` or `>global:`) or of a local variable (defined by
+    `local:` or `>local:`).
+
+    Example:
+
+        global: foo
+        7 !> foo
+        foo
+
+        => 7
+;
+
+1array
+    ( x -- array )
+    Create a new array with one element: `{ x }`.
+
+2array
+    ( x y -- array )
+    Create a new array with two elements: `{ x y }`.
+
+2bi
+    ( x y quot1 quot2 -- )
+    Apply `quot1` to `x` and `y`, then apply `quot2` to `x` and `y`.
+
+2dip
+    ( x y quot -- x y )
+    Remove `x` and `y` from the stack and call `quot`. Restore `x` and `y`
+    to the top of the stack when `quot` returns.
+
+2keep
+    ( x y quot -- x y )
+    Call `quot` with `x` and `y` on the stack. Restore `x` and `y` to the
+    top of the stack when `quot` returns.
+
+2nip
+    ( x y z -- z )
+    Remove `x` and `y` from the stack.
+
+2over
+    ( x y z -- x y z x y )
+    Copy `x` and `y` over `z` to the top of the stack.
+
+    (Feline uses Factor's definition of `2over`. The Forth definition
+    is different.)
+
+2tri
+    ( x y quot1 quot2 quot3 -- )
+    Apply `quot1` to `x` and `y`, then apply `quot2` to `x` and `y`,
+    then apply `quot3` to `x` and `y`.
+
+3array
+    ( x y z -- array )
+    Create a new array with three elements: `{ x y z }`.
+
+4array
+    ( w x y z -- array )
+    Create a new array with four elements: `{ w x y z }`.
+
+<array>
+    ( n element -- array )
+    Create a new array with length `n` and all elements initially
+    set to `element`.
+
+<hashtable>
+    ( n -- hashtable )
+    Create a new hashtable with an initial capacity of `n` key/value pairs.
+
+<range>
+    ( start len -- range )
+    Create a new immutable virtual sequence containing the
+    integers from `start` to `start+len-1`.
+
+<sbuf>
+    ( n -- sbuf )
+    Create a new string buffer with an initial capacity of `n` characters.
+
+<vector>
+    ( n -- vector )
+    Create a new vector with an initial capacity of `n` elements.
+
+=
+    ( obj1 obj2 -- ? )
+    Returns `t` if `obj1` and `obj2` are equal.
+
+?
+    ( ? x y -- x/y )
+    If the generalized boolean `?` is true (that is, not `f`), return
+    `x`. Otherwise return `y`.
+
+and
+    ( obj1 obj2 -- ? )
+    Boolean `and`: if both `obj1` and `obj2` are true (that is, not `f`),
+    return `obj2`. Otherwise return `f`. (Bitwise `and` is `bitand`.)
+
+between?
+    ( n min max -- ? )
+    Return `t` if `n` >= `min` and `n` <= `max`.
+
+bi
+    ( x quot1 quot2 -- )
+    Apply `quot1` to `x`, then apply `quot2` to `x`.
+
+bi@
+    ( x y quot -- )
+    Apply `quot` to `x`, then apply `quot` to `y`.
+
+boolean-equal?
+    ( x y -- ? )
+    Return `t` if `x` and `y` are the same boolean. Otherwise return `f`,
+    even if neither argument is a boolean.
+
+boolean?
+    ( x -- ? )
+    Return `t` if `x` is a boolean (either `t` or `f`). Otherwise return `f`.
+
+case
+    ( key cases -- )
+    `case` allows the conditional execution of a quotation that is
+    selected by matching the `key`, which may be any object, with
+    the first element of a pair.
+
+    `cases` is an array of pairs. The last element of `cases` may
+    be a quotation by itself; if so, this quotation is used as the
+    default case.
+
+    The first element of each pair may be any object. The second
+    element must be a quotation. `case` compares `key` against the
+    first element of each pair. If the two objects are equal (in the
+    sense of `=`), `key` is removed from the stack, the quotation
+    is called, and `case` returns.
+
+    If there is no case matching `key`, `key` remains on the stack
+    and the default case is used. If there is no default case, an
+    exception is thrown.
+
+    Example:
+
+        3 4 + {
+            { 7 [ "right!" write ] }
+            [ drop "wrong!" write ]
+        } case
+
+charpos
+    ( -- n )
+    Return the current output column.
+
+    See also: `tab`
+
+dip
+    ( x quot -- x )
+    Remove `x` from the stack, call `quot`, and restore `x` to the top
+    of the stack when `quot` returns.;
+
+drop
+    ( x -- )
+    Remove `x` from the stack.
+
+dup
+    ( x -- x x )
+    Duplicate `x`.
+
+dupd
+    ( x y -- x x y)
+    Duplicate the second item on the stack.
+
+each
+    ( seq quot -- )            quot: ( element -- )
+    Apply `quot` to each element of `seq` in order.
+
+each-index
+    ( seq quot -- )            quot: ( element index -- )
+    Call `quot` for each element of `seq` with both the element and its
+    index on the stack.
+
+each-integer
+    ( n quot -- )              quot: ( i -- )
+    Call `quot` for each integer from 0 up to `n`, excluding `n`.
+
+even?
+    ( n -- ? )
+    Return `t` if `n` is even.
+
+file-contents
+    ( path -- string )
+    Return the contents of the specified file as a string.
+
+filter
+    ( seq quot -- subseq )     quot: ( element -- ? )
+    Return a new sequence containing the elements of `seq` for which
+    `quot` returns a true value.
+
+find
+    ( seq quot -- index/f element/f )  quot: ( element -- ? )
+    Apply `quot` to each element of `seq` in order. If `quot` returns a
+    true value for some element, return the index of that element and
+    the element itself. Otherwise return `f` for both the index and
+    the element.
+
+find-last-from
+    ( n seq quot -- index/f element/f )        quot: ( element -- ? )
+    Apply `quot` to each element of `seq` in reverse order, starting at
+    index `n`. If the quotation returns a true value for some element,
+    return the index of that element and the element itself. Otherwise
+    return `f` for both the index and the element.
+
+find-name
+    ( string -- symbol/string ? )
+    Find `string` in the current vocabulary search order. If successful,
+    return the matching symbol and `t`; otherwise, return `string` and `f`.
+
+in-bounds?
+    ( n seq -- ? )
+    Return `t` if `n` is within the bounds of `seq`.
+
+index
+    ( obj seq -- n )
+    Return the index of the first element of `seq` that is equal to `obj`.
+    Return `f` if there is no such element.
+
+index?
+    ( x -- ? )
+    Return `t` if `x` is a non-negative fixnum.
+
+keep
+    ( x quot -- x )
+    Call `quot` with `x` on the stack. Restore `x` to the top of the
+    stack when `quot` returns.
+
+length
+    ( seq -- n )
+    Return the length of `seq`.
+
+map
+    ( seq quot -- newseq )     quot: ( element -- newelt )
+    Apply `quot` to each element of `seq` in order. Collect the results
+    in a new sequence of the same type as `seq`.
+
+map-index
+    ( seq quot -- newseq )     quot: ( element index -- newelt )
+    Call `quot` for each element of `seq` with both the element and its
+    index on the stack. Collect the results in a new sequence of the
+    the same type as `seq`.
+
+member?
+    ( obj seq -- ? )
+    Return `t` if `seq` contains an element equal to `obj`.
+
+min-length
+    ( seq1 seq2 -- n )
+    Return the length of the shorter sequence.
+
+mismatch
+    ( seq1 seq2 -- index/f )
+    Compare `seq1` and `seq2` up to the length of the shorter sequence.
+    Return the first index where the elements of the two sequences
+    are not equal, or `f` if there is no mismatch.
+
+new-sequence
+    ( len seq -- newseq )
+    Return a new sequence of length `len` which can hold the elements
+    of `seq`.
+
+odd?
+    ( n -- ? )
+    Return `t` if `n` is odd.
+
+or
+    ( obj1 obj2 -- ? )
+    Boolean inclusive `or`: if both `obj1` and `obj2` are `f`, return `f`.
+    Otherwise return the first of `obj1` and `obj2` which is not `f`.
+    (For bitwise inclusive `or`, see `bitor`.)
+
+over
+    ( x y -- x y x )
+    Place a copy of `x` on top of the stack.
+
+pick
+    ( x y z -- x y z x )
+    Place a copy of `x` on top of the stack.
+
+    (Feline uses Factor's definition of `pick`. The Forth definition
+    is different.)
+
+rot
+    ( x y z -- y z x )
+    Rotate the third entry to the top of the stack.
+
+sbuf-append-string
+    ( string sbuf -- )
+    Modify `sbuf` by adding the characters of `string` to the end.
+
+string-has-prefix?
+    ( prefix string -- ? )
+    Return `t` if `string` starts with `prefix`.
+
+sbuf-shorten
+    ( n sbuf -- )
+    Shorten `sbuf` to be `n` characters long.
+
+set-at
+    ( value key hashtable -- )
+    Associate `value` with `key` in `hashtable`.
+
+set-nth
+    ( element n seq -- )
+    Set `element` to be the `n`th element of `seq`.
+
+string-index-from
+    ( char start-index string -- index/f )
+    Return the index of the first occurrence of `char` in `string`,
+    starting at `start-index`. Return `f` if `char` is not found.
+
+string-skip-to-whitespace
+    ( start-index string -- index/f )
+    Return the index of the first whitespace character in `string`,
+    starting at `start-index`. Return `f` if no whitespace character
+    is found.
+
+string-skip-whitespace
+    ( start-index string -- index/f )
+    Return the index of the first non-whitespace character in `string`,
+    starting at `start-index`. Return `f` if no non-whitespace character
+    is found.
+
+substring
+    ( start-index end-index string/sbuf -- substring )
+    Return a new string consisting of the characters of the given
+    string or sbuf starting at `start-index` up to but not including
+    `end-index`.
+
+swap
+    ( x y -- y x )
+    Exchange the top two stack items.
+
+swapd
+    ( x y z -- y x z )
+    Exchange the second and third stack items.
+
+symbol-equal?
+    ( x y -- ? )
+    Return `t` if `x` and `y` are the same symbol. Otherwise return `f`,
+    even if neither argument is a symbol.
+
+symbol-prop
+    ( key symbol -- value )
+    Return the value of the symbol property with the given key.
+    The key is usually a string.
+
+symbol-set-prop
+    ( value key symbol -- )
+    Store a key/value pair as a property of `symbol`.
+    The key is usually a string.
+
+tab
+    ( n -- )
+    Write enough space characters so that the next character will
+    be written in column `n`.
+
+    See also: `charpos`
+
+time
+    ( quot -- )
+    Run `quot` and report the total run time.
+
+times
+    ( n quot -- )
+    Call `quot` `n` times.
+
+tri
+    ( x quot1 quot2 quot3 -- )
+    Apply `quot1` to `x`, then apply `quot2` to `x`, then apply
+    `quot3` to `x`.
+
+unless
+    ( x quot -- )
+    If `x` is `f`, remove it from the stack and call `quot`.
+    Otherwise, just remove `x` from the stack.
+
+unless*
+    ( x quot -- )
+    If `x` is `f`, remove it from the stack and call `quot`.
+    Otherwise, just leave `x` on the stack.
+
+until
+    ( quot1 quot2 -- )
+    Call `quot1`. If `quot1` returns `f`, call `quot2`. Repeat until `quot1`
+    returns a true value.
+
+vector-adjoin
+    ( element vector -- )
+    Make `element` the last element of `vector`, adding it if necessary and
+    removing any other elements that are equal to it.
+
+vector-remove
+    ( element vector -- new-vector )
+    Return a new vector containing all the elements of `vector` except
+    those equal to `element`.
+
+vector-remove!
+    ( element vector -- vector )
+    Remove all elements of `vector` equal to `element` and return the
+    modified vector.
+
+while
+    ( pred body -- )
+    Call `pred`. If `pred` returns true (that is, not `f`), call `body`.
+    Repeat until `pred` returns `f`.
