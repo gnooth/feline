@@ -103,6 +103,11 @@ help: 2over
     (Feline uses Factor's definition of `2over`. The Forth definition
     is different.)" ;
 
+help: 2tri
+    "( x y quot1 quot2 quot3 -- )
+    Apply `quot1` to `x` and `y`, then apply `quot2` to `x` and `y`,
+    then apply `quot3` to `x` and `y`." ;
+
 help: 3array
     "( x y z -- array )
     Create a new array with three elements: `{ x y z }`." ;
@@ -137,6 +142,11 @@ help: =
     "( obj1 obj2 -- ? )
     Returns `t` if `obj1` and `obj2` are equal." ;
 
+help: ?
+    "( ? x y -- x/y )
+    If the generalized boolean `?` is true (that is, not `f`), return
+    `x`. Otherwise return `y`." ;
+
 help: and
     "( obj1 obj2 -- ? )
     Boolean `and`: if both `obj1` and `obj2` are true (that is, not `f`),
@@ -150,6 +160,10 @@ help: bi
     "( x quot1 quot2 -- )
     Apply `quot1` to `x`, then apply `quot2` to `x`." ;
 
+help: bi@
+    "( x y quot -- )
+    Apply `quot` to `x`, then apply `quot` to `y`." ;
+
 help: boolean-equal?
     "( x y -- ? )
     Return `t` if `x` and `y` are the same boolean. Otherwise return `f`,
@@ -158,6 +172,25 @@ help: boolean-equal?
 help: boolean?
     "( x -- ? )
     Return `t` if `x` is a boolean (either `t` or `f`). Otherwise return `f`." ;
+
+help: case
+    "( key cases -- )
+    `case` allows the conditional execution of a quotation that is
+    selected by matching the `key`, which may be any object, with
+    the first element of a pair.
+
+    `cases` is an array of pairs. The last element of `cases` may
+    be a quotation by itself; if so, this quotation is used as the
+    default case.
+
+    The first element of each pair may be any object. The second
+    element must be a quotation. `case` compares `key` against the
+    first element of each pair. If the two objects are equal (in the
+    sense of `=`), `key` is removed from the stack, the quotation
+    is called, and `case` returns.
+
+    If there is no case matching `key`, the default case is used. If
+    there is no default case, an exception is thrown." ;
 
 help: charpos
     "( -- n )
@@ -384,6 +417,11 @@ help: time
 help: times
     "( n quot -- )
     Call `quot` `n` times." ;
+
+help: tri
+    "( x quot1 quot2 quot3 -- )
+    Apply `quot1` to `x`, then apply `quot2` to `x`, then apply
+    `quot3` to `x`." ;
 
 help: unless
     "( x quot -- )
