@@ -189,8 +189,16 @@ help: case
     sense of `=`), `key` is removed from the stack, the quotation
     is called, and `case` returns.
 
-    If there is no case matching `key`, the default case is used. If
-    there is no default case, an exception is thrown." ;
+    If there is no case matching `key`, `key` remains on the stack
+    and the default case is used. If there is no default case, an
+    exception is thrown.
+
+    Example:
+
+        3 4 + {
+            { 7 [ \"right!\" write ] }
+            [ drop \"wrong!\" write ]
+        } case" ;
 
 help: charpos
     "( -- n )
