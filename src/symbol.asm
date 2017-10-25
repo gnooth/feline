@@ -481,22 +481,6 @@ code symbol_set_prop, 'symbol-set-prop' ; value key symbol --
         next
 endcode
 
-; ### symbol-help
-code symbol_help, 'symbol-help'         ; symbol -- content/f
-        _quote "help"
-        _swap
-        _ symbol_prop
-        next
-endcode
-
-; ### symbol-set-help
-code symbol_set_help, 'symbol-set-help' ; content symbol --
-        _quote "help"
-        _swap
-        _ symbol_set_prop
-        next
-endcode
-
 ; ### symbol-primitive?
 code symbol_primitive?, 'symbol-primitive?'     ; symbol -- ?
         _symbol_flags_bit SYMBOL_PRIMITIVE

@@ -762,25 +762,6 @@ code top_level_only, 'top-level-only'   ; word --
         next
 endcode
 
-; ### help:
-code help_colon, 'help:', SYMBOL_IMMEDIATE
-
-        _lit S_help_colon
-        _ top_level_only
-
-        _ must_parse_token      ; -- string
-        _ must_find_name        ; -- symbol
-
-        _quote ";"
-        _ parse_until
-        _ vector_to_array       ; -- symbol array
-
-        _swap
-        _ symbol_set_help
-
-        next
-endcode
-
 ; ### sh
 code sh, 'sh'
         _ current_lexer
