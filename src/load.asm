@@ -230,8 +230,19 @@ endcode
 
 ; ### load
 code load, 'load'                       ; string --
+
         _ ensure_feline_extension
-        _ canonical_path
+
+        _dup
+        _ find_file
+        _dup
+        _tagged_if_not .1
+        _drop
+        _ error_file_not_found
+        _else .1
+        _nip
+        _then .1
+
         _dup
         _ file_contents
         _ new_lexer
@@ -249,7 +260,7 @@ code load, 'load'                       ; string --
 
         _ load_verbose?
         _ get
-        _tagged_if .1
+        _tagged_if .2
         _ ?nl
         _write "Loading "
         _ current_lexer
@@ -257,16 +268,16 @@ code load, 'load'                       ; string --
         _ lexer_file
         _ write_string
         _ nl
-        _then .1
+        _then .2
 
         _ interactive?
         _ get
-        _tagged_if .2
+        _tagged_if .3
         _ current_lexer
         _ get
         _ lexer_file
         _ maybe_set_reload_file
-        _then .2
+        _then .3
 
         _f
         _ interactive?
@@ -275,11 +286,11 @@ code load, 'load'                       ; string --
         _ save_search_order
 
         _lit S_interpret                ; try
-        _quotation .3                   ; recover
+        _quotation .4                   ; recover
         _ do_error1
         _ restore_search_order
         _ reset
-        _end_quotation .3
+        _end_quotation .4
         _ recover
 
         ; no error
