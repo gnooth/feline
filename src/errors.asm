@@ -227,7 +227,7 @@ endcode
 
 ; ### error-file-not-found
 code error_file_not_found, 'error-file-not-found'
-        _quote "ERROR: the file %S does not exist."
+        _quote "ERROR: can't find %s."
         _ format
         _ error
         next
