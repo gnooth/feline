@@ -292,9 +292,7 @@ endcode
 
 ; ### load-system-file
 code load_system_file, 'load-system-file'       ; filename --
-        _ feline_home
-        _quote "src"
-        _ path_append
+        _ feline_source_directory
         _swap
         _ path_append
         _ load

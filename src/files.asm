@@ -476,6 +476,12 @@ code feline_home, 'feline-home'         ; -- string
         next
 endcode
 
+; ### feline-source-directory
+code feline_source_directory, 'feline-source-directory' ; -- string
+        _quote FELINE_SOURCE_DIR
+        next
+endcode
+
 ; ### tilde-expand-filename
 code tilde_expand_filename, 'tilde-expand-filename'     ; string1 -- string2
         _ verify_string
