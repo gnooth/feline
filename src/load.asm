@@ -176,22 +176,22 @@ endcode
 code find_file_in_source_path, 'find-file-in-source-path'       ; string -- path
 
         _ source_path
-        _quotation .3
+        _quotation .1
         _ over
         _ path_append
         _ regular_file?
-        _end_quotation .3
+        _end_quotation .1
         _ map_find                      ; -- string boolean directory
 
         _swap
-        _tagged_if .4
+        _tagged_if .2
         _swap
         _ path_append
         _ canonical_path
-        _else .4
+        _else .2
         _2drop
         _f
-        _then .4
+        _then .2
 
         next
 endcode
