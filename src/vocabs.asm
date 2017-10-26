@@ -345,17 +345,30 @@ code use_vocab, 'use-vocab'             ; vocab-specifier --
 
         _drop                           ; -- string
 
+        ; not loaded
+        ; check Feline source directory first
         _dup
         _quote ".feline"
         _ concat
+        _dup
+        _ feline_source_directory
+        _swap
+        _ path_append
+        _ regular_file?
+        _tagged_if .3
         _ load_system_file
+        _else .3
+        ; not a system file
+        ; try the source path
+        _ load
+        _then .3
 
         _ lookup_vocab
-        _tagged_if .3
+        _tagged_if .4
         _ context_vector
         _ vector_push
         _return
-        _then .3
+        _then .4
 
         _error "can't find vocab"
 
