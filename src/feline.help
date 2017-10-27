@@ -13,7 +13,6 @@
         foo
 
         => 7
-;
 
 1array
     ( x -- array )
@@ -85,7 +84,7 @@
 
 =
     ( obj1 obj2 -- ? )
-    Returns `t` if `obj1` and `obj2` are equal.
+    Return `t` if `obj1` and `obj2` are equal.
 
 ?
     ( ? x y -- x/y )
@@ -141,8 +140,8 @@ case
     Example:
 
         3 4 + {
-            { 7 [ "right!" write ] }
-            [ drop "wrong!" write ]
+            { 7 [ "Right!" write ] }
+            [ drop "Wrong!" write ]
         } case
 
 charpos
@@ -150,6 +149,30 @@ charpos
     Return the current output column.
 
     See also: `tab`
+
+cond
+    ( assoc -- )
+
+    `assoc` is a sequence of pairs of quotations. The first quotation
+    in each pair is the test quotation.
+
+    `cond` processes the pairs in order. For each pair, the test quotation
+    is called. If the result is `f`, `cond` continues to the next pair.
+    Otherwise, the second quotation is called and `cond` returns.
+
+    The last element of `assoc` may be a quotation by itself; if so, this
+    quotation is used as a default.
+
+    If no test quotation returns a true value, the default quotation is called.
+    If there is no default quotation, an exception is thrown.
+
+    Example:
+
+        "test" {
+            { [ string? ] [ "It's a string!" ] }
+            { [ array? ] [ "It's an array!" ] }
+            [ "None of the above!" ]
+        } cond
 
 dip
     ( x quot -- x )
