@@ -44,7 +44,7 @@ in: feline
 : edit
     [
         f load-verbose? set
-        "editor.feline" load-system-file
+        "editor.feline" load
     ] with-scope
     "edit" "editor" vocab-find-name [ call-symbol ] when ;
 
