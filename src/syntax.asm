@@ -247,6 +247,12 @@ code parse_array, '{', SYMBOL_IMMEDIATE         ; -- handle
         next
 endcode
 
+; ### }
+code rbrace, '}', SYMBOL_IMMEDIATE              ; --
+        _ error_unexpected_delimiter
+        next
+endcode
+
 ; ### [
 code parse_quotation, '[', SYMBOL_IMMEDIATE     ; -- quotation
         _quote "]"
@@ -254,6 +260,12 @@ code parse_quotation, '[', SYMBOL_IMMEDIATE     ; -- quotation
         _ vector_to_array
         _ array_to_quotation
         _ maybe_add
+        next
+endcode
+
+; ### ]
+code rbracket, ']', SYMBOL_IMMEDIATE            ; --
+        _ error_unexpected_delimiter
         next
 endcode
 
@@ -424,6 +436,12 @@ code define, ':', SYMBOL_IMMEDIATE      ; --
         _over
         _ symbol_set_def                ; -- symbol
         _ compile_word
+        next
+endcode
+
+; ### ;
+code semi, ';', SYMBOL_IMMEDIATE        ; --
+        _ error_unexpected_delimiter
         next
 endcode
 

@@ -232,3 +232,10 @@ code error_file_not_found, 'error-file-not-found'
         _ error
         next
 endcode
+
+; ### error-unexpected-delimiter
+code error_unexpected_delimiter, 'error-unexpected-delimiter'
+        _quote "ERROR: unexpected delimiter."
+        _ error
+        next
+endcode
