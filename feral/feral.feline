@@ -16,9 +16,11 @@
 using: feline ;
 in: feral
 
-feline-home "feral" path-append >constant: feral-source-dir
+feline-home "feral" path-append >constant: feral-source-directory
 
-feral-source-dir "editor.feline" path-append load
+feral-source-directory add-source-directory
+
+feral-source-directory "editor.feline" path-append load
 
 : go
     args length 3 = [ args third editor:edit-file bye ] when
