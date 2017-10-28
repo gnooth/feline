@@ -167,8 +167,16 @@ endcode
 ; ### add-source-directory
 code add_source_directory, 'add-source-directory'       ; path --
         _ verify_string
+
+        _dup
+        _ source_path
+        _ member?
+        _tagged_if .1
+        _drop
+        _else .1
         _ source_path
         _ vector_push
+        _then .1
         next
 endcode
 
