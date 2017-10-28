@@ -14,13 +14,26 @@
 
         => 7
 
+'
+    name ( -- symbol )
+    Parse `name` from the input stream. Return the symbol named
+    by `name`.
+
 1array
     ( x -- array )
-    Create a new array with one element: `{ x }`.
+    Create a new array with one element.
+
+    Example:
+
+        pi 1array => { 3.1415926535897931 }
 
 2array
     ( x y -- array )
-    Create a new array with two elements: `{ x y }`.
+    Create a new array with two elements.
+
+    Example:
+
+        ' dup ' + 2array => { dup + }
 
 2bi
     ( x y quot1 quot2 -- )
@@ -54,11 +67,33 @@
 
 3array
     ( x y z -- array )
-    Create a new array with three elements: `{ x y z }`.
+    Create a new array with three elements.
+
+    Example:
+
+        "dog" "cat" "monkey" 3array => { "dog" "cat" "monkey" }
 
 4array
     ( w x y z -- array )
-    Create a new array with four elements: `{ w x y z }`.
+    Create a new array with four elements.
+
+    Example:
+
+         4 [ 1 + ] each-integer 4array => { 1 2 3 4 }
+
+:
+    name ( -- )
+    Parse `name` and its definition from the input stream,
+    defining a new word in the current vocabulary.
+
+    Example:
+
+        : 2* dup + ;
+
+        7 2* => 14
+
+;
+    Delimiter that terminates a definition.
 
 <array>
     ( n element -- array )
@@ -90,6 +125,16 @@
     ( ? x y -- x/y )
     If the generalized boolean `?` is true (that is, not `f`), return
     `x`. Otherwise return `y`.
+
+[
+    Introduces a literal quotation, terminated by `]`.
+
+    Example:
+
+        [ dup + ]
+
+]
+    Delimiter that terminates a literal quotation.
 
 and
     ( obj1 obj2 -- ? )
@@ -207,6 +252,11 @@ each-integer
 even?
     ( n -- ? )
     Return `t` if `n` is even.
+
+f
+    ( -- f )
+    The canonical boolean value representing false. (Any object
+    other than `f` is considered true as a generalized boolean.)
 
 file-contents
     ( path -- string )
@@ -379,6 +429,11 @@ symbol-set-prop
     Store a key/value pair as a property of `symbol`.
     The key is usually a string.
 
+t
+    ( -- t )
+    The canonical boolean value representing true. (Any object
+    other than `f` is considered true as a generalized boolean.)
+
 tab
     ( n -- )
     Write enough space characters so that the next character will
@@ -429,7 +484,24 @@ vector-remove!
     Remove all elements of `vector` equal to `element` and return the
     modified vector.
 
+vector{
+    Introduces a literal vector, terminated by `}`.
+
+    Example:
+
+        vector{ 1 2 3 4 }
+
 while
     ( pred body -- )
     Call `pred`. If `pred` returns true (that is, not `f`), call `body`.
     Repeat until `pred` returns `f`.
+
+{
+    Introduces a literal array, terminated by `}`.
+
+    Example:
+
+        { "yes" "no" "maybe" "so" }
+
+}
+    Delimiter that terminates a literal array or vector.
