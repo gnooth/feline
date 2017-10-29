@@ -29,6 +29,7 @@ extern os_file_is_directory
 extern os_file_position
 extern os_file_size
 extern os_file_status
+extern os_file_write_time
 extern os_flush_file
 extern os_free
 extern os_free_executable

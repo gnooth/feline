@@ -93,6 +93,16 @@ code file_size, 'file-size'             ; fd -- tagged-size
         next
 endcode
 
+; ### file-write-time
+code file_write_time, 'file-write-time' ; path -- fixnum
+        _ string_raw_data_address
+        mov     arg0_register, rbx
+        xcall   os_file_write_time
+        mov     rbx, rax
+        _tag_fixnum
+        next
+endcode
+
 ; ### file-read-char
 code file_read_char, 'file-read-char'   ; fd -- char/f
 %ifdef WIN64

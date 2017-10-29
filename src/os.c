@@ -248,6 +248,16 @@ cell os_file_size(cell fd)
 #endif
 }
 
+cell os_file_write_time(const char *path)
+{
+  struct stat statbuf;
+  // stat() follows symlinks; lstat() does not
+  if (stat(path, &statbuf) == 0)
+    return statbuf.st_mtime;
+  else
+    return 0;
+}
+
 cell os_file_position(cell fd)
 {
 #ifdef WIN64_NATIVE
