@@ -1076,6 +1076,13 @@ code ?nl, '?nl'
         next
 endcode
 
+; ### print
+code print, 'print'
+        _ generic_write
+        _ nl
+        next
+endcode
+
 ; ### c@
 code cfetch, 'c@'       ; address -- unsigned-byte
         _check_fixnum
