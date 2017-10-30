@@ -897,7 +897,8 @@ endcode
 _global standard_output_handle
 %endif
 
-_global last_char
+asm_global last_char_, 10
+
 _global output_column
 
 ; ### charpos
@@ -921,7 +922,7 @@ endcode
 ; ### write-char
 code write_char, 'write-char'           ; tagged-char --
         _check_char
-        mov     [last_char], rbx
+        mov     [last_char_], rbx
         cmp     rbx, 10
         je      .1
         inc     qword [output_column]
@@ -1067,7 +1068,7 @@ endcode
 ; ### ?nl
 code ?nl, '?nl'
 ; Name from Factor.
-        mov     rax, [last_char]
+        mov     rax, [last_char_]
         ; was last char a newline?
         cmp     rax, 10
         je     .1

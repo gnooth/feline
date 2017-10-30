@@ -810,7 +810,7 @@ code unsafe_raw_write_chars, 'unsafe-raw-write-chars'   ; raw-address raw-count 
         ; store last char for ?nl
         mov     rax, [rbp]
         movzx   eax, byte [rax + rbx - 1]
-        mov     [last_char], rax
+        mov     [last_char_], rax
 
         push    rbx                     ; save length
 %ifdef WIN64

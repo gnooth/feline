@@ -461,7 +461,7 @@ code query, 'query'                     ; -- string/f
         _then .3
 
         ; last char was a newline
-        mov     qword [last_char], 10
+        mov     qword [last_char_], 10
         mov     qword [output_column], 0
 
         next
