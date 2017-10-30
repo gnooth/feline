@@ -219,6 +219,11 @@ cond
             [ "None of the above!" ]
         } cond
 
+count
+    ( seq quot -- n )   quot: ( element -- ? )
+    Return the number of elements in `seq` for which `quot` returns a true
+    value.
+
 dip
     ( x quot -- x )
     Remove `x` from the stack, call `quot`, and restore `x` to the top
@@ -358,6 +363,10 @@ pick
 
     (Feline uses Factor's definition of `pick`. The Forth definition
     is different.)
+
+print
+    ( string -- )
+    Write `string` followed by a newline.
 
 rot
     ( x y z -- y z x )
