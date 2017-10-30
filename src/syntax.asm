@@ -316,9 +316,22 @@ endcode
 ; ### note-redefinition
 code note_redefinition, 'note_redefinition'     ; symbol --
         _ ?nl
-        _write "redefining "
+        _dup
+        _ symbol_vocab_name
+        _swap
         _ symbol_name
-        _ write_string
+        _quote "NOTE: redefining %s:%s"
+        _ format
+        _ comment_style
+        _ print
+        _ output_style
+        _ location
+        _dup
+        _tagged_if .1
+        _ print_location
+        _else .1
+        _drop
+        _then .1
         next
 endcode
 
