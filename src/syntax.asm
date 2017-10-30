@@ -424,9 +424,9 @@ code parse_definition, 'parse-definition'       ; -- vector
 endcode
 
 ; ### :
-code define, ':', SYMBOL_IMMEDIATE      ; --
+code colon, ':', SYMBOL_IMMEDIATE       ; --
 
-        _lit S_define
+        _lit S_colon
         _ top_level_only
 
         _ parse_definition_name         ; -- symbol
@@ -454,7 +454,7 @@ endcode
 
 ; ### syntax:
 code syntax, 'syntax:', SYMBOL_IMMEDIATE
-        _ define
+        _ colon
         _ immediate
         next
 endcode
