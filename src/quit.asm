@@ -334,9 +334,8 @@ code mark_error_location, 'mark-error-location'         ; --
         next
 endcode
 
-; ### print-error-location
-code print_error_location, 'print-error-location'       ; --
-        _ error_location
+; ### print-location
+code print_location, 'print-location'   ; location --
         _dup
         _ array_first           ; path
         _dup
@@ -354,6 +353,14 @@ code print_error_location, 'print-error-location'       ; --
         _else .2
         _drop
         _then .2
+        _ nl
+        next
+endcode
+
+; ### print-error-location
+code print_error_location, 'print-error-location'       ; --
+        _ error_location
+        _ print_location
         next
 endcode
 
