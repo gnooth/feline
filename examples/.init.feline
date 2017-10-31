@@ -1,0 +1,9 @@
+using: feline ;
+in: user
+
+feline-source-directory add-source-directory
+feline-home "benchmarks" path-append add-source-directory
+feline-home "feral" path-append add-source-directory
+
+cyan set-comment-foreground
++color
