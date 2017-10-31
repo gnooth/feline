@@ -1,0 +1,85 @@
+-- Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline ;
+in: accept-string
+
+empty
+
+private
+
+global: dot
+global: bindings
+global: sb
+global: done?
+global: prompt-string
+
+: prompt ( -- )
+    prompt-style
+    prompt-string write-string ;
+
+: redisplay ( -- )
+    0 at-x
+    prompt
+    input-style
+    sb write-sbuf
+    clear-to-eol
+    dot prompt-string length + at-x ;
+
+: bind-key ( key symbol -- ) swap bindings set-at ;
+
+: lookup-key ( key -- symbol/f ) bindings at ;
+
+: do-enter ( -- )
+    t !> done? ;
+
+: do-bs ( -- )
+    dot 0 > [
+        dot 1 - !> dot
+        dot sb sbuf-remove-nth! drop
+        redisplay
+    ] when ;
+
+: do-normal-char ( char -- )
+    dup write-char dot 1 + !> dot sb push ;
+
+: initialize-bindings ( -- )
+    32 <hashtable> !> bindings
+    10                  ' do-enter                      bind-key
+    13                  ' do-enter                      bind-key
+    127                 ' do-bs                         bind-key        -- Linux
+    8                   ' do-bs                         bind-key        -- Windows
+;
+
+: process-key ( tagged-char -- )
+    dup printable?
+    [ do-normal-char ]
+    [ lookup-key [ call-symbol ] when* ]
+    if ;
+
+public
+
+: accept-string ( prompt-string -- string )
+    1 ?enough
+    verify-string !> prompt-string
+    initialize-bindings
+    128 <sbuf> !> sb
+    0 !> dot
+    f !> done?
+    prompt
+    input-style
+    [ done? ] [ ekey process-key ] until
+    sb sbuf>string
+    output-style ;
