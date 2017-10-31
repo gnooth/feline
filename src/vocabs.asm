@@ -304,19 +304,32 @@ endcode
 
 ; ### load-vocab
 code load_vocab, 'load-vocab'           ; string -- vocab/f
-        _dup
+        _dup                            ; -- string
         _ lookup_vocab
         _tagged_if .1
         _nip
         _return
-        _then .1                        ; -- string f
+        _then .1
 
-        _drop
+        _drop                           ; -- string
 
+        ; not loaded
+        ; check Feline source directory first
         _dup
         _quote ".feline"
         _ concat
+        _dup
+        _ feline_source_directory
+        _swap
+        _ path_append
+        _ regular_file?
+        _tagged_if .3
         _ load_system_file
+        _else .3
+        ; not a system file
+        ; try the source path
+        _ load
+        _then .3
 
         _ lookup_vocab
         _drop
@@ -345,31 +358,16 @@ code use_vocab, 'use-vocab'             ; vocab-specifier --
 
         _drop                           ; -- string
 
-        ; not loaded
-        ; check Feline source directory first
+        _ load_vocab
         _dup
-        _quote ".feline"
-        _ concat
-        _dup
-        _ feline_source_directory
-        _swap
-        _ path_append
-        _ regular_file?
-        _tagged_if .3
-        _ load_system_file
-        _else .3
-        ; not a system file
-        ; try the source path
-        _ load
-        _then .3
 
-        _ lookup_vocab
         _tagged_if .4
         _ context_vector
         _ vector_push
         _return
         _then .4
 
+        _drop
         _error "can't find vocab"
 
          next
