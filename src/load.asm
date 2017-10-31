@@ -219,12 +219,19 @@ code find_file, 'find-file'             ; string -- path
 
         _dup
         _ canonical_path
+
+        ; canonical-path might return f
+        _dup
+        _tagged_if .2
+
         _dup
         _ regular_file?
-        _tagged_if .2
+        _tagged_if .3
         _nip
         _rdrop
         _return
+        _then .3
+
         _then .2
 
         _2drop
