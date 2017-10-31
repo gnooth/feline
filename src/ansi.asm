@@ -40,7 +40,7 @@ endcode
 code ansi_csi, 'esc['                   ; --
 ; control sequence introducer
         _quote `\e[`
-        _ write_string
+        _ write_string_escaped
         next
 endcode
 
@@ -50,12 +50,12 @@ code foreground, 'foreground'           ; color --
         _tagged_if .1
         _ ansi_csi
         _tagged_char '3'
-        _ write_char
+        _ write_char_escaped
         _tagged_char '0'
         _ fixnum_fixnum_plus
-        _ write_char
+        _ write_char_escaped
         _tagged_char 'm'
-        _ write_char
+        _ write_char_escaped
         _else .1
         _drop
         _then .1
@@ -68,12 +68,12 @@ code background, 'background'           ; color --
         _tagged_if .1
         _ ansi_csi
         _tagged_char '4'
-        _ write_char
+        _ write_char_escaped
         _tagged_char '0'
         _ fixnum_fixnum_plus
-        _ write_char
+        _ write_char_escaped
         _tagged_char 'm'
-        _ write_char
+        _ write_char_escaped
         _else .1
         _drop
         _then .1
