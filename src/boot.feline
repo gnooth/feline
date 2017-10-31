@@ -52,8 +52,6 @@ in: feline
     "editor" use-vocab
     "edit" "editor" vocab-find-name [ call-symbol ] when ;
 
-: help help:help ;
-
 : run-tests
     [
         t load-verbose? set

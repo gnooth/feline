@@ -123,5 +123,7 @@ public
 using: feline help ;
 in: feline
 
+: help help:help ;
+
 : h ( -- )
-    parse-token [ find-name [ help ] [ drop ] if ] when* ;
+    parse-token [ find-name [ help:help ] [ drop ] if ] when* ;
