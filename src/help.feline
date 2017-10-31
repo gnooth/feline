@@ -52,12 +52,30 @@ white >constant: fg-default
     normal
     fg-default foreground ;
 
+feline-source-directory "feline.help" path-append >constant: glossary-file-name
+
+global: glossary
+global: glossary-file-write-time
+
+: cache-glossary ( -- )
+    glossary [
+        glossary-file-name file-write-time glossary-file-write-time eq? [
+            f !> glossary
+        ] unless
+    ] when
+
+    glossary [
+        ?nl "Reading glossary..." print
+        glossary-file-name [ file-lines !> glossary ] [ file-write-time !> glossary-file-write-time ] bi
+    ] unless
+;
+
 public
 
-: help ( symbol -- )
+: symbol-help ( symbol -- string/f )
     symbol-name >local: name
 
-    "feline.help" file-lines >local: glossary
+    cache-glossary
 
     glossary [ name swap string-has-prefix? ] find    -- index/f element/f
 
@@ -65,6 +83,8 @@ public
     >local: line-number
 
     local: v
+
+    f >local: help-string
 
     line [
         8 <vector> !> v
@@ -84,15 +104,20 @@ public
             v vector-last empty? [ v vector-pop* ] when
         ] unless
 
-        name format-title nl
-
         256 <sbuf> >local: sb
         v [ sb sbuf-append-string 10 sb sbuf-push ] each
-        sb sbuf>string format-string
+        sb sbuf>string !> help-string
     ] when
 
-    f !> glossary
-    gc
+    help-string
+;
+
+: help ( symbol -- )
+    dup symbol-name >local: name
+    symbol-help [
+        name format-title nl
+        format-string
+    ] when*
 ;
 
 using: feline help ;
