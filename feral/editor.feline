@@ -1,7 +1,11 @@
-using: accept-string feline ;
+using: feline ;
 in: editor
 
 empty
+
+feline-home "feral" path-append add-source-directory
+
+using: feline accept-string ;
 
 global: current-buffer
 global: mod-count
