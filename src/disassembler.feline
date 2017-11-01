@@ -14,11 +14,9 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
-in: user
-
-"disassembler" delete-vocab
-
 in: disassembler
+
+empty
 
 -- "0 = default operand size   1 = 64-bit operand size"
 8 >constant: rex.w
@@ -1011,6 +1009,17 @@ last-word 0x99 install-handler
 
 last-word 0xa4 install-handler
 
+: .a5
+    instruction-operand-size {
+        { 16 [ "movsw" ] }
+        { 32 [ "movsd" ] }
+        { 64 [ "movsq" ] }
+    } case !> mnemonic
+    0 !> #operands
+    .inst ;
+
+last-word 0xa5 install-handler
+
 : .a6
     "cmpsb" !> mnemonic
     0 !> #operands
@@ -1089,9 +1098,9 @@ last-word 0xab install-handler
 last-word 0xc1 install-handler
 
 : .c3
-   "ret" !> mnemonic
-   0 !> #operands
-   .inst ;
+    "ret" !> mnemonic
+    0 !> #operands
+    .inst ;
 
 last-word 0xc3 install-handler
 
@@ -1377,6 +1386,20 @@ last-word 0xf6 install-handler
     .inst ;
 
 last-word 0xf7 install-handler
+
+: .fc ( -- )
+    "cld" !> mnemonic
+    0 !> #operands
+    .inst ;
+
+last-word 0xfc install-handler
+
+: .fd ( -- )
+    "std" !> mnemonic
+    0 !> #operands
+    .inst ;
+
+last-word 0xfd install-handler
 
 : .ff ( -- )
     !modrm-byte
