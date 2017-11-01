@@ -16,7 +16,7 @@
 file __FILE__
 
 ; ### cmove
-code cmove, 'cmove'                     ; c-addr1 c-addr2 u --
+code cmove, 'cmove', SYMBOL_INTERNAL    ; c-addr1 c-addr2 u --
         mov     rcx, rbx                        ; count
         mov     rdi, [rbp]                      ; destination
         mov     rsi, [rbp + BYTES_PER_CELL]     ; source
@@ -29,7 +29,7 @@ code cmove, 'cmove'                     ; c-addr1 c-addr2 u --
 endcode
 
 ; ### cmove>
-code cmoveup, 'cmove>'                  ; c-addr1 c-addr2 u --
+code cmoveup, 'cmove>', SYMBOL_INTERNAL ; c-addr1 c-addr2 u --
         mov     rcx, rbx                        ; count
         mov     rdi, [rbp]                      ; destination
         mov     rsi, [rbp + BYTES_PER_CELL]     ; source
