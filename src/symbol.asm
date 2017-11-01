@@ -550,6 +550,12 @@ code symbol_private?, 'symbol-private?'         ; symbol -- ?
         next
 endcode
 
+; ### symbol-internal?
+code symbol_internal?, 'symbol-internal?'       ; symbol -- ?
+        _symbol_flags_bit SYMBOL_INTERNAL
+        next
+endcode
+
 ; ### generic?
 code generic?, 'generic?'                       ; symbol -- ?
         _symbol_flags_bit SYMBOL_GENERIC
