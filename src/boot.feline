@@ -56,7 +56,7 @@ feline-home "feral" path-append "editor.feline" path-append >constant: editor.fe
     [
         f load-verbose? set
         editor.feline load
-    ] with-scope ;
+    ] with-dynamic-scope ;
 
 public
 
@@ -83,4 +83,4 @@ public
 
         .version
 
-    ] with-scope ;
+    ] with-dynamic-scope ;

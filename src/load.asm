@@ -264,7 +264,7 @@ code load, 'load'                       ; string --
         _tuck
         _ lexer_set_file                ; -- lexer
 
-        _ begin_scope
+        _ begin_dynamic_scope
 
         _ current_lexer
         _ set                           ; --
@@ -311,7 +311,7 @@ code load, 'load'                       ; string --
         ; no error
         _ restore_search_order
 
-        _ end_scope
+        _ end_dynamic_scope
 
         next
 endcode

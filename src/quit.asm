@@ -537,7 +537,7 @@ endcode
 
 ; ### evaluate
 code evaluate, 'evaluate'               ; string --
-        _ begin_scope
+        _ begin_dynamic_scope
 
         _ new_lexer
         _ current_lexer
@@ -547,7 +547,7 @@ code evaluate, 'evaluate'               ; string --
         _lit S_do_error         ; recover
         _ recover
 
-        _ end_scope
+        _ end_dynamic_scope
         next
 endcode
 

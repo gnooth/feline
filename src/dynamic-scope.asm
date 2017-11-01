@@ -75,8 +75,8 @@ code initialize_dynamic_scope, 'initialize_dynamic_scope', SYMBOL_INTERNAL
         next
 endcode
 
-; ### begin-scope
-code begin_scope, 'begin-scope'         ; --
+; ### begin-dynamic-scope
+code begin_dynamic_scope, 'begin-dynamic-scope' ; --
         _lit 4
         _ new_hashtable_untagged
         _get_dynamic_scope
@@ -84,8 +84,8 @@ code begin_scope, 'begin-scope'         ; --
         next
 endcode
 
-; ### end-scope
-code end_scope, 'end-scope'             ; --
+; ### end-dynamic-scope
+code end_dynamic_scope, 'end-dynamic-scope'     ; --
         _get_dynamic_scope
         _ vector_pop_star
         next
@@ -99,9 +99,9 @@ code set, 'set'                         ; value variable --
         next
 endcode
 
-; ### with-scope
-code with_scope, 'with-scope'           ; quot --
-        _ begin_scope
+; ### with-dynamic-scope
+code with_dynamic_scope, 'with-dynamic-scope'   ; quot --
+        _ begin_dynamic_scope
 
         ; protect quotation from gc
         push    rbx
@@ -114,7 +114,7 @@ code with_scope, 'with-scope'           ; quot --
         ; drop quotation
         pop     rax
 
-        _ end_scope
+        _ end_dynamic_scope
         next
 endcode
 

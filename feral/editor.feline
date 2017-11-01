@@ -544,7 +544,7 @@ symbol: +compound-undo+
                     delete-line-separator
                     modified
                     +compound-undo+ get
-                ] with-scope
+                ] with-dynamic-scope
                 push-undo
             ]
         }

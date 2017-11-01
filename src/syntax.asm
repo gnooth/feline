@@ -197,7 +197,7 @@ endcode
 code parse_until, 'parse-until'         ; delimiter -- vector
 ; REVIEW Delimiter is a string.
 
-        _ begin_scope
+        _ begin_dynamic_scope
 
         _t
         _ in_definition?
@@ -225,7 +225,7 @@ code parse_until, 'parse-until'         ; delimiter -- vector
         _2drop
         _get_accum                      ; -- vector
 
-        _ end_scope
+        _ end_dynamic_scope
 
         next
 endcode
@@ -388,7 +388,7 @@ code parse_definition, 'parse-definition'       ; -- vector
 
         _zeroto using_locals?
 
-        _ begin_scope
+        _ begin_dynamic_scope
 
         _t
         _ in_definition?
@@ -426,7 +426,7 @@ code parse_definition, 'parse-definition'       ; -- vector
 
         _get_accum                      ; -- vector
 
-        _ end_scope
+        _ end_dynamic_scope
 
         _zeroto using_locals?
 
