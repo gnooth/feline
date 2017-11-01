@@ -125,7 +125,7 @@ code output_style, 'output-style'
         next
 endcode
 
-asm_global comment_foreground_, WHITE
+asm_global comment_foreground_, CYAN
 
 ; ### comment-foreground
 code comment_foreground, 'comment-foreground'
