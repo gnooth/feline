@@ -52,21 +52,15 @@ white >constant: fg-default
     normal
     fg-default foreground ;
 
-feline-source-directory "feline.help" path-append >constant: glossary-file-name
+feline-source-directory "feline.help" path-append >constant: feline.help
 
 global: glossary
 global: glossary-file-write-time
 
-: cache-glossary ( -- )
-    glossary [
-        glossary-file-name file-write-time glossary-file-write-time eq? [
-            f !> glossary
-        ] unless
-    ] when
-
-    glossary [
-        ?nl "Reading glossary..." print
-        glossary-file-name [ file-lines !> glossary ] [ file-write-time !> glossary-file-write-time ] bi
+: maybe-load-glossary ( -- )
+    feline.help file-write-time glossary-file-write-time eq? [
+        ?nl "Loading glossary" print
+        feline.help [ file-lines !> glossary ] [ file-write-time !> glossary-file-write-time ] bi
     ] unless
 ;
 
@@ -75,7 +69,7 @@ public
 : symbol-help ( symbol -- string/f )
     symbol-name >local: name
 
-    cache-glossary
+    maybe-load-glossary
 
     glossary [ name swap string-has-prefix? ] find    -- index/f element/f
 
