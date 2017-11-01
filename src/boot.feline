@@ -30,26 +30,44 @@ in: feline
     "help.feline"
 } [ load-system-file ] each
 
-: dis
-    [
-        f load-verbose? set
-        "disassembler.feline" load-system-file
-    ] with-scope
-    "dis" "disassembler" vocab-find-name [ call-symbol ] when ;
+private
+
+feline-source-directory "disassembler.feline" path-append >constant: disassembler.feline
+
+global: disassembler-file-write-time
+
+: maybe-load-disassembler ( -- )
+    disassembler.feline file-write-time disassembler-file-write-time neq? [
+        disassembler.feline [ load ] [ file-write-time !> disassembler-file-write-time ] bi
+    ] when ;
+
+public
 
 : d
+    maybe-load-disassembler
     "disassembler" use-vocab
     "dis" "disassembler" vocab-find-name [ call-symbol ] when ;
 
-: edit
+private
+
+feline-home "feral" path-append "editor.feline" path-append >constant: editor.feline
+
+: load-editor ( -- )
     [
         f load-verbose? set
-        "editor.feline" load
-    ] with-scope
-    "edit" "editor" vocab-find-name [ call-symbol ] when ;
+        editor.feline load
+    ] with-scope ;
+
+public
 
 : e
-    "editor" use-vocab
+    "editor" lookup-vocab [
+        use-vocab
+    ] [
+        drop
+        load-editor
+        "editor" use-vocab
+    ] if
     "edit" "editor" vocab-find-name [ call-symbol ] when ;
 
 : run-tests
