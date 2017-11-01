@@ -434,6 +434,41 @@ code string_find_char, 'string-find-char'       ; char string -- index/f
         next
 endcode
 
+; ### string-find-char-from-index
+code string_find_char_from_index, 'string-find-char-from-index' ; index char string -- index/f
+
+        _ check_string
+
+        push    this_register
+        popd    this_register           ; -- tagged-index tagged-char
+
+        _check_char                     ; -- tagged-index untagged-char
+
+        _swap
+        _check_index                    ; -- untagged-char untagged-index
+
+        _this_string_raw_length
+        _swap
+        _register_do_range .1           ; -- untagged-char
+        _raw_loop_index
+        _this_string_nth_unsafe
+        _over
+        _eq?
+        _tagged_if .2
+        _drop
+        _tagged_loop_index
+        _unloop
+        jmp     .exit
+        _then .2
+        _loop .1
+        ; not found
+        _drop
+        _f
+.exit:
+        pop     this_register
+        next
+endcode
+
 ; ### string-substring
 code string_substring, 'string-substring'       ; from to string -- substring
 
