@@ -191,8 +191,8 @@ code apropos, 'apropos'                 ; pattern --
         next
 endcode
 
-; ### ap
-code ap, 'ap'                           ; --
+; ### a
+code a, 'a'                             ; --
         _ must_parse_token
         _ apropos
         next
