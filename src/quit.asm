@@ -72,6 +72,12 @@ code find_name_in_context_vocab, 'find-name-in-context-vocab'
         _ symbol_private?               ; -- symbol ?
         cmp     ebx, f_value
         jne     .2
+
+        mov     rbx, [rbp]
+        _ symbol_internal?
+        cmp     ebx, f_value
+        jne     .2
+
         mov     ebx, t_value
         _return
 
@@ -87,8 +93,20 @@ code find_name, 'find-name'             ; string -- symbol/string ?
         _dup
         _ current_vocab
         _ vocab_hashtable
-        _ hashtable_at_star
+        _ hashtable_at_star             ; -- string symbol/? ?
         _tagged_if .1
+
+        ; found in current vocab
+        _dup
+        _ symbol_internal?
+        _tagged_if .2
+        ; internal
+        _drop
+        _f
+        _return
+        _then .2
+
+        ; not internal
         _nip
         _t
         _return
@@ -98,20 +116,20 @@ code find_name, 'find-name'             ; string -- symbol/string ?
 
         _ context_vector
         _ vector_raw_length
-        _register_do_times .2
+        _register_do_times .3
         _dup                            ; -- string string
         _raw_loop_index
         _ context_vector
         _ vector_nth_untagged           ; -- string string vocab
         _ find_name_in_context_vocab
-        _tagged_if .3
+        _tagged_if .4
         _nip
         _t
         _unloop
         _return
-        _then .3
+        _then .4
         _drop
-        _loop .2
+        _loop .3
 
         _ find_qualified_name
 
