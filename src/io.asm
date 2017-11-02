@@ -129,29 +129,6 @@ code system_, 'system'                  ; c-addr u --
         next
 endcode
 
-; ### get-environment-variable
-code get_environment_variable, 'get-environment-variable' ; name -- value
-        _ string_raw_data_address
-%ifdef WIN64
-        popd    rcx
-%else
-        popd    rdi
-%endif
-        xcall   os_getenv
-        pushd   rbx
-        mov     rbx, rax
-        pushd   rbx
-        test    rbx, rbx
-        jz      .1
-        _ zstrlen
-        jmp     .2
-.1:
-        xor     ebx, ebx
-.2:
-        _ copy_to_string
-        next
-endcode
-
 ; ### errno-to-string
 code errno_to_string, 'errno-to-string' ; n -- string
 %ifdef WIN64
