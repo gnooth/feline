@@ -188,7 +188,7 @@ endcode
 %endmacro
 
 ; ### copy-to-string
-code copy_to_string, 'copy-to-string', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL
 ; from-addr from-length -- handle
 ; arguments are untagged
 
