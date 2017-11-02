@@ -131,7 +131,7 @@ endcode
 code dot_version, '.version'            ; --
         _quote "Feline "
         _quote VERSION
-        _ concat
+        _ string_append
         _ write_string
 
 %ifdef DEBUG

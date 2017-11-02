@@ -131,7 +131,7 @@ code float_to_string, 'float>string'    ; float -- string
         _ string_find_char
         _tagged_if_not .1
         _quote ".0"
-        _ concat
+        _ string_append
         _then .1
 
         next

@@ -473,10 +473,10 @@ code path_append, 'path-append'         ; string1 string2 -- string3
 %else
         _quote "/"
 %endif
-        _ concat
+        _ string_append
         _then .2
         _swap
-        _ concat
+        _ string_append
         next
 endcode
 
@@ -531,7 +531,7 @@ code tilde_expand_filename, 'tilde-expand-filename'     ; string1 -- string2
         _lit 1
         _slashstring
         _ copy_to_string
-        _ concat
+        _ string_append
         _return
         _then .3
 

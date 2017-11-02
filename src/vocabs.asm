@@ -317,7 +317,7 @@ code load_vocab, 'load-vocab'           ; string -- vocab/f
         ; check Feline source directory first
         _dup
         _quote ".feline"
-        _ concat
+        _ string_append
         _dup
         _ feline_source_directory
         _swap

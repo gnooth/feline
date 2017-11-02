@@ -189,7 +189,7 @@ code generic_function_to_string, 'generic-function>string'      ; gf -- string
         _ symbol_name
         _quote "#'"
         _swap
-        _ concat
+        _ string_append
         next
 endcode
 

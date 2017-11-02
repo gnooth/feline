@@ -139,7 +139,7 @@ code ensure_feline_extension, 'ensure-feline-extension'         ; path -- path
         _ string_equal?
         _tagged_if_not .1
         _ feline_extension
-        _ concat
+        _ string_append
         _then .1
         next
 endcode

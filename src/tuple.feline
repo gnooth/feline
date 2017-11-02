@@ -32,7 +32,7 @@ global: class-symbol ( symbol )
     [
         accessor-prefix
         swap
-        concat
+        string-append
         feline:new-symbol-in-current-vocab
     ] dip                               -- symbol index
 
@@ -50,8 +50,8 @@ global: class-symbol ( symbol )
     [
         accessor-prefix
         swap
-        concat
-        "!" concat
+        string-append
+        "!" string-append
         feline:new-symbol-in-current-vocab
     ] dip                               -- symbol index
 
@@ -66,7 +66,7 @@ global: class-symbol ( symbol )
 ;
 
 : define-accessors ( -- )
-    class-name "-" concat !> accessor-prefix
+    class-name "-" string-append !> accessor-prefix
     slot-names [ define-reader ] each-index
     slot-names [ define-writer ] each-index
 ;
@@ -79,7 +79,7 @@ global: class-symbol ( symbol )
 ;
 
 : define-tuple-predicate ( -- )
-    class-name "?" concat
+    class-name "?" string-append
     feline:new-symbol-in-current-vocab  -- symbol
 
     ' object-typecode

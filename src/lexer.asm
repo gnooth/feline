@@ -660,9 +660,9 @@ code lexer_parse_token, 'lexer-parse-token'     ; lexer -- string/f
 
         _quote '"'
         _swap
-        _ concat
+        _ string_append
         _quote '"'
-        _ concat
+        _ string_append
 
         _return
 

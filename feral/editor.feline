@@ -491,7 +491,7 @@ symbol: +compound-undo+
 
     s n string-head
     n 1 + s string-length < [
-        s n 1 + string-tail concat
+        s n 1 + string-tail string-append
     ] when
 ;
 
@@ -507,7 +507,7 @@ symbol: +compound-undo+
         dot-offset dot-line-length = [
             add-undo-delete-line-separator
             dot-line-number 1 + buffer-nth-line
-            dot-line swap concat dot-line!
+            dot-line swap string-append dot-line!
             dot-line-number 1 + buffer-lines vector-remove-nth!
             t !> repaint?
         ] when
@@ -597,7 +597,7 @@ symbol: +compound-undo+
 
 : make-backup ( -- )
     editor-filename dup file-exists?
-    [ dup "~" concat copy-file ] [ drop ] if
+    [ dup "~" string-append copy-file ] [ drop ] if
 ;
 
 : do-save ( -- )

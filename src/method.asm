@@ -175,11 +175,11 @@ code method_to_string, 'method>string'  ; method -- string
         _ raw_typecode_to_type
         _ type_to_string
         _quote "."
-        _ concat
+        _ string_append
         _ swap
         _method_generic_function
         _ generic_function_name
         _ symbol_name
-        _ concat
+        _ string_append
         next
 endcode

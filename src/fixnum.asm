@@ -765,6 +765,6 @@ code fixnum_to_hex, 'fixnum>hex'        ; fixnum -- string
         _ untagged_to_base
         _quote "-"
         _swap
-        _ concat
+        _ string_append
         next
 endcode

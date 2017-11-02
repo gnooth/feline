@@ -32,8 +32,8 @@ global: done?
     f !> history-index f !> pattern ;
 
 : prompt ( -- )
-    "in: " current-vocab vocab-name concat
-    "> " concat
+    "in: " current-vocab vocab-name string-append
+    "> " string-append
     dup !> prompt-string
     prompt-style
     write-string ;

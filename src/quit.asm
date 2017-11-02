@@ -150,7 +150,7 @@ code undefined, 'undefined'             ; string/symbol --
         _ symbol_name
         _then .1
         _quote " ?"
-        _ concat
+        _ string_append
         _ error
         next
 endcode

@@ -515,7 +515,7 @@ code limit_string, 'limit-string'       ; string limit -- limited-string
         _ rot
         _ string_substring
         _quote "..."
-        _ concat
+        _ string_append
         _then .1
         next
 endcode
@@ -878,8 +878,8 @@ code write_string, 'write-string'       ; string --
         next
 endcode
 
-; ### concat
-code concat, 'concat'                   ; string1 string2 -- string3
+; ### string-append
+code string_append, 'string-append'     ; string1 string2 -- string3
         _swap
         _ string_to_sbuf                ; -- string2 sbuf
         _tuck

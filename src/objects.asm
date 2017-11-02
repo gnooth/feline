@@ -446,7 +446,7 @@ code object_to_string, 'object>string'  ; object -- string
         _ fixnum_to_hex
         _quote "$"
         _swap
-        _ concat
+        _ string_append
 
         next
 endcode
@@ -469,7 +469,7 @@ code short_dot, 'short.'                ; handle-or-object --
         _lit tagged_fixnum(40)
         _ string_head
         _quote '...'
-        _ concat
+        _ string_append
         _then .1
         _ write_string
         next
