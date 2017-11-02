@@ -492,6 +492,57 @@ code feline_source_directory, 'feline-source-directory' ; -- string
         next
 endcode
 
+; ### path-separator-char
+%ifdef WIN64
+constant path_separator_char, 'path-separator-char', '\'
+%else
+constant path_separator_char, 'path-separator-char', '/'
+%endif
+
+; ### path-separator-char?
+code path_separator_char?, 'path-separator-char?' ; char -- flag
+; Accept '/' even on Windows.
+%ifdef WIN64
+        _dup
+        _lit '\'
+        _equal
+        _if .1
+        _drop
+        _true
+        _return
+        _then .1
+        ; Fall through...
+%endif
+        _lit '/'
+        _equal
+        next
+endcode
+
+; ### path-get-directory
+code path_get_directory, 'path-get-directory' ; string1 -- string2 | 0
+        _ string_from                   ; -- c-addr u
+        _begin .1
+        _dup
+        _while .1
+        _oneminus
+        _twodup
+        _plus
+        _cfetch
+        _ path_separator_char?
+        _if .2
+        _dup
+        _zeq_if .3
+        _oneplus
+        _then .3
+        _ copy_to_string
+        _return
+        _then .2
+        _repeat .1
+        _2drop
+        _zero
+        next
+endcode
+
 ; ### tilde-expand-filename
 code tilde_expand_filename, 'tilde-expand-filename'     ; string1 -- string2
         _ verify_string
@@ -517,7 +568,7 @@ code tilde_expand_filename, 'tilde-expand-filename'     ; string1 -- string2
         _return
         _then .2
                                         ; -- string
-        ; length <> 1
+        ; length > 1
         _lit 1
         _over
         _ string_nth_untagged
