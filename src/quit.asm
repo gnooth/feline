@@ -492,6 +492,7 @@ code query, 'query'                     ; -- string/f
         next
 endcode
 
+; ### print-data-stack1
 code print_data_stack1, 'print-data-stack1'     ; x --
         _ nl
         _lit tagged_fixnum(4)
