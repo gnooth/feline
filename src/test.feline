@@ -2801,6 +2801,16 @@ test: canonical-path-test-1
     "" canonical-path assert-false
 
     windows? [ "..." canonical-path assert-false ] unless
+
+    "~" canonical-path user-home assert=
+
+    "~/" canonical-path user-home "/" path-append canonical-path assert=
+    "~/foo.bar" canonical-path user-home "foo.bar" path-append canonical-path assert=
+
+    windows? [
+        "~\\" canonical-path user-home "\\" path-append canonical-path assert=
+        "~\\foo.bar" canonical-path user-home "foo.bar" path-append canonical-path assert=
+    ] when
 ;
 
 canonical-path-test-1
