@@ -466,15 +466,16 @@ code path_append, 'path-append'         ; string1 string2 -- string3
         _dup
         _ string_last_char
         _ path_separator_char
-        _notequal
-        _if .2
+        cmp     rbx, [rbp]
+        _2drop
+        je      .1
 %ifdef WIN64
         _quote "\"
 %else
         _quote "/"
 %endif
         _ string_append
-        _then .2
+.1:
         _swap
         _ string_append
         next
