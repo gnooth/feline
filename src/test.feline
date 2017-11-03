@@ -2780,6 +2780,20 @@ test: bitnot-test-1
 
 bitnot-test-1
 
+test: path-append-test-1
+    windows? [
+        "foo"   "bar" path-append "foo\\bar" assert=
+        "foo\\" "bar" path-append "foo\\bar" assert=
+    ] when
+
+    linux? [
+        "foo"   "bar" path-append "foo/bar" assert=
+        "foo/"  "bar" path-append "foo/bar" assert=
+    ] when
+;
+
+path-append-test-1
+
 test: canonical-path-test-1
     "." canonical-path string? assert-true
 
