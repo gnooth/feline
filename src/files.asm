@@ -414,47 +414,52 @@ code path_is_absolute?, 'path-is-absolute?'     ; string -- ?
         next
 endcode
 
+; ### path-separator-char
+%ifdef WIN64
+feline_constant path_separator_char, 'path-separator-char', tagged_char('\')
+%else
+feline_constant path_separator_char, 'path-separator-char', tagged_char('/')
+%endif
+
+; ### path-separator-char?
+code path_separator_char?, 'path-separator-char?'       ; char -- ?
+; accept '/' even on Windows
+%ifdef WIN64
+        cmp     rbx, tagged_char('\')
+        jne     .1
+        mov     ebx, t_value
+        _return
+.1:
+        ; fall through...
+%endif
+        _eq? tagged_char('/')
+        next
+endcode
+
 ; ### path-extension
 code path_extension, 'path-extension'   ; path -- extension/f
-
-        _ check_string
-
-        push    this_register
-        mov     this_register, rbx
-
-        _string_raw_length
-
-        _begin .1
+        _duptor
+        _ string_raw_length
+        sub     rbx, 1
+        _tag_fixnum
+        _rfetch
+        _quotation .1
         _dup
-        _while .1
-        _oneminus
-        _dup
-        _this_string_nth_unsafe
-
-        ; If we find a path separator char before finding a '.', there is no
-        ; extension. Return f.
-        _dup
+        _eq? tagged_char('.')
+        _swap
         _ path_separator_char?
-        _if .2
-        _2drop
-        _f
-        jmp     .exit
+        _ feline_or
+        _end_quotation .1
+        _ find_last_from                ; -- index/f element/f
+        _eq? tagged_char('.')
+        _tagged_if .2
+        _rfrom                          ; -- index string
+        _swap
+        _ string_tail
+        _else .2
+        _rdrop
+        mov     ebx, f_value
         _then .2
-
-        _lit '.'
-        _equal
-        _if .3
-        _this_string_raw_length
-        _this_string_substring_unsafe
-        jmp     .exit
-        _then .3
-        _repeat .1
-
-        _drop
-        _f
-
-.exit:
-        pop     this_register
         next
 endcode
 
@@ -493,32 +498,6 @@ code feline_source_directory, 'feline-source-directory' ; -- string
         next
 endcode
 
-; ### path-separator-char
-%ifdef WIN64
-feline_constant path_separator_char, 'path-separator-char', tagged_char('\')
-%else
-feline_constant path_separator_char, 'path-separator-char', tagged_char('/')
-%endif
-
-; ### path-separator-char?
-code path_separator_char?, 'path-separator-char?' ; char -- flag
-; Accept '/' even on Windows.
-%ifdef WIN64
-        _dup
-        _lit '\'
-        _equal
-        _if .1
-        _drop
-        _true
-        _return
-        _then .1
-        ; Fall through...
-%endif
-        _lit '/'
-        _equal
-        next
-endcode
-
 ; ### path-get-directory
 code path_get_directory, 'path-get-directory' ; string1 -- string2 | 0
         _ string_from                   ; -- c-addr u
@@ -530,7 +509,7 @@ code path_get_directory, 'path-get-directory' ; string1 -- string2 | 0
         _plus
         _cfetch
         _ path_separator_char?
-        _if .2
+        _tagged_if .2
         _dup
         _zeq_if .3
         _oneplus
@@ -573,9 +552,8 @@ code tilde_expand_filename, 'tilde-expand-filename'     ; string1 -- string2
         _lit 1
         _over
         _ string_nth_untagged
-        _untag_char
         _ path_separator_char?          ; "~/" or "~\"
-        _if .3
+        _tagged_if .3
         _ user_home
         _ verify_string
         _swap
