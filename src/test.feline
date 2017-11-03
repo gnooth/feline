@@ -2836,6 +2836,11 @@ test: path-extension-test-1
 
     "foo.bar/test.feline" path-extension ".feline" assert=
     "foo.bar/test" path-extension assert-false
+
+    windows? [
+        "foo.bar\\test.feline" path-extension ".feline" assert=
+        "foo.bar\\test" path-extension assert-false
+    ] when
 ;
 
 path-extension-test-1
