@@ -24,7 +24,7 @@ file __FILE__
 %endmacro
 
 ; typecodes
-TYPECODE_TYPE                   equ  0
+TYPECODE_UNKNOWN                equ  0
 TYPECODE_FIXNUM                 equ  1
 TYPECODE_BOOLEAN                equ  2
 TYPECODE_VECTOR                 equ  3
@@ -53,8 +53,9 @@ TYPECODE_GENERIC_FUNCTION       equ 21
 TYPECODE_UINT64                 equ 22
 TYPECODE_INT64                  equ 23
 TYPECODE_TUPLE_CLASS            equ 24
+TYPECODE_TYPE                   equ 25
 
-LAST_BUILTIN_TYPECODE           equ 24
+LAST_BUILTIN_TYPECODE           equ 25
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
