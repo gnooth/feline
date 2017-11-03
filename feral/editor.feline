@@ -853,6 +853,7 @@ in: editor
 ;
 
 : edit-file ( path -- )
+    canonical-path
     initialize-editor
     0 initialize-buffer
     edit1
