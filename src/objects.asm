@@ -159,11 +159,22 @@ code type_of, 'type-of'                 ; object -- type
         _return
 
 .1:
-        ; tuple
-        _drop
+        ; tuple?
+        mov     rbx, [rbp]              ; -- object object
+        _ tuple_instance?
+        _tagged_if .2
         _lit tagged_fixnum(1)
         _ slot                          ; -- layout
         _ array_first
+        _return
+        _then .2
+
+        ; unknown
+        _drop
+        _lit TYPECODE_UNKNOWN
+        _ types
+        _ vector_nth_untagged
+
         next
 endcode
 
