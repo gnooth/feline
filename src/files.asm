@@ -525,52 +525,60 @@ endcode
 
 ; ### tilde-expand-filename
 code tilde_expand_filename, 'tilde-expand-filename'     ; string1 -- string2
-        _ verify_string
 
-        _dup
-        _ string_first_char
-        _untag_char
-        _lit '~'
-        _notequal
-        _if .1
-        _return
-        _then .1
+        _duptor
 
-        _dup
-        _ string_length
-        _untag_fixnum
-        _lit 1
-        _equal
-        _if .2
+        _ string_raw_length
+        test    rbx, rbx
         _drop
-        _ user_home
-        _ verify_string
+        jnz .1
+        _rfrom
         _return
-        _then .2
-                                        ; -- string
+
+.1:
+        ; length > 0
+        _rfetch
+        _ string_first_char
+        cmp     rbx, tagged_char('~')
+        _drop
+        jz      .2
+        _rfrom
+        _return
+
+.2:
+        _rfetch
+        _ string_raw_length
+        cmp     rbx, 1
+        _drop
+        jne .3
+        _rdrop
+        _ user_home
+        _return
+
+.3:
         ; length > 1
         _lit 1
-        _over
+        _rfetch
         _ string_nth_untagged
         _ path_separator_char?          ; "~/" or "~\"
-        _tagged_if .3
+        _tagged_if .4
         _ user_home
-        _ verify_string
-        _swap
-        _ string_from
-        _lit 1
-        _slashstring
-        _ copy_to_string
-        _ string_append
+        _rfrom
+        _lit tagged_fixnum(1)
+        _ string_tail
+        _ path_append
         _return
-        _then .3
+        _then .4
 
         ; return original string
+        _rfrom
         next
 endcode
 
 ; ### canonical-path
 code canonical_path, 'canonical-path'   ; string1 -- string2
+
+        _ tilde_expand_filename
 
         _ string_raw_data_address       ; -- zaddr1
 
@@ -636,7 +644,7 @@ code cd, 'cd'
         _ parse_token
         _dup
         _tagged_if .1
-        _ tilde_expand_filename
+        _ canonical_path
         _ set_current_directory
         _drop                           ; REVIEW error message?
         _else .1
