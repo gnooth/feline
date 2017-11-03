@@ -494,9 +494,9 @@ endcode
 
 ; ### path-separator-char
 %ifdef WIN64
-constant path_separator_char, 'path-separator-char', '\'
+feline_constant path_separator_char, 'path-separator-char', tagged_char('\')
 %else
-constant path_separator_char, 'path-separator-char', '/'
+feline_constant path_separator_char, 'path-separator-char', tagged_char('/')
 %endif
 
 ; ### path-separator-char?
