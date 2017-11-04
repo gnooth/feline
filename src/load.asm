@@ -205,7 +205,7 @@ code find_file_in_source_path, 'find-file-in-source-path'       ; string -- path
 endcode
 
 ; ### find-file
-code find_file, 'find-file'             ; string -- path
+code find_file, 'find-file'             ; string -- path/f
 
         _duptor
 
