@@ -382,7 +382,7 @@ code path_is_absolute?, 'path-is-absolute?'     ; string -- ?
 
         _dup
         _ string_first_char
-        _eq? tagged_char(PATH_SEPARATOR_CHAR)
+        _ path_separator_char?
         _tagged_if .2
         mov     ebx, t_value
         _return
@@ -407,7 +407,7 @@ code path_is_absolute?, 'path-is-absolute?'     ; string -- ?
 
         ; Linux
         _ string_first_char
-        _eq? tagged_char(PATH_SEPARATOR_CHAR)
+        _ path_separator_char?
 
 %endif
 
