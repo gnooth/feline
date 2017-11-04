@@ -852,11 +852,20 @@ in: editor
     use-default-screen-buffer
 ;
 
-: edit-file ( path -- )
-    canonical-path
-    initialize-editor
-    0 initialize-buffer
-    edit1
+: edit-file ( arg -- )
+    >local: arg
+
+    arg find-file [
+        arg ensure-feline-extension find-file
+    ] unless*   -- path/f
+
+    [
+        initialize-editor
+        0 initialize-buffer
+        edit1
+    ] [
+        arg error-file-not-found
+    ] if*
 ;
 
 : edit-definition ( symbol -- )
