@@ -28,10 +28,16 @@ value stack_cells, 'stack-cells', 0     ; initialized in main()
 asm_global main_argc ; untagged
 asm_global main_argv ; untagged
 
-feline_global args, 'args'
+asm_global args_
 
-; ### process-command-line
-code process_command_line, 'process-command-line'
+code args, 'args'                       ; -- vector
+        pushrbx
+        mov     rbx, [args_]
+        next
+endcode
+
+; ### process_command_line
+code process_command_line, 'process_command_line', SYMBOL_INTERNAL
 
 ; sudo sh -c 'echo 1 > /proc/sys/kernel/perf_event_paranoid'
 ; perf record feline -e '"stress.feline" load bye'
@@ -40,8 +46,11 @@ code process_command_line, 'process-command-line'
         mov     rbx, [main_argc]        ; -- argc
 
         _dup
-        _ new_vector_untagged   ; -- argc vector
-        _to_global args         ; -- argc
+        _ new_vector_untagged           ; -- argc vector
+        mov     [args_], rbx
+        poprbx
+        _lit args_
+        _ gc_add_root
 
         _zero
         _?do .1
@@ -50,7 +59,7 @@ code process_command_line, 'process-command-line'
         _i
         _cells
         _plus
-        _fetch                  ; -- zstring
+        _fetch                          ; -- zstring
         _ zcount
         _ copy_to_string
         _ args
