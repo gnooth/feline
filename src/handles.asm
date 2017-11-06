@@ -151,28 +151,18 @@ code get_empty_handle, 'get_empty_handle', SYMBOL_INTERNAL      ; -- handle/0
         _rep_return
 
 .1:
-        _drop                   ; --
-
+        ; -- f
         cmp     qword [unused], 0
-        jz .3
-        pushrbx
-        mov     rbx, [handle_space_free_]
-        pushrbx
-        mov     rbx, [handle_space_limit_]
-        _ult
-        _if .4
-        pushrbx
+        jz .2
         mov     rbx, [handle_space_free_]       ; address of handle to be returned
-        _dup
-        _cellplus
-        mov     [handle_space_free_], rbx
-        poprbx
+        cmp     rbx, [handle_space_limit_]
+        jae     .2
+        add     qword [handle_space_free_], BYTES_PER_CELL
         sub     qword [unused], 1
         _return
-        _then .4
 
-.3:
-        pushrbx
+.2:
+        ; -- handle/f
         xor     ebx, ebx
         next
 endcode
