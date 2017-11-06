@@ -22,6 +22,14 @@ asm_global rp0_, 0
 
 asm_global sp0_, 0                      ; initialized in main()
 
+; ### sp0
+code sp0, 'sp0'                         ; -- tagged-address
+        pushrbx
+        mov     rbx, [sp0_]
+        _tag_fixnum
+        next
+endcode
+
 ; ### stack-cells                       ; environment query
 value stack_cells, 'stack-cells', 0     ; initialized in main()
 
