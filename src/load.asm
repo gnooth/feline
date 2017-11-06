@@ -161,6 +161,25 @@ code initialize_source_path, 'initialize_source_path', SYMBOL_INTERNAL  ; --
         poprbx
         _lit source_path_
         _ gc_add_root
+
+        _ feline_source_directory
+        _ add_source_directory
+
+        _ feline_home
+        _quote "feral"
+        _ path_append
+        _ add_source_directory
+
+        _ feline_home
+        _quote "examples"
+        _ path_append
+        _ add_source_directory
+
+        _ feline_home
+        _quote "benchmarks"
+        _ path_append
+        _ add_source_directory
+
         next
 endcode
 
