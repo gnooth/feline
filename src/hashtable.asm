@@ -433,9 +433,8 @@ code this_hashtable_find_index_for_key, 'this-hashtable-find-index-for-key', SYM
 
         _loop .1
 
-        _2drop
-        _f
-        _f
+        mov     ebx, f_value
+        _dup
 
         next
 endcode
