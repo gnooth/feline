@@ -207,8 +207,8 @@ code lookup_method, 'lookup-method'     ; object dispatch-table -- object raw-co
         next
 endcode
 
-; ### do-generic
-code do_generic, 'do-generic'           ; object dispatch-table --
+; ### do_generic
+code do_generic, 'do_generic', SYMBOL_INTERNAL  ; object dispatch-table --
         _lookup_method                  ; -- object raw-code-address/f
         cmp     rbx, f_value
         je      .1
@@ -231,11 +231,7 @@ endcode
         code %1, %2, SYMBOL_GENERIC
         pushrbx
         mov     rbx, [S_%1_symbol_value]
-%ifdef DEBUG
         call    do_generic
-%else
-        jmp     do_generic
-%endif
         next
         endcode
 %endmacro
