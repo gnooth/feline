@@ -390,8 +390,8 @@ endcode
         _mask_index
 %endmacro
 
-; ### this-hashtable-find-index-for-key
-code this_hashtable_find_index_for_key, 'this-hashtable-find-index-for-key', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; ### this_hashtable_find_index_for_key
+code this_hashtable_find_index_for_key, 'this_hashtable_find_index_for_key', SYMBOL_INTERNAL
 ; key -- tagged-index/f ?
 ; must be called with the raw address of the hashtable in this_register (r15)
 
