@@ -187,7 +187,7 @@ new_sbuf_untagged:
         _over
         _sbuf_raw_capacity              ; -- sbuf data-address capacity
         _oneplus
-        _ erase                         ; -- sbuf
+        _ raw_erase_bytes               ; -- sbuf
         _ new_handle
         next
 endcode

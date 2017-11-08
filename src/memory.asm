@@ -26,7 +26,8 @@ code __raw_allocate, '__raw_allocate', SYMBOL_INTERNAL
 endcode
 
 ; ### raw_allocate
-code raw_allocate, 'raw_allocate', SYMBOL_INTERNAL      ; raw-size -- raw-address
+code raw_allocate, 'raw_allocate', SYMBOL_INTERNAL
+; raw-size -- raw-address
         mov     arg0_register, rbx
         xcall   malloc
         test    rax, rax
@@ -36,7 +37,8 @@ code raw_allocate, 'raw_allocate', SYMBOL_INTERNAL      ; raw-size -- raw-addres
 endcode
 
 ; ### raw_realloc
-code raw_realloc, 'raw_realloc', SYMBOL_INTERNAL        ; raw-address raw-size -- new-raw-address
+code raw_realloc, 'raw_realloc', SYMBOL_INTERNAL
+; raw-address raw-size -- new-raw-address
         mov     arg1_register, rbx
         mov     arg0_register, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
@@ -55,9 +57,9 @@ code raw_free, 'raw_free', SYMBOL_INTERNAL      ; raw-address --
         next
 endcode
 
-; ### erase
-code erase, 'erase'                     ; addr u --
-; CORE EXT
+; ### raw_erase_bytes
+code raw_erase_bytes, 'raw_erase_bytes', SYMBOL_INTERNAL
+; raw-address raw-count --
 %ifdef WIN64
         push    rdi                     ; rdi is callee-saved on Windows
 %endif

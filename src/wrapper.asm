@@ -25,7 +25,7 @@ code new_wrapper, '<wrapper>'           ; obj -- wrapper
         push    this_register
         mov     this_register, rbx
         _swap
-        _ erase
+        _ raw_erase_bytes
 
         _this_object_set_raw_typecode TYPECODE_WRAPPER
 
