@@ -75,8 +75,9 @@ code erase, 'erase'                     ; addr u --
         next
 endcode
 
-; ### raw-erase-cells
-code raw_erase_cells, 'raw-erase-cells' ; raw-address raw-count --
+; ### raw_erase_cells
+code raw_erase_cells, 'raw_erase_cells', SYMBOL_INTERNAL
+; raw-address raw-count --
 %ifdef WIN64
         push    rdi                     ; rdi is callee-saved on Windows
 %endif
