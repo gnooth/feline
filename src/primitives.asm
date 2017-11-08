@@ -858,8 +858,8 @@ endcode
 ; ### bin.
 code bindot, 'bin.'                     ; n --
         _ fixnum_to_binary
-        _lit tagged_char('%')
-        _ write_char
+        _quote "0b"
+        _ write_string
         _ write_string
         next
 endcode
