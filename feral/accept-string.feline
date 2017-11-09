@@ -64,7 +64,7 @@ global: prompt-string
 ;
 
 : process-key ( tagged-char -- )
-    dup printable?
+    dup printable-char?
     [ do-normal-char ]
     [ lookup-key [ call-symbol ] when* ]
     if ;

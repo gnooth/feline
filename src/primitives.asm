@@ -1413,16 +1413,20 @@ code decimal_to_number, 'decimal>number'        ; string -- n/f
         _rep_return
 endcode
 
-; ### printable?
-code printable?, 'printable?'           ; char -- ?
-        _check_char
+; ### printable-char?
+code printable_char?, 'printable-char?'           ; x -- ?
+        _dup
+        _char?
+        _tagged_if .1
+        _untag_char
         cmp     rbx, 32
-        jl      .1
+        jl      .2
         cmp     rbx, 126
-        jg      .1
+        jg      .2
         mov     ebx, t_value
         _return
-.1:
+        _then .1
+.2:
         mov     ebx, f_value
         next
 endcode

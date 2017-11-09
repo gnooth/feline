@@ -24,8 +24,7 @@ in: dump
     over >hex dup length 12 swap - spaces write-string 2 spaces
     <range> [ [ c@ .2 space ] each ] keep
     dup length 16 swap - 3 * 1 + spaces
-    [ c@ dup printable? [ drop '.' ] unless write-char ] each
-;
+    [ c@ dup printable-char? [ drop '.' ] unless write-char ] each ;
 
 using: dump feline ;
 in: feline
@@ -34,5 +33,4 @@ in: feline
     ?nl 15 spaces
     over 16 <range> [ 15 bitand >hex write-string 2 spaces ] each
     [ dup 16 > not ] [ over 16 dump-line 16 - swap 16 + swap ] until
-    dump-line
-;
+    dump-line ;
