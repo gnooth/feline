@@ -77,13 +77,13 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL
 
 %ifdef TAGGED_HANDLES
         cmp     bl, HANDLE_TAG
-        je      .2
+        je      .3
         ; not a handle
         test    ebx, LOWTAG_MASK
-        jz      .3
+        jz      .4
 %else
         test    ebx, LOWTAG_MASK
-        jz      .2
+        jz      .3
 %endif
 
 %if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
@@ -99,19 +99,26 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL
         _return
 
 .1:
+%if CHAR_TAG <> FIXNUM_TAG
+        cmp     bl, CHAR_TAG
+        jne     .2
+        mov     ebx, TYPECODE_CHAR
+        _return
+.2:
+%endif
         mov     eax, ebx
         and     eax, BOOLEAN_TAG_MASK
         cmp     eax, BOOLEAN_TAG
-        jne     .4
+        jne     .5
         mov     ebx, TYPECODE_BOOLEAN
         _return
 
-.2:
+.3:
 %ifndef TAGGED_HANDLES
         cmp     rbx, [handle_space_]
-        jb      .3
+        jb      .4
         cmp     rbx, [handle_space_free_]
-        jae     .3
+        jae     .4
 %endif
         _handle_to_object_unsafe
         test    rbx, rbx
@@ -119,15 +126,15 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL
         _object_raw_typecode
         _return
 
-.3:
+.4:
         cmp     rbx, static_data_area
-        jb      .4
+        jb      .5
         cmp     rbx, static_data_area_limit
-        jae     .4
+        jae     .5
         _object_raw_typecode
         _return
 
-.4:
+.5:
         ; not an object
         ; return -1
         xor     ebx, ebx
