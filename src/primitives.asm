@@ -1427,6 +1427,53 @@ code printable?, 'printable?'           ; char -- ?
         next
 endcode
 
+; ### code-char
+inline code_char, 'code-char'           ; tagged_fixnum -- tagged-char
+        _code_char
+endinline
+
+; ### char-code
+inline char_code, 'char-code'           ; tagged-char -- tagged-fixnum
+        _char_code
+endinline
+
+; ### char?
+inline char?, 'char?'                   ; x -- ?
+        _char?
+endinline
+
+; ### char-hashcode
+inline char_hashcode, 'char-hashcode'   ; tagged-char -- tagged-fixnum
+        ; REVIEW collisions with fixnums
+        _char_code
+endinline
+
+; ### char>string
+code char_to_string, 'char>string'      ; tagged-char -- string
+
+        _verify_char
+
+        _lit 3
+        _ new_sbuf_untagged
+        _tor
+
+        _lit tagged_char("'")
+        _rfetch
+        _ sbuf_push
+
+        _rfetch
+        _ sbuf_push
+
+        _lit tagged_char("'")
+        _rfetch
+        _ sbuf_push
+
+        _rfrom
+        _ sbuf_to_string
+
+        next
+endcode
+
 ; ### allocate
 code feline_allocate, 'allocate'        ; tagged-size -- addr
 
