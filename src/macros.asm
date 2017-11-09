@@ -38,9 +38,14 @@ GENERIC_WRITE   equ     $40000000
 
 %define FIXNUM_TAG      1
 
+%if 1
 %define CHAR_TAG        FIXNUM_TAG
 %define CHAR_TAG_BITS   FIXNUM_TAG_BITS
 %define CHAR_TAG_MASK   FIXNUM_TAG_MASK
+%else
+%define CHAR_TAG        0xe2
+%define CHAR_TAG_BITS   8
+%endif
 
 %define BOOLEAN_TAG_BITS        3
 %define BOOLEAN_TAG_MASK        (1 << BOOLEAN_TAG_BITS) - 1
@@ -153,28 +158,62 @@ GENERIC_WRITE   equ     $40000000
         cmovz   ebx, eax
 %endmacro
 
+%macro  _char? 0                        ; x -- ?
+%if CHAR_TAG = FIXNUM_TAG
+        and     ebx, FIXNUM_TAG_MASK
+        cmp     ebx, FIXNUM_TAG
+        mov     eax, t_value
+        mov     ebx, f_value
+        cmove   ebx, eax
+%else
+        cmp     bl, CHAR_TAG
+        mov     eax, f_value
+        mov     ebx, t_value
+        cmovne  ebx, eax
+%endif
+%endmacro
+
 %macro  _tag_char 0
+%if CHAR_TAG = FIXNUM_TAG
         _tag_fixnum
+%else
+        shl     rbx, CHAR_TAG_BITS
+        or      rbx, CHAR_TAG
+%endif
 %endmacro
 
 %macro  _untag_char 0
+%if CHAR_TAG = FIXNUM_TAG
         _untag_fixnum
+%else
+        shr     rbx, CHAR_TAG_BITS
+%endif
 %endmacro
 
 %macro  _untag_char 1
+%if CHAR_TAG = FIXNUM_TAG
         _untag_fixnum %1
+%else
+        shr     %1, CHAR_TAG_BITS
+%endif
 %endmacro
 
 %macro  _verify_char 0
+%ifdef CHAR_TAG_MASK
         mov     al, bl
         and     al, CHAR_TAG_MASK
         cmp     al, CHAR_TAG
+%else
+        cmp     bl, CHAR_TAG
+%endif
         jne     error_not_char
 %endmacro
 
 %macro  _verify_char 1
         mov     rax, %1
+%ifdef CHAR_TAG_MASK
         and     al, CHAR_TAG_MASK
+%endif
         cmp     al, CHAR_TAG
         jne     error_not_char
 %endmacro
@@ -317,6 +356,16 @@ GENERIC_WRITE   equ     $40000000
 
 %macro  _tagged_char 1
         pushd   tagged_char(%1)
+%endmacro
+
+%macro  _char_code 0
+        _untag_char
+        _tag_fixnum
+%endmacro
+
+%macro  _code_char 0
+        _untag_fixnum
+        _tag_char
 %endmacro
 
 ; DEPRECATED use asm_global
