@@ -164,6 +164,7 @@ code initialize_types, 'initialize_types', SYMBOL_INTERNAL      ; --
         _add_type "sbuf", TYPECODE_SBUF
         _add_type "array", TYPECODE_ARRAY
         _add_type "hashtable", TYPECODE_HASHTABLE
+        _add_type "char", TYPECODE_CHAR
         _add_type "symbol", TYPECODE_SYMBOL
         _add_type "vocab", TYPECODE_VOCAB
         _add_type "quotation", TYPECODE_QUOTATION
