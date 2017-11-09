@@ -452,12 +452,14 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
 
         ; hashcode
         _initialize_generic_function generic_hashcode
+        _add_method generic_hashcode, TYPECODE_CHAR, char_hashcode
         _add_method generic_hashcode, TYPECODE_FIXNUM, fixnum_hashcode
         _add_method generic_hashcode, TYPECODE_STRING, string_hashcode
         _add_method generic_hashcode, TYPECODE_SYMBOL, symbol_hashcode
 
         ; equal?
         _initialize_generic_function equal?
+        _add_method equal?, TYPECODE_CHAR, eq?
         _add_method equal?, TYPECODE_FIXNUM, fixnum_equal?
         _add_method equal?, TYPECODE_ARRAY, array_equal?
         _add_method equal?, TYPECODE_VECTOR, vector_equal?
