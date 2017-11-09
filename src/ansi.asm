@@ -52,7 +52,9 @@ code foreground, 'foreground'           ; color --
         _tagged_char '3'
         _ write_char_escaped
         _tagged_char '0'
+        _char_code
         _ fixnum_fixnum_plus
+        _code_char
         _ write_char_escaped
         _tagged_char 'm'
         _ write_char_escaped
@@ -70,7 +72,9 @@ code background, 'background'           ; color --
         _tagged_char '4'
         _ write_char_escaped
         _tagged_char '0'
+        _char_code
         _ fixnum_fixnum_plus
+        _code_char
         _ write_char_escaped
         _tagged_char 'm'
         _ write_char_escaped
