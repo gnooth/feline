@@ -13,7 +13,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline ;
+using: feline key ;
 in: accept
 
 global: prompt-string
@@ -199,9 +199,6 @@ global: prefix-offset
         complete-first [ complete1 ] when*
     ] if ;
 
--- FIXME need value for k-shift-tab on Windows
-0x1b5b5a >constant: k-shift-tab -- Linux
-
 : do-shift-tab ( -- )
     completions [
         complete-prev
@@ -224,32 +221,31 @@ global: prefix-offset
     history-file-pathname set-file-lines ;
 
 : bind-key ( key action -- )
-    2array bindings push ;
+    swap bindings set-at ;
 
 : lookup-key ( key -- symbol/f )
-    bindings length [ bindings nth array-first over = ] find-integer    -- n/f
-    nip dup [ bindings nth array-second ] [ drop f ] if ;
+    bindings at ;
 
 : initialize-bindings ( -- )
-    10 <vector> !> bindings
-    10                  ' do-enter                   bind-key
-    13                  ' do-enter                   bind-key
-    3 ( control c )     ' bye                        bind-key
-    0x1b                ' do-escape                  bind-key
-    127                 ' do-bs                      bind-key   -- Linux
-    8                   ' do-bs                      bind-key   -- Windows
-    k-left              ' do-left                    bind-key
-    k-right             ' do-right                   bind-key
-    k-home              ' do-home                    bind-key
-    k-end               ' do-end                     bind-key
-    k-up                ' do-previous                bind-key
-    k-down              ' do-next                    bind-key
-    k-delete            ' do-delete-char             bind-key
-    0x0b ( control k )  ' do-kill-line               bind-key
-    0x10 ( control p )  ' do-previous-matching-input bind-key
-    0x0e ( control n )  ' do-next-matching-input     bind-key
-    9                   ' do-tab                     bind-key
-    k-shift-tab         ' do-shift-tab               bind-key ;
+    16 <hashtable> !> bindings
+
+    key:enter           ' do-enter                      bind-key
+    key:ctrl-c          ' bye                           bind-key
+    key:escape          ' do-escape                     bind-key
+    key:del             ' do-bs                         bind-key   -- Linux
+    key:backspace       ' do-bs                         bind-key   -- Windows
+    key:left            ' do-left                       bind-key
+    key:right           ' do-right                      bind-key
+    key:home            ' do-home                       bind-key
+    key:end             ' do-end                        bind-key
+    key:up              ' do-previous                   bind-key
+    key:down            ' do-next                       bind-key
+    key:delete          ' do-delete-char                bind-key
+    key:ctrl-k          ' do-kill-line                  bind-key
+    key:ctrl-p          ' do-previous-matching-input    bind-key
+    key:ctrl-n          ' do-next-matching-input        bind-key
+    key:tab             ' do-tab                        bind-key
+    key:shift-tab       ' do-shift-tab                  bind-key ;
 
 : do-normal-char ( c -- )
     dot buffer length < [
@@ -260,7 +256,7 @@ global: prefix-offset
     reset-history
     reset-completion ;
 
-: process-key ( tagged-char -- )
+: process-key ( key -- )
     dup printable-char?
     [ do-normal-char ]
     [ lookup-key [ call-symbol ] when* ]
