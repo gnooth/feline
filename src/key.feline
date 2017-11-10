@@ -1,0 +1,50 @@
+-- Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline ;
+in: key
+
+0x03 code-char                  >constant: ctrl-c
+0x06 code-char                  >constant: ctrl-f
+0x07 code-char                  >constant: ctrl-g
+0x08 code-char                  >constant: backspace
+0x09 code-char                  >constant: tab
+0x0b code-char                  >constant: ctrl-k
+0x0e code-char                  >constant: ctrl-n
+0x10 code-char                  >constant: ctrl-p
+0x11 code-char                  >constant: ctrl-q
+0x13 code-char                  >constant: ctrl-s
+0x15 code-char                  >constant: ctrl-u
+0x1a code-char                  >constant: ctrl-z
+0x1b code-char                  >constant: escape
+
+0x7f code-char                  >constant: del
+
+k-enter                         >constant: enter
+k-delete                        >constant: delete
+k-home                          >constant: home
+k-end                           >constant: end
+k-left                          >constant: left
+k-right                         >constant: right
+k-up                            >constant: up
+k-down                          >constant: down
+k-prior                         >constant: pageup
+k-next                          >constant: pagedown
+k-ctrl-home                     >constant: ctrl-home
+k-ctrl-end                      >constant: ctrl-end
+
+windows? 0x803d 0x1b4f52 ?      >constant: f3
+
+0x1b5b5a                        >constant: shift-tab    -- Linux only
