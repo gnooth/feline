@@ -571,7 +571,7 @@ symbol: +compound-undo+
 
     >local: n
     dot-line-head string>sbuf >local: sb
-    n [ 32 sb sbuf-push ] times
+    n [ 32 code-char sb sbuf-push ] times
     dot-line-tail sb sbuf-append-string
     sb sbuf>string dot-line!
     dot-offset n + dot-offset!
@@ -738,7 +738,7 @@ public
 
 --
 
-using: feline search ;
+using: feline search key ;
 in: editor
 
 : bind-key ( key symbol -- ) swap bindings set-at ;
@@ -747,37 +747,37 @@ in: editor
 
 : initialize-bindings ( -- )
     32 <hashtable> !> bindings
-    127                 ' do-bs                         bind-key        -- Linux
-    8                   ' do-bs                         bind-key        -- Windows
-    k-delete            ' do-delete                     bind-key
-    k-home              ' do-home                       bind-key
-    k-end               ' end-of-line                   bind-key
-    k-left              ' do-left                       bind-key
-    k-right             ' do-right                      bind-key
-    k-up                ' do-up                         bind-key
-    k-down              ' do-down                       bind-key
-    k-prior             ' do-page-up                    bind-key
-    k-next              ' do-page-down                  bind-key
-    k-ctrl-home         ' beginning-of-buffer           bind-key
-    k-ctrl-end          ' end-of-buffer                 bind-key
-    7 ( control g )     ' gotoline                      bind-key
-    0x11 ( control q )  ' do-quit                       bind-key
-    0x13 ( control s )  ' do-save                       bind-key
-    k-enter             ' insert-line-separator         bind-key
-    0x06 ( control f )  ' do-find                       bind-key
-    0x803d ( F3 )       ' do-find-again                 bind-key        -- Windows
-    0x1b4f52 ( F3 )     ' do-find-again                 bind-key        -- Linux
-    0x09 ( tab )        ' do-tab                        bind-key
-    0x0b ( control k )  ' kill-line                     bind-key
-    0x1a ( control z )  ' undo                          bind-key
-    0x15 ( control u )  ' undo                          bind-key
-    0x1b ( escape )     ' quit                          bind-key
+
+    key:del             ' do-bs                         bind-key        -- Linux
+    key:backspace       ' do-bs                         bind-key        -- Windows
+    key:delete          ' do-delete                     bind-key
+    key:home            ' do-home                       bind-key
+    key:end             ' end-of-line                   bind-key
+    key:left            ' do-left                       bind-key
+    key:right           ' do-right                      bind-key
+    key:up              ' do-up                         bind-key
+    key:down            ' do-down                       bind-key
+    key:pageup          ' do-page-up                    bind-key
+    key:pagedown        ' do-page-down                  bind-key
+    key:ctrl-home       ' beginning-of-buffer           bind-key
+    key:ctrl-end        ' end-of-buffer                 bind-key
+    key:ctrl-g          ' gotoline                      bind-key
+    key:ctrl-q          ' do-quit                       bind-key
+    key:ctrl-s          ' do-save                       bind-key
+    key:enter           ' insert-line-separator         bind-key
+    key:ctrl-f          ' do-find                       bind-key
+    key:f3              ' do-find-again                 bind-key
+    key:tab             ' do-tab                        bind-key
+    key:ctrl-k          ' kill-line                     bind-key
+    key:ctrl-z          ' undo                          bind-key
+    key:ctrl-u          ' undo                          bind-key
+    key:escape          ' quit                          bind-key
 ;
 
 : do-command ( -- ) lookup-key [ call-symbol ] when* ;
 
 : dispatch ( key -- )
-    dup 32 126 between? [ do-normal-char ] [ do-command ] if ;
+    dup printable-char? [ do-normal-char ] [ do-command ] if ;
 
 : edit-loop ( -- )
     f !> done?
