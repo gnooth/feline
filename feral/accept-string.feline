@@ -13,7 +13,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline ;
+using: feline key ;
 in: accept-string
 
 empty
@@ -57,10 +57,9 @@ global: prompt-string
 
 : initialize-bindings ( -- )
     32 <hashtable> !> bindings
-    10                  ' do-enter                      bind-key
-    13                  ' do-enter                      bind-key
-    127                 ' do-bs                         bind-key        -- Linux
-    8                   ' do-bs                         bind-key        -- Windows
+    key:enter           ' do-enter                      bind-key
+    key:del             ' do-bs                         bind-key        -- Linux
+    key:backspace       ' do-bs                         bind-key        -- Windows
 ;
 
 : process-key ( tagged-char -- )
