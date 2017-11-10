@@ -38,8 +38,6 @@ code feline_key, 'key'          ; -- tagged-char
         next
 endcode
 
-extern os_key_avail
-
 ; ### key?
 code feline_key?, 'key?'        ; -- ?
         xcall   os_key_avail
@@ -74,52 +72,56 @@ endcode
 ; ;
 
 ; ### ekey
-code ekey, 'ekey'                       ; -- fixnum
+code ekey, 'ekey'                       ; -- tagged-fixnum/tagged-char
         _ raw_key
+
         _dup
         _zeq_if .1
         _drop
         _ raw_key
-        _lit $8000
+        _lit 0x8000
         _or
         _tag_fixnum
         _return
         _then .1
+
         _dup
-        _lit $80
+        _lit 0x80
         _ult
         _if .2
-        _tag_fixnum
+        _tag_char
         _return
         _then .2
+
         _dup
-        _lit $0e0
+        _lit 0xe0
         _equal
         _if .3
         _drop
         _ raw_key
-        _lit $8000
+        _lit 0x8000
         _or
         _tag_fixnum
         _return
         _then .3
+
         next
 endcode
 
-feline_constant k_right,     'k-right',     tagged_fixnum($804d)
-feline_constant k_left,      'k-left',      tagged_fixnum($804b)
-feline_constant k_up,        'k-up',        tagged_fixnum($8048)
-feline_constant k_down,      'k-down',      tagged_fixnum($8050)
-feline_constant k_home,      'k-home',      tagged_fixnum($8047)
-feline_constant k_end,       'k-end',       tagged_fixnum($804f)
-feline_constant k_delete,    'k-delete',    tagged_fixnum($8053)
-feline_constant k_prior,     'k-prior',     tagged_fixnum($8049)
-feline_constant k_next,      'k-next',      tagged_fixnum($8051)
+feline_constant k_right,     'k-right',     tagged_fixnum(0x804d)
+feline_constant k_left,      'k-left',      tagged_fixnum(0x804b)
+feline_constant k_up,        'k-up',        tagged_fixnum(0x8048)
+feline_constant k_down,      'k-down',      tagged_fixnum(0x8050)
+feline_constant k_home,      'k-home',      tagged_fixnum(0x8047)
+feline_constant k_end,       'k-end',       tagged_fixnum(0x804f)
+feline_constant k_delete,    'k-delete',    tagged_fixnum(0x8053)
+feline_constant k_prior,     'k-prior',     tagged_fixnum(0x8049)
+feline_constant k_next,      'k-next',      tagged_fixnum(0x8051)
 
-feline_constant k_ctrl_home, 'k-ctrl-home', tagged_fixnum($8077)
-feline_constant k_ctrl_end,  'k-ctrl-end',  tagged_fixnum($8075)
+feline_constant k_ctrl_home, 'k-ctrl-home', tagged_fixnum(0x8077)
+feline_constant k_ctrl_end,  'k-ctrl-end',  tagged_fixnum(0x8075)
 
-feline_constant k_enter,     'k-enter',     tagged_fixnum($0d)
+feline_constant k_enter,     'k-enter',     tagged_char(0x0d)
 
 %else
 
@@ -142,7 +144,7 @@ feline_constant k_enter,     'k-enter',     tagged_fixnum($0d)
 code ekey, 'ekey'                       ; -- fixnum
         _ raw_key
         _dup
-        _lit $1b
+        _lit 0x1b
         _equal
         _if .1
         _begin .2
@@ -154,23 +156,32 @@ code ekey, 'ekey'                       ; -- fixnum
         _or
         _repeat .2
         _then .1
+
+        _dup
+        _lit 0x80
+        _ult
+        _if .3
+        _tag_char
+        _else .3
         _tag_fixnum
+        _then .3
+
         next
 endcode
 
-feline_constant k_right,     'k-right',     tagged_fixnum($1b5b43)
-feline_constant k_left,      'k-left',      tagged_fixnum($1b5b44)
-feline_constant k_up,        'k-up',        tagged_fixnum($1b5b41)
-feline_constant k_down,      'k-down',      tagged_fixnum($1b5b42)
-feline_constant k_home,      'k-home',      tagged_fixnum($1b5b48)
-feline_constant k_end,       'k-end',       tagged_fixnum($1b5b46)
-feline_constant k_delete,    'k-delete',    tagged_fixnum($1b5b337e)
-feline_constant k_prior,     'k-prior',     tagged_fixnum($1b5b357e)
-feline_constant k_next,      'k-next',      tagged_fixnum($1b5b367e)
+feline_constant k_right,     'k-right',     tagged_fixnum(0x1b5b43)
+feline_constant k_left,      'k-left',      tagged_fixnum(0x1b5b44)
+feline_constant k_up,        'k-up',        tagged_fixnum(0x1b5b41)
+feline_constant k_down,      'k-down',      tagged_fixnum(0x1b5b42)
+feline_constant k_home,      'k-home',      tagged_fixnum(0x1b5b48)
+feline_constant k_end,       'k-end',       tagged_fixnum(0x1b5b46)
+feline_constant k_delete,    'k-delete',    tagged_fixnum(0x1b5b337e)
+feline_constant k_prior,     'k-prior',     tagged_fixnum(0x1b5b357e)
+feline_constant k_next,      'k-next',      tagged_fixnum(0x1b5b367e)
 
-feline_constant k_ctrl_home, 'k-ctrl-home', tagged_fixnum($1b5b313b3548)
-feline_constant k_ctrl_end,  'k-ctrl-end',  tagged_fixnum($1b5b313b3546)
+feline_constant k_ctrl_home, 'k-ctrl-home', tagged_fixnum(0x1b5b313b3548)
+feline_constant k_ctrl_end,  'k-ctrl-end',  tagged_fixnum(0x1b5b313b3546)
 
-feline_constant k_enter,     'k-enter',     tagged_fixnum($0a)
+feline_constant k_enter,     'k-enter',     tagged_char(0x0a)
 
 %endif
