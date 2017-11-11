@@ -38,7 +38,7 @@ GENERIC_WRITE   equ     $40000000
 
 %define FIXNUM_TAG      1
 
-%if 1
+%if 0
 %define CHAR_TAG        FIXNUM_TAG
 %define CHAR_TAG_BITS   FIXNUM_TAG_BITS
 %define CHAR_TAG_MASK   FIXNUM_TAG_MASK
