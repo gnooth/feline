@@ -1457,16 +1457,53 @@ code char_to_string, 'char>string'      ; tagged-char -- string
 
         _verify_char
 
+        ; space char is a special case
+        _dup
+        _tagged_char(' ')
+        _eq?
+        _tagged_if .1
+        _drop
+        _quote "'\x20'"
+        _return
+        _then .1
+
         _lit 3
         _ new_sbuf_untagged
         _tor
 
         _lit tagged_char("'")
         _rfetch
-        _ sbuf_push
+        _ sbuf_push                     ; -- tagged-char
+
+        _dup
+        _ printable_char?
+        _tagged_if .2
 
         _rfetch
         _ sbuf_push
+
+        _else .2
+
+        _quote '\x'
+        _ rfetch
+        _ sbuf_append_string            ; -- tagged-char
+
+        _char_code
+        _ fixnum_to_hex                 ; -- string
+
+        _dup
+        _ string_raw_length
+        cmp     rbx, 1
+        _drop
+        jne     .3
+        _lit tagged_char('0')
+        _rfetch
+        _ sbuf_push
+.3:
+        _rfetch
+        _ sbuf_append_string
+
+        _then .2
 
         _lit tagged_char("'")
         _rfetch

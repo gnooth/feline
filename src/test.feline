@@ -2958,4 +2958,19 @@ test: file-attributes-test-1
 
 file-attributes-test-1
 
+test: char>string-test-1
+    'a' char>string "'a'" assert=
+    '7' char>string "'7'" assert=
+    '~' char>string "'~'" assert=
+
+     3 code-char char>string "'\\x03'" assert=
+     8 code-char char>string "'\\x08'" assert=  -- \b
+     9 code-char char>string "'\\x09'" assert=  -- \t
+    10 code-char char>string "'\\x0a'" assert=  -- \n
+    13 code-char char>string "'\\x0d'" assert=  -- \r
+    32 code-char char>string "'\\x20'" assert=
+;
+
+char>string-test-1
+
 ?nl "Reached end of test.feline" write-string
