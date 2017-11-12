@@ -650,6 +650,7 @@ last-word 0x63 install-handler
     -- modrm-reg encodes opcode extension
     -- source is imm8
     -- dest is r/m8
+    8 !> dsize
     !modrm-byte
     regop-mnemonic !> mnemonic
     modrm-mod {
@@ -686,7 +687,6 @@ last-word 0x63 install-handler
         { 3  [
             -- register-direct
             modrm-rm !> dreg
-            8 !> dsize
             next-byte !> immediate-operand
             t !> immediate-operand?
         ] }
