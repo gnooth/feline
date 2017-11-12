@@ -192,7 +192,7 @@ global: prefix-offset
         dot 1 < [ ] return-if
 
         -- get word before dot
-        dot 1 - buffer [ 32 = ] find-last-from  -- index/f elt/f
+        dot 1 - buffer [ 32 code-char = ] find-last-from  -- index/f elt/f
         [ 1 + ] [ drop 0 ] if !> prefix-offset
 
         prefix-offset dot buffer sbuf-substring -- prefix
