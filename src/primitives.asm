@@ -433,42 +433,43 @@ code while, 'while'             ; pred body --
 endcode
 
 ; ### token-character-literal?
-code token_character_literal?, 'token-character-literal?' ; token -- char t | token f
-        _dup
-        _ string_length
-        _lit tagged_fixnum(3)
-        _equal
-        _zeq_if .1
-        _f
-        _return
-        _then .1
+code token_character_literal?, 'token-character-literal?'       ; token -- char t | token f
 
-        _lit tagged_zero
-        _over
-        _ string_nth
-        _lit $27
+        _duptor
+
+        _ check_string
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; --    r: -- token
+
+        cmp     this_string_raw_length, 3
+        jl .fail
+
+        ; length >= 3
+        cmp     this_string_first_unsafe, 0x27
+        jne .fail
+
+        _this_string_last_unsafe
+        cmp     rbx, 0x27
+        poprbx
+        jne .fail
+
+        cmp     this_string_raw_length, 3
+        jne     .fail
+
+        _this_string_second_unsafe
         _tag_char
-        _equal
-        _zeq_if .2
-        _f
-        _return
-        _then .2
 
-        _lit tagged_fixnum(2)
-        _over
-        _ string_nth
-        _lit $27
-        _tag_char
-        _equal
-        _zeq_if .3
-        _f
-        _return
-        _then .3
-
-        _lit tagged_fixnum(1)
-        _swap
-        _ string_nth
+        pop     this_register
+        _rdrop
         _t
+        _return
+
+.fail:
+        pop     this_register
+        _rfrom
+        _f
         next
 endcode
 
