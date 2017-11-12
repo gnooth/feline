@@ -187,6 +187,32 @@ endcode
         movzx   ebx, byte [rbx + this_register + STRING_RAW_DATA_OFFSET]
 %endmacro
 
+%define this_string_first_unsafe        byte [this_register + STRING_RAW_DATA_OFFSET]
+
+%macro  _this_string_first_unsafe 0     ; -- untagged-char
+        pushrbx
+        movzx   ebx, byte [this_register + STRING_RAW_DATA_OFFSET]
+%endmacro
+
+%define this_string_second_unsafe       byte [this_register + STRING_RAW_DATA_OFFSET + 1]
+
+%macro  _this_string_second_unsafe 0    ; -- untagged-char
+        pushrbx
+        movzx   ebx, byte [this_register + STRING_RAW_DATA_OFFSET + 1]
+%endmacro
+
+%define this_string_third_unsafe        byte [this_register + STRING_RAW_DATA_OFFSET + 2]
+
+%macro  _this_string_third_unsafe 0     ; -- untagged-char
+        pushrbx
+        movzx   ebx, byte [this_register + STRING_RAW_DATA_OFFSET + 2]
+%endmacro
+
+%macro  _this_string_last_unsafe 0      ; -- untagged-char
+        _this_string_raw_length
+        movzx   ebx, byte [rbx + this_register + STRING_RAW_DATA_OFFSET - 1]
+%endmacro
+
 ; ### copy-to-string
 code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL
 ; from-addr from-length -- handle
