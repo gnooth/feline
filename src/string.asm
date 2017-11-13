@@ -402,9 +402,8 @@ code string_first_char, 'string-first-char'     ; string -- char
 ; return first byte of string
 ; error if string is empty
         _ check_string
-        mov     rax, [rbx + STRING_RAW_LENGTH_OFFSET]
-        test    rax, rax
-        jz      error_string_index_out_of_bounds
+        cmp     qword [rbx + STRING_RAW_LENGTH_OFFSET], 0
+        je      error_string_index_out_of_bounds
         movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET]
         _tag_char
         next
