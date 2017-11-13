@@ -414,20 +414,10 @@ code string_last_char, 'string-last-char'       ; string -- char
 ; return last byte of string
 ; error if string is empty
         _ check_string
-        _dup
-        _string_raw_length
-        _dup
-        _zeq_if .1
-        _2drop
-        _error "index out of bounds"
-        _else .1
-        _swap
-        _string_raw_data_address
-        _plus
-        _oneminus
-        _cfetch
-        _then .1
-
+        mov     rax, qword [rbx + STRING_RAW_LENGTH_OFFSET]
+        sub     rax, 1
+        js      error_string_index_out_of_bounds
+        movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET + rax]
         _tag_char
         next
 endcode
