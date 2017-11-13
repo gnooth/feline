@@ -19,8 +19,10 @@ file __FILE__
 
 ; 3 cells: object header, length, hashcode
 
+%define STRING_RAW_LENGTH_OFFSET        8
+
 ; character data (untagged) starts at offset 24
-%define STRING_RAW_DATA_OFFSET  24
+%define STRING_RAW_DATA_OFFSET          24
 
 ; ### string?
 code string?, 'string?'                 ; x -- ?
@@ -396,20 +398,22 @@ string_nth_untagged:
 endcode
 
 ; ### string-first-char
-code string_first_char, 'string-first-char' ; string -- char
-; Returns first character of string.
-; Throws an error if the string is empty.
-        _ verify_string
-        _zero
-        _swap
-        _ string_nth_untagged
+code string_first_char, 'string-first-char'     ; string -- char
+; return first byte of string
+; error if string is empty
+        _ check_string
+        mov     rax, [rbx + STRING_RAW_LENGTH_OFFSET]
+        test    rax, rax
+        jz      error_string_index_out_of_bounds
+        movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET]
+        _tag_char
         next
 endcode
 
 ; ### string-last-char
-code string_last_char, 'string-last-char' ; string -- char
-; Returns last character of string.
-; Throws an error if the string is empty.
+code string_last_char, 'string-last-char'       ; string -- char
+; return last byte of string
+; error if string is empty
         _ check_string
         _dup
         _string_raw_length

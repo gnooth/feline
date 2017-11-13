@@ -239,3 +239,10 @@ code error_unexpected_delimiter, 'error-unexpected-delimiter'
         _ error
         next
 endcode
+
+; ### error-string-index-out-of-bounds
+code error_string_index_out_of_bounds, 'error-string-index-out-of-bounds'
+        _quote "ERROR: string index out of bounds."
+        _ error
+        next
+endcode
