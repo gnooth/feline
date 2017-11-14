@@ -557,9 +557,9 @@ code tilde_expand_filename, 'tilde-expand-filename'     ; string1 -- string2
 
 .3:
         ; length > 1
-        _lit 1
+        _lit tagged_fixnum(1)
         _rfetch
-        _ string_nth_untagged
+        _ string_nth
         _ path_separator_char?          ; "~/" or "~\"
         _tagged_if .4
         _ user_home
