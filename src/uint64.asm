@@ -25,8 +25,6 @@ file __FILE__
         _set_slot1
 %endmacro
 
-%define __this_uint64_raw_value this_slot1
-
 %macro  _this_uint64_raw_value 0        ; -- raw-value
         _this_slot1
 %endmacro
