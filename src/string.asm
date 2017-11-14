@@ -371,29 +371,18 @@ endcode
 
 ; ### string-nth
 code string_nth, 'string-nth'   ; tagged-index string -- tagged-char
-; Return character at index.
-
-        _tor
-        _check_index
-        _rfrom                          ; -- raw-index string
-
-string_nth_untagged:
-
+; return byte at index
         _ check_string
-
-        push    this_register
-        mov     this_register, rbx
-        poprbx                          ; -- raw-index
-        cmp     rbx, this_string_raw_length
-        jnb     .1
-        _this_string_nth_unsafe
+        push    rbx
+        mov     rbx, [rbp]
+        _nip
+        _check_fixnum
+        mov     rax, rbx                ; raw index in rax
+        pop     rbx                     ; -- string
+        cmp     rax, qword [rbx + STRING_RAW_LENGTH_OFFSET]
+        jnb     error_string_index_out_of_bounds
+        movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET + rax]
         _tag_char
-        pop     this_register
-        _return
-
-.1:
-        pop     this_register
-        _error "index out of bounds"
         next
 endcode
 
