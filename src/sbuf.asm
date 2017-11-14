@@ -31,7 +31,7 @@ file __FILE__
         _set_slot1
 %endmacro
 
-%define __this_sbuf_raw_length this_slot1
+%define this_sbuf_raw_length this_slot1
 
 %macro  _this_sbuf_raw_length 0         ; -- length
         _this_slot1
@@ -49,7 +49,7 @@ file __FILE__
         _set_slot2
 %endmacro
 
-%define __this_sbuf_raw_data_address this_slot2
+%define this_sbuf_raw_data_address this_slot2
 
 %macro  _this_sbuf_data 0               ; -- data-address
         _this_slot2
@@ -91,12 +91,12 @@ file __FILE__
 %endmacro
 
 %macro  _this_sbuf_nth_unsafe 0         ; index -- untagged-char
-        mov     rdx, __this_sbuf_raw_data_address
+        mov     rdx, this_sbuf_raw_data_address
         movzx   rbx, byte [rdx + rbx]
 %endmacro
 
 %macro  _this_sbuf_set_nth_unsafe 0     ; char index --
-        mov     rdx, __this_sbuf_raw_data_address
+        mov     rdx, this_sbuf_raw_data_address
         mov     al, [rbp]
         mov     [rdx + rbx], al
         _2drop
@@ -425,7 +425,7 @@ code this_sbuf_push_raw_unsafe, 'this_sbuf_push_raw_unsafe', SYMBOL_INTERNAL
 ; untagged-char --
         _this_sbuf_raw_length
         _this_sbuf_set_nth_unsafe
-        add     __this_sbuf_raw_length, 1
+        add     this_sbuf_raw_length, 1
         next
 endcode
 
@@ -461,7 +461,7 @@ code sbuf_push, 'sbuf-push'             ; tagged-char sbuf --
 
         _this_sbuf_set_nth_unsafe
 
-        add     __this_sbuf_raw_length, 1
+        add     this_sbuf_raw_length, 1
 
         pop     this_register
         _return
