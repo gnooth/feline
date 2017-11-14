@@ -1474,6 +1474,8 @@ last-word 0x31 install-0x0f-handler
 : .0f-87 ( -- ) "ja"  jcc-rel32 ; last-word 0x87 install-0x0f-handler
 : .0f-88 ( -- ) "js"  jcc-rel32 ; last-word 0x88 install-0x0f-handler
 : .0f-8c ( -- ) "jl"  jcc-rel32 ; last-word 0x8c install-0x0f-handler
+: .0f-8d ( -- ) "jge" jcc-rel32 ; last-word 0x8d install-0x0f-handler
+: .0f-8e ( -- ) "jle" jcc-rel32 ; last-word 0x8e install-0x0f-handler
 : .0f-8f ( -- ) "jg"  jcc-rel32 ; last-word 0x8f install-0x0f-handler
 
 : setcc-mnemonic ( byte -- string )
