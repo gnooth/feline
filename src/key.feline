@@ -45,6 +45,16 @@ k-next                          >constant: pagedown
 k-ctrl-home                     >constant: ctrl-home
 k-ctrl-end                      >constant: ctrl-end
 
+windows? #if
+0x808d                          >constant: ctrl-up
+0x8091                          >constant: ctrl-down
+#endif
+
+linux? #if
+0x1b5b313b3541                  >constant: ctrl-up
+0x1b5b313b3542                  >constant: ctrl-down
+#endif
+
 windows? 0x803d 0x1b4f52 ?      >constant: f3
 
 0x1b5b5a                        >constant: shift-tab    -- Linux only
