@@ -80,6 +80,8 @@ tuple: position line-number offset ;
 
 : lines-per-page ( -- n ) #rows 2 - ;
 
+: bottom-line-number ( -- n ) top-line-number lines-per-page 1 - + buffer-line-count min ;
+
 : .cursor ( -- )
     dot-offset
     dot-line-number top-line-number -
@@ -444,6 +446,30 @@ symbol: +compound-undo+
     ] when
 ;
 
+: do-window-up
+    top-line-number 0 > [
+        top-line-number 1 - !> top-line-number
+        dot-line-number bottom-line-number > [
+            add-undo-move
+            bottom-line-number dot-line-number!
+            0 dot-offset!
+        ] when
+        t !> repaint?
+    ] when
+;
+
+: do-window-down
+    top-line-number buffer-line-count 1 - < [
+        top-line-number 1 + !> top-line-number
+        dot-line-number top-line-number < [
+            add-undo-move
+            top-line-number dot-line-number!
+            0 dot-offset!
+        ] when
+        t !> repaint?
+    ] when
+;
+
 : do-page-down
     add-undo-move
 
@@ -757,6 +783,8 @@ in: editor
     key:right           ' do-right                      bind-key
     key:up              ' do-up                         bind-key
     key:down            ' do-down                       bind-key
+    key:ctrl-up         ' do-window-up                  bind-key
+    key:ctrl-down       ' do-window-down                bind-key
     key:pageup          ' do-page-up                    bind-key
     key:pagedown        ' do-page-down                  bind-key
     key:ctrl-home       ' beginning-of-buffer           bind-key
