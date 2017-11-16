@@ -789,7 +789,7 @@ code string_skip_to_whitespace, 'string-skip-to-whitespace' ; start-index string
 endcode
 
 ; ### string-index-from
-code string_index_from, 'string-index-from' ; char start-index string -- index/f
+code string_index_from, 'string-index-from'     ; char start-index string -- index/f
 
         _ check_string
 
@@ -803,10 +803,10 @@ code string_index_from, 'string-index-from' ; char start-index string -- index/f
         jnc     .1
 
         _2drop
-        jmp     .4
+        jmp     .not_found
 
 .1:                                     ; -- char untagged-start-index untagged-length
-        _untag_char qword [rbp + BYTES_PER_CELL]
+        _check_char qword [rbp + BYTES_PER_CELL]
         _swap
 
         _register_do_range .2
@@ -818,15 +818,15 @@ code string_index_from, 'string-index-from' ; char start-index string -- index/f
         mov     rbx, index_register
         _tag_fixnum
         _unloop
-        jmp     .5
+        jmp     .exit
 .3:
-        _loop   .2
+        _loop .2
 
-.4:
+.not_found:
         ; not found
         mov     ebx, f_value
 
-.5:
+.exit:
         pop     this_register
         next
 endcode

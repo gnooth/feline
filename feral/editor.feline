@@ -94,16 +94,16 @@ tuple: position line-number offset ;
 
 : detab ( string -- string' )
     >local: s
-    9 s string-index >local: i
+    9 code-char s string-index >local: i
     i f eq? [ s ] return-if
 
     256 <sbuf> >local: sb
 
     s [
-        dup 9 eq? [
+        dup 9 code-char eq? [
             drop
-            32 sb sbuf-push
-            [ sb sbuf-length 8 mod 0 eq? ] [ 32 sb sbuf-push ] until
+            32 code-char sb sbuf-push
+            [ sb sbuf-length 8 mod 0 eq? ] [ 32 code-char sb sbuf-push ] until
         ] [
             sb sbuf-push
         ] if
@@ -845,11 +845,11 @@ in: editor
     current-buffer buffer-filename file-contents
 
     -- detect eol
-    13 over string-index CR+LF LF ? current-buffer buffer-eol!
+    13 code-char over string-index CR+LF LF ? current-buffer buffer-eol!
 
     dup string-lines verify-vector !> buffer-lines
 
-    string-last-char 10 eq? [ "" buffer-lines vector-push ] when
+    string-last-char 10 code-char eq? [ "" buffer-lines vector-push ] when
 
     position make-instance !> dot
 
