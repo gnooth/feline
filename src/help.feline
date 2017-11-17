@@ -20,7 +20,7 @@ empty
 
 private
 
-   96 >constant: backquote
+96 code-char >constant: backquote
 
 white >constant: fg-title
  cyan >constant: fg-parameter
@@ -99,7 +99,7 @@ public
         ] unless
 
         256 <sbuf> >local: sb
-        v [ sb sbuf-append-string 10 sb sbuf-push ] each
+        v [ sb sbuf-append-string 10 code-char sb sbuf-push ] each
         sb sbuf>string !> help-string
     ] when
 
