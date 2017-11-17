@@ -12,7 +12,6 @@ global: mod-count
 global: mod-count-last-save
 global: buffer-lines
 global: top-line-number
-global: dot
 global: repaint?
 global: dot-line-changed?
 global: bindings
@@ -23,7 +22,19 @@ global: done?
 "\n"   >constant: LF
 "\r\n" >constant: CR+LF
 
-tuple: buffer filename autosave-filename eol ;
+tuple: position
+    line-number
+    offset ;
+
+tuple: buffer
+    dot
+    filename
+    autosave-filename
+    eol ;
+
+: dot ( -- position ) current-buffer buffer-dot ;
+
+: set-dot ( position -- ) current-buffer buffer-dot! ;
 
 : new-buffer ( -- ) buffer make-instance ;
 
@@ -33,8 +44,6 @@ tuple: buffer filename autosave-filename eol ;
 ;
 
 : editor-filename ( -- filename ) current-buffer buffer-filename ;
-
-tuple: position line-number offset ;
 
 : dot-line-number ( -- line-number ) dot position-line-number ;
 
@@ -215,7 +224,11 @@ tuple: position line-number offset ;
 
 : maybe-reframe ( -- ) reframe? [ reframe ] when ;
 
-tuple: undo-record mod-count action dot data ;
+tuple: undo-record
+    mod-count
+    action
+    dot
+    data ;
 
 symbol: +move+
 symbol: +line-edit+
@@ -266,7 +279,7 @@ symbol: +compound-undo+
 
 : undo-move ( undo-record -- )
     [ undo-record-mod-count !> mod-count ]
-    [ undo-record-dot !> dot ]
+    [ undo-record-dot set-dot ]
     bi
 ;
 
@@ -279,7 +292,7 @@ symbol: +compound-undo+
 
 : undo-line-edit ( undo-record -- )
     [ undo-record-mod-count !> mod-count ]
-    [ undo-record-dot !> dot ]
+    [ undo-record-dot set-dot ]
     [ undo-record-data dot-line! ]
     tri
 
@@ -299,7 +312,7 @@ symbol: +compound-undo+
 : undo-delete-line-separator ( undo-record -- )
     dup
     [ undo-record-mod-count !> mod-count ]
-    [ undo-record-dot !> dot ]
+    [ undo-record-dot set-dot ]
     bi
     undo-record-data ( 2array )
     dup array-first dot-line!
@@ -316,7 +329,7 @@ symbol: +compound-undo+
 
 : undo-insert-line-separator ( undo-record -- )
     [ undo-record-mod-count !> mod-count ]
-    [ undo-record-dot !> dot ]
+    [ undo-record-dot set-dot ]
     [ undo-record-data dot-line! ]
     tri
     dot-line-number 1 + buffer-lines vector-remove-nth!
@@ -844,7 +857,7 @@ in: editor
     LF current-buffer buffer-eol!
     64 <vector> !> buffer-lines
     "" buffer-lines vector-push
-    position make-instance !> dot
+    position make-instance set-dot
     0 dot-offset!
     0 dot-line-number!
     0 !> top-line-number
@@ -868,7 +881,7 @@ in: editor
 
     string-last-char 10 code-char eq? [ "" buffer-lines vector-push ] when
 
-    position make-instance !> dot
+    position make-instance set-dot
 
     0 dot-offset!
     line-number 1 - 0 max buffer-line-count 1 - min dot-line-number!
