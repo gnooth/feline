@@ -8,8 +8,6 @@ feline-home "feral" path-append add-source-directory
 using: feline accept-string ;
 
 global: current-buffer
-global: mod-count
-global: mod-count-last-save
 global: top-line-number
 global: repaint?
 global: dot-line-changed?
@@ -30,6 +28,8 @@ tuple: buffer
     dot
     filename
     autosave-filename
+    mod-count
+    mod-count-last-save
     eol ;
 
 : current-buffer-lines ( -- vector ) current-buffer buffer-lines ;
@@ -40,7 +40,13 @@ tuple: buffer
 
 : set-dot ( position -- ) current-buffer buffer-dot! ;
 
-: new-buffer ( -- ) buffer make-instance ;
+: mod-count ( -- n ) current-buffer buffer-mod-count ;
+
+: set-mod-count ( n -- ) current-buffer buffer-mod-count! ;
+
+: mod-count-last-save ( -- n ) current-buffer buffer-mod-count-last-save ;
+
+: set-mod-count-last-save ( n -- ) current-buffer buffer-mod-count-last-save! ;
 
 : create-buffer ( filename -- buffer )
     buffer make-instance
@@ -69,7 +75,7 @@ tuple: buffer
 
 : modified? ( -- ) mod-count mod-count-last-save neq? ;
 
-: modified ( -- ) mod-count 1 + !> mod-count ;
+: modified ( -- ) mod-count 1 + set-mod-count ;
 
 : buffer-line-count ( -- n ) current-buffer-lines length ;
 
@@ -282,7 +288,7 @@ symbol: +compound-undo+
 ;
 
 : undo-move ( undo-record -- )
-    [ undo-record-mod-count !> mod-count ]
+    [ undo-record-mod-count set-mod-count ]
     [ undo-record-dot set-dot ]
     bi
 ;
@@ -295,7 +301,7 @@ symbol: +compound-undo+
 ;
 
 : undo-line-edit ( undo-record -- )
-    [ undo-record-mod-count !> mod-count ]
+    [ undo-record-mod-count set-mod-count ]
     [ undo-record-dot set-dot ]
     [ undo-record-data dot-line! ]
     tri
@@ -315,7 +321,7 @@ symbol: +compound-undo+
 
 : undo-delete-line-separator ( undo-record -- )
     dup
-    [ undo-record-mod-count !> mod-count ]
+    [ undo-record-mod-count set-mod-count ]
     [ undo-record-dot set-dot ]
     bi
     undo-record-data ( 2array )
@@ -332,7 +338,7 @@ symbol: +compound-undo+
 ;
 
 : undo-insert-line-separator ( undo-record -- )
-    [ undo-record-mod-count !> mod-count ]
+    [ undo-record-mod-count set-mod-count ]
     [ undo-record-dot set-dot ]
     [ undo-record-data dot-line! ]
     tri
@@ -679,7 +685,7 @@ symbol: +compound-undo+
 
     fd file-close
 
-    mod-count !> mod-count-last-save
+    mod-count set-mod-count-last-save
 
     "Saving...done" message
 ;
@@ -866,7 +872,7 @@ in: editor
     0 dot-line-number!
     0 !> top-line-number
 
-    0 !> mod-count 0 !> mod-count-last-save
+    0 set-mod-count 0 set-mod-count-last-save
     0 !> goal-x
 ;
 
@@ -892,7 +898,7 @@ in: editor
 
     0 !> top-line-number
 
-    0 !> mod-count 0 !> mod-count-last-save
+    0 set-mod-count 0 set-mod-count-last-save
     0 !> goal-x
 ;
 
