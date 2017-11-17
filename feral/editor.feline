@@ -82,8 +82,25 @@ tuple: position line-number offset ;
 
 : bottom-line-number ( -- n ) top-line-number lines-per-page 1 - + buffer-line-count min ;
 
+: tab-width ( -- n ) 8 ;
+
+: dot-column ( -- column )
+    dot-offset dot-line-length min >local: limit
+    dot-line >local: line
+    0 >local: column
+    limit [
+        line string-nth 9 code-char eq? [
+            column
+            tab-width column tab-width mod -
+            + !> column
+        ] [
+            column 1 + !> column
+        ] if
+    ] each-integer
+    column ;
+
 : .cursor ( -- )
-    dot-offset
+    dot-column
     dot-line-number top-line-number -
     dup 0 >= assert-true
     at-xy ;
@@ -143,7 +160,7 @@ tuple: position line-number offset ;
     modified? [ '*' write-char ] [ space ] if
     editor-filename write-string
     dot-line-number 1 +
-    dot-offset 1 +
+    dot-column 1 +
     "Line %d Col %d " format
     #cols over length - >local: x
     x editor-filename length 1 + - 1 max spaces
