@@ -8,7 +8,6 @@ feline-home "feral" path-append add-source-directory
 using: feline accept-string ;
 
 global: current-buffer
-global: top-line-number
 global: repaint?
 global: dot-line-changed?
 global: bindings
@@ -26,6 +25,7 @@ tuple: position
 tuple: buffer
     lines
     dot
+    top-line-number
     filename
     autosave-filename
     mod-count
@@ -39,6 +39,10 @@ tuple: buffer
 : dot ( -- position ) current-buffer buffer-dot ;
 
 : set-dot ( position -- ) current-buffer buffer-dot! ;
+
+: top-line-number ( -- n ) current-buffer buffer-top-line-number ;
+
+: set-top-line-number ( n -- ) current-buffer buffer-top-line-number! ;
 
 : mod-count ( -- n ) current-buffer buffer-mod-count ;
 
@@ -228,7 +232,7 @@ tuple: buffer
 : reframe ( -- )
     dot-line-number
     lines-per-page 2 /i verify-index
-    - 0 max !> top-line-number
+    - 0 max set-top-line-number
     t !> repaint?
 ;
 
@@ -376,7 +380,7 @@ symbol: +compound-undo+
     0 dot-line-number!
     0 dot-offset!
 
-    0 !> top-line-number
+    0 set-top-line-number
     0 !> goal-x
     t !> repaint?
 ;
@@ -385,7 +389,7 @@ symbol: +compound-undo+
     add-undo-move
 
     buffer-line-count 1 - 0 max dot-line-number!
-    buffer-line-count lines-per-page - 0 max !> top-line-number
+    buffer-line-count lines-per-page - 0 max set-top-line-number
     dot-line-length dot-offset!
     dot-offset !> goal-x
     t !> repaint?
@@ -434,7 +438,7 @@ symbol: +compound-undo+
             dot-line-length dot-offset!
             dot-offset !> goal-x
             reframe? [
-                dot-line-number !> top-line-number
+                dot-line-number set-top-line-number
                 t !> repaint?
             ] when
         ] when
@@ -453,7 +457,7 @@ symbol: +compound-undo+
             0 dot-offset!
             dot-offset !> goal-x
             reframe? [
-                dot-line-number lines-per-page 1 - - !> top-line-number
+                dot-line-number lines-per-page 1 - - set-top-line-number
                 t !> repaint?
             ] when
         ] when
@@ -466,7 +470,7 @@ symbol: +compound-undo+
     dot-line-number buffer-line-count 1 - < [
         dot-line-number 1 + dot-line-number!
         reframe? [
-            dot-line-number lines-per-page 1 - - !> top-line-number
+            dot-line-number lines-per-page 1 - - set-top-line-number
             t !> repaint?
         ] when
         adjust-cursor-x
@@ -479,7 +483,7 @@ symbol: +compound-undo+
     dot-line-number 0 > [
         dot-line-number 1 - dot-line-number!
         reframe? [
-            dot-line-number !> top-line-number
+            dot-line-number set-top-line-number
             t !> repaint?
         ] when
         adjust-cursor-x
@@ -488,7 +492,7 @@ symbol: +compound-undo+
 
 : do-window-up
     top-line-number 0 > [
-        top-line-number 1 - !> top-line-number
+        top-line-number 1 - set-top-line-number
         dot-line-number bottom-line-number > [
             add-undo-move
             bottom-line-number dot-line-number!
@@ -500,7 +504,7 @@ symbol: +compound-undo+
 
 : do-window-down
     top-line-number buffer-line-count 1 - < [
-        top-line-number 1 + !> top-line-number
+        top-line-number 1 + set-top-line-number
         dot-line-number top-line-number < [
             add-undo-move
             top-line-number dot-line-number!
@@ -519,7 +523,7 @@ symbol: +compound-undo+
     buffer-line-count 1 - min
     dot-line-number!
 
-    dot-line-number goal-y - 0 max !> top-line-number
+    dot-line-number goal-y - 0 max set-top-line-number
     t !> repaint?
     adjust-cursor-x
 ;
@@ -531,7 +535,7 @@ symbol: +compound-undo+
 
     dot-line-number lines-per-page - 0 max dot-line-number!
 
-    dot-line-number goal-y - 0 max !> top-line-number
+    dot-line-number goal-y - 0 max set-top-line-number
     t !> repaint?
     adjust-cursor-x
 ;
@@ -870,7 +874,7 @@ in: editor
     position make-instance set-dot
     0 dot-offset!
     0 dot-line-number!
-    0 !> top-line-number
+    0 set-top-line-number
 
     0 set-mod-count 0 set-mod-count-last-save
     0 !> goal-x
@@ -896,7 +900,7 @@ in: editor
     0 dot-offset!
     line-number 1 - 0 max buffer-line-count 1 - min dot-line-number!
 
-    0 !> top-line-number
+    0 set-top-line-number
 
     0 set-mod-count 0 set-mod-count-last-save
     0 !> goal-x
