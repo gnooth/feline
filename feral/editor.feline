@@ -10,7 +10,6 @@ using: feline accept-string ;
 global: current-buffer
 global: mod-count
 global: mod-count-last-save
-global: buffer-lines
 global: top-line-number
 global: repaint?
 global: dot-line-changed?
@@ -27,10 +26,15 @@ tuple: position
     offset ;
 
 tuple: buffer
+    lines
     dot
     filename
     autosave-filename
     eol ;
+
+: current-buffer-lines ( -- vector ) current-buffer buffer-lines ;
+
+: set-current-buffer-lines ( vector -- ) current-buffer buffer-lines! ;
 
 : dot ( -- position ) current-buffer buffer-dot ;
 
@@ -67,15 +71,15 @@ tuple: buffer
 
 : modified ( -- ) mod-count 1 + !> mod-count ;
 
-: buffer-line-count ( -- n ) buffer-lines length ;
+: buffer-line-count ( -- n ) current-buffer-lines length ;
 
-: buffer-nth-line ( n -- string ) buffer-lines vector-nth ;
+: buffer-nth-line ( n -- string ) current-buffer-lines vector-nth ;
 
-: buffer-nth-line! ( string n -- ) buffer-lines vector-set-nth ;
+: buffer-nth-line! ( string n -- ) current-buffer-lines vector-set-nth ;
 
-: buffer-insert-nth-line ( string n -- ) buffer-lines vector-insert-nth ;
+: buffer-insert-nth-line ( string n -- ) current-buffer-lines vector-insert-nth ;
 
-: buffer-last-line ( -- string ) buffer-lines vector-last ;
+: buffer-last-line ( -- string ) current-buffer-lines vector-last ;
 
 : dot-line ( -- string ) dot-line-number buffer-nth-line ;
 
@@ -332,7 +336,7 @@ symbol: +compound-undo+
     [ undo-record-dot set-dot ]
     [ undo-record-data dot-line! ]
     tri
-    dot-line-number 1 + buffer-lines vector-remove-nth!
+    dot-line-number 1 + current-buffer-lines vector-remove-nth!
     t t !> repaint?
 ;
 
@@ -564,7 +568,7 @@ symbol: +compound-undo+
             add-undo-delete-line-separator
             dot-line-number 1 + buffer-nth-line
             dot-line swap string-append dot-line!
-            dot-line-number 1 + buffer-lines vector-remove-nth!
+            dot-line-number 1 + current-buffer-lines vector-remove-nth!
             t !> repaint?
         ] when
     ] when
@@ -740,7 +744,7 @@ public
     ] when
 
     found? [
-        next-line-number buffer-lines [
+        next-line-number current-buffer-lines [
             pattern swap substring-start
             dup !> found-offset
         ] find-from ( line-number/f line/f )
@@ -774,7 +778,7 @@ public
     ] when
 
     found? [
-        next-line-number buffer-lines [
+        next-line-number current-buffer-lines [
             pattern swap substring-start
             dup !> found-offset
         ] find-from ( line-number/f line/f )
@@ -855,8 +859,8 @@ in: editor
 : initialize-empty-buffer ( -- )
     "untitled" create-buffer !> current-buffer
     LF current-buffer buffer-eol!
-    64 <vector> !> buffer-lines
-    "" buffer-lines vector-push
+    64 <vector> set-current-buffer-lines
+    "" current-buffer-lines vector-push
     position make-instance set-dot
     0 dot-offset!
     0 dot-line-number!
@@ -877,9 +881,9 @@ in: editor
     -- detect eol
     13 code-char over string-index CR+LF LF ? current-buffer buffer-eol!
 
-    dup string-lines verify-vector !> buffer-lines
+    dup string-lines verify-vector set-current-buffer-lines
 
-    string-last-char 10 code-char eq? [ "" buffer-lines vector-push ] when
+    string-last-char 10 code-char eq? [ "" current-buffer-lines vector-push ] when
 
     position make-instance set-dot
 
