@@ -23,6 +23,7 @@ in: key
 0x09 code-char                  >constant: tab
 0x0b code-char                  >constant: ctrl-k
 0x0e code-char                  >constant: ctrl-n
+0x0f code-char                  >constant: ctrl-o
 0x10 code-char                  >constant: ctrl-p
 0x11 code-char                  >constant: ctrl-q
 0x13 code-char                  >constant: ctrl-s
@@ -48,11 +49,15 @@ k-ctrl-end                      >constant: ctrl-end
 windows? #if
 0x808d                          >constant: ctrl-up
 0x8091                          >constant: ctrl-down
+0x809b                          >constant: alt-left
+0x809d                          >constant: alt-right
 #endif
 
 linux? #if
 0x1b5b313b3541                  >constant: ctrl-up
 0x1b5b313b3542                  >constant: ctrl-down
+0x1b5b313b3344                  >constant: alt-left
+0x1b5b313b3343                  >constant: alt-right
 #endif
 
 windows? 0x803d 0x1b4f52 ?      >constant: f3
