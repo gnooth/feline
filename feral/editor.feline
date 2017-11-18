@@ -375,7 +375,7 @@ symbol: +compound-undo+
     [ undo-record-data dot-line! ]
     tri
     dot-line-number 1 + current-buffer-lines vector-remove-nth!
-    t t !> repaint?
+    t !> repaint?
 ;
 
 : undo1 ( undo-record -- )
