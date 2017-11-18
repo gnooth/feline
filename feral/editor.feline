@@ -741,104 +741,6 @@ symbol: +compound-undo+
     clear-message-line
 ;
 
--- find, find-again
-
-using: feline accept-string editor ;
-in: search
-
-empty
-
-private
-
-global: pattern
-
-global: found-line-number
-global: found-offset
-
-: not-found ( -- )
-   0 message-y at-xy error-style "Not found" write-string output-style ;
-
-: find-pattern-in-current-line ( start -- index/f )
-    pattern dot-line pick string-tail substring-start ( index/f )
-    [ + ] [ drop f ] if*
-;
-
-public
-
-: do-find ( -- )
-    0 message-y at-xy "Find: " accept-string !> pattern
-    clear-message-line
-
-    f >local: found?
-
-    f !> found-line-number
-    f !> found-offset
-
-    dot-offset find-pattern-in-current-line !> found-offset
-
-    found-offset [
-        dot-line-number !> found-line-number
-        t !> found?
-    ] when
-
-    found? [
-        next-line-number current-buffer-lines [
-            pattern swap substring-start
-            dup !> found-offset
-        ] find-from ( line-number/f line/f )
-        [ !> found-line-number t !> found? ] [ drop ] if
-    ] unless
-
-    found? [
-        add-undo-move
-        found-line-number dot-line-number!
-        found-offset dot-offset!
-        dot-offset !> goal-x
-        maybe-reframe
-    ] [
-        not-found
-    ] if
-;
-
-: do-find-again ( -- )
-    f >local: found?
-
-    f !> found-line-number
-    f !> found-offset
-
-    dot-offset dot-line-length 1 - < [
-        dot-offset 1 + find-pattern-in-current-line !> found-offset
-    ] when
-
-    found-offset [
-        dot-line-number !> found-line-number
-        t !> found?
-    ] when
-
-    found? [
-        next-line-number current-buffer-lines [
-            pattern swap substring-start
-            dup !> found-offset
-        ] find-from ( line-number/f line/f )
-        [ !> found-line-number t !> found? ] [ drop ] if
-    ] unless
-
-    found? [
-        add-undo-move
-        found-line-number dot-line-number!
-        found-offset dot-offset!
-        dot-offset !> goal-x
-        maybe-reframe
-    ] [
-        not-found
-    ] if
-;
-
---
-
-using: feline search key accept-string ;
-in: editor
-
 : initialize-empty-buffer ( -- )
     "untitled" create-buffer !> current-buffer
     LF current-buffer buffer-eol!
@@ -925,6 +827,8 @@ in: editor
     buffer-list vector-nth !> current-buffer
     t !> repaint?
 ;
+
+use: search
 
 : bind-key ( key symbol -- ) swap bindings set-at ;
 
