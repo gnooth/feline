@@ -47,6 +47,19 @@ tuple: buffer
     mod-count-last-save
     eol ;
 
+16 <vector> >global: buffer-list
+
+: make-buffer ( -- buffer )
+    buffer make-instance >local: buf
+
+    0 buf buffer-top-line-number!
+    0 buf buffer-mod-count!
+    0 buf buffer-mod-count-last-save!
+    LF buf buffer-eol!
+
+    buf
+;
+
 : current-buffer-lines ( -- vector ) current-buffer buffer-lines ;
 
 : set-current-buffer-lines ( vector -- ) current-buffer buffer-lines! ;
@@ -823,8 +836,95 @@ public
 
 --
 
-using: feline search key ;
+using: feline search key accept-string ;
 in: editor
+
+: initialize-empty-buffer ( -- )
+    "untitled" create-buffer !> current-buffer
+    LF current-buffer buffer-eol!
+    64 <vector> set-current-buffer-lines
+    "" current-buffer-lines vector-push
+    position make-instance set-dot
+    0 dot-offset!
+    0 dot-line-number!
+    0 set-top-line-number
+
+    0 set-mod-count 0 set-mod-count-last-save
+    0 !> goal-x
+;
+
+: initialize-buffer ( filename line-number -- buf )
+    verify-index  >local: line-number
+    verify-string >local: filename
+
+    make-buffer >local: buf
+
+    filename buf buffer-filename!
+
+    filename file-contents
+
+    -- detect eol
+    13 code-char over string-index CR+LF LF ? buf buffer-eol!
+
+    dup string-lines verify-vector >local: lines
+
+    string-last-char 10 code-char eq? [ "" lines vector-push ] when
+
+    lines buf buffer-lines!
+
+    position make-instance >local: pos
+
+    0 pos position-offset!
+    line-number 1 - 0 max lines length 1 - min pos position-line-number!
+
+    pos buf buffer-dot!
+
+    0 !> goal-x
+
+    buf buffer-list vector-push
+
+    buf
+;
+
+: find-file-to-edit ( arg -- path/f )
+    >local: arg
+
+    arg find-file [
+        arg ensure-feline-extension find-file
+    ] unless*
+;
+
+: open-file ( -- )
+    0 message-y at-xy "File: " accept-string >local: arg
+    clear-message-line
+
+    arg find-file-to-edit [
+        1 initialize-buffer !> current-buffer
+        t !> repaint?
+    ] when*
+;
+
+: next-buffer ( -- )
+    buffer-list length 2 < [ ] return-if
+
+    buffer-list [ current-buffer eq? ] find     -- index/f element/f
+    current-buffer assert-eq                    -- index
+    1 + dup buffer-list length < [ drop 0 ] unless
+
+    buffer-list vector-nth !> current-buffer
+    t !> repaint?
+;
+
+: previous-buffer ( -- )
+    buffer-list length 2 < [ ] return-if
+
+    buffer-list [ current-buffer eq? ] find     -- index/f element/f
+    current-buffer assert-eq                    -- index
+    1 - dup 0 >= [ drop buffer-list length 1 - ] unless
+
+    buffer-list vector-nth !> current-buffer
+    t !> repaint?
+;
 
 : bind-key ( key symbol -- ) swap bindings set-at ;
 
@@ -859,6 +959,9 @@ in: editor
     key:ctrl-z          ' undo                          bind-key
     key:ctrl-u          ' undo                          bind-key
     key:escape          ' quit                          bind-key
+    key:ctrl-o          ' open-file                     bind-key
+    key:alt-right       ' next-buffer                   bind-key
+    key:alt-left        ' previous-buffer               bind-key
 ;
 
 : do-command ( -- ) lookup-key [ call-symbol ] when* ;
@@ -879,46 +982,6 @@ in: editor
 : initialize-editor ( -- )
     bindings [ initialize-bindings ] unless
     100 <vector> !> undo-stack
-;
-
-: initialize-empty-buffer ( -- )
-    "untitled" create-buffer !> current-buffer
-    LF current-buffer buffer-eol!
-    64 <vector> set-current-buffer-lines
-    "" current-buffer-lines vector-push
-    position make-instance set-dot
-    0 dot-offset!
-    0 dot-line-number!
-    0 set-top-line-number
-
-    0 set-mod-count 0 set-mod-count-last-save
-    0 !> goal-x
-;
-
-: initialize-buffer ( filename line-number -- )
-    verify-index  >local: line-number
-    verify-string >local: filename
-
-    filename create-buffer !> current-buffer
-
-    current-buffer buffer-filename file-contents
-
-    -- detect eol
-    13 code-char over string-index CR+LF LF ? current-buffer buffer-eol!
-
-    dup string-lines verify-vector set-current-buffer-lines
-
-    string-last-char 10 code-char eq? [ "" current-buffer-lines vector-push ] when
-
-    position make-instance set-dot
-
-    0 dot-offset!
-    line-number 1 - 0 max buffer-line-count 1 - min dot-line-number!
-
-    0 set-top-line-number
-
-    0 set-mod-count 0 set-mod-count-last-save
-    0 !> goal-x
 ;
 
 : edit1 ( -- )
@@ -942,13 +1005,9 @@ in: editor
 : edit-file ( arg -- )
     >local: arg
 
-    arg find-file [
-        arg ensure-feline-extension find-file
-    ] unless*   -- path/f
-
-    [
+    arg find-file-to-edit [
         initialize-editor
-        0 initialize-buffer
+        0 initialize-buffer !> current-buffer
         edit1
     ] [
         arg error-file-not-found
@@ -958,7 +1017,7 @@ in: editor
 : edit-definition ( symbol -- )
     initialize-editor
     symbol-location 2dup and
-    [ initialize-buffer edit1 ] [ 2drop ] if
+    [ initialize-buffer !> current-buffer edit1 ] [ 2drop ] if
 ;
 
 : edit-new ( -- )
