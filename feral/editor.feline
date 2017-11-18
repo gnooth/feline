@@ -581,6 +581,49 @@ symbol: +compound-undo+
     ] when
 ;
 
+: insert-spaces ( n -- )
+    -- no undo
+
+    >local: n
+    dot-line-head string>sbuf >local: sb
+    n [ 32 code-char sb sbuf-push ] times
+    dot-line-tail sb sbuf-append-string
+    sb sbuf>string dot-line!
+    dot-offset n + dot-offset!
+    t !> dot-line-changed?
+    modified
+;
+
+: do-tab ( -- )
+    add-undo-line-edit
+    4 dot-offset 4 mod - insert-spaces
+;
+
+: get-indentation ( line -- n/f )
+    dup empty? [ drop f ] return-if
+
+    detab
+    [ char-code 32 > ] find     -- index/f element/f
+    drop
+;
+
+: newline-and-indent ( -- )
+    dot-line get-indentation >local: indent
+
+    indent [
+        [
+            new-compound-undo +compound-undo+ set
+            insert-line-separator
+            add-undo-line-edit
+            indent insert-spaces
+            +compound-undo+ get
+        ] with-dynamic-scope
+        push-undo
+    ] [
+        insert-line-separator
+    ] if
+;
+
 : string-remove-nth ( n string -- string' )
     check-bounds
 
@@ -662,24 +705,6 @@ symbol: +compound-undo+
     t !> dot-line-changed?
     modified
     dot-offset !> goal-x
-;
-
-: insert-spaces ( n -- )
-    -- no undo
-
-    >local: n
-    dot-line-head string>sbuf >local: sb
-    n [ 32 code-char sb sbuf-push ] times
-    dot-line-tail sb sbuf-append-string
-    sb sbuf>string dot-line!
-    dot-offset n + dot-offset!
-    t !> dot-line-changed?
-    modified
-;
-
-: do-tab ( -- )
-    add-undo-line-edit
-    4 dot-offset 4 mod - insert-spaces
 ;
 
 : kill-line ( -- )
@@ -855,7 +880,7 @@ use: search
     key:ctrl-g          ' gotoline                      bind-key
     key:ctrl-q          ' do-quit                       bind-key
     key:ctrl-s          ' do-save                       bind-key
-    key:enter           ' insert-line-separator         bind-key
+    key:enter           ' newline-and-indent            bind-key
     key:ctrl-f          ' do-find                       bind-key
     key:f3              ' do-find-again                 bind-key
     key:tab             ' do-tab                        bind-key
