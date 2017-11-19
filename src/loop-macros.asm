@@ -91,8 +91,22 @@
 %1_top:
 %endmacro
 
-%macro  _do 1           ; limit start-index --
+%macro  _do 1                           ; limit start-index --
         _?do    %1
+%endmacro
+
+%macro  _do_times 1                     ; count --
+        test    rbx, rbx
+        jg      %1_ok                   ; count must be > 0
+        ; nothing to do
+        _drop
+        jmp     %1_exit
+%1_ok:
+        push    rbx                     ; r: -- limit
+        push    0                       ; r: -- limit start-index
+        _drop
+        align   DEFAULT_CODE_ALIGNMENT
+%1_top:
 %endmacro
 
 %macro  _loop 1

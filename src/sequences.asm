@@ -433,10 +433,8 @@ code each, 'each'       ; seq callable --
         mov     this_register, rbx      ; handle to seq in this_register
         _ length
         _untag_fixnum
-        _zero
-        _?do .1
-        _i
-        _tag_fixnum
+        _do_times .1
+        _tagged_loop_index
         _this                           ; -- tagged-index handle
         _ nth_unsafe                    ; -- element
         call    r12
