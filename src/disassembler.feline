@@ -170,15 +170,6 @@ global: #operands
 
 : .instruction-bytes ( -- )  ip instruction-start - .bytes ;
 
-: .dest ( -- )
-    dest-col
-    {
-        { [ dreg ] [ dreg dsize .register-name ] }
-        { [ dbase ] [ dbase dindex dscale ddisp dsize .relative ]  }
-        { [ memory-operand? ] [ ddisp dsize .memory-operand f !> memory-operand? ] }
-        [ ".dest" error ]
-    } cond ;
-
 : .sep  ( -- )  ", " write-string ;
 
 : .immediate-operand ( -- )
@@ -187,6 +178,16 @@ global: #operands
         { [ dup uint64? ] [ hex. ] }
         { [ dup 10 < ]    [ dec. ] }
         [ hex. ]
+    } cond ;
+
+: .dest ( -- )
+    dest-col
+    {
+        { [ dreg ] [ dreg dsize .register-name ] }
+        { [ dbase ] [ dbase dindex dscale ddisp dsize .relative ]  }
+        { [ memory-operand? ] [ ddisp dsize .memory-operand f !> memory-operand? ] }
+        { [ immediate-operand? ] [ .immediate-operand ] }
+        [ ".dest" error ]
     } cond ;
 
 : .source ( -- )
@@ -617,6 +618,15 @@ last-word 0x3c install-handler
     .inst ;
 
 last-word 0x63 install-handler
+
+: .6a
+    "push" !> mnemonic
+    next-signed-byte !> immediate-operand
+    t !> immediate-operand?
+    1 !> #operands
+    .inst ;
+
+last-word 0x6a install-handler
 
 : jmp/jcc-rel8 ( mnemonic -- )
     !> mnemonic
