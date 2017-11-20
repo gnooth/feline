@@ -296,6 +296,13 @@
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
+%macro  _not 0
+        mov     eax, t_value
+        cmp     rbx, f_value
+        mov     ebx, f_value
+        cmove   ebx, eax
+%endmacro
+
 %macro  _tuck 0                         ; x1 x2 -- x2 x1 x2
         mov     rax, [rbp]              ; x1 in rax, x2 in rbx
         mov     [rbp], rbx

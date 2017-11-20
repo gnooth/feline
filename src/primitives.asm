@@ -179,13 +179,6 @@ code feline_equal, '='                  ; x y -- ?
         next
 endcode
 
-%macro  _not 0
-        mov     eax, t_value
-        cmp     rbx, f_value
-        mov     ebx, f_value
-        cmove   ebx, eax
-%endmacro
-
 ; ### not
 inline not, 'not'
         _not
