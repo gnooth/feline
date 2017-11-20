@@ -452,6 +452,28 @@ code colon, ':', SYMBOL_IMMEDIATE       ; --
         next
 endcode
 
+; ### private:
+code private_colon, 'private:', SYMBOL_IMMEDIATE        ; --
+        _lit S_private_colon
+        _ top_level_only
+
+        _ colon
+        _ last_word
+        _ symbol_set_private
+        next
+endcode
+
+; ### public:
+code public_colon, 'public:', SYMBOL_IMMEDIATE          ; --
+        _lit S_public_colon
+        _ top_level_only
+
+        _ colon
+        _ last_word
+        _ symbol_set_public
+        next
+endcode
+
 ; ### ;
 code semi, ';', SYMBOL_IMMEDIATE        ; --
         _ error_unexpected_delimiter

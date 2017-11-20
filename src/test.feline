@@ -2514,15 +2514,27 @@ public
 
 : this-is-a-public-word ;
 
+public: this-is-another-public-word ;
+
+private: this-is-not-a-public-word ;
+
 private
 
 : this-is-a-private-word ;
 
+private: this-is-another-private-word ;
+
+public: this-is-not-a-private-word ;
+
 public
 
 test: visibility-test-1
-    ' this-is-a-public-word symbol-private? assert-false
-    ' this-is-a-private-word symbol-private? assert-true
+    ' this-is-a-public-word             [ symbol-private? assert-false ] [ symbol-public? assert-true ]  bi
+    ' this-is-another-public-word       [ symbol-private? assert-false ] [ symbol-public? assert-true ]  bi
+    ' this-is-not-a-public-word         [ symbol-private? assert-true ]  [ symbol-public? assert-false ] bi
+    ' this-is-a-private-word            [ symbol-private? assert-true ]  [ symbol-public? assert-false ] bi
+    ' this-is-another-private-word      [ symbol-private? assert-true ]  [ symbol-public? assert-false ] bi
+    ' this-is-not-a-private-word        [ symbol-private? assert-false ] [ symbol-public? assert-true ]  bi
 ;
 
 visibility-test-1
