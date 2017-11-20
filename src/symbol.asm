@@ -155,11 +155,17 @@ file __FILE__
 %macro  _symbol_set_flags_bit 1         ; symbol --
         _ check_symbol
         or      symbol_flags_slot, %1
-        poprbx
+        _drop
 %endmacro
 
 %macro  _this_symbol_set_flags_bit 1    ; --
         or      this_symbol_flags_slot, %1
+%endmacro
+
+%macro  _symbol_clear_flags_bit 1       ; symbol --
+        _ check_symbol
+        and     symbol_flags_slot, ~%1
+        _drop
 %endmacro
 
 %macro  _symbol_file 0                  ; symbol -- file
@@ -547,6 +553,27 @@ endcode
 ; ### symbol-private?
 code symbol_private?, 'symbol-private?'         ; symbol -- ?
         _symbol_flags_bit SYMBOL_PRIVATE
+        next
+endcode
+
+; ### symbol-set-private
+code symbol_set_private, 'symbol-set-private', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; symbol --
+        _symbol_set_flags_bit SYMBOL_PRIVATE
+        next
+endcode
+
+; ### symbol-public?
+code symbol_public?, 'symbol-public?'           ; symbol -- ?
+        _symbol_flags_bit SYMBOL_PRIVATE
+        _not
+        next
+endcode
+
+; ### symbol-set-public
+code symbol_set_public, 'symbol-set-public', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; symbol --
+        _symbol_clear_flags_bit SYMBOL_PRIVATE
         next
 endcode
 
