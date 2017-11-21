@@ -28,7 +28,7 @@ global: dot-line-changed?
 global: bindings
 global: done?
 
-0 >global: goal-x
+0 >global: goal-column
 
 "\n"   >constant: LF
 "\r\n" >constant: CR+LF
@@ -249,7 +249,7 @@ tuple: buffer
 ;
 
 : adjust-cursor-x ( -- )
-    goal-x dot-offset!
+    goal-column dot-offset!
     dot-offset dot-line-length > [
         dot-line-length dot-offset!
     ] when
@@ -421,7 +421,7 @@ symbol: +compound-undo+
     0 dot-offset!
 
     0 set-top-line-number
-    0 !> goal-x
+    0 !> goal-column
     t !> repaint?
 ;
 
@@ -431,7 +431,7 @@ symbol: +compound-undo+
     buffer-line-count 1 - 0 max dot-line-number!
     buffer-line-count lines-per-page - 0 max set-top-line-number
     dot-line-length dot-offset!
-    dot-offset !> goal-x
+    dot-offset !> goal-column
     t !> repaint?
 ;
 
@@ -456,14 +456,14 @@ symbol: +compound-undo+
     add-undo-move
 
     0 dot-offset!
-    0 !> goal-x
+    0 !> goal-column
 ;
 
 : end-of-line ( -- )
     add-undo-move
 
     dot-line length dot-offset!
-    dot-offset !> goal-x
+    dot-offset !> goal-column
 ;
 
 : do-left ( -- )
@@ -471,12 +471,12 @@ symbol: +compound-undo+
 
     dot-offset 0 > [
         dot-offset 1 - dot-offset!
-        dot-offset !> goal-x
+        dot-offset !> goal-column
     ] [
         dot-line-number 0 > [
             dot-line-number 1 - dot-line-number!
             dot-line-length dot-offset!
-            dot-offset !> goal-x
+            dot-offset !> goal-column
             reframe? [
                 dot-line-number set-top-line-number
                 t !> repaint?
@@ -490,12 +490,12 @@ symbol: +compound-undo+
 
     dot-offset dot-line length < [
         dot-offset 1 + dot-offset!
-        dot-offset !> goal-x
+        dot-offset !> goal-column
     ] [
         dot-line-number buffer-line-count 1 - < [
             dot-line-number 1 + dot-line-number!
             0 dot-offset!
-            dot-offset !> goal-x
+            dot-offset !> goal-column
             reframe? [
                 dot-line-number lines-per-page 1 - - set-top-line-number
                 t !> repaint?
@@ -587,7 +587,7 @@ symbol: +compound-undo+
         dot-line-head dot-line!
         dot-line-number 1 + dot-line-number!
         0 dot-offset!
-        0 !> goal-x
+        0 !> goal-column
         modified
         t !> repaint?
     ] when
@@ -721,7 +721,7 @@ symbol: +compound-undo+
     dot-offset 1 + dot-offset!
     t !> dot-line-changed?
     modified
-    dot-offset !> goal-x
+    dot-offset !> goal-column
 ;
 
 : kill-line ( -- )
@@ -794,7 +794,7 @@ symbol: +compound-undo+
     0 set-top-line-number
 
     0 set-mod-count 0 set-mod-count-last-save
-    0 !> goal-x
+    0 !> goal-column
 ;
 
 : initialize-buffer ( filename line-number -- buf )
@@ -823,7 +823,7 @@ symbol: +compound-undo+
 
     pos buf buffer-dot!
 
-    0 !> goal-x
+    0 !> goal-column
 
     buf buffer-list vector-push
 

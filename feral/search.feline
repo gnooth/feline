@@ -63,7 +63,7 @@ public
         add-undo-move
         found-line-number dot-line-number!
         found-offset dot-offset!
-        dot-offset !> goal-x
+        dot-offset !> goal-column
         maybe-reframe
     ] [
         not-found
@@ -97,7 +97,7 @@ public
         add-undo-move
         found-line-number dot-line-number!
         found-offset dot-offset!
-        dot-offset !> goal-x
+        dot-offset !> goal-column
         maybe-reframe
     ] [
         not-found
