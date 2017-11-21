@@ -281,7 +281,8 @@ symbol: +line-edit+
 symbol: +delete-line-separator+
 symbol: +insert-line-separator+
 
-tuple: compound-undo records ( vector ) ;
+tuple: compound-undo
+    records ( vector ) ;
 
 : new-compound-undo ( -- compound-undo )
     compound-undo make-instance
@@ -297,6 +298,15 @@ symbol: +compound-undo+
 
 : push-undo ( undo-record -- )
     +compound-undo+ get [ add-undo ] [ undo-stack vector-push ] if* ;
+
+: with-compound-undo ( quotation -- )
+    [
+        new-compound-undo +compound-undo+ set
+        call
+        +compound-undo+ get
+    ] with-dynamic-scope
+    push-undo
+;
 
 : pop-undo ( -- undo-record ) undo-stack vector-pop ;
 
@@ -614,13 +624,10 @@ symbol: +compound-undo+
 
     indent [
         [
-            new-compound-undo +compound-undo+ set
             insert-line-separator
             add-undo-line-edit
             indent insert-spaces
-            +compound-undo+ get
-        ] with-dynamic-scope
-        push-undo
+        ] with-compound-undo
     ] [
         insert-line-separator
     ] if
