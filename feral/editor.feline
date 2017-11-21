@@ -611,26 +611,34 @@ symbol: +compound-undo+
     4 dot-offset 4 mod - insert-spaces
 ;
 
-: get-indentation ( line -- n/f )
-    dup empty? [ drop f ] return-if
+: get-indentation-column ( line -- column )
+    dup empty? [ drop 0 ] return-if
 
     detab
-    [ char-code 32 > ] find     -- index/f element/f
-    drop
+    [ char-code 32 > ] find             -- index/f element/f
+    [ drop 0 ] unless
+;
+
+: delete-indentation ( line -- line' )
+    dup empty? [ ] return-if
+
+    >local: line
+
+    line [ char-code 32 > ] find        -- index/f element/f
+    [ line swap string-tail ] [ drop "" ] if
 ;
 
 : newline-and-indent ( -- )
-    dot-line get-indentation >local: indent
+    dot-line get-indentation-column >local: indent-col
 
-    indent [
-        [
-            insert-line-separator
-            add-undo-line-edit
-            indent insert-spaces
-        ] with-compound-undo
-    ] [
+    [
         insert-line-separator
-    ] if
+        add-undo-line-edit
+        dot-line delete-indentation dot-line!
+        indent-col 0 > [
+            indent-col insert-spaces
+        ] when
+    ] with-compound-undo
 ;
 
 : string-remove-nth ( n string -- string' )
