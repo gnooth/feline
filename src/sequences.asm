@@ -483,44 +483,48 @@ code each_index, 'each-index'           ; seq callable --
 endcode
 
 ; ### find
-code find, 'find'       ; seq quot -- index/f elt/f
+code find, 'find'                       ; seq quot -- index/f element/f
 
         ; protect callable from gc
         push    rbx
 
-        _ callable_raw_code_address     ; -- seq code-address
+        _ callable_raw_code_address     ; -- seq raw-code-address
 
+        push    r13
         push    r12
         mov     r12, rbx                ; address to call in r12
-        poprbx                          ; -- seq
+        _drop                           ; -- seq
         push    this_register
         mov     this_register, rbx      ; handle to seq in this_register
         _ length
         _untag_fixnum
-        _zero
-        _?do .1
-        _i
-        _tag_fixnum
+
+        _do_times .1
+        _tagged_loop_index
         _this                           ; -- tagged-index handle
         _ nth_unsafe                    ; -- element
+        mov     r13, rbx                ; save element in r13
         call    r12                     ; -- ?
-        _tagged_if .2
-        ; we're done
-        _i
-        _tag_fixnum
-        _dup
-        _this
-        _ nth_unsafe
-        _unloop
-        jmp     .exit
-        _then .2
+        cmp     rbx, f_value
+        _drop
+        jne     .found
         _loop .1
+
         ; not found
         _f
         _dup
+        jmp     .exit
+
+.found:
+        _tagged_loop_index              ; -- tagged-index
+        _dup
+        mov     rbx, r13                ; -- tagged-index element
+        _unloop
+
 .exit:
         pop     this_register
         pop     r12
+        pop     r13
 
         ; drop callable
         pop     rax
