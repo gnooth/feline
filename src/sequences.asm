@@ -789,3 +789,12 @@ code member_eq?, 'member-eq?'           ; obj seq -- index/f
         pop     this_register
         next
 endcode
+
+code any?, 'any?'                       ; seq quot -- ?
+        _ find                          ; -- index/f element/f
+        _drop
+        mov     rax, t_value
+        cmp     rbx, f_value
+        cmovne  rbx, rax
+        next
+endcode

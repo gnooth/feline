@@ -1309,6 +1309,13 @@ test: member-eq?-test-1
 
 member-eq?-test-1
 
+test: any?-test-1
+    { 1 2 3 4 } [ char? ] any? assert-false
+    { 1 2 3 4 't' } [ char? ] any? assert-true
+    { 't' 1 2 3 4 } [ char? ] any? assert-true ;
+
+any?-test-1
+
 test: string-head-test-1 ( -- )
     "this is a test"
     [ 4 string-head "this" assert= ] keep
