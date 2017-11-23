@@ -141,6 +141,17 @@ and
     Boolean `and`: if both `obj1` and `obj2` are true (that is, not `f`),
     return `obj2`. Otherwise return `f`. (Bitwise `and` is `bitand`.)
 
+any?
+    ( seq quot -- ? )   quot: ( element -- ? )
+    Return `t` if `seq` contains an element for which `quot` returns a
+    true value. Otherwise return `f`.
+
+    Example:
+
+        { 17 "test" } [ char? ] any?    -- f
+
+        { 17 "test" } [ string? ] any?  -- t
+
 between?
     ( n min max -- ? )
     Return `t` if `n` >= `min` and `n` <= `max`.
