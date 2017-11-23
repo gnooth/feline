@@ -29,20 +29,20 @@ global: pc
 
 : emit-byte ( byte -> )
     pc c!
-    pc 1 + pc! ;
+    pc 1 + !> pc ;
 
 : emit-dword ( dword -> )
     pc l!
-    pc 4 + pc! ;
+    pc 4 + !> pc ;
 
 : emit-qword ( qword -> )
     pc !
-    pc 8 + pc! ;
+    pc 8 + !> pc ;
 
 tuple: instruction %op %param ;
 
 : make-instruction ( x y -> instruction )
-    ' instruction new
+    instruction make-instance
     [ instruction-%param! ] keep
     [ instruction-%op! ] keep ;
 
@@ -86,7 +86,7 @@ tuple: instruction %op %param ;
     swap symbol-code-size               -- address size
     1 -                                 -- adjust size to exclude ret instruction
     pc swap [ copy-bytes ] keep         -- size
-    pc + pc! ;
+    pc + !> pc ;
 
 : compile-call ( symbol -> )
     symbol-code-address
@@ -118,7 +118,7 @@ tuple: instruction %op %param ;
         ?nl dup [ inst. ] each
     ] when
 
-    dup length 32 * initialize-code-block dup pc! origin!
+    dup length 32 * initialize-code-block dup !> pc !> origin
 
     ' compile-instruction each
 
