@@ -182,6 +182,7 @@ code initialize_types, 'initialize_types', SYMBOL_INTERNAL      ; --
         _add_type "int64", TYPECODE_INT64
         _add_type "tuple-class", TYPECODE_TUPLE_CLASS
         _add_type "type", TYPECODE_TYPE
+        _add_type "keyword", TYPECODE_KEYWORD
 
         next
 endcode

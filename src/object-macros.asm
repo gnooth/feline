@@ -50,8 +50,9 @@ TYPECODE_UINT64                 equ 22
 TYPECODE_INT64                  equ 23
 TYPECODE_TUPLE_CLASS            equ 24
 TYPECODE_TYPE                   equ 25
+TYPECODE_KEYWORD                equ 26
 
-LAST_BUILTIN_TYPECODE           equ 25
+LAST_BUILTIN_TYPECODE           equ 26
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
