@@ -113,6 +113,9 @@ tuple: buffer
 
 : normal ( -- ) esc[ "m" write-string ;
 
+: buffer-modified? ( buffer -- )
+    dup buffer-mod-count swap buffer-mod-count-last-save neq? ;
+
 : modified? ( -- ) mod-count mod-count-last-save neq? ;
 
 : modified ( -- ) mod-count 1 + set-mod-count ;
@@ -787,6 +790,39 @@ symbol: +compound-undo+
     clear-message-line
 ;
 
+: kill-buffer ( -- )
+    buffer-list length 1 = [ do-quit ] return-if
+
+    modified? [
+        0 message-y at-xy prompt-style "Save file? (y or n) " write-string
+        key 'y' eq? [ do-save ] when
+    ] when
+
+    local: response
+    t >local: ok?
+
+    modified? [
+        0 message-y at-xy
+        "Abandon changes? (yes or no) " accept-string !> response
+        response "yes" = [ f !> ok? ] unless
+    ] when
+
+    clear-message-line
+
+    ok? not [ ] return-if
+
+    buffer-list [ current-buffer eq? ] find     -- index/f element/f
+    current-buffer assert-eq
+    >local: n
+
+    n buffer-list vector-remove-nth!
+
+    n buffer-list length < [ n 1 - !> n ] unless
+
+    n buffer-list vector-nth !> current-buffer
+    t !> repaint?
+;
+
 : initialize-empty-buffer ( -- )
     "untitled" create-buffer !> current-buffer
     LF current-buffer buffer-eol!
@@ -899,6 +935,7 @@ use: search
     key:ctrl-g          ' gotoline                      bind-key
     key:ctrl-q          ' do-quit                       bind-key
     key:ctrl-s          ' do-save                       bind-key
+    key:ctrl-w          ' kill-buffer                   bind-key
     key:enter           ' newline-and-indent            bind-key
     key:ctrl-f          ' do-find                       bind-key
     key:f3              ' do-find-again                 bind-key
