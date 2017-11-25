@@ -409,12 +409,18 @@ GENERIC_WRITE   equ     $40000000
         align   DEFAULT_DATA_ALIGNMENT
 %strlen len     %2
 %1:
+        ; object header
         dw      TYPECODE_STRING
         db      0                       ; flags byte
         db      0                       ; not used
         dd      0                       ; not used
+
+        ; slot 1
         dq      len                     ; length
+
+        ; slot 2
         dq      f_value                 ; hashcode
+
         db      %2                      ; string
         db      0                       ; null byte at end
 %endmacro
@@ -436,7 +442,7 @@ section .data
 %define current_file    %%label
 %endmacro
 
-; Symbol bit flags
+; symbol bit flags
 %define SYMBOL_PRIMITIVE        $0001
 %define SYMBOL_IMMEDIATE        $0002
 %define SYMBOL_INLINE           $0004
