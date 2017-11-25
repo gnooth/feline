@@ -96,6 +96,14 @@ code error_not_char, 'error-not-char'           ; x --
         next
 endcode
 
+; ### error-not-keyword
+code error_not_keyword, 'error-not-keyword'     ; x --
+        _quote "a keyword"
+        _ format_type_error
+        _ error
+        next
+endcode
+
 ; ### error-not-string
 code error_not_string, 'error-not-string'       ; x --
         _quote "a string"
