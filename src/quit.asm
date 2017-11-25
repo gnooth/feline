@@ -175,6 +175,22 @@ code must_find_global, 'must-find-global'       ; string -- global
         next
 endcode
 
+; ### token-keyword?
+code token_keyword?, 'token-keyword?'   ; string -- keyword/string ?
+        _quote "#:"
+        _over
+        _ string_has_prefix?
+        _tagged_if .1
+        _lit tagged_fixnum(2)
+        _ string_tail
+        _ intern_keyword
+        _t
+        _else .1
+        _f
+        _then .1
+        next
+endcode
+
 ; ### token-literal?
 code token_literal?, 'token-literal?'   ; string -- literal/string ?
         _ token_character_literal?
@@ -189,16 +205,22 @@ code token_literal?, 'token-literal?'   ; string -- literal/string ?
         _return
         _then .2                        ; -- string
 
+        _ token_keyword?
+        _tagged_if .3
+        _t
+        _return
+        _then .3
+
         _dup
         _ string_to_number              ; -- string n/f
         _dup
-        _tagged_if .3                   ; -- string n
+        _tagged_if .4                   ; -- string n
         _nip
         _t
         _return
-        _else .3
+        _else .4
         _drop
-        _then .3                        ; -- string
+        _then .4                        ; -- string
 
         _f
 

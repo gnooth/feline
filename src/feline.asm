@@ -65,6 +65,7 @@ IN_FELINE
 %include "range.asm"
 %include "sequences.asm"
 %include "symbol.asm"
+%include "keyword.asm"
 %include "vocab.asm"
 %include "wrapper.asm"
 %include "quotation.asm"

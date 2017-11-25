@@ -206,6 +206,13 @@ code cold, 'cold'                       ; --
 
         _ hash_vocabs
 
+        _lit 64
+        _ new_hashtable_untagged
+        mov     [keyword_hashtable_], rbx
+        _drop
+        _lit keyword_hashtable_
+        _ gc_add_root
+
         _ initialize_types
 
         _ initialize_source_path

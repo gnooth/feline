@@ -155,28 +155,34 @@ code process_token, 'process-token'     ; string -- ???
         _then .1
 
         _ token_string_literal?
+        _tagged_if .3
+        _ maybe_add
+        _return
+        _then .3
+
+        _ find_name                     ; -- symbol/string ?
+        _tagged_if .4                   ; -- symbol
+        _dup
+        _ symbol_immediate?
+        _tagged_if .5
+        _ call_symbol
+        _else .5
+        _ maybe_add
+        _then .5
+        _return
+        _then .4
+
+        _ token_character_literal?
         _tagged_if .6
         _ maybe_add
         _return
         _then .6
 
-        _ find_name                     ; -- symbol/string ?
-        _tagged_if .3                   ; -- symbol
-        _dup
-        _ symbol_immediate?
-        _tagged_if .4
-        _ call_symbol
-        _else .4
-        _ maybe_add
-        _then .4
-        _return
-        _then .3
-
-        _ token_character_literal?
-        _tagged_if .5
+        _ token_keyword?
+        _tagged_if .7
         _ maybe_add
         _return
-        _then .5
+        _then .7
 
         _dup
         _ string_to_number
