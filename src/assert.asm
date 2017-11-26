@@ -84,7 +84,7 @@ code check_assert_equal, 'check-assert='        ; x y location --
         _3drop
         _else .1
         _to_global error_location
-        _quote "Assertion failed: %s %s ="
+        _quote "Assertion failed: %S %S ="
         _ format
         _ error
         _then .1
