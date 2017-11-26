@@ -21,6 +21,7 @@ in: feline
 
 {
     "syntax.feline"
+    "control.feline"
     "backtrace.feline"
     "dump.feline"
     "sequences.feline"
