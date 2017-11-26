@@ -1,0 +1,113 @@
+using: feline control ;
+in: control-test
+
+empty
+
+clear
+
+depth zero? assert-true
+ignore-level zero? assert-true
+
+t #if
+depth zero? assert-true
+ignore-level zero? assert-true
+#endif
+
+f #if
+assert-false
+#else
+depth zero? assert-true
+ignore-level zero? assert-true
+#endif
+
+ignore-level zero? assert-true
+
+--
+
+f #if
+assert-false
+
+t #if
+assert-false
+#else
+assert-false
+#endif
+assert-false
+
+#else
+depth zero? assert-true
+ignore-level zero? assert-true
+#endif
+
+--
+
+t #if
+ignore-level zero? assert-true
+
+f #if
+assert-false
+#else
+depth zero? assert-true
+ignore-level zero? assert-true
+#endif
+
+depth zero? assert-true
+ignore-level zero? assert-true
+#else
+assert-false
+#endif
+
+depth zero? assert-true
+ignore-level zero? assert-true
+
+-- control-test:raccoon is not defined
+test: control-test-1
+    #ifdef control-test:raccoon
+    "yes raccoon"
+    #else
+    "no raccoon"
+    #endif
+
+    "no raccoon" assert=
+
+    depth zero? assert-true
+
+    #ifndef control-test:raccoon
+    "no raccoon"
+    #else
+    "yes raccoon"
+    #endif
+
+    "no raccoon" assert=
+
+    depth zero? assert-true ;
+
+control-test-1
+
+symbol: baboon
+
+-- control-test:baboon is defined
+test: control-test-2
+    #ifdef control-test:baboon
+    "yes baboon"
+    #else
+    "no baboon"
+    #endif
+
+    "yes baboon" assert=
+
+    depth zero? assert-true
+
+    #ifndef control-test:baboon
+    "no baboon"
+    #else
+    "yes baboon"
+    #endif
+
+    "yes baboon" assert=
+
+    depth zero? assert-true ;
+
+control-test-2
+
+?nl "Reached end of control-test.feline" print
