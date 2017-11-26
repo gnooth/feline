@@ -77,6 +77,7 @@ public
 
         {
             "test.feline"
+            "control-test.feline"
             "random-tests.feline"
             "clisp-tests.feline"
             "stress.feline"

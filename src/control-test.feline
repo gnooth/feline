@@ -110,4 +110,4 @@ test: control-test-2
 
 control-test-2
 
-?nl "Reached end of control-test.feline" print
+?nl "Reached end of control-test.feline" write-string
