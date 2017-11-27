@@ -1686,16 +1686,23 @@ expt-test-1
 #endif
 
 test: string-substring-test-1
-    "this is a test"
-     0  4 pick string-substring "this"  assert=
-    10 14 pick string-substring "test"  assert=
-     5 10 pick string-substring "is a " assert=
-    13 14 pick string-substring "t"     assert=
+    "this is a test" >local: s
 
-    0 0 pick string-substring "" assert=
-    4 4 pick string-substring "" assert=
+     0  4 s string-substring "this"  assert=
+    10 14 s string-substring "test"  assert=
+     5 10 s string-substring "is a " assert=
+    13 14 s string-substring "t"     assert=
 
-    0 14 rot string-substring "this is a test" assert=
+     0  0 s string-substring "" assert=
+     4  4 s string-substring "" assert=
+    14 14 s string-substring "" assert=
+
+     0 14 s string-substring "this is a test" assert=
+
+    [  0 15 s string-substring ] assert-must-fail
+    [  0 -4 s string-substring ] assert-must-fail
+    [ -2 14 s string-substring ] assert-must-fail
+    [  4  3 s string-substring ] assert-must-fail
 ;
 
 string-substring-test-1
@@ -1709,6 +1716,7 @@ test: sbuf-substring-test-1
 
     0 0 pick sbuf-substring "" assert=
     4 4 pick sbuf-substring "" assert=
+
 
     0 14 rot sbuf-substring "this is a test" assert=
 ;

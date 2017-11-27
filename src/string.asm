@@ -482,25 +482,22 @@ code string_substring, 'string-substring'       ; from to string -- substring
 
         _ check_string
 
-string_substring_unchecked:
         push    this_register
-        popd    this_register           ; -- start-index end-index
+        mov     this_register, rbx
+        _drop                           ; -- start-index end-index
 
-        _check_index qword [rbp]
-        _check_index
+        push    rbx
+        mov     rbx, [rbp]
+        _check_fixnum
+        mov     [rbp], rbx
+        pop     rbx
+        _check_fixnum                   ; -- start-index end-index
 
-        _dup
-        _this_string_raw_length
-        _ugt
-        _if .1
-        _error "end index out of range"
-        _then .1
-                                        ; -- start-index end-index
-        _twodup                         ; -- start-index end-index start-index end-index
-        _ugt
-        _if .2
-        _error "start index > end index"
-        _then .2                        ; -- start-index end-index
+        cmp     rbx, qword [this_register + STRING_RAW_LENGTH_OFFSET]
+        ja      error_string_index_out_of_bounds
+
+        cmp     qword [rbp], rbx
+        ja      error_string_index_out_of_bounds
 
         _this_string_substring_unsafe
 
