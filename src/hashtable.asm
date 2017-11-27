@@ -154,7 +154,9 @@ endcode
 ; ### check_hashtable
 code check_hashtable, 'check_hashtable'         ; handle -- hashtable
         _dup
-        _ deref
+        cmp     bl, HANDLE_TAG
+        jne     .error
+        _handle_to_object_unsafe
         test    rbx, rbx
         jz      .error
         _object_raw_typecode_eax
