@@ -157,6 +157,19 @@ code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; fixnum1 fixnum2 -- sum
         next
 endcode
 
+; ### fixnum-1+
+code fixnum_oneplus, 'fixnum-1+'                 ; fixnum -- fixnum/int64
+        _verify_fixnum
+        add     rbx, (1 << FIXNUM_TAG_BITS)
+        jo      .overflow
+        next
+.overflow:
+        mov     rbx, MOST_POSITIVE_FIXNUM
+        add     rbx, 1
+        _ new_int64
+        next
+endcode
+
 ; ### int64-fixnum+
 code int64_fixnum_plus, 'int64-fixnum+'         ; int64 fixnum -- sum
 
