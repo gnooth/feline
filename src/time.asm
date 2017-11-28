@@ -97,7 +97,6 @@ code time, 'time'                       ; callable --
         _ write_string
         _ nl                            ; -- cycles
 
-        _tag_fixnum
         _ fixnum_to_string
         _ write_string
         _quote " cycles"
