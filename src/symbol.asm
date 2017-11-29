@@ -628,15 +628,15 @@ code verify_global, 'verify-global'     ; global -- global
 endcode
 
 ; ### check_global
-subroutine check_global         ; x -- unboxed-symbol
+code check_global, 'check_global', SYMBOL_INTERNAL      ; x -- unboxed-symbol
         _ check_symbol
         _dup
         _symbol_flags
         and     rbx, SYMBOL_GLOBAL
         poprbx
         jz      error_not_global
-        ret
-endsub
+        next
+endcode
 
 ; ### global-inc
 code global_inc, 'global-inc'   ; symbol --
