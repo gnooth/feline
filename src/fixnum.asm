@@ -204,6 +204,19 @@ code fixnum_fixnum_minus, 'fixnum-fixnum-'      ; fixnum1 fixnum2 -- difference
         next
 endcode
 
+; ### fixnum-1-
+code fixnum_oneminus, 'fixnum-1-'              ; fixnum -- fixnum/int64
+        _verify_fixnum
+        sub     rbx, (1 << FIXNUM_TAG_BITS)
+        jo      .overflow
+        next
+.overflow:
+        mov     rbx, MOST_NEGATIVE_FIXNUM
+        sub     rbx, 1
+        _ new_int64
+        next
+endcode
+
 ; ### int64-fixnum-
 code int64_fixnum_minus, 'int64-fixnum-'        ; int64 fixnum -- difference
         _check_fixnum

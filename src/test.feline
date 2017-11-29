@@ -2261,6 +2261,27 @@ test: fixnum-1+-test-1
 
 fixnum-1+-test-1
 
+test: fixnum-1--test-1
+    43 fixnum-1- 42 assert-eq
+     0 fixnum-1- -1 assert-eq
+    -1 fixnum-1- -2 assert-eq
+
+    most-positive-fixnum fixnum-1-
+    [ fixnum? assert-true ]
+    [ most-positive-fixnum fixnum>int64 1 int64-fixnum- assert= ]
+    [ most-positive-fixnum 1 - assert= ]
+    tri
+
+    -- overflow
+    most-negative-fixnum fixnum-1-
+    [ int64? assert-true ]
+    [ most-negative-fixnum 1 fixnum-fixnum- assert= ]
+    [ most-negative-fixnum 1 - assert= ]
+    tri
+;
+
+fixnum-1--test-1
+
 test: fixnum-fixnum*-test-1
     fixnum-tag-bits 3 = [
         most-positive-fixnum 1 fixnum-fixnum* 1152921504606846975 assert-eq
