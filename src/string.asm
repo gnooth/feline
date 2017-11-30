@@ -265,10 +265,10 @@ endcode
 code string_from, 'string_from', SYMBOL_INTERNAL
 ; string -- raw-data-address raw-length
         _ check_string
-        _duptor
+        mov     rax, [rbx + STRING_RAW_LENGTH_OFFSET]
         _string_raw_data_address
-        _rfrom
-        _string_raw_length
+        _dup
+        mov     rbx, rax
         next
 endcode
 
