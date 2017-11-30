@@ -464,18 +464,6 @@ section .data
 %define in_forth
 %endmacro
 
-%macro  subroutine 1
-        %push subroutine
-        global %1
-        section .text
-        align   DEFAULT_CODE_ALIGNMENT
-%1:
-%endmacro
-
-%macro  endsub 0
-        %pop subroutine
-%endmacro
-
 %define symbol_link     0
 
 ; static symbol

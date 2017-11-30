@@ -152,7 +152,8 @@ code sbuf_capacity, 'sbuf-capacity'     ; sbuf -- capacity
 endcode
 
 ; ### make_sbuf_internal
-subroutine make_sbuf_internal   ; untagged-capacity -- sbuf
+code make_sbuf_internal, 'make_sbuf_internal', SYMBOL_INTERNAL
+; untagged-capacity -- sbuf
         _lit 4
         _ raw_allocate_cells            ; -- capacity addr
 
@@ -174,8 +175,8 @@ subroutine make_sbuf_internal   ; untagged-capacity -- sbuf
         mov     rbx, this_register      ; -- sbuf
 
         pop     this_register
-        ret
-endsub
+        next
+endcode
 
 ; ### <sbuf>
 code new_sbuf, '<sbuf>'                 ; tagged-capacity -- sbuf
@@ -193,7 +194,8 @@ new_sbuf_untagged:
 endcode
 
 ; ### copy_to_sbuf
-subroutine copy_to_sbuf ; from-addr length -- handle
+code copy_to_sbuf, 'copy_to_sbuf', SYMBOL_INTERNAL
+; from-addr length -- handle
         _dup
         _ make_sbuf_internal
 
@@ -220,8 +222,8 @@ subroutine copy_to_sbuf ; from-addr length -- handle
         _ new_handle
 
         pop     this_register
-        ret
-endsub
+        next
+endcode
 
 ; ### string>sbuf
 code string_to_sbuf, 'string>sbuf'      ; handle-or-string -- handle
@@ -230,14 +232,15 @@ code string_to_sbuf, 'string>sbuf'      ; handle-or-string -- handle
         next
 endcode
 
-subroutine sbuf_from                    ; handle -- c-addr u
+; ### sbuf_from
+code sbuf_from, 'sbuf_from', SYMBOL_INTERNAL    ; handle -- c-addr u
         _ check_sbuf
         _duptor
         _sbuf_data
         _rfrom
         _sbuf_raw_length
-        ret
-endsub
+        next
+endcode
 
 ; ### this_sbuf_to_string
 code this_sbuf_to_string, 'this_sbuf_to_string', SYMBOL_INTERNAL        ; -- string
@@ -330,7 +333,8 @@ code sbuf_check_index, 'sbuf-check-index'       ; handle index -- flag
 endcode
 
 ; ### sbuf_resize
-subroutine sbuf_resize                  ; sbuf new-capacity --
+code sbuf_resize, 'sbuf_resize', SYMBOL_INTERNAL
+; raw-sbuf untagged-new-capacity --
 
         _swap
 
@@ -348,12 +352,12 @@ subroutine sbuf_resize                  ; sbuf new-capacity --
         _this_sbuf_set_raw_capacity
 
         pop     this_register
-        ret
-endsub
+        next
+endcode
 
 ; ### sbuf_ensure_capacity
-subroutine sbuf_ensure_capacity         ; u sbuf --
-; Numeric argument is untagged.
+code sbuf_ensure_capacity, 'sbuf_ensure_capacity', SYMBOL_INTERNAL
+; untagged-fixnum raw-sbuf --
         _twodup                         ; -- u sbuf u sbuf
         _sbuf_raw_capacity              ; -- u sbuf u capacity
         _ugt
@@ -368,8 +372,8 @@ subroutine sbuf_ensure_capacity         ; u sbuf --
         _else .1
         _2drop
         _then .1
-        ret
-endsub
+        next
+endcode
 
 ; ### sbuf-validate
 code sbuf_validate, 'sbuf-validate'     ; sbuf --
