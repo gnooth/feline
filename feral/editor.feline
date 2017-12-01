@@ -774,22 +774,16 @@ symbol: +compound-undo+
 ;
 
 : do-quit ( -- )
-    t !> done?
+    buffer-list ' buffer-modified? count >local: n
 
-    modified? [
-        0 message-y at-xy prompt-style "Save file? (y or n) " write-string
-        key 'y' eq? [ do-save ] when
-    ] when
-
-    local: response
-
-    modified? [
-        0 message-y at-xy
-        "Abandon changes? (yes or no) " accept-string !> response
-        response "yes" = [ f !> done? ] unless
-    ] when
-
-    clear-message-line
+    n zero? [
+        t !> done?
+    ] [
+        n dup 1 > "s" "" ?
+        "Really exit with %s modified buffer%s? (yes or no) " format
+        accept-string "yes" string= !> done?
+        clear-message-line
+    ] if
 ;
 
 : kill-buffer ( -- )
