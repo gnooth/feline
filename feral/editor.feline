@@ -449,7 +449,7 @@ symbol: +compound-undo+
     "Line number: " accept-string >local: response
     clear-message-line
     response string>number [
-        1 - 0 max buffer-line-count 1 - min
+        1- 0 max buffer-line-count 1- min
         dup dot-line-number <> [
             add-undo-move
             dot-line-number!
