@@ -197,6 +197,8 @@ global: buffer-list
 
     detab
 
+    output-style
+
     dup length #cols < [
         dup write
         length #cols swap - spaces
