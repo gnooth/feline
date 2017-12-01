@@ -47,7 +47,7 @@ tuple: buffer
     eol
     undo-stack ;
 
-16 <vector> >global: buffer-list
+global: buffer-list
 
 : make-buffer ( -- buffer )
     buffer make-instance >local: buf
@@ -965,6 +965,7 @@ use: search
 ;
 
 : initialize-editor ( -- )
+    16 <vector> !> buffer-list
     bindings [ initialize-bindings ] unless
 ;
 
