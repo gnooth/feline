@@ -379,6 +379,23 @@ print
     ( string -- )
     Write `string` followed by a newline.
 
+reduce
+    ( sequence identity quot -- result )    quot: ( x y -- z )
+    Combine the elements of `sequence` using the binary operation
+    specified by `quot` and return the final result.
+
+    For the first iteration, the inputs to the quotation are
+    `identity` and the first element of `sequence`. After that,
+    the first input is the result of the previous iteration, and
+    the second input is the next element of the sequence.
+
+    Examples:
+
+        { 1 2 3 4 5 } 1 [ * ] reduce => 120
+
+        { 1 2 3 4 5 } 0 [ + ] reduce => 15
+
+
 rot
     ( x y z -- y z x )
     Rotate the third entry to the top of the stack.

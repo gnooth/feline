@@ -2918,4 +2918,19 @@ test: keyword-name-test-1
 
 keyword-name-test-1
 
+test: reduce-test-1
+    { 1 2 3 4 5 } 1 [ * ] reduce 120 assert-eq
+    { 1 2 3 4 5 } 0 [ + ] reduce  15 assert-eq
+
+    { 91 47 1000 -3 15 -7.1 0 }
+    [ most-positive-fixnum [ min ] reduce -7.1 assert= ]
+    [ most-negative-fixnum [ max ] reduce 1000 assert= ]
+    bi
+
+    { }    42 [ + ] reduce 42 assert-eq
+    { 17 } 42 [ + ] reduce 59 assert-eq
+;
+
+reduce-test-1
+
 ?nl "Reached end of test.feline" write-string

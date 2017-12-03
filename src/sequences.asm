@@ -682,6 +682,14 @@ code map_find, 'map-find'               ; seq quot -- result elt
         next
 endcode
 
+; ### reduce
+code reduce, 'reduce'                   ; seq identity quot -- result
+; Factor
+        _ swapd
+        _ each
+        next
+endcode
+
 ; ### first
 code first, 'first'                     ; seq -- first
         _lit tagged_zero
