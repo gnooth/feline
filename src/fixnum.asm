@@ -234,14 +234,9 @@ code fixnum_plus, 'fixnum+'             ; number fixnum -- sum
         _verify_fixnum
 
         ; dispatch on type of first arg
-        mov     al, byte [rbp]
-        and     al, FIXNUM_TAG_MASK
-        cmp     al, FIXNUM_TAG
-        jne     .1
-        _ fixnum_fixnum_plus
-        _return
+        test    byte [rbp], FIXNUM_TAG
+        jnz     fixnum_fixnum_plus
 
-.1:
         _over
         _ int64?
         _tagged_if .2
