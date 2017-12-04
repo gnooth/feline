@@ -955,16 +955,6 @@ test: ?lookup-symbol-test-1
 
 ?lookup-symbol-test-1
 
-test: create-symbol-test-1 ( -- )
-    "effluvia" "test" ?lookup-symbol assert-false
-    "effluvia" "test" create-symbol
-    dup symbol? assert-true
-    dup "effluvia" "test" ?lookup-symbol assert-eq
-    symbol-vocab-name "test" assert=
-;
-
-create-symbol-test-1
-
 test: immediate?-test-1 ( -- )
     ' symbol: immediate? assert-true
     ' dup immediate? assert-false

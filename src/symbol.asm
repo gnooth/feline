@@ -343,29 +343,6 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
         next
 endcode
 
-; ### create-symbol
-code create_symbol, 'create-symbol'     ; name vocab -- symbol
-; REVIEW does not check for redefinition
-
-        _ lookup_vocab
-        _tagged_if_not .1
-        _error "no such vocab"
-        _then .1                        ; -- name vocab
-
-        _ new_symbol                    ; -- symbol
-
-        _dup
-        _ new_wrapper
-        _ one_quotation
-        _over
-        _ symbol_set_def                ; -- handle
-
-        _dup
-        _ compile_word
-
-        next
-endcode
-
 ; ### symbol-equal?
 code symbol_equal?, 'symbol-equal?'     ; x y -- ?
         _dup
