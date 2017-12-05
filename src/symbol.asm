@@ -515,6 +515,13 @@ code symbol_set_global_bit, 'symbol-set-global-bit', SYMBOL_PRIVATE
         next
 endcode
 
+; ### symbol-set-special-bit
+code symbol_set_special_bit, 'symbol-set-special-bit', SYMBOL_PRIVATE
+; symbol --
+        _symbol_set_flags_bit SYMBOL_SPECIAL
+        next
+endcode
+
 ; ### symbol-constant?
 code symbol_constant?, 'symbol-constant?'       ; symbol -- ?
         _symbol_flags_bit SYMBOL_CONSTANT
@@ -696,6 +703,14 @@ code symbol_set_code_size, 'symbol-set-code-size'       ; tagged-code-size symbo
         _verify_fixnum [rbp]
         _untag_fixnum qword [rbp]
         _symbol_set_raw_code_size
+        next
+endcode
+
+; ### symbol-flags
+code symbol_flags, 'symbol-flags'       ; symbol -- flags
+        _ check_symbol
+        _symbol_flags                   ; -- raw-uint64
+        _ new_uint64
         next
 endcode
 
