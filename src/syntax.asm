@@ -319,6 +319,23 @@ code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE  ; --
         next
 endcode
 
+; ### special:
+code parse_special, 'special:', SYMBOL_IMMEDIATE        ; --
+        _ must_parse_token              ; -- string
+        _ new_symbol_in_current_vocab   ; -- symbol
+
+        _dup
+        _ symbol_set_special_bit
+
+        _dup
+        _ new_wrapper
+        _ one_quotation
+        _over
+        _ symbol_set_def                ; -- handle
+        _ compile_word
+        next
+endcode
+
 ; ### note-redefinition
 code note_redefinition, 'note_redefinition'     ; symbol --
         _ ?nl
