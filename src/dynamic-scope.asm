@@ -28,17 +28,6 @@ code get_dynamic_scope, 'get-dynamic-scope'     ; -- vector
         next
 endcode
 
-%macro _set_dynamic_scope 0
-        mov     [dynamic_scope_], rbx
-        poprbx
-%endmacro
-
-; ### set-dynamic-scope
-code set_dynamic_scope, 'set-dynamic-scope'     ; vector --
-        _set_dynamic_scope
-        next
-endcode
-
 asm_global primordial_bindings_, f_value
 
 %macro _primordial_bindings 0
@@ -46,24 +35,21 @@ asm_global primordial_bindings_, f_value
         mov     rbx, [primordial_bindings_]
 %endmacro
 
-%macro _set_primordial_bindings 0
-        mov     [primordial_bindings_], rbx
-        poprbx
-%endmacro
-
 ; ### initialize_dynamic_scope
 code initialize_dynamic_scope, 'initialize_dynamic_scope', SYMBOL_INTERNAL
 
         _lit 16
         _ new_hashtable_untagged
-        _set_primordial_bindings
+        mov     [primordial_bindings_], rbx
+        _drop
 
         _lit primordial_bindings_
         _ gc_add_root
 
         _lit 16
         _ new_vector_untagged
-        _set_dynamic_scope
+        mov     [dynamic_scope_], rbx
+        _drop
 
         _lit dynamic_scope_
         _ gc_add_root
