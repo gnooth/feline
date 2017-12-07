@@ -302,8 +302,7 @@ tuple: compound-undo
     compound-undo-records vector-push
 ;
 
--- special
-symbol: +compound-undo+
+special: +compound-undo+
 
 : push-undo ( undo-record -- )
     +compound-undo+ get [ add-undo ] [ undo-stack vector-push ] if* ;
