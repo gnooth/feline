@@ -26,6 +26,10 @@ global: current-buffer
 global: repaint?
 global: dot-line-changed?
 global: bindings
+
+global: current-command
+global: last-command
+
 global: done?
 
 "\n"   >constant: LF
@@ -475,7 +479,7 @@ special: +compound-undo+
 ;
 
 : do-left ( -- )
-    add-undo-move
+    last-command ' do-left eq? [ add-undo-move ] unless
 
     dot-offset 0 > [
         dot-offset 1 - dot-offset!
@@ -494,7 +498,7 @@ special: +compound-undo+
 ;
 
 : do-right ( -- )
-    add-undo-move
+    last-command ' do-right eq? [ add-undo-move ] unless
 
     dot-offset dot-line length < [
         dot-offset 1 + dot-offset!
@@ -959,9 +963,11 @@ use: search
     key:alt-left        ' previous-buffer               bind-key
 ;
 
-: do-command ( -- ) lookup-key [ call-symbol ] when* ;
+: do-command ( -- ) lookup-key [ dup !> current-command call-symbol ] when* ;
 
 : dispatch ( key -- )
+    current-command !> last-command
+    f !> current-command
     dup printable-char? [ do-normal-char ] [ do-command ] if ;
 
 : edit-loop ( -- )
