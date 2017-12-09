@@ -25,13 +25,19 @@ global: pattern
 global: found-line-number
 global: found-offset
 
+: found ( -- )
+    add-undo-move
+    found-line-number dot-line-number!
+    found-offset dot-offset!
+    dot-offset set-goal-column
+    maybe-reframe ;
+
 : not-found ( -- )
    0 message-y at-xy error-style "Not found" write-string output-style ;
 
 : find-pattern-in-current-line ( start -- index/f )
     pattern dot-line pick string-tail substring-start ( index/f )
-    [ + ] [ drop f ] if*
-;
+    [ + ] [ drop f ] if* ;
 
 public
 
@@ -59,16 +65,7 @@ public
         [ !> found-line-number t !> found? ] [ drop ] if
     ] unless
 
-    found? [
-        add-undo-move
-        found-line-number dot-line-number!
-        found-offset dot-offset!
-        dot-offset set-goal-column
-        maybe-reframe
-    ] [
-        not-found
-    ] if
-;
+    found? [ found ] [ not-found ] if ;
 
 : do-find-again ( -- )
     f >local: found?
@@ -93,13 +90,4 @@ public
         [ !> found-line-number t !> found? ] [ drop ] if
     ] unless
 
-    found? [
-        add-undo-move
-        found-line-number dot-line-number!
-        found-offset dot-offset!
-        dot-offset set-goal-column
-        maybe-reframe
-    ] [
-        not-found
-    ] if
-;
+    found? [ found ] [ not-found ] if ;
