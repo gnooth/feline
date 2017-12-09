@@ -290,6 +290,13 @@ find
     the element itself. Otherwise return `f` for both the index and
     the element.
 
+find-from
+    ( n seq quot -- index/f element/f )        quot: ( element -- ? )
+    Apply `quot` to each element of `seq` in order, starting at index `n`.
+    If `quot` returns a true value for some element, return the index of
+    that element and the element itself. Otherwise return `f` for both the
+    index and the element.
+
 find-last-from
     ( n seq quot -- index/f element/f )        quot: ( element -- ? )
     Apply `quot` to each element of `seq` in reverse order, starting at
@@ -477,6 +484,14 @@ tab
     be written in column `n`.
 
     See also: `charpos`
+
+terminal-height
+    ( -- n )
+    Return the height of the terminal window (in rows).
+
+terminal-width
+    ( -- n )
+    Return the width of the terminal window (in columns).
 
 time
     ( quot -- )
