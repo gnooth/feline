@@ -144,7 +144,7 @@ global: buffer-list
 
 : dot-line-tail ( -- string ) dot-line dot-offset string-tail ;
 
-: lines-per-page ( -- n ) #rows 2 - ;
+: lines-per-page ( -- n ) terminal-height 2 - ;
 
 : bottom-line-number ( -- n ) top-line-number lines-per-page 1 - + buffer-line-count min ;
 
@@ -203,11 +203,11 @@ global: buffer-list
 
     output-style
 
-    dup length #cols < [
+    dup length terminal-width < [
         dup write
-        length #cols swap - spaces
+        length terminal-width swap - spaces
     ] [
-        0 #cols rot substring write
+        0 terminal-width rot substring write
     ] if
 ;
 
@@ -216,11 +216,11 @@ global: buffer-list
     top-line-number y + buffer-line-count < [
         y .line
     ] [
-        0 y at-xy #cols spaces
+        0 y at-xy terminal-width spaces
     ] if
 ;
 
-: status-y ( -- n ) #rows 2 - ;
+: status-y ( -- n ) terminal-height 2 - ;
 
 : status ( -- )
     reverse
@@ -230,7 +230,7 @@ global: buffer-list
     dot-line-number 1 +
     dot-column 1 +
     "Line %d Col %d " format
-    #cols over length - >local: x
+    terminal-width over length - >local: x
     x editor-filename length 1 + - 1 max spaces
     write-string
     normal

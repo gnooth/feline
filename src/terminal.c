@@ -41,23 +41,21 @@ static int terminal_prepped = 0;
 
 static void get_terminal_size()
 {
-  extern cell nrows_data;
-  extern cell ncols_data;
 #ifdef WIN64
   CONSOLE_SCREEN_BUFFER_INFO info;
   if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info))
     {
-      ncols_data = info.srWindow.Right - info.srWindow.Left;
-      nrows_data = info.srWindow.Bottom - info.srWindow.Top;
+      terminal_width_  = info.srWindow.Right  - info.srWindow.Left;
+      terminal_height_ = info.srWindow.Bottom - info.srWindow.Top;
     }
 #else
   struct winsize size;
   if (ioctl(tty, TIOCGWINSZ, (char *) &size) < 0)
-    nrows_data = ncols_data = 0;
+    terminal_height_ = terminal_width_ = 0;
   else
     {
-      nrows_data = size.ws_row;
-      ncols_data = size.ws_col;
+      terminal_height_ = size.ws_row;
+      terminal_width_  = size.ws_col;
     }
 #endif
 }
@@ -85,10 +83,8 @@ void prep_terminal()
       SetConsoleMode(console_input_handle, mode);
       get_terminal_size();
       COORD size;
-      extern cell ncols_data;
-      size.X = ncols_data;
-      extern cell nrows_data;
-      size.Y = nrows_data;
+      size.X = terminal_width_;
+      size.Y = terminal_height_;
       SetConsoleScreenBufferSize(console_input_handle, size);
       line_input_data = 0;
       if (GetConsoleMode(console_output_handle, &mode))

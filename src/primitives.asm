@@ -1544,22 +1544,22 @@ code feline_free, 'free'                ; addr --
         next
 endcode
 
-asm_global nrows_data
+asm_global terminal_height_
 
-; ### #rows
-code nrows, '#rows'
+; ### terminal-height
+code terminal_height, 'terminal-height'
         pushrbx
-        mov     rbx, [nrows_data]
+        mov     rbx, [terminal_height_]
         _tag_fixnum
         next
 endcode
 
-asm_global ncols_data
+asm_global terminal_width_
 
-; ### #cols
-code ncols, '#cols'
+; ### terminal-width
+code terminal_width, 'terminal-width'
         pushrbx
-        mov     rbx, [ncols_data]
+        mov     rbx, [terminal_width_]
         _tag_fixnum
         next
 endcode

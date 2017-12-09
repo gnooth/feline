@@ -74,6 +74,9 @@ extern cell os_errno_data;
 
 extern cell start_time_ticks_data;
 
+extern cell terminal_width_;
+extern cell terminal_height_;
+
 #ifdef WIN64
 extern cell saved_exception_code_data;
 extern cell saved_exception_address_data;
