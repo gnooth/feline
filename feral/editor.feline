@@ -165,9 +165,10 @@ global: buffer-list
 
 : tab-width ( -- n ) 8 ;
 
-: dot-column ( -- column )
-    dot-offset dot-line-length min >local: limit
-    dot-line >local: line
+: position-column ( position -- column )
+    >local: pos
+    pos position-line-number buffer-nth-line >local: line
+    pos position-offset line length min >local: limit
     0 >local: column
     limit [
         line string-nth 9 code-char eq? [
@@ -179,6 +180,10 @@ global: buffer-list
         ] if
     ] each-integer
     column ;
+
+: dot-column ( -- column ) dot position-column ;
+
+: mark-column ( -- column ) mark [ mark position-column ] [ f ] if ;
 
 : .cursor ( -- )
     dot-column
