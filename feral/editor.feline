@@ -215,26 +215,36 @@ global: buffer-list
     sb sbuf>string
 ;
 
-: .line ( y -- )
-    0 over at-xy
-    top-line-number + buffer-nth-line
+: paint-line ( y -- )
+    >local: y
 
-    detab
+    0 y at-xy
+    top-line-number y + >local: line-number
+
+    line-number buffer-nth-line detab >local: detabbed-text
 
     output-style
 
-    dup length terminal-width < [
-        dup write
-        length terminal-width swap - spaces
+    line-number mark-line-number eq? [
+        0 dot-column detabbed-text string-substring write
+        reverse
+        dot-column mark-column detabbed-text string-substring write
+        normal
+        detabbed-text mark-column string-tail write
     ] [
-        0 terminal-width rot substring write
+        detabbed-text length terminal-width < [
+            detabbed-text write
+            detabbed-text length terminal-width swap - spaces
+        ] [
+            0 terminal-width detabbed-text substring write
+        ] if
     ] if
 ;
 
 : redisplay-line ( y -- )
     >local: y
     top-line-number y + buffer-line-count < [
-        y .line
+        y paint-line
     ] [
         0 y at-xy terminal-width spaces
     ] if
