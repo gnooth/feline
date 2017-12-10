@@ -25,12 +25,19 @@ global: pattern
 global: found-line-number
 global: found-offset
 
+: mark-found-pattern ( -- )
+    position make-instance set-mark
+    found-line-number mark position-line-number!
+    found-offset pattern length + mark position-offset! ;
+
 : found ( -- )
     add-undo-move
     found-line-number dot-line-number!
     found-offset dot-offset!
     dot-offset set-goal-column
-    maybe-reframe ;
+    mark-found-pattern
+    maybe-reframe
+    t !> repaint? ;
 
 : not-found ( -- )
    0 message-y at-xy error-style "Not found" write-string output-style ;
