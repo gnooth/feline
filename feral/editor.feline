@@ -42,6 +42,7 @@ tuple: position
 tuple: buffer
     lines
     dot
+    mark
     top-line-number
     goal-column
     filename
@@ -74,6 +75,12 @@ global: buffer-list
 
 : set-dot ( position -- ) current-buffer buffer-dot! ;
 
+: mark ( -- position ) current-buffer buffer-mark ;
+
+: set-mark ( position -- ) current-buffer buffer-mark! ;
+
+: unmark ( -- ) mark [ f set-mark t !> repaint? ] when ;
+
 : top-line-number ( -- n ) current-buffer buffer-top-line-number ;
 
 : set-top-line-number ( n -- ) current-buffer buffer-top-line-number! ;
@@ -103,13 +110,19 @@ global: buffer-list
 
 : dot-line-number! ( line-number -- ) dot position-line-number! ;
 
+: mark-line-number ( -- line-number ) mark [ mark position-line-number ] [ f ] if ;
+
+: mark-line-number! ( line-number -- ) mark [ position-line-number! ] when* ;
+
 : next-line-number ( -- line-number ) dot-line-number 1 + ;
 
 : dot-offset ( -- ) dot position-offset ;
 
 : dot-offset! ( n -- ) dot position-offset! ;
 
-: hide-cursor ( -- ) esc[ "?25l" write-string ;
+: mark-offset ( -- ) mark position-offset ;
+
+: mark-offset! ( n -- ) mark position-offset! ;
 
 : show-cursor ( -- ) esc[ "?25h" write-string ;
 
