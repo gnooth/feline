@@ -124,11 +124,13 @@ global: buffer-list
 
 : mark-offset! ( n -- ) mark position-offset! ;
 
-: show-cursor ( -- ) esc[ "?25h" write-string ;
+: hide-cursor ( -- ) esc[ "?25l" write-string-escaped ;
 
-: reverse ( -- ) esc[ "7m" write-string ;
+: show-cursor ( -- ) esc[ "?25h" write-string-escaped ;
 
-: normal ( -- ) esc[ "m" write-string ;
+: reverse ( -- ) esc[ "7m" write-string-escaped ;
+
+: normal ( -- ) esc[ "m" write-string-escaped ;
 
 : buffer-modified? ( buffer -- )
     dup buffer-mod-count swap buffer-mod-count-last-save neq? ;
