@@ -344,12 +344,15 @@ special: +compound-undo+
 
 : reset-undo ( -- ) 0 undo-stack vector-set-length ;
 
-: copy-dot ( -- position )
-    dot [ position-line-number ] [ position-offset ] bi
+: copy-position ( position -- copy )
+    [ position-line-number ] [ position-offset ] bi
     position make-instance
     [ position-offset! ] keep
-    [ position-line-number! ] keep
-;
+    [ position-line-number! ] keep ;
+
+: copy-dot ( -- position ) dot copy-position ;
+
+: copy-mark ( -- position ) mark [ copy-position ] [ f ] if* ;
 
 : new-undo-record ( -- undo-record )
     undo-record make-instance
