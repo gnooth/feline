@@ -99,6 +99,30 @@ code tri, 'tri'                         ; x quot1 quot2 quot3 --
         next
 endcode
 
+; ### cleave
+code cleave, 'cleave'                   ; x seq --
+; Apply each quotation in seq to x.
+        push    r12
+        mov     r12, [rbp]              ; x in r12
+        _nip                            ; -- seq
+        push    this_register
+        mov     this_register, rbx      ; handle to seq in this_register
+        _ length
+        _untag_fixnum
+        _do_times .1
+        _tagged_loop_index
+        _this                           ; -- tagged-index handle
+        _ nth_unsafe                    ; -- quotation
+        _ callable_raw_code_address
+        mov     rax, rbx
+        mov     rbx, r12                ; -- x
+        call    rax
+        _loop .1
+        pop     this_register
+        pop     r12
+        next
+endcode
+
 ; ### 2tri
 code twotri, '2tri'                     ; x y quot1 quot2 quot3 --
 ; Apply quot1 to x and y, then apply quot2 to x and y, and finally apply

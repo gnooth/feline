@@ -2923,4 +2923,16 @@ test: reduce-test-1
 
 reduce-test-1
 
+test: cleave-test-1
+    clear
+    19 { [ dup + ] [ dup * ] } cleave get-data-stack { 38 361 } assert=
+    clear
+    14 { [ 23 + ] } cleave get-data-stack { 37 } assert=
+    clear
+    97 { } cleave get-data-stack { } assert=
+    clear
+;
+
+cleave-test-1
+
 ?nl "Reached end of test.feline" write-string

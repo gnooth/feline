@@ -206,6 +206,11 @@ charpos
 
     See also: `tab`
 
+cleave
+    ( x seq -- )
+    Apply each quotation in `seq` (which must be a sequence of quotations)
+    to `x`.
+
 cond
     ( assoc -- )
 
