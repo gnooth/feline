@@ -317,6 +317,7 @@ tuple: undo-record
     mod-count
     action
     dot
+    mark
     data ;
 
 symbol: +move+
@@ -368,6 +369,7 @@ special: +compound-undo+
     undo-record make-instance
     mod-count over undo-record-mod-count!
     copy-dot over undo-record-dot!
+    copy-mark over undo-record-mark!
 ;
 
 : add-undo-move ( -- )
@@ -379,7 +381,8 @@ special: +compound-undo+
 : undo-move ( undo-record -- )
     [ undo-record-mod-count set-mod-count ]
     [ undo-record-dot set-dot ]
-    bi
+    [ undo-record-mark set-mark ]
+    tri
 ;
 
 : add-undo-line-edit ( -- )
@@ -462,6 +465,8 @@ special: +compound-undo+
 : beginning-of-buffer ( -- )
     add-undo-move
 
+    unmark
+
     0 dot-line-number!
     0 dot-offset!
 
@@ -472,6 +477,8 @@ special: +compound-undo+
 
 : end-of-buffer ( -- )
     add-undo-move
+
+    unmark
 
     buffer-line-count 1 - 0 max dot-line-number!
     buffer-line-count lines-per-page - 0 max set-top-line-number
@@ -488,6 +495,7 @@ special: +compound-undo+
         1- 0 max buffer-line-count 1- min
         dup dot-line-number <> [
             add-undo-move
+            unmark
             dot-line-number!
             0 dot-offset!
             maybe-reframe
@@ -500,6 +508,8 @@ special: +compound-undo+
 : do-home ( -- )
     add-undo-move
 
+    unmark
+
     0 dot-offset!
     0 set-goal-column
 ;
@@ -507,12 +517,16 @@ special: +compound-undo+
 : end-of-line ( -- )
     add-undo-move
 
+    unmark
+
     dot-line length dot-offset!
     dot-offset set-goal-column
 ;
 
 : do-left ( -- )
     last-command ' do-left eq? [ add-undo-move ] unless
+
+    unmark
 
     dot-offset 0 > [
         dot-offset 1 - dot-offset!
@@ -533,6 +547,8 @@ special: +compound-undo+
 : do-right ( -- )
     last-command ' do-right eq? [ add-undo-move ] unless
 
+    unmark
+
     dot-offset dot-line length < [
         dot-offset 1 + dot-offset!
         dot-offset set-goal-column
@@ -552,10 +568,11 @@ special: +compound-undo+
 : do-down ( -- )
     add-undo-move
 
-    dot-line-number buffer-line-count 1 - < [
-        dot-line-number 1 + dot-line-number!
+    dot-line-number buffer-line-count 1- < [
+        dot-line-number 1+ dot-line-number!
+        unmark
         reframe? [
-            dot-line-number lines-per-page 1 - - set-top-line-number
+            dot-line-number lines-per-page 1- - set-top-line-number
             t !> repaint?
         ] when
         adjust-cursor-x
@@ -567,6 +584,7 @@ special: +compound-undo+
 
     dot-line-number 0 > [
         dot-line-number 1 - dot-line-number!
+        unmark
         reframe? [
             dot-line-number set-top-line-number
             t !> repaint?
