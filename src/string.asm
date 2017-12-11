@@ -836,7 +836,10 @@ code string_index, 'string-index'       ; char string -- index/f
         next
 endcode
 
-code unsafe_raw_write_chars, 'unsafe-raw-write-chars'   ; raw-address raw-count --
+; ### unsafe_raw_write_chars
+code unsafe_raw_write_chars, 'unsafe_raw_write_chars', SYMBOL_INTERNAL
+; raw-address raw-count --
+
         ; test for zero length string
         test    rbx, rbx
         jnz     .1
