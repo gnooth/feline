@@ -289,7 +289,7 @@ global: buffer-list
     ] if
     status
     .cursor
-    show-cursor
+    mark [ show-cursor ] unless
 ;
 
 : adjust-cursor-x ( -- )
@@ -384,6 +384,8 @@ special: +compound-undo+
     [ undo-record-dot set-dot ]
     [ undo-record-mark set-mark ]
     tri
+
+    mark [ t !> repaint? ] when
 ;
 
 : add-undo-line-edit ( -- )
@@ -524,10 +526,21 @@ special: +compound-undo+
     dot-offset set-goal-column
 ;
 
+: beginning-of-block
+    mark [ mark-offset dot-offset min dot-offset! ] when
+;
+
+: end-of-block
+    mark [ mark-offset dot-offset max dot-offset! ] when
+;
+
 : do-left ( -- )
     last-command ' do-left eq? [ add-undo-move ] unless
 
-    unmark
+    mark [
+        beginning-of-block
+        unmark
+    ] return-if
 
     dot-offset 0 > [
         dot-offset 1 - dot-offset!
@@ -548,10 +561,13 @@ special: +compound-undo+
 : do-right ( -- )
     last-command ' do-right eq? [ add-undo-move ] unless
 
-    unmark
+    mark [
+        end-of-block
+        unmark
+    ] return-if
 
     dot-offset dot-line length < [
-        dot-offset 1 + dot-offset!
+        dot-offset 1+ dot-offset!
         dot-offset set-goal-column
     ] [
         dot-line-number buffer-line-count 1 - < [
