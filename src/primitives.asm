@@ -1041,17 +1041,24 @@ code space, 'space'                     ; --
         next
 endcode
 
+%define spaces_count    256
+
+        section .data
+        align   DEFAULT_DATA_ALIGNMENT
+spaces_:
+        times spaces_count db ' '
+
 ; ### spaces
 code spaces, 'spaces'                   ; n --
 
-%define spaces_count    256
-
-        _ check_index
+        _check_fixnum                   ; -- raw-count
+        test    rbx, rbx
+        jng     .exit
 
         cmp     rbx, spaces_count
-        ja      .1
-        pushd   spaces_data
-        _swap
+        jg      .1
+        _dup
+        mov     qword [rbp], spaces_    ; -- raw-address raw-count
         _ unsafe_raw_write_chars
         _return
 
@@ -1061,14 +1068,12 @@ code spaces, 'spaces'                   ; n --
         _loop .2
         _return
 
-        section .data
-        align   DEFAULT_DATA_ALIGNMENT
-spaces_data:
-        times spaces_count db ' '
+.exit:
+        _drop
+        next
+endcode
 
 %undef spaces_count
-
-endcode
 
 ; ### nl
 code nl, 'nl'
