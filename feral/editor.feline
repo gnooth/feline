@@ -380,6 +380,8 @@ special: +compound-undo+
 ;
 
 : undo-move ( undo-record -- )
+    mark [ t !> repaint? ] when
+
     [ undo-record-mod-count set-mod-count ]
     [ undo-record-dot set-dot ]
     [ undo-record-mark set-mark ]
