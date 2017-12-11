@@ -231,10 +231,11 @@ global: buffer-list
         dot-column mark-column detabbed-text string-substring write
         normal
         detabbed-text mark-column string-tail write
+        terminal-width detabbed-text string-length - spaces
     ] [
         detabbed-text length terminal-width < [
             detabbed-text write
-            detabbed-text length terminal-width swap - spaces
+            terminal-width detabbed-text string-length - spaces
         ] [
             0 terminal-width detabbed-text substring write
         ] if
