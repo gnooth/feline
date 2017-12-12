@@ -157,6 +157,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 
 # -felf64 even on Windows
 feline.o: $(ASM_SOURCES)
+	echo "%define VERSION \"$(VERSION)\"" > version.asm
 	nasm $(ASMFLAGS) -g -felf64 feline.asm
 
 # Microsoft compiler and linker
