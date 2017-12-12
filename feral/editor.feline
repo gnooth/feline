@@ -960,14 +960,28 @@ special: +compound-undo+
     ] unless*
 ;
 
+: find-buffer ( filename -- buffer/f )
+    >local: filename
+
+    buffer-list [ buffer-filename filename = ] find     -- index/f element/f
+    nip
+;
+
 : open-file ( -- )
     0 message-y at-xy "File: " accept-string >local: arg
     clear-message-line
 
-    arg find-file-to-edit [
-        1 initialize-buffer !> current-buffer
-        t !> repaint?
-    ] when*
+    arg find-file-to-edit >local: filename
+
+    filename [
+        filename find-buffer [
+            !> current-buffer
+            t !> repaint?
+        ] [
+            filename 1 initialize-buffer !> current-buffer
+            t !> repaint?
+        ] if*
+    ] when
 ;
 
 : next-buffer ( -- )
