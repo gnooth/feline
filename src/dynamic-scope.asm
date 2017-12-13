@@ -77,10 +77,33 @@ code end_dynamic_scope, 'end-dynamic-scope'     ; --
         next
 endcode
 
+; ### verify-special
+code verify_special, 'verify-special'   ; special -- special
+        _dup
+        _ symbol_special?
+        cmp     rbx, f_value
+        _drop
+        je      .error
+        next
+.error:
+        _error "not a special"
+        next
+endcode
+
 ; ### set
-code set, 'set'                         ; value variable --
+code set, 'set'                         ; value special --
+        _ verify_special
         _get_dynamic_scope
         _ vector_last
+        _ hashtable_set_at
+        next
+endcode
+
+; ### set-default
+code set_default, 'set-default'         ; value special --
+        _ verify_special
+        _get_dynamic_scope
+        _ vector_first
         _ hashtable_set_at
         next
 endcode
@@ -105,13 +128,16 @@ code with_dynamic_scope, 'with-dynamic-scope'   ; quot --
 endcode
 
 ; ### find-in-scope
-code find_in_scope, 'find-in-scope'     ; variable scope -- value/f ?
+code find_in_scope, 'find-in-scope'     ; special scope -- value/f ?
         _ hashtable_at_star
         next
 endcode
 
 ; ### get
-code get, 'get'                         ; variable -- value
+code get, 'get'                         ; special -- value
+
+        _ verify_special
+
         _tor
         _get_dynamic_scope
 
