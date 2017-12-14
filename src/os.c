@@ -507,9 +507,7 @@ void os_bye()
     WSACleanup();
 #endif
 
-  extern void * data_stack_base;
   deprep_terminal();
-  free(data_stack_base);
   exit(0);
 }
 

@@ -115,17 +115,40 @@ static void args(int argc, char **argv)
   main_argv = (cell) argv;
 }
 
-void * data_stack_base;
-
 static void initialize_data_stack()
 {
+#ifdef WIN64
+  SYSTEM_INFO info;
+  GetSystemInfo(&info);
+
   extern cell sp0_;
   extern cell stack_cells_data;
 
   stack_cells_data = 4096;
   size_t data_stack_size = stack_cells_data * sizeof(cell);
-  data_stack_base = malloc(data_stack_size + 64);
+  cell data_stack_base = (cell) VirtualAlloc(NULL,
+                                             data_stack_size + info.dwPageSize,
+                                             MEM_COMMIT|MEM_RESERVE,
+                                             PAGE_READWRITE);
+  DWORD old_protect;
+  BOOL ret = VirtualProtect((LPVOID)(data_stack_base + data_stack_size),
+                            info.dwPageSize,
+                            PAGE_NOACCESS,
+                            &old_protect);
+  if (!ret)
+    printf("VirtualProtect error\n");
+
+
+  sp0_ = data_stack_base + data_stack_size;
+#else
+  extern cell sp0_;
+  extern cell stack_cells_data;
+
+  stack_cells_data = 4096;
+  size_t data_stack_size = stack_cells_data * sizeof(cell);
+  cell data_stack_base = malloc(data_stack_size + 64);
   sp0_ = (cell) data_stack_base + data_stack_size;
+#endif
 }
 
 static void initialize_dynamic_code_space()
