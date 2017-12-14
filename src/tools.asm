@@ -138,14 +138,12 @@ endcode
 
 ; ### exception-text
 code exception_text, 'exception-text'   ; n -- string/f
-; The exception text should end with a space for compatibility with
-; the string printed by h. when there is no exception text.
         _dup
         _lit $0C0000005
         _equal
         _if .1
         _drop
-        _quote "memory access exception "
+        _quote "memory access exception"
         _return
         _then .1
 
@@ -154,7 +152,7 @@ code exception_text, 'exception-text'   ; n -- string/f
         _equal
         _if .2
         _drop
-        _quote "division by zero exception "
+        _quote "division by zero exception"
         _return
         _then .2
 
@@ -163,7 +161,7 @@ code exception_text, 'exception-text'   ; n -- string/f
         _equal
         _if .3
         _drop
-        _quote "breakpoint exception "
+        _quote "breakpoint exception"
         _return
         _then .3
 
