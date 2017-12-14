@@ -19,6 +19,7 @@
 #ifdef WIN64
 #include <windows.h>
 #else
+#include <unistd.h>             // sysconf
 #include <signal.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -135,19 +136,36 @@ static void initialize_data_stack()
                             info.dwPageSize,
                             PAGE_NOACCESS,
                             &old_protect);
+  // "If the function succeeds, the return value is nonzero."
   if (!ret)
     printf("VirtualProtect error\n");
 
 
   sp0_ = data_stack_base + data_stack_size;
 #else
+  long pagesize = sysconf(_SC_PAGESIZE);
+
   extern cell sp0_;
   extern cell stack_cells_data;
 
   stack_cells_data = 4096;
   size_t data_stack_size = stack_cells_data * sizeof(cell);
-  cell data_stack_base = malloc(data_stack_size + 64);
-  sp0_ = (cell) data_stack_base + data_stack_size;
+  cell data_stack_base =
+    (cell) mmap(NULL,                                           // starting address
+                data_stack_size + pagesize,                     // size
+                PROT_READ|PROT_WRITE,                           // protection
+                MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE,        // flags
+                -1,                                             // fd
+                0);                                             // offset
+
+  int ret = mprotect((void *)(data_stack_base + data_stack_size),
+                     pagesize,
+                     PROT_NONE);
+  // mprotect() returns zero on success
+  if (ret != 0)
+    printf("mprotect error\n");
+
+  sp0_ = data_stack_base + data_stack_size;
 #endif
 }
 
