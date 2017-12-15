@@ -846,9 +846,8 @@ code vector_each, 'vector-each'         ; vector callable --
         mov     r12, [rbp]              ; code address in r12
         _2drop                          ; adjust stack
         _this_vector_raw_length
-        _zero
-        _?do .1
-        _i
+        _do_times .1
+        _raw_loop_index
         _this_vector_nth_unsafe         ; -- element
         call    r12
         _loop .1
