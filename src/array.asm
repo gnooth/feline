@@ -340,7 +340,6 @@ code array_each, 'array-each'           ; array callable --
         _ callable_raw_code_address
 
         _swap
-
         _ check_array                   ; -- code-address array
 
         push    this_register
@@ -349,9 +348,8 @@ code array_each, 'array-each'           ; array callable --
         mov     r12, [rbp]              ; address to call in r12
         _2drop                          ; adjust stack
         _this_array_raw_length
-        _zero
-        _?do .1
-        _i
+        _do_times .1
+        _raw_loop_index
         _this_array_nth_unsafe          ; -- element
         call    r12
         _loop .1
