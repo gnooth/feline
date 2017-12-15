@@ -419,7 +419,20 @@ code count, 'count'     ; seq callable -- n
 endcode
 
 ; ### each
-code each, 'each'       ; seq callable --
+code each, 'each'                       ; seq callable --
+
+        _over
+        _ object_raw_typecode
+        cmp     rbx, TYPECODE_VECTOR
+        mov     rax, rbx
+        _drop           ; -- seq callable
+
+        cmp     rax, TYPECODE_VECTOR
+        je      vector_each
+        cmp     rax, TYPECODE_ARRAY
+        je      array_each
+
+        ; fall through...
 
         ; protect callable from gc
         push    rbx
@@ -428,7 +441,7 @@ code each, 'each'       ; seq callable --
 
         push    r12
         mov     r12, rbx                ; code address in r12
-        poprbx                          ; -- seq
+        _drop                           ; -- seq
         push    this_register
         mov     this_register, rbx      ; handle to seq in this_register
         _ length
