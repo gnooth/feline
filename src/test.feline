@@ -20,8 +20,6 @@ interactive? get assert-false
 vector{ 1 2 3 } length 3 assert=
 vector{ "this is a test" } length 1 assert=
 
-vector{ 1 2 3 } [ dup + ] map vector{ 2 4 6 } sequence= assert-true
-
 "this is a multiline
 string" length 26 assert=
 
@@ -438,6 +436,17 @@ test: each-index-test-1 ( -- )
 ;
 
 each-index-test-1
+
+test: map-test-1
+    vector{ 1 2 3 } [ dup + ] map vector{ 2 4 6 } assert=
+    clear
+    { { 1 2 } { 3 4 } { 5 6 } } [ first ] map get-data-stack { { 1 3 5 } } assert=
+    clear
+    { 3 -4 2 -5 -6 } [ abs ] map get-data-stack { { 3 4 2 5 6 } } assert=
+    clear
+;
+
+map-test-1
 
 test: map-index-test-1 ( -- )
     clear
