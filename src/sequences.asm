@@ -152,39 +152,37 @@ code map, 'map' ; seq callable -- new-seq
 
         _ callable_raw_code_address
 
-        _swap                           ; -- code-address seq
-
-        push    this_register
-        popd    this_register           ; -- code-address
         push    r12
-        popd    r12                     ; code address in r12
+        push    this_register
+
+        mov     r12, rbx                ; raw code address in r12
+        mov     this_register, [rbp]    ; seq in r15
+        _2drop
+
         _this
         _ length                        ; -- len
-        _this                           ; -- len seq
-        _ new_sequence                  ; -- new-seq
+        _dup                            ; -- len len
+        _this                           ; -- len len seq
+        _ new_sequence                  ; -- len new-seq
 
-        _this
-        _ length
+        _swap                           ; -- new-seq len
         _untag_fixnum
-        _zero
-        _?do .1
+        _do_times .1
 
-        _i
-        _tag_fixnum
+        _tagged_loop_index
         _this
         _ nth_unsafe                    ; -- new-seq element
 
         call    r12                     ; -- new-seq new-element
 
-        _i
-        _tag_fixnum                     ; -- new-seq new-element i
-        _pick                           ; -- new-seq new-element i new-seq
+        _tagged_loop_index              ; -- new-seq new-element tagged-index
+        _pick                           ; -- new-seq new-element tagged-index new-seq
         _ set_nth                       ; -- new-seq
 
         _loop .1
 
-        pop     r12
         pop     this_register
+        pop     r12
 
         ; drop callable
         pop     rax
