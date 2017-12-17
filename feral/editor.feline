@@ -585,7 +585,7 @@ special: +compound-undo+
 ;
 
 : do-down ( -- )
-    add-undo-move
+    last-command ' do-down eq? [ add-undo-move ] unless
 
     dot-line-number buffer-line-count 1- < [
         dot-line-number 1+ dot-line-number!
@@ -599,7 +599,7 @@ special: +compound-undo+
 ;
 
 : do-up ( -- )
-    add-undo-move
+    last-command ' do-up eq? [ add-undo-move ] unless
 
     dot-line-number 0 > [
         dot-line-number 1 - dot-line-number!
@@ -794,7 +794,9 @@ special: +compound-undo+
 ;
 
 : do-normal-char ( char -- )
-    add-undo-line-edit
+    current-command assert-false
+    ' do-normal-char !> current-command
+    last-command ' do-normal-char eq? [ add-undo-line-edit ] unless
 
     dot-line-head string>sbuf >local: sb
     sb sbuf-push
