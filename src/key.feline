@@ -29,6 +29,7 @@ in: key
 0x13 code-char                  >constant: ctrl-s
 0x15 code-char                  >constant: ctrl-u
 0x17 code-char                  >constant: ctrl-w
+0x19 code-char                  >constant: ctrl-y
 0x1a code-char                  >constant: ctrl-z
 0x1b code-char                  >constant: escape
 
