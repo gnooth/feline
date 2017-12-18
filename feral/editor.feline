@@ -50,7 +50,8 @@ tuple: buffer
     mod-count
     mod-count-last-save
     eol
-    undo-stack ;
+    undo-stack
+    redo-stack ;
 
 global: buffer-list
 
@@ -62,7 +63,9 @@ global: buffer-list
     0 buf buffer-mod-count!
     0 buf buffer-mod-count-last-save!
     LF buf buffer-eol!
+
     100 <vector> buf buffer-undo-stack!
+     16 <vector> buf buffer-redo-stack!
 
     buf
 ;
@@ -98,6 +101,8 @@ global: buffer-list
 : set-mod-count-last-save ( n -- ) current-buffer buffer-mod-count-last-save! ;
 
 : undo-stack ( -- vector ) current-buffer buffer-undo-stack ;
+
+: redo-stack ( -- vector ) current-buffer buffer-redo-stack ;
 
 : create-buffer ( filename -- buffer )
     buffer make-instance
@@ -354,7 +359,13 @@ special: +compound-undo+
 
 : pop-undo ( -- undo-record ) undo-stack vector-pop ;
 
-: reset-undo ( -- ) 0 undo-stack vector-set-length ;
+: push-redo ( undo-record -- ) redo-stack vector-push ;
+
+: pop-redo ( -- undo-record ) redo-stack vector-pop ;
+
+: reset-undo ( -- ) undo-stack vector-delete-all ;
+
+: reset-redo ( -- ) redo-stack vector-delete-all ;
 
 : copy-position ( position -- copy )
     [ position-line-number ] [ position-offset ] bi
