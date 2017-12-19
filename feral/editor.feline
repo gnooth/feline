@@ -30,6 +30,8 @@ global: bindings
 global: current-command
 global: last-command
 
+global: in-redo?
+
 global: done?
 
 "\n"   >constant: LF
@@ -401,14 +403,19 @@ special: +compound-undo+
     mark [ t !> repaint? ] when
 ;
 
-: add-undo-line-edit ( -- )
+: new-undo-line-edit ( -- undo-record )
     new-undo-record
     +line-edit+ over undo-record-action!
     dot-line over undo-record-data!
-    push-undo
 ;
 
+: add-undo-line-edit ( -- ) new-undo-line-edit push-undo ;
+
+: add-redo-line-edit ( -- ) new-undo-line-edit push-redo ;
+
 : undo-line-edit ( undo-record -- )
+    in-redo? [ add-undo-line-edit ] [ add-redo-line-edit ] if
+
     [ undo-record-mod-count set-mod-count ]
     [ undo-record-dot set-dot ]
     [ undo-record-data dot-line! ]
@@ -475,6 +482,17 @@ special: +compound-undo+
         ] [
             undo1
         ] if
+    ] if
+;
+
+: redo ( -- )
+    redo-stack empty? [
+        "Nothing to redo" message
+    ] [
+        t !> in-redo?
+        pop-redo
+        undo1
+        f !> in-redo?
     ] if
 ;
 
@@ -596,6 +614,8 @@ special: +compound-undo+
 ;
 
 : do-down ( -- )
+    reset-redo
+
     last-command ' do-down eq? [ add-undo-move ] unless
 
     dot-line-number buffer-line-count 1- < [
@@ -610,6 +630,8 @@ special: +compound-undo+
 ;
 
 : do-up ( -- )
+    reset-redo
+
     last-command ' do-up eq? [ add-undo-move ] unless
 
     dot-line-number 0 > [
@@ -805,6 +827,8 @@ special: +compound-undo+
 ;
 
 : do-normal-char ( char -- )
+    reset-redo
+
     current-command assert-false
     ' do-normal-char !> current-command
     last-command ' do-normal-char eq? [ add-undo-line-edit ] unless
@@ -1054,6 +1078,7 @@ use: search
     key:ctrl-k          ' kill-line                     bind-key
     key:ctrl-z          ' undo                          bind-key
     key:ctrl-u          ' undo                          bind-key
+    key:ctrl-y          ' redo                          bind-key
     key:escape          ' quit                          bind-key
     key:ctrl-o          ' open-file                     bind-key
     key:alt-right       ' next-buffer                   bind-key
