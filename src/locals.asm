@@ -103,20 +103,6 @@ endinline
 ; ### local-names
 feline_global local_names, 'local-names'
 
-; ### locals-defined
-code locals_defined, 'locals-defined'   ; -- n
-; return value is untagged
-        _ local_names
-        _tagged_if .1
-        _ local_names
-        _ vector_length
-        _untag_fixnum
-        _else .1
-        _zero
-        _then .1
-        next
-endcode
-
 ; ### initialize-local-names
 code initialize_local_names, 'initialize-local-names'
         ; allow for maximum number of locals
