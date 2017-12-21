@@ -27,30 +27,32 @@ file __FILE__
         pop     r14
 %endmacro
 
-asm_global lp0_value, 0
+asm_global lp0_, 0
 
 %macro _lp0 0
-        pushrbx
-        mov     rbx, [lp0_value]
+        _dup
+        mov     rbx, [lp0_]
 %endmacro
 
 ; ### lp0
-code lp0, 'lp0'         ; -- tagged-address
+code lp0, 'lp0'                         ; -- tagged-address
         _lp0
         _tag_fixnum
         next
 endcode
 
 %macro  _lpstore 0
-        popd    r14
+        mov     r14, rbx
+        _drop
 %endmacro
 
 %macro  _lpfetch 0
-        pushd   r14
+        _dup
+        mov     rbx, r14
 %endmacro
 
 ; ### lp@
-code lpfetch, 'lp@'     ; -- tagged-address
+code lpfetch, 'lp@'                     ; -- tagged-address
         _lpfetch
         _tag_fixnum
         next
@@ -60,25 +62,24 @@ endcode
 value using_locals?, 'using-locals?', 0
 ; true at compile time if the current definition uses locals
 
-; ### initialize-locals-stack
-code initialize_locals_stack, 'initialize-locals-stack'
-        ; idempotent
+; ### initialize_locals_stack
+code initialize_locals_stack, 'initialize_locals_stack', SYMBOL_INTERNAL
         _lp0
         _if .1
         _return
         _then .1
 
-        _lit    4096                    ; REVIEW
+        _lit 4096
         _dup
         _ raw_allocate
         _plus
-        mov     [lp0_value], rbx
+        mov     [lp0_], rbx
         _lpstore
         next
 endcode
 
-; ### free-locals-stack
-code free_locals_stack, 'free-locals-stack'
+; ### free_locals_stack
+code free_locals_stack, 'free_locals_stack', SYMBOL_INTERNAL
 ; called by BYE to make sure we're freeing all allocated memory
         _lp0
         _?dup
@@ -112,12 +113,5 @@ code initialize_local_names, 'initialize-local-names'
 
         _true
         _to using_locals?
-        next
-endcode
-
-; ### delete-local-names
-code delete_local_names, 'delete-local-names'
-        _f
-        _to_global local_names
         next
 endcode
