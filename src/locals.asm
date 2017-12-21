@@ -105,7 +105,7 @@ endinline
 feline_global local_names, 'local-names'
 
 ; ### initialize_local_names
-code initialize_local_names, 'initialize_local_names'
+code initialize_local_names, 'initialize_local_names', SYMBOL_INTERNAL
         ; allow for maximum number of locals
         _lit MAX_LOCALS
         _ new_vector_untagged
