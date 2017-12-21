@@ -101,17 +101,30 @@ always_inline locals_leave, 'locals-leave'
         _locals_leave
 endinline
 
+asm_global local_names_, f_value
+
 ; ### local-names
-feline_global local_names, 'local-names'
+code local_names, 'local-names'
+        _dup
+        mov     rbx, [local_names_]
+        next
+endcode
 
 ; ### initialize_local_names
 code initialize_local_names, 'initialize_local_names', SYMBOL_INTERNAL
         ; allow for maximum number of locals
         _lit MAX_LOCALS
         _ new_vector_untagged
-        _to_global local_names
+        mov     [local_names_], rbx
+        _drop
 
         _true
         _to using_locals?
+        next
+endcode
+
+; ### forget_local_names
+code forget_local_names, 'forget_local_names', SYMBOL_INTERNAL
+        mov     qword [local_names_], f_value
         next
 endcode

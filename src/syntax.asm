@@ -453,8 +453,7 @@ code parse_definition, 'parse-definition'       ; -- vector
 
         _zeroto using_locals?
 
-        _f
-        _to_global local_names
+        _ forget_local_names
 
         next
 endcode
