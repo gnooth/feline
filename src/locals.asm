@@ -58,10 +58,6 @@ code lpfetch, 'lp@'                     ; -- tagged-address
         next
 endcode
 
-; ### using-locals?
-value using_locals?, 'using-locals?', 0
-; true at compile time if the current definition uses locals
-
 ; ### initialize_locals_stack
 code initialize_locals_stack, 'initialize_locals_stack', SYMBOL_INTERNAL
         _lp0
@@ -117,9 +113,6 @@ code initialize_local_names, 'initialize_local_names', SYMBOL_INTERNAL
         _ new_vector_untagged
         mov     [local_names_], rbx
         _drop
-
-        _true
-        _to using_locals?
         next
 endcode
 

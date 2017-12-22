@@ -409,8 +409,6 @@ endcode
 ; ### parse-definition
 code parse_definition, 'parse-definition'       ; -- vector
 
-        _zeroto using_locals?
-
         _ begin_dynamic_scope
 
         _t
@@ -440,8 +438,8 @@ code parse_definition, 'parse-definition'       ; -- vector
         jmp     .top
 
 .bottom:
-        _ using_locals?
-        _if .5
+        _ local_names
+        _tagged_if .5
         _lit S_locals_leave
         _get_accum
         _ vector_push
@@ -450,8 +448,6 @@ code parse_definition, 'parse-definition'       ; -- vector
         _get_accum                      ; -- vector
 
         _ end_dynamic_scope
-
-        _zeroto using_locals?
 
         _ forget_local_names
 
@@ -671,8 +667,8 @@ endcode
 
 ; ### return-if
 code return_if, 'return-if', SYMBOL_IMMEDIATE
-        _ using_locals?
-        _if .1
+        _ local_names
+        _tagged_if .1
         _lit S_return_if_locals
         _else .1
         _lit S_return_if_no_locals
@@ -684,8 +680,8 @@ endcode
 
 ; ### declare-local-internal
 code declare_local_internal, 'declare-local-internal'   ; --
-        _ using_locals?
-        _zeq_if .1
+        _ local_names
+        _tagged_if_not .1
         ; first local in this definition
         _ initialize_local_names
         _lit S_locals_enter
@@ -697,7 +693,7 @@ code declare_local_internal, 'declare-local-internal'   ; --
         ; if found, replace with return-if-locals
         _get_accum
         _quotation .2
-        ; -- elt index
+        ; -- element index
         _swap
         _lit S_return_if_no_locals
         _eq?
