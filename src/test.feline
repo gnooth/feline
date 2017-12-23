@@ -2944,4 +2944,13 @@ test: cleave-test-1
 
 cleave-test-1
 
+test: sbuf-append-string-test-1
+    "this is a test" string>sbuf >local: sb
+    " and this is " sb sbuf-append-string
+    "another test" sb sbuf-append-string
+    sb "this is a test and this is another test" sequence= assert
+;
+
+sbuf-append-string-test-1
+
 ?nl "Reached end of test.feline" write-string
