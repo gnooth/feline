@@ -2953,4 +2953,27 @@ test: sbuf-append-string-test-1
 
 sbuf-append-string-test-1
 
+test: sbuf-push-test-1
+    8 <sbuf> >local: sb
+    sb sbuf-capacity 8 assert-eq
+    't' sb sbuf-push
+    'e' sb sbuf-push
+    's' sb sbuf-push
+    't' sb sbuf-push
+    'i' sb sbuf-push
+    'n' sb sbuf-push
+    'g' sb sbuf-push
+    sb sbuf-capacity 8 assert-eq
+    sb sbuf-length 7 assert-eq
+    'x' sb sbuf-push
+    sb sbuf-capacity 8 assert-eq
+    sb sbuf-length 8 assert-eq
+    'y' sb sbuf-push
+    sb sbuf-capacity 9 >= assert
+    sb sbuf-length 9 assert-eq
+    sb "testingxy" sequence= assert
+;
+
+sbuf-push-test-1
+
 ?nl "Reached end of test.feline" write-string
