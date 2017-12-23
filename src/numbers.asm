@@ -145,6 +145,9 @@ endcode
 
 ; ### float-float-equal?
 code float_float_equal?, 'float-float-equal?'   ; x y -- ?
+
+        _debug_?enough 2
+
         _ float_raw_value
         _swap
         _ float_raw_value
@@ -154,6 +157,9 @@ endcode
 
 ; ### float-equal?
 code float_equal?, 'float-equal?'       ; x float -- ?
+
+        _debug_?enough 2
+
         _ verify_float
         _swap
 

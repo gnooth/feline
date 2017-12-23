@@ -169,6 +169,9 @@ endinline
 
 ; ### =
 code feline_equal, '='                  ; x y -- ?
+
+        _debug_?enough 2
+
         cmp     rbx, [rbp]
         jne     .1
         lea     rbp, [rbp + BYTES_PER_CELL]
@@ -434,19 +437,19 @@ code token_character_literal?, 'token-character-literal?'       ; token -- char 
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; --    r: -- token
+        _drop                           ; --    r: -- token
 
         cmp     this_string_raw_length, 3
-        jl .fail
+        jl      .fail
 
         ; length >= 3
         cmp     this_string_first_unsafe, 0x27
-        jne .fail
+        jne     .fail
 
         _this_string_last_unsafe
         cmp     rbx, 0x27
-        poprbx
-        jne .fail
+        _drop
+        jne     .fail
 
         cmp     this_string_raw_length, 3
         jne     .fail
