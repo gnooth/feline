@@ -461,7 +461,7 @@ code sbuf_push, 'sbuf-push'             ; tagged-char sbuf --
 
         _sbuf_raw_length                ; -- char length
         cmp     rbx, this_sbuf_raw_capacity
-        jnc     .1
+        jge     .1
 
         _this_sbuf_set_nth_unsafe
 
@@ -492,34 +492,27 @@ code sbuf_append_chars, 'sbuf_append_chars', SYMBOL_INTERNAL
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -- from-addr from-length
 
-        _this_sbuf_raw_length           ; -- from-addr from-length to-length
-
-        _over
-        _plus                           ; -- from-addr from-length total-length
+        _sbuf_raw_length                        ; -- address length old-length
+        add     rbx, qword [rbp]                ; -- address length new-length
 
         _this
-        _ sbuf_ensure_capacity          ; -- from-addr from-length
+        _ sbuf_ensure_capacity                  ; -- address length
 
-        _tuck                           ; -- from-length from-addr from-length
+        push    rbx                             ; -- address length      r: -- length
 
         _this_sbuf_data
-        _this_sbuf_raw_length
-        _plus                           ; -- from-length from-addr from-length to-addr
+        add     rbx, this_sbuf_raw_length       ; -- address length dest r: -- length
 
         _swap
-        _ cmove                         ; -- from-length
+        _ cmove                                 ; --    r: -- from-length
 
-        _this_sbuf_raw_length
-        _plus                           ; -- total-length
-        _this_sbuf_set_raw_length       ; --
+        pop     rax
+        add     this_sbuf_raw_length, rax
 
-        _zero
-        _this_sbuf_data
-        _this_sbuf_raw_length
-        _plus
-        _cstore
+        mov     rax, this_sbuf_raw_data_address
+        add     rax, this_sbuf_raw_length
+        mov     byte [rax], 0
 
         pop     this_register
         next
