@@ -863,15 +863,8 @@ section .text
 %endmacro
 
 %macro  _zero 0
-        _lit 0
-%endmacro
-
-%macro  _true 0
-        _lit -1
-%endmacro
-
-%macro  _false 0
-        _lit 0
+        _dup
+        xor     ebx, ebx
 %endmacro
 
 ; static quotation
