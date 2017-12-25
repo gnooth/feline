@@ -36,7 +36,17 @@ endcode
 ; ### raw_nano_count
 code raw_nano_count, 'raw_nano_count', SYMBOL_INTERNAL  ; -- raw-uint64
         xcall   os_nano_count
-        pushd   rax
+        _dup
+        mov     rbx, rax
+        next
+endcode
+
+; ### nano-count
+code nano_count, 'nano-count'           ; -- ns
+        xcall   os_nano_count
+        _dup
+        mov     rbx, rax
+        _ normalize
         next
 endcode
 
