@@ -1562,18 +1562,29 @@ test: sbuf-reverse!-test-1
 
 sbuf-reverse!-test-1
 
-test: sbuf-shorten-1
+test: sbuf-shorten-test-1
     "12345678" string>sbuf >local: sb
+    sb sbuf-length 8 assert-eq
     sb sbuf-validate
     16 sb sbuf-shorten
+    sb sbuf-length 8 assert-eq
     sb sbuf-validate
     sb "12345678" sequence= assert-true
     4 sb sbuf-shorten
+    sb sbuf-length 4 assert-eq
     sb sbuf-validate
     sb "1234" sequence= assert-true
+
+    most-positive-fixnum sb sbuf-shorten
+    sb sbuf-length 4 assert-eq
+    sb sbuf-validate
+    sb "1234" sequence= assert-true
+
+    [ -1 sb sbuf-shorten ] assert-must-fail
+    [ most-negative-fixnum sb sbuf-shorten ] assert-must-fail
 ;
 
-sbuf-shorten-1
+sbuf-shorten-test-1
 
 test: string-index-from-test-1
     't' 0 "this is a test" string-index-from zero? assert-true
