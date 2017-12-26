@@ -134,8 +134,12 @@ GENERIC_WRITE   equ     $40000000
 %endmacro
 
 %macro  _check_index 1
-        _verify_index %1
-        _untag_fixnum %1
+        mov     rax, %1
+        test    al, FIXNUM_TAG
+        jz      error_not_index_rax
+        test    rax, rax
+        js      error_not_index_rax
+        sar     %1, FIXNUM_TAG_BITS
 %endmacro
 
 %define f_value BOOLEAN_TAG
