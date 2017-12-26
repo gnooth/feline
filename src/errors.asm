@@ -80,6 +80,14 @@ code error_not_fixnum, 'error-not-fixnum'       ; x --
         next
 endcode
 
+; ### error_not_fixnum_rax
+code error_not_fixnum_rax, 'error_not_fixnum_rax', SYMBOL_INTERNAL
+        _dup
+        mov     rbx, rax
+        _ error_not_fixnum
+        next
+endcode
+
 ; ### error-not-float
 code error_not_float, 'error-not-float'         ; x --
         _quote "a float"
@@ -122,9 +130,17 @@ endcode
 
 ; ### error-not-index
 code error_not_index, 'error-not-index'         ; x --
-        _quote "an index"
+        _quote "a valid sequence index"
         _ format_type_error
         _ error
+        next
+endcode
+
+; ### error_not_index_rax
+code error_not_index_rax, 'error_not_index_rax', SYMBOL_INTERNAL
+        _dup
+        mov     rbx, rax
+        _ error_not_index
         next
 endcode
 
