@@ -17,6 +17,7 @@ file __FILE__
 
 ; ### assertion-failed
 code assertion_failed, 'assertion-failed'       ; location --
+        _debug_?enough 1
         _to_global error_location
         _error "Assertion failed"
         next
@@ -103,10 +104,11 @@ code check_assert_must_fail, 'check-assert-must-fail'   ; quotation location --
         _lit S_failed
         _end_quotation .1
         _ recover
+        _dup
         _lit S_failed
         _eq?
         _tagged_if .2
-        _drop
+        _2drop
         _else .2
         _ assertion_failed
         _then .2
