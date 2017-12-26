@@ -1027,6 +1027,18 @@ last-word 0xa5 install-handler
 
 last-word 0xa6 install-handler
 
+: .a8
+    -- source is imm8
+    -- dest is al
+    "test" !> mnemonic
+    8 !> dsize
+    0 !> dreg   -- al
+    next-byte !> immediate-operand
+    t !> immediate-operand?
+    .inst ;
+
+last-word 0xa8 install-handler
+
 : .a9
     -- source is imm16/32
     -- dest is ax/eax/rax
