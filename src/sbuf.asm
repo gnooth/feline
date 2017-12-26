@@ -397,13 +397,15 @@ endcode
 ; ### sbuf-shorten
 code sbuf_shorten, 'sbuf-shorten'       ; fixnum handle --
 
-        _check_fixnum qword [rbp]
-        _ check_sbuf                    ; -- u sbuf
+        _check_index qword [rbp]
+        _ check_sbuf                    ; -- n sbuf
 
         _twodup
-        _sbuf_raw_length
-        _ult
-        _if .1
+        _sbuf_raw_length                ; -- n sbuf n raw-length
+        cmp     rbx, [rbp]
+        _2drop
+        jle     .1
+
 
         push    this_register
         mov     this_register, rbx
@@ -416,11 +418,10 @@ code sbuf_shorten, 'sbuf-shorten'       ; fixnum handle --
         mov     byte [rax], 0
 
         pop     this_register
+        _return
 
-        _else .1
+.1:
         _2drop
-        _then .1
-
         next
 endcode
 
@@ -461,7 +462,7 @@ code sbuf_push, 'sbuf-push'             ; tagged-char sbuf --
 
         _sbuf_raw_length                ; -- char length
         cmp     rbx, this_sbuf_raw_capacity
-        jge     .1
+        jnl     .1
 
         _this_sbuf_set_nth_unsafe
 
