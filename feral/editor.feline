@@ -865,23 +865,26 @@ special: +compound-undo+
 
     make-backup
 
-    current-buffer buffer-filename file-create-write >local: fd
     current-buffer buffer-eol >local: eol
+    buffer-line-count 80 * <sbuf> >local: sb
+    nano-count >local: start-ns
 
-    -- write out all lines but the last followed by eol
-    buffer-line-count 1 - [
-        buffer-nth-line fd file-write-string
-        eol fd file-write-string
+    -- all lines but the last are followed by eol
+    buffer-line-count 1- [
+        buffer-nth-line sb sbuf-append-string
+        eol sb sbuf-append-string
     ] each-integer
 
-    -- write out last line, no eol
-    buffer-last-line fd file-write-string
+    -- last line, no eol
+    buffer-last-line sb sbuf-append-string
 
-    fd file-close
+    sb sbuf>string current-buffer buffer-filename set-file-contents
+
+    nano-count start-ns - >local: elapsed-ns
 
     mod-count set-mod-count-last-save
 
-    "Saving...done" message
+    elapsed-ns 1000000 /i "Saving...done (%s ms)" format message
 ;
 
 : do-quit ( -- )
