@@ -31,6 +31,8 @@ global: found-offset
     found-offset pattern length + mark position-offset! ;
 
 : found ( -- )
+    reset-redo
+
     add-undo-move
     found-line-number dot-line-number!
     found-offset dot-offset!

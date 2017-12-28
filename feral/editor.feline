@@ -392,7 +392,15 @@ special: +compound-undo+
     push-undo
 ;
 
+: add-redo-move ( -- )
+    new-undo-record
+    +move+ over undo-record-action!
+    push-redo
+;
+
 : undo-move ( undo-record -- )
+    in-redo? [ add-undo-move ] [ add-redo-move ] if
+
     mark [ t !> repaint? ] when
 
     [ undo-record-mod-count set-mod-count ]
@@ -428,10 +436,16 @@ special: +compound-undo+
     new-undo-record
     +delete-line-separator+ over undo-record-action!
     dot-line
-    dot-line-number 1 + buffer-nth-line
+    dot-line-number 1+ buffer-nth-line
     2array
     over undo-record-data!
     push-undo
+;
+
+: add-redo-delete-line-separator ( -- )
+    new-undo-record
+    +delete-line-separator+ over undo-record-action!
+    push-redo
 ;
 
 : undo-delete-line-separator ( undo-record -- )
@@ -443,6 +457,8 @@ special: +compound-undo+
     dup array-first dot-line!
     array-second dot-line-number 1 + buffer-insert-nth-line
     t !> repaint?
+
+    add-redo-delete-line-separator
 ;
 
 : add-undo-insert-line-separator ( -- )
@@ -452,13 +468,21 @@ special: +compound-undo+
     push-undo
 ;
 
+: add-redo-insert-line-separator ( -- )
+    new-undo-record
+    +insert-line-separator+ over undo-record-action!
+    push-redo
+;
+
 : undo-insert-line-separator ( undo-record -- )
     [ undo-record-mod-count set-mod-count ]
     [ undo-record-dot set-dot ]
     [ undo-record-data dot-line! ]
     tri
-    dot-line-number 1 + current-buffer-lines vector-remove-nth!
+    dot-line-number 1+ current-buffer-lines vector-remove-nth!
     t !> repaint?
+
+    add-redo-insert-line-separator
 ;
 
 : undo1 ( undo-record -- )
@@ -482,17 +506,7 @@ special: +compound-undo+
         ] [
             undo1
         ] if
-    ] if
-;
-
-: redo ( -- )
-    redo-stack empty? [
-        "Nothing to redo" message
-    ] [
-        t !> in-redo?
-        pop-redo
-        undo1
-        f !> in-redo?
+        "Undo!" message
     ] if
 ;
 
@@ -635,7 +649,7 @@ special: +compound-undo+
     last-command ' do-up eq? [ add-undo-move ] unless
 
     dot-line-number 0 > [
-        dot-line-number 1 - dot-line-number!
+        dot-line-number 1- dot-line-number!
         unmark
         reframe? [
             dot-line-number set-top-line-number
@@ -647,7 +661,7 @@ special: +compound-undo+
 
 : do-window-up
     top-line-number 0 > [
-        top-line-number 1 - set-top-line-number
+        top-line-number 1- set-top-line-number
         dot-line-number bottom-line-number > [
             add-undo-move
             bottom-line-number dot-line-number!
@@ -659,7 +673,7 @@ special: +compound-undo+
 
 : do-window-down
     top-line-number buffer-line-count 1 - < [
-        top-line-number 1 + set-top-line-number
+        top-line-number 1+ set-top-line-number
         dot-line-number top-line-number < [
             add-undo-move
             top-line-number dot-line-number!
@@ -675,7 +689,7 @@ special: +compound-undo+
     dot-y >local: goal-y
 
     dot-line-number lines-per-page +
-    buffer-line-count 1 - min
+    buffer-line-count 1- min
     dot-line-number!
 
     dot-line-number goal-y - 0 max set-top-line-number
@@ -698,9 +712,9 @@ special: +compound-undo+
 : insert-line-separator ( -- )
     dot-offset dot-line-length <= [
         add-undo-insert-line-separator
-        dot-line-tail dot-line-number 1 + buffer-insert-nth-line
+        dot-line-tail dot-line-number 1+ buffer-insert-nth-line
         dot-line-head dot-line!
-        dot-line-number 1 + dot-line-number!
+        dot-line-number 1+ dot-line-number!
         0 dot-offset!
         0 set-goal-column
         modified
@@ -779,9 +793,9 @@ special: +compound-undo+
     dot-line-number buffer-line-count 1 - < [
         dot-offset dot-line-length = [
             add-undo-delete-line-separator
-            dot-line-number 1 + buffer-nth-line
+            dot-line-number 1+ buffer-nth-line
             dot-line swap string-append dot-line!
-            dot-line-number 1 + current-buffer-lines vector-remove-nth!
+            dot-line-number 1+ current-buffer-lines vector-remove-nth!
             t !> repaint?
         ] when
     ] when
@@ -851,6 +865,30 @@ special: +compound-undo+
         dot-line-head dot-line!
         t !> dot-line-changed?
         modified
+    ] if
+;
+
+: redo1 ( undo-record -- )
+    dup undo-record-action
+    {
+        { +move+ [ undo-move ] }
+        { +line-edit+ [ undo-line-edit ] }
+        { +delete-line-separator+ [ drop delete-line-separator ] }
+        { +insert-line-separator+ [ drop insert-line-separator ] }
+        [ error "unsupported" ]
+    } case
+    maybe-reframe
+;
+
+: redo ( -- )
+    redo-stack empty? [
+        "Nothing to redo" message
+    ] [
+        t !> in-redo?
+        pop-redo
+        redo1
+        f !> in-redo?
+        "Redo!" message
     ] if
 ;
 
