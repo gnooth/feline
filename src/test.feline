@@ -150,7 +150,6 @@ test: fixnum<=-test-1 ( -- )
 
 fixnum<=-test-1
 
--- fixnum>
 test: fixnum>-test-1 ( -- )
     0 0 fixnum> assert-false
     1 1 fixnum> assert-false
@@ -164,11 +163,12 @@ test: fixnum>-test-1 ( -- )
     most-negative-fixnum most-positive-fixnum fixnum> assert-false
     most-positive-fixnum most-negative-fixnum fixnum> assert-true
     0 most-positive-fixnum fixnum> assert-false
+
+    most-positive-fixnum 1+ most-positive-fixnum fixnum> assert-true
 ;
 
 fixnum>-test-1
 
--- fixnum>=
 test: fixnum>=-test-1 ( -- )
     0 0 fixnum>= assert-true
     1 1 fixnum>= assert-true
@@ -187,7 +187,6 @@ test: fixnum>=-test-1 ( -- )
 
 fixnum>=-test-1
 
--- >=
 test: >=-test-1 ( -- )
      0  0 >= assert-true
      1  1 >= assert-true
@@ -2197,14 +2196,6 @@ test: <=-test-1
 ;
 
 <=-test-1
-
-test: fixnum>-test-1
-    43 42 fixnum> assert-true
-    42 43 fixnum> assert-false
-    most-positive-fixnum 1 + most-positive-fixnum fixnum> assert-true
-;
-
-fixnum>-test-1
 
 test: fixnum-fixnum>=-test-1
     43 42 fixnum-fixnum>= assert-true
