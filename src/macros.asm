@@ -83,9 +83,8 @@ GENERIC_WRITE   equ     $40000000
 
 %macro  _verify_fixnum 1
         mov     rax, %1
-        and     al, FIXNUM_TAG_MASK
-        cmp     al, FIXNUM_TAG
-        jne     error_not_fixnum
+        test    al, FIXNUM_TAG
+        jz      error_not_fixnum_rax
 %endmacro
 
 %macro  _check_fixnum 0
