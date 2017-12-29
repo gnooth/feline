@@ -15,14 +15,6 @@
 
 file __FILE__
 
-; ### fixnum-bitand
-code fixnum_bitand, 'fixnum-bitand'     ; x y -- z
-        _untag_2_fixnums
-        _and
-        _tag_fixnum
-        next
-endcode
-
 ; ### bitand
 code bitand, 'bitand'                   ; x y -- z
         _check_fixnum
@@ -33,31 +25,19 @@ code bitand, 'bitand'                   ; x y -- z
 endcode
 
 ; ### integer_to_raw_bits
-code integer_to_raw_bits, 'integer_to_raw_bits', SYMBOL_INTERNAL        ; x -- y
+code integer_to_raw_bits, 'integer_to_raw_bits', SYMBOL_INTERNAL
+; x -- y
 
-%if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
-        test    ebx, 1
+        test    bl, FIXNUM_TAG
         jz      .1
-%else
-        mov     al, bl
-        and     al, FIXNUM_TAG_MASK
-        cmp     al, FIXNUM_TAG
-        jne     .1
-%endif
         _untag_fixnum
         _return
 
 .1:
         ; not a fixnum
-%ifdef TAGGED_HANDLES
         cmp     bl, HANDLE_TAG
         jne     error_not_integer
-%else
-        cmp     rbx, [handle_space_]
-        jb      error_not_integer
-        cmp     rbx, [handle_space_free_]
-        jnb     error_not_integer
-%endif
+
         _handle_to_object_unsafe
 
         test    rbx, rbx
