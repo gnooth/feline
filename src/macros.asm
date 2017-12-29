@@ -77,15 +77,8 @@ GENERIC_WRITE   equ     $40000000
 %endmacro
 
 %macro  _verify_fixnum 0
-%if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
-        test    ebx, 1
+        test    bl, FIXNUM_TAG
         jz      error_not_fixnum
-%else
-        mov     al, bl
-        and     al, FIXNUM_TAG_MASK
-        cmp     al, FIXNUM_TAG
-        jne     error_not_fixnum
-%endif
 %endmacro
 
 %macro  _verify_fixnum 1
