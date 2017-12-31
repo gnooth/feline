@@ -143,6 +143,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	string.asm \
 	strings.asm \
 	symbol.asm \
+	thread.asm \
 	time.asm \
 	tools.asm \
 	tuple.asm \
