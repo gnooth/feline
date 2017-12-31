@@ -522,7 +522,7 @@ code token_string_literal?, 'token-string-literal?' ; token -- string t | token 
 endcode
 
 ; ### times
-code times_, 'times'                    ; tagged-fixnum xt --
+code times_, 'times'                    ; tagged-fixnum quotation --
 
         ; protect quotation from gc
         push    rbx
@@ -1487,7 +1487,7 @@ code char_to_string, 'char>string'      ; tagged-char -- string
         _else .2
 
         _quote '\x'
-        _ rfetch
+        _rfetch
         _ sbuf_append_string            ; -- tagged-char
 
         _char_code
