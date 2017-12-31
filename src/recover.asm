@@ -15,6 +15,16 @@
 
 file __FILE__
 
+%macro  _rpfetch 0
+        _dup
+        mov     rbx, rsp
+%endmacro
+
+%macro _rpstore 0
+        mov     rsp, rbx
+        _drop
+%endmacro
+
 %macro _spfetch 0
         lea     rbp, [rbp - BYTES_PER_CELL]
         mov     [rbp], rbx
