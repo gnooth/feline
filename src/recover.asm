@@ -15,6 +15,18 @@
 
 file __FILE__
 
+%macro _spfetch 0
+        lea     rbp, [rbp - BYTES_PER_CELL]
+        mov     [rbp], rbx
+        mov     rbx, rbp
+%endmacro
+
+%macro _spstore 0
+        mov     rbp, rbx
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
 section .data
 feline_handler_data:
         dq      0
@@ -35,7 +47,7 @@ endcode
 
 ; ### catch
 code catch, 'catch'
-        _ spfetch
+        _spfetch
         _tor
         _lpfetch
         _tor
@@ -100,7 +112,7 @@ code throw, 'throw'
         _rfrom
         _swap
         _tor
-        _ spstore
+        _spstore
         _drop
         _rfrom
         next
