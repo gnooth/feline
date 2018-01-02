@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -57,7 +57,6 @@ extern os_write_file
 extern os_get_console_character_attributes
 %endif
 
-extern c_fixnum_to_base
 extern c_get_saved_backtrace_array
 extern c_get_saved_backtrace_size
 extern c_random
@@ -66,6 +65,7 @@ extern c_seed_random
 
 ; numbers.c
 extern c_decimal_to_number
+extern c_fixnum_to_base
 extern c_float_expt
 extern c_float_float_divide
 extern c_float_float_ge

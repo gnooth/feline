@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 #include <math.h>       // M_PI
 #include <string.h>     // strlen
 #include <errno.h>      // errno
+#include <inttypes.h>   // PRId64
 
 #include "feline.h"
 
@@ -141,6 +142,18 @@ cell c_decimal_to_number(char *s, size_t length)
     }
 
   return c_string_to_float(s, length);
+}
+
+int c_fixnum_to_base(cell n, cell base, char * buf, size_t size)
+{
+  // arguments are all untagged
+  if (base == 16)
+    // PRIX64 is defined in inttypes.h
+    return snprintf(buf, size, "%" PRIx64, n);
+  else
+    // FIXME it's an error if base is not 10 here
+    // PRId64 is defined in inttypes.h
+    return snprintf(buf, size, "%" PRId64, n);
 }
 
 cell c_pi()

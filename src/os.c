@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 #include <time.h>               // time, localtime_r
 #include <errno.h>
 #include <string.h>             // strerror
-#include <inttypes.h>           // PRId64
 #ifdef WIN64
 #include <windows.h>
 #include <io.h>                 // _chsize
@@ -509,16 +508,4 @@ void os_bye()
 
   deprep_terminal();
   exit(0);
-}
-
-int c_fixnum_to_base(cell n, cell base, char * buf, size_t size)
-{
-  // arguments are all untagged
-  if (base == 16)
-    // PRIX64 is defined in inttypes.h
-    return snprintf(buf, size, "%" PRIx64, n);
-  else
-    // FIXME it's an error if base is not 10 here
-    // PRId64 is defined in inttypes.h
-    return snprintf(buf, size, "%" PRId64, n);
 }
