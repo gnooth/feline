@@ -1,4 +1,4 @@
-; Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -183,6 +183,7 @@ code initialize_types, 'initialize_types', SYMBOL_INTERNAL      ; --
         _add_type "tuple-class", TYPECODE_TUPLE_CLASS
         _add_type "type", TYPECODE_TYPE
         _add_type "keyword", TYPECODE_KEYWORD
+        _add_type "thread", TYPECODE_THREAD
 
         next
 endcode
