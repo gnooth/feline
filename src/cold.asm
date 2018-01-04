@@ -30,9 +30,6 @@ code sp0, 'sp0'                         ; -- tagged-address
         next
 endcode
 
-; ### stack-cells                       ; environment query
-value stack_cells, 'stack-cells', 0     ; initialized in main()
-
 asm_global main_argc ; untagged
 asm_global main_argv ; untagged
 

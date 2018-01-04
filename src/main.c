@@ -118,54 +118,48 @@ static void args(int argc, char **argv)
 
 static void initialize_data_stack()
 {
+#define DATA_STACK_SIZE 4096 * sizeof(cell)
 #ifdef WIN64
   SYSTEM_INFO info;
   GetSystemInfo(&info);
 
-  extern cell sp0_;
-  extern cell stack_cells_data;
-
-  stack_cells_data = 4096;
-  size_t data_stack_size = stack_cells_data * sizeof(cell);
   cell data_stack_base = (cell) VirtualAlloc(NULL,
-                                             data_stack_size + info.dwPageSize,
+                                             DATA_STACK_SIZE + info.dwPageSize,
                                              MEM_COMMIT|MEM_RESERVE,
                                              PAGE_READWRITE);
   DWORD old_protect;
-  BOOL ret = VirtualProtect((LPVOID)(data_stack_base + data_stack_size),
+  BOOL ret = VirtualProtect((LPVOID)(data_stack_base + DATA_STACK_SIZE),
                             info.dwPageSize,
                             PAGE_NOACCESS,
                             &old_protect);
+
   // "If the function succeeds, the return value is nonzero."
   if (!ret)
     printf("VirtualProtect error\n");
 
-
-  sp0_ = data_stack_base + data_stack_size;
+  extern cell sp0_;
+  sp0_ = data_stack_base + DATA_STACK_SIZE;
 #else
   long pagesize = sysconf(_SC_PAGESIZE);
 
-  extern cell sp0_;
-  extern cell stack_cells_data;
-
-  stack_cells_data = 4096;
-  size_t data_stack_size = stack_cells_data * sizeof(cell);
   cell data_stack_base =
     (cell) mmap(NULL,                                           // starting address
-                data_stack_size + pagesize,                     // size
+                DATA_STACK_SIZE + pagesize,                     // size
                 PROT_READ|PROT_WRITE,                           // protection
                 MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE,        // flags
                 -1,                                             // fd
                 0);                                             // offset
 
-  int ret = mprotect((void *)(data_stack_base + data_stack_size),
+  int ret = mprotect((void *)(data_stack_base + DATA_STACK_SIZE),
                      pagesize,
                      PROT_NONE);
+
   // mprotect() returns zero on success
   if (ret != 0)
     printf("mprotect error\n");
 
-  sp0_ = data_stack_base + data_stack_size;
+  extern cell sp0_;
+  sp0_ = data_stack_base + DATA_STACK_SIZE;
 #endif
 }
 
