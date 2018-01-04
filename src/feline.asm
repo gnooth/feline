@@ -36,7 +36,6 @@ string FELINE_VOCAB_NAME, 'feline'
 IN_FELINE
 
 %include "cold.asm"
-%include "thread.asm"
 %include "move.asm"
 %include "memory.asm"
 %include "debug.asm"
@@ -93,6 +92,7 @@ IN_FELINE
 %include "ansi.asm"
 %include "color.asm"
 %include "socket.asm"
+%include "thread.asm"
 
 ; ### in-static-data-area?
 code in_static_data_area?, 'in-static-data-area?', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
