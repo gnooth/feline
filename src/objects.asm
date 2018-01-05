@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -472,6 +472,13 @@ code object_to_string, 'object>string'  ; object -- string
         _ keyword_to_string
         _return
         _then .29
+
+        _dup
+        _ thread?
+        _tagged_if .30
+        _ thread_to_string
+        _return
+        _then .30
 
         ; give up
         _tag_fixnum
