@@ -240,6 +240,19 @@ static void reserve_handle_space()
 #endif
 }
 
+#ifdef WIN64
+DWORD tls_index;
+
+static void initialize_threads()
+{
+  tls_index = TlsAlloc();
+
+  if (tls_index == TLS_OUT_OF_INDEXES)
+    printf("TlsAlloc failed\n");
+
+}
+#endif
+
 int main(int argc, char **argv, char **env)
 {
   start_time_ticks_data = os_ticks();
@@ -253,6 +266,10 @@ int main(int argc, char **argv, char **env)
   reserve_handle_space();
 
   initialize_data_stack();
+
+#ifdef WIN64
+  initialize_threads();
+#endif
 
 #ifdef WIN64
   AddVectoredExceptionHandler(1, windows_exception_handler);
