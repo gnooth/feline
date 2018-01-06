@@ -373,29 +373,19 @@ void os_time_and_date(void * buf)
 #endif
 }
 
-uint64_t os_nano_count()
+cell os_nano_count()
 {
-  // adapted from Factor
-  // FIXME error handling
 #ifdef WIN64
-  static double scale;
-
-  uint64_t hi, lo;
-
+  static int64_t frequency;
+  if (frequency == 0)
+    {
+      LARGE_INTEGER freq;
+      QueryPerformanceFrequency(&freq);
+      frequency = freq.QuadPart;
+    }
   LARGE_INTEGER count;
   QueryPerformanceCounter(&count);
-
-  if (scale == 0.0)
-    {
-      LARGE_INTEGER frequency;
-      QueryPerformanceFrequency(&frequency);
-      scale = 1000000000.0 / frequency.QuadPart;
-    }
-
-  hi = count.HighPart;
-  lo = count.LowPart;
-
-  return ((hi << 32) | lo) * scale;
+  return (count.QuadPart * 1000000000) / frequency;
 #else
   struct timespec t;
   clock_gettime(CLOCK_MONOTONIC, &t);
