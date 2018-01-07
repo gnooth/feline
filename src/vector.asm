@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -642,8 +642,8 @@ vector_push_unchecked:
 
         mov     rax, vector_raw_length_slot     ; raw length in rax
         cmp     rax, vector_raw_capacity_slot
-        jnc     .1
-        mov     rdx, [rbp]                      ; element in rdx
+        jge     .1                      ; length >= capacity
+        mov     rdx, [rbp]              ; element in rdx
         mov     rcx, vector_raw_data_address_slot
         mov     [rcx + BYTES_PER_CELL * rax], rdx
         add     vector_raw_length_slot, 1
