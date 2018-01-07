@@ -77,10 +77,9 @@ file __FILE__
 
 %macro  _vector_nth_unsafe 0            ; index vector -- element
         mov     rax, [rbp]              ; untagged index in rax
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        shl     rax, 3                  ; convert cells to bytes
         _vector_raw_data_address
-        mov     rbx, [rbx + rax]
+        _nip
+        mov     rbx, [rbx + BYTES_PER_CELL * rax]
 %endmacro
 
 %macro  _this_vector_nth_unsafe 0       ; index -- element
@@ -330,20 +329,24 @@ vector_nth_untagged:
 
         _ check_vector
 
-        push    this_register
-        mov     this_register, rbx      ; -- raw-index raw_vector
-
-        _vector_raw_length              ; -- raw-index raw-length
-        cmp     [rbp], rbx
-        poprbx                          ; -- raw-index
-        jae .1                          ; branch if index >= length (unsigned comparison)
-        _this_vector_nth_unsafe
-        pop     this_register
+        mov     rax, [rbp]              ; raw index in rax
+        cmp     rax, vector_raw_length_slot
+        jge     .error                  ; index >= length
+        _vector_raw_data_address
+        _nip
+        mov     rbx, [rbx + BYTES_PER_CELL * rax]
         next
-.1:
-        _drop
-        pop     this_register
-        _error "vector-nth index out of range"
+
+.error:
+        ; -- raw-index vector
+        _vector_raw_length
+        _tag_fixnum
+        _swap
+        _tag_fixnum
+        _swap
+        _quote "ERROR: the index %s is out of range for a vector of length %s."
+        _ format
+        _ error
         next
 endcode
 
