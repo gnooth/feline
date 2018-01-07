@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -255,7 +255,7 @@ static void initialize_threads()
 
 int main(int argc, char **argv, char **env)
 {
-  start_time_ticks_data = os_ticks();
+  start_time_raw_nano_count_ = os_nano_count();
 
   args(argc, argv);
 

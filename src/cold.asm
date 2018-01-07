@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -15,8 +15,14 @@
 
 file __FILE__
 
-; ### start-time-ticks
-value start_time_ticks, 'start-time-ticks', 0
+asm_global start_time_raw_nano_count_, 0
+
+; ### start_time_raw_nano_count
+code start_time_raw_nano_count, 'start_time_raw_nano_count', SYMBOL_INTERNAL
+        _dup
+        mov     rbx, [start_time_raw_nano_count_]
+        next
+endcode
 
 asm_global rp0_, 0
 
@@ -131,12 +137,13 @@ endcode
 ; ### report-startup-time
 code report_startup_time, 'report-startup-time' ; --
         _write "Startup completed in "
-        _ ticks
-        _ start_time_ticks
+        _ raw_nano_count
+        _ start_time_raw_nano_count
         _minus
-        _tag_fixnum
+        _lit 1000000
+        _ raw_int64_divide_truncate
         _ decimal_dot
-        _write "milliseconds."
+        _write " milliseconds."
         _ nl
         next
 endcode

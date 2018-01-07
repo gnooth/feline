@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@ Float *make_float(double d);
 cell os_ticks();
 cell os_close_file(cell fd);
 cell os_write_file(cell fd, void *buf, size_t count);
+cell os_nano_count();
 
 // terminal.c
 void prep_terminal();
@@ -72,7 +73,7 @@ cell get_handle_for_object(cell);
 
 extern cell os_errno_data;
 
-extern cell start_time_ticks_data;
+extern cell start_time_raw_nano_count_;
 
 extern cell terminal_width_;
 extern cell terminal_height_;
