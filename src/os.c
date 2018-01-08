@@ -499,3 +499,62 @@ void os_bye()
   deprep_terminal();
   exit(0);
 }
+
+#ifdef WIN64
+
+#define DATA_STACK_SIZE 4096 * sizeof(cell)
+
+cell os_thread_initialize_data_stack()
+{
+  printf("os_thread_initialize_data_stack called\n");
+
+  SYSTEM_INFO info;
+  GetSystemInfo(&info);
+
+  cell data_stack_base = (cell) VirtualAlloc(NULL,
+                                             DATA_STACK_SIZE + info.dwPageSize,
+                                             MEM_COMMIT|MEM_RESERVE,
+                                             PAGE_READWRITE);
+  DWORD old_protect;
+  BOOL ret = VirtualProtect((LPVOID)(data_stack_base + DATA_STACK_SIZE),
+                            info.dwPageSize,
+                            PAGE_NOACCESS,
+                            &old_protect);
+
+  // "If the function succeeds, the return value is nonzero."
+  if (!ret)
+    printf("VirtualProtect error\n");
+
+  return data_stack_base + DATA_STACK_SIZE;
+}
+
+DWORD WINAPI thread_run(LPVOID arg)
+{
+  // arg is the handle of the Feline thread object
+
+  extern DWORD tls_index;
+  TlsSetValue(tls_index, arg);
+
+  extern void thread_run_internal(cell);
+  thread_run_internal((cell)arg);
+
+  return 0;
+}
+
+cell os_create_thread(cell arg)
+{
+  printf("os_create_thread called\n");
+
+  DWORD dwThreadId;
+
+  HANDLE h = CreateThread(
+    NULL,                       // use default security attributes
+    0,                          // use default stack size
+    thread_run,                 // thread function
+    (void *)arg,                // argument to thread function
+    0,                          // use default creation flags
+    &dwThreadId);               // variable to receive thread identifier
+
+  return (cell) h;
+}
+#endif
