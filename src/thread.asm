@@ -17,19 +17,19 @@ file __FILE__
 
 ; 4 cells: object header, sp0, lp0, callable
 
-%macro  _thread_raw_sp0 0               ; thread -- id
+%macro  _thread_raw_sp0 0               ; thread -- sp0
         _slot1
 %endmacro
 
-%macro  _thread_set_raw_sp0 0           ; id thread --
+%macro  _thread_set_raw_sp0 0           ; sp0 thread --
         _set_slot1
 %endmacro
 
-%macro  _thread_raw_lp0 0               ; thread -- handle
+%macro  _thread_raw_lp0 0               ; thread -- lp0
         _slot2
 %endmacro
 
-%macro  _thread_set_raw_lp0 0           ; handle thread --
+%macro  _thread_set_raw_lp0 0           ; lp0 thread --
         _set_slot2
 %endmacro
 
@@ -90,34 +90,82 @@ code verify_thread, 'verify-thread'     ; handle -- handle
         next
 endcode
 
+; ### current-thread
 code current_thread, 'current-thread'   ; -- thread
-        ; needs code!
+        _error "current-thread needs code!"
         next
 endcode
 
+; ### <thread>
 code new_thread, '<thread>'             ; -- thread
         _lit 4
         _ raw_allocate_cells            ; -- address
         mov     qword [rbx], TYPECODE_THREAD
+
+%ifdef WIN64
+        extern os_thread_initialize_data_stack
+        xcall   os_thread_initialize_data_stack ; returns tos in rax
+        _dup
+        mov     rbx, rax
+        _over
+        _thread_set_raw_sp0
+%endif
+
         _ new_handle
         next
 endcode
 
-; extern os_create_thread
+extern os_create_thread
 
-; code thread_create, 'thread-create'     ; thread --
-;         mov     arg0_register, rbx
-;         _drop
-;         xcall   os_create_thread
-;         next
-; endcode
+; ### thread-create
+code thread_create, 'thread-create'     ; thread --
+
+%ifdef WIN64
+        mov     arg0_register, rbx
+        _drop
+        xcall   os_create_thread
+%endif
+
+        next
+endcode
+
+; ### thread_run_internal
+code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
+; called from C with handle of thread object in arg0_register
+
+        push    rbp
+
+        ; set up data stack
+        mov     rbx, arg0_register      ; handle of thread object in rbx
+        _ deref                         ; object address in rbx
+        mov     rbp, qword [rbx + BYTES_PER_CELL]
+
+        ; FIXME
+        _quotation .1
+        _lit tagged_fixnum(42)
+        _lit tagged_fixnum(17)
+        _ generic_plus
+        _ dot_object
+        _ nl
+        _quote "Hello!"
+        _ write_string
+        _end_quotation .1
+
+        _ call_quotation
+
+        pop     rbp
+        next
+endcode
 
 ; ### thread>string
 code thread_to_string, 'thread>string'  ; thread -- string
         _ verify_thread
+
+        ; REVIEW
         _ object_address                ; -- tagged-fixnum
         _ fixnum_to_hex
         _quote "#<thread 0x%s>"
         _ format
+
         next
 endcode
