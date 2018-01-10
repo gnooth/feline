@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; 4 cells: object header, sp0, lp0, callable
+; 6 cells: object header, sp0, rp0, lp0, quotation, result
 
 %macro  _thread_raw_sp0 0               ; thread -- sp0
         _slot1
@@ -25,12 +25,36 @@ file __FILE__
         _set_slot1
 %endmacro
 
-%macro  _thread_raw_lp0 0               ; thread -- lp0
+%macro  _thread_raw_rp0 0               ; thread -- rp0
         _slot2
 %endmacro
 
-%macro  _thread_set_raw_lp0 0           ; lp0 thread --
+%macro  _thread_set_raw_rp0 0           ; rp0 thread --
         _set_slot2
+%endmacro
+
+%macro  _thread_raw_lp0 0               ; thread -- lp0
+        _slot3
+%endmacro
+
+%macro  _thread_set_raw_lp0 0           ; lp0 thread --
+        _set_slot3
+%endmacro
+
+%macro  _thread_quotation 0             ; thread -- quotation
+        _slot4
+%endmacro
+
+%macro  _thread_set_quotation 0         ; quotation thread --
+        _set_slot4
+%endmacro
+
+%macro  _thread_result 0                ; thread -- result
+        _slot5
+%endmacro
+
+%macro  _thread_set_result 0            ; result thread --
+        _set_slot5
 %endmacro
 
 ; ### thread?
@@ -98,7 +122,7 @@ endcode
 
 ; ### <thread>
 code new_thread, '<thread>'             ; -- thread
-        _lit 4
+        _lit 6
         _ raw_allocate_cells            ; -- address
         mov     qword [rbx], TYPECODE_THREAD
 
