@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -32,11 +32,11 @@ file __FILE__
 ; Arrays store their data inline starting at this + 16 bytes.
 %define ARRAY_DATA_OFFSET       16
 
-%macro _array_data 0
+%macro _array_raw_data_address 0
         lea     rbx, [rbx + ARRAY_DATA_OFFSET]
 %endmacro
 
-%macro _this_array_data 0
+%macro _this_array_raw_data_address 0
         pushrbx
         lea     rbx, [this_register + ARRAY_DATA_OFFSET]
 %endmacro
@@ -52,7 +52,7 @@ file __FILE__
 %endmacro
 
 %macro  _array_set_nth_unsafe 0         ; element index array --
-        _array_data
+        _array_raw_data_address
         _swap
         _cells
         _plus
@@ -61,7 +61,7 @@ file __FILE__
 
 %macro  _this_array_set_nth_unsafe 0    ; element index --
         _cells
-        _this_array_data
+        _this_array_raw_data_address
         _plus
         _store
 %endmacro
@@ -100,7 +100,8 @@ code check_array, 'check-array'         ; handle -- raw-array
 endcode
 
 ; ### array_raw_length
-code array_raw_length, 'array_raw_length'       ; array -- raw-length
+code array_raw_length, 'array_raw_length', SYMBOL_INTERNAL
+; array -- raw-length
         _ check_array
         _array_raw_length
         next
@@ -291,7 +292,7 @@ array_set_nth_untagged:
         _array_raw_length
         _ult
         _if .2
-        _array_data
+        _array_raw_data_address
         _swap
         _cells
         _plus
