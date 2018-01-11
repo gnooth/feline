@@ -17,6 +17,8 @@ file __FILE__
 
 ; 6 cells: object header, sp0, rp0, lp0, quotation, result
 
+%define thread_raw_sp0_slot     qword [rbx + BYTES_PER_CELL]
+
 %macro  _thread_raw_sp0 0               ; thread -- sp0
         _slot1
 %endmacro
@@ -114,6 +116,13 @@ code verify_thread, 'verify-thread'     ; handle -- handle
         next
 endcode
 
+; ### thread-quotation
+code thread_quotation, 'thread-quotation'       ; thread -- quotation
+        _ check_thread
+        _thread_quotation
+        next
+endcode
+
 ; ### current-thread
 code current_thread, 'current-thread'   ; -- thread
         _error "current-thread needs code!"
@@ -121,10 +130,14 @@ code current_thread, 'current-thread'   ; -- thread
 endcode
 
 ; ### <thread>
-code new_thread, '<thread>'             ; -- thread
+code new_thread, '<thread>'             ; quotation -- thread
         _lit 6
-        _ raw_allocate_cells            ; -- address
+        _ raw_allocate_cells            ; -- quotation thread
+
         mov     qword [rbx], TYPECODE_THREAD
+
+        _tuck
+        _thread_set_quotation
 
 %ifdef WIN64
         extern os_thread_initialize_data_stack
@@ -162,18 +175,10 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
         ; set up data stack
         mov     rbx, arg0_register      ; handle of thread object in rbx
         _ deref                         ; object address in rbx
-        mov     rbp, qword [rbx + BYTES_PER_CELL]
+        mov     rbp, thread_raw_sp0_slot
 
-        ; FIXME
-        _quotation .1
-        _lit tagged_fixnum(42)
-        _lit tagged_fixnum(17)
-        _ generic_plus
-        _ dot_object
-        _ nl
-        _quote "Hello!"
-        _ write_string
-        _end_quotation .1
+        _dup
+        _thread_quotation
 
         _ call_quotation
 
