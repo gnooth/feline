@@ -129,26 +129,50 @@ code current_thread, 'current-thread'   ; -- thread
         next
 endcode
 
-; ### <thread>
-code new_thread, '<thread>'             ; quotation -- thread
+; ### new_thread
+code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
         _lit 6
-        _ raw_allocate_cells            ; -- quotation thread
-
+        _ raw_allocate_cells
         mov     qword [rbx], TYPECODE_THREAD
+        _ new_handle
+        next
+endcode
+
+; ### <thread>
+code make_thread, '<thread>'            ; quotation -- thread
+        _ new_thread
+        _duptor
+
+        _ check_thread
 
         _tuck
         _thread_set_quotation
 
 %ifdef WIN64
         extern os_thread_initialize_data_stack
-        xcall   os_thread_initialize_data_stack ; returns tos in rax
+        xcall   os_thread_initialize_data_stack ; returns sp0 in rax
         _dup
         mov     rbx, rax
-        _over
+        _swap
         _thread_set_raw_sp0
 %endif
 
-        _ new_handle
+        _rfrom
+        next
+endcode
+
+; ### initialize_primordial_thread
+code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERNAL
+        _ new_thread
+
+%ifdef WIN64
+        mov     arg0_register, rbx
+        _drop
+
+        extern os_initialize_primordial_thread
+        xcall   os_initialize_primordial_thread
+%endif
+
         next
 endcode
 
