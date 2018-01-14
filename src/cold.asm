@@ -219,6 +219,8 @@ code cold, 'cold'                       ; --
 
         _ initialize_types
 
+        _ initialize_primordial_thread
+
         _ initialize_source_path
 
         _quote "boot.feline"
