@@ -74,13 +74,6 @@ code thread?, 'thread?'                 ; handle -- ?
         next
 endcode
 
-; ### error-not-thread
-code error_not_thread, 'error-not-thread'       ; x --
-        ; REVIEW
-        _error "not an thread"
-        next
-endcode
-
 ; ### check_thread
 code check_thread, 'check_thread', SYMBOL_INTERNAL      ; handle -- thread
         _dup

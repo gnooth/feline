@@ -168,6 +168,14 @@ code error_not_hashtable, 'error-not-hashtable' ; x --
         next
 endcode
 
+; ### error-not-thread
+code error_not_thread, 'error-not-thread'       ; x --
+        _quote "a thread"
+        _ format_type_error
+        _ error
+        next
+endcode
+
 ; ### error-not-type
 code error_not_type, 'error-not-type'           ; x --
         _quote "a type"
