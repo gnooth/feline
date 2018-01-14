@@ -528,11 +528,12 @@ cell os_thread_initialize_data_stack()
   return data_stack_base + DATA_STACK_SIZE;
 }
 
+extern DWORD tls_index;
+
 DWORD WINAPI thread_run(LPVOID arg)
 {
   // arg is the handle of the Feline thread object
 
-  extern DWORD tls_index;
   TlsSetValue(tls_index, arg);
 
   extern void thread_run_internal(cell);
@@ -541,10 +542,18 @@ DWORD WINAPI thread_run(LPVOID arg)
   return 0;
 }
 
+void os_initialize_primordial_thread (LPVOID arg)
+{
+  TlsSetValue(tls_index, arg);
+}
+
+cell os_current_thread()
+{
+  return (cell) TlsGetValue(tls_index);
+}
+
 cell os_create_thread(cell arg)
 {
-  printf("os_create_thread called\n");
-
   DWORD dwThreadId;
 
   HANDLE h = CreateThread(
