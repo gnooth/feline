@@ -178,23 +178,40 @@ code make_thread, '<thread>'            ; quotation -- thread
         next
 endcode
 
+asm_global all_threads_, f_value
+
+; ### all-threads
+code all_threads, 'all-threads'         ; -- vector
+        pushrbx
+        mov     rbx, [all_threads_]
+        next
+endcode
+
 ; ### initialize_primordial_thread
 code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERNAL
+        _lit 8
+        _ new_vector_untagged
+        mov     [all_threads_], rbx
+        poprbx
+        _lit all_threads_
+        _ gc_add_root
 
-%ifdef WIN64
         _ new_thread
 
         pushrbx
         mov     rbx, [sp0_]
         _over
-        _ thread_set_raw_sp0
+        _ thread_set_raw_sp0            ; -- vector
 
+%ifdef WIN64
         mov     arg0_register, rbx
-        _drop
 
         extern os_initialize_primordial_thread
         xcall   os_initialize_primordial_thread
 %endif
+
+        _ all_threads
+        _ vector_push
 
         next
 endcode
