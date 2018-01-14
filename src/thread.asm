@@ -116,6 +116,21 @@ code verify_thread, 'verify-thread'     ; handle -- handle
         next
 endcode
 
+; ### thread_set_raw_sp0
+code thread_set_raw_sp0, 'thread_set_raw_sp0', SYMBOL_INTERNAL  ; sp0 thread --
+        _ check_thread
+        _thread_set_raw_sp0
+        next
+endcode
+
+; ### thread-sp0
+code thread_sp0, 'thread-sp0'           ; thread -- sp0
+        _ check_thread
+        _thread_raw_sp0
+        _tag_fixnum
+        next
+endcode
+
 ; ### thread-quotation
 code thread_quotation, 'thread-quotation'       ; thread -- quotation
         _ check_thread
@@ -125,7 +140,16 @@ endcode
 
 ; ### current-thread
 code current_thread, 'current-thread'   ; -- thread
-        _error "current-thread needs code!"
+
+%ifdef WIN64
+        extern os_current_thread
+        xcall os_current_thread
+        _dup
+        mov     rbx, rax
+%else
+        _error "unimplemented"
+%endif
+
         next
 endcode
 
@@ -163,9 +187,15 @@ endcode
 
 ; ### initialize_primordial_thread
 code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERNAL
-        _ new_thread
 
 %ifdef WIN64
+        _ new_thread
+
+        pushrbx
+        mov     rbx, [sp0_]
+        _over
+        _ thread_set_raw_sp0
+
         mov     arg0_register, rbx
         _drop
 
