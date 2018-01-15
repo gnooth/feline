@@ -55,7 +55,7 @@ $(FELINE_EXE):  $(OBJS)
 	date > ../build
 else
 $(FELINE_EXE):  $(OBJS)
-	$(CC) $(LINKFLAGS) $(OBJS) -lm -o $(FELINE_EXE)
+	$(CC) $(LINKFLAGS) $(OBJS) -lm -lpthread -o $(FELINE_EXE)
 	date > ../build
 endif
 
