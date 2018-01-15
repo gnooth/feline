@@ -23,6 +23,7 @@
 #include <signal.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <pthread.h>
 #endif
 
 #include "feline.h"
@@ -251,6 +252,15 @@ static void initialize_threads()
     printf("TlsAlloc failed\n");
 
 }
+#else
+pthread_key_t tls_key;
+
+static void initialize_threads()
+{
+  long status = pthread_key_create(&tls_key, NULL);
+  if (status != 0)
+    printf("pthread_key_create failed\n");
+}
 #endif
 
 int main(int argc, char **argv, char **env)
@@ -267,9 +277,7 @@ int main(int argc, char **argv, char **env)
 
   initialize_data_stack();
 
-#ifdef WIN64
   initialize_threads();
-#endif
 
 #ifdef WIN64
   AddVectoredExceptionHandler(1, windows_exception_handler);
