@@ -133,16 +133,10 @@ endcode
 
 ; ### current-thread
 code current_thread, 'current-thread'   ; -- thread
-
-%ifdef WIN64
         extern os_current_thread
         xcall os_current_thread
         _dup
         mov     rbx, rax
-%else
-        _error "unimplemented"
-%endif
-
         next
 endcode
 
@@ -203,12 +197,10 @@ code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERN
         _over
         _ thread_set_raw_sp0            ; -- vector
 
-%ifdef WIN64
         mov     arg0_register, rbx
 
         extern os_initialize_primordial_thread
         xcall   os_initialize_primordial_thread
-%endif
 
         _ all_threads
         _ vector_push
