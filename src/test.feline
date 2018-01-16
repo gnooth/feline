@@ -2995,13 +2995,11 @@ test: sbuf-push-test-1
 
 sbuf-push-test-1
 
-windows? #if
 test: thread-test-1
     current-thread thread? assert-true
     sp0 current-thread thread-sp0 assert-eq
 ;
 
 thread-test-1
-#endif
 
 ?nl "Reached end of test.feline" write-string
