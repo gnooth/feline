@@ -20,6 +20,7 @@
 #include <time.h>               // time, localtime_r
 #include <errno.h>
 #include <string.h>             // strerror
+
 #ifdef WIN64
 #include <windows.h>
 #include <io.h>                 // _chsize
@@ -28,6 +29,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/resource.h>       // getrusage
+#include <pthread.h>
 #endif
 
 #include "feline.h"
@@ -542,15 +544,29 @@ DWORD WINAPI thread_run(LPVOID arg)
   return 0;
 }
 
-void os_initialize_primordial_thread (LPVOID arg)
+#endif
+
+void os_initialize_primordial_thread (void *arg)
 {
+#ifdef WIN64
   TlsSetValue(tls_index, arg);
+#else
+  extern pthread_key_t tls_key;
+  pthread_setspecific(tls_key, arg);
+#endif
 }
 
 cell os_current_thread()
 {
+#ifdef WIN64
   return (cell) TlsGetValue(tls_index);
+#else
+  extern pthread_key_t tls_key;
+  return (cell) pthread_getspecific(tls_key);
+#endif
 }
+
+#ifdef WIN64
 
 cell os_create_thread(cell arg)
 {
@@ -566,4 +582,5 @@ cell os_create_thread(cell arg)
 
   return (cell) h;
 }
+
 #endif
