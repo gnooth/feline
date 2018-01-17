@@ -119,32 +119,8 @@ static void args(int argc, char **argv)
 
 static void initialize_data_stack()
 {
-#ifdef WIN64
   extern cell sp0_;
   sp0_ = os_thread_initialize_data_stack();
-#else
-#define DATA_STACK_SIZE 4096 * sizeof(cell)
-  long pagesize = sysconf(_SC_PAGESIZE);
-
-  cell data_stack_base =
-    (cell) mmap(NULL,                                           // starting address
-                DATA_STACK_SIZE + pagesize,                     // size
-                PROT_READ|PROT_WRITE,                           // protection
-                MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE,        // flags
-                -1,                                             // fd
-                0);                                             // offset
-
-  int ret = mprotect((void *)(data_stack_base + DATA_STACK_SIZE),
-                     pagesize,
-                     PROT_NONE);
-
-  // mprotect() returns zero on success
-  if (ret != 0)
-    printf("mprotect error\n");
-
-  extern cell sp0_;
-  sp0_ = data_stack_base + DATA_STACK_SIZE;
-#endif
 }
 
 static void initialize_dynamic_code_space()
