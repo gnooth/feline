@@ -60,6 +60,7 @@ cell os_ticks();
 cell os_close_file(cell fd);
 cell os_write_file(cell fd, void *buf, size_t count);
 cell os_nano_count();
+cell os_thread_initialize_data_stack();
 
 // terminal.c
 void prep_terminal();

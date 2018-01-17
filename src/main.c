@@ -119,28 +119,11 @@ static void args(int argc, char **argv)
 
 static void initialize_data_stack()
 {
-#define DATA_STACK_SIZE 4096 * sizeof(cell)
 #ifdef WIN64
-  SYSTEM_INFO info;
-  GetSystemInfo(&info);
-
-  cell data_stack_base = (cell) VirtualAlloc(NULL,
-                                             DATA_STACK_SIZE + info.dwPageSize,
-                                             MEM_COMMIT|MEM_RESERVE,
-                                             PAGE_READWRITE);
-  DWORD old_protect;
-  BOOL ret = VirtualProtect((LPVOID)(data_stack_base + DATA_STACK_SIZE),
-                            info.dwPageSize,
-                            PAGE_NOACCESS,
-                            &old_protect);
-
-  // "If the function succeeds, the return value is nonzero."
-  if (!ret)
-    printf("VirtualProtect error\n");
-
   extern cell sp0_;
-  sp0_ = data_stack_base + DATA_STACK_SIZE;
+  sp0_ = os_thread_initialize_data_stack();
 #else
+#define DATA_STACK_SIZE 4096 * sizeof(cell)
   long pagesize = sysconf(_SC_PAGESIZE);
 
   cell data_stack_base =
