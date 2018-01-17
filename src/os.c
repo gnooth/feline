@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/resource.h>       // getrusage
+#include <sys/mman.h>
 #include <pthread.h>
 #endif
 
@@ -502,7 +503,6 @@ void os_bye()
   exit(0);
 }
 
-#ifdef WIN64
 
 #define DATA_STACK_SIZE 4096 * sizeof(cell)
 
@@ -510,6 +510,7 @@ cell os_thread_initialize_data_stack()
 {
   printf("os_thread_initialize_data_stack called\n");
 
+#ifdef WIN64
   SYSTEM_INFO info;
   GetSystemInfo(&info);
 
@@ -528,7 +529,30 @@ cell os_thread_initialize_data_stack()
     printf("VirtualProtect error\n");
 
   return data_stack_base + DATA_STACK_SIZE;
+#else
+  long pagesize = sysconf(_SC_PAGESIZE);
+
+  cell data_stack_base =
+    (cell) mmap(NULL,                                           // starting address
+                DATA_STACK_SIZE + pagesize,                     // size
+                PROT_READ|PROT_WRITE,                           // protection
+                MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE,        // flags
+                -1,                                             // fd
+                0);                                             // offset
+
+  int ret = mprotect((void *)(data_stack_base + DATA_STACK_SIZE),
+                     pagesize,
+                     PROT_NONE);
+
+  // mprotect() returns zero on success
+  if (ret != 0)
+    printf("mprotect error\n");
+
+  return data_stack_base + DATA_STACK_SIZE;
+#endif
 }
+
+#ifdef WIN64
 
 extern DWORD tls_index;
 
