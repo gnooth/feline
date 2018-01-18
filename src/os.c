@@ -554,8 +554,6 @@ cell os_thread_initialize_data_stack()
 
 #ifdef WIN64
 
-extern DWORD tls_index;
-
 DWORD WINAPI thread_run(LPVOID arg)
 {
   // arg is the handle of the Feline thread object
@@ -575,7 +573,6 @@ void os_initialize_primordial_thread (void *arg)
 #ifdef WIN64
   TlsSetValue(tls_index, arg);
 #else
-  extern pthread_key_t tls_key;
   pthread_setspecific(tls_key, arg);
 #endif
 }
@@ -585,7 +582,6 @@ cell os_current_thread()
 #ifdef WIN64
   return (cell) TlsGetValue(tls_index);
 #else
-  extern pthread_key_t tls_key;
   return (cell) pthread_getspecific(tls_key);
 #endif
 }

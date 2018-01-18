@@ -202,25 +202,22 @@ static void reserve_handle_space()
 
 #ifdef WIN64
 DWORD tls_index;
-
-static void initialize_threads()
-{
-  tls_index = TlsAlloc();
-
-  if (tls_index == TLS_OUT_OF_INDEXES)
-    printf("TlsAlloc failed\n");
-
-}
 #else
 pthread_key_t tls_key;
+#endif
 
 static void initialize_threads()
 {
-  long status = pthread_key_create(&tls_key, NULL);
+#ifdef WIN64
+  tls_index = TlsAlloc();
+  if (tls_index == TLS_OUT_OF_INDEXES)
+    printf("TlsAlloc failed\n");
+#else
+  int status = pthread_key_create(&tls_key, NULL);
   if (status != 0)
     printf("pthread_key_create failed\n");
-}
 #endif
+}
 
 int main(int argc, char **argv, char **env)
 {

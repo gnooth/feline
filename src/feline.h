@@ -62,6 +62,12 @@ cell os_write_file(cell fd, void *buf, size_t count);
 cell os_nano_count();
 cell os_thread_initialize_data_stack();
 
+#ifdef WIN64
+extern DWORD tls_index;
+#else
+extern pthread_key_t tls_key;
+#endif
+
 // terminal.c
 void prep_terminal();
 void deprep_terminal();
