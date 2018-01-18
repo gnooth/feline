@@ -19,6 +19,10 @@
 #include <stdint.h>             // int64_t
 #include <stdlib.h>
 
+#ifdef WIN64
+#include <windows.h>
+#endif
+
 typedef int64_t cell;
 
 // These #defines must be kept in sync with macros.asm and object-macros.asm.
