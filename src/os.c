@@ -566,6 +566,18 @@ DWORD WINAPI thread_run(LPVOID arg)
   return 0;
 }
 
+#else
+
+void* thread_run(void *arg)
+{
+  // arg is the handle of the Feline thread object
+
+  pthread_setspecific(tls_key, arg);
+
+  extern void thread_run_internal(cell);
+  thread_run_internal((cell)arg);
+}
+
 #endif
 
 void os_initialize_primordial_thread (void *arg)
@@ -586,10 +598,10 @@ cell os_current_thread()
 #endif
 }
 
-#ifdef WIN64
 
 cell os_create_thread(cell arg)
 {
+#ifdef WIN64
   DWORD dwThreadId;
 
   HANDLE h = CreateThread(
@@ -601,6 +613,11 @@ cell os_create_thread(cell arg)
     &dwThreadId);               // variable to receive thread identifier
 
   return (cell) h;
+#else
+  pthread_t thread_id;
+  int status = pthread_create(&thread_id, NULL, thread_run, (void *)arg);
+  if (status != 0)
+    printf("pthread_create failed\n");
+#endif
 }
 
-#endif
