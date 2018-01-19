@@ -159,14 +159,12 @@ code make_thread, '<thread>'            ; quotation -- thread
         _tuck
         _thread_set_quotation
 
-%ifdef WIN64
         extern os_thread_initialize_data_stack
         xcall   os_thread_initialize_data_stack ; returns sp0 in rax
         _dup
         mov     rbx, rax
         _swap
         _thread_set_raw_sp0
-%endif
 
         _rfrom
         next
@@ -212,13 +210,9 @@ extern os_create_thread
 
 ; ### thread-create
 code thread_create, 'thread-create'     ; thread --
-
-%ifdef WIN64
         mov     arg0_register, rbx
         _drop
         xcall   os_create_thread
-%endif
-
         next
 endcode
 
