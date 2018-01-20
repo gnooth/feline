@@ -184,6 +184,7 @@ code initialize_types, 'initialize_types', SYMBOL_INTERNAL      ; --
         _add_type "type", TYPECODE_TYPE
         _add_type "keyword", TYPECODE_KEYWORD
         _add_type "thread", TYPECODE_THREAD
+        _add_type "mutex", TYPECODE_MUTEX
 
         next
 endcode
