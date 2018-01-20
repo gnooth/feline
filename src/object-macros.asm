@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -52,8 +52,9 @@ TYPECODE_TUPLE_CLASS            equ 24
 TYPECODE_TYPE                   equ 25
 TYPECODE_KEYWORD                equ 26
 TYPECODE_THREAD                 equ 27
+TYPECODE_MUTEX                  equ 28
 
-LAST_BUILTIN_TYPECODE           equ 27
+LAST_BUILTIN_TYPECODE           equ 28
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
