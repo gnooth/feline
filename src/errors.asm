@@ -1,4 +1,4 @@
-; Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -163,6 +163,14 @@ endcode
 ; ### error-not-hashtable
 code error_not_hashtable, 'error-not-hashtable' ; x --
         _quote "a hashtable"
+        _ format_type_error
+        _ error
+        next
+endcode
+
+; ### error-not-mutex
+code error_not_mutex, 'error-not-mutex'         ; x --
+        _quote "a mutex"
         _ format_type_error
         _ error
         next
