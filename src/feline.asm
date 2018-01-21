@@ -93,6 +93,7 @@ IN_FELINE
 %include "color.asm"
 %include "socket.asm"
 %include "thread.asm"
+%include "mutex.asm"
 
 ; ### in-static-data-area?
 code in_static_data_area?, 'in-static-data-area?', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE

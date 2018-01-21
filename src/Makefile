@@ -126,6 +126,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	memory.asm \
 	method.asm \
 	move.asm \
+	mutex.asm \
 	numbers.asm \
 	object-macros.asm \
 	objects.asm \
