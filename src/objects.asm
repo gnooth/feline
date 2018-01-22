@@ -480,6 +480,13 @@ code object_to_string, 'object>string'  ; object -- string
         _return
         _then .30
 
+        _dup
+        _ mutex?
+        _tagged_if .31
+        _ mutex_to_string
+        _return
+        _then .31
+
         ; give up
         _tag_fixnum
         _ fixnum_to_hex
