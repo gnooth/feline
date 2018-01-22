@@ -17,6 +17,10 @@ extern malloc
 extern realloc
 extern free
 
+%ifdef WIN64
+extern CreateMutexA
+%endif
+
 extern os_accept_string
 extern os_allocate_executable
 extern os_bye
