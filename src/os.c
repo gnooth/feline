@@ -598,7 +598,6 @@ cell os_current_thread()
 #endif
 }
 
-
 cell os_create_thread(cell arg)
 {
 #ifdef WIN64
@@ -621,3 +620,52 @@ cell os_create_thread(cell arg)
 #endif
 }
 
+#ifndef WIN64
+cell os_mutex_init()
+{
+//   printf("sizeof(pthread_mutex_t) = %ld\n", sizeof(pthread_mutex_t));
+  pthread_mutex_t *mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  if (mutex != NULL)
+    {
+      int status = pthread_mutex_init(mutex, NULL);
+      if (status != 0)
+        printf("pthread_mutex_init failed\n");
+    }
+  else
+    printf("os_initialize_mutex allocation failed\n");
+  return (cell) mutex;
+}
+#endif
+
+cell os_mutex_lock(cell arg)
+{
+#ifdef WIN64
+  HANDLE h = (HANDLE) arg;
+  return (WaitForSingleObject(h, INFINITE) == WAIT_OBJECT_0) ? T_VALUE : F_VALUE;
+#else
+  pthread_mutex_t *mutex = (pthread_mutex_t *) arg;
+  return (pthread_mutex_lock(mutex) == 0) ? T_VALUE : F_VALUE;
+#endif
+}
+
+cell os_mutex_trylock(cell arg)
+{
+#ifdef WIN64
+  HANDLE h = (HANDLE) arg;
+  return (WaitForSingleObject(h, 0) == WAIT_OBJECT_0) ? T_VALUE : F_VALUE;
+#else
+  pthread_mutex_t *mutex = (pthread_mutex_t *) arg;
+  return (pthread_mutex_trylock(mutex) == 0) ? T_VALUE : F_VALUE;
+#endif
+}
+
+cell os_mutex_unlock(cell arg)
+{
+#ifdef WIN64
+  HANDLE h = (HANDLE) arg;
+  return (ReleaseMutex(h) != 0) ? T_VALUE : F_VALUE;
+#else
+  pthread_mutex_t *mutex = (pthread_mutex_t *) arg;
+  return (pthread_mutex_unlock(mutex) == 0) ? T_VALUE : F_VALUE;
+#endif
+}
