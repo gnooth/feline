@@ -89,10 +89,42 @@ code make_mutex, 'make-mutex'
         xcall   CreateMutexA
         mov     mutex_raw_value_slot, rax
 %else
-        ; FIXME
-        mov     mutex_raw_value_slot, f_value
+        extern  os_mutex_init
+        xcall   os_mutex_init
+        mov     mutex_raw_value_slot, rax
 %endif
         _ new_handle
+        next
+endcode
+
+; ### mutex-lock
+code mutex_lock, 'mutex-lock'           ; mutex -- ?
+        _ check_mutex
+        mov     arg0_register, mutex_raw_value_slot
+        extern  os_mutex_lock
+        xcall   os_mutex_lock
+        mov     rbx, rax
+        next
+endcode
+
+; ### mutex-trylock
+code mutex_trylock, 'mutex-trylock'     ; mutex -- ?
+        _ check_mutex
+        mov     arg0_register, mutex_raw_value_slot
+        extern  os_mutex_trylock
+        xcall   os_mutex_trylock
+        mov     rbx, rax
+        next
+endcode
+
+
+; ### mutex-unlock
+code mutex_unlock, 'mutex-unlock'       ; mutex -- ?
+        _ check_mutex
+        mov     arg0_register, mutex_raw_value_slot
+        extern  os_mutex_unlock
+        xcall   os_mutex_unlock
+        mov     rbx, rax
         next
 endcode
 

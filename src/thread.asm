@@ -133,8 +133,8 @@ endcode
 
 ; ### current-thread
 code current_thread, 'current-thread'   ; -- thread
-        extern os_current_thread
-        xcall os_current_thread
+        extern  os_current_thread
+        xcall   os_current_thread
         _dup
         mov     rbx, rax
         next
@@ -159,7 +159,7 @@ code make_thread, '<thread>'            ; quotation -- thread
         _tuck
         _thread_set_quotation
 
-        extern os_thread_initialize_data_stack
+        extern  os_thread_initialize_data_stack
         xcall   os_thread_initialize_data_stack ; returns sp0 in rax
         _dup
         mov     rbx, rax
@@ -197,7 +197,7 @@ code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERN
 
         mov     arg0_register, rbx
 
-        extern os_initialize_primordial_thread
+        extern  os_initialize_primordial_thread
         xcall   os_initialize_primordial_thread
 
         _ all_threads
@@ -206,12 +206,11 @@ code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERN
         next
 endcode
 
-extern os_create_thread
-
 ; ### thread-create
 code thread_create, 'thread-create'     ; thread --
         mov     arg0_register, rbx
         _drop
+        extern  os_create_thread
         xcall   os_create_thread
         next
 endcode
