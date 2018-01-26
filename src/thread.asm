@@ -27,6 +27,8 @@ file __FILE__
         _set_slot1
 %endmacro
 
+%define thread_raw_rp0_slot     qword [rbx + BYTES_PER_CELL * 2]
+
 %macro  _thread_raw_rp0 0               ; thread -- rp0
         _slot2
 %endmacro
@@ -130,6 +132,27 @@ code thread_sp0, 'thread-sp0'           ; thread -- sp0
         next
 endcode
 
+; ### thread_raw_rp0
+code thread_raw_rp0, 'thread_raw_rp0', SYMBOL_INTERNAL  ; -- raw-rp0
+        _ check_thread
+        _thread_raw_rp0
+        next
+endcode
+
+; ### thread_set_raw_rp0
+code thread_set_raw_rp0, 'thread_set_raw_rp0', SYMBOL_INTERNAL  ; raw-rp0 thread --
+        _ check_thread
+        _thread_set_raw_rp0
+        next
+endcode
+
+; ### thread-rp0
+code thread_rp0, 'thread-rp0'           ; thread -- rp0
+        _ thread_raw_rp0
+        _tag_fixnum
+        next
+endcode
+
 ; ### thread-quotation
 code thread_quotation, 'thread-quotation'       ; thread -- quotation
         _ check_thread
@@ -187,6 +210,7 @@ endcode
 
 ; ### initialize_primordial_thread
 code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERNAL
+; --
         _lit 8
         _ new_vector_untagged
         mov     [all_threads_], rbx
@@ -194,12 +218,17 @@ code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERN
         _lit all_threads_
         _ gc_add_root
 
-        _ new_thread
+        _ new_thread                    ; -- thread
 
         pushrbx
         mov     rbx, [sp0_]
         _over
-        _ thread_set_raw_sp0            ; -- vector
+        _ thread_set_raw_sp0            ; -- thread
+
+        pushrbx
+        mov     rbx, [rp0_]
+        _over
+        _ thread_set_raw_rp0            ; -- thread
 
         mov     arg0_register, rbx
 
@@ -231,6 +260,9 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
         mov     rbx, arg0_register      ; handle of thread object in rbx
         _ deref                         ; object address in rbx
         mov     rbp, thread_raw_sp0_slot
+
+        ; rp0
+        mov     thread_raw_rp0_slot, rsp
 
         _dup
         _thread_quotation
