@@ -19,11 +19,11 @@ file __FILE__
 
 %define thread_raw_sp0_slot     qword [rbx + BYTES_PER_CELL]
 
-%macro  _thread_raw_sp0 0               ; thread -- sp0
+%macro  _thread_raw_sp0 0               ; thread -- raw-sp0
         _slot1
 %endmacro
 
-%macro  _thread_set_raw_sp0 0           ; sp0 thread --
+%macro  _thread_set_raw_sp0 0           ; raw-sp0 thread --
         _set_slot1
 %endmacro
 
@@ -109,8 +109,15 @@ code verify_thread, 'verify-thread'     ; handle -- handle
         next
 endcode
 
+; ### thread_raw_sp0
+code thread_raw_sp0, 'thread_raw_sp0', SYMBOL_INTERNAL  ; -- raw-sp0
+        _ check_thread
+        _thread_raw_sp0
+        next
+endcode
+
 ; ### thread_set_raw_sp0
-code thread_set_raw_sp0, 'thread_set_raw_sp0', SYMBOL_INTERNAL  ; sp0 thread --
+code thread_set_raw_sp0, 'thread_set_raw_sp0', SYMBOL_INTERNAL  ; raw-sp0 thread --
         _ check_thread
         _thread_set_raw_sp0
         next
@@ -118,8 +125,7 @@ endcode
 
 ; ### thread-sp0
 code thread_sp0, 'thread-sp0'           ; thread -- sp0
-        _ check_thread
-        _thread_raw_sp0
+        _ thread_raw_sp0
         _tag_fixnum
         next
 endcode
@@ -160,7 +166,7 @@ code make_thread, '<thread>'            ; quotation -- thread
         _thread_set_quotation
 
         extern  os_thread_initialize_data_stack
-        xcall   os_thread_initialize_data_stack ; returns sp0 in rax
+        xcall   os_thread_initialize_data_stack ; returns raw sp0 in rax
         _dup
         mov     rbx, rax
         _swap
