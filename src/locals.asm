@@ -58,17 +58,20 @@ code lpfetch, 'lp@'                     ; -- tagged-address
         next
 endcode
 
-; ### initialize_locals_stack
-code initialize_locals_stack, 'initialize_locals_stack', SYMBOL_INTERNAL
-        _lp0
-        _if .1
-        _return
-        _then .1
-
+; ### allocate_locals_stack
+code allocate_locals_stack, 'allocate_locals_stack', SYMBOL_INTERNAL
+; -- raw-lp0
         _lit 4096
         _dup
         _ raw_allocate
         _plus
+        next
+endcode
+
+; ### initialize_locals_stack
+code initialize_locals_stack, 'initialize_locals_stack', SYMBOL_INTERNAL
+; --
+        _ allocate_locals_stack
         mov     [lp0_], rbx
         _lpstore
         next
