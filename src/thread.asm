@@ -37,6 +37,8 @@ file __FILE__
         _set_slot2
 %endmacro
 
+%define thread_raw_lp0_slot     qword [rbx + BYTES_PER_CELL * 3]
+
 %macro  _thread_raw_lp0 0               ; thread -- lp0
         _slot3
 %endmacro
@@ -186,7 +188,11 @@ code make_thread, '<thread>'            ; quotation -- thread
         _ check_thread
 
         _tuck
-        _thread_set_quotation
+        _thread_set_quotation           ; -- thread
+
+        _ allocate_locals_stack
+        _over
+        _thread_set_raw_lp0
 
         extern  os_thread_initialize_data_stack
         xcall   os_thread_initialize_data_stack ; returns raw sp0 in rax
@@ -263,6 +269,9 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
 
         ; rp0
         mov     thread_raw_rp0_slot, rsp
+
+        ; lp0
+        mov     r14, thread_raw_lp0_slot
 
         _dup
         _thread_quotation
