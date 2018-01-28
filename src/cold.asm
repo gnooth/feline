@@ -30,9 +30,8 @@ asm_global sp0_, 0                      ; initialized in main()
 
 ; ### sp0
 code sp0, 'sp0'                         ; -- tagged-address
-        pushrbx
-        mov     rbx, [sp0_]
-        _tag_fixnum
+        _ current_thread
+        _ thread_sp0
         next
 endcode
 
