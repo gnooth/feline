@@ -27,6 +27,8 @@ extern os_bye
 extern os_chdir
 extern os_close_file
 extern os_create_file
+extern os_create_thread
+extern os_current_thread
 extern os_delete_file
 extern os_emit_file
 extern os_file_is_directory
@@ -39,10 +41,19 @@ extern os_free
 extern os_free_executable
 extern os_getcwd
 extern os_getenv
+extern os_initialize_primordial_thread
 extern os_key
 extern os_key_avail
 extern os_malloc
 extern os_ms
+
+%ifndef WIN64
+extern os_mutex_init
+%endif
+
+extern os_mutex_lock
+extern os_mutex_trylock
+extern os_mutex_unlock
 extern os_nano_count
 extern os_open_file
 extern os_read_char
@@ -55,6 +66,7 @@ extern os_resize_file
 extern os_strerror
 extern os_system
 extern os_ticks
+extern os_thread_initialize_data_stack
 extern os_write_file
 
 %ifdef WIN64
