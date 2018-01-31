@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@ inline ?dup, '?dup'
 endinline
 
 %macro  _depth 0
-        mov     rax, [sp0_]
-        sub     rax, rbp
-        shr     rax, 3
-        pushd   rax
+        _ current_thread_raw_sp0
+        sub     rbx, rbp
+        shr     rbx, 3
+        sub     rbx, 1
 %endmacro
