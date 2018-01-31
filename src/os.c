@@ -508,8 +508,6 @@ void os_bye()
 
 cell os_thread_initialize_data_stack()
 {
-  printf("os_thread_initialize_data_stack called\n");
-
 #ifdef WIN64
   SYSTEM_INFO info;
   GetSystemInfo(&info);
