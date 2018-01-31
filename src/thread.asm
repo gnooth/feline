@@ -170,6 +170,14 @@ code current_thread, 'current-thread'   ; -- thread
         next
 endcode
 
+; ### current_thread_raw_sp0
+code current_thread_raw_sp0, 'current_thread_raw_sp0', SYMBOL_INTERNAL
+        _ current_thread
+        _ check_thread
+        _thread_raw_sp0
+        next
+endcode
+
 ; ### new_thread
 code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
         _lit 6
