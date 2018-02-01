@@ -26,3 +26,9 @@ endinline
         shr     rbx, 3
         sub     rbx, 1
 %endmacro
+
+%macro  _rdepth 0
+        _ current_thread_raw_rp0
+        sub     rbx, rsp
+        shr     rbx, 3
+%endmacro

@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -269,7 +269,7 @@ code initialize_gc_dispatch_table, 'initialize-gc-dispatch-table'
 endcode
 
 ; ### mark-raw-object
-code mark_raw_object, 'mark-raw-object'         ; raw-object --
+code mark_raw_object, 'mark-raw-object' ; raw-object --
         _test_marked_bit
         jnz .1
 
@@ -343,13 +343,6 @@ code mark_data_stack, 'mark-data-stack' ; --
         _drop
         next
 endcode
-
-%macro  _rdepth 0
-        mov     rax, [rp0_]
-        sub     rax, rsp
-        shr     rax, 3
-        pushd   rax
-%endmacro
 
 ; ### mark_return_stack
 code mark_return_stack, 'mark_return_stack', SYMBOL_INTERNAL    ; --
