@@ -1081,13 +1081,15 @@ endcode
 ; ### nl
 code nl, 'nl'
 %ifdef WIN64
-        _lit 13
-        _tag_char
+        _quote `\r\n`
+        _ write_string
+        mov     qword [last_char_], 10
+        xor     eax, eax
+        mov     [output_column], rax
+%else
+        _lit tagged_char(10)
         _ write_char
 %endif
-        _lit 10
-        _tag_char
-        _ write_char
         next
 endcode
 
