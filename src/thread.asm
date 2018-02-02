@@ -155,6 +155,27 @@ code thread_rp0, 'thread-rp0'           ; thread -- rp0
         next
 endcode
 
+; ### thread_raw_lp0
+code thread_raw_lp0, 'thread_raw_lp0', SYMBOL_INTERNAL  ; -- raw-lp0
+        _ check_thread
+        _thread_raw_lp0
+        next
+endcode
+
+; ### thread_set_raw_lp0
+code thread_set_raw_lp0, 'thread_set_raw_lp0', SYMBOL_INTERNAL  ; raw-lp0 thread --
+        _ check_thread
+        _thread_set_raw_lp0
+        next
+endcode
+
+; ### thread-lp0
+code thread_lp0, 'thread-lp0'           ; thread -- lp0
+        _ thread_raw_lp0
+        _tag_fixnum
+        next
+endcode
+
 ; ### thread-quotation
 code thread_quotation, 'thread-quotation'       ; thread -- quotation
         _ check_thread
@@ -249,6 +270,11 @@ code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERN
         mov     rbx, [rp0_]
         _over
         _ thread_set_raw_rp0            ; -- thread
+
+        pushrbx
+        mov     rbx, [lp0_]
+        _over
+        _ thread_set_raw_lp0            ; -- thread
 
         mov     arg0_register, rbx
 
