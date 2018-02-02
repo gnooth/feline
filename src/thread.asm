@@ -207,6 +207,14 @@ code current_thread_raw_rp0, 'current_thread_raw_rp0', SYMBOL_INTERNAL
         next
 endcode
 
+; ### current_thread_raw_lp0
+code current_thread_raw_lp0, 'current_thread_raw_lp0', SYMBOL_INTERNAL
+        _ current_thread
+        _ check_thread
+        _thread_raw_lp0
+        next
+endcode
+
 ; ### new_thread
 code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
         _lit 6
