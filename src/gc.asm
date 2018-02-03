@@ -412,6 +412,20 @@ code x_test_mark_return_stack, 'x_test_mark_return_stack', SYMBOL_INTERNAL      
         next
 endcode
 
+; ### mark_range
+code mark_range, 'mark_range', SYMBOL_INTERNAL  ; low high --
+        sub     rbx, qword [rbp]        ; -- low number-of-bytes
+        shr     rbx, 3                  ; -- low number-of-cells
+        _register_do_times .1
+        _raw_loop_index
+        shl     rbx, 3
+        add     rbx, qword [rbp]
+        _ maybe_mark_from_root
+        _loop .1
+        _drop
+        next
+endcode
+
 ; ### mark-locals-stack
 code mark_locals_stack, 'mark-locals-stack' ; --
         _lpfetch
