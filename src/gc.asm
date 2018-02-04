@@ -344,7 +344,7 @@ code mark_data_stack, 'mark-data-stack' ; --
         pushrbx
         mov     rbx, rbp
         _ current_thread_raw_sp0
-        _ mark_range
+        _ mark_cells_in_range
         next
 endcode
 
@@ -416,10 +416,11 @@ code x_test_mark_return_stack, 'x_test_mark_return_stack', SYMBOL_INTERNAL      
         next
 endcode
 
-; ### mark_range
-code mark_range, 'mark_range', SYMBOL_INTERNAL  ; low high --
-        sub     rbx, qword [rbp]        ; -- low number-of-bytes
-        shr     rbx, 3                  ; -- low number-of-cells
+; ### mark_cells_in_range
+code mark_cells_in_range, 'mark_cells_in_range', SYMBOL_INTERNAL
+; low-address high-address --
+        sub     rbx, qword [rbp]        ; -- low-address number-of-bytes
+        shr     rbx, 3                  ; -- low-address number-of-cells
         _register_do_times .1
         _raw_loop_index
         shl     rbx, 3
@@ -434,7 +435,7 @@ endcode
 code mark_locals_stack, 'mark-locals-stack'     ; --
         _lpfetch
         _ current_thread_raw_lp0
-        _ mark_range
+        _ mark_cells_in_range
         next
 endcode
 
