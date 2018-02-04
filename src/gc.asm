@@ -329,18 +329,10 @@ endcode
 
 ; ### mark-data-stack
 code mark_data_stack, 'mark-data-stack' ; --
-        _depth
-        mov     rcx, rbx
-        jrcxz   .2
-.1:
-        push    rcx
-        pushd   rcx
-        _forth_pick
-        _ maybe_mark_handle
-        pop     rcx
-        loop    .1
-.2:
-        _drop
+        pushrbx
+        mov     rbx, rbp
+        _ current_thread_raw_sp0
+        _ mark_range
         next
 endcode
 
@@ -427,18 +419,10 @@ code mark_range, 'mark_range', SYMBOL_INTERNAL  ; low high --
 endcode
 
 ; ### mark-locals-stack
-code mark_locals_stack, 'mark-locals-stack' ; --
+code mark_locals_stack, 'mark-locals-stack'     ; --
         _lpfetch
-        _begin .3
-        _dup
-        _lp0
-        _ult
-        _while .3
-        _dup
-        _ maybe_mark_from_root
-        _cellplus
-        _repeat .3
-        _drop
+        _ current_thread_raw_lp0
+        _ mark_range
         next
 endcode
 
