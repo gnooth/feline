@@ -80,6 +80,7 @@ IN_FELINE
 %include "primitives.asm"
 %include "format.asm"
 %include "time.asm"
+%include "thread.asm"
 %include "gc.asm"
 %include "syntax.asm"
 %include "assert.asm"
@@ -92,7 +93,6 @@ IN_FELINE
 %include "ansi.asm"
 %include "color.asm"
 %include "socket.asm"
-%include "thread.asm"
 %include "mutex.asm"
 
 ; ### in-static-data-area?

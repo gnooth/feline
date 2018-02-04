@@ -200,10 +200,18 @@ code mark_iterator, 'mark-iterator'     ; iterator --
         next
 endcode
 
+; ### mark_thread
+code mark_thread, 'mark_thread', SYMBOL_INTERNAL        ; thread --
+        _thread_quotation
+        _ maybe_mark_handle
+        next
+endcode
+
 asm_global gc_dispatch_table_
 
-; ### initialize-gc-dispatch-table
-code initialize_gc_dispatch_table, 'initialize-gc-dispatch-table'
+; ### initialize_gc_dispatch_table
+code initialize_gc_dispatch_table, 'initialize_gc_dispatch_table', SYMBOL_INTERNAL
+; --
         _lit 32
         _lit 0
         _ new_array_untagged
@@ -262,6 +270,10 @@ code initialize_gc_dispatch_table, 'initialize-gc-dispatch-table'
 
         _lit mark_tuple_class
         _lit TYPECODE_TUPLE_CLASS
+        _this_array_set_nth_unsafe
+
+        _lit mark_thread
+        _lit TYPECODE_THREAD
         _this_array_set_nth_unsafe
 
         pop     this_register
