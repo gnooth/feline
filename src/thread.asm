@@ -245,6 +245,11 @@ code make_thread, '<thread>'            ; quotation -- thread
         _thread_set_raw_sp0
 
         _rfrom
+
+        _dup
+        _ all_threads
+        _ vector_push
+
         next
 endcode
 
