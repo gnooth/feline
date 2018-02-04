@@ -667,3 +667,12 @@ cell os_mutex_unlock(cell arg)
   return (pthread_mutex_unlock(mutex) == 0) ? T_VALUE : F_VALUE;
 #endif
 }
+
+void os_sleep(cell arg)
+{
+#ifdef WIN64
+  DWORD millis = (DWORD) arg;
+  Sleep(millis);
+#else
+#endif
+}

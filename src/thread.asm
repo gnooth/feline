@@ -307,6 +307,15 @@ code thread_create, 'thread-create'     ; thread --
         next
 endcode
 
+; ### sleep
+code sleep, 'sleep'                     ; millis --
+        _check_fixnum
+        mov     arg0_register, rbx
+        poprbx
+        xcall   os_sleep
+        next
+endcode
+
 ; ### thread_run_internal
 code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
 ; called from C with handle of thread object in arg0_register

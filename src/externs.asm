@@ -63,6 +63,7 @@ extern os_realpath
 extern os_rename_file
 extern os_reposition_file
 extern os_resize_file
+extern os_sleep
 extern os_strerror
 extern os_system
 extern os_ticks
