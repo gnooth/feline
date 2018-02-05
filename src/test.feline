@@ -3002,4 +3002,22 @@ test: thread-test-1
 
 thread-test-1
 
+windows? #if
+
+global: thread-test-2-result
+
+test: thread-test-2
+    f !> thread-test-2-result
+    [ 42 !> thread-test-2-result ] <thread> thread-create
+
+    -- REVIEW
+    10 sleep
+
+    thread-test-2-result 42 assert-eq
+;
+
+thread-test-2
+
+#endif
+
 ?nl "Reached end of test.feline" write-string
