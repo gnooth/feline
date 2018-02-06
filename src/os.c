@@ -674,5 +674,11 @@ void os_sleep(cell arg)
   DWORD millis = (DWORD) arg;
   Sleep(millis);
 #else
+  int64_t millis = arg;
+  struct timespec tv;
+  tv.tv_sec = millis / 1000;
+  tv.tv_nsec = (millis - tv.tv_sec * 1000) * 1000000;
+  while (nanosleep(&tv, &tv) && errno == EINTR)
+    ;
 #endif
 }

@@ -3002,8 +3002,6 @@ test: thread-test-1
 
 thread-test-1
 
-windows? #if
-
 global: thread-test-2-result
 
 test: thread-test-2
@@ -3017,7 +3015,5 @@ test: thread-test-2
 ;
 
 thread-test-2
-
-#endif
 
 ?nl "Reached end of test.feline" write-string
