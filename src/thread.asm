@@ -253,6 +253,23 @@ code make_thread, '<thread>'            ; quotation -- thread
         next
 endcode
 
+; ### destroy_thread
+code destroy_thread, 'destroy_thread', SYMBOL_INTERNAL  ; thread --
+
+        ; free locals stack
+        _dup
+        _thread_raw_lp0
+        sub     rbx, 4096
+        _ raw_free
+
+        ; zero out object header
+        xor     eax, eax
+        mov     [rbx], rax
+
+        _ raw_free
+        next
+endcode
+
 asm_global all_threads_, f_value
 
 ; ### all-threads

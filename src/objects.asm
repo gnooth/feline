@@ -214,6 +214,8 @@ code destroy_heap_object, 'destroy_heap_object', SYMBOL_INTERNAL
         je      destroy_quotation_unchecked
         cmp     eax, TYPECODE_CURRY
         je      destroy_curry_unchecked
+        cmp     eax, TYPECODE_THREAD
+        je      destroy_thread
 
         ; Default behavior for objects with only one allocation.
 
