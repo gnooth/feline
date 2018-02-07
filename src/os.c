@@ -598,7 +598,7 @@ cell os_current_thread()
 #endif
 }
 
-cell os_create_thread(cell arg)
+void os_create_thread(cell arg)
 {
 #ifdef WIN64
   DWORD dwThreadId;
@@ -611,12 +611,15 @@ cell os_create_thread(cell arg)
     0,                          // use default creation flags
     &dwThreadId);               // variable to receive thread identifier
 
-  return (cell) h;
+  CloseHandle(h);
 #else
   pthread_t thread_id;
   int status = pthread_create(&thread_id, NULL, thread_run, (void *)arg);
   if (status != 0)
     printf("pthread_create failed\n");
+  status = pthread_detach(thread_id);
+  if (status != 0)
+    printf("pthread_detach failed\n");
 #endif
 }
 
