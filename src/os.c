@@ -561,6 +561,8 @@ DWORD WINAPI thread_run(LPVOID arg)
   extern void thread_run_internal(cell);
   thread_run_internal((cell)arg);
 
+  TlsSetValue(tls_index, 0);
+
   return 0;
 }
 
