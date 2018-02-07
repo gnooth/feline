@@ -320,11 +320,13 @@ endcode
 code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
 ; called from C with handle of thread object in arg0_register
 
+        ; save C registers
         push    rbp
         push    rbx
 
         ; set up data stack
         mov     rbx, arg0_register      ; handle of thread object in rbx
+        push    rbx                     ; save handle
         _ deref                         ; object address in rbx
         mov     rbp, thread_raw_sp0_slot
 
@@ -339,8 +341,16 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
 
         _ call_quotation
 
+        pop     rbx                     ; retrieve handle
+        pushrbx
+        _ all_threads
+        _ vector_remove_mutating        ; -- vector
+        _drop                           ; --
+
+        ; restore C registers
         pop     rbx
         pop     rbp
+
         next
 endcode
 
