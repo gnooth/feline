@@ -321,6 +321,7 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
 ; called from C with handle of thread object in arg0_register
 
         push    rbp
+        push    rbx
 
         ; set up data stack
         mov     rbx, arg0_register      ; handle of thread object in rbx
@@ -338,6 +339,7 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
 
         _ call_quotation
 
+        pop     rbx
         pop     rbp
         next
 endcode
