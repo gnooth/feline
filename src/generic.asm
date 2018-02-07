@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -475,6 +475,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method equal?, TYPECODE_FLOAT, float_equal?
         _add_method equal?, TYPECODE_INT64, int64_equal?
         _add_method equal?, TYPECODE_UINT64, uint64_equal?
+        _add_method equal?, TYPECODE_THREAD, eq?
 
         ; length
         _initialize_generic_function length
