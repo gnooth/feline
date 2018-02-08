@@ -183,6 +183,21 @@ code thread_quotation, 'thread-quotation'       ; thread -- quotation
         next
 endcode
 
+; ### thread-result
+code thread_result, 'thread-result'     ; thread -- result
+        _ check_thread
+        _thread_result
+        next
+endcode
+
+; ### thread_set_result
+code thread_set_result, 'thread_set_result', SYMBOL_INTERNAL
+; result thread --
+        _ check_thread
+        _thread_set_result
+        next
+endcode
+
 ; ### current-thread
 code current_thread, 'current-thread'   ; -- thread
         xcall   os_current_thread
