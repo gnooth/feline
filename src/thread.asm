@@ -246,6 +246,10 @@ code make_thread, '<thread>'            ; quotation -- thread
 
         _ check_thread
 
+        _f
+        _over
+        _thread_set_result
+
         _tuck
         _thread_set_quotation           ; -- thread
 
@@ -358,9 +362,12 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
 
         ; set up data stack
         mov     rbx, arg0_register      ; handle of thread object in rbx
-        push    rbx                     ; save handle
-        _ deref                         ; object address in rbx
+        push    rbx                     ; save thread handle
+        _handle_to_object_unsafe        ; raw object address in rbx
         mov     rbp, thread_raw_sp0_slot
+
+        ; make stack depth = 1
+        _dup                            ; -- raw-object-address
 
         ; rp0
         mov     thread_raw_rp0_slot, rsp
@@ -368,13 +375,16 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
         ; lp0
         mov     r14, thread_raw_lp0_slot
 
-        _dup
-        _thread_quotation
+        _thread_quotation               ; -- quotation
 
-        _ call_quotation
+        _ call_quotation                ; -- ???
 
-        pop     rbx                     ; retrieve handle
+        _ get_data_stack                ; -- ??? array
+
         pushrbx
+        pop     rbx                     ; -- ??? array handle
+        _tuck
+        _ thread_set_result             ; -- ??? handle
         _ all_threads
         _ vector_remove_mutating        ; -- vector
         _drop                           ; --

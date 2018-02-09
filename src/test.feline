@@ -3016,4 +3016,17 @@ test: thread-test-2
 
 thread-test-2
 
+test: thread-test-3
+    [ 1 2 3 4 ] <thread>
+    dup thread-result assert-false
+    dup thread-create
+
+    -- REVIEW
+    10 sleep
+
+    thread-result { 1 2 3 4 } assert=
+;
+
+thread-test-3
+
 ?nl "Reached end of test.feline" write-string
