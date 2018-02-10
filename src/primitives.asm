@@ -754,9 +754,10 @@ code get_data_stack, 'get-data-stack'   ; -- array
 endcode
 
 ; ### clear
-code clear, 'clear'
+code clear, 'clear'                     ; ??? --
 ; clear the data stack
-        mov     rbp, [sp0_]
+        _ current_thread_raw_sp0
+        mov     rbp, rbx
         next
 endcode
 
