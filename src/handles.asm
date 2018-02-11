@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -197,8 +197,67 @@ endcode
         add qword [recent_allocations_], 1
 %endmacro
 
+asm_global handles_lock_, 0
+
+%macro  _handles_lock 0
+        pushrbx
+        mov     rbx, [handles_lock_]
+%endmacro
+
+; ### initialize_handles_lock
+code initialize_handles_lock, 'initialize_handles_lock', SYMBOL_INTERNAL
+; --
+        _ make_mutex
+        mov     [handles_lock_], rbx
+        poprbx
+        _lit handles_lock_
+        _ gc_add_root
+        next
+endcode
+
+; ### lock_handles
+code lock_handles, 'lock_handles', SYMBOL_INTERNAL      ; --
+        _handles_lock
+
+        test    rbx, rbx
+        jnz      .1
+        _drop
+        _return
+
+.1:
+        _ mutex_lock
+        _tagged_if_not .2
+        _error "mutex_lock failed"
+        _then .2
+        next
+endcode
+
+; ### unlock_handles
+code unlock_handles, 'unlock_handles', SYMBOL_INTERNAL   ; --
+        _handles_lock
+
+        test    rbx, rbx
+        jnz     .1
+        _drop
+        _return
+
+.1:
+        _ mutex_unlock
+        _tagged_if_not .2
+        _error "mutex_unlock failed"
+        _then .2
+        next
+endcode
+
+; %define LOCK_HANDLES
+
 ; ### new_handle
 code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
+
+%ifdef LOCK_HANDLES
+        _ lock_handles
+%endif
+
         _ get_empty_handle              ; -- object handle/0
         test    rbx, rbx
         jz     .1
@@ -212,6 +271,9 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
 %endif
 
         _increment_allocation_count
+%ifdef LOCK_HANDLES
+        _ unlock_handles
+%endif
         _return
 
 .1:                                     ; -- object 0
@@ -232,8 +294,14 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
 %endif
 
         _increment_allocation_count
+%ifdef LOCK_HANDLES
+        _ unlock_handles
+%endif
         _return
 .2:
+%ifdef LOCK_HANDLES
+        _ unlock_handles
+%endif
         _error "out of handles"
         next
 endcode
