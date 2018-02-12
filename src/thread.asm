@@ -217,9 +217,18 @@ endcode
 ; ### current_thread_raw_sp0_rax
 code current_thread_raw_sp0_rax, 'current_thread_raw_sp0_rax', SYMBOL_INTERNAL
 ; returns raw sp0 in rax
-        xcall   os_current_thread       ; handle of current thread in rax
+        xcall   os_current_thread       ; get handle of current Feline thread object in rax
+
+        ; rax will be 0 if we haven't called initialize_primordial_thread yet
+        test    rax, rax
+        jz      .too_soon
+
         _handle_to_object_unsafe_rax
         mov     rax, qword [rax + BYTES_PER_CELL]       ; slot 1
+        _return
+
+.too_soon:
+        mov     rax, [sp0_]
         next
 endcode
 
