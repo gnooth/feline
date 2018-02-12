@@ -214,6 +214,15 @@ code current_thread_raw_sp0, 'current_thread_raw_sp0', SYMBOL_INTERNAL
         next
 endcode
 
+; ### current_thread_raw_sp0_rax
+code current_thread_raw_sp0_rax, 'current_thread_raw_sp0_rax', SYMBOL_INTERNAL
+; returns raw sp0 in rax
+        xcall   os_current_thread       ; handle of current thread in rax
+        _handle_to_object_unsafe_rax
+        mov     rax, qword [rax + BYTES_PER_CELL]       ; slot 1
+        next
+endcode
+
 ; ### current_thread_raw_rp0
 code current_thread_raw_rp0, 'current_thread_raw_rp0', SYMBOL_INTERNAL
         _ current_thread
