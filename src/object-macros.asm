@@ -23,6 +23,14 @@ file __FILE__
         mov     rbx, [rbx]
 %endmacro
 
+%macro  _handle_to_object_unsafe_rax 0
+%ifdef TAGGED_HANDLES
+        shr     rax, HANDLE_TAG_BITS
+        ; fall through
+%endif
+        mov     rax, [rax]
+%endmacro
+
 ; typecodes
 TYPECODE_UNKNOWN                equ  0
 TYPECODE_FIXNUM                 equ  1
