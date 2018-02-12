@@ -623,10 +623,28 @@ void os_create_thread(cell arg)
 #endif
 }
 
-#ifndef WIN64
+#define USE_CRITICAL_SECTION
+
 cell os_mutex_init()
 {
-//   printf("sizeof(pthread_mutex_t) = %ld\n", sizeof(pthread_mutex_t));
+#ifdef WIN64
+
+#ifdef USE_CRITICAL_SECTION
+  CRITICAL_SECTION *cs = (CRITICAL_SECTION *) malloc(sizeof(CRITICAL_SECTION));
+  if (cs != NULL)
+      InitializeCriticalSection(cs);
+  else
+    printf("os_mutex_init allocation failed\n");
+  return (cell) cs;
+#else
+  HANDLE h = CreateMutex(NULL, FALSE, NULL);
+  if (h == NULL)
+    printf("CreateMutex failed\n");
+  return (cell) h;
+#endif
+
+#else
+  // Linux
   pthread_mutex_t *mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   if (mutex != NULL)
     {
@@ -637,15 +655,25 @@ cell os_mutex_init()
   else
     printf("os_initialize_mutex allocation failed\n");
   return (cell) mutex;
-}
 #endif
+}
 
 cell os_mutex_lock(cell arg)
 {
 #ifdef WIN64
+
+#ifdef USE_CRITICAL_SECTION
+  CRITICAL_SECTION *cs = (CRITICAL_SECTION *) arg;
+  EnterCriticalSection(cs);
+  // EnterCriticalSection does not return a value.
+  return T_VALUE;
+#else
   HANDLE h = (HANDLE) arg;
   return (WaitForSingleObject(h, INFINITE) == WAIT_OBJECT_0) ? T_VALUE : F_VALUE;
+#endif
+
 #else
+  // Linux
   pthread_mutex_t *mutex = (pthread_mutex_t *) arg;
   return (pthread_mutex_lock(mutex) == 0) ? T_VALUE : F_VALUE;
 #endif
@@ -654,9 +682,17 @@ cell os_mutex_lock(cell arg)
 cell os_mutex_trylock(cell arg)
 {
 #ifdef WIN64
+
+#ifdef USE_CRITICAL_SECTION
+  CRITICAL_SECTION *cs = (CRITICAL_SECTION *) arg;
+  return (TryEnterCriticalSection(cs) != 0) ? T_VALUE : F_VALUE;
+#else
   HANDLE h = (HANDLE) arg;
   return (WaitForSingleObject(h, 0) == WAIT_OBJECT_0) ? T_VALUE : F_VALUE;
+#endif
+
 #else
+  // Linux
   pthread_mutex_t *mutex = (pthread_mutex_t *) arg;
   return (pthread_mutex_trylock(mutex) == 0) ? T_VALUE : F_VALUE;
 #endif
@@ -665,9 +701,19 @@ cell os_mutex_trylock(cell arg)
 cell os_mutex_unlock(cell arg)
 {
 #ifdef WIN64
+
+#ifdef USE_CRITICAL_SECTION
+  CRITICAL_SECTION *cs = (CRITICAL_SECTION *) arg;
+  LeaveCriticalSection(cs);
+  // LeaveCriticalSection does not return a value.
+  return T_VALUE;
+#else
   HANDLE h = (HANDLE) arg;
   return (ReleaseMutex(h) != 0) ? T_VALUE : F_VALUE;
+#endif
+
 #else
+  // Linux
   pthread_mutex_t *mutex = (pthread_mutex_t *) arg;
   return (pthread_mutex_unlock(mutex) == 0) ? T_VALUE : F_VALUE;
 #endif

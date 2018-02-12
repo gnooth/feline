@@ -82,16 +82,8 @@ code make_mutex, 'make-mutex'
         _lit    BYTES_PER_CELL * 2
         _ raw_allocate
         mov     qword [rbx], TYPECODE_MUTEX
-%ifdef WIN64
-        mov     arg0_register, 0
-        mov     arg1_register, 0
-        mov     arg2_register, 0
-        xcall   CreateMutexA
-        mov     mutex_raw_value_slot, rax
-%else
         xcall   os_mutex_init
         mov     mutex_raw_value_slot, rax
-%endif
         _ new_handle
         next
 endcode

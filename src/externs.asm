@@ -46,11 +46,7 @@ extern os_key
 extern os_key_avail
 extern os_malloc
 extern os_ms
-
-%ifndef WIN64
 extern os_mutex_init
-%endif
-
 extern os_mutex_lock
 extern os_mutex_trylock
 extern os_mutex_unlock
