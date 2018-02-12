@@ -755,9 +755,9 @@ endcode
 
 ; ### clear
 code clear, 'clear'                     ; ??? --
-; clear the data stack
-        _ current_thread_raw_sp0
-        mov     rbp, rbx
+; clear the current thread's data stack
+        _ current_thread_raw_sp0_rax
+        mov     rbp, rax
         next
 endcode
 
