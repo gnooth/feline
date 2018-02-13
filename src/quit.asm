@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -260,7 +260,9 @@ code ?enough, '?enough'                 ; n --
         test    rbx, rbx
         js      .1
 
-        cmp     rbp, [sp0_]
+        _ current_thread_raw_sp0_rax
+        cmp     rbp, rax
+
         ja      error_data_stack_underflow
 
         ; save expected number of parameters in rdx
@@ -274,7 +276,8 @@ code ?enough, '?enough'                 ; n --
         ; convert cells to bytes
         _cells
 
-        mov     rax, [sp0_]
+        _ current_thread_raw_sp0_rax
+
         sub     rax, rbx
         cmp     rbp, rax
         ja      .2
