@@ -247,7 +247,8 @@ endcode
 
 ; ### ?stack
 code ?stack, '?stack'
-        cmp     rbp, [sp0_]
+        _ current_thread_raw_sp0_rax
+        cmp     rbp, rax
         ja      error_data_stack_underflow
         next
 endcode

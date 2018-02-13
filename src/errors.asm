@@ -210,7 +210,8 @@ endcode
 ; ### error-data-stack-underflow
 code error_data_stack_underflow, 'error-data-stack-underflow'           ; --
         ; fix underflow before going any further
-        mov     rbp, [sp0_]
+        _ current_thread_raw_sp0_rax
+        mov     rbp, rax
 
         _quote "ERROR: data stack underflow."
         _ error
