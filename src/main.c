@@ -119,8 +119,8 @@ static void args(int argc, char **argv)
 
 static void initialize_data_stack()
 {
-  extern cell sp0_;
-  sp0_ = os_thread_initialize_data_stack();
+  extern cell primordial_sp0_;
+  primordial_sp0_ = os_thread_initialize_data_stack();
 }
 
 static void initialize_dynamic_code_space()

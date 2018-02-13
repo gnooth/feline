@@ -26,7 +26,7 @@ endcode
 
 asm_global rp0_, 0
 
-asm_global sp0_, 0                      ; initialized in main()
+asm_global primordial_sp0_, 0           ; initialized in main()
 
 ; ### sp0
 code sp0, 'sp0'                         ; -- tagged-address
@@ -184,7 +184,7 @@ special load_verbose?, 'load-verbose?'
 ; ### cold
 code cold, 'cold'                       ; --
         mov     [rp0_], rsp
-        mov     rbp, [sp0_]
+        mov     rbp, [primordial_sp0_]
 
         _ initialize_locals_stack
 

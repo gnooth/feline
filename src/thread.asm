@@ -228,7 +228,7 @@ code current_thread_raw_sp0_rax, 'current_thread_raw_sp0_rax', SYMBOL_INTERNAL
         _return
 
 .too_soon:
-        mov     rax, [sp0_]
+        mov     rax, [primordial_sp0_]
         next
 endcode
 
@@ -329,7 +329,7 @@ code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERN
         _ new_thread                    ; -- thread
 
         pushrbx
-        mov     rbx, [sp0_]
+        mov     rbx, [primordial_sp0_]
         _over
         _ thread_set_raw_sp0            ; -- thread
 
