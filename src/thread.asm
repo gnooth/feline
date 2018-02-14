@@ -15,52 +15,62 @@
 
 file __FILE__
 
-; 6 cells: object header, sp0, rp0, lp0, quotation, result
+; 7 cells: object header, thread id, sp0, rp0, lp0, quotation, result
 
-%define thread_raw_sp0_slot     qword [rbx + BYTES_PER_CELL]
+%define thread_raw_thread_id_slot       qword [rbx + BYTES_PER_CELL]
 
-%macro  _thread_raw_sp0 0               ; thread -- raw-sp0
+%macro  _thread_raw_thread_id 0         ; thread -- raw-thread_id
         _slot1
 %endmacro
 
-%macro  _thread_set_raw_sp0 0           ; raw-sp0 thread --
+%macro  _thread_set_raw_thread_id 0     ; raw-thread_id thread --
         _set_slot1
 %endmacro
 
-%define thread_raw_rp0_slot     qword [rbx + BYTES_PER_CELL * 2]
+%define thread_raw_sp0_slot     qword [rbx + BYTES_PER_CELL * 2]
 
-%macro  _thread_raw_rp0 0               ; thread -- rp0
+%macro  _thread_raw_sp0 0               ; thread -- raw-sp0
         _slot2
 %endmacro
 
-%macro  _thread_set_raw_rp0 0           ; rp0 thread --
+%macro  _thread_set_raw_sp0 0           ; raw-sp0 thread --
         _set_slot2
 %endmacro
 
-%define thread_raw_lp0_slot     qword [rbx + BYTES_PER_CELL * 3]
+%define thread_raw_rp0_slot     qword [rbx + BYTES_PER_CELL * 3]
 
-%macro  _thread_raw_lp0 0               ; thread -- lp0
+%macro  _thread_raw_rp0 0               ; thread -- rp0
         _slot3
 %endmacro
 
-%macro  _thread_set_raw_lp0 0           ; lp0 thread --
+%macro  _thread_set_raw_rp0 0           ; rp0 thread --
         _set_slot3
 %endmacro
 
-%macro  _thread_quotation 0             ; thread -- quotation
+%define thread_raw_lp0_slot     qword [rbx + BYTES_PER_CELL * 4]
+
+%macro  _thread_raw_lp0 0               ; thread -- lp0
         _slot4
 %endmacro
 
-%macro  _thread_set_quotation 0         ; quotation thread --
+%macro  _thread_set_raw_lp0 0           ; lp0 thread --
         _set_slot4
 %endmacro
 
-%macro  _thread_result 0                ; thread -- result
+%macro  _thread_quotation 0             ; thread -- quotation
         _slot5
 %endmacro
 
-%macro  _thread_set_result 0            ; result thread --
+%macro  _thread_set_quotation 0         ; quotation thread --
         _set_slot5
+%endmacro
+
+%macro  _thread_result 0                ; thread -- result
+        _slot6
+%endmacro
+
+%macro  _thread_set_result 0            ; result thread --
+        _set_slot6
 %endmacro
 
 ; ### thread?
@@ -224,7 +234,7 @@ code current_thread_raw_sp0_rax, 'current_thread_raw_sp0_rax', SYMBOL_INTERNAL
         jz      .too_soon
 
         _handle_to_object_unsafe_rax
-        mov     rax, qword [rax + BYTES_PER_CELL]       ; slot 1
+        mov     rax, qword [rax + BYTES_PER_CELL * 2]   ; slot 2
         _return
 
 .too_soon:
@@ -250,7 +260,7 @@ endcode
 
 ; ### new_thread
 code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
-        _lit 6
+        _lit 7
         _ raw_allocate_cells
         mov     qword [rbx], TYPECODE_THREAD
         _ new_handle
@@ -357,7 +367,7 @@ endcode
 code thread_create, 'thread-create'     ; thread --
         mov     arg0_register, rbx
         _drop
-        xcall   os_create_thread
+        xcall   os_create_thread        ; returns thread id in rax
         next
 endcode
 
