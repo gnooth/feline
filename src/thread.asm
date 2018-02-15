@@ -375,7 +375,7 @@ endcode
 code thread_create, 'thread-create'     ; thread --
         _ verify_thread
         mov     arg0_register, rbx
-        xcall   os_create_thread        ; returns thread id in rax
+        xcall   os_thread_create        ; returns thread id in rax
         _handle_to_object_unsafe
         mov     thread_raw_thread_id_slot, rax
         poprbx

@@ -598,7 +598,7 @@ cell os_current_thread()
 #endif
 }
 
-cell os_create_thread(cell arg)
+cell os_thread_create(cell arg)
 {
 #ifdef WIN64
   DWORD thread_id;

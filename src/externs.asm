@@ -27,7 +27,6 @@ extern os_bye
 extern os_chdir
 extern os_close_file
 extern os_create_file
-extern os_create_thread
 extern os_current_thread
 extern os_delete_file
 extern os_emit_file
@@ -62,8 +61,9 @@ extern os_resize_file
 extern os_sleep
 extern os_strerror
 extern os_system
-extern os_ticks
+extern os_thread_create
 extern os_thread_initialize_data_stack
+extern os_ticks
 extern os_write_file
 
 %ifdef WIN64
