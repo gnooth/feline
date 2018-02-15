@@ -123,6 +123,14 @@ code verify_thread, 'verify-thread'     ; handle -- handle
         next
 endcode
 
+; ### thread_set_raw_thread_id
+code thread_set_raw_thread_id, 'thread_set_raw_thread_id', SYMBOL_INTERNAL
+; raw-thread_id thread --
+        _ check_thread
+        _thread_set_raw_thread_id
+        next
+endcode
+
 ; ### thread_raw_sp0
 code thread_raw_sp0, 'thread_raw_sp0', SYMBOL_INTERNAL  ; -- raw-sp0
         _ check_thread
@@ -365,9 +373,12 @@ endcode
 
 ; ### thread-create
 code thread_create, 'thread-create'     ; thread --
+        _ verify_thread
         mov     arg0_register, rbx
-        _drop
         xcall   os_create_thread        ; returns thread id in rax
+        _handle_to_object_unsafe
+        mov     thread_raw_thread_id_slot, rax
+        poprbx
         next
 endcode
 
