@@ -28,6 +28,7 @@ extern os_chdir
 extern os_close_file
 extern os_create_file
 extern os_current_thread
+extern os_current_thread_raw_thread_id
 extern os_delete_file
 extern os_emit_file
 extern os_file_is_directory

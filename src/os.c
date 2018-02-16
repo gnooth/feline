@@ -598,6 +598,15 @@ cell os_current_thread()
 #endif
 }
 
+cell os_current_thread_raw_thread_id()
+{
+#ifdef WIN64
+  return (cell) GetCurrentThreadId();
+#else
+  return (cell) pthread_self();
+#endif
+}
+
 cell os_thread_create(cell arg)
 {
 #ifdef WIN64
