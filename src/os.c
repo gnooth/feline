@@ -621,9 +621,6 @@ cell os_thread_create(cell arg)
   int status = pthread_create(&thread_id, NULL, thread_run, (void *)arg);
   if (status != 0)
     printf("pthread_create failed\n");
-  status = pthread_detach(thread_id);
-  if (status != 0)
-    printf("pthread_detach failed\n");
   return (cell) thread_id;
 #endif
 }
@@ -637,6 +634,10 @@ void os_thread_join(cell arg)
     printf("OpenThread failed\n");
   WaitForSingleObject(h, INFINITE);
 #else
+  pthread_t thread_id = (pthread_t) arg;
+  int status = pthread_join(thread_id, NULL);
+  if (status != 0)
+    printf("pthread_join failed\n");
 #endif
 }
 
