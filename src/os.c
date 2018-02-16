@@ -628,6 +628,18 @@ cell os_thread_create(cell arg)
 #endif
 }
 
+void os_thread_join(cell arg)
+{
+#ifdef WIN64
+  DWORD thread_id = (DWORD) arg;
+  HANDLE h = OpenThread(SYNCHRONIZE, FALSE, thread_id);
+  if (h == NULL)
+    printf("OpenThread failed\n");
+  WaitForSingleObject(h, INFINITE);
+#else
+#endif
+}
+
 #define USE_CRITICAL_SECTION
 
 cell os_mutex_init()

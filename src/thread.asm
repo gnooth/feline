@@ -382,6 +382,18 @@ code thread_create, 'thread-create'     ; thread --
         next
 endcode
 
+%ifdef WIN64
+; ### thread-join
+code thread_join, 'thread-join'         ; thread --
+        _ check_thread
+        _thread_raw_thread_id
+        mov     arg0_register, rbx
+        poprbx
+        xcall   os_thread_join
+        next
+endcode
+%endif
+
 ; ### sleep
 code sleep, 'sleep'                     ; millis --
         _check_fixnum
