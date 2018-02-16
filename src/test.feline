@@ -3006,11 +3006,8 @@ global: thread-test-2-result
 
 test: thread-test-2
     f !> thread-test-2-result
-    [ 42 !> thread-test-2-result ] <thread> thread-create
-
-    -- REVIEW
-    10 sleep
-
+    [ 42 !> thread-test-2-result ] <thread>
+    dup thread-create thread-join
     thread-test-2-result 42 assert-eq
 ;
 
@@ -3020,10 +3017,7 @@ test: thread-test-3
     [ 1 2 3 4 ] <thread>
     dup thread-result assert-false
     dup thread-create
-
-    -- REVIEW
-    10 sleep
-
+    dup thread-join
     thread-result { 1 2 3 4 } assert=
 ;
 

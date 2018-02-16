@@ -382,7 +382,6 @@ code thread_create, 'thread-create'     ; thread --
         next
 endcode
 
-%ifdef WIN64
 ; ### thread-join
 code thread_join, 'thread-join'         ; thread --
         _ check_thread
@@ -392,7 +391,6 @@ code thread_join, 'thread-join'         ; thread --
         xcall   os_thread_join
         next
 endcode
-%endif
 
 ; ### sleep
 code sleep, 'sleep'                     ; millis --
