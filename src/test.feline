@@ -3023,4 +3023,10 @@ test: thread-test-3
 
 thread-test-3
 
+test: thread-test-4
+    current-thread thread-id current-thread-id assert=
+;
+
+thread-test-4
+
 ?nl "Reached end of test.feline" write-string

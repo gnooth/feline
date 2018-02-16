@@ -19,11 +19,11 @@ file __FILE__
 
 %define thread_raw_thread_id_slot       qword [rbx + BYTES_PER_CELL]
 
-%macro  _thread_raw_thread_id 0         ; thread -- raw-thread_id
+%macro  _thread_raw_thread_id 0         ; thread -- raw-thread-id
         _slot1
 %endmacro
 
-%macro  _thread_set_raw_thread_id 0     ; raw-thread_id thread --
+%macro  _thread_set_raw_thread_id 0     ; raw-thread-id thread --
         _set_slot1
 %endmacro
 
@@ -125,9 +125,17 @@ endcode
 
 ; ### thread_set_raw_thread_id
 code thread_set_raw_thread_id, 'thread_set_raw_thread_id', SYMBOL_INTERNAL
-; raw-thread_id thread --
+; raw-thread-id thread --
         _ check_thread
         _thread_set_raw_thread_id
+        next
+endcode
+
+; ### thread-id
+code thread_id, 'thread-id'             ; thread -- thread-id
+        _ check_thread
+        _thread_raw_thread_id
+        _ normalize
         next
 endcode
 
@@ -219,8 +227,24 @@ endcode
 ; ### current-thread
 code current_thread, 'current-thread'   ; -- thread
         xcall   os_current_thread
-        _dup
+        pushrbx
         mov     rbx, rax
+        next
+endcode
+
+; ### current_thread_raw_thread_id
+code current_thread_raw_thread_id, 'current_thread_raw_thread_id', SYMBOL_INTERNAL
+; -- raw-thread-id
+        xcall   os_current_thread_raw_thread_id
+        pushrbx
+        mov     rbx, rax
+        next
+endcode
+
+; ### current-thread-id
+code current_thread_id, 'current-thread-id'     ; -- thread-id
+        _ current_thread_raw_thread_id
+        _ normalize
         next
 endcode
 
@@ -360,6 +384,10 @@ code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERN
         mov     rbx, [lp0_]
         _over
         _ thread_set_raw_lp0            ; -- thread
+
+        _ current_thread_raw_thread_id
+        _over
+        _ thread_set_raw_thread_id
 
         mov     arg0_register, rbx
 
