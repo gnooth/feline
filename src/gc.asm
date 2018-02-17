@@ -200,13 +200,6 @@ code mark_iterator, 'mark-iterator'     ; iterator --
         next
 endcode
 
-; ### mark_thread
-code mark_thread, 'mark_thread', SYMBOL_INTERNAL        ; thread --
-        _thread_quotation
-        _ maybe_mark_handle
-        next
-endcode
-
 asm_global gc_dispatch_table_
 
 ; ### initialize_gc_dispatch_table

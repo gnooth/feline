@@ -17,61 +17,17 @@ file __FILE__
 
 ; 7 cells: object header, thread id, sp0, rp0, lp0, quotation, result
 
-%define thread_raw_thread_id_slot       qword [rbx + BYTES_PER_CELL]
+%define thread_slot_raw_thread_id       1
+%define thread_slot_raw_sp0             2
+%define thread_slot_raw_rp0             3
+%define thread_slot_raw_lp0             4
+%define thread_slot_quotation           5
+%define thread_slot_result              6
 
-%macro  _thread_raw_thread_id 0         ; thread -- raw-thread-id
-        _slot1
-%endmacro
-
-%macro  _thread_set_raw_thread_id 0     ; raw-thread-id thread --
-        _set_slot1
-%endmacro
-
-%define thread_raw_sp0_slot     qword [rbx + BYTES_PER_CELL * 2]
-
-%macro  _thread_raw_sp0 0               ; thread -- raw-sp0
-        _slot2
-%endmacro
-
-%macro  _thread_set_raw_sp0 0           ; raw-sp0 thread --
-        _set_slot2
-%endmacro
-
-%define thread_raw_rp0_slot     qword [rbx + BYTES_PER_CELL * 3]
-
-%macro  _thread_raw_rp0 0               ; thread -- rp0
-        _slot3
-%endmacro
-
-%macro  _thread_set_raw_rp0 0           ; rp0 thread --
-        _set_slot3
-%endmacro
-
-%define thread_raw_lp0_slot     qword [rbx + BYTES_PER_CELL * 4]
-
-%macro  _thread_raw_lp0 0               ; thread -- lp0
-        _slot4
-%endmacro
-
-%macro  _thread_set_raw_lp0 0           ; lp0 thread --
-        _set_slot4
-%endmacro
-
-%macro  _thread_quotation 0             ; thread -- quotation
-        _slot5
-%endmacro
-
-%macro  _thread_set_quotation 0         ; quotation thread --
-        _set_slot5
-%endmacro
-
-%macro  _thread_result 0                ; thread -- result
-        _slot6
-%endmacro
-
-%macro  _thread_set_result 0            ; result thread --
-        _set_slot6
-%endmacro
+%define thread_raw_thread_id_slot       qword [rbx + bytes_per_cell * thread_slot_raw_thread_id]
+%define thread_raw_sp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_sp0]
+%define thread_raw_rp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_rp0]
+%define thread_raw_lp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_lp0]
 
 ; ### thread?
 code thread?, 'thread?'                 ; handle -- ?
@@ -127,14 +83,14 @@ endcode
 code thread_set_raw_thread_id, 'thread_set_raw_thread_id', SYMBOL_INTERNAL
 ; raw-thread-id thread --
         _ check_thread
-        _thread_set_raw_thread_id
+        _set_slot thread_slot_raw_thread_id
         next
 endcode
 
 ; ### thread-id
 code thread_id, 'thread-id'             ; thread -- thread-id
         _ check_thread
-        _thread_raw_thread_id
+        _slot thread_slot_raw_thread_id
         _ normalize
         next
 endcode
@@ -142,14 +98,14 @@ endcode
 ; ### thread_raw_sp0
 code thread_raw_sp0, 'thread_raw_sp0', SYMBOL_INTERNAL  ; -- raw-sp0
         _ check_thread
-        _thread_raw_sp0
+        _slot thread_slot_raw_sp0
         next
 endcode
 
 ; ### thread_set_raw_sp0
 code thread_set_raw_sp0, 'thread_set_raw_sp0', SYMBOL_INTERNAL  ; raw-sp0 thread --
         _ check_thread
-        _thread_set_raw_sp0
+        _set_slot thread_slot_raw_sp0
         next
 endcode
 
@@ -163,14 +119,14 @@ endcode
 ; ### thread_raw_rp0
 code thread_raw_rp0, 'thread_raw_rp0', SYMBOL_INTERNAL  ; -- raw-rp0
         _ check_thread
-        _thread_raw_rp0
+        _slot thread_slot_raw_rp0
         next
 endcode
 
 ; ### thread_set_raw_rp0
 code thread_set_raw_rp0, 'thread_set_raw_rp0', SYMBOL_INTERNAL  ; raw-rp0 thread --
         _ check_thread
-        _thread_set_raw_rp0
+        _set_slot thread_slot_raw_rp0
         next
 endcode
 
@@ -184,14 +140,14 @@ endcode
 ; ### thread_raw_lp0
 code thread_raw_lp0, 'thread_raw_lp0', SYMBOL_INTERNAL  ; -- raw-lp0
         _ check_thread
-        _thread_raw_lp0
+        _slot thread_slot_raw_lp0
         next
 endcode
 
 ; ### thread_set_raw_lp0
 code thread_set_raw_lp0, 'thread_set_raw_lp0', SYMBOL_INTERNAL  ; raw-lp0 thread --
         _ check_thread
-        _thread_set_raw_lp0
+        _set_slot thread_slot_raw_lp0
         next
 endcode
 
@@ -205,14 +161,14 @@ endcode
 ; ### thread-quotation
 code thread_quotation, 'thread-quotation'       ; thread -- quotation
         _ check_thread
-        _thread_quotation
+        _slot thread_slot_quotation
         next
 endcode
 
 ; ### thread-result
 code thread_result, 'thread-result'     ; thread -- result
         _ check_thread
-        _thread_result
+        _slot thread_slot_result
         next
 endcode
 
@@ -220,7 +176,7 @@ endcode
 code thread_set_result, 'thread_set_result', SYMBOL_INTERNAL
 ; result thread --
         _ check_thread
-        _thread_set_result
+        _set_slot thread_slot_result
         next
 endcode
 
@@ -252,7 +208,7 @@ endcode
 code current_thread_raw_sp0, 'current_thread_raw_sp0', SYMBOL_INTERNAL
         _ current_thread
         _ check_thread
-        _thread_raw_sp0
+        _slot thread_slot_raw_sp0
         next
 endcode
 
@@ -266,7 +222,7 @@ code current_thread_raw_sp0_rax, 'current_thread_raw_sp0_rax', SYMBOL_INTERNAL
         jz      .too_soon
 
         _handle_to_object_unsafe_rax
-        mov     rax, qword [rax + BYTES_PER_CELL * 2]   ; slot 2
+        mov     rax, qword [rax + bytes_per_cell * thread_slot_raw_sp0]
         _return
 
 .too_soon:
@@ -278,7 +234,7 @@ endcode
 code current_thread_raw_rp0, 'current_thread_raw_rp0', SYMBOL_INTERNAL
         _ current_thread
         _ check_thread
-        _thread_raw_rp0
+        _slot thread_slot_raw_rp0
         next
 endcode
 
@@ -286,7 +242,7 @@ endcode
 code current_thread_raw_lp0, 'current_thread_raw_lp0', SYMBOL_INTERNAL
         _ current_thread
         _ check_thread
-        _thread_raw_lp0
+        _slot thread_slot_raw_lp0
         next
 endcode
 
@@ -308,20 +264,20 @@ code make_thread, '<thread>'            ; quotation -- thread
 
         _f
         _over
-        _thread_set_result
+        _set_slot thread_slot_result
 
         _tuck
-        _thread_set_quotation           ; -- thread
+        _set_slot thread_slot_quotation           ; -- thread
 
         _ allocate_locals_stack
         _over
-        _thread_set_raw_lp0
+        _set_slot thread_slot_raw_lp0
 
         xcall   os_thread_initialize_data_stack ; returns raw sp0 in rax
         _dup
         mov     rbx, rax
         _swap
-        _thread_set_raw_sp0
+        _set_slot thread_slot_raw_sp0
 
         _rfrom
 
@@ -337,7 +293,7 @@ code destroy_thread, 'destroy_thread', SYMBOL_INTERNAL  ; thread --
 
         ; free locals stack
         _dup
-        _thread_raw_lp0
+        _slot thread_slot_raw_lp0
         sub     rbx, 4096
         _ raw_free
 
@@ -413,7 +369,7 @@ endcode
 ; ### thread-join
 code thread_join, 'thread-join'         ; thread --
         _ check_thread
-        _thread_raw_thread_id
+        _slot thread_slot_raw_thread_id
         mov     arg0_register, rbx
         poprbx
         xcall   os_thread_join
@@ -452,7 +408,7 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
         ; lp0
         mov     r14, thread_raw_lp0_slot
 
-        _thread_quotation               ; -- quotation
+        _slot thread_slot_quotation               ; -- quotation
 
         _ call_quotation                ; -- ???
 
@@ -485,3 +441,17 @@ code thread_to_string, 'thread>string'  ; thread -- string
 
         next
 endcode
+
+; ### mark_thread
+code mark_thread, 'mark_thread', SYMBOL_INTERNAL        ; thread --
+        _slot thread_slot_quotation
+        _ maybe_mark_handle
+        next
+endcode
+
+%undef slot_raw_thread_id
+%undef slot_raw_sp0
+%undef slot_raw_rp0
+%undef slot_raw_lp0
+%undef slot_quotation
+%undef slot_result
