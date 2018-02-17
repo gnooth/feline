@@ -637,19 +637,9 @@ section .data
         poprbx
 %endmacro
 
-%macro  _clear 1                        ; label
-        xor     eax, eax
-        mov     [%1_data], rax          ; REVIEW 32-bit address
-%endmacro
-
 %macro  _zeroto 1                       ; label
         xor     eax, eax
         mov     [%1_data], rax          ; REVIEW 32-bit address
-%endmacro
-
-%macro  _plusto 1                       ; label
-        add     [%1_data], rbx          ; REVIEW 32-bit address
-        poprbx
 %endmacro
 
 %macro  _oneplusto 1                    ; label
