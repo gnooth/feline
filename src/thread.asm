@@ -15,16 +15,18 @@
 
 file __FILE__
 
-; 7 cells: object header, thread id, sp0, rp0, lp0, quotation, result
+; 8 cells: object header, thread id, thread handle, sp0, rp0, lp0, quotation, result
 
 %define thread_slot_raw_thread_id       1
-%define thread_slot_raw_sp0             2
-%define thread_slot_raw_rp0             3
-%define thread_slot_raw_lp0             4
-%define thread_slot_quotation           5
-%define thread_slot_result              6
+%define thread_slot_raw_thread_handle   2
+%define thread_slot_raw_sp0             3
+%define thread_slot_raw_rp0             4
+%define thread_slot_raw_lp0             5
+%define thread_slot_quotation           6
+%define thread_slot_result              7
 
 %define thread_raw_thread_id_slot       qword [rbx + bytes_per_cell * thread_slot_raw_thread_id]
+%define thread_raw_thread_handle_slot   qword [rbx + bytes_per_cell * thread_slot_raw_thread_handle]
 %define thread_raw_sp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_sp0]
 %define thread_raw_rp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_rp0]
 %define thread_raw_lp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_lp0]
@@ -94,6 +96,16 @@ code thread_id, 'thread-id'             ; thread -- thread-id
         _ normalize
         next
 endcode
+
+%ifdef WIN64
+; ### thread_set_raw_thread_handle
+code thread_set_raw_thread_handle, 'thread_set_raw_thread_handle', SYMBOL_INTERNAL
+; raw-thread-id thread --
+        _ check_thread
+        _set_slot thread_slot_raw_thread_handle
+        next
+endcode
+%endif
 
 ; ### thread_raw_sp0
 code thread_raw_sp0, 'thread_raw_sp0', SYMBOL_INTERNAL  ; -- raw-sp0
@@ -248,7 +260,7 @@ endcode
 
 ; ### new_thread
 code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
-        _lit 7
+        _lit 8
         _ raw_allocate_cells
         mov     qword [rbx], TYPECODE_THREAD
         _ new_handle
