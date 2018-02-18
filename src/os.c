@@ -607,6 +607,27 @@ cell os_current_thread_raw_thread_id()
 #endif
 }
 
+#ifdef WIN64
+cell os_current_thread_raw_thread_handle()
+{
+  HANDLE h;
+
+  BOOL status = DuplicateHandle(
+    GetCurrentProcess(),
+    GetCurrentThread(),
+    GetCurrentProcess(),
+    &h,
+    0,          // desired access (ignored if DUPLICATE_SAME_ACCESS is specified)
+    FALSE,      // not inheritable
+    DUPLICATE_SAME_ACCESS);
+
+  if (!status)
+    printf("DuplicateHandle failed\n");
+
+  return (cell) h;
+}
+#endif
+
 cell os_thread_create(cell arg)
 {
 #ifdef WIN64
