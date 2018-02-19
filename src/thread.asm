@@ -403,6 +403,30 @@ code thread_join, 'thread-join'         ; thread --
         next
 endcode
 
+%ifdef WIN64
+; ### thread-suspend
+code thread_suspend, 'thread-suspend'   ; thread --
+        _ check_thread
+        _slot thread_slot_raw_thread_handle
+        mov     arg0_register, rbx
+        poprbx
+        extern  SuspendThread
+        xcall   SuspendThread
+        next
+endcode
+
+; ### thread-resume
+code thread_resume, 'thread-resume'   ; thread --
+        _ check_thread
+        _slot thread_slot_raw_thread_handle
+        mov     arg0_register, rbx
+        poprbx
+        extern  ResumeThread
+        xcall   ResumeThread
+        next
+endcode
+%endif
+
 ; ### sleep
 code sleep, 'sleep'                     ; millis --
         _check_fixnum
