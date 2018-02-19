@@ -628,24 +628,24 @@ cell os_current_thread_raw_thread_handle()
 }
 #endif
 
+// returns native thread handle (Windows) or native thread id (Linux)
 cell os_thread_create(cell arg)
 {
 #ifdef WIN64
-  DWORD thread_id;
-
   HANDLE h = CreateThread(
     NULL,                       // use default security attributes
     0,                          // use default stack size
     thread_run,                 // thread function
     (void *)arg,                // argument to thread function
     CREATE_SUSPENDED,           // creation flags
-    &thread_id);                // variable to receive thread identifier
+    NULL);                      // variable to receive thread identifier
+
+  if (h == NULL)
+    printf("CreateThread failed\n");
 
   ResumeThread(h);
 
-  CloseHandle(h);
-
-  return (cell) thread_id;
+  return (cell) h;
 #else
   pthread_t thread_id;
   int status = pthread_create(&thread_id, NULL, thread_run, (void *)arg);
@@ -658,10 +658,7 @@ cell os_thread_create(cell arg)
 void os_thread_join(cell arg)
 {
 #ifdef WIN64
-  DWORD thread_id = (DWORD) arg;
-  HANDLE h = OpenThread(SYNCHRONIZE, FALSE, thread_id);
-  if (h == NULL)
-    printf("OpenThread failed\n");
+  HANDLE h = (HANDLE) arg;
   WaitForSingleObject(h, INFINITE);
 #else
   pthread_t thread_id = (pthread_t) arg;

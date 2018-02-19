@@ -357,8 +357,15 @@ code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERN
         _over
         _ thread_set_raw_thread_id
 
-        mov     arg0_register, rbx
+%ifdef WIN64
+        xcall   os_current_thread_raw_thread_handle
+        pushrbx
+        mov     rbx, rax
+        _over
+        _ thread_set_raw_thread_handle
+%endif
 
+        mov     arg0_register, rbx
         xcall   os_initialize_primordial_thread
 
         _ all_threads
@@ -371,9 +378,13 @@ endcode
 code thread_create, 'thread-create'     ; thread --
         _ verify_thread
         mov     arg0_register, rbx
-        xcall   os_thread_create        ; returns thread id in rax
+        xcall   os_thread_create        ; returns native thread identifier in rax
         _handle_to_object_unsafe
+%ifdef WIN64
+        mov     thread_raw_thread_handle_slot, rax
+%else
         mov     thread_raw_thread_id_slot, rax
+%endif
         poprbx
         next
 endcode
@@ -381,7 +392,11 @@ endcode
 ; ### thread-join
 code thread_join, 'thread-join'         ; thread --
         _ check_thread
+%ifdef WIN64
+        _slot thread_slot_raw_thread_handle
+%else
         _slot thread_slot_raw_thread_id
+%endif
         mov     arg0_register, rbx
         poprbx
         xcall   os_thread_join

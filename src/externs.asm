@@ -28,6 +28,11 @@ extern os_chdir
 extern os_close_file
 extern os_create_file
 extern os_current_thread
+
+%ifdef WIN64
+extern os_current_thread_raw_thread_handle
+%endif
+
 extern os_current_thread_raw_thread_id
 extern os_delete_file
 extern os_emit_file
