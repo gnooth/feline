@@ -15,21 +15,29 @@
 
 file __FILE__
 
-; 8 cells: object header, thread id, thread handle, sp0, rp0, lp0, quotation, result
+; 13 slots:
 
-%define thread_slot_raw_thread_id       1
-%define thread_slot_raw_thread_handle   2
-%define thread_slot_raw_sp0             3
-%define thread_slot_raw_rp0             4
-%define thread_slot_raw_lp0             5
-%define thread_slot_quotation           6
-%define thread_slot_result              7
+%define thread_slot_raw_thread_id        1
+%define thread_slot_raw_thread_handle    2
+%define thread_slot_raw_sp0              3
+%define thread_slot_raw_rp0              4
+%define thread_slot_raw_lp0              5
+%define thread_slot_quotation            6
+%define thread_slot_result               7
+%define thread_slot_thread_locals        8
+
+%define thread_slot_saved_rbx            9
+%define thread_slot_saved_rsp           10
+%define thread_slot_saved_rbp           11
+%define thread_slot_saved_r14           12
 
 %define thread_raw_thread_id_slot       qword [rbx + bytes_per_cell * thread_slot_raw_thread_id]
 %define thread_raw_thread_handle_slot   qword [rbx + bytes_per_cell * thread_slot_raw_thread_handle]
 %define thread_raw_sp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_sp0]
 %define thread_raw_rp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_rp0]
 %define thread_raw_lp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_lp0]
+
+%define THREAD_REGISTERS_OFFSET         bytes_per_cell * thread_slot_saved_rbx
 
 ; ### thread?
 code thread?, 'thread?'                 ; handle -- ?
@@ -260,7 +268,7 @@ endcode
 
 ; ### new_thread
 code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
-        _lit 8
+        _lit 13
         _ raw_allocate_cells
         mov     qword [rbx], TYPECODE_THREAD
         _ new_handle
