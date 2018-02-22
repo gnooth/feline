@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -478,22 +478,21 @@ code hashtable_at_star, 'at*'           ; key hashtable -- value/f ?
 endcode
 
 ; ### at
-code hashtable_at, 'at'                  ; key hashtable -- value
+code hashtable_at, 'at'                 ; key hashtable -- value
         _ check_hashtable
         push    this_register
         mov     this_register, rbx
         poprbx                                  ; -- key
         _ this_hashtable_find_index_for_key     ; -- tagged-index/f ?
         cmp     rbx, f_value
-        jz      .1
+        je      .1
         _drop
         _untag_fixnum
         _this_hashtable_nth_value
         pop     this_register
         _return
-.1:
-        _2drop
-        _f
+.1:                                     ; -- f f
+        _nip
         pop     this_register
         next
 endcode
