@@ -271,6 +271,12 @@ code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
         _lit 13
         _ raw_allocate_cells
         mov     qword [rbx], TYPECODE_THREAD
+
+        _lit 8
+        _ new_hashtable_untagged
+        _over
+        _set_slot thread_slot_thread_locals
+
         _ new_handle
         next
 endcode
@@ -335,8 +341,7 @@ code all_threads, 'all-threads'         ; -- vector
 endcode
 
 ; ### initialize_primordial_thread
-code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERNAL
-; --
+code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERNAL      ; --
         _lit 8
         _ new_vector_untagged
         mov     [all_threads_], rbx
@@ -444,6 +449,44 @@ code sleep, 'sleep'                     ; millis --
         next
 endcode
 
+; ### current-thread-locals
+code current_thread_locals, 'current-thread-locals'     ; -- hashtable
+        _ current_thread
+        _ check_thread
+        _slot thread_slot_thread_locals
+        next
+endcode
+
+; ### thread-local-set
+code thread_local_set, 'thread-local-set'       ; value symbol thread --
+        _ check_thread
+        _slot thread_slot_thread_locals
+        _ hashtable_set_at
+        next
+endcode
+
+; ### thread-local-get
+code thread_local_get, 'thread-local-get'       ; symbol thread -- value
+        _ check_thread
+        _slot thread_slot_thread_locals
+        _ hashtable_at
+        next
+endcode
+
+; ### current-thread-local-set
+code current_thread_local_set, 'current-thread-local-set'       ; value symbol --
+        _ current_thread
+        _ thread_local_set
+        next
+endcode
+
+; ### current-thread-local-get
+code current_thread_local_get, 'current-thread-local-get'       ; symbol -- value
+        _ current_thread
+        _ thread_local_get
+        next
+endcode
+
 ; ### thread_run_internal
 code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
 ; called from C with handle of thread object in arg0_register
@@ -503,7 +546,10 @@ endcode
 
 ; ### mark_thread
 code mark_thread, 'mark_thread', SYMBOL_INTERNAL        ; thread --
+        _dup
         _slot thread_slot_quotation
+        _ maybe_mark_handle
+        _slot thread_slot_thread_locals
         _ maybe_mark_handle
         next
 endcode
