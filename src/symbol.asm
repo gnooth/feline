@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -512,6 +512,35 @@ endcode
 code symbol_set_global_bit, 'symbol-set-global-bit', SYMBOL_PRIVATE
 ; symbol --
         _symbol_set_flags_bit SYMBOL_GLOBAL
+        next
+endcode
+
+; ### symbol-thread-local?
+code symbol_thread_local?, 'symbol-thread-local?'       ; symbol -- f
+        _symbol_flags_bit SYMBOL_THREAD_LOCAL
+        next
+endcode
+
+; ### symbol-set-thread-local-bit
+code symbol_set_thread_local_bit, 'symbol-set-thread-local-bit', SYMBOL_PRIVATE ; symbol --
+        _symbol_set_flags_bit SYMBOL_THREAD_LOCAL
+        next
+endcode
+
+; ### error-not-thread-local
+code error_not_thread_local, 'error-not-thread-local'   ; x --
+        _error "not a thread-local"
+        next
+endcode
+
+; ### verify-thread-local
+code verify_thread_local, 'verify-thread-local' ; thread-local -- thread-local
+        _dup
+        _ check_symbol
+        _symbol_flags
+        and     rbx, SYMBOL_THREAD_LOCAL
+        poprbx
+        jz      error_not_thread_local
         next
 endcode
 

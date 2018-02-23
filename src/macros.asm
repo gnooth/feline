@@ -449,6 +449,7 @@ section .data
 %define SYMBOL_GENERIC          $0080
 %define SYMBOL_ALWAYS_INLINE    $0100
 %define SYMBOL_INTERNAL         $0200
+%define SYMBOL_THREAD_LOCAL     $0400
 
 %macro  IN_FELINE 0
 %undef  in_forth
