@@ -516,7 +516,7 @@ code symbol_set_global_bit, 'symbol-set-global-bit', SYMBOL_PRIVATE
 endcode
 
 ; ### symbol-thread-local?
-code symbol_thread_local?, 'symbol-thread-local?'       ; symbol -- f
+code symbol_thread_local?, 'symbol-thread-local?'       ; symbol -- ?
         _symbol_flags_bit SYMBOL_THREAD_LOCAL
         next
 endcode
