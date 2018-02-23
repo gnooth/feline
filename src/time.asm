@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -96,6 +96,8 @@ code time, 'time'                       ; callable --
         _ elapsed                       ; -- ns cycles
 
         _swap                           ; -- cycles ns
+
+        _ ?nl
 
         _ fixnum_to_float
         _lit tagged_fixnum(1000000)
