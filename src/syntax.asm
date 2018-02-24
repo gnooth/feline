@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -765,15 +765,91 @@ code find_local_name, 'find-local-name' ; string -- index/string ?
         next
 endcode
 
+; ### local-name?
+code local_name?, 'local-name?'         ; string -- string/index ?
+        _ in_definition?
+        _ get
+        _tagged_if .1
+        _ find_local_name
+        _else .1
+        _f
+        _then .1
+        next
+endcode
+
+; ### store-to-thread-local
+code store_to_thread_local, 'store-to-thread-local'
+        _ in_definition?
+        _ get
+        _tagged_if .1
+        _ new_wrapper
+        _ add_to_definition
+        _lit S_current_thread_local_set
+        _ add_to_definition
+        _else .1
+        _ current_thread_local_set
+        _then .1
+        next
+endcode
+
+; ### store-to-global
+code store_to_global, 'store-to-global'
+        _ in_definition?
+        _ get
+        _tagged_if .1
+        _ new_wrapper
+        _ add_to_definition
+        _lit S_symbol_set_value
+        _ add_to_definition
+        _else .1
+        _ symbol_set_value
+        _then .1
+        next
+endcode
+
+; ### !>
+code storeto, '!>', SYMBOL_IMMEDIATE    ; --
+        _ must_parse_token              ; -- string
+
+        _ local_name?                   ; -- index/string ?
+        _tagged_if .1                   ; -- index
+        _ add_to_definition
+        _lit S_local_store
+        _ add_to_definition
+        _return
+        _then .1                        ; -- string
+
+        ; not a local
+        _ must_find_name                ; -- symbol
+
+        _dup
+        _ symbol_thread_local?
+        _tagged_if .2
+        _ store_to_thread_local
+        _return
+        _then .2
+
+        _dup
+        _ symbol_global?
+        _tagged_if .3
+        _ store_to_global
+        _return
+        _then .3
+
+        _error "not a variable"
+
+        next
+endcode
+
 %macro define_prefix_operator 2         ; local global
-        _ must_parse_token      ; -- string
+        _ must_parse_token              ; -- string
 
         _ in_definition?
         _ get
         _tagged_if .1
 
-        _ find_local_name       ; -- index/string ?
-        _tagged_if .2           ; -- index
+        _ find_local_name               ; -- index/string ?
+        _tagged_if .2                   ; -- index
 
         _ add_to_definition
 
@@ -800,12 +876,6 @@ endcode
 
         _then .1
 %endmacro
-
-; ### !>
-code storeto, '!>', SYMBOL_IMMEDIATE    ; --
-        define_prefix_operator local_store, symbol_set_value
-        next
-endcode
 
 ; ### 1+!>
 code oneplusstoreto, '1+!>', SYMBOL_IMMEDIATE   ; --
