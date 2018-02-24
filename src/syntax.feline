@@ -1,4 +1,4 @@
--- Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2018 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -31,3 +31,14 @@ syntax: >global:
     must-parse-token
     make-global
     symbol-set-value ;
+
+: make-thread-local ( string -> symbol )
+    new-symbol-in-current-vocab
+    dup symbol-set-thread-local-bit
+    dup <wrapper> ' current-thread-local-get 2array array>quotation over symbol-set-def
+    dup compile-word ;
+
+syntax: thread-local:
+    must-parse-token
+    make-thread-local
+    drop ;
