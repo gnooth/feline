@@ -479,6 +479,29 @@ code mark_static_symbols, 'mark-static-symbols'
         next
 endcode
 
+asm_global stop_for_gc?_, f_value
+
+; ### stop-for-gc?
+code stop_for_gc?, 'stop-for-gc?'       ; -- ?
+        pushrbx
+        mov     rbx, [stop_for_gc?_]
+        next
+endcode
+
+; ### stop-for-gc
+code stop_for_gc, 'stop-for-gc'         ; --
+        _ current_thread
+        mov     qword [stop_for_gc?_], rbx
+        poprbx
+        next
+endcode
+
+; ### restart-after-gc
+code restart_after_gc, 'restart-after-gc'       ; --
+        mov     qword [stop_for_gc?_], f_value
+        next
+endcode
+
 asm_global in_gc?_, f_value
 
 ; ### in-gc?
