@@ -3029,4 +3029,19 @@ test: thread-test-4
 
 thread-test-4
 
+thread-local: test5
+
+test: thread-test-5
+    gc
+    87 !> test5
+    test5 87 assert-eq
+    [ 42 !> test5 test5 ] <thread> >local: th
+    th thread-create
+    th thread-join
+    th thread-result { 42 } assert=
+    test5 87 assert-eq
+;
+
+thread-test-5
+
 ?nl "Reached end of test.feline" write-string
