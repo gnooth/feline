@@ -193,10 +193,41 @@ code thread_result, 'thread-result'     ; thread -- result
 endcode
 
 ; ### thread_set_result
-code thread_set_result, 'thread_set_result', SYMBOL_INTERNAL
-; result thread --
+code thread_set_result, 'thread_set_result', SYMBOL_INTERNAL    ; result thread --
         _ check_thread
         _set_slot thread_slot_result
+        next
+endcode
+
+; ### thread-saved-rbx
+code thread_saved_rbx, 'thread-saved-rbx'       ; thread -- saved-rbx
+        _ check_thread
+        _slot thread_slot_saved_rbx
+        _tag_fixnum
+        next
+endcode
+
+; ### thread-saved-rsp
+code thread_saved_rsp, 'thread-saved-rsp'       ; thread -- saved-rsp
+        _ check_thread
+        _slot thread_slot_saved_rsp
+        _tag_fixnum
+        next
+endcode
+
+; ### thread-saved-rbp
+code thread_saved_rbp, 'thread-saved-rbp'       ; thread -- saved-rbp
+        _ check_thread
+        _slot thread_slot_saved_rbp
+        _tag_fixnum
+        next
+endcode
+
+; ### thread-saved-r14
+code thread_saved_r14, 'thread-saved-r14'       ; thread -- saved-r14
+        _ check_thread
+        _slot thread_slot_saved_r14
+        _tag_fixnum
         next
 endcode
 
@@ -263,6 +294,28 @@ code current_thread_raw_lp0, 'current_thread_raw_lp0', SYMBOL_INTERNAL
         _ current_thread
         _ check_thread
         _slot thread_slot_raw_lp0
+        next
+endcode
+
+; ### current-thread-save-registers
+code current_thread_save_registers, 'current-thread-save-registers'     ; --
+        pushrbx                         ; -- rbx
+        _ current_thread
+        _ check_thread                  ; -- rbx thread
+        _tuck
+        _set_slot thread_slot_saved_rbx ; -- thread
+        pushrbx
+        mov     rbx, rsp
+        _over
+        _set_slot thread_slot_saved_rsp
+        pushrbx
+        mov     rbx, rbp
+        _over
+        _set_slot thread_slot_saved_rbp
+        pushrbx
+        mov     rbx, r14
+        _swap
+        _set_slot thread_slot_saved_r14
         next
 endcode
 
