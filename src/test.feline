@@ -3024,7 +3024,17 @@ test: thread-test-3
 thread-test-3
 
 test: thread-test-4
-    current-thread thread-id current-thread-id assert=
+    linux? [ current-thread thread-id current-thread-id assert= ] when
+
+    windows? [
+        -- REVIEW
+        -- In general we don't care about the native thread id on Windows.
+        -- We do care about the native thread handle (which doesn't exist on Linux).
+        -- We do store the native thread id for the primordial thread (only).
+        current-thread primordial-thread eq? [
+            current-thread thread-id current-thread-id assert=
+        ] when
+    ] when
 ;
 
 thread-test-4
