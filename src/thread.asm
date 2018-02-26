@@ -393,6 +393,15 @@ code all_threads, 'all-threads'         ; -- vector
         next
 endcode
 
+asm_global primordial_thread_, f_value
+
+; ### primordial-thread
+code primordial_thread, 'primordial-thread'     ; -- thread
+        pushrbx
+        mov     rbx, [primordial_thread_]
+        next
+endcode
+
 ; ### initialize_primordial_thread
 code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERNAL      ; --
         _lit 8
@@ -433,6 +442,8 @@ code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERN
 
         mov     arg0_register, rbx
         xcall   os_initialize_primordial_thread
+
+        mov     [primordial_thread_], rbx
 
         _ all_threads
         _ vector_push
@@ -563,7 +574,7 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
         ; lp0
         mov     r14, thread_raw_lp0_slot
 
-        _slot thread_slot_quotation               ; -- quotation
+        _slot thread_slot_quotation     ; -- quotation
 
         _ call_quotation                ; -- ???
 
