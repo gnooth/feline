@@ -249,7 +249,7 @@ code unlock_handles, 'unlock_handles', SYMBOL_INTERNAL   ; --
         next
 endcode
 
-; %define LOCK_HANDLES
+%define LOCK_HANDLES
 
 ; ### new_handle
 code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
