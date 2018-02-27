@@ -324,9 +324,25 @@ code maybe_mark_handle, 'maybe_mark_handle', SYMBOL_INTERNAL    ; handle --
         next
 endcode
 
+; ### maybe_mark_verified_handle
+code maybe_mark_verified_handle, 'maybe_mark_verified_handle', SYMBOL_INTERNAL  ; handle --
+        _dup
+        _ verified_handle?
+        cmp     rbx, f_value
+        poprbx
+        jz      .1                      ; -- handle
+        _handle_to_object_unsafe
+        test    rbx, rbx
+        jz      .1
+        _ mark_raw_object
+        _return
+.1:
+        _drop
+        next
+endcode
+
 ; ### maybe_mark_from_root
-code maybe_mark_from_root, 'maybe_mark_from_root', SYMBOL_INTERNAL
-; raw-address --
+code maybe_mark_from_root, 'maybe_mark_from_root', SYMBOL_INTERNAL      ; raw-address --
         _fetch
         _ maybe_mark_handle
         next
@@ -426,7 +442,8 @@ code mark_cells_in_range, 'mark_cells_in_range', SYMBOL_INTERNAL
         _raw_loop_index
         shl     rbx, 3
         add     rbx, qword [rbp]
-        _ maybe_mark_from_root
+        mov     rbx, [rbx]
+        _ maybe_mark_verified_handle
         _loop .1
         _drop
         next
