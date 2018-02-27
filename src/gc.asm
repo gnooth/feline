@@ -332,12 +332,20 @@ code maybe_mark_from_root, 'maybe_mark_from_root', SYMBOL_INTERNAL
         next
 endcode
 
+; ### thread_mark_data_stack
+code thread_mark_data_stack, 'thread_mark_data_stack'   ; thread --
+        _dup
+        _ thread_saved_rbp
+        _swap
+        _ thread_raw_sp0
+        _ mark_cells_in_range
+        next
+endcode
+
 ; ### mark-data-stack
 code mark_data_stack, 'mark-data-stack' ; --
-        pushrbx
-        mov     rbx, rbp
-        _ current_thread_raw_sp0
-        _ mark_cells_in_range
+        _ current_thread
+        _ thread_mark_data_stack
         next
 endcode
 
@@ -575,6 +583,8 @@ code gc, 'gc'                           ; --
         _to gc_start_cycles
 .2:
         mov     qword [in_gc?_], t_value
+
+        _ current_thread_save_registers
 
         ; data stack
         _ mark_data_stack

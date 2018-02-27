@@ -293,8 +293,8 @@ code current_thread_raw_lp0, 'current_thread_raw_lp0', SYMBOL_INTERNAL
         next
 endcode
 
-; ### current-thread-save-registers
-code current_thread_save_registers, 'current-thread-save-registers'     ; --
+; ### current_thread_save_registers
+code current_thread_save_registers, 'current_thread_save_registers', SYMBOL_INTERNAL    ; --
         pushrbx                         ; -- rbx
         _ current_thread
         _ check_thread                  ; -- rbx thread
