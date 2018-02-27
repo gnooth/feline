@@ -329,6 +329,23 @@ code handle?, 'handle?'                 ; x -- ?
         next
 endcode
 
+; ### verified-handle?
+code verified_handle?, 'verified-handle?'       ; x -- ?
+        cmp     bl, HANDLE_TAG
+        jne     .no
+        shr     rbx, HANDLE_TAG_BITS
+        ; must point into handle space
+        cmp     rbx, [handle_space_]
+        jb .no
+        cmp     rbx, [handle_space_free_]
+        jae .no
+        mov     ebx, t_value
+        _return
+.no:
+        mov     ebx, f_value
+        next
+endcode
+
 ; ### deref
 code deref, 'deref', SYMBOL_INTERNAL    ; x -- object-address/0
 %ifdef TAGGED_HANDLES
