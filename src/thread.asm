@@ -199,35 +199,31 @@ code thread_set_result, 'thread_set_result', SYMBOL_INTERNAL    ; result thread 
         next
 endcode
 
-; ### thread-saved-rbx
-code thread_saved_rbx, 'thread-saved-rbx'       ; thread -- saved-rbx
+; ### thread_saved_rbx
+code thread_saved_rbx, 'thread_saved_rbx', SYMBOL_INTERNAL      ; thread -- saved-rbx
         _ check_thread
         _slot thread_slot_saved_rbx
-        _tag_fixnum
         next
 endcode
 
-; ### thread-saved-rsp
-code thread_saved_rsp, 'thread-saved-rsp'       ; thread -- saved-rsp
+; ### thread_saved_rsp
+code thread_saved_rsp, 'thread_saved_rsp', SYMBOL_INTERNAL      ; thread -- saved-rsp
         _ check_thread
         _slot thread_slot_saved_rsp
-        _tag_fixnum
         next
 endcode
 
-; ### thread-saved-rbp
-code thread_saved_rbp, 'thread-saved-rbp'       ; thread -- saved-rbp
+; ### thread_saved_rbp
+code thread_saved_rbp, 'thread_saved_rbp', SYMBOL_INTERNAL      ; thread -- saved-rbp
         _ check_thread
         _slot thread_slot_saved_rbp
-        _tag_fixnum
         next
 endcode
 
-; ### thread-saved-r14
-code thread_saved_r14, 'thread-saved-r14'       ; thread -- saved-r14
+; ### thread_saved_r14
+code thread_saved_r14, 'thread_saved_r14', SYMBOL_INTERNAL      ; thread -- saved-r14
         _ check_thread
         _slot thread_slot_saved_r14
-        _tag_fixnum
         next
 endcode
 
