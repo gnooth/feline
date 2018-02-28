@@ -348,6 +348,21 @@ code maybe_mark_from_root, 'maybe_mark_from_root', SYMBOL_INTERNAL      ; raw-ad
         next
 endcode
 
+; ### mark_cells_in_range
+code mark_cells_in_range, 'mark_cells_in_range', SYMBOL_INTERNAL        ; low-address high-address --
+        sub     rbx, qword [rbp]        ; -- low-address number-of-bytes
+        shr     rbx, 3                  ; -- low-address number-of-cells
+        _register_do_times .1
+        _raw_loop_index
+        shl     rbx, 3
+        add     rbx, qword [rbp]
+        mov     rbx, [rbx]
+        _ maybe_mark_verified_handle
+        _loop .1
+        _drop
+        next
+endcode
+
 ; ### thread_mark_data_stack
 code thread_mark_data_stack, 'thread_mark_data_stack', SYMBOL_INTERNAL  ; thread --
         _dup
@@ -382,26 +397,20 @@ code mark_return_stack, 'mark_return_stack', SYMBOL_INTERNAL    ; --
         next
 endcode
 
-; ### mark_cells_in_range
-code mark_cells_in_range, 'mark_cells_in_range', SYMBOL_INTERNAL        ; low-address high-address --
-        sub     rbx, qword [rbp]        ; -- low-address number-of-bytes
-        shr     rbx, 3                  ; -- low-address number-of-cells
-        _register_do_times .1
-        _raw_loop_index
-        shl     rbx, 3
-        add     rbx, qword [rbp]
-        mov     rbx, [rbx]
-        _ maybe_mark_verified_handle
-        _loop .1
-        _drop
+; ### thread_mark_locals_stack
+code thread_mark_locals_stack, 'thread_mark_locals_stack', SYMBOL_INTERNAL      ; thread --
+        _dup
+        _ thread_saved_r14
+        _swap
+        _ thread_raw_lp0
+        _ mark_cells_in_range
         next
 endcode
 
-; ### mark-locals-stack
-code mark_locals_stack, 'mark-locals-stack'     ; --
-        _lpfetch
-        _ current_thread_raw_lp0
-        _ mark_cells_in_range
+; ### mark_locals_stack
+code mark_locals_stack, 'mark_locals_stack', SYMBOL_INTERNAL    ; --
+        _ current_thread
+        _ thread_mark_locals_stack
         next
 endcode
 
