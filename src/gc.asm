@@ -349,7 +349,7 @@ code maybe_mark_from_root, 'maybe_mark_from_root', SYMBOL_INTERNAL      ; raw-ad
 endcode
 
 ; ### thread_mark_data_stack
-code thread_mark_data_stack, 'thread_mark_data_stack'   ; thread --
+code thread_mark_data_stack, 'thread_mark_data_stack', SYMBOL_INTERNAL  ; thread --
         _dup
         _ thread_saved_rbp
         _swap
@@ -358,84 +358,32 @@ code thread_mark_data_stack, 'thread_mark_data_stack'   ; thread --
         next
 endcode
 
-; ### mark-data-stack
-code mark_data_stack, 'mark-data-stack' ; --
+; ### mark_data_stack
+code mark_data_stack, 'mark_data_stack', SYMBOL_INTERNAL        ; --
         _ current_thread
         _ thread_mark_data_stack
         next
 endcode
 
-; ### mark_return_stack
-code mark_return_stack, 'mark_return_stack', SYMBOL_INTERNAL    ; --
-
-        push    r12
-        _rdepth
-        mov     r12, rbx                ; depth in r12
-        test    r12, r12
-        jz      .2
-.1:
-        mov     rax, [rsp + r12 * BYTES_PER_CELL]
-
-%ifdef TAGGED_HANDLES
-        cmp     al, HANDLE_TAG
-        jne     .3
-
-        ; tag byte is ok, but the return stack is a jungle
-        ; see x_test_mark_return_stack below
-
-        ; make a copy in rdx (maybe_mark_handle expects a tagged handle)
-        mov     rdx, rax
-
-        shr     rdx, HANDLE_TAG_BITS
-
-        ; handles are 8-byte aligned
-        test    dl, 7
-        jnz     .3
-
-        ; must be in handle space
-        cmp     rdx, [handle_space_]
-        jb      .3
-        cmp     rdx, [handle_space_free_]
-        jae     .3
-%else
-        test    eax, LOWTAG_MASK
-        jnz     .3
-%endif
-
-        pushrbx
-        mov     rbx, rax
-        _ maybe_mark_handle
-.3:
-        dec     r12
-        jnz     .1
-.2:
-        poprbx
-        pop     r12
+; ### thread_mark_return_stack
+code thread_mark_return_stack, 'thread_mark_return_stack', SYMBOL_INTERNAL      ; thread --
+        _dup
+        _ thread_saved_rsp
+        _swap
+        _ thread_raw_rp0
+        _ mark_cells_in_range
         next
 endcode
 
-; ### x_test_mark_return_stack
-; A test to verify that mark_return_stack is not confused by some arbitrary
-; return address with a low byte matching HANDLE_TAG.
-code x_test_mark_return_stack, 'x_test_mark_return_stack', SYMBOL_INTERNAL      ; -- 0xf2
-%ifdef HANDLE_TAG
-        mov     eax, HANDLE_TAG
-%else
-        ; HANDLE_TAG is 0xf2
-        mov     eax, 0xf2
-%endif
-        push    rax
-        _ gc
-        pop     rax
-        pushrbx
-        mov     rbx, rax
-        _tag_fixnum
+; ### mark_return_stack
+code mark_return_stack, 'mark_return_stack', SYMBOL_INTERNAL    ; --
+        _ current_thread
+        _ thread_mark_return_stack
         next
 endcode
 
 ; ### mark_cells_in_range
-code mark_cells_in_range, 'mark_cells_in_range', SYMBOL_INTERNAL
-; low-address high-address --
+code mark_cells_in_range, 'mark_cells_in_range', SYMBOL_INTERNAL        ; low-address high-address --
         sub     rbx, qword [rbp]        ; -- low-address number-of-bytes
         shr     rbx, 3                  ; -- low-address number-of-cells
         _register_do_times .1
