@@ -31,11 +31,15 @@ file __FILE__
 %define thread_slot_saved_rbp           11
 %define thread_slot_saved_r14           12
 
+%define thread_slot_state               13
+
 %define thread_raw_thread_id_slot       qword [rbx + bytes_per_cell * thread_slot_raw_thread_id]
 %define thread_raw_thread_handle_slot   qword [rbx + bytes_per_cell * thread_slot_raw_thread_handle]
 %define thread_raw_sp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_sp0]
 %define thread_raw_rp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_rp0]
 %define thread_raw_lp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_lp0]
+
+%define thread_state_slot               qword [rbx + bytes_per_cell * thread_slot_state]
 
 %define THREAD_REGISTERS_OFFSET         bytes_per_cell * thread_slot_saved_rbx
 
@@ -227,6 +231,24 @@ code thread_saved_r14, 'thread_saved_r14', SYMBOL_INTERNAL      ; thread -- save
         next
 endcode
 
+; REVIEW
+special THREAD_STOPPED, 'THREAD_STOPPED'
+special THREAD_RUNNING, 'THREAD_RUNNING'
+
+; ### thread-state
+code thread_state, 'thread-state'       ; thread -- state
+        _ check_thread
+        _slot thread_slot_state
+        next
+endcode
+
+; ### thread_set_state
+code thread_set_state, 'thread_set_state', SYMBOL_INTERNAL      ; state thread --
+        _ check_thread
+        _set_slot thread_slot_state
+        next
+endcode
+
 ; ### current-thread
 code current_thread, 'current-thread'   ; -- thread
         xcall   os_current_thread
@@ -317,7 +339,7 @@ endcode
 
 ; ### new_thread
 code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
-        _lit 13
+        _lit 14
         _ raw_allocate_cells
         mov     qword [rbx], TYPECODE_THREAD
 
@@ -336,6 +358,10 @@ code make_thread, '<thread>'            ; quotation -- thread
         _duptor
 
         _ check_thread
+
+        _lit S_THREAD_STOPPED
+        _over
+        _set_slot thread_slot_state
 
         _f
         _over
@@ -435,6 +461,10 @@ code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERN
         _over
         _ thread_set_raw_thread_handle
 %endif
+
+        _ THREAD_RUNNING
+        _over
+        _ thread_set_state
 
         mov     arg0_register, rbx
         xcall   os_initialize_primordial_thread
@@ -570,6 +600,8 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
         ; lp0
         mov     r14, thread_raw_lp0_slot
 
+        mov     thread_state_slot, S_THREAD_RUNNING
+
         _slot thread_slot_quotation     ; -- quotation
 
         _ call_quotation                ; -- ???
@@ -580,6 +612,11 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
         pop     rbx                     ; -- ??? array handle
         _tuck
         _ thread_set_result             ; -- ??? handle
+
+        _ THREAD_STOPPED
+        _over
+        _ thread_set_state
+
         _ all_threads
         _ vector_remove_mutating        ; -- vector
         _drop                           ; --
