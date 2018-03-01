@@ -495,6 +495,13 @@ endcode
 ; ### thread-join
 code thread_join, 'thread-join'         ; thread --
         _ check_thread
+
+        _lit S_THREAD_STOPPED
+        _ current_thread
+        _ thread_set_state
+
+        _ current_thread_save_registers
+
 %ifdef WIN64
         _slot thread_slot_raw_thread_handle
 %else
@@ -503,6 +510,11 @@ code thread_join, 'thread-join'         ; thread --
         mov     arg0_register, rbx
         poprbx
         xcall   os_thread_join
+
+        _lit S_THREAD_RUNNING
+        _ current_thread
+        _ thread_set_state
+
         next
 endcode
 
