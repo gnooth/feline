@@ -1744,6 +1744,7 @@ code feline_bye, "bye"
         _ get
         _tagged_if .1
         _ ?nl
+        _ output_style
         _write `Bye!\n`
         _then .1
 
