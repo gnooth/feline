@@ -463,15 +463,16 @@ endcode
 
 asm_global stop_for_gc?_, f_value
 
-; ### stop-for-gc?
-code stop_for_gc?, 'stop-for-gc?'       ; -- ?
+; ### stop_for_gc?
+code stop_for_gc?, 'stop_for_gc?', SYMBOL_INTERNAL      ; -- ?
         pushrbx
         mov     rbx, [stop_for_gc?_]
         next
 endcode
 
-; ### stop-for-gc
-code stop_for_gc, 'stop-for-gc'         ; --
+; ### stop_for_gc
+code stop_for_gc, 'stop_for_gc', SYMBOL_INTERNAL         ; --
+        ; store the Feline handle of the current thread in the asm global
         _ current_thread
         mov     qword [stop_for_gc?_], rbx
         poprbx
