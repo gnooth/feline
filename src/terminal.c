@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -136,13 +136,13 @@ void deprep_terminal()
 cell os_key_avail()
 {
 #ifdef WIN64
-  return _kbhit() ? (cell) -1 : 0;
+  return _kbhit();
 #else
   // Linux
   int chars_avail = 0;
   int tty = fileno(stdin);
   if (ioctl(tty, FIONREAD, &chars_avail) == 0)
-    return chars_avail ? (cell) -1 : 0;
+    return chars_avail;
   return 0;
 #endif
 }
