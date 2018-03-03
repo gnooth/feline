@@ -479,6 +479,31 @@ code stop_for_gc, 'stop_for_gc', SYMBOL_INTERNAL         ; --
         next
 endcode
 
+; ### stop_current_thread_for_gc
+code stop_current_thread_for_gc, 'stop_current_thread_for_gc', SYMBOL_INTERNAL  ; --
+        _quote `stop current thread for gc\n`
+        _ write_string
+
+        _lit S_THREAD_STOPPED
+        _ current_thread
+        _ thread_set_state
+
+        _ current_thread_save_registers
+
+.wait:
+        _ stop_for_gc?
+        _tagged_if .0
+        _lit tagged_zero
+        _ sleep
+        jmp     .wait
+        _then .0
+
+        _quote `restarting current thread\n`
+        _ write_string
+
+        next
+endcode
+
 ; ### restart-after-gc
 code restart_after_gc, 'restart-after-gc'       ; --
         mov     qword [stop_for_gc?_], f_value
