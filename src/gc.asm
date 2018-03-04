@@ -504,6 +504,22 @@ code stop_current_thread_for_gc, 'stop_current_thread_for_gc', SYMBOL_INTERNAL  
         next
 endcode
 
+; ### safepoint
+code safepoint, 'safepoint', SYMBOL_INTERNAL    ; --
+        cmp     qword [stop_for_gc?_], f_value
+        jne     .1
+        _return
+.1:
+        _ current_thread
+        cmp     qword [stop_for_gc?_], rbx
+        poprbx
+        jne     .2
+        _return
+.2:
+        _ stop_current_thread_for_gc
+        next
+endcode
+
 ; ### restart-after-gc
 code restart_after_gc, 'restart-after-gc'       ; --
         mov     qword [stop_for_gc?_], f_value
