@@ -568,6 +568,66 @@ code gc_enable, 'gc-enable'
         next
 endcode
 
+; ### wait_for_thread_to_stop
+code wait_for_thread_to_stop, 'wait_for_thread_to_stop', SYMBOL_INTERNAL        ; thread --
+
+        ; don't stop the collector thread
+        cmp     rbx, qword [stop_for_gc?_]
+        je      .exit
+
+        _dup
+        _ thread_state
+        cmp     rbx, S_THREAD_STOPPED
+        poprbx
+        je      .exit
+
+        _lit tagged_zero
+        _ sleep
+
+        jmp     wait_for_thread_to_stop
+.exit:
+        _drop
+        next
+endcode
+
+; ### stop_the_world
+code stop_the_world, 'stop_the_world', SYMBOL_INTERNAL  ; --
+        _ ?nl
+        _quote `stop_the_world\n`
+        _ write_string
+
+        _ stop_for_gc
+
+        _ all_threads
+        _lit S_wait_for_thread_to_stop
+        _ vector_each
+
+        next
+endcode
+
+; ### start_the_world
+code start_the_world, 'start_the_world', SYMBOL_INTERNAL        ; --
+        _ ?nl
+        _quote `start_the_world\n`
+        _ write_string
+
+        mov     qword [stop_for_gc?_], f_value
+        next
+endcode
+
+; ### mark_thread_stacks
+code mark_thread_stacks, 'mark_thread_stacks', SYMBOL_INTERNAL  ; thread --
+        _ ?nl
+        _quote `mark_thread_stacks\n`
+        _ write_string
+
+        _lit S_thread_mark_data_stack
+        _lit S_thread_mark_return_stack
+        _lit S_thread_mark_locals_stack
+        _ tri
+        next
+endcode
+
 ; ### gc
 code gc, 'gc'                           ; --
         cmp     qword [S_gc_inhibit_symbol_value], f_value
