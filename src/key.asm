@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -15,23 +15,36 @@
 
 file __FILE__
 
-; ### raw-key
-code raw_key, 'raw-key'         ; -- untagged-char
+; ### wait_for_key
+code wait_for_key, 'wait_for_key', SYMBOL_INTERNAL      ; --
+        xcall   os_key_avail
+        test    rax, rax
+        jnz     .exit
+        _ safepoint
+        _lit tagged_fixnum(1)
+        _ sleep
+        jmp     wait_for_key
+.exit:
+        next
+endcode
+
+; ### raw_key
+code raw_key, 'raw_key', SYMBOL_INTERNAL        ; -- untagged-char
         xcall   os_key
         pushd   rax
         next
 endcode
 
-; ### raw-key?
-code raw_key?, 'raw-key?'       ; -- -1/0
-; return value is untagged
-        xcall   os_key_avail
+; ### raw_key?
+code raw_key?, 'raw_key?', SYMBOL_INTERNAL      ; -- untagged
+        xcall   os_key_avail            ; returns non-zero if a key has been pressed
         pushd   rax
         next
 endcode
 
 ; ### key
-code feline_key, 'key'          ; -- tagged-char
+code feline_key, 'key'                  ; -- tagged-char
+        _ wait_for_key
         xcall   os_key
         pushd   rax
         _tag_char
@@ -39,7 +52,7 @@ code feline_key, 'key'          ; -- tagged-char
 endcode
 
 ; ### key?
-code feline_key?, 'key?'        ; -- ?
+code feline_key?, 'key?'                ; -- ?
         xcall   os_key_avail
         pushrbx
         mov     ebx, f_value
@@ -73,6 +86,9 @@ endcode
 
 ; ### ekey
 code ekey, 'ekey'                       ; -- tagged-fixnum/tagged-char
+
+        _ wait_for_key
+
         _ raw_key
 
         _dup
@@ -142,7 +158,11 @@ feline_constant k_enter,     'k-enter',     tagged_char(0x0d)
 
 ; ### ekey
 code ekey, 'ekey'                       ; -- fixnum
+
+        _ wait_for_key
+
         _ raw_key
+
         _dup
         _lit 0x1b
         _equal
