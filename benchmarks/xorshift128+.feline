@@ -1,8 +1,8 @@
 using: feline ;
 in: user
 
-1 >global: state0
-2 >global: state1
+thread-local: state0
+thread-local: state1
 
 : xorshift128+
     state0 >local: s1
