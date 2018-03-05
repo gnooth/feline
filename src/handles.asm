@@ -162,7 +162,7 @@ code get_empty_handle, 'get_empty_handle', SYMBOL_INTERNAL      ; -- handle/0
         _return
 
 .2:
-        ; -- handle/f
+        ; -- f
         xor     ebx, ebx
         next
 endcode
@@ -253,6 +253,8 @@ endcode
 
 ; ### new_handle
 code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
+
+        _ safepoint
 
 %ifdef LOCK_HANDLES
         _ lock_handles
