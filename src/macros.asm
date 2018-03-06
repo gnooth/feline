@@ -675,6 +675,15 @@ section .data
         _ write_string
 %endmacro
 
+%macro  _debug_print 1
+%ifdef  DEBUG
+        _ ?nl
+        _quote %1
+        _ write_string
+        _ nl
+%endif
+%endmacro
+
 %macro  _error 1
         _quote %1
         _ throw
