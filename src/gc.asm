@@ -656,7 +656,17 @@ code gc, 'gc'                           ; --
 .2:
         mov     qword [in_gc?_], t_value
 
+        _ stop_the_world
+
         _ current_thread_save_registers
+
+        _ all_threads
+        _ vector_length
+        _lit tagged_fixnum(1)
+        _ eq?
+        _tagged_if .3
+
+        _debug_print "marking single thread"
 
         ; data stack
         _ mark_data_stack
@@ -666,6 +676,16 @@ code gc, 'gc'                           ; --
 
         ; locals stack
         _ mark_locals_stack
+
+        _else .3
+
+        _debug_print "marking multiple threads"
+
+        _ all_threads
+        _lit S_mark_thread_stacks
+        _ vector_each
+
+        _then .3
 
         ; static symbols
         _ mark_static_symbols
@@ -679,6 +699,8 @@ code gc, 'gc'                           ; --
         _lit S_maybe_collect_handle
         _ each_handle
 
+        _ start_the_world
+
         inc     qword [gc_count_value]
 
         mov     qword [in_gc?_], f_value
@@ -686,7 +708,8 @@ code gc, 'gc'                           ; --
         mov     qword [S_gc_pending_symbol_value], f_value
 
         cmp     qword [S_gc_verbose_symbol_value], f_value
-        je .3
+        je .4
+
         _rdtsc
         _to gc_end_cycles
         _ ticks
@@ -716,7 +739,7 @@ code gc, 'gc'                           ; --
         _write " cycles"
         _ nl
 
-.3:
+.4:
         _reset_recent_allocations
 
         next
