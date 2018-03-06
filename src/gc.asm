@@ -481,8 +481,8 @@ endcode
 
 ; ### stop_current_thread_for_gc
 code stop_current_thread_for_gc, 'stop_current_thread_for_gc', SYMBOL_INTERNAL  ; --
-        _quote `stop current thread for gc\n`
-        _ write_string
+
+        _debug_print "stop_current_thread_for_gc"
 
         _lit S_THREAD_STOPPED
         _ current_thread
@@ -498,8 +498,7 @@ code stop_current_thread_for_gc, 'stop_current_thread_for_gc', SYMBOL_INTERNAL  
         jmp     .wait
         _then .0
 
-        _quote `restarting current thread\n`
-        _ write_string
+        _debug_print "restarting current thread"
 
         next
 endcode
@@ -608,9 +607,8 @@ endcode
 
 ; ### stop_the_world
 code stop_the_world, 'stop_the_world', SYMBOL_INTERNAL  ; --
-        _ ?nl
-        _quote `stop_the_world\n`
-        _ write_string
+
+        _debug_print "stop_the_world"
 
         _ stop_for_gc
 
@@ -623,9 +621,8 @@ endcode
 
 ; ### start_the_world
 code start_the_world, 'start_the_world', SYMBOL_INTERNAL        ; --
-        _ ?nl
-        _quote `start_the_world\n`
-        _ write_string
+
+        _debug_print "start_the_world"
 
         mov     qword [stop_for_gc?_], f_value
         next
@@ -633,9 +630,8 @@ endcode
 
 ; ### mark_thread_stacks
 code mark_thread_stacks, 'mark_thread_stacks', SYMBOL_INTERNAL  ; thread --
-        _ ?nl
-        _quote `mark_thread_stacks\n`
-        _ write_string
+
+        _debug_print "mark_thread_stacks"
 
         _lit S_thread_mark_data_stack
         _lit S_thread_mark_return_stack
