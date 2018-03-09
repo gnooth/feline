@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -145,7 +145,7 @@
 %endif
 %endmacro
 
-%macro  _leave 0
+%macro  _leave 1
 %ifdef index_register
         _register_loop_leave
 %else
