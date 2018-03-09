@@ -576,6 +576,9 @@ void* thread_run(void *arg)
 
   extern void thread_run_internal(cell);
   thread_run_internal((cell)arg);
+
+  // clean up
+  pthread_detach(pthread_self());
 }
 
 #endif
