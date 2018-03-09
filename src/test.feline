@@ -3054,4 +3054,16 @@ test: thread-test-5
 
 thread-test-5
 
+test: vector-all?-test-1
+    vector{ } [ fixnum? ] vector-all? assert-true
+
+    vector{ 1 2 3 4 5 } [ fixnum? ] vector-all? assert-true
+    vector{ 'a' 'b' 'c' } [ fixnum? ] vector-all? assert-false
+    vector{ 'a' 'b' 'c' } [ char? ] vector-all? assert-true
+    vector{ 'a' 2 3 4 5 } [ fixnum? ] vector-all? assert-false
+    vector{ 1 2 3 4 'z' } [ fixnum? ] vector-all? assert-false
+;
+
+vector-all?-test-1
+
 ?nl "Reached end of test.feline" write-string
