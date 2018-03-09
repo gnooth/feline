@@ -590,6 +590,7 @@ code wait_for_thread_to_stop, 'wait_for_thread_to_stop', SYMBOL_INTERNAL        
         cmp     rbx, qword [stop_for_gc?_]
         je      .exit
 
+.top:
         _dup
         _ thread_state
         cmp     rbx, S_THREAD_STOPPED
@@ -599,7 +600,7 @@ code wait_for_thread_to_stop, 'wait_for_thread_to_stop', SYMBOL_INTERNAL        
         _lit tagged_zero
         _ sleep
 
-        jmp     wait_for_thread_to_stop
+        jmp     .top
 .exit:
         _drop
         next
