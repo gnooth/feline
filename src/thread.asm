@@ -249,6 +249,15 @@ code thread_set_state, 'thread_set_state', SYMBOL_INTERNAL      ; state thread -
         next
 endcode
 
+; ### thread-stopped?
+code thread_stopped?, 'thread-stopped?' ; thread -- ?
+        _ check_thread
+        _slot thread_slot_state
+        _ THREAD_STOPPED
+        _eq?
+        next
+endcode
+
 ; ### current-thread
 code current_thread, 'current-thread'   ; -- thread
         xcall   os_current_thread
