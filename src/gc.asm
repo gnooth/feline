@@ -470,6 +470,15 @@ code stop_for_gc?, 'stop_for_gc?', SYMBOL_INTERNAL      ; -- ?
         next
 endcode
 
+asm_global collector_thread_, f_value
+
+; ### collector_thread
+code collector_thread, 'collector_thread', SYMBOL_INTERNAL      ; -- thread/f
+        pushrbx
+        mov     rbx, [collector_thread_]
+        next
+endcode
+
 ; ### stop_for_gc
 code stop_for_gc, 'stop_for_gc', SYMBOL_INTERNAL         ; --
         ; store the Feline handle of the current thread in the asm global
