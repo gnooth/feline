@@ -414,6 +414,18 @@ code mark_locals_stack, 'mark_locals_stack', SYMBOL_INTERNAL    ; --
         next
 endcode
 
+; ### mark_thread_stacks
+code mark_thread_stacks, 'mark_thread_stacks', SYMBOL_INTERNAL  ; thread --
+
+        _debug_print "mark_thread_stacks"
+
+        _lit S_thread_mark_data_stack
+        _lit S_thread_mark_return_stack
+        _lit S_thread_mark_locals_stack
+        _ tri
+        next
+endcode
+
 ; ### maybe_collect_handle
 code maybe_collect_handle, 'maybe_collect_handle', SYMBOL_INTERNAL
 ; untagged-handle --
@@ -638,18 +650,6 @@ code start_the_world, 'start_the_world', SYMBOL_INTERNAL        ; --
         next
 endcode
 
-; ### mark_thread_stacks
-code mark_thread_stacks, 'mark_thread_stacks', SYMBOL_INTERNAL  ; thread --
-
-        _debug_print "mark_thread_stacks"
-
-        _lit S_thread_mark_data_stack
-        _lit S_thread_mark_return_stack
-        _lit S_thread_mark_locals_stack
-        _ tri
-        next
-endcode
-
 ; ### gc
 code gc, 'gc'                           ; --
         cmp     qword [S_gc_inhibit_symbol_value], f_value
@@ -666,15 +666,13 @@ code gc, 'gc'                           ; --
 .2:
         mov     qword [in_gc?_], t_value
 
-        _ stop_the_world
-
-        _ current_thread_save_registers
-
         _ all_threads
         _ vector_length
         _lit tagged_fixnum(1)
         _ eq?
         _tagged_if .3
+
+        _ current_thread_save_registers
 
         _debug_print "marking single thread"
 
@@ -688,6 +686,10 @@ code gc, 'gc'                           ; --
         _ mark_locals_stack
 
         _else .3
+
+        _ stop_the_world
+
+        _ current_thread_save_registers
 
         _debug_print "marking multiple threads"
 
