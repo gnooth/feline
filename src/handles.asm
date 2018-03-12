@@ -232,6 +232,20 @@ code lock_handles, 'lock_handles', SYMBOL_INTERNAL      ; --
         next
 endcode
 
+; ### trylock_handles
+code trylock_handles, 'trylock_handles', SYMBOL_INTERNAL        ; -- ?
+        _handles_lock
+
+        test    rbx, rbx
+        jnz      .1
+        mov     ebx, t_value
+        _return
+
+.1:
+        _ mutex_trylock
+        next
+endcode
+
 ; ### unlock_handles
 code unlock_handles, 'unlock_handles', SYMBOL_INTERNAL   ; --
         _handles_lock
@@ -257,7 +271,10 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
         _ safepoint
 
 %ifdef LOCK_HANDLES
-        _ lock_handles
+        _ trylock_handles
+        cmp     rbx, f_value
+        poprbx
+        je      new_handle
 %endif
 
         _ get_empty_handle              ; -- object handle/0
