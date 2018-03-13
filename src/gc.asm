@@ -667,10 +667,10 @@ code gc, 'gc'                           ; --
         mov     qword [in_gc?_], t_value
 
         _ all_threads
-        _ vector_length
-        _lit tagged_fixnum(1)
-        _ eq?
-        _tagged_if .3
+        _ vector_raw_length
+        cmp     rbx, 1
+        poprbx
+        jne     .3
 
         _ current_thread_save_registers
 
@@ -685,8 +685,9 @@ code gc, 'gc'                           ; --
         ; locals stack
         _ mark_locals_stack
 
-        _else .3
+        jmp     .4
 
+.3:
         _ stop_the_world
 
         _ current_thread_save_registers
@@ -697,8 +698,7 @@ code gc, 'gc'                           ; --
         _lit S_mark_thread_stacks
         _ vector_each
 
-        _then .3
-
+.4:
         ; static symbols
         _ mark_static_symbols
 
@@ -720,7 +720,7 @@ code gc, 'gc'                           ; --
         mov     qword [S_gc_pending_symbol_value], f_value
 
         cmp     qword [S_gc_verbose_symbol_value], f_value
-        je .4
+        je .5
 
         _rdtsc
         _to gc_end_cycles
@@ -751,7 +751,7 @@ code gc, 'gc'                           ; --
         _write " cycles"
         _ nl
 
-.4:
+.5:
         _reset_recent_allocations
 
         next
