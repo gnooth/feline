@@ -650,8 +650,8 @@ code start_the_world, 'start_the_world', SYMBOL_INTERNAL        ; --
         next
 endcode
 
-; ### gc
-code gc, 'gc'                           ; --
+; ### gc_collect
+code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
         cmp     qword [S_gc_inhibit_symbol_value], f_value
         je .1
         mov     qword [S_gc_pending_symbol_value], t_value
@@ -754,5 +754,11 @@ code gc, 'gc'                           ; --
 .5:
         _reset_recent_allocations
 
+        next
+endcode
+
+; gc
+code gc, 'gc'                           ; --
+        _ gc_collect
         next
 endcode

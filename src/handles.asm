@@ -298,7 +298,7 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
 .1:                                     ; -- object 0
         _drop
 
-        _ gc
+        _ gc_collect
 
         _ get_empty_handle
         test    rbx, rbx
