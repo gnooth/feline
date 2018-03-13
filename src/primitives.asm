@@ -802,15 +802,6 @@ code to_hex, '>hex'                     ; n -- string
         _return
         _then .1
 
-%ifdef FELINE_FEATURE_BIGNUMS
-        _dup
-        _ bignum?
-        _tagged_if .2
-        _ bignum_to_hex
-        _return
-        _then .2
-%endif
-
         _ error_not_number
 
         next
@@ -1612,53 +1603,6 @@ endcode
 ; ### expt
 code expt, 'expt'                       ; base power -- result
 
-%ifdef FELINE_FEATURE_BIGNUMS
-
-        ; FIXME incomplete
-
-        _check_index
-
-        _over
-        _fixnum?_if .1
-%ifdef WIN64
-        _swap
-        _untag_fixnum
-        _ signed_to_bignum
-        _swap
-%else
-        _ gc_disable
-        mov     arg1_register, rbx
-        poprbx
-        _untag_fixnum
-        mov     arg0_register, rbx
-        poprbx
-        xcall   c_fixnum_expt
-        pushrbx
-        mov     rbx, rax
-        _ gc_enable
-        _return
-%endif
-        _then .1
-
-        _over
-        _ bignum?
-        _tagged_if .2
-        _ gc_disable
-        mov     arg1_register, rbx
-        poprbx
-        _handle_to_object_unsafe
-        mov     arg0_register, rbx
-        poprbx
-        xcall   c_bignum_expt
-        pushrbx
-        mov     rbx, rax
-        _ gc_enable
-        _return
-        _then .2
-
-%else
-
-        ; no bignums
         _dup_fixnum?_if .1
         _ fixnum_to_float
         _then .1
@@ -1678,7 +1622,6 @@ code expt, 'expt'                       ; base power -- result
         mov     rbx, rax
 
         _ new_handle
-%endif
 
         next
 endcode
