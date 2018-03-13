@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -215,9 +215,8 @@ endcode
         movzx   ebx, byte [rbx + this_register + STRING_RAW_DATA_OFFSET - 1]
 %endmacro
 
-; ### copy-to-string
-code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL
-; from-addr from-length -- handle
+; ### copy_to_string
+code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL  ; from-addr from-length -- handle
 ; arguments are untagged
 
         _lit STRING_RAW_DATA_OFFSET
