@@ -759,6 +759,16 @@ endcode
 
 ; gc
 code gc, 'gc'                           ; --
+
+.wait:
+        _ trylock_handles
+        cmp     rbx, f_value
+        poprbx
+        je      .wait
+
         _ gc_collect
+
+        _ unlock_handles
+
         next
 endcode
