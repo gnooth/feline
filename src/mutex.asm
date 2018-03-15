@@ -15,17 +15,13 @@
 
 file __FILE__
 
-; 2 cells: object header, raw value
+; 3 cells: object header, raw value, owner
 
-%define mutex_raw_value_slot    qword [rbx + BYTES_PER_CELL]
+%define mutex_slot_raw_value    1
+%define mutex_slot_owner        2
 
-%macro  _mutex_raw_value 0              ; mutex -- raw-value
-        _slot1
-%endmacro
-
-%macro  _mutex_set_raw_value 0          ; raw-value mutex --
-        _set_slot1
-%endmacro
+%define mutex_raw_value_slot    qword [rbx + BYTES_PER_CELL * mutex_slot_raw_value]
+%define mutex_owner_slot        qword [rbx + BYTES_PER_CELL * mutex_slot_owner]
 
 ; ### mutex?
 code mutex?, 'mutex?'                   ; handle -- ?
@@ -79,12 +75,20 @@ endcode
 
 ; ### make-mutex
 code make_mutex, 'make-mutex'
-        _lit    BYTES_PER_CELL * 2
+        _lit    BYTES_PER_CELL * 3
         _ raw_allocate
         mov     qword [rbx], TYPECODE_MUTEX
         xcall   os_mutex_init
         mov     mutex_raw_value_slot, rax
+        mov     mutex_owner_slot, f_value
         _ new_handle
+        next
+endcode
+
+; ### mutex-owner
+code mutex_owner, 'mutex-owner'         ; mutex -- thread/f
+        _ check_mutex
+        _slot mutex_slot_owner
         next
 endcode
 
@@ -93,7 +97,14 @@ code mutex_lock, 'mutex-lock'           ; mutex -- ?
         _ check_mutex
         mov     arg0_register, mutex_raw_value_slot
         xcall   os_mutex_lock
-        mov     rbx, rax
+        cmp     rax, f_value
+        je      .1
+        xcall   os_current_thread
+        mov     mutex_owner_slot, rax
+        mov     ebx, t_value
+        _return
+.1:
+        mov     ebx, f_value
         next
 endcode
 
@@ -102,7 +113,14 @@ code mutex_trylock, 'mutex-trylock'     ; mutex -- ?
         _ check_mutex
         mov     arg0_register, mutex_raw_value_slot
         xcall   os_mutex_trylock
-        mov     rbx, rax
+        cmp     rax, f_value
+        je      .1
+        xcall   os_current_thread
+        mov     mutex_owner_slot, rax
+        mov     ebx, t_value
+        _return
+.1:
+        mov     ebx, f_value
         next
 endcode
 
@@ -111,7 +129,13 @@ code mutex_unlock, 'mutex-unlock'       ; mutex -- ?
         _ check_mutex
         mov     arg0_register, mutex_raw_value_slot
         xcall   os_mutex_unlock
-        mov     rbx, rax
+        cmp     rax, f_value
+        je      .1
+        mov     mutex_owner_slot, f_value
+        mov     ebx, t_value
+        _return
+.1:
+        mov     ebx, f_value
         next
 endcode
 

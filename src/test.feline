@@ -3054,6 +3054,17 @@ test: thread-test-5
 
 thread-test-5
 
+test: thread-test-6
+    make-mutex >local: m
+    m mutex-owner assert-false
+    m mutex-lock assert-true
+    m mutex-owner current-thread assert-eq
+    m mutex-unlock assert-true
+    m mutex-owner assert-false
+;
+
+thread-test-6
+
 test: vector-all?-test-1
     vector{ } [ fixnum? ] vector-all? assert-true
 
