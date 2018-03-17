@@ -29,3 +29,9 @@ thread-local: state1
 
 -- state0 = 2116950370223064412
 -- state1 = 13984883008063501915
+
+-- 2 threads
+: test2 [ test ] <thread> thread-create test ;
+
+-- 3 threads
+: test3 [ test ] <thread> thread-create [ test ] <thread> thread-create test ;
