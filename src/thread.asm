@@ -391,10 +391,6 @@ code make_thread, '<thread>'            ; quotation -- thread
 
         _rfrom
 
-        _dup
-        _ all_threads
-        _ vector_push
-
         next
 endcode
 
@@ -622,6 +618,10 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
         mov     r14, thread_raw_lp0_slot
 
         mov     thread_state_slot, S_THREAD_RUNNING
+
+        _rfetch
+        _ all_threads
+        _ vector_push
 
         _slot thread_slot_quotation     ; -- quotation
 
