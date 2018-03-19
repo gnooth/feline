@@ -429,8 +429,8 @@ code primordial_thread, 'primordial-thread'     ; -- thread
         next
 endcode
 
-; ### initialize_primordial_thread
-code initialize_primordial_thread, 'initialize_primordial_thread', SYMBOL_INTERNAL      ; --
+; ### initialize_threads
+code initialize_threads, 'initialize_threads', SYMBOL_INTERNAL  ; --
         _lit 8
         _ new_vector_untagged
         mov     [all_threads_], rbx

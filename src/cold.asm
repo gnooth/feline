@@ -182,7 +182,7 @@ special interactive?, 'interactive?'
 special load_verbose?, 'load-verbose?'
 
 ; ### cold
-code cold, 'cold'                       ; --
+code cold, 'cold', SYMBOL_INTERNAL      ; --
         mov     [rp0_], rsp
         mov     rbp, [primordial_sp0_]
 
@@ -220,7 +220,7 @@ code cold, 'cold'                       ; --
 
         _ initialize_source_path
 
-        _ initialize_primordial_thread
+        _ initialize_threads
 
         _ initialize_handles_lock
 
