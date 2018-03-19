@@ -495,7 +495,7 @@ endcode
 code stop_for_gc, 'stop_for_gc', SYMBOL_INTERNAL         ; --
         ; store the Feline handle of the current thread in the asm global
         _ current_thread
-        mov     qword [stop_for_gc?_], rbx
+        xchg    qword [stop_for_gc?_], rbx
         poprbx
         next
 endcode
@@ -537,12 +537,6 @@ code safepoint, 'safepoint', SYMBOL_INTERNAL    ; --
         _return
 .2:
         _ stop_current_thread_for_gc
-        next
-endcode
-
-; ### restart-after-gc
-code restart_after_gc, 'restart-after-gc'       ; --
-        mov     qword [stop_for_gc?_], f_value
         next
 endcode
 
@@ -646,12 +640,17 @@ code start_the_world, 'start_the_world', SYMBOL_INTERNAL        ; --
 
         _debug_print "start_the_world"
 
-        mov     qword [stop_for_gc?_], f_value
+        mov     eax, f_value
+        xchg    qword [stop_for_gc?_], rax
+
         next
 endcode
 
 ; ### gc_collect
 code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
+
+        _debug_print "entering gc_collect"
+
         cmp     qword [S_gc_inhibit_symbol_value], f_value
         je .1
         mov     qword [S_gc_pending_symbol_value], t_value
@@ -754,11 +753,15 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
 .5:
         _reset_recent_allocations
 
+        _debug_print "leaving gc_collect"
+
         next
 endcode
 
-; gc
+; ### gc
 code gc, 'gc'                           ; --
+
+        _debug_print "entering gc"
 
 .wait:
         _ trylock_handles
@@ -769,6 +772,8 @@ code gc, 'gc'                           ; --
         _ gc_collect
 
         _ unlock_handles
+
+        _debug_print "leaving gc"
 
         next
 endcode
