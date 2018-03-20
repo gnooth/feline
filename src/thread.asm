@@ -420,6 +420,39 @@ code all_threads, 'all-threads'         ; -- vector
         next
 endcode
 
+asm_global all_threads_lock_, 0
+
+%macro  _all_threads_lock 0
+        pushrbx
+        mov     rbx, [all_threads_lock_]
+%endmacro
+
+; ### lock_all_threads
+code lock_all_threads, 'lock_all_threads', SYMBOL_INTERNAL      ; --
+
+        _debug_print "lock all threads"
+
+        _all_threads_lock
+        _ mutex_lock
+        _tagged_if_not .2
+        _error "mutex_lock failed"
+        _then .2
+        next
+endcode
+
+; ### unlock_all_threads
+code unlock_all_threads, 'unlock_all_threads', SYMBOL_INTERNAL  ; --
+
+        _debug_print "unlock all threads"
+
+        _all_threads_lock
+        _ mutex_unlock
+        _tagged_if_not .2
+        _error "mutex_unlock failed"
+        _then .2
+        next
+endcode
+
 asm_global primordial_thread_, f_value
 
 ; ### primordial-thread
@@ -431,6 +464,8 @@ endcode
 
 ; ### initialize_threads
 code initialize_threads, 'initialize_threads', SYMBOL_INTERNAL  ; --
+
+        ; all-threads vector
         _lit 8
         _ new_vector_untagged
         mov     [all_threads_], rbx
@@ -438,6 +473,14 @@ code initialize_threads, 'initialize_threads', SYMBOL_INTERNAL  ; --
         _lit all_threads_
         _ gc_add_root
 
+        ; all-threads lock
+        _ make_mutex
+        mov     [all_threads_lock_], rbx
+        poprbx
+        _lit all_threads_lock_
+        _ gc_add_root
+
+        ; primordial thread
         _ new_thread                    ; -- thread
 
         pushrbx
@@ -474,8 +517,9 @@ code initialize_threads, 'initialize_threads', SYMBOL_INTERNAL  ; --
         mov     arg0_register, rbx
         xcall   os_initialize_primordial_thread
 
-        mov     [primordial_thread_], rbx
+        mov     [primordial_thread_], rbx       ; -- thread
 
+        ; no lock needed
         _ all_threads
         _ vector_push
 
@@ -619,9 +663,11 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
 
         mov     thread_state_slot, S_THREAD_RUNNING
 
+        _ lock_all_threads
         _rfetch
         _ all_threads
         _ vector_push
+        _ unlock_all_threads
 
         _slot thread_slot_quotation     ; -- quotation
 
@@ -638,9 +684,11 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
         _over
         _ thread_set_state
 
+        _ lock_all_threads
         _ all_threads
         _ vector_remove_mutating        ; -- vector
         _drop                           ; --
+        _ unlock_all_threads
 
         ; restore C registers
         pop     rbx
