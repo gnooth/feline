@@ -628,6 +628,7 @@ code stop_the_world, 'stop_the_world', SYMBOL_INTERNAL  ; --
 
         _ stop_for_gc
 
+        ; REVIEW locking
         _ all_threads
         _lit S_wait_for_thread_to_stop
         _ vector_each
@@ -665,8 +666,10 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
 .2:
         mov     qword [in_gc?_], t_value
 
+        _ lock_all_threads
         _ all_threads
         _ vector_raw_length
+        _ unlock_all_threads
         cmp     rbx, 1
         poprbx
         jne     .3
@@ -693,6 +696,7 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
 
         _debug_print "marking multiple threads"
 
+        ; REVIEW locking
         _ all_threads
         _lit S_mark_thread_stacks
         _ vector_each
