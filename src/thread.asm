@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; 13 slots:
+; 14 slots:
 
 %define thread_slot_raw_thread_id        1
 %define thread_slot_raw_thread_handle    2
@@ -32,6 +32,8 @@ file __FILE__
 %define thread_slot_saved_r14           12
 
 %define thread_slot_state               13
+
+%define thread_slot_debug_name          14
 
 %define thread_raw_thread_id_slot       qword [rbx + bytes_per_cell * thread_slot_raw_thread_id]
 %define thread_raw_thread_handle_slot   qword [rbx + bytes_per_cell * thread_slot_raw_thread_handle]
@@ -258,11 +260,33 @@ code thread_stopped?, 'thread-stopped?' ; thread -- ?
         next
 endcode
 
+; ### thread-debug-name
+code thread_debug_name, 'thread-debug-name'     ; thread -- name
+        _ check_thread
+        _slot thread_slot_debug_name
+        next
+endcode
+
+; ### thread-set-debug-name
+code thread_set_debug_name, 'thread-set-debug-name'     ; name thread --
+        _ check_thread
+        _set_slot thread_slot_debug_name
+        next
+endcode
+
 ; ### current-thread
 code current_thread, 'current-thread'   ; -- thread
         xcall   os_current_thread
         pushrbx
         mov     rbx, rax
+        next
+endcode
+
+; ### current-thread-debug-name
+code current_thread_debug_name, 'current-thread-debug-name'     ; -- name
+        _ current_thread
+        _ check_thread
+        _slot thread_slot_debug_name
         next
 endcode
 
@@ -346,10 +370,26 @@ code current_thread_save_registers, 'current_thread_save_registers', SYMBOL_INTE
         next
 endcode
 
+; ### get_next_thread_debug_name
+code get_next_thread_debug_name, 'get_next_thread_debug_name', SYMBOL_INTERNAL  ; -- name
+        _ lock_all_threads
+        mov     rax, [thread_number_]
+        pushrbx
+        mov     rbx, rax
+        add     rax, 1
+        mov     [thread_number_], rax
+        _ unlock_all_threads
+        _tag_fixnum
+        _quote "thread %d"
+        _ format
+        next
+endcode
+
 ; ### new_thread
 code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
-        _lit 14
+        _lit 15
         _ raw_allocate_cells
+
         mov     qword [rbx], TYPECODE_THREAD
 
         _lit 8
@@ -357,7 +397,16 @@ code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
         _over
         _set_slot thread_slot_thread_locals
 
+        _f
+        _over
+        _set_slot thread_slot_quotation
+
+        _f
+        _over
+        _set_slot thread_slot_debug_name
+
         _ new_handle
+
         next
 endcode
 
@@ -371,6 +420,10 @@ code make_thread, '<thread>'            ; quotation -- thread
         _lit S_THREAD_STOPPED
         _over
         _set_slot thread_slot_state
+
+        _ get_next_thread_debug_name
+        _over
+        _set_slot thread_slot_debug_name
 
         _f
         _over
@@ -410,6 +463,9 @@ code destroy_thread, 'destroy_thread', SYMBOL_INTERNAL  ; thread --
         _ raw_free
         next
 endcode
+
+; 0 is reserved for the primordial thread
+asm_global thread_number_, 1
 
 asm_global all_threads_, f_value
 
@@ -482,6 +538,10 @@ code initialize_threads, 'initialize_threads', SYMBOL_INTERNAL  ; --
 
         ; primordial thread
         _ new_thread                    ; -- thread
+
+        _quote "thread 0"
+        _over
+        _ thread_set_debug_name
 
         pushrbx
         mov     rbx, [primordial_sp0_]
@@ -556,8 +616,10 @@ code thread_join, 'thread-join'         ; thread --
 %else
         _slot thread_slot_raw_thread_id
 %endif
+
         mov     arg0_register, rbx
         poprbx
+
         xcall   os_thread_join
 
         _lit S_THREAD_RUNNING
@@ -715,14 +777,13 @@ code mark_thread, 'mark_thread', SYMBOL_INTERNAL        ; thread --
         _dup
         _slot thread_slot_quotation
         _ maybe_mark_handle
+        _dup
         _slot thread_slot_thread_locals
+        _ maybe_mark_handle
+        _dup
+        _slot thread_slot_quotation
+        _ maybe_mark_handle
+        _slot thread_slot_debug_name
         _ maybe_mark_handle
         next
 endcode
-
-%undef slot_raw_thread_id
-%undef slot_raw_sp0
-%undef slot_raw_rp0
-%undef slot_raw_lp0
-%undef slot_quotation
-%undef slot_result
