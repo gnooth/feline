@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -65,3 +65,35 @@ endcode
         _quote %1
         _ debug1
 %endmacro
+
+asm_global debug_print_lock_, 0
+
+; ### debug-print
+code debug_print, 'debug-print'         ; string --
+
+        mov     eax, 1
+
+.lock:
+        cmp     byte [debug_print_lock_], 0
+        jne     .lock
+
+        xchg    eax, [debug_print_lock_]
+        test    eax, eax
+        jnz     .lock
+
+        _ ?nl
+
+        _ current_thread
+        _ thread_debug_name
+        _ write_string
+        _quote ": "
+        _ write_string
+
+        _ write_string
+        _ nl
+
+        ; unlock
+        mov     byte [debug_print_lock_], 0
+
+        next
+endcode

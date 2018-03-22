@@ -677,10 +677,8 @@ section .data
 
 %macro  _debug_print 1
 %ifdef  DEBUG
-        _ ?nl
         _quote %1
-        _ write_string
-        _ nl
+        _ debug_print
 %endif
 %endmacro
 
