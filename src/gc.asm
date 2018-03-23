@@ -647,6 +647,29 @@ code start_the_world, 'start_the_world', SYMBOL_INTERNAL        ; --
         next
 endcode
 
+asm_global gc_lock_, f_value
+
+%macro  _gc_lock 0
+        pushrbx
+        mov     rbx, [gc_lock_]
+%endmacro
+
+; gc-lock
+code gc_lock, 'gc-lock'                 ; -- mutex
+        _gc_lock
+        next
+endcode
+
+; ### initialize_gc_lock
+code initialize_gc_lock, 'initialize_gc_lock', SYMBOL_INTERNAL  ; --
+        _ make_mutex
+        mov     [gc_lock_], rbx
+        poprbx
+        _lit gc_lock_
+        _ gc_add_root
+        next
+endcode
+
 ; ### gc_collect
 code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
 

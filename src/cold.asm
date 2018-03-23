@@ -224,6 +224,8 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
 
         _ initialize_handles_lock
 
+        _ initialize_gc_lock
+
         _quote "boot.feline"
         _lit S_load_system_file
         _ catch
