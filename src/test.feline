@@ -2997,6 +2997,7 @@ sbuf-push-test-1
 
 test: thread-test-1
     current-thread thread? assert-true
+    current-thread thread-state THREAD_RUNNING assert-eq
     sp0 current-thread thread-sp0 assert-eq
 ;
 
