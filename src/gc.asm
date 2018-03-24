@@ -505,7 +505,7 @@ code stop_current_thread_for_gc, 'stop_current_thread_for_gc', SYMBOL_INTERNAL  
 
         _debug_print "stop_current_thread_for_gc"
 
-        _lit S_THREAD_STOPPED
+        _ THREAD_STOPPED
         _ current_thread
         _ thread_set_state
 
@@ -520,6 +520,10 @@ code stop_current_thread_for_gc, 'stop_current_thread_for_gc', SYMBOL_INTERNAL  
         _then .0
 
         _debug_print "restarting current thread"
+
+        _ THREAD_RUNNING
+        _ current_thread
+        _ thread_set_state
 
         next
 endcode
