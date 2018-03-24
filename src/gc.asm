@@ -794,6 +794,16 @@ code gc, 'gc'                           ; --
 
         _debug_print "entering gc"
 
+        _ gc_lock
+        _ mutex_trylock
+        _tagged_if_not .1
+        ; gc is already in progress
+        _debug_print "gc already in progress, returning"
+        jmp .exit
+        _then .1
+
+        _debug_print "gc obtained gc lock"
+
 .wait:
         _ trylock_handles
         cmp     rbx, f_value
@@ -804,6 +814,13 @@ code gc, 'gc'                           ; --
 
         _ unlock_handles
 
+        _ gc_lock
+        _ mutex_unlock
+        _tagged_if_not .2
+        _error "gc mutex_unlock failed"
+        _then .2
+
+.exit:
         _debug_print "leaving gc"
 
         next
