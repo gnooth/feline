@@ -234,8 +234,10 @@ code thread_saved_r14, 'thread_saved_r14', SYMBOL_INTERNAL      ; thread -- save
 endcode
 
 ; REVIEW
-special THREAD_STOPPED, 'THREAD_STOPPED'
-special THREAD_RUNNING, 'THREAD_RUNNING'
+special THREAD_NEW,      'THREAD_NEW'
+special THREAD_STARTING, 'THREAD_STARTING'
+special THREAD_STOPPED,  'THREAD_STOPPED'
+special THREAD_RUNNING,  'THREAD_RUNNING'
 
 ; ### thread-state
 code thread_state, 'thread-state'       ; thread -- state
@@ -400,6 +402,10 @@ code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
         _f
         _over
         _set_slot thread_slot_quotation
+
+        _ THREAD_NEW
+        _over
+        _set_slot thread_slot_state
 
         _f
         _over
