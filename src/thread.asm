@@ -539,6 +539,10 @@ code initialize_threads, 'initialize_threads', SYMBOL_INTERNAL  ; --
         ; primordial thread
         _ new_thread                    ; -- thread
 
+        mov     [primordial_thread_], rbx       ; -- thread
+        _lit primordial_thread_
+        _ gc_add_root
+
         _quote "thread 0"
         _over
         _ thread_set_debug_name
@@ -576,8 +580,6 @@ code initialize_threads, 'initialize_threads', SYMBOL_INTERNAL  ; --
 
         mov     arg0_register, rbx
         xcall   os_initialize_primordial_thread
-
-        mov     [primordial_thread_], rbx       ; -- thread
 
         ; no lock needed
         _ all_threads
