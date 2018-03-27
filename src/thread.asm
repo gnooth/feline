@@ -423,10 +423,6 @@ code make_thread, '<thread>'            ; quotation -- thread
 
         _ check_thread
 
-        _lit S_THREAD_STOPPED
-        _over
-        _set_slot thread_slot_state
-
         _ get_next_thread_debug_name
         _over
         _set_slot thread_slot_debug_name
@@ -597,6 +593,17 @@ endcode
 ; ### thread-create
 code thread_create, 'thread-create'     ; thread --
         _ verify_thread
+
+        _ THREAD_STARTING
+        _over
+        _ thread_set_state
+
+        _ lock_all_threads
+        _dup
+        _ all_threads
+        _ vector_push
+        _ unlock_all_threads
+
         mov     arg0_register, rbx
         xcall   os_thread_create        ; returns native thread identifier in rax
         _handle_to_object_unsafe
@@ -613,7 +620,7 @@ endcode
 code thread_join, 'thread-join'         ; thread --
         _ check_thread
 
-        _lit S_THREAD_STOPPED
+        _ THREAD_STOPPED
         _ current_thread
         _ thread_set_state
 
@@ -630,7 +637,7 @@ code thread_join, 'thread-join'         ; thread --
 
         xcall   os_thread_join
 
-        _lit S_THREAD_RUNNING
+        _ THREAD_RUNNING
         _ current_thread
         _ thread_set_state
 
@@ -732,12 +739,6 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
         mov     r14, thread_raw_lp0_slot
 
         mov     thread_state_slot, S_THREAD_RUNNING
-
-        _ lock_all_threads
-        _rfetch
-        _ all_threads
-        _ vector_push
-        _ unlock_all_threads
 
         _slot thread_slot_quotation     ; -- quotation
 
