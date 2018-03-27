@@ -205,30 +205,12 @@ asm_global handles_lock_, 0
 %endmacro
 
 ; ### initialize_handles_lock
-code initialize_handles_lock, 'initialize_handles_lock', SYMBOL_INTERNAL
-; --
+code initialize_handles_lock, 'initialize_handles_lock', SYMBOL_INTERNAL        ; --
         _ make_mutex
         mov     [handles_lock_], rbx
         poprbx
         _lit handles_lock_
         _ gc_add_root
-        next
-endcode
-
-; ### lock_handles
-code lock_handles, 'lock_handles', SYMBOL_INTERNAL      ; --
-        _handles_lock
-
-        test    rbx, rbx
-        jnz      .1
-        _drop
-        _return
-
-.1:
-        _ mutex_lock
-        _tagged_if_not .2
-        _error "mutex_lock failed"
-        _then .2
         next
 endcode
 
@@ -292,27 +274,28 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
 .1:                                     ; -- object 0
         _drop
 
+        _debug_print "new_handle need to gc"
+
+        _ gc_lock
+        _ mutex_trylock
+        _tagged_if .2
+        _debug_print "new_handle acquired gc lock"
         _ gc_collect
+        _ gc_lock
+        _ mutex_unlock
+        _tagged_if_not .3
+        _error "gc mutex_unlock failed"
+        _then .3
+        _debug_print "new_handle released gc lock"
+        _then .2
 
-        _ get_empty_handle
-        test    rbx, rbx
-        jz     .2
-
-        mov     rax, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        mov     [rbx], rax
-
-%ifdef TAGGED_HANDLES
-        _tag_handle
-%endif
-
-        _increment_allocation_count
+        _debug_print "new_handle calling unlock_handles"
         _ unlock_handles
-        _return
-.2:
 
-        _ unlock_handles
-        _error "out of handles"
+        _debug_print "new_handle jumping back"
+        jmp     new_handle
+
+        ; FIXME not reached!
         next
 endcode
 
