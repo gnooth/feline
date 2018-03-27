@@ -263,19 +263,15 @@ code unlock_handles, 'unlock_handles', SYMBOL_INTERNAL   ; --
         next
 endcode
 
-%define LOCK_HANDLES
-
 ; ### new_handle
 code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
 
         _ safepoint
 
-%ifdef LOCK_HANDLES
         _ trylock_handles
         cmp     rbx, f_value
         poprbx
         je      new_handle
-%endif
 
         _ get_empty_handle              ; -- object handle/0
         test    rbx, rbx
@@ -290,9 +286,7 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
 %endif
 
         _increment_allocation_count
-%ifdef LOCK_HANDLES
         _ unlock_handles
-%endif
         _return
 
 .1:                                     ; -- object 0
@@ -313,14 +307,11 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
 %endif
 
         _increment_allocation_count
-%ifdef LOCK_HANDLES
         _ unlock_handles
-%endif
         _return
 .2:
-%ifdef LOCK_HANDLES
+
         _ unlock_handles
-%endif
         _error "out of handles"
         next
 endcode
