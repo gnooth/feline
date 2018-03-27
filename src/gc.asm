@@ -632,7 +632,6 @@ code stop_the_world, 'stop_the_world', SYMBOL_INTERNAL  ; --
 
         _ stop_for_gc
 
-        ; REVIEW locking
         _ all_threads
         _lit S_wait_for_thread_to_stop
         _ vector_each
@@ -658,7 +657,7 @@ asm_global gc_lock_, f_value
         mov     rbx, [gc_lock_]
 %endmacro
 
-; gc-lock
+; ### gc-lock
 code gc_lock, 'gc-lock'                 ; -- mutex
         _gc_lock
         next
@@ -696,7 +695,6 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
         _ lock_all_threads
         _ all_threads
         _ vector_raw_length
-        _ unlock_all_threads
         cmp     rbx, 1
         poprbx
         jne     .3
@@ -714,6 +712,8 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
         ; locals stack
         _ mark_locals_stack
 
+        _ unlock_all_threads
+
         jmp     .4
 
 .3:
@@ -723,10 +723,11 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
 
         _debug_print "marking multiple threads"
 
-        ; REVIEW locking
         _ all_threads
         _lit S_mark_thread_stacks
         _ vector_each
+
+        _ unlock_all_threads
 
 .4:
         ; static symbols
