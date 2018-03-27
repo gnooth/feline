@@ -478,6 +478,31 @@ code all_threads, 'all-threads'         ; -- vector
         next
 endcode
 
+asm_global thread_count_, 1
+
+%macro  _thread_count 0                 ; -- count
+        pushrbx
+        mov     rbx, [thread_count_]
+%endmacro
+
+%macro  _set_thread_count 0
+        xchg    [thread_count_], rbx
+        poprbx
+%endmacro
+
+%macro  _update_thread_count 0
+        _ all_threads
+        _ vector_raw_length
+        _set_thread_count
+%endmacro
+
+; ### thread-count
+code thread_count, 'thread-count'       ; -- count
+        _thread_count
+        _tag_fixnum
+        next
+endcode
+
 asm_global all_threads_lock_, 0
 
 %macro  _all_threads_lock 0
@@ -602,6 +627,7 @@ code thread_create, 'thread-create'     ; thread --
         _dup
         _ all_threads
         _ vector_push
+        _update_thread_count
         _ unlock_all_threads
 
         mov     arg0_register, rbx
@@ -759,6 +785,7 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
         _ all_threads
         _ vector_remove_mutating        ; -- vector
         _drop                           ; --
+        _update_thread_count
         _ unlock_all_threads
 
         ; restore C registers
