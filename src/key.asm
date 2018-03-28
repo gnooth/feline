@@ -21,7 +21,7 @@ code wait_for_key, 'wait_for_key', SYMBOL_INTERNAL      ; --
         test    rax, rax
         jnz     .exit
         _ safepoint
-        _lit tagged_fixnum(1)
+        _lit tagged_fixnum(25)
         _ sleep
         jmp     wait_for_key
 .exit:
