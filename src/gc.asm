@@ -692,9 +692,7 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
 .2:
         mov     qword [in_gc?_], t_value
 
-        _ lock_all_threads
-        _ all_threads
-        _ vector_raw_length
+        _thread_count
         cmp     rbx, 1
         poprbx
         jne     .3
@@ -712,11 +710,11 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
         ; locals stack
         _ mark_locals_stack
 
-        _ unlock_all_threads
-
         jmp     .4
 
 .3:
+        _ lock_all_threads
+
         _ stop_the_world
 
         _ current_thread_save_registers
