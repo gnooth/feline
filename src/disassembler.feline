@@ -1,4 +1,4 @@
--- Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -661,13 +661,28 @@ last-word 0x6a install-handler
     -- source is imm8
     -- dest is r/m8
     8 !> dsize
+    t !> immediate-operand?
     !modrm-byte
     regop-mnemonic !> mnemonic
     modrm-mod {
         { 0 [
-            modrm-rm register-rm !> dbase
-            next-byte !> immediate-operand
-            t !> immediate-operand?
+            modrm-rm {
+                { 4 [
+                    !sib-byte
+                    sib-index 4 =
+                    sib-base 5 = and [
+                        next-int32 !> ddisp
+                        t !> memory-operand?
+                        next-byte !> immediate-operand
+                    ] [ unsupported ] if
+                ] }
+                [
+                    -- default case
+                    drop
+                    modrm-rm register-rm !> dbase
+                    next-byte !> immediate-operand
+                ]
+            } case
         ] }
         { 1  [
             modrm-rm {
@@ -680,7 +695,6 @@ last-word 0x6a install-handler
                             sib-index !> dindex
                             next-signed-byte !> ddisp
                             next-byte !> immediate-operand
-                            t !> immediate-operand?
                         ] [ unsupported ] if
                     ] [ unsupported ] if
                 ] }
@@ -690,7 +704,6 @@ last-word 0x6a install-handler
                     modrm-rm register-rm !> dbase
                     next-signed-byte !> ddisp
                     next-byte !> immediate-operand
-                    t !> immediate-operand?
                 ]
             } case
         ] }
@@ -698,7 +711,6 @@ last-word 0x6a install-handler
             -- register-direct
             modrm-rm !> dreg
             next-byte !> immediate-operand
-            t !> immediate-operand?
         ] }
         [ unsupported ]
     } case
