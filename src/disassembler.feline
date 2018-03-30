@@ -851,6 +851,15 @@ last-word 0x84 install-handler
 
 last-word 0x85 install-handler
 
+: .87
+    -- /r
+    -- source is r/m32/64
+    -- dest is r32/64
+    "xchg" !> mnemonic
+    /r-reg-r/m ;
+
+last-word 0x87 install-handler
+
 : .88
     -- /r
     -- source is r8
@@ -1141,11 +1150,14 @@ last-word 0xc3 install-handler
             modrm-rm {
                 { 4 [
                     !sib-byte
-
-                    sib-base register-rm !> dbase
-                    sib-index register-index !> dindex
-                    sib-scale !> dscale
-
+                    sib-index 4 = sib-base 5 = and [
+                        next-int32 !> ddisp
+                        t !> memory-operand?
+                    ] [
+                        sib-base register-rm !> dbase
+                        sib-index register-index !> dindex
+                        sib-scale !> dscale
+                    ] if
                     next-byte !> immediate-operand
                 ] }
                 [
