@@ -788,6 +788,8 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
         _update_thread_count
         _ unlock_all_threads
 
+        _debug_print "leaving thread_run_internal"
+
         ; restore C registers
         pop     rbx
         pop     rbp
