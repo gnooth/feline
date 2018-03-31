@@ -539,15 +539,21 @@ code times_, 'times'                    ; tagged-fixnum quotation --
         _2drop                          ; clean up the stack now!
 
         test    r12, r12
-        jle     .2
-.1:
+        jle     .exit
+
+        align   DEFAULT_CODE_ALIGNMENT
+.top:
+        cmp     qword [stop_for_gc?_], f_value
+        je      .continue
+        _ safepoint_stop
+.continue:
         call    r13
         dec     r12
-        jz      .2
+        jz      .exit
         call    r13
         dec     r12
-        jnz     .1
-.2:
+        jnz     .top
+.exit:
         pop     r13
         pop     r12
 
