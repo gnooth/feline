@@ -528,12 +528,8 @@ code stop_current_thread_for_gc, 'stop_current_thread_for_gc', SYMBOL_INTERNAL  
         next
 endcode
 
-; ### safepoint
-code safepoint, 'safepoint', SYMBOL_INTERNAL    ; --
-        cmp     qword [stop_for_gc?_], f_value
-        jne     .1
-        _return
-.1:
+; ### safepoint_stop
+code safepoint_stop, 'safepoint_stop', SYMBOL_INTERNAL  ; --
         _ current_thread
         cmp     qword [stop_for_gc?_], rbx
         poprbx
@@ -541,6 +537,13 @@ code safepoint, 'safepoint', SYMBOL_INTERNAL    ; --
         _return
 .2:
         _ stop_current_thread_for_gc
+        next
+endcode
+
+; ### safepoint
+code safepoint, 'safepoint', SYMBOL_INTERNAL    ; --
+        cmp     qword [stop_for_gc?_], f_value
+        jne     safepoint_stop
         next
 endcode
 
