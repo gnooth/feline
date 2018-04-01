@@ -289,13 +289,30 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
         _debug_print "new_handle released gc lock"
         _then .2
 
-        _debug_print "new_handle calling unlock_handles"
+        _debug_print "new_handle calling get_empty_handle"
+
+        _ get_empty_handle              ; -- object handle/0
+        test    rbx, rbx
+        jz     .4
+
+        _debug_print "new_handle got handle after gc"
+
+        mov     rax, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        mov     [rbx], rax
+
+%ifdef TAGGED_HANDLES
+        _tag_handle
+%endif
+
+        _increment_allocation_count
         _ unlock_handles
+        _return
 
-        _debug_print "new_handle jumping back"
-        jmp     new_handle
-
-        ; FIXME not reached!
+.4:
+        _ unlock_handles
+        _write `\nout of handles, exiting...\n`
+        xcall   os_bye
         next
 endcode
 
