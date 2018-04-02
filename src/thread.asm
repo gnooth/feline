@@ -418,6 +418,16 @@ endcode
 
 ; ### <thread>
 code make_thread, '<thread>'            ; quotation -- thread
+
+        ; REVIEW locking
+        _dup
+        _ quotation_raw_code_address
+        cmp     rbx, 0
+        poprbx
+        jnz     .1
+        _ compile_quotation
+
+.1:
         _ new_thread
         _duptor
 
@@ -432,7 +442,7 @@ code make_thread, '<thread>'            ; quotation -- thread
         _set_slot thread_slot_result
 
         _tuck
-        _set_slot thread_slot_quotation           ; -- thread
+        _set_slot thread_slot_quotation ; -- thread
 
         _ allocate_locals_stack
         _over
