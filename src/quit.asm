@@ -599,27 +599,45 @@ code quit, 'quit'                       ; --
         next
 endcode
 
+asm_global saved_data_stack_, f_value
+
+asm_global continue?_, f_value
+
+; ### continue
+code continue, 'continue'               ; --
+        mov     qword [continue?_], t_value
+        next
+endcode
+
 ; ### break
 code break, 'break'                     ; --
+
+        _ get_data_stack
+        mov     [saved_data_stack_], rbx
+        poprbx
+
         _ ?nl
         _ error_style
         _write "break called"
         _ print_data_stack
-        _ nl
-        _write "Press c to continue or q to quit..."
-        _ nl
-        _begin .1
-        _ raw_key
-        cmp     rbx, 'c'
-        jne     .2
-        _drop
-        _return
-.2:
-        cmp     rbx, 'q'
-        jne     .3
-        _drop
-        _ quit
-.3:
-        _again .1
+
+.loop:
+        _ query
+        _ evaluate
+        cmp     qword [continue?_], f_value
+        jne     .continue
+        _ maybe_print_data_stack
+        jmp     .loop
+
+.continue:
+        ; restore data stack
+        _ clear
+        pushrbx
+        mov     rbx, [saved_data_stack_]
+        _quotation .1
+        _ identity
+        _end_quotation .1
+        _ each
+
         next
 endcode
