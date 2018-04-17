@@ -1,0 +1,23 @@
+(defvar state0)
+(defvar state1)
+
+(declaim (inline mod64))
+(defun mod64 (x) (declare (type integer x)) (mod x (expt 2 64)))
+
+(defun xorshift128+ ()
+  (declare (optimize speed))
+  (let ((s1 state0) (s0 state1))
+    (setf state0 s0)
+    (setf s1 (logxor (mod64 (ash s1 23)) s1))
+    (setf s1 (logxor (ash s1 -17) s1))
+    (setf s1 (logxor s1 s0))
+    (setf s1 (logxor (ash s0 -26) s1))
+    (setf state1 s1)))
+
+(defun test ()
+  (gc)
+  (setf state0 1)
+  (setf state1 2)
+  (time (dotimes (i 10000000) (xorshift128+)))
+  (format t "state0 = ~D~%" state0)
+  (format t "state1 = ~D~%" state1))
