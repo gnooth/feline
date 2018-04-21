@@ -265,7 +265,18 @@ code fixnum_minus, 'fixnum-'            ; x y -- z
 
         ; dispatch on type of x
         test    qword [rbp], FIXNUM_TAG
-        jnz     fixnum_fixnum_minus
+        jz      .x_is_not_a_fixnum
+
+        ; both x and y are fixnums
+        mov     rax, rbx                ; y in rax
+        mov     rbx, [rbp]              ; x in rbx
+        sar     rax, FIXNUM_TAG
+        sar     rbx, FIXNUM_TAG
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        sub     rbx, rax
+        jmp     normalize
+
+.x_is_not_a_fixnum:
 
         _over
         _ object_raw_typecode
