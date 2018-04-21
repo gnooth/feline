@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -258,19 +258,19 @@ code fixnum_plus, 'fixnum+'             ; number fixnum -- sum
 endcode
 
 ; ### fixnum-
-code fixnum_minus, 'fixnum-'            ; number fixnum -- difference
+code fixnum_minus, 'fixnum-'            ; x y -- z
 
-        ; second arg must be a fixnum
+        ; y must be a fixnum
         _verify_fixnum
 
-        ; dispatch on type of first arg
+        ; dispatch on type of x
+        test    qword [rbp], FIXNUM_TAG
+        jnz     fixnum_fixnum_minus
+
         _over
         _ object_raw_typecode
         mov     rax, rbx
         poprbx                          ; -- x y
-
-        cmp     rax, TYPECODE_FIXNUM
-        je      fixnum_fixnum_minus
 
         cmp     rax, TYPECODE_INT64
         je      int64_fixnum_minus
