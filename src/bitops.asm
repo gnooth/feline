@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -120,13 +120,51 @@ endcode
 
 ; ### rshift
 code rshift, 'rshift'                   ; x n -- y
-; shifts fixnum x to the right by n bits
-; n must be >= 0
+; shifts integer x to the right by n bits
+
+        ; n must be >= 0
         _check_index
-        mov     ecx, ebx
-        poprbx
-        _ integer_to_raw_bits
+
+        mov     ecx, ebx                ; n (untagged) in ecx
+        poprbx                          ; -- x
+        test    bl, FIXNUM_TAG
+        jz      x_is_not_a_fixnum
+
+        ; x is a fixnum
+        sar     rbx, cl
+        or      rbx, FIXNUM_TAG
+        next
+
+x_is_not_a_fixnum:
+
+        cmp     bl, HANDLE_TAG
+        jne     error_not_integer
+
+        _handle_to_object_unsafe
+
+        test    rbx, rbx
+        jz      error_empty_handle
+
+        _object_raw_typecode_eax
+
+        cmp     eax, TYPECODE_INT64
+        je      .int64
+        cmp     eax, TYPECODE_UINT64
+        je      .uint64
+
+        _ error_not_integer
+        _return
+
+.int64:
+        _int64_raw_value
+        sar     rbx, cl
+        jmp     normalize
+
+.uint64:
+        _uint64_raw_value
         shr     rbx, cl
-        _ normalize_unsigned
+        jmp     normalize_unsigned
+
+        ; not reached
         next
 endcode
