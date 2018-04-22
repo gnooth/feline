@@ -628,6 +628,19 @@ last-word 0x63 install-handler
 
 last-word 0x6a install-handler
 
+: .6b
+    "imul" !> mnemonic
+    !modrm-byte
+    modrm-mod 3 eq? modrm-reg modrm-rm eq? and [
+        next-signed-byte !> immediate-operand
+        t !> immediate-operand?
+        modrm-rm !> dreg
+        2 !> #operands
+        .inst
+    ] [ unsupported ] if ;
+
+last-word 0x6b install-handler
+
 : jmp/jcc-rel8 ( mnemonic -- )
     !> mnemonic
     next-signed-byte ip + >local: jump-target
