@@ -147,7 +147,7 @@
 
 %macro  _leave 1
 %ifdef index_register
-        _register_loop_leave
+        _register_loop_leave %1
 %else
         add     rsp, BYTES_PER_CELL * 2
         jmp     %1_exit
