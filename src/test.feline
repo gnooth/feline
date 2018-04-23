@@ -716,6 +716,18 @@ test: symbol?-test-1 ( -- )
 
 symbol?-test-1
 
+test: decimal>unsigned-test-1
+    "0" decimal>unsigned 0 assert-eq
+
+    "4611686018427387903"  decimal>unsigned most-positive-fixnum assert-eq
+    "9223372036854775807"  decimal>unsigned dup int64? assert-true most-positive-int64 assert=
+    "18446744073709551615" decimal>unsigned dup uint64? assert-true max-uint64 assert=
+
+    64 [ 2 swap lshift dup number>string decimal>unsigned assert= ] each-integer
+;
+
+decimal>unsigned-test-1
+
 test: string>number-test-1
     "." string>number assert-false
     "-" string>number assert-false

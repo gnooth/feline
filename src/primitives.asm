@@ -1406,6 +1406,61 @@ code decimal_to_number, 'decimal>number'        ; string -- n/f
         _rep_return
 endcode
 
+; ### raw_digit?
+code raw_digit?, 'raw_digit?', SYMBOL_INTERNAL  ; unsigned-char -- ?
+        cmp     ebx, '0'
+        jl      .no
+        cmp     ebx, '9'
+        jg      .no
+        mov     ebx, t_value
+        next
+.no:
+        mov     ebx, f_value
+        next
+endcode
+
+; ### decimal>unsigned
+code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned
+
+        _ check_string
+
+        push    this_register
+        popd    this_register           ; --
+
+        _zero                           ; -- accum
+
+        _this_string_raw_length
+        _register_do_times .1
+
+        imul    rbx, 10
+
+        _raw_loop_index
+        _this_string_nth_unsafe         ; -- accum untagged-char
+        _dup
+        _ raw_digit?
+        _tagged_if .2
+        sub     ebx, '0'
+        add     qword [rbp], rbx
+        poprbx
+        _else .2
+        _drop
+        mov     rbx, f_value
+        _unloop
+        _leave .1
+        _then .2
+
+        _loop .1
+
+        pop     this_register
+
+        _dup
+        _tagged_if .3
+        _ normalize_unsigned
+        _then .3
+
+        next
+endcode
+
 ; ### printable-char?
 code printable_char?, 'printable-char?'           ; x -- ?
         _dup
