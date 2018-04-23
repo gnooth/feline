@@ -1,4 +1,4 @@
-; Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -122,11 +122,18 @@ code new_uint64, 'new_uint64', SYMBOL_INTERNAL  ; raw-uint64 -- uint64
 endcode
 
 ; ### normalize_unsigned
-code normalize_unsigned, 'normalize_unsigned', SYMBOL_INTERNAL  ; raw-int64 -- fixnum-or-uint64
+code normalize_unsigned, 'normalize_unsigned', SYMBOL_INTERNAL  ; raw-int64 -- integer
         mov     rcx, MOST_POSITIVE_FIXNUM
         cmp     rbx, rcx
-        ja      new_uint64
+        ja      .not_a_fixnum
         _tag_fixnum
+        _return
+
+.not_a_fixnum:
+        mov     rcx, MOST_POSITIVE_INT64
+        cmp     rbx, rcx
+        jna     new_int64
+        _ new_uint64
         next
 endcode
 
