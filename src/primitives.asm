@@ -769,24 +769,20 @@ endcode
 
 ; ### number>string
 code number_to_string, 'number>string'  ; n -- string
-        _dup_fixnum?_if .1
-        _ fixnum_to_string
-        _return
-        _then .1
+        test    bl, FIXNUM_TAG
+        jnz fixnum_to_string
 
         _dup
-        _ int64?
-        _tagged_if .2
-        _ int64_to_string
-        _return
-        _then .2
+        _ object_raw_typecode
+        mov     rax, rbx
+        poprbx
 
-        _dup
-        _ float?
-        _tagged_if .3
-        _ float_to_string
-        _return
-        _then .3
+        cmp     rax, TYPECODE_INT64
+        je      int64_to_string
+        cmp     rax, TYPECODE_UINT64
+        je      uint64_to_string
+        cmp     rax, TYPECODE_FLOAT
+        je      float_to_string
 
         _ error_not_number
 
