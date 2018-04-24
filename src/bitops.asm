@@ -92,14 +92,36 @@ endcode
 
 ; ### lshift
 code lshift, 'lshift'                   ; x n -- y
-; shifts fixnum x to the left by n bits
-; n must be >= 0
+; shifts integer x to the left by n bits
+
+        ; n must be >= 0
         _check_index
+
+        ; "When the destination is 64 bits wide, the processor masks the upper
+        ; two bits of the count, providing a count in the range of 0 to 63."
+        cmp     rbx, 63
+        ja      .error
+
         mov     ecx, ebx
         poprbx
+
         _ integer_to_raw_bits
+
+        test    rbx, rbx
+        jns     .unsigned
+        shl     rbx, cl
+        _ normalize
+        _return
+
+.unsigned:
         shl     rbx, cl
         _ normalize_unsigned
+        _return
+
+.error:
+        ; REVIEW julia and lua return 0 in this situation
+        _nip
+        mov     ebx, tagged_zero
         next
 endcode
 

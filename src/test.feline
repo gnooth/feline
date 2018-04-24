@@ -2711,15 +2711,20 @@ test: lshift-test-1
     1 1 lshift 2 assert-eq
     1 2 lshift 4 assert-eq
 
-    1 60 lshift-signed 1152921504606846976 2dup assert=
-    swap assert=
+    -1 1 lshift -2 assert-eq
+    -2 1 lshift -4 assert-eq
 
-    1 63 lshift uint64>string "9223372036854775808" assert=
+    1 60 lshift 1152921504606846976 assert-eq
+    1 61 lshift 2305843009213693952 assert-eq
+    1 62 lshift dup int64? assert-true 4611686018427387904 assert=
+    1 63 lshift dup uint64? assert-true uint64>string "9223372036854775808" assert=
 
-    most-positive-fixnum 1 lshift dup uint64? assert-true
-    most-positive-fixnum dup + assert=
+    -1 60 lshift -1152921504606846976 assert-eq
+    -1 61 lshift -2305843009213693952 assert-eq
+    -1 62 lshift dup fixnum? assert-true -4611686018427387904 assert-eq
+    -1 63 lshift dup int64? assert-true int64>string "-9223372036854775808" assert=
 
-    most-positive-fixnum 1 lshift-signed dup int64? assert-true
+    most-positive-fixnum 1 lshift dup int64? assert-true
     most-positive-fixnum dup + assert=
 ;
 
@@ -2731,7 +2736,7 @@ test: bitnot-test-1
 
     123 bitnot -124 assert-eq
 
-    63 [ 1 swap lshift-signed dup bitnot swap negate 1 - assert= ] each-integer
+    63 [ 1 swap lshift dup bitnot swap negate 1 - assert= ] each-integer
 ;
 
 bitnot-test-1
