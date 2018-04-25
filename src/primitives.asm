@@ -1407,7 +1407,7 @@ code decimal_to_number, 'decimal>number'        ; string -- n/f
 endcode
 
 ; ### raw_digit?
-code raw_digit?, 'raw_digit?', SYMBOL_INTERNAL  ; unsigned-char -- ?
+code raw_digit?, 'raw_digit?', SYMBOL_INTERNAL  ; untagged-char -- ?
         cmp     ebx, '0'
         jl      .no
         cmp     ebx, '9'
@@ -1420,7 +1420,7 @@ code raw_digit?, 'raw_digit?', SYMBOL_INTERNAL  ; unsigned-char -- ?
 endcode
 
 ; ### decimal>unsigned
-code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned
+code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned/f
 
         _ check_string
 
@@ -1445,7 +1445,6 @@ code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned
         _else .2
         _drop
         mov     rbx, f_value
-        _unloop
         _leave .1
         _then .2
 
