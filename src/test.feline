@@ -717,6 +717,13 @@ test: symbol?-test-1 ( -- )
 symbol?-test-1
 
 test: decimal>unsigned-test-1
+    "" decimal>unsigned assert-false
+    "test" decimal>unsigned assert-false
+    "3.14159" decimal>unsigned assert-false
+    "3." decimal>unsigned assert-false
+    ".3" decimal>unsigned assert-false
+    "-1" decimal>unsigned assert-false
+
     "0" decimal>unsigned 0 assert-eq
 
     "4611686018427387903"  decimal>unsigned most-positive-fixnum assert-eq
