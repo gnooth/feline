@@ -1424,13 +1424,23 @@ code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned/f
 
         _ check_string
 
+        ; return f if string is empty
+        _dup
+        _string_raw_length
+        test    rbx, rbx
+        poprbx
+        jnz     .1
+        mov     rbx, f_value
+        _return
+.1:
+
         push    this_register
         popd    this_register           ; --
 
         _zero                           ; -- accum
 
         _this_string_raw_length
-        _register_do_times .1
+        _register_do_times .loop
 
         imul    rbx, 10
 
@@ -1445,10 +1455,10 @@ code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned/f
         _else .2
         _drop
         mov     rbx, f_value
-        _leave .1
+        _leave .loop
         _then .2
 
-        _loop .1
+        _loop .loop
 
         pop     this_register
 
