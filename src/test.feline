@@ -731,6 +731,21 @@ test: decimal>unsigned-test-1
     "18446744073709551615" decimal>unsigned dup uint64? assert-true max-uint64 assert=
 
     64 [ 2 swap lshift dup number>string decimal>unsigned assert= ] each-integer
+
+    -- overflow
+    "18446744073709551616" decimal>unsigned assert-false
+    "18446744073709551617" decimal>unsigned assert-false
+    "18446744073709551618" decimal>unsigned assert-false
+    "18446744073709551619" decimal>unsigned assert-false
+    "18446744073709551620" decimal>unsigned assert-false
+    "18446744073709551621" decimal>unsigned assert-false
+    "18446744073709551622" decimal>unsigned assert-false
+    "18446744073709551623" decimal>unsigned assert-false
+    "18446744073709551624" decimal>unsigned assert-false
+    "18446744073709551625" decimal>unsigned assert-false
+    "18446744073709551626" decimal>unsigned assert-false
+
+    "100000000000000000000" decimal>unsigned assert-false
 ;
 
 decimal>unsigned-test-1
