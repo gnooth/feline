@@ -1442,7 +1442,15 @@ code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned/f
         _this_string_raw_length
         _register_do_times .loop
 
-        imul    rbx, 10
+        mov     eax, 10
+        mul     rbx
+
+        jno     .no_overflow
+        mov     rbx, f_value
+        _leave .loop
+
+.no_overflow:
+        mov     rbx, rax
 
         _raw_loop_index
         _this_string_nth_unsafe         ; -- accum untagged-char
@@ -1451,9 +1459,16 @@ code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned/f
         _tagged_if .2
         sub     ebx, '0'
         add     qword [rbp], rbx
+
+        jnc     .no_carry
+        _nip
+        mov     rbx, f_value
+        _leave .loop
+
+.no_carry:
         poprbx
         _else .2
-        _drop
+        _nip
         mov     rbx, f_value
         _leave .loop
         _then .2
