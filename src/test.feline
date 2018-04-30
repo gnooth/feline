@@ -726,6 +726,10 @@ test: decimal>unsigned-test-1
 
     "0" decimal>unsigned 0 assert-eq
 
+    -- avoid confusion with t and f
+    "6" decimal>unsigned 6 assert-eq
+    "14" decimal>unsigned 14 assert-eq
+
     "4611686018427387903"  decimal>unsigned most-positive-fixnum assert-eq
     "9223372036854775807"  decimal>unsigned dup int64? assert-true most-positive-int64 assert=
     "18446744073709551615" decimal>unsigned dup uint64? assert-true max-uint64 assert=

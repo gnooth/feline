@@ -1430,7 +1430,7 @@ code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned/f
         test    rbx, rbx
         poprbx
         jnz     .1
-        mov     rbx, f_value
+        mov     ebx, f_value
         _return
 .1:
 
@@ -1446,8 +1446,10 @@ code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned/f
         mul     rbx
 
         jno     .no_overflow
-        mov     rbx, f_value
-        _leave .loop
+        _unloop
+        pop     this_register
+        mov     ebx, f_value
+        _return
 
 .no_overflow:
         mov     rbx, rax
@@ -1456,31 +1458,31 @@ code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned/f
         _this_string_nth_unsafe         ; -- accum untagged-char
         _dup
         _ raw_digit?
-        _tagged_if .2
+        _tagged_if_not .2
+        _nip
+        _unloop
+        pop     this_register
+        mov     ebx, f_value
+        _return
+        _then .2
+
         sub     ebx, '0'
         add     qword [rbp], rbx
 
         jnc     .no_carry
         _nip
-        mov     rbx, f_value
-        _leave .loop
+        _unloop
+        pop     this_register
+        mov     ebx, f_value
+        _return
 
 .no_carry:
         poprbx
-        _else .2
-        _nip
-        mov     rbx, f_value
-        _leave .loop
-        _then .2
-
         _loop .loop
 
-        pop     this_register
+        pop     this_register           ; -- raw-int64
 
-        _dup
-        _tagged_if .3
         _ normalize_unsigned
-        _then .3
 
         next
 endcode
