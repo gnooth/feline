@@ -189,6 +189,10 @@ endcode
         movzx   ebx, byte [rbx + this_register + STRING_RAW_DATA_OFFSET]
 %endmacro
 
+%macro  _string_first_unsafe 0
+        movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET]
+%endmacro
+
 %define this_string_first_unsafe        byte [this_register + STRING_RAW_DATA_OFFSET]
 
 %macro  _this_string_first_unsafe 0     ; -- untagged-char
