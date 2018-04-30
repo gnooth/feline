@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ code raw_int64_equal?, 'raw_int64_equal?', SYMBOL_INTERNAL      ; number raw-int
 endcode
 
 ; ### raw_uint64_equal?
-code raw_uint64_equal?, 'raw_uint64_equal?', SYMBOL_INTERNAL    ; number raw-int64 -- ?
+code raw_uint64_equal?, 'raw_uint64_equal?', SYMBOL_INTERNAL    ; number raw-uint64 -- ?
 
         _swap                           ; -- raw-uint64 number
 
