@@ -750,6 +750,60 @@ test: decimal>unsigned-test-1
 
 decimal>unsigned-test-1
 
+
+test: decimal>signed-test-1
+    -- too short
+    "" decimal>signed assert-false
+    "-" decimal>signed assert-false
+
+    -- first char must be '-'
+    "0" decimal>signed assert-false
+    "1" decimal>signed assert-false
+
+    -- all chars after '-' must be decimal digits
+    "-test" decimal>signed assert-false
+    "-3.14159" decimal>signed assert-false
+    "-3." decimal>signed assert-false
+    "-.3" decimal>signed assert-false
+
+    "-1" decimal>signed -1 assert-eq
+    "-2" decimal>signed -2 assert-eq
+    "-3" decimal>signed -3 assert-eq
+
+    -- avoid confusion with t and f
+    "-6" decimal>signed -6 assert-eq
+    "-14" decimal>signed -14 assert-eq
+
+    "-4611686018427387900"  decimal>signed most-negative-fixnum 4 + assert-eq
+    "-4611686018427387901"  decimal>signed most-negative-fixnum 3 + assert-eq
+    "-4611686018427387902"  decimal>signed most-negative-fixnum 2 + assert-eq
+    "-4611686018427387903"  decimal>signed most-negative-fixnum 1 + assert-eq
+    "-4611686018427387904"  decimal>signed most-negative-fixnum assert-eq
+    "-4611686018427387905"  decimal>signed dup int64? assert-true most-negative-fixnum 1 - assert=
+    "-4611686018427387906"  decimal>signed dup int64? assert-true most-negative-fixnum 2 - assert=
+    "-4611686018427387907"  decimal>signed dup int64? assert-true most-negative-fixnum 3 - assert=
+    "-4611686018427387908"  decimal>signed dup int64? assert-true most-negative-fixnum 4 - assert=
+    "-4611686018427387909"  decimal>signed dup int64? assert-true most-negative-fixnum 5 - assert=
+    "-4611686018427387910"  decimal>signed dup int64? assert-true most-negative-fixnum 6 - assert=
+
+    "-9223372036854775800"  decimal>signed dup int64? assert-true most-negative-int64 8 - assert=
+    "-9223372036854775800"  decimal>signed dup int64? assert-true most-negative-int64 7 - assert=
+    "-9223372036854775800"  decimal>signed dup int64? assert-true most-negative-int64 6 - assert=
+    "-9223372036854775800"  decimal>signed dup int64? assert-true most-negative-int64 5 - assert=
+    "-9223372036854775800"  decimal>signed dup int64? assert-true most-negative-int64 4 - assert=
+    "-9223372036854775800"  decimal>signed dup int64? assert-true most-negative-int64 3 - assert=
+    "-9223372036854775800"  decimal>signed dup int64? assert-true most-negative-int64 2 - assert=
+    "-9223372036854775800"  decimal>signed dup int64? assert-true most-negative-int64 1 - assert=
+    "-9223372036854775808"  decimal>signed dup int64? assert-true most-negative-int64 assert=
+    "-9223372036854775809"  decimal>signed assert-false
+    "-9223372036854775810"  decimal>signed assert-false
+    "-9223372036854775811"  decimal>signed assert-false
+
+    "-100000000000000000000" decimal>signed assert-false
+;
+
+decimal>signed-test-1
+
 test: string>number-test-1
     "." string>number assert-false
     "-" string>number assert-false

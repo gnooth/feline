@@ -1485,8 +1485,106 @@ code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned/f
         next
 endcode
 
+; ### decimal>signed
+code decimal_to_signed, 'decimal>signed'        ; string -- signed/f
+
+        _ check_string
+
+        _dup
+        _string_raw_length
+        cmp     rbx, 2
+        poprbx
+        jge     .1
+        mov     ebx, f_value
+        _return
+
+.1:
+        _dup
+        _string_first_unsafe
+        cmp     rbx, '-'
+        poprbx
+        je      .2
+        mov     ebx, f_value
+        _return
+
+.2:
+        push    this_register
+        popd    this_register           ; --
+
+        _zero                           ; -- accum
+
+        _this_string_raw_length
+        _lit 1
+        _register_do_range .loop
+
+        imul    rbx, 10
+
+        jno     .no_overflow
+        _unloop
+        pop     this_register
+        mov     ebx, f_value
+        _return
+
+.no_overflow:
+        _raw_loop_index
+        _this_string_nth_unsafe         ; -- accum untagged-char
+
+        _dup
+        _ raw_digit?
+        _tagged_if_not .3
+        _drop
+        _unloop
+        pop     this_register
+        mov     ebx, f_value
+        _return
+        _then .3
+
+        sub     ebx, '0'
+        add     qword [rbp], rbx
+
+        ; if sign flag is not set, addition did not overflow
+        jns     .no_carry
+
+        ; sign flag is set
+
+        ; MOST_NEGATIVE_INT64 is a special case
+        ; if this is not the last time through the loop, the next imul will overflow
+        mov     rax, MOST_NEGATIVE_INT64        ; 0x8000000000000000
+        cmp     qword [rbp], rax
+        je      .no_carry
+
+        ; not MOST_NEGATIVE_INT64
+        _nip
+        _unloop
+        pop     this_register
+        mov     rbx, f_value
+        _return
+
+.no_carry:
+        poprbx
+        _loop .loop
+
+        pop     this_register           ; -- raw-int64
+
+        ; MOST_NEGATIVE_INT64 is a special case
+        ; we don't need to negate it
+        mov     rax, MOST_NEGATIVE_INT64
+        cmp     rbx, rax
+        je      new_int64
+
+        neg     rbx
+
+        mov     rax, MOST_NEGATIVE_FIXNUM
+        cmp     rbx, rax
+        jl      new_int64
+
+        _tag_fixnum
+
+        next
+endcode
+
 ; ### printable-char?
-code printable_char?, 'printable-char?'           ; x -- ?
+code printable_char?, 'printable-char?' ; x -- ?
         _dup
         _char?
         _tagged_if .1
