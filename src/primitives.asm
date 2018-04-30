@@ -1385,7 +1385,7 @@ endcode
 
 ; ### decimal>number
 code decimal_to_number, 'decimal>number'        ; string -- n/f
-
+%if 0
         _ string_from                   ; -- raw-data-address raw-length
 
         mov     arg1_register, rbx      ; length
@@ -1404,7 +1404,59 @@ code decimal_to_number, 'decimal>number'        ; string -- n/f
 
 .1:
         _rep_return
+%else
+        _duptor
+        _ string_first_char
+        _eq? tagged_char('-')
+        _tagged_if .1
+        _rfetch
+        _ decimal_to_signed
+        _else .1
+        _rfetch
+        _ decimal_to_unsigned
+        _then .1                        ; -- n/f
+
+        _dup
+        _tagged_if .2
+        _rdrop
+        _return
+        _then .2
+
+        ; not an integer
+        _drop
+        _rfrom
+        _ string_to_float
+        next
+%endif
 endcode
+
+%if 0
+; ### xdecimal>number
+code xdecimal_to_number, 'xdecimal>number'      ; string -- n/f
+        _duptor
+        _ string_first_char
+        _eq? tagged_char('-')
+        _tagged_if .1
+        _rfetch
+        _ decimal_to_signed
+        _else .1
+        _rfetch
+        _ decimal_to_unsigned
+        _then .1                        ; -- n/f
+
+        _dup
+        _tagged_if .2
+        _rdrop
+        _return
+        _then .2
+
+        ; not an integer
+        _drop
+        _rfrom
+        _ string_to_float
+        next
+endcode
+%endif
 
 ; ### raw_digit?
 code raw_digit?, 'raw_digit?', SYMBOL_INTERNAL  ; untagged-char -- ?
