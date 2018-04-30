@@ -35,3 +35,24 @@ thread-local: state1
 
 -- 3 threads
 : test3 [ test ] <thread> thread-create [ test ] <thread> thread-create test ;
+
+
+: xorshift128+-locals-only
+    >local: s0
+    >local: s1
+
+    s1 23 lshift s1 bitxor !> s1
+    s1 17 rshift s1 bitxor !> s1
+    s1 s0 bitxor !> s1
+    s0 26 rshift s1 bitxor !> s1
+
+    s0 s1
+;
+
+: test-locals-only
+    gc
+    1 2 [ 10000000 [ xorshift128+-locals-only ] times ] time
+    swap
+    "state0 = " write . nl
+    "state1 = " write . nl
+;
