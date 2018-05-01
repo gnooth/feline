@@ -1,4 +1,4 @@
-; Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -436,6 +436,13 @@ endcode
 ; ### int64-negate
 code int64_negate, 'int64-negate'       ; n -- -n
         _ check_int64
+        mov     rax, MOST_POSITIVE_FIXNUM + 1
+        cmp     rbx, rax
+        jne     .0
+        mov     rbx, MOST_NEGATIVE_FIXNUM
+        _tag_fixnum
+        _return
+.0:
         mov     rax, MOST_NEGATIVE_INT64
         cmp     rbx, rax
         je      .1

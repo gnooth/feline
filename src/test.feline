@@ -1739,28 +1739,23 @@ test: negate-test-1
     0 negate 0 assert-eq
     42 negate -42 assert-eq
 
-    fixnum-tag-bits 3 = [
-        most-positive-fixnum negate number>string "-1152921504606846975" assert=
-        most-positive-fixnum negate -1152921504606846975 assert-eq
+    most-positive-fixnum 4611686018427387903 assert-eq
+    most-positive-fixnum negate -4611686018427387903 assert-eq
+    most-positive-fixnum 1+ negate dup fixnum? assert-true -4611686018427387904 assert-eq
+    most-positive-fixnum 1- negate dup fixnum? assert-true -4611686018427387902 assert-eq
 
-        most-positive-fixnum dup fixnum-fixnum+ negate number>string  "-2305843009213693950" assert=
-        most-positive-fixnum dup fixnum-fixnum+ negate -2305843009213693950 assert=
-
-        most-negative-fixnum negate number>string "1152921504606846976" assert=
-        most-negative-fixnum negate 1152921504606846976 assert=
-
-        most-negative-fixnum dup fixnum-fixnum+ negate number>string "2305843009213693952" assert=
-        most-negative-fixnum dup fixnum-fixnum+ negate 2305843009213693952 assert=
-    ] when
+    most-negative-fixnum -4611686018427387904 assert-eq
+    most-negative-fixnum negate dup int64? assert-true 4611686018427387904 assert=
+    most-negative-fixnum 1+ negate dup fixnum? assert-true 4611686018427387903 assert-eq
+    most-negative-fixnum 1- negate dup int64? assert-true 4611686018427387905 assert=
 
     most-positive-int64 9223372036854775807 assert=
-    most-positive-int64 negate dup int64? assert-true
-    -9223372036854775807 assert=
+    most-positive-int64 negate dup int64? assert-true -9223372036854775807 assert=
 
     most-negative-int64 -9223372036854775808 assert=
-    most-negative-int64 negate dup uint64? assert-true
-    dup uint64>string "9223372036854775808" assert=
+    most-negative-int64 negate dup uint64? assert-true dup 9223372036854775808 assert=
     negate dup int64? assert-true most-negative-int64 assert=
+    most-negative-int64 1 + negate dup int64? assert-true 9223372036854775807 assert=
 ;
 
 negate-test-1
