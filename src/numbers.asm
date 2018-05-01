@@ -961,3 +961,59 @@ code float_ge, 'float>='                ; number float -- ?
         _ error_not_number
         next
 endcode
+
+; ### negative?
+code negative?, 'negative?'             ; number -- ?
+        test    bl, FIXNUM_TAG
+        jz      .1
+        test    rbx, rbx
+        mov     eax, t_value
+        mov     ebx, f_value
+        cmovs   ebx, eax
+        next
+
+.1:
+        ; not a fixnum
+        cmp     bl, HANDLE_TAG
+        jne     error_not_number
+
+        _handle_to_object_unsafe
+
+        test    rbx, rbx
+        jz      error_empty_handle
+
+        _object_raw_typecode_eax
+
+        cmp     eax, TYPECODE_INT64
+        je      .2
+        cmp     eax, TYPECODE_UINT64
+        je      .3
+        cmp     eax, TYPECODE_FLOAT
+        je      .4
+
+        _ error_not_number
+        next
+
+.2:
+        ; int64
+        _int64_raw_value
+        test    rbx, rbx
+        mov     eax, t_value
+        mov     ebx, f_value
+        cmovs   ebx, eax
+        next
+
+.3:
+        ; uint64
+        mov     ebx, f_value
+        next
+
+.4:
+        ; float
+        _float_raw_value
+        test    rbx, rbx
+        mov     eax, t_value
+        mov     ebx, f_value
+        cmovs   ebx, eax
+        next
+endcode
