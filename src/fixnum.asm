@@ -29,11 +29,10 @@ endcode
 
 ; ### fixnum?
 code fixnum?, 'fixnum?'                 ; x -- ?
-        and     ebx, FIXNUM_TAG_MASK
-        cmp     ebx, FIXNUM_TAG
+        test    bl, FIXNUM_TAG
         mov     eax, t_value
         mov     ebx, f_value
-        cmove   ebx, eax
+        cmovnz    ebx, eax
         next
 endcode
 
