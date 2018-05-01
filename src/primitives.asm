@@ -1581,17 +1581,15 @@ code decimal_to_signed, 'decimal>signed'        ; string -- signed/f
         _raw_loop_index
         _this_string_nth_unsafe         ; -- accum untagged-char
 
-        _dup
-        _ raw_digit?
-        _tagged_if_not .3
-        _drop
+        sub     ebx, '0'                ; 0 <= ebx <= 9 if valid decimal digit
+        cmp     ebx, 10
+        jb      .3                      ; unsigned comparison
+        _nip
         _unloop
         pop     this_register
         mov     ebx, f_value
         _return
-        _then .3
-
-        sub     ebx, '0'
+.3:
         add     qword [rbp], rbx
 
         ; if sign flag is not set, addition did not overflow
