@@ -1385,26 +1385,6 @@ endcode
 
 ; ### decimal>number
 code decimal_to_number, 'decimal>number'        ; string -- n/f
-%if 0
-        _ string_from                   ; -- raw-data-address raw-length
-
-        mov     arg1_register, rbx      ; length
-        mov     arg0_register, [rbp]    ; address
-        _nip
-
-        xcall   c_decimal_to_number
-
-        mov     rbx, rax
-        cmp     rax, f_value
-        je      .1
-
-        and     al, FIXNUM_TAG_MASK
-        cmp     al, FIXNUM_TAG
-        jne     new_handle
-
-.1:
-        _rep_return
-%else
         _duptor
         _ string_first_char
         _eq? tagged_char('-')
@@ -1426,48 +1406,6 @@ code decimal_to_number, 'decimal>number'        ; string -- n/f
         _drop
         _rfrom
         _ string_to_float
-        next
-%endif
-endcode
-
-%if 0
-; ### xdecimal>number
-code xdecimal_to_number, 'xdecimal>number'      ; string -- n/f
-        _duptor
-        _ string_first_char
-        _eq? tagged_char('-')
-        _tagged_if .1
-        _rfetch
-        _ decimal_to_signed
-        _else .1
-        _rfetch
-        _ decimal_to_unsigned
-        _then .1                        ; -- n/f
-
-        _dup
-        _tagged_if .2
-        _rdrop
-        _return
-        _then .2
-
-        ; not an integer
-        _drop
-        _rfrom
-        _ string_to_float
-        next
-endcode
-%endif
-
-; ### raw_digit?
-code raw_digit?, 'raw_digit?', SYMBOL_INTERNAL  ; untagged-char -- ?
-        cmp     ebx, '0'
-        jl      .no
-        cmp     ebx, '9'
-        jg      .no
-        mov     ebx, t_value
-        next
-.no:
-        mov     ebx, f_value
         next
 endcode
 
