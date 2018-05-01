@@ -1,4 +1,4 @@
-; Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -483,8 +483,8 @@ code float_negate, 'float-negate'               ; n -- -n
         next
 endcode
 
-; ### float-neg?
-code float_neg?, 'float-neg?'           ; x -- ?
+; ### float-negative?
+code float_negative?, 'float-negative?' ; x -- ?
         _ float_raw_value
         test    rbx, rbx
         mov     ebx, f_value
@@ -496,7 +496,7 @@ endcode
 ; ### float-abs
 code float_abs, 'float-abs'             ; x -- y
         _dup
-        _ float_neg?
+        _ float_negative?
         _tagged_if .1
         _ float_negate
         _then .1
@@ -506,7 +506,7 @@ endcode
 ; ### float-sqrt
 code float_sqrt, 'float-sqrt'           ; x -- y
         _dup
-        _ float_neg?
+        _ float_negative?
         _tagged_if .1
         _error "ERROR: sqrt is not yet implemented for negative numbers."
         _return
