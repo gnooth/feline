@@ -73,6 +73,16 @@ endcode
 
 ; ### bitxor
 code bitxor, 'bitxor'                   ; x y -- z
+        test    ebx, FIXNUM_TAG
+        jz      .1
+        test    qword [rbp], FIXNUM_TAG
+        jz      .1
+        ; x and y are both fixnums
+        xor     rbx, [rbp]
+        _nip
+        or      rbx, 1
+        next
+.1:
         _ integer_to_raw_bits
         _swap
         _ integer_to_raw_bits
