@@ -1,6 +1,6 @@
-# Feline 0.0.0.29
+# Feline 0.0.0.30
 
-April 1, 2018
+May 1, 2018
 
 Feline is a concatenative programming language in the spirit of Forth, Joy and
 Factor.
