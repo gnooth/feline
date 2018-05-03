@@ -85,6 +85,20 @@ code make_mutex, 'make-mutex'
         next
 endcode
 
+; ### destroy_mutex
+code destroy_mutex, 'destroy_mutex', SYMBOL_INTERNAL
+        _dup
+        mov     rbx, mutex_raw_value_slot
+        _ raw_free
+
+        ; zero out object header
+        xor     eax, eax
+        mov     [rbx], rax
+
+        _ raw_free
+        next
+endcode
+
 ; ### mutex-owner
 code mutex_owner, 'mutex-owner'         ; mutex -- thread/f
         _ check_mutex
