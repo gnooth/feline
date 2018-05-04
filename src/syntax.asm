@@ -750,6 +750,22 @@ code assign_local, '>local:', SYMBOL_IMMEDIATE  ; x --
         next
 endcode
 
+; ### :>
+code assign_local2, ':>', SYMBOL_IMMEDIATE      ; x --
+        _ declare_local_internal        ; -- index
+
+        ; add index to quotation
+        _get_accum
+        _ vector_push
+
+        ; add local! to quotation as a symbol
+        _lit S_local_store
+        _get_accum
+        _ vector_push
+
+        next
+endcode
+
 ; ### find-local-name
 code find_local_name, 'find-local-name' ; string -- index/string ?
 
