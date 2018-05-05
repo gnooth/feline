@@ -1,4 +1,4 @@
--- Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -25,12 +25,12 @@ global: pattern
 global: found-line-number
 global: found-offset
 
-: mark-found-pattern ( -- )
+: mark-found-pattern
     position make-instance set-mark
     found-line-number mark position-line-number!
     found-offset pattern length + mark position-offset! ;
 
-: found ( -- )
+: found
     reset-redo
 
     add-undo-move
@@ -41,16 +41,16 @@ global: found-offset
     maybe-reframe
     t !> repaint? ;
 
-: not-found ( -- )
+: not-found
    0 message-y at-xy error-style "Not found" write-string output-style ;
 
-: find-pattern-in-current-line ( start -- index/f )
-    pattern dot-line pick string-tail substring-start ( index/f )
+: find-pattern-in-current-line          -- start -> index/f
+    pattern dot-line pick string-tail substring-start   -- index/f
     [ + ] [ drop f ] if* ;
 
 public
 
-: do-find ( -- )
+: do-find
     0 message-y at-xy "Find: " accept-string !> pattern
     clear-message-line
 
@@ -70,13 +70,13 @@ public
         next-line-number current-buffer-lines [
             pattern swap substring-start
             dup !> found-offset
-        ] find-from ( line-number/f line/f )
+        ] find-from                     -- line-number/f line/f
         [ !> found-line-number t !> found? ] [ drop ] if
     ] unless
 
     found? [ found ] [ not-found ] if ;
 
-: do-find-again ( -- )
+: do-find-again
     f >local: found?
 
     f !> found-line-number
@@ -95,7 +95,7 @@ public
         next-line-number current-buffer-lines [
             pattern swap substring-start
             dup !> found-offset
-        ] find-from ( line-number/f line/f )
+        ] find-from                     -- line-number/f line/f
         [ !> found-line-number t !> found? ] [ drop ] if
     ] unless
 
