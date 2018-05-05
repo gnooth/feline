@@ -1,4 +1,4 @@
--- Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -25,20 +25,20 @@ global: history-index
 global: pattern
 global: done?
 
-: history. ( -- )
+: history.
     history [ write-string nl ] each ;
 
-: reset-history ( -- )
+: reset-history
     f !> history-index f !> pattern ;
 
-: prompt ( -- )
+: prompt
     "in: " current-vocab vocab-name string-append
     "> " string-append
     dup !> prompt-string
     prompt-style
     write-string ;
 
-: redisplay ( -- )
+: redisplay
     0 at-x
     prompt
     input-style
@@ -46,27 +46,27 @@ global: done?
     clear-to-eol
     dot prompt-string length + at-x ;
 
-: do-escape ( -- )
+: do-escape
     0 buffer sbuf-shorten
     0 !> dot
     reset-history
     redisplay ;
 
-: do-kill-line ( -- )
+: do-kill-line
     dot buffer length < [
         dot buffer sbuf-shorten
         reset-history
         redisplay
     ] when ;
 
-: do-delete-char ( -- )
+: do-delete-char
     dot buffer length < [
         dot buffer sbuf-remove-nth! drop
         reset-history
         redisplay
     ] when ;
 
-: do-bs ( -- )
+: do-bs
     dot 0 > [
         dot 1 - !> dot
         dot buffer sbuf-remove-nth! drop
@@ -74,27 +74,27 @@ global: done?
         redisplay
     ] when ;
 
-: do-home ( -- )
+: do-home
     prompt-string length at-x
     0 !> dot
     reset-history ;
 
-: do-end ( -- )
+: do-end
     buffer length !> dot
     prompt-string length dot + at-x
     reset-history ;
 
-: do-right ( -- )
+: do-right
     dot buffer length <
     [ dot 1 + !> dot dot prompt-string length + at-x ]
     when
     reset-history ;
 
-: do-left ( -- )
+: do-left
     dot 0 > [ dot 1 - !> dot dot prompt-string length + at-x ] when
     reset-history ;
 
-: do-previous ( -- )
+: do-previous
     history-index [ history length !> history-index ] unless
     history-index zero? [
         history-index 1 - !> history-index
@@ -104,7 +104,7 @@ global: done?
         redisplay
     ] unless ;
 
-: do-next ( -- )
+: do-next
     history-index [
         history length 1 - < [
             history-index 1 + !> history-index
@@ -116,10 +116,10 @@ global: done?
     ] when*
 ;
 
-: match? ( string -- ? )
+: match?                                -- string -> ?
     pattern 2dup longer? [ mismatch not ] [ 2drop f ] if ;
 
-: do-previous-matching-input ( -- )
+: do-previous-matching-input
     pattern [
         buffer sbuf>string !> pattern
         history length !> history-index
@@ -127,7 +127,7 @@ global: done?
     history-index 1 -
     history
     [ match? ]
-    find-last-from ( -- index/f elt/f )
+    find-last-from                      -- index/f element/f
     [
         swap !> history-index
         0 buffer sbuf-shorten
@@ -136,12 +136,12 @@ global: done?
         redisplay
     ] [ drop ] if* ;
 
-: do-next-matching-input ( -- )
+: do-next-matching-input
     pattern [
         history-index 1 +
         history
         [ match? ]
-        find-from ( -- index/f elt/f )
+        find-from                       -- index/f element/f
         [
             swap !> history-index
             0 buffer sbuf-shorten
@@ -155,21 +155,21 @@ global: completion-prefix
 global: completions
 global: completion-index
 
-: reset-completion ( -- ) f !> completions ;
+: reset-completion  f !> completions ;
 
-: complete-first ( prefix -- symbol/f )
+: complete-first                        -- prefix -> symbol/f
     !> completion-prefix
     all-words [ symbol-name completion-prefix swap string-has-prefix? ] filter !> completions
     0 !> completion-index
     completions ?first ;
 
-: complete-next ( -- symbol/f )
+: complete-next                         -- -> symbol/f
     completion-index completions length 1 - < [
         1+!> completion-index
         completion-index completions nth
     ] [ f ] if ;
 
-: complete-prev ( -- symbol/f )
+: complete-prev                         -- -> symbol/f
     completion-index 0 > [
         1-!> completion-index
         completion-index completions nth
@@ -177,7 +177,7 @@ global: completion-index
 
 global: prefix-offset
 
-: complete1 ( symbol -- )
+: complete1                             -- symbol ->
     symbol-name
     verify-string
     prefix-offset buffer sbuf-shorten
@@ -185,55 +185,55 @@ global: prefix-offset
     buffer length !> dot
     redisplay ;
 
-: do-tab ( -- )
+: do-tab
     completions [
         complete-next [ complete1 ] when*
     ] [
         dot 1 < [ ] return-if
 
         -- get word before dot
-        dot 1 - buffer [ 32 code-char = ] find-last-from  -- index/f elt/f
+        dot 1 - buffer [ 32 code-char = ] find-last-from        -- index/f elt/f
         [ 1 + ] [ drop 0 ] if !> prefix-offset
 
-        prefix-offset dot buffer sbuf-substring -- prefix
+        prefix-offset dot buffer sbuf-substring                 -- prefix
         complete-first [ complete1 ] when*
     ] if ;
 
-: do-shift-tab ( -- )
+: do-shift-tab
     completions [
         complete-prev
         [ complete1 ] when*
     ] when ;
 
-: do-enter ( -- ) reset-completion t !> done? ;
+: do-enter  reset-completion t !> done? ;
 
-: history-file-pathname ( -- string )
+: history-file-pathname                 -- -> string
     user-home ".feline-history" path-append ;
 
-: initialize-history ( -- )
+: initialize-history
     history-file-pathname dup regular-file?
     [ file-lines ] [ drop 100 <vector> ] if !> history ;
 
-: save-history ( -- )
+: save-history
     history
     [ length dup 100 - 0 max swap ] keep
     <slice>
     history-file-pathname set-file-lines ;
 
-: bind-key ( key action -- )
+: bind-key                              -- key action ->
     swap bindings set-at ;
 
-: lookup-key ( key -- symbol/f )
+: lookup-key                            -- key -> symbol/f
     bindings at ;
 
-: initialize-bindings ( -- )
+: initialize-bindings
     16 <hashtable> !> bindings
 
     key:enter           ' do-enter                      bind-key
     key:ctrl-c          ' bye                           bind-key
     key:escape          ' do-escape                     bind-key
-    key:del             ' do-bs                         bind-key   -- Linux
-    key:backspace       ' do-bs                         bind-key   -- Windows
+    key:del             ' do-bs                         bind-key        -- Linux
+    key:backspace       ' do-bs                         bind-key        -- Windows
     key:left            ' do-left                       bind-key
     key:right           ' do-right                      bind-key
     key:home            ' do-home                       bind-key
@@ -247,7 +247,7 @@ global: prefix-offset
     key:tab             ' do-tab                        bind-key
     key:shift-tab       ' do-shift-tab                  bind-key ;
 
-: do-normal-char ( c -- )
+: do-normal-char                        -- c ->
     dot buffer length < [
         dot buffer sbuf-insert-nth! dot 1 + !> dot redisplay
     ] [
@@ -256,15 +256,16 @@ global: prefix-offset
     reset-history
     reset-completion ;
 
-: process-key ( key -- )
+: process-key                           -- key ->
     dup printable-char?
     [ do-normal-char ]
     [ lookup-key [ call-symbol ] when* ]
     if ;
 
-: accept-key ( -- tagged-char) ekey ;
+: accept-key                            -- -> tagged-char
+    ekey ;
 
-: accept-string ( -- string )
+: accept-string                         -- -> string
     256 <sbuf> !> buffer
     bindings [ initialize-bindings ] unless
     history [ initialize-history ] unless
