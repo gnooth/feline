@@ -16,7 +16,7 @@
 using: feline ;
 in: feline
 
-: make-global ( string -> global )
+: make-global                           -- string -> global
     new-symbol-in-current-vocab
     dup symbol-set-global-bit
     dup <wrapper> ' symbol-value 2array array>quotation over symbol-set-def
@@ -32,13 +32,19 @@ syntax: >global:
     make-global
     symbol-set-value ;
 
-: make-thread-local ( string -> symbol )
+: make-thread-local-getter              -- string -> symbol
     new-symbol-in-current-vocab
     dup symbol-set-thread-local-bit
     dup <wrapper> ' current-thread-local-get 2array array>quotation over symbol-set-def
     dup compile-word ;
 
+: make-thread-local-setter              -- getter ->
+    :> getter
+    getter symbol-name "!" string-append new-symbol-in-current-vocab :> setter
+    getter <wrapper> ' current-thread-local-set 2array array>quotation setter symbol-set-def
+    setter compile-word ;
+
 syntax: thread-local:
     must-parse-token
-    make-thread-local
-    drop ;
+    make-thread-local-getter
+    make-thread-local-setter ;
