@@ -1,4 +1,4 @@
--- Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 using: feline ;
 in: feline
 
-: find-word-from-code-address ( tagged-code-address -- word/f )
+: find-word-from-code-address           -- tagged-code-address -> word/f
     >local: x
     all-words
     [
@@ -26,12 +26,12 @@ in: feline
     ]
     find nip ;
 
-: print-reg ( string untagged -- )
+: print-reg                             -- string untagged ->
     swap write-string
     "0x" write-string
     untagged>hex write-string ;
 
-: print-saved-registers ( -- )
+: print-saved-registers
     ?nl
     "Registers:" write-string nl
     4 tab "RAX = " saved-rax print-reg 40 tab "R8  = " saved-r8  print-reg nl
@@ -44,17 +44,17 @@ in: feline
     4 tab "RSP = " saved-rsp print-reg 40 tab "R15 = " saved-r15 print-reg nl
     4 tab "RIP = " saved-rip print-reg 40 tab "EFL = " saved-efl print-reg nl ;
 
-: format-address ( untagged -- )
+: format-address                        -- untagged ->
     untagged>hex dup length 16 swap - spaces
     "0x" write-string
     write-string ;
 
-: format-word ( tagged-code-address symbol -- )
+: format-word                           -- tagged-code-address symbol ->
     dup symbol-name write-string
     symbol-code-address -
     space '+' write-char space fixnum>string write-string ;
 
-: print-backtrace ( -- )
+: print-backtrace
     ?nl "Backtrace:" write-string
     get-saved-backtrace
     nl
@@ -64,4 +64,4 @@ in: feline
         nl
     ] each ;
 
-: bt ( -- ) print-backtrace ;
+: bt print-backtrace ;

@@ -1,4 +1,4 @@
--- Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -16,10 +16,10 @@
 using: feline ;
 in: dump
 
-: .2 ( ub -- )
+: .2                                    -- ub ->
     >hex dup length 2 < [ '0' write-char ] when write-string ;
 
-: dump-line ( addr len -- )
+: dump-line                             -- addr len ->
     ?nl
     over >hex dup length 12 swap - spaces write-string 2 spaces
     <range> [ [ c@ .2 space ] each ] keep
@@ -29,7 +29,7 @@ in: dump
 using: dump feline ;
 in: feline
 
-: dump ( addr len -- )
+: dump                                  -- addr len ->
     ?nl 15 spaces
     over 16 <range> [ 15 bitand >hex write-string 2 spaces ] each
     [ dup 16 > not ] [ over 16 dump-line 16 - swap 16 + swap ] until

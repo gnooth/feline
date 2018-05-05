@@ -1,4 +1,4 @@
--- Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 using: feline ;
 in: feline
 
-: blank? ( char -- ? )
+: blank?        -- char -> ?
     { 9 10 13 32 } member? ;
 
 {
@@ -37,7 +37,7 @@ feline-source-directory "disassembler.feline" path-append >constant: disassemble
 
 global: disassembler-file-write-time
 
-: maybe-load-disassembler ( -- )
+: maybe-load-disassembler
     disassembler.feline file-write-time disassembler-file-write-time neq? [
         disassembler.feline [ load ] [ file-write-time !> disassembler-file-write-time ] bi
     ] when ;
@@ -53,7 +53,7 @@ private
 
 feline-home "feral" path-append "editor.feline" path-append >constant: editor.feline
 
-: load-editor ( -- )
+: load-editor
     [
         f load-verbose? set
         editor.feline load

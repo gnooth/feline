@@ -1,4 +1,4 @@
--- Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -22,13 +22,13 @@ global: class
 
 global: accessor-prefix
 
-global: class-name ( string )
+global: class-name                      -- string
 
-global: slot-names ( vector )
+global: slot-names                      -- vector
 
-global: class-symbol ( symbol )
+global: class-symbol                    -- symbol
 
-: define-reader ( slot-name index -- )
+: define-reader                         -- slot-name index ->
     [
         accessor-prefix
         swap
@@ -46,7 +46,7 @@ global: class-symbol ( symbol )
     feline:compile-word
 ;
 
-: define-writer ( slot-name index -- )
+: define-writer                         -- slot-name index ->
     [
         accessor-prefix
         swap
@@ -65,20 +65,20 @@ global: class-symbol ( symbol )
     feline:compile-word
 ;
 
-: define-accessors ( -- )
+: define-accessors
     class-name "-" string-append !> accessor-prefix
     slot-names [ define-reader ] each-index
     slot-names [ define-writer ] each-index
 ;
 
-: define-class-symbol ( -- )
+: define-class-symbol
     class-name feline:new-symbol-in-current-vocab !> class-symbol
 
     class-symbol <wrapper> 1quotation class-symbol symbol-set-def
     class-symbol feline:compile-word
 ;
 
-: define-tuple-predicate ( -- )
+: define-tuple-predicate
     class-name "?" string-append
     feline:new-symbol-in-current-vocab  -- symbol
 
@@ -91,7 +91,7 @@ global: class-symbol ( symbol )
     feline:compile-word
 ;
 
-: define-tuple-class ( -- )
+: define-tuple-class
 
     define-class-symbol
 
