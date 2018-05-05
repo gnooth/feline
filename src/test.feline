@@ -8,7 +8,6 @@ default-visibility get ' feline:public assert-eq
 public
 
 -- this is a comment
-( this is another comment )
 
 interactive? get assert-false
 
@@ -41,7 +40,7 @@ test: string-literal-escapes-test-1
 
 string-literal-escapes-test-1
 
-test: string?-test-1 ( -- )
+test: string?-test-1
     t string? assert-false
     f string? assert-false
     42 string? assert-false
@@ -55,7 +54,7 @@ string?-test-1
 
 -- Test for the Factor/Feline version of pick.
 -- The Forth version of pick is different.
-test: pick-test-1 ( -- )
+test: pick-test-1
     clear
     1 2 3 pick get-data-stack { 1 2 3 1 } sequence= assert-true
     clear
@@ -65,7 +64,7 @@ pick-test-1
 
 -- Test for the Factor/Feline version of 2over.
 -- The Forth version of 2over is different.
-test: 2over-test-1 ( -- )
+test: 2over-test-1
     clear
     1 2 3 2over get-data-stack { 1 2 3 1 2 } sequence= assert-true
     clear
@@ -73,7 +72,7 @@ test: 2over-test-1 ( -- )
 
 2over-test-1
 
-test: fixnum?-test-1 ( -- )
+test: fixnum?-test-1
     most-negative-fixnum fixnum? assert-true
     -3 fixnum? assert-true
     -2 fixnum? assert-true
@@ -90,20 +89,20 @@ test: fixnum?-test-1 ( -- )
 
 fixnum?-test-1
 
-test: fixnum-test-1 ( -- )
+test: fixnum-test-1
     1 2 + 3 assert=
     1 2 + fixnum? assert-true
 ;
 
 fixnum-test-1
 
-test: fixnum-test-2 ( -- )
+test: fixnum-test-2
     -1 -2 + -3 assert=
 ;
 
 fixnum-test-2
 
-test: fixnum-test-3 ( -- )
+test: fixnum-test-3
     0 fixnum? assert-true
     0 0 assert=
     1 0 = assert-false
@@ -115,7 +114,7 @@ test: fixnum-test-3 ( -- )
 fixnum-test-3
 
 -- fixnum<
-test: fixnum<-test-1 ( -- )
+test: fixnum<-test-1
     0 0 fixnum< assert-false
     1 1 fixnum< assert-false
     1 2 fixnum< assert-true
@@ -132,7 +131,7 @@ test: fixnum<-test-1 ( -- )
 fixnum<-test-1
 
 -- fixnum<=
-test: fixnum<=-test-1 ( -- )
+test: fixnum<=-test-1
     0 0 fixnum<= assert-true
     1 1 fixnum<= assert-true
     1 2 fixnum<= assert-true
@@ -150,7 +149,7 @@ test: fixnum<=-test-1 ( -- )
 
 fixnum<=-test-1
 
-test: fixnum>-test-1 ( -- )
+test: fixnum>-test-1
     0 0 fixnum> assert-false
     1 1 fixnum> assert-false
     1 2 fixnum> assert-false
@@ -169,7 +168,7 @@ test: fixnum>-test-1 ( -- )
 
 fixnum>-test-1
 
-test: fixnum>=-test-1 ( -- )
+test: fixnum>=-test-1
     0 0 fixnum>= assert-true
     1 1 fixnum>= assert-true
     1 2 fixnum>= assert-false
@@ -187,7 +186,7 @@ test: fixnum>=-test-1 ( -- )
 
 fixnum>=-test-1
 
-test: >=-test-1 ( -- )
+test: >=-test-1
      0  0 >= assert-true
      1  1 >= assert-true
      1  2 >= assert-false
@@ -211,21 +210,21 @@ test: >=-test-1 ( -- )
 
 >=-test-1
 
-test: fixnum-test-5 ( -- )
+test: fixnum-test-5
     1 2 fixnum- -1 assert=
     1 2 - -1 assert=
 ;
 
 fixnum-test-5
 
-test: fixnum-test-6 ( -- )
+test: fixnum-test-6
     2 3 fixnum* 6 assert=
     2 3 * 6 assert=
 ;
 
 fixnum-test-6
 
-test: fixnum-test-7 ( -- )
+test: fixnum-test-7
     8 3 fixnum/i 2 assert=
     8 3 / float? assert
     8 3 / 2 = assert-false
@@ -238,7 +237,7 @@ test: fixnum-test-7 ( -- )
 
 fixnum-test-7
 
-test: mod-test-1 ( -- )
+test: mod-test-1
      7  3 mod  1 assert=
      7 -3 mod  1 assert=
     -7  3 mod -1 assert=
@@ -276,7 +275,7 @@ test: fixnum-abs-test-1
 fixnum-abs-test-1
 
 -- fixnum-bitand, bitand
-test: fixnum-test-9 ( -- )
+test: fixnum-test-9
     15 7 bitand 7 assert=
     15 0xf0 bitand 0 assert=
     3 1 bitand 1 assert=
@@ -285,7 +284,7 @@ test: fixnum-test-9 ( -- )
 fixnum-test-9
 
 -- fixnum+
-test: fixnum-test-10 ( -- )
+test: fixnum-test-10
      42  87 fixnum+  129 assert=
     -42  87 fixnum+   45 assert=
      42 -87 fixnum+  -45 assert=
@@ -304,7 +303,7 @@ test: fixnum-test-10 ( -- )
 
 fixnum-test-10
 
-test: fixnum>string-test-1 ( -- )
+test: fixnum>string-test-1
     -17 fixnum>string "-17" assert=
       0 fixnum>string   "0" assert=
      42 fixnum>string  "42" assert=
@@ -319,7 +318,7 @@ test: fixnum>string-test-1 ( -- )
 
 fixnum>string-test-1
 
-test: fixnum>hex-test-1 ( -- )
+test: fixnum>hex-test-1
     -17 fixnum>hex "-11" assert=
       0 fixnum>hex   "0" assert=
      42 fixnum>hex  "2a" assert=
@@ -337,7 +336,7 @@ test: fixnum>hex-test-1 ( -- )
 
 fixnum>hex-test-1
 
-test: number>string-test-1 ( -- )
+test: number>string-test-1
     -17 number>string "-17" assert=
     0 number>string "0" assert=
     42 number>string "42" assert=
@@ -351,7 +350,7 @@ test: number>string-test-1 ( -- )
 
 number>string-test-1
 
-test: fixnum-max-test-1 ( -- )
+test: fixnum-max-test-1
     1 2 fixnum-max 2 assert-eq
     2 1 fixnum-max 2 assert-eq
     -1 2 fixnum-max 2 assert-eq
@@ -364,7 +363,7 @@ test: fixnum-max-test-1 ( -- )
 
 fixnum-max-test-1
 
-test: max-test-1 ( -- )
+test: max-test-1
     1 2 max 2 assert-eq
     2 1 max 2 assert-eq
     -1 2 max 2 assert-eq
@@ -377,7 +376,7 @@ test: max-test-1 ( -- )
 
 max-test-1
 
-test: fixnum-min-test-1 ( -- )
+test: fixnum-min-test-1
     1 2 fixnum-min 1 assert-eq
     2 1 fixnum-min 1 assert-eq
     -1 2 fixnum-min -1 assert-eq
@@ -390,7 +389,7 @@ test: fixnum-min-test-1 ( -- )
 
 fixnum-min-test-1
 
-test: min-test-1 ( -- )
+test: min-test-1
     1 2 min 1 assert-eq
     2 1 min 1 assert-eq
     -1 2 min -1 assert-eq
@@ -419,7 +418,7 @@ test: dip-test-1
 
 dip-test-1
 
-test: 2dip-test-1 ( -- )
+test: 2dip-test-1
     clear
     42 17 89 [ 1 + ] 2dip get-data-stack { 43 17 89 } sequence= assert-true
     clear
@@ -427,7 +426,7 @@ test: 2dip-test-1 ( -- )
 
 2dip-test-1
 
-test: each-index-test-1 ( -- )
+test: each-index-test-1
     clear
     { "a" "b" "c" } [ 2array ] each-index get-data-stack
     { { "a" 0 } { "b" 1 } { "c" 2 } } sequence= assert-true
@@ -447,7 +446,7 @@ test: map-test-1
 
 map-test-1
 
-test: map-index-test-1 ( -- )
+test: map-index-test-1
     clear
     { "a" "b" "c" } [ 2array ] map-index get-data-stack
     { { { "a" 0 } { "b" 1 } { "c" 2 } } } assert=
@@ -459,7 +458,7 @@ test: map-index-test-1 ( -- )
 
 map-index-test-1
 
-test: keep-test-1 ( -- )
+test: keep-test-1
     42 [ dup ] keep get-data-stack vector{ 42 42 42 } sequence= assert-true
     clear
 ;
@@ -473,7 +472,7 @@ test: bi@-test-1
 
 bi@-test-1
 
-test: array-test-1 ( -- )
+test: array-test-1
     10 42 <array>
     [ array? assert-true ] keep
     [ length 10 assert= ] keep
@@ -503,7 +502,7 @@ test: array-test-3
 
 array-test-3
 
-test: 1array-test-1 ( -- )
+test: 1array-test-1
     clear
     71 1array get-data-stack { { 71 } } sequence= assert-true
     clear
@@ -512,7 +511,7 @@ test: 1array-test-1 ( -- )
 
 1array-test-1
 
-test: 2array-test-1 ( -- )
+test: 2array-test-1
     clear
     "test1" "test2" 2array get-data-stack { { "test1" "test2" } } sequence= assert-true
     clear
@@ -521,7 +520,7 @@ test: 2array-test-1 ( -- )
 
 2array-test-1
 
-test: 3array-test-1 ( -- )
+test: 3array-test-1
     clear
     1 2 3 3array get-data-stack { { 1 2 3 } } sequence= assert-true
     clear
@@ -531,7 +530,7 @@ test: 3array-test-1 ( -- )
 
 3array-test-1
 
-test: 4array-test-1 ( -- )
+test: 4array-test-1
     clear
     1 2 3 4 4array get-data-stack { { 1 2 3 4 } } sequence= assert-true
     clear
@@ -542,7 +541,7 @@ test: 4array-test-1 ( -- )
 4array-test-1
 
 -- vector-insert-nth
-test: vector-test-1 ( -- )
+test: vector-test-1
     17 0 vector{ 0 1 2 3 } [ vector-insert-nth ] keep
     vector{ 17 0 1 2 3 } sequence= assert-true
     clear
@@ -560,7 +559,7 @@ test: vector-remove-nth!-test-1
 
 vector-remove-nth!-test-1
 
-test: vector-test-2 ( -- )
+test: vector-test-2
     1 <vector> [ vector? assert-true ] keep
     100 [ dup pick vector-set-nth ] each-integer
     [ [ assert-eq ] vector-each-index ] keep
@@ -587,7 +586,7 @@ test: vector-test-2 ( -- )
 
 vector-test-2
 
-test: vector-test-3 ( -- )
+test: vector-test-3
     1 <vector> [ vector? assert-true ] keep
     10 [ over vector-push ] each-integer
     10 [ dup pick vector-nth assert-eq ] each-integer
@@ -599,7 +598,7 @@ test: vector-test-3 ( -- )
 vector-test-3
 
 -- vector-pop*
-test: vector-test-4 ( -- )
+test: vector-test-4
     vector{ 1 2 3 } [ vector-pop* ] keep
     [ length 2 assert= ] keep
     [ vector-pop* ] keep
@@ -611,7 +610,7 @@ test: vector-test-4 ( -- )
 vector-test-4
 
 -- vector-last
-test: vector-test-5 ( -- )
+test: vector-test-5
     clear
     vector{ 1 2 3 } vector-last get-data-stack { 3 } sequence= assert-true
     clear
@@ -654,7 +653,7 @@ test: vector-?nth-test-1
 
 vector-?nth-test-1
 
-test: vector>array-test-1 ( -- )
+test: vector>array-test-1
     vector{ 1 2 3 } vector>array
     [ array? assert-true ] keep
     { 1 2 3 } assert=
@@ -662,31 +661,31 @@ test: vector>array-test-1 ( -- )
 
 vector>array-test-1
 
-: %local-test-1 ( -- 42 )
+: %local-test-1                         -- -> 42
     local: foo
     42 !> foo
     foo
 ;
 
-test: local-test-1 ( -- )
+test: local-test-1
     %local-test-1 42 assert-eq
 ;
 
 local-test-1
 
-: %local-test-2 ( -- )
+: %local-test-2
     42 >local: foo
     17 >local: bar
     foo bar -
 ;
 
-test: local-test-2 ( -- )
+test: local-test-2
     %local-test-2 25 assert-eq
 ;
 
 local-test-2
 
-test: if-test-1 ( -- )
+test: if-test-1
     t [ 42 ] [ 17 ] if 42 assert-eq
     f [ 42 ] [ 17 ] if 17 assert-eq
     0 [ 42 ] [ 17 ] if 42 assert-eq
@@ -694,7 +693,7 @@ test: if-test-1 ( -- )
 
 if-test-1
 
-test: if*-test-1 ( -- )
+test: if*-test-1
     clear
     t [ 42 ] [ 17 ] if* get-data-stack { t 42 } sequence= assert-true
     clear
@@ -706,7 +705,7 @@ test: if*-test-1 ( -- )
 
 if*-test-1
 
-test: symbol?-test-1 ( -- )
+test: symbol?-test-1
     ' dup symbol? assert-true
     ' assert-true symbol? assert-true
     42 symbol? assert-false
@@ -861,7 +860,7 @@ test: string>number-test-5
 
 string>number-test-5
 
-test: '-test-1 ( -- )
+test: '-test-1
     [ ' dup ] call symbol? assert-true
     3 [ dup ] call get-data-stack { 3 3 } sequence= assert-true
     clear
@@ -869,7 +868,7 @@ test: '-test-1 ( -- )
 
 '-test-1
 
-test: hashcode-test-1 ( -- )
+test: hashcode-test-1
     "test"
     [ string-hashcode fixnum? assert-true ] keep
     [ hashcode dup fixnum? assert-true ] keep
@@ -878,7 +877,7 @@ test: hashcode-test-1 ( -- )
 
 hashcode-test-1
 
-test: hashcode-test-2 ( -- )
+test: hashcode-test-2
     ' dup
     [ symbol-name "dup" string= assert-true ] keep
     [ symbol-vocab-name "feline" string= assert-true ] keep
@@ -889,7 +888,7 @@ test: hashcode-test-2 ( -- )
 
 hashcode-test-2
 
-test: hashtable-test-1 ( -- )
+test: hashtable-test-1
     local: ht
     16 <hashtable> !> ht
     42 "parker" ht set-at
@@ -906,13 +905,13 @@ test: hashtable-test-1 ( -- )
 
 hashtable-test-1
 
-test: hashtable-test-2 ( -- )
+test: hashtable-test-2
     72 <hashtable> hashtable-capacity 128 assert=
 ;
 
 hashtable-test-2
 
-test: hashtable-test-3 ( -- )
+test: hashtable-test-3
     local: ht
     16 <hashtable> !> ht
     1000 [ dup number>string ht set-at ] each-integer
@@ -927,7 +926,7 @@ global: ht
 100 >constant: n1       -- total number of entries
 40  >constant: n2       -- number of entries to delete
 
-test: hashtable-test-4 ( -- )
+test: hashtable-test-4
     1 <hashtable> !> ht
     n1 [ dup number>string ht set-at ] each-integer
     n1 [ dup number>string ht at assert= ] each-integer
@@ -971,7 +970,7 @@ test: hashtable-test-5
 
 hashtable-test-5
 
-test: length-test-1 ( -- )
+test: length-test-1
     "test" length 4 assert-eq
     "testing" string>sbuf length 7 assert-eq
     { 1 2 3 } length 3 assert-eq
@@ -983,7 +982,7 @@ test: length-test-1 ( -- )
 
 length-test-1
 
-test: find-test-1 ( -- )
+test: find-test-1
     vector{ 1 2 3 4 5 6 } [ 3 = ] find
     get-data-stack vector{ 2 3 } sequence= assert-true
     clear
@@ -997,7 +996,7 @@ test: find-test-1 ( -- )
 
 find-test-1
 
-test: find-from-test-1 ( -- )
+test: find-from-test-1
     4 "this is a test" [ 'e' = ] find-from
     get-data-stack { 11 'e' } sequence= assert-true
     clear
@@ -1034,7 +1033,7 @@ test: find-last-from-test-1
 
 find-last-from-test-1
 
-test: map-find-test-1 ( -- )
+test: map-find-test-1
     clear
     vector{ 1 2 3 4 5 6 } [ 3 = ] map-find get-data-stack { t 3 } sequence= assert-true
     clear
@@ -1072,7 +1071,7 @@ test: ?lookup-symbol-test-1
 
 ?lookup-symbol-test-1
 
-test: immediate?-test-1 ( -- )
+test: immediate?-test-1
     ' symbol: immediate? assert-true
     ' dup immediate? assert-false
     42 immediate? assert-false
@@ -1082,13 +1081,13 @@ test: immediate?-test-1 ( -- )
 
 immediate?-test-1
 
-test: sequence=-test-1 ( -- )
+test: sequence=-test-1
     { "this is a test" } { "this is a test" } sequence= assert-true
 ;
 
 sequence=-test-1
 
-test: symbol-props-test-1 ( -- )
+test: symbol-props-test-1
     clear
     "foo" ' dup symbol-prop get-data-stack { f } sequence= assert-true
     clear
@@ -1102,7 +1101,7 @@ test: symbol-props-test-1 ( -- )
 
 symbol-props-test-1
 
-test: symbol-props-gc-test-1 ( -- )
+test: symbol-props-gc-test-1
     "this is a test" "foo" ' dup symbol-set-prop
     "foo" ' dup symbol-prop get-data-stack { "this is a test" } sequence= assert-true
     clear
@@ -1118,13 +1117,13 @@ test: symbol-props-gc-test-1 ( -- )
 
 symbol-props-gc-test-1
 
-test: times-test-1 ( -- )
+test: times-test-1
     0 10 [ 1 + ] times 10 assert-eq
 ;
 
 times-test-1
 
-test: filter-test-1 ( -- )
+test: filter-test-1
     vector{ 1 2 3 4 } [ 3 < ] filter vector{ 1 2 } assert=
     { 1 2 3 4 } [ 3 < ] filter { 1 2 } assert=
 
@@ -1134,7 +1133,7 @@ test: filter-test-1 ( -- )
 
 filter-test-1
 
-test: in-bounds?-test-1 ( -- )
+test: in-bounds?-test-1
     { 1 2 3 }
     0 over in-bounds? assert-true
     1 over in-bounds? assert-true
@@ -1181,7 +1180,7 @@ test: while-test-1
 
 while-test-1
 
-test: bi-test-1 ( -- )
+test: bi-test-1
     clear
     42 [ 1 + ] [ 2 + ] bi get-data-stack { 43 44 } sequence= assert-true
     clear
@@ -1255,7 +1254,7 @@ tuple-instance-test-1
 
 global: temp-string "test" !> temp-string
 
-test: tuple-test-1 ( -- )
+test: tuple-test-1
     foo make-instance
     [ foo? assert-true ] keep
     [ foo-a assert-false ] keep
@@ -1281,15 +1280,15 @@ tuple-test-1
 test: vocab?-test-1
     42 vocab? assert-false
     "feline" vocab? assert-false
-    "feline" lookup-vocab ( vocab ? ) assert-true vocab? assert-true
+    "feline" lookup-vocab assert-true vocab? assert-true
 ;
 
 vocab?-test-1
 
 test: lookup-vocab-test-1
-    "feline" lookup-vocab ( vocab ? ) assert-true vocab? assert-true
-    "feline" lookup-vocab ( vocab ? ) assert-true ( vocab ) lookup-vocab assert-true vocab? assert-true
-    "feline" lookup-vocab ( vocab ? ) assert-true ( vocab ) dup lookup-vocab assert-true assert-eq
+    "feline" lookup-vocab assert-true vocab? assert-true
+    "feline" lookup-vocab assert-true lookup-vocab assert-true vocab? assert-true
+    "feline" lookup-vocab assert-true dup lookup-vocab assert-true assert-eq
     current-vocab lookup-vocab assert-true vocab? assert-true
     "not a vocab" lookup-vocab assert-false vocab? assert-false
 ;
@@ -1309,7 +1308,7 @@ test: set-current-vocab-test-1
 
 set-current-vocab-test-1
 
-test: unless*-test-1 ( -- )
+test: unless*-test-1
     clear
     f [ 42 ] unless* get-data-stack { 42 } assert=
     clear
@@ -1323,13 +1322,13 @@ unless*-test-1
 
 global: zork
 
-test: global-test-1 ( -- )
+test: global-test-1
     42 !> zork zork 42 assert-eq
 ;
 
 global-test-1
 
--- : global-test-2 ( -- )
+-- : global-test-2
 --     << last-word symbol-name >> ?nl write-string
 --     87 ' zork set-global
 --     ' zork get-global 87 eq? assert-true
@@ -1347,7 +1346,7 @@ global-test-1
 
 -- global-test-2
 
--- : global-test-3 ( -- )
+-- : global-test-3
 --     << last-word symbol-name >> ?nl write-string
 --     f zork!
 --     zork assert-false
@@ -1389,7 +1388,7 @@ test: member?-test-1
 
 member?-test-1
 
-test: member?-test-2 ( -- )
+test: member?-test-2
     "bar" { "foo" "bar" "baz" } member? 1 assert=
     "bag" { "foo" "bar" "baz" } member? assert-false
     4 { 1 2 3 4 } member? 3 assert=
@@ -1423,7 +1422,7 @@ test: any?-test-1
 
 any?-test-1
 
-test: string-head-test-1 ( -- )
+test: string-head-test-1
     "this is a test"
     [ 4 string-head "this" assert= ] keep
 
@@ -1437,7 +1436,7 @@ test: string-head-test-1 ( -- )
 
 string-head-test-1
 
-test: string-tail-test-1 ( -- )
+test: string-tail-test-1
     "this is a test"
     [ 10 string-tail "test" assert= ] keep
     [ 14 string-tail [ string? assert-true ] [ length zero? assert-true ] bi ] keep
@@ -1449,13 +1448,13 @@ string-tail-test-1
 
 magenta >constant: test-magenta
 
-test: constant-test-1 ( -- )
+test: constant-test-1
     test-magenta 5 assert-eq
 ;
 
 constant-test-1
 
-test: string-skip-whitespace-test-1 ( -- )
+test: string-skip-whitespace-test-1
     "   this is a test   "
     [  0 swap string-skip-whitespace  3 assert-eq ] keep
     [  2 swap string-skip-whitespace  3 assert-eq ] keep
@@ -1474,7 +1473,7 @@ test: string-skip-whitespace-test-1 ( -- )
 string-skip-whitespace-test-1
 
 -- multiline string
-test: string-skip-whitespace-test-2 ( -- )
+test: string-skip-whitespace-test-2
     "   this is
 a multiline string   "
     [  0 swap string-skip-whitespace  3 assert-eq ] keep
@@ -1490,7 +1489,7 @@ a multiline string   "
 
 string-skip-whitespace-test-2
 
-test: string-skip-to-whitespace-test-1 ( -- )
+test: string-skip-to-whitespace-test-1
     "   this is a test   "
     [  0 swap string-skip-to-whitespace  0 assert-eq ] keep
     [  2 swap string-skip-to-whitespace  2 assert-eq ] keep
@@ -1510,7 +1509,7 @@ test: string-skip-to-whitespace-test-1 ( -- )
 string-skip-to-whitespace-test-1
 
 -- multiline string
-test: string-skip-to-whitespace-test-2 ( -- )
+test: string-skip-to-whitespace-test-2
     "   this is
 a multiline string   "
     [  3 swap string-skip-to-whitespace  7 assert-eq ] keep
@@ -1523,7 +1522,7 @@ a multiline string   "
 
 string-skip-to-whitespace-test-2
 
-test: ?-test-1 ( -- )
+test: ?-test-1
     t "yes" "no" ? "yes" assert=
     f "yes" "no" ? "no"  assert=
     0 "yes" "no" ? "yes" assert=
@@ -1880,7 +1879,7 @@ test: vector-find-string-test-1
 
 vector-find-string-test-1
 
-test: 1+!>-test-1 ( -- )
+test: 1+!>-test-1
     42 >local: bar
     bar 42 assert=
     1+!> bar
@@ -1891,7 +1890,7 @@ test: 1+!>-test-1 ( -- )
 
 1+!>-test-1
 
-test: 1-!>-test-1 ( -- )
+test: 1-!>-test-1
     42 >local: bar
     bar 42 assert=
     1-!> bar
@@ -1904,7 +1903,7 @@ test: 1-!>-test-1 ( -- )
 
 global: bar
 
-test: 1+!>-test-2 ( -- )
+test: 1+!>-test-2
     ' bar symbol-global? assert-true
     42 !> bar
     bar 42 assert=
@@ -1916,7 +1915,7 @@ test: 1+!>-test-2 ( -- )
 
 1+!>-test-2
 
-test: 1-!>-test-2 ( -- )
+test: 1-!>-test-2
     ' bar symbol-global? assert-true
     42 !> bar
     bar 42 assert=
@@ -1928,7 +1927,7 @@ test: 1-!>-test-2 ( -- )
 
 1-!>-test-2
 
-test: 1+!>-test-3 ( -- )
+test: 1+!>-test-3
     ' bar symbol-global? assert-true
     ' test:bar ' bar assert-eq
 
@@ -1952,7 +1951,7 @@ test: 1+!>-test-3 ( -- )
 
 1+!>-test-3
 
-: %case-test-1 ( x -- y )
+: %case-test-1                          -- x -> y
     {
         { 1 [ "one" ] }
         { 2 [ "two" ] }
@@ -1973,7 +1972,7 @@ test: case-test-1
 
 case-test-1
 
-: %case-test-2 ( x -- y )
+: %case-test-2                          -- x -> y
     {
         { 1 [ "one" ] }
         { 2 [ "two" ] }
@@ -2008,7 +2007,7 @@ test: case-test-3
 
 case-test-3
 
-: %case-test-4 ( x -- y )
+: %case-test-4                          -- x -> y
     {
         { "fee"  [ 1 ] }
         { "fie"  [ 2 ] }
@@ -2027,7 +2026,7 @@ test: case-test-4
 
 case-test-4
 
-: %cond-test-1 ( x -- y )
+: %cond-test-1                          -- x -> y
     {
         { [ dup 1 = ] [ drop "one" ] }
         { [ dup 2 = ] [ drop "two" ] }
@@ -2046,7 +2045,7 @@ test: cond-test-1
 
 cond-test-1
 
-: %cond-test-2 ( x -- y )
+: %cond-test-2                          -- x -> y
     {
         { [ dup 1 = ] [ drop "one" ] }
         { [ dup 2 = ] [ drop "two" ] }
@@ -2084,7 +2083,7 @@ test: cond-test-4
 
 cond-test-4
 
-: %return-if-test-1 ( arg -- "yes"/"no" )
+: %return-if-test-1                     -- arg -> "yes"/"no"
     [ "yes" ] return-if
     "no" ;
 
