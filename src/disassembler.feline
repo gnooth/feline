@@ -66,7 +66,7 @@ global: ddisp                   -- destination displacement
 
 global: #operands
 
-: reset-disassembler ( -- )
+: reset-disassembler
     0 !> prefix
     0 !> byte2
     0 !> operand-size-prefix
@@ -94,18 +94,18 @@ global: #operands
 
     2 !> #operands ;
 
-: reg64-name ( register-number -- string )
+: reg64-name                            -- register-number -> string
     { "rax" "rcx" "rdx" "rbx" "rsp" "rbp" "rsi" "rdi"
       "r8"  "r9"  "r10" "r11" "r12" "r13" "r14" "r15" } array-nth ;
 
-: reg32-name ( register-number -- string )
+: reg32-name                            -- register-number -> string
     { "eax"  "ecx"  "edx"  "ebx"  "esp"  "ebp"  "esi"  "edi"
       "r8d"  "r9d"  "r10d" "r11d" "r12d" "r13d" "r14d" "r15d" } array-nth ;
 
-: reg8-name ( register-number -- string )
+: reg8-name                             -- register-number -> string
     { "al" "cl" "dl" "bl" } array-nth ;
 
-: .register-name ( register-number size -- )
+: .register-name                        -- register-number size -> void
     >local: size
     >local: n
     {
@@ -114,9 +114,10 @@ global: #operands
         { [ size  8 = ] [ n  reg8-name write-string ] }
     } cond ;
 
-: .reg64  ( +n -- ) reg64-name write-string ;
+: .reg64                                -- register-number -> void
+    reg64-name write-string ;
 
-: .size ( n -- )
+: .size                                 -- n -> void
     {
         {  8 [ "byte"  ] }
         { 16 [ "word"  ] }
@@ -125,7 +126,7 @@ global: #operands
     } case
     write-string space ;
 
-: .relative ( base index scale disp size -- )
+: .relative                             -- base index scale disp size -> void
     >local: size
     >local: disp
     >local: scale
@@ -147,32 +148,32 @@ global: #operands
     ] unless
     "]" write-string ;
 
-: .memory-operand ( disp size -- )
+: .memory-operand                       -- disp size -> void
     .size "[" write-string hex. "]" write-string ;
 
-: .ip ( -- ) ?nl ip hex. space ;
+: .ip ?nl ip hex. space ;
 
-: ++ip ( -- ) 1+!> ip ;
+: ++ip 1+!> ip ;
 
-: mnemonic-col ( -- ) 42 tab ;
+: mnemonic-col 42 tab ;
 
-: dest-col     ( -- ) 50 tab ;
+: dest-col 50 tab ;
 
-: comment-col  ( -- ) 64 tab ;
+: comment-col 64 tab ;
 
-: .mnemonic ( -- ) mnemonic [ mnemonic-col write-string ] when* ;
+: .mnemonic mnemonic [ mnemonic-col write-string ] when* ;
 
-: .hexbyte ( unsigned-byte -- )
+: .hexbyte                              -- unsigned-byte -> void
     >hex dup length 2 < [ '0' write-char ] when write-string ;
 
-: .bytes ( u -- )
+: .bytes                                -- u -> void
     [ instruction-start + c@ .hexbyte space ] each-integer ;
 
-: .instruction-bytes ( -- )  ip instruction-start - .bytes ;
+: .instruction-bytes ip instruction-start - .bytes ;
 
-: .sep  ( -- )  ", " write-string ;
+: .sep ", " write-string ;
 
-: .immediate-operand ( -- )
+: .immediate-operand
     immediate-operand {
         { [ signed? ]     [ dec. ] }
         { [ dup uint64? ] [ hex. ] }
@@ -180,7 +181,7 @@ global: #operands
         [ hex. ]
     } cond ;
 
-: .dest ( -- )
+: .dest
     dest-col
     {
         { [ dreg ] [ dreg dsize .register-name ] }
@@ -190,7 +191,7 @@ global: #operands
         [ ".dest" error ]
     } cond ;
 
-: .source ( -- )
+: .source
     {
         { [ immediate-operand? ] [ .sep .immediate-operand ] }
         { [ sbase ] [ .sep sbase sindex sscale sdisp ssize .relative ] }
@@ -199,7 +200,7 @@ global: #operands
         [ ".source" error ]
     } cond ;
 
-: .inst ( -- )
+: .inst
     .instruction-bytes
     .mnemonic
     #operands 0 > [ .dest ] when
@@ -207,28 +208,39 @@ global: #operands
 
 256 f <array> >global: handlers
 
-: install-handler ( handler opcode -- ) handlers array-set-nth ;
+: install-handler                       -- handler opcode -> void
+    handlers array-set-nth ;
 
-: handler ( opcode -- handler ) handlers array-nth ;
+: handler                               -- opcode -> handler
+    handlers array-nth ;
 
-: execute-handler ( handler -- )
+: execute-handler                       -- handler -> void
     [ call-symbol ] [ "no handler" error ] if* ;
 
-: next-byte ( -- byte ) ip c@ ++ip ;
+: next-byte                             -- void -> byte
+    ip c@ ++ip ;
 
-: next-signed-byte ( -- signed-byte ) ip c@s ++ip ;
+: next-signed-byte                      -- void -> signed-byte
+    ip c@s ++ip ;
 
-: next-int32 ( -- int32 ) ip l@s ip 4 + !> ip ;
+: next-int32                            -- void -> int32
+    ip l@s ip 4 + !> ip ;
 
-: next-uint32 ( -- uint32 ) ip l@ ip 4 + !> ip ;
+: next-uint32                           -- void -> uint32
+    ip l@ ip 4 + !> ip ;
 
-: next-uint64 ( -- uint64 ) ip @ ip 8 + !> ip ;
+: next-uint64                           -- void -> uint64
+    ip @ ip 8 + !> ip ;
 
-: next-uint16 ( -- int16 ) ip w@ ip 2 + !> ip ;
+: next-uint16                           -- void -> int16
+    ip w@ ip 2 + !> ip ;
 
-: (modrm-mod) ( modrm-byte -- mod ) 0b11000000 bitand 6 rshift ;
-: (modrm-reg) ( modrm-byte -- reg ) 0b00111000 bitand 3 rshift ;
-: (modrm-rm)  ( modrm-byte -- rm  ) 0b00000111 bitand ;
+: %modrm-mod                            -- modrm-byte -> mod
+    0b11000000 bitand 6 rshift ;
+: %modrm-reg                            -- modrm-byte -> reg
+    0b00111000 bitand 3 rshift ;
+: %modrm-rm                             -- modrm-byte -> rm
+    0b00000111 bitand ;
 
 global: modrm-mod
 global: modrm-reg
@@ -237,66 +249,74 @@ global: modrm-rm
 -- regop is a synonym of modrm-reg
 global: regop   -- REGister or OPcode extension (depending on the instruction)
 
-: !modrm-byte ( -- )
+: !modrm-byte
     next-byte dup !> modrm-byte
-    dup (modrm-mod) !> modrm-mod
-    dup (modrm-reg) !> modrm-reg
-    (modrm-rm) !> modrm-rm
+    dup %modrm-mod !> modrm-mod
+    dup %modrm-reg !> modrm-reg
+    %modrm-rm !> modrm-rm
     modrm-reg !> regop ;
 
-: register-reg ( n1 -- n2 )
+: register-reg                          -- n1 -> n2
     prefix 4 rshift 4 = [
         prefix rex.r bitand zero? not [
             8 bitor
         ] when
     ] when ;
 
-: register-rm ( n1 -- n2 )
+: register-rm                           -- n1 -> n2
     prefix 4 rshift 4 = [
         prefix rex.b bitand zero? not [
             8 bitor
         ] when
     ] when ;
 
-: .2 ( ub -- ) fixnum>binary dup length 2 <      [ '0' write-char ] when  write-string ;
-: .3 ( ub -- ) fixnum>binary dup length 3 swap - [ '0' write-char ] times write-string ;
+: .2                                    -- ub -> void
+    fixnum>binary dup length 2 < [ '0' write-char ] when write-string ;
+: .3                                    -- ub -> void
+    fixnum>binary dup length 3 swap - [ '0' write-char ] times write-string ;
 
-: .modrm ( modrm-byte -- )
-   ?nl " mod: " write-string dup (modrm-mod) .2
-   nl  " reg: " write-string dup (modrm-reg) .3
-   nl  "  rm: " write-string     (modrm-rm)  .3 ;
+: .modrm                                -- modrm-byte -> void
+   ?nl " mod: " write-string dup %modrm-mod .2
+   nl  " reg: " write-string dup %modrm-reg .3
+   nl  "  rm: " write-string     %modrm-rm  .3 ;
 
-: !sib-byte ( -- ) next-byte !> sib-byte ;
+: !sib-byte next-byte !> sib-byte ;
 
-: (sib-scale) ( sib -- scale ) 0b11000000 bitand 6 rshift ;
-: (sib-index) ( sib -- index ) 0b00111000 bitand 3 rshift ;
-: (sib-base)  ( sib -- base  ) 0b00000111 bitand ;
+: %sib-scale                            -- sib -> scale
+    0b11000000 bitand 6 rshift ;
+: %sib-index                            -- sib -> index
+    0b00111000 bitand 3 rshift ;
+: %sib-base                             -- sib -> base
+    0b00000111 bitand ;
 
-: sib-scale ( -- scale ) sib-byte (sib-scale) ;
-: sib-index ( -- index ) sib-byte (sib-index) ;
-: sib-base  ( -- base  ) sib-byte (sib-base)  ;
+: sib-scale                             -- void -> scale
+    sib-byte %sib-scale ;
+: sib-index                             -- void -> index
+    sib-byte %sib-index ;
+: sib-base                              -- void -> base
+    sib-byte %sib-base ;
 
-: .sib  ( sib -- )
-   ?nl " scale: " write-string dup (sib-scale) .2
-   nl  " index: " write-string dup (sib-index) .3
-   nl  "  base: " write-string     (sib-base)  .3 ;
+: .sib                                  -- sib -> void
+   ?nl " scale: " write-string dup %sib-scale .2
+   nl  " index: " write-string dup %sib-index .3
+   nl  "  base: " write-string     %sib-base  .3 ;
 
-: register-index ( n1 -- n2 )
+: register-index                        -- n1 -> n2
     prefix 4 rshift 4 = [
         prefix rex.x bitand zero? not [
             8 bitor
         ] when
     ] when ;
 
-: unsupported ( -- )
+: unsupported
     ?nl "unsupported instruction at " write-string instruction-start hex.
     instruction-start 16 dump
     "unsupported instruction" error ;
 
-: instruction-operand-size ( -- n )
+: instruction-operand-size              -- void -> n
     operand-size-prefix 0x66 eq? [ 16 ] [ prefix 0x48 bitand 0x48 = 64 32 ? ] if ;
 
-: set-instruction-size ( -- ) instruction-operand-size dup !> dsize !> ssize ;
+: set-instruction-size instruction-operand-size dup !> dsize !> ssize ;
 
 : /r-r/m-reg
     -- /r
@@ -339,20 +359,20 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
     } case
     .inst ;
 
-: al,imm8 ( mnemonic -- )
+: al,imm8                               -- mnemonic -> void
     !> mnemonic
     next-byte !> immediate-operand
     .instruction-bytes
     .mnemonic
     dest-col "al, " write-string .immediate-operand ;
 
-: find-word-from-exact-code-address ( tagged-code-address -- word/f )
+: find-word-from-exact-code-address     -- tagged-code-address -> word/f
     >local: x
     all-words [
         symbol-code-address x =
     ] find nip ;
 
-: jcc-rel32 ( mnemonic -- )
+: jcc-rel32                             -- mnemonic -> void
     !> mnemonic
     next-int32 ip + >local: jump-target
 
@@ -364,7 +384,7 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
         comment-col symbol-name write
     ] when* ;
 
-: regop-mnemonic ( -- string )
+: regop-mnemonic                        -- void -> string
     {
         {
             [ opcode 0x80 0x83 between? ]
@@ -380,7 +400,7 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
         }
     } cond ;
 
-: /r-reg-r/m ( -- )
+: /r-reg-r/m
     -- /r
     -- source is r/m32/64
     -- dest is r32/64
@@ -423,7 +443,7 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
     } case
     .inst ;
 
-: .push  ( -- )
+: .push
     "push" !> mnemonic
     opcode 0x50 - register-rm !> dreg
     1 !> #operands
@@ -431,7 +451,7 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
 
 8 [ 0x50 + ' .push swap install-handler ] each-integer
 
-: .pop  ( -- )
+: .pop
     "pop" !> mnemonic
     opcode 0x58 - register-rm !> dreg
     1 !> #operands
@@ -641,7 +661,7 @@ last-word 0x6a install-handler
 
 last-word 0x6b install-handler
 
-: jmp/jcc-rel8 ( mnemonic -- )
+: jmp/jcc-rel8                          -- mnemonic -> void
     !> mnemonic
     next-signed-byte ip + >local: jump-target
     .instruction-bytes
@@ -652,24 +672,24 @@ last-word 0x6b install-handler
         comment-col symbol-name write
     ] when* ;
 
-: .70 ( -- ) "jo"  jmp/jcc-rel8 ; last-word 0x70 install-handler
-: .71 ( -- ) "jno" jmp/jcc-rel8 ; last-word 0x71 install-handler
-: .72 ( -- ) "jc"  jmp/jcc-rel8 ; last-word 0x72 install-handler
-: .73 ( -- ) "jnc" jmp/jcc-rel8 ; last-word 0x73 install-handler
-: .74 ( -- ) "jz"  jmp/jcc-rel8 ; last-word 0x74 install-handler
-: .75 ( -- ) "jne" jmp/jcc-rel8 ; last-word 0x75 install-handler
-: .76 ( -- ) "jna" jmp/jcc-rel8 ; last-word 0x76 install-handler
-: .77 ( -- ) "ja"  jmp/jcc-rel8 ; last-word 0x77 install-handler
-: .78 ( -- ) "js"  jmp/jcc-rel8 ; last-word 0x78 install-handler
-: .79 ( -- ) "jns" jmp/jcc-rel8 ; last-word 0x79 install-handler
-: .7a ( -- ) "jpe" jmp/jcc-rel8 ; last-word 0x7a install-handler
-: .7b ( -- ) "jpo" jmp/jcc-rel8 ; last-word 0x7b install-handler
-: .7c ( -- ) "jl"  jmp/jcc-rel8 ; last-word 0x7c install-handler
-: .7d ( -- ) "jge" jmp/jcc-rel8 ; last-word 0x7d install-handler
-: .7e ( -- ) "jle" jmp/jcc-rel8 ; last-word 0x7e install-handler
-: .7f ( -- ) "jg"  jmp/jcc-rel8 ; last-word 0x7f install-handler
+: .70 "jo"  jmp/jcc-rel8 ; last-word 0x70 install-handler
+: .71 "jno" jmp/jcc-rel8 ; last-word 0x71 install-handler
+: .72 "jc"  jmp/jcc-rel8 ; last-word 0x72 install-handler
+: .73 "jnc" jmp/jcc-rel8 ; last-word 0x73 install-handler
+: .74 "jz"  jmp/jcc-rel8 ; last-word 0x74 install-handler
+: .75 "jne" jmp/jcc-rel8 ; last-word 0x75 install-handler
+: .76 "jna" jmp/jcc-rel8 ; last-word 0x76 install-handler
+: .77 "ja"  jmp/jcc-rel8 ; last-word 0x77 install-handler
+: .78 "js"  jmp/jcc-rel8 ; last-word 0x78 install-handler
+: .79 "jns" jmp/jcc-rel8 ; last-word 0x79 install-handler
+: .7a "jpe" jmp/jcc-rel8 ; last-word 0x7a install-handler
+: .7b "jpo" jmp/jcc-rel8 ; last-word 0x7b install-handler
+: .7c "jl"  jmp/jcc-rel8 ; last-word 0x7c install-handler
+: .7d "jge" jmp/jcc-rel8 ; last-word 0x7d install-handler
+: .7e "jle" jmp/jcc-rel8 ; last-word 0x7e install-handler
+: .7f "jg"  jmp/jcc-rel8 ; last-word 0x7f install-handler
 
-: .80 ( -- )
+: .80
     -- modrm-reg encodes opcode extension
     -- source is imm8
     -- dest is r/m8
@@ -758,7 +778,7 @@ last-word 0x80 install-handler
 
 last-word 0x81 install-handler
 
-: .83 ( -- )
+: .83
     -- modrm-reg encodes opcode extension
     -- source is imm8
     -- dest is r/m16/32/64
@@ -1260,7 +1280,7 @@ last-word 0xc7 install-handler
 
 last-word 0xcc install-handler
 
-: .d1 ( -- )
+: .d1
     !modrm-byte
     regop-mnemonic !> mnemonic
     modrm-mod {
@@ -1284,20 +1304,20 @@ last-word 0xd1 install-handler
 
 : .d3
     -- dest is r/m32/64
-    -- source is cl register
     !modrm-byte
     regop-mnemonic !> mnemonic
     modrm-mod 3 = [
         -- register-direct
         modrm-rm register-rm !> dreg
-        1 ( cl ) !> sreg
+        -- source is cl register
+        1 !> sreg
         8 !> ssize
         .inst
     ] [ unsupported ] if ;
 
 last-word 0xd3 install-handler
 
-: .e2 ( -- )
+: .e2
    "loop" !> mnemonic
    next-signed-byte ip + >local: code-address
    .instruction-bytes
@@ -1317,11 +1337,11 @@ last-word 0xe2 install-handler
 
 last-word 0xe3 install-handler
 
-: .eb ( -- ) "jmp" jmp/jcc-rel8 ;
+: .eb "jmp" jmp/jcc-rel8 ;
 
 last-word 0xeb install-handler
 
-: .e8 ( -- )
+: .e8
    "call" !> mnemonic
    next-int32 ip + >local: code-address
    .instruction-bytes
@@ -1332,7 +1352,7 @@ last-word 0xeb install-handler
 
 last-word 0xe8 install-handler
 
-: .e9  ( -- )
+: .e9
    "jmp" !> mnemonic
    next-int32 ip + >local: jump-target
    .instruction-bytes
@@ -1428,21 +1448,21 @@ last-word 0xf6 install-handler
 
 last-word 0xf7 install-handler
 
-: .fc ( -- )
+: .fc
     "cld" !> mnemonic
     0 !> #operands
     .inst ;
 
 last-word 0xfc install-handler
 
-: .fd ( -- )
+: .fd
     "std" !> mnemonic
     0 !> #operands
     .inst ;
 
 last-word 0xfd install-handler
 
-: .ff ( -- )
+: .ff
     !modrm-byte
     regop { "inc" "dec" "call" "callf" "jmp" "jmpf" "push" } nth !> mnemonic
     1 !> #operands
@@ -1486,11 +1506,13 @@ last-word 0xff install-handler
 
 256 f <array> >global: 0x0f-handlers
 
-: install-0x0f-handler ( handler opcode -- ) 0x0f-handlers array-set-nth ;
+: install-0x0f-handler                  -- handler opcode -> void
+    0x0f-handlers array-set-nth ;
 
-: 0x0f-handler ( opcode -- handler ) 0x0f-handlers array-nth ;
+: 0x0f-handler                          -- opcode -> handler
+    0x0f-handlers array-nth ;
 
-: .0f ( -- )
+: .0f
     next-byte dup !> byte2 0x0f-handler
     [ execute-handler ] [ unsupported ] if* ;
 
@@ -1503,13 +1525,13 @@ last-word 0x0f install-handler
 
 last-word 0x31 install-0x0f-handler
 
-: cmovcc-mnemonic ( byte2 -- )
+: cmovcc-mnemonic                       -- byte2 -> void
     0x0f bitand {
         "cmovo" "cmovno" "cmovc"  "cmovnc" "cmovz" "cmovnz" "cmovna" "cmova"
         "cmovs" "cmovns" "cmovpe" "cmovpo" "cmovl" "cmovge" "cmovle" "cmovg"
     } array-nth ;
 
-: .0f-4x ( -- )
+: .0f-4x
     set-instruction-size
     byte2 cmovcc-mnemonic !> mnemonic
     !modrm-byte
@@ -1525,20 +1547,20 @@ last-word 0x31 install-0x0f-handler
 
 16 [ 0x40 + ' .0f-4x swap install-0x0f-handler ] each-integer
 
-: .0f-81 ( -- ) "jno" jcc-rel32 ; last-word 0x81 install-0x0f-handler
-: .0f-82 ( -- ) "jc"  jcc-rel32 ; last-word 0x82 install-0x0f-handler
-: .0f-83 ( -- ) "jnc" jcc-rel32 ; last-word 0x83 install-0x0f-handler
-: .0f-84 ( -- ) "jz"  jcc-rel32 ; last-word 0x84 install-0x0f-handler
-: .0f-85 ( -- ) "jne" jcc-rel32 ; last-word 0x85 install-0x0f-handler
-: .0f-86 ( -- ) "jna" jcc-rel32 ; last-word 0x86 install-0x0f-handler
-: .0f-87 ( -- ) "ja"  jcc-rel32 ; last-word 0x87 install-0x0f-handler
-: .0f-88 ( -- ) "js"  jcc-rel32 ; last-word 0x88 install-0x0f-handler
-: .0f-8c ( -- ) "jl"  jcc-rel32 ; last-word 0x8c install-0x0f-handler
-: .0f-8d ( -- ) "jge" jcc-rel32 ; last-word 0x8d install-0x0f-handler
-: .0f-8e ( -- ) "jle" jcc-rel32 ; last-word 0x8e install-0x0f-handler
-: .0f-8f ( -- ) "jg"  jcc-rel32 ; last-word 0x8f install-0x0f-handler
+: .0f-81 "jno" jcc-rel32 ; last-word 0x81 install-0x0f-handler
+: .0f-82 "jc"  jcc-rel32 ; last-word 0x82 install-0x0f-handler
+: .0f-83 "jnc" jcc-rel32 ; last-word 0x83 install-0x0f-handler
+: .0f-84 "jz"  jcc-rel32 ; last-word 0x84 install-0x0f-handler
+: .0f-85 "jne" jcc-rel32 ; last-word 0x85 install-0x0f-handler
+: .0f-86 "jna" jcc-rel32 ; last-word 0x86 install-0x0f-handler
+: .0f-87 "ja"  jcc-rel32 ; last-word 0x87 install-0x0f-handler
+: .0f-88 "js"  jcc-rel32 ; last-word 0x88 install-0x0f-handler
+: .0f-8c "jl"  jcc-rel32 ; last-word 0x8c install-0x0f-handler
+: .0f-8d "jge" jcc-rel32 ; last-word 0x8d install-0x0f-handler
+: .0f-8e "jle" jcc-rel32 ; last-word 0x8e install-0x0f-handler
+: .0f-8f "jg"  jcc-rel32 ; last-word 0x8f install-0x0f-handler
 
-: setcc-mnemonic ( byte -- string )
+: setcc-mnemonic                        -- byte -> string
     0x0f bitand {
         "seto" "setno" "setc"  "setnc" "setz" "setnz" "setna" "seta"
         "sets" "setns" "setpe" "setpo" "setl" "setge" "setle" "setg"
@@ -1676,7 +1698,7 @@ last-word 0xbe install-0x0f-handler
     .opcode
     1+!> #insts ;
 
-: disasm ( code-address code-size -- )
+: disasm                                -- code-address code-size -> void
     over !> start-address
     + !> stop-address
 
@@ -1689,11 +1711,11 @@ last-word 0xbe install-0x0f-handler
     #insts dec. " instructions " write-string
     ip start-address - dec. " bytes" write-string ;
 
-: disassemble ( symbol -- )
+: disassemble                           -- symbol -> void
     [ symbol-code-address ] [ symbol-code-size ] bi disasm ;
 
 : dis
-    must-parse-token            -- string
+    must-parse-token                    -- string
     find-qualified-name [
         disassemble
     ] [
