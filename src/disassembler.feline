@@ -1530,6 +1530,7 @@ last-word 0x31 install-0x0f-handler
 : .0f-83 ( -- ) "jnc" jcc-rel32 ; last-word 0x83 install-0x0f-handler
 : .0f-84 ( -- ) "jz"  jcc-rel32 ; last-word 0x84 install-0x0f-handler
 : .0f-85 ( -- ) "jne" jcc-rel32 ; last-word 0x85 install-0x0f-handler
+: .0f-86 ( -- ) "jna" jcc-rel32 ; last-word 0x86 install-0x0f-handler
 : .0f-87 ( -- ) "ja"  jcc-rel32 ; last-word 0x87 install-0x0f-handler
 : .0f-88 ( -- ) "js"  jcc-rel32 ; last-word 0x88 install-0x0f-handler
 : .0f-8c ( -- ) "jl"  jcc-rel32 ; last-word 0x8c install-0x0f-handler
