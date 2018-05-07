@@ -186,8 +186,6 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         mov     [rp0_], rsp
         mov     rbp, [primordial_sp0_]
 
-        _ initialize_locals_stack
-
         _ seed_random
 
         _ initialize_handle_space
@@ -198,6 +196,8 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         poprbx
         _lit gc_roots_
         _ gc_add_root
+
+        _ initialize_locals
 
         _ initialize_gc_dispatch_table
 

@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -59,21 +59,11 @@ code lpfetch, 'lp@'                     ; -- tagged-address
 endcode
 
 ; ### allocate_locals_stack
-code allocate_locals_stack, 'allocate_locals_stack', SYMBOL_INTERNAL
-; -- raw-lp0
+code allocate_locals_stack, 'allocate_locals_stack', SYMBOL_INTERNAL    ; -- raw-lp0
         _lit 4096
         _dup
         _ raw_allocate
         _plus
-        next
-endcode
-
-; ### initialize_locals_stack
-code initialize_locals_stack, 'initialize_locals_stack', SYMBOL_INTERNAL
-; --
-        _ allocate_locals_stack
-        mov     [lp0_], rbx
-        _lpstore
         next
 endcode
 
@@ -90,6 +80,28 @@ code free_locals_stack, 'free_locals_stack', SYMBOL_INTERNAL
         next
 endcode
 
+asm_global local_names_, f_value
+
+; ### local-names
+code local_names, 'local-names'
+        _dup
+        mov     rbx, [local_names_]
+        next
+endcode
+
+; ### initialize_locals
+code initialize_locals, 'initialize_locals', SYMBOL_INTERNAL    ; --
+
+        _ allocate_locals_stack
+        mov     [lp0_], rbx
+        _lpstore
+
+        _lit local_names_
+        _ gc_add_root
+
+        next
+endcode
+
 ; ### locals-enter
 always_inline locals_enter, 'locals-enter'
         _locals_enter
@@ -99,15 +111,6 @@ endinline
 always_inline locals_leave, 'locals-leave'
         _locals_leave
 endinline
-
-asm_global local_names_, f_value
-
-; ### local-names
-code local_names, 'local-names'
-        _dup
-        mov     rbx, [local_names_]
-        next
-endcode
 
 ; ### initialize_local_names
 code initialize_local_names, 'initialize_local_names', SYMBOL_INTERNAL
