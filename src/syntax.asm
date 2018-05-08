@@ -623,48 +623,6 @@ code comment_to_eol, '--', SYMBOL_IMMEDIATE     ; --
         next
 endcode
 
-; ### (
-code feline_paren, '(', SYMBOL_IMMEDIATE        ; --
-        _ current_lexer
-        _ get
-        _dup
-        _tagged_if .1
-
-        ; -- lexer
-        _dup
-        _ lexer_index
-        _over
-        _ lexer_string
-        _lit tagged_char(')')
-        _ rrot
-        _ string_index_from             ; -- lexer index/f
-
-        _dup
-        _tagged_if .2
-        ; found ')'
-        _lit tagged_fixnum(1)
-        _ fixnum_plus
-        _swap
-        _ lexer_set_index
-        _else .2
-        _drop
-        _dup
-        _ lexer_string
-        _ string_length
-        _swap
-        _ lexer_set_index
-        _then .2
-
-        _return
-
-        _else .1
-        _drop
-        _error "no lexer"
-        _then .1
-
-        next
-endcode
-
 ; ### return-if
 code return_if, 'return-if', SYMBOL_IMMEDIATE
         _ local_names
