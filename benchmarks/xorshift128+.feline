@@ -15,7 +15,7 @@ thread-local: state1
     s1 !> state1
 ;
 
-: test ( -- )
+: test
     gc
 
     1 !> state0
