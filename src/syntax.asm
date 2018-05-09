@@ -636,6 +636,29 @@ code return_if, 'return-if', SYMBOL_IMMEDIATE
         next
 endcode
 
+; ### add-local-name
+code add_local_name, 'add-local-name'   ; string -- index
+
+        ; is there already a local with this name?
+        _dup
+        _ local_names
+        _ member?
+        _tagged_if .4
+        _error "duplicate local name"
+        _then .4                        ; -- string
+
+        ; add name
+        _ local_names
+        _ vector_push
+
+        ; return index of added name
+        _ local_names
+        _ vector_length
+        _lit tagged_fixnum(1)
+        _ fixnum_minus
+        next
+endcode
+
 ; ### declare-local-internal
 code declare_local_internal, 'declare-local-internal'   ; --
         _ local_names
@@ -672,15 +695,7 @@ code declare_local_internal, 'declare-local-internal'   ; --
 
         _ parse_token                   ; -- string
 
-        ; add name to quotation locals so it can be found
-        _ local_names
-        _ vector_push
-
-        ; return index of added name
-        _ local_names
-        _ vector_length
-        _lit tagged_fixnum(1)
-        _ fixnum_minus
+        _ add_local_name
 
         next
 endcode
