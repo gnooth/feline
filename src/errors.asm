@@ -281,6 +281,13 @@ code error_unexpected_delimiter, 'error-unexpected-delimiter'
         next
 endcode
 
+; ### error-unexpected-end-of-input
+code error_unexpected_end_of_input, 'error-unexpected-end-of-input'
+        _quote "ERROR: unexpected end of input."
+        _ error
+        next
+endcode
+
 ; ### error-string-index-out-of-bounds
 code error_string_index_out_of_bounds, 'error-string-index-out-of-bounds'
         _quote "ERROR: string index out of bounds."

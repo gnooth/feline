@@ -70,7 +70,7 @@ code must_parse_token, 'must-parse-token'       ; -- string
         _dup
         _tagged_if_not .1
         _drop
-        _error "unexpected end of input"
+        _ error_unexpected_end_of_input
         _then .1
         next
 endcode
@@ -218,7 +218,7 @@ code parse_until, 'parse-until'         ; delimiter -- vector
         cmp     rbx, f_value
         jne     .1
         _2drop
-        _error "unexpected end of input"
+        _ error_unexpected_end_of_input
 .1:                                     ; -- delimiter string
         _twodup                         ; -- d s d s
         _ string_equal?                 ; -- d s ?
@@ -423,7 +423,7 @@ code parse_definition, 'parse-definition'       ; -- vector
         cmp     rbx, f_value
         jne     .1
         poprbx
-        _error "unexpected end of input"
+        _ error_unexpected_end_of_input
 .1:                                     ; --  string
         _dup
         _quote ";"

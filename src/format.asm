@@ -1,4 +1,4 @@
-; Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ code parse_format_specifier, 'parse-format-specifier'   ; lexer -- string/f
         _ugt
         _if .1
         pop     this_register
-        _error "unexpected end of input"
+        _ error_unexpected_end_of_input
         _return
         _then .1
 
