@@ -633,6 +633,47 @@ code return_if, 'return-if', SYMBOL_IMMEDIATE
         next
 endcode
 
+; ### store_1_arg
+always_inline store_1_arg, 'store_1_arg'
+        mov     [r14], rbx
+        poprbx
+endinline
+
+; ### store_2_args
+always_inline store_2_args, 'store_2_args'
+        mov     rax, [rbp]
+        mov     [r14 + BYTES_PER_CELL], rbx
+        mov     [r14], rax
+        _2drop
+endinline
+
+; ### process-named-parameters
+code process_named_parameters, 'process-named-parameters'
+        _ local_names
+        _ vector_length
+        _untag_fixnum
+        cmp     rbx, 1
+        jz      .1
+        cmp     rbx, 2
+        jz      .2
+        _drop
+        _return
+
+.1:
+        _drop
+        _lit S_store_1_arg
+        _ add_to_definition
+        _return
+
+.2:
+        _drop
+        _lit S_store_2_args
+        _ add_to_definition
+        _return
+
+        next
+endcode
+
 ; ### add-local-name
 code add_local_name, 'add-local-name'   ; string -- index
 
@@ -640,9 +681,9 @@ code add_local_name, 'add-local-name'   ; string -- index
         _dup
         _ local_names
         _ member?
-        _tagged_if .4
+        _tagged_if .1
         _error "duplicate local name"
-        _then .4                        ; -- string
+        _then .1                        ; -- string
 
         ; add name
         _ local_names
@@ -653,6 +694,74 @@ code add_local_name, 'add-local-name'   ; string -- index
         _ vector_length
         _lit tagged_fixnum(1)
         _ fixnum_minus
+
+        next
+endcode
+
+; ### add-named-parameter
+code add_named_parameter, 'add-named-parameter' ; string --
+        _ add_local_name                ; -- index
+        _drop
+        next
+endcode
+
+; ### (
+code paren, '(', SYMBOL_IMMEDIATE       ; --
+
+        _ current_lexer
+        _ get
+        _tagged_if_not .1
+        _error "no lexer"
+        _then .1
+
+        _ in_definition?
+        _ get
+        _tagged_if_not .2
+        _error "not in definition"
+        _then .2
+
+        ; FIXME
+        ; Parameter list must come before anything else in the definition.
+        ; Checking local names is not enough here.
+        _ local_names
+        _tagged_if .3
+        _error "misplaced ("
+        _then .3
+
+        _ begin_dynamic_scope
+
+        _lit 10
+        _ new_vector_untagged
+        _set_accum
+
+.again:
+        _ must_parse_token              ; -- string
+        _dup
+        _quote ")"
+        _ string_equal?
+        cmp     rbx, f_value
+        _drop
+        jne     .done
+        _get_accum
+        _ vector_push
+        jmp     .again
+
+.done:
+        _drop
+        _get_accum                      ; -- vector
+
+        _ end_dynamic_scope
+
+        ; initialize locals
+        _ initialize_local_names
+        _lit S_locals_enter
+        _ add_to_definition
+
+        _lit S_add_named_parameter
+        _ vector_each
+
+        _ process_named_parameters
+
         next
 endcode
 

@@ -3208,4 +3208,14 @@ test: vector-all?-test-1
 
 vector-all?-test-1
 
+: %named-parameters-test-1 ( x y ) x y ;
+
+test: named-parameters-test-1
+    clear
+    42 "test" %named-parameters-test-1 get-data-stack { 42 "test" } assert=
+    clear
+;
+
+named-parameters-test-1
+
 ?nl "Reached end of test.feline" write-string
