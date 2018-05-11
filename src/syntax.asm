@@ -67,11 +67,8 @@ endcode
 ; ### must-parse-token
 code must_parse_token, 'must-parse-token'       ; -- string
         _ parse_token
-        _dup
-        _tagged_if_not .1
-        _drop
-        _ error_unexpected_end_of_input
-        _then .1
+        cmp     rbx, f_value
+        je      error_unexpected_end_of_input
         next
 endcode
 
