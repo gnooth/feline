@@ -16,25 +16,25 @@
 using: feline key ;
 in: accept
 
-global: prompt-string
-global: buffer
-global: bindings
-global: dot
-global: history
-global: history-index
-global: pattern
-global: done?
+var prompt-string
+var buffer
+var bindings
+var dot
+var history
+var history-index
+var pattern
+var done?
 
 : history.
     history [ write-string nl ] each ;
 
 : reset-history
-    f !> history-index f !> pattern ;
+    f history-index! f pattern! ;
 
 : prompt
     "in: " current-vocab vocab-name string-append
     "> " string-append
-    dup !> prompt-string
+    dup prompt-string!
     prompt-style
     write-string ;
 
@@ -48,7 +48,7 @@ global: done?
 
 : do-escape
     0 buffer sbuf-shorten
-    0 !> dot
+    0 dot!
     reset-history
     redisplay ;
 
@@ -68,7 +68,7 @@ global: done?
 
 : do-bs
     dot 0 > [
-        dot 1 - !> dot
+        dot 1 - dot!
         dot buffer sbuf-remove-nth! drop
         reset-history
         redisplay
@@ -76,41 +76,39 @@ global: done?
 
 : do-home
     prompt-string length at-x
-    0 !> dot
+    0 dot!
     reset-history ;
 
 : do-end
-    buffer length !> dot
+    buffer length dot!
     prompt-string length dot + at-x
     reset-history ;
 
 : do-right
-    dot buffer length <
-    [ dot 1 + !> dot dot prompt-string length + at-x ]
-    when
+    dot buffer length < [ dot 1+ dot! dot prompt-string length + at-x ] when
     reset-history ;
 
 : do-left
-    dot 0 > [ dot 1 - !> dot dot prompt-string length + at-x ] when
+    dot 0 > [ dot 1- dot! dot prompt-string length + at-x ] when
     reset-history ;
 
 : do-previous
-    history-index [ history length !> history-index ] unless
+    history-index [ history length history-index! ] unless
     history-index zero? [
-        history-index 1 - !> history-index
+        history-index 1- history-index!
         0 buffer sbuf-shorten
         history-index history nth buffer sbuf-append-string
-        buffer length !> dot
+        buffer length dot!
         redisplay
     ] unless ;
 
 : do-next
     history-index [
         history length 1 - < [
-            history-index 1 + !> history-index
+            history-index 1 + history-index!
             0 buffer sbuf-shorten
             history-index history nth buffer sbuf-append-string
-            buffer length !> dot
+            buffer length dot!
             redisplay
         ] when
     ] when*
@@ -121,68 +119,68 @@ global: done?
 
 : do-previous-matching-input
     pattern [
-        buffer sbuf>string !> pattern
-        history length !> history-index
+        buffer sbuf>string pattern!
+        history length history-index!
     ] unless
-    history-index 1 -
+    history-index 1-
     history
     [ match? ]
     find-last-from                      -- index/f element/f
     [
-        swap !> history-index
+        swap history-index!
         0 buffer sbuf-shorten
         buffer sbuf-append-string
-        buffer length !> dot
+        buffer length dot!
         redisplay
     ] [ drop ] if* ;
 
 : do-next-matching-input
     pattern [
-        history-index 1 +
+        history-index 1+
         history
         [ match? ]
         find-from                       -- index/f element/f
         [
-            swap !> history-index
+            swap history-index!
             0 buffer sbuf-shorten
             buffer sbuf-append-string
-            buffer length !> dot
+            buffer length dot!
             redisplay
         ] [ drop ] if*
     ] [ do-next ] if ;
 
-global: completion-prefix
-global: completions
-global: completion-index
+var completion-prefix
+var completions
+var completion-index
 
-: reset-completion  f !> completions ;
+: reset-completion f completions! ;
 
 : complete-first                        -- prefix -> symbol/f
-    !> completion-prefix
-    all-words [ symbol-name completion-prefix swap string-has-prefix? ] filter !> completions
-    0 !> completion-index
+    completion-prefix!
+    all-words [ symbol-name completion-prefix swap string-has-prefix? ] filter completions!
+    0 completion-index!
     completions ?first ;
 
 : complete-next                         -- -> symbol/f
-    completion-index completions length 1 - < [
-        1+!> completion-index
+    completion-index completions length 1- < [
+        completion-index 1+ completion-index!
         completion-index completions nth
     ] [ f ] if ;
 
 : complete-prev                         -- -> symbol/f
     completion-index 0 > [
-        1-!> completion-index
+        completion-index 1- completion-index!
         completion-index completions nth
     ] [ f ] if ;
 
-global: prefix-offset
+var prefix-offset
 
 : complete1                             -- symbol ->
     symbol-name
     verify-string
     prefix-offset buffer sbuf-shorten
     buffer sbuf-append-string
-    buffer length !> dot
+    buffer length dot!
     redisplay ;
 
 : do-tab
@@ -192,8 +190,8 @@ global: prefix-offset
         dot 1 < [ ] return-if
 
         -- get word before dot
-        dot 1 - buffer [ 32 code-char = ] find-last-from        -- index/f elt/f
-        [ 1 + ] [ drop 0 ] if !> prefix-offset
+        dot 1 - buffer [ 32 code-char = ] find-last-from        -- index/f element/f
+        [ 1 + ] [ drop 0 ] if prefix-offset!
 
         prefix-offset dot buffer sbuf-substring                 -- prefix
         complete-first [ complete1 ] when*
@@ -205,14 +203,14 @@ global: prefix-offset
         [ complete1 ] when*
     ] when ;
 
-: do-enter  reset-completion t !> done? ;
+: do-enter reset-completion t done?! ;
 
 : history-file-pathname                 -- -> string
     user-home ".feline-history" path-append ;
 
 : initialize-history
     history-file-pathname dup regular-file?
-    [ file-lines ] [ drop 100 <vector> ] if !> history ;
+    [ file-lines ] [ drop 100 <vector> ] if history! ;
 
 : save-history
     history
@@ -220,14 +218,14 @@ global: prefix-offset
     <slice>
     history-file-pathname set-file-lines ;
 
-: bind-key                              -- key action ->
+: bind-key                              -- key action -> void
     swap bindings set-at ;
 
 : lookup-key                            -- key -> symbol/f
     bindings at ;
 
 : initialize-bindings
-    16 <hashtable> !> bindings
+    16 <hashtable> bindings!
 
     key:enter           ' do-enter                      bind-key
     key:ctrl-c          ' bye                           bind-key
@@ -249,9 +247,9 @@ global: prefix-offset
 
 : do-normal-char                        -- c ->
     dot buffer length < [
-        dot buffer sbuf-insert-nth! dot 1 + !> dot redisplay
+        dot buffer sbuf-insert-nth! dot 1+ dot! redisplay
     ] [
-        dup write-char dot 1 + !> dot buffer push
+        dup write-char dot 1+ dot! buffer push
     ] if
     reset-history
     reset-completion ;
@@ -266,12 +264,12 @@ global: prefix-offset
     ekey ;
 
 : accept-string                         -- -> string
-    256 <sbuf> !> buffer
+    256 <sbuf> buffer!
     bindings [ initialize-bindings ] unless
     history [ initialize-history ] unless
     prompt
-    0 !> dot
-    f !> done?
+    0 dot!
+    f done?!
     input-style
     [ done? ] [ accept-key process-key ] until
     output-style
@@ -284,6 +282,6 @@ global: prefix-offset
         } cond
     ] keep
 
-    f !> buffer
+    f buffer!
     reset-history
     nl ;
