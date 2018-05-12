@@ -48,3 +48,8 @@ syntax: thread-local:
     must-parse-token
     make-thread-local-getter
     make-thread-local-setter ;
+
+syntax: var
+    must-parse-token
+    make-thread-local-getter
+    make-thread-local-setter ;
