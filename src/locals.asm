@@ -58,6 +58,78 @@ code lpfetch, 'lp@'                     ; -- tagged-address
         next
 endcode
 
+; ### local@
+code local_fetch, 'local@'              ; index -- value
+        _check_index
+        mov     rbx, [r14 + rbx * BYTES_PER_CELL]
+        next
+endcode
+
+; ### local_0_fetch
+inline local_0_fetch, 'local_0_fetch', SYMBOL_INTERNAL  ; -- value
+        pushrbx
+        mov     rbx, [r14]
+endinline
+
+; ### local_1_fetch
+inline local_1_fetch, 'local_1_fetch', SYMBOL_INTERNAL  ; -- value
+        pushrbx
+        mov     rbx, [r14 + BYTES_PER_CELL]
+endinline
+
+; ### local!
+code local_store, 'local!'              ; value index --
+        _check_index
+        _cells
+        add     rbx, r14
+        mov     rax, [rbp]
+        mov     [rbx], rax
+        _2drop
+        next
+endcode
+
+; ### local_0_store
+inline local_0_store, 'local_0_store', SYMBOL_INTERNAL  ; value --
+        mov     [r14], rbx
+        poprbx
+endinline
+
+; ### local_1_store
+inline local_1_store, 'local_1_store', SYMBOL_INTERNAL  ; value --
+        mov     [r14 + BYTES_PER_CELL], rbx
+        poprbx
+endinline
+
+; ### local-inc
+code local_inc, 'local-inc'     ; index --
+        _check_index
+        _cells
+        add     rbx, r14
+        mov     rdx, rbx        ; address
+        mov     rbx, [rbx]
+        _check_fixnum
+        add     rbx, 1
+        _tag_fixnum
+        mov     [rdx], rbx
+        _drop
+        next
+endcode
+
+; ### local-dec
+code local_dec, 'local-dec'     ; index --
+        _check_index
+        _cells
+        add     rbx, r14
+        mov     rdx, rbx        ; address
+        mov     rbx, [rbx]
+        _check_fixnum
+        sub     rbx, 1
+        _tag_fixnum
+        mov     [rdx], rbx
+        _drop
+        next
+endcode
+
 ; ### allocate_locals_stack
 code allocate_locals_stack, 'allocate_locals_stack', SYMBOL_INTERNAL    ; -- raw-lp0
         _lit 4096
