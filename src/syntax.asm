@@ -446,7 +446,7 @@ code parse_definition, 'parse-definition'       ; -- vector
 
         _ end_dynamic_scope
 
-        _ forget_local_names
+        _ forget_locals
 
         next
 endcode

@@ -218,8 +218,8 @@ code add_local, 'add-local'             ; string -- index
         next
 endcode
 
-; ### forget_local_names
-code forget_local_names, 'forget_local_names', SYMBOL_INTERNAL
+; ### forget-locals
+code forget_locals, 'forget-locals'
         mov     qword [local_names_], f_value
         next
 endcode
