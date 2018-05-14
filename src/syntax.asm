@@ -674,30 +674,6 @@ code process_named_parameters, 'process-named-parameters'
         next
 endcode
 
-; ### add-local-name
-code add_local_name, 'add-local-name'   ; string -- index
-
-        ; is there already a local with this name?
-        _dup
-        _ local_names
-        _ member?
-        _tagged_if .1
-        _error "duplicate local name"
-        _then .1                        ; -- string
-
-        ; add name
-        _ local_names
-        _ vector_push
-
-        ; return index of added name
-        _ local_names
-        _ vector_length
-        _lit tagged_fixnum(1)
-        _ fixnum_minus
-
-        next
-endcode
-
 ; ### add-named-parameter
 code add_named_parameter, 'add-named-parameter' ; string --
         _ add_local_name                ; -- index

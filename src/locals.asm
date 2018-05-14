@@ -194,6 +194,30 @@ code initialize_local_names, 'initialize_local_names', SYMBOL_INTERNAL
         next
 endcode
 
+; ### add-local-name
+code add_local_name, 'add-local-name'   ; string -- index
+
+        ; is there already a local with this name?
+        _dup
+        _ local_names
+        _ member?
+        _tagged_if .1
+        _error "duplicate local name"
+        _then .1                        ; -- string
+
+        ; add name
+        _ local_names
+        _ vector_push
+
+        ; return index of added name
+        _ local_names
+        _ vector_length
+        _lit tagged_fixnum(1)
+        _ fixnum_minus
+
+        next
+endcode
+
 ; ### forget_local_names
 code forget_local_names, 'forget_local_names', SYMBOL_INTERNAL
         mov     qword [local_names_], f_value
