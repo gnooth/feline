@@ -152,11 +152,30 @@ code free_locals_stack, 'free_locals_stack', SYMBOL_INTERNAL
         next
 endcode
 
+asm_global locals_, f_value
+
+; ### locals
+code locals, 'locals'                   ; -- hashtable/f
+        pushrbx
+        mov     rbx, [locals_]
+        next
+endcode
+
+asm_global locals_count_, 0
+
+; ### locals-count
+code locals_count, 'locals-count'       ; -- n
+        pushrbx
+        mov     rbx, [locals_count_]
+        _tag_fixnum
+        next
+endcode
+
 asm_global local_names_, f_value
 
 ; ### local-names
 code local_names, 'local-names'
-        _dup
+        pushrbx
         mov     rbx, [local_names_]
         next
 endcode
@@ -167,6 +186,9 @@ code initialize_locals, 'initialize_locals', SYMBOL_INTERNAL    ; --
         _ allocate_locals_stack
         mov     [lp0_], rbx
         _lpstore
+
+        _lit locals_
+        _ gc_add_root
 
         _lit local_names_
         _ gc_add_root
@@ -184,13 +206,19 @@ always_inline locals_leave, 'locals-leave'
         _locals_leave
 endinline
 
-; ### initialize_local_names
-code initialize_local_names, 'initialize_local_names', SYMBOL_INTERNAL
-        ; allow for maximum number of locals
+; ### initialize-local-names
+code initialize_local_names, 'initialize-local-names'
+
+        _lit MAX_LOCALS
+        _ new_hashtable_untagged
+        mov     [locals_], rbx
+        poprbx
+
         _lit MAX_LOCALS
         _ new_vector_untagged
         mov     [local_names_], rbx
-        _drop
+        poprbx
+
         next
 endcode
 
@@ -219,7 +247,9 @@ code add_local, 'add-local'             ; string -- index
 endcode
 
 ; ### forget-locals
-code forget_locals, 'forget-locals'
+code forget_locals, 'forget-locals'     ; --
+        mov     qword [locals_], f_value
+        mov     qword [locals_count_], 0
         mov     qword [local_names_], f_value
         next
 endcode
