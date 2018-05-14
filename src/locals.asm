@@ -194,8 +194,8 @@ code initialize_local_names, 'initialize_local_names', SYMBOL_INTERNAL
         next
 endcode
 
-; ### add-local-name
-code add_local_name, 'add-local-name'   ; string -- index
+; ### add-local
+code add_local, 'add-local'             ; string -- index
 
         ; is there already a local with this name?
         _dup

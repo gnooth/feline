@@ -676,7 +676,7 @@ endcode
 
 ; ### add-named-parameter
 code add_named_parameter, 'add-named-parameter' ; string --
-        _ add_local_name                ; -- index
+        _ add_local                     ; -- index
         _drop
         next
 endcode
@@ -777,7 +777,7 @@ code declare_local_internal, 'declare-local-internal'   ; --
 
         _ parse_token                   ; -- string
 
-        _ add_local_name
+        _ add_local
 
         next
 endcode
