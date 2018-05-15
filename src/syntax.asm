@@ -137,11 +137,11 @@ endcode
 
 ; ### process-token
 code process_token, 'process-token'     ; string -- ???
-        _ local_names
+        _ locals
         _tagged_if .1
         _dup
-        _ local_names                   ; -- string string vector
-        _ vector_find_string            ; -- string index/f ?
+        _ locals                        ; -- string string hashtable
+        _ hashtable_at_star             ; -- string index/f ?
         _tagged_if .2                   ; -- string index
         _nip
         _ process_local_fetch
