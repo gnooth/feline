@@ -225,23 +225,34 @@ endcode
 ; ### add-local
 code add_local, 'add-local'             ; string -- index
 
+        cmp     qword [locals_count_], MAX_LOCALS
+        jb      .1
+        _error "too many locals"
+
+.1:
         ; is there already a local with this name?
         _dup
-        _ local_names
-        _ member?
-        _tagged_if .1
+        _ locals
+        _ hashtable_at
+        _tagged_if .2
         _error "duplicate local name"
-        _then .1                        ; -- string
+        _then .2                        ; -- string
 
         ; add name
+        _dup
         _ local_names
         _ vector_push
 
-        ; return index of added name
-        _ local_names
-        _ vector_length
-        _lit tagged_fixnum(1)
-        _ fixnum_minus
+        _ locals_count
+        _swap
+        _ locals
+        _ hashtable_set_at
+
+         ; return index of added name
+        _ locals_count                  ; -- index
+
+        ; update locals count
+        add     qword [locals_count_], 1
 
         next
 endcode
