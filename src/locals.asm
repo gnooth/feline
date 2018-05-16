@@ -180,8 +180,8 @@ code local_names, 'local-names'
         next
 endcode
 
-; ### initialize_locals
-code initialize_locals, 'initialize_locals', SYMBOL_INTERNAL    ; --
+; ### cold_initialize_locals
+code cold_initialize_locals, 'cold_initialize_locals', SYMBOL_INTERNAL
 
         _ allocate_locals_stack
         mov     [lp0_], rbx

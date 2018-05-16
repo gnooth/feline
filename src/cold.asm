@@ -197,7 +197,7 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         _lit gc_roots_
         _ gc_add_root
 
-        _ initialize_locals
+        _ cold_initialize_locals
 
         _ initialize_gc_dispatch_table
 
