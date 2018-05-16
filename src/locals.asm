@@ -206,8 +206,8 @@ always_inline locals_leave, 'locals-leave'
         _locals_leave
 endinline
 
-; ### initialize-local-names
-code initialize_local_names, 'initialize-local-names'
+; ### initialize-locals
+code initialize_locals, 'initialize-locals'
 
         _lit MAX_LOCALS
         _ new_hashtable_untagged

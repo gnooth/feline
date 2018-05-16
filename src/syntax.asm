@@ -728,8 +728,7 @@ code paren, '(', SYMBOL_IMMEDIATE       ; --
 
         _ end_dynamic_scope
 
-        ; initialize locals
-        _ initialize_local_names
+        _ initialize_locals
         _lit S_locals_enter
         _ add_to_definition
 
@@ -746,7 +745,7 @@ code declare_local_internal, 'declare-local-internal'   ; --
         _ local_names
         _tagged_if_not .1
         ; first local in this definition
-        _ initialize_local_names
+        _ initialize_locals
         _lit S_locals_enter
         _lit tagged_zero
         _get_accum
