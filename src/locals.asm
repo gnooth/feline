@@ -152,6 +152,15 @@ code free_locals_stack, 'free_locals_stack', SYMBOL_INTERNAL
         next
 endcode
 
+asm_global using_locals?_, f_value
+
+; ### using-locals?
+code using_locals?, 'using-locals?'     ; -> ?
+        pushrbx
+        mov     rbx, [using_locals?_]
+        next
+endcode
+
 asm_global locals_, f_value
 
 ; ### locals
@@ -219,6 +228,8 @@ code initialize_locals, 'initialize-locals'
         mov     [local_names_], rbx
         poprbx
 
+        mov     qword [using_locals?_], t_value
+
         next
 endcode
 
@@ -262,5 +273,6 @@ code forget_locals, 'forget-locals'     ; --
         mov     qword [locals_], f_value
         mov     qword [locals_count_], 0
         mov     qword [local_names_], f_value
+        mov     qword [using_locals?_], f_value
         next
 endcode
