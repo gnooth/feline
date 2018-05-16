@@ -435,7 +435,8 @@ code parse_definition, 'parse-definition'       ; -- vector
         jmp     .top
 
 .bottom:
-        _ local_names
+
+        _ using_locals?
         _tagged_if .5
         _lit S_locals_leave
         _get_accum
@@ -622,7 +623,7 @@ endcode
 
 ; ### return-if
 code return_if, 'return-if', SYMBOL_IMMEDIATE
-        _ local_names
+        _ using_locals?
         _tagged_if .1
         _lit S_return_if_locals
         _else .1
@@ -742,7 +743,7 @@ endcode
 
 ; ### declare-local-internal
 code declare_local_internal, 'declare-local-internal'   ; --
-        _ local_names
+        _ using_locals?
         _tagged_if_not .1
         ; first local in this definition
         _ initialize_locals
@@ -823,7 +824,7 @@ endcode
 ; ### find-local-name
 code find_local_name, 'find-local-name' ; string -- index/string ?
 
-        _ local_names
+        _ using_locals?
         _tagged_if_not .1
         _f                      ; -- string f
         _return
