@@ -650,8 +650,7 @@ endinline
 
 ; ### process-named-parameters
 code process_named_parameters, 'process-named-parameters'
-        _ local_names
-        _ vector_length
+        _ locals_count
         _untag_fixnum
         cmp     rbx, 1
         jz      .1
@@ -699,9 +698,10 @@ code paren, '(', SYMBOL_IMMEDIATE       ; --
 
         ; FIXME
         ; Parameter list must come before anything else in the definition.
-        ; Checking local names is not enough here.
-        _ local_names
-        _tagged_if .3
+        ; Checking locals-count is not enough here.
+        _ locals_count
+        _ zero?
+        _tagged_if_not .3
         _error "misplaced ("
         _then .3
 
