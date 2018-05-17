@@ -830,8 +830,14 @@ code find_local_name, 'find-local-name' ; string -- index/string ?
         _return
         _then .1                ; -- string
 
-        _ local_names           ; -- string vector
-        _ vector_find_string    ; -- index/string ?
+        _dup
+        _ locals
+        _ hashtable_at                  ; -> string index/f
+        _dup
+        _tagged_if .2
+        _nip
+        _t
+        _then .2
 
         next
 endcode
