@@ -202,6 +202,108 @@ inline local_1_set, 'local_1_set', SYMBOL_INTERNAL      ; value --
         poprbx
 endinline
 
+; ### local_2_set
+inline local_2_set, 'local_2_set', SYMBOL_INTERNAL      ; value --
+        mov     [r14 + BYTES_PER_CELL * 2], rbx
+        poprbx
+endinline
+
+; ### local_3_set
+inline local_3_set, 'local_3_set', SYMBOL_INTERNAL      ; value --
+        mov     [r14 + BYTES_PER_CELL * 3], rbx
+        poprbx
+endinline
+
+; ### local_4_set
+inline local_4_set, 'local_4_set', SYMBOL_INTERNAL      ; value --
+        mov     [r14 + BYTES_PER_CELL * 4], rbx
+        poprbx
+endinline
+
+; ### local_5_set
+inline local_5_set, 'local_5_set', SYMBOL_INTERNAL      ; value --
+        mov     [r14 + BYTES_PER_CELL * 5], rbx
+        poprbx
+endinline
+
+; ### local_6_set
+inline local_6_set, 'local_6_set', SYMBOL_INTERNAL      ; value --
+        mov     [r14 + BYTES_PER_CELL * 6], rbx
+        poprbx
+endinline
+
+; ### local_7_set
+inline local_7_set, 'local_7_set', SYMBOL_INTERNAL      ; value --
+        mov     [r14 + BYTES_PER_CELL * 7], rbx
+        poprbx
+endinline
+
+asm_global local_setters_, f_value
+
+; ### local-setters
+code local_setters, 'local-setters'     ; -> vector
+        pushrbx
+        mov     rbx, [local_setters_]
+        next
+endcode
+
+; ### initialize_local_setters
+code initialize_local_setters, 'initialize_local_setters', SYMBOL_INTERNAL
+        _lit 16
+        _ new_vector_untagged
+        mov     [local_setters_], rbx
+        poprbx
+
+        _lit local_setters_
+        _ gc_add_root
+
+        pushrbx
+        mov     rbx, [local_setters_]
+
+        _lit S_local_0_set
+        _over
+        _ vector_push
+
+        _lit S_local_1_set
+        _over
+        _ vector_push
+
+        _lit S_local_2_set
+        _over
+        _ vector_push
+
+        _lit S_local_3_set
+        _over
+        _ vector_push
+
+        _lit S_local_4_set
+        _over
+        _ vector_push
+
+        _lit S_local_5_set
+        _over
+        _ vector_push
+
+        _lit S_local_6_set
+        _over
+        _ vector_push
+
+        _lit S_local_7_set
+        _over
+        _ vector_push
+
+        _drop
+
+        next
+endcode
+
+; ### local-setter
+code local_setter, 'local-setter'       ; index -> symbol
+        _ local_setters
+        _ vector_nth
+        next
+endcode
+
 ; ### local-inc
 code local_inc, 'local-inc'     ; index --
         _check_index
@@ -305,6 +407,7 @@ code cold_initialize_locals, 'cold_initialize_locals', SYMBOL_INTERNAL
         _ gc_add_root
 
         _ initialize_local_getters
+        _ initialize_local_setters
 
         next
 endcode
