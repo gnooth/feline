@@ -99,14 +99,16 @@ code immediate?, 'immediate?'   ; object -- ?
         next
 endcode
 
-; ### process_local_fetch
-code process_local_fetch, 'process_local_fetch', SYMBOL_INTERNAL        ; tagged-index --
+; ### process_local_get
+code process_local_get, 'process_local_get', SYMBOL_INTERNAL    ; tagged-index --
         _dup
         _lit tagged_zero
         _eq?
         _tagged_if .1
         _drop
-        _lit S_local_0_fetch
+        _lit 0
+        _ local_getters
+        _ vector_nth_untagged
         _get_accum
         _ vector_push
         _return
@@ -117,7 +119,9 @@ code process_local_fetch, 'process_local_fetch', SYMBOL_INTERNAL        ; tagged
         _eq?
         _tagged_if .2
         _drop
-        _lit S_local_1_fetch
+        _lit 1
+        _ local_getters
+        _ vector_nth_untagged
         _get_accum
         _ vector_push
         _return
@@ -128,7 +132,7 @@ code process_local_fetch, 'process_local_fetch', SYMBOL_INTERNAL        ; tagged
         _ vector_push                   ; --
 
         ; push local@
-        _lit S_local_fetch
+        _lit S_local_get
         _get_accum
         _ vector_push
 
@@ -144,7 +148,7 @@ code process_token, 'process-token'     ; string -- ???
         _ hashtable_at_star             ; -- string index/f ?
         _tagged_if .2                   ; -- string index
         _nip
-        _ process_local_fetch
+        _ process_local_get
         _return
         _else .2                        ; -- string f
         _drop
@@ -798,7 +802,7 @@ code assign_local, '>local:', SYMBOL_IMMEDIATE  ; x --
         _ vector_push
 
         ; add local! to quotation as a symbol
-        _lit S_local_store
+        _lit S_local_set
         _get_accum
         _ vector_push
 
@@ -814,7 +818,7 @@ code assign_local2, ':>', SYMBOL_IMMEDIATE      ; x --
         _ vector_push
 
         ; add local! to quotation as a symbol
-        _lit S_local_store
+        _lit S_local_set
         _get_accum
         _ vector_push
 
@@ -891,7 +895,7 @@ code storeto, '!>', SYMBOL_IMMEDIATE    ; --
         _ local_name?                   ; -- index/string ?
         _tagged_if .1                   ; -- index
         _ add_to_definition
-        _lit S_local_store
+        _lit S_local_set
         _ add_to_definition
         _return
         _then .1                        ; -- string

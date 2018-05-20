@@ -59,26 +59,61 @@ code lpfetch, 'lp@'                     ; -- tagged-address
 endcode
 
 ; ### local@
-code local_fetch, 'local@'              ; index -- value
+code local_get, 'local@'                ; index -- value
         _check_index
         mov     rbx, [r14 + rbx * BYTES_PER_CELL]
         next
 endcode
 
-; ### local_0_fetch
-inline local_0_fetch, 'local_0_fetch', SYMBOL_INTERNAL  ; -- value
+; ### local_0_get
+inline local_0_get, 'local_0_get', SYMBOL_INTERNAL      ; -- value
         pushrbx
         mov     rbx, [r14]
 endinline
 
-; ### local_1_fetch
-inline local_1_fetch, 'local_1_fetch', SYMBOL_INTERNAL  ; -- value
+; ### local_1_get
+inline local_1_get, 'local_1_get', SYMBOL_INTERNAL      ; -- value
         pushrbx
         mov     rbx, [r14 + BYTES_PER_CELL]
 endinline
 
+asm_global local_getters_, f_value
+
+; ### local-getters
+code local_getters, 'local-getters'     ; -> vector
+        pushrbx
+        mov     rbx, [local_getters_]
+        next
+endcode
+
+; ### initialize_local_getters
+code initialize_local_getters, 'initialize_local_getters', SYMBOL_INTERNAL
+        _lit 16
+        _ new_vector_untagged
+        mov     [local_getters_], rbx
+        poprbx
+
+        _lit local_getters_
+        _ gc_add_root
+
+        pushrbx
+        mov     rbx, [local_getters_]
+
+        _lit S_local_0_get
+        _over
+        _ vector_push
+
+        _lit S_local_1_get
+        _over
+        _ vector_push
+
+        _drop
+
+        next
+endcode
+
 ; ### local!
-code local_store, 'local!'              ; value index --
+code local_set, 'local!'                ; value index --
         _check_index
         _cells
         add     rbx, r14
@@ -88,14 +123,14 @@ code local_store, 'local!'              ; value index --
         next
 endcode
 
-; ### local_0_store
-inline local_0_store, 'local_0_store', SYMBOL_INTERNAL  ; value --
+; ### local_0_set
+inline local_0_set, 'local_0_set', SYMBOL_INTERNAL      ; value --
         mov     [r14], rbx
         poprbx
 endinline
 
-; ### local_1_store
-inline local_1_store, 'local_1_store', SYMBOL_INTERNAL  ; value --
+; ### local_1_set
+inline local_1_set, 'local_1_set', SYMBOL_INTERNAL      ; value --
         mov     [r14 + BYTES_PER_CELL], rbx
         poprbx
 endinline
@@ -202,6 +237,8 @@ code cold_initialize_locals, 'cold_initialize_locals', SYMBOL_INTERNAL
         _lit local_names_
         _ gc_add_root
 
+        _ initialize_local_getters
+
         next
 endcode
 
@@ -223,8 +260,8 @@ code initialize_locals, 'initialize-locals'
         mov     [locals_], rbx
         poprbx
 
-        _lit MAX_LOCALS
-        _ new_vector_untagged
+        _lit MAX_LOCALS * 2
+        _ new_hashtable_untagged
         mov     [local_names_], rbx
         poprbx
 
@@ -249,14 +286,14 @@ code add_local, 'add-local'             ; string -- index
         _error "duplicate local name"
         _then .2                        ; -- string
 
-        ; add name
-        _dup
-        _ local_names
-        _ vector_push
+        _ locals_count
+        _over
+        _ locals
+        _ hashtable_set_at
 
         _ locals_count
         _swap
-        _ locals
+        _ local_names
         _ hashtable_set_at
 
          ; return index of added name
