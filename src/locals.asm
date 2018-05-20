@@ -59,22 +59,58 @@ code lpfetch, 'lp@'                     ; -- tagged-address
 endcode
 
 ; ### local@
-code local_get, 'local@'                ; index -- value
+code local_get, 'local@'                ; index -> value
         _check_index
         mov     rbx, [r14 + rbx * BYTES_PER_CELL]
         next
 endcode
 
 ; ### local_0_get
-inline local_0_get, 'local_0_get', SYMBOL_INTERNAL      ; -- value
+inline local_0_get, 'local_0_get', SYMBOL_INTERNAL      ; -> value
         pushrbx
         mov     rbx, [r14]
 endinline
 
 ; ### local_1_get
-inline local_1_get, 'local_1_get', SYMBOL_INTERNAL      ; -- value
+inline local_1_get, 'local_1_get', SYMBOL_INTERNAL      ; -> value
         pushrbx
         mov     rbx, [r14 + BYTES_PER_CELL]
+endinline
+
+; ### local_2_get
+inline local_2_get, 'local_2_get', SYMBOL_INTERNAL      ; -> value
+        pushrbx
+        mov     rbx, [r14 + BYTES_PER_CELL * 2]
+endinline
+
+; ### local_3_get
+inline local_3_get, 'local_3_get', SYMBOL_INTERNAL      ; -> value
+        pushrbx
+        mov     rbx, [r14 + BYTES_PER_CELL * 3]
+endinline
+
+; ### local_4_get
+inline local_4_get, 'local_4_get', SYMBOL_INTERNAL      ; -> value
+        pushrbx
+        mov     rbx, [r14 + BYTES_PER_CELL * 4]
+endinline
+
+; ### local_5_get
+inline local_5_get, 'local_5_get', SYMBOL_INTERNAL      ; -> value
+        pushrbx
+        mov     rbx, [r14 + BYTES_PER_CELL * 5]
+endinline
+
+; ### local_6_get
+inline local_6_get, 'local_6_get', SYMBOL_INTERNAL      ; -> value
+        pushrbx
+        mov     rbx, [r14 + BYTES_PER_CELL * 6]
+endinline
+
+; ### local_7_get
+inline local_7_get, 'local_7_get', SYMBOL_INTERNAL      ; -> value
+        pushrbx
+        mov     rbx, [r14 + BYTES_PER_CELL * 7]
 endinline
 
 asm_global local_getters_, f_value
@@ -107,8 +143,39 @@ code initialize_local_getters, 'initialize_local_getters', SYMBOL_INTERNAL
         _over
         _ vector_push
 
+        _lit S_local_2_get
+        _over
+        _ vector_push
+
+        _lit S_local_3_get
+        _over
+        _ vector_push
+
+        _lit S_local_4_get
+        _over
+        _ vector_push
+
+        _lit S_local_5_get
+        _over
+        _ vector_push
+
+        _lit S_local_6_get
+        _over
+        _ vector_push
+
+        _lit S_local_7_get
+        _over
+        _ vector_push
+
         _drop
 
+        next
+endcode
+
+; ### local-getter
+code local_getter, 'local-getter'       ; index -> symbol
+        _ local_getters
+        _ vector_nth
         next
 endcode
 
@@ -271,7 +338,7 @@ code initialize_locals, 'initialize-locals'
 endcode
 
 ; ### add-local
-code add_local, 'add-local'             ; string -- index
+code add_local, 'add-local'             ; string -> index
 
         cmp     qword [locals_count_], MAX_LOCALS
         jb      .1
@@ -284,20 +351,22 @@ code add_local, 'add-local'             ; string -- index
         _ hashtable_at
         _tagged_if .2
         _error "duplicate local name"
-        _then .2                        ; -- string
+        _then .2                        ; -> string
 
         _ locals_count
         _over
         _ locals
-        _ hashtable_set_at
+        _ hashtable_set_at              ; -> string
 
         _ locals_count
+        _ local_getter
+        _ verify_symbol
         _swap
         _ local_names
         _ hashtable_set_at
 
          ; return index of added name
-        _ locals_count                  ; -- index
+        _ locals_count                  ; -> index
 
         ; update locals count
         add     qword [locals_count_], 1

@@ -99,58 +99,18 @@ code immediate?, 'immediate?'   ; object -- ?
         next
 endcode
 
-; ### process_local_get
-code process_local_get, 'process_local_get', SYMBOL_INTERNAL    ; tagged-index --
-        _dup
-        _lit tagged_zero
-        _eq?
-        _tagged_if .1
-        _drop
-        _lit 0
-        _ local_getters
-        _ vector_nth_untagged
-        _get_accum
-        _ vector_push
-        _return
-        _then .1
-
-        _dup
-        _tagged_fixnum 1
-        _eq?
-        _tagged_if .2
-        _drop
-        _lit 1
-        _ local_getters
-        _ vector_nth_untagged
-        _get_accum
-        _ vector_push
-        _return
-        _then .2
-
-        ; push index
-        _get_accum
-        _ vector_push                   ; --
-
-        ; push local@
-        _lit S_local_get
-        _get_accum
-        _ vector_push
-
-        next
-endcode
-
 ; ### process-token
 code process_token, 'process-token'     ; string -- ???
-        _ locals
+        _ using_locals?
         _tagged_if .1
         _dup
-        _ locals                        ; -- string string hashtable
-        _ hashtable_at_star             ; -- string index/f ?
-        _tagged_if .2                   ; -- string index
+        _ local_names
+        _ hashtable_at_star
+        _tagged_if .2
         _nip
-        _ process_local_get
+        _ maybe_add
         _return
-        _else .2                        ; -- string f
+        _else .2
         _drop
         _then .2
         _then .1
