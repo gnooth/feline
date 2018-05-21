@@ -473,6 +473,15 @@ code initialize_locals, 'initialize-locals'
         next
 endcode
 
+; ### maybe-initialize-locals
+code maybe_initialize_locals, 'maybe-initialize-locals'
+        _ using_locals?
+        _tagged_if_not .1
+        _ initialize_locals
+        _then .1
+        next
+endcode
+
 ; ### add-local
 code add_local, 'add-local'             ; string -> index
 
