@@ -16,7 +16,14 @@
 file __FILE__
 
 ; maximum number of local variables in a definition
-%define MAX_LOCALS      16
+%define MAX_LOCALS      8
+
+; ### max-locals
+code max_locals, 'max-locals'           ; -> n
+        pushrbx
+        mov     ebx, tagged_fixnum(MAX_LOCALS)
+        next
+endcode
 
 %macro  _locals_enter 0
         push    r14
