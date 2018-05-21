@@ -437,12 +437,19 @@ code initialize_locals, 'initialize-locals'
         mov     [locals_], rbx
         poprbx
 
+        mov     qword [locals_count_], 0
+
         _lit MAX_LOCALS * 2
         _ new_hashtable_untagged
         mov     [local_names_], rbx
         poprbx
 
         mov     qword [using_locals?_], t_value
+
+        _lit S_locals_enter
+        _lit tagged_zero
+        _ current_definition
+        _ vector_insert_nth
 
         next
 endcode

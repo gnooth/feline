@@ -721,8 +721,6 @@ code paren, '(', SYMBOL_IMMEDIATE       ; --
         _ end_dynamic_scope
 
         _ initialize_locals
-        _lit S_locals_enter
-        _ add_to_definition
 
         _lit S_add_named_parameter
         _ vector_each
@@ -738,10 +736,6 @@ code declare_local_internal, 'declare-local-internal'   ; --
         _tagged_if_not .1
         ; first local in this definition
         _ initialize_locals
-        _lit S_locals_enter
-        _lit tagged_zero
-        _get_accum
-        _ vector_insert_nth
 
         ; check for return-if-no-locals
         ; if found, replace with return-if-locals
