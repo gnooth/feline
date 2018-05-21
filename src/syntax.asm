@@ -367,8 +367,28 @@ code parse_definition_name, 'parse-definition-name'     ; -- symbol
         next
 endcode
 
+asm_global current_definition_, f_value
+
+; ### current-definition
+code current_definition, 'current-definition'   ; -> vector/?
+        pushrbx
+        mov     rbx, [current_definition_]
+        next
+endcode
+
+; ### set-current-definition
+code set_current_definition, 'set-current-definition'   ; vector/? -> void
+        _dup
+        _tagged_if .1
+        _ verify_vector
+        _then .1
+        mov     [current_definition_], rbx
+        poprbx
+        next
+endcode
+
 ; ### parse-definition
-code parse_definition, 'parse-definition'       ; -- vector
+code parse_definition, 'parse-definition'       ; -> vector
 
         _ begin_dynamic_scope
 
@@ -378,14 +398,17 @@ code parse_definition, 'parse-definition'       ; -- vector
 
         _lit 10
         _ new_vector_untagged
+        _dup
+        _ set_current_definition
         _set_accum
+
 .top:
-        _ parse_token                   ; -- string/f
+        _ parse_token                   ; -> string/f
         cmp     rbx, f_value
         jne     .1
         poprbx
         _ error_unexpected_end_of_input
-.1:                                     ; --  string
+.1:                                     ; ->  string
         _dup
         _quote ";"
         _ string_equal?
@@ -403,21 +426,24 @@ code parse_definition, 'parse-definition'       ; -- vector
         _ using_locals?
         _tagged_if .5
         _lit S_locals_leave
-        _get_accum
+        _ current_definition
         _ vector_push
         _then .5
 
-        _get_accum                      ; -- vector
+        _ current_definition            ; -> vector
 
         _ end_dynamic_scope
 
         _ forget_locals
 
+        _f
+        _ set_current_definition
+
         next
 endcode
 
 ; ### :
-code colon, ':', SYMBOL_IMMEDIATE       ; --
+code colon, ':', SYMBOL_IMMEDIATE
 
         _lit S_colon
         _ top_level_only
@@ -429,6 +455,7 @@ code colon, ':', SYMBOL_IMMEDIATE       ; --
         _over
         _ symbol_set_def                ; -- symbol
         _ compile_word
+
         next
 endcode
 
