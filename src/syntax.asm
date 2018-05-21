@@ -854,8 +854,8 @@ code storeto, '!>', SYMBOL_IMMEDIATE    ; --
 
         _ local_name?                   ; -- index/string ?
         _tagged_if .1                   ; -- index
-        _ add_to_definition
-        _lit S_local_set
+        _ local_setter
+        _ verify_symbol
         _ add_to_definition
         _return
         _then .1                        ; -- string
