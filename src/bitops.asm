@@ -160,14 +160,14 @@ code rshift, 'rshift'                   ; x n -- y
         mov     ecx, ebx                ; n (untagged) in ecx
         poprbx                          ; -- x
         test    bl, FIXNUM_TAG
-        jz      x_is_not_a_fixnum
+        jz      .not_a_fixnum
 
         ; x is a fixnum
         sar     rbx, cl
         or      rbx, FIXNUM_TAG
         next
 
-x_is_not_a_fixnum:
+.not_a_fixnum:
 
         cmp     bl, HANDLE_TAG
         jne     error_not_integer
