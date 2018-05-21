@@ -731,31 +731,10 @@ code paren, '(', SYMBOL_IMMEDIATE       ; --
 endcode
 
 ; ### declare-local-internal
-code declare_local_internal, 'declare-local-internal'   ; --
+code declare_local_internal, 'declare-local-internal'   ; -> index
         _ using_locals?
         _tagged_if_not .1
-        ; first local in this definition
         _ initialize_locals
-
-        ; check for return-if-no-locals
-        ; if found, replace with return-if-locals
-        _get_accum
-        _quotation .2
-        ; -- element index
-        _swap
-        _lit S_return_if_no_locals
-        _eq?
-        _tagged_if .3
-        _lit S_return_if_locals
-        _swap
-        _get_accum
-        _ vector_set_nth
-        _else .3
-        _drop
-        _then .3
-        _end_quotation .2
-        _ vector_each_index
-
         _then .1
 
         ; FIXME verify that we're inside a named quotation

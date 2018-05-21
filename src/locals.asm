@@ -451,6 +451,25 @@ code initialize_locals, 'initialize-locals'
         _ current_definition
         _ vector_insert_nth
 
+        ; check for return-if-no-locals
+        ; if found, replace with return-if-locals
+        _ current_definition
+        _quotation .1
+        ; -> element index
+        _swap
+        _lit S_return_if_no_locals
+        _eq?
+        _tagged_if .2
+        _lit S_return_if_locals
+        _swap
+        _ current_definition
+        _ vector_set_nth
+        _else .2
+        _drop
+        _then .2
+        _end_quotation .1
+        _ vector_each_index
+
         next
 endcode
 
