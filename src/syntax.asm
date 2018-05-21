@@ -754,34 +754,20 @@ code declare_local, 'local:', SYMBOL_IMMEDIATE  ; -- tagged-index
 endcode
 
 ; ### >local:
-code assign_local, '>local:', SYMBOL_IMMEDIATE  ; x --
-        _ declare_local_internal        ; -- index
-
-        ; add index to quotation
+code assign_local, '>local:', SYMBOL_IMMEDIATE  ; x -> void
+        _ declare_local_internal        ; -> index
+        _ local_setter                  ; -> symbol
         _get_accum
         _ vector_push
-
-        ; add local! to quotation as a symbol
-        _lit S_local_set
-        _get_accum
-        _ vector_push
-
         next
 endcode
 
 ; ### :>
-code assign_local2, ':>', SYMBOL_IMMEDIATE      ; x --
+code assign_local2, ':>', SYMBOL_IMMEDIATE      ; x -> void
         _ declare_local_internal        ; -- index
-
-        ; add index to quotation
+        _ local_setter                  ; -> symbol
         _get_accum
         _ vector_push
-
-        ; add local! to quotation as a symbol
-        _lit S_local_set
-        _get_accum
-        _ vector_push
-
         next
 endcode
 
