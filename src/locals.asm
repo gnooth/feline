@@ -483,7 +483,7 @@ code maybe_initialize_locals, 'maybe-initialize-locals'
 endcode
 
 ; ### add-local
-code add_local, 'add-local'             ; string -> index
+code add_local, 'add-local'             ; string -> void
 
         cmp     qword [locals_count_], MAX_LOCALS
         jb      .1
@@ -508,12 +508,8 @@ code add_local, 'add-local'             ; string -> index
         _ verify_symbol
         _swap
         _ local_names
-        _ hashtable_set_at
+        _ hashtable_set_at              ; -> void
 
-         ; return index of added name
-        _ locals_count                  ; -> index
-
-        ; update locals count
         add     qword [locals_count_], 1
 
         next

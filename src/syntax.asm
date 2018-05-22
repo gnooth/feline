@@ -667,8 +667,7 @@ endcode
 
 ; ### add-named-parameter
 code add_named_parameter, 'add-named-parameter' ; string --
-        _ add_local                     ; -- index
-        _drop
+        _ add_local
         next
 endcode
 
@@ -730,43 +729,40 @@ code paren, '(', SYMBOL_IMMEDIATE       ; --
         next
 endcode
 
-; ### declare-local-internal
-code declare_local_internal, 'declare-local-internal'   ; -> index
-        _ using_locals?
-        _tagged_if_not .1
-        _ initialize_locals
-        _then .1
-
-        ; FIXME verify that we're inside a named quotation
-
-        _ parse_token                   ; -- string
-
-        _ add_local
-
-        next
-endcode
-
 ; ### local:
 code declare_local, 'local:', SYMBOL_IMMEDIATE  ; -- tagged-index
-        _ declare_local_internal
-        _drop
+        _ maybe_initialize_locals
+        _ must_parse_token
+        _ add_local
         next
 endcode
 
 ; ### >local:
 code assign_local, '>local:', SYMBOL_IMMEDIATE  ; x -> void
-        _ declare_local_internal        ; -> index
-        _ local_setter                  ; -> symbol
-        _get_accum
+        _ maybe_initialize_locals
+        _ must_parse_token
+        _dup
+        _ add_local
+        _ locals
+        _ hashtable_at
+        _ verify_fixnum
+        _ local_setter
+        _ current_definition
         _ vector_push
         next
 endcode
 
 ; ### :>
 code assign_local2, ':>', SYMBOL_IMMEDIATE      ; x -> void
-        _ declare_local_internal        ; -- index
-        _ local_setter                  ; -> symbol
-        _get_accum
+        _ maybe_initialize_locals
+        _ must_parse_token
+        _dup
+        _ add_local
+        _ locals
+        _ hashtable_at
+        _ verify_fixnum
+        _ local_setter
+        _ current_definition
         _ vector_push
         next
 endcode
