@@ -33,14 +33,13 @@ endcode
 
 asm_global recycled_handles_vector_, 0
 
-%macro _recycled_handles_vector 0       ; -- raw-vector
+%macro _recycled_handles_vector 0       ; -> raw-vector
         pushrbx
         mov     rbx, [recycled_handles_vector_]
 %endmacro
 
 ; ### initialize_handle_space
 code initialize_handle_space, 'initialize_handle_space', SYMBOL_INTERNAL
-; --
 
         pushrbx
         mov     rbx, [handle_space_]
@@ -84,7 +83,7 @@ code initialize_handle_space, 'initialize_handle_space', SYMBOL_INTERNAL
         _dup
         _handle_to_object_unsafe                        ; -- handle raw-vector
 
-        ; store address of raw vector in recycled_handles_vector_ asm global
+        ; store address of raw vector asm global
         mov     [recycled_handles_vector_], rbx         ; -- handle raw_vector
         poprbx                                          ; -- handle
 
@@ -141,7 +140,7 @@ code gc_status, 'gc-status'     ; --
 endcode
 
 ; ### get_empty_handle
-code get_empty_handle, 'get_empty_handle', SYMBOL_INTERNAL      ; -- handle/0
+code get_empty_handle, 'get_empty_handle', SYMBOL_INTERNAL      ; -> handle/0
         _recycled_handles_vector
         test    rbx, rbx
         jz      .1
@@ -151,7 +150,6 @@ code get_empty_handle, 'get_empty_handle', SYMBOL_INTERNAL      ; -- handle/0
         _rep_return
 
 .1:
-        ; -- f
         cmp     qword [unused], 0
         jz .2
         mov     rbx, [handle_space_free_]       ; address of handle to be returned
@@ -162,7 +160,6 @@ code get_empty_handle, 'get_empty_handle', SYMBOL_INTERNAL      ; -- handle/0
         _return
 
 .2:
-        ; -- f
         xor     ebx, ebx
         next
 endcode
@@ -215,7 +212,7 @@ code initialize_handles_lock, 'initialize_handles_lock', SYMBOL_INTERNAL        
 endcode
 
 ; ### trylock_handles
-code trylock_handles, 'trylock_handles', SYMBOL_INTERNAL        ; -- ?
+code trylock_handles, 'trylock_handles', SYMBOL_INTERNAL        ; -> ?
         _handles_lock
 
         test    rbx, rbx
@@ -229,35 +226,45 @@ code trylock_handles, 'trylock_handles', SYMBOL_INTERNAL        ; -- ?
 endcode
 
 ; ### unlock_handles
-code unlock_handles, 'unlock_handles', SYMBOL_INTERNAL   ; --
+code unlock_handles, 'unlock_handles', SYMBOL_INTERNAL
+
+        cmp     qword [handles_lock_], 0
+        jz      .exit
+
         _handles_lock
-
-        test    rbx, rbx
-        jnz     .1
-        _drop
+        _ mutex_owner
+        _tagged_if_not .1
         _return
+        _then .1
 
-.1:
+        _handles_lock
         _ mutex_unlock
         _tagged_if_not .2
         _error "mutex_unlock failed"
         _then .2
-        next
+
+.exit:
+        _rep_return
 endcode
 
 ; ### new_handle
-code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
+code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -> handle
 
+        cmp     qword [thread_count_], 1
+        je      .1
+
+.2:
         _ safepoint
 
         _ trylock_handles
         cmp     rbx, f_value
         poprbx
-        je      new_handle
+        je      .2
 
-        _ get_empty_handle              ; -- object handle/0
+.1:
+        _ get_empty_handle              ; -> object handle/0
         test    rbx, rbx
-        jz     .1
+        jz     .3
 
         mov     rax, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
@@ -271,29 +278,29 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
         _ unlock_handles
         _return
 
-.1:                                     ; -- object 0
+.3:                                     ; -> object 0
         _drop
 
         _debug_print "new_handle need to gc"
 
         _ gc_lock
         _ mutex_trylock
-        _tagged_if .2
+        _tagged_if .4
         _debug_print "new_handle acquired gc lock"
         _ gc_collect
         _ gc_lock
         _ mutex_unlock
-        _tagged_if_not .3
+        _tagged_if_not .5
         _error "gc mutex_unlock failed"
-        _then .3
+        _then .5
         _debug_print "new_handle released gc lock"
-        _then .2
+        _then .4
 
         _debug_print "new_handle calling get_empty_handle"
 
         _ get_empty_handle              ; -- object handle/0
         test    rbx, rbx
-        jz     .4
+        jz     .6
 
         _debug_print "new_handle got handle after gc"
 
@@ -309,7 +316,7 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -- handle
         _ unlock_handles
         _return
 
-.4:
+.6:
         _ unlock_handles
         _write `\nout of handles, exiting...\n`
         xcall   os_bye
