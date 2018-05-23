@@ -106,8 +106,8 @@ global: #operands
     { "al" "cl" "dl" "bl" } array-nth ;
 
 : .register-name                        -- register-number size -> void
-    >local: size
-    >local: n
+    :> size
+    :> n
     {
         { [ size 64 = ] [ n reg64-name write-string ] }
         { [ size 32 = ] [ n reg32-name write-string ] }
@@ -127,11 +127,11 @@ global: #operands
     write-string space ;
 
 : .relative                             -- base index scale disp size -> void
-    >local: size
-    >local: disp
-    >local: scale
-    >local: index
-    >local: base
+    :> size
+    :> disp
+    :> scale
+    :> index
+    :> base
 
     mnemonic "lea" = [ size .size ] unless
 
@@ -367,14 +367,14 @@ global: regop   -- REGister or OPcode extension (depending on the instruction)
     dest-col "al, " write-string .immediate-operand ;
 
 : find-word-from-exact-code-address     -- tagged-code-address -> word/f
-    >local: x
+    :> x
     all-words [
         symbol-code-address x =
     ] find nip ;
 
 : jcc-rel32                             -- mnemonic -> void
     !> mnemonic
-    next-int32 ip + >local: jump-target
+    next-int32 ip + :> jump-target
 
     .instruction-bytes
     .mnemonic
@@ -663,7 +663,7 @@ last-word 0x6b install-handler
 
 : jmp/jcc-rel8                          -- mnemonic -> void
     !> mnemonic
-    next-signed-byte ip + >local: jump-target
+    next-signed-byte ip + :> jump-target
     .instruction-bytes
     .mnemonic
     dest-col jump-target hex.
@@ -1319,7 +1319,7 @@ last-word 0xd3 install-handler
 
 : .e2
    "loop" !> mnemonic
-   next-signed-byte ip + >local: code-address
+   next-signed-byte ip + :> code-address
    .instruction-bytes
    .mnemonic
    dest-col code-address hex. ;
@@ -1329,7 +1329,7 @@ last-word 0xe2 install-handler
 : .e3
     -- jump short if rcx == 0
     "jrcxz" !> mnemonic
-    next-signed-byte ip + >local: target
+    next-signed-byte ip + :> target
     ip instruction-start - .bytes
     .instruction-bytes
     .mnemonic
@@ -1343,7 +1343,7 @@ last-word 0xeb install-handler
 
 : .e8
    "call" !> mnemonic
-   next-int32 ip + >local: code-address
+   next-int32 ip + :> code-address
    .instruction-bytes
    .mnemonic
    dest-col
@@ -1354,7 +1354,7 @@ last-word 0xe8 install-handler
 
 : .e9
    "jmp" !> mnemonic
-   next-int32 ip + >local: jump-target
+   next-int32 ip + :> jump-target
    .instruction-bytes
    .mnemonic
    dest-col
@@ -1680,7 +1680,7 @@ last-word 0xbe install-0x0f-handler
 : decode
     reset-disassembler
     .ip
-    ip c@ >local: byte
+    ip c@ :> byte
     byte 0x66 eq? [
         byte !> operand-size-prefix
         ++ip
