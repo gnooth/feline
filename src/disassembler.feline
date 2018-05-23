@@ -128,7 +128,7 @@ global: #operands
 
 : .relative                             -- base index scale disp size -> void
     :> size
-    :> disp
+    :> disp!
     :> scale
     :> index
     :> base
@@ -143,7 +143,7 @@ global: #operands
         index .reg64
     ] when
     disp 0 = [
-        disp 0 > [ "+" write-string ] [ "-" write-string disp negate !> disp ] if
+        disp 0 > [ "+" write-string ] [ "-" write-string disp negate disp! ] if
         disp dec.
     ] unless
     "]" write-string ;
@@ -1680,11 +1680,11 @@ last-word 0xbe install-0x0f-handler
 : decode
     reset-disassembler
     .ip
-    ip c@ :> byte
+    ip c@ :> byte!
     byte 0x66 eq? [
         byte !> operand-size-prefix
         ++ip
-        ip c@ !> byte
+        ip c@ byte!
     ] when
     byte 0x40 0x4f between? [
         byte !> prefix
