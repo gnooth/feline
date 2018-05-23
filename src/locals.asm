@@ -515,6 +515,32 @@ code add_local, 'add-local'             ; string -> void
         next
 endcode
 
+; ### add-local-setter
+code add_local_setter, 'add-local-setter'       ; string -> void
+
+        cmp     qword [locals_count_], MAX_LOCALS
+        jb      .1
+        _error "too many locals"
+
+.1:
+        ; is this already a local name?
+        _dup
+        _ local_names
+        _ hashtable_at
+        _tagged_if .2
+        _error "duplicate local name"
+        _then .2                        ; -> string
+
+        _ locals_count
+        _ local_setter
+        _ verify_symbol
+        _swap
+        _ local_names
+        _ hashtable_set_at              ; -> void
+
+        next
+endcode
+
 ; ### forget-locals
 code forget_locals, 'forget-locals'     ; --
         mov     qword [locals_], f_value
