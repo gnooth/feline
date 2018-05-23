@@ -3218,4 +3218,26 @@ test: named-parameters-test-1
 
 named-parameters-test-1
 
+test: local-test-3
+    42 :> x
+    87 :> y
+    x 42 assert-eq
+    y 87 assert-eq
+;
+
+local-test-3
+
+test: local-test-4
+    42 :> x!
+    87 :> y!
+    x 42 assert-eq
+    y 87 assert-eq
+    17 x!
+    31 y!
+    x 17 assert-eq
+    y 31 assert-eq
+;
+
+local-test-4
+
 ?nl "Reached end of test.feline" write-string
