@@ -754,8 +754,26 @@ endcode
 
 ; ### :>
 code assign_local2, ':>', SYMBOL_IMMEDIATE      ; x -> void
+
         _ maybe_initialize_locals
-        _ must_parse_token
+
+        _ must_parse_token              ; -> string
+
+        _dup
+        _ string_last_char
+        cmp     rbx, tagged_char('!')
+        poprbx
+        jne     .1
+
+        _dup
+        _ add_local_setter              ; -> string
+
+        _dup
+        _ string_length
+        sub     rbx, (1 << FIXNUM_TAG_BITS)
+        _ string_head
+
+.1:
         _dup
         _ add_local
         _ locals
@@ -764,6 +782,7 @@ code assign_local2, ':>', SYMBOL_IMMEDIATE      ; x -> void
         _ local_setter
         _ current_definition
         _ vector_push
+
         next
 endcode
 
