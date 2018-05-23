@@ -340,6 +340,9 @@ code reset, 'reset'
         _ vector_set_length
         _then .2
 
+        ; REVIEW
+        _ forget_locals
+
         jmp     quit
 
         next                            ; for decompiler
