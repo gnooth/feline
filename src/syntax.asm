@@ -634,9 +634,31 @@ endinline
 ; ### store_2_args
 always_inline store_2_args, 'store_2_args'
         mov     rax, [rbp]
-        mov     [r14 + BYTES_PER_CELL], rbx
         mov     [r14], rax
+        mov     [r14 + BYTES_PER_CELL], rbx
         _2drop
+endinline
+
+; ### store_3_args
+always_inline store_3_args, 'store_3_args'
+        mov     rax, [rbp + BYTES_PER_CELL]
+        mov     [r14], rax
+        mov     rax, [rbp]
+        mov     [r14 + BYTES_PER_CELL], rax
+        mov     [r14 + BYTES_PER_CELL * 2], rbx
+        _3drop
+endinline
+
+; ### store_4_args
+always_inline store_4_args, 'store_4_args'
+        mov     rax, [rbp + BYTES_PER_CELL * 2]
+        mov     [r14], rax
+        mov     rax, [rbp + BYTES_PER_CELL]
+        mov     [r14 + BYTES_PER_CELL], rax
+        mov     rax, [rbp]
+        mov     [r14 + BYTES_PER_CELL * 2], rax
+        mov     [r14 + BYTES_PER_CELL * 3], rbx
+        _4drop
 endinline
 
 ; ### process-named-parameters
@@ -647,8 +669,12 @@ code process_named_parameters, 'process-named-parameters'
         jz      .1
         cmp     rbx, 2
         jz      .2
-        _drop
-        _return
+        cmp     rbx, 3
+        jz      .3
+        cmp     rbx, 4
+        jz      .4
+
+        _error "too many named parameters"
 
 .1:
         _drop
@@ -659,6 +685,18 @@ code process_named_parameters, 'process-named-parameters'
 .2:
         _drop
         _lit S_store_2_args
+        _ add_to_definition
+        _return
+
+.3:
+        _drop
+        _lit S_store_3_args
+        _ add_to_definition
+        _return
+
+.4:
+        _drop
+        _lit S_store_4_args
         _ add_to_definition
         _return
 
