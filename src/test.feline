@@ -3208,15 +3208,45 @@ test: vector-all?-test-1
 
 vector-all?-test-1
 
-: %named-parameters-test-1 ( x y ) x y ;
+: %named-parameters-test-1 ( a ) a ;
 
 test: named-parameters-test-1
     clear
-    42 "test" %named-parameters-test-1 get-data-stack { 42 "test" } assert=
+    1 %named-parameters-test-1 get-data-stack { 1 } assert=
     clear
 ;
 
 named-parameters-test-1
+
+: %named-parameters-test-2 ( a b ) a b ;
+
+test: named-parameters-test-2
+    clear
+    1 2 %named-parameters-test-2 get-data-stack { 1 2 } assert=
+    clear
+;
+
+named-parameters-test-2
+
+: %named-parameters-test-3 ( a b c ) a b c ;
+
+test: named-parameters-test-3
+    clear
+    1 2 3 %named-parameters-test-3 get-data-stack { 1 2 3 } assert=
+    clear
+;
+
+named-parameters-test-3
+
+: %named-parameters-test-4 ( a b c d ) a b c d ;
+
+test: named-parameters-test-4
+    clear
+    1 2 3 4 %named-parameters-test-4 get-data-stack { 1 2 3 4 } assert=
+    clear
+;
+
+named-parameters-test-4
 
 test: local-test-3
     42 :> x
