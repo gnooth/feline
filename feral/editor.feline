@@ -22,20 +22,20 @@ feline-home "feral" path-append add-source-directory
 
 using: feline accept-string ;
 
-global: current-buffer
-global: repaint?
-global: dot-line-changed?
-global: bindings
+var current-buffer
+var repaint?
+var dot-line-changed?
+var bindings
 
-global: current-command
-global: last-command
+var current-command
+var last-command
 
-global: in-redo?
+var in-redo?
 
-global: done?
+var done?
 
-"\n"   >constant: LF
-"\r\n" >constant: CR+LF
+"\n"   constant LF
+"\r\n" constant CR+LF
 
 tuple: position
     line-number
@@ -55,10 +55,10 @@ tuple: buffer
     undo-stack
     redo-stack ;
 
-global: buffer-list
+var buffer-list
 
 : make-buffer                           -- -> buffer
-    buffer make-instance >local: buf
+    buffer make-instance :> buf
 
     0 buf buffer-top-line-number!
     0 buf buffer-goal-column!
@@ -90,7 +90,7 @@ global: buffer-list
 : set-mark                              -- position ->
     current-buffer buffer-mark! ;
 
-: unmark mark [ f set-mark t !> repaint? ] when ;
+: unmark mark [ f set-mark t repaint?! ] when ;
 
 : top-line-number                       -- -> n
     current-buffer buffer-top-line-number ;
@@ -210,18 +210,15 @@ global: buffer-list
 : tab-width                             -- -> n
     8 ;
 
-: position-column                       -- position -> column
-    >local: pos
-    pos position-line-number buffer-nth-line >local: line
-    pos position-offset line length min >local: limit
-    0 >local: column
+: position-column ( pos )               -- position -> column
+    pos position-line-number buffer-nth-line :> line
+    pos position-offset line length min :> limit
+    0 :> column!
     limit [
         line string-nth 9 code-char eq? [
-            column
-            tab-width column tab-width mod -
-            + !> column
+            column tab-width column tab-width mod - + column!
         ] [
-            column 1 + !> column
+            column 1+ column!
         ] if
     ] each-integer
     column ;
@@ -242,12 +239,11 @@ global: buffer-list
     dot-line-number top-line-number -
     dup 0 >= assert-true ;
 
-: detab                                 -- string1 -> string2
-    >local: s
-    9 code-char s string-index >local: i
+: detab ( s )                           -- string1 -> string2
+    9 code-char s string-index :> i
     i f eq? [ s ] return-if
 
-    256 <sbuf> >local: sb
+    256 <sbuf> :> sb
 
     s [
         dup 9 code-char eq? [
@@ -262,13 +258,11 @@ global: buffer-list
     sb sbuf>string
 ;
 
-: paint-line                            -- y ->
-    >local: y
-
+: paint-line ( y )                      -- y ->
     0 y at-xy
-    top-line-number y + >local: line-number
+    top-line-number y + :> line-number
 
-    line-number buffer-nth-line detab >local: detabbed-text
+    line-number buffer-nth-line detab :> detabbed-text
 
     output-style
 
@@ -289,8 +283,7 @@ global: buffer-list
     ] if
 ;
 
-: redisplay-line                        -- y ->
-    >local: y
+: redisplay-line ( y )                  -- y ->
     top-line-number y + buffer-line-count < [
         y paint-line
     ] [
@@ -306,11 +299,11 @@ global: buffer-list
     0 status-y at-xy
     modified? [ '*' write-char ] [ space ] if
     editor-filename write-string
-    dot-line-number 1 +
-    dot-column 1 +
+    dot-line-number 1+
+    dot-column 1+
     "Line %d Col %d " format
-    terminal-width over length - >local: x
-    x editor-filename length 1 + - 1 max spaces
+    terminal-width over length - :> x
+    x editor-filename length 1+ - 1 max spaces
     write-string
     normal
 ;
@@ -318,7 +311,7 @@ global: buffer-list
 : clear-status-line 0 status-y at-xy clear-to-eol ;
 
 : message-y                             -- -> n
-    status-y 1 + ;
+    status-y 1+ ;
 
 : message                               -- string ->
     0 message-y at-xy write-string ;
@@ -330,11 +323,11 @@ global: buffer-list
     repaint? [
         0 0 at-xy
         lines-per-page [ redisplay-line ] each-integer
-        f !> repaint?
+        f repaint?!
     ] [
         dot-line-changed? [
             dot-y redisplay-line
-            f !> dot-line-changed?
+            f dot-line-changed?!
         ] when
     ] if
     status
@@ -359,7 +352,7 @@ global: buffer-list
     dot-line-number
     lines-per-page 2 /i verify-index
     - 0 max set-top-line-number
-    t !> repaint?
+    t repaint?!
 ;
 
 : maybe-reframe reframe? [ reframe ] when ;
@@ -450,14 +443,14 @@ special: +compound-undo+
 : undo-move                             -- undo-record ->
     in-redo? [ add-undo-move ] [ add-redo-move ] if
 
-    mark [ t !> repaint? ] when
+    mark [ t repaint?! ] when
 
     [ undo-record-mod-count set-mod-count ]
     [ undo-record-dot set-dot ]
     [ undo-record-mark set-mark ]
     tri
 
-    mark [ t !> repaint? ] when
+    mark [ t repaint?! ] when
 ;
 
 : new-undo-line-edit                    -- -> undo-record
@@ -478,7 +471,7 @@ special: +compound-undo+
     [ undo-record-data dot-line! ]
     tri
 
-    t !> dot-line-changed?
+    t dot-line-changed?!
 ;
 
 : add-undo-delete-line-separator
@@ -505,7 +498,7 @@ special: +compound-undo+
     undo-record-data                    -- 2array
     dup array-first dot-line!
     array-second dot-line-number 1 + buffer-insert-nth-line
-    t !> repaint?
+    t repaint?!
 
     add-redo-delete-line-separator
 ;
@@ -529,7 +522,7 @@ special: +compound-undo+
     [ undo-record-data dot-line! ]
     tri
     dot-line-number 1+ current-buffer-lines vector-remove-nth!
-    t !> repaint?
+    t repaint?!
 
     add-redo-insert-line-separator
 ;
@@ -569,7 +562,7 @@ special: +compound-undo+
 
     0 set-top-line-number
     0 set-goal-column
-    t !> repaint?
+    t repaint?!
 ;
 
 : end-of-buffer
@@ -581,12 +574,12 @@ special: +compound-undo+
     buffer-line-count lines-per-page - 0 max set-top-line-number
     dot-line-length dot-offset!
     dot-offset set-goal-column
-    t !> repaint?
+    t repaint?!
 ;
 
 : gotoline
     0 message-y at-xy
-    "Line number: " accept-string >local: response
+    "Line number: " accept-string :> response
     clear-message-line
     response string>number [
         1- 0 max buffer-line-count 1- min
@@ -646,7 +639,7 @@ special: +compound-undo+
             dot-offset set-goal-column
             reframe? [
                 dot-line-number set-top-line-number
-                t !> repaint?
+                t repaint?!
             ] when
         ] when
     ] if
@@ -670,7 +663,7 @@ special: +compound-undo+
             dot-offset set-goal-column
             reframe? [
                 dot-line-number lines-per-page 1 - - set-top-line-number
-                t !> repaint?
+                t repaint?!
             ] when
         ] when
     ] if
@@ -686,7 +679,7 @@ special: +compound-undo+
         unmark
         reframe? [
             dot-line-number lines-per-page 1- - set-top-line-number
-            t !> repaint?
+            t repaint?!
         ] when
         adjust-cursor-x
     ] when
@@ -702,7 +695,7 @@ special: +compound-undo+
         unmark
         reframe? [
             dot-line-number set-top-line-number
-            t !> repaint?
+            t repaint?!
         ] when
         adjust-cursor-x
     ] when
@@ -716,7 +709,7 @@ special: +compound-undo+
             bottom-line-number dot-line-number!
             0 dot-offset!
         ] when
-        t !> repaint?
+        t repaint?!
     ] when
 ;
 
@@ -728,33 +721,33 @@ special: +compound-undo+
             top-line-number dot-line-number!
             0 dot-offset!
         ] when
-        t !> repaint?
+        t repaint?!
     ] when
 ;
 
 : do-page-down
     add-undo-move
 
-    dot-y >local: goal-y
+    dot-y :> goal-y
 
     dot-line-number lines-per-page +
     buffer-line-count 1- min
     dot-line-number!
 
     dot-line-number goal-y - 0 max set-top-line-number
-    t !> repaint?
+    t repaint?!
     adjust-cursor-x
 ;
 
 : do-page-up
     add-undo-move
 
-    dot-y >local: goal-y
+    dot-y :> goal-y
 
     dot-line-number lines-per-page - 0 max dot-line-number!
 
     dot-line-number goal-y - 0 max set-top-line-number
-    t !> repaint?
+    t repaint?!
     adjust-cursor-x
 ;
 
@@ -767,7 +760,7 @@ special: +compound-undo+
         0 dot-offset!
         0 set-goal-column
         modified
-        t !> repaint?
+        t repaint?!
     ] when
 ;
 
@@ -780,7 +773,7 @@ special: +compound-undo+
     dot-line-tail sb sbuf-append-string
     sb sbuf>string dot-line!
     dot-offset n + dot-offset!
-    t !> dot-line-changed?
+    t dot-line-changed?!
     modified
 ;
 
@@ -835,7 +828,7 @@ special: +compound-undo+
     add-undo-line-edit
 
     dot-offset dot-line string-remove-nth dot-line!
-    t !> dot-line-changed?
+    t dot-line-changed?!
 ;
 
 : delete-line-separator
@@ -845,7 +838,7 @@ special: +compound-undo+
             dot-line-number 1+ buffer-nth-line
             dot-line swap string-append dot-line!
             dot-line-number 1+ current-buffer-lines vector-remove-nth!
-            t !> repaint?
+            t repaint?!
         ] when
     ] when
 ;
@@ -867,7 +860,7 @@ special: +compound-undo+
                 add-undo-line-edit
                 dot-offset 1 -
                 [ dot-line string-remove-nth dot-line! ] [ dot-offset! ] bi
-                t !> dot-line-changed?
+                t dot-line-changed?!
                 modified
             ]
         }
@@ -893,7 +886,7 @@ special: +compound-undo+
     reset-redo
 
     current-command assert-false
-    ' do-normal-char !> current-command
+    ' do-normal-char current-command!
     last-command ' do-normal-char eq? [ add-undo-line-edit ] unless
 
     dot-line-head string>sbuf >local: sb
@@ -901,7 +894,7 @@ special: +compound-undo+
     dot-line-tail sb sbuf-append-string
     sb sbuf>string dot-line!
     dot-offset 1 + dot-offset!
-    t !> dot-line-changed?
+    t dot-line-changed?!
     modified
     dot-offset set-goal-column
 ;
@@ -912,7 +905,7 @@ special: +compound-undo+
     ] [
         add-undo-line-edit
         dot-line-head dot-line!
-        t !> dot-line-changed?
+        t dot-line-changed?!
         modified
     ] if
 ;
@@ -933,10 +926,10 @@ special: +compound-undo+
     redo-stack empty? [
         "Nothing to redo" message
     ] [
-        t !> in-redo?
+        t in-redo?!
         pop-redo
         redo1
-        f !> in-redo?
+        f in-redo?!
         "Redo!" message
     ] if
 ;
@@ -978,17 +971,17 @@ special: +compound-undo+
     buffer-list ' buffer-modified? count >local: n
 
     n zero? [
-        t !> done?
+        t done?!
     ] [
         n dup 1 > "s" "" ?
         "Really exit with %s modified buffer%s? (yes or no) " format
-        accept-string "yes" string= !> done?
+        accept-string "yes" string= done?!
         clear-message-line
     ] if
 ;
 
 : confirm-kill-current-buffer           -- -> ?
-    f >local: confirmed?
+    f :> confirmed?!
 
     modified? [
         0 message-y at-xy prompt-style "Save file? (y or n) " write-string
@@ -999,7 +992,7 @@ special: +compound-undo+
     modified? [
         0 message-y at-xy
         "Abandon changes? (yes or no) " accept-string
-        "yes" = [ t !> confirmed? ] when
+        "yes" = [ t confirmed?! ] when
         clear-message-line
     ] when
 
@@ -1008,26 +1001,26 @@ special: +compound-undo+
 
 : kill-current-buffer
     buffer-list [ current-buffer eq? ] find     -- index/f element/f
-    current-buffer assert-eq
-    >local: n
+    current-buffer assert-eq                    -- index
+    :> n!                                       --
 
     n buffer-list vector-remove-nth!
 
-    n buffer-list length < [ n 1 - !> n ] unless
+    n buffer-list length < [ n 1- n! ] unless
 
-    n buffer-list vector-nth !> current-buffer
-    t !> repaint?
+    n buffer-list vector-nth current-buffer!
+    t repaint?!
 ;
 
 : kill-buffer
-    f >local: confirmed?
+    f :> confirmed?!
 
-    modified? [ confirm-kill-current-buffer !> confirmed? ] when
+    modified? [ confirm-kill-current-buffer confirmed?! ] when
 
     modified? not confirmed? or [
         buffer-list length 1 = [
             0 buffer-list vector-set-length
-            t !> done?
+            t done?!
         ] [
             kill-current-buffer
         ] if
@@ -1035,7 +1028,7 @@ special: +compound-undo+
 ;
 
 : initialize-empty-buffer
-    "untitled" create-buffer !> current-buffer
+    "untitled" create-buffer current-buffer!
     LF current-buffer buffer-eol!
     64 <vector> set-current-buffer-lines
     "" current-buffer-lines vector-push
@@ -1102,11 +1095,11 @@ special: +compound-undo+
 
     filename [
         filename find-buffer [
-            !> current-buffer
-            t !> repaint?
+            current-buffer!
+            t repaint?!
         ] [
-            filename 1 initialize-buffer !> current-buffer
-            t !> repaint?
+            filename 1 initialize-buffer current-buffer!
+            t repaint?!
         ] if*
     ] when
 ;
@@ -1116,10 +1109,10 @@ special: +compound-undo+
 
     buffer-list [ current-buffer eq? ] find     -- index/f element/f
     current-buffer assert-eq                    -- index
-    1 + dup buffer-list length < [ drop 0 ] unless
+    1+ dup buffer-list length < [ drop 0 ] unless
 
-    buffer-list vector-nth !> current-buffer
-    t !> repaint?
+    buffer-list vector-nth current-buffer!
+    t repaint?!
 ;
 
 : previous-buffer
@@ -1129,8 +1122,8 @@ special: +compound-undo+
     current-buffer assert-eq                    -- index
     1 - dup 0 >= [ drop buffer-list length 1 - ] unless
 
-    buffer-list vector-nth !> current-buffer
-    t !> repaint?
+    buffer-list vector-nth current-buffer!
+    t repaint?!
 ;
 
 use: search
@@ -1142,7 +1135,7 @@ use: search
     bindings at ;
 
 : initialize-bindings
-    32 <hashtable> !> bindings
+    32 <hashtable> bindings!
 
     key:del             ' do-bs                         bind-key        -- Linux
     key:backspace       ' do-bs                         bind-key        -- Windows
@@ -1177,15 +1170,16 @@ use: search
     key:alt-left        ' previous-buffer               bind-key
 ;
 
-: do-command lookup-key [ dup !> current-command call-symbol ] when* ;
+: do-command                            -- key ->
+    lookup-key [ dup current-command! call-symbol ] when* ;
 
 : dispatch                              -- key ->
-    current-command !> last-command
-    f !> current-command
+    current-command last-command!
+    f current-command!
     dup printable-char? [ do-normal-char ] [ do-command ] if ;
 
 : edit-loop
-    f !> done?
+    f done?!
     [ done? ] [
         update-display
         ekey
@@ -1195,7 +1189,7 @@ use: search
 ;
 
 : initialize-editor
-    16 <vector> !> buffer-list
+    16 <vector> buffer-list!
     bindings [ initialize-bindings ] unless
 ;
 
@@ -1205,7 +1199,7 @@ use: search
     page
     normal
     maybe-reframe
-    t !> repaint?
+    t repaint?!
 
     edit-loop
 
@@ -1222,7 +1216,7 @@ use: search
 
     arg find-file-to-edit [
         initialize-editor
-        0 initialize-buffer !> current-buffer
+        0 initialize-buffer current-buffer!
         edit1
     ] [
         arg error-file-not-found
@@ -1232,7 +1226,7 @@ use: search
 : edit-definition                       -- symbol ->
     initialize-editor
     symbol-location 2dup and
-    [ initialize-buffer !> current-buffer edit1 ] [ 2drop ] if
+    [ initialize-buffer current-buffer! edit1 ] [ 2drop ] if
 ;
 
 : edit-new
@@ -1252,7 +1246,7 @@ use: search
 : ed
     page
     normal
-    t !> repaint?
+    t repaint?!
     edit-loop
     clear-status-line
     clear-message-line
