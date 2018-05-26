@@ -20,11 +20,11 @@ empty
 
 private
 
-global: dot
-global: bindings
-global: sb
-global: done?
-global: prompt-string
+var dot
+var bindings
+var sb
+var done?
+var prompt-string
 
 : prompt
     prompt-style
@@ -45,20 +45,20 @@ global: prompt-string
     bindings at ;
 
 : do-enter
-    t !> done? ;
+    t done?! ;
 
 : do-bs
     dot 0 > [
-        dot 1 - !> dot
+        dot 1- dot!
         dot sb sbuf-remove-nth! drop
         redisplay
     ] when ;
 
 : do-normal-char                        -- char ->
-    dup write-char dot 1 + !> dot sb push ;
+    dup write-char dot 1+ dot! sb push ;
 
 : initialize-bindings
-    32 <hashtable> !> bindings
+    32 <hashtable> bindings!
     key:enter           ' do-enter                      bind-key
     key:del             ' do-bs                         bind-key        -- Linux
     key:backspace       ' do-bs                         bind-key        -- Windows
@@ -74,11 +74,11 @@ public
 
 : accept-string                         -- prompt-string -> string
     1 ?enough
-    verify-string !> prompt-string
+    verify-string prompt-string!
     initialize-bindings
-    128 <sbuf> !> sb
-    0 !> dot
-    f !> done?
+    128 <sbuf> sb!
+    0 dot!
+    f done?!
     prompt
     input-style
     [ done? ] [ ekey process-key ] until
