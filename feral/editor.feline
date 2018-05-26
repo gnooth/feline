@@ -764,11 +764,9 @@ special: +compound-undo+
     ] when
 ;
 
-: insert-spaces                         -- n ->
+: insert-spaces ( n )                   -- n ->
     -- no undo
-
-    >local: n
-    dot-line-head string>sbuf >local: sb
+    dot-line-head string>sbuf :> sb
     n [ 32 code-char sb sbuf-push ] times
     dot-line-tail sb sbuf-append-string
     sb sbuf>string dot-line!
@@ -793,14 +791,14 @@ special: +compound-undo+
 : delete-indentation                    -- line1 -> line2
     dup empty? [ ] return-if
 
-    >local: line
+    :> line
 
     line [ char-code 32 > ] find        -- index/f element/f
     [ line swap string-tail ] [ drop "" ] if
 ;
 
 : newline-and-indent
-    dot-line get-indentation-column >local: indent-col
+    dot-line get-indentation-column :> indent-col
 
     [
         insert-line-separator
@@ -815,8 +813,8 @@ special: +compound-undo+
 : string-remove-nth                     -- n string1 -> string2
     check-bounds
 
-    >local: s
-    >local: n
+    :> s
+    :> n
 
     s n string-head
     n 1 + s string-length < [
@@ -889,11 +887,11 @@ special: +compound-undo+
     ' do-normal-char current-command!
     last-command ' do-normal-char eq? [ add-undo-line-edit ] unless
 
-    dot-line-head string>sbuf >local: sb
+    dot-line-head string>sbuf :> sb
     sb sbuf-push
     dot-line-tail sb sbuf-append-string
     sb sbuf>string dot-line!
-    dot-offset 1 + dot-offset!
+    dot-offset 1+ dot-offset!
     t dot-line-changed?!
     modified
     dot-offset set-goal-column
@@ -945,9 +943,9 @@ special: +compound-undo+
 
     make-backup
 
-    current-buffer buffer-eol >local: eol
-    buffer-line-count 80 * <sbuf> >local: sb
-    nano-count >local: start-ns
+    current-buffer buffer-eol :> eol
+    buffer-line-count 80 * <sbuf> :> sb
+    nano-count :> start-ns
 
     -- all lines but the last are followed by eol
     buffer-line-count 1- [
@@ -960,7 +958,7 @@ special: +compound-undo+
 
     sb sbuf>string current-buffer buffer-filename set-file-contents
 
-    nano-count start-ns - >local: elapsed-ns
+    nano-count start-ns - :> elapsed-ns
 
     mod-count set-mod-count-last-save
 
@@ -968,7 +966,7 @@ special: +compound-undo+
 ;
 
 : do-quit
-    buffer-list ' buffer-modified? count >local: n
+    buffer-list ' buffer-modified? count :> n
 
     n zero? [
         t done?!
@@ -1042,10 +1040,10 @@ special: +compound-undo+
 ;
 
 : initialize-buffer                     -- filename line-number -> buf
-    verify-index  >local: line-number
-    verify-string >local: filename
+    verify-index  :> line-number
+    verify-string :> filename
 
-    make-buffer >local: buf
+    make-buffer :> buf
 
     filename buf buffer-filename!
 
@@ -1054,13 +1052,13 @@ special: +compound-undo+
     -- detect eol
     13 code-char over string-index CR+LF LF ? buf buffer-eol!
 
-    dup string-lines verify-vector >local: lines
+    dup string-lines verify-vector :> lines
 
     string-last-char 10 code-char eq? [ "" lines vector-push ] when
 
     lines buf buffer-lines!
 
-    position make-instance >local: pos
+    position make-instance :> pos
 
     0 pos position-offset!
     line-number 1 - 0 max lines length 1 - min pos position-line-number!
@@ -1072,26 +1070,22 @@ special: +compound-undo+
     buf
 ;
 
-: find-file-to-edit                     -- arg -> path/f
-    >local: arg
-
+: find-file-to-edit ( arg )             -- arg -> path/f
     arg find-file [
         arg ensure-feline-extension find-file
     ] unless*
 ;
 
-: find-buffer                           -- filename -> buffer/f
-    >local: filename
-
+: find-buffer ( filename )              -- filename -> buffer/f
     buffer-list [ buffer-filename filename = ] find     -- index/f element/f
     nip
 ;
 
 : open-file
-    0 message-y at-xy "File: " accept-string >local: arg
+    0 message-y at-xy "File: " accept-string :> arg
     clear-message-line
 
-    arg find-file-to-edit >local: filename
+    arg find-file-to-edit :> filename
 
     filename [
         filename find-buffer [
@@ -1211,9 +1205,7 @@ use: search
     use-default-screen-buffer
 ;
 
-: edit-file                             -- arg ->
-    >local: arg
-
+: edit-file ( arg )                     -- arg ->
     arg find-file-to-edit [
         initialize-editor
         0 initialize-buffer current-buffer!
