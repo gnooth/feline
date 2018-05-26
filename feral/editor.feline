@@ -300,8 +300,9 @@ var buffer-list
     modified? [ '*' write-char ] [ space ] if
     editor-filename write-string
     dot-line-number 1+
+    buffer-line-count
     dot-column 1+
-    "Line %d Col %d " format
+    "Line %d of %d Col %d " format
     terminal-width over length - :> x
     x editor-filename length 1+ - 1 max spaces
     write-string
