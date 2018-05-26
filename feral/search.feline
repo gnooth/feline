@@ -20,10 +20,10 @@ empty
 
 private
 
-global: pattern
+var pattern
 
-global: found-line-number
-global: found-offset
+var found-line-number
+var found-offset
 
 : mark-found-pattern
     position make-instance set-mark
@@ -39,7 +39,7 @@ global: found-offset
     dot-offset set-goal-column
     mark-found-pattern
     maybe-reframe
-    t !> repaint? ;
+    t repaint?! ;
 
 : not-found
    0 message-y at-xy error-style "Not found" write-string output-style ;
@@ -51,52 +51,52 @@ global: found-offset
 public
 
 : do-find
-    0 message-y at-xy "Find: " accept-string !> pattern
+    0 message-y at-xy "Find: " accept-string pattern!
     clear-message-line
 
-    f >local: found?
+    f :> found?!
 
-    f !> found-line-number
-    f !> found-offset
+    f found-line-number!
+    f found-offset!
 
-    dot-offset find-pattern-in-current-line !> found-offset
+    dot-offset find-pattern-in-current-line found-offset!
 
     found-offset [
-        dot-line-number !> found-line-number
-        t !> found?
+        dot-line-number found-line-number!
+        t found?!
     ] when
 
     found? [
         next-line-number current-buffer-lines [
             pattern swap substring-start
-            dup !> found-offset
+            dup found-offset!
         ] find-from                     -- line-number/f line/f
-        [ !> found-line-number t !> found? ] [ drop ] if
+        [ found-line-number! t found?! ] [ drop ] if
     ] unless
 
     found? [ found ] [ not-found ] if ;
 
 : do-find-again
-    f >local: found?
+    f :> found?!
 
-    f !> found-line-number
-    f !> found-offset
+    f found-line-number!
+    f found-offset!
 
-    dot-offset dot-line-length 1 - < [
-        dot-offset 1 + find-pattern-in-current-line !> found-offset
+    dot-offset dot-line-length 1- < [
+        dot-offset 1+ find-pattern-in-current-line found-offset!
     ] when
 
     found-offset [
-        dot-line-number !> found-line-number
-        t !> found?
+        dot-line-number found-line-number!
+        t found?!
     ] when
 
     found? [
         next-line-number current-buffer-lines [
             pattern swap substring-start
-            dup !> found-offset
+            dup found-offset!
         ] find-from                     -- line-number/f line/f
-        [ !> found-line-number t !> found? ] [ drop ] if
+        [ found-line-number! t found?! ] [ drop ] if
     ] unless
 
     found? [ found ] [ not-found ] if ;
