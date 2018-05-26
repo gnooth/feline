@@ -1,4 +1,4 @@
--- Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -16,52 +16,52 @@
 using: feline ;
 in: key
 
-0x03 code-char                  >constant: ctrl-c
-0x06 code-char                  >constant: ctrl-f
-0x07 code-char                  >constant: ctrl-g
-0x08 code-char                  >constant: backspace
-0x09 code-char                  >constant: tab
-0x0b code-char                  >constant: ctrl-k
-0x0e code-char                  >constant: ctrl-n
-0x0f code-char                  >constant: ctrl-o
-0x10 code-char                  >constant: ctrl-p
-0x11 code-char                  >constant: ctrl-q
-0x13 code-char                  >constant: ctrl-s
-0x15 code-char                  >constant: ctrl-u
-0x17 code-char                  >constant: ctrl-w
-0x19 code-char                  >constant: ctrl-y
-0x1a code-char                  >constant: ctrl-z
-0x1b code-char                  >constant: escape
+0x03 code-char                  constant ctrl-c
+0x06 code-char                  constant ctrl-f
+0x07 code-char                  constant ctrl-g
+0x08 code-char                  constant backspace
+0x09 code-char                  constant tab
+0x0b code-char                  constant ctrl-k
+0x0e code-char                  constant ctrl-n
+0x0f code-char                  constant ctrl-o
+0x10 code-char                  constant ctrl-p
+0x11 code-char                  constant ctrl-q
+0x13 code-char                  constant ctrl-s
+0x15 code-char                  constant ctrl-u
+0x17 code-char                  constant ctrl-w
+0x19 code-char                  constant ctrl-y
+0x1a code-char                  constant ctrl-z
+0x1b code-char                  constant escape
 
-0x7f code-char                  >constant: del
+0x7f code-char                  constant del
 
-k-enter                         >constant: enter
-k-delete                        >constant: delete
-k-home                          >constant: home
-k-end                           >constant: end
-k-left                          >constant: left
-k-right                         >constant: right
-k-up                            >constant: up
-k-down                          >constant: down
-k-prior                         >constant: pageup
-k-next                          >constant: pagedown
-k-ctrl-home                     >constant: ctrl-home
-k-ctrl-end                      >constant: ctrl-end
+k-enter                         constant enter
+k-delete                        constant delete
+k-home                          constant home
+k-end                           constant end
+k-left                          constant left
+k-right                         constant right
+k-up                            constant up
+k-down                          constant down
+k-prior                         constant pageup
+k-next                          constant pagedown
+k-ctrl-home                     constant ctrl-home
+k-ctrl-end                      constant ctrl-end
 
 windows? #if
-0x808d                          >constant: ctrl-up
-0x8091                          >constant: ctrl-down
-0x809b                          >constant: alt-left
-0x809d                          >constant: alt-right
+0x808d                          constant ctrl-up
+0x8091                          constant ctrl-down
+0x809b                          constant alt-left
+0x809d                          constant alt-right
 #endif
 
 linux? #if
-0x1b5b313b3541                  >constant: ctrl-up
-0x1b5b313b3542                  >constant: ctrl-down
-0x1b5b313b3344                  >constant: alt-left
-0x1b5b313b3343                  >constant: alt-right
+0x1b5b313b3541                  constant ctrl-up
+0x1b5b313b3542                  constant ctrl-down
+0x1b5b313b3344                  constant alt-left
+0x1b5b313b3343                  constant alt-right
 #endif
 
-windows? 0x803d 0x1b4f52 ?      >constant: f3
+windows? 0x803d 0x1b4f52 ?      constant f3
 
-0x1b5b5a                        >constant: shift-tab    -- Linux only
+0x1b5b5a                        constant shift-tab    -- Linux only
