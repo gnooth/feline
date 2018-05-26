@@ -42,7 +42,10 @@ var found-offset
     t repaint?! ;
 
 : not-found
-   0 message-y at-xy error-style "Not found" write-string output-style ;
+    pattern "%S not found" format
+    0 message-y at-xy output-style
+    write-string
+;
 
 : find-pattern-in-current-line          -- start -> index/f
     pattern dot-line pick string-tail substring-start   -- index/f
