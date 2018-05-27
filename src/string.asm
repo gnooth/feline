@@ -530,13 +530,13 @@ endcode
 
 ; ### escaped
 code escaped, 'escaped'                 ; -- string
-        _quote 'nr"\'
+        _quote 'enr"\'
         next
 endcode
 
 ; ### unescaped
 code unescaped, 'unescaped'             ; -- string
-        _quote `\n\r\"\\`
+        _quote `\e\n\r\"\\`
         next
 endcode
 
