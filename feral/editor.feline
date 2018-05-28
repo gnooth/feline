@@ -20,7 +20,7 @@ empty
 
 feline-home "feral" path-append add-source-directory
 
-using: feline accept-string ;
+using: feline modes accept-string ;
 
 var current-buffer
 var repaint?
@@ -42,6 +42,7 @@ tuple: position
     offset ;
 
 tuple: buffer
+    mode
     lines
     dot
     mark
@@ -258,11 +259,22 @@ var buffer-list
     sb sbuf>string
 ;
 
+: format-line ( s )
+    current-buffer buffer-mode :> mode
+    mode [
+        s mode mode-formatter call-symbol
+    ] [
+        s
+    ] if
+;
+
 : paint-line ( y )                      -- y ->
     0 y at-xy
     top-line-number y + :> line-number
 
-    line-number buffer-nth-line detab :> detabbed-text
+    line-number buffer-nth-line detab :> detabbed-text!
+
+    detabbed-text format-line detabbed-text!
 
     output-style
 
@@ -1047,6 +1059,8 @@ special: +compound-undo+
     make-buffer :> buf
 
     filename buf buffer-filename!
+
+    filename path-extension [ modes at buf buffer-mode! ] when*
 
     filename file-contents
 
