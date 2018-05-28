@@ -1,0 +1,68 @@
+-- Copyright (C) 2018 Peter Graves <gnooth@gmail.com>
+
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline ;
+in: modes
+
+tuple: mode
+    formatter ;
+
+var modes
+
+: asm-format-line ( s )
+    ";" s substring-start :> index
+
+    index [
+        s index string-head
+        "\e[33m"                        -- yellow
+        string-append
+        s index string-tail string-append
+    ] [
+        s
+    ] if
+;
+
+: initialize-asm-mode
+    mode make-instance :> m
+    ' asm-format-line m mode-formatter!
+    m ".asm" modes set-at
+;
+
+: feline-format-line ( s )
+    "--" s substring-start :> index
+
+    index [
+        s index string-head
+        "\e[33m"                        -- yellow
+        string-append
+        s index string-tail string-append
+    ] [
+        s
+    ] if
+;
+
+: initialize-feline-mode
+    mode make-instance :> m
+    ' feline-format-line m mode-formatter!
+    m feline-extension modes set-at
+;
+
+: initialize-modes
+    8 <hashtable> modes!
+    initialize-asm-mode
+    initialize-feline-mode
+;
+
+initialize-modes
