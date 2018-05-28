@@ -32,7 +32,9 @@ var modes
         "\e[37m"                        -- white foreground
         string-append
     ] [
+        "\e[37m"                        -- white foreground
         s
+        string-append
     ] if
 ;
 
@@ -53,7 +55,9 @@ var modes
         "\e[37m"                        -- white foreground
         string-append
     ] [
+        "\e[37m"                        -- white foreground
         s
+        string-append
     ] if
 ;
 
