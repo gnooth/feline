@@ -26,9 +26,11 @@ var modes
 
     index [
         s index string-head
-        "\e[33m"                        -- yellow
+        "\e[33m"                        -- yellow foreground
         string-append
         s index string-tail string-append
+        "\e[37m"                        -- white foreground
+        string-append
     ] [
         s
     ] if
@@ -45,9 +47,11 @@ var modes
 
     index [
         s index string-head
-        "\e[33m"                        -- yellow
+        "\e[33m"                        -- yellow foreground
         string-append
         s index string-tail string-append
+        "\e[37m"                        -- white foreground
+        string-append
     ] [
         s
     ] if
