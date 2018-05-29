@@ -50,7 +50,7 @@ global: verbose?
 : ?echo
     verbose? [ ?nl 2 tab x . space y . nl ] when ;
 
-1000 >global: #reps
+1000 constant #reps
 
 : %test-2
     random-integer !> x
