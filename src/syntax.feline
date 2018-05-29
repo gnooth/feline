@@ -16,11 +16,15 @@
 using: feline ;
 in: feline
 
-: make-global                           -- string -> global
+private
+
+: make-global                           -- string -> symbol
     new-symbol-in-current-vocab
     dup symbol-set-global-bit
     dup <wrapper> ' symbol-value 2array array>quotation over symbol-set-def
     dup compile-word ;
+
+public
 
 syntax: global:
     must-parse-token
@@ -31,6 +35,13 @@ syntax: >global:
     must-parse-token
     make-global
     symbol-set-value ;
+
+syntax: global
+    must-parse-token
+    make-global                         -- symbol
+    drop ;
+
+private
 
 : make-thread-local-getter              -- string -> symbol
     new-symbol-in-current-vocab
@@ -43,6 +54,8 @@ syntax: >global:
     getter symbol-name "!" string-append new-symbol-in-current-vocab :> setter
     getter <wrapper> ' current-thread-local-set 2array array>quotation setter symbol-set-def
     setter compile-word ;
+
+public
 
 syntax: thread-local:
     must-parse-token
