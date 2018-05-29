@@ -19,52 +19,52 @@ in: disassembler
 empty
 
 -- "0 = default operand size   1 = 64-bit operand size"
-8 >constant: rex.w
+8 constant rex.w
 
 -- "1-bit (high) extension of the ModRM reg field, thus permitting access to 16 registers."
-4 >constant: rex.r
+4 constant rex.r
 
 -- "1-bit (high) extension of the SIB index field, thus permitting access to 16 registers."
-2 >constant: rex.x
+2 constant rex.x
 
 -- "1-bit (high) extension of the ModRM r/m field, SIB base field, or opcode reg field,
 -- thus permitting access to 16 registers."
-1 >constant: rex.b
+1 constant rex.b
 
-global: start-address
-global: stop-address
-global: #insts
-global: instruction-start
-global: ip
-global: prefix
-global: operand-size-prefix
-global: opcode
-global: byte2                   -- second byte of two-byte opcode
-global: modrm-byte
-global: sib-byte
+global start-address
+global stop-address
+global #insts
+global instruction-start
+global ip
+global prefix
+global operand-size-prefix
+global opcode
+global byte2                            -- second byte of two-byte opcode
+global modrm-byte
+global sib-byte
 
-global: mnemonic
+global mnemonic
 
-global: immediate-operand?
-global: immediate-operand
-global: signed?
+global immediate-operand?
+global immediate-operand
+global signed?
 
-global: register-direct?
-global: memory-operand?
-global: sreg                    -- source register
-global: ssize                   -- source operand size
-global: sbase                   -- source base register
-global: sindex                  -- source index register
-global: sscale                  -- source scaling factor
-global: sdisp                   -- source displacement
-global: dreg                    -- destination register
-global: dsize                   -- destination operand size
-global: dbase                   -- destination base register
-global: dindex                  -- destination index register
-global: dscale                  -- destination scaling factor
-global: ddisp                   -- destination displacement
+global register-direct?
+global memory-operand?
+global sreg                             -- source register
+global ssize                            -- source operand size
+global sbase                            -- source base register
+global sindex                           -- source index register
+global sscale                           -- source scaling factor
+global sdisp                            -- source displacement
+global dreg                             -- destination register
+global dsize                            -- destination operand size
+global dbase                            -- destination base register
+global dindex                           -- destination index register
+global dscale                           -- destination scaling factor
+global ddisp                            -- destination displacement
 
-global: #operands
+global #operands
 
 : reset-disassembler
     0 !> prefix
@@ -242,12 +242,12 @@ global: #operands
 : %modrm-rm                             -- modrm-byte -> rm
     0b00000111 bitand ;
 
-global: modrm-mod
-global: modrm-reg
-global: modrm-rm
+global modrm-mod
+global modrm-reg
+global modrm-rm
 
 -- regop is a synonym of modrm-reg
-global: regop   -- REGister or OPcode extension (depending on the instruction)
+global regop    -- REGister or OPcode extension (depending on the instruction)
 
 : !modrm-byte
     next-byte dup !> modrm-byte
