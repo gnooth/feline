@@ -20,27 +20,30 @@ empty
 
 private
 
-96 code-char >constant: backquote
+96 code-char constant backquote
 
-white >constant: fg-title
- cyan >constant: fg-parameter
-white >constant: fg-default
+white constant fg-title
+cyan  constant fg-parameter
+white constant fg-default
 
 : bold   color? [ esc[ "1m" write-string ] when ;
 : normal color? [ esc[ "0m" write-string ] when ;
 
 : format-string                         -- string ->
-    >local: s
+    :> s!
+    f :> in-quote?!
+    f :> i!
     color? [
-        f >local: in-quote?
-        backquote s index >local: i
-        [ i ] [
+        backquote s index i!
+        [
+            i
+        ] [
             s i string-head write-string
-            1+!> i
-            s i string-tail !> s
-            in-quote? not !> in-quote?
+            i 1+ i!
+            s i string-tail s!
+            in-quote? not in-quote?!
             in-quote? fg-parameter fg-default ? foreground
-            backquote s index !> i
+            backquote s index i!
         ] while
     ] when
     s write-string ;
@@ -52,45 +55,44 @@ white >constant: fg-default
     normal
     fg-default foreground ;
 
-feline-source-directory "feline.help" path-append >constant: feline.help
+feline-source-directory "feline.help" path-append constant feline.help
 
-global: glossary
-global: glossary-file-write-time
+var glossary
+var glossary-file-write-time
 
 : maybe-load-glossary
     feline.help file-write-time glossary-file-write-time eq? [
         ?nl "Loading glossary" print
-        feline.help [ file-lines !> glossary ] [ file-write-time !> glossary-file-write-time ] bi
-    ] unless
-;
+        feline.help [ file-lines glossary! ] [ file-write-time glossary-file-write-time! ] bi
+    ] unless ;
 
 public
 
 : symbol-help                           -- symbol -> string/f
-    symbol-name >local: name
+    symbol-name :> name
 
     maybe-load-glossary
 
     glossary [ name swap string-has-prefix? ] find      -- index/f element/f
 
-    >local: line
-    >local: line-number
+    :> line
+    :> line-number!
 
-    local: v
-
-    f >local: help-string
+    f :> v!
+    f :> sb!
+    f :> help-string!
 
     line [
-        8 <vector> !> v
+        8 <vector> v!
         [
-            line-number 1 + !> line-number
+            line-number 1+ line-number!
             line-number glossary vector-length >=
         ] [
             line-number glossary vector-nth
             dup "    " over string-has-prefix? swap empty? or [
                 v vector-push
             ] [
-                drop glossary vector-length !> line-number
+                drop glossary vector-length line-number!
             ] if
         ] until
 
@@ -98,16 +100,16 @@ public
             v vector-last empty? [ v vector-pop* ] when
         ] unless
 
-        256 <sbuf> >local: sb
+        256 <sbuf> sb!
         v [ sb sbuf-append-string 10 code-char sb sbuf-push ] each
-        sb sbuf>string !> help-string
+        sb sbuf>string help-string!
     ] when
 
     help-string
 ;
 
 : help                                  -- symbol ->
-    dup symbol-name >local: name
+    dup symbol-name :> name
     symbol-help [
         name format-title nl
         format-string
