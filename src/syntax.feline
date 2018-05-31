@@ -18,51 +18,42 @@ in: feline
 
 private
 
-: make-global                           -- string -> symbol
-    new-symbol-in-current-vocab
-    dup symbol-set-global-bit
-    dup <wrapper> ' symbol-value 2array array>quotation over symbol-set-def
-    dup compile-word ;
+: make-global ( name )                  -- string -> void
+    name new-symbol-in-current-vocab :> getter
+    getter symbol-set-global-bit
+    getter <wrapper> ' symbol-value 2array array>quotation getter symbol-set-def
+    getter compile-word
 
-public
+    name "!" string-append new-symbol-in-current-vocab :> setter
+    getter <wrapper> ' symbol-set-value 2array array>quotation setter symbol-set-def
+    setter compile-word ;
 
-syntax: global:
-    must-parse-token
-    make-global
-    drop ;
+: make-var ( name )                     -- string -> void
+    name new-symbol-in-current-vocab :> getter
+    getter symbol-set-thread-local-bit
+    getter <wrapper> ' current-thread-local-get 2array array>quotation getter symbol-set-def
+    getter compile-word
 
-syntax: >global:
-    must-parse-token
-    make-global
-    symbol-set-value ;
-
-syntax: global
-    must-parse-token
-    make-global                         -- symbol
-    drop ;
-
-private
-
-: make-thread-local-getter              -- string -> symbol
-    new-symbol-in-current-vocab
-    dup symbol-set-thread-local-bit
-    dup <wrapper> ' current-thread-local-get 2array array>quotation over symbol-set-def
-    dup compile-word ;
-
-: make-thread-local-setter              -- getter ->
-    :> getter
-    getter symbol-name "!" string-append new-symbol-in-current-vocab :> setter
+    name "!" string-append new-symbol-in-current-vocab :> setter
     getter <wrapper> ' current-thread-local-set 2array array>quotation setter symbol-set-def
     setter compile-word ;
 
 public
 
+-- deprecated
+syntax: global:
+    must-parse-token
+    make-global ;
+
+syntax: global
+    must-parse-token
+    make-global ;
+
+-- deprecated
 syntax: thread-local:
     must-parse-token
-    make-thread-local-getter
-    make-thread-local-setter ;
+    make-var ;
 
 syntax: var
     must-parse-token
-    make-thread-local-getter
-    make-thread-local-setter ;
+    make-var ;

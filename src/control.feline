@@ -20,24 +20,28 @@ empty
 
 public
 
-0 >global: ignore-level
+global ignore-level 0 ignore-level!
 
 : ignoring? ignore-level 0 > ;
 
-: stop-ignoring 0 !> ignore-level ;
+: stop-ignoring 0 ignore-level! ;
 
-private: process-next-token
-    must-parse-token >local: token
+private
+
+: process-next-token
+    must-parse-token :> token
 
     {
-        { [ token    "#if" = ] [ ignore-level 1 + !> ignore-level ] }
-        { [ token "#endif" = ] [ ignore-level 1 - !> ignore-level ] }
+        { [ token    "#if" = ] [ ignore-level 1+ ignore-level! ] }
+        { [ token "#endif" = ] [ ignore-level 1- ignore-level! ] }
         { [ token  "#else" = ] [ ignore-level 1 = [ stop-ignoring ] when ] }
         [ ] -- otherwise, nothing to do
     } cond ;
 
+public
+
 : start-ignoring
-    1 !> ignore-level
+    1 ignore-level!
     [ ignoring? ] [ process-next-token ] while ;
 
 --
@@ -57,7 +61,7 @@ syntax: #else
         [ drop ]
     } case ;
 
-syntax: #endif ignoring? [ ignore-level 1 - !> ignore-level ] when ;
+syntax: #endif ignoring? [ ignore-level 1- ignore-level! ] when ;
 
 syntax: #ifdef
     must-parse-token
