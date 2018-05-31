@@ -231,11 +231,11 @@ code unlock_handles, 'unlock_handles', SYMBOL_INTERNAL
         cmp     qword [handles_lock_], 0
         jz      .exit
 
-        _handles_lock
-        _ mutex_owner
-        _tagged_if_not .1
-        _return
-        _then .1
+;         _handles_lock
+;         _ mutex_owner
+;         _tagged_if_not .1
+;         _return
+;         _then .1
 
         _handles_lock
         _ mutex_unlock
@@ -250,8 +250,8 @@ endcode
 ; ### new_handle
 code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -> handle
 
-        cmp     qword [thread_count_], 1
-        je      .1
+;         cmp     qword [thread_count_], 1
+;         je      .1
 
 .2:
         _ safepoint
@@ -261,7 +261,7 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -> handle
         poprbx
         je      .2
 
-.1:
+; .1:
         _ get_empty_handle              ; -> object handle/0
         test    rbx, rbx
         jz     .3
