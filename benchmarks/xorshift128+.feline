@@ -1,25 +1,25 @@
 using: feline ;
 in: user
 
-thread-local: state0
-thread-local: state1
+var state0
+var state1
 
 : xorshift128+
-    state0 >local: s1
-    state1 >local: s0
-    s0 !> state0
-    s1 23 lshift s1 bitxor !> s1
-    s1 17 rshift s1 bitxor !> s1
-    s1 s0 bitxor !> s1
-    s0 26 rshift s1 bitxor !> s1
-    s1 !> state1
+    state0 :> s1!
+    state1 :> s0!
+    s0 state0!
+    s1 23 lshift s1 bitxor s1!
+    s1 17 rshift s1 bitxor s1!
+    s1 s0 bitxor s1!
+    s0 26 rshift s1 bitxor s1!
+    s1 state1!
 ;
 
 : test
     gc
 
-    1 !> state0
-    2 !> state1
+    1 state0!
+    2 state1!
 
     [ 10000000 [ xorshift128+ ] times ] time
 
@@ -36,15 +36,14 @@ thread-local: state1
 -- 3 threads
 : test3 [ test ] <thread> thread-create [ test ] <thread> thread-create test ;
 
-
 : xorshift128+-locals-only
-    >local: s0
-    >local: s1
+    :> s0!
+    :> s1!
 
-    s1 23 lshift s1 bitxor !> s1
-    s1 17 rshift s1 bitxor !> s1
-    s1 s0 bitxor !> s1
-    s0 26 rshift s1 bitxor !> s1
+    s1 23 lshift s1 bitxor s1!
+    s1 17 rshift s1 bitxor s1!
+    s1 s0 bitxor s1!
+    s0 26 rshift s1 bitxor s1!
 
     s0 s1
 ;
