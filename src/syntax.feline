@@ -40,19 +40,9 @@ private
 
 public
 
--- deprecated
-syntax: global:
-    must-parse-token
-    make-global ;
-
 syntax: global
     must-parse-token
     make-global ;
-
--- deprecated
-syntax: thread-local:
-    must-parse-token
-    make-var ;
 
 syntax: var
     must-parse-token
