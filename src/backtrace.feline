@@ -16,13 +16,12 @@
 using: feline ;
 in: feline
 
-: find-word-from-code-address           -- tagged-code-address -> word/f
-    >local: x
+: find-word-from-code-address ( x )     -- tagged-code-address -> word/f
     all-words
     [
         dup symbol-code-address swap symbol-code-size
         2dup and
-        [ over + 1 - x -rot between? ] [ 2drop f ] if
+        [ over + 1- x -rot between? ] [ 2drop f ] if
     ]
     find nip ;
 
