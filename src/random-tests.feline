@@ -42,10 +42,10 @@ test: test-1
 
 test-1
 
-global: x
-global: y
+global x
+global y
 
-global: verbose?
+global verbose?
 
 : ?echo
     verbose? [ ?nl 2 tab x . space y . nl ] when ;
@@ -53,8 +53,8 @@ global: verbose?
 1000 constant #reps
 
 : %test-2
-    random-integer !> x
-    random-integer !> y
+    random-integer x!
+    random-integer y!
     ?echo
     x y + y x + assert= ;
 
@@ -64,8 +64,8 @@ test: test-2
 test-2
 
 : %test-3
-    random-fixnum !> x
-    random-fixnum !> y
+    random-fixnum x!
+    random-fixnum y!
     ?echo
     x y - y x - negate assert=
     x y - y + x assert= ;
@@ -76,8 +76,8 @@ test: test-3
 test-3
 
 : %test-4
-    random-integer !> x
-    random-integer !> y
+    random-integer x!
+    random-integer y!
     ?echo
     x y < [
         x y >= assert-false
@@ -94,8 +94,8 @@ test: test-4
 test-4
 
 : %test-5
-    random-integer !> x
-    random-integer !> y
+    random-integer x!
+    random-integer y!
     ?echo
     x y <= [
         x y > assert-false
@@ -110,13 +110,13 @@ test: test-5
 test-5
 
 : %test-6
-    random-fixnum !> x
-    random-fixnum !> y
+    random-fixnum x!
+    random-fixnum y!
     ?echo
     x y * y x * assert=
 
-    x fixnum>int64 !> x
-    y fixnum>int64 !> y
+    x fixnum>int64 x!
+    y fixnum>int64 y!
     x y * y x * assert=
 ;
 
@@ -126,8 +126,8 @@ test: test-6
 test-6
 
 : %test-7
-    random-integer !> x
-    random-float !> y
+    random-integer x!
+    random-float y!
     ?echo
     x y + y x + assert=
     x y - y x - negate assert=
@@ -140,8 +140,8 @@ test: test-7
 test-7
 
 : %test-8
-    random-integer !> x
-    random-float !> y
+    random-integer x!
+    random-float y!
     ?echo
     x y * y x * assert=
     x negate y * y negate x * assert=
@@ -154,8 +154,8 @@ test: test-8
 test-8
 
 : %test-9
-    random-integer !> x
-    random-integer !> y
+    random-integer x!
+    random-integer y!
     ?echo
     x y /i y * x y mod + x 2dup = [
         2drop
@@ -170,8 +170,8 @@ test: test-9
 test-9
 
 : %test-10
-    random-float !> x
-    random-float !> y
+    random-float x!
+    random-float y!
     ?echo
     x y < [ x y > assert-false x y = assert-false y x = assert-false ] when
     x y > [ x y < assert-false x y = assert-false y x = assert-false ] when
@@ -183,8 +183,8 @@ test: test-10
 test-10
 
 : %test-11
-    random-integer !> x
-    random-float !> y
+    random-integer x!
+    random-float y!
     ?echo
     x y < [ x y > assert-false x y = assert-false y x = assert-false ] when
     x y > [ x y < assert-false x y = assert-false y x = assert-false ] when
@@ -198,8 +198,8 @@ test: test-11
 test-11
 
 : %test-12
-    random-integer !> x
-    x >float !> y
+    random-integer x!
+    x >float y!
     ?echo
     y float? assert
     x y assert=
@@ -213,10 +213,10 @@ test-12
 
 f #if
 : %test-13
-    random !> x
+    random x!
     x fixnum? assert
     x 0 >= assert
-    x fixnum>uint64 !> y
+    x fixnum>uint64 y!
     y uint64? assert
     x fixnum>string y uint64>string = assert
     x fixnum>hex y uint64>hex = assert
@@ -229,8 +229,8 @@ test-13
 #endif
 
 : %test-14
-    random-integer !> x
-    random-integer !> y
+    random-integer x!
+    random-integer y!
     ?echo
     x y / y * x 2dup = [
         2drop
@@ -245,8 +245,8 @@ test: test-14
 test-14
 
 : %test-15
-    random-integer !> x
-    random-float !> y
+    random-integer x!
+    random-float y!
     ?echo
     x y <= [ x y > assert-false ] when
     x y >= [ x y < assert-false ] when
@@ -260,8 +260,8 @@ test: test-15
 test-15
 
 : %test-16
-    random-real !> x
-    random-real !> y
+    random-real x!
+    random-real y!
     x y + y x + assert=
     x y - y x - negate assert=
     x y * y x * assert=
@@ -278,7 +278,7 @@ test: test-16
 
 test-16
 
-f !> x
-f !> y
+f x!
+f y!
 
 ?nl "Reached end of random-tests.feline" write-string
