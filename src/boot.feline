@@ -16,7 +16,7 @@
 using: feline ;
 in: feline
 
-: blank?        -- char -> ?
+: blank?                                -- char -> ?
     { 9 10 13 32 } member? ;
 
 {
@@ -33,9 +33,9 @@ in: feline
 
 private
 
-feline-source-directory "disassembler.feline" path-append >constant: disassembler.feline
+feline-source-directory "disassembler.feline" path-append constant disassembler.feline
 
-global: disassembler-file-write-time
+global disassembler-file-write-time
 
 : maybe-load-disassembler
     disassembler.feline file-write-time disassembler-file-write-time neq? [
@@ -51,7 +51,7 @@ public
 
 private
 
-feline-home "feral" path-append "editor.feline" path-append >constant: editor.feline
+feline-home "feral" path-append "editor.feline" path-append constant editor.feline
 
 : load-editor
     [
