@@ -921,54 +921,6 @@ code storeto, '!>', SYMBOL_IMMEDIATE    ; --
         next
 endcode
 
-%macro define_prefix_operator 2         ; local global
-        _ must_parse_token              ; -- string
-
-        _ in_definition?
-        _ get
-        _tagged_if .1
-
-        _ find_local_name               ; -- index/string ?
-        _tagged_if .2                   ; -- index
-
-        _ add_to_definition
-
-        _lit S_%1
-        _ add_to_definition
-
-        _else .2
-
-        ; not a local
-        _ must_find_global
-        _ new_wrapper
-        _ add_to_definition
-
-        _lit S_%2
-        _ add_to_definition
-
-        _then .2
-
-        _else .1
-
-        ; not in a definition
-        _ must_find_global
-        _ %2
-
-        _then .1
-%endmacro
-
-; ### 1+!>
-code oneplusstoreto, '1+!>', SYMBOL_IMMEDIATE   ; --
-        define_prefix_operator local_inc, global_inc
-        next
-endcode
-
-; ### 1-!>
-code oneminusstoreto, '1-!>', SYMBOL_IMMEDIATE  ; --
-        define_prefix_operator local_dec, global_dec
-        next
-endcode
-
 ; ### top-level-only
 code top_level_only, 'top-level-only'   ; word --
         _ in_definition?
