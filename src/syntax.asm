@@ -767,29 +767,6 @@ code paren, '(', SYMBOL_IMMEDIATE       ; --
         next
 endcode
 
-; ### local:
-code declare_local, 'local:', SYMBOL_IMMEDIATE  ; -- tagged-index
-        _ maybe_initialize_locals
-        _ must_parse_token
-        _ add_local
-        next
-endcode
-
-; ### >local:
-code assign_local, '>local:', SYMBOL_IMMEDIATE  ; x -> void
-        _ maybe_initialize_locals
-        _ must_parse_token
-        _dup
-        _ add_local
-        _ locals
-        _ hashtable_at
-        _ verify_fixnum
-        _ local_setter
-        _ current_definition
-        _ vector_push
-        next
-endcode
-
 ; ### :>
 code assign_local2, ':>', SYMBOL_IMMEDIATE      ; x -> void
 
@@ -820,103 +797,6 @@ code assign_local2, ':>', SYMBOL_IMMEDIATE      ; x -> void
         _ local_setter
         _ current_definition
         _ vector_push
-
-        next
-endcode
-
-; ### find-local-name
-code find_local_name, 'find-local-name' ; string -- index/string ?
-
-        _ using_locals?
-        _tagged_if_not .1
-        _f                      ; -- string f
-        _return
-        _then .1                ; -- string
-
-        _dup
-        _ locals
-        _ hashtable_at                  ; -> string index/f
-        _dup
-        _tagged_if .2
-        _nip
-        _t
-        _then .2
-
-        next
-endcode
-
-; ### local-name?
-code local_name?, 'local-name?'         ; string -- string/index ?
-        _ in_definition?
-        _ get
-        _tagged_if .1
-        _ find_local_name
-        _else .1
-        _f
-        _then .1
-        next
-endcode
-
-; ### store-to-thread-local
-code store_to_thread_local, 'store-to-thread-local'
-        _ in_definition?
-        _ get
-        _tagged_if .1
-        _ new_wrapper
-        _ add_to_definition
-        _lit S_current_thread_local_set
-        _ add_to_definition
-        _else .1
-        _ current_thread_local_set
-        _then .1
-        next
-endcode
-
-; ### store-to-global
-code store_to_global, 'store-to-global'
-        _ in_definition?
-        _ get
-        _tagged_if .1
-        _ new_wrapper
-        _ add_to_definition
-        _lit S_symbol_set_value
-        _ add_to_definition
-        _else .1
-        _ symbol_set_value
-        _then .1
-        next
-endcode
-
-; ### !>
-code storeto, '!>', SYMBOL_IMMEDIATE    ; --
-        _ must_parse_token              ; -- string
-
-        _ local_name?                   ; -- index/string ?
-        _tagged_if .1                   ; -- index
-        _ local_setter
-        _ verify_symbol
-        _ add_to_definition
-        _return
-        _then .1                        ; -- string
-
-        ; not a local
-        _ must_find_name                ; -- symbol
-
-        _dup
-        _ symbol_thread_local?
-        _tagged_if .2
-        _ store_to_thread_local
-        _return
-        _then .2
-
-        _dup
-        _ symbol_global?
-        _tagged_if .3
-        _ store_to_global
-        _return
-        _then .3
-
-        _error "not a variable"
 
         next
 endcode
