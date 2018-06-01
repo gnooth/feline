@@ -18,17 +18,17 @@ in: tuple
 
 private
 
-global: class
+global class
 
-global: accessor-prefix
+global accessor-prefix
 
-global: class-name                      -- string
+global class-name                       -- string
 
-global: slot-names                      -- vector
+global slot-names                       -- vector
 
-global: class-symbol                    -- symbol
+global class-symbol                     -- symbol
 
-: define-reader                         -- slot-name index ->
+: define-reader                         -- slot-name index -> void
     [
         accessor-prefix
         swap
