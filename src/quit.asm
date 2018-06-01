@@ -532,6 +532,7 @@ code print_data_stack1, 'print-data-stack1'     ; x -> void
         _ comment_style
         _lit tagged_fixnum(50)
         _ tab
+        _write "-- "
         _ type_of
         _ dot_object
         next
