@@ -522,7 +522,7 @@ code query, 'query'                     ; -- string/f
 endcode
 
 ; ### print-data-stack1
-code print_data_stack1, 'print-data-stack1'     ; x --
+code print_data_stack1, 'print-data-stack1'     ; x -> void
         _ nl
         _lit tagged_fixnum(4)
         _ tab
@@ -530,17 +530,15 @@ code print_data_stack1, 'print-data-stack1'     ; x --
         _ dup
         _ short_dot
         _ comment_style
-        _quote " ( "
-        _ write_string
+        _lit tagged_fixnum(50)
+        _ tab
         _ type_of
         _ dot_object
-        _quote " )"
-        _ write_string
         next
 endcode
 
 ; ### print-data-stack
-code print_data_stack, 'print-data-stack'       ; --
+code print_data_stack, 'print-data-stack'
         _ ?nl
         _ comment_style
         _write "-- Data stack: "
