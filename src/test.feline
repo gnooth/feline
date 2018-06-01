@@ -483,7 +483,7 @@ test: array-test-1
 array-test-1
 
 test: array-test-2
-    10 f <array> >local: a
+    10 f <array> :> a
     10 [ [ number>string ] keep a array-set-nth ] each-integer
     a [ number>string assert= ] each-index
     [ -1 a array-nth ] assert-must-fail
@@ -573,8 +573,7 @@ test: vector-test-2
     100 [ over vector-nth assert-false ] each-integer
     clear
 
-    local: v
-    1 <vector> !> v
+    1 <vector> :> v
     42 9 v set-nth
     87 v push
     v vector{ f f f f f f f f f 42 87 } sequence= assert-true
@@ -620,7 +619,7 @@ test: vector-test-5
 vector-test-5
 
 test: vector-nth-test-1
-    vector{ 0 1 2 3 } >local: v
+    vector{ 0 1 2 3 } :> v
     0 v vector-nth 0 assert=
     1 v vector-nth 1 assert=
     2 v vector-nth 2 assert=
@@ -637,7 +636,7 @@ test: vector-nth-test-1
 vector-nth-test-1
 
 test: vector-?nth-test-1
-    vector{ 0 1 2 3 } >local: v
+    vector{ 0 1 2 3 } :> v
     0 v vector-?nth 0 assert=
     1 v vector-?nth 1 assert=
     2 v vector-?nth 2 assert=
@@ -662,8 +661,7 @@ test: vector>array-test-1
 vector>array-test-1
 
 : %local-test-1                         -- -> 42
-    local: foo
-    42 !> foo
+    42 :> foo
     foo
 ;
 
@@ -674,8 +672,8 @@ test: local-test-1
 local-test-1
 
 : %local-test-2
-    42 >local: foo
-    17 >local: bar
+    42 :> foo
+    17 :> bar
     foo bar -
 ;
 
@@ -889,8 +887,7 @@ test: hashcode-test-2
 hashcode-test-2
 
 test: hashtable-test-1
-    local: ht
-    16 <hashtable> !> ht
+    16 <hashtable> :> ht
     42 "parker" ht set-at
     ht hashtable-count 1 assert=
     87 "penelope" ht set-at
@@ -912,8 +909,7 @@ test: hashtable-test-2
 hashtable-test-2
 
 test: hashtable-test-3
-    local: ht
-    16 <hashtable> !> ht
+    16 <hashtable> :> ht
     1000 [ dup number>string ht set-at ] each-integer
     1000 [ dup number>string ht at assert= ] each-integer
     "charlie" ht at* assert-false assert-false
@@ -921,13 +917,13 @@ test: hashtable-test-3
 
 hashtable-test-3
 
-global: ht
+global ht
 
-100 >constant: n1       -- total number of entries
-40  >constant: n2       -- number of entries to delete
+100 constant n1         -- total number of entries
+40  constant n2         -- number of entries to delete
 
 test: hashtable-test-4
-    1 <hashtable> !> ht
+    1 <hashtable> ht!
     n1 [ dup number>string ht set-at ] each-integer
     n1 [ dup number>string ht at assert= ] each-integer
 
@@ -954,14 +950,13 @@ test: hashtable-test-4
     ht hashtable-values length n1 assert-eq
     ht hashtable-values [ fixnum? assert-true ] each
 
-    f !> ht
+    f ht!
 ;
 
 hashtable-test-4
 
 test: hashtable-test-5
-    local: ht
-    16 <hashtable> !> ht
+    16 <hashtable> :> ht
     -- fixnum keys
     1000 [ dup ht set-at ] each-integer
     1000 [ dup ht at assert= ] each-integer
@@ -1252,7 +1247,7 @@ test: tuple-instance-test-1
 
 tuple-instance-test-1
 
-global: temp-string "test" !> temp-string
+global temp-string "test" temp-string!
 
 test: tuple-test-1
     foo make-instance
@@ -1268,7 +1263,7 @@ test: tuple-test-1
     [ foo-c temp-string assert= ] keep
     [ foo-c "test" assert= ] keep
 
-    f !> temp-string
+    f temp-string!
     gc
     [ foo-c "test" assert= ] keep
 
@@ -1320,10 +1315,10 @@ test: unless*-test-1
 
 unless*-test-1
 
-global: zork
+global zork
 
 test: global-test-1
-    42 !> zork zork 42 assert-eq
+    42 zork! zork 42 assert-eq
 ;
 
 global-test-1
@@ -1400,13 +1395,13 @@ test: member?-test-2
 member?-test-2
 
 test: member-eq?-test-1
-    { 1 2 3 4 } >local: a
+    { 1 2 3 4 } :> a
     0 a member-eq? assert-false
     1 a member-eq? 0 assert=
     2 a member-eq? 1 assert=
-    "test" >local: s
+    "test" :> s
     s a member-eq? assert-false
-    vector{ 1 2 3 4 } >local: v
+    vector{ 1 2 3 4 } :> v
     a [ v member-eq? assert ] each
     v [ a member-eq? assert ] each
     s v member-eq? assert-false
@@ -1446,7 +1441,7 @@ test: string-tail-test-1
 
 string-tail-test-1
 
-magenta >constant: test-magenta
+magenta constant test-magenta
 
 test: constant-test-1
     test-magenta 5 assert-eq
@@ -1644,7 +1639,7 @@ test: or-test-1
 or-test-1
 
 test: sbuf-insert-nth!-test-1
-    "oat" string>sbuf >local: sb
+    "oat" string>sbuf :> sb
     'b' 0 sb sbuf-insert-nth!
     sb "boat" sequence= assert-true
     's' 3 sb sbuf-insert-nth!
@@ -1670,7 +1665,7 @@ test: sbuf-reverse!-test-1
 sbuf-reverse!-test-1
 
 test: sbuf-shorten-test-1
-    "12345678" string>sbuf >local: sb
+    "12345678" string>sbuf :> sb
     sb sbuf-length 8 assert-eq
     sb sbuf-validate
     16 sb sbuf-shorten
@@ -1760,7 +1755,7 @@ test: negate-test-1
 negate-test-1
 
 test: string-substring-test-1
-    "this is a test" >local: s
+    "this is a test" :> s
 
      0  4 s string-substring "this"  assert=
     10 14 s string-substring "test"  assert=
@@ -1868,7 +1863,7 @@ test: substring-start-test-1
 substring-start-test-1
 
 test: vector-find-string-test-1
-    vector{ "foo" "bar" "baz" "zork" } >local: v
+    vector{ "foo" "bar" "baz" "zork" } :> v
     "foo"  v vector-find-string assert-true 0 assert=
     "zork" v vector-find-string assert-true 3 assert=
     "baz"  v vector-find-string assert-true 2 assert=
@@ -2037,7 +2032,7 @@ test: return-if-test-1
 return-if-test-1
 
 : %return-if-test-2
-    >local: arg
+    :> arg
 
     arg [ arg ] return-if
     arg ;
@@ -2065,15 +2060,15 @@ return-if-test-2
 -- return-if before first local
 : %return-if-test-3
     dup 3 = [ drop 47 ] return-if
-    >local: arg
+    :> arg
     arg 9 = [ arg 1 + ] return-if
     arg ;
 
-global: saved-lp
+global saved-lp
 
 test: return-if-test-3
     clear
-    lp@ !> saved-lp
+    lp@ saved-lp!
     3 %return-if-test-3 get-data-stack { 47 } assert=
     clear
     9 %return-if-test-3 get-data-stack { 10 } assert=
@@ -2103,16 +2098,16 @@ test: vector-?pop-test-1
 vector-?pop-test-1
 
 test: vector-reverse!-test-1
-    vector{ 1 2 3 4 5 } >local: v
+    vector{ 1 2 3 4 5 } :> v!
     v vector-reverse! v assert-eq
     v vector{ 5 4 3 2 1 } sequence= assert
-    vector{ 1 2 3 4 } !> v
+    vector{ 1 2 3 4 } v!
     v vector-reverse! v assert-eq
     v vector{ 4 3 2 1 } sequence= assert
-    vector{ 17 } !> v
+    vector{ 17 } v!
     v vector-reverse! v assert-eq
     v vector{ 17 } sequence= assert
-    vector{ } !> v
+    vector{ } v!
     v vector-reverse! v assert-eq
     v vector{ } sequence= assert
 ;
@@ -2249,8 +2244,8 @@ test: >=-test-2
 >=-test-2
 
 test: iterator-test-1
-    "this is a test" <iterator> >local: iter
-    "" string>sbuf >local: sb
+    "this is a test" <iterator> :> iter
+    "" string>sbuf :> sb
     [ iter next dup ] [ sb push ] while drop
     sb sbuf>string "this is a test" assert=
 ;
@@ -2498,8 +2493,8 @@ test: vector-remove-test-1
     17 vector{ 17 } vector-remove vector{ } assert=
     3 vector{ 3 1 2 3 4 5 3 6 3 } vector-remove vector{ 1 2 4 5 6 } assert=
 
-    vector{ 3 1 2 3 4 5 3 6 3 } >local: v1
-    3 v1 vector-remove >local: v2
+    vector{ 3 1 2 3 4 5 3 6 3 } :> v1
+    3 v1 vector-remove :> v2
     v1 vector{ 3 1 2 3 4 5 3 6 3 } assert=
     v2 vector{ 1 2 4 5 6 } assert=
     v1 v2 eq? assert-false
@@ -2513,8 +2508,8 @@ test: vector-remove!-test-1
     17 vector{ 17 } vector-remove! vector{ } assert=
     3 vector{ 3 1 2 3 4 5 3 6 3 } vector-remove! vector{ 1 2 4 5 6 } assert=
 
-    vector{ 3 1 2 3 4 5 3 6 3 } >local: v1
-    3 v1 vector-remove! >local: v2
+    vector{ 3 1 2 3 4 5 3 6 3 } :> v1
+    3 v1 vector-remove! :> v2
     v1 vector{ 1 2 4 5 6 } assert=
     v2 vector{ 1 2 4 5 6 } assert=
     v1 v2 assert-eq
@@ -2523,7 +2518,7 @@ test: vector-remove!-test-1
 vector-remove!-test-1
 
 test: vector-adjoin-test-1
-    vector{ 1 2 3 4 5 6 } >local: v
+    vector{ 1 2 3 4 5 6 } :> v
     42 v vector-adjoin
     v vector{ 1 2 3 4 5 6 42 } assert=
     4 v vector-adjoin
@@ -2536,7 +2531,7 @@ test: vector-adjoin-test-1
 vector-adjoin-test-1
 
 test: string-nth-test-1
-    "this is a test" >local: s
+    "this is a test" :> s
     0 s string-nth 't' assert-eq
     1 s string-nth 'h' assert-eq
     13 s string-nth 't' assert-eq
@@ -3022,7 +3017,7 @@ test: cleave-test-1
 cleave-test-1
 
 test: sbuf-append-string-test-1
-    "this is a test" string>sbuf >local: sb
+    "this is a test" string>sbuf :> sb
     " and this is " sb sbuf-append-string
     "another test" sb sbuf-append-string
     sb "this is a test and this is another test" sequence= assert
@@ -3031,7 +3026,7 @@ test: sbuf-append-string-test-1
 sbuf-append-string-test-1
 
 test: sbuf-push-test-1
-    8 <sbuf> >local: sb
+    8 <sbuf> :> sb
     sb sbuf-capacity 8 assert-eq
     't' sb sbuf-push
     'e' sb sbuf-push
@@ -3061,11 +3056,11 @@ test: thread-test-1
 
 thread-test-1
 
-global: thread-test-2-result
+global thread-test-2-result
 
 test: thread-test-2
-    f !> thread-test-2-result
-    [ 42 !> thread-test-2-result ] <thread>
+    f thread-test-2-result!
+    [ 42 thread-test-2-result! ] <thread>
     dup thread-create thread-join
     thread-test-2-result 42 assert-eq
 ;
@@ -3104,7 +3099,7 @@ test: thread-test-5
     gc
     87 test5!
     test5 87 assert-eq
-    [ 42 test5! test5 ] <thread> >local: th
+    [ 42 test5! test5 ] <thread> :> th
     th thread-create
     th thread-join
     th thread-result { 42 } assert=
@@ -3114,7 +3109,7 @@ test: thread-test-5
 thread-test-5
 
 test: thread-test-6
-    make-mutex >local: m
+    make-mutex :> m
     m mutex-owner assert-false
     m mutex-lock assert-true
     m mutex-owner current-thread assert-eq
