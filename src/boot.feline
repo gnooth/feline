@@ -16,8 +16,10 @@
 using: feline ;
 in: feline
 
+public
+
 : blank?                                -- char -> ?
-    { 9 10 13 32 } member? ;
+    "\t\n\r " member? ;
 
 {
     "syntax.feline"

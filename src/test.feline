@@ -1151,6 +1151,14 @@ test: empty?-test-1
 
 empty?-test-1
 
+test: blank?-test-1
+    'a' blank? assert-false
+    { 9 10 13 32 } [ code-char blank? assert ] each
+    "BeTheBestRabbitYouCanBe!" [ blank? assert-false ] each
+;
+
+blank?-test-1
+
 test: until-test-1
     clear
     1 [ dup 1 = ] [ 1 + ] until get-data-stack { 1 } sequence= assert-true
