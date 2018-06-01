@@ -39,7 +39,7 @@ global disassembler-file-write-time
 
 : maybe-load-disassembler
     disassembler.feline file-write-time disassembler-file-write-time neq? [
-        disassembler.feline [ load ] [ file-write-time !> disassembler-file-write-time ] bi
+        disassembler.feline [ load ] [ file-write-time disassembler-file-write-time! ] bi
     ] when ;
 
 public
