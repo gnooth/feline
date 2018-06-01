@@ -1,6 +1,6 @@
-# Feline 0.0.0.30
+# Feline 0.0.0.31
 
-May 1, 2018
+June 1, 2018
 
 Feline is a concatenative programming language in the spirit of Forth, Joy and
 Factor.
@@ -19,7 +19,7 @@ tools installed. I'm using gcc (tdm64-1) 5.1.0, GNU Make 4.2.1, and nasm
 Feline also builds and runs on the Windows 10 Linux Subsystem, where you can
 use `apt-get` to install the tools.
 
-After starting Feline, you can type `+color` at the `in:user>` prompt if you'd
+After starting Feline, you can type `+color` at the `in: user>` prompt if you'd
 like a more colorful experience, but the default color setup is only suitable if
 your console window has a dark background. `-color` turns color off.
 
@@ -27,7 +27,7 @@ To a first approximation, Feline looks like Forth:
 ```
   in: user> 1 2 +
   -- Data stack:
-      3 ( fixnum )
+      3                                             -- fixnum
 ```
 Like Forth, Feline is a postfix language (mostly).
 
@@ -46,7 +46,7 @@ all may be part of a Feline name. So it's possible to do silly things:
   in:user> : 1234 42 ;
   in:user> 1234
   -- Data stack:
-      42 ( fixnum )
+      42                                            -- fixnum
 ```
 Unlike Forth, Feline is case-sensitive, and all of the builtin words are lower
 case.
@@ -87,7 +87,7 @@ is a prefix operator, so `h each` provides help on the word `each`.
 Out of the box there are about 1300 words in Feline:
 ```
   in: user> all-words length .
-  1314
+  1555
 ```
 But only about 100 of them currently have help. (Sad!)
 
