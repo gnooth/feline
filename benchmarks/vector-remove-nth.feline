@@ -1,9 +1,9 @@
 using: feline ;
 in: user
 
-1000 >global: n
+1000 constant n
 
-global: v
+global v
 
 : test1
     100 v vector-remove-nth!
@@ -11,7 +11,7 @@ global: v
 ;
 
 : test
-    n <vector> !> v
+    n <vector> v!
     n [ v vector-push ] each-integer
     gc
     [ 1000000 ' test1 times ] time
@@ -22,6 +22,7 @@ global: v
 -- 2512 ms      move_cells_down no rep movsq
 -- 2284 ms      move_cells_down rep movsq
 -- 460 ms       0.0.0.23-43-g564d5767
+-- 447 ms       0.0.0.30-85-g263086ef
 
 -- lenny (ubuntu)
 -- 433 ms       0.0.0.23-43-g564d5767
