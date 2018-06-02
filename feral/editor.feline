@@ -88,10 +88,10 @@ var buffer-list
 : mark                                  -- -> position
     current-buffer buffer-mark ;
 
-: set-mark                              -- position ->
+: mark!                                 -- position ->
     current-buffer buffer-mark! ;
 
-: unmark mark [ f set-mark t repaint?! ] when ;
+: unmark mark [ f mark! t repaint?! ] when ;
 
 : top-line-number                       -- -> n
     current-buffer buffer-top-line-number ;
@@ -460,7 +460,7 @@ special: +compound-undo+
 
     [ undo-record-mod-count set-mod-count ]
     [ undo-record-dot set-dot ]
-    [ undo-record-mark set-mark ]
+    [ undo-record-mark mark! ]
     tri
 
     mark [ t repaint?! ] when

@@ -26,7 +26,7 @@ var found-line-number
 var found-offset
 
 : mark-found-pattern
-    position make-instance set-mark
+    position make-instance mark!
     found-line-number mark position-line-number!
     found-offset pattern length + mark position-offset! ;
 
