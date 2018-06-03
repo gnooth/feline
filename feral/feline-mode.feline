@@ -13,16 +13,11 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline ;
-in: modes
+using: modes feline ;
+in: feline-mode
 
-tuple: mode
-    formatter ;
-
-var modes
-
-: asm-format-line ( s )
-    ";" s substring-start :> index
+: feline-format-line ( s )
+    "--" s substring-start :> index
 
     index [
         s index string-head
@@ -38,18 +33,9 @@ var modes
     ] if
 ;
 
-: initialize-asm-mode
+: initialize-feline-mode
     mode make-instance :> m
-    ' asm-format-line m mode-formatter!
-    m ".asm" modes set-at
+    ' feline-format-line m mode-formatter!
+    m feline-extension modes set-at
 ;
 
-use: feline-mode
-
-: initialize-modes
-    8 <hashtable> modes!
-    initialize-asm-mode
-    initialize-feline-mode
-;
-
-initialize-modes
