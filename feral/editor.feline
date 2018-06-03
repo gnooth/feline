@@ -272,9 +272,9 @@ var buffer-list
     0 y at-xy
     top-line-number y + :> line-number
 
-    line-number buffer-nth-line detab :> detabbed-text!
+    line-number buffer-nth-line detab :> detabbed-text
 
-    detabbed-text format-line detabbed-text!
+    detabbed-text format-line :> formatted-text
 
     output-style
 
@@ -287,7 +287,7 @@ var buffer-list
         terminal-width detabbed-text string-length - spaces
     ] [
         detabbed-text length terminal-width < [
-            detabbed-text write
+            formatted-text write
             terminal-width detabbed-text string-length - spaces
         ] [
             0 terminal-width detabbed-text substring write
