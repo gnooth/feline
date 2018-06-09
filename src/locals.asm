@@ -311,36 +311,6 @@ code local_setter, 'local-setter'       ; index -> symbol
         next
 endcode
 
-; ### local-inc
-code local_inc, 'local-inc'     ; index --
-        _check_index
-        _cells
-        add     rbx, r14
-        mov     rdx, rbx        ; address
-        mov     rbx, [rbx]
-        _check_fixnum
-        add     rbx, 1
-        _tag_fixnum
-        mov     [rdx], rbx
-        _drop
-        next
-endcode
-
-; ### local-dec
-code local_dec, 'local-dec'     ; index --
-        _check_index
-        _cells
-        add     rbx, r14
-        mov     rdx, rbx        ; address
-        mov     rbx, [rbx]
-        _check_fixnum
-        sub     rbx, 1
-        _tag_fixnum
-        mov     [rdx], rbx
-        _drop
-        next
-endcode
-
 ; ### allocate_locals_stack
 code allocate_locals_stack, 'allocate_locals_stack', SYMBOL_INTERNAL    ; -- raw-lp0
         _lit 4096
