@@ -64,13 +64,9 @@ feline-home "feral" path-append "editor.feline" path-append constant editor.feli
 public
 
 : e
-    "editor" lookup-vocab [
-        use-vocab
-    ] [
-        drop
-        load-editor
-        "editor" use-vocab
-    ] if
+    "editor" delete-vocab
+    load-editor
+    "editor" use-vocab
     "edit" "editor" vocab-find-name [ call-symbol ] when ;
 
 : run-tests
