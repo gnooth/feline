@@ -311,6 +311,20 @@ code ?enough, '?enough'                 ; n --
         next
 endcode
 
+; ### ?enough-1
+code ?enough_1, '?enough-1'
+        _ current_thread_raw_sp0_rax
+        sub     rax, 8
+        cmp     rbp, rax
+        ja      .error
+        next
+.error:
+        _quote "ERROR: not enough parameters (expected 1, got 0)."
+        _ format
+        _ error
+        next
+endcode
+
 ; ### interpret
 code interpret, 'interpret'             ; --
         _begin .1
