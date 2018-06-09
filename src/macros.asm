@@ -928,3 +928,9 @@ section .text
         _ ?enough
 %endif
 %endmacro
+
+%macro  _debug_?enough_1 0
+%ifdef  DEBUG
+        _ ?enough_1
+%endif
+%endmacro

@@ -198,49 +198,57 @@ code local_set, 'local!'                ; value index --
 endcode
 
 ; ### local_0_set
-inline local_0_set, 'local_0_set', SYMBOL_INTERNAL      ; value --
+inline local_0_set, 'local_0_set', SYMBOL_INTERNAL      ; value -> void
+        _debug_?enough_1
         mov     [r14], rbx
         poprbx
 endinline
 
 ; ### local_1_set
-inline local_1_set, 'local_1_set', SYMBOL_INTERNAL      ; value --
+inline local_1_set, 'local_1_set', SYMBOL_INTERNAL      ; value -> void
+        _debug_?enough_1
         mov     [r14 + BYTES_PER_CELL], rbx
         poprbx
 endinline
 
 ; ### local_2_set
-inline local_2_set, 'local_2_set', SYMBOL_INTERNAL      ; value --
+inline local_2_set, 'local_2_set', SYMBOL_INTERNAL      ; value -> void
+        _debug_?enough_1
         mov     [r14 + BYTES_PER_CELL * 2], rbx
         poprbx
 endinline
 
 ; ### local_3_set
-inline local_3_set, 'local_3_set', SYMBOL_INTERNAL      ; value --
+inline local_3_set, 'local_3_set', SYMBOL_INTERNAL      ; value -> void
+        _debug_?enough_1
         mov     [r14 + BYTES_PER_CELL * 3], rbx
         poprbx
 endinline
 
 ; ### local_4_set
-inline local_4_set, 'local_4_set', SYMBOL_INTERNAL      ; value --
+inline local_4_set, 'local_4_set', SYMBOL_INTERNAL      ; value -> void
+        _debug_?enough_1
         mov     [r14 + BYTES_PER_CELL * 4], rbx
         poprbx
 endinline
 
 ; ### local_5_set
-inline local_5_set, 'local_5_set', SYMBOL_INTERNAL      ; value --
+inline local_5_set, 'local_5_set', SYMBOL_INTERNAL      ; value -> void
+        _debug_?enough_1
         mov     [r14 + BYTES_PER_CELL * 5], rbx
         poprbx
 endinline
 
 ; ### local_6_set
-inline local_6_set, 'local_6_set', SYMBOL_INTERNAL      ; value --
+inline local_6_set, 'local_6_set', SYMBOL_INTERNAL      ; value -> void
+        _debug_?enough_1
         mov     [r14 + BYTES_PER_CELL * 6], rbx
         poprbx
 endinline
 
 ; ### local_7_set
-inline local_7_set, 'local_7_set', SYMBOL_INTERNAL      ; value --
+inline local_7_set, 'local_7_set', SYMBOL_INTERNAL      ; value -> void
+        _debug_?enough_1
         mov     [r14 + BYTES_PER_CELL * 7], rbx
         poprbx
 endinline
