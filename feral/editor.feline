@@ -14,6 +14,13 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
+in: user
+
+"accept-string" delete-vocab
+"search" delete-vocab
+"modes" delete-vocab
+"feline-mode" delete-vocab
+
 in: editor
 
 empty
