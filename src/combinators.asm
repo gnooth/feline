@@ -179,6 +179,42 @@ code bi_at, 'bi@'                       ; x y quot --
         next
 endcode
 
+; ### tri@
+code tri@, 'tri@'                       ; x y z quot ->
+; Apply quot to x, then to y, then to z.
+; Quotation must have stack effect ( obj -> ... ).
+
+        ; protect callable from gc
+        push    rbx
+
+        _ callable_raw_code_address
+
+        push    r12                     ; save non-volatile register
+        mov     r12, rbx                ; address to call in r12
+
+        mov     rax, [rbp]                      ; z in rax
+        mov     rdx, [rbp + BYTES_PER_CELL]     ; y in rdx
+        push    rax                     ; save z
+        push    rdx                     ; save y
+
+        _3drop                          ; -> x
+
+        call    r12
+        pushrbx
+        pop     rbx                     ; -> y
+        call    r12
+        pushrbx
+        pop     rbx                     ; -> z
+        call    r12
+
+        pop     r12
+
+        ; drop callable
+        pop     rax
+
+        next
+endcode
+
 ; ### ?
 code question, '?'                      ; ? true false -- true/false
         cmp     qword [rbp + BYTES_PER_CELL], f_value

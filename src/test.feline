@@ -472,6 +472,16 @@ test: bi@-test-1
 
 bi@-test-1
 
+test: tri@-test-1
+    clear
+    10 20 30 ' 1+ tri@ get-data-stack { 11 21 31 } sequence= assert-true
+    clear
+    1 2 3 [ dup ] tri@ get-data-stack { 1 1 2 2 3 3 } sequence= assert-true
+    clear
+;
+
+tri@-test-1
+
 test: array-test-1
     10 42 <array>
     [ array? assert-true ] keep
