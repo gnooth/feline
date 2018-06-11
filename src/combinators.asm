@@ -152,9 +152,9 @@ code twobi, '2bi'                       ; x y quot1 quot2 --
 endcode
 
 ; ### bi@
-code bi_at, 'bi@'                       ; x y quot --
+code bi@, 'bi@'                         ; x y quot ->
 ; Apply quot to x, then to y.
-; Quotation must have stack effect ( obj -- ... ).
+; Quotation must have stack effect ( obj -> ... ).
 
         ; protect callable from gc
         push    rbx
@@ -165,11 +165,11 @@ code bi_at, 'bi@'                       ; x y quot --
         mov     r12, rbx                ; address to call in r12
         mov     rax, [rbp]              ; y in rax
         mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2] ; -- x
+        lea     rbp, [rbp + BYTES_PER_CELL * 2] ; -> x
         push    rax                     ; save y
         call    r12
         pushrbx
-        pop     rbx                     ; -- y
+        pop     rbx                     ; -> y
         call    r12
         pop     r12
 

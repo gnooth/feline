@@ -625,7 +625,7 @@ endcode
 code string_has_prefix?, 'string-has-prefix?'   ; prefix string -- ?
         _twodup
         _lit S_string_length
-        _ bi_at
+        _ bi@
         _ fixnum_fixnum_le
         _tagged_if .1
         _ mismatch
@@ -695,7 +695,7 @@ endcode
 code string_has_suffix?, 'string-has-suffix?'   ; suffix string -- ?
         _twodup
         _lit S_string_length
-        _ bi_at                 ; -- suffix string len1 len2
+        _ bi@                           ; -- suffix string len1 len2
         _twodup
         _ fixnum_fixnum_le
         _tagged_if .1
@@ -1015,7 +1015,7 @@ code string_equal?, 'string-equal?'     ; object1 object2 -- ?
 
         _twodup
         _lit S_string_hashcode
-        _ bi_at                         ; -- seq1 seq2 hashcode1 hashcode2
+        _ bi@                           ; -- seq1 seq2 hashcode1 hashcode2
 
         _equal
         _zeq_if .3
