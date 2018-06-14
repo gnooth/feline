@@ -16,10 +16,13 @@
 using: feline ;
 in: user
 
-"accept-string" delete-vocab
-"search" delete-vocab
-"modes" delete-vocab
-"feline-mode" delete-vocab
+{
+    "accept-string"
+    "search"
+    "modes"
+    "ansi-color"
+    "feline-mode"
+} [ delete-vocab ] each
 
 in: editor
 
