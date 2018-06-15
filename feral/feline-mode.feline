@@ -13,29 +13,146 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: modes feline ;
+using: modes ansi-color feline ;
 in: feline-mode
 
-: feline-format-line ( s )
-    "--" s substring-start :> index
+private
 
-    index [
-        s index string-head
-        "\e[33m"                        -- yellow foreground
-        string-append
-        s index string-tail string-append
-        "\e[37m"                        -- white foreground
-        string-append
-    ] [
-        "\e[37m"                        -- white foreground
-        s
-        string-append
-    ] if
+128 128   0 rgb-foreground-prefix constant comment-prefix
+192 192 192 rgb-foreground-prefix constant text-prefix
+  0 255 255 rgb-foreground-prefix constant syntax-prefix
+  0   0 238 rgb-foreground-prefix constant name-prefix
+  0 170   0 rgb-foreground-prefix constant string-prefix
+
+"\e[0m" constant reset-suffix
+
+tuple: segment
+    text
+    start
+    format
 ;
+
+: make-segment ( text start )
+    segment make-instance :> segment
+    text segment segment-text!
+    start segment segment-start!
+    segment
+;
+
+32 code-char constant space-char
+34 code-char constant quote-char
+
+: non-blank?                            -- string -> ?
+    1 ?enough
+    verify-string
+    [ space-char neq? ] find drop ;
+
+: string>segments ( s )                 -- string -> segments
+    s string-length :> len
+    0 :> start!
+    0 :> end!
+    16 <vector> :> v
+    f :> c!
+
+    [ end len fixnum-fixnum< ] [
+        start s string-nth c!
+        {
+            { [ c space-char eq? ] [ start s string-skip-whitespace len or end! ] }
+            { [ c quote-char eq? ] [ start s string-skip-quoted-string len or end! ] }
+            [ start s string-skip-to-whitespace len or end! ]
+        } cond
+        start end s string-substring start make-segment v vector-push
+        end start!
+    ] while
+
+    v
+;
+
+{
+    "var"
+    "using:"
+    "in:"
+    ":"
+    ";"
+    "constant"
+    "tuple:"
+    ":>"
+    "global"
+    "t"
+    "f"
+    "test:"
+    "public"
+    "private"
+} constant syntax-words
+
+{
+    "var"
+    ":"
+    "test:"
+    "constant"
+    "tuple:"
+    "global"
+} constant defining-words
+
+var in-comment?
+
+var last-segment-text
+
+: format-segment ( segment )
+    in-comment? [
+        segment segment-text "--" string-equal? in-comment?!
+    ] unless
+
+    in-comment? [
+        comment-prefix segment segment-format!
+    ] return-if
+
+    -- not a comment
+    segment segment-text syntax-words member? [
+        syntax-prefix segment segment-format!
+    ] return-if
+
+    last-segment-text defining-words member? [
+        name-prefix segment segment-format!
+    ] return-if
+
+    segment segment-text string-first-char quote-char eq? [
+        string-prefix segment segment-format!
+    ] return-if
+
+    -- default
+    text-prefix segment segment-format!
+;
+
+: format-segments ( segments )
+    f in-comment?!
+    "" last-segment-text!
+    segments [
+        dup format-segment
+        segment-text dup non-blank? [ last-segment-text! ] [ drop ] if
+    ] each
+;
+
+: segments>string ( seq )               -- segments -> string
+    256 <sbuf> :> sb
+    seq [
+        dup
+        segment-format sb sbuf-append-string
+        segment-text sb sbuf-append-string
+    ] each
+    reset-suffix sb sbuf-append-string
+    sb sbuf>string
+;
+
+: feline-format-line
+    string>segments                     -- -> vector
+    [ format-segments ] [ segments>string ] bi
+;
+
+public
 
 : initialize-feline-mode
     mode make-instance :> m
     ' feline-format-line m mode-formatter!
     m feline-extension modes set-at
 ;
-
