@@ -342,27 +342,27 @@ code new_symbol_in_current_vocab, 'new-symbol-in-current-vocab', SYMBOL_PRIMITIV
         next
 endcode
 
-; ### parse-definition-name
-code parse_definition_name, 'parse-definition-name'     ; -- symbol
+; ### parse-name
+code parse_name, 'parse-name'           ; -> symbol
 
-        _ must_parse_token              ; -- string
-        _ new_symbol_in_current_vocab   ; -- symbol
+        _ must_parse_token              ; -> string
+        _ new_symbol_in_current_vocab   ; -> symbol
 
-        _ location                      ; -- symbol 3array/f
+        _ location                      ; -> symbol 3array/f
         _dup
-        _tagged_if .3                   ; -- symbol 3array
+        _tagged_if .1                   ; -> symbol 3array
         _dup
         _ array_first
         _swap
-        _ array_second                  ; -- symbol file line-number
+        _ array_second                  ; -> symbol file line-number
         _pick
         _ symbol_set_location
-        _else .3
+        _else .1
         _drop
-        _then .3                        ; -- symbol
+        _then .1                        ; -> symbol
 
         _dup
-        _ set_last_word                 ; -- symbol
+        _ set_last_word                 ; -> symbol
 
         next
 endcode
@@ -448,12 +448,12 @@ code colon, ':', SYMBOL_IMMEDIATE
         _lit S_colon
         _ top_level_only
 
-        _ parse_definition_name         ; -- symbol
-        _ parse_definition              ; -- symbol vector
+        _ parse_name                    ; -> symbol
+        _ parse_definition              ; -> symbol vector
         _ vector_to_array
-        _ array_to_quotation            ; -- symbol quotation
+        _ array_to_quotation            ; -> symbol quotation
         _over
-        _ symbol_set_def                ; -- symbol
+        _ symbol_set_def                ; -> symbol
         _ compile_word
 
         next
@@ -502,9 +502,9 @@ code syntax, 'syntax:', SYMBOL_IMMEDIATE
 endcode
 
 ; ### test:
-code define_test, 'test:'               ; --
-        _ parse_definition_name         ; -- symbol
-        _ parse_definition              ; -- symbol vector
+code define_test, 'test:'
+        _ parse_name                    ; -> symbol
+        _ parse_definition              ; -> symbol vector
 
         _lit S_?nl
         _lit tagged_zero
@@ -523,19 +523,19 @@ code define_test, 'test:'               ; --
         _ vector_insert_nth
 
         _ vector_to_array
-        _ array_to_quotation            ; -- symbol quotation
+        _ array_to_quotation            ; -> symbol quotation
         _over
-        _ symbol_set_def                ; -- symbol
+        _ symbol_set_def                ; -> symbol
         _ compile_word
         next
 endcode
 
 ; ### generic:
-code define_generic, 'generic:', SYMBOL_IMMEDIATE       ; --
-        _ parse_definition_name         ; -- symbol
+code define_generic, 'generic:', SYMBOL_IMMEDIATE
+        _ parse_name                    ; -> symbol
 
         _dup
-        _ initialize_generic_function   ; -- symbol
+        _ initialize_generic_function   ; -> symbol
 
         _dup
         _ new_wrapper
@@ -544,12 +544,12 @@ code define_generic, 'generic:', SYMBOL_IMMEDIATE       ; --
         _ three_array
         _ array_to_quotation
         _over
-        _ symbol_set_def                ; -- symbol
+        _ symbol_set_def                ; -> symbol
 
         _dup
         _ symbol_set_generic
 
-        _ compile_word                  ; --
+        _ compile_word                  ; -> void
 
         next
 endcode
