@@ -5,7 +5,7 @@ in: user
 
 in: stress
 
-4000000 >constant: limit
+4000000 constant limit
 
 -- The followings tests verify that the quotation remains valid through gc,
 -- even if there is no other reference to it. These tests must not be in a
