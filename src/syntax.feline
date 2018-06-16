@@ -43,3 +43,7 @@ public
 syntax: global parse-name make-global ;
 
 syntax: var parse-name make-var ;
+
+syntax: constant                        -- x -> void
+    parse-name
+    swap 1array array>quotation over symbol-set-def compile-word ;

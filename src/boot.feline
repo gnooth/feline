@@ -28,7 +28,6 @@ public
     "dump.feline"
     "sequences.feline"
     "tuple.feline"
-    "constant.feline"
     "accept.feline"
     "help.feline"
 } [ load-system-file ] each
