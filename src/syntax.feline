@@ -18,32 +18,28 @@ in: feline
 
 private
 
-: make-global ( name )                  -- string -> void
-    name new-symbol-in-current-vocab :> getter
-    getter symbol-set-global-bit
-    getter <wrapper> ' symbol-value 2array array>quotation getter symbol-set-def
-    getter compile-word
+: make-global ( name )                  -- symbol -> void
+    name :> reader
+    reader symbol-set-global-bit
+    reader <wrapper> ' symbol-value 2array array>quotation reader symbol-set-def
+    reader compile-word
 
-    name "!" string-append new-symbol-in-current-vocab :> setter
-    getter <wrapper> ' symbol-set-value 2array array>quotation setter symbol-set-def
-    setter compile-word ;
+    reader symbol-name "!" string-append new-symbol-in-current-vocab :> writer
+    reader <wrapper> ' symbol-set-value 2array array>quotation writer symbol-set-def
+    writer compile-word ;
 
-: make-var ( name )                     -- string -> void
-    name new-symbol-in-current-vocab :> getter
-    getter symbol-set-thread-local-bit
-    getter <wrapper> ' current-thread-local-get 2array array>quotation getter symbol-set-def
-    getter compile-word
+: make-var ( name )                     -- symbol -> void
+    name :> reader
+    reader symbol-set-thread-local-bit
+    reader <wrapper> ' current-thread-local-get 2array array>quotation reader symbol-set-def
+    reader compile-word
 
-    name "!" string-append new-symbol-in-current-vocab :> setter
-    getter <wrapper> ' current-thread-local-set 2array array>quotation setter symbol-set-def
-    setter compile-word ;
+    reader symbol-name "!" string-append new-symbol-in-current-vocab :> writer
+    reader <wrapper> ' current-thread-local-set 2array array>quotation writer symbol-set-def
+    writer compile-word ;
 
 public
 
-syntax: global
-    must-parse-token
-    make-global ;
+syntax: global parse-name make-global ;
 
-syntax: var
-    must-parse-token
-    make-var ;
+syntax: var parse-name make-var ;
