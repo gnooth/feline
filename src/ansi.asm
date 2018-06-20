@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -44,17 +44,32 @@ code ansi_csi, 'esc['                   ; --
         next
 endcode
 
+; ### check_color
+code check_color, 'check_color'         ; color -> untagged-fixnum
+        test    bl, FIXNUM_TAG
+        jz      .error
+        cmp     rbx, tagged_fixnum(7)
+        ja     .error
+        _untag_fixnum
+        _return
+
+.error:
+        _quote "a valid color specifier"
+        _ format_type_error
+        _ error
+
+        next
+endcode
+
 ; ### foreground
-code foreground, 'foreground'           ; color --
+code foreground, 'foreground'           ; color -> void
         _ color?
         _tagged_if .1
-        _ ansi_csi
-        _tagged_char '3'
-        _ write_char_escaped
-        _tagged_char '0'
-        _char_code
-        _ fixnum_fixnum_plus
-        _code_char
+        _ check_color                   ; -> untagged-fixnum
+        _quote `\e[3`
+        _ write_string_escaped
+        add     rbx, '0'
+        _tag_char
         _ write_char_escaped
         _tagged_char 'm'
         _ write_char_escaped
@@ -65,16 +80,14 @@ code foreground, 'foreground'           ; color --
 endcode
 
 ; ### background
-code background, 'background'           ; color --
+code background, 'background'           ; color -> void
         _ color?
         _tagged_if .1
-        _ ansi_csi
-        _tagged_char '4'
-        _ write_char_escaped
-        _tagged_char '0'
-        _char_code
-        _ fixnum_fixnum_plus
-        _code_char
+        _ check_color                   ; -> untagged-fixnum
+        _quote `\e[4`
+        _ write_string_escaped
+        add     rbx, '0'
+        _tag_char
         _ write_char_escaped
         _tagged_char 'm'
         _ write_char_escaped
