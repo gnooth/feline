@@ -90,6 +90,8 @@ file __FILE__
         _this_set_slot5
 %endmacro
 
+%define SYMBOL_VALUE_OFFSET     BYTES_PER_CELL * 6
+
 %macro  _symbol_value 0                 ; symbol -- value
         _slot 6
 %endmacro
