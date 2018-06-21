@@ -609,6 +609,19 @@ code symbol_set_generic, 'symbol-set-generic', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
+; ### deferred?
+code deferred?, 'deferred?'             ; symbol -> ?
+        _symbol_flags_bit SYMBOL_DEFERRED
+        next
+endcode
+
+; ### symbol-set-deferred-bit
+code symbol_set_deferred_bit, 'symbol-set-deferred-bit', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; symbol -> void
+        _symbol_set_flags_bit SYMBOL_DEFERRED
+        next
+endcode
+
 ; ### symbol-value
 code symbol_value, 'symbol-value'               ; symbol -- value
         _ check_symbol
