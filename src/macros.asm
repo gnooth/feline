@@ -450,6 +450,7 @@ section .data
 %define SYMBOL_ALWAYS_INLINE    $0100
 %define SYMBOL_INTERNAL         $0200
 %define SYMBOL_THREAD_LOCAL     $0400
+%define SYMBOL_DEFERRED         $0800
 
 %macro  IN_FELINE 0
 %undef  in_forth
@@ -570,6 +571,17 @@ section .data
         %error "endinline not in inline"
 %endif
         %pop inline
+%endmacro
+
+%macro  deferred 3                      ; label, name, action
+        symbol S_%1, %2, %1, %1_ret - %1 + 1, SYMBOL_DEFERRED, %3
+        section .text
+        align DEFAULT_CODE_ALIGNMENT
+%1:
+        mov     rax, [S_%1_symbol_value]
+        jmp     rax
+%1_ret:
+        next
 %endmacro
 
 %macro  value 3                         ; label, name, value
