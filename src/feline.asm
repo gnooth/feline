@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -94,6 +94,7 @@ IN_FELINE
 %include "color.asm"
 %include "socket.asm"
 %include "mutex.asm"
+%include "defer.asm"
 
 ; ### in-static-data-area?
 code in_static_data_area?, 'in-static-data-area?', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE

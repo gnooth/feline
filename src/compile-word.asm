@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -485,6 +485,47 @@ code compile_word, 'compile-word', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         _ symbol_set_code_address
 
         _ quotation_code_size
+        _swap
+        _ symbol_set_code_size
+
+        next
+endcode
+
+; ### compile-deferred
+code compile_deferred, 'compile-deferred'       ; symbol -> void
+        _lit tagged_fixnum(16)
+        _ initialize_code_block         ; -> symbol tagged-code-address
+
+        _dup
+        _check_fixnum
+        mov     [pc_], rbx
+        _drop
+
+        _over
+        _ symbol_set_code_address       ; -> symbol
+
+        _lit 0x48
+        _ emit_raw_byte
+        _lit 0x8b
+        _ emit_raw_byte
+        _lit 0x04
+        _ emit_raw_byte
+        _lit 0x25
+        _ emit_raw_byte
+
+        _dup
+        _ check_symbol
+        add     rbx, SYMBOL_VALUE_OFFSET
+        _ emit_raw_dword
+
+        _lit 0xff
+        _ emit_raw_byte
+        _lit 0xe0
+        _ emit_raw_byte
+        _lit 0xc3
+        _ emit_raw_byte
+
+        _lit tagged_fixnum(11)
         _swap
         _ symbol_set_code_size
 

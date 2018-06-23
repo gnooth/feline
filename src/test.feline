@@ -3211,4 +3211,23 @@ test: local-test-4
 
 local-test-4
 
+defer %defer-test-1
+
+: %defer-test1-impl1 "hello!" ;
+
+: %defer-test1-impl2 "goodbye!" ;
+
+test: defer-test-1
+    [ %defer-test-1 ] assert-must-fail
+    ' %defer-test1-impl1 ' %defer-test-1 defer!
+    %defer-test-1 "hello!" assert=
+    ' %defer-test1-impl2 ' %defer-test-1 defer!
+    %defer-test-1 "goodbye!" assert=
+    ' %defer-test1-impl1 ' %defer-test-1 defer!
+    %defer-test-1 "hello!" assert=
+    [ ' %defer-test-1 ' %defer-test-1 defer! ] assert-must-fail
+;
+
+defer-test-1
+
 ?nl "Reached end of test.feline" write-string
