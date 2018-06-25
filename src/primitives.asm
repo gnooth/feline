@@ -429,43 +429,71 @@ code while, 'while'             ; pred body --
 endcode
 
 ; ### token-character-literal?
-code token_character_literal?, 'token-character-literal?'       ; token -- char t | token f
-
-        _duptor
-
-        _ check_string
-
-        push    this_register
-        mov     this_register, rbx
-        _drop                           ; --    r: -- token
-
-        cmp     this_string_raw_length, 3
-        jl      .fail
-
-        ; length >= 3
-        cmp     this_string_first_unsafe, 0x27
+code token_character_literal?, 'token-character-literal?'       ; string -> char/string t/f
+        _dup
+        _ string_length                 ; ->  string length
+        cmp     rbx, tagged_fixnum(3)
+        jb      .fail
+        _over
+        _ string_first_char
+        cmp     rbx, tagged_char(0x27)
+        _drop
         jne     .fail
-
-        _this_string_last_unsafe
-        cmp     rbx, 0x27
+        _over
+        _ string_last_char
+        cmp     rbx, tagged_char(0x27)
         _drop
         jne     .fail
 
-        cmp     this_string_raw_length, 3
-        jne     .fail
+        ; reaching here, length is at least 3
+        ; first and last chars are single quotes
+        cmp     rbx, tagged_fixnum(3)
+        je      .length_is_3
+        cmp     rbx, tagged_fixnum(6)
+        je      .length_is_6
 
-        _this_string_second_unsafe
-        _tag_char
-
-        pop     this_register
-        _rdrop
-        _t
-        _return
+        ; TODO
+        ; add support for '\n' etc. (length 4)
 
 .fail:
-        pop     this_register
-        _rfrom
+        _drop
         _f
+        next
+
+.length_is_3:
+        _drop                           ; -> string
+        _tagged_fixnum(1)
+        _swap
+        _ string_nth_unsafe
+        _t
+        next
+
+.length_is_6:
+        _drop                           ; -> string
+        _tagged_fixnum(1)
+        _over
+        _ string_nth_unsafe
+        cmp     rbx, tagged_char('\')
+        jne     .fail
+        _drop
+        _tagged_fixnum(2)
+        _over
+        _ string_nth_unsafe
+        cmp     rbx, tagged_char('x')
+        jne     .fail
+        _drop                           ; -> string
+        _tagged_fixnum(3)
+        _tagged_fixnum(5)
+        _pick
+        _ string_substring
+        _ hex_to_integer
+        cmp     rbx, f_value
+        jne     .ok
+        _return
+.ok:
+        _code_char
+        _nip
+        _t
         next
 endcode
 
