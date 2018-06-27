@@ -228,7 +228,7 @@ feline_constant min_int32, 'min-int32', tagged_fixnum(MIN_INT32)
 feline_constant max_int32, 'max-int32', tagged_fixnum(MAX_INT32)
 
 ; ### raw_int32?
-code raw_int32?, 'raw_int32?'           ; untagged-fixnum -- ?
+code raw_int32?, 'raw_int32?'           ; untagged-fixnum -> ?
         cmp     rbx, MIN_INT32
         jl      .1
         cmp     rbx, MAX_INT32
@@ -241,13 +241,13 @@ code raw_int32?, 'raw_int32?'           ; untagged-fixnum -- ?
 endcode
 
 ; ### int32?
-code int32?, 'int32?'                   ; tagged-fixnum -- ?
-        _dup_fixnum?_if .1
+code int32?, 'int32?'                   ; tagged-fixnum -> ?
+        test    bl, FIXNUM_TAG
+        jz      .1
         _untag_fixnum
-        _ raw_int32?
-        _else .1
+        jmp     raw_int32?
+.1:
         mov     ebx, f_value
-        _then .1
         next
 endcode
 
@@ -504,28 +504,24 @@ code compile_deferred, 'compile-deferred'       ; symbol -> void
         _over
         _ symbol_set_code_address       ; -> symbol
 
+        ; movabs rax, qword [moffset64]
         _lit 0x48
         _ emit_raw_byte
-        _lit 0x8b
-        _ emit_raw_byte
-        _lit 0x04
-        _ emit_raw_byte
-        _lit 0x25
+        _lit 0xa1
         _ emit_raw_byte
 
         _dup
         _ check_symbol
         add     rbx, SYMBOL_VALUE_OFFSET
-        _ emit_raw_dword
+        _ emit_raw_qword
 
+        ; jmp rax
         _lit 0xff
         _ emit_raw_byte
         _lit 0xe0
         _ emit_raw_byte
-        _lit 0xc3
-        _ emit_raw_byte
 
-        _lit tagged_fixnum(11)
+        _lit tagged_fixnum(12)
         _swap
         _ symbol_set_code_size
 
