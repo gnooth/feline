@@ -2973,21 +2973,6 @@ test: file-attributes-test-1
 
 file-attributes-test-1
 
-test: char>string-test-1
-    'a' char>string "'a'" assert=
-    '7' char>string "'7'" assert=
-    '~' char>string "'~'" assert=
-
-     3 code-char char>string "'\\x03'" assert=
-     8 code-char char>string "'\\x08'" assert=  -- \b
-     9 code-char char>string "'\\x09'" assert=  -- \t
-    10 code-char char>string "'\\x0a'" assert=  -- \n
-    13 code-char char>string "'\\x0d'" assert=  -- \r
-    32 code-char char>string "'\\x20'" assert=
-;
-
-char>string-test-1
-
 test: keyword-test-1
     #:foo [ keyword? assert-true ] [ symbol? assert-false ] bi
     #:foo verify-keyword #:foo assert-eq
@@ -3229,5 +3214,63 @@ test: defer-test-1
 ;
 
 defer-test-1
+
+test: char>string-test-1
+    'a' char>string "'a'" assert=
+    '7' char>string "'7'" assert=
+    '~' char>string "'~'" assert=
+
+     3 code-char char>string "'\\x03'" assert=  -- ctrl-c
+
+     7 code-char char>string "'\\a'" assert=  -- \a
+     8 code-char char>string "'\\b'" assert=  -- \b
+     9 code-char char>string "'\\t'" assert=  -- \t
+    10 code-char char>string "'\\n'" assert=  -- \n
+    11 code-char char>string "'\\v'" assert=  -- \v
+    12 code-char char>string "'\\f'" assert=  -- \f
+    13 code-char char>string "'\\r'" assert=  -- \r
+    32 code-char char>string "'\\s'" assert=  -- \s
+    34 code-char char>string "'\"'"  assert=  -- \"
+    39 code-char char>string "'\\''" assert=  -- \'
+    92 code-char char>string "'\\'"  assert=  -- \\
+;
+
+char>string-test-1
+
+test: token-character-literal?-test-1
+    clear
+    "'a'" token-character-literal? get-data-stack { 'a' t } assert=
+    clear
+    "'\\x61'" token-character-literal? get-data-stack { 'a' t } assert=
+    clear
+    "'\\x1b'" token-character-literal? get-data-stack { '\x1b' t } assert=
+    clear
+    "'\\x20'" token-character-literal? get-data-stack { '\x20' t } assert=
+    clear
+
+    "'\a'" token-character-literal? get-data-stack { '\x07' t } assert=
+    clear
+    "'\b'" token-character-literal? get-data-stack { '\x08' t } assert=
+    clear
+    "'\t'" token-character-literal? get-data-stack { '\x09' t } assert=
+    clear
+    "'\n'" token-character-literal? get-data-stack { '\x0a' t } assert=
+    clear
+    "'\v'" token-character-literal? get-data-stack { '\x0b' t } assert=
+    clear
+    "'\f'" token-character-literal? get-data-stack { '\x0c' t } assert=
+    clear
+    "'\r'" token-character-literal? get-data-stack { '\x0d' t } assert=
+    clear
+    "'\e'" token-character-literal? get-data-stack { '\x1b' t } assert=
+    clear
+    "'\"'" token-character-literal? get-data-stack { '\x22' t } assert=
+    clear
+
+    "'\\xxx'" token-character-literal? get-data-stack { "'\\xxx'" f } assert=
+    clear
+;
+
+token-character-literal?-test-1
 
 ?nl "Reached end of test.feline" write-string

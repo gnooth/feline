@@ -428,6 +428,34 @@ code while, 'while'             ; pred body --
         next
 endcode
 
+; ### char-escape-char
+code char_escape_char, 'char-escape-char'       ; tagged-char1 -> tagged-char2/f
+
+        _quote `\a\b\t\n\v\f\r\e '\0'`
+        _ string_index
+        _dup
+        _tagged_if .1
+        _quote `abtnvfres'0`
+        _ string_nth_unsafe
+        _then .1
+
+        next
+endcode
+
+; ### char-unescape-char
+code char_unescape_char, 'char-unescape-char'   ; tagged-char1 -> tagged-char2/f
+
+        _quote `abtnvfres"'0\\`
+        _ string_index
+        _dup
+        _tagged_if .1
+        _quote `\a\b\t\n\v\f\r\e "'\0'\\`
+        _ string_nth_unsafe
+        _then .1
+
+        next
+endcode
+
 ; ### token-character-literal?
 code token_character_literal?, 'token-character-literal?'       ; string -> char/string t/f
         _dup
@@ -449,11 +477,10 @@ code token_character_literal?, 'token-character-literal?'       ; string -> char
         ; first and last chars are single quotes
         cmp     rbx, tagged_fixnum(3)
         je      .length_is_3
+        cmp     rbx, tagged_fixnum(4)
+        je      .length_is_4
         cmp     rbx, tagged_fixnum(6)
         je      .length_is_6
-
-        ; TODO
-        ; add support for '\n' etc. (length 4)
 
 .fail:
         _drop
@@ -466,6 +493,29 @@ code token_character_literal?, 'token-character-literal?'       ; string -> char
         _swap
         _ string_nth_unsafe
         _t
+        next
+
+.length_is_4:
+        _drop                           ; -> string
+        _tagged_fixnum(1)
+        _over
+        _ string_nth_unsafe
+        cmp     rbx, tagged_char('\')
+        jne     .fail
+        _drop
+        _tagged_fixnum(2)
+        _over
+        _ string_nth_unsafe             ; -> string char
+        _ char_unescape_char
+        _dup
+        _tagged_if .1
+        _nip
+        _t
+        _else .1
+        _drop
+        _f
+        _then .1
+
         next
 
 .length_is_6:
@@ -1577,7 +1627,7 @@ code char_to_string, 'char>string'      ; tagged-char -- string
         _eq?
         _tagged_if .1
         _drop
-        _quote "'\x20'"
+        _quote "'\s'"
         _return
         _then .1
 
@@ -1588,6 +1638,21 @@ code char_to_string, 'char>string'      ; tagged-char -- string
         _lit tagged_char("'")
         _rfetch
         _ sbuf_push                     ; -- tagged-char
+
+        _dup
+        _ char_escape_char
+        _dup
+        _tagged_if .4
+        _nip
+        _lit tagged_char('\')
+        _rfetch
+        _ sbuf_push
+        _rfetch
+        _ sbuf_push
+        jmp     .5
+        _else .4
+        _drop
+        _then .4
 
         _dup
         _ printable_char?
@@ -1619,6 +1684,7 @@ code char_to_string, 'char>string'      ; tagged-char -- string
 
         _then .2
 
+.5:
         _lit tagged_char("'")
         _rfetch
         _ sbuf_push
