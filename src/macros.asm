@@ -688,7 +688,7 @@ section .data
 %endmacro
 
 %macro  _debug_print 1
-%ifdef  DEBUG
+%ifdef DEBUG_PRINT
         _quote %1
         _ debug_print
 %endif
