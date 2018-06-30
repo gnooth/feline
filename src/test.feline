@@ -1,4 +1,16 @@
 using: feline ;
+in: feline
+
+: unit-test ( expected quot )           -- sequence quotation -> void
+    clear
+    quot call
+    get-data-stack :> got
+    clear
+    expected got sequence= [
+        expected got "ERROR: expected %s, got %s." format error
+    ] unless
+;
+
 in: test
 
 empty
@@ -3238,37 +3250,23 @@ test: char>string-test-1
 char>string-test-1
 
 test: token-character-literal?-test-1
-    clear
-    "'a'" token-character-literal? get-data-stack { 'a' t } assert=
-    clear
-    "'\\x61'" token-character-literal? get-data-stack { 'a' t } assert=
-    clear
-    "'\\x1b'" token-character-literal? get-data-stack { '\x1b' t } assert=
-    clear
-    "'\\x20'" token-character-literal? get-data-stack { '\x20' t } assert=
-    clear
 
-    "'\a'" token-character-literal? get-data-stack { '\x07' t } assert=
-    clear
-    "'\b'" token-character-literal? get-data-stack { '\x08' t } assert=
-    clear
-    "'\t'" token-character-literal? get-data-stack { '\x09' t } assert=
-    clear
-    "'\n'" token-character-literal? get-data-stack { '\x0a' t } assert=
-    clear
-    "'\v'" token-character-literal? get-data-stack { '\x0b' t } assert=
-    clear
-    "'\f'" token-character-literal? get-data-stack { '\x0c' t } assert=
-    clear
-    "'\r'" token-character-literal? get-data-stack { '\x0d' t } assert=
-    clear
-    "'\e'" token-character-literal? get-data-stack { '\x1b' t } assert=
-    clear
-    "'\"'" token-character-literal? get-data-stack { '\x22' t } assert=
-    clear
+    { 'a' t } [ "'a'" token-character-literal? ] unit-test
+    { 'a' t } [ "'\\x61'" token-character-literal? ] unit-test
+    { '\x1b' t } [ "'\\x1b'" token-character-literal? ] unit-test
+    { '\x20' t } [ "'\\x20'" token-character-literal? ] unit-test
 
-    "'\\xxx'" token-character-literal? get-data-stack { "'\\xxx'" f } assert=
-    clear
+    { '\x07' t } [ "'\a'" token-character-literal? ] unit-test
+    { '\x08' t } [ "'\b'" token-character-literal? ] unit-test
+    { '\x09' t } [ "'\t'" token-character-literal? ] unit-test
+    { '\x0a' t } [ "'\n'" token-character-literal? ] unit-test
+    { '\x0b' t } [ "'\v'" token-character-literal? ] unit-test
+    { '\x0c' t } [ "'\f'" token-character-literal? ] unit-test
+    { '\x0d' t } [ "'\r'" token-character-literal? ] unit-test
+    { '\x1b' t } [ "'\e'" token-character-literal? ] unit-test
+    { '\x22' t } [ "'\"'" token-character-literal? ] unit-test
+
+    { "'\\xxx'" f } [ "'\\xxx'" token-character-literal? ] unit-test
 ;
 
 token-character-literal?-test-1
