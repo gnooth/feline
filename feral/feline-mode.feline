@@ -47,6 +47,34 @@ tuple: segment
     verify-string
     [ space-char neq? ] find drop ;
 
+: skip-quoted-string                    -- start-index string -> index/f
+    2dup string-length >= [ 2drop f ] return-if
+
+    :> s
+    :> start
+
+    s start 1+ string-tail <iterator> :> iter
+
+    f :> this-char!
+    this-char :> last-char!
+    f :> done?!
+
+    [
+        this-char last-char!
+        iter next this-char!
+        this-char [ t done?! ] unless
+        done?
+    ] [
+        this-char '\x22' eq? [
+            last-char '\' neq? [
+                t done?!
+            ] when
+        ] when
+    ] until
+
+    start 1+ iter iterator-index +
+;
+
 : string>segments ( s )                 -- string -> segments
     s string-length :> len
     0 :> start!
@@ -58,7 +86,7 @@ tuple: segment
         start s string-nth c!
         {
             { [ c space-char eq? ] [ start s string-skip-whitespace len or end! ] }
-            { [ c quote-char eq? ] [ start s string-skip-quoted-string len or end! ] }
+            { [ c quote-char eq? ] [ start s skip-quoted-string len or end! ] }
             [ start s string-skip-to-whitespace len or end! ]
         } cond
         start end s string-substring start make-segment v vector-push
