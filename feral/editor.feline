@@ -600,6 +600,19 @@ special: +compound-undo+
     t repaint?!
 ;
 
+: gotoline-internal                     -- line-number
+        1- 0 max buffer-line-count 1- min
+        dup dot-line-number <> [
+            add-undo-move
+            unmark
+            dot-line-number!
+            0 dot-offset!
+            maybe-reframe
+        ] [
+            drop
+        ] if
+;
+
 : gotoline
     0 message-y at-xy
     "Line number: " accept-string :> response
@@ -1072,14 +1085,19 @@ special: +compound-undo+
 
     filename path-extension [ modes at buf buffer-mode! ] when*
 
-    filename file-contents
+    filename file-contents :> contents
 
-    -- detect eol
-    13 code-char over string-index CR+LF LF ? buf buffer-eol!
+    contents string-lines verify-vector :> lines
 
-    dup string-lines verify-vector :> lines
-
-    string-last-char 10 code-char eq? [ "" lines vector-push ] when
+    contents empty? [
+        "" lines vector-push
+    ] [
+        -- detect eol
+        13 code-char contents string-index CR+LF LF ? buf buffer-eol!
+        contents string-last-char 10 code-char eq? [
+            "" lines vector-push
+        ] when
+    ] if
 
     lines buf buffer-lines!
 
@@ -1145,6 +1163,52 @@ special: +compound-undo+
     t repaint?!
 ;
 
+: identifier-at-dot                     -- -> string/f
+    dot-offset dot-line-length 1- min 0 max :> offset!
+
+    offset dot-line [ 32 code-char eq? ] find-last-from drop :> start!
+
+    -- get to first non-blank char
+    start [ start 1+ start! ] [ 0 start! ] if
+
+    start dot-line string-skip-to-whitespace    -- -> index/f
+    dot-line length or [
+        start swap dot-line string-substring
+    ] [
+        f
+    ] if* ;
+
+: goto-definition                       -- symbol -> void
+    symbol-location :> line-number :> filename
+    filename [
+        filename find-buffer [
+            current-buffer!
+            line-number gotoline-internal
+        ] [
+            filename line-number initialize-buffer current-buffer!
+        ] if*
+        maybe-reframe
+        t repaint?!
+    ] when ;
+
+: find-definition
+    identifier-at-dot
+    find-qualified-name [
+        goto-definition
+    ] [
+        all-words [ symbol-name over = ] filter nip
+        dup length {
+            { 0 [ drop ] }
+            { 1 [ first goto-definition ] }
+            [
+                -- more than 1 match
+                drop
+                0 message-y at-xy
+                [ symbol-qualified-name write-string space ] each
+            ]
+        } case
+    ] if ;
+
 use: search
 
 : bind-key                              -- key symbol ->
@@ -1187,6 +1251,7 @@ use: search
     key:ctrl-o          ' open-file                     bind-key
     key:alt-right       ' next-buffer                   bind-key
     key:alt-left        ' previous-buffer               bind-key
+    key:ctrl-t          ' find-definition               bind-key
 ;
 
 : do-command                            -- key ->
