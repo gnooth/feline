@@ -17,6 +17,8 @@ file __FILE__
 
 ; 3 cells: object header, sequence, raw index
 
+%define iterator_sequence_slot  qword [rbx + BYTES_PER_CELL]
+
 %macro  _iterator_sequence 0
         _slot1
 %endmacro
@@ -28,6 +30,8 @@ file __FILE__
 %macro  _this_iterator_set_sequence 0
         _this_set_slot1
 %endmacro
+
+%define iterator_raw_index_slot qword [rbx + BYTES_PER_CELL * 2]
 
 %macro  _this_iterator_raw_index 0
         _this_slot2
@@ -109,7 +113,7 @@ endcode
 
 ; ### <iterator>
 code new_iterator, '<iterator>'         ; sequence -- iterator
-; 3 cells: object header, string, raw index, line, line start, file
+; 3 cells: object header, sequence, raw index
 
         _lit 3
         _ raw_allocate_cells
@@ -161,6 +165,21 @@ code iterator_next, 'next'              ; iterator -- element/f
         _then .1
 
         pop     this_register
+
+        next
+endcode
+
+; ### skip
+code skip, 'skip'                       ; fixnum iterator -> void
+        _ check_iterator
+
+        mov     rax, [rbp]
+        test    al, FIXNUM_TAG
+        jz      error_not_fixnum_rax
+        sar     rax, FIXNUM_TAG_BITS
+
+        add     iterator_raw_index_slot, rax
+        _2drop
 
         next
 endcode
