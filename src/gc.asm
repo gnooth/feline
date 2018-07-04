@@ -200,11 +200,18 @@ code mark_iterator, 'mark-iterator'     ; iterator --
         next
 endcode
 
+; ### mark-string-iterator
+code mark_string_iterator, 'mark-string-iterator'       ; string-iterator -> void
+        _string_iterator_string
+        _ maybe_mark_handle
+        next
+endcode
+
 asm_global gc_dispatch_table_
 
 ; ### initialize_gc_dispatch_table
 code initialize_gc_dispatch_table, 'initialize_gc_dispatch_table', SYMBOL_INTERNAL
-; --
+
         _lit 32
         _lit 0
         _ new_array_untagged
@@ -267,6 +274,10 @@ code initialize_gc_dispatch_table, 'initialize_gc_dispatch_table', SYMBOL_INTERN
 
         _lit mark_thread
         _lit TYPECODE_THREAD
+        _this_array_set_nth_unsafe
+
+        _lit mark_string_iterator
+        _lit TYPECODE_STRING_ITERATOR
         _this_array_set_nth_unsafe
 
         pop     this_register
