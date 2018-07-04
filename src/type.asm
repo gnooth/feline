@@ -144,14 +144,14 @@ code add_builtin_type, 'add_builtin_type', SYMBOL_INTERNAL      ; name raw-typec
         next
 endcode
 
-%macro  _add_type 2     ; name raw-typecode --
+%macro  _add_type 2                     ; name raw-typecode -> void
         _quote %1
         _lit %2
         _ add_builtin_type
 %endmacro
 
 ; ### initialize_types
-code initialize_types, 'initialize_types', SYMBOL_INTERNAL      ; --
+code initialize_types, 'initialize_types', SYMBOL_INTERNAL
         _lit 64
         _ new_vector_untagged
         _to_global types
@@ -185,6 +185,7 @@ code initialize_types, 'initialize_types', SYMBOL_INTERNAL      ; --
         _add_type "keyword", TYPECODE_KEYWORD
         _add_type "thread", TYPECODE_THREAD
         _add_type "mutex", TYPECODE_MUTEX
+        _add_type "string-iterator", TYPECODE_STRING_ITERATOR
 
         next
 endcode
