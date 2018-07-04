@@ -491,6 +491,13 @@ code object_to_string, 'object>string'  ; object -- string
         _return
         _then .31
 
+        _dup
+        _ string_iterator?
+        _tagged_if .32
+        _ string_iterator_to_string
+        _return
+        _then .32
+
         ; give up
         _tag_fixnum
         _ fixnum_to_hex

@@ -77,6 +77,7 @@ IN_FELINE
 %include "quit.asm"
 %include "lexer.asm"
 %include "iterator.asm"
+%include "string-iterator.asm"
 %include "primitives.asm"
 %include "format.asm"
 %include "time.asm"

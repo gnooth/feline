@@ -142,6 +142,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	slice.asm \
 	socket.asm \
 	stack.asm \
+	string-iterator.asm \
 	string.asm \
 	strings.asm \
 	symbol.asm \
