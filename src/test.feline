@@ -1,16 +1,28 @@
 using: feline ;
-in: feline
+in: unit-test
 
-: unit-test ( expected quot )           -- sequence quotation -> void
+empty
+
+private
+
+var expected
+var quot
+var got
+
+public
+
+: unit-test                             -- sequence quotation -> void
+    quot! expected!
     clear
     quot call
-    get-data-stack :> got
+    get-data-stack got!
     clear
     expected got sequence= [
         expected got "ERROR: expected %s, got %s." format error
     ] unless
 ;
 
+using: unit-test feline ;
 in: test
 
 empty
@@ -2273,15 +2285,6 @@ test: >=-test-2
 
 >=-test-2
 
-test: iterator-test-1
-    "this is a test" <iterator> :> iter
-    "" string>sbuf :> sb
-    [ iter next dup ] [ sb push ] while drop
-    sb sbuf>string "this is a test" assert=
-;
-
-iterator-test-1
-
 test: fixnum-fixnum+-test-1
     1  2 fixnum-fixnum+  3 assert-eq
     1 -2 fixnum-fixnum+ -1 assert-eq
@@ -3270,5 +3273,36 @@ test: token-character-literal?-test-1
 ;
 
 token-character-literal?-test-1
+
+test: iterator-test-1
+    "this is a test" <iterator> :> iter
+    "" string>sbuf :> sb
+    [ iter next dup ] [ sb push ] while drop
+    sb sbuf>string "this is a test" assert=
+;
+
+iterator-test-1
+
+test: string-iterator-test-1
+    clear
+
+    "test" <string-iterator> :> iter
+
+    { t } [ iter string-iterator? ] unit-test
+
+    { 't' } [ iter string-iterator-next ] unit-test
+    { 'e' } [ iter string-iterator-next ] unit-test
+    { 's' } [ iter string-iterator-next ] unit-test
+    { 't' } [ iter string-iterator-next ] unit-test
+
+    { f } [ iter string-iterator-next ] unit-test
+
+    -- subsequent calls continue to return f
+    { f } [ iter string-iterator-next ] unit-test
+
+    get-data-stack empty? assert-true
+;
+
+string-iterator-test-1
 
 ?nl "Reached end of test.feline" write-string
