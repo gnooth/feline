@@ -5,21 +5,32 @@ empty
 
 private
 
+var location
 var expected
 var quot
 var got
 
-public
-
-: unit-test                             -- sequence quotation -> void
-    quot! expected!
+: do-unit-test                          -- sequence quotation location -> void
+    location! quot! expected!
     clear
     quot call
     get-data-stack got!
     clear
     expected got sequence= [
+        loc set-error-location
         expected got "ERROR: expected %s, got %s." format error
     ] unless
+;
+
+public
+
+syntax: unit-test
+    in-definition? get [
+        current-lexer-location accum-push
+        ' do-unit-test accum-push
+    ] [
+        current-lexer-location do-unit-test
+    ] if
 ;
 
 using: unit-test feline ;
