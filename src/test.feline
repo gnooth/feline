@@ -17,7 +17,7 @@ var got
     get-data-stack got!
     clear
     expected got sequence= [
-        loc set-error-location
+        location set-error-location
         expected got "ERROR: expected %s, got %s." format error
     ] unless
 ;
