@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -272,8 +272,8 @@ code lexer_location, 'lexer-location'   ; lexer -- 3array
         next
 endcode
 
-; ### location
-code location, 'location'       ; -- 3array/f
+; ### current-lexer-location
+code current_lexer_location, 'current-lexer-location'   ; -> 3array/f
         _ current_lexer
         _ get
         _dup

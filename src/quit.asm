@@ -442,7 +442,7 @@ endcode
 code where, 'where'             ; --
         _ error_location
         _tagged_if_not .1
-        _ location
+        _ current_lexer_location
         _ set_error_location
         _then .1
 

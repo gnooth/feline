@@ -128,13 +128,13 @@ code assert, 'assert', SYMBOL_IMMEDIATE
         _ in_definition?
         _ get
         _tagged_if .1
-        _ location
+        _ current_lexer_location
         _ accum_push
         _lit S_check_assert
         _ accum_push
         _else .1
         ; top level assertion
-        _ location
+        _ current_lexer_location
         _ check_assert
         _then .1
         next
@@ -145,13 +145,13 @@ code assert_true, 'assert-true', SYMBOL_IMMEDIATE
         _ in_definition?
         _ get
         _tagged_if .1
-        _ location
+        _ current_lexer_location
         _ accum_push
         _lit S_check_assert_true
         _ accum_push
         _else .1
         ; top level assertion
-        _ location
+        _ current_lexer_location
         _ check_assert_true
         _then .1
         next
@@ -162,13 +162,13 @@ code assert_false, 'assert-false', SYMBOL_IMMEDIATE
         _ in_definition?
         _ get
         _tagged_if .1
-        _ location
+        _ current_lexer_location
         _ accum_push
         _lit S_check_assert_false
         _ accum_push
         _else .1
         ; top level assertion
-        _ location
+        _ current_lexer_location
         _ check_assert_false
         _then .1
         next
@@ -179,13 +179,13 @@ code assert_eq, 'assert-eq', SYMBOL_IMMEDIATE
         _ in_definition?
         _ get
         _tagged_if .1
-        _ location
+        _ current_lexer_location
         _ accum_push
         _lit S_check_assert_eq
         _ accum_push
         _else .1
         ; top level assertion
-        _ location
+        _ current_lexer_location
         _ check_assert_eq
         _then .1
         next
@@ -196,13 +196,13 @@ code assert_equal, 'assert=', SYMBOL_IMMEDIATE
         _ in_definition?
         _ get
         _tagged_if .1
-        _ location
+        _ current_lexer_location
         _ accum_push
         _lit S_check_assert_equal
         _ accum_push
         _else .1
         ; top level assertion
-        _ location
+        _ current_lexer_location
         _ check_assert_equal
         _then .1
         next
@@ -213,13 +213,13 @@ code assert_must_fail, 'assert-must-fail', SYMBOL_IMMEDIATE
         _ in_definition?
         _ get
         _tagged_if .1
-        _ location
+        _ current_lexer_location
         _ accum_push
         _lit S_check_assert_must_fail
         _ accum_push
         _else .1
         ; top level assertion
-        _ location
+        _ current_lexer_location
         _ check_assert_must_fail
         _then .1
         next

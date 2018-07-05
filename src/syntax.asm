@@ -309,7 +309,7 @@ code note_redefinition, 'note_redefinition'     ; symbol --
         _ comment_style
         _ print
         _ output_style
-        _ location
+        _ current_lexer_location
         _dup
         _tagged_if .1
         _ print_location
@@ -348,7 +348,7 @@ code parse_name, 'parse-name'           ; -> symbol
         _ must_parse_token              ; -> string
         _ new_symbol_in_current_vocab   ; -> symbol
 
-        _ location                      ; -> symbol 3array/f
+        _ current_lexer_location        ; -> symbol 3array/f
         _dup
         _tagged_if .1                   ; -> symbol 3array
         _dup
