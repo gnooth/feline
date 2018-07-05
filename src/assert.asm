@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ file __FILE__
 ; ### assertion-failed
 code assertion_failed, 'assertion-failed'       ; location --
         _debug_?enough 1
-        _to_global error_location
+        _ set_error_location
         _error "Assertion failed"
         next
 endcode
@@ -84,7 +84,7 @@ code check_assert_equal, 'check-assert='        ; x y location --
         _tagged_if .1
         _3drop
         _else .1
-        _to_global error_location
+        _ set_error_location
         _quote "Assertion failed: %S %S ="
         _ format
         _ error

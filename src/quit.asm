@@ -362,8 +362,21 @@ code reset, 'reset'
         next                            ; for decompiler
 endcode
 
+asm_global error_location_, f_value
+
 ; ### error-location
-feline_global error_location, 'error-location'
+code error_location, 'error-location'   ; -> location/f
+        pushrbx
+        mov     rbx, [error_location_]
+        next
+endcode
+
+; ### set-error-location
+code set_error_location, 'set-error-location'   ; location/f -> void
+        mov     [error_location_], rbx
+        poprbx
+        next
+endcode
 
 ; ### print-source-line
 code print_source_line, 'print-source-line'     ; path line-number --
@@ -430,7 +443,7 @@ code where, 'where'             ; --
         _ error_location
         _tagged_if_not .1
         _ location
-        _to_global error_location
+        _ set_error_location
         _then .1
 
         _ ?nl
@@ -456,7 +469,7 @@ code where, 'where'             ; --
         _ print_error_location
 
         _f
-        _to_global error_location
+        _ set_error_location
 
         next
 endcode
