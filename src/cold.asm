@@ -229,7 +229,7 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         _quote "boot.feline"
         _lit S_load_system_file
         _ catch
-        _ ?dup
+        _?dup
         _if .1
         _ do_error
         _then .1
@@ -241,7 +241,7 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
 
         _lit S_process_command_line
         _ catch
-        _ ?dup
+        _?dup
         _if .2
         _ do_error
         _then .2
@@ -251,7 +251,7 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
 
         _lit S_process_init_file
         _ catch
-        _ ?dup
+        _?dup
         _if .3
         _ do_error
         _then .3

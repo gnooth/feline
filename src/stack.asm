@@ -15,11 +15,6 @@
 
 file __FILE__
 
-; ### ?dup
-inline ?dup, '?dup'
-        _?dup
-endinline
-
 %macro  _depth 0
         _ current_thread_raw_sp0
         sub     rbx, rbp

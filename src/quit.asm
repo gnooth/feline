@@ -521,7 +521,7 @@ code query, 'query'                     ; -- string/f
         _dup
         _tagged_if .1
         _ catch
-        _ ?dup
+        _?dup
         _if .2
         _ do_error
         _then .2
