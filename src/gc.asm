@@ -374,8 +374,8 @@ code mark_cells_in_range, 'mark_cells_in_range', SYMBOL_INTERNAL        ; low-ad
         next
 endcode
 
-; ### thread_mark_data_stack
-code thread_mark_data_stack, 'thread_mark_data_stack', SYMBOL_INTERNAL  ; thread --
+; ### thread_mark_datastack
+code thread_mark_datastack, 'thread_mark_datastack', SYMBOL_INTERNAL    ; thread --
         _dup
         _ thread_saved_rbp
         _swap
@@ -384,10 +384,10 @@ code thread_mark_data_stack, 'thread_mark_data_stack', SYMBOL_INTERNAL  ; thread
         next
 endcode
 
-; ### mark_data_stack
-code mark_data_stack, 'mark_data_stack', SYMBOL_INTERNAL        ; --
+; ### mark_datastack
+code mark_datastack, 'mark_datastack', SYMBOL_INTERNAL
         _ current_thread
-        _ thread_mark_data_stack
+        _ thread_mark_datastack
         next
 endcode
 
@@ -426,11 +426,11 @@ code mark_locals_stack, 'mark_locals_stack', SYMBOL_INTERNAL    ; --
 endcode
 
 ; ### mark_thread_stacks
-code mark_thread_stacks, 'mark_thread_stacks', SYMBOL_INTERNAL  ; thread --
+code mark_thread_stacks, 'mark_thread_stacks', SYMBOL_INTERNAL  ; thread -> void
 
         _debug_print "mark_thread_stacks"
 
-        _lit S_thread_mark_data_stack
+        _lit S_thread_mark_datastack
         _lit S_thread_mark_return_stack
         _lit S_thread_mark_locals_stack
         _ tri
@@ -716,7 +716,7 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
         _debug_print "marking single thread"
 
         ; data stack
-        _ mark_data_stack
+        _ mark_datastack
 
         ; return stack
         _ mark_return_stack
