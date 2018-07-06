@@ -3288,7 +3288,7 @@ token-character-literal?-test-1
 test: iterator-test-1
     "this is a test" <iterator> :> iter
     "" string>sbuf :> sb
-    [ iter next dup ] [ sb push ] while drop
+    [ iter iterator-next dup ] [ sb push ] while drop
     sb sbuf>string "this is a test" assert=
 ;
 

@@ -1,4 +1,4 @@
-; Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -137,8 +137,8 @@ code new_iterator, '<iterator>'         ; sequence -- iterator
         next
 endcode
 
-; ### next
-code iterator_next, 'next'              ; iterator -- element/f
+; ### iterator-next
+code iterator_next, 'iterator-next'     ; iterator -> element/f
 
         _ check_iterator
 
@@ -169,8 +169,8 @@ code iterator_next, 'next'              ; iterator -- element/f
         next
 endcode
 
-; ### skip
-code skip, 'skip'                       ; fixnum iterator -> void
+; ### iterator-skip
+code iterator_skip, 'iterator-skip'     ; fixnum iterator -> void
         _ check_iterator
 
         mov     rax, [rbp]
