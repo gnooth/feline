@@ -549,7 +549,7 @@ code query, 'query'                     ; -- string/f
 endcode
 
 ; ### print-data-stack1
-code print_data_stack1, 'print-data-stack1'     ; x -> void
+code print_datastack1, 'print-datastack1'       ; x -> void
         _ nl
         _lit tagged_fixnum(4)
         _ tab
@@ -566,14 +566,14 @@ code print_data_stack1, 'print-data-stack1'     ; x -> void
 endcode
 
 ; ### print-data-stack
-code print_data_stack, 'print-data-stack'
+code print_datastack, 'print-datastack'
         _ ?nl
         _ comment_style
         _write "-- Data stack: "
         _depth
         _if .1
         _ get_datastack
-        _lit S_print_data_stack1
+        _lit S_print_datastack1
         _ each
         _else .1
         _ output_style
@@ -582,11 +582,11 @@ code print_data_stack, 'print-data-stack'
         next
 endcode
 
-; ### maybe-print-data-stack
-code maybe_print_data_stack, 'maybe-print-data-stack'   ; --
+; ### maybe-print-datastack
+code maybe_print_datastack, 'maybe-print-datastack'
         _depth
         _if .1
-        _ print_data_stack
+        _ print_datastack
         _then .1
         next
 endcode
@@ -621,7 +621,7 @@ code quit, 'quit'                       ; --
 
         _ query                         ; -- string
         _ evaluate
-        _ maybe_print_data_stack
+        _ maybe_print_datastack
 
         _again .1
 
@@ -648,14 +648,14 @@ code break, 'break'                     ; --
         _ ?nl
         _ error_style
         _write "break called"
-        _ print_data_stack
+        _ print_datastack
 
 .loop:
         _ query
         _ evaluate
         cmp     qword [continue?_], f_value
         jne     .continue
-        _ maybe_print_data_stack
+        _ maybe_print_datastack
         jmp     .loop
 
 .continue:
