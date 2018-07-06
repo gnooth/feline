@@ -807,8 +807,8 @@ code depth, 'depth'                     ; -- fixnum
         next
 endcode
 
-; ### get-data-stack
-code get_data_stack, 'get-data-stack'   ; -- array
+; ### get-datastack
+code get_datastack, 'get-datastack'     ; -- array
         push r12
 
         _lit 10

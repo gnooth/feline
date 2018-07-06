@@ -572,7 +572,7 @@ code print_data_stack, 'print-data-stack'
         _write "-- Data stack: "
         _depth
         _if .1
-        _ get_data_stack
+        _ get_datastack
         _lit S_print_data_stack1
         _ each
         _else .1
@@ -641,7 +641,7 @@ endcode
 ; ### break
 code break, 'break'                     ; --
 
-        _ get_data_stack
+        _ get_datastack
         mov     [saved_data_stack_], rbx
         poprbx
 

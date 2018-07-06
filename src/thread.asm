@@ -780,7 +780,7 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
 
         _ call_quotation                ; -- ???
 
-        _ get_data_stack                ; -- ??? array
+        _ get_datastack                ; -- ??? array
 
         pushrbx
         pop     rbx                     ; -- ??? array handle
