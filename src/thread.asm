@@ -448,7 +448,7 @@ code make_thread, '<thread>'            ; quotation -- thread
         _over
         _set_slot thread_slot_raw_lp0
 
-        xcall   os_thread_initialize_data_stack ; returns raw sp0 in rax
+        xcall   os_thread_initialize_datastack  ; returns raw sp0 in rax
         _dup
         mov     rbx, rax
         _swap

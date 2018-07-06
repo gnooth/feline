@@ -68,7 +68,7 @@ extern os_sleep
 extern os_strerror
 extern os_system
 extern os_thread_create
-extern os_thread_initialize_data_stack
+extern os_thread_initialize_datastack
 extern os_thread_join
 extern os_ticks
 extern os_write_file

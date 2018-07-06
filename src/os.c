@@ -504,20 +504,20 @@ void os_bye()
 }
 
 
-#define DATA_STACK_SIZE 4096 * sizeof(cell)
+#define DATASTACK_SIZE 4096 * sizeof(cell)
 
-cell os_thread_initialize_data_stack()
+cell os_thread_initialize_datastack()
 {
 #ifdef WIN64
   SYSTEM_INFO info;
   GetSystemInfo(&info);
 
-  cell data_stack_base = (cell) VirtualAlloc(NULL,
-                                             DATA_STACK_SIZE + info.dwPageSize,
-                                             MEM_COMMIT|MEM_RESERVE,
-                                             PAGE_READWRITE);
+  cell datastack_base = (cell) VirtualAlloc(NULL,
+                                            DATASTACK_SIZE + info.dwPageSize,
+                                            MEM_COMMIT|MEM_RESERVE,
+                                            PAGE_READWRITE);
   DWORD old_protect;
-  BOOL ret = VirtualProtect((LPVOID)(data_stack_base + DATA_STACK_SIZE),
+  BOOL ret = VirtualProtect((LPVOID)(datastack_base + DATASTACK_SIZE),
                             info.dwPageSize,
                             PAGE_NOACCESS,
                             &old_protect);
@@ -526,19 +526,19 @@ cell os_thread_initialize_data_stack()
   if (!ret)
     printf("VirtualProtect error\n");
 
-  return data_stack_base + DATA_STACK_SIZE;
+  return datastack_base + DATASTACK_SIZE;
 #else
   long pagesize = sysconf(_SC_PAGESIZE);
 
-  cell data_stack_base =
+  cell datastack_base =
     (cell) mmap(NULL,                                           // starting address
-                DATA_STACK_SIZE + pagesize,                     // size
+                DATASTACK_SIZE + pagesize,                      // size
                 PROT_READ|PROT_WRITE,                           // protection
                 MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE,        // flags
                 -1,                                             // fd
                 0);                                             // offset
 
-  int ret = mprotect((void *)(data_stack_base + DATA_STACK_SIZE),
+  int ret = mprotect((void *)(datastack_base + DATASTACK_SIZE),
                      pagesize,
                      PROT_NONE);
 
@@ -546,7 +546,7 @@ cell os_thread_initialize_data_stack()
   if (ret != 0)
     printf("mprotect error\n");
 
-  return data_stack_base + DATA_STACK_SIZE;
+  return datastack_base + DATASTACK_SIZE;
 #endif
 }
 

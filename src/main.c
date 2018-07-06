@@ -117,10 +117,10 @@ static void args(int argc, char **argv)
   main_argv = (cell) argv;
 }
 
-static void initialize_data_stack()
+static void initialize_datastack()
 {
   extern cell primordial_sp0_;
-  primordial_sp0_ = os_thread_initialize_data_stack();
+  primordial_sp0_ = os_thread_initialize_datastack();
 }
 
 static void initialize_dynamic_code_space()
@@ -231,7 +231,7 @@ int main(int argc, char **argv, char **env)
 
   reserve_handle_space();
 
-  initialize_data_stack();
+  initialize_datastack();
 
   initialize_threads();
 
