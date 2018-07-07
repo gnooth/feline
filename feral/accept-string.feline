@@ -47,6 +47,10 @@ var prompt-string
 : do-enter
     t done?! ;
 
+: do-escape
+    0 sb sbuf-shorten
+    t done?! ;
+
 : do-bs
     dot 0 > [
         dot 1- dot!
@@ -62,6 +66,7 @@ var prompt-string
     key:enter           ' do-enter                      bind-key
     key:del             ' do-bs                         bind-key        -- Linux
     key:backspace       ' do-bs                         bind-key        -- Windows
+    key:escape          ' do-escape                     bind-key
 ;
 
 : process-key                           -- tagged-char ->
