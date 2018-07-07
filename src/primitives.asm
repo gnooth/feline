@@ -808,31 +808,40 @@ code depth, 'depth'                     ; -- fixnum
 endcode
 
 ; ### get-datastack
-code get_datastack, 'get-datastack'     ; -- array
-        push r12
-
-        _lit 10
-        _ new_vector_untagged
-        popd    r12
-
+code get_datastack, 'get-datastack'     ; -> array
         _depth
-        mov     rcx, rbx
-        jrcxz   .2
-.1:
-        push    rcx
-        pushd   rcx
-        _forth_pick
-        pushd   r12
-        _ vector_push
-        pop     rcx
-        loop    .1
-.2:
+        _f
+        _ new_array_untagged            ; -> array
+
+        push    rbx                     ; save array handle
+
+        _handle_to_object_unsafe
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -> void
+
+        _ current_thread_raw_sp0
+
+        lea     rdx, [rbx - BYTES_PER_CELL]
         poprbx
 
-        pushd   r12                     ; -- vector
-        pop     r12
+        _depth
+        _dup
+        _register_do_times .1
 
-        _ vector_to_array               ; -- array
+        sub     rdx, BYTES_PER_CELL
+        mov     rax, [rdx]
+
+        mov     rcx, index_register
+        shl     rcx, 3                  ; convert bytes to words
+        mov     [this_register + ARRAY_DATA_OFFSET + rcx], rax
+
+        _loop .1
+
+        pop     this_register
+
+        pop     rbx                     ; -> handle
 
         next
 endcode
