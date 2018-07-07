@@ -352,8 +352,22 @@ global regop    -- REGister or OPcode extension (depending on the instruction)
             } case
         ] }
         { 1 [
-            next-signed-byte ddisp!
-            modrm-rm register-rm dbase!
+            modrm-rm {
+                { 4 [
+                    !sib-byte
+                    sib-base register-rm dbase!
+                    sib-index register-index dindex!
+                    sib-scale dscale!
+                    next-signed-byte ddisp!
+                    ]
+                }
+                [
+                    -- default case
+                    drop
+                    next-signed-byte ddisp!
+                    modrm-rm register-rm dbase!
+                ]
+            } case
         ] }
         { 3 [ modrm-rm register-rm dreg! ] }
     } case
