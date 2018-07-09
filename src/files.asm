@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -276,6 +276,18 @@ code file_close, 'file-close'           ; fd --
         _return
 .1:
         _error "unable to close file"
+        next
+endcode
+
+; ### file-flush
+code file_flush, 'file-flush'           ; fd -> void
+        popd    arg0_register
+        xcall   os_flush_file
+        test    rax, rax
+        js      .1
+        _return
+.1:
+        _error "unable to flush file"
         next
 endcode
 
