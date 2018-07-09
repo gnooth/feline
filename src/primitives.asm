@@ -809,9 +809,19 @@ endcode
 
 ; ### get-datastack
 code get_datastack, 'get-datastack'     ; -> array
-        _depth
+
+        _ current_thread_raw_sp0        ; -> raw-sp0
+        mov     rcx, rbx                ; rcx = raw sp0
+        sub     rbx, rbp                ; rbx = raw depth (number of bytes)
+        shr     rbx, 3                  ; rbx = raw depth (number of cells)
+
+        ; subtract 1 since we've put an extra item on the stack
+        sub     rbx, 1                  ; rbx = raw depth (number of cells)
+
+        push    rcx                     ; save rcx = raw sp0
         _f
-        _ new_array_untagged            ; -> array
+        _ new_array_untagged            ; -> handle
+        pop     rcx                     ; restore rcx = raw sp0
 
         push    rbx                     ; save array handle
 
@@ -819,23 +829,22 @@ code get_datastack, 'get-datastack'     ; -> array
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -> void
 
-        _ current_thread_raw_sp0
+        mov     rbx, rcx                ; rbx = raw sp0
 
-        lea     rdx, [rbx - BYTES_PER_CELL]
-        poprbx
+        sub     rcx, BYTES_PER_CELL
 
-        _depth
+        sub     rbx, rbp
+        shr     rbx, 3
+        sub     rbx, 1                  ; -> raw-depth
+
         _dup
         _register_do_times .1
 
-        sub     rdx, BYTES_PER_CELL
-        mov     rax, [rdx]
+        sub     rcx, BYTES_PER_CELL
+        mov     rax, [rcx]
 
-        mov     rcx, index_register
-        shl     rcx, 3                  ; convert bytes to words
-        mov     [this_register + ARRAY_DATA_OFFSET + rcx], rax
+        mov     [this_register + ARRAY_DATA_OFFSET + index_register * 8], rax
 
         _loop .1
 
