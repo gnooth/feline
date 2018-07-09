@@ -80,6 +80,8 @@ public
     found? [ found ] [ not-found ] if ;
 
 : do-find-again
+    pattern f eq? [ do-find ] return-if
+
     f :> found?!
 
     f found-line-number!
