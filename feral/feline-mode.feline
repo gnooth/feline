@@ -21,7 +21,7 @@ private
 128 128   0 rgb-foreground-prefix constant comment-prefix
 192 192 192 rgb-foreground-prefix constant text-prefix
   0 255 255 rgb-foreground-prefix constant syntax-prefix
-  0   0 238 rgb-foreground-prefix constant name-prefix
+255 165   0 rgb-foreground-prefix constant name-prefix
   0 170   0 rgb-foreground-prefix constant string-prefix
 
 "\e[0m" constant reset-suffix
