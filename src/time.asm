@@ -91,7 +91,7 @@ code elapsed, 'elapsed'                 ; callable -- ns cycles
 endcode
 
 ; ### time
-code time, 'time'                       ; callable --
+code feline_time, 'time'                ; callable --
 
         _ elapsed                       ; -- ns cycles
 
