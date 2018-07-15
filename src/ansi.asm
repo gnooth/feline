@@ -154,6 +154,20 @@ code at_x, 'at-x'                       ; col --
         next
 endcode
 
+; hide-cursor
+code hide_cursor, 'hide-cursor'
+        _quote `\e[?25l`
+        _ write_string_escaped
+        next
+endcode
+
+; show-cursor
+code show_cursor, 'show-cursor'
+        _quote `\e[?25h`
+        _ write_string_escaped
+        next
+endcode
+
 ; ### clear-to-eol
 code clear_to_eol, 'clear-to-eol'       ; --
         _ ansi_csi

@@ -166,10 +166,6 @@ var buffer-list
 : mark-offset!                          -- n ->
     mark position-offset! ;
 
-: hide-cursor esc[ "?25l" write-string-escaped ;
-
-: show-cursor esc[ "?25h" write-string-escaped ;
-
 : reverse esc[ "7m" write-string-escaped ;
 
 : normal esc[ "m" write-string-escaped ;
