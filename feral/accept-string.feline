@@ -86,6 +86,7 @@ public
     f done?!
     prompt
     input-style
+    show-cursor
     [ done? ] [ ekey process-key ] until
     sb sbuf>string
     output-style ;
