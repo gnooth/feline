@@ -452,16 +452,6 @@ section .data
 %define SYMBOL_THREAD_LOCAL     $0400
 %define SYMBOL_DEFERRED         $0800
 
-%macro  IN_FELINE 0
-%undef  in_forth
-%define in_feline
-%endmacro
-
-%macro  IN_FORTH 0
-%undef  in_feline
-%define in_forth
-%endmacro
-
 %define symbol_link     0
 
 ; static symbol
@@ -500,9 +490,7 @@ section .data
 %endmacro
 
 %macro  head 2-4 0, 0                   ; label, name, flags, inline size
-%ifdef in_feline
         symbol S_%1, %2, %1, %4, %3
-%endif
 %endmacro
 
 %macro  special 2                       ; label, name

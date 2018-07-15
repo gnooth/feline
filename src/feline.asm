@@ -22,8 +22,6 @@ default abs ; use absolute addresses by default
 %include "loop-macros.asm"
 %include "inlines.asm"
 
-IN_FORTH
-
 section .data
 static_data_area:
 
@@ -32,8 +30,6 @@ string FELINE_VOCAB_NAME, 'feline'
 %include "io.asm"
 %include "stack.asm"
 %include "strings.asm"
-
-IN_FELINE
 
 %include "cold.asm"
 %include "move.asm"
