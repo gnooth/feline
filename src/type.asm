@@ -186,6 +186,7 @@ code initialize_types, 'initialize_types', SYMBOL_INTERNAL
         _add_type "thread", TYPECODE_THREAD
         _add_type "mutex", TYPECODE_MUTEX
         _add_type "string-iterator", TYPECODE_STRING_ITERATOR
+        _add_type "stream", TYPECODE_STREAM
 
         next
 endcode

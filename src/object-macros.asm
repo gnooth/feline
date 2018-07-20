@@ -62,8 +62,9 @@ TYPECODE_KEYWORD                equ 26
 TYPECODE_THREAD                 equ 27
 TYPECODE_MUTEX                  equ 28
 TYPECODE_STRING_ITERATOR        equ 29
+TYPECODE_STREAM                 equ 30
 
-LAST_BUILTIN_TYPECODE           equ 29
+LAST_BUILTIN_TYPECODE           equ 30
 
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
