@@ -176,6 +176,14 @@ code error_not_mutex, 'error-not-mutex'         ; x --
         next
 endcode
 
+; ### error-not-stream
+code error_not_stream, 'error-not-stream'       ; x --
+        _quote "a stream"
+        _ format_type_error
+        _ error
+        next
+endcode
+
 ; ### error-not-thread
 code error_not_thread, 'error-not-thread'       ; x --
         _quote "a thread"
