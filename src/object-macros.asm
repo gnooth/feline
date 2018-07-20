@@ -93,6 +93,10 @@ OBJECT_ALLOCATED_BIT            equ 4
         movzx   eax, word [rbx]
 %endmacro
 
+%macro  _object_set_raw_typecode 1
+        mov     word [rbx], %1
+%endmacro
+
 %macro  _this_object_set_raw_typecode 1
         mov     word [this_register], %1
 %endmacro
