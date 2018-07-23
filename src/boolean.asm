@@ -1,4 +1,4 @@
-; Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -15,23 +15,20 @@
 
 file __FILE__
 
-%macro  _boolean? 0                     ; x -- ?
+; ### boolean?
+code boolean?, 'boolean?'               ; x -> ?
         and     ebx, BOOLEAN_TAG_MASK
         mov     eax, t_value
         cmp     ebx, BOOLEAN_TAG
         mov     ebx, f_value
         cmove   ebx, eax
-%endmacro
-
-; ### boolean?
-inline boolean?, 'boolean?'             ; x -- ?
-        _boolean?
-endinline
+        next
+endcode
 
 ; ### boolean-equal?
 code boolean_equal?, 'boolean-equal?'
         _dup
-        _boolean?
+        _ boolean?
         _tagged_if .1
         _eq?
         _return
@@ -40,5 +37,13 @@ code boolean_equal?, 'boolean-equal?'
         _drop
         mov     ebx, f_value
 
+        next
+endcode
+
+; ### >boolean
+code to_boolean, '>boolean'             ; x -> ?
+        mov     eax, t_value
+        cmp     rbx, f_value
+        cmovne  ebx, eax
         next
 endcode
