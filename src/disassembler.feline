@@ -613,13 +613,27 @@ last-word 0x38 install-handler
 last-word 0x39 install-handler
 
 : .3a
+    -- dest is r8
+    -- source is r/m8
     "cmp" mnemonic!
     8 dup ssize! dsize!
     !modrm-byte
     modrm-mod {
         { 1 [
-            modrm-rm register-rm sbase!
-            next-signed-byte sdisp!
+            modrm-rm 4 = [
+                !sib-byte
+                next-signed-byte sdisp!
+                sib-byte 0x24 = [
+                    sib-base sbase!
+                ] [
+                    sib-base register-rm sbase!
+                    sib-index register-index sindex!
+                    sib-scale sscale!
+                ] if
+            ] [
+                modrm-rm register-rm sbase!
+                next-signed-byte sdisp!
+            ] if
             modrm-reg register-reg dreg!
         ] }
         [ unsupported ]
