@@ -1741,19 +1741,6 @@ test: sbuf-shorten-test-1
 
 sbuf-shorten-test-1
 
-test: string-index-from-test-1
-    't' 0 "this is a test" string-index-from zero? assert-true
-    'h' 0 "this is a test" string-index-from 1 assert-eq
-    'h' 2 "this is a test" string-index-from assert-false
-    't' 1 "this is a test" string-index-from 10 assert-eq
-    'e' 4 "this is a test" string-index-from 11 assert-eq
-    'x' 0 "this is a test" string-index-from assert-false
-
-    't' most-positive-fixnum "this is a test" string-index-from assert-false
-;
-
-string-index-from-test-1
-
 test: base>integer-test-1
       "0" 10 base>integer   0 assert-eq
      "42" 10 base>integer  42 assert-eq
@@ -3315,5 +3302,49 @@ test: string-iterator-test-1
 ;
 
 string-iterator-test-1
+
+test: string-index-from-test-1
+    't' 0 "this is a test" string-index-from zero? assert-true
+    'h' 0 "this is a test" string-index-from 1 assert-eq
+    'h' 2 "this is a test" string-index-from assert-false
+    't' 1 "this is a test" string-index-from 10 assert-eq
+    'e' 4 "this is a test" string-index-from 11 assert-eq
+
+    'x' 0 "this is a test" string-index-from assert-false
+
+    't' most-positive-fixnum "this is a test" string-index-from assert-false
+
+    [ 't' -1 "this is a test" string-index-from ] assert-must-fail
+    [ 't' most-negative-fixnum "this is a test" string-index-from ] assert-must-fail
+;
+
+string-index-from-test-1
+
+test: string-last-index-from-test-1
+    't' 0 "this is a test" string-last-index-from zero? assert-true
+    'h' 0 "this is a test" string-last-index-from assert-false
+    'h' 2 "this is a test" string-last-index-from 1 assert-eq
+    't' 13 "this is a test" string-last-index-from 13 assert-eq
+    'e' 13 "this is a test" string-last-index-from 11 assert-eq
+
+    's' 13 "this is a test" string-last-index-from 12 assert-eq
+    's' 12 "this is a test" string-last-index-from 12 assert-eq
+    's' 11 "this is a test" string-last-index-from 6 assert-eq
+    's' 6 "this is a test" string-last-index-from 6 assert-eq
+    's' 5 "this is a test" string-last-index-from 3 assert-eq
+    's' 3 "this is a test" string-last-index-from 3 assert-eq
+    's' 2 "this is a test" string-last-index-from assert-false
+
+    'x' 13 "this is a test" string-last-index-from assert-false
+
+    't' 14 "this is a test" string-last-index-from assert-false
+
+    't' most-positive-fixnum "this is a test" string-last-index-from assert-false
+
+    [ 't' -1 "this is a test" string-last-index-from ] assert-must-fail
+    [ 't' most-negative-fixnum "this is a test" string-last-index-from ] assert-must-fail
+;
+
+string-last-index-from-test-1
 
 ?nl "Reached end of test.feline" write-string

@@ -883,6 +883,53 @@ code string_index, 'string-index'       ; char string -- index/f
         next
 endcode
 
+; ### string-last-index-from
+code string_last_index_from, 'string-last-index-from'   ; char start-index string -- index/f
+
+        _ check_string
+
+        push    this_register
+        popd    this_register
+
+        _check_index                    ; -> char untagged-start-index
+
+        cmp     rbx, this_string_raw_length
+        jge     .out_of_bounds
+
+        push    r12
+        mov     r12, rbx                ; untagged start index in r12
+        poprbx                          ; -> char
+
+        _untag_char                     ; -> untagged-char
+
+        align   DEFAULT_CODE_ALIGNMENT
+.loop:
+        cmp     bl, byte [r12 + this_register + STRING_RAW_DATA_OFFSET]
+        je      .found
+        sub     r12, 1
+        jns     .loop
+
+        ; not found
+        mov     ebx, f_value
+        pop     r12
+        pop     this_register
+        next
+
+.found:
+        mov     rbx, r12
+        _tag_fixnum
+        pop     r12
+        pop     this_register
+        next
+
+.out_of_bounds:
+        _nip
+        mov     ebx, f_value
+        pop     this_register
+        next
+
+endcode
+
 ; ### unsafe_raw_write_chars
 code unsafe_raw_write_chars, 'unsafe_raw_write_chars', SYMBOL_INTERNAL
 ; raw-address raw-count --
