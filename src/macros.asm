@@ -101,7 +101,7 @@ GENERIC_WRITE   equ     $40000000
         test    rbx, rbx
         js      error_not_index
 %if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
-        test    ebx, 1
+        test    bl, 1
         jz      error_not_index
 %else
         mov     al, bl
