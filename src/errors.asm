@@ -242,6 +242,14 @@ code error_not_generic_function, 'error-not-generic-function'   ; x --
         next
 endcode
 
+; ### error-not-slot-definition
+code error_not_slot_definition, 'error-not-slot-definition'     ; x --
+        _quote "a slot definition"
+        _ format_type_error
+        _ error
+        next
+endcode
+
 ; ### error-not-sbuf
 code error_not_sbuf, 'error-not-sbuf'   ; x --
         _quote "a string buffer"
