@@ -505,6 +505,13 @@ code object_to_string, 'object>string'  ; object -- string
         _return
         _then .33
 
+        _dup
+        _ slot_definition?
+        _tagged_if .34
+        _ slot_definition_to_string
+        _return
+        _then .34
+
         ; give up
         _tag_fixnum
         _ fixnum_to_hex
