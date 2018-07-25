@@ -171,7 +171,7 @@ code type_of, 'type-of'                 ; object -- type
         _ tuple_instance?
         _tagged_if .2
         _lit tagged_fixnum(1)
-        _ slot                          ; -- layout
+        _ slot@                         ; -- layout
         _ array_first
         _return
         _then .2
@@ -231,8 +231,8 @@ code destroy_heap_object, 'destroy_heap_object', SYMBOL_INTERNAL
         next
 endcode
 
-; ### slot
-code slot, 'slot'                       ; obj tagged-fixnum -- value
+; ### slot@
+code slot@, 'slot@'                     ; obj tagged-fixnum -- value
         _untag_fixnum
         _cells
         _swap

@@ -39,7 +39,7 @@ global class-symbol                     -- symbol
     class tuple-class-typecode
     ' verify-typecode
     rot 2 +
-    ' slot
+    ' slot@
     4array array>quotation
 
     over symbol-set-def
