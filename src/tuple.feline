@@ -24,11 +24,14 @@ global accessor-prefix
 
 global class-name                       -- string
 
-global slot-names                       -- vector
+global slot-definitions                 -- sequence
 
 global class-symbol                     -- symbol
 
-: define-reader                         -- slot-name index -> void
+: define-reader                         -- slot-definition -> void
+
+    [ slot-definition-name ] [ slot-definition-index ] bi
+
     [
         accessor-prefix
         swap
@@ -46,7 +49,10 @@ global class-symbol                     -- symbol
     feline:compile-word
 ;
 
-: define-writer                         -- slot-name index ->
+: define-writer                         -- slot-definition-index -> void
+
+    [ slot-definition-name ] [ slot-definition-index ] bi
+
     [
         accessor-prefix
         swap
@@ -67,8 +73,8 @@ global class-symbol                     -- symbol
 
 : define-accessors
     class-name "-" string-append accessor-prefix!
-    slot-names [ define-reader ] each-index
-    slot-names [ define-writer ] each-index
+    slot-definitions [ define-reader ] each
+    slot-definitions [ define-writer ] each
 ;
 
 : define-class-symbol
@@ -95,7 +101,7 @@ global class-symbol                     -- symbol
 
     define-class-symbol
 
-    class-symbol slot-names make-tuple-class class!
+    class-symbol slot-definitions make-tuple-class class!
 
     class 1quotation class-symbol symbol-set-def
     class-symbol feline:compile-word
@@ -115,7 +121,9 @@ public
     drop
     vector>array                        -- class-name slot-names
 
-    slot-names! class-name!
+    [ make-slot-definition ] map-index  -- class-name slot-definitions
+
+    slot-definitions! class-name!
 
     tuple:define-tuple-class
 ;

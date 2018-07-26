@@ -1251,7 +1251,11 @@ tuple: foo a b c ;
 test: tuple-class-test-1
     foo tuple-class? assert-true
     foo tuple-class-name dup symbol? assert-true ' foo assert-eq
-    foo tuple-class-slots dup array? assert-true { "a" "b" "c" } equal? assert-true
+
+    -- REVIEW
+    foo tuple-class-slots dup array? assert-true
+    [ slot-definition-name ] map { "a" "b" "c" } equal? assert-true
+
     foo tuple-class-layout array? assert-true
     foo tuple-class-layout array-first dup tuple-class? assert-true foo assert-eq
     foo tuple-class-layout array-second 3 assert-eq
@@ -1264,7 +1268,11 @@ test: tuple-class-test-2
 
     foo tuple-class? assert-true
     foo tuple-class-name dup symbol? assert-true ' foo assert-eq
-    foo tuple-class-slots dup array? assert-true { "a" "b" "c" } equal? assert-true
+
+    -- REVIEW
+    foo tuple-class-slots dup array? assert-true
+    [ slot-definition-name ] map { "a" "b" "c" } equal? assert-true
+
     foo tuple-class-layout array? assert-true
     foo tuple-class-layout array-first dup tuple-class? assert-true foo assert-eq
     foo tuple-class-layout array-second 3 assert-eq
