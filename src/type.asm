@@ -15,43 +15,59 @@
 
 file __FILE__
 
-; 3 cells: object header, type symbol, raw typecode
+; 4 cells: object header, type symbol, raw typecode, layout
 
-%macro  _type_symbol 0                  ; type -- symbol
+%macro  _type_symbol 0                  ; type -> symbol
         _slot1
 %endmacro
 
-%macro  _type_set_symbol 0              ; symbol type --
+%macro  _type_set_symbol 0              ; symbol type ->
         _set_slot1
 %endmacro
 
-%macro  _this_type_symbol 0             ; -- symbol
+%macro  _this_type_symbol 0             ; -> symbol
         _this_slot1
 %endmacro
 
-%macro  _this_type_set_symbol 0         ; symbol --
+%macro  _this_type_set_symbol 0         ; symbol ->
         _this_set_slot1
 %endmacro
 
-%macro  _type_raw_typecode 0            ; type -- raw-typecode
+%macro  _type_raw_typecode 0            ; type -> raw-typecode
         _slot2
 %endmacro
 
-%macro  _type_set_raw_typecode 0        ; raw-typecode type --
+%macro  _type_set_raw_typecode 0        ; raw-typecode type ->
         _set_slot2
 %endmacro
 
-%macro  _this_type_raw_typecode 0       ; -- raw-typecode
+%macro  _this_type_raw_typecode 0       ; -> raw-typecode
         _this_slot2
 %endmacro
 
-%macro  _this_type_set_raw_typecode 0   ; raw-typecode --
+%macro  _this_type_set_raw_typecode 0   ; raw-typecode ->
         _this_set_slot2
 %endmacro
 
+%macro  _type_layout 0                  ; type -> layout
+        _slot3
+%endmacro
+
+%macro  _type_set_layout 0              ; layout type ->
+        _set_slot3
+%endmacro
+
+%macro  _this_type_layout 0             ; -> layout
+        _this_slot3
+%endmacro
+
+%macro  _this_type_set_layout 0         ; layout ->
+        _this_set_slot3
+%endmacro
+
 ; ### type?
-code type?, 'type?'                     ; handle -- ?
-        _ deref                         ; -- raw-object/0
+code type?, 'type?'                     ; handle -> ?
+        _ deref                         ; -> raw-object/0
         test    rbx, rbx
         jz      .1
         movzx   eax, word [rbx]
@@ -65,7 +81,7 @@ code type?, 'type?'                     ; handle -- ?
 endcode
 
 ; ### check-type
-code check_type, 'check-type'           ; handle -- type
+code check_type, 'check-type'           ; handle -> type
         _dup
         _ deref
         test    rbx, rbx
@@ -82,29 +98,32 @@ code check_type, 'check-type'           ; handle -- type
 endcode
 
 ; ### make-type
-code make_type, 'make-type', SYMBOL_PRIVATE     ; symbol raw-typecode -- type
+code make_type, 'make-type', SYMBOL_PRIVATE     ; symbol raw-typecode -> type
 
-        _lit 3
+        _lit 4
         _ raw_allocate_cells
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -- symbol typecode
+        poprbx                          ; -> symbol typecode
 
         _this_object_set_raw_typecode TYPECODE_TYPE
 
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 
-        _this_type_set_raw_typecode     ; -- symbol
+        _this_type_set_raw_typecode     ; -> symbol
 
         _dup
         _this_type_set_symbol
 
+        _f
+        _this_type_set_layout
+
         pushrbx
-        mov     rbx, this_register      ; -- symbol raw-object-address
+        mov     rbx, this_register      ; -> symbol raw-object-address
 
         ; return handle
-        _ new_handle                    ; -- symbol type
+        _ new_handle                    ; -> symbol type
 
         pop     this_register
 
@@ -112,7 +131,7 @@ code make_type, 'make-type', SYMBOL_PRIVATE     ; symbol raw-typecode -- type
         _tuck
         _quote "type"
         _ rot
-        _ symbol_set_prop               ; -- type
+        _ symbol_set_prop               ; -> type
 
         next
 endcode
@@ -120,24 +139,24 @@ endcode
 feline_global types, 'types'
 
 ; ### add_builtin_type
-code add_builtin_type, 'add_builtin_type', SYMBOL_INTERNAL      ; name raw-typecode --
+code add_builtin_type, 'add_builtin_type', SYMBOL_INTERNAL      ; name raw-typecode ->
 
-        _tor                            ; -- name       r: -- raw-typecode
+        _tor                            ; -> name       r: -> raw-typecode
 
-        _ new_symbol_in_current_vocab   ; -- symbol
+        _ new_symbol_in_current_vocab   ; -> symbol
 
         _dup
         _rfetch
-        _ make_type                     ; -- symbol type
+        _ make_type                     ; -> symbol type
 
         _dup
         _ one_quotation
         _pick
         _ symbol_set_def
         _swap
-        _ compile_word                  ; -- type       r: -- raw-typecode
+        _ compile_word                  ; -> type       r: -> raw-typecode
 
-        _rfrom                          ; -- type raw-typecode          r: --
+        _rfrom                          ; -> type raw-typecode          r: ->
         _ types
         _ vector_set_nth_untagged
 
@@ -193,30 +212,44 @@ code initialize_types, 'initialize_types', SYMBOL_INTERNAL
 endcode
 
 ; ### type-symbol
-code type_symbol, 'type-symbol'         ; type -- symbol
+code type_symbol, 'type-symbol'         ; type -> symbol
         _ check_type
         _type_symbol
         next
 endcode
 
 ; ### type-typecode
-code type_typecode, 'type-typecode'     ; type -- tagged-typecode
+code type_typecode, 'type-typecode'     ; type -> tagged-typecode
         _ check_type
         _type_raw_typecode
         _tag_fixnum
         next
 endcode
 
+; ### type-layout
+code type_layout, 'type-layout'         ; type -> layout
+        _ check_type
+        _type_layout
+        next
+endcode
+
+; ### type-set-layout
+code type_set_layout, 'type-set-layout' ; layout type -> void
+        _ check_type
+        _type_set_layout
+        next
+endcode
+
 ; ### raw_typecode_to_type
 code raw_typecode_to_type, 'raw_typecode_to_type', SYMBOL_INTERNAL
-; raw-typecode -- type
+; raw-typecode -> type
         _ types
         _ vector_nth_untagged
         next
 endcode
 
 ; ### typecode>type
-code typecode_to_type, 'typecode>type'  ; typecode -- type
+code typecode_to_type, 'typecode>type'  ; typecode -> type
         _check_index
         _ types
         _ vector_nth_untagged
@@ -224,7 +257,7 @@ code typecode_to_type, 'typecode>type'  ; typecode -- type
 endcode
 
 ; ### find-type
-code find_type, 'find-type'             ; string -- type
+code find_type, 'find-type'             ; string -> type
         _ find_name
         _tagged_if .1
         _quote "type"
@@ -243,7 +276,7 @@ code find_type, 'find-type'             ; string -- type
 endcode
 
 ; ### type>string
-code type_to_string, 'type>string'      ; type -- string
+code type_to_string, 'type>string'      ; type -> string
         _ check_type
         _type_symbol
         _ symbol_name

@@ -214,6 +214,13 @@ code mark_slot_definition, 'mark-slot-definition'       ; slot-definition -> voi
         next
 endcode
 
+; ### mark-type
+code mark_type, 'mark-type'             ; type -> void
+        _type_layout
+        _ maybe_mark_handle
+        next
+endcode
+
 asm_global gc_dispatch_table_
 
 ; ### initialize_gc_dispatch_table
@@ -291,6 +298,10 @@ code initialize_gc_dispatch_table, 'initialize_gc_dispatch_table', SYMBOL_INTERN
 
         _lit mark_slot_definition
         _lit TYPECODE_SLOT_DEFINITION
+        _this_array_set_nth_unsafe
+
+        _lit mark_type
+        _lit TYPECODE_TYPE
         _this_array_set_nth_unsafe
 
         pop     this_register
