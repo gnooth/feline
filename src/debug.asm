@@ -54,7 +54,6 @@ code debug1, 'debug1'                   ; string --
         _write ": "
         _dup
         _ dot_object
-        _ nl
         _return
 .1:
         _drop
