@@ -526,6 +526,7 @@ endcode
 code dot_object, '.'                    ; handle-or-object --
         _ object_to_string
         _ write_string
+        _ nl
         next
 endcode
 
@@ -543,6 +544,9 @@ code short_dot, 'short.'                ; handle-or-object --
         _ string_append
         _then .1
         _ write_string
+
+        ; REVIEW no newline
+
         next
 endcode
 
