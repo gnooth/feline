@@ -97,6 +97,23 @@ code check_type, 'check-type'           ; handle -> type
         next
 endcode
 
+; ### verify-type
+code verify_type, 'verify-type'         ; type -- type
+        _dup
+        _ deref
+        test    rbx, rbx
+        jz      .error
+        _object_raw_typecode_eax
+        cmp     eax, TYPECODE_TYPE
+        jne     .error
+        _drop
+        next
+.error:
+        _drop
+        _ error_not_type
+        next
+endcode
+
 ; ### make-type
 code make_type, 'make-type', SYMBOL_PRIVATE     ; symbol raw-typecode -> type
 
