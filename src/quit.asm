@@ -548,9 +548,8 @@ code query, 'query'                     ; -- string/f
         next
 endcode
 
-; ### print-data-stack1
+; ### print-datastack1
 code print_datastack1, 'print-datastack1'       ; x -> void
-        _ nl
         _lit tagged_fixnum(4)
         _ tab
         _ output_style
@@ -565,11 +564,11 @@ code print_datastack1, 'print-datastack1'       ; x -> void
         next
 endcode
 
-; ### print-data-stack
+; ### print-datastack
 code print_datastack, 'print-datastack'
         _ ?nl
         _ comment_style
-        _write "-- Data stack: "
+        _print "-- Data stack: "
         _depth
         _if .1
         _ get_datastack
@@ -577,7 +576,7 @@ code print_datastack, 'print-datastack'
         _ each
         _else .1
         _ output_style
-        _write "Empty"
+        _print "Empty"
         _then .1
         next
 endcode
