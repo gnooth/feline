@@ -136,7 +136,14 @@ code make_type, 'make-type', SYMBOL_PRIVATE     ; symbol raw-typecode -> type
         next
 endcode
 
-feline_global types, 'types'
+asm_global types_, f_value
+
+; ### types
+code types, 'types'                     ; -> sequence
+        pushrbx
+        mov     rbx, [types_]
+        next
+endcode
 
 ; ### add_builtin_type
 code add_builtin_type, 'add_builtin_type', SYMBOL_INTERNAL      ; name raw-typecode ->
@@ -171,9 +178,13 @@ endcode
 
 ; ### initialize_types
 code initialize_types, 'initialize_types', SYMBOL_INTERNAL
+        _lit types_
+        _ gc_add_root
+
         _lit 64
         _ new_vector_untagged
-        _to_global types
+        mov     [types_], rbx
+        poprbx
 
         _add_type "unknown", TYPECODE_UNKNOWN
         _add_type "fixnum", TYPECODE_FIXNUM
