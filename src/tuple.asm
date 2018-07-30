@@ -71,6 +71,68 @@ tuple_size_unchecked:
         next
 endcode
 
+; ### make-instance
+code make_instance, 'make-instance'     ; class -- instance
+
+        _ verify_type
+
+        _dup
+        _ type_layout
+        _ array_raw_length
+
+        ; slot 0 is object header, slot 1 is layout
+        add     rbx, 2
+
+        _cells
+        _ raw_allocate                  ; -- class address
+
+        _tor                            ; -- class
+
+        _dup
+        _ type_typecode
+        _untag_fixnum                   ; -- class raw-typecode
+
+        ; store raw typecode in object header
+        _rfetch
+        _store                          ; -- class
+
+        ; store layout in slot 1
+        _dup
+        _ type_layout
+        _rfetch
+        add     rbx, BYTES_PER_CELL
+        _store
+
+        _ type_layout
+        _ array_raw_length
+
+        mov     rcx, rbx                ; number of slots in rcx
+        poprbx
+
+        jrcxz   .2
+
+        mov     eax, f_value
+
+        _rfetch
+        add     rbx, BYTES_PER_CELL * 2
+
+        mov     rdx, rbx
+        poprbx
+
+ .1:
+        mov     [rdx], rax
+        add     rdx, BYTES_PER_CELL
+        dec     rcx
+        jnz     .1
+
+.2:
+        _rfrom
+
+        _ new_handle
+
+        next
+endcode
+
 ; ### tuple>string
 code tuple_to_string, 'tuple>string'    ; tuple --
         _ check_tuple_instance
