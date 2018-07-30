@@ -200,14 +200,6 @@ code error_not_type, 'error-not-type'           ; x --
         next
 endcode
 
-; ### error-not-tuple-class
-code error_not_tuple_class, 'error-not-tuple-class'     ; x --
-        _quote "a tuple-class"
-        _ format_type_error
-        _ error
-        next
-endcode
-
 ; ### error-not-enough-parameters
 code error_not_enough_parameters, 'error-not-enough-parameters'         ; --
         _quote "ERROR: not enough parameters."
