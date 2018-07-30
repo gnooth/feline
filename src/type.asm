@@ -153,6 +153,22 @@ code make_type, 'make-type'             ; symbol typecode -> type
         next
 endcode
 
+; ### make-tuple-type
+code make_tuple_type, 'make-tuple-type' ; symbol slots -> type
+        _swap
+        _ next_raw_typecode
+        _duptor
+        _tag_fixnum
+        _ make_type
+        _tuck
+        _ type_set_layout
+        _dup
+        _rfrom
+        _ types
+        _ vector_set_nth_untagged
+        next
+endcode
+
 asm_global types_, f_value
 
 ; ### types
