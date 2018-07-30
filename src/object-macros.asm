@@ -56,7 +56,7 @@ TYPECODE_METHOD                 equ 20
 TYPECODE_GENERIC_FUNCTION       equ 21
 TYPECODE_UINT64                 equ 22
 TYPECODE_INT64                  equ 23
-TYPECODE_TUPLE_CLASS            equ 24
+; TYPECODE_TUPLE_CLASS            equ 24
 TYPECODE_TYPE                   equ 25
 TYPECODE_KEYWORD                equ 26
 TYPECODE_THREAD                 equ 27
