@@ -67,6 +67,16 @@ TYPECODE_SLOT_DEFINITION        equ 31
 
 LAST_BUILTIN_TYPECODE           equ 31
 
+asm_global last_raw_typecode_, LAST_BUILTIN_TYPECODE + 1
+
+; ### next_raw_typecode
+code next_raw_typecode, 'next_raw_typecode'     ; -- raw-typecode
+        pushrbx
+        mov     rbx, [last_raw_typecode_]
+        add     qword [last_raw_typecode_], 1
+        next
+endcode
+
 ; Object flag bits.
 OBJECT_MARKED_BIT               equ 1
 OBJECT_ALLOCATED_BIT            equ 4

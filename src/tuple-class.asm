@@ -85,16 +85,6 @@ file __FILE__
         _this_set_slot4
 %endmacro
 
-asm_global last_raw_typecode_, LAST_BUILTIN_TYPECODE + 1
-
-; ### next_raw_typecode
-code next_raw_typecode, 'next_raw_typecode'     ; -- raw-typecode
-        pushrbx
-        mov     rbx, [last_raw_typecode_]
-        add     qword [last_raw_typecode_], 1
-        next
-endcode
-
 ; ### tuple-class?
 code tuple_class?, 'tuple-class?'       ; x -- ?
         _ deref                         ; -- raw-object/0
