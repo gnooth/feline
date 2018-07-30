@@ -450,13 +450,6 @@ code object_to_string, 'object>string'  ; object -- string
         _then .25
 
         _dup
-        _ tuple_class?
-        _tagged_if .26
-        _ tuple_class_to_string
-        _return
-        _then .26
-
-        _dup
         _ tuple_instance?
         _tagged_if .27
         _ tuple_to_string
