@@ -170,19 +170,6 @@ code mark_tuple, 'mark-tuple'           ; tuple --
         next
 endcode
 
-; ### mark_tuple_class
-code mark_tuple_class, 'mark_tuple_class'       ; tuple-class --
-        _dup
-        _tuple_class_name
-        _ maybe_mark_handle
-        _dup
-        _tuple_class_slots
-        _ maybe_mark_handle
-        _tuple_class_layout
-        _ maybe_mark_handle
-        next
-endcode
-
 ; ### mark-lexer
 code mark_lexer, 'mark-lexer'           ; lexer --
         _dup
@@ -282,10 +269,6 @@ code initialize_gc_dispatch_table, 'initialize_gc_dispatch_table', SYMBOL_INTERN
 
         _lit mark_iterator
         _lit TYPECODE_ITERATOR
-        _this_array_set_nth_unsafe
-
-        _lit mark_tuple_class
-        _lit TYPECODE_TUPLE_CLASS
         _this_array_set_nth_unsafe
 
         _lit mark_thread
