@@ -55,20 +55,18 @@ code check_tuple_instance, 'check_tuple_instance', SYMBOL_INTERNAL
         next
 endcode
 
-%macro _tuple_layout_of 0               ; tuple -- layout
-        _slot 1
-%endmacro
-
 ; ### tuple-size
 code tuple_size, 'tuple-size'           ; tuple -- size
 ; return number of named slots
 
-        _ check_tuple_instance
+        _ check_tuple_instance          ; -> raw-tuple-instance
 
 tuple_size_unchecked:
 
-        _tuple_layout_of
-        _ array_second
+        _object_raw_typecode
+        _ raw_typecode_to_type
+        _ type_layout
+        _ array_length
 
         next
 endcode

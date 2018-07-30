@@ -1,4 +1,4 @@
-; Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -210,8 +210,10 @@ endcode
 ; ### make-instance
 code make_instance, 'make-instance'     ; class -- instance
 
+        _ verify_type
+
         _dup
-        _ tuple_class_slots
+        _ type_layout
         _ array_raw_length
 
         ; slot 0 is object header, slot 1 is layout
@@ -223,7 +225,7 @@ code make_instance, 'make-instance'     ; class -- instance
         _tor                            ; -- class
 
         _dup
-        _ tuple_class_typecode
+        _ type_typecode
         _untag_fixnum                   ; -- class raw-typecode
 
         ; store raw typecode in object header
@@ -232,12 +234,12 @@ code make_instance, 'make-instance'     ; class -- instance
 
         ; store layout in slot 1
         _dup
-        _ tuple_class_layout
+        _ type_layout
         _rfetch
         add     rbx, BYTES_PER_CELL
         _store
 
-        _ tuple_class_slots
+        _ type_layout
         _ array_raw_length
 
         mov     rcx, rbx                ; number of slots in rcx

@@ -562,7 +562,9 @@ code method_colon, 'method:', SYMBOL_IMMEDIATE  ; --
 
         _ must_parse_token              ; -- string
         _ must_find_name                ; -- symbol
-        _ call_symbol                   ; -- class
+        _ call_symbol                   ; -- type
+
+        _ verify_type
 
         _dup
         _ tuple_class?

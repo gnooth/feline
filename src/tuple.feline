@@ -39,7 +39,7 @@ global class-symbol                     -- symbol
         feline:new-symbol-in-current-vocab
     ] dip                               -- symbol index
 
-    class tuple-class-typecode
+    class type-typecode
     ' verify-typecode
     rot 2 +
     ' slot@
@@ -61,7 +61,7 @@ global class-symbol                     -- symbol
         feline:new-symbol-in-current-vocab
     ] dip                               -- symbol index
 
-    class tuple-class-typecode
+    class type-typecode
     ' verify-typecode
     rot 2 +
     ' slot!
@@ -89,7 +89,7 @@ global class-symbol                     -- symbol
     feline:new-symbol-in-current-vocab  -- symbol
 
     ' object-typecode
-    class tuple-class-typecode
+    class type-typecode
     ' eq?
     3array array>quotation
 
@@ -101,10 +101,7 @@ global class-symbol                     -- symbol
 
     define-class-symbol
 
-    class-symbol slot-definitions make-tuple-class class!
-
-    class 1quotation class-symbol symbol-set-def
-    class-symbol feline:compile-word
+    class-symbol slot-definitions make-tuple-type verify-type class!
 
     define-accessors
 
