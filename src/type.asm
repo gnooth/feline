@@ -115,14 +115,16 @@ code verify_type, 'verify-type'         ; type -- type
 endcode
 
 ; ### make-type
-code make_type, 'make-type', SYMBOL_PRIVATE     ; symbol raw-typecode -> type
+code make_type, 'make-type'             ; symbol typecode -> type
+
+        _check_fixnum                   ; -> symbol raw-typecode
 
         _lit 4
         _ raw_allocate_cells
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -> symbol typecode
+        poprbx                          ; -> symbol raw-typecode
 
         _this_object_set_raw_typecode TYPECODE_TYPE
 
@@ -138,17 +140,18 @@ code make_type, 'make-type', SYMBOL_PRIVATE     ; symbol raw-typecode -> type
 
         pushrbx
         mov     rbx, this_register      ; -> symbol raw-object-address
-
-        ; return handle
-        _ new_handle                    ; -> symbol type
-
         pop     this_register
 
-        ; set type object as value of type symbol's "type" property
-        _tuck
-        _quote "type"
-        _ rot
-        _ symbol_set_prop               ; -> type
+        _ new_handle                    ; -> symbol type
+
+        _tuck                           ; -> type symbol type
+        _ one_quotation                 ; -> type symbol quotation
+        _over                           ; -> type symbol quotation symbol
+        _ symbol_set_def                ; -> type symbol
+        _ compile_word
+
+        next
+endcode
 
         next
 endcode
@@ -163,24 +166,17 @@ code types, 'types'                     ; -> sequence
 endcode
 
 ; ### add_builtin_type
-code add_builtin_type, 'add_builtin_type', SYMBOL_INTERNAL      ; name raw-typecode ->
+code add_builtin_type, 'add_builtin_type', SYMBOL_INTERNAL      ; name typecode ->
 
-        _tor                            ; -> name       r: -> raw-typecode
+        _tor                            ; -> name       r: -> typecode
 
         _ new_symbol_in_current_vocab   ; -> symbol
 
-        _dup
         _rfetch
-        _ make_type                     ; -> symbol type
+        _ make_type                     ; -> type
 
-        _dup
-        _ one_quotation
-        _pick
-        _ symbol_set_def
-        _swap
-        _ compile_word                  ; -> type       r: -> raw-typecode
-
-        _rfrom                          ; -> type raw-typecode          r: ->
+        _rfrom                          ; -> type typecode
+        _untag_fixnum
         _ types
         _ vector_set_nth_untagged
 
@@ -189,7 +185,7 @@ endcode
 
 %macro  _add_type 2                     ; name raw-typecode -> void
         _quote %1
-        _lit %2
+        _lit tagged_fixnum(%2)
         _ add_builtin_type
 %endmacro
 
