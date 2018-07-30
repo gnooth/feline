@@ -153,9 +153,6 @@ code make_type, 'make-type'             ; symbol typecode -> type
         next
 endcode
 
-        next
-endcode
-
 asm_global types_, f_value
 
 ; ### types
