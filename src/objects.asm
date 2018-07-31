@@ -141,35 +141,10 @@ code object_typecode, 'object-typecode' ; x -- typecode
 endcode
 
 ; ### type-of
-code type_of, 'type-of'                 ; object -- type
-        _dup
+code type_of, 'type-of'                 ; object -> type
         _ object_raw_typecode
-        cmp     rbx, LAST_BUILTIN_TYPECODE
-        ja .1
-
-        ; builtin
-        _nip
         _ types
         _ vector_nth_untagged
-        _return
-
-.1:
-        ; tuple?
-        mov     rbx, [rbp]              ; -- object object
-        _ tuple_instance?
-        _tagged_if .2
-        _lit tagged_fixnum(1)
-        _ slot@                         ; -- layout
-        _ array_first
-        _return
-        _then .2
-
-        ; unknown
-        _drop
-        _lit TYPECODE_UNKNOWN
-        _ types
-        _ vector_nth_untagged
-
         next
 endcode
 
