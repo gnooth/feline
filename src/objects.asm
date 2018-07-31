@@ -148,6 +148,13 @@ code type_of, 'type-of'                 ; object -> type
         next
 endcode
 
+; ### object-layout
+code object_layout, 'object-layout'     ; object -> layout
+        _ type_of
+        _ type_layout
+        next
+endcode
+
 ; ### .t
 code dot_t, '.t'                        ; object -- object
         _lit tagged_fixnum(1)
