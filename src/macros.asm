@@ -238,25 +238,17 @@ GENERIC_WRITE   equ     $40000000
 %define MOST_NEGATIVE_INT64     -9223372036854775808
 
 ; tagged handles
-%define TAGGED_HANDLES
-
-%ifdef TAGGED_HANDLES
-
 %define HANDLE_TAG_BITS         8
 %define HANDLE_TAG              0xf2
 
 %macro  _tag_handle 0
         shl     rbx, HANDLE_TAG_BITS
-%if HANDLE_TAG <> 0
         or      rbx, HANDLE_TAG
-%endif
 %endmacro
 
 %macro  _untag_handle 0
         shr     rbx, HANDLE_TAG_BITS
 %endmacro
-
-%endif  ; TAGGED_HANDLES
 
 %define DEFAULT_DATA_ALIGNMENT  8
 

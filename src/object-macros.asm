@@ -16,18 +16,12 @@
 file __FILE__
 
 %macro  _handle_to_object_unsafe 0
-%ifdef TAGGED_HANDLES
         shr     rbx, HANDLE_TAG_BITS
-        ; fall through
-%endif
         mov     rbx, [rbx]
 %endmacro
 
 %macro  _handle_to_object_unsafe_rax 0
-%ifdef TAGGED_HANDLES
         shr     rax, HANDLE_TAG_BITS
-        ; fall through
-%endif
         mov     rax, [rax]
 %endmacro
 

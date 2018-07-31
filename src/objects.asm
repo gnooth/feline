@@ -72,19 +72,13 @@ code error_empty_handle, 'error-empty-handle'
 endcode
 
 ; ### object_raw_typecode
-code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL
-; x -- raw-typecode
+code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL        ; x -> raw-typecode
 
-%ifdef TAGGED_HANDLES
         cmp     bl, HANDLE_TAG
         je      .3
         ; not a handle
         test    ebx, LOWTAG_MASK
         jz      .4
-%else
-        test    ebx, LOWTAG_MASK
-        jz      .3
-%endif
 
 %if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
         test    ebx, FIXNUM_TAG
@@ -114,12 +108,6 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL
         _return
 
 .3:
-%ifndef TAGGED_HANDLES
-        cmp     rbx, [handle_space_]
-        jb      .4
-        cmp     rbx, [handle_space_free_]
-        jae     .4
-%endif
         _handle_to_object_unsafe
         test    rbx, rbx
         jz      error_empty_handle
