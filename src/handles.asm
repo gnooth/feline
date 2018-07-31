@@ -88,9 +88,7 @@ code initialize_handle_space, 'initialize_handle_space', SYMBOL_INTERNAL
         poprbx                                          ; -- handle
 
         ; and release its handle
-%ifdef TAGGED_HANDLES
         _untag_handle
-%endif
         _ release_handle_unsafe                         ; --
 
         next
@@ -270,9 +268,7 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -> handle
         lea     rbp, [rbp + BYTES_PER_CELL]
         mov     [rbx], rax
 
-%ifdef TAGGED_HANDLES
         _tag_handle
-%endif
 
         _increment_allocation_count
         _ unlock_handles
@@ -308,9 +304,7 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -> handle
         lea     rbp, [rbp + BYTES_PER_CELL]
         mov     [rbx], rax
 
-%ifdef TAGGED_HANDLES
         _tag_handle
-%endif
 
         _increment_allocation_count
         _ unlock_handles
@@ -325,20 +319,8 @@ endcode
 
 ; ### handle?
 code handle?, 'handle?'                 ; x -- ?
-%ifdef TAGGED_HANDLES
         cmp     bl, HANDLE_TAG
         jne     .1
-%else
-        ; handles are 8-byte aligned
-        test    bl, 7
-        jnz     .1
-
-        ; must point into handle space
-        cmp     rbx, [handle_space_]
-        jb .1
-        cmp     rbx, [handle_space_free_]
-        jae .1
-%endif
         mov     ebx, t_value
         _return
 .1:
@@ -365,20 +347,8 @@ endcode
 
 ; ### deref
 code deref, 'deref', SYMBOL_INTERNAL    ; x -- object-address/0
-%ifdef TAGGED_HANDLES
         cmp     bl, HANDLE_TAG
         jne     .1
-%else
-        ; handles are 8-byte aligned
-        test    bl, 7
-        jnz     .1
-
-        ; must point into handle space
-        cmp     rbx, [handle_space_]
-        jb .1
-        cmp     rbx, [handle_space_free_]
-        jae .1
-%endif
         ; valid handle
         _handle_to_object_unsafe        ; -- object-address/0
         _return
