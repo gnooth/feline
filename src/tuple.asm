@@ -144,19 +144,9 @@ code tuple_to_string, 'tuple>string'    ; tuple --
         _quote "tuple{ "
         _ string_to_sbuf
 
-        _this_slot 1                    ; -- layout
-        _dup
-        _ first
-        _ object_to_string
-        _pick
-        _ sbuf_append_string
-        _tagged_char(32)
-        _pick
-        _ sbuf_push
-
-        _ second
-        _untag_fixnum
-
+        _this
+        _ tuple_size_unchecked
+        _check_fixnum
         _register_do_times .1
 
         _raw_loop_index
