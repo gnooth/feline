@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ tuple_size_unchecked:
 endcode
 
 ; ### make-instance
-code make_instance, 'make-instance'     ; class -- instance
+code make_instance, 'make-instance'     ; class -> instance
 
         _ verify_type
 
@@ -80,28 +80,20 @@ code make_instance, 'make-instance'     ; class -- instance
         _ type_layout
         _ array_raw_length
 
-        ; slot 0 is object header, slot 1 is layout
-        add     rbx, 2
+        ; slot 0 is object header
+        add     rbx, 1
 
         _cells
-        _ raw_allocate                  ; -- class address
+        _ raw_allocate                  ; -> class address
 
-        _tor                            ; -- class
+        _tor                            ; -> class
 
         _dup
-        _ type_typecode
-        _untag_fixnum                   ; -- class raw-typecode
+        _ type_raw_typecode             ; -> class raw-typecode
 
         ; store raw typecode in object header
         _rfetch
-        _store                          ; -- class
-
-        ; store layout in slot 1
-        _dup
-        _ type_layout
-        _rfetch
-        add     rbx, BYTES_PER_CELL
-        _store
+        _store                          ; -> class
 
         _ type_layout
         _ array_raw_length
@@ -114,7 +106,7 @@ code make_instance, 'make-instance'     ; class -- instance
         mov     eax, f_value
 
         _rfetch
-        add     rbx, BYTES_PER_CELL * 2
+        add     rbx, BYTES_PER_CELL
 
         mov     rdx, rbx
         poprbx
@@ -134,12 +126,12 @@ code make_instance, 'make-instance'     ; class -- instance
 endcode
 
 ; ### tuple>string
-code tuple_to_string, 'tuple>string'    ; tuple --
+code tuple_to_string, 'tuple>string'    ; tuple -> void
         _ check_tuple_instance
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; --
+        poprbx
 
         _quote "tuple{ "
         _ string_to_sbuf
@@ -150,7 +142,7 @@ code tuple_to_string, 'tuple>string'    ; tuple --
         _register_do_times .1
 
         _raw_loop_index
-        add     rbx, 2
+        add     rbx, 1
         _this_nth_slot
         _ object_to_string
         _over

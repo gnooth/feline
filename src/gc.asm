@@ -150,14 +150,11 @@ code mark_tuple, 'mark-tuple'           ; tuple --
         mov     this_register, rbx      ; -- tuple
 
         _ tuple_size_unchecked          ; -- size
-        _untag_fixnum                   ; untagged size (number of defined slots) in rbx
+        _check_fixnum                   ; untagged size (number of defined slots) in rbx
 
         ; slot 0 is object header
-        ; slot 1 is layout
-        ; slot 2 is first defined slot
-        ; so:
-        add     rbx, 2                  ; loop limit is size + 2
-        _lit 2                          ; loop start is 2
+        add     rbx, 1                  ; loop limit is size + 1
+        _lit 1                          ; loop start is 1
 
         ; -- limit start
         _?do .1

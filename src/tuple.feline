@@ -14,19 +14,17 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
-in: tuple
+in: feline
 
 private
 
-global class
+global tuple-type
 
 global accessor-prefix
 
-global class-name                       -- string
+global tuple-name                       -- string
 
 global slot-definitions                 -- sequence
-
-global class-symbol                     -- symbol
 
 : define-reader                         -- slot-definition -> void
 
@@ -36,17 +34,17 @@ global class-symbol                     -- symbol
         accessor-prefix
         swap
         string-append
-        feline:new-symbol-in-current-vocab
+        new-symbol-in-current-vocab
     ] dip                               -- symbol index
 
-    class type-typecode
+    tuple-type type-typecode
     ' verify-typecode
-    rot 2 +
+    rot 1+
     ' slot@
     4array array>quotation
 
     over symbol-set-def
-    feline:compile-word
+    compile-word
 ;
 
 : define-writer                         -- slot-definition-index -> void
@@ -58,73 +56,56 @@ global class-symbol                     -- symbol
         swap
         string-append
         "!" string-append
-        feline:new-symbol-in-current-vocab
+        new-symbol-in-current-vocab
     ] dip                               -- symbol index
 
-    class type-typecode
+    tuple-type type-typecode
     ' verify-typecode
-    rot 2 +
+    rot 1+
     ' slot!
     4array array>quotation
 
     over symbol-set-def
-    feline:compile-word
+    compile-word
 ;
 
 : define-accessors
-    class-name "-" string-append accessor-prefix!
+    tuple-name "-" string-append accessor-prefix!
     slot-definitions [ define-reader ] each
     slot-definitions [ define-writer ] each
 ;
 
-: define-class-symbol
-    class-name feline:new-symbol-in-current-vocab class-symbol!
-
-    class-symbol <wrapper> 1quotation class-symbol symbol-set-def
-    class-symbol feline:compile-word
-;
-
 : define-tuple-predicate
-    class-name "?" string-append
-    feline:new-symbol-in-current-vocab  -- symbol
+    tuple-name "?" string-append new-symbol-in-current-vocab
 
     ' object-typecode
-    class type-typecode
+    tuple-type type-typecode
     ' eq?
     3array array>quotation
 
     over symbol-set-def
-    feline:compile-word
+    compile-word
 ;
 
-: define-tuple-class
+: define-tuple-type
+    tuple-name new-symbol-in-current-vocab
+    slot-definitions make-tuple-type verify-type tuple-type!
+;
 
-    define-class-symbol
-
-    class-symbol slot-definitions make-tuple-type verify-type class!
-
-    define-accessors
-
-    define-tuple-predicate
+: parse-tuple-slots
+    10 <vector>
+    [ must-parse-token dup ";" string= ] [ suffix! ] until
+    drop
+    vector>array
+    [ make-slot-definition ] map-index slot-definitions!
 ;
 
 public
 
 : tuple:
-    must-parse-token                    -- string
-    10 <vector>                         -- string vector
-
-    [ parse-token dup ";" string= ] [ suffix! ] until
-    drop
-    vector>array                        -- class-name slot-names
-
-    [ make-slot-definition ] map-index  -- class-name slot-definitions
-
-    slot-definitions! class-name!
-
-    tuple:define-tuple-class
+    must-parse-token tuple-name!
+    parse-tuple-slots
+    define-tuple-type
+    define-accessors
+    define-tuple-predicate
 ;
-
-in: feline
-
-: tuple: tuple:tuple: ;
