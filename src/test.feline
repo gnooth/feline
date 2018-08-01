@@ -1248,37 +1248,23 @@ test: 2bi-test-1
 
 tuple: foo a b c ;
 
--- test: tuple-class-test-1
---     foo tuple-class? assert-true
---     foo tuple-class-name dup symbol? assert-true ' foo assert-eq
+: %tuple-layout-test-1
+    foo type? assert-true
+    foo type-symbol dup symbol? assert-true ' foo assert-eq
+    foo type-layout array? assert-true
+    foo type-layout length 3 assert-eq
+    foo type-layout [ slot-definition? assert-true ] each
+    foo type-layout [ slot-definition-index ] map { 0 1 2 } equal? assert-true
+    foo type-layout [ slot-definition-name ] map { "a" "b" "c" } equal? assert-true
+;
 
---     -- REVIEW
---     foo tuple-class-slots dup array? assert-true
---     [ slot-definition-name ] map { "a" "b" "c" } equal? assert-true
+test: tuple-layout-test-1
+    %tuple-layout-test-1
+    gc
+    %tuple-layout-test-1
+;
 
---     foo tuple-class-layout array? assert-true
---     foo tuple-class-layout array-first dup tuple-class? assert-true foo assert-eq
---     foo tuple-class-layout array-second 3 assert-eq
--- ;
-
--- tuple-class-test-1
-
--- test: tuple-class-test-2
---     gc
-
---     foo tuple-class? assert-true
---     foo tuple-class-name dup symbol? assert-true ' foo assert-eq
-
---     -- REVIEW
---     foo tuple-class-slots dup array? assert-true
---     [ slot-definition-name ] map { "a" "b" "c" } equal? assert-true
-
---     foo tuple-class-layout array? assert-true
---     foo tuple-class-layout array-first dup tuple-class? assert-true foo assert-eq
---     foo tuple-class-layout array-second 3 assert-eq
--- ;
-
--- tuple-class-test-2
+tuple-layout-test-1
 
 test: tuple-instance?-test-1
     t tuple-instance? assert-false
