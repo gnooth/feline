@@ -1250,15 +1250,16 @@ use: search
     key:ctrl-t          ' find-definition               bind-key
 ;
 
-var feral-log-fd
+-- var feral-log-fd
 
-"feral-log" file-create-write feral-log-fd!
+-- "feral-log" file-create-write feral-log-fd!
 
-: log                                   -- string -> void
-    feral-log-fd file-write-line
-    feral-log-fd file-flush ;
+-- : log                                   -- string -> void
+--     feral-log-fd file-write-line
+--     feral-log-fd file-flush ;
 
-"startup" log
+-- "startup" log
+: log drop ;
 
 : do-mouse                              -- key -> void
     verify-fixnum :> keycode
