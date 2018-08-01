@@ -254,6 +254,13 @@ code type_symbol, 'type-symbol'         ; type -> symbol
         next
 endcode
 
+; ### type_raw_typecode
+code type_raw_typecode, 'type_raw_typecode'     ; type -> raw-typecode
+        _ check_type
+        _type_raw_typecode
+        next
+endcode
+
 ; ### type-typecode
 code type_typecode, 'type-typecode'     ; type -> tagged-typecode
         _ check_type
