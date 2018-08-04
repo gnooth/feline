@@ -127,6 +127,97 @@ cell os_open_file(const char *filename, int flags)
 #endif
 }
 
+cell os_file_open_read(const char *filename)
+{
+#ifdef WIN64_NATIVE
+  HANDLE h = CreateFile(filename,
+                        GENERIC_READ,
+                        FILE_SHARE_READ,
+                        NULL, // default security descriptor
+                        OPEN_EXISTING,
+                        FILE_ATTRIBUTE_NORMAL,
+                        NULL // template file (ignored for existing file)
+                        );
+  if (h == INVALID_HANDLE_VALUE)
+    os_errno_data = GetLastError();
+  return (cell) h;
+#else
+  int ret;
+  int flags = 0;
+#ifdef WIN64
+  flags |= _O_BINARY;
+#endif
+  ret = open(filename, flags);
+  if (ret < 0)
+    {
+      os_errno_data = errno;
+      return (cell) -1;
+    }
+  else
+    return ret;
+#endif
+}
+
+cell os_file_open_append(const char *filename)
+{
+#ifdef WIN64_NATIVE
+  HANDLE h = CreateFile(filename,
+                        GENERIC_WRITE,
+                        FILE_SHARE_WRITE,
+                        NULL, // default security descriptor
+                        OPEN_ALWAYS,
+                        FILE_ATTRIBUTE_NORMAL,
+                        NULL // template file (ignored for existing file)
+                        );
+  if (h == INVALID_HANDLE_VALUE)
+    os_errno_data = GetLastError();
+  SetFilePointer(h, 0, 0, FILE_END);
+  return (cell) h;
+#else
+  int ret;
+  int flags = 0;
+#ifdef WIN64
+  flags |= _O_BINARY;
+#endif
+  ret = open(filename, flags);
+  if (ret < 0)
+    {
+      os_errno_data = errno;
+      return (cell) -1;
+    }
+  else
+    return ret;
+#endif
+}
+
+cell os_file_create_write(const char *filename, int flags)
+{
+#ifdef WIN64_NATIVE
+  HANDLE h = CreateFile(filename,
+                        GENERIC_WRITE,
+                        FILE_SHARE_READ,
+                        NULL, // default security descriptor
+                        CREATE_ALWAYS,
+                        FILE_ATTRIBUTE_NORMAL,
+                        NULL // template file (ignored for existing file)
+                        );
+  return (cell) h;
+#else
+  int ret;
+  int flags = O_WRONLY;
+#ifdef WIN64
+  flags |= _O_CREAT|_O_TRUNC|_O_BINARY;
+#else
+  flags |= O_CREAT|O_TRUNC;
+#endif
+  ret = open(filename, flags, 0644);
+  if (ret < 0)
+    return (cell) -1;
+  else
+    return ret;
+#endif
+}
+
 cell os_create_file(const char *filename, int flags)
 {
 #ifdef WIN64_NATIVE
