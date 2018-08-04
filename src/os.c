@@ -190,7 +190,7 @@ cell os_file_open_append(const char *filename)
 #endif
 }
 
-cell os_file_create_write(const char *filename, int flags)
+cell os_file_create_write(const char *filename)
 {
 #ifdef WIN64_NATIVE
   HANDLE h = CreateFile(filename,
