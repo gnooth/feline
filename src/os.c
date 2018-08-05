@@ -454,12 +454,20 @@ cell os_ticks()
 
 void os_date_time(void * buf)
 {
+#ifdef WIN64
+  SYSTEMTIME lt;
+  char * months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+  GetLocalTime(&lt);
+  sprintf(buf, "%s %02d %02d:%02d:%02d.%03d",
+          months[lt.wMonth - 1], lt.wDay, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds);
+#else
   struct timespec ts;
   timespec_get(&ts, TIME_UTC);
   char buf2[100];
   struct tm local;
   strftime(buf2, sizeof buf2, "%b %d %T", localtime_r(&ts.tv_sec, &local));
   sprintf(buf, "%s.%03ld", buf2, ts.tv_nsec / 1000000);
+#endif
 }
 
 cell os_nano_count()
