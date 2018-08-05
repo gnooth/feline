@@ -165,3 +165,38 @@ code initialize_streams, 'initialize-streams'
         _ gc_add_root
         next
 endcode
+
+; ### stream-write-string
+code stream_write_string, 'stream-write-string' ; string stream -> void
+
+        _ check_stream
+        _swap
+        _ string_from                   ; -> stream address length
+
+        ; test for zero length string
+        test    rbx, rbx
+        jz      .zero_length
+
+.1:
+        push    rbx                     ; save length
+        popd    arg2_register
+        popd    arg1_register
+        mov     arg0_register, stream_fd_slot
+        poprbx
+
+        xcall   os_write_file           ; cell os_write_file(cell fd, void *buf, size_t count)
+
+        ; os_write_file returns number of bytes written or -1 in rax
+        pop     rdx                     ; length
+        cmp     rdx, rax
+        jne     .error
+        next
+
+.error:
+        _error "error writing to file"
+        next
+
+.zero_length:
+        _3drop
+        next
+endcode
