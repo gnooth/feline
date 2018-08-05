@@ -34,6 +34,7 @@ extern os_current_thread_raw_thread_handle
 %endif
 
 extern os_current_thread_raw_thread_id
+extern os_date_time
 extern os_delete_file
 extern os_emit_file
 extern os_file_create_write

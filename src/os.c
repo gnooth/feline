@@ -452,19 +452,14 @@ cell os_ticks()
 #endif
 }
 
-void os_time_and_date(void * buf)
+void os_date_time(void * buf)
 {
-  time_t now;
-#ifdef WIN64
-  struct tm * ltime;
-  time(&now);
-  ltime = localtime(&now);
-  if (ltime)
-    memcpy(buf, ltime, sizeof(struct tm));
-#else
-  time(&now);
-  localtime_r(&now, buf);
-#endif
+  struct timespec ts;
+  timespec_get(&ts, TIME_UTC);
+  char buf2[100];
+  struct tm local;
+  strftime(buf2, sizeof buf2, "%b %d %T", localtime_r(&ts.tv_sec, &local));
+  sprintf(buf, "%s.%03ld", buf2, ts.tv_nsec / 1000000);
 }
 
 cell os_nano_count()

@@ -142,3 +142,19 @@ code errno_to_string, 'errno-to-string' ; n -- string
         _ copy_to_string
         next
 endcode
+
+; ### date-time
+code date_time, 'date-time'             ; -> string
+        _lit 256
+        _ raw_allocate
+        _duptor
+        popd    arg0_register
+        xcall   os_date_time
+        _rfetch
+        _dup
+        _ zstrlen
+        _ copy_to_string
+        _rfrom
+        _ raw_free
+        next
+endcode
