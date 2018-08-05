@@ -56,16 +56,23 @@ endcode
 code file_open_read, 'file-open-read'   ; string -- fd
         _dup
         _ string_raw_data_address
-%ifdef WIN64
-        ; args in rcx, rdx, r8, r9
-        popd    rcx
-        mov     rdx, GENERIC_READ
-%else
-        ; args in rdi, rsi, rdx, rcx
-        popd    rdi
-        xor     esi, esi
-%endif
-        xcall   os_open_file
+        popd    arg0_register
+        xcall   os_file_open_read
+        test    rax, rax
+        js      .1
+        mov     rbx, rax
+        _return
+.1:
+        _ error_file_not_found
+        next
+endcode
+
+; ### file-open-append
+code file_open_append, 'file-open-append'       ; string -- fd
+        _dup
+        _ string_raw_data_address
+        popd    arg0_register
+        xcall   os_file_open_append
         test    rax, rax
         js      .1
         mov     rbx, rax
@@ -196,16 +203,10 @@ code file_read_line, 'file-read-line'   ; fd -- string/f
 endcode
 
 ; ### file-create-write
-code file_create_write, 'file-create-write' ; string -- fd
+code file_create_write, 'file-create-write'     ; string -- fd
         _ string_raw_data_address
-%ifdef WIN64
-        mov     rdx, GENERIC_WRITE
-        popd    rcx
-%else
-        mov     rsi, 1
-        popd    rdi
-%endif
-        xcall   os_create_file
+        popd    arg0_register
+        xcall   os_file_create_write
         test    rax, rax
         js      .1
         pushd   rax                     ; -- fd

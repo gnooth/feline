@@ -36,7 +36,10 @@ extern os_current_thread_raw_thread_handle
 extern os_current_thread_raw_thread_id
 extern os_delete_file
 extern os_emit_file
+extern os_file_create_write
 extern os_file_is_directory
+extern os_file_open_append
+extern os_file_open_read
 extern os_file_position
 extern os_file_size
 extern os_file_status
