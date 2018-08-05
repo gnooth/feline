@@ -15,19 +15,16 @@
 
 file __FILE__
 
-%define DIRECTION_INPUT         1
-%define DIRECTION_OUTPUT        2
-
-; 4 cells: object header, fd, handle, direction
+; 4 cells: object header, fd, input?, output?
 
 %define stream_fd_slot                  qword [rbx + BYTES_PER_CELL]
 %define this_stream_fd_slot             qword [this_register + BYTES_PER_CELL]
 
-%define stream_handle_slot              qword [rbx + BYTES_PER_CELL * 2]
-%define this_stream_handle_slot         qword [this_register + BYTES_PER_CELL * 2]
+%define stream_input?_slot              qword [rbx + BYTES_PER_CELL * 2]
+%define this_stream_input?_slot         qword [this_register + BYTES_PER_CELL * 2]
 
-%define stream_direction_slot           qword [rbx + BYTES_PER_CELL * 3]
-%define this_stream_direction_slot      qword [this_register + BYTES_PER_CELL * 3]
+%define stream_output?_slot             qword [rbx + BYTES_PER_CELL * 3]
+%define this_stream_output?_slot        qword [this_register + BYTES_PER_CELL * 3]
 
 ; ### stream?
 code stream?, 'stream?'                 ; handle -> ?
@@ -79,12 +76,39 @@ code verify_stream, 'verify-stream'     ; handle -- handle
         next
 endcode
 
-; ### <stream>
-code new_stream, '<stream>'             ; -> stream
+; ### stream-fd
+code stream_fd, 'stream-fd'             ; -> fd
+        _ check_stream
+        mov     rbx, stream_fd_slot
+        _ normalize
+        next
+endcode
+
+; ### make-stream
+code make_stream, 'make-stream'         ; fd input? output? -> stream
         _lit 4
-        _ raw_allocate_cells            ; -> raw-stream
+        _ raw_allocate_cells
         _object_set_raw_typecode TYPECODE_STREAM
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -> fd input? output?
+
+        ; output?
+        _ to_boolean
+        mov     this_stream_output?_slot, rbx
+        poprbx
+
+        ; input?
+        _ to_boolean
+        mov     this_stream_input?_slot, rbx
+        poprbx
+
+        ; fd
+        mov     this_stream_fd_slot, rbx
+
+        mov     rbx, this_register
         _ new_handle
+        pop     this_register
         next
 endcode
 
