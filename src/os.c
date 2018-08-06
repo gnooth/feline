@@ -139,7 +139,10 @@ cell os_file_open_read(const char *filename)
                         NULL // template file (ignored for existing file)
                         );
   if (h == INVALID_HANDLE_VALUE)
-    os_errno_data = GetLastError();
+    {
+      os_errno_data = GetLastError();
+      return (cell) -1;
+    }
   return (cell) h;
 #else
   int ret;
@@ -170,7 +173,10 @@ cell os_file_open_append(const char *filename)
                         NULL // template file (ignored for existing file)
                         );
   if (h == INVALID_HANDLE_VALUE)
-    os_errno_data = GetLastError();
+    {
+      os_errno_data = GetLastError();
+      return (cell) -1;
+    }
   SetFilePointer(h, 0, 0, FILE_END);
   return (cell) h;
 #else
