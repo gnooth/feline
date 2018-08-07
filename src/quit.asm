@@ -554,7 +554,8 @@ code print_datastack1, 'print-datastack1'       ; x -> void
         _ tab
         _ output_style
         _ dup
-        _ short_dot
+        _ object_to_short_string
+        _ write_string
         _ comment_style
         _lit tagged_fixnum(50)
         _ tab

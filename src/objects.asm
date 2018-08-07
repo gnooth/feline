@@ -493,8 +493,8 @@ code dot_object, '.'                    ; handle-or-object --
         next
 endcode
 
-; ### short.
-code short_dot, 'short.'                ; handle-or-object --
+; ### object>short-string
+code object_to_short_string, 'object>short-string'      ; x -> string
         _ object_to_string
         _dup
         _ string_length
@@ -506,10 +506,14 @@ code short_dot, 'short.'                ; handle-or-object --
         _quote '...'
         _ string_append
         _then .1
+        next
+endcode
+
+; ### short.
+code short_dot, 'short.'                ; handle-or-object --
+        _ object_to_short_string
         _ write_string
-
-        ; REVIEW no newline
-
+        _ nl
         next
 endcode
 
