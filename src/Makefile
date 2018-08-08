@@ -108,6 +108,7 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 	defer.asm \
 	dynamic-scope.asm \
 	errors.asm \
+	file-output-stream.asm \
 	files.asm \
 	fixnum.asm \
 	float.asm \
