@@ -68,7 +68,7 @@ code file_open_read, 'file-open-read'   ; string -- fd
 endcode
 
 ; ### file-open-append
-code file_open_append, 'file-open-append'       ; string -- fd
+code file_open_append, 'file-open-append'       ; string -> file-output-stream
         _dup
         _ string_raw_data_address
         popd    arg0_register
@@ -76,7 +76,8 @@ code file_open_append, 'file-open-append'       ; string -- fd
         test    rax, rax
         js      .1
         mov     rbx, rax
-        _return
+        _ make_file_output_stream
+        next
 .1:
         _ error_file_not_found
         next
