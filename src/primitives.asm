@@ -892,6 +892,24 @@ code decimal_dot, 'dec.'                ; n --
         next
 endcode
 
+; ### dec.r
+code decimal_dot_r, 'dec.r'             ; n width -> void
+        _check_fixnum
+        _swap
+        _ number_to_string              ; -> raw-width string
+        push    rbx
+        _ string_raw_length             ; -> raw-width raw-length
+        _minus
+        js      .1
+        _tag_fixnum
+        _ spaces
+        pushrbx
+.1:
+        pop     rbx
+        _ write_string
+        next
+endcode
+
 ; ### >hex
 code to_hex, '>hex'                     ; n -- string
         _dup
