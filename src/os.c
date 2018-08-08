@@ -163,7 +163,7 @@ cell os_file_open_read(const char *filename)
 
 cell os_file_open_append(const char *filename)
 {
-#ifdef WIN64_NATIVE
+#ifdef WIN64
   HANDLE h = CreateFile(filename,
                         GENERIC_WRITE,
                         FILE_SHARE_WRITE,
@@ -180,12 +180,13 @@ cell os_file_open_append(const char *filename)
   SetFilePointer(h, 0, 0, FILE_END);
   return (cell) h;
 #else
-  int ret;
-  int flags = 0;
-#ifdef WIN64
-  flags |= _O_BINARY;
-#endif
-  ret = open(filename, flags);
+  int flags = O_WRONLY|O_APPEND;
+  int ret = open(filename, flags);
+  if (ret >= 0)
+    // file already exists
+    return ret;
+  flags |= O_CREAT;
+  ret = open(filename, flags, 0644);
   if (ret < 0)
     {
       os_errno_data = errno;
