@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -85,15 +85,29 @@ code resize_file, 'resize-file'         ; ud fileid -- ior
 endcode
 
 ; ### delete-file
-code delete_file, 'delete-file'         ; c-addr u -- ior
-        _ as_c_string
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
+code delete_file, 'delete-file'         ; string ->
+        _dup
+        _ string_raw_data_address
+        mov     arg0_register, rbx
+        poprbx
         xcall   os_delete_file
-        mov     ebx, eax
+        test    rax, rax
+        js      .error
+        _drop
+        next
+.error:
+        ; REVIEW explain why delete failed
+        _quote `ERROR: unable to delete `
+        _ string_to_sbuf
+        _swap
+        _ canonical_path
+        _over
+        _ sbuf_append_string
+        _lit tagged_char('.')
+        _over
+        _ sbuf_push
+        _ sbuf_to_string
+        _ error
         next
 endcode
 
