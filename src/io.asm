@@ -97,7 +97,7 @@ code delete_file, 'delete-file'         ; string ->
         next
 .error:
         ; REVIEW explain why delete failed
-        _quote `ERROR: unable to delete `
+        _quote `ERROR: unable to delete file `
         _ string_to_sbuf
         _swap
         _ canonical_path
