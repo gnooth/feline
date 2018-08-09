@@ -83,6 +83,34 @@ code file_open_append, 'file-open-append'       ; string -> file-output-stream
         next
 endcode
 
+; ### file-create-write
+code file_create_write, 'file-create-write'     ; string -> file-output-stream
+        _dup
+        _ string_raw_data_address
+        mov     arg0_register, rbx
+        poprbx
+        xcall   os_file_create_write
+        test    rax, rax
+        js      .error
+        mov     rbx, rax
+        _ make_file_output_stream
+        next
+.error:
+        ; REVIEW explain reason for failure
+        _quote `ERROR: unable to create file `
+        _ string_to_sbuf
+        _swap
+        _ canonical_path
+        _over
+        _ sbuf_append_string
+        _lit tagged_char('.')
+        _over
+        _ sbuf_push
+        _ sbuf_to_string
+        _ error
+        next
+endcode
+
 ; ### file-size
 code file_size, 'file-size'             ; fd -- tagged-size
 %ifdef WIN64
