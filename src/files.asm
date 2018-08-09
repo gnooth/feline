@@ -203,8 +203,8 @@ code file_read_line, 'file-read-line'   ; fd -- string/f
         next
 endcode
 
-; ### file-create-write
-code file_create_write, 'file-create-write'     ; string -- fd
+; ### file-create-write-fd
+code file_create_write_fd, 'file-create-write-fd'       ; string -- fd
         _ string_raw_data_address
         popd    arg0_register
         xcall   os_file_create_write
@@ -331,7 +331,7 @@ endcode
 
 ; ### set-file-contents
 code set_file_contents, 'set-file-contents'     ; string path --
-        _ file_create_write
+        _ file_create_write_fd
         _tuck
         _ file_write_string
         _ file_close
@@ -371,7 +371,7 @@ endcode
 
 ; ### set-file-lines
 code set_file_lines, 'set-file-lines'   ; seq path --
-        _ file_create_write             ; -- seq fd
+        _ file_create_write_fd          ; -- seq fd
         _swap                           ; -- fd seq
         _quotation .1
         _over
