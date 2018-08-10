@@ -359,10 +359,10 @@ endcode
 
 ; ### set-file-contents
 code set_file_contents, 'set-file-contents'     ; string path --
-        _ file_create_write_fd
+        _ file_create_write             ; -> string file-output-stream
         _tuck
-        _ file_write_string
-        _ file_close
+        _ file_output_stream_write_string
+        _ file_output_stream_close
         next
 endcode
 
