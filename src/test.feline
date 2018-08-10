@@ -3415,4 +3415,26 @@ test: set-file-contents-test-1
 
 set-file-contents-test-1
 
+test: stream-output-column-test-1
+    "delete-me" file-exists? [
+        "delete-me" delete-file
+    ] when
+    "delete-me" file-exists? assert-false
+
+    "delete-me" file-open-append :> stream
+    stream file-output-stream? assert-true
+    stream file-output-stream-output-column 0 assert-eq
+    "this is a test" stream file-output-stream-write-string
+    stream file-output-stream-output-column 14 assert-eq
+    " and this is another-test" stream file-output-stream-write-string
+    stream file-output-stream-output-column 39 assert-eq
+    stream file-output-stream-nl
+    stream file-output-stream-output-column 0 assert-eq
+
+    -- generic
+    stream close
+;
+
+stream-output-column-test-1
+
 ?nl "Reached end of test.feline" write-string
