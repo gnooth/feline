@@ -221,6 +221,20 @@ code file_output_stream_nl, 'file-output-stream-nl'     ; stream -> void
         next
 endcode
 
+; ### file-output-stream-?nl
+code file_output_stream_?nl, 'file-output-stream-?nl'   ; stream -> void
+        _dup
+        _ file_output_stream_output_column
+        cmp     rbx, tagged_zero
+        jne     .1
+        _2drop
+        next
+.1:
+        _drop
+        _ file_output_stream_nl
+        next
+endcode
+
 ;  ### file-output-stream-close
 code file_output_stream_close, 'file-output-stream-close'       ; stream -> void
         _ check_file_output_stream

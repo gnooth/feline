@@ -3431,6 +3431,11 @@ test: stream-output-column-test-1
     stream file-output-stream-nl
     stream file-output-stream-output-column 0 assert-eq
 
+    "one more" stream file-output-stream-write-string
+    stream file-output-stream-output-column 8 assert-eq
+    stream file-output-stream-?nl
+    stream file-output-stream-output-column 0 assert-eq
+
     -- generic
     stream close
 ;
