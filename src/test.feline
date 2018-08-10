@@ -3369,4 +3369,50 @@ test: file-open-append-test-1
 
 file-open-append-test-1
 
+test: file-open-append-test-2
+    "delete-me" file-exists? [
+        "delete-me" delete-file
+    ] when
+    "delete-me" file-exists? assert-false
+
+    "delete-me" file-open-append :> stream!
+    stream file-output-stream? assert-true
+    "this is a test" stream file-output-stream-write-string
+    -- generic
+    stream close
+
+    "delete-me" file-exists? assert-true
+    "delete-me" file-contents "this is a test" assert=
+
+    "delete-me" file-open-append stream!
+    stream file-output-stream? assert-true
+    " and this is another test" stream file-output-stream-write-string
+    -- generic
+    stream close
+
+    "delete-me" file-exists? assert-true
+    "delete-me" file-contents "this is a test and this is another test" assert=
+
+    "delete-me" delete-file
+    "delete-me" file-exists? assert-false
+;
+
+file-open-append-test-2
+
+test: set-file-contents-test-1
+    "delete-me" file-exists? [
+        "delete-me" delete-file
+    ] when
+    "delete-me" file-exists? assert-false
+
+    "this is a test" "delete-me" set-file-contents
+    "delete-me" file-exists? assert-true
+    "delete-me" file-contents "this is a test" assert=
+
+    "delete-me" delete-file
+    "delete-me" file-exists? assert-false
+;
+
+set-file-contents-test-1
+
 ?nl "Reached end of test.feline" write-string
