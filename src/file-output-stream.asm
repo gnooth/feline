@@ -17,11 +17,13 @@ file __FILE__
 
 ; 3 cells: object header, fd, output column
 
-; slot 1
-%define file_output_stream_fd_slot      qword [rbx + BYTES_PER_CELL]
+; slot 1: fd
+%define file_output_stream_fd_slot                      qword [rbx + BYTES_PER_CELL]
+%define this_file_output_stream_fd_slot                 qword [this_register + BYTES_PER_CELL]
 
-; slot 2
-%define file_output_stream_output_column_slot   qword [rbx + BYTES_PER_CELL * 2]
+; slot 2: output column
+%define file_output_stream_output_column_slot           qword [rbx + BYTES_PER_CELL * 2]
+%define this_file_output_stream_output_column_slot      qword [this_register + BYTES_PER_CELL * 2]
 
 ; ### file-output-stream?
 code file_output_stream?, 'file-output-stream?' ; handle -> ?
@@ -82,10 +84,23 @@ code file_output_stream_fd, 'file-output-stream-fd'     ; stream -> fd
 endcode
 
 ; ### file-output-stream-output-column
-code file_output_stream_output_column, 'file-output-stream-output-column'       ; stream -> fd
+code file_output_stream_output_column, 'file-output-stream-output-column'       ; stream -> n
         _ check_file_output_stream
         mov     rbx, file_output_stream_output_column_slot
         _tag_fixnum
+        next
+endcode
+
+; ### file-output-stream-set-output-column
+code file_output_stream_set_output_column, 'file-output-stream-set-output-column'       ; n stream -> void
+        _ check_file_output_stream
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+        _check_fixnum
+        mov     this_file_output_stream_output_column_slot, rbx
+        poprbx
+        pop     this_register
         next
 endcode
 
@@ -148,34 +163,61 @@ endcode
 code file_output_stream_write_string, 'file-output-stream-write-string' ; string stream -> void
 
         _ check_file_output_stream
-        _swap
-        _ string_from                   ; -> raw-stream address length
 
-        ; test for zero length string
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -> string
+
+        _ string_from                   ; -> address length
+
         test    rbx, rbx
-        jz      .zero_length
+        jz      .zero_length_string
 
-.1:
         push    rbx                     ; save length
         popd    arg2_register
         popd    arg1_register
-        mov     arg0_register, file_output_stream_fd_slot
-        poprbx
+        mov     arg0_register, this_file_output_stream_fd_slot
 
         xcall   os_write_file           ; cell os_write_file(cell fd, void *buf, size_t count)
 
         ; os_write_file returns number of bytes written or -1 in rax
-        pop     rdx                     ; length
+        pop     rdx                     ; retrieve length
         cmp     rdx, rax
         jne     .error
+
+        ; update output column
+        add     this_file_output_stream_output_column_slot, rax
+
+        pop     this_register
         next
 
 .error:
         _error "error writing to file"
+        pop     this_register
         next
 
-.zero_length:
-        _3drop
+.zero_length_string:
+        _2drop
+        pop     this_register
+        next
+endcode
+
+; ### file-output-stream-nl
+code file_output_stream_nl, 'file-output-stream-nl'     ; stream -> void
+        push    rbx                     ; save stream
+%ifdef WIN64
+        _quote `\r\n`
+        _swap
+        _ file_output_stream_write_string
+%else
+        _lit tagged_char(10)
+        _swap
+        _ file_output_stream_write_char
+%endif
+        _lit tagged_zero
+        pushrbx
+        pop     rbx
+        _ file_output_stream_set_output_column
         next
 endcode
 
