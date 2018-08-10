@@ -453,6 +453,9 @@ generic substring, 'substring'          ; from to string/sbuf -- substring
 ; ### >float
 generic to_float, '>float'
 
+; ### close
+generic generic_close, 'close'          ; stream -> void
+
 ; ### initialize_generic_functions
 code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERNAL      ; --
 
@@ -620,6 +623,10 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method to_float, TYPECODE_INT64, int64_to_float
         _add_method to_float, TYPECODE_FLOAT, identity
         _add_method to_float, TYPECODE_STRING, string_to_float
+
+        ; close
+        _initialize_generic_function generic_close
+        _add_method generic_close, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_close
 
         next
 endcode
