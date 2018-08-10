@@ -15,10 +15,13 @@
 
 file __FILE__
 
-; 2 cells: object header, fd
+; 3 cells: object header, fd, output column
 
 ; slot 1
 %define file_output_stream_fd_slot      qword [rbx + BYTES_PER_CELL]
+
+; slot 2
+%define file_output_stream_output_column_slot   qword [rbx + BYTES_PER_CELL * 2]
 
 ; ### file-output-stream?
 code file_output_stream?, 'file-output-stream?' ; handle -> ?
@@ -71,16 +74,24 @@ code verify_file_output_stream, 'verify-file-output-stream'     ; handle -> hand
 endcode
 
 ; ### file-output-stream-fd
-code file_output_stream_fd, 'file-output-stream-fd'     ; -> fd
+code file_output_stream_fd, 'file-output-stream-fd'     ; stream -> fd
         _ check_file_output_stream
         mov     rbx, file_output_stream_fd_slot
         _ normalize
         next
 endcode
 
+; ### file-output-stream-output-column
+code file_output_stream_output_column, 'file-output-stream-output-column'       ; stream -> fd
+        _ check_file_output_stream
+        mov     rbx, file_output_stream_output_column_slot
+        _tag_fixnum
+        next
+endcode
+
 ; ### make-file-output-stream
 code make_file_output_stream, 'make-file-output-stream' ; fd -> stream
-        _lit 2
+        _lit 3
         _ raw_allocate_cells
 
         _object_set_raw_typecode TYPECODE_FILE_OUTPUT_STREAM
@@ -89,6 +100,8 @@ code make_file_output_stream, 'make-file-output-stream' ; fd -> stream
         mov     rax, [rbp]              ; fd in rax
         _nip
         mov     file_output_stream_fd_slot, rax
+
+        mov     file_output_stream_output_column_slot, 0
 
         ; -> raw-stream
         _ new_handle
