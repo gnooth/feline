@@ -439,6 +439,18 @@ section .data
 %define SYMBOL_THREAD_LOCAL     $0400
 %define SYMBOL_DEFERRED         $0800
 
+%macro  subroutine 1
+        %push subroutine
+        global %1
+        section .text
+        align   DEFAULT_CODE_ALIGNMENT
+%1:
+%endmacro
+
+%macro  endsub 0
+        %pop subroutine
+%endmacro
+
 %define symbol_link     0
 
 ; static symbol
