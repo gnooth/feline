@@ -197,8 +197,6 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         _lit gc_roots_
         _ gc_add_root
 
-        _ initialize_streams
-
         _ cold_initialize_locals
 
         _ initialize_gc_dispatch_table
@@ -210,6 +208,8 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         _ initialize_generic_functions
 
         _ hash_vocabs
+
+        _ initialize_streams
 
         _lit 64
         _ new_hashtable_untagged

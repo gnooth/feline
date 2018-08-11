@@ -260,6 +260,8 @@ code stdout, 'stdout'                   ; -> stream
         next
 endcode
 
+special standard_output, 'standard-output'
+
 ; ### initialize-streams
 code initialize_streams, 'initialize-streams'
         pushrbx
@@ -270,8 +272,14 @@ code initialize_streams, 'initialize-streams'
 %endif
         _ make_file_output_stream
         mov     [stdout_], rbx
-        poprbx
+        _drop
+
         _lit stdout_
         _ gc_add_root
+
+        _ stdout
+        _ standard_output
+        _ set
+
         next
 endcode
