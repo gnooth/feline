@@ -169,6 +169,26 @@ code file_output_stream_write_char, 'file-output-stream-write-char'     ; char s
         next
 endcode
 
+; ### this_stream_write_bytes_unsafe
+subroutine this_stream_write_bytes_unsafe       ; raw-address raw-length -> void
+; call with raw address of stream object in this_register
+; returns number of bytes written in rax
+        push    rbx                     ; save raw length
+        popd    arg2_register
+        popd    arg1_register
+        mov     arg0_register, this_file_output_stream_fd_slot
+
+        xcall   os_write_file           ; cell os_write_file(cell fd, void *buf, size_t count)
+
+        ; os_write_file returns number of bytes written or -1 in rax
+        pop     rdx                     ; retrieve raw length
+        cmp     rdx, rax
+        jne     .error
+        ret
+.error:
+        _error "error writing to file"  ; no return
+endsub
+
 ; ### file-output-stream-write-string
 code file_output_stream_write_string, 'file-output-stream-write-string' ; string stream -> void
 
@@ -178,31 +198,17 @@ code file_output_stream_write_string, 'file-output-stream-write-string' ; string
         mov     this_register, rbx
         poprbx                          ; -> string
 
-        _ string_from                   ; -> address length
+        _ string_from                   ; -> raw-address raw-length
 
         test    rbx, rbx
         jz      .zero_length_string
 
-        push    rbx                     ; save length
-        popd    arg2_register
-        popd    arg1_register
-        mov     arg0_register, this_file_output_stream_fd_slot
-
-        xcall   os_write_file           ; cell os_write_file(cell fd, void *buf, size_t count)
-
-        ; os_write_file returns number of bytes written or -1 in rax
-        pop     rdx                     ; retrieve length
-        cmp     rdx, rax
-        jne     .error
+        ; returns number of bytes written in rax
+        call    this_stream_write_bytes_unsafe
 
         ; update output column
         add     this_file_output_stream_output_column_slot, rax
 
-        pop     this_register
-        next
-
-.error:
-        _error "error writing to file"
         pop     this_register
         next
 
