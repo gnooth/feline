@@ -150,12 +150,22 @@ endcode
 ; ### file-output-stream-write-char
 code file_output_stream_write_char, 'file-output-stream-write-char'     ; char stream -> void
         _ check_file_output_stream
+        push    this_register
+        mov     this_register, rbx
         mov     arg1_register, file_output_stream_fd_slot
         poprbx
         _check_char
-        mov     arg0_register, rbx
-        poprbx
+        mov     arg0_register, rbx      ; untagged char in rbx
         xcall   os_emit_file            ; void os_emit_file(int c, int fd)
+        cmp     rbx, 10                 ; newline?
+        poprbx
+        je      .newline
+        add     this_file_output_stream_output_column_slot, 1
+        pop     this_register
+        next
+.newline:
+        mov     this_file_output_stream_output_column_slot, 0
+        pop     this_register
         next
 endcode
 
