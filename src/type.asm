@@ -241,7 +241,6 @@ code initialize_types, 'initialize_types', SYMBOL_INTERNAL
         _add_type "thread", TYPECODE_THREAD
         _add_type "mutex", TYPECODE_MUTEX
         _add_type "string-iterator", TYPECODE_STRING_ITERATOR
-        _add_type "stream", TYPECODE_STREAM
         _add_type "slot-definition", TYPECODE_SLOT_DEFINITION
         _add_type "file-output-stream", TYPECODE_FILE_OUTPUT_STREAM
 

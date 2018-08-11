@@ -461,12 +461,12 @@ code object_to_string, 'object>string'  ; object -- string
         _return
         _then .32
 
-        _dup
-        _ stream?
-        _tagged_if .33
-        _ stream_to_string
-        _return
-        _then .33
+;         _dup
+;         _ stream?
+;         _tagged_if .33
+;         _ stream_to_string
+;         _return
+;         _then .33
 
         _dup
         _ slot_definition?
