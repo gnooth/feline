@@ -260,10 +260,6 @@ code stdout, 'stdout'                   ; -> stream
         next
 endcode
 
-; ### stdin
-
-; ### stderr
-
 ; ### initialize-streams
 code initialize_streams, 'initialize-streams'
         pushrbx
@@ -272,9 +268,7 @@ code initialize_streams, 'initialize-streams'
 %else
         mov     rbx, 1
 %endif
-        _f
-        _t
-        _ make_stream
+        _ make_file_output_stream
         mov     [stdout_], rbx
         poprbx
         _lit stdout_
