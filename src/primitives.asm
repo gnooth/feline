@@ -1066,11 +1066,10 @@ code write_char_escaped, 'write-char-escaped'   ; tagged-char --
 endcode
 
 ; ### write-string-escaped
-code write_string_escaped, 'write-string-escaped'       ; string --
-        _quotation .1
-        _ write_char_escaped
-        _end_quotation .1
-        _ each
+code write_string_escaped, 'write-string-escaped'       ; string -> void
+        _ standard_output
+        _ get
+        _ file_output_stream_write_string_escaped
         next
 endcode
 
