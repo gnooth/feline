@@ -974,9 +974,10 @@ code unsafe_raw_write_chars, 'unsafe_raw_write_chars', SYMBOL_INTERNAL
 endcode
 
 ; ### write-string
-code write_string, 'write-string'       ; string --
-        _ string_from                   ; -- addr len
-        _ unsafe_raw_write_chars
+code write_string, 'write-string'       ; string -> void
+        _ standard_output
+        _ get
+        _ file_output_stream_write_string
         next
 endcode
 
