@@ -3424,16 +3424,29 @@ test: stream-output-column-test-1
     "delete-me" file-open-append :> stream
     stream file-output-stream? assert-true
     stream file-output-stream-output-column 0 assert-eq
+
     "this is a test" stream file-output-stream-write-string
     stream file-output-stream-output-column 14 assert-eq
-    " and this is another-test" stream file-output-stream-write-string
+
+    " and this is another test" stream file-output-stream-write-string
     stream file-output-stream-output-column 39 assert-eq
+
     stream file-output-stream-nl
     stream file-output-stream-output-column 0 assert-eq
 
     "one more" stream file-output-stream-write-string
     stream file-output-stream-output-column 8 assert-eq
+
     stream file-output-stream-?nl
+    stream file-output-stream-output-column 0 assert-eq
+
+    'a' stream file-output-stream-write-char
+    stream file-output-stream-output-column 1 assert-eq
+    'b' stream file-output-stream-write-char
+    stream file-output-stream-output-column 2 assert-eq
+    'c' stream file-output-stream-write-char
+    stream file-output-stream-output-column 3 assert-eq
+    '\n' stream file-output-stream-write-char
     stream file-output-stream-output-column 0 assert-eq
 
     -- generic
