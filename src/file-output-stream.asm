@@ -250,3 +250,34 @@ code file_output_stream_close, 'file-output-stream-close'       ; stream -> void
         _error "unable to close stream"
         next
 endcode
+
+asm_global stdout_
+
+; ### stdout
+code stdout, 'stdout'                   ; -> stream
+        pushrbx
+        mov     rbx, [stdout_]
+        next
+endcode
+
+; ### stdin
+
+; ### stderr
+
+; ### initialize-streams
+code initialize_streams, 'initialize-streams'
+        pushrbx
+%ifdef WIN64
+        mov     rbx, [standard_output_handle]
+%else
+        mov     rbx, 1
+%endif
+        _f
+        _t
+        _ make_stream
+        mov     [stdout_], rbx
+        poprbx
+        _lit stdout_
+        _ gc_add_root
+        next
+endcode

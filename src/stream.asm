@@ -135,37 +135,6 @@ code stream_to_string, 'stream>string'  ; stream -> string
         next
 endcode
 
-asm_global stdout_
-
-; ### stdout
-code stdout, 'stdout'                   ; -> stream
-        pushrbx
-        mov     rbx, [stdout_]
-        next
-endcode
-
-; ### stdin
-
-; ### stderr
-
-; ### initialize-streams
-code initialize_streams, 'initialize-streams'
-        pushrbx
-%ifdef WIN64
-        mov     rbx, [standard_output_handle]
-%else
-        mov     rbx, 1
-%endif
-        _f
-        _t
-        _ make_stream
-        mov     [stdout_], rbx
-        poprbx
-        _lit stdout_
-        _ gc_add_root
-        next
-endcode
-
 ; ### stream-write-string
 code stream_write_string, 'stream-write-string' ; string stream -> void
 
