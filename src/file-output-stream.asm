@@ -218,6 +218,33 @@ code file_output_stream_write_string, 'file-output-stream-write-string' ; string
         next
 endcode
 
+; ### file-output-stream-write-string-escaped
+code file_output_stream_write_string_escaped, 'file-output-stream-write-string-escaped' ; string stream -> void
+
+        ; does not update output column!
+
+        _ check_file_output_stream
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -> string
+
+        _ string_from                   ; -> address length
+
+        test    rbx, rbx
+        jz      .zero_length_string
+
+        call    this_stream_write_bytes_unsafe
+
+        pop     this_register
+        next
+
+.zero_length_string:
+        _2drop
+        pop     this_register
+        next
+endcode
+
 ; ### file-output-stream-nl
 code file_output_stream_nl, 'file-output-stream-nl'     ; stream -> void
         push    rbx                     ; save stream
