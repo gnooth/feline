@@ -973,14 +973,6 @@ code unsafe_raw_write_chars, 'unsafe_raw_write_chars', SYMBOL_INTERNAL
         next
 endcode
 
-; ### write-string
-code write_string, 'write-string'       ; string -> void
-        _ standard_output
-        _ get
-        _ file_output_stream_write_string
-        next
-endcode
-
 ; ### string-append
 code string_append, 'string-append'     ; string1 string2 -- string3
         _swap

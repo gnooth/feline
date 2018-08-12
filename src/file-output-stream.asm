@@ -399,8 +399,16 @@ code ?nl, '?nl'
         next
 endcode
 
+; ### write-string
+code write_string, 'write-string'       ; string -> void
+        _ standard_output
+        _ get
+        _ file_output_stream_write_string
+        next
+endcode
+
 ; ### print
-code print, 'print'
+code print, 'print'                     ; string -> void
         _ generic_write
         _ nl
         next
