@@ -169,6 +169,18 @@ code file_output_stream_write_char, 'file-output-stream-write-char'     ; char s
         next
 endcode
 
+; ### file-output-stream-write-char-escaped
+code file_output_stream_write_char_escaped, 'file-output-stream-write-char-escaped'     ; char stream -> void
+        _ check_file_output_stream
+        mov     arg1_register, file_output_stream_fd_slot
+        poprbx
+        _check_char
+        mov     arg0_register, rbx      ; untagged char in rbx
+        poprbx
+        xcall   os_emit_file            ; void os_emit_file(int c, int fd)
+        next
+endcode
+
 ; ### this_stream_write_bytes_unsafe
 subroutine this_stream_write_bytes_unsafe       ; raw-address raw-length -> void
 ; call with raw address of stream object in this_register
