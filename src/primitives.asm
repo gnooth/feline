@@ -1006,14 +1006,6 @@ asm_global last_char_, 10
 
 _global output_column
 
-; ### charpos
-code charpos, 'charpos'                 ; -- n
-        pushrbx
-        mov     rbx, [output_column]
-        _tag_fixnum
-        next
-endcode
-
 ; ### write-char-escaped
 code write_char_escaped, 'write-char-escaped'   ; tagged-char --
         _check_char
