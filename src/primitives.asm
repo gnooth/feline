@@ -1014,26 +1014,6 @@ code charpos, 'charpos'                 ; -- n
         next
 endcode
 
-; ### tab
-code tab, 'tab'                         ; n --
-        _ standard_output
-        _ get
-        _ file_output_stream_output_column
-        _ generic_minus
-        _lit tagged_fixnum(1)
-        _ generic_max
-        _ spaces
-        next
-endcode
-
-; ### write-char
-code write_char, 'write-char'           ; tagged-char --
-        _ standard_output
-        _ get
-        _ file_output_stream_write_char
-        next
-endcode
-
 ; ### write-char-escaped
 code write_char_escaped, 'write-char-escaped'   ; tagged-char --
         _check_char
@@ -1047,14 +1027,6 @@ code write_char_escaped, 'write-char-escaped'   ; tagged-char --
         mov     esi, 1                  ; fd
 %endif
         xcall   os_emit_file            ; void os_emit_file(int c, int fd)
-        next
-endcode
-
-; ### write-string-escaped
-code write_string_escaped, 'write-string-escaped'       ; string -> void
-        _ standard_output
-        _ get
-        _ file_output_stream_write_string_escaped
         next
 endcode
 

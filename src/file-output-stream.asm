@@ -399,11 +399,39 @@ code ?nl, '?nl'
         next
 endcode
 
+; ### tab
+code tab, 'tab'                         ; n --
+        _ standard_output
+        _ get
+        _ file_output_stream_output_column
+        _ generic_minus
+        _lit tagged_fixnum(1)
+        _ generic_max
+        _ spaces
+        next
+endcode
+
+; ### write-char
+code write_char, 'write-char'           ; tagged-char -> void
+        _ standard_output
+        _ get
+        _ file_output_stream_write_char
+        next
+endcode
+
 ; ### write-string
 code write_string, 'write-string'       ; string -> void
         _ standard_output
         _ get
         _ file_output_stream_write_string
+        next
+endcode
+
+; ### write-string-escaped
+code write_string_escaped, 'write-string-escaped'       ; string -> void
+        _ standard_output
+        _ get
+        _ file_output_stream_write_string_escaped
         next
 endcode
 
