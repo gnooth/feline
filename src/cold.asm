@@ -249,7 +249,6 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         _then .2
 
         _ dot_version
-        _ ?nl
 
         _lit S_process_init_file
         _ catch
