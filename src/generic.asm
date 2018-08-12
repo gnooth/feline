@@ -453,6 +453,30 @@ generic substring, 'substring'          ; from to string/sbuf -- substring
 ; ### >float
 generic to_float, '>float'
 
+; ### output-stream?
+generic output_stream?, 'output-stream?'        ; object -> ?
+
+; ### stream-write-char
+generic stream_write_char, 'stream-write-char'  ; char stream -> void
+
+; ### stream-write-char-escaped
+generic stream_write_char_escaped, 'stream-write-char-escaped'  ; char stream -> void
+
+; ### stream-write-string
+generic stream_write_string, 'stream-write-string'      ; string stream -> void
+
+; ### stream-write-string-escaped
+generic stream_write_string_escaped, 'stream-write-string-escaped'      ; string stream -> void
+
+; ### stream-output-column
+generic stream_output_column, 'stream-output-column'    ; stream -> fixnum
+
+; ### stream-nl
+generic stream_nl, 'stream-nl'          ; stream -> void
+
+; ### stream-?nl
+generic stream_?nl, 'stream-?nl'        ; stream -> void
+
 ; ### close
 generic generic_close, 'close'          ; stream -> void
 
@@ -623,6 +647,38 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method to_float, TYPECODE_INT64, int64_to_float
         _add_method to_float, TYPECODE_FLOAT, identity
         _add_method to_float, TYPECODE_STRING, string_to_float
+
+        ; output-stream?
+        _initialize_generic_function output_stream?
+        _add_method output_stream?, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream?
+
+        ; stream-write-char
+        _initialize_generic_function stream_write_char
+        _add_method stream_write_char, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_write_char
+
+        ; stream-write-char-escaped
+        _initialize_generic_function stream_write_char_escaped
+        _add_method stream_write_char_escaped, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_write_char_escaped
+
+        ; stream-write-string
+        _initialize_generic_function stream_write_string
+        _add_method stream_write_string, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_write_string
+
+        ; stream-write-string-escaped
+        _initialize_generic_function stream_write_string_escaped
+        _add_method stream_write_string_escaped, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_write_string_escaped
+
+        ; stream-output-column
+        _initialize_generic_function stream_output_column
+        _add_method stream_output_column, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_output_column
+
+        ; stream-nl
+        _initialize_generic_function stream_nl
+        _add_method stream_nl, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_nl
+
+        ; stream-?nl
+        _initialize_generic_function stream_?nl
+        _add_method stream_?nl, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_?nl
 
         ; close
         _initialize_generic_function generic_close
