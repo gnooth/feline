@@ -1016,7 +1016,9 @@ endcode
 
 ; ### tab
 code tab, 'tab'                         ; n --
-        _ charpos
+        _ standard_output
+        _ get
+        _ file_output_stream_output_column
         _ generic_minus
         _lit tagged_fixnum(1)
         _ generic_max
@@ -1026,26 +1028,9 @@ endcode
 
 ; ### write-char
 code write_char, 'write-char'           ; tagged-char --
-        _check_char
-        mov     [last_char_], rbx
-        cmp     rbx, 10
-        je      .1
-        inc     qword [output_column]
-        jmp     .2
-.1:
-        xor     eax, eax
-        mov     [output_column], rax
-.2:
-%ifdef WIN64
-        ; args in rcx, rdx, r8, r9
-        popd    rcx
-        mov     rdx, [standard_output_handle]
-%else
-        ; args in rdi, rsi, rdx, rcx
-        popd    rdi
-        mov     esi, 1                  ; fd
-%endif
-        xcall   os_emit_file            ; void os_emit_file(int c, int fd)
+        _ standard_output
+        _ get
+        _ file_output_stream_write_char
         next
 endcode
 
