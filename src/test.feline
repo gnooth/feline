@@ -3342,9 +3342,7 @@ test: string-last-index-from-test-1
 string-last-index-from-test-1
 
 test: file-open-append-test-1
-    "delete-me" file-exists? [
-        "delete-me" delete-file
-    ] when
+    "delete-me" file-exists? [ "delete-me" delete-file ] when
     "delete-me" file-exists? assert-false
 
     "delete-me" file-open-append :> stream!
@@ -3370,9 +3368,7 @@ test: file-open-append-test-1
 file-open-append-test-1
 
 test: file-open-append-test-2
-    "delete-me" file-exists? [
-        "delete-me" delete-file
-    ] when
+    "delete-me" file-exists? [ "delete-me" delete-file ] when
     "delete-me" file-exists? assert-false
 
     "delete-me" file-open-append :> stream!
@@ -3400,9 +3396,7 @@ test: file-open-append-test-2
 file-open-append-test-2
 
 test: set-file-contents-test-1
-    "delete-me" file-exists? [
-        "delete-me" delete-file
-    ] when
+    "delete-me" file-exists? [ "delete-me" delete-file ] when
     "delete-me" file-exists? assert-false
 
     "this is a test" "delete-me" set-file-contents
@@ -3416,40 +3410,46 @@ test: set-file-contents-test-1
 set-file-contents-test-1
 
 test: stream-output-column-test-1
-    "delete-me" file-exists? [
-        "delete-me" delete-file
-    ] when
+    "delete-me" file-exists? [ "delete-me" delete-file ] when
     "delete-me" file-exists? assert-false
 
     "delete-me" file-open-append :> stream
-    stream file-output-stream? assert-true
-    stream file-output-stream-output-column 0 assert-eq
+    stream output-stream? assert-true
+    stream stream-output-column 0 assert-eq
 
-    "this is a test" stream file-output-stream-write-string
-    stream file-output-stream-output-column 14 assert-eq
+    "this is a test" stream stream-write-string
+    stream stream-output-column 14 assert-eq
 
-    " and this is another test" stream file-output-stream-write-string
-    stream file-output-stream-output-column 39 assert-eq
+    " and this is another test" stream stream-write-string
+    stream stream-output-column 39 assert-eq
 
-    stream file-output-stream-nl
-    stream file-output-stream-output-column 0 assert-eq
+    stream stream-nl
+    stream stream-output-column 0 assert-eq
 
-    "one more" stream file-output-stream-write-string
-    stream file-output-stream-output-column 8 assert-eq
+    "one more" stream stream-write-string
+    stream stream-output-column 8 assert-eq
 
-    stream file-output-stream-?nl
-    stream file-output-stream-output-column 0 assert-eq
+    stream stream-?nl
+    stream stream-output-column 0 assert-eq
 
-    'a' stream file-output-stream-write-char
-    stream file-output-stream-output-column 1 assert-eq
-    'b' stream file-output-stream-write-char
-    stream file-output-stream-output-column 2 assert-eq
-    'c' stream file-output-stream-write-char
-    stream file-output-stream-output-column 3 assert-eq
-    '\n' stream file-output-stream-write-char
-    stream file-output-stream-output-column 0 assert-eq
+    "last one" stream stream-write-string-escaped
+    stream stream-output-column 0 assert-eq
 
-    -- generic
+    stream stream-nl
+    stream stream-output-column 0 assert-eq
+
+    'a' stream stream-write-char
+    stream stream-output-column 1 assert-eq
+    'b' stream stream-write-char
+    stream stream-output-column 2 assert-eq
+    'c' stream stream-write-char
+    stream stream-output-column 3 assert-eq
+    '\n' stream stream-write-char
+    stream stream-output-column 0 assert-eq
+
+    'x' stream stream-write-char-escaped
+    stream stream-output-column 0 assert-eq
+
     stream close
 ;
 
