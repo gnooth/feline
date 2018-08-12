@@ -328,65 +328,74 @@ code initialize_streams, 'initialize-streams'
 endcode
 
 ; ### space
-code space, 'space'                     ; --
-        _write_char 32
+code space, 'space'
+        _tagged_char(32)
+        _ standard_output
+        _ get
+        _ file_output_stream_write_char
         next
 endcode
 
-%define spaces_count    256
+%define MAX_SPACES      256
 
         section .data
         align   DEFAULT_DATA_ALIGNMENT
 spaces_:
-        times spaces_count db ' '
+        times MAX_SPACES db 32
 
 ; ### spaces
-code spaces, 'spaces'                   ; n --
+code spaces, 'spaces'                   ; n -> void
 
-        _check_fixnum                   ; -- raw-count
+        _check_fixnum                   ; -> raw-count
         test    rbx, rbx
         jng     .exit
 
-        cmp     rbx, spaces_count
+        cmp     rbx, MAX_SPACES
         jg      .1
         _dup
-        mov     qword [rbp], spaces_    ; -- raw-address raw-count
-        _ unsafe_raw_write_chars
-        _return
+        mov     qword [rbp], spaces_    ; -> raw-address raw-count
+
+        _ standard_output
+        _ get
+        _ check_file_output_stream
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -> raw-address raw-count
+
+        ; returns number of bytes written in rax
+        call    this_stream_write_bytes_unsafe
+
+        ; update output column
+        add     this_file_output_stream_output_column_slot, rax
+
+        pop     this_register
+        next
 
 .1:
         _register_do_times .2
         _ space
         _loop .2
-        _return
+        next
 
 .exit:
         _drop
         next
 endcode
 
-%undef spaces_count
-
 ; ### nl
 code nl, 'nl'
-%ifdef WIN64
-        _quote `\r\n`
-        _ write_string
-        mov     qword [last_char_], 10
-        xor     eax, eax
-        mov     [output_column], rax
-%else
-        _lit tagged_char(10)
-        _ write_char
-%endif
+        _ standard_output
+        _ get
+        _ file_output_stream_nl
         next
 endcode
 
 ; ### ?nl
 code ?nl, '?nl'
-        ; was last char a newline?
-        cmp     qword [last_char_], 10
-        jne     nl
+        _ standard_output
+        _ get
+        _ file_output_stream_?nl
         next
 endcode
 
