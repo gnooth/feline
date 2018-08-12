@@ -364,7 +364,7 @@ code spaces, 'spaces'                   ; n -> void
 
         cmp     rbx, MAX_SPACES
         jg      .1
-        _dup
+        lea     rbp, [rbp - BYTES_PER_CELL]
         mov     qword [rbp], spaces_    ; -> raw-address raw-count
 
         _ standard_output
