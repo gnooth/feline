@@ -431,6 +431,22 @@ code write_char, 'write-char'           ; tagged-char -> void
         next
 endcode
 
+; ### write-char-escaped
+code write_char_escaped, 'write-char-escaped'   ; tagged-char --
+        _check_char
+%ifdef WIN64
+        ; args in rcx, rdx, r8, r9
+        popd    rcx
+        mov     rdx, [standard_output_handle]
+%else
+        ; args in rdi, rsi, rdx, rcx
+        popd    rdi
+        mov     esi, 1                  ; fd
+%endif
+        xcall   os_emit_file            ; void os_emit_file(int c, int fd)
+        next
+endcode
+
 ; ### write-string
 code write_string, 'write-string'       ; string -> void
         _ standard_output
