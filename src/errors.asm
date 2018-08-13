@@ -192,6 +192,14 @@ code error_not_file_output_stream, 'error-not-file-output-stream'       ; x --
         next
 endcode
 
+; ### error-not-string-output-stream
+code error_not_string_output_stream, 'error-not-string-output-stream'   ; x --
+        _quote "a string output stream"
+        _ format_type_error
+        _ error
+        next
+endcode
+
 ; ### error-not-thread
 code error_not_thread, 'error-not-thread'       ; x --
         _quote "a thread"
