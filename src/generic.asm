@@ -453,9 +453,6 @@ generic substring, 'substring'          ; from to string/sbuf -- substring
 ; ### >float
 generic to_float, '>float'
 
-; ### output-stream?
-generic output_stream?, 'output-stream?'        ; object -> ?
-
 ; ### stream-write-char
 generic stream_write_char, 'stream-write-char'  ; char stream -> void
 
@@ -647,10 +644,6 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method to_float, TYPECODE_INT64, int64_to_float
         _add_method to_float, TYPECODE_FLOAT, identity
         _add_method to_float, TYPECODE_STRING, string_to_float
-
-        ; output-stream?
-        _initialize_generic_function output_stream?
-        _add_method output_stream?, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream?
 
         ; stream-write-char
         _initialize_generic_function stream_write_char

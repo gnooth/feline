@@ -453,3 +453,9 @@ code print, 'print'                     ; string -> void
         _ nl
         next
 endcode
+
+; ### output-stream?
+code output_stream?, 'output-stream?'   ; object -> ?
+        _ file_output_stream?
+        next
+endcode
