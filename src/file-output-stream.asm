@@ -432,18 +432,10 @@ code write_char, 'write-char'           ; tagged-char -> void
 endcode
 
 ; ### write-char-escaped
-code write_char_escaped, 'write-char-escaped'   ; tagged-char --
-        _check_char
-%ifdef WIN64
-        ; args in rcx, rdx, r8, r9
-        popd    rcx
-        mov     rdx, [standard_output_handle]
-%else
-        ; args in rdi, rsi, rdx, rcx
-        popd    rdi
-        mov     esi, 1                  ; fd
-%endif
-        xcall   os_emit_file            ; void os_emit_file(int c, int fd)
+code write_char_escaped, 'write-char-escaped'   ; tagged-char -> void
+        _ standard_output
+        _ get
+        _ file_output_stream_write_char_escaped
         next
 endcode
 
