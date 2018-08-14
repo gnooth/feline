@@ -136,6 +136,7 @@ code string_output_stream_write_char, 'string-output-stream-write-char' ; char s
         _this_string_output_stream_sbuf ; -> char char sbuf
         _ sbuf_push                     ; -> char
         cmp     rbx, tagged_char('\n')
+        poprbx                          ; -> void
         je      .newline
         add     this_string_output_stream_output_column_slot, 1
         pop     this_register
