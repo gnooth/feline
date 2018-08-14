@@ -33,14 +33,8 @@
 
 %define FIXNUM_TAG      1
 
-%if 0
-%define CHAR_TAG        FIXNUM_TAG
-%define CHAR_TAG_BITS   FIXNUM_TAG_BITS
-%define CHAR_TAG_MASK   FIXNUM_TAG_MASK
-%else
 %define CHAR_TAG        0xe2
 %define CHAR_TAG_BITS   8
-%endif
 
 %define BOOLEAN_TAG_BITS        3
 %define BOOLEAN_TAG_MASK        (1 << BOOLEAN_TAG_BITS) - 1
@@ -190,21 +184,12 @@
 %endmacro
 
 %macro  _verify_char 0
-%ifdef CHAR_TAG_MASK
-        mov     al, bl
-        and     al, CHAR_TAG_MASK
-        cmp     al, CHAR_TAG
-%else
         cmp     bl, CHAR_TAG
-%endif
         jne     error_not_char
 %endmacro
 
 %macro  _verify_char 1
         mov     rax, %1
-%ifdef CHAR_TAG_MASK
-        and     al, CHAR_TAG_MASK
-%endif
         cmp     al, CHAR_TAG
         jne     error_not_char
 %endmacro
