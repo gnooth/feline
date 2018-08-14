@@ -3455,4 +3455,21 @@ test: stream-output-column-test-1
 
 stream-output-column-test-1
 
+test: string-output-stream-test-1
+    make-string-output-stream verify-string-output-stream :> stream
+    stream string-output-stream? assert-true
+    "this is a test" stream string-output-stream-write-string
+    stream string-output-stream-output-column 14 assert-eq
+    " of course" stream string-output-stream-write-string
+    stream string-output-stream-output-column 24 assert-eq
+    'r' stream string-output-stream-write-char
+    stream string-output-stream-output-column 25 assert-eq
+    's' stream string-output-stream-write-char
+    stream string-output-stream-output-column 26 assert-eq
+    stream string-output-stream-string "this is a test of coursers" assert=
+--     stream close
+;
+
+string-output-stream-test-1
+
 ?nl "Reached end of test.feline" write-string
