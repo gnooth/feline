@@ -85,6 +85,7 @@ string FELINE_VOCAB_NAME, 'feline'
 %include "recover.asm"
 %include "file-output-stream.asm"
 %include "string-output-stream.asm"
+%include "stream.asm"
 %include "files.asm"
 %include "load.asm"
 %include "errors.asm"
