@@ -482,6 +482,13 @@ code object_to_string, 'object>string'  ; object -- string
         _return
         _then .35
 
+        _dup
+        _ string_output_stream?
+        _tagged_if .36
+        _ string_output_stream_to_string
+        _return
+        _then .36
+
         ; give up
         _tag_fixnum
         _ fixnum_to_hex
