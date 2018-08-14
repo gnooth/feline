@@ -66,12 +66,15 @@ endcode
 ; ### check-assert-eq
 code check_assert_eq, 'check-assert-eq'         ; x y location --
         _debug_?enough 3
-        _ rrot
+        _ feline_2over
         _eq?
         _tagged_if .1
-        _drop
+        _3drop
         _else .1
-        _ assertion_failed
+        _ set_error_location
+        _quote "Assertion failed: %S %S eq?"
+        _ format
+        _ error
         _then .1
         next
 endcode
