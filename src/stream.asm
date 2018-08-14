@@ -19,7 +19,7 @@ file __FILE__
 code nl, 'nl'
         _ standard_output
         _ get
-        _ file_output_stream_nl
+        _ stream_nl
         next
 endcode
 
@@ -27,7 +27,7 @@ endcode
 code ?nl, '?nl'
         _ standard_output
         _ get
-        _ file_output_stream_?nl
+        _ stream_?nl
         next
 endcode
 
@@ -35,7 +35,7 @@ endcode
 code tab, 'tab'                         ; n --
         _ standard_output
         _ get
-        _ file_output_stream_output_column
+        _ stream_output_column
         _ generic_minus
         _lit tagged_fixnum(1)
         _ generic_max
@@ -47,7 +47,7 @@ endcode
 code write_char, 'write-char'           ; tagged-char -> void
         _ standard_output
         _ get
-        _ file_output_stream_write_char
+        _ stream_write_char
         next
 endcode
 
@@ -55,7 +55,7 @@ endcode
 code write_char_escaped, 'write-char-escaped'   ; tagged-char -> void
         _ standard_output
         _ get
-        _ file_output_stream_write_char_escaped
+        _ stream_write_char_escaped
         next
 endcode
 
@@ -63,7 +63,7 @@ endcode
 code write_string, 'write-string'       ; string -> void
         _ standard_output
         _ get
-        _ file_output_stream_write_string
+        _ stream_write_string
         next
 endcode
 
@@ -71,7 +71,7 @@ endcode
 code write_string_escaped, 'write-string-escaped'       ; string -> void
         _ standard_output
         _ get
-        _ file_output_stream_write_string_escaped
+        _ stream_write_string_escaped
         next
 endcode
 
