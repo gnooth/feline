@@ -21,6 +21,10 @@ file __FILE__
 %define string_output_stream_sbuf_slot                  qword [rbx + BYTES_PER_CELL]
 %define this_string_output_stream_sbuf_slot             qword [this_register + BYTES_PER_CELL]
 
+%macro  _string_output_stream_sbuf 0    ; -> sbuf
+        _slot1
+%endmacro
+
 %macro  _this_string_output_stream_sbuf 0       ; -> sbuf
         _this_slot1
 %endmacro
