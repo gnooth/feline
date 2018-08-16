@@ -276,44 +276,37 @@ code destroy_vector_unchecked, 'destroy_vector_unchecked', SYMBOL_INTERNAL
         next
 endcode
 
-; ### vector_resize
-code vector_resize, 'vector_resize', SYMBOL_INTERNAL
-; raw-vector raw-capacity --
-        _swap
+; ### vector_ensure_capacity
+code vector_ensure_capacity, 'vector_ensure_capacity', SYMBOL_INTERNAL  ; raw-capacity raw-vector -> void
+
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -- new-capacity
-        _this_vector_raw_data_address   ; -- new-capacity raw-data-address
-        _over                           ; -- new-capacity raw-data-address new-capacity
+        poprbx                          ; -> raw-capacity
+
+        cmp     this_vector_raw_capacity, rbx
+        jge     .nothing_to_do
+
+        _this_vector_raw_capacity
+        _twostar
+        _max
+        _this_vector_raw_data_address
+        _over
         _cells
-        _ raw_realloc                   ; -- new-capacity new-raw-data-address
+        _ raw_realloc
         _this_vector_set_raw_data_address
         _this_vector_set_raw_capacity
+
+        pop     this_register
+        next
+
+.nothing_to_do:
+        _drop
         pop     this_register
         next
 endcode
 
-; ### vector_ensure_capacity
-code vector_ensure_capacity, 'vector_ensure_capacity', SYMBOL_INTERNAL
-; raw-capacity raw-vector --
-        _twodup                         ; -- u vector u vector
-        _vector_raw_capacity            ; -- u vector u capacity
-        _ugt
-        _if .1                          ; -- u vector
-        _dup                            ; -- u vector vector
-        _vector_raw_capacity            ; -- u vector capacity
-        _twostar                        ; -- u vector capacity*2
-        _ rot                           ; -- vector capacity*2 u
-        _max                            ; -- vector new-capacity
-        _ vector_resize
-        _else .1
-        _2drop
-        _then .1
-        next
-endcode
-
 ; ### vector-nth-unsafe
-code vector_nth_unsafe, 'vector-nth-unsafe' ; index handle -- element
+code vector_nth_unsafe, 'vector-nth-unsafe'     ; index handle -> element
         _untag_fixnum qword [rbp]
         _handle_to_object_unsafe
         _vector_nth_unsafe
