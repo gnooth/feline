@@ -174,7 +174,7 @@ code vector_set_length, 'vector-set-length' ; tagged-new-length handle --
         push    this_register
         mov     this_register, rbx
         poprbx                          ; -- tagged-new-length
-        _untag_fixnum                   ; -- new-length
+        _check_index                    ; -- new-length
         _dup
         _this_vector_raw_capacity
         _ugt
