@@ -198,6 +198,13 @@ code mark_slot_definition, 'mark-slot-definition'       ; slot-definition -> voi
         next
 endcode
 
+; ### mark_string_output_stream
+code mark_string_output_stream, 'mark_string_output_stream'     ; raw-stream -> void
+        _string_output_stream_sbuf
+        _ maybe_mark_handle
+        next
+endcode
+
 ; ### mark-type
 code mark_type, 'mark-type'             ; type -> void
         _type_layout
@@ -282,6 +289,10 @@ code initialize_gc_dispatch_table, 'initialize_gc_dispatch_table', SYMBOL_INTERN
 
         _lit mark_type
         _lit TYPECODE_TYPE
+        _this_array_set_nth_unsafe
+
+        _lit mark_string_output_stream
+        _lit TYPECODE_STRING_OUTPUT_STREAM
         _this_array_set_nth_unsafe
 
         pop     this_register
