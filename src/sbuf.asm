@@ -395,22 +395,23 @@ code sbuf_validate, 'sbuf-validate'     ; sbuf --
 endcode
 
 ; ### sbuf-shorten
-code sbuf_shorten, 'sbuf-shorten'       ; fixnum handle --
+code sbuf_shorten, 'sbuf-shorten'       ; n sbuf -> void
+; shortens sbuf to be n bytes long
 
-        _check_index qword [rbp]
-        _ check_sbuf                    ; -- n sbuf
-
-        _twodup
-        _sbuf_raw_length                ; -- n sbuf n raw-length
-        cmp     rbx, [rbp]
-        _2drop
-        jle     .1
-
+        _ check_sbuf                    ; -> n raw-sbuf
 
         push    this_register
         mov     this_register, rbx
+        poprbx                          ; -> n
 
-        _sbuf_set_raw_length
+        _check_index                    ; -> raw-index
+
+        _this_sbuf_raw_length           ; -> raw-index raw-length
+        cmp     rbx, [rbp]
+        jle     .nothing_to_do
+
+        _drop
+        _this_sbuf_set_raw_length
 
         ; store terminal null byte
         mov     rax, qword [this_register + SBUF_DATA_ADDRESS_OFFSET]
@@ -418,10 +419,11 @@ code sbuf_shorten, 'sbuf-shorten'       ; fixnum handle --
         mov     byte [rax], 0
 
         pop     this_register
-        _return
+        next
 
-.1:
+.nothing_to_do:
         _2drop
+        pop     this_register
         next
 endcode
 
