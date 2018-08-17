@@ -98,6 +98,19 @@ code string_output_stream_output_column, 'string-output-stream-output-column'   
         next
 endcode
 
+; ### string-output-stream-set-output-column
+code string_output_stream_set_output_column, 'string-output-stream-set-output-column'   ; n stream -> void
+        _ check_string_output_stream
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+        _check_fixnum
+        mov     this_string_output_stream_output_column_slot, rbx
+        poprbx
+        pop     this_register
+        next
+endcode
+
 ; ### make-string-output-stream
 code make_string_output_stream, 'make-string-output-stream'     ; void -> stream
         _lit 3
@@ -184,10 +197,51 @@ code string_output_stream_write_string_escaped, 'string-output-stream-write-stri
         next
 endcode
 
+; ### string-output-stream-nl
+code string_output_stream_nl, 'string-output-stream-nl' ; stream -> void
+        push    rbx                     ; save stream
+%ifdef WIN64
+        _quote `\r\n`
+        _swap
+        _ string_output_stream_write_string
+%else
+        _lit tagged_char(10)
+        _swap
+        _ string_output_stream_write_char
+%endif
+        _lit tagged_zero
+        pushrbx
+        pop     rbx
+        _ string_output_stream_set_output_column
+        next
+endcode
+
+; ### string-output-stream-?nl
+code string_output_stream_?nl, 'string-output-stream-?nl'       ; stream -> void
+        _dup
+        _ string_output_stream_output_column
+        cmp     rbx, tagged_zero
+        jne     .1
+        _2drop
+        next
+.1:
+        _drop
+        _ string_output_stream_nl
+        next
+endcode
+
 ; ### string-output-stream-string
 code string_output_stream_string, 'string-output-stream-string' ; stream -> string
         _ check_string_output_stream
         mov     rbx, string_output_stream_sbuf_slot
         _ sbuf_to_string
+        next
+endcode
+
+;  ### string-output-stream-close
+code string_output_stream_close, 'string-output-stream-close'   ; stream -> void
+        _ check_string_output_stream
+        mov     string_output_stream_sbuf_slot, f_value
+        _drop
         next
 endcode
