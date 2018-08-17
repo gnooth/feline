@@ -648,34 +648,42 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         ; stream-write-char
         _initialize_generic_function stream_write_char
         _add_method stream_write_char, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_write_char
+        _add_method stream_write_char, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_write_char
 
         ; stream-write-char-escaped
         _initialize_generic_function stream_write_char_escaped
         _add_method stream_write_char_escaped, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_write_char_escaped
+        _add_method stream_write_char_escaped, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_write_char_escaped
 
         ; stream-write-string
         _initialize_generic_function stream_write_string
         _add_method stream_write_string, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_write_string
+        _add_method stream_write_string, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_write_string
 
         ; stream-write-string-escaped
         _initialize_generic_function stream_write_string_escaped
         _add_method stream_write_string_escaped, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_write_string_escaped
+        _add_method stream_write_string_escaped, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_write_string_escaped
 
         ; stream-output-column
         _initialize_generic_function stream_output_column
         _add_method stream_output_column, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_output_column
+        _add_method stream_output_column, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_output_column
 
         ; stream-nl
         _initialize_generic_function stream_nl
         _add_method stream_nl, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_nl
+        _add_method stream_nl, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_nl
 
         ; stream-?nl
         _initialize_generic_function stream_?nl
         _add_method stream_?nl, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_?nl
+        _add_method stream_?nl, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_?nl
 
         ; close
         _initialize_generic_function generic_close
         _add_method generic_close, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_close
+        _add_method generic_close, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_close
 
         next
 endcode
