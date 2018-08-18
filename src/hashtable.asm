@@ -219,24 +219,16 @@ code hashtable_set_test_function, 'hashtable-set-test-function' ; test-function 
 endcode
 
 ; ### empty-or-deleted?
-code empty_or_deleted?, 'empty-or-deleted?'     ; x -- ?
-        _dup
-        _tagged_if_not .1
-        ; empty
-        mov     rbx, t_value
-        _return
-        _then .1
-
-        _dup
-        _eq? S_deleted
-        _tagged_if .2
-        ; deleted
-        mov     rbx, t_value
-        _return
-        _then .2
-
-        ; none of the above
+code empty_or_deleted?, 'empty-or-deleted?'     ; x -> ?
+        cmp     rbx, f_value
+        je     .2
+.1:
+        cmp     rbx, S_deleted
+        je      .2
         mov     rbx, f_value
+        next
+.2:
+        mov     rbx, t_value
         next
 endcode
 
