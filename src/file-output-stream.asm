@@ -348,46 +348,36 @@ code space, 'space'
         next
 endcode
 
-%define MAX_SPACES      256
-
-        section .data
-        align   DEFAULT_DATA_ALIGNMENT
-spaces_:
-        times MAX_SPACES db 32
-
 ; ### spaces
 code spaces, 'spaces'                   ; n -> void
 
         _check_fixnum                   ; -> raw-count
+
         test    rbx, rbx
         jng     .exit
 
-        cmp     rbx, MAX_SPACES
-        jg      .1
-        lea     rbp, [rbp - BYTES_PER_CELL]
-        mov     qword [rbp], spaces_    ; -> raw-address raw-count
-
         _ standard_output
-        _ get
-        _ check_file_output_stream
+        _ get                           ; -> raw-count stream
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -> raw-address raw-count
+        poprbx
 
-        ; returns number of bytes written in rax
-        call    this_stream_write_bytes_unsafe
+        push    r12
+        mov     r12, rbx
+        poprbx
 
-        ; update output column
-        add     this_file_output_stream_output_column_slot, rax
+        align   DEFAULT_CODE_ALIGNMENT
+.loop:
+        _tagged_char(32)
+        pushrbx
+        mov     rbx, this_register
+        _ stream_write_char
+        sub     r12, 1
+        jnz     .loop
 
+        pop     r12
         pop     this_register
-        next
-
-.1:
-        _register_do_times .2
-        _ space
-        _loop .2
         next
 
 .exit:
