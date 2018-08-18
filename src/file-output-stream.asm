@@ -344,7 +344,7 @@ code space, 'space'
         _tagged_char(32)
         _ standard_output
         _ get
-        _ file_output_stream_write_char
+        _ stream_write_char
         next
 endcode
 
