@@ -15,34 +15,6 @@
 
 file __FILE__
 
-; ### nl
-code nl, 'nl'
-        _ standard_output
-        _ get
-        _ stream_nl
-        next
-endcode
-
-; ### ?nl
-code ?nl, '?nl'
-        _ standard_output
-        _ get
-        _ stream_?nl
-        next
-endcode
-
-; ### tab
-code tab, 'tab'                         ; n --
-        _ standard_output
-        _ get
-        _ stream_output_column
-        _ generic_minus
-        _lit tagged_fixnum(1)
-        _ generic_max
-        _ spaces
-        next
-endcode
-
 ; ### write-char
 code write_char, 'write-char'           ; tagged-char -> void
         _ standard_output
@@ -75,6 +47,80 @@ code write_string_escaped, 'write-string-escaped'       ; string -> void
         next
 endcode
 
+; ### nl
+code nl, 'nl'
+        _ standard_output
+        _ get
+        _ stream_nl
+        next
+endcode
+
+; ### ?nl
+code ?nl, '?nl'
+        _ standard_output
+        _ get
+        _ stream_?nl
+        next
+endcode
+
+; ### space
+code space, 'space'
+        _tagged_char(32)
+        _ standard_output
+        _ get
+        _ stream_write_char
+        next
+endcode
+
+; ### spaces
+code spaces, 'spaces'                   ; n -> void
+
+        _check_fixnum                   ; -> raw-count
+
+        test    rbx, rbx
+        jng     .exit
+
+        _ standard_output
+        _ get                           ; -> raw-count stream
+
+        push    this_register
+        mov     this_register, rbx
+        poprbx
+
+        push    r12
+        mov     r12, rbx
+        poprbx
+
+        align   DEFAULT_CODE_ALIGNMENT
+.loop:
+        _tagged_char(32)
+        pushrbx
+        mov     rbx, this_register
+        _ stream_write_char
+        sub     r12, 1
+        jnz     .loop
+
+        pop     r12
+        pop     this_register
+        next
+
+.exit:
+        _drop
+        next
+endcode
+
+; ### tab
+code tab, 'tab'                         ; n --
+        _ standard_output
+        _ get
+        _ stream_output_column
+        _ generic_minus
+        _lit tagged_fixnum(1)
+        _ generic_max
+        _ spaces
+        next
+endcode
+
 ; ### print
 code print, 'print'                     ; string -> void
         _ generic_write
@@ -85,5 +131,38 @@ endcode
 ; ### output-stream?
 code output_stream?, 'output-stream?'   ; object -> ?
         _ file_output_stream?
+        next
+endcode
+
+asm_global stdout_
+
+; ### stdout
+code stdout, 'stdout'                   ; -> stream
+        pushrbx
+        mov     rbx, [stdout_]
+        next
+endcode
+
+special standard_output, 'standard-output'
+
+; ### initialize-streams
+code initialize_streams, 'initialize-streams'
+        pushrbx
+%ifdef WIN64
+        mov     rbx, [standard_output_handle]
+%else
+        mov     rbx, 1
+%endif
+        _ make_file_output_stream
+        mov     [stdout_], rbx
+        _drop
+
+        _lit stdout_
+        _ gc_add_root
+
+        _ stdout
+        _ standard_output
+        _ set
+
         next
 endcode
