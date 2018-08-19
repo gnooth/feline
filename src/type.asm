@@ -156,16 +156,15 @@ endcode
 ; ### make-tuple-type
 code make_tuple_type, 'make-tuple-type' ; symbol slots -> type
         _swap
-        _ next_raw_typecode
+        _ next_typecode
         _duptor
-        _tag_fixnum
         _ make_type
         _tuck
         _ type_set_layout
         _dup
         _rfrom
         _ types
-        _ vector_set_nth_untagged
+        _ vector_set_nth
         next
 endcode
 

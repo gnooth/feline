@@ -65,11 +65,12 @@ LAST_BUILTIN_TYPECODE           equ 33
 
 asm_global last_raw_typecode_, LAST_BUILTIN_TYPECODE + 1
 
-; ### next_raw_typecode
-code next_raw_typecode, 'next_raw_typecode'     ; -- raw-typecode
+; ### next-typecode
+code next_typecode, 'next-typecode'     ; -> fixnum
         pushrbx
         mov     rbx, [last_raw_typecode_]
         add     qword [last_raw_typecode_], 1
+        _tag_fixnum
         next
 endcode
 
