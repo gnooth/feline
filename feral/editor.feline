@@ -247,16 +247,16 @@ var buffer-list
     dup 0 >= assert-true ;
 
 : detab ( s )                           -- string1 -> string2
-    9 code-char s string-index :> i
+    '\t' s string-index :> i
     i f eq? [ s ] return-if
 
     256 <sbuf> :> sb
 
     s [
-        dup 9 code-char eq? [
+        dup '\t' eq? [
             drop
-            32 code-char sb sbuf-push
-            [ sb sbuf-length 8 mod 0 eq? ] [ 32 code-char sb sbuf-push ] until
+            '\s' sb sbuf-push
+            [ sb sbuf-length 8 mod 0 eq? ] [ '\s' sb sbuf-push ] until
         ] [
             sb sbuf-push
         ] if
@@ -340,7 +340,6 @@ var buffer-list
 : update-display
     hide-cursor
     repaint? [
-        0 0 at-xy
         lines-per-page [ redisplay-line ] each-integer
         f repaint?!
     ] [
