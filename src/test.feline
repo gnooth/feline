@@ -1254,7 +1254,7 @@ tuple: foo a b c ;
     foo type-layout array? assert-true
     foo type-layout length 3 assert-eq
     foo type-layout [ slot-definition? assert-true ] each
-    foo type-layout [ slot-definition-index ] map { 0 1 2 } equal? assert-true
+    foo type-layout [ slot-definition-index ] map { 1 2 3 } equal? assert-true
     foo type-layout [ slot-definition-name ] map { "a" "b" "c" } equal? assert-true
 ;
 
@@ -3467,7 +3467,7 @@ test: string-output-stream-test-1
     's' stream string-output-stream-write-char
     stream string-output-stream-output-column 26 assert-eq
     stream string-output-stream-string "this is a test of coursers" assert=
---     stream close
+    stream close
 ;
 
 string-output-stream-test-1

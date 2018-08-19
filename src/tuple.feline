@@ -39,7 +39,7 @@ global slot-definitions                 -- sequence
 
     tuple-type type-typecode
     ' verify-typecode
-    rot 1+
+    rot
     ' slot@
     4array array>quotation
 
@@ -61,7 +61,7 @@ global slot-definitions                 -- sequence
 
     tuple-type type-typecode
     ' verify-typecode
-    rot 1+
+    rot
     ' slot!
     4array array>quotation
 
@@ -97,7 +97,7 @@ global slot-definitions                 -- sequence
     [ must-parse-token dup ";" string= ] [ suffix! ] until
     drop
     vector>array
-    [ make-slot-definition ] map-index slot-definitions!
+    [ 1+ make-slot-definition ] map-index slot-definitions!
 ;
 
 public
