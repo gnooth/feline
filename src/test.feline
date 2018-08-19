@@ -3472,4 +3472,17 @@ test: string-output-stream-test-1
 
 string-output-stream-test-1
 
+test: string-output-stream-test-2
+    make-string-output-stream :> stream
+    stream string-output-stream-string "" assert=
+
+    -- verify that the stream's sbuf is still valid after gc
+    gc
+    stream string-output-stream-string "" assert=
+
+    stream close
+;
+
+string-output-stream-test-2
+
 ?nl "Reached end of test.feline" write-string
