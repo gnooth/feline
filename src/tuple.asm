@@ -72,7 +72,7 @@ tuple_size_unchecked:
 endcode
 
 ; ### make-instance
-code make_instance, 'make-instance'     ; class -> instance
+code make_instance, 'make-instance'     ; type -> instance
 
         _ verify_type
 
@@ -84,16 +84,16 @@ code make_instance, 'make-instance'     ; class -> instance
         add     rbx, 1
 
         _cells
-        _ raw_allocate                  ; -> class address
+        _ raw_allocate                  ; -> type address
 
-        _tor                            ; -> class
+        _tor                            ; -> type
 
         _dup
-        _ type_raw_typecode             ; -> class raw-typecode
+        _ type_raw_typecode             ; -> type raw-typecode
 
         ; store raw typecode in object header
         _rfetch
-        _store                          ; -> class
+        _store                          ; -> type
 
         _ type_layout
         _ array_raw_length
