@@ -23,6 +23,7 @@ private
   0 255 255 rgb-foreground-prefix constant syntax-prefix
 255 165   0 rgb-foreground-prefix constant name-prefix
   0 170   0 rgb-foreground-prefix constant string-prefix
+255   0 255 rgb-foreground-prefix constant combinator-prefix
 
 "\e[0m" constant reset-suffix
 
@@ -111,6 +112,10 @@ tuple: segment
     "test:"
     "public"
     "private"
+    "["
+    "]"
+    "{"
+    "}"
 } constant syntax-words
 
 {
@@ -121,6 +126,31 @@ tuple: segment
     "tuple:"
     "global"
 } constant defining-words
+
+{
+    "bi"
+    "bi@"
+    "case"
+    "cond"
+    "each"
+    "each-index"
+    "each-integer"
+    "filter"
+    "find"
+    "find-from"
+    "if"
+    "if*"
+    "keep"
+    "return-if"
+    "times"
+    "tri"
+    "unless"
+    "unless*"
+    "until"
+    "when"
+    "when*"
+    "while"
+} constant combinators
 
 var in-comment?
 
@@ -146,6 +176,10 @@ var last-segment-text
 
     segment segment-text string-first-char quote-char eq? [
         string-prefix segment segment-format!
+    ] return-if
+
+    segment segment-text combinators member? [
+        combinator-prefix segment segment-format!
     ] return-if
 
     -- default
