@@ -154,14 +154,14 @@ code at_x, 'at-x'                       ; col --
         next
 endcode
 
-; hide-cursor
+; ### hide-cursor
 code hide_cursor, 'hide-cursor'
         _quote `\e[?25l`
         _ write_string_escaped
         next
 endcode
 
-; show-cursor
+; ### show-cursor
 code show_cursor, 'show-cursor'
         _quote `\e[?25h`
         _ write_string_escaped
