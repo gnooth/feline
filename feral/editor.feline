@@ -1113,6 +1113,33 @@ special: +compound-undo+
     [ line ] [ line line-text print line line-next line! ] while
 ;
 
+: renumber-lines ( buf )
+    buf buffer-%first-line :> line!
+    0 :> n!
+
+    [ line ] [
+        n line line-%number!
+
+        line line-text
+        line line-%number buf buffer-lines vector-nth assert=
+
+        n 1+ n!
+        line line-next line!
+    ] while
+
+    n current-buffer-lines length assert=
+;
+
+: validate-buffer ( buf )
+    buf buffer-%first-line :> line!
+
+    [ line ] [
+        line line-text
+        line line-%number buf buffer-lines vector-nth assert=
+        line line-next line!
+    ] while
+;
+
 : initialize-buffer                     -- filename line-number -> buf
     verify-index  :> line-number
     verify-string :> filename
