@@ -126,39 +126,26 @@ code make_instance, 'make-instance'     ; type -> instance
 endcode
 
 ; ### tuple>string
-code tuple_to_string, 'tuple>string'    ; tuple -> void
-        _ check_tuple_instance
-
-        push    this_register
-        mov     this_register, rbx
-        poprbx
-
-        _quote "tuple{ "
-        _ string_to_sbuf
-
-        _this
-        _ tuple_size_unchecked
-        _check_fixnum
-        _register_do_times .1
-
-        _raw_loop_index
-        add     rbx, 1
-        _this_nth_slot
-        _ object_to_string
+code tuple_to_string, 'tuple>string'    ; tuple-instance -> void
+        _dup
+        _ type_of                       ; -> tuple-instance type
+        _ type_symbol
+        _ symbol_name                   ; -> tuple-instance type-name
+        _quote "<tuple "
+        _ string_to_sbuf                ; -> tuple-instance type-name sbuf
+        _tuck
+        _ sbuf_append_string            ; -> tuple-instance sbuf
+        _quote " 0x"
+        _over
+        _ sbuf_append_string            ; -> tuple-instance sbuf
+        _swap
+        _ object_address
+        _ to_hex
         _over
         _ sbuf_append_string
-        _tagged_char(32)
-        _over
-        _ sbuf_push
-
-        _loop .1
-
-        pop     this_register
-
-        _tagged_char('}')
+        _lit tagged_char('>')
         _over
         _ sbuf_push
         _ sbuf_to_string
-
         next
 endcode
