@@ -47,6 +47,24 @@ var done?
 "\n"   constant LF
 "\r\n" constant CR+LF
 
+tuple: line
+    prev
+    next
+    %number
+    text ;
+
+: make-line/1                           -- string -> void
+    line make-instance
+    tuck
+    line-text! ;
+
+: make-line/2                           -- string index
+    line make-instance
+    tuck
+    line-%number!
+    tuck
+    line-text! ;
+
 tuple: position
     line-number
     offset ;
@@ -64,7 +82,11 @@ tuple: buffer
     mod-count-last-save
     eol
     undo-stack
-    redo-stack ;
+    redo-stack
+
+    %first-line
+    %last-line
+;
 
 var buffer-list
 
@@ -222,7 +244,7 @@ var buffer-list
     pos position-offset line length min :> limit
     0 :> column!
     limit [
-        line string-nth 9 code-char eq? [
+        line string-nth '\t' eq? [
             column tab-width column tab-width mod - + column!
         ] [
             column 1+ column!
@@ -1070,6 +1092,27 @@ special: +compound-undo+
     0 goal-column!
 ;
 
+: buffer-append-line ( buf line )       -- buffer line -> void
+    buf buffer-%last-line line line-prev!
+    buf buffer-%last-line [ line swap line-next! ] when*
+    line buf buffer-%last-line!
+    buf buffer-%first-line [
+        line buf buffer-%first-line!
+    ] unless
+;
+
+: initialize-lines-list ( buf )         -- buffer -> void
+    buf buffer-lines [
+        make-line/2 buf swap buffer-append-line
+    ] each-index
+;
+
+: print-lines ( buf )                   -- buffer -> void
+    buf buffer-%first-line :> line!
+
+    [ line ] [ line line-text print line line-next line! ] while
+;
+
 : initialize-buffer                     -- filename line-number -> buf
     verify-index  :> line-number
     verify-string :> filename
@@ -1088,8 +1131,8 @@ special: +compound-undo+
         "" lines vector-push
     ] [
         -- detect eol
-        13 code-char contents string-index CR+LF LF ? buf buffer-eol!
-        contents string-last-char 10 code-char eq? [
+        '\r' contents string-index CR+LF LF ? buf buffer-eol!
+        contents string-last-char '\n' eq? [
             "" lines vector-push
         ] when
     ] if
