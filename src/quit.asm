@@ -610,6 +610,7 @@ endcode
 ; ### quit
 code quit, 'quit'                       ; --
         _ use_default_screen_buffer
+        _ show_cursor
 
         _begin .1
 
