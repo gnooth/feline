@@ -116,6 +116,7 @@ tuple: segment
     "]"
     "{"
     "}"
+    "'"
 } constant syntax-words
 
 {
