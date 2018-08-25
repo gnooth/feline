@@ -225,14 +225,24 @@ endcode
 
 ; ### verify-typecode
 code verify_typecode, 'verify-typecode' ; object typecode -- object
+
+        _twodup
+
         _over
         _ object_typecode
         cmp     rbx, [rbp]
         jne     .1
-        _2drop
+        _4drop
         _return
 .1:
-        _error "type error"
+        _2drop
+        _ type_of
+        _swap
+        _ typecode_to_type
+        _swap
+        _quote "TYPE ERROR: expected a %s, got a %s."
+        _ format
+        _ error
         next
 endcode
 
