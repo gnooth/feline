@@ -233,14 +233,13 @@ var current-buffer
     ] while
 ;
 
-: nth-line ( line-number )       -- line-number -> line
+: nth-line ( line-number )              -- line-number -> line
     first-line :> line!
     0 :> n!
     [ n line-number < ] [
         n 1+ n!
         line line-next line!
     ] while
-    line line-%number line-number assert-eq
     line
 ;
 
@@ -313,12 +312,10 @@ var current-buffer
 : .cursor
     dot-column
     dot-line-number top-line-number -
-    dup 0 >= assert-true
     at-xy ;
 
 : dot-y                                 -- -> n
-    dot-line-number top-line-number -
-    dup 0 >= assert-true ;
+    dot-line-number top-line-number - ;
 
 : detab ( s )                           -- string1 -> string2
     '\t' s string-index :> i
@@ -827,7 +824,6 @@ special: +compound-undo+
 : do-window-up
     top-line line-prev [
         top-line line-prev top-line!
-        top-line line? assert
         dot-line-number bottom-line-number > [
             add-undo-move
             bottom-line dot-line!
@@ -840,7 +836,6 @@ special: +compound-undo+
 : do-window-down
     top-line line-next [
         top-line line-next top-line!
-        top-line line? assert
         dot-line-number top-line-number < [
             add-undo-move
             top-line dot-line!
@@ -1429,7 +1424,6 @@ use: search
 : edit-loop
     f done?!
     [ done? ] [
-        top-line line? assert
         update-display
         ekey
         clear-message-line
