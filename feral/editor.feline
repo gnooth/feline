@@ -1198,6 +1198,7 @@ special: +compound-undo+
     [ buf buffer-append-line ]
     [ 0 make-position buf buffer-dot! ]
     bi
+    buf buffer-list vector-push
     buf current-buffer!
     dot-line top-line!
 ;
