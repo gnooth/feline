@@ -26,15 +26,13 @@ var found-line-number
 var found-offset
 
 : mark-found-pattern
-    position make-instance mark!
-    found-line-number mark position-line-number!
-    found-offset pattern length + mark position-offset! ;
+    dot-line dot-offset pattern length + make-position mark! ;
 
 : found
     reset-redo
 
     add-undo-move
-    found-line-number dot-line-number!
+    found-line-number nth-line dot-line!
     found-offset dot-offset!
     dot-offset goal-column!
     mark-found-pattern
@@ -47,8 +45,11 @@ var found-offset
     write-string
 ;
 
+: find-pattern-in-line                  -- line -> index/f
+    line-text pattern swap substring-start ;
+
 : find-pattern-in-current-line          -- start -> index/f
-    pattern dot-line pick string-tail substring-start   -- index/f
+    pattern dot-line-text pick string-tail substring-start      -- index/f
     [ + ] [ drop f ] if* ;
 
 public
@@ -69,13 +70,17 @@ public
         t found?!
     ] when
 
-    found? [
-        next-line-number current-buffer-lines [
-            pattern swap substring-start
-            dup found-offset!
-        ] find-from                     -- line-number/f line/f
-        [ found-line-number! t found?! ] [ drop ] if
-    ] unless
+    found? [ found ] return-if
+
+    dot-line-next :> line!
+    [ line found? not and ] [
+        line find-pattern-in-line [
+            found-offset!
+            line line-%number found-line-number!
+            t found?!
+        ] when*
+        line line-next line!
+    ] while
 
     found? [ found ] [ not-found ] if ;
 
@@ -96,12 +101,17 @@ public
         t found?!
     ] when
 
-    found? [
-        next-line-number current-buffer-lines [
-            pattern swap substring-start
-            dup found-offset!
-        ] find-from                     -- line-number/f line/f
-        [ found-line-number! t found?! ] [ drop ] if
-    ] unless
+    found? [ found ] return-if
 
-    found? [ found ] [ not-found ] if ;
+    dot-line-next :> line!
+    [ line found? not and ] [
+        line find-pattern-in-line [
+            found-offset!
+            line line-%number found-line-number!
+            t found?!
+        ] when*
+        line line-next line!
+    ] while
+
+    found? [ found ] [ not-found ] if
+;

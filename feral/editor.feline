@@ -32,7 +32,69 @@ feline-home "feral" path-append add-source-directory
 
 using: feline modes accept-string ;
 
-var current-buffer
+tuple: line
+    prev
+    next
+    %number
+    text ;
+
+: make-line/1                           -- string -> line
+    line make-instance
+    tuck
+    line-text! ;
+
+: make-line/2                           -- string index -> line
+    line make-instance
+    tuck
+    line-%number!
+    tuck
+    line-text! ;
+
+tuple: position
+    %line
+    offset ;
+
+: make-position                         -- line offset -> position
+    position make-instance :> pos
+    pos position-offset!
+    pos position-%line!
+    pos
+;
+
+tuple: buffer
+    mode
+    dot
+    mark
+    goal-column
+    filename
+    autosave-filename
+    mod-count
+    mod-count-last-save
+    eol
+    undo-stack
+    redo-stack
+    %first-line
+    %last-line
+    %top-line
+;
+
+"\n"   constant LF
+"\r\n" constant CR+LF
+
+: make-buffer                           -- -> buffer
+    buffer make-instance :> buf
+
+    0 buf buffer-goal-column!
+    0 buf buffer-mod-count!
+    0 buf buffer-mod-count-last-save!
+    LF buf buffer-eol!
+
+    100 <vector> buf buffer-undo-stack!
+    16 <vector> buf buffer-redo-stack!
+
+    buf
+;
+
 var repaint?
 var dot-line-changed?
 var bindings
@@ -44,92 +106,93 @@ var in-redo?
 
 var done?
 
-"\n"   constant LF
-"\r\n" constant CR+LF
-
-tuple: line
-    prev
-    next
-    %number
-    text ;
-
-: make-line/1                           -- string -> void
-    line make-instance
-    tuck
-    line-text! ;
-
-: make-line/2                           -- string index
-    line make-instance
-    tuck
-    line-%number!
-    tuck
-    line-text! ;
-
-tuple: position
-    line-number
-    offset ;
-
-tuple: buffer
-    mode
-    lines
-    dot
-    mark
-    top-line-number
-    goal-column
-    filename
-    autosave-filename
-    mod-count
-    mod-count-last-save
-    eol
-    undo-stack
-    redo-stack
-
-    %first-line
-    %last-line
-;
-
 var buffer-list
 
-: make-buffer                           -- -> buffer
-    buffer make-instance :> buf
+var current-buffer
 
-    0 buf buffer-top-line-number!
-    0 buf buffer-goal-column!
-    0 buf buffer-mod-count!
-    0 buf buffer-mod-count-last-save!
-    LF buf buffer-eol!
-
-    100 <vector> buf buffer-undo-stack!
-     16 <vector> buf buffer-redo-stack!
-
-    buf
-;
-
-: current-buffer-lines                  -- -> vector
-    current-buffer buffer-lines ;
-
-: set-current-buffer-lines              -- vector ->
-    current-buffer buffer-lines! ;
+: buffer-modified?                      -- buffer -> ?
+    dup buffer-mod-count swap buffer-mod-count-last-save neq? ;
 
 : dot                                   -- -> position
     current-buffer buffer-dot ;
 
-: set-dot                               -- position ->
+: dot!                                  -- position -> void
     current-buffer buffer-dot! ;
 
-: mark                                  -- -> position
+: dot-line                              -- -> line
+    dot position-%line ;
+
+: dot-line-number                       -- -> line-number
+    dot position-%line line-%number ;
+
+: dot-line!                            -- line -> void
+    dot position-%line! ;
+
+: dot-offset                            -- -> n
+    dot position-offset ;
+
+: dot-offset!                           -- n -> void
+    dot position-offset! ;
+
+: mark                                  -- -> position/f
     current-buffer buffer-mark ;
 
-: mark!                                 -- position ->
+: mark!                                 -- position -> void
     current-buffer buffer-mark! ;
 
-: unmark mark [ f mark! t repaint?! ] when ;
+: mark-line                             -- -> line/f
+    mark [ mark position-%line ] [ f ] if ;
+
+: mark-line-number                      -- -> line-number/f
+    mark [ mark position-%line line-%number ] [ f ] if ;
+
+: mark-offset                           -- -> n
+    mark position-offset ;
+
+: unmark
+    mark [ f mark! t repaint?! ] when ;
+
+: top-line                              -- -> line
+    current-buffer buffer-%top-line ;
+
+: top-line!                             -- line ->
+    current-buffer buffer-%top-line! ;
 
 : top-line-number                       -- -> n
-    current-buffer buffer-top-line-number ;
+    current-buffer buffer-%top-line line-%number ;
 
-: set-top-line-number                   -- n ->
-    current-buffer buffer-top-line-number! ;
+: dot-line-text                         -- -> string
+    dot-line line-text ;
+
+: dot-line-text!                        -- string ->
+    dot-line line-text! ;
+
+: dot-line-length                       -- -> n
+    dot-line-text string-length ;
+
+: dot-line-head                         -- -> string
+    dot-line line-text dot-offset string-head ;
+
+: dot-line-tail                         -- -> string
+    dot-line line-text dot-offset string-tail ;
+
+: dot-line-next                         -- -> line'
+    dot position-%line line-next ;
+
+: dot-line-prev                         -- -> line'
+    dot position-%line line-prev ;
+
+: first-line                            -- -> line
+    current-buffer buffer-%first-line ;
+
+: last-line                             -- -> line
+    current-buffer buffer-%last-line ;
+
+: last-line-number                      -- --> n
+    last-line line-%number ;
+
+: line-count                            -- -> n
+    last-line-number 1+ ;
 
 : goal-column                           -- -> n
     current-buffer buffer-goal-column ;
@@ -140,14 +203,19 @@ var buffer-list
 : mod-count                             -- -> n
     current-buffer buffer-mod-count ;
 
-: set-mod-count                         -- n ->
+: mod-count!                            -- n ->
     current-buffer buffer-mod-count! ;
 
 : mod-count-last-save                   -- -> n
     current-buffer buffer-mod-count-last-save ;
 
-: set-mod-count-last-save               -- n ->
+: mod-count-last-save!               -- n ->
     current-buffer buffer-mod-count-last-save! ;
+
+: modified?                             -- -> ?
+    mod-count mod-count-last-save neq? ;
+
+: modified mod-count 1+ mod-count! ;
 
 : undo-stack                            -- -> vector
     current-buffer buffer-undo-stack ;
@@ -155,96 +223,80 @@ var buffer-list
 : redo-stack                            -- -> vector
     current-buffer buffer-redo-stack ;
 
-: create-buffer                         -- filename -> buffer
-    buffer make-instance
-    [ buffer-filename! ] keep
+: renumber
+    first-line :> line!
+    0 :> n!
+    [ line ] [
+        n line line-%number!
+        n 1+ n!
+        line line-next line!
+    ] while
 ;
 
-: editor-filename                       -- -> filename
-    current-buffer buffer-filename ;
+: nth-line ( line-number )       -- line-number -> line
+    first-line :> line!
+    0 :> n!
+    [ n line-number < ] [
+        n 1+ n!
+        line line-next line!
+    ] while
+    line line-%number line-number assert-eq
+    line
+;
 
-: dot-line-number                       -- -> line-number
-    dot position-line-number ;
+: insert-after ( line prev )            -- line prev -> void
+    -- insert line after prev
+    prev line-next :> next
 
-: dot-line-number!                      -- line-number ->
-    dot position-line-number! ;
+    line prev line-next!
+    prev line line-prev!
 
-: mark-line-number                      -- -> line-number
-    mark [ mark position-line-number ] [ f ] if ;
+    next line line-next!
+    next [ line next line-prev! ] when
 
-: mark-line-number!                     -- line-number ->
-    mark [ position-line-number! ] when* ;
+    renumber
+;
 
-: next-line-number                      -- -> line-number
-    dot-line-number 1 + ;
+: unlink ( line )                       -- line -> void
+    line line-next :> next
+    line line-prev :> prev
 
-: dot-offset dot position-offset ;
+    prev [ next prev line-next! ] when
+    next [ prev next line-prev! ] when
 
-: dot-offset!                           -- n ->
-    dot position-offset! ;
+    f line line-next!
+    f line line-prev!
 
-: mark-offset mark position-offset ;    -- -> n
-
-: mark-offset!                          -- n ->
-    mark position-offset! ;
-
-: reverse esc[ "7m" write-string-escaped ;
-
-: normal esc[ "m" write-string-escaped ;
-
-: buffer-modified?                      -- buffer -> ?
-    dup buffer-mod-count swap buffer-mod-count-last-save neq? ;
-
-: modified?                             -- -> ?
-    mod-count mod-count-last-save neq? ;
-
-: modified mod-count 1 + set-mod-count ;
-
-: buffer-line-count                     -- -> n
-    current-buffer-lines length ;
-
-: buffer-nth-line                       -- n -> string
-    current-buffer-lines vector-nth ;
-
-: buffer-nth-line!                      -- string n ->
-    current-buffer-lines vector-set-nth ;
-
-: buffer-insert-nth-line                -- string n ->
-    current-buffer-lines vector-insert-nth ;
-
-: buffer-last-line                      -- -> string
-    current-buffer-lines vector-last ;
-
-: dot-line                              -- -> string
-    dot-line-number buffer-nth-line ;
-
-: dot-line!                             -- string ->
-    dot-line-number buffer-nth-line! ;
-
-: dot-line-length                       -- -> n
-    dot-line string-length ;
-
-: dot-line-head                         -- -> string
-    dot-line dot-offset string-head ;
-
-: dot-line-tail                         -- -> string
-    dot-line dot-offset string-tail ;
+    renumber
+;
 
 : lines-per-page                        -- -> n
     terminal-height 2 - ;
 
+: bottom-line                           -- -> line
+    top-line :> line!
+    0 :> i!
+
+    [ i lines-per-page 1- < ] [
+        line line-next [ line! ] when*
+        i 1+ i!
+    ] while
+
+    line
+;
+
 : bottom-line-number                    -- -> n
-    top-line-number lines-per-page 1 - + buffer-line-count min ;
+    bottom-line line-%number ;
 
 : tab-width                             -- -> n
     8 ;
 
 : position-column ( pos )               -- position -> column
-    pos position-line-number buffer-nth-line :> line
-    pos position-offset line length min :> limit
+    pos position-%line :> line
+    pos position-offset line line-text length min :> limit
     0 :> column!
     limit [
-        line string-nth '\t' eq? [
+        line line-text string-nth '\t' eq? [
             column tab-width column tab-width mod - + column!
         ] [
             column 1+ column!
@@ -296,17 +348,44 @@ var buffer-list
     ] if
 ;
 
-: paint-line ( y )                      -- y ->
-    0 y at-xy
-    top-line-number y + :> line-number
+: status-y                              -- -> n
+    terminal-height 2 - ;
 
-    line-number buffer-nth-line detab :> detabbed-text
+: reverse esc[ "7m" write-string-escaped ;
 
+: normal esc[ "m" write-string-escaped ;
+
+: status
+    reverse
+    0 status-y at-xy
+    modified? [ '*' write-char ] [ space ] if
+    current-buffer buffer-filename write-string
+
+    dot-line-number 1+
+    line-count
+    dot-column 1+
+    "Line %d of %d Col %d " format
+    terminal-width over length - :> x
+    x current-buffer buffer-filename length 1+ - 1 max spaces
+    write-string
+    normal
+;
+
+: clear-status-line 0 status-y at-xy clear-to-eol ;
+
+: message-y                             -- -> n
+    status-y 1+ ;
+
+: message                               -- string ->
+    0 message-y at-xy write-string ;
+
+: clear-message-line hide-cursor 0 message-y at-xy clear-to-eol ;
+
+: repaint-line ( line )                -- line -> void
+    line line-text detab :> detabbed-text
     detabbed-text format-line :> formatted-text
-
     output-style
-
-    line-number mark-line-number eq? [
+    line mark-line eq? [
         0 dot-column detabbed-text string-substring write
         reverse
         dot-column mark-column detabbed-text string-substring write
@@ -323,50 +402,32 @@ var buffer-list
     ] if
 ;
 
-: redisplay-line ( y )                  -- y ->
-    top-line-number y + buffer-line-count < [
-        y paint-line
-    ] [
+: repaint
+    top-line :> line!
+    0 :> y!
+
+    [ line y lines-per-page < and ] [
+        0 y at-xy
+        line repaint-line
+        y 1+ y! line line-next line!
+    ] while
+
+    [ y lines-per-page < ] [
         0 y at-xy terminal-width spaces
-    ] if
+        y 1+ y!
+    ] while
+
+    f repaint?!
 ;
-
-: status-y                              -- -> n
-    terminal-height 2 - ;
-
-: status
-    reverse
-    0 status-y at-xy
-    modified? [ '*' write-char ] [ space ] if
-    editor-filename write-string
-    dot-line-number 1+
-    buffer-line-count
-    dot-column 1+
-    "Line %d of %d Col %d " format
-    terminal-width over length - :> x
-    x editor-filename length 1+ - 1 max spaces
-    write-string
-    normal
-;
-
-: clear-status-line 0 status-y at-xy clear-to-eol ;
-
-: message-y                             -- -> n
-    status-y 1+ ;
-
-: message                               -- string ->
-    0 message-y at-xy write-string ;
-
-: clear-message-line hide-cursor 0 message-y at-xy clear-to-eol ;
 
 : update-display
     hide-cursor
     repaint? [
-        lines-per-page [ redisplay-line ] each-integer
-        f repaint?!
+        repaint
     ] [
         dot-line-changed? [
-            dot-y redisplay-line
+            0 dot-y at-xy
+            dot-line repaint-line
             f dot-line-changed?!
         ] when
     ] if
@@ -385,13 +446,20 @@ var buffer-list
 : reframe?                              -- -> ?
     dot-line-number
     top-line-number
-    dup lines-per-page 1 - +
+    dup lines-per-page 1- +
     between? not ;
 
 : reframe
-    dot-line-number
-    lines-per-page 2 /i verify-index
-    - 0 max set-top-line-number
+    lines-per-page 2 /i verify-index :> i!
+    dot-line :> line!
+
+    [ i 0 > line line-prev and ] [
+        line line-prev line!
+        i 1- i!
+    ] while
+
+    line top-line!
+
     t repaint?!
 ;
 
@@ -401,7 +469,11 @@ tuple: undo-record
     mod-count
     action
     dot
+    %dot-line-number
+    %dot-offset
     mark
+    %mark-line-number
+    %mark-offset
     data ;
 
 symbol: +move+
@@ -449,11 +521,8 @@ special: +compound-undo+
 
 : reset-redo redo-stack vector-delete-all ;
 
-: copy-position                         -- position -> copy
-    [ position-line-number ] [ position-offset ] bi
-    position make-instance
-    [ position-offset! ] keep
-    [ position-line-number! ] keep ;
+: copy-position ( pos )                 -- position -> copy
+    pos position-%line pos position-offset make-position ;
 
 : copy-dot                              -- -> position
     dot copy-position ;
@@ -462,10 +531,15 @@ special: +compound-undo+
     mark [ copy-position ] [ f ] if* ;
 
 : new-undo-record                       -- -> undo-record
-    undo-record make-instance
-    mod-count over undo-record-mod-count!
-    copy-dot over undo-record-dot!
-    copy-mark over undo-record-mark!
+    undo-record make-instance :> undo-rec
+
+    mod-count undo-rec undo-record-mod-count!
+    copy-dot undo-rec undo-record-dot!
+    copy-mark undo-rec undo-record-mark!
+    dot-line-number undo-rec undo-record-%dot-line-number!
+    dot-offset undo-rec undo-record-%dot-offset!
+
+    undo-rec
 ;
 
 : add-undo-move
@@ -480,15 +554,20 @@ special: +compound-undo+
     push-redo
 ;
 
-: undo-move                             -- undo-record ->
+: undo-move ( undo-rec )                -- undo-record ->
     in-redo? [ add-undo-move ] [ add-redo-move ] if
 
     mark [ t repaint?! ] when
 
-    [ undo-record-mod-count set-mod-count ]
-    [ undo-record-dot set-dot ]
-    [ undo-record-mark mark! ]
-    tri
+    undo-rec undo-record-mod-count mod-count!
+
+    undo-rec undo-record-%dot-line-number nth-line
+    undo-rec undo-record-%dot-offset
+    make-position dot!
+
+    undo-rec undo-record-mark mark!
+
+    top-line line? assert
 
     mark [ t repaint?! ] when
 ;
@@ -496,7 +575,7 @@ special: +compound-undo+
 : new-undo-line-edit                    -- -> undo-record
     new-undo-record
     +line-edit+ over undo-record-action!
-    dot-line over undo-record-data!
+    dot-line-text over undo-record-data!
 ;
 
 : add-undo-line-edit new-undo-line-edit push-undo ;
@@ -506,9 +585,9 @@ special: +compound-undo+
 : undo-line-edit                        -- undo-record ->
     in-redo? [ add-undo-line-edit ] [ add-redo-line-edit ] if
 
-    [ undo-record-mod-count set-mod-count ]
-    [ undo-record-dot set-dot ]
-    [ undo-record-data dot-line! ]
+    [ undo-record-mod-count mod-count! ]
+    [ undo-record-dot dot! ]
+    [ undo-record-data dot-line-text! ]
     tri
 
     t dot-line-changed?!
@@ -517,10 +596,7 @@ special: +compound-undo+
 : add-undo-delete-line-separator
     new-undo-record
     +delete-line-separator+ over undo-record-action!
-    dot-line
-    dot-line-number 1+ buffer-nth-line
-    2array
-    over undo-record-data!
+    dot-line-text dot-line-next line-text 2array over undo-record-data!
     push-undo
 ;
 
@@ -530,14 +606,15 @@ special: +compound-undo+
     push-redo
 ;
 
-: undo-delete-line-separator            -- undo-record ->
-    dup
-    [ undo-record-mod-count set-mod-count ]
-    [ undo-record-dot set-dot ]
-    bi
-    undo-record-data                    -- 2array
-    dup array-first dot-line!
-    array-second dot-line-number 1 + buffer-insert-nth-line
+: undo-delete-line-separator  ( undo-rec )      -- undo-record -> void
+    undo-rec undo-record-mod-count mod-count!
+    undo-rec undo-record-%dot-line-number nth-line
+    undo-rec undo-record-%dot-offset
+    make-position dot!
+    undo-rec undo-record-data           -- -> 2array
+    dup array-first dot-line-text!
+    array-second make-line/1 dot-line insert-after
+
     t repaint?!
 
     add-redo-delete-line-separator
@@ -546,7 +623,7 @@ special: +compound-undo+
 : add-undo-insert-line-separator
     new-undo-record
     +insert-line-separator+ over undo-record-action!
-    dot-line over undo-record-data!
+    dot-line-text over undo-record-data!
     push-undo
 ;
 
@@ -557,11 +634,13 @@ special: +compound-undo+
 ;
 
 : undo-insert-line-separator            -- undo-record ->
-    [ undo-record-mod-count set-mod-count ]
-    [ undo-record-dot set-dot ]
-    [ undo-record-data dot-line! ]
+    [ undo-record-mod-count mod-count! ]
+    [ undo-record-dot dot! ]
+    [ undo-record-data dot-line-text! ]
     tri
-    dot-line-number 1+ current-buffer-lines vector-remove-nth!
+
+    dot-line line-next unlink
+
     t repaint?!
 
     add-redo-insert-line-separator
@@ -594,58 +673,50 @@ special: +compound-undo+
 
 : beginning-of-buffer
     add-undo-move
-
     unmark
-
-    0 dot-line-number!
-    0 dot-offset!
-
-    0 set-top-line-number
+    first-line top-line!
+    first-line 0 make-position dot!
     0 goal-column!
     t repaint?!
 ;
 
 : end-of-buffer
     add-undo-move
-
     unmark
-
-    buffer-line-count 1 - 0 max dot-line-number!
-    buffer-line-count lines-per-page - 0 max set-top-line-number
+    last-line dot-line!
     dot-line-length dot-offset!
     dot-offset goal-column!
+
+    -- reframe
+    last-line :> line!
+    lines-per-page 1- :> i!
+    [ line line-prev i 0 > and ] [
+        line line-prev line!
+        i 1- i!
+    ] while
+    line top-line!
+
     t repaint?!
 ;
 
 : gotoline-internal                     -- line-number
-        1- 0 max buffer-line-count 1- min
-        dup dot-line-number <> [
-            add-undo-move
-            unmark
-            dot-line-number!
-            0 dot-offset!
-            maybe-reframe
-        ] [
-            drop
-        ] if
+    1- 0 max line-count 1- min
+    dup dot-line-number <> [
+        add-undo-move
+        unmark
+        nth-line dot-line!
+        0 dot-offset!
+        maybe-reframe
+    ] [
+        drop
+    ] if
 ;
 
 : gotoline
     0 message-y at-xy
     "Line number: " accept-string :> response
     clear-message-line
-    response string>number [
-        1- 0 max buffer-line-count 1- min
-        dup dot-line-number <> [
-            add-undo-move
-            unmark
-            dot-line-number!
-            0 dot-offset!
-            maybe-reframe
-        ] [
-            drop
-        ] if
-    ] when*
+    response string>number [ gotoline-internal ] when*
 ;
 
 : do-home
@@ -662,7 +733,7 @@ special: +compound-undo+
 
     unmark
 
-    dot-line length dot-offset!
+    dot-line-length dot-offset!
     dot-offset goal-column!
 ;
 
@@ -683,15 +754,15 @@ special: +compound-undo+
     ] return-if
 
     dot-offset 0 > [
-        dot-offset 1 - dot-offset!
+        dot-offset 1- dot-offset!
         dot-offset goal-column!
     ] [
-        dot-line-number 0 > [
-            dot-line-number 1 - dot-line-number!
+        dot-line-prev [
+            dot-line-prev dot-line!
             dot-line-length dot-offset!
             dot-offset goal-column!
             reframe? [
-                dot-line-number set-top-line-number
+                dot-line top-line!
                 t repaint?!
             ] when
         ] when
@@ -706,16 +777,16 @@ special: +compound-undo+
         unmark
     ] return-if
 
-    dot-offset dot-line length < [
+    dot-offset dot-line-length < [
         dot-offset 1+ dot-offset!
         dot-offset goal-column!
     ] [
-        dot-line-number buffer-line-count 1 - < [
-            dot-line-number 1 + dot-line-number!
+        dot-line-next [
+            dot-line-next dot-line!
             0 dot-offset!
             dot-offset goal-column!
             reframe? [
-                dot-line-number lines-per-page 1 - - set-top-line-number
+                dot-line-number lines-per-page 1- - nth-line top-line!
                 t repaint?!
             ] when
         ] when
@@ -727,13 +798,11 @@ special: +compound-undo+
 
     last-command ' do-down eq? [ add-undo-move ] unless
 
-    dot-line-number buffer-line-count 1- < [
-        dot-line-number 1+ dot-line-number!
+    dot-line line-next [
+        dot-line line-next dot position-%line!
+
         unmark
-        reframe? [
-            dot-line-number lines-per-page 1- - set-top-line-number
-            t repaint?!
-        ] when
+        reframe? [ reframe ] when
         adjust-cursor-x
     ] when
 ;
@@ -743,11 +812,12 @@ special: +compound-undo+
 
     last-command ' do-up eq? [ add-undo-move ] unless
 
-    dot-line-number 0 > [
-        dot-line-number 1- dot-line-number!
+    dot-line line-prev [
+        dot-line line-prev dot position-%line!
+
         unmark
         reframe? [
-            dot-line-number set-top-line-number
+            dot-line current-buffer buffer-%top-line!
             t repaint?!
         ] when
         adjust-cursor-x
@@ -755,11 +825,12 @@ special: +compound-undo+
 ;
 
 : do-window-up
-    top-line-number 0 > [
-        top-line-number 1- set-top-line-number
+    top-line line-prev [
+        top-line line-prev top-line!
+        top-line line? assert
         dot-line-number bottom-line-number > [
             add-undo-move
-            bottom-line-number dot-line-number!
+            bottom-line dot-line!
             0 dot-offset!
         ] when
         t repaint?!
@@ -767,11 +838,12 @@ special: +compound-undo+
 ;
 
 : do-window-down
-    top-line-number buffer-line-count 1 - < [
-        top-line-number 1+ set-top-line-number
+    top-line line-next [
+        top-line line-next top-line!
+        top-line line? assert
         dot-line-number top-line-number < [
             add-undo-move
-            top-line-number dot-line-number!
+            top-line dot-line!
             0 dot-offset!
         ] when
         t repaint?!
@@ -783,11 +855,28 @@ special: +compound-undo+
 
     dot-y :> goal-y
 
-    dot-line-number lines-per-page +
-    buffer-line-count 1- min
-    dot-line-number!
+    top-line-number lines-per-page + last-line-number > [
+        last-line dot-line!
+        adjust-cursor-x
+    ] return-if
 
-    dot-line-number goal-y - 0 max set-top-line-number
+    top-line :> line!
+    0 :> i!
+
+    [ line line-next i lines-per-page < and ] [
+        i 1+ i! line line-next line!
+    ] while
+
+    line top-line!
+
+    goal-y i!
+
+    [ line line-next i 0 > and ] [
+        i 1- i! line line-next line!
+    ] while
+
+    line dot-line!
+
     t repaint?!
     adjust-cursor-x
 ;
@@ -797,32 +886,46 @@ special: +compound-undo+
 
     dot-y :> goal-y
 
-    dot-line-number lines-per-page - 0 max dot-line-number!
+    dot-line :> line!
+    0 :> i!
 
-    dot-line-number goal-y - 0 max set-top-line-number
+    [ line line-prev i lines-per-page < and ] [
+        i 1+ i! line line-prev line!
+    ] while
+
+    line dot-line!
+
+    goal-y i!
+
+    [ line line-prev i 0 > and ] [
+        i 1- i! line line-prev line!
+    ] while
+
+    line top-line!
+
     t repaint?!
     adjust-cursor-x
 ;
 
 : insert-line-separator
-    dot-offset dot-line-length <= [
-        add-undo-insert-line-separator
-        dot-line-tail dot-line-number 1+ buffer-insert-nth-line
-        dot-line-head dot-line!
-        dot-line-number 1+ dot-line-number!
-        0 dot-offset!
-        0 goal-column!
-        modified
-        t repaint?!
-    ] when
+    add-undo-insert-line-separator
+    dot-line-tail make-line/1 :> new-line
+    dot-line-head dot-line-text!
+    new-line dot-line insert-after
+    new-line dot-line!
+    0 dot-offset!
+    0 goal-column!
+    modified
+    t repaint?!
+    renumber
 ;
 
 : insert-spaces ( n )                   -- n ->
     -- no undo
     dot-line-head string>sbuf :> sb
-    n [ 32 code-char sb sbuf-push ] times
+    n [ '\s' sb sbuf-push ] times
     dot-line-tail sb sbuf-append-string
-    sb sbuf>string dot-line!
+    sb sbuf>string dot-line-text!
     dot-offset n + dot-offset!
     t dot-line-changed?!
     modified
@@ -841,22 +944,22 @@ special: +compound-undo+
     [ drop 0 ] unless
 ;
 
-: delete-indentation                    -- line1 -> line2
+: delete-indentation                    -- string -> string'
     dup empty? [ ] return-if
 
-    :> line
+    :> text
 
-    line [ char-code 32 > ] find        -- index/f element/f
-    [ line swap string-tail ] [ drop "" ] if
+    text [ char-code 32 > ] find        -- index/f element/f
+    [ text swap string-tail ] [ drop "" ] if
 ;
 
 : newline-and-indent
-    dot-line get-indentation-column :> indent-col
+    dot-line-text get-indentation-column :> indent-col
 
     [
         insert-line-separator
         add-undo-line-edit
-        dot-line delete-indentation dot-line!
+        dot-line-text delete-indentation dot-line-text!
         indent-col 0 > [
             indent-col insert-spaces
         ] when
@@ -870,25 +973,23 @@ special: +compound-undo+
     :> n
 
     s n string-head
-    n 1 + s string-length < [
-        s n 1 + string-tail string-append
+    n 1+ s string-length < [
+        s n 1+ string-tail string-append
     ] when
 ;
 
 : delete-normal-char
     add-undo-line-edit
-
-    dot-offset dot-line string-remove-nth dot-line!
+    dot-offset dot-line-text string-remove-nth dot-line-text!
     t dot-line-changed?!
 ;
 
 : delete-line-separator
-    dot-line-number buffer-line-count 1 - < [
-        dot-offset dot-line-length = [
+    dot-line-next [
+        dot-offset dot-line-length eq? [
             add-undo-delete-line-separator
-            dot-line-number 1+ buffer-nth-line
-            dot-line swap string-append dot-line!
-            dot-line-number 1+ current-buffer-lines vector-remove-nth!
+            dot-line-text dot-line-next line-text string-append dot-line-text!
+            dot-line-next unlink
             t repaint?!
         ] when
     ] when
@@ -909,14 +1010,14 @@ special: +compound-undo+
             [ dot-offset 0 > ]
             [
                 add-undo-line-edit
-                dot-offset 1 -
-                [ dot-line string-remove-nth dot-line! ] [ dot-offset! ] bi
+                dot-offset 1-
+                [ dot-line line-text string-remove-nth dot-line line-text! ] [ dot-offset! ] bi
                 t dot-line-changed?!
                 modified
             ]
         }
         {
-            [ dot-line-number 0 > ]
+            [ dot-line-prev ]
             [
                 [
                     new-compound-undo +compound-undo+ set
@@ -943,7 +1044,7 @@ special: +compound-undo+
     dot-line-head string>sbuf :> sb
     sb sbuf-push
     dot-line-tail sb sbuf-append-string
-    sb sbuf>string dot-line!
+    sb sbuf>string dot-line line-text!
     dot-offset 1+ dot-offset!
     t dot-line-changed?!
     modified
@@ -955,10 +1056,10 @@ special: +compound-undo+
         delete-line-separator
     ] [
         add-undo-line-edit
-        dot-line-head dot-line!
+        dot-line-head dot-line-text!
         t dot-line-changed?!
-        modified
     ] if
+    modified
 ;
 
 : redo1                                 -- undo-record ->
@@ -986,40 +1087,43 @@ special: +compound-undo+
 ;
 
 : make-backup
-    editor-filename dup file-exists?
+    current-buffer buffer-filename dup file-exists?
     [ dup "~" string-append copy-file ] [ drop ] if
 ;
 
 : do-save
+    -- save the current buffer to disk
     output-style
     "Saving..." message
 
     make-backup
 
     current-buffer buffer-eol :> eol
-    buffer-line-count 80 * <sbuf> :> sb
+    line-count 80 * <sbuf> :> sb
     nano-count :> start-ns
 
     -- all lines but the last are followed by eol
-    buffer-line-count 1- [
-        buffer-nth-line sb sbuf-append-string
+    first-line :> line!
+    [ line last-line neq? ] [
+        line line-text sb sbuf-append-string
         eol sb sbuf-append-string
-    ] each-integer
+        line line-next line!
+    ] while
 
     -- last line, no eol
-    buffer-last-line sb sbuf-append-string
+    last-line line-text sb sbuf-append-string
 
     sb sbuf>string current-buffer buffer-filename set-file-contents
 
     nano-count start-ns - :> elapsed-ns
 
-    mod-count set-mod-count-last-save
+    mod-count mod-count-last-save!
 
     elapsed-ns 1000000 /i "Saving...done (%s ms)" format message
 ;
 
 : do-quit
-    buffer-list ' buffer-modified? count :> n
+    buffer-list [ buffer-modified? ] count :> n
 
     n zero? [
         t done?!
@@ -1078,21 +1182,7 @@ special: +compound-undo+
     ] when
 ;
 
-: initialize-empty-buffer
-    "untitled" create-buffer current-buffer!
-    LF current-buffer buffer-eol!
-    64 <vector> set-current-buffer-lines
-    "" current-buffer-lines vector-push
-    position make-instance set-dot
-    0 dot-offset!
-    0 dot-line-number!
-    0 set-top-line-number
-
-    0 set-mod-count 0 set-mod-count-last-save
-    0 goal-column!
-;
-
-: buffer-append-line ( buf line )       -- buffer line -> void
+: buffer-append-line ( line buf )       -- line buffer -> void
     buf buffer-%last-line line line-prev!
     buf buffer-%last-line [ line swap line-next! ] when*
     line buf buffer-%last-line!
@@ -1101,43 +1191,15 @@ special: +compound-undo+
     ] unless
 ;
 
-: initialize-lines-list ( buf )         -- buffer -> void
-    buf buffer-lines [
-        make-line/2 buf swap buffer-append-line
-    ] each-index
-;
-
-: print-lines ( buf )                   -- buffer -> void
-    buf buffer-%first-line :> line!
-
-    [ line ] [ line line-text print line line-next line! ] while
-;
-
-: renumber-lines ( buf )
-    buf buffer-%first-line :> line!
-    0 :> n!
-
-    [ line ] [
-        n line line-%number!
-
-        line line-text
-        line line-%number buf buffer-lines vector-nth assert=
-
-        n 1+ n!
-        line line-next line!
-    ] while
-
-    n current-buffer-lines length assert=
-;
-
-: validate-buffer ( buf )
-    buf buffer-%first-line :> line!
-
-    [ line ] [
-        line line-text
-        line line-%number buf buffer-lines vector-nth assert=
-        line line-next line!
-    ] while
+: initialize-empty-buffer
+    make-buffer :> buf
+    "untitled" buf buffer-filename!
+    "" 0 make-line/2
+    [ buf buffer-append-line ]
+    [ 0 make-position buf buffer-dot! ]
+    bi
+    buf current-buffer!
+    dot-line top-line!
 ;
 
 : initialize-buffer                     -- filename line-number -> buf
@@ -1164,14 +1226,15 @@ special: +compound-undo+
         ] when
     ] if
 
-    lines buf buffer-lines!
+    lines [
+        make-line/2 buf buffer-append-line
+    ] each-index
 
-    position make-instance :> pos
+    buf buffer-%first-line line? assert
 
-    0 pos position-offset!
-    line-number 1 - 0 max lines length 1 - min pos position-line-number!
+    buf buffer-%first-line 0 make-position buf buffer-dot!
 
-    pos buf buffer-dot!
+    buf buffer-%first-line buf buffer-%top-line!
 
     buf buffer-list vector-push
 
@@ -1231,14 +1294,14 @@ special: +compound-undo+
 : identifier-at-dot                     -- -> string/f
     dot-offset dot-line-length 1- min 0 max :> offset!
 
-    offset dot-line [ 32 code-char eq? ] find-last-from drop :> start!
+    offset dot-line-text [ '\s' eq? ] find-last-from drop :> start!
 
     -- get to first non-blank char
     start [ start 1+ start! ] [ 0 start! ] if
 
-    start dot-line string-skip-to-whitespace    -- -> index/f
-    dot-line length or [
-        start swap dot-line string-substring
+    start dot-line-text string-skip-to-whitespace       -- -> index/f
+    dot-line-length or [
+        start swap dot-line-text string-substring
     ] [
         f
     ] if* ;
@@ -1251,10 +1314,12 @@ special: +compound-undo+
             line-number gotoline-internal
         ] [
             filename line-number initialize-buffer current-buffer!
+            line-number gotoline-internal
         ] if*
         maybe-reframe
         t repaint?!
-    ] when ;
+    ] when
+;
 
 : find-definition
     identifier-at-dot
@@ -1283,7 +1348,7 @@ use: search
     bindings at ;
 
 : initialize-bindings
-    32 <hashtable> bindings!
+    128 <hashtable> bindings!
 
     key:del             ' do-bs                         bind-key        -- Linux
     key:backspace       ' do-bs                         bind-key        -- Windows
@@ -1331,27 +1396,28 @@ use: search
 : log drop ;
 
 : do-mouse                              -- key -> void
-    verify-fixnum :> keycode
-    f :> button! f :> x! f :> y!
-    keycode fixnum>hex log
-    keycode 24 rshift 0x1b5b4d = [
-        -- "\e[M"
-        keycode 0xff bitand 32 - y!
-        keycode 0xff00 bitand 8 rshift 32 - x!
-        keycode 0xff0000 bitand 16 rshift 3 bitand zero? [
-            -- left button pressed
-            x y "left button pressed x = %d y = %d" format log
-            top-line-number y + gotoline-internal
-            x 1- 0 max dot-offset!
-        ] when
-    ] when
+--     verify-fixnum :> keycode
+--     f :> button! f :> x! f :> y!
+--     keycode fixnum>hex log
+--     keycode 24 rshift 0x1b5b4d = [
+--         -- "\e[M"
+--         keycode 0xff bitand 32 - y!
+--         keycode 0xff00 bitand 8 rshift 32 - x!
+--         keycode 0xff0000 bitand 16 rshift 3 bitand zero? [
+--             -- left button pressed
+--             x y "left button pressed x = %d y = %d" format log
+--             top-line-number y + gotoline-internal
+--             x 1- 0 max dot-offset!
+--         ] when
+--     ] when
 ;
 
 : do-command                            -- key ->
     dup lookup-key [
         nip dup current-command! call-symbol
     ] [
-        do-mouse
+--         do-mouse
+        drop
     ] if* ;
 
 : dispatch                              -- key ->
@@ -1362,6 +1428,7 @@ use: search
 : edit-loop
     f done?!
     [ done? ] [
+        top-line line? assert
         update-display
         ekey
         clear-message-line
@@ -1401,6 +1468,7 @@ use: search
     arg find-file-to-edit [
         initialize-editor
         0 initialize-buffer current-buffer!
+        first-line top-line!
         edit1
     ] [
         arg error-file-not-found
