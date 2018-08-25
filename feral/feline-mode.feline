@@ -23,7 +23,7 @@ private
   0 255 255 rgb-foreground-prefix constant syntax-prefix
 255 165   0 rgb-foreground-prefix constant name-prefix
   0 170   0 rgb-foreground-prefix constant string-prefix
-255   0 255 rgb-foreground-prefix constant combinator-prefix
+192   0 192 rgb-foreground-prefix constant combinator-prefix
 
 "\e[0m" constant reset-suffix
 
@@ -117,6 +117,8 @@ tuple: segment
     "{"
     "}"
     "'"
+    "symbol:"
+    "special:"
 } constant syntax-words
 
 {
