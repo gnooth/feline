@@ -63,7 +63,7 @@ file __FILE__
         _tag_fixnum
 %endmacro
 
-%macro  _this_lexer_index 0             ; lexer -- index
+%macro  _this_lexer_index 0             ; -> index
         _this_lexer_raw_index
         _tag_fixnum
 %endmacro
@@ -505,36 +505,35 @@ skip_blank_unchecked:
         next
 endcode
 
-; : skip-word ( )
-;     lexer-index lexer-string string-skip-to-whitespace ( -- index/f )
+; : lexer-skip-word ( )
+;     lexer-index lexer-string string-skip-to-whitespace
 ;     [ lexer-index! ] [ lexer-string length lexer-index! ] if* ;
 
-; ### skip-word
-code skip_word, 'skip-word'             ; lexer -- index
+; ### lexer-skip-word
+code lexer_skip_word, 'lexer-skip-word' ; lexer -> index
         _ check_lexer
 
-skip_word_unchecked:
-
         push    this_register
-        mov     this_register, rbx
-        poprbx
+        mov     this_register, rbx      ; -> lexer
 
-        _this_lexer_index
-        _this_lexer_string
-        _ string_skip_to_whitespace     ; -- index/f
+        _lexer_index                    ; -> index
+        _this_lexer_string              ; -> index string
+        _ string_skip_to_whitespace     ; -> index/f
 
-        _dup
-        _tagged_if .1
-        _untag_fixnum
-        _this_lexer_set_raw_index
-        _else .1
+        cmp     rbx, f_value
+        je      .1                      ; -> index
+
+        mov     rax, rbx
+        _untag_fixnum rax
+        mov     this_lexer_raw_index, rax       ; -> index
+        pop     this_register
+        next
+
+.1:                                     ; -> f
         _drop
         _this_lexer_string_raw_length
-        _this_lexer_set_raw_index
-        _then .1
-
-        _this_lexer_index
-
+        mov     this_lexer_raw_index, rbx
+        _tag_fixnum                     ; -> index
         pop     this_register
         next
 endcode
@@ -589,7 +588,7 @@ code unescape_char, 'unescape-char'     ; char1 -- char2
 endcode
 
 ; ### lexer-parse-quoted-string
-code lexer_parse_quoted_string, 'lexer-parse-quoted-string' ; lexer -- string
+code lexer_parse_quoted_string, 'lexer-parse-quoted-string'     ; lexer -> string
 
         _ verify_lexer
 
@@ -639,24 +638,23 @@ code lexer_parse_quoted_string, 'lexer-parse-quoted-string' ; lexer -- string
 endcode
 
 ; ### lexer-parse-token
-code lexer_parse_token, 'lexer-parse-token'     ; lexer -- string/f
+code lexer_parse_token, 'lexer-parse-token'     ; lexer -> string/f
         _dup
-        _ lexer_skip_blank              ; -- lexer index/f
+        _ lexer_skip_blank              ; -> lexer index/f
 
-        _dup
-        _tagged_if_not .1
-        _2drop
-        _f
+        cmp     rbx, f_value
+        jne     .1
+        _nip
         _return
-        _then .1                        ; -- lexer index
 
+.1:                                     ; -> lexer index
         _over
         _ lexer_char
         _lit tagged_char('"')
         _eq?
         _tagged_if .2
-        _drop                           ; -- lexer
-        _ lexer_parse_quoted_string
+        _drop                           ; -> lexer
+        _ lexer_parse_quoted_string     ; -> string
 
         _quote '"'
         _swap
@@ -669,7 +667,7 @@ code lexer_parse_token, 'lexer-parse-token'     ; lexer -- string/f
         _then .2
 
         _over
-        _ skip_word
+        _ lexer_skip_word
         _twodup
         _ eq?
         _tagged_if .3
