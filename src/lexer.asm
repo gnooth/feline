@@ -635,9 +635,29 @@ code lexer_parse_token, 'lexer-parse-token'     ; lexer -> string/f
         _ lexer_skip_word               ; -> lexer index index'
         cmp     rbx, [rbp]
         jz      .exit
-        _ rot
-        _ lexer_string
-        _ string_substring
+
+        _pick                           ; -> lexer index index' lexer
+        _ lexer_string                  ; -> lexer index index' string
+        _ string_substring              ; -> lexer substring
+
+        ; check for comment
+        _dup
+        _quote "--"
+        _ stringequal
+        _tagged_if .3
+
+        _drop                           ; -> lexer
+        _dup
+        _ lexer_next_line
+        jmp     lexer_parse_token       ; recurse!
+
+        _else .3
+
+        ; not a comment
+        _nip
+
+        _then .3
+
         next
 
 .exit:
