@@ -473,38 +473,6 @@ code lexer_skip_blank, 'lexer-skip-blank' ; lexer -- index/f
         next
 endcode
 
-; : skip-blank ( )
-;     lexer-index lexer-string string-skip-whitespace ( -- index/f )
-;     [ lexer-index! ] [ lexer-string length lexer-index! ] if* ;
-
-; ### skip-blank
-code skip_blank, 'skip-blank'           ; lexer --
-        _ check_lexer
-
-skip_blank_unchecked:
-
-        push    this_register
-        mov     this_register, rbx
-        poprbx
-
-        _this_lexer_index
-        _this_lexer_string
-        _ string_skip_whitespace        ; -- index/f
-
-        _dup
-        _tagged_if .1
-        _untag_fixnum
-        _this_lexer_set_raw_index
-        _else .1
-        _drop
-        _this_lexer_string_raw_length
-        _this_lexer_set_raw_index
-        _then .1
-
-        pop     this_register
-        next
-endcode
-
 ; : lexer-skip-word ( )
 ;     lexer-index lexer-string string-skip-to-whitespace
 ;     [ lexer-index! ] [ lexer-string length lexer-index! ] if* ;
@@ -645,40 +613,36 @@ code lexer_parse_token, 'lexer-parse-token'     ; lexer -> string/f
         cmp     rbx, f_value
         jne     .1
         _nip
-        _return
+        next
 
 .1:                                     ; -> lexer index
         _over
-        _ lexer_char
-        _lit tagged_char('"')
-        _eq?
-        _tagged_if .2
+        _ lexer_char                    ; -> lexer index char
+        cmp     rbx, tagged_char('"')
+        _drop                           ; -> lexer index
+        jne     .2
         _drop                           ; -> lexer
         _ lexer_parse_quoted_string     ; -> string
-
         _quote '"'
         _swap
         _ string_append
         _quote '"'
         _ string_append
+        next
 
-        _return
-
-        _then .2
-
+.2:
         _over
-        _ lexer_skip_word
-        _twodup
-        _ eq?
-        _tagged_if .3
-        _3drop
-        _f
-        _else .3
+        _ lexer_skip_word               ; -> lexer index index'
+        cmp     rbx, [rbp]
+        jz      .exit
         _ rot
         _ lexer_string
         _ string_substring
-        _then .3
+        next
 
+.exit:
+        mov     rbx, f_value
+        _2nip
         next
 endcode
 
