@@ -51,21 +51,21 @@ endcode
 special current_lexer, 'current-lexer'
 
 ; ### parse-token
-code parse_token, 'parse-token'         ; -- string/f
+code parse_token, 'parse-token'         ; -> string/f
         _ current_lexer
         _ get
-        _dup
-        _tagged_if .2
+        cmp     rbx, f_value
+        je      .error
         _ lexer_parse_token
-        _else .2
+        next
+.error:
         _drop
         _error "no lexer"
-        _then .2
         next
 endcode
 
 ; ### must-parse-token
-code must_parse_token, 'must-parse-token'       ; -- string
+code must_parse_token, 'must-parse-token'       ; -> string
         _ parse_token
         cmp     rbx, f_value
         je      error_unexpected_end_of_input
