@@ -1084,8 +1084,10 @@ special: +compound-undo+
 ;
 
 : make-backup
-    current-buffer buffer-filename dup file-exists?
-    [ dup "~" string-append copy-file ] [ drop ] if
+    current-buffer buffer-filename [
+        dup file-exists?
+        [ dup "~" string-append copy-file ] [ drop ] if
+    ] when*
 ;
 
 : do-save
@@ -1094,18 +1096,10 @@ special: +compound-undo+
     filename [
         0 message-y at-xy "File: " accept-string filename!
         clear-message-line
-
-        filename canonical-path filename!
-
-        -- REVIEW
-        -- canonical-path might return f
-        -- directory might not exist
         filename file-exists? [
             0 message-y at-xy "Overwrite existing file? (yes or no) " accept-string
             "yes" <> [ f filename! ] when
         ] when
-
-        filename [ filename current-buffer buffer-filename! ] when
     ] unless
 
     filename f eq? [ ] return-if
@@ -1138,6 +1132,10 @@ special: +compound-undo+
     mod-count mod-count-last-save!
 
     elapsed-ns 1000000 /i "Saving...done (%s ms)" format message
+
+    current-buffer buffer-filename [
+        filename canonical-path current-buffer buffer-filename!
+    ] unless
 ;
 
 : do-quit
