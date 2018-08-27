@@ -251,7 +251,7 @@ var current-buffer
     prev line line-prev!
 
     next line line-next!
-    next [ line next line-prev! ] when
+    next [ line next line-prev! ] [ line current-buffer buffer-%last-line! ] if
 
     renumber
 ;
@@ -356,14 +356,16 @@ var current-buffer
     reverse
     0 status-y at-xy
     modified? [ '*' write-char ] [ space ] if
-    current-buffer buffer-filename write-string
+    current-buffer buffer-filename :> filename!
+    filename [ "untitled" filename! ] unless
+    filename write-string
 
     dot-line-number 1+
     line-count
     dot-column 1+
     "Line %d of %d Col %d " format
     terminal-width over length - :> x
-    x current-buffer buffer-filename length 1+ - 1 max spaces
+    x filename length 1+ - 1 max spaces
     write-string
     normal
 ;
@@ -1087,6 +1089,27 @@ special: +compound-undo+
 ;
 
 : do-save
+    current-buffer buffer-filename :> filename!
+
+    filename [
+        0 message-y at-xy "File: " accept-string filename!
+        clear-message-line
+
+        filename canonical-path filename!
+
+        -- REVIEW
+        -- canonical-path might return f
+        -- directory might not exist
+        filename file-exists? [
+            0 message-y at-xy "Overwrite existing file? (yes or no) " accept-string
+            "yes" <> [ f filename! ] when
+        ] when
+
+        filename [ filename current-buffer buffer-filename! ] when
+    ] unless
+
+    filename f eq? [ ] return-if
+
     -- save the current buffer to disk
     output-style
     "Saving..." message
@@ -1108,7 +1131,7 @@ special: +compound-undo+
     -- last line, no eol
     last-line line-text sb sbuf-append-string
 
-    sb sbuf>string current-buffer buffer-filename set-file-contents
+    sb sbuf>string filename set-file-contents
 
     nano-count start-ns - :> elapsed-ns
 
@@ -1188,7 +1211,6 @@ special: +compound-undo+
 
 : initialize-empty-buffer
     make-buffer :> buf
-    "untitled" buf buffer-filename!
     "" 0 make-line/2
     [ buf buffer-append-line ]
     [ 0 make-position buf buffer-dot! ]
