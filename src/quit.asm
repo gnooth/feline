@@ -177,11 +177,11 @@ endcode
 
 ; ### token-keyword?
 code token_keyword?, 'token-keyword?'   ; string -- keyword/string ?
-        _quote "#:"
+        _quote ":"
         _over
         _ string_has_prefix?
         _tagged_if .1
-        _lit tagged_fixnum(2)
+        _lit tagged_fixnum(1)
         _ string_tail
         _ intern_keyword
         _t

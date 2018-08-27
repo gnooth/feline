@@ -1,4 +1,4 @@
-; Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -77,8 +77,6 @@ endcode
 
 ; ### string>keyword
 code string_to_keyword, 'string>keyword'        ; string -- keyword
-; 12 slots: object header, name, vocab name, hashcode, def, props,
-; value, code address, code size, flags, file, line number
 
         _lit 2
         _ raw_allocate_cells            ; -- name raw-object-address
@@ -132,7 +130,7 @@ endcode
 
 ; ### keyword>string
 code keyword_to_string, 'keyword>string'        ; keyword -- string
-        _quote "#:"
+        _quote ":"
         _swap
         _ keyword_name
         _ string_append

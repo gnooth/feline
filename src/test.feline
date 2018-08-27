@@ -2981,17 +2981,17 @@ test: file-attributes-test-1
 file-attributes-test-1
 
 test: keyword-test-1
-    #:foo [ keyword? assert-true ] [ symbol? assert-false ] bi
-    #:foo verify-keyword #:foo assert-eq
-    #:foo #:foo assert-eq
-    #:foo gc #:foo assert-eq
-    { #:foo #:bar } [ first #:foo assert-eq ] [ second #:bar assert-eq ] bi
+    :foo [ keyword? assert-true ] [ symbol? assert-false ] bi
+    :foo verify-keyword :foo assert-eq
+    :foo :foo assert-eq
+    :foo gc :foo assert-eq
+    { :foo :bar } [ first :foo assert-eq ] [ second :bar assert-eq ] bi
 ;
 
 keyword-test-1
 
 test: keyword-name-test-1
-    #:foo keyword-name "foo" assert=
+    :foo keyword-name "foo" assert=
     [ ' dup keyword-name ] assert-must-fail
     [ "test" keyword-name ] assert-must-fail
     [ 93 keyword-name ] assert-must-fail
