@@ -35,7 +35,7 @@ using: feline modes accept-string ;
 tuple: line
     prev
     next
-    %number
+    %number                             -- 0-based line number
     text ;
 
 : make-line/1                           -- string -> line
@@ -712,10 +712,9 @@ special: +compound-undo+
 ;
 
 : gotoline
-    0 message-y at-xy
-    "Line number: " accept-string :> response
+    0 message-y at-xy "Line number: " accept-string
     clear-message-line
-    response string>number [ gotoline-internal ] when*
+    string>number [ gotoline-internal ] when*
 ;
 
 : do-home
@@ -1207,18 +1206,21 @@ special: +compound-undo+
     ] unless
 ;
 
-: initialize-empty-buffer
+: create-buffer                         -- void -> void
     make-buffer :> buf
     "" 0 make-line/2
+
     [ buf buffer-append-line ]
     [ 0 make-position buf buffer-dot! ]
     bi
+
     buf buffer-list vector-push
     buf current-buffer!
+
     dot-line top-line!
 ;
 
-: initialize-buffer                     -- filename line-number -> buf
+: create-buffer/2                       -- filename line-number -> void
     verify-index  :> line-number
     verify-string :> filename
 
@@ -1247,14 +1249,19 @@ special: +compound-undo+
     ] each-index
 
     buf buffer-%first-line line? assert
+    buf buffer-%last-line  line? assert
 
     buf buffer-%first-line 0 make-position buf buffer-dot!
-
     buf buffer-%first-line buf buffer-%top-line!
 
     buf buffer-list vector-push
 
-    buf
+    buf current-buffer!
+
+    line-number 1- 0 max line-count 1- min nth-line dot-line!
+    0 dot-offset!
+
+    maybe-reframe
 ;
 
 : find-file-to-edit ( arg )             -- arg -> path/f
@@ -1279,7 +1286,7 @@ special: +compound-undo+
             current-buffer!
             t repaint?!
         ] [
-            filename 1 initialize-buffer current-buffer!
+            filename 1 create-buffer/2
             t repaint?!
         ] if*
     ] when
@@ -1329,8 +1336,7 @@ special: +compound-undo+
             current-buffer!
             line-number gotoline-internal
         ] [
-            filename line-number initialize-buffer current-buffer!
-            line-number gotoline-internal
+            filename line-number create-buffer/2
         ] if*
         maybe-reframe
         t repaint?!
@@ -1479,26 +1485,30 @@ use: search
     use-default-screen-buffer
 ;
 
-: edit-file ( arg )                     -- arg ->
-    arg find-file-to-edit [
+: edit-file ( name )                    -- name -> void
+    name find-file-to-edit [
         initialize-editor
-        0 initialize-buffer current-buffer!
-        first-line top-line!
+        1 create-buffer/2
         edit1
     ] [
-        arg error-file-not-found
+        name error-file-not-found
     ] if*
 ;
 
 : edit-definition                       -- symbol ->
-    initialize-editor
     symbol-location 2dup and
-    [ initialize-buffer current-buffer! edit1 ] [ 2drop ] if
+    [
+        initialize-editor
+        create-buffer/2
+        edit1
+    ] [
+        2drop
+    ] if
 ;
 
 : edit-new
     initialize-editor
-    initialize-empty-buffer
+    create-buffer
     edit1
 ;
 
