@@ -1344,7 +1344,8 @@ special: +compound-undo+
 ;
 
 : find-definition
-    identifier-at-dot
+    0 message-y at-xy "Word: " accept-string
+    clear-message-line
     find-qualified-name [
         goto-definition
     ] [
