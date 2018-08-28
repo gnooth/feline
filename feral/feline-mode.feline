@@ -23,7 +23,7 @@ private
   0 255 255 rgb-foreground-prefix constant syntax-prefix
 255 165   0 rgb-foreground-prefix constant name-prefix
   0 170   0 rgb-foreground-prefix constant string-prefix
-192   0 192 rgb-foreground-prefix constant combinator-prefix
+  0 192 192 rgb-foreground-prefix constant combinator-prefix
 
 "\e[0m" constant reset-suffix
 
@@ -98,36 +98,38 @@ tuple: segment
 ;
 
 {
-    "var"
-    "using:"
-    "in:"
+    "'"
     ":"
-    ";"
-    "constant"
-    "tuple:"
     ":>"
-    "global"
-    "t"
-    "f"
-    "test:"
-    "public"
-    "private"
+    ";"
     "["
     "]"
+    "constant"
+    "f"
+    "global"
+    "in:"
+    "private"
+    "public"
+    "special:"
+    "symbol:"
+    "t"
+    "test:"
+    "tuple:"
+    "use:"
+    "using:"
+    "var"
+    "vector{"
     "{"
     "}"
-    "'"
-    "symbol:"
-    "special:"
 } constant syntax-words
 
 {
-    "var"
     ":"
-    "test:"
     "constant"
-    "tuple:"
     "global"
+    "test:"
+    "tuple:"
+    "var"
 } constant defining-words
 
 {
@@ -169,12 +171,12 @@ var last-segment-text
     ] return-if
 
     -- not a comment
-    segment segment-text syntax-words member? [
-        syntax-prefix segment segment-format!
-    ] return-if
-
     last-segment-text defining-words member? [
         name-prefix segment segment-format!
+    ] return-if
+
+    segment segment-text syntax-words member? [
+        syntax-prefix segment segment-format!
     ] return-if
 
     segment segment-text string-first-char quote-char eq? [
