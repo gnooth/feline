@@ -401,6 +401,21 @@ code string_first_char, 'string-first-char'     ; string -- char
         next
 endcode
 
+; ### string-?first
+code string_?first, 'string-?first'     ; string -> char/f
+; return first byte of string
+; return f if string is empty
+        _ check_string
+        cmp     qword [rbx + STRING_RAW_LENGTH_OFFSET], 0
+        je      .empty
+        movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET]
+        _tag_char
+        next
+.empty:
+        mov     ebx, f_value
+        next
+endcode
+
 ; ### string-last-char
 code string_last_char, 'string-last-char'       ; string -- char
 ; return last byte of string
@@ -411,6 +426,22 @@ code string_last_char, 'string-last-char'       ; string -- char
         js      error_string_index_out_of_bounds
         movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET + rax]
         _tag_char
+        next
+endcode
+
+; ### string-?last
+code string_?last, 'string-?last'       ; string -> char/f
+; return last byte of string
+; return f if string is empty
+        _ check_string
+        mov     rax, qword [rbx + STRING_RAW_LENGTH_OFFSET]
+        sub     rax, 1
+        js      .empty
+        movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET + rax]
+        _tag_char
+        next
+.empty:
+        mov     ebx, f_value
         next
 endcode
 
