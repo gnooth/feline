@@ -653,12 +653,20 @@ test: vector-test-4
 
 vector-test-4
 
--- vector-last
 test: vector-test-5
-    clear
-    vector{ 1 2 3 } vector-last get-datastack { 3 } sequence= assert-true
-    clear
-    vector{ "test" } vector-last "test" assert=
+    -- vector-last
+    { 3 } [ vector{ 1 2 3 } vector-last ] unit-test
+    { "test" } [ vector{ "test" } vector-last ] unit-test
+    [ vector{ } vector-last ] assert-must-fail
+
+    -- vector-set-last
+    { vector{ 1 2 42 } } [ 42 vector{ 1 2 3 } tuck vector-set-last ] unit-test
+    [ 42 vector{ } vector-set-last ] assert-must-fail
+
+    -- vector-?last
+    { 3 } [ vector{ 1 2 3 } vector-?last ] unit-test
+    { "test" } [ vector{ "test" } vector-?last ] unit-test
+    { f } [ vector{ } vector-?last ] unit-test
 ;
 
 vector-test-5
@@ -3484,5 +3492,21 @@ test: string-output-stream-test-2
 ;
 
 string-output-stream-test-2
+
+test: string-?first-test-1
+    { 'B' } [ "Be the best bunny you can be!" string-?first ] unit-test
+    { 'a' } [ "a" string-?first ] unit-test
+    { f } [ "" string-?first ] unit-test
+;
+
+string-?first-test-1
+
+test: string-?last-test-1
+    { '!' } [ "Be the best bunny you can be!" string-?last ] unit-test
+    { 'z' } [ "z" string-?last ] unit-test
+    { f } [ "" string-?last ] unit-test
+;
+
+string-?last-test-1
 
 ?nl "Reached end of test.feline" write-string

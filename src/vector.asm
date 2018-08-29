@@ -401,6 +401,33 @@ code vector_last, 'vector-last'         ; handle -- element
         next
 endcode
 
+; ### vector-?last
+code vector_?last, 'vector-?last'       ; vector -> element/f
+        _ check_vector
+        mov     rax, vector_raw_length_slot
+        sub     rax, 1
+        js      .empty
+        _vector_raw_data_address
+        mov     rbx, [rbx + BYTES_PER_CELL * rax]
+        next
+.empty:
+        mov     ebx, f_value
+        next
+endcode
+
+; ### vector-set-last
+code vector_set_last, 'vector-set-last' ; element vector -> void
+        _ check_vector
+        mov     rax, vector_raw_length_slot
+        sub     rax, 1
+        js      error_vector_index_out_of_bounds
+        mov     rdx, [rbp]
+        _vector_raw_data_address
+        mov     [rbx + BYTES_PER_CELL * rax], rdx
+        _2drop
+        next
+endcode
+
 ; ### vector-set-nth
 code vector_set_nth, 'vector-set-nth'   ; element index vector --
 

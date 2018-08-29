@@ -318,3 +318,10 @@ code error_string_index_out_of_bounds, 'error-string-index-out-of-bounds'
         _ error
         next
 endcode
+
+; ### error-vector-index-out-of-bounds
+code error_vector_index_out_of_bounds, 'error-vector-index-out-of-bounds'
+        _quote "ERROR: vector index out of bounds."
+        _ error
+        next
+endcode
