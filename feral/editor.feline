@@ -250,15 +250,18 @@ var current-buffer
 
 : insert-after ( line prev )            -- line prev -> void
     -- insert line after prev
-    prev line-next :> next
 
-    line prev line-next!
+    prev [ prev line-next ] [ first-line ] if :> next
+
+    prev [
+        line prev line-next!
+    ] [
+        line dup current-buffer buffer-%first-line! top-line!
+    ] if
     prev line line-prev!
 
     next line line-next!
     next [ line next line-prev! ] [ line current-buffer buffer-%last-line! ] if
-
-    renumber
 ;
 
 : unlink ( line )                       -- line -> void
@@ -620,6 +623,7 @@ special: +compound-undo+
     array-second make-line/1 dot-line insert-after
 
     t repaint?!
+    renumber
 
     add-redo-delete-line-separator
 ;
