@@ -105,6 +105,7 @@ tuple: segment
     "["
     "]"
     "constant"
+    "defer"
     "f"
     "global"
     "in:"
@@ -126,6 +127,7 @@ tuple: segment
 {
     ":"
     "constant"
+    "defer"
     "global"
     "test:"
     "tuple:"
