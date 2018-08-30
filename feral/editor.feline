@@ -108,6 +108,8 @@ var done?
 
 var buffer-list
 
+var kill-list
+
 var current-buffer
 
 : buffer-modified?                      -- buffer -> ?
@@ -1050,16 +1052,38 @@ special: +compound-undo+
     dot-offset goal-column!
 ;
 
-: kill-line
+: last-kill                             -- void -> string/f
+    kill-list vector-?last
+;
+
+: last-kill!                            -- string -> void
+    kill-list vector-set-last
+;
+
+defer kill-line
+
+: append-kill                           -- string -> void
+    last-command ' kill-line eq? [
+        last-kill [ last-kill swap string-append last-kill! ] [ kill-list vector-push ] if
+    ] [
+        kill-list push
+    ] if
+;
+
+: %kill-line
     dot-line-tail length zero? [
         delete-line-separator
+        current-buffer buffer-eol verify-string append-kill
     ] [
         add-undo-line-edit
+        dot-line-tail append-kill
         dot-line-head dot-line-text!
         t dot-line-changed?!
     ] if
     modified
 ;
+
+' %kill-line ' kill-line defer!
 
 : redo1                                 -- undo-record ->
     dup undo-record-action
@@ -1463,6 +1487,7 @@ use: search
 
 : initialize-editor
     16 <vector> buffer-list!
+    16 <vector> kill-list!
     bindings [ initialize-bindings ] unless
 ;
 
