@@ -487,6 +487,7 @@ symbol: +move+
 symbol: +line-edit+
 symbol: +delete-line-separator+
 symbol: +insert-line-separator+
+symbol: +insert-multiline-string+
 
 tuple: compound-undo
     records                             -- vector
@@ -641,7 +642,7 @@ special: +compound-undo+
     push-redo
 ;
 
-: undo-insert-line-separator            -- undo-record ->
+: undo-insert-line-separator            -- undo-record -> void
     [ undo-record-mod-count mod-count! ]
     [ undo-record-dot dot! ]
     [ undo-record-data dot-line-text! ]
@@ -654,6 +655,27 @@ special: +compound-undo+
     add-redo-insert-line-separator
 ;
 
+: add-undo-insert-multiline-string
+    new-undo-record
+    +insert-multiline-string+ over undo-record-action!
+    push-undo
+;
+
+: undo-insert-multiline-string          -- undo-record -> void
+    f :> prev!
+    [ undo-record-mod-count mod-count! ]
+    [ undo-record-%dot-line-number 1- nth-line prev! ]
+    bi
+
+    prev dot-line line-prev!
+    prev [ dot-line prev line-next! ] [
+        dot-line dup current-buffer buffer-%top-line! top-line!
+    ] if
+
+    t repaint?!
+    renumber
+;
+
 : undo1                                 -- undo-record ->
     dup undo-record-action
     {
@@ -661,6 +683,7 @@ special: +compound-undo+
         { +line-edit+ [ undo-line-edit ] }
         { +delete-line-separator+ [ undo-delete-line-separator ] }
         { +insert-line-separator+ [ undo-insert-line-separator ] }
+        { +insert-multiline-string+ [ undo-insert-multiline-string ] }
         [ error "unsupported" ]
     } case
     maybe-reframe
@@ -1089,6 +1112,38 @@ defer kill-line
 
 ' %kill-line ' kill-line defer!
 
+: insert-multiline-string               -- string --> void
+    -- insert string before line containing dot
+    add-undo-insert-multiline-string
+
+    dot-line-prev :> prev!
+
+    string-lines [
+        make-line/1 dup prev insert-after prev!
+    ] each
+
+    renumber
+;
+
+: paste
+    kill-list vector-?pop :> s
+
+    s f eq? [ "Kill list is empty" message ] return-if
+
+    '\n' s string-index [
+        s insert-multiline-string
+        t repaint?!
+        modified
+    ] [
+        add-undo-line-edit
+        dot-line-head s string-append
+        dot-line-tail string-append
+        dot-line-text!
+        t dot-line-changed?!
+        modified
+    ] if
+;
+
 : redo1                                 -- undo-record ->
     dup undo-record-action
     {
@@ -1436,6 +1491,7 @@ use: search
     key:alt-right       ' next-buffer                   bind-key
     key:alt-left        ' previous-buffer               bind-key
     key:ctrl-t          ' find-definition               bind-key
+    key:ctrl-v          ' paste                         bind-key
 ;
 
 -- var feral-log-fd
