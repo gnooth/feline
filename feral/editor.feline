@@ -234,6 +234,9 @@ var current-buffer
 ;
 
 : nth-line ( line-number )              -- line-number -> line
+
+    line-number 0 < [ f ] return-if
+
     first-line :> line!
     0 :> n!
     [ n line-number < ] [
