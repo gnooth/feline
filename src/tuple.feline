@@ -47,7 +47,7 @@ global slot-definitions                 -- sequence
     compile-word
 ;
 
-: define-writer                         -- slot-definition-index -> void
+: define-writer                         -- slot-definition -> void
 
     [ slot-definition-name ] [ slot-definition-index ] bi
 
