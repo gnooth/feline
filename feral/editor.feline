@@ -1506,20 +1506,22 @@ use: search
 : log drop ;
 
 : do-mouse                              -- key -> void
-     verify-fixnum :> keycode
-     f :> button! f :> x! f :> y!
---      keycode fixnum>hex log
-     keycode 24 rshift 0x1b5b4d = [
-         -- "\e[M"
-         keycode 0xff bitand 32 - y!
-         keycode 0xff00 bitand 8 rshift 32 - x!
-         keycode 0xff0000 bitand 16 rshift 3 bitand zero? [
-             -- left button pressed
---              x y "left button pressed x = %d y = %d" format log
-             top-line-number y + gotoline-internal
-             x 1- 0 max dot-line-length min dot-offset!
-         ] when
-     ] when
+    dup fixnum? not [ drop ] return-if
+
+    :> keycode
+    f :> button! f :> x! f :> y!
+--     keycode fixnum>hex log
+    keycode 24 rshift 0x1b5b4d = [
+        -- "\e[M"
+        keycode 0xff bitand 32 - y!
+        keycode 0xff00 bitand 8 rshift 32 - x!
+        keycode 0xff0000 bitand 16 rshift 3 bitand zero? [
+            -- left button pressed
+--             x y "left button pressed x = %d y = %d" format log
+            top-line-number y + gotoline-internal
+            x 1- 0 max dot-line-length min dot-offset!
+        ] when
+    ] when
 ;
 
 : do-command                            -- key ->
