@@ -115,7 +115,7 @@ void prep_terminal()
   tcgetattr(tty, &tio);
   otio = tio;
   tio.c_iflag &= ~(IXON | IXOFF);       // we want to see C-s and C-q
-  tio.c_lflag &= ~(ICANON | ECHO);
+  tio.c_lflag &= ~(ISIG | ICANON | ECHO);
   tcsetattr(tty, TCSADRAIN, &tio);
   setvbuf(stdin, NULL, _IONBF, 0);
   signal(SIGWINCH, sig_winch);
