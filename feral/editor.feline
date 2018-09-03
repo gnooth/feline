@@ -1448,6 +1448,24 @@ defer kill-line
         } case
     ] if ;
 
+: find-definition-at-dot
+    identifier-at-dot
+    find-qualified-name [
+        goto-definition
+    ] [
+        all-words [ symbol-name over = ] filter nip
+        dup length {
+            { 0 [ drop ] }
+            { 1 [ first goto-definition ] }
+            [
+                -- more than 1 match
+                drop
+                0 message-y at-xy
+                [ symbol-qualified-name write-string space ] each
+            ]
+        } case
+    ] if ;
+
 use: search
 
 : bind-key                              -- key symbol ->
