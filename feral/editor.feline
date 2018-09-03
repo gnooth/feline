@@ -387,8 +387,26 @@ var current-buffer
 
 : clear-message-line hide-cursor 0 message-y at-xy clear-to-eol ;
 
-: repaint-line ( line )                -- line -> void
+: line-selected? ( line )               -- line -> ?
+    mark not [ f ] return-if
+
+    line line-%number mark-line-number >= [
+        line line-%number dot-line-number <
+    ] [
+        f
+    ] if
+;
+
+: repaint-line ( line )                 -- line -> void
     line line-text detab :> detabbed-text
+
+    line line-selected? [
+        reverse
+        detabbed-text write
+        terminal-width detabbed-text string-length - spaces
+        normal
+    ] return-if
+
     detabbed-text format-line :> formatted-text
     output-style
     line mark-line eq? [
@@ -1111,6 +1129,23 @@ defer kill-line
 
 ' %kill-line ' kill-line defer!
 
+: select-line
+    dot-line-prev dup line-selected? and [
+        -- extend selection if possible
+        dot-line-next [
+            dot-line-next dot-line! 0 dot-offset!
+        ] when
+    ] [
+        dot-line-next [
+            add-undo-move
+            dot-line 0 make-position mark!
+            dot-line-next dot-line! 0 dot-offset!
+        ] when
+    ] if
+
+    t repaint?!
+;
+
 : insert-multiline-string               -- string --> void
     -- insert string before line containing dot
     add-undo-insert-multiline-string
@@ -1518,6 +1553,7 @@ var escape-keymap
     ' next-buffer               key:alt-right   keymap set-at
     ' previous-buffer           key:alt-left    keymap set-at
     ' find-definition           key:ctrl-t      keymap set-at
+    ' select-line               key:ctrl-l      keymap set-at
     ' paste                     key:ctrl-v      keymap set-at
 
     keymap base-keymap!
