@@ -97,7 +97,6 @@ tuple: buffer
 
 var repaint?
 var dot-line-changed?
-var bindings
 
 var current-command
 var last-command
@@ -1468,48 +1467,76 @@ defer kill-line
 
 use: search
 
-: bind-key                              -- key symbol ->
-    swap bindings set-at ;
+var base-keymap
+
+var escape-keymap
+
+: do-escape
+    "ESC-" message
+    ekey
+    clear-message-line
+    escape-keymap at [ call-symbol ] when*
+;
 
 : lookup-key                            -- key -> symbol/f
-    bindings at ;
+    base-keymap at ;
 
-: initialize-bindings
-    128 <hashtable> bindings!
+: initialize-base-keymap
+    base-keymap [ ] return-if
 
-    key:del             ' do-bs                         bind-key        -- Linux
-    key:backspace       ' do-bs                         bind-key        -- Windows
-    key:delete          ' do-delete                     bind-key
-    key:home            ' do-home                       bind-key
-    key:end             ' end-of-line                   bind-key
-    key:left            ' do-left                       bind-key
-    key:right           ' do-right                      bind-key
-    key:up              ' do-up                         bind-key
-    key:down            ' do-down                       bind-key
-    key:ctrl-up         ' do-window-up                  bind-key
-    key:ctrl-down       ' do-window-down                bind-key
-    key:pageup          ' do-page-up                    bind-key
-    key:pagedown        ' do-page-down                  bind-key
-    key:ctrl-home       ' beginning-of-buffer           bind-key
-    key:ctrl-end        ' end-of-buffer                 bind-key
-    key:ctrl-g          ' gotoline                      bind-key
-    key:ctrl-q          ' do-quit                       bind-key
-    key:ctrl-s          ' do-save                       bind-key
-    key:ctrl-w          ' kill-buffer                   bind-key
-    key:enter           ' newline-and-indent            bind-key
-    key:ctrl-f          ' do-find                       bind-key
-    key:f3              ' do-find-again                 bind-key
-    key:tab             ' do-tab                        bind-key
-    key:ctrl-k          ' kill-line                     bind-key
-    key:ctrl-z          ' undo                          bind-key
-    key:ctrl-u          ' undo                          bind-key
-    key:ctrl-y          ' redo                          bind-key
-    key:escape          ' quit                          bind-key
-    key:ctrl-o          ' open-file                     bind-key
-    key:alt-right       ' next-buffer                   bind-key
-    key:alt-left        ' previous-buffer               bind-key
-    key:ctrl-t          ' find-definition               bind-key
-    key:ctrl-v          ' paste                         bind-key
+    128 <hashtable> :> keymap
+
+    ' do-bs                     key:del         keymap set-at   -- Linux
+    ' do-bs                     key:backspace   keymap set-at   -- Windows
+    ' do-delete                 key:delete      keymap set-at
+    ' do-home                   key:home        keymap set-at
+    ' end-of-line               key:end         keymap set-at
+    ' do-left                   key:left        keymap set-at
+    ' do-right                  key:right       keymap set-at
+    ' do-up                     key:up          keymap set-at
+    ' do-down                   key:down        keymap set-at
+    ' do-window-up              key:ctrl-up     keymap set-at
+    ' do-window-down            key:ctrl-down   keymap set-at
+    ' do-page-up                key:pageup      keymap set-at
+    ' do-page-down              key:pagedown    keymap set-at
+    ' beginning-of-buffer       key:ctrl-home   keymap set-at
+    ' end-of-buffer             key:ctrl-end    keymap set-at
+    ' gotoline                  key:ctrl-g      keymap set-at
+    ' do-quit                   key:ctrl-q      keymap set-at
+    ' do-save                   key:ctrl-s      keymap set-at
+    ' kill-buffer               key:ctrl-w      keymap set-at
+    ' newline-and-indent        key:enter       keymap set-at
+    ' do-find                   key:ctrl-f      keymap set-at
+    ' do-find-again             key:f3          keymap set-at
+    ' do-tab                    key:tab         keymap set-at
+    ' kill-line                 key:ctrl-k      keymap set-at
+    ' undo                      key:ctrl-z      keymap set-at
+    ' undo                      key:ctrl-u      keymap set-at
+    ' redo                      key:ctrl-y      keymap set-at
+    ' do-escape                 key:escape      keymap set-at
+    ' open-file                 key:ctrl-o      keymap set-at
+    ' next-buffer               key:alt-right   keymap set-at
+    ' previous-buffer           key:alt-left    keymap set-at
+    ' find-definition           key:ctrl-t      keymap set-at
+    ' paste                     key:ctrl-v      keymap set-at
+
+    keymap base-keymap!
+;
+
+: initialize-escape-keymap
+    escape-keymap [ ] return-if
+
+    128 <hashtable> :> keymap
+
+    ' quit                      key:escape      keymap set-at
+    ' find-definition-at-dot    '.'             keymap set-at
+
+    keymap escape-keymap!
+;
+
+: initialize-global-keymaps
+    initialize-base-keymap
+    initialize-escape-keymap
 ;
 
 -- var feral-log-fd
@@ -1567,7 +1594,7 @@ use: search
 : initialize-editor
     16 <vector> buffer-list!
     16 <vector> kill-list!
-    bindings [ initialize-bindings ] unless
+    initialize-global-keymaps
 ;
 
 : edit1
