@@ -530,8 +530,8 @@ code define_test, 'test:'
         next
 endcode
 
-; ### generic:
-code define_generic, 'generic:', SYMBOL_IMMEDIATE
+; ### generic
+code define_generic, 'generic', SYMBOL_IMMEDIATE
         _ parse_name                    ; -> symbol
 
         _dup

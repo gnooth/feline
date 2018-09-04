@@ -2927,7 +2927,7 @@ test: ?bounds-test-1
 
 ?bounds-test-1
 
-generic: %method-test-1
+generic %method-test-1
 
 method: string %method-test-1
     string-length ;
@@ -2948,7 +2948,7 @@ method-test-1
 tuple: tuple-1 ;
 tuple: tuple-2 ;
 
-generic: %method-test-2
+generic %method-test-2
 
 method: tuple-1 %method-test-2 drop 42 ;
 method: tuple-2 %method-test-2 drop 87 ;
