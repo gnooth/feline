@@ -23,7 +23,7 @@ private
   0 255 255 rgb-foreground-prefix constant syntax-prefix
 255 165   0 rgb-foreground-prefix constant name-prefix
   0 170   0 rgb-foreground-prefix constant string-prefix
-  0 192 192 rgb-foreground-prefix constant combinator-prefix
+  0 153 153 rgb-foreground-prefix constant combinator-prefix
 
 "\e[0m" constant reset-suffix
 
@@ -109,12 +109,15 @@ tuple: segment
     "constant"
     "defer"
     "f"
+    "generic"
     "global"
     "in:"
+    "method:"
     "private"
     "public"
     "special:"
     "symbol:"
+    "syntax:"
     "t"
     "test:"
     "tuple:"
@@ -130,7 +133,10 @@ tuple: segment
     ":"
     "constant"
     "defer"
+    "generic"
     "global"
+    "method:"
+    "syntax:"
     "test:"
     "tuple:"
     "var"
