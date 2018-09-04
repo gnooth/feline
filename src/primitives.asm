@@ -183,7 +183,12 @@ code feline_equal, '='                  ; x y -- ?
 endcode
 
 ; ### not
-inline not, 'not'
+inline not, 'not'                       ; x -> ?
+        _not
+endinline
+
+; ### null?
+inline null?, 'null?'                   ; x -> ?
         _not
 endinline
 
