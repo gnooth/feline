@@ -931,13 +931,14 @@ special: +compound-undo+
 : do-down
     reset-redo
 
-    last-command ' do-down eq? [ add-undo-move ] unless
-
     dot-line line-next [
+        last-command ' do-down eq? [ add-undo-move ] unless
         dot-line line-next dot position-%line!
-
         unmark
-        reframe? [ reframe ] when
+        reframe? [
+            dot-line-number lines-per-page 1- - nth-line top-line!
+            t repaint?!
+        ] when
         adjust-cursor-x
     ] when
 ;
@@ -945,14 +946,12 @@ special: +compound-undo+
 : do-up
     reset-redo
 
-    last-command ' do-up eq? [ add-undo-move ] unless
-
     dot-line line-prev [
+        last-command ' do-up eq? [ add-undo-move ] unless
         dot-line line-prev dot position-%line!
-
         unmark
         reframe? [
-            dot-line current-buffer buffer-%top-line!
+            dot-line top-line!
             t repaint?!
         ] when
         adjust-cursor-x
