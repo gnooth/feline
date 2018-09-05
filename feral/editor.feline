@@ -931,9 +931,9 @@ special: +compound-undo+
 : do-down
     reset-redo
 
-    dot-line line-next [
+    dot-line-next [
         last-command ' do-down eq? [ add-undo-move ] unless
-        dot-line line-next dot position-%line!
+        dot-line-next dot-line!
         unmark
         reframe? [
             dot-line-number lines-per-page 1- - nth-line top-line!
@@ -946,9 +946,9 @@ special: +compound-undo+
 : do-up
     reset-redo
 
-    dot-line line-prev [
+    dot-line-prev [
         last-command ' do-up eq? [ add-undo-move ] unless
-        dot-line line-prev dot position-%line!
+        dot-line-prev dot-line!
         unmark
         reframe? [
             dot-line top-line!
