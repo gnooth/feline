@@ -50,6 +50,12 @@ tuple: line
     tuck
     line-text! ;
 
+method: line length                     -- line -> length
+    line-text string-length ;
+
+method: line substring                  -- from to line -> substring
+    line-text string-substring ;
+
 tuple: position
     %line
     offset ;
@@ -59,6 +65,88 @@ tuple: position
     pos position-offset!
     pos position-%line!
     pos
+;
+
+: position-before? ( pos1 pos2 )        -- pos1 pos2 -> ?
+    pos1 position-%line :> line1
+    pos2 position-%line :> line2
+
+    line1 line-%number line2 line-%number < [ t ] return-if
+
+    line1 line2 eq? [ pos1 position-offset pos2 position-offset < ] [ f ] if
+;
+
+generic before?
+
+method: position before? position-before? ;
+
+tuple: region
+    begin
+    end ;
+
+: make-region/2 ( pos1 pos2 )
+    region make-instance :> region
+    pos1 pos2 before? [ pos1 pos2 ] [ pos2 pos1 ] if
+    region [ region-end! ] [ region-begin! ] bi
+    region
+;
+
+generic begin
+
+method: region begin                    -- region -> position
+    region-begin ;
+
+generic begin-line
+
+method: region begin-line               -- region -> line
+    region-begin position-%line ;
+
+generic begin-offset
+
+method: region begin-offset             -- region -> offset
+    region-begin position-offset ;
+
+generic end
+
+method: region end                      -- region -> position
+    region-end ;
+
+generic end-line
+
+method: region end-line                 -- region -> line
+    region-end position-%line ;
+
+generic end-offset
+
+method: region end-offset               -- region -> offset
+    region-end position-offset ;
+
+: region-as-string ( region )
+    region [ begin-line ] [ end-line ] bi eq? [
+        region [ begin-offset ] [ end-offset ] [ begin-line ] tri substring
+    ] return-if
+
+    1024 <sbuf> :> sb
+
+    region [ begin-offset ] [ begin-line length ] [ begin-line ] tri substring
+    sb sbuf-append-string
+    '\n' sb sbuf-push
+
+    region begin-line line-next :> line!
+    region end-line :> end-line
+
+    [ line end-line neq? ] [
+        line line-text sb sbuf-append-string
+        '\n' sb sbuf-push
+        line line-next line!
+    ] while
+
+    region end-offset 0 > [
+        0 region end-offset region end-line line-text substring
+        sb sbuf-append-string
+    ] when
+
+    sb sbuf>string
 ;
 
 tuple: buffer
@@ -1159,6 +1247,19 @@ defer kill-line
     renumber
 ;
 
+: copy-line
+    dot-line-text "\n" string-append append-kill
+    "Line copied to kill list" message
+;
+
+: copy-region ( region )
+    mark dot make-region/2 region-as-string append-kill
+    "Region copied to kill list" message
+;
+
+: copy
+    mark [ dot make-region/2 copy-region ] [ copy-line ] if* ;
+
 : paste
     kill-list vector-?pop :> s
 
@@ -1173,6 +1274,7 @@ defer kill-line
         dot-line-head s string-append
         dot-line-tail string-append
         dot-line-text!
+        dot-offset s string-length + dot-offset!
         t dot-line-changed?!
         modified
     ] if
@@ -1554,6 +1656,7 @@ var escape-keymap
     ' previous-buffer           key:alt-left    keymap set-at
     ' find-definition           key:ctrl-t      keymap set-at
     ' select-line               key:ctrl-l      keymap set-at
+    ' copy                      key:ctrl-c      keymap set-at
     ' paste                     key:ctrl-v      keymap set-at
 
     keymap base-keymap!
