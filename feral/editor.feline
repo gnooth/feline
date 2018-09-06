@@ -22,6 +22,7 @@ in: user
     "modes"
     "ansi-color"
     "feline-mode"
+    "kill-ring"
 } [ delete-vocab ] each
 
 in: editor
@@ -194,8 +195,6 @@ var in-redo?
 var done?
 
 var buffer-list
-
-var kill-list
 
 var current-buffer
 
@@ -1183,25 +1182,9 @@ special: +compound-undo+
     dot-offset goal-column!
 ;
 
-: last-kill                             -- void -> string/f
-    kill-list vector-?last
-;
+use: kill-ring
 
-: last-kill!                            -- string -> void
-    kill-list vector-set-last
-;
-
-defer kill-line
-
-: append-kill                           -- string -> void
-    last-command ' kill-line eq? [
-        last-kill [ last-kill swap string-append last-kill! ] [ kill-list vector-push ] if
-    ] [
-        kill-list push
-    ] if
-;
-
-: %kill-line
+: kill-line
     dot-line-tail length zero? [
         delete-line-separator
         current-buffer buffer-eol verify-string append-kill
@@ -1213,8 +1196,6 @@ defer kill-line
     ] if
     modified
 ;
-
-' %kill-line ' kill-line defer!
 
 : select-line
     dot-line-prev dup line-selected? and [
@@ -1259,15 +1240,12 @@ defer kill-line
 : copy
     mark [ dot make-region/2 copy-region ] [ copy-line ] if* ;
 
-: paste
-    kill-list vector-?pop :> s
-
-    s f eq? [ "Kill list is empty" message ] return-if
-
+: paste/1                               -- string -> void
+    1 ?enough
+    :> s
     '\n' s string-index [
         s insert-multiline-string
         t repaint?!
-        modified
     ] [
         add-undo-line-edit
         dot-line-head s string-append
@@ -1275,8 +1253,22 @@ defer kill-line
         dot-line-text!
         dot-offset s string-length + dot-offset!
         t dot-line-changed?!
-        modified
     ] if
+    modified
+;
+
+: paste
+    last-kill [ paste/1 ] [ "Kill ring is empty" message ] if*
+;
+
+: cycle-paste
+    last-command ' paste eq? [
+        next-kill [ undo paste/1 ] when*
+    ] [
+        paste
+    ] if
+
+    ' paste current-command!
 ;
 
 : redo1                                 -- undo-record ->
@@ -1611,7 +1603,10 @@ var escape-keymap
     "ESC-" message
     ekey
     clear-message-line
-    escape-keymap at [ call-symbol ] when*
+    escape-keymap at [
+        dup current-command!
+        call-symbol
+    ] when*
 ;
 
 : lookup-key                            -- key -> symbol/f
@@ -1668,6 +1663,7 @@ var escape-keymap
 
     ' quit                      key:escape      keymap set-at
     ' find-definition-at-dot    '.'             keymap set-at
+    ' cycle-paste               'v'             keymap set-at
 
     keymap escape-keymap!
 ;
@@ -1731,7 +1727,7 @@ var escape-keymap
 
 : initialize-editor
     16 <vector> buffer-list!
-    16 <vector> kill-list!
+    initialize-kill-ring
     initialize-global-keymaps
 ;
 
