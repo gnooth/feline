@@ -1229,12 +1229,12 @@ use: kill-ring
 
 : copy-line
     dot-line-text "\n" string-append append-kill
-    "Line copied to kill list" message
+    "Line copied to kill ring" message
 ;
 
 : copy-region ( region )
     mark dot make-region/2 region-as-string append-kill
-    "Region copied to kill list" message
+    "Region copied to kill ring" message
 ;
 
 : copy
