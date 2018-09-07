@@ -18,14 +18,24 @@ in: kill-ring
 
 var kill-list                           -- -> vector
 var kill-list-next                      -- -> fixnum/f
+var last-paste                          -- -> string/f
 
 : initialize-kill-ring
     16 <vector> kill-list!
     f kill-list-next!
 ;
 
+: maybe-promote-last-paste
+    last-paste [
+        kill-list vector-adjoin
+        f last-paste!
+    ] when*
+;
+
 : last-kill                             -- void -> string/f
     kill-list empty? [ f ] return-if
+
+    maybe-promote-last-paste
 
     kill-list length 1- kill-list nth   -- -> string
 
@@ -37,6 +47,8 @@ var kill-list-next                      -- -> fixnum/f
 
     kill-list-next kill-list nth        -- -> string
 
+    dup last-paste!
+
     kill-list-next 0 > [
         kill-list-next 1-
     ] [
@@ -46,5 +58,6 @@ var kill-list-next                      -- -> fixnum/f
 ;
 
 : append-kill                           -- string -> void
+    maybe-promote-last-paste
     kill-list vector-push
 ;
