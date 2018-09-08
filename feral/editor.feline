@@ -824,16 +824,10 @@ special: +compound-undo+
     dot-line-length dot-offset!
     dot-offset goal-column!
 
-    -- reframe
-    last-line :> line!
-    lines-per-page 1- :> i!
-    [ line line-prev i 0 > and ] [
-        line line-prev line!
-        i 1- i!
-    ] while
-    line top-line!
-
-    t repaint?!
+    reframe? [
+        dot-line-number lines-per-page 1- - nth-line top-line!
+        t repaint?!
+    ] when
 ;
 
 : gotoline-internal                     -- line-number
