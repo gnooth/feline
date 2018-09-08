@@ -58,6 +58,8 @@ public
     0 message-y at-xy "Find: " accept-string pattern!
     clear-message-line
 
+    pattern empty? [ ] return-if
+
     f :> found?!
 
     f found-line-number!
