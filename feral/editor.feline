@@ -697,10 +697,12 @@ special: +compound-undo+
 : undo-line-edit                        -- undo-record ->
     in-redo? [ add-undo-line-edit ] [ add-redo-line-edit ] if
 
-    [ undo-record-mod-count mod-count! ]
-    [ undo-record-dot dot! ]
-    [ undo-record-data dot-line-text! ]
-    tri
+    {
+        [ undo-record-mod-count mod-count! ]
+        [ undo-record-dot dot! ]
+        [ undo-record-data dot-line-text! ]
+        [ undo-record-mark mark! ]
+    } cleave
 
     t dot-line-changed?!
 ;
