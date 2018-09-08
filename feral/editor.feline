@@ -1232,8 +1232,8 @@ use: kill-ring
     "Line copied to kill ring" message
 ;
 
-: copy-region ( region )
-    mark dot make-region/2 region-as-string append-kill
+: copy-region                           -- region -> void
+    region-as-string append-kill
     "Region copied to kill ring" message
 ;
 
