@@ -68,6 +68,9 @@ tuple: position
     pos
 ;
 
+: copy-position ( pos )                 -- position -> copy
+    pos position-%line pos position-offset make-position ;
+
 : position-before? ( pos1 pos2 )        -- pos1 pos2 -> ?
     pos1 position-%line :> line1
     pos2 position-%line :> line2
@@ -88,6 +91,7 @@ tuple: region
 : make-region/2 ( pos1 pos2 )
     region make-instance :> region
     pos1 pos2 before? [ pos1 pos2 ] [ pos2 pos1 ] if
+    [ copy-position ] bi@
     region [ region-end! ] [ region-begin! ] bi
     region
 ;
@@ -632,9 +636,6 @@ special: +compound-undo+
 : reset-undo undo-stack vector-delete-all ;
 
 : reset-redo redo-stack vector-delete-all ;
-
-: copy-position ( pos )                 -- position -> copy
-    pos position-%line pos position-offset make-position ;
 
 : copy-dot                              -- -> position
     dot copy-position ;
