@@ -22,18 +22,14 @@ private
 
 var pattern
 
-var found-line-number
-var found-offset
-
 : mark-found-pattern
     dot-line dot-offset pattern length + make-position mark! ;
 
-: found
+: found ( pos )                         -- position -> void
     reset-redo
 
     add-undo-move
-    found-line-number nth-line dot-line!
-    found-offset dot-offset!
+    pos dot!
     dot-offset goal-column!
     mark-found-pattern
     maybe-reframe
@@ -42,15 +38,34 @@ var found-offset
 : not-found
     pattern "%S not found" format
     0 message-y at-xy output-style
-    write-string
+    write-string ;
+
+: find-string ( s startpos )            -- string position -> position/f
+    startpos position-%line :> line!
+    startpos position-offset :> offset
+
+    f :> index!
+    offset line length s length - <= [
+        s line line-text offset string-tail substring-start index!
+    ] when
+    index [ line offset index + make-position ] return-if
+
+    line line-next line!
+
+    f :> result!
+
+    [ line ] [
+        s line line-text substring-start index!
+        index [
+            line index make-position result!
+            f line!
+        ] [
+            line line-next line!
+        ] if
+    ] while
+
+    result
 ;
-
-: find-pattern-in-line                  -- line -> index/f
-    line-text pattern swap substring-start ;
-
-: find-pattern-in-current-line          -- start -> index/f
-    pattern dot-line-text pick string-tail substring-start      -- index/f
-    [ + ] [ drop f ] if* ;
 
 public
 
@@ -60,60 +75,21 @@ public
 
     pattern empty? [ ] return-if
 
-    f :> found?!
-
-    f found-line-number!
-    f found-offset!
-
-    dot-offset find-pattern-in-current-line found-offset!
-
-    found-offset [
-        dot-line-number found-line-number!
-        t found?!
-    ] when
-
-    found? [ found ] return-if
-
-    dot-line-next :> line!
-    [ line found? not and ] [
-        line find-pattern-in-line [
-            found-offset!
-            line line-%number found-line-number!
-            t found?!
-        ] when*
-        line line-next line!
-    ] while
-
-    found? [ found ] [ not-found ] if ;
+    pattern dot find-string [ found ] [ not-found ] if*
+;
 
 : do-find-again
-    pattern f eq? [ do-find ] return-if
+    pattern empty? [ do-find ] return-if
 
-    f :> found?!
+    mark [ dot mark make-region/2 begin ] [ copy-dot ] if :> start!
 
-    f found-line-number!
-    f found-offset!
+    start [ position-offset ] [ position-%line length ] bi < [
+        start position-offset 1+ start position-offset!
+    ] [
+        start position-%line line-next [ start position-%line! 0 start position-offset! ] [ f start! ] if*
+    ] if
 
-    dot-offset dot-line-length 1- < [
-        dot-offset 1+ find-pattern-in-current-line found-offset!
-    ] when
+    start null? [ not-found ] return-if
 
-    found-offset [
-        dot-line-number found-line-number!
-        t found?!
-    ] when
-
-    found? [ found ] return-if
-
-    dot-line-next :> line!
-    [ line found? not and ] [
-        line find-pattern-in-line [
-            found-offset!
-            line line-%number found-line-number!
-            t found?!
-        ] when*
-        line line-next line!
-    ] while
-
-    found? [ found ] [ not-found ] if
+    pattern start find-string [ found ] [ not-found ] if*
 ;
