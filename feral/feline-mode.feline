@@ -146,6 +146,7 @@ tuple: segment
     "bi"
     "bi@"
     "case"
+    "cleave"
     "cond"
     "each"
     "each-index"
