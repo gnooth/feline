@@ -88,6 +88,14 @@ code error_not_fixnum_rax, 'error_not_fixnum_rax', SYMBOL_INTERNAL
         next
 endcode
 
+; ### error_not_fixnum_rdx
+code error_not_fixnum_rdx, 'error_not_fixnum_rdx', SYMBOL_INTERNAL
+        _dup
+        mov     rbx, rdx
+        _ error_not_fixnum
+        next
+endcode
+
 ; ### error-not-float
 code error_not_float, 'error-not-float'         ; x --
         _quote "a float"
