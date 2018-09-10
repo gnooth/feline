@@ -1051,6 +1051,27 @@ code unsafe_raw_memequal, 'unsafe_raw_memequal', SYMBOL_INTERNAL
         next
 endcode
 
+code unsafe_memequal, 'unsafe-memequal' ; address1 address2 length -> ?
+        ; address1
+        mov     rax, [rbp + BYTES_PER_CELL]
+        test    al, FIXNUM_TAG
+        jz      error_not_fixnum_rax
+        _untag_fixnum rax
+        mov     [rbp + BYTES_PER_CELL], rax
+
+        ; address2
+        mov     rdx, [rbp]
+        test    dl, FIXNUM_TAG
+        jz      error_not_fixnum_rdx
+        _untag_fixnum rdx
+        mov     [rbp], rdx
+
+        _check_fixnum
+
+        _ unsafe_raw_memequal
+        next
+endcode
+
 ; ### string=
 code stringequal, 'string='             ; string1 string2 -- ?
         _tor
