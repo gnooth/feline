@@ -876,6 +876,81 @@ code find_integer_in_range, 'find-integer-in-range'     ; start end callable -> 
         next
 endcode
 
+; ### find-last-integer-in-range
+code find_last_integer_in_range, 'find-last-integer-in-range'   ; start end callable -> i/f
+; callable must have stack effect ( i -> ? )
+
+; Applies the callable to each integer from `end` down to `start`, inclusive. If the
+; callable returns a true value for some integer in the specified range, iteration
+; stops and that integer is returned. Otherwise the word returns `f`.
+
+        ; start
+        mov     rax, [rbp + BYTES_PER_CELL]
+        test    al, FIXNUM_TAG
+        jz      error_not_fixnum_rax
+        _untag_fixnum rax               ; start (untagged) in rax
+
+        ; end
+        mov     rdx, [rbp]
+        test    dl, FIXNUM_TAG
+        jz      error_not_fixnum_rdx
+        _untag_fixnum rdx               ; end (untagged) in rdx
+
+        ; make sure start is before end
+        cmp     rdx, rax
+        jg      .1
+        _2drop
+        mov     ebx, f_value
+        _return
+
+.1:
+        ; protect callable from gc
+        push    rbx
+
+        push    r12
+        push    r13
+        push    r15
+
+        mov     r12, rdx                ; loop index in r12
+        mov     r15, rax                ; loop limit in r15
+
+        _ callable_raw_code_address
+        mov     r13, rbx                ; code address in r13
+
+        _3drop                          ; clean up the stack now!
+.2:
+        pushd   r12
+        _tag_fixnum
+        call    r13
+        ; test flag returned by quotation
+        cmp     rbx, f_value
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        jne     .3
+        ; flag was f
+        ; keep going as long as loop index >= start of range
+        dec     r12
+        cmp     r12, r15
+        jge     .2
+        ; reached start of range
+        ; return f
+        _f
+        jmp     .4
+.3:
+        ; return tagged index
+        pushd   r12
+        _tag_fixnum
+.4:
+        pop     r15
+        pop     r13
+        pop     r12
+
+        ; drop callable
+        pop     rax
+
+        next
+endcode
+
 ; ### depth
 code depth, 'depth'                     ; -- fixnum
         _depth

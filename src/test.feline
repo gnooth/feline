@@ -3510,15 +3510,33 @@ test: string-?last-test-1
 string-?last-test-1
 
 test: find-integer-in-range-test-1
+    { 0 } [ 0 100 [ 72 < ] find-integer-in-range ] unit-test
     { 73 } [ 0 100 [ 72 > ] find-integer-in-range ] unit-test
     { 73 } [ -100 100 [ 72 > ] find-integer-in-range ] unit-test
     { -71 } [ -100 100 [ -72 > ] find-integer-in-range ] unit-test
     { 100 } [ 100 1000 [ 72 > ] find-integer-in-range ] unit-test
 
+    { f } [ 0 100 [ 100 eq? ] find-integer-in-range ] unit-test
     { f } [ 100 1000 [ 2000 eq? ] find-integer-in-range ] unit-test
+
     { f } [ 100 -100 [ 72 > ] find-integer-in-range ] unit-test
 ;
 
 find-integer-in-range-test-1
+
+test: find-last-integer-in-range-test-1
+    { 100 } [ 0 100 [ 72 > ] find-last-integer-in-range ] unit-test
+    { 71 } [ 0 100 [ 72 < ] find-last-integer-in-range ] unit-test
+    { 71 } [ -100 100 [ 72 < ] find-last-integer-in-range ] unit-test
+    { -73 } [ -100 100 [ -72 < ] find-last-integer-in-range ] unit-test
+    { 1000 } [ 100 1000 [ 72 > ] find-last-integer-in-range ] unit-test
+
+    { 0 } [ 0 10 [ 0 eq? ] find-last-integer-in-range ] unit-test
+    { f } [ 100 1000 [ 2000 eq? ] find-last-integer-in-range ] unit-test
+
+    { f } [ 100 -100 [ 72 > ] find-last-integer-in-range ] unit-test
+;
+
+find-last-integer-in-range-test-1
 
 ?nl "Reached end of test.feline" write-string
