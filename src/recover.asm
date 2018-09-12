@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -128,7 +128,14 @@ code throw, 'throw'
         next
 endcode
 
-_global error_object, f_value
+asm_global error_object_, f_value
+
+; ### error-object
+code error_object, 'error-object'
+        pushrbx
+        mov     rbx, [error_object_]
+        next
+endcode
 
 ; ### recover
 code recover, 'recover'                 ; try-quot recover-quot --
@@ -162,7 +169,7 @@ code recover, 'recover'                 ; try-quot recover-quot --
 
 .error:
         ; error object is in rbx
-        mov     [error_object], rbx
+        mov     [error_object_], rbx
 
         ; restore data stack
         _ clear
@@ -173,8 +180,7 @@ code recover, 'recover'                 ; try-quot recover-quot --
         _ each
 
         pushrbx
-        mov     rbx, [error_object]
-        mov     qword [error_object], f_value
+        mov     rbx, [error_object_]
 
         _rfrom                          ; -- recover-quot
 
