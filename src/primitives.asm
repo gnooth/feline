@@ -880,9 +880,9 @@ endcode
 code find_last_integer_in_range, 'find-last-integer-in-range'   ; start end callable -> i/f
 ; callable must have stack effect ( i -> ? )
 
-; Applies the callable to each integer from `end` down to `start`, inclusive. If the
-; callable returns a true value for some integer in the specified range, iteration
-; stops and that integer is returned. Otherwise the word returns `f`.
+; Applies the callable to each integer from end - 1 down to start. If the
+; callable returns a true value for some integer in the specified range,
+; iteration stops and that integer is returned. Otherwise the word returns `f`.
 
         ; start
         mov     rax, [rbp + BYTES_PER_CELL]
@@ -911,8 +911,9 @@ code find_last_integer_in_range, 'find-last-integer-in-range'   ; start end call
         push    r13
         push    r15
 
-        mov     r12, rdx                ; loop index in r12
-        mov     r15, rax                ; loop limit in r15
+        sub     rdx, 1
+        mov     r12, rdx                ; end - 1 (starting loop index) in r12
+        mov     r15, rax                ; start (loop limit) in r15
 
         _ callable_raw_code_address
         mov     r13, rbx                ; code address in r13
@@ -928,7 +929,7 @@ code find_last_integer_in_range, 'find-last-integer-in-range'   ; start end call
         lea     rbp, [rbp + BYTES_PER_CELL]
         jne     .3
         ; flag was f
-        ; keep going as long as loop index >= start of range
+        ; keep going as long as loop index >= start
         dec     r12
         cmp     r12, r15
         jge     .2
