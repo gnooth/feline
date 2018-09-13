@@ -170,9 +170,8 @@ code string_raw_data_address, 'string_raw_data_address', SYMBOL_INTERNAL
         next
 endcode
 
-; ### string-data-address
-code string_data_address, 'string-data-address', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; string -- data-address
+; ### unsafe-string-data-address
+code unsafe_string_data_address, 'unsafe-string-data-address'   ; string -> address
         _ check_string
         _string_raw_data_address
         _tag_fixnum

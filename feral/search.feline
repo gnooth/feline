@@ -45,8 +45,8 @@ var pattern
 ;
 
 : find-string-in-range ( s1 s2 start end )      -- string1 string2 start end -> i/f
-    s1 feline:string-data-address :> addr1
-    s2 feline:string-data-address :> addr2
+    s1 unsafe-string-data-address :> addr1
+    s2 unsafe-string-data-address :> addr2
     s1 string-length :> len
 
     start end [ addr2 + addr1 len unsafe-memequal ] find-integer-in-range
