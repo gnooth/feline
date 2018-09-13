@@ -20,10 +20,10 @@ empty
 
 private
 
-var pattern
+var current-pattern
 
 : mark-found-pattern
-    dot-line dot-offset pattern length + make-position mark! ;
+    dot-line dot-offset current-pattern string-length + make-position mark! ;
 
 : found ( pos )                         -- position -> void
     reset-redo
@@ -36,47 +36,100 @@ var pattern
     t repaint?! ;
 
 : not-found
-    pattern "%S not found" format
+    current-pattern "%S not found" format
     0 message-y at-xy output-style
     write-string ;
 
-: find-char-in-range ( c s start end )   -- char string start end -> i/f
-    start end [ s string-nth-unsafe c eq? ] find-integer-in-range
+: find-char-in-range ( char string start end )  -- char string start end -> i/f
+    start end [ string string-nth-unsafe char eq? ] find-integer-in-range
 ;
 
-: find-string-in-range ( s1 s2 start end )      -- string1 string2 start end -> i/f
-    s1 unsafe-string-data-address :> addr1
-    s2 unsafe-string-data-address :> addr2
-    s1 string-length :> len
+: find-substring-in-range ( pattern string start end )  -- pattern string start end -> i/f
+    pattern unsafe-string-data-address :> pattern-data-address
+    string unsafe-string-data-address :> string-data-address
+    pattern string-length :> pattern-length
 
-    start end [ addr2 + addr1 len unsafe-memequal ] find-integer-in-range
+    start end [
+        string-data-address +
+        pattern-data-address
+        pattern-length unsafe-memequal
+    ] find-integer-in-range
 ;
 
-: find-string-from ( s1 s2 start )      -- string1 string2 start -> i/f
-    s2 string-length s1 string-length - 1+ :> end
-    s1 s2 start end find-string-in-range
+: find-substring-from ( pattern string start )  -- pattern string start -> i/f
+    string string-length pattern string-length - 1+ :> end
+    pattern string start end find-substring-in-range
 ;
 
-: find-string ( s startpos )            -- string position -> position/f
+: find-substring-in-line ( pattern line )       -- pattern line -> position/f
+    pattern line line-text 0 find-substring-from
+    [ line swap make-position ] [ f ] if*
+;
+
+: search-forward ( pattern startpos )   -- string position -> position/f
     startpos position-%line :> line!
     startpos position-offset :> offset
 
-    s line line-text offset find-string-from :> index!
+    pattern line line-text offset find-substring-from :> index!
 
-    index [ line offset index + make-position ] return-if
+    index [ line index make-position ] return-if
 
     line line-next line!
 
     f :> result!
 
     [ line ] [
-        s line line-text 0 find-string-from index!
-        index [
-            line index make-position result!
+        pattern line find-substring-in-line [
+            result!
             f line!
         ] [
             line line-next line!
-        ] if
+        ] if*
+    ] while
+
+    result
+;
+
+: find-last-substring-in-range ( pattern string start end )     -- string1 string2 start end -> i/f
+    pattern unsafe-string-data-address :> pattern-data-address
+    string unsafe-string-data-address :> string-data-address
+    pattern string-length :> pattern-length
+
+    start string string-length pattern-length - 1+ end min [
+        string-data-address +
+        pattern-data-address
+        pattern-length unsafe-memequal
+    ] find-last-integer-in-range ;
+
+: find-last-substring-from ( pattern string from )      -- pattern string from -> i/f
+    pattern string 0
+    string string-length pattern string-length - 1+ from min
+    find-last-substring-in-range ;
+
+: find-last-substring-in-line ( pattern line )  -- pattern line -> position/f
+    pattern line line-text line length find-last-substring-from
+    [ line swap make-position ] [ f ] if*
+;
+
+: search-backward ( pattern startpos )  -- pattern startpos -> position/f
+    startpos position-%line :> line!
+    startpos position-offset :> offset
+
+    pattern line line-text offset find-last-substring-from :> index!
+
+    index [ line index make-position ] return-if
+
+    line line-prev line!
+
+    f :> result!
+
+    [ line ] [
+        pattern line find-last-substring-in-line [
+            result!
+            f line!
+        ] [
+            line line-prev line!
+        ] if*
     ] while
 
     result
@@ -85,26 +138,25 @@ var pattern
 public
 
 : do-find
-    0 message-y at-xy "Find: " accept-string pattern!
+    0 message-y at-xy "Find: " accept-string :> pattern
     clear-message-line
 
     pattern empty? [ ] return-if
 
-    pattern dot find-string [ found ] [ not-found ] if*
+    pattern current-pattern!
+    pattern dot search-forward [ found ] [ not-found ] if*
 ;
 
-: do-find-again
-    pattern empty? [ do-find ] return-if
+: do-find-next
+    current-pattern empty? [ do-find ] return-if
 
-    mark [ dot mark make-region/2 begin ] [ copy-dot ] if :> start!
+    mark [ dot mark make-region/2 end ] [ copy-dot ] if :> startpos
+    current-pattern startpos search-forward [ found ] [ not-found ] if*
+;
 
-    start [ position-offset ] [ position-%line length ] bi < [
-        start position-offset 1+ start position-offset!
-    ] [
-        start position-%line line-next [ start position-%line! 0 start position-offset! ] [ f start! ] if*
-    ] if
+: do-find-prev
+    current-pattern empty? [ do-find ] return-if
 
-    start null? [ not-found ] return-if
-
-    pattern start find-string [ found ] [ not-found ] if*
+    mark [ dot mark make-region/2 begin ] [ copy-dot ] if :> startpos
+    current-pattern startpos search-backward [ found ] [ not-found ] if*
 ;
