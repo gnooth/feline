@@ -398,6 +398,8 @@ endcode
 code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; quotation --
 
+        _debug_?enough 1
+
         _ compile_verbose?
         _tagged_if .1
         _ ?nl
