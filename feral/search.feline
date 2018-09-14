@@ -135,6 +135,31 @@ var current-pattern
     result
 ;
 
+: delimited? ( pos len )                -- position length -> ?
+    pos position-%line :> line
+    pos position-offset :> offset
+
+    t :> result!
+
+    offset 0 > [
+        offset 1- line line-text string-nth blank? [
+            f result!
+        ] unless
+    ] when
+
+    result f eq? [ f ] return-if
+
+    offset len + :> after
+
+    after line length < [
+        after line line-text string-nth blank? [
+            f result!
+        ] unless
+    ] when
+
+    result
+;
+
 public
 
 : do-find
@@ -159,4 +184,28 @@ public
 
     mark [ dot mark make-region/2 begin ] [ copy-dot ] if :> startpos
     current-pattern startpos search-backward [ found ] [ not-found ] if*
+;
+
+: find-word-at-dot
+    identifier-at-dot :> pattern
+    pattern empty? [ ] return-if
+    pattern current-pattern!
+
+    pattern string-length :> pattern-length
+    copy-dot :> pos!
+
+    f :> result!
+
+    [ result null? pos and ] [
+        pos move-next [
+            pattern pos search-forward pos!
+            pos [
+                pos pattern-length delimited? [
+                    pos result!
+                ] when
+            ] when
+        ] when
+    ] while
+
+    result [ found ] [ not-found ] if*
 ;
