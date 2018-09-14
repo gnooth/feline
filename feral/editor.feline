@@ -84,6 +84,17 @@ generic before?
 
 method: position before? position-before? ;
 
+: move-next ( pos )                     -- position -> ?
+    pos position-offset :> offset
+    pos position-%line :> line
+
+    {
+        { [ offset line length < ] [ offset 1+ pos position-offset! t ] }
+        { [ line line-next ] [ line line-next pos position-%line! 0 pos position-offset! t ] }
+        [ f ]
+    } cond
+;
+
 tuple: region
     begin
     end ;
