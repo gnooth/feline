@@ -1673,6 +1673,7 @@ var escape-keymap
     ' quit                      key:escape      keymap set-at
     ' find-definition-at-dot    '.'             keymap set-at
     ' cycle-paste               'v'             keymap set-at
+    ' find-word-at-dot          key:down        keymap set-at
 
     keymap escape-keymap!
 ;
