@@ -106,7 +106,7 @@ method: position before? position-before? ;
         { [ offset 0 > ] [ offset 1- pos position-offset! t ] }
         { [ line line-prev ] [
             line line-prev pos position-%line!
-            pos position-%line length position-offset! t
+            pos position-%line length pos position-offset! t
         ] }
         [ f ]
     } cond
