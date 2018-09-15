@@ -1663,8 +1663,8 @@ var escape-keymap
     ' kill-buffer               key:ctrl-w      keymap set-at
     ' newline-and-indent        key:enter       keymap set-at
     ' do-find                   key:ctrl-f      keymap set-at
-    ' do-find-next              key:f3          keymap set-at
-    ' do-find-prev              key:shift-f3    keymap set-at
+    ' repeat-search-forward     key:f3          keymap set-at
+    ' repeat-search-backward    key:shift-f3    keymap set-at
     ' do-tab                    key:tab         keymap set-at
     ' kill-line                 key:ctrl-k      keymap set-at
     ' undo                      key:ctrl-z      keymap set-at

@@ -20,7 +20,24 @@ empty
 
 private
 
-var current-pattern
+tuple: search
+    %pattern
+    %whole-words-only ;
+
+: make-search                           -- pattern whole-words-only -> search
+    search make-instance
+    tuck
+    search-%whole-words-only!
+    tuck
+    search-%pattern! ;
+
+var current-search
+
+: current-pattern                       -- -> string
+    current-search search-%pattern ;
+
+: whole-words-only?                     -- -> ?
+    current-search search-%whole-words-only ;
 
 : mark-found-pattern
     dot-line dot-offset current-pattern string-length + make-position mark! ;
@@ -168,32 +185,15 @@ public
 
     pattern empty? [ ] return-if
 
-    pattern current-pattern!
+    pattern f make-search current-search!
+
     pattern dot search-forward [ found ] [ not-found ] if*
 ;
 
-: do-find-next
-    current-pattern empty? [ do-find ] return-if
-
-    mark [ dot mark make-region/2 end ] [ copy-dot ] if :> startpos
-    current-pattern startpos search-forward [ found ] [ not-found ] if*
-;
-
-: do-find-prev
-    current-pattern empty? [ do-find ] return-if
-
-    mark [ dot mark make-region/2 begin ] [ copy-dot ] if :> startpos
-    current-pattern startpos search-backward [ found ] [ not-found ] if*
-;
-
-: search-forward-word-at-dot
-    identifier-at-dot :> pattern
-    pattern empty? [ ] return-if
-    pattern current-pattern!
-
+: search-forward-word
+    current-pattern :> pattern
     pattern string-length :> pattern-length
     copy-dot :> pos!
-
     f :> result!
 
     [ result null? pos and ] [
@@ -210,14 +210,17 @@ public
     result [ found ] [ not-found ] if*
 ;
 
-: search-backward-word-at-dot
+: search-forward-word-at-dot
     identifier-at-dot :> pattern
-    pattern empty? [ ] return-if
-    pattern current-pattern!
+    pattern empty? [
+        pattern t make-search current-search!
+        search-forward-word
+    ] unless ;
 
+: search-backward-word
+    current-pattern :> pattern
     pattern string-length :> pattern-length
     copy-dot :> pos!
-
     f :> result!
 
     [ result null? pos and ] [
@@ -232,4 +235,35 @@ public
     ] while
 
     result [ found ] [ not-found ] if*
+;
+
+: search-backward-word-at-dot
+    identifier-at-dot :> pattern
+    pattern empty? [
+        pattern t make-search current-search!
+        search-backward-word
+    ] unless ;
+
+: repeat-search-forward
+    current-pattern empty? [ do-find ] return-if
+
+    mark [ dot mark make-region/2 end ] [ copy-dot ] if :> startpos
+
+    whole-words-only? [
+        search-forward-word
+    ] [
+        current-pattern startpos search-forward [ found ] [ not-found ] if*
+    ] if
+;
+
+: repeat-search-backward
+    current-pattern empty? [ do-find ] return-if
+
+    mark [ dot mark make-region/2 begin ] [ copy-dot ] if :> startpos
+
+    whole-words-only? [
+        search-backward-word
+    ] [
+        current-pattern startpos search-backward [ found ] [ not-found ] if*
+    ] if
 ;
