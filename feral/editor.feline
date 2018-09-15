@@ -90,7 +90,24 @@ method: position before? position-before? ;
 
     {
         { [ offset line length < ] [ offset 1+ pos position-offset! t ] }
-        { [ line line-next ] [ line line-next pos position-%line! 0 pos position-offset! t ] }
+        { [ line line-next ] [
+            line line-next pos position-%line!
+            0 pos position-offset! t
+        ] }
+        [ f ]
+    } cond
+;
+
+: move-prev ( pos )                     -- position -> ?
+    pos position-offset :> offset
+    pos position-%line :> line
+
+    {
+        { [ offset 0 > ] [ offset 1- pos position-offset! t ] }
+        { [ line line-prev ] [
+            line line-prev pos position-%line!
+            pos position-%line length position-offset! t
+        ] }
         [ f ]
     } cond
 ;
