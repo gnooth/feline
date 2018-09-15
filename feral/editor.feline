@@ -1687,10 +1687,11 @@ var escape-keymap
 
     128 <hashtable> :> keymap
 
-    ' quit                      key:escape      keymap set-at
-    ' find-definition-at-dot    '.'             keymap set-at
-    ' cycle-paste               'v'             keymap set-at
-    ' find-word-at-dot          key:down        keymap set-at
+    ' quit                              key:escape      keymap set-at
+    ' find-definition-at-dot            '.'             keymap set-at
+    ' cycle-paste                       'v'             keymap set-at
+    ' search-forward-word-at-dot        key:down        keymap set-at
+    ' search-backward-word-at-dot       key:up          keymap set-at
 
     keymap escape-keymap!
 ;

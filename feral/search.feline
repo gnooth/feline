@@ -186,7 +186,7 @@ public
     current-pattern startpos search-backward [ found ] [ not-found ] if*
 ;
 
-: find-word-at-dot
+: search-forward-word-at-dot
     identifier-at-dot :> pattern
     pattern empty? [ ] return-if
     pattern current-pattern!
@@ -199,6 +199,30 @@ public
     [ result null? pos and ] [
         pos move-next [
             pattern pos search-forward pos!
+            pos [
+                pos pattern-length delimited? [
+                    pos result!
+                ] when
+            ] when
+        ] when
+    ] while
+
+    result [ found ] [ not-found ] if*
+;
+
+: search-backward-word-at-dot
+    identifier-at-dot :> pattern
+    pattern empty? [ ] return-if
+    pattern current-pattern!
+
+    pattern string-length :> pattern-length
+    copy-dot :> pos!
+
+    f :> result!
+
+    [ result null? pos and ] [
+        pos move-prev [
+            pattern pos search-backward pos!
             pos [
                 pos pattern-length delimited? [
                     pos result!
