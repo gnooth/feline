@@ -177,18 +177,27 @@ var current-search
     result
 ;
 
-public
+: find-word-in-line ( pattern line )    -- pattern line -> position/f
+    0 :> index!
+    f :> pos!
 
-: do-find
-    0 message-y at-xy "Find: " accept-string :> pattern
-    clear-message-line
+    [ index pos null? and ] [
+        pattern line line-text index find-substring-from index!
+        index [
+            line index make-position pos!
+            pos pattern string-length delimited? [ f pos! ] unless
+            index line length < [ index 1+ ] [ f ] if index!
+        ] when
+    ] while
 
-    pattern empty? [ ] return-if
+    pos ;
 
-    pattern f make-search current-search!
-
-    pattern dot search-forward [ found ] [ not-found ] if*
-;
+: find-in-line                          -- pattern line -> position/?
+    whole-words-only? [
+        find-word-in-line
+    ] [
+        find-substring-in-line
+    ] if ;
 
 : search-forward-word
     current-pattern :> pattern
@@ -210,13 +219,6 @@ public
     result [ found ] [ not-found ] if*
 ;
 
-: search-forward-word-at-dot
-    identifier-at-dot :> pattern
-    pattern empty? [
-        pattern t make-search current-search!
-        search-forward-word
-    ] unless ;
-
 : search-backward-word
     current-pattern :> pattern
     pattern string-length :> pattern-length
@@ -236,6 +238,26 @@ public
 
     result [ found ] [ not-found ] if*
 ;
+
+public
+
+: do-find
+    0 message-y at-xy "Find: " accept-string :> pattern
+    clear-message-line
+
+    pattern empty? [ ] return-if
+
+    pattern f make-search current-search!
+
+    pattern dot search-forward [ found ] [ not-found ] if*
+;
+
+: search-forward-word-at-dot
+    identifier-at-dot :> pattern
+    pattern empty? [
+        pattern t make-search current-search!
+        search-forward-word
+    ] unless ;
 
 : search-backward-word-at-dot
     identifier-at-dot :> pattern
@@ -266,4 +288,34 @@ public
     ] [
         current-pattern startpos search-backward [ found ] [ not-found ] if*
     ] if
+;
+
+: search-list-occurrences
+    current-search null? [ ] return-if
+
+    make-buffer :> buf
+
+    current-pattern :> pattern
+    first-line :> line!
+
+    "List Occurrences" make-line/1 buf
+    2dup buffer-append-line buffer-%top-line!
+
+    pattern "Pattern: %S" format make-line/1 buf buffer-append-line
+
+    [ line ] [
+        pattern line find-in-line [
+            line line-%number 1+ line line-text "%d:%s" format
+            make-line/1 buf buffer-append-line
+        ] when
+        line line-next line!
+    ] while
+
+    buf buffer-%top-line 0 make-position buf buffer-dot!
+
+    buf buffer-list vector-push
+    buf current-buffer!
+
+    renumber
+    t repaint?!
 ;
