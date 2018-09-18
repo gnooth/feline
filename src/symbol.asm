@@ -321,6 +321,34 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
         next
 endcode
 
+; ### ensure-symbol
+code ensure_symbol, 'ensure-symbol'     ; symbol-name vocab-name -> symbol
+
+        _debug_?enough 2
+
+        ; vocabulary must exist
+        _dup
+        _ lookup_vocab
+        _tagged_if_not .1
+        _drop
+        _ error_vocab_not_found
+        _else .1
+        _ nip
+        _then .1                        ; -> symbol-name vocab
+
+        _twodup
+        _ vocab_hashtable
+        _ hashtable_at_star
+        _tagged_if .2
+        _2nip
+        _else .2
+        _drop
+        _ new_symbol
+        _then .2
+
+        next
+endcode
+
 ; ### symbol-equal?
 code symbol_equal?, 'symbol-equal?'     ; x y -- ?
         _dup

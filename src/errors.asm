@@ -306,6 +306,14 @@ code error_file_not_found, 'error-file-not-found'
         next
 endcode
 
+; ### error-vocab-not-found
+code error_vocab_not_found, 'error-vocab-not-found'
+        _quote "ERROR: there is no vocabulary named %S."
+        _ format
+        _ error
+        next
+endcode
+
 ; ### error-unexpected-delimiter
 code error_unexpected_delimiter, 'error-unexpected-delimiter'
         _quote "ERROR: unexpected delimiter."
