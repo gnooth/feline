@@ -182,14 +182,36 @@ code generic_function_set_dispatch, 'generic-function-set-dispatch'     ; dispat
         next
 endcode
 
-; ### generic-function>string
-code generic_function_to_string, 'generic-function>string'      ; gf -- string
-        _ check_generic_function
-        _gf_name
-        _ symbol_name
-        _quote "#'"
+; ### generic-function-to-string
+code generic_function_to_string, 'generic-function-to-string'   ; generic-function -> string
+
+        _ verify_generic_function
+        _quote "<generic-function "
+        _ string_to_sbuf                ; -> gf sbuf
+
+        _over                           ; -> gf sbuf generic
+        _ generic_function_name
+        _ symbol_name                   ; -> gf sbuf name
+        _ quote_string
+        _over
+        _ sbuf_append_string            ; -> gf sbuf
+
+        _quote " 0x"
+        _over
+        _ sbuf_append_string
+
         _swap
-        _ string_append
+        _ object_address
+        _ to_hex
+        _over
+        _ sbuf_append_string
+
+        _quote ">"
+        _over
+        _ sbuf_append_string
+
+        _ sbuf_to_string
+
         next
 endcode
 
