@@ -1,4 +1,4 @@
-; Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -98,8 +98,26 @@ code check_method, 'check-method'       ; handle -- method
         next
 endcode
 
+; ### verify-method
+code verify_method, 'verify-method'     ; method -> method
+; returns argument unchanged
+        _dup
+        _ deref
+        test    rbx, rbx
+        jz      .error
+        _object_raw_typecode_eax
+        cmp     eax, TYPECODE_METHOD
+        jne     .error
+        _drop
+        next
+.error:
+        _drop
+        _ error_not_method
+        next
+endcode
+
 ; ### <method>
-code new_method, '<method>'     ; tagged-typecode generic-function callable -- method
+code new_method, '<method>'             ; tagged-typecode generic-function callable -- method
         _lit 4
         _ raw_allocate_cells
 
