@@ -117,7 +117,7 @@ code verify_generic_function, 'verify-generic-function' ; handle -- handle
         next
 endcode
 
-; ### <generic_function>
+; ### <generic-function>
 code new_generic_function, '<generic-function>' ; symbol -- gf
 ; 6 slots: object header, raw code address, raw code size, symbol, methods, dispatch
 
@@ -358,27 +358,31 @@ code add_method_to_dispatch_table, 'add-method-to-dispatch-table'
 endcode
 
 ; ### install-method
-code install_method, 'install-method'   ; method --
+code install_method, 'install-method'   ; method -> void
 
-        _dup
-        _ method_callable
+        ; add method to generic function's methods hashtable
+        _duptor
+
+        _dup                            ; -> method method
+        _ method_typecode               ; -> method typecode
         _over
-        _ method_typecode
-        _pick
-        _ method_generic_function       ; -- method callable typecode gf
+        _ method_generic_function
         _ generic_function_methods
-        _ verify_hashtable
+        _ verify_hashtable              ; -> method typecode ht
         _ hashtable_set_at
 
+        _rfrom                          ; -> method
+
+        ; add method's raw code address to generic function's dispatch table
         _dup
         _ method_callable
-        _ callable_raw_code_address     ; -- method method-raw-code-address
-        _swap                           ; -- method-raw-code-address method
+        _ callable_raw_code_address     ; -> method raw-code-address
+        _swap                           ; -> raw-code-address method
         _dup
-        _ method_typecode               ; -- method-raw-code-address method typecode
+        _ method_typecode               ; -> raw-code-address method typecode
         _swap
 
-        _ method_generic_function       ; -- method-raw-code-address typecode gf
+        _ method_generic_function       ; -> raw-code-address typecode gf
 
         _ generic_function_dispatch
         _ verify_hashtable
