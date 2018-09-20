@@ -212,6 +212,19 @@ code mark_type, 'mark-type'             ; type -> void
         next
 endcode
 
+; ### mark-generic-function             ; generic-function -> void
+code mark_generic_function, 'mark-generic-function'
+        _dup
+        _gf_name
+        _ maybe_mark_handle
+        _dup
+        _gf_methods
+        _ maybe_mark_handle
+        _gf_dispatch
+        _ maybe_mark_handle
+        next
+endcode
+
 asm_global gc_dispatch_table_
 
 ; ### initialize_gc_dispatch_table
@@ -293,6 +306,10 @@ code initialize_gc_dispatch_table, 'initialize_gc_dispatch_table', SYMBOL_INTERN
 
         _lit mark_string_output_stream
         _lit TYPECODE_STRING_OUTPUT_STREAM
+        _this_array_set_nth_unsafe
+
+        _lit mark_generic_function
+        _lit TYPECODE_GENERIC_FUNCTION
         _this_array_set_nth_unsafe
 
         pop     this_register
