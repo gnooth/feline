@@ -185,19 +185,20 @@ code method_set_callable, 'method-set-callable' ; callable method --
         next
 endcode
 
-; ### method>string
-code method_to_string, 'method>string'  ; method -- string
-        _ check_method
-        _dup
-        _method_raw_typecode
-        _ raw_typecode_to_type
+; ### method->string
+code method_to_string, 'method->string' ; method -> string
+        _duptor
+        _ method_typecode
+        _ typecode_to_type
         _ type_to_string
-        _quote "."
-        _ string_append
-        _ swap
-        _method_generic_function
+        _rfetch
+        _ method_generic_function
         _ generic_function_name
         _ symbol_name
-        _ string_append
+        _rfrom
+        _ object_address
+        _ to_hex
+        _quote `<method \"%s %s\" 0x%s>`
+        _ format
         next
 endcode
