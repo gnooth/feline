@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -234,5 +234,17 @@ code ?lookup_symbol, '?lookup-symbol'   ; name vocab-spec -- symbol/f
 
         _ vocab_hashtable
         _ hashtable_at
+        next
+endcode
+
+; ### vocab->string
+code vocab_to_string, 'vocab->string'   ; vocab -> string
+        _dup
+        _ vocab_name
+        _swap
+        _ object_address
+        _ to_hex
+        _quote `<vocab \"%s\" 0x%s>`
+        _ format
         next
 endcode

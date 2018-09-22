@@ -246,8 +246,8 @@ code verify_typecode, 'verify-typecode' ; object typecode -- object
         next
 endcode
 
-; ### object>string
-code object_to_string, 'object>string'  ; object -- string
+; ### object->string
+code object_to_string, 'object->string' ; object -> string
 ; FIXME make this a generic word
 
         cmp     rbx, f_value
@@ -333,8 +333,7 @@ code object_to_string, 'object>string'  ; object -- string
         _dup
         _ vocab?
         _tagged_if .11
-        ; REVIEW
-        _ vocab_name
+        _ vocab_to_string
         _return
         _then .11
 
