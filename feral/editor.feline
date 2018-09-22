@@ -507,7 +507,7 @@ var current-buffer
 : clear-message-line hide-cursor 0 message-y at-xy clear-to-eol ;
 
 : line-selected? ( line )               -- line -> ?
-    mark not [ f ] return-if
+    mark null? [ f ] return-if
 
     line line-%number mark-line-number >= [
         line line-%number dot-line-number <
@@ -516,17 +516,23 @@ var current-buffer
     ] if
 ;
 
+use: ansi-color
+
+ 64  64  64 rgb-background-prefix constant selection-prefix
+
 : repaint-line ( line )                 -- line -> void
     line line-text detab :> detabbed-text
 
+    detabbed-text format-line :> formatted-text
+
     line line-selected? [
-        reverse
-        detabbed-text write
+        selection-prefix write-string-escaped
+        formatted-text write
+        selection-prefix write-string-escaped
         terminal-width detabbed-text string-length - spaces
-        normal
+        "\e[0m" write-string-escaped
     ] return-if
 
-    detabbed-text format-line :> formatted-text
     output-style
     line mark-line eq? [
         0 dot-column detabbed-text string-substring write
@@ -1252,6 +1258,32 @@ use: kill-ring
     renumber
 ;
 
+: cut-region ( region )
+    region begin-line region end-line eq? [
+
+        region begin-line dot-line assert-eq
+
+        region region-as-string append-kill
+
+        add-undo-line-edit
+        dot-line-text region begin-offset string-head
+        dot-line-text region end-offset string-tail
+        string-append dot-line-text!
+
+        unmark
+        region begin-offset dot-offset!
+        t dot-line-changed?!
+        modified
+    ] return-if
+
+;
+
+: cut-line
+;
+
+: cut
+    mark [ dot make-region/2 cut-region ] [ cut-line ] if* ;
+
 : copy-line
     dot-line-text "\n" string-append append-kill
     "Line copied to kill ring" message
@@ -1676,6 +1708,7 @@ var escape-keymap
     ' previous-buffer           key:alt-left    keymap set-at
     ' find-definition           key:ctrl-t      keymap set-at
     ' select-line               key:ctrl-l      keymap set-at
+    ' cut                       key:ctrl-x      keymap set-at
     ' copy                      key:ctrl-c      keymap set-at
     ' paste                     key:ctrl-v      keymap set-at
 
@@ -1692,6 +1725,7 @@ var escape-keymap
     ' cycle-paste                       'v'             keymap set-at
     ' search-forward-word-at-dot        key:down        keymap set-at
     ' search-backward-word-at-dot       key:up          keymap set-at
+    ' search-list-occurrences           'l'             keymap set-at
 
     keymap escape-keymap!
 ;
