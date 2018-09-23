@@ -594,6 +594,38 @@ code method_colon, 'method:', SYMBOL_IMMEDIATE  ; --
         next
 endcode
 
+; ### forget:
+code forget_colon, 'forget:', SYMBOL_IMMEDIATE
+; Removes the symbol from its vocab.
+; Does nothing if the symbol does not exist.
+
+        _lit S_forget_colon
+        _ top_level_only
+
+        _ must_parse_token
+
+        _ find_name
+        _tagged_if .1
+        _dup
+        _ symbol_name
+        _swap
+        _ symbol_vocab
+        _dup
+        _tagged_if .2
+        _ vocab_hashtable
+        _ delete_at
+        _else .2
+        ; no vocab
+        _2drop
+        _then .2
+        _else .1
+        ; name not found
+        _drop
+        _then .1
+
+        next
+endcode
+
 ; ### --
 code comment_to_eol, '--', SYMBOL_IMMEDIATE     ; --
         _ current_lexer
