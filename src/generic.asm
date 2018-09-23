@@ -305,6 +305,57 @@ code initialize_generic_function, 'initialize-generic-function' ; generic-symbol
         next
 endcode
 
+; ### make-generic
+code make_generic, 'make-generic'       ; symbol -> symbol
+
+        _dup
+        _ new_generic_function          ; -> symbol gf
+
+        _tor                            ; -> symbol     r: -> gf
+
+        ; methods
+        _ make_fixnum_hashtable
+        _rfetch
+        _ generic_function_set_methods
+
+        ; dispatch table
+        _ make_fixnum_hashtable
+        _rfetch
+        _ generic_function_set_dispatch ; -> symbol
+
+        _rfetch
+        _ generic_function_dispatch
+        _over
+        _ symbol_set_value              ; -> symbol
+
+        _dup                            ; -> symbol symbol
+        _ new_wrapper
+        _lit S_symbol_value
+        _lit S_do_generic
+        _ three_array
+        _ array_to_quotation
+        _ compile_quotation             ; -> symbol quotation
+
+        _dup
+        _ quotation_code_address
+        _pick
+        _ symbol_set_code_address
+
+        _ quotation_code_size
+        _over
+        _ symbol_set_code_size          ; -> symbol
+
+        _rfrom                          ; -> symbol gf          r: -> void
+
+        _over
+        _ symbol_set_def
+
+        _dup
+        _ symbol_set_generic
+
+        next
+endcode
+
 ; ### find-method
 code find_method, 'find-method'         ; symbol-or-type symbol-or-gf -- method
 
