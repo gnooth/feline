@@ -409,6 +409,20 @@ code symbol_vocab_name, 'symbol-vocab-name' ; symbol -- vocab-name
         next
 endcode
 
+; ### symbol-vocab
+code symbol_vocab, 'symbol-vocab'       ; symbol -> vocab/f
+        _ check_symbol
+        _symbol_vocab_name              ; -> string
+        _ dictionary                    ; -> string hashtable/f
+        _dup                            ; -> string hashtable/f hashtable/f
+        _tagged_if .1                   ; -> string hashtable
+        _ hashtable_at                  ; -> vocab/f
+        _else .1                        ; -> string f
+        _nip                            ; -> f
+        _then .1
+        next
+endcode
+
 ; ### symbol-def
 code symbol_def, 'symbol-def'           ; symbol -- definition
         _ check_symbol
