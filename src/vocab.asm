@@ -94,7 +94,7 @@ code check_vocab, 'check_vocab', SYMBOL_INTERNAL        ; handle -- vocab
 endcode
 
 ; ### <vocab>
-code new_vocab, '<vocab>'               ;  name -- vocab
+code new_vocab, '<vocab>'               ;  name -> vocab
 ; 3 cells (object header, name, hashtable)
         _lit 3
         _ raw_allocate_cells
@@ -115,16 +115,21 @@ code new_vocab, '<vocab>'               ;  name -- vocab
         _this_vocab_hashtable
         _ hashtable_set_hash_function
 
+%if 0
+        ; Deleting a symbol breaks the current hashtable implementation if
+        ; string= is the test function.
+        ; Sep 23 2018 11:02 AM
         _lit S_stringequal
         _ symbol_raw_code_address
         _this_vocab_hashtable
         _ hashtable_set_test_function
+%endif
 
         pushrbx
-        mov     rbx, this_register      ; -- vocab
+        mov     rbx, this_register
 
-        ; Return handle.
-        _ new_handle                    ; -- handle
+        ; return handle
+        _ new_handle
 
         pop     this_register
         next
