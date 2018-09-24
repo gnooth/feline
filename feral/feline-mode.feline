@@ -13,7 +13,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: modes ansi-color feline ;
+using: feline accessors modes ansi-color ;
 in: feline-mode
 
 private
@@ -35,8 +35,8 @@ tuple: segment
 
 : make-segment ( text start )
     segment make-instance :> segment
-    text segment segment-text!
-    start segment segment-start!
+    text segment text<<
+    start segment start<<
     segment
 ;
 
@@ -174,32 +174,32 @@ var last-segment-text
 
 : format-segment ( segment )
     in-comment? [
-        segment segment-text "--" string-equal? in-comment?!
+        segment text>> "--" string-equal? in-comment?!
     ] unless
 
     in-comment? [
-        comment-prefix segment segment-format!
+        comment-prefix segment format<<
     ] return-if
 
     -- not a comment
     last-segment-text defining-words member? [
-        name-prefix segment segment-format!
+        name-prefix segment format<<
     ] return-if
 
-    segment segment-text syntax-words member? [
-        syntax-prefix segment segment-format!
+    segment text>> syntax-words member? [
+        syntax-prefix segment format<<
     ] return-if
 
-    segment segment-text string-first-char quote-char eq? [
-        string-prefix segment segment-format!
+    segment text>> string-first-char quote-char eq? [
+        string-prefix segment format<<
     ] return-if
 
-    segment segment-text combinators member? [
-        combinator-prefix segment segment-format!
+    segment text>> combinators member? [
+        combinator-prefix segment format<<
     ] return-if
 
     -- default
-    text-prefix segment segment-format!
+    text-prefix segment format<<
 ;
 
 : format-segments ( segments )
@@ -207,7 +207,7 @@ var last-segment-text
     "" last-segment-text!
     segments [
         dup format-segment
-        segment-text dup non-blank? [ last-segment-text! ] [ drop ] if
+        text>> dup non-blank? [ last-segment-text! ] [ drop ] if
     ] each
 ;
 
@@ -215,8 +215,8 @@ var last-segment-text
     256 <sbuf> :> sb
     seq [
         dup
-        segment-format sb sbuf-append-string
-        segment-text sb sbuf-append-string
+        format>> sb sbuf-append-string
+        text>> sb sbuf-append-string
     ] each
     reset-suffix sb sbuf-append-string
     sb sbuf>string
@@ -231,6 +231,6 @@ public
 
 : initialize-feline-mode
     mode make-instance :> m
-    ' feline-format-line m mode-formatter!
+    ' feline-format-line m formatter<<
     m feline-extension modes set-at
 ;

@@ -13,7 +13,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline ;
+using: feline accessors ;
 in: modes
 
 tuple: mode
@@ -40,7 +40,7 @@ var modes
 
 : initialize-asm-mode
     mode make-instance :> m
-    ' asm-format-line m mode-formatter!
+    ' asm-format-line m formatter<<
     m ".asm" modes set-at
 ;
 

@@ -13,7 +13,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accept-string editor ;
+using: feline accessors accept-string editor ;
 in: search
 
 empty
@@ -21,23 +21,23 @@ empty
 private
 
 tuple: search
-    %pattern
-    %whole-words-only ;
+    pattern
+    whole-words-only ;
 
 : make-search                           -- pattern whole-words-only -> search
     search make-instance
     tuck
-    search-%whole-words-only!
+    whole-words-only<<
     tuck
-    search-%pattern! ;
+    pattern<< ;
 
 var current-search
 
 : current-pattern                       -- -> string
-    current-search search-%pattern ;
+    current-search pattern>> ;
 
 : whole-words-only?                     -- -> ?
-    current-search search-%whole-words-only ;
+    current-search whole-words-only>> ;
 
 : mark-found-pattern
     dot-line dot-offset current-pattern string-length + make-position mark! ;
@@ -79,19 +79,19 @@ var current-search
 ;
 
 : find-substring-in-line ( pattern line )       -- pattern line -> position/f
-    pattern line line-text 0 find-substring-from
+    pattern line text>> 0 find-substring-from
     [ line swap make-position ] [ f ] if*
 ;
 
 : search-forward ( pattern startpos )   -- string position -> position/f
-    startpos position-%line :> line!
-    startpos position-offset :> offset
+    startpos line>> :> line!
+    startpos offset>> :> offset
 
-    pattern line line-text offset find-substring-from :> index!
+    pattern line text>> offset find-substring-from :> index!
 
     index [ line index make-position ] return-if
 
-    line line-next line!
+    line next>> line!
 
     f :> result!
 
@@ -100,7 +100,7 @@ var current-search
             result!
             f line!
         ] [
-            line line-next line!
+            line next>> line!
         ] if*
     ] while
 
@@ -124,19 +124,19 @@ var current-search
     find-last-substring-in-range ;
 
 : find-last-substring-in-line ( pattern line )  -- pattern line -> position/f
-    pattern line line-text line length find-last-substring-from
+    pattern line text>> line length find-last-substring-from
     [ line swap make-position ] [ f ] if*
 ;
 
 : search-backward ( pattern startpos )  -- pattern startpos -> position/f
-    startpos position-%line :> line!
-    startpos position-offset :> offset
+    startpos line>> :> line!
+    startpos offset>> :> offset
 
-    pattern line line-text offset find-last-substring-from :> index!
+    pattern line text>> offset find-last-substring-from :> index!
 
     index [ line index make-position ] return-if
 
-    line line-prev line!
+    line prev>> line!
 
     f :> result!
 
@@ -145,7 +145,7 @@ var current-search
             result!
             f line!
         ] [
-            line line-prev line!
+            line prev>> line!
         ] if*
     ] while
 
@@ -153,13 +153,13 @@ var current-search
 ;
 
 : delimited? ( pos len )                -- position length -> ?
-    pos position-%line :> line
-    pos position-offset :> offset
+    pos line>> :> line
+    pos offset>> :> offset
 
     t :> result!
 
     offset 0 > [
-        offset 1- line line-text string-nth blank? [
+        offset 1- line text>> string-nth blank? [
             f result!
         ] unless
     ] when
@@ -169,7 +169,7 @@ var current-search
     offset len + :> after
 
     after line length < [
-        after line line-text string-nth blank? [
+        after line text>> string-nth blank? [
             f result!
         ] unless
     ] when
@@ -182,7 +182,7 @@ var current-search
     f :> pos!
 
     [ index pos null? and ] [
-        pattern line line-text index find-substring-from index!
+        pattern line text>> index find-substring-from index!
         index [
             line index make-position pos!
             pos pattern string-length delimited? [ f pos! ] unless
@@ -299,19 +299,19 @@ public
     first-line :> line!
 
     "List Occurrences" make-line/1 buf
-    2dup buffer-append-line buffer-%top-line!
+    2dup buffer-append-line top-line<<
 
     pattern "Pattern: %S" format make-line/1 buf buffer-append-line
 
     [ line ] [
         pattern line find-in-line [
-            line line-%number 1+ line line-text "%d:%s" format
+            line number>> 1+ line text>> "%d:%s" format
             make-line/1 buf buffer-append-line
         ] when
-        line line-next line!
+        line next>> line!
     ] while
 
-    buf buffer-%top-line 0 make-position buf buffer-dot!
+    buf top-line>> 0 make-position buf dot<<
 
     buf buffer-list vector-push
     buf current-buffer!
