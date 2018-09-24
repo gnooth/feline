@@ -18,68 +18,89 @@ in: feline
 
 private
 
-global tuple-type
+global tuple-typecode                   -- -> fixnum
+global tuple-symbol                     -- -> symbol
+global tuple-name                       -- -> string
+global slot-definitions                 -- -> array
+global generic-reader                   -- -> symbol
+global generic-writer                   -- -> symbol
 
-global accessor-prefix
+: define-generic-reader                 -- slot-definition -> void
+    [ slot-definition-name ]
+    [ slot-definition-index ] bi
+    :> index
+    ">>" string-append "accessors" ensure-generic generic-reader!
 
-global tuple-name                       -- string
+    -- accessors must be public
+    generic-reader symbol-set-public
 
-global slot-definitions                 -- sequence
-
-: define-reader                         -- slot-definition -> void
-
-    [ slot-definition-name ] [ slot-definition-index ] bi
-
-    [
-        accessor-prefix
-        swap
-        string-append
-        new-symbol-in-current-vocab
-    ] dip                               -- symbol index
-
-    tuple-type type-typecode
+    tuple-typecode
     ' verify-typecode
-    rot
+    index
     ' slot@
-    4array array>quotation
+    4array array>quotation :> quotation
 
-    over symbol-set-def
-    compile-word
+    tuple-typecode
+    generic-reader symbol-def verify-generic-function
+    quotation
+    <method>
+    install-method
 ;
 
-: define-writer                         -- slot-definition -> void
+: define-generic-writer                 -- slot-definition -> void
+    [ slot-definition-name ]
+    [ slot-definition-index ] bi
+    :> index
+    "<<" string-append "accessors" ensure-generic generic-writer!
 
-    [ slot-definition-name ] [ slot-definition-index ] bi
+    -- accessors must be public
+    generic-writer symbol-set-public
 
-    [
-        accessor-prefix
-        swap
-        string-append
-        "!" string-append
-        new-symbol-in-current-vocab
-    ] dip                               -- symbol index
-
-    tuple-type type-typecode
+    tuple-typecode
     ' verify-typecode
-    rot
+    index
     ' slot!
-    4array array>quotation
+    4array array>quotation :> quotation
 
-    over symbol-set-def
-    compile-word
+    tuple-typecode
+    generic-writer symbol-def verify-generic-function
+    quotation
+    <method>
+    install-method
+;
+
+: define-setter                         -- slot-definition -> void
+    ">>" swap slot-definition-name string-append :> setter-name
+
+    setter-name accessors-vocab ?lookup-symbol [ ] return-if
+
+    -- not found
+    setter-name accessors-vocab <symbol> :> setter
+
+    -- accessors must be public
+    setter symbol-set-public
+
+    ' over
+    generic-writer
+    2array array>quotation setter symbol-set-def
+    setter compile-word
 ;
 
 : define-accessors
-    tuple-name "-" string-append accessor-prefix!
-    slot-definitions [ define-reader ] each
-    slot-definitions [ define-writer ] each
+    slot-definitions [
+        {
+            [ define-generic-reader ]
+            [ define-generic-writer ]
+            [ define-setter ]
+        } cleave
+    ] each
 ;
 
 : define-tuple-predicate
     tuple-name "?" string-append new-symbol-in-current-vocab
 
     ' object-typecode
-    tuple-type type-typecode
+    tuple-typecode
     ' eq?
     3array array>quotation
 
@@ -88,8 +109,7 @@ global slot-definitions                 -- sequence
 ;
 
 : define-tuple-type
-    tuple-name new-symbol-in-current-vocab
-    slot-definitions make-tuple-type verify-type tuple-type!
+    tuple-symbol slot-definitions make-tuple-type type-typecode tuple-typecode!
 ;
 
 : parse-tuple-slots
@@ -103,7 +123,8 @@ global slot-definitions                 -- sequence
 public
 
 : tuple:
-    must-parse-token tuple-name!
+    parse-name [ tuple-symbol! ] [ symbol-name tuple-name! ] bi
+
     parse-tuple-slots
     define-tuple-type
     define-accessors

@@ -1302,31 +1302,6 @@ test: tuple-instance-test-1
 
 tuple-instance-test-1
 
-global temp-string "test" temp-string!
-
-test: tuple-test-1
-    foo make-instance
-    [ foo? assert-true ] keep
-    [ foo-a assert-false ] keep
-    [ foo-b assert-false ] keep
-    [ foo-c assert-false ] keep
-    42 over foo-a!
-    71 over foo-b!
-    temp-string over foo-c!
-    [ foo-a 42 assert= ] keep
-    [ foo-b 71 assert= ] keep
-    [ foo-c temp-string assert= ] keep
-    [ foo-c "test" assert= ] keep
-
-    f temp-string!
-    gc
-    [ foo-c "test" assert= ] keep
-
-    drop
-;
-
-tuple-test-1
-
 test: vocab?-test-1
     42 vocab? assert-false
     "feline" vocab? assert-false
@@ -3538,5 +3513,32 @@ test: find-last-integer-in-range-test-1
 ;
 
 find-last-integer-in-range-test-1
+
+use: accessors
+
+test: tuple-accessors-test-1
+    foo make-instance :> x
+    { t } [ x foo? ] unit-test
+
+    { f } [ x a>> ] unit-test
+    { f } [ x b>> ] unit-test
+    { f } [ x c>> ] unit-test
+
+    { } [ 42 x a<< ] unit-test
+    { } [ 87 x b<< ] unit-test
+    { } [ 17 x c<< ] unit-test
+
+    { 42 } [ x a>> ] unit-test
+    { 87 } [ x b>> ] unit-test
+    { 17 } [ x c>> ] unit-test
+
+    { } [ x 23 >>a 14 >>b 79 >>c drop ] unit-test
+
+    { 23 } [ x a>> ] unit-test
+    { 14 } [ x b>> ] unit-test
+    { 79 } [ x c>> ] unit-test
+;
+
+tuple-accessors-test-1
 
 ?nl "Reached end of test.feline" write-string
