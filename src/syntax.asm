@@ -530,27 +530,73 @@ code define_test, 'test:'
         next
 endcode
 
+; ### find-generic
+code find_generic, 'find-generic'       ; symbol-name vocab-designator -> symbol/?
+
+        _debug_?enough 2
+
+        ; vocabulary must exist
+        _dup
+        _ lookup_vocab
+        _tagged_if_not .1
+        _drop
+        _ error_vocab_not_found
+        _else .1
+        _ nip
+        _then .1                        ; -> symbol-name vocab
+
+        _ vocab_hashtable
+        _ hashtable_at_star
+        _tagged_if_not .2
+        _return
+        _then .2
+
+        _dup
+        _ generic?
+        _tagged_if_not .3
+        _drop
+        _f
+        _then .3
+
+        next
+endcode
+
+; ### ensure-generic
+code ensure_generic, 'ensure-generic'   ; symbol-name vocab-designator -> symbol
+
+        _debug_?enough 2
+
+        _twodup
+        _ find_generic
+        _dup
+        _tagged_if .1
+        _2nip
+        _return
+        _then .1
+
+        _drop
+
+        ; vocabulary must exist
+        _dup
+        _ lookup_vocab
+        _tagged_if_not .2
+        _drop
+        _ error_vocab_not_found
+        _then .2
+
+        _nip                            ; -> symbol-name vocab
+
+        _ new_symbol
+        _ make_generic
+
+        next
+endcode
+
 ; ### generic
-code define_generic, 'generic', SYMBOL_IMMEDIATE
+code parse_generic, 'generic', SYMBOL_IMMEDIATE
         _ parse_name                    ; -> symbol
-
-        _dup
-        _ initialize_generic_function   ; -> symbol
-
-        _dup
-        _ new_wrapper
-        _lit S_symbol_value
-        _lit S_do_generic
-        _ three_array
-        _ array_to_quotation
-        _over
-        _ symbol_set_def                ; -> symbol
-
-        _dup
-        _ symbol_set_generic
-
-        _ compile_word                  ; -> void
-
+        _ make_generic                  ; -> symbol
+        _drop
         next
 endcode
 
