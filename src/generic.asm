@@ -305,8 +305,8 @@ code initialize_generic_function, 'initialize-generic-function' ; generic-symbol
         next
 endcode
 
-; ### make-generic
-code make_generic, 'make-generic'       ; symbol -> symbol
+; ### define-generic
+code define_generic, 'define-generic'   ; symbol -> symbol
 
         _dup
         _ new_generic_function          ; -> symbol gf

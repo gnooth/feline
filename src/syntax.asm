@@ -587,7 +587,7 @@ code ensure_generic, 'ensure-generic'   ; symbol-name vocab-designator -> symbol
         _nip                            ; -> symbol-name vocab
 
         _ new_symbol
-        _ make_generic
+        _ define_generic
 
         next
 endcode
@@ -595,7 +595,7 @@ endcode
 ; ### generic
 code parse_generic, 'generic', SYMBOL_IMMEDIATE
         _ parse_name                    ; -> symbol
-        _ make_generic                  ; -> symbol
+        _ define_generic                ; -> symbol
         _drop
         next
 endcode
