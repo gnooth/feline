@@ -1841,6 +1841,7 @@ var escape-keymap
 ;
 
 : ed
+    use-alternate-screen-buffer
     page
     normal
     t repaint?!
@@ -1849,4 +1850,5 @@ var escape-keymap
     clear-message-line
     0 lines-per-page at-xy
     show-cursor
+    use-default-screen-buffer
 ;
