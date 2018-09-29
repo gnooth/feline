@@ -561,7 +561,9 @@ code print_datastack1, 'print-datastack1'       ; x -> void
         _ tab
         _write "-- "
         _ type_of
-        _ dot_object
+        _ type_name
+        _ write_string
+        _ nl
         next
 endcode
 

@@ -254,6 +254,13 @@ code type_symbol, 'type-symbol'         ; type -> symbol
         next
 endcode
 
+; ### type-name
+code type_name, 'type-name'             ; type -> string
+        _ type_symbol
+        _ symbol_name
+        next
+endcode
+
 ; ### type_raw_typecode
 code type_raw_typecode, 'type_raw_typecode'     ; type -> raw-typecode
         _ check_type
@@ -318,10 +325,35 @@ code find_type, 'find-type'             ; string -> type
         next
 endcode
 
-; ### type>string
-code type_to_string, 'type>string'      ; type -> string
-        _ check_type
-        _type_symbol
-        _ symbol_name
+; ### type->string
+code type_to_string, 'type->string'     ; type -> string
+
+        _ verify_type
+        _quote "<type "
+        _ string_to_sbuf                ; -> type sbuf
+
+        _over                           ; -> type sbuf type
+        _ type_symbol
+        _ symbol_name                   ; -> type sbuf string
+        _ quote_string
+        _over
+        _ sbuf_append_string            ; -> type sbuf
+
+        _quote " 0x"
+        _over
+        _ sbuf_append_string
+
+        _swap
+        _ object_address
+        _ to_hex
+        _over
+        _ sbuf_append_string
+
+        _quote ">"
+        _over
+        _ sbuf_append_string
+
+        _ sbuf_to_string
+
         next
 endcode
