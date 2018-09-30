@@ -190,7 +190,7 @@ code method_to_string, 'method->string' ; method -> string
         _duptor
         _ method_typecode
         _ typecode_to_type
-        _ type_to_string
+        _ type_name
         _rfetch
         _ method_generic_function
         _ generic_function_name
