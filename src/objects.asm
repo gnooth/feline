@@ -548,8 +548,14 @@ code fixnum_tag_bits, 'fixnum-tag-bits'
 endcode
 
 ; ### tag-fixnum
-code tag_fixnum, 'tag-fixnum'           ; n -- tagged
+code tag_fixnum, 'tag-fixnum'           ; untagged -> fixnum
         _tag_fixnum
+        next
+endcode
+
+; ### untag-fixnum
+code untag_fixnum, 'untag-fixnum'       ; fixnum -> untagged
+        _untag_fixnum
         next
 endcode
 
