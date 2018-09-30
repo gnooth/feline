@@ -258,6 +258,14 @@ code error_not_generic_function, 'error-not-generic-function'   ; x --
         next
 endcode
 
+; ### error-not-generic-word
+code error_not_generic_word, 'error-not-generic-word'           ; x -> void
+        _quote "ERROR: `%S` is not a generic word."
+        _ format
+        _ error
+        next
+endcode
+
 ; ### error-not-slot-definition
 code error_not_slot_definition, 'error-not-slot-definition'     ; x --
         _quote "a slot definition"
