@@ -116,6 +116,7 @@ endcode
 
 ; ### make-type
 code make_type, 'make-type'             ; symbol typecode -> type
+; 4 slots: object header, symbol, typecode, layout
 
         _check_fixnum                   ; -> symbol raw-typecode
 
@@ -144,10 +145,18 @@ code make_type, 'make-type'             ; symbol typecode -> type
 
         _ new_handle                    ; -> symbol type
 
-        _tuck                           ; -> type symbol type
-        _ one_quotation                 ; -> type symbol quotation
-        _over                           ; -> type symbol quotation symbol
-        _ symbol_set_def                ; -> type symbol
+        _twodup
+        _swap
+        _ symbol_set_value              ; -> symbol type
+
+        _over                           ; -> symbol type symbol
+        _ new_wrapper
+        _lit S_symbol_value
+        _ two_array
+        _ array_to_quotation            ; -> symbol type quotation
+        _pick                           ; -> symbol type quotation symbol
+        _ symbol_set_def                ; -> symbol type
+        _swap
         _ compile_word
 
         next
@@ -298,29 +307,37 @@ code raw_typecode_to_type, 'raw_typecode_to_type', SYMBOL_INTERNAL
         next
 endcode
 
-; ### typecode>type
-code typecode_to_type, 'typecode>type'  ; typecode -> type
+; ### typecode->type
+code typecode_to_type, 'typecode->type' ; typecode -> type
         _check_index
         _ types
         _ vector_nth_untagged
         next
 endcode
 
-; ### find-type
-code find_type, 'find-type'             ; string -> type
-        _ find_name
-        _tagged_if .1
-        _quote "type"
-        _swap
-        _ symbol_prop
+; ### must-find-type
+code must_find_type, 'must-find-type'   ; string -> type
+
+        _duptor                         ; -> string     r: -> string
+
+        _ find_name                     ; -> symbol/string ?
+        _tagged_if .1                   ; -> symbol
+        _ symbol_value                  ; -> x
         _dup
-        _ type?
-        _tagged_if .2
+        _ type?                         ; -> x ?
+        _tagged_if .2                   ; -> type       r: -> string
+        _rdrop                          ; -> type       r: -> void
         _return
         _then .2
         _then .1
 
-        _error "can't find type"
+        _drop
+
+        _rfrom
+
+        _quote "ERROR: `%s` is not the name of a type."
+        _ format
+        _ error
 
         next
 endcode

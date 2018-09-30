@@ -601,41 +601,34 @@ code parse_generic, 'generic', SYMBOL_IMMEDIATE
 endcode
 
 ; ### method:
-code method_colon, 'method:', SYMBOL_IMMEDIATE  ; --
+code method_colon, 'method:', SYMBOL_IMMEDIATE
 
         _lit S_method_colon
         _ top_level_only
 
-        _ must_parse_token              ; -- string
-        _ must_find_name                ; -- symbol
-        _ call_symbol                   ; -- type
+        ; type
+        _ must_parse_token              ; -> string
+        _ must_find_type                ; -> type
+        _ type_typecode                 ; -> typecode
 
-        _ verify_type
-
-        _ type_typecode                 ; -- tagged-typecode
-
-        _ must_parse_token              ; -- typecode string
-        _ find_name                     ; -- typecode symbol/string ?
-        _tagged_if_not .1
-        _error "can't find generic word"
-        _return
-        _then .1                        ; -- typecode generic-symbol
+        ; generic word
+        _ must_parse_token              ; -> typecode string
+        _ must_find_name                ; -> typecode symbol
 
         _dup
         _ generic?
         _tagged_if_not .2
-        _error "not a generic word"
+        _ error_not_generic_word
         _return
-        _then .2
+        _then .2                        ; -> typecode generic-symbol
 
-        _ parse_definition              ; -- typecode generic-symbol vector
+        _ symbol_def                    ; -> typecode gf
+        _ parse_definition              ; -> typecode gf vector
         _ vector_to_array
-        _ array_to_quotation            ; -- typecode generic-symbol quotation
-        _ compile_quotation             ; -- typecode generic-symbol quotation
-        _ quotation_raw_code_address    ; -- typecode generic-symbol raw-code-address
-
-        _ rrot
-        _ add_method_to_dispatch_table  ; --
+        _ array_to_quotation            ; -> typecode gf quotation
+        _ compile_quotation             ; -> typecode gf quotation
+        _ new_method
+        _ install_method
 
         next
 endcode
@@ -673,7 +666,7 @@ code forget_colon, 'forget:', SYMBOL_IMMEDIATE
 endcode
 
 ; ### --
-code comment_to_eol, '--', SYMBOL_IMMEDIATE     ; --
+code comment_to_eol, '--', SYMBOL_IMMEDIATE
         _ current_lexer
         _ get
         _dup

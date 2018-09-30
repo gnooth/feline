@@ -381,7 +381,7 @@ code find_method, 'find-method'         ; symbol-or-type symbol-or-gf -- method
         _ symbol?
         _tagged_if .3
         _ symbol_name
-        _ find_type
+        _ must_find_type
         _then .3
         _ type_typecode
         _swap
