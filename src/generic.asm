@@ -250,12 +250,20 @@ code do_generic, 'do_generic', SYMBOL_INTERNAL  ; object dispatch-table --
 endcode
 
 %macro  generic 2
+
+        global %1_generic_function_dispatch_table
+        section .data
+        align   DEFAULT_DATA_ALIGNMENT
+%1_generic_function_dispatch_table:
+        dq      0
+
         code %1, %2, SYMBOL_GENERIC
         pushrbx
-        mov     rbx, [S_%1_symbol_value]
+        mov     rbx, [%1_generic_function_dispatch_table]
         call    do_generic
         next
         endcode
+
 %endmacro
 
 ; ### make-fixnum-hashtable
@@ -279,10 +287,10 @@ code make_fixnum_hashtable, 'make-fixnum-hashtable'     ; -- hashtable
 endcode
 
 ; ### initialize-generic-function
-code initialize_generic_function, 'initialize-generic-function' ; generic-symbol --
+code initialize_generic_function, 'initialize-generic-function' ; generic-symbol -> gf
 
         _dup
-        _ new_generic_function          ; -- symbol gf
+        _ new_generic_function          ; -> symbol gf
 
         ; methods
         _ make_fixnum_hashtable
@@ -292,15 +300,13 @@ code initialize_generic_function, 'initialize-generic-function' ; generic-symbol
         ; dispatch
         _ make_fixnum_hashtable
         _over
-        _ generic_function_set_dispatch ; -- symbol gf
+        _ generic_function_set_dispatch ; -> symbol gf
 
-        _dup
-        _ generic_function_dispatch
-        _pick
-        _ symbol_set_value
+        _duptor
+        _swap                           ; -> gf symbol
+        _ symbol_set_def
 
-        _swap
-        _ symbol_set_def                ; --
+        _rfrom
 
         next
 endcode
@@ -387,9 +393,12 @@ code find_method, 'find-method'         ; symbol-or-type symbol-or-gf -- method
         next
 endcode
 
-%macro _initialize_generic_function 1   ; generic-asm-name --
+%macro _initialize_generic_function 1
         _lit S_%1
-        _ initialize_generic_function
+        _ initialize_generic_function   ; -> gf
+        _ generic_function_dispatch     ; -> hashtable
+        mov     [%1_generic_function_dispatch_table], rbx
+        _drop                           ; -> void
 %endmacro
 
 ; ### install-method
