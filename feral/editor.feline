@@ -1774,6 +1774,11 @@ var escape-keymap
         clear-message-line
         dispatch
     ] until
+
+    -- clean up
+    f current-buffer!
+    f buffer-list!
+    gc
 ;
 
 : initialize-editor
