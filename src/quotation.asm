@@ -246,28 +246,12 @@ code quotation_set_code_address, 'quotation-set-code-address'
         next
 endcode
 
-; ### quotation_raw_code_size
-code quotation_raw_code_size, 'quotation_raw_code_size', SYMBOL_INTERNAL
-; quotation -- raw-code-size
-        _ check_quotation
-        _quotation_raw_code_size
-        next
-endcode
-
 ; ### quotation-code-size
 code quotation_code_size, 'quotation-code-size'
 ; quotation -- code-size
         _ check_quotation
         _quotation_raw_code_size
         _tag_fixnum
-        next
-endcode
-
-; ### quotation_set_raw_code_size
-code quotation_set_raw_code_size, 'quotation_set_raw_code_size', SYMBOL_INTERNAL
-; raw-code-size quotation --
-        _ check_quotation
-        _quotation_set_raw_code_size
         next
 endcode
 
