@@ -649,7 +649,7 @@ code vector_remove_mutating, 'vector-remove!'   ; element vector -- vector
 endcode
 
 ; ### vector-adjoin
-code vector_adjoin, 'vector-adjoin'     ; element set --
+code vector_adjoin, 'vector-adjoin'     ; element vector -> void
         _dupd
         _ vector_remove_mutating
         _ vector_push
