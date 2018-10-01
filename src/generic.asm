@@ -325,14 +325,8 @@ code define_generic, 'define-generic'   ; symbol -> symbol
 
         _rfetch
         _ generic_function_dispatch
-        _over
-        _ symbol_set_value              ; -> symbol
-
-        _dup                            ; -> symbol symbol
-        _ new_wrapper
-        _lit S_symbol_value
         _lit S_do_generic
-        _ three_array
+        _ two_array
         _ array_to_quotation
         _ compile_quotation             ; -> symbol quotation
 
