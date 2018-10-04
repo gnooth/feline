@@ -133,8 +133,8 @@ code make_slot, 'make-slot'             ; name index -> slot
         next
 endcode
 
-; ### slot>string
-code slot_to_string, 'slot>string'      ; slot -> string
+; ### slot->string
+code slot_to_string, 'slot->string'     ; slot -> string
 
         _ verify_slot
 
@@ -143,8 +143,8 @@ code slot_to_string, 'slot>string'      ; slot -> string
 
         _over
 
-        _ slot_name
-        _ quote_string
+        _ slot_index
+        _ fixnum_to_decimal
         _over
         _ sbuf_append_string
 
@@ -153,8 +153,8 @@ code slot_to_string, 'slot>string'      ; slot -> string
         _ sbuf_push
 
         _swap
-        _ slot_index
-        _ fixnum_to_decimal
+        _ slot_name
+        _ quote_string
         _over
         _ sbuf_append_string
 
