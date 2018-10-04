@@ -191,9 +191,9 @@ code mark_string_iterator, 'mark-string-iterator'       ; string-iterator -> voi
         next
 endcode
 
-; ### mark-slot-definition
-code mark_slot_definition, 'mark-slot-definition'       ; slot-definition -> void
-        _slot_definition_name
+; ### mark-slot
+code mark_slot, 'mark-slot'             ; slot -> void
+        _slot_name
         _ maybe_mark_handle
         next
 endcode
@@ -296,8 +296,8 @@ code initialize_gc_dispatch_table, 'initialize_gc_dispatch_table', SYMBOL_INTERN
         _lit TYPECODE_STRING_ITERATOR
         _this_array_set_nth_unsafe
 
-        _lit mark_slot_definition
-        _lit TYPECODE_SLOT_DEFINITION
+        _lit mark_slot
+        _lit TYPECODE_SLOT
         _this_array_set_nth_unsafe
 
         _lit mark_type

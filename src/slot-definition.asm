@@ -18,37 +18,37 @@ file __FILE__
 ; REVIEW type, read-only
 ; 3 cells: object header, raw index, name
 
-%macro  _slot_definition_raw_index 0            ; slot-definition -> raw-index
+%macro  _slot_raw_index 0               ; slot -> raw-index
         _slot1
 %endmacro
 
-%macro  _slot_definition_set_raw_index 0        ; raw-index slot-definition ->
+%macro  _slot_set_raw_index 0           ; raw-index slot ->
         _set_slot1
 %endmacro
 
-%macro  _this_slot_definition_set_raw_index 0   ; raw-index ->
+%macro  _this_slot_set_raw_index 0      ; raw-index ->
         _this_set_slot1
 %endmacro
 
-%macro  _slot_definition_name 0                 ; slot-definition -> name
+%macro  _slot_name 0                    ; slot -> name
         _slot2
 %endmacro
 
-%macro  _slot_definition_set_name 0             ; name slot-definition ->
+%macro  _slot_set_name 0                ; name slot ->
         _set_slot2
 %endmacro
 
-%macro  _this_slot_definition_set_name 0        ; name ->
+%macro  _this_slot_set_name 0           ; name ->
         _this_set_slot2
 %endmacro
 
-; ### slot-definition?
-code slot_definition?, 'slot-definition?'       ; handle -> ?
+; ### slot?
+code slot?, 'slot?'                     ; handle -> ?
         _ deref                         ; -> raw-object/0
         test    rbx, rbx
         jz      .1
         _object_raw_typecode_eax
-        cmp     eax, TYPECODE_SLOT_DEFINITION
+        cmp     eax, TYPECODE_SLOT
         jne     .1
         mov     ebx, t_value
         _return
@@ -57,74 +57,74 @@ code slot_definition?, 'slot-definition?'       ; handle -> ?
         next
 endcode
 
-; ### check_slot_definition
-code check_slot_definition, 'check_slot_definition', SYMBOL_INTERNAL    ; handle -> slot-definition
+; ### check_slot
+code check_slot, 'check_slot', SYMBOL_INTERNAL  ; handle -> slot
         _dup
         _ deref
         test    rbx, rbx
         jz      .error
         _object_raw_typecode_eax
-        cmp     eax, TYPECODE_SLOT_DEFINITION
+        cmp     eax, TYPECODE_SLOT
         jne     .error
         _nip
         next
 .error:
         _drop
-        _ error_not_slot_definition
+        _ error_not_slot
         next
 endcode
 
-; ### verify-slot-definition
-code verify_slot_definition, 'verify-slot-definition'   ; handle -> handle
+; ### verify-slot
+code verify_slot, 'verify-slot'         ; handle -> handle
 ; returns argument unchanged
         _dup
         _ deref
         test    rbx, rbx
         jz      .error
         _object_raw_typecode_eax
-        cmp     eax, TYPECODE_SLOT_DEFINITION
+        cmp     eax, TYPECODE_SLOT
         jne     .error
         _drop
         next
 .error:
         _drop
-        _ error_not_slot_definition
+        _ error_not_slot
         next
 endcode
 
-; ### slot-definition-name
-code slot_definition_name, 'slot-definition-name'       ; slot-definition -> name
-        _ check_slot_definition
-        _slot_definition_name
+; ### slot-name
+code slot_name, 'slot-name'             ; slot -> name
+        _ check_slot
+        _slot_name
         next
 endcode
 
-; ### slot-definition-index
-code slot_definition_index, 'slot-definition-index'     ; slot-definition -> index
-        _ check_slot_definition
-        _slot_definition_raw_index
+; ### slot-index
+code slot_index, 'slot-index'           ; slot -> index
+        _ check_slot
+        _slot_raw_index
         _tag_fixnum
         next
 endcode
 
-; ### make-slot-definition
-code make_slot_definition, 'make-slot-definition'       ; name index -> slot
+; ### make-slot
+code make_slot, 'make-slot'             ; name index -> slot
         _check_index
         _swap
         _ verify_string                 ; -> raw-index string
 
         _lit 3
         _ raw_allocate_cells
-        _object_set_raw_typecode TYPECODE_SLOT_DEFINITION
+        _object_set_raw_typecode TYPECODE_SLOT
         push    this_register
         mov     this_register, rbx
         poprbx                          ; -> raw-index string
 
         ; name
-        _this_slot_definition_set_name
+        _this_slot_set_name
 
         ; index
-        _this_slot_definition_set_raw_index
+        _this_slot_set_raw_index
 
         pushrbx
         mov     rbx, this_register
@@ -133,17 +133,17 @@ code make_slot_definition, 'make-slot-definition'       ; name index -> slot
         next
 endcode
 
-; ### slot-definition>string
-code slot_definition_to_string, 'slot-definition>string'        ; slot -> string
+; ### slot>string
+code slot_to_string, 'slot>string'      ; slot -> string
 
-        _ verify_slot_definition
+        _ verify_slot
 
         _quote "<slot "
         _ string_to_sbuf                ; -> slot sbuf
 
         _over
 
-        _ slot_definition_name
+        _ slot_name
         _ quote_string
         _over
         _ sbuf_append_string
@@ -153,7 +153,7 @@ code slot_definition_to_string, 'slot-definition>string'        ; slot -> string
         _ sbuf_push
 
         _swap
-        _ slot_definition_index
+        _ slot_index
         _ fixnum_to_decimal
         _over
         _ sbuf_append_string

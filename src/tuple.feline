@@ -21,13 +21,13 @@ private
 global tuple-typecode                   -- -> fixnum
 global tuple-symbol                     -- -> symbol
 global tuple-name                       -- -> string
-global slot-definitions                 -- -> array
+global slots                            -- -> array
 global generic-reader                   -- -> symbol
 global generic-writer                   -- -> symbol
 
-: define-generic-reader                 -- slot-definition -> void
-    [ slot-definition-name ]
-    [ slot-definition-index ] bi
+: define-generic-reader                 -- slot -> void
+    [ slot-name ]
+    [ slot-index ] bi
     :> index
     ">>" string-append "accessors" ensure-generic generic-reader!
 
@@ -47,9 +47,9 @@ global generic-writer                   -- -> symbol
     install-method
 ;
 
-: define-generic-writer                 -- slot-definition -> void
-    [ slot-definition-name ]
-    [ slot-definition-index ] bi
+: define-generic-writer                 -- slot -> void
+    [ slot-name ]
+    [ slot-index ] bi
     :> index
     "<<" string-append "accessors" ensure-generic generic-writer!
 
@@ -69,8 +69,8 @@ global generic-writer                   -- -> symbol
     install-method
 ;
 
-: define-setter                         -- slot-definition -> void
-    ">>" swap slot-definition-name string-append :> setter-name
+: define-setter                         -- slot -> void
+    ">>" swap slot-name string-append :> setter-name
 
     setter-name accessors-vocab ?lookup-symbol [ ] return-if
 
@@ -87,7 +87,7 @@ global generic-writer                   -- -> symbol
 ;
 
 : define-accessors
-    slot-definitions [
+    slots [
         {
             [ define-generic-reader ]
             [ define-generic-writer ]
@@ -109,7 +109,7 @@ global generic-writer                   -- -> symbol
 ;
 
 : define-tuple-type
-    tuple-symbol slot-definitions make-tuple-type type-typecode tuple-typecode!
+    tuple-symbol slots make-tuple-type type-typecode tuple-typecode!
 ;
 
 : parse-tuple-slots
@@ -117,7 +117,7 @@ global generic-writer                   -- -> symbol
     [ must-parse-token dup ";" string= ] [ suffix! ] until
     drop
     vector>array
-    [ 1+ make-slot-definition ] map-index slot-definitions!
+    [ 1+ make-slot ] map-index slots!
 ;
 
 public

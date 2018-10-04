@@ -1261,9 +1261,9 @@ tuple: foo a b c ;
     foo type-symbol dup symbol? assert-true ' foo assert-eq
     foo type-layout array? assert-true
     foo type-layout length 3 assert-eq
-    foo type-layout [ slot-definition? assert-true ] each
-    foo type-layout [ slot-definition-index ] map { 1 2 3 } equal? assert-true
-    foo type-layout [ slot-definition-name ] map { "a" "b" "c" } equal? assert-true
+    foo type-layout [ slot? assert-true ] each
+    foo type-layout [ slot-index ] map { 1 2 3 } equal? assert-true
+    foo type-layout [ slot-name ] map { "a" "b" "c" } equal? assert-true
 ;
 
 test: tuple-layout-test-1

@@ -266,9 +266,9 @@ code error_not_generic_word, 'error-not-generic-word'           ; x -> void
         next
 endcode
 
-; ### error-not-slot-definition
-code error_not_slot_definition, 'error-not-slot-definition'     ; x --
-        _quote "a slot definition"
+; ### error-not-slot
+code error_not_slot, 'error-not-slot'   ; x -> void
+        _quote "a slot"
         _ format_type_error
         _ error
         next

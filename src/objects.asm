@@ -478,9 +478,9 @@ code object_to_string, 'object->string' ; object -> string
 ;         _then .33
 
         _dup
-        _ slot_definition?
+        _ slot?
         _tagged_if .34
-        _ slot_definition_to_string
+        _ slot_to_string
         _return
         _then .34
 

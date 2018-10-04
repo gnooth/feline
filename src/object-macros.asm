@@ -57,7 +57,7 @@ TYPECODE_THREAD                 equ 27
 TYPECODE_MUTEX                  equ 28
 TYPECODE_STRING_ITERATOR        equ 29
 ; TYPECODE_STREAM                 equ 30
-TYPECODE_SLOT_DEFINITION        equ 31
+TYPECODE_SLOT                   equ 31
 TYPECODE_FILE_OUTPUT_STREAM     equ 32
 TYPECODE_STRING_OUTPUT_STREAM   equ 33
 
