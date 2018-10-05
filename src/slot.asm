@@ -16,26 +16,18 @@
 file __FILE__
 
 ; REVIEW type, read-only
-; 3 cells: object header, raw index, name
+; 3 cells: object header, index, name
 
-%macro  _slot_raw_index 0               ; slot -> raw-index
+%macro  _slot_index 0                   ; slot -> index
         _slot1
 %endmacro
 
-%macro  _slot_set_raw_index 0           ; raw-index slot ->
-        _set_slot1
-%endmacro
-
-%macro  _this_slot_set_raw_index 0      ; raw-index ->
+%macro  _this_slot_set_index 0          ; index ->
         _this_set_slot1
 %endmacro
 
 %macro  _slot_name 0                    ; slot -> name
         _slot2
-%endmacro
-
-%macro  _slot_set_name 0                ; name slot ->
-        _set_slot2
 %endmacro
 
 %macro  _this_slot_set_name 0           ; name ->
@@ -102,29 +94,28 @@ endcode
 ; ### slot-index
 code slot_index, 'slot-index'           ; slot -> index
         _ check_slot
-        _slot_raw_index
-        _tag_fixnum
+        _slot_index
         next
 endcode
 
 ; ### make-slot
 code make_slot, 'make-slot'             ; name index -> slot
-        _check_index
+        _verify_index
         _swap
-        _ verify_string                 ; -> raw-index string
+        _ verify_string                 ; -> index string
 
         _lit 3
         _ raw_allocate_cells
         _object_set_raw_typecode TYPECODE_SLOT
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -> raw-index string
+        poprbx                          ; -> index string
 
         ; name
         _this_slot_set_name
 
         ; index
-        _this_slot_set_raw_index
+        _this_slot_set_index
 
         pushrbx
         mov     rbx, this_register
