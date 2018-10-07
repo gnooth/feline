@@ -225,6 +225,16 @@ code mark_generic_function, 'mark-generic-function'
         next
 endcode
 
+; ### mark-method
+code mark_method, 'mark-method'         ; method -> void
+        _dup
+        _method_generic_function
+        _ maybe_mark_handle
+        _method_callable
+        _ maybe_mark_handle
+        next
+endcode
+
 asm_global gc_dispatch_table_
 
 ; ### initialize_gc_dispatch_table
@@ -310,6 +320,10 @@ code initialize_gc_dispatch_table, 'initialize_gc_dispatch_table', SYMBOL_INTERN
 
         _lit mark_generic_function
         _lit TYPECODE_GENERIC_FUNCTION
+        _this_array_set_nth_unsafe
+
+        _lit mark_method
+        _lit TYPECODE_METHOD
         _this_array_set_nth_unsafe
 
         pop     this_register
