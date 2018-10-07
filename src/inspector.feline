@@ -1,0 +1,82 @@
+-- Copyright (C) 2018 Peter Graves <gnooth@gmail.com>
+
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline ;
+in: inspector
+
+empty
+
+global inspected-object
+
+: builtin-type-set-layout               -- slots type -> void
+    [ [ 1+ make-slot ] map-index ] dip type-set-layout
+;
+
+{
+    "symbol"
+    "raw-typecode"
+    "layout"
+} type builtin-type-set-layout
+
+{
+    "raw-code-address"
+    "raw-code-size"
+    "symbol"
+    "methods"
+    "dispatch"
+} generic-function builtin-type-set-layout
+
+{
+    "raw typecode"
+    "generic function"
+    "callable"
+} method builtin-type-set-layout
+
+{
+    "array"
+    "raw-code-address"
+    "raw-code-size"
+} quotation builtin-type-set-layout
+
+{
+    "count"
+    "deleted"
+    "capacity"
+    "data address"
+    "hash function"
+    "test function"
+    "raw mask"
+} hashtable builtin-type-set-layout
+
+{ "name" "hashtable" } vocab builtin-type-set-layout
+
+: inspect
+    1 ?enough
+    dup inspected-object!
+    inspected-object type-of .
+    inspected-object object-layout :> layout
+    layout [
+        layout length dup "%d slots" format print
+        [
+            4 tab
+            dup 1+ 2 dec.r
+            8 tab
+            dup layout nth slot-name write
+            32 tab
+            1+ inspected-object swap slot@ short.
+        ] each-integer
+
+    ] when
+;
