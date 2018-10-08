@@ -289,30 +289,15 @@ endcode
 
 ; ### call
 code call_quotation, 'call'             ; callable --
-        _dup
-        _ curry?
-        _tagged_if .1
-        _ curry_raw_code_address
+        _ callable_raw_code_address
         mov     rax, rbx
         poprbx
+%ifdef DEBUG
         call    rax
-        _return
-        _then .1
-
-        _dup
-        _ quotation_raw_code_address
-        _dup_if .2
-        _nip                            ; -- raw-code-address
-        _else .2
-        _drop                           ; -- quotation
-        _ compile_quotation             ; -- quotation
-        _ quotation_raw_code_address
-        _then .2
-        mov     rax, rbx
-        poprbx
-        call    rax
-
         next
+%else
+        jmp     rax
+%endif
 endcode
 
 ; ### callable_raw_code_address
