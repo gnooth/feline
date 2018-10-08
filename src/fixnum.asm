@@ -51,7 +51,7 @@ endcode
 ; ### fixnum-hashcode
 code fixnum_hashcode, 'fixnum-hashcode' ; fixnum -- hashcode
         _verify_fixnum
-        next
+        _rep_return
 endcode
 
 ; ### verify-index
