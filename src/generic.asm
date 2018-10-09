@@ -223,15 +223,9 @@ endcode
         _ hashtable_at          ; -- object raw-code-address/f
 %endmacro
 
-; ### lookup-method
-code lookup_method, 'lookup-method'     ; object dispatch-table -- object raw-code-address/f
-        _lookup_method
-        next
-endcode
-
-; ### do_generic
-code do_generic, 'do_generic', SYMBOL_INTERNAL  ; object dispatch-table --
-        _lookup_method                  ; -- object raw-code-address/f
+; ### do-generic
+code do_generic, 'do-generic'           ; object dispatch-table ->
+        _lookup_method                  ; -> object raw-code-address/f
         cmp     rbx, f_value
         je      .1
         mov     rax, rbx
@@ -242,9 +236,31 @@ code do_generic, 'do_generic', SYMBOL_INTERNAL  ; object dispatch-table --
 %else
         jmp     rax
 %endif
-.1:                                     ; -- object f
+.1:                                     ; -> object f
         mov     rbx, [rsp]
-        _tag_fixnum                     ; -- object return-address
+        _tag_fixnum                     ; -> object return-address
+        _ error_no_method
+        next
+endcode
+
+; ### do-builtin-generic
+code do_builtin_generic, 'do-builtin-generic' ; object dispatch-table ->
+
+        _ hashtable_at                  ; -> object raw-code-address/f
+
+        cmp     rbx, f_value
+        je      .1
+        mov     rax, rbx
+        poprbx
+%ifdef DEBUG
+        call    rax
+        _return
+%else
+        jmp     rax
+%endif
+.1:                                     ; -> object f
+        mov     rbx, [rsp]
+        _tag_fixnum                     ; -> object return-address
         _ error_no_method
         next
 endcode
@@ -258,9 +274,11 @@ endcode
         dq      0
 
         code %1, %2, SYMBOL_GENERIC
+        _dup
+        _ object_typecode
         pushrbx
         mov     rbx, [%1_generic_function_dispatch_table]
-        call    do_generic
+        call    do_builtin_generic
         next
         endcode
 
