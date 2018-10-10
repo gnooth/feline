@@ -223,26 +223,6 @@ endcode
         _ hashtable_at          ; -- object raw-code-address/f
 %endmacro
 
-; ### do-generic
-code do_generic, 'do-generic'           ; object dispatch-table ->
-        _lookup_method                  ; -> object raw-code-address/f
-        cmp     rbx, f_value
-        je      .1
-        mov     rax, rbx
-        poprbx
-%ifdef DEBUG
-        call    rax
-        _return
-%else
-        jmp     rax
-%endif
-.1:                                     ; -> object f
-        mov     rbx, [rsp]
-        _tag_fixnum                     ; -> object return-address
-        _ error_no_method
-        next
-endcode
-
 ; ### do-builtin-generic
 code do_builtin_generic, 'do-builtin-generic' ; object dispatch-table ->
 
@@ -347,10 +327,12 @@ code define_generic, 'define-generic'   ; symbol -> symbol
         _rfetch
         _ generic_function_set_dispatch ; -> symbol
 
+        _lit S_dup
+        _lit S_object_typecode
         _rfetch
         _ generic_function_dispatch
-        _lit S_do_generic
-        _ two_array
+        _lit S_do_builtin_generic
+        _ four_array
         _ array_to_quotation
         _ compile_quotation             ; -> symbol quotation
 
