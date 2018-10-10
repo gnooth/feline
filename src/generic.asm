@@ -215,16 +215,8 @@ code generic_function_to_string, 'generic-function-to-string'   ; generic-functi
         next
 endcode
 
-%macro  _lookup_method 0        ; object dispatch-table -- object raw-code-address/f
-; return f if no method
-        _over
-        _ object_typecode
-        _swap                   ; -- object typecode dispatch-table
-        _ hashtable_at          ; -- object raw-code-address/f
-%endmacro
-
-; ### do-builtin-generic
-code do_builtin_generic, 'do-builtin-generic' ; object dispatch-table ->
+; ### do-generic
+code do_generic, 'do-generic'           ; object dispatch-table ->
 
         _ hashtable_at                  ; -> object raw-code-address/f
 
@@ -258,7 +250,7 @@ endcode
         _ object_typecode
         pushrbx
         mov     rbx, [%1_generic_function_dispatch_table]
-        call    do_builtin_generic
+        call    do_generic
         next
         endcode
 
@@ -331,7 +323,7 @@ code define_generic, 'define-generic'   ; symbol -> symbol
         _lit S_object_typecode
         _rfetch
         _ generic_function_dispatch
-        _lit S_do_builtin_generic
+        _lit S_do_generic
         _ four_array
         _ array_to_quotation
         _ compile_quotation             ; -> symbol quotation
