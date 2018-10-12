@@ -1,4 +1,4 @@
--- Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -13,64 +13,66 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline ;
+using: feline accessors ;
+in: user
+
+"compiler" delete-vocab
+
 in: compiler
 
 empty
 
+private
+
 -- These definitions shadow the ones in compile-word.asm. Turning on
 -- verbosity in this vocabulary only affects the optimizing compiler.
-global: compile-verbose?
-: +v t !> compile-verbose? ;
-: -v f !> compile-verbose? ;
+global compile-verbose?
+: +v t compile-verbose?! ;
+: -v f compile-verbose?! ;
 
-global: origin
-global: pc
+global origin
+global pc
 
-: emit-byte ( byte -> )
+: emit-byte                             -- byte -> void
     pc c!
-    pc 1 + !> pc ;
+    pc 1+ pc! ;
 
-: emit-dword ( dword -> )
+: emit-dword                            -- dword -> void
     pc l!
-    pc 4 + !> pc ;
+    pc 4 + pc! ;
 
-: emit-qword ( qword -> )
+: emit-qword                            -- qword -> void
     pc !
-    pc 8 + !> pc ;
+    pc 8 + pc! ;
 
-tuple: instruction %op %param ;
+tuple: instruction op param ;
 
-: make-instruction ( x y -> instruction )
-    instruction make-instance
-    [ instruction-%param! ] keep
-    [ instruction-%op! ] keep ;
+: make-instruction                      -- op param -> instruction
+    instruction make-instance           -- -> op param instruction
+    swap >>param
+    swap >>op ;
 
-: op instruction-%op ;
+: literal?                              -- instruction -> ?
+    op>> f eq? ;
 
-: param instruction-%param ;
-
-: literal? ( instruction -- ? )
-    op f eq? ;
-
-: inst. ( instruction -- )
+: inst.                                 -- instruction -> void
     ?nl
     dup literal? [
         "literal: " write-string
-        param .
+        param>> .
     ] [
         " symbol: " write-string
-        op .
+        op>> .
     ] if ;
 
-: precompile-object ( object -> pair )
+: precompile-object                     -- object -> instruction
     dup symbol? [ f ] [ f swap ] if
     make-instruction ;
 
-: emit-pushrbx ( -> )
+: emit-pushrbx
     { 0x48 0x89 0x5d 0xf8 0x48 0x8d 0x6d 0xf8 } ' emit-byte each ;
 
-: compile-literal ( x -> )
+: compile-literal                       -- x -> void
     dup wrapper? [ wrapped ] when
 
     emit-pushrbx
@@ -83,60 +85,63 @@ tuple: instruction %op %param ;
 
 : inline-primitive
     dup symbol-code-address
-    swap symbol-code-size               -- address size
-    1 -                                 -- adjust size to exclude ret instruction
-    pc swap [ copy-bytes ] keep         -- size
-    pc + !> pc ;
+    swap symbol-code-size               -- -> address size
+    1-                                  -- adjust size to exclude ret instruction
+    pc swap [ copy-bytes ] keep         -- -> size
+    pc + pc! ;
 
-: compile-call ( symbol -> )
+: compile-call -- symbol ->
     symbol-code-address
-    dup pc 5 + -                        -- tagged-address tagged-displacement
+    dup pc 5 + -                        -- -> tagged-address tagged-displacement
     int32? [
-        0xe8 emit-byte                  -- tagged-address
+        0xe8 emit-byte                  -- -> tagged-address
         pc 4 + - emit-dword
     ] [
         "unsupported" error
     ] if ;
 
-: compile-primitive ( symbol -- )
+: compile-primitive                     -- symbol -> void
     dup debug? [
         symbol-always-inline? [ inline-primitive ] [ compile-call ] if
     ] [
         symbol-inline? [ inline-primitive ] [ compile-call ] if
     ] if ;
 
-: compile-symbol ( symbol -- )
+: compile-symbol                        -- symbol -> void
     dup symbol-primitive? [ compile-primitive ] [ compile-call ] if ;
 
-: compile-instruction ( instruction -> )
-    dup op [ op compile-symbol ] [ param compile-literal ] if ;
+: compile-instruction                   -- instruction -> void
+    dup op>> [ op>> compile-symbol ] [ param>> compile-literal ] if ;
 
-: compile-quotation-internal ( quotation -> )
-    dup quotation-array ' precompile-object map-array ( array )
+: compile-quotation-internal            -- quotation -> void
+    dup quotation-array [ precompile-object ] map-array -- -> array
 
     compile-verbose? [
         ?nl dup [ inst. ] each
     ] when
 
-    dup length 32 * initialize-code-block dup !> pc !> origin
+    dup length 32 * initialize-code-block dup pc! origin!
 
     ' compile-instruction each
 
     0xc3 emit-byte
 
-    origin pc over -                    -- quotation code-address code-size
+    origin pc over -                    -- -> quotation code-address code-size
     pick quotation-set-code-size
     swap quotation-set-code-address ;
 
-: compile-quotation ( quotation -> quotation )
+: compile-quotation                     -- quotation -> quotation
     compile-verbose? [ ?nl "compiler:compile-quotation " write dup . nl ] when
     ' compile-quotation-internal keep ;
 
-: compile-word ( symbol -> )
-    dup symbol-def compile-quotation ( symbol quotation )
+: compile-word                          -- symbol -> void
+    dup symbol-def compile-quotation    -- -> symbol quotation
     dup quotation-code-address pick symbol-set-code-address
     quotation-code-size swap symbol-set-code-size ;
 
-: opt ( ->  )
+public
+
+: opt
     postpone: '
+    +v
     compile-word ;

@@ -79,6 +79,14 @@ public
     load-inspector
     "inspect" "inspector" vocab-find-name [ call-symbol ] when ;
 
+: opt
+    "compiler" delete-vocab
+    [
+        f load-verbose? set
+        "compiler.feline" load-system-file
+    ] with-dynamic-scope
+    "opt" "compiler" vocab-find-name [ call-symbol ] when ;
+
 : run-tests
     [
         t load-verbose? set
