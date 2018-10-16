@@ -60,13 +60,27 @@ tuple: instruction op param ;
 
 : inst.                                 -- instruction -> void
     ?nl
-    dup literal? [
-        "literal: " write-string
-        param>> .
+    "op: " write-string
+    dup op>> object->string write-string
+    space
+    "param: " write-string
+    param>> object->string write-string
+;
+
+: precompile-object  ( x )              -- object -> instruction
+    x symbol? [
+        x f make-instruction
     ] [
-        " symbol: " write-string
-        op>> .
-    ] if ;
+        x quotation? [
+            x quotation-code-address zero? [
+                x feline:primitive-compile-quotation
+                x quotation-code-address zero? assert-false
+            ] when
+        ] when
+        f x make-instruction
+    ] if
+;
+
 
 : precompile-object                     -- object -> instruction
     dup symbol? [ f ] [ f swap ] if
