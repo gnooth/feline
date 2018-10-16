@@ -45,6 +45,9 @@ global pc
     pc !
     pc 8 + pc! ;
 
+: emit-bytes                            -- sequence -> void
+    ' emit-byte each ;
+
 tuple: instruction op param ;
 
 : make-instruction                      -- op param -> instruction
@@ -70,7 +73,10 @@ tuple: instruction op param ;
     make-instruction ;
 
 : emit-pushrbx
-    { 0x48 0x89 0x5d 0xf8 0x48 0x8d 0x6d 0xf8 } ' emit-byte each ;
+    { 0x48 0x89 0x5d 0xf8 0x48 0x8d 0x6d 0xf8 } emit-bytes ;
+
+: emit-poprbx
+    { 0x48 0x8b 0x5d 0x00 0x48 0x8d 0x6d 0x08 } emit-bytes ;
 
 : compile-literal                       -- x -> void
     dup wrapper? [ wrapped ] when
