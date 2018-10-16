@@ -81,10 +81,13 @@ tuple: instruction op param ;
     ] if
 ;
 
+: precompile-quotation                  -- quotation -> array
+    dup quotation-array [ precompile-object ] map-array -- -> array
 
-: precompile-object                     -- object -> instruction
-    dup symbol? [ f ] [ f swap ] if
-    make-instruction ;
+    compile-verbose? [
+        ?nl dup [ inst. ] each
+    ] when
+;
 
 : emit-pushrbx
     { 0x48 0x89 0x5d 0xf8 0x48 0x8d 0x6d 0xf8 } emit-bytes ;
@@ -103,6 +106,14 @@ tuple: instruction op param ;
         0x48 emit-byte 0xbb emit-byte emit-qword
     ] if ;
 
+global pending 10 <vector> pending!
+
+: flush-pending
+    pending empty? [
+        pending [ compile-literal ] each
+        pending vector-delete-all
+    ] unless ;
+
 : inline-primitive
     dup symbol-code-address
     swap symbol-code-size               -- -> address size
@@ -110,8 +121,7 @@ tuple: instruction op param ;
     pc swap [ copy-bytes ] keep         -- -> size
     pc + pc! ;
 
-: compile-call -- symbol ->
-    symbol-code-address
+: compile-call-address                  -- tagged-address -> void
     dup pc 5 + -                        -- -> tagged-address tagged-displacement
     int32? [
         0xe8 emit-byte                  -- -> tagged-address
@@ -120,27 +130,60 @@ tuple: instruction op param ;
         "unsupported" error
     ] if ;
 
+: compile-call-symbol                   -- symbol ->
+    symbol-code-address
+    compile-call-address
+;
+
 : compile-primitive                     -- symbol -> void
     dup debug? [
-        symbol-always-inline? [ inline-primitive ] [ compile-call ] if
+        symbol-always-inline? [ inline-primitive ] [ compile-call-symbol ] if
     ] [
-        symbol-inline? [ inline-primitive ] [ compile-call ] if
+        symbol-inline? [ inline-primitive ] [ compile-call-symbol ] if
     ] if ;
 
-: compile-symbol                        -- symbol -> void
-    dup symbol-primitive? [ compile-primitive ] [ compile-call ] if ;
+: compile-when
+    ?nl "compile-when" print
+
+    pending vector-?last :> last
+
+    last quotation? [
+
+        { 0x48 0x83 0xfb 0x06 } emit-bytes -- cmp rbx, 6
+        emit-poprbx
+        0x74 emit-byte                  -- jz
+        0x05 emit-byte                  -- $+5
+
+        last quotation-code-address compile-call-address
+
+        pending vector-pop*
+
+    ] when
+;
+
+: compile-operator ( op )               -- symbol -> void
+
+    op ' when eq? [
+        compile-when
+    ] return-if
+
+    flush-pending
+
+    op symbol-primitive? [ op compile-primitive ] [ op compile-call-symbol ] if ;
 
 : compile-instruction                   -- instruction -> void
-    dup op>> [ op>> compile-symbol ] [ param>> compile-literal ] if ;
+    dup op>> [
+        op>> compile-operator
+    ] [
+        param>> pending vector-push
+    ] if ;
 
 : compile-quotation-internal            -- quotation -> void
-    dup quotation-array [ precompile-object ] map-array -- -> array
-
-    compile-verbose? [
-        ?nl dup [ inst. ] each
-    ] when
+    precompile-quotation
 
     dup length 32 * initialize-code-block dup pc! origin!
+
+    pending vector-delete-all
 
     ' compile-instruction each
 
