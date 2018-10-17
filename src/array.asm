@@ -332,6 +332,21 @@ code array_third, 'array-third'         ; handle -- element
         next
 endcode
 
+; ### array-?last
+code array_?last, 'array-?last'         ; array -> element/f
+; return last element of array
+; return f if array is empty
+        _ check_array
+        mov     rax, [rbx + ARRAY_LENGTH_OFFSET]
+        sub     rax, 1
+        js      .empty
+        mov     rbx, [rbx + ARRAY_DATA_OFFSET + BYTES_PER_CELL * rax]
+        next
+.empty:
+        mov     ebx, f_value
+        next
+endcode
+
 ; ### array-each
 code array_each, 'array-each'           ; array callable --
 
