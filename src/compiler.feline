@@ -161,10 +161,24 @@ global pending 10 <vector> pending!
     ] when
 ;
 
+global declared-type
+
+: compile-declare
+    ?nl "compile-declare" print
+
+    pending vector-?last array-?last symbol-value verify-type declared-type!
+    ?nl "declared type = " write-string declared-type type-name print
+    pending vector-pop*
+;
+
 : compile-operator ( op )               -- symbol -> void
 
     op ' when eq? [
         compile-when
+    ] return-if
+
+    op ' declare eq? [
+        compile-declare
     ] return-if
 
     flush-pending
