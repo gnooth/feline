@@ -255,8 +255,10 @@ code verify_typecode, 'verify-typecode' ; object typecode -- object
 .1:
         _2drop
         _ type_of
+        _ type_name
         _swap
         _ typecode_to_type
+        _ type_name
         _swap
         _quote "TYPE ERROR: expected a %s, got a %s."
         _ format

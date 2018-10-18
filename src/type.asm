@@ -374,3 +374,13 @@ code type_to_string, 'type->string'     ; type -> string
 
         next
 endcode
+
+; ### declare
+code declare, 'declare'                 ; array -> void
+; REVIEW
+        _ array_?last
+        _ symbol_value
+        _ type_typecode
+        _ verify_typecode
+        next
+endcode
