@@ -212,6 +212,24 @@ code slot@, 'slot@'                     ; obj tagged-fixnum -- value
         next
 endcode
 
+; ### tuple-slot1@
+inline tuple_slot1@, 'tuple-slot1@'     ; obj -- value
+        _handle_to_object_unsafe
+        mov     rbx, [rbx + BYTES_PER_CELL]
+endinline
+
+; ### tuple-slot2@
+inline tuple_slot2@, 'tuple-slot2@'     ; obj -- value
+        _handle_to_object_unsafe
+        mov     rbx, [rbx + BYTES_PER_CELL * 2]
+endinline
+
+; ### tuple-slot3@
+inline tuple_slot3@, 'tuple-slot3@'     ; obj -- value
+        _handle_to_object_unsafe
+        mov     rbx, [rbx + BYTES_PER_CELL * 3]
+endinline
+
 ; ### slot!
 code set_slot, 'slot!'                  ; value obj tagged-fixnum --
         _untag_fixnum

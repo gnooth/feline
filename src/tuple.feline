@@ -34,11 +34,14 @@ global generic-writer                   -- -> symbol
     -- accessors must be public
     generic-reader symbol-set-public
 
-    tuple-typecode
-    ' verify-typecode
-    index
-    ' slot@
-    4array array>quotation :> quotation
+    index {
+        { 1 [ ' tuple-slot1@ 1array ] }
+        { 2 [ ' tuple-slot2@ 1array ] }
+        { 3 [ ' tuple-slot3@ 1array ] }
+        -- default case
+        [ ' slot@ 2array ]
+    } case
+    array>quotation :> quotation
 
     tuple-typecode
     generic-reader symbol-def verify-generic-function
