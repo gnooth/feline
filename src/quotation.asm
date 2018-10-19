@@ -334,6 +334,13 @@ code callable_raw_code_address, 'callable_raw_code_address', SYMBOL_INTERNAL
         next
 endcode
 
+; ### callable-code-address
+code callable_code_address, 'callable-code-address' ; callable -> tagged-code-address
+        _ callable_raw_code_address
+        _tag_fixnum
+        next
+endcode
+
 ; ### quotation>string
 code quotation_to_string, 'quotation>string'    ; quotation -- string
         _ quotation_array
