@@ -130,7 +130,7 @@ global pending 10 <vector> pending!
         "unsupported" error
     ] if ;
 
-: compile-call-symbol                   -- symbol ->
+: compile-call-symbol                   -- symbol -> void
     symbol-code-address
     compile-call-address
 ;
@@ -171,6 +171,26 @@ global declared-type
     pending vector-pop*
 ;
 
+: compile-generic ( op )                -- symbol -> void
+    ?nl "compile-generic" print
+
+    f :> address!
+
+    declared-type type? [
+        declared-type op find-method [
+            method-callable callable-code-address address!
+        ] when*
+    ] when
+
+    flush-pending
+
+    address [
+        compile-call-address
+    ] [
+        op compile-call-symbol
+    ] if*
+;
+
 : compile-operator ( op )               -- symbol -> void
 
     op ' when eq? [
@@ -179,6 +199,10 @@ global declared-type
 
     op ' declare eq? [
         compile-declare
+    ] return-if
+
+    op generic? [
+        op compile-generic
     ] return-if
 
     flush-pending
