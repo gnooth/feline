@@ -132,8 +132,19 @@ code string_raw_length, 'string_raw_length', SYMBOL_INTERNAL
 endcode
 
 ; ### string-length
-code string_length, 'string-length'     ; string -- length
+code string_length, 'string-length'     ; string -> length
         _ check_string
+        _string_raw_length
+        _tag_fixnum
+        next
+endcode
+
+; ### string-length-unsafe
+code string_length_unsafe, 'string-length-unsafe' ; string -> length
+        cmp     bl, HANDLE_TAG
+        jne     .1
+        _handle_to_object_unsafe
+.1:
         _string_raw_length
         _tag_fixnum
         next

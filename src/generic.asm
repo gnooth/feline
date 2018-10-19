@@ -565,7 +565,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
 
         ; length
         _initialize_generic_function length
-        _add_method length, TYPECODE_STRING, string_length
+        _add_method length, TYPECODE_STRING, string_length_unsafe
         _add_method length, TYPECODE_SBUF, sbuf_length
         _add_method length, TYPECODE_ARRAY, array_length
         _add_method length, TYPECODE_VECTOR, vector_length
