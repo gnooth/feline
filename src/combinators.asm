@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -16,11 +16,10 @@
 file __FILE__
 
 ; ### dip
-code dip, 'dip'                         ; x quot -- x
+code dip, 'dip'                         ; x quot -> x
 ; Removes x, calls quot, restores x to top of stack after quot returns.
         _ callable_raw_code_address     ; code address in rbx
-        mov     rax, [rbp]              ; x in rax
-        push    rax
+        push    qword [rbp]
         mov     rax, rbx
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
