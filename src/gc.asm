@@ -375,13 +375,15 @@ code mark_raw_object, 'mark-raw-object' ; raw-object --
         next
 endcode
 
-; ### maybe_mark_handle
-code maybe_mark_handle, 'maybe_mark_handle', SYMBOL_INTERNAL    ; handle --
-        _ deref                         ; -- raw-object/0
+; ### maybe-mark-handle
+code maybe_mark_handle, 'maybe-mark-handle', SYMBOL_INTERNAL ; x -> void
+        cmp     bl, HANDLE_TAG
+        jne     .1
+        _handle_to_object_unsafe
         test    rbx, rbx
         jz      .1
         _ mark_raw_object
-        _return
+        next
 .1:
         _drop
         next
