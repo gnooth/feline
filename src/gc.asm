@@ -101,7 +101,10 @@ code mark_vocab, 'mark-vocab'           ; vocab --
 endcode
 
 ; ### mark-symbol
-code mark_symbol, 'mark-symbol'         ; symbol --
+code mark_symbol, 'mark-symbol'         ; symbol -> void
+        _dup
+        _symbol_name
+        _ maybe_mark_handle
         _dup
         _symbol_def
         _ maybe_mark_handle
@@ -113,7 +116,7 @@ code mark_symbol, 'mark-symbol'         ; symbol --
         _ maybe_mark_handle
         _symbol_file
         _ maybe_mark_handle
-        ; REVIEW name vocab
+        ; REVIEW vocab
         next
 endcode
 
@@ -207,6 +210,9 @@ endcode
 
 ; ### mark-type
 code mark_type, 'mark-type'             ; type -> void
+        _dup
+        _type_symbol
+        _ maybe_mark_handle
         _type_layout
         _ maybe_mark_handle
         next
