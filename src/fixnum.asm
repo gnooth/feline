@@ -169,6 +169,11 @@ code fixnum_oneplus, 'fixnum-1+'                 ; fixnum -- fixnum/int64
         next
 endcode
 
+; ### fixnum-1+-fast
+inline fixnum_oneplus_fast, 'fixnum-1+-fast' ; fixnum -> fixnum
+        add     rbx, (1 << FIXNUM_TAG_BITS)
+endinline
+
 ; ### int64-fixnum+
 code int64_fixnum_plus, 'int64-fixnum+'         ; int64 fixnum -- sum
 
@@ -328,6 +333,20 @@ code fixnum_fixnum_multiply, 'fixnum-fixnum*'   ; x y -- z
         next
 endcode
 
+; ### fixnum-2*-fast
+inline fixnum_twostar_fast, 'fixnum-2*-fast' ; fixnum -> fixnum
+; FIXME optimize
+%if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
+        sar     rbx, 1
+        shl     rbx, 2
+        or      rbx, 1
+%else
+        _untag_fixnum
+        shl     rbx, 1
+        _tag_fixnum
+%endif
+endinline
+
 ; ### int64-fixnum*
 code int64_fixnum_multiply, 'int64-fixnum*'     ; x y -- z
         _check_fixnum
@@ -420,6 +439,19 @@ code fixnum_fixnum_divide_truncate, 'fixnum-fixnum/i'   ; x y -- z
         _ raw_int64_divide_truncate
         next
 endcode
+
+; ### fixnum-2/-fast
+inline fixnum_twoslash_fast, 'fixnum-2/-fast' ; fixnum -> fixnum
+%if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
+        sar     rbx, 2
+        shl     rbx, 1
+        or      rbx, 1
+%else
+        _untag_fixnum
+        sar     rbx, 1
+        _tag_fixnum
+%endif
+endinline
 
 ; ### int64-fixnum/i
 code int64_fixnum_divide_truncate, 'int64-fixnum/i'     ; x y -- z

@@ -3549,4 +3549,53 @@ test: tuple-accessors-test-1
 
 tuple-accessors-test-1
 
+test: fixnum-1+-fast-test-1
+    most-negative-fixnum 1 + 1array [ most-negative-fixnum fixnum-1+-fast ] unit-test
+
+    { 0 } [ -1 fixnum-1+-fast ] unit-test
+
+    { 1 } [ 0 fixnum-1+-fast ] unit-test
+    { 2 } [ 1 fixnum-1+-fast ] unit-test
+    { 3 } [ 2 fixnum-1+-fast ] unit-test
+
+    most-positive-fixnum 1array [ most-positive-fixnum 1 - fixnum-1+-fast ] unit-test
+;
+
+fixnum-1+-fast-test-1
+
+test: fixnum-2*-fast-test-1
+    { -4 } [ -2 fixnum-2*-fast ] unit-test
+    { -2 } [ -1 fixnum-2*-fast ] unit-test
+
+    { 0 } [ 0 fixnum-2*-fast ] unit-test
+
+    { 2 } [ 1 fixnum-2*-fast ] unit-test
+    { 4 } [ 2 fixnum-2*-fast ] unit-test
+    { 6 } [ 3 fixnum-2*-fast ] unit-test
+;
+
+fixnum-2*-fast-test-1
+
+test: fixnum-2/-fast-test-1
+    { -3 } [ -6 fixnum-2/-fast ] unit-test
+    { -2 } [ -4 fixnum-2/-fast ] unit-test
+    { -1 } [ -2 fixnum-2/-fast ] unit-test
+
+    -- REVIEW -3 2 /i -> -1
+    { -2 } [ -3 fixnum-2/-fast ] unit-test
+
+    -- REVIEW -1 2 /i -> 0
+    { -1 } [ -1 fixnum-2/-fast ] unit-test
+
+    { 0 } [ 0 fixnum-2/-fast ] unit-test
+
+    { 1 } [ 2 fixnum-2/-fast ] unit-test
+    { 1 } [ 3 fixnum-2/-fast ] unit-test
+    { 2 } [ 4 fixnum-2/-fast ] unit-test
+    { 2 } [ 5 fixnum-2/-fast ] unit-test
+    { 3 } [ 6 fixnum-2/-fast ] unit-test
+;
+
+fixnum-2/-fast-test-1
+
 ?nl "Reached end of test.feline" write-string
