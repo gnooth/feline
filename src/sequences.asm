@@ -809,9 +809,10 @@ code member_eq?, 'member-eq?'           ; obj seq -- index/f
         next
 endcode
 
-code any?, 'any?'                       ; seq quot -- ?
-        _ find                          ; -- index/f element/f
-        _drop
+; ### any?
+code any?, 'any?'                       ; seq quot -> ?
+        _ find                          ; -> index/f element/f
+        _nip
         mov     rax, t_value
         cmp     rbx, f_value
         cmovne  rbx, rax
