@@ -3598,4 +3598,14 @@ test: fixnum-2/-fast-test-1
 
 fixnum-2/-fast-test-1
 
+test: &&-test-1
+    { f } [ { [ 1 ] [ f ] [ 3 ] } && ] unit-test
+    { f } [ { [ 1 ] [ f ] [ f assert-true ] } && ] unit-test
+    { 3 } [ { [ 1 ] [ 2 ] [ 3 ] } && ] unit-test
+
+    { f } [ { } && ] unit-test
+;
+
+&&-test-1
+
 ?nl "Reached end of test.feline" write-string
