@@ -3604,8 +3604,22 @@ test: &&-test-1
     { 3 } [ { [ 1 ] [ 2 ] [ 3 ] } && ] unit-test
 
     { f } [ { } && ] unit-test
+
+    [ { [ f assert-true 42 ] } && ] assert-must-fail
 ;
 
 &&-test-1
+
+test: ||-test-1
+    { f } [ { [ f ] [ f ] [ f ] } || ] unit-test
+    { "ok" } [ { [ 10 string? ] [ "ok" ] [ t assert-false 17 ] } || ] unit-test
+    { "ok" } [ { [ "ok" ] [ 10 string? ] [ t assert-false 17 ] } || ] unit-test
+
+    { f } [ { } || ] unit-test
+
+    [ { [ f assert-true 42 ] } || ] assert-must-fail
+;
+
+||-test-1
 
 ?nl "Reached end of test.feline" write-string

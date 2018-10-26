@@ -345,3 +345,29 @@ code short_circuit_and, '&&'            ; seq -> ?
         pop     this_register
         next
 endcode
+
+; ### ||
+code short_circuit_or, '||'             ; seq -> ?
+        push    this_register
+        mov     this_register, rbx      ; handle to seq in this_register
+        _ length
+        _untag_fixnum
+        _do_times .1
+        _tagged_loop_index
+        _this                           ; -- tagged-index handle
+        _ nth_unsafe                    ; -- quotation
+        _ call_quotation
+        cmp     rbx, f_value
+        mov     rax, rbx
+        poprbx
+        je      .2
+        _unloop
+        jmp     .exit
+.2:
+        _loop .1
+.exit:
+        pushrbx
+        mov     rbx, rax
+        pop     this_register
+        next
+endcode
