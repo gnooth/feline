@@ -223,7 +223,7 @@ global declared-type
     ] if ;
 
 : compile-quotation-internal            -- quotation -> void
-    precompile-quotation
+    precompile-quotation                -- -> array
 
     dup length 32 * initialize-code-block dup pc! origin!
 
@@ -237,9 +237,17 @@ global declared-type
     pick quotation-set-code-size
     swap quotation-set-code-address ;
 
-: compile-quotation                     -- quotation -> quotation
-    compile-verbose? [ ?nl "compiler:compile-quotation " write dup . nl ] when
-    ' compile-quotation-internal keep ;
+: compile-quotation ( quotation )       -- quotation -> quotation
+    compile-verbose? [ ?nl "compile-quotation " write quotation . ] when
+
+    { [ quotation length 1 eq? ] [ quotation first symbol? ] } && [
+        quotation first [ symbol-code-address ] [ symbol-code-size ] bi
+        quotation quotation-set-code-size
+        quotation quotation-set-code-address
+        quotation
+    ] return-if
+
+    quotation [ compile-quotation-internal ] keep ;
 
 : compile-word                          -- symbol -> void
     dup symbol-def compile-quotation    -- -> symbol quotation
