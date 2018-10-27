@@ -168,6 +168,13 @@ code vector_length, 'vector-length'     ; vector -- length
         next
 endcode
 
+; ### vector-length-unsafe
+inline vector_length_unsafe, 'vector-length-unsafe' ; vector -> length
+        _handle_to_object_unsafe
+        _vector_raw_length
+        _tag_fixnum
+endinline
+
 ; ### vector-set-length
 code vector_set_length, 'vector-set-length' ; tagged-new-length handle --
         _ check_vector                  ; -- tagged-new-length vector

@@ -349,7 +349,7 @@ code define_generic, 'define-generic'   ; symbol -> symbol
 endcode
 
 ; ### find-method
-code find_method, 'find-method'         ; symbol-or-type symbol-or-gf -- method
+code find_method, 'find-method'         ; symbol-or-type symbol-or-gf -> method/f
 
         _debug_?enough 2
 
@@ -568,7 +568,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method length, TYPECODE_STRING, string_length_unsafe
         _add_method length, TYPECODE_SBUF, sbuf_length
         _add_method length, TYPECODE_ARRAY, array_length
-        _add_method length, TYPECODE_VECTOR, vector_length
+        _add_method length, TYPECODE_VECTOR, vector_length_unsafe
         _add_method length, TYPECODE_SLICE, slice_length
         _add_method length, TYPECODE_RANGE, range_length
         _add_method length, TYPECODE_QUOTATION, quotation_length
