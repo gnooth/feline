@@ -167,28 +167,30 @@ global declared-type
     ?nl "compile-declare" print
 
     pending vector-?last array-?last symbol-value verify-type declared-type!
-    ?nl "declared type = " write-string declared-type type-name print
+    ?nl "compile-declare declared type = " write-string declared-type type-name print
     pending vector-pop*
 ;
 
+: inline-or-compile-call                -- symbol -> void
+    dup symbol-primitive? [ compile-primitive ] [ compile-call-symbol ] if ;
+
 : compile-generic ( op )                -- symbol -> void
-    ?nl "compile-generic" print
+    ?nl "compile-generic declared-type = " write declared-type .
 
-    f :> address!
-
-    declared-type type? [
-        declared-type op find-method [
-            method-callable callable-code-address address!
-        ] when*
-    ] when
+    {
+        [ declared-type type? ]
+        [ declared-type op find-method ]
+    } && :> method
 
     flush-pending
 
-    address [
-        compile-call-address
-    ] [
-        op compile-call-symbol
-    ] if*
+    method null? [ op compile-call-symbol ] return-if
+
+    method method-callable :> callable
+
+    callable symbol? [ callable inline-or-compile-call ] return-if
+
+    callable callable-code-address compile-call-address
 ;
 
 : compile-operator ( op )               -- symbol -> void
@@ -207,7 +209,8 @@ global declared-type
 
     flush-pending
 
-    op symbol-primitive? [ op compile-primitive ] [ op compile-call-symbol ] if ;
+    op inline-or-compile-call
+;
 
 : compile-instruction                   -- instruction -> void
     dup op>> [
