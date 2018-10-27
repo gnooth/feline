@@ -67,7 +67,7 @@ tuple: instruction op param ;
     param>> object->string write-string
 ;
 
-: precompile-object  ( x )              -- object -> instruction
+: precompile-object ( x )               -- x -> instruction
     x symbol? [
         x f make-instruction
     ] [
@@ -145,20 +145,23 @@ global pending 10 <vector> pending!
 : compile-when
     ?nl "compile-when" print
 
-    pending vector-?last :> last
+    pending empty? [ ' when compile-call-symbol ] return-if
 
-    last quotation? [
+    pending vector-last dup wrapper? [ wrapped ] when :> last
 
+    last callable-code-address :> address
+
+    address [
         { 0x48 0x83 0xfb 0x06 } emit-bytes -- cmp rbx, 6
         emit-poprbx
         0x74 emit-byte                  -- jz
         0x05 emit-byte                  -- $+5
-
-        last quotation-code-address compile-call-address
-
+        address compile-call-address
         pending vector-pop*
-
-    ] when
+    ] [
+        flush-pending
+        ' when compile-call-symbol
+    ] if
 ;
 
 global declared-type
