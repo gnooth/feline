@@ -99,7 +99,7 @@ endcode
 feline_constant failed, '+failed+', S_failed
 
 ; ### check-assert-must-fail
-code check_assert_must_fail, 'check-assert-must-fail'   ; quotation location --
+code check_assert_must_fail, 'check-assert-must-fail' ; quotation location -> void
         _debug_?enough 2
         _swap
         _quotation .1
@@ -111,7 +111,11 @@ code check_assert_must_fail, 'check-assert-must-fail'   ; quotation location --
         _lit S_failed
         _eq?
         _tagged_if .2
+        ; The expected failure did occur. This is not an error!
         _2drop
+        ; Forget saved error location.
+        _f
+        _ set_error_location
         _else .2
         _ assertion_failed
         _then .2
