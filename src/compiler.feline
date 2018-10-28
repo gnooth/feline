@@ -30,8 +30,40 @@ global compile-verbose?
 : +v t compile-verbose?! ;
 : -v f compile-verbose?! ;
 
-global origin
-global pc
+tuple: compiler-context
+    pc
+    origin
+    pending
+    declared-type ;
+
+: make-compiler-context                 -- void -> compiler-context
+    compile-verbose? [ ?nl "make-compiler-context" print ] when
+
+    compiler-context make-instance
+    10 <vector> >>pending ;
+
+special: current-context
+
+: origin                                -- void -> fixnum
+    current-context get origin>> ;
+
+: origin!                               -- address -> void
+    current-context get origin<< ;
+
+: pc                                    -- void -> fixnum
+    current-context get pc>> ;
+
+: pc!                                   -- address -> void
+    current-context get pc<< ;
+
+: pending                               -- void -> vector
+    current-context get pending>> ;
+
+: declared-type                         -- void -> type
+    current-context get declared-type>> ;
+
+: declared-type!                        -- type -> void
+    current-context get declared-type<< ;
 
 : emit-byte                             -- byte -> void
     pc c!
@@ -64,8 +96,9 @@ tuple: instruction op param ;
     dup op>> object->string write-string
     space
     "param: " write-string
-    param>> object->string write-string
-;
+    param>> object->string write-string ;
+
+defer compile-quotation
 
 : precompile-object ( x )               -- x -> instruction
     x symbol? [
@@ -73,7 +106,7 @@ tuple: instruction op param ;
     ] [
         x quotation? [
             x quotation-code-address zero? [
-                x feline:primitive-compile-quotation
+                x compile-quotation drop
                 x quotation-code-address zero? assert-false
             ] when
         ] when
@@ -105,8 +138,6 @@ tuple: instruction op param ;
     ] [
         0x48 emit-byte 0xbb emit-byte emit-qword
     ] if ;
-
-global pending 10 <vector> pending!
 
 : flush-pending
     pending empty? [
@@ -143,7 +174,7 @@ global pending 10 <vector> pending!
     ] if ;
 
 : compile-when
-    ?nl "compile-when" print
+    compile-verbose? [ ?nl "compile-when" print ] when
 
     pending empty? [ ' when compile-call-symbol ] return-if
 
@@ -164,13 +195,11 @@ global pending 10 <vector> pending!
     ] if
 ;
 
-global declared-type
-
 : compile-declare
-    ?nl "compile-declare" print
+    compile-verbose? [ ?nl "compile-declare" print ] when
 
     pending vector-?last array-?last symbol-value verify-type declared-type!
-    ?nl "compile-declare declared type = " write-string declared-type type-name print
+    compile-verbose? [ ?nl "compile-declare declared type = " write-string declared-type type-name print ] when
     pending vector-pop*
 ;
 
@@ -178,7 +207,7 @@ global declared-type
     dup symbol-primitive? [ compile-primitive ] [ compile-call-symbol ] if ;
 
 : compile-generic ( op )                -- symbol -> void
-    ?nl "compile-generic declared-type = " write declared-type .
+    compile-verbose? [ ?nl "compile-generic declared-type = " write declared-type . ] when
 
     {
         [ declared-type type? ]
@@ -227,9 +256,9 @@ global declared-type
 
     dup length 32 * initialize-code-block dup pc! origin!
 
-    pending vector-delete-all
-
     ' compile-instruction each
+
+    flush-pending
 
     0xc3 emit-byte
 
@@ -237,8 +266,8 @@ global declared-type
     pick quotation-set-code-size
     swap quotation-set-code-address ;
 
-: compile-quotation ( quotation )       -- quotation -> quotation
-    compile-verbose? [ ?nl "compile-quotation " write quotation . ] when
+: %compile-quotation ( quotation )       -- quotation -> quotation
+    compile-verbose? [ ?nl "%compile-quotation " write quotation . ] when
 
     { [ quotation length 1 eq? ] [ quotation first symbol? ] } && [
         quotation first [ symbol-code-address ] [ symbol-code-size ] bi
@@ -247,7 +276,15 @@ global declared-type
         quotation
     ] return-if
 
-    quotation [ compile-quotation-internal ] keep ;
+    [
+        make-compiler-context current-context set
+        quotation [ compile-quotation-internal ] keep
+    ] with-dynamic-scope
+
+     compile-verbose? [ ?nl "leaving %compile-quotation" print ] when
+;
+
+' %compile-quotation ' compile-quotation defer!
 
 : compile-word                          -- symbol -> void
     dup symbol-def compile-quotation    -- -> symbol quotation
