@@ -474,8 +474,8 @@ code compile_quotation, 'compile-quotation', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
-; ### compile-word
-code compile_word, 'compile-word', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+; ### primitive-compile-word
+code primitive_compile_word, 'primitive-compile-word', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; symbol --
         _dup
         _ symbol_def
@@ -492,6 +492,8 @@ code compile_word, 'compile-word', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 
         next
 endcode
+
+deferred compile_word, 'compile-word', primitive_compile_word
 
 ; ### compile-deferred
 code compile_deferred, 'compile-deferred'       ; symbol -> void
