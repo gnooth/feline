@@ -1736,6 +1736,7 @@ last-word 0xbe install-0x0f-handler
     #insts 1+ #insts! ;
 
 : disasm                                -- code-address code-size -> void
+    2 ?enough
     over start-address!
     + stop-address!
 
@@ -1743,6 +1744,20 @@ last-word 0xbe install-0x0f-handler
     0 #insts!
 
     [ ip stop-address >= ] [ decode ] until
+
+    ?nl
+    #insts dec. " instructions " write-string
+    ip start-address - dec. " bytes" write-string ;
+
+: disasm/1                              -- code-address -> void
+    start-address!
+
+    start-address ip!
+    0 #insts!
+
+    [ ip c@ 0xc3 eq? ] [ decode ] until
+
+    decode
 
     ?nl
     #insts dec. " instructions " write-string
