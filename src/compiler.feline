@@ -87,9 +87,6 @@ tuple: instruction op param ;
     swap >>param
     swap >>op ;
 
-: literal?                              -- instruction -> ?
-    op>> f eq? ;
-
 : inst.                                 -- instruction -> void
     ?nl
     "op: " write-string
