@@ -242,6 +242,8 @@ defer compile-quotation
     flush-pending
 
     op inline-or-compile-call
+
+    f declared-type!
 ;
 
 : compile-instruction                   -- instruction -> void
@@ -249,6 +251,7 @@ defer compile-quotation
         op>> compile-operator
     ] [
         param>> pending vector-push
+        f declared-type!
     ] if ;
 
 : compile-quotation-internal            -- quotation -> void
