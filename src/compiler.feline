@@ -33,8 +33,7 @@ global compile-verbose?
 tuple: compiler-context
     pc
     origin
-    pending
-    declared-type ;
+    pending ;
 
 : make-compiler-context                 -- void -> compiler-context
     compile-verbose? [ ?nl "make-compiler-context" print ] when
@@ -56,15 +55,6 @@ special: current-context
 : pc!                                   -- address -> void
     current-context get pc<< ;
 
-: pending                               -- void -> vector
-    current-context get pending>> ;
-
-: declared-type                         -- void -> type
-    current-context get declared-type>> ;
-
-: declared-type!                        -- type -> void
-    current-context get declared-type<< ;
-
 : emit-byte                             -- byte -> void
     pc c!
     pc 1+ pc! ;
@@ -80,26 +70,48 @@ special: current-context
 : emit-bytes                            -- sequence -> void
     ' emit-byte each ;
 
-tuple: instruction op param ;
+tuple: node
+    literal?
+    literal-value
+    literal-type
+    op
+    derived-type
+    declared-type ;
 
-: make-instruction                      -- op param -> instruction
-    instruction make-instance           -- -> op param instruction
-    swap >>param
+: make-literal-node                     -- literal -> node
+    node make-instance
+    t >>literal?
+    swap >>literal-value ;
+
+: make-operator-node                    -- symbol -> node
+    node make-instance
     swap >>op ;
 
-: inst.                                 -- instruction -> void
+: inst.                                 -- node -> void
     ?nl
     "op: " write-string
     dup op>> object->string write-string
     space
-    "param: " write-string
-    param>> object->string write-string ;
+    "literal: " write-string
+    literal-value>> object->string write-string ;
+
+: pending                               -- void -> vector
+    current-context get pending>> ;
+
+: pending-last                          -- void -> node
+    pending vector-last ;
+
+: pending-last-value                    -- void -> x
+    pending vector-last literal-value>> ;
+
+: pending-remove-last
+    pending vector-pop* ;
 
 defer compile-quotation
 
-: precompile-object ( x )               -- x -> instruction
+: precompile-object ( x )               -- x -> node
     x symbol? [
-        x f make-instruction
+        x make-operator-node
     ] [
         x quotation? [
             x quotation-code-address zero? [
@@ -107,17 +119,15 @@ defer compile-quotation
                 x quotation-code-address zero? assert-false
             ] when
         ] when
-        f x make-instruction
-    ] if
-;
+        x make-literal-node
+    ] if ;
 
 : precompile-quotation                  -- quotation -> array
     dup quotation-array [ precompile-object ] map-array -- -> array
 
     compile-verbose? [
         ?nl dup [ inst. ] each
-    ] when
-;
+    ] when ;
 
 : emit-pushrbx
     { 0x48 0x89 0x5d 0xf8 0x48 0x8d 0x6d 0xf8 } emit-bytes ;
@@ -125,7 +135,9 @@ defer compile-quotation
 : emit-poprbx
     { 0x48 0x8b 0x5d 0x00 0x48 0x8d 0x6d 0x08 } emit-bytes ;
 
-: compile-literal                       -- x -> void
+: compile-literal                       -- node -> void
+    literal-value>>
+
     dup wrapper? [ wrapped ] when
 
     emit-pushrbx
@@ -160,8 +172,7 @@ defer compile-quotation
 
 : compile-call-symbol                   -- symbol -> void
     symbol-code-address
-    compile-call-address
-;
+    compile-call-address ;
 
 : compile-primitive                     -- symbol -> void
     dup debug? [
@@ -175,35 +186,42 @@ defer compile-quotation
 
     pending empty? [ ' when compile-call-symbol ] return-if
 
-    pending vector-last dup wrapper? [ wrapped ] when :> last
+    pending-last-value dup wrapper? [ wrapped ] when :> last-value
 
-    last callable-code-address :> address
+    last-value callable-code-address :> address
 
     address [
+        pending-remove-last
+        flush-pending
         { 0x48 0x83 0xfb 0x06 } emit-bytes -- cmp rbx, 6
         emit-poprbx
         0x74 emit-byte                  -- jz
         0x05 emit-byte                  -- $+5
         address compile-call-address
-        pending vector-pop*
     ] [
         flush-pending
         ' when compile-call-symbol
-    ] if
-;
+    ] if ;
 
 : compile-declare
     compile-verbose? [ ?nl "compile-declare" print ] when
 
-    pending vector-?last array-?last symbol-value verify-type declared-type!
-    compile-verbose? [ ?nl "compile-declare declared type = " write-string declared-type type-name print ] when
-    pending vector-pop*
-;
+    pending-last-value array-?last symbol-value verify-type :> declared-type
+    pending-remove-last
+
+    declared-type pending-last declared-type<<
+
+    compile-verbose? [
+        ?nl "compile-declare declared type = " write-string declared-type type-name print
+    ] when ;
 
 : inline-or-compile-call                -- symbol -> void
     dup symbol-primitive? [ compile-primitive ] [ compile-call-symbol ] if ;
 
 : compile-generic ( op )                -- symbol -> void
+
+    pending empty? [ f ] [ pending-last declared-type>> ] if :> declared-type
+
     compile-verbose? [ ?nl "compile-generic declared-type = " write declared-type . ] when
 
     {
@@ -219,10 +237,11 @@ defer compile-quotation
 
     callable symbol? [ callable inline-or-compile-call ] return-if
 
-    callable callable-code-address compile-call-address
-;
+    callable callable-code-address compile-call-address ;
 
-: compile-operator ( op )               -- symbol -> void
+: compile-operator-node ( node )        -- node -> void
+
+    node op>> :> op
 
     op ' when eq? [
         compile-when
@@ -238,17 +257,13 @@ defer compile-quotation
 
     flush-pending
 
-    op inline-or-compile-call
+    op inline-or-compile-call ;
 
-    f declared-type!
-;
-
-: compile-instruction                   -- instruction -> void
+: compile-node                          -- node -> void
     dup op>> [
-        op>> compile-operator
+        compile-operator-node
     ] [
-        param>> pending vector-push
-        f declared-type!
+        pending vector-push
     ] if ;
 
 : compile-quotation-internal            -- quotation -> void
@@ -256,7 +271,7 @@ defer compile-quotation
 
     dup length 32 * initialize-code-block dup pc! origin!
 
-    ' compile-instruction each
+    ' compile-node each
 
     flush-pending
 
@@ -281,8 +296,7 @@ defer compile-quotation
         quotation [ compile-quotation-internal ] keep
     ] with-dynamic-scope
 
-     compile-verbose? [ ?nl "leaving %compile-quotation" print ] when
-;
+     compile-verbose? [ ?nl "leaving %compile-quotation" print ] when ;
 
 ' %compile-quotation ' compile-quotation defer!
 
@@ -297,3 +311,10 @@ public
     postpone: '
     +v
     compile-word ;
+
+: +opt
+    -v
+    ' compiler:compile-word ' feline:compile-word defer! ;
+
+: -opt
+    ' feline:primitive-compile-word ' feline:compile-word defer! ;
