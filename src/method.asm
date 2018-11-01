@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; 4 slots: object header, raw typecode, generic symbol, callable
+; 4 slots: object header, raw typecode, generic function, callable
 ; REVIEW might want to add: code-address, code-size
 
 %macro  _method_raw_typecode 0          ; method -- raw-typecode
