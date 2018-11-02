@@ -218,15 +218,22 @@ defer compile-quotation
 : inline-or-compile-call                -- symbol -> void
     dup symbol-primitive? [ compile-primitive ] [ compile-call-symbol ] if ;
 
+: derive-type ( node )                  -- node -> type/f
+    node literal?>> [
+        node literal-value>> type-of
+    ] return-if
+
+    node declared-type>> ;
+
 : compile-generic ( op )                -- symbol -> void
 
-    pending empty? [ f ] [ pending-last declared-type>> ] if :> declared-type
+    pending empty? [ f ] [ pending-last derive-type ] if :> derived-type
 
-    compile-verbose? [ ?nl "compile-generic declared-type = " write declared-type . ] when
+    compile-verbose? [ ?nl "compile-generic derived-type = " write derived-type . ] when
 
     {
-        [ declared-type type? ]
-        [ declared-type op find-method ]
+        [ derived-type type? ]
+        [ derived-type op find-method ]
     } && :> method
 
     flush-pending
