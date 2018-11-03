@@ -140,15 +140,14 @@ code string_length, 'string-length'     ; string -> length
 endcode
 
 ; ### string-length-unsafe
-code string_length_unsafe, 'string-length-unsafe' ; string -> length
+inline string_length_unsafe, 'string-length-unsafe' ; string -> length
         cmp     bl, HANDLE_TAG
         jne     .1
         _handle_to_object_unsafe
 .1:
         _string_raw_length
         _tag_fixnum
-        next
-endcode
+endinline
 
 ; ### string-empty?
 code string_empty?, 'string-empty?'     ; string -- ?
