@@ -333,8 +333,7 @@ code maybe_note_redefinition, 'maybe-note-redefinition' ; string --
 endcode
 
 ; ### new-symbol-in-current-vocab
-code new_symbol_in_current_vocab, 'new-symbol-in-current-vocab', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; string -- symbol
+code new_symbol_in_current_vocab, 'new-symbol-in-current-vocab' ; string -> symbol
         _dup
         _ maybe_note_redefinition
         _ current_vocab
