@@ -1262,9 +1262,21 @@ test: 2bi-test-1
 
 2bi-test-1
 
+test: verify-type-test-1
+    42 type-of dup verify-type assert-eq
+    "test" type-of dup verify-type assert-eq
+    ' string symbol-value dup verify-type assert-eq
+
+    [ 42 verify-type ] assert-must-fail
+    [ ' string verify-type ] assert-must-fail
+;
+
+verify-type-test-1
+
 tuple: foo a b c ;
 
 : %tuple-layout-test-1
+    foo dup verify-type assert-eq
     foo type? assert-true
     foo type-symbol dup symbol? assert-true ' foo assert-eq
     foo type-layout array? assert-true
