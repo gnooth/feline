@@ -98,19 +98,17 @@ code check_type, 'check-type'           ; handle -> type
 endcode
 
 ; ### verify-type
-code verify_type, 'verify-type'         ; type -- type
-        _dup
-        _ deref
+code verify_type, 'verify-type'         ; type -> type
+        cmp     bl, HANDLE_TAG
+        jne     error_not_type
+        mov     rax, rbx
+        _handle_to_object_unsafe
         test    rbx, rbx
-        jz      .error
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_TYPE
-        jne     .error
-        _drop
-        next
-.error:
-        _drop
-        _ error_not_type
+        jz      error_empty_handle
+        _object_raw_typecode
+        cmp     rbx, TYPECODE_TYPE
+        mov     rbx, rax
+        jne     error_not_type
         next
 endcode
 
