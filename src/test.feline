@@ -1144,12 +1144,9 @@ test: sequence=-test-1
 sequence=-test-1
 
 test: symbol-props-test-1
-    clear
-    "foo" ' dup symbol-prop get-datastack { f } sequence= assert-true
-    clear
+    { f } [ "foo" ' dup symbol-prop ] unit-test
     "this is a test" "foo" ' dup symbol-set-prop
-    "foo" ' dup symbol-prop get-datastack { "this is a test" } sequence= assert-true
-    clear
+    { "this is a test" } [ "foo" ' dup symbol-prop ] unit-test
 
     -- clean up
     f "foo" ' dup symbol-set-prop
