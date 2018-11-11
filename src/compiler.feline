@@ -71,29 +71,34 @@ special: current-context
     ' emit-byte each ;
 
 tuple: node
-    literal?
     literal-value
-    literal-type
     op
-    derived-type
-    declared-type ;
+    type                                -- result type
+    pred                                -- predecessor node or f
+;
 
 : make-literal-node                     -- literal -> node
+    dup type-of                         -- -> literal type
     node make-instance
-    t >>literal?
+    swap >>type
     swap >>literal-value ;
 
 : make-operator-node                    -- symbol -> node
     node make-instance
     swap >>op ;
 
-: inst.                                 -- node -> void
-    ?nl
-    "op: " write-string
-    dup op>> object->string write-string
-    space
-    "literal: " write-string
-    literal-value>> object->string write-string ;
+: dump-node ( node )                    -- node -> void
+    node op>> [
+        "operator: " write-string
+        node op>> object->string write-string
+        " type: " write-string
+        node type>> object->string print
+    ] [
+        "literal: " write-string
+        node literal-value>> object->string write-string
+        " type: " write-string
+        node type>> [ object->string print ] [ . ] if*
+    ] if ;
 
 : pending                               -- void -> vector
     current-context get pending>> ;
@@ -123,11 +128,20 @@ defer compile-quotation
     ] if ;
 
 : precompile-quotation                  -- quotation -> array
-    dup quotation-array [ precompile-object ] map-array -- -> array
+
+    64 <vector> :> vec
+
+    quotation-array [
+        precompile-object               -- -> node
+        vec vector-?last >>pred
+        vec push
+    ] each
 
     compile-verbose? [
-        ?nl dup [ inst. ] each
-    ] when ;
+        ?nl vec [ dec. space dump-node ] each-index
+    ] when
+
+    vec ;
 
 : emit-pushrbx
     { 0x48 0x89 0x5d 0xf8 0x48 0x8d 0x6d 0xf8 } emit-bytes ;
@@ -181,7 +195,8 @@ defer compile-quotation
         symbol-inline? [ inline-primitive ] [ compile-call-symbol ] if
     ] if ;
 
-: compile-when
+: compile-when ( node )                 -- node -> void
+
     compile-verbose? [ ?nl "compile-when" print ] when
 
     pending empty? [ ' when compile-call-symbol ] return-if
@@ -203,13 +218,19 @@ defer compile-quotation
         ' when compile-call-symbol
     ] if ;
 
-: compile-declare
+: compile-declare ( node )              -- node -> void
+
     compile-verbose? [ ?nl "compile-declare" print ] when
 
-    pending-last-value array-?last symbol-value verify-type :> declared-type
-    pending-remove-last
+    node pred>> :> pred
 
-    declared-type pending-last declared-type<<
+    pred pending-last assert-eq
+
+    pending vector-pop*
+
+    pred literal-value>> array-?last symbol-value verify-type :> declared-type
+
+    declared-type node type<<
 
     compile-verbose? [
         ?nl "compile-declare declared type = " write-string declared-type type-name print
@@ -218,16 +239,11 @@ defer compile-quotation
 : inline-or-compile-call                -- symbol -> void
     dup symbol-primitive? [ compile-primitive ] [ compile-call-symbol ] if ;
 
-: derive-type ( node )                  -- node -> type/f
-    node literal?>> [
-        node literal-value>> type-of
-    ] return-if
+: compile-generic ( node )              -- node -> void
 
-    node declared-type>> ;
+    node op>> :> op
 
-: compile-generic ( op )                -- symbol -> void
-
-    pending empty? [ f ] [ pending-last derive-type ] if :> derived-type
+    node pred>> [ type>> ] [ f ] if* :> derived-type
 
     compile-verbose? [ ?nl "compile-generic derived-type = " write derived-type . ] when
 
@@ -251,15 +267,15 @@ defer compile-quotation
     node op>> :> op
 
     op ' when eq? [
-        compile-when
+        node compile-when
     ] return-if
 
     op ' declare eq? [
-        compile-declare
+        node compile-declare
     ] return-if
 
     op generic? [
-        op compile-generic
+        node compile-generic
     ] return-if
 
     flush-pending
@@ -274,7 +290,8 @@ defer compile-quotation
     ] if ;
 
 : compile-quotation-internal            -- quotation -> void
-    precompile-quotation                -- -> array
+
+    dup precompile-quotation            -- -> quotation array
 
     dup length 32 * initialize-code-block dup pc! origin!
 
