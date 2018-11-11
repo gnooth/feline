@@ -373,6 +373,35 @@ code type_to_string, 'type->string'     ; type -> string
         next
 endcode
 
+; ### as-type
+code as_type, 'as-type'                 ; x -> type
+        _dup
+        _ type?
+        _tagged_if .1
+        _return
+        _then .1
+
+        _dup
+        _ symbol?
+        _tagged_if .2
+        _dup
+        _ symbol_value
+        _dup
+        _ type?
+        _tagged_if .3
+        _nip
+        _return
+        _then .3
+        _drop
+        _then .2
+
+        _quote "ERROR: the value `%S` does not name a type."
+        _ format
+        _ error
+
+        next
+endcode
+
 ; ### declare
 code declare, 'declare'                 ; array -> void
 ; REVIEW

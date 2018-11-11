@@ -3631,4 +3631,28 @@ test: ||-test-1
 
 ||-test-1
 
+test: as-type-test-1
+    string type? assert-true
+    string as-type string assert-eq
+
+    string "test" type-of assert-eq
+
+    ' string symbol? assert-true
+    ' string type? assert-false
+    ' string as-type type? assert-true
+    ' string as-type string assert-eq
+
+    { string } first {
+        [ symbol? assert-true ]
+        [ type? assert-false ]
+        [ as-type type? assert-true ]
+        [ as-type string assert-eq ]
+    } cleave
+
+    [ 42 as-type ] assert-must-fail
+    [ "string" as-type ] assert-must-fail
+;
+
+as-type-test-1
+
 ?nl "Reached end of test.feline" write-string
