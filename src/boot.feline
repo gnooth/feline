@@ -23,6 +23,7 @@ public
 
 {
     "syntax.feline"
+    "declare.feline"
     "control.feline"
     "backtrace.feline"
     "dump.feline"
