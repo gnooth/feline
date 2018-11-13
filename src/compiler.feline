@@ -84,8 +84,10 @@ tuple: node
     swap >>literal-value ;
 
 : make-operator-node                    -- symbol -> node
+    [ symbol-declared-type ] keep
     node make-instance
-    swap >>op ;
+    swap >>op
+    swap >>type ;
 
 : dump-node ( node )                    -- node -> void
     node op>> [
