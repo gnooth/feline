@@ -401,13 +401,3 @@ code as_type, 'as-type'                 ; x -> type
 
         next
 endcode
-
-; ### declare
-code declare, 'declare'                 ; array -> void
-; REVIEW
-        _ array_?last
-        _ symbol_value
-        _ type_typecode
-        _ verify_typecode
-        next
-endcode

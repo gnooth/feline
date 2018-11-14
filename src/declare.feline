@@ -22,6 +22,9 @@ private
 
 public
 
+: declare                               -- array -> void
+    array-?last as-type type-typecode verify-typecode ;
+
 syntax: declare:
     must-parse-token
     find-name [ new-symbol-in-current-vocab ] unless verify-symbol :> sym
