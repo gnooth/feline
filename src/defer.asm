@@ -20,8 +20,7 @@ code make_deferred, 'make-deferred'     ; symbol -> void
         _dup
         _ symbol_set_deferred_bit       ; -> symbol
         _lit S_error_no_definition
-        _ one_array
-        _ array_to_quotation            ; -> symbol quotation
+        _ one_quotation                 ; -> symbol quotation
         _over
         _ symbol_set_def
         _lit error_no_definition        ; -> symbol raw-code-address
