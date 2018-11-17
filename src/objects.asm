@@ -182,8 +182,6 @@ code destroy_heap_object, 'destroy_heap_object', SYMBOL_INTERNAL
         je      destroy_hashtable_unchecked
         cmp     eax, TYPECODE_QUOTATION
         je      destroy_quotation_unchecked
-        cmp     eax, TYPECODE_CURRY
-        je      destroy_curry_unchecked
         cmp     eax, TYPECODE_THREAD
         je      destroy_thread
         cmp     eax, TYPECODE_MUTEX
@@ -370,13 +368,6 @@ code object_to_string, 'object->string' ; object -> string
         _ wrapper_to_string
         _return
         _then .13
-
-        _dup
-        _ curry?
-        _tagged_if .15
-        _ curry_to_string
-        _return
-        _then .15
 
         _dup
         _ slice?

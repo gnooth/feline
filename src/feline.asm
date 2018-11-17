@@ -65,7 +65,6 @@ string FELINE_VOCAB_NAME, 'feline'
 %include "vocab.asm"
 %include "wrapper.asm"
 %include "quotation.asm"
-%include "curry.asm"
 %include "slot.asm"
 %include "tuple.asm"
 %include "dynamic-scope.asm"

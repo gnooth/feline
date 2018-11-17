@@ -276,14 +276,30 @@ code callable?, 'callable?'             ; object -- ?
         cmp     ebx, TYPECODE_SYMBOL
         je      .1
 
-        cmp     ebx, TYPECODE_CURRY
-        je      .1
-
         mov     ebx, f_value
         next
 
 .1:
         mov     ebx, t_value
+        next
+endcode
+
+; ### verify-callable
+code verify_callable, 'verify-callable' ; callable -> callable
+        _dup
+        _ quotation?
+        _tagged_if .1
+        _return
+        _then .1
+
+        _dup
+        _ symbol?
+        _tagged_if .2
+        _return
+        _then .2
+
+        _error "not a callable"
+
         next
 endcode
 
@@ -310,8 +326,6 @@ code callable_raw_code_address, 'callable_raw_code_address', SYMBOL_INTERNAL
 
         cmp     rax, TYPECODE_SYMBOL
         je      symbol_raw_code_address
-        cmp     rax, TYPECODE_CURRY
-        je      curry_raw_code_address
         cmp     rax, TYPECODE_QUOTATION
         jne     .error
 
