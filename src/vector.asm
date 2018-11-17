@@ -109,21 +109,25 @@ code vector?, 'vector?'                 ; handle -- ?
         next
 endcode
 
-; ### check_vector
-code check_vector, 'check_vector', SYMBOL_INTERNAL      ; handle -- vector
-        _dup
-        _ deref
+; ### check-vector
+code check_vector, 'check-vector'       ; handle -> vector
+        cmp     bl, HANDLE_TAG
+        jne     .error2
+        mov     rdx, rbx                ; copy argument in case there's an error
+        _handle_to_object_unsafe
+%ifdef DEBUG
         test    rbx, rbx
-        jz      .error
+        jz      error_empty_handle
+%endif
         _object_raw_typecode_eax
         cmp     eax, TYPECODE_VECTOR
-        jne     .error
-        _nip
+        jne     .error1
         next
-.error:
-        _drop
-        _ error_not_vector
-        next
+.error1:
+        ; restore original argument
+        mov     rbx, rdx
+.error2:
+        jmp     error_not_vector
 endcode
 
 ; ### verify-vector
