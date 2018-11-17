@@ -128,17 +128,6 @@ code mark_quotation, 'mark-quotation'   ; quotation --
         next
 endcode
 
-; ### mark-curry
-code mark_curry, 'mark-curry'           ; curry --
-        _dup
-        _curry_object
-        _ maybe_mark_handle
-        _curry_callable
-        _ maybe_mark_handle
-        ; REVIEW code
-        next
-endcode
-
 ; ### mark-slice
 code mark_slice, 'mark-slice'           ; slice --
         _slice_seq
@@ -282,10 +271,6 @@ code initialize_gc_dispatch_table, 'initialize_gc_dispatch_table', SYMBOL_INTERN
 
         _lit mark_quotation
         _lit TYPECODE_QUOTATION
-        _this_array_set_nth_unsafe
-
-        _lit mark_curry
-        _lit TYPECODE_CURRY
         _this_array_set_nth_unsafe
 
         _lit mark_slice
