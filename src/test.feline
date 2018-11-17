@@ -1032,8 +1032,8 @@ test: length-test-1
     { 1 2 3 } length 3 assert-eq
     vector{ 1 2 3 "test" } length 4 assert-eq
     [ dup + ] length 2 assert-eq
-    3 [ + ] <curry> length 2 assert-eq
-    3 ' + <curry> length 2 assert-eq
+--     3 [ + ] <curry> length 2 assert-eq
+--     3 ' + <curry> length 2 assert-eq
 ;
 
 length-test-1
@@ -1609,32 +1609,32 @@ test: index?-test-1
 
 index?-test-1
 
-test: curry-nth-test-1
-    3 [ + ] <curry>
-    0 over curry-nth 3 assert-eq
-    1 over curry-nth ' + assert-eq
-    0 over nth 3 assert-eq
-    1 over nth ' + assert-eq
-    clear
-;
+-- test: curry-nth-test-1
+--     3 [ + ] <curry>
+--     0 over curry-nth 3 assert-eq
+--     1 over curry-nth ' + assert-eq
+--     0 over nth 3 assert-eq
+--     1 over nth ' + assert-eq
+--     clear
+-- ;
 
-curry-nth-test-1
+-- curry-nth-test-1
 
-test: curry-nth-unsafe-test-1
-    3 [ + ] <curry>
-    0 over curry-nth-unsafe 3 assert-eq
-    1 over curry-nth-unsafe ' + assert-eq
-    0 over nth-unsafe 3 assert-eq
-    1 over nth-unsafe ' + assert-eq
-    clear
-;
+-- test: curry-nth-unsafe-test-1
+--     3 [ + ] <curry>
+--     0 over curry-nth-unsafe 3 assert-eq
+--     1 over curry-nth-unsafe ' + assert-eq
+--     0 over nth-unsafe 3 assert-eq
+--     1 over nth-unsafe ' + assert-eq
+--     clear
+-- ;
 
-curry-nth-unsafe-test-1
+-- curry-nth-unsafe-test-1
 
 test: ?nth-test-1
-    4 { 0 1 2 3 } [ ?nth ] <curry> each-integer
-    get-datastack { 0 1 2 3 } sequence= assert-true
-    clear
+--     4 { 0 1 2 3 } [ ?nth ] <curry> each-integer
+--     get-datastack { 0 1 2 3 } sequence= assert-true
+--     clear
 
     { 0 1 2 3 }
     -1 over ?nth assert-false
@@ -1646,9 +1646,9 @@ test: ?nth-test-1
 ?nth-test-1
 
 test: ?nth-test-2
-    4 vector{ 0 1 2 3 } [ ?nth ] <curry> each-integer
-    get-datastack { 0 1 2 3 } sequence= assert-true
-    clear
+--     4 vector{ 0 1 2 3 } [ ?nth ] <curry> each-integer
+--     get-datastack { 0 1 2 3 } sequence= assert-true
+--     clear
 
     vector{ 0 1 2 3 }
     -1 over ?nth assert-false
@@ -2582,8 +2582,8 @@ test: type-of-test-1
     [ dup + ] type-of quotation assert-eq
     ' dup <wrapper> dup wrapper? assert-true
     type-of wrapper assert-eq
-    3 [ + ] <curry> dup curry? assert-true
-    type-of curry assert-eq
+--     3 [ + ] <curry> dup curry? assert-true
+--     type-of curry assert-eq
     2 5 { 11 12 13 14 15 16 17 18 } <slice> dup slice? assert-true
     type-of slice assert-eq
     3 5 <range> dup range? assert-true
@@ -2664,7 +2664,7 @@ test: callable?-test-1
 
     [ dup ] callable? assert-true
 
-    3 [ + ] <curry> dup curry? assert-true callable? assert-true
+--     3 [ + ] <curry> dup curry? assert-true callable? assert-true
 
     42 callable? assert-false
     "test" callable? assert-false
