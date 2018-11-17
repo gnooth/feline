@@ -572,7 +572,6 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method length, TYPECODE_SLICE, slice_length
         _add_method length, TYPECODE_RANGE, range_length
         _add_method length, TYPECODE_QUOTATION, quotation_length
-        _add_method length, TYPECODE_CURRY, curry_length
 
         ; push
         _initialize_generic_function push
@@ -587,7 +586,6 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method nth, TYPECODE_SBUF, sbuf_nth
         _add_method nth, TYPECODE_SLICE, slice_nth
         _add_method nth, TYPECODE_QUOTATION, quotation_nth
-        _add_method nth, TYPECODE_CURRY, curry_nth
 
         ; nth-unsafe
         _initialize_generic_function nth_unsafe
@@ -598,7 +596,6 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method nth_unsafe, TYPECODE_SLICE, slice_nth_unsafe
         _add_method nth_unsafe, TYPECODE_RANGE, range_nth_unsafe
         _add_method nth_unsafe, TYPECODE_QUOTATION, quotation_nth_unsafe
-        _add_method nth_unsafe, TYPECODE_CURRY, curry_nth_unsafe
 
         ; set-nth
         _initialize_generic_function set_nth
