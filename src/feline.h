@@ -29,8 +29,8 @@ typedef int64_t cell;
 #define T_VALUE                14
 #define F_VALUE                 6
 
-#define TYPECODE_FLOAT         18
-#define TYPECODE_INT64         23
+#define TYPECODE_FLOAT         17
+#define TYPECODE_INT64         22
 
 #define FIXNUM_TAG_BITS         1
 

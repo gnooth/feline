@@ -232,7 +232,6 @@ code initialize_types, 'initialize_types', SYMBOL_INTERNAL
         _add_type "quotation", TYPECODE_QUOTATION
         _add_type "wrapper", TYPECODE_WRAPPER
         _add_type "tuple", TYPECODE_TUPLE
-        _add_type "curry", TYPECODE_CURRY
         _add_type "slice", TYPECODE_SLICE
         _add_type "range", TYPECODE_RANGE
         _add_type "lexer", TYPECODE_LEXER

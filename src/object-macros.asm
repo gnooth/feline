@@ -40,28 +40,25 @@ TYPECODE_VOCAB                  equ 10
 TYPECODE_QUOTATION              equ 11
 TYPECODE_WRAPPER                equ 12
 TYPECODE_TUPLE                  equ 13
-TYPECODE_CURRY                  equ 14
-TYPECODE_SLICE                  equ 15
-TYPECODE_RANGE                  equ 16
-TYPECODE_LEXER                  equ 17
-TYPECODE_FLOAT                  equ 18
-TYPECODE_ITERATOR               equ 19
-TYPECODE_METHOD                 equ 20
-TYPECODE_GENERIC_FUNCTION       equ 21
-TYPECODE_UINT64                 equ 22
-TYPECODE_INT64                  equ 23
-; TYPECODE_TUPLE_CLASS            equ 24
-TYPECODE_TYPE                   equ 25
-TYPECODE_KEYWORD                equ 26
-TYPECODE_THREAD                 equ 27
-TYPECODE_MUTEX                  equ 28
-TYPECODE_STRING_ITERATOR        equ 29
-; TYPECODE_STREAM                 equ 30
-TYPECODE_SLOT                   equ 31
-TYPECODE_FILE_OUTPUT_STREAM     equ 32
-TYPECODE_STRING_OUTPUT_STREAM   equ 33
+TYPECODE_SLICE                  equ 14
+TYPECODE_RANGE                  equ 15
+TYPECODE_LEXER                  equ 16
+TYPECODE_FLOAT                  equ 17
+TYPECODE_ITERATOR               equ 18
+TYPECODE_METHOD                 equ 19
+TYPECODE_GENERIC_FUNCTION       equ 20
+TYPECODE_UINT64                 equ 21
+TYPECODE_INT64                  equ 22
+TYPECODE_TYPE                   equ 23
+TYPECODE_KEYWORD                equ 24
+TYPECODE_THREAD                 equ 25
+TYPECODE_MUTEX                  equ 26
+TYPECODE_STRING_ITERATOR        equ 27
+TYPECODE_SLOT                   equ 28
+TYPECODE_FILE_OUTPUT_STREAM     equ 29
+TYPECODE_STRING_OUTPUT_STREAM   equ 30
 
-LAST_BUILTIN_TYPECODE           equ 33
+LAST_BUILTIN_TYPECODE           equ 30
 
 asm_global last_raw_typecode_, LAST_BUILTIN_TYPECODE + 1
 
