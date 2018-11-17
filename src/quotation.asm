@@ -355,8 +355,8 @@ code callable_code_address, 'callable-code-address' ; callable -> tagged-code-ad
         next
 endcode
 
-; ### quotation>string
-code quotation_to_string, 'quotation>string'    ; quotation -- string
+; ### quotation->string
+code quotation_to_string, 'quotation->string' ; quotation -> string
         _ quotation_array
 
         _quote "[ "
@@ -376,29 +376,5 @@ code quotation_to_string, 'quotation>string'    ; quotation -- string
         _ sbuf_push
         _ sbuf_to_string
 
-        next
-endcode
-
-; ### .quotation
-code dot_quotation, '.quotation'        ; quotation --
-        _ quotation_array
-
-        _ check_array
-
-        push    this_register
-        mov     this_register, rbx
-
-        _write "[ "
-        _array_raw_length
-        _zero
-        _?do .1
-        _i
-        _this_array_nth_unsafe
-        _ dot_object
-        _ space
-        _loop .1
-        _write "]"
-
-        pop     this_register
         next
 endcode
