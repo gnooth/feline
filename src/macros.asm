@@ -87,17 +87,9 @@
 %endmacro
 
 %macro  _verify_index 0
+        _verify_fixnum
         test    rbx, rbx
         js      error_not_index
-%if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
-        test    bl, 1
-        jz      error_not_index
-%else
-        mov     al, bl
-        and     al, FIXNUM_TAG_MASK
-        cmp     al, FIXNUM_TAG
-        jne     error_not_index
-%endif
 %endmacro
 
 %macro  _verify_index 1
