@@ -108,12 +108,26 @@ code array_raw_length, 'array_raw_length', SYMBOL_INTERNAL
 endcode
 
 ; ### array-length
-code array_length, 'array-length'       ; array -- length
+code array_length, 'array-length'       ; array -> length
         _ check_array
         _array_raw_length
         _tag_fixnum
         next
 endcode
+
+; ### allocate_array
+subroutine allocate_array
+; call with untagged length in arg0_register
+; returns untagged address (not handle) of allocated object in rax
+        push    arg0_register           ; save length
+        add     arg0_register, 2        ; object header and length slot
+        shl     arg0_register, 3        ; convert cells to bytes
+        xcall   malloc                  ; raw object address in rax
+        pop     arg0_register           ; restore saved length
+        mov     qword [rax], TYPECODE_ARRAY
+        mov     [rax + BYTES_PER_CELL], arg0_register
+        ret
+endsub
 
 ; ### <array>
 code new_array, '<array>'               ; length element -- handle
@@ -164,26 +178,25 @@ new_array_untagged:
 endcode
 
 ; ### 1array
-code one_array, '1array'                ; x -- handle
-        _lit 1
-        _swap
-        _ new_array_untagged            ; -- handle
+code one_array, '1array'                ; x -> array
+        mov     arg0_register, 1        ; untagged length in arg0_register
+        _ allocate_array                ; returns untagged address in rax
+        mov     [rax + ARRAY_DATA_OFFSET], rbx
+        mov     rbx, rax
+        _ new_handle
         next
 endcode
 
 ; ### 2array
-code two_array, '2array'                ; x y -- handle
-        _lit 2
-        _lit 0
-        _ new_array_untagged            ; -- x y handle
-        _duptor
-        _lit 1
-        _swap
-        _ array_set_nth_untagged
-        _lit 0
-        _rfetch
-        _ array_set_nth_untagged
-        _rfrom
+code two_array, '2array'                ; x y -> array
+        mov     arg0_register, 2        ; untagged length in arg0_register
+        _ allocate_array                ; returns untagged address in rax
+        mov     rdx, [rbp]              ; x in rdx
+        _nip
+        mov     [rax + ARRAY_DATA_OFFSET], rdx
+        mov     [rax + ARRAY_DATA_OFFSET + BYTES_PER_CELL], rbx ; y
+        mov     rbx, rax
+        _ new_handle
         next
 endcode
 
