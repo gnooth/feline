@@ -1279,6 +1279,25 @@ code copy_bytes, 'copy-bytes'           ; source destination count --
         next
 endcode
 
+; ### copy_cells
+subroutine copy_cells
+; arg0_register: untagged source address
+; arg1_register: untagged destination address
+; arg2_register: untagged count
+; does not support overlapping moves
+        test    arg2_register, arg2_register
+        je      .1
+        xor     eax, eax
+.2:
+        mov     r10, [arg0_register + rax * BYTES_PER_CELL]
+        mov     [arg1_register + rax * BYTES_PER_CELL], r10
+        add     rax, 1
+        cmp     arg2_register, rax
+        jne     .2
+.1:
+        ret
+endsub
+
 ; ### char-upcase
 code char_upcase, 'char-upcase'
         _check_char
