@@ -266,6 +266,39 @@ code quotation_set_code_size, 'quotation-set-code-size'
         next
 endcode
 
+; ### curry
+code curry, 'curry'                     ; x quot1 -> quot2
+        _dup
+        _ symbol?
+        _tagged_if .1
+        _ two_array
+        _ array_to_quotation
+        next
+        _then .1
+
+        _ quotation_array
+        _ check_array                   ; -> x array
+
+        mov     arg0_register, [rbx + ARRAY_LENGTH_OFFSET]
+        add     arg0_register, 1
+        _ allocate_array                ; returns untagged address in rax
+        mov     rdx, [rbp]              ; x in rdx
+        mov     [rax + ARRAY_DATA_OFFSET], rdx
+
+        lea     arg0_register, [rbx + ARRAY_DATA_OFFSET] ; source
+        lea     arg1_register, [rax + ARRAY_DATA_OFFSET + BYTES_PER_CELL] ; destination
+        mov     arg2_register, [rbx + ARRAY_LENGTH_OFFSET] ; count
+
+        push    rax
+        _ copy_cells
+        pop     rbx
+
+        _nip
+        _ new_handle
+        _ array_to_quotation
+        next
+endcode
+
 ; ### callable?
 code callable?, 'callable?'             ; object -- ?
         _ object_raw_typecode
