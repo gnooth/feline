@@ -119,7 +119,7 @@ global generic-writer                   -- -> symbol
     10 <vector>
     [ must-parse-token dup ";" string= ] [ suffix! ] until
     drop
-    vector>array
+    vector->array
     [ 1+ make-slot ] map-index slots!
 ;
 

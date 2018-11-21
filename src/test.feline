@@ -713,13 +713,13 @@ test: vector-?nth-test-1
 
 vector-?nth-test-1
 
-test: vector>array-test-1
-    vector{ 1 2 3 } vector>array
+test: vector->array-test-1
+    vector{ 1 2 3 } vector->array
     [ array? assert-true ] keep
     { 1 2 3 } assert=
 ;
 
-vector>array-test-1
+vector->array-test-1
 
 : %local-test-1                         -- -> 42
     42 :> foo

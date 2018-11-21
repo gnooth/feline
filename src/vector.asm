@@ -15,6 +15,8 @@
 
 file __FILE__
 
+%define VECTOR_LENGTH_OFFSET    8
+
 %define vector_raw_length_slot  qword [rbx + BYTES_PER_CELL]
 
 %macro  _vector_raw_length 0            ; vector -- untagged-length
@@ -34,6 +36,8 @@ file __FILE__
 %macro  _this_vector_set_raw_length 0   ; untagged-length --
         _this_set_slot1
 %endmacro
+
+%define VECTOR_DATA_ADDRESS_OFFSET      16
 
 %define vector_raw_data_address_slot    qword [rbx + BYTES_PER_CELL * 2]
 
@@ -1010,40 +1014,5 @@ code vector_to_string, 'vector>string'  ; vector -- string
         _over
         _ sbuf_push
         _ sbuf_to_string
-        next
-endcode
-
-; ### vector-clone
-code vector_clone, 'vector-clone'       ; old -- new
-        _dup
-        _ vector_length
-        _ new_vector                    ; -- old new
-        _swap
-
-        _quotation .1
-        _over
-        _ vector_push
-        _end_quotation .1
-
-        _ vector_each
-        next
-endcode
-
-; ### vector>array
-code vector_to_array, 'vector>array'    ; vector -- array
-        _dup
-        _ vector_length
-        _f
-        _ new_array                     ; -- vector array
-        _swap                           ; -- array vector
-
-        _quotation .1
-        ; -- array element index
-        _pick
-        ; -- array element index array
-        _ array_set_nth
-        _end_quotation .1               ; -- array vector quotation
-
-        _ vector_each_index             ; -- array
         next
 endcode

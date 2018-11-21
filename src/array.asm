@@ -125,7 +125,7 @@ subroutine allocate_array
         xcall   malloc                  ; raw object address in rax
         pop     arg0_register           ; restore saved length
         mov     qword [rax], TYPECODE_ARRAY
-        mov     [rax + BYTES_PER_CELL], arg0_register
+        mov     [rax + ARRAY_LENGTH_OFFSET], arg0_register
         ret
 endsub
 
@@ -140,6 +140,27 @@ code make_array_1, 'make-array/1'       ; length -> array
         mov     rbx, rax                ; object address
         _ fill_cells
         _ new_handle
+        next
+endcode
+
+; ### vector->array
+code vector_to_array, 'vector->array'   ; vector -- array
+        _ check_vector                  ; -> raw-vector
+
+        mov     arg0_register, [rbx + VECTOR_LENGTH_OFFSET]
+        _ allocate_array                ; returns raw object address in rax
+
+        mov     arg0_register, [rbx + VECTOR_DATA_ADDRESS_OFFSET] ; source
+        lea     arg1_register, [rax + ARRAY_DATA_OFFSET] ; destination
+        mov     arg2_register, [rax + ARRAY_LENGTH_OFFSET] ; length
+
+        ; must move array address into rbx before calling copy_cells!
+        mov     rbx, rax
+
+        _ copy_cells
+
+        _ new_handle
+
         next
 endcode
 
