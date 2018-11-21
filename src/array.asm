@@ -129,6 +129,20 @@ subroutine allocate_array
         ret
 endsub
 
+; ### make-array/1
+code make_array_1, 'make-array/1'       ; length -> array
+        _check_index                    ; -> untagged-length
+        mov     arg0_register, rbx
+        _ allocate_array                ; returns raw object address in rax
+        lea     arg0_register, [rax + ARRAY_DATA_OFFSET] ; data address
+        mov     arg1_register, f_value  ; element
+        mov     arg2_register, rbx      ; length
+        mov     rbx, rax                ; object address
+        _ fill_cells
+        _ new_handle
+        next
+endcode
+
 ; ### <array>
 code new_array, '<array>'               ; length element -- handle
 
