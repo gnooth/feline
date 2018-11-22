@@ -971,8 +971,10 @@ code get_datastack, 'get-datastack'     ; -> array
         sub     rbx, 1                  ; rbx = raw depth (number of cells)
 
         push    rcx                     ; save rcx = raw sp0
-        _f
-        _ new_array_untagged            ; -> handle
+
+        _tag_fixnum
+        _ make_array_1
+
         pop     rcx                     ; restore rcx = raw sp0
 
         push    rbx                     ; save array handle
