@@ -236,10 +236,10 @@ asm_global gc_dispatch_table_
 code initialize_gc_dispatch_table, 'initialize_gc_dispatch_table', SYMBOL_INTERNAL
 
         ; REVIEW
-        _lit 64
-
+        _tagged_fixnum 64
         _lit 0
-        _ new_array_untagged
+        _ new_array
+
         mov     [gc_dispatch_table_], rbx
         _lit gc_dispatch_table_
         _ gc_add_root
