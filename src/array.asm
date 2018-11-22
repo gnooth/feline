@@ -143,8 +143,28 @@ code make_array_1, 'make-array/1'       ; length -> array
         next
 endcode
 
+; ### <array>
+code new_array, '<array>'               ; length element -> array
+        _swap
+        _check_index                    ; -> element untagged-length
+        mov     arg0_register, rbx
+        _ allocate_array                ; returns raw object address in rax
+
+        lea     arg0_register, [rax + ARRAY_DATA_OFFSET] ; data address
+        mov     arg1_register, [rbp]    ; element
+        mov     arg2_register, rbx      ; untagged length
+        _nip
+
+        ; must move array address into rbx before calling fill_cells
+        mov     rbx, rax
+
+        _ fill_cells
+        _ new_handle
+        next
+endcode
+
 ; ### vector->array
-code vector_to_array, 'vector->array'   ; vector -- array
+code vector_to_array, 'vector->array'   ; vector -> array
         _ check_vector                  ; -> raw-vector
 
         mov     arg0_register, [rbx + VECTOR_LENGTH_OFFSET]
@@ -161,54 +181,6 @@ code vector_to_array, 'vector->array'   ; vector -- array
 
         _ new_handle
 
-        next
-endcode
-
-; ### <array>
-code new_array, '<array>'               ; length element -- handle
-
-        _swap
-        _check_index
-        _swap
-
-new_array_untagged:
-        push    this_register
-
-        _over                           ; -- length element length
-        _cells
-        _lit 16
-        _plus                           ; -- length element total-size
-        _ allocate_object               ; -- length element array
-        popd    this_register           ; -- length element
-
-        ; Zero all bits of object header.
-        xor     eax, eax
-        mov     [this_register], rax
-
-        _this_object_set_raw_typecode TYPECODE_ARRAY
-        _this_object_set_flags OBJECT_ALLOCATED_BIT
-
-        _over                           ; -- length element length
-        _this_array_set_raw_length      ; -- length element
-
-        popd    rax                     ; element in rax
-        popd    rcx                     ; length in rcx
-%ifdef WIN64
-        push    rdi
-%endif
-        lea     rdi, [this_register + ARRAY_DATA_OFFSET]
-        rep     stosq
-%ifdef WIN64
-        pop     rdi
-%endif
-
-        pushrbx
-        mov     rbx, this_register      ; -- array
-
-        ; Return handle of allocated array.
-        _ new_handle                    ; -- handle
-
-        pop     this_register
         next
 endcode
 
@@ -421,8 +393,8 @@ code map_array, 'map-array'             ; array callable -- new-array
         popd    r12                     ; code address in r12
 
         _this_array_raw_length
-        _f
-        _ new_array_untagged            ; -- new-array
+        _tag_fixnum
+        _ make_array_1                  ; -> new-array
 
         _this_array_raw_length
         _zero
