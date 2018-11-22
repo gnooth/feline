@@ -236,58 +236,34 @@ code two_array, '2array'                ; x y -> array
 endcode
 
 ; ### 3array
-code three_array, '3array'              ; x y z -- handle
-        _lit 3
-        _lit 0
-        _ new_array_untagged            ; -- x y z handle
-        _duptor
-        _handle_to_object_unsafe        ; -- x y z array
-        push    this_register
-        popd    this_register           ; -- x y z
-%ifdef WIN64
-        push    rdi
-%endif
-        lea     rdi, [this_register + ARRAY_DATA_OFFSET]
-        mov     rax, [rbp + BYTES_PER_CELL]
-        stosq
-        mov     rax, [rbp]
-        stosq
-        mov     [rdi], rbx
-%ifdef WIN64
-        pop     rdi
-%endif
-        _3drop
-        pop     this_register
-        _rfrom
+code three_array, '3array'              ; x y z -> array
+        mov     arg0_register, 3        ; untagged length in arg0_register
+        _ allocate_array                ; returns untagged address in rax
+        mov     rdx, [rbp + BYTES_PER_CELL] ; x
+        mov     rcx, [rbp]              ; y
+        _2nip
+        mov     [rax + ARRAY_DATA_OFFSET], rdx
+        mov     [rax + ARRAY_DATA_OFFSET + BYTES_PER_CELL], rcx
+        mov     [rax + ARRAY_DATA_OFFSET + BYTES_PER_CELL * 2], rbx ; z
+        mov     rbx, rax
+        _ new_handle
         next
 endcode
 
 ; ### 4array
-code four_array, '4array'               ; w x y z -- handle
-        _lit 4
-        _lit 0
-        _ new_array_untagged            ; -- w x y z handle
-        _duptor
-        _handle_to_object_unsafe        ; -- w x y z array
-        push    this_register
-        popd    this_register           ; -- w x y z
-%ifdef WIN64
-        push    rdi
-%endif
-        lea     rdi, [this_register + ARRAY_DATA_OFFSET]
-        mov     rax, [rbp + BYTES_PER_CELL * 2]
-        stosq
-        mov     rax, [rbp + BYTES_PER_CELL]
-        stosq
-        mov     rax, [rbp]
-        stosq
-        mov     [rdi], rbx
-%ifdef WIN64
-        pop     rdi
-%endif
-        _4drop
-        pop     this_register
-        _rfrom
+code four_array, '4array'               ; w x y z -> array
+        mov     arg0_register, 4        ; untagged length in arg0_register
+        _ allocate_array                ; returns untagged address in rax
+        mov     rsi, [rbp + BYTES_PER_CELL * 2 ] ; w
+        mov     rdx, [rbp + BYTES_PER_CELL] ; x
+        mov     rcx, [rbp]              ; y
+        _3nip
+        mov     [rax + ARRAY_DATA_OFFSET], rsi
+        mov     [rax + ARRAY_DATA_OFFSET + BYTES_PER_CELL], rdx
+        mov     [rax + ARRAY_DATA_OFFSET + BYTES_PER_CELL * 2], rcx
+        mov     [rax + ARRAY_DATA_OFFSET + BYTES_PER_CELL * 3], rbx ; z
+        mov     rbx, rax
+        _ new_handle
         next
 endcode
 
