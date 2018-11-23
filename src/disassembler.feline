@@ -838,7 +838,11 @@ last-word 0x81 install-handler
                 ] }
                 [
                     -- default case
-                    drop modrm-rm register-rm dbase!
+                    drop
+                    modrm-rm register-rm dbase!
+                    -- source is imm8
+                    t immediate-operand?!
+                    next-byte immediate-operand!
                 ]
             } case
         ] }
