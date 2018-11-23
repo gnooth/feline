@@ -143,8 +143,8 @@ code make_array_1, 'make-array/1'       ; length -> array
         next
 endcode
 
-; ### <array>
-code new_array, '<array>'               ; length element -> array
+; ### make-array/2
+code make_array_2, 'make-array/2'       ; length element -> array
         _swap
         _check_index                    ; -> element untagged-length
         mov     arg0_register, rbx
@@ -242,8 +242,7 @@ endcode
 ; ### array-new-sequence
 code array_new_sequence, 'array-new-sequence' ; len seq -- newseq
         _drop
-        _f
-        _ new_array
+        _ make_array_1
         next
 endcode
 

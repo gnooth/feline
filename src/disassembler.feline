@@ -206,7 +206,7 @@ global #operands
     #operands 0 > [ .dest ] when
     #operands 1 > [ .source ] when ;
 
-global handlers 256 f <array> handlers!
+global handlers 256 make-array/1 handlers!
 
 : install-handler                       -- handler opcode -> void
     handlers array-set-nth ;
@@ -1539,9 +1539,9 @@ last-word 0xfd install-handler
 
 last-word 0xff install-handler
 
--- Two-byte opcodes beginning with 0x0f
+-- 2-byte opcodes beginning with 0x0f
 
-global 0x0f-handlers 256 f <array> 0x0f-handlers!
+global 0x0f-handlers 256 make-array/1 0x0f-handlers!
 
 : install-0x0f-handler                  -- handler opcode -> void
     0x0f-handlers array-set-nth ;

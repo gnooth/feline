@@ -238,7 +238,7 @@ code initialize_gc_dispatch_table, 'initialize_gc_dispatch_table', SYMBOL_INTERN
         ; REVIEW
         _tagged_fixnum 64
         _lit 0
-        _ new_array
+        _ make_array_2
 
         mov     [gc_dispatch_table_], rbx
         _lit gc_dispatch_table_

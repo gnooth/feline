@@ -518,7 +518,7 @@ test: tri@-test-1
 tri@-test-1
 
 test: array-test-1
-    10 42 <array>
+    10 42 make-array/2
     [ array? assert-true ] keep
     [ length 10 assert= ] keep
     10 [ over nth 42 assert-eq ] each-integer
@@ -528,7 +528,7 @@ test: array-test-1
 array-test-1
 
 test: array-test-2
-    10 f <array> :> a
+    10 make-array/1 :> a
     10 [ [ number>string ] keep a array-set-nth ] each-integer
     a [ number>string assert= ] each-index
     [ -1 a array-nth ] assert-must-fail
