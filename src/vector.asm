@@ -99,16 +99,19 @@ file __FILE__
 %endmacro
 
 ; ### vector?
-code vector?, 'vector?'                 ; handle -- ?
-        _ deref                         ; -- raw-object/0
+code vector?, 'vector?'                 ; x -> ?
+        cmp     bl, HANDLE_TAG
+        jne     .not_a_vector
+        _handle_to_object_unsafe
+%ifdef DEBUG
         test    rbx, rbx
-        jz      .1
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_VECTOR
-        jne     .1
+        jz      error_empty_handle
+%endif
+        cmp     word [rbx], TYPECODE_VECTOR
+        jne     .not_a_vector
         mov     ebx, t_value
-        _return
-.1:
+        next
+.not_a_vector:
         mov     ebx, f_value
         next
 endcode
@@ -117,19 +120,17 @@ endcode
 code check_vector, 'check-vector'       ; handle -> vector
         cmp     bl, HANDLE_TAG
         jne     .error2
-        mov     rdx, rbx                ; copy argument in case there's an error
+        mov     rdx, rbx                ; copy argument in case there is an error
         _handle_to_object_unsafe
 %ifdef DEBUG
         test    rbx, rbx
         jz      error_empty_handle
 %endif
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_VECTOR
+        cmp     word [rbx], TYPECODE_VECTOR
         jne     .error1
         next
 .error1:
-        ; restore original argument
-        mov     rbx, rdx
+        mov     rbx, rdx                ; restore original argument
 .error2:
         jmp     error_not_vector
 endcode
