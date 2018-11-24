@@ -19,11 +19,14 @@ file __FILE__
 code make_deferred, 'make-deferred'     ; symbol -> void
         _dup
         _ symbol_set_deferred_bit       ; -> symbol
+        _dup
         _lit S_error_no_definition
-        _ one_quotation                 ; -> symbol quotation
-        _over
-        _ symbol_set_def
-        _lit error_no_definition        ; -> symbol raw-code-address
+        _ curry                         ; -> symbol quotation
+        _ compile_quotation
+        _dup                            ; -> symbol quotation quotation
+        _pick                           ; -> symbol quotation quotation symbol
+        _ symbol_set_def                ; -> symbol quotation
+        _ quotation_raw_code_address    ; -> symbol raw-code-address
         _over
         _ symbol_set_value
         _ compile_deferred
@@ -70,8 +73,9 @@ code error_not_deferred, 'error-not-deferred'   ; symbol ->
 endcode
 
 ; ### error-no-definition
-code error_no_definition, 'error-no-definition' ; void -> void
-        _quote "ERROR: no definition for deferred word."
+code error_no_definition, 'error-no-definition' ; symbol -> void
+        _quote "ERROR: no definition for the deferred word `%s`."
+        _ format
         _ error
         next
 endcode
