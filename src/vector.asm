@@ -59,6 +59,8 @@ file __FILE__
         _this_set_slot2
 %endmacro
 
+%define VECTOR_CAPACITY_OFFSET          24
+
 %define vector_raw_capacity_slot        qword [rbx + BYTES_PER_CELL * 3]
 
 %macro  _vector_raw_capacity 0          ; vector -- raw-capacity
@@ -447,18 +449,15 @@ endcode
 ; ### vector-set-nth
 code vector_set_nth, 'vector-set-nth'   ; element index vector -> void
 
-        _verify_index qword [rbp]
-        _untag_fixnum qword [rbp]
-
         _ check_vector
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -- element untagged-index
+        poprbx                          ; -> element index
 
-        _this_vector_raw_capacity
-        cmp     [rbp], rbx
-        poprbx
+        _check_index
+
+        cmp     rbx, [this_register + VECTOR_CAPACITY_OFFSET]
         jl      .1
 
         ; -- element untagged-index
