@@ -268,6 +268,10 @@ endcode
 
 ; ### curry
 code curry, 'curry'                     ; x quot1 -> quot2
+        _tor
+        _ literalize
+        _rfrom
+
         _dup
         _ symbol?
         _tagged_if .1
