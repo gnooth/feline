@@ -248,18 +248,10 @@ new_vector_untagged:
         _this_vector_set_raw_capacity   ; --
 
         ; initialize all allocated cells to f
-        mov     rax, f_value            ; element in rax
-        _this_vector_raw_capacity
-        popd    rcx                     ; capacity in rcx
-%ifdef WIN64
-        push    rdi
-%endif
-        _this_vector_raw_data_address
-        popd    rdi
-        rep     stosq
-%ifdef WIN64
-        pop     rdi
-%endif
+        mov     arg0_register, [this_register + VECTOR_DATA_ADDRESS_OFFSET]
+        mov     arg1_register, f_value
+        mov     arg2_register, [this_register + VECTOR_CAPACITY_OFFSET]
+        _ fill_cells
 
         pushrbx
         mov     rbx, this_register      ; -- vector
