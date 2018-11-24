@@ -445,12 +445,10 @@ code vector_set_last, 'vector-set-last' ; element vector -> void
 endcode
 
 ; ### vector-set-nth
-code vector_set_nth, 'vector-set-nth'   ; element index vector --
+code vector_set_nth, 'vector-set-nth'   ; element index vector -> void
 
         _verify_index qword [rbp]
         _untag_fixnum qword [rbp]
-
-vector_set_nth_untagged:
 
         _ check_vector
 

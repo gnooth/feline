@@ -185,20 +185,14 @@ code types, 'types'                     ; -> sequence
 endcode
 
 ; ### add_builtin_type
-code add_builtin_type, 'add_builtin_type', SYMBOL_INTERNAL      ; name typecode ->
-
+code add_builtin_type, 'add_builtin_type', SYMBOL_INTERNAL ; name typecode ->
         _tor                            ; -> name       r: -> typecode
-
         _ new_symbol_in_current_vocab   ; -> symbol
-
         _rfetch
         _ make_type                     ; -> type
-
         _rfrom                          ; -> type typecode
-        _untag_fixnum
         _ types
-        _ vector_set_nth_untagged
-
+        _ vector_set_nth
         next
 endcode
 
