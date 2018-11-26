@@ -195,7 +195,7 @@ code all_words, 'all-words'             ; -- seq
 endcode
 
 ; ### apropos
-code apropos, 'apropos'                 ; pattern --
+code apropos, 'apropos'                 ; pattern -> void
         _ all_words
         _quotation .1
         _ symbol_name
@@ -206,14 +206,15 @@ code apropos, 'apropos'                 ; pattern --
         _ filter
         _nip
         _quotation .2
-        _ dot_object
+        _ symbol_qualified_name
+        _ print
         _end_quotation .2
         _ vector_each
         next
 endcode
 
 ; ### a
-code a, 'a'                             ; --
+code a, 'a'
         _ must_parse_token
         _ apropos
         next
