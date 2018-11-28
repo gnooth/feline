@@ -67,20 +67,13 @@ code check_index, 'check-index'         ; non-negative-fixnum -- untagged-fixnum
 endcode
 
 ; ### index?
-code index?, 'index?'                   ; x -- ?
-%if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
-        test    ebx, FIXNUM_TAG
+code index?, 'index?'                   ; x -> ?
+        test    bl, FIXNUM_TAG
         jz      .1
-%else
-        mov     al, bl
-        and     al, FIXNUM_TAG_MASK
-        cmp     al, FIXNUM_TAG
-        jne     .1
-%endif
         test    rbx, rbx
         js      .1
         mov     ebx, t_value
-        _return
+        next
 .1:
         mov     ebx, f_value
         next
