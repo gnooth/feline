@@ -3655,4 +3655,18 @@ test: as-type-test-1
 
 as-type-test-1
 
+test: string->index-test-1
+    { 42 } [ "42" string->index ] unit-test
+    { 0 } [ "0" string->index ] unit-test
+
+    most-positive-fixnum number>string string->index most-positive-fixnum assert-eq
+
+    { f } [ "-1" string->index ] unit-test
+    { f } [ most-negative-fixnum number>string string->index ] unit-test
+    { f } [ "3.14159" string->index ] unit-test
+    { f } [ "test" string->index ] unit-test
+;
+
+string->index-test-1
+
 ?nl "Reached end of test.feline" write-string

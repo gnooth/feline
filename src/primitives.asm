@@ -1415,21 +1415,21 @@ code base_to_integer, 'base>integer'    ; string base -- n/f
 endcode
 
 ; ### hex>integer
-code hex_to_integer, 'hex>integer'              ; string -- n/f
+code hex_to_integer, 'hex>integer'      ; string -> n/f
         _lit tagged_fixnum(16)
         _ base_to_integer
         next
 endcode
 
 ; ### binary>integer
-code binary_to_integer, 'binary>integer'        ; string -- n/f
+code binary_to_integer, 'binary>integer' ; string -> n/f
         _lit tagged_fixnum(2)
         _ base_to_integer
         next
 endcode
 
 ; ### string>number
-code string_to_number, 'string>number'  ; string -- n/f
+code string_to_number, 'string>number'  ; string -> n/f
         _dup
         _ string_empty?
         _tagged_if .1
@@ -1474,6 +1474,22 @@ code string_to_number, 'string>number'  ; string -- n/f
 
         _ decimal_to_number
 
+        next
+endcode
+
+; ### string->index
+code string_to_index, 'string->index'   ; string -> index/f
+        _ string_to_number
+        cmp     rbx, f_value
+        je      .1
+        test    bl, FIXNUM_TAG
+        jz      .2
+        test    rbx, rbx
+        js      .2
+.1:
+        next
+.2:
+        mov     ebx, f_value
         next
 endcode
 
