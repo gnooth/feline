@@ -41,10 +41,10 @@ file __FILE__
         lea     rbx, [this_register + ARRAY_DATA_OFFSET]
 %endmacro
 
-%macro  _array_nth_unsafe 0             ; untagged-index array -- element
+%macro  _array_nth_unsafe 0             ; untagged-index array -> element
         mov     rax, [rbp]              ; untagged index in rax
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        mov     rbx, [rbx + BYTES_PER_CELL*rax + ARRAY_DATA_OFFSET]
+        _nip
+        mov     rbx, [rbx + ARRAY_DATA_OFFSET + BYTES_PER_CELL * rax]
 %endmacro
 
 %macro  _this_array_nth_unsafe 0        ; untagged-index -- element
@@ -247,10 +247,12 @@ code array_new_sequence, 'array-new-sequence' ; len seq -- newseq
 endcode
 
 ; ### array-nth-unsafe
-code array_nth_unsafe, 'array-nth-unsafe' ; index handle -- element
-        _untag_fixnum qword [rbp]
+code array_nth_unsafe, 'array-nth-unsafe' ; index handle -> element
+        mov     rax, [rbp]              ; tagged index in rax
+        _nip
         _handle_to_object_unsafe
-        _array_nth_unsafe
+        _untag_fixnum rax               ; untagged index in rax
+        mov     rbx, [rbx + ARRAY_DATA_OFFSET + BYTES_PER_CELL * rax]
         next
 endcode
 
