@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -47,58 +47,43 @@ code cmoveup, 'cmove>', SYMBOL_INTERNAL ; c-addr1 c-addr2 u --
         next
 endcode
 
-; ### move_cells_down
-code move_cells_down, 'move_cells_down', SYMBOL_INTERNAL
-; source destination count --
-%ifdef WIN64
-        push    rdi
-        push    rsi
-%endif
-        mov     rcx, rbx                        ; count
-        mov     rdi, [rbp]                      ; destination
-        mov     rsi, [rbp + BYTES_PER_CELL]     ; source
-        mov     rbx, [rbp + BYTES_PER_CELL * 2]
-        lea     rbp, [rbp + BYTES_PER_CELL * 3]
-        jrcxz   .1
+subroutine move_cells
+; arg0_register: untagged source address
+; arg1_register: untagged destination address
+; arg2_register: untagged count (cells, not bytes)
+; handles overlapping moves correctly
 
-        rep     movsq
+        ; do nothing if count <= 0
+        test    arg2_register, arg2_register
+        jle     .exit
 
+        cmp     arg0_register, arg1_register
+
+        ; do nothing if source = destination
+        jz      .exit
+
+        ja      .2
+
+        ; source < destination
+        ; copy last cell first
 .1:
-%ifdef WIN64
-        pop     rsi
-        pop     rdi
-%endif
-        next
-endcode
+        mov     rax, [arg0_register + BYTES_PER_CELL * arg2_register - BYTES_PER_CELL]
+        mov     [arg1_register + BYTES_PER_CELL * arg2_register - BYTES_PER_CELL], rax
+        sub     arg2_register, 1
+        jnz     .1
+        ret
 
-; ### move_cells_up
-code move_cells_up, 'move_cells_up', SYMBOL_INTERNAL
-; source destination count --
-%ifdef WIN64
-        push    rdi
-        push    rsi
-%endif
-        mov     rcx, rbx                        ; count
-        mov     rdi, [rbp]                      ; destination
-        mov     rsi, [rbp + BYTES_PER_CELL]     ; source
-        mov     rbx, [rbp + BYTES_PER_CELL * 2]
-        lea     rbp, [rbp + BYTES_PER_CELL * 3]
-        jrcxz   .1
+.2:
+        ; source > destination
+        ; copy first cell first
+        xor     eax, eax
+.3:
+        mov     r10, [arg0_register + rax * BYTES_PER_CELL]
+        mov     [arg1_register + rax * BYTES_PER_CELL], r10
+        add     rax, 1
+        cmp     arg2_register, rax
+        jne     .3
 
-        mov     rdx, rcx
-        dec     rdx
-        shl     rdx, 3
-        add     rdi, rdx
-        add     rsi, rdx
-
-        std
-        rep     movsq
-        cld
-
-.1:
-%ifdef WIN64
-        pop     rsi
-        pop     rdi
-%endif
-        next
-endcode
+.exit:
+        ret
+endsub
