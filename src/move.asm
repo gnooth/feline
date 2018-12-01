@@ -47,6 +47,7 @@ code cmoveup, 'cmove>', SYMBOL_INTERNAL ; c-addr1 c-addr2 u --
         next
 endcode
 
+; ### move_cells
 subroutine move_cells
 ; arg0_register: untagged source address
 ; arg1_register: untagged destination address
