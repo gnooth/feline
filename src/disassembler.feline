@@ -103,7 +103,8 @@ global #operands
       "r8d"  "r9d"  "r10d" "r11d" "r12d" "r13d" "r14d" "r15d" } array-nth ;
 
 : reg8-name                             -- register-number -> string
-    { "al" "cl" "dl" "bl" } array-nth ;
+    { "al"  "cl"  "dl"   "bl"   "spl"  "bpl"  "sil"  "dil"
+      "r8b" "r9b" "r10b" "r11b" "r12b" "r13b" "r14b" "r15b" } array-nth ;
 
 : .register-name                        -- register-number size -> void
     :> size
@@ -931,7 +932,7 @@ last-word 0x87 install-handler
     -- dest is r/m8
     "mov" mnemonic!
     !modrm-byte
-    modrm-reg sreg!
+    modrm-reg register-reg sreg!
     8 ssize!
     8 dsize!
     {
