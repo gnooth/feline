@@ -1247,37 +1247,38 @@ code store, '!'                         ; qword tagged-address --
         next
 endcode
 
-; ### copy-bytes
-code copy_bytes, 'copy-bytes'           ; source destination count --
-; FIXME inefficient, does not support overlapping moves
-
-        _check_fixnum
-        _ rrot
-        _check_fixnum
-        _ rrot
-        _check_fixnum
-        _ rrot                          ; -- source destination count
-
-%ifdef WIN64
-        push    rdi
-        push    rsi
-%endif
-
-        mov     rcx, rbx                        ; count
-        mov     rdi, [rbp]                      ; destination
-        mov     rsi, [rbp + BYTES_PER_CELL]     ; source
-        mov     rbx, [rbp + BYTES_PER_CELL * 2]
-        lea     rbp, [rbp + BYTES_PER_CELL * 3]
-        jrcxz   .1
-        rep     movsb
-
+; ### copy_bytes
+subroutine copy_bytes
+; arg0_register: untagged source address
+; arg1_register: untagged destination address
+; arg2_register: untagged count
+; does not support overlapping moves
+        test    arg2_register, arg2_register
+        jle     .1
+        xor     eax, eax
+.2:
+        movzx   r10d, byte [arg0_register + rax]
+        mov     [arg1_register + rax], r10b
+        add     rax, 1
+        cmp     arg2_register, rax
+        jne     .2
 .1:
+        ret
+endsub
 
-%ifdef WIN64
-        pop     rsi
-        pop     rdi
-%endif
-
+; ### unsafe-copy-bytes
+code unsafe_copy_bytes, 'unsafe-copy-bytes' ; source destination count -> void
+; does not support overlapping moves
+        _check_fixnum
+        mov     arg2_register, rbx      ; count
+        _drop
+        _check_fixnum
+        mov     arg1_register, rbx      ; destination
+        _drop
+        _check_fixnum
+        mov     arg0_register, rbx      ; source
+        _drop
+        _ copy_bytes
         next
 endcode
 

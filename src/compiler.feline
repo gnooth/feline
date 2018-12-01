@@ -174,7 +174,7 @@ defer compile-quotation
     dup symbol-code-address
     swap symbol-code-size               -- -> address size
     1-                                  -- adjust size to exclude ret instruction
-    pc swap [ copy-bytes ] keep         -- -> size
+    pc swap [ unsafe-copy-bytes ] keep  -- -> size
     pc + pc! ;
 
 : compile-call-address                  -- tagged-address -> void
