@@ -1740,10 +1740,19 @@ last-word 0xbe install-0x0f-handler
     .opcode
     #insts 1+ #insts! ;
 
+: print-header
+    start-address find-word-from-exact-code-address [
+        dup symbol-qualified-name write space
+        symbol-location swap write space dec.
+        nl
+    ] when* ;
+
 : disasm                                -- code-address code-size -> void
     2 ?enough
     over start-address!
     + stop-address!
+
+    print-header
 
     start-address ip!
     0 #insts!
@@ -1756,6 +1765,8 @@ last-word 0xbe install-0x0f-handler
 
 : disasm/1                              -- code-address -> void
     start-address!
+
+    print-header
 
     start-address ip!
     0 #insts!
@@ -1771,23 +1782,76 @@ last-word 0xbe install-0x0f-handler
 : disassemble                           -- symbol -> void
     [ symbol-code-address ] [ symbol-code-size ] bi disasm ;
 
-: dis
-    must-parse-token                    -- string
+global choices
+
+: maybe-choose-symbol                   -- index -> symbol/f
+    1- choices ?nth ;
+
+: find-symbol                           -- string -> symbol/f
     find-qualified-name [
-        disassemble
-    ] [
         all-words [ symbol-name over = ] filter nip
         dup length {
-            { 0 [ drop ] }
-            { 1 [ first disassemble ] }
+            { 0 [ drop f ] }
+            { 1 [ first ] }
             [
                 -- more than 1 match
                 drop
-                [ symbol-qualified-name write-string nl ] each
+                dup choices!
+                [
+                    1+ dec. space
+                    symbol-qualified-name write-string nl
+                ] each-index
+                f
             ]
         } case
+    ] unless ;
+
+: d/1 ( token1 )
+    token1 string->index :> n
+    f :> sym!
+    n [
+        token1 find-symbol sym!
+    ] unless
+    {
+        { [ n ] [
+            n 1024 > [ n disasm/1 ] [
+                choices [ n maybe-choose-symbol sym! ] when
+            ] if
+        ] }
+        -- default
+        [ ]
+    } cond
+    sym [ sym disassemble ] when ;
+
+: d/2 ( token1 token2 )
+    token1 string->index :> addr
+    f :> len!
+    f :> sym1!
+    f :> sym2!
+    addr [
+        token2 string->index len!
+    ] [
+        token1 find-symbol sym1!
+        token2 find-symbol sym2!
     ] if
-;
+    {
+        { [ addr len and ] [
+            addr len disasm
+        ] }
+        { [ sym1 sym2 and ] [
+            sym1 sym2 find-method [
+                method-callable callable-code-address disasm/1
+            ] when*
+        ] }
+        -- default
+        [ ]
+    } cond ;
+
+: d
+    parse-token :> token1
+    token1 null? [ ] return-if
+    parse-token :> token2
+    token2 [ token1 token2 d/2 ] [ token1 d/1 ] if ;
 
 : test-all
     all-words [ nl nl dec. space dup . disassemble ] each-index ;

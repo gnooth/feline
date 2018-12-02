@@ -49,7 +49,7 @@ public
 : d
     maybe-load-disassembler
     "disassembler" use-vocab
-    "dis" "disassembler" vocab-find-name [ call-symbol ] when ;
+    "d" "disassembler" vocab-find-name [ call-symbol ] when ;
 
 private
 
