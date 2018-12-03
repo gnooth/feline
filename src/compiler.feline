@@ -295,7 +295,7 @@ defer compile-quotation
 
     dup precompile-quotation            -- -> quotation array
 
-    dup length 32 * initialize-code-block dup pc! origin!
+    dup length 32 * 16 max initialize-code-block dup pc! origin!
 
     ' compile-node each
 
