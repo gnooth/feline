@@ -1743,7 +1743,7 @@ last-word 0xbe install-0x0f-handler
 : print-header
     start-address find-word-from-exact-code-address [
         dup symbol-qualified-name write space
-        symbol-location swap write space dec.
+        symbol-location 2dup and [ swap write space dec. ] [ 2drop ] if
         nl
     ] when* ;
 
