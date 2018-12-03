@@ -3669,4 +3669,22 @@ test: string->index-test-1
 
 string->index-test-1
 
+global zork-vocab-name "zork" zork-vocab-name!
+
+test: symbol-vocab-name-test-1
+    "zork" delete-vocab
+    zork-vocab-name ensure-vocab :> v!
+    f zork-vocab-name!
+    "foo" v <symbol> :> sym
+    sym symbol-vocab-name "zork" assert=
+    v delete-vocab
+    sym symbol-vocab-name "zork" assert=
+    f v!
+    sym symbol-vocab-name "zork" assert=
+    gc
+    sym symbol-vocab-name "zork" assert=
+;
+
+symbol-vocab-name-test-1
+
 ?nl "Reached end of test.feline" write-string
