@@ -278,15 +278,19 @@ endcode
 ; ### when
 code when, 'when'                       ; ? quot --
 ; if conditional is not f, calls quot
-        _swap
-        _tagged_if .1
+        cmp     qword [rbp], f_value
+        je      .1
         _ callable_raw_code_address
         mov     rax, rbx
-        poprbx
+        _2drop
+%ifdef DEBUG
         call    rax
-        _else .1
-        _drop
-        _then .1
+        next
+%else
+        jmp     rax
+%endif
+.1:
+        _2drop
         next
 endcode
 
