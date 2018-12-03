@@ -109,8 +109,10 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL        ; x -> r
 
 .3:
         _handle_to_object_unsafe
+%ifdef DEBUG
         test    rbx, rbx
         jz      error_empty_handle
+%endif
         _object_raw_typecode
         _return
 
