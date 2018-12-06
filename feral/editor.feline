@@ -164,16 +164,16 @@ method: region end-offset               -- region -> offset
     '\n' sb sbuf-push
 
     region begin-line next>> :> line!
-    region end-line :> end-line
+    region end-line :> region-end-line
 
-    [ line end-line neq? ] [
+    [ line region-end-line neq? ] [
         line text>> sb sbuf-append-string
         '\n' sb sbuf-push
         line next>> line!
     ] while
 
     region end-offset 0 > [
-        0 region end-offset region end-line text>> substring
+        0 region end-offset region-end-line text>> substring
         sb sbuf-append-string
     ] when
 
