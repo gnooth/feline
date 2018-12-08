@@ -659,7 +659,7 @@ tuple: compound-undo
 
 special: +compound-undo+
 
-: push-undo                             -- undo-record ->
+: push-undo                             -- undo-record -> void
     +compound-undo+ get [ add-undo ] [ undo-stack vector-push ] if* ;
 
 : with-compound-undo                    -- quotation ->
@@ -694,12 +694,29 @@ special: +compound-undo+
     undo-record make-instance :> undo-rec
 
     mod-count undo-rec mod-count<<
+
     copy-dot undo-rec dot<<
-    copy-mark undo-rec mark<<
     dot-line-number undo-rec dot-line-number<<
     dot-offset undo-rec dot-offset<<
 
+    copy-mark undo-rec mark<<
+    mark [
+        mark-line-number undo-rec mark-line-number<<
+        mark-offset undo-rec mark-offset<<
+    ] when
+
     undo-rec
+;
+
+: restore-dot                           -- undo-record -> void
+    [ dot-line-number>> nth-line ]
+    [ dot-offset>> ] bi make-position dot! ;
+
+: restore-mark                          -- undo-record -> void
+    mark-line-number>> [
+        [ mark-line-number>> nth-line ]
+        [ mark-offset>> ] bi make-position mark!
+    ] when
 ;
 
 : add-undo-move
