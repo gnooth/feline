@@ -674,8 +674,19 @@ special: +compound-undo+
 : pop-undo                              -- -> undo-record
     undo-stack vector-pop ;
 
+special: +compound-redo+
+
 : push-redo                             -- undo-record ->
-    redo-stack vector-push ;
+    +compound-redo+ get [ add-undo ] [ redo-stack vector-push ] if* ;
+
+: with-compound-redo                    -- quotation ->
+    [
+        new-compound-undo +compound-redo+ set
+        call
+        +compound-redo+ get
+    ] with-dynamic-scope
+    push-redo
+;
 
 : pop-redo                              -- -> undo-record
     redo-stack vector-pop ;
@@ -738,9 +749,7 @@ special: +compound-undo+
 
     undo-rec mod-count>> mod-count!
 
-    undo-rec dot-line-number>> nth-line
-    undo-rec dot-offset>>
-    make-position dot!
+    undo-rec restore-dot
 
     undo-rec mark>> mark!
 
@@ -759,12 +768,12 @@ special: +compound-undo+
 
 : add-redo-line-edit new-undo-line-edit push-redo ;
 
-: undo-line-edit                        -- undo-record ->
+: undo-line-edit                        -- undo-record -> void
     in-redo? [ add-undo-line-edit ] [ add-redo-line-edit ] if
 
     {
         [ mod-count>> mod-count! ]
-        [ dot>> dot! ]
+        [ restore-dot ]
         [ data>> dot-line-text! ]
         [ mark>> mark! ]
     } cleave
@@ -787,9 +796,7 @@ special: +compound-undo+
 
 : undo-delete-line-separator  ( undo-rec )      -- undo-record -> void
     undo-rec mod-count>> mod-count!
-    undo-rec dot-line-number>> nth-line
-    undo-rec dot-offset>>
-    make-position dot!
+    undo-rec restore-dot
     undo-rec data>>                     -- -> 2array
     dup array-first dot-line-text!
     array-second make-line/1 dot-line insert-after
@@ -802,20 +809,20 @@ special: +compound-undo+
 
 : add-undo-insert-line-separator
     new-undo-record
-    +insert-line-separator+ over action<<
-    dot-line-text over data<<
+    +insert-line-separator+ >>action
+    dot-line-text >>data
     push-undo
 ;
 
 : add-redo-insert-line-separator
     new-undo-record
-    +insert-line-separator+ over action<<
+    +insert-line-separator+ >>action
     push-redo
 ;
 
 : undo-insert-line-separator            -- undo-record -> void
     [ mod-count>> mod-count! ]
-    [ dot>> dot! ]
+    [ restore-dot ]
     [ data>> dot-line-text! ]
     tri
 
@@ -847,7 +854,20 @@ special: +compound-undo+
     renumber
 ;
 
+: log-undo                              -- undo-record -> undo-record
+    dup action>> :> action
+    action symbol? [
+        action symbol-name "undo1 %s" format log
+    ] when ;
+
+: log-redo                              -- undo-record -> undo-record
+    dup action>> :> action
+    action symbol? [
+        action symbol-name "redo1 %s" format log
+    ] when ;
+
 : undo1                                 -- undo-record ->
+    log-undo
     dup action>>
     {
         { +move+ [ undo-move ] }
@@ -865,8 +885,10 @@ special: +compound-undo+
         "Nothing to undo" message
     ] [
         pop-undo dup compound-undo? [
-            records>> vector-reverse! ' undo1 each
+            "undo compound-undo" log
+            [ records>> vector-reverse! ' undo1 each ] with-compound-redo
         ] [
+            "undo" log
             undo1
         ] if
         "Undo!" message
@@ -1358,7 +1380,8 @@ use: kill-ring
     ' paste current-command!
 ;
 
-: redo1                                 -- undo-record ->
+: redo1                                 -- undo-record -> void
+    log-redo
     dup action>> {
         { +move+ [ undo-move ] }
         { +line-edit+ [ undo-line-edit ] }
@@ -1374,8 +1397,13 @@ use: kill-ring
         "Nothing to redo" message
     ] [
         t in-redo?!
-        pop-redo
-        redo1
+        pop-redo dup compound-undo? [
+            "redo compound-undo" log
+            [ records>> vector-reverse! ' redo1 each ] with-compound-undo
+        ] [
+            "redo" log
+            redo1
+        ] if
         f in-redo?!
         "Redo!" message
     ] if
