@@ -726,21 +726,18 @@ special: +compound-redo+
 : restore-mark                          -- undo-record -> void
     mark-line-number>> [
         [ mark-line-number>> nth-line ]
-        [ mark-offset>> ] bi make-position mark!
-    ] when
-;
+        [ mark-offset>> ] bi make-position
+    ] [ f ] if mark! ;
 
 : add-undo-move
     new-undo-record
-    +move+ over action<<
-    push-undo
-;
+    +move+ >>action
+    push-undo ;
 
 : add-redo-move
     new-undo-record
-    +move+ over action<<
-    push-redo
-;
+    +move+ >>action
+    push-redo ;
 
 : undo-move ( undo-rec )                -- undo-record ->
     in-redo? [ add-undo-move ] [ add-redo-move ] if
@@ -783,14 +780,14 @@ special: +compound-redo+
 
 : add-undo-delete-line-separator
     new-undo-record
-    +delete-line-separator+ over action<<
-    dot-line-text dot-line-next text>> 2array over data<<
+    +delete-line-separator+ >>action
+    dot-line-text dot-line-next text>> 2array >>data
     push-undo
 ;
 
 : add-redo-delete-line-separator
     new-undo-record
-    +delete-line-separator+ over action<<
+    +delete-line-separator+ >>action
     push-redo
 ;
 
