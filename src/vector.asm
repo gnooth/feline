@@ -220,11 +220,11 @@ code vector_set_length, 'vector-set-length' ; tagged-new-length handle --
 endcode
 
 ; ### vector-delete-all
-code vector_delete_all, 'vector-delete-all' ; handle --
+code vector_delete_all, 'vector-delete-all' ; vector -> void
         _ check_vector
-        _zero
-        _swap                           ; -- 0 vector
-        _vector_set_raw_length
+        xor     eax, eax
+        mov     [rbx + VECTOR_LENGTH_OFFSET], rax
+        _drop
         next
 endcode
 
