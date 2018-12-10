@@ -290,10 +290,10 @@ var current-buffer
 : top-line                              -- -> line
     current-buffer top-line>> ;
 
-: top-line!                             -- line ->
+: top-line!                             -- line -> void
     current-buffer top-line<< ;
 
-: top-line-number                       -- -> n
+: top-line-number                       -- void -> n
     current-buffer top-line>> number>> ;
 
 : dot-line-text                         -- -> string
@@ -317,11 +317,17 @@ var current-buffer
 : dot-line-prev                         -- -> line
     dot line>> prev>> ;
 
-: first-line                            -- -> line
+: first-line                            -- void -> line
     current-buffer first-line>> ;
+
+: first-line!                           -- line -> void
+    current-buffer first-line<< ;
 
 : last-line                             -- -> line
     current-buffer last-line>> ;
+
+: last-line!                            -- line -> void
+    current-buffer last-line<< ;
 
 : last-line-number                      -- --> n
     last-line number>> ;
@@ -389,12 +395,25 @@ var current-buffer
     prev [
         line prev next<<
     ] [
-        line dup current-buffer first-line<< top-line!
+        line dup first-line! top-line!
     ] if
     prev line prev<<
 
     next line next<<
-    next [ line next prev<< ] [ line current-buffer last-line<< ] if
+    next [ line next prev<< ] [ line last-line! ] if
+;
+
+: insert-before ( line next )           -- line next -> void
+    -- insert line before next
+
+    next [ next prev>> ] [ f ] if :> prev
+
+    prev [ line prev insert-after ] return-if
+
+    -- prev is null
+    line first-line prev<<
+    first-line line next<<
+    line first-line!
 ;
 
 : unlink ( line )                       -- line -> void
