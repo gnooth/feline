@@ -1305,12 +1305,6 @@ use: kill-ring
 
 ;
 
-: cut-line
-;
-
-: cut
-    mark [ dot make-region/2 cut-region ] [ cut-line ] if* ;
-
 : copy-line
     dot-line-text "\n" string-append append-kill
     "Line copied to kill ring" message
@@ -1325,6 +1319,78 @@ use: kill-ring
     { [ anchor ] [ mark ] } ||
     [ dot make-region/2 copy-region ] [ copy-line ] if*
 ;
+
+symbol: +delete-line+
+
+: add-undo-delete-line
+    new-undo-record
+    dot-line-text >>data
+    +delete-line+ >>action
+    push-undo ;
+
+: add-redo-delete-line
+    new-undo-record
+    +delete-line+ >>action
+    push-redo ;
+
+: undo-delete-line ( undo-rec )         -- undo-record -> void
+    dot-line-next [
+        undo-rec data>> make-line/1 dot-line insert-before
+        undo-rec mod-count>> mod-count!
+        undo-rec restore-dot
+    ] [
+        -- last line
+        undo-rec data>> make-line/1 dot-line insert-after
+        undo-rec mod-count>> mod-count!
+        undo-rec restore-dot
+    ] if
+    t repaint?!
+    renumber
+
+    add-redo-delete-line
+;
+
+: delete-line
+    reset-redo
+
+    add-undo-delete-line
+
+    dot-line-prev :> prev
+    dot-line-next :> next
+
+    {
+        { [ prev next and ] [
+            dot-line
+            next dot-line! 0 dot-offset!
+            unlink
+        ] }
+        { [ prev null? ] [
+            -- deleting first line
+            dot-line
+            next dot-line! 0 dot-offset!
+            unlink
+            next dup first-line! top-line!
+        ] }
+        { [ next null? ] [
+            -- deleting last line
+            dot-line
+            prev dot-line! prev length dot-offset!
+            unlink
+            prev last-line!
+        ] }
+    } cond
+
+    modified
+    t repaint?!
+    renumber
+;
+
+: cut-line
+    copy-line
+    delete-line ;
+
+: cut
+    mark [ dot make-region/2 cut-region ] [ cut-line ] if* ;
 
 : paste/1                               -- string -> void
     1 ?enough
@@ -1368,6 +1434,7 @@ use: kill-ring
         { +delete-line-separator+ [ undo-delete-line-separator ] }
         { +insert-line-separator+ [ undo-insert-line-separator ] }
         { +insert-multiline-string+ [ undo-insert-multiline-string ] }
+        { +delete-line+ [ undo-delete-line ] }
         [ error "unsupported" ]
     } case
     maybe-reframe
@@ -1395,6 +1462,7 @@ use: kill-ring
         { +line-edit+ [ undo-line-edit ] }
         { +delete-line-separator+ [ drop delete-line-separator ] }
         { +insert-line-separator+ [ drop insert-line-separator ] }
+        { +delete-line+ [ drop delete-line ] }
         [ error "unsupported" ]
     } case
     maybe-reframe
