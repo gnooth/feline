@@ -31,17 +31,7 @@ empty
 
 feline-home "feral" path-append add-source-directory
 
-using: feline accessors modes accept-string ;
-
-var log-fd
-
-"feral.log" file-create-write-fd log-fd!
-
-: log                                   -- string -> void
-    log-fd file-write-line
-    log-fd file-flush ;
-
-"startup" log
+using: feline accessors modes accept-string logging ;
 
 tuple: line
     prev
@@ -1923,7 +1913,7 @@ var escape-keymap
     f current-buffer!
     f buffer-list!
     gc
-    log-fd [ file-close ] when*
+    close-log
 ;
 
 : initialize-editor
