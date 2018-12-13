@@ -13,7 +13,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accessors accept-string editor ;
+using: feline accessors accept-string editor history ;
 in: search
 
 empty
@@ -241,8 +241,21 @@ var current-search
 
 public
 
+var saved-history-for-find-command
+
 : do-find
-    0 message-y at-xy "Find: " accept-string :> pattern
+    0 message-y at-xy
+
+    [
+        saved-history-for-find-command [
+            initialize-history
+        ] [
+            make-history dup saved-history-for-find-command! initialize-history
+        ] if*
+        "Find: " accept-string
+        dup update-history
+    ] with-dynamic-scope :> pattern
+
     clear-message-line
 
     pattern empty? [ ] return-if
