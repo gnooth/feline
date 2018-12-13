@@ -13,7 +13,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline key ;
+using: feline key history ;
 in: accept-string
 
 empty
@@ -45,18 +45,41 @@ var prompt-string
     bindings at ;
 
 : do-enter
+    reset-history
     t done?! ;
 
 : do-escape
     0 sb sbuf-shorten
+    reset-history
     t done?! ;
 
 : do-bs
     dot 0 > [
         dot 1- dot!
         dot sb sbuf-remove-nth! drop
+        reset-history
         redisplay
     ] when ;
+
+: do-previous
+    history-previous :> s
+    s [
+        0 sb sbuf-shorten
+        s sb sbuf-append-string
+        sb length dot!
+        redisplay
+    ] when
+;
+
+: do-next
+    history-next :> s
+    s [
+        0 sb sbuf-shorten
+        s sb sbuf-append-string
+        sb length dot!
+        redisplay
+    ] when
+;
 
 : do-normal-char                        -- char ->
     dup write-char dot 1+ dot! sb push ;
@@ -67,6 +90,8 @@ var prompt-string
     key:del             ' do-bs                         bind-key        -- Linux
     key:backspace       ' do-bs                         bind-key        -- Windows
     key:escape          ' do-escape                     bind-key
+    key:up              ' do-previous                   bind-key
+    key:down            ' do-next                       bind-key
 ;
 
 : process-key                           -- tagged-char ->
@@ -89,4 +114,5 @@ public
     show-cursor
     [ done? ] [ ekey process-key ] until
     sb sbuf>string
+    reset-history
     output-style ;
