@@ -697,17 +697,24 @@ code cd, 'cd'
         next
 endcode
 
-%ifdef WIN64
 ; ### make-directory
 code make_directory, 'make-directory'   ; string -> void
         _dup
         _ string_raw_data_address
         mov     arg0_register, rbx
+%ifdef WIN64
         mov     arg1_register, 0
-        extern CreateDirectoryA
+        extern  CreateDirectoryA
         xcall   CreateDirectoryA
         test    rax, rax
         jz      .error
+%else
+        mov     arg1_register, 0x1ff
+        extern  mkdir
+        xcall   mkdir
+        test    rax, rax
+        jnz     .error
+%endif
         _2drop
         next
 .error:
@@ -717,4 +724,3 @@ code make_directory, 'make-directory'   ; string -> void
         _ error
         next
 endcode
-%endif
