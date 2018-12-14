@@ -696,3 +696,25 @@ code cd, 'cd'
         _then .1
         next
 endcode
+
+%ifdef WIN64
+; ### make-directory
+code make_directory, 'make-directory'   ; string -> void
+        _dup
+        _ string_raw_data_address
+        mov     arg0_register, rbx
+        mov     arg1_register, 0
+        extern CreateDirectoryA
+        xcall   CreateDirectoryA
+        test    rax, rax
+        jz      .error
+        _2drop
+        next
+.error:
+        _drop
+        _quote "ERROR: Unable to create directory %S."
+        _ format
+        _ error
+        next
+endcode
+%endif
