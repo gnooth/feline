@@ -73,12 +73,14 @@ var prompt-string
 
 : do-next
     history-next :> s
+    0 sb sbuf-shorten
     s [
-        0 sb sbuf-shorten
         s sb sbuf-append-string
         sb length dot!
-        redisplay
-    ] when
+    ] [
+        0 dot!
+    ] if
+    redisplay
 ;
 
 : do-normal-char                        -- char ->
@@ -101,6 +103,9 @@ var prompt-string
     if ;
 
 public
+
+: accept-string-set-history             -- history/f -> void
+    set-current-history ;
 
 : accept-string                         -- prompt-string -> string
     1 ?enough

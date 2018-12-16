@@ -241,27 +241,17 @@ var current-search
 
 public
 
-var saved-history-for-find-command
+var find-history
 
 : do-find
     0 message-y at-xy
-
-    [
-        saved-history-for-find-command [
-            initialize-history
-        ] [
-            make-history dup saved-history-for-find-command! initialize-history
-        ] if*
-        "Find: " accept-string
-        dup update-history
-    ] with-dynamic-scope :> pattern
-
+    find-history [ make-history find-history! ] unless
+    find-history accept-string-set-history
+    "Find: " accept-string :> pattern
     clear-message-line
-
     pattern empty? [ ] return-if
-
+    pattern update-history
     pattern f make-search current-search!
-
     pattern dot search-forward [ found ] [ not-found ] if*
 ;
 

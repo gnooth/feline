@@ -18,7 +18,7 @@ in: history
 
 private
 
-special: current-history
+var current-history
 
 tuple: history
     strings
@@ -26,18 +26,22 @@ tuple: history
 ;
 
 : strings                               -- void -> vector/f
-    current-history get [ strings>> ] [ f ] if* ;
+    current-history [ strings>> ] [ f ] if* ;
 
 : index                                 -- void -> index/f
-    current-history get [ index>> ] [ f ] if* ;
+    current-history [ index>> ] [ f ] if* ;
 
 : index!                                -- index -> void
-    current-history get [ index<< ] [ drop ] if* ;
+    current-history [ index<< ] [ drop ] if* ;
 
 public
 
 : reset-history
-    f index! ;
+    strings length index! ;
+
+: set-current-history                   -- history/f -> void
+   current-history!
+   reset-history ;
 
 : history-previous                      -- void -> string/f
     index [ strings length index! ] unless
@@ -51,22 +55,17 @@ public
     index strings length 1- < [
         index 1+ index!
         index strings nth
-    ] [ f ] if ;
+    ] [ reset-history f ] if ;
 
 : make-history                          -- void -> history
     history make-instance
     100 <vector> >>strings
 ;
 
-: initialize-history                    -- history/f -> void
-    "initialize-history" log
-    [ make-history ] unless* current-history set
-;
-
 : update-history ( s )                  -- string/f -> void
     "update-history called" log
     s string? [
-        current-history get [
+        current-history [
             strings>> s over vector-adjoin -- -> vector
             "-- begin history" log
             [ log ] each
