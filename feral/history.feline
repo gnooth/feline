@@ -37,7 +37,7 @@ tuple: history
 public
 
 : reset-history
-    strings length index! ;
+    strings [ length index! ] when* ;
 
 : set-current-history                   -- history/f -> void
    current-history!
