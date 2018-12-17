@@ -1783,6 +1783,16 @@ symbol: +delete-line+
         } case
     ] if ;
 
+: execute-command
+    0 message-y at-xy "Command: " accept-string :> command
+    clear-message-line
+    command find-name [
+        call-symbol
+    ] [
+        "%S is not a valid command name." format message
+    ] if
+;
+
 use: search
 
 var base-keymap
@@ -1860,6 +1870,7 @@ var escape-keymap
     ' search-backward-word-at-dot       key:up          keymap set-at
     ' search-list-occurrences           'l'             keymap set-at
     ' do-anchor                         'a'             keymap set-at
+    ' execute-command                   'x'             keymap set-at
 
     keymap escape-keymap!
 ;
