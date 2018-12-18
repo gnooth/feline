@@ -17,6 +17,7 @@ using: feline ;
 in: user
 
 {
+    "directories"
     "accept-string"
     "search"
     "modes"
@@ -31,7 +32,11 @@ empty
 
 feline-home "feral" path-append add-source-directory
 
-using: feline accessors modes accept-string logging ;
+use: directories
+
+initialize-directories
+
+using: feline accessors modes accept-string logging directories ;
 
 tuple: line
     prev
