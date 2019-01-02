@@ -3687,4 +3687,27 @@ test: symbol-vocab-name-test-1
 
 symbol-vocab-name-test-1
 
+test: file-lines-test-1
+    "delete-me" :> file
+    { "this" "is" "a" "test" } :> seq
+
+    file file-exists? [ file delete-file ] when
+    file file-exists? assert-false
+
+    seq file set-file-lines
+    file file-exists? assert-true
+
+    file file-contents
+    windows? "this\r\nis\r\na\r\ntest\r\n" "this\nis\na\ntest\n" ?
+    string= assert-true
+
+    file file-lines seq sequence= assert-true
+
+    file file-exists? assert-true
+    file delete-file
+    file file-exists? assert-false
+;
+
+file-lines-test-1
+
 ?nl "Reached end of test.feline" write-string
