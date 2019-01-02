@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -112,12 +112,8 @@ code file_create_write, 'file-create-write'     ; string -> file-output-stream
 endcode
 
 ; ### file-size
-code file_size, 'file-size'             ; fd -- tagged-size
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
+code file_size, 'file-size'             ; fd -> tagged-size
+        mov     arg0_register, rbx
         xcall   os_file_size
         test    rax, rax
         js      .1
@@ -140,12 +136,8 @@ code file_write_time, 'file-write-time' ; path -- fixnum
 endcode
 
 ; ### file-read-char
-code file_read_char, 'file-read-char'   ; fd -- char/f
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
+code file_read_char, 'file-read-char'   ; fd -> char/f
+        mov     arg0_register, rbx
         ; REVIEW os_read_char returns -1 if error or end of file
         xcall   os_read_char
         test    rax, rax
@@ -159,25 +151,25 @@ code file_read_char, 'file-read-char'   ; fd -- char/f
 endcode
 
 ; ### file-read-unsafe
-code file_read_unsafe, 'file-read-unsafe' ; addr tagged-size fd -- count
-; Address and fd are untagged.
+code file_read_unsafe, 'file-read-unsafe' ; buffer-address tagged-size fd -> tagged-count
+; address and fd are untagged
         _tor
         _ check_index
         _rfrom
-%ifdef WIN64
-        popd    rcx                     ; fd
-        popd    r8                      ; size
-        popd    rdx                     ; addr
-%else
-        popd    rdi
-        popd    rdx
-        popd    rsi
-%endif
-        xcall   os_read_file
+
+        popd    arg0_register           ; fd
+        popd    arg2_register           ; untagged size
+        popd    arg1_register           ; addr
+
+; arg0_register: fd
+; arg1_register: buffer address
+; arg2_register: untagged size
+
+        xcall   os_read_file            ; cell os_read_file(cell fd, void *buf, size_t count)
         test    rax, rax
         js      .1
         pushd   rax
-        _tag_fixnum                     ; -- count
+        _tag_fixnum                     ; -> tagged-count
         _return
 .1:
         _error "error reading from file"
@@ -246,35 +238,24 @@ code file_create_write_fd, 'file-create-write-fd'       ; string -- fd
 endcode
 
 ; ### file-write-char
-code file_write_char, 'file-write-char' ; tagged-char fd --
-        _swap
-        _untag_char
-        _swap
-%ifdef WIN64
-        ; args in rcx, rdx, r8, r9
-        popd    rdx
-        popd    rcx
-%else
-        ; args in rdi, rsi, rdx, rcx
-        popd    rsi
-        popd    rdi
-%endif
+code file_write_char, 'file-write-char' ; tagged-char fd -> void
+        popd    arg1_register           ; fd
+        _check_char
+        popd    arg0_register
         xcall   os_emit_file            ; void os_emit_file(int c, int fd)
         next
 endcode
 
 ; ### file-write-string
-code file_write_string, 'file-write-string'     ; string fd --
+code file_write_string, 'file-write-string' ; string fd -> void
         _tor
-        _dup
-        _ string_raw_data_address
-        _swap
-        _ string_raw_length
-        _rfrom
-        popd    arg0_register
-        popd    arg2_register
-        popd    arg1_register
-        xcall   os_write_file
+        _ string_from
+        _rfrom                          ; -> raw-data-address raw-length fd
+        mov     arg0_register, rbx      ; fd
+        mov     arg1_register, [rbp + BYTES_PER_CELL] ; raw-data-address
+        mov     arg2_register, [rbp]    ; raw-length length
+        _3drop
+        xcall   os_write_file           ; cell os_write_file(cell fd, void *buf, size_t count)
         test    rax, rax
         jns     .1
         _error "error writing to file"
