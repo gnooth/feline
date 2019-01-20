@@ -357,11 +357,12 @@ global regop    -- REGister or OPcode extension (depending on the instruction)
                 { 4 [
                     !sib-byte
                     sib-base register-rm dbase!
-                    sib-index register-index dindex!
+                    sib-index 4 eq? [
+                        sib-index register-index dindex!
+                    ] unless
                     sib-scale dscale!
                     next-signed-byte ddisp!
-                    ]
-                }
+                ] }
                 [
                     -- default case
                     drop
