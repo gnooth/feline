@@ -1520,17 +1520,26 @@ last-word 0xfd install-handler
     1 #operands!
     modrm-mod {
         { 0 [
-            modrm-rm 4 = [
-                !sib-byte
-                sib-index 4 = [
-                    sib-base {
-                        { 4 [ modrm-rm register-rm dbase! ] }
-                        { 5 [ next-int32 ddisp! t memory-operand?! ] }
-                    } case
-                ] when
-            ] [
-                modrm-rm register-rm dbase!
-            ] if
+            modrm-rm {
+                { 4 [
+                    !sib-byte
+                    sib-index 4 = [
+                        sib-base {
+                            { 4 [ modrm-rm register-rm dbase! ] }
+                            { 5 [ next-int32 ddisp! t memory-operand?! ] }
+                        } case
+                    ] when
+                ] }
+                { 5 [
+                    -- RIP-relative addressing, 32-bit offset
+                    next-int32 ip + ddisp! t memory-operand?!
+                ] }
+                [
+                    -- default case
+                    drop
+                    modrm-rm register-rm dbase!
+                ]
+            } case
         ] }
         { 1 [
             modrm-rm 4 = [
