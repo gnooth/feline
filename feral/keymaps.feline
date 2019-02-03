@@ -1,0 +1,99 @@
+-- Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+var base-keymap
+
+var escape-keymap
+
+: do-escape
+    "ESC-" message
+    ekey
+    clear-message-line
+    escape-keymap at [
+        dup current-command!
+        call-symbol
+    ] when*
+;
+
+: lookup-key                            -- key -> symbol/f
+    base-keymap at ;
+
+: initialize-base-keymap
+    base-keymap [ ] return-if
+
+    128 <hashtable> :> keymap
+
+    ' do-bs                     key:del         keymap set-at   -- Linux
+    ' do-bs                     key:backspace   keymap set-at   -- Windows
+    ' do-delete                 key:delete      keymap set-at
+    ' do-home                   key:home        keymap set-at
+    ' end-of-line               key:end         keymap set-at
+    ' do-left                   key:left        keymap set-at
+    ' do-right                  key:right       keymap set-at
+    ' do-up                     key:up          keymap set-at
+    ' do-down                   key:down        keymap set-at
+    ' do-window-up              key:ctrl-up     keymap set-at
+    ' do-window-down            key:ctrl-down   keymap set-at
+    ' do-page-up                key:pageup      keymap set-at
+    ' do-page-down              key:pagedown    keymap set-at
+    ' beginning-of-buffer       key:ctrl-home   keymap set-at
+    ' end-of-buffer             key:ctrl-end    keymap set-at
+    ' gotoline                  key:ctrl-g      keymap set-at
+    ' do-quit                   key:ctrl-q      keymap set-at
+    ' do-save                   key:ctrl-s      keymap set-at
+    ' kill-buffer               key:ctrl-w      keymap set-at
+    ' newline-and-indent        key:enter       keymap set-at
+    ' do-find                   key:ctrl-f      keymap set-at
+    ' repeat-search-forward     key:f3          keymap set-at
+    ' repeat-search-backward    key:shift-f3    keymap set-at
+    ' do-tab                    key:tab         keymap set-at
+    ' kill-line                 key:ctrl-k      keymap set-at
+    ' undo                      key:ctrl-z      keymap set-at
+    ' undo                      key:ctrl-u      keymap set-at
+    ' redo                      key:ctrl-y      keymap set-at
+    ' do-escape                 key:escape      keymap set-at
+    ' open-file                 key:ctrl-o      keymap set-at
+    ' next-buffer               key:alt-right   keymap set-at
+    ' previous-buffer           key:alt-left    keymap set-at
+    ' find-definition           key:ctrl-t      keymap set-at
+    ' select-line               key:ctrl-l      keymap set-at
+    ' cut                       key:ctrl-x      keymap set-at
+    ' copy                      key:ctrl-c      keymap set-at
+    ' paste                     key:ctrl-v      keymap set-at
+
+    keymap base-keymap!
+;
+
+: initialize-escape-keymap
+    escape-keymap [ ] return-if
+
+    128 <hashtable> :> keymap
+
+    ' quit                              key:escape      keymap set-at
+    ' find-definition-at-dot            '.'             keymap set-at
+    ' cycle-paste                       'v'             keymap set-at
+    ' search-forward-word-at-dot        key:down        keymap set-at
+    ' search-backward-word-at-dot       key:up          keymap set-at
+    ' search-list-occurrences           'l'             keymap set-at
+    ' do-anchor                         'a'             keymap set-at
+    ' execute-command                   'x'             keymap set-at
+
+    keymap escape-keymap!
+;
+
+: initialize-global-keymaps
+    initialize-base-keymap
+    initialize-escape-keymap
+;
