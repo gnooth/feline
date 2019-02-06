@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -895,16 +895,7 @@ code sh, 'sh'
 
         _swap
         _ lexer_next_line
-
-        _ string_raw_data_address       ; -- untagged-address
-
-%ifdef WIN64
-        popd    rcx
-%else
-        popd    rdi
-%endif
-        xcall   os_system
-
+        _ system_
         _else .1
         _drop
         _error "no lexer"

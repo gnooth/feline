@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -132,13 +132,9 @@ code rename_file, 'rename-file'         ; c-addr1 u1 c-addr2 u2 -- ior
 endcode
 
 ; ### system
-code system_, 'system'                  ; c-addr u --
-        _ as_c_string
-%ifdef WIN64
-        popd    rcx
-%else
-        popd    rdi
-%endif
+code system_, 'system'                  ; string -> void
+        _ string_raw_data_address
+        popd    arg0_register
         xcall   os_system
         next
 endcode
