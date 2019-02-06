@@ -112,22 +112,22 @@ code delete_file, 'delete-file'         ; string ->
 endcode
 
 ; ### rename-file
-code rename_file, 'rename-file'         ; c-addr1 u1 c-addr2 u2 -- ior
-        ; -- old new
-        _ as_c_string                   ; new name
-        _ rrot
-        _ as_c_string                   ; old name
-        ; -- new old
-%ifdef WIN64
-        popd    rcx                     ; old name
-        popd    rdx                     ; new name
-%else
-        popd    rdi                     ; old name
-        popd    rsi                     ; new name
-%endif
-        xcall   os_rename_file
-        pushrbx
-        mov     rbx, rax
+code rename_file, 'rename-file'         ; old-name new-name -> ?
+; returns t if successful, f on error
+
+        _ string_raw_data_address
+        mov     arg1_register, rbx      ; new name
+        _drop
+        _ string_raw_data_address
+        mov     arg0_register, rbx      ; old name
+
+        xcall   os_rename_file          ; rax = 0 if successful, -1 on error
+
+        mov     ebx, t_value
+        mov     edx, f_value
+        test    rax, rax
+        cmovs   ebx, edx
+
         next
 endcode
 

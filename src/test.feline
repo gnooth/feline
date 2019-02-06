@@ -3710,4 +3710,59 @@ test: file-lines-test-1
 
 file-lines-test-1
 
+test: rename-file-test-1
+    "delete-me" :> file
+    "delete-me~" :> backup
+    "this is a test" :> contents
+
+    file file-exists? [ file delete-file ] when
+    file file-exists? assert-false
+
+    backup file-exists? [ backup delete-file ] when
+    backup file-exists? assert-false
+
+    contents file set-file-contents
+    file file-exists? assert-true
+    file regular-file? assert-true
+    file file-contents contents assert=
+
+    file file-exists? assert-true
+    backup file-exists? assert-false
+
+    file backup rename-file assert-true
+    file file-exists? assert-false
+    backup file-exists? assert-true
+    backup file-contents contents assert=
+
+    backup delete-file
+    backup file-exists? assert-false
+
+    -- error cases
+    file file-exists? assert-false
+    backup file-exists? assert-false
+    file backup rename-file assert-false
+
+    "different contents" :> contents2
+
+    contents2 file set-file-contents
+    contents backup set-file-contents
+    file file-exists? assert-true
+    backup file-exists? assert-true
+
+    file backup rename-file assert-false
+
+    file file-exists? assert-true
+    file file-contents contents2 assert=
+    backup file-exists? assert-true
+    backup file-contents contents assert=
+
+    file delete-file
+    file file-exists? assert-false
+
+    backup delete-file
+    backup file-exists? assert-false
+;
+
+rename-file-test-1
+
 ?nl "Reached end of test.feline" write-string
