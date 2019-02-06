@@ -1,4 +1,4 @@
--- Copyright (C) 2018 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ global inspected-object
 : inspect
     1 ?enough
     dup inspected-object!
-    inspected-object type-of .
+    inspected-object type-of type-name print
     inspected-object object-layout :> layout
     layout [
         layout length dup "%d slots" format print
