@@ -1,4 +1,4 @@
-// Copyright (C) 2017 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,11 +15,11 @@
 
 #include <stdio.h>
 #include <string.h>     // memcpy, memset
-#include <unistd.h>     // write
 
 #ifdef WIN64
 #include <winsock2.h>
 #else
+#include <unistd.h>     // write
 #include <netdb.h>
 #include <sys/types.h>
 #include <sys/socket.h>
