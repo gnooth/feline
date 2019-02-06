@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -156,9 +156,9 @@ int c_fixnum_to_base(cell n, cell base, char * buf, size_t size)
     return snprintf(buf, size, "%" PRId64, n);
 }
 
-cell c_pi()
+cell c_pi (void)
 {
-  return (cell) make_float(M_PI);
+  return (cell) make_float (3.1415926535897932846);
 }
 
 cell c_float_float_lt(Float *p1, Float *p2)
