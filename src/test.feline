@@ -3713,7 +3713,8 @@ file-lines-test-1
 test: rename-file-test-1
     "delete-me" :> file
     "delete-me~" :> backup
-    "this is a test" :> contents
+    "this is a test" :> contents1
+    "this is another test" :> contents2
 
     file file-exists? [ file delete-file ] when
     file file-exists? assert-false
@@ -3721,10 +3722,10 @@ test: rename-file-test-1
     backup file-exists? [ backup delete-file ] when
     backup file-exists? assert-false
 
-    contents file set-file-contents
+    contents1 file set-file-contents
     file file-exists? assert-true
     file regular-file? assert-true
-    file file-contents contents assert=
+    file file-contents contents1 assert=
 
     file file-exists? assert-true
     backup file-exists? assert-false
@@ -3732,32 +3733,30 @@ test: rename-file-test-1
     file backup rename-file assert-true
     file file-exists? assert-false
     backup file-exists? assert-true
-    backup file-contents contents assert=
+    backup file-contents contents1 assert=
 
     backup delete-file
     backup file-exists? assert-false
 
-    -- error cases
+    -- attempt to rename a file that does not exist
     file file-exists? assert-false
     backup file-exists? assert-false
     file backup rename-file assert-false
 
-    "different contents" :> contents2
+    -- new name refers to an existing file
+    contents1 file set-file-contents
+    contents2 backup set-file-contents
+    file regular-file? assert-true
+    file file-contents contents1 assert=
+    file regular-file? assert-true
+    backup file-contents contents2 assert=
 
-    contents2 file set-file-contents
-    contents backup set-file-contents
-    file file-exists? assert-true
-    backup file-exists? assert-true
+    -- rename should work
+    file backup rename-file assert-true
 
-    file backup rename-file assert-false
-
-    file file-exists? assert-true
-    file file-contents contents2 assert=
-    backup file-exists? assert-true
-    backup file-contents contents assert=
-
-    file delete-file
     file file-exists? assert-false
+    backup regular-file? assert-true
+    backup file-contents contents1 assert=
 
     backup delete-file
     backup file-exists? assert-false

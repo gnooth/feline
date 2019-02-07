@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -410,12 +410,12 @@ cell os_delete_file(const char *filename)
 #endif
 }
 
-cell os_rename_file(const char *oldpath, const char *newpath)
+cell os_rename_file (const char *oldpath, const char *newpath)
 {
 #ifdef WIN64_NATIVE
-  return MoveFile(oldpath, newpath) ? 0 : -1;
+  return MoveFileEx (oldpath, newpath, MOVEFILE_REPLACE_EXISTING) ? 0 : -1;
 #else
-  return rename(oldpath, newpath);
+  return rename (oldpath, newpath);
 #endif
 }
 
