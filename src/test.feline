@@ -2164,6 +2164,12 @@ test: format-test-1
 
 format-test-1
 
+test: format-test-2
+    "this is a %%test%%" format "this is a %test%" assert=
+;
+
+format-test-2
+
 test: string>float-test-1
     "42.0" string>float 42.0 assert=
     "42" string>float 42.0 assert=

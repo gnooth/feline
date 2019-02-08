@@ -1,4 +1,4 @@
-; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -199,6 +199,16 @@ code format_object, 'format-object'     ; object format-specifier -- string
         _then .4
         _return
         _then .3
+
+        ; %% escaped % char
+        _dup
+        _quote "%%"
+        _ stringequal
+        _tagged_if .5
+        _drop
+        _quote "%"
+        _return
+        _then .5
 
         ; FIXME support more format specifiers
         _error "unsupported"
