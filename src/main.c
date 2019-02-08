@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -117,7 +117,7 @@ static void initialize_datastack()
   primordial_sp0_ = os_thread_initialize_datastack();
 }
 
-static void initialize_dynamic_code_space()
+static void initialize_dynamic_code_space (void)
 {
   extern cell code_space_;
   extern cell code_space_free_;
@@ -126,15 +126,15 @@ static void initialize_dynamic_code_space()
 #define DYNAMIC_CODE_SPACE_RESERVED_SIZE 1024*1024*8    // 8 mb
 
 #ifdef WIN64
-  void *address = (void *)0x80000000;
+  uint64_t address = 0x80000000;
 
   for (int i = 0; i < 3; i++)
     {
       code_space_ =
-        (cell) VirtualAlloc(address,                            // starting address
-                            DYNAMIC_CODE_SPACE_RESERVED_SIZE,   // size
-                            MEM_COMMIT|MEM_RESERVE,             // allocation type
-                            PAGE_EXECUTE_READWRITE);            // protection
+        (cell) VirtualAlloc ((LPVOID)address,                   // starting address
+                             DYNAMIC_CODE_SPACE_RESERVED_SIZE,  // size
+                             MEM_COMMIT|MEM_RESERVE,            // allocation type
+                             PAGE_EXECUTE_READWRITE);           // protection
       if (code_space_)
         break;
       address += 0x100000;
@@ -144,27 +144,27 @@ static void initialize_dynamic_code_space()
     {
       // give up
       code_space_ =
-        (cell) VirtualAlloc(NULL,                               // starting address
-                            DYNAMIC_CODE_SPACE_RESERVED_SIZE,   // size
-                            MEM_COMMIT|MEM_RESERVE,             // allocation type
-                            PAGE_EXECUTE_READWRITE);            // protection
+        (cell) VirtualAlloc (NULL,                              // starting address
+                             DYNAMIC_CODE_SPACE_RESERVED_SIZE,  // size
+                             MEM_COMMIT|MEM_RESERVE,            // allocation type
+                             PAGE_EXECUTE_READWRITE);           // protection
 
     }
 
   if (code_space_ == (cell) NULL)
-    exit(EXIT_FAILURE);
+    exit (EXIT_FAILURE);
 #else
   // Linux
   code_space_ =
-    (cell) mmap((void *)0x1000000,                              // starting address
-                DYNAMIC_CODE_SPACE_RESERVED_SIZE,               // size
-                PROT_READ|PROT_WRITE|PROT_EXEC,                 // protection
-                MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE,        // flags
-                -1,                                             // fd
-                0);                                             // offset
+    (cell) mmap ((void *)0x1000000,                             // starting address
+                 DYNAMIC_CODE_SPACE_RESERVED_SIZE,              // size
+                 PROT_READ|PROT_WRITE|PROT_EXEC,                // protection
+                 MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE,       // flags
+                 -1,                                            // fd
+                 0);                                            // offset
 
   if (code_space_ == (cell) MAP_FAILED)
-    exit(EXIT_FAILURE);
+    exit (EXIT_FAILURE);
 #endif
 
   code_space_free_  = code_space_;
