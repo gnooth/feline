@@ -2809,7 +2809,7 @@ test: bitnot-test-1
 bitnot-test-1
 
 test: path-append-test-1
-    windows? [
+    win64? [
         "foo"   "bar" path-append "foo\\bar" assert=
         "foo\\" "bar" path-append "foo\\bar" assert=
     ] when
@@ -2828,14 +2828,14 @@ test: canonical-path-test-1
     " " canonical-path assert-false
     "" canonical-path assert-false
 
-    windows? [ "..." canonical-path assert-false ] unless
+    win64? [ "..." canonical-path assert-false ] unless
 
     "~" canonical-path user-home assert=
 
     "~/" canonical-path user-home "/" path-append canonical-path assert=
     "~/foo.bar" canonical-path user-home "foo.bar" path-append canonical-path assert=
 
-    windows? [
+    win64? [
         "~\\" canonical-path user-home "\\" path-append canonical-path assert=
         "~\\foo.bar" canonical-path user-home "foo.bar" path-append canonical-path assert=
     ] when
@@ -2846,7 +2846,7 @@ canonical-path-test-1
 test: path-is-absolute?-test-1
     clear
 
-    windows? [
+    win64? [
         "" path-is-absolute? assert-false
         "foo" path-is-absolute? assert-false
         "\\foo" path-is-absolute? assert-true
@@ -2875,7 +2875,7 @@ test: path-extension-test-1
     "foo.bar/test.feline" path-extension ".feline" assert=
     "foo.bar/test" path-extension assert-false
 
-    windows? [
+    win64? [
         "foo.bar\\test.feline" path-extension ".feline" assert=
         "foo.bar\\test" path-extension assert-false
     ] when
@@ -2971,7 +2971,7 @@ test: tri-test-1
 tri-test-1
 
 test: file-attributes-test-1
-    windows? "c:/windows" "/home" ?
+    win64? "c:/windows" "/home" ?
     [ file-exists? assert-true ]
     [ directory? assert-true ]
     [ regular-file? assert-false ]
@@ -3096,7 +3096,7 @@ thread-test-3
 test: thread-test-4
     linux? [ current-thread thread-id current-thread-id assert= ] when
 
-    windows? [
+    win64? [
         -- REVIEW
         -- In general we don't care about the native thread id on Windows.
         -- We do care about the native thread handle (which doesn't exist on Linux).
@@ -3704,7 +3704,7 @@ test: file-lines-test-1
     file file-exists? assert-true
 
     file file-contents
-    windows? "this\r\nis\r\na\r\ntest\r\n" "this\nis\na\ntest\n" ?
+    win64? "this\r\nis\r\na\r\ntest\r\n" "this\nis\na\ntest\n" ?
     string= assert-true
 
     file file-lines seq sequence= assert-true

@@ -1,4 +1,4 @@
--- Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ k-next                          constant pagedown
 k-ctrl-home                     constant ctrl-home
 k-ctrl-end                      constant ctrl-end
 
-windows? #if
+win64? #if
 0x808d                          constant ctrl-up
 0x8091                          constant ctrl-down
 0x809b                          constant alt-left

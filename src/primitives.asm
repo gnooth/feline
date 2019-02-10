@@ -1924,8 +1924,8 @@ code expt, 'expt'                       ; base power -- result
         next
 endcode
 
-; ### windows?
-code windows?, 'windows?'               ; -- ?
+; ### win64?
+code win64?, 'win64?'                   ; void -> ?
 %ifdef WIN64
         _t
 %else
@@ -1935,7 +1935,7 @@ code windows?, 'windows?'               ; -- ?
 endcode
 
 ; ### linux?
-code linux?, 'linux?'                   ; -- ?
+code linux?, 'linux?'                   ; void -> ?
 %ifdef WIN64
         _f
 %else
@@ -1945,7 +1945,7 @@ code linux?, 'linux?'                   ; -- ?
 endcode
 
 ; ### debug?
-code debug?, 'debug?'                   ; -- ?
+code debug?, 'debug?'                   ; void -> ?
 %ifdef DEBUG
         _t
 %else
