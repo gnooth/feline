@@ -324,13 +324,13 @@ code file_contents, 'file-contents'     ; path -- string
         next
 endcode
 
-; ### ?file-contents
-code safe_file_contents, '?file-contents'       ; path -- string/f
+; ### safe-file-contents
+code safe_file_contents, 'safe-file-contents' ; path -> string/f
         _quotation .1
         _ file_contents
         _end_quotation .1
         _quotation .2
-        ; -- path error
+        ; -> path error
         _2drop
         _f
         _end_quotation .2
