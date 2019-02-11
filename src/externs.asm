@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -70,7 +70,6 @@ extern os_reposition_file
 extern os_resize_file
 extern os_sleep
 extern os_strerror
-extern os_system
 extern os_thread_create
 extern os_thread_initialize_datastack
 extern os_thread_join
