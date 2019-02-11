@@ -129,10 +129,18 @@
 %endmacro
 
 %macro  _tag_boolean 0
+; converts 0 in rbx to f, anything else to t
         mov     eax, f_value
         test    rbx, rbx
         mov     ebx, t_value
         cmovz   ebx, eax
+%endmacro
+
+%macro  _as_boolean 0
+; converts anything in rbx but f to t
+        mov     eax, t_value
+        cmp     rbx, f_value
+        cmovne  rbx, rax
 %endmacro
 
 %macro  _char? 0                        ; x -- ?

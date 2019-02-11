@@ -184,9 +184,7 @@ endcode
 
 ; ### as-boolean
 inline as_boolean, 'as-boolean'         ; x -> ?
-        mov     rax, t_value
-        cmp     rbx, f_value
-        cmovne  rbx, rax
+        _as_boolean
 endinline
 
 ; ### not
