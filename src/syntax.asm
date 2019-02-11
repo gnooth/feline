@@ -895,7 +895,8 @@ code sh, 'sh'
 
         _swap
         _ lexer_next_line
-        _ system_
+        _ run_shell_command             ; returns fixnum 0 on success
+        _ drop                          ; ignore return value
         _else .1
         _drop
         _error "no lexer"

@@ -131,11 +131,15 @@ code rename_file, 'rename-file'         ; old-name new-name -> ?
         next
 endcode
 
-; ### system
-code system_, 'system'                  ; string -> void
+; ### run-shell-command
+code run_shell_command, 'run-shell-command' ; string -> fixnum
+; returns fixnum 0 on success
         _ string_raw_data_address
-        popd    arg0_register
-        xcall   os_system
+        mov     arg0_register, rbx
+        extern  system
+        xcall   system
+        mov     rbx, rax
+        _tag_fixnum
         next
 endcode
 
