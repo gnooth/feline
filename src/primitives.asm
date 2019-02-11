@@ -182,6 +182,13 @@ code feline_equal, '='                  ; x y -- ?
         next
 endcode
 
+; ### as-boolean
+inline as_boolean, 'as-boolean'         ; x -> ?
+        mov     rax, t_value
+        cmp     rbx, f_value
+        cmovne  rbx, rax
+endinline
+
 ; ### not
 inline not, 'not'                       ; x -> ?
         _not
