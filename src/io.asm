@@ -85,29 +85,15 @@ code resize_file, 'resize-file'         ; ud fileid -- ior
 endcode
 
 ; ### delete-file
-code delete_file, 'delete-file'         ; string ->
-        _dup
+code delete_file, 'delete-file'         ; string -> ?
+; returns t if successful, f on error
         _ string_raw_data_address
         mov     arg0_register, rbx
-        poprbx
         xcall   os_delete_file
+        mov     ebx, t_value
+        mov     edx, f_value
         test    rax, rax
-        js      .error
-        _drop
-        next
-.error:
-        ; REVIEW explain why delete failed
-        _quote `ERROR: unable to delete file `
-        _ string_to_sbuf
-        _swap
-        _ canonical_path
-        _over
-        _ sbuf_append_string
-        _lit tagged_char('.')
-        _over
-        _ sbuf_push
-        _ sbuf_to_string
-        _ error
+        cmovs   ebx, edx
         next
 endcode
 
