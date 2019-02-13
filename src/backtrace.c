@@ -1,4 +1,4 @@
-// Copyright (C) 2015-2017 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2015-2019 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,26 +20,32 @@
 static cell saved_backtrace_array[32];
 static cell saved_backtrace_size;
 
-cell * c_get_saved_backtrace_array()
+cell * c_get_saved_backtrace_array (void)
 {
   return saved_backtrace_array;
 }
 
-cell c_get_saved_backtrace_size()
+cell c_get_saved_backtrace_size (void)
 {
   return saved_backtrace_size;
 }
 
-void c_save_backtrace(cell rip, cell rsp)
+static cell c_current_thread_raw_rp0 (void)
 {
-  memset(saved_backtrace_array, 0, sizeof(saved_backtrace_array));
+  cell * thread = (cell *) (os_current_thread () >> 8);
+  return thread[4];
+}
+
+void c_save_backtrace (cell rip, cell rsp)
+{
+  memset (saved_backtrace_array, 0, sizeof (saved_backtrace_array));
   saved_backtrace_array[0] = rip;
   int i = 1;
-  extern cell *rp0_;
-  for (cell * p = (cell *)rsp; p < rp0_; ++p)
+  cell * rp0 = (cell *) c_current_thread_raw_rp0 ();
+  for (cell * p = (cell *) rsp; p < rp0; ++p)
     {
       saved_backtrace_array[i++] = *p;
-      if (i >= sizeof(saved_backtrace_array) / sizeof(cell))
+      if (i >= sizeof (saved_backtrace_array) / sizeof (cell))
         break;
     }
   saved_backtrace_size = i;

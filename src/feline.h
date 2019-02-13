@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -35,36 +35,50 @@ typedef int64_t cell;
 #define FIXNUM_TAG_BITS         1
 
 #if FIXNUM_TAG_BITS == 1
-#define make_fixnum(n)          (((cell)n << 1) + 1)
+#define make_fixnum(n)          (((cell) n << 1) + 1)
 #define MOST_POSITIVE_FIXNUM    ((cell)  4611686018427387903)
 #define MOST_NEGATIVE_FIXNUM    ((cell) -4611686018427387904)
 #elif FIXNUM_TAG_BITS == 3
-#define make_fixnum(n)          (((cell)n << 3) + 1)
+#define make_fixnum(n)          (((cell) n << 3) + 1)
 #define MOST_POSITIVE_FIXNUM    ((cell)  1152921504606846975)
 #define MOST_NEGATIVE_FIXNUM    ((cell) -1152921504606846976)
 #endif
 
+// int64.asm
 typedef struct
 {
   cell header;
   int64_t n;
 } Int64;
 
+// float.asm
 typedef struct
 {
   cell header;
   double d;
 } Float;
 
+// thread.asm
+typedef struct
+{
+  cell header;
+  cell raw_thread_id;
+  cell raw_thread_handle;
+  cell raw_sp0;
+  cell raw_rp0;
+  // 10 more slots
+} Thread;
+
 // numbers.c
 Float *make_float(double d);
 
 // os.c
-cell os_ticks();
-cell os_close_file(cell fd);
-cell os_write_file(cell fd, void *buf, size_t count);
-cell os_nano_count();
-cell os_thread_initialize_datastack();
+cell os_ticks (void);
+cell os_close_file (cell fd);
+cell os_write_file (cell fd, void * buf, size_t count);
+cell os_nano_count (void);
+cell os_thread_initialize_datastack (void);
+cell os_current_thread (void);
 
 #ifdef WIN64
 extern DWORD tls_index;
@@ -73,11 +87,11 @@ extern pthread_key_t tls_key;
 #endif
 
 // terminal.c
-void prep_terminal();
-void deprep_terminal();
+void prep_terminal (void);
+void deprep_terminal (void);
 
 // backtrace.c
-void c_save_backtrace(cell rip, cell rsp);
+void c_save_backtrace (cell rip, cell rsp);
 
 // handles.asm
 cell get_handle_for_object(cell);
