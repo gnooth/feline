@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -25,6 +25,23 @@ code max_locals, 'max-locals'           ; -> n
         next
 endcode
 
+; %define LOCALS_USE_RETURN_STACK
+
+%ifdef LOCALS_USE_RETURN_STACK
+
+%macro  _locals_enter 0
+        push    r14
+        sub     rsp, BYTES_PER_CELL * MAX_LOCALS
+        mov     r14, rsp
+%endmacro
+
+%macro  _locals_leave 0
+        add     rsp, BYTES_PER_CELL * MAX_LOCALS
+        pop     r14
+%endmacro
+
+%else
+
 %macro  _locals_enter 0
         push    r14
         lea     r14, [r14 - BYTES_PER_CELL * MAX_LOCALS];
@@ -33,6 +50,8 @@ endcode
 %macro  _locals_leave 0
         pop     r14
 %endmacro
+
+%endif
 
 asm_global lp0_, 0
 
