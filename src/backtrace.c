@@ -30,18 +30,15 @@ cell c_get_saved_backtrace_size (void)
   return saved_backtrace_size;
 }
 
-static cell c_current_thread_raw_rp0 (void)
-{
-  cell * thread = (cell *) (os_current_thread () >> 8);
-  return thread[4];
-}
+// thread.asm
+cell current_thread_raw_rp0_rax (void);
 
 void c_save_backtrace (cell rip, cell rsp)
 {
   memset (saved_backtrace_array, 0, sizeof (saved_backtrace_array));
   saved_backtrace_array[0] = rip;
   int i = 1;
-  cell * rp0 = (cell *) c_current_thread_raw_rp0 ();
+  cell * rp0 = (cell *) current_thread_raw_rp0_rax ();
   for (cell * p = (cell *) rsp; p < rp0; ++p)
     {
       saved_backtrace_array[i++] = *p;

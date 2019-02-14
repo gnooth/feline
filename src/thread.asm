@@ -321,7 +321,7 @@ code current_thread_raw_sp0_rax, 'current_thread_raw_sp0_rax', SYMBOL_INTERNAL
 ; returns raw sp0 in rax
         xcall   os_current_thread       ; get handle of current Feline thread object in rax
 
-        ; rax will be 0 if we haven't called initialize_primordial_thread yet
+        ; rax will be 0 if we haven't called initialize_threads yet
         test    rax, rax
         jz      .too_soon
 
@@ -339,6 +339,24 @@ code current_thread_raw_rp0, 'current_thread_raw_rp0', SYMBOL_INTERNAL
         _ current_thread
         _ check_thread
         _slot thread_slot_raw_rp0
+        next
+endcode
+
+; ### current_thread_raw_rp0_rax
+code current_thread_raw_rp0_rax, 'current_thread_raw_rp0_rax', SYMBOL_INTERNAL
+; returns raw rp0 in rax
+        xcall   os_current_thread       ; get handle of current Feline thread object in rax
+
+        ; rax will be 0 if we haven't called initialize_threads yet
+        test    rax, rax
+        jz      .too_soon
+
+        _handle_to_object_unsafe_rax
+        mov     rax, qword [rax + bytes_per_cell * thread_slot_raw_rp0]
+        _return
+
+.too_soon:
+        mov     rax, [primordial_rp0_]
         next
 endcode
 
