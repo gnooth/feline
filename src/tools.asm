@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -20,8 +20,6 @@ code int3, 'int3'                       ; --
         int3
         next
 endcode
-
-; %ifndef WIN64
 
 extern c_get_saved_backtrace_array
 extern c_get_saved_backtrace_size
@@ -67,8 +65,6 @@ code get_saved_backtrace, 'get-saved-backtrace' ; -- vector
 
         next
 endcode
-
-; %endif
 
 %ifdef WIN64
 
@@ -212,7 +208,7 @@ endcode
 ; ### handle-signal
 code handle_signal, 'handle-signal'
         mov     rbp, [primordial_sp0_]
-        mov     rsp, [rp0_]
+        mov     rsp, [primordial_rp0_]
 
         _lp0
         _?dup

@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ code start_time_raw_nano_count, 'start_time_raw_nano_count', SYMBOL_INTERNAL
         next
 endcode
 
-asm_global rp0_, 0
+asm_global primordial_rp0_, 0
 
 asm_global primordial_sp0_, 0           ; initialized in main()
 
@@ -183,7 +183,7 @@ special load_verbose?, 'load-verbose?'
 
 ; ### cold
 code cold, 'cold', SYMBOL_INTERNAL      ; --
-        mov     [rp0_], rsp
+        mov     [primordial_rp0_], rsp
         mov     rbp, [primordial_sp0_]
 
         _ seed_random

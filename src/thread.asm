@@ -1,4 +1,4 @@
-; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -590,7 +590,7 @@ code initialize_threads, 'initialize_threads', SYMBOL_INTERNAL  ; --
         _ thread_set_raw_sp0            ; -- thread
 
         pushrbx
-        mov     rbx, [rp0_]
+        mov     rbx, [primordial_rp0_]
         _over
         _ thread_set_raw_rp0            ; -- thread
 
