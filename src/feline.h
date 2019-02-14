@@ -58,17 +58,6 @@ typedef struct
   double d;
 } Float;
 
-// thread.asm
-typedef struct
-{
-  cell header;
-  cell raw_thread_id;
-  cell raw_thread_handle;
-  cell raw_sp0;
-  cell raw_rp0;
-  // 10 more slots
-} Thread;
-
 // numbers.c
 Float *make_float(double d);
 
@@ -92,9 +81,6 @@ void deprep_terminal (void);
 
 // backtrace.c
 void c_save_backtrace (cell rip, cell rsp);
-
-// handles.asm
-cell get_handle_for_object(cell);
 
 extern cell os_errno_data;
 
