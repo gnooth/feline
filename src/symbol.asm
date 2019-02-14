@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -73,6 +73,8 @@ file __FILE__
 %macro  _this_symbol_set_def 0          ; definition --
         _this_set_slot4
 %endmacro
+
+%define SYMBOL_PROPS_OFFSET BYTES_PER_CELL * 5
 
 %macro  _symbol_props 0
         _slot5
@@ -438,49 +440,43 @@ code symbol_set_def, 'symbol-set-def'   ; definition symbol --
 endcode
 
 ; ### symbol-props
-code symbol_props, 'symbol-props'       ; symbol -- props
+code symbol_props, 'symbol-props'       ; symbol -> hashtable/f
         _ check_symbol
         _symbol_props
         next
 endcode
 
 ; ### symbol-prop
-code symbol_prop, 'symbol-prop'         ; key symbol -- value
-        _ check_symbol
-        push    this_register
-        mov     this_register, rbx
-        poprbx                          ; -- key
-
-        _this_symbol_props
-        _dup
-        _tagged_if .1
+code symbol_prop, 'symbol-prop'         ; key symbol -> value
+        _ symbol_props
+        cmp     rbx, f_value
+        je      .no_props
         _ hashtable_at
-        _else .1
+        next
+.no_props:
+        ; rbx = f
         _nip
-        _then .1
-
-        pop     this_register
         next
 endcode
 
 ; ### symbol-set-prop
-code symbol_set_prop, 'symbol-set-prop' ; value key symbol --
-        _ check_symbol
-        push    this_register
-        mov     this_register, rbx
-        poprbx                          ; -- value key
-
-        _this_symbol_props
-        _tagged_if_not .1
-        _lit 2
-        _ new_hashtable_untagged
-        _this_symbol_set_props
-        _then .1
-
-        _this_symbol_props
+code symbol_set_prop, 'symbol-set-prop' ; value key symbol -> void
+        _ check_symbol                  ; -> value key ^symbol
+        mov     rax, rbx                ; rax = ^symbol
+        mov     rbx, [rax + SYMBOL_PROPS_OFFSET] ; -> value key hashtable/f
+        cmp     rbx, rbx
+        je      .no_props
         _ hashtable_set_at
-
-        pop     this_register
+        next
+.no_props:
+        ; rax = ^symbol
+        ; -> value key f
+        push    rax                     ; save ^symbol on return stack
+        mov     rbx, 2                  ; replace f with 2 (capacity arg for new hashtable)
+        _ new_hashtable_untagged        ; -> value key hashtable
+        pop     rax                     ; rax = ^symbol, rbx = hashtable
+        mov     [rax + SYMBOL_PROPS_OFFSET], rbx ; store hashtable in symbol object
+        _ hashtable_set_at
         next
 endcode
 
