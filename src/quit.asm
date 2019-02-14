@@ -340,10 +340,13 @@ endcode
 
 ; ### reset
 code reset, 'reset'
+
+%ifndef LOCALS_USE_RETURN_STACK
         _lp0
         _?dup_if .1
         _lpstore
         _then .1
+%endif
 
         _ get_dynamic_scope
         _dup
