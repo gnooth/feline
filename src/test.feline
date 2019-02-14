@@ -3348,7 +3348,7 @@ test: string-last-index-from-test-1
 string-last-index-from-test-1
 
 test: file-open-append-test-1
-    "delete-me" file-exists? [ "delete-me" delete-file ] when
+    "delete-me" file-exists? [ "delete-me" delete-file assert-true ] when
     "delete-me" file-exists? assert-false
 
     "delete-me" file-open-append :> stream!
@@ -3367,14 +3367,14 @@ test: file-open-append-test-1
     "delete-me" file-exists? assert-true
     "delete-me" file-contents "this is a test and this is another test" assert=
 
-    "delete-me" delete-file
+    "delete-me" delete-file assert-true
     "delete-me" file-exists? assert-false
 ;
 
 file-open-append-test-1
 
 test: file-open-append-test-2
-    "delete-me" file-exists? [ "delete-me" delete-file ] when
+    "delete-me" file-exists? [ "delete-me" delete-file assert-true ] when
     "delete-me" file-exists? assert-false
 
     "delete-me" file-open-append :> stream!
@@ -3395,28 +3395,28 @@ test: file-open-append-test-2
     "delete-me" file-exists? assert-true
     "delete-me" file-contents "this is a test and this is another test" assert=
 
-    "delete-me" delete-file
+    "delete-me" delete-file assert-true
     "delete-me" file-exists? assert-false
 ;
 
 file-open-append-test-2
 
 test: set-file-contents-test-1
-    "delete-me" file-exists? [ "delete-me" delete-file ] when
+    "delete-me" file-exists? [ "delete-me" delete-file assert-true ] when
     "delete-me" file-exists? assert-false
 
     "this is a test" "delete-me" set-file-contents
     "delete-me" file-exists? assert-true
     "delete-me" file-contents "this is a test" assert=
 
-    "delete-me" delete-file
+    "delete-me" delete-file assert-true
     "delete-me" file-exists? assert-false
 ;
 
 set-file-contents-test-1
 
 test: stream-output-column-test-1
-    "delete-me" file-exists? [ "delete-me" delete-file ] when
+    "delete-me" file-exists? [ "delete-me" delete-file assert-true ] when
     "delete-me" file-exists? assert-false
 
     "delete-me" file-open-append :> stream
@@ -3697,7 +3697,7 @@ test: file-lines-test-1
     "delete-me" :> file
     { "this" "is" "a" "test" } :> seq
 
-    file file-exists? [ file delete-file ] when
+    file file-exists? [ file delete-file assert-true ] when
     file file-exists? assert-false
 
     seq file set-file-lines
@@ -3710,7 +3710,7 @@ test: file-lines-test-1
     file file-lines seq sequence= assert-true
 
     file file-exists? assert-true
-    file delete-file
+    file delete-file assert-true
     file file-exists? assert-false
 ;
 
@@ -3722,10 +3722,10 @@ test: rename-file-test-1
     "this is a test" :> contents1
     "this is another test" :> contents2
 
-    file file-exists? [ file delete-file ] when
+    file file-exists? [ file delete-file assert-true ] when
     file file-exists? assert-false
 
-    backup file-exists? [ backup delete-file ] when
+    backup file-exists? [ backup delete-file assert-true ] when
     backup file-exists? assert-false
 
     contents1 file set-file-contents
@@ -3741,7 +3741,7 @@ test: rename-file-test-1
     backup file-exists? assert-true
     backup file-contents contents1 assert=
 
-    backup delete-file
+    backup delete-file assert-true
     backup file-exists? assert-false
 
     -- attempt to rename a file that does not exist
@@ -3764,7 +3764,7 @@ test: rename-file-test-1
     backup regular-file? assert-true
     backup file-contents contents1 assert=
 
-    backup delete-file
+    backup delete-file assert-true
     backup file-exists? assert-false
 ;
 
