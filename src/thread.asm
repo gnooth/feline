@@ -823,16 +823,13 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
         next
 endcode
 
-; ### thread>string
-code thread_to_string, 'thread>string'  ; thread -- string
+; ### thread->string
+code thread_to_string, 'thread->string' ; thread -> string
         _ verify_thread
-
-        ; REVIEW
-        _ object_address                ; -- tagged-fixnum
+        _ object_address                ; -> tagged-fixnum
         _ fixnum_to_hex
-        _quote "#<thread 0x%s>"
+        _quote "<thread 0x%s>"
         _ format
-
         next
 endcode
 

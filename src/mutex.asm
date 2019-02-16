@@ -1,4 +1,4 @@
-; Copyright (C) 2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -153,14 +153,12 @@ code mutex_unlock, 'mutex-unlock'       ; mutex -- ?
         next
 endcode
 
-; ### mutex>string
-code mutex_to_string, 'mutex>string'    ; mutex -- string
+; ### mutex->string
+code mutex_to_string, 'mutex->string'   ; mutex -> string
         _ verify_mutex
-
-        _ object_address                ; -- tagged-fixnum
+        _ object_address                ; -> tagged-fixnum
         _ fixnum_to_hex
-        _quote "#<mutex 0x%s>"
+        _quote "<mutex 0x%s>"
         _ format
-
         next
 endcode
