@@ -207,14 +207,19 @@ endcode
 
 ; ### handle-signal
 code handle_signal, 'handle-signal'
-        mov     rbp, [primordial_sp0_]
-        mov     rsp, [primordial_rp0_]
 
+        _ current_thread_raw_rp0_rax
+        mov     rsp, rax
+        _ current_thread_raw_sp0_rax
+        mov     rbp, rax
+
+%ifndef LOCALS_USE_RETURN_STACK
         _lp0
         _?dup
         _if .1
         _lpstore
         _then .1
+%endif
 
         _ ?nl
         _ print_exception
