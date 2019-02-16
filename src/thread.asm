@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; 14 slots:
+; 15 slots:
 
 %define thread_slot_raw_thread_id        1
 %define thread_slot_raw_thread_handle    2
@@ -35,6 +35,8 @@ file __FILE__
 
 %define thread_slot_debug_name          14
 
+%define thread_slot_catchstack          15
+
 %define thread_raw_thread_id_slot       qword [rbx + bytes_per_cell * thread_slot_raw_thread_id]
 %define thread_raw_thread_handle_slot   qword [rbx + bytes_per_cell * thread_slot_raw_thread_handle]
 %define thread_raw_sp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_sp0]
@@ -42,6 +44,8 @@ file __FILE__
 %define thread_raw_lp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_lp0]
 
 %define thread_state_slot               qword [rbx + bytes_per_cell * thread_slot_state]
+
+%define thread_catchstack_slot          qword [rbx + bytes_per_cell * thread_slot_catchstack]
 
 ; ### thread?
 code thread?, 'thread?'                 ; handle -- ?
@@ -182,8 +186,22 @@ code thread_lp0, 'thread-lp0'           ; thread -- lp0
         next
 endcode
 
+; ### thread-catchstack
+code thread_catchstack, 'thread-catchstack' ; void -> vector
+        _ check_thread
+        _slot thread_slot_catchstack
+        next
+endcode
+
+; ### thread-set-catchstack
+code thread_set_catchstack, 'thread-set-catchstack' ; vector thread -> void
+        _ check_thread
+        _set_slot thread_slot_catchstack
+        next
+endcode
+
 ; ### thread-quotation
-code thread_quotation, 'thread-quotation'       ; thread -- quotation
+code thread_quotation, 'thread-quotation' ; thread -> quotation
         _ check_thread
         _slot thread_slot_quotation
         next
@@ -405,7 +423,7 @@ endcode
 
 ; ### new_thread
 code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
-        _lit 15
+        _lit 16
         _ raw_allocate_cells
 
         mov     qword [rbx], TYPECODE_THREAD
@@ -463,6 +481,11 @@ code make_thread, '<thread>'            ; quotation -- thread
         _ allocate_locals_stack
         _over
         _set_slot thread_slot_raw_lp0
+
+        _lit 16
+        _ new_vector_untagged
+        _over
+        _set_slot thread_slot_catchstack
 
         xcall   os_thread_initialize_datastack  ; returns raw sp0 in rax
         _dup
@@ -630,6 +653,11 @@ code initialize_threads, 'initialize_threads', SYMBOL_INTERNAL  ; --
         _ THREAD_RUNNING
         _over
         _ thread_set_state
+
+        _lit 16
+        _ new_vector_untagged
+        _over
+        _ thread_set_catchstack
 
         mov     arg0_register, rbx
         xcall   os_initialize_primordial_thread
@@ -844,7 +872,10 @@ code mark_thread, 'mark_thread', SYMBOL_INTERNAL        ; thread --
         _dup
         _slot thread_slot_quotation
         _ maybe_mark_handle
+        _dup
         _slot thread_slot_debug_name
+        _ maybe_mark_handle
+        _slot thread_slot_catchstack
         _ maybe_mark_handle
         next
 endcode
