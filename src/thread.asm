@@ -43,8 +43,6 @@ file __FILE__
 
 %define thread_state_slot               qword [rbx + bytes_per_cell * thread_slot_state]
 
-%define THREAD_REGISTERS_OFFSET         bytes_per_cell * thread_slot_saved_rbx
-
 ; ### thread?
 code thread?, 'thread?'                 ; handle -- ?
         _ deref                         ; -- raw-object/0
