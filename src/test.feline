@@ -2051,17 +2051,7 @@ test: return-if-test-1
     f %return-if-test-1 get-datastack { "no"  } assert=
     clear
     0 %return-if-test-1 get-datastack { "yes" } assert=
-    clear
-
-    lp@
-    t %return-if-test-1 "yes" assert=
-    lp@ assert=
-
-    lp@
-    f %return-if-test-1 "no"  assert=
-    lp@ assert=
-
-    depth zero? assert ;
+    clear ;
 
 return-if-test-1
 
@@ -2077,16 +2067,6 @@ test: return-if-test-2
     depth zero? assert
 
     f %return-if-test-2 assert-false
-    depth zero? assert
-
-    lp@
-    "foo" dup %return-if-test-2 assert-eq
-    lp@ assert=
-
-    lp@
-    f %return-if-test-2 assert-false
-    lp@ assert=
-
     depth zero? assert ;
 
 return-if-test-2
@@ -2098,18 +2078,15 @@ return-if-test-2
     arg 9 = [ arg 1 + ] return-if
     arg ;
 
-global saved-lp
-
 test: return-if-test-3
     clear
-    lp@ saved-lp!
     3 %return-if-test-3 get-datastack { 47 } assert=
     clear
     9 %return-if-test-3 get-datastack { 10 } assert=
     clear
     5 %return-if-test-3 get-datastack {  5 } assert=
     clear
-    lp@ saved-lp assert= ;
+;
 
 return-if-test-3
 
