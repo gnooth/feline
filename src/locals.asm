@@ -25,7 +25,7 @@ code max_locals, 'max-locals'           ; -> n
         next
 endcode
 
-; %define LOCALS_USE_RETURN_STACK
+%define LOCALS_USE_RETURN_STACK
 
 %ifdef LOCALS_USE_RETURN_STACK
 
