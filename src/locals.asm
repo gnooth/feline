@@ -338,6 +338,8 @@ code local_setter, 'local-setter'       ; index -> symbol
         next
 endcode
 
+%ifndef LOCALS_USE_RETURN_STACK
+
 ; ### allocate_locals_stack
 code allocate_locals_stack, 'allocate_locals_stack', SYMBOL_INTERNAL    ; -- raw-lp0
         _lit 4096
@@ -359,6 +361,8 @@ code free_locals_stack, 'free_locals_stack', SYMBOL_INTERNAL
         _then .1
         next
 endcode
+
+%endif
 
 asm_global using_locals?_, f_value
 
@@ -400,9 +404,11 @@ endcode
 ; ### cold_initialize_locals
 code cold_initialize_locals, 'cold_initialize_locals', SYMBOL_INTERNAL
 
+%ifndef LOCALS_USE_RETURN_STACK
         _ allocate_locals_stack
         mov     [lp0_], rbx
         _lpstore
+%endif
 
         _lit locals_
         _ gc_add_root
