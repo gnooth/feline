@@ -53,6 +53,8 @@ endcode
 
 %endif
 
+%ifndef LOCALS_USE_RETURN_STACK
+
 asm_global lp0_, 0
 
 %macro _lp0 0
@@ -83,6 +85,8 @@ code lpfetch, 'lp@'                     ; -- tagged-address
         _tag_fixnum
         next
 endcode
+
+%endif
 
 ; ### local@
 code local_get, 'local@'                ; index -> value

@@ -637,10 +637,12 @@ code initialize_threads, 'initialize_threads', SYMBOL_INTERNAL  ; --
         _over
         _ thread_set_raw_rp0            ; -- thread
 
+%ifndef LOCALS_USE_RETURN_STACK
         pushrbx
         mov     rbx, [lp0_]
         _over
         _ thread_set_raw_lp0            ; -- thread
+%endif
 
         _ current_thread_raw_thread_id
         _over
