@@ -1984,13 +1984,17 @@ endcode
 
 ; ### bye
 code bye, "bye"
+
+%ifndef LOCALS_USE_RETURN_STACK
         _ free_locals_stack
+%endif
 
         _ interactive?
         _ get
         _tagged_if .1
         _ ?nl
         _ output_style
+        _ show_cursor
         _write `Bye!\n`
         _then .1
 
