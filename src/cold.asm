@@ -231,9 +231,11 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         _quote "boot.feline"
         _lit S_load_system_file
         _ catch
-        _?dup
-        _if .1
+        _dup
+        _tagged_if .1
         _ do_error
+        _else .1
+        _drop
         _then .1
 
 ;         _ report_startup_time
@@ -243,18 +245,22 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
 
         _lit S_process_command_line
         _ catch
-        _?dup
-        _if .2
+        _dup
+        _tagged_if .2
         _ do_error
+        _else .2
+        _drop
         _then .2
 
         _ dot_version
 
         _lit S_process_init_file
         _ catch
-        _?dup
-        _if .3
+        _dup
+        _tagged_if .3
         _ do_error
+        _else .3
+        _drop
         _then .3
 
         _t

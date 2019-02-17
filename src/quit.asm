@@ -524,10 +524,14 @@ code query, 'query'                     ; -- string/f
         _dup
         _tagged_if .1
         _ catch
-        _?dup
-        _if .2
+
+        _dup
+        _tagged_if .2
         _ do_error
+        _else .2
+        _drop
         _then .2
+
         _return
         _then .1
 

@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -25,120 +25,61 @@ file __FILE__
         _drop
 %endmacro
 
-%macro _spfetch 0
-        lea     rbp, [rbp - BYTES_PER_CELL]
-        mov     [rbp], rbx
-        mov     rbx, rbp
-%endmacro
-
-%macro _spstore 0
-        mov     rbp, rbx
-        mov     rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
-%endmacro
-
-section .data
-feline_handler_data:
-        dq      0
-
-; ### feline_handler
-code feline_handler, 'feline-handler'   ; -- handler
-        pushrbx
-        mov     rbx, [feline_handler_data]
-        next
-endcode
-
-; ### feline_handler!
-code set_feline_handler, 'feline-handler!' ; handler --
-        mov     [feline_handler_data], rbx
-        poprbx
-        next
-endcode
-
 ; ### catch
-code catch, 'catch'
-        _spfetch
-        _tor
-        _lpfetch
-        _tor
+code catch, 'catch'                     ; quot -> ... f
 
-        _ get_dynamic_scope
-        _dup
-        _ vector?
-        _tagged_if .1
-        _ vector_length
-        _else .1
-        _ drop
-        _ f
-        _then .1
-        _tor
+        _rpfetch                        ; -> quot raw-rp
 
-        _ feline_handler
-        _tor
-        _rpfetch
-        _ set_feline_handler
+        _ current_thread
+        _ thread_catchstack
+        _ vector_push                   ; -> quot
 
         _ callable_raw_code_address
         mov     rax, rbx
         _drop
         call    rax
 
-        _rfrom
-        _ set_feline_handler
+        _ current_thread
+        _ thread_catchstack
+        _ vector_pop_star
 
-        lea     rsp, [rsp + BYTES_PER_CELL * 3]
-
-        _zero
+        ; no error
+        _f
 
         next
 endcode
 
 ; ### throw
-code throw, 'throw'
-        test    rbx, rbx
-        jnz .1
-        poprbx
-        _return
-.1:
-        _ save_backtrace
-        _dup
-        _ feline_handler
+code throw, 'throw'                     ; error ->
+
+        cmp     rbx, f_value
+        jnz     .error
+        _drop
+        next
+
+.error:
+        _ current_thread
+        _ thread_catchstack
+        _ vector_?pop
+
+        cmp     rbx, f_value
+        je      .no_catch
+
+        ; -> saved-raw-rp
         _rpstore
+        next
 
-        _rfrom
-        _ set_feline_handler
-
-        _rfrom
-        _dup
-        _tagged_if .2
-        _ get_dynamic_scope
-        _ vector_set_length
-        _else .2
-        _drop
-        _then .2
-
-        _rfrom
-        _lpstore
-        _rfrom
-        _swap
-        _tor
-        _spstore
-        _drop
-        _rfrom
+.no_catch:
+        ; REVIEW
+        _ bye
         next
 endcode
 
+; REVIEW
 asm_global error_object_, f_value
 
-; ### error-object
-code error_object, 'error-object'
-        pushrbx
-        mov     rbx, [error_object_]
-        next
-endcode
-
 ; ### recover
-code recover, 'recover'                 ; try-quot recover-quot --
+code recover, 'recover'                 ; try-quot recover-quot ->
         _tor
         _tor                            ; --            r: -- recover-quot try-quot
         _ get_datastack                 ; -- data-stack
@@ -158,8 +99,8 @@ code recover, 'recover'                 ; try-quot recover-quot --
         pop     r13
         pop     r12
 
-        test    rbx, rbx
-        jnz     .error
+        cmp     rbx, f_value
+        jne     .error
 
         ; no error
         poprbx

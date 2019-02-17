@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -1983,7 +1983,7 @@ code get_environment_variable, 'get-environment-variable' ; name -- value
 endcode
 
 ; ### bye
-code feline_bye, "bye"
+code bye, "bye"
         _ free_locals_stack
 
         _ interactive?
