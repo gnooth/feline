@@ -137,7 +137,8 @@ code find_name, 'find-name'             ; string -- symbol/string ?
 endcode
 
 ; ### error
-code error, 'error'                     ; string --
+code error, 'error'                     ; string -> void
+        _ save_backtrace
         _ throw
         next
 endcode
