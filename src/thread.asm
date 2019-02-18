@@ -15,36 +15,27 @@
 
 file __FILE__
 
-; 15 slots:
+; 13 slots:
 
 %define thread_slot_raw_thread_id        1
 %define thread_slot_raw_thread_handle    2
 %define thread_slot_raw_sp0              3
 %define thread_slot_raw_rp0              4
-%define thread_slot_raw_lp0              5
-%define thread_slot_quotation            6
-%define thread_slot_result               7
-%define thread_slot_thread_locals        8
-
-%define thread_slot_saved_rbx            9
-%define thread_slot_saved_rsp           10
-%define thread_slot_saved_rbp           11
-%define thread_slot_saved_r14           12
-
-%define thread_slot_state               13
-
-%define thread_slot_debug_name          14
-
-%define thread_slot_catchstack          15
+%define thread_slot_quotation            5
+%define thread_slot_result               6
+%define thread_slot_thread_locals        7
+%define thread_slot_saved_rbx            8
+%define thread_slot_saved_rsp            9
+%define thread_slot_saved_rbp           10
+%define thread_slot_state               11
+%define thread_slot_debug_name          12
+%define thread_slot_catchstack          13
 
 %define thread_raw_thread_id_slot       qword [rbx + bytes_per_cell * thread_slot_raw_thread_id]
 %define thread_raw_thread_handle_slot   qword [rbx + bytes_per_cell * thread_slot_raw_thread_handle]
 %define thread_raw_sp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_sp0]
 %define thread_raw_rp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_rp0]
-%define thread_raw_lp0_slot             qword [rbx + bytes_per_cell * thread_slot_raw_lp0]
-
 %define thread_state_slot               qword [rbx + bytes_per_cell * thread_slot_state]
-
 %define thread_catchstack_slot          qword [rbx + bytes_per_cell * thread_slot_catchstack]
 
 ; ### thread?
@@ -63,7 +54,7 @@ code thread?, 'thread?'                 ; handle -- ?
 endcode
 
 ; ### check_thread
-code check_thread, 'check_thread', SYMBOL_INTERNAL      ; handle -- thread
+code check_thread, 'check_thread', SYMBOL_INTERNAL ; handle -> ^thread
         _dup
         _ deref
         test    rbx, rbx
@@ -165,27 +156,6 @@ code thread_rp0, 'thread-rp0'           ; thread -- rp0
         next
 endcode
 
-; ### thread_raw_lp0
-code thread_raw_lp0, 'thread_raw_lp0', SYMBOL_INTERNAL  ; -- raw-lp0
-        _ check_thread
-        _slot thread_slot_raw_lp0
-        next
-endcode
-
-; ### thread_set_raw_lp0
-code thread_set_raw_lp0, 'thread_set_raw_lp0', SYMBOL_INTERNAL  ; raw-lp0 thread --
-        _ check_thread
-        _set_slot thread_slot_raw_lp0
-        next
-endcode
-
-; ### thread-lp0
-code thread_lp0, 'thread-lp0'           ; thread -- lp0
-        _ thread_raw_lp0
-        _tag_fixnum
-        next
-endcode
-
 ; ### thread-catchstack
 code thread_catchstack, 'thread-catchstack' ; void -> vector
         _ check_thread
@@ -239,13 +209,6 @@ endcode
 code thread_saved_rbp, 'thread_saved_rbp', SYMBOL_INTERNAL      ; thread -- saved-rbp
         _ check_thread
         _slot thread_slot_saved_rbp
-        next
-endcode
-
-; ### thread_saved_r14
-code thread_saved_r14, 'thread_saved_r14', SYMBOL_INTERNAL      ; thread -- saved-r14
-        _ check_thread
-        _slot thread_slot_saved_r14
         next
 endcode
 
@@ -376,14 +339,6 @@ code current_thread_raw_rp0_rax, 'current_thread_raw_rp0_rax', SYMBOL_INTERNAL
         next
 endcode
 
-; ### current_thread_raw_lp0
-code current_thread_raw_lp0, 'current_thread_raw_lp0', SYMBOL_INTERNAL
-        _ current_thread
-        _ check_thread
-        _slot thread_slot_raw_lp0
-        next
-endcode
-
 ; ### current_thread_save_registers
 code current_thread_save_registers, 'current_thread_save_registers', SYMBOL_INTERNAL    ; --
         pushrbx                         ; -- rbx
@@ -397,12 +352,8 @@ code current_thread_save_registers, 'current_thread_save_registers', SYMBOL_INTE
         _set_slot thread_slot_saved_rsp
         pushrbx
         mov     rbx, rbp
-        _over
-        _set_slot thread_slot_saved_rbp
-        pushrbx
-        mov     rbx, r14
         _swap
-        _set_slot thread_slot_saved_r14
+        _set_slot thread_slot_saved_rbp
         next
 endcode
 
@@ -423,7 +374,7 @@ endcode
 
 ; ### new_thread
 code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
-        _lit 16
+        _lit 14
         _ raw_allocate_cells
 
         mov     qword [rbx], TYPECODE_THREAD
@@ -623,13 +574,6 @@ code initialize_threads, 'initialize_threads', SYMBOL_INTERNAL  ; --
         _over
         _ thread_set_raw_rp0            ; -- thread
 
-%ifndef LOCALS_USE_RETURN_STACK
-        pushrbx
-        mov     rbx, [lp0_]
-        _over
-        _ thread_set_raw_lp0            ; -- thread
-%endif
-
         _ current_thread_raw_thread_id
         _over
         _ thread_set_raw_thread_id
@@ -806,11 +750,6 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
 
         ; rp0
         mov     thread_raw_rp0_slot, rsp
-
-%ifndef LOCALS_USE_RETURN_STACK
-        ; lp0
-        mov     r14, thread_raw_lp0_slot
-%endif
 
         mov     thread_state_slot, S_THREAD_RUNNING
 
