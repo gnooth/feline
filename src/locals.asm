@@ -25,10 +25,6 @@ code max_locals, 'max-locals'           ; -> n
         next
 endcode
 
-%define LOCALS_USE_RETURN_STACK
-
-%ifdef LOCALS_USE_RETURN_STACK
-
 %macro  _locals_enter 0
         push    r14
         sub     rsp, BYTES_PER_CELL * MAX_LOCALS
@@ -39,54 +35,6 @@ endcode
         add     rsp, BYTES_PER_CELL * MAX_LOCALS
         pop     r14
 %endmacro
-
-%else
-
-%macro  _locals_enter 0
-        push    r14
-        lea     r14, [r14 - BYTES_PER_CELL * MAX_LOCALS];
-%endmacro
-
-%macro  _locals_leave 0
-        pop     r14
-%endmacro
-
-%endif
-
-%ifndef LOCALS_USE_RETURN_STACK
-
-asm_global lp0_, 0
-
-%macro _lp0 0
-        _dup
-        mov     rbx, [lp0_]
-%endmacro
-
-; ### lp0
-code lp0, 'lp0'                         ; -- tagged-address
-        _lp0
-        _tag_fixnum
-        next
-endcode
-
-%macro  _lpstore 0
-        mov     r14, rbx
-        _drop
-%endmacro
-
-%macro  _lpfetch 0
-        _dup
-        mov     rbx, r14
-%endmacro
-
-; ### lp@
-code lpfetch, 'lp@'                     ; -- tagged-address
-        _lpfetch
-        _tag_fixnum
-        next
-endcode
-
-%endif
 
 ; ### local@
 code local_get, 'local@'                ; index -> value
@@ -342,32 +290,6 @@ code local_setter, 'local-setter'       ; index -> symbol
         next
 endcode
 
-%ifndef LOCALS_USE_RETURN_STACK
-
-; ### allocate_locals_stack
-code allocate_locals_stack, 'allocate_locals_stack', SYMBOL_INTERNAL    ; -- raw-lp0
-        _lit 4096
-        _dup
-        _ raw_allocate
-        _plus
-        next
-endcode
-
-; ### free_locals_stack
-code free_locals_stack, 'free_locals_stack', SYMBOL_INTERNAL
-; called by BYE to make sure we're freeing all allocated memory
-        _lp0
-        _?dup
-        _if .1
-        _lit 4096
-        _minus
-        _ raw_free
-        _then .1
-        next
-endcode
-
-%endif
-
 asm_global using_locals?_, f_value
 
 ; ### using-locals?
@@ -407,12 +329,6 @@ endcode
 
 ; ### cold_initialize_locals
 code cold_initialize_locals, 'cold_initialize_locals', SYMBOL_INTERNAL
-
-%ifndef LOCALS_USE_RETURN_STACK
-        _ allocate_locals_stack
-        mov     [lp0_], rbx
-        _lpstore
-%endif
 
         _lit locals_
         _ gc_add_root
