@@ -31,10 +31,10 @@ var state1
 -- state1 = 13984883008063501915
 
 -- 2 threads
-: test2 [ test ] <thread> thread-create test ;
+: test2 [ test ] make-thread thread-create test ;
 
 -- 3 threads
-: test3 [ test ] <thread> thread-create [ test ] <thread> thread-create test ;
+: test3 [ test ] make-thread thread-create [ test ] make-thread thread-create test ;
 
 : xorshift128+-locals-only
     :> s0!

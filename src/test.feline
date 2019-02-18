@@ -3053,7 +3053,7 @@ global thread-test-2-result
 
 test: thread-test-2
     f thread-test-2-result!
-    [ 42 thread-test-2-result! ] <thread>
+    [ 42 thread-test-2-result! ] make-thread
     dup thread-create thread-join
     thread-test-2-result 42 assert-eq
 ;
@@ -3061,7 +3061,7 @@ test: thread-test-2
 thread-test-2
 
 test: thread-test-3
-    [ 1 2 3 4 ] <thread>
+    [ 1 2 3 4 ] make-thread
     dup thread-result assert-false
     dup thread-create
     dup thread-join
@@ -3092,7 +3092,7 @@ test: thread-test-5
     gc
     87 test5!
     test5 87 assert-eq
-    [ 42 test5! test5 ] <thread> :> th
+    [ 42 test5! test5 ] make-thread :> th
     th thread-create
     th thread-join
     th thread-result { 42 } assert=

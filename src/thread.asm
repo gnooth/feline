@@ -450,8 +450,8 @@ code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
         next
 endcode
 
-; ### <thread>
-code make_thread, '<thread>'            ; quotation -- thread
+; ### make-thread
+code make_thread, 'make-thread'         ; quotation -- thread
 
         ; REVIEW locking
         _dup
