@@ -478,12 +478,6 @@ code make_thread, '<thread>'            ; quotation -- thread
         _tuck
         _set_slot thread_slot_quotation ; -- thread
 
-%ifndef LOCALS_USE_RETURN_STACK
-        _ allocate_locals_stack
-        _over
-        _set_slot thread_slot_raw_lp0
-%endif
-
         _lit 16
         _ new_vector_untagged
         _over
@@ -502,14 +496,6 @@ endcode
 
 ; ### destroy_thread
 code destroy_thread, 'destroy_thread', SYMBOL_INTERNAL  ; thread --
-
-%ifndef LOCALS_USE_RETURN_STACK
-        ; free locals stack
-        _dup
-        _slot thread_slot_raw_lp0
-        sub     rbx, 4096
-        _ raw_free
-%endif
 
         ; zero out object header
         xor     eax, eax
