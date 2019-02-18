@@ -449,28 +449,6 @@ code mark_return_stack, 'mark_return_stack', SYMBOL_INTERNAL    ; --
         next
 endcode
 
-
-%ifndef LOCALS_USE_RETURN_STACK
-
-; ### thread_mark_locals_stack
-code thread_mark_locals_stack, 'thread_mark_locals_stack', SYMBOL_INTERNAL ; thread -> void
-        _dup
-        _ thread_saved_r14
-        _swap
-        _ thread_raw_lp0
-        _ mark_cells_in_range
-        next
-endcode
-
-; ### mark_locals_stack
-code mark_locals_stack, 'mark_locals_stack', SYMBOL_INTERNAL
-        _ current_thread
-        _ thread_mark_locals_stack
-        next
-endcode
-
-%endif
-
 ; ### mark_thread_stacks
 code mark_thread_stacks, 'mark_thread_stacks', SYMBOL_INTERNAL ; thread -> void
 
@@ -478,13 +456,7 @@ code mark_thread_stacks, 'mark_thread_stacks', SYMBOL_INTERNAL ; thread -> void
 
         _lit S_thread_mark_datastack
         _lit S_thread_mark_return_stack
-
-%ifndef LOCALS_USE_RETURN_STACK
-        _lit S_thread_mark_locals_stack
-        _ tri
-%else
         _ bi
-%endif
 
         next
 endcode
@@ -772,11 +744,6 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
 
         ; return stack
         _ mark_return_stack
-
-%ifndef LOCALS_USE_RETURN_STACK
-        ; locals stack
-        _ mark_locals_stack
-%endif
 
         jmp     .4
 
