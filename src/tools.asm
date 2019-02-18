@@ -213,14 +213,6 @@ code handle_signal, 'handle-signal'
         _ current_thread_raw_sp0_rax
         mov     rbp, rax
 
-%ifndef LOCALS_USE_RETURN_STACK
-        _lp0
-        _?dup
-        _if .1
-        _lpstore
-        _then .1
-%endif
-
         _ ?nl
         _ print_exception
         _ print_saved_registers_and_backtrace
