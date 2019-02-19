@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -19,7 +19,12 @@ file __FILE__
 
 ; 3 cells: object header, length, hashcode
 
-%define STRING_RAW_LENGTH_OFFSET        8
+%define PREFIX STRING
+
+DEFINE_SLOT RAW_LENGTH,1
+DEFINE_SLOT HASHCODE, 2
+
+%undef PREFIX
 
 ; character data (untagged) starts at offset 24
 %define STRING_RAW_DATA_OFFSET          24
@@ -44,9 +49,9 @@ code verify_static_string, 'verify_static_string'       ; string -- string
 endcode
 
 ; ### check_string
-code check_string, 'check_string'       ; x -- unboxed-string
+code check_string, 'check_string'       ; x -> ^string
         _dup
-        _ deref                         ; -- x object/0
+        _ deref                         ; -> x ^object/0
         test    rbx, rbx
         jz      .1
         _object_raw_typecode_eax
@@ -85,34 +90,24 @@ code verify_string, 'verify-string'     ; handle-or-string -- handle-or-string
         next
 endcode
 
-%macro  _string_raw_length 0            ; string -- untagged-length
-        _slot1
+%macro  _string_raw_length 0            ; ^string -> raw-length
+        _slot STRING_RAW_LENGTH_SLOT#
 %endmacro
 
-%define this_string_raw_length this_slot1
-
-%macro  _this_string_raw_length 0       ; -- untagged-length
-        _this_slot1
+%macro  _this_string_raw_length 0       ; -> raw-length
+        _this_slot STRING_RAW_LENGTH_SLOT#
 %endmacro
 
-%macro  _this_string_set_raw_length 0   ; untagged-length --
-        _this_set_slot1
+%macro  _this_string_set_raw_length 0   ; raw-length -> void
+        _this_set_slot STRING_RAW_LENGTH_SLOT#
 %endmacro
 
-%macro  _string_hashcode 0              ; string -- tagged-fixnum
-        _slot2
+%macro  _string_hashcode 0              ; ^string -> tagged-fixnum
+        _slot STRING_HASHCODE_SLOT#
 %endmacro
 
-%macro  _string_set_hashcode 0          ; tagged-fixnum string --
-        _set_slot2
-%endmacro
-
-%macro  _this_string_hashcode 0         ; -- tagged-fixnum
-        _this_slot2
-%endmacro
-
-%macro  _this_string_set_hashcode 0     ; tagged-fixnum --
-        _this_set_slot2
+%macro  _this_string_set_hashcode 0     ; fixnum -> void
+        _this_set_slot STRING_HASHCODE_SLOT#
 %endmacro
 
 %macro  _this_string_substring_unsafe 0 ; from to -- substring
@@ -124,8 +119,7 @@ endcode
 %endmacro
 
 ; ### string_raw_length
-code string_raw_length, 'string_raw_length', SYMBOL_INTERNAL
-; string -- raw-length
+code string_raw_length, 'string_raw_length', SYMBOL_INTERNAL ; string -> raw-length
         _ check_string
         _string_raw_length
         next
@@ -150,7 +144,7 @@ inline string_length_unsafe, 'string-length-unsafe' ; string -> length
 endinline
 
 ; ### string-empty?
-code string_empty?, 'string-empty?'     ; string -- ?
+code string_empty?, 'string-empty?'     ; string -> ?
         _ check_string
         _string_raw_length
         test    rbx, rbx
@@ -173,15 +167,14 @@ endcode
 %endmacro
 
 ; ### string_raw_data_address
-code string_raw_data_address, 'string_raw_data_address', SYMBOL_INTERNAL
-; string -- raw-data-address
+code string_raw_data_address, 'string_raw_data_address', SYMBOL_INTERNAL ; string -> raw-data-address
         _ check_string
         _string_raw_data_address
         next
 endcode
 
 ; ### unsafe-string-data-address
-code unsafe_string_data_address, 'unsafe-string-data-address'   ; string -> address
+code unsafe_string_data_address, 'unsafe-string-data-address' ; string -> address
         _ check_string
         _string_raw_data_address
         _tag_fixnum
@@ -229,7 +222,7 @@ endcode
 %endmacro
 
 ; ### copy_to_string
-code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL  ; from-addr from-length -- handle
+code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL ; from-addr from-length -> string
 ; arguments are untagged
 
         _lit STRING_RAW_DATA_OFFSET
@@ -259,7 +252,7 @@ code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL  ; from-addr from-length 
         _ cmove                         ; --
 
         ; store terminal null byte
-        mov     rdx, this_string_raw_length
+        mov     rdx, THIS_STRING_RAW_LENGTH
         lea     rax, [this_register + STRING_RAW_DATA_OFFSET]
         mov     byte [rax + rdx], 0
 
@@ -274,10 +267,9 @@ code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL  ; from-addr from-length 
 endcode
 
 ; ### string_from
-code string_from, 'string_from', SYMBOL_INTERNAL
-; string -- raw-data-address raw-length
+code string_from, 'string_from', SYMBOL_INTERNAL ; string -> raw-data-address raw-length
         _ check_string
-        mov     rax, [rbx + STRING_RAW_LENGTH_OFFSET]
+        mov     rax, STRING_RAW_LENGTH
         _string_raw_data_address
         _dup
         mov     rbx, rax
@@ -391,7 +383,7 @@ code string_nth, 'string-nth'   ; tagged-index string -- tagged-char
         _check_fixnum
         mov     rax, rbx                ; raw index in rax
         pop     rbx                     ; -- string
-        cmp     rax, qword [rbx + STRING_RAW_LENGTH_OFFSET]
+        cmp     rax, STRING_RAW_LENGTH
         jnb     error_string_index_out_of_bounds
         movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET + rax]
         _tag_char
@@ -403,7 +395,7 @@ code string_first_char, 'string-first-char'     ; string -- char
 ; return first byte of string
 ; error if string is empty
         _ check_string
-        cmp     qword [rbx + STRING_RAW_LENGTH_OFFSET], 0
+        cmp     STRING_RAW_LENGTH, 0
         je      error_string_index_out_of_bounds
         movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET]
         _tag_char
@@ -415,7 +407,7 @@ code string_?first, 'string-?first'     ; string -> char/f
 ; return first byte of string
 ; return f if string is empty
         _ check_string
-        cmp     qword [rbx + STRING_RAW_LENGTH_OFFSET], 0
+        cmp     STRING_RAW_LENGTH, 0
         je      .empty
         movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET]
         _tag_char
@@ -430,7 +422,7 @@ code string_last_char, 'string-last-char'       ; string -- char
 ; return last byte of string
 ; error if string is empty
         _ check_string
-        mov     rax, qword [rbx + STRING_RAW_LENGTH_OFFSET]
+        mov     rax, STRING_RAW_LENGTH
         sub     rax, 1
         js      error_string_index_out_of_bounds
         movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET + rax]
@@ -443,7 +435,7 @@ code string_?last, 'string-?last'       ; string -> char/f
 ; return last byte of string
 ; return f if string is empty
         _ check_string
-        mov     rax, qword [rbx + STRING_RAW_LENGTH_OFFSET]
+        mov     rax, STRING_RAW_LENGTH
         sub     rax, 1
         js      .empty
         movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET + rax]
@@ -521,7 +513,7 @@ code string_find_char_from_index, 'string-find-char-from-index' ; index char str
 endcode
 
 ; ### string-substring
-code string_substring, 'string-substring'       ; from to string -- substring
+code string_substring, 'string-substring' ; from to string -> substring
 
         _ check_string
 
@@ -536,7 +528,7 @@ code string_substring, 'string-substring'       ; from to string -- substring
         pop     rbx
         _check_fixnum                   ; -- start-index end-index
 
-        cmp     rbx, qword [this_register + STRING_RAW_LENGTH_OFFSET]
+        cmp     rbx, THIS_STRING_RAW_LENGTH
         ja      error_string_index_out_of_bounds
 
         cmp     qword [rbp], rbx
@@ -933,7 +925,7 @@ code string_last_index_from, 'string-last-index-from'   ; char start-index strin
 
         _check_index                    ; -> char untagged-start-index
 
-        cmp     rbx, this_string_raw_length
+        cmp     rbx, THIS_STRING_RAW_LENGTH
         jge     .out_of_bounds
 
         push    r12
