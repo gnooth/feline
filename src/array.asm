@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -118,7 +118,7 @@ endcode
 ; ### allocate_array
 subroutine allocate_array
 ; call with untagged length in arg0_register
-; returns untagged address (not handle) of allocated object in rax
+; returns ^array in rax
         push    arg0_register           ; save length
         add     arg0_register, 2        ; object header and length slot
         shl     arg0_register, 3        ; convert cells to bytes
@@ -165,12 +165,12 @@ endcode
 
 ; ### vector->array
 code vector_to_array, 'vector->array'   ; vector -> array
-        _ check_vector                  ; -> raw-vector
+        _ check_vector                  ; -> ^vector
 
-        mov     arg0_register, [rbx + VECTOR_LENGTH_OFFSET]
+        mov     arg0_register, [rbx + VECTOR_RAW_LENGTH_OFFSET]
         _ allocate_array                ; returns raw object address in rax
 
-        mov     arg0_register, [rbx + VECTOR_DATA_ADDRESS_OFFSET] ; source
+        mov     arg0_register, [rbx + VECTOR_RAW_DATA_ADDRESS_OFFSET] ; source
         lea     arg1_register, [rax + ARRAY_DATA_OFFSET] ; destination
         mov     arg2_register, [rax + ARRAY_LENGTH_OFFSET] ; length
 

@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -14,6 +14,15 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 %idefine bytes_per_cell 8
+
+%macro DEFINE_SLOT 2                    ; slot name, slot number
+
+%define %[PREFIX]_%1_SLOT# %2                                   ; VECTOR_RAW_LENGTH_SLOT#
+%define %[PREFIX]_%1_OFFSET %2*%[BYTES_PER_CELL]                ; VECTOR_RAW_LENGTH_OFFSET
+%define %[PREFIX]_%1 qword [rbx + %2*%[BYTES_PER_CELL]]         ; VECTOR_RAW_LENGTH
+%define THIS_%[PREFIX]_%1 qword [r15 + %2*%[BYTES_PER_CELL]]    ; THIS_VECTOR_RAW_LENGTH
+
+%endmacro
 
 %macro  pushrbx 0
         mov     [rbp - BYTES_PER_CELL], rbx

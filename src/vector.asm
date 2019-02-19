@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -15,87 +15,65 @@
 
 file __FILE__
 
-%define VECTOR_LENGTH_OFFSET    8
+%define PREFIX VECTOR
 
-%define vector_raw_length_slot  qword [rbx + BYTES_PER_CELL]
+DEFINE_SLOT RAW_LENGTH,1
+DEFINE_SLOT RAW_DATA_ADDRESS, 2
+DEFINE_SLOT RAW_CAPACITY, 3
 
-%macro  _vector_raw_length 0            ; vector -- untagged-length
-        _slot1
+%undef PREFIX
+
+%macro  _vector_raw_length 0            ; ^vector -> raw-length
+        _slot VECTOR_RAW_LENGTH_SLOT#
 %endmacro
 
-%macro  _vector_set_raw_length 0        ; untagged-length vector --
-        _set_slot1
+%macro  _this_vector_raw_length 0       ; -> raw-length
+        _this_slot VECTOR_RAW_LENGTH_SLOT#
 %endmacro
 
-%define this_vector_raw_length this_slot1
-
-%macro  _this_vector_raw_length 0       ; -- untagged-length
-        _this_slot1
+%macro  _this_vector_set_raw_length 0   ; raw-length -> void
+        _this_set_slot VECTOR_RAW_LENGTH_SLOT#
 %endmacro
 
-%macro  _this_vector_set_raw_length 0   ; untagged-length --
-        _this_set_slot1
+%macro  _vector_raw_data_address 0      ; ^vector -> raw-data-address
+        _slot VECTOR_RAW_DATA_ADDRESS_SLOT#
 %endmacro
 
-%define VECTOR_DATA_ADDRESS_OFFSET      16
-
-%define vector_raw_data_address_slot    qword [rbx + BYTES_PER_CELL * 2]
-
-%macro  _vector_raw_data_address 0      ; vector -- raw-data-address
-        _slot2
+%macro  _this_vector_raw_data_address 0 ; -> raw-data-address
+        _this_slot VECTOR_RAW_DATA_ADDRESS_SLOT#
 %endmacro
 
-%macro  _vector_set_raw_data_address 0  ; raw-data-address vector --
-        _set_slot2
+%macro  _this_vector_set_raw_data_address 0 ; raw-data-address -> void
+        _this_set_slot VECTOR_RAW_DATA_ADDRESS_SLOT#
 %endmacro
 
-%define this_vector_raw_data_address this_slot2
-
-%macro  _this_vector_raw_data_address 0 ; -- raw-data-address
-        _this_slot2
+%macro  _vector_raw_capacity 0          ; ^vector -> raw-capacity
+        _slot VECTOR_RAW_CAPACITY_SLOT#
 %endmacro
 
-%macro  _this_vector_set_raw_data_address 0     ; raw-data-address --
-        _this_set_slot2
+%macro  _this_vector_raw_capacity 0     ; -> raw-capacity
+        _this_slot VECTOR_RAW_CAPACITY_SLOT#
 %endmacro
 
-%define VECTOR_CAPACITY_OFFSET          24
-
-%define vector_raw_capacity_slot        qword [rbx + BYTES_PER_CELL * 3]
-
-%macro  _vector_raw_capacity 0          ; vector -- raw-capacity
-        _slot3
+%macro  _this_vector_set_raw_capacity 0 ; raw-capacity -> void
+        _this_set_slot VECTOR_RAW_CAPACITY_SLOT#
 %endmacro
 
-%macro  _vector_set_raw_capacity 0      ; raw-capacity vector --
-        _set_slot3
-%endmacro
-
-%define this_vector_raw_capacity this_slot3
-
-%macro  _this_vector_raw_capacity 0     ; -- raw-capacity
-        _this_slot3
-%endmacro
-
-%macro  _this_vector_set_raw_capacity 0 ; raw-capacity --
-        _this_set_slot3
-%endmacro
-
-%macro  _vector_nth_unsafe 0            ; index vector -- element
+%macro  _vector_nth_unsafe 0            ; index ^vector -> element
         mov     rax, [rbp]              ; untagged index in rax
         _vector_raw_data_address
         _nip
         mov     rbx, [rbx + BYTES_PER_CELL * rax]
 %endmacro
 
-%macro  _this_vector_nth_unsafe 0       ; index -- element
-        mov     rax, this_vector_raw_data_address
+%macro  _this_vector_nth_unsafe 0       ; index -> element
+        mov     rax, THIS_VECTOR_RAW_DATA_ADDRESS
         mov     rbx, [rax + BYTES_PER_CELL * rbx]
 %endmacro
 
-%macro  _this_vector_set_nth_unsafe 0   ; element index --
+%macro  _this_vector_set_nth_unsafe 0   ; element index -> void
         mov     rdx, [rbp]
-        mov     rax, this_vector_raw_data_address
+        mov     rax, THIS_VECTOR_RAW_DATA_ADDRESS
         mov     [rax + BYTES_PER_CELL * rbx], rdx
         _2drop
 %endmacro
@@ -156,7 +134,7 @@ code verify_vector, 'verify-vector'     ; handle -- handle
 endcode
 
 ; ### vector-capacity
-code vector_capacity, 'vector-capacity' ; vector -- capacity
+code vector_capacity, 'vector-capacity' ; vector -> capacity
         _ check_vector
         _vector_raw_capacity
         _tag_fixnum
@@ -164,15 +142,14 @@ code vector_capacity, 'vector-capacity' ; vector -- capacity
 endcode
 
 ; ### vector_raw_length
-code vector_raw_length, 'vector_raw_length', SYMBOL_INTERNAL
-; vector -- raw-length
+code vector_raw_length, 'vector_raw_length', SYMBOL_INTERNAL ; vector -> raw-length
         _ check_vector
         _vector_raw_length
         next
 endcode
 
 ; ### vector-length
-code vector_length, 'vector-length'     ; vector -- length
+code vector_length, 'vector-length'     ; vector -> length
         _ check_vector
         _vector_raw_length
         _tag_fixnum
@@ -223,7 +200,7 @@ endcode
 code vector_delete_all, 'vector-delete-all' ; vector -> void
         _ check_vector
         xor     eax, eax
-        mov     [rbx + VECTOR_LENGTH_OFFSET], rax
+        mov     [rbx + VECTOR_RAW_LENGTH_OFFSET], rax
         _drop
         next
 endcode
@@ -248,9 +225,9 @@ new_vector_untagged:
         _this_vector_set_raw_capacity   ; --
 
         ; initialize all allocated cells to f
-        mov     arg0_register, [this_register + VECTOR_DATA_ADDRESS_OFFSET]
+        mov     arg0_register, [this_register + VECTOR_RAW_DATA_ADDRESS_OFFSET]
         mov     arg1_register, f_value
-        mov     arg2_register, [this_register + VECTOR_CAPACITY_OFFSET]
+        mov     arg2_register, [this_register + VECTOR_RAW_CAPACITY_OFFSET]
         _ fill_cells
 
         pushrbx
@@ -293,7 +270,7 @@ code vector_ensure_capacity, 'vector_ensure_capacity', SYMBOL_INTERNAL  ; raw-ca
         mov     this_register, rbx
         poprbx                          ; -> raw-capacity
 
-        cmp     this_vector_raw_capacity, rbx
+        cmp     THIS_VECTOR_RAW_CAPACITY, rbx
         jge     .nothing_to_do
 
         _this_vector_raw_capacity
@@ -333,7 +310,7 @@ vector_nth_untagged:
         _ check_vector
 
         mov     rax, [rbp]              ; raw index in rax
-        cmp     rax, vector_raw_length_slot
+        cmp     rax, VECTOR_RAW_LENGTH
         jge     .error                  ; index >= length
         _vector_raw_data_address
         _nip
@@ -414,7 +391,7 @@ endcode
 ; ### vector-?last
 code vector_?last, 'vector-?last'       ; vector -> element/f
         _ check_vector
-        mov     rax, vector_raw_length_slot
+        mov     rax, VECTOR_RAW_LENGTH
         sub     rax, 1
         js      .empty
         _vector_raw_data_address
@@ -428,7 +405,7 @@ endcode
 ; ### vector-set-last
 code vector_set_last, 'vector-set-last' ; element vector -> void
         _ check_vector
-        mov     rax, vector_raw_length_slot
+        mov     rax, VECTOR_RAW_LENGTH
         sub     rax, 1
         js      error_vector_index_out_of_bounds
         mov     rdx, [rbp]
@@ -449,7 +426,7 @@ code vector_set_nth, 'vector-set-nth'   ; element index vector -> void
 
         _check_index
 
-        cmp     rbx, [this_register + VECTOR_CAPACITY_OFFSET]
+        cmp     rbx, [this_register + VECTOR_RAW_CAPACITY_OFFSET]
         jl      .1
 
         ; -- element untagged-index
@@ -576,7 +553,7 @@ code vector_remove_nth_mutating, 'vector-remove-nth!'   ; n vector --
         _plus
         _store
 
-        sub     this_vector_raw_length, 1
+        sub     THIS_VECTOR_RAW_LENGTH, 1
 
         pop     this_register
         next
@@ -680,13 +657,13 @@ code vector_push, 'vector-push'         ; element handle --
 
 vector_push_unchecked:
 
-        mov     rax, vector_raw_length_slot     ; raw length in rax
-        cmp     rax, vector_raw_capacity_slot
+        mov     rax, VECTOR_RAW_LENGTH  ; raw length in rax
+        cmp     rax, VECTOR_RAW_CAPACITY
         jge     .1                      ; length >= capacity
         mov     rdx, [rbp]              ; element in rdx
-        mov     rcx, vector_raw_data_address_slot
+        mov     rcx, VECTOR_RAW_DATA_ADDRESS
         mov     [rcx + BYTES_PER_CELL * rax], rdx
-        add     vector_raw_length_slot, 1
+        add     VECTOR_RAW_LENGTH, 1
         _2drop
         _return
 .1:
@@ -697,11 +674,11 @@ vector_push_unchecked:
         _over
         _ vector_ensure_capacity
 
-        mov     rax, vector_raw_length_slot     ; raw length in rax
-        mov     rdx, [rbp]                      ; element in rdx
-        mov     rcx, vector_raw_data_address_slot
+        mov     rax, VECTOR_RAW_LENGTH  ; raw length in rax
+        mov     rdx, [rbp]              ; element in rdx
+        mov     rcx, VECTOR_RAW_DATA_ADDRESS
         mov     [rcx + BYTES_PER_CELL * rax], rdx
-        add     vector_raw_length_slot, 1
+        add     VECTOR_RAW_LENGTH, 1
         _2drop
         next
 endcode
@@ -761,12 +738,12 @@ code vector_?pop, 'vector-?pop'         ; handle -- element/f
 
 vector_?pop_unchecked:
 
-        mov     rax, vector_raw_length_slot
+        mov     rax, VECTOR_RAW_LENGTH
         test    rax, rax
         jz      .1
         sub     rax, 1
-        mov     vector_raw_length_slot, rax
-        mov     rdx, vector_raw_data_address_slot
+        mov     VECTOR_RAW_LENGTH, rax
+        mov     rdx, VECTOR_RAW_DATA_ADDRESS
         mov     rbx, qword [rdx + rax * BYTES_PER_CELL]
         mov     qword [rdx + rax * BYTES_PER_CELL], f_value
         _return
