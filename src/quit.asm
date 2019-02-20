@@ -436,12 +436,18 @@ code print_error_location, 'print-error-location'       ; --
 endcode
 
 ; ### where
-code where, 'where'             ; --
+code where, 'where'
+
         _ error_location
         _tagged_if_not .1
         _ current_lexer_location
         _ set_error_location
         _then .1
+
+        _ error_location
+        _tagged_if_not .2
+        _return
+        _then .2
 
         _ ?nl
         _ output_style
@@ -449,19 +455,19 @@ code where, 'where'             ; --
         _ error_location
         _ first
         _dup
-        _tagged_if .2
+        _tagged_if .3
         _ error_location
         _ second
         _ print_source_line
         _ mark_error_location
-        _else .2
+        _else .3
         _drop
         _ current_lexer
         _ get
         _ lexer_string
         _ write_string
         _ mark_error_location
-        _then .2
+        _then .3
 
         _ print_error_location
 
