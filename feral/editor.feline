@@ -50,9 +50,9 @@ var in-redo?
 
 var done?
 
-var buffer-list
+global buffer-list
 
-var current-buffer
+global current-buffer
 
 : buffer-modified?                      -- buffer -> ?
     dup mod-count>> swap mod-count-last-save>> neq? ;
