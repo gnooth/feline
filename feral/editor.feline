@@ -662,13 +662,10 @@ use: ansi-color
         ] }
         { [ dot-line-prev ] [
             [
-                new-compound-undo +compound-undo+ set
                 do-left
                 delete-line-separator
                 modified
-                +compound-undo+ get
-            ] with-dynamic-scope
-            push-undo
+            ] with-compound-undo
         ] }
         -- do nothing if dot is at beginning of buffer
         [ ]
