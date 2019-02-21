@@ -254,6 +254,12 @@ global current-buffer
 : unmark
     mark [ f mark! t repaint?! ] when ;
 
+: copy-dot                              -- -> position
+    dot copy-position ;
+
+: copy-mark                             -- -> position
+    mark [ copy-position ] [ f ] if* ;
+
 : anchor                                -- -> position/f
     current-buffer anchor>> ;
 

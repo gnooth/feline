@@ -82,12 +82,6 @@ special: +compound-redo+
 
 : reset-redo redo-stack vector-delete-all ;
 
-: copy-dot                              -- -> position
-    dot copy-position ;
-
-: copy-mark                             -- -> position
-    mark [ copy-position ] [ f ] if* ;
-
 : new-undo-record                       -- -> undo-record
     undo-record make-instance :> undo-rec
 
