@@ -776,36 +776,6 @@ use: kill-ring
     [ dot make-region/2 copy-region ] [ copy-line ] if*
 ;
 
-symbol: +delete-line+
-
-: add-undo-delete-line
-    new-undo-record
-    dot-line-text >>data
-    +delete-line+ >>action
-    push-undo ;
-
-: add-redo-delete-line
-    new-undo-record
-    +delete-line+ >>action
-    push-redo ;
-
-: undo-delete-line ( undo-rec )         -- undo-record -> void
-    dot-line-next [
-        undo-rec data>> make-line/1 dot-line insert-before
-        undo-rec mod-count>> mod-count!
-        undo-rec restore-dot
-    ] [
-        -- last line
-        undo-rec data>> make-line/1 dot-line insert-after
-        undo-rec mod-count>> mod-count!
-        undo-rec restore-dot
-    ] if
-    t repaint?!
-    renumber
-
-    add-redo-delete-line
-;
-
 : delete-line
     reset-redo
 
