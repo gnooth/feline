@@ -836,48 +836,6 @@ use: kill-ring
     last-kill [ paste/1 ] [ "Kill ring is empty" message ] if*
 ;
 
-: log-undo                              -- undo-record -> undo-record
-    dup action>> :> action
-    action symbol? [
-        action symbol-name "undo1 %s" format log
-    ] when ;
-
-: log-redo                              -- undo-record -> undo-record
-    dup action>> :> action
-    action symbol? [
-        action symbol-name "redo1 %s" format log
-    ] when ;
-
-: undo1                                 -- undo-record ->
-    log-undo
-    dup action>>
-    {
-        { +move+ [ undo-move ] }
-        { +line-edit+ [ undo-line-edit ] }
-        { +delete-line-separator+ [ undo-delete-line-separator ] }
-        { +insert-line-separator+ [ undo-insert-line-separator ] }
-        { +insert-multiline-string+ [ undo-insert-multiline-string ] }
-        { +delete-line+ [ undo-delete-line ] }
-        [ error "unsupported" ]
-    } case
-    maybe-reframe
-;
-
-: undo
-    undo-stack empty? [
-        "Nothing to undo" message
-    ] [
-        pop-undo dup compound-undo? [
-            "undo compound-undo" log
-            [ records>> vector-reverse! ' undo1 each ] with-compound-redo
-        ] [
-            "undo" log
-            undo1
-        ] if
-        "Undo!" message
-    ] if
-;
-
 : redo1                                 -- undo-record -> void
     log-redo
     dup action>> {
