@@ -1,0 +1,237 @@
+-- Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline accessors ;
+in: editor
+
+: beginning-of-buffer
+    add-undo-move
+    unmark
+    first-line top-line!
+    first-line 0 make-position dot!
+    0 goal-column!
+    t repaint?!
+;
+
+: end-of-buffer
+    add-undo-move
+    unmark
+    last-line dot-line!
+    dot-line-length dot-offset!
+    dot-offset goal-column!
+
+    reframe? [
+        dot-line-number lines-per-page 1- - nth-line top-line!
+        t repaint?!
+    ] when
+;
+
+: gotoline-internal                     -- line-number
+    1- 0 max line-count 1- min
+    dup dot-line-number <> [
+        add-undo-move
+        unmark
+        nth-line dot-line!
+        0 dot-offset!
+        maybe-reframe
+    ] [
+        drop
+    ] if
+;
+
+: do-home
+    add-undo-move
+
+    unmark
+
+    0 dot-offset!
+    0 goal-column!
+;
+
+: end-of-line
+    add-undo-move
+
+    unmark
+
+    dot-line-length dot-offset!
+    dot-offset goal-column!
+;
+
+: beginning-of-block
+    mark [ mark-offset dot-offset min dot-offset! ] when
+;
+
+: end-of-block
+    mark [ mark-offset dot-offset max dot-offset! ] when
+;
+
+: do-left
+    last-command ' do-left eq? [ add-undo-move ] unless
+
+    mark [
+        beginning-of-block
+        unmark
+    ] return-if
+
+    dot-offset 0 > [
+        dot-offset 1- dot-offset!
+        dot-offset goal-column!
+    ] [
+        dot-line-prev [
+            dot-line-prev dot-line!
+            dot-line-length dot-offset!
+            dot-offset goal-column!
+            reframe? [
+                dot-line top-line!
+                t repaint?!
+            ] when
+        ] when
+    ] if
+;
+
+: do-right
+    last-command ' do-right eq? [ add-undo-move ] unless
+
+    mark [
+        end-of-block
+        unmark
+    ] return-if
+
+    dot-offset dot-line-length < [
+        dot-offset 1+ dot-offset!
+        dot-offset goal-column!
+    ] [
+        dot-line-next [
+            dot-line-next dot-line!
+            0 dot-offset!
+            dot-offset goal-column!
+            reframe? [
+                dot-line-number lines-per-page 1- - nth-line top-line!
+                t repaint?!
+            ] when
+        ] when
+    ] if
+;
+
+: do-down
+    reset-redo
+
+    dot-line-next [
+        last-command ' do-down eq? [ add-undo-move ] unless
+        dot-line-next dot-line!
+        unmark
+        reframe? [
+            dot-line-number lines-per-page 1- - nth-line top-line!
+            t repaint?!
+        ] when
+        adjust-cursor-x
+    ] when
+;
+
+: do-up
+    reset-redo
+
+    dot-line-prev [
+        last-command ' do-up eq? [ add-undo-move ] unless
+        dot-line-prev dot-line!
+        unmark
+        reframe? [
+            dot-line top-line!
+            t repaint?!
+        ] when
+        adjust-cursor-x
+    ] when
+;
+
+: do-window-up
+    top-line prev>> [
+        top-line prev>> top-line!
+        dot-line-number bottom-line-number > [
+            add-undo-move
+            bottom-line dot-line!
+            0 dot-offset!
+        ] when
+        t repaint?!
+    ] when
+;
+
+: do-window-down
+    top-line next>> [
+        top-line next>> top-line!
+        dot-line-number top-line-number < [
+            add-undo-move
+            top-line dot-line!
+            0 dot-offset!
+        ] when
+        t repaint?!
+    ] when
+;
+
+: do-page-down
+    add-undo-move
+
+    dot-y :> goal-y
+
+    top-line-number lines-per-page + last-line-number > [
+        last-line dot-line!
+        adjust-cursor-x
+    ] return-if
+
+    top-line :> line!
+    0 :> i!
+
+    [ line next>> i lines-per-page < and ] [
+        i 1+ i! line next>> line!
+    ] while
+
+    line top-line!
+
+    goal-y i!
+
+    [ line next>> i 0 > and ] [
+        i 1- i! line next>> line!
+    ] while
+
+    line dot-line!
+
+    t repaint?!
+    adjust-cursor-x
+;
+
+: do-page-up
+    add-undo-move
+
+    dot-y :> goal-y
+
+    dot-line :> line!
+    0 :> i!
+
+    [ line prev>> i lines-per-page < and ] [
+        i 1+ i! line prev>> line!
+    ] while
+
+    line dot-line!
+
+    goal-y i!
+
+    [ line prev>> i 0 > and ] [
+        i 1- i! line prev>> line!
+    ] while
+
+    line top-line!
+
+    t repaint?!
+    adjust-cursor-x
+;
