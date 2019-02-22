@@ -1,0 +1,155 @@
+-- Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline accessors ;
+in: editor
+
+: insert-line-separator
+    add-undo-insert-line-separator
+    dot-line-tail make-line/1 :> new-line
+    dot-line-head dot-line-text!
+    new-line dot-line insert-after
+    new-line dot-line!
+    0 dot-offset!
+    0 goal-column!
+    modified
+    t repaint?!
+    renumber
+;
+
+: insert-spaces ( n )                   -- n ->
+    -- no undo
+    dot-line-head string>sbuf :> sb
+    n [ '\s' sb sbuf-push ] times
+    dot-line-tail sb sbuf-append-string
+    sb sbuf>string dot-line-text!
+    dot-offset n + dot-offset!
+    t dot-line-changed?!
+    modified
+;
+
+: do-tab
+    add-undo-line-edit
+    4 dot-offset 4 mod - insert-spaces
+;
+
+: get-indentation-column                -- line -> column
+    dup empty? [ drop 0 ] return-if
+
+    detab
+    [ char-code 32 > ] find             -- index/f element/f
+    [ drop 0 ] unless
+;
+
+: delete-indentation                    -- string -> string'
+    dup empty? [ ] return-if
+
+    :> text
+
+    text [ char-code 32 > ] find        -- index/f element/f
+    [ text swap string-tail ] [ drop "" ] if
+;
+
+: newline-and-indent
+    reset-redo
+
+    dot-line-text get-indentation-column :> indent-col
+
+    [
+        insert-line-separator
+        add-undo-line-edit
+        dot-line-text delete-indentation dot-line-text!
+        indent-col 0 > [
+            indent-col insert-spaces
+        ] when
+    ] with-compound-undo
+;
+
+: string-remove-nth                     -- n string1 -> string2
+    check-bounds
+
+    :> s
+    :> n
+
+    s n string-head
+    n 1+ s string-length < [
+        s n 1+ string-tail string-append
+    ] when
+;
+
+: delete-normal-char
+    add-undo-line-edit
+    dot-offset dot-line-text string-remove-nth dot-line-text!
+    t dot-line-changed?!
+;
+
+: delete-line-separator
+    dot-line-next [
+        dot-offset dot-line-length eq? [
+            add-undo-delete-line-separator
+            dot-line-text dot-line-next text>> string-append dot-line-text!
+            dot-line-next unlink
+            t repaint?!
+        ] when
+    ] when
+;
+
+: do-delete
+    dot-offset dot-line-length < [
+        delete-normal-char
+    ] [
+        delete-line-separator
+    ] if
+    modified
+;
+
+: do-bs
+    {
+        { [ dot-offset 0 > ] [
+            add-undo-line-edit
+            dot-offset 1-
+            [ dot-line text>> string-remove-nth dot-line text<< ] [ dot-offset! ] bi
+            t dot-line-changed?!
+            modified
+        ] }
+        { [ dot-line-prev ] [
+            [
+                do-left
+                delete-line-separator
+                modified
+            ] with-compound-undo
+        ] }
+        -- do nothing if dot is at beginning of buffer
+        [ ]
+    } cond
+;
+
+: do-normal-char                        -- char ->
+    reset-redo
+
+    current-command assert-false
+    ' do-normal-char current-command!
+    last-command ' do-normal-char eq? [ add-undo-line-edit ] unless
+
+    dot-line-head string>sbuf :> sb
+    sb sbuf-push
+    dot-line-tail sb sbuf-append-string
+    sb sbuf>string dot-line text<<
+    dot-offset 1+ dot-offset!
+    t dot-line-changed?!
+    modified
+    dot-offset goal-column!
+;
+
