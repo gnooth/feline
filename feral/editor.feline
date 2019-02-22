@@ -523,60 +523,7 @@ use: kill-ring
     ' paste current-command!
 ;
 
-: make-backup
-    current-buffer filename>> [
-        dup file-exists?
-        [ dup "~" string-append copy-file ] [ drop ] if
-    ] when*
-;
-
-: do-save
-    current-buffer filename>> :> filename!
-
-    filename [
-        0 message-y at-xy "File: " accept-string filename!
-        clear-message-line
-        filename file-exists? [
-            0 message-y at-xy "Overwrite existing file? (yes or no) " accept-string
-            "yes" <> [ f filename! ] when
-        ] when
-    ] unless
-
-    filename f eq? [ ] return-if
-
-    -- save the current buffer to disk
-    output-style
-    "Saving..." message
-
-    make-backup
-
-    current-buffer eol>> :> eol
-    line-count 80 * <sbuf> :> sb
-    nano-count :> start-ns
-
-    -- all lines but the last are followed by eol
-    first-line :> line!
-    [ line last-line neq? ] [
-        line text>> sb sbuf-append-string
-        eol sb sbuf-append-string
-        line next>> line!
-    ] while
-
-    -- last line, no eol
-    last-line text>> sb sbuf-append-string
-
-    sb sbuf>string filename set-file-contents
-
-    nano-count start-ns - :> elapsed-ns
-
-    mod-count mod-count-last-save!
-
-    elapsed-ns 1000000 /i "Saving...done (%s ms)" format message
-
-    current-buffer filename>> [
-        filename canonical-path current-buffer filename<<
-    ] unless
-;
+"save.feline" load
 
 : do-quit
     buffer-list [ buffer-modified? ] count :> n

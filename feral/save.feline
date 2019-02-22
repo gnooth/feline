@@ -1,0 +1,72 @@
+-- Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline accessors accept-string ;
+in: editor
+
+: make-backup
+    current-buffer filename>> [
+        dup file-exists?
+        [ dup "~" string-append copy-file ] [ drop ] if
+    ] when*
+;
+
+: do-save
+    current-buffer filename>> :> filename!
+
+    filename [
+        0 message-y at-xy "File: " accept-string filename!
+        clear-message-line
+        filename file-exists? [
+            0 message-y at-xy "Overwrite existing file? (yes or no) " accept-string
+            "yes" <> [ f filename! ] when
+        ] when
+    ] unless
+
+    filename f eq? [ ] return-if
+
+    -- save the current buffer to disk
+    output-style
+    "Saving..." message
+
+    make-backup
+
+    current-buffer eol>> :> eol
+    line-count 80 * <sbuf> :> sb
+    nano-count :> start-ns
+
+    -- all lines but the last are followed by eol
+    first-line :> line!
+    [ line last-line neq? ] [
+        line text>> sb sbuf-append-string
+        eol sb sbuf-append-string
+        line next>> line!
+    ] while
+
+    -- last line, no eol
+    last-line text>> sb sbuf-append-string
+
+    sb sbuf>string filename set-file-contents
+
+    nano-count start-ns - :> elapsed-ns
+
+    mod-count mod-count-last-save!
+
+    elapsed-ns 1000000 /i "Saving...done (%s ms)" format message
+
+    current-buffer filename>> [
+        filename canonical-path current-buffer filename<<
+    ] unless
+;
