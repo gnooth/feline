@@ -1,4 +1,4 @@
--- Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -241,12 +241,9 @@ var current-search
 
 public
 
-var find-history
-
 : do-find
     0 message-y at-xy
-    find-history [ make-history find-history! ] unless
-    find-history accept-string-set-history
+    "find" load-history accept-string-set-history
     "Find: " accept-string :> pattern
     clear-message-line
     pattern empty? [ ] return-if

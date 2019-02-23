@@ -1,4 +1,4 @@
--- Copyright (C) 2018 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -13,17 +13,22 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accessors logging ;
+using: feline accessors logging directories ;
 in: history
 
 private
 
-var current-history
+global current-history
 
 tuple: history
+    name
+    filename
     strings
     index
 ;
+
+: name                                  -- void -> string/f
+    current-history [ name>> ] [ f ] if* ;
 
 : strings                               -- void -> vector/f
     current-history [ strings>> ] [ f ] if* ;
@@ -44,33 +49,45 @@ public
    reset-history ;
 
 : history-previous                      -- void -> string/f
-    index [ strings length index! ] unless
     index 0 > [
         index 1- index!
         index strings nth
     ] [ f ] if ;
 
 : history-next
-    index [ strings length index! ] unless
     index strings length 1- < [
         index 1+ index!
         index strings nth
     ] [ reset-history f ] if ;
 
-: make-history                          -- void -> history
-    history make-instance
-    100 <vector> >>strings
+: history-name->pathname                -- name -> pathname
+    feral-history-directory swap path-append ".history" string-append ;
+
+: load-history ( name )                 -- name -> history
+    history make-instance :> hist
+    name hist name<<
+    feral-history-directory name path-append ".history" string-append hist filename<<
+    name history-name->pathname :> pathname
+    pathname regular-file? [
+        pathname file-lines
+    ] [
+        100 <vector>
+    ] if
+    hist over >>strings
+    swap length >>index
+;
+
+: save-history
+    strings [
+        feral-history-directory name path-append ".history" string-append
+        set-file-lines
+    ] when*
 ;
 
 : update-history ( s )                  -- string/f -> void
-    "update-history called" log
     s string? [
         current-history [
-            strings>> s over vector-adjoin -- -> vector
-            "-- begin history" log
-            [ log ] each
-            "-- end history" log
-            --         save-history
+            strings>> s swap vector-adjoin
+            save-history
         ] when*
-    ] when
-;
+    ] when ;
