@@ -330,9 +330,14 @@ use: ansi-color
 
 "move.feline" load
 
-: gotoline
-    0 message-y at-xy "Line number: " accept-string
+: minibuffer-accept-string              -- prompt-string -> string
+    0 message-y at-xy
+    accept-string
     clear-message-line
+;
+
+: gotoline
+    "Line number: " minibuffer-accept-string
     string>number [ gotoline-internal ] when*
 ;
 
@@ -535,8 +540,8 @@ use: kill-ring
     ] [
         n dup 1 > "s" "" ?
         "Really exit with %s modified buffer%s? (yes or no) " format
-        accept-string "yes" string= done?!
-        clear-message-line
+        minibuffer-accept-string
+        "yes" string= done?!
     ] if
 ;
 
@@ -544,16 +549,13 @@ use: kill-ring
     f :> confirmed?!
 
     modified? [
-        0 message-y at-xy prompt-style "Save file? (y or n) " write-string
-        input-style key 'y' eq? [ do-save ] when
-        clear-message-line
+        "Save file? (y or n) " minibuffer-accept-string
+        "y" = [ do-save ] when
     ] when
 
     modified? [
-        0 message-y at-xy
-        "Abandon changes? (yes or no) " accept-string
+        "Abandon changes? (yes or no) " minibuffer-accept-string
         "yes" = [ t confirmed?! ] when
-        clear-message-line
     ] when
 
     confirmed?
@@ -666,8 +668,7 @@ use: kill-ring
 ;
 
 : open-file
-    0 message-y at-xy "File: " accept-string :> arg
-    clear-message-line
+    "File: " minibuffer-accept-string :> arg
 
     arg find-file-to-edit :> filename
 
@@ -734,8 +735,7 @@ use: kill-ring
 ;
 
 : find-definition
-    0 message-y at-xy "Word: " accept-string
-    clear-message-line
+    "Word: " minibuffer-accept-string
     find-qualified-name [
         goto-definition
     ] [
@@ -771,8 +771,7 @@ use: kill-ring
     ] if ;
 
 : execute-command
-    0 message-y at-xy "Command: " accept-string :> command
-    clear-message-line
+    "Command: " minibuffer-accept-string :> command
     command find-name [
         call-symbol
     ] [
