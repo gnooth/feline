@@ -13,7 +13,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accessors accept-string editor history ;
+using: feline accessors editor history ;
 in: search
 
 empty
@@ -241,13 +241,13 @@ var current-search
 
 public
 
+winui? #if
+use: mini
+#endif
+
 : do-find
-    0 message-y at-xy
-    "find" load-history accept-string-set-history
-    "Find: " accept-string :> pattern
-    clear-message-line
+    "Find: " minibuffer-accept-string :> pattern
     pattern empty? [ ] return-if
-    pattern update-history
     pattern f make-search current-search!
     pattern dot search-forward [ found ] [ not-found ] if*
 ;
