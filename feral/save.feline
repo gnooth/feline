@@ -13,7 +13,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accessors accept-string ;
+using: feline accessors ;
 in: editor
 
 : make-backup
@@ -23,15 +23,18 @@ in: editor
     ] when*
 ;
 
+winui? #if
+use: mini
+#endif
+
 : do-save
     current-buffer filename>> :> filename!
 
     filename [
-        0 message-y at-xy "File: " accept-string filename!
-        clear-message-line
+        "File: " minibuffer-accept-string filename!
         filename file-exists? [
-            0 message-y at-xy "Overwrite existing file? (yes or no) " accept-string
-            "yes" <> [ f filename! ] when
+            "Overwrite existing file? (yes or no) " minibuffer-accept-string
+            "yes" string= [ f filename! ] unless
         ] when
     ] unless
 
