@@ -30,6 +30,8 @@ in: editor
 
 empty
 
+f constant winui?
+
 feline-home "feral" path-append add-source-directory
 
 use: directories
