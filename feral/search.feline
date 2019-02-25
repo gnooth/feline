@@ -54,8 +54,7 @@ var current-search
 
 : not-found
     current-pattern "%S not found" format
-    0 message-y at-xy output-style
-    write-string ;
+    message ;
 
 : find-char-in-range ( char string start end )  -- char string start end -> i/f
     start end [ string string-nth-unsafe char eq? ] find-integer-in-range
