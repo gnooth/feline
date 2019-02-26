@@ -107,14 +107,14 @@ using: feline accessors modes accept-string logging directories ;
     renumber
 ;
 
-: lines-per-page                        -- -> n
+: text-rows                             -- -> n
     terminal-height 2 - ;
 
 : bottom-line                           -- -> line
     top-line :> line!
     0 :> i!
 
-    [ i lines-per-page 1- < ] [
+    [ i text-rows 1- < ] [
         line next>> [ line! ] when*
         i 1+ i!
     ] while
@@ -267,13 +267,13 @@ use: ansi-color
     top-line :> line!
     0 :> y!
 
-    [ line y lines-per-page < and ] [
+    [ line y text-rows < and ] [
         0 y at-xy
         line repaint-line
         y 1+ y! line next>> line!
     ] while
 
-    [ y lines-per-page < ] [
+    [ y text-rows < ] [
         0 y at-xy terminal-width spaces
         y 1+ y!
     ] while
@@ -307,11 +307,11 @@ use: ansi-color
 : reframe?                              -- -> ?
     dot-line-number
     top-line-number
-    dup lines-per-page 1- +
+    dup text-rows 1- +
     between? not ;
 
 : reframe
-    lines-per-page 2 /i verify-index :> i!
+    text-rows 2 /i verify-index :> i!
     dot-line :> line!
 
     [ i 0 > line prev>> and ] [
@@ -853,7 +853,7 @@ use: search
 
     clear-status-line
     clear-message-line
-    0 lines-per-page at-xy
+    0 text-rows at-xy
     show-cursor
 
     use-default-screen-buffer
@@ -902,7 +902,7 @@ use: search
     edit-loop
     clear-status-line
     clear-message-line
-    0 lines-per-page at-xy
+    0 text-rows at-xy
     show-cursor
     use-default-screen-buffer
 ;
