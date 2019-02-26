@@ -216,7 +216,7 @@ using: feline accessors modes accept-string logging directories ;
 : message                               -- string ->
     0 message-y at-xy write-string ;
 
-: clear-message-line hide-cursor 0 message-y at-xy clear-to-eol ;
+: clear-message hide-cursor 0 message-y at-xy clear-to-eol ;
 
 : line-selected? ( line )               -- line -> ?
     mark null? [ f ] return-if
@@ -333,7 +333,7 @@ use: ansi-color
 : minibuffer-accept-string              -- prompt-string -> string
     0 message-y at-xy
     accept-string
-    clear-message-line
+    clear-message
 ;
 
 : gotoline
@@ -819,7 +819,7 @@ use: search
     [ done? ] [
         update-display
         ekey
-        clear-message-line
+        clear-message
         dispatch
     ] until
 
@@ -852,7 +852,7 @@ use: search
     edit-loop
 
     clear-status-line
-    clear-message-line
+    clear-message
     0 text-rows at-xy
     show-cursor
 
@@ -901,7 +901,7 @@ use: search
     t repaint?!
     edit-loop
     clear-status-line
-    clear-message-line
+    clear-message
     0 text-rows at-xy
     show-cursor
     use-default-screen-buffer

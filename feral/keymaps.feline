@@ -20,7 +20,7 @@ var escape-keymap
 : do-escape
     "ESC-" message
     ekey
-    clear-message-line
+    clear-message
     escape-keymap at [
         dup current-command!
         call-symbol
