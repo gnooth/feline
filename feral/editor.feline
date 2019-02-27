@@ -311,7 +311,6 @@ use: ansi-color
     between? not ;
 
 : reframe
-    break
     text-rows 2 /i verify-index :> i!
     dot-line :> line!
 
