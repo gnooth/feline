@@ -589,80 +589,12 @@ use: kill-ring
     ] when
 ;
 
-: buffer-append-line ( line buf )       -- line buffer -> void
-    buf last-line>> line prev<<
-    buf last-line>> [ line swap next<< ] when*
-    line buf last-line<<
-    buf first-line>> [
-        line buf first-line<<
-    ] unless
-;
-
-: create-buffer                         -- void -> void
-    make-buffer :> buf
-    "" 0 make-line/2
-
-    [ buf buffer-append-line ]
-    [ 0 make-position buf dot<< ]
-    bi
-
-    buf buffer-list vector-push
-    buf current-buffer!
-
-    dot-line top-line!
-;
-
-: create-buffer/2                       -- filename line-number -> void
-    verify-index  :> line-number
-    verify-string :> filename
-
-    make-buffer :> buf
-
-    filename buf filename<<
-
-    filename path-extension [ modes at buf mode<< ] when*
-
-    filename file-contents :> contents
-
-    contents string-lines verify-vector :> lines
-
-    contents empty? [
-        "" lines vector-push
-    ] [
-        -- detect eol
-        '\r' contents string-index CR+LF LF ? buf eol<<
-        contents string-last-char '\n' eq? [
-            "" lines vector-push
-        ] when
-    ] if
-
-    lines [
-        make-line/2 buf buffer-append-line
-    ] each-index
-
-    buf first-line>> line? assert
-    buf last-line>>  line? assert
-
-    buf first-line>> 0 make-position buf dot<<
-    buf first-line>> buf top-line<<
-
-    buf buffer-list vector-push
-
-    buf current-buffer!
-
-    line-number 1- 0 max line-count 1- min nth-line dot-line!
-    0 dot-offset!
-;
+"buffer.feline" load
 
 : find-file-to-edit ( arg )             -- arg -> path/f
     arg find-file [
         arg ensure-feline-extension find-file
     ] unless*
-;
-
-: find-buffer ( filename )              -- filename -> buffer/f
-    buffer-list [ filename>> filename = ] find  -- index/f element/f
-    nip
 ;
 
 : open-file
@@ -679,28 +611,6 @@ use: kill-ring
             t repaint?!
         ] if*
     ] when
-;
-
-: next-buffer
-    buffer-list length 2 < [ ] return-if
-
-    buffer-list [ current-buffer eq? ] find     -- index/f element/f
-    current-buffer assert-eq                    -- index
-    1+ dup buffer-list length < [ drop 0 ] unless
-
-    buffer-list vector-nth current-buffer!
-    t repaint?!
-;
-
-: previous-buffer
-    buffer-list length 2 < [ ] return-if
-
-    buffer-list [ current-buffer eq? ] find     -- index/f element/f
-    current-buffer assert-eq                    -- index
-    1 - dup 0 >= [ drop buffer-list length 1 - ] unless
-
-    buffer-list vector-nth current-buffer!
-    t repaint?!
 ;
 
 : identifier-at-dot                     -- -> string/f

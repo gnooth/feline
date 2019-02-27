@@ -1,0 +1,111 @@
+-- Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: modes feline accessors ;
+in: editor
+
+: buffer-append-line ( line buf )       -- line buffer -> void
+    buf last-line>> line prev<<
+    buf last-line>> [ line swap next<< ] when*
+    line buf last-line<<
+    buf first-line>> [
+        line buf first-line<<
+    ] unless
+;
+
+: create-buffer                         -- void -> void
+    make-buffer :> buf
+    "" 0 make-line/2
+
+    [ buf buffer-append-line ]
+    [ 0 make-position buf dot<< ]
+    bi
+
+    buf buffer-list vector-push
+    buf current-buffer!
+
+    dot-line top-line!
+;
+
+: create-buffer/2                       -- filename line-number -> void
+    verify-index  :> line-number
+    verify-string :> filename
+
+    make-buffer :> buf
+
+    filename buf filename<<
+
+    filename path-extension [ modes at buf mode<< ] when*
+
+    filename file-contents :> contents
+
+    contents string-lines verify-vector :> lines
+
+    contents empty? [
+        "" lines vector-push
+    ] [
+        -- detect eol
+        '\r' contents string-index CR+LF LF ? buf eol<<
+        contents string-last-char '\n' eq? [
+            "" lines vector-push
+        ] when
+    ] if
+
+    lines [
+        make-line/2 buf buffer-append-line
+    ] each-index
+
+    buf first-line>> line? assert
+    buf last-line>>  line? assert
+
+    buf first-line>> 0 make-position buf dot<<
+    buf first-line>> buf top-line<<
+
+    buf buffer-list vector-push
+
+    buf current-buffer!
+
+    line-number 1- 0 max line-count 1- min nth-line dot-line!
+
+    0 dot-offset!
+;
+
+: find-buffer ( filename )              -- filename -> buffer/f
+    buffer-list [ filename>> filename = ] find  -- index/f element/f
+    nip
+;
+
+: next-buffer
+    buffer-list length 2 < [ ] return-if
+
+    buffer-list [ current-buffer eq? ] find     -- index/f element/f
+    current-buffer assert-eq                    -- index
+    1+ dup buffer-list length < [ drop 0 ] unless
+
+    buffer-list vector-nth current-buffer!
+    t repaint?!
+;
+
+: previous-buffer
+    buffer-list length 2 < [ ] return-if
+
+    buffer-list [ current-buffer eq? ] find     -- index/f element/f
+    current-buffer assert-eq                    -- index
+    1 - dup 0 >= [ drop buffer-list length 1 - ] unless
+
+    buffer-list vector-nth current-buffer!
+    t repaint?!
+;
+
