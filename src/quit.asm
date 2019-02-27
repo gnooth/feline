@@ -650,6 +650,7 @@ endcode
 
 ; ### break
 code break, 'break'                     ; --
+        _ save_backtrace
 
         _ get_datastack
         mov     [saved_data_stack_], rbx
