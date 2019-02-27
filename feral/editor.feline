@@ -311,6 +311,7 @@ use: ansi-color
     between? not ;
 
 : reframe
+    break
     text-rows 2 /i verify-index :> i!
     dot-line :> line!
 
@@ -652,8 +653,6 @@ use: kill-ring
 
     line-number 1- 0 max line-count 1- min nth-line dot-line!
     0 dot-offset!
-
-    maybe-reframe
 ;
 
 : find-file-to-edit ( arg )             -- arg -> path/f
