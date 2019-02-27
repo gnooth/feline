@@ -19,7 +19,7 @@ in: modes
 tuple: mode
     formatter ;
 
-var modes
+global modes
 
 : asm-format-line ( s )
     ";" s substring-start :> index
