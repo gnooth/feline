@@ -147,10 +147,20 @@ code report_startup_time, 'report-startup-time' ; --
         next
 endcode
 
+; version.c
+extern version
+extern build
+
 ; ### .version
 code dot_version, '.version'            ; --
         _quote "Feline "
-        _quote VERSION
+
+        xcall   version
+        pushrbx
+        mov     rbx, rax
+        _ zcount
+        _ copy_to_string
+
         _ string_append
         _ write_string
 
@@ -159,10 +169,12 @@ code dot_version, '.version'            ; --
         _ write_string
 %endif
 
-        _ feline_home
-        _quote "build"
-        _ path_append
-        _ safe_file_contents
+        xcall   build
+        pushrbx
+        mov     rbx, rax
+        _ zcount
+        _ copy_to_string
+
         _dup
         _tagged_if .1
         _quote " built "
@@ -271,6 +283,7 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         _ load_verbose?
         _ set
 
+        _ ?nl
         _quote "Meow!"
         _ write_string
         _ nl
