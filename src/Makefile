@@ -15,7 +15,9 @@
 
 # There is no support in this makefile for Microsoft tools.
 
-VERSION = `git describe --tags`
+REPOSITORY_VERSION = `git describe --dirty=*`
+
+BUILD = `date`
 
 ifeq ($(OS),Windows_NT)
 	CC = gcc
@@ -31,7 +33,7 @@ ASMFLAGS =
 # gcc 6.2.0 on Ubuntu 16.10 needs -no-pie
 # LINKFLAGS = -m64 -no-pie
 
-OBJS = main.o os.o terminal.o backtrace.o random.o numbers.o math.o socket.o feline.o
+OBJS = main.o os.o terminal.o backtrace.o random.o numbers.o math.o socket.o version.o feline.o
 
 ifeq ($(OS),Windows_NT)
 	CFLAGS += -DWIN64 -DWIN64_NATIVE
@@ -50,13 +52,11 @@ else
 endif
 
 ifeq ($(OS),Windows_NT)
-$(FELINE_EXE):  $(OBJS)
+$(FELINE_EXE): version.h $(OBJS)
 	$(CC) $(LINKFLAGS) $(OBJS) -lm -l ws2_32 -o $(FELINE_EXE)
-	date > ../build
 else
-$(FELINE_EXE):  $(OBJS)
+$(FELINE_EXE): version.h $(OBJS)
 	$(CC) $(LINKFLAGS) $(OBJS) -lm -lpthread -o $(FELINE_EXE)
-	date > ../build
 endif
 
 feline_home.asm: $(FELINE_HOME_EXE)
@@ -65,8 +65,11 @@ feline_home.asm: $(FELINE_HOME_EXE)
 $(FELINE_HOME_EXE): feline_home.c
 	$(CC) feline_home.c -o $(FELINE_HOME_EXE)
 
-version.asm:
-	echo "%define VERSION \"$(VERSION)\"" > version.asm
+.PHONY: version.h
+version.h: version.h.in
+	cp version.h.in version.h
+	echo "#define REPOSITORY_VERSION \"$(REPOSITORY_VERSION)\"" >> version.h
+	echo "#define BUILD \"$(BUILD)\"" >> version.h
 
 main.o:	feline.h main.c
 	$(CC) $(CFLAGS) -c -o main.o main.c
@@ -92,7 +95,10 @@ math.o: feline.h math.c
 socket.o: feline.h socket.c
 	$(CC) $(CFLAGS) -c -o socket.o socket.c
 
-ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
+version.o: version.h
+	$(CC) $(CFLAGS) -c -o version.o version.c
+
+ASM_SOURCES = feline.asm feline_home.asm externs.asm \
 	macros.asm loop-macros.asm inlines.asm \
 	ansi.asm \
 	array.asm \
@@ -163,7 +169,6 @@ ASM_SOURCES = feline.asm feline_home.asm version.asm externs.asm \
 
 # -felf64 even on Windows
 feline.o: $(ASM_SOURCES)
-	echo "%define VERSION \"$(VERSION)\"" > version.asm
 	nasm $(ASMFLAGS) -g -felf64 feline.asm
 
 # Microsoft compiler and linker
@@ -179,8 +184,4 @@ feline.o: $(ASM_SOURCES)
 clean:
 	-rm -f *.o *.obj
 	-rm -f feline_home.asm feline_home.exe feline_home
-	-rm -f version.h version.asm
-
-zip:
-	-rm -f feline.zip
-	zip feline.zip *.c *.h *.asm *.feline benchmarks/*.feline benchmarks/*.c tests/*.feline Makefile
+	-rm -f version.h
