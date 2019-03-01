@@ -176,10 +176,14 @@ code dot_version, '.version'            ; --
         _ copy_to_string
 
         _dup
+        _ string_length
+        _lit tagged_fixnum(10)
+        _ fixnum_fixnum_gt
         _tagged_if .1
         _quote " built "
         _ write_string
         _ write_string
+        _ nl
         _else .1
         _drop
         _then .1
@@ -283,10 +287,8 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         _ load_verbose?
         _ set
 
-        _ ?nl
         _quote "Meow!"
         _ write_string
-        _ nl
 
         jmp     quit
 
