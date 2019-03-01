@@ -4,10 +4,10 @@ else
 	FELINE_EXE = feline
 endif
 
-all: FELINE_EXE
+all: $(FELINE_EXE)
 
-FELINE_EXE:
-	cd src && $(MAKE)
+$(FELINE_EXE):
+	cd src && $(MAKE) ../$(FELINE_EXE)
 
 clean:
 	-rm -f feline feline.exe build
