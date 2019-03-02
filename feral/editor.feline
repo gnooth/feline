@@ -17,6 +17,7 @@ using: feline ;
 in: user
 
 {
+    "feral-config"
     "directories"
     "accept-string"
     "search"
@@ -26,11 +27,15 @@ in: user
     "kill-ring"
 } [ delete-vocab ] each
 
-in: editor
+in: feral-config
 
 empty
 
 f constant winui?
+
+in: editor
+
+empty
 
 feline-home "feral" path-append add-source-directory
 
