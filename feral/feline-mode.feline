@@ -27,19 +27,6 @@ private
 
 "\e[0m" constant reset-suffix
 
-tuple: segment
-    text
-    start
-    format
-;
-
-: make-segment ( text start )
-    segment make-instance :> segment
-    text segment text<<
-    start segment start<<
-    segment
-;
-
 32 code-char constant space-char
 34 code-char constant quote-char
 

@@ -16,6 +16,19 @@
 using: feline accessors ;
 in: modes
 
+tuple: segment
+    text
+    start
+    format
+;
+
+: make-segment ( text start )
+    segment make-instance :> segment
+    text segment text<<
+    start segment start<<
+    segment
+;
+
 tuple: mode
     formatter ;
 
