@@ -209,28 +209,6 @@ cell os_file_create_write (const char *filename)
 #endif
 }
 
-cell os_create_file (const char *filename, int flags)
-{
-#ifdef WIN64
-  HANDLE h = CreateFile (filename,
-                         flags,
-                         FILE_SHARE_READ,
-                         NULL, // default security descriptor
-                         CREATE_ALWAYS,
-                         FILE_ATTRIBUTE_NORMAL,
-                         NULL // template file (ignored for existing file)
-                         );
-  return (cell) h;
-#else
-  flags |= O_CREAT|O_TRUNC;
-  int ret = open (filename, flags, 0644);
-  if (ret < 0)
-    return (cell) -1;
-  else
-    return ret;
-#endif
-}
-
 cell os_read_file (cell fd, void *buf, size_t count)
 {
 #ifdef WIN64
@@ -469,18 +447,6 @@ cell os_nano_count()
   return (uint64_t)t.tv_sec * 1000000000 + t.tv_nsec;
 #endif
 }
-
-#ifdef WIN64
-void os_ms (DWORD ms)
-{
-  Sleep (ms);
-}
-#else
-void os_ms (unsigned int ms)
-{
-  usleep (ms * 1000);
-}
-#endif
 
 char *os_getenv (const char *name)
 {

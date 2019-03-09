@@ -26,7 +26,6 @@ extern os_allocate_executable
 extern os_bye
 extern os_chdir
 extern os_close_file
-extern os_create_file
 extern os_current_thread
 
 %ifdef WIN64
@@ -54,7 +53,6 @@ extern os_initialize_primordial_thread
 extern os_key
 extern os_key_avail
 extern os_malloc
-extern os_ms
 extern os_mutex_init
 extern os_mutex_lock
 extern os_mutex_trylock
