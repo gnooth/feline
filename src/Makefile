@@ -33,7 +33,20 @@ ASMFLAGS =
 # gcc 6.2.0 on Ubuntu 16.10 needs -no-pie
 # LINKFLAGS = -m64 -no-pie
 
-OBJS = main.o os.o terminal.o backtrace.o random.o numbers.o math.o socket.o version.o feline.o
+OBJS = main.o os.o terminal.o backtrace.o random.o numbers.o math.o \
+	socket.o version.o feline.o
+
+ifneq ($(OS),Windows_NT)
+# Linux
+ifdef GTKUI
+	OBJS += gtkui.o
+	ASMFLAGS += -DGTKUI
+
+	PKGCONFIG = $(shell which pkg-config)
+	GTK_CFLAGS = $(shell $(PKGCONFIG) --cflags gtk+-3.0)
+	GTK_LIBS = $(shell $(PKGCONFIG) --libs gtk+-3.0)
+endif
+endif
 
 ifeq ($(OS),Windows_NT)
 	CFLAGS += -DWIN64
@@ -55,8 +68,15 @@ ifeq ($(OS),Windows_NT)
 $(FELINE_EXE): version.h $(OBJS)
 	$(CC) $(LINKFLAGS) $(OBJS) -lm -l ws2_32 -o $(FELINE_EXE)
 else
+# Linux
+ifdef GTKUI
+$(FELINE_EXE): version.h $(OBJS)
+	$(CC) $(LINKFLAGS) $(OBJS) -lm -lpthread $(GTK_LIBS) -o $(FELINE_EXE)
+else
 $(FELINE_EXE): version.h $(OBJS)
 	$(CC) $(LINKFLAGS) $(OBJS) -lm -lpthread -o $(FELINE_EXE)
+endif
+
 endif
 
 feline_home.asm: $(FELINE_HOME_EXE)
@@ -97,6 +117,9 @@ socket.o: feline.h socket.c
 
 version.o: version.h
 	$(CC) $(CFLAGS) -c -o version.o version.c
+
+gtkui.o: gtkui.c
+	$(CC) $(CFLAGS) $(GTK_CFLAGS) -c -o gtkui.o gtkui.c
 
 ASM_SOURCES = feline.asm feline_home.asm externs.asm \
 	macros.asm loop-macros.asm inlines.asm \
