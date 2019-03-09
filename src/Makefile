@@ -36,8 +36,8 @@ ASMFLAGS =
 OBJS = main.o os.o terminal.o backtrace.o random.o numbers.o math.o socket.o version.o feline.o
 
 ifeq ($(OS),Windows_NT)
-	CFLAGS += -DWIN64 -DWIN64_NATIVE
-	ASMFLAGS += -DWIN64 -DWIN64_NATIVE
+	CFLAGS += -DWIN64
+	ASMFLAGS += -DWIN64
 	FELINE_EXE = ../feline.exe
 	FELINE_HOME_EXE = feline_home.exe
 else

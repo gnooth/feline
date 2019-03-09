@@ -97,26 +97,22 @@ int os_file_is_directory(char *path)
 #endif
 }
 
-cell os_open_file(const char *filename, int flags)
+cell os_open_file (const char *filename, int flags)
 {
-#ifdef WIN64_NATIVE
-  HANDLE h = CreateFile(filename,
-                        flags,
-                        FILE_SHARE_READ,
-                        NULL, // default security descriptor
-                        OPEN_EXISTING,
-                        FILE_ATTRIBUTE_NORMAL,
-                        NULL // template file (ignored for existing file)
-                        );
+#ifdef WIN64
+  HANDLE h = CreateFile (filename,
+                         flags,
+                         FILE_SHARE_READ,
+                         NULL, // default security descriptor
+                         OPEN_EXISTING,
+                         FILE_ATTRIBUTE_NORMAL,
+                         NULL // template file (ignored for existing file)
+                         );
   if (h == INVALID_HANDLE_VALUE)
-    os_errno_data = GetLastError();
+    os_errno_data = GetLastError ();
   return (cell) h;
 #else
-  int ret;
-#ifdef WIN64
-  flags |= _O_BINARY;
-#endif
-  ret = open(filename, flags);
+  int ret = open (filename, flags);
   if (ret < 0)
     {
       os_errno_data = errno;
@@ -127,30 +123,25 @@ cell os_open_file(const char *filename, int flags)
 #endif
 }
 
-cell os_file_open_read(const char *filename)
+cell os_file_open_read (const char *filename)
 {
-#ifdef WIN64_NATIVE
-  HANDLE h = CreateFile(filename,
-                        GENERIC_READ,
-                        FILE_SHARE_READ,
-                        NULL, // default security descriptor
-                        OPEN_EXISTING,
-                        FILE_ATTRIBUTE_NORMAL,
-                        NULL // template file (ignored for existing file)
-                        );
+#ifdef WIN64
+  HANDLE h = CreateFile (filename,
+                         GENERIC_READ,
+                         FILE_SHARE_READ,
+                         NULL, // default security descriptor
+                         OPEN_EXISTING,
+                         FILE_ATTRIBUTE_NORMAL,
+                         NULL // template file (ignored for existing file)
+                         );
   if (h == INVALID_HANDLE_VALUE)
     {
-      os_errno_data = GetLastError();
+      os_errno_data = GetLastError ();
       return (cell) -1;
     }
   return (cell) h;
 #else
-  int ret;
-  int flags = 0;
-#ifdef WIN64
-  flags |= _O_BINARY;
-#endif
-  ret = open(filename, flags);
+  int ret = open (filename, O_RDONLY);
   if (ret < 0)
     {
       os_errno_data = errno;
@@ -161,32 +152,32 @@ cell os_file_open_read(const char *filename)
 #endif
 }
 
-cell os_file_open_append(const char *filename)
+cell os_file_open_append (const char *filename)
 {
 #ifdef WIN64
-  HANDLE h = CreateFile(filename,
-                        GENERIC_WRITE,
-                        FILE_SHARE_WRITE,
-                        NULL, // default security descriptor
-                        OPEN_ALWAYS,
-                        FILE_ATTRIBUTE_NORMAL,
-                        NULL // template file (ignored for existing file)
-                        );
+  HANDLE h = CreateFile (filename,
+                         GENERIC_WRITE,
+                         FILE_SHARE_WRITE,
+                         NULL, // default security descriptor
+                         OPEN_ALWAYS,
+                         FILE_ATTRIBUTE_NORMAL,
+                         NULL // template file (ignored for existing file)
+                         );
   if (h == INVALID_HANDLE_VALUE)
     {
-      os_errno_data = GetLastError();
+      os_errno_data = GetLastError ();
       return (cell) -1;
     }
-  SetFilePointer(h, 0, 0, FILE_END);
+  SetFilePointer (h, 0, 0, FILE_END);
   return (cell) h;
 #else
   int flags = O_WRONLY|O_APPEND;
-  int ret = open(filename, flags);
+  int ret = open (filename, flags);
   if (ret >= 0)
     // file already exists
     return ret;
   flags |= O_CREAT;
-  ret = open(filename, flags, 0644);
+  ret = open (filename, flags, 0644);
   if (ret < 0)
     {
       os_errno_data = errno;
@@ -197,27 +188,20 @@ cell os_file_open_append(const char *filename)
 #endif
 }
 
-cell os_file_create_write(const char *filename)
+cell os_file_create_write (const char *filename)
 {
-#ifdef WIN64_NATIVE
-  HANDLE h = CreateFile(filename,
-                        GENERIC_WRITE,
-                        FILE_SHARE_READ,
-                        NULL, // default security descriptor
-                        CREATE_ALWAYS,
-                        FILE_ATTRIBUTE_NORMAL,
-                        NULL // template file (ignored for existing file)
-                        );
+#ifdef WIN64
+  HANDLE h = CreateFile (filename,
+                         GENERIC_WRITE,
+                         FILE_SHARE_READ,
+                         NULL, // default security descriptor
+                         CREATE_ALWAYS,
+                         FILE_ATTRIBUTE_NORMAL,
+                         NULL // template file (ignored for existing file)
+                         );
   return (cell) h;
 #else
-  int ret;
-  int flags = O_WRONLY;
-#ifdef WIN64
-  flags |= _O_CREAT|_O_TRUNC|_O_BINARY;
-#else
-  flags |= O_CREAT|O_TRUNC;
-#endif
-  ret = open(filename, flags, 0644);
+  int ret = open (filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
   if (ret < 0)
     return (cell) -1;
   else
@@ -225,26 +209,21 @@ cell os_file_create_write(const char *filename)
 #endif
 }
 
-cell os_create_file(const char *filename, int flags)
+cell os_create_file (const char *filename, int flags)
 {
-#ifdef WIN64_NATIVE
-  HANDLE h = CreateFile(filename,
-                        flags,
-                        FILE_SHARE_READ,
-                        NULL, // default security descriptor
-                        CREATE_ALWAYS,
-                        FILE_ATTRIBUTE_NORMAL,
-                        NULL // template file (ignored for existing file)
-                        );
+#ifdef WIN64
+  HANDLE h = CreateFile (filename,
+                         flags,
+                         FILE_SHARE_READ,
+                         NULL, // default security descriptor
+                         CREATE_ALWAYS,
+                         FILE_ATTRIBUTE_NORMAL,
+                         NULL // template file (ignored for existing file)
+                         );
   return (cell) h;
 #else
-  int ret;
-#ifdef WIN64
-  flags |= _O_CREAT|_O_TRUNC|_O_BINARY;
-#else
   flags |= O_CREAT|O_TRUNC;
-#endif
-  ret = open(filename, flags, 0644);
+  int ret = open (filename, flags, 0644);
   if (ret < 0)
     return (cell) -1;
   else
@@ -252,17 +231,17 @@ cell os_create_file(const char *filename, int flags)
 #endif
 }
 
-cell os_read_file(cell fd, void *buf, size_t count)
+cell os_read_file (cell fd, void *buf, size_t count)
 {
-#ifdef WIN64_NATIVE
+#ifdef WIN64
   DWORD bytes_read;
-  BOOL ret = ReadFile((HANDLE)fd, buf, count, &bytes_read, NULL);
+  BOOL ret = ReadFile ((HANDLE) fd, buf, count, &bytes_read, NULL);
   if (ret)
     return (cell) bytes_read;
   else
     return (cell) -1;
 #else
-  int ret = read(fd, buf, count);
+  int ret = read (fd, buf, count);
   if (ret < 0)
     {
       os_errno_data = errno;
@@ -273,12 +252,12 @@ cell os_read_file(cell fd, void *buf, size_t count)
 #endif
 }
 
-cell os_read_char(cell fd)
+cell os_read_char (cell fd)
 {
-#ifdef WIN64_NATIVE
+#ifdef WIN64
   DWORD bytes_read;
   unsigned char c;
-  BOOL ret = ReadFile((HANDLE)fd, &c, 1, &bytes_read, NULL);
+  BOOL ret = ReadFile ((HANDLE) fd, &c, 1, &bytes_read, NULL);
   // "When a synchronous read operation reaches the end of a file, ReadFile
   // returns TRUE and sets *lpNumberOfBytesRead to zero."
   if (ret && bytes_read == 1)
@@ -287,36 +266,36 @@ cell os_read_char(cell fd)
     return (cell) -1;
 #else
   unsigned char c;
-  int ret = read(fd, &c, 1);
+  int ret = read (fd, &c, 1);
   if (ret <= 0)
     return -1;
   return (cell) c;
 #endif
 }
 
-cell os_write_file(cell fd, void *buf, size_t count)
+cell os_write_file (cell fd, void *buf, size_t count)
 {
-#ifdef WIN64_NATIVE
+#ifdef WIN64
   DWORD bytes_written = 0;
-  if (WriteFile((HANDLE)fd, buf, count, &bytes_written, NULL))
+  if (WriteFile ((HANDLE) fd, buf, count, &bytes_written, NULL))
     return bytes_written;
   else
     return -1;
 #else
-  return write(fd, buf, count);
+  return write (fd, buf, count);
 #endif
 }
 
 cell os_close_file(cell fd)
 {
-#ifdef WIN64_NATIVE
-  cell ret = (cell) CloseHandle((HANDLE)fd);
+#ifdef WIN64
+  cell ret = (cell) CloseHandle ((HANDLE) fd);
   if (ret)
     return 0;
   else
     return (cell) -1;
 #else
-  int ret = close(fd);
+  int ret = close (fd);
   if (ret < 0)
     return (cell) -1;
   else
@@ -324,23 +303,23 @@ cell os_close_file(cell fd)
 #endif
 }
 
-cell os_file_size(cell fd)
+cell os_file_size (cell fd)
 {
-#ifdef WIN64_NATIVE
+#ifdef WIN64
   DWORD current, end;
-  current = SetFilePointer((HANDLE)fd, 0, NULL, FILE_CURRENT);
+  current = SetFilePointer ((HANDLE) fd, 0, NULL, FILE_CURRENT);
   if (current == INVALID_SET_FILE_POINTER)
     return -1;
-  end = SetFilePointer((HANDLE)fd, 0, NULL, FILE_END);
+  end = SetFilePointer ((HANDLE) fd, 0, NULL, FILE_END);
   if (end == INVALID_SET_FILE_POINTER)
     return -1;
-  SetFilePointer((HANDLE)fd, current, NULL, FILE_BEGIN);
+  SetFilePointer ((HANDLE) fd, current, NULL, FILE_BEGIN);
   return end;
 #else
   off_t current, end;
-  current = lseek(fd, 0, SEEK_CUR);
-  end = lseek(fd, 0, SEEK_END);
-  lseek(fd, current, SEEK_SET);
+  current = lseek (fd, 0, SEEK_CUR);
+  end = lseek (fd, 0, SEEK_END);
+  lseek (fd, current, SEEK_SET);
   if (end == (off_t) -1)
     return (cell) -1;
   else
@@ -348,132 +327,126 @@ cell os_file_size(cell fd)
 #endif
 }
 
-cell os_file_write_time(const char *path)
+cell os_file_write_time (const char *path)
 {
   struct stat statbuf;
   // stat() follows symlinks; lstat() does not
-  if (stat(path, &statbuf) == 0)
+  if (stat (path, &statbuf) == 0)
     return statbuf.st_mtime;
   else
     return 0;
 }
 
-cell os_file_position(cell fd)
+cell os_file_position (cell fd)
 {
-#ifdef WIN64_NATIVE
-  DWORD pos = SetFilePointer((HANDLE)fd, 0, NULL, FILE_CURRENT);
+#ifdef WIN64
+  DWORD pos = SetFilePointer ((HANDLE) fd, 0, NULL, FILE_CURRENT);
   if (pos == INVALID_SET_FILE_POINTER)
     return -1;
   else
     return pos;
 #else
-  return (cell) lseek(fd, 0, SEEK_CUR);
+  return (cell) lseek (fd, 0, SEEK_CUR);
 #endif
 }
 
-cell os_reposition_file(cell fd, off_t offset)
+cell os_reposition_file (cell fd, off_t offset)
 {
-#ifdef WIN64_NATIVE
-  DWORD pos = SetFilePointer((HANDLE)fd, offset, NULL, FILE_BEGIN);
+#ifdef WIN64
+  DWORD pos = SetFilePointer ((HANDLE) fd, offset, NULL, FILE_BEGIN);
   if (pos == INVALID_SET_FILE_POINTER)
     return -1;
   else
     return pos;
 #else
-  return (cell) lseek(fd, offset, SEEK_SET);
+  return (cell) lseek (fd, offset, SEEK_SET);
 #endif
 }
 
-cell os_resize_file(cell fd, off_t offset)
+cell os_resize_file (cell fd, off_t offset)
 {
-#ifdef WIN64_NATIVE
-  DWORD pos = SetFilePointer((HANDLE)fd, offset, NULL, FILE_BEGIN);
+#ifdef WIN64
+  DWORD pos = SetFilePointer ((HANDLE) fd, offset, NULL, FILE_BEGIN);
   if (pos == INVALID_SET_FILE_POINTER)
     return -1;
-  if (SetEndOfFile((HANDLE)fd))
+  if (SetEndOfFile ((HANDLE) fd))
     return 0;
   else
     return -1;
-#elif defined(WIN64)
-  return (cell) _chsize(fd, offset);
 #else
-  return (cell) ftruncate(fd, offset);
+  return (cell) ftruncate (fd, offset);
 #endif
 }
 
-cell os_delete_file(const char *filename)
+cell os_delete_file (const char *filename)
 {
-#ifdef WIN64_NATIVE
-  return DeleteFile(filename) ? 0 : -1;
+#ifdef WIN64
+  return DeleteFile (filename) ? 0 : -1;
 #else
-  return unlink(filename);
+  return unlink (filename);
 #endif
 }
 
 cell os_rename_file (const char *oldpath, const char *newpath)
 {
-#ifdef WIN64_NATIVE
+#ifdef WIN64
   return MoveFileEx (oldpath, newpath, MOVEFILE_REPLACE_EXISTING) ? 0 : -1;
 #else
   return rename (oldpath, newpath);
 #endif
 }
 
-cell os_flush_file(cell fd)
+cell os_flush_file (cell fd)
 {
 #ifdef WIN64
-#ifdef WIN64_NATIVE
-  BOOL ret = FlushFileBuffers((HANDLE)fd);
+  BOOL ret = FlushFileBuffers ((HANDLE) fd);
   if (ret)
     return 0;
   else
     return -1;
 #else
-  return 0;     // REVIEW
-#endif
-#else
   // Linux
-  return fsync(fd);
+  return fsync (fd);
 #endif
 }
 
-cell os_emit_file(int c, int fd)
+cell os_emit_file (int c, int fd)
 {
 #ifdef WIN64
   return os_write_file (fd, &c, 1);
 #else
-  return write(fd, &c, 1);
+  return write (fd, &c, 1);
 #endif
 }
 
-cell os_ticks()
+cell os_ticks (void)
 {
 #ifdef WIN64
-  ULONGLONG WINAPI GetTickCount64(void);
-  return GetTickCount64();
+  ULONGLONG WINAPI GetTickCount64 (void);
+  return GetTickCount64 ();
 #else
   struct timeval tv;
-  if(gettimeofday(&tv, NULL) != 0)
+  if(gettimeofday (&tv, NULL) != 0)
     return 0;
   return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 #endif
 }
 
-void os_date_time(void * buf)
+void os_date_time (void * buf)
 {
 #ifdef WIN64
   SYSTEMTIME lt;
   char * months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-  GetLocalTime(&lt);
-  sprintf(buf, "%s %02d %02d:%02d:%02d.%03d",
-          months[lt.wMonth - 1], lt.wDay, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds);
+  GetLocalTime (&lt);
+  sprintf (buf, "%s %02d %02d:%02d:%02d.%03d",
+           months[lt.wMonth - 1], lt.wDay, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds);
 #else
   struct timespec ts;
-  timespec_get(&ts, TIME_UTC);
+  timespec_get (&ts, TIME_UTC);
   char buf2[100];
   struct tm local;
-  strftime(buf2, sizeof buf2, "%b %d %T", localtime_r(&ts.tv_sec, &local));
-  sprintf(buf, "%s.%03ld", buf2, ts.tv_nsec / 1000000);
+  strftime (buf2, sizeof buf2, "%b %d %T", localtime_r (&ts.tv_sec, &local));
+  sprintf (buf, "%s.%03ld", buf2, ts.tv_nsec / 1000000);
 #endif
 }
 
@@ -484,41 +457,41 @@ cell os_nano_count()
   if (frequency == 0)
     {
       LARGE_INTEGER freq;
-      QueryPerformanceFrequency(&freq);
+      QueryPerformanceFrequency (&freq);
       frequency = freq.QuadPart;
     }
   LARGE_INTEGER count;
-  QueryPerformanceCounter(&count);
+  QueryPerformanceCounter (&count);
   return (count.QuadPart * 1000000000) / frequency;
 #else
   struct timespec t;
-  clock_gettime(CLOCK_MONOTONIC, &t);
+  clock_gettime (CLOCK_MONOTONIC, &t);
   return (uint64_t)t.tv_sec * 1000000000 + t.tv_nsec;
 #endif
 }
 
 #ifdef WIN64
-void os_ms(DWORD ms)
+void os_ms (DWORD ms)
 {
-  Sleep(ms);
+  Sleep (ms);
 }
 #else
-void os_ms(unsigned int ms)
+void os_ms (unsigned int ms)
 {
-  usleep(ms * 1000);
+  usleep (ms * 1000);
 }
 #endif
 
-char *os_getenv(const char *name)
+char *os_getenv (const char *name)
 {
-  return getenv(name);
+  return getenv (name);
 }
 
-char *os_getcwd(char *buf, size_t size)
+char *os_getcwd (char *buf, size_t size)
 {
   // REVIEW error handling
 #ifdef WIN64
-  int ret = GetCurrentDirectory(size, buf);
+  int ret = GetCurrentDirectory (size, buf);
   if (ret)
     {
       // "If the function succeeds, the return value specifies the number of
@@ -532,57 +505,57 @@ char *os_getcwd(char *buf, size_t size)
       return NULL;
     }
 #else
-  return getcwd(buf, size);
+  return getcwd (buf, size);
 #endif
 }
 
-cell os_chdir(const char *path)
+cell os_chdir (const char *path)
 {
   // Returns 1 if successful, otherwise 0.
 #ifdef WIN64
-  return SetCurrentDirectory(path);
+  return SetCurrentDirectory (path);
 #else
   return chdir(path) ? 0 : 1;
 #endif
 }
 
-char *os_realpath(const char *path)
+char *os_realpath (const char *path)
 {
 #ifdef WIN64
-  char *buf = malloc(MAX_PATH);
-  DWORD ret = GetFullPathName(path, MAX_PATH, buf, NULL);
+  char *buf = malloc (MAX_PATH);
+  DWORD ret = GetFullPathName (path, MAX_PATH, buf, NULL);
   if (ret > 0 && ret <= MAX_PATH)
     return buf;
   else
     {
-      free(buf);
+      free (buf);
       return NULL;
     }
 #else
-  return realpath(path, NULL);
+  return realpath (path, NULL);
 #endif
 }
 
-char *os_strerror(int errnum)
+char *os_strerror (int errnum)
 {
-  return strerror(errnum);
+  return strerror (errnum);
 }
 
 #ifdef WIN64
-void os_set_console_cursor_position(SHORT x, SHORT y)
+void os_set_console_cursor_position (SHORT x, SHORT y)
 {
-  HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+  HANDLE h = GetStdHandle (STD_OUTPUT_HANDLE);
   COORD coord;
   coord.X = x;
   coord.Y = y;
-  SetConsoleCursorPosition(h, coord);
+  SetConsoleCursorPosition (h, coord);
 }
 
-cell os_get_console_character_attributes()
+cell os_get_console_character_attributes (void)
 {
-  HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+  HANDLE h = GetStdHandle (STD_OUTPUT_HANDLE);
   CONSOLE_SCREEN_BUFFER_INFO info;
-  GetConsoleScreenBufferInfo(h, &info);
+  GetConsoleScreenBufferInfo (h, &info);
   return info.wAttributes;
 }
 #endif
@@ -592,55 +565,55 @@ void os_bye()
 #ifdef WIN64
   extern int winsock_initialized;
   if (winsock_initialized)
-    WSACleanup();
+    WSACleanup ();
 #endif
 
-  deprep_terminal();
-  exit(0);
+  deprep_terminal ();
+  exit (0);
 }
 
 
 #define DATASTACK_SIZE 4096 * sizeof(cell)
 
-cell os_thread_initialize_datastack()
+cell os_thread_initialize_datastack (void)
 {
 #ifdef WIN64
   SYSTEM_INFO info;
-  GetSystemInfo(&info);
+  GetSystemInfo (&info);
 
-  cell datastack_base = (cell) VirtualAlloc(NULL,
-                                            DATASTACK_SIZE + info.dwPageSize,
-                                            MEM_COMMIT|MEM_RESERVE,
-                                            PAGE_READWRITE);
+  cell datastack_base = (cell) VirtualAlloc (NULL,
+                                             DATASTACK_SIZE + info.dwPageSize,
+                                             MEM_COMMIT|MEM_RESERVE,
+                                             PAGE_READWRITE);
   DWORD old_protect;
-  BOOL ret = VirtualProtect((LPVOID)(datastack_base + DATASTACK_SIZE),
-                            info.dwPageSize,
-                            PAGE_NOACCESS,
-                            &old_protect);
+  BOOL ret = VirtualProtect ((LPVOID) (datastack_base + DATASTACK_SIZE),
+                             info.dwPageSize,
+                             PAGE_NOACCESS,
+                             &old_protect);
 
   // "If the function succeeds, the return value is nonzero."
   if (!ret)
-    printf("VirtualProtect error\n");
+    printf ("VirtualProtect error\n");
 
   return datastack_base + DATASTACK_SIZE;
 #else
-  long pagesize = sysconf(_SC_PAGESIZE);
+  long pagesize = sysconf (_SC_PAGESIZE);
 
   cell datastack_base =
-    (cell) mmap(NULL,                                           // starting address
-                DATASTACK_SIZE + pagesize,                      // size
-                PROT_READ|PROT_WRITE,                           // protection
-                MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE,        // flags
-                -1,                                             // fd
-                0);                                             // offset
+    (cell) mmap (NULL,                                          // starting address
+                 DATASTACK_SIZE + pagesize,                     // size
+                 PROT_READ|PROT_WRITE,                          // protection
+                 MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE,       // flags
+                 -1,                                            // fd
+                 0);                                            // offset
 
-  int ret = mprotect((void *)(datastack_base + DATASTACK_SIZE),
-                     pagesize,
-                     PROT_NONE);
+  int ret = mprotect ((void *) (datastack_base + DATASTACK_SIZE),
+                      pagesize,
+                      PROT_NONE);
 
   // mprotect() returns zero on success
   if (ret != 0)
-    printf("mprotect error\n");
+    printf ("mprotect error\n");
 
   return datastack_base + DATASTACK_SIZE;
 #endif

@@ -1161,7 +1161,7 @@ code feline_2over, '2over'              ; x y z -- x y z x y
         next
 endcode
 
-%ifdef WIN64_NATIVE
+%ifdef WIN64
 _global standard_output_handle
 %endif
 
