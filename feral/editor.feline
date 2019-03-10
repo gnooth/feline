@@ -113,7 +113,7 @@ using: feline accessors modes accept-string logging directories ;
 ;
 
 : text-rows                             -- -> n
-    terminal-height 2 - ;
+    terminal-rows 2 - ;
 
 : bottom-line                           -- -> line
     top-line :> line!
@@ -189,7 +189,7 @@ using: feline accessors modes accept-string logging directories ;
 ;
 
 : status-y                              -- -> n
-    terminal-height 2 - ;
+    terminal-rows 2 - ;
 
 : reverse esc[ "7m" write-string-escaped ;
 
@@ -207,7 +207,7 @@ using: feline accessors modes accept-string logging directories ;
     line-count
     dot-column 1+
     "Line %d of %d Col %d " format
-    terminal-width over length - :> x
+    terminal-columns over length - :> x
     x filename length 1+ - 1 max spaces
     write-string
     normal
@@ -246,7 +246,7 @@ use: ansi-color
         selection-prefix write-string-escaped
         formatted-text write
         selection-prefix write-string-escaped
-        terminal-width detabbed-text string-length - spaces
+        terminal-columns detabbed-text string-length - spaces
         "\e[0m" write-string-escaped
     ] return-if
 
@@ -257,13 +257,13 @@ use: ansi-color
         dot-column mark-column detabbed-text string-substring write
         normal
         detabbed-text mark-column string-tail write
-        terminal-width detabbed-text string-length - spaces
+        terminal-columns detabbed-text string-length - spaces
     ] [
-        detabbed-text length terminal-width < [
+        detabbed-text length terminal-columns < [
             formatted-text write
-            terminal-width detabbed-text string-length - spaces
+            terminal-columns detabbed-text string-length - spaces
         ] [
-            0 terminal-width detabbed-text substring write
+            0 terminal-columns detabbed-text substring write
         ] if
     ] if
 ;
@@ -279,7 +279,7 @@ use: ansi-color
     ] while
 
     [ y text-rows < ] [
-        0 y at-xy terminal-width spaces
+        0 y at-xy terminal-columns spaces
         y 1+ y!
     ] while
 

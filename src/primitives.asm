@@ -1844,22 +1844,22 @@ code feline_free, 'free'                ; addr --
         next
 endcode
 
-asm_global terminal_height_
+asm_global terminal_rows_
 
-; ### terminal-height
-code terminal_height, 'terminal-height'
+; ### terminal-rows
+code terminal_rows, 'terminal-rows'
         pushrbx
-        mov     rbx, [terminal_height_]
+        mov     rbx, [terminal_rows_]
         _tag_fixnum
         next
 endcode
 
-asm_global terminal_width_
+asm_global terminal_columns_
 
-; ### terminal-width
-code terminal_width, 'terminal-width'
+; ### terminal-columns
+code terminal_columns, 'terminal-columns'
         pushrbx
-        mov     rbx, [terminal_width_]
+        mov     rbx, [terminal_columns_]
         _tag_fixnum
         next
 endcode

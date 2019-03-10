@@ -86,8 +86,8 @@ extern cell os_errno_data;
 
 extern cell start_time_raw_nano_count_;
 
-extern cell terminal_width_;
-extern cell terminal_height_;
+extern cell terminal_columns_;
+extern cell terminal_rows_;
 
 #ifdef WIN64
 extern cell saved_exception_code_data;
