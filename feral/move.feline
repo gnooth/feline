@@ -33,7 +33,7 @@ in: editor
     dot-offset goal-column!
 
     reframe? [
-        dot-line-number text-rows 1- - nth-line top-line!
+        dot-line-number textview-rows 1- - nth-line top-line!
         t repaint?!
     ] when
 ;
@@ -118,7 +118,7 @@ in: editor
             0 dot-offset!
             dot-offset goal-column!
             reframe? [
-                dot-line-number text-rows 1- - nth-line top-line!
+                dot-line-number textview-rows 1- - nth-line top-line!
                 t repaint?!
             ] when
         ] when
@@ -133,7 +133,7 @@ in: editor
         dot-line-next dot-line!
         unmark
         reframe? [
-            dot-line-number text-rows 1- - nth-line top-line!
+            dot-line-number textview-rows 1- - nth-line top-line!
             t repaint?!
         ] when
         adjust-cursor-x
@@ -184,7 +184,7 @@ in: editor
 
     dot-y :> goal-y
 
-    top-line-number text-rows + last-line-number > [
+    top-line-number textview-rows + last-line-number > [
         last-line dot-line!
         adjust-cursor-x
     ] return-if
@@ -192,7 +192,7 @@ in: editor
     top-line :> line!
     0 :> i!
 
-    [ line next>> i text-rows < and ] [
+    [ line next>> i textview-rows < and ] [
         i 1+ i! line next>> line!
     ] while
 
@@ -218,7 +218,7 @@ in: editor
     dot-line :> line!
     0 :> i!
 
-    [ line prev>> i text-rows < and ] [
+    [ line prev>> i textview-rows < and ] [
         i 1+ i! line prev>> line!
     ] while
 

@@ -112,14 +112,14 @@ using: feline accessors modes accept-string logging directories ;
     renumber
 ;
 
-: text-rows                             -- -> n
+: textview-rows                         -- -> n
     terminal-rows 2 - ;
 
 : bottom-line                           -- -> line
     top-line :> line!
     0 :> i!
 
-    [ i text-rows 1- < ] [
+    [ i textview-rows 1- < ] [
         line next>> [ line! ] when*
         i 1+ i!
     ] while
@@ -272,13 +272,13 @@ use: ansi-color
     top-line :> line!
     0 :> y!
 
-    [ line y text-rows < and ] [
+    [ line y textview-rows < and ] [
         0 y at-xy
         line repaint-line
         y 1+ y! line next>> line!
     ] while
 
-    [ y text-rows < ] [
+    [ y textview-rows < ] [
         0 y at-xy terminal-columns spaces
         y 1+ y!
     ] while
@@ -312,11 +312,11 @@ use: ansi-color
 : reframe?                              -- -> ?
     dot-line-number
     top-line-number
-    dup text-rows 1- +
+    dup textview-rows 1- +
     between? not ;
 
 : reframe
-    text-rows 2 /i verify-index :> i!
+    textview-rows 2 /i verify-index :> i!
     dot-line :> line!
 
     [ i 0 > line prev>> and ] [
@@ -766,7 +766,7 @@ use: search
 
     clear-status-line
     clear-message
-    0 text-rows at-xy
+    0 textview-rows at-xy
     show-cursor
 
     use-default-screen-buffer
@@ -815,7 +815,7 @@ use: search
     edit-loop
     clear-status-line
     clear-message
-    0 text-rows at-xy
+    0 textview-rows at-xy
     show-cursor
     use-default-screen-buffer
 ;
