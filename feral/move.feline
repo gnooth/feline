@@ -16,7 +16,7 @@
 using: feline accessors ;
 in: editor
 
-: adjust-cursor-x
+: adjust-dot-column
     goal-column dot-offset!
     dot-offset dot-line-length > [
         dot-line-length dot-offset!
@@ -143,7 +143,7 @@ in: editor
             dot-line-number textview-rows 1- - nth-line top-line!
             t repaint?!
         ] when
-        adjust-cursor-x
+        adjust-dot-column
     ] when
 ;
 
@@ -158,7 +158,7 @@ in: editor
             dot-line top-line!
             t repaint?!
         ] when
-        adjust-cursor-x
+        adjust-dot-column
     ] when
 ;
 
@@ -193,7 +193,7 @@ in: editor
 
     top-line-number textview-rows + last-line-number > [
         last-line dot-line!
-        adjust-cursor-x
+        adjust-dot-column
     ] return-if
 
     top-line :> line!
@@ -214,7 +214,7 @@ in: editor
     line dot-line!
 
     t repaint?!
-    adjust-cursor-x
+    adjust-dot-column
 ;
 
 : do-page-up
@@ -240,5 +240,5 @@ in: editor
     line top-line!
 
     t repaint?!
-    adjust-cursor-x
+    adjust-dot-column
 ;
