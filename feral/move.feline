@@ -16,6 +16,13 @@
 using: feline accessors ;
 in: editor
 
+: adjust-cursor-x
+    goal-column dot-offset!
+    dot-offset dot-line-length > [
+        dot-line-length dot-offset!
+    ] when
+;
+
 : beginning-of-buffer
     add-undo-move
     unmark

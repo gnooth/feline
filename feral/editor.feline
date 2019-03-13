@@ -302,13 +302,6 @@ use: ansi-color
     mark [ show-cursor ] unless
 ;
 
-: adjust-cursor-x
-    goal-column dot-offset!
-    dot-offset dot-line-length > [
-        dot-line-length dot-offset!
-    ] when
-;
-
 : reframe?                              -- -> ?
     dot-line-number
     top-line-number
