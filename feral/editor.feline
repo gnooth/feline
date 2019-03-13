@@ -149,6 +149,9 @@ using: feline accessors modes accept-string logging directories ;
 : dot-column                            -- -> column
     dot position-column ;
 
+: dot-row                               -- -> n
+    dot-line-number top-line-number - ;
+
 : mark-column                           -- -> column
     mark [ mark position-column ] [ f ] if ;
 
@@ -156,9 +159,6 @@ using: feline accessors modes accept-string logging directories ;
     dot-column
     dot-line-number top-line-number -
     at-xy ;
-
-: dot-y                                 -- -> n
-    dot-line-number top-line-number - ;
 
 : detab ( s )                           -- string1 -> string2
     '\t' s string-index :> i
@@ -292,7 +292,7 @@ use: ansi-color
         repaint
     ] [
         dot-line-changed? [
-            0 dot-y at-xy
+            0 dot-row at-xy
             dot-line repaint-line
             f dot-line-changed?!
         ] when

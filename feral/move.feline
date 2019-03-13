@@ -182,7 +182,7 @@ in: editor
 : do-page-down
     add-undo-move
 
-    dot-y :> goal-y
+    dot-row :> goal-row
 
     top-line-number textview-rows + last-line-number > [
         last-line dot-line!
@@ -198,7 +198,7 @@ in: editor
 
     line top-line!
 
-    goal-y i!
+    goal-row i!
 
     [ line next>> i 0 > and ] [
         i 1- i! line next>> line!
@@ -213,7 +213,7 @@ in: editor
 : do-page-up
     add-undo-move
 
-    dot-y :> goal-y
+    dot-row :> goal-row
 
     dot-line :> line!
     0 :> i!
@@ -224,7 +224,7 @@ in: editor
 
     line dot-line!
 
-    goal-y i!
+    goal-row i!
 
     [ line prev>> i 0 > and ] [
         i 1- i! line prev>> line!
