@@ -13,7 +13,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accessors ;
+using: feline accessors feral-config ;
 in: editor
 
 tuple: line
@@ -408,8 +408,13 @@ global current-buffer
     renumber
 ;
 
+winui? #if
+: textview-rows                         -- -> n
+    winui-textview-rows ;
+#else
 : textview-rows                         -- -> n
     terminal-rows 2 - ;
+#endif
 
 : bottom-line                           -- -> line
     top-line :> line!
