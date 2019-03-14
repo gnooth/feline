@@ -43,141 +43,14 @@ use: directories
 
 initialize-directories
 
-using: feline accessors modes accept-string logging directories ;
+using: feline accessors modes accept-string logging directories feral-config ;
 
 "defs.feline" load
-
-: renumber
-    first-line :> line!
-    0 :> n!
-    [ line ] [
-        n line number<<
-        n 1+ n!
-        line next>> line!
-    ] while
-;
-
-: nth-line ( line-number )              -- line-number -> line
-
-    line-number 0 < [ f ] return-if
-
-    first-line :> line!
-    0 :> n!
-    [ n line-number < ] [
-        n 1+ n!
-        line next>> line!
-    ] while
-    line
-;
-
-: insert-after ( line prev )            -- line prev -> void
-    -- insert line after prev
-
-    prev [ prev next>> ] [ first-line ] if :> next
-
-    prev [
-        line prev next<<
-    ] [
-        line dup first-line! top-line!
-    ] if
-    prev line prev<<
-
-    next line next<<
-    next [ line next prev<< ] [ line last-line! ] if
-;
-
-: insert-before ( line next )           -- line next -> void
-    -- insert line before next
-
-    next [ next prev>> ] [ f ] if :> prev
-
-    prev [ line prev insert-after ] return-if
-
-    -- prev is null
-    line first-line prev<<
-    first-line line next<<
-    line first-line!
-;
-
-: unlink ( line )                       -- line -> void
-    line next>> :> next
-    line prev>> :> prev
-
-    prev [ next prev next<< ] when
-    next [ prev next prev<< ] when
-
-    f line next<<
-    f line prev<<
-
-    renumber
-;
-
-: textview-rows                         -- -> n
-    terminal-rows 2 - ;
-
-: bottom-line                           -- -> line
-    top-line :> line!
-    0 :> i!
-
-    [ i textview-rows 1- < ] [
-        line next>> [ line! ] when*
-        i 1+ i!
-    ] while
-
-    line
-;
-
-: bottom-line-number                    -- -> n
-    bottom-line number>> ;
-
-: tab-width                             -- -> n
-    8 ;
-
-: position-column ( pos )               -- position -> column
-    pos line>> :> line
-    pos offset>> line text>> length min :> limit
-    0 :> column!
-    limit [
-        line text>> string-nth '\t' eq? [
-            column tab-width column tab-width mod - + column!
-        ] [
-            column 1+ column!
-        ] if
-    ] each-integer
-    column ;
-
-: dot-column                            -- -> column
-    dot position-column ;
-
-: dot-row                               -- -> n
-    dot-line-number top-line-number - ;
-
-: mark-column                           -- -> column
-    mark [ mark position-column ] [ f ] if ;
 
 : .cursor
     dot-column
     dot-line-number top-line-number -
     at-xy ;
-
-: detab ( s )                           -- string1 -> string2
-    '\t' s string-index :> i
-    i f eq? [ s ] return-if
-
-    256 <sbuf> :> sb
-
-    s [
-        dup '\t' eq? [
-            drop
-            '\s' sb sbuf-push
-            [ sb sbuf-length 8 mod 0 eq? ] [ '\s' sb sbuf-push ] until
-        ] [
-            sb sbuf-push
-        ] if
-    ] each
-
-    sb sbuf>string
-;
 
 : format-line ( s )
     current-buffer mode>> :> mode
