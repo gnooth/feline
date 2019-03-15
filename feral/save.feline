@@ -32,13 +32,15 @@ use: mini
 
     filename [
         "File: " minibuffer-accept-string filename!
-        filename file-exists? [
-            "Overwrite existing file? (yes or no) " minibuffer-accept-string
-            "yes" string= [ f filename! ] unless
+        filename [
+            filename file-exists? [
+                "Overwrite existing file? (yes or no) " minibuffer-accept-string
+                "yes" = [ f filename! ] unless
+            ] when
         ] when
     ] unless
 
-    filename f eq? [ ] return-if
+    filename null? [ ] return-if
 
     -- save the current buffer to disk
     output-style
