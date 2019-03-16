@@ -84,7 +84,7 @@ code file_open_append, 'file-open-append'       ; string -> file-output-stream
 endcode
 
 ; ### file-create-write
-code file_create_write, 'file-create-write'     ; string -> file-output-stream
+code file_create_write, 'file-create-write' ; string -> file-output-stream
         _dup
         _ string_raw_data_address
         mov     arg0_register, rbx
@@ -97,16 +97,8 @@ code file_create_write, 'file-create-write'     ; string -> file-output-stream
         next
 .error:
         ; REVIEW explain reason for failure
-        _quote `ERROR: unable to create file `
-        _ string_to_sbuf
-        _swap
-        _ canonical_path
-        _over
-        _ sbuf_append_string
-        _lit tagged_char('.')
-        _over
-        _ sbuf_push
-        _ sbuf_to_string
+        _quote "Unable to create file %s"
+        _ format
         _ error
         next
 endcode
@@ -599,11 +591,11 @@ code tilde_expand_filename, 'tilde-expand-filename'     ; string1 -- string2
 endcode
 
 ; ### canonical-path
-code canonical_path, 'canonical-path'   ; string1 -- string2
+code canonical_path, 'canonical-path'   ; string1 -> string2/f
 
         _ tilde_expand_filename
 
-        _ string_raw_data_address       ; -- zaddr1
+        _ string_raw_data_address       ; -> zaddr1
 
         mov     arg0_register, rbx
         xcall   os_realpath
@@ -611,10 +603,10 @@ code canonical_path, 'canonical-path'   ; string1 -- string2
         test    rax, rax
         jz      .1
 
-        mov     rbx, rax                ; -- zaddr2
+        mov     rbx, rax                ; -> zaddr2
         _dup
         _ zcount
-        _ copy_to_string                ; -- zaddr2 string2
+        _ copy_to_string                ; -> zaddr2 string2
         mov     arg0_register, [rbp]
         xcall   os_free
         _nip
@@ -627,7 +619,7 @@ code canonical_path, 'canonical-path'   ; string1 -- string2
 endcode
 
 ; ### get-current-directory
-code get_current_directory, 'get-current-directory'     ; -- string
+code get_current_directory, 'get-current-directory' ; -- string
         _lit 1024
         _ feline_allocate_untagged      ; address in rbx
         mov     arg1_register, 1024
