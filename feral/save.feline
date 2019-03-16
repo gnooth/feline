@@ -46,6 +46,8 @@ use: mini
     output-style
     "Saving..." message
 
+    f :> saved?!
+
     make-backup
 
     current-buffer eol>> :> eol
@@ -63,15 +65,18 @@ use: mini
     -- last line, no eol
     last-line text>> sb sbuf-append-string
 
-    sb sbuf>string filename set-file-contents
+    sb sbuf>string filename
+
+    -- set-file-contents might throw
+    [ set-file-contents t saved?! ] [ 2nip message ] recover
 
     nano-count start-ns - :> elapsed-ns
 
-    mod-count mod-count-last-save!
-
-    elapsed-ns 1000000 /i "Saving...done (%s ms)" format message
-
-    current-buffer filename>> [
-        filename canonical-path current-buffer filename<<
-    ] unless
+    saved? [
+        mod-count mod-count-last-save!
+        elapsed-ns 1000000 /i "Saving...done (%s ms)" format message
+        current-buffer filename>> [
+            filename canonical-path current-buffer filename<<
+        ] unless
+    ] when
 ;
