@@ -157,26 +157,6 @@ void winui__create_frame (void)
   RECT rect;
   GetClientRect (hwnd_frame, &rect);
 
-  // minibuffer
-  hwnd_minibuffer = CreateWindow (
-    FERAL_MINIBUFFER,                   // window class
-    NULL,                               // title
-    WS_CHILD | WS_VISIBLE,              // child window
-    0,                                  // left
-    rect.bottom - 16,                   // top
-    rect.right,                         // width
-    16,                                 // height
-    hwnd_frame,                         // owner window
-    NULL,                               // no menu
-    hinst,                              // handle to application instance
-    NULL);                              // no window-creation data
-
-  if (!hwnd_minibuffer)
-    {
-      fprintf (stderr, "Unable to create window for minibuffer.\n");
-      return;
-    }
-
   // text view
   hwnd_textview = CreateWindow (
     FERAL_TEXT,                         // window class
@@ -185,7 +165,7 @@ void winui__create_frame (void)
     0,                                  // left
     0,                                  // top
     rect.right - rect.left,             // width
-    rect.bottom - rect.top - 32,        // height
+    rect.bottom - rect.top - 2 * char_height,   // height
     hwnd_frame,                         // owner window
     NULL,                               // use class menu
     hinst,                              // handle to application instance
@@ -203,9 +183,9 @@ void winui__create_frame (void)
     NULL,                               // no title
     WS_CHILD | WS_VISIBLE,              // child window
     0,                                  // left
-    rect.bottom - 32,                   // top
+    rect.bottom - 2 * char_height,      // top
     rect.right,                         // width
-    16,                                 // height
+    char_height,                        // height
     hwnd_frame,                         // owner window
     NULL,                               // use class menu
     hinst,                              // handle to application instance
@@ -214,6 +194,26 @@ void winui__create_frame (void)
   if (!hwnd_modeline)
     {
       fprintf (stderr, "Unable to create window for modeline.\n");
+      return;
+    }
+
+  // minibuffer
+  hwnd_minibuffer = CreateWindow (
+    FERAL_MINIBUFFER,                   // window class
+    NULL,                               // title
+    WS_CHILD | WS_VISIBLE,              // child window
+    0,                                  // left
+    rect.bottom - char_height,          // top
+    rect.right,                         // width
+    char_height,                        // height
+    hwnd_frame,                         // owner window
+    NULL,                               // no menu
+    hinst,                              // handle to application instance
+    NULL);                              // no window-creation data
+
+  if (!hwnd_minibuffer)
+    {
+      fprintf (stderr, "Unable to create window for minibuffer.\n");
       return;
     }
 
@@ -283,6 +283,33 @@ static void winui__create_font (HWND hwnd)
     hfont_normal = (HFONT) GetStockObject (SYSTEM_FIXED_FONT);
 }
 
+void winui__resize (void)
+{
+  RECT rect;
+  GetClientRect (hwnd_frame, &rect);
+
+  MoveWindow (hwnd_textview,
+              0,                                // left
+              0,                                // top
+              rect.right - rect.left,           // width
+              rect.bottom - rect.top - 32,      // height
+              TRUE);
+
+  MoveWindow (hwnd_modeline,
+              0,                                // left
+              rect.bottom - 2 * char_height,    // top
+              rect.right,                       // width
+              char_height,                      // height
+              TRUE);
+
+  MoveWindow (hwnd_minibuffer,
+              0,                                // left
+              rect.bottom - char_height,        // top
+              rect.right,                       // width
+              char_height,                      // height
+              TRUE);
+}
+
 void winui__exit (void)
 {
   SendMessage (hwnd_frame, WM_CLOSE, 0, 0);
@@ -304,6 +331,10 @@ static LRESULT CALLBACK winui__frame_wnd_proc (HWND hwnd, UINT msg,
     case WM_SETFOCUS:
       if (hwnd_textview)
         SetFocus (hwnd_textview);
+      return 0;
+
+    case WM_SIZE:
+      winui__resize ();
       return 0;
     }
 
