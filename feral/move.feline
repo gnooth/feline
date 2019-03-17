@@ -13,7 +13,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accessors ;
+using: feline accessors feral-config ;
 in: editor
 
 : adjust-dot-column
@@ -161,6 +161,46 @@ in: editor
         adjust-dot-column
     ] when
 ;
+
+winui? #if
+
+: mousewheel-scroll-up
+    current-command last-command!
+    ' mousewheel-scroll-up current-command!
+
+    top-line prev>> [
+        top-line!
+        4 [ top-line prev>> [ top-line! ] when* ] times
+
+        dot-line-number bottom-line-number > [
+            last-command ' mousewheel-scroll-up eq? [ add-undo-move ] unless
+            bottom-line dot-line!
+            0 dot-offset!
+        ] when
+
+        t repaint?!
+        update-display
+    ] when* ;
+
+: mousewheel-scroll-down
+    current-command last-command!
+    ' mousewheel-scroll-down current-command!
+
+    top-line next>> [
+        top-line!
+        4 [ top-line next>> [ top-line! ] when* ] times
+
+        dot-line-number top-line-number < [
+            last-command ' mousewheel-scroll-down eq? [ add-undo-move ] unless
+            top-line dot-line!
+            0 dot-offset!
+        ] when
+
+        t repaint?!
+        update-display
+    ] when* ;
+
+#endif
 
 : do-window-up
     top-line prev>> [
