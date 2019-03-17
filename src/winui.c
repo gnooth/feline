@@ -313,6 +313,7 @@ static LRESULT CALLBACK winui__frame_wnd_proc (HWND hwnd, UINT msg,
 // winui.asm
 extern void winui_textview_paint (void);
 extern void winui_textview_char (WPARAM);
+extern void winui_textview_keydown (WPARAM);
 extern void winui_textview_lbuttondown (WPARAM, LPARAM);
 extern void winui_textview_mousewheel (int);
 
