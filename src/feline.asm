@@ -94,6 +94,12 @@ string FELINE_VOCAB_NAME, 'feline'
 %include "mutex.asm"
 %include "defer.asm"
 
+%ifdef WIN64
+%ifdef WINUI
+%include "winui.asm"
+%endif
+%endif
+
 ; ### in-static-data-area?
 code in_static_data_area?, 'in-static-data-area?', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; addr -- ?
