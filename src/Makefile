@@ -36,7 +36,12 @@ ASMFLAGS =
 OBJS = main.o os.o terminal.o backtrace.o random.o numbers.o math.o \
 	socket.o version.o feline.o
 
-ifneq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT)
+ifdef WINUI
+	OBJS += winui.o
+	ASMFLAGS += -DWINUI
+endif
+else
 # Linux
 ifdef GTKUI
 	OBJS += gtkui.o
@@ -65,8 +70,13 @@ else
 endif
 
 ifeq ($(OS),Windows_NT)
+ifdef WINUI
+$(FELINE_EXE): version.h $(OBJS)
+	$(CC) $(LINKFLAGS) $(OBJS) -lm -l gdi32 -l user32 -l ws2_32 -o $(FELINE_EXE)
+else
 $(FELINE_EXE): version.h $(OBJS)
 	$(CC) $(LINKFLAGS) $(OBJS) -lm -l ws2_32 -o $(FELINE_EXE)
+endif
 else
 # Linux
 ifdef GTKUI
@@ -76,7 +86,6 @@ else
 $(FELINE_EXE): version.h $(OBJS)
 	$(CC) $(LINKFLAGS) $(OBJS) -lm -lpthread -o $(FELINE_EXE)
 endif
-
 endif
 
 feline_home.asm: $(FELINE_HOME_EXE)
@@ -120,6 +129,9 @@ version.o: version.h
 
 gtkui.o: gtkui.c
 	$(CC) $(CFLAGS) $(GTK_CFLAGS) -c -o gtkui.o gtkui.c
+
+winui.o: winui.c
+	$(CC) $(CFLAGS) $(GTK_CFLAGS) -c -o winui.o winui.c
 
 ASM_SOURCES = feline.asm feline_home.asm externs.asm \
 	macros.asm loop-macros.asm inlines.asm \
@@ -189,6 +201,12 @@ ASM_SOURCES = feline.asm feline_home.asm externs.asm \
 	vocabs.asm \
 	vector.asm \
 	wrapper.asm
+
+ifeq ($(OS),Windows_NT)
+ifdef WINUI
+	ASM_SOURCES += winui.asm
+endif
+endif
 
 # -felf64 even on Windows
 feline.o: $(ASM_SOURCES)
