@@ -13,6 +13,100 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using: feline search feral-config ;
+in: editor
+
+winui? #if
+
+0x08 constant VK_BACK
+0x0d constant VK_RETURN
+
+0x21 constant VK_PRIOR
+0x22 constant VK_NEXT
+0x23 constant VK_END
+0x24 constant VK_HOME
+0x25 constant VK_LEFT
+0x26 constant VK_UP
+0x27 constant VK_RIGHT
+0x28 constant VK_DOWN
+
+0x2e constant VK_DELETE
+
+0x70 constant VK_F1
+0x71 constant VK_F2
+0x72 constant VK_F3
+
+0xbe constant VK_OEM_PERIOD
+
+0x01 16 lshift constant ALT_MASK
+0x02 16 lshift constant CTRL_MASK
+0x04 16 lshift constant SHIFT_MASK
+
+global winui-keymap
+
+: initialize-winui-keymap
+    winui-keymap [ ] return-if
+
+    128 <hashtable> :> keymap
+
+    ' do-bs                     key:backspace                   keymap set-at
+    ' do-delete                 VK_DELETE                       keymap set-at
+    ' do-home                   VK_HOME                         keymap set-at
+    ' end-of-line               VK_END                          keymap set-at
+    ' do-left                   VK_LEFT                         keymap set-at
+    ' do-right                  VK_RIGHT                        keymap set-at
+    ' do-up                     VK_UP                           keymap set-at
+    ' do-down                   VK_DOWN                         keymap set-at
+
+    ' do-page-up                VK_PRIOR                        keymap set-at
+    ' do-page-down              VK_NEXT                         keymap set-at
+
+    ' beginning-of-buffer       VK_HOME CTRL_MASK bitor         keymap set-at
+    ' end-of-buffer             VK_END CTRL_MASK bitor          keymap set-at
+
+    ' do-window-up              VK_UP CTRL_MASK bitor           keymap set-at
+    ' do-window-down            VK_DOWN CTRL_MASK bitor         keymap set-at
+
+    ' gotoline                  key:ctrl-g                      keymap set-at
+    ' do-quit                   key:ctrl-q                      keymap set-at
+    ' do-save                   key:ctrl-s                      keymap set-at
+    ' kill-buffer               key:ctrl-w                      keymap set-at
+    ' newline-and-indent        key:enter                       keymap set-at
+    ' do-find                   key:ctrl-f                      keymap set-at
+    ' repeat-search-forward     VK_F3                           keymap set-at
+    ' repeat-search-backward    VK_F3 SHIFT_MASK bitor          keymap set-at
+    ' do-tab                    key:tab                         keymap set-at
+    ' kill-line                 key:ctrl-k                      keymap set-at
+    ' undo                      key:ctrl-z                      keymap set-at
+    ' redo                      key:ctrl-y                      keymap set-at
+    ' open-file                 key:ctrl-o                      keymap set-at
+    ' next-buffer               VK_RIGHT ALT_MASK bitor         keymap set-at
+    ' previous-buffer           VK_LEFT ALT_MASK bitor          keymap set-at
+    ' find-definition           key:ctrl-t                      keymap set-at
+    ' select-line               key:ctrl-l                      keymap set-at
+    ' cut                       key:ctrl-x                      keymap set-at
+    ' copy                      key:ctrl-c                      keymap set-at
+    ' paste                     key:ctrl-v                      keymap set-at
+
+    ' find-definition-at-dot    VK_OEM_PERIOD ALT_MASK bitor    keymap set-at
+    ' cycle-paste               'V' char-code ALT_MASK bitor    keymap set-at
+    ' search-forward-word-at-dot        VK_DOWN ALT_MASK bitor  keymap set-at
+    ' search-backward-word-at-dot       VK_UP ALT_MASK bitor    keymap set-at
+    ' search-list-occurrences   'L' char-code ALT_MASK bitor    keymap set-at
+    ' execute-command           'X' char-code ALT_MASK bitor    keymap set-at
+
+    keymap winui-keymap!
+;
+
+: winui-lookup-key                      -- key -> symbol/f
+    winui-keymap at ;
+
+: initialize-global-keymaps
+    initialize-winui-keymap
+;
+
+#else
+
 var base-keymap
 
 var escape-keymap
@@ -97,3 +191,5 @@ var escape-keymap
     initialize-base-keymap
     initialize-escape-keymap
 ;
+
+#endif
