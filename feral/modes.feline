@@ -1,4 +1,4 @@
--- Copyright (C) 2018 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -13,8 +13,18 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accessors ;
+using: feline accessors feral-config ;
 in: modes
+
+winui? #if
+
+: make-colorref ( r g b )               -- r g b -> fixnum
+    b 16 lshift g 8 lshift + r + ;
+
+128 128   0 make-colorref constant color-comment
+192 192 192 make-colorref constant color-text
+
+#endif
 
 tuple: segment
     text
@@ -29,12 +39,42 @@ tuple: segment
     segment
 ;
 
+: make-segment/3 ( text start format )
+    segment make-instance :> segment
+    text segment text<<
+    start segment start<<
+    format segment format<<
+    segment
+;
+
 tuple: mode
     formatter ;
 
 global modes
 
-: asm-format-line ( s )
+winui? #if
+
+: winui-asm-format-line ( s )           -- string -> segments
+    ";" s substring-start :> index
+
+    index [
+        s index string-head 0 color-text make-segment/3
+        s index string-tail index color-comment make-segment/3
+        2array
+    ] [
+        s 0 color-text make-segment/3
+        1array
+    ] if
+;
+
+: initialize-asm-mode
+    mode make-instance :> m
+    ' winui-asm-format-line m formatter<<
+    m ".asm" modes set-at ;
+
+#else
+
+: asm-format-line ( s )                 -- string -> string'
     ";" s substring-start :> index
 
     index [
@@ -54,15 +94,15 @@ global modes
 : initialize-asm-mode
     mode make-instance :> m
     ' asm-format-line m formatter<<
-    m ".asm" modes set-at
-;
+    m ".asm" modes set-at ;
+
+#endif
 
 use: feline-mode
 
 : initialize-modes
     8 <hashtable> modes!
     initialize-asm-mode
-    initialize-feline-mode
-;
+    initialize-feline-mode ;
 
 initialize-modes
