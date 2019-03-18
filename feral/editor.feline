@@ -106,74 +106,7 @@ using: feline accessors modes accept-string logging directories feral-config ;
     ] if
 ;
 
-use: ansi-color
-
- 64  64  64 rgb-background-prefix constant selection-prefix
-
-: repaint-line ( line )                 -- line -> void
-    line text>> detab :> detabbed-text
-
-    detabbed-text format-line :> formatted-text
-
-    line line-selected? [
-        selection-prefix write-string-escaped
-        formatted-text write
-        selection-prefix write-string-escaped
-        terminal-columns detabbed-text string-length - spaces
-        "\e[0m" write-string-escaped
-    ] return-if
-
-    output-style
-    line mark-line eq? [
-        0 dot-column detabbed-text string-substring write
-        reverse
-        dot-column mark-column detabbed-text string-substring write
-        normal
-        detabbed-text mark-column string-tail write
-        terminal-columns detabbed-text string-length - spaces
-    ] [
-        detabbed-text length terminal-columns < [
-            formatted-text write
-            terminal-columns detabbed-text string-length - spaces
-        ] [
-            0 terminal-columns detabbed-text substring write
-        ] if
-    ] if
-;
-
-: repaint
-    top-line :> line!
-    0 :> y!
-
-    [ line y textview-rows < and ] [
-        0 y at-xy
-        line repaint-line
-        y 1+ y! line next>> line!
-    ] while
-
-    [ y textview-rows < ] [
-        0 y at-xy terminal-columns spaces
-        y 1+ y!
-    ] while
-
-    f repaint?!
-;
-
-: update-display
-    hide-cursor
-    repaint? [
-        repaint
-    ] [
-        dot-line-changed? [
-            0 dot-row at-xy
-            dot-line repaint-line
-            f dot-line-changed?!
-        ] when
-    ] if
-    status
-    .cursor
-    mark [ show-cursor ] unless
-;
+"display.feline" load
 
 : reframe?                              -- -> ?
     dot-line-number
