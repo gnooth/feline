@@ -1,4 +1,4 @@
--- Copyright (C) 2018 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -13,76 +13,10 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accessors modes ansi-color ;
+using: feline accessors modes ansi-color feral-config ;
 in: feline-mode
 
 private
-
-128 128   0 rgb-foreground-prefix constant comment-prefix
-192 192 192 rgb-foreground-prefix constant text-prefix
-  0 255 255 rgb-foreground-prefix constant syntax-prefix
-255 165   0 rgb-foreground-prefix constant name-prefix
-  0 170   0 rgb-foreground-prefix constant string-prefix
-  0 153 153 rgb-foreground-prefix constant combinator-prefix
-
-"\e[0m" constant reset-suffix
-
-32 code-char constant space-char
-34 code-char constant quote-char
-
-: non-blank?                            -- string -> ?
-    1 ?enough
-    verify-string
-    [ space-char neq? ] find drop ;
-
-: skip-quoted-string                    -- start-index string -> index/f
-    2dup string-length >= [ 2drop f ] return-if
-
-    :> s
-    :> start
-
-    s start 1+ string-tail <string-iterator> :> iter
-
-    f :> this-char!
-    this-char :> last-char!
-    f :> done?!
-
-    [
-        this-char last-char!
-        iter string-iterator-next this-char!
-        this-char [ t done?! ] unless
-        done?
-    ] [
-        this-char '\x22' eq? [
-            last-char '\' neq? [
-                t done?!
-            ] when
-        ] when
-    ] until
-
-    start 1+ iter string-iterator-index +
-;
-
-: string>segments ( s )                 -- string -> segments
-    s string-length :> len
-    0 :> start!
-    0 :> end!
-    16 <vector> :> v
-    f :> c!
-
-    [ end len fixnum-fixnum< ] [
-        start s string-nth c!
-        {
-            { [ c space-char eq? ] [ start s string-skip-whitespace len or end! ] }
-            { [ c quote-char eq? ] [ start s skip-quoted-string len or end! ] }
-            [ start s string-skip-to-whitespace len or end! ]
-        } cond
-        start end s string-substring start make-segment v vector-push
-        end start!
-    ] while
-
-    v
-;
 
 {
     "'"
@@ -155,9 +89,145 @@ private
     "while"
 } constant combinators
 
+32 code-char constant space-char
+34 code-char constant quote-char
+
+: non-blank?                            -- string -> ?
+    1 ?enough
+    verify-string
+    [ space-char neq? ] find drop ;
+
+: skip-quoted-string                    -- start-index string -> index/f
+    2dup string-length >= [ 2drop f ] return-if
+
+    :> s
+    :> start
+
+    s start 1+ string-tail <string-iterator> :> iter
+
+    f :> this-char!
+    this-char :> last-char!
+    f :> done?!
+
+    [
+        this-char last-char!
+        iter string-iterator-next this-char!
+        this-char [ t done?! ] unless
+        done?
+    ] [
+        this-char '\x22' eq? [
+            last-char '\' neq? [
+                t done?!
+            ] when
+        ] when
+    ] until
+
+    start 1+ iter string-iterator-index +
+;
+
+: string->segments ( s )                -- string -> segments
+    s string-length :> len
+    0 :> start!
+    0 :> end!
+    16 <vector> :> v
+    f :> c!
+
+    [ end len fixnum-fixnum< ] [
+        start s string-nth c!
+        {
+            { [ c space-char eq? ] [ start s string-skip-whitespace len or end! ] }
+            { [ c quote-char eq? ] [ start s skip-quoted-string len or end! ] }
+            [ start s string-skip-to-whitespace len or end! ]
+        } cond
+        start end s string-substring start make-segment v vector-push
+        end start!
+    ] while
+
+    v
+;
+
+winui? #if
+
+  0 255 255 make-colorref constant color-syntax
+255 165   0 make-colorref constant color-name
+  0 170   0 make-colorref constant color-string
+  0 153 153 make-colorref constant color-combinator
+
+#else
+
+128 128   0 rgb-foreground-prefix constant comment-prefix
+192 192 192 rgb-foreground-prefix constant text-prefix
+  0 255 255 rgb-foreground-prefix constant syntax-prefix
+255 165   0 rgb-foreground-prefix constant name-prefix
+  0 170   0 rgb-foreground-prefix constant string-prefix
+  0 153 153 rgb-foreground-prefix constant combinator-prefix
+
+"\e[0m" constant reset-suffix
+
+#endif
+
 var in-comment?
 
 var last-segment-text
+
+winui? #if
+
+: winui-format-segment ( segment )
+    in-comment? [
+        segment text>> "--" string-equal? in-comment?!
+    ] unless
+
+    in-comment? [
+        color-comment segment format<<
+    ] return-if
+
+    -- not a comment
+    last-segment-text defining-words member? [
+        color-name segment format<<
+    ] return-if
+
+    segment text>> syntax-words member? [
+        color-syntax segment format<<
+    ] return-if
+
+    segment text>> string-first-char quote-char eq? [
+        color-string segment format<<
+    ] return-if
+
+    segment text>> combinators member? [
+        color-combinator segment format<<
+    ] return-if
+
+    -- default
+    color-text segment format<<
+;
+
+
+: winui-format-segments ( segments )
+    f in-comment?!
+    "" last-segment-text!
+    segments [
+        dup winui-format-segment
+        text>> dup non-blank? [ last-segment-text! ] [ drop ] if
+    ] each
+
+    segments
+;
+
+: winui-feline-format-line              -- string -> segments
+    string->segments
+    winui-format-segments
+;
+
+public
+
+: initialize-feline-mode
+    mode make-instance :> m
+    ' winui-feline-format-line m formatter<<
+    m feline-extension modes set-at
+;
+
+#else
 
 : format-segment ( segment )
     in-comment? [
@@ -198,7 +268,7 @@ var last-segment-text
     ] each
 ;
 
-: segments>string ( seq )               -- segments -> string
+: segments->string ( seq )              -- segments -> string
     256 <sbuf> :> sb
     seq [
         dup
@@ -209,9 +279,9 @@ var last-segment-text
     sb sbuf>string
 ;
 
-: feline-format-line
-    string>segments                     -- -> vector
-    [ format-segments ] [ segments>string ] bi
+: feline-format-line                    -- string -> string'
+    string->segments                    -- -> vector
+    [ format-segments ] [ segments->string ] bi
 ;
 
 public
@@ -221,3 +291,5 @@ public
     ' feline-format-line m formatter<<
     m feline-extension modes set-at
 ;
+
+#endif
