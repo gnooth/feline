@@ -23,14 +23,15 @@ tuple: line
     text ;
 
 : make-line/1                           -- string -> line
+    verify-string
     line make-instance
     tuck
     text<< ;
 
 : make-line/2                           -- string line-number -> line
     line make-instance
-    swap >>number
-    swap >>text ;
+    swap verify-fixnum >>number
+    swap verify-string >>text ;
 
 method: line length                     -- line -> length
     text>> string-length ;
@@ -164,6 +165,7 @@ method: region end-offset               -- region -> offset
 ;
 
 tuple: buffer
+    name
     mode
     dot
     mark
