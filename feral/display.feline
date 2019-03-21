@@ -18,6 +18,10 @@ in: editor
 
 winui? #if
 
+192 192 192 make-colorref constant fg-default
+  0   0   0 make-colorref constant bg-default
+ 64  64  64 make-colorref constant bg-selected
+
 : repaint-segment                       -- segment y -> void
     :> y :> segment
 
@@ -32,15 +36,15 @@ winui? #if
     segments [ y repaint-segment ] each
 ;
 
-: repaint-line ( x y line )             -- x y line -> void
+: repaint-selected-line ( x y line )    -- x y line -> void
+
+    line line-selected? assert
 
     line text>> detab :> detabbed-text
 
     detabbed-text format-line :> segments
 
-    line line-selected? [
-        64 64 64 make-colorref winui-textview-set-bg-color
-    ] when
+    bg-selected winui-textview-set-bg-color
 
     segments string? [
         color-text winui-textview-set-fg-color
@@ -51,9 +55,25 @@ winui? #if
 
     detabbed-text length y winui-textview-clear-eol
 
-    line line-selected? [
-        0 0 0 make-colorref winui-textview-set-bg-color
-    ] when
+    bg-default winui-textview-set-bg-color
+;
+
+: repaint-line ( x y line )             -- x y line -> void
+
+    line line-selected? [ x y line repaint-selected-line ] return-if
+
+    line text>> detab :> detabbed-text
+
+    detabbed-text format-line :> segments
+
+    segments string? [
+        color-text winui-textview-set-fg-color
+        0 y winui-char-height * segments winui-textview-text-out
+    ] [
+        y segments repaint-segments
+    ] if
+
+    detabbed-text length y winui-textview-clear-eol
 ;
 
 : repaint
