@@ -96,39 +96,7 @@ using: feline accessors modes accept-string logging directories feral-config ;
 
 : clear-message hide-cursor 0 message-y at-xy clear-to-eol ;
 
-: line-selected? ( line )               -- line -> ?
-    mark null? [ f ] return-if
-
-    line number>> mark-line-number >= [
-        line number>> dot-line-number <
-    ] [
-        f
-    ] if
-;
-
 "display.feline" load
-
-: reframe?                              -- -> ?
-    dot-line-number
-    top-line-number
-    dup textview-rows 1- +
-    between? not ;
-
-: reframe
-    textview-rows 2 /i verify-index :> i!
-    dot-line :> line!
-
-    [ i 0 > line prev>> and ] [
-        line prev>> line!
-        i 1- i!
-    ] while
-
-    line top-line!
-
-    t repaint?!
-;
-
-: maybe-reframe reframe? [ reframe ] when ;
 
 "undo.feline" load
 
