@@ -47,11 +47,6 @@ using: feline accessors modes accept-string logging directories feral-config ;
 
 "defs.feline" load
 
-: .cursor
-    dot-column
-    dot-line-number top-line-number -
-    at-xy ;
-
 : format-line ( s )
     current-buffer mode>> :> mode
     mode [
