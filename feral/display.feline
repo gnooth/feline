@@ -123,7 +123,7 @@ winui? #if
 
 #else
 
-: .cursor
+: update-caret-pos
     dot-column
     dot-line-number top-line-number -
     at-xy ;
@@ -193,7 +193,7 @@ use: ansi-color
         ] when
     ] if
     status
-    .cursor
+    update-caret-pos
     mark [ show-cursor ] unless
 ;
 
