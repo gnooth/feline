@@ -18,6 +18,12 @@ in: editor
 
 winui? #if
 
+: update-caret-pos
+    dot-column winui-char-width *
+    dot-line-number top-line-number - winui-char-height *
+    winui-set-caret-pos
+;
+
 192 192 192 make-colorref constant fg-default
   0   0   0 make-colorref constant bg-default
  64  64  64 make-colorref constant bg-selected
