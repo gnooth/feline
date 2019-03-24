@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -1015,5 +1015,33 @@ code negative?, 'negative?'             ; number -- ?
         mov     eax, t_value
         mov     ebx, f_value
         cmovs   ebx, eax
+        next
+endcode
+
+; ### between?
+code between?, 'between?'               ; n min max -- ?
+; returns t if min <= n <= max
+        _pick
+        _ generic_ge
+        _tagged_if .1
+        _ generic_ge
+        _else .1
+        _drop
+        mov     ebx, f_value
+        _then .1
+        next
+endcode
+
+; ### within?
+code within?, 'within?'                 ; n min max -- ?
+; returns t if min <= n < max
+        _pick
+        _ generic_gt
+        _tagged_if .1
+        _ generic_ge
+        _else .1
+        _drop
+        mov     ebx, f_value
+        _then .1
         next
 endcode

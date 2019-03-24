@@ -125,19 +125,6 @@ code generic_max, 'max'                 ; x y -- z
         next
 endcode
 
-; ### between?
-code between?, 'between?'               ; n min max -- ?
-        _pick
-        _ generic_ge
-        _tagged_if .1
-        _ generic_ge
-        _else .1
-        _drop
-        mov     ebx, f_value
-        _then .1
-        next
-endcode
-
 ; ### fixnum-fixnum+
 code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; fixnum1 fixnum2 -- sum
         _check_fixnum
