@@ -778,13 +778,14 @@ code index_from, 'index-from'           ; obj start-index seq -- index/f
 endcode
 
 ; ### member?
-code member?, 'member?'                 ; obj seq -- index/f
+code member?, 'member?'                 ; obj seq -> ?
         _ index
+        _as_boolean
         next
 endcode
 
 ; ### member-eq?
-code member_eq?, 'member-eq?'           ; obj seq -- index/f
+code member_eq?, 'member-eq?'           ; obj seq -> ?
         push    this_register
         mov     this_register, rbx      ; handle to seq in this_register
         _ length
@@ -797,8 +798,7 @@ code member_eq?, 'member-eq?'           ; obj seq -- index/f
         cmp     rbx, [rbp]
         poprbx
         jne     .2
-        mov     rbx, index_register
-        _tag_fixnum
+        mov     rbx, t_value
         _unloop
         jmp     .exit
 .2:
