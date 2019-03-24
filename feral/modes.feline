@@ -13,7 +13,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accessors segments feral-config ;
+using: feline accessors feral-config ;
 in: modes
 
 winui? #if
@@ -25,6 +25,27 @@ winui? #if
 192 192 192 make-colorref constant color-text
 
 #endif
+
+tuple: segment
+    text
+    start
+    format
+;
+
+: make-segment ( text start )
+    segment make-instance :> segment
+    text segment text<<
+    start segment start<<
+    segment
+;
+
+: make-segment/3 ( text start format )
+    segment make-instance :> segment
+    text segment text<<
+    start segment start<<
+    format segment format<<
+    segment
+;
 
 tuple: mode
     formatter ;
