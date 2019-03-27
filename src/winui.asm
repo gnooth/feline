@@ -122,7 +122,7 @@ subroutine winui_textview_keydown       ; wparam -> void
 endsub
 
 ; ### winui_textview_lbuttondown
-subroutine winui_textview_lbuttondown   ; lparam wparam -> void
+subroutine winui_textview_lbuttondown   ; wparam lparam -> void
 ; 2-arg callback
 
         ; enter callback
@@ -131,10 +131,10 @@ subroutine winui_textview_lbuttondown   ; lparam wparam -> void
         mov     rbp, [winui_raw_sp0_]
 
         pushrbx
-        mov     rbx, arg0_register
+        mov     rbx, arg0_register      ; wparam
         _tag_fixnum
         pushrbx
-        mov     rbx, arg1_register
+        mov     rbx, arg1_register      ; lparam
         _tag_fixnum
 
         _quote "winui-textview-lbuttondown"

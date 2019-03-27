@@ -363,13 +363,6 @@ static void winui__textview_keydown (WPARAM wparam)
   winui_textview_keydown (wparam);
 }
 
-static void winui__textview_lbuttondown (WPARAM wparam, LPARAM lparam)
-{
-  int x = (int) LOWORD (lparam);
-  int y = (int) HIWORD (lparam);
-  winui_textview_lbuttondown (x / char_width, y / char_height);
-}
-
 static LRESULT CALLBACK winui__textview_wnd_proc (HWND hwnd, UINT msg,
                                                   WPARAM wparam, LPARAM lparam)
 {
@@ -429,7 +422,7 @@ static LRESULT CALLBACK winui__textview_wnd_proc (HWND hwnd, UINT msg,
 
     case WM_LBUTTONDOWN:
       SetCapture (hwnd);
-      winui__textview_lbuttondown (wparam, lparam);
+      winui_textview_lbuttondown (wparam, lparam);
       return 0;
 
     case WM_LBUTTONUP:
