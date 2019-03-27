@@ -449,6 +449,7 @@ void winui__textview_text_out (int x, int y, LPCSTR lpString, int c)
   if (hdc_textview)
     {
       SetTextColor (hdc_textview, rgb_textview_fg);
+      SetBkColor (hdc_textview, rgb_textview_bg);
       TextOut (hdc_textview, x, y, lpString, c);
     }
   else
