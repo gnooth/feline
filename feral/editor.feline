@@ -43,9 +43,9 @@ use: directories
 
 initialize-directories
 
-using: feline accessors modes accept-string logging directories feral-config ;
-
 "defs.feline" load
+
+using: feline accessors modes accept-string logging directories feral-config ;
 
 : format-line ( s )
     current-buffer mode>> :> mode
