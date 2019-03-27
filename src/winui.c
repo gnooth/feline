@@ -376,7 +376,7 @@ static LRESULT CALLBACK winui__textview_wnd_proc (HWND hwnd, UINT msg,
   switch (msg)
     {
     case WM_SETFOCUS:
-      CreateCaret (hwnd, NULL, char_width, char_height);
+      CreateCaret (hwnd, NULL, 1, char_height); // caret width is 1 pixel
       ShowCaret (hwnd);
       break;
 
