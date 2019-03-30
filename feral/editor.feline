@@ -18,6 +18,7 @@ in: user
 
 {
     "feral-config"
+    "feral-core"
     "directories"
     "accept-string"
     "search"
@@ -43,9 +44,7 @@ use: directories
 
 initialize-directories
 
-"feral-core.feline" load
-
-using: feline accessors modes accept-string logging directories feral-config ;
+using: feral-core feline accessors modes accept-string logging directories feral-config ;
 
 : format-line ( s )
     current-buffer mode>> :> mode

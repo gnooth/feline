@@ -14,7 +14,7 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline accessors feral-config ;
-in: editor
+in: feral-core
 
 tuple: line
     prev
