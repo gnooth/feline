@@ -1,4 +1,4 @@
--- Copyright (C) 2018 Peter Graves <gnooth@gmail.com>
+-- Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -16,25 +16,14 @@
 using: feline ;
 in: ansi-color
 
-: rgb-foreground-prefix ( r g b )       -- r g b -> string
-    256 <sbuf> :> sb
-    "\e[38;2;" sb sbuf-append-string
-    r g [ number>string sb sbuf-append-string ';' sb sbuf-push ] bi@
-    b number>string sb sbuf-append-string 'm' sb sbuf-push
-    sb sbuf>string
-;
+: rgb-foreground-prefix                 // r g b -> string
+    "\e[38;2;%d;%d;%dm" format ;
 
-: rgb-background-prefix ( r g b )       -- r g b -> string
-    256 <sbuf> :> sb
-    "\e[48;2;" sb sbuf-append-string
-    r g [ number>string sb sbuf-append-string ';' sb sbuf-push ] bi@
-    b number>string sb sbuf-append-string 'm' sb sbuf-push
-    sb sbuf>string
-;
+: rgb-background-prefix                 // r g b -> string
+    "\e[48;2;%d;%d;%dm" format ;
 
-: rgb-foreground                        -- r g b -> void
-    rgb-foreground-prefix write-string-escaped
-;
+: rgb-foreground                        // r g b -> void
+    rgb-foreground-prefix write-string-escaped ;
 
-: rgb-background                        -- r g b -> void
+: rgb-background                        // r g b -> void
     rgb-background-prefix write-string-escaped ;
