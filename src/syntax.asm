@@ -678,6 +678,34 @@ code comment_to_eol, '--', SYMBOL_IMMEDIATE
         next
 endcode
 
+; ### //
+code comment_to_eol2, '//', SYMBOL_IMMEDIATE
+        _ current_lexer
+        _ get
+        _dup
+        _tagged_if .1
+        _ lexer_next_line
+        _else .1
+        _drop
+        _error "no lexer"
+        _then .1
+        next
+endcode
+
+; ### ///
+code comment_to_eol3, '///', SYMBOL_IMMEDIATE
+        _ current_lexer
+        _ get
+        _dup
+        _tagged_if .1
+        _ lexer_next_line
+        _else .1
+        _drop
+        _error "no lexer"
+        _then .1
+        next
+endcode
+
 ; ### return-if
 code return_if, 'return-if', SYMBOL_IMMEDIATE
         _ using_locals?
