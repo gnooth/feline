@@ -44,7 +44,7 @@ use: directories
 
 initialize-directories
 
-using: feral-core feline accessors modes accept-string logging directories feral-config ;
+using: feral-core feline accessors modes accept-string directories feral-config ;
 
 : format-line ( s )
     current-buffer mode>> :> mode
@@ -257,7 +257,6 @@ use: kill-ring
 ;
 
 : redo1                                 -- undo-record -> void
-    log-redo
     dup action>> {
         { +move+ [ undo-move ] }
         { +line-edit+ [ undo-line-edit ] }
@@ -275,10 +274,8 @@ use: kill-ring
     ] [
         t in-redo?!
         pop-redo dup compound-undo? [
-            "redo compound-undo" log
             [ records>> vector-reverse! ' redo1 each ] with-compound-undo
         ] [
-            "redo" log
             redo1
         ] if
         f in-redo?!
@@ -501,7 +498,6 @@ use: search
     f current-buffer!
     f buffer-list!
     gc
-    close-log
 ;
 
 : initialize-editor
