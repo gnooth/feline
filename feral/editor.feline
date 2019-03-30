@@ -43,7 +43,7 @@ use: directories
 
 initialize-directories
 
-"defs.feline" load
+"feral-core.feline" load
 
 using: feline accessors modes accept-string logging directories feral-config ;
 
