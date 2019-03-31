@@ -1,38 +1,57 @@
--- Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accessors ;
+using: feline accessors feral-core ;
 in: segments
 
 tuple: segment
     text
     start
-    format
-;
+    format ;
 
 : make-segment ( text start )
     segment make-instance :> segment
     text segment text<<
     start segment start<<
-    segment
-;
+    segment ;
 
 : make-segment/3 ( text start format )
     segment make-instance :> segment
     text segment text<<
     start segment start<<
     format segment format<<
-    segment
-;
+    segment ;
+
+method: segment length                  // segment -> length
+    text>> string-length ;
+
+method: segment begin-offset            // segment -> offset
+    start>> ;
+
+method: segment end-offset              // segment -> offset
+    dup start>> swap length + ;
+
+: in-segment? ( n segment )             // n segment -> ?
+    n segment start>> >= [
+        n segment start>> segment length + <
+    ] [ f ] if ;
+
+: split-segment ( segment index )       // segment index -> seg1 seg2
+    segment text>> :> text
+    segment format>> :> format
+    segment start>> :> start
+
+    text index string-head start format make-segment/3
+    text index string-tail start index + format make-segment/3 ;
