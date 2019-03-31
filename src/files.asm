@@ -513,31 +513,6 @@ code feline_source_directory, 'feline-source-directory' ; -- string
         next
 endcode
 
-; ### path-get-directory
-code path_get_directory, 'path-get-directory' ; string1 -- string2 | 0
-        _ string_from                   ; -- c-addr u
-        _begin .1
-        _dup
-        _while .1
-        _oneminus
-        _twodup
-        _plus
-        _cfetch
-        _ path_separator_char?
-        _tagged_if .2
-        _dup
-        _zeq_if .3
-        _oneplus
-        _then .3
-        _ copy_to_string
-        _return
-        _then .2
-        _repeat .1
-        _2drop
-        _zero
-        next
-endcode
-
 ; ### tilde-expand-filename
 code tilde_expand_filename, 'tilde-expand-filename'     ; string1 -- string2
 
