@@ -152,6 +152,7 @@ winui? #if
 255 165   0 make-colorref constant color-name
   0 170   0 make-colorref constant color-string
   0 153 153 make-colorref constant color-combinator
+255   0   0 make-colorref constant color-preprocessor
 
 #else
 
@@ -161,6 +162,7 @@ winui? #if
 255 165   0 rgb-foreground-prefix constant name-prefix
   0 170   0 rgb-foreground-prefix constant string-prefix
   0 153 153 rgb-foreground-prefix constant combinator-prefix
+255   0   0 rgb-foreground-prefix constant preprocessor-prefix
 
 "\e[0m" constant reset-suffix
 
@@ -196,6 +198,10 @@ winui? #if
 
     segment text>> combinators member? [
         color-combinator segment format<<
+    ] return-if
+
+    segment text>> { "#if" "#else" "#endif" "#ifdef" "#ifndef" } member? [
+        color-preprocessor segment format<<
     ] return-if
 
     -- default
@@ -253,6 +259,10 @@ public
 
     segment text>> combinators member? [
         combinator-prefix segment format<<
+    ] return-if
+
+    segment text>> { "#if" "#else" "#endif" "#ifdef" "#ifndef" } member? [
+        preprocessor-prefix segment format<<
     ] return-if
 
     -- default
