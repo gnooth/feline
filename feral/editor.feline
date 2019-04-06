@@ -46,15 +46,6 @@ initialize-directories
 
 using: feral-core feline accessors modes accept-string directories feral-config ;
 
-: format-line ( s )
-    current-buffer mode>> :> mode
-    mode [
-        s mode formatter>> call-symbol
-    ] [
-        s
-    ] if
-;
-
 : status-y                              -- -> n
     terminal-rows 2 - ;
 

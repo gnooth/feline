@@ -16,6 +16,15 @@
 using: feral-core feline accessors modes feral-config ;
 in: editor
 
+: format-line ( s )
+    current-buffer mode>> :> mode
+    mode [
+        s mode formatter>> call-symbol
+    ] [
+        s
+    ] if
+;
+
 winui? #if
 
 : update-caret-pos
