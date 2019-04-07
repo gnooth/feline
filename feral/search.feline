@@ -252,14 +252,18 @@ use: mini
 ;
 
 : search-forward-word-at-dot
-    identifier-at-dot :> pattern
+    identifier-at-dot                   // -> start/f string/f
+    nip                                 // -> string/f
+    :> pattern
     pattern empty? [
         pattern t make-search current-search!
         search-forward-word
     ] unless ;
 
 : search-backward-word-at-dot
-    identifier-at-dot :> pattern
+    identifier-at-dot                   // -> start/f string/f
+    nip                                 // -> string/f
+    :> pattern
     pattern empty? [
         pattern t make-search current-search!
         search-backward-word
