@@ -54,6 +54,7 @@ using: feral-core feline accessors modes accept-string directories feral-config 
 : normal esc[ "m" write-string-escaped ;
 
 : status
+    "\e[37m" write-string-escaped       // white foreground
     reverse
     0 status-y at-xy
     modified? [ '*' write-char ] [ space ] if
