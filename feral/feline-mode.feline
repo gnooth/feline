@@ -1,17 +1,17 @@
--- Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline accessors segments modes ansi-color feral-config ;
 in: feline-mode
@@ -92,12 +92,12 @@ private
 32 code-char constant space-char
 34 code-char constant quote-char
 
-: non-blank?                            -- string -> ?
+: non-blank?                            // string -> ?
     1 ?enough
     verify-string
     [ space-char neq? ] find drop ;
 
-: skip-quoted-string                    -- start-index string -> index/f
+: skip-quoted-string                    // start-index string -> index/f
     2dup string-length >= [ 2drop f ] return-if
 
     :> s
@@ -125,7 +125,7 @@ private
     start 1+ iter string-iterator-index +
 ;
 
-: string->segments ( s )                -- string -> segments
+: string->segments ( s )                // string -> segments
     s string-length :> len
     0 :> start!
     0 :> end!
@@ -156,15 +156,13 @@ winui? #if
 
 #else
 
-128 128   0 rgb-foreground-prefix constant comment-prefix
 192 192 192 rgb-foreground-prefix constant text-prefix
+128 128   0 rgb-foreground-prefix constant comment-prefix
   0 255 255 rgb-foreground-prefix constant syntax-prefix
 255 165   0 rgb-foreground-prefix constant name-prefix
   0 170   0 rgb-foreground-prefix constant string-prefix
   0 153 153 rgb-foreground-prefix constant combinator-prefix
 255   0   0 rgb-foreground-prefix constant preprocessor-prefix
-
-"\e[0m" constant reset-suffix
 
 #endif
 
@@ -176,14 +174,14 @@ winui? #if
 
 : winui-format-segment ( segment )
     in-comment? [
-        segment text>> "--" string-equal? in-comment?!
+        segment text>> { "--" "//" "///" } member? in-comment?!
     ] unless
 
     in-comment? [
         color-comment segment format<<
     ] return-if
 
-    -- not a comment
+    // not a comment
     last-segment-text defining-words member? [
         color-name segment format<<
     ] return-if
@@ -204,10 +202,9 @@ winui? #if
         color-preprocessor segment format<<
     ] return-if
 
-    -- default
+    // default
     color-text segment format<<
 ;
-
 
 : winui-format-segments ( segments )
     f in-comment?!
@@ -220,7 +217,7 @@ winui? #if
     segments
 ;
 
-: winui-feline-format-line              -- string -> segments
+: winui-feline-format-line              // string -> segments
     string->segments
     winui-format-segments
 ;
@@ -235,16 +232,16 @@ public
 
 #else
 
-: format-segment ( segment )
+: format-segment ( segment )            // segment -> void
     in-comment? [
-        segment text>> "--" string-equal? in-comment?!
+        segment text>> { "--" "//" "///" } member? in-comment?!
     ] unless
 
     in-comment? [
         comment-prefix segment format<<
     ] return-if
 
-    -- not a comment
+    // not a comment
     last-segment-text defining-words member? [
         name-prefix segment format<<
     ] return-if
@@ -265,11 +262,11 @@ public
         preprocessor-prefix segment format<<
     ] return-if
 
-    -- default
+    // default
     text-prefix segment format<<
 ;
 
-: format-segments ( segments )
+: format-segments ( segments )          // segments -> segments
     f in-comment?!
     "" last-segment-text!
     segments [
@@ -278,20 +275,9 @@ public
     ] each
 ;
 
-: segments->string ( seq )              -- segments -> string
-    256 <sbuf> :> sb
-    seq [
-        dup
-        format>> sb sbuf-append-string
-        text>> sb sbuf-append-string
-    ] each
-    reset-suffix sb sbuf-append-string
-    sb sbuf>string
-;
-
-: feline-format-line                    -- string -> string'
-    string->segments                    -- -> vector
-    [ format-segments ] [ segments->string ] bi
+: feline-format-line                    // string -> segments
+    string->segments                    // -> vector
+    dup format-segments
 ;
 
 public
@@ -303,3 +289,5 @@ public
 ;
 
 #endif
+
+initialize-feline-mode
