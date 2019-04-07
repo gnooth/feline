@@ -1,87 +1,46 @@
--- Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accessors segments feral-config ;
+using: feline accessors feral-config ;
 in: modes
-
-winui? #if
-
-: make-colorref ( r g b )               -- r g b -> fixnum
-    b 16 lshift g 8 lshift + r + ;
-
-128 128   0 make-colorref constant color-comment
-192 192 192 make-colorref constant color-text
-
-#endif
 
 tuple: mode
     formatter ;
 
 global modes
 
+: initialize-modes 8 <hashtable> modes! ;
+
+initialize-modes
+
 winui? #if
 
-: winui-asm-format-line ( s )           -- string -> segments
-    ";" s substring-start :> index
+: make-colorref ( r g b )               // r g b -> fixnum
+    b 16 lshift g 8 lshift + r + ;
 
-    index [
-        s index string-head 0 color-text make-segment/3
-        s index string-tail index color-comment make-segment/3
-        2array
-    ] [
-        s 0 color-text make-segment/3
-        1array
-    ] if
-;
-
-: initialize-asm-mode
-    mode make-instance :> m
-    ' winui-asm-format-line m formatter<<
-    m ".asm" modes set-at ;
+192 192 192 make-colorref constant color-text
+128 128   0 make-colorref constant color-comment
 
 #else
 
-: asm-format-line ( s )                 -- string -> string'
-    ";" s substring-start :> index
+use: ansi-color
 
-    index [
-        s index string-head
-        "\e[33m"                        -- yellow foreground
-        string-append
-        s index string-tail string-append
-        "\e[37m"                        -- white foreground
-        string-append
-    ] [
-        "\e[37m"                        -- white foreground
-        s
-        string-append
-    ] if
-;
-
-: initialize-asm-mode
-    mode make-instance :> m
-    ' asm-format-line m formatter<<
-    m ".asm" modes set-at ;
+192 192 192 rgb-foreground-prefix constant color-text
+128 128   0 rgb-foreground-prefix constant color-comment
 
 #endif
 
-use: feline-mode
-
-: initialize-modes
-    8 <hashtable> modes!
-    initialize-asm-mode
-    initialize-feline-mode ;
-
-initialize-modes
+"asm-mode.feline" load
+"feline-mode.feline" load
