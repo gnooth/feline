@@ -1,27 +1,28 @@
--- Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline accessors modes feral-config ;
+using: feral-core feline accessors segments modes feral-config ;
 in: editor
 
-: format-line ( s )
+: format-line ( s )                     // string -> segments
     current-buffer mode>> :> mode
     mode [
         s mode formatter>> call-symbol
     ] [
-        s
+        s 0 color-text make-segment/3
+        1array
     ] if
 ;
 
@@ -37,7 +38,8 @@ winui? #if
   0   0   0 make-colorref constant bg-default
  64  64  64 make-colorref constant bg-selected
 
-: repaint-segment                       -- segment y -> void
+: repaint-segment                       // segment y -> void
+    2 ?enough
     :> y :> segment
 
     segment format>> dup fixnum? assert winui-textview-set-fg-color
@@ -47,11 +49,64 @@ winui? #if
     segment text>> winui-textview-text-out
 ;
 
-: repaint-segments ( y segments )       -- y segments -> void
+: xrepaint-segment ( segment region y )
+
+    region begin-offset :> region-begin
+    region end-offset :> region-end
+
+    top-line-number y + nth-line dot-line assert-eq
+    dot-line mark-line assert-eq
+
+    region-begin segment start>> <
+    segment start>> segment text>> length + region-end <= and [
+        // segment is entirely within selection
+        bg-selected winui-textview-set-bg-color
+        segment y repaint-segment
+        bg-default winui-textview-set-bg-color
+    ] return-if
+
+    f :> seg1!
+    f :> seg2!
+
+    region-begin segment in-segment? region-end segment in-segment? and [
+        segment region-begin segment start>> - split-segment seg2! seg1!
+        bg-default winui-textview-set-bg-color
+        seg1 y repaint-segment
+
+        // now split seg2 at region-end
+        seg2 region-end seg2 start>> - split-segment
+        swap
+        bg-selected winui-textview-set-bg-color
+        y repaint-segment
+        bg-default winui-textview-set-bg-color
+        y repaint-segment
+    ] return-if
+
+    region-begin segment in-segment? [
+        segment region-begin segment start>> - split-segment seg2! seg1!
+        bg-default winui-textview-set-bg-color
+        seg1 y repaint-segment
+        bg-selected winui-textview-set-bg-color
+        seg2 y repaint-segment
+        bg-default winui-textview-set-bg-color
+    ] return-if
+
+    region-end segment in-segment? [
+        segment region-end segment start>> - split-segment seg2! seg1!
+        bg-selected winui-textview-set-bg-color
+        seg1 y repaint-segment
+        bg-default winui-textview-set-bg-color
+        seg2 y repaint-segment
+    ] return-if
+
+    segment y repaint-segment
+;
+
+: repaint-segments ( segments y )       // segments y -> void
     segments [ y repaint-segment ] each
 ;
 
-: repaint-selected-line ( x y line )    -- x y line -> void
+: repaint-selected-line ( line y )      // line y -> void
 
     line line-selected? assert
 
@@ -65,7 +120,7 @@ winui? #if
         color-text winui-textview-set-fg-color
         0 y winui-char-height * segments winui-textview-text-out
     ] [
-        y segments repaint-segments
+        segments y repaint-segments
     ] if
 
     detabbed-text length y winui-textview-clear-eol
@@ -73,9 +128,34 @@ winui? #if
     bg-default winui-textview-set-bg-color
 ;
 
-: repaint-line ( x y line )             -- x y line -> void
+: repaint-line-containing-selection ( x y line ) // x y line -> void
 
-    line line-selected? [ x y line repaint-selected-line ] return-if
+    line line-contains-selection? assert
+
+    line text>> detab :> detabbed-text
+
+    detabbed-text format-line :> segments
+
+    mark dot make-region/2 :> region
+
+    segments string? [
+        // FIXME
+        color-text winui-textview-set-fg-color
+        0 y winui-char-height * segments winui-textview-text-out
+    ] [
+        segments [ region y xrepaint-segment ] each
+    ] if
+
+    detabbed-text length y winui-textview-clear-eol
+;
+
+: repaint-line ( line y )               // line y -> void
+
+    line line-selected? [ line y repaint-selected-line ] return-if
+
+    line line-contains-selection? [
+        0 y line repaint-line-containing-selection
+    ] return-if
 
     line text>> detab :> detabbed-text
 
@@ -85,7 +165,7 @@ winui? #if
         color-text winui-textview-set-fg-color
         0 y winui-char-height * segments winui-textview-text-out
     ] [
-        y segments repaint-segments
+        segments y repaint-segments
     ] if
 
     detabbed-text length y winui-textview-clear-eol
@@ -99,7 +179,7 @@ winui? #if
     winui-hide-caret
 
     [ line y textview-rows < and ] [
-        0 y line repaint-line
+        line y repaint-line
         y 1+ y! line next>> line!
     ] while
 
@@ -121,7 +201,7 @@ winui? #if
         repaint
     ] [
         dot-line-changed? [
-            0 dot-row dot-line repaint-line
+            dot-line dot-row repaint-line
             f dot-line-changed?!
         ] when
     ] if
@@ -139,36 +219,142 @@ winui? #if
 
 use: ansi-color
 
- 64  64  64 rgb-background-prefix constant selection-prefix
+192 192 192 rgb-foreground-prefix constant fg-default
+  0   0   0 rgb-background-prefix constant bg-default
+ 64  64  64 rgb-background-prefix constant bg-selected
 
-: repaint-line ( line )                 -- line -> void
-    line text>> detab :> detabbed-text
+: repaint-segment                       // segment -> void
+    dup
+    format>> write-string-escaped
+    text>> write-string
+;
 
-    detabbed-text format-line :> formatted-text
+: xrepaint-segment ( segment region )
 
-    line line-selected? [
-        selection-prefix write-string-escaped
-        formatted-text write
-        selection-prefix write-string-escaped
-        terminal-columns detabbed-text string-length - spaces
-        "\e[0m" write-string-escaped
+    region begin-offset :> region-begin
+    region end-offset :> region-end
+
+    dot-line mark-line assert-eq
+
+    region-begin segment start>> <
+    segment start>> segment text>> length + region-end <= and [
+        // segment is entirely within region
+        bg-selected write-string-escaped
+        segment repaint-segment
+        bg-default write-string-escaped
     ] return-if
 
-    output-style
-    line mark-line eq? [
-        0 dot-column detabbed-text string-substring write
-        reverse
-        dot-column mark-column detabbed-text string-substring write
-        normal
-        detabbed-text mark-column string-tail write
-        terminal-columns detabbed-text string-length - spaces
+    f :> seg1!
+    f :> seg2!
+
+    region-begin segment in-segment? region-end segment in-segment? and [
+        segment region-begin segment start>> - split-segment seg2! seg1!
+        bg-default write-string-escaped
+        seg1 repaint-segment
+
+        // now split seg2 at region-end
+        seg2 region-end seg2 start>> - split-segment
+        swap
+        bg-selected write-string-escaped
+        repaint-segment
+        bg-default write-string-escaped
+        repaint-segment
+    ] return-if
+
+    region-begin segment in-segment? [
+        segment region-begin segment start>> - split-segment seg2! seg1!
+        bg-default write-string-escaped
+        seg1 repaint-segment
+        bg-selected write-string-escaped
+        seg2 repaint-segment
+        bg-default write-string-escaped
+    ] return-if
+
+    region-end segment in-segment? [
+        segment region-end segment start>> - split-segment seg2! seg1!
+        bg-selected write-string-escaped
+        seg1 repaint-segment
+        bg-default write-string-escaped
+        seg2 repaint-segment
+    ] return-if
+
+    segment repaint-segment
+;
+
+: repaint-segments                      // segments -> void
+    [ repaint-segment ] each ;
+
+: repaint-selected-line ( line )        // line -> void
+
+    line line-selected? assert
+
+    line text>> detab :> detabbed-text
+
+    detabbed-text format-line :> segments
+
+    bg-selected write-string-escaped
+
+    segments string? [
+        fg-default write-string-escaped
+        segments write-string
     ] [
+        segments repaint-segments
+    ] if
+
+    terminal-columns detabbed-text string-length - spaces
+
+    bg-default write-string-escaped
+;
+
+: repaint-line-containing-selection ( line ) // line -> void
+
+    line line-contains-selection? assert
+
+    line text>> detab :> detabbed-text
+
+    detabbed-text format-line :> segments
+
+    mark dot make-region/2 :> region
+
+    segments string? [
+        // FIXME
         detabbed-text length terminal-columns < [
-            formatted-text write
+            segments write
             terminal-columns detabbed-text string-length - spaces
         ] [
             0 terminal-columns detabbed-text substring write
         ] if
+    ] [
+        segments [ region xrepaint-segment ] each
+    ] if
+
+    detabbed-text string-length terminal-columns < [
+        terminal-columns detabbed-text string-length - spaces
+    ] when
+;
+
+: repaint-line ( line )                 // line -> void
+
+    line line-selected? [ line repaint-selected-line ] return-if
+
+    line line-contains-selection? [
+        line repaint-line-containing-selection
+    ] return-if
+
+    line text>> detab :> detabbed-text
+
+    detabbed-text format-line :> segments
+
+    segments string? [
+        detabbed-text length terminal-columns < [
+            segments write
+            terminal-columns detabbed-text string-length - spaces
+        ] [
+            0 terminal-columns detabbed-text substring write
+        ] if
+    ] [
+        segments repaint-segments
+        terminal-columns detabbed-text string-length - spaces
     ] if
 ;
 
@@ -203,7 +389,7 @@ use: ansi-color
     ] if
     status
     update-caret-pos
-    mark [ show-cursor ] unless
+    show-cursor
 ;
 
 #endif
