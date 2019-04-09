@@ -16,9 +16,6 @@
 using: feline accessors feral-config ;
 in: modes
 
-tuple: mode
-    formatter ;
-
 global modes
 
 : initialize-modes 8 <hashtable> modes! ;

@@ -18,6 +18,9 @@ in: feline-mode
 
 private
 
+tuple: feline-mode
+    formatter ;
+
 {
     "'"
     "("
@@ -225,7 +228,7 @@ winui? #if
 public
 
 : initialize-feline-mode
-    mode make-instance :> m
+    feline-mode make-instance :> m
     ' winui-feline-format-line m formatter<<
     m feline-extension modes set-at
 ;
@@ -283,7 +286,7 @@ public
 public
 
 : initialize-feline-mode
-    mode make-instance :> m
+    feline-mode make-instance :> m
     ' feline-format-line m formatter<<
     m feline-extension modes set-at
 ;

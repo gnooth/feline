@@ -16,6 +16,11 @@
 using: modes feline accessors segments ;
 in: asm-mode
 
+private
+
+tuple: asm-mode
+    formatter ;
+
 : asm-format-line ( s )                 // string -> string'
     ";" s substring-start :> comment-start
 
@@ -26,11 +31,10 @@ in: asm-mode
     ] [
         s 0 color-text make-segment/3
         1array
-    ] if
-;
+    ] if ;
 
 : initialize-asm-mode
-    mode make-instance :> m
+    asm-mode make-instance :> m
     ' asm-format-line m formatter<<
     m ".asm" modes set-at ;
 
