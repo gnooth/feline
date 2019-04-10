@@ -368,32 +368,6 @@ use: kill-ring
     ] when
 ;
 
-: identifier-char?                      // char -> ?
-    '\s' neq?
-;
-
-: identifier-at-dot                     // void -> start/f string/f
-
-    { [ mark ] [ mark-line dot-line eq? ] } && [
-        mark dot make-region/2 begin-offset
-    ] [
-        dot-offset dot-line-length 1- min 0 max
-    ] if :> offset
-
-    offset dot-line-text [ identifier-char? not ] find-last-from drop :> start!
-
-    // get to first non-blank char
-    start [ start 1+ start! ] [ 0 start! ] if
-
-    start dot-line-text string-skip-to-whitespace // -> index/f
-    dot-line-length or
-    [
-        start swap dot-line-text string-substring // -> string
-        start swap                                // -> start string
-    ] [
-        f f
-    ] if* ;
-
 : goto-definition                       -- symbol -> void
     symbol-location :> line-number :> filename
     filename [
@@ -427,7 +401,7 @@ use: kill-ring
     ] if ;
 
 : find-definition-at-dot
-    identifier-at-dot                   // -> start/f string/f
+    current-mode identifier-at-dot      // -> start/f string/f
     nip                                 // -> string/f
     find-qualified-name [
         goto-definition

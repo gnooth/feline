@@ -514,3 +514,8 @@ winui? #if
 ;
 
 : maybe-reframe reframe? [ reframe ] when ;
+
+: current-mode                          // -> mode
+    current-buffer mode>> ;
+
+generic identifier-at-dot               // mode -> start/f string/f
