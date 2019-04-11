@@ -24,7 +24,7 @@ tuple: search
     pattern
     whole-words-only ;
 
-: make-search                           -- pattern whole-words-only -> search
+: make-search                           // pattern whole-words-only -> search
     search make-instance
     tuck
     whole-words-only<<
@@ -33,22 +33,19 @@ tuple: search
 
 var current-search
 
-: current-pattern                       -- -> string
-    current-search pattern>> ;
+: current-pattern                       // -> string/f
+    current-search [ pattern>> ] [ f ] if* ;
 
-: whole-words-only?                     -- -> ?
-    current-search whole-words-only>> ;
+: whole-words-only?                     // -> ?
+    current-search [ whole-words-only>> ] [ f ] if* ;
 
-: mark-found-pattern
-    dot-line dot-offset current-pattern string-length + make-position mark! ;
-
-: found ( pos )                         -- position -> void
+: found ( pos )                         // position -> void
     reset-redo
 
     add-undo-move
-    pos dot!
-    dot-offset goal-column!
-    mark-found-pattern
+    pos mark!
+    mark-line mark-offset current-pattern string-length + make-position dot!
+
     maybe-reframe
     t repaint?! ;
 
@@ -191,17 +188,17 @@ var current-search
 
     pos ;
 
-: find-in-line                          -- pattern line -> position/?
+: find-in-line                          // pattern line -> position/?
     whole-words-only? [
         find-word-in-line
     ] [
         find-substring-in-line
     ] if ;
 
-: search-forward-word
+: search-forward-word ( startpos )      // position -> position/?
     current-pattern :> pattern
     pattern string-length :> pattern-length
-    copy-dot :> pos!
+    startpos copy-position :> pos!
     f :> result!
 
     [ result null? pos and ] [
@@ -215,13 +212,13 @@ var current-search
         ] when
     ] while
 
-    result [ found ] [ not-found ] if*
+    result
 ;
 
-: search-backward-word
+: search-backward-word ( startpos )     // startpos -> pos/?
     current-pattern :> pattern
     pattern string-length :> pattern-length
-    copy-dot :> pos!
+    startpos copy-position :> pos!
     f :> result!
 
     [ result null? pos and ] [
@@ -235,7 +232,7 @@ var current-search
         ] when
     ] while
 
-    result [ found ] [ not-found ] if*
+    result
 ;
 
 public
@@ -252,21 +249,26 @@ use: mini
 ;
 
 : search-forward-word-at-dot
-    identifier-at-dot                   // -> start/f string/f
-    nip                                 // -> string/f
-    :> pattern
+    current-mode identifier-at-dot      // -> index/f string/f
+    :> pattern :> start
+    f :> pos!
     pattern empty? [
         pattern t make-search current-search!
-        search-forward-word
+        dot-line start pattern length + make-position search-forward-word // -> position/f
+        [ found ] [ not-found ] if*
     ] unless ;
 
 : search-backward-word-at-dot
-    identifier-at-dot                   // -> start/f string/f
-    nip                                 // -> string/f
-    :> pattern
+    current-mode identifier-at-dot      // -> index/f string/f
+    :> pattern :> start
+    f :> pos!
     pattern empty? [
         pattern t make-search current-search!
-        search-backward-word
+        dot-line start make-position pos!
+        pos move-prev [
+            pos search-backward-word    // -> position/f
+            [ found ] [ not-found ] if*
+        ] when
     ] unless ;
 
 : repeat-search-forward
@@ -275,10 +277,10 @@ use: mini
     mark [ dot mark make-region/2 end ] [ copy-dot ] if :> startpos
 
     whole-words-only? [
-        search-forward-word
+        startpos search-forward-word
     ] [
-        current-pattern startpos search-forward [ found ] [ not-found ] if*
-    ] if
+        current-pattern startpos search-forward
+    ] if [ found ] [ not-found ] if*
 ;
 
 : repeat-search-backward
@@ -287,10 +289,10 @@ use: mini
     mark [ dot mark make-region/2 begin ] [ copy-dot ] if :> startpos
 
     whole-words-only? [
-        search-backward-word
+        startpos search-backward-word
     ] [
-        current-pattern startpos search-backward [ found ] [ not-found ] if*
-    ] if
+        current-pattern startpos search-backward
+    ] if [ found ] [ not-found ] if*
 ;
 
 : search-list-occurrences
@@ -301,8 +303,8 @@ use: mini
     current-pattern :> pattern
     first-line :> line!
 
-    "List Occurrences" make-line/1 buf
-    2dup buffer-append-line top-line<<
+    "List Occurrences" dup buf name<<
+    make-line/1 buf 2dup buffer-append-line top-line<<
 
     pattern "Pattern: %S" format make-line/1 buf buffer-append-line
 
