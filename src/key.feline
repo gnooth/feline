@@ -92,6 +92,6 @@ linux? #if
 0x1b5b313b3343          constant alt-right
 0x1b4f52                constant f3
 0x1b5b313b3252          constant shift-f3
+#endif
 
 0x1b5b5a                constant shift-tab      // Linux only
-#endif
