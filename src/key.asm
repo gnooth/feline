@@ -174,19 +174,4 @@ code ekey, 'ekey'                       ; -- fixnum
         next
 endcode
 
-feline_constant k_right,     'k-right',     tagged_fixnum(0x1b5b43)
-feline_constant k_left,      'k-left',      tagged_fixnum(0x1b5b44)
-feline_constant k_up,        'k-up',        tagged_fixnum(0x1b5b41)
-feline_constant k_down,      'k-down',      tagged_fixnum(0x1b5b42)
-feline_constant k_home,      'k-home',      tagged_fixnum(0x1b5b48)
-feline_constant k_end,       'k-end',       tagged_fixnum(0x1b5b46)
-feline_constant k_delete,    'k-delete',    tagged_fixnum(0x1b5b337e)
-feline_constant k_prior,     'k-prior',     tagged_fixnum(0x1b5b357e)
-feline_constant k_next,      'k-next',      tagged_fixnum(0x1b5b367e)
-
-feline_constant k_ctrl_home, 'k-ctrl-home', tagged_fixnum(0x1b5b313b3548)
-feline_constant k_ctrl_end,  'k-ctrl-end',  tagged_fixnum(0x1b5b313b3546)
-
-feline_constant k_enter,     'k-enter',     tagged_char(0x0a)
-
 %endif
