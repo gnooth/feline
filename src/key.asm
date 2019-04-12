@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -123,21 +123,6 @@ code ekey, 'ekey'                       ; -- tagged-fixnum/tagged-char
 
         next
 endcode
-
-feline_constant k_right,     'k-right',     tagged_fixnum(0x804d)
-feline_constant k_left,      'k-left',      tagged_fixnum(0x804b)
-feline_constant k_up,        'k-up',        tagged_fixnum(0x8048)
-feline_constant k_down,      'k-down',      tagged_fixnum(0x8050)
-feline_constant k_home,      'k-home',      tagged_fixnum(0x8047)
-feline_constant k_end,       'k-end',       tagged_fixnum(0x804f)
-feline_constant k_delete,    'k-delete',    tagged_fixnum(0x8053)
-feline_constant k_prior,     'k-prior',     tagged_fixnum(0x8049)
-feline_constant k_next,      'k-next',      tagged_fixnum(0x8051)
-
-feline_constant k_ctrl_home, 'k-ctrl-home', tagged_fixnum(0x8077)
-feline_constant k_ctrl_end,  'k-ctrl-end',  tagged_fixnum(0x8075)
-
-feline_constant k_enter,     'k-enter',     tagged_char(0x0d)
 
 %else
 

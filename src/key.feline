@@ -1,17 +1,17 @@
--- Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
 in: key
@@ -23,8 +23,8 @@ in: key
 0x05 code-char                  constant ctrl-e
 0x06 code-char                  constant ctrl-f
 0x07 code-char                  constant ctrl-g
-0x08 code-char                  constant backspace
-0x09 code-char                  constant tab
+0x08 code-char                  constant ctrl-h
+0x09 code-char                  constant ctrl-i
 0x0a code-char                  constant ctrl-j
 0x0b code-char                  constant ctrl-k
 0x0c code-char                  constant ctrl-l
@@ -42,22 +42,26 @@ in: key
 0x18 code-char                  constant ctrl-x
 0x19 code-char                  constant ctrl-y
 0x1a code-char                  constant ctrl-z
-0x1b code-char                  constant escape
 
+0x08 code-char                  constant backspace
+0x09 code-char                  constant tab
+0x0d code-char                  constant enter
+0x1b code-char                  constant escape
 0x7f code-char                  constant del
 
-k-enter                         constant enter
-k-delete                        constant delete
-k-home                          constant home
-k-end                           constant end
-k-left                          constant left
-k-right                         constant right
-k-up                            constant up
-k-down                          constant down
-k-prior                         constant pageup
-k-next                          constant pagedown
-k-ctrl-home                     constant ctrl-home
-k-ctrl-end                      constant ctrl-end
+win64? #if
+0x8053                          constant delete
+0x8047                          constant home
+0x804f                          constant end
+0x804b                          constant left
+0x804d                          constant right
+0x8048                          constant up
+0x8050                          constant down
+0x8049                          constant pageup
+0x8051                          constant pagedown
+0x8077                          constant ctrl-home
+0x8075                          constant ctrl-end
+#endif
 
 win64? #if
 0x808d                          constant ctrl-up
@@ -77,4 +81,4 @@ linux? #if
 0x1b5b313b3252                  constant shift-f3
 #endif
 
-0x1b5b5a                        constant shift-tab    -- Linux only
+0x1b5b5a                        constant shift-tab    // Linux only
