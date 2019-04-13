@@ -1,0 +1,79 @@
+// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline feral-config ;
+in: feral-key
+
+winui? #if
+
+private
+
+0x08 constant VK_BACK
+0x0d constant VK_RETURN
+
+0x21 constant VK_PRIOR
+0x22 constant VK_NEXT
+0x23 constant VK_END
+0x24 constant VK_HOME
+0x25 constant VK_LEFT
+0x26 constant VK_UP
+0x27 constant VK_RIGHT
+0x28 constant VK_DOWN
+
+0x2e constant VK_DELETE
+
+0x70 constant VK_F1
+0x71 constant VK_F2
+0x72 constant VK_F3
+
+0xbe constant VK_OEM_PERIOD
+
+0x01 16 lshift constant alt-mask
+0x02 16 lshift constant ctrl-mask
+0x04 16 lshift constant shift-mask
+
+: alt   alt-mask bitor ;
+: ctrl  ctrl-mask bitor ;
+: shift shift-mask bitor ;
+
+public
+
+VK_DELETE               constant delete
+VK_HOME                 constant home
+VK_END                  constant end
+VK_LEFT                 constant left
+VK_RIGHT                constant right
+VK_UP                   constant up
+VK_DOWN                 constant down
+VK_PRIOR                constant pageup
+VK_NEXT                 constant pagedown
+VK_HOME ctrl            constant ctrl-home
+VK_END ctrl             constant ctrl-end
+VK_UP ctrl              constant ctrl-up
+VK_DOWN ctrl            constant ctrl-down
+VK_LEFT alt             constant alt-left
+VK_RIGHT alt            constant alt-right
+VK_F3                   constant f3
+VK_F3 shift             constant shift-f3
+
+'B' char-code alt       constant alt-b
+VK_OEM_PERIOD alt       constant alt-.
+'V' char-code alt       constant alt-v
+VK_DOWN alt             constant alt-down
+VK_UP alt               constant alt-up
+'L' char-code alt       constant alt-l
+'X' char-code alt       constant alt-x
+
+#endif

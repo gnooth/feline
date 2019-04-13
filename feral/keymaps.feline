@@ -1,104 +1,82 @@
--- Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feral-core feline search feral-config ;
 in: editor
 
 winui? #if
 
-0x08 constant VK_BACK
-0x0d constant VK_RETURN
-
-0x21 constant VK_PRIOR
-0x22 constant VK_NEXT
-0x23 constant VK_END
-0x24 constant VK_HOME
-0x25 constant VK_LEFT
-0x26 constant VK_UP
-0x27 constant VK_RIGHT
-0x28 constant VK_DOWN
-
-0x2e constant VK_DELETE
-
-0x70 constant VK_F1
-0x71 constant VK_F2
-0x72 constant VK_F3
-
-0xbe constant VK_OEM_PERIOD
-
-0x01 16 lshift constant ALT_MASK
-0x02 16 lshift constant CTRL_MASK
-0x04 16 lshift constant SHIFT_MASK
-
 global winui-keymap
+
+use: feral-key
 
 : initialize-winui-keymap
     winui-keymap [ ] return-if
 
     128 <hashtable> :> keymap
 
-    ' do-bs                     key:backspace                   keymap set-at
-    ' do-delete                 VK_DELETE                       keymap set-at
-    ' do-home                   VK_HOME                         keymap set-at
-    ' end-of-line               VK_END                          keymap set-at
-    ' do-left                   VK_LEFT                         keymap set-at
-    ' do-right                  VK_RIGHT                        keymap set-at
-    ' do-up                     VK_UP                           keymap set-at
-    ' do-down                   VK_DOWN                         keymap set-at
+    ' do-bs                             key:backspace                   keymap set-at
+    ' do-delete                         feral-key:delete                keymap set-at
+    ' do-home                           feral-key:home                  keymap set-at
+    ' end-of-line                       feral-key:end                   keymap set-at
+    ' do-left                           feral-key:left                  keymap set-at
+    ' do-right                          feral-key:right                 keymap set-at
+    ' do-up                             feral-key:up                    keymap set-at
+    ' do-down                           feral-key:down                  keymap set-at
 
-    ' do-page-up                VK_PRIOR                        keymap set-at
-    ' do-page-down              VK_NEXT                         keymap set-at
+    ' do-page-up                        feral-key:pageup                keymap set-at
+    ' do-page-down                      feral-key:pagedown              keymap set-at
 
-    ' beginning-of-buffer       VK_HOME CTRL_MASK bitor         keymap set-at
-    ' end-of-buffer             VK_END CTRL_MASK bitor          keymap set-at
+    ' beginning-of-buffer               feral-key:ctrl-home             keymap set-at
+    ' end-of-buffer                     feral-key:ctrl-end              keymap set-at
 
-    ' do-window-up              VK_UP CTRL_MASK bitor           keymap set-at
-    ' do-window-down            VK_DOWN CTRL_MASK bitor         keymap set-at
+    ' do-window-up                      feral-key:ctrl-up               keymap set-at
+    ' do-window-down                    feral-key:ctrl-down             keymap set-at
 
-    ' gotoline                  key:ctrl-g                      keymap set-at
-    ' do-quit                   key:ctrl-q                      keymap set-at
-    ' do-save                   key:ctrl-s                      keymap set-at
-    ' kill-buffer               key:ctrl-w                      keymap set-at
-    ' newline-and-indent        key:enter                       keymap set-at
-    ' do-find                   key:ctrl-f                      keymap set-at
-    ' repeat-search-forward     VK_F3                           keymap set-at
-    ' repeat-search-backward    VK_F3 SHIFT_MASK bitor          keymap set-at
-    ' do-tab                    key:tab                         keymap set-at
-    ' kill-line                 key:ctrl-k                      keymap set-at
-    ' undo                      key:ctrl-z                      keymap set-at
-    ' redo                      key:ctrl-y                      keymap set-at
-    ' open-file                 key:ctrl-o                      keymap set-at
-    ' next-buffer               VK_RIGHT ALT_MASK bitor         keymap set-at
-    ' previous-buffer           VK_LEFT ALT_MASK bitor          keymap set-at
-    ' find-definition           key:ctrl-t                      keymap set-at
-    ' select-line               key:ctrl-l                      keymap set-at
-    ' cut                       key:ctrl-x                      keymap set-at
-    ' copy                      key:ctrl-c                      keymap set-at
-    ' paste                     key:ctrl-v                      keymap set-at
+    ' gotoline                          key:ctrl-g                      keymap set-at
+    ' do-quit                           key:ctrl-q                      keymap set-at
+    ' do-save                           key:ctrl-s                      keymap set-at
+    ' kill-buffer                       key:ctrl-w                      keymap set-at
+    ' newline-and-indent                key:enter                       keymap set-at
+    ' do-find                           key:ctrl-f                      keymap set-at
+    ' repeat-search-forward             feral-key:f3                    keymap set-at
+    ' repeat-search-backward            feral-key:shift-f3              keymap set-at
+    ' do-tab                            key:tab                         keymap set-at
+    ' kill-line                         key:ctrl-k                      keymap set-at
+    ' undo                              key:ctrl-z                      keymap set-at
+    ' redo                              key:ctrl-y                      keymap set-at
+    ' open-file                         key:ctrl-o                      keymap set-at
+    ' next-buffer                       feral-key:alt-right             keymap set-at
+    ' previous-buffer                   feral-key:alt-left              keymap set-at
+    ' find-definition                   key:ctrl-t                      keymap set-at
+    ' select-line                       key:ctrl-l                      keymap set-at
+    ' cut                               key:ctrl-x                      keymap set-at
+    ' copy                              key:ctrl-c                      keymap set-at
+    ' paste                             key:ctrl-v                      keymap set-at
 
-    ' find-definition-at-dot    VK_OEM_PERIOD ALT_MASK bitor    keymap set-at
-    ' cycle-paste               'V' char-code ALT_MASK bitor    keymap set-at
-    ' search-forward-word-at-dot        VK_DOWN ALT_MASK bitor  keymap set-at
-    ' search-backward-word-at-dot       VK_UP ALT_MASK bitor    keymap set-at
-    ' search-list-occurrences   'L' char-code ALT_MASK bitor    keymap set-at
-    ' execute-command           'X' char-code ALT_MASK bitor    keymap set-at
+    ' find-definition-at-dot            feral-key:alt-.                 keymap set-at
+    ' cycle-paste                       feral-key:alt-v                 keymap set-at
+    ' search-forward-word-at-dot        feral-key:alt-down              keymap set-at
+    ' search-backward-word-at-dot       feral-key:alt-up                keymap set-at
+    ' search-list-occurrences           feral-key:alt-l                 keymap set-at
+    ' execute-command                   feral-key:alt-x                 keymap set-at
 
     keymap winui-keymap!
 ;
 
-: winui-lookup-key                      -- key -> symbol/f
+: winui-lookup-key                      // key -> symbol/f
     winui-keymap at ;
 
 : initialize-global-keymaps
@@ -121,7 +99,7 @@ var escape-keymap
     ] when*
 ;
 
-: lookup-key                            -- key -> symbol/f
+: lookup-key                            // key -> symbol/f
     base-keymap at ;
 
 : initialize-base-keymap
@@ -129,8 +107,8 @@ var escape-keymap
 
     128 <hashtable> :> keymap
 
-    ' do-bs                     key:del         keymap set-at   -- Linux
-    ' do-bs                     key:backspace   keymap set-at   -- Windows
+    ' do-bs                     key:del         keymap set-at   // Linux
+    ' do-bs                     key:backspace   keymap set-at   // Windows
     ' do-delete                 key:delete      keymap set-at
     ' do-home                   key:home        keymap set-at
     ' end-of-line               key:end         keymap set-at
