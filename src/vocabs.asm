@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -422,7 +422,7 @@ code use_colon, 'use:'
 endcode
 
 ; ### unuse-vocab
-code unuse_vocab, 'unuse-vocab'         ; vocab-specifier --
+code unuse_vocab, 'unuse-vocab'         ; vocab-specifier -> void
         _ lookup_vocab
         _tagged_if_not .1
         _drop
@@ -430,7 +430,7 @@ code unuse_vocab, 'unuse-vocab'         ; vocab-specifier --
         _then .1
 
         _ context_vector
-        _ member_eq?                    ; -- index/f
+        _ index                         ; -> index/f
         _dup
         _tagged_if_not .2
         _drop
