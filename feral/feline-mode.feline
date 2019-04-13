@@ -75,6 +75,7 @@ method: feline-mode identifier-at-dot   // void -> start/f string/f
     "t"
     "test:"
     "tuple:"
+    "unuse:"
     "use:"
     "using:"
     "var"
