@@ -588,7 +588,7 @@ last-word 0x2b install-handler
     !modrm-byte
     modrm-mod {
         { 3 [
-            modrm-rm register-reg sreg!
+            modrm-reg register-reg sreg!
             modrm-rm register-rm dreg!
         ] }
         [ unsupported ]
@@ -621,7 +621,7 @@ last-word 0x33 install-handler
     !modrm-byte
     modrm-mod {
         { 3 [
-            modrm-rm register-reg sreg!
+            modrm-reg register-reg sreg!
             modrm-rm register-rm dreg!
         ] }
         [ unsupported ]
