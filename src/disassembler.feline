@@ -502,6 +502,24 @@ last-word 0x01 install-handler
 
 last-word 0x03 install-handler
 
+: .08
+    -- /r
+    -- source is r8
+    -- dest is r/m8
+    "or" mnemonic!
+    8 dup ssize! dsize!
+    !modrm-byte
+    modrm-mod {
+        { 3 [
+            modrm-reg register-reg sreg!
+            modrm-rm register-rm dreg!
+        ] }
+        [ unsupported ]
+    } case
+    .inst ;
+
+last-word 0x08 install-handler
+
 : .09
     -- /r
     -- ModR/M byte contains both a register and an r/m operand
