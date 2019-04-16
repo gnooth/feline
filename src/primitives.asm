@@ -1730,6 +1730,22 @@ inline char_hashcode, 'char-hashcode'   ; tagged-char -- tagged-fixnum
         _char_code
 endinline
 
+; ### whitespace?
+code whitespace?, 'whitespace?'         ; x -> ?
+; return t if x is a space or tab character
+; otherwise return f (no error if x is not a character)
+        cmp     rbx, tagged_char(32)
+        jne     .1
+        mov     ebx, t_value
+        next
+.1:
+        cmp     rbx, tagged_char(9)
+        mov     ebx, f_value
+        mov     eax, t_value
+        cmove   ebx, eax
+        next
+endcode
+
 ; ### char>string
 code char_to_string, 'char>string'      ; tagged-char -- string
 
