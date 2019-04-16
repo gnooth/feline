@@ -27,6 +27,46 @@ winui? #if
 use: mini
 #endif
 
+: trim ( s )                            // string -> string/f
+    s string-?last whitespace? [
+        s string-length 1- s [ whitespace? not ] find-last-from // -> index/f element/f
+        [ s swap 1+ string-head ] [ drop "" ] if
+    ] [
+        f
+    ] if ;
+
+: remove-trailing-whitespace
+
+    first-line :> line!
+
+    f :> changed!
+
+    [ line last-line eq? ] [
+        line text>> trim [
+            line text<<
+            t changed!
+        ] when*
+        line next>> line!
+    ] until
+
+    line last-line assert-eq
+
+    line text>> trim [
+        line text<<
+        t changed!
+    ] when*
+
+    // adjust dot and mark if necessary
+    dot-offset dot-line-length > [ dot-line-length dot-offset! ] when
+
+    mark [
+        mark-offset mark-line text>> length > [
+            mark-line text>> length mark offset<<
+        ] when
+    ] when
+
+    changed [ modified ] when ;
+
 : do-save
     current-buffer filename>> :> filename!
 
@@ -49,6 +89,8 @@ use: mini
     f :> saved?!
 
     make-backup
+
+    remove-trailing-whitespace
 
     current-buffer eol>> :> eol
     line-count 80 * <sbuf> :> sb
