@@ -13,6 +13,24 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using: feline ;
+in: feline
+
+public
+
+: alphanumeric?                         // char -> ?
+
+    dup char? not [ error-not-char ] return-if
+
+    char-code :> c
+
+    { [ 'A' char-code c <= ] [ c 'Z' char-code <= ] } && [ t ] return-if
+    { [ 'a' char-code c <= ] [ c 'z' char-code <= ] } && [ t ] return-if
+    { [ '0' char-code c <= ] [ c '9' char-code <= ] } && [ t ] return-if
+
+    f
+;
+
 using: feral-core modes feline accessors segments ;
 in: asm-mode
 
@@ -21,8 +39,8 @@ private
 tuple: asm-mode
     formatter ;
 
-: identifier-char?                      // char -> ?
-    '\s' neq?
+: asm-mode-identifier-char? ( x )       // x -> ?
+    { [ x alphanumeric? ] [ x "_$#@~.?" member-eq? ] } ||
 ;
 
 : asm-mode-identifier-at-dot            // void -> start/f string/f
@@ -33,19 +51,20 @@ tuple: asm-mode
         dot-offset dot-line-length 1- min 0 max
     ] if :> offset
 
-    offset dot-line-text [ identifier-char? not ] find-last-from drop :> start!
+    offset dot-line-text [ asm-mode-identifier-char? not ] find-last-from drop :> start!
 
-    // get to first non-blank char
+    // advance to first identifier char
     start [ start 1+ start! ] [ 0 start! ] if
 
-    start dot-line-text string-skip-to-whitespace // -> index/f
-    dot-line-length or
-    [
-        start swap dot-line-text string-substring // -> string
-        start swap                                // -> start string
-    ] [
-        f f
-    ] if* ;
+    start dot-line-text [ asm-mode-identifier-char? not ] find-from drop :> end!
+
+    end [ dot-line-length end! ] unless
+
+    start
+    start end dot-line-text string-substring
+
+    2dup . .
+;
 
 method: asm-mode identifier-at-dot      // void -> start/f string/f
     drop
