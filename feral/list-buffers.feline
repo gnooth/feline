@@ -1,0 +1,92 @@
+// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: editor feral-core feline accessors modes key ;
+in: list-buffers
+
+private
+
+tuple: list-buffers-mode
+    formatter ;
+
+global list-buffers-old-buffer
+
+: list-buffers-select
+    dot-line-text print
+    f :> name!
+    4 dot-line-length dot-line-text substring name!
+    buffer-list [ name>> name = ] find nip [
+        current-buffer!
+        t repaint?!
+        update-display
+    ] when*
+;
+
+: list-buffers-quit
+    list-buffers-old-buffer current-buffer!
+    t repaint?!
+    update-display
+;
+
+global list-buffers-local-map
+
+: initialize-local-map
+    128 <hashtable> :> keymap
+    ' list-buffers-select   key:enter   keymap set-at
+    ' list-buffers-quit     key:escape  keymap set-at
+    ' list-buffers-quit     key:ctrl-w  keymap set-at
+    keymap list-buffers-local-map!
+;
+
+initialize-local-map
+
+: list-buffers
+    current-buffer list-buffers-old-buffer!
+    make-buffer :> buf
+    "List Buffers" buf name<<
+    list-buffers-local-map buf local-map<<
+
+    f :> b!
+    f :> sb!
+    f :> select!
+    buffer-list [
+        b!
+        128 <sbuf> sb!
+
+        b list-buffers-old-buffer eq?   '.' '\s' ? sb sbuf-push
+        b read-only>>                   'R' '\s' ? sb sbuf-push
+        b buffer-modified?              '*' '\s' ? sb sbuf-push
+        '\s' sb sbuf-push
+        b buffer-name sb sbuf-append-string
+
+        sb sbuf>string make-line/1 buf buffer-append-line
+
+        b list-buffers-old-buffer eq? [ buf last-line>> select! ] when
+    ] each
+
+    buf first-line>> buf top-line<<
+    select [ buf first-line>> ] unless* 0 make-position buf dot<<
+
+    buf current-buffer!
+    renumber
+    t repaint?!
+;
+
+in: editor
+
+public
+
+: list-buffers
+    list-buffers:list-buffers ;
