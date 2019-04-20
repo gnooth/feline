@@ -20,12 +20,14 @@ in: user
     "feral-config"
     "feral-core"
     "directories"
-    "accept-string"
     "search"
     "modes"
-    "ansi-color"
     "feline-mode"
+    "asm-mode"
+    "list-buffers"
     "kill-ring"
+    "ansi-color"
+    "accept-string"
 } [ delete-vocab ] each
 
 in: feral-config
@@ -346,7 +348,9 @@ use: kill-ring
 
 "buffer.feline" load
 
-: find-file-to-edit ( arg )             -- arg -> path/f
+"list-buffers.feline" load
+
+: find-file-to-edit ( arg )             // arg -> path/f
     arg find-file [
         arg ensure-feline-extension find-file
     ] unless*
@@ -451,14 +455,29 @@ use: search
     ] when
 ;
 
-: do-command                            -- key ->
-    dup lookup-key [
-        nip dup current-command! call-symbol
-    ] [
-        linux? [ do-mouse ] [ drop ] if
-    ] if* ;
+: do-command ( key )                    // key -> void
 
-: dispatch                              -- key ->
+    f :> command!
+
+    // try local map first
+    current-buffer local-map>> :> local-map
+    local-map [
+        key local-map at command!
+    ] when
+
+    // global map
+    command [
+        key lookup-key command!
+    ] unless
+
+    command [
+        command dup current-command! call-symbol
+    ] [
+        linux? [ key do-mouse ] when
+    ] if
+;
+
+: dispatch                              // key -> void
     current-command last-command!
     f current-command!
     dup printable-char? [ do-normal-char ] [ do-command ] if ;
