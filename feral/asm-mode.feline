@@ -62,8 +62,6 @@ tuple: asm-mode
 
     start
     start end dot-line-text string-substring
-
-    2dup . .
 ;
 
 method: asm-mode identifier-at-dot      // void -> start/f string/f
