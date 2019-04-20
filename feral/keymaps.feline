@@ -48,6 +48,7 @@ use: feral-key
     ' gotoline                          key:ctrl-g                      keymap set-at
     ' do-quit                           key:ctrl-q                      keymap set-at
     ' do-save                           key:ctrl-s                      keymap set-at
+    ' list-buffers                      feral-key:alt-b                 keymap set-at
     ' kill-buffer                       key:ctrl-w                      keymap set-at
     ' newline-and-indent                key:enter                       keymap set-at
     ' do-find                           key:ctrl-f                      keymap set-at
