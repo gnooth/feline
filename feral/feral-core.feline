@@ -520,4 +520,6 @@ winui? #if
 : current-mode                          // -> mode
     current-buffer mode>> ;
 
+generic identifier-char?                // char mode -> ?
+
 generic identifier-at-dot               // mode -> start/f string/f

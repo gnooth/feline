@@ -25,6 +25,10 @@ tuple: feline-mode
     '\s' neq?
 ;
 
+method: feline-mode identifier-char?    // char mode -> ?
+    drop
+    feline-mode-identifier-char? ;
+
 : feline-mode-identifier-at-dot         // void -> start/f string/f
 
     { [ mark ] [ mark-line dot-line eq? ] } && [
@@ -47,7 +51,7 @@ tuple: feline-mode
         f f
     ] if* ;
 
-method: feline-mode identifier-at-dot   // void -> start/f string/f
+method: feline-mode identifier-at-dot   // mode -> start/f string/f
     drop
     feline-mode-identifier-at-dot ;
 

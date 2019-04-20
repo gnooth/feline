@@ -43,6 +43,10 @@ tuple: asm-mode
     { [ x alphanumeric? ] [ x "_$#@~.?" member-eq? ] } ||
 ;
 
+method: asm-mode identifier-char?       // char mode -> ?
+    drop
+    asm-mode-identifier-char? ;
+
 : asm-mode-identifier-at-dot            // void -> start/f string/f
 
     { [ mark ] [ mark-line dot-line eq? ] } && [
@@ -64,7 +68,7 @@ tuple: asm-mode
     start end dot-line-text string-substring
 ;
 
-method: asm-mode identifier-at-dot      // void -> start/f string/f
+method: asm-mode identifier-at-dot      // mode -> start/f string/f
     drop
     asm-mode-identifier-at-dot ;
 
