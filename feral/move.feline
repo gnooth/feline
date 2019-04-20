@@ -55,6 +55,9 @@ in: editor
         maybe-reframe
     ] [
         drop
+        add-undo-move
+        unmark
+        0 dot-offset!
     ] if
 ;
 
