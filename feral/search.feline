@@ -155,9 +155,9 @@ var current-search
     t :> result!
 
     offset 0 > [
-        offset 1- line text>> string-nth blank? [
+        offset 1- line text>> string-nth current-mode identifier-char? [
             f result!
-        ] unless
+        ] when
     ] when
 
     result f eq? [ f ] return-if
@@ -165,9 +165,9 @@ var current-search
     offset len + :> after
 
     after line length < [
-        after line text>> string-nth blank? [
+        after line text>> string-nth current-mode identifier-char? [
             f result!
-        ] unless
+        ] when
     ] when
 
     result
