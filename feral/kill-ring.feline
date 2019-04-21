@@ -1,24 +1,24 @@
--- Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
 in: kill-ring
 
-global kill-list                        -- -> vector
-global kill-list-next                   -- -> fixnum/f
-global last-paste                       -- -> string/f
+global kill-list                        // -> vector
+global kill-list-next                   // -> fixnum/f
+global last-paste                       // -> string/f
 
 : initialize-kill-ring
     16 <vector> kill-list!
@@ -32,12 +32,12 @@ global last-paste                       -- -> string/f
     ] when*
 ;
 
-: last-kill                             -- void -> string/f
+: last-kill                             // void -> string/f
     kill-list empty? [ f ] return-if
 
     maybe-promote-last-paste
 
-    kill-list length 1- kill-list nth   -- -> string
+    kill-list length 1- kill-list nth   // -> string
 
     kill-list vector-length 2 - kill-list-next!
 ;
@@ -45,19 +45,19 @@ global last-paste                       -- -> string/f
 : next-kill
     kill-list empty? [ f ] return-if
 
-    kill-list-next kill-list nth        -- -> string
+    kill-list-next kill-list nth        // -> string
 
     dup last-paste!
 
     kill-list-next 0 > [
         kill-list-next 1-
     ] [
-        -- wrap around
+        // wrap around
         kill-list length 1-
     ] if kill-list-next!
 ;
 
-: append-kill                           -- string -> void
+: append-kill                           // string -> void
     maybe-promote-last-paste
     kill-list vector-push
 ;
