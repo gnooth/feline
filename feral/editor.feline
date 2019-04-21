@@ -474,7 +474,6 @@ use: search
 
 : initialize-editor
     16 <vector> buffer-list!
-    initialize-kill-ring
     initialize-global-keymaps
 ;
 

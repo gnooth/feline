@@ -25,6 +25,8 @@ global last-paste                       // -> string/f
     f kill-list-next!
 ;
 
+initialize-kill-ring
+
 : maybe-promote-last-paste
     last-paste [
         kill-list vector-adjoin
