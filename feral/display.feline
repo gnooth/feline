@@ -233,6 +233,31 @@ use: ansi-color
   0   0   0 rgb-background-prefix constant bg-default
  64  64  64 rgb-background-prefix constant bg-selected
 
+: reverse esc[ "7m" write-string-escaped ;
+
+: normal esc[ "m" write-string-escaped ;
+
+: status
+    "\e[37m" write-string-escaped       // white foreground
+    reverse
+    0 status-y at-xy
+    modified? [ '*' write-char ] [ space ] if
+    current-buffer filename>> :> filename!
+    filename [ "untitled" filename! ] unless
+    filename write-string
+
+    dot-line-number 1+
+    line-count
+    dot-column 1+
+    "Line %d of %d Col %d " format
+    terminal-columns over length - :> x
+    x filename length 1+ - 1 max spaces
+    write-string
+    normal
+;
+
+: clear-status-line 0 status-y at-xy clear-to-eol ;
+
 : repaint-segment                       // segment -> void
     dup
     format>> write-string-escaped
