@@ -24,7 +24,6 @@ tuple: list-buffers-mode
 global list-buffers-old-buffer
 
 : list-buffers-select
-    dot-line-text print
     f :> name!
     4 dot-line-length dot-line-text substring name!
     buffer-list [ name>> name = ] find nip [
