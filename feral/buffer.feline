@@ -90,26 +90,24 @@ in: editor
 ;
 
 : next-buffer
-    buffer-list length 2 < [ ] return-if
-
-    buffer-list [ current-buffer eq? ] find     -- index/f element/f
-    current-buffer assert-eq                    -- index
-    1+ dup buffer-list length < [ drop 0 ] unless
-
-    buffer-list vector-nth current-buffer!
-    t repaint?!
-;
+    buffer-list length 1 > [
+        buffer-list [ current-buffer eq? ] find [
+            // -> index
+            1+ dup buffer-list length < [ drop 0 ] unless
+            buffer-list vector-nth current-buffer!
+            t repaint?!
+        ] when
+    ] when ;
 
 : previous-buffer
-    buffer-list length 2 < [ ] return-if
-
-    buffer-list [ current-buffer eq? ] find     -- index/f element/f
-    current-buffer assert-eq                    -- index
-    1 - dup 0 >= [ drop buffer-list length 1 - ] unless
-
-    buffer-list vector-nth current-buffer!
-    t repaint?!
-;
+    buffer-list length 1 > [
+        buffer-list [ current-buffer eq? ] find [
+            // -> index
+            1- dup 0 >= [ drop buffer-list length 1- ] unless
+            buffer-list vector-nth current-buffer!
+            t repaint?!
+        ] when
+    ] when ;
 
 : buffer-name ( buf )
     buf name>> [ buf filename>> ] unless*
