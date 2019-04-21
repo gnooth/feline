@@ -1,17 +1,17 @@
--- Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
 in: user
@@ -48,7 +48,7 @@ initialize-directories
 
 using: feral-core feline accessors modes accept-string directories feral-config ;
 
-: status-y                              -- -> n
+: status-y                              // -> n
     terminal-rows 2 - ;
 
 : reverse esc[ "7m" write-string-escaped ;
@@ -76,10 +76,10 @@ using: feral-core feline accessors modes accept-string directories feral-config 
 
 : clear-status-line 0 status-y at-xy clear-to-eol ;
 
-: message-y                             -- -> n
+: message-y                             // -> n
     status-y 1+ ;
 
-: message                               -- string ->
+: message                               // string ->
     0 message-y at-xy write-string ;
 
 : clear-message hide-cursor 0 message-y at-xy clear-to-eol ;
@@ -90,7 +90,7 @@ using: feral-core feline accessors modes accept-string directories feral-config 
 
 "move.feline" load
 
-: minibuffer-accept-string              -- prompt-string -> string
+: minibuffer-accept-string              // prompt-string -> string
     0 message-y at-xy
     accept-string
     clear-message
@@ -120,7 +120,7 @@ use: kill-ring
 
 : select-line
     dot-line-prev dup line-selected? and [
-        -- extend selection if possible
+        // extend selection if possible
         dot-line-next [
             dot-line-next dot-line! 0 dot-offset!
         ] when
@@ -139,8 +139,8 @@ use: kill-ring
     unmark
     copy-dot anchor! ;
 
-: insert-multiline-string               -- string --> void
-    -- insert string before line containing dot
+: insert-multiline-string               // string -> void
+    // insert string before line containing dot
     add-undo-insert-multiline-string
 
     dot-line-prev :> prev!
@@ -177,7 +177,7 @@ use: kill-ring
     "Line copied to kill ring" message
 ;
 
-: copy-region                           -- region -> void
+: copy-region                           // region -> void
     region-as-string append-kill
     "Region copied to kill ring" message
 ;
@@ -202,14 +202,14 @@ use: kill-ring
             unlink
         ] }
         { [ prev null? ] [
-            -- deleting first line
+            // deleting first line
             dot-line
             next dot-line! 0 dot-offset!
             unlink
             next dup first-line! top-line!
         ] }
         { [ next null? ] [
-            -- deleting last line
+            // deleting last line
             dot-line
             prev dot-line! prev length dot-offset!
             unlink
@@ -229,7 +229,7 @@ use: kill-ring
 : cut
     mark [ dot make-region/2 cut-region ] [ cut-line ] if* ;
 
-: paste/1                               -- string -> void
+: paste/1                               // string -> void
     1 ?enough
     :> s
     '\n' s string-index [
@@ -250,7 +250,7 @@ use: kill-ring
     last-kill [ paste/1 ] [ "Kill ring is empty" message ] if*
 ;
 
-: redo1                                 -- undo-record -> void
+: redo1                                 // undo-record -> void
     dup action>> {
         { +move+ [ undo-move ] }
         { +line-edit+ [ undo-line-edit ] }
@@ -302,7 +302,7 @@ use: kill-ring
     ] if
 ;
 
-: confirm-kill-current-buffer           -- -> ?
+: confirm-kill-current-buffer           // -> ?
     f :> confirmed?!
 
     modified? [
@@ -319,9 +319,9 @@ use: kill-ring
 ;
 
 : kill-current-buffer
-    buffer-list [ current-buffer eq? ] find     -- index/f element/f
-    current-buffer assert-eq                    -- index
-    :> n!                                       --
+    buffer-list [ current-buffer eq? ] find     // -> index/f element/f
+    current-buffer assert-eq                    // -> index
+    :> n!
 
     n buffer-list vector-remove-nth!
 
@@ -372,7 +372,7 @@ use: kill-ring
     ] when
 ;
 
-: goto-definition                       -- symbol -> void
+: goto-definition                       // symbol -> void
     symbol-location :> line-number :> filename
     filename [
         filename find-buffer [
@@ -396,7 +396,7 @@ use: kill-ring
             { 0 [ drop ] }
             { 1 [ first goto-definition ] }
             [
-                -- more than 1 match
+                // more than 1 match
                 drop
                 0 message-y at-xy
                 [ symbol-qualified-name write-string space ] each
@@ -415,7 +415,7 @@ use: kill-ring
             { 0 [ drop ] }
             { 1 [ first goto-definition ] }
             [
-                -- more than 1 match
+                // more than 1 match
                 drop
                 0 message-y at-xy
                 [ symbol-qualified-name write-string space ] each
@@ -436,19 +436,19 @@ use: search
 
 "keymaps.feline" load
 
-: do-mouse                              -- key -> void
+: do-mouse                              // key -> void
     dup fixnum? not [ drop ] return-if
 
     :> keycode
     f :> button! f :> x! f :> y!
---     keycode fixnum>hex log
+//     keycode fixnum>hex log
     keycode 24 rshift 0x1b5b4d = [
-        -- "\e[M"
+        // "\e[M"
         keycode 0xff bitand 32 - y!
         keycode 0xff00 bitand 8 rshift 32 - x!
         keycode 0xff0000 bitand 16 rshift 3 bitand zero? [
-            -- left button pressed
---             x y "left button pressed x = %d y = %d" format log
+            // left button pressed
+//             x y "left button pressed x = %d y = %d" format log
             top-line-number y + gotoline-internal
             x 1- 0 max dot-line-length min dot-offset!
         ] when
@@ -491,7 +491,7 @@ use: search
         dispatch
     ] until
 
-    -- clean up
+    // clean up
     f current-buffer!
     f buffer-list!
     gc
@@ -512,7 +512,7 @@ use: search
     t repaint?!
 
     linux? [
-        -- enable mouse tracking
+        // enable mouse tracking
         "\e[?1000h" write-string-escaped
     ] when
 
@@ -526,7 +526,7 @@ use: search
     use-default-screen-buffer
 ;
 
-: edit-file ( name )                    -- name -> void
+: edit-file ( name )                    // name -> void
     name find-file-to-edit [
         initialize-editor
         1 create-buffer/2
@@ -536,7 +536,7 @@ use: search
     ] if*
 ;
 
-: edit-definition                       -- symbol ->
+: edit-definition                       // symbol ->
     symbol-location 2dup and
     [
         initialize-editor
