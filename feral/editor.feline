@@ -80,16 +80,18 @@ using: feral-core feline accessors modes accept-string directories feral-config 
 
 "save.feline" load
 
+: exit-feral t done?! ;
+
 : do-quit
     buffer-list [ buffer-modified? ] count :> n
 
     n zero? [
-        t done?!
+        exit-feral
     ] [
         n dup 1 > "s" "" ?
         "Really exit with %s modified buffer%s? (yes or no) " format
         minibuffer-accept-string
-        "yes" string= done?!
+        "yes" = [ exit-feral ] when
     ] if
 ;
 

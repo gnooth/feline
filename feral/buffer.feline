@@ -160,7 +160,7 @@ unuse: mini
     modified? not confirmed? or [
         buffer-list length 1 = [
             0 buffer-list vector-set-length
-            t done?!
+            exit-feral
         ] [
             kill-current-buffer
         ] if
