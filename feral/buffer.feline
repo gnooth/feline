@@ -113,6 +113,12 @@ in: editor
     buf name>> [ buf filename>> ] unless*
 ;
 
+use: feral-config
+
+winui? #if
+use: mini
+#endif
+
 : confirm-kill-current-buffer           // -> ?
     f :> confirmed?!
 
@@ -128,6 +134,10 @@ in: editor
 
     confirmed?
 ;
+
+winui? #if
+unuse: mini
+#endif
 
 : kill-current-buffer
     buffer-list [ current-buffer eq? ] find     // -> index/f element/f
