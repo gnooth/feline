@@ -112,3 +112,47 @@ in: editor
 : buffer-name ( buf )
     buf name>> [ buf filename>> ] unless*
 ;
+
+: confirm-kill-current-buffer           // -> ?
+    f :> confirmed?!
+
+    modified? [
+        "Save file? (y or n) " minibuffer-accept-string
+        "y" = [ do-save ] when
+    ] when
+
+    modified? [
+        "Abandon changes? (yes or no) " minibuffer-accept-string
+        "yes" = [ t confirmed?! ] when
+    ] when
+
+    confirmed?
+;
+
+: kill-current-buffer
+    buffer-list [ current-buffer eq? ] find     // -> index/f element/f
+    current-buffer assert-eq                    // -> index
+    :> n!
+
+    n buffer-list vector-remove-nth!
+
+    n buffer-list length < [ n 1- n! ] unless
+
+    n buffer-list vector-nth current-buffer!
+    t repaint?!
+;
+
+: kill-buffer
+    f :> confirmed?!
+
+    modified? [ confirm-kill-current-buffer confirmed?! ] when
+
+    modified? not confirmed? or [
+        buffer-list length 1 = [
+            0 buffer-list vector-set-length
+            t done?!
+        ] [
+            kill-current-buffer
+        ] if
+    ] when
+;
