@@ -246,8 +246,12 @@ code feline_if, 'if'                    ; ? true false --
         _ callable_raw_code_address     ; code address in rbx
         mov     rax, rbx
         _3drop
+%ifdef DEBUG
         call    rax
         next
+%else
+        jmp     rax
+%endif
 endcode
 
 ; ### if*
