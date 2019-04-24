@@ -523,3 +523,12 @@ winui? #if
 generic identifier-char?                // char mode -> ?
 
 generic identifier-at-dot               // mode -> start/f string/f
+
+generic initialize-buffer               // buffer mode -> void
+
+: default-initialize-buffer             // buffer mode -> void
+    2 ?enough
+    2drop
+;
+
+' default-initialize-buffer ' initialize-buffer symbol-def set-default-method
