@@ -215,13 +215,37 @@ code generic_function_to_string, 'generic-function-to-string'   ; generic-functi
         next
 endcode
 
+%define DEFAULT_METHOD tagged_fixnum(65535)
+
+; ### set-default-method
+code set_default_method, 'set-default-method' ; callable generic-symbol -> void
+        _dup
+        _ generic?
+        _tagged_if .1
+        _ symbol_def
+        _ generic_function_dispatch
+        _swap
+        _ callable_raw_code_address
+        _swap
+        _lit DEFAULT_METHOD
+        _swap
+        _ hashtable_set_at
+        _else .1
+        _ error_not_generic_word
+        _then .1
+        next
+endcode
+
 ; ### do-generic
-code do_generic, 'do-generic'           ; object dispatch-table ->
+code do_generic, 'do-generic'           ; object typecode dispatch-table ->
+
+        push    rbx                     ; save dispatch table
 
         _ hashtable_at                  ; -> object raw-code-address/f
 
         cmp     rbx, f_value
         je      .1
+        _rdrop                          ; drop dispatch table
         mov     rax, rbx
         poprbx
 %ifdef DEBUG
@@ -230,7 +254,26 @@ code do_generic, 'do-generic'           ; object dispatch-table ->
 %else
         jmp     rax
 %endif
+
 .1:                                     ; -> object f
+        ; typecode lookup failed
+        ; is there a default method?
+        pop     rbx                     ; -> object dispatch-table
+        _lit DEFAULT_METHOD
+        _swap
+        _ hashtable_at
+        cmp     rbx, f_value
+        je      .2
+        mov     rax, rbx
+        poprbx
+%ifdef DEBUG
+        call    rax
+        _return
+%else
+        jmp     rax
+%endif
+
+.2:
         mov     rbx, [rsp]
         _tag_fixnum                     ; -> object return-address
         _ error_no_method
