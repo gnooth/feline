@@ -531,4 +531,4 @@ generic initialize-buffer               // buffer mode -> void
     2drop
 ;
 
-' default-initialize-buffer ' initialize-buffer symbol-def set-default-method
+' default-initialize-buffer ' initialize-buffer set-default-method
