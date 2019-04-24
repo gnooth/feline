@@ -1,24 +1,24 @@
--- Copyright (C) 2018 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
 in: feline
 
 private
 
-: make-global ( name )                  -- symbol -> void
+: make-global ( name )                  // symbol -> void
     name :> reader
     reader symbol-set-global-bit
     reader <wrapper> ' symbol-value 2array array>quotation reader symbol-set-def
@@ -28,7 +28,7 @@ private
     reader <wrapper> ' symbol-set-value 2array array>quotation writer symbol-set-def
     writer compile-word ;
 
-: make-var ( name )                     -- symbol -> void
+: make-var ( name )                     // symbol -> void
     name :> reader
     reader symbol-set-thread-local-bit
     reader <wrapper> ' current-thread-local-get 2array array>quotation reader symbol-set-def
@@ -44,6 +44,6 @@ syntax: global parse-name make-global ;
 
 syntax: var parse-name make-var ;
 
-syntax: constant                        -- x -> void
+syntax: constant                        // x -> void
     parse-name
     swap 1array array>quotation over symbol-set-def compile-word ;
