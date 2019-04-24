@@ -1,17 +1,17 @@
--- Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feral-core feline accessors feral-config ;
 in: editor
@@ -22,10 +22,6 @@ in: editor
         [ dup "~" string-append copy-file ] [ drop ] if
     ] when*
 ;
-
-winui? #if
-use: mini
-#endif
 
 : trim ( s )                            // string -> string/f
     s string-?last whitespace? [
@@ -41,20 +37,13 @@ use: mini
 
     f :> changed!
 
-    [ line last-line eq? ] [
+    [ line ] [
         line text>> trim [
             line text<<
             t changed!
         ] when*
         line next>> line!
-    ] until
-
-    line last-line assert-eq
-
-    line text>> trim [
-        line text<<
-        t changed!
-    ] when*
+    ] while
 
     // adjust dot and mark if necessary
     dot-offset dot-line-length > [ dot-line-length dot-offset! ] when
@@ -66,6 +55,10 @@ use: mini
     ] when
 
     changed [ modified ] when ;
+
+winui? #if
+use: mini
+#endif
 
 : do-save
     current-buffer filename>> :> filename!
@@ -82,7 +75,7 @@ use: mini
 
     filename null? [ ] return-if
 
-    -- save the current buffer to disk
+    // save the current buffer to disk
     output-style
     "Saving..." message
 
@@ -96,20 +89,19 @@ use: mini
     line-count 80 * <sbuf> :> sb
     nano-count :> start-ns
 
-    -- all lines but the last are followed by eol
+    // all lines but the last are followed by eol
     first-line :> line!
-    [ line last-line neq? ] [
+    [ line ] [
         line text>> sb sbuf-append-string
-        eol sb sbuf-append-string
+        line next>> [
+            eol sb sbuf-append-string
+        ] when
         line next>> line!
     ] while
 
-    -- last line, no eol
-    last-line text>> sb sbuf-append-string
-
     sb sbuf>string filename
 
-    -- set-file-contents might throw
+    // set-file-contents might throw
     [ set-file-contents t saved?! ] [ 2nip message ] recover
 
     nano-count start-ns - :> elapsed-ns
