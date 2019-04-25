@@ -35,6 +35,7 @@ code find_qualified_name, 'find-qualified-name'
         _quotation .3
         _lit tagged_fixnum(1)
         _ generic_plus
+        _swap
         _ string_tail
         _end_quotation .3
 
@@ -177,12 +178,13 @@ code must_find_global, 'must-find-global'       ; string -- global
 endcode
 
 ; ### token-keyword?
-code token_keyword?, 'token-keyword?'   ; string -- keyword/string ?
+code token_keyword?, 'token-keyword?'   ; string -> keyword/string ?
         _quote ":"
         _over
         _ string_has_prefix?
         _tagged_if .1
         _lit tagged_fixnum(1)
+        _swap
         _ string_tail
         _ intern_keyword
         _t

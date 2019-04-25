@@ -645,16 +645,16 @@ code string_head, 'string-head'         ; string n -- substring
 endcode
 
 ; ### string-tail
-code string_tail, 'string-tail'         ; string n -- substring
-        _over
+code string_tail, 'string-tail'         ; n string -> substring
+        _dup
         _ string_length
-        _ rot
+        _swap
         _ string_substring
         next
 endcode
 
 ; ### string-has-prefix?
-code string_has_prefix?, 'string-has-prefix?'   ; prefix string -- ?
+code string_has_prefix?, 'string-has-prefix?' ; prefix string -> ?
         _twodup
         _lit S_string_length
         _ bi@
@@ -733,6 +733,7 @@ code string_has_suffix?, 'string-has-suffix?'   ; suffix string -- ?
         _tagged_if .1
         _swap
         _ fixnum_minus
+        _swap
         _ string_tail
         _ stringequal
         _else .1

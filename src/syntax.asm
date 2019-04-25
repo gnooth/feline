@@ -919,6 +919,7 @@ code sh, 'sh'
         _ lexer_line                    ; -- lexer string
         _over
         _ lexer_index                   ; -- lexer string index
+        _swap
         _ string_tail                   ; -- lexer tail
 
         _swap

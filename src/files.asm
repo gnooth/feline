@@ -469,7 +469,6 @@ code path_extension, 'path-extension'   ; path -- extension/f
         _eq? tagged_char('.')
         _tagged_if .2
         _rfrom                          ; -- index string
-        _swap
         _ string_tail
         _else .2
         _rdrop
@@ -514,7 +513,7 @@ code feline_source_directory, 'feline-source-directory' ; -- string
 endcode
 
 ; ### tilde-expand-filename
-code tilde_expand_filename, 'tilde-expand-filename'     ; string1 -- string2
+code tilde_expand_filename, 'tilde-expand-filename' ; string1 -> string2
 
         _duptor
 
@@ -553,8 +552,8 @@ code tilde_expand_filename, 'tilde-expand-filename'     ; string1 -- string2
         _ path_separator_char?          ; "~/" or "~\"
         _tagged_if .4
         _ user_home
-        _rfrom
         _lit tagged_fixnum(1)
+        _rfrom
         _ string_tail
         _ path_append
         _return

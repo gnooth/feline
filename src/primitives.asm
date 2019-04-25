@@ -1470,6 +1470,7 @@ code string_to_number, 'string>number'  ; string -> n/f
         _ string_has_prefix?
         _tagged_if .2
         _lit tagged_fixnum(2)
+        _swap
         _ string_tail
         _ binary_to_integer
         _return
@@ -1480,6 +1481,7 @@ code string_to_number, 'string>number'  ; string -> n/f
         _ string_has_prefix?
         _tagged_if .3
         _lit tagged_fixnum(3)
+        _swap
         _ string_tail
         _ binary_to_integer
         _ generic_negate
