@@ -636,10 +636,9 @@ code quote_string, 'quote-string'       ; string -- quoted-string
 endcode
 
 ; ### string-head
-code string_head, 'string-head'         ; string n -- substring
+code string_head, 'string-head'         ; n string -> substring
         _lit tagged_zero
-        _swap
-        _ rot
+        _ rrot
         _ string_substring
         next
 endcode

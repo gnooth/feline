@@ -29,6 +29,7 @@ code find_qualified_name, 'find-qualified-name'
         _dupd                           ; -- string string index
 
         _quotation .2
+        _swap
         _ string_head
         _end_quotation .2
 

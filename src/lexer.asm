@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -714,8 +714,8 @@ code dot_lexer, '.lexer'                ; lexer --
         _lit tagged_char('"')
         _ write_char
 
-        _this_lexer_string
         _lit tagged_fixnum(37)
+        _this_lexer_string
         _ string_head
         _ write_string
 

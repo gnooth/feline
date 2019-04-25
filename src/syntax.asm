@@ -880,6 +880,7 @@ code assign_local2, ':>', SYMBOL_IMMEDIATE      ; x -> void
         _dup
         _ string_length
         sub     rbx, (1 << FIXNUM_TAG_BITS)
+        _swap
         _ string_head
 
 .1:

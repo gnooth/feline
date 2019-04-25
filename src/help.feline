@@ -38,7 +38,7 @@ white constant fg-default
         [
             i
         ] [
-            s i string-head write-string
+            i s string-head write-string
             i 1+ i!
             i s string-tail s!
             in-quote? not in-quote?!
