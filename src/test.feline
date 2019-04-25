@@ -1480,9 +1480,9 @@ string-head-test-1
 
 test: string-tail-test-1
     "this is a test"
-    [ 10 string-tail "test" assert= ] keep
-    [ 14 string-tail [ string? assert-true ] [ length zero? assert-true ] bi ] keep
-    [ 0 string-tail "this is a test" assert= ] keep
+    [ 10 swap string-tail "test" assert= ] keep
+    [ 14 swap string-tail [ string? assert-true ] [ length zero? assert-true ] bi ] keep
+    [ 0 swap string-tail "this is a test" assert= ] keep
     drop
 ;
 
