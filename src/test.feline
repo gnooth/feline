@@ -1466,13 +1466,9 @@ any?-test-1
 
 test: string-head-test-1
     "this is a test"
-    [ 4 string-head "this" assert= ] keep
-
-    -- FIXME "" confuses the parser Aug 22 2016 12:49 PM
---     [ 0 string-head "" assert= ] keep
-
-    [ 0 string-head [ string? assert-true ] [ length zero? assert-true ] bi ] keep
-    [ 14 string-head "this is a test" assert= ] keep
+    [ 4 swap string-head "this" assert= ] keep
+    [ 0 swap string-head [ string? assert-true ] [ length zero? assert-true ] bi ] keep
+    [ 14 swap string-head "this is a test" assert= ] keep
     drop
 ;
 

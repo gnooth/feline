@@ -53,5 +53,5 @@ method: segment end-offset              // segment -> offset
     segment format>> :> format
     segment start>> :> start
 
-    text index string-head start format make-segment/3
+    index text string-head start format make-segment/3
     index text string-tail start index + format make-segment/3 ;

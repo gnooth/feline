@@ -76,7 +76,7 @@ method: asm-mode identifier-at-dot      // mode -> start/f string/f
     ";" s substring-start :> comment-start
 
     comment-start [
-        s comment-start string-head 0 color-text make-segment/3
+        comment-start s string-head 0 color-text make-segment/3
         comment-start s string-tail comment-start color-comment make-segment/3
         2array
     ] [

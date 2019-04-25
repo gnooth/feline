@@ -530,7 +530,7 @@ code dot_object, '.'                    ; handle-or-object --
 endcode
 
 ; ### object>short-string
-code object_to_short_string, 'object>short-string'      ; x -> string
+code object_to_short_string, 'object>short-string' ; x -> string
         _ object_to_string
         _dup
         _ string_length
@@ -538,6 +538,7 @@ code object_to_short_string, 'object>short-string'      ; x -> string
         _ fixnum_fixnum_gt
         _tagged_if .1
         _lit tagged_fixnum(40)
+        _swap
         _ string_head
         _quote '...'
         _ string_append

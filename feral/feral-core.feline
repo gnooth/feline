@@ -289,7 +289,7 @@ global current-buffer
     dot-line-text string-length ;
 
 : dot-line-head                         // -> string
-    dot-line text>> dot-offset string-head ;
+    dot-offset dot-line text>> string-head ;
 
 : dot-line-tail                         // -> string
     dot-offset dot-line text>> string-tail ;

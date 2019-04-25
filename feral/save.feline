@@ -26,7 +26,7 @@ in: editor
 : trim ( s )                            // string -> string/f
     s string-?last whitespace? [
         s string-length 1- s [ whitespace? not ] find-last-from // -> index/f element/f
-        [ s swap 1+ string-head ] [ drop "" ] if
+        [ 1+ s string-head ] [ drop "" ] if
     ] [
         f
     ] if ;

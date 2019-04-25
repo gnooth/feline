@@ -88,7 +88,7 @@ in: editor
     :> s
     :> n
 
-    s n string-head
+    n s string-head
     n 1+ s string-length < [
         n 1+ s string-tail string-append
     ] when
@@ -215,7 +215,7 @@ use: kill-ring
         region region-as-string append-kill
 
         add-undo-line-edit
-        dot-line-text region begin-offset string-head
+        region begin-offset dot-line-text string-head
         region end-offset dot-line-text string-tail
         string-append dot-line-text!
 
