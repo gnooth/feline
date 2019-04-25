@@ -59,7 +59,7 @@ in: editor
     :> text
 
     text [ char-code 32 > ] find        // index/f element/f
-    [ text swap string-tail ] [ drop "" ] if
+    [ text string-tail ] [ drop "" ] if
 ;
 
 : newline-and-indent
@@ -90,7 +90,7 @@ in: editor
 
     s n string-head
     n 1+ s string-length < [
-        s n 1+ string-tail string-append
+        n 1+ s string-tail string-append
     ] when
 ;
 
@@ -194,7 +194,7 @@ use: kill-ring
     unmark
     copy-dot anchor! ;
 
-: insert-multiline-string               // string --> void
+: insert-multiline-string               // string -> void
     // insert string before line containing dot
     add-undo-insert-multiline-string
 
@@ -216,7 +216,7 @@ use: kill-ring
 
         add-undo-line-edit
         dot-line-text region begin-offset string-head
-        dot-line-text region end-offset string-tail
+        region end-offset dot-line-text string-tail
         string-append dot-line-text!
 
         unmark

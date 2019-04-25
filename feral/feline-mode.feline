@@ -142,7 +142,7 @@ method: feline-mode identifier-at-dot   // mode -> start/f string/f
     :> s
     :> start
 
-    s start 1+ string-tail <string-iterator> :> iter
+    start 1+ s string-tail <string-iterator> :> iter
 
     f :> this-char!
     this-char :> last-char!
