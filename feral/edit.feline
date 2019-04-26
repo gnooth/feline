@@ -106,6 +106,7 @@ in: editor
             add-undo-delete-line-separator
             dot-line-text dot-line-next text>> string-append dot-line-text!
             dot-line-next unlink
+            renumber
             t repaint?!
         ] when
     ] when
