@@ -1,4 +1,4 @@
-; Copyright (C) 2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -137,7 +137,7 @@ endcode
 asm_global stdout_
 
 ; ### stdout
-code stdout, 'stdout'                   ; -> stream
+code feline_stdout, 'stdout'            ; -> stream
         pushrbx
         mov     rbx, [stdout_]
         next
@@ -160,7 +160,7 @@ code initialize_streams, 'initialize-streams'
         _lit stdout_
         _ gc_add_root
 
-        _ stdout
+        _ feline_stdout
         _ standard_output
         _ set
 
