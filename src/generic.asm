@@ -504,6 +504,12 @@ generic nth_unsafe, 'nth-unsafe'
 ; ### set-nth
 generic set_nth, 'set-nth'
 
+; ### head
+generic generic_head, 'head'
+
+; ### tail
+generic generic_tail, 'tail'
+
 ; ### new-sequence
 generic new_sequence, 'new-sequence'    ; len seq -- new-seq
 
@@ -645,6 +651,14 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _initialize_generic_function set_nth
         _add_method set_nth, TYPECODE_ARRAY, array_set_nth
         _add_method set_nth, TYPECODE_VECTOR, vector_set_nth
+
+        ; head
+        _initialize_generic_function generic_head
+        _add_method generic_head, TYPECODE_STRING, string_head
+
+        ; tail
+        _initialize_generic_function generic_tail
+        _add_method generic_tail, TYPECODE_STRING, string_tail
 
         ; new-sequence
         _initialize_generic_function new_sequence
