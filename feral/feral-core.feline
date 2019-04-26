@@ -350,23 +350,26 @@ global current-buffer
 : renumber
     first-line :> line!
     0 :> n!
-    [ line ] [
+    [ line next>> ] [
         n line number<<
         n 1+ n!
         line next>> line!
     ] while
-;
+    n line number<<
+    line last-line! ;
 
-: nth-line ( line-number )              // line-number -> line
+: nth-line ( line-number )              // line-number -> line/f
 
     line-number 0 < [ f ] return-if
 
     first-line :> line!
     0 :> n!
-    [ n line-number < ] [
+
+    [ line n line-number < and ] [
         n 1+ n!
         line next>> line!
     ] while
+
     line
 ;
 
