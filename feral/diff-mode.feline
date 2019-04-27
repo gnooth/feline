@@ -1,0 +1,65 @@
+// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline accessors segments modes feral-config ;
+in: diff-mode
+
+private
+
+tuple: diff-mode
+    formatter ;
+
+winui? #if
+
+0x00 0x99 0x00 make-colorref constant color-insertion
+0x99 0x00 0x00 make-colorref constant color-deletion
+
+#else
+
+use: ansi-color
+
+0x00 0x99 0x00 rgb-foreground-prefix constant color-insertion
+0x99 0x00 0x00 rgb-foreground-prefix constant color-deletion
+
+unuse: ansi-color
+
+#endif
+
+: diff-format-line ( s )                // string -> segments
+
+    s length 0 eq? [ s ] return-if
+
+    "+++" s head? [ s ] return-if
+    "---" s head? [ s ] return-if
+
+    s string-first-char {
+        { '+' [ color-insertion ] }
+        { '-' [ color-deletion ] }
+        [
+            // default case
+            drop
+            color-text
+        ]
+    } case :> color
+
+    s 0 color make-segment/3 1array
+;
+
+public
+
+: initialize-diff-mode                  // void -> diff-mode
+    diff-mode make-instance :> m
+    ' diff-format-line m formatter<<
+    m ;
