@@ -3880,4 +3880,14 @@ test: within?-test-1
 
 within?-test-1
 
+test: +-test-1
+    { 129 } [ 42 87 + ] unit-test
+    { "not sure" } [ "not " "sure" + ] unit-test
+
+    [ 42 "no good" + ] assert-must-fail
+    [ "no good" 42 + ] assert-must-fail
+;
+
++-test-1
+
 ?nl "Reached end of test.feline" write-string
