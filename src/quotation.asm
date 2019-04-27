@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -142,8 +142,15 @@ code array_to_quotation, 'array>quotation'      ; array -- quotation
 endcode
 
 ; ### 1quotation
-code one_quotation, '1quotation'        ; object -- quotation
+code one_quotation, '1quotation'        ; x -> quotation
         _ one_array
+        _ array_to_quotation
+        next
+endcode
+
+; ### 2quotation
+code two_quotation, '2quotation'        ; x y -> quotation
+        _ two_array
         _ array_to_quotation
         next
 endcode
