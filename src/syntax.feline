@@ -18,31 +18,63 @@ in: feline
 
 private
 
-: make-global ( name )                  // symbol -> void
-    name :> reader
-    reader symbol-set-global-bit
-    reader <wrapper> ' symbol-value 2array array>quotation reader symbol-set-def
-    reader compile-word
+: make-global ( name )                  // string -> void
 
-    reader symbol-name "!" string-append new-symbol-in-current-vocab :> writer
-    reader <wrapper> ' symbol-set-value 2array array>quotation writer symbol-set-def
-    writer compile-word ;
+    name new-symbol-in-current-vocab :> reader
 
-: make-var ( name )                     // symbol -> void
-    name :> reader
-    reader symbol-set-thread-local-bit
-    reader <wrapper> ' current-thread-local-get 2array array>quotation reader symbol-set-def
-    reader compile-word
+    reader {
+        [ symbol-set-global-bit ]
+        [ <wrapper> ' symbol-value 2quotation ]
+        [ symbol-set-def ]
+        [ compile-word ]
+    } cleave
 
-    reader symbol-name "!" string-append new-symbol-in-current-vocab :> writer
-    reader <wrapper> ' current-thread-local-set 2array array>quotation writer symbol-set-def
-    writer compile-word ;
+    name "!" + new-symbol-in-current-vocab
+    {
+        [ drop reader <wrapper> ' symbol-set-value 2quotation ]
+        [ symbol-set-def ]
+        [ compile-word ]
+    } cleave
+
+    "?" name tail? [
+        name but-last "!" + new-symbol-in-current-vocab
+        {
+            [ drop reader <wrapper> ' symbol-set-value 2quotation ]
+            [ symbol-set-def ]
+            [ compile-word ]
+        } cleave
+    ] when ;
+
+: make-var ( name )                     // string -> void
+
+    name new-symbol-in-current-vocab :> reader
+
+    reader {
+        [ symbol-set-thread-local-bit ]
+        [ <wrapper> ' current-thread-local-get 2quotation ]
+        [ symbol-set-def ]
+        [ compile-word ]
+    } cleave
+
+    name "!" + new-symbol-in-current-vocab {
+        [ drop reader <wrapper> ' current-thread-local-set 2quotation ]
+        [ symbol-set-def ]
+        [ compile-word ]
+    } cleave
+
+    "?" name tail? [
+        name but-last "!" + new-symbol-in-current-vocab {
+            [ drop reader <wrapper> ' current-thread-local-set 2quotation ]
+            [ symbol-set-def ]
+            [ compile-word ]
+        } cleave
+    ] when ;
 
 public
 
-syntax: global parse-name make-global ;
+syntax: global must-parse-token make-global ;
 
-syntax: var parse-name make-var ;
+syntax: var must-parse-token make-var ;
 
 syntax: constant                        // x -> void
     parse-name
