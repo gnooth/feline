@@ -99,6 +99,8 @@ using: feral-core feline accessors modes accept-string directories feral-config 
 
 "list-buffers.feline" load
 
+"git.feline" load
+
 : find-file-to-edit ( arg )             // arg -> path/f
     arg find-file [
         arg ensure-feline-extension find-file
