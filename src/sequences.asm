@@ -131,11 +131,11 @@ endcode
 ; ### head?
 code head?, 'head?'                     ; begin seq -> ?
 ; Factor (with arguments reversed)
-; Return t if seq starts with begin.
+; Return t if `seq` starts with `begin`.
 
         _twodup
         _ longer?
-        ; Return f if begin is longer than seq.
+        ; Return f if `begin` is longer than `seq`.
         _quotation .1
         _2drop
         _f
@@ -148,10 +148,33 @@ code head?, 'head?'                     ; begin seq -> ?
         next
 endcode
 
+; ### tail?
+code tail?, 'tail?'                     ; end seq -> ?
+; Factor (with arguments reversed)
+; Return t if `seq` ends with `end`.
+
+        _twodup
+        _ longer?
+        _tagged_if .1
+        _2drop
+        _f
+        _return
+        _then .1
+
+        _over
+        _ length                        ; -> end seq end-length
+        _swap
+        _ tailstar                      ; -> end tail
+
+        _ mismatch
+        _ not
+        next
+endcode
+
 ; ### head*
 code headstar, 'head*'                  ; n seq -> head
 ; Factor (with arguments reversed)
-; Return a new sequence consisting of the elements of seq
+; Return a new sequence consisting of the elements of `seq`
 ; with the last n elements removed.
 ;
 ; 2 "quarter" head* -> "quart"
@@ -166,10 +189,27 @@ code headstar, 'head*'                  ; n seq -> head
         next
 endcode
 
+; ### tail*
+code tailstar, 'tail*'                  ; n seq -> tail
+; Factor (with arguments reversed)
+; Return a new sequence consisting of the last n elements of `seq`.
+;
+; 4 "quarterback" tail* -> "back"
+
+        _quotation .1
+        _ length
+        _swap
+        _ fixnum_fixnum_minus
+        _end_quotation .1
+        _ keep
+        _ generic_tail
+        next
+endcode
+
 ; ### but-last
 code but_last, 'but-last'               ; seq -> head
 ; Factor
-; Return a new sequence consisting of the elements of seq
+; Return a new sequence consisting of the elements of `seq`
 ; with the last element removed.
 
 ; "gadzooks" but-last -> "gadzook"

@@ -1508,7 +1508,6 @@ test: head?-test-1
     "this" "this is a test" head? assert-true
     "this is a test" "this is a test" head? assert-true
 
-    // Factor: "If `begin` is longer than `seq`, this word outputs f."
     "this is a test" "this" head? assert-false
 
     "" "this is a test" head? assert-true
@@ -1516,6 +1515,18 @@ test: head?-test-1
 ;
 
 head?-test-1
+
+test: tail?-test-1
+    "test" "this is a test" tail? assert-true
+    "this is a test" "this is a test" tail? assert-true
+
+    "this is a test" "test" tail? assert-false
+
+    "" "this is a test" tail? assert-true
+    "" "" tail? assert-true
+;
+
+tail?-test-1
 
 test: head*-test-1
     0 "quarter" head* "quarter" assert=
@@ -1527,6 +1538,17 @@ test: head*-test-1
 ;
 
 head*-test-1
+
+test: tail*-test-1
+    0 "quarter" tail* "" assert=
+    2 "quarter" tail* "er" assert=
+    7 "quarter" tail* "quarter" assert=
+
+    [ -1 "quarter" tail* ] assert-must-fail
+    [ 8 "quarter" tail* ] assert-must-fail
+;
+
+tail*-test-1
 
 test: but-last-test-1
     "gadzooks" but-last "gadzook" assert=
