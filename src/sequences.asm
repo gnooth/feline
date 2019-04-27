@@ -129,9 +129,13 @@ code mismatch, 'mismatch'               ; seq1 seq2 -- index/f
 endcode
 
 ; ### head?
-code head?, 'head?'                     ; seq begin -- ?
+code head?, 'head?'                     ; begin seq -> ?
+; Factor (with arguments reversed)
+; Return t if seq starts with begin.
+
         _twodup
-        _ shorter?
+        _ longer?
+        ; Return f if begin is longer than seq.
         _quotation .1
         _2drop
         _f
@@ -141,6 +145,38 @@ code head?, 'head?'                     ; seq begin -- ?
         _ not
         _end_quotation .2
         _ feline_if
+        next
+endcode
+
+; ### head*
+code headstar, 'head*'                  ; n seq -> head
+; Factor (with arguments reversed)
+; Return a new sequence consisting of the elements of seq
+; with the last n elements removed.
+;
+; 2 "quarter" head* -> "quart"
+
+        _quotation .1
+        _ length
+        _swap
+        _ fixnum_fixnum_minus
+        _end_quotation .1
+        _ keep
+        _ generic_head
+        next
+endcode
+
+; ### but-last
+code but_last, 'but-last'               ; seq -> head
+; Factor
+; Return a new sequence consisting of the elements of seq
+; with the last element removed.
+
+; "gadzooks" but-last -> "gadzook"
+
+        _lit tagged_fixnum(1)
+        _swap
+        _ headstar
         next
 endcode
 
