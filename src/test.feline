@@ -1504,6 +1504,39 @@ test: tail-test-1
 
 tail-test-1
 
+test: head?-test-1
+    "this" "this is a test" head? assert-true
+    "this is a test" "this is a test" head? assert-true
+
+    // Factor: "If `begin` is longer than `seq`, this word outputs f."
+    "this is a test" "this" head? assert-false
+
+    "" "this is a test" head? assert-true
+    "" "" head? assert-true
+;
+
+head?-test-1
+
+test: head*-test-1
+    0 "quarter" head* "quarter" assert=
+    2 "quarter" head* "quart" assert=
+    7 "quarter" head* "" assert=
+
+    [ -1 "quarter" head* ] assert-must-fail
+    [ 8 "quarter" head* ] assert-must-fail
+;
+
+head*-test-1
+
+test: but-last-test-1
+    "gadzooks" but-last "gadzook" assert=
+    "g" but-last "" assert=
+
+    [ "" but-last ] assert-must-fail
+;
+
+but-last-test-1
+
 magenta constant test-magenta
 
 test: constant-test-1
