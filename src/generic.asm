@@ -670,6 +670,8 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method generic_plus, TYPECODE_FIXNUM, fixnum_plus
         _add_method generic_plus, TYPECODE_INT64, int64_plus
         _add_method generic_plus, TYPECODE_FLOAT, float_plus
+        ; REVIEW
+        _add_method generic_plus, TYPECODE_STRING, string_append
 
         ; -
         _initialize_generic_function generic_minus
