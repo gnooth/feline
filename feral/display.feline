@@ -26,6 +26,16 @@ in: editor
     ] if
 ;
 
+: mode-line-text                        // void -> string
+    256 <sbuf> :> sb
+    modified? '*' '\s' ? sb sbuf-push
+    current-buffer name>> "untitled" or sb sbuf-append-string
+    dot-line-number 1+
+    dot-column 1+
+    line-count
+    " %d:%d (%d)" format sb sbuf-append-string
+    sb sbuf>string ;
+
 winui? #if
 
 : update-caret-pos
@@ -34,14 +44,8 @@ winui? #if
     winui-set-caret-pos
 ;
 
-: update-modeline
-    256 <sbuf> :> sb
-    modified? '*' '\s' ? sb sbuf-push
-    current-buffer name>> "untitled" or sb sbuf-append-string
-    dot-line-number 1+
-    dot-column 1+
-    " %d:%d " format sb sbuf-append-string
-    sb sbuf>string winui-modeline-set-text
+: update-mode-line
+    mode-line-text winui-modeline-set-text
 ;
 
 192 192 192 make-colorref constant fg-default
@@ -198,7 +202,7 @@ winui? #if
         y 1+ y!
     ] while
 
-    update-modeline
+    update-mode-line
 
     winui-show-caret
 
@@ -215,7 +219,7 @@ winui? #if
             f dot-line-changed?!
         ] when
     ] if
-    update-modeline
+    update-mode-line
     update-caret-pos
     winui-show-caret
 ;
@@ -233,27 +237,22 @@ use: ansi-color
   0   0   0 rgb-background-prefix constant bg-default
  64  64  64 rgb-background-prefix constant bg-selected
 
-: reverse esc[ "7m" write-string-escaped ;
-
 : normal esc[ "m" write-string-escaped ;
 
-: status
-    "\e[37m" write-string-escaped       // white foreground
-    reverse
-    0 status-y at-xy
-    modified? [ '*' write-char ] [ space ] if
-    current-buffer filename>> :> filename!
-    filename [ "untitled" filename! ] unless
-    filename write-string
+  0   0   0 rgb-foreground-prefix constant fg-mode-line
+192 192 192 rgb-background-prefix constant bg-mode-line
 
-    dot-line-number 1+
-    line-count
-    dot-column 1+
-    "Line %d of %d Col %d " format
-    terminal-columns over length - :> x
-    x filename length 1+ - 1 max spaces
-    write-string
-    normal
+: update-mode-line
+    0 status-y at-xy
+
+    fg-mode-line write-string-escaped
+    bg-mode-line write-string-escaped
+
+    mode-line-text write-string
+    clear-to-eol
+
+    fg-default write-string-escaped
+    bg-default write-string-escaped
 ;
 
 : clear-status-line 0 status-y at-xy clear-to-eol ;
@@ -422,7 +421,7 @@ use: ansi-color
             f dot-line-changed?!
         ] when
     ] if
-    status
+    update-mode-line
     update-caret-pos
     show-cursor
 ;
