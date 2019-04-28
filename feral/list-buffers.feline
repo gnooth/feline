@@ -23,19 +23,20 @@ tuple: list-buffers-mode
 
 global list-buffers-old-buffer
 
+4 constant buffer-name-column
+
 : list-buffers-select
-    f :> name!
-    4 dot-line-length dot-line-text substring name!
+    buffer-name-column dot-line-text tail :> name
     buffer-list [ name>> name = ] find nip [
         current-buffer!
-        t repaint?!
+        t repaint!
         update-display
     ] when*
 ;
 
 : list-buffers-quit
     list-buffers-old-buffer current-buffer!
-    t repaint?!
+    t repaint!
     update-display
 ;
 
@@ -76,11 +77,13 @@ initialize-local-map
     ] each
 
     buf first-line>> buf top-line<<
-    select [ buf first-line>> ] unless* 0 make-position buf dot<<
+
+    select [ buf first-line>> ] unless* buffer-name-column make-position buf dot<<
+    buffer-name-column buf goal-column<<
 
     buf current-buffer!
     renumber
-    t repaint?!
+    t repaint!
 ;
 
 in: editor
