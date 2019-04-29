@@ -39,6 +39,10 @@ method: line length                     // line -> length
 method: line substring                  // from to line -> substring
     text>> string-substring ;
 
+: line-before? ( line1 line2 )          // line1 line2 -> ?
+    line1 number>> line2 number>> <
+;
+
 tuple: position
     line
     offset ;
@@ -63,6 +67,8 @@ tuple: position
 ;
 
 generic before?
+
+method: line before? line-before? ;
 
 method: position before? position-before? ;
 
