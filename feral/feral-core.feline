@@ -498,13 +498,32 @@ winui? #if
 
 : line-selected? ( line )               // line -> ?
     mark null? [ f ] return-if
+    dot mark make-region/2 :> region
+    {
+        {
+            [ region begin-line line before? ]
+            [ line region end-line before? ]
+        }
+        {
+            [ region begin-line line eq? ]
+            [ region begin-offset 0 eq? line region end-line before? and ]
+        }
+        // default
+        [ f ]
+    } cond ;
 
-    line number>> mark-line-number >= [
-        line number>> dot-line-number <
-    ] [
-        f
-    ] if
-;
+: line-starts-in-selection? ( line )    // line -> ?
+    mark null? [ f ] return-if
+
+    mark dot make-region/2 :> region
+    line 0 make-position :> pos
+
+    pos region in-region? ;
+
+: line-is-partly-selected? ( line )     // line -> ?
+    mark [
+        line dot-line eq? line mark-line eq? or
+    ] [ f ] if ;
 
 : line-contains-selection? ( line )     // line -> ?
     mark null? [ f ] return-if
