@@ -801,6 +801,16 @@ code third, 'third'                     ; seq -- third
         next
 endcode
 
+; ### last
+code last, 'last'                       ; seq -> element
+        _dup
+        _ length
+        sub     rbx, (1 << FIXNUM_TAG_BITS)
+        _swap
+        _ nth
+        next
+endcode
+
 ; ### index
 code index, 'index'                     ; obj seq -- index/f
         push    this_register
