@@ -60,11 +60,12 @@ tuple: position
 : position-before? ( pos1 pos2 )        // pos1 pos2 -> ?
     pos1 line>> :> line1
     pos2 line>> :> line2
-
-    line1 number>> line2 number>> < [ t ] return-if
-
-    line1 line2 eq? [ pos1 offset>> pos2 offset>> < ] [ f ] if
-;
+    {
+        { [ line1 number>> line2 number>> < ] [ t ] }
+        { [ line1 line2 eq? ] [ pos1 offset>> pos2 offset>> < ] }
+        // default
+        [ f ]
+    } cond ;
 
 generic before?
 
@@ -104,13 +105,20 @@ tuple: region
     begin
     end ;
 
-: make-region/2 ( pos1 pos2 )
+: make-region/2 ( pos1 pos2 )           // pos1 pos2 -> region
     region make-instance :> region
     pos1 pos2 before? [ pos1 pos2 ] [ pos2 pos1 ] if
     [ copy-position ] bi@
     region [ end<< ] [ begin<< ] bi
     region
 ;
+
+: in-region? ( pos region )             // pos region -> ?
+    pos region begin>> before? [
+        f
+    ] [
+        pos region end>> before?
+    ] if ;
 
 generic begin
 
