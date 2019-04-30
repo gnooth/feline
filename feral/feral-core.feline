@@ -526,10 +526,9 @@ winui? #if
     ] [ f ] if ;
 
 : line-contains-selection? ( line )     // line -> ?
-    mark null? [ f ] return-if
-
-    line dot-line eq? [ line mark-line eq? ] [ f ] if
-;
+    mark [
+        line dot-line eq? line mark-line eq? and
+    ] [ f ] if ;
 
 : reframe?                              // -> ?
     dot-line-number
