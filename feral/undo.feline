@@ -1,17 +1,17 @@
--- Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feral-core feline accessors ;
 in: editor
@@ -34,22 +34,22 @@ symbol: +insert-line-separator+
 symbol: +insert-multiline-string+
 
 tuple: compound-undo
-    records                             -- vector
+    records                             // vector
 ;
 
-: new-compound-undo                     -- -> compound-undo
+: new-compound-undo                     // -> compound-undo
     compound-undo make-instance
     4 <vector> over records<< ;
 
-: add-undo                              -- undo-record compound-undo ->
+: add-undo                              // undo-record compound-undo ->
     records>> vector-push ;
 
 special: +compound-undo+
 
-: push-undo                             -- undo-record -> void
+: push-undo                             // undo-record -> void
     +compound-undo+ get [ add-undo ] [ undo-stack vector-push ] if* ;
 
-: with-compound-undo                    -- quotation ->
+: with-compound-undo                    // quotation ->
     [
         new-compound-undo +compound-undo+ set
         call
@@ -58,15 +58,15 @@ special: +compound-undo+
     push-undo
 ;
 
-: pop-undo                              -- -> undo-record
+: pop-undo                              // -> undo-record
     undo-stack vector-pop ;
 
 special: +compound-redo+
 
-: push-redo                             -- undo-record ->
+: push-redo                             // undo-record ->
     +compound-redo+ get [ add-undo ] [ redo-stack vector-push ] if* ;
 
-: with-compound-redo                    -- quotation ->
+: with-compound-redo                    // quotation ->
     [
         new-compound-undo +compound-redo+ set
         call
@@ -75,14 +75,14 @@ special: +compound-redo+
     push-redo
 ;
 
-: pop-redo                              -- -> undo-record
+: pop-redo                              // -> undo-record
     redo-stack vector-pop ;
 
 : reset-undo undo-stack vector-delete-all ;
 
 : reset-redo redo-stack vector-delete-all ;
 
-: new-undo-record                       -- -> undo-record
+: new-undo-record                       // -> undo-record
     undo-record make-instance :> undo-rec
 
     mod-count undo-rec mod-count<<
@@ -100,11 +100,11 @@ special: +compound-redo+
     undo-rec
 ;
 
-: restore-dot                           -- undo-record -> void
+: restore-dot                           // undo-record -> void
     [ dot-line-number>> nth-line ]
     [ dot-offset>> ] bi make-position dot! ;
 
-: restore-mark                          -- undo-record -> void
+: restore-mark                          // undo-record -> void
     mark-line-number>> [
         [ mark-line-number>> nth-line ]
         [ mark-offset>> ] bi make-position
@@ -120,7 +120,7 @@ special: +compound-redo+
     +move+ >>action
     push-redo ;
 
-: undo-move ( undo-rec )                -- undo-record ->
+: undo-move ( undo-rec )                // undo-record ->
     in-redo? [ add-undo-move ] [ add-redo-move ] if
 
     mark [ t repaint?! ] when
@@ -136,7 +136,7 @@ special: +compound-redo+
     mark [ t repaint?! ] when
 ;
 
-: new-undo-line-edit                    -- -> undo-record
+: new-undo-line-edit                    // -> undo-record
     new-undo-record
     +line-edit+ over action<<
     dot-line-text over data<<
@@ -146,7 +146,7 @@ special: +compound-redo+
 
 : add-redo-line-edit new-undo-line-edit push-redo ;
 
-: undo-line-edit                        -- undo-record -> void
+: undo-line-edit                        // undo-record -> void
     in-redo? [ add-undo-line-edit ] [ add-redo-line-edit ] if
 
     {
@@ -172,10 +172,10 @@ special: +compound-redo+
     push-redo
 ;
 
-: undo-delete-line-separator  ( undo-rec )      -- undo-record -> void
+: undo-delete-line-separator  ( undo-rec )      // undo-record -> void
     undo-rec mod-count>> mod-count!
     undo-rec restore-dot
-    undo-rec data>>                     -- -> 2array
+    undo-rec data>>                     // -> 2array
     dup array-first dot-line-text!
     array-second make-line/1 dot-line insert-after
 
@@ -198,7 +198,7 @@ special: +compound-redo+
     push-redo
 ;
 
-: undo-insert-line-separator            -- undo-record -> void
+: undo-insert-line-separator            // undo-record -> void
     [ mod-count>> mod-count! ]
     [ restore-dot ]
     [ data>> dot-line-text! ]
@@ -217,7 +217,7 @@ special: +compound-redo+
     push-undo
 ;
 
-: undo-insert-multiline-string          -- undo-record -> void
+: undo-insert-multiline-string          // undo-record -> void
     f :> prev!
     [ mod-count>> mod-count! ]
     [ dot-line-number>> 1- nth-line prev! ]
@@ -245,13 +245,13 @@ symbol: +delete-line+
     +delete-line+ >>action
     push-redo ;
 
-: undo-delete-line ( undo-rec )         -- undo-record -> void
+: undo-delete-line ( undo-rec )         // undo-record -> void
     dot-line-next [
         undo-rec data>> make-line/1 dot-line insert-before
         undo-rec mod-count>> mod-count!
         undo-rec restore-dot
     ] [
-        -- last line
+        // last line
         undo-rec data>> make-line/1 dot-line insert-after
         undo-rec mod-count>> mod-count!
         undo-rec restore-dot
@@ -262,7 +262,7 @@ symbol: +delete-line+
     add-redo-delete-line
 ;
 
-: undo1                                 -- undo-record ->
+: undo1                                 // undo-record ->
     dup action>>
     {
         { +move+ [ undo-move ] }
