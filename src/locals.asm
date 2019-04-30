@@ -414,6 +414,14 @@ code maybe_initialize_locals, 'maybe-initialize-locals'
         next
 endcode
 
+; ### error-duplicate-local-name
+code error_duplicate_local_name, 'error-duplicate-local-name'
+        _quote "ERROR: duplicate local name %S."
+        _ format
+        _ error
+        next
+endcode
+
 ; ### add-local
 code add_local, 'add-local'             ; string -> void
 
@@ -427,7 +435,7 @@ code add_local, 'add-local'             ; string -> void
         _ locals
         _ hashtable_at
         _tagged_if .2
-        _error "duplicate local name"
+        _ error_duplicate_local_name
         _then .2                        ; -> string
 
         _ locals_count
@@ -460,7 +468,7 @@ code add_local_setter, 'add-local-setter'       ; string -> void
         _ local_names
         _ hashtable_at
         _tagged_if .2
-        _error "duplicate local name"
+        _ error_duplicate_local_name
         _then .2                        ; -> string
 
         _ locals_count
