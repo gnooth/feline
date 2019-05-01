@@ -123,17 +123,17 @@ special: +compound-redo+
 : undo-move ( undo-rec )                // undo-record ->
     in-redo? [ add-undo-move ] [ add-redo-move ] if
 
-    mark [ t repaint?! ] when
+    mark [ t repaint! ] when
 
     undo-rec mod-count>> mod-count!
 
     undo-rec restore-dot
 
-    undo-rec mark>> mark!
+    undo-rec restore-mark
 
     top-line line? assert
 
-    mark [ t repaint?! ] when
+    mark [ t repaint! ] when
 ;
 
 : new-undo-line-edit                    // -> undo-record
