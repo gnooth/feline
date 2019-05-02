@@ -555,6 +555,17 @@ winui? #if
 : current-mode                          // -> mode
     current-buffer mode>> ;
 
+generic formatter                       // mode -> formatter
+
+use: segments
+
+: default-formatter
+    [ make-segment 1array ] ;
+
+unuse: segments
+
+' default-formatter ' formatter set-default-method
+
 generic identifier-char?                // char mode -> ?
 
 generic identifier-at-dot               // mode -> start/f string/f
