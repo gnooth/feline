@@ -39,6 +39,7 @@ private
 0x72 constant VK_F3
 
 0xbe constant VK_OEM_PERIOD
+0xbf constant VK_OEM_2                  // '/' '?'
 
 0x01 16 lshift constant alt-mask
 0x02 16 lshift constant ctrl-mask
@@ -59,6 +60,7 @@ VK_UP                   constant up
 VK_DOWN                 constant down
 VK_PRIOR                constant pageup
 VK_NEXT                 constant pagedown
+VK_OEM_2 ctrl           constant ctrl-/
 VK_HOME ctrl            constant ctrl-home
 VK_END ctrl             constant ctrl-end
 VK_UP ctrl              constant ctrl-up
