@@ -19,7 +19,7 @@ in: editor
 : format-line ( s )                     // string -> segments
     current-buffer mode>> :> mode
     mode [
-        s mode formatter call-symbol
+        s mode formatter call
     ] [
         s 0 color-text make-segment/3
         1array
@@ -259,7 +259,7 @@ use: ansi-color
 
 : repaint-segment                       // segment -> void
     dup
-    format>> write-string-escaped
+    format>> [ write-string-escaped ] when*
     text>> write-string
 ;
 
