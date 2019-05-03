@@ -338,14 +338,6 @@ code new_symbol_in_current_vocab, 'new-symbol-in-current-vocab' ; string -> symb
         _ maybe_note_redefinition
         _ current_vocab
         _ new_symbol
-        next
-endcode
-
-; ### parse-name
-code parse_name, 'parse-name'           ; -> symbol
-
-        _ must_parse_token              ; -> string
-        _ new_symbol_in_current_vocab   ; -> symbol
 
         _ current_lexer_location        ; -> symbol 3array/f
         _dup
@@ -359,6 +351,15 @@ code parse_name, 'parse-name'           ; -> symbol
         _else .1
         _drop
         _then .1                        ; -> symbol
+
+        next
+endcode
+
+; ### parse-name
+code parse_name, 'parse-name'           ; -> symbol
+
+        _ must_parse_token              ; -> string
+        _ new_symbol_in_current_vocab   ; -> symbol
 
         _dup
         _ set_last_word                 ; -> symbol
