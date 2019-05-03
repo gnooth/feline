@@ -80,6 +80,9 @@ using: feral-core feline accessors modes accept-string directories feral-config 
 
 "save.feline" load
 
+"asm-mode.feline" load
+"feline-mode.feline" load
+
 : exit-feral t done?! ;
 
 : do-quit

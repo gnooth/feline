@@ -38,6 +38,3 @@ use: ansi-color
 128 128   0 rgb-foreground-prefix constant color-comment
 
 #endif
-
-"asm-mode.feline" load
-"feline-mode.feline" load
