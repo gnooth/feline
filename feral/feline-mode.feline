@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline accessors segments modes ansi-color feral-config ;
+using: feral-core feline accessors segments modes feral-config ;
 in: feline-mode
 
 private
@@ -198,6 +198,8 @@ winui? #if
 
 #else
 
+use: ansi-color
+
 192 192 192 rgb-foreground-prefix constant text-prefix
 128 128   0 rgb-foreground-prefix constant comment-prefix
   0 255 255 rgb-foreground-prefix constant syntax-prefix
@@ -205,6 +207,8 @@ winui? #if
   0 170   0 rgb-foreground-prefix constant string-prefix
   0 153 153 rgb-foreground-prefix constant combinator-prefix
 255   0   0 rgb-foreground-prefix constant preprocessor-prefix
+
+unuse: ansi-color
 
 #endif
 
