@@ -21,6 +21,9 @@ private
 tuple: feline-mode
     formatter ;
 
+method: feline-mode formatter           // mode -> formatter
+    formatter>> ;
+
 : feline-mode-identifier-char?          // char -> ?
     '\s' neq?
 ;

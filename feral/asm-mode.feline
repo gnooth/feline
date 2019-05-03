@@ -39,6 +39,9 @@ private
 tuple: asm-mode
     formatter ;
 
+method: asm-mode formatter              // mode -> formatter
+    formatter>> ;
+
 : asm-mode-identifier-char? ( x )       // x -> ?
     { [ x alphanumeric? ] [ x "_$#@~.?" member-eq? ] } ||
 ;

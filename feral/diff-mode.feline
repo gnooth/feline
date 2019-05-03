@@ -13,13 +13,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accessors segments modes feral-config ;
+using: feline accessors feral-core segments modes feral-config ;
 in: diff-mode
 
 private
 
 tuple: diff-mode
     formatter ;
+
+method: diff-mode formatter             // mode -> formatter
+    formatter>> ;
 
 winui? #if
 
