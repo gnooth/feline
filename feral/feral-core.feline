@@ -551,7 +551,6 @@ winui? #if
 : insert-multiline-string-internal ( s )        // string -> void
     s string-lines :> lines
     lines length :> len
-    len 2 >= assert
     lines last :> last-line
 
     f :> line!
