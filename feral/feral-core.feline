@@ -270,7 +270,7 @@ global current-buffer
     mark offset>> ;
 
 : unmark
-    mark [ f mark! t repaint?! ] when ;
+    mark [ f mark! t repaint! ] when ;
 
 : copy-dot                              // -> position
     dot copy-position ;
@@ -529,6 +529,57 @@ winui? #if
     mark [
         line dot-line eq? line mark-line eq? and
     ] [ f ] if ;
+
+: insert-string-internal ( s )
+    dot-line-head s + dot-line-tail + dot-line-text!
+    dot-offset s length + dot-offset!
+    t dot-line-changed!
+;
+
+: insert-line-separator-internal
+    // insert line separator at dot
+    // move dot past the inserted separator
+    // no undo
+
+    dot-line-tail make-line/1 :> new-line
+    dot-line-head dot-line-text!
+    new-line dot-line insert-after
+    new-line dot-line!
+    0 dot-offset!
+;
+
+: insert-multiline-string-internal ( s )        // string -> void
+    s string-lines :> lines
+    lines length :> len
+    len 2 >= assert
+    lines last :> last-line
+
+    f :> line!
+    lines [
+        line!
+
+        line insert-string-internal
+        line last-line neq? [
+            insert-line-separator-internal
+        ] when
+    ] each
+
+    s last '\n' eq? [ insert-line-separator-internal ] when
+
+    renumber
+;
+
+: insert-string ( s )                   // string -> void
+    // insert string at dot
+    // moves dot past inserted string
+    // no undo
+
+    '\n' s index [
+        s insert-multiline-string-internal
+    ] [
+        s insert-string-internal
+    ] if
+;
 
 : reframe?                              // -> ?
     dot-line-number
