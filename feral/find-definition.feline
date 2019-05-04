@@ -1,0 +1,92 @@
+// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feral-core feline feral-config ;
+in: editor
+
+winui? #if
+use: mini
+#endif
+
+: goto-definition                       // symbol -> void
+    symbol-location :> line-number :> filename
+    filename [
+        filename find-buffer [
+            current-buffer!
+            line-number gotoline-internal
+        ] [
+            filename line-number create-buffer/2
+        ] if*
+        maybe-reframe
+        t repaint!
+    ] when
+;
+
+winui? #if
+
+: minibuffer-list-symbols               // symbols -> void
+    256 <sbuf> :> sb
+    [
+        symbol-qualified-name sb sbuf-append-string
+        '\s' sb sbuf-push
+    ] each
+    sb sbuf>string minibuffer-set-text
+;
+
+#else
+
+: minibuffer-list-symbols               // symbols -> void
+    0 message-y at-xy
+    [ symbol-qualified-name write-string space ] each
+;
+
+#endif
+
+: find-definition
+    "Word: " minibuffer-accept-string
+    dup null? [ drop ] return-if
+
+    find-qualified-name [
+        goto-definition
+    ] [
+        all-words [ symbol-name over = ] filter nip
+        dup length {
+            { 0 [ drop ] }
+            { 1 [ first goto-definition ] }
+            [
+                // more than 1 match
+                drop
+                minibuffer-list-symbols
+            ]
+        } case
+    ] if ;
+
+: find-definition-at-dot
+    current-mode identifier-at-dot      // -> index/f string/f
+    nip                                 // -> string/f
+    find-qualified-name [
+        goto-definition
+    ] [
+        all-words [ symbol-name over = ] filter nip
+        dup length {
+            { 0 [ drop ] }
+            { 1 [ first goto-definition ] }
+            [
+                // more than 1 match
+                drop
+                minibuffer-list-symbols
+            ]
+        } case
+    ] if ;

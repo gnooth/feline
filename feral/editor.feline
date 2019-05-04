@@ -126,56 +126,7 @@ using: feral-core feline accessors modes accept-string directories feral-config 
     ] when
 ;
 
-: goto-definition                       // symbol -> void
-    symbol-location :> line-number :> filename
-    filename [
-        filename find-buffer [
-            current-buffer!
-            line-number gotoline-internal
-        ] [
-            filename line-number create-buffer/2
-        ] if*
-        maybe-reframe
-        t repaint?!
-    ] when
-;
-
-: find-definition
-    "Word: " minibuffer-accept-string
-    find-qualified-name [
-        goto-definition
-    ] [
-        all-words [ symbol-name over = ] filter nip
-        dup length {
-            { 0 [ drop ] }
-            { 1 [ first goto-definition ] }
-            [
-                // more than 1 match
-                drop
-                0 message-y at-xy
-                [ symbol-qualified-name write-string space ] each
-            ]
-        } case
-    ] if ;
-
-: find-definition-at-dot
-    current-mode identifier-at-dot      // -> start/f string/f
-    nip                                 // -> string/f
-    find-qualified-name [
-        goto-definition
-    ] [
-        all-words [ symbol-name over = ] filter nip
-        dup length {
-            { 0 [ drop ] }
-            { 1 [ first goto-definition ] }
-            [
-                // more than 1 match
-                drop
-                0 message-y at-xy
-                [ symbol-qualified-name write-string space ] each
-            ]
-        } case
-    ] if ;
+"find-definition.feline" load
 
 : execute-command
     "Command: " minibuffer-accept-string :> command
