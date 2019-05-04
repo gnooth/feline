@@ -105,10 +105,10 @@ special: +compound-redo+
     [ dot-offset>> ] bi make-position dot! ;
 
 : restore-mark                          // undo-record -> void
-    mark-line-number>> [
+    dup mark-line-number>> [
         [ mark-line-number>> nth-line ]
         [ mark-offset>> ] bi make-position
-    ] [ f ] if mark! ;
+    ] [ drop f ] if mark! ;
 
 : add-undo-move
     new-undo-record
