@@ -54,10 +54,7 @@ winui? #if
 
 #endif
 
-: find-definition
-    "Word: " minibuffer-accept-string
-    dup null? [ drop ] return-if
-
+: find-definition-internal              // string -> void
     find-qualified-name [
         goto-definition
     ] [
@@ -72,21 +69,12 @@ winui? #if
             ]
         } case
     ] if ;
+
+: find-definition
+    "Word: " minibuffer-accept-string
+    [ find-definition-internal ] when* ;
 
 : find-definition-at-dot
     current-mode identifier-at-dot      // -> index/f string/f
     nip                                 // -> string/f
-    find-qualified-name [
-        goto-definition
-    ] [
-        all-words [ symbol-name over = ] filter nip
-        dup length {
-            { 0 [ drop ] }
-            { 1 [ first goto-definition ] }
-            [
-                // more than 1 match
-                drop
-                minibuffer-list-symbols
-            ]
-        } case
-    ] if ;
+    [ find-definition-internal ] when* ;
