@@ -13,6 +13,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using: feline feral-config ;
+in: user
+
+"mini" delete-vocab
+
+winui? #if
+
 using: feline accessors ;
 in: mini
 
@@ -119,6 +126,14 @@ initialize-minibuffer-keymap
 
 public
 
+: message                               // string ->
+    minibuffer-set-text
+;
+
+: clear-message
+    "" minibuffer-set-text
+;
+
 : minibuffer-accept-string              // prompt -> string/f
     verify-string prompt!
     f minibuffer-contents!
@@ -131,3 +146,27 @@ public
         minibuffer-contents substring
     ] [ f ] if
 ;
+
+#else
+
+using: feline accept-string ;
+in: mini
+
+: status-y                              // -> n
+    terminal-rows 2 - ;
+
+: message-y                             // -> n
+    terminal-rows 1- ;
+
+: message                               // string ->
+    0 message-y at-xy write-string ;
+
+: clear-message hide-cursor 0 message-y at-xy clear-to-eol ;
+
+: minibuffer-accept-string              // prompt-string -> string
+    0 message-y at-xy
+    accept-string
+    clear-message
+;
+
+#endif
