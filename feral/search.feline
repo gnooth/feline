@@ -1,19 +1,19 @@
--- Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline accessors editor history feral-config ;
+using: feral-core feline accessors editor history feral-config mini ;
 in: search
 
 empty
@@ -53,11 +53,11 @@ var current-search
     current-pattern "%S not found" format
     message ;
 
-: find-char-in-range ( char string start end )  -- char string start end -> i/f
+: find-char-in-range ( char string start end )  // char string start end -> i/f
     start end [ string string-nth-unsafe char eq? ] find-integer-in-range
 ;
 
-: find-substring-in-range ( pattern string start end )  -- pattern string start end -> i/f
+: find-substring-in-range ( pattern string start end )  // pattern string start end -> i/f
     pattern unsafe-string-data-address :> pattern-data-address
     string unsafe-string-data-address :> string-data-address
     pattern string-length :> pattern-length
@@ -69,17 +69,17 @@ var current-search
     ] find-integer-in-range
 ;
 
-: find-substring-from ( pattern string start )  -- pattern string start -> i/f
+: find-substring-from ( pattern string start )  // pattern string start -> i/f
     string string-length pattern string-length - 1+ :> end
     pattern string start end find-substring-in-range
 ;
 
-: find-substring-in-line ( pattern line )       -- pattern line -> position/f
+: find-substring-in-line ( pattern line )       // pattern line -> position/f
     pattern line text>> 0 find-substring-from
     [ line swap make-position ] [ f ] if*
 ;
 
-: search-forward ( pattern startpos )   -- string position -> position/f
+: search-forward ( pattern startpos )   // string position -> position/f
     startpos line>> :> line!
     startpos offset>> :> offset
 
@@ -103,7 +103,7 @@ var current-search
     result
 ;
 
-: find-last-substring-in-range ( pattern string start end )     -- string1 string2 start end -> i/f
+: find-last-substring-in-range ( pattern string start end )     // string1 string2 start end -> i/f
     pattern unsafe-string-data-address :> pattern-data-address
     string unsafe-string-data-address :> string-data-address
     pattern string-length :> pattern-length
@@ -114,17 +114,17 @@ var current-search
         pattern-length unsafe-memequal
     ] find-last-integer-in-range ;
 
-: find-last-substring-from ( pattern string from )      -- pattern string from -> i/f
+: find-last-substring-from ( pattern string from )      // pattern string from -> i/f
     pattern string 0
     string string-length pattern string-length - 1+ from min
     find-last-substring-in-range ;
 
-: find-last-substring-in-line ( pattern line )  -- pattern line -> position/f
+: find-last-substring-in-line ( pattern line )  // pattern line -> position/f
     pattern line text>> line length find-last-substring-from
     [ line swap make-position ] [ f ] if*
 ;
 
-: search-backward ( pattern startpos )  -- pattern startpos -> position/f
+: search-backward ( pattern startpos )  // pattern startpos -> position/f
     startpos line>> :> line!
     startpos offset>> :> offset
 
@@ -148,7 +148,7 @@ var current-search
     result
 ;
 
-: delimited? ( pos len )                -- position length -> ?
+: delimited? ( pos len )                // position length -> ?
     pos line>> :> line
     pos offset>> :> offset
 
@@ -173,7 +173,7 @@ var current-search
     result
 ;
 
-: find-word-in-line ( pattern line )    -- pattern line -> position/f
+: find-word-in-line ( pattern line )    // pattern line -> position/f
     0 :> index!
     f :> pos!
 
