@@ -13,12 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline feral-config ;
+using: feral-core feline feral-config mini ;
 in: editor
-
-winui? #if
-use: mini
-#endif
 
 : goto-definition                       // symbol -> void
     symbol-location :> line-number :> filename
