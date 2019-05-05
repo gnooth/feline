@@ -14,132 +14,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
-in: user
-
-{
-    "feral-config"
-    "feral-core"
-    "directories"
-    "search"
-    "modes"
-    "feline-mode"
-    "asm-mode"
-    "list-buffers"
-    "kill-ring"
-    "ansi-color"
-    "accept-string"
-} [ delete-vocab ] each
-
-in: feral-config
-
-empty
-
-f constant winui?
-
 in: editor
 
 empty
 
-feline-home "feral" path-append add-source-directory
+"feral-loader.feline" load
 
-use: directories
+directories:initialize-directories
 
-initialize-directories
-
-using: feral-core feline accessors modes accept-string directories feral-config ;
-
-: status-y                              // -> n
-    terminal-rows 2 - ;
-
-: message-y                             // -> n
-    status-y 1+ ;
-
-: message                               // string ->
-    0 message-y at-xy write-string ;
-
-: clear-message hide-cursor 0 message-y at-xy clear-to-eol ;
-
-"display.feline" load
-
-"undo.feline" load
-
-"move.feline" load
-
-: minibuffer-accept-string              // prompt-string -> string
-    0 message-y at-xy
-    accept-string
-    clear-message
-;
-
-: gotoline
-    "Line number: " minibuffer-accept-string
-    string>number [ gotoline-internal ] when*
-;
-
-"edit.feline" load
-
-"save.feline" load
-
-"asm-mode.feline" load
-"feline-mode.feline" load
-
-: exit-feral t done?! ;
-
-: do-quit
-    buffer-list [ buffer-modified? ] count :> n
-
-    n zero? [
-        exit-feral
-    ] [
-        n dup 1 > "s" "" ?
-        "Really exit with %s modified buffer%s? (yes or no) " format
-        minibuffer-accept-string
-        "yes" = [ exit-feral ] when
-    ] if
-;
-
-"buffer.feline" load
-
-"list-buffers.feline" load
-
-"git.feline" load
-
-: find-file-to-edit ( arg )             // arg -> path/f
-    arg find-file [
-        arg ensure-feline-extension find-file
-    ] unless*
-;
-
-: open-file
-    "File: " minibuffer-accept-string :> arg
-
-    arg find-file-to-edit :> filename
-
-    filename [
-        filename find-buffer [
-            current-buffer!
-            t repaint?!
-        ] [
-            filename 1 create-buffer/2
-            t repaint?!
-        ] if*
-    ] when
-;
-
-"find-definition.feline" load
-
-: execute-command
-    "Command: " minibuffer-accept-string :> command
-    command find-name [
-        call-symbol
-    ] [
-        "%S is not a valid command name." format message
-    ] if
-;
-
-use: search
-
-"keymaps.feline" load
+using: feral-core feline accessors mini ;
 
 : do-mouse                              // key -> void
     dup fixnum? not [ drop ] return-if
