@@ -38,3 +38,5 @@ global feral-temp-directory             // ~/.feral.d/temp
     feral-temp-directory directory? [
         feral-temp-directory make-directory
     ] unless ;
+
+initialize-directories

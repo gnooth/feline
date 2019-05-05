@@ -26,8 +26,6 @@ empty
 
 "feral-loader.feline" load
 
-directories:initialize-directories
-
 using: feral-core feline accessors mini ;
 
 : do-mouse                              // key -> void
