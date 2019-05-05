@@ -24,7 +24,6 @@ in: user
     "directories"
     "editor"
     "feline-mode"
-    "feral-config"
     "feral-core"
     "history"
     "kill-ring"
@@ -33,10 +32,6 @@ in: user
     "modes"
     "search"
 } [ delete-vocab ] each
-
-in: feral-config
-
-f constant winui?
 
 in: feral-loader
 
