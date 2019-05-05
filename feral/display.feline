@@ -242,6 +242,8 @@ use: ansi-color
   0   0   0 rgb-foreground-prefix constant fg-mode-line
 192 192 192 rgb-background-prefix constant bg-mode-line
 
+use: mini
+
 : update-mode-line
     0 status-y at-xy
 
