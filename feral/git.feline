@@ -13,12 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline accessors directories ;
+using: feral-core feline accessors directories mini diff-mode ;
 in: editor
-
-"diff-mode.feline" load
-
-use: diff-mode
 
 : get-temporary-filename                // void -> string
     feral-temp-directory
@@ -42,7 +38,7 @@ use: diff-mode
         current-buffer name<<
         t current-buffer read-only<<
         initialize-diff-mode current-buffer mode<<
-        t repaint?!
+        t repaint!
     ] [ "No changes" message ] if
 
     tempname delete-file assert-true
