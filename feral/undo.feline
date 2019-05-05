@@ -276,6 +276,8 @@ symbol: +delete-line+
     maybe-reframe
 ;
 
+use: mini
+
 : undo
     undo-stack empty? [
         "Nothing to undo" message
