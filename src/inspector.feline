@@ -20,47 +20,72 @@ empty
 
 global inspected-object
 
-: builtin-type-set-layout               // slots type -> void
-    [ [ 1+ make-slot ] map-index ] dip type-set-layout
+: make-typed-slot                       -- arg index -> slot
+    :> index
+    :> arg
+    arg string? [
+        arg index make-slot
+    ] [
+        arg array? assert
+        arg first arg second index
+        make-slot/3
+    ] if
+;
+
+: builtin-type-set-layout               -- slots type -> void
+    [ [ 1+ make-typed-slot ] map-index ] dip type-set-layout
 ;
 
 {
     "symbol"
-    "raw-typecode"
+    { "raw-typecode" :raw }
     "layout"
 } type builtin-type-set-layout
 
 {
-    "raw-code-address"
-    "raw-code-size"
+    { "raw-code-address" :raw }
+    { "raw-code-size" :raw }
     "symbol"
     "methods"
     "dispatch"
 } generic-function builtin-type-set-layout
 
 {
-    "raw typecode"
+    { "raw typecode" :raw }
     "generic function"
     "callable"
 } method builtin-type-set-layout
 
 {
     "array"
-    "raw-code-address"
-    "raw-code-size"
+    { "raw-code-address" :raw }
+    { "raw-code-size" :raw }
 } quotation builtin-type-set-layout
 
 {
-    "count"
-    "deleted"
-    "capacity"
-    "data address"
-    "hash function"
-    "test function"
-    "raw mask"
+    { "count" :raw }
+    { "deleted" :raw }
+    { "capacity" :raw }
+    { "data address" :raw }
+    { "hash function" :raw }
+    { "test function" :raw }
+    { "raw mask" :raw }
 } hashtable builtin-type-set-layout
 
 { "name" "hashtable" } vocab builtin-type-set-layout
+
+: print-slot ( object n )               -- object n -> void
+    object object-layout :> layout
+    n layout nth :> slot
+    4 tab
+    n 1+ 2 dec.r
+    8 tab
+    slot slot-name write
+    32 tab
+    object n 1+ slot@
+    slot slot-type :raw eq? [ normalize ] when
+    short.
+;
 
 : inspect
     1 ?enough
@@ -69,14 +94,6 @@ global inspected-object
     inspected-object object-layout :> layout
     layout [
         layout length dup "%d slots" format print
-        [
-            4 tab
-            dup 1+ 2 dec.r
-            8 tab
-            dup layout nth slot-name write
-            32 tab
-            1+ inspected-object swap slot@ short.
-        ] each-integer
-
+        [ inspected-object swap print-slot ] each-integer
     ] when
 ;
