@@ -1,4 +1,4 @@
-; Copyright (C) 2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -15,8 +15,8 @@
 
 file __FILE__
 
-; REVIEW type, read-only
-; 3 cells: object header, index, name
+; REVIEW read-only
+; 4 cells: object header, index, name, type
 
 %macro  _slot_index 0                   ; slot -> index
         _slot1
@@ -32,6 +32,14 @@ file __FILE__
 
 %macro  _this_slot_set_name 0           ; name ->
         _this_set_slot2
+%endmacro
+
+%macro  _slot_type 0                    ; slot -> type
+        _slot3
+%endmacro
+
+%macro  _this_slot_set_type 0           ; type ->
+        _this_set_slot3
 %endmacro
 
 ; ### slot?
@@ -91,6 +99,13 @@ code slot_name, 'slot-name'             ; slot -> name
         next
 endcode
 
+; ### slot-type
+code slot_type, 'slot-type'             ; slot -> type
+        _ check_slot
+        _slot_type
+        next
+endcode
+
 ; ### slot-index
 code slot_index, 'slot-index'           ; slot -> index
         _ check_slot
@@ -104,7 +119,7 @@ code make_slot, 'make-slot'             ; name index -> slot
         _swap
         _ verify_string                 ; -> index string
 
-        _lit 3
+        _lit 4
         _ raw_allocate_cells
         _object_set_raw_typecode TYPECODE_SLOT
         push    this_register
@@ -113,6 +128,42 @@ code make_slot, 'make-slot'             ; name index -> slot
 
         ; name
         _this_slot_set_name
+
+        ; index
+        _this_slot_set_index
+
+        ; type
+        _f
+        _this_slot_set_type
+
+        pushrbx
+        mov     rbx, this_register
+        _ new_handle
+        pop     this_register
+        next
+endcode
+
+; ### make-slot/3
+code make_slot_3, 'make-slot/3'         ; name type index -> slot
+
+        _verify_index
+        _ rrot                          ; -> index name type
+
+        _swap
+        _ verify_string                 ; -> index type name
+
+        _lit 4
+        _ raw_allocate_cells
+        _object_set_raw_typecode TYPECODE_SLOT
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -> type name
+
+        ; name
+        _this_slot_set_name
+
+        ; type
+        _this_slot_set_type
 
         ; index
         _this_slot_set_index
@@ -132,27 +183,38 @@ code slot_to_string, 'slot->string'     ; slot -> string
         _quote "<slot "
         _ string_to_sbuf                ; -> slot sbuf
 
-        _over
+        _tor
 
+        _dup
         _ slot_index
         _ fixnum_to_decimal
-        _over
+        _rfetch
         _ sbuf_append_string
 
         _lit tagged_char(' ')
-        _over
+        _rfetch
         _ sbuf_push
 
-        _swap
+        _dup
         _ slot_name
         _ quote_string
-        _over
+        _rfetch
+        _ sbuf_append_string
+
+        _lit tagged_char(' ')
+        _rfetch
+        _ sbuf_push
+
+        _ slot_type
+        _ object_to_string
+        _rfetch
         _ sbuf_append_string
 
         _lit tagged_char('>')
-        _over
+        _rfetch
         _ sbuf_push
 
+        _rfrom
         _ sbuf_to_string
 
         next
