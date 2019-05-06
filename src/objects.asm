@@ -511,9 +511,8 @@ code object_to_string, 'object->string' ; object -> string
         _then .36
 
         ; give up
-        _tag_fixnum
-        _ fixnum_to_hex
-        _quote "$"
+        _ raw_uint64_to_hex
+        _quote "0x"
         _swap
         _ string_append
 
