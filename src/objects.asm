@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -72,7 +72,8 @@ code error_empty_handle, 'error-empty-handle'
 endcode
 
 ; ### object_raw_typecode
-code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL        ; x -> raw-typecode
+
+code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-typecode
 
         cmp     bl, HANDLE_TAG
         je      .3
@@ -126,15 +127,13 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL        ; x -> r
 
 .5:
         ; not an object
-        ; return -1
-        xor     ebx, ebx
-        not     rbx
+        mov     ebx, TYPECODE_UNKNOWN
 
         next
 endcode
 
 ; ### object-typecode
-code object_typecode, 'object-typecode' ; x -- typecode
+code object_typecode, 'object-typecode' ; x -> typecode
 ; return value is tagged
 ; error if x is not an object
         _ object_raw_typecode
@@ -143,7 +142,7 @@ code object_typecode, 'object-typecode' ; x -- typecode
 endcode
 
 ; ### type-of
-code type_of, 'type-of'                 ; object -> type
+code type_of, 'type-of'                 ; x -> type
         _ object_raw_typecode
         _ types
         _ vector_nth_untagged
