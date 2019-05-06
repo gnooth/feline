@@ -1,4 +1,4 @@
-; Copyright (C) 2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ code file_output_stream?, 'file-output-stream?' ; handle -> ?
 endcode
 
 ; ### check_file_output_stream
-code check_file_output_stream, 'check_file_output_stream', SYMBOL_INTERNAL      ; handle -> raw-stream
+code check_file_output_stream, 'check_file_output_stream', SYMBOL_INTERNAL ; handle -> raw-stream
         _dup
         _ deref
         test    rbx, rbx
@@ -58,7 +58,7 @@ code check_file_output_stream, 'check_file_output_stream', SYMBOL_INTERNAL      
 endcode
 
 ; ### verify-file-output-stream
-code verify_file_output_stream, 'verify-file-output-stream'     ; handle -> handle
+code verify_file_output_stream, 'verify-file-output-stream' ; handle -> handle
 ; returns argument unchanged
         _dup
         _ deref
@@ -287,6 +287,20 @@ code file_output_stream_?nl, 'file-output-stream-?nl'   ; stream -> void
 .1:
         _drop
         _ file_output_stream_nl
+        next
+endcode
+
+; ### file-output-stream-flush
+code file_output_stream_flush, 'file-output-stream-flush' ; stream -> void
+        _ check_file_output_stream
+        mov     arg0_register, file_output_stream_fd_slot
+        poprbx
+        xcall   os_flush_file
+        test    rax, rax
+        js      .1
+        _return
+.1:
+        _error "unable to flush file output stream"
         next
 endcode
 
