@@ -133,15 +133,19 @@ void winui__initialize (void)
 
 void winui__create_frame (void)
 {
+  HWND hwnd_desktop = GetDesktopWindow ();
+  RECT rect;
+  GetWindowRect (hwnd_desktop, &rect);
+
   // frame
   hwnd_frame = CreateWindowEx (
     0,                                  // extended window style
     FERAL_FRAME,                        // name of window class
     "Feral",                            // title-bar string
     WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,     // top-level window
-    640,                                // left
+    (rect.right - rect.left) / 2,       // left
     0,                                  // top
-    640,                                // width
+    (rect.right - rect.left) / 2,       // width
     768,                                // height
     NULL,                               // no owner window
     NULL,                               // no menu
@@ -154,7 +158,6 @@ void winui__create_frame (void)
       return;
     }
 
-  RECT rect;
   GetClientRect (hwnd_frame, &rect);
 
   // text view
