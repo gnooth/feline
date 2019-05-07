@@ -25,6 +25,7 @@ in: user
     "editor"
     "feline-mode"
     "feral-core"
+    "feral-key"
     "history"
     "kill-ring"
     "list-buffers"
@@ -41,6 +42,7 @@ feline-home "feral" path-append add-source-directory
 
 : load-feral
     {
+        "feral-key.feline"
         "directories.feline"
         "feral-core.feline"
         "history.feline"
