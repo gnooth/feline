@@ -20,17 +20,38 @@ empty
 
 private
 
-var log-fd
+var log-stream
 
-: initialize-logging
-    "feral.log" file-create-write-fd log-fd! ;
+: initialize-logging                    // void -> void
+    "feral.log" file-create-write log-stream! ;
+
+: close-log                             // void -> void
+    log-stream [ close f log-stream! ] when* ;
+
+: stamp                                 // void -> void
+    log-stream [
+        dup stream-?nl
+        date-time " " + swap file-output-stream-write-string
+    ] when* ;
 
 public
 
 : log                                   // string -> void
-    log-fd [ initialize-logging ] unless
-    log-fd file-write-line
-    log-fd file-flush ;
+    log-stream [ initialize-logging ] unless
 
-: close-log
-    log-fd [ file-close f log-fd! ] when* ;
+    stamp
+
+    log-stream {
+        [ file-output-stream-write-string ]
+        [ file-output-stream-nl ]
+        [ file-output-stream-flush ]
+    } cleave ;
+
+: with-output-to-log                    // quotation -> void
+    log-stream [ initialize-logging ] unless
+
+    [
+        log-stream standard-output set
+        stamp
+        call
+    ] with-dynamic-scope ;
