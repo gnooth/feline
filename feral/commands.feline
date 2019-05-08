@@ -45,9 +45,11 @@ in: editor
 
 : execute-command
     "Command: " minibuffer-accept-string :> command
-    command find-name [
-        call-symbol
-    ] [
-        "%S is not a valid command name." format message
-    ] if
-;
+
+    command empty? [
+        command find-name [
+            call-symbol
+        ] [
+            "%S is not a valid command name." format message
+        ] if
+    ] unless ;
