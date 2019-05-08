@@ -18,30 +18,26 @@ in: editor
 
 : gotoline
     "Line number: " minibuffer-accept-string
-    string>number [ gotoline-internal ] when*
-;
+    string>number [ gotoline-internal ] when* ;
 
 : find-file-to-edit ( arg )             // arg -> path/f
     arg find-file [
         arg ensure-feline-extension find-file
-    ] unless*
-;
+    ] unless* ;
 
 : open-file
     "File: " minibuffer-accept-string :> arg
 
-    arg find-file-to-edit :> filename
+    arg empty? [ f ] [ arg find-file-to-edit ] if :> filename
 
     filename [
         filename find-buffer [
             current-buffer!
-            t repaint!
         ] [
             filename 1 create-buffer/2
-            t repaint!
         ] if*
-    ] when
-;
+        t repaint!
+    ] when ;
 
 : execute-command
     "Command: " minibuffer-accept-string :> command
