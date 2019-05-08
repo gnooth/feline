@@ -78,6 +78,13 @@ endcode
 ; REVIEW
 asm_global error_object_, f_value
 
+; ### last-error
+code last_error, 'last-error'           ; void -> object/f
+        pushrbx
+        mov     rbx, [error_object_]
+        next
+endcode
+
 ; ### recover
 code recover, 'recover'                 ; try-quot recover-quot ->
         _tor
