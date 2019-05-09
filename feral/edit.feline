@@ -143,6 +143,11 @@ in: editor
 ;
 
 : do-normal-char                        // char ->
+    current-buffer read-only>> [
+        drop
+        "Buffer is read-only" message
+    ] return-if
+
     reset-redo
 
     current-command assert-false
