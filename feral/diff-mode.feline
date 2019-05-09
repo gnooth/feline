@@ -24,6 +24,20 @@ tuple: diff-mode
 method: diff-mode formatter             // mode -> formatter
     formatter>> ;
 
+global diff-mode-local-map
+
+: initialize-local-map
+    128 <hashtable> :> m
+    ' editor:kill-buffer key:escape m set-at
+    m diff-mode-local-map! ;
+
+initialize-local-map
+
+method: diff-mode initialize-buffer     // buffer mode -> void
+    2 ?enough
+    drop
+    diff-mode-local-map swap local-map<< ;
+
 winui? #if
 
 0x00 0x99 0x00 make-colorref constant color-insertion
