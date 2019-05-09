@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline ;
+using: feline feral-core ;
 in: logging
 
 empty
@@ -22,11 +22,12 @@ private
 
 var log-stream
 
-: initialize-logging                    // void -> void
-    "feral.log" file-create-write log-stream! ;
-
 : close-log                             // void -> void
     log-stream [ close f log-stream! ] when* ;
+
+: initialize-logging                    // void -> void
+    ' close-log ' exit-feral-hook add-hook
+    "feral.log" file-create-write log-stream! ;
 
 : stamp                                 // void -> void
     log-stream [
