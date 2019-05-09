@@ -18,11 +18,15 @@ in: editor
 
 winui? #if
 
-: exit-feral winui-exit ;
+: exit-feral
+    ' exit-feral-hook run-hook
+    winui-exit ;
 
 #else
 
-: exit-feral t done! ;
+: exit-feral
+    ' exit-feral-hook run-hook
+    t done! ;
 
 #endif
 
