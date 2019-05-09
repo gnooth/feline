@@ -38,6 +38,7 @@ in: editor
         current-buffer name<<
         t current-buffer read-only<<
         initialize-diff-mode current-buffer mode<<
+        current-buffer dup mode>> initialize-buffer
         t repaint!
     ] [ "No changes" message ] if
 
