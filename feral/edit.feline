@@ -18,16 +18,11 @@ in: editor
 
 : insert-line-separator
     add-undo-insert-line-separator
-    dot-line-tail make-line/1 :> new-line
-    dot-line-head dot-line-text!
-    new-line dot-line insert-after
-    new-line dot-line!
-    0 dot-offset!
+    insert-line-separator-internal
     0 goal-column!
     modified
     t repaint?!
-    renumber
-;
+    renumber ;
 
 : insert-spaces ( n )                   // n ->
     // no undo
@@ -37,21 +32,18 @@ in: editor
     sb sbuf>string dot-line-text!
     dot-offset n + dot-offset!
     t dot-line-changed?!
-    modified
-;
+    modified ;
 
 : do-tab
     add-undo-line-edit
-    4 dot-offset 4 mod - insert-spaces
-;
+    4 dot-offset 4 mod - insert-spaces ;
 
 : get-indentation-column                // line -> column
     dup empty? [ drop 0 ] return-if
 
     detab
     [ char-code 32 > ] find             // index/f element/f
-    [ drop 0 ] unless
-;
+    [ drop 0 ] unless ;
 
 : delete-indentation                    // string -> string'
     dup empty? [ ] return-if
@@ -59,8 +51,7 @@ in: editor
     :> text
 
     text [ char-code 32 > ] find        // index/f element/f
-    [ text string-tail ] [ drop "" ] if
-;
+    [ text string-tail ] [ drop "" ] if ;
 
 : newline-and-indent
     reset-redo
@@ -78,9 +69,8 @@ in: editor
 
     reframe? [
         dot-line-number textview-rows 1- - nth-line top-line!
-        t repaint?!
-    ] when
-;
+        t repaint!
+    ] when ;
 
 : string-remove-nth                     // n string1 -> string2
     check-bounds
@@ -91,14 +81,12 @@ in: editor
     n s string-head
     n 1+ s string-length < [
         n 1+ s string-tail string-append
-    ] when
-;
+    ] when ;
 
 : delete-normal-char
     add-undo-line-edit
     dot-offset dot-line-text string-remove-nth dot-line-text!
-    t dot-line-changed?!
-;
+    t dot-line-changed! ;
 
 : delete-line-separator
     dot-line-next [
@@ -183,6 +171,7 @@ use: kill-ring
     dot-line-prev dup line-selected? and [
         // extend selection if possible
         dot-line-next [
+            add-undo-move
             dot-line-next dot-line! 0 dot-offset!
         ] when
     ] [
@@ -193,7 +182,7 @@ use: kill-ring
         ] when
     ] if
 
-    t repaint?!
+    t repaint!
 ;
 
 : do-anchor
