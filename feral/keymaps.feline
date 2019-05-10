@@ -13,69 +13,71 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline search feral-config mini ;
-in: editor
+using: editor feral-core feline search feral-config mini ;
+in: keymaps
+
+private
 
 winui? #if
 
 global winui-keymap
 
-use: feral-key
-
 : initialize-winui-keymap
     winui-keymap [ ] return-if
 
-    128 <hashtable> :> keymap
+    128 <hashtable> :> m
 
-    ' do-bs                             key:backspace                   keymap set-at
-    ' do-delete                         feral-key:delete                keymap set-at
-    ' do-home                           feral-key:home                  keymap set-at
-    ' end-of-line                       feral-key:end                   keymap set-at
-    ' do-left                           feral-key:left                  keymap set-at
-    ' do-right                          feral-key:right                 keymap set-at
-    ' do-up                             feral-key:up                    keymap set-at
-    ' do-down                           feral-key:down                  keymap set-at
+    ' do-bs                             key:backspace                   m set-at
+    ' do-delete                         feral-key:delete                m set-at
+    ' do-home                           feral-key:home                  m set-at
+    ' end-of-line                       feral-key:end                   m set-at
+    ' do-left                           feral-key:left                  m set-at
+    ' do-right                          feral-key:right                 m set-at
+    ' do-up                             feral-key:up                    m set-at
+    ' do-down                           feral-key:down                  m set-at
 
-    ' do-page-up                        feral-key:pageup                keymap set-at
-    ' do-page-down                      feral-key:pagedown              keymap set-at
+    ' do-page-up                        feral-key:pageup                m set-at
+    ' do-page-down                      feral-key:pagedown              m set-at
 
-    ' beginning-of-buffer               feral-key:ctrl-home             keymap set-at
-    ' end-of-buffer                     feral-key:ctrl-end              keymap set-at
+    ' beginning-of-buffer               feral-key:ctrl-home             m set-at
+    ' end-of-buffer                     feral-key:ctrl-end              m set-at
 
-    ' do-window-up                      feral-key:ctrl-up               keymap set-at
-    ' do-window-down                    feral-key:ctrl-down             keymap set-at
+    ' do-window-up                      feral-key:ctrl-up               m set-at
+    ' do-window-down                    feral-key:ctrl-down             m set-at
 
-    ' gotoline                          key:ctrl-g                      keymap set-at
-    ' do-quit                           key:ctrl-q                      keymap set-at
-    ' do-save                           key:ctrl-s                      keymap set-at
-    ' list-buffers                      feral-key:alt-b                 keymap set-at
-    ' kill-buffer                       key:ctrl-w                      keymap set-at
-    ' newline-and-indent                key:enter                       keymap set-at
-    ' do-find                           key:ctrl-f                      keymap set-at
-    ' repeat-search-forward             feral-key:f3                    keymap set-at
-    ' repeat-search-backward            feral-key:shift-f3              keymap set-at
-    ' do-tab                            key:tab                         keymap set-at
-    ' kill-line                         key:ctrl-k                      keymap set-at
-    ' undo                              key:ctrl-z                      keymap set-at
-    ' redo                              key:ctrl-y                      keymap set-at
-    ' open-file                         key:ctrl-o                      keymap set-at
-    ' next-buffer                       feral-key:alt-right             keymap set-at
-    ' previous-buffer                   feral-key:alt-left              keymap set-at
-    ' find-definition                   key:ctrl-t                      keymap set-at
-    ' select-line                       key:ctrl-l                      keymap set-at
-    ' cut                               key:ctrl-x                      keymap set-at
-    ' copy                              key:ctrl-c                      keymap set-at
-    ' paste                             key:ctrl-v                      keymap set-at
+    ' gotoline                          key:ctrl-g                      m set-at
+    ' do-quit                           key:ctrl-q                      m set-at
+    ' do-save                           key:ctrl-s                      m set-at
+    ' list-buffers                      feral-key:alt-b                 m set-at
+    ' kill-buffer                       key:ctrl-w                      m set-at
+    ' newline-and-indent                key:enter                       m set-at
+    ' do-find                           key:ctrl-f                      m set-at
+    ' repeat-search-forward             feral-key:f3                    m set-at
+    ' repeat-search-backward            feral-key:shift-f3              m set-at
+    ' do-tab                            key:tab                         m set-at
+    ' kill-line                         key:ctrl-k                      m set-at
+    ' undo                              key:ctrl-z                      m set-at
+    ' redo                              key:ctrl-y                      m set-at
+    ' open-file                         key:ctrl-o                      m set-at
+    ' next-buffer                       feral-key:alt-right             m set-at
+    ' previous-buffer                   feral-key:alt-left              m set-at
+    ' find-definition                   key:ctrl-t                      m set-at
+    ' select-line                       key:ctrl-l                      m set-at
+    ' cut                               key:ctrl-x                      m set-at
+    ' copy                              key:ctrl-c                      m set-at
+    ' paste                             key:ctrl-v                      m set-at
 
-    ' find-definition-at-dot            feral-key:alt-.                 keymap set-at
-    ' cycle-paste                       feral-key:alt-v                 keymap set-at
-    ' search-forward-word-at-dot        feral-key:alt-down              keymap set-at
-    ' search-backward-word-at-dot       feral-key:alt-up                keymap set-at
-    ' search-list-occurrences           feral-key:alt-l                 keymap set-at
-    ' execute-command                   feral-key:alt-x                 keymap set-at
+    ' find-definition-at-dot            feral-key:alt-.                 m set-at
+    ' cycle-paste                       feral-key:alt-v                 m set-at
+    ' search-forward-word-at-dot        feral-key:alt-down              m set-at
+    ' search-backward-word-at-dot       feral-key:alt-up                m set-at
+    ' search-list-occurrences           feral-key:alt-l                 m set-at
+    ' execute-command                   feral-key:alt-x                 m set-at
 
-    keymap winui-keymap!
+    m winui-keymap!
 ;
+
+public
 
 : winui-lookup-key                      // key -> symbol/f
     winui-keymap at ;
@@ -86,90 +88,91 @@ use: feral-key
 
 #else
 
-var base-keymap
+var global-map
 
-var escape-keymap
+var ctrl-k-map
 
-: do-escape
-    "ESC-" message
+: do-ctrl-k
+    "ctrl-k-" message
     ekey
     clear-message
-    escape-keymap at [
+    ctrl-k-map at [
         dup current-command!
         call-symbol
-    ] when*
+    ] when* ;
+
+: initialize-global-map
+    global-map [ ] return-if
+
+    128 <hashtable> :> m
+
+    ' do-bs                             key:del         m set-at // Linux
+    ' do-bs                             key:backspace   m set-at // Windows
+    ' do-delete                         key:delete      m set-at
+    ' do-home                           key:home        m set-at
+    ' end-of-line                       key:end         m set-at
+    ' do-left                           key:left        m set-at
+    ' do-right                          key:right       m set-at
+    ' do-up                             key:up          m set-at
+    ' do-down                           key:down        m set-at
+    ' do-window-up                      key:ctrl-up     m set-at
+    ' do-window-down                    key:ctrl-down   m set-at
+    ' do-page-up                        key:pageup      m set-at
+    ' do-page-down                      key:pagedown    m set-at
+    ' beginning-of-buffer               key:ctrl-home   m set-at
+    ' end-of-buffer                     key:ctrl-end    m set-at
+    ' gotoline                          key:ctrl-g      m set-at
+    ' do-quit                           key:ctrl-q      m set-at
+    ' do-save                           key:ctrl-s      m set-at
+    ' kill-buffer                       key:ctrl-w      m set-at
+    ' newline-and-indent                key:enter       m set-at
+    ' do-find                           key:ctrl-f      m set-at
+    ' repeat-search-forward             key:f3          m set-at
+    ' repeat-search-backward            key:shift-f3    m set-at
+    ' do-tab                            key:tab         m set-at
+    ' undo                              key:ctrl-z      m set-at
+    ' undo                              key:ctrl-u      m set-at
+    ' redo                              key:ctrl-y      m set-at
+    ' do-ctrl-k                         key:ctrl-k      m set-at
+    ' open-file                         key:ctrl-o      m set-at
+    ' next-buffer                       key:alt-right   m set-at
+    ' previous-buffer                   key:alt-left    m set-at
+    ' find-definition                   key:ctrl-t      m set-at
+    ' select-line                       key:ctrl-l      m set-at
+    ' cut                               key:ctrl-x      m set-at
+    ' copy                              key:ctrl-c      m set-at
+    ' paste                             key:ctrl-v      m set-at
+
+    m global-map!
 ;
+
+: initialize-ctrl-k-map
+    ctrl-k-map [ ] return-if
+
+    16 <hashtable> :> m
+
+    ' quit                              key:escape      m set-at
+    ' find-definition-at-dot            '.'             m set-at
+    ' cycle-paste                       'v'             m set-at
+    ' search-forward-word-at-dot        key:down        m set-at
+    ' search-backward-word-at-dot       key:up          m set-at
+    ' search-list-occurrences           'l'             m set-at
+    ' do-anchor                         'a'             m set-at
+    ' list-buffers                      'b'             m set-at
+    ' execute-command                   'x'             m set-at
+
+    ' kill-line                         key:ctrl-k      m set-at
+
+    m ctrl-k-map!
+;
+
+public
 
 : lookup-key                            // key -> symbol/f
-    base-keymap at ;
+    global-map at ;
 
-: initialize-base-keymap
-    base-keymap [ ] return-if
-
-    128 <hashtable> :> keymap
-
-    ' do-bs                     key:del         keymap set-at   // Linux
-    ' do-bs                     key:backspace   keymap set-at   // Windows
-    ' do-delete                 key:delete      keymap set-at
-    ' do-home                   key:home        keymap set-at
-    ' end-of-line               key:end         keymap set-at
-    ' do-left                   key:left        keymap set-at
-    ' do-right                  key:right       keymap set-at
-    ' do-up                     key:up          keymap set-at
-    ' do-down                   key:down        keymap set-at
-    ' do-window-up              key:ctrl-up     keymap set-at
-    ' do-window-down            key:ctrl-down   keymap set-at
-    ' do-page-up                key:pageup      keymap set-at
-    ' do-page-down              key:pagedown    keymap set-at
-    ' beginning-of-buffer       key:ctrl-home   keymap set-at
-    ' end-of-buffer             key:ctrl-end    keymap set-at
-    ' gotoline                  key:ctrl-g      keymap set-at
-    ' do-quit                   key:ctrl-q      keymap set-at
-    ' do-save                   key:ctrl-s      keymap set-at
-    ' kill-buffer               key:ctrl-w      keymap set-at
-    ' newline-and-indent        key:enter       keymap set-at
-    ' do-find                   key:ctrl-f      keymap set-at
-    ' repeat-search-forward     key:f3          keymap set-at
-    ' repeat-search-backward    key:shift-f3    keymap set-at
-    ' do-tab                    key:tab         keymap set-at
-    ' kill-line                 key:ctrl-k      keymap set-at
-    ' undo                      key:ctrl-z      keymap set-at
-    ' undo                      key:ctrl-u      keymap set-at
-    ' redo                      key:ctrl-y      keymap set-at
-    ' do-escape                 key:escape      keymap set-at
-    ' open-file                 key:ctrl-o      keymap set-at
-    ' next-buffer               key:alt-right   keymap set-at
-    ' previous-buffer           key:alt-left    keymap set-at
-    ' find-definition           key:ctrl-t      keymap set-at
-    ' select-line               key:ctrl-l      keymap set-at
-    ' cut                       key:ctrl-x      keymap set-at
-    ' copy                      key:ctrl-c      keymap set-at
-    ' paste                     key:ctrl-v      keymap set-at
-
-    keymap base-keymap!
-;
-
-: initialize-escape-keymap
-    escape-keymap [ ] return-if
-
-    128 <hashtable> :> keymap
-
-    ' quit                              key:escape      keymap set-at
-    ' find-definition-at-dot            '.'             keymap set-at
-    ' cycle-paste                       'v'             keymap set-at
-    ' search-forward-word-at-dot        key:down        keymap set-at
-    ' search-backward-word-at-dot       key:up          keymap set-at
-    ' search-list-occurrences           'l'             keymap set-at
-    ' do-anchor                         'a'             keymap set-at
-    ' list-buffers                      'b'             keymap set-at
-    ' execute-command                   'x'             keymap set-at
-
-    keymap escape-keymap!
-;
-
-: initialize-global-keymaps
-    initialize-base-keymap
-    initialize-escape-keymap
-;
+: initialize-keymaps
+    initialize-global-map
+    initialize-ctrl-k-map ;
 
 #endif

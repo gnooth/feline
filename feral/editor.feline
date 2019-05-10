@@ -59,7 +59,7 @@ using: feral-core feline accessors mini ;
 
     // global map
     command [
-        key lookup-key command!
+        key keymaps:lookup-key command!
     ] unless
 
     command [
@@ -91,7 +91,7 @@ using: feral-core feline accessors mini ;
 
 : initialize-editor
     16 <vector> buffer-list!
-    initialize-global-keymaps
+    keymaps:initialize-keymaps
 ;
 
 : edit1

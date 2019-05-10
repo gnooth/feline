@@ -27,6 +27,7 @@ in: user
     "feral-core"
     "feral-key"
     "history"
+    "keymaps"
     "kill-ring"
     "list-buffers"
     "logging"
