@@ -293,16 +293,16 @@ use: kill-ring
 : paste/1                               // string -> void
     1 ?enough
     :> s
+    reset-redo
     '\n' s string-index [
         s insert-multiline-string
-        t repaint?!
+        maybe-reframe
+        t repaint!
     ] [
         add-undo-line-edit
-        dot-line-head s string-append
-        dot-line-tail string-append
-        dot-line-text!
-        dot-offset s string-length + dot-offset!
-        t dot-line-changed?!
+        dot-line-head s + dot-line-tail + dot-line-text!
+        dot-offset s length + dot-offset!
+        t dot-line-changed!
     ] if
     modified
 ;
