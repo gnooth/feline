@@ -644,6 +644,10 @@ code lexer_parse_token, 'lexer-parse-token'     ; lexer -> string/f
         _dup
         _quote "--"
         _ stringequal
+        _over
+        _quote "//"
+        _ stringequal
+        _ feline_or
         _tagged_if .3
 
         _drop                           ; -> lexer
