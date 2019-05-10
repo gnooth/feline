@@ -18,12 +18,12 @@ in: keymaps
 
 private
 
+global global-map
+
 winui? #if
 
-global winui-keymap
-
-: initialize-winui-keymap
-    winui-keymap [ ] return-if
+: initialize-global-map
+    global-map [ ] return-if
 
     128 <hashtable> :> m
 
@@ -74,23 +74,21 @@ global winui-keymap
     ' search-list-occurrences           feral-key:alt-l                 m set-at
     ' execute-command                   feral-key:alt-x                 m set-at
 
-    m winui-keymap!
+    m global-map!
 ;
 
 public
 
-: winui-lookup-key                      // key -> symbol/f
-    winui-keymap at ;
+: lookup-key                            // key -> symbol/f
+    global-map at ;
 
-: initialize-global-keymaps
-    initialize-winui-keymap
+: initialize-keymaps
+    initialize-global-map
 ;
 
 #else
 
-var global-map
-
-var ctrl-k-map
+global ctrl-k-map
 
 : do-ctrl-k
     "ctrl-k-" message
