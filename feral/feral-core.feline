@@ -196,6 +196,7 @@ method: region end-offset               // region -> offset
 tuple: buffer
     name
     mode
+    parent
     local-map
     read-only
     dot
