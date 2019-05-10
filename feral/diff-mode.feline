@@ -24,11 +24,40 @@ tuple: diff-mode
 method: diff-mode formatter             // mode -> formatter
     formatter>> ;
 
+: diff-mode-goto-source
+    dot-line :> line!
+    f :> found!
+    0 :> count!
+
+    [ line ] [
+        "@@" line text>> head? [
+            line found! f line!
+        ] [
+            line text>> "-" head? [ count 1+ count! ] unless
+            line prev>> line!
+        ] if
+    ] while
+
+    found null? [ ] return-if
+
+    found text>> :> s
+    '+' s string-find-char 1+ s string-tail :> s2
+    ',' s2 string-find-char s2 head :> s3
+
+    s3 string>number count +
+    1- 0 max                            // convert to zero-based line number
+    :> line-number
+
+    current-buffer parent>> current-buffer!
+    line-number editor:gotoline-internal
+    t repaint! ;
+
 global diff-mode-local-map
 
 : initialize-local-map
     128 <hashtable> :> m
     ' editor:kill-buffer key:escape m set-at
+    ' diff-mode-goto-source key:enter m set-at
     m diff-mode-local-map! ;
 
 initialize-local-map

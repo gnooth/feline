@@ -22,7 +22,8 @@ in: editor
     path-append ;
 
 : git-diff
-    "git diff " current-buffer filename>> string-append // -> string
+    current-buffer filename>> :> source-file
+    "git diff " source-file +           // -> string
     " > " +                             // -> string
     get-temporary-filename dup :> tempname +
     run-shell-command 0 assert-eq       // run-shell-command should return 0
@@ -31,13 +32,16 @@ in: editor
     fd file-size :> size
     fd file-close
 
+    current-buffer :> parent
+
     size 0 > [
         "git diff "
-        current-buffer filename>> file-name-nondirectory +
+        source-file file-name-nondirectory +
         tempname 1 create-buffer/2
         current-buffer name<<
         t current-buffer read-only<<
         initialize-diff-mode current-buffer mode<<
+        parent current-buffer parent<<
         current-buffer dup mode>> initialize-buffer
         t repaint!
     ] [ "No changes" message ] if
