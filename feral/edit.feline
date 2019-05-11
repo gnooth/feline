@@ -100,15 +100,6 @@ in: editor
     ] when
 ;
 
-: do-delete
-    dot-offset dot-line-length < [
-        delete-normal-char
-    ] [
-        delete-line-separator
-    ] if
-    modified
-;
-
 : do-bs
     {
         { [ dot-offset 0 > ] [
@@ -210,20 +201,32 @@ use: kill-ring
     renumber
     t repaint! ;
 
+: do-delete
+    {
+        { [ mark ] [ mark dot make-region/2 delete-region ] }
+        { [ dot-offset dot-line-length < ] [ delete-normal-char ] }
+        // default
+        [ delete-line-separator ]
+    } cond
+
+    modified
+;
+
+: cut-region ( region )
+    region region-as-string append-kill
+    region delete-region ;
+
 : copy-line
     dot-line-text "\n" string-append append-kill
-    "Line copied to kill ring" message
-;
+    "Line copied to kill ring" message ;
 
 : copy-region                           // region -> void
     region-as-string append-kill
-    "Region copied to kill ring" message
-;
+    "Region copied to kill ring" message ;
 
 : copy
     { [ anchor ] [ mark ] } ||
-    [ dot make-region/2 copy-region ] [ copy-line ] if*
-;
+    [ dot make-region/2 copy-region ] [ copy-line ] if* ;
 
 : delete-line
     reset-redo
@@ -256,8 +259,8 @@ use: kill-ring
     } cond
 
     modified
-    t repaint?!
     renumber
+    t repaint!
 ;
 
 : cut-line
@@ -288,6 +291,27 @@ use: kill-ring
     last-kill [ paste/1 ] [ "Kill ring is empty" message ] if*
 ;
 
+: cycle-paste
+    last-command ' paste eq? [
+        next-kill [ undo paste/1 ] when*
+    ] [
+        paste
+    ] if
+
+    ' paste current-command!
+;
+
+: redo-insert-multiline-string          // undo-record -> void
+    data>> insert-multiline-string
+    modified
+    renumber
+    t repaint!
+;
+
+: redo-delete-region                    // undo-record -> void
+    drop
+    mark dot make-region/2 delete-region ;
+
 : redo1                                 // undo-record -> void
     dup action>> {
         { +move+ [ undo-move ] }
@@ -295,6 +319,8 @@ use: kill-ring
         { +delete-line-separator+ [ drop delete-line-separator ] }
         { +insert-line-separator+ [ drop insert-line-separator ] }
         { +delete-line+ [ drop delete-line ] }
+        { +delete-region+ [ redo-delete-region ] }
+        { +insert-multiline-string+ [ redo-insert-multiline-string ] }
         [ error "unsupported" ]
     } case
     maybe-reframe
@@ -304,23 +330,13 @@ use: kill-ring
     redo-stack empty? [
         "Nothing to redo" message
     ] [
-        t in-redo?!
+        t in-redo!
         pop-redo dup compound-undo? [
             [ records>> vector-reverse! ' redo1 each ] with-compound-undo
         ] [
             redo1
         ] if
-        f in-redo?!
+        f in-redo!
         "Redo!" message
     ] if
-;
-
-: cycle-paste
-    last-command ' paste eq? [
-        next-kill [ undo paste/1 ] when*
-    ] [
-        paste
-    ] if
-
-    ' paste current-command!
 ;
