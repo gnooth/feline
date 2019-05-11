@@ -21,7 +21,7 @@ in: editor
     insert-line-separator-internal
     0 goal-column!
     modified
-    t repaint?!
+    t repaint!
     renumber ;
 
 : insert-spaces ( n )                   // n ->
@@ -31,7 +31,7 @@ in: editor
     dot-line-tail sb sbuf-append-string
     sb sbuf>string dot-line-text!
     dot-offset n + dot-offset!
-    t dot-line-changed?!
+    t dot-line-changed!
     modified ;
 
 : do-tab
@@ -95,7 +95,7 @@ in: editor
             dot-line-text dot-line-next text>> string-append dot-line-text!
             dot-line-next unlink
             renumber
-            t repaint?!
+            t repaint!
         ] when
     ] when
 ;
@@ -115,7 +115,7 @@ in: editor
             add-undo-line-edit
             dot-offset 1-
             [ dot-line text>> string-remove-nth dot-line text<< ] [ dot-offset! ] bi
-            t dot-line-changed?!
+            t dot-line-changed!
             modified
         ] }
         { [ dot-line-prev ] [
@@ -147,10 +147,9 @@ in: editor
     dot-line-tail sb sbuf-append-string
     sb sbuf>string dot-line text<<
     dot-offset 1+ dot-offset!
-    t dot-line-changed?!
+    t dot-line-changed!
     modified
-    dot-offset goal-column!
-;
+    dot-offset goal-column! ;
 
 use: kill-ring
 
@@ -162,10 +161,9 @@ use: kill-ring
         add-undo-line-edit
         dot-line-tail append-kill
         dot-line-head dot-line-text!
-        t dot-line-changed?!
+        t dot-line-changed!
     ] if
-    modified
-;
+    modified ;
 
 : select-line
     dot-line-prev dup line-selected? and [
@@ -182,32 +180,35 @@ use: kill-ring
         ] when
     ] if
 
-    t repaint!
-;
+    t repaint! ;
 
 : do-anchor
     unmark
     copy-dot anchor! ;
 
 : insert-multiline-string               // string -> void
-    // insert string before line containing dot
-    add-undo-insert-multiline-string
+    // insert multiline string at dot
+    [ add-undo-insert-multiline-string ]
+    [ insert-multiline-string-internal ] bi ;
 
-    dot-line-prev :> prev!
+: delete-region ( region )
+    region add-undo-delete-region
 
-    string-lines [
-        make-line/1 dup prev insert-after prev!
-    ] each
+    0 region begin-offset region begin-line substring :> head
+    region end-offset region end-line length region end-line substring :> tail
 
+    head tail + region begin-line text<<
+
+    region end-line next>> :> next
+    next region begin-line next<<
+    next [ region begin-line next prev<< ] when
+
+    unmark
+    region begin copy-position dot!
+
+    modified
     renumber
-;
-
-: cut-region ( region )
-    region begin-line region end-line eq? [
-
-        region begin-line dot-line assert-eq
-
-        region region-as-string append-kill
+    t repaint! ;
 
         add-undo-line-edit
         region begin-offset dot-line-text string-head
