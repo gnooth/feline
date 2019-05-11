@@ -210,19 +210,6 @@ use: kill-ring
     renumber
     t repaint! ;
 
-        add-undo-line-edit
-        region begin-offset dot-line-text string-head
-        region end-offset dot-line-text string-tail
-        string-append dot-line-text!
-
-        unmark
-        region begin-offset dot-offset!
-        t dot-line-changed?!
-        modified
-    ] return-if
-
-;
-
 : copy-line
     dot-line-text "\n" string-append append-kill
     "Line copied to kill ring" message
