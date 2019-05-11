@@ -108,6 +108,38 @@ comment-start length constant comment-start-length
     editor:update-display
 ;
 
+: feline-mode-comment-region
+    mark null? [ ] return-if
+
+    dot mark make-region/2 :> region
+
+    region editor:add-undo-edit-region
+
+    region [ comment-start over text>> + swap text<< ] region-each-line
+
+    modified
+    t repaint!
+    editor:update-display
+;
+
+: feline-mode-uncomment-region
+    mark null? [ ] return-if
+
+    dot mark make-region/2 :> region
+
+    region editor:add-undo-edit-region
+
+    region [
+        comment-start over text>> head? [
+            comment-start-length over text>> tail swap text<<
+        ] [ drop ] if
+    ] region-each-line
+
+    modified
+    t repaint!
+    editor:update-display
+;
+
 global feline-mode-local-map
 
 winui? #if
@@ -116,7 +148,9 @@ use: feral-key
 
 : initialize-local-map
     128 <hashtable> :> m
-    ' feline-mode-toggle-line-comment   ctrl-/  m set-at
+    ' feline-mode-toggle-line-comment   ctrl-/      m set-at
+    ' feline-mode-comment-region        f11         m set-at
+    ' feline-mode-uncomment-region      shift-f11   m set-at
     m feline-mode-local-map!
 ;
 
