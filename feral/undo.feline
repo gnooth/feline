@@ -30,6 +30,7 @@ tuple: undo-record
 
 symbol: +move+
 symbol: +line-edit+
+symbol: +edit-region+
 symbol: +delete-line-separator+
 symbol: +insert-line-separator+
 symbol: +insert-multiline-string+
@@ -158,6 +159,40 @@ special: +compound-redo+
     } cleave
 
     t dot-line-changed!
+;
+
+: add-undo-edit-region ( region )
+    new-undo-record :> undo-rec
+    +edit-region+ undo-rec action<<
+
+    region begin-line :> line!
+    region end-line :> end
+    16 <vector> :> v
+
+    [ line line end neq? and ] [
+        line text>> v push
+        line next>> line!
+    ] while
+
+    v vector->array undo-rec data<<
+    undo-rec push-undo
+;
+
+: undo-edit-region ( undo-rec )
+    mark assert
+
+    dot mark make-region/2 :> region
+
+    region begin-line :> line!
+
+    undo-rec data>> [
+        line text<<
+        line next>> line!
+    ] each
+
+    modified
+    t repaint!
+    editor:update-display
 ;
 
 : add-undo-delete-line-separator
@@ -312,6 +347,7 @@ symbol: +delete-region+
     {
         { +move+ [ undo-move ] }
         { +line-edit+ [ undo-line-edit ] }
+        { +edit-region+ [ undo-edit-region ] }
         { +delete-line-separator+ [ undo-delete-line-separator ] }
         { +insert-line-separator+ [ undo-insert-line-separator ] }
         { +insert-multiline-string+ [ undo-insert-multiline-string ] }
