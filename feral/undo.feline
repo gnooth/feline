@@ -25,7 +25,8 @@ tuple: undo-record
     mark
     mark-line-number
     mark-offset
-    data ;
+    data
+    redo-data ;
 
 symbol: +move+
 symbol: +line-edit+
@@ -156,7 +157,7 @@ special: +compound-redo+
         [ mark>> mark! ]
     } cleave
 
-    t dot-line-changed?!
+    t dot-line-changed!
 ;
 
 : add-undo-delete-line-separator
@@ -211,25 +212,40 @@ special: +compound-redo+
     add-redo-insert-line-separator
 ;
 
-: add-undo-insert-multiline-string
+: add-undo-insert-multiline-string ( s ) // string -> void
     new-undo-record
-    +insert-multiline-string+ over action<<
+    dot-line-text >>data
+    s >>redo-data
+    +insert-multiline-string+ >>action
     push-undo
 ;
 
-: undo-insert-multiline-string          // undo-record -> void
-    f :> prev!
-    [ mod-count>> mod-count! ]
-    [ dot-line-number>> 1- nth-line prev! ]
-    bi
+: add-redo-insert-multiline-string ( s )
+    new-undo-record
+    s >>data
+    +insert-multiline-string+ >>action
+    push-redo ;
 
-    prev dot-line prev<<
-    prev [ dot-line prev next<< ] [
-        dot-line dup current-buffer top-line<< top-line!
-    ] if
+: undo-insert-multiline-string ( undo-rec ) // undo-record -> void
 
-    t repaint?!
+    // insert-multiline-string leaves dot at the end of the inserted string
+    // so dot-line is the last line of the inserted line sequence
+    dot-line :> last
+
+    undo-rec mod-count>> mod-count!
+    undo-rec restore-dot
+
+    dot-line :> first
+
+    undo-rec redo-data>> add-redo-insert-multiline-string
+
+    last next>> dot-line next<<
+    last next>> [ dot-line swap prev<< ] when*
+
+    undo-rec data>> dot-line-text!
+
     renumber
+    t repaint!
 ;
 
 symbol: +delete-line+
@@ -256,9 +272,8 @@ symbol: +delete-line+
         undo-rec mod-count>> mod-count!
         undo-rec restore-dot
     ] if
-    t repaint?!
     renumber
-
+    t repaint!
     add-redo-delete-line
 ;
 
