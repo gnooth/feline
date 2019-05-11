@@ -220,7 +220,7 @@ special: +compound-redo+
     push-undo
 ;
 
-: add-redo-insert-multiline-string ( s )
+: add-redo-insert-multiline-string ( s ) // string -> void
     new-undo-record
     s >>data
     +insert-multiline-string+ >>action
@@ -277,6 +277,36 @@ symbol: +delete-line+
     add-redo-delete-line
 ;
 
+symbol: +delete-region+
+
+: add-undo-delete-region ( region-or-string )
+    region-or-string region? [
+        region-or-string region-as-string
+    ] [
+        region-or-string verify-string
+    ] if :> s
+
+    new-undo-record
+    s >>data
+    +delete-region+ >>action
+    push-undo ;
+
+: add-redo-delete-region
+    new-undo-record
+    +delete-region+ >>action
+    push-redo ;
+
+: undo-delete-region ( undo-rec )       // undo-record -> void
+    add-redo-delete-region
+
+    undo-rec data>> insert-string
+    undo-rec mod-count>> mod-count!
+    undo-rec restore-dot
+    undo-rec restore-mark
+
+    renumber
+    t repaint! ;
+
 : undo1                                 // undo-record ->
     dup action>>
     {
@@ -286,6 +316,7 @@ symbol: +delete-line+
         { +insert-line-separator+ [ undo-insert-line-separator ] }
         { +insert-multiline-string+ [ undo-insert-multiline-string ] }
         { +delete-line+ [ undo-delete-line ] }
+        { +delete-region+ [ undo-delete-region ] }
         [ error "unsupported" ]
     } case
     maybe-reframe
