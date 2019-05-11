@@ -165,6 +165,16 @@ generic end-offset
 method: region end-offset               // region -> offset
     end>> offset>> ;
 
+: region-each-line ( region callable )
+
+    region begin-line :> line!
+    region end-line :> end
+
+    [ line line end neq? and ] [
+        line callable call
+        line next>> line!
+    ] while ;
+
 : region-as-string ( region )
     region [ begin-line ] [ end-line ] bi eq? [
         region [ begin-offset ] [ end-offset ] [ begin-line ] tri substring
