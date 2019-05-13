@@ -33,7 +33,7 @@ method: diff-mode formatter             // mode -> formatter
         "@@" line text>> head? [
             line found! f line!
         ] [
-            line text>> "-" head? [ count 1+ count! ] unless
+            "-" line text>> head? [ count 1+ count! ] unless
             line prev>> line!
         ] if
     ] while
