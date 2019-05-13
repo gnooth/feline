@@ -165,15 +165,53 @@ generic end-offset
 method: region end-offset               // region -> offset
     end>> offset>> ;
 
-: region-each-line ( region callable )
+tuple: region-iterator
+    current
+    end ;
 
-    region begin-line :> line!
-    region end-line :> end
+: make-region-iterator                  // region -> iterator
+    region-iterator make-instance
+    swap [ begin-line ] [ end-line ] bi
+    [ >>current ] dip
+    >>end                               // -> iterator
+;
 
-    [ line line end neq? and ] [
-        line callable call
-        line next>> line!
-    ] while ;
+: region-iterator-next                  // iterator -> line/f
+
+    dup current>> null? [ drop f ] return-if
+
+    [ current>> ] keep                  // -> current iterator
+
+    dup
+    [ current>> ] [ end>> ] bi eq?      // -> current iterator ?
+
+    [ f ] [
+        dup current>> [ next>> ] when*
+    ] if
+
+    swap current<<
+;
+
+: region-each-line                      // region callable ->
+    swap
+
+    dup end>> offset>> zero? [
+        // region ends at offset 0 of its last line
+        // don't include this line
+        [ begin>> ] [ end>> ] bi        // -> callable begin end
+        line>> prev>> 0 make-position   // -> callable begin end'
+        make-region/2                   // -> callable region'
+    ] when
+
+    make-region-iterator                // -> callable iterator
+    [
+        dup region-iterator-next dup
+    ] [
+        // -> callable iterator line/f
+        pick call
+    ] while
+    2drop
+;
 
 : region-as-string ( region )
     region [ begin-line ] [ end-line ] bi eq? [
