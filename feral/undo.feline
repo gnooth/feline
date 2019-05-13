@@ -178,10 +178,29 @@ special: +compound-redo+
     undo-rec push-undo
 ;
 
+: add-redo-edit-region ( region )
+    new-undo-record :> undo-rec
+    +edit-region+ undo-rec action<<
+
+    region begin-line :> line!
+    region end-line :> end
+    16 <vector> :> v
+
+    [ line line end neq? and ] [
+        line text>> v push
+        line next>> line!
+    ] while
+
+    v vector->array undo-rec data<<
+    undo-rec push-redo
+;
+
 : undo-edit-region ( undo-rec )
     mark assert
 
     dot mark make-region/2 :> region
+
+    region add-redo-edit-region
 
     region begin-line :> line!
 
@@ -190,10 +209,27 @@ special: +compound-redo+
         line next>> line!
     ] each
 
-    modified
-    t repaint!
-    editor:update-display
-;
+    undo-rec mod-count>> mod-count!
+
+    t repaint! ;
+
+: redo-edit-region ( undo-rec )
+    mark assert
+
+    dot mark make-region/2 :> region
+
+    region add-undo-edit-region
+
+    region begin-line :> line!
+
+    undo-rec data>> [
+        line text<<
+        line next>> line!
+    ] each
+
+    undo-rec mod-count>> mod-count!
+
+    t repaint! ;
 
 : add-undo-delete-line-separator
     new-undo-record
@@ -215,7 +251,7 @@ special: +compound-redo+
     dup array-first dot-line-text!
     array-second make-line/1 dot-line insert-after
 
-    t repaint?!
+    t repaint!
     renumber
 
     add-redo-delete-line-separator
