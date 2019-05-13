@@ -1,4 +1,4 @@
-; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -347,5 +347,12 @@ endcode
 code error_vector_index_out_of_bounds, 'error-vector-index-out-of-bounds'
         _quote "ERROR: vector index out of bounds."
         _ error
+        next
+endcode
+
+; ### error-not-callable
+code error_not_callable, 'error-not-callable'
+        _quote "a callable"
+        _ format_type_error
         next
 endcode

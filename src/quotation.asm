@@ -362,7 +362,7 @@ endcode
 
 ; ### callable_raw_code_address
 code callable_raw_code_address, 'callable_raw_code_address', SYMBOL_INTERNAL
-; callable -- raw-code-address
+; callable -> raw-code-address
         _dup
         _ object_raw_typecode
         mov     rax, rbx
@@ -371,24 +371,22 @@ code callable_raw_code_address, 'callable_raw_code_address', SYMBOL_INTERNAL
         cmp     rax, TYPECODE_SYMBOL
         je      symbol_raw_code_address
         cmp     rax, TYPECODE_QUOTATION
-        jne     .error
+        jne     .not_callable
 
         _dup
-        _ quotation_raw_code_address    ; -- quotation raw-code-address
+        _ quotation_raw_code_address    ; -> quotation raw-code-address
         test    rbx, rbx
         jz      .1
         _nip
         _return
 .1:
         _drop
-        _ compile_quotation             ; -- quotation
+        _ compile_quotation             ; -> quotation
         _ quotation_raw_code_address
         _return
 
-.error:
-        _drop
-        _error "not a callable"
-
+.not_callable:
+        _ error_not_callable
         next
 endcode
 
