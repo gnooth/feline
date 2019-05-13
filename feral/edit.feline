@@ -316,6 +316,7 @@ use: kill-ring
     dup action>> {
         { +move+ [ undo-move ] }
         { +line-edit+ [ undo-line-edit ] }
+        { +edit-region+ [ redo-edit-region ] }
         { +delete-line-separator+ [ drop delete-line-separator ] }
         { +insert-line-separator+ [ drop insert-line-separator ] }
         { +delete-line+ [ drop delete-line ] }
