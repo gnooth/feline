@@ -157,19 +157,18 @@ use: kill-ring
     modified ;
 
 : select-line
+    dot-line-next null? ?exit
+
+    reset-redo
+
+    add-undo-move
+
     dot-line-prev dup line-selected? and [
-        // extend selection if possible
-        dot-line-next [
-            add-undo-move
-            dot-line-next dot-line! 0 dot-offset!
-        ] when
-    ] [
-        dot-line-next [
-            add-undo-move
-            dot-line 0 make-position mark!
-            dot-line-next dot-line! 0 dot-offset!
-        ] when
-    ] if
+        // we're not extending an existing selection
+        dot-line 0 make-position mark!
+    ] unless
+
+    dot-line-next 0 make-position dot!
 
     reframe? [
         dot-line-number textview-rows 1- - nth-line top-line!
