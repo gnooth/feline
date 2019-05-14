@@ -707,6 +707,19 @@ code comment_to_eol3, '///', SYMBOL_IMMEDIATE
         next
 endcode
 
+; ### ?exit
+code ?exit, '?exit', SYMBOL_IMMEDIATE
+        _ using_locals?
+        _tagged_if .1
+        _lit S_?exit_locals
+        _else .1
+        _lit S_?exit_no_locals
+        _then .1
+        _get_accum
+        _ vector_push
+        next
+endcode
+
 ; ### return-if
 code return_if, 'return-if', SYMBOL_IMMEDIATE
         _ using_locals?

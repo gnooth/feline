@@ -353,9 +353,30 @@ code unless_star, 'unless*'             ; ? quot --
         next
 endcode
 
+; ### ?exit-no-locals
+always_inline ?exit_no_locals, '?exit-no-locals'
+        cmp     rbx, f_value
+        _drop
+        je      .1
+        lea     rsp, [rsp + BYTES_PER_CELL]
+        ret
+.1:
+endinline
+
+; ### ?exit-locals
+always_inline ?exit_locals, '?exit-locals'
+        cmp     rbx, f_value
+        _drop
+        je      .1
+        lea     rsp, [rsp + BYTES_PER_CELL]
+        _locals_leave
+        ret
+.1:
+endinline
+
 ; ### return-if-no-locals
 code return_if_no_locals, 'return-if-no-locals' ; ? quot --
-        cmp    qword [rbp], f_value
+        cmp     qword [rbp], f_value
         je      .1
         _nip
         _ call_quotation
@@ -368,7 +389,7 @@ endcode
 
 ; ### return-if-locals
 code return_if_locals, 'return-if-locals'       ; ? quot --
-        cmp    qword [rbp], f_value
+        cmp     qword [rbp], f_value
         je      .1
         _nip
         _ call_quotation
