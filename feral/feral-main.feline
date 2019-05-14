@@ -1,0 +1,57 @@
+// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: editor feral-core feline ;
+in: editor
+
+: initialize-editor
+    16 <vector> buffer-list!
+    keymaps:initialize-keymaps
+;
+
+: edit-file ( name )                    // name -> void
+    name find-file-to-edit [
+        initialize-editor
+        1 create-buffer/2
+        edit1
+    ] [
+        name error-file-not-found
+    ] if*
+;
+
+: edit-definition                       // symbol ->
+    symbol-location 2dup and
+    [
+        initialize-editor
+        create-buffer/2
+        edit1
+    ] [
+        2drop
+    ] if
+;
+
+: edit-new
+    initialize-editor
+    create-buffer
+    edit1
+;
+
+: edit
+    parse-token dup [
+        find-name [ edit-definition ] [ edit-file ] if
+    ] [
+        drop edit-new
+    ] if
+;

@@ -26,7 +26,7 @@ empty
 
 "feral-loader.feline" load
 
-using: feral-core feline accessors mini ;
+using: feral-core feline accessors ;
 
 : do-mouse                              // key -> void
     dup fixnum? not [ drop ] return-if
@@ -79,7 +79,7 @@ using: feral-core feline accessors mini ;
     [ done? ] [
         update-display
         ekey
-        clear-message
+        mini:clear-message
         dispatch
     ] until
 
@@ -87,11 +87,6 @@ using: feral-core feline accessors mini ;
     f current-buffer!
     f buffer-list!
     gc
-;
-
-: initialize-editor
-    16 <vector> buffer-list!
-    keymaps:initialize-keymaps
 ;
 
 : edit1
@@ -110,46 +105,11 @@ using: feral-core feline accessors mini ;
     edit-loop
 
     clear-status-line
-    clear-message
+    mini:clear-message
     0 textview-rows at-xy
     show-cursor
 
     use-default-screen-buffer
-;
-
-: edit-file ( name )                    // name -> void
-    name find-file-to-edit [
-        initialize-editor
-        1 create-buffer/2
-        edit1
-    ] [
-        name error-file-not-found
-    ] if*
-;
-
-: edit-definition                       // symbol ->
-    symbol-location 2dup and
-    [
-        initialize-editor
-        create-buffer/2
-        edit1
-    ] [
-        2drop
-    ] if
-;
-
-: edit-new
-    initialize-editor
-    create-buffer
-    edit1
-;
-
-: edit
-    parse-token dup [
-        find-name [ edit-definition ] [ edit-file ] if
-    ] [
-        drop edit-new
-    ] if
 ;
 
 : ed
@@ -159,8 +119,10 @@ using: feral-core feline accessors mini ;
     t repaint?!
     edit-loop
     clear-status-line
-    clear-message
+    mini:clear-message
     0 textview-rows at-xy
     show-cursor
     use-default-screen-buffer
 ;
+
+"feral-main.feline" load
