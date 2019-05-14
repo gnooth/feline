@@ -3890,4 +3890,25 @@ test: +-test-1
 
 +-test-1
 
+: %?exit-test-1
+    ?exit 42 ;
+
+test: ?exit-test-1
+    { }    [ t %?exit-test-1 ] unit-test
+    { 42 } [ f %?exit-test-1 ] unit-test ;
+
+?exit-test-1
+
+: %?exit-test-2 ( x y )
+    x 42 = ?exit
+    y 87 = ?exit
+    x y + ;
+
+test: ?exit-test-2
+    { }    [ 42 13 %?exit-test-2 ] unit-test
+    { }    [ 13 87 %?exit-test-2 ] unit-test
+    { 42 } [ 27 15 %?exit-test-2 ] unit-test ;
+
+?exit-test-2
+
 ?nl "Reached end of test.feline" write-string
