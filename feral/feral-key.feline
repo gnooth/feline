@@ -76,6 +76,8 @@ VK_UP ctrl              constant ctrl-up
 VK_DOWN ctrl            constant ctrl-down
 VK_LEFT alt             constant alt-left
 VK_RIGHT alt            constant alt-right
+VK_LEFT ctrl            constant ctrl-left
+VK_RIGHT ctrl           constant ctrl-right
 VK_F3                   constant f3
 VK_F3 shift             constant shift-f3
 VK_F11                  constant f11
