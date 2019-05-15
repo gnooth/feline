@@ -363,6 +363,9 @@ global current-buffer
 : dot-line-text!                        // string ->
     dot-line text<< ;
 
+: dot-char                              // -> char/?
+    dot-offset dot-line-text ?nth ;
+
 : dot-line-length                       // -> n
     dot-line-text string-length ;
 
