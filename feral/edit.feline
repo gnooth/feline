@@ -277,22 +277,41 @@ use: kill-ring
     1 ?enough
     :> s
     reset-redo
-    '\n' s string-index [
-        s insert-multiline-string
-        maybe-reframe
-        t repaint!
-    ] [
-        add-undo-line-edit
-        dot-line-head s + dot-line-tail + dot-line-text!
-        dot-offset s length + dot-offset!
-        t dot-line-changed!
-    ] if
-    modified
-;
+
+    {
+        { [ s string-?last '\n' eq? ] [
+            // one or more full lines (to a first approximation)
+            // insert string before line containing dot
+            [
+                dot-offset
+                add-undo-move
+                0 dot-offset!
+                s insert-multiline-string
+                add-undo-move
+                dot-offset!
+            ] with-compound-undo
+            maybe-reframe
+            t repaint!
+        ] }
+        { [ '\n' s string-index ] [
+            s insert-multiline-string
+            maybe-reframe
+            t repaint!
+        ] }
+        [
+            // default case
+            // no newlines in string
+            add-undo-line-edit
+            dot-line-head s + dot-line-tail + dot-line-text!
+            dot-offset s length + dot-offset!
+            t dot-line-changed!
+        ]
+    } cond
+
+    modified ;
 
 : paste
-    last-kill [ paste/1 ] [ "Kill ring is empty" message ] if*
-;
+    last-kill [ paste/1 ] [ "Kill ring is empty" message ] if* ;
 
 : cycle-paste
     last-command ' paste eq? [
@@ -301,8 +320,7 @@ use: kill-ring
         paste
     ] if
 
-    ' paste current-command!
-;
+    ' paste current-command! ;
 
 : redo-insert-multiline-string          // undo-record -> void
     data>> insert-multiline-string
