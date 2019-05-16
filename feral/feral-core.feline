@@ -381,6 +381,18 @@ global current-buffer
 : dot-line-prev                         // -> line
     dot line>> prev>> ;
 
+: bol?                                  // void -> ?
+    dot-offset zero? ;
+
+: eol?                                  // void -> ?
+    dot-offset dot-line-length eq? ;
+
+: bob?                                  // void -> ?
+    bol? dot-line-prev null? and ;
+
+: eob?                                  // void -> ?
+    eol? dot-line-next null? and ;
+
 : first-line                            // void -> line
     current-buffer first-line>> ;
 
@@ -393,7 +405,7 @@ global current-buffer
 : last-line!                            // line -> void
     current-buffer last-line<< ;
 
-: last-line-number                      // --> n
+: last-line-number                      // -> n
     last-line number>> ;
 
 : line-count                            // -> n
