@@ -29,7 +29,7 @@ in: editor
     first-line top-line!
     first-line 0 make-position dot!
     0 goal-column!
-    t repaint?!
+    t repaint!
 ;
 
 : end-of-buffer
@@ -41,7 +41,7 @@ in: editor
 
     reframe? [
         dot-line-number textview-rows 1- - nth-line top-line!
-        t repaint?!
+        t repaint!
     ] when
 ;
 
@@ -87,6 +87,24 @@ in: editor
     dot mark make-region/2 end dot!
 ;
 
+: char-left-internal                    // void -> void
+    dot-offset 0 > [
+        dot-offset 1- dot-offset!
+    ] [
+        dot-line-prev [
+            dot-line-prev dup length make-position dot!
+        ] when
+    ] if ;
+
+: char-right-internal                   // void -> void
+    dot-offset dot-line-length < [
+        dot-offset 1+ dot-offset!
+    ] [
+        dot-line-next [
+            dot-line-next 0 make-position dot!
+        ] when
+    ] if ;
+
 : do-left
     last-command ' do-left eq? [ add-undo-move ] unless
 
@@ -105,7 +123,7 @@ in: editor
             dot-offset goal-column!
             reframe? [
                 dot-line top-line!
-                t repaint?!
+                t repaint!
             ] when
         ] when
     ] if
