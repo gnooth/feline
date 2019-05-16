@@ -88,6 +88,8 @@ linux? #if
 0x1b5b313b3546          constant ctrl-end
 0x1b5b313b3541          constant ctrl-up
 0x1b5b313b3542          constant ctrl-down
+0x1b5b313b3543          constant ctrl-right
+0x1b5b313b3544          constant ctrl-left
 0x1b5b313b3344          constant alt-left
 0x1b5b313b3343          constant alt-right
 0x1b4f52                constant f3
