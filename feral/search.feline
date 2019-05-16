@@ -45,9 +45,10 @@ var current-search
     add-undo-move
     pos mark!
     mark-line mark-offset current-pattern string-length + make-position dot!
+    dot-offset goal-column!
 
     maybe-reframe
-    t repaint?! ;
+    t repaint! ;
 
 : not-found
     current-pattern "%S not found" format
