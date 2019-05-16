@@ -36,6 +36,9 @@ winui? #if
     ' do-up                             feral-key:up                    m set-at
     ' do-down                           feral-key:down                  m set-at
 
+    ' word-left                         feral-key:ctrl-left             m set-at
+    ' word-right                        feral-key:ctrl-right            m set-at
+
     ' do-page-up                        feral-key:pageup                m set-at
     ' do-page-down                      feral-key:pagedown              m set-at
 

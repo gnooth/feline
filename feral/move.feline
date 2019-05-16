@@ -147,10 +147,78 @@ in: editor
             dot-offset goal-column!
             reframe? [
                 dot-line-number textview-rows 1- - nth-line top-line!
-                t repaint?!
+                t repaint!
             ] when
         ] when
     ] if
+;
+
+: word-left
+    add-undo-move
+
+    in-word? [
+        char-left-internal
+
+        not-in-word? [
+            [
+                in-word? bob? or
+            ] [
+                char-left-internal
+            ] until
+        ] when
+
+        in-word? [
+            [
+                not-in-word? bol? or
+            ] [
+                dot-offset 1- dot-offset!
+            ] until
+
+            in-word? [
+                dot-offset 1+ dot-offset!
+            ] unless
+        ] when
+    ] [
+        // not in word
+        [
+            in-word? bob? or
+        ] [
+            char-left-internal
+        ] until
+
+        in-word? [
+
+            // move to beginning of word (which must be on the same line)
+            [
+                not-in-word? bol? or
+            ] [
+                dot-offset 1- dot-offset!
+            ] until
+
+            in-word? [
+                dot-offset 1+ dot-offset!
+            ] unless
+
+        ] when
+    ] if ;
+
+: word-right
+    add-undo-move
+
+    not-in-word? [
+        [
+            in-word? eob? or
+        ] [
+            char-right-internal
+        ] until
+    ] when
+
+    in-word? [
+        // move to end of word
+        [ not-in-word? eol? or ] [
+            dot-offset 1+ dot-offset!
+        ] until
+    ] when
 ;
 
 : do-down
@@ -280,7 +348,7 @@ winui? #if
 
     line dot-line!
 
-    t repaint?!
+    t repaint!
     adjust-dot-column
 ;
 
@@ -306,6 +374,6 @@ winui? #if
 
     line top-line!
 
-    t repaint?!
+    t repaint!
     adjust-dot-column
 ;
