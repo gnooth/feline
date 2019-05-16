@@ -114,6 +114,8 @@ global ctrl-k-map
     ' end-of-line                       key:end         m set-at
     ' do-left                           key:left        m set-at
     ' do-right                          key:right       m set-at
+    ' word-left                         key:ctrl-left   m set-at
+    ' word-right                        key:ctrl-right  m set-at
     ' do-up                             key:up          m set-at
     ' do-down                           key:down        m set-at
     ' do-window-up                      key:ctrl-up     m set-at
