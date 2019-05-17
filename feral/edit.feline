@@ -204,6 +204,38 @@ use: kill-ring
     renumber
     t repaint! ;
 
+: delete-word-right
+    reset-redo
+
+    [
+        add-undo-move
+        dot copy-position mark!
+
+        in-word? [
+            // move to end of word
+            [ not-in-word? eol? or ] [
+                dot-offset 1+ dot-offset!
+            ] until
+        ] [
+            // not in word
+            [
+                in-word? eob? or
+            ] [
+                char-right-internal
+            ] until
+            in-word? [
+                // move to end of word
+                [ not-in-word? eol? or ] [
+                    dot-offset 1+ dot-offset!
+                ] until
+            ] when
+        ] if
+
+        mark dot make-region/2 delete-region
+    ] with-compound-undo
+
+    t repaint! ;
+
 : do-delete
     {
         { [ mark ] [ mark dot make-region/2 delete-region ] }

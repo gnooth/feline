@@ -70,6 +70,7 @@ VK_DOWN                 constant down
 VK_PRIOR                constant pageup
 VK_NEXT                 constant pagedown
 VK_OEM_2 ctrl           constant ctrl-/
+VK_DELETE ctrl          constant ctrl-delete
 VK_HOME ctrl            constant ctrl-home
 VK_END ctrl             constant ctrl-end
 VK_UP ctrl              constant ctrl-up
