@@ -64,6 +64,7 @@ win64? #if
 0x8050                  constant down
 0x8049                  constant pageup
 0x8051                  constant pagedown
+0x8093                  constant ctrl-delete
 0x8077                  constant ctrl-home
 0x8075                  constant ctrl-end
 0x808d                  constant ctrl-up
