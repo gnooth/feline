@@ -697,10 +697,13 @@ unuse: segments
 
 generic identifier-char?                // char mode -> ?
 
-: in-word?                              // -> ?
+: in-whitespace?                        // void -> ?
+    dot-char whitespace? ;
+
+: in-word?                              // void -> ?
     dot-char [ current-mode identifier-char? ] [ f ] if* ;
 
-: not-in-word?                          // -> ?
+: not-in-word?                          // void -> ?
     dot-char [ current-mode identifier-char? not ] [ t ] if* ;
 
 generic identifier-at-dot               // mode -> start/f string/f
