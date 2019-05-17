@@ -393,6 +393,24 @@ code initialize_locals, 'initialize-locals'
         _end_quotation .1
         _ vector_each_index
 
+        ; check for ?exit-no-locals
+        ; if found, replace with ?exit-locals
+        _ current_definition
+        _quotation .3
+        _swap
+        _lit S_?exit_no_locals
+        _eq?
+        _tagged_if .4
+        _lit S_?exit_locals
+        _swap
+        _ current_definition
+        _ vector_set_nth
+        _else .4
+        _drop
+        _then .4
+        _end_quotation .3
+        _ vector_each_index
+
         next
 endcode
 
