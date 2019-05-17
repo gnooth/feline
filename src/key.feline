@@ -86,6 +86,7 @@ linux? #if
 0x1b5b42                constant down
 0x1b5b357e              constant pageup
 0x1b5b367e              constant pagedown
+0x1b5b333b357e          constant ctrl-delete
 0x1b5b313b3548          constant ctrl-home
 0x1b5b313b3546          constant ctrl-end
 0x1b5b313b3541          constant ctrl-up
