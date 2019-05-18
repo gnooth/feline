@@ -109,7 +109,7 @@ comment-start length constant comment-start-length
 ;
 
 : feline-mode-comment-region
-    mark null? [ ] return-if
+    mark null? ?exit
 
     dot mark make-region/2 :> region
 
@@ -123,7 +123,7 @@ comment-start length constant comment-start-length
 ;
 
 : feline-mode-uncomment-region
-    mark null? [ ] return-if
+    mark null? ?exit
 
     dot mark make-region/2 :> region
 
@@ -140,6 +140,58 @@ comment-start length constant comment-start-length
     editor:update-display
 ;
 
+: feline-mode-expand-if
+    mark ?exit
+    "if" dot-line-head tail? not ?exit
+
+    editor:add-undo-line-edit
+
+    "if" length dot-line-head head*
+    "[  ] [  ] if" +
+    dot-line-tail +
+    dot-line-text!
+
+    t dot-line-changed! ;
+
+: feline-mode-expand-when
+    mark ?exit
+    "when" dot-line-head tail? not ?exit
+
+    editor:add-undo-line-edit
+
+    "when" length dot-line-head head*
+    "[  ] when" +
+    dot-line-tail +
+    dot-line-text!
+
+    dot-offset 2 - dot-offset!
+    t dot-line-changed! ;
+
+: feline-mode-expand
+    mark ?exit
+    dot-offset zero? ?exit
+
+    dot-offset :> old-dot-offset
+
+    dot-offset 1- dot-offset!
+
+    [ in-word? dot-offset zero? not and ] [
+        dot-offset 1- dot-offset!
+    ] while
+
+    not-in-word? [ dot-offset 1+ dot-offset! ] when
+
+    dot-offset old-dot-offset dot-line-text string-substring
+
+    old-dot-offset dot-offset!
+
+    {
+        { "when" [ feline-mode-expand-when ] }
+        { "if"   [ feline-mode-expand-if ]   }
+        // default
+        [ "No expansion for %S" format mini:message ]
+    } case ;
+
 global feline-mode-local-map
 
 winui? #if
@@ -151,6 +203,7 @@ use: feral-key
     ' feline-mode-toggle-line-comment   ctrl-/      m set-at
     ' feline-mode-comment-region        f11         m set-at
     ' feline-mode-uncomment-region      shift-f11   m set-at
+    ' feline-mode-expand                ctrl-space  m set-at
     m feline-mode-local-map!
 ;
 
