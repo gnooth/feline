@@ -539,9 +539,8 @@ winui? #if
 : bottom-line-number                    // -> n
     bottom-line number>> ;
 
-: detab ( s )                           // string1 -> string2
-    '\t' s string-index :> i
-    i f eq? [ s ] return-if
+: detab ( s )                           // string -> string'
+    '\t' s string-index null? [ s ] return-if
 
     256 <sbuf> :> sb
 
@@ -549,7 +548,7 @@ winui? #if
         dup '\t' eq? [
             drop
             '\s' sb sbuf-push
-            [ sb sbuf-length 8 mod 0 eq? ] [ '\s' sb sbuf-push ] until
+            [ sb sbuf-length tab-width mod 0 eq? ] [ '\s' sb sbuf-push ] until
         ] [
             sb sbuf-push
         ] if
