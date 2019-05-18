@@ -261,6 +261,8 @@ tuple: buffer
     first-line
     last-line
     top-line
+    indent-size
+    tab-width
 ;
 
 "\n"   constant LF
