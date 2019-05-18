@@ -39,6 +39,11 @@ private
 tuple: asm-mode
     formatter ;
 
+method: asm-mode initialize-buffer      // buffer mode -> void
+    2 ?enough
+    drop :> buf
+    8 buf indent-size<< ;
+
 method: asm-mode formatter              // mode -> formatter
     formatter>> ;
 
