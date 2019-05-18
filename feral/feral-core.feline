@@ -442,6 +442,12 @@ global current-buffer
 : redo-stack                            // -> vector
     current-buffer redo-stack>> ;
 
+: tab-width                             // void -> n
+    current-buffer tab-width>> [ 8 ] unless* ;
+
+: indent-size                           // void -> n
+    current-buffer indent-size>> [ 4 ] unless* ;
+
 : renumber
     first-line :> line!
     0 :> n!
@@ -532,9 +538,6 @@ winui? #if
 
 : bottom-line-number                    // -> n
     bottom-line number>> ;
-
-: tab-width                             // -> n
-    8 ;
 
 : detab ( s )                           // string1 -> string2
     '\t' s string-index :> i
