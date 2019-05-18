@@ -215,8 +215,9 @@ unuse: feral-key
 
 method: feline-mode initialize-buffer   // buffer mode -> void
     2 ?enough
-    drop
-    feline-mode-local-map swap local-map<<
+    drop :> buf
+    feline-mode-local-map buf local-map<<
+    4 buf indent-size<<
 ;
 
 {
