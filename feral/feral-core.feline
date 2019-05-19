@@ -54,6 +54,22 @@ method: line length                     // line -> length
 method: line substring                  // from to line -> substring
     text>> string-substring ;
 
+generic indentation-length
+
+method: string indentation-length       // string -> index
+    [ whitespace? not ] find [ drop 0 ] unless ;
+
+method: line indentation-length         // line -> index
+    text>> indentation-length ;
+
+generic indentation-string
+
+method: string indentation-string       // string -> string'
+    [ indentation-length ] keep head ;
+
+method: line indentation-string         // line -> string
+    text>> indentation-string ;
+
 : line-before? ( line1 line2 )          // line1 line2 -> ?
     line1 number>> line2 number>> <
 ;
