@@ -74,6 +74,7 @@ VK_NEXT                 constant pagedown
 VK_OEM_2 ctrl           constant ctrl-/
 VK_OEM_4 ctrl           constant ctrl-[
 VK_OEM_6 ctrl           constant ctrl-]
+VK_BACK ctrl            constant ctrl-backspace
 VK_DELETE ctrl          constant ctrl-delete
 VK_HOME ctrl            constant ctrl-home
 VK_END ctrl             constant ctrl-end
