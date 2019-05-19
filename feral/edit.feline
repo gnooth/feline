@@ -72,25 +72,25 @@ in: editor
         t repaint!
     ] when ;
 
+: make-indentation-string ( n )         // n -> string
+    n <sbuf> :> sb
+    n [ '\s' sb push ] times
+    sb sbuf>string ;
+
 : indent-line
     mark ?exit
     add-undo-line-edit
     dot-offset :> old-dot-offset
-    0 dot-offset!
-    4 insert-spaces
-    old-dot-offset dot-offset! ;
+    indent-size make-indentation-string dot-line-text + dot-line-text!
+    old-dot-offset dot-offset!
+    modified
+    t dot-line-changed! ;
 
 : indent-region
-    indent-size <sbuf> :> sb
-    indent-size [ '\s' sb push ] times
-    sb sbuf>string :> indentation
-
+    indent-size make-indentation-string :> s
     dot mark make-region/2 :> region
-
     region editor:add-undo-edit-region
-
-    region [ indentation over text>> + swap text<< ] region-each-line
-
+    region [ s over text>> + swap text<< ] region-each-line
     modified
     t repaint! ;
 
