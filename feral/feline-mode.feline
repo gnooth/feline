@@ -58,54 +58,48 @@ method: feline-mode identifier-at-dot   // mode -> start/f string/f
     drop
     feline-mode-identifier-at-dot ;
 
-: get-indentation ( s )                 // string -> indentation
-    s [ whitespace? not ] find [ drop 0 ] unless  // -> index
-    s head                              // -> indentation
-;
-
 "// " constant comment-start
 
 comment-start length constant comment-start-length
 
 : feline-mode-toggle-line-comment
     dot-line-text :> text
-    text get-indentation :> indent
-    indent length :> indent-length
-    indent-length text tail :> content
+    text indentation-string :> indentation-string
+    indentation-string length :> indentation-length
+    indentation-length text tail :> content
 
     editor:add-undo-line-edit
 
     comment-start content head? [
         // uncomment
-        indent
+        indentation-string
         comment-start-length content tail +
         dot-line-text!
         {
             {
-                [ dot-offset indent-length comment-start-length + >= ]
+                [ dot-offset indentation-length comment-start-length + >= ]
                 [ dot-offset comment-start-length - dot-offset! ]
             }
             {
-                [ dot-offset indent-length >= ]
-                [ indent-length dot-offset! ]
+                [ dot-offset indentation-length >= ]
+                [ indentation-length dot-offset! ]
             }
             // dot-offset < indent-length
             [ ]
         } cond
     ] [
         // comment
-        indent
+        indentation-string
         comment-start +
         content +
         dot-line-text!
-        dot-offset indent-length >= [
+        dot-offset indentation-length >= [
             dot-offset comment-start-length + dot-offset!
         ] when
     ] if
 
     modified
     t dot-line-changed!
-    editor:update-display
 ;
 
 : feline-mode-comment-region
@@ -119,7 +113,6 @@ comment-start length constant comment-start-length
 
     modified
     t repaint!
-    editor:update-display
 ;
 
 : feline-mode-uncomment-region
@@ -137,7 +130,6 @@ comment-start length constant comment-start-length
 
     modified
     t repaint!
-    editor:update-display
 ;
 
 : feline-mode-expand-if
