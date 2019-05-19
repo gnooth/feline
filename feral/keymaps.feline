@@ -23,7 +23,7 @@ global global-map
 winui? #if
 
 : initialize-global-map
-    global-map [ ] return-if
+    global-map ?exit
 
     128 <hashtable> :> m
 
@@ -70,6 +70,9 @@ winui? #if
     ' cut                               key:ctrl-x                      m set-at
     ' copy                              key:ctrl-c                      m set-at
     ' paste                             key:ctrl-v                      m set-at
+
+    ' indent                            feral-key:ctrl-]                m set-at
+    ' unindent                          feral-key:ctrl-[                m set-at
 
     ' find-definition-at-dot            feral-key:alt-.                 m set-at
     ' cycle-paste                       feral-key:alt-v                 m set-at
