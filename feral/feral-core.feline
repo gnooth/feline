@@ -715,8 +715,6 @@ unuse: segments
 
 ' default-formatter ' formatter set-default-method
 
-generic identifier-char?                // char mode -> ?
-
 : alphanumeric?                         // char -> ?
 
     dup char? not [ error-not-char ] return-if
@@ -728,6 +726,15 @@ generic identifier-char?                // char mode -> ?
     { [ '0' char-code c <= ] [ c '9' char-code <= ] } && [ t ] return-if
 
     f ;
+
+generic identifier-char?                // char mode -> ?
+
+: default-identifier-char?              // char mode -> ?
+    drop
+    :> x
+    { [ x alphanumeric? ] [ x '_' eq? ] } || ;
+
+' default-identifier-char? ' identifier-char? set-default-method
 
 : in-whitespace?                        // void -> ?
     dot-char whitespace? ;
