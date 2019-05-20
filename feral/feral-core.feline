@@ -717,6 +717,18 @@ unuse: segments
 
 generic identifier-char?                // char mode -> ?
 
+: alphanumeric?                         // char -> ?
+
+    dup char? not [ error-not-char ] return-if
+
+    char-code :> c
+
+    { [ 'A' char-code c <= ] [ c 'Z' char-code <= ] } && [ t ] return-if
+    { [ 'a' char-code c <= ] [ c 'z' char-code <= ] } && [ t ] return-if
+    { [ '0' char-code c <= ] [ c '9' char-code <= ] } && [ t ] return-if
+
+    f ;
+
 : in-whitespace?                        // void -> ?
     dot-char whitespace? ;
 

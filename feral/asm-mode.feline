@@ -13,24 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline ;
-in: feline
-
-public
-
-: alphanumeric?                         // char -> ?
-
-    dup char? not [ error-not-char ] return-if
-
-    char-code :> c
-
-    { [ 'A' char-code c <= ] [ c 'Z' char-code <= ] } && [ t ] return-if
-    { [ 'a' char-code c <= ] [ c 'z' char-code <= ] } && [ t ] return-if
-    { [ '0' char-code c <= ] [ c '9' char-code <= ] } && [ t ] return-if
-
-    f
-;
-
 using: feral-core modes feline accessors segments ;
 in: asm-mode
 
