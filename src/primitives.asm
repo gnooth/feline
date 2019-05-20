@@ -401,6 +401,32 @@ code return_if_locals, 'return-if-locals'       ; ? quot --
         next
 endcode
 
+; ### loop
+code feline_loop, 'loop'        ; quotation ->
+; call quotation repeatedly until it returns f
+
+        ; protect quotation from gc
+        push    rbx
+
+        push    r12
+        _ callable_raw_code_address
+        mov     r12, rbx
+        poprbx
+.1:
+        call    r12
+        cmp     rbx, f_value
+        poprbx
+        je      .exit
+        jmp     .1
+.exit:
+        pop     r12
+
+        ; drop quotation
+        lea     rsp, [rsp + BYTES_PER_CELL]
+
+        next
+endcode
+
 ; ### until
 code until, 'until'             ; pred body --
 ; call body until pred returns t
