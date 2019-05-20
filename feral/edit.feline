@@ -36,7 +36,7 @@ in: editor
 
 : do-tab
     add-undo-line-edit
-    4 dot-offset 4 mod - insert-spaces ;
+    indent-size dot-offset indent-size mod - insert-spaces ;
 
 : get-indentation-column                // line -> column
     dup empty? [ drop 0 ] return-if
@@ -300,6 +300,59 @@ use: kill-ring
                 [ in-whitespace? ] [
                     dot-offset 1+ dot-offset!
                 ] while
+            ]
+        } cond
+
+        mark dot make-region/2 delete-region
+
+    ] with-compound-undo
+
+    t dot-line-changed!
+;
+
+: char-left-line                        // void -> ?
+    dot-offset 0 > [ dot-offset 1- dot-offset! t ] [ f ] if ;
+
+: delete-word-left
+    bob? ?exit
+
+    reset-redo
+
+    bol? [
+        [
+            unmark
+            add-undo-move
+            char-left-internal
+            delete-line-separator
+        ] with-compound-undo
+    ] return-if
+
+    [
+        add-undo-move
+        dot copy-position mark!
+
+        // not bol
+        // move back one character
+        char-left-line assert
+
+        {
+            { [ in-whitespace? ] [
+                [ char-left-line [ in-whitespace? ] [ f ] if ] loop
+                dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
+            ] }
+            { [ in-word? ] [
+                // move to beginning of word
+                [ char-left-line [ in-word? ] [ f ] if ] loop
+                dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
+            ] }
+            // default case
+            [
+                // not in word, not in whitespace
+                [ char-left-line [ not-in-word? not-in-whitespace? and ] [ f ] if ] loop
+                dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
+                // delete preceding whitespace if any
+                [ char-left-line [ in-whitespace? ] [ f ] if ] loop
+                dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
             ]
         } cond
 
