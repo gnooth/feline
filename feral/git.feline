@@ -16,11 +16,6 @@
 using: feral-core feline accessors directories mini diff-mode ;
 in: editor
 
-: get-temporary-filename                // void -> string
-    feral-temp-directory
-    nano-count fixnum>uint64 uint64>string
-    path-append ;
-
 : git-diff
     current-buffer filename>> :> source-file
     "git diff " source-file +           // -> string

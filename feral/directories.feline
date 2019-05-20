@@ -40,3 +40,8 @@ global feral-temp-directory             // ~/.feral.d/temp
     ] unless ;
 
 initialize-directories
+
+: get-temporary-filename                // void -> string
+    feral-temp-directory
+    nano-count fixnum>uint64 uint64>string
+    path-append ;
