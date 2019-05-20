@@ -739,6 +739,9 @@ generic identifier-char?                // char mode -> ?
 : in-whitespace?                        // void -> ?
     dot-char whitespace? ;
 
+: not-in-whitespace?                    // void -> ?
+    dot-char whitespace? not ;
+
 : in-word?                              // void -> ?
     dot-char [ current-mode identifier-char? ] [ f ] if* ;
 
