@@ -259,6 +259,7 @@ method: feline-mode initialize-buffer   // buffer mode -> void
 } constant defining-words
 
 {
+    "&&"
     "bi"
     "bi@"
     "case"
@@ -283,6 +284,7 @@ method: feline-mode initialize-buffer   // buffer mode -> void
     "when"
     "when*"
     "while"
+    "||"
 } constant combinators
 
 32 code-char constant space-char
