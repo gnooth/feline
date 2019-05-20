@@ -39,6 +39,7 @@ winui? #if
     ' word-left                         feral-key:ctrl-left             m set-at
     ' word-right                        feral-key:ctrl-right            m set-at
     ' delete-word-right                 feral-key:ctrl-delete           m set-at
+    ' delete-word-left                  feral-key:ctrl-backspace        m set-at
 
     ' do-page-up                        feral-key:pageup                m set-at
     ' do-page-down                      feral-key:pagedown              m set-at
