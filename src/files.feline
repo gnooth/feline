@@ -18,8 +18,14 @@ in: feline
 
 public
 
-// returns filename without its directory
+// returns filename without its directory component
 : file-name-nondirectory ( filename )
     filename length :> len
     len 1- filename [ path-separator-char? ] find-last-from // -> index/f element/f
     [ 1+ len filename substring ] [ filename nip ] if ;
+
+// returns the filename's directory component
+: file-name-directory ( filename )
+    filename length :> len
+    len 1- filename [ path-separator-char? ] find-last-from // -> index/f element/f
+    [ filename head ] when ;
