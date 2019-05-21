@@ -64,6 +64,7 @@ feline-home "feral" path-append add-source-directory
         "list-buffers.feline"
         "diff-mode.feline"
         "git.feline"
+        "directory.feline"
         "find-definition.feline"
         "search.feline"
         "commands.feline"
