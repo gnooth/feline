@@ -310,9 +310,6 @@ use: kill-ring
     t dot-line-changed!
 ;
 
-: char-left-line                        // void -> ?
-    dot-offset 0 > [ dot-offset 1- dot-offset! t ] [ f ] if ;
-
 : delete-word-left
     bob? ?exit
 

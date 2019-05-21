@@ -96,6 +96,9 @@ in: editor
         ] when
     ] if ;
 
+: char-left-line                        // void -> ?
+    dot-offset 0 > [ dot-offset 1- dot-offset! t ] [ f ] if ;
+
 : char-right-internal                   // void -> void
     dot-offset dot-line-length < [
         dot-offset 1+ dot-offset!
