@@ -275,6 +275,7 @@ method: feline-mode initialize-buffer   // buffer mode -> void
     "if"
     "if*"
     "keep"
+    "loop"
     "return-if"
     "times"
     "tri"
