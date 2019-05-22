@@ -334,23 +334,31 @@ use: kill-ring
         char-left-line assert
 
         {
-            { [ in-whitespace? ] [
-                [ char-left-line [ in-whitespace? ] [ f ] if ] loop
-                dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
-            ] }
-            { [ in-word? ] [
-                // move to beginning of word
-                [ char-left-line [ in-word? ] [ f ] if ] loop
-                dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
-            ] }
-            // default case
+            {
+                [ in-whitespace? ]
+                [
+                    move-left-past-whitespace
+                    move-left-to-beginning-of-word
+                ]
+            }
+
+            { [ in-word? ] [ move-left-to-beginning-of-word ] }
+
             [
                 // not in word, not in whitespace
-                [ char-left-line [ not-in-word? not-in-whitespace? and ] [ f ] if ] loop
-                dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
-                // delete preceding whitespace if any
-                [ char-left-line [ in-whitespace? ] [ f ] if ] loop
-                dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
+                // if previous char is whitespace, then dot is at the start
+                // of a word and we are done
+                dot-char-prev whitespace? [
+                    // previous char is NOT whitespace
+                    [
+                        char-left-line
+                        [ not-in-word? not-in-whitespace? and ] [ f ] if
+                    ] loop
+                    dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
+                    // skip over preceding whitespace if any
+                    move-left-past-whitespace
+                    dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
+                ] unless
             ]
         } cond
 
