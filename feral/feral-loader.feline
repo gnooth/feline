@@ -22,6 +22,7 @@ in: user
     "asm-mode"
     "diff-mode"
     "directories"
+    "directory-mode"
     "editor"
     "feline-mode"
     "feral-core"
