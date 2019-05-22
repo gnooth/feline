@@ -257,6 +257,7 @@ use: kill-ring
 
     modified
     renumber
+    maybe-reframe
     t repaint!
 ;
 
