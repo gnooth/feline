@@ -156,54 +156,58 @@ in: editor
     ] if
 ;
 
+: move-left-to-beginning-of-word
+    // no undo
+    in-word? [
+        [ char-left-line [ in-word? ] [ f ] if ] loop
+        dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
+    ] when
+;
+
+: move-left-past-whitespace
+    // no undo
+    [ char-left-line [ in-whitespace? ] [ f ] if ] loop
+;
+
 : word-left
+    bob? ?exit
+
+    reset-redo
     add-undo-move
 
-    in-word? [
+    bol? [
+        unmark
         char-left-internal
+    ] return-if
 
-        not-in-word? [
-            [
-                in-word? bob? or
-            ] [
-                char-left-internal
-            ] until
-        ] when
+    // not bol
+    // move back one character
+    char-left-line assert
+    eol? assert-false
 
-        in-word? [
-            [
-                not-in-word? bol? or
-            ] [
-                dot-offset 1- dot-offset!
-            ] until
+    {
+        {
+            [ in-whitespace? ] [
+                move-left-past-whitespace
+                move-left-to-beginning-of-word
+            ]
+        }
 
-            in-word? [
-                dot-offset 1+ dot-offset!
-            ] unless
-        ] when
-    ] [
-        // not in word
+        { [ in-word? ] [ move-left-to-beginning-of-word ] }
+
         [
-            in-word? bob? or
-        ] [
-            char-left-internal
-        ] until
-
-        in-word? [
-
-            // move to beginning of word (which must be on the same line)
+            // not in word, not in whitespace
             [
-                not-in-word? bol? or
-            ] [
-                dot-offset 1- dot-offset!
-            ] until
-
-            in-word? [
-                dot-offset 1+ dot-offset!
-            ] unless
-
-        ] when
-    ] if ;
+                char-left-line
+                [ not-in-word? not-in-whitespace? and ] [ f ] if
+            ] loop
+            dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
+            // skip over preceding whitespace if any
+            move-left-past-whitespace
+            dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
+        ]
+    } cond
+;
 
 : word-right
     add-undo-move
