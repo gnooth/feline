@@ -53,7 +53,7 @@ winui? #if
     ' gotoline                          key:ctrl-g                      m set-at
     ' do-quit                           key:ctrl-q                      m set-at
     ' do-save                           key:ctrl-s                      m set-at
-    ' list-buffers                      feral-key:alt-b                 m set-at
+    ' list-buffers                      key:ctrl-b                      m set-at
     ' kill-buffer                       key:ctrl-w                      m set-at
     ' newline-and-indent                key:enter                       m set-at
     ' do-find                           key:ctrl-f                      m set-at
@@ -133,6 +133,7 @@ global ctrl-k-map
     ' gotoline                          key:ctrl-g      m set-at
     ' do-quit                           key:ctrl-q      m set-at
     ' do-save                           key:ctrl-s      m set-at
+    ' list-buffers                      key:ctrl-b      m set-at
     ' kill-buffer                       key:ctrl-w      m set-at
     ' newline-and-indent                key:enter       m set-at
     ' do-find                           key:ctrl-f      m set-at
