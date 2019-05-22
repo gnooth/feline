@@ -108,6 +108,9 @@ in: editor
         ] when
     ] if ;
 
+: char-right-line                       // void -> ?
+    dot-offset dot-line-length < [ dot-offset 1+ dot-offset! t ] [ f ] if ;
+
 : do-left
     last-command ' do-left eq? [ add-undo-move ] unless
 
@@ -209,24 +212,50 @@ in: editor
     } cond
 ;
 
+: move-right-past-whitespace
+    // no undo
+    [ char-right-line [ in-whitespace? ] [ f ] if ] loop
+;
+
 : word-right
+    eob? ?exit
+
+    reset-redo
     add-undo-move
 
-    not-in-word? [
-        [
-            in-word? eob? or
-        ] [
-            char-right-internal
-        ] until
-    ] when
+    {
+        {
+            [ eol? ]
+            [ dot-line next>> dot-line! 0 dot-offset! maybe-reframe ]
+        }
 
-    in-word? [
-        // move to end of word
-        [ not-in-word? eol? or ] [
-            dot-offset 1+ dot-offset!
-        ] until
-    ] when
-;
+        {
+            [ in-whitespace? ]
+            [ move-right-past-whitespace ]
+        }
+
+        {
+            [ in-word? ]
+            [
+                // move to end of word
+                [ not-in-word? eol? or ] [
+                    dot-offset 1+ dot-offset!
+                ] until
+                // skip following whitespace if any
+                in-whitespace? [
+                    move-right-past-whitespace
+                ] when
+            ]
+        }
+
+        [
+            // not eol, not in word, not in whitespace
+            [ in-whitespace? in-word? or eol? or ] [ dot-offset 1+ dot-offset! ] until
+            in-whitespace? [
+                move-right-past-whitespace
+            ] when
+        ]
+    } cond ;
 
 : do-down
     reset-redo
