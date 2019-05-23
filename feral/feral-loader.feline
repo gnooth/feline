@@ -25,7 +25,9 @@ in: user
     "directory-mode"
     "editor"
     "feline-mode"
+    "feral-colors"
     "feral-core"
+    "feral-hooks"
     "feral-key"
     "history"
     "keymaps"
@@ -45,10 +47,12 @@ feline-home "feral" path-append add-source-directory
 : load-feral
     {
         "feral-key.feline"
+        "feral-colors.feline"
+        "feral-hooks.feline"
         "directories.feline"
+        "logging.feline"
         "feral-core.feline"
         "history.feline"
-        "logging.feline"
         "accept-string.feline"
         "mini.feline"
         "modes.feline"
