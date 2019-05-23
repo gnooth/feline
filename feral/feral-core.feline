@@ -16,21 +16,6 @@
 using: feline accessors feral-config ;
 in: feral-core
 
-: add-hook ( callable hook )            // callable symbol -> void
-    hook symbol-value [
-        1 <vector> hook symbol-set-value
-    ] unless
-    hook symbol-value verify-vector :> hooks
-    callable hooks vector-adjoin ;
-
-: run-hook ( hook )                     // hook -> void
-    hook symbol-value :> val
-    val vector? [
-        val [ call ] each
-    ] when ;
-
-global exit-feral-hook
-
 tuple: line
     prev
     next
