@@ -82,6 +82,8 @@ winui? #if
     ' search-list-occurrences           feral-key:alt-l                 m set-at
     ' execute-command                   feral-key:alt-x                 m set-at
 
+    ' dir                               key:ctrl-d                      m set-at
+
     m global-map!
 ;
 
@@ -152,6 +154,7 @@ global ctrl-k-map
     ' cut                               key:ctrl-x      m set-at
     ' copy                              key:ctrl-c      m set-at
     ' paste                             key:ctrl-v      m set-at
+    ' dir                               key:ctrl-d      m set-at
 
     m global-map!
 ;
