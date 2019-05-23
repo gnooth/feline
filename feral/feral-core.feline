@@ -699,8 +699,9 @@ generic formatter                       // mode -> formatter
 
 use: segments
 
-: default-formatter
-    [ make-segment 1array ] ;
+: default-formatter                     // mode -> formatter
+    drop
+    [ 0 feral-colors:color-text make-segment/3 1array ] ;
 
 unuse: segments
 
