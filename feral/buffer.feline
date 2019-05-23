@@ -25,6 +25,16 @@ in: editor
     ] unless
 ;
 
+: buffer-set-contents ( s buf )         // string buffer -> void
+    f buf first-line<<
+    f buf last-line<<
+    f buf top-line<<
+    f buf dot<<
+    f buf mark<<
+
+    s string-lines [ make-line/2 buf buffer-append-line ] each-index
+;
+
 : create-buffer                         // void -> void
     make-buffer :> buf
     "" 0 make-line/2
