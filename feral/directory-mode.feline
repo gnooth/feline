@@ -28,6 +28,7 @@ global directory-mode-local-map
     1 ?enough verify-string :> s
 
     win64? [
+        // Windows
         // 05/24/2019  09:37 AM             3,019 directory-mode.feline
         //                                      ^^^
 
@@ -41,7 +42,18 @@ global directory-mode-local-map
 
         // If the string qualifies, the filename begins at offset 39.
         39 f ?
-    ] [ f ] if ;
+    ] [
+        // Linux
+        // -rw-rw-r-- 1 peter peter  3224 May 24 10:10 directory-mode.feline
+        //                                           ^^^
+        {
+            [ 42 s ?nth digit? ]
+            [ 43 s ?nth '\s' eq? ]
+            [ 44 s ?nth alphanumeric? ]
+        } && // -> ?
+
+        44 f ?
+    ] if ;
 
 public
 
