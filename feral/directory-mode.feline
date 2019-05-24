@@ -14,30 +14,56 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feral-core feline accessors directories mini ;
+in: directory-mode
+
+private
+
+tuple: directory-mode ;
+
+global instance
+
+public: get-instance                    // void -> directory-mode
+    instance [
+        directory-mode make-instance dup instance!
+    ] unless* ;
+
+global directory-mode-local-map
+
+method: directory-mode initialize-buffer // buffer mode -> void
+    2 ?enough
+    drop :> buf
+    get-instance dup assert buf mode<<
+    directory-mode-local-map buf local-map<<
+    t buf read-only<< ;
+
 in: editor
+
+public
 
 : dir
     current-buffer filename>> [ file-name-directory ] [ get-current-directory ] if*
     :> directory
 
-    win64? [ "dir " ] [ "ls -l " ] if
-    directory +                         // -> string
-    " > " +                             // -> string
-    get-temporary-filename dup :> tempname +
-    run-shell-command 0 assert-eq       // run-shell-command should return 0
+    directory find-buffer :> buf!
 
-    tempname file-open-read :> fd
-    fd file-size :> size
-    fd file-close
+    buf [ buf current-buffer! t repaint! ] return-if
 
-    size 0 > [
-        tempname 1 create-buffer/2
-        "Directory of " directory + current-buffer name<<
-        t current-buffer read-only<<
-        // initialize-diff-mode current-buffer mode<<
-        current-buffer dup mode>> initialize-buffer
+    win64? "dir " "ls -l " ? directory + shell-command-to-string :> s
+
+    s length 0 > [
+        make-buffer buf!
+        s buf buffer-set-contents
+        buf first-line>> 0 make-position buf dot<<
+        buf first-line>> buf top-line<<
+        t buf read-only<<
+        directory buf filename<<
+        "Directory of " directory + buf name<<
+
+        directory-mode:get-instance dup buf mode<<
+        buf swap initialize-buffer
+
+        buf buffer-list vector-push
+        buf current-buffer!
+
         t repaint!
-    ] [ "No changes" message ] if
-
-    tempname delete-file assert-true
-;
+    ] [ "No changes" message ] if ;
