@@ -18,28 +18,22 @@ in: editor
 
 : git-diff
     current-buffer filename>> :> source-file
-    "git diff " source-file +           // -> string
-    " > " +                             // -> string
-    get-temporary-filename dup :> tempname +
-    run-shell-command 0 assert-eq       // run-shell-command should return 0
+    "git diff " source-file + shell-command-to-string :> s
+    f :> buf!
+    s length 0 > [
+        make-buffer buf!
+        s buf buffer-set-contents
+        "git diff " source-file file-name-nondirectory + buf name<<
+        t buf read-only<<
+        buf first-line>> 0 make-position buf dot<<
+        buf first-line>> buf top-line<<
 
-    tempname file-open-read :> fd
-    fd file-size :> size
-    fd file-close
+        initialize-diff-mode buf mode<<
+        current-buffer buf parent<<
+        buf dup mode>> initialize-buffer
 
-    current-buffer :> parent
+        buf buffer-list vector-push
+        buf current-buffer!
 
-    size 0 > [
-        "git diff "
-        source-file file-name-nondirectory +
-        tempname 1 create-buffer/2
-        current-buffer name<<
-        t current-buffer read-only<<
-        initialize-diff-mode current-buffer mode<<
-        parent current-buffer parent<<
-        current-buffer dup mode>> initialize-buffer
         t repaint!
-    ] [ "No changes" message ] if
-
-    tempname delete-file assert-true
-;
+    ] [ "No changes" message ] if ;
