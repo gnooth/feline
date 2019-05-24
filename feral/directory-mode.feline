@@ -22,12 +22,33 @@ tuple: directory-mode ;
 
 global instance
 
-public: get-instance                    // void -> directory-mode
+global directory-mode-local-map
+
+: name-offset                           // string -> index/f
+    1 ?enough verify-string :> s
+
+    win64? [
+        // 05/24/2019  09:37 AM             3,019 directory-mode.feline
+        //                                      ^^^
+
+        // At offset 37, we require a digit, followed by a space,
+        // followed by an alphanumeric character.
+        {
+            [ 37 s ?nth digit? ]
+            [ 38 s ?nth '\s' eq? ]
+            [ 39 s ?nth alphanumeric? ]
+        } && // -> ?
+
+        // If the string qualifies, the filename begins at offset 39.
+        39 f ?
+    ] [ f ] if ;
+
+public
+
+: get-instance                          // void -> directory-mode
     instance [
         directory-mode make-instance dup instance!
     ] unless* ;
-
-global directory-mode-local-map
 
 method: directory-mode initialize-buffer // buffer mode -> void
     2 ?enough
@@ -67,3 +88,32 @@ public
 
         t repaint!
     ] [ "No changes" message ] if ;
+
+: dir-open-file                         // void -> void
+    dot-line-text :> s
+
+    s directory-mode:name-offset [ s tail ] [ f ] if* :> filename!
+
+    filename [
+        current-buffer filename>> filename path-append filename!
+        filename print
+        filename find-buffer [
+            current-buffer!
+        ] [
+            filename 1 create-buffer/2
+        ] if*
+        t repaint!
+    ] when ;
+
+using: feline ;
+in: directory-mode
+
+private
+
+: initialize-local-map
+    128 <hashtable> :> m
+    ' editor:dir-open-file      key:enter       m set-at
+    m directory-mode-local-map!
+;
+
+initialize-local-map
