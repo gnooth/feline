@@ -29,19 +29,25 @@ global directory-mode-local-map
 
     win64? [
         // Windows
+        // 09/25/2017  12:32 PM               190 .gitignore
         // 05/24/2019  09:37 AM             3,019 directory-mode.feline
         //                                      ^^^
 
-        // At offset 37, we require a digit, followed by a space,
-        // followed by an alphanumeric character.
+        // For an ordinary file, we require a digit at offset 37, followed
+        // by a space, followed by an alphanumeric character or '.'.
         {
             [ 37 s ?nth digit? ]
             [ 38 s ?nth '\s' eq? ]
-            [ 39 s ?nth alphanumeric? ]
+            [ 39 s ?nth dup alphanumeric? swap '.' eq? or ]
         } && // -> ?
-
-        // If the string qualifies, the filename begins at offset 39.
-        39 f ?
+        [
+            // The string qualifies. The name begins at offset 39.
+            39
+        ] [
+            // For a directory...
+            "<DIR>          " s substring-start // -> index/f
+            [ 15 + ] [ f ] if*
+        ] if
     ] [
         // Linux
         // -rw-rw-r-- 1 peter peter  3224 May 24 10:10 directory-mode.feline
