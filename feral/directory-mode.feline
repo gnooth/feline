@@ -27,6 +27,8 @@ global directory-mode-local-map
 : name-offset                           // string -> index/f
     1 ?enough verify-string :> s
 
+    f :> index!
+
     win64? [
         // Windows
         // 09/25/2017  12:32 PM               190 .gitignore
@@ -52,13 +54,18 @@ global directory-mode-local-map
         // Linux
         // -rw-rw-r-- 1 peter peter  3224 May 24 10:10 directory-mode.feline
         //                                           ^^^
+
+        s length 1- s [ '\s' eq? ] find-last-from // -> index/f element/f
+        drop
+        index!
+
         {
-            [ 42 s ?nth digit? ]
-            [ 43 s ?nth '\s' eq? ]
-            [ 44 s ?nth alphanumeric? ]
+            [ index 1-  s ?nth digit? ]
+            [ index s ?nth '\s' eq? ]
+            [ index 1+ s ?nth dup alphanumeric? swap '.' eq? or ]
         } && // -> ?
 
-        44 f ?
+        index 1+ f ?
     ] if ;
 
 public
@@ -87,7 +94,7 @@ public
 
     buf [ buf current-buffer! t repaint! ] return-if
 
-    win64? "dir " "ls -l " ? directory + shell-command-to-string :> s
+    win64? "dir " "ls -la " ? directory + shell-command-to-string :> s
 
     s length 0 > [
         make-buffer buf!
