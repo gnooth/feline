@@ -3922,4 +3922,36 @@ test: ?exit-test-3
 
 ?exit-test-3
 
+test: string-append-char-test-1
+    { "cats" } [ "cat" 's' string-append-char ] unit-test
+;
+
+string-append-char-test-1
+
+test: file-name-directory-test-1
+    win64? [
+
+        { "c:\\Users\\peter\\feline\\src" }
+        [ "c:\\Users\\peter\\feline\\src\\test.feline" file-name-directory ] unit-test
+
+        { "c:\\Users\\peter\\feline" }
+        [ "c:\\Users\\peter\\feline\\src" file-name-directory ] unit-test
+
+        { "c:\\Users\\peter" }
+        [ "c:\\Users\\peter\\feline" file-name-directory ] unit-test
+
+        { "c:\\Users" }
+        [ "c:\\Users\\peter" file-name-directory ] unit-test
+
+        { "c:\\" }
+        [ "c:\\Users" file-name-directory ] unit-test
+
+        { f }
+        [ "c:\\" file-name-directory ] unit-test
+
+    ] when
+;
+
+file-name-directory-test-1
+
 ?nl "Reached end of test.feline" write-string
