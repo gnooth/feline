@@ -16,6 +16,27 @@
 using: feral-core feline accessors mini ;
 in: editor
 
+: delete-region ( region )
+    region add-undo-delete-region
+
+    0 region begin-offset region begin-line substring :> head
+    region end-offset region end-line length region end-line substring :> tail
+
+    head tail + region begin-line text<<
+
+    region end-line next>> :> next
+    next region begin-line next<<
+    next [ region begin-line next prev<< ] when
+
+    unmark
+    region begin copy-position dot!
+
+    modified
+    renumber
+    maybe-reframe
+    t repaint!
+;
+
 : insert-line-separator
     add-undo-insert-line-separator
     insert-line-separator-internal
@@ -54,11 +75,18 @@ in: editor
     [ text string-tail ] [ drop "" ] if ;
 
 : newline-and-indent
+    current-buffer read-only>> [
+        "Buffer is read-only" message
+    ] return-if
+
     reset-redo
 
     dot-line-text get-indentation-column :> indent-col
 
     [
+        mark [
+            mark dot make-region/2 delete-region
+        ] when
         insert-line-separator
         add-undo-line-edit
         dot-line-text delete-indentation dot-line-text!
@@ -239,27 +267,6 @@ use: kill-ring
     // insert multiline string at dot
     [ add-undo-insert-multiline-string ]
     [ insert-multiline-string-internal ] bi ;
-
-: delete-region ( region )
-    region add-undo-delete-region
-
-    0 region begin-offset region begin-line substring :> head
-    region end-offset region end-line length region end-line substring :> tail
-
-    head tail + region begin-line text<<
-
-    region end-line next>> :> next
-    next region begin-line next<<
-    next [ region begin-line next prev<< ] when
-
-    unmark
-    region begin copy-position dot!
-
-    modified
-    renumber
-    maybe-reframe
-    t repaint!
-;
 
 : delete-word-right
     reset-redo
