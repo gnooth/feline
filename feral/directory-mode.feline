@@ -139,6 +139,7 @@ public
         current-buffer filename>>
         swap
         path-append
+        canonical-path
     ] [ f ] if* :> filename
 
     filename [
