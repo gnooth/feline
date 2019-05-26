@@ -154,6 +154,25 @@ public
         t repaint!
     ] when ;
 
+: dir-up-dir
+    f :> dirname!
+    current-buffer :> buf
+    buf filename>> [
+        file-name-directory dirname!
+        dirname [
+            dirname directory? [
+                dirname directory-contents buf buffer-set-contents
+                buf first-line>> 0 make-position buf dot<<
+                buf first-line>> buf top-line<<
+                t buf read-only<<
+                dirname buf filename<<
+                "Directory of " dirname + buf name<<
+                t repaint!
+            ] when
+        ] when
+    ] when*
+;
+
 using: feline ;
 in: directory-mode
 
@@ -162,6 +181,8 @@ private
 : initialize-local-map
     128 <hashtable> :> m
     ' editor:dir-open-file      key:enter       m set-at
+    ' editor:dir-up-dir         'u'             m set-at
+    ' editor:dir-up-dir         '^'             m set-at // Emacs
     m directory-mode-local-map!
 ;
 
