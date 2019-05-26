@@ -24,6 +24,8 @@ global instance
 
 global directory-mode-local-map
 
+public
+
 : name-offset                           // string -> index/f
     1 ?enough verify-string :> s
 
@@ -68,8 +70,6 @@ global directory-mode-local-map
         index 1+ f ?
     ] if ;
 
-public
-
 : get-instance                          // void -> directory-mode
     instance [
         directory-mode make-instance dup instance!
@@ -82,50 +82,74 @@ method: directory-mode initialize-buffer // buffer mode -> void
     directory-mode-local-map buf local-map<<
     t buf read-only<< ;
 
-in: editor
+: directory-contents ( dirname )        // dirname -> string
+    win64? "dir " "ls -la " ? dirname + shell-command-to-string ;
 
-public
-
-: dir
-    current-buffer filename>> [ file-name-directory ] [ get-current-directory ] if*
-    :> directory
-
-    directory find-buffer :> buf!
-
-    buf [ buf current-buffer! t repaint! ] return-if
-
-    win64? "dir " "ls -la " ? directory + shell-command-to-string :> s
-
+: create-directory-buffer ( dirname )   // dirname -> buffer/f
+    dirname directory-contents :> s
+    f :> buf!
     s length 0 > [
         make-buffer buf!
-        s buf buffer-set-contents
+        s buf editor:buffer-set-contents
         buf first-line>> 0 make-position buf dot<<
         buf first-line>> buf top-line<<
         t buf read-only<<
-        directory buf filename<<
-        "Directory of " directory + buf name<<
+        dirname buf filename<<
+        "Directory of " dirname + buf name<<
 
         directory-mode:get-instance dup buf mode<<
         buf swap initialize-buffer
 
         buf buffer-list vector-push
-        buf current-buffer!
+    ] when
+    buf ;
 
-        t repaint!
-    ] [ "No changes" message ] if ;
+: open-directory ( dirname )            // dirname -> void
+    dirname directory? [
+        dirname create-directory-buffer [
+            current-buffer!
+            t repaint!
+        ] when*
+    ] when
+;
+
+using: directory-mode feral-core feline accessors ;
+in: editor
+
+public
+
+: dir
+    current-buffer filename>> [
+        file-name-directory
+    ] [
+        get-current-directory
+    ] if* :> dirname
+
+    dirname find-buffer [
+        current-buffer! t repaint!
+    ] [
+        dirname open-directory
+    ] if* ;
 
 : dir-open-file                         // void -> void
     dot-line-text :> s
 
-    s directory-mode:name-offset [ s tail ] [ f ] if* :> filename!
+    s name-offset [
+        s tail
+        current-buffer filename>>
+        swap
+        path-append
+    ] [ f ] if* :> filename
 
     filename [
-        current-buffer filename>> filename path-append filename!
-        filename print
         filename find-buffer [
             current-buffer!
         ] [
-            filename 1 create-buffer/2
+            filename directory? [
+                filename open-directory
+            ] [
+                filename 1 create-buffer/2
+            ] if
         ] if*
         t repaint!
     ] when ;
