@@ -58,16 +58,15 @@ public
         //                                           ^^^
 
         s length 1- s [ '\s' eq? ] find-last-from // -> index/f element/f
-        drop
-        index!
-
-        {
-            [ index 1-  s ?nth digit? ]
-            [ index s ?nth '\s' eq? ]
-            [ index 1+ s ?nth dup alphanumeric? swap '.' eq? or ]
-        } && // -> ?
-
-        index 1+ f ?
+        [
+            index!
+            {
+                [ index 1-  s ?nth digit? ]
+                [ index s ?nth '\s' eq? ]
+                [ index 1+ s ?nth dup alphanumeric? swap '.' eq? or ]
+            } && // -> ?
+            index 1+ f ?
+        ] when
     ] if ;
 
 : get-instance                          // void -> directory-mode
