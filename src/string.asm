@@ -1006,11 +1006,21 @@ code unsafe_raw_write_chars, 'unsafe_raw_write_chars', SYMBOL_INTERNAL
 endcode
 
 ; ### string-append
-code string_append, 'string-append'     ; string1 string2 -- string3
+code string_append, 'string-append'     ; string1 string2 -> string3
         _swap
-        _ string_to_sbuf                ; -- string2 sbuf
+        _ string_to_sbuf                ; -> string2 sbuf
         _tuck
         _ sbuf_append_string
+        _ sbuf_to_string
+        next
+endcode
+
+; ### string-append-char
+code string_append_char, 'string-append-char' ; string char -> string'
+        _swap
+        _ string_to_sbuf                ; -> char sbuf
+        _tuck
+        _ sbuf_push
         _ sbuf_to_string
         next
 endcode
