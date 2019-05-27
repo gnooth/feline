@@ -23,7 +23,7 @@ in: editor
     ] when*
 ;
 
-: trim ( s )                            // string -> string/f
+: trim-trailing ( s )                   // string -> string/f
     s string-?last whitespace? [
         s string-length 1- s [ whitespace? not ] find-last-from // -> index/f element/f
         [ 1+ s string-head ] [ drop "" ] if
@@ -38,7 +38,7 @@ in: editor
     f :> changed!
 
     [ line ] [
-        line text>> trim [
+        line text>> trim-trailing [
             line text<<
             t changed!
         ] when*
