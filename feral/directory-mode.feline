@@ -84,6 +84,14 @@ method: directory-mode initialize-buffer // buffer mode -> void
 : directory-contents ( dirname )        // dirname -> string
     win64? "dir " "ls -la " ? dirname + shell-command-to-string ;
 
+: directory-buffer-set-name ( dirname buf )
+    dirname file-name-nondirectory empty? [
+        dirname
+    ] [
+        dirname file-name-nondirectory
+    ] if
+    buf name<< ;
+
 : create-directory-buffer ( dirname )   // dirname -> buffer/f
     dirname directory-contents :> s
     f :> buf!
@@ -94,7 +102,7 @@ method: directory-mode initialize-buffer // buffer mode -> void
         buf first-line>> buf top-line<<
         t buf read-only<<
         dirname buf filename<<
-        "Directory of " dirname + buf name<<
+        dirname buf directory-buffer-set-name
 
         directory-mode:get-instance dup buf mode<<
         buf swap initialize-buffer
@@ -166,7 +174,7 @@ public
                 buf first-line>> buf top-line<<
                 t buf read-only<<
                 dirname buf filename<<
-                "Directory of " dirname + buf name<<
+                dirname buf directory-buffer-set-name
                 t repaint!
             ] when
         ] when
