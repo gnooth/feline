@@ -43,14 +43,17 @@ in: key
 0x19 code-char          constant ctrl-y
 0x1a code-char          constant ctrl-z
 
-0x08 code-char          constant backspace
 0x09 code-char          constant tab
 0x1b code-char          constant escape
 0x7f code-char          constant del
 
 win64? #if
+0x08 code-char          constant backspace
+0x7f code-char          constant ctrl-backspace
 0x0d code-char          constant enter
 #else
+0x7f code-char          constant backspace
+0x08 code-char          constant ctrl-backspace
 0x0a code-char          constant enter
 #endif
 
