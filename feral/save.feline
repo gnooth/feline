@@ -23,13 +23,18 @@ in: editor
     ] when*
 ;
 
-: trim-trailing ( s )                   // string -> string/f
+: trim-trailing ( s )                   // string -> string/string'
     s string-?last whitespace? [
         s string-length 1- s [ whitespace? not ] find-last-from // -> index/f element/f
         [ 1+ s string-head ] [ drop "" ] if
     ] [
-        f
+        s
     ] if ;
+
+: trim-trailing* ( s )                  // string -> string/string' ?
+    // if whitespace was trimmed, return string' t
+    // if there was no change, return string f
+    s trim-trailing dup s neq? ;
 
 : remove-trailing-whitespace
 
@@ -38,10 +43,12 @@ in: editor
     f :> changed!
 
     [ line ] [
-        line text>> trim-trailing [
+        line text>> trim-trailing* [
             line text<<
             t changed!
-        ] when*
+        ] [
+            drop
+        ] if
         line next>> line!
     ] while
 
