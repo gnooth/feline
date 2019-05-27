@@ -17,8 +17,10 @@ using: feline feral-core mini ;
 in: editor
 
 : gotoline
-    "Line number: " minibuffer-accept-string
-    string>number [ gotoline-internal ] when* ;
+    "Line number: " minibuffer-accept-string :> s
+    s empty? [
+        s string>number [ gotoline-internal ] when*
+    ] unless ;
 
 : find-file-to-edit ( arg )             // arg -> path/f
     arg find-file [
