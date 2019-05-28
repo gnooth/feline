@@ -57,13 +57,10 @@ public
 
 : file-name-directory-linux ( filename ) // filename -> dirname/f
     filename length :> len
-
-    f :> dirname!
-    len 1- filename [ path-separator-char? ] find-last-from // -> index/f element/f
-    [
-        filename head dirname!
-    ] when
-    dirname ;
+    len 1- filename [ path-separator-char? ] find-last-from [
+        // -> index
+        dup zero? [ drop "/" ] [ filename head ] if
+    ] when ;
 
 
 // returns the filename's directory component

@@ -3950,7 +3950,31 @@ test: file-name-directory-test-1
         [ "c:\\" file-name-directory ] unit-test
 
     ] when
-;
+
+    linux? [
+
+        { "/home/peter/feline/src" }
+        [ "/home/peter/feline/src/test.feline" file-name-directory ] unit-test
+
+        { "/home/peter/feline" }
+        [ "/home/peter/feline/src" file-name-directory ] unit-test
+
+        { "/home/peter" }
+        [ "/home/peter/feline" file-name-directory ] unit-test
+
+        { "/home" }
+        [ "/home/peter" file-name-directory ] unit-test
+
+        { "/" }
+        [ "/home" file-name-directory ] unit-test
+
+        { "/" }
+        [ "/" file-name-directory ] unit-test
+
+        { f }
+        [ "foo" file-name-directory ] unit-test
+
+    ] when ;
 
 file-name-directory-test-1
 
