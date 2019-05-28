@@ -18,15 +18,17 @@ in: feral-core
 
 use: directories
 
-: shell-command-to-string ( command )   // command -> string
+: shell-command-to-string ( command )   // command -> string/f
+    f :> result!
     get-temporary-filename :> temp
     command " > " + temp + run-shell-command // should return fixnum 0
     zero? [
-        temp file-contents // file-contents returns a string (but might throw)
+        temp file-contents result! // file-contents returns a string (but might throw)
     ] when
     temp delete-file
     // delete-file returns t if it succeeds
-    drop ;
+    drop
+    result ;
 
 unuse: directories
 
