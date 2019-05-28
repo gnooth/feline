@@ -25,6 +25,37 @@ public
     [ 1+ filename tail ] [ filename nip ] if ;
 
 // returns the filename's directory component
+: file-name-directory-win64 ( filename ) // filename -> dirname/f
+    filename length :> len
+
+    {
+        [ len 3 eq? ]
+        [ 1 filename nth-unsafe ':' eq? ]
+        [ 2 filename nth-unsafe path-separator-char? ]
+    } &&
+    [ f ] return-if
+
+    {
+        [ len 2 eq? ]
+        [ 1 filename nth-unsafe ':' eq? ]
+    } &&
+    [ f ] return-if
+
+    f :> dirname!
+    len 1- filename [ path-separator-char? ] find-last-from // -> index/f element/f
+    [
+        filename head dirname!
+        {
+            [ dirname length 2 eq? ]
+            [ 1 dirname nth-unsafe ':' eq? ]
+        } &&
+        [
+            dirname path-separator-char string-append-char dirname!
+        ] when
+    ] when
+    dirname ;
+
+// returns the filename's directory component
 : file-name-directory ( filename )      // filename -> dirname/f
     filename length :> len
 
