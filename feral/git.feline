@@ -18,6 +18,9 @@ in: editor
 
 : git-diff
     current-buffer filename>> :> source-file
+
+    source-file null? ?exit
+
     "git diff " source-file + shell-command-to-string :> s
     f :> buf!
     s length 0 > [
