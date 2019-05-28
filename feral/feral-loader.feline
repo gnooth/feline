@@ -29,6 +29,7 @@ in: user
     "feral-core"
     "feral-hooks"
     "feral-key"
+    "grep"
     "history"
     "keymaps"
     "kill-ring"
@@ -72,6 +73,7 @@ feline-home "feral" path-append add-source-directory
         "directory-mode.feline"
         "find-definition.feline"
         "search.feline"
+        "grep.feline"
         "commands.feline"
         "keymaps.feline"
     } [ load ] each
