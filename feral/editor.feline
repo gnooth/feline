@@ -47,7 +47,7 @@ using: feral-core feline accessors ;
     ] when
 ;
 
-: do-command ( key )                    // key -> void
+: do-command ( key )                    // key -> ?
 
     f :> command!
 
@@ -64,15 +64,19 @@ using: feral-core feline accessors ;
 
     command [
         command dup current-command! call-symbol
+        t
     ] [
-        linux? [ key do-mouse ] when
-    ] if
-;
+//         linux? [ key do-mouse ] when
+        f
+    ] if ;
 
-: dispatch                              // key -> void
+: dispatch ( key )                      // key -> void
     current-command last-command!
     f current-command!
-    dup printable-char? [ do-normal-char ] [ do-command ] if ;
+
+    key do-command [
+        key printable-char? [ key do-normal-char ] when
+    ] unless ;
 
 : edit-loop
     f done?!
