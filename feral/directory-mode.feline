@@ -82,7 +82,16 @@ method: directory-mode initialize-buffer // buffer mode -> void
     t buf read-only<< ;
 
 : directory-contents ( dirname )        // dirname -> string
-    win64? "dir " "ls -la " ? dirname + shell-command-to-string ;
+    win64? [
+        "dir /A:-L "
+        // Quotes are needed here for filenames that contain spaces.
+        // Filenames without spaces don't seem to mind being quoted.
+        "\"" + dirname + "\"" +
+    ] [
+        "ls -la " ?
+        dirname +
+    ] if
+    shell-command-to-string ;
 
 : directory-buffer-set-name ( dirname buf )
     dirname file-name-nondirectory empty? [
@@ -94,6 +103,9 @@ method: directory-mode initialize-buffer // buffer mode -> void
 
 : create-directory-buffer ( dirname )   // dirname -> buffer/f
     dirname directory-contents :> s
+
+    s empty? [ f ] return-if
+
     f :> buf!
     s length 0 > [
         make-buffer buf!
@@ -141,11 +153,10 @@ public
 : dir-open-file                         // void -> void
     dot-line-text :> s
 
+    f :> name!
     s name-offset [
-        s tail
-        current-buffer filename>>
-        swap
-        path-append
+        s tail name!
+        current-buffer filename>> name path-append
         canonical-path
     ] [ f ] if* :> filename
 
