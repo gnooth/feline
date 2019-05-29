@@ -25,20 +25,26 @@ global list-buffers-old-buffer
 
 4 constant buffer-name-column
 
+40 constant buffer-filename-column
+
 : list-buffers-select
-    buffer-name-column dot-line-text tail :> name
-    buffer-list [ name>> name = ] find nip [
+    buffer-name-column
+    buffer-filename-column dot-line-length min
+    dot-line-text substring
+    trim-trailing :> name
+
+    buffer-list [ name>> name = ] find // -> index/f buffer/f
+    nip
+    [
         current-buffer!
         t repaint!
         update-display
-    ] when*
-;
+    ] when* ;
 
 : list-buffers-quit
     list-buffers-old-buffer current-buffer!
     t repaint!
-    update-display
-;
+    update-display ;
 
 global list-buffers-local-map
 
@@ -47,8 +53,7 @@ global list-buffers-local-map
     ' list-buffers-select   key:enter   keymap set-at
     ' list-buffers-quit     key:escape  keymap set-at
     ' list-buffers-quit     key:ctrl-w  keymap set-at
-    keymap list-buffers-local-map!
-;
+    keymap list-buffers-local-map! ;
 
 initialize-local-map
 
@@ -68,8 +73,14 @@ initialize-local-map
         b list-buffers-old-buffer eq?   '.' '\s' ? sb sbuf-push
         b read-only>>                   'R' '\s' ? sb sbuf-push
         b buffer-modified?              '*' '\s' ? sb sbuf-push
-        '\s' sb sbuf-push
+        '\s' sb push
         b buffer-name sb sbuf-append-string
+
+        b filename>> [
+            '\s' sb push
+            [ sb length buffer-filename-column < ] [ '\s' sb push ] while
+            sb sbuf-append-string
+        ] when*
 
         sb sbuf>string make-line/1 buf buffer-append-line
 
