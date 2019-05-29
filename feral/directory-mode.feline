@@ -88,8 +88,7 @@ method: directory-mode initialize-buffer // buffer mode -> void
         // Filenames without spaces don't seem to mind being quoted.
         "\"" + dirname + "\"" +
     ] [
-        "ls -la " ?
-        dirname +
+        "ls -la " dirname +
     ] if
     shell-command-to-string ;
 
