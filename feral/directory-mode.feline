@@ -123,14 +123,28 @@ method: directory-mode initialize-buffer // buffer mode -> void
     ] when
     buf ;
 
-: open-directory ( dirname )            // dirname -> void
+: open-directory ( dirname ) // dirname -> void
     dirname directory? [
         dirname create-directory-buffer [
             current-buffer!
             t repaint!
         ] when*
-    ] when
-;
+    ] when ;
+
+: open-directory-in-current-buffer ( dirname ) // dirname -> void
+    current-buffer :> buf
+    dirname directory-contents :> s
+    s empty? [
+        s buf editor:buffer-set-contents
+        buf first-line>> 0 make-position buf dot<<
+        buf first-line>> buf top-line<<
+        t buf read-only<<
+        dirname buf filename<<
+        dirname buf directory-buffer-set-name
+        renumber
+        maybe-reframe
+        t repaint!
+    ] unless ;
 
 using: directory-mode feral-core feline accessors ;
 in: editor
@@ -165,7 +179,7 @@ public
             current-buffer!
         ] [
             filename directory? [
-                filename open-directory
+                filename open-directory-in-current-buffer
             ] [
                 filename 1 create-buffer/2
             ] if
@@ -189,8 +203,7 @@ public
                 t repaint!
             ] when
         ] when
-    ] when*
-;
+    ] when* ;
 
 using: feline ;
 in: directory-mode
