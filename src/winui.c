@@ -405,6 +405,8 @@ static LRESULT CALLBACK winui__textview_wnd_proc (HWND hwnd, UINT msg,
           {
             if (wparam == 32) // ctrl-space
               return 0;
+            if (GetKeyState (VK_SHIFT) & 0x8000)
+              return 0;
           }
         // lparam bit 31 is the transition state
         // "The value is 1 if the key is being released, or it is 0 if the
