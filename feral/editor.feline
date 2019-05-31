@@ -75,7 +75,7 @@ using: feral-core feline accessors ;
     f current-command!
 
     key do-command [
-        key printable-char? [ key do-normal-char ] when
+        key printable-char? [ key insert-normal-char ] when
     ] unless ;
 
 : edit-loop

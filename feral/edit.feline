@@ -205,7 +205,7 @@ in: editor
     } cond
 ;
 
-: do-normal-char                        // char ->
+: insert-normal-char // char -> void
     current-buffer read-only>> [
         drop
         "Buffer is read-only" message
@@ -214,8 +214,8 @@ in: editor
     reset-redo
 
     current-command assert-false
-    ' do-normal-char current-command!
-    last-command ' do-normal-char eq? [ add-undo-line-edit ] unless
+    ' insert-normal-char current-command!
+    last-command ' insert-normal-char eq? [ add-undo-line-edit ] unless
 
     dot-line-head string>sbuf :> sb
     sb sbuf-push
