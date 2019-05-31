@@ -16,7 +16,7 @@
 using: feral-core feline accessors mini ;
 in: editor
 
-: delete-region ( region )
+: delete-region/1 ( region ) // region -> void
     region add-undo-delete-region
 
     0 region begin-offset region begin-line substring :> head
@@ -36,6 +36,9 @@ in: editor
     maybe-reframe
     t repaint!
 ;
+
+: delete-region // void -> void
+    mark [ dot mark make-region/2 delete-region/1 ] when ;
 
 : insert-line-separator
     add-undo-insert-line-separator
@@ -84,9 +87,7 @@ in: editor
     dot-line-text get-indentation-column :> indent-col
 
     [
-        mark [
-            mark dot make-region/2 delete-region
-        ] when
+        mark [ delete-region ] when
         insert-line-separator
         add-undo-line-edit
         dot-line-text delete-indentation dot-line-text!
@@ -311,7 +312,7 @@ use: kill-ring
             ]
         } cond
 
-        mark dot make-region/2 delete-region
+        delete-region
 
     ] with-compound-undo
 
@@ -369,7 +370,7 @@ use: kill-ring
             ]
         } cond
 
-        mark dot make-region/2 delete-region
+        delete-region
 
     ] with-compound-undo
 
@@ -378,9 +379,9 @@ use: kill-ring
 
 : do-delete
     {
-        { [ mark ] [ mark dot make-region/2 delete-region ] }
+        { [ mark ] [ delete-region ] }
         { [ dot-offset dot-line-length < ] [ delete-normal-char ] }
-        // default
+        // otherwise...
         [ delete-line-separator ]
     } cond
 
@@ -389,7 +390,7 @@ use: kill-ring
 
 : cut-region ( region )
     region region-as-string append-kill
-    region delete-region ;
+    region delete-region/1 ;
 
 : copy-line
     dot-line-text "\n" string-append append-kill
@@ -503,7 +504,7 @@ use: kill-ring
 
 : redo-delete-region                    // undo-record -> void
     drop
-    mark dot make-region/2 delete-region ;
+    delete-region ;
 
 : redo1                                 // undo-record -> void
     dup action>> {
