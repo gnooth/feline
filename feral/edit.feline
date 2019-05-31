@@ -205,7 +205,21 @@ in: editor
     } cond
 ;
 
-: insert-normal-char // char -> void
+private: insert-char-internal // char -> void
+    // no undo
+
+    dot-line-head string>sbuf :> sb
+    sb sbuf-push
+    dot-line-tail sb sbuf-append-string
+    sb sbuf>string dot-line text<<
+
+    dot-offset 1+ dot-offset!
+    t dot-line-changed!
+    modified
+    dot-offset goal-column!
+;
+
+: insert-char // char -> void
     current-buffer read-only>> [
         drop
         "Buffer is read-only" message
@@ -214,17 +228,19 @@ in: editor
     reset-redo
 
     current-command assert-false
-    ' insert-normal-char current-command!
-    last-command ' insert-normal-char eq? [ add-undo-line-edit ] unless
+    ' insert-char current-command!
 
-    dot-line-head string>sbuf :> sb
-    sb sbuf-push
-    dot-line-tail sb sbuf-append-string
-    sb sbuf>string dot-line text<<
-    dot-offset 1+ dot-offset!
-    t dot-line-changed!
-    modified
-    dot-offset goal-column! ;
+    mark
+    [
+        [
+            delete-region
+            add-undo-line-edit
+            insert-char-internal
+        ] with-compound-undo
+    ] [
+        last-command ' insert-char eq? [ add-undo-line-edit ] unless
+        insert-char-internal
+    ] if ;
 
 use: kill-ring
 
