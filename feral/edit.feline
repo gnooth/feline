@@ -378,6 +378,10 @@ use: kill-ring
 ;
 
 : do-delete
+    current-buffer read-only>> [
+        "Buffer is read-only" message
+    ] return-if
+
     {
         { [ mark ] [ delete-region ] }
         { [ dot-offset dot-line-length < ] [ delete-normal-char ] }
