@@ -266,6 +266,15 @@ code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL ; from-addr from-length -
         next
 endcode
 
+; ### alien->string
+code alien_to_string, 'alien->string'   ; alien -> string
+; make a Feline string from a C string at the specified address
+        _ integer_to_raw_bits
+        _ zcount
+        _ copy_to_string
+        next
+endcode
+
 ; ### string_from
 code string_from, 'string_from', SYMBOL_INTERNAL ; string -> raw-data-address raw-length
         _ check_string
