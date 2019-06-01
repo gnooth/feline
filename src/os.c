@@ -97,6 +97,47 @@ int os_file_is_directory(char *path)
 #endif
 }
 
+#ifdef WIN64
+
+typedef struct
+{
+  char *filename;
+  HANDLE handle;
+  WIN32_FIND_DATA ffd;
+} FindFileData ;
+
+cell os_find_first_file (const char *filename)
+{
+  FindFileData * p = malloc (sizeof (FindFileData));
+  HANDLE h = FindFirstFile (filename, &(p->ffd));
+  if (h == INVALID_HANDLE_VALUE)
+    {
+      free (p);
+      return 0;
+    }
+  p->handle = h;
+  p->filename = &(p->ffd.cFileName[0]);
+  return (cell) p;
+}
+
+cell os_find_next_file (FindFileData *p)
+{
+  return FindNextFile (p->handle, &(p->ffd));
+}
+
+cell os_find_close (FindFileData *p)
+{
+  BOOL b = FindClose (p->handle);
+  free (p);
+  return b;
+}
+
+cell os_find_file_filename (FindFileData *p)
+{
+  return (p != NULL) ? (cell) p->filename : (cell) NULL;
+}
+#endif
+
 cell os_open_file (const char *filename, int flags)
 {
 #ifdef WIN64
