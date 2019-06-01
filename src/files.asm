@@ -671,3 +671,67 @@ code make_directory, 'make-directory'   ; string -> void
         _ error
         next
 endcode
+
+%ifdef WIN64
+
+extern os_find_first_file
+
+; ### find-first-file
+code find_first_file, 'find-first-file' ; string -> alien
+        _ string_raw_data_address
+        mov     arg0_register, rbx
+
+        ; os_find_first_file returns 0 if FindFirstFile returns
+        ; INVALID_HANDLE_VALUE
+        xcall   os_find_first_file
+
+        mov     rbx, rax
+        _tag_fixnum
+        next
+endcode
+
+extern os_find_next_file
+
+; ### find-next-file
+code find_next_file, 'find-next-file'   ; alien -> ?
+        _check_fixnum
+        mov     arg0_register, rbx
+        xcall   os_find_next_file
+        test    rax, rax
+        jz .1
+        mov     ebx, t_value
+        next
+.1:
+        mov     ebx, f_value
+        next
+endcode
+
+extern os_find_close
+
+; ### find-close
+code find_close, 'find-close'           ; alien -> ?
+        _check_fixnum
+        mov     arg0_register, rbx
+        xcall   os_find_close
+        test    rax, rax
+        jz .1
+        mov     ebx, t_value
+        next
+.1:
+        mov     ebx, f_value
+        next
+endcode
+
+extern os_find_file_filename
+
+; ### find-file-filename
+code find_file_filename, 'find-file-filename' ; alien -> alien'
+        _check_fixnum
+        mov     arg0_register, rbx
+        xcall   os_find_file_filename
+        mov     rbx, rax
+        _tag_fixnum
+        next
+endcode
+
+%endif
