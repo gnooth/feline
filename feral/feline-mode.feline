@@ -58,9 +58,9 @@ method: feline-mode identifier-at-dot   // mode -> start/f string/f
     drop
     feline-mode-identifier-at-dot ;
 
-"// " constant comment-start
+"// " constant comment-start-string
 
-comment-start length constant comment-start-length
+comment-start-string length constant comment-start-string-length
 
 : feline-mode-toggle-line-comment
     dot-line-text :> text
@@ -70,15 +70,15 @@ comment-start length constant comment-start-length
 
     editor:add-undo-line-edit
 
-    comment-start content head? [
+    comment-start-string content head? [
         // uncomment
         indentation-string
-        comment-start-length content tail +
+        comment-start-string-length content tail +
         dot-line-text!
         {
             {
-                [ dot-offset indentation-length comment-start-length + >= ]
-                [ dot-offset comment-start-length - dot-offset! ]
+                [ dot-offset indentation-length comment-start-string-length + >= ]
+                [ dot-offset comment-start-string-length - dot-offset! ]
             }
             {
                 [ dot-offset indentation-length >= ]
@@ -90,11 +90,11 @@ comment-start length constant comment-start-length
     ] [
         // comment
         indentation-string
-        comment-start +
+        comment-start-string +
         content +
         dot-line-text!
         dot-offset indentation-length >= [
-            dot-offset comment-start-length + dot-offset!
+            dot-offset comment-start-string-length + dot-offset!
         ] when
     ] if
 
@@ -109,7 +109,7 @@ comment-start length constant comment-start-length
 
     region editor:add-undo-edit-region
 
-    region [ comment-start over text>> + swap text<< ] region-each-line
+    region [ comment-start-string over text>> + swap text<< ] region-each-line
 
     modified
     t repaint!
@@ -123,8 +123,8 @@ comment-start length constant comment-start-length
     region editor:add-undo-edit-region
 
     region [
-        comment-start over text>> head? [
-            comment-start-length over text>> tail swap text<<
+        comment-start-string over text>> head? [
+            comment-start-string-length over text>> tail swap text<<
         ] [ drop ] if
     ] region-each-line
 
