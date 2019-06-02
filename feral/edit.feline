@@ -111,7 +111,7 @@ in: editor
     add-undo-line-edit
     dot-offset :> old-dot-offset
     indent-size make-indentation-string dot-line-text + dot-line-text!
-    old-dot-offset dot-offset!
+    old-dot-offset indent-size + dot-offset!
     modified
     t dot-line-changed! ;
 
@@ -133,7 +133,7 @@ in: editor
     n 0 > [
         add-undo-line-edit
         n dot-line-text tail dot-line-text!
-        dot-offset n - 0 min dot-offset!
+        dot-offset n - 0 max dot-offset!
     ] when
     modified
     t dot-line-changed! ;
