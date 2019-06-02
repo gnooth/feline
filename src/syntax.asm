@@ -876,7 +876,7 @@ code paren, '(', SYMBOL_IMMEDIATE       ; --
 endcode
 
 ; ### :>
-code assign_local2, ':>', SYMBOL_IMMEDIATE      ; x -> void
+code assign_local, ':>', SYMBOL_IMMEDIATE       ; x -> void
 
         _ maybe_initialize_locals
 
@@ -898,6 +898,30 @@ code assign_local2, ':>', SYMBOL_IMMEDIATE      ; x -> void
         _ string_head
 
 .1:
+        _dup
+        _ add_local
+        _ locals
+        _ hashtable_at
+        _ verify_fixnum
+        _ local_setter
+        _ current_definition
+        _ vector_push
+
+        next
+endcode
+
+; ### !>
+code assign_mutable_local, '!>', SYMBOL_IMMEDIATE       ; x -> void
+
+        _ maybe_initialize_locals
+
+        _ must_parse_token              ; -> string
+
+        _dup
+        _lit tagged_char('!')
+        _ string_append_char
+        _ add_local_setter              ; -> string
+
         _dup
         _ add_local
         _ locals
