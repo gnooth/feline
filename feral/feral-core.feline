@@ -766,3 +766,9 @@ generic initialize-buffer               // buffer mode -> void
 ;
 
 ' default-initialize-buffer ' initialize-buffer set-default-method
+
+generic comment-start                   // mode -> string/f
+
+: default-comment-start 1 ?enough drop f ;
+
+' default-comment-start ' comment-start set-default-method
