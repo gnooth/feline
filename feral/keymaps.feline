@@ -180,6 +180,9 @@ global ctrl-k-map
 
     ' kill-line                         key:ctrl-k      m set-at
 
+    ' comment-region                    key:ctrl-c      m set-at
+    ' uncomment-region                  key:ctrl-u      m set-at
+
     m ctrl-k-map!
 ;
 
