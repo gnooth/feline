@@ -43,7 +43,9 @@ in: feral-loader
 
 empty
 
-feline-home "feral" path-append add-source-directory
+feline-home "feral" path-append constant feral-source-directory
+
+feral-source-directory add-source-directory
 
 : load-feral
     {
@@ -76,7 +78,7 @@ feline-home "feral" path-append add-source-directory
         "grep.feline"
         "commands.feline"
         "keymaps.feline"
-    } [ load ] each
+    } [ feral-source-directory swap path-append load ] each
 ;
 
 load-feral
