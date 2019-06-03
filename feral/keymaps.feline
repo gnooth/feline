@@ -84,6 +84,9 @@ winui? #if
 
     ' dir                               key:ctrl-d                      m set-at
 
+    ' comment-region                    feral-key:f11                   m set-at
+    ' uncomment-region                  feral-key:shift-f11             m set-at
+
     m global-map!
 ;
 
