@@ -222,13 +222,14 @@ tuple: region-iterator
 
     make-region-iterator                // -> callable iterator
     [
+        // -> callable iterator
         dup region-iterator-next dup
     ] [
-        // -> callable iterator line/f
+        // -> callable iterator line
         pick call
     ] while
-    2drop
-;
+    // -> callable iterator f
+    3drop ;
 
 : region-as-string ( region )
     region [ begin-line ] [ end-line ] bi eq? [

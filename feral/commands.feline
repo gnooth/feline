@@ -51,3 +51,6 @@ in: editor
             "%S is not a valid command name." format message
         ] if
     ] unless ;
+
+: escape
+    mark [ unmark t repaint! ] when ;
