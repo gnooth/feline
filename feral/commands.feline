@@ -30,7 +30,15 @@ in: editor
 : open-file
     "File: " minibuffer-accept-string :> arg
 
-    arg empty? [ f ] [ arg find-file-to-edit ] if :> filename
+    arg empty? ?exit
+
+    arg canonical-path !> filename
+
+    filename directory? [
+        filename directory-mode:open-directory
+    ] return-if
+
+    arg find-file-to-edit filename!
 
     filename [
         filename find-buffer [
