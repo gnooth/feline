@@ -58,9 +58,13 @@ method: feline-mode identifier-at-dot   // mode -> start/f string/f
     drop
     feline-mode-identifier-at-dot ;
 
-"// " constant comment-start-string
+"// " constant feline-mode-comment-start
 
-comment-start-string length constant comment-start-string-length
+method: feline-mode comment-start // mode -> string
+    drop
+    feline-mode-comment-start ;
+
+feline-mode-comment-start length constant comment-start-length
 
 : feline-mode-toggle-line-comment
     dot-line-text :> text
@@ -70,15 +74,15 @@ comment-start-string length constant comment-start-string-length
 
     editor:add-undo-line-edit
 
-    comment-start-string content head? [
+    feline-mode-comment-start content head? [
         // uncomment
         indentation-string
-        comment-start-string-length content tail +
+        comment-start-length content tail +
         dot-line-text!
         {
             {
-                [ dot-offset indentation-length comment-start-string-length + >= ]
-                [ dot-offset comment-start-string-length - dot-offset! ]
+                [ dot-offset indentation-length comment-start-length + >= ]
+                [ dot-offset comment-start-length - dot-offset! ]
             }
             {
                 [ dot-offset indentation-length >= ]
@@ -90,46 +94,16 @@ comment-start-string length constant comment-start-string-length
     ] [
         // comment
         indentation-string
-        comment-start-string +
+        feline-mode-comment-start +
         content +
         dot-line-text!
         dot-offset indentation-length >= [
-            dot-offset comment-start-string-length + dot-offset!
+            dot-offset comment-start-length + dot-offset!
         ] when
     ] if
 
     modified
     t dot-line-changed!
-;
-
-: feline-mode-comment-region
-    mark null? ?exit
-
-    dot mark make-region/2 :> region
-
-    region editor:add-undo-edit-region
-
-    region [ comment-start-string over text>> + swap text<< ] region-each-line
-
-    modified
-    t repaint!
-;
-
-: feline-mode-uncomment-region
-    mark null? ?exit
-
-    dot mark make-region/2 :> region
-
-    region editor:add-undo-edit-region
-
-    region [
-        comment-start-string over text>> head? [
-            comment-start-string-length over text>> tail swap text<<
-        ] [ drop ] if
-    ] region-each-line
-
-    modified
-    t repaint!
 ;
 
 : feline-mode-expand-if
@@ -193,8 +167,6 @@ use: feral-key
 : initialize-local-map
     128 <hashtable> :> m
     ' feline-mode-toggle-line-comment   ctrl-/      m set-at
-    ' feline-mode-comment-region        f11         m set-at
-    ' feline-mode-uncomment-region      shift-f11   m set-at
     ' feline-mode-expand                ctrl-space  m set-at
     m feline-mode-local-map!
 ;
