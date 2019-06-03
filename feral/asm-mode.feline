@@ -62,8 +62,12 @@ method: asm-mode identifier-at-dot      // mode -> start/f string/f
     drop
     asm-mode-identifier-at-dot ;
 
+method: asm-mode comment-start          // mode -> string
+    drop
+    "; " ;
+
 : asm-format-line ( s )                 // string -> array-of-segments
-    ";" s substring-start :> comment-start
+    ';' s string-find-char :> comment-start
 
     comment-start [
         comment-start s string-head 0 color-text make-segment/3
