@@ -16,6 +16,9 @@
 using: feral-core feline accessors modes mini ;
 in: editor
 
+: buffer-directory ( buf )              // buffer -> directory
+    buf filename>> [ file-name-directory ] [ get-current-directory ] if* ;
+
 : buffer-append-line ( line buf )       // line buffer -> void
     buf last-line>> line prev<<
     buf last-line>> [ line swap next<< ] when*
