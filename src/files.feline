@@ -66,3 +66,63 @@ public
 // returns the filename's directory component
 : file-name-directory                   // filename -> dirname/f
     win64? [ file-name-directory-win64 ] [ file-name-directory-linux ] if ;
+
+win64? #if
+
+: verify-extension // extension filename  -> filename/f
+    tuck
+    path-extension string-equal? [ drop f ] unless ;
+
+: directory-files // string -> sequence/f
+    1 ?enough !> arg
+
+    arg empty? [ f ] return-if
+
+    // canonical-path calls tilde-expand-filename
+    arg canonical-path arg!
+
+    // canonical-path might return f
+    arg null? [ f ] return-if
+
+    arg directory? [
+        arg "*" path-append arg!
+    ] [
+        arg last path-separator-char? [ arg "*" + arg! ] when
+    ] if
+
+    arg path-extension :> extension
+
+    arg find-first-file :> p
+
+    p zero? [ f ] return-if
+
+    64 <vector> :> v
+
+    f !> filename
+    extension [
+        p find-file-filename alien->string filename!
+        extension filename verify-extension [
+            filename v push
+        ] when
+
+        [ p find-next-file ] [
+            p find-file-filename alien->string filename!
+            extension filename verify-extension [
+                filename v push
+            ] when
+        ] while
+    ] [
+        p find-file-filename alien->string filename!
+        filename v push
+
+        [ p find-next-file ] [
+            p find-file-filename alien->string filename!
+            filename v push
+        ] while
+    ] if
+
+    p find-close assert-true
+
+    v ;
+
+#endif
