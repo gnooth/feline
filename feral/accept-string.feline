@@ -107,7 +107,7 @@ public
 : accept-string-set-history             -- history/f -> void
     set-current-history ;
 
-: accept-string                         -- prompt-string -> string
+: accept-string                         -- prompt -> string
     1 ?enough
     verify-string prompt-string!
     initialize-bindings
@@ -115,6 +115,22 @@ public
     0 dot!
     f done?!
     prompt
+    input-style
+    show-cursor
+    [ done? ] [ ekey process-key ] until
+    sb sbuf>string
+    reset-history
+    output-style ;
+
+: accept-string/2                       -- prompt default -> string
+    2 ?enough
+    verify-string :> default
+    verify-string prompt-string!
+    initialize-bindings
+    default string>sbuf sb!
+    sb length dot!
+    f done?!
+    redisplay
     input-style
     show-cursor
     [ done? ] [ ekey process-key ] until

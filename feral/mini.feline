@@ -147,6 +147,24 @@ public
     ] [ f ] if
 ;
 
+: minibuffer-accept-string/2            // prompt default -> string/f
+    2 ?enough
+    verify-string :> default
+    verify-string prompt!
+    f minibuffer-contents!
+
+    prompt default +
+    [ string>sbuf minibuffer-set-text ]
+    [ length winui-char-width * 0 winui-set-caret-pos ]
+    bi
+
+    winui-minibuffer-main
+
+    minibuffer-contents [
+        prompt length minibuffer-contents tail
+    ] [ f ] if
+;
+
 #else
 
 using: feline accept-string ;
@@ -163,10 +181,14 @@ in: mini
 
 : clear-message hide-cursor 0 message-y at-xy clear-to-eol ;
 
-: minibuffer-accept-string              // prompt-string -> string
+: minibuffer-accept-string              // prompt -> string
     0 message-y at-xy
     accept-string
-    clear-message
-;
+    clear-message ;
+
+: minibuffer-accept-string/2            // prompt default -> string
+    0 message-y at-xy
+    accept-string/2
+    clear-message ;
 
 #endif
