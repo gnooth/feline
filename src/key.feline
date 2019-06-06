@@ -78,6 +78,7 @@ win64? #if
 0x809d                  constant alt-right
 0x803d                  constant f3
 0x8056                  constant shift-f3
+0x8040                  constant f6
 #endif
 
 linux? #if
@@ -101,6 +102,7 @@ linux? #if
 0x1b5b313b3343          constant alt-right
 0x1b4f52                constant f3
 0x1b5b313b3252          constant shift-f3
+0x1b5b31377e            constant f6
 #endif
 
 0x1b5b5a                constant shift-tab      // Linux only
