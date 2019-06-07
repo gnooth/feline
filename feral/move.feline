@@ -164,13 +164,18 @@ in: editor
     in-word? [
         [ char-left-line [ in-word? ] [ f ] if ] loop
         dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
-    ] when
-;
+    ] when ;
+
+: move-left-to-beginning-of-whitespace
+    // no undo
+    in-whitespace? [
+        [ char-left-line [ in-whitespace? ] [ f ] if ] loop
+        in-whitespace? [ dot-offset 1+ dot-offset! ] unless
+    ] when ;
 
 : move-left-past-whitespace
     // no undo
-    [ char-left-line [ in-whitespace? ] [ f ] if ] loop
-;
+    [ char-left-line [ in-whitespace? ] [ f ] if ] loop ;
 
 : word-left
     bob? ?exit
