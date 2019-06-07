@@ -31,6 +31,8 @@
 #include <sys/resource.h>       // getrusage
 #include <sys/mman.h>
 #include <pthread.h>
+#include <sys/types.h>
+#include <dirent.h>
 #endif
 
 #include "feline.h"
@@ -136,6 +138,25 @@ cell os_find_file_filename (FindFileData *p)
 {
   return (p != NULL) ? (cell) p->filename : (cell) NULL;
 }
+
+#else
+
+cell os_opendir (const char *name)
+{
+  return (cell) opendir (name);
+}
+
+cell os_readdir (DIR *p)
+{
+  struct dirent *entry = readdir (p);
+  return (entry != NULL) ? (cell) entry->d_name : (cell) NULL;
+}
+
+cell os_closedir (DIR *p)
+{
+  return closedir (p);
+}
+
 #endif
 
 cell os_open_file (const char *filename, int flags)
