@@ -398,16 +398,8 @@ use: kill-ring
         char-left-line assert
 
         {
-            {
-                [ in-whitespace? ]
-                [
-                    move-left-past-whitespace
-                    move-left-to-beginning-of-word
-                ]
-            }
-
+            { [ in-whitespace? ] [ move-left-to-beginning-of-whitespace ] }
             { [ in-word? ] [ move-left-to-beginning-of-word ] }
-
             [
                 // not in word, not in whitespace
                 // if previous char is whitespace, then dot is at the start
@@ -430,8 +422,7 @@ use: kill-ring
 
     ] with-compound-undo
 
-    t dot-line-changed!
-;
+    t dot-line-changed! ;
 
 : do-delete
     current-buffer read-only>> [
