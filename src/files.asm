@@ -552,7 +552,7 @@ code tilde_expand_filename, 'tilde-expand-filename' ; string1 -> string2
         _ path_separator_char?          ; "~/" or "~\"
         _tagged_if .4
         _ user_home
-        _lit tagged_fixnum(1)
+        _lit tagged_fixnum(2)
         _rfrom
         _ string_tail
         _ path_append
@@ -729,6 +729,46 @@ code find_file_filename, 'find-file-filename' ; alien -> alien'
         _check_fixnum
         mov     arg0_register, rbx
         xcall   os_find_file_filename
+        mov     rbx, rax
+        _tag_fixnum
+        next
+endcode
+
+%else
+
+; Linux
+
+extern os_opendir
+
+; ### opendir
+code feline_opendir, 'opendir'          ; string -> alien
+        _ string_raw_data_address
+        mov     arg0_register, rbx
+        xcall   os_opendir
+        mov     rbx, rax
+        _tag_fixnum
+        next
+endcode
+
+extern os_readdir
+
+; ### readdir
+code feline_readdir, 'readdir'          ; alien -> alien'
+        _check_fixnum
+        mov     arg0_register, rbx
+        xcall   os_readdir
+        mov     rbx, rax
+        _tag_fixnum
+        next
+endcode
+
+extern os_closedir
+
+; ### closedir
+code feline_closedir, 'closedir'
+        _check_fixnum
+        mov     arg0_register, rbx
+        xcall   os_closedir
         mov     rbx, rax
         _tag_fixnum
         next
