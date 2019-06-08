@@ -185,6 +185,7 @@ method: feline-mode initialize-buffer   // buffer mode -> void
 ;
 
 {
+    "!>"
     "'"
     "("
     ")"
