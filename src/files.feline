@@ -18,6 +18,11 @@ in: feline
 
 public
 
+: file-name-as-directory // string -> string'
+    dup string-?last path-separator-char? [
+        path-separator-char string-append-char
+    ] unless ;
+
 // returns filename without its directory component
 : file-name-nondirectory ( filename )
     filename length :> len
