@@ -160,43 +160,50 @@ in: editor
     mark [ unindent-region ] [ unindent-line ] if ;
 
 : comment-region
-    mark null? ?exit
-
     current-mode comment-start :> s
-
     s empty? ?exit
 
-    dot mark make-region/2 :> region
-
-    region editor:add-undo-edit-region
-
-    region [ s over text>> + swap text<< ] region-each-line
-
+    f !> region
+    mark [
+        dot mark make-region/2 region!
+        region editor:add-undo-edit-region
+        region [ s over text>> + swap text<< ] region-each-line
+        t repaint!
+    ] [
+        editor:add-undo-line-edit
+        s dot-line-text + dot-line-text!
+        dot-offset s length + dot-offset!
+        t dot-line-changed!
+    ] if
     modified
-    t repaint!
 ;
 
 : uncomment-region
-    mark null? ?exit
-
     current-mode comment-start :> s
-
     s empty? ?exit
 
-    dot mark make-region/2 :> region
-
-    region editor:add-undo-edit-region
-
-    region [
-        s over text>> head? [
-            s length over text>> tail swap text<<
-        ] [
-            drop
-        ] if
-    ] region-each-line
-
-    modified
-    t repaint!
+    f !> region
+    mark [
+        dot mark make-region/2 region!
+        region editor:add-undo-edit-region
+        region [
+            s over text>> head? [
+                s length over text>> tail swap text<<
+            ] [
+                drop
+            ] if
+        ] region-each-line
+        modified
+        t repaint!
+    ] [
+        s dot-line-text head? [
+            editor:add-undo-line-edit
+            s length dot-line-text tail dot-line-text!
+            dot-offset s length - dot-offset!
+            modified
+            t dot-line-changed!
+        ] when
+    ] if
 ;
 
 : string-remove-nth                     // n string1 -> string2
