@@ -21,7 +21,7 @@ in: editor
 
     source-file null? ?exit
 
-    "git diff " source-file + shell-command-to-string :> s
+    "git diff " source-file + shell-command-to-string !> s
     f :> buf!
     s length 0 > [
         make-buffer buf!
@@ -39,4 +39,7 @@ in: editor
         buf current-buffer!
 
         t repaint!
-    ] [ "No changes" message ] if ;
+    ] [
+        "git ls-files " source-file + shell-command-to-string s!
+        s length zero? [ "Untracked" ] [ "No changes" ] if message
+    ] if ;
