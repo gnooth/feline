@@ -79,6 +79,8 @@ win64? #if
 0x803d                  constant f3
 0x8056                  constant shift-f3
 0x8040                  constant f6
+0x8085                  constant f11
+0x8087                  constant shift-f11
 #endif
 
 linux? #if
