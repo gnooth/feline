@@ -161,6 +161,9 @@ global ctrl-k-map
     ' paste                             key:ctrl-v      m set-at
     ' dir                               key:ctrl-d      m set-at
 
+    ' comment-region                    key:f11         m set-at
+    ' uncomment-region                  key:shift-f11   m set-at
+
     m global-map!
 ;
 
