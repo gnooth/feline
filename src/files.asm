@@ -349,24 +349,9 @@ code copy_file, 'copy-file'     ; from to --
 endcode
 
 ; ### file-lines
-code file_lines, 'file-lines'           ; path -- vector
-        _ file_open_read                ; -- fd
-        _lit 256
-        _ new_vector_untagged           ; -- fd vector
-.1:
-        _over
-        _ file_read_line                ; -- fd vector string/f
-        _dup
-        _tagged_if .2
-        _over
-        _ vector_push
-        jmp .1
-        _else .2
-        ; reached end of file
-        _drop
-        _swap
-        _ file_close
-        _then .2
+code file_lines, 'file-lines'           ; path -> vector
+        _ file_contents
+        _ string_lines
         next
 endcode
 
