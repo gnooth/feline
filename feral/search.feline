@@ -243,11 +243,16 @@ use: mini
 #endif
 
 : do-find
+    "find" load-history set-current-history
+
     "Find: " minibuffer-accept-string :> pattern
     pattern empty? [ ] return-if
     pattern f make-search current-search!
     pattern dot search-forward [ found ] [ not-found ] if*
-;
+
+    pattern update-history
+    save-history
+    f set-current-history ;
 
 : search-forward-word-at-dot
     current-mode identifier-at-dot      // -> index/f string/f
