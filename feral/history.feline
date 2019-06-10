@@ -1,17 +1,17 @@
--- Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline accessors logging directories ;
 in: history
@@ -27,16 +27,16 @@ tuple: history
     index
 ;
 
-: name                                  -- void -> string/f
+: name                                  // void -> string/f
     current-history [ name>> ] [ f ] if* ;
 
-: strings                               -- void -> vector/f
+: strings                               // void -> vector/f
     current-history [ strings>> ] [ f ] if* ;
 
-: index                                 -- void -> index/f
+: index                                 // void -> index/f
     current-history [ index>> ] [ f ] if* ;
 
-: index!                                -- index -> void
+: index!                                // index -> void
     current-history [ index<< ] [ drop ] if* ;
 
 public
@@ -44,11 +44,11 @@ public
 : reset-history
     strings [ length index! ] when* ;
 
-: set-current-history                   -- history/f -> void
+: set-current-history                   // history/f -> void
    current-history!
    reset-history ;
 
-: history-previous                      -- void -> string/f
+: history-previous                      // void -> string/f
     index 0 > [
         index 1- index!
         index strings nth
@@ -60,10 +60,10 @@ public
         index strings nth
     ] [ reset-history f ] if ;
 
-: history-name->pathname                -- name -> pathname
+: history-name->pathname                // name -> pathname
     feral-history-directory swap path-append ".history" string-append ;
 
-: load-history ( name )                 -- name -> history
+: load-history ( name )                 // name -> history
     history make-instance :> hist
     name hist name<<
     feral-history-directory name path-append ".history" string-append hist filename<<
@@ -84,7 +84,7 @@ public
     ] when*
 ;
 
-: update-history ( s )                  -- string/f -> void
+: update-history ( s )                  // string/f -> void
     s string? [
         current-history [
             strings>> s swap vector-adjoin
