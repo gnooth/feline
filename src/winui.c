@@ -553,6 +553,17 @@ void winui__minibuffer_exit (void)
 extern void winui_minibuffer_char (WPARAM);
 extern void winui_minibuffer_paint (void);
 
+static void winui__minibuffer_keydown (WPARAM wparam)
+{
+  if (GetKeyState (VK_MENU) & 0x8000)
+    wparam |= ALT_MASK;
+  if (GetKeyState (VK_CONTROL) & 0x8000)
+    wparam |= CTRL_MASK;
+  if (GetKeyState (VK_SHIFT) & 0x8000)
+    wparam |= SHIFT_MASK;
+  winui_minibuffer_keydown (wparam);
+}
+
 static LRESULT CALLBACK winui__minibuffer_wnd_proc (HWND hwnd, UINT msg,
                                                     WPARAM wparam, LPARAM lparam)
 {
@@ -582,6 +593,11 @@ static LRESULT CALLBACK winui__minibuffer_wnd_proc (HWND hwnd, UINT msg,
 
     case WM_CHAR:
       winui_minibuffer_char (wparam);
+      break;
+
+    case WM_KEYDOWN:
+      if (wparam != VK_SHIFT && wparam != VK_CONTROL && wparam != VK_MENU)
+        winui__minibuffer_keydown (wparam);
       break;
     }
 
