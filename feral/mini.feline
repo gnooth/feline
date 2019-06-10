@@ -124,6 +124,9 @@ initialize-minibuffer-keymap
         lookup-key [ call-symbol ] when*
     ] if ;
 
+: winui-minibuffer-keydown              // key -> void
+    lookup-key [ call-symbol ] when* ;
+
 public
 
 : message                               // string ->
