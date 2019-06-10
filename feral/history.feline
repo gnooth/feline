@@ -49,12 +49,16 @@ public
    reset-history ;
 
 : history-previous                      // void -> string/f
+    index null? [ f ] return-if
+
     index 0 > [
         index 1- index!
         index strings nth
     ] [ f ] if ;
 
 : history-next
+    index null? [ f ] return-if
+
     index strings length 1- < [
         index 1+ index!
         index strings nth
