@@ -102,15 +102,32 @@ private
     winui-minibuffer-invalidate
 ;
 
+: minibuffer-set-text-from-history ( s ) // string/f -> void
+    s null? ?exit
+    prompt s + string>sbuf :> sb
+    sb minibuffer-set-text
+    sb length winui-char-width * 0
+    winui-set-caret-pos
+    winui-minibuffer-invalidate ;
+
+use: history
+
+: do-previous history-previous minibuffer-set-text-from-history ;
+
+: do-next history-next minibuffer-set-text-from-history ;
+
+unuse: history
+
 global minibuffer-keymap
 
 : initialize-minibuffer-keymap
-    128 <hashtable> :> keymap
-    ' do-enter  key:enter       keymap set-at
-    ' do-escape key:escape      keymap set-at
-    ' do-bs     key:backspace   keymap set-at
-    keymap minibuffer-keymap!
-;
+    128 <hashtable> :> m
+    ' do-enter      key:enter       m set-at
+    ' do-escape     key:escape      m set-at
+    ' do-bs         key:backspace   m set-at
+    ' do-previous   feral-key:up    m set-at
+    ' do-next       feral-key:down  m set-at
+    m minibuffer-keymap! ;
 
 initialize-minibuffer-keymap
 
