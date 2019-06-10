@@ -20,7 +20,7 @@ in: user
 
 winui? #if
 
-using: feline accessors ;
+using: history feline accessors ;
 in: mini
 
 private
@@ -70,6 +70,13 @@ private
     sb sbuf? assert-true
 
     sb sbuf>string minibuffer-contents!
+
+    current-history [
+        prompt length minibuffer-contents tail update-history
+        save-history
+        f set-current-history
+    ] when
+
     "" minibuffer-set-text
     winui-minibuffer-exit
 ;
@@ -77,8 +84,8 @@ private
 : do-escape
     f minibuffer-contents!
     "" minibuffer-set-text
-    winui-minibuffer-exit
-;
+    f set-current-history
+    winui-minibuffer-exit ;
 
 : do-bs
     minibuf text>> :> sb
@@ -110,13 +117,9 @@ private
     winui-set-caret-pos
     winui-minibuffer-invalidate ;
 
-use: history
-
 : do-previous history-previous minibuffer-set-text-from-history ;
 
 : do-next history-next minibuffer-set-text-from-history ;
-
-unuse: history
 
 global minibuffer-keymap
 
@@ -161,9 +164,7 @@ public
     prompt length winui-char-width * 0 winui-set-caret-pos
     winui-minibuffer-main
     minibuffer-contents [
-        prompt length
-        minibuffer-contents length
-        minibuffer-contents substring
+        prompt length minibuffer-contents tail
     ] [ f ] if
 ;
 
