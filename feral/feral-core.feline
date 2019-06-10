@@ -759,6 +759,30 @@ generic identifier-char?                // char mode -> ?
 
 generic identifier-at-dot               // mode -> start/f string/f
 
+: default-identifier-at-dot             // mode -> start/f string/f
+
+    drop
+
+    { [ mark ] [ mark-line dot-line eq? ] } && [
+        mark dot make-region/2 begin-offset
+    ] [
+        dot-offset dot-line-length 1- min 0 max
+    ] if :> offset
+
+    offset dot-line-text [ current-mode identifier-char? not ] find-last-from drop :> start!
+
+    // advance to first identifier char
+    start [ start 1+ start! ] [ 0 start! ] if
+
+    start dot-line-text [ current-mode identifier-char? not ] find-from drop :> end!
+
+    end [ dot-line-length end! ] unless
+
+    start
+    start end dot-line-text string-substring ;
+
+' default-identifier-at-dot ' identifier-at-dot set-default-method
+
 generic initialize-buffer               // buffer mode -> void
 
 : default-initialize-buffer             // buffer mode -> void
