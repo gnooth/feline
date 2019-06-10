@@ -395,6 +395,31 @@ subroutine winui_minibuffer_char        ; char -> void
         ret
 endsub
 
+; ### winui_minibuffer_keydown
+subroutine winui_minibuffer_keydown     ; wparam -> void
+; 1-arg callback
+
+        ; enter callback
+        push    rbx
+        push    rbp
+        mov     rbp, [winui_raw_sp0_]
+
+        pushrbx
+        mov     rbx, arg0_register
+        _tag_fixnum
+
+        _quote "winui-minibuffer-keydown"
+        _quote "mini"
+        _ ?lookup_symbol
+        _ call_symbol
+
+        ; leave callback
+        pop     rbp
+        pop     rbx
+
+        ret
+endsub
+
 ; ### winui-show-caret
 code winui_show_caret, 'winui-show-caret' ; void -> void
         xor     arg0_register, arg0_register
