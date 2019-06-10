@@ -16,9 +16,11 @@
 using: feline accessors logging directories ;
 in: history
 
-private
+public
 
 global current-history
+
+private
 
 tuple: history
     name
