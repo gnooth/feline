@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -224,12 +224,12 @@ code find_file_in_source_path, 'find-file-in-source-path'       ; string -- path
 endcode
 
 ; ### find-file
-code find_file, 'find-file'             ; string -- path/f
+code find_file, 'find-file'             ; string -> path/f
 
         _duptor
 
         _dup
-        _ path_is_absolute?
+        _ file_name_absolute?
         _tagged_if .1
         _ canonical_path
         _rdrop

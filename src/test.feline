@@ -2891,30 +2891,30 @@ test: canonical-path-test-1
 
 canonical-path-test-1
 
-test: path-is-absolute?-test-1
+test: file-name-absolute?-test-1
     clear
 
     win64? [
-        "" path-is-absolute? assert-false
-        "foo" path-is-absolute? assert-false
-        "\\foo" path-is-absolute? assert-true
-        "foo\\bar" path-is-absolute? assert-false
-        "\\foo\\bar" path-is-absolute? assert-true
-        "c" path-is-absolute? assert-false
+        "" file-name-absolute? assert-false
+        "foo" file-name-absolute? assert-false
+        "\\foo" file-name-absolute? assert-true
+        "foo\\bar" file-name-absolute? assert-false
+        "\\foo\\bar" file-name-absolute? assert-true
+        "c" file-name-absolute? assert-false
     ] when
 
     linux? [
-        "" path-is-absolute? assert-false
-        "foo" path-is-absolute? assert-false
-        "/foo" path-is-absolute? assert-true
-        "foo/bar" path-is-absolute? assert-false
-        "/foo/bar" path-is-absolute? assert-true
+        "" file-name-absolute? assert-false
+        "foo" file-name-absolute? assert-false
+        "/foo" file-name-absolute? assert-true
+        "foo/bar" file-name-absolute? assert-false
+        "/foo/bar" file-name-absolute? assert-true
     ] when
 
     depth zero? assert-true
 ;
 
-path-is-absolute?-test-1
+file-name-absolute?-test-1
 
 test: path-extension-test-1
     "test.feline" path-extension ".feline" assert=

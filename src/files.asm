@@ -368,8 +368,8 @@ code set_file_lines, 'set-file-lines'   ; seq path --
         next
 endcode
 
-; ### path-is-absolute?
-code path_is_absolute?, 'path-is-absolute?'     ; string -- ?
+; ### file-name-absolute?
+code file_name_absolute?, 'file-name-absolute?' ; string -> ?
 
         _dup
         _ string_empty?
