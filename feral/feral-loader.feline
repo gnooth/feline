@@ -29,7 +29,7 @@ in: user
     "feral-core"
     "feral-hooks"
     "feral-key"
-    "grep"
+    "find-in-files"
     "history"
     "keymaps"
     "kill-ring"
@@ -75,7 +75,7 @@ feral-source-directory add-source-directory
         "directory-mode.feline"
         "find-definition.feline"
         "search.feline"
-        "grep.feline"
+        "find-in-files.feline"
         "commands.feline"
         "keymaps.feline"
     } [ feral-source-directory swap path-append load ] each
