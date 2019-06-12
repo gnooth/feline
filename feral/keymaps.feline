@@ -85,6 +85,9 @@ winui? #if
 
     ' dir                               key:ctrl-d                      m set-at
 
+    ' find-in-files                     feral-key:ctrl-shift-f          m set-at
+    ' find-in-files                     feral-key:f6                    m set-at
+
     ' comment-region                    feral-key:f11                   m set-at
     ' uncomment-region                  feral-key:shift-f11             m set-at
 
@@ -164,11 +167,13 @@ global ctrl-k-map
     ' comment-region                    key:f11         m set-at
     ' uncomment-region                  key:shift-f11   m set-at
 
+    ' find-in-files                     key:f6          m set-at
+
     m global-map!
 ;
 
 : initialize-ctrl-k-map
-    ctrl-k-map [ ] return-if
+    ctrl-k-map ?exit
 
     16 <hashtable> :> m
 
