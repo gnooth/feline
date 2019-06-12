@@ -254,6 +254,7 @@ method: feline-mode initialize-buffer   // buffer mode -> void
     "keep"
     "loop"
     "return-if"
+    "time"
     "times"
     "tri"
     "unless"
