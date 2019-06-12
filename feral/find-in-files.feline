@@ -1,0 +1,146 @@
+// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: editor feral-core feline accessors mini ;
+in: find-in-files
+
+private
+
+tuple: find-in-files-line
+    prev
+    next
+    number                              // 0-based line number
+    text
+    source-file
+    source-line-number                  // 1-based line-number
+;
+
+: make-find-in-files-line               // text source-file source-line-number -> line
+    find-in-files-line make-instance
+    swap >>source-line-number
+    swap >>source-file
+    swap >>text ;
+
+global local-map
+
+public
+
+global current-output-buffer
+
+global current-pattern
+
+global current-files
+
+: find-in-file
+    1 ?enough
+    verify-string
+    :> filename
+
+    f !> i
+    f !> s
+    f !> found
+    filename file-lines [
+        // -> string index
+        i! s!
+        current-pattern s substring-start [
+            found [
+                filename dup i 1+ make-find-in-files-line
+                current-output-buffer buffer-append-line
+                t found!
+            ] unless
+            i 1+ number>string ":" + s +
+            filename i 1+ make-find-in-files-line
+            current-output-buffer buffer-append-line
+        ] when
+    ] each-index
+;
+
+using: find-in-files feral-core history mini feline accessors ;
+in: editor
+
+: find-in-files
+    current-mode identifier-at-dot nip :> default-pattern
+
+    "find" load-history set-current-history
+
+    "Find: "
+    default-pattern empty? [
+        minibuffer-accept-string
+    ] [
+        default-pattern minibuffer-accept-string/2
+    ] if current-pattern!
+
+    current-pattern empty? ?exit
+
+    current-buffer buffer-directory file-name-as-directory :> default-directory
+
+    "Files: " default-directory minibuffer-accept-string/2 current-files!
+
+    current-files empty? ?exit
+
+    current-files file-name-directory :> directory
+
+    directory null? ?exit
+
+    make-buffer :> buf
+    buf current-output-buffer!
+
+    current-files directory-files [
+        [
+            directory swap path-append canonical-path [ find-in-file ] when*
+        ] each
+    ] when*
+
+    buf first-line>> null? [ "Not found" message ] return-if
+
+    buf first-line>> 0 make-position buf dot<<
+    buf first-line>> buf top-line<<
+    t buf read-only<<
+    "find-in-files " current-pattern + " " + current-files + buf name<<
+
+    find-in-files:local-map buf local-map<<
+
+    buf buffer-list vector-push
+    buf current-buffer!
+
+    renumber
+    t repaint!
+;
+
+using: editor feral-core feline accessors ;
+in: find-in-files
+
+private
+
+: find-in-files-open-file
+    dot-line source-file>> :> source-file
+    dot-line source-line-number>> :> line-number
+
+    source-file find-buffer [
+        current-buffer!
+        line-number gotoline-internal
+        // gotoline-internal calls maybe-reframe
+    ] [
+        source-file line-number create-buffer/2
+        reframe
+    ] if*
+    t repaint! ;
+
+: initialize-local-map
+    128 <hashtable> :> m
+    ' find-in-files-open-file key:enter m set-at
+    m local-map! ;
+
+initialize-local-map
