@@ -462,40 +462,50 @@ use: kill-ring
     { [ anchor ] [ mark ] } ||
     [ dot make-region/2 copy-region ] [ copy-line ] if* ;
 
-: delete-line
-    reset-redo
-
-    add-undo-delete-line
-
+: delete-line-internal
     dot-line-prev :> prev
     dot-line-next :> next
 
     {
-        { [ prev next and ] [
-            dot-line
-            next dot-line! 0 dot-offset!
-            unlink
-        ] }
-        { [ prev null? ] [
-            // deleting first line
-            dot-line
-            next dot-line! 0 dot-offset!
-            unlink
-            next dup first-line! top-line!
-        ] }
-        { [ next null? ] [
-            // deleting last line
-            dot-line
-            prev dot-line! prev length dot-offset!
-            unlink
-            prev last-line!
-        ] }
+        {
+            [ prev next and ]
+            [
+                dot-line
+                next dot-line! 0 dot-offset!
+                unlink
+            ]
+        }
+        {
+            [ prev null? ]
+            [
+                // deleting first line
+                dot-line
+                next dot-line! 0 dot-offset!
+                unlink
+                next dup first-line! top-line!
+            ]
+        }
+        {
+            [ next null? ]
+            [
+                // deleting last line
+                dot-line
+                prev dot-line! prev length dot-offset!
+                unlink
+                prev last-line!
+            ]
+        }
     } cond
-
     modified
     renumber
     t repaint!
 ;
+
+: delete-line
+    unmark
+    reset-redo
+    add-undo-delete-line
+    delete-line-internal ;
 
 : cut-line
     copy-line
@@ -564,6 +574,10 @@ use: kill-ring
     drop
     delete-region ;
 
+: redo-delete-line                      // undo-record -> void
+    drop
+    delete-line-internal ;
+
 : redo1                                 // undo-record -> void
     dup action>> {
         { +move+ [ undo-move ] }
@@ -571,7 +585,7 @@ use: kill-ring
         { +edit-region+ [ redo-edit-region ] }
         { +delete-line-separator+ [ drop delete-line-separator ] }
         { +insert-line-separator+ [ drop insert-line-separator ] }
-        { +delete-line+ [ drop delete-line ] }
+        { +delete-line+ [ redo-delete-line ] }
         { +delete-region+ [ redo-delete-region ] }
         { +insert-multiline-string+ [ redo-insert-multiline-string ] }
         [ error "unsupported" ]
