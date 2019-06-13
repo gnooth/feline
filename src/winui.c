@@ -230,14 +230,21 @@ void winui__create_frame (void)
   SetForegroundWindow (hwnd_frame);
 }
 
+// winui.asm
+extern void winui_safepoint (void);
+
 void winui__main (void)
 {
-  BOOL ret;
-  MSG msg;
-  while ((ret = GetMessage (&msg, NULL, 0, 0)) != 0 && ret != -1)
+  while (1)
     {
-      TranslateMessage (&msg);
-      DispatchMessage (&msg);
+      winui_safepoint ();
+
+      MSG msg;
+      if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE) != 0)
+        {
+          TranslateMessage (&msg);
+          DispatchMessage (&msg);
+        }
     }
 }
 

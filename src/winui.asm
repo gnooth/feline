@@ -50,6 +50,24 @@ code winui_exit, 'winui-exit'
         next
 endcode
 
+; ### winui_safepoint
+subroutine winui_safepoint              ; void -> void
+; 0-arg callback
+
+        ; enter callback
+        push    rbx
+        push    rbp
+        mov     rbp, [winui_raw_sp0_]
+
+        _ safepoint
+
+        ; leave callback
+        pop     rbp
+        pop     rbx
+
+        ret
+endsub
+
 ; ### winui_textview_paint
 subroutine winui_textview_paint         ; void -> void
 ; 0-arg callback
