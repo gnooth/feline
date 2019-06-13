@@ -21,25 +21,36 @@ in: editor
 
     source-file null? ?exit
 
-    "git diff " source-file + shell-command-to-string !> s
-    f :> buf!
+    "git diff " source-file + :> command
+    command shell-command-to-string !> s
+    f !> buf
     s length 0 > [
-        make-buffer buf!
+        buffer-list [ command>> command = ] find // index/f element/f
+        [
+            nip buf!
+        ] [
+            drop make-buffer buf!
+        ] if*
+
         s buf buffer-set-contents
-        "git diff " source-file file-name-nondirectory + buf name<<
+        command buf command<<
+        "git diff " source-file + buf name<<
         t buf read-only<<
         buf first-line>> 0 make-position buf dot<<
+        f buf mark<<
         buf first-line>> buf top-line<<
 
         initialize-diff-mode buf mode<<
         current-buffer buf parent<<
         buf dup mode>> initialize-buffer
 
-        buf buffer-list vector-push
+        buf buffer-list member-eq? [
+            buf buffer-list vector-push
+        ] unless
         buf current-buffer!
 
         t repaint!
     ] [
         "git ls-files " source-file + shell-command-to-string s!
-        s length zero? [ "Untracked" ] [ "No changes" ] if message
+        s length zero? "Untracked" "No changes" ? message
     ] if ;
