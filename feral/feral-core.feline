@@ -281,7 +281,7 @@ tuple: buffer
     top-line
     indent-size
     tab-width
-;
+    command ;
 
 "\n"   constant LF
 "\r\n" constant CR+LF
