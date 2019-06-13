@@ -240,11 +240,13 @@ void winui__main (void)
       winui_safepoint ();
 
       MSG msg;
-      if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE) != 0)
+      while (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE) != 0)
         {
           TranslateMessage (&msg);
           DispatchMessage (&msg);
         }
+
+      Sleep (1);
     }
 }
 
