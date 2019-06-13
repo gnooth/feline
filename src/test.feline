@@ -3922,6 +3922,15 @@ test: ?exit-test-3
 
 ?exit-test-3
 
+: %inner1 t ?exit ;
+
+: %outer1 %inner1 87 ;
+
+test: ?exit-test-4
+    { 87 } [ %outer1 ] unit-test ;
+
+?exit-test-4
+
 test: string-append-char-test-1
     { "cats" } [ "cat" 's' string-append-char ] unit-test
 ;

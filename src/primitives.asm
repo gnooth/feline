@@ -358,7 +358,6 @@ always_inline ?exit_no_locals, '?exit-no-locals'
         cmp     rbx, f_value
         _drop
         je      .1
-        lea     rsp, [rsp + BYTES_PER_CELL]
         ret
 .1:
 endinline
@@ -368,7 +367,6 @@ always_inline ?exit_locals, '?exit-locals'
         cmp     rbx, f_value
         _drop
         je      .1
-        lea     rsp, [rsp + BYTES_PER_CELL]
         _locals_leave
         ret
 .1:
