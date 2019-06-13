@@ -3978,4 +3978,14 @@ test: file-name-directory-test-1
 
 file-name-directory-test-1
 
+test: tilde-expand-filename-test-1
+    linux? [
+        "foo" tilde-expand-filename "foo" assert=
+        "/" tilde-expand-filename "/" assert=
+        "~/" tilde-expand-filename user-home "/" + assert=
+        "~/foo" tilde-expand-filename user-home "foo" path-append assert=
+    ] when ;
+
+tilde-expand-filename-test-1
+
 ?nl "Reached end of test.feline" write-string
