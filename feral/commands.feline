@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline feral-core mini ;
+using: feline accessors feral-core mini ;
 in: editor
 
 : gotoline
@@ -27,27 +27,63 @@ in: editor
         arg ensure-feline-extension find-file
     ] unless* ;
 
+: create-buffer-for-new-file ( filename )
+    make-buffer :> buf
+
+    "" 0 make-line/2
+    [ buf buffer-append-line ]
+    [ 0 make-position buf dot<< ]
+    bi
+
+    buf dot>> line>> buf top-line<<
+
+    filename buf filename<<
+    filename file-name-nondirectory buf name<<
+    filename path-extension [ modes:modes at buf mode<< ] when*
+
+    buf dup mode>> initialize-buffer
+
+    buf buffer-list vector-push
+    buf current-buffer!
+
+    t repaint!
+;
+
 : open-file
-    "File: " minibuffer-accept-string :> arg
+    current-buffer buffer-directory file-name-as-directory :> default-directory
+
+    "File: " default-directory minibuffer-accept-string/2 !> arg
 
     arg empty? ?exit
 
-    arg canonical-path !> filename
+    arg tilde-expand-filename arg!
 
-    filename directory? [
-        filename directory-mode:open-directory
-    ] return-if
+    arg directory? [ arg directory-mode:open-directory ] return-if
 
-    arg find-file-to-edit filename!
+    arg find-file-to-edit :> filename
 
-    filename [
-        filename find-buffer [
-            current-buffer!
-        ] [
-            filename 1 create-buffer/2
-        ] if*
-        t repaint!
-    ] when ;
+    f !> buf
+    {
+        {
+            [ filename null? ]
+            [ arg canonical-path [ create-buffer-for-new-file ] when* ]
+        }
+        {
+            [ filename find-buffer dup buf! ]
+            [ buf current-buffer! ]
+        }
+        {
+            [ filename file-exists? ]
+            [ filename 1 create-buffer/2 ]
+        }
+        {
+            [ filename feline-extension + file-exists? ]
+            [ filename feline-extension + 1 create-buffer/2 ]
+        }
+        // otherwise...
+        [ arg canonical-path [ create-buffer-for-new-file ] when* ]
+    } cond
+;
 
 : execute-command
     "Command: " minibuffer-accept-string :> command
