@@ -18,6 +18,18 @@ in: list-buffers
 
 private
 
+tuple: list-buffers-line
+    prev
+    next
+    number                              // 0-based line number
+    text
+    buffer ;
+
+: make-list-buffers-line                // text buffer -> line
+    list-buffers-line make-instance
+    swap >>buffer
+    swap >>text ;
+
 tuple: list-buffers-mode
     formatter ;
 
@@ -28,18 +40,9 @@ global list-buffers-old-buffer
 40 constant buffer-filename-column
 
 : list-buffers-select
-    buffer-name-column
-    buffer-filename-column dot-line-length min
-    dot-line-text substring
-    trim-trailing :> name
-
-    buffer-list [ name>> name = ] find // -> index/f buffer/f
-    nip
-    [
-        current-buffer!
-        t repaint!
-        update-display
-    ] when* ;
+    dot-line buffer>> current-buffer!
+    t repaint!
+    update-display ;
 
 : list-buffers-quit
     list-buffers-old-buffer current-buffer!
@@ -63,9 +66,9 @@ initialize-local-map
     "List Buffers" buf name<<
     list-buffers-local-map buf local-map<<
 
-    f :> b!
-    f :> sb!
-    f :> select!
+    f !> b
+    f !> sb
+    f !> old-buffer-line
     buffer-list [
         b!
         128 <sbuf> sb!
@@ -82,14 +85,17 @@ initialize-local-map
             sb sbuf-append-string
         ] when*
 
-        sb sbuf>string make-line/1 buf buffer-append-line
+        sb sbuf>string b make-list-buffers-line buf buffer-append-line
 
-        b list-buffers-old-buffer eq? [ buf last-line>> select! ] when
+        b list-buffers-old-buffer eq? [ buf last-line>> old-buffer-line! ] when
     ] each
 
     buf first-line>> buf top-line<<
 
-    select [ buf first-line>> ] unless* buffer-name-column make-position buf dot<<
+    old-buffer-line buf first-line>> or // line
+    buffer-name-column                  // column
+    make-position buf dot<<
+
     buffer-name-column buf goal-column<<
 
     buf current-buffer!
