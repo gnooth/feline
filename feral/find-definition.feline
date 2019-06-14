@@ -13,14 +13,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline feral-config mini ;
+using: feral-core feline feral-config history mini ;
 in: editor
 
 : goto-definition                       // symbol -> void
     symbol-location :> line-number :> filename
     filename [
         filename find-buffer [
-            current-buffer!
             line-number gotoline-internal
         ] [
             filename line-number create-buffer/2
@@ -67,6 +66,7 @@ winui? #if
     ] if ;
 
 : find-definition
+    "find-definition" load-history set-current-history
     "Word: " minibuffer-accept-string
     [ find-definition-internal ] when* ;
 
