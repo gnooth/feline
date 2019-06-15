@@ -77,7 +77,6 @@ winui? #if
     ' indent                            feral-key:ctrl-]                m set-at
     ' unindent                          feral-key:ctrl-[                m set-at
 
-    ' find-definition-at-dot            feral-key:alt-.                 m set-at
     ' cycle-paste                       feral-key:alt-v                 m set-at
     ' search-forward-word-at-dot        feral-key:alt-down              m set-at
     ' search-backward-word-at-dot       feral-key:alt-up                m set-at
@@ -88,8 +87,15 @@ winui? #if
     ' dir                               key:ctrl-d                      m set-at
 
     ' find-in-files                     feral-key:ctrl-shift-f          m set-at
-    ' find-in-files                     feral-key:f6                    m set-at
 
+    // emacs
+    ' find-definition-at-dot            feral-key:alt-.                 m set-at
+
+    // vscode, sublime
+    ' find-definition-at-dot            feral-key:f12                   m set-at
+
+    // j
+    ' find-in-files                     feral-key:f6                    m set-at
     ' comment-region                    feral-key:f11                   m set-at
     ' uncomment-region                  feral-key:shift-f11             m set-at
 
