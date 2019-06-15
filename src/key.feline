@@ -81,6 +81,8 @@ win64? #if
 0x8040                  constant f6
 0x8085                  constant f11
 0x8087                  constant shift-f11
+0x8086                  constant f12
+0x8088                  constant shift-f12
 #endif
 
 linux? #if
