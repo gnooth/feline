@@ -100,10 +100,9 @@ in: editor
 
     t repaint! ;
 
-: find-buffer ( filename )              // filename -> buffer/f
+: find-buffer-from-file-name ( filename )       // filename -> buffer/f
     buffer-list [ filename>> filename = ] find  // index/f element/f
-    nip
-;
+    nip ;
 
 : next-buffer
     buffer-list length 1 > [

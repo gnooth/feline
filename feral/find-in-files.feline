@@ -128,15 +128,14 @@ private
     dot-line source-file>> :> source-file
     dot-line source-line-number>> :> line-number
 
-    source-file find-buffer [
-        current-buffer!
+    source-file find-buffer-from-file-name [
+        set-current-buffer
         line-number gotoline-internal
         // gotoline-internal calls maybe-reframe
     ] [
         source-file line-number create-buffer/2
         reframe
-    ] if*
-    t repaint! ;
+    ] if* ;
 
 : initialize-local-map
     128 <hashtable> :> m

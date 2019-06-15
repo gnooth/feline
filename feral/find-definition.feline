@@ -19,7 +19,7 @@ in: editor
 : goto-definition                       // symbol -> void
     symbol-location :> line-number :> filename
     filename [
-        filename find-buffer [
+        filename find-buffer-from-file-name [
             current-buffer!
             line-number gotoline-internal
         ] [

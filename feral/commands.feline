@@ -69,7 +69,7 @@ in: editor
             [ arg canonical-path [ create-buffer-for-new-file ] when* ]
         }
         {
-            [ filename find-buffer dup buf! ]
+            [ filename find-buffer-from-file-name dup buf! ]
             [ buf set-current-buffer ]
         }
         {

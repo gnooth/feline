@@ -157,8 +157,8 @@ public
         get-current-directory
     ] if* :> dirname
 
-    dirname find-buffer [
-        current-buffer! t repaint!
+    dirname find-buffer-from-file-name [
+        set-current-buffer
     ] [
         dirname open-directory
     ] if* ;
@@ -174,8 +174,8 @@ public
     ] [ f ] if* :> filename
 
     filename [
-        filename find-buffer [
-            current-buffer!
+        filename find-buffer-from-file-name [
+            set-current-buffer
         ] [
             filename directory? [
                 filename open-directory-in-current-buffer
@@ -183,7 +183,6 @@ public
                 filename 1 create-buffer/2
             ] if
         ] if*
-        t repaint!
     ] when ;
 
 : dir-up-dir
