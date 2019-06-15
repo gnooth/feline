@@ -107,6 +107,8 @@ linux? #if
 0x1b5b31377e            constant f6
 0x1b5b32337e            constant f11
 0x1b5b32333b327e        constant shift-f11
+0x1b5b32347e            constant f12
+0x1b5b32343b327e        constant shift-f12
 #endif
 
 0x1b5b5a                constant shift-tab      // Linux only
