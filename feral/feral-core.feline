@@ -314,6 +314,12 @@ global buffer-list
 
 global current-buffer
 
+: set-current-buffer ( buf )            // buffer -> void
+    buf current-buffer neq? [
+        buf current-buffer!
+        t repaint!
+    ] when ;
+
 : buffer-modified?                      // buffer -> ?
     dup mod-count>> swap mod-count-last-save>> neq? ;
 
