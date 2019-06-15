@@ -70,7 +70,7 @@ in: editor
         }
         {
             [ filename find-buffer dup buf! ]
-            [ buf current-buffer! ]
+            [ buf set-current-buffer ]
         }
         {
             [ filename file-exists? ]
