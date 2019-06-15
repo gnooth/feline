@@ -166,9 +166,12 @@ global ctrl-k-map
     ' paste                             key:ctrl-v      m set-at
     ' dir                               key:ctrl-d      m set-at
 
+    // vscode, sublime
+    ' find-definition-at-dot            key:f12         m set-at
+
+    // j
     ' comment-region                    key:f11         m set-at
     ' uncomment-region                  key:shift-f11   m set-at
-
     ' find-in-files                     key:f6          m set-at
 
     m global-map!
@@ -180,7 +183,6 @@ global ctrl-k-map
     16 <hashtable> :> m
 
     ' quit                              key:escape      m set-at
-    ' find-definition-at-dot            '.'             m set-at
     ' cycle-paste                       'v'             m set-at
     ' search-forward-word-at-dot        key:down        m set-at
     ' search-backward-word-at-dot       key:up          m set-at
