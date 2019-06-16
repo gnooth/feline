@@ -52,99 +52,102 @@ winui? #if
   0   0   0 make-colorref constant bg-default
  64  64  64 make-colorref constant bg-selected
 
-: repaint-segment                       // segment y -> void
+: bg-set-default bg-default winui-textview-set-bg-color ;
+
+: bg-set-selected bg-selected winui-textview-set-bg-color ;
+
+: repaint-segment                       // segment row -> void
     2 ?enough
-    :> y :> segment
+    :> row :> segment
 
     segment format>> dup fixnum? assert winui-textview-set-fg-color
 
     segment start>> winui-char-width *
-    y winui-char-height *
-    segment text>> winui-textview-text-out
-;
+    row winui-char-height *
+    segment text>> winui-textview-text-out ;
 
-: xrepaint-segment ( segment region y )
+: repaint-segments ( segments row )     // segments row -> void
+    segments [ row repaint-segment ] each ;
 
-    region begin-offset :> region-begin
-    region end-offset :> region-end
-
-    top-line-number y + nth-line dot-line assert-eq
-    dot-line mark-line assert-eq
-
-    region-begin segment start>> <
-    segment start>> segment text>> length + region-end <= and [
-        // segment is entirely within selection
-        bg-selected winui-textview-set-bg-color
-        segment y repaint-segment
-        bg-default winui-textview-set-bg-color
-    ] return-if
-
-    f :> seg1!
-    f :> seg2!
-
-    region-begin segment in-segment? region-end segment in-segment? and [
-        segment region-begin segment start>> - split-segment seg2! seg1!
-        bg-default winui-textview-set-bg-color
-        seg1 y repaint-segment
-
-        // now split seg2 at region-end
-        seg2 region-end seg2 start>> - split-segment
-        swap
-        bg-selected winui-textview-set-bg-color
-        y repaint-segment
-        bg-default winui-textview-set-bg-color
-        y repaint-segment
-    ] return-if
-
-    region-begin segment in-segment? [
-        segment region-begin segment start>> - split-segment seg2! seg1!
-        bg-default winui-textview-set-bg-color
-        seg1 y repaint-segment
-        bg-selected winui-textview-set-bg-color
-        seg2 y repaint-segment
-        bg-default winui-textview-set-bg-color
-    ] return-if
-
-    region-end segment in-segment? [
-        segment region-end segment start>> - split-segment seg2! seg1!
-        bg-selected winui-textview-set-bg-color
-        seg1 y repaint-segment
-        bg-default winui-textview-set-bg-color
-        seg2 y repaint-segment
-    ] return-if
-
-    segment y repaint-segment
-;
-
-: repaint-segments ( segments y )       // segments y -> void
-    segments [ y repaint-segment ] each
-;
-
-: repaint-selected-line ( line y )      // line y -> void
-
-    line line-selected? assert
-
+: repaint-line-no-selection ( line row ) // line row -> void
+    // no part of line is selected
     line text>> detab :> detabbed-text
-
     detabbed-text format-line :> segments
-
-    bg-selected winui-textview-set-bg-color
-
     segments string? [
         color-text winui-textview-set-fg-color
-        0 y winui-char-height * segments winui-textview-text-out
+        0 row winui-char-height * segments winui-textview-text-out
     ] [
-        segments y repaint-segments
+        segments row repaint-segments
     ] if
+    detabbed-text length row winui-textview-clear-eol ;
 
-    detabbed-text length y winui-textview-clear-eol
+: repaint-selected-line ( line row )    // line row -> void
+    // entire line is selected
+    line line-selected? assert
+    line text>> detab :> detabbed-text
+    detabbed-text format-line :> segments
+    bg-set-selected
+    segments string? [
+        color-text winui-textview-set-fg-color
+        0 row winui-char-height * segments winui-textview-text-out
+    ] [
+        segments row repaint-segments
+    ] if
+    detabbed-text length row winui-textview-clear-eol
+    bg-set-default ;
 
-    bg-default winui-textview-set-bg-color
+: xxxrepaint-segment ( segment line region row )
+    line region begin-line eq? [ region begin-offset ] [ 0 ] if :> selection-start-index
+    line region end-line eq? [ region end-offset ] [ line length ] if :> selection-end-index
+
+    selection-start-index segment start>> <
+    segment start>> segment text>> length + selection-end-index <= and [
+        // segment is entirely within selection
+        bg-set-selected
+        segment row repaint-segment
+    ] return-if
+
+    f !> seg1
+    f !> seg2
+
+    selection-start-index segment in-segment? selection-end-index segment in-segment? and [
+        // region is entirely within segment
+        segment selection-start-index segment start>> - split-segment seg2! seg1!
+        bg-set-default
+        seg1 row repaint-segment
+
+        // now split seg2 at selection-end-index
+        seg2 selection-end-index seg2 start>> - split-segment
+        swap
+        bg-set-selected
+        row repaint-segment
+        bg-set-default
+        row repaint-segment
+    ] return-if
+
+    selection-start-index segment in-segment? [
+        segment selection-start-index segment start>> - split-segment seg2! seg1!
+        bg-set-default
+        seg1 row repaint-segment
+        bg-set-selected
+        seg2 row repaint-segment
+        bg-set-default
+    ] return-if
+
+    selection-end-index segment in-segment? [
+        segment selection-end-index segment start>> - split-segment seg2! seg1!
+        bg-set-selected
+        seg1 row repaint-segment
+        bg-set-default
+        seg2 row repaint-segment
+    ] return-if
+
+    segment row repaint-segment
 ;
 
-: repaint-line-containing-selection ( x y line ) // x y line -> void
+: repaint-partly-selected-line ( line row )
 
-    line line-contains-selection? assert
+    line line-is-partly-selected? assert
 
     line text>> detab :> detabbed-text
 
@@ -152,62 +155,57 @@ winui? #if
 
     mark dot make-region/2 :> region
 
+    line line-starts-in-selection? [ bg-set-selected ] [ bg-set-default ] if
+
     segments string? [
         // FIXME
         color-text winui-textview-set-fg-color
-        0 y winui-char-height * segments winui-textview-text-out
+        0 row winui-char-height * segments winui-textview-text-out
     ] [
-        segments [ region y xrepaint-segment ] each
+        segments [ line region row xxxrepaint-segment ] each
     ] if
 
-    detabbed-text length y winui-textview-clear-eol
+    {
+        [ line next>> ]
+        [ line next>> 0 make-position region in-region? ]
+    } && bg-selected bg-default ? winui-textview-set-bg-color
+
+    detabbed-text length row winui-textview-clear-eol
 ;
 
-: repaint-line ( line y )               // line y -> void
-
-    line line-selected? [ line y repaint-selected-line ] return-if
-
-    line line-contains-selection? [
-        0 y line repaint-line-containing-selection
-    ] return-if
-
-    line text>> detab :> detabbed-text
-
-    detabbed-text format-line :> segments
-
-    segments string? [
-        color-text winui-textview-set-fg-color
-        0 y winui-char-height * segments winui-textview-text-out
-    ] [
-        segments y repaint-segments
-    ] if
-
-    detabbed-text length y winui-textview-clear-eol
-;
+: repaint-line ( line row )             // line row -> void
+    {
+        {
+            [ line line-selected? ]
+            [ line row repaint-selected-line ]
+        }
+        {
+            [ line line-is-partly-selected? ]
+            [ line row repaint-partly-selected-line ]
+        }
+        // otherwise...
+        [ line row repaint-line-no-selection ]
+    } cond ;
 
 : repaint
-
-    top-line :> line!
-    0 :> y!
-
     winui-hide-caret
 
-    [ line y textview-rows < and ] [
-        line y repaint-line
-        y 1+ y! line next>> line!
+    top-line !> line
+    0 !> row
+
+    [ line row textview-rows < and ] [
+        line row repaint-line
+        row 1+ row! line next>> line!
     ] while
 
-    [ y textview-rows < ] [
-        0 y winui-textview-clear-eol
-        y 1+ y!
+    [ row textview-rows < ] [
+        0 row winui-textview-clear-eol
+        row 1+ row!
     ] while
 
-    update-mode-line
+    f repaint!
 
-    winui-show-caret
-
-    f repaint?!
-;
+    winui-show-caret ;
 
 : update-display
     winui-hide-caret
@@ -216,13 +214,12 @@ winui? #if
     ] [
         dot-line-changed? [
             dot-line dot-row repaint-line
-            f dot-line-changed?!
+            f dot-line-changed!
         ] when
     ] if
     update-mode-line
     update-caret-pos
-    winui-show-caret
-;
+    winui-show-caret ;
 
 #else
 
