@@ -70,14 +70,27 @@ in: editor
     0 goal-column!
 ;
 
+: select-to-bol
+    add-undo-move
+    unmark
+    copy-dot mark!
+    dot-line indentation-length dot-offset!
+    dot-offset goal-column!
+    t dot-line-changed! ;
+
 : end-of-line
     add-undo-move
-
     unmark
+    dot-line-length dot-offset!
+    dot-offset goal-column! ;
 
+: select-to-eol
+    add-undo-move
+    unmark
+    copy-dot mark!
     dot-line-length dot-offset!
     dot-offset goal-column!
-;
+    t dot-line-changed! ;
 
 : beginning-of-block
     dot mark make-region/2 begin dot!
