@@ -95,6 +95,8 @@ VK_LEFT shift           constant shift-left
 VK_RIGHT shift          constant shift-right
 VK_UP shift             constant shift-up
 VK_DOWN shift           constant shift-down
+VK_HOME shift           constant shift-home
+VK_END shift            constant shift-end
 
 VK_SPACE ctrl           constant ctrl-space
 
