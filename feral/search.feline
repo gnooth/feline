@@ -243,8 +243,7 @@ use: mini
 #endif
 
 : do-find
-    "find" load-history set-current-history
-
+    "find" set-history
     "Find: " minibuffer-accept-string :> pattern
     pattern empty? [ ] return-if
     pattern f make-search current-search!

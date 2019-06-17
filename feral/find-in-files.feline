@@ -73,8 +73,7 @@ in: editor
 : find-in-files
     current-mode identifier-at-dot nip :> default-pattern
 
-    "find" load-history set-current-history
-
+    "find" set-history
     "Find: "
     default-pattern empty? [
         minibuffer-accept-string
@@ -86,7 +85,7 @@ in: editor
 
     current-buffer buffer-directory file-name-as-directory :> default-directory
 
-    "files" load-history set-current-history
+    "files" set-history
     "Files: " history-previous default-directory or
     minibuffer-accept-string/2 current-files!
 

@@ -67,7 +67,7 @@ winui? #if
     ] if ;
 
 : find-definition
-    "find-definition" load-history set-current-history
+    "find-definition" set-history
     "Word: " minibuffer-accept-string
     [ find-definition-internal ] when* ;
 

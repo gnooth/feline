@@ -52,7 +52,7 @@ in: editor
 : open-file
     current-buffer buffer-directory file-name-as-directory :> default-directory
 
-    "open-file" load-history set-current-history
+    "open-file" set-history
     "File: " default-directory minibuffer-accept-string/2 !> arg
 
     arg empty? ?exit
@@ -87,7 +87,7 @@ in: editor
 ;
 
 : execute-command
-    "command" load-history set-current-history
+    "command" set-history
     "Command: " minibuffer-accept-string :> command
 
     command empty? [
