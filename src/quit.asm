@@ -569,7 +569,7 @@ code print_datastack1, 'print-datastack1'       ; x -> void
         _ comment_style
         _lit tagged_fixnum(50)
         _ tab
-        _write "-- "
+        _write "// "
         _ type_of
         _ type_name
         _ write_string
@@ -581,7 +581,7 @@ endcode
 code print_datastack, 'print-datastack'
         _ ?nl
         _ comment_style
-        _print "-- Data stack: "
+        _print "// Data stack: "
         _depth
         _if .1
         _ get_datastack
