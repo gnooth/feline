@@ -722,9 +722,13 @@ generic formatter                       // mode -> formatter
 
 use: segments
 
+: trivial-format-line                   // string -> segments
+    1 ?enough verify-string
+    0 feral-colors:color-text make-segment/3 1array ;
+
 : default-formatter                     // mode -> formatter
     drop
-    [ 0 feral-colors:color-text make-segment/3 1array ] ;
+    ' trivial-format-line ;
 
 unuse: segments
 
