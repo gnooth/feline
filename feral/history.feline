@@ -46,10 +46,6 @@ public
 : reset-history
     strings [ length index! ] when* ;
 
-: set-current-history                   // history/f -> void
-   current-history!
-   reset-history ;
-
 : history-previous                      // void -> string/f
     index null? [ f ] return-if
 
