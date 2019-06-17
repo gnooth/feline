@@ -30,7 +30,9 @@ winui? #if
     ' do-bs                             key:backspace                   m set-at
     ' do-delete                         feral-key:delete                m set-at
     ' do-home                           feral-key:home                  m set-at
+    ' select-to-bol                     feral-key:shift-home            m set-at
     ' end-of-line                       feral-key:end                   m set-at
+    ' select-to-eol                     feral-key:shift-end             m set-at
     ' do-left                           feral-key:left                  m set-at
     ' do-right                          feral-key:right                 m set-at
     ' do-up                             feral-key:up                    m set-at
