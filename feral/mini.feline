@@ -74,7 +74,7 @@ private
     current-history [
         prompt length minibuffer-contents tail update-history
         save-history
-        f set-current-history
+        f current-history!
     ] when
 
     "" minibuffer-set-text
@@ -84,7 +84,7 @@ private
 : do-escape
     f minibuffer-contents!
     "" minibuffer-set-text
-    f set-current-history
+    f current-history!
     winui-minibuffer-exit ;
 
 : do-bs
