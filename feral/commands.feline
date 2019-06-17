@@ -87,6 +87,7 @@ in: editor
 ;
 
 : execute-command
+    "command" load-history set-current-history
     "Command: " minibuffer-accept-string :> command
 
     command empty? [
