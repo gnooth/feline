@@ -104,9 +104,6 @@ var prompt-string
 
 public
 
-: accept-string-set-history             -- history/f -> void
-    set-current-history ;
-
 : accept-string                         -- prompt -> string
     1 ?enough
     verify-string prompt-string!
