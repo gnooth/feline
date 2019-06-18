@@ -38,7 +38,7 @@ method: diff-mode formatter             // mode -> formatter
         ] if
     ] while
 
-    found null? [ ] return-if
+    found null? ?exit
 
     found text>> :> s
     '+' s string-find-char 1+ s string-tail :> s2
