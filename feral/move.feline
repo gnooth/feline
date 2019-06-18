@@ -61,14 +61,11 @@ in: editor
     ] if
 ;
 
-: do-home
+: move-to-bol
     add-undo-move
-
     unmark
-
     0 dot-offset!
-    0 goal-column!
-;
+    0 goal-column! ;
 
 : select-to-bol
     add-undo-move
@@ -78,7 +75,7 @@ in: editor
     dot-offset goal-column!
     t dot-line-changed! ;
 
-: end-of-line
+: move-to-eol
     add-undo-move
     unmark
     dot-line-length dot-offset!
