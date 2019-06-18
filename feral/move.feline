@@ -380,6 +380,8 @@ winui? #if
 : do-page-down
     add-undo-move
 
+    unmark
+
     dot-row :> goal-row
 
     top-line-number textview-rows + last-line-number > [
@@ -410,6 +412,8 @@ winui? #if
 
 : do-page-up
     add-undo-move
+
+    unmark
 
     dot-row :> goal-row
 
