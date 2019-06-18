@@ -84,7 +84,7 @@ winui? #if
     ' search-backward-word-at-dot       feral-key:alt-up                m set-at
     ' search-list-occurrences           feral-key:alt-l                 m set-at
     ' execute-command                   feral-key:alt-x                 m set-at
-    ' escape                            key:escape                      m set-at
+    ' escape                            feral-key:escape                m set-at
 
     ' dir                               key:ctrl-d                      m set-at
 
