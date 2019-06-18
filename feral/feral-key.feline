@@ -22,6 +22,7 @@ private
 
 0x08 constant VK_BACK
 0x0d constant VK_RETURN
+0x1b constant VK_ESCAPE
 0x20 constant VK_SPACE
 0x21 constant VK_PRIOR
 0x22 constant VK_NEXT
@@ -62,6 +63,7 @@ private
 
 public
 
+VK_ESCAPE               constant escape
 VK_DELETE               constant delete
 VK_HOME                 constant home
 VK_END                  constant end
