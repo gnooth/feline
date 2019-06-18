@@ -150,7 +150,6 @@ in: editor
     mark null? ?exit
     dot mark make-region/2 :> region
     region editor:add-undo-edit-region
-    f :> line!
     region [
         unindent-line-internal
     ] region-each-line
