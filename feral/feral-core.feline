@@ -413,17 +413,17 @@ global current-buffer
 : dot-line-prev                         // -> line
     dot line>> prev>> ;
 
-: bol?                                  // void -> ?
+: at-bol?                               // void -> ?
     dot-offset zero? ;
 
-: eol?                                  // void -> ?
+: at-eol?                               // void -> ?
     dot-offset dot-line-length eq? ;
 
-: bob?                                  // void -> ?
-    bol? dot-line-prev null? and ;
+: at-bof?                               // void -> ?
+    at-bol? dot-line-prev null? and ;
 
-: eob?                                  // void -> ?
-    eol? dot-line-next null? and ;
+: at-eof?                               // void -> ?
+    at-eol? dot-line-next null? and ;
 
 : first-line                            // void -> line
     current-buffer first-line>> ;

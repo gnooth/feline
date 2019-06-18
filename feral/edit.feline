@@ -223,7 +223,7 @@ in: editor
     t dot-line-changed! ;
 
 : delete-line-separator
-    dot-line-next eol? and [
+    dot-line-next at-eol? and [
         add-undo-delete-line-separator
         dot-line-text dot-line-next text>> + dot-line-text!
         dot-line-next unlink
@@ -335,7 +335,7 @@ use: kill-ring
 : delete-word-right
     reset-redo
 
-    eol? [
+    at-eol? [
         unmark
         delete-line-separator
     ] return-if
@@ -347,7 +347,7 @@ use: kill-ring
         {
             { [ in-word? ] [
                 // move to end of word
-                [ not-in-word? eol? or ] [
+                [ not-in-word? at-eol? or ] [
                     dot-offset 1+ dot-offset!
                 ] until
                 // delete following whitespace if any
@@ -364,7 +364,7 @@ use: kill-ring
             [
                 // not in word, not in whitespace
                 [
-                    in-word? in-whitespace? or eol? or
+                    in-word? in-whitespace? or at-eol? or
                 ] [
                     dot-offset 1+ dot-offset!
                 ] until
@@ -383,11 +383,11 @@ use: kill-ring
 ;
 
 : delete-word-left
-    bob? ?exit
+    at-bof? ?exit
 
     reset-redo
 
-    bol? [
+    at-bol? [
         [
             unmark
             add-undo-move

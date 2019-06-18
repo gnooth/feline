@@ -188,12 +188,12 @@ in: editor
     [ char-left-line [ in-whitespace? ] [ f ] if ] loop ;
 
 : word-left
-    bob? ?exit
+    at-bof? ?exit
 
     reset-redo
     add-undo-move
 
-    bol? [
+    at-bol? [
         unmark
         char-left-internal
     ] return-if
@@ -201,7 +201,7 @@ in: editor
     // not bol
     // move back one character
     char-left-line assert
-    eol? assert-false
+    at-eol? assert-false
 
     {
         {
@@ -238,14 +238,14 @@ in: editor
 ;
 
 : word-right
-    eob? ?exit
+    at-eof? ?exit
 
     reset-redo
     add-undo-move
 
     {
         {
-            [ eol? ]
+            [ at-eol? ]
             [ dot-line next>> dot-line! 0 dot-offset! maybe-reframe ]
         }
 
@@ -258,7 +258,7 @@ in: editor
             [ in-word? ]
             [
                 // move to end of word
-                [ not-in-word? eol? or ] [
+                [ not-in-word? at-eol? or ] [
                     dot-offset 1+ dot-offset!
                 ] until
                 // skip following whitespace if any
@@ -270,7 +270,7 @@ in: editor
 
         [
             // not eol, not in word, not in whitespace
-            [ in-whitespace? in-word? or eol? or ] [ dot-offset 1+ dot-offset! ] until
+            [ in-whitespace? in-word? or at-eol? or ] [ dot-offset 1+ dot-offset! ] until
             in-whitespace? [
                 move-right-past-whitespace
             ] when
