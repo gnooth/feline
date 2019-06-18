@@ -166,10 +166,10 @@ special: +compound-redo+
     +edit-region+ undo-rec action<<
 
     region begin-line :> line!
-    region end-line :> end
+    region end-line :> endline
     16 <vector> :> v
 
-    [ line line end neq? and ] [
+    [ line line endline neq? and ] [
         line text>> v push
         line next>> line!
     ] while
@@ -183,10 +183,10 @@ special: +compound-redo+
     +edit-region+ undo-rec action<<
 
     region begin-line :> line!
-    region end-line :> end
+    region end-line :> endline
     16 <vector> :> v
 
-    [ line line end neq? and ] [
+    [ line line endline neq? and ] [
         line text>> v push
         line next>> line!
     ] while
