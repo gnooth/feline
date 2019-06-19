@@ -48,7 +48,7 @@ method: diff-mode formatter             // mode -> formatter
     1- 0 max                            // convert to zero-based line number
     :> line-number
 
-    current-buffer parent>> current-buffer!
+    current-buffer parent>> set-current-buffer
     line-number editor:gotoline-internal
     t repaint! ;
 
