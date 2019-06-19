@@ -237,6 +237,7 @@ method: feline-mode initialize-buffer   // buffer mode -> void
 
 {
     "&&"
+    "?exit"
     "bi"
     "bi@"
     "case"
