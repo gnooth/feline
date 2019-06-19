@@ -314,8 +314,17 @@ global buffer-list
 
 global current-buffer
 
+global previous-buffers 16 <vector> previous-buffers!
+
+global next-buffers 16 <vector> next-buffers!
+
 : set-current-buffer ( buf )            // buffer -> void
+    current-buffer [
+        // we don't want the buffer list in the buffer history
+        name>> "List Buffers" = [ f current-buffer! ] when
+    ] when*
     buf current-buffer neq? [
+        current-buffer [ previous-buffers vector-push ] when*
         buf current-buffer!
         t repaint!
     ] when ;
