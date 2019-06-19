@@ -90,7 +90,7 @@ in: editor
 
     buf buffer-list vector-push
 
-    buf current-buffer!
+    buf set-current-buffer
 
     line-number 1- 0 max line-count 1- min nth-line dot-line!
 
@@ -105,28 +105,21 @@ in: editor
     nip ;
 
 : next-buffer
-    buffer-list length 1 > [
-        buffer-list [ current-buffer eq? ] find [
-            // -> index
-            1+ dup buffer-list length < [ drop 0 ] unless
-            buffer-list vector-nth current-buffer!
-            t repaint?!
-        ] when
-    ] when ;
+    next-buffers vector-?pop [
+        current-buffer previous-buffers vector-push
+        current-buffer!
+        t repaint!
+    ] when* ;
 
 : previous-buffer
-    buffer-list length 1 > [
-        buffer-list [ current-buffer eq? ] find [
-            // -> index
-            1- dup 0 >= [ drop buffer-list length 1- ] unless
-            buffer-list vector-nth current-buffer!
-            t repaint?!
-        ] when
-    ] when ;
+    previous-buffers vector-?pop [
+        current-buffer next-buffers vector-push
+        current-buffer!
+        t repaint!
+    ] when* ;
 
 : buffer-name ( buf )
-    buf name>> [ buf filename>> ] unless*
-;
+    buf name>> [ buf filename>> ] unless* ;
 
 use: feral-config
 
