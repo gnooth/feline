@@ -245,7 +245,7 @@ use: mini
 : do-find
     "find" set-history
     "Find: " minibuffer-accept-string :> pattern
-    pattern empty? [ ] return-if
+    pattern empty? ?exit
     pattern f make-search current-search!
     pattern dot search-forward [ found ] [ not-found ] if* ;
 
