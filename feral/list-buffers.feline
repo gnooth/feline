@@ -40,7 +40,7 @@ global list-buffers-old-buffer
 40 constant buffer-filename-column
 
 : list-buffers-select
-    dot-line buffer>> current-buffer!
+    dot-line buffer>> set-current-buffer
     t repaint!
     update-display ;
 
