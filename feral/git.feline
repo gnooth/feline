@@ -47,7 +47,7 @@ in: editor
         buf buffer-list member-eq? [
             buf buffer-list vector-push
         ] unless
-        buf current-buffer!
+        buf set-current-buffer
 
         t repaint!
     ] [
