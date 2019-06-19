@@ -20,7 +20,7 @@ in: editor
     symbol-location :> line-number :> filename
     filename [
         filename find-buffer-from-file-name [
-            current-buffer!
+            set-current-buffer
             line-number gotoline-internal
         ] [
             filename line-number create-buffer/2
