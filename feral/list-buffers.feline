@@ -18,18 +18,6 @@ in: list-buffers
 
 private
 
-tuple: list-buffers-line
-    prev
-    next
-    number                              // 0-based line number
-    text
-    buffer ;
-
-: make-list-buffers-line                // text buffer -> line
-    list-buffers-line make-instance
-    swap >>buffer
-    swap >>text ;
-
 tuple: list-buffers-mode
     formatter ;
 
@@ -40,7 +28,7 @@ global list-buffers-old-buffer
 40 constant buffer-filename-column
 
 : list-buffers-select
-    dot-line buffer>> set-current-buffer
+    :buffer dot-line line-get-property set-current-buffer
     t repaint!
     update-display ;
 
@@ -69,6 +57,7 @@ initialize-local-map
     f !> b
     f !> sb
     f !> old-buffer-line
+    f !> line
     buffer-list [
         b!
         128 <sbuf> sb!
@@ -85,7 +74,9 @@ initialize-local-map
             sb sbuf-append-string
         ] when*
 
-        sb sbuf>string b make-list-buffers-line buf buffer-append-line
+        sb sbuf>string make-line/1 line!
+        b :buffer line line-set-property
+        line buf buffer-append-line
 
         b list-buffers-old-buffer eq? [ buf last-line>> old-buffer-line! ] when
     ] each
