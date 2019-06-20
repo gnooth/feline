@@ -1,4 +1,4 @@
-; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -122,17 +122,26 @@ code intern_keyword, 'intern-keyword'   ; string -- keyword
 endcode
 
 ; ### keyword-name
-code keyword_name, 'keyword-name'       ; keyword -- name
+code keyword_name, 'keyword-name'       ; keyword -> name
         _ check_keyword
         _keyword_name
         next
 endcode
 
-; ### keyword>string
-code keyword_to_string, 'keyword>string'        ; keyword -- string
+; ### keyword->string
+code keyword_to_string, 'keyword->string' ; keyword -> string
         _quote ":"
         _swap
         _ keyword_name
         _ string_append
+        next
+endcode
+
+; ### keyword-hashcode
+code keyword_hashcode, 'keyword-hashcode' ; keyword -> hashcode
+        _ object_address
+        _untag_fixnum
+        shr     rbx, 3
+        _tag_fixnum
         next
 endcode

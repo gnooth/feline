@@ -597,6 +597,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method generic_hashcode, TYPECODE_FIXNUM, fixnum_hashcode
         _add_method generic_hashcode, TYPECODE_STRING, string_hashcode
         _add_method generic_hashcode, TYPECODE_SYMBOL, symbol_hashcode
+        _add_method generic_hashcode, TYPECODE_KEYWORD, keyword_hashcode
 
         ; equal?
         _initialize_generic_function equal?
@@ -612,6 +613,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method equal?, TYPECODE_UINT64, uint64_equal?
         _add_method equal?, TYPECODE_THREAD, eq?
         _add_method equal?, TYPECODE_VOCAB, eq?
+        _add_method equal?, TYPECODE_KEYWORD, eq?
 
         ; length
         _initialize_generic_function length
