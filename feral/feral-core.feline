@@ -36,7 +36,8 @@ tuple: line
     prev
     next
     number                              // 0-based line number
-    text ;
+    text
+    properties ;
 
 : make-line/1                           // string -> line
     verify-string
@@ -48,6 +49,15 @@ tuple: line
     line make-instance
     swap verify-fixnum >>number
     swap verify-string >>text ;
+
+: line-get-property ( keyword line )    // keyword line -> value
+    line properties>> [ keyword swap at ] [ f ] if* ;
+
+: line-set-property ( value keyword line ) // value keyword line -> void
+    line properties>> [
+        2 <hashtable> line properties<<
+    ] unless
+    value keyword line properties>> set-at ;
 
 method: line length                     // line -> length
     text>> string-length ;
