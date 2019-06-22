@@ -332,6 +332,7 @@ winui? #if
   0 170   0 make-colorref constant color-string
   0 153 153 make-colorref constant color-combinator
 255   0   0 make-colorref constant color-preprocessor
+210 105  30 make-colorref constant color-keyword
 
 #else
 
@@ -356,8 +357,10 @@ var last-segment-text
 winui? #if
 
 : winui-format-segment ( segment )
+    segment text>> :> s
+
     in-comment? [
-        segment text>> { "--" "//" "///" } member? in-comment?!
+        s { "--" "//" "///" } member? in-comment!
     ] unless
 
     in-comment? [
@@ -369,25 +372,28 @@ winui? #if
         color-name segment format<<
     ] return-if
 
-    segment text>> syntax-words member? [
+    s syntax-words member? [
         color-syntax segment format<<
     ] return-if
 
-    segment text>> string-first-char quote-char eq? [
+    s string-first-char quote-char eq? [
         color-string segment format<<
     ] return-if
 
-    segment text>> combinators member? [
+    s combinators member? [
         color-combinator segment format<<
     ] return-if
 
-    segment text>> { "#if" "#else" "#endif" "#ifdef" "#ifndef" } member? [
+    s { "#if" "#else" "#endif" "#ifdef" "#ifndef" } member? [
         color-preprocessor segment format<<
     ] return-if
 
+    s string-first-char ':' eq? [
+        color-keyword segment format<<
+    ] return-if
+
     // default
-    color-text segment format<<
-;
+    color-text segment format<< ;
 
 : winui-format-segments ( segments )
     f in-comment?!
