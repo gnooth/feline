@@ -325,31 +325,6 @@ method: feline-mode initialize-buffer   // buffer mode -> void
     v
 ;
 
-winui? #if
-
-  0 255 255 make-colorref constant color-syntax
-255 165   0 make-colorref constant color-name
-  0 170   0 make-colorref constant color-string
-  0 153 153 make-colorref constant color-combinator
-255   0   0 make-colorref constant color-preprocessor
-210 105  30 make-colorref constant color-keyword
-
-#else
-
-use: ansi-color
-
-192 192 192 rgb-foreground-prefix constant text-prefix
-128 128   0 rgb-foreground-prefix constant comment-prefix
-  0 255 255 rgb-foreground-prefix constant syntax-prefix
-255 165   0 rgb-foreground-prefix constant name-prefix
-  0 170   0 rgb-foreground-prefix constant string-prefix
-  0 153 153 rgb-foreground-prefix constant combinator-prefix
-255   0   0 rgb-foreground-prefix constant preprocessor-prefix
-
-unuse: ansi-color
-
-#endif
-
 var in-comment?
 
 var last-segment-text

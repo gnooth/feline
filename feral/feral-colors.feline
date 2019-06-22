@@ -13,10 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accessors feral-config ;
-in: feral-colors
+feral-config:winui? #if
 
-winui? #if
+using: feline accessors ;
+in: feral-colors
 
 : make-colorref ( r g b )               // r g b -> fixnum
     b 16 lshift g 8 lshift + r + ;
@@ -24,11 +24,27 @@ winui? #if
 192 192 192 make-colorref constant color-text
 128 128   0 make-colorref constant color-comment
 
+  0 255 255 make-colorref constant color-syntax
+255 165   0 make-colorref constant color-name
+  0 170   0 make-colorref constant color-string
+  0 153 153 make-colorref constant color-combinator
+255   0   0 make-colorref constant color-preprocessor
+210 105  30 make-colorref constant color-keyword
+
 #else
 
-use: ansi-color
+using: ansi-color feline accessors ;
+in: feral-colors
 
 192 192 192 rgb-foreground-prefix constant color-text
 128 128   0 rgb-foreground-prefix constant color-comment
+
+192 192 192 rgb-foreground-prefix constant text-prefix
+128 128   0 rgb-foreground-prefix constant comment-prefix
+  0 255 255 rgb-foreground-prefix constant syntax-prefix
+255 165   0 rgb-foreground-prefix constant name-prefix
+  0 170   0 rgb-foreground-prefix constant string-prefix
+  0 153 153 rgb-foreground-prefix constant combinator-prefix
+255   0   0 rgb-foreground-prefix constant preprocessor-prefix
 
 #endif
