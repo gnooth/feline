@@ -168,8 +168,7 @@ use: feral-key
     128 <hashtable> :> m
     ' feline-mode-toggle-line-comment   ctrl-/      m set-at
     ' feline-mode-expand                ctrl-space  m set-at
-    m feline-mode-local-map!
-;
+    m feline-mode-local-map! ;
 
 initialize-local-map
 
@@ -181,8 +180,7 @@ method: feline-mode initialize-buffer   // buffer mode -> void
     2 ?enough
     drop :> buf
     feline-mode-local-map buf local-map<<
-    4 buf indent-size<<
-;
+    4 buf indent-size<< ;
 
 {
     "!>"
@@ -329,9 +327,7 @@ var in-comment?
 
 var last-segment-text
 
-winui? #if
-
-: winui-format-segment ( segment )
+: format-segment ( segment )
     segment text>> :> s
 
     in-comment? [
@@ -370,88 +366,22 @@ winui? #if
     // default
     color-text segment format<< ;
 
-: winui-format-segments ( segments )
-    f in-comment?!
-    "" last-segment-text!
-    segments [
-        dup winui-format-segment
-        text>> dup non-blank? [ last-segment-text! ] [ drop ] if
-    ] each
-
-    segments
-;
-
-: winui-feline-format-line              // string -> segments
-    string->segments
-    winui-format-segments
-;
-
-public
-
-: initialize-feline-mode
-    feline-mode make-instance :> m
-    ' winui-feline-format-line m formatter<<
-    m feline-extension modes set-at
-;
-
-#else
-
-: format-segment ( segment )            // segment -> void
-    in-comment? [
-        segment text>> { "--" "//" "///" } member? in-comment?!
-    ] unless
-
-    in-comment? [
-        comment-prefix segment format<<
-    ] return-if
-
-    // not a comment
-    last-segment-text defining-words member? [
-        name-prefix segment format<<
-    ] return-if
-
-    segment text>> syntax-words member? [
-        syntax-prefix segment format<<
-    ] return-if
-
-    segment text>> string-first-char quote-char eq? [
-        string-prefix segment format<<
-    ] return-if
-
-    segment text>> combinators member? [
-        combinator-prefix segment format<<
-    ] return-if
-
-    segment text>> { "#if" "#else" "#endif" "#ifdef" "#ifndef" } member? [
-        preprocessor-prefix segment format<<
-    ] return-if
-
-    // default
-    text-prefix segment format<<
-;
-
-: format-segments ( segments )          // segments -> segments
-    f in-comment?!
+: format-segments ( segments )
+    f in-comment!
     "" last-segment-text!
     segments [
         dup format-segment
         text>> dup non-blank? [ last-segment-text! ] [ drop ] if
     ] each
-;
+    segments ;
 
-: feline-format-line                    // string -> segments
-    string->segments                    // -> vector
-    dup format-segments
-;
-
-public
+: feline-format-line              // string -> segments
+    string->segments
+    format-segments ;
 
 : initialize-feline-mode
     feline-mode make-instance :> m
     ' feline-format-line m formatter<<
-    m feline-extension modes set-at
-;
-
-#endif
+    m feline-extension modes set-at ;
 
 initialize-feline-mode
