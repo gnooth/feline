@@ -347,7 +347,9 @@ var last-segment-text
         color-syntax segment format<<
     ] return-if
 
-    s string-first-char quote-char eq? [
+    s string-first-char :> first-char
+
+    first-char quote-char eq? [
         color-string segment format<<
     ] return-if
 
@@ -359,8 +361,12 @@ var last-segment-text
         color-preprocessor segment format<<
     ] return-if
 
-    s string-first-char ':' eq? [
+    first-char ':' eq? [
         color-keyword segment format<<
+    ] return-if
+
+    first-char '\'' eq? s string-last-char '\'' eq? and [
+        color-string segment format<<
     ] return-if
 
     // default
