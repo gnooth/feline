@@ -18,8 +18,7 @@ in: editor
 
 : initialize-editor
     16 <vector> buffer-list!
-    keymaps:initialize-keymaps
-;
+    keymaps:initialize-keymaps ;
 
 : edit-file ( name )                    // name -> void
     name find-file-to-edit [
@@ -28,8 +27,7 @@ in: editor
         edit1
     ] [
         name error-file-not-found
-    ] if*
-;
+    ] if* ;
 
 : edit-definition                       // symbol ->
     symbol-location 2dup and
@@ -39,19 +37,16 @@ in: editor
         edit1
     ] [
         2drop
-    ] if
-;
+    ] if ;
 
-: edit-new
+: edit-home
     initialize-editor
-    create-buffer
-    edit1
-;
+    user-home directory-mode:open-directory
+    edit1 ;
 
 : edit
-    parse-token dup [
+    parse-token [
         find-name [ edit-definition ] [ edit-file ] if
     ] [
-        drop edit-new
-    ] if
-;
+        edit-home
+    ] if* ;
