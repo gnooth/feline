@@ -28,24 +28,29 @@ empty
 
 using: feral-core feline accessors ;
 
-: do-mouse                              // key -> void
-    dup fixnum? not [ drop ] return-if
+linux? #if
+
+: do-mouse                              // key -> ?
+    dup fixnum? not [ drop f ] return-if
 
     :> keycode
-    f :> button! f :> x! f :> y!
-//     keycode fixnum>hex log
+    f !> column f !> row f !> result
+
     keycode 24 rshift 0x1b5b4d = [
         // "\e[M"
-        keycode 0xff bitand 32 - y!
-        keycode 0xff00 bitand 8 rshift 32 - x!
+        keycode 0xff bitand 32 - row!
+        keycode 0xff00 bitand 8 rshift 32 - column!
         keycode 0xff0000 bitand 16 rshift 3 bitand zero? [
             // left button pressed
-//             x y "left button pressed x = %d y = %d" format log
-            top-line-number y + gotoline-internal
-            x 1- 0 max dot-line-length min dot-offset!
+            top-line-number row + gotoline-internal
+            column 1- 0 max dot-line-length min dot-offset!
+            t result!
         ] when
     ] when
-;
+
+    result ;
+
+#endif
 
 : do-command ( key )                    // key -> ?
 
@@ -66,8 +71,7 @@ using: feral-core feline accessors ;
         command dup current-command! call-symbol
         t
     ] [
-//         linux? [ key do-mouse ] when
-        f
+        linux? [ key do-mouse ] [ f ] if
     ] if ;
 
 : dispatch                              // key -> void
