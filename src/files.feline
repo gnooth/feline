@@ -72,11 +72,11 @@ public
 : file-name-directory                   // filename -> dirname/f
     win64? [ file-name-directory-win64 ] [ file-name-directory-linux ] if ;
 
-win64? #if
-
 : verify-extension // extension filename  -> filename/f
     tuck
     path-extension string-equal? [ drop f ] unless ;
+
+win64? #if
 
 : directory-files // string -> sequence/f
     1 ?enough !> arg
@@ -127,6 +127,49 @@ win64? #if
     ] if
 
     p find-close assert-true
+
+    v ;
+
+#endif
+
+linux? #if
+
+: directory-files // string -> sequence/f
+    1 ?enough !> arg
+    arg empty? [ f ] return-if
+
+    arg tilde-expand-filename arg!
+
+    f !> dir
+    arg directory? [
+        arg dir!
+    ] [
+        arg file-name-directory dir!
+        dir [ get-current-directory dir! ] unless
+    ] if
+
+    arg path-extension :> extension
+    64 <vector> :> v
+
+    dir opendir :> p
+
+    f !> entry
+    f !> filename
+
+    [ p readdir dup entry! zero? ] [
+        entry alien->string filename!
+
+        extension [
+            // We only check that the filename's extension matches the
+            // extension of the argument; the argument's base name is
+            // ignored.
+            extension filename verify-extension [ v push ] when*
+        ] [
+            filename v push
+        ] if
+    ] until
+
+    p closedir .
 
     v ;
 
