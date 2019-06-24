@@ -70,13 +70,15 @@ using: feral-core feline accessors ;
         f
     ] if ;
 
-: dispatch ( key )                      // key -> void
+: dispatch                              // key -> void
     current-command last-command!
     f current-command!
 
-    key do-command [
-        key printable-char? [ key insert-char ] when
-    ] unless ;
+    dup do-command [
+        drop
+    ] [
+        printable-char? [ insert-char ] when*
+    ] if ;
 
 : edit-loop
     f done?!
