@@ -396,3 +396,28 @@ code both?, 'both?'                     ; quot1 quot2 -> ?
         _rdrop
         next
 endcode
+
+; ### either?
+code either?, 'either?'                 ; quot1 quot2 -> ?
+; Short-circuit `or` for two quotations.
+; Removes both quotations from the stack. Calls quot1.
+; Returns the result without calling quot2 if the result
+; is not f. Otherwise, calls quot2 and returns the result quot2
+; returns.
+        _tor                            ; move quot2 to return stack
+        _ callable_raw_code_address     ; quot1 code address in rbx
+        mov     rax, rbx                ; quot1 code address in rax
+        poprbx                          ; empty stack
+        call    rax                     ; call quot1
+        cmp     rbx, f_value
+        jne     .1
+        pop     rbx
+        _ callable_raw_code_address
+        mov     rax, rbx
+        poprbx
+        call    rax
+        next
+.1:
+        _rdrop
+        next
+endcode

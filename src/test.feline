@@ -4034,4 +4034,19 @@ test: both?-test-1
 
 both?-test-1
 
+test: either?-test-1
+    { 42 } [ [ f ] [ 42 ] either? ] unit-test
+    { t }  [ [ f ] [ t ]  either? ] unit-test
+
+    87 !> x
+
+    { 87 } [ [ x ] [ 93 x! ] either? ] unit-test
+    x 87 assert-eq
+
+    { f } [ [ 71 x! f ] [ 97 x! f ] either? ] unit-test
+    x 97 assert-eq
+;
+
+either?-test-1
+
 ?nl "Reached end of test.feline" write-string
