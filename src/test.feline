@@ -3997,4 +3997,19 @@ test: tilde-expand-filename-test-1
 
 tilde-expand-filename-test-1
 
+test: both?-test-1
+    { 42 } [ [ t ] [ 42 ] both? ] unit-test
+    { f }  [ [ t ] [ f ]  both? ] unit-test
+
+    87 !> x
+
+    { f } [ [ x ] [ 93 x! f ] both? ] unit-test
+    x 93 assert-eq
+
+    { f } [ [ 71 x! f ] [ 97 x! f ] both? ] unit-test
+    x 71 assert-eq
+;
+
+both?-test-1
+
 ?nl "Reached end of test.feline" write-string
