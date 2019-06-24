@@ -28,8 +28,6 @@ empty
 
 using: feral-core feline accessors ;
 
-linux? #if
-
 : do-mouse                              // key -> ?
     dup fixnum? not [ drop f ] return-if
 
@@ -49,8 +47,6 @@ linux? #if
     ] when
 
     result ;
-
-#endif
 
 : do-command ( key )                    // key -> ?
 
