@@ -1744,18 +1744,14 @@ endcode
 
 ; ### printable-char?
 code printable_char?, 'printable-char?' ; x -- ?
-        _dup
-        _char?
-        _tagged_if .1
-        _untag_char
-        cmp     rbx, 32
-        jl      .2
-        cmp     rbx, 126
-        jg      .2
-        mov     ebx, t_value
-        _return
-        _then .1
-.2:
+        cmp     bl, CHAR_TAG
+        jne     .1
+        cmp     rbx, tagged_char(32)
+        jl      .1
+        cmp     rbx, tagged_char(126)
+        jg      .1
+        next
+.1:
         mov     ebx, f_value
         next
 endcode

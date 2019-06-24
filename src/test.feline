@@ -3276,6 +3276,28 @@ test: defer-test-1
 
 defer-test-1
 
+test: printable-char?-test-1
+    // printable-char? returns its argument if it is a printable char
+    { 'a' } [ 'a' printable-char? ] unit-test
+    { '~' } [ '~' printable-char? ] unit-test
+    { '\s' } [ " " string-first-char printable-char? ] unit-test
+
+    { f } [ 3 code-char printable-char? ] unit-test ;
+
+printable-char?-test-1
+
+test: printable-char?-test-2
+    { f }
+    [ 0 32 [ code-char printable-char? ] find-integer-in-range ] unit-test
+
+    { f }
+    [ 32 127 [ code-char printable-char? not ] find-integer-in-range ] unit-test
+
+    { f }
+    [ 127 256 [ code-char printable-char? ] find-integer-in-range ] unit-test ;
+
+printable-char?-test-2
+
 test: char>string-test-1
     'a' char>string "'a'" assert=
     '7' char>string "'7'" assert=
