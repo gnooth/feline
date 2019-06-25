@@ -759,9 +759,9 @@ unuse: segments
 
     char-code :> c
 
-    { [ 'A' char-code c <= ] [ c 'Z' char-code <= ] } && [ t ] return-if
-    { [ 'a' char-code c <= ] [ c 'z' char-code <= ] } && [ t ] return-if
-    { [ '0' char-code c <= ] [ c '9' char-code <= ] } && [ t ] return-if
+    [ 'A' char-code c <= ] [ c 'Z' char-code <= ] both? [ t ] return-if
+    [ 'a' char-code c <= ] [ c 'z' char-code <= ] both? [ t ] return-if
+    [ '0' char-code c <= ] [ c '9' char-code <= ] both? [ t ] return-if
 
     f ;
 
@@ -792,7 +792,7 @@ generic identifier-at-dot               // mode -> start/f string/f
 
     drop
 
-    { [ mark ] [ mark-line dot-line eq? ] } && [
+    [ mark ] [ mark-line dot-line eq? ] both? [
         mark dot make-region/2 begin-offset
     ] [
         dot-offset dot-line-length 1- min 0 max
