@@ -85,8 +85,11 @@ in: editor
 
     current-buffer buffer-directory file-name-as-directory :> default-directory
 
+    current-buffer filename>> path-extension :> default-extension
+
     "files" set-history
-    "Files: " history-previous default-directory or
+    "Files: "
+    default-directory "*" + default-extension +
     minibuffer-accept-string/2 current-files!
 
     current-files empty? ?exit
