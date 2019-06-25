@@ -30,8 +30,7 @@ method: asm-mode formatter              // mode -> formatter
     formatter>> ;
 
 : asm-mode-identifier-char? ( x )       // x -> ?
-    { [ x alphanumeric? ] [ x "_$#@~.?" member-eq? ] } ||
-;
+    [ x alphanumeric? ] [ x "_$#@~.?" member-eq? ] either? ;
 
 method: asm-mode identifier-char?       // char mode -> ?
     drop
