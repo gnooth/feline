@@ -770,7 +770,7 @@ generic identifier-char?                // char mode -> ?
 : default-identifier-char?              // char mode -> ?
     drop
     :> x
-    { [ x alphanumeric? ] [ x '_' eq? ] } || ;
+    [ x alphanumeric? ] [ x '_' eq? ] either? ;
 
 ' default-identifier-char? ' identifier-char? set-default-method
 
