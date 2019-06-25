@@ -39,7 +39,7 @@ method: asm-mode identifier-char?       // char mode -> ?
 
 : asm-mode-identifier-at-dot            // void -> start/f string/f
 
-    { [ mark ] [ mark-line dot-line eq? ] } && [
+    [ mark ] [ mark-line dot-line eq? ] both? [
         mark dot make-region/2 begin-offset
     ] [
         dot-offset dot-line-length 1- min 0 max
