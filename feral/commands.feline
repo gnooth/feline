@@ -39,7 +39,7 @@ in: editor
 
     filename buf filename<<
     filename file-name-nondirectory buf name<<
-    filename path-extension [ modes:modes at buf mode<< ] when*
+    filename file-name-extension [ modes:modes at buf mode<< ] when*
 
     buf dup mode>> initialize-buffer
 
