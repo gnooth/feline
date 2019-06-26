@@ -2916,20 +2916,28 @@ test: file-name-absolute?-test-1
 
 file-name-absolute?-test-1
 
-test: path-extension-test-1
-    "test.feline" path-extension ".feline" assert=
-    "test" path-extension assert-false
+test: file-name-extension-test-1
+    { ".feline" } [ "test.feline" file-name-extension ] unit-test
 
-    "foo.bar/test.feline" path-extension ".feline" assert=
-    "foo.bar/test" path-extension assert-false
+    { f } [ "test" file-name-extension ] unit-test
+
+    { f } [ ""  file-name-extension ] unit-test
+    { f } [ "." file-name-extension ] unit-test
+    { f } [ "a" file-name-extension ] unit-test
+
+    { f } [ ".foo" file-name-extension ] unit-test
+    { f } [ "foo." file-name-extension ] unit-test
+
+    { ".feline" } [ "foo.bar/test.feline" file-name-extension ] unit-test
+
+    { f } [ "foo.bar/test" file-name-extension ] unit-test
 
     win64? [
-        "foo.bar\\test.feline" path-extension ".feline" assert=
-        "foo.bar\\test" path-extension assert-false
-    ] when
-;
+        { ".feline" } [ "foo.bar\\test.feline" file-name-extension ] unit-test
+        { f } [ "foo.bar\\test" file-name-extension ] unit-test
+    ] when ;
 
-path-extension-test-1
+file-name-extension-test-1
 
 test: ensure-feline-extension-test-1
     clear
