@@ -29,6 +29,25 @@ public
     len 1- filename [ path-separator-char? ] find-last-from // -> index/f element/f
     [ 1+ filename tail ] [ filename nip ] if ;
 
+// Returns the filename's extension, including its leading '.' (".ext"),
+// or f if the filename has no extension.
+: file-name-extension // filename -> string/f
+    file-name-nondirectory :> name
+    name length :> len
+
+    f !> index
+    {
+        { [ len zero? ] [ f ] }
+        { [ name first '.' eq? ] [ f ] }
+        { [ name last '.' eq? ] [ f ] }
+        {
+            [ '.' len 1- name string-last-index-from dup index! ]
+            [ index name tail ]
+        }
+        // otherwise...
+        [ f ]
+    } cond ;
+
 // returns the filename's directory component
 : file-name-directory-win64 ( filename ) // filename -> dirname/f
     filename length :> len
@@ -74,7 +93,7 @@ public
 
 : verify-extension // extension filename  -> filename/f
     tuck
-    path-extension string-equal? [ drop f ] unless ;
+    file-name-extension equal? [ drop f ] unless ;
 
 win64? #if
 
@@ -95,7 +114,7 @@ win64? #if
         arg last path-separator-char? [ arg "*" + arg! ] when
     ] if
 
-    arg path-extension :> extension
+    arg file-name-extension :> extension
 
     arg find-first-file :> p
 
@@ -148,7 +167,7 @@ linux? #if
         dir [ get-current-directory dir! ] unless
     ] if
 
-    arg path-extension :> extension
+    arg file-name-extension :> extension
     64 <vector> :> v
 
     dir opendir :> p
