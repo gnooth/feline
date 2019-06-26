@@ -436,32 +436,6 @@ code path_separator_char?, 'path-separator-char?'       ; char -- ?
         next
 endcode
 
-; ### path-extension
-code path_extension, 'path-extension'   ; path -- extension/f
-        _duptor
-        _ string_raw_length
-        sub     rbx, 1
-        _tag_fixnum
-        _rfetch
-        _quotation .1
-        _dup
-        _eq? tagged_char('.')
-        _swap
-        _ path_separator_char?
-        _ feline_or
-        _end_quotation .1
-        _ find_last_from                ; -- index/f element/f
-        _eq? tagged_char('.')
-        _tagged_if .2
-        _rfrom                          ; -- index string
-        _ string_tail
-        _else .2
-        _rdrop
-        mov     ebx, f_value
-        _then .2
-        next
-endcode
-
 ; ### path-append
 code path_append, 'path-append'         ; string1 string2 -- string3
         _ verify_string
