@@ -85,7 +85,8 @@ in: editor
 
     current-buffer buffer-directory file-name-as-directory :> default-directory
 
-    current-buffer filename>> path-extension :> default-extension
+    current-buffer filename>> file-name-extension // -> string/f
+    feline-extension or !> default-extension
 
     "files" set-history
     "Files: "
