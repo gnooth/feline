@@ -18,21 +18,6 @@ in: find-in-files
 
 private
 
-tuple: find-in-files-line
-    prev
-    next
-    number                              // 0-based line number
-    text
-    source-file
-    source-line-number                  // 1-based line-number
-;
-
-: make-find-in-files-line               // text source-file source-line-number -> line
-    find-in-files-line make-instance
-    swap >>source-line-number
-    swap >>source-file
-    swap >>text ;
-
 global local-map
 
 public
@@ -51,18 +36,22 @@ global current-files
     f !> i
     f !> s
     f !> found
+    f !> line
     filename file-lines [
         // -> string index
         i! s!
         current-pattern s substring-start [
             found [
-                filename dup i 1+ make-find-in-files-line
-                current-output-buffer buffer-append-line
+                filename make-line/1 line!
+                filename :source-file line line-set-property
+                i 1+ :source-line-number line line-set-property
+                line current-output-buffer buffer-append-line
                 t found!
             ] unless
-            i 1+ number>string ":" + s +
-            filename i 1+ make-find-in-files-line
-            current-output-buffer buffer-append-line
+            i 1+ number>string ":" + s + make-line/1 line!
+            filename :source-file line line-set-property
+            i 1+ :source-line-number line line-set-property
+            line current-output-buffer buffer-append-line
         ] when
     ] each-index
 ;
@@ -130,8 +119,8 @@ in: find-in-files
 private
 
 : find-in-files-open-file
-    dot-line source-file>> :> source-file
-    dot-line source-line-number>> :> line-number
+    :source-file dot-line line-get-property :> source-file
+    :source-line-number dot-line line-get-property :> line-number
 
     source-file find-buffer-from-file-name [
         set-current-buffer
@@ -144,6 +133,7 @@ private
 
 : initialize-local-map
     128 <hashtable> :> m
+    ' editor:kill-buffer key:escape m set-at
     ' find-in-files-open-file key:enter m set-at
     m local-map! ;
 
