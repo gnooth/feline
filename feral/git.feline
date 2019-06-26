@@ -22,7 +22,12 @@ in: editor
     source-file null? ?exit
 
     "git diff " source-file + :> command
+
     command shell-command-to-string !> s
+
+    // shell-command-to-string might return f
+    s null? ?exit
+
     f !> buf
     s length 0 > [
         buffer-list [ command>> command = ] find // index/f element/f
@@ -34,7 +39,7 @@ in: editor
 
         s buf buffer-set-contents
         command buf command<<
-        "git diff " source-file + buf name<<
+        command buf name<<
         t buf read-only<<
         buf first-line>> 0 make-position buf dot<<
         f buf mark<<
