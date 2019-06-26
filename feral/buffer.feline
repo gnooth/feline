@@ -62,7 +62,7 @@ in: editor
 
     filename file-name-nondirectory buf name<<
 
-    filename path-extension [ modes at buf mode<< ] when*
+    filename file-name-extension [ modes at buf mode<< ] when*
 
     filename file-contents :> contents
 
