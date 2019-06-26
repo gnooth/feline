@@ -133,10 +133,9 @@ endcode
 
 ; ### ensure-feline-extension
 code ensure_feline_extension, 'ensure-feline-extension'         ; path -- path
-        _dup
-        _ path_extension
         _ feline_extension
-        _ string_equal?
+        _over
+        _ string_has_suffix?
         _tagged_if_not .1
         _ feline_extension
         _ string_append
