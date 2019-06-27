@@ -672,33 +672,30 @@ code write_sbuf, 'write-sbuf'           ; sbuf --
 endcode
 
 ; ### sbuf-substring
-code sbuf_substring, 'sbuf-substring'   ; from to sbuf -- substring
+code sbuf_substring, 'sbuf-substring'   ; from to sbuf -> substring
 
         _ check_sbuf
 
         push    this_register
-        popd    this_register           ; -- from to
+        popd    this_register           ; -> from to
 
         _check_index qword [rbp]
-        _check_index
+        _check_index                    ; -> from to (untagged)
 
         _dup
-        _this_sbuf_raw_length
-        _ugt
-        _if .1
+        _this_sbuf_raw_length           ; -> from to to raw-length
+        cmp     [rbp], rbx
+        _2drop
+        jle     .1
         _error "end index out of range"
-        _then .1
-                                        ; -- from to
-        _twodup
-        _ugt
-        _if .2
+.1:                                     ; -> from to
+        cmp     [rbp], rbx
+        jle     .2
         _error "start index > end index"
-        _then .2                        ; -- from to
-
-        sub     rbx, qword [rbp]        ; length (in rbx) = to - from
+.2:                                     ; -> from to
+        sub     rbx, qword [rbp]        ; length in rbx = to - from
         mov     rax, [this_register + SBUF_DATA_ADDRESS_OFFSET]
         add     qword [rbp], rax        ; address of start of substring
-        ; -- c-addr u
         _ copy_to_string
 
         pop     this_register
