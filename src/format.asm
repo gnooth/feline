@@ -16,7 +16,7 @@
 file __FILE__
 
 ; ### parse-format-specifier
-code parse_format_specifier, 'parse-format-specifier'   ; lexer -- string/f
+code parse_format_specifier, 'parse-format-specifier' ; lexer -> string/f
         _ check_lexer
 
         push    this_register
@@ -27,13 +27,14 @@ code parse_format_specifier, 'parse-format-specifier'   ; lexer -- string/f
         add     rbx, 2
         _this_lexer_string
         _ string_raw_length
-        _ugt
-        _if .1
-        pop     this_register
-        _ error_unexpected_end_of_input
-        _return
-        _then .1
 
+        cmp     qword [rbp], rbx
+        _2drop
+        jle     .1
+        _ error_unexpected_end_of_input
+        jmp     .2
+
+.1:
         ; collect token
         _this_lexer_raw_index
         _dup
@@ -46,6 +47,7 @@ code parse_format_specifier, 'parse-format-specifier'   ; lexer -- string/f
 
         add     this_lexer_raw_index, 2
 
+.2:
         pop     this_register
         next
 endcode
