@@ -27,7 +27,7 @@ winui? #if
 
     128 <hashtable> :> m
 
-    ' do-bs                             key:backspace                   m set-at
+    ' backspace                         key:backspace                   m set-at
     ' do-delete                         feral-key:delete                m set-at
     ' move-to-bol                       feral-key:home                  m set-at
     ' select-to-bol                     feral-key:shift-home            m set-at
@@ -131,8 +131,8 @@ global ctrl-k-map
 
     128 <hashtable> :> m
 
-    ' do-bs                             key:del         m set-at // Linux
-    ' do-bs                             key:backspace   m set-at // Windows
+    ' backspace                         key:del         m set-at // Linux
+    ' backspace                         key:backspace   m set-at // Windows
     ' do-delete                         key:delete      m set-at
     ' move-to-bol                       key:home        m set-at
     ' move-to-eol                       key:end         m set-at

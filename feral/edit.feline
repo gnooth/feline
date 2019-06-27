@@ -230,7 +230,7 @@ in: editor
         t repaint!
     ] when ;
 
-: do-bs
+: backspace
     {
         { [ dot-offset 0 > ] [
             add-undo-line-edit
