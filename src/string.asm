@@ -752,35 +752,32 @@ code string_has_suffix?, 'string-has-suffix?'   ; suffix string -- ?
 endcode
 
 ; ### string-skip-whitespace
-code string_skip_whitespace, 'string-skip-whitespace' ; start-index string -- index/f
+code string_skip_whitespace, 'string-skip-whitespace' ; start-index string -> index/f
         _ check_string
 
         push    this_register
-        popd    this_register           ; -- start-index
+        popd    this_register           ; -> start-index
 
-        _ check_index                   ; -- untagged-start-index
+        _ check_index                   ; -> untagged-start-index
 
         _this_string_raw_length
-        _twodup
-        _ge
-        _if .1
-        _2drop
-        _f
+        cmp     [rbp], rbx
+        jl      .1
+        _drop
+        mov     rbx, f_value
         jmp     .exit
-        _then .1                        ; -- untagged-start-index untagged-length
-
+.1:
         _swap
         _do .2
-        _i
+        _raw_loop_index
         _this_string_nth_unsafe
-        _lit 32
-        _ugt
-        _if .3
-        _i
-        _tag_fixnum
+        cmp     rbx, 32
+        _drop
+        jle     .3
+        _tagged_loop_index
         _unloop
         jmp     .exit
-        _then .3
+.3:
         _loop .2
 
         ; not found
