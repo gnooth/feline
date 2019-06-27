@@ -284,16 +284,18 @@ hashtable_values_unchecked:
 endcode
 
 ; ### next-power-of-2
-code next_power_of_2, 'next-power-of-2' ; m -- n
+code next_power_of_2, 'next-power-of-2' ; m -> n
 ; Argument and return value are tagged fixnums.
+; We don't check for overflow.
         _check_fixnum
         _lit 2
-        _begin .1
-        _twodup
-        _ugt
-        _while .1
-        _twostar
-        _repeat .1
+.1:
+        cmp     rbx, qword [rbp]        ; m is in [rbp]
+        jge     .2
+
+        shl     rbx, 1
+        jmp     .1
+.2:
         _nip
         _tag_fixnum
         next
