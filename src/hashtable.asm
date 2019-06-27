@@ -509,11 +509,12 @@ code hashtable_set_at, 'set-at'         ; value key handle --
         _over
         _hashtable_raw_capacity
         _twostar
-        _ugt
-        _if .1
+        cmp     [rbp], rbx
+        _2drop
+        jle     .1
         _dup
         _ hashtable_grow_unchecked
-        _then .1
+.1:
 
 hashtable_set_at_unchecked:
 
