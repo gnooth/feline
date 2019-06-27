@@ -241,15 +241,14 @@ in: editor
         ] }
         { [ dot-line-prev ] [
             [
-                do-left
+                move-left
                 delete-line-separator
                 modified
             ] with-compound-undo
         ] }
         // do nothing if dot is at beginning of buffer
         [ ]
-    } cond
-;
+    } cond ;
 
 private: insert-char-internal // char -> void
     // no undo

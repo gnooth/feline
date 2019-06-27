@@ -33,8 +33,8 @@ winui? #if
     ' select-to-bol                     feral-key:shift-home            m set-at
     ' move-to-eol                       feral-key:end                   m set-at
     ' select-to-eol                     feral-key:shift-end             m set-at
-    ' do-left                           feral-key:left                  m set-at
-    ' do-right                          feral-key:right                 m set-at
+    ' move-left                         feral-key:left                  m set-at
+    ' move-right                        feral-key:right                 m set-at
     ' do-up                             feral-key:up                    m set-at
     ' do-down                           feral-key:down                  m set-at
 
@@ -136,8 +136,8 @@ global ctrl-k-map
     ' do-delete                         key:delete      m set-at
     ' move-to-bol                       key:home        m set-at
     ' move-to-eol                       key:end         m set-at
-    ' do-left                           key:left        m set-at
-    ' do-right                          key:right       m set-at
+    ' move-left                         key:left        m set-at
+    ' move-right                        key:right       m set-at
     ' word-left                         key:ctrl-left   m set-at
     ' word-right                        key:ctrl-right  m set-at
     ' delete-word-left                  key:ctrl-backspace  m set-at

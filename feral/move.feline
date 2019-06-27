@@ -119,8 +119,8 @@ in: editor
 : char-right-line                       // void -> ?
     dot-offset dot-line-length < [ dot-offset 1+ dot-offset! t ] [ f ] if ;
 
-: do-left
-    last-command ' do-left eq? [ add-undo-move ] unless
+: move-left
+    last-command ' move-left eq? [ add-undo-move ] unless
 
     mark [
         beginning-of-block
@@ -140,11 +140,10 @@ in: editor
                 t repaint!
             ] when
         ] when
-    ] if
-;
+    ] if ;
 
-: do-right
-    last-command ' do-right eq? [ add-undo-move ] unless
+: move-right
+    last-command ' move-right eq? [ add-undo-move ] unless
 
     mark [
         end-of-block
@@ -164,8 +163,7 @@ in: editor
                 t repaint!
             ] when
         ] when
-    ] if
-;
+    ] if ;
 
 : move-left-to-beginning-of-word
     // no undo
