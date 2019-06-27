@@ -1568,37 +1568,33 @@ test: constant-test-1
 constant-test-1
 
 test: string-skip-whitespace-test-1
-    "   this is a test   "
-    [  0 swap string-skip-whitespace  3 assert-eq ] keep
-    [  2 swap string-skip-whitespace  3 assert-eq ] keep
-    [  3 swap string-skip-whitespace  3 assert-eq ] keep
-    [  6 swap string-skip-whitespace  6 assert-eq ] keep
-    [  7 swap string-skip-whitespace  8 assert-eq ] keep
-    [ 16 swap string-skip-whitespace 16 assert-eq ] keep
-    [ 17 swap string-skip-whitespace  f assert-eq ] keep
-    [ 18 swap string-skip-whitespace  f assert-eq ] keep
-    [ 19 swap string-skip-whitespace  f assert-eq ] keep
-    [ 20 swap string-skip-whitespace  f assert-eq ] keep
-    [ 99 swap string-skip-whitespace  f assert-eq ] keep
-    drop
-;
+    "   this is a test   " :> s
+    { 3 }  [  0 s string-skip-whitespace ] unit-test
+    { 3 }  [  2 s string-skip-whitespace ] unit-test
+    { 3 }  [  3 s string-skip-whitespace ] unit-test
+    { 6 }  [  6 s string-skip-whitespace ] unit-test
+    { 8 }  [  7 s string-skip-whitespace ] unit-test
+    { 16 } [ 16 s string-skip-whitespace ] unit-test
+    { f }  [ 17 s string-skip-whitespace ] unit-test
+    { f }  [ 18 s string-skip-whitespace ] unit-test
+    { f }  [ 19 s string-skip-whitespace ] unit-test
+    { f }  [ 20 s string-skip-whitespace ] unit-test
+    { f }  [ 99 s string-skip-whitespace ] unit-test ;
 
 string-skip-whitespace-test-1
 
 -- multiline string
 test: string-skip-whitespace-test-2
     "   this is
-a multiline string   "
-    [  0 swap string-skip-whitespace  3 assert-eq ] keep
-    [  2 swap string-skip-whitespace  3 assert-eq ] keep
-    [  3 swap string-skip-whitespace  3 assert-eq ] keep
-    [  6 swap string-skip-whitespace  6 assert-eq ] keep
-    [  7 swap string-skip-whitespace  8 assert-eq ] keep
-    [ 10 swap string-skip-whitespace 11 assert-eq ] keep
-    [ 11 swap string-skip-whitespace 11 assert-eq ] keep
-    [ 12 swap string-skip-whitespace 13 assert-eq ] keep
-    drop
-;
+a multiline string   " :> s
+    { 3 }  [  0 s string-skip-whitespace ] unit-test
+    { 3 }  [  2 s string-skip-whitespace ] unit-test
+    { 3 }  [  3 s string-skip-whitespace ] unit-test
+    { 6 }  [  6 s string-skip-whitespace ] unit-test
+    { 8 }  [  7 s string-skip-whitespace ] unit-test
+    { 11 } [ 10 s string-skip-whitespace ] unit-test
+    { 11 } [ 11 s string-skip-whitespace ] unit-test
+    { 13 } [ 12 s string-skip-whitespace ] unit-test ;
 
 string-skip-whitespace-test-2
 
