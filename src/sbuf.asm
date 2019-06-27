@@ -357,21 +357,22 @@ endcode
 
 ; ### sbuf_ensure_capacity
 code sbuf_ensure_capacity, 'sbuf_ensure_capacity', SYMBOL_INTERNAL
-; untagged-fixnum raw-sbuf --
-        _twodup                         ; -- u sbuf u sbuf
-        _sbuf_raw_capacity              ; -- u sbuf u capacity
-        _ugt
-        _if .1                          ; -- u sbuf
-        _dup                            ; -- u sbuf sbuf
-        _sbuf_raw_capacity              ; -- u sbuf capacity
-        _twostar                        ; -- u sbuf capacity*2
-        _oneplus                        ; -- u sbuf capacity*2+1
-        _ rot                           ; -- sbuf capacity*2 u
-        _max                            ; -- sbuf new-capacity
-        _ sbuf_resize
-        _else .1
+; untagged-fixnum raw-sbuf -> void
+        _twodup                         ; -> n sbuf n sbuf
+        _sbuf_raw_capacity              ; -> n sbuf n capacity
+        cmp     [rbp], rbx
+        jg      .1
+        _4drop
+        _return
+.1:
         _2drop
-        _then .1
+        _dup                            ; -> n sbuf sbuf
+        _sbuf_raw_capacity              ; -> n sbuf capacity
+        _twostar                        ; -> n sbuf capacity*2
+        _oneplus                        ; -> n sbuf capacity*2+1
+        _ rot                           ; -> sbuf capacity*2 n
+        _max                            ; -> sbuf new-capacity
+        _ sbuf_resize
         next
 endcode
 
