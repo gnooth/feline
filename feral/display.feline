@@ -41,8 +41,7 @@ winui? #if
 : update-caret-pos
     dot-column winui-char-width *
     dot-line-number top-line-number - winui-char-height *
-    winui-set-caret-pos
-;
+    winui-set-caret-pos ;
 
 : update-mode-line
     mode-line-text winui-modeline-set-text
@@ -60,7 +59,7 @@ winui? #if
     2 ?enough
     :> row :> segment
 
-    segment format>> dup fixnum? assert winui-textview-set-fg-color
+    segment format>> winui-textview-set-fg-color
 
     segment start>> winui-char-width *
     row winui-char-height *
@@ -73,30 +72,19 @@ winui? #if
     // no part of line is selected
     line text>> detab :> detabbed-text
     detabbed-text format-line :> segments
-    segments string? [
-        color-text winui-textview-set-fg-color
-        0 row winui-char-height * segments winui-textview-text-out
-    ] [
-        segments row repaint-segments
-    ] if
+    segments row repaint-segments
     detabbed-text length row winui-textview-clear-eol ;
 
 : repaint-selected-line ( line row )    // line row -> void
     // entire line is selected
-    line line-selected? assert
     line text>> detab :> detabbed-text
     detabbed-text format-line :> segments
     bg-set-selected
-    segments string? [
-        color-text winui-textview-set-fg-color
-        0 row winui-char-height * segments winui-textview-text-out
-    ] [
-        segments row repaint-segments
-    ] if
+    segments row repaint-segments
     detabbed-text length row winui-textview-clear-eol
     bg-set-default ;
 
-: xxxrepaint-segment ( segment line region row )
+: repaint-segment-of-partly-selected-line ( segment line region row )
     line region begin-line eq? [ region begin-offset ] [ 0 ] if :> selection-start-index
     line region end-line eq? [ region end-offset ] [ line length ] if :> selection-end-index
 
@@ -142,36 +130,21 @@ winui? #if
         seg2 row repaint-segment
     ] return-if
 
-    segment row repaint-segment
-;
+    segment row repaint-segment ;
 
 : repaint-partly-selected-line ( line row )
-
-    line line-is-partly-selected? assert
-
     line text>> detab :> detabbed-text
-
     detabbed-text format-line :> segments
-
     mark dot make-region/2 :> region
-
     line line-starts-in-selection? [ bg-set-selected ] [ bg-set-default ] if
+    segments [ line region row repaint-segment-of-partly-selected-line ] each
 
-    segments string? [
-        // FIXME
-        color-text winui-textview-set-fg-color
-        0 row winui-char-height * segments winui-textview-text-out
-    ] [
-        segments [ line region row xxxrepaint-segment ] each
-    ] if
+    [ line next>> ]
+    [ line next>> 0 make-position region in-region? ]
+    both?
+    bg-selected bg-default ? winui-textview-set-bg-color
 
-    {
-        [ line next>> ]
-        [ line next>> 0 make-position region in-region? ]
-    } && bg-selected bg-default ? winui-textview-set-bg-color
-
-    detabbed-text length row winui-textview-clear-eol
-;
+    detabbed-text length row winui-textview-clear-eol ;
 
 : repaint-line ( line row )             // line row -> void
     {
