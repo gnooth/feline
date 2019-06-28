@@ -62,6 +62,14 @@ feline-home "feral" path-append "editor.feline" path-append constant editor.feli
         editor.feline load
     ] with-dynamic-scope ;
 
+feline-home "feral" path-append "editorx.feline" path-append constant editorx.feline
+
+: load-editorx
+    [
+        f load-verbose? set
+        editorx.feline load
+    ] with-dynamic-scope ;
+
 : load-inspector
     [
         f load-verbose? set
@@ -73,6 +81,12 @@ public
 : e
     "editor" delete-vocab
     load-editor
+    "editor" use-vocab
+    "edit" "editor" vocab-find-name [ call-symbol ] when ;
+
+: x
+    "editor" delete-vocab
+    load-editorx
     "editor" use-vocab
     "edit" "editor" vocab-find-name [ call-symbol ] when ;
 
