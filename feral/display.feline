@@ -224,18 +224,16 @@ use: mini
     clear-to-eol
 
     fg-default write-string-escaped
-    bg-default write-string-escaped
-;
+    bg-default write-string-escaped ;
 
 : clear-status-line 0 status-y at-xy clear-to-eol ;
 
 : repaint-segment                       // segment -> void
     dup
     format>> [ write-string-escaped ] when*
-    text>> write-string
-;
+    text>> write-string ;
 
-: xrepaint-segment ( segment region )
+: repaint-segment-of-line-containing-selection ( segment region )
 
     region begin-offset :> region-begin
     region end-offset :> region-end
@@ -291,56 +289,23 @@ use: mini
     [ repaint-segment ] each ;
 
 : repaint-selected-line ( line )        // line -> void
-
-    line line-selected? assert
-
     line text>> detab :> detabbed-text
-
     detabbed-text format-line :> segments
-
     bg-selected write-string-escaped
-
-    segments string? [
-        fg-default write-string-escaped
-        segments write-string
-    ] [
-        segments repaint-segments
-    ] if
-
+    segments repaint-segments
     terminal-columns detabbed-text string-length - spaces
-
-    bg-default write-string-escaped
-;
+    bg-default write-string-escaped ;
 
 : repaint-line-containing-selection ( line ) // line -> void
-
-    line line-contains-selection? assert
-
     line text>> detab :> detabbed-text
-
     detabbed-text format-line :> segments
-
     mark dot make-region/2 :> region
-
-    segments string? [
-        // FIXME
-        detabbed-text length terminal-columns < [
-            segments write
-            terminal-columns detabbed-text string-length - spaces
-        ] [
-            0 terminal-columns detabbed-text substring write
-        ] if
-    ] [
-        segments [ region xrepaint-segment ] each
-    ] if
-
+    segments [ region repaint-segment-of-line-containing-selection ] each
     detabbed-text string-length terminal-columns < [
         terminal-columns detabbed-text string-length - spaces
-    ] when
-;
+    ] when ;
 
 : repaint-line ( line )                 // line -> void
-
     line line-selected? [ line repaint-selected-line ] return-if
 
     line line-contains-selection? [
@@ -348,21 +313,9 @@ use: mini
     ] return-if
 
     line text>> detab :> detabbed-text
-
     detabbed-text format-line :> segments
-
-    segments string? [
-        detabbed-text length terminal-columns < [
-            segments write
-            terminal-columns detabbed-text string-length - spaces
-        ] [
-            0 terminal-columns detabbed-text substring write
-        ] if
-    ] [
-        segments repaint-segments
-        terminal-columns detabbed-text string-length - spaces
-    ] if
-;
+    segments repaint-segments
+    terminal-columns detabbed-text string-length - spaces ;
 
 : repaint
     top-line :> line!
