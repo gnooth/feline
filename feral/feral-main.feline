@@ -21,8 +21,130 @@ empty
 "feral-loader.feline" load
 
 using: feral-core feline accessors ;
+in: editor
 
-feral-config:winui? null? #if
+feral-config:winui? #if
+
+: safe-call-symbol                      // symbol ->
+    [ call-symbol ]
+    [
+        last-error string? [
+            last-error
+            [ feral-config:winui? [ print ] when ]
+            [ mini:message ]
+            [ logging:log ]
+            tri
+        ] when
+        [ print-backtrace ] logging:with-output-to-log
+    ]
+    recover ;
+
+: do-command ( key )                    // key -> ?
+
+    f !> command
+
+    // try local map first
+    current-buffer local-map>> :> local-map
+    local-map [
+        key local-map at command!
+    ] when
+
+    // global map
+    command [
+        key keymaps:lookup-key command!
+    ] unless
+
+    command [
+        command dup current-command! safe-call-symbol
+        t
+    ] [
+        f
+    ] if ;
+
+: dispatch                              // key -> void
+    current-command last-command!
+    f current-command!
+
+    dup do-command [
+        drop
+    ] [
+        printable-char? [ insert-char ] when*
+    ] if ;
+
+: winui-textview-char                   // char -> void
+    current-command last-command!
+    dispatch
+    update-display ;
+
+: winui-textview-keydown ( key )        // key -> void
+    current-command last-command!
+    mini:clear-message
+    f !> command
+
+    // try local map first
+    current-buffer local-map>> :> local-map
+
+    local-map [
+        key local-map at command!
+    ] when
+
+    // global map
+    command [
+        key keymaps:lookup-key command!
+    ] unless
+
+    command [
+        command dup current-command! safe-call-symbol
+        update-display
+    ] when ;
+
+: mouse-select ( col row )
+    mark null? [
+        add-undo-move
+        dot copy-position mark!
+        top-line-number row + nth-line dot-line!
+        col dot-line-length min dot-offset!
+        t repaint!
+        update-display
+    ] when ;
+
+: winui-textview-lbuttondown ( wparam lparam ) // wparam lparam -> void
+
+    mini:clear-message
+
+    lparam 0xffff bitand winui-char-width /i :> x
+    lparam 16 rshift 0xffff bitand winui-char-height /i :> y
+
+    wparam {
+
+        // MK_LBUTTON = 0x01 left mouse button is down
+        { 0x01 [
+            add-undo-move
+            unmark
+            top-line-number y + last-line-number min nth-line dot-line!
+            x dot-line-length min dot-offset!
+            update-display
+        ] }
+
+        // MK_SHIFT = 0x04 shift key is down
+        // 0x05 = MK_LBUTTON | MK_SHIFT
+        { 0x05 [ x y mouse-select ] }
+
+        // default case
+        [ drop ]
+    } case ;
+
+: edit1
+    [
+        winui-initialize
+        winui-create-frame
+        reframe
+        t repaint!
+        update-display
+        winui-main
+    ] make-thread thread-create ;
+
+#else
 
 : do-mouse                              // key -> ?
     dup fixnum? not [ drop f ] return-if
@@ -111,8 +233,7 @@ feral-config:winui? null? #if
     0 textview-rows at-xy
     show-cursor
 
-    use-default-screen-buffer
-;
+    use-default-screen-buffer ;
 
 : ed
     use-alternate-screen-buffer
@@ -124,8 +245,7 @@ feral-config:winui? null? #if
     mini:clear-message
     0 textview-rows at-xy
     show-cursor
-    use-default-screen-buffer
-;
+    use-default-screen-buffer ;
 
 #endif
 
