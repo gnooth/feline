@@ -107,7 +107,7 @@ in: editor
     find-in-files:local-map buf local-map<<
 
     buf buffer-list vector-push
-    buf current-buffer!
+    buf set-current-buffer
 
     renumber
     t repaint!
