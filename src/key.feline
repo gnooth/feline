@@ -113,4 +113,7 @@ linux? #if
 0x1b5b32343b327e        constant shift-f12
 #endif
 
-0x1b5b5a                constant shift-tab      // Linux only
+// Linux only
+0x1b5b5a                constant shift-tab
+0x1b5b313b3248          constant shift-home
+0x1b5b313b3246          constant shift-end
