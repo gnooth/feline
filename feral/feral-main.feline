@@ -13,6 +13,122 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using: feline ;
+in: editor
+
+empty
+
+"feral-loader.feline" load
+
+using: feral-core feline accessors ;
+
+feral-config:winui? null? #if
+
+: do-mouse                              // key -> ?
+    dup fixnum? not [ drop f ] return-if
+
+    :> keycode
+    f !> column f !> row f !> result
+
+    keycode 24 rshift 0x1b5b4d = [
+        // "\e[M"
+        keycode 0xff bitand 32 - row!
+        keycode 0xff00 bitand 8 rshift 32 - column!
+        keycode 0xff0000 bitand 16 rshift 3 bitand zero? [
+            // left button pressed
+            top-line-number row + gotoline-internal
+            column 1- 0 max dot-line-length min dot-offset!
+            t result!
+        ] when
+    ] when
+
+    result ;
+
+: do-command ( key )                    // key -> ?
+
+    f !> command
+
+    // try local map first
+    current-buffer local-map>> :> local-map
+    local-map [
+        key local-map at command!
+    ] when
+
+    // global map
+    command [
+        key keymaps:lookup-key command!
+    ] unless
+
+    command [
+        command dup current-command! call-symbol
+        t
+    ] [
+        linux? [ key do-mouse ] [ f ] if
+    ] if ;
+
+: dispatch                              // key -> void
+    current-command last-command!
+    f current-command!
+
+    dup do-command [
+        drop
+    ] [
+        printable-char? [ insert-char ] when*
+    ] if ;
+
+: edit-loop
+    f done?!
+    [ done? ] [
+        update-display
+        ekey
+        mini:clear-message
+        dispatch
+    ] until
+
+    // clean up
+    f current-buffer!
+    f buffer-list!
+    gc
+;
+
+: edit1
+    use-alternate-screen-buffer
+
+    page
+    normal
+    maybe-reframe
+    t repaint?!
+
+    linux? [
+        // enable mouse tracking
+        "\e[?1000h" write-string-escaped
+    ] when
+
+    edit-loop
+
+    clear-status-line
+    mini:clear-message
+    0 textview-rows at-xy
+    show-cursor
+
+    use-default-screen-buffer
+;
+
+: ed
+    use-alternate-screen-buffer
+    page
+    normal
+    t repaint?!
+    edit-loop
+    clear-status-line
+    mini:clear-message
+    0 textview-rows at-xy
+    show-cursor
+    use-default-screen-buffer
+;
+
+#endif
+
 using: editor feral-core feline ;
 in: editor
 
