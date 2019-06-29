@@ -110,11 +110,11 @@ endcode
         _this_set_slot STRING_HASHCODE_SLOT#
 %endmacro
 
-%macro  _this_string_substring_unsafe 0 ; from to -- substring
+%macro  _this_string_substring_unsafe 0 ; from to -> substring
 ; no bounds checking
         sub     rbx, qword [rbp]        ; length (in rbx) = to - from
         lea     rax, [this_register + STRING_RAW_DATA_OFFSET]   ; raw data address in rax
-        add     qword [rbp], rax        ; start of substring = from + raw data address
+        add     qword [rbp], rax        ; start of substring = raw data address + from
         _ copy_to_string
 %endmacro
 
@@ -521,29 +521,67 @@ code string_find_char_from_index, 'string-find-char-from-index' ; index char str
         next
 endcode
 
+; ### string-validate-slice
+code string_validate_slice, 'string-validate-slice'
+; from to string -> from to string
+        _debug_?enough 3
+        _ threedup
+
+        _ string_raw_length
+        _check_index qword [rbp]
+        _check_index qword [rbp + BYTES_PER_CELL]
+
+        ; to
+        cmp     [rbp], rbx
+        jg      .error1
+
+        ; from
+        cmp     [rbp + BYTES_PER_CELL], rbx
+        jg      .error2
+
+        ; `from` must be <= `to`
+        mov     rax, [rbp + BYTES_PER_CELL]     ; from
+        cmp     rax, [rbp]                      ; to
+        jg      .error3
+
+        _3drop
+        next
+
+.error1:
+        _3drop                          ; -> from to string
+        _ rot
+        _drop                           ; -> to string
+        _ error_index_not_valid_for_string
+        next
+
+.error2:
+        _3drop
+        _nip                            ; -> from string
+        _ error_index_not_valid_for_string
+        next
+
+.error3:
+        _4drop                          ; -> from to
+        _quote "ERROR: the `from` index %d must not be greater than the `to` index %d."
+        _ format
+        _ error
+        next
+endcode
+
 ; ### string-substring
 code string_substring, 'string-substring' ; from to string -> substring
+        _ string_validate_slice
 
-        _ check_string
+        _ check_string                  ; -> from to ^string
 
         push    this_register
-        mov     this_register, rbx
-        _drop                           ; -- start-index end-index
+        mov     this_register, rbx      ; ^string in this_register
+        _drop                           ; -> from to
 
-        push    rbx
-        mov     rbx, [rbp]
-        _check_fixnum
-        mov     [rbp], rbx
-        pop     rbx
-        _check_fixnum                   ; -- start-index end-index
+        ; already validated by string-validate-slice
+        _untag_2_fixnums
 
-        cmp     rbx, THIS_STRING_RAW_LENGTH
-        ja      error_string_index_out_of_bounds
-
-        cmp     qword [rbp], rbx
-        ja      error_string_index_out_of_bounds
-
-        _this_string_substring_unsafe
+        _this_string_substring_unsafe   ; -> substring
 
         pop     this_register
         next

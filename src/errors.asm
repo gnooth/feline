@@ -356,3 +356,11 @@ code error_not_callable, 'error-not-callable'
         _ format_type_error
         next
 endcode
+
+; ### error-index-not-valid-for-string  ; index string -> void
+code error_index_not_valid_for_string, 'error-index-not-valid-for-string'
+        _quote "ERROR: the value %d is not a valid index for the string %S."
+        _ format
+        _ error
+        next
+endcode
