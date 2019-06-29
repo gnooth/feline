@@ -116,7 +116,7 @@ public
     show-cursor
     [ done? ] [ ekey process-key ] until
     sb sbuf>string
-    reset-history
+    dup update-history
     output-style ;
 
 : accept-string/2                       -- prompt default -> string
@@ -132,5 +132,5 @@ public
     show-cursor
     [ done? ] [ ekey process-key ] until
     sb sbuf>string
-    reset-history
+    dup update-history
     output-style ;
