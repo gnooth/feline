@@ -73,7 +73,6 @@ private
 
     current-history [
         prompt length minibuffer-contents tail update-history
-        save-history
         f current-history!
     ] when
 
