@@ -81,10 +81,10 @@ public
 
 : save-history
     strings [
+        [ length dup 10 - 0 max swap ] keep <slice>
         feral-history-directory name path-append ".history" string-append
         set-file-lines
-    ] when*
-;
+    ] when* ;
 
 : update-history ( s )                  // string/f -> void
     s string? [
