@@ -1993,34 +1993,31 @@ code expt, 'expt'                       ; base power -- result
 endcode
 
 ; ### win64?
-code win64?, 'win64?'                   ; void -> ?
+inline win64?, 'win64?'                 ; void -> ?
 %ifdef WIN64
         _t
 %else
         _f
 %endif
-        next
-endcode
+endinline
 
 ; ### linux?
-code linux?, 'linux?'                   ; void -> ?
+inline linux?, 'linux?'                 ; void -> ?
 %ifdef WIN64
         _f
 %else
         _t
 %endif
-        next
-endcode
+endinline
 
 ; ### debug?
-code debug?, 'debug?'                   ; void -> ?
+inline debug?, 'debug?'                 ; void -> ?
 %ifdef DEBUG
         _t
 %else
         _f
 %endif
-        next
-endcode
+endinline
 
 ; ### get-environment-variable
 code get_environment_variable, 'get-environment-variable' ; name -- value
