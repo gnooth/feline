@@ -156,12 +156,14 @@ unuse: mini
 
     n buffer-list length < [ n 1- n! ] unless
 
+    current-buffer previous-buffers vector-remove-eq! drop
+    current-buffer next-buffers vector-remove-eq! drop
+
     n buffer-list vector-nth current-buffer!
-    t repaint?!
-;
+    t repaint! ;
 
 : kill-buffer
-    f :> confirmed?!
+    f !> confirmed?
 
     modified? [ confirm-kill-current-buffer confirmed?! ] when
 
@@ -172,5 +174,4 @@ unuse: mini
         ] [
             kill-current-buffer
         ] if
-    ] when
-;
+    ] when ;
