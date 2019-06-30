@@ -37,7 +37,7 @@ code string?, 'string?'                 ; x -- ?
 endcode
 
 ; ### verify_static_string
-code verify_static_string, 'verify_static_string'       ; string -- string
+code verify_static_string, 'verify_static_string'       ; string -> string
         cmp     rbx, static_data_area
         jb      error_not_string
         cmp     rbx, static_data_area_limit
@@ -50,27 +50,27 @@ endcode
 
 ; ### check_string
 code check_string, 'check_string'       ; x -> ^string
-        _dup
-        _ deref                         ; -> x ^object/0
-        test    rbx, rbx
-        jz      .1
+        cmp     bl, HANDLE_TAG
+        jne     .1
+        push    rbx                     ; save x for error reporting
+        _handle_to_object_unsafe
         _object_raw_typecode_eax
         cmp     eax, TYPECODE_STRING
         jne     .2
-        _nip
-        _return
+        _rdrop                          ; drop saved x
+        next
 .1:
         ; not a handle
-        _drop
         _ verify_static_string
-        _return
+        next
 .2:
+        pop     rbx
         _ error_not_string
         next
 endcode
 
 ; ### verify-string
-code verify_string, 'verify-string'     ; handle-or-string -- handle-or-string
+code verify_string, 'verify-string'     ; string -> string
 ; returns argument unchanged
         _dup
         _ deref
