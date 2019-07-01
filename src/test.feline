@@ -10,7 +10,7 @@ var expected
 var quot
 var got
 
-: do-unit-test                          -- sequence quotation location -> void
+: do-unit-test                          // sequence quotation location -> void
     location! quot! expected!
     clear
     quot call
@@ -42,7 +42,7 @@ default-visibility get ' feline:public assert-eq
 
 public
 
--- this is a comment
+// this is a comment
 
 interactive? get assert-false
 
@@ -87,8 +87,8 @@ test: string?-test-1
 
 string?-test-1
 
--- Test for the Factor/Feline version of pick.
--- The Forth version of pick is different.
+// Test for the Factor/Feline version of pick.
+// The Forth version of pick is different.
 test: pick-test-1
     clear
     1 2 3 pick get-datastack { 1 2 3 1 } sequence= assert-true
@@ -97,8 +97,8 @@ test: pick-test-1
 
 pick-test-1
 
--- Test for the Factor/Feline version of 2over.
--- The Forth version of 2over is different.
+// Test for the Factor/Feline version of 2over.
+// The Forth version of 2over is different.
 test: 2over-test-1
     clear
     1 2 3 2over get-datastack { 1 2 3 1 2 } sequence= assert-true
@@ -148,7 +148,7 @@ test: fixnum-test-3
 
 fixnum-test-3
 
--- fixnum<
+// fixnum<
 test: fixnum<-test-1
     0 0 fixnum< assert-false
     1 1 fixnum< assert-false
@@ -165,7 +165,7 @@ test: fixnum<-test-1
 
 fixnum<-test-1
 
--- fixnum<=
+// fixnum<=
 test: fixnum<=-test-1
     0 0 fixnum<= assert-true
     1 1 fixnum<= assert-true
@@ -309,7 +309,7 @@ test: fixnum-abs-test-1
 
 fixnum-abs-test-1
 
--- fixnum-bitand, bitand
+// fixnum-bitand, bitand
 test: fixnum-test-9
     15 7 bitand 7 assert=
     15 0xf0 bitand 0 assert=
@@ -318,7 +318,7 @@ test: fixnum-test-9
 
 fixnum-test-9
 
--- fixnum+
+// fixnum+
 test: fixnum-test-10
      42  87 fixnum+  129 assert=
     -42  87 fixnum+   45 assert=
@@ -593,7 +593,7 @@ test: array-?last-test-1
 
 array-?last-test-1
 
--- vector-insert-nth
+// vector-insert-nth
 test: vector-test-1
     17 0 vector{ 0 1 2 3 } [ vector-insert-nth ] keep
     vector{ 17 0 1 2 3 } sequence= assert-true
@@ -622,7 +622,7 @@ test: vector-test-2
     "test" [ 100 pick vector-set-nth ] keep
     100 pick vector-nth assert-eq
 
-    -- verify that new cells are initialized to f
+    // verify that new cells are initialized to f
     100 [ over vector-nth assert-false ] each-integer
     clear
 
@@ -631,9 +631,9 @@ test: vector-test-2
     87 v push
     v vector{ f f f f f f f f f 42 87 } sequence= assert-true
 
-    -- FIXME this fails Nov 25 2016 9:42 AM
-    -- 14 19 v set-nth
-    -- v vector{ f f f f f f f f f 42 87 f f f f f f f f 14 } sequence= assert-true
+    // FIXME this fails Nov 25 2016 9:42 AM
+    // 14 19 v set-nth
+    // v vector{ f f f f f f f f f 42 87 f f f f f f f f 14 } sequence= assert-true
 ;
 
 vector-test-2
@@ -649,7 +649,7 @@ test: vector-test-3
 
 vector-test-3
 
--- vector-pop*
+// vector-pop*
 test: vector-test-4
     vector{ 1 2 3 } [ vector-pop* ] keep
     [ length 2 assert= ] keep
@@ -662,16 +662,16 @@ test: vector-test-4
 vector-test-4
 
 test: vector-test-5
-    -- vector-last
+    // vector-last
     { 3 } [ vector{ 1 2 3 } vector-last ] unit-test
     { "test" } [ vector{ "test" } vector-last ] unit-test
     [ vector{ } vector-last ] assert-must-fail
 
-    -- vector-set-last
+    // vector-set-last
     { vector{ 1 2 42 } } [ 42 vector{ 1 2 3 } tuck vector-set-last ] unit-test
     [ 42 vector{ } vector-set-last ] assert-must-fail
 
-    -- vector-?last
+    // vector-?last
     { 3 } [ vector{ 1 2 3 } vector-?last ] unit-test
     { "test" } [ vector{ "test" } vector-?last ] unit-test
     { f } [ vector{ } vector-?last ] unit-test
@@ -721,7 +721,7 @@ test: vector->array-test-1
 
 vector->array-test-1
 
-: %local-test-1                         -- -> 42
+: %local-test-1                         // -> 42
     42 :> foo
     foo
 ;
@@ -784,7 +784,7 @@ test: decimal>unsigned-test-1
 
     "0" decimal>unsigned 0 assert-eq
 
-    -- avoid confusion with t and f
+    // avoid confusion with t and f
     "6" decimal>unsigned 6 assert-eq
     "14" decimal>unsigned 14 assert-eq
 
@@ -794,7 +794,7 @@ test: decimal>unsigned-test-1
 
     64 [ 2 swap lshift dup number>string decimal>unsigned assert= ] each-integer
 
-    -- overflow
+    // overflow
     "18446744073709551616" decimal>unsigned assert-false
     "18446744073709551617" decimal>unsigned assert-false
     "18446744073709551618" decimal>unsigned assert-false
@@ -814,15 +814,15 @@ decimal>unsigned-test-1
 
 
 test: decimal>signed-test-1
-    -- too short
+    // too short
     "" decimal>signed assert-false
     "-" decimal>signed assert-false
 
-    -- first char must be '-'
+    // first char must be '-'
     "0" decimal>signed assert-false
     "1" decimal>signed assert-false
 
-    -- all chars after '-' must be decimal digits
+    // all chars after '-' must be decimal digits
     "-test" decimal>signed assert-false
     "-3.14159" decimal>signed assert-false
     "-3." decimal>signed assert-false
@@ -832,7 +832,7 @@ test: decimal>signed-test-1
     "-2" decimal>signed -2 assert-eq
     "-3" decimal>signed -3 assert-eq
 
-    -- avoid confusion with t and f
+    // avoid confusion with t and f
     "-6" decimal>signed -6 assert-eq
     "-14" decimal>signed -14 assert-eq
 
@@ -980,30 +980,30 @@ hashtable-test-3
 
 global ht
 
-100 constant n1         -- total number of entries
-40  constant n2         -- number of entries to delete
+100 constant n1         // total number of entries
+40  constant n2         // number of entries to delete
 
 test: hashtable-test-4
     1 <hashtable> ht!
     n1 [ dup number>string ht set-at ] each-integer
     n1 [ dup number>string ht at assert= ] each-integer
 
-    -- delete first n2 entries
+    // delete first n2 entries
     n2 [ number>string ht delete-at ] each-integer
 
-    -- verify remaining entries are findable
+    // verify remaining entries are findable
     n1 n2 - [ n2 + dup number>string ht at assert= ] each-integer
 
-    -- delete first n2 entries again (should make no difference)
+    // delete first n2 entries again (should make no difference)
     n2 [ number>string ht delete-at ] each-integer
 
-    -- verify remaining entries are findable
+    // verify remaining entries are findable
     n1 n2 - [ n2 + dup number>string ht at assert= ] each-integer
 
-    -- add deleted entries back
+    // add deleted entries back
     n2 [ dup number>string ht set-at ] each-integer
 
-    -- verify all entries are findable
+    // verify all entries are findable
     n1 [ dup number>string ht at assert= ] each-integer
 
     ht hashtable-keys length n1 assert-eq
@@ -1018,7 +1018,7 @@ hashtable-test-4
 
 test: hashtable-test-5
     16 <hashtable> :> ht
-    -- fixnum keys
+    // fixnum keys
     1000 [ dup ht set-at ] each-integer
     1000 [ dup ht at assert= ] each-integer
     "charlie" ht at* assert-false assert-false
@@ -1148,7 +1148,7 @@ test: symbol-props-test-1
     "this is a test" "foo" ' dup symbol-set-prop
     { "this is a test" } [ "foo" ' dup symbol-prop ] unit-test
 
-    -- clean up
+    // clean up
     f "foo" ' dup symbol-set-prop
 ;
 
@@ -1164,7 +1164,7 @@ test: symbol-props-gc-test-1
     "foo" ' dup symbol-prop get-datastack { "this is a test" } sequence= assert-true
     clear
 
-    -- clean up
+    // clean up
     f "foo" ' dup symbol-set-prop
 ;
 
@@ -1370,33 +1370,33 @@ test: global-test-1
 
 global-test-1
 
--- : global-test-2
---     << last-word symbol-name >> ?nl write-string
---     87 ' zork set-global
---     ' zork get-global 87 eq? assert-true
+// : global-test-2
+//     << last-word symbol-name >> ?nl write-string
+//     87 ' zork set-global
+//     ' zork get-global 87 eq? assert-true
 
---     [
---         "test" dup zork! zork eq? assert-true
---         ' zork get-global 87 eq? assert-true
---         19 ' zork set-global
---         zork "test" assert=
---         ' zork get-global 19 eq? assert-true
---     ] with-scope
+//     [
+//         "test" dup zork! zork eq? assert-true
+//         ' zork get-global 87 eq? assert-true
+//         19 ' zork set-global
+//         zork "test" assert=
+//         ' zork get-global 19 eq? assert-true
+//     ] with-scope
 
---     ' zork get-global 19 eq? assert-true
--- ;
+//     ' zork get-global 19 eq? assert-true
+// ;
 
--- global-test-2
+// global-test-2
 
--- : global-test-3
---     << last-word symbol-name >> ?nl write-string
---     f zork!
---     zork assert-false
---     [ [ 71 zork! zork ] with-scope ] [ ] recover 71 eq? assert-true
---     [ [ 71 zork! "error" error ] with-scope ] [ drop zork ] recover assert-false
--- ;
+// : global-test-3
+//     << last-word symbol-name >> ?nl write-string
+//     f zork!
+//     zork assert-false
+//     [ [ 71 zork! zork ] with-scope ] [ ] recover 71 eq? assert-true
+//     [ [ 71 zork! "error" error ] with-scope ] [ drop zork ] recover assert-false
+// ;
 
--- global-test-3
+// global-test-3
 
 test: index-test-1
     3 { 1 2 3 4 } index 2 assert-eq
@@ -1583,7 +1583,7 @@ test: string-skip-whitespace-test-1
 
 string-skip-whitespace-test-1
 
--- multiline string
+// multiline string
 test: string-skip-whitespace-test-2
     "   this is
 a multiline string   " :> s
@@ -1617,7 +1617,7 @@ test: string-skip-to-whitespace-test-1
 
 string-skip-to-whitespace-test-1
 
--- multiline string
+// multiline string
 test: string-skip-to-whitespace-test-2
     "   this is
 a multiline string   "
@@ -1893,7 +1893,7 @@ test: sbuf-substring-test-1
 
 sbuf-substring-test-1
 
--- generic
+// generic
 test: substring-test-1
     "this is a test"
      0  4 pick substring "this"  assert=
@@ -1975,7 +1975,7 @@ test: vector-find-string-test-1
 
 vector-find-string-test-1
 
-: %case-test-1                          -- x -> y
+: %case-test-1                          // x -> y
     {
         { 1 [ "one" ] }
         { 2 [ "two" ] }
@@ -1996,13 +1996,13 @@ test: case-test-1
 
 case-test-1
 
-: %case-test-2                          -- x -> y
+: %case-test-2                          // x -> y
     {
         { 1 [ "one" ] }
         { 2 [ "two" ] }
         { 3 [ "three" ] }
         { 4 [ "four" ] }
-        -- no default
+        // no default
     } case ;
 
 test: case-test-2
@@ -2031,7 +2031,7 @@ test: case-test-3
 
 case-test-3
 
-: %case-test-4                          -- x -> y
+: %case-test-4                          // x -> y
     {
         { "fee"  [ 1 ] }
         { "fie"  [ 2 ] }
@@ -2050,13 +2050,13 @@ test: case-test-4
 
 case-test-4
 
-: %cond-test-1                          -- x -> y
+: %cond-test-1                          // x -> y
     {
         { [ dup 1 = ] [ drop "one" ] }
         { [ dup 2 = ] [ drop "two" ] }
         { [ dup 3 = ] [ drop "three" ] }
         { [ dup 4 = ] [ drop "four" ] }
-        -- no default
+        // no default
     } cond ;
 
 test: cond-test-1
@@ -2069,7 +2069,7 @@ test: cond-test-1
 
 cond-test-1
 
-: %cond-test-2                          -- x -> y
+: %cond-test-2                          // x -> y
     {
         { [ dup 1 = ] [ drop "one" ] }
         { [ dup 2 = ] [ drop "two" ] }
@@ -2107,7 +2107,7 @@ test: cond-test-4
 
 cond-test-4
 
-: %return-if-test-1                     -- arg -> "yes"/"no"
+: %return-if-test-1                     // arg -> "yes"/"no"
     [ "yes" ] return-if
     "no" ;
 
@@ -2138,7 +2138,7 @@ test: return-if-test-2
 
 return-if-test-2
 
--- return-if before first local
+// return-if before first local
 : %return-if-test-3
     dup 3 = [ drop 47 ] return-if
     :> arg
@@ -2364,7 +2364,7 @@ test: fixnum-1+-test-1
     [ most-negative-fixnum 1 + assert= ]
     tri
 
-    -- overflow
+    // overflow
     most-positive-fixnum fixnum-1+
     [ int64? assert-true ]
     [ most-positive-fixnum fixnum>int64 1 int64-fixnum+ assert= ]
@@ -2385,7 +2385,7 @@ test: fixnum-1--test-1
     [ most-positive-fixnum 1 - assert= ]
     tri
 
-    -- overflow
+    // overflow
     most-negative-fixnum fixnum-1-
     [ int64? assert-true ]
     [ most-negative-fixnum 1 fixnum-fixnum- assert= ]
@@ -2624,7 +2624,7 @@ test: vector-adjoin-test-1
     v vector{ 1 2 3 4 5 6 42 } assert=
     4 v vector-adjoin
     v vector{ 1 2 3 5 6 42 4 } assert=
-    -- no change if element is already at the end of the sequence
+    // no change if element is already at the end of the sequence
     4 v vector-adjoin
     v vector{ 1 2 3 5 6 42 4 } assert=
 ;
@@ -2684,7 +2684,7 @@ test: symbol-equal?-test-1
 
     42 42 symbol-equal? assert-false
 
-    -- generic
+    // generic
     ' dup dup equal? assert-true
     ' drop ' dup equal? assert-false
 ;
@@ -2715,7 +2715,7 @@ test: boolean-equal?-test-1
     "test" "test" boolean-equal? assert-false
     "test" 42 boolean-equal? assert-false
 
-    -- generic
+    // generic
     t t equal? assert-true
     f f equal? assert-true
     t f equal? assert-false
@@ -3175,10 +3175,10 @@ test: thread-test-4
     linux? [ current-thread thread-id current-thread-id assert= ] when
 
     win64? [
-        -- REVIEW
-        -- In general we don't care about the native thread id on Windows.
-        -- We do care about the native thread handle (which doesn't exist on Linux).
-        -- We do store the native thread id for the primordial thread (only).
+        // REVIEW
+        // In general we don't care about the native thread id on Windows.
+        // We do care about the native thread handle (which doesn't exist on Linux).
+        // We do store the native thread id for the primordial thread (only).
         current-thread primordial-thread eq? [
             current-thread thread-id current-thread-id assert=
         ] when
@@ -3333,19 +3333,19 @@ test: char>string-test-1
     '7' char>string "'7'" assert=
     '~' char>string "'~'" assert=
 
-     3 code-char char>string "'\\x03'" assert=  -- ctrl-c
+     3 code-char char>string "'\\x03'" assert=  // ctrl-c
 
-     7 code-char char>string "'\\a'" assert=  -- \a
-     8 code-char char>string "'\\b'" assert=  -- \b
-     9 code-char char>string "'\\t'" assert=  -- \t
-    10 code-char char>string "'\\n'" assert=  -- \n
-    11 code-char char>string "'\\v'" assert=  -- \v
-    12 code-char char>string "'\\f'" assert=  -- \f
-    13 code-char char>string "'\\r'" assert=  -- \r
-    32 code-char char>string "'\\s'" assert=  -- \s
-    34 code-char char>string "'\"'"  assert=  -- \"
-    39 code-char char>string "'\\''" assert=  -- \'
-    92 code-char char>string "'\\'"  assert=  -- \\
+     7 code-char char>string "'\\a'" assert=  // \a
+     8 code-char char>string "'\\b'" assert=  // \b
+     9 code-char char>string "'\\t'" assert=  // \t
+    10 code-char char>string "'\\n'" assert=  // \n
+    11 code-char char>string "'\\v'" assert=  // \v
+    12 code-char char>string "'\\f'" assert=  // \f
+    13 code-char char>string "'\\r'" assert=  // \r
+    32 code-char char>string "'\\s'" assert=  // \s
+    34 code-char char>string "'\"'"  assert=  // \"
+    39 code-char char>string "'\\''" assert=  // \'
+    92 code-char char>string "'\\'"  assert=  // \\
 ;
 
 char>string-test-1
@@ -3395,7 +3395,7 @@ test: string-iterator-test-1
 
     { f } [ iter string-iterator-next ] unit-test
 
-    -- subsequent calls continue to return f
+    // subsequent calls continue to return f
     { f } [ iter string-iterator-next ] unit-test
 
     get-datastack empty? assert-true
@@ -3480,7 +3480,7 @@ test: file-open-append-test-2
     "delete-me" file-open-append :> stream!
     stream file-output-stream? assert-true
     "this is a test" stream file-output-stream-write-string
-    -- generic
+    // generic
     stream close
 
     "delete-me" file-exists? assert-true
@@ -3489,7 +3489,7 @@ test: file-open-append-test-2
     "delete-me" file-open-append stream!
     stream file-output-stream? assert-true
     " and this is another test" stream file-output-stream-write-string
-    -- generic
+    // generic
     stream close
 
     "delete-me" file-exists? assert-true
@@ -3582,7 +3582,7 @@ test: string-output-stream-test-2
     make-string-output-stream :> stream
     stream string-output-stream-string "" assert=
 
-    -- verify that the stream's sbuf is still valid after gc
+    // verify that the stream's sbuf is still valid after gc
     gc
     stream string-output-stream-string "" assert=
 
@@ -3696,10 +3696,10 @@ test: fixnum-2/-fast-test-1
     { -2 } [ -4 fixnum-2/-fast ] unit-test
     { -1 } [ -2 fixnum-2/-fast ] unit-test
 
-    -- REVIEW -3 2 /i -> -1
+    // REVIEW -3 2 /i -> -1
     { -2 } [ -3 fixnum-2/-fast ] unit-test
 
-    -- REVIEW -1 2 /i -> 0
+    // REVIEW -1 2 /i -> 0
     { -1 } [ -1 fixnum-2/-fast ] unit-test
 
     { 0 } [ 0 fixnum-2/-fast ] unit-test
@@ -3844,12 +3844,12 @@ test: rename-file-test-1
     backup delete-file assert-true
     backup file-exists? assert-false
 
-    -- attempt to rename a file that does not exist
+    // attempt to rename a file that does not exist
     file file-exists? assert-false
     backup file-exists? assert-false
     file backup rename-file assert-false
 
-    -- new name refers to an existing file
+    // new name refers to an existing file
     contents1 file set-file-contents
     contents2 backup set-file-contents
     file regular-file? assert-true
@@ -3857,7 +3857,7 @@ test: rename-file-test-1
     file regular-file? assert-true
     backup file-contents contents2 assert=
 
-    -- rename should work
+    // rename should work
     file backup rename-file assert-true
 
     file file-exists? assert-false
