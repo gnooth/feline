@@ -2157,14 +2157,25 @@ test: return-if-test-3
 
 return-if-test-3
 
--- test: @-test-1
---     ' dup symbol-code-address @
---     [ bignum? assert-true ] keep
---     [ 17901119438411630920 assert= ] keep
---     [ $f86d8d48f85d8948 assert= ] keep
---     bignum>hex "f86d8d48f85d8948" assert= ;
+test: return-if-test-4
+    { 3 } [ 17 19 = [ 4 ] [ 3 ] if ] unit-test
+    { 3 } [ 17 [ 19 = [ 4 ] return-if 3 ] call ] unit-test
+    { 4 } [ 19 19 = [ 4 ] [ 3 ] if ] unit-test
+    { 4 } [ 19 [ 19 = [ 4 ] return-if 3 ] call ] unit-test
+;
 
--- @-test-1
+return-if-test-4
+
+// : %return-if-test-5
+//     87 :> x
+//     19 [ 19 = [ 4 ] return-if 3 ] call
+// ;
+
+// test: return-if-test-5
+//     %return-if-test-5
+// ;
+
+// return-if-test-5
 
 test: vector-?pop-test-1
     vector{ 1 2 }
