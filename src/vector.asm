@@ -741,38 +741,33 @@ code vector_push_all, 'vector-push-all' ; seq vector --
         next
 endcode
 
-; ### vector-pop
-code vector_pop, 'vector-pop'           ; handle -- element
+; ### error-empty-vector
+code error_empty_vector, 'error-empty-vector'
+        _quote "ERROR: %s: the vector is empty."
+        _ format
+        _ error
+        next
+endcode
 
-        _ check_vector                  ; -- vector
+; ### vector-pop
+code vector_pop, 'vector-pop'           ; vector -> element
+; error if vector is empty
+
+        _ check_vector                  ; ^vector in rbx
 
 vector_pop_unchecked:
+        mov     rax, [rbx + VECTOR_RAW_LENGTH_OFFSET]
+        sub     rax, 1
+        js      .error
+        mov     [rbx + VECTOR_RAW_LENGTH_OFFSET], rax
+        mov     rdx, VECTOR_RAW_DATA_ADDRESS
+        mov     rbx, [rdx + BYTES_PER_CELL * rax]
+        next
 
-        push    this_register
-        mov     this_register, rbx
-
-        _vector_raw_length
-        _oneminus
-        _dup
-        _zge
-        _if .1
-        _dup
-        _this_vector_set_raw_length
-        _this_vector_nth_unsafe         ; -- element
-
-        ; mark cell empty
-        _f
-        _this_vector_raw_length
-        _this_vector_set_nth_unsafe
-
-        pop     this_register
-        _return
-        _then .1
-
+.error:
         _drop
-        pop     this_register
-        _error "vector-pop vector is empty"
-
+        _quote "vector-pop"
+        _ error_empty_vector
         next
 endcode
 
