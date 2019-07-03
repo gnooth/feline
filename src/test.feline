@@ -649,6 +649,16 @@ test: vector-test-3
 
 vector-test-3
 
+test: vector-pop-test-1
+    vector{ 1 2 3 } :> v
+    { 3 } [ v vector-pop ] unit-test
+    { 2 } [ v vector-pop ] unit-test
+    { 1 } [ v vector-pop ] unit-test
+    v vector-length zero? assert
+    [ v vector-pop ] assert-must-fail ;
+
+vector-pop-test-1 quit
+
 // vector-pop*
 test: vector-test-4
     vector{ 1 2 3 } [ vector-pop* ] keep
