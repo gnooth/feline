@@ -652,24 +652,36 @@ vector-test-3
 test: vector-pop-test-1
     vector{ 1 2 3 } :> v
     { 3 } [ v vector-pop ] unit-test
+    v vector-length 2 assert-eq
+    v vector{ 1 2 } assert=
     { 2 } [ v vector-pop ] unit-test
+    v vector-length 1 assert-eq
+    v vector{ 1 } assert=
     { 1 } [ v vector-pop ] unit-test
     v vector-length zero? assert
-    [ v vector-pop ] assert-must-fail ;
+    v vector{ } assert=
+    [ v vector-pop ] assert-must-fail
+    v vector-length zero? assert
+    v vector{ } assert= ;
 
-vector-pop-test-1 quit
+vector-pop-test-1
 
-// vector-pop*
-test: vector-test-4
-    vector{ 1 2 3 } [ vector-pop* ] keep
-    [ length 2 assert= ] keep
-    [ vector-pop* ] keep
-    [ length 1 assert= ] keep
-    [ vector-pop* ] keep
-    [ length zero? assert-true ]
-;
+test: vector-pop*-test-1
+    vector{ 1 2 3 } :> v
+    { } [ v vector-pop* ] unit-test
+    v vector-length 2 assert-eq
+    v vector{ 1 2 } assert=
+    { } [ v vector-pop* ] unit-test
+    v vector-length 1 assert-eq
+    v vector{ 1 } assert=
+    { } [ v vector-pop* ] unit-test
+    v vector-length zero? assert
+    v vector{ } assert=
+    [ v vector-pop* ] assert-must-fail
+    v vector-length zero? assert
+    v vector{ } assert= ;
 
-vector-test-4
+vector-pop*-test-1
 
 test: vector-test-5
     // vector-last
