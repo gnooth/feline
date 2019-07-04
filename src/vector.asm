@@ -15,48 +15,44 @@
 
 file __FILE__
 
-%define PREFIX VECTOR
-
-DEFINE_SLOT RAW_LENGTH, 1
-DEFINE_SLOT RAW_DATA_ADDRESS, 2
-DEFINE_SLOT RAW_CAPACITY, 3
-
-%undef PREFIX
+%define VECTOR_RAW_LENGTH_OFFSET 8
+%define VECTOR_RAW_DATA_ADDRESS_OFFSET 16
+%define VECTOR_RAW_CAPACITY_OFFSET 24
 
 %macro  _vector_raw_length 0            ; ^vector -> raw-length
-        _slot VECTOR_RAW_LENGTH_SLOT#
+        _slot 1
 %endmacro
 
 %macro  _this_vector_raw_length 0       ; -> raw-length
-        _this_slot VECTOR_RAW_LENGTH_SLOT#
+        _this_slot 1
 %endmacro
 
 %macro  _this_vector_set_raw_length 0   ; raw-length -> void
-        _this_set_slot VECTOR_RAW_LENGTH_SLOT#
+        _this_set_slot 1
 %endmacro
 
 %macro  _vector_raw_data_address 0      ; ^vector -> raw-data-address
-        _slot VECTOR_RAW_DATA_ADDRESS_SLOT#
+        _slot 2
 %endmacro
 
 %macro  _this_vector_raw_data_address 0 ; -> raw-data-address
-        _this_slot VECTOR_RAW_DATA_ADDRESS_SLOT#
+        _this_slot 2
 %endmacro
 
 %macro  _this_vector_set_raw_data_address 0 ; raw-data-address -> void
-        _this_set_slot VECTOR_RAW_DATA_ADDRESS_SLOT#
+        _this_set_slot 2
 %endmacro
 
 %macro  _vector_raw_capacity 0          ; ^vector -> raw-capacity
-        _slot VECTOR_RAW_CAPACITY_SLOT#
+        _slot 3
 %endmacro
 
 %macro  _this_vector_raw_capacity 0     ; -> raw-capacity
-        _this_slot VECTOR_RAW_CAPACITY_SLOT#
+        _this_slot 3
 %endmacro
 
 %macro  _this_vector_set_raw_capacity 0 ; raw-capacity -> void
-        _this_set_slot VECTOR_RAW_CAPACITY_SLOT#
+        _this_set_slot 3
 %endmacro
 
 %macro  _vector_nth_unsafe 0            ; index ^vector -> element
@@ -67,13 +63,13 @@ DEFINE_SLOT RAW_CAPACITY, 3
 %endmacro
 
 %macro  _this_vector_nth_unsafe 0       ; index -> element
-        mov     rax, THIS_VECTOR_RAW_DATA_ADDRESS
+        mov     rax, [this_register + VECTOR_RAW_DATA_ADDRESS_OFFSET]
         mov     rbx, [rax + BYTES_PER_CELL * rbx]
 %endmacro
 
 %macro  _this_vector_set_nth_unsafe 0   ; element index -> void
         mov     rdx, [rbp]
-        mov     rax, THIS_VECTOR_RAW_DATA_ADDRESS
+        mov     rax, [this_register + VECTOR_RAW_DATA_ADDRESS_OFFSET]
         mov     [rax + BYTES_PER_CELL * rbx], rdx
         _2drop
 %endmacro
@@ -270,7 +266,7 @@ code vector_ensure_capacity, 'vector_ensure_capacity', SYMBOL_INTERNAL  ; raw-ca
         mov     this_register, rbx
         poprbx                          ; -> raw-capacity
 
-        cmp     THIS_VECTOR_RAW_CAPACITY, rbx
+        cmp     [this_register + VECTOR_RAW_CAPACITY_OFFSET], rbx
         jge     .nothing_to_do
 
         _this_vector_raw_capacity
@@ -310,7 +306,7 @@ vector_nth_untagged:
         _ check_vector
 
         mov     rax, [rbp]              ; raw index in rax
-        cmp     rax, VECTOR_RAW_LENGTH
+        cmp     rax, [rbx + VECTOR_RAW_LENGTH_OFFSET]
         jge     .error                  ; index >= length
         _vector_raw_data_address
         _nip
@@ -391,7 +387,7 @@ endcode
 ; ### vector-?last
 code vector_?last, 'vector-?last'       ; vector -> element/f
         _ check_vector
-        mov     rax, VECTOR_RAW_LENGTH
+        mov     rax, [rbx + VECTOR_RAW_LENGTH_OFFSET]
         sub     rax, 1
         js      .empty
         _vector_raw_data_address
@@ -405,7 +401,7 @@ endcode
 ; ### vector-set-last
 code vector_set_last, 'vector-set-last' ; element vector -> void
         _ check_vector
-        mov     rax, VECTOR_RAW_LENGTH
+        mov     rax, [rbx + VECTOR_RAW_LENGTH_OFFSET]
         sub     rax, 1
         js      error_vector_index_out_of_bounds
         mov     rdx, [rbp]
@@ -553,7 +549,7 @@ code vector_remove_nth_mutating, 'vector-remove-nth!'   ; n vector --
         _plus
         _store
 
-        sub     THIS_VECTOR_RAW_LENGTH, 1
+        sub     qword [this_register + VECTOR_RAW_LENGTH_OFFSET], 1
 
         pop     this_register
         next
@@ -702,13 +698,13 @@ code vector_push, 'vector-push'         ; element handle --
 
 vector_push_unchecked:
 
-        mov     rax, VECTOR_RAW_LENGTH  ; raw length in rax
-        cmp     rax, VECTOR_RAW_CAPACITY
+        mov     rax, [rbx + VECTOR_RAW_LENGTH_OFFSET]
+        cmp     rax, [rbx + VECTOR_RAW_CAPACITY_OFFSET]
         jge     .1                      ; length >= capacity
         mov     rdx, [rbp]              ; element in rdx
-        mov     rcx, VECTOR_RAW_DATA_ADDRESS
+        mov     rcx, [rbx + VECTOR_RAW_DATA_ADDRESS_OFFSET]
         mov     [rcx + BYTES_PER_CELL * rax], rdx
-        add     VECTOR_RAW_LENGTH, 1
+        add     qword [rbx + VECTOR_RAW_LENGTH_OFFSET], 1
         _2drop
         _return
 .1:
@@ -719,11 +715,11 @@ vector_push_unchecked:
         _over
         _ vector_ensure_capacity
 
-        mov     rax, VECTOR_RAW_LENGTH  ; raw length in rax
+        mov     rax, [rbx + VECTOR_RAW_LENGTH_OFFSET] ; raw length in rax
         mov     rdx, [rbp]              ; element in rdx
-        mov     rcx, VECTOR_RAW_DATA_ADDRESS
+        mov     rcx, [rbx + VECTOR_RAW_DATA_ADDRESS_OFFSET]
         mov     [rcx + BYTES_PER_CELL * rax], rdx
-        add     VECTOR_RAW_LENGTH, 1
+        add     qword [rbx + VECTOR_RAW_LENGTH_OFFSET], 1
         _2drop
         next
 endcode
@@ -760,7 +756,7 @@ vector_pop_unchecked:
         sub     rax, 1
         js      .error
         mov     [rbx + VECTOR_RAW_LENGTH_OFFSET], rax
-        mov     rdx, VECTOR_RAW_DATA_ADDRESS
+        mov     rdx, [rbx + VECTOR_RAW_DATA_ADDRESS_OFFSET]
         mov     rbx, [rdx + BYTES_PER_CELL * rax]
         next
 
@@ -778,12 +774,12 @@ code vector_?pop, 'vector-?pop'         ; handle -- element/f
 
 vector_?pop_unchecked:
 
-        mov     rax, VECTOR_RAW_LENGTH
+        mov     rax, [rbx + VECTOR_RAW_LENGTH_OFFSET]
         test    rax, rax
         jz      .1
         sub     rax, 1
-        mov     VECTOR_RAW_LENGTH, rax
-        mov     rdx, VECTOR_RAW_DATA_ADDRESS
+        mov     [rbx + VECTOR_RAW_LENGTH_OFFSET], rax
+        mov     rdx, [rbx + VECTOR_RAW_DATA_ADDRESS_OFFSET]
         mov     rbx, qword [rdx + rax * BYTES_PER_CELL]
         mov     qword [rdx + rax * BYTES_PER_CELL], f_value
         _return
