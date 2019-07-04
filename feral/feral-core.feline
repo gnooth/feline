@@ -324,17 +324,17 @@ global buffer-list
 
 global current-buffer
 
-global previous-buffers 16 <vector> previous-buffers!
-
-global next-buffers 16 <vector> next-buffers!
-
 : set-current-buffer ( buf )            // buffer -> void
-    current-buffer [
-        // we don't want the buffer list in the buffer history
-        name>> "List Buffers" = [ f current-buffer! ] when
-    ] when*
-    buf current-buffer neq? [
-        current-buffer [ previous-buffers vector-push ] when*
+    [ buf ] [ buf current-buffer neq? ] both? [
+        current-buffer [
+            buffer-list [ current-buffer eq? ] find [
+                drop
+                buf buffer-list vector-remove-eq!
+                buffer-list [ current-buffer eq? ] find assert // -> index
+                1+ // insert after current buffer
+                buf swap buffer-list vector-insert-nth
+            ] when
+        ] when
         buf current-buffer!
         t repaint!
     ] when ;

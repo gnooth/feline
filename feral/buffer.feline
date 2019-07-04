@@ -105,18 +105,24 @@ in: editor
     nip ;
 
 : next-buffer
-    next-buffers vector-?pop [
-        current-buffer previous-buffers vector-push
-        current-buffer!
-        t repaint!
-    ] when* ;
+    buffer-list length 1 > [
+        buffer-list [ current-buffer eq? ] find [
+            // -> index
+            1+ dup buffer-list length < [ drop 0 ] unless
+            buffer-list vector-nth current-buffer!
+            t repaint!
+        ] when
+    ] when ;
 
 : previous-buffer
-    previous-buffers vector-?pop [
-        current-buffer next-buffers vector-push
-        current-buffer!
-        t repaint!
-    ] when* ;
+    buffer-list length 1 > [
+        buffer-list [ current-buffer eq? ] find [
+            // -> index
+            1- dup 0 >= [ drop buffer-list length 1- ] unless
+            buffer-list vector-nth current-buffer!
+            t repaint!
+        ] when
+    ] when ;
 
 : buffer-name ( buf )
     buf name>> [ buf filename>> ] unless* ;
@@ -155,9 +161,6 @@ unuse: mini
     n buffer-list vector-remove-nth!
 
     n buffer-list length < [ n 1- n! ] unless
-
-    current-buffer previous-buffers vector-remove-eq! drop
-    current-buffer next-buffers vector-remove-eq! drop
 
     n buffer-list vector-nth current-buffer!
     t repaint! ;
