@@ -28,7 +28,7 @@ global list-buffers-old-buffer
 40 constant buffer-filename-column
 
 : list-buffers-select
-    :buffer dot-line line-get-property set-current-buffer
+    :buffer dot-line line-get-property current-buffer!
     t repaint!
     update-display ;
 
