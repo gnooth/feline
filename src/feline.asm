@@ -95,9 +95,17 @@ string FELINE_VOCAB_NAME, 'feline'
 %include "defer.asm"
 
 %ifdef WIN64
+
 %ifdef WINUI
 %include "winui.asm"
 %endif
+
+%else
+
+%ifdef GTKUI
+%include "gtkui.asm"
+%endif
+
 %endif
 
 ; ### in-static-data-area?
