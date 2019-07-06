@@ -450,6 +450,11 @@ static LRESULT CALLBACK winui__textview_wnd_proc (HWND hwnd, UINT msg,
       ReleaseCapture ();
       return 0;
 
+    case WM_LBUTTONDBLCLK:
+      // pretend it's just a key...
+      winui__textview_keydown (VK_LBUTTON);
+      return 0;
+
     case WM_MOUSEWHEEL:
       winui_textview_mousewheel (GET_WHEEL_DELTA_WPARAM (wparam));
       return 0;
