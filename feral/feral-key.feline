@@ -20,7 +20,10 @@ winui? #if
 
 private
 
+0x01 constant VK_LBUTTON
+
 0x08 constant VK_BACK
+0x09 constant VK_TAB
 0x0d constant VK_RETURN
 0x1b constant VK_ESCAPE
 0x20 constant VK_SPACE
@@ -63,6 +66,8 @@ private
 
 public
 
+VK_LBUTTON              constant double-mouse-1
+VK_TAB                  constant tab
 VK_ESCAPE               constant escape
 VK_DELETE               constant delete
 VK_HOME                 constant home
