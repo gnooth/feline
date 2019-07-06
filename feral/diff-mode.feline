@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accessors feral-core segments modes feral-colors feral-config ;
+using: feline accessors feral-core segments modes feral-colors ;
 in: diff-mode
 
 private
@@ -62,12 +62,18 @@ global diff-mode-local-map
 
 initialize-local-map
 
+feral-config:winui? #if
+
+' diff-mode-goto-source feral-key:double-mouse-1 diff-mode-local-map set-at
+
+#endif
+
 method: diff-mode initialize-buffer // buffer mode -> void
     2 ?enough
     drop
     diff-mode-local-map swap local-map<< ;
 
-winui? #if
+feral-config:winui? #if
 
 0x00 0x99 0x00 make-colorref constant color-insertion
 0x99 0x00 0x00 make-colorref constant color-deletion
