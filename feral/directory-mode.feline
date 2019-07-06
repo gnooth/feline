@@ -217,3 +217,9 @@ private
 ;
 
 initialize-local-map
+
+feral-config:winui? #if
+
+' editor:dir-open-file feral-key:double-mouse-1 directory-mode-local-map set-at
+
+#endif
