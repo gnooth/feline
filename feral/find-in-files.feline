@@ -16,11 +16,9 @@
 using: editor feral-core feline accessors mini ;
 in: find-in-files
 
-private
-
-global local-map
-
 public
+
+global find-in-files-local-map
 
 global current-output-buffer
 
@@ -104,7 +102,7 @@ in: editor
     t buf read-only<<
     "find-in-files " current-pattern + " " + current-files + buf name<<
 
-    find-in-files:local-map buf local-map<<
+    find-in-files-local-map buf local-map<<
 
     buf buffer-list vector-push
     buf set-current-buffer
@@ -135,6 +133,12 @@ private
     128 <hashtable> :> m
     ' editor:kill-buffer key:escape m set-at
     ' find-in-files-open-file key:enter m set-at
-    m local-map! ;
+    m find-in-files-local-map! ;
 
 initialize-local-map
+
+feral-config:winui? #if
+
+' find-in-files-open-file feral-key:double-mouse-1 find-in-files-local-map set-at
+
+#endif
