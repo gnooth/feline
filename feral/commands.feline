@@ -49,10 +49,23 @@ in: editor
     t repaint!
 ;
 
+: open-file-get-completions
+    1 ?enough verify-string :> prefix
+    prefix file-name-directory :> dir
+    prefix file-name-nondirectory :> name
+
+    f !> s
+    dir directory-files [
+        s! [ s string-last-char '~' neq? ] [ name s head? ] both?
+    ] filter :> files
+
+    files length 1 eq? [ dir files first path-append ] [ f ] if ;
+
 : open-file
     current-buffer buffer-directory file-name-as-directory :> default-directory
 
     "open-file" set-history
+    ' open-file-get-completions mini:set-completion-provider
     "File: " default-directory minibuffer-accept-string/2 !> arg
 
     arg empty? ?exit

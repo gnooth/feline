@@ -13,12 +13,22 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline feral-config ;
+using: feline ;
 in: user
 
 "mini" delete-vocab
 
-winui? #if
+in: mini
+
+private
+
+global completion-provider
+
+public
+
+: set-completion-provider completion-provider! ;
+
+feral-config:winui? #if
 
 using: history feline accessors ;
 in: mini
@@ -77,6 +87,7 @@ private
     ] when
 
     "" minibuffer-set-text
+    f set-completion-provider
     winui-minibuffer-exit
 ;
 
@@ -84,6 +95,7 @@ private
     f minibuffer-contents!
     "" minibuffer-set-text
     f current-history!
+    f set-completion-provider
     winui-minibuffer-exit ;
 
 : do-bs
@@ -120,6 +132,19 @@ private
 
 : do-next history-next minibuffer-set-text-from-history ;
 
+: minibuffer-set-completion-text // string/f -> void
+    minibuffer-set-text-from-history ;
+
+: do-tab
+    completion-provider null? ?exit
+
+    minibuf text>> :> sb
+    sb sbuf? assert-true
+    prompt length sb sbuf>string tail 1 ?enough dup print
+    completion-provider call [
+        minibuffer-set-completion-text
+    ] when* ;
+
 global minibuffer-keymap
 
 : initialize-minibuffer-keymap
@@ -129,6 +154,7 @@ global minibuffer-keymap
     ' do-bs         key:backspace   m set-at
     ' do-previous   feral-key:up    m set-at
     ' do-next       feral-key:down  m set-at
+    ' do-tab        feral-key:tab   m set-at
     m minibuffer-keymap! ;
 
 initialize-minibuffer-keymap
