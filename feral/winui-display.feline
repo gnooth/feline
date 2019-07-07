@@ -1,0 +1,173 @@
+// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feral-core feline accessors segments feral-colors ;
+in: editor
+
+feral-config:winui? assert
+
+: update-caret-pos
+    dot-column winui-char-width *
+    dot-line-number top-line-number - winui-char-height *
+    winui-set-caret-pos ;
+
+: update-mode-line mode-line-text winui-modeline-set-text ;
+
+192 192 192 make-colorref constant fg-default
+  0   0   0 make-colorref constant bg-default
+ 64  64  64 make-colorref constant bg-selected
+
+: bg-set-default bg-default winui-textview-set-bg-color ;
+
+: bg-set-selected bg-selected winui-textview-set-bg-color ;
+
+: repaint-segment                       // segment row -> void
+    2 ?enough
+    :> row :> segment
+
+    segment format>> winui-textview-set-fg-color
+
+    segment start>> winui-char-width *
+    row winui-char-height *
+    segment text>> winui-textview-text-out ;
+
+: repaint-segments ( segments row )     // segments row -> void
+    segments [ row repaint-segment ] each ;
+
+: repaint-line-no-selection ( line row ) // line row -> void
+    // no part of line is selected
+    line text>> detab :> detabbed-text
+    detabbed-text format-line :> segments
+    segments row repaint-segments
+    detabbed-text length row winui-textview-clear-eol ;
+
+: repaint-selected-line ( line row )    // line row -> void
+    // entire line is selected
+    line text>> detab :> detabbed-text
+    detabbed-text format-line :> segments
+    bg-set-selected
+    segments row repaint-segments
+    detabbed-text length row winui-textview-clear-eol
+    bg-set-default ;
+
+: repaint-segment-of-partly-selected-line ( segment line region row )
+    line region begin-line eq? [ region begin-offset ] [ 0 ] if :> selection-start-index
+    line region end-line eq? [ region end-offset ] [ line length ] if :> selection-end-index
+
+    selection-start-index segment start>> <
+    segment start>> segment text>> length + selection-end-index <= and [
+        // segment is entirely within selection
+        bg-set-selected
+        segment row repaint-segment
+    ] return-if
+
+    f !> seg1
+    f !> seg2
+
+    selection-start-index segment in-segment? selection-end-index segment in-segment? and [
+        // region is entirely within segment
+        segment selection-start-index segment start>> - split-segment seg2! seg1!
+        bg-set-default
+        seg1 row repaint-segment
+
+        // now split seg2 at selection-end-index
+        seg2 selection-end-index seg2 start>> - split-segment
+        swap
+        bg-set-selected
+        row repaint-segment
+        bg-set-default
+        row repaint-segment
+    ] return-if
+
+    selection-start-index segment in-segment? [
+        segment selection-start-index segment start>> - split-segment seg2! seg1!
+        bg-set-default
+        seg1 row repaint-segment
+        bg-set-selected
+        seg2 row repaint-segment
+        bg-set-default
+    ] return-if
+
+    selection-end-index segment in-segment? [
+        segment selection-end-index segment start>> - split-segment seg2! seg1!
+        bg-set-selected
+        seg1 row repaint-segment
+        bg-set-default
+        seg2 row repaint-segment
+    ] return-if
+
+    segment row repaint-segment ;
+
+: repaint-partly-selected-line ( line row )
+    line text>> detab :> detabbed-text
+    detabbed-text format-line :> segments
+    mark dot make-region/2 :> region
+    line line-starts-in-selection? [ bg-set-selected ] [ bg-set-default ] if
+    segments [ line region row repaint-segment-of-partly-selected-line ] each
+
+    [ line next>> ]
+    [ line next>> 0 make-position region in-region? ]
+    both?
+    bg-selected bg-default ? winui-textview-set-bg-color
+
+    detabbed-text length row winui-textview-clear-eol ;
+
+: repaint-line ( line row )             // line row -> void
+    {
+        {
+            [ line line-selected? ]
+            [ line row repaint-selected-line ]
+        }
+        {
+            [ line line-is-partly-selected? ]
+            [ line row repaint-partly-selected-line ]
+        }
+        // otherwise...
+        [ line row repaint-line-no-selection ]
+    } cond ;
+
+: repaint
+    winui-hide-caret
+
+    top-line !> line
+    0 !> row
+
+    [ line row textview-rows < and ] [
+        line row repaint-line
+        row 1+ row! line next>> line!
+    ] while
+
+    [ row textview-rows < ] [
+        0 row winui-textview-clear-eol
+        row 1+ row!
+    ] while
+
+    f repaint!
+
+    winui-show-caret ;
+
+: update-display
+    winui-hide-caret
+    repaint? [
+        repaint
+    ] [
+        dot-line-changed? [
+            dot-line dot-row repaint-line
+            f dot-line-changed!
+        ] when
+    ] if
+    update-mode-line
+    update-caret-pos
+    winui-show-caret ;

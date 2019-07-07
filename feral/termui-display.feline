@@ -1,0 +1,175 @@
+// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feral-core feline accessors segments ;
+in: editor
+
+feral-config:winui? assert-false
+
+: update-caret-pos
+    dot-column
+    dot-line-number top-line-number -
+    at-xy ;
+
+use: ansi-color
+
+192 192 192 rgb-foreground-prefix constant fg-default
+  0   0   0 rgb-background-prefix constant bg-default
+ 64  64  64 rgb-background-prefix constant bg-selected
+
+: normal esc[ "m" write-string-escaped ;
+
+  0   0   0 rgb-foreground-prefix constant fg-mode-line
+192 192 192 rgb-background-prefix constant bg-mode-line
+
+use: mini
+
+: update-mode-line
+    0 status-y at-xy
+
+    fg-mode-line write-string-escaped
+    bg-mode-line write-string-escaped
+
+    mode-line-text write-string
+    clear-to-eol
+
+    fg-default write-string-escaped
+    bg-default write-string-escaped ;
+
+: clear-status-line 0 status-y at-xy clear-to-eol ;
+
+: repaint-segment                       // segment -> void
+    dup
+    format>> [ write-string-escaped ] when*
+    text>> write-string ;
+
+: repaint-segment-of-line-containing-selection ( segment region )
+
+    region begin-offset :> region-begin
+    region end-offset :> region-end
+
+    dot-line mark-line assert-eq
+
+    region-begin segment start>> <
+    segment start>> segment text>> length + region-end <= and [
+        // segment is entirely within region
+        bg-selected write-string-escaped
+        segment repaint-segment
+        bg-default write-string-escaped
+    ] return-if
+
+    f :> seg1!
+    f :> seg2!
+
+    region-begin segment in-segment? region-end segment in-segment? and [
+        segment region-begin segment start>> - split-segment seg2! seg1!
+        bg-default write-string-escaped
+        seg1 repaint-segment
+
+        // now split seg2 at region-end
+        seg2 region-end seg2 start>> - split-segment
+        swap
+        bg-selected write-string-escaped
+        repaint-segment
+        bg-default write-string-escaped
+        repaint-segment
+    ] return-if
+
+    region-begin segment in-segment? [
+        segment region-begin segment start>> - split-segment seg2! seg1!
+        bg-default write-string-escaped
+        seg1 repaint-segment
+        bg-selected write-string-escaped
+        seg2 repaint-segment
+        bg-default write-string-escaped
+    ] return-if
+
+    region-end segment in-segment? [
+        segment region-end segment start>> - split-segment seg2! seg1!
+        bg-selected write-string-escaped
+        seg1 repaint-segment
+        bg-default write-string-escaped
+        seg2 repaint-segment
+    ] return-if
+
+    segment repaint-segment
+;
+
+: repaint-segments                      // segments -> void
+    [ repaint-segment ] each ;
+
+: repaint-selected-line ( line )        // line -> void
+    line text>> detab :> detabbed-text
+    detabbed-text format-line :> segments
+    bg-selected write-string-escaped
+    segments repaint-segments
+    terminal-columns detabbed-text string-length - spaces
+    bg-default write-string-escaped ;
+
+: repaint-line-containing-selection ( line ) // line -> void
+    line text>> detab :> detabbed-text
+    detabbed-text format-line :> segments
+    mark dot make-region/2 :> region
+    segments [ region repaint-segment-of-line-containing-selection ] each
+    detabbed-text string-length terminal-columns < [
+        terminal-columns detabbed-text string-length - spaces
+    ] when ;
+
+: repaint-line ( line )                 // line -> void
+    line line-selected? [ line repaint-selected-line ] return-if
+
+    line line-contains-selection? [
+        line repaint-line-containing-selection
+    ] return-if
+
+    line text>> detab :> detabbed-text
+    detabbed-text format-line :> segments
+    segments repaint-segments
+    terminal-columns detabbed-text string-length - spaces ;
+
+: repaint
+    top-line :> line!
+    0 :> y!
+
+    [ line y textview-rows < and ] [
+        0 y at-xy
+        line repaint-line
+        y 1+ y! line next>> line!
+    ] while
+
+    [ y textview-rows < ] [
+        0 y at-xy terminal-columns spaces
+        y 1+ y!
+    ] while
+
+    f repaint?!
+;
+
+: update-display
+    hide-cursor
+    repaint? [
+        repaint
+    ] [
+        dot-line-changed? [
+            0 dot-row at-xy
+            dot-line repaint-line
+            f dot-line-changed?!
+        ] when
+    ] if
+    update-mode-line
+    update-caret-pos
+    show-cursor
+;
+
