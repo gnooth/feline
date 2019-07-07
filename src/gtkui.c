@@ -61,7 +61,7 @@ modeline_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 
   cairo_select_font_face (cr, "monospace",
                           CAIRO_FONT_SLANT_NORMAL,
-                          CAIRO_FONT_WEIGHT_BOLD);
+                          CAIRO_FONT_WEIGHT_NORMAL);
 
   cairo_text_extents_t extents;
   cairo_text_extents (cr, "test", &extents);
@@ -69,14 +69,14 @@ modeline_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   double char_height = extents.height;
   g_print ("char_width = %f char_height = %f\n", char_width, char_height);
 
-  cairo_move_to (cr, 0, 10);
+  cairo_move_to (cr, 0, 14);
   cairo_set_font_size (cr, 14.0);
   // white background
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
   cairo_paint (cr);
   // black text
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-  cairo_show_text (cr, "This is a test!");
+  cairo_show_text (cr, " feline-mode.feline 1:1 (396)");
   return TRUE;
 }
 
@@ -84,6 +84,10 @@ static gboolean
 minibuffer_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
   g_print ("minibuffer_draw_callback called\n");
+
+  GtkAllocation allocation;
+  gtk_widget_get_allocation (widget, &allocation);
+  g_print ("minibuffer height = %d\n", allocation.height);
 
   cairo_select_font_face (cr, "monospace",
                           CAIRO_FONT_SLANT_NORMAL,
@@ -95,14 +99,14 @@ minibuffer_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   double char_height = extents.height;
   g_print ("char_width = %f char_height = %f\n", char_width, char_height);
 
-  cairo_move_to (cr, 0, 10);
+  cairo_move_to (cr, 0, 14);
   cairo_set_font_size (cr, 14.0);
   // black background
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
   cairo_paint (cr);
   // white text
-  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-  cairo_show_text (cr, "This is a test!");
+//   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+//   cairo_show_text (cr, "This is a test!");
   return TRUE;
 }
 
@@ -114,12 +118,12 @@ void gtkui__initialize (void)
   gtk_window_set_title (GTK_WINDOW (window), "Feral");
   gtk_window_set_default_size (GTK_WINDOW (window), 800, 600);
 
-  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 1);
-  gtk_container_add (GTK_CONTAINER (window), box);
+  GtkBox *box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(box));
 
   GtkWidget *drawing_area_1 = gtk_drawing_area_new();
-  gtk_widget_set_size_request (drawing_area_1, 800, 576);
-  gtk_container_add (GTK_CONTAINER (box), drawing_area_1);
+  gtk_widget_set_size_request (drawing_area_1, 800, 568);
+//   gtk_container_add (GTK_CONTAINER (box), drawing_area_1);
   gtk_widget_set_can_focus (drawing_area_1, TRUE);
 
   gtk_widget_set_events (drawing_area_1,
@@ -141,8 +145,8 @@ void gtkui__initialize (void)
                     G_CALLBACK(key_press_callback), NULL);
 
   GtkWidget *drawing_area_2 = gtk_drawing_area_new();
-  gtk_widget_set_size_request (drawing_area_2, 576, 12);
-  gtk_container_add (GTK_CONTAINER (box), drawing_area_2);
+  gtk_widget_set_size_request (drawing_area_2, 568, 16);
+//   gtk_container_add (GTK_CONTAINER (box), drawing_area_2);
   gtk_widget_set_can_focus (drawing_area_2, TRUE);
 
   gtk_widget_set_events (drawing_area_2,
@@ -164,8 +168,8 @@ void gtkui__initialize (void)
 //                     G_CALLBACK(key_press_callback), NULL);
 
   GtkWidget *drawing_area_3 = gtk_drawing_area_new();
-  gtk_widget_set_size_request (drawing_area_3, 588, 12);
-  gtk_container_add (GTK_CONTAINER (box), drawing_area_3);
+  gtk_widget_set_size_request (drawing_area_3, 584, 16);
+//   gtk_container_add (GTK_CONTAINER (box), drawing_area_3);
   gtk_widget_set_can_focus (drawing_area_3, TRUE);
 
   gtk_widget_set_events (drawing_area_3,
@@ -185,6 +189,13 @@ void gtkui__initialize (void)
                     G_CALLBACK (minibuffer_draw_callback), NULL);
   //   g_signal_connect (drawing_area_3, "key-press-event",
   //                     G_CALLBACK(key_press_callback), NULL);
+
+//   gtk_container_add (GTK_CONTAINER (box), drawing_area_1);
+//   gtk_container_add (GTK_CONTAINER (box), drawing_area_2);
+//   gtk_container_add (GTK_CONTAINER (box), drawing_area_3);
+  gtk_box_pack_end (box, drawing_area_3, FALSE, FALSE, 0);
+  gtk_box_pack_end (box, drawing_area_2, FALSE, FALSE, 0);
+  gtk_box_pack_end (box, drawing_area_1, FALSE, FALSE, 0);
 
   gtk_widget_show_all (window);
   g_print ("leaving gtkui__initialize\n");
