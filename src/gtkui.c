@@ -38,15 +38,32 @@ textview_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   cairo_select_font_face (cr, "monospace",
                           CAIRO_FONT_SLANT_NORMAL,
                           CAIRO_FONT_WEIGHT_NORMAL);
-
-  cairo_move_to (cr, 40, 40);
   cairo_set_font_size (cr, 14.0);
+
+  cairo_font_extents_t fe;
+  cairo_font_extents (cr, &fe);
+  g_print ("ascent = %f  descent = %f\n", fe.ascent, fe.descent);
+  g_print ("height = %f\n", fe.height);
+  g_print ("max_x_advance = %f max_y_advance = %f\n",
+           fe.max_x_advance, fe.max_x_advance);
+
+  cairo_text_extents_t extents;
+  cairo_text_extents (cr, "test", &extents);
+  double char_width = extents.width / 4;
+  double char_height = extents.height;
+  g_print ("textview char_width = %f char_height = %f\n", char_width, char_height);
+
   // black background
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
   cairo_paint (cr);
   // white text
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-  cairo_show_text (cr, "This is a test!");
+  cairo_move_to (cr, 0, 18);
+  cairo_show_text (cr, "This is a test line 1");
+  cairo_move_to (cr, 0, 36);
+  cairo_show_text (cr, "This is a test line 2");
+//   cairo_move_to (cr, 48, 0);
+//   cairo_show_text (cr, "This is a test line 3");
   return TRUE;
 }
 
@@ -67,7 +84,7 @@ modeline_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   cairo_text_extents (cr, "test", &extents);
   double char_width = extents.width / 4;
   double char_height = extents.height;
-  g_print ("char_width = %f char_height = %f\n", char_width, char_height);
+  g_print ("modeline char_width = %f char_height = %f\n", char_width, char_height);
 
   cairo_move_to (cr, 0, 14);
   cairo_set_font_size (cr, 14.0);
@@ -97,7 +114,7 @@ minibuffer_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   cairo_text_extents (cr, "test", &extents);
   double char_width = extents.width / 4;
   double char_height = extents.height;
-  g_print ("char_width = %f char_height = %f\n", char_width, char_height);
+  g_print ("minibufffer char_width = %f char_height = %f\n", char_width, char_height);
 
   cairo_move_to (cr, 0, 14);
   cairo_set_font_size (cr, 14.0);
