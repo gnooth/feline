@@ -19,5 +19,6 @@ in: feral-config
 empty
 
 win64? constant winui?
+linux? constant gtkui?
 
 "feral-main.feline" load
