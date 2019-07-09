@@ -20,5 +20,6 @@ empty
 
 win64? constant winui?
 linux? constant gtkui?
+f      constant termui?
 
 "feral-main.feline" load
