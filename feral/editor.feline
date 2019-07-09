@@ -19,5 +19,7 @@ in: feral-config
 empty
 
 f constant winui?
+f constant gtkui?
+t constant termui?
 
 "feral-main.feline" load
