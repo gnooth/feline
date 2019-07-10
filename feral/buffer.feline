@@ -98,6 +98,18 @@ in: editor
 
     buf dup mode>> initialize-buffer
 
+    get-current-directory :> dir
+    dir [
+        filename file-name-directory [
+            set-current-directory [
+                "git symbolic-ref -q --short HEAD" shell-command-to-string [
+                    :git-branch buf buffer-set-property
+                ] when*
+                dir set-current-directory assert
+            ] when
+        ] when*
+    ] when
+
     t repaint! ;
 
 : find-buffer-from-file-name ( filename )       // filename -> buffer/f

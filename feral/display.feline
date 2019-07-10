@@ -33,7 +33,10 @@ in: editor
     dot-line-number 1+
     dot-column 1+
     line-count
-    " %d:%d (%d)" format sb sbuf-append-string
+    " %d:%d (%d) " format sb sbuf-append-string
+    :git-branch current-buffer buffer-get-property [
+        sb sbuf-append-string
+    ] when*
     sb sbuf>string ;
 
 feral-config:winui? #if
