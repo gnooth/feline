@@ -203,9 +203,17 @@ ASM_SOURCES = feline.asm feline_home.asm externs.asm \
 	wrapper.asm
 
 ifeq ($(OS),Windows_NT)
+
 ifdef WINUI
 	ASM_SOURCES += winui.asm
 endif
+
+else
+
+ifdef GTKUI
+	ASM_SOURCES += gtkui.asm
+endif
+
 endif
 
 # -felf64 even on Windows
