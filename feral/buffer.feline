@@ -103,6 +103,9 @@ in: editor
         filename file-name-directory [
             set-current-directory [
                 "git symbolic-ref -q --short HEAD" shell-command-to-string [
+                    dup string-?last '\n' eq? [
+                        1 swap head*
+                    ] when
                     :git-branch buf buffer-set-property
                 ] when*
                 dir set-current-directory assert
