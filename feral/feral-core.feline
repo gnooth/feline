@@ -291,7 +291,8 @@ tuple: buffer
     top-line
     indent-size
     tab-width
-    command ;
+    command
+    properties ;
 
 "\n"   constant LF
 "\r\n" constant CR+LF
@@ -309,6 +310,15 @@ tuple: buffer
 
     buf
 ;
+
+: buffer-get-property ( keyword buffer ) // keyword buffer -> value
+    buffer properties>> [ keyword swap at ] [ f ] if* ;
+
+: buffer-set-property ( value keyword buffer ) // value keyword buffer -> void
+    buffer properties>> [
+        2 <hashtable> buffer properties<<
+    ] unless
+    value keyword buffer properties>> set-at ;
 
 var repaint?
 var dot-line-changed?
