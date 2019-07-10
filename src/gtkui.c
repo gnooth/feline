@@ -30,10 +30,14 @@ key_press_callback (GtkWidget *widget, GdkEventKey *event, gpointer data)
   return TRUE;
 }
 
+extern void gtkui_textview_paint (void);
+
 static gboolean
 textview_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
   g_print ("textview_draw_callback called\n");
+
+  gtkui_textview_paint ();
 
   cairo_select_font_face (cr, "monospace",
                           CAIRO_FONT_SLANT_NORMAL,

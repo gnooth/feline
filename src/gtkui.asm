@@ -29,3 +29,24 @@ code gtkui_initialize, 'gtkui-initialize'
 
         next
 endcode
+
+; ### gtkui_textview_paint
+subroutine gtkui_textview_paint         ; void -> void
+; 0-arg callback
+
+        ; enter callback
+        push    rbx
+        push    rbp
+        mov     rbp, [gtkui_raw_sp0_]
+
+        _quote "repaint"
+        _quote "editor"
+        _ ?lookup_symbol
+        _ call_symbol
+
+        ; leave callback
+        pop     rbp
+        pop     rbx
+
+        ret
+endsub
