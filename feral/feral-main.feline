@@ -62,14 +62,14 @@ feral-config:winui? #if
     ] if ;
 
 : dispatch                              // key -> void
+    1 ?enough :> key
+
     current-command last-command!
     f current-command!
 
-    dup do-command [
-        drop
-    ] [
-        printable-char? [ insert-char ] when*
-    ] if ;
+    key do-command [
+        key printable-char? [ insert-char ] when*
+    ] unless ;
 
 : winui-textview-char                   // char -> void
     current-command last-command!
