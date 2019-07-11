@@ -144,7 +144,9 @@ feral-config:winui? #if
         winui-main
     ] make-thread thread-create ;
 
-#else
+#endif
+
+feral-config:termui? #if
 
 : do-mouse                              // key -> ?
     dup fixnum? not [ drop f ] return-if
