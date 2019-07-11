@@ -96,7 +96,11 @@ in: editor
 
     0 dot-offset!
 
-    buf dup mode>> initialize-buffer
+    buf mode>> mode? [
+        buf mode>> initialize-buffer-function>> [ buf swap call ] when*
+    ] [
+        buf dup mode>> initialize-buffer
+    ] if
 
     get-current-directory :> dir
     dir [
