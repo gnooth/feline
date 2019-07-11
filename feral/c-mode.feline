@@ -63,6 +63,7 @@ global instance
     mode make-instance :> m
     "C" m name<<
     2 m indent-size<<
+    "// " m comment-start<<
     ' c-format-line m formatter<<
     m ".c" modes set-at
     m ".h" modes set-at
