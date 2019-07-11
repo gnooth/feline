@@ -18,54 +18,19 @@ in: asm-mode
 
 private
 
-tuple: asm-mode
-    formatter ;
+global instance
 
-method: asm-mode initialize-buffer      // buffer mode -> void
-    2 ?enough
-    drop :> buf
-    8 buf indent-size<< ;
+: get-instance                          // void -> mode
+    instance ;
 
-method: asm-mode formatter              // mode -> formatter
-    formatter>> ;
+: asm-mode-initialize-buffer            // buffer -> void
+    1 ?enough :> buf
+    instance indent-size>> buf indent-size<< ;
 
 : asm-mode-identifier-char? ( x )       // x -> ?
     [ x alphanumeric? ] [ x "_$#@~.?" member-eq? ] either? ;
 
-method: asm-mode identifier-char?       // char mode -> ?
-    drop
-    asm-mode-identifier-char? ;
-
-: asm-mode-identifier-at-dot            // void -> start/f string/f
-
-    [ mark ] [ mark-line dot-line eq? ] both? [
-        mark dot make-region/2 begin-offset
-    ] [
-        dot-offset dot-line-length 1- min 0 max
-    ] if :> offset
-
-    offset dot-line-text [ asm-mode-identifier-char? not ] find-last-from drop :> start!
-
-    // advance to first identifier char
-    start [ start 1+ start! ] [ 0 start! ] if
-
-    start dot-line-text [ asm-mode-identifier-char? not ] find-from drop :> end!
-
-    end [ dot-line-length end! ] unless
-
-    start
-    start end dot-line-text string-substring
-;
-
-method: asm-mode identifier-at-dot      // mode -> start/f string/f
-    drop
-    asm-mode-identifier-at-dot ;
-
-method: asm-mode comment-start          // mode -> string
-    drop
-    "; " ;
-
-: asm-format-line ( s )                 // string -> array-of-segments
+: asm-mode-format-line ( s )            // string -> array-of-segments
     ';' s string-find-char :> comment-start
 
     comment-start [
@@ -78,8 +43,14 @@ method: asm-mode comment-start          // mode -> string
     ] if ;
 
 : initialize-asm-mode
-    asm-mode make-instance :> m
-    ' asm-format-line m formatter<<
-    m ".asm" modes set-at ;
+    mode make-instance :> m
+    "Assembly" m name<<
+    8 m indent-size<<
+    "; " m comment-start<<
+    ' asm-mode-format-line m formatter<<
+    ' asm-mode-initialize-buffer m initialize-buffer-function<<
+    ' asm-mode-identifier-char? m identifier-char?-function<<
+    m ".asm" modes set-at
+    m instance! ;
 
 initialize-asm-mode
