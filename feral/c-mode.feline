@@ -1,0 +1,71 @@
+// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: modes feral-core feline accessors segments feral-colors ;
+in: c-mode
+
+private
+
+global instance
+
+: get-instance // void -> mode
+    instance ;
+
+: c-mode-identifier-char? ( x )         // x -> ?
+    [ x alphanumeric? ] [ x "_" eq? ] either? ;
+
+: c-mode-identifier-at-dot              // void -> start/f string/f
+
+    [ mark ] [ mark-line dot-line eq? ] both? [
+        mark dot make-region/2 begin-offset
+    ] [
+        dot-offset dot-line-length 1- min 0 max
+    ] if :> offset
+
+    offset dot-line-text [ c-mode-identifier-char? not ] find-last-from drop :> start!
+
+    // advance to first identifier char
+    start [ start 1+ start! ] [ 0 start! ] if
+
+    start dot-line-text [ c-mode-identifier-char? not ] find-from drop :> end!
+
+    end [ dot-line-length end! ] unless
+
+    start
+    start end dot-line-text string-substring
+;
+
+: c-format-line ( s )                   // string -> array-of-segments
+    "//" s substring-start :> comment-start
+
+    comment-start [
+        comment-start s string-head 0 color-text make-segment/3
+        comment-start s string-tail comment-start color-comment make-segment/3
+        2array
+    ] [
+        s 0 color-text make-segment/3
+        1array
+    ] if ;
+
+: initialize-c-mode
+    mode make-instance :> m
+    "C" m name<<
+    2 m indent-size<<
+    ' c-format-line m formatter<<
+    m ".c" modes set-at
+    m ".h" modes set-at
+    m instance! ;
+
+initialize-c-mode
