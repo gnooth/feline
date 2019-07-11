@@ -744,10 +744,19 @@ winui? #if
 
 : maybe-reframe reframe? [ reframe ] when ;
 
+tuple: mode
+    name
+    indent-size
+    formatter
+;
+
 : current-mode                          // -> mode
     current-buffer mode>> ;
 
 generic formatter                       // mode -> formatter
+
+method: mode formatter                  // mode -> formatter
+    formatter>> ;
 
 use: segments
 
