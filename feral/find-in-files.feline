@@ -100,7 +100,7 @@ in: editor
     buf first-line>> 0 make-position buf dot<<
     buf first-line>> buf top-line<<
     t buf read-only<<
-    "find-in-files " current-pattern + " " + current-files + buf name<<
+    current-pattern current-files "find-in-files %S %s" format buf name<<
 
     find-in-files-local-map buf local-map<<
 
