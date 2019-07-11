@@ -747,6 +747,9 @@ winui? #if
 tuple: mode
     name
     indent-size
+    comment-start
+    initialize-buffer-function
+    identifier-char?-function
     formatter
 ;
 
@@ -785,6 +788,13 @@ unuse: segments
     f ;
 
 generic identifier-char?                // char mode -> ?
+
+method: mode identifier-char?           // char mode -> ?
+    swap :> x
+    identifier-char?-function>>
+    [ x swap call ] [
+        [ x alphanumeric? ] [ x '_' eq? ] either?
+    ] if* ;
 
 : default-identifier-char?              // char mode -> ?
     drop
@@ -841,6 +851,9 @@ generic initialize-buffer               // buffer mode -> void
 ' default-initialize-buffer ' initialize-buffer set-default-method
 
 generic comment-start                   // mode -> string/f
+
+method: mode comment-start              // mode -> string/f
+    comment-start>> ;
 
 : default-comment-start 1 ?enough drop f ;
 
