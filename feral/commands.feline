@@ -111,5 +111,30 @@ in: editor
         ] if
     ] unless ;
 
+: shell-command
+    "shell-command" set-history
+    "Shell command: " minibuffer-accept-string :> command
+
+    command empty? ?exit
+
+    command shell-command-to-string !> s
+
+    s empty? ?exit
+
+    make-buffer :> buf
+
+    s buf buffer-set-contents
+    command buf command<<
+    command buf name<<
+    t buf read-only<<
+    buf first-line>> 0 make-position buf dot<<
+    f buf mark<<
+    buf first-line>> buf top-line<<
+
+    buf buffer-list vector-push
+    buf set-current-buffer
+
+    t repaint! ;
+
 : escape
     mark [ unmark t repaint! ] when ;
