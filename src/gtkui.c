@@ -15,6 +15,9 @@
 
 #include <gtk/gtk.h>
 
+static double char_width = 0.0;
+static double char_height = 0.0;
+
 static GtkWidget *window;
 
 static gboolean
@@ -44,18 +47,22 @@ textview_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
                           CAIRO_FONT_WEIGHT_NORMAL);
   cairo_set_font_size (cr, 14.0);
 
-  cairo_font_extents_t fe;
-  cairo_font_extents (cr, &fe);
-  g_print ("ascent = %f  descent = %f\n", fe.ascent, fe.descent);
-  g_print ("height = %f\n", fe.height);
-  g_print ("max_x_advance = %f max_y_advance = %f\n",
-           fe.max_x_advance, fe.max_x_advance);
+  if (char_width == 0.0)
+    {
+      cairo_font_extents_t fe;
+      cairo_font_extents (cr, &fe);
+      g_print ("ascent = %f  descent = %f\n", fe.ascent, fe.descent);
+      g_print ("height = %f\n", fe.height);
+      g_print ("max_x_advance = %f max_y_advance = %f\n",
+               fe.max_x_advance, fe.max_x_advance);
 
-  cairo_text_extents_t extents;
-  cairo_text_extents (cr, "test", &extents);
-  double char_width = extents.width / 4;
-  double char_height = extents.height;
-  g_print ("textview char_width = %f char_height = %f\n", char_width, char_height);
+      cairo_text_extents_t extents;
+      cairo_text_extents (cr, "test", &extents);
+      char_width = extents.width / 4;
+      char_height = extents.height;
+      g_print ("textview char_width = %f char_height = %f\n",
+               char_width, char_height);
+    }
 
   // black background
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
