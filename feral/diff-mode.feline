@@ -18,11 +18,7 @@ in: diff-mode
 
 private
 
-tuple: diff-mode
-    formatter ;
-
-method: diff-mode formatter             // mode -> formatter
-    formatter>> ;
+global instance
 
 : diff-mode-goto-source
     dot-line :> line!
@@ -68,11 +64,6 @@ feral-config:winui? #if
 
 #endif
 
-method: diff-mode initialize-buffer // buffer mode -> void
-    2 ?enough
-    drop
-    diff-mode-local-map swap local-map<< ;
-
 feral-config:winui? #if
 
 0x00 0x99 0x00 make-colorref constant color-insertion
@@ -108,9 +99,20 @@ unuse: ansi-color
 
     s 0 color make-segment/3 1array ;
 
+: diff-mode-initialize-buffer           // buffer -> void
+    1 ?enough :> buf
+    diff-mode-local-map buf local-map<< ;
+
+: initialize-diff-mode
+    mode make-instance :> m
+    "Diff" m name<<
+    ' diff-mode-initialize-buffer m initialize-buffer-function<<
+    ' diff-mode-format-line m formatter<<
+    m instance! ;
+
+initialize-diff-mode
+
 public
 
-: initialize-diff-mode                  // void -> diff-mode
-    diff-mode make-instance :> m
-    ' diff-mode-format-line m formatter<<
-    m ;
+: get-instance                          // void -> mode
+    instance ;

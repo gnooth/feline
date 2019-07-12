@@ -45,9 +45,9 @@ in: editor
         f buf mark<<
         buf first-line>> buf top-line<<
 
-        initialize-diff-mode buf mode<<
         current-buffer buf parent<<
-        buf dup mode>> initialize-buffer
+        diff-mode:get-instance buf mode<<
+        buf mode>> initialize-buffer-function>> [ buf swap call ] when*
 
         buf buffer-list member-eq? [
             buf buffer-list vector-push
