@@ -15,10 +15,22 @@
 
 #include <gtk/gtk.h>
 
-static double char_width = 0.0;
-static double char_height = 0.0;
+static int char_width;
+static int char_height;
 
-static GtkWidget *window;
+static GtkWidget *frame;
+
+static cairo_t *cr_textview;
+
+int gtkui__char_height (void)
+{
+  return char_height;
+}
+
+int gtkui__char_width (void)
+{
+  return char_width;
+}
 
 static gboolean
 key_press_callback (GtkWidget *widget, GdkEventKey *event, gpointer data)
@@ -27,7 +39,7 @@ key_press_callback (GtkWidget *widget, GdkEventKey *event, gpointer data)
            gdk_keyval_name (event->keyval));
   if (event->keyval == 0x71)
     {
-      gtk_widget_destroy (window);
+      gtk_widget_destroy (frame);
       gtk_main_quit ();
     }
   return TRUE;
@@ -35,19 +47,28 @@ key_press_callback (GtkWidget *widget, GdkEventKey *event, gpointer data)
 
 extern void gtkui_textview_paint (void);
 
+void gtkui__textview_text_out (int x, int y, const char* s)
+{
+  g_print ("gtkui__textview_text_out called\n");
+  cairo_move_to(cr_textview, x, y);
+  cairo_show_text(cr_textview, s);
+}
+
 static gboolean
 textview_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
   g_print ("textview_draw_callback called\n");
 
-  gtkui_textview_paint ();
+  cr_textview = cr;
+
+//   gtkui_textview_paint ();
 
   cairo_select_font_face (cr, "monospace",
                           CAIRO_FONT_SLANT_NORMAL,
                           CAIRO_FONT_WEIGHT_NORMAL);
   cairo_set_font_size (cr, 14.0);
 
-  if (char_width == 0.0)
+  if (char_width == 0)
     {
       cairo_font_extents_t fe;
       cairo_font_extents (cr, &fe);
@@ -56,12 +77,17 @@ textview_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
       g_print ("max_x_advance = %f max_y_advance = %f\n",
                fe.max_x_advance, fe.max_x_advance);
 
-      cairo_text_extents_t extents;
-      cairo_text_extents (cr, "test", &extents);
-      char_width = extents.width / 4;
-      char_height = extents.height;
-      g_print ("textview char_width = %f char_height = %f\n",
+      char_width = (int) fe.max_x_advance;
+      char_height = (int) fe.height;
+      g_print ("textview char_width = %d char_height = %d\n",
                char_width, char_height);
+
+//       cairo_text_extents_t extents;
+//       cairo_text_extents (cr, "test", &extents);
+//       char_width = (int) extents.width / 4;
+//       char_height = (int) extents.height;
+//       g_print ("textview x_bearing = %f y_bearing = %f\n",
+//                extents.x_bearing, extents.y_bearing);
     }
 
   // black background
@@ -69,15 +95,43 @@ textview_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   cairo_paint (cr);
   // white text
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-  cairo_move_to (cr, 0, 18);
-  cairo_show_text (cr, "This is a test line 1");
-  cairo_move_to (cr, 0, 36);
-  cairo_show_text (cr, "This is a test line 2");
+//   cairo_move_to (cr, 0, char_height * 1);
+//   cairo_show_text (cr, "This is a test line 1");
+#if 0
+  gtkui__textview_text_out (0, char_height * 1, "This is a real test line 1");
+  gtkui__textview_text_out (0, char_height * 2, "This is a real test line 2");
+#endif
+  gtkui_textview_paint ();
+//   cairo_move_to (cr, 0, char_height * 2);
+//   cairo_show_text (cr, "This is a test line 2");
 //   cairo_move_to (cr, 48, 0);
 //   cairo_show_text (cr, "This is a test line 3");
+  cr_textview = 0;
   return TRUE;
 }
 
+#if 0
+void winui__textview_text_out (int x, int y, LPCSTR lpString, int c)
+{
+  if (hdc_textview)
+    {
+      SetTextColor (hdc_textview, rgb_textview_fg);
+      SetBkColor (hdc_textview, rgb_textview_bg);
+      TextOut (hdc_textview, x, y, lpString, c);
+    }
+  else
+    {
+      HDC hdc = GetDC (hwnd_textview);
+      SelectObject (hdc, hfont_normal);
+      SetTextColor (hdc, rgb_textview_fg);
+      SetBkColor (hdc, rgb_textview_bg);
+      HideCaret (hwnd_textview);
+      TextOut (hdc, x, y, lpString, c);
+      ShowCaret (hwnd_textview);
+      ReleaseDC (hwnd_textview, hdc);
+    }
+}
+#endif
 static gboolean
 modeline_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
@@ -142,12 +196,12 @@ void gtkui__initialize (void)
 {
   gtk_init(0,  NULL);
 
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (window), "Feral");
-  gtk_window_set_default_size (GTK_WINDOW (window), 800, 600);
+  frame = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (frame), "Feral");
+  gtk_window_set_default_size (GTK_WINDOW (frame), 800, 600);
 
   GtkBox *box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET(box));
+  gtk_container_add (GTK_CONTAINER (frame), GTK_WIDGET(box));
 
   GtkWidget *drawing_area_1 = gtk_drawing_area_new();
   gtk_widget_set_size_request (drawing_area_1, 800, 568);
@@ -225,7 +279,7 @@ void gtkui__initialize (void)
   gtk_box_pack_end (box, drawing_area_2, FALSE, FALSE, 0);
   gtk_box_pack_end (box, drawing_area_1, FALSE, FALSE, 0);
 
-  gtk_widget_show_all (window);
+  gtk_widget_show_all (frame);
   g_print ("leaving gtkui__initialize\n");
   gtk_main ();
 }

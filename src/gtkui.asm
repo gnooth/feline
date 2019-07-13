@@ -30,6 +30,45 @@ code gtkui_initialize, 'gtkui-initialize'
         next
 endcode
 
+; ### gtkui-char-width
+code gtkui_char_width, 'gtkui-char-width' ; void -> fixnum
+        extern  gtkui__char_width
+        xcall   gtkui__char_width
+        pushrbx
+        mov     rbx, rax
+        _tag_fixnum
+        next
+endcode
+
+; ### gtkui-char-height
+code gtkui_char_height, 'gtkui-char-height' ; void -> fixnum
+        extern  gtkui__char_height
+        xcall   gtkui__char_height
+        pushrbx
+        mov     rbx, rax
+        _tag_fixnum
+        next
+endcode
+
+; ### gtkui-textview-text-out
+code gtkui_textview_text_out, 'gtkui-textview-text-out' ; x y string -> void
+        _ string_from
+        _drop
+        mov     arg2_register, rbx
+        poprbx
+        _ check_fixnum
+        mov     arg1_register, rbx
+        poprbx
+        _ check_fixnum
+        mov     arg0_register, rbx
+        poprbx
+
+        extern  gtkui__textview_text_out
+        xcall   gtkui__textview_text_out
+
+        next
+endcode
+
 ; ### gtkui_textview_paint
 subroutine gtkui_textview_paint         ; void -> void
 ; 0-arg callback
