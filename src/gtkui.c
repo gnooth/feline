@@ -32,11 +32,40 @@ int gtkui__char_width (void)
   return char_width;
 }
 
+extern void gtkui_textview_keydown (guint);
+
+#define ALT_MASK        0x01 << 16
+#define CTRL_MASK       0x02 << 16
+#define SHIFT_MASK      0x04 << 16
+
+static void gtkui__textview_keydown (GdkEventKey *event)
+{
+  guint keyval = event->keyval;
+  guint state = event->state;
+//   if (GetKeyState (VK_MENU) & 0x8000)
+//     wparam |= ALT_MASK;
+//   if (GetKeyState (VK_CONTROL) & 0x8000)
+//     wparam |= CTRL_MASK;
+//   if (GetKeyState (VK_SHIFT) & 0x8000)
+//     wparam |= SHIFT_MASK;
+//   winui_textview_keydown (wparam);
+  if (state & GDK_MOD1_MASK)
+    keyval |= ALT_MASK;
+  if (state & GDK_CONTROL_MASK)
+    keyval |= CTRL_MASK;
+  if (state & GDK_SHIFT_MASK)
+    keyval |= SHIFT_MASK;
+  g_print ("gtkui__textview_keydown keyval = 0x%08x\n", keyval);
+  gtkui_textview_keydown (keyval);
+  gtk_widget_queue_draw (frame);
+}
+
 static gboolean
 key_press_callback (GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
   g_print ("key pressed 0x%08x 0x%08x %s\n", event->state, event->keyval,
            gdk_keyval_name (event->keyval));
+  gtkui__textview_keydown (event);
   if (event->keyval == 0x71)
     {
       gtk_widget_destroy (frame);
@@ -49,7 +78,7 @@ extern void gtkui_textview_paint (void);
 
 void gtkui__textview_text_out (int x, int y, const char* s)
 {
-  g_print ("gtkui__textview_text_out called\n");
+//   g_print ("gtkui__textview_text_out called\n");
   cairo_move_to(cr_textview, x, y);
   cairo_show_text(cr_textview, s);
 }

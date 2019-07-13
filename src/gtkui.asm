@@ -89,3 +89,28 @@ subroutine gtkui_textview_paint         ; void -> void
 
         ret
 endsub
+
+; ### gtkui_textview_keydown
+subroutine gtkui_textview_keydown       ; keyval -> void
+; 1-arg callback
+
+        ; enter callback
+        push    rbx
+        push    rbp
+        mov     rbp, [gtkui_raw_sp0_]
+
+        pushrbx
+        mov     rbx, arg0_register
+        _tag_fixnum
+
+        _quote "gtkui-textview-keydown"
+        _quote "editor"
+        _ ?lookup_symbol
+        _ call_symbol
+
+        ; leave callback
+        pop     rbp
+        pop     rbx
+
+        ret
+endsub
