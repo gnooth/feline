@@ -13,14 +13,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: editor feral-core feline search feral-config mini ;
+using: editor feral-core feline search mini ;
 in: keymaps
 
 private
 
 global global-map
 
-winui? #if
+: lookup-key                            // key -> symbol/f
+    global-map at ;
+
+feral-config:winui? #if
 
 : initialize-global-map
     global-map ?exit
@@ -105,14 +108,13 @@ winui? #if
 
 public
 
-: lookup-key                            // key -> symbol/f
-    global-map at ;
-
 : initialize-keymaps
     initialize-global-map
 ;
 
-#else
+#endif
+
+feral-config:termui? #if
 
 global ctrl-k-map
 
@@ -212,9 +214,6 @@ global ctrl-k-map
 ;
 
 public
-
-: lookup-key                            // key -> symbol/f
-    global-map at ;
 
 : initialize-keymaps
     initialize-global-map
