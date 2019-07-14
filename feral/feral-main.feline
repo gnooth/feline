@@ -23,14 +23,12 @@ empty
 using: feral-core feline accessors ;
 in: editor
 
-feral-config:winui? #if
-
 : safe-call-symbol                      // symbol ->
     [ call-symbol ]
     [
         last-error string? [
             last-error
-            [ feral-config:winui? [ print ] when ]
+            [ feral-config:termui? [ print ] unless ]
             [ mini:message ]
             [ logging:log ]
             tri
@@ -38,6 +36,8 @@ feral-config:winui? #if
         [ print-backtrace ] logging:with-output-to-log
     ]
     recover ;
+
+feral-config:winui? #if
 
 : do-command ( key )                    // key -> ?
 
@@ -184,7 +184,7 @@ feral-config:termui? #if
     ] unless
 
     command [
-        command dup current-command! call-symbol
+        command dup current-command! safe-call-symbol
         t
     ] [
         linux? [ key do-mouse ] [ f ] if
