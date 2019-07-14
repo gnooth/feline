@@ -40,11 +40,13 @@ in: editor
     sb sbuf>string ;
 
 feral-config:winui? #if
-
 "winui-display.feline" load
+#endif
 
-#else
+feral-config:gtkui? #if
+"gtkui-display.feline" load
+#endif
 
+feral-config:termui? #if
 "termui-display.feline" load
-
 #endif
