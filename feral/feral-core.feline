@@ -578,7 +578,14 @@ global current-buffer
 winui? #if
 : textview-rows                         // -> n
     winui-textview-rows ;
-#else
+#endif
+
+gtkui? #if
+: textview-rows                         // -> n
+    gtkui-textview-rows ;
+#endif
+
+termui? #if
 : textview-rows                         // -> n
     terminal-rows 2 - ;
 #endif
