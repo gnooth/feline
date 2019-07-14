@@ -18,9 +18,27 @@
 static int char_width;
 static int char_height;
 
+static int textview_rows;
+static int textview_columns;
+
 static GtkWidget *frame;
 
 static cairo_t *cr_textview;
+
+static const char *mode_line_text;
+
+static int caret_row;
+static int caret_column;
+
+int gtkui__textview_rows (void)
+{
+  return textview_rows;
+}
+
+int gtkui__textview_columns (void)
+{
+  return textview_columns;
+}
 
 int gtkui__char_height (void)
 {
@@ -37,6 +55,14 @@ extern void gtkui_textview_keydown (guint);
 #define ALT_MASK        0x01 << 16
 #define CTRL_MASK       0x02 << 16
 #define SHIFT_MASK      0x04 << 16
+
+void gtkui__modeline_set_text (const char *s)
+{
+//   if (hwnd_modeline)
+//     SetWindowText (hwnd_modeline, lpString);
+  mode_line_text = s;
+  g_print ("gtkui__modeline_set_text %s\n", mode_line_text);
+}
 
 static void gtkui__textview_keydown (GdkEventKey *event)
 {
@@ -59,6 +85,14 @@ static void gtkui__textview_keydown (GdkEventKey *event)
   gtkui_textview_keydown (keyval);
   gtk_widget_queue_draw (frame);
 }
+
+// static void
+// on_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
+// {
+//   int  width, height;
+//   gtk_window_get_size (GTK_WINDOW (widget), &width, &height);
+//   g_print ("w = %d h = %d\n", width, height);
+// }
 
 static gboolean
 key_press_callback (GtkWidget *widget, GdkEventKey *event, gpointer data)
@@ -86,7 +120,7 @@ void gtkui__textview_text_out (int x, int y, const char* s)
 static gboolean
 textview_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
-  g_print ("textview_draw_callback called\n");
+//   g_print ("textview_draw_callback called\n");
 
   cr_textview = cr;
 
@@ -101,10 +135,10 @@ textview_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
     {
       cairo_font_extents_t fe;
       cairo_font_extents (cr, &fe);
-      g_print ("ascent = %f  descent = %f\n", fe.ascent, fe.descent);
-      g_print ("height = %f\n", fe.height);
-      g_print ("max_x_advance = %f max_y_advance = %f\n",
-               fe.max_x_advance, fe.max_x_advance);
+//       g_print ("ascent = %f  descent = %f\n", fe.ascent, fe.descent);
+//       g_print ("height = %f\n", fe.height);
+//       g_print ("max_x_advance = %f max_y_advance = %f\n",
+//                fe.max_x_advance, fe.max_x_advance);
 
       char_width = (int) fe.max_x_advance;
       char_height = (int) fe.height;
@@ -117,6 +151,15 @@ textview_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 //       char_height = (int) extents.height;
 //       g_print ("textview x_bearing = %f y_bearing = %f\n",
 //                extents.x_bearing, extents.y_bearing);
+
+      GtkAllocation allocation;
+      gtk_widget_get_allocation (widget, &allocation);
+      g_print ("textview h = %d w = %d\n", allocation.height, allocation.width);
+
+      textview_rows = allocation.height / char_height;
+      textview_columns = allocation.width / char_width;
+      g_print ("textview %d rows, %d columns\n", textview_rows, textview_columns);
+
     }
 
   // black background
@@ -135,6 +178,17 @@ textview_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 //   cairo_show_text (cr, "This is a test line 2");
 //   cairo_move_to (cr, 48, 0);
 //   cairo_show_text (cr, "This is a test line 3");
+
+  int x = char_width * caret_column;
+  int y = char_height * caret_row;
+  g_print ("drawing caret column = %d row = %d\n", caret_column, caret_row);
+  g_print ("drawing caret x = %d y = %d\n", x, y);
+  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+  cairo_set_line_width (cr, 1.0);
+  cairo_move_to (cr, x, y);
+  cairo_line_to (cr, x, y + char_height);
+  cairo_stroke (cr);
+
   cr_textview = 0;
   return TRUE;
 }
@@ -161,24 +215,25 @@ void winui__textview_text_out (int x, int y, LPCSTR lpString, int c)
     }
 }
 #endif
+
 static gboolean
 modeline_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
   g_print ("modeline_draw_callback called\n");
 
-  GtkAllocation allocation;
-  gtk_widget_get_allocation (widget, &allocation);
-  g_print ("modeline height = %d\n", allocation.height);
+//   GtkAllocation allocation;
+//   gtk_widget_get_allocation (widget, &allocation);
+//   g_print ("modeline height = %d\n", allocation.height);
 
   cairo_select_font_face (cr, "monospace",
                           CAIRO_FONT_SLANT_NORMAL,
                           CAIRO_FONT_WEIGHT_NORMAL);
 
-  cairo_text_extents_t extents;
-  cairo_text_extents (cr, "test", &extents);
-  double char_width = extents.width / 4;
-  double char_height = extents.height;
-  g_print ("modeline char_width = %f char_height = %f\n", char_width, char_height);
+//   cairo_text_extents_t extents;
+//   cairo_text_extents (cr, "test", &extents);
+//   double char_width = extents.width / 4;
+//   double char_height = extents.height;
+//   g_print ("modeline char_width = %f char_height = %f\n", char_width, char_height);
 
   cairo_move_to (cr, 0, 14);
   cairo_set_font_size (cr, 14.0);
@@ -187,7 +242,8 @@ modeline_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   cairo_paint (cr);
   // black text
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-  cairo_show_text (cr, " feline-mode.feline 1:1 (396)");
+//   cairo_show_text (cr, " feline-mode.feline 1:1 (396)");
+  cairo_show_text (cr, mode_line_text);
   return TRUE;
 }
 
@@ -254,6 +310,8 @@ void gtkui__initialize (void)
                     G_CALLBACK (textview_draw_callback), NULL);
   g_signal_connect (drawing_area_1, "key-press-event",
                     G_CALLBACK(key_press_callback), NULL);
+//   g_signal_connect (drawing_area_1, "size-allocate",
+//                     G_CALLBACK (on_size_allocate), NULL);
 
   GtkWidget *drawing_area_2 = gtk_drawing_area_new();
   gtk_widget_set_size_request (drawing_area_2, 568, 16);
@@ -311,4 +369,10 @@ void gtkui__initialize (void)
   gtk_widget_show_all (frame);
   g_print ("leaving gtkui__initialize\n");
   gtk_main ();
+}
+
+void gtkui__set_caret_pos (int column, int row)
+{
+  caret_column = column;
+  caret_row = row;
 }

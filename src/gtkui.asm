@@ -30,6 +30,26 @@ code gtkui_initialize, 'gtkui-initialize'
         next
 endcode
 
+; ### gtkui-textview-rows
+code gtkui_textview_rows, 'gtkui-textview-rows' ; void -> fixnum
+        extern  gtkui__textview_rows
+        xcall   gtkui__textview_rows
+        pushrbx
+        mov     rbx, rax
+        _tag_fixnum
+        next
+endcode
+
+; ### gtkui-textview-columns
+code gtkui_textview_columns, 'gtkui-textview-columns' ; void -> fixnum
+        extern  gtkui__textview_columns
+        xcall   gtkui__textview_columns
+        pushrbx
+        mov     rbx, rax
+        _tag_fixnum
+        next
+endcode
+
 ; ### gtkui-char-width
 code gtkui_char_width, 'gtkui-char-width' ; void -> fixnum
         extern  gtkui__char_width
@@ -47,6 +67,18 @@ code gtkui_char_height, 'gtkui-char-height' ; void -> fixnum
         pushrbx
         mov     rbx, rax
         _tag_fixnum
+        next
+endcode
+
+; ### gtkui-modeline-set-text
+code gtkui_modeline_set_text, 'gtkui-modeline-set-text' ; string -> void
+        _ string_raw_data_address
+        mov     arg0_register, rbx
+        poprbx
+
+        extern  gtkui__modeline_set_text
+        xcall   gtkui__modeline_set_text
+
         next
 endcode
 
@@ -114,3 +146,18 @@ subroutine gtkui_textview_keydown       ; keyval -> void
 
         ret
 endsub
+
+; ### gtkui-set-caret-pos
+code gtkui_set_caret_pos, 'gtkui-set-caret-pos' ; x y -> void
+        _check_fixnum
+        mov     arg1_register, rbx
+        poprbx
+        _check_fixnum
+        mov     arg0_register, rbx
+        poprbx
+;         extern  SetCaretPos
+;         xcall   SetCaretPos
+        extern  gtkui__set_caret_pos
+        xcall   gtkui__set_caret_pos
+        next
+endcode
