@@ -23,7 +23,10 @@ static int textview_columns;
 
 static GtkWidget *frame;
 
+static GtkWidget *minibuffer;
+
 static cairo_t *cr_textview;
+static cairo_t *cr_minibuffer;
 
 static const char *mode_line_text;
 
@@ -58,10 +61,7 @@ extern void gtkui_textview_keydown (guint);
 
 void gtkui__modeline_set_text (const char *s)
 {
-//   if (hwnd_modeline)
-//     SetWindowText (hwnd_modeline, lpString);
   mode_line_text = s;
-//   g_print ("gtkui__modeline_set_text %s\n", mode_line_text);
 }
 
 static void gtkui__textview_keydown (GdkEventKey *event)
@@ -72,13 +72,6 @@ static void gtkui__textview_keydown (GdkEventKey *event)
     return;
 
   guint state = event->state;
-//   if (GetKeyState (VK_MENU) & 0x8000)
-//     wparam |= ALT_MASK;
-//   if (GetKeyState (VK_CONTROL) & 0x8000)
-//     wparam |= CTRL_MASK;
-//   if (GetKeyState (VK_SHIFT) & 0x8000)
-//     wparam |= SHIFT_MASK;
-//   winui_textview_keydown (wparam);
   if (state & GDK_MOD1_MASK)
     keyval |= ALT_MASK;
   if (state & GDK_CONTROL_MASK)
@@ -99,7 +92,7 @@ static void gtkui__textview_keydown (GdkEventKey *event)
 // }
 
 static gboolean
-key_press_callback (GtkWidget *widget, GdkEventKey *event, gpointer data)
+on_textview_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
   if (event->keyval == 0xffe3 || event->keyval == 0xff34)
     return FALSE;
@@ -107,6 +100,23 @@ key_press_callback (GtkWidget *widget, GdkEventKey *event, gpointer data)
 //   g_print ("key pressed 0x%08x 0x%08x %s\n", event->state, event->keyval,
 //            gdk_keyval_name (event->keyval));
   gtkui__textview_keydown (event);
+  if (event->keyval == 0x71)
+    {
+      gtk_widget_destroy (frame);
+      gtk_main_quit ();
+    }
+  return TRUE;
+}
+
+static gboolean
+on_minibuffer_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
+{
+  if (event->keyval == 0xffe3 || event->keyval == 0xff34)
+    return FALSE;
+
+  //   g_print ("key pressed 0x%08x 0x%08x %s\n", event->state, event->keyval,
+  //            gdk_keyval_name (event->keyval));
+//   gtkui__textview_keydown (event);
   if (event->keyval == 0x71)
     {
       gtk_widget_destroy (frame);
@@ -132,9 +142,9 @@ void gtkui__textview_text_out (int x, int y, const char* s)
 }
 
 static gboolean
-textview_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
+on_textview_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
-//   g_print ("textview_draw_callback called\n");
+//   g_print ("on_textview_draw called\n");
 
   cr_textview = cr;
 
@@ -261,10 +271,14 @@ modeline_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   return TRUE;
 }
 
+extern void gtkui_minibuffer_paint (void);
+
 static gboolean
-minibuffer_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
+on_minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
-//   g_print ("minibuffer_draw_callback called\n");
+  g_print ("on_minibuffer_draw called\n");
+
+  cr_minibuffer = cr;
 
   GtkAllocation allocation;
   gtk_widget_get_allocation (widget, &allocation);
@@ -288,6 +302,10 @@ minibuffer_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   // white text
 //   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 //   cairo_show_text (cr, "This is a test!");
+  gtkui_minibuffer_paint ();
+
+  cr_minibuffer = 0;
+
   return TRUE;
 }
 
@@ -321,9 +339,9 @@ void gtkui__initialize (void)
                          );
 
   g_signal_connect (drawing_area_1, "draw",
-                    G_CALLBACK (textview_draw_callback), NULL);
+                    G_CALLBACK (on_textview_draw), NULL);
   g_signal_connect (drawing_area_1, "key-press-event",
-                    G_CALLBACK(key_press_callback), NULL);
+                    G_CALLBACK(on_textview_key_press), NULL);
 //   g_signal_connect (drawing_area_1, "size-allocate",
 //                     G_CALLBACK (on_size_allocate), NULL);
 
@@ -350,7 +368,9 @@ void gtkui__initialize (void)
 //   g_signal_connect (drawing_area_2, "key-press-event",
 //                     G_CALLBACK(key_press_callback), NULL);
 
+  // drawing_area_3 is the minibuffer
   GtkWidget *drawing_area_3 = gtk_drawing_area_new();
+  minibuffer = drawing_area_3;
   gtk_widget_set_size_request (drawing_area_3, 584, 16);
 //   gtk_container_add (GTK_CONTAINER (box), drawing_area_3);
   gtk_widget_set_can_focus (drawing_area_3, TRUE);
@@ -369,7 +389,9 @@ void gtkui__initialize (void)
                          );
 
   g_signal_connect (drawing_area_3, "draw",
-                    G_CALLBACK (minibuffer_draw_callback), NULL);
+                    G_CALLBACK (on_minibuffer_draw), NULL);
+  g_signal_connect (drawing_area_3, "key-press-event",
+                    G_CALLBACK (on_minibuffer_key_press), NULL);
   //   g_signal_connect (drawing_area_3, "key-press-event",
   //                     G_CALLBACK(key_press_callback), NULL);
 
@@ -389,4 +411,62 @@ void gtkui__set_caret_pos (int column, int row)
 {
   caret_column = column;
   caret_row = row;
+}
+
+
+#if 0
+void winui__minibuffer_text_out (int x, int y, LPCSTR lpString, int c)
+{
+  if (hdc_minibuffer)
+    {
+      TextOut (hdc_minibuffer, x, y, lpString, c);
+    }
+  else
+    {
+      HDC hdc = GetDC (hwnd_minibuffer);
+      SelectObject (hdc, hfont_normal);
+      SetTextColor (hdc, rgb_minibuffer_fg);
+      SetBkColor (hdc, rgb_minibuffer_bg);
+      HideCaret (hwnd_minibuffer);
+      TextOut (hdc, x, y, lpString, c);
+      ShowCaret (hwnd_minibuffer);
+      ReleaseDC (hwnd_minibuffer, hdc);
+    }
+}
+#endif
+
+void gtkui__minibuffer_main (void)
+{
+//   minibuffer_exit = FALSE;
+
+//   SetFocus (hwnd_minibuffer);
+
+//   BOOL ret;
+//   MSG msg;
+//   while ((ret = GetMessage (&msg, NULL, 0, 0)) != 0
+//          && ret != -1
+//          && minibuffer_exit == FALSE)
+//     {
+//       TranslateMessage (&msg);
+//       DispatchMessage (&msg);
+//     }
+
+//   SetFocus (hwnd_textview);
+  g_print ("gtkui__minibuffer_main called\n");
+  gtk_widget_queue_draw (minibuffer);
+  gtk_widget_grab_focus (minibuffer);
+}
+
+void gtkui__minibuffer_text_out (int x, int y, const char* s)
+{
+  g_print ("gtkui__minibuffer_text_out called\n");
+  if (cr_minibuffer)
+    {
+      cairo_move_to (cr_minibuffer, x, y);
+      cairo_show_text (cr_minibuffer, s);
+    }
+  else
+    {
+      g_print ("gtkui__minibuffer_text_out no cr\n");
+    }
 }

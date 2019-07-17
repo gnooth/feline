@@ -147,6 +147,53 @@ subroutine gtkui_textview_keydown       ; keyval -> void
         ret
 endsub
 
+; ### gtkui-minibuffer-main
+code gtkui_minibuffer_main, 'gtkui-minibuffer-main' ; void -> void
+        extern  gtkui__minibuffer_main
+        xcall   gtkui__minibuffer_main
+        next
+endcode
+
+; ### gtkui-minibuffer-text-out
+code gtkui_minibuffer_text_out, 'gtkui-minibuffer-text-out' ; x y string -> void
+        _ string_from
+        _drop
+        mov     arg2_register, rbx
+        poprbx
+        _ check_fixnum
+        mov     arg1_register, rbx
+        poprbx
+        _ check_fixnum
+        mov     arg0_register, rbx
+        poprbx
+
+        extern  gtkui__minibuffer_text_out
+        xcall   gtkui__minibuffer_text_out
+
+        next
+endcode
+
+; ### gtkui_minibuffer_paint
+subroutine gtkui_minibuffer_paint       ; void -> void
+; 0-arg callback
+
+        ; enter callback
+        push    rbx
+        push    rbp
+        mov     rbp, [gtkui_raw_sp0_]
+
+        _quote "repaint-minibuffer"     ; name
+        _quote "mini"                   ; vocab-name
+        _ ?lookup_symbol
+        _ call_symbol
+
+        ; leave callback
+        pop     rbp
+        pop     rbx
+
+        ret
+endsub
+
 ; ### gtkui-set-caret-pos
 code gtkui_set_caret_pos, 'gtkui-set-caret-pos' ; x y -> void
         _check_fixnum
