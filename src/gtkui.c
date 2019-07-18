@@ -94,7 +94,14 @@ static void gtkui__textview_keydown (GdkEventKey *event)
 static gboolean
 on_textview_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
-  if (event->keyval == 0xffe3 || event->keyval == 0xff34)
+// #define GDK_KEY_Control_L 0xffe3
+// #define GDK_KEY_Control_R 0xffe4
+  if (event->keyval == GDK_KEY_Control_L || event->keyval == GDK_KEY_Control_R)
+    return FALSE;
+
+// #define GDK_KEY_Alt_L 0xffe9
+// #define GDK_KEY_Alt_R 0xffea
+  if (event->keyval == GDK_KEY_Alt_L || event->keyval == GDK_KEY_Alt_R)
     return FALSE;
 
 //   g_print ("key pressed 0x%08x 0x%08x %s\n", event->state, event->keyval,
@@ -108,20 +115,46 @@ on_textview_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
   return TRUE;
 }
 
+extern void gtkui_minibuffer_keydown (guint);
+
 static gboolean
 on_minibuffer_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
-  if (event->keyval == 0xffe3 || event->keyval == 0xff34)
+// #define GDK_KEY_Control_L 0xffe3
+// #define GDK_KEY_Control_R 0xffe4
+  if (event->keyval == GDK_KEY_Control_L || event->keyval == GDK_KEY_Control_R)
     return FALSE;
 
-  //   g_print ("key pressed 0x%08x 0x%08x %s\n", event->state, event->keyval,
-  //            gdk_keyval_name (event->keyval));
+// #define GDK_KEY_Alt_L 0xffe9
+// #define GDK_KEY_Alt_R 0xffea
+  if (event->keyval == GDK_KEY_Alt_L || event->keyval == GDK_KEY_Alt_R)
+    return FALSE;
+
+  g_print ("minibuffer key pressed 0x%08x 0x%08x %s\n",
+           event->state, event->keyval, gdk_keyval_name (event->keyval));
 //   gtkui__textview_keydown (event);
+
   if (event->keyval == 0x71)
     {
       gtk_widget_destroy (frame);
       gtk_main_quit ();
     }
+
+  guint keyval = event->keyval;
+
+  if (keyval == 0xffe3 || keyval == 0xffe4) // Control_L, Control_R
+    return;
+
+  guint state = event->state;
+  if (state & GDK_MOD1_MASK)
+    keyval |= ALT_MASK;
+  if (state & GDK_CONTROL_MASK)
+    keyval |= CTRL_MASK;
+  if (state & GDK_SHIFT_MASK)
+    keyval |= SHIFT_MASK;
+
+  gtkui_minibuffer_keydown (keyval);
+
   return TRUE;
 }
 
@@ -300,11 +333,13 @@ on_minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
   cairo_paint (cr);
   // white text
-//   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 //   cairo_show_text (cr, "This is a test!");
   gtkui_minibuffer_paint ();
 
   cr_minibuffer = 0;
+
+  g_print ("on_minibuffer_draw returning\n");
 
   return TRUE;
 }
@@ -460,6 +495,7 @@ void gtkui__minibuffer_main (void)
 void gtkui__minibuffer_text_out (int x, int y, const char* s)
 {
   g_print ("gtkui__minibuffer_text_out called\n");
+  g_print ("x = %d y = %d s = |%s|\n", x, y, s);
   if (cr_minibuffer)
     {
       cairo_move_to (cr_minibuffer, x, y);

@@ -194,6 +194,31 @@ subroutine gtkui_minibuffer_paint       ; void -> void
         ret
 endsub
 
+; ### gtkui_minibuffer_keydown
+subroutine gtkui_minibuffer_keydown     ; wparam -> void
+; 1-arg callback
+
+        ; enter callback
+        push    rbx
+        push    rbp
+        mov     rbp, [gtkui_raw_sp0_]
+
+        pushrbx
+        mov     rbx, arg0_register
+        _tag_fixnum
+
+        _quote "gtkui-minibuffer-keydown"
+        _quote "mini"
+        _ ?lookup_symbol
+        _ call_symbol
+
+        ; leave callback
+        pop     rbp
+        pop     rbx
+
+        ret
+endsub
+
 ; ### gtkui-set-caret-pos
 code gtkui_set_caret_pos, 'gtkui-set-caret-pos' ; x y -> void
         _check_fixnum
