@@ -154,6 +154,13 @@ code gtkui_minibuffer_main, 'gtkui-minibuffer-main' ; void -> void
         next
 endcode
 
+; ### gtkui-minibuffer-exit
+code gtkui_minibuffer_exit, 'gtkui-minibuffer-exit' ; void -> void
+        extern  gtkui__minibuffer_exit
+        xcall   gtkui__minibuffer_exit
+        next
+endcode
+
 ; ### gtkui-minibuffer-text-out
 code gtkui_minibuffer_text_out, 'gtkui-minibuffer-text-out' ; x y string -> void
         _ string_from

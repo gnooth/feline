@@ -143,7 +143,7 @@ on_minibuffer_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
   guint keyval = event->keyval;
 
   if (keyval == 0xffe3 || keyval == 0xffe4) // Control_L, Control_R
-    return;
+    return FALSE;
 
   guint state = event->state;
   if (state & GDK_MOD1_MASK)
@@ -154,6 +154,7 @@ on_minibuffer_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
     keyval |= SHIFT_MASK;
 
   gtkui_minibuffer_keydown (keyval);
+  gtk_widget_queue_draw (minibuffer);
 
   return TRUE;
 }
@@ -309,7 +310,7 @@ extern void gtkui_minibuffer_paint (void);
 static gboolean
 on_minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
-  g_print ("on_minibuffer_draw called\n");
+//   g_print ("on_minibuffer_draw called\n");
 
   cr_minibuffer = cr;
 
@@ -339,7 +340,7 @@ on_minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 
   cr_minibuffer = 0;
 
-  g_print ("on_minibuffer_draw returning\n");
+//   g_print ("on_minibuffer_draw returning\n");
 
   return TRUE;
 }
@@ -490,6 +491,18 @@ void gtkui__minibuffer_main (void)
   g_print ("gtkui__minibuffer_main called\n");
   gtk_widget_queue_draw (minibuffer);
   gtk_widget_grab_focus (minibuffer);
+
+  // nested call to gtk_main
+  gtk_main ();
+
+  g_print ("gtkui__minibuffer_main returning\n");
+}
+
+void gtkui__minibuffer_exit (void)
+{
+  g_print ("gtkui__minibuffer_exit called\n");
+  // return from nested call to gtk_main
+  gtk_main_quit();
 }
 
 void gtkui__minibuffer_text_out (int x, int y, const char* s)
