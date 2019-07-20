@@ -23,10 +23,14 @@ static int textview_columns;
 
 static GtkWidget *frame;
 
+static GtkWidget *textview;
 static GtkWidget *minibuffer;
 
 static cairo_t *cr_textview;
 static cairo_t *cr_minibuffer;
+
+// static int rgb_textview_fg = RGB (192, 192, 192);
+// static int rgb_textview_bg = 0;
 
 static const char *mode_line_text;
 
@@ -41,6 +45,16 @@ int gtkui__textview_rows (void)
 int gtkui__textview_columns (void)
 {
   return textview_columns;
+}
+
+void gtkui__textview_set_fg_color (int rgb)
+{
+//   rgb_textview_fg = rgb;
+}
+
+void gtkui__textview_set_bg_color (int rgb)
+{
+//   rgb_textview_bg = rgb;
 }
 
 int gtkui__char_height (void)
@@ -78,7 +92,7 @@ static void gtkui__textview_keydown (GdkEventKey *event)
     keyval |= CTRL_MASK;
   if (state & GDK_SHIFT_MASK)
     keyval |= SHIFT_MASK;
-//   g_print ("gtkui__textview_keydown keyval = 0x%08x\n", keyval);
+  g_print ("gtkui__textview_keydown keyval = 0x%08x\n", keyval);
   gtkui_textview_keydown (keyval);
   gtk_widget_queue_draw (frame);
 }
@@ -357,6 +371,8 @@ void gtkui__initialize (void)
   gtk_container_add (GTK_CONTAINER (frame), GTK_WIDGET(box));
 
   GtkWidget *drawing_area_1 = gtk_drawing_area_new();
+  textview = drawing_area_1;
+
   gtk_widget_set_size_request (drawing_area_1, 800, 568);
 //   gtk_container_add (GTK_CONTAINER (box), drawing_area_1);
   gtk_widget_set_can_focus (drawing_area_1, TRUE);
@@ -496,6 +512,8 @@ void gtkui__minibuffer_main (void)
   gtk_main ();
 
   g_print ("gtkui__minibuffer_main returning\n");
+
+  gtk_widget_grab_focus (textview);
 }
 
 void gtkui__minibuffer_exit (void)
