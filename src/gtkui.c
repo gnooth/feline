@@ -296,9 +296,9 @@ void winui__textview_text_out (int x, int y, LPCSTR lpString, int c)
 #endif
 
 static gboolean
-modeline_draw_callback (GtkWidget *widget, cairo_t *cr, gpointer user_data)
+on_modeline_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
-//   g_print ("modeline_draw_callback called\n");
+//   g_print ("on_modeline_draw called\n");
 
 //   GtkAllocation allocation;
 //   gtk_widget_get_allocation (widget, &allocation);
@@ -369,13 +369,15 @@ on_minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
       //   cairo_move_to (cr, x, y);
       //   cairo_line_to (cr, x, y + char_height);
 
+      g_print ("caret_column = %d\n", caret_column);
+
       cairo_rectangle (cr,
-                       0,
+                       caret_column * char_width,
                        0,
                        2.0,
                        char_height);
       cairo_fill (cr);
-      cairo_paint (cr);
+//       cairo_paint (cr);
 //       cairo_stroke (cr);
     }
 
@@ -443,7 +445,7 @@ void gtkui__initialize (void)
                          );
 
   g_signal_connect (drawing_area_2, "draw",
-                    G_CALLBACK (modeline_draw_callback), NULL);
+                    G_CALLBACK (on_modeline_draw), NULL);
 //   g_signal_connect (drawing_area_2, "key-press-event",
 //                     G_CALLBACK(key_press_callback), NULL);
 
