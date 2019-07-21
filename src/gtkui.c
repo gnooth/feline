@@ -255,10 +255,17 @@ on_textview_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   int y = char_height * caret_row;
 //   g_print ("drawing caret column = %d row = %d\n", caret_column, caret_row);
 //   g_print ("drawing caret x = %d y = %d\n", x, y);
-  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-  cairo_set_line_width (cr, 1.0);
-  cairo_move_to (cr, x, y);
-  cairo_line_to (cr, x, y + char_height);
+
+  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); // white
+//   cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); // red
+
+//   cairo_set_line_width (cr, 1.0);
+//   cairo_move_to (cr, x, y);
+//   cairo_line_to (cr, x, y + char_height);
+
+  cairo_rectangle (cr, x, y, 2.0, char_height);
+  cairo_fill (cr);
+
   cairo_stroke (cr);
 
   cr_textview = 0;
@@ -324,7 +331,7 @@ extern void gtkui_minibuffer_paint (void);
 static gboolean
 on_minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
-//   g_print ("on_minibuffer_draw called\n");
+  g_print ("on_minibuffer_draw called\n");
 
   cr_minibuffer = cr;
 
@@ -338,11 +345,11 @@ on_minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 
   cairo_text_extents_t extents;
   cairo_text_extents (cr, "test", &extents);
-  double char_width = extents.width / 4;
-  double char_height = extents.height;
-//   g_print ("minibufffer char_width = %f char_height = %f\n", char_width, char_height);
+//   double char_width = extents.width / 4;
+//   double char_height = extents.height;
+//   g_print ("minibuffer char_width = %f char_height = %f\n", char_width, char_height);
 
-  cairo_move_to (cr, 0, 14);
+//   cairo_move_to (cr, 0, 14);
   cairo_set_font_size (cr, 14.0);
   // black background
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
@@ -351,6 +358,26 @@ on_minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 //   cairo_show_text (cr, "This is a test!");
   gtkui_minibuffer_paint ();
+
+  if (gtk_widget_is_focus (minibuffer))
+    {
+      g_print ("minibuffer has focus!\n");
+//       cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); // white
+      cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); // red
+
+      //   cairo_set_line_width (cr, 1.0);
+      //   cairo_move_to (cr, x, y);
+      //   cairo_line_to (cr, x, y + char_height);
+
+      cairo_rectangle (cr,
+                       0,
+                       0,
+                       2.0,
+                       char_height);
+      cairo_fill (cr);
+      cairo_paint (cr);
+//       cairo_stroke (cr);
+    }
 
   cr_minibuffer = 0;
 
@@ -465,28 +492,6 @@ void gtkui__set_caret_pos (int column, int row)
   caret_row = row;
 }
 
-
-#if 0
-void winui__minibuffer_text_out (int x, int y, LPCSTR lpString, int c)
-{
-  if (hdc_minibuffer)
-    {
-      TextOut (hdc_minibuffer, x, y, lpString, c);
-    }
-  else
-    {
-      HDC hdc = GetDC (hwnd_minibuffer);
-      SelectObject (hdc, hfont_normal);
-      SetTextColor (hdc, rgb_minibuffer_fg);
-      SetBkColor (hdc, rgb_minibuffer_bg);
-      HideCaret (hwnd_minibuffer);
-      TextOut (hdc, x, y, lpString, c);
-      ShowCaret (hwnd_minibuffer);
-      ReleaseDC (hwnd_minibuffer, hdc);
-    }
-}
-#endif
-
 void gtkui__minibuffer_main (void)
 {
 //   minibuffer_exit = FALSE;
@@ -525,6 +530,9 @@ void gtkui__minibuffer_exit (void)
 
 void gtkui__minibuffer_text_out (int x, int y, const char* s)
 {
+  if (*s == 0) // empty string
+    return;
+
   g_print ("gtkui__minibuffer_text_out called\n");
   g_print ("x = %d y = %d s = |%s|\n", x, y, s);
   if (cr_minibuffer)
