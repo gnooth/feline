@@ -105,8 +105,8 @@ static void gtkui__textview_keydown (GdkEventKey *event)
 {
   guint keyval = event->keyval;
 
-  if (keyval == 0xffe3 || keyval == 0xffe4) // Control_L, Control_R
-    return;
+//   if (keyval == 0xffe3 || keyval == 0xffe4) // Control_L, Control_R
+//     return;
 
   guint state = event->state;
   if (state & GDK_MOD1_MASK)
@@ -115,7 +115,7 @@ static void gtkui__textview_keydown (GdkEventKey *event)
     keyval |= CTRL_MASK;
   if (state & GDK_SHIFT_MASK)
     keyval |= SHIFT_MASK;
-  g_print ("gtkui__textview_keydown keyval = 0x%08x\n", keyval);
+//   g_print ("gtkui__textview_keydown keyval = 0x%08x\n", keyval);
   gtkui_textview_keydown (keyval);
   gtk_widget_queue_draw (frame);
 }
@@ -167,8 +167,8 @@ on_minibuffer_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
   if (event->keyval == GDK_KEY_Alt_L || event->keyval == GDK_KEY_Alt_R)
     return FALSE;
 
-  g_print ("minibuffer key pressed 0x%08x 0x%08x %s\n",
-           event->state, event->keyval, gdk_keyval_name (event->keyval));
+//   g_print ("minibuffer key pressed 0x%08x 0x%08x %s\n",
+//            event->state, event->keyval, gdk_keyval_name (event->keyval));
 //   gtkui__textview_keydown (event);
 
   if (event->keyval == 0x71)
@@ -203,6 +203,10 @@ void gtkui__textview_text_out (int x, int y, const char* s)
 //   g_print ("gtkui__textview_text_out called\n");
   if (cr_textview)
     {
+      cairo_set_source_rgb (cr_textview,
+                            rgb_red (rgb_textview_fg),
+                            rgb_green (rgb_textview_fg),
+                            rgb_blue (rgb_textview_fg));
       cairo_move_to (cr_textview, x, y);
       cairo_show_text (cr_textview, s);
     }
@@ -262,17 +266,20 @@ on_textview_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   cairo_paint (cr);
 
   // white text
-//   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-  cairo_set_source_rgb (cr,
-                        rgb_red (rgb_textview_fg),
-                        rgb_green (rgb_textview_fg),
-                        rgb_blue (rgb_textview_fg));
+  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+
+//   cairo_set_source_rgb (cr,
+//                         rgb_red (rgb_textview_fg),
+//                         rgb_green (rgb_textview_fg),
+//                         rgb_blue (rgb_textview_fg));
 
 #if 0
   gtkui__textview_text_out (0, char_height * 1, "This is a real test line 1");
   gtkui__textview_text_out (0, char_height * 2, "This is a real test line 2");
 #endif
+
   gtkui_textview_paint ();
+
 //   cairo_move_to (cr, 0, char_height * 2);
 //   cairo_show_text (cr, "This is a test line 2");
 //   cairo_move_to (cr, 48, 0);
@@ -358,7 +365,7 @@ extern void gtkui_minibuffer_paint (void);
 static gboolean
 on_minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
-  g_print ("on_minibuffer_draw called\n");
+//   g_print ("on_minibuffer_draw called\n");
 
   cr_minibuffer = cr;
 
@@ -388,7 +395,7 @@ on_minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 
   if (gtk_widget_is_focus (minibuffer))
     {
-      g_print ("minibuffer has focus!\n");
+//       g_print ("minibuffer has focus!\n");
 //       cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); // white
       cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); // red
 
@@ -396,7 +403,7 @@ on_minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
       //   cairo_move_to (cr, x, y);
       //   cairo_line_to (cr, x, y + char_height);
 
-      g_print ("caret_column = %d\n", caret_column);
+//       g_print ("caret_column = %d\n", caret_column);
 
       cairo_rectangle (cr,
                        caret_column * char_width,
@@ -538,21 +545,21 @@ void gtkui__minibuffer_main (void)
 //     }
 
 //   SetFocus (hwnd_textview);
-  g_print ("gtkui__minibuffer_main called\n");
+//   g_print ("gtkui__minibuffer_main called\n");
   gtk_widget_queue_draw (minibuffer);
   gtk_widget_grab_focus (minibuffer);
 
   // nested call to gtk_main
   gtk_main ();
 
-  g_print ("gtkui__minibuffer_main returning\n");
+//   g_print ("gtkui__minibuffer_main returning\n");
 
   gtk_widget_grab_focus (textview);
 }
 
 void gtkui__minibuffer_exit (void)
 {
-  g_print ("gtkui__minibuffer_exit called\n");
+//   g_print ("gtkui__minibuffer_exit called\n");
   // return from nested call to gtk_main
   gtk_main_quit();
 }
@@ -562,8 +569,8 @@ void gtkui__minibuffer_text_out (int x, int y, const char* s)
   if (*s == 0) // empty string
     return;
 
-  g_print ("gtkui__minibuffer_text_out called\n");
-  g_print ("x = %d y = %d s = |%s|\n", x, y, s);
+//   g_print ("gtkui__minibuffer_text_out called\n");
+//   g_print ("x = %d y = %d s = |%s|\n", x, y, s);
   if (cr_minibuffer)
     {
       cairo_move_to (cr_minibuffer, x, y);
