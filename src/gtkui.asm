@@ -50,6 +50,26 @@ code gtkui_textview_columns, 'gtkui-textview-columns' ; void -> fixnum
         next
 endcode
 
+; ### gtkui-textview-set-fg-color
+code gtkui_textview_set_fg_color, 'gtkui-textview-set-fg-color' ; color -> void
+        _check_fixnum
+        mov     arg0_register, rbx
+        poprbx
+        extern  gtkui__textview_set_fg_color
+        xcall   gtkui__textview_set_fg_color
+        next
+endcode
+
+; ### gtkui-textview-set-bg-color
+code gtkui_textview_set_bg_color, 'gtkui-textview-set-bg-color' ; color -> void
+        _check_fixnum
+        mov     arg0_register, rbx
+        poprbx
+        extern  gtkui__textview_set_bg_color
+        xcall   gtkui__textview_set_bg_color
+        next
+endcode
+
 ; ### gtkui-char-width
 code gtkui_char_width, 'gtkui-char-width' ; void -> fixnum
         extern  gtkui__char_width

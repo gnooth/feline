@@ -15,6 +15,8 @@
 
 #include <gtk/gtk.h>
 
+#include "feline.h"
+
 static int char_width;
 static int char_height;
 
@@ -29,8 +31,29 @@ static GtkWidget *minibuffer;
 static cairo_t *cr_textview;
 static cairo_t *cr_minibuffer;
 
-// static int rgb_textview_fg = RGB (192, 192, 192);
-// static int rgb_textview_bg = 0;
+static COLORREF rgb_textview_fg = RGB (192, 192, 192);
+static COLORREF rgb_textview_bg = 0;
+
+static COLORREF rgb_modeline_fg = 0;
+static COLORREF rgb_modeline_bg = RGB (192, 192, 192);
+
+static COLORREF rgb_minibuffer_fg = RGB (192, 192, 192);
+static COLORREF rgb_minibuffer_bg = 0;
+
+double rgb_red (COLORREF rgb)
+{
+  return (rgb & 0xff) / 255.0;
+}
+
+double rgb_green (COLORREF rgb)
+{
+  return ((rgb >> 8) & 0xff) / 255.0;
+}
+
+double rgb_blue (COLORREF rgb)
+{
+  return ((rgb >> 16) & 0xff) / 255.0;
+}
 
 static const char *mode_line_text;
 
@@ -49,12 +72,12 @@ int gtkui__textview_columns (void)
 
 void gtkui__textview_set_fg_color (int rgb)
 {
-//   rgb_textview_fg = rgb;
+  rgb_textview_fg = rgb;
 }
 
 void gtkui__textview_set_bg_color (int rgb)
 {
-//   rgb_textview_bg = rgb;
+  rgb_textview_bg = rgb;
 }
 
 int gtkui__char_height (void)
@@ -237,10 +260,14 @@ on_textview_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   // black background
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
   cairo_paint (cr);
+
   // white text
-  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-//   cairo_move_to (cr, 0, char_height * 1);
-//   cairo_show_text (cr, "This is a test line 1");
+//   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+  cairo_set_source_rgb (cr,
+                        rgb_red (rgb_textview_fg),
+                        rgb_green (rgb_textview_fg),
+                        rgb_blue (rgb_textview_fg));
+
 #if 0
   gtkui__textview_text_out (0, char_height * 1, "This is a real test line 1");
   gtkui__textview_text_out (0, char_height * 2, "This is a real test line 2");
