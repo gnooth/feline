@@ -25,6 +25,14 @@
 
 typedef int64_t cell;
 
+#ifndef COLORREF
+typedef cell COLORREF;
+#endif
+
+#ifndef RGB
+#define RGB(r, g, b)           ((COLORREF) (r + (g << 8) + (b << 16)))
+#endif
+
 // These #defines must be kept in sync with macros.asm and object-macros.asm.
 #define T_VALUE                14
 #define F_VALUE                 6
