@@ -115,7 +115,7 @@ static void gtkui__textview_keydown (GdkEventKey *event)
     keyval |= CTRL_MASK;
   if (state & GDK_SHIFT_MASK)
     keyval |= SHIFT_MASK;
-//   g_print ("gtkui__textview_keydown keyval = 0x%08x\n", keyval);
+  g_print ("gtkui__textview_keydown keyval = 0x%08x\n", keyval);
   gtkui_textview_keydown (keyval);
   gtk_widget_queue_draw (frame);
 }
@@ -139,6 +139,11 @@ on_textview_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
 // #define GDK_KEY_Alt_L 0xffe9
 // #define GDK_KEY_Alt_R 0xffea
   if (event->keyval == GDK_KEY_Alt_L || event->keyval == GDK_KEY_Alt_R)
+    return FALSE;
+
+// #define GDK_KEY_Shift_L 0xffe1
+// #define GDK_KEY_Shift_R 0xffe2
+  if (event->keyval == GDK_KEY_Shift_L || event->keyval == GDK_KEY_Shift_R)
     return FALSE;
 
 //   g_print ("key pressed 0x%08x 0x%08x %s\n", event->state, event->keyval,

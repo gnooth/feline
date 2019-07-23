@@ -173,8 +173,17 @@ feral-config:gtkui? #if
         command dup current-command! safe-call-symbol
 //         update-display
     ] [
-//         "key = " write-string key hex. nl
-        key code-char printable-char? [ insert-char ] when*
+        "key = " write-string key hex. nl
+//         key code-char printable-char? [ insert-char ] when*
+        key code-char printable-char? [
+            insert-char
+        ] [
+            key 16 rshift 4 eq? [ // shift is only modifier
+                key 0xff bitand code-char printable-char? [
+                    insert-char
+                ] when*
+            ] when
+        ] if*
     ] if
     update-display
 ;
