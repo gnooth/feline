@@ -50,11 +50,23 @@ global instance
 
 global diff-mode-local-map
 
+feral-config:gtkui? #if
+
+: initialize-local-map
+    128 <hashtable> :> m
+    ' editor:kill-buffer feral-key:escape m set-at
+    ' diff-mode-goto-source feral-key:enter m set-at
+    m diff-mode-local-map! ;
+
+#else
+
 : initialize-local-map
     128 <hashtable> :> m
     ' editor:kill-buffer key:escape m set-at
     ' diff-mode-goto-source key:enter m set-at
     m diff-mode-local-map! ;
+
+#endif
 
 initialize-local-map
 
@@ -64,7 +76,7 @@ feral-config:winui? #if
 
 #endif
 
-feral-config:winui? #if
+feral-config:winui? feral-config:gtkui? or #if
 
 0x00 0x99 0x00 make-colorref constant color-insertion
 0x99 0x00 0x00 make-colorref constant color-deletion

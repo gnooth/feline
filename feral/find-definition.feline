@@ -30,7 +30,7 @@ in: editor
     ] when
 ;
 
-winui? #if
+winui? gtkui? or #if
 
 : minibuffer-list-symbols               // symbols -> void
     256 <sbuf> :> sb

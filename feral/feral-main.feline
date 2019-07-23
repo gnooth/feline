@@ -148,8 +148,39 @@ feral-config:winui? #if
 
 feral-config:gtkui? #if
 
+: gtkui-textview-keydown ( key )        // key -> void
+//    "gtkui-textview-keydown called" print
+
+    current-command last-command!
+    f current-command!
+
+    mini:clear-message
+    f !> command
+
+    // try local map first
+    current-buffer local-map>> :> local-map
+
+    local-map [
+        key local-map at command!
+    ] when
+
+    // global map
+    command [
+        key keymaps:lookup-key command!
+    ] unless
+
+    command [
+        command dup current-command! safe-call-symbol
+//         update-display
+    ] [
+//         "key = " write-string key hex. nl
+        key code-char printable-char? [ insert-char ] when*
+    ] if
+    update-display
+;
+
 : edit1
-    "edit1 called" print
+//     "edit1 called" print
     gtkui-initialize
     reframe
     t repaint!
