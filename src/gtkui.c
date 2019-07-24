@@ -57,8 +57,11 @@ double rgb_blue (COLORREF rgb)
 
 static const char *mode_line_text;
 
-static int caret_row;
-static int caret_column;
+static int textview_caret_row;
+static int textview_caret_column;
+
+static int minibuffer_caret_row;
+static int minibuffer_caret_column;
 
 int gtkui__textview_rows (void)
 {
@@ -149,11 +152,11 @@ on_textview_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
 //   g_print ("key pressed 0x%08x 0x%08x %s\n", event->state, event->keyval,
 //            gdk_keyval_name (event->keyval));
   gtkui__textview_keydown (event);
-  if (event->keyval == 0x71)
-    {
-      gtk_widget_destroy (frame);
-      gtk_main_quit ();
-    }
+//   if (event->keyval == 0x71)
+//     {
+//       gtk_widget_destroy (frame);
+//       gtk_main_quit ();
+//     }
   return TRUE;
 }
 
@@ -290,8 +293,8 @@ on_textview_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 //   cairo_move_to (cr, 48, 0);
 //   cairo_show_text (cr, "This is a test line 3");
 
-  int x = char_width * caret_column;
-  int y = char_height * caret_row;
+  int x = char_width * textview_caret_column;
+  int y = char_height * textview_caret_row;
 //   g_print ("drawing caret column = %d row = %d\n", caret_column, caret_row);
 //   g_print ("drawing caret x = %d y = %d\n", x, y);
 
@@ -411,7 +414,7 @@ on_minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 //       g_print ("caret_column = %d\n", caret_column);
 
       cairo_rectangle (cr,
-                       caret_column * char_width,
+                       minibuffer_caret_column * char_width,
                        0,
                        2.0,
                        char_height);
@@ -527,10 +530,10 @@ void gtkui__initialize (void)
   gtk_main ();
 }
 
-void gtkui__set_caret_pos (int column, int row)
+void gtkui__textview_set_caret_pos (int column, int row)
 {
-  caret_column = column;
-  caret_row = row;
+  textview_caret_column = column;
+  textview_caret_row = row;
 }
 
 void gtkui__minibuffer_main (void)
@@ -585,4 +588,10 @@ void gtkui__minibuffer_text_out (int x, int y, const char* s)
     {
       g_print ("gtkui__minibuffer_text_out no cr\n");
     }
+}
+
+void gtkui__minibuffer_set_caret_pos (int column, int row)
+{
+  minibuffer_caret_column = column;
+  minibuffer_caret_row = row;
 }

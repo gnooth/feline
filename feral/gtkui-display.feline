@@ -86,7 +86,7 @@ feral-config:gtkui? assert
 : update-caret-pos
     dot-column // gtkui-char-width *
     dot-line-number top-line-number - // gtkui-char-height *
-    gtkui-set-caret-pos ;
+    gtkui-textview-set-caret-pos ;
 
 : update-display
 //     gtkui-hide-caret

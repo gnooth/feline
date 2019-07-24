@@ -167,6 +167,19 @@ subroutine gtkui_textview_keydown       ; keyval -> void
         ret
 endsub
 
+; ### gtkui-textview-set-caret-pos
+code gtkui_textview_set_caret_pos, 'gtkui-textview-set-caret-pos' ; x y -> void
+        _check_fixnum
+        mov     arg1_register, rbx
+        poprbx
+        _check_fixnum
+        mov     arg0_register, rbx
+        poprbx
+        extern  gtkui__textview_set_caret_pos
+        xcall   gtkui__textview_set_caret_pos
+        next
+endcode
+
 ; ### gtkui-minibuffer-main
 code gtkui_minibuffer_main, 'gtkui-minibuffer-main' ; void -> void
         extern  gtkui__minibuffer_main
@@ -246,17 +259,15 @@ subroutine gtkui_minibuffer_keydown     ; wparam -> void
         ret
 endsub
 
-; ### gtkui-set-caret-pos
-code gtkui_set_caret_pos, 'gtkui-set-caret-pos' ; x y -> void
+; ### gtkui-minibuffer-set-caret-pos
+code gtkui_minibuffer_set_caret_pos, 'gtkui-minibuffer-set-caret-pos' ; x y -> void
         _check_fixnum
         mov     arg1_register, rbx
         poprbx
         _check_fixnum
         mov     arg0_register, rbx
         poprbx
-;         extern  SetCaretPos
-;         xcall   SetCaretPos
-        extern  gtkui__set_caret_pos
-        xcall   gtkui__set_caret_pos
+        extern  gtkui__minibuffer_set_caret_pos
+        xcall   gtkui__minibuffer_set_caret_pos
         next
 endcode

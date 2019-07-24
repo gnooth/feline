@@ -292,7 +292,7 @@ public: minibuffer-set-text                   // string-or-sbuf -> void
     sb length prompt length > [
         sb length 1 - sb sbuf-shorten
         sb length 0
-        gtkui-set-caret-pos
+        gtkui-minibuffer-set-caret-pos
 --         winui-minibuffer-invalidate
     ] when
 ;
@@ -302,7 +302,7 @@ public: minibuffer-set-text                   // string-or-sbuf -> void
     sb sbuf? assert-true
 
     c sb sbuf-push
-    sb length 0 gtkui-set-caret-pos
+    sb length 0 gtkui-minibuffer-set-caret-pos
 --     winui-minibuffer-invalidate
 ;
 
@@ -310,7 +310,7 @@ public: minibuffer-set-text                   // string-or-sbuf -> void
     s null? ?exit
     prompt s + string>sbuf :> sb
     sb minibuffer-set-text
-    sb length 0 gtkui-set-caret-pos
+    sb length 0 gtkui-minibuffer-set-caret-pos
 --     winui-minibuffer-invalidate
 ;
 
@@ -378,7 +378,7 @@ public
     verify-string prompt!
     f minibuffer-contents!
     prompt string>sbuf minibuffer-set-text
-    prompt length 0 gtkui-set-caret-pos
+    prompt length 0 gtkui-minibuffer-set-caret-pos
     gtkui-minibuffer-main
     minibuffer-contents [
        prompt length minibuffer-contents tail
@@ -394,7 +394,7 @@ public
 
     prompt default +
     [ string>sbuf minibuffer-set-text ]
-    [ length 0 gtkui-set-caret-pos ]
+    [ length 0 gtkui-minibuffer-set-caret-pos ]
     bi
 
     gtkui-minibuffer-main

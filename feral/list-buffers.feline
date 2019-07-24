@@ -41,6 +41,11 @@ global list-buffers-local-map
 
 : initialize-local-map
     128 <hashtable> :> keymap
+    feral-config:gtkui? [
+        ' list-buffers-select   feral-key:enter   keymap set-at
+        ' list-buffers-quit     feral-key:escape  keymap set-at
+        ' list-buffers-quit     feral-key:ctrl-w  keymap set-at
+    ] when
     ' list-buffers-select   key:enter   keymap set-at
     ' list-buffers-quit     key:escape  keymap set-at
     ' list-buffers-quit     key:ctrl-w  keymap set-at
