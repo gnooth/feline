@@ -153,6 +153,7 @@ use: mini
 #endif
 
 : confirm-kill-current-buffer           // -> ?
+    "confirm-kill-current-buffer" print
     f :> confirmed?!
 
     modified? [
@@ -173,6 +174,7 @@ unuse: mini
 #endif
 
 : kill-current-buffer
+    "kill-current-buffer" print
     buffer-list [ current-buffer eq? ] find     // -> index/f element/f
     current-buffer assert-eq                    // -> index
     :> n!
@@ -185,6 +187,7 @@ unuse: mini
     t repaint! ;
 
 : kill-buffer
+    "kill-buffer" print
     f !> confirmed?
 
     modified? [ confirm-kill-current-buffer confirmed?! ] when

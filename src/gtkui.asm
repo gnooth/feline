@@ -30,6 +30,13 @@ code gtkui_initialize, 'gtkui-initialize'
         next
 endcode
 
+; ### gtkui-exit
+code gtkui_exit, 'gtkui-exit'
+        extern  gtkui__exit
+        xcall   gtkui__exit
+        next
+endcode
+
 ; ### gtkui-textview-rows
 code gtkui_textview_rows, 'gtkui-textview-rows' ; void -> fixnum
         extern  gtkui__textview_rows

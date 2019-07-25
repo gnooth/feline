@@ -63,6 +63,12 @@ static int textview_caret_column;
 static int minibuffer_caret_row;
 static int minibuffer_caret_column;
 
+void gtkui__exit (void)
+{
+  gtk_widget_destroy (frame);
+  gtk_main_quit ();
+}
+
 int gtkui__textview_rows (void)
 {
   return textview_rows;
@@ -118,7 +124,7 @@ static void gtkui__textview_keydown (GdkEventKey *event)
     keyval |= CTRL_MASK;
   if (state & GDK_SHIFT_MASK)
     keyval |= SHIFT_MASK;
-  g_print ("gtkui__textview_keydown keyval = 0x%08x\n", keyval);
+//   g_print ("gtkui__textview_keydown keyval = 0x%08x\n", keyval);
   gtkui_textview_keydown (keyval);
   gtk_widget_queue_draw (frame);
 }
@@ -179,11 +185,11 @@ on_minibuffer_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
 //            event->state, event->keyval, gdk_keyval_name (event->keyval));
 //   gtkui__textview_keydown (event);
 
-  if (event->keyval == 0x71)
-    {
-      gtk_widget_destroy (frame);
-      gtk_main_quit ();
-    }
+//   if (event->keyval == 0x71)
+//     {
+//       gtk_widget_destroy (frame);
+//       gtk_main_quit ();
+//     }
 
   guint keyval = event->keyval;
 

@@ -261,7 +261,7 @@ public: minibuffer-set-text                   // string-or-sbuf -> void
 ;
 
 : do-enter
-    "do-enter called" print
+//     "do-enter called" print
     minibuf text>> :> sb
     sb sbuf? assert-true
 
@@ -360,7 +360,8 @@ initialize-minibuffer-keymap
 --     lookup-key [ call-symbol ] when*
     1 ?enough :> key
     key lookup-key [ call-symbol ] [
-        key code-char printable-char? [ do-normal-char ] when*
+--         key code-char printable-char? [ do-normal-char ] when*
+        key feral-key:key-to-printable-char [ do-normal-char ] when*
     ] if*
 ;
 

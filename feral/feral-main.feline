@@ -149,7 +149,7 @@ feral-config:winui? #if
 feral-config:gtkui? #if
 
 : gtkui-textview-keydown ( key )        // key -> void
-//    "gtkui-textview-keydown called" print
+//     "gtkui-textview-keydown called key = " write key hex. nl
 
     current-command last-command!
     f current-command!
@@ -169,21 +169,26 @@ feral-config:gtkui? #if
         key keymaps:lookup-key command!
     ] unless
 
+//     "command = " write command .
+
     command [
         command dup current-command! safe-call-symbol
 //         update-display
     ] [
-        "key = " write-string key hex. nl
+//         "key = " write-string key hex. nl
 //         key code-char printable-char? [ insert-char ] when*
-        key code-char printable-char? [
-            insert-char
-        ] [
-            key 16 rshift 4 eq? [ // shift is only modifier
-                key 0xff bitand code-char printable-char? [
-                    insert-char
-                ] when*
-            ] when
-        ] if*
+
+--         key code-char printable-char? [
+--             insert-char
+--         ] [
+--             key 16 rshift 4 eq? [ // shift is only modifier
+--                 key 0xff bitand code-char printable-char? [
+--                     insert-char
+--                 ] when*
+--             ] when
+--         ] if*
+
+        key feral-key:key-to-printable-char [ insert-char ] when*
     ] if
     update-display
 ;

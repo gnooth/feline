@@ -16,6 +16,20 @@
 using: feline feral-config ;
 in: feral-key
 
+0x01 constant alt-bit
+0x02 constant ctrl-bit
+0x04 constant shift-bit
+
+alt-bit 16 lshift constant alt-mask
+ctrl-bit 16 lshift constant ctrl-mask
+shift-bit 16 lshift constant shift-mask
+
+: alt   alt-mask bitor ;
+: ctrl  ctrl-mask bitor ;
+: shift shift-mask bitor ;
+
+: modifiers 16 rshift 0x07 bitand ;
+
 winui? #if
 
 private
@@ -55,14 +69,6 @@ private
 0xbf constant VK_OEM_2                  // '/' '?'
 0xdb constant VK_OEM_4                  // '[' '{'
 0xdd constant VK_OEM_6                  // ']' '}'
-
-0x01 16 lshift constant alt-mask
-0x02 16 lshift constant ctrl-mask
-0x04 16 lshift constant shift-mask
-
-: alt   alt-mask bitor ;
-: ctrl  ctrl-mask bitor ;
-: shift shift-mask bitor ;
 
 public
 
@@ -124,14 +130,6 @@ VK_UP alt               constant alt-up
 private
 
 gtkui? #if
-
-0x01 16 lshift constant alt-mask
-0x02 16 lshift constant ctrl-mask
-0x04 16 lshift constant shift-mask
-
-: alt   alt-mask bitor ;
-: ctrl  ctrl-mask bitor ;
-: shift shift-mask bitor ;
 
 public
 
@@ -229,5 +227,22 @@ up alt                  constant alt-up
 'd' char-code ctrl shift    constant ctrl-shift-d
 'F' char-code ctrl shift    constant ctrl-shift-f
 'K' char-code ctrl shift    constant ctrl-shift-k
+
+: key-to-printable-char ( key )         // fixnum -> char/f
+    f !> result
+
+    key code-char printable-char? [ result! ] when*
+
+    result [
+        key modifiers shift-bit eq? [
+            // shift is the only modifier
+            key 0xff bitand code-char printable-char? [
+                result!
+            ] when*
+        ] when
+    ] unless
+
+    result
+;
 
 #endif
