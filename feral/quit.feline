@@ -13,16 +13,26 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline feral-core mini feral-hooks feral-config ;
+using: feline feral-core mini feral-hooks ;
 in: editor
 
-winui? #if
+feral-config:winui? #if
 
 : exit-feral
     ' exit-feral-hook run-hook
     winui-exit ;
 
-#else
+#endif
+
+feral-config:gtkui? #if
+
+: exit-feral
+    ' exit-feral-hook run-hook
+    gtkui-exit ;
+
+#endif
+
+feral-config:termui? #if
 
 : exit-feral
     ' exit-feral-hook run-hook
