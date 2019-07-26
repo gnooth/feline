@@ -17,15 +17,23 @@
 
 #include "feline.h"
 
-static int char_width;
-static int char_height;
+#define FERAL_DEFAULT_FRAME_HEIGHT      600
 
-static int textview_rows;
-static int textview_columns;
+#define FERAL_DEFAULT_FONT_SIZE         14.0
+
+#define FERAL_DEFAULT_CHAR_HEIGHT       16
+
+static int char_width = 0;
+static int char_height = FERAL_DEFAULT_CHAR_HEIGHT;
+
+static int textview_rows
+  = FERAL_DEFAULT_FRAME_HEIGHT / FERAL_DEFAULT_CHAR_HEIGHT - 2;
+static int textview_columns = 0;
 
 static GtkWidget *frame;
 
 static GtkWidget *textview;
+static GtkWidget *modeline;
 static GtkWidget *minibuffer;
 
 static cairo_t *cr_textview;
@@ -89,19 +97,17 @@ void gtkui__initialize (void)
 
   frame = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (frame), "Feral");
-  gtk_window_set_default_size (GTK_WINDOW (frame), 800, 600);
+  gtk_window_set_default_size (GTK_WINDOW (frame), 800, FERAL_DEFAULT_FRAME_HEIGHT);
 
   GtkBox *box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_container_add (GTK_CONTAINER (frame), GTK_WIDGET(box));
 
-  GtkWidget *drawing_area_1 = gtk_drawing_area_new();
-  textview = drawing_area_1;
+  textview = gtk_drawing_area_new();
 
-  gtk_widget_set_size_request (drawing_area_1, 800, 568);
-  //   gtk_container_add (GTK_CONTAINER (box), drawing_area_1);
-  gtk_widget_set_can_focus (drawing_area_1, TRUE);
+  gtk_widget_set_size_request (textview, 800, 568);
+  gtk_widget_set_can_focus (textview, TRUE);
 
-  gtk_widget_set_events (drawing_area_1,
+  gtk_widget_set_events (textview,
                          //                          GDK_EXPOSURE_MASK |
                          //                          GDK_ENTER_NOTIFY_MASK |
                          //                          GDK_LEAVE_NOTIFY_MASK |
@@ -114,19 +120,18 @@ void gtkui__initialize (void)
                          //                          GDK_POINTER_MOTION_HINT_MASK
                          );
 
-  g_signal_connect (drawing_area_1, "draw",
+  g_signal_connect (textview, "draw",
                     G_CALLBACK (on_textview_draw), NULL);
-  g_signal_connect (drawing_area_1, "key-press-event",
+  g_signal_connect (textview, "key-press-event",
                     G_CALLBACK(on_textview_key_press), NULL);
-  //   g_signal_connect (drawing_area_1, "size-allocate",
-  //                     G_CALLBACK (on_size_allocate), NULL);
 
-  GtkWidget *drawing_area_2 = gtk_drawing_area_new();
-  gtk_widget_set_size_request (drawing_area_2, 568, 16);
-  //   gtk_container_add (GTK_CONTAINER (box), drawing_area_2);
-  gtk_widget_set_can_focus (drawing_area_2, TRUE);
+  modeline = gtk_drawing_area_new();
 
-  gtk_widget_set_events (drawing_area_2,
+  gtk_widget_set_size_request (modeline, 568, 16);
+  //   gtk_container_add (GTK_CONTAINER (box), modeline);
+  gtk_widget_set_can_focus (modeline, TRUE);
+
+  gtk_widget_set_events (modeline,
                          //                          GDK_EXPOSURE_MASK |
                          //                          GDK_ENTER_NOTIFY_MASK |
                          //                          GDK_LEAVE_NOTIFY_MASK |
@@ -139,19 +144,18 @@ void gtkui__initialize (void)
                          //                          GDK_POINTER_MOTION_HINT_MASK
                          );
 
-  g_signal_connect (drawing_area_2, "draw",
+  g_signal_connect (modeline, "draw",
                     G_CALLBACK (on_modeline_draw), NULL);
-  //   g_signal_connect (drawing_area_2, "key-press-event",
+  //   g_signal_connect (modeline, "key-press-event",
   //                     G_CALLBACK(key_press_callback), NULL);
 
-  // drawing_area_3 is the minibuffer
-  GtkWidget *drawing_area_3 = gtk_drawing_area_new();
-  minibuffer = drawing_area_3;
-  gtk_widget_set_size_request (drawing_area_3, 584, 16);
-  //   gtk_container_add (GTK_CONTAINER (box), drawing_area_3);
-  gtk_widget_set_can_focus (drawing_area_3, TRUE);
+  minibuffer = gtk_drawing_area_new();
 
-  gtk_widget_set_events (drawing_area_3,
+  gtk_widget_set_size_request (minibuffer, 584, 16);
+  //   gtk_container_add (GTK_CONTAINER (box), minibuffer);
+  gtk_widget_set_can_focus (minibuffer, TRUE);
+
+  gtk_widget_set_events (minibuffer,
                          //                          GDK_EXPOSURE_MASK |
                          //                          GDK_ENTER_NOTIFY_MASK |
                          //                          GDK_LEAVE_NOTIFY_MASK |
@@ -164,23 +168,21 @@ void gtkui__initialize (void)
                          //                          GDK_POINTER_MOTION_HINT_MASK
                          );
 
-  g_signal_connect (drawing_area_3, "draw",
+  g_signal_connect (minibuffer, "draw",
                     G_CALLBACK (on_minibuffer_draw), NULL);
-  g_signal_connect (drawing_area_3, "key-press-event",
+  g_signal_connect (minibuffer, "key-press-event",
                     G_CALLBACK (on_minibuffer_key_press), NULL);
-  //   g_signal_connect (drawing_area_3, "key-press-event",
+  //   g_signal_connect (minibuffer, "key-press-event",
   //                     G_CALLBACK(key_press_callback), NULL);
 
   //   gtk_container_add (GTK_CONTAINER (box), drawing_area_1);
-  //   gtk_container_add (GTK_CONTAINER (box), drawing_area_2);
-  //   gtk_container_add (GTK_CONTAINER (box), drawing_area_3);
-  gtk_box_pack_end (box, drawing_area_3, FALSE, FALSE, 0);
-  gtk_box_pack_end (box, drawing_area_2, FALSE, FALSE, 0);
-  gtk_box_pack_end (box, drawing_area_1, FALSE, FALSE, 0);
+  //   gtk_container_add (GTK_CONTAINER (box), modeline);
+  //   gtk_container_add (GTK_CONTAINER (box), minibuffer);
+  gtk_box_pack_end (box, minibuffer, FALSE, FALSE, 0);
+  gtk_box_pack_end (box, modeline, FALSE, FALSE, 0);
+  gtk_box_pack_end (box, textview, FALSE, FALSE, 0);
 
   gtk_widget_show_all (frame);
-  //   g_print ("leaving gtkui__initialize\n");
-//   gtk_main ();
 }
 
 void gtkui__main (void)
@@ -360,6 +362,8 @@ on_textview_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
 //   g_print ("on_textview_draw called\n");
 
+  g_return_val_if_fail (widget == textview, FALSE);
+
   cr_textview = cr;
 
 //   gtkui_textview_paint ();
@@ -367,7 +371,7 @@ on_textview_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   cairo_select_font_face (cr, "monospace",
                           CAIRO_FONT_SLANT_NORMAL,
                           CAIRO_FONT_WEIGHT_NORMAL);
-  cairo_set_font_size (cr, 14.0);
+  cairo_set_font_size (cr, FERAL_DEFAULT_FONT_SIZE);
 
   if (char_width == 0)
     {
@@ -380,8 +384,8 @@ on_textview_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 
       char_width = (int) fe.max_x_advance;
       char_height = (int) fe.height;
-//       g_print ("textview char_width = %d char_height = %d\n",
-//                char_width, char_height);
+      g_print ("textview char_width = %d char_height = %d\n",
+               char_width, char_height);
 
 //       cairo_text_extents_t extents;
 //       cairo_text_extents (cr, "test", &extents);
