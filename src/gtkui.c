@@ -63,6 +63,131 @@ static int textview_caret_column;
 static int minibuffer_caret_row;
 static int minibuffer_caret_column;
 
+static gboolean on_textview_key_press (GtkWidget *widget,
+                                       GdkEventKey *event,
+                                       gpointer data);
+
+static gboolean on_minibuffer_key_press (GtkWidget *widget,
+                                         GdkEventKey *event,
+                                         gpointer data);
+
+static gboolean on_modeline_draw (GtkWidget *widget,
+                                  cairo_t *cr,
+                                  gpointer user_data);
+
+static gboolean on_minibuffer_draw (GtkWidget *widget,
+                                    cairo_t *cr,
+                                    gpointer user_data);
+
+static gboolean on_textview_draw (GtkWidget *widget,
+                                  cairo_t *cr,
+                                  gpointer user_data);
+
+void gtkui__initialize (void)
+{
+  gtk_init(0,  NULL);
+
+  frame = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (frame), "Feral");
+  gtk_window_set_default_size (GTK_WINDOW (frame), 800, 600);
+
+  GtkBox *box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_container_add (GTK_CONTAINER (frame), GTK_WIDGET(box));
+
+  GtkWidget *drawing_area_1 = gtk_drawing_area_new();
+  textview = drawing_area_1;
+
+  gtk_widget_set_size_request (drawing_area_1, 800, 568);
+  //   gtk_container_add (GTK_CONTAINER (box), drawing_area_1);
+  gtk_widget_set_can_focus (drawing_area_1, TRUE);
+
+  gtk_widget_set_events (drawing_area_1,
+                         //                          GDK_EXPOSURE_MASK |
+                         //                          GDK_ENTER_NOTIFY_MASK |
+                         //                          GDK_LEAVE_NOTIFY_MASK |
+                         //                          GDK_BUTTON_PRESS_MASK |
+                         //                          GDK_BUTTON_RELEASE_MASK |
+                         //                          GDK_SCROLL_MASK |
+                         GDK_KEY_PRESS_MASK
+                         //                          GDK_KEY_RELEASE_MASK |
+                         //                          GDK_POINTER_MOTION_MASK |
+                         //                          GDK_POINTER_MOTION_HINT_MASK
+                         );
+
+  g_signal_connect (drawing_area_1, "draw",
+                    G_CALLBACK (on_textview_draw), NULL);
+  g_signal_connect (drawing_area_1, "key-press-event",
+                    G_CALLBACK(on_textview_key_press), NULL);
+  //   g_signal_connect (drawing_area_1, "size-allocate",
+  //                     G_CALLBACK (on_size_allocate), NULL);
+
+  GtkWidget *drawing_area_2 = gtk_drawing_area_new();
+  gtk_widget_set_size_request (drawing_area_2, 568, 16);
+  //   gtk_container_add (GTK_CONTAINER (box), drawing_area_2);
+  gtk_widget_set_can_focus (drawing_area_2, TRUE);
+
+  gtk_widget_set_events (drawing_area_2,
+                         //                          GDK_EXPOSURE_MASK |
+                         //                          GDK_ENTER_NOTIFY_MASK |
+                         //                          GDK_LEAVE_NOTIFY_MASK |
+                         //                          GDK_BUTTON_PRESS_MASK |
+                         //                          GDK_BUTTON_RELEASE_MASK |
+                         //                          GDK_SCROLL_MASK |
+                         GDK_KEY_PRESS_MASK
+                         //                          GDK_KEY_RELEASE_MASK |
+                         //                          GDK_POINTER_MOTION_MASK |
+                         //                          GDK_POINTER_MOTION_HINT_MASK
+                         );
+
+  g_signal_connect (drawing_area_2, "draw",
+                    G_CALLBACK (on_modeline_draw), NULL);
+  //   g_signal_connect (drawing_area_2, "key-press-event",
+  //                     G_CALLBACK(key_press_callback), NULL);
+
+  // drawing_area_3 is the minibuffer
+  GtkWidget *drawing_area_3 = gtk_drawing_area_new();
+  minibuffer = drawing_area_3;
+  gtk_widget_set_size_request (drawing_area_3, 584, 16);
+  //   gtk_container_add (GTK_CONTAINER (box), drawing_area_3);
+  gtk_widget_set_can_focus (drawing_area_3, TRUE);
+
+  gtk_widget_set_events (drawing_area_3,
+                         //                          GDK_EXPOSURE_MASK |
+                         //                          GDK_ENTER_NOTIFY_MASK |
+                         //                          GDK_LEAVE_NOTIFY_MASK |
+                         GDK_BUTTON_PRESS_MASK |
+                         //                          GDK_BUTTON_RELEASE_MASK |
+                         //                          GDK_SCROLL_MASK |
+                         GDK_KEY_PRESS_MASK
+                         //                          GDK_KEY_RELEASE_MASK |
+                         //                          GDK_POINTER_MOTION_MASK |
+                         //                          GDK_POINTER_MOTION_HINT_MASK
+                         );
+
+  g_signal_connect (drawing_area_3, "draw",
+                    G_CALLBACK (on_minibuffer_draw), NULL);
+  g_signal_connect (drawing_area_3, "key-press-event",
+                    G_CALLBACK (on_minibuffer_key_press), NULL);
+  //   g_signal_connect (drawing_area_3, "key-press-event",
+  //                     G_CALLBACK(key_press_callback), NULL);
+
+  //   gtk_container_add (GTK_CONTAINER (box), drawing_area_1);
+  //   gtk_container_add (GTK_CONTAINER (box), drawing_area_2);
+  //   gtk_container_add (GTK_CONTAINER (box), drawing_area_3);
+  gtk_box_pack_end (box, drawing_area_3, FALSE, FALSE, 0);
+  gtk_box_pack_end (box, drawing_area_2, FALSE, FALSE, 0);
+  gtk_box_pack_end (box, drawing_area_1, FALSE, FALSE, 0);
+
+  gtk_widget_show_all (frame);
+  //   g_print ("leaving gtkui__initialize\n");
+//   gtk_main ();
+}
+
+void gtkui__main (void)
+{
+  gtk_main ();
+}
+
 void gtkui__exit (void)
 {
   gtk_widget_destroy (frame);
@@ -434,106 +559,6 @@ on_minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 //   g_print ("on_minibuffer_draw returning\n");
 
   return TRUE;
-}
-
-void gtkui__initialize (void)
-{
-  gtk_init(0,  NULL);
-
-  frame = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (frame), "Feral");
-  gtk_window_set_default_size (GTK_WINDOW (frame), 800, 600);
-
-  GtkBox *box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_container_add (GTK_CONTAINER (frame), GTK_WIDGET(box));
-
-  GtkWidget *drawing_area_1 = gtk_drawing_area_new();
-  textview = drawing_area_1;
-
-  gtk_widget_set_size_request (drawing_area_1, 800, 568);
-//   gtk_container_add (GTK_CONTAINER (box), drawing_area_1);
-  gtk_widget_set_can_focus (drawing_area_1, TRUE);
-
-  gtk_widget_set_events (drawing_area_1,
-                         //                          GDK_EXPOSURE_MASK |
-                         //                          GDK_ENTER_NOTIFY_MASK |
-                         //                          GDK_LEAVE_NOTIFY_MASK |
-                         //                          GDK_BUTTON_PRESS_MASK |
-                         //                          GDK_BUTTON_RELEASE_MASK |
-                         //                          GDK_SCROLL_MASK |
-                         GDK_KEY_PRESS_MASK
-                         //                          GDK_KEY_RELEASE_MASK |
-                         //                          GDK_POINTER_MOTION_MASK |
-                         //                          GDK_POINTER_MOTION_HINT_MASK
-                         );
-
-  g_signal_connect (drawing_area_1, "draw",
-                    G_CALLBACK (on_textview_draw), NULL);
-  g_signal_connect (drawing_area_1, "key-press-event",
-                    G_CALLBACK(on_textview_key_press), NULL);
-//   g_signal_connect (drawing_area_1, "size-allocate",
-//                     G_CALLBACK (on_size_allocate), NULL);
-
-  GtkWidget *drawing_area_2 = gtk_drawing_area_new();
-  gtk_widget_set_size_request (drawing_area_2, 568, 16);
-//   gtk_container_add (GTK_CONTAINER (box), drawing_area_2);
-  gtk_widget_set_can_focus (drawing_area_2, TRUE);
-
-  gtk_widget_set_events (drawing_area_2,
-                         //                          GDK_EXPOSURE_MASK |
-                         //                          GDK_ENTER_NOTIFY_MASK |
-                         //                          GDK_LEAVE_NOTIFY_MASK |
-                         //                          GDK_BUTTON_PRESS_MASK |
-                         //                          GDK_BUTTON_RELEASE_MASK |
-                         //                          GDK_SCROLL_MASK |
-                         GDK_KEY_PRESS_MASK
-                         //                          GDK_KEY_RELEASE_MASK |
-                         //                          GDK_POINTER_MOTION_MASK |
-                         //                          GDK_POINTER_MOTION_HINT_MASK
-                         );
-
-  g_signal_connect (drawing_area_2, "draw",
-                    G_CALLBACK (on_modeline_draw), NULL);
-//   g_signal_connect (drawing_area_2, "key-press-event",
-//                     G_CALLBACK(key_press_callback), NULL);
-
-  // drawing_area_3 is the minibuffer
-  GtkWidget *drawing_area_3 = gtk_drawing_area_new();
-  minibuffer = drawing_area_3;
-  gtk_widget_set_size_request (drawing_area_3, 584, 16);
-//   gtk_container_add (GTK_CONTAINER (box), drawing_area_3);
-  gtk_widget_set_can_focus (drawing_area_3, TRUE);
-
-  gtk_widget_set_events (drawing_area_3,
-                         //                          GDK_EXPOSURE_MASK |
-                         //                          GDK_ENTER_NOTIFY_MASK |
-                         //                          GDK_LEAVE_NOTIFY_MASK |
-                         //                          GDK_BUTTON_PRESS_MASK |
-                         //                          GDK_BUTTON_RELEASE_MASK |
-                         //                          GDK_SCROLL_MASK |
-                         GDK_KEY_PRESS_MASK
-                         //                          GDK_KEY_RELEASE_MASK |
-                         //                          GDK_POINTER_MOTION_MASK |
-                         //                          GDK_POINTER_MOTION_HINT_MASK
-                         );
-
-  g_signal_connect (drawing_area_3, "draw",
-                    G_CALLBACK (on_minibuffer_draw), NULL);
-  g_signal_connect (drawing_area_3, "key-press-event",
-                    G_CALLBACK (on_minibuffer_key_press), NULL);
-  //   g_signal_connect (drawing_area_3, "key-press-event",
-  //                     G_CALLBACK(key_press_callback), NULL);
-
-//   gtk_container_add (GTK_CONTAINER (box), drawing_area_1);
-//   gtk_container_add (GTK_CONTAINER (box), drawing_area_2);
-//   gtk_container_add (GTK_CONTAINER (box), drawing_area_3);
-  gtk_box_pack_end (box, drawing_area_3, FALSE, FALSE, 0);
-  gtk_box_pack_end (box, drawing_area_2, FALSE, FALSE, 0);
-  gtk_box_pack_end (box, drawing_area_1, FALSE, FALSE, 0);
-
-  gtk_widget_show_all (frame);
-//   g_print ("leaving gtkui__initialize\n");
-  gtk_main ();
 }
 
 void gtkui__textview_set_caret_pos (int column, int row)

@@ -194,12 +194,11 @@ feral-config:gtkui? #if
 ;
 
 : edit1
-//     "edit1 called" print
     gtkui-initialize
     reframe
     t repaint!
     update-display
-;
+    gtkui-main ;
 
 #endif
 

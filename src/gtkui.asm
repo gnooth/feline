@@ -30,6 +30,13 @@ code gtkui_initialize, 'gtkui-initialize'
         next
 endcode
 
+; ### gtkui-main
+code gtkui_main, 'gtkui-main'           ; void -> void
+        extern  gtkui__main
+        xcall   gtkui__main
+        next
+endcode
+
 ; ### gtkui-exit
 code gtkui_exit, 'gtkui-exit'
         extern  gtkui__exit
