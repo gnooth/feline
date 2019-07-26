@@ -17,11 +17,20 @@
 
 #include "feline.h"
 
+#define FERAL_DEFAULT_FRAME_WIDTH       800
 #define FERAL_DEFAULT_FRAME_HEIGHT      600
 
 #define FERAL_DEFAULT_FONT_SIZE         14.0
 
 #define FERAL_DEFAULT_CHAR_HEIGHT       16
+
+#define FERAL_DEFAULT_MODELINE_HEIGHT   16
+#define FERAL_DEFAULT_MINIBUFFER_HEIGHT 16
+
+#define FERAL_DEFAULT_TEXTVIEW_HEIGHT \
+ (FERAL_DEFAULT_FRAME_HEIGHT - \
+  FERAL_DEFAULT_MODELINE_HEIGHT - \
+  FERAL_DEFAULT_MINIBUFFER_HEIGHT)
 
 static int char_width = 0;
 static int char_height = FERAL_DEFAULT_CHAR_HEIGHT;
@@ -83,13 +92,13 @@ static gboolean on_modeline_draw (GtkWidget *widget,
                                   cairo_t *cr,
                                   gpointer user_data);
 
-static gboolean on_minibuffer_draw (GtkWidget *widget,
-                                    cairo_t *cr,
-                                    gpointer user_data);
+static gboolean gtkui__minibuffer_draw (GtkWidget *widget,
+                                        cairo_t *cr,
+                                        gpointer user_data);
 
-static gboolean on_textview_draw (GtkWidget *widget,
-                                  cairo_t *cr,
-                                  gpointer user_data);
+static gboolean gtkui__textview_draw (GtkWidget *widget,
+                                      cairo_t *cr,
+                                      gpointer user_data);
 
 void gtkui__initialize (void)
 {
@@ -97,14 +106,19 @@ void gtkui__initialize (void)
 
   frame = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (frame), "Feral");
-  gtk_window_set_default_size (GTK_WINDOW (frame), 800, FERAL_DEFAULT_FRAME_HEIGHT);
+  gtk_window_set_default_size (GTK_WINDOW (frame),
+                               FERAL_DEFAULT_FRAME_WIDTH,
+                               FERAL_DEFAULT_FRAME_HEIGHT);
 
   GtkBox *box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_container_add (GTK_CONTAINER (frame), GTK_WIDGET(box));
 
   textview = gtk_drawing_area_new();
 
-  gtk_widget_set_size_request (textview, 800, 568);
+  gtk_widget_set_size_request (textview,
+                               FERAL_DEFAULT_FRAME_WIDTH,
+                               FERAL_DEFAULT_TEXTVIEW_HEIGHT);
+
   gtk_widget_set_can_focus (textview, TRUE);
 
   gtk_widget_set_events (textview,
@@ -121,7 +135,7 @@ void gtkui__initialize (void)
                          );
 
   g_signal_connect (textview, "draw",
-                    G_CALLBACK (on_textview_draw), NULL);
+                    G_CALLBACK (gtkui__textview_draw), NULL);
   g_signal_connect (textview, "key-press-event",
                     G_CALLBACK(on_textview_key_press), NULL);
 
@@ -169,7 +183,7 @@ void gtkui__initialize (void)
                          );
 
   g_signal_connect (minibuffer, "draw",
-                    G_CALLBACK (on_minibuffer_draw), NULL);
+                    G_CALLBACK (gtkui__minibuffer_draw), NULL);
   g_signal_connect (minibuffer, "key-press-event",
                     G_CALLBACK (on_minibuffer_key_press), NULL);
   //   g_signal_connect (minibuffer, "key-press-event",
@@ -181,6 +195,9 @@ void gtkui__initialize (void)
   gtk_box_pack_end (box, minibuffer, FALSE, FALSE, 0);
   gtk_box_pack_end (box, modeline, FALSE, FALSE, 0);
   gtk_box_pack_end (box, textview, FALSE, FALSE, 0);
+
+  // REVIEW
+  gtk_window_move (GTK_WINDOW (frame), 480, 0);
 
   gtk_widget_show_all (frame);
 }
@@ -358,15 +375,11 @@ void gtkui__textview_text_out (int x, int y, const char* s)
 }
 
 static gboolean
-on_textview_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
+gtkui__textview_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
-//   g_print ("on_textview_draw called\n");
-
   g_return_val_if_fail (widget == textview, FALSE);
 
   cr_textview = cr;
-
-//   gtkui_textview_paint ();
 
   cairo_select_font_face (cr, "monospace",
                           CAIRO_FONT_SLANT_NORMAL,
@@ -506,9 +519,9 @@ on_modeline_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 extern void gtkui_minibuffer_paint (void);
 
 static gboolean
-on_minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
+gtkui__minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
-//   g_print ("on_minibuffer_draw called\n");
+//   g_print ("gtkui__minibuffer_draw called\n");
 
   cr_minibuffer = cr;
 
@@ -560,7 +573,7 @@ on_minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 
   cr_minibuffer = 0;
 
-//   g_print ("on_minibuffer_draw returning\n");
+//   g_print ("gtkui__minibuffer_draw returning\n");
 
   return TRUE;
 }
