@@ -18,14 +18,14 @@
 #include "feline.h"
 
 #define FERAL_DEFAULT_FRAME_WIDTH       800
-#define FERAL_DEFAULT_FRAME_HEIGHT      600
+#define FERAL_DEFAULT_FRAME_HEIGHT      768
 
 #define FERAL_DEFAULT_FONT_SIZE         14.0
 
 #define FERAL_DEFAULT_CHAR_HEIGHT       16
 
-#define FERAL_DEFAULT_MODELINE_HEIGHT   16
-#define FERAL_DEFAULT_MINIBUFFER_HEIGHT 16
+#define FERAL_DEFAULT_MODELINE_HEIGHT   20
+#define FERAL_DEFAULT_MINIBUFFER_HEIGHT 20
 
 #define FERAL_DEFAULT_TEXTVIEW_HEIGHT \
  (FERAL_DEFAULT_FRAME_HEIGHT - \
@@ -141,8 +141,10 @@ void gtkui__initialize (void)
 
   modeline = gtk_drawing_area_new();
 
-  gtk_widget_set_size_request (modeline, 568, 16);
-  //   gtk_container_add (GTK_CONTAINER (box), modeline);
+  gtk_widget_set_size_request (modeline,
+                               FERAL_DEFAULT_FRAME_WIDTH,
+                               FERAL_DEFAULT_MODELINE_HEIGHT);
+
   gtk_widget_set_can_focus (modeline, TRUE);
 
   gtk_widget_set_events (modeline,
@@ -165,8 +167,10 @@ void gtkui__initialize (void)
 
   minibuffer = gtk_drawing_area_new();
 
-  gtk_widget_set_size_request (minibuffer, 584, 16);
-  //   gtk_container_add (GTK_CONTAINER (box), minibuffer);
+  gtk_widget_set_size_request (minibuffer,
+                               FERAL_DEFAULT_FRAME_WIDTH,
+                               FERAL_DEFAULT_MINIBUFFER_HEIGHT);
+
   gtk_widget_set_can_focus (minibuffer, TRUE);
 
   gtk_widget_set_events (minibuffer,
@@ -184,14 +188,10 @@ void gtkui__initialize (void)
 
   g_signal_connect (minibuffer, "draw",
                     G_CALLBACK (gtkui__minibuffer_draw), NULL);
+
   g_signal_connect (minibuffer, "key-press-event",
                     G_CALLBACK (on_minibuffer_key_press), NULL);
-  //   g_signal_connect (minibuffer, "key-press-event",
-  //                     G_CALLBACK(key_press_callback), NULL);
 
-  //   gtk_container_add (GTK_CONTAINER (box), drawing_area_1);
-  //   gtk_container_add (GTK_CONTAINER (box), modeline);
-  //   gtk_container_add (GTK_CONTAINER (box), minibuffer);
   gtk_box_pack_end (box, minibuffer, FALSE, FALSE, 0);
   gtk_box_pack_end (box, modeline, FALSE, FALSE, 0);
   gtk_box_pack_end (box, textview, FALSE, FALSE, 0);
@@ -390,10 +390,10 @@ gtkui__textview_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
     {
       cairo_font_extents_t fe;
       cairo_font_extents (cr, &fe);
-//       g_print ("ascent = %f  descent = %f\n", fe.ascent, fe.descent);
-//       g_print ("height = %f\n", fe.height);
-//       g_print ("max_x_advance = %f max_y_advance = %f\n",
-//                fe.max_x_advance, fe.max_x_advance);
+      g_print ("ascent = %f  descent = %f\n", fe.ascent, fe.descent);
+      g_print ("height = %f\n", fe.height);
+      g_print ("max_x_advance = %f max_y_advance = %f\n",
+               fe.max_x_advance, fe.max_x_advance);
 
       char_width = (int) fe.max_x_advance;
       char_height = (int) fe.height;
