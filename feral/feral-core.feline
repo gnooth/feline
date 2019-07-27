@@ -736,7 +736,6 @@ termui? #if
     between? not ;
 
 : reframe
-    "reframe called textview-rows = " write textview-rows .
     textview-rows 2 /i verify-index :> i!
     dot-line :> line!
 
@@ -751,7 +750,6 @@ termui? #if
 ;
 
 : maybe-reframe
-    "maybe-reframe called" print
     reframe? [ reframe ] when ;
 
 tuple: mode

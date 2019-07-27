@@ -374,6 +374,30 @@ void gtkui__textview_text_out (int x, int y, const char* s)
     }
 }
 
+static void
+gtkui__textview_draw_caret ()
+{
+  if (gtk_widget_is_focus (textview))
+    {
+      int x = char_width * textview_caret_column;
+      int y = char_height * textview_caret_row;
+    //   g_print ("drawing caret column = %d row = %d\n", caret_column, caret_row);
+    //   g_print ("drawing caret x = %d y = %d\n", x, y);
+
+      cairo_set_source_rgb (cr_textview, 1.0, 1.0, 1.0); // white
+    //   cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); // red
+
+    //   cairo_set_line_width (cr, 1.0);
+    //   cairo_move_to (cr, x, y);
+    //   cairo_line_to (cr, x, y + char_height);
+
+      cairo_rectangle (cr_textview, x, y + 3, 2, char_height);
+      cairo_fill (cr_textview);
+
+//       cairo_stroke (cr_textview);
+    }
+}
+
 static gboolean
 gtkui__textview_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
@@ -429,34 +453,9 @@ gtkui__textview_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 //                         rgb_green (rgb_textview_fg),
 //                         rgb_blue (rgb_textview_fg));
 
-#if 0
-  gtkui__textview_text_out (0, char_height * 1, "This is a real test line 1");
-  gtkui__textview_text_out (0, char_height * 2, "This is a real test line 2");
-#endif
-
   gtkui_textview_paint ();
 
-//   cairo_move_to (cr, 0, char_height * 2);
-//   cairo_show_text (cr, "This is a test line 2");
-//   cairo_move_to (cr, 48, 0);
-//   cairo_show_text (cr, "This is a test line 3");
-
-  int x = char_width * textview_caret_column;
-  int y = char_height * textview_caret_row;
-//   g_print ("drawing caret column = %d row = %d\n", caret_column, caret_row);
-//   g_print ("drawing caret x = %d y = %d\n", x, y);
-
-  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); // white
-//   cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); // red
-
-//   cairo_set_line_width (cr, 1.0);
-//   cairo_move_to (cr, x, y);
-//   cairo_line_to (cr, x, y + char_height);
-
-  cairo_rectangle (cr, x, y, 2.0, char_height);
-  cairo_fill (cr);
-
-  cairo_stroke (cr);
+  gtkui__textview_draw_caret ();
 
   cr_textview = 0;
   return TRUE;
@@ -516,6 +515,22 @@ on_modeline_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
   return TRUE;
 }
 
+static void
+gtkui__minibuffer_draw_caret (void)
+{
+  if (gtk_widget_is_focus (minibuffer))
+    {
+      cairo_set_source_rgb (cr_minibuffer, 1.0, 1.0, 1.0); // white
+
+      cairo_rectangle (cr_minibuffer,
+                       minibuffer_caret_column * char_width,
+                       3,
+                       2,
+                       char_height);
+      cairo_fill (cr_minibuffer);
+    }
+}
+
 extern void gtkui_minibuffer_paint (void);
 
 static gboolean
@@ -549,27 +564,29 @@ gtkui__minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
 //   cairo_show_text (cr, "This is a test!");
   gtkui_minibuffer_paint ();
 
-  if (gtk_widget_is_focus (minibuffer))
-    {
-//       g_print ("minibuffer has focus!\n");
-//       cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); // white
-      cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); // red
-
-      //   cairo_set_line_width (cr, 1.0);
-      //   cairo_move_to (cr, x, y);
-      //   cairo_line_to (cr, x, y + char_height);
-
-//       g_print ("caret_column = %d\n", caret_column);
-
-      cairo_rectangle (cr,
-                       minibuffer_caret_column * char_width,
-                       0,
-                       2.0,
-                       char_height);
-      cairo_fill (cr);
-//       cairo_paint (cr);
-//       cairo_stroke (cr);
-    }
+//   if (gtk_widget_is_focus (minibuffer))
+//     {
+// //       g_print ("minibuffer has focus!\n");
+// //       cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); // white
+//       cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); // red
+//
+//       //   cairo_set_line_width (cr, 1.0);
+//       //   cairo_move_to (cr, x, y);
+//       //   cairo_line_to (cr, x, y + char_height);
+//
+// //       g_print ("caret_column = %d\n", caret_column);
+//
+//       cairo_rectangle (cr,
+//                        minibuffer_caret_column * char_width,
+//                        0,
+//                        2.0,
+//                        char_height);
+//       cairo_fill (cr);
+// //       cairo_paint (cr);
+// //       cairo_stroke (cr);
+//     }
+//
+  gtkui__minibuffer_draw_caret ();
 
   cr_minibuffer = 0;
 
