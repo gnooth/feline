@@ -33,7 +33,7 @@ feral-config:gtkui? assert
     segment format>> gtkui-textview-set-fg-color
 
     segment start>> gtkui-char-width *
-    row gtkui-char-height *
+    row 1+ gtkui-char-height *
     segment text>> gtkui-textview-text-out ;
 
 : repaint-segments ( segments row )     // segments row -> void
@@ -49,7 +49,7 @@ feral-config:gtkui? assert
 
 : repaint-selected-line ( line row )    // line row -> void
     // entire line is selected
-    "repaint-selected-line row = " write row .
+//     "repaint-selected-line row = " write row .
     line text>> detab :> detabbed-text
     detabbed-text format-line :> segments
     bg-set-selected
@@ -135,14 +135,14 @@ feral-config:gtkui? assert
     {
         {
             [ line line-selected? ]
-            [ line row 1+ repaint-selected-line ]
+            [ line row repaint-selected-line ]
         }
         {
             [ line line-is-partly-selected? ]
-            [ line row 1+ repaint-partly-selected-line ]
+            [ line row repaint-partly-selected-line ]
         }
         // otherwise...
-        [ line row 1+ repaint-line-no-selection ]
+        [ line row repaint-line-no-selection ]
     } cond ;
 
 : repaint

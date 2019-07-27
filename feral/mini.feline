@@ -383,9 +383,7 @@ public
     gtkui-minibuffer-main
     minibuffer-contents [
        prompt length minibuffer-contents tail
-    ] [ f ] if
-    "minibuffer-accept-string returning  " write dup .
-;
+    ] [ f ] if ;
 
 : minibuffer-accept-string/2            // prompt default -> string/f
     2 ?enough
@@ -402,8 +400,7 @@ public
 
     minibuffer-contents [
         prompt length minibuffer-contents tail
-    ] [ f ] if
-;
+    ] [ f ] if ;
 
 #endif
 

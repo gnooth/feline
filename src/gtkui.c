@@ -400,17 +400,18 @@ void gtkui__textview_text_out (int x, int y, const char* s)
     }
 }
 
-void gtkui__textview_clear_eol (int x, int y)
+void gtkui__textview_clear_eol (int column, int row)
 {
-  g_print("gtkui__textview_clear_eol x = %d y = %d\n", x, y);
+//   g_print("clear_eol column = %d row = %d rgb = 0x%08lx\n",
+//           column, row, rgb_textview_bg);
   cairo_save (cr_textview);
   cairo_set_source_rgb (cr_textview,
                         rgb_red (rgb_textview_bg),
                         rgb_green (rgb_textview_bg),
                         rgb_blue (rgb_textview_bg));
   cairo_rectangle (cr_textview,
-                   x * char_width,
-                   y * char_height, // REVIEW
+                   column * char_width,
+                   row * char_height + 3, // REVIEW
                    textview_columns * char_width,
                    char_height);
   cairo_clip (cr_textview);
