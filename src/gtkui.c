@@ -361,17 +361,61 @@ void gtkui__textview_text_out (int x, int y, const char* s)
 //   g_print ("gtkui__textview_text_out called\n");
   if (cr_textview)
     {
+//       g_print ("rgb_textview_bg = 0x%08lx\n", rgb_textview_bg);
+//       cairo_set_source_rgb (cr_textview,
+//                             rgb_red (rgb_textview_bg),
+//                             rgb_green (rgb_textview_bg),
+//                             rgb_blue (rgb_textview_bg));
+//       cairo_paint (cr_textview);
+
+      if (rgb_textview_bg != 0) // REVIEW
+        {
+          cairo_save (cr_textview);
+          cairo_set_source_rgb (cr_textview,
+                                rgb_red (rgb_textview_bg),
+                                rgb_green (rgb_textview_bg),
+                                rgb_blue (rgb_textview_bg));
+          cairo_rectangle (cr_textview,
+                           x,
+                           y - char_height + 3, // REVIEW
+                           char_width * strlen (s),
+                           char_height);
+          cairo_clip (cr_textview);
+          cairo_paint (cr_textview);
+          cairo_restore (cr_textview);
+        }
+
+//       cairo_save (cr_textview);
       cairo_set_source_rgb (cr_textview,
                             rgb_red (rgb_textview_fg),
                             rgb_green (rgb_textview_fg),
                             rgb_blue (rgb_textview_fg));
       cairo_move_to (cr_textview, x, y);
       cairo_show_text (cr_textview, s);
+//       cairo_restore (cr_textview);
     }
   else
     {
       g_print ("no cr\n");
     }
+}
+
+void gtkui__textview_clear_eol (int x, int y)
+{
+  g_print("gtkui__textview_clear_eol x = %d y = %d\n", x, y);
+  cairo_save (cr_textview);
+  cairo_set_source_rgb (cr_textview,
+                        rgb_red (rgb_textview_bg),
+                        rgb_green (rgb_textview_bg),
+                        rgb_blue (rgb_textview_bg));
+  cairo_rectangle (cr_textview,
+                   x * char_width,
+                   y * char_height, // REVIEW
+                   textview_columns * char_width,
+                   char_height);
+  cairo_clip (cr_textview);
+  cairo_paint (cr_textview);
+  cairo_restore (cr_textview);
 }
 
 static void

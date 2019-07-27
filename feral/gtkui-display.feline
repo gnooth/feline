@@ -47,17 +47,103 @@ feral-config:gtkui? assert
 //     detabbed-text length row gtkui-textview-clear-eol
 ;
 
-: repaint-line ( line row )
-    f
-    [
-        0
-        row 1+ gtkui-char-height *
-        line text>> gtkui-textview-text-out
-    ]
-    [
-        line row 1+ repaint-line-no-selection
-    ] if
-;
+: repaint-selected-line ( line row )    // line row -> void
+    // entire line is selected
+    "repaint-selected-line row = " write row .
+    line text>> detab :> detabbed-text
+    detabbed-text format-line :> segments
+    bg-set-selected
+    segments row repaint-segments
+    detabbed-text length row gtkui-textview-clear-eol
+    bg-set-default ;
+
+: repaint-segment-of-partly-selected-line ( segment line region row )
+    line region begin-line eq? [ region begin-offset ] [ 0 ] if :> selection-start-index
+    line region end-line eq? [ region end-offset ] [ line length ] if :> selection-end-index
+
+    selection-start-index segment start>> <
+    segment start>> segment text>> length + selection-end-index <= and [
+        // segment is entirely within selection
+        bg-set-selected
+        segment row repaint-segment
+    ] return-if
+
+    f !> seg1
+    f !> seg2
+
+    selection-start-index segment in-segment? selection-end-index segment in-segment? and [
+        // region is entirely within segment
+        segment selection-start-index segment start>> - split-segment seg2! seg1!
+        bg-set-default
+        seg1 row repaint-segment
+
+        // now split seg2 at selection-end-index
+        seg2 selection-end-index seg2 start>> - split-segment
+        swap
+        bg-set-selected
+        row repaint-segment
+        bg-set-default
+        row repaint-segment
+    ] return-if
+
+    selection-start-index segment in-segment? [
+        segment selection-start-index segment start>> - split-segment seg2! seg1!
+        bg-set-default
+        seg1 row repaint-segment
+        bg-set-selected
+        seg2 row repaint-segment
+        bg-set-default
+    ] return-if
+
+    selection-end-index segment in-segment? [
+        segment selection-end-index segment start>> - split-segment seg2! seg1!
+        bg-set-selected
+        seg1 row repaint-segment
+        bg-set-default
+        seg2 row repaint-segment
+    ] return-if
+
+    segment row repaint-segment ;
+
+: repaint-partly-selected-line ( line row )
+    line text>> detab :> detabbed-text
+    detabbed-text format-line :> segments
+    mark dot make-region/2 :> region
+    line line-starts-in-selection? [ bg-set-selected ] [ bg-set-default ] if
+    segments [ line region row repaint-segment-of-partly-selected-line ] each
+
+    [ line next>> ]
+    [ line next>> 0 make-position region in-region? ]
+    both?
+    bg-selected bg-default ? gtkui-textview-set-bg-color
+
+    detabbed-text length row gtkui-textview-clear-eol ;
+
+-- : repaint-line ( line row )
+--     f
+--     [
+--         0
+--         row 1+ gtkui-char-height *
+--         line text>> gtkui-textview-text-out
+--     ]
+--     [
+--         line row 1+ repaint-line-no-selection
+--     ] if
+-- ;
+
+: repaint-line ( line row )             // line row -> void
+    {
+        {
+            [ line line-selected? ]
+            [ line row 1+ repaint-selected-line ]
+        }
+        {
+            [ line line-is-partly-selected? ]
+            [ line row 1+ repaint-partly-selected-line ]
+        }
+        // otherwise...
+        [ line row 1+ repaint-line-no-selection ]
+    } cond ;
 
 : repaint
 //    "repaint called" print
@@ -104,34 +190,6 @@ feral-config:gtkui? assert
 ;
 
 f #if
-
-192 192 192 make-colorref constant fg-default
-  0   0   0 make-colorref constant bg-default
- 64  64  64 make-colorref constant bg-selected
-
-: bg-set-default bg-default gtkui-textview-set-bg-color ;
-
-: bg-set-selected bg-selected gtkui-textview-set-bg-color ;
-
-: repaint-segment                       // segment row -> void
-    2 ?enough
-    :> row :> segment
-
-    segment format>> gtkui-textview-set-fg-color
-
-    segment start>> gtkui-char-width *
-    row gtkui-char-height *
-    segment text>> gtkui-textview-text-out ;
-
-: repaint-segments ( segments row )     // segments row -> void
-    segments [ row repaint-segment ] each ;
-
-: repaint-line-no-selection ( line row ) // line row -> void
-    // no part of line is selected
-    line text>> detab :> detabbed-text
-    detabbed-text format-line :> segments
-    segments row repaint-segments
-    detabbed-text length row gtkui-textview-clear-eol ;
 
 : repaint-selected-line ( line row )    // line row -> void
     // entire line is selected

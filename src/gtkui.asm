@@ -135,6 +135,21 @@ code gtkui_textview_text_out, 'gtkui-textview-text-out' ; x y string -> void
         next
 endcode
 
+; ### gtkui-textview-clear-eol
+code gtkui_textview_clear_eol, 'gtkui-textview-clear-eol' ; x y -> void
+        _check_fixnum
+        mov     arg1_register, rbx
+        poprbx
+        _check_fixnum
+        mov     arg0_register, rbx
+        poprbx
+
+        extern  gtkui__textview_clear_eol
+        xcall   gtkui__textview_clear_eol
+
+        next
+endcode
+
 ; ### gtkui_textview_paint
 subroutine gtkui_textview_paint         ; void -> void
 ; 0-arg callback
