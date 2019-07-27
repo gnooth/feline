@@ -59,11 +59,17 @@ global instance
         1array
     ] if ;
 
+: c-mode-initialize-buffer              // buffer -> void
+    1 ?enough :> buf
+    get-instance :> m
+    m indent-size>> buf indent-size<< ;
+
 : initialize-c-mode
     mode make-instance :> m
     "C" m name<<
     2 m indent-size<<
     "// " m comment-start<<
+    ' c-mode-initialize-buffer m initialize-buffer-function<<
     ' c-format-line m formatter<<
     m ".c" modes set-at
     m ".h" modes set-at
