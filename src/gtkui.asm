@@ -150,6 +150,15 @@ code gtkui_textview_clear_eol, 'gtkui-textview-clear-eol' ; x y -> void
         next
 endcode
 
+; ### gtkui-textview-invalidate
+code gtkui_textview_invalidate, 'gtkui-textview-invalidate'
+
+        extern  gtkui__textview_invalidate
+        xcall   gtkui__textview_invalidate
+
+        next
+endcode
+
 ; ### gtkui_textview_paint
 subroutine gtkui_textview_paint         ; void -> void
 ; 0-arg callback
@@ -185,6 +194,34 @@ subroutine gtkui_textview_keydown       ; keyval -> void
         _tag_fixnum
 
         _quote "gtkui-textview-keydown"
+        _quote "editor"
+        _ ?lookup_symbol
+        _ call_symbol
+
+        ; leave callback
+        pop     rbp
+        pop     rbx
+
+        ret
+endsub
+
+; ### gtkui_textview_button_press
+subroutine gtkui_textview_button_press  ; x y -> void
+; 2-arg callback
+
+        ; enter callback
+        push    rbx
+        push    rbp
+        mov     rbp, [gtkui_raw_sp0_]
+
+        pushrbx
+        mov     rbx, arg0_register      ; x
+        _tag_fixnum
+        pushrbx
+        mov     rbx, arg1_register      ; y
+        _tag_fixnum
+
+        _quote "gtkui-textview-button-press"
         _quote "editor"
         _ ?lookup_symbol
         _ call_symbol

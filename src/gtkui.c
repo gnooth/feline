@@ -80,9 +80,13 @@ static int textview_caret_column;
 static int minibuffer_caret_row;
 static int minibuffer_caret_column;
 
-static gboolean on_textview_key_press (GtkWidget *widget,
-                                       GdkEventKey *event,
-                                       gpointer data);
+static gboolean gtkui__textview_key_press (GtkWidget *widget,
+                                           GdkEventKey *event,
+                                           gpointer data);
+
+static gboolean gtkui__textview_button_press (GtkWidget *widget,
+                                              GdkEventButton *event,
+                                              gpointer data);
 
 static gboolean on_minibuffer_key_press (GtkWidget *widget,
                                          GdkEventKey *event,
@@ -90,15 +94,15 @@ static gboolean on_minibuffer_key_press (GtkWidget *widget,
 
 static gboolean on_modeline_draw (GtkWidget *widget,
                                   cairo_t *cr,
-                                  gpointer user_data);
+                                  gpointer data);
 
 static gboolean gtkui__minibuffer_draw (GtkWidget *widget,
                                         cairo_t *cr,
-                                        gpointer user_data);
+                                        gpointer data);
 
 static gboolean gtkui__textview_draw (GtkWidget *widget,
                                       cairo_t *cr,
-                                      gpointer user_data);
+                                      gpointer data);
 
 void gtkui__initialize (void)
 {
@@ -125,7 +129,7 @@ void gtkui__initialize (void)
                          //                          GDK_EXPOSURE_MASK |
                          //                          GDK_ENTER_NOTIFY_MASK |
                          //                          GDK_LEAVE_NOTIFY_MASK |
-                         //                          GDK_BUTTON_PRESS_MASK |
+                         GDK_BUTTON_PRESS_MASK |
                          //                          GDK_BUTTON_RELEASE_MASK |
                          //                          GDK_SCROLL_MASK |
                          GDK_KEY_PRESS_MASK
@@ -137,7 +141,9 @@ void gtkui__initialize (void)
   g_signal_connect (textview, "draw",
                     G_CALLBACK (gtkui__textview_draw), NULL);
   g_signal_connect (textview, "key-press-event",
-                    G_CALLBACK(on_textview_key_press), NULL);
+                    G_CALLBACK(gtkui__textview_key_press), NULL);
+  g_signal_connect (textview, "button-press-event",
+                    G_CALLBACK(gtkui__textview_button_press), NULL);
 
   modeline = gtk_drawing_area_new();
 
@@ -244,6 +250,7 @@ int gtkui__char_width (void)
 }
 
 extern void gtkui_textview_keydown (guint);
+extern void gtkui_textview_button_press (int, int);
 
 #define ALT_MASK        0x01 << 16
 #define CTRL_MASK       0x02 << 16
@@ -282,7 +289,18 @@ static void gtkui__textview_keydown (GdkEventKey *event)
 // }
 
 static gboolean
-on_textview_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
+gtkui__textview_button_press (GtkWidget *widget,
+                              GdkEventButton *event,
+                              gpointer data)
+{
+  gtkui_textview_button_press (event->x, event->y);
+  return TRUE;
+}
+
+static gboolean
+gtkui__textview_key_press (GtkWidget *widget,
+                           GdkEventKey *event,
+                           gpointer data)
 {
 // #define GDK_KEY_Control_L 0xffe3
 // #define GDK_KEY_Control_R 0xffe4
@@ -443,8 +461,14 @@ gtkui__textview_draw_caret ()
     }
 }
 
+void gtkui__textview_invalidate (void)
+{
+  gtk_widget_queue_draw (textview);
+  gtk_widget_queue_draw (modeline);
+}
+
 static gboolean
-gtkui__textview_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
+gtkui__textview_draw (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
   g_return_val_if_fail (widget == textview, FALSE);
 
@@ -530,7 +554,7 @@ void winui__textview_text_out (int x, int y, LPCSTR lpString, int c)
 #endif
 
 static gboolean
-on_modeline_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
+on_modeline_draw (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
 //   g_print ("on_modeline_draw called\n");
 
@@ -579,7 +603,7 @@ gtkui__minibuffer_draw_caret (void)
 extern void gtkui_minibuffer_paint (void);
 
 static gboolean
-gtkui__minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data)
+gtkui__minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
 //   g_print ("gtkui__minibuffer_draw called\n");
 

@@ -210,6 +210,9 @@ private
 
 : initialize-local-map
     128 <hashtable> :> m
+    feral-config:gtkui? [
+        ' editor:dir-open-file  feral-key:enter     m set-at
+    ] when
     ' editor:dir-open-file      key:enter       m set-at
     ' editor:dir-up-dir         'u'             m set-at
     ' editor:dir-up-dir         '^'             m set-at // Emacs

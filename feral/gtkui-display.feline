@@ -167,23 +167,23 @@ feral-config:gtkui? assert
 //     gtkui-show-caret
 ;
 
-: update-mode-line mode-line-text gtkui-modeline-set-text ;
-
 : update-caret-pos
     dot-column // gtkui-char-width *
     dot-line-number top-line-number - // gtkui-char-height *
     gtkui-textview-set-caret-pos ;
 
+: update-mode-line mode-line-text gtkui-modeline-set-text ;
+
 : update-display
-//     gtkui-hide-caret
-    repaint? [
---         repaint
-    ] [
-        dot-line-changed? [
---             dot-line dot-row repaint-line
-            f dot-line-changed!
-        ] when
-    ] if
+// //     gtkui-hide-caret
+//     repaint? [
+// --         repaint
+//     ] [
+//         dot-line-changed? [
+// --             dot-line dot-row repaint-line
+//             f dot-line-changed!
+//         ] when
+//     ] if
     update-caret-pos
     update-mode-line
 //     gtkui-show-caret

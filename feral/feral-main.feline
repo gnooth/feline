@@ -172,26 +172,34 @@ feral-config:gtkui? #if
 //     "command = " write command .
 
     command [
-        command dup current-command! safe-call-symbol
-//         update-display
+        dup current-command! safe-call-symbol
     ] [
-//         "key = " write-string key hex. nl
-//         key code-char printable-char? [ insert-char ] when*
-
---         key code-char printable-char? [
---             insert-char
---         ] [
---             key 16 rshift 4 eq? [ // shift is only modifier
---                 key 0xff bitand code-char printable-char? [
---                     insert-char
---                 ] when*
---             ] when
---         ] if*
-
         key feral-key:key-to-printable-char [ insert-char ] when*
-    ] if
+    ] if*
+
     update-display
 ;
+
+: gtkui-textview-button-press
+    2 ?enough :> y :> x
+    x y "gtkui-textview-button-press called x = %d y = %d" format print
+
+    x gtkui-char-width /i :> column
+    y gtkui-char-height /i :> row
+
+    row column "row = %d column = %d" format print
+
+    add-undo-move
+    unmark
+    top-line-number row + last-line-number min nth-line dot-line!
+
+    // FIXME
+    // column is not the same as offset if there are tab chars in the buffer
+    column dot-line-length min dot-offset!
+
+    update-display
+
+    gtkui-textview-invalidate ;
 
 : edit1
     gtkui-initialize
