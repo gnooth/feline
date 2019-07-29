@@ -18,7 +18,7 @@
 #include "feline.h"
 
 #define FERAL_DEFAULT_FRAME_WIDTH       800
-#define FERAL_DEFAULT_FRAME_HEIGHT      768
+#define FERAL_DEFAULT_FRAME_HEIGHT      600
 
 #define FERAL_DEFAULT_FONT_SIZE         14.0
 
@@ -108,6 +108,10 @@ static gboolean gtkui__textview_draw (GtkWidget *widget,
                                       cairo_t *cr,
                                       gpointer data);
 
+static gboolean gtkui__frame_configure (GtkWidget *widget,
+                                        GdkEventConfigure *event,
+                                        gpointer data);
+
 void gtkui__initialize (void)
 {
   gtk_init(0,  NULL);
@@ -117,6 +121,9 @@ void gtkui__initialize (void)
   gtk_window_set_default_size (GTK_WINDOW (frame),
                                FERAL_DEFAULT_FRAME_WIDTH,
                                FERAL_DEFAULT_FRAME_HEIGHT);
+
+  g_signal_connect (frame, "configure-event",
+                    G_CALLBACK (gtkui__frame_configure), NULL);
 
   GtkBox *box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_container_add (GTK_CONTAINER (frame), GTK_WIDGET(box));
@@ -206,12 +213,30 @@ void gtkui__initialize (void)
 
   gtk_box_pack_end (box, minibuffer, FALSE, FALSE, 0);
   gtk_box_pack_end (box, modeline, FALSE, FALSE, 0);
-  gtk_box_pack_end (box, textview, FALSE, FALSE, 0);
+  gtk_box_pack_end (box, textview, TRUE, TRUE, 0);
 
   // REVIEW
   gtk_window_move (GTK_WINDOW (frame), 480, 0);
 
   gtk_widget_show_all (frame);
+}
+
+static gboolean gtkui__frame_configure (GtkWidget *widget,
+                                        GdkEventConfigure *event,
+                                        gpointer data)
+{
+  g_print ("gtkui__frame_configure called\n");
+
+  GtkAllocation allocation;
+  gtk_widget_get_allocation (textview, &allocation);
+  //       g_print ("textview h = %d w = %d\n", allocation.height, allocation.width);
+
+  if (char_height)
+    textview_rows = allocation.height / char_height;
+  if (char_width)
+    textview_columns = allocation.width / char_width;
+
+  return TRUE;
 }
 
 void gtkui__main (void)
