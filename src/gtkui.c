@@ -84,6 +84,10 @@ static gboolean gtkui__textview_key_press (GtkWidget *widget,
                                            GdkEventKey *event,
                                            gpointer data);
 
+static gboolean gtkui__textview_mousewheel (GtkWidget *widget,
+                                            GdkEventScroll *event,
+                                            gpointer data);
+
 static gboolean gtkui__textview_button_press (GtkWidget *widget,
                                               GdkEventButton *event,
                                               gpointer data);
@@ -131,7 +135,7 @@ void gtkui__initialize (void)
                          //                          GDK_LEAVE_NOTIFY_MASK |
                          GDK_BUTTON_PRESS_MASK |
                          //                          GDK_BUTTON_RELEASE_MASK |
-                         //                          GDK_SCROLL_MASK |
+                         GDK_SCROLL_MASK |
                          GDK_KEY_PRESS_MASK
                          //                          GDK_KEY_RELEASE_MASK |
                          //                          GDK_POINTER_MOTION_MASK |
@@ -144,6 +148,8 @@ void gtkui__initialize (void)
                     G_CALLBACK(gtkui__textview_key_press), NULL);
   g_signal_connect (textview, "button-press-event",
                     G_CALLBACK(gtkui__textview_button_press), NULL);
+  g_signal_connect (textview, "scroll-event",
+                    G_CALLBACK(gtkui__textview_mousewheel), NULL);
 
   modeline = gtk_drawing_area_new();
 
@@ -294,6 +300,33 @@ gtkui__textview_button_press (GtkWidget *widget,
                               gpointer data)
 {
   gtkui_textview_button_press (event->x, event->y);
+  return TRUE;
+}
+
+void gtkui__textview_invalidate (void)
+{
+  gtk_widget_queue_draw (textview);
+  gtk_widget_queue_draw (modeline);
+}
+
+extern void gtkui_textview_mousewheel (cell);
+
+static gboolean
+gtkui__textview_mousewheel (GtkWidget *widget,
+                            GdkEventScroll *event,
+                            gpointer data)
+{
+  if (event->direction == GDK_SCROLL_UP)
+    {
+//       g_print ("gtkui__textview_mousewheel scroll up\n");
+      gtkui_textview_mousewheel (1);
+    }
+  else if (event->direction == GDK_SCROLL_DOWN)
+    {
+//       g_print ("gtkui__textview_mousewheel scroll down\n");
+      gtkui_textview_mousewheel (-1);
+    }
+  gtkui__textview_invalidate ();
   return TRUE;
 }
 
@@ -459,12 +492,6 @@ gtkui__textview_draw_caret ()
 
 //       cairo_stroke (cr_textview);
     }
-}
-
-void gtkui__textview_invalidate (void)
-{
-  gtk_widget_queue_draw (textview);
-  gtk_widget_queue_draw (modeline);
 }
 
 static gboolean

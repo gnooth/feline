@@ -233,6 +233,38 @@ subroutine gtkui_textview_button_press  ; x y -> void
         ret
 endsub
 
+; ### gtkui_textview_mousewheel
+subroutine gtkui_textview_mousewheel    ; +1/-1 -> void
+; 1-arg callback
+
+        ; enter callback
+        push    rbx
+        push    rbp
+        mov     rbp, [gtkui_raw_sp0_]
+
+        test    arg0_register, arg0_register
+        js      .1
+
+        _quote "mousewheel-scroll-up"
+        _quote "editor"
+        _ ?lookup_symbol
+        _ call_symbol
+        jmp     .exit
+
+.1:
+        _quote "mousewheel-scroll-down"
+        _quote "editor"
+        _ ?lookup_symbol
+        _ call_symbol
+
+.exit:
+        ; leave callback
+        pop     rbp
+        pop     rbx
+
+        ret
+endsub
+
 ; ### gtkui-textview-set-caret-pos
 code gtkui_textview_set_caret_pos, 'gtkui-textview-set-caret-pos' ; x y -> void
         _check_fixnum
