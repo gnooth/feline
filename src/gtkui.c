@@ -108,6 +108,10 @@ static gboolean gtkui__textview_draw (GtkWidget *widget,
                                       cairo_t *cr,
                                       gpointer data);
 
+static gboolean gtkui__textview_size_allocate (GtkWidget *widget,
+                                               GdkRectangle* allocation,
+                                               gpointer data);
+
 static gboolean gtkui__frame_configure (GtkWidget *widget,
                                         GdkEventConfigure *event,
                                         gpointer data);
@@ -131,8 +135,11 @@ void gtkui__initialize (void)
   textview = gtk_drawing_area_new();
 
   gtk_widget_set_size_request (textview,
-                               FERAL_DEFAULT_FRAME_WIDTH,
-                               FERAL_DEFAULT_TEXTVIEW_HEIGHT);
+//                                FERAL_DEFAULT_FRAME_WIDTH,
+                               -1,
+//                                FERAL_DEFAULT_TEXTVIEW_HEIGHT
+                               -1
+                               );
 
   gtk_widget_set_can_focus (textview, TRUE);
 
@@ -157,11 +164,14 @@ void gtkui__initialize (void)
                     G_CALLBACK(gtkui__textview_button_press), NULL);
   g_signal_connect (textview, "scroll-event",
                     G_CALLBACK(gtkui__textview_mousewheel), NULL);
+  g_signal_connect (textview, "size-allocate",
+                    G_CALLBACK (gtkui__textview_size_allocate), NULL);
 
   modeline = gtk_drawing_area_new();
 
   gtk_widget_set_size_request (modeline,
-                               FERAL_DEFAULT_FRAME_WIDTH,
+//                                FERAL_DEFAULT_FRAME_WIDTH,
+                               -1,
                                FERAL_DEFAULT_MODELINE_HEIGHT);
 
   gtk_widget_set_can_focus (modeline, TRUE);
@@ -187,7 +197,8 @@ void gtkui__initialize (void)
   minibuffer = gtk_drawing_area_new();
 
   gtk_widget_set_size_request (minibuffer,
-                               FERAL_DEFAULT_FRAME_WIDTH,
+//                                FERAL_DEFAULT_FRAME_WIDTH,
+                               -1,
                                FERAL_DEFAULT_MINIBUFFER_HEIGHT);
 
   gtk_widget_set_can_focus (minibuffer, TRUE);
@@ -227,33 +238,22 @@ void gtkui__textview_invalidate (void)
   gtk_widget_queue_draw (modeline);
 }
 
+static gboolean gtkui__textview_size_allocate (GtkWidget *widget,
+                                               GdkRectangle *allocation,
+                                               gpointer data)
+{
+  if (char_height)
+    textview_rows = allocation->height / char_height;
+  if (char_width)
+    textview_columns = allocation->width / char_width;
+  return TRUE;
+}
+
 static gboolean gtkui__frame_configure (GtkWidget *widget,
                                         GdkEventConfigure *event,
                                         gpointer data)
 {
-  int frame_width = event->width;
-  int frame_height = event->height;
-
-  g_print ("gtkui__frame_configure called %d %d\n", frame_width, frame_height);
-
-  gtk_widget_queue_resize (frame);
-
-//   gtk_widget_set_size_request (textview,
-//                                frame_width,
-//                                frame_height - FERAL_DEFAULT_MODELINE_HEIGHT \
-//                                             - FERAL_DEFAULT_MINIBUFFER_HEIGHT);
-
-  GtkAllocation allocation;
-  gtk_widget_get_allocation (textview, &allocation);
-  //       g_print ("textview h = %d w = %d\n", allocation.height, allocation.width);
-
-  if (char_height)
-    textview_rows = allocation.height / char_height;
-  if (char_width)
-    textview_columns = allocation.width / char_width;
-
-  gtkui__textview_invalidate ();
-
+  gtk_widget_queue_resize (textview);
   return TRUE;
 }
 
