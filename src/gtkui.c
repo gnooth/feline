@@ -221,11 +221,27 @@ void gtkui__initialize (void)
   gtk_widget_show_all (frame);
 }
 
+void gtkui__textview_invalidate (void)
+{
+  gtk_widget_queue_draw (textview);
+  gtk_widget_queue_draw (modeline);
+}
+
 static gboolean gtkui__frame_configure (GtkWidget *widget,
                                         GdkEventConfigure *event,
                                         gpointer data)
 {
-  g_print ("gtkui__frame_configure called\n");
+  int frame_width = event->width;
+  int frame_height = event->height;
+
+  g_print ("gtkui__frame_configure called %d %d\n", frame_width, frame_height);
+
+  gtk_widget_queue_resize (frame);
+
+//   gtk_widget_set_size_request (textview,
+//                                frame_width,
+//                                frame_height - FERAL_DEFAULT_MODELINE_HEIGHT \
+//                                             - FERAL_DEFAULT_MINIBUFFER_HEIGHT);
 
   GtkAllocation allocation;
   gtk_widget_get_allocation (textview, &allocation);
@@ -235,6 +251,8 @@ static gboolean gtkui__frame_configure (GtkWidget *widget,
     textview_rows = allocation.height / char_height;
   if (char_width)
     textview_columns = allocation.width / char_width;
+
+  gtkui__textview_invalidate ();
 
   return TRUE;
 }
@@ -326,12 +344,6 @@ gtkui__textview_button_press (GtkWidget *widget,
 {
   gtkui_textview_button_press (event->x, event->y);
   return TRUE;
-}
-
-void gtkui__textview_invalidate (void)
-{
-  gtk_widget_queue_draw (textview);
-  gtk_widget_queue_draw (modeline);
 }
 
 extern void gtkui_textview_mousewheel (cell);
