@@ -25,11 +25,8 @@
 
 typedef int64_t cell;
 
-#ifndef COLORREF
+#ifndef WIN64
 typedef cell COLORREF;
-#endif
-
-#ifndef RGB
 #define RGB(r, g, b)           ((COLORREF) (r + (g << 8) + (b << 16)))
 #endif
 
