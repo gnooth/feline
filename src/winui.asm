@@ -43,6 +43,27 @@ code winui_main, 'winui-main'           ; void -> void
         next
 endcode
 
+; ### winui-close
+subroutine winui_close                  ; void -> void
+; 0-arg callback
+
+        ; enter callback
+        push    rbx
+        push    rbp
+        mov     rbp, [winui_raw_sp0_]
+
+        _quote "do-quit"
+        _quote "editor"
+        _ ?lookup_symbol
+        _ call_symbol
+
+        ; leave callback
+        pop     rbp
+        pop     rbx
+
+        ret
+endsub
+
 ; ### winui-exit
 code winui_exit, 'winui-exit'
         extern  winui__exit
