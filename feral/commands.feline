@@ -101,10 +101,7 @@ in: editor
 
 : execute-command
     "command" set-history
-    "execute-command calling minibuffer-accept-string\n" print
     "Command: " minibuffer-accept-string :> command
-
-    command "execute-command command = %S\n" format print
 
     command empty? [
         command find-name [
