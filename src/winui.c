@@ -324,8 +324,11 @@ void winui__resize (void)
 
 void winui__exit (void)
 {
-  SendMessage (hwnd_frame, WM_CLOSE, 0, 0);
+  DestroyWindow (hwnd_frame);
 }
+
+// winui.asm
+extern void winui_close(void);
 
 static LRESULT CALLBACK winui__frame_wnd_proc (HWND hwnd, UINT msg,
                                                WPARAM wparam, LPARAM lparam)
@@ -334,6 +337,10 @@ static LRESULT CALLBACK winui__frame_wnd_proc (HWND hwnd, UINT msg,
     {
     case WM_CREATE:
       winui__create_font (hwnd);
+      return 0;
+
+    case WM_CLOSE:
+      winui_close ();
       return 0;
 
     case WM_DESTROY:
@@ -564,6 +571,7 @@ void winui__minibuffer_exit (void)
 }
 
 // winui.asm
+extern void winui_minibuffer_keydown (WPARAM);
 extern void winui_minibuffer_char (WPARAM);
 extern void winui_minibuffer_paint (void);
 
