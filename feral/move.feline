@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline accessors feral-config ;
+using: feral-core feline accessors ;
 in: editor
 
 : adjust-dot-column
@@ -309,7 +309,7 @@ in: editor
     ] when
 ;
 
-winui? #if
+feral-config:winui? feral-config:gtkui? or #if
 
 : mousewheel-scroll-up
     current-command last-command!
