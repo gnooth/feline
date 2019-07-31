@@ -37,6 +37,27 @@ code gtkui_main, 'gtkui-main'           ; void -> void
         next
 endcode
 
+; ### gtkui_close
+subroutine gtkui_close                  ; void -> void
+; 0-arg callback
+
+        ; enter callback
+        push    rbx
+        push    rbp
+        mov     rbp, [gtkui_raw_sp0_]
+
+        _quote "do-quit"
+        _quote "editor"
+        _ ?lookup_symbol
+        _ call_symbol
+
+        ; leave callback
+        pop     rbp
+        pop     rbx
+
+        ret
+endsub
+
 ; ### gtkui-exit
 code gtkui_exit, 'gtkui-exit'
         extern  gtkui__exit
