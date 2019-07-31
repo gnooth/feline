@@ -746,11 +746,10 @@ termui? #if
 
     line top-line!
 
-    t repaint!
+    t repaint?!
 ;
 
-: maybe-reframe
-    reframe? [ reframe ] when ;
+: maybe-reframe reframe? [ reframe ] when ;
 
 tuple: mode
     name
