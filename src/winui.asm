@@ -43,7 +43,7 @@ code winui_main, 'winui-main'           ; void -> void
         next
 endcode
 
-; ### winui-close
+; ### winui_close
 subroutine winui_close                  ; void -> void
 ; 0-arg callback
 
