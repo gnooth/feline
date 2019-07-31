@@ -116,6 +116,16 @@ static gboolean gtkui__frame_configure (GtkWidget *widget,
                                         GdkEventConfigure *event,
                                         gpointer data);
 
+// gtkui.asm
+extern void gtkui_close (void);
+
+static gboolean
+gtkui__close (GtkWidget *widget, GdkEvent *event, gpointer data)
+{
+  gtkui_close ();
+  return TRUE;
+}
+
 void gtkui__initialize (void)
 {
   gtk_init(0,  NULL);
@@ -128,6 +138,8 @@ void gtkui__initialize (void)
 
   g_signal_connect (frame, "configure-event",
                     G_CALLBACK (gtkui__frame_configure), NULL);
+
+  g_signal_connect (frame, "delete-event", G_CALLBACK (gtkui__close), NULL);
 
   GtkBox *box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_container_add (GTK_CONTAINER (frame), GTK_WIDGET(box));
@@ -298,6 +310,7 @@ int gtkui__char_width (void)
   return char_width;
 }
 
+// gtkui.asm
 extern void gtkui_textview_keydown (guint);
 extern void gtkui_textview_button_press (int, int);
 
