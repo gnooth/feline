@@ -223,13 +223,6 @@
         not     rbx
 %endmacro
 
-%macro  _zgt 0                          ; 0>
-        test    rbx, rbx
-        setg    bl
-        neg     bl
-        movsx   rbx, bl
-%endmacro
-
 %macro  _zlt 0                          ; 0<
 ; Win32Forth
         sar     rbx, 63
