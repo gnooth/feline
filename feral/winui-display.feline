@@ -144,12 +144,12 @@ feral-config:winui? assert
     top-line !> line
     0 !> row
 
-    [ line row textview-rows < and ] [
+    [ line row textview-rows <= and ] [
         line row repaint-line
         row 1+ row! line next>> line!
     ] while
 
-    [ row textview-rows < ] [
+    [ row textview-rows <= ] [
         0 row winui-textview-clear-eol
         row 1+ row!
     ] while

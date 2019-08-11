@@ -733,7 +733,7 @@ termui? #if
     dot-line-number
     top-line-number
     dup textview-rows 1- +
-    between? not ;
+    within? not ;
 
 : reframe
     textview-rows 2 /i verify-index :> i!
