@@ -244,7 +244,7 @@ feline-mode-comment-start length constant comment-start-length
     start 1+ iter string-iterator-index +
 ;
 
-: string->segments ( s )                // string -> segments
+: string-segments ( s ) // string -> segments
     s string-length :> len
     0 :> start!
     0 :> end!
@@ -323,9 +323,8 @@ var last-segment-text
     ] each
     segments ;
 
-: feline-format-line                    // string -> segments
-    string->segments
-    format-segments ;
+: feline-mode-format-line // string -> segments
+    string-segments format-segments ;
 
 : line-is-definition? ( line )
     ": " line text>> head?
@@ -392,7 +391,7 @@ unuse: feral-key
     feline-mode-comment-start m comment-start<<
     ' feline-mode-initialize-buffer m initialize-buffer-function<<
     ' feline-mode-identifier-char? m identifier-char?-function<<
-    ' feline-format-line m formatter<<
+    ' feline-mode-format-line m formatter<<
     m feline-extension modes set-at
     m instance! ;
 
