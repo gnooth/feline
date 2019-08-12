@@ -23,10 +23,6 @@ global instance
 : get-instance                          // void -> mode
     instance ;
 
-: asm-mode-initialize-buffer            // buffer -> void
-    1 ?enough :> buf
-    instance indent-size>> buf indent-size<< ;
-
 : asm-mode-identifier-char? ( x )       // x -> ?
     [ x alphanumeric? ] [ x "_$#@~.?" member-eq? ] either? ;
 
@@ -41,6 +37,62 @@ global instance
         s 0 color-text make-segment/3
         1array
     ] if ;
+
+: line-is-definition? ( line )
+    "code " line text>> head?
+    "%macro " line text>> head? or
+;
+
+: asm-mode-list-symbols
+    make-buffer :> buf
+    "symbols " current-buffer filename>> + buf name<<
+
+    first-line :> line!
+
+    [ line ] [
+        line line-is-definition? [
+            line number>> 1+ line text>> "%d %s" format make-line/1
+            buf top-line>> [ dup buf top-line<< ] unless
+            buf editor:buffer-append-line
+        ] when
+        line next>> line!
+    ] while
+
+    buf top-line>> 0 make-position buf dot<<
+    t buf read-only<<
+
+    current-buffer buf parent<<
+    symbols-mode:get-instance buf mode<<
+    buf mode>> initialize-buffer-function>> [ buf swap call ] when*
+
+    buf buffer-list vector-push
+    buf set-current-buffer
+
+    renumber
+    t repaint!
+;
+
+global asm-mode-local-map
+
+feral-config:winui? #if
+
+use: feral-key
+
+: initialize-local-map
+    128 <hashtable> :> m
+    ' asm-mode-list-symbols ctrl-shift-o m set-at
+    m asm-mode-local-map! ;
+
+initialize-local-map
+
+unuse: feral-key
+
+#endif
+
+: asm-mode-initialize-buffer            // buffer -> void
+    1 ?enough :> buf
+    asm-mode-local-map buf local-map<<
+    instance indent-size>> buf indent-size<< ;
 
 : initialize-asm-mode
     mode make-instance :> m
