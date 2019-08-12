@@ -38,6 +38,7 @@ in: user
     "logging"
     "modes"
     "search"
+    "symbols-mode"
 } [ delete-vocab ] each
 
 in: feral-loader
@@ -68,6 +69,7 @@ feral-source-directory add-source-directory
         "save.feline"
         "quit.feline"
         "buffer.feline"
+        "symbols-mode.feline"
         "asm-mode.feline"
         "c-mode.feline"
         "feline-mode.feline"
