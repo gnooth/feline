@@ -364,7 +364,7 @@ global current-buffer
 : dot-line-number                       // -> line-number
     dot line>> number>> ;
 
-: dot-line!                            // line -> void
+: dot-line!                             // line -> void
     dot line<< ;
 
 : dot-offset                            // -> n
