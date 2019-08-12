@@ -122,24 +122,6 @@ feline-mode-comment-start length constant comment-start-length
         [ "No expansion for %S" format mini:message ]
     } case ;
 
-global feline-mode-local-map
-
-winui? #if
-
-use: feral-key
-
-: initialize-local-map
-    128 <hashtable> :> m
-    ' feline-mode-toggle-line-comment   ctrl-/      m set-at
-    ' feline-mode-expand                ctrl-space  m set-at
-    m feline-mode-local-map! ;
-
-initialize-local-map
-
-unuse: feral-key
-
-#endif
-
 {
     "!>"
     "'"
@@ -344,6 +326,59 @@ var last-segment-text
 : feline-format-line                    // string -> segments
     string->segments
     format-segments ;
+
+: line-is-definition? ( line )
+    ": " line text>> head?
+    "global " line text>> head? or
+;
+
+: feline-mode-list-symbols
+    make-buffer :> buf
+    "symbols " current-buffer filename>> + buf name<<
+
+    first-line :> line!
+
+    [ line ] [
+        line line-is-definition? [
+            line number>> 1+ line text>> "%d %s" format make-line/1
+            buf top-line>> [ dup buf top-line<< ] unless
+            buf editor:buffer-append-line
+        ] when
+        line next>> line!
+    ] while
+
+    buf top-line>> 0 make-position buf dot<<
+    t buf read-only<<
+
+    current-buffer buf parent<<
+    symbols-mode:get-instance buf mode<<
+    buf mode>> initialize-buffer-function>> [ buf swap call ] when*
+
+    buf buffer-list vector-push
+    buf set-current-buffer
+
+    renumber
+    t repaint!
+;
+
+global feline-mode-local-map
+
+winui? #if
+
+use: feral-key
+
+: initialize-local-map
+    128 <hashtable> :> m
+    ' feline-mode-toggle-line-comment   ctrl-/          m set-at
+    ' feline-mode-expand                ctrl-space      m set-at
+    ' feline-mode-list-symbols          ctrl-shift-o    m set-at
+    m feline-mode-local-map! ;
+
+initialize-local-map
+
+unuse: feral-key
+
+#endif
 
 : feline-mode-initialize-buffer         // buffer -> void
     1 ?enough :> buf
