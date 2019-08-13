@@ -1,0 +1,148 @@
+// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline ;
+in: symbols
+
+global sourcefile
+
+global symbols-hashtable
+
+: process-code-line ( s lineno ) // string fixnum -> void
+    f !> begin
+    f !> end
+
+    "code " length begin!
+    ',' s index verify-fixnum end!
+
+    sourcefile lineno 1+ 2array // location
+    begin end s substring // symbol
+    symbols-hashtable set-at
+
+    end 2 + s nth :> quotechar
+    quotechar { '\'' '"' } member-eq? assert
+    end 3 + begin!
+    quotechar begin s index-from verify-fixnum end!
+
+    sourcefile lineno 1+ 2array // location
+    begin end s substring // symbol
+    symbols-hashtable set-at ;
+
+: process-macro-line ( s lineno ) // string fixnum -> void
+    f !> begin
+    f !> end
+
+    "%macro " length begin!
+    begin s string-skip-whitespace begin!
+    begin s string-skip-to-whitespace end!
+
+    sourcefile lineno 1+ 2array // location
+    begin end s substring // symbol
+    symbols-hashtable set-at ;
+
+: process-line // string fixnum -> void
+    2 ?enough :> lineno :> s
+    "code " s head? [ s lineno process-code-line ] return-if
+    "%macro " s head? [ s lineno process-macro-line ] return-if ;
+
+: process-asm-file
+    sourcefile file-lines [ process-line ] each-index ;
+
+{
+    "feline.asm"
+    "feline_home.asm"
+    "externs.asm"
+    "macros.asm"
+    "loop-macros.asm"
+    "inlines.asm"
+    "ansi.asm"
+    "array.asm"
+    "assert.asm"
+    "bitops.asm"
+    "boolean.asm"
+    "cold.asm"
+    "color.asm"
+    "combinators.asm"
+    "compile-word.asm"
+    "debug.asm"
+    "defer.asm"
+    "dynamic-scope.asm"
+    "errors.asm"
+    "file-output-stream.asm"
+    "files.asm"
+    "fixnum.asm"
+    "float.asm"
+    "format.asm"
+    "gc.asm"
+    "generic.asm"
+    "handles.asm"
+    "hashtable.asm"
+    "io.asm"
+    "iterator.asm"
+    "key.asm"
+    "keyword.asm"
+    "lexer.asm"
+    "load.asm"
+    "locals.asm"
+    "math.asm"
+    "memory.asm"
+    "method.asm"
+    "move.asm"
+    "mutex.asm"
+    "numbers.asm"
+    "object-macros.asm"
+    "objects.asm"
+    "syntax.asm"
+    "primitives.asm"
+    "quit.asm"
+    "quotation.asm"
+    "range.asm"
+    "recover.asm"
+    "sequences.asm"
+    "sbuf.asm"
+    "slice.asm"
+    "slot.asm"
+    "socket.asm"
+    "stack.asm"
+    "stream.asm"
+    "string-iterator.asm"
+    "string-output-stream.asm"
+    "string.asm"
+    "strings.asm"
+    "symbol.asm"
+    "thread.asm"
+    "time.asm"
+    "tools.asm"
+    "tuple.asm"
+    "type.asm"
+    "uint64.asm"
+    "int64.asm"
+    "vocab.asm"
+    "vocabs.asm"
+    "vector.asm"
+    "wrapper.asm"
+} constant asm-files
+
+: generate-hashtable
+    4096 <hashtable> symbols-hashtable!
+    asm-files [
+         feline-source-directory swap path-append sourcefile!
+         process-asm-file
+    ] each ;
+
+: find-tag // string -> 2array/f
+    1 ?enough :> tag
+    symbols-hashtable [ generate-hashtable ] unless
+    tag symbols-hashtable at ;
