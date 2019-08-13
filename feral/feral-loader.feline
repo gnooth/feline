@@ -38,6 +38,7 @@ in: user
     "logging"
     "modes"
     "search"
+    "symbols"
     "symbols-mode"
 } [ delete-vocab ] each
 
@@ -77,6 +78,7 @@ feral-source-directory add-source-directory
         "diff-mode.feline"
         "git.feline"
         "directory-mode.feline"
+        "symbols.feline"
         "find-definition.feline"
         "search.feline"
         "find-in-files.feline"
