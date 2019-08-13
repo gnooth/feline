@@ -167,7 +167,7 @@ in: editor
         dot mark make-region/2 region!
         region editor:add-undo-edit-region
         region [ s over text>> + swap text<< ] region-each-line
-        t repaint!
+        unmark
     ] [
         editor:add-undo-line-edit
         s dot-line-text + dot-line-text!
@@ -193,7 +193,7 @@ in: editor
             ] if
         ] region-each-line
         modified
-        t repaint!
+        unmark
     ] [
         s dot-line-text head? [
             editor:add-undo-line-edit
@@ -458,7 +458,7 @@ use: kill-ring
 
 : copy
     [ anchor ] [ mark ] either?
-    [ dot make-region/2 copy-region ] [ copy-line ] if* ;
+    [ dot make-region/2 copy-region unmark ] [ copy-line ] if* ;
 
 : delete-line-internal
     dot-line-prev :> prev
