@@ -16,10 +16,12 @@
 using: feral-core feline feral-config history mini ;
 in: editor
 
-: goto-definition                       // symbol -> void
-    symbol-location :> line-number :> filename
+: goto-location/2 // filename line-number -> void
+    :> line-number :> filename
     filename [
-        filename find-buffer-from-file-name [
+        filename find-buffer-from-file-name // -> buffer/f
+        [
+            // -> buffer
             set-current-buffer
             line-number gotoline-internal
         ] [
@@ -29,6 +31,14 @@ in: editor
         t repaint!
     ] when
 ;
+
+: goto-location/1 // 2array -> void
+    1 ?enough dup second :> line-number first :> filename
+    filename line-number goto-location/2 ;
+
+: goto-definition                       // symbol -> void
+    symbol-location // filename line-number
+    goto-location/2 ;
 
 winui? #if
 
@@ -51,7 +61,12 @@ winui? #if
 #endif
 
 : find-definition-internal              // string -> void
-    find-qualified-name [
+    1 ?enough :> identifier
+
+    identifier symbols:find-tag :> location
+    location [ location goto-location/1 ] return-if
+
+    identifier find-qualified-name [
         goto-definition
     ] [
         all-words [ symbol-name over = ] filter nip
