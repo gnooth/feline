@@ -13,13 +13,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline feral-config history mini ;
+using: feral-core feline history mini ;
 in: editor
 
-: goto-definition                       // symbol -> void
-    symbol-location :> line-number :> filename
+: goto-location/2 // filename line-number -> void
+    :> line-number :> filename
     filename [
-        filename find-buffer-from-file-name [
+        filename find-buffer-from-file-name // -> buffer/f
+        [
+            // -> buffer
             set-current-buffer
             line-number gotoline-internal
         ] [
@@ -30,7 +32,15 @@ in: editor
     ] when
 ;
 
-winui? gtkui? or #if
+: goto-location/1 // 2array -> void
+    1 ?enough dup second :> line-number first :> filename
+    filename line-number goto-location/2 ;
+
+: goto-definition                       // symbol -> void
+    symbol-location // filename line-number
+    goto-location/2 ;
+
+feral-config:winui? feral-config:gtkui? or #if
 
 : minibuffer-list-symbols               // symbols -> void
     256 <sbuf> :> sb
@@ -51,7 +61,12 @@ winui? gtkui? or #if
 #endif
 
 : find-definition-internal              // string -> void
-    find-qualified-name [
+    1 ?enough :> identifier
+
+    identifier symbols:find-tag :> location
+    location [ location goto-location/1 ] return-if
+
+    identifier find-qualified-name [
         goto-definition
     ] [
         all-words [ symbol-name over = ] filter nip
