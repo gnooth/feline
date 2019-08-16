@@ -118,6 +118,7 @@ VK_UP alt               constant alt-up
 'D' char-code ctrl shift    constant ctrl-shift-d
 'F' char-code ctrl shift    constant ctrl-shift-f
 'K' char-code ctrl shift    constant ctrl-shift-k
+'L' char-code ctrl shift    constant ctrl-shift-l
 'O' char-code ctrl shift    constant ctrl-shift-o
 
 #endif
