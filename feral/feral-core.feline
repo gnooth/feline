@@ -99,6 +99,14 @@ tuple: position
 : copy-position ( pos )                 // position -> copy
     pos line>> pos offset>> make-position ;
 
+: position-equal? ( pos1 pos2 )
+    {
+        [ pos1 line>> pos2 line>> eq? ]
+        [ pos1 offset>> pos2 offset>> eq? ]
+    } && ;
+
+method: position equal? position-equal? ;
+
 : position-before? ( pos1 pos2 )        // pos1 pos2 -> ?
     pos1 line>> :> line1
     pos2 line>> :> line2
@@ -372,6 +380,9 @@ global current-buffer
 
 : dot-offset!                           // n -> void
     dot offset<< ;
+
+: move-dot-to                           // line offset -> void
+    dot-offset! dot-line! ;
 
 : mark                                  // -> position/f
     current-buffer mark>> ;
