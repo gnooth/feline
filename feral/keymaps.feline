@@ -38,7 +38,9 @@ feral-config:winui? #if
     ' move-to-eol                       feral-key:end               m set-at
     ' select-to-eol                     feral-key:shift-end         m set-at
     ' move-left                         feral-key:left              m set-at
+    ' select-left                       feral-key:shift-left        m set-at
     ' move-right                        feral-key:right             m set-at
+    ' select-right                      feral-key:shift-right       m set-at
     ' do-up                             feral-key:up                m set-at
     ' do-down                           feral-key:down              m set-at
 
@@ -74,6 +76,7 @@ feral-config:winui? #if
     ' previous-buffer                   feral-key:alt-left          m set-at
     ' find-definition                   key:ctrl-t                  m set-at
     ' select-line                       key:ctrl-l                  m set-at
+    ' select-line-up                    feral-key:ctrl-shift-l      m set-at
     ' delete-line                       feral-key:ctrl-shift-k      m set-at
 
     ' cut                               key:ctrl-x                  m set-at
