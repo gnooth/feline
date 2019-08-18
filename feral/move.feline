@@ -142,6 +142,27 @@ in: editor
         ] when
     ] if ;
 
+: select-left
+    last-command ' select-left eq? [ add-undo-move ] unless
+
+    dot-offset 0 > [
+        mark [ copy-dot mark! ] unless
+        dot-offset 1- dot-offset!
+        dot-offset goal-column!
+        t repaint!
+    ] [
+        dot-line-prev [
+            mark [ copy-dot mark! ] unless
+            dot-line-prev dot-line!
+            dot-line-length dot-offset!
+            dot-offset goal-column!
+            reframe? [
+                dot-line top-line!
+            ] when
+            t repaint!
+        ] when
+    ] if ;
+
 : move-right
     last-command ' move-right eq? [ add-undo-move ] unless
 
@@ -162,6 +183,27 @@ in: editor
                 dot-line-number textview-rows 1- - nth-line top-line!
                 t repaint!
             ] when
+        ] when
+    ] if ;
+
+: select-right
+    last-command ' select-right eq? [ add-undo-move ] unless
+
+    dot-offset dot-line-length < [
+        mark [ copy-dot mark! ] unless
+        dot-offset 1+ dot-offset!
+        dot-offset goal-column!
+        t repaint!
+    ] [
+        dot-line-next [
+            mark [ copy-dot mark! ] unless
+            dot-line-next dot-line!
+            0 dot-offset!
+            dot-offset goal-column!
+            reframe? [
+                dot-line-number textview-rows 1- - nth-line top-line!
+            ] when
+            t repaint!
         ] when
     ] if ;
 
