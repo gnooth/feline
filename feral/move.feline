@@ -84,10 +84,12 @@ in: editor
     t dot-line-changed! ;
 
 : move-to-eol
-    add-undo-move
-    unmark
-    dot-line-length dot-offset!
-    dot-offset goal-column! ;
+    mark dot-offset dot-line-length neq? or [
+        add-undo-move
+        unmark
+        dot-line-length dot-offset!
+        dot-offset goal-column!
+    ] when ;
 
 : select-to-eol
     add-undo-move
