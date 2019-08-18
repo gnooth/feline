@@ -76,12 +76,20 @@ in: editor
     ] if ;
 
 : select-to-bol
-    add-undo-move
-    unmark
-    copy-dot mark!
-    dot-line indentation-length dot-offset!
-    dot-offset goal-column!
-    t dot-line-changed! ;
+    0 !> goal
+    dot-line indentation-length :> len
+
+    len zero? [
+        dot-offset len neq? [ len goal! ] when
+    ] unless
+
+    mark null?
+    goal dot-offset neq? or [
+        add-undo-move
+        mark [ copy-dot mark! ] unless
+        goal dot-offset neq? [ goal dot-offset! ] when
+        t repaint!
+    ] when ;
 
 : move-to-eol
     mark dot-offset dot-line-length neq? or [
