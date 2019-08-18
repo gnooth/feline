@@ -60,10 +60,20 @@ in: editor
 ;
 
 : move-to-bol
-    add-undo-move
-    unmark
-    0 dot-offset!
-    0 goal-column! ;
+    0 !> goal
+    dot-line indentation-length :> len
+
+    len zero? [
+        dot-offset len neq? [ len goal! ] when
+    ] unless
+
+    goal dot-offset neq? [
+        add-undo-move
+        unmark
+        goal dot-offset!
+    ] [
+        mark [ add-undo-move unmark ] when
+    ] if ;
 
 : select-to-bol
     add-undo-move
