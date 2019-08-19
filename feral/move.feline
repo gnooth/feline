@@ -70,7 +70,7 @@ in: editor
     goal dot-offset neq? [
         add-undo-move
         unmark
-        goal dot-offset!
+        goal dup dot-offset! goal-column!
     ] [
         mark [ add-undo-move unmark ] when
     ] if ;
@@ -95,25 +95,25 @@ in: editor
     mark dot-offset dot-line-length neq? or [
         add-undo-move
         unmark
-        dot-line-length dot-offset!
-        dot-offset goal-column!
+        dot-line-length dup dot-offset! goal-column!
     ] when ;
 
 : select-to-eol
-    add-undo-move
-    unmark
-    copy-dot mark!
-    dot-line-length dot-offset!
-    dot-offset goal-column!
-    t dot-line-changed! ;
+    dot-line-length :> len
+
+    mark null?
+    len dot-offset neq? or [
+        add-undo-move
+        mark [ copy-dot mark! ] unless
+        len dot-offset!
+        t repaint!
+    ] when ;
 
 : beginning-of-block
-    dot mark make-region/2 begin dot!
-;
+    dot mark make-region/2 begin dot! ;
 
 : end-of-block
-    dot mark make-region/2 end dot!
-;
+    dot mark make-region/2 end dot! ;
 
 : char-left-internal                    // void -> void
     dot-offset 0 > [
