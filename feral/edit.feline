@@ -331,103 +331,18 @@ use: kill-ring
     [ insert-multiline-string-internal ] bi ;
 
 : delete-word-right
-    reset-redo
-
-    at-eol? [
-        unmark
-        delete-line-separator
-    ] return-if
-
+    at-eof? ?exit
     [
-        add-undo-move
-        dot copy-position mark!
-
-        {
-            { [ in-word? ] [
-                // move to end of word
-                [ not-in-word? at-eol? or ] [
-                    dot-offset 1+ dot-offset!
-                ] until
-                // delete following whitespace if any
-                [ in-whitespace? ] [
-                    dot-offset 1+ dot-offset!
-                ] while
-            ] }
-            { [ in-whitespace? ] [
-                [ in-whitespace? ] [
-                    dot-offset 1+ dot-offset!
-                ] while
-            ] }
-            // default
-            [
-                // not in word, not in whitespace
-                [
-                    in-word? in-whitespace? or at-eol? or
-                ] [
-                    dot-offset 1+ dot-offset!
-                ] until
-                // delete following whitespace if any
-                [ in-whitespace? ] [
-                    dot-offset 1+ dot-offset!
-                ] while
-            ]
-        } cond
-
+        select-word-right
         delete-region
-
-    ] with-compound-undo
-
-    t dot-line-changed!
-;
+    ] with-compound-undo ;
 
 : delete-word-left
     at-bof? ?exit
-
-    reset-redo
-
-    at-bol? [
-        [
-            unmark
-            add-undo-move
-            char-left-internal
-            delete-line-separator
-        ] with-compound-undo
-    ] return-if
-
     [
-        add-undo-move
-        dot copy-position mark!
-
-        // not bol
-        // move back one character
-        char-left-line assert
-
-        {
-            { [ in-whitespace? ] [ move-left-to-beginning-of-whitespace ] }
-            { [ in-word? ] [ move-left-to-beginning-of-word ] }
-            [
-                // not in word, not in whitespace
-                // if previous char is whitespace, then dot is at the start
-                // of a word and we are done
-                dot-char-prev whitespace? [
-                    // previous char is NOT whitespace
-                    [
-                        char-left-line
-                        [ not-in-word? not-in-whitespace? and ] [ f ] if
-                    ] loop
-                    dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
-                    // skip over preceding whitespace if any
-                    move-left-past-whitespace
-                    dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
-                ] unless
-            ]
-        } cond
-
+        select-word-left
         delete-region
-
-    ] with-compound-undo
-
-    t dot-line-changed! ;
+    ] with-compound-undo ;
 
 : do-delete
     current-buffer read-only>> [
@@ -441,8 +356,7 @@ use: kill-ring
         [ delete-line-separator ]
     } cond
 
-    modified
-;
+    modified ;
 
 : cut-region ( region )
     region region-as-string append-kill
