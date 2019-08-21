@@ -45,7 +45,9 @@ feral-config:winui? #if
     ' do-down                           feral-key:down              m set-at
 
     ' word-left                         feral-key:ctrl-left         m set-at
+    ' select-word-left                  feral-key:ctrl-shift-left   m set-at
     ' word-right                        feral-key:ctrl-right        m set-at
+    ' select-word-right                 feral-key:ctrl-shift-right  m set-at
     ' delete-word-right                 feral-key:ctrl-delete       m set-at
     ' delete-word-left                  feral-key:ctrl-backspace    m set-at
 
