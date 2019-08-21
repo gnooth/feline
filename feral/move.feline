@@ -227,113 +227,45 @@ in: editor
         ] when
     ] if ;
 
-: move-left-to-beginning-of-word
-    // no undo
-    in-word? [
-        [ char-left-line [ in-word? ] [ f ] if ] loop
-        dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
-    ] when ;
-
-: move-left-to-beginning-of-whitespace
-    // no undo
-    in-whitespace? [
-        [ char-left-line [ in-whitespace? ] [ f ] if ] loop
-        in-whitespace? [ dot-offset 1+ dot-offset! ] unless
-    ] when ;
-
-: move-left-past-whitespace
-    // no undo
-    [ char-left-line [ in-whitespace? ] [ f ] if ] loop ;
-
 : word-left
     at-bof? ?exit
-
     reset-redo
     add-undo-move
+    unmark
+    in-word? [ char-left-internal ] when
+    [ at-bof? not not-in-word? and ] [ char-left-internal ] while
+    at-bof? ?exit
+    [ at-bof? not in-word? and ] [ char-left-internal ] while
+    at-bof? [ char-right-internal ] unless ;
 
-    at-bol? [
-        unmark
-        char-left-internal
-    ] return-if
-
-    // not bol
-    // move back one character
-    char-left-line assert
-    at-eol? assert-false
-
-    {
-        {
-            [ in-whitespace? ] [
-                move-left-past-whitespace
-                move-left-to-beginning-of-word
-            ]
-        }
-
-        { [ in-word? ] [ move-left-to-beginning-of-word ] }
-
-        [
-            // not in word, not in whitespace
-            // if previous char is whitespace, then dot is at the start
-            // of a word and we are done
-            dot-char-prev whitespace? [
-                // previous char is NOT whitespace
-                [
-                    char-left-line
-                    [ not-in-word? not-in-whitespace? and ] [ f ] if
-                ] loop
-                dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
-                // skip over preceding whitespace if any
-                move-left-past-whitespace
-                dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
-            ] unless
-        ]
-    } cond
-;
-
-: move-right-past-whitespace
-    // no undo
-    [ char-right-line [ in-whitespace? ] [ f ] if ] loop
-;
+: select-word-left
+    at-bof? ?exit
+    reset-redo
+    add-undo-move
+    mark [ copy-dot mark! ] unless
+    in-word? [ char-left-internal ] when
+    [ at-bof? not not-in-word? and ] [ char-left-internal ] while
+    at-bof? ?exit
+    [ at-bof? not in-word? and ] [ char-left-internal ] while
+    at-bof? [ char-right-internal ] unless
+    t repaint! ;
 
 : word-right
     at-eof? ?exit
-
     reset-redo
     add-undo-move
+    unmark
+    [ at-eof? not in-word? and ] [ char-right-internal ] while
+    [ at-eof? not not-in-word? and ] [ char-right-internal ] while ;
 
-    {
-        {
-            [ at-eol? ]
-            [ dot-line next>> dot-line! 0 dot-offset! maybe-reframe ]
-        }
-
-        {
-            [ in-whitespace? ]
-            [ move-right-past-whitespace ]
-        }
-
-        {
-            [ in-word? ]
-            [
-                // move to end of word
-                [ not-in-word? at-eol? or ] [
-                    dot-offset 1+ dot-offset!
-                ] until
-                // skip following whitespace if any
-                in-whitespace? [
-                    move-right-past-whitespace
-                ] when
-            ]
-        }
-
-        [
-            // not eol, not in word, not in whitespace
-            [ in-whitespace? in-word? or at-eol? or ] [ dot-offset 1+ dot-offset! ] until
-            in-whitespace? [
-                move-right-past-whitespace
-            ] when
-        ]
-    } cond ;
+: select-word-right
+    at-eof? ?exit
+    reset-redo
+    add-undo-move
+    mark [ copy-dot mark! ] unless
+    [ at-eof? not in-word? and ] [ char-right-internal ] while
+    [ at-eof? not not-in-word? and ] [ char-right-internal ] while
+    t repaint! ;
 
 : do-down
     dot-line-next null? ?exit
