@@ -121,4 +121,7 @@ VK_UP alt               constant alt-up
 'L' char-code ctrl shift    constant ctrl-shift-l
 'O' char-code ctrl shift    constant ctrl-shift-o
 
+VK_LEFT ctrl shift          constant ctrl-shift-left
+VK_RIGHT ctrl shift         constant ctrl-shift-right
+
 #endif
