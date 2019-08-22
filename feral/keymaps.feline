@@ -259,8 +259,8 @@ global ctrl-k-map
     ' word-right                        key:ctrl-right  m set-at
     ' delete-word-left                  key:ctrl-backspace  m set-at
     ' delete-word-right                 key:ctrl-delete     m set-at
-    ' do-up                             key:up          m set-at
-    ' do-down                           key:down        m set-at
+    ' move-up                           key:up          m set-at
+    ' move-down                         key:down        m set-at
     ' do-window-up                      key:ctrl-up     m set-at
     ' do-window-down                    key:ctrl-down   m set-at
     ' do-page-up                        key:pageup      m set-at
