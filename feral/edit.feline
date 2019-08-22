@@ -167,7 +167,7 @@ in: editor
         dot mark make-region/2 region!
         region editor:add-undo-edit-region
         region [ s over text>> + swap text<< ] region-each-line
-        t repaint!
+        unmark
     ] [
         editor:add-undo-line-edit
         s dot-line-text + dot-line-text!
@@ -193,7 +193,7 @@ in: editor
             ] if
         ] region-each-line
         modified
-        t repaint!
+        unmark
     ] [
         s dot-line-text head? [
             editor:add-undo-line-edit
@@ -305,18 +305,96 @@ use: kill-ring
     dot-line-next null? ?exit
 
     reset-redo
-
     add-undo-move
 
-    dot-line-prev dup line-selected? and [
-        // we're not extending an existing selection
-        dot-line 0 make-position mark!
-    ] unless
+    {
+        {
+            [ dot-line-prev null? ]
+            [
+                // first line of buffer
+                "down case 0" print
+                dot-line line-selected? [
+                    dot-line 0 move-dot-to
+                    f mark!
+                ] [
+                    dot-line 0 make-position mark!
+                    dot-line-next 0 move-dot-to
+                ] if
+            ]
+        }
+        {
+            [ dot-line-prev line-selected? ]
+            [
+                "down case 1" print
+                dot-line-next 0 move-dot-to
+            ]
+        }
+        {
+            [ dot-line line-selected? ]
+            [
+                "down case 2" print
+                dot-offset zero?
+                mark-line dot-line-next eq? and
+                mark-offset zero? and
+                [ f mark! ] [ dot-line-next 0 move-dot-to ] if
+            ]
+        }
 
-    dot-line-next 0 make-position dot!
+        [
+            // default case
+            "down case 3" print
+            dot-line 0 make-position mark!
+            dot-line-next 0 move-dot-to
+        ]
+    } cond
 
     reframe? [
         dot-line-number textview-rows 1- - nth-line top-line!
+    ] when
+
+    t repaint! ;
+
+: select-line-up
+//     dot-line-prev null? ?exit
+
+    reset-redo
+    add-undo-move
+
+    {
+        {
+            [ dot-line-prev null? ]
+            [
+                // first line of buffer
+                "up case 0" print
+                dot-line-next [
+                    0 make-position mark!
+                    0 dot-offset!
+                ] when*
+            ]
+        }
+        {
+            [ dot-line-prev line-selected? ]
+            [ "up case 1" print dot-line-prev dot-line! 0 dot-offset! ]
+        }
+        {
+            [ dot-line line-selected? ]
+            [ "up case 2" print dot-line-prev dot-line! 0 dot-offset! ]
+        }
+        {
+            [ dot-line-next ]
+            [
+                "up case 3" print
+                dot-line-next 0 make-position mark!
+                0 dot-offset!
+            ]
+        }
+        // default
+        [ "default case" print ]
+    } cond
+
+    reframe? [
+//         dot-line-number textview-rows 1- - nth-line top-line!
+        dot-line-prev top-line!
     ] when
 
     t repaint! ;
@@ -331,103 +409,18 @@ use: kill-ring
     [ insert-multiline-string-internal ] bi ;
 
 : delete-word-right
-    reset-redo
-
-    at-eol? [
-        unmark
-        delete-line-separator
-    ] return-if
-
+    at-eof? ?exit
     [
-        add-undo-move
-        dot copy-position mark!
-
-        {
-            { [ in-word? ] [
-                // move to end of word
-                [ not-in-word? at-eol? or ] [
-                    dot-offset 1+ dot-offset!
-                ] until
-                // delete following whitespace if any
-                [ in-whitespace? ] [
-                    dot-offset 1+ dot-offset!
-                ] while
-            ] }
-            { [ in-whitespace? ] [
-                [ in-whitespace? ] [
-                    dot-offset 1+ dot-offset!
-                ] while
-            ] }
-            // default
-            [
-                // not in word, not in whitespace
-                [
-                    in-word? in-whitespace? or at-eol? or
-                ] [
-                    dot-offset 1+ dot-offset!
-                ] until
-                // delete following whitespace if any
-                [ in-whitespace? ] [
-                    dot-offset 1+ dot-offset!
-                ] while
-            ]
-        } cond
-
+        select-word-right
         delete-region
-
-    ] with-compound-undo
-
-    t dot-line-changed!
-;
+    ] with-compound-undo ;
 
 : delete-word-left
     at-bof? ?exit
-
-    reset-redo
-
-    at-bol? [
-        [
-            unmark
-            add-undo-move
-            char-left-internal
-            delete-line-separator
-        ] with-compound-undo
-    ] return-if
-
     [
-        add-undo-move
-        dot copy-position mark!
-
-        // not bol
-        // move back one character
-        char-left-line assert
-
-        {
-            { [ in-whitespace? ] [ move-left-to-beginning-of-whitespace ] }
-            { [ in-word? ] [ move-left-to-beginning-of-word ] }
-            [
-                // not in word, not in whitespace
-                // if previous char is whitespace, then dot is at the start
-                // of a word and we are done
-                dot-char-prev whitespace? [
-                    // previous char is NOT whitespace
-                    [
-                        char-left-line
-                        [ not-in-word? not-in-whitespace? and ] [ f ] if
-                    ] loop
-                    dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
-                    // skip over preceding whitespace if any
-                    move-left-past-whitespace
-                    dot-offset zero? [ dot-offset 1+ dot-offset! ] unless
-                ] unless
-            ]
-        } cond
-
+        select-word-left
         delete-region
-
-    ] with-compound-undo
-
-    t dot-line-changed! ;
+    ] with-compound-undo ;
 
 : do-delete
     current-buffer read-only>> [
@@ -441,8 +434,7 @@ use: kill-ring
         [ delete-line-separator ]
     } cond
 
-    modified
-;
+    modified ;
 
 : cut-region ( region )
     region region-as-string append-kill
@@ -458,7 +450,7 @@ use: kill-ring
 
 : copy
     [ anchor ] [ mark ] either?
-    [ dot make-region/2 copy-region ] [ copy-line ] if* ;
+    [ dot make-region/2 copy-region unmark ] [ copy-line ] if* ;
 
 : delete-line-internal
     dot-line-prev :> prev
