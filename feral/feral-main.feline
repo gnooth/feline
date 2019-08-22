@@ -134,15 +134,20 @@ feral-config:winui? #if
         [ drop ]
     } case ;
 
+: edit1-internal
+    winui-initialize
+    winui-create-frame
+    reframe
+    t repaint!
+    update-display
+    winui-main ;
+
 : edit1
-    [
-        winui-initialize
-        winui-create-frame
-        reframe
-        t repaint!
-        update-display
-        winui-main
-    ] make-thread thread-create ;
+    feral-config:standalone? [
+        edit1-internal
+    ] [
+        [ edit1-internal ] make-thread thread-create
+    ] if ;
 
 #endif
 
