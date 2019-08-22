@@ -94,19 +94,31 @@ string FELINE_VOCAB_NAME, 'feline'
 %include "mutex.asm"
 %include "defer.asm"
 
-%ifdef WIN64
+%ifdef WIN64 ; Windows
+
+feline_constant have_gtkui?, 'have-gtkui?', f_value
 
 %ifdef WINUI
 %include "winui.asm"
+feline_constant have_winui?, 'have-winui?', t_value
+%else
+feline_constant have_winui?, 'have-winui?', f_value
 %endif
 
-%else
+%endif ; Windows
+
+%ifndef WINUI ; Linux
+
+feline_constant have_winui?, 'have-winui?', f_value
 
 %ifdef GTKUI
 %include "gtkui.asm"
+feline_constant have_gtkui?, 'have-gtkui?', t_value
+%else
+feline_constant have_gtkui?, 'have-gtkui?', f_value
 %endif
 
-%endif
+%endif ; Linux
 
 ; ### in-static-data-area?
 code in_static_data_area?, 'in-static-data-area?', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
