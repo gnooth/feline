@@ -99,6 +99,14 @@ tuple: position
 : copy-position ( pos )                 // position -> copy
     pos line>> pos offset>> make-position ;
 
+: position-equal? ( pos1 pos2 )
+    {
+        [ pos1 line>> pos2 line>> eq? ]
+        [ pos1 offset>> pos2 offset>> eq? ]
+    } && ;
+
+method: position equal? position-equal? ;
+
 : position-before? ( pos1 pos2 )        // pos1 pos2 -> ?
     pos1 line>> :> line1
     pos2 line>> :> line2
@@ -364,7 +372,7 @@ global current-buffer
 : dot-line-number                       // -> line-number
     dot line>> number>> ;
 
-: dot-line!                            // line -> void
+: dot-line!                             // line -> void
     dot line<< ;
 
 : dot-offset                            // -> n
@@ -372,6 +380,9 @@ global current-buffer
 
 : dot-offset!                           // n -> void
     dot offset<< ;
+
+: move-dot-to                           // line offset -> void
+    dot-offset! dot-line! ;
 
 : mark                                  // -> position/f
     current-buffer mark>> ;
@@ -733,7 +744,7 @@ termui? #if
     dot-line-number
     top-line-number
     dup textview-rows 1- +
-    between? not ;
+    within? not ;
 
 : reframe
     textview-rows 2 /i verify-index :> i!
