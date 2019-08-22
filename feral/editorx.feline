@@ -18,6 +18,8 @@ in: feral-config
 
 empty
 
+f constant standalone?
+
 win64? constant winui?
 linux? constant gtkui?
 f      constant termui?
