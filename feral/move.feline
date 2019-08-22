@@ -267,12 +267,12 @@ in: editor
     [ at-eof? not not-in-word? and ] [ char-right-internal ] while
     t repaint! ;
 
-: do-down
+: move-down
     dot-line-next null? ?exit
 
     reset-redo
 
-    last-command ' do-down eq? [ add-undo-move ] unless
+    last-command ' move-down eq? [ add-undo-move ] unless
 
     mark [
         end-of-block
@@ -288,11 +288,11 @@ in: editor
         adjust-dot-column
     ] when* ;
 
-: do-up
+: move-up
     reset-redo
 
     dot-line-prev [
-        last-command ' do-up eq? [ add-undo-move ] unless
+        last-command ' move-up eq? [ add-undo-move ] unless
         dot-line-prev dot-line!
         unmark
         reframe? [
