@@ -13,13 +13,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-feral-config:winui? #if
+feral-config:winui? feral-config:gtkui? or #if
 
 using: feline accessors ;
 in: feral-colors
 
 : make-colorref ( r g b )               // r g b -> fixnum
     b 16 lshift g 8 lshift + r + ;
+
+: colorref-red                          // colorref -> r
+    0xff bitand ;
+
+: colorref-green                        // colorref -> g
+    8 rshift 0xff bitand ;
+
+: colorref-blue                         // colorref -> b
+    16 rshift 0xff bitand ;
+
+: colorref->rgb                         // colorref -> r g b
+    [ colorref-red ]
+    [ colorref-green ]
+    [ colorref-blue ]
+    tri ;
 
 192 192 192 make-colorref constant color-text
 128 128   0 make-colorref constant color-comment
