@@ -20,7 +20,8 @@ feral-config:winui? #if
 
 : exit-feral
     ' exit-feral-hook run-hook
-    winui-exit ;
+    winui-exit
+    current-thread primordial-thread eq? [ bye ] when ;
 
 #endif
 
