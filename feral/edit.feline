@@ -165,17 +165,19 @@ in: editor
     f !> region
     mark [
         dot mark make-region/2 region!
-        region editor:add-undo-edit-region
-        region [ s over text>> + swap text<< ] region-each-line
-        unmark
+        [
+            region editor:add-undo-edit-region
+            region [ s over text>> + swap text<< ] region-each-line
+            add-undo-move
+            unmark
+        ] with-compound-undo
     ] [
         editor:add-undo-line-edit
         s dot-line-text + dot-line-text!
         dot-offset s length + dot-offset!
         t dot-line-changed!
     ] if
-    modified
-;
+    modified ;
 
 : uncomment-region
     current-mode comment-start :> s
@@ -184,26 +186,27 @@ in: editor
     f !> region
     mark [
         dot mark make-region/2 region!
-        region editor:add-undo-edit-region
-        region [
-            s over text>> head? [
-                s length over text>> tail swap text<<
-            ] [
-                drop
-            ] if
-        ] region-each-line
-        modified
-        unmark
+        [
+            region editor:add-undo-edit-region
+            region [
+                s over text>> head? [
+                    s length over text>> tail swap text<<
+                ] [
+                    drop
+                ] if
+            ] region-each-line
+            add-undo-move
+            unmark
+        ] with-compound-undo
     ] [
         s dot-line-text head? [
             editor:add-undo-line-edit
             s length dot-line-text tail dot-line-text!
             dot-offset s length - dot-offset!
-            modified
             t dot-line-changed!
         ] when
     ] if
-;
+    modified ;
 
 : string-remove-nth                     // n string1 -> string2
     check-bounds
@@ -305,96 +308,18 @@ use: kill-ring
     dot-line-next null? ?exit
 
     reset-redo
+
     add-undo-move
 
-    {
-        {
-            [ dot-line-prev null? ]
-            [
-                // first line of buffer
-                "down case 0" print
-                dot-line line-selected? [
-                    dot-line 0 move-dot-to
-                    f mark!
-                ] [
-                    dot-line 0 make-position mark!
-                    dot-line-next 0 move-dot-to
-                ] if
-            ]
-        }
-        {
-            [ dot-line-prev line-selected? ]
-            [
-                "down case 1" print
-                dot-line-next 0 move-dot-to
-            ]
-        }
-        {
-            [ dot-line line-selected? ]
-            [
-                "down case 2" print
-                dot-offset zero?
-                mark-line dot-line-next eq? and
-                mark-offset zero? and
-                [ f mark! ] [ dot-line-next 0 move-dot-to ] if
-            ]
-        }
+    dot-line-prev dup line-selected? and [
+        // we're not extending an existing selection
+        dot-line 0 make-position mark!
+    ] unless
 
-        [
-            // default case
-            "down case 3" print
-            dot-line 0 make-position mark!
-            dot-line-next 0 move-dot-to
-        ]
-    } cond
+    dot-line-next 0 make-position dot!
 
     reframe? [
         dot-line-number textview-rows 1- - nth-line top-line!
-    ] when
-
-    t repaint! ;
-
-: select-line-up
-//     dot-line-prev null? ?exit
-
-    reset-redo
-    add-undo-move
-
-    {
-        {
-            [ dot-line-prev null? ]
-            [
-                // first line of buffer
-                "up case 0" print
-                dot-line-next [
-                    0 make-position mark!
-                    0 dot-offset!
-                ] when*
-            ]
-        }
-        {
-            [ dot-line-prev line-selected? ]
-            [ "up case 1" print dot-line-prev dot-line! 0 dot-offset! ]
-        }
-        {
-            [ dot-line line-selected? ]
-            [ "up case 2" print dot-line-prev dot-line! 0 dot-offset! ]
-        }
-        {
-            [ dot-line-next ]
-            [
-                "up case 3" print
-                dot-line-next 0 make-position mark!
-                0 dot-offset!
-            ]
-        }
-        // default
-        [ "default case" print ]
-    } cond
-
-    reframe? [
-//         dot-line-number textview-rows 1- - nth-line top-line!
-        dot-line-prev top-line!
     ] when
 
     t repaint! ;
