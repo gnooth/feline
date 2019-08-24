@@ -41,7 +41,9 @@ feral-config:winui? #if
     ' move-right                        feral-key:right             m set-at
     ' select-right                      feral-key:shift-right       m set-at
     ' move-up                           feral-key:up                m set-at
+    ' select-up                         feral-key:shift-up          m set-at
     ' move-down                         feral-key:down              m set-at
+    ' select-down                       feral-key:shift-down        m set-at
 
     ' word-left                         feral-key:ctrl-left         m set-at
     ' select-word-left                  feral-key:ctrl-shift-left   m set-at

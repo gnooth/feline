@@ -267,6 +267,42 @@ in: editor
     [ at-eof? not not-in-word? and ] [ char-right-internal ] while
     t repaint! ;
 
+: move-up
+    dot-line-prev null? ?exit
+
+    reset-redo
+
+    last-command ' move-up eq? [ add-undo-move ] unless
+
+    mark [
+        beginning-of-block
+        unmark
+        dot-offset goal-column!
+    ] when
+
+    dot-line-prev dot-line!
+    reframe? [
+        dot-line top-line!
+        t repaint!
+    ] when
+    adjust-dot-column ;
+
+: select-up
+    dot-line-prev null? ?exit
+
+    reset-redo
+
+    last-command ' select-up eq? [ add-undo-move ] unless
+
+    mark [ copy-dot mark! ] unless
+
+    dot-line-prev dot-line!
+    reframe? [
+        dot-line top-line!
+    ] when
+    adjust-dot-column
+    t repaint! ;
+
 : move-down
     dot-line-next null? ?exit
 
@@ -277,31 +313,31 @@ in: editor
     mark [
         end-of-block
         unmark
+        dot-offset goal-column!
     ] when
 
-    dot-line-next [
-        dot-line!
-        reframe? [
-            dot-line-number textview-rows 1- - nth-line top-line!
-            t repaint!
-        ] when
-        adjust-dot-column
-    ] when* ;
+    dot-line-next dot-line!
+    reframe? [
+        dot-line-number textview-rows 1- - nth-line top-line!
+        t repaint!
+    ] when
+    adjust-dot-column ;
 
-: move-up
+: select-down
+    dot-line-next null? ?exit
+
     reset-redo
 
-    dot-line-prev [
-        last-command ' move-up eq? [ add-undo-move ] unless
-        dot-line-prev dot-line!
-        unmark
-        reframe? [
-            dot-line top-line!
-            t repaint?!
-        ] when
-        adjust-dot-column
+    last-command ' select-down eq? [ add-undo-move ] unless
+
+    mark [ copy-dot mark! ] unless
+
+    dot-line-next dot-line!
+    reframe? [
+        dot-line-number textview-rows 1- - nth-line top-line!
     ] when
-;
+    adjust-dot-column
+    t repaint! ;
 
 feral-config:winui? feral-config:gtkui? or #if
 
