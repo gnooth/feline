@@ -77,7 +77,6 @@ feral-config:winui? #if
     ' previous-buffer                   feral-key:alt-left          m set-at
     ' find-definition                   key:ctrl-t                  m set-at
     ' select-line                       key:ctrl-l                  m set-at
-    ' select-line-up                    feral-key:ctrl-shift-l      m set-at
     ' delete-line                       feral-key:ctrl-shift-k      m set-at
 
     ' cut                               key:ctrl-x                  m set-at
