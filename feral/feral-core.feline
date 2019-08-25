@@ -32,21 +32,6 @@ use: directories
 
 unuse: directories
 
-: string-trim-head ( s ) // string -> string'
-    s string-length zero? [ s ] return-if
-    s string-first-char whitespace? not [ s ] return-if
-
-    s [ whitespace? not ] find // -> index/f element/f
-    [ s string-tail ] [ drop "" ] if ;
-
-: string-trim-tail ( s ) // string -> string'
-    s string-length :> len
-    len zero? [ s ] return-if
-    s string-last-char whitespace? not [ s ] return-if
-
-    len 1- s [ whitespace? not ] find-last-from // -> index/f element/f
-    [ 1+ s string-head ] [ drop "" ] if ;
-
 tuple: line
     prev
     next
