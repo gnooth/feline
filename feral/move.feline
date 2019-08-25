@@ -120,7 +120,7 @@ in: editor
         dot-offset 1- dot-offset!
     ] [
         dot-line-prev [
-            dot-line-prev dup length make-position dot!
+            dot-line-prev dup length move-dot-to
         ] when
     ] if ;
 
@@ -132,7 +132,7 @@ in: editor
         dot-offset 1+ dot-offset!
     ] [
         dot-line-next [
-            dot-line-next 0 make-position dot!
+            dot-line-next 0 move-dot-to
         ] when
     ] if ;
 
@@ -250,21 +250,23 @@ in: editor
     at-bof? [ char-right-internal ] unless
     t repaint! ;
 
+private: word-right-internal
+    [ at-eof? not not-in-word? and ] [ char-right-internal ] while
+    [ at-eof? not in-word? and ] [ char-right-internal ] while ;
+
 : word-right
     at-eof? ?exit
     reset-redo
     add-undo-move
     unmark
-    [ at-eof? not in-word? and ] [ char-right-internal ] while
-    [ at-eof? not not-in-word? and ] [ char-right-internal ] while ;
+    word-right-internal ;
 
 : select-word-right
     at-eof? ?exit
     reset-redo
     add-undo-move
     mark [ copy-dot mark! ] unless
-    [ at-eof? not in-word? and ] [ char-right-internal ] while
-    [ at-eof? not not-in-word? and ] [ char-right-internal ] while
+    word-right-internal
     t repaint! ;
 
 : move-up
