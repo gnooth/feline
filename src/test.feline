@@ -4101,4 +4101,15 @@ test: either?-test-1
 
 either?-test-1
 
+test: string-trim-test-1
+    { "" } [ "" string-trim ] unit-test
+    { "" } [ "     " string-trim ] unit-test
+    { "foo bar" } [ "foo bar" string-trim ] unit-test
+    { "foo bar" } [ " foo bar" string-trim ] unit-test
+    { "foo bar" } [ "foo bar " string-trim ] unit-test
+    { "foo bar" } [ "   foo bar    " string-trim ] unit-test
+;
+
+string-trim-test-1
+
 ?nl "Reached end of test.feline" write-string
