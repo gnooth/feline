@@ -1,0 +1,132 @@
+// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline ;
+in: feral-key
+
+feral-config:gtkui? assert
+
+public
+
+0xff09                  constant tab
+0xff1b                  constant escape
+0xffff                  constant delete
+0xff50                  constant home
+0xff57                  constant end
+0xff51                  constant left
+0xff53                  constant right
+0xff52                  constant up
+0xff54                  constant down
+0xff55                  constant pageup
+0xff56                  constant pagedown
+
+0xff08                  constant backspace
+0xff0d                  constant enter
+
+'/' char-code ctrl      constant ctrl-/
+'[' char-code ctrl      constant ctrl-[
+']' char-code ctrl      constant ctrl-]
+
+backspace ctrl          constant ctrl-backspace
+delete ctrl             constant ctrl-delete
+home ctrl               constant ctrl-home
+end ctrl                constant ctrl-end
+up ctrl                 constant ctrl-up
+down ctrl               constant ctrl-down
+left alt                constant alt-left
+right alt               constant alt-right
+left ctrl               constant ctrl-left
+right ctrl              constant ctrl-right
+
+0xffbe                  constant f1
+0xffbf                  constant f2
+0xffc0                  constant f3
+0xffc1                  constant f4
+0xffc2                  constant f5
+0xffc3                  constant f6
+0xffc4                  constant f7
+0xffc5                  constant f8
+0xffc6                  constant f9
+0xffc7                  constant f10
+0xffc8                  constant f11
+0xffc9                  constant f12
+
+f3 shift                constant shift-f3
+f11 shift               constant shift-f11
+f12 shift               constant shift-f12
+
+left shift              constant shift-left
+right shift             constant shift-right
+up shift                constant shift-up
+down shift              constant shift-down
+home shift              constant shift-home
+end shift               constant shift-end
+
+0x20 ctrl               constant ctrl-space
+
+'b' char-code alt       constant alt-b
+'.' char-code alt       constant alt-.
+'v' char-code alt       constant alt-v
+down alt                constant alt-down
+up alt                  constant alt-up
+'l' char-code alt       constant alt-l
+'x' char-code alt       constant alt-x
+
+'a' char-code ctrl      constant ctrl-a
+'b' char-code ctrl      constant ctrl-b
+'c' char-code ctrl      constant ctrl-c
+'d' char-code ctrl      constant ctrl-d
+'e' char-code ctrl      constant ctrl-e
+'f' char-code ctrl      constant ctrl-f
+'g' char-code ctrl      constant ctrl-g
+'h' char-code ctrl      constant ctrl-h
+'i' char-code ctrl      constant ctrl-i
+'j' char-code ctrl      constant ctrl-j
+'k' char-code ctrl      constant ctrl-k
+'l' char-code ctrl      constant ctrl-l
+'m' char-code ctrl      constant ctrl-m
+'n' char-code ctrl      constant ctrl-n
+'o' char-code ctrl      constant ctrl-o
+'p' char-code ctrl      constant ctrl-p
+'q' char-code ctrl      constant ctrl-q
+'r' char-code ctrl      constant ctrl-r
+'s' char-code ctrl      constant ctrl-s
+'t' char-code ctrl      constant ctrl-t
+'u' char-code ctrl      constant ctrl-u
+'v' char-code ctrl      constant ctrl-v
+'w' char-code ctrl      constant ctrl-w
+'x' char-code ctrl      constant ctrl-x
+'y' char-code ctrl      constant ctrl-y
+'z' char-code ctrl      constant ctrl-z
+
+'d' char-code ctrl shift    constant ctrl-shift-d
+'F' char-code ctrl shift    constant ctrl-shift-f
+'K' char-code ctrl shift    constant ctrl-shift-k
+
+: key-to-printable-char ( key )         // fixnum -> char/f
+    f !> result
+
+    key code-char printable-char? [ result! ] when*
+
+    result [
+        key modifiers shift-bit eq? [
+            // shift is the only modifier
+            key 0xff bitand code-char printable-char? [
+                result!
+            ] when*
+        ] when
+    ] unless
+
+    result ;
