@@ -13,10 +13,24 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline feral-config ;
+using: feline ;
 in: feral-key
 
-winui? #if
+0x01 constant alt-bit
+0x02 constant ctrl-bit
+0x04 constant shift-bit
+
+alt-bit 16 lshift constant alt-mask
+ctrl-bit 16 lshift constant ctrl-mask
+shift-bit 16 lshift constant shift-mask
+
+: alt alt-mask bitor ;
+: ctrl ctrl-mask bitor ;
+: shift shift-mask bitor ;
+
+: modifiers 16 rshift 0x7 bitand ;
+
+feral-config:winui? #if
 
 private
 
@@ -55,14 +69,6 @@ private
 0xbf constant VK_OEM_2                  // '/' '?'
 0xdb constant VK_OEM_4                  // '[' '{'
 0xdd constant VK_OEM_6                  // ']' '}'
-
-0x01 16 lshift constant alt-mask
-0x02 16 lshift constant ctrl-mask
-0x04 16 lshift constant shift-mask
-
-: alt   alt-mask bitor ;
-: ctrl  ctrl-mask bitor ;
-: shift shift-mask bitor ;
 
 public
 
