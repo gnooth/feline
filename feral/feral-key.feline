@@ -134,7 +134,7 @@ VK_RIGHT ctrl shift         constant ctrl-shift-right
 
 private
 
-gtkui? #if
+feral-config:gtkui? #if
 
 public
 
