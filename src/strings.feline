@@ -23,7 +23,7 @@ private: string-trim-head-internal ( s ) // string -> string'
 : string-trim-head ( s ) // string -> string'
     s string-length zero? [ s ] return-if
     s string-first-char whitespace? not [ s ] return-if
-    string-trim-head-internal ;
+    s string-trim-head-internal ;
 
 private: string-trim-tail-internal ( s ) // string -> string'
     s string-length 1- s [ whitespace? not ] find-last-from // -> index/f element/f
@@ -32,10 +32,10 @@ private: string-trim-tail-internal ( s ) // string -> string'
 : string-trim-tail ( s ) // string -> string'
     s string-length zero? [ s ] return-if
     s string-last-char whitespace? not [ s ] return-if
-    string-trim-tail-internal ;
+    s string-trim-tail-internal ;
 
 : string-trim // string -> string'
-    !> s
+    !> s // mutable
     s string-length zero? [ s ] return-if
     s string-first-char whitespace? [ s string-trim-head-internal s! ] when
     s string-length zero? [ s ] return-if

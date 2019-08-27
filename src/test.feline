@@ -4101,6 +4101,28 @@ test: either?-test-1
 
 either?-test-1
 
+test: string-trim-head-test-1
+    { "" } [ "" string-trim-head ] unit-test
+    { "" } [ "     " string-trim-head ] unit-test
+    { "foo bar" } [ "foo bar" string-trim-head ] unit-test
+    { "foo bar" } [ " foo bar" string-trim-head ] unit-test
+    { "foo bar  " } [ "foo bar  " string-trim-head ] unit-test
+    { "foo bar    " } [ "   foo bar    " string-trim-head ] unit-test
+;
+
+string-trim-head-test-1
+
+test: string-trim-tail-test-1
+    { "" } [ "" string-trim-tail ] unit-test
+    { "" } [ "     " string-trim-tail ] unit-test
+    { "foo bar" } [ "foo bar" string-trim-tail ] unit-test
+    { " foo bar" } [ " foo bar" string-trim-tail ] unit-test
+    { "foo bar" } [ "foo bar  " string-trim-tail ] unit-test
+    { "   foo bar" } [ "   foo bar    " string-trim-tail ] unit-test
+;
+
+string-trim-tail-test-1
+
 test: string-trim-test-1
     { "" } [ "" string-trim ] unit-test
     { "" } [ "     " string-trim ] unit-test
