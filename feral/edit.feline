@@ -422,6 +422,34 @@ use: kill-ring
     add-undo-delete-line
     delete-line-internal ;
 
+: join-lines
+    dot-line-next null? ?exit
+
+    dot-line-next text>> string-trim-head :> next-line-trimmed-text
+    dot-line-length :> new-dot-offset
+
+    next-line-trimmed-text length zero? [
+        dot-line-text
+    ] [
+        dot-line-text " " + next-line-trimmed-text +
+    ] if :> new-dot-line-text
+
+    [
+        move-to-eol
+        delete-line-separator
+        next-line-trimmed-text length zero? [
+            add-undo-line-edit
+            new-dot-line-text dot-line-text!
+            add-undo-move
+            new-dot-offset dot-offset!
+        ] unless
+    ] with-compound-undo
+
+    modified
+    renumber
+    t repaint!
+;
+
 : cut-line
     copy-line
     delete-line ;
