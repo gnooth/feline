@@ -71,7 +71,19 @@ winui? gtkui? or #if
     "Word: " minibuffer-accept-string
     [ find-definition-internal ] when* ;
 
+// REVIEW name
 : find-definition-at-dot
+    dot-offset :> old-dot-offset
+    dot-line indentation-length :> indent
+
+    dot-char whitespace? [
+        {
+            { [ dot-offset indent < ] [ indent dot-offset! ] }
+            { [ dot-offset 0 > ] [ dot-offset 1- dot-offset! ] }
+        } cond
+    ] when
+
     current-mode identifier-at-dot      // -> index/f string/f
     nip                                 // -> string/f
+    old-dot-offset dot-offset!
     [ find-definition-internal ] when* ;
