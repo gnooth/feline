@@ -58,6 +58,8 @@ private
 
 public
 
+0x0d code-char          constant enter
+
 VK_LBUTTON              constant double-mouse-1
 VK_TAB                  constant tab
 VK_ESCAPE               constant escape
