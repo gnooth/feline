@@ -194,6 +194,7 @@ feral-config:gtkui? #if
     ' find-definition                   feral-key:ctrl-t            m set-at
     ' select-line                       feral-key:ctrl-l            m set-at
     ' delete-line                       feral-key:ctrl-shift-k      m set-at
+    ' join-lines                        feral-key:ctrl-j            m set-at
 
     ' cut                               feral-key:ctrl-x            m set-at
     ' copy                              feral-key:ctrl-c            m set-at
