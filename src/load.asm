@@ -334,6 +334,18 @@ code load, 'load'                       ; string --
         next
 endcode
 
+; ### ?load
+code ?load, '?load'                     ; filename ? -> void
+; if ? is not f, calls load
+        cmp     rbx, f_value
+        je      .1
+        _drop
+        jmp     load
+.1:
+        _2drop
+        next
+endcode
+
 ; ### load-system-file
 code load_system_file, 'load-system-file'       ; filename --
         _ feline_source_directory
