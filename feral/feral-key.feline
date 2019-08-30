@@ -32,3 +32,4 @@ shift-bit 16 lshift constant shift-mask
 
 "winui-key.feline" feral-config:winui? ?load
 "gtkui-key.feline" feral-config:gtkui? ?load
+"termui-key.feline" feral-config:termui? ?load
