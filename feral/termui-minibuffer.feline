@@ -13,21 +13,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline ;
-in: user
-
-"mini" delete-vocab
-
+using: feline accept-string ;
 in: mini
 
-private
+feral-config:termui? assert
 
-global completion-provider
+: status-y                              // -> n
+    terminal-rows 2 - ;
 
-public
+: message-y                             // -> n
+    terminal-rows 1- ;
 
-: set-completion-provider completion-provider! ;
+: message                               // string ->
+    0 message-y at-xy write-string ;
 
-"winui-minibuffer.feline" feral-config:winui? ?load
-"gtkui-minibuffer.feline" feral-config:gtkui? ?load
-"termui-minibuffer.feline" feral-config-termui? ?load
+: clear-message hide-cursor 0 message-y at-xy clear-to-eol ;
+
+: minibuffer-accept-string              // prompt -> string
+    0 message-y at-xy
+    accept-string
+    clear-message ;
+
+: minibuffer-accept-string/2            // prompt default -> string
+    0 message-y at-xy
+    accept-string/2
+    clear-message ;
