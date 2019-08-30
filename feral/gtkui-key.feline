@@ -114,6 +114,7 @@ up alt                  constant alt-up
 'd' char-code ctrl shift    constant ctrl-shift-d
 'F' char-code ctrl shift    constant ctrl-shift-f
 'K' char-code ctrl shift    constant ctrl-shift-k
+'O' char-code ctrl shift    constant ctrl-shift-o
 
 : key-to-printable-char ( key )         // fixnum -> char/f
     f !> result
