@@ -13,25 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline ;
-in: user
-
-"mini" delete-vocab
-
-in: mini
-
-private
-
-global completion-provider
-
-public
-
-: set-completion-provider completion-provider! ;
-
-feral-config:winui? #if
-
 using: history feline accessors ;
 in: mini
+
+feral-config:gtkui? assert
 
 private
 
@@ -52,30 +37,31 @@ tuple: minibuffer
 create-minibuffer
 
 : repaint-minibuffer
-    winui-hide-caret
+//     "repaint-minibuffer called" print
+//     winui-hide-caret
 
     minibuf text>> :> s!                // string or sbuf
 
     s string? [ s sbuf>string s! ] unless
 
-    0 0 s winui-minibuffer-text-out
-    s length 0 winui-minibuffer-clear-eol
+    0 gtkui-char-height s gtkui-minibuffer-text-out
+//     s length 0 gtkui-minibuffer-clear-eol
 
-    winui-show-caret
+//     winui-show-caret
 ;
 
-public
+public: minibuffer-set-text                   // string-or-sbuf -> void
+//     "minibuffer-set-text called" print
+//     dup print
 
-: minibuffer-set-text                   // string-or-sbuf -> void
     minibuf text>> over sequence= [ drop ] [
         minibuf text<<
-        winui-minibuffer-invalidate
+//        winui-minibuffer-invalidate
     ] if
 ;
 
-private
-
 : do-enter
+//     "do-enter called" print
     minibuf text>> :> sb
     sb sbuf? assert-true
 
@@ -88,7 +74,7 @@ private
 
     "" minibuffer-set-text
     f set-completion-provider
-    winui-minibuffer-exit
+    gtkui-minibuffer-exit
 ;
 
 : do-escape
@@ -96,7 +82,8 @@ private
     "" minibuffer-set-text
     f current-history!
     f set-completion-provider
-    winui-minibuffer-exit ;
+    gtkui-minibuffer-exit
+;
 
 : do-bs
     minibuf text>> :> sb
@@ -104,9 +91,9 @@ private
 
     sb length prompt length > [
         sb length 1 - sb sbuf-shorten
-        sb length winui-char-width * 0
-        winui-set-caret-pos
-        winui-minibuffer-invalidate
+        sb length 0
+        gtkui-minibuffer-set-caret-pos
+//         winui-minibuffer-invalidate
     ] when
 ;
 
@@ -115,18 +102,17 @@ private
     sb sbuf? assert-true
 
     c sb sbuf-push
-    sb length winui-char-width * 0
-    winui-set-caret-pos
-    winui-minibuffer-invalidate
+    sb length 0 gtkui-minibuffer-set-caret-pos
+//     winui-minibuffer-invalidate
 ;
 
 : minibuffer-set-text-from-history ( s ) // string/f -> void
     s null? ?exit
     prompt s + string>sbuf :> sb
     sb minibuffer-set-text
-    sb length winui-char-width * 0
-    winui-set-caret-pos
-    winui-minibuffer-invalidate ;
+    sb length 0 gtkui-minibuffer-set-caret-pos
+//     winui-minibuffer-invalidate
+;
 
 : do-previous history-previous minibuffer-set-text-from-history ;
 
@@ -149,12 +135,12 @@ global minibuffer-keymap
 
 : initialize-minibuffer-keymap
     128 <hashtable> :> m
-    ' do-enter      key:enter       m set-at
-    ' do-escape     key:escape      m set-at
-    ' do-bs         key:backspace   m set-at
-    ' do-previous   feral-key:up    m set-at
-    ' do-next       feral-key:down  m set-at
-    ' do-tab        feral-key:tab   m set-at
+    ' do-enter      feral-key:enter     m set-at
+    ' do-escape     feral-key:escape    m set-at
+    ' do-bs         feral-key:backspace m set-at
+    ' do-previous   feral-key:up        m set-at
+    ' do-next       feral-key:down      m set-at
+    ' do-tab        feral-key:tab       m set-at
     m minibuffer-keymap! ;
 
 initialize-minibuffer-keymap
@@ -162,15 +148,22 @@ initialize-minibuffer-keymap
 : lookup-key                            // key -> symbol/f
     minibuffer-keymap at ;
 
-: winui-minibuffer-char                 // tagged-char -> void
-    dup printable-char? [
-        do-normal-char
-    ] [
-        lookup-key [ call-symbol ] when*
-    ] if ;
+// : gtkui-minibuffer-char                 // tagged-char -> void
+//     dup printable-char? [
+//         do-normal-char
+//     ] [
+//         lookup-key [ call-symbol ] when*
+//     ] if ;
 
-: winui-minibuffer-keydown              // key -> void
-    lookup-key [ call-symbol ] when* ;
+: gtkui-minibuffer-keydown              // key -> void
+//     "gtkui-minibuffer-keydown" print
+//     lookup-key [ call-symbol ] when*
+    1 ?enough :> key
+    key lookup-key [ call-symbol ] [
+//         key code-char printable-char? [ do-normal-char ] when*
+        key feral-key:key-to-printable-char [ do-normal-char ] when*
+    ] if*
+;
 
 public
 
@@ -186,12 +179,11 @@ public
     verify-string prompt!
     f minibuffer-contents!
     prompt string>sbuf minibuffer-set-text
-    prompt length winui-char-width * 0 winui-set-caret-pos
-    winui-minibuffer-main
+    prompt length 0 gtkui-minibuffer-set-caret-pos
+    gtkui-minibuffer-main
     minibuffer-contents [
-        prompt length minibuffer-contents tail
-    ] [ f ] if
-;
+       prompt length minibuffer-contents tail
+    ] [ f ] if ;
 
 : minibuffer-accept-string/2            // prompt default -> string/f
     2 ?enough
@@ -201,44 +193,11 @@ public
 
     prompt default +
     [ string>sbuf minibuffer-set-text ]
-    [ length winui-char-width * 0 winui-set-caret-pos ]
+    [ length 0 gtkui-minibuffer-set-caret-pos ]
     bi
 
-    winui-minibuffer-main
+    gtkui-minibuffer-main
 
     minibuffer-contents [
         prompt length minibuffer-contents tail
-    ] [ f ] if
-;
-
-#endif
-
-"gtkui-minibuffer.feline" feral-config:gtkui? ?load
-
-feral-config:termui? #if
-
-using: feline accept-string ;
-in: mini
-
-: status-y                              // -> n
-    terminal-rows 2 - ;
-
-: message-y                             // -> n
-    terminal-rows 1- ;
-
-: message                               // string ->
-    0 message-y at-xy write-string ;
-
-: clear-message hide-cursor 0 message-y at-xy clear-to-eol ;
-
-: minibuffer-accept-string              // prompt -> string
-    0 message-y at-xy
-    accept-string
-    clear-message ;
-
-: minibuffer-accept-string/2            // prompt default -> string
-    0 message-y at-xy
-    accept-string/2
-    clear-message ;
-
-#endif
+    ] [ f ] if ;
