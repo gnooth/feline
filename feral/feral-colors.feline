@@ -48,6 +48,9 @@ in: feral-colors
 
  96  96  96 make-colorref constant color-line-number
 
+  0 153   0 make-colorref constant color-insertion
+153   0   0 make-colorref constant color-deletion
+
 #else
 
 using: ansi-color feline accessors ;
@@ -64,5 +67,8 @@ in: feral-colors
 210 105  30 rgb-foreground-prefix constant color-keyword
 
  96  96  96 rgb-foreground-prefix constant color-line-number
+
+  0 153   0 rgb-foreground-prefix constant color-insertion
+153   0   0 rgb-foreground-prefix constant color-deletion
 
 #endif
