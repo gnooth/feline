@@ -52,8 +52,8 @@ global diff-mode-local-map
 
 : initialize-local-map
     128 <hashtable> :> m
-    ' editor:kill-buffer key:escape m set-at
-    ' diff-mode-goto-source key:enter m set-at
+    ' editor:kill-buffer feral-key:escape m set-at
+    ' diff-mode-goto-source feral-key:enter m set-at
     m diff-mode-local-map! ;
 
 initialize-local-map
