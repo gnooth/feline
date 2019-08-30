@@ -74,18 +74,14 @@ global instance
 
 global asm-mode-local-map
 
-feral-config:winui? #if
-
-use: feral-key
+feral-config:winui? feral-config:gtkui? or #if
 
 : initialize-local-map
     128 <hashtable> :> m
-    ' asm-mode-list-symbols ctrl-shift-o m set-at
+    ' asm-mode-list-symbols feral-key:ctrl-shift-o m set-at
     m asm-mode-local-map! ;
 
 initialize-local-map
-
-unuse: feral-key
 
 #endif
 
