@@ -30,4 +30,4 @@ public
 
 "winui-minibuffer.feline" feral-config:winui? ?load
 "gtkui-minibuffer.feline" feral-config:gtkui? ?load
-"termui-minibuffer.feline" feral-config-termui? ?load
+"termui-minibuffer.feline" feral-config:termui? ?load
