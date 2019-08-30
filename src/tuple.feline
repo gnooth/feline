@@ -1,44 +1,44 @@
--- Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
 in: feline
 
 private
 
-global tuple-typecode                   -- -> fixnum
-global tuple-symbol                     -- -> symbol
-global tuple-name                       -- -> string
-global slots                            -- -> array
-global generic-reader                   -- -> symbol
-global generic-writer                   -- -> symbol
+global tuple-typecode                   // -> fixnum
+global tuple-symbol                     // -> symbol
+global tuple-name                       // -> string
+global slots                            // -> array
+global generic-reader                   // -> symbol
+global generic-writer                   // -> symbol
 
-: define-generic-reader                 -- slot -> void
+: define-generic-reader                 // slot -> void
     [ slot-name ]
     [ slot-index ] bi
     :> index
     ">>" string-append "accessors" ensure-generic generic-reader!
 
-    -- accessors must be public
+    // accessors must be public
     generic-reader symbol-set-public
 
     index {
         { 1 [ ' tuple-slot1@ 1array ] }
         { 2 [ ' tuple-slot2@ 1array ] }
         { 3 [ ' tuple-slot3@ 1array ] }
-        -- default case
+        // default case
         [ ' slot@ 2array ]
     } case
     array>quotation :> quotation
@@ -50,13 +50,13 @@ global generic-writer                   -- -> symbol
     install-method
 ;
 
-: define-generic-writer                 -- slot -> void
+: define-generic-writer                 // slot -> void
     [ slot-name ]
     [ slot-index ] bi
     :> index
     "<<" string-append "accessors" ensure-generic generic-writer!
 
-    -- accessors must be public
+    // accessors must be public
     generic-writer symbol-set-public
 
     tuple-typecode
@@ -72,15 +72,15 @@ global generic-writer                   -- -> symbol
     install-method
 ;
 
-: define-setter                         -- slot -> void
+: define-setter                         // slot -> void
     ">>" swap slot-name string-append :> setter-name
 
     setter-name accessors-vocab ?lookup-symbol [ ] return-if
 
-    -- not found
+    // not found
     setter-name accessors-vocab <symbol> :> setter
 
-    -- accessors must be public
+    // accessors must be public
     setter symbol-set-public
 
     ' over
