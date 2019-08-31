@@ -1,3 +1,4 @@
+// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,5 +24,5 @@ global global-map
     global-map at ;
 
 "winui-keymaps.feline" feral-config:winui? ?load
-
+"gtkui-keymaps.feline" feral-config:gtkui? ?load
 "termui-keymaps.feline" feral-config:termui? ?load
