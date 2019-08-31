@@ -131,8 +131,8 @@ private
 
 : initialize-local-map
     128 <hashtable> :> m
-    ' editor:kill-buffer key:escape m set-at
-    ' find-in-files-open-file key:enter m set-at
+    ' editor:kill-buffer feral-key:escape m set-at
+    ' find-in-files-open-file feral-key:enter m set-at
     m find-in-files-local-map! ;
 
 initialize-local-map
