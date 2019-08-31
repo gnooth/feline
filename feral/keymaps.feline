@@ -30,7 +30,7 @@ feral-config:winui? #if
 
     128 <hashtable> :> m
 
-    ' backspace                         key:backspace               m set-at
+    ' backspace                         feral-key:backspace         m set-at
     ' do-delete                         feral-key:delete            m set-at
     ' move-to-bol                       feral-key:home              m set-at
     ' select-to-bol                     feral-key:shift-home        m set-at
@@ -61,30 +61,30 @@ feral-config:winui? #if
     ' do-window-up                      feral-key:ctrl-up           m set-at
     ' do-window-down                    feral-key:ctrl-down         m set-at
 
-    ' gotoline                          key:ctrl-g                  m set-at
-    ' do-quit                           key:ctrl-q                  m set-at
-    ' do-save                           key:ctrl-s                  m set-at
-    ' list-buffers                      key:ctrl-b                  m set-at
-    ' kill-buffer                       key:ctrl-w                  m set-at
-    ' newline-and-indent                key:enter                   m set-at
-    ' do-find                           key:ctrl-f                  m set-at
+    ' gotoline                          feral-key:ctrl-g            m set-at
+    ' do-quit                           feral-key:ctrl-q            m set-at
+    ' do-save                           feral-key:ctrl-s            m set-at
+    ' list-buffers                      feral-key:ctrl-b            m set-at
+    ' kill-buffer                       feral-key:ctrl-w            m set-at
+    ' newline-and-indent                feral-key:enter             m set-at
+    ' do-find                           feral-key:ctrl-f            m set-at
     ' repeat-search-forward             feral-key:f3                m set-at
     ' repeat-search-backward            feral-key:shift-f3          m set-at
-    ' do-tab                            key:tab                     m set-at
-    ' kill-line                         key:ctrl-k                  m set-at
-    ' undo                              key:ctrl-z                  m set-at
-    ' redo                              key:ctrl-y                  m set-at
-    ' open-file                         key:ctrl-o                  m set-at
+    ' do-tab                            feral-key:tab               m set-at
+    ' kill-line                         feral-key:ctrl-k            m set-at
+    ' undo                              feral-key:ctrl-z            m set-at
+    ' redo                              feral-key:ctrl-y            m set-at
+    ' open-file                         feral-key:ctrl-o            m set-at
     ' next-buffer                       feral-key:alt-right         m set-at
     ' previous-buffer                   feral-key:alt-left          m set-at
-    ' find-definition                   key:ctrl-t                  m set-at
-    ' select-line                       key:ctrl-l                  m set-at
+    ' find-definition                   feral-key:ctrl-t            m set-at
+    ' select-line                       feral-key:ctrl-l            m set-at
     ' delete-line                       feral-key:ctrl-shift-k      m set-at
-    ' join-lines                        key:ctrl-j                  m set-at
+    ' join-lines                        feral-key:ctrl-j            m set-at
 
-    ' cut                               key:ctrl-x                  m set-at
-    ' copy                              key:ctrl-c                  m set-at
-    ' paste                             key:ctrl-v                  m set-at
+    ' cut                               feral-key:ctrl-x            m set-at
+    ' copy                              feral-key:ctrl-c            m set-at
+    ' paste                             feral-key:ctrl-v            m set-at
 
     ' indent                            feral-key:ctrl-]            m set-at
     ' unindent                          feral-key:ctrl-[            m set-at
@@ -96,7 +96,7 @@ feral-config:winui? #if
     ' execute-command                   feral-key:alt-x             m set-at
     ' escape                            feral-key:escape            m set-at
 
-    ' dir                               key:ctrl-d                  m set-at
+    ' dir                               feral-key:ctrl-d            m set-at
 
     ' find-in-files                     feral-key:ctrl-shift-f      m set-at
 
