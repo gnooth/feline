@@ -21,7 +21,6 @@ private
 global global-map
 
 : lookup-key                            // key -> symbol/f
-//     dup hex. nl
     global-map at ;
 
 feral-config:winui? #if
