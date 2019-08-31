@@ -58,37 +58,37 @@ private
 
 public
 
-0x01 code-char          constant ctrl-a
-0x02 code-char          constant ctrl-b
-0x03 code-char          constant ctrl-c
-0x04 code-char          constant ctrl-d
-0x05 code-char          constant ctrl-e
-0x06 code-char          constant ctrl-f
-0x07 code-char          constant ctrl-g
-0x08 code-char          constant ctrl-h
-0x09 code-char          constant ctrl-i
-0x0a code-char          constant ctrl-j
-0x0b code-char          constant ctrl-k
-0x0c code-char          constant ctrl-l
-0x0d code-char          constant ctrl-m
-0x0e code-char          constant ctrl-n
-0x0f code-char          constant ctrl-o
-0x10 code-char          constant ctrl-p
-0x11 code-char          constant ctrl-q
-0x12 code-char          constant ctrl-r
-0x13 code-char          constant ctrl-s
-0x14 code-char          constant ctrl-t
-0x15 code-char          constant ctrl-u
-0x16 code-char          constant ctrl-v
-0x17 code-char          constant ctrl-w
-0x18 code-char          constant ctrl-x
-0x19 code-char          constant ctrl-y
-0x1a code-char          constant ctrl-z
-
-0x0d code-char          constant enter
+'A' char-code ctrl      constant ctrl-a
+'B' char-code ctrl      constant ctrl-b
+'C' char-code ctrl      constant ctrl-c
+'D' char-code ctrl      constant ctrl-d
+'E' char-code ctrl      constant ctrl-e
+'F' char-code ctrl      constant ctrl-f
+'G' char-code ctrl      constant ctrl-g
+'H' char-code ctrl      constant ctrl-h
+'I' char-code ctrl      constant ctrl-i
+'J' char-code ctrl      constant ctrl-j
+'K' char-code ctrl      constant ctrl-k
+'L' char-code ctrl      constant ctrl-l
+'M' char-code ctrl      constant ctrl-m
+'N' char-code ctrl      constant ctrl-n
+'O' char-code ctrl      constant ctrl-o
+'P' char-code ctrl      constant ctrl-p
+'Q' char-code ctrl      constant ctrl-q
+'R' char-code ctrl      constant ctrl-r
+'S' char-code ctrl      constant ctrl-s
+'T' char-code ctrl      constant ctrl-t
+'U' char-code ctrl      constant ctrl-u
+'V' char-code ctrl      constant ctrl-v
+'W' char-code ctrl      constant ctrl-w
+'X' char-code ctrl      constant ctrl-x
+'Y' char-code ctrl      constant ctrl-y
+'Z' char-code ctrl      constant ctrl-z
 
 VK_LBUTTON              constant double-mouse-1
+VK_BACK                 constant backspace
 VK_TAB                  constant tab
+VK_RETURN               constant enter
 VK_ESCAPE               constant escape
 VK_DELETE               constant delete
 VK_HOME                 constant home
