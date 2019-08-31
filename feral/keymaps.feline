@@ -1,4 +1,3 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +12,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: editor feline search ;
+using: feline ;
 in: keymaps
 
 private
@@ -25,109 +24,4 @@ global global-map
 
 "winui-keymaps.feline" feral-config:winui? ?load
 
-feral-config:termui? #if
-
-global ctrl-k-map
-
-: do-ctrl-k
-    "ctrl-k-" message
-    ekey
-    clear-message
-    ctrl-k-map at [
-        dup current-command!
-        call-symbol
-    ] when* ;
-
-: initialize-global-map
-    global-map ?exit
-
-    128 <hashtable> :> m
-
-    ' backspace                         key:del         m set-at // Linux
-    ' backspace                         key:backspace   m set-at // Windows
-    ' do-delete                         key:delete      m set-at
-    ' move-to-bol                       key:home        m set-at
-    ' select-to-bol                     key:shift-home  m set-at // Linux only
-    ' move-to-eol                       key:end         m set-at
-    ' select-to-eol                     key:shift-end   m set-at // Linux only
-    ' move-left                         key:left        m set-at
-    ' move-right                        key:right       m set-at
-    ' word-left                         key:ctrl-left   m set-at
-    ' word-right                        key:ctrl-right  m set-at
-    ' delete-word-left                  key:ctrl-backspace  m set-at
-    ' delete-word-right                 key:ctrl-delete     m set-at
-    ' move-up                           key:up          m set-at
-    ' move-down                         key:down        m set-at
-    ' do-window-up                      key:ctrl-up     m set-at
-    ' do-window-down                    key:ctrl-down   m set-at
-    ' do-page-up                        key:pageup      m set-at
-    ' do-page-down                      key:pagedown    m set-at
-    ' beginning-of-buffer               key:ctrl-home   m set-at
-    ' end-of-buffer                     key:ctrl-end    m set-at
-    ' gotoline                          key:ctrl-g      m set-at
-    ' do-quit                           key:ctrl-q      m set-at
-    ' do-save                           key:ctrl-s      m set-at
-    ' list-buffers                      key:ctrl-b      m set-at
-    ' kill-buffer                       key:ctrl-w      m set-at
-    ' newline-and-indent                key:enter       m set-at
-    ' do-find                           key:ctrl-f      m set-at
-    ' repeat-search-forward             key:f3          m set-at
-    ' repeat-search-backward            key:shift-f3    m set-at
-    ' do-tab                            key:tab         m set-at
-    ' undo                              key:ctrl-z      m set-at
-    ' undo                              key:ctrl-u      m set-at
-    ' redo                              key:ctrl-y      m set-at
-    ' do-ctrl-k                         key:ctrl-k      m set-at
-    ' open-file                         key:ctrl-o      m set-at
-    ' next-buffer                       key:alt-right   m set-at
-    ' previous-buffer                   key:alt-left    m set-at
-    ' find-definition                   key:ctrl-t      m set-at
-    ' select-line                       key:ctrl-l      m set-at
-    ' cut                               key:ctrl-x      m set-at
-    ' copy                              key:ctrl-c      m set-at
-    ' paste                             key:ctrl-v      m set-at
-    ' dir                               key:ctrl-d      m set-at
-
-    // vscode, sublime
-    ' find-definition-at-dot            key:f12         m set-at
-
-    // j
-    ' comment-region                    key:f11         m set-at
-    ' uncomment-region                  key:shift-f11   m set-at
-    ' find-in-files                     key:f6          m set-at
-
-    m global-map!
-;
-
-: initialize-ctrl-k-map
-    ctrl-k-map ?exit
-
-    16 <hashtable> :> m
-
-    ' quit                              key:escape      m set-at
-    ' cycle-paste                       'v'             m set-at
-    ' search-forward-word-at-dot        key:down        m set-at
-    ' search-backward-word-at-dot       key:up          m set-at
-    ' search-list-occurrences           'l'             m set-at
-    ' do-anchor                         'a'             m set-at
-    ' list-buffers                      'b'             m set-at
-    ' execute-command                   'x'             m set-at
-
-    ' kill-line                         key:ctrl-k      m set-at
-
-    ' comment-region                    key:ctrl-c      m set-at
-    ' uncomment-region                  key:ctrl-u      m set-at
-
-    ' indent                            ']'             m set-at
-    ' unindent                          '['             m set-at
-
-    m ctrl-k-map!
-;
-
-public
-
-: initialize-keymaps
-    initialize-global-map
-    initialize-ctrl-k-map ;
-
-#endif
+"termui-keymaps.feline" feral-config:termui? ?load
