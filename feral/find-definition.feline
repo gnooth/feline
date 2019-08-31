@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline feral-config history mini ;
+using: feral-core feline history mini ;
 in: editor
 
 : goto-location/2 // filename line-number -> void
@@ -40,7 +40,7 @@ in: editor
     symbol-location // filename line-number
     goto-location/2 ;
 
-winui? #if
+feral-config:winui? feral-config:gtkui? or #if
 
 : minibuffer-list-symbols               // symbols -> void
     256 <sbuf> :> sb
