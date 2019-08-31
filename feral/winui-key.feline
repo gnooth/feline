@@ -58,6 +58,33 @@ private
 
 public
 
+0x01 code-char          constant ctrl-a
+0x02 code-char          constant ctrl-b
+0x03 code-char          constant ctrl-c
+0x04 code-char          constant ctrl-d
+0x05 code-char          constant ctrl-e
+0x06 code-char          constant ctrl-f
+0x07 code-char          constant ctrl-g
+0x08 code-char          constant ctrl-h
+0x09 code-char          constant ctrl-i
+0x0a code-char          constant ctrl-j
+0x0b code-char          constant ctrl-k
+0x0c code-char          constant ctrl-l
+0x0d code-char          constant ctrl-m
+0x0e code-char          constant ctrl-n
+0x0f code-char          constant ctrl-o
+0x10 code-char          constant ctrl-p
+0x11 code-char          constant ctrl-q
+0x12 code-char          constant ctrl-r
+0x13 code-char          constant ctrl-s
+0x14 code-char          constant ctrl-t
+0x15 code-char          constant ctrl-u
+0x16 code-char          constant ctrl-v
+0x17 code-char          constant ctrl-w
+0x18 code-char          constant ctrl-x
+0x19 code-char          constant ctrl-y
+0x1a code-char          constant ctrl-z
+
 0x0d code-char          constant enter
 
 VK_LBUTTON              constant double-mouse-1
