@@ -188,7 +188,10 @@ linux? #if
         ] if
     ] until
 
-    p closedir .
+    p closedir
+
+    // REVIEW closedir returns 0 on success
+    drop
 
     v ;
 
