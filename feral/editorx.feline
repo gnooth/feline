@@ -20,8 +20,9 @@ empty
 
 f constant standalone?
 
-win64? constant winui?
-linux? constant gtkui?
-f      constant termui?
+win64? have-winui? and constant winui?
+linux? have-gtkui? and constant gtkui?
+
+winui? gtkui? or not constant termui?
 
 "feral-main.feline" load
