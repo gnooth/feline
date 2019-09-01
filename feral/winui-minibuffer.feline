@@ -125,7 +125,7 @@ private
 
     minibuf text>> :> sb
     sb sbuf? assert-true
-    prompt length sb sbuf>string tail 1 ?enough dup print
+    prompt length sb sbuf>string tail
     completion-provider call [
         minibuffer-set-completion-text
     ] when* ;
