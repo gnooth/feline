@@ -23,6 +23,7 @@ public
 0xff09                  constant tab
 0xff1b                  constant escape
 0xffff                  constant delete
+
 0xff50                  constant home
 0xff57                  constant end
 0xff51                  constant left
@@ -31,6 +32,15 @@ public
 0xff54                  constant down
 0xff55                  constant pageup
 0xff56                  constant pagedown
+
+0xff95                  constant kp-home
+0xff9c                  constant kp-end
+0xff96                  constant kp-left
+0xff98                  constant kp-right
+0xff97                  constant kp-up
+0xff99                  constant kp-down
+0xff9a                  constant kp-pageup
+0xff9b                  constant kp-pagedown
 
 0xff08                  constant backspace
 0xff0d                  constant enter
@@ -73,6 +83,13 @@ up shift                constant shift-up
 down shift              constant shift-down
 home shift              constant shift-home
 end shift               constant shift-end
+
+kp-left shift           constant kp-shift-left
+kp-right shift          constant kp-shift-right
+kp-up shift             constant kp-shift-up
+kp-down shift           constant kp-shift-down
+kp-home shift           constant kp-shift-home
+kp-end shift            constant kp-shift-end
 
 0x20 ctrl               constant ctrl-space
 

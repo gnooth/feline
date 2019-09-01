@@ -29,6 +29,7 @@ using: editor feline search ;
 
     ' backspace                         feral-key:backspace         m set-at
     ' do-delete                         feral-key:delete            m set-at
+
     ' move-to-bol                       feral-key:home              m set-at
     ' select-to-bol                     feral-key:shift-home        m set-at
     ' move-to-eol                       feral-key:end               m set-at
@@ -42,6 +43,19 @@ using: editor feline search ;
     ' move-down                         feral-key:down              m set-at
     ' select-down                       feral-key:shift-down        m set-at
 
+    ' move-to-bol                       feral-key:kp-home           m set-at
+    ' select-to-bol                     feral-key:kp-shift-home     m set-at
+    ' move-to-eol                       feral-key:kp-end            m set-at
+    ' select-to-eol                     feral-key:kp-shift-end      m set-at
+    ' move-left                         feral-key:kp-left           m set-at
+    ' select-left                       feral-key:kp-shift-left     m set-at
+    ' move-right                        feral-key:kp-right          m set-at
+    ' select-right                      feral-key:kp-shift-right    m set-at
+    ' move-up                           feral-key:kp-up             m set-at
+    ' select-up                         feral-key:kp-shift-up       m set-at
+    ' move-down                         feral-key:kp-down           m set-at
+    ' select-down                       feral-key:kp-shift-down     m set-at
+
     ' word-left                         feral-key:ctrl-left         m set-at
     ' word-right                        feral-key:ctrl-right        m set-at
     ' delete-word-right                 feral-key:ctrl-delete       m set-at
@@ -49,6 +63,9 @@ using: editor feline search ;
 
     ' do-page-up                        feral-key:pageup            m set-at
     ' do-page-down                      feral-key:pagedown          m set-at
+
+    ' do-page-up                        feral-key:kp-pageup         m set-at
+    ' do-page-down                      feral-key:kp-pagedown       m set-at
 
     ' beginning-of-buffer               feral-key:ctrl-home         m set-at
     ' end-of-buffer                     feral-key:ctrl-end          m set-at
