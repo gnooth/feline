@@ -232,6 +232,7 @@ var prefix-offset
     key:escape          ' do-escape                     bind-key
     key:del             ' do-bs                         bind-key        // Linux
     key:backspace       ' do-bs                         bind-key        // Windows
+    key:ctrl-backspace  ' do-bs                         bind-key
     key:left            ' do-left                       bind-key
     key:right           ' do-right                      bind-key
     key:home            ' do-home                       bind-key
