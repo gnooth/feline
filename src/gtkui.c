@@ -447,15 +447,9 @@ gtkui__textview_draw (GtkWidget *widget, cairo_t *cr, gpointer data)
     {
       cairo_font_extents_t fe;
       cairo_font_extents (cr, &fe);
-      g_print ("ascent = %f  descent = %f\n", fe.ascent, fe.descent);
-      g_print ("height = %f\n", fe.height);
-      g_print ("max_x_advance = %f max_y_advance = %f\n",
-               fe.max_x_advance, fe.max_x_advance);
 
       char_width = (int) fe.max_x_advance;
       char_height = (int) fe.height;
-      g_print ("textview char_width = %d char_height = %d\n",
-               char_width, char_height);
 
       GtkAllocation allocation;
       gtk_widget_get_allocation (widget, &allocation);
