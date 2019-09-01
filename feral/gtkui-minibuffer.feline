@@ -1,0 +1,165 @@
+// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: history feline accessors ;
+in: mini
+
+feral-config:gtkui? assert
+
+private
+
+global minibuf
+
+global minibuffer-contents
+
+global prompt
+
+tuple: minibuffer
+    text ;
+
+: create-minibuffer
+    minibuffer make-instance minibuf!
+    "" minibuf text<<
+;
+
+create-minibuffer
+
+: repaint-minibuffer
+    minibuf text>> :> s!                // string or sbuf
+    s string? [ s sbuf>string s! ] unless
+    0 gtkui-char-height s gtkui-minibuffer-text-out ;
+
+public: minibuffer-set-text             // string-or-sbuf -> void
+    minibuf text>> over sequence= [ drop ] [ minibuf text<< ] if ;
+
+: do-enter
+    minibuf text>> :> sb
+    sb sbuf? assert-true
+
+    sb sbuf>string minibuffer-contents!
+
+    current-history [
+        prompt length minibuffer-contents tail update-history
+        f current-history!
+    ] when
+
+    "" minibuffer-set-text
+    f set-completion-provider
+    gtkui-minibuffer-exit ;
+
+: do-escape
+    f minibuffer-contents!
+    "" minibuffer-set-text
+    f current-history!
+    f set-completion-provider
+    gtkui-minibuffer-exit ;
+
+: do-bs
+    minibuf text>> :> sb
+    sb sbuf? assert-true
+
+    sb length prompt length > [
+        sb length 1 - sb sbuf-shorten
+        sb length 0
+        gtkui-minibuffer-set-caret-pos
+    ] when ;
+
+: do-normal-char ( c )
+    minibuf text>> :> sb
+    sb sbuf? assert-true
+
+    c sb sbuf-push
+    sb length 0 gtkui-minibuffer-set-caret-pos ;
+
+: minibuffer-set-text-from-history ( s ) // string/f -> void
+    s null? ?exit
+    prompt s + string>sbuf :> sb
+    sb minibuffer-set-text
+    sb length 0 gtkui-minibuffer-set-caret-pos ;
+
+: do-previous history-previous minibuffer-set-text-from-history ;
+
+: do-next history-next minibuffer-set-text-from-history ;
+
+: minibuffer-set-completion-text // string/f -> void
+    minibuffer-set-text-from-history ;
+
+: do-tab
+    completion-provider null? ?exit
+
+    minibuf text>> :> sb
+    sb sbuf? assert-true
+    prompt length sb sbuf>string tail 1 ?enough dup print
+    completion-provider call [
+        minibuffer-set-completion-text
+    ] when* ;
+
+global minibuffer-keymap
+
+: initialize-minibuffer-keymap
+    128 <hashtable> :> m
+    ' do-enter      feral-key:enter     m set-at
+    ' do-escape     feral-key:escape    m set-at
+    ' do-bs         feral-key:backspace m set-at
+    ' do-previous   feral-key:up        m set-at
+    ' do-next       feral-key:down      m set-at
+    ' do-tab        feral-key:tab       m set-at
+    m minibuffer-keymap! ;
+
+initialize-minibuffer-keymap
+
+: lookup-key                            // key -> symbol/f
+    minibuffer-keymap at ;
+
+: gtkui-minibuffer-keydown              // key -> void
+    1 ?enough :> key
+    key lookup-key [ call-symbol ] [
+        key feral-key:key-to-printable-char [ do-normal-char ] when*
+    ] if* ;
+
+public
+
+: message                               // string ->
+    minibuffer-set-text ;
+
+: clear-message
+    "" minibuffer-set-text ;
+
+: minibuffer-accept-string              // prompt -> string/f
+    verify-string prompt!
+    f minibuffer-contents!
+    prompt string>sbuf minibuffer-set-text
+    prompt length 0 gtkui-minibuffer-set-caret-pos
+    gtkui-minibuffer-main
+    minibuffer-contents [
+       prompt length minibuffer-contents tail
+    ] [ f ] if ;
+
+: minibuffer-accept-string/2            // prompt default -> string/f
+    2 ?enough
+    verify-string :> default
+    verify-string prompt!
+    f minibuffer-contents!
+
+    prompt default +
+    [ string>sbuf minibuffer-set-text ]
+    [ length 0 gtkui-minibuffer-set-caret-pos ]
+    bi
+
+    gtkui-minibuffer-main
+
+    minibuffer-contents [
+        prompt length minibuffer-contents tail
+    ] [ f ] if ;

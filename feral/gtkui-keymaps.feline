@@ -1,0 +1,114 @@
+// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline search ;
+in: keymaps
+
+private
+
+feral-config:gtkui? assert
+
+using: editor feline search ;
+
+: initialize-global-map
+    global-map ?exit
+
+    128 <hashtable> :> m
+
+    ' backspace                         feral-key:backspace         m set-at
+    ' do-delete                         feral-key:delete            m set-at
+    ' move-to-bol                       feral-key:home              m set-at
+    ' select-to-bol                     feral-key:shift-home        m set-at
+    ' move-to-eol                       feral-key:end               m set-at
+    ' select-to-eol                     feral-key:shift-end         m set-at
+    ' move-left                         feral-key:left              m set-at
+    ' select-left                       feral-key:shift-left        m set-at
+    ' move-right                        feral-key:right             m set-at
+    ' select-right                      feral-key:shift-right       m set-at
+    ' move-up                           feral-key:up                m set-at
+    ' select-up                         feral-key:shift-up          m set-at
+    ' move-down                         feral-key:down              m set-at
+    ' select-down                       feral-key:shift-down        m set-at
+
+    ' word-left                         feral-key:ctrl-left         m set-at
+    ' word-right                        feral-key:ctrl-right        m set-at
+    ' delete-word-right                 feral-key:ctrl-delete       m set-at
+    ' delete-word-left                  feral-key:ctrl-backspace    m set-at
+
+    ' do-page-up                        feral-key:pageup            m set-at
+    ' do-page-down                      feral-key:pagedown          m set-at
+
+    ' beginning-of-buffer               feral-key:ctrl-home         m set-at
+    ' end-of-buffer                     feral-key:ctrl-end          m set-at
+
+    ' do-window-up                      feral-key:ctrl-up           m set-at
+    ' do-window-down                    feral-key:ctrl-down         m set-at
+
+    ' gotoline                          feral-key:ctrl-g            m set-at
+    ' do-quit                           feral-key:ctrl-q            m set-at
+    ' do-save                           feral-key:ctrl-s            m set-at
+    ' list-buffers                      feral-key:ctrl-b            m set-at
+    ' kill-buffer                       feral-key:ctrl-w            m set-at
+    ' newline-and-indent                feral-key:enter             m set-at
+    ' do-find                           feral-key:ctrl-f            m set-at
+    ' repeat-search-forward             feral-key:f3                m set-at
+    ' repeat-search-backward            feral-key:shift-f3          m set-at
+    ' do-tab                            feral-key:tab               m set-at
+    ' kill-line                         feral-key:ctrl-k            m set-at
+    ' undo                              feral-key:ctrl-z            m set-at
+    ' redo                              feral-key:ctrl-y            m set-at
+    ' open-file                         feral-key:ctrl-o            m set-at
+    ' next-buffer                       feral-key:alt-right         m set-at
+    ' previous-buffer                   feral-key:alt-left          m set-at
+    ' find-definition                   feral-key:ctrl-t            m set-at
+    ' select-line                       feral-key:ctrl-l            m set-at
+    ' delete-line                       feral-key:ctrl-shift-k      m set-at
+    ' join-lines                        feral-key:ctrl-j            m set-at
+
+    ' cut                               feral-key:ctrl-x            m set-at
+    ' copy                              feral-key:ctrl-c            m set-at
+    ' paste                             feral-key:ctrl-v            m set-at
+
+    ' indent                            feral-key:ctrl-]            m set-at
+    ' unindent                          feral-key:ctrl-[            m set-at
+
+    ' cycle-paste                       feral-key:alt-v             m set-at
+    ' search-forward-word-at-dot        feral-key:alt-down          m set-at
+    ' search-backward-word-at-dot       feral-key:alt-up            m set-at
+    ' search-list-occurrences           feral-key:alt-l             m set-at
+    ' execute-command                   feral-key:alt-x             m set-at
+    ' escape                            feral-key:escape            m set-at
+
+    ' dir                               feral-key:ctrl-d            m set-at
+
+    ' find-in-files                     feral-key:ctrl-shift-f      m set-at
+
+    // emacs
+    ' find-definition-at-dot            feral-key:alt-.             m set-at
+
+    // vscode, sublime
+    ' find-definition-at-dot            feral-key:f12               m set-at
+
+    // j
+    ' find-in-files                     feral-key:f6                m set-at
+    ' comment-region                    feral-key:f11               m set-at
+    ' uncomment-region                  feral-key:shift-f11         m set-at
+
+    m global-map! ;
+
+public
+
+: initialize-keymaps
+    initialize-global-map ;
