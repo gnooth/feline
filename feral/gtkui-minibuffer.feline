@@ -37,31 +37,14 @@ tuple: minibuffer
 create-minibuffer
 
 : repaint-minibuffer
-//     "repaint-minibuffer called" print
-//     winui-hide-caret
-
     minibuf text>> :> s!                // string or sbuf
-
     s string? [ s sbuf>string s! ] unless
+    0 gtkui-char-height s gtkui-minibuffer-text-out ;
 
-    0 gtkui-char-height s gtkui-minibuffer-text-out
-//     s length 0 gtkui-minibuffer-clear-eol
-
-//     winui-show-caret
-;
-
-public: minibuffer-set-text                   // string-or-sbuf -> void
-//     "minibuffer-set-text called" print
-//     dup print
-
-    minibuf text>> over sequence= [ drop ] [
-        minibuf text<<
-//        winui-minibuffer-invalidate
-    ] if
-;
+public: minibuffer-set-text             // string-or-sbuf -> void
+    minibuf text>> over sequence= [ drop ] [ minibuf text<< ] if ;
 
 : do-enter
-//     "do-enter called" print
     minibuf text>> :> sb
     sb sbuf? assert-true
 
@@ -74,16 +57,14 @@ public: minibuffer-set-text                   // string-or-sbuf -> void
 
     "" minibuffer-set-text
     f set-completion-provider
-    gtkui-minibuffer-exit
-;
+    gtkui-minibuffer-exit ;
 
 : do-escape
     f minibuffer-contents!
     "" minibuffer-set-text
     f current-history!
     f set-completion-provider
-    gtkui-minibuffer-exit
-;
+    gtkui-minibuffer-exit ;
 
 : do-bs
     minibuf text>> :> sb
@@ -93,26 +74,20 @@ public: minibuffer-set-text                   // string-or-sbuf -> void
         sb length 1 - sb sbuf-shorten
         sb length 0
         gtkui-minibuffer-set-caret-pos
-//         winui-minibuffer-invalidate
-    ] when
-;
+    ] when ;
 
 : do-normal-char ( c )
     minibuf text>> :> sb
     sb sbuf? assert-true
 
     c sb sbuf-push
-    sb length 0 gtkui-minibuffer-set-caret-pos
-//     winui-minibuffer-invalidate
-;
+    sb length 0 gtkui-minibuffer-set-caret-pos ;
 
 : minibuffer-set-text-from-history ( s ) // string/f -> void
     s null? ?exit
     prompt s + string>sbuf :> sb
     sb minibuffer-set-text
-    sb length 0 gtkui-minibuffer-set-caret-pos
-//     winui-minibuffer-invalidate
-;
+    sb length 0 gtkui-minibuffer-set-caret-pos ;
 
 : do-previous history-previous minibuffer-set-text-from-history ;
 
@@ -148,32 +123,19 @@ initialize-minibuffer-keymap
 : lookup-key                            // key -> symbol/f
     minibuffer-keymap at ;
 
-// : gtkui-minibuffer-char                 // tagged-char -> void
-//     dup printable-char? [
-//         do-normal-char
-//     ] [
-//         lookup-key [ call-symbol ] when*
-//     ] if ;
-
 : gtkui-minibuffer-keydown              // key -> void
-//     "gtkui-minibuffer-keydown" print
-//     lookup-key [ call-symbol ] when*
     1 ?enough :> key
     key lookup-key [ call-symbol ] [
-//         key code-char printable-char? [ do-normal-char ] when*
         key feral-key:key-to-printable-char [ do-normal-char ] when*
-    ] if*
-;
+    ] if* ;
 
 public
 
 : message                               // string ->
-    minibuffer-set-text
-;
+    minibuffer-set-text ;
 
 : clear-message
-    "" minibuffer-set-text
-;
+    "" minibuffer-set-text ;
 
 : minibuffer-accept-string              // prompt -> string/f
     verify-string prompt!
