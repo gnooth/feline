@@ -107,7 +107,7 @@ feline_constant have_winui?, 'have-winui?', f_value
 
 %endif ; Windows
 
-%ifndef WINUI ; Linux
+%ifndef WIN64 ; Linux
 
 feline_constant have_winui?, 'have-winui?', f_value
 
