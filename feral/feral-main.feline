@@ -151,6 +151,64 @@ feral-config:winui? #if
 
 #endif
 
+feral-config:gtkui? #if
+
+: gtkui-textview-keydown ( key )        // key -> void
+
+    current-command last-command!
+    f current-command!
+
+    mini:clear-message
+    f !> command
+
+    // try local map first
+    current-buffer local-map>> :> local-map
+
+    local-map [
+        key local-map at command!
+    ] when
+
+    // global map
+    command [
+        key keymaps:lookup-key command!
+    ] unless
+
+    command [
+        dup current-command! safe-call-symbol
+    ] [
+        key feral-key:key-to-printable-char [ insert-char ] when*
+    ] if*
+
+    update-display
+;
+
+: gtkui-textview-button-press
+    2 ?enough :> y :> x
+
+    x gtkui-char-width /i :> column
+    y gtkui-char-height /i :> row
+
+    add-undo-move
+    unmark
+    top-line-number row + last-line-number min nth-line dot-line!
+
+    // FIXME
+    // column may not be the same as offset if there are tab chars in the buffer
+    column dot-line-length min dot-offset!
+
+    update-display
+
+    gtkui-textview-invalidate ;
+
+: edit1
+    gtkui-initialize
+    reframe
+    t repaint!
+    update-display
+    gtkui-main ;
+
+#endif
+
 feral-config:termui? #if
 
 : do-mouse                              // key -> ?
