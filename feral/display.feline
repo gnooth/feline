@@ -39,14 +39,6 @@ in: editor
     ] when*
     sb sbuf>string ;
 
-feral-config:winui? #if
-"winui-display.feline" load
-#endif
-
-feral-config:gtkui? #if
-"gtkui-display.feline" load
-#endif
-
-feral-config:termui? #if
-"termui-display.feline" load
-#endif
+"winui-display.feline" feral-config:winui? ?load
+"gtkui-display.feline" feral-config:gtkui? ?load
+"termui-display.feline" feral-config:termui? ?load
