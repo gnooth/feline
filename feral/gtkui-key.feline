@@ -22,7 +22,9 @@ public
 
 0xff09                  constant tab
 0xff1b                  constant escape
+
 0xffff                  constant delete
+0xff9f                  constant kp-delete
 
 0xff50                  constant home
 0xff57                  constant end
@@ -50,15 +52,33 @@ public
 ']' char-code ctrl      constant ctrl-]
 
 backspace ctrl          constant ctrl-backspace
+
 delete ctrl             constant ctrl-delete
+kp-delete ctrl          constant ctrl-kp-delete
+
 home ctrl               constant ctrl-home
 end ctrl                constant ctrl-end
 up ctrl                 constant ctrl-up
 down ctrl               constant ctrl-down
-left alt                constant alt-left
-right alt               constant alt-right
 left ctrl               constant ctrl-left
 right ctrl              constant ctrl-right
+
+kp-home ctrl            constant ctrl-kp-home
+kp-end ctrl             constant ctrl-kp-end
+kp-up ctrl              constant ctrl-kp-up
+kp-down ctrl            constant ctrl-kp-down
+kp-left ctrl            constant ctrl-kp-left
+kp-right ctrl           constant ctrl-kp-right
+
+left alt                constant alt-left
+kp-left alt             constant alt-kp-left
+right alt               constant alt-right
+kp-right alt            constant alt-kp-right
+
+down alt                constant alt-down
+kp-down alt             constant alt-kp-down
+up alt                  constant alt-up
+kp-up alt               constant alt-kp-up
 
 0xffbe                  constant f1
 0xffbf                  constant f2
@@ -84,20 +104,19 @@ down shift              constant shift-down
 home shift              constant shift-home
 end shift               constant shift-end
 
-kp-left shift           constant kp-shift-left
-kp-right shift          constant kp-shift-right
-kp-up shift             constant kp-shift-up
-kp-down shift           constant kp-shift-down
-kp-home shift           constant kp-shift-home
-kp-end shift            constant kp-shift-end
+kp-left shift           constant shift-kp-left
+kp-right shift          constant shift-kp-right
+kp-up shift             constant shift-kp-up
+kp-down shift           constant shift-kp-down
+
+0x0004ffb7              constant shift-kp-home  // GDK_KEY_KP_7
+0x0004ffb1              constant shift-kp-end   // GDK_KEY_KP_1
 
 0x20 ctrl               constant ctrl-space
 
 'b' char-code alt       constant alt-b
 '.' char-code alt       constant alt-.
 'v' char-code alt       constant alt-v
-down alt                constant alt-down
-up alt                  constant alt-up
 'l' char-code alt       constant alt-l
 'x' char-code alt       constant alt-x
 
