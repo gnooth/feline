@@ -58,7 +58,17 @@ using: find-in-files feral-core history mini feline accessors ;
 in: editor
 
 : find-in-files
-    current-mode identifier-at-dot nip :> default-pattern
+    f !> default-pattern
+
+    mark dot and [
+        mark-line dot-line eq? [
+            dot mark make-region/2 region-as-string default-pattern!
+        ] when
+    ] when
+
+    default-pattern [
+        current-mode identifier-at-dot nip default-pattern!
+    ] unless
 
     "find" set-history
     "Find: "
