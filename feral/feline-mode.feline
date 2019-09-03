@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline accessors segments modes feral-colors feral-config ;
+using: feral-core feline accessors segments modes feral-colors ;
 in: feline-mode
 
 private
@@ -362,7 +362,7 @@ var last-segment-text
 
 global feline-mode-local-map
 
-winui? #if
+feral-config:winui? feral-config:gtkui? or #if
 
 use: feral-key
 
