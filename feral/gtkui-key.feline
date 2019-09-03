@@ -104,13 +104,26 @@ down shift              constant shift-down
 home shift              constant shift-home
 end shift               constant shift-end
 
-kp-left shift           constant shift-kp-left
-kp-right shift          constant shift-kp-right
-kp-up shift             constant shift-kp-up
-kp-down shift           constant shift-kp-down
+left ctrl shift         constant ctrl-shift-left
+right ctrl shift        constant ctrl-shift-right
+up ctrl shift           constant ctrl-shift-up
+down ctrl shift         constant ctrl-shift-down
+home ctrl shift         constant ctrl-shift-home
+end ctrl shift          constant ctrl-shift-end
 
+0x0004ffb4              constant shift-kp-left  // GDK_KEY_KP_4
+0x0004ffb6              constant shift-kp-right // GDK_KEY_KP_6
+0x0004ffb8              constant shift-kp-up    // GDK_KEY_KP_8
+0x0004ffb2              constant shift-kp-down  // GDK_JEY_KP_2
 0x0004ffb7              constant shift-kp-home  // GDK_KEY_KP_7
 0x0004ffb1              constant shift-kp-end   // GDK_KEY_KP_1
+
+0x0006ffb4              constant ctrl-shift-kp-left  // GDK_KEY_KP_4
+0x0006ffb6              constant ctrl-shift-kp-right // GDK_KEY_KP_6
+0x0006ffb8              constant ctrl-shift-kp-up    // GDK_KEY_KP_8
+0x0006ffb2              constant ctrl-shift-kp-down  // GDK_JEY_KP_2
+0x0006ffb7              constant ctrl-shift-kp-home  // GDK_KEY_KP_7
+0x0006ffb1              constant ctrl-shift-kp-end   // GDK_KEY_KP_1
 
 0x20 ctrl               constant ctrl-space
 
