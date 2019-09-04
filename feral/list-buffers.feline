@@ -25,7 +25,7 @@ global list-buffers-old-buffer
 
 4 constant buffer-name-column
 
-40 constant buffer-filename-column
+40 constant buffer-directory-column
 
 : list-buffers-select
     :buffer dot-line line-get-property current-buffer!
@@ -75,9 +75,11 @@ feral-config:winui? #if
         b buffer-name sb sbuf-append-string
 
         b filename>> [
-            '\s' sb push
-            [ sb length buffer-filename-column < ] [ '\s' sb push ] while
-            sb sbuf-append-string
+            file-name-directory [
+                '\s' sb push
+                [ sb length buffer-directory-column < ] [ '\s' sb push ] while
+                sb sbuf-append-string
+            ] when*
         ] when*
 
         sb sbuf>string make-line/1 line!
