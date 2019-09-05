@@ -288,6 +288,7 @@ tuple: buffer
     anchor
     goal-column
     filename
+    directory
     autosave-filename
     mod-count
     mod-count-last-save
