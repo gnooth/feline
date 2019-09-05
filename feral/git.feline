@@ -23,13 +23,14 @@ in: editor
 
     "git diff " source-file + :> command
 
-    command shell-command-to-string !> s
+    command shell-command-to-string !> output
 
     // shell-command-to-string might return f
-    s null? ?exit
+    output null? ?exit
 
     f !> buf
-    s length 0 > [
+    output length 0 > [
+        // reuse existing buffer if possible
         buffer-list [ command>> command = ] find // index/f element/f
         [
             nip buf!
@@ -37,9 +38,10 @@ in: editor
             drop make-buffer buf!
         ] if*
 
-        s buf buffer-set-contents
+        output buf buffer-set-contents
         command buf command<<
         command buf name<<
+        current-buffer directory>> buf directory<<
         t buf read-only<<
         buf first-line>> 0 make-position buf dot<<
         f buf mark<<
@@ -56,6 +58,6 @@ in: editor
 
         t repaint!
     ] [
-        "git ls-files " source-file + shell-command-to-string s!
-        s length zero? "Untracked" "No changes" ? message
+        "git ls-files " source-file + shell-command-to-string output!
+        output length zero? "Untracked" "No changes" ? message
     ] if ;
