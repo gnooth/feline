@@ -58,6 +58,7 @@ feral-config:winui? #if
     current-buffer list-buffers-old-buffer!
     make-buffer :> buf
     "List Buffers" buf name<<
+    current-buffer directory>> buf directory<<
     list-buffers-local-map buf local-map<<
 
     f !> b
@@ -75,12 +76,12 @@ feral-config:winui? #if
         b buffer-name sb sbuf-append-string
 
         b filename>> [
-            file-name-directory [
+            b directory>> [
                 '\s' sb push
                 [ sb length buffer-directory-column < ] [ '\s' sb push ] while
                 sb sbuf-append-string
             ] when*
-        ] when*
+        ] when
 
         sb sbuf>string make-line/1 line!
         b :buffer line line-set-property
