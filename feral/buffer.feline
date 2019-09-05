@@ -60,6 +60,8 @@ in: editor
 
     filename buf filename<<
 
+    filename file-name-directory buf directory<<
+
     filename file-name-nondirectory buf name<<
 
     filename file-name-extension [ modes at buf mode<< ] when*
