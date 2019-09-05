@@ -80,7 +80,7 @@ in: editor
 
     current-pattern empty? ?exit
 
-    current-buffer buffer-directory file-name-as-directory :> default-directory
+    current-buffer directory>> file-name-as-directory :> default-directory
 
     current-buffer filename>> file-name-extension // -> string/f
     feline-extension or !> default-extension

@@ -16,17 +16,13 @@
 using: feral-core feline accessors modes mini ;
 in: editor
 
-: buffer-directory ( buf )              // buffer -> directory
-    buf filename>> [ file-name-directory ] [ get-current-directory ] if* ;
-
 : buffer-append-line ( line buf )       // line buffer -> void
     buf last-line>> line prev<<
     buf last-line>> [ line swap next<< ] when*
     line buf last-line<<
     buf first-line>> [
         line buf first-line<<
-    ] unless
-;
+    ] unless ;
 
 : buffer-set-contents ( s buf )         // string buffer -> void
     f buf first-line<<
@@ -35,8 +31,7 @@ in: editor
     f buf dot<<
     f buf mark<<
 
-    s string-lines [ make-line/2 buf buffer-append-line ] each-index
-;
+    s string-lines [ make-line/2 buf buffer-append-line ] each-index ;
 
 : create-buffer                         // void -> void
     make-buffer :> buf

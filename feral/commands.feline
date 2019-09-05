@@ -62,7 +62,7 @@ in: editor
     files length 1 eq? [ dir files first path-append ] [ f ] if ;
 
 : open-file
-    current-buffer buffer-directory file-name-as-directory :> default-directory
+    current-buffer directory>> file-name-as-directory :> default-directory
 
     "open-file" set-history
     ' open-file-get-completions mini:set-completion-provider
