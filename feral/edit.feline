@@ -256,6 +256,8 @@ in: editor
 private: insert-char-internal // char -> void
     // no undo
 
+    dot-offset dot-line-length <= assert
+
     dot-line-head string>sbuf :> sb
     sb sbuf-push
     dot-line-tail sb sbuf-append-string
