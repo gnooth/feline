@@ -30,32 +30,44 @@ in: editor
     // if there was no change, return string f
     s string-trim-tail dup s neq? ;
 
-: remove-trailing-whitespace
+: buffer-remove-trailing-whitespace ( buf )
+    // REVIEW no undo
 
-    first-line :> line!
+    buf first-line>> !> line
 
-    f :> changed!
+    // first see if there's anything to do
+    f !> found
+    [ line found not and ] [
+        line text>> string-?last whitespace? [
+            line found!
+        ] [
+            line next>> line!
+        ] if
+    ] while
+
+    found null? ?exit // nothing to do
+
+    line found assert-eq
 
     [ line ] [
-        line text>> trim-trailing* [
-            line text<<
-            t changed!
-        ] [
-            drop
-        ] if
+        line text>> string-?last whitespace? [
+            line text>> string-trim-tail line text<<
+        ] when
         line next>> line!
     ] while
 
     // adjust dot and mark if necessary
-    dot-offset dot-line-length > [ dot-line-length dot-offset! ] when
+    buf dot>> offset>> buf dot>> line>> text>> length > [
+        buf dot>> line>> text>> length buf dot>> offset<<
+    ] when
 
-    mark [
-        mark-offset mark-line text>> length > [
-            mark-line text>> length mark offset<<
+    buf mark>> [
+        buf mark>> offset>> buf mark>> line>> text>> length > [
+            buf mark>> line>> text>> length buf mark>> offset<<
         ] when
     ] when
 
-    changed [ modified ] when ;
+    modified ;
 
 : do-save
     current-buffer filename>> :> filename!
@@ -70,17 +82,16 @@ in: editor
         ] when
     ] unless
 
-    filename null? [ ] return-if
+    filename null? ?exit
 
     // save the current buffer to disk
-    output-style
     "Saving..." message
 
     f :> saved?!
 
     make-backup
 
-    remove-trailing-whitespace
+    current-buffer buffer-remove-trailing-whitespace
 
     current-buffer eol>> :> eol
     line-count 80 * <sbuf> :> sb
