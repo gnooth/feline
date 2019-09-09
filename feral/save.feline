@@ -16,25 +16,19 @@
 using: feral-core feline accessors mini ;
 in: editor
 
-: make-backup
-    current-buffer filename>> [
+: buffer-make-backup ( buf )
+    buf filename>> [
         dup file-exists?
         [ dup "~" string-append copy-file ] [ drop ] if
-    ] when*
-;
+    ] when* ;
 
-: trim-trailing ( s )                   // string -> string/string'
-    s string-?last whitespace? [
-        s string-length 1- s [ whitespace? not ] find-last-from // -> index/f element/f
-        [ 1+ s string-head ] [ drop "" ] if
-    ] [
-        s
-    ] if ;
+: make-backup
+    current-buffer buffer-make-backup ;
 
 : trim-trailing* ( s )                  // string -> string/string' ?
     // if whitespace was trimmed, return string' t
     // if there was no change, return string f
-    s trim-trailing dup s neq? ;
+    s string-trim-tail dup s neq? ;
 
 : remove-trailing-whitespace
 
