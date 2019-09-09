@@ -102,11 +102,16 @@ special: +compound-redo+
     undo-rec
 ;
 
-: restore-dot                           // undo-record -> void
-    [ dot-line-number>> nth-line ]
-    [ dot-offset>> ] bi make-position dot! ;
+: restore-dot-line // undo-record -> void
+    dot-line-number>> nth-line dot-line! ;
 
-: restore-mark                          // undo-record -> void
+: restore-dot-offset // undo-record -> void
+    dot-offset>> dot-line-length min dot-offset! ;
+
+: restore-dot // undo-record -> void
+    [ restore-dot-line ] [ restore-dot-offset ] bi ;
+
+: restore-mark // undo-record -> void
     dup mark-line-number>> [
         [ mark-line-number>> nth-line ]
         [ mark-offset>> ] bi make-position
@@ -153,8 +158,9 @@ special: +compound-redo+
 
     {
         [ mod-count>> mod-count! ]
-        [ restore-dot ]
+        [ restore-dot-line ]
         [ data>> dot-line-text! ]
+        [ restore-dot-offset ]
         [ mark>> mark! ]
     } cleave
 
