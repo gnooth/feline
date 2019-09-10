@@ -67,7 +67,9 @@ in: editor
         ] when
     ] when
 
-    modified ;
+    modified
+
+    buf current-buffer [ t repaint! ] when ;
 
 : do-save
     current-buffer filename>> :> filename!
