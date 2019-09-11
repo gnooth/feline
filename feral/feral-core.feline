@@ -382,6 +382,14 @@ global current-buffer
 : dot-offset!                           // n -> void
     dot offset<< ;
 
+// REVIEW dot-offset++
+: ++dot-offset
+    dot-offset 1+ dot-offset! ;
+
+// REVIEW dot-offset--
+: --dot-offset
+    dot-offset 1- dot-offset! ;
+
 : move-dot-to                           // line offset -> void
     dot-offset! dot-line! ;
 
