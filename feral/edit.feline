@@ -397,10 +397,76 @@ use: kill-ring
 
 : delete-word-left
     at-bof? ?exit
+
+    at-bol? [
+        [
+            unmark
+            add-undo-move
+            char-left-internal
+            delete-line-separator
+            modified
+        ] with-compound-undo
+    ] return-if
+
     [
-        select-word-left
+        add-undo-move
+        dot copy-position mark!
+
+        --dot-offset
+
+        {
+            {
+                [ in-word? ]
+                [
+                    // move left to beginning of word
+                    [ in-word? at-bol? not and ] [ --dot-offset ] while
+                    in-word? [ ++dot-offset ] unless
+                ]
+            }
+            {
+                [ in-whitespace? ]
+                [
+                    --dot-offset
+                    {
+                        {
+                            [ in-whitespace? ]
+                            [
+                                // delete rest of whitespace
+                                [ in-whitespace? at-bol? not and ] [ --dot-offset ] while
+                                in-whitespace? [ ++dot-offset ] unless
+                            ]
+                        }
+
+                        {
+                            [ in-word? ]
+                            [
+                                // move left to beginning of word
+                                [ in-word? at-bol? not and ] [ --dot-offset ] while
+                                in-word? [ ++dot-offset ] unless
+                            ]
+                        }
+
+                        {
+                            // not in word, not in whitespace
+                            [ t ]
+                            [
+                                [ in-word? in-whitespace? or at-bol? or ] [ --dot-offset ] until
+                                [ in-word? in-whitespace? or ] [ ++dot-offset ] when
+                            ]
+                        }
+                    } cond
+                ]
+            }
+            // default
+            [
+                // not in word, not in whitespace
+                [ in-word? in-whitespace? or at-bol? or ] [ --dot-offset ] until
+                [ in-word? in-whitespace? or ] [ ++dot-offset ] when
+            ]
+        } cond
         delete-region
-    ] with-compound-undo ;
+    ] with-compound-undo
+    t dot-line-changed! ;
 
 : do-delete
     current-buffer read-only>> [
