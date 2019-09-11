@@ -159,6 +159,8 @@ in: editor
     mark [ unindent-region ] [ unindent-line ] if ;
 
 : comment-region
+    // REVIEW comment-padding
+
     current-mode comment-start :> s
     s empty? ?exit
 
@@ -180,6 +182,8 @@ in: editor
     modified ;
 
 : uncomment-region
+    // REVIEW comment-padding
+
     current-mode comment-start :> s
     s empty? ?exit
 
@@ -337,10 +341,59 @@ use: kill-ring
 
 : delete-word-right
     at-eof? ?exit
+    at-eol? [ unmark delete-line-separator ] return-if
     [
-        select-word-right
+        add-undo-move
+        dot copy-position mark!
+        {
+            {
+                [ in-word? ]
+                [
+                    // delete to end of word
+                    [ in-word? ] [ ++dot-offset ] while
+                ]
+            }
+            {
+                [ in-whitespace? ]
+                [
+                    ++dot-offset
+                    {
+                        {
+                            [ in-whitespace? ]
+                            [
+                                // delete rest of whitespace
+                                [ in-whitespace? ] [ ++dot-offset ] while
+                            ]
+                        }
+
+                        {
+                            [ in-word? ]
+                            [
+                                // delete to end of word
+                                [ in-word? ] [ ++dot-offset ] while
+                            ]
+                        }
+
+                        {
+                            // not in word, not in whitespace
+                            [ t ]
+                            [
+                                [ in-word? in-whitespace? or at-eol? or ]
+                                [ ++dot-offset ] until
+                            ]
+                        }
+                    } cond
+                ]
+            }
+            // default
+            [
+                // not in word, not in whitespace
+                [ in-word? in-whitespace? or at-eol? or ] [ ++dot-offset ] until
+            ]
+        } cond
         delete-region
-    ] with-compound-undo ;
+    ] with-compound-undo
+    t dot-line-changed! ;
 
 : delete-word-left
     at-bof? ?exit
