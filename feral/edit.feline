@@ -340,67 +340,67 @@ use: kill-ring
     [ insert-multiline-string-internal ] bi ;
 
 : delete-word-right
+    mark [ delete-region ] return-if
+
     at-eof? ?exit
-    at-eol? [ unmark delete-line-separator ] return-if
+
+    at-eol? [ delete-line-separator modified ] return-if
+
     [
         add-undo-move
         dot copy-position mark!
+
         {
-            {
-                [ in-word? ]
-                [
-                    // delete to end of word
-                    [ in-word? ] [ ++dot-offset ] while
-                ]
-            }
-            {
-                [ in-whitespace? ]
-                [
-                    ++dot-offset
-                    {
-                        {
-                            [ in-whitespace? ]
-                            [
-                                // delete rest of whitespace
-                                [ in-whitespace? ] [ ++dot-offset ] while
-                            ]
-                        }
-
-                        {
-                            [ in-word? ]
-                            [
-                                // delete to end of word
-                                [ in-word? ] [ ++dot-offset ] while
-                            ]
-                        }
-
-                        {
-                            // not in word, not in whitespace
-                            [ t ]
-                            [
-                                [ in-word? in-whitespace? or at-eol? or ]
-                                [ ++dot-offset ] until
-                            ]
-                        }
-                    } cond
-                ]
-            }
-            // default
+            [ in-word? ] =>
             [
-                // not in word, not in whitespace
+                // delete to end of word
+                [ in-word? ] [ ++dot-offset ] while
+            ]
+
+            [ in-whitespace? ] =>
+            [
+                ++dot-offset
+
+                {
+                    [ in-whitespace? ] =>
+                    [
+                        // delete rest of whitespace
+                        [ in-whitespace? ] [ ++dot-offset ] while
+                    ]
+
+                    [ in-word? ] =>
+                    [
+                        // delete to end of word
+                        [ in-word? ] [ ++dot-offset ] while
+                    ]
+
+                    // not in word, not in whitespace
+                    [ t ] =>
+                    [
+                        [ in-word? in-whitespace? or at-eol? or ]
+                        [ ++dot-offset ] until
+                    ]
+                } cond
+            ]
+
+            // not in word, not in whitespace
+            [ t ] =>
+            [
                 [ in-word? in-whitespace? or at-eol? or ] [ ++dot-offset ] until
             ]
         } cond
+
         delete-region
-    ] with-compound-undo
-    t dot-line-changed! ;
+
+    ] with-compound-undo ;
 
 : delete-word-left
+    mark [ delete-region ] return-if
+
     at-bof? ?exit
 
     at-bol? [
         [
-            unmark
             add-undo-move
             char-left-internal
             delete-line-separator
