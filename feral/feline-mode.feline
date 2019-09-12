@@ -130,6 +130,7 @@ feline-mode-comment-start length constant comment-start-length
     ":"
     ":>"
     ";"
+    "=>"
     "["
     "]"
     "constant"
