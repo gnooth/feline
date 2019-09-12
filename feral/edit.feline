@@ -415,58 +415,52 @@ use: kill-ring
         --dot-offset
 
         {
-            {
-                [ in-word? ]
-                [
-                    // move left to beginning of word
-                    [ in-word? at-bol? not and ] [ --dot-offset ] while
-                    in-word? [ ++dot-offset ] unless
-                ]
-            }
-            {
-                [ in-whitespace? ]
-                [
-                    --dot-offset
-                    {
-                        {
-                            [ in-whitespace? ]
-                            [
-                                // delete rest of whitespace
-                                [ in-whitespace? at-bol? not and ] [ --dot-offset ] while
-                                in-whitespace? [ ++dot-offset ] unless
-                            ]
-                        }
-
-                        {
-                            [ in-word? ]
-                            [
-                                // move left to beginning of word
-                                [ in-word? at-bol? not and ] [ --dot-offset ] while
-                                in-word? [ ++dot-offset ] unless
-                            ]
-                        }
-
-                        {
-                            // not in word, not in whitespace
-                            [ t ]
-                            [
-                                [ in-word? in-whitespace? or at-bol? or ] [ --dot-offset ] until
-                                [ in-word? in-whitespace? or ] [ ++dot-offset ] when
-                            ]
-                        }
-                    } cond
-                ]
-            }
-            // default
+            [ in-word? ] =>
             [
-                // not in word, not in whitespace
+                // move left to beginning of word
+                [ in-word? at-bol? not and ] [ --dot-offset ] while
+                in-word? [ ++dot-offset ] unless
+            ]
+
+            [ in-whitespace? ] =>
+            [
+                --dot-offset
+
+                {
+                    [ in-whitespace? ] =>
+                    [
+                        // delete rest of whitespace
+                        [ in-whitespace? at-bol? not and ] [ --dot-offset ] while
+                        in-whitespace? [ ++dot-offset ] unless
+                    ]
+
+                    [ in-word? ] =>
+                    [
+                        // move left to beginning of word
+                        [ in-word? at-bol? not and ] [ --dot-offset ] while
+                        in-word? [ ++dot-offset ] unless
+                    ]
+
+                    // not in word, not in whitespace
+                    [ t ] =>
+                    [
+                        [ in-word? in-whitespace? or at-bol? or ] [ --dot-offset ] until
+                        [ in-word? in-whitespace? or ] [ ++dot-offset ] when
+                    ]
+                } cond
+            ]
+
+            // not in word, not in whitespace
+            [ t ] =>
+            [
                 [ in-word? in-whitespace? or at-bol? or ] [ --dot-offset ] until
                 [ in-word? in-whitespace? or ] [ ++dot-offset ] when
             ]
         } cond
+
         delete-region
-    ] with-compound-undo
-    t dot-line-changed! ;
+
+    ] with-compound-undo ;
 
 : do-delete
     current-buffer read-only>> [
