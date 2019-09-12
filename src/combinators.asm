@@ -272,8 +272,8 @@ code case, 'case'               ; x array --
         next
 endcode
 
-; ### cond
-code cond, 'cond'               ; array --
+; ### old-cond
+code old_cond, 'old-cond'               ; array ->
         _ check_array
         push    this_register
         mov     this_register, rbx
@@ -311,6 +311,53 @@ code cond, 'cond'               ; array --
         _then .2
 
         _loop .1
+
+        ; not found
+        _error "no cond"
+
+.exit:
+        pop     this_register
+        next
+endcode
+
+code fat_arrow, '=>', SYMBOL_IMMEDIATE
+        next
+endcode
+
+; ### cond
+code cond, 'cond'                       ; array ->
+        _dup
+        _ array_first
+        _ quotation?
+        _tagged_if_not .1
+        _ old_cond
+        _return
+        _then .1
+
+        _ check_array
+        push    this_register
+        mov     this_register, rbx
+        poprbx                          ; -> void
+
+        _this_array_raw_length
+        shr     rbx, 1
+        _do_times .2
+
+        _raw_loop_index
+        shl     rbx, 1
+        _this_array_nth_unsafe          ; -> quotation
+        _ call_quotation                ; -> ?
+        _tagged_if .3
+        _raw_loop_index
+        shl     rbx, 1
+        add     rbx, 1
+        _this_array_nth_unsafe
+        _ call_quotation
+        _unloop
+        jmp     .exit
+        _then .3
+
+        _loop .2
 
         ; not found
         _error "no cond"
