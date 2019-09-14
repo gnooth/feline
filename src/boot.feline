@@ -18,7 +18,7 @@ in: feline
 
 public
 
-: blank?                                -- char -> ?
+: blank?                                // char -> ?
     "\t\n\r " member? ;
 
 {

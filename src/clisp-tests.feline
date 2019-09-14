@@ -1,9 +1,9 @@
--- Adapted from clisp 2.49 tests/numbers.tst
+// Adapted from clisp 2.49 tests/numbers.tst
 
 using: feline ;
 in: user
 
--- Addition
+// Addition
 
 0.6049332056786565e+0 -0.9611373574853808e+0 + -0.35620415180672427e+0 assert=
 
@@ -305,7 +305,7 @@ in: user
 
 -9.614117725927607e-21 -5.35667712698602e-21 + -1.4970794852913628e-20 assert=
 
--- Subtraction
+// Subtraction
 
 -0.011326914400453525e0 -0.6668141757661364e0 - 0.6554872613656829e0 assert=
 
@@ -607,7 +607,7 @@ in: user
 
 -3.4813735333296525e-21 -2.6602650182385188e-21 - -8.211085150911337e-22 assert=
 
--- Multiplication
+// Multiplication
 
 -0.2554913394465045e0 0.27042187315261135e0 * -0.0690904465873934e0 assert=
 
@@ -909,7 +909,7 @@ in: user
 
 -2.1886866436065787e-21 6.29322016055891e-22 * -1.3773886910690934e-42 assert=
 
--- Division
+// Division
 
 -0.651381628953465e0 -0.9237050214744277e0 / 0.7051835962889135e0 assert=
 

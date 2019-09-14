@@ -22,8 +22,6 @@ ignore-level zero? assert-true
 
 ignore-level zero? assert-true
 
---
-
 f #if
 assert-false
 
@@ -38,8 +36,6 @@ assert-false
 depth zero? assert-true
 ignore-level zero? assert-true
 #endif
-
---
 
 t #if
 ignore-level zero? assert-true
@@ -60,7 +56,7 @@ assert-false
 depth zero? assert-true
 ignore-level zero? assert-true
 
--- control-test:raccoon is not defined
+// control-test:raccoon is not defined
 test: control-test-1
     #ifdef control-test:raccoon
     "yes raccoon"
@@ -86,7 +82,7 @@ control-test-1
 
 symbol: baboon
 
--- control-test:baboon is defined
+// control-test:baboon is defined
 test: control-test-2
     #ifdef control-test:baboon
     "yes baboon"

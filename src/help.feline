@@ -1,17 +1,17 @@
--- Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
 in: help
@@ -29,7 +29,7 @@ white constant fg-default
 : bold   color? [ esc[ "1m" write-string ] when ;
 : normal color? [ esc[ "0m" write-string ] when ;
 
-: format-string                         -- string ->
+: format-string                         // string ->
     :> s!
     f :> in-quote?!
     f :> i!
@@ -48,7 +48,7 @@ white constant fg-default
     ] when
     s write-string ;
 
-: format-title                          -- string ->
+: format-title                          // string ->
     bold
     fg-title foreground
     write-string
@@ -68,12 +68,12 @@ var glossary-file-write-time
 
 public
 
-: symbol-help                           -- symbol -> string/f
+: symbol-help                           // symbol -> string/f
     symbol-name :> name
 
     maybe-load-glossary
 
-    glossary [ name swap string-has-prefix? ] find      -- index/f element/f
+    glossary [ name swap string-has-prefix? ] find      // index/f element/f
 
     :> line
     :> line-number!
@@ -108,7 +108,7 @@ public
     help-string
 ;
 
-: help                                  -- symbol ->
+: help                                  // symbol ->
     dup symbol-name :> name
     symbol-help [
         name format-title nl

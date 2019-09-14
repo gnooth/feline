@@ -20,7 +20,7 @@ empty
 
 global inspected-object
 
-: make-typed-slot                       -- arg index -> slot
+: make-typed-slot                       // arg index -> slot
     :> index
     :> arg
     arg string? [
@@ -32,7 +32,7 @@ global inspected-object
     ] if
 ;
 
-: builtin-type-set-layout               -- slots type -> void
+: builtin-type-set-layout               // slots type -> void
     [ [ 1+ make-typed-slot ] map-index ] dip type-set-layout
 ;
 
@@ -74,7 +74,7 @@ global inspected-object
 
 { "name" "hashtable" } vocab builtin-type-set-layout
 
-: print-slot ( object n )               -- object n -> void
+: print-slot ( object n )               // object n -> void
     object object-layout :> layout
     n layout nth :> slot
     4 tab

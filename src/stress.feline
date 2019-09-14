@@ -7,10 +7,10 @@ in: stress
 
 4000000 constant limit
 
--- The followings tests verify that the quotation remains valid through gc,
--- even if there is no other reference to it. These tests must not be in a
--- definition, since in that case the symbol-def slot would hold a reference
--- to the quotation.
+// The followings tests verify that the quotation remains valid through gc,
+// even if there is no other reference to it. These tests must not be in a
+// definition, since in that case the symbol-def slot would hold a reference
+// to the quotation.
 
 "each-integer-gc-test-1" ?nl write-string
 limit [ number>string drop ] each-integer
