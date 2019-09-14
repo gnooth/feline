@@ -62,6 +62,7 @@ global instance
     t buf read-only<<
 
     current-buffer buf parent<<
+    current-buffer directory>> buf directory<<
     symbols-mode:get-instance buf mode<<
     buf mode>> initialize-buffer-function>> [ buf swap call ] when*
 
