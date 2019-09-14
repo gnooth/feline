@@ -58,8 +58,8 @@ global symbols-mode-local-map
 
 : initialize-local-map
     128 <hashtable> :> m
-    ' editor:kill-buffer key:escape m set-at
-    ' symbols-mode-goto-source key:enter m set-at
+    ' editor:kill-buffer feral-key:escape m set-at
+    ' symbols-mode-goto-source feral-key:enter m set-at
     m symbols-mode-local-map! ;
 
 initialize-local-map
