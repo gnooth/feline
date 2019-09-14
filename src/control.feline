@@ -44,8 +44,6 @@ public
     1 ignore-level!
     [ ignoring? ] [ process-next-token ] while ;
 
---
-
 using: feline control ;
 in: feline
 
