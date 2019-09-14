@@ -92,14 +92,6 @@ method: directory-mode initialize-buffer // buffer mode -> void
     ] if
     shell-command-to-string ;
 
-: directory-buffer-set-name ( dirname buf )
-    dirname file-name-nondirectory empty? [
-        dirname
-    ] [
-        dirname file-name-nondirectory
-    ] if
-    buf name<< ;
-
 : create-directory-buffer ( dirname )   // dirname -> buffer/f
     dirname directory-contents :> s
 
@@ -112,8 +104,7 @@ method: directory-mode initialize-buffer // buffer mode -> void
         buf first-line>> 0 make-position buf dot<<
         buf first-line>> buf top-line<<
         t buf read-only<<
-        dirname buf filename<<
-        dirname buf directory-buffer-set-name
+        dirname buf [ filename<< ] [ directory<< ] [ name<< ] 2tri
 
         directory-mode:get-instance dup buf mode<<
         buf swap initialize-buffer
@@ -138,8 +129,7 @@ method: directory-mode initialize-buffer // buffer mode -> void
         buf first-line>> 0 make-position buf dot<<
         buf first-line>> buf top-line<<
         t buf read-only<<
-        dirname buf filename<<
-        dirname buf directory-buffer-set-name
+        dirname buf [ filename<< ] [ directory<< ] [ name<< ] 2tri
         renumber
         maybe-reframe
         t repaint!
@@ -196,8 +186,7 @@ public
                 buf first-line>> 0 make-position buf dot<<
                 buf first-line>> buf top-line<<
                 t buf read-only<<
-                dirname buf filename<<
-                dirname buf directory-buffer-set-name
+                dirname buf [ filename<< ] [ directory<< ] [ name<< ] 2tri
                 t repaint!
             ] when
         ] when
