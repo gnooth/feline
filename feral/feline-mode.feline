@@ -334,7 +334,7 @@ var last-segment-text
 
 : feline-mode-list-symbols
     make-buffer :> buf
-    "symbols " current-buffer filename>> + buf name<<
+    "symbols " current-buffer filename>> file-name-nondirectory + buf name<<
 
     first-line :> line!
 
