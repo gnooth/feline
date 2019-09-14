@@ -70,18 +70,18 @@ feral-config:winui? #if
         128 <sbuf> sb!
 
         b list-buffers-old-buffer eq?   '.' '\s' ? sb sbuf-push
-        b read-only>>                   'R' '\s' ? sb sbuf-push
+        b read-only>>                   'r' '\s' ? sb sbuf-push
         b buffer-modified?              '*' '\s' ? sb sbuf-push
         '\s' sb push
         b buffer-name sb sbuf-append-string
 
         b filename>> [
-            b directory>> [
+            directory? [
                 '\s' sb push
                 [ sb length buffer-directory-column < ] [ '\s' sb push ] while
-                sb sbuf-append-string
-            ] when*
-        ] when
+                b directory>> sb sbuf-append-string
+            ] unless
+        ] when*
 
         sb sbuf>string make-line/1 line!
         b :buffer line line-set-property
