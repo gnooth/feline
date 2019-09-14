@@ -1,17 +1,17 @@
--- Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline key history ;
 in: accept-string
@@ -38,10 +38,10 @@ var prompt-string
     clear-to-eol
     dot prompt-string length + at-x ;
 
-: bind-key                              -- key symbol ->
+: bind-key                              // key symbol ->
     swap bindings set-at ;
 
-: lookup-key                            -- key -> symbol/f
+: lookup-key                            // key -> symbol/f
     bindings at ;
 
 : do-enter
@@ -83,20 +83,20 @@ var prompt-string
     redisplay
 ;
 
-: do-normal-char                        -- char ->
+: do-normal-char                        // char ->
     dup write-char dot 1+ dot! sb push ;
 
 : initialize-bindings
     32 <hashtable> bindings!
     key:enter           ' do-enter                      bind-key
-    key:del             ' do-bs                         bind-key        -- Linux
-    key:backspace       ' do-bs                         bind-key        -- Windows
+    key:del             ' do-bs                         bind-key        // Linux
+    key:backspace       ' do-bs                         bind-key        // Windows
     key:escape          ' do-escape                     bind-key
     key:up              ' do-previous                   bind-key
     key:down            ' do-next                       bind-key
 ;
 
-: process-key                           -- tagged-char ->
+: process-key                           // tagged-char ->
     dup printable-char?
     [ do-normal-char ]
     [ lookup-key [ call-symbol ] when* ]
@@ -104,7 +104,7 @@ var prompt-string
 
 public
 
-: accept-string                         -- prompt -> string
+: accept-string                         // prompt -> string
     1 ?enough
     verify-string prompt-string!
     initialize-bindings
@@ -119,7 +119,7 @@ public
     dup update-history
     output-style ;
 
-: accept-string/2                       -- prompt default -> string
+: accept-string/2                       // prompt default -> string
     2 ?enough
     verify-string :> default
     verify-string prompt-string!
