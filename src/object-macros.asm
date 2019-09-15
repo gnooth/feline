@@ -130,6 +130,13 @@ OBJECT_ALLOCATED_BIT            equ 4
         movzx   ebx, bl
 %endmacro
 
+; mark byte (gc2)
+%define OBJECT_MARK_BYTE        byte [rbx + 4]
+
+%macro  _object_mark_byte 0
+        movzx   rbx, OBJECT_MARK_BYTE
+%endmacro
+
 %macro  _slot 1                         ; object -- x
         mov     rbx, [rbx + BYTES_PER_CELL * %1]
 %endmacro
