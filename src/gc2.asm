@@ -52,37 +52,37 @@ code initialize_work_list, 'initialize-work-list'
         next
 endcode
 
-; %macro _set_marked_bit 0                ; object -- object
-;         or      OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
-; %endmacro
-;
-; %macro _test_marked_bit 0               ; object -- object
-;         test    OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
-; %endmacro
-;
-; %macro  _unmark_object 0                ; object --
-;         and     OBJECT_FLAGS_BYTE, ~OBJECT_MARKED_BIT
-;         poprbx
-; %endmacro
+%macro _set_marked_bit 0                ; object -- object
+        or      OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
+%endmacro
+
+%macro _test_marked_bit 0               ; object -- object
+        test    OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
+%endmacro
+
+%macro  _unmark_object 0                ; object --
+        and     OBJECT_FLAGS_BYTE, ~OBJECT_MARKED_BIT
+        poprbx
+%endmacro
 
 %define MARK_WHITE 0b00
 %define MARK_GRAY  0b01
 %define MARK_BLACK 0b11
 
-%macro  _mark_bits                      ; ^object -> mark-bits
+%macro  _mark_bits 0                    ; ^object -> mark-bits
         _object_mark_byte
         and     rbx, 0xb11
 %endmacro
 
-%macro  _mark_white
+%macro  _mark_white 0
         and     OBJECT_FLAGS_BYTE, MARK_WHITE
 %endmacro
 
-%macro  _mark_gray
+%macro  _mark_gray 0
         or      OBJECT_FLAGS_BYTE, MARK_GRAY
 %endmacro
 
-%macro  _mark_black
+%macro  _mark_black 0
         or      OBJECT_FLAGS_BYTE, MARK_BLACK
 %endmacro
 
@@ -404,6 +404,12 @@ code mark_raw_object, 'mark-raw-object' ; raw-object --
         next
 endcode
 
+; ### gc2_add_raw_object
+code gc2_add_raw_object, 'gc2_add_raw_object' ; ^object -> void
+        _debug_print "gc2_add_raw_object called"
+        next
+endcode
+
 ; ### maybe-mark-handle
 code maybe_mark_handle, 'maybe-mark-handle', SYMBOL_INTERNAL ; x -> void
         cmp     bl, HANDLE_TAG
@@ -450,10 +456,34 @@ code maybe_mark_verified_handle, 'maybe_mark_verified_handle', SYMBOL_INTERNAL  
         next
 endcode
 
+; ### gc2_maybe_add_verified_handle
+code gc2_maybe_add_verified_handle, 'gc2_maybe_add_verified_handle' ; handle --
+        _dup
+        _ verified_handle?
+        cmp     rbx, f_value
+        poprbx
+        jz      .1                      ; -- handle
+        _handle_to_object_unsafe
+        test    rbx, rbx
+        jz      .1
+;         _ mark_raw_object
+        _ gc2_add_raw_object
+        _return
+.1:
+        _drop
+        next
+endcode
+
 ; ### maybe_mark_from_root
 code maybe_mark_from_root, 'maybe_mark_from_root', SYMBOL_INTERNAL      ; raw-address --
         _fetch
         _ maybe_mark_handle
+        next
+endcode
+
+; ### gc2_maybe_add_root
+code gc2_maybe_add_root, 'gc2_maybe_add_root'
+        _debug_print "gc2_maybe_add_root"
         next
 endcode
 
@@ -467,6 +497,22 @@ code mark_cells_in_range, 'mark_cells_in_range', SYMBOL_INTERNAL        ; low-ad
         add     rbx, qword [rbp]
         mov     rbx, [rbx]
         _ maybe_mark_verified_handle
+        _loop .1
+        _drop
+        next
+endcode
+
+; ### gc2_add_cells_in_range
+code gc2_add_cells_in_range, 'gc2_add_cells_in_range' ; low-address high-address -> void
+        sub     rbx, qword [rbp]        ; -- low-address number-of-bytes
+        shr     rbx, 3                  ; -- low-address number-of-cells
+        _register_do_times .1
+        _raw_loop_index
+        shl     rbx, 3
+        add     rbx, qword [rbp]
+        mov     rbx, [rbx]
+;         _ maybe_mark_verified_handle
+        _ gc2_maybe_add_verified_handle
         _loop .1
         _drop
         next
@@ -489,6 +535,23 @@ code mark_datastack, 'mark_datastack', SYMBOL_INTERNAL
         next
 endcode
 
+; ### gc2_thread_add_datastack
+code gc2_thread_add_datastack, 'gc2_thread_mark_datastack' ; thread --
+        _dup
+        _ thread_saved_rbp
+        _swap
+        _ thread_raw_sp0
+        _ gc2_add_cells_in_range
+        next
+endcode
+; ### gc2_add_datastack
+code gc2_add_datastack, 'gc2_add_datastack'
+        _debug_print "gc2_add_datastack called"
+        _ current_thread
+        _ gc2_thread_add_datastack
+        next
+endcode
+
 ; ### thread_mark_return_stack
 code thread_mark_return_stack, 'thread_mark_return_stack', SYMBOL_INTERNAL      ; thread --
         _dup
@@ -506,10 +569,16 @@ code mark_return_stack, 'mark_return_stack', SYMBOL_INTERNAL    ; --
         next
 endcode
 
+; ### gc2_add_return_stack
+code gc2_add_return_stack, 'gc2_add_return_stack'
+        _debug_print "gc2_add_return_stack called"
+        next
+endcode
+
 ; ### mark_thread_stacks
 code mark_thread_stacks, 'mark_thread_stacks', SYMBOL_INTERNAL ; thread -> void
 
-        _debug_print "mark_thread_stacks"
+        _debug_print "mark_thread_stacks called"
 
         _lit S_thread_mark_datastack
         _lit S_thread_mark_return_stack
@@ -562,6 +631,12 @@ code mark_static_symbols, 'mark-static-symbols'
         _fetch
         _repeat .1
         _drop
+        next
+endcode
+
+; ### gc2_add_static_symbols
+code gc2_add_static_symbols, 'gc2_add_static_symbols'
+        _debug_print "gc2_add_static_symbols called"
         next
 endcode
 
@@ -768,8 +843,8 @@ code initialize_gc_lock, 'initialize_gc_lock', SYMBOL_INTERNAL  ; --
         next
 endcode
 
-; ### gc2_collect
-code gc2_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
+; ### gc_collect
+code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
 
         _debug_print "entering gc_collect"
 
@@ -880,10 +955,132 @@ code gc2_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
         next
 endcode
 
-; ### gc2
-code gc2, 'gc2'
+; ### gc2_collect
+code gc2_collect, 'gc2_collect', SYMBOL_INTERNAL  ; --
 
-        _debug_print "entering gc2"
+        _debug_print "entering gc2_collect"
+
+        cmp     qword [S_gc_inhibit_symbol_value], f_value
+        je .1
+        mov     qword [S_gc_pending_symbol_value], t_value
+        _return
+.1:
+        cmp     qword [S_gc_verbose_symbol_value], f_value
+        je .2
+        _ ticks
+        _to gc_start_ticks
+        _rdtsc
+        _to gc_start_cycles
+.2:
+        mov     qword [in_gc?_], t_value
+
+        _thread_count
+        cmp     rbx, 1
+        poprbx
+        jne     .3
+
+        _ current_thread_save_registers
+
+        _debug_print "marking single thread"
+
+        ; data stack
+;         _ mark_datastack
+        _ gc2_add_datastack
+
+        ; return stack
+;         _ mark_return_stack
+        _ gc2_add_return_stack
+
+        jmp     .4
+
+.3:
+        _debug_print "gc2 multiple threads, exiting..."
+        xcall   os_bye
+
+        _ lock_all_threads
+
+        _ stop_the_world
+
+        _ current_thread_save_registers
+
+        _debug_print "marking multiple threads"
+
+        _ all_threads
+        _lit S_mark_thread_stacks
+        _ vector_each
+
+        _ unlock_all_threads
+
+.4:
+        ; static symbols
+;         _ mark_static_symbols
+        _ gc2_add_static_symbols
+
+        ; explicit roots
+        _ gc_roots
+;         _lit S_maybe_mark_from_root
+        _lit S_gc2_maybe_add_root
+        _ vector_each
+
+        _debug_print "returning from gc2_collect"
+        _return
+
+        ; sweep
+        _lit S_maybe_collect_handle
+        _ each_handle
+
+        _ start_the_world
+
+        inc     qword [gc_count_value]
+
+        mov     qword [in_gc?_], f_value
+
+        mov     qword [S_gc_pending_symbol_value], f_value
+
+        cmp     qword [S_gc_verbose_symbol_value], f_value
+        je .5
+
+        _rdtsc
+        _to gc_end_cycles
+        _ ticks
+        _to gc_end_ticks
+
+        _ ?nl
+        _write "gc "
+        _ recent_allocations
+        _ decimal_dot
+        _write " allocations since last gc"
+        _ nl
+
+        _ ?nl
+        _write "gc "
+        _ gc_end_ticks
+        _ gc_start_ticks
+        _minus
+        _tag_fixnum
+        _ decimal_dot
+        _write " ms "
+
+        _ gc_end_cycles
+        _ gc_start_cycles
+        _minus
+        _tag_fixnum
+        _ decimal_dot
+        _write " cycles"
+        _ nl
+
+.5:
+        _reset_recent_allocations
+
+        _debug_print "leaving gc2_collect"
+
+        next
+endcode
+
+; ### gc
+code gc, 'gc'
+
+        _debug_print "entering gc"
 
         _ gc_lock
         _ mutex_trylock
@@ -901,7 +1098,7 @@ code gc2, 'gc2'
         poprbx
         je      .wait
 
-        _ gc2_collect
+        _ gc_collect
 
         _ unlock_handles
 
@@ -912,7 +1109,14 @@ code gc2, 'gc2'
         _then .2
 
 .exit:
-        _debug_print "leaving gc2"
+        _debug_print "leaving gc"
 
+        next
+endcode
+
+code gc2, 'gc2'
+        _ gc2_collect
+        _debug_print "back from gc2_collect"
+        int3
         next
 endcode
