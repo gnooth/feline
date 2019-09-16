@@ -33,9 +33,15 @@ endcode
 
 asm_global work_list_
 
-; ### initialize-work-list
-code initialize_work_list, 'initialize-work-list'
-        poprbx
+%macro _work_list 0                     ; -> ^vector
+        pushrbx
+        mov     rbx, [work_list_]
+%endmacro
+
+; ### gc2-initialize-work-list
+code gc2_initialize_work_list, 'gc2-initialize-work-list'
+        _debug_print "gc2-initialize-work-list called"
+
         _lit 256
         _ new_vector_untagged                           ; -> handle
 
@@ -407,6 +413,7 @@ endcode
 ; ### gc2_add_raw_object
 code gc2_add_raw_object, 'gc2_add_raw_object' ; ^object -> void
         _debug_print "gc2_add_raw_object called"
+        _drop ; FIXME
         next
 endcode
 
@@ -457,12 +464,13 @@ code maybe_mark_verified_handle, 'maybe_mark_verified_handle', SYMBOL_INTERNAL  
 endcode
 
 ; ### gc2_maybe_add_verified_handle
-code gc2_maybe_add_verified_handle, 'gc2_maybe_add_verified_handle' ; handle --
+code gc2_maybe_add_verified_handle, 'gc2_maybe_add_verified_handle' ; handle -> empty
+        _debug_print "gc2_maybe_add_verified_handle called"
         _dup
         _ verified_handle?
         cmp     rbx, f_value
         poprbx
-        jz      .1                      ; -- handle
+        jz      .1                      ; -> handle
         _handle_to_object_unsafe
         test    rbx, rbx
         jz      .1
@@ -482,8 +490,9 @@ code maybe_mark_from_root, 'maybe_mark_from_root', SYMBOL_INTERNAL      ; raw-ad
 endcode
 
 ; ### gc2_maybe_add_root
-code gc2_maybe_add_root, 'gc2_maybe_add_root'
+code gc2_maybe_add_root, 'gc2_maybe_add_root' ; ^object -> void
         _debug_print "gc2_maybe_add_root"
+        _drop
         next
 endcode
 
@@ -636,7 +645,7 @@ endcode
 
 ; ### gc2_add_static_symbols
 code gc2_add_static_symbols, 'gc2_add_static_symbols'
-        _debug_print "gc2_add_static_symbols called"
+        _debug_print "gc2_add_static_symbols called "
         next
 endcode
 
@@ -1117,6 +1126,5 @@ endcode
 code gc2, 'gc2'
         _ gc2_collect
         _debug_print "back from gc2_collect"
-        int3
         next
 endcode
