@@ -669,6 +669,8 @@ section .data
         _ nl
 %endmacro
 
+%define DEBUG_PRINT
+
 %macro  _debug_print 1
 %ifdef DEBUG_PRINT
         _quote %1
