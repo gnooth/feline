@@ -882,6 +882,38 @@ code vector_reverse_in_place, 'vector-reverse!'         ; vector -- vector
         next
 endcode
 
+; ### unsafe_raw_code_address_vector_each
+code unsafe_raw_code_address_vector_each, 'unsafe_raw_code_address_vector_each'
+; vector raw-code-address ->
+
+;         ; protect callable from gc
+;         push    rbx
+;
+;         _ callable_raw_code_address     ; -- vector code-address
+
+        _swap
+        _ check_vector                  ; -- code-address vector
+
+        push    this_register
+        mov     this_register, rbx
+        push    r12
+        mov     r12, [rbp]              ; code address in r12
+        _2drop                          ; adjust stack
+        _this_vector_raw_length
+        _do_times .1
+        _raw_loop_index
+        _this_vector_nth_unsafe         ; -- element
+        call    r12
+        _loop .1
+        pop     r12
+        pop     this_register
+
+;         ; drop callable
+;         pop     rax
+
+        next
+endcode
+
 ; ### vector-each
 code vector_each, 'vector-each'         ; vector callable --
 
