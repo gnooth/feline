@@ -31,12 +31,22 @@ code gc_add_root, 'gc_add_root', SYMBOL_INTERNAL        ; raw-address --
         next
 endcode
 
-asm_global work_list_
+asm_global gc2_work_list_raw_vector_
 
-%macro _work_list 0                     ; -> ^vector
+%macro _gc2_work_list_raw_vector 0                 ; -> ^vector
         pushrbx
-        mov     rbx, [work_list_]
+        mov     rbx, [gc2_work_list_raw_vector_]
 %endmacro
+
+asm_global gc2_work_list_fake_handle_
+
+; ### gc2-work-list
+code gc2_work_list, 'gc2-work-list'     ; -> handle
+        pushrbx
+        mov     rbx, [gc2_work_list_fake_handle_]
+        _tag_handle
+        next
+endcode
 
 ; ### gc2-initialize-work-list
 code gc2_initialize_work_list, 'gc2-initialize-work-list'
@@ -49,12 +59,15 @@ code gc2_initialize_work_list, 'gc2-initialize-work-list'
         _handle_to_object_unsafe                        ; -> handle ^vector
 
         ; store address of raw vector in asm global
-        mov     [work_list_], rbx                       ; -> handle ^vector
+        mov     [gc2_work_list_raw_vector_], rbx        ; -> handle ^vector
         poprbx                                          ; -> handle
 
         ; and release its handle
         _untag_handle
         _ release_handle_unsafe                         ; -> empty
+
+        mov     rax, gc2_work_list_raw_vector_
+        mov     [gc2_work_list_fake_handle_], rax
         next
 endcode
 
@@ -410,6 +423,13 @@ code mark_raw_object, 'mark-raw-object' ; raw-object --
         next
 endcode
 
+; ### gc2_add_handle_to_work_list
+code gc2_add_handle_to_work_list, 'gc2_add_handle_to_work_list' ; handle -> void
+        _debug_print "gc2_add_handle_to_work_list called"
+        _drop ; FIXME
+        next
+endcode
+
 ; ### gc2_add_raw_object
 code gc2_add_raw_object, 'gc2_add_raw_object' ; ^object -> void
         _debug_print "gc2_add_raw_object called"
@@ -489,9 +509,21 @@ code maybe_mark_from_root, 'maybe_mark_from_root', SYMBOL_INTERNAL      ; raw-ad
         next
 endcode
 
-; ### gc2_maybe_add_root
-code gc2_maybe_add_root, 'gc2_maybe_add_root' ; ^object -> void
-        _debug_print "gc2_maybe_add_root"
+; ### gc2_maybe_add_handle_from_root
+code gc2_maybe_add_handle_from_root, 'gc2_maybe_add_handle_from_root' ; raw-address -> void
+        _debug_print "gc2_maybe_add_handle_from_root"
+        _fetch
+        cmp     bl, HANDLE_TAG
+        jne     .1
+;         _handle_to_object_unsafe
+;         test    rbx, rbx
+;         jz      .1
+;         _ mark_raw_object
+        _ gc2_work_list
+        _ vector_push
+        next
+.1:
+        _debug_print "not a handle"
         _drop
         next
 endcode
@@ -1028,8 +1060,10 @@ code gc2_collect, 'gc2_collect', SYMBOL_INTERNAL  ; --
         ; explicit roots
         _ gc_roots
 ;         _lit S_maybe_mark_from_root
-        _lit S_gc2_maybe_add_root
-        _ vector_each
+;         _lit S_gc2_maybe_add_root
+;         _ vector_each
+        _lit gc2_maybe_add_handle_from_root
+        _ unsafe_raw_code_address_vector_each
 
         _debug_print "returning from gc2_collect"
         _return
