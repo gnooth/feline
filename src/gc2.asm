@@ -86,7 +86,7 @@ endcode
 
 %define MARK_WHITE 0b00
 %define MARK_GRAY  0b01
-%define MARK_BLACK 0b11
+%define MARK_BLACK 0b10
 
 %macro  _mark_bits 0                    ; ^object -> mark-bits
         _object_mark_byte
@@ -94,15 +94,15 @@ endcode
 %endmacro
 
 %macro  _mark_white 0
-        and     OBJECT_FLAGS_BYTE, MARK_WHITE
+        mov     OBJECT_MARK_BYTE, MARK_WHITE
 %endmacro
 
 %macro  _mark_gray 0
-        or      OBJECT_FLAGS_BYTE, MARK_GRAY
+        mov     OBJECT_MARK_BYTE, MARK_GRAY
 %endmacro
 
 %macro  _mark_black 0
-        or      OBJECT_FLAGS_BYTE, MARK_BLACK
+        mov      OBJECT_MARK_BYTE, MARK_BLACK
 %endmacro
 
 ; ### mark-vector
@@ -180,6 +180,30 @@ code mark_symbol, 'mark-symbol'         ; symbol -> void
         _ maybe_mark_handle
         _symbol_file
         _ maybe_mark_handle
+        next
+endcode
+
+; ### gc2_scan_symbol
+code gc2_scan_symbol, 'gc2_scan_symbol' ; symbol -> void
+        _debug_print "gc2_scan_symbol"
+        _ verify_static_symbol
+        _dup
+        _symbol_name
+        _ gc2_maybe_add_handle
+        _dup
+        _symbol_vocab_name
+        _ gc2_maybe_add_handle
+        _dup
+        _symbol_def
+        _ gc2_maybe_add_handle
+        _dup
+        _symbol_props
+        _ gc2_maybe_add_handle
+        _dup
+        _symbol_value
+        _ gc2_maybe_add_handle
+        _symbol_file
+        _ gc2_maybe_add_handle
         next
 endcode
 
@@ -423,6 +447,52 @@ code mark_raw_object, 'mark-raw-object' ; raw-object --
         next
 endcode
 
+; ### mark-byte
+code mark_byte, 'mark-byte'  ; handle -> fixnum/nil
+        cmp     bl, HANDLE_TAG
+        jne     .1
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]              ; ^object in rbx
+        test    rbx, rbx
+        jz      .1
+        movzx   rbx, byte [rbx + OBJECT_MARK_BYTE_OFFSET]
+        _tag_fixnum
+        next
+.1:
+        mov     rbx, f_value
+        next
+endcode
+
+; ### gc2_maybe_add_handle
+code gc2_maybe_add_handle, 'gc2_maybe_add_handle' ; x -> void
+        cmp     bl, HANDLE_TAG
+        jne     .1
+
+;         _handle_to_object_unsafe
+;         test    rbx, rbx
+;         jz      .1
+;         _ mark_raw_object
+        mov     rax, rbx                ; use rax as work register
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]              ; ^object in rax
+        test    rax, rax                ; check for empty handle
+        jz      .1
+        cmp     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_WHITE
+        jne     .1
+        mov     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
+
+        _dup
+        _ mark_byte
+        _ hexdot
+
+        _ gc2_work_list
+        _ vector_push
+        next
+.1:
+        _drop
+        next
+endcode
+
 ; ### gc2_add_handle_to_work_list
 code gc2_add_handle_to_work_list, 'gc2_add_handle_to_work_list' ; handle -> void
         _debug_print "gc2_add_handle_to_work_list called"
@@ -585,6 +655,7 @@ code gc2_thread_add_datastack, 'gc2_thread_mark_datastack' ; thread --
         _ gc2_add_cells_in_range
         next
 endcode
+
 ; ### gc2_add_datastack
 code gc2_add_datastack, 'gc2_add_datastack'
         _debug_print "gc2_add_datastack called"
@@ -675,9 +746,19 @@ code mark_static_symbols, 'mark-static-symbols'
         next
 endcode
 
-; ### gc2_add_static_symbols
-code gc2_add_static_symbols, 'gc2_add_static_symbols'
+; ### gc2_scan_static_symbols
+code gc2_scan_static_symbols, 'gc2_scan_static_symbols'
         _debug_print "gc2_add_static_symbols called "
+        _ last_static_symbol
+        _begin .1
+        _dup
+        _while .1                       ; -- symbol
+        _dup
+        _ gc2_scan_symbol
+        _cellminus
+        _fetch
+        _repeat .1
+        _drop
         next
 endcode
 
@@ -1026,11 +1107,11 @@ code gc2_collect, 'gc2_collect', SYMBOL_INTERNAL  ; --
 
         ; data stack
 ;         _ mark_datastack
-        _ gc2_add_datastack
+;         _ gc2_add_datastack
 
         ; return stack
 ;         _ mark_return_stack
-        _ gc2_add_return_stack
+;         _ gc2_add_return_stack
 
         jmp     .4
 
@@ -1055,7 +1136,7 @@ code gc2_collect, 'gc2_collect', SYMBOL_INTERNAL  ; --
 .4:
         ; static symbols
 ;         _ mark_static_symbols
-        _ gc2_add_static_symbols
+        _ gc2_scan_static_symbols
 
         ; explicit roots
         _ gc_roots
