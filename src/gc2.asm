@@ -105,6 +105,246 @@ endcode
         mov      OBJECT_MARK_BYTE, MARK_BLACK
 %endmacro
 
+; scanners
+
+; ### gc2-scan-vector
+code gc2_scan_vector, 'gc2-scan-vector' ; vector --
+        push    this_register
+        mov     this_register, rbx
+        _vector_raw_length
+        _register_do_times .1
+        _raw_loop_index
+        _this_vector_nth_unsafe         ; -- element
+        _ maybe_mark_handle
+        _loop .1                        ; --
+        pop     this_register
+        next
+endcode
+
+; ### gc2-scan-array
+code gc2_scan_array, 'gc2-scan-array'   ; array --
+        push    this_register
+        mov     this_register, rbx
+        _array_raw_length
+        _zero
+        _?do .1
+        _i
+        _this_array_nth_unsafe          ; -- element
+        _ maybe_mark_handle
+        _loop .1                        ; --
+        pop     this_register
+        next
+endcode
+
+; ### gc2-scan-hashtable
+code gc2_scan_hashtable, 'gc2-scan-hashtable'   ; hashtable --
+        push    this_register
+        mov     this_register, rbx      ; -- hashtable
+        _hashtable_raw_capacity         ; -- capacity
+        _register_do_times .1
+        _raw_loop_index
+        _dup
+        _this_hashtable_nth_key
+        _ maybe_mark_handle
+        _this_hashtable_nth_value
+        _ maybe_mark_handle
+        _loop .1                        ; --
+        pop     this_register
+        next
+endcode
+
+; ### gc2-scan-vocab
+code gc2_scan_vocab, 'gc2-scan-vocab'           ; vocab --
+        _dup
+        _vocab_name
+        _ maybe_mark_handle
+        _vocab_hashtable
+        _ maybe_mark_handle
+        next
+endcode
+
+; ; ### gc2-scan-symbol
+; code gc2_scan_symbol, 'gc2-scan-symbol'         ; symbol -> void
+;         _dup
+;         _symbol_name
+;         _ maybe_mark_handle
+;         _dup
+;         _symbol_vocab_name
+;         _ maybe_mark_handle
+;         _dup
+;         _symbol_def
+;         _ maybe_mark_handle
+;         _dup
+;         _symbol_props
+;         _ maybe_mark_handle
+;         _dup
+;         _symbol_value
+;         _ maybe_mark_handle
+;         _symbol_file
+;         _ maybe_mark_handle
+;         next
+; endcode
+
+; ### gc2_scan_symbol
+code gc2_scan_symbol, 'gc2_scan_symbol' ; symbol -> void
+        _debug_print "gc2_scan_symbol"
+        _ verify_static_symbol
+        _dup
+        _symbol_name
+        _ gc2_maybe_push_handle
+        _dup
+        _symbol_vocab_name
+        _ gc2_maybe_push_handle
+        _dup
+        _symbol_def
+        _ gc2_maybe_push_handle
+        _dup
+        _symbol_props
+        _ gc2_maybe_push_handle
+        _dup
+        _symbol_value
+        _ gc2_maybe_push_handle
+        _symbol_file
+        _ gc2_maybe_push_handle
+        next
+endcode
+
+; ### gc2-scan-quotation
+code gc2_scan_quotation, 'gc2-scan-quotation'   ; quotation --
+        _quotation_array
+        _ maybe_mark_handle
+        ; REVIEW code
+        next
+endcode
+
+; ### gc2-scan-slice
+code gc2_scan_slice, 'gc2-scan-slice'           ; slice --
+        _slice_seq
+        _ maybe_mark_handle
+        ; REVIEW code
+        next
+endcode
+
+; ### gc2-scan-tuple
+code gc2_scan_tuple, 'gc2-scan-tuple'           ; tuple --
+        push    this_register
+        mov     this_register, rbx      ; -- tuple
+
+        _ tuple_size_unchecked          ; -- size
+        _check_fixnum                   ; untagged size (number of defined slots) in rbx
+
+        ; slot 0 is object header
+        add     rbx, 1                  ; loop limit is size + 1
+        _lit 1                          ; loop start is 1
+
+        ; -- limit start
+        _?do .1
+        _i
+        _this_nth_slot
+        _ maybe_mark_handle
+        _loop .1
+
+        pop     this_register
+        next
+endcode
+
+; ### gc2-scan-lexer
+code gc2_scan_lexer, 'gc2-scan-lexer'           ; lexer --
+        _dup
+        _lexer_string
+        _ maybe_mark_handle
+        _lexer_file
+        _ maybe_mark_handle
+        next
+endcode
+
+; ### gc2-scan-iterator
+code gc2_scan_iterator, 'gc2-scan-iterator'     ; iterator --
+        _iterator_sequence
+        _ maybe_mark_handle
+        next
+endcode
+
+; ### gc2-scan-string-iterator
+code gc2_scan_string_iterator, 'gc2-scan-string-iterator'       ; string-iterator -> void
+        _string_iterator_string
+        _ maybe_mark_handle
+        next
+endcode
+
+; ### gc2-scan-slot
+code gc2_scan_slot, 'gc2-scan-slot'             ; slot -> void
+        _slot_name
+        _ maybe_mark_handle
+        next
+endcode
+
+; ### gc2_scan_string_output_stream
+code gc2_scan_string_output_stream, 'mark_string_output_stream'     ; raw-stream -> void
+        _string_output_stream_sbuf
+        _ maybe_mark_handle
+        next
+endcode
+
+; ### gc2-scan-type
+code gc2_scan_type, 'gc2-scan-type'             ; type -> void
+        _dup
+        _type_symbol
+        _ maybe_mark_handle
+        _type_layout
+        _ maybe_mark_handle
+        next
+endcode
+
+; ### gc2-scan-generic-function             ; generic-function -> void
+code gc2_scan_generic_function, 'gc2-scan-generic-function'
+        _dup
+        _gf_name
+        _ maybe_mark_handle
+        _dup
+        _gf_methods
+        _ maybe_mark_handle
+        _gf_dispatch
+        _ maybe_mark_handle
+        next
+endcode
+
+; ### gc2-scan-method
+code gc2_scan_method, 'gc2-scan-method'         ; method -> void
+        _dup
+        _method_generic_function
+        _ maybe_mark_handle
+        _method_callable
+        _ maybe_mark_handle
+        next
+endcode
+
+; ### gc2_scan_raw_object
+code gc2_scan_raw_object, 'gc2_scan_raw_object' ; ^object -> void
+        _debug_print "gc2_scan_raw_object needs code"
+
+        ; FIXME
+        _drop
+
+        next
+endcode
+
+; ### gc2_scan_handle
+code gc2_scan_handle, 'gc2_scan_handle' ; handle -> void
+        cmp     bl, HANDLE_TAG
+        jne     .1
+        _handle_to_object_unsafe        ; -> ^object
+        test    rbx, rbx
+        jz      .1
+        _ gc2_scan_raw_object
+        next
+.1:
+        _drop
+        next
+endcode
+
+; begin old code from gc.asm
+
 ; ### mark-vector
 code mark_vector, 'mark-vector'         ; vector --
         push    this_register
@@ -180,30 +420,6 @@ code mark_symbol, 'mark-symbol'         ; symbol -> void
         _ maybe_mark_handle
         _symbol_file
         _ maybe_mark_handle
-        next
-endcode
-
-; ### gc2_scan_symbol
-code gc2_scan_symbol, 'gc2_scan_symbol' ; symbol -> void
-        _debug_print "gc2_scan_symbol"
-        _ verify_static_symbol
-        _dup
-        _symbol_name
-        _ gc2_maybe_add_handle
-        _dup
-        _symbol_vocab_name
-        _ gc2_maybe_add_handle
-        _dup
-        _symbol_def
-        _ gc2_maybe_add_handle
-        _dup
-        _symbol_props
-        _ gc2_maybe_add_handle
-        _dup
-        _symbol_value
-        _ gc2_maybe_add_handle
-        _symbol_file
-        _ gc2_maybe_add_handle
         next
 endcode
 
@@ -463,8 +679,8 @@ code mark_byte, 'mark-byte'  ; handle -> fixnum/nil
         next
 endcode
 
-; ### gc2_maybe_add_handle
-code gc2_maybe_add_handle, 'gc2_maybe_add_handle' ; x -> void
+; ### gc2_maybe_push_handle
+code gc2_maybe_push_handle, 'gc2_maybe_push_handle' ; x -> void
         cmp     bl, HANDLE_TAG
         jne     .1
 
@@ -521,20 +737,20 @@ code maybe_mark_handle, 'maybe-mark-handle', SYMBOL_INTERNAL ; x -> void
         next
 endcode
 
-; ### add-object-address-to-gray-list
-code maybe_add_object_address_to_gray_list, 'maybe-add-object-address-to-gray-list'
-        cmp     bl, HANDLE_TAG
-        jne     .1
-        _handle_to_object_unsafe
-        test    rbx, rbx
-        jz      .1
-;         _ mark_raw_object
-        _mark_gray
-        next
-.1:
-        _drop
-        next
-endcode
+; ; ### add-object-address-to-gray-list
+; code maybe_add_object_address_to_gray_list, 'maybe-add-object-address-to-gray-list'
+;         cmp     bl, HANDLE_TAG
+;         jne     .1
+;         _handle_to_object_unsafe
+;         test    rbx, rbx
+;         jz      .1
+; ;         _ mark_raw_object
+;         _mark_gray
+;         next
+; .1:
+;         _drop
+;         next
+; endcode
 
 ; ### maybe_mark_verified_handle
 code maybe_mark_verified_handle, 'maybe_mark_verified_handle', SYMBOL_INTERNAL  ; handle --
@@ -579,9 +795,9 @@ code maybe_mark_from_root, 'maybe_mark_from_root', SYMBOL_INTERNAL      ; raw-ad
         next
 endcode
 
-; ### gc2_maybe_add_handle_from_root
-code gc2_maybe_add_handle_from_root, 'gc2_maybe_add_handle_from_root' ; raw-address -> void
-        _debug_print "gc2_maybe_add_handle_from_root"
+; ### gc2_visit_root
+code gc2_visit_root, 'gc2_visit_root' ; raw-address -> void
+        _debug_print "gc2_visit_root"
         _fetch
 ;         cmp     bl, HANDLE_TAG
 ;         jne     .1
@@ -596,7 +812,7 @@ code gc2_maybe_add_handle_from_root, 'gc2_maybe_add_handle_from_root' ; raw-addr
 ;         _debug_print "not a handle"
 ;         _drop
 
-        _ gc2_maybe_add_handle
+        _ gc2_maybe_push_handle
 
         next
 endcode
@@ -1080,8 +1296,8 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
         next
 endcode
 
-; ### gc2_drain_work_list
-code gc2_drain_work_list, 'gc2_drain_work_list'
+; ### gc2_process_work_list
+code gc2_process_work_list, 'gc2_process_work_list'
 
 .top:
         _ gc2_work_list
@@ -1112,9 +1328,7 @@ code gc2_drain_work_list, 'gc2_drain_work_list'
         _ ?nl
 
         ; TODO
-        ; gc2_scan_handle               ; uses dispatch table
-        _drop
-
+        _ gc2_scan_handle               ; uses dispatch table
 
         jmp     .top
 
@@ -1189,11 +1403,11 @@ code gc2_collect, 'gc2_collect'
 ;         _lit S_maybe_mark_from_root
 ;         _lit S_gc2_maybe_add_root
 ;         _ vector_each
-        _lit gc2_maybe_add_handle_from_root
+        _lit gc2_visit_root
         _ unsafe_raw_code_address_vector_each
 
         ; work list is ready to go
-        _ gc2_drain_work_list
+        _ gc2_process_work_list
 
         _debug_print "returning from gc2_collect"
         _return
