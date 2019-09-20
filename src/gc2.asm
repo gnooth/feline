@@ -583,18 +583,21 @@ endcode
 code gc2_maybe_add_handle_from_root, 'gc2_maybe_add_handle_from_root' ; raw-address -> void
         _debug_print "gc2_maybe_add_handle_from_root"
         _fetch
-        cmp     bl, HANDLE_TAG
-        jne     .1
-;         _handle_to_object_unsafe
-;         test    rbx, rbx
-;         jz      .1
-;         _ mark_raw_object
-        _ gc2_work_list
-        _ vector_push
-        next
-.1:
-        _debug_print "not a handle"
-        _drop
+;         cmp     bl, HANDLE_TAG
+;         jne     .1
+; ;         _handle_to_object_unsafe
+; ;         test    rbx, rbx
+; ;         jz      .1
+; ;         _ mark_raw_object
+;         _ gc2_work_list
+;         _ vector_push
+;         next
+; .1:
+;         _debug_print "not a handle"
+;         _drop
+
+        _ gc2_maybe_add_handle
+
         next
 endcode
 
@@ -1077,8 +1080,51 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
         next
 endcode
 
+; ### gc2_drain_work_list
+code gc2_drain_work_list, 'gc2_drain_work_list'
+
+.top:
+        _ gc2_work_list
+        _ vector_?pop                   ; -> handle/nil
+        cmp     rbx, f_value
+        je      .1
+
+        ; -> handle
+        cmp     bl, HANDLE_TAG
+        jne     .1
+
+;         _handle_to_object_unsafe
+;         test    rbx, rbx
+;         jz      .1
+;         _ mark_raw_object
+        mov     rax, rbx                ; use rax as work register
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]              ; ^object in rax
+        test    rax, rax                ; check for empty handle
+        jz      .1
+        cmp     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
+        jne     .1
+        mov     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
+
+        _dup
+        _ mark_byte
+        _ hexdot
+        _ ?nl
+
+        ; TODO
+        ; gc2_scan_handle               ; uses dispatch table
+        _drop
+
+
+        jmp     .top
+
+.1:
+        _drop
+        next
+endcode
+
 ; ### gc2_collect
-code gc2_collect, 'gc2_collect', SYMBOL_INTERNAL  ; --
+code gc2_collect, 'gc2_collect'
 
         _debug_print "entering gc2_collect"
 
@@ -1145,6 +1191,9 @@ code gc2_collect, 'gc2_collect', SYMBOL_INTERNAL  ; --
 ;         _ vector_each
         _lit gc2_maybe_add_handle_from_root
         _ unsafe_raw_code_address_vector_each
+
+        ; work list is ready to go
+        _ gc2_drain_work_list
 
         _debug_print "returning from gc2_collect"
         _return
