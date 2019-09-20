@@ -40,17 +40,17 @@ asm_global gc2_work_list_raw_vector_
 
 asm_global gc2_work_list_fake_handle_
 
-; ### gc2-work-list
-code gc2_work_list, 'gc2-work-list'     ; -> handle
+; ### gc2_work_list
+code gc2_work_list, 'gc2_work_list'     ; -> handle
         pushrbx
         mov     rbx, [gc2_work_list_fake_handle_]
         _tag_handle
         next
 endcode
 
-; ### gc2-initialize-work-list
-code gc2_initialize_work_list, 'gc2-initialize-work-list'
-        _debug_print "gc2-initialize-work-list called"
+; ### gc2_initialize_work_list
+code gc2_initialize_work_list, 'gc2_initialize_work_list'
+        _debug_print "gc2_initialize_work_list called"
 
         _lit 256
         _ new_vector_untagged                           ; -> handle
@@ -107,8 +107,8 @@ endcode
 
 ; scanners
 
-; ### gc2-scan-vector
-code gc2_scan_vector, 'gc2-scan-vector' ; vector --
+; ### gc2_scan_vector
+code gc2_scan_vector, 'gc2_scan_vector' ; vector --
         push    this_register
         mov     this_register, rbx
         _vector_raw_length
@@ -121,8 +121,8 @@ code gc2_scan_vector, 'gc2-scan-vector' ; vector --
         next
 endcode
 
-; ### gc2-scan-array
-code gc2_scan_array, 'gc2-scan-array'   ; array --
+; ### gc2_scan_array
+code gc2_scan_array, 'gc2_scan_array'   ; array --
         push    this_register
         mov     this_register, rbx
         _array_raw_length
@@ -136,8 +136,8 @@ code gc2_scan_array, 'gc2-scan-array'   ; array --
         next
 endcode
 
-; ### gc2-scan-hashtable
-code gc2_scan_hashtable, 'gc2-scan-hashtable'   ; hashtable --
+; ### gc2_scan_hashtable
+code gc2_scan_hashtable, 'gc2_scan_hashtable'   ; hashtable --
         push    this_register
         mov     this_register, rbx      ; -- hashtable
         _hashtable_raw_capacity         ; -- capacity
@@ -153,8 +153,8 @@ code gc2_scan_hashtable, 'gc2-scan-hashtable'   ; hashtable --
         next
 endcode
 
-; ### gc2-scan-vocab
-code gc2_scan_vocab, 'gc2-scan-vocab'           ; vocab --
+; ### gc2_scan_vocab
+code gc2_scan_vocab, 'gc2_scan_vocab'   ; vocab -> void
         _dup
         _vocab_name
         _ maybe_mark_handle
@@ -162,28 +162,6 @@ code gc2_scan_vocab, 'gc2-scan-vocab'           ; vocab --
         _ maybe_mark_handle
         next
 endcode
-
-; ; ### gc2-scan-symbol
-; code gc2_scan_symbol, 'gc2-scan-symbol'         ; symbol -> void
-;         _dup
-;         _symbol_name
-;         _ maybe_mark_handle
-;         _dup
-;         _symbol_vocab_name
-;         _ maybe_mark_handle
-;         _dup
-;         _symbol_def
-;         _ maybe_mark_handle
-;         _dup
-;         _symbol_props
-;         _ maybe_mark_handle
-;         _dup
-;         _symbol_value
-;         _ maybe_mark_handle
-;         _symbol_file
-;         _ maybe_mark_handle
-;         next
-; endcode
 
 ; ### gc2_scan_symbol
 code gc2_scan_symbol, 'gc2_scan_symbol' ; symbol -> void
@@ -209,24 +187,24 @@ code gc2_scan_symbol, 'gc2_scan_symbol' ; symbol -> void
         next
 endcode
 
-; ### gc2-scan-quotation
-code gc2_scan_quotation, 'gc2-scan-quotation'   ; quotation --
+; ### gc2_scan_quotation
+code gc2_scan_quotation, 'gc2_scan_quotation'   ; quotation --
         _quotation_array
         _ maybe_mark_handle
         ; REVIEW code
         next
 endcode
 
-; ### gc2-scan-slice
-code gc2_scan_slice, 'gc2-scan-slice'           ; slice --
+; ### gc2_scan_slice
+code gc2_scan_slice, 'gc2_scan_slice'           ; slice --
         _slice_seq
         _ maybe_mark_handle
         ; REVIEW code
         next
 endcode
 
-; ### gc2-scan-tuple
-code gc2_scan_tuple, 'gc2-scan-tuple'           ; tuple --
+; ### gc2_scan_tuple
+code gc2_scan_tuple, 'gc2_scan_tuple'           ; tuple --
         push    this_register
         mov     this_register, rbx      ; -- tuple
 
@@ -248,8 +226,8 @@ code gc2_scan_tuple, 'gc2-scan-tuple'           ; tuple --
         next
 endcode
 
-; ### gc2-scan-lexer
-code gc2_scan_lexer, 'gc2-scan-lexer'           ; lexer --
+; ### gc2_scan_lexer
+code gc2_scan_lexer, 'gc2_scan_lexer'   ; lexer -> void
         _dup
         _lexer_string
         _ maybe_mark_handle
@@ -258,36 +236,61 @@ code gc2_scan_lexer, 'gc2-scan-lexer'           ; lexer --
         next
 endcode
 
-; ### gc2-scan-iterator
-code gc2_scan_iterator, 'gc2-scan-iterator'     ; iterator --
+; ### gc2_scan_iterator
+code gc2_scan_iterator, 'gc2_scan_iterator' ; iterator -> void
         _iterator_sequence
         _ maybe_mark_handle
         next
 endcode
 
-; ### gc2-scan-string-iterator
-code gc2_scan_string_iterator, 'gc2-scan-string-iterator'       ; string-iterator -> void
+; ### gc2_scan_thread
+code gc2_scan_thread, 'gc2_scan_thread' ; ^thread -> void
+
+        _dup
+        _slot THREAD_QUOTATION_SLOT#
+        _ maybe_mark_handle
+
+        _dup
+        _slot THREAD_THREAD_LOCALS_SLOT#
+        _ maybe_mark_handle
+
+        _dup
+        _slot THREAD_RESULT_SLOT#
+        _ maybe_mark_handle
+
+        _dup
+        _slot THREAD_DEBUG_NAME_SLOT#
+        _ maybe_mark_handle
+
+        _slot THREAD_CATCHSTACK_SLOT#
+        _ maybe_mark_handle
+
+        next
+endcode
+
+; ### gc2_scan_string_iterator
+code gc2_scan_string_iterator, 'gc2_scan_string_iterator'       ; string-iterator -> void
         _string_iterator_string
         _ maybe_mark_handle
         next
 endcode
 
-; ### gc2-scan-slot
-code gc2_scan_slot, 'gc2-scan-slot'             ; slot -> void
+; ### gc2_scan_slot
+code gc2_scan_slot, 'gc2_scan_slot' ; slot -> void
         _slot_name
         _ maybe_mark_handle
         next
 endcode
 
 ; ### gc2_scan_string_output_stream
-code gc2_scan_string_output_stream, 'mark_string_output_stream'     ; raw-stream -> void
+code gc2_scan_string_output_stream, 'scan_string_output_stream'     ; raw-stream -> void
         _string_output_stream_sbuf
         _ maybe_mark_handle
         next
 endcode
 
-; ### gc2-scan-type
-code gc2_scan_type, 'gc2-scan-type'             ; type -> void
+; ### gc2_scan_type
+code gc2_scan_type, 'gc2_scan_type'     ; type -> void
         _dup
         _type_symbol
         _ maybe_mark_handle
@@ -296,8 +299,8 @@ code gc2_scan_type, 'gc2-scan-type'             ; type -> void
         next
 endcode
 
-; ### gc2-scan-generic-function             ; generic-function -> void
-code gc2_scan_generic_function, 'gc2-scan-generic-function'
+; ### gc2_scan_generic_function
+code gc2_scan_generic_function, 'gc2_scan_generic_function' ; generic-function -> void
         _dup
         _gf_name
         _ maybe_mark_handle
@@ -309,8 +312,8 @@ code gc2_scan_generic_function, 'gc2-scan-generic-function'
         next
 endcode
 
-; ### gc2-scan-method
-code gc2_scan_method, 'gc2-scan-method'         ; method -> void
+; ### gc2_scan_method
+code gc2_scan_method, 'gc2_scan_method' ; method -> void
         _dup
         _method_generic_function
         _ maybe_mark_handle
@@ -340,6 +343,97 @@ code gc2_scan_handle, 'gc2_scan_handle' ; handle -> void
         next
 .1:
         _drop
+        next
+endcode
+
+asm_global gc2_dispatch_table_
+
+; ### initialize_gc2_dispatch_table
+code initialize_gc2_dispatch_table, 'initialize_gc2_dispatch_table'
+
+        ; REVIEW
+        _tagged_fixnum 64
+        _lit 0
+        _ make_array_2
+
+        mov     [gc2_dispatch_table_], rbx
+        _lit gc_dispatch_table_
+        _ gc_add_root
+
+        _handle_to_object_unsafe
+
+        push    this_register
+        popd    this_register
+
+        _lit gc2_scan_vector
+        _lit TYPECODE_VECTOR
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_array
+        _lit TYPECODE_ARRAY
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_hashtable
+        _lit TYPECODE_HASHTABLE
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_vocab
+        _lit TYPECODE_VOCAB
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_symbol
+        _lit TYPECODE_SYMBOL
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_quotation
+        _lit TYPECODE_QUOTATION
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_slice
+        _lit TYPECODE_SLICE
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_tuple
+        _lit TYPECODE_TUPLE
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_lexer
+        _lit TYPECODE_LEXER
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_iterator
+        _lit TYPECODE_ITERATOR
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_thread
+        _lit TYPECODE_THREAD
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_string_iterator
+        _lit TYPECODE_STRING_ITERATOR
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_slot
+        _lit TYPECODE_SLOT
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_type
+        _lit TYPECODE_TYPE
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_string_output_stream
+        _lit TYPECODE_STRING_OUTPUT_STREAM
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_generic_function
+        _lit TYPECODE_GENERIC_FUNCTION
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_method
+        _lit TYPECODE_METHOD
+        _this_array_set_nth_unsafe
+
+        pop     this_register
         next
 endcode
 
