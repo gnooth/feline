@@ -217,6 +217,8 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
 
         _ initialize_gc_dispatch_table
 
+        _ initialize_gc2_dispatch_table
+
         _ initialize_dynamic_scope
 
         _ initialize_vocabs
