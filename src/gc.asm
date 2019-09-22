@@ -772,7 +772,7 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
         _ vector_each
 
         ; sweep
-        _lit S_maybe_collect_handle
+        _lit maybe_collect_handle
         _ each_handle
 
         _ start_the_world
