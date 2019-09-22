@@ -149,20 +149,22 @@ endcode
 
 ; ### gc2_scan_hashtable
 code gc2_scan_hashtable, 'gc2_scan_hashtable'   ; hashtable --
-        _debug_print "gc2_scan_hashtable needs code"
-        _drop
-;         push    this_register
-;         mov     this_register, rbx      ; -- hashtable
-;         _hashtable_raw_capacity         ; -- capacity
-;         _register_do_times .1
-;         _raw_loop_index
-;         _dup
-;         _this_hashtable_nth_key
+        _debug_print "gc2_scan_hashtable"
+;         _drop
+        push    this_register
+        mov     this_register, rbx      ; -- hashtable
+        _hashtable_raw_capacity         ; -- capacity
+        _register_do_times .1
+        _raw_loop_index
+        _dup
+        _this_hashtable_nth_key
 ;         _ maybe_mark_handle
-;         _this_hashtable_nth_value
+        _ gc2_maybe_push_handle
+        _this_hashtable_nth_value
 ;         _ maybe_mark_handle
-;         _loop .1                        ; --
-;         pop     this_register
+        _ gc2_maybe_push_handle
+        _loop .1                        ; --
+        pop     this_register
         next
 endcode
 
@@ -339,16 +341,16 @@ endcode
 
 ; ### gc2_scan_generic_function
 code gc2_scan_generic_function, 'gc2_scan_generic_function' ; generic-function -> void
-        _debug_print "gc2_scan_generic_function needs code"
-        _drop
-;         _dup
-;         _gf_name
-;         _ maybe_mark_handle
-;         _dup
-;         _gf_methods
-;         _ maybe_mark_handle
-;         _gf_dispatch
-;         _ maybe_mark_handle
+        _debug_print "gc2_scan_generic_function"
+;         _drop
+        _dup
+        _gf_name
+        _ gc2_maybe_push_handle
+        _dup
+        _gf_methods
+        _ gc2_maybe_push_handle
+        _gf_dispatch
+        _ gc2_maybe_push_handle
         next
 endcode
 
@@ -836,8 +838,8 @@ code mark_raw_object, 'mark-raw-object' ; raw-object --
         next
 endcode
 
-; ### mark-byte
-code mark_byte, 'mark-byte'  ; handle -> fixnum/nil
+; ### mark_byte
+code mark_byte, 'mark_byte'  ; handle -> fixnum/nil
         cmp     bl, HANDLE_TAG
         jne     .1
         shr     rbx, HANDLE_TAG_BITS
@@ -879,7 +881,12 @@ code gc2_maybe_push_handle, 'gc2_maybe_push_handle' ; x -> void
         _ vector_push
         next
 .1:
-        _drop
+;         _drop
+        mov     rbx, rax
+        _write "skipping "
+        _ mark_byte
+        _ dot_object
+
         next
 endcode
 
@@ -1116,6 +1123,42 @@ code maybe_collect_handle, 'maybe_collect_handle', SYMBOL_INTERNAL
         ; object is not marked
         _ destroy_heap_object           ; -- untagged-handle
         _ release_handle_unsafe
+        _return
+
+.1:
+        ; null object address, nothing to do
+        _2drop
+        next
+endcode
+
+; ### gc2_maybe_collect_handle
+code gc2_maybe_collect_handle, 'gc2_maybe_collect_handle' ; untagged-handle --
+
+        _dup
+        mov     rbx, [rbx]              ; -- untagged-handle raw-object/0
+
+        ; check for null object address
+        test    rbx, rbx
+        jz      .1
+
+        ; is object unmarked?
+;         _test_marked_bit
+;         jz .2
+        cmp     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_WHITE
+        je      .2
+
+        ; object is not white
+        _nip                            ; -- object
+;         _unmark_object
+        mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_WHITE
+        _drop
+        _return
+
+.2:                                     ; -- untagged-handle object
+        ; object is white
+;         _ destroy_heap_object           ; -- untagged-handle
+;         _ release_handle_unsafe
+        _2drop ; FIXME
         _return
 
 .1:
@@ -1594,12 +1637,16 @@ code gc2_collect, 'gc2_collect'
         ; work list is ready to go
         _ gc2_process_work_list
 
-        _debug_print "returning from gc2_collect"
-        _return
+;         _debug_print "returning from gc2_collect"
+;         _return
 
         ; sweep
-        _lit S_maybe_collect_handle
+        _print "collecting handles"
+        _lit S_gc2_maybe_collect_handle
         _ each_handle
+
+        _debug_print "returning from gc2_collect"
+        _return
 
         _ start_the_world
 
