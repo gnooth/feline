@@ -1469,7 +1469,7 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
         _ vector_each
 
         ; sweep
-        _lit S_maybe_collect_handle
+        _lit maybe_collect_handle
         _ each_handle
 
         _ start_the_world
@@ -1642,7 +1642,7 @@ code gc2_collect, 'gc2_collect'
 
         ; sweep
         _print "collecting handles"
-        _lit S_gc2_maybe_collect_handle
+        _lit gc2_maybe_collect_handle
         _ each_handle
 
         _debug_print "returning from gc2_collect"
