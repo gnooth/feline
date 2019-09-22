@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -473,12 +473,11 @@ code dot_handles, '.handles'
         next
 endcode
 
-; ### each-handle
-code each_handle, 'each-handle'         ; callable --
-        _ callable_raw_code_address
+; ### each_handle
+code each_handle, 'each_handle'         ; raw-code-address -> void
         push    r12
         mov     r12, rbx                ; code address in r12
-        _drop                           ; --
+        _drop                           ; -> empty
         pushrbx
         mov     rbx, [handle_space_]
         _begin .1
@@ -486,7 +485,7 @@ code each_handle, 'each-handle'         ; callable --
         pushrbx
         mov     rbx, [handle_space_free_]
         _ult
-        _while .1                       ; -- addr
+        _while .1                       ; -> addr
         _dup
         call    r12
         _cellplus
