@@ -162,7 +162,8 @@ code gc2_scan_array, 'gc2_scan_array'   ; ^array -> void
         _?do .1
         _i
         _this_array_nth_unsafe          ; -- element
-        _ maybe_mark_handle
+;         _ maybe_mark_handle
+        _ gc2_maybe_push_handle
         _loop .1                        ; --
         pop     this_register
         next
