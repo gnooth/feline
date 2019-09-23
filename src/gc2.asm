@@ -446,6 +446,9 @@ code gc2_scan_object, 'gc2_scan_object' ; ^object -> void
         test    rbx, rbx
         jz      error_empty_handle
 
+        ; this is probably redundant
+        mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
+
         _dup
         _object_raw_typecode
 
@@ -931,6 +934,14 @@ endcode
 code gc2_maybe_push_handle, 'gc2_maybe_push_handle' ; x -> void
         cmp     bl, HANDLE_TAG
         jne     .1
+
+;         _dup
+;         _ object_raw_typecode
+;         cmp     rbx, TYPECODE_STRING
+;         poprbx
+;         jne     .0
+;         _debug_print "gc2_maybe_push_handle string"
+; .0:
 
 ;         _handle_to_object_unsafe
 ;         test    rbx, rbx
@@ -1628,6 +1639,15 @@ code gc2_process_work_list, 'gc2_process_work_list'
         ; -> handle
         cmp     bl, HANDLE_TAG
         jne     .not_a_handle
+
+;         _dup
+;         _ object_raw_typecode
+;         cmp     rbx, TYPECODE_STRING
+;         poprbx
+;         jne     .0
+;         _debug_print "gc2_process_work_list string"
+;         int3
+; .0:
 
 ;         _handle_to_object_unsafe
 ;         test    rbx, rbx
