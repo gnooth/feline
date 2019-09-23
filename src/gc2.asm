@@ -143,10 +143,10 @@ code gc2_scan_vector, 'gc2_scan_vector' ; ^vector -> void
         _loop .1                        ; --
         pop     this_register
 
-        _write "leaving gc2_scan_vector work list length = "
-        _ gc2_work_list
-        _ vector_length
-        _ dot_object
+;         _write "leaving gc2_scan_vector work list length = "
+;         _ gc2_work_list
+;         _ vector_length
+;         _ dot_object
 
         next
 endcode
@@ -257,7 +257,7 @@ code gc2_scan_symbol, 'gc2_scan_symbol' ; ^symbol -> void
 endcode
 
 ; ### gc2_scan_quotation
-code gc2_scan_quotation, 'gc2_scan_quotation'   ; quotation -> void
+code gc2_scan_quotation, 'gc2_scan_quotation' ; quotation -> void
 ;         _debug_print "gc2_scan_quotation"
 ;         _drop
         _quotation_array
@@ -267,7 +267,7 @@ code gc2_scan_quotation, 'gc2_scan_quotation'   ; quotation -> void
 endcode
 
 ; ### gc2_scan_slice
-code gc2_scan_slice, 'gc2_scan_slice'           ; slice -> void
+code gc2_scan_slice, 'gc2_scan_slice'   ; slice -> void
 ;         _debug_print "gc2_scan_slice"
 ;         _drop
         _slice_seq
@@ -277,22 +277,22 @@ code gc2_scan_slice, 'gc2_scan_slice'           ; slice -> void
 endcode
 
 ; ### gc2_scan_tuple
-code gc2_scan_tuple, 'gc2_scan_tuple'           ; tuple --
+code gc2_scan_tuple, 'gc2_scan_tuple'   ; ^tuple -> void
         _debug_?enough 1
-        _debug_print "gc2_scan_tuple"
+;         _debug_print "gc2_scan_tuple"
 ;         _drop
-REVIEW REVIEW REVIEW
-        push    this_register
-        mov     this_register, rbx      ; -- tuple
 
-        _ tuple_size_unchecked          ; -- size
+        push    this_register
+        mov     this_register, rbx      ; -> ^tuple
+
+        _ tuple_size_unchecked          ; -> size
         _check_fixnum                   ; untagged size (number of defined slots) in rbx
 
         ; slot 0 is object header
         add     rbx, 1                  ; loop limit is size + 1
         _lit 1                          ; loop start is 1
 
-        ; -- limit start
+        ; -> limit start
         _?do .1
         _i
         _this_nth_slot
@@ -1208,7 +1208,7 @@ endcode
 code gc2_maybe_collect_handle, 'gc2_maybe_collect_handle' ; untagged-handle --
 
         _dup
-        mov     rbx, [rbx]              ; -- untagged-handle raw-object/0
+        mov     rbx, [rbx]              ; -- untagged-handle ^object/0
 
         ; check for null object address
         test    rbx, rbx
@@ -1227,11 +1227,10 @@ code gc2_maybe_collect_handle, 'gc2_maybe_collect_handle' ; untagged-handle --
         _drop
         _return
 
-.2:                                     ; -- untagged-handle object
+.2:                                     ; -> untagged-handle object
         ; object is white
-;         _ destroy_heap_object           ; -- untagged-handle
-;         _ release_handle_unsafe
-        _2drop ; FIXME
+        _ destroy_heap_object           ; -> untagged-handle
+        _ release_handle_unsafe
         _return
 
 .1:
@@ -1257,7 +1256,7 @@ endcode
 
 ; ### gc2_scan_static_symbols
 code gc2_scan_static_symbols, 'gc2_scan_static_symbols'
-        _debug_print "entering gc2_scan_static_symbols"
+;         _debug_print "entering gc2_scan_static_symbols"
 
         _ last_static_symbol
         _begin .1
@@ -1270,10 +1269,10 @@ code gc2_scan_static_symbols, 'gc2_scan_static_symbols'
         _repeat .1
         _drop
 
-        _write "leaving gc2_scan_static_symbols work list length = "
-        _ gc2_work_list
-        _ vector_length
-        _ dot_object
+;         _write "leaving gc2_scan_static_symbols work list length = "
+;         _ gc2_work_list
+;         _ vector_length
+;         _ dot_object
 
         next
 endcode
@@ -1593,16 +1592,35 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
         next
 endcode
 
+asm_global gc2_work_list_max_
+
+; ### gc2_work_list_max
+code gc2_work_list_max, 'gc2_work_list_max'
+        pushrbx
+        mov     rbx, [gc2_work_list_max_]
+        _tag_fixnum
+        next
+endcode
+
 ; ### gc2_process_work_list
 code gc2_process_work_list, 'gc2_process_work_list'
 
-        _write "gc2_process_work_list work list length = "
         _ gc2_work_list
-        _ vector_length
-        _ dot_object
+        _ vector_raw_length
+        mov     [gc2_work_list_max_], rbx
+        _drop
 
 .top:
         _ gc2_work_list
+
+        _dup
+        _ vector_length
+        cmp     [gc2_work_list_max_], rbx
+        jge     .1
+        mov     [gc2_work_list_max_], rbx
+.1:
+        _drop
+
         _ vector_?pop                   ; -> handle/nil
         cmp     rbx, f_value
         je      .normal_exit
@@ -1657,7 +1675,7 @@ endcode
 ; ### gc2_collect
 code gc2_collect, 'gc2_collect'
 
-        _debug_print "entering gc2_collect"
+;         _debug_print "entering gc2_collect"
 
         cmp     qword [S_gc_inhibit_symbol_value], f_value
         je .1
@@ -1688,11 +1706,11 @@ code gc2_collect, 'gc2_collect'
 
         ; data stack
 ;         _ mark_datastack
-;         _ gc2_add_datastack
+        _ gc2_add_datastack
 
         ; return stack
 ;         _ mark_return_stack
-;         _ gc2_add_return_stack
+        _ gc2_add_return_stack
 
         jmp     .4
 
@@ -1738,8 +1756,8 @@ code gc2_collect, 'gc2_collect'
         _lit gc2_maybe_collect_handle
         _ each_handle
 
-        _debug_print "returning from gc2_collect"
-        _return
+;         _debug_print "returning from gc2_collect"
+;         _return
 
         _ start_the_world
 
@@ -1784,7 +1802,7 @@ code gc2_collect, 'gc2_collect'
 .5:
         _reset_recent_allocations
 
-        _debug_print "leaving gc2_collect"
+;         _debug_print "leaving gc2_collect"
 
         next
 endcode
@@ -1826,8 +1844,47 @@ code gc, 'gc'
         next
 endcode
 
+; ### gc2
 code gc2, 'gc2'
+
+        _debug_print "entering gc2"
+
+%if 0
+        _ gc_lock
+        _ mutex_trylock
+        _tagged_if_not .1
+        ; gc is already in progress
+        _debug_print "gc already in progress, returning"
+        jmp .exit
+        _then .1
+
+        _debug_print "gc2 obtained gc lock"
+
+.wait:
+        _ trylock_handles
+        cmp     rbx, f_value
+        poprbx
+        je      .wait
+
         _ gc2_collect
-        _debug_print "back from gc2_collect"
+
+        _ unlock_handles
+
+        _ gc_lock
+        _ mutex_unlock
+        _tagged_if_not .2
+        _error "gc mutex_unlock failed"
+        _then .2
+
+.exit:
+%else
+        _ gc2_collect
+%endif
+        _debug_print "leaving gc2"
+
+        _write "gc2_work_list_max = "
+        _ gc2_work_list_max
+        _ dot_object
+
         next
 endcode
