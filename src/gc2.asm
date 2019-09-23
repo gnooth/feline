@@ -321,10 +321,11 @@ endcode
 
 ; ### gc2_scan_iterator
 code gc2_scan_iterator, 'gc2_scan_iterator' ; iterator -> void
-        _debug_print "gc2_scan_iterator needs code"
-        _drop
-;         _iterator_sequence
+;         _debug_print "gc2_scan_iterator"
+;         _drop
+        _iterator_sequence
 ;         _ maybe_mark_handle
+        _ gc2_maybe_push_handle
         next
 endcode
 
@@ -362,19 +363,21 @@ endcode
 
 ; ### gc2_scan_string_iterator
 code gc2_scan_string_iterator, 'gc2_scan_string_iterator'       ; string-iterator -> void
-        _debug_print "gc2_scan_string_iterator needs code"
-        _drop
-;         _string_iterator_string
+;         _debug_print "gc2_scan_string_iterator"
+;         _drop
+        _string_iterator_string
 ;         _ maybe_mark_handle
+        _ gc2_maybe_push_handle
         next
 endcode
 
 ; ### gc2_scan_slot
 code gc2_scan_slot, 'gc2_scan_slot' ; slot -> void
-        _debug_print "gc2_scan_slot needs code"
-        _drop
-;         _slot_name
+;         _debug_print "gc2_scan_slot"
+;         _drop
+        _slot_name
 ;         _ maybe_mark_handle
+        _ gc2_maybe_push_handle
         next
 endcode
 
@@ -1043,11 +1046,12 @@ code gc2_maybe_add_verified_handle, 'gc2_maybe_add_verified_handle' ; handle -> 
         cmp     rbx, f_value
         poprbx
         jz      .1                      ; -> handle
-        _handle_to_object_unsafe
-        test    rbx, rbx
-        jz      .1
-;         _ mark_raw_object
-        _ gc2_add_raw_object
+;         _handle_to_object_unsafe
+;         test    rbx, rbx
+;         jz      .1
+; ;         _ mark_raw_object
+;         _ gc2_add_raw_object
+        _ gc2_maybe_push_handle
         _return
 .1:
         _drop
@@ -1495,6 +1499,9 @@ endcode
 ; ### gc_collect
 code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
 
+        _ gc2_collect
+        _return
+
         _debug_print "entering gc_collect"
 
         cmp     qword [S_gc_inhibit_symbol_value], f_value
@@ -1831,6 +1838,9 @@ endcode
 ; ### gc
 code gc, 'gc'
 
+        _ gc2
+        _return
+
         _debug_print "entering gc"
 
         _ gc_lock
@@ -1870,7 +1880,7 @@ code gc2, 'gc2'
 
         _debug_print "entering gc2"
 
-%if 0
+%if 1
         _ gc_lock
         _ mutex_trylock
         _tagged_if_not .1
