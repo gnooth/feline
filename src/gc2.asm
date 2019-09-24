@@ -1040,7 +1040,7 @@ endcode
 
 ; ### gc2_maybe_add_verified_handle
 code gc2_maybe_add_verified_handle, 'gc2_maybe_add_verified_handle' ; handle -> empty
-        _debug_print "gc2_maybe_add_verified_handle called"
+;        _debug_print "gc2_maybe_add_verified_handle called"
         _dup
         _ verified_handle?
         cmp     rbx, f_value
@@ -1170,9 +1170,21 @@ code mark_return_stack, 'mark_return_stack', SYMBOL_INTERNAL    ; --
         next
 endcode
 
+; ### gc2_thread_add_return_stack
+code gc2_thread_add_return_stack, 'gc2_thread_add_return_stack' ; thread --
+        _dup
+        _ thread_saved_rsp
+        _swap
+        _ thread_raw_rp0
+        _ gc2_add_cells_in_range
+        next
+endcode
+
 ; ### gc2_add_return_stack
 code gc2_add_return_stack, 'gc2_add_return_stack'
         _debug_print "gc2_add_return_stack called"
+        _ current_thread
+        _ gc2_thread_add_return_stack
         next
 endcode
 
