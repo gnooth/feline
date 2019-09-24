@@ -3611,7 +3611,7 @@ test: string-output-stream-test-2
     stream close
 ;
 
-// string-output-stream-test-2
+string-output-stream-test-2
 
 test: string-?first-test-1
     { 'B' } [ "Be the best bunny you can be!" string-?first ] unit-test
@@ -3813,7 +3813,7 @@ test: symbol-vocab-name-test-1
     sym symbol-vocab-name "zork" assert=
 ;
 
-// symbol-vocab-name-test-1
+symbol-vocab-name-test-1
 
 test: file-lines-test-1
     "delete-me" :> file
