@@ -1755,8 +1755,8 @@ code gc2_collect, 'gc2_collect'
         jmp     .4
 
 .3:
-        _debug_print "gc2 multiple threads, exiting..."
-        xcall   os_bye
+;         _debug_print "gc2 multiple threads, exiting..."
+;         xcall   os_bye
 
         _ lock_all_threads
 
