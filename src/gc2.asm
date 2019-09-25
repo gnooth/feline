@@ -1038,9 +1038,9 @@ code maybe_mark_verified_handle, 'maybe_mark_verified_handle', SYMBOL_INTERNAL  
         next
 endcode
 
-; ### gc2_maybe_add_verified_handle
-code gc2_maybe_add_verified_handle, 'gc2_maybe_add_verified_handle' ; handle -> empty
-;        _debug_print "gc2_maybe_add_verified_handle called"
+; ### gc2_scan_verified_handle
+code gc2_scan_verified_handle, 'gc2_scan_verified_handle' ; handle -> empty
+;        _debug_print "gc2_scan_verified_handle"
         _dup
         _ verified_handle?
         cmp     rbx, f_value
@@ -1102,17 +1102,17 @@ code mark_cells_in_range, 'mark_cells_in_range', SYMBOL_INTERNAL        ; low-ad
         next
 endcode
 
-; ### gc2_add_cells_in_range
-code gc2_add_cells_in_range, 'gc2_add_cells_in_range' ; low-address high-address -> void
-        sub     rbx, qword [rbp]        ; -- low-address number-of-bytes
-        shr     rbx, 3                  ; -- low-address number-of-cells
+; ### gc2_scan_cells_in_range
+code gc2_scan_cells_in_range, 'gc2_scan_cells_in_range' ; low-address high-address -> void
+        sub     rbx, qword [rbp]        ; -> low-address number-of-bytes
+        shr     rbx, 3                  ; -> low-address number-of-cells
         _register_do_times .1
         _raw_loop_index
         shl     rbx, 3
         add     rbx, qword [rbp]
         mov     rbx, [rbx]
 ;         _ maybe_mark_verified_handle
-        _ gc2_maybe_add_verified_handle
+        _ gc2_scan_verified_handle
         _loop .1
         _drop
         next
@@ -1135,21 +1135,21 @@ code mark_datastack, 'mark_datastack', SYMBOL_INTERNAL
         next
 endcode
 
-; ### gc2_thread_add_datastack
-code gc2_thread_add_datastack, 'gc2_thread_mark_datastack' ; thread --
+; ### gc2_thread_scan_data_stack
+code gc2_thread_scan_data_stack, 'gc2_thread_scan_data_stack' ; thread -> void
         _dup
         _ thread_saved_rbp
         _swap
         _ thread_raw_sp0
-        _ gc2_add_cells_in_range
+        _ gc2_scan_cells_in_range
         next
 endcode
 
-; ### gc2_add_datastack
-code gc2_add_datastack, 'gc2_add_datastack'
-        _debug_print "gc2_add_datastack called"
+; ### gc2_scan_data_stack
+code gc2_scan_data_stack, 'gc2_scan_data_stack'
+        _debug_print "gc2_scan_data_stack called"
         _ current_thread
-        _ gc2_thread_add_datastack
+        _ gc2_thread_scan_data_stack
         next
 endcode
 
@@ -1170,21 +1170,21 @@ code mark_return_stack, 'mark_return_stack', SYMBOL_INTERNAL    ; --
         next
 endcode
 
-; ### gc2_thread_add_return_stack
-code gc2_thread_add_return_stack, 'gc2_thread_add_return_stack' ; thread --
+; ### gc2_thread_scan_return_stack
+code gc2_thread_scan_return_stack, 'gc2_thread_scan_return_stack' ; thread -> void
         _dup
         _ thread_saved_rsp
         _swap
         _ thread_raw_rp0
-        _ gc2_add_cells_in_range
+        _ gc2_scan_cells_in_range
         next
 endcode
 
-; ### gc2_add_return_stack
-code gc2_add_return_stack, 'gc2_add_return_stack'
-        _debug_print "gc2_add_return_stack called"
+; ### gc2_scan_return_stack
+code gc2_scan_return_stack, 'gc2_scan_return_stack'
+        _debug_print "gc2_scan_return_stack called"
         _ current_thread
-        _ gc2_thread_add_return_stack
+        _ gc2_thread_scan_return_stack
         next
 endcode
 
@@ -1195,6 +1195,17 @@ code mark_thread_stacks, 'mark_thread_stacks', SYMBOL_INTERNAL ; thread -> void
 
         _lit S_thread_mark_datastack
         _lit S_thread_mark_return_stack
+        _ bi
+
+        next
+endcode
+
+; ### gc2_scan_thread_stacks
+code gc2_scan_thread_stacks, 'gc2_scan_thread_stacks' ; thread -> void
+        _debug_print "gc2_scan_thread_stacks called"
+
+        _lit S_gc2_thread_scan_data_stack
+        _lit S_gc2_thread_scan_return_stack
         _ bi
 
         next
@@ -1645,7 +1656,7 @@ code gc2_process_work_list, 'gc2_process_work_list'
         _ gc2_work_list
 
         _dup
-        _ vector_length
+        _ vector_raw_length
         cmp     [gc2_work_list_max_], rbx
         jge     .1
         mov     [gc2_work_list_max_], rbx
@@ -1746,11 +1757,11 @@ code gc2_collect, 'gc2_collect'
 
         ; data stack
 ;         _ mark_datastack
-        _ gc2_add_datastack
+        _ gc2_scan_data_stack
 
         ; return stack
 ;         _ mark_return_stack
-        _ gc2_add_return_stack
+        _ gc2_scan_return_stack
 
         jmp     .4
 
@@ -1767,7 +1778,8 @@ code gc2_collect, 'gc2_collect'
         _debug_print "marking multiple threads"
 
         _ all_threads
-        _lit S_mark_thread_stacks
+;         _lit S_mark_thread_stacks
+        _lit S_gc2_scan_thread_stacks
         _ vector_each
 
         _ unlock_all_threads
@@ -1792,7 +1804,7 @@ code gc2_collect, 'gc2_collect'
 ;         _return
 
         ; sweep
-        _print "collecting handles"
+        _debug_print "collecting handles"
         _lit gc2_maybe_collect_handle
         _ each_handle
 
@@ -1892,7 +1904,7 @@ code gc2, 'gc2'
 
         _debug_print "entering gc2"
 
-%if 1
+; %if 1
         _ gc_lock
         _ mutex_trylock
         _tagged_if_not .1
@@ -1920,9 +1932,9 @@ code gc2, 'gc2'
         _then .2
 
 .exit:
-%else
-        _ gc2_collect
-%endif
+; %else
+;         _ gc2_collect
+; %endif
         _debug_print "leaving gc2"
 
         _write "gc2_work_list_max = "
