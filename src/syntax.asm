@@ -86,6 +86,13 @@ code f, 'f', SYMBOL_IMMEDIATE   ; -- f
         next
 endcode
 
+; ### nil
+code nil, 'nil', SYMBOL_IMMEDIATE ; -> nil
+        _nil
+        _ maybe_add
+        next
+endcode
+
 ; ### immediate?
 code immediate?, 'immediate?'   ; object -- ?
         _dup

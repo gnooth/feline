@@ -127,6 +127,8 @@
 %define f_value BOOLEAN_TAG
 %define t_value BOOLEAN_TAG + (1 << LOWTAG_BITS)
 
+%define nil_value BOOLEAN_TAG
+
 %macro  _f 0
         pushrbx
         mov     ebx, f_value
@@ -135,6 +137,11 @@
 %macro  _t 0
         pushrbx
         mov     ebx, t_value
+%endmacro
+
+%macro  _nil 0
+        pushrbx
+        mov     ebx, nil_value
 %endmacro
 
 %macro  _tag_boolean 0
