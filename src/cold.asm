@@ -215,7 +215,7 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
 
         _ cold_initialize_locals
 
-        _ initialize_gc_dispatch_table
+;         _ initialize_gc_dispatch_table
 
         _ initialize_gc2_dispatch_table
 
