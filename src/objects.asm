@@ -269,10 +269,10 @@ endcode
 code object_to_string, 'object->string' ; object -> string
 ; FIXME make this a generic word
 
-        cmp     rbx, f_value
+        cmp     rbx, nil_value
         jnz     .1
         _drop
-        _quote "f"
+        _quote "nil"
         _return
 
 .1:
