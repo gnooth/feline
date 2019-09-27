@@ -785,28 +785,3 @@ code thread_to_string, 'thread->string' ; thread -> string
         _ format
         next
 endcode
-
-; ### mark_thread
-code mark_thread, 'mark_thread', SYMBOL_INTERNAL ; thread -> void
-
-        _dup
-        _slot THREAD_QUOTATION_SLOT#
-        _ maybe_mark_handle
-
-        _dup
-        _slot THREAD_THREAD_LOCALS_SLOT#
-        _ maybe_mark_handle
-
-        _dup
-        _slot THREAD_RESULT_SLOT#
-        _ maybe_mark_handle
-
-        _dup
-        _slot THREAD_DEBUG_NAME_SLOT#
-        _ maybe_mark_handle
-
-        _slot THREAD_CATCHSTACK_SLOT#
-        _ maybe_mark_handle
-
-        next
-endcode

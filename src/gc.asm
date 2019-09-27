@@ -199,6 +199,31 @@ code mark_string_output_stream, 'mark_string_output_stream'     ; raw-stream -> 
         next
 endcode
 
+; ### mark_thread
+code mark_thread, 'mark_thread', SYMBOL_INTERNAL ; thread -> void
+
+        _dup
+        _slot THREAD_QUOTATION_SLOT#
+        _ maybe_mark_handle
+
+        _dup
+        _slot THREAD_THREAD_LOCALS_SLOT#
+        _ maybe_mark_handle
+
+        _dup
+        _slot THREAD_RESULT_SLOT#
+        _ maybe_mark_handle
+
+        _dup
+        _slot THREAD_DEBUG_NAME_SLOT#
+        _ maybe_mark_handle
+
+        _slot THREAD_CATCHSTACK_SLOT#
+        _ maybe_mark_handle
+
+        next
+endcode
+
 ; ### mark-type
 code mark_type, 'mark-type'             ; type -> void
         _dup
