@@ -71,9 +71,9 @@ code gc2_initialize_work_list, 'gc2_initialize_work_list'
         next
 endcode
 
-%macro _set_marked_bit 0                ; object -- object
-        or      OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
-%endmacro
+; %macro _set_marked_bit 0                ; object -- object
+;         or      OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
+; %endmacro
 
 %macro _test_marked_bit 0               ; object -- object
         test    OBJECT_FLAGS_BYTE, OBJECT_MARKED_BIT
@@ -382,7 +382,7 @@ code gc2_scan_slot, 'gc2_scan_slot' ; slot -> void
 endcode
 
 ; ### gc2_scan_string_output_stream
-code gc2_scan_string_output_stream, 'scan_string_output_stream'     ; raw-stream -> void
+code gc2_scan_string_output_stream, 'gc2_scan_string_output_stream' ; ^stream -> void
 ;         _debug_print "gc2_scan_string_output_stream"
 ;         _drop
         _string_output_stream_sbuf
@@ -392,7 +392,7 @@ code gc2_scan_string_output_stream, 'scan_string_output_stream'     ; raw-stream
 endcode
 
 ; ### gc2_scan_type
-code gc2_scan_type, 'gc2_scan_type'     ; type -> void
+code gc2_scan_type, 'gc2_scan_type' ; ^type -> void
 ;         _debug_print "gc2_scan_type"
 ;         _drop
         _dup
@@ -406,7 +406,7 @@ code gc2_scan_type, 'gc2_scan_type'     ; type -> void
 endcode
 
 ; ### gc2_scan_generic_function
-code gc2_scan_generic_function, 'gc2_scan_generic_function' ; generic-function -> void
+code gc2_scan_generic_function, 'gc2_scan_generic_function' ; ^generic-function -> void
 ;         _debug_print "gc2_scan_generic_function"
 ;         _drop
         _dup
@@ -421,7 +421,7 @@ code gc2_scan_generic_function, 'gc2_scan_generic_function' ; generic-function -
 endcode
 
 ; ### gc2_scan_method
-code gc2_scan_method, 'gc2_scan_method' ; method -> void
+code gc2_scan_method, 'gc2_scan_method' ; ^method -> void
 ;         _debug_print "gc2_scan_method"
 ;         _drop
         _dup
@@ -600,326 +600,326 @@ endcode
 
 ; begin old code from gc.asm
 
-; ### mark-vector
-code mark_vector, 'mark-vector'         ; vector --
-        push    this_register
-        mov     this_register, rbx
-        _vector_raw_length
-        _register_do_times .1
-        _raw_loop_index
-        _this_vector_nth_unsafe         ; -- element
-        _ maybe_mark_handle
-        _loop .1                        ; --
-        pop     this_register
-        next
-endcode
+; ; ### mark-vector
+; code mark_vector, 'mark-vector'         ; vector --
+;         push    this_register
+;         mov     this_register, rbx
+;         _vector_raw_length
+;         _register_do_times .1
+;         _raw_loop_index
+;         _this_vector_nth_unsafe         ; -- element
+;         _ maybe_mark_handle
+;         _loop .1                        ; --
+;         pop     this_register
+;         next
+; endcode
 
-; ### mark-array
-code mark_array, 'mark-array'           ; array --
-        push    this_register
-        mov     this_register, rbx
-        _array_raw_length
-        _zero
-        _?do .1
-        _i
-        _this_array_nth_unsafe          ; -- element
-        _ maybe_mark_handle
-        _loop .1                        ; --
-        pop     this_register
-        next
-endcode
+; ; ### mark-array
+; code mark_array, 'mark-array'           ; array --
+;         push    this_register
+;         mov     this_register, rbx
+;         _array_raw_length
+;         _zero
+;         _?do .1
+;         _i
+;         _this_array_nth_unsafe          ; -- element
+;         _ maybe_mark_handle
+;         _loop .1                        ; --
+;         pop     this_register
+;         next
+; endcode
 
-; ### mark-hashtable
-code mark_hashtable, 'mark-hashtable'   ; hashtable --
-        push    this_register
-        mov     this_register, rbx      ; -- hashtable
-        _hashtable_raw_capacity         ; -- capacity
-        _register_do_times .1
-        _raw_loop_index
-        _dup
-        _this_hashtable_nth_key
-        _ maybe_mark_handle
-        _this_hashtable_nth_value
-        _ maybe_mark_handle
-        _loop .1                        ; --
-        pop     this_register
-        next
-endcode
+; ; ### mark-hashtable
+; code mark_hashtable, 'mark-hashtable'   ; hashtable --
+;         push    this_register
+;         mov     this_register, rbx      ; -- hashtable
+;         _hashtable_raw_capacity         ; -- capacity
+;         _register_do_times .1
+;         _raw_loop_index
+;         _dup
+;         _this_hashtable_nth_key
+;         _ maybe_mark_handle
+;         _this_hashtable_nth_value
+;         _ maybe_mark_handle
+;         _loop .1                        ; --
+;         pop     this_register
+;         next
+; endcode
 
-; ### mark-vocab
-code mark_vocab, 'mark-vocab'           ; vocab --
-        _dup
-        _vocab_name
-        _ maybe_mark_handle
-        _vocab_hashtable
-        _ maybe_mark_handle
-        next
-endcode
+; ; ### mark-vocab
+; code mark_vocab, 'mark-vocab'           ; vocab --
+;         _dup
+;         _vocab_name
+;         _ maybe_mark_handle
+;         _vocab_hashtable
+;         _ maybe_mark_handle
+;         next
+; endcode
 
-; ### mark-symbol
-code mark_symbol, 'mark-symbol'         ; symbol -> void
-        _dup
-        _symbol_name
-        _ maybe_mark_handle
-        _dup
-        _symbol_vocab_name
-        _ maybe_mark_handle
-        _dup
-        _symbol_def
-        _ maybe_mark_handle
-        _dup
-        _symbol_props
-        _ maybe_mark_handle
-        _dup
-        _symbol_value
-        _ maybe_mark_handle
-        _symbol_file
-        _ maybe_mark_handle
-        next
-endcode
+; ; ### mark-symbol
+; code mark_symbol, 'mark-symbol'         ; symbol -> void
+;         _dup
+;         _symbol_name
+;         _ maybe_mark_handle
+;         _dup
+;         _symbol_vocab_name
+;         _ maybe_mark_handle
+;         _dup
+;         _symbol_def
+;         _ maybe_mark_handle
+;         _dup
+;         _symbol_props
+;         _ maybe_mark_handle
+;         _dup
+;         _symbol_value
+;         _ maybe_mark_handle
+;         _symbol_file
+;         _ maybe_mark_handle
+;         next
+; endcode
 
-; ### mark-quotation
-code mark_quotation, 'mark-quotation'   ; quotation --
-        _quotation_array
-        _ maybe_mark_handle
-        ; REVIEW code
-        next
-endcode
+; ; ### mark-quotation
+; code mark_quotation, 'mark-quotation'   ; quotation --
+;         _quotation_array
+;         _ maybe_mark_handle
+;         ; REVIEW code
+;         next
+; endcode
 
-; ### mark-slice
-code mark_slice, 'mark-slice'           ; slice --
-        _slice_seq
-        _ maybe_mark_handle
-        ; REVIEW code
-        next
-endcode
+; ; ### mark-slice
+; code mark_slice, 'mark-slice'           ; slice --
+;         _slice_seq
+;         _ maybe_mark_handle
+;         ; REVIEW code
+;         next
+; endcode
 
-; ### mark-tuple
-code mark_tuple, 'mark-tuple'           ; tuple --
-        push    this_register
-        mov     this_register, rbx      ; -- tuple
+; ; ### mark-tuple
+; code mark_tuple, 'mark-tuple'           ; tuple --
+;         push    this_register
+;         mov     this_register, rbx      ; -- tuple
 
-        _ tuple_size_unchecked          ; -- size
-        _check_fixnum                   ; untagged size (number of defined slots) in rbx
+;         _ tuple_size_unchecked          ; -- size
+;         _check_fixnum                   ; untagged size (number of defined slots) in rbx
 
-        ; slot 0 is object header
-        add     rbx, 1                  ; loop limit is size + 1
-        _lit 1                          ; loop start is 1
+;         ; slot 0 is object header
+;         add     rbx, 1                  ; loop limit is size + 1
+;         _lit 1                          ; loop start is 1
 
-        ; -- limit start
-        _?do .1
-        _i
-        _this_nth_slot
-        _ maybe_mark_handle
-        _loop .1
+;         ; -- limit start
+;         _?do .1
+;         _i
+;         _this_nth_slot
+;         _ maybe_mark_handle
+;         _loop .1
 
-        pop     this_register
-        next
-endcode
+;         pop     this_register
+;         next
+; endcode
 
-; ### mark-lexer
-code mark_lexer, 'mark-lexer'           ; lexer --
-        _dup
-        _lexer_string
-        _ maybe_mark_handle
-        _lexer_file
-        _ maybe_mark_handle
-        next
-endcode
+; ; ### mark-lexer
+; code mark_lexer, 'mark-lexer'           ; lexer --
+;         _dup
+;         _lexer_string
+;         _ maybe_mark_handle
+;         _lexer_file
+;         _ maybe_mark_handle
+;         next
+; endcode
 
-; ### mark-iterator
-code mark_iterator, 'mark-iterator'     ; iterator --
-        _iterator_sequence
-        _ maybe_mark_handle
-        next
-endcode
+; ; ### mark-iterator
+; code mark_iterator, 'mark-iterator'     ; iterator --
+;         _iterator_sequence
+;         _ maybe_mark_handle
+;         next
+; endcode
 
-; ### mark-string-iterator
-code mark_string_iterator, 'mark-string-iterator'       ; string-iterator -> void
-        _string_iterator_string
-        _ maybe_mark_handle
-        next
-endcode
+; ; ### mark-string-iterator
+; code mark_string_iterator, 'mark-string-iterator'       ; string-iterator -> void
+;         _string_iterator_string
+;         _ maybe_mark_handle
+;         next
+; endcode
 
-; ### mark-slot
-code mark_slot, 'mark-slot'             ; slot -> void
-        _slot_name
-        _ maybe_mark_handle
-        next
-endcode
+; ; ### mark-slot
+; code mark_slot, 'mark-slot'             ; slot -> void
+;         _slot_name
+;         _ maybe_mark_handle
+;         next
+; endcode
 
-; ### mark_string_output_stream
-code mark_string_output_stream, 'mark_string_output_stream'     ; raw-stream -> void
-        _string_output_stream_sbuf
-        _ maybe_mark_handle
-        next
-endcode
+; ; ### mark_string_output_stream
+; code mark_string_output_stream, 'mark_string_output_stream'     ; raw-stream -> void
+;         _string_output_stream_sbuf
+;         _ maybe_mark_handle
+;         next
+; endcode
 
-; ### mark-type
-code mark_type, 'mark-type'             ; type -> void
-        _dup
-        _type_symbol
-        _ maybe_mark_handle
-        _type_layout
-        _ maybe_mark_handle
-        next
-endcode
+; ; ### mark-type
+; code mark_type, 'mark-type'             ; type -> void
+;         _dup
+;         _type_symbol
+;         _ maybe_mark_handle
+;         _type_layout
+;         _ maybe_mark_handle
+;         next
+; endcode
 
-; ### mark-generic-function             ; generic-function -> void
-code mark_generic_function, 'mark-generic-function'
-        _dup
-        _gf_name
-        _ maybe_mark_handle
-        _dup
-        _gf_methods
-        _ maybe_mark_handle
-        _gf_dispatch
-        _ maybe_mark_handle
-        next
-endcode
+; ; ### mark-generic-function             ; generic-function -> void
+; code mark_generic_function, 'mark-generic-function'
+;         _dup
+;         _gf_name
+;         _ maybe_mark_handle
+;         _dup
+;         _gf_methods
+;         _ maybe_mark_handle
+;         _gf_dispatch
+;         _ maybe_mark_handle
+;         next
+; endcode
 
-; ### mark-method
-code mark_method, 'mark-method'         ; method -> void
-        _dup
-        _method_generic_function
-        _ maybe_mark_handle
-        _method_callable
-        _ maybe_mark_handle
-        next
-endcode
+; ; ### mark-method
+; code mark_method, 'mark-method'         ; method -> void
+;         _dup
+;         _method_generic_function
+;         _ maybe_mark_handle
+;         _method_callable
+;         _ maybe_mark_handle
+;         next
+; endcode
 
 asm_global gc_dispatch_table_
 
-; ### initialize_gc_dispatch_table
-code initialize_gc_dispatch_table, 'initialize_gc_dispatch_table', SYMBOL_INTERNAL
+; ; ### initialize_gc_dispatch_table
+; code initialize_gc_dispatch_table, 'initialize_gc_dispatch_table', SYMBOL_INTERNAL
+;
+;         ; REVIEW
+;         _tagged_fixnum 64
+;         _lit 0
+;         _ make_array_2
+;
+;         mov     [gc_dispatch_table_], rbx
+;         _lit gc_dispatch_table_
+;         _ gc_add_root
+;
+;         _handle_to_object_unsafe
+;
+;         push    this_register
+;         popd    this_register
+;
+;         _lit mark_vector
+;         _lit TYPECODE_VECTOR
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_array
+;         _lit TYPECODE_ARRAY
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_hashtable
+;         _lit TYPECODE_HASHTABLE
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_vocab
+;         _lit TYPECODE_VOCAB
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_symbol
+;         _lit TYPECODE_SYMBOL
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_quotation
+;         _lit TYPECODE_QUOTATION
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_slice
+;         _lit TYPECODE_SLICE
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_tuple
+;         _lit TYPECODE_TUPLE
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_lexer
+;         _lit TYPECODE_LEXER
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_iterator
+;         _lit TYPECODE_ITERATOR
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_thread
+;         _lit TYPECODE_THREAD
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_string_iterator
+;         _lit TYPECODE_STRING_ITERATOR
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_slot
+;         _lit TYPECODE_SLOT
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_type
+;         _lit TYPECODE_TYPE
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_string_output_stream
+;         _lit TYPECODE_STRING_OUTPUT_STREAM
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_generic_function
+;         _lit TYPECODE_GENERIC_FUNCTION
+;         _this_array_set_nth_unsafe
+;
+;         _lit mark_method
+;         _lit TYPECODE_METHOD
+;         _this_array_set_nth_unsafe
+;
+;         pop     this_register
+;         next
+; endcode
 
-        ; REVIEW
-        _tagged_fixnum 64
-        _lit 0
-        _ make_array_2
-
-        mov     [gc_dispatch_table_], rbx
-        _lit gc_dispatch_table_
-        _ gc_add_root
-
-        _handle_to_object_unsafe
-
-        push    this_register
-        popd    this_register
-
-        _lit mark_vector
-        _lit TYPECODE_VECTOR
-        _this_array_set_nth_unsafe
-
-        _lit mark_array
-        _lit TYPECODE_ARRAY
-        _this_array_set_nth_unsafe
-
-        _lit mark_hashtable
-        _lit TYPECODE_HASHTABLE
-        _this_array_set_nth_unsafe
-
-        _lit mark_vocab
-        _lit TYPECODE_VOCAB
-        _this_array_set_nth_unsafe
-
-        _lit mark_symbol
-        _lit TYPECODE_SYMBOL
-        _this_array_set_nth_unsafe
-
-        _lit mark_quotation
-        _lit TYPECODE_QUOTATION
-        _this_array_set_nth_unsafe
-
-        _lit mark_slice
-        _lit TYPECODE_SLICE
-        _this_array_set_nth_unsafe
-
-        _lit mark_tuple
-        _lit TYPECODE_TUPLE
-        _this_array_set_nth_unsafe
-
-        _lit mark_lexer
-        _lit TYPECODE_LEXER
-        _this_array_set_nth_unsafe
-
-        _lit mark_iterator
-        _lit TYPECODE_ITERATOR
-        _this_array_set_nth_unsafe
-
-        _lit mark_thread
-        _lit TYPECODE_THREAD
-        _this_array_set_nth_unsafe
-
-        _lit mark_string_iterator
-        _lit TYPECODE_STRING_ITERATOR
-        _this_array_set_nth_unsafe
-
-        _lit mark_slot
-        _lit TYPECODE_SLOT
-        _this_array_set_nth_unsafe
-
-        _lit mark_type
-        _lit TYPECODE_TYPE
-        _this_array_set_nth_unsafe
-
-        _lit mark_string_output_stream
-        _lit TYPECODE_STRING_OUTPUT_STREAM
-        _this_array_set_nth_unsafe
-
-        _lit mark_generic_function
-        _lit TYPECODE_GENERIC_FUNCTION
-        _this_array_set_nth_unsafe
-
-        _lit mark_method
-        _lit TYPECODE_METHOD
-        _this_array_set_nth_unsafe
-
-        pop     this_register
-        next
-endcode
-
-; ### mark-raw-object
-code mark_raw_object, 'mark-raw-object' ; raw-object --
-        _test_marked_bit
-        jnz .1
-
-        _set_marked_bit
-
-        _dup
-        _object_raw_typecode
-
-        cmp     rbx, LAST_BUILTIN_TYPECODE
-        ja      .2
-
-        pushrbx
-        mov     rbx, [gc_dispatch_table_]
-
-        _handle_to_object_unsafe
-        _array_nth_unsafe
-        test    rbx, rbx
-        jz .3
-        mov     rax, rbx
-        poprbx                          ; -- object
-        call    rax
-        _return
-
-.3:
-        _2drop
-        _return
-
-.2:
-        _drop
-        _ mark_tuple
-        _return
-
-.1:
-        _drop
-        next
-endcode
+; ; ### mark-raw-object
+; code mark_raw_object, 'mark-raw-object' ; raw-object --
+;         _test_marked_bit
+;         jnz .1
+;
+;         _set_marked_bit
+;
+;         _dup
+;         _object_raw_typecode
+;
+;         cmp     rbx, LAST_BUILTIN_TYPECODE
+;         ja      .2
+;
+;         pushrbx
+;         mov     rbx, [gc_dispatch_table_]
+;
+;         _handle_to_object_unsafe
+;         _array_nth_unsafe
+;         test    rbx, rbx
+;         jz .3
+;         mov     rax, rbx
+;         poprbx                          ; -- object
+;         call    rax
+;         _return
+;
+; .3:
+;         _2drop
+;         _return
+;
+; .2:
+;         _drop
+;         _ mark_tuple
+;         _return
+;
+; .1:
+;         _drop
+;         next
+; endcode
 
 ; ### mark_byte
-code mark_byte, 'mark_byte'  ; handle -> fixnum/nil
+code mark_byte, 'mark_byte' ; handle -> fixnum/nil
         cmp     bl, HANDLE_TAG
         jne     .1
         shr     rbx, HANDLE_TAG_BITS
@@ -992,19 +992,19 @@ code gc2_add_raw_object, 'gc2_add_raw_object' ; ^object -> void
         next
 endcode
 
-; ### maybe-mark-handle
-code maybe_mark_handle, 'maybe-mark-handle', SYMBOL_INTERNAL ; x -> void
-        cmp     bl, HANDLE_TAG
-        jne     .1
-        _handle_to_object_unsafe
-        test    rbx, rbx
-        jz      .1
-        _ mark_raw_object
-        next
-.1:
-        _drop
-        next
-endcode
+; ; ### maybe-mark-handle
+; code maybe_mark_handle, 'maybe-mark-handle', SYMBOL_INTERNAL ; x -> void
+;         cmp     bl, HANDLE_TAG
+;         jne     .1
+;         _handle_to_object_unsafe
+;         test    rbx, rbx
+;         jz      .1
+;         _ mark_raw_object
+;         next
+; .1:
+;         _drop
+;         next
+; endcode
 
 ; ; ### add-object-address-to-gray-list
 ; code maybe_add_object_address_to_gray_list, 'maybe-add-object-address-to-gray-list'
@@ -1021,22 +1021,22 @@ endcode
 ;         next
 ; endcode
 
-; ### maybe_mark_verified_handle
-code maybe_mark_verified_handle, 'maybe_mark_verified_handle', SYMBOL_INTERNAL  ; handle --
-        _dup
-        _ verified_handle?
-        cmp     rbx, f_value
-        poprbx
-        jz      .1                      ; -- handle
-        _handle_to_object_unsafe
-        test    rbx, rbx
-        jz      .1
-        _ mark_raw_object
-        _return
-.1:
-        _drop
-        next
-endcode
+; ; ### maybe_mark_verified_handle
+; code maybe_mark_verified_handle, 'maybe_mark_verified_handle', SYMBOL_INTERNAL  ; handle --
+;         _dup
+;         _ verified_handle?
+;         cmp     rbx, f_value
+;         poprbx
+;         jz      .1                      ; -- handle
+;         _handle_to_object_unsafe
+;         test    rbx, rbx
+;         jz      .1
+;         _ mark_raw_object
+;         _return
+; .1:
+;         _drop
+;         next
+; endcode
 
 ; ### gc2_scan_verified_handle
 code gc2_scan_verified_handle, 'gc2_scan_verified_handle' ; handle -> empty
@@ -1058,12 +1058,12 @@ code gc2_scan_verified_handle, 'gc2_scan_verified_handle' ; handle -> empty
         next
 endcode
 
-; ### maybe_mark_from_root
-code maybe_mark_from_root, 'maybe_mark_from_root', SYMBOL_INTERNAL      ; raw-address --
-        _fetch
-        _ maybe_mark_handle
-        next
-endcode
+; ; ### maybe_mark_from_root
+; code maybe_mark_from_root, 'maybe_mark_from_root', SYMBOL_INTERNAL      ; raw-address --
+;         _fetch
+;         _ maybe_mark_handle
+;         next
+; endcode
 
 ; ### gc2_visit_root
 code gc2_visit_root, 'gc2_visit_root' ; raw-address -> void
@@ -1087,20 +1087,20 @@ code gc2_visit_root, 'gc2_visit_root' ; raw-address -> void
         next
 endcode
 
-; ### mark_cells_in_range
-code mark_cells_in_range, 'mark_cells_in_range', SYMBOL_INTERNAL        ; low-address high-address --
-        sub     rbx, qword [rbp]        ; -- low-address number-of-bytes
-        shr     rbx, 3                  ; -- low-address number-of-cells
-        _register_do_times .1
-        _raw_loop_index
-        shl     rbx, 3
-        add     rbx, qword [rbp]
-        mov     rbx, [rbx]
-        _ maybe_mark_verified_handle
-        _loop .1
-        _drop
-        next
-endcode
+; ; ### mark_cells_in_range
+; code mark_cells_in_range, 'mark_cells_in_range', SYMBOL_INTERNAL        ; low-address high-address --
+;         sub     rbx, qword [rbp]        ; -- low-address number-of-bytes
+;         shr     rbx, 3                  ; -- low-address number-of-cells
+;         _register_do_times .1
+;         _raw_loop_index
+;         shl     rbx, 3
+;         add     rbx, qword [rbp]
+;         mov     rbx, [rbx]
+;         _ maybe_mark_verified_handle
+;         _loop .1
+;         _drop
+;         next
+; endcode
 
 ; ### gc2_scan_cells_in_range
 code gc2_scan_cells_in_range, 'gc2_scan_cells_in_range' ; low-address high-address -> void
@@ -1111,29 +1111,28 @@ code gc2_scan_cells_in_range, 'gc2_scan_cells_in_range' ; low-address high-addre
         shl     rbx, 3
         add     rbx, qword [rbp]
         mov     rbx, [rbx]
-;         _ maybe_mark_verified_handle
         _ gc2_scan_verified_handle
         _loop .1
         _drop
         next
 endcode
 
-; ### thread_mark_datastack
-code thread_mark_datastack, 'thread_mark_datastack', SYMBOL_INTERNAL    ; thread --
-        _dup
-        _ thread_saved_rbp
-        _swap
-        _ thread_raw_sp0
-        _ mark_cells_in_range
-        next
-endcode
+; ; ### thread_mark_datastack
+; code thread_mark_datastack, 'thread_mark_datastack', SYMBOL_INTERNAL    ; thread --
+;         _dup
+;         _ thread_saved_rbp
+;         _swap
+;         _ thread_raw_sp0
+;         _ mark_cells_in_range
+;         next
+; endcode
 
-; ### mark_datastack
-code mark_datastack, 'mark_datastack', SYMBOL_INTERNAL
-        _ current_thread
-        _ thread_mark_datastack
-        next
-endcode
+; ; ### mark_datastack
+; code mark_datastack, 'mark_datastack', SYMBOL_INTERNAL
+;         _ current_thread
+;         _ thread_mark_datastack
+;         next
+; endcode
 
 ; ### gc2_thread_scan_data_stack
 code gc2_thread_scan_data_stack, 'gc2_thread_scan_data_stack' ; thread -> void
@@ -1153,22 +1152,22 @@ code gc2_scan_data_stack, 'gc2_scan_data_stack'
         next
 endcode
 
-; ### thread_mark_return_stack
-code thread_mark_return_stack, 'thread_mark_return_stack', SYMBOL_INTERNAL      ; thread --
-        _dup
-        _ thread_saved_rsp
-        _swap
-        _ thread_raw_rp0
-        _ mark_cells_in_range
-        next
-endcode
+; ; ### thread_mark_return_stack
+; code thread_mark_return_stack, 'thread_mark_return_stack', SYMBOL_INTERNAL      ; thread --
+;         _dup
+;         _ thread_saved_rsp
+;         _swap
+;         _ thread_raw_rp0
+;         _ mark_cells_in_range
+;         next
+; endcode
 
-; ### mark_return_stack
-code mark_return_stack, 'mark_return_stack', SYMBOL_INTERNAL    ; --
-        _ current_thread
-        _ thread_mark_return_stack
-        next
-endcode
+; ; ### mark_return_stack
+; code mark_return_stack, 'mark_return_stack', SYMBOL_INTERNAL    ; --
+;         _ current_thread
+;         _ thread_mark_return_stack
+;         next
+; endcode
 
 ; ### gc2_thread_scan_return_stack
 code gc2_thread_scan_return_stack, 'gc2_thread_scan_return_stack' ; thread -> void
@@ -1188,17 +1187,17 @@ code gc2_scan_return_stack, 'gc2_scan_return_stack'
         next
 endcode
 
-; ### mark_thread_stacks
-code mark_thread_stacks, 'mark_thread_stacks', SYMBOL_INTERNAL ; thread -> void
+; ; ### mark_thread_stacks
+; code mark_thread_stacks, 'mark_thread_stacks', SYMBOL_INTERNAL ; thread -> void
 
-        _debug_print "mark_thread_stacks called"
+;         _debug_print "mark_thread_stacks called"
 
-        _lit S_thread_mark_datastack
-        _lit S_thread_mark_return_stack
-        _ bi
+;         _lit S_thread_mark_datastack
+;         _lit S_thread_mark_return_stack
+;         _ bi
 
-        next
-endcode
+;         next
+; endcode
 
 ; ### gc2_scan_thread_stacks
 code gc2_scan_thread_stacks, 'gc2_scan_thread_stacks' ; thread -> void
@@ -1278,20 +1277,20 @@ code gc2_maybe_collect_handle, 'gc2_maybe_collect_handle' ; untagged-handle --
         next
 endcode
 
-; ### mark-static-symbols
-code mark_static_symbols, 'mark-static-symbols'
-        _ last_static_symbol
-        _begin .1
-        _dup
-        _while .1                       ; -- symbol
-        _dup
-        _ mark_symbol
-        _cellminus
-        _fetch
-        _repeat .1
-        _drop
-        next
-endcode
+; ; ### mark-static-symbols
+; code mark_static_symbols, 'mark-static-symbols'
+;         _ last_static_symbol
+;         _begin .1
+;         _dup
+;         _while .1                       ; -- symbol
+;         _dup
+;         _ mark_symbol
+;         _cellminus
+;         _fetch
+;         _repeat .1
+;         _drop
+;         next
+; endcode
 
 ; ### gc2_scan_static_symbols
 code gc2_scan_static_symbols, 'gc2_scan_static_symbols'
@@ -1525,113 +1524,113 @@ code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
         _ gc2_collect
         _return
 
-        _debug_print "entering gc_collect"
+;         _debug_print "entering gc_collect"
 
-        cmp     qword [S_gc_inhibit_symbol_value], f_value
-        je .1
-        mov     qword [S_gc_pending_symbol_value], t_value
-        _return
-.1:
-        cmp     qword [S_gc_verbose_symbol_value], f_value
-        je .2
-        _ ticks
-        _to gc_start_ticks
-        _rdtsc
-        _to gc_start_cycles
-.2:
-        mov     qword [in_gc?_], t_value
+;         cmp     qword [S_gc_inhibit_symbol_value], f_value
+;         je .1
+;         mov     qword [S_gc_pending_symbol_value], t_value
+;         _return
+; .1:
+;         cmp     qword [S_gc_verbose_symbol_value], f_value
+;         je .2
+;         _ ticks
+;         _to gc_start_ticks
+;         _rdtsc
+;         _to gc_start_cycles
+; .2:
+;         mov     qword [in_gc?_], t_value
 
-        _thread_count
-        cmp     rbx, 1
-        poprbx
-        jne     .3
+;         _thread_count
+;         cmp     rbx, 1
+;         poprbx
+;         jne     .3
 
-        _ current_thread_save_registers
+;         _ current_thread_save_registers
 
-        _debug_print "marking single thread"
+;         _debug_print "marking single thread"
 
-        ; data stack
-        _ mark_datastack
+;         ; data stack
+;         _ mark_datastack
 
-        ; return stack
-        _ mark_return_stack
+;         ; return stack
+;         _ mark_return_stack
 
-        jmp     .4
+;         jmp     .4
 
-.3:
-        _ lock_all_threads
+; .3:
+;         _ lock_all_threads
 
-        _ stop_the_world
+;         _ stop_the_world
 
-        _ current_thread_save_registers
+;         _ current_thread_save_registers
 
-        _debug_print "marking multiple threads"
+;         _debug_print "marking multiple threads"
 
-        _ all_threads
-        _lit S_mark_thread_stacks
-        _ vector_each
+;         _ all_threads
+;         _lit S_mark_thread_stacks
+;         _ vector_each
 
-        _ unlock_all_threads
+;         _ unlock_all_threads
 
-.4:
-        ; static symbols
-        _ mark_static_symbols
+; .4:
+;         ; static symbols
+;         _ mark_static_symbols
 
-        ; explicit roots
-        _ gc_roots
-        _lit S_maybe_mark_from_root
-        _ vector_each
+;         ; explicit roots
+;         _ gc_roots
+;         _lit S_maybe_mark_from_root
+;         _ vector_each
 
-        ; sweep
-        _lit maybe_collect_handle
-        _ each_handle
+;         ; sweep
+;         _lit maybe_collect_handle
+;         _ each_handle
 
-        _ start_the_world
+;         _ start_the_world
 
-        inc     qword [gc_count_value]
+;         inc     qword [gc_count_value]
 
-        mov     qword [in_gc?_], f_value
+;         mov     qword [in_gc?_], f_value
 
-        mov     qword [S_gc_pending_symbol_value], f_value
+;         mov     qword [S_gc_pending_symbol_value], f_value
 
-        cmp     qword [S_gc_verbose_symbol_value], f_value
-        je .5
+;         cmp     qword [S_gc_verbose_symbol_value], f_value
+;         je .5
 
-        _rdtsc
-        _to gc_end_cycles
-        _ ticks
-        _to gc_end_ticks
+;         _rdtsc
+;         _to gc_end_cycles
+;         _ ticks
+;         _to gc_end_ticks
 
-        _ ?nl
-        _write "gc "
-        _ recent_allocations
-        _ decimal_dot
-        _write " allocations since last gc"
-        _ nl
+;         _ ?nl
+;         _write "gc "
+;         _ recent_allocations
+;         _ decimal_dot
+;         _write " allocations since last gc"
+;         _ nl
 
-        _ ?nl
-        _write "gc "
-        _ gc_end_ticks
-        _ gc_start_ticks
-        _minus
-        _tag_fixnum
-        _ decimal_dot
-        _write " ms "
+;         _ ?nl
+;         _write "gc "
+;         _ gc_end_ticks
+;         _ gc_start_ticks
+;         _minus
+;         _tag_fixnum
+;         _ decimal_dot
+;         _write " ms "
 
-        _ gc_end_cycles
-        _ gc_start_cycles
-        _minus
-        _tag_fixnum
-        _ decimal_dot
-        _write " cycles"
-        _ nl
+;         _ gc_end_cycles
+;         _ gc_start_cycles
+;         _minus
+;         _tag_fixnum
+;         _ decimal_dot
+;         _write " cycles"
+;         _ nl
 
-.5:
-        _reset_recent_allocations
+; .5:
+;         _reset_recent_allocations
 
-        _debug_print "leaving gc_collect"
+;         _debug_print "leaving gc_collect"
 
-        next
+;         next
 endcode
 
 asm_global gc2_work_list_max_
@@ -1756,11 +1755,9 @@ code gc2_collect, 'gc2_collect'
         _ each_handle
 
         ; data stack
-;         _ mark_datastack
         _ gc2_scan_data_stack
 
         ; return stack
-;         _ mark_return_stack
         _ gc2_scan_return_stack
 
         jmp     .4
