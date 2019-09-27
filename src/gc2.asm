@@ -126,7 +126,6 @@ code gc2_scan_vector, 'gc2_scan_vector' ; ^vector -> void
         _raw_loop_index
         _this_vector_nth_unsafe         ; -> element
         _ gc2_maybe_push_handle
-
         _loop .1
         pop     this_register
 
@@ -623,66 +622,6 @@ code gc2_maybe_push_handle, 'gc2_maybe_push_handle' ; x -> void
         next
 endcode
 
-; ; ### gc2_add_handle_to_work_list
-; code gc2_add_handle_to_work_list, 'gc2_add_handle_to_work_list' ; handle -> void
-;         _debug_print "gc2_add_handle_to_work_list called"
-;         _drop ; FIXME
-;         next
-; endcode
-
-; ; ### gc2_add_raw_object
-; code gc2_add_raw_object, 'gc2_add_raw_object' ; ^object -> void
-;         _debug_print "gc2_add_raw_object called"
-;         _drop ; FIXME
-;         next
-; endcode
-
-; ; ### maybe-mark-handle
-; code maybe_mark_handle, 'maybe-mark-handle', SYMBOL_INTERNAL ; x -> void
-;         cmp     bl, HANDLE_TAG
-;         jne     .1
-;         _handle_to_object_unsafe
-;         test    rbx, rbx
-;         jz      .1
-;         _ mark_raw_object
-;         next
-; .1:
-;         _drop
-;         next
-; endcode
-
-; ; ### add-object-address-to-gray-list
-; code maybe_add_object_address_to_gray_list, 'maybe-add-object-address-to-gray-list'
-;         cmp     bl, HANDLE_TAG
-;         jne     .1
-;         _handle_to_object_unsafe
-;         test    rbx, rbx
-;         jz      .1
-; ;         _ mark_raw_object
-;         _mark_gray
-;         next
-; .1:
-;         _drop
-;         next
-; endcode
-
-; ; ### maybe_mark_verified_handle
-; code maybe_mark_verified_handle, 'maybe_mark_verified_handle', SYMBOL_INTERNAL  ; handle --
-;         _dup
-;         _ verified_handle?
-;         cmp     rbx, f_value
-;         poprbx
-;         jz      .1                      ; -- handle
-;         _handle_to_object_unsafe
-;         test    rbx, rbx
-;         jz      .1
-;         _ mark_raw_object
-;         _return
-; .1:
-;         _drop
-;         next
-; endcode
-
 ; ### gc2_scan_verified_handle
 code gc2_scan_verified_handle, 'gc2_scan_verified_handle' ; handle -> empty
 ;        _debug_print "gc2_scan_verified_handle"
@@ -702,13 +641,6 @@ code gc2_scan_verified_handle, 'gc2_scan_verified_handle' ; handle -> empty
         _drop
         next
 endcode
-
-; ; ### maybe_mark_from_root
-; code maybe_mark_from_root, 'maybe_mark_from_root', SYMBOL_INTERNAL      ; raw-address --
-;         _fetch
-;         _ maybe_mark_handle
-;         next
-; endcode
 
 ; ### gc2_visit_root
 code gc2_visit_root, 'gc2_visit_root' ; raw-address -> void
@@ -732,21 +664,6 @@ code gc2_visit_root, 'gc2_visit_root' ; raw-address -> void
         next
 endcode
 
-; ; ### mark_cells_in_range
-; code mark_cells_in_range, 'mark_cells_in_range', SYMBOL_INTERNAL        ; low-address high-address --
-;         sub     rbx, qword [rbp]        ; -- low-address number-of-bytes
-;         shr     rbx, 3                  ; -- low-address number-of-cells
-;         _register_do_times .1
-;         _raw_loop_index
-;         shl     rbx, 3
-;         add     rbx, qword [rbp]
-;         mov     rbx, [rbx]
-;         _ maybe_mark_verified_handle
-;         _loop .1
-;         _drop
-;         next
-; endcode
-
 ; ### gc2_scan_cells_in_range
 code gc2_scan_cells_in_range, 'gc2_scan_cells_in_range' ; low-address high-address -> void
         sub     rbx, qword [rbp]        ; -> low-address number-of-bytes
@@ -761,23 +678,6 @@ code gc2_scan_cells_in_range, 'gc2_scan_cells_in_range' ; low-address high-addre
         _drop
         next
 endcode
-
-; ; ### thread_mark_datastack
-; code thread_mark_datastack, 'thread_mark_datastack', SYMBOL_INTERNAL    ; thread --
-;         _dup
-;         _ thread_saved_rbp
-;         _swap
-;         _ thread_raw_sp0
-;         _ mark_cells_in_range
-;         next
-; endcode
-
-; ; ### mark_datastack
-; code mark_datastack, 'mark_datastack', SYMBOL_INTERNAL
-;         _ current_thread
-;         _ thread_mark_datastack
-;         next
-; endcode
 
 ; ### gc2_thread_scan_data_stack
 code gc2_thread_scan_data_stack, 'gc2_thread_scan_data_stack' ; thread -> void
@@ -797,23 +697,6 @@ code gc2_scan_data_stack, 'gc2_scan_data_stack'
         next
 endcode
 
-; ; ### thread_mark_return_stack
-; code thread_mark_return_stack, 'thread_mark_return_stack', SYMBOL_INTERNAL      ; thread --
-;         _dup
-;         _ thread_saved_rsp
-;         _swap
-;         _ thread_raw_rp0
-;         _ mark_cells_in_range
-;         next
-; endcode
-
-; ; ### mark_return_stack
-; code mark_return_stack, 'mark_return_stack', SYMBOL_INTERNAL    ; --
-;         _ current_thread
-;         _ thread_mark_return_stack
-;         next
-; endcode
-
 ; ### gc2_thread_scan_return_stack
 code gc2_thread_scan_return_stack, 'gc2_thread_scan_return_stack' ; thread -> void
         _dup
@@ -832,18 +715,6 @@ code gc2_scan_return_stack, 'gc2_scan_return_stack'
         next
 endcode
 
-; ; ### mark_thread_stacks
-; code mark_thread_stacks, 'mark_thread_stacks', SYMBOL_INTERNAL ; thread -> void
-
-;         _debug_print "mark_thread_stacks called"
-
-;         _lit S_thread_mark_datastack
-;         _lit S_thread_mark_return_stack
-;         _ bi
-
-;         next
-; endcode
-
 ; ### gc2_scan_thread_stacks
 code gc2_scan_thread_stacks, 'gc2_scan_thread_stacks' ; thread -> void
         _debug_print "gc2_scan_thread_stacks called"
@@ -854,38 +725,6 @@ code gc2_scan_thread_stacks, 'gc2_scan_thread_stacks' ; thread -> void
 
         next
 endcode
-
-; ; ### maybe_collect_handle
-; code maybe_collect_handle, 'maybe_collect_handle', SYMBOL_INTERNAL
-; ; untagged-handle --
-
-;         _dup
-;         mov     rbx, [rbx]              ; -- untagged-handle raw-object/0
-
-;         ; check for null object address
-;         test    rbx, rbx
-;         jz      .1
-
-;         ; is object marked?
-;         _test_marked_bit
-;         jz .2
-
-;         ; object is marked
-;         _nip                            ; -- object
-;         _unmark_object
-;         _return
-
-; .2:                                     ; -- untagged-handle object
-;         ; object is not marked
-;         _ destroy_heap_object           ; -- untagged-handle
-;         _ release_handle_unsafe
-;         _return
-
-; .1:
-;         ; null object address, nothing to do
-;         _2drop
-;         next
-; endcode
 
 ; ### gc2_maybe_collect_handle
 code gc2_maybe_collect_handle, 'gc2_maybe_collect_handle' ; untagged-handle --
@@ -947,15 +786,6 @@ code stop_for_gc?, 'stop_for_gc?', SYMBOL_INTERNAL      ; -- ?
         mov     rbx, [stop_for_gc?_]
         next
 endcode
-
-; asm_global collector_thread_, f_value
-
-; ; ### collector_thread
-; code collector_thread, 'collector_thread', SYMBOL_INTERNAL ; -- thread/f
-;         pushrbx
-;         mov     rbx, [collector_thread_]
-;         next
-; endcode
 
 ; ### stop_for_gc
 code stop_for_gc, 'stop_for_gc', SYMBOL_INTERNAL         ; --
