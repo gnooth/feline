@@ -1450,7 +1450,7 @@ asm_global gc_lock_, f_value
 %endmacro
 
 ; ### gc-lock
-code gc_lock, 'gc-lock'                 ; -- mutex
+code gc_lock, 'gc_lock' ; -> mutex
         _gc_lock
         next
 endcode
@@ -1466,118 +1466,11 @@ code initialize_gc_lock, 'initialize_gc_lock', SYMBOL_INTERNAL  ; --
 endcode
 
 ; ### gc_collect
-code gc_collect, 'gc_collect', SYMBOL_INTERNAL  ; --
+code gc_collect, 'gc_collect', SYMBOL_INTERNAL
 
         _ gc2_collect
         _return
 
-;         _debug_print "entering gc_collect"
-
-;         cmp     qword [S_gc_inhibit_symbol_value], f_value
-;         je .1
-;         mov     qword [S_gc_pending_symbol_value], t_value
-;         _return
-; .1:
-;         cmp     qword [S_gc_verbose_symbol_value], f_value
-;         je .2
-;         _ ticks
-;         _to gc_start_ticks
-;         _rdtsc
-;         _to gc_start_cycles
-; .2:
-;         mov     qword [in_gc?_], t_value
-
-;         _thread_count
-;         cmp     rbx, 1
-;         poprbx
-;         jne     .3
-
-;         _ current_thread_save_registers
-
-;         _debug_print "marking single thread"
-
-;         ; data stack
-;         _ mark_datastack
-
-;         ; return stack
-;         _ mark_return_stack
-
-;         jmp     .4
-
-; .3:
-;         _ lock_all_threads
-
-;         _ stop_the_world
-
-;         _ current_thread_save_registers
-
-;         _debug_print "marking multiple threads"
-
-;         _ all_threads
-;         _lit S_mark_thread_stacks
-;         _ vector_each
-
-;         _ unlock_all_threads
-
-; .4:
-;         ; static symbols
-;         _ mark_static_symbols
-
-;         ; explicit roots
-;         _ gc_roots
-;         _lit S_maybe_mark_from_root
-;         _ vector_each
-
-;         ; sweep
-;         _lit maybe_collect_handle
-;         _ each_handle
-
-;         _ start_the_world
-
-;         inc     qword [gc_count_value]
-
-;         mov     qword [in_gc?_], f_value
-
-;         mov     qword [S_gc_pending_symbol_value], f_value
-
-;         cmp     qword [S_gc_verbose_symbol_value], f_value
-;         je .5
-
-;         _rdtsc
-;         _to gc_end_cycles
-;         _ ticks
-;         _to gc_end_ticks
-
-;         _ ?nl
-;         _write "gc "
-;         _ recent_allocations
-;         _ decimal_dot
-;         _write " allocations since last gc"
-;         _ nl
-
-;         _ ?nl
-;         _write "gc "
-;         _ gc_end_ticks
-;         _ gc_start_ticks
-;         _minus
-;         _tag_fixnum
-;         _ decimal_dot
-;         _write " ms "
-
-;         _ gc_end_cycles
-;         _ gc_start_cycles
-;         _minus
-;         _tag_fixnum
-;         _ decimal_dot
-;         _write " cycles"
-;         _ nl
-
-; .5:
-;         _reset_recent_allocations
-
-;         _debug_print "leaving gc_collect"
-
-;         next
 endcode
 
 asm_global gc2_work_list_max_
@@ -1730,30 +1623,20 @@ code gc2_collect, 'gc2_collect'
 
 .4:
         ; static symbols
-;         _ mark_static_symbols
         _ gc2_scan_static_symbols
 
         ; explicit roots
         _ gc_roots
-;         _lit S_maybe_mark_from_root
-;         _lit S_gc2_maybe_add_root
-;         _ vector_each
         _lit gc2_visit_root
         _ unsafe_raw_code_address_vector_each
 
         ; work list is ready to go
         _ gc2_process_work_list
 
-;         _debug_print "returning from gc2_collect"
-;         _return
-
         ; sweep
         _debug_print "collecting handles"
         _lit gc2_maybe_collect_handle
         _ each_handle
-
-;         _debug_print "returning from gc2_collect"
-;         _return
 
         _ start_the_world
 
@@ -1809,38 +1692,6 @@ code gc, 'gc'
         _ gc2
         _return
 
-        _debug_print "entering gc"
-
-        _ gc_lock
-        _ mutex_trylock
-        _tagged_if_not .1
-        ; gc is already in progress
-        _debug_print "gc already in progress, returning"
-        jmp .exit
-        _then .1
-
-        _debug_print "gc obtained gc lock"
-
-.wait:
-        _ trylock_handles
-        cmp     rbx, f_value
-        poprbx
-        je      .wait
-
-        _ gc_collect
-
-        _ unlock_handles
-
-        _ gc_lock
-        _ mutex_unlock
-        _tagged_if_not .2
-        _error "gc mutex_unlock failed"
-        _then .2
-
-.exit:
-        _debug_print "leaving gc"
-
-        next
 endcode
 
 ; ### gc2
@@ -1848,7 +1699,6 @@ code gc2, 'gc2'
 
         _debug_print "entering gc2"
 
-; %if 1
         _ gc_lock
         _ mutex_trylock
         _tagged_if_not .1
@@ -1876,9 +1726,6 @@ code gc2, 'gc2'
         _then .2
 
 .exit:
-; %else
-;         _ gc2_collect
-; %endif
         _debug_print "leaving gc2"
 
         _write "gc2_work_list_max = "
