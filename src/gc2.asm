@@ -580,44 +580,21 @@ endcode
 
 ; ### gc2_maybe_push_handle
 code gc2_maybe_push_handle, 'gc2_maybe_push_handle' ; x -> void
+
         cmp     bl, HANDLE_TAG
-        jne     .1
+        jne     drop                    ; do nothing if x is not a handle
 
-;         _dup
-;         _ object_raw_typecode
-;         cmp     rbx, TYPECODE_STRING
-;         poprbx
-;         jne     .0
-;         _debug_print "gc2_maybe_push_handle string"
-; .0:
-
-;         _handle_to_object_unsafe
-;         test    rbx, rbx
-;         jz      .1
-;         _ mark_raw_object
         mov     rax, rbx                ; use rax as work register
         shr     rax, HANDLE_TAG_BITS
         mov     rax, [rax]              ; ^object in rax
         test    rax, rax                ; check for empty handle
-        jz      .1
+        jz      drop
         cmp     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_WHITE
-        jne     .1
+        jne     drop
         mov     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
-
-;         _dup
-;         _ mark_byte
-;         _ hexdot
-;         _ nl
 
         _ gc2_work_list
         _ vector_push
-        next
-.1:
-;         mov     rbx, rax
-;         _write "skipping "
-;         _ mark_byte
-;         _ dot_object
-        _drop
 
         next
 endcode
