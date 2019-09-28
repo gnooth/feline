@@ -1,0 +1,12 @@
+using: feline ;
+in: gc0
+
+empty
+
+// factor/extra/benchmark/gc0/gc0.factor
+
+: allocate 10 make-array/1 ;
+
+: gc0 f 60000000 [ allocate nip ] times drop ;
+
+: test [ gc0 ] time ;
