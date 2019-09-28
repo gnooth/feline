@@ -92,6 +92,8 @@ endcode
         mov      OBJECT_MARK_BYTE, MARK_BLACK
 %endmacro
 
+%ifdef DEBUG
+
 ; ### gc2_assert_white
 code gc2_assert_white, 'gc2_assert_white' ; ^object -> void
 ;         _print "gc2_assert_white"
@@ -112,6 +114,8 @@ code gc2_assert_white, 'gc2_assert_white' ; ^object -> void
         _error "gc_verify_white error!"
         next
 endcode
+
+%endif
 
 ; scanners
 
@@ -574,7 +578,7 @@ code mark_byte, 'mark_byte' ; handle -> fixnum/nil
         _tag_fixnum
         next
 .1:
-        mov     rbx, f_value
+        mov     ebx, nil_value
         next
 endcode
 
@@ -704,25 +708,22 @@ code gc2_scan_thread_stacks, 'gc2_scan_thread_stacks' ; thread -> void
 endcode
 
 ; ### gc2_maybe_collect_handle
-code gc2_maybe_collect_handle, 'gc2_maybe_collect_handle' ; untagged-handle --
+code gc2_maybe_collect_handle, 'gc2_maybe_collect_handle' ; untagged-handle -> void
 
         _dup
-        mov     rbx, [rbx]              ; -- untagged-handle ^object/0
+        mov     rbx, [rbx]              ; -> untagged-handle ^object/0
 
         ; check for null object address
         test    rbx, rbx
-        jz      .1
+        jz      twodrop
 
-        ; is object unmarked?
-;         _test_marked_bit
-;         jz .2
         cmp     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_WHITE
         je      .2
 
         ; object is not white
-        _nip                            ; -- object
+        _nip                            ; -> ^object
         mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_WHITE
-        _drop
+        jmp     drop
         _return
 
 .2:                                     ; -> untagged-handle object
@@ -731,10 +732,10 @@ code gc2_maybe_collect_handle, 'gc2_maybe_collect_handle' ; untagged-handle --
         _ release_handle_unsafe
         _return
 
-.1:
-        ; null object address, nothing to do
-        _2drop
-        next
+; .1:
+;         ; null object address, nothing to do
+;         _2drop
+;         next
 endcode
 
 ; ### gc2_scan_static_symbols
@@ -1074,9 +1075,11 @@ code gc2_collect, 'gc2_collect'
 
         _debug_print "marking single thread"
 
+%ifdef DEBUG
         ; verify that all handles are white
         _lit gc2_assert_white
         _ each_handle
+%endif
 
         ; data stack
         _ gc2_scan_data_stack
