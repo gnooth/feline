@@ -409,13 +409,13 @@ endcode
 code gc2_scan_object, 'gc2_scan_object' ; ^object -> void
 ;         _debug_print "gc2_scan_object"
 
-        _debug_?enough 1
+;         _debug_?enough 1
 
-        test    rbx, rbx
-        jz      error_empty_handle
+;         test    rbx, rbx
+;         jz      error_empty_handle
 
         ; REVIEW this is probably redundant
-        mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
+;         mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
 
         _dup
         _object_raw_typecode
@@ -455,6 +455,7 @@ code gc2_scan_object, 'gc2_scan_object' ; ^object -> void
         next
 endcode
 
+%if 0
 ; ### gc2_scan_handle
 code gc2_scan_handle, 'gc2_scan_handle' ; handle -> void
         cmp     bl, HANDLE_TAG
@@ -468,6 +469,7 @@ code gc2_scan_handle, 'gc2_scan_handle' ; handle -> void
         _drop
         next
 endcode
+%endif
 
 asm_global gc2_dispatch_table_
 
@@ -998,7 +1000,9 @@ code gc2_process_work_list, 'gc2_process_work_list'
         jne     .not_gray
         mov     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
 
-        _ gc2_scan_handle               ; uses dispatch table
+;         _ gc2_scan_handle               ; uses dispatch table
+        mov     rbx, rax                ; -> ^object
+        _ gc2_scan_object
 
         jmp     .top
 
