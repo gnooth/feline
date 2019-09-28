@@ -730,11 +730,6 @@ code gc2_maybe_collect_handle, 'gc2_maybe_collect_handle' ; untagged-handle -> v
         _ destroy_heap_object           ; -> untagged-handle
         _ release_handle_unsafe
         _return
-
-; .1:
-;         ; null object address, nothing to do
-;         _2drop
-;         next
 endcode
 
 ; ### gc2_scan_static_symbols
@@ -987,26 +982,13 @@ code gc2_process_work_list, 'gc2_process_work_list'
         _drop
 
         _ vector_?pop                   ; -> handle/nil
-        cmp     rbx, f_value
+        cmp     rbx, nil_value
         je      .normal_exit
 
         ; -> handle
         cmp     bl, HANDLE_TAG
         jne     .not_a_handle
 
-;         _dup
-;         _ object_raw_typecode
-;         cmp     rbx, TYPECODE_STRING
-;         poprbx
-;         jne     .0
-;         _debug_print "gc2_process_work_list string"
-;         int3
-; .0:
-
-;         _handle_to_object_unsafe
-;         test    rbx, rbx
-;         jz      .1
-;         _ mark_raw_object
         mov     rax, rbx                ; use rax as work register
         shr     rax, HANDLE_TAG_BITS
         mov     rax, [rax]              ; ^object in rax
@@ -1015,11 +997,6 @@ code gc2_process_work_list, 'gc2_process_work_list'
         cmp     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
         jne     .not_gray
         mov     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
-
-;         _dup
-;         _ mark_byte
-;         _ hexdot
-;         _ ?nl
 
         _ gc2_scan_handle               ; uses dispatch table
 
