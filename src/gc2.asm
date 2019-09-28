@@ -75,22 +75,22 @@ endcode
 %define MARK_GRAY  0b01
 %define MARK_BLACK 0b10
 
-%macro  _mark_bits 0                    ; ^object -> mark-bits
-        _object_mark_byte
-        and     rbx, 0xb11
-%endmacro
+; %macro  _mark_bits 0                    ; ^object -> mark-bits
+;         _object_mark_byte
+;         and     rbx, 0xb11
+; %endmacro
 
-%macro  _mark_white 0
-        mov     OBJECT_MARK_BYTE, MARK_WHITE
-%endmacro
+; %macro  _mark_white 0
+;         mov     OBJECT_MARK_BYTE, MARK_WHITE
+; %endmacro
 
-%macro  _mark_gray 0
-        mov     OBJECT_MARK_BYTE, MARK_GRAY
-%endmacro
+; %macro  _mark_gray 0
+;         mov     OBJECT_MARK_BYTE, MARK_GRAY
+; %endmacro
 
-%macro  _mark_black 0
-        mov      OBJECT_MARK_BYTE, MARK_BLACK
-%endmacro
+; %macro  _mark_black 0
+;         mov      OBJECT_MARK_BYTE, MARK_BLACK
+; %endmacro
 
 %ifdef DEBUG
 
@@ -143,9 +143,8 @@ code gc2_scan_array, 'gc2_scan_array'   ; ^array -> void
         push    this_register
         mov     this_register, rbx
         _array_raw_length
-        _zero
-        _?do .1
-        _i
+        _register_do_times .1
+        _raw_loop_index
         _this_array_nth_unsafe
         _ gc2_maybe_push_handle
         _loop .1
@@ -589,7 +588,7 @@ code gc2_maybe_push_handle, 'gc2_maybe_push_handle' ; x -> void
         jne     drop                    ; do nothing if x is not a handle
 
         mov     rax, rbx                ; use rax as work register
-        shr     rax, HANDLE_TAG_BITS
+        shr     rax, HANDLE_TAG_BITS    ; untagged handle in rax
         mov     rax, [rax]              ; ^object in rax
         test    rax, rax                ; check for empty handle
         jz      drop
@@ -1090,9 +1089,6 @@ code gc2_collect, 'gc2_collect'
         jmp     .4
 
 .3:
-;         _debug_print "gc2 multiple threads, exiting..."
-;         xcall   os_bye
-
         _ lock_all_threads
 
         _ stop_the_world
@@ -1102,7 +1098,6 @@ code gc2_collect, 'gc2_collect'
         _debug_print "marking multiple threads"
 
         _ all_threads
-;         _lit S_mark_thread_stacks
         _lit S_gc2_scan_thread_stacks
         _ vector_each
 
