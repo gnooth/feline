@@ -75,23 +75,6 @@ endcode
 %define MARK_GRAY  0b01
 %define MARK_BLACK 0b10
 
-; %macro  _mark_bits 0                    ; ^object -> mark-bits
-;         _object_mark_byte
-;         and     rbx, 0xb11
-; %endmacro
-
-; %macro  _mark_white 0
-;         mov     OBJECT_MARK_BYTE, MARK_WHITE
-; %endmacro
-
-; %macro  _mark_gray 0
-;         mov     OBJECT_MARK_BYTE, MARK_GRAY
-; %endmacro
-
-; %macro  _mark_black 0
-;         mov      OBJECT_MARK_BYTE, MARK_BLACK
-; %endmacro
-
 %ifdef DEBUG
 
 ; ### gc2_assert_white
@@ -111,7 +94,7 @@ code gc2_assert_white, 'gc2_assert_white' ; ^object -> void
         next
 
 .error:
-        _error "gc_verify_white error!"
+        _error "gc_assert_white error!"
         next
 endcode
 
@@ -174,7 +157,7 @@ code gc2_scan_hashtable, 'gc2_scan_hashtable' ; ^hashtable -> void
 endcode
 
 ; ### gc2_scan_vocab
-code gc2_scan_vocab, 'gc2_scan_vocab'   ; vocab -> void
+code gc2_scan_vocab, 'gc2_scan_vocab' ; ^vocab -> void
 ;         _debug_print "gc2_scan_vocab"
 
         _dup
@@ -239,7 +222,7 @@ code gc2_scan_symbol, 'gc2_scan_symbol' ; ^symbol -> void
 endcode
 
 ; ### gc2_scan_quotation
-code gc2_scan_quotation, 'gc2_scan_quotation' ; quotation -> void
+code gc2_scan_quotation, 'gc2_scan_quotation' ; ^quotation -> void
 ;         _debug_print "gc2_scan_quotation"
 
         _quotation_array
@@ -249,7 +232,7 @@ code gc2_scan_quotation, 'gc2_scan_quotation' ; quotation -> void
 endcode
 
 ; ### gc2_scan_slice
-code gc2_scan_slice, 'gc2_scan_slice'   ; slice -> void
+code gc2_scan_slice, 'gc2_scan_slice' ; ^slice -> void
 ;         _debug_print "gc2_scan_slice"
 
         _slice_seq
@@ -259,7 +242,7 @@ code gc2_scan_slice, 'gc2_scan_slice'   ; slice -> void
 endcode
 
 ; ### gc2_scan_tuple
-code gc2_scan_tuple, 'gc2_scan_tuple'   ; ^tuple -> void
+code gc2_scan_tuple, 'gc2_scan_tuple' ; ^tuple -> void
         _debug_?enough 1
 ;         _debug_print "gc2_scan_tuple"
 
@@ -286,7 +269,7 @@ code gc2_scan_tuple, 'gc2_scan_tuple'   ; ^tuple -> void
 endcode
 
 ; ### gc2_scan_lexer
-code gc2_scan_lexer, 'gc2_scan_lexer'   ; lexer -> void
+code gc2_scan_lexer, 'gc2_scan_lexer' ; ^lexer -> void
 ;         _debug_print "gc2_scan_lexer"
 
         _dup
@@ -409,14 +392,6 @@ endcode
 code gc2_scan_object, 'gc2_scan_object' ; ^object -> void
 ;         _debug_print "gc2_scan_object"
 
-;         _debug_?enough 1
-
-;         test    rbx, rbx
-;         jz      error_empty_handle
-
-        ; REVIEW this is probably redundant
-;         mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
-
         _dup
         _object_raw_typecode
 
@@ -454,22 +429,6 @@ code gc2_scan_object, 'gc2_scan_object' ; ^object -> void
         _drop
         next
 endcode
-
-%if 0
-; ### gc2_scan_handle
-code gc2_scan_handle, 'gc2_scan_handle' ; handle -> void
-        cmp     bl, HANDLE_TAG
-        jne     .1
-        _handle_to_object_unsafe        ; -> ^object
-        test    rbx, rbx
-        jz      .1
-        _ gc2_scan_object
-        next
-.1:
-        _drop
-        next
-endcode
-%endif
 
 asm_global gc2_dispatch_table_
 
@@ -1000,7 +959,6 @@ code gc2_process_work_list, 'gc2_process_work_list'
         jne     .not_gray
         mov     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
 
-;         _ gc2_scan_handle               ; uses dispatch table
         mov     rbx, rax                ; -> ^object
         _ gc2_scan_object
 
