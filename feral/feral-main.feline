@@ -340,14 +340,14 @@ in: editor
         2drop
     ] if ;
 
-: edit-home
+: edit-current-directory
     initialize-editor
-    user-home directory-mode:open-directory
+    get-current-directory directory-mode:open-directory
     edit1 ;
 
 : edit
     parse-token [
         find-name [ edit-definition ] [ edit-file ] if
     ] [
-        edit-home
+        edit-current-directory
     ] if* ;
