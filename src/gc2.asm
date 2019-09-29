@@ -1057,7 +1057,7 @@ code gc2_collect, 'gc2_collect'
         ; explicit roots
         _ gc_roots
         _lit gc2_visit_root
-        _ unsafe_raw_code_address_vector_each
+        _ vector_each_internal
 
         ; work list is ready to go
         _ gc2_process_work_list

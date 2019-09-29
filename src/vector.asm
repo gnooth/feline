@@ -882,9 +882,8 @@ code vector_reverse_in_place, 'vector-reverse!'         ; vector -- vector
         next
 endcode
 
-; ### unsafe_raw_code_address_vector_each
-code unsafe_raw_code_address_vector_each, 'unsafe_raw_code_address_vector_each'
-; vector raw-code-address ->
+; ### vector_each_internal
+subroutine vector_each_internal ; vector raw-code-address ->
 
 ;         ; protect callable from gc
 ;         push    rbx
@@ -911,8 +910,8 @@ code unsafe_raw_code_address_vector_each, 'unsafe_raw_code_address_vector_each'
 ;         ; drop callable
 ;         pop     rax
 
-        next
-endcode
+        ret
+endsub
 
 ; ### vector-each
 code vector_each, 'vector-each'         ; vector callable --
