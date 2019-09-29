@@ -25,4 +25,4 @@ linux? have-gtkui? and constant gtkui?
 
 winui? gtkui? or not constant termui?
 
-"feral-main.feline" load
+feline-home "feral" path-append "feral-main.feline" path-append load
