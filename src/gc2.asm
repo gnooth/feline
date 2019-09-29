@@ -557,6 +557,8 @@ code gc2_maybe_push_handle, 'gc2_maybe_push_handle' ; x -> void
         jne     drop
         mov     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
 
+        mov     rbx, rax
+
         _ gc2_work_list
         _ vector_push
 
@@ -946,20 +948,25 @@ code gc2_process_work_list, 'gc2_process_work_list'
         cmp     rbx, nil_value
         je      .normal_exit
 
-        ; -> handle
-        cmp     bl, HANDLE_TAG
-        jne     .not_a_handle
+;         ; -> handle
+;         cmp     bl, HANDLE_TAG
+;         jne     .not_a_handle
 
-        mov     rax, rbx                ; use rax as work register
-        shr     rax, HANDLE_TAG_BITS
-        mov     rax, [rax]              ; ^object in rax
-        test    rax, rax                ; check for empty handle
-        jz      .empty_handle
-        cmp     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
+;         mov     rax, rbx                ; use rax as work register
+;         shr     rax, HANDLE_TAG_BITS
+;         mov     rax, [rax]              ; ^object in rax
+;         test    rax, rax                ; check for empty handle
+;         jz      .empty_handle
+;         cmp     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
+;         jne     .not_gray
+;         mov     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
+;
+;         mov     rbx, rax                ; -> ^object
+
+        cmp     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
         jne     .not_gray
-        mov     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
+        mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
 
-        mov     rbx, rax                ; -> ^object
         _ gc2_scan_object
 
         jmp     .top
@@ -978,7 +985,8 @@ code gc2_process_work_list, 'gc2_process_work_list'
         next
 
 .not_gray:
-        movzx   rbx, byte [rax + OBJECT_MARK_BYTE_OFFSET]
+;         movzx   rbx, byte [rax + OBJECT_MARK_BYTE_OFFSET]
+        movzx   rbx, byte [rbx + OBJECT_MARK_BYTE_OFFSET]
         _write "handle on work list is not gray: "
         _ hexdot
         _ nl
