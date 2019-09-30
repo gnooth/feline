@@ -686,7 +686,7 @@ code gc2_maybe_collect_handle, 'gc2_maybe_collect_handle' ; untagged-handle -> v
         _nip                            ; -> ^object
         mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_WHITE
         jmp     drop
-        _return
+;         _return
 
 .2:                                     ; -> untagged-handle object
         ; object is white
@@ -928,22 +928,26 @@ endcode
 ; ### gc2_process_work_list
 code gc2_process_work_list, 'gc2_process_work_list'
 
+%ifdef DEBUG
         _ gc2_work_list
         _ vector_raw_length
         mov     [gc2_work_list_max_], rbx
         _drop
+%endif
 
 .top:
-        _ gc2_work_list
 
-        _dup
+%ifdef DEBUG
+        _ gc2_work_list
         _ vector_raw_length
         cmp     [gc2_work_list_max_], rbx
         jge     .1
         mov     [gc2_work_list_max_], rbx
 .1:
         _drop
+%endif
 
+        _ gc2_work_list
         _ vector_?pop                   ; -> handle/nil
         cmp     rbx, nil_value
         je      .normal_exit
@@ -1156,10 +1160,10 @@ code gc2, 'gc2'
 
 .exit:
         _debug_print "leaving gc2"
-
+%ifdef DEBUG
         _write "gc2_work_list_max = "
         _ gc2_work_list_max
         _ dot_object
-
+%endif
         next
 endcode
