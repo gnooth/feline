@@ -18,24 +18,24 @@ file __FILE__
 asm_global gc_roots_                    ; initialized in cold
 
 ; ### gc_roots
-code gc_roots, 'gc_roots', SYMBOL_INTERNAL      ; -- vector
+code gc_roots, 'gc_roots', SYMBOL_INTERNAL ; -- vector
         pushrbx
         mov     rbx, [gc_roots_]
         next
 endcode
 
 ; ### gc_add_root
-code gc_add_root, 'gc_add_root', SYMBOL_INTERNAL        ; raw-address --
+code gc_add_root, 'gc_add_root', SYMBOL_INTERNAL  ; raw-address --
         _ gc_roots
         _ vector_push
         next
 endcode
 
-asm_global gc2_work_list_raw_vector_
+asm_global gc2_work_list_
 
-%macro _gc2_work_list_raw_vector 0                 ; -> ^vector
+%macro _gc2_work_list 0                 ; -> ^vector
         pushrbx
-        mov     rbx, [gc2_work_list_raw_vector_]
+        mov     rbx, [gc2_work_list_]
 %endmacro
 
 asm_global gc2_work_list_fake_handle_
@@ -52,21 +52,22 @@ endcode
 code gc2_initialize_work_list, 'gc2_initialize_work_list'
         _debug_print "gc2_initialize_work_list called"
 
-        _lit 256
+        _lit 1024
         _ new_vector_untagged                           ; -> handle
 
         _dup
         _handle_to_object_unsafe                        ; -> handle ^vector
 
-        ; store address of raw vector in asm global
-        mov     [gc2_work_list_raw_vector_], rbx        ; -> handle ^vector
+        ; store address of vector in asm global
+        mov     [gc2_work_list_], rbx                   ; -> handle ^vector
         poprbx                                          ; -> handle
 
         ; and release its handle
         _untag_handle
         _ release_handle_unsafe                         ; -> empty
 
-        mov     rax, gc2_work_list_raw_vector_
+        ; set up fake handle
+        mov     rax, gc2_work_list_
         mov     [gc2_work_list_fake_handle_], rax
         next
 endcode
@@ -954,10 +955,10 @@ code gc2_process_work_list, 'gc2_process_work_list'
         _drop
 %endif
 
-        _ gc2_work_list
-        _ vector_?pop                   ; -> ^object/nil
+        _gc2_work_list                  ; -> ^vector
+        _ vector_?pop_internal          ; -> ^object/nil
         cmp     rbx, nil_value
-        je      .normal_exit
+        je      drop                    ; normal exit
 
         ; -> ^object
         cmp     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
@@ -968,9 +969,9 @@ code gc2_process_work_list, 'gc2_process_work_list'
 
         jmp     .top
 
-.normal_exit:
-        _drop
-        next
+; .normal_exit:
+;         _drop
+;         next
 
 ; .not_a_handle:
 ;         _error "not a handle"
