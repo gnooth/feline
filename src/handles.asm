@@ -368,7 +368,7 @@ code release_handle_unsafe, 'release_handle_unsafe', SYMBOL_INTERNAL    ; handle
 
         ; add handle to recycled handles vector
         _recycled_handles_vector
-        _ vector_push_unchecked         ; --
+        _ vector_push_internal
 
         next
 endcode

@@ -691,13 +691,8 @@ code vector_adjoin, 'vector-adjoin'     ; element vector -> void
         next
 endcode
 
-; ### vector-push
-code vector_push, 'vector-push'         ; element handle --
-
-        _ check_vector                  ; -- element vector
-
-vector_push_unchecked:
-
+; ### vector_push_internal
+subroutine vector_push_internal         ; element ^vector -> void
         mov     rax, [rbx + VECTOR_RAW_LENGTH_OFFSET]
         cmp     rax, [rbx + VECTOR_RAW_CAPACITY_OFFSET]
         jge     .1                      ; length >= capacity
@@ -705,8 +700,7 @@ vector_push_unchecked:
         mov     rcx, [rbx + VECTOR_RAW_DATA_ADDRESS_OFFSET]
         mov     [rcx + BYTES_PER_CELL * rax], rdx
         add     qword [rbx + VECTOR_RAW_LENGTH_OFFSET], 1
-        _2drop
-        _return
+        jmp     twodrop
 .1:
         ; need to grow capacity
         _dup
@@ -720,8 +714,13 @@ vector_push_unchecked:
         mov     rcx, [rbx + VECTOR_RAW_DATA_ADDRESS_OFFSET]
         mov     [rcx + BYTES_PER_CELL * rax], rdx
         add     qword [rbx + VECTOR_RAW_LENGTH_OFFSET], 1
-        _2drop
-        next
+        jmp     twodrop
+endsub
+
+; ### vector-push
+code vector_push, 'vector-push'         ; element handle -> void
+        _ check_vector                  ; -> element ^vector
+        jmp     vector_push_internal
 endcode
 
 ; ### vector-push-all
