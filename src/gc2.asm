@@ -75,6 +75,37 @@ endcode
 %define MARK_GRAY  0b01
 %define MARK_BLACK 0b10
 
+; ### gc2_maybe_push_handle
+code gc2_maybe_push_handle, 'gc2_maybe_push_handle' ; x -> void
+
+        cmp     bl, HANDLE_TAG
+        jne     drop                    ; do nothing if x is not a handle
+
+        shr     rbx, HANDLE_TAG_BITS    ; untagged handle in rbx
+        mov     rbx, [rbx]              ; ^object in rbx
+        test    rbx, rbx                ; check for empty handle
+        jz      drop
+        cmp     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_WHITE
+        jne     drop
+
+
+        _object_raw_typecode_eax
+        cmp     eax, TYPECODE_STRING
+        je      .1
+        cmp     eax, TYPECODE_SBUF
+        je      .1
+
+        mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
+
+        _ gc2_work_list
+        _ vector_push
+        next
+
+.1:
+        mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
+        jmp     drop
+endcode
+
 %ifdef DEBUG
 
 ; ### gc2_assert_white
@@ -540,37 +571,6 @@ code mark_byte, 'mark_byte' ; handle -> fixnum/nil
 .1:
         mov     ebx, nil_value
         next
-endcode
-
-; ### gc2_maybe_push_handle
-code gc2_maybe_push_handle, 'gc2_maybe_push_handle' ; x -> void
-
-        cmp     bl, HANDLE_TAG
-        jne     drop                    ; do nothing if x is not a handle
-
-        shr     rbx, HANDLE_TAG_BITS    ; untagged handle in rbx
-        mov     rbx, [rbx]              ; ^object in rbx
-        test    rbx, rbx                ; check for empty handle
-        jz      drop
-        cmp     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_WHITE
-        jne     drop
-
-
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_STRING
-        je      .1
-        cmp     eax, TYPECODE_SBUF
-        je      .1
-
-        mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
-
-        _ gc2_work_list
-        _ vector_push
-        next
-
-.1:
-        mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
-        jmp     drop
 endcode
 
 ; ### gc2_scan_verified_handle
