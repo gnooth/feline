@@ -1365,13 +1365,21 @@ subroutine fill_cells
 ; arg1_register: x
 ; arg2_register: untagged count
         test    arg2_register, arg2_register
-        je      .1
-        xor     eax, eax
+        jz      .1
+;         xor     eax, eax
+; .2:
+;         mov     [arg0_register + rax * BYTES_PER_CELL], arg1_register
+;         add     rax, 1
+;         cmp     arg2_register, rax
+;         jne     .2
+
+        sub     arg2_register, 1
 .2:
-        mov     [arg0_register + rax * BYTES_PER_CELL], arg1_register
-        add     rax, 1
-        cmp     arg2_register, rax
-        jne     .2
+        mov     [arg0_register + arg2_register * BYTES_PER_CELL], arg1_register
+        sub     arg2_register, 1
+;         cmp     arg2_register, rax
+;         jne     .2
+        jns     .2
 .1:
         ret
 endsub
