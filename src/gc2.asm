@@ -31,98 +31,6 @@ code gc_add_root, 'gc_add_root', SYMBOL_INTERNAL  ; raw-address --
         next
 endcode
 
-asm_global gc2_dispatch_table_
-
-; ### gc2_initialize_dispatch_table
-code gc2_initialize_dispatch_table, 'gc2_initialize_dispatch_table'
-
-        ; REVIEW
-        _tagged_fixnum 64
-        _lit 0
-        _ make_array_2
-
-        mov     [gc2_dispatch_table_], rbx
-        _lit gc2_dispatch_table_
-        _ gc_add_root
-
-        _handle_to_object_unsafe
-
-        push    this_register
-        popd    this_register
-
-        _lit gc2_scan_vector
-        _lit TYPECODE_VECTOR
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_array
-        _lit TYPECODE_ARRAY
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_hashtable
-        _lit TYPECODE_HASHTABLE
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_vocab
-        _lit TYPECODE_VOCAB
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_symbol
-        _lit TYPECODE_SYMBOL
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_quotation
-        _lit TYPECODE_QUOTATION
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_slice
-        _lit TYPECODE_SLICE
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_tuple
-        _lit TYPECODE_TUPLE
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_lexer
-        _lit TYPECODE_LEXER
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_iterator
-        _lit TYPECODE_ITERATOR
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_thread
-        _lit TYPECODE_THREAD
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_string_iterator
-        _lit TYPECODE_STRING_ITERATOR
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_slot
-        _lit TYPECODE_SLOT
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_type
-        _lit TYPECODE_TYPE
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_string_output_stream
-        _lit TYPECODE_STRING_OUTPUT_STREAM
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_generic_function
-        _lit TYPECODE_GENERIC_FUNCTION
-        _this_array_set_nth_unsafe
-
-        _lit gc2_scan_method
-        _lit TYPECODE_METHOD
-        _this_array_set_nth_unsafe
-
-        pop     this_register
-
-        next
-endcode
-
 asm_global gc2_work_list_
 
 %macro _gc2_work_list 0                 ; -> ^vector
@@ -512,6 +420,117 @@ code gc2_scan_method, 'gc2_scan_method' ; ^method -> void
         next
 endcode
 
+asm_global gc2_dispatch_table_
+
+%macro _gc2_dispatch_table 0                 ; -> ^vector
+        pushrbx
+        mov     rbx, [gc2_dispatch_table_]
+%endmacro
+
+; ### gc2_initialize_dispatch_table
+code gc2_initialize_dispatch_table, 'gc2_initialize_dispatch_table'
+
+        ; REVIEW
+        _tagged_fixnum 64
+        _lit 0
+        _ make_array_2                  ; -> handle
+
+;         ; store address of vector in asm global
+;         mov     [gc2_work_list_], rbx                   ; -> handle ^vector
+;         poprbx                                          ; -> handle
+;
+;         ; and release its handle
+;         _untag_handle
+;         _ release_handle_unsafe                         ; -> empty
+
+
+        _dup
+        _handle_to_object_unsafe        ; -> handle ^array
+
+        ; store address of array in asm global
+        mov     [gc2_dispatch_table_], rbx
+        poprbx                          ; -> handle
+
+        ; and release its handle
+        _untag_handle
+        _ release_handle_unsafe         ; -> empty
+
+        push    this_register
+        mov     this_register, [gc2_dispatch_table_]
+
+        _lit gc2_scan_vector
+        _lit TYPECODE_VECTOR
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_array
+        _lit TYPECODE_ARRAY
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_hashtable
+        _lit TYPECODE_HASHTABLE
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_vocab
+        _lit TYPECODE_VOCAB
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_symbol
+        _lit TYPECODE_SYMBOL
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_quotation
+        _lit TYPECODE_QUOTATION
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_slice
+        _lit TYPECODE_SLICE
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_tuple
+        _lit TYPECODE_TUPLE
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_lexer
+        _lit TYPECODE_LEXER
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_iterator
+        _lit TYPECODE_ITERATOR
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_thread
+        _lit TYPECODE_THREAD
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_string_iterator
+        _lit TYPECODE_STRING_ITERATOR
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_slot
+        _lit TYPECODE_SLOT
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_type
+        _lit TYPECODE_TYPE
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_string_output_stream
+        _lit TYPECODE_STRING_OUTPUT_STREAM
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_generic_function
+        _lit TYPECODE_GENERIC_FUNCTION
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_method
+        _lit TYPECODE_METHOD
+        _this_array_set_nth_unsafe
+
+        pop     this_register
+
+        next
+endcode
+
 ; ### gc2_scan_object
 code gc2_scan_object, 'gc2_scan_object' ; ^object -> void
 ;         _debug_print "gc2_scan_object"
@@ -525,13 +544,15 @@ code gc2_scan_object, 'gc2_scan_object' ; ^object -> void
         pushrbx
         mov     rbx, [gc2_dispatch_table_]
 
-        _handle_to_object_unsafe
+;         _handle_to_object_unsafe
 
-        test    rbx, rbx
-        jnz     .ok
-        _error "no dispatch table"
+;         test    rbx, rbx
+;         _object_raw_typecode_eax
+;         cmp     rax, TYPECODE_ARRAY
+;         je      .ok
+;         _error "bad dispatch table"
 
-.ok:
+; .ok:
         _array_nth_unsafe
         test    rbx, rbx
 ;         jz .3
@@ -551,25 +572,21 @@ code gc2_scan_object, 'gc2_scan_object' ; ^object -> void
         next
 endcode
 
-; begin old code from gc.asm
-
-asm_global gc_dispatch_table_
-
-; ### mark_byte
-code mark_byte, 'mark_byte' ; handle -> fixnum/nil
-        cmp     bl, HANDLE_TAG
-        jne     .1
-        shr     rbx, HANDLE_TAG_BITS
-        mov     rbx, [rbx]              ; ^object in rbx
-        test    rbx, rbx
-        jz      .1
-        movzx   rbx, byte [rbx + OBJECT_MARK_BYTE_OFFSET]
-        _tag_fixnum
-        next
-.1:
-        mov     ebx, nil_value
-        next
-endcode
+; ; ### mark_byte
+; code mark_byte, 'mark_byte' ; handle -> fixnum/nil
+;         cmp     bl, HANDLE_TAG
+;         jne     .1
+;         shr     rbx, HANDLE_TAG_BITS
+;         mov     rbx, [rbx]              ; ^object in rbx
+;         test    rbx, rbx
+;         jz      .1
+;         movzx   rbx, byte [rbx + OBJECT_MARK_BYTE_OFFSET]
+;         _tag_fixnum
+;         next
+; .1:
+;         mov     ebx, nil_value
+;         next
+; endcode
 
 ; ### gc2_scan_verified_handle
 code gc2_scan_verified_handle, 'gc2_scan_verified_handle' ; handle -> empty
