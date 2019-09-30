@@ -39,18 +39,17 @@ code mutex?, 'mutex?'                   ; handle -- ?
 endcode
 
 ; ### check_mutex
-code check_mutex, 'check_mutex', SYMBOL_INTERNAL        ; handle -- mutex
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .error
+code check_mutex, 'check_mutex', SYMBOL_INTERNAL ; x -> ^mutex
+        cmp     bl, HANDLE_TAG
+        jne     error_not_mutex
+        mov     rdx, rbx                ; save x for error reporting
+        _handle_to_object_unsafe        ; -> ^object
         _object_raw_typecode_eax
         cmp     eax, TYPECODE_MUTEX
         jne     .error
-        _nip
         next
 .error:
-        _drop
+        mov     rbx, rdx
         _ error_not_mutex
         next
 endcode
