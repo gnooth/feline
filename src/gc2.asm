@@ -98,8 +98,8 @@ code gc2_maybe_push_handle, 'gc2_maybe_push_handle' ; x -> void
 
         mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
 
-        _ gc2_work_list
-        _ vector_push
+        _gc2_work_list
+        _ vector_push_internal
         next
 
 .1:
