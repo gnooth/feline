@@ -767,25 +767,24 @@ vector_pop_unchecked:
         next
 endcode
 
-; ### vector-?pop
-code vector_?pop, 'vector-?pop'         ; handle -- element/f
-
-        _ check_vector                  ; -- vector
-
-vector_?pop_unchecked:
-
+; ### vector_?pop_internal
+subroutine vector_?pop_internal         ; ^vector -> element/nil
         mov     rax, [rbx + VECTOR_RAW_LENGTH_OFFSET]
-        test    rax, rax
-        jz      .1
         sub     rax, 1
+        js      .1
         mov     [rbx + VECTOR_RAW_LENGTH_OFFSET], rax
         mov     rdx, [rbx + VECTOR_RAW_DATA_ADDRESS_OFFSET]
         mov     rbx, qword [rdx + rax * BYTES_PER_CELL]
-        mov     qword [rdx + rax * BYTES_PER_CELL], f_value
-        _return
+        ret
 .1:
-        mov     ebx, f_value
-        next
+        mov     ebx, nil_value
+        ret
+endsub
+
+; ### vector-?pop
+code vector_?pop, 'vector-?pop'         ; handle -> element/nil
+        _ check_vector                  ; -> vector
+        jmp     vector_?pop_internal
 endcode
 
 ; ### vector-pop*
