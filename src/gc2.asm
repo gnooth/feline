@@ -457,9 +457,9 @@ code gc2_scan_object, 'gc2_scan_object' ; ^object -> void
         _ gc2_scan_tuple
         next
 
-.1:
-        _drop
-        next
+; .1:
+;         _drop
+;         next
 endcode
 
 asm_global gc2_dispatch_table_
