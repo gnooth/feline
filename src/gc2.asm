@@ -548,21 +548,30 @@ code gc2_maybe_push_handle, 'gc2_maybe_push_handle' ; x -> void
         cmp     bl, HANDLE_TAG
         jne     drop                    ; do nothing if x is not a handle
 
-        mov     rax, rbx                ; use rax as work register
-        shr     rax, HANDLE_TAG_BITS    ; untagged handle in rax
-        mov     rax, [rax]              ; ^object in rax
-        test    rax, rax                ; check for empty handle
+;         mov     rax, rbx                ; use rax as work register
+        shr     rbx, HANDLE_TAG_BITS    ; untagged handle in rbx
+        mov     rbx, [rbx]              ; ^object in rbx
+        test    rbx, rbx                ; check for empty handle
         jz      drop
-        cmp     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_WHITE
+        cmp     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_WHITE
         jne     drop
-        mov     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
 
-        mov     rbx, rax
+
+        _object_raw_typecode_eax
+        cmp     eax, TYPECODE_STRING
+        je      .1
+
+        mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
+
+;         mov     rbx, rax
 
         _ gc2_work_list
         _ vector_push
-
         next
+
+.1:
+        mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
+        jmp     drop
 endcode
 
 ; ### gc2_scan_verified_handle
@@ -686,7 +695,6 @@ code gc2_maybe_collect_handle, 'gc2_maybe_collect_handle' ; untagged-handle -> v
         _nip                            ; -> ^object
         mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_WHITE
         jmp     drop
-;         _return
 
 .2:                                     ; -> untagged-handle object
         ; object is white
@@ -948,25 +956,11 @@ code gc2_process_work_list, 'gc2_process_work_list'
 %endif
 
         _ gc2_work_list
-        _ vector_?pop                   ; -> handle/nil
+        _ vector_?pop                   ; -> ^object/nil
         cmp     rbx, nil_value
         je      .normal_exit
 
-;         ; -> handle
-;         cmp     bl, HANDLE_TAG
-;         jne     .not_a_handle
-
-;         mov     rax, rbx                ; use rax as work register
-;         shr     rax, HANDLE_TAG_BITS
-;         mov     rax, [rax]              ; ^object in rax
-;         test    rax, rax                ; check for empty handle
-;         jz      .empty_handle
-;         cmp     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
-;         jne     .not_gray
-;         mov     byte [rax + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
-;
-;         mov     rbx, rax                ; -> ^object
-
+        ; -> ^object
         cmp     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
         jne     .not_gray
         mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_BLACK
@@ -979,14 +973,14 @@ code gc2_process_work_list, 'gc2_process_work_list'
         _drop
         next
 
-.not_a_handle:
-        _error "not a handle"
-        next
-
-.empty_handle:
-        _print "empty handle on work list"
-        _drop
-        next
+; .not_a_handle:
+;         _error "not a handle"
+;         next
+;
+; .empty_handle:
+;         _print "empty handle on work list"
+;         _drop
+;         next
 
 .not_gray:
 ;         movzx   rbx, byte [rax + OBJECT_MARK_BYTE_OFFSET]
