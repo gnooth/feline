@@ -142,7 +142,7 @@ code get_empty_handle, 'get_empty_handle', SYMBOL_INTERNAL      ; -> handle/0
         _recycled_handles_vector
         test    rbx, rbx
         jz      .1
-        _ vector_?pop_unchecked
+        _ vector_?pop_internal
         cmp     rbx, f_value
         je      .1
         _rep_return
