@@ -548,7 +548,6 @@ code gc2_maybe_push_handle, 'gc2_maybe_push_handle' ; x -> void
         cmp     bl, HANDLE_TAG
         jne     drop                    ; do nothing if x is not a handle
 
-;         mov     rax, rbx                ; use rax as work register
         shr     rbx, HANDLE_TAG_BITS    ; untagged handle in rbx
         mov     rbx, [rbx]              ; ^object in rbx
         test    rbx, rbx                ; check for empty handle
@@ -560,10 +559,10 @@ code gc2_maybe_push_handle, 'gc2_maybe_push_handle' ; x -> void
         _object_raw_typecode_eax
         cmp     eax, TYPECODE_STRING
         je      .1
+        cmp     eax, TYPECODE_SBUF
+        je      .1
 
         mov     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_GRAY
-
-;         mov     rbx, rax
 
         _ gc2_work_list
         _ vector_push
