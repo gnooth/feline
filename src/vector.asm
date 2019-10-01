@@ -883,13 +883,8 @@ endcode
 ; ### vector_each_internal
 subroutine vector_each_internal ; vector raw-code-address ->
 
-;         ; protect callable from gc
-;         push    rbx
-;
-;         _ callable_raw_code_address     ; -- vector code-address
-
         _swap
-        _ check_vector                  ; -- code-address vector
+        _ check_vector                  ; -> code-address vector
 
         push    this_register
         mov     this_register, rbx
@@ -899,14 +894,11 @@ subroutine vector_each_internal ; vector raw-code-address ->
         _this_vector_raw_length
         _do_times .1
         _raw_loop_index
-        _this_vector_nth_unsafe         ; -- element
+        _this_vector_nth_unsafe         ; -> element
         call    r12
         _loop .1
         pop     r12
         pop     this_register
-
-;         ; drop callable
-;         pop     rax
 
         ret
 endsub
