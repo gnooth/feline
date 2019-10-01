@@ -115,7 +115,8 @@ special: +compound-redo+
     dup mark-line-number>> [
         [ mark-line-number>> nth-line ]
         [ mark-offset>> ] bi make-position
-    ] [ drop f ] if mark! ;
+    ] [ drop f ] if mark!
+    t repaint! ;
 
 : add-undo-move
     new-undo-record
@@ -161,7 +162,7 @@ special: +compound-redo+
         [ restore-dot-line ]
         [ data>> dot-line-text! ]
         [ restore-dot-offset ]
-        [ mark>> mark! ]
+        [ restore-mark ]
     } cleave
 
     t dot-line-changed!
