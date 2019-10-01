@@ -880,6 +880,29 @@ code vector_reverse_in_place, 'vector-reverse!'         ; vector -- vector
         next
 endcode
 
+; ### vector_each_internal
+subroutine vector_each_internal ; vector raw-code-address ->
+
+        _swap
+        _ check_vector                  ; -> code-address vector
+
+        push    this_register
+        mov     this_register, rbx
+        push    r12
+        mov     r12, [rbp]              ; code address in r12
+        _2drop                          ; adjust stack
+        _this_vector_raw_length
+        _do_times .1
+        _raw_loop_index
+        _this_vector_nth_unsafe         ; -> element
+        call    r12
+        _loop .1
+        pop     r12
+        pop     this_register
+
+        ret
+endsub
+
 ; ### vector-each
 code vector_each, 'vector-each'         ; vector callable --
 
