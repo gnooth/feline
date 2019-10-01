@@ -929,14 +929,6 @@ code initialize_gc_lock, 'initialize_gc_lock', SYMBOL_INTERNAL  ; --
         next
 endcode
 
-; ### gc_collect
-code gc_collect, 'gc_collect', SYMBOL_INTERNAL
-
-        _ gc2_collect
-        _return
-
-endcode
-
 asm_global gc2_work_list_max_
 
 ; ### gc2_work_list_max
@@ -1007,8 +999,6 @@ endcode
 
 ; ### gc2_collect
 code gc2_collect, 'gc2_collect'
-
-;         _debug_print "entering gc2_collect"
 
         cmp     qword [S_gc_inhibit_symbol_value], f_value
         je .1
@@ -1122,17 +1112,13 @@ code gc2_collect, 'gc2_collect'
 .5:
         _reset_recent_allocations
 
-;         _debug_print "leaving gc2_collect"
-
         next
 endcode
 
-; ### gc
-code gc, 'gc'
-
-        _ gc2
-        _return
-
+; ### gc_collect
+code gc_collect, 'gc_collect', SYMBOL_INTERNAL
+        _ gc2_collect
+        next
 endcode
 
 ; ### gc2
@@ -1173,5 +1159,11 @@ code gc2, 'gc2'
         _ gc2_work_list_max
         _ dot_object
 %endif
+        next
+endcode
+
+; ### gc
+code gc, 'gc'
+        _ gc2
         next
 endcode
