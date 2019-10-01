@@ -215,8 +215,6 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
 
         _ cold_initialize_locals
 
-        _ initialize_gc_dispatch_table
-
         _ initialize_dynamic_scope
 
         _ initialize_vocabs
@@ -243,6 +241,9 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         _ initialize_handles_lock
 
         _ initialize_gc_lock
+
+        _ gc2_initialize_dispatch_table
+        _ gc2_initialize_work_list
 
         _quote "boot.feline"
         _lit S_load_system_file

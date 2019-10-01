@@ -153,7 +153,7 @@ ASM_SOURCES = feline.asm feline_home.asm externs.asm \
 	fixnum.asm \
 	float.asm \
 	format.asm \
-	gc.asm \
+	gc2.asm \
 	generic.asm \
 	handles.asm \
 	hashtable.asm \
