@@ -113,7 +113,7 @@ endcode
 
 ; ### gc2_assert_white
 code gc2_assert_white, 'gc2_assert_white' ; ^object -> void
-;         _print "gc2_assert_white"
+
         mov     rbx, [rbx]
         ; check for null object address
         test    rbx, rbx
@@ -138,7 +138,6 @@ endcode
 
 ; ### gc2_scan_vector
 code gc2_scan_vector, 'gc2_scan_vector' ; ^vector -> void
-;         _debug_print "gc2_scan_vector"
 
         push    this_register
         mov     this_register, rbx
@@ -154,8 +153,7 @@ code gc2_scan_vector, 'gc2_scan_vector' ; ^vector -> void
 endcode
 
 ; ### gc2_scan_array
-code gc2_scan_array, 'gc2_scan_array'   ; ^array -> void
-;         _debug_print "gc2_scan_array"
+code gc2_scan_array, 'gc2_scan_array' ; ^array -> void
 
         push    this_register
         mov     this_register, rbx
@@ -172,7 +170,6 @@ endcode
 
 ; ### gc2_scan_hashtable
 code gc2_scan_hashtable, 'gc2_scan_hashtable' ; ^hashtable -> void
-;         _debug_print "gc2_scan_hashtable"
 
         push    this_register
         mov     this_register, rbx      ; -> ^hashtable
@@ -192,7 +189,6 @@ endcode
 
 ; ### gc2_scan_vocab
 code gc2_scan_vocab, 'gc2_scan_vocab' ; ^vocab -> void
-;         _debug_print "gc2_scan_vocab"
 
         _dup
         _vocab_name
@@ -205,7 +201,6 @@ endcode
 
 ; ### gc2_scan_static_symbol
 code gc2_scan_static_symbol, 'gc2_scan_static_symbol' ; ^symbol -> void
-;         _debug_print "gc2_scan_symbol"
 
         _ verify_static_symbol
 
@@ -232,7 +227,6 @@ endcode
 
 ; ### gc2_scan_symbol
 code gc2_scan_symbol, 'gc2_scan_symbol' ; ^symbol -> void
-;         _debug_print "gc2_scan_symbol"
 
         _dup
         _symbol_name
@@ -257,7 +251,6 @@ endcode
 
 ; ### gc2_scan_quotation
 code gc2_scan_quotation, 'gc2_scan_quotation' ; ^quotation -> void
-;         _debug_print "gc2_scan_quotation"
 
         _quotation_array
         _ gc2_maybe_push_handle
@@ -267,7 +260,6 @@ endcode
 
 ; ### gc2_scan_slice
 code gc2_scan_slice, 'gc2_scan_slice' ; ^slice -> void
-;         _debug_print "gc2_scan_slice"
 
         _slice_seq
         _ gc2_maybe_push_handle
@@ -277,8 +269,6 @@ endcode
 
 ; ### gc2_scan_tuple
 code gc2_scan_tuple, 'gc2_scan_tuple' ; ^tuple -> void
-        _debug_?enough 1
-;         _debug_print "gc2_scan_tuple"
 
         push    this_register
         mov     this_register, rbx      ; -> ^tuple
@@ -304,7 +294,6 @@ endcode
 
 ; ### gc2_scan_lexer
 code gc2_scan_lexer, 'gc2_scan_lexer' ; ^lexer -> void
-;         _debug_print "gc2_scan_lexer"
 
         _dup
         _lexer_string
@@ -316,8 +305,8 @@ code gc2_scan_lexer, 'gc2_scan_lexer' ; ^lexer -> void
 endcode
 
 ; ### gc2_scan_iterator
-code gc2_scan_iterator, 'gc2_scan_iterator' ; iterator -> void
-;         _debug_print "gc2_scan_iterator"
+code gc2_scan_iterator, 'gc2_scan_iterator' ; ^iterator -> void
+
         _iterator_sequence
         _ gc2_maybe_push_handle
 
@@ -326,7 +315,6 @@ endcode
 
 ; ### gc2_scan_thread
 code gc2_scan_thread, 'gc2_scan_thread' ; ^thread -> void
-;         _debug_print "gc2_scan_thread"
 
         _dup
         _slot THREAD_QUOTATION_SLOT#
@@ -351,8 +339,7 @@ code gc2_scan_thread, 'gc2_scan_thread' ; ^thread -> void
 endcode
 
 ; ### gc2_scan_string_iterator
-code gc2_scan_string_iterator, 'gc2_scan_string_iterator'       ; string-iterator -> void
-;         _debug_print "gc2_scan_string_iterator"
+code gc2_scan_string_iterator, 'gc2_scan_string_iterator' ; ^string-iterator -> void
 
         _string_iterator_string
         _ gc2_maybe_push_handle
@@ -361,8 +348,7 @@ code gc2_scan_string_iterator, 'gc2_scan_string_iterator'       ; string-iterato
 endcode
 
 ; ### gc2_scan_slot
-code gc2_scan_slot, 'gc2_scan_slot' ; slot -> void
-;         _debug_print "gc2_scan_slot"
+code gc2_scan_slot, 'gc2_scan_slot' ; ^slot -> void
 
         _slot_name
         _ gc2_maybe_push_handle
@@ -372,7 +358,6 @@ endcode
 
 ; ### gc2_scan_string_output_stream
 code gc2_scan_string_output_stream, 'gc2_scan_string_output_stream' ; ^stream -> void
-;         _debug_print "gc2_scan_string_output_stream"
 
         _string_output_stream_sbuf
         _ gc2_maybe_push_handle
@@ -382,7 +367,6 @@ endcode
 
 ; ### gc2_scan_type
 code gc2_scan_type, 'gc2_scan_type' ; ^type -> void
-;         _debug_print "gc2_scan_type"
 
         _dup
         _type_symbol
@@ -395,7 +379,6 @@ endcode
 
 ; ### gc2_scan_generic_function
 code gc2_scan_generic_function, 'gc2_scan_generic_function' ; ^generic-function -> void
-;         _debug_print "gc2_scan_generic_function"
 
         _dup
         _gf_name
@@ -411,7 +394,6 @@ endcode
 
 ; ### gc2_scan_method
 code gc2_scan_method, 'gc2_scan_method' ; ^method -> void
-;         _debug_print "gc2_scan_method"
 
         _dup
         _method_generic_function
@@ -424,7 +406,7 @@ endcode
 
 asm_global gc2_dispatch_table_
 
-%macro _gc2_dispatch_table 0                 ; -> ^vector
+%macro _gc2_dispatch_table 0 ; -> ^vector
         pushrbx
         mov     rbx, [gc2_dispatch_table_]
 %endmacro
@@ -436,15 +418,6 @@ code gc2_initialize_dispatch_table, 'gc2_initialize_dispatch_table'
         _tagged_fixnum 64
         _lit 0
         _ make_array_2                  ; -> handle
-
-;         ; store address of vector in asm global
-;         mov     [gc2_work_list_], rbx                   ; -> handle ^vector
-;         poprbx                                          ; -> handle
-;
-;         ; and release its handle
-;         _untag_handle
-;         _ release_handle_unsafe                         ; -> empty
-
 
         _dup
         _handle_to_object_unsafe        ; -> handle ^array
@@ -535,100 +508,48 @@ endcode
 
 ; ### gc2_scan_object
 code gc2_scan_object, 'gc2_scan_object' ; ^object -> void
-;         _debug_print "gc2_scan_object"
 
         _dup
         _object_raw_typecode
 
         cmp     rbx, LAST_BUILTIN_TYPECODE
-        jg      .2
+        jg      .1
 
         pushrbx
         mov     rbx, [gc2_dispatch_table_]
 
-;         _handle_to_object_unsafe
-
-;         test    rbx, rbx
-;         _object_raw_typecode_eax
-;         cmp     rax, TYPECODE_ARRAY
-;         je      .ok
-;         _error "bad dispatch table"
-
-; .ok:
         _array_nth_unsafe
         test    rbx, rbx
-;         jz .3
         jz      twodrop
         mov     rax, rbx
         poprbx                          ; -- object
         call    rax
         next
 
-; .3:
-;         _2drop
-;         next
-
-.2:
+.1:
         _drop
         _ gc2_scan_tuple
         next
 endcode
 
-; ; ### mark_byte
-; code mark_byte, 'mark_byte' ; handle -> fixnum/nil
-;         cmp     bl, HANDLE_TAG
-;         jne     .1
-;         shr     rbx, HANDLE_TAG_BITS
-;         mov     rbx, [rbx]              ; ^object in rbx
-;         test    rbx, rbx
-;         jz      .1
-;         movzx   rbx, byte [rbx + OBJECT_MARK_BYTE_OFFSET]
-;         _tag_fixnum
-;         next
-; .1:
-;         mov     ebx, nil_value
-;         next
-; endcode
-
 ; ### gc2_scan_verified_handle
 code gc2_scan_verified_handle, 'gc2_scan_verified_handle' ; handle -> empty
-;        _debug_print "gc2_scan_verified_handle"
+
         _dup
         _ verified_handle?
         cmp     rbx, f_value
         poprbx
-        jz      .1                      ; -> handle
-;         _handle_to_object_unsafe
-;         test    rbx, rbx
-;         jz      .1
-; ;         _ mark_raw_object
-;         _ gc2_add_raw_object
+        jz      drop
+        ; -> handle
         _ gc2_maybe_push_handle
-        _return
-.1:
-        _drop
+
         next
 endcode
 
 ; ### gc2_visit_root
 code gc2_visit_root, 'gc2_visit_root' ; raw-address -> void
-;         _debug_print "gc2_visit_root"
         _fetch
-;         cmp     bl, HANDLE_TAG
-;         jne     .1
-; ;         _handle_to_object_unsafe
-; ;         test    rbx, rbx
-; ;         jz      .1
-; ;         _ mark_raw_object
-;         _ gc2_work_list
-;         _ vector_push
-;         next
-; .1:
-;         _debug_print "not a handle"
-;         _drop
-
         _ gc2_maybe_push_handle
-
         next
 endcode
 
@@ -690,9 +611,6 @@ code gc2_scan_thread_stacks, 'gc2_scan_thread_stacks' ; thread -> void
         _lit S_gc2_thread_scan_data_stack
         _lit S_gc2_thread_scan_return_stack
         _ bi
-;         _dup
-;         _ gc2_thread_scan_data_stack
-;         _ gc2_thread_scan_return_stack
 
         next
 endcode
@@ -724,12 +642,11 @@ endcode
 
 ; ### gc2_scan_static_symbols
 code gc2_scan_static_symbols, 'gc2_scan_static_symbols'
-;         _debug_print "entering gc2_scan_static_symbols"
 
         _ last_static_symbol
         _begin .1
         _dup
-        _while .1                       ; -- symbol
+        _while .1                       ; -> symbol
         _dup
         _ gc2_scan_static_symbol
         _cellminus
@@ -743,14 +660,14 @@ endcode
 asm_global stop_for_gc?_, f_value
 
 ; ### stop_for_gc?
-code stop_for_gc?, 'stop_for_gc?', SYMBOL_INTERNAL      ; -- ?
+code stop_for_gc?, 'stop_for_gc?', SYMBOL_INTERNAL ; -> ?
         pushrbx
         mov     rbx, [stop_for_gc?_]
         next
 endcode
 
 ; ### stop_for_gc
-code stop_for_gc, 'stop_for_gc', SYMBOL_INTERNAL         ; --
+code stop_for_gc, 'stop_for_gc', SYMBOL_INTERNAL
         ; store the Feline handle of the current thread in the asm global
         _ current_thread
         xchg    qword [stop_for_gc?_], rbx
@@ -759,7 +676,7 @@ code stop_for_gc, 'stop_for_gc', SYMBOL_INTERNAL         ; --
 endcode
 
 ; ### stop_current_thread_for_gc
-code stop_current_thread_for_gc, 'stop_current_thread_for_gc', SYMBOL_INTERNAL  ; --
+code stop_current_thread_for_gc, 'stop_current_thread_for_gc', SYMBOL_INTERNAL
 
         _debug_print "stop_current_thread_for_gc"
 
@@ -787,7 +704,7 @@ code stop_current_thread_for_gc, 'stop_current_thread_for_gc', SYMBOL_INTERNAL  
 endcode
 
 ; ### safepoint_stop
-code safepoint_stop, 'safepoint_stop', SYMBOL_INTERNAL  ; --
+code safepoint_stop, 'safepoint_stop', SYMBOL_INTERNAL
         _ current_thread
         cmp     qword [stop_for_gc?_], rbx
         poprbx
@@ -799,7 +716,7 @@ code safepoint_stop, 'safepoint_stop', SYMBOL_INTERNAL  ; --
 endcode
 
 ; ### safepoint
-code safepoint, 'safepoint', SYMBOL_INTERNAL    ; --
+code safepoint, 'safepoint', SYMBOL_INTERNAL
         cmp     qword [stop_for_gc?_], f_value
         jne     safepoint_stop
         next
@@ -808,7 +725,7 @@ endcode
 asm_global in_gc?_, f_value
 
 ; ### in-gc?
-code in_gc?, 'in-gc?'                   ; -- ?
+code in_gc?, 'in-gc?' ; -> ?
         pushrbx
         mov     rbx, [in_gc?_]
         next
@@ -864,7 +781,7 @@ code gc_enable, 'gc-enable'
 endcode
 
 ; ### wait_for_thread_to_stop
-code wait_for_thread_to_stop, 'wait_for_thread_to_stop', SYMBOL_INTERNAL        ; thread --
+code wait_for_thread_to_stop, 'wait_for_thread_to_stop', SYMBOL_INTERNAL ; thread -> void
 
         ; don't stop the collector thread
         cmp     rbx, qword [stop_for_gc?_]
@@ -887,7 +804,7 @@ code wait_for_thread_to_stop, 'wait_for_thread_to_stop', SYMBOL_INTERNAL        
 endcode
 
 ; ### stop_the_world
-code stop_the_world, 'stop_the_world', SYMBOL_INTERNAL  ; --
+code stop_the_world, 'stop_the_world', SYMBOL_INTERNAL
 
         _debug_print "stop_the_world"
 
@@ -901,7 +818,7 @@ code stop_the_world, 'stop_the_world', SYMBOL_INTERNAL  ; --
 endcode
 
 ; ### start_the_world
-code start_the_world, 'start_the_world', SYMBOL_INTERNAL        ; --
+code start_the_world, 'start_the_world', SYMBOL_INTERNAL
 
         _debug_print "start_the_world"
 
@@ -925,7 +842,7 @@ code gc_lock, 'gc_lock' ; -> mutex
 endcode
 
 ; ### initialize_gc_lock
-code initialize_gc_lock, 'initialize_gc_lock', SYMBOL_INTERNAL  ; --
+code initialize_gc_lock, 'initialize_gc_lock', SYMBOL_INTERNAL
         _ make_mutex
         mov     [gc_lock_], rbx
         poprbx
@@ -980,25 +897,10 @@ code gc2_process_work_list, 'gc2_process_work_list'
 
         jmp     .top
 
-; .normal_exit:
-;         _drop
-;         next
-
-; .not_a_handle:
-;         _error "not a handle"
-;         next
-;
-; .empty_handle:
-;         _print "empty handle on work list"
-;         _drop
-;         next
-
 .not_gray:
-;         movzx   rbx, byte [rax + OBJECT_MARK_BYTE_OFFSET]
+        ; shouldn't get here
         movzx   rbx, byte [rbx + OBJECT_MARK_BYTE_OFFSET]
-        _write "handle on work list is not gray: "
-        _ hexdot
-        _ nl
+        _error "handle on work list is not gray"
         next
 endcode
 
