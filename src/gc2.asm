@@ -15,6 +15,8 @@
 
 file __FILE__
 
+; %define DEBUG_PRINT
+
 asm_global gc_roots_                    ; initialized in cold
 
 ; ### gc_roots
@@ -688,6 +690,9 @@ code gc2_scan_thread_stacks, 'gc2_scan_thread_stacks' ; thread -> void
         _lit S_gc2_thread_scan_data_stack
         _lit S_gc2_thread_scan_return_stack
         _ bi
+;         _dup
+;         _ gc2_thread_scan_data_stack
+;         _ gc2_thread_scan_return_stack
 
         next
 endcode
@@ -1047,8 +1052,8 @@ code gc2_collect, 'gc2_collect'
         _debug_print "marking multiple threads"
 
         _ all_threads
-        _lit S_gc2_scan_thread_stacks
-        _ vector_each
+        _lit gc2_scan_thread_stacks
+        _ vector_each_internal
 
         _ unlock_all_threads
 
