@@ -131,7 +131,9 @@ OBJECT_ALLOCATED_BIT            equ 4
 %endmacro
 
 ; mark byte (gc2)
-%define OBJECT_MARK_BYTE        byte [rbx + 4]
+%define OBJECT_MARK_BYTE_OFFSET         4
+
+%define OBJECT_MARK_BYTE                byte [rbx + OBJECT_MARK_BYTE_OFFSET]
 
 %macro  _object_mark_byte 0
         movzx   rbx, OBJECT_MARK_BYTE
