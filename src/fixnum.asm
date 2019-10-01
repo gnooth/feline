@@ -32,7 +32,7 @@ code fixnum?, 'fixnum?'                 ; x -- ?
         test    bl, FIXNUM_TAG
         mov     eax, t_value
         mov     ebx, f_value
-        cmovnz    ebx, eax
+        cmovnz  ebx, eax
         next
 endcode
 
@@ -627,6 +627,16 @@ code even?, 'even?'                     ; n -- ?
         and     ebx, 1
         mov     ebx, f_value
         cmovz   ebx, eax
+        next
+endcode
+
+; ### 0>
+code zgt, '0>'                          ; fixnum -> ?
+        _check_fixnum
+        mov     eax, nil_value
+        test    rbx, rbx
+        mov     ebx, t_value
+        cmovng  ebx, eax
         next
 endcode
 
