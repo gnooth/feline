@@ -91,6 +91,7 @@ var prompt-string
     key:enter           ' do-enter                      bind-key
     key:del             ' do-bs                         bind-key        // Linux
     key:backspace       ' do-bs                         bind-key        // Windows
+    key:ctrl-backspace  ' do-bs                         bind-key
     key:escape          ' do-escape                     bind-key
     key:up              ' do-previous                   bind-key
     key:down            ' do-next                       bind-key
