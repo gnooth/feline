@@ -111,6 +111,7 @@ in: editor
     buf first-line>> buf top-line<<
     t buf read-only<<
     current-pattern current-files "find-in-files %S %s" format buf name<<
+    directory buf directory<<
 
     find-in-files-local-map buf local-map<<
 
