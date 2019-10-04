@@ -17,13 +17,13 @@ using: feral-core feline accessors directories mini diff-mode ;
 in: editor
 
 : git-diff
-    current-buffer filename>> :> source-file
-
-    source-file null? ?exit
-
-    "git diff " source-file + :> command
-
+    current-buffer filename>> :> sourcefile
+    sourcefile null? ?exit
+    get-current-directory :> olddir
+    sourcefile file-name-directory set-current-directory
+    "git diff " sourcefile + :> command
     command shell-command-to-string !> output
+    olddir set-current-directory
 
     // shell-command-to-string might return f
     output null? ?exit
@@ -58,6 +58,6 @@ in: editor
 
         t repaint!
     ] [
-        "git ls-files " source-file + shell-command-to-string output!
+        "git ls-files " sourcefile + shell-command-to-string output!
         output length zero? "Untracked" "No changes" ? message
     ] if ;
