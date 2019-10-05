@@ -766,6 +766,15 @@ test: local-test-2
 
 local-test-2
 
+test: local-test-3
+    local x
+    x nil? assert
+    59 x!
+    x 59 assert-eq
+;
+
+local-test-3
+
 test: if-test-1
     t [ 42 ] [ 17 ] if 42 assert-eq
     f [ 42 ] [ 17 ] if 17 assert-eq
