@@ -767,13 +767,35 @@ test: local-test-2
 local-test-2
 
 test: local-test-3
+    42 :> x
+    87 :> y
+    x 42 assert-eq
+    y 87 assert-eq
+;
+
+local-test-3
+
+test: local-test-4
+    42 :> x!
+    87 :> y!
+    x 42 assert-eq
+    y 87 assert-eq
+    17 x!
+    31 y!
+    x 17 assert-eq
+    y 31 assert-eq
+;
+
+local-test-4
+
+test: local-test-5
     local x
     x nil? assert
     59 x!
     x 59 assert-eq
 ;
 
-local-test-3
+local-test-5
 
 test: if-test-1
     t [ 42 ] [ 17 ] if 42 assert-eq
@@ -3295,28 +3317,6 @@ test: named-parameters-test-4
 ;
 
 named-parameters-test-4
-
-test: local-test-3
-    42 :> x
-    87 :> y
-    x 42 assert-eq
-    y 87 assert-eq
-;
-
-local-test-3
-
-test: local-test-4
-    42 :> x!
-    87 :> y!
-    x 42 assert-eq
-    y 87 assert-eq
-    17 x!
-    31 y!
-    x 17 assert-eq
-    y 31 assert-eq
-;
-
-local-test-4
 
 defer %defer-test-1
 
