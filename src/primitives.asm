@@ -197,8 +197,13 @@ inline null?, 'null?'                   ; x -> ?
         _not
 endinline
 
+; ### nil?                              ; x -> ?
+inline nil?, 'nil?'
+        _nil?
+endinline
+
 ; ### <>
-code not_equal, '<>'                    ; x y -- ?
+code not_equal, '<>'                    ; x y -> ?
         cmp     rbx, [rbp]
         jne     .1
         lea     rbp, [rbp + BYTES_PER_CELL]

@@ -296,6 +296,13 @@
         cmove   ebx, eax
 %endmacro
 
+%macro _nil? 0
+        mov     eax, nil_value
+        cmp     rbx, rax
+        mov     ebx, t_value
+        cmovne  ebx, eax
+%endmacro
+
 %macro  _tuck 0                         ; x1 x2 -- x2 x1 x2
         mov     rax, [rbp]              ; x1 in rax, x2 in rbx
         mov     [rbp], rbx
