@@ -726,6 +726,19 @@ code return_if, 'return-if', SYMBOL_IMMEDIATE
         next
 endcode
 
+; ### ?return
+code ?return, '?return', SYMBOL_IMMEDIATE
+        _ using_locals?
+        _tagged_if .1
+        _lit S_return_if_locals
+        _else .1
+        _lit S_return_if_no_locals
+        _then .1
+        _get_accum
+        _ vector_push
+        next
+endcode
+
 ; ### store_1_arg
 always_inline store_1_arg, 'store_1_arg'
         mov     [r14], rbx

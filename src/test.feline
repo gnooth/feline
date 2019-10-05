@@ -2160,75 +2160,75 @@ test: cond-test-4
 
 cond-test-4
 
-: %return-if-test-1                     // arg -> "yes"/"no"
-    [ "yes" ] return-if
+: %?return-test-1
+    [ "yes" ] ?return
     "no" ;
 
-test: return-if-test-1
+test: ?return-test-1
     clear
-    t %return-if-test-1 get-datastack { "yes" } assert=
+    t %?return-test-1 get-datastack { "yes" } assert=
     clear
-    f %return-if-test-1 get-datastack { "no"  } assert=
+    f %?return-test-1 get-datastack { "no"  } assert=
     clear
-    0 %return-if-test-1 get-datastack { "yes" } assert=
+    0 %?return-test-1 get-datastack { "yes" } assert=
     clear ;
 
-return-if-test-1
+?return-test-1
 
-: %return-if-test-2
+: %?return-test-2
     :> arg
 
-    arg [ arg ] return-if
+    arg [ arg ] ?return
     arg ;
 
-test: return-if-test-2
+test: ?return-test-2
     clear
-    "foo" dup %return-if-test-2 assert-eq
+    "foo" dup %?return-test-2 assert-eq
     depth zero? assert
 
-    f %return-if-test-2 assert-false
+    f %?return-test-2 assert-false
     depth zero? assert ;
 
-return-if-test-2
+?return-test-2
 
-// return-if before first local
-: %return-if-test-3
-    dup 3 = [ drop 47 ] return-if
+// ?return before first local
+: %?return-test-3
+    dup 3 = [ drop 47 ] ?return
     :> arg
-    arg 9 = [ arg 1 + ] return-if
+    arg 9 = [ arg 1 + ] ?return
     arg ;
 
-test: return-if-test-3
+test: ?return-test-3
     clear
-    3 %return-if-test-3 get-datastack { 47 } assert=
+    3 %?return-test-3 get-datastack { 47 } assert=
     clear
-    9 %return-if-test-3 get-datastack { 10 } assert=
+    9 %?return-test-3 get-datastack { 10 } assert=
     clear
-    5 %return-if-test-3 get-datastack {  5 } assert=
+    5 %?return-test-3 get-datastack {  5 } assert=
     clear
 ;
 
-return-if-test-3
+?return-test-3
 
-test: return-if-test-4
+test: ?return-test-4
     { 3 } [ 17 19 = [ 4 ] [ 3 ] if ] unit-test
-    { 3 } [ 17 [ 19 = [ 4 ] return-if 3 ] call ] unit-test
+    { 3 } [ 17 [ 19 = [ 4 ] ?return 3 ] call ] unit-test
     { 4 } [ 19 19 = [ 4 ] [ 3 ] if ] unit-test
-    { 4 } [ 19 [ 19 = [ 4 ] return-if 3 ] call ] unit-test
+    { 4 } [ 19 [ 19 = [ 4 ] ?return 3 ] call ] unit-test
 ;
 
-return-if-test-4
+?return-test-4
 
-// : %return-if-test-5
+// : %?return-test-5
 //     87 :> x
-//     19 [ 19 = [ 4 ] return-if 3 ] call
+//     19 [ 19 = [ 4 ] ?return 3 ] call
 // ;
 
-// test: return-if-test-5
-//     %return-if-test-5
+// test: ?return-test-5
+//     %?return-test-5
 // ;
 
-// return-if-test-5
+// ?return-test-5
 
 test: vector-?pop-test-1
     vector{ 1 2 }
