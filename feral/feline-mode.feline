@@ -139,6 +139,7 @@ feline-mode-comment-start length constant comment-start-length
     "generic"
     "global"
     "in:"
+    "local"
     "method:"
     "private"
     "private:"
@@ -178,6 +179,7 @@ feline-mode-comment-start length constant comment-start-length
     "&&"
     "?"
     "?exit"
+    "?return"
     "bi"
     "bi@"
     "both?"
@@ -218,7 +220,7 @@ feline-mode-comment-start length constant comment-start-length
     [ space-char neq? ] find drop ;
 
 : skip-quoted-string                    // start-index string -> index/f
-    2dup string-length >= [ 2drop f ] return-if
+    2dup string-length >= [ 2drop f ] ?return
 
     :> s
     :> start
@@ -279,38 +281,38 @@ var last-segment-text
 
     in-comment? [
         color-comment segment format<<
-    ] return-if
+    ] ?return
 
     // not a comment
     last-segment-text defining-words member? [
         color-name segment format<<
-    ] return-if
+    ] ?return
 
     s syntax-words member? [
         color-syntax segment format<<
-    ] return-if
+    ] ?return
 
     s string-first-char :> first-char
 
     first-char quote-char eq? [
         color-string segment format<<
-    ] return-if
+    ] ?return
 
     s combinators member? [
         color-combinator segment format<<
-    ] return-if
+    ] ?return
 
     s { "#if" "#else" "#endif" "#ifdef" "#ifndef" } member? [
         color-preprocessor segment format<<
-    ] return-if
+    ] ?return
 
     first-char ':' eq? [
         color-keyword segment format<<
-    ] return-if
+    ] ?return
 
     [ first-char '\'' eq? ] [ s string-last-char '\'' eq? ] both? [
         color-string segment format<<
-    ] return-if
+    ] ?return
 
     // default
     color-text segment format<< ;
