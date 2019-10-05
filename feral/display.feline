@@ -31,9 +31,9 @@ in: editor
     modified? '*' '\s' ? sb sbuf-push
     current-buffer name>> "untitled" or sb sbuf-append-string
     dot-line-number 1+
-    dot-column 1+
     line-count
-    " %d:%d (%d) " format sb sbuf-append-string
+    dot-column 1+
+    " %d(%d):%d " format sb sbuf-append-string
     :git-branch current-buffer buffer-get-property [
         sb sbuf-append-string
     ] when*
