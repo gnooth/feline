@@ -860,8 +860,8 @@ code paren, '(', SYMBOL_IMMEDIATE       ; --
 
         _ initialize_locals
 
-        _lit S_add_named_parameter
-        _ vector_each
+        _lit add_named_parameter
+        _ vector_each_internal
 
         _ process_named_parameters
 
@@ -869,7 +869,7 @@ code paren, '(', SYMBOL_IMMEDIATE       ; --
 endcode
 
 ; ### :>
-code assign_local, ':>', SYMBOL_IMMEDIATE       ; x -> void
+code define_immutable_local, ':>', SYMBOL_IMMEDIATE
 
         _ maybe_initialize_locals
 
@@ -895,7 +895,7 @@ code assign_local, ':>', SYMBOL_IMMEDIATE       ; x -> void
         _ add_local
         _ locals
         _ hashtable_at
-        _ verify_fixnum
+        _verify_fixnum                  ; -> index
         _ local_setter
         _ current_definition
         _ vector_push
@@ -904,14 +904,14 @@ code assign_local, ':>', SYMBOL_IMMEDIATE       ; x -> void
 endcode
 
 ; ### !>
-code assign_mutable_local, '!>', SYMBOL_IMMEDIATE       ; x -> void
+code define_mutable_local, '!>', SYMBOL_IMMEDIATE
 
         _ maybe_initialize_locals
 
         _ must_parse_token              ; -> string
 
         _dup
-        _lit tagged_char('!')
+        _tagged_char('!')
         _ string_append_char
         _ add_local_setter              ; -> string
 
@@ -919,7 +919,38 @@ code assign_mutable_local, '!>', SYMBOL_IMMEDIATE       ; x -> void
         _ add_local
         _ locals
         _ hashtable_at
-        _ verify_fixnum
+        _verify_fixnum
+        _ local_setter
+        _ current_definition
+        _ vector_push
+
+        next
+endcode
+
+; ### local
+code local, 'local', SYMBOL_IMMEDIATE
+; another way to define a mutable local
+; `local x` is equivalent to `nil !> x`
+
+        _ maybe_initialize_locals
+
+        _ must_parse_token              ; -> string
+
+        _dup
+        _tagged_char('!')
+        _ string_append_char
+        _ add_local_setter              ; -> string
+
+        _dup
+        _ add_local
+
+        _nil
+        _ current_definition
+        _ vector_push
+
+        _ locals
+        _ hashtable_at
+        _verify_fixnum
         _ local_setter
         _ current_definition
         _ vector_push
