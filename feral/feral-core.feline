@@ -329,15 +329,16 @@ tuple: buffer
     ] unless
     value keyword buffer properties>> set-at ;
 
-var repaint?
-var dot-line-changed?
+var repaint? : repaint! repaint?! ;
+
+var dot-line-changed? : dot-line-changed! dot-line-changed?! ;
 
 var current-command
 var last-command
 
-var in-redo?
+var in-redo? : in-redo! in-redo?! ;
 
-var done?
+var done? : done! done?! ;
 
 global buffer-list
 

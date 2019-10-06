@@ -34,16 +34,7 @@ private
         [ drop reader <wrapper> ' symbol-set-value 2quotation ]
         [ symbol-set-def ]
         [ compile-word ]
-    } cleave
-
-    "?" name tail? [
-        name but-last "!" + new-symbol-in-current-vocab
-        {
-            [ drop reader <wrapper> ' symbol-set-value 2quotation ]
-            [ symbol-set-def ]
-            [ compile-word ]
-        } cleave
-    ] when ;
+    } cleave ;
 
 : make-var ( name )                     // string -> void
 
@@ -60,15 +51,7 @@ private
         [ drop reader <wrapper> ' current-thread-local-set 2quotation ]
         [ symbol-set-def ]
         [ compile-word ]
-    } cleave
-
-    "?" name tail? [
-        name but-last "!" + new-symbol-in-current-vocab {
-            [ drop reader <wrapper> ' current-thread-local-set 2quotation ]
-            [ symbol-set-def ]
-            [ compile-word ]
-        } cleave
-    ] when ;
+    } cleave ;
 
 public
 

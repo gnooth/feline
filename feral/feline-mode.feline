@@ -268,7 +268,7 @@ feline-mode-comment-start length constant comment-start-length
     v
 ;
 
-var in-comment?
+var in-comment? : in-comment! in-comment?! ;
 
 var last-segment-text
 
