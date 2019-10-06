@@ -355,7 +355,7 @@ global current-buffer
             ] when
         ] when
         buf current-buffer!
-        t repaint!
+        t repaint?!
     ] when ;
 
 : buffer-modified?                      // buffer -> ?
@@ -409,7 +409,7 @@ global current-buffer
     mark offset>> ;
 
 : unmark
-    mark [ f mark! t repaint! ] when ;
+    mark [ f mark! t repaint?! ] when ;
 
 : copy-dot                              // -> position
     dot copy-position ;
@@ -702,8 +702,7 @@ termui? #if
 : insert-string-internal ( s )
     dot-line-head s + dot-line-tail + dot-line-text!
     dot-offset s length + dot-offset!
-    t dot-line-changed!
-;
+    t dot-line-changed?! ;
 
 : insert-line-separator-internal
     // insert line separator at dot
