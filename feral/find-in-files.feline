@@ -58,7 +58,7 @@ using: find-in-files feral-core history mini feline accessors ;
 in: editor
 
 : find-in-files
-    f !> default-pattern
+    local default-pattern
 
     mark dot and [
         mark-line dot-line eq? [
@@ -82,8 +82,17 @@ in: editor
 
     current-buffer directory>> file-name-as-directory :> default-directory
 
-    current-buffer filename>> file-name-extension // -> string/f
-    feline-extension or !> default-extension
+    local default-extension
+    current-buffer filename>> [
+        file-name-extension default-extension!
+    ] [
+        current-buffer parent>> [
+            filename>> [
+                file-name-extension default-extension!
+            ] when*
+        ] when*
+    ] if*
+    default-extension [ feline-extension default-extension! ] unless
 
     "files" set-history
     "Files: "
