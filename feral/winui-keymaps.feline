@@ -62,7 +62,7 @@ feral-config:winui? assert
     ' list-buffers                      feral-key:ctrl-b            m set-at
     ' kill-buffer                       feral-key:ctrl-w            m set-at
     ' newline-and-indent                feral-key:enter             m set-at
-    ' do-find                           feral-key:ctrl-f            m set-at
+    ' find-command                      feral-key:ctrl-f            m set-at
     ' repeat-search-forward             feral-key:f3                m set-at
     ' repeat-search-backward            feral-key:shift-f3          m set-at
     ' do-tab                            feral-key:tab               m set-at

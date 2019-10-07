@@ -63,7 +63,7 @@ global ctrl-k-map
     ' list-buffers                      key:ctrl-b      m set-at
     ' kill-buffer                       key:ctrl-w      m set-at
     ' newline-and-indent                key:enter       m set-at
-    ' do-find                           key:ctrl-f      m set-at
+    ' find-command                      key:ctrl-f      m set-at
     ' repeat-search-forward             key:f3          m set-at
     ' repeat-search-backward            key:shift-f3    m set-at
     ' do-tab                            key:tab         m set-at

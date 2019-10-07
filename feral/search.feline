@@ -242,11 +242,11 @@ winui? #if
 use: mini
 #endif
 
-: do-find
+: find-command
     "find" set-history
     "Find: " minibuffer-accept-string :> pattern
     pattern empty? ?exit
-    pattern f make-search current-search!
+    pattern nil make-search current-search!
     pattern dot search-forward [ found ] [ not-found ] if* ;
 
 : search-forward-word-at-dot
@@ -273,7 +273,7 @@ use: mini
     ] unless ;
 
 : repeat-search-forward
-    current-pattern empty? [ do-find ] return-if
+    current-pattern empty? [ find-command ] ?return
 
     mark [ dot mark make-region/2 end ] [ copy-dot ] if :> startpos
 
@@ -285,7 +285,7 @@ use: mini
 ;
 
 : repeat-search-backward
-    current-pattern empty? [ do-find ] return-if
+    current-pattern empty? [ find-command ] ?return
 
     mark [ dot mark make-region/2 begin ] [ copy-dot ] if :> startpos
 
