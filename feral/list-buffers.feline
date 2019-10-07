@@ -21,8 +21,6 @@ private
 tuple: list-buffers-mode
     formatter ;
 
-global list-buffers-old-buffer
-
 4 constant buffer-name-column
 
 40 constant buffer-directory-column
@@ -33,7 +31,7 @@ global list-buffers-old-buffer
     update-display ;
 
 : list-buffers-quit
-    list-buffers-old-buffer current-buffer!
+    current-buffer parent>> current-buffer!
     t repaint!
     update-display ;
 
@@ -55,23 +53,22 @@ feral-config:winui? #if
 #endif
 
 : list-buffers
-    current-buffer list-buffers-old-buffer!
     make-buffer :> buf
     "List Buffers" buf name<<
     current-buffer directory>> buf directory<<
     list-buffers-local-map buf local-map<<
 
-    f !> b
-    f !> sb
-    f !> old-buffer-line
-    f !> line
+    local b
+    local sb
+    local parent-buffer-line
+    local line
     buffer-list [
         b!
         128 <sbuf> sb!
 
-        b list-buffers-old-buffer eq?   '.' '\s' ? sb sbuf-push
-        b read-only>>                   'r' '\s' ? sb sbuf-push
-        b buffer-modified?              '*' '\s' ? sb sbuf-push
+        b current-buffer eq? '.' '\s' ? sb sbuf-push
+        b read-only>>        'r' '\s' ? sb sbuf-push
+        b buffer-modified?   '*' '\s' ? sb sbuf-push
         '\s' sb push
         b buffer-name sb sbuf-append-string
 
@@ -87,13 +84,16 @@ feral-config:winui? #if
         b :buffer line line-set-property
         line buf buffer-append-line
 
-        b list-buffers-old-buffer eq? [ buf last-line>> old-buffer-line! ] when
+        b current-buffer eq? [ buf last-line>> parent-buffer-line! ] when
     ] each
+
+    current-buffer buf parent<<
+    t buf read-only<<
 
     buf first-line>> buf top-line<<
 
-    old-buffer-line buf first-line>> or // line
-    buffer-name-column                  // column
+    parent-buffer-line buf first-line>> or // line
+    buffer-name-column                     // column
     make-position buf dot<<
 
     buffer-name-column buf goal-column<<
