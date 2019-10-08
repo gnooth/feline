@@ -124,11 +124,11 @@ in: editor
 
     find-in-files-local-map buf local-map<<
 
-    buf buffer-list vector-push
+    current-buffer buf parent<<
     buf set-current-buffer
 
     renumber
-    t repaint!
+    t repaint?!
 ;
 
 using: editor feral-core feline accessors ;
