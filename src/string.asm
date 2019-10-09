@@ -19,12 +19,7 @@ file __FILE__
 
 ; 3 cells: object header, length, hashcode
 
-%define PREFIX STRING
-
-DEFINE_SLOT RAW_LENGTH, 1
-DEFINE_SLOT HASHCODE, 2
-
-%undef PREFIX
+%define STRING_RAW_LENGTH_OFFSET        8
 
 ; character data (untagged) starts at offset 24
 %define STRING_RAW_DATA_OFFSET          24
@@ -91,23 +86,23 @@ code verify_string, 'verify-string'     ; string -> string
 endcode
 
 %macro  _string_raw_length 0            ; ^string -> raw-length
-        _slot STRING_RAW_LENGTH_SLOT#
+        _slot 1
 %endmacro
 
 %macro  _this_string_raw_length 0       ; -> raw-length
-        _this_slot STRING_RAW_LENGTH_SLOT#
+        _this_slot 1
 %endmacro
 
 %macro  _this_string_set_raw_length 0   ; raw-length -> void
-        _this_set_slot STRING_RAW_LENGTH_SLOT#
+        _this_set_slot 1
 %endmacro
 
 %macro  _string_hashcode 0              ; ^string -> tagged-fixnum
-        _slot STRING_HASHCODE_SLOT#
+        _slot 2
 %endmacro
 
 %macro  _this_string_set_hashcode 0     ; fixnum -> void
-        _this_set_slot STRING_HASHCODE_SLOT#
+        _this_set_slot 2
 %endmacro
 
 %macro  _this_string_substring_unsafe 0 ; from to -> substring
@@ -252,7 +247,7 @@ code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL ; from-addr from-length -
         _ cmove                         ; --
 
         ; store terminal null byte
-        mov     rdx, THIS_STRING_RAW_LENGTH
+        mov     rdx, [this_register + STRING_RAW_LENGTH_OFFSET]
         lea     rax, [this_register + STRING_RAW_DATA_OFFSET]
         mov     byte [rax + rdx], 0
 
@@ -278,7 +273,7 @@ endcode
 ; ### string_from
 code string_from, 'string_from', SYMBOL_INTERNAL ; string -> raw-data-address raw-length
         _ check_string
-        mov     rax, STRING_RAW_LENGTH
+        mov     rax, [rbx + STRING_RAW_LENGTH_OFFSET]
         _string_raw_data_address
         _dup
         mov     rbx, rax
@@ -392,7 +387,7 @@ code string_nth, 'string-nth'   ; tagged-index string -- tagged-char
         _check_fixnum
         mov     rax, rbx                ; raw index in rax
         pop     rbx                     ; -- string
-        cmp     rax, STRING_RAW_LENGTH
+        cmp     rax, [rbx + STRING_RAW_LENGTH_OFFSET]
         jnb     error_string_index_out_of_bounds
         movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET + rax]
         _tag_char
@@ -404,7 +399,7 @@ code string_first_char, 'string-first-char'     ; string -- char
 ; return first byte of string
 ; error if string is empty
         _ check_string
-        cmp     STRING_RAW_LENGTH, 0
+        cmp     qword [rbx + STRING_RAW_LENGTH_OFFSET], 0
         je      error_string_index_out_of_bounds
         movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET]
         _tag_char
@@ -416,7 +411,7 @@ code string_?first, 'string-?first'     ; string -> char/f
 ; return first byte of string
 ; return f if string is empty
         _ check_string
-        cmp     STRING_RAW_LENGTH, 0
+        cmp     qword [rbx + STRING_RAW_LENGTH_OFFSET], 0
         je      .empty
         movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET]
         _tag_char
@@ -431,7 +426,7 @@ code string_last_char, 'string-last-char'       ; string -- char
 ; return last byte of string
 ; error if string is empty
         _ check_string
-        mov     rax, STRING_RAW_LENGTH
+        mov     rax, [rbx + STRING_RAW_LENGTH_OFFSET]
         sub     rax, 1
         js      error_string_index_out_of_bounds
         movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET + rax]
@@ -444,7 +439,7 @@ code string_?last, 'string-?last'       ; string -> char/f
 ; return last byte of string
 ; return f if string is empty
         _ check_string
-        mov     rax, STRING_RAW_LENGTH
+        mov     rax, [rbx + STRING_RAW_LENGTH_OFFSET]
         sub     rax, 1
         js      .empty
         movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET + rax]
@@ -969,7 +964,7 @@ code string_last_index_from, 'string-last-index-from'   ; char start-index strin
 
         _check_index                    ; -> char untagged-start-index
 
-        cmp     rbx, THIS_STRING_RAW_LENGTH
+        cmp     rbx, [this_register + STRING_RAW_LENGTH_OFFSET]
         jge     .out_of_bounds
 
         push    r12
