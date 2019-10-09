@@ -195,7 +195,7 @@ code destroy_heap_object, 'destroy_heap_object', SYMBOL_INTERNAL
         xor     eax, eax
         mov     [rbx], rax
 
-        _ raw_free
+        _feline_free
 
         next
 endcode

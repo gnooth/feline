@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ file __FILE__
 code __raw_allocate, '__raw_allocate', SYMBOL_INTERNAL
 ; call with raw size in arg0_register
 ; returns raw address in rax
-        xcall   malloc
+        _os_malloc
         test    rax, rax
         jz      error_out_of_memory
         next
@@ -27,9 +27,9 @@ endcode
 
 ; ### raw_allocate
 code raw_allocate, 'raw_allocate', SYMBOL_INTERNAL
-; raw-size -- raw-address
+; raw-size -> raw-address
         mov     arg0_register, rbx
-        xcall   malloc
+        _os_malloc
         test    rax, rax
         mov     rbx, rax
         jz      error_out_of_memory
@@ -38,11 +38,11 @@ endcode
 
 ; ### raw_realloc
 code raw_realloc, 'raw_realloc', SYMBOL_INTERNAL
-; raw-address raw-size -- new-raw-address
+; raw-address raw-size -> new-raw-address
         mov     arg1_register, rbx
         mov     arg0_register, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
-        xcall   realloc
+        _os_realloc
         test    rax, rax
         mov     rbx, rax
         jz      error_out_of_memory
@@ -50,10 +50,10 @@ code raw_realloc, 'raw_realloc', SYMBOL_INTERNAL
 endcode
 
 ; ### raw_free
-code raw_free, 'raw_free', SYMBOL_INTERNAL      ; raw-address --
+code raw_free, 'raw_free', SYMBOL_INTERNAL ; raw-address -> void
         mov     arg0_register, rbx
         poprbx
-        xcall   free
+        _os_free
         next
 endcode
 

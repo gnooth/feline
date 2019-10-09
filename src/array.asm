@@ -122,7 +122,7 @@ subroutine allocate_array
         push    arg0_register           ; save length
         add     arg0_register, 2        ; object header and length slot
         shl     arg0_register, 3        ; convert cells to bytes
-        xcall   malloc                  ; raw object address in rax
+        _os_malloc                      ; raw object address in rax
         pop     arg0_register           ; restore saved length
         mov     qword [rax], TYPECODE_ARRAY
         mov     [rax + ARRAY_LENGTH_OFFSET], arg0_register
