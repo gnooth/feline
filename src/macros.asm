@@ -935,3 +935,27 @@ section .text
         _ ?enough_1
 %endif
 %endmacro
+
+%macro  _os_malloc 0
+        xcall   malloc
+%endmacro
+
+%macro  _os_realloc 0
+        xcall   realloc
+%endmacro
+
+%macro  _os_free 0
+        xcall   free
+%endmacro
+
+%macro  _feline_malloc 0
+        mov     arg0_register, rbx
+        xcall   malloc
+        mov     rbx, rax
+%endmacro
+
+%macro  _feline_free 0
+        mov     arg0_register, rbx
+        poprbx
+        xcall   free
+%endmacro
