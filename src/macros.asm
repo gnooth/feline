@@ -951,7 +951,9 @@ section .text
 %macro  _feline_malloc 0
         mov     arg0_register, rbx
         xcall   malloc
+        test    rax, rax
         mov     rbx, rax
+        jz      error_out_of_memory
 %endmacro
 
 %macro  _feline_free 0

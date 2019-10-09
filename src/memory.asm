@@ -16,13 +16,8 @@
 file __FILE__
 
 ; ### raw_allocate
-code raw_allocate, 'raw_allocate', SYMBOL_INTERNAL
-; raw-size -> raw-address
-        mov     arg0_register, rbx
-        _os_malloc
-        test    rax, rax
-        mov     rbx, rax
-        jz      error_out_of_memory
+code raw_allocate, 'raw_allocate', SYMBOL_INTERNAL ; raw-size -> raw-address
+        _feline_malloc
         next
 endcode
 
