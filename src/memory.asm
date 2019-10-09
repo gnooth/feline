@@ -15,16 +15,6 @@
 
 file __FILE__
 
-; ### __raw_allocate
-code __raw_allocate, '__raw_allocate', SYMBOL_INTERNAL
-; call with raw size in arg0_register
-; returns raw address in rax
-        _os_malloc
-        test    rax, rax
-        jz      error_out_of_memory
-        next
-endcode
-
 ; ### raw_allocate
 code raw_allocate, 'raw_allocate', SYMBOL_INTERNAL
 ; raw-size -> raw-address

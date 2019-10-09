@@ -1,4 +1,4 @@
-; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -104,12 +104,14 @@ endcode
 %endif
 
 ; ### new_uint64
-code new_uint64, 'new_uint64', SYMBOL_INTERNAL  ; raw-uint64 -- uint64
+code new_uint64, 'new_uint64', SYMBOL_INTERNAL ; raw-uint64 -> uint64
 
         ; 2 cells: object header, raw value
         mov     arg0_register, 2 * BYTES_PER_CELL
 
-        call    __raw_allocate
+        _os_malloc
+        test    rax, rax
+        jz      error_out_of_memory
 
         mov     qword [rax], TYPECODE_UINT64
         mov     [rax + BYTES_PER_CELL], rbx
@@ -122,7 +124,7 @@ code new_uint64, 'new_uint64', SYMBOL_INTERNAL  ; raw-uint64 -- uint64
 endcode
 
 ; ### normalize_unsigned
-code normalize_unsigned, 'normalize_unsigned', SYMBOL_INTERNAL  ; raw-int64 -- integer
+code normalize_unsigned, 'normalize_unsigned', SYMBOL_INTERNAL ; raw-int64 -> integer
         mov     rcx, MOST_POSITIVE_FIXNUM
         cmp     rbx, rcx
         ja      .not_a_fixnum
