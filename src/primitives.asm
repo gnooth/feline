@@ -342,20 +342,17 @@ code unless, 'unless'                   ; ? quot --
 endcode
 
 ; ### unless*
-code unless_star, 'unless*'             ; ? quot --
-        _over
-        _f
-        _equal
-        _if .1
-        _nip
+code unless_star, 'unless*'             ; x quot -> y
+; if x is not nil, keep x on the stack, drop the quotation and return
+; if x is nil, drop x, call the quotation and return the result of the call
+; `x [ y ] unless*` is equivalent to `x [ ] [ y ] if*`
+        cmp     qword [rbp], nil_value
+        jne     drop
+        ; x is nil
         _ callable_raw_code_address
         mov     rax, rbx
-        poprbx
-        call    rax
-        _else .1
-        _drop
-        _then .1
-        next
+        _2nip
+        jmp     rax
 endcode
 
 ; ### ?exit-no-locals
