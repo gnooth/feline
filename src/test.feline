@@ -1404,13 +1404,9 @@ test: set-current-vocab-test-1
 set-current-vocab-test-1
 
 test: unless*-test-1
-    clear
-    f [ 42 ] unless* get-datastack { 42 } assert=
-    clear
-    t [ 42 ] unless* get-datastack { t } assert=
-    clear
-    "test" [ 42 ] unless* get-datastack { "test" } assert=
-    clear
+    { 42 } [ nil [ 42 ] unless* ] unit-test
+    { t } [ t [ 42 ] unless* ] unit-test
+    { "test" } [ "test" [ 42 ] unless* ] unit-test
 ;
 
 unless*-test-1
