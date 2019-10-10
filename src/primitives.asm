@@ -290,62 +290,67 @@ code if_star, 'if*'                     ; ? true false --
 endcode
 
 ; ### when
-code when, 'when'                       ; ? quot --
-; if conditional is not f, calls quot
-        cmp     qword [rbp], f_value
-        je      .1
+code when, 'when'                       ; x quotation -> ...
+; If x is not nil, drop x, call the quotation, and return the
+; results of the call.
+
+; If x is nil, drop both x and the quotation. Return without
+; calling the quotation.
+
+        cmp     qword [rbp], nil_value
+        je      twodrop
+        ; x is not nil
         _ callable_raw_code_address
         mov     rax, rbx
         _2drop
-%ifdef DEBUG
-        call    rax
-        next
-%else
         jmp     rax
-%endif
-.1:
-        _2drop
-        next
 endcode
 
 ; ### when*
-code when_star, 'when*'                 ; ? quot --
-; if conditional is not f, calls quot
-; conditional remains on the stack to be consumed (or not) by quot
+code when_star, 'when*'                 ; x quotation -> ...
+; If x is not nil, keep x on the stack, call the quotation, and
+; return the results of the call; x remains on the stack to be
+; consumed or left on the stack by the call.
 
-        cmp     qword [rbp], f_value
-        je      .1
+; If x is nil, drop both x and the quotation. Return without
+; calling the quotation.
+
+        cmp     qword [rbp], nil_value
+        je      twodrop
+        ; x is not nil
         _ callable_raw_code_address
         mov     rax, rbx
-        poprbx
+        _drop
         jmp     rax
-
-.1:
-        _2drop
-        next
 endcode
 
 ; ### unless
-code unless, 'unless'                   ; ? quot --
-        _swap
-        _f
-        _equal
-        _if .1
+code unless, 'unless'                   ; x quotation -> ...
+; If x is nil, drop x and call the quotation. Return the
+; results of the call.
+
+; If x is not nil, drop both x and the quotation. Return
+; without calling the quotation.
+
+        cmp     qword [rbp], nil_value
+        jne     twodrop
+        ; x is nil
         _ callable_raw_code_address
         mov     rax, rbx
-        poprbx
-        call    rax
-        _else .1
-        _drop
-        _then .1
-        next
+        _2drop
+        jmp     rax
 endcode
 
 ; ### unless*
-code unless_star, 'unless*'             ; x quot -> y
-; if x is not nil, keep x on the stack, drop the quotation and return
-; if x is nil, drop x, call the quotation and return the result of the call
+code unless_star, 'unless*'             ; x quotation -> ...
+; If x is not nil, keep x on the stack and drop the quotation.
+; Return without calling the quotation.
+
+; If x is nil, drop x and call the quotation. Return the
+; results of the call.
+
 ; `x [ y ] unless*` is equivalent to `x [ ] [ y ] if*`
+
         cmp     qword [rbp], nil_value
         jne     drop
         ; x is nil
