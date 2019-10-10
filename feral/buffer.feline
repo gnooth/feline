@@ -176,10 +176,13 @@ unuse: mini
 
     n buffer-list vector-remove-nth!
 
-    n buffer-list length < [ n 1- n! ] unless
+    n 0> [ n 1- n! ] when
 
-    n buffer-list vector-nth current-buffer!
-    t repaint! ;
+    current-buffer parent>>
+    n buffer-list vector-nth or
+    current-buffer!
+
+    t repaint?! ;
 
 : kill-buffer
     f !> confirmed?
