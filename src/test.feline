@@ -1403,6 +1403,17 @@ test: set-current-vocab-test-1
 
 set-current-vocab-test-1
 
+test: unless-test-1
+    { 42 } [ nil [ 42 ] unless ] unit-test
+    { } [ t [ 42 ] unless ] unit-test
+    { } [ "test" [ 42 ] unless ] unit-test
+
+    { 1 2 } [ 1 2 3 [ 42 ] unless ] unit-test
+    { 1 2 42 } [ 1 2 nil [ 42 ] unless ] unit-test
+;
+
+unless-test-1
+
 test: unless*-test-1
     { 42 } [ nil [ 42 ] unless* ] unit-test
     { t } [ t [ 42 ] unless* ] unit-test
