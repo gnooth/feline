@@ -148,10 +148,6 @@
         add     rbx, 1                  ; faster than inc rbx
 %endmacro
 
-%macro  _twoplus 0                      ; 2+
-        add     rbx, 2
-%endmacro
-
 %macro  _minus 0                        ; -
         neg     rbx
         add     rbx, [rbp]
