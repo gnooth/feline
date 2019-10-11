@@ -15,7 +15,7 @@
 
 file __FILE__
 
-%define ARRAY_LENGTH_OFFSET     8
+%define ARRAY_RAW_LENGTH_OFFSET     8
 
 %macro  _array_raw_length 0             ; array -- untagged-length
         _slot1
@@ -29,7 +29,7 @@ file __FILE__
         _this_set_slot1
 %endmacro
 
-; Arrays store their data inline starting at this + 16 bytes.
+; Arrays store their data inline starting at this offset.
 %define ARRAY_DATA_OFFSET       16
 
 %macro _array_raw_data_address 0
@@ -125,7 +125,7 @@ subroutine allocate_array
         _os_malloc                      ; raw object address in rax
         pop     arg0_register           ; restore saved length
         mov     qword [rax], TYPECODE_ARRAY
-        mov     [rax + ARRAY_LENGTH_OFFSET], arg0_register
+        mov     [rax + ARRAY_RAW_LENGTH_OFFSET], arg0_register
         ret
 endsub
 
@@ -172,7 +172,7 @@ code vector_to_array, 'vector->array'   ; vector -> array
 
         mov     arg0_register, [rbx + VECTOR_RAW_DATA_ADDRESS_OFFSET] ; source
         lea     arg1_register, [rax + ARRAY_DATA_OFFSET] ; destination
-        mov     arg2_register, [rax + ARRAY_LENGTH_OFFSET] ; length
+        mov     arg2_register, [rax + ARRAY_RAW_LENGTH_OFFSET] ; length
 
         ; must move array address into rbx before calling copy_cells!
         mov     rbx, rax
@@ -266,7 +266,7 @@ array_nth_untagged:
         push    this_register
         mov     this_register, rbx
         poprbx                          ; -- untagged-index
-        cmp     rbx, [this_register + ARRAY_LENGTH_OFFSET]
+        cmp     rbx, [this_register + ARRAY_RAW_LENGTH_OFFSET]
         jae     .error
         _this_array_nth_unsafe
         pop     this_register
@@ -303,7 +303,7 @@ endcode
 ; ### array-first
 code array_first, 'array-first'         ; handle -- element
         _ check_array
-        mov     rax, [rbx + ARRAY_LENGTH_OFFSET]
+        mov     rax, [rbx + ARRAY_RAW_LENGTH_OFFSET]
         test    rax, rax
         jng     .error
         mov     rbx, [rbx + ARRAY_DATA_OFFSET]
@@ -334,7 +334,7 @@ code array_?last, 'array-?last'         ; array -> element/f
 ; return last element of array
 ; return f if array is empty
         _ check_array
-        mov     rax, [rbx + ARRAY_LENGTH_OFFSET]
+        mov     rax, [rbx + ARRAY_RAW_LENGTH_OFFSET]
         sub     rax, 1
         js      .empty
         mov     rbx, [rbx + ARRAY_DATA_OFFSET + BYTES_PER_CELL * rax]

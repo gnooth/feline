@@ -290,7 +290,7 @@ code curry, 'curry'                     ; x quot1 -> quot2
         _ quotation_array
         _ check_array                   ; -> x array
 
-        mov     arg0_register, [rbx + ARRAY_LENGTH_OFFSET]
+        mov     arg0_register, [rbx + ARRAY_RAW_LENGTH_OFFSET]
         add     arg0_register, 1
         _ allocate_array                ; returns untagged address in rax
         mov     rdx, [rbp]              ; x in rdx
@@ -298,7 +298,7 @@ code curry, 'curry'                     ; x quot1 -> quot2
 
         lea     arg0_register, [rbx + ARRAY_DATA_OFFSET] ; source
         lea     arg1_register, [rax + ARRAY_DATA_OFFSET + BYTES_PER_CELL] ; destination
-        mov     arg2_register, [rbx + ARRAY_LENGTH_OFFSET] ; count
+        mov     arg2_register, [rbx + ARRAY_RAW_LENGTH_OFFSET] ; count
 
         push    rax
         _ copy_cells
