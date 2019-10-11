@@ -640,6 +640,16 @@ code zgt, '0>'                          ; fixnum -> ?
         next
 endcode
 
+; ### 0<
+code zlt, '0<'                          ; fixnum -> ?
+        _check_fixnum
+        mov     eax, nil_value
+        test    rbx, rbx
+        mov     ebx, t_value
+        cmovnl  ebx, eax
+        next
+endcode
+
 ; ### fixnum>binary
 code fixnum_to_binary, 'fixnum>binary'  ; fixnum -- string
 
