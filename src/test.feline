@@ -198,7 +198,7 @@ test: fixnum>-test-1
     most-positive-fixnum most-negative-fixnum fixnum> assert-true
     0 most-positive-fixnum fixnum> assert-false
 
-    most-positive-fixnum 1+ most-positive-fixnum fixnum> assert-true
+    most-positive-fixnum 1 + most-positive-fixnum fixnum> assert-true
 ;
 
 fixnum>-test-1
@@ -1896,13 +1896,13 @@ test: negate-test-1
 
     most-positive-fixnum 4611686018427387903 assert-eq
     most-positive-fixnum negate -4611686018427387903 assert-eq
-    most-positive-fixnum 1+ negate dup fixnum? assert-true -4611686018427387904 assert-eq
+    most-positive-fixnum 1 + negate dup fixnum? assert-true -4611686018427387904 assert-eq
     most-positive-fixnum 1- negate dup fixnum? assert-true -4611686018427387902 assert-eq
 
     most-negative-fixnum -4611686018427387904 assert-eq
     most-negative-fixnum negate dup int64? assert-true 4611686018427387904 assert=
     most-negative-fixnum 1+ negate dup fixnum? assert-true 4611686018427387903 assert-eq
-    most-negative-fixnum 1- negate dup int64? assert-true 4611686018427387905 assert=
+    most-negative-fixnum 1 - negate dup int64? assert-true 4611686018427387905 assert=
 
     most-positive-int64 9223372036854775807 assert=
     most-positive-int64 negate dup int64? assert-true -9223372036854775807 assert=
@@ -4204,5 +4204,35 @@ test: 0?-test-1
 ;
 
 0?-test-1
+
+test: 1+-test-1
+    -1 1+ 0? assert
+    0 1+ 1 assert-eq
+    1 1+ 2 assert-eq
+
+    10 [ dup 1+ swap 1 + assert-eq ] each-integer
+
+    most-positive-fixnum dup 1 - 1+ assert-eq
+    most-negative-fixnum dup 1+ 1 - assert-eq
+
+    [ most-positive-fixnum 1+ ] assert-must-fail // overflow
+;
+
+1+-test-1
+
+test: 1--test-1
+    1 1- 0? assert
+    0 1- -1 assert-eq
+    -1 1- -2 assert-eq
+
+    10 [ dup 1- swap 1 - assert-eq ] each-integer
+
+    most-positive-fixnum dup 1- 1 + assert-eq
+    most-negative-fixnum dup 1 + 1- assert-eq
+
+    [ most-negative-fixnum 1- ] assert-must-fail // overflow
+;
+
+1--test-1
 
 ?nl "Reached end of test.feline" write-string

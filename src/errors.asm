@@ -364,3 +364,10 @@ code error_index_not_valid_for_string, 'error-index-not-valid-for-string'
         _ error
         next
 endcode
+
+; ### error-fixnum-overflow
+code error_fixnum_overflow, 'error-fixnum-overflow'
+        _quote "ERROR: fixnum overflow"
+        _ error
+        next
+endcode

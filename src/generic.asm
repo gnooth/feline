@@ -519,12 +519,6 @@ generic generic_plus, '+'               ; x y -- z
 ; ### -
 generic generic_minus, '-'              ; x y -- z
 
-; ### 1+
-generic generic_oneplus, '1+'           ; x y -- z
-
-; ### 1-
-generic generic_oneminus, '1-'          ; x y -- z
-
 ; ### *
 generic generic_multiply, '*'           ; x y -- z
 
@@ -680,14 +674,6 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method generic_minus, TYPECODE_FIXNUM, fixnum_minus
         _add_method generic_minus, TYPECODE_INT64, int64_minus
         _add_method generic_minus, TYPECODE_FLOAT, float_minus
-
-        ; 1+
-        _initialize_generic_function generic_oneplus
-        _add_method generic_oneplus, TYPECODE_FIXNUM, fixnum_oneplus
-
-        ; 1-
-        _initialize_generic_function generic_oneminus
-        _add_method generic_oneminus, TYPECODE_FIXNUM, fixnum_oneminus
 
         ; *
         _initialize_generic_function generic_multiply
