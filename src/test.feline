@@ -4150,4 +4150,42 @@ test: string-trim-test-1
 
 string-trim-test-1
 
+test: 0>-test-1
+    1 0> assert
+    2 0> assert
+    most-positive-fixnum 0> assert
+    most-positive-fixnum 1- 0> assert
+
+    [ most-positive-fixnum 1 + 0> ] assert-must-fail // not a fixnum
+
+    0 0> assert-false
+    -1 0> assert-false
+    -2 0> assert-false
+    most-negative-fixnum 0> assert-false
+    most-negative-fixnum 1+ 0> assert-false
+
+    [ most-negative-fixnum 1 - 0> ] assert-must-fail // not a fixnum
+;
+
+0>-test-1
+
+test: 0<-test-1
+    -1 0< assert
+    -2 0< assert
+    most-negative-fixnum 0< assert
+    most-negative-fixnum 1+ 0< assert
+
+    [ most-negative-fixnum 1 - 0< ] assert-must-fail // not a fixnum
+
+    0 0< assert-false
+    1 0< assert-false
+    2 0< assert-false
+    most-positive-fixnum 0< assert-false
+    most-positive-fixnum 1- 0< assert-false
+
+    [ most-positive-fixnum 1 + 0< ] assert-must-fail // not a fixnum
+;
+
+0<-test-1
+
 ?nl "Reached end of test.feline" write-string
