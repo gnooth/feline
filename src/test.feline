@@ -4188,4 +4188,21 @@ test: 0<-test-1
 
 0<-test-1
 
+test: 0?-test-1
+    0 0? assert
+
+    1 0? assert-false
+    most-positive-fixnum 0? assert-false
+
+    -1 0? assert-false
+    most-negative-fixnum 0? assert-false
+
+    // not a fixnum
+    [ most-positive-fixnum 1 + 0? ] assert-must-fail
+    [ most-negative-fixnum 1 - 0? ] assert-must-fail
+    [ 0.0 0? ] assert-must-fail
+;
+
+0?-test-1
+
 ?nl "Reached end of test.feline" write-string
