@@ -632,9 +632,10 @@ endcode
 
 ; ### 0>
 code zgt, '0>'                          ; fixnum -> ?
-        _check_fixnum
+        test    bl, FIXNUM_TAG
+        jz      error_not_fixnum
+        sar     rbx, FIXNUM_TAG_BITS
         mov     eax, nil_value
-        test    rbx, rbx
         mov     ebx, t_value
         cmovng  ebx, eax
         next
@@ -642,11 +643,23 @@ endcode
 
 ; ### 0<
 code zlt, '0<'                          ; fixnum -> ?
-        _check_fixnum
+        test    bl, FIXNUM_TAG
+        jz      error_not_fixnum
+        sar     rbx, FIXNUM_TAG_BITS
         mov     eax, nil_value
-        test    rbx, rbx
         mov     ebx, t_value
         cmovnl  ebx, eax
+        next
+endcode
+
+; ### 0?
+code fixnum_zero?, '0?'                 ; fixnum -> ?
+        test    bl, FIXNUM_TAG
+        jz      error_not_fixnum
+        sar     rbx, FIXNUM_TAG_BITS
+        mov     eax, nil_value
+        mov     ebx, t_value
+        cmovnz  ebx, eax
         next
 endcode
 
