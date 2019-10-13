@@ -102,10 +102,9 @@ feline_constant failed, '+failed+', S_failed
 code check_assert_must_fail, 'check-assert-must-fail' ; quotation location -> void
         _debug_?enough 2
         _swap
-        _quotation .1
-        _drop
+        _lit S_drop
         _lit S_failed
-        _end_quotation .1
+        _ two_quotation
         _ recover
         _dup
         _lit S_failed
@@ -114,10 +113,15 @@ code check_assert_must_fail, 'check-assert-must-fail' ; quotation location -> vo
         ; The expected failure did occur. This is not an error!
         _2drop
         ; Forget saved error location.
-        _f
+        _nil
         _ set_error_location
         _else .2
-        _ assertion_failed
+        ; The expected failure did not occur. This is disappointing,
+        ; since we were hoping for a failure, but we don't want to
+        ; call recover here since the try quotation did not throw.
+        _quote "Assertion failed"
+        _ do_error1
+        _ reset
         _then .2
         next
 endcode
