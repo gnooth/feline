@@ -23,8 +23,8 @@ global global-map
 : lookup-key                            // key -> symbol/nil
     global-map at ;
 
-feral-source-directory {
+{
     { [ winui?  ] [ "winui-keymaps.feline"  ] }
     { [ gtkui?  ] [ "gtkui-keymaps.feline"  ] }
     { [ termui? ] [ "termui-keymaps.feline" ] }
-} cond path-append load
+} cond load-feral-source-file
