@@ -39,6 +39,11 @@ in: editor
     ] when*
     sb sbuf>string ;
 
-"winui-display.feline" feral-config:winui? ?load
-"gtkui-display.feline" feral-config:gtkui? ?load
-"termui-display.feline" feral-config:termui? ?load
+use: feral-config
+use: feral-loader
+
+{
+    { [ winui?  ] [ "winui-display.feline"  ] }
+    { [ gtkui?  ] [ "gtkui-display.feline"  ] }
+    { [ termui? ] [ "termui-display.feline" ] }
+} cond load-feral-source-file
