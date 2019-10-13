@@ -1418,6 +1418,8 @@ test: unless*-test-1
     { 42 } [ nil [ 42 ] unless* ] unit-test
     { t } [ t [ 42 ] unless* ] unit-test
     { "test" } [ "test" [ 42 ] unless* ] unit-test
+
+    { 17 42 } [ 17 nil [ 42 ] unless* ] unit-test
 ;
 
 unless*-test-1

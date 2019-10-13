@@ -356,7 +356,7 @@ code unless_star, 'unless*'             ; x quotation -> ...
         ; x is nil
         _ callable_raw_code_address
         mov     rax, rbx
-        _2nip
+        _2drop
         jmp     rax
 endcode
 
