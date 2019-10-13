@@ -13,16 +13,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline ;
+using: feral-config feral-loader feline ;
 in: keymaps
 
 private
 
 global global-map
 
-: lookup-key                            // key -> symbol/f
+: lookup-key                            // key -> symbol/nil
     global-map at ;
 
-"winui-keymaps.feline" feral-config:winui? ?load
-"gtkui-keymaps.feline" feral-config:gtkui? ?load
-"termui-keymaps.feline" feral-config:termui? ?load
+feral-source-directory {
+    { [ winui?  ] [ "winui-keymaps.feline"  ] }
+    { [ gtkui?  ] [ "gtkui-keymaps.feline"  ] }
+    { [ termui? ] [ "termui-keymaps.feline" ] }
+} cond path-append load
