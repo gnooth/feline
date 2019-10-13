@@ -48,6 +48,9 @@ empty
 
 feline-home "feral" path-append constant feral-source-directory
 
+: load-feral-source-file // string -> void
+    feral-source-directory swap path-append load ;
+
 feral-source-directory add-source-directory
 
 : load-feral
@@ -84,7 +87,7 @@ feral-source-directory add-source-directory
         "find-in-files.feline"
         "commands.feline"
         "keymaps.feline"
-    } [ feral-source-directory swap path-append load ] each
+    } ' load-feral-source-file each
 ;
 
 load-feral
