@@ -16,6 +16,9 @@
 using: feral-core feline accessors mini ;
 in: editor
 
+: check-read-only // void -> ?
+    current-buffer read-only>> dup [ "Buffer is read-only" message ] when ;
+
 : delete-region/1 ( region ) // region -> void
     region add-undo-delete-region
 
@@ -34,7 +37,7 @@ in: editor
     modified
     renumber
     maybe-reframe
-    t repaint!
+    t repaint?!
 ;
 
 : delete-region // void -> void
@@ -45,7 +48,7 @@ in: editor
     insert-line-separator-internal
     0 goal-column!
     modified
-    t repaint!
+    t repaint?!
     renumber ;
 
 : insert-spaces ( n )                   // n ->
@@ -55,7 +58,7 @@ in: editor
     dot-line-tail sb sbuf-append-string
     sb sbuf>string dot-line-text!
     dot-offset n + dot-offset!
-    t dot-line-changed!
+    t dot-line-changed?!
     modified ;
 
 : do-tab
@@ -70,7 +73,7 @@ in: editor
     [ drop 0 ] unless ;
 
 : delete-indentation                    // string -> string'
-    dup empty? [ ] return-if
+    dup empty? ?exit
 
     :> text
 
@@ -78,9 +81,7 @@ in: editor
     [ text string-tail ] [ drop "" ] if ;
 
 : newline-and-indent
-    current-buffer read-only>> [
-        "Buffer is read-only" message
-    ] return-if
+    check-read-only ?exit
 
     reset-redo
 
@@ -238,24 +239,18 @@ in: editor
     ] when ;
 
 : backspace
-    {
-        { [ dot-offset 0 > ] [
-            add-undo-line-edit
-            dot-offset 1-
-            [ dot-line text>> string-remove-nth dot-line text<< ] [ dot-offset! ] bi
-            t dot-line-changed!
-            modified
-        ] }
-        { [ dot-line-prev ] [
-            [
-                move-left
-                delete-line-separator
-                modified
-            ] with-compound-undo
-        ] }
-        // do nothing if dot is at beginning of buffer
-        [ ]
-    } cond ;
+    at-bof? ?exit
+    check-read-only ?exit
+    dot-offset 0> [
+        add-undo-line-edit
+        dot-offset 1-
+        [ dot-line text>> string-remove-nth dot-line text<< ] [ dot-offset! ] bi
+        t dot-line-changed?!
+        modified
+    ] [
+        dot-line-prev assert
+        [ move-left delete-line-separator modified ] with-compound-undo
+    ] if ;
 
 private: insert-char-internal // char -> void
     // no undo
@@ -268,29 +263,21 @@ private: insert-char-internal // char -> void
     sb sbuf>string dot-line text<<
 
     dot-offset 1+ dot-offset!
-    t dot-line-changed!
+    t dot-line-changed?!
     modified
     dot-offset goal-column!
 ;
 
 : insert-char // char -> void
-    current-buffer read-only>> [
-        drop
-        "Buffer is read-only" message
-    ] return-if
+    check-read-only ?exit
 
     reset-redo
 
     current-command assert-false
     ' insert-char current-command!
 
-    mark
-    [
-        [
-            delete-region
-            add-undo-line-edit
-            insert-char-internal
-        ] with-compound-undo
+    mark [
+        [ delete-region add-undo-line-edit insert-char-internal ] with-compound-undo
     ] [
         last-command ' insert-char eq? [ add-undo-line-edit ] unless
         insert-char-internal
@@ -463,17 +450,13 @@ use: kill-ring
     ] with-compound-undo ;
 
 : do-delete
-    current-buffer read-only>> [
-        "Buffer is read-only" message
-    ] return-if
-
+    check-read-only ?exit
     {
         { [ mark ] [ delete-region ] }
         { [ dot-offset dot-line-length < ] [ delete-normal-char ] }
         // otherwise...
         [ delete-line-separator ]
     } cond
-
     modified ;
 
 : cut-region ( region )
