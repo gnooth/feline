@@ -297,30 +297,29 @@ use: mini
 ;
 
 : search-list-occurrences
-    current-search null? [ ] return-if
+    current-search nil? ?exit
 
     make-buffer :> buf
 
     current-pattern :> pattern
     first-line :> line!
 
-    "List Occurrences" dup buf name<<
-    make-line/1 buf 2dup buffer-append-line top-line<<
-
-    pattern "Pattern: %S" format make-line/1 buf buffer-append-line
-
     [ line ] [
         pattern line find-in-line [
             line number>> 1+ line text>> "%d:%s" format
-            make-line/1 buf buffer-append-line
+            make-line/1
+            buf top-line>> [ dup buf top-line<< ] unless
+            buf buffer-append-line
         ] when
         line next>> line!
     ] while
 
     buf top-line>> 0 make-position buf dot<<
+    t buf read-only<<
+    pattern "list-occurrences %S" format buf name<<
+    current-buffer buf parent<<
 
-    buf buffer-list vector-push
-    buf current-buffer!
+    buf set-current-buffer
 
     renumber
     t repaint?!
