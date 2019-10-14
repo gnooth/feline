@@ -18,20 +18,20 @@ in: editor
 
 : git-diff
     current-buffer filename>> :> sourcefile
-    sourcefile null? ?exit
+    sourcefile nil? ?exit
     get-current-directory :> olddir
     sourcefile file-name-directory set-current-directory
     "git diff " sourcefile + :> command
-    command shell-command-to-string !> output
+    command shell-command-to-string :> output
     olddir set-current-directory
 
-    // shell-command-to-string might return f
-    output null? ?exit
+    // shell-command-to-string might return nil
+    output nil? ?exit
 
-    f !> buf
-    output length 0 > [
+    local buf
+    output length 0> [
         // reuse existing buffer if possible
-        buffer-list [ command>> command = ] find // index/f element/f
+        buffer-list [ command>> command = ] find // -> index/nil element/nil
         [
             nip buf!
         ] [
@@ -44,7 +44,7 @@ in: editor
         current-buffer directory>> buf directory<<
         t buf read-only<<
         buf first-line>> 0 make-position buf dot<<
-        f buf mark<<
+        nil buf mark<<
         buf first-line>> buf top-line<<
 
         current-buffer buf parent<<
@@ -56,8 +56,8 @@ in: editor
         ] unless
         buf set-current-buffer
 
-        t repaint!
+        t repaint?!
     ] [
-        "git ls-files " sourcefile + shell-command-to-string output!
-        output length zero? "Untracked" "No changes" ? message
+        "git ls-files " sourcefile + shell-command-to-string // -> string/nil
+        [ length 0? "Untracked" "No changes" ? message ] when*
     ] if ;
