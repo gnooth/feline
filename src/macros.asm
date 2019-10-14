@@ -15,15 +15,6 @@
 
 %idefine bytes_per_cell 8
 
-%macro DEFINE_SLOT 2                    ; slot name, slot number
-
-%define %[PREFIX]_%1_SLOT# %2                                   ; VECTOR_RAW_LENGTH_SLOT#
-%define %[PREFIX]_%1_OFFSET %2*%[BYTES_PER_CELL]                ; VECTOR_RAW_LENGTH_OFFSET
-%define %[PREFIX]_%1 qword [rbx + %2*%[BYTES_PER_CELL]]         ; VECTOR_RAW_LENGTH
-%define THIS_%[PREFIX]_%1 qword [r15 + %2*%[BYTES_PER_CELL]]    ; THIS_VECTOR_RAW_LENGTH
-
-%endmacro
-
 %macro  pushrbx 0
         mov     [rbp - BYTES_PER_CELL], rbx
         lea     rbp, [rbp - BYTES_PER_CELL]

@@ -317,22 +317,22 @@ endcode
 code gc2_scan_thread, 'gc2_scan_thread' ; ^thread -> void
 
         _dup
-        _slot THREAD_QUOTATION_SLOT#
+        _thread_quotation
         _ gc2_maybe_push_handle
 
         _dup
-        _slot THREAD_THREAD_LOCALS_SLOT#
+        _thread_locals
         _ gc2_maybe_push_handle
 
         _dup
-        _slot THREAD_RESULT_SLOT#
+        _thread_result
         _ gc2_maybe_push_handle
 
         _dup
-        _slot THREAD_DEBUG_NAME_SLOT#
+        _thread_debug_name
         _ gc2_maybe_push_handle
 
-        _slot THREAD_CATCHSTACK_SLOT#
+        _thread_catchstack
         _ gc2_maybe_push_handle
 
         next
