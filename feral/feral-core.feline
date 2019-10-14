@@ -19,13 +19,13 @@ in: feral-core
 use: directories
 
 : shell-command-to-string ( command )   // command -> string/f
-    f :> result!
-    get-temporary-filename :> temp
-    command " > " + temp + run-shell-command // should return fixnum 0
-    zero? [
-        temp file-contents result! // file-contents returns a string (but might throw)
+    nil !> result
+    get-temporary-filename :> tempfile
+    command " > " + tempfile + run-shell-command // should return fixnum 0
+    0? [
+        tempfile safe-file-contents result!
     ] when
-    temp delete-file
+    tempfile delete-file
     // delete-file returns t if it succeeds
     drop
     result ;
@@ -627,7 +627,7 @@ termui? #if
     bottom-line number>> ;
 
 : detab ( s )                           // string -> string'
-    '\t' s string-index null? [ s ] return-if
+    '\t' s string-index nil? [ s ] ?return
 
     256 <sbuf> :> sb
 
@@ -635,7 +635,7 @@ termui? #if
         dup '\t' eq? [
             drop
             '\s' sb sbuf-push
-            [ sb sbuf-length tab-width mod 0 eq? ] [ '\s' sb sbuf-push ] until
+            [ sb sbuf-length tab-width mod 0? ] [ '\s' sb sbuf-push ] until
         ] [
             sb sbuf-push
         ] if
