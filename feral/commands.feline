@@ -39,6 +39,7 @@ in: editor
 
     filename buf filename<<
     filename file-name-nondirectory buf name<<
+    filename file-name-directory buf directory<<
     filename file-name-extension [ modes:modes at buf mode<< ] when*
 
     buf dup mode>> initialize-buffer
@@ -46,7 +47,7 @@ in: editor
     buf buffer-list vector-push
     buf current-buffer!
 
-    t repaint!
+    t repaint?!
 ;
 
 : open-file-get-completions
