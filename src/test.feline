@@ -4030,6 +4030,7 @@ test: string-append-char-test-1
 string-append-char-test-1
 
 test: file-name-directory-test-1
+
     win64? [
 
         { "c:\\Users\\peter\\feline\\src" }
@@ -4047,8 +4048,14 @@ test: file-name-directory-test-1
         { "c:\\" }
         [ "c:\\Users" file-name-directory ] unit-test
 
-        { f }
+        { nil } // REVIEW should this be "\\"?
         [ "c:\\" file-name-directory ] unit-test
+
+        { nil }
+        [ "c:foo" file-name-directory ] unit-test
+
+        { nil }
+        [ "foo" file-name-directory ] unit-test
 
     ] when
 
@@ -4072,7 +4079,7 @@ test: file-name-directory-test-1
         { "/" }
         [ "/" file-name-directory ] unit-test
 
-        { f }
+        { nil }
         [ "foo" file-name-directory ] unit-test
 
     ] when ;

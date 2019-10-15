@@ -48,8 +48,8 @@ public
         [ f ]
     } cond ;
 
-// returns the filename's directory component
-: file-name-directory-win64 ( filename ) // filename -> dirname/f
+: file-name-directory-win64 ( filename ) // filename -> dirname/nil
+// returns the file name's directory component
     filename length :> len
 
     {
@@ -57,38 +57,36 @@ public
         [ 1 filename nth-unsafe ':' eq? ]
         [ 2 filename nth-unsafe path-separator-char? ]
     } &&
-    [ f ] return-if
+    [ nil ] ?return
 
-    {
-        [ len 2 eq? ]
-        [ 1 filename nth-unsafe ':' eq? ]
-    } &&
-    [ f ] return-if
+    [ len 2 eq? ] [ 1 filename nth-unsafe ':' eq? ] both?
+    [ nil ] ?return
 
-    f :> dirname!
-    len 1- filename [ path-separator-char? ] find-last-from // -> index/f element/f
+    nil !> dirname
+    len 1- filename [ path-separator-char? ] find-last-from // -> index/nil element/nil
     [
+        // -> index
         filename head dirname!
-        {
-            [ dirname length 2 eq? ]
-            [ 1 dirname nth-unsafe ':' eq? ]
-        } &&
+        [ dirname length 2 eq? ] [ 1 dirname nth-unsafe ':' eq? ] both?
         [
             dirname path-separator-char string-append-char dirname!
         ] when
-    ] when
+    ] [
+        // -> nil
+        drop
+    ] if
+
     dirname ;
 
-: file-name-directory-linux ( filename ) // filename -> dirname/f
+: file-name-directory-linux ( filename ) // filename -> dirname/nil
     filename length :> len
     len 1- filename [ path-separator-char? ] find-last-from [
         // -> index
         dup zero? [ drop "/" ] [ filename head ] if
     ] when ;
 
-
-// returns the filename's directory component
-: file-name-directory                   // filename -> dirname/f
+: file-name-directory // filename -> dirname/nil
+// returns the file name's directory component
     win64? [ file-name-directory-win64 ] [ file-name-directory-linux ] if ;
 
 : verify-extension // extension filename  -> filename/f
