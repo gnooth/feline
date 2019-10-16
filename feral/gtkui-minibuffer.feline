@@ -145,7 +145,7 @@ public
     prompt length 0 gtkui-minibuffer-set-caret-pos
 
     gtkui-minibuffer-main
-    minibuffer-contents [ prompt length minibuffer-contents tail ] [ nil] if ;
+    minibuffer-contents [ prompt length minibuffer-contents tail ] [ nil ] if ;
 
 : minibuffer-accept-string/2 // prompt default -> string/nil
     2 ?enough
