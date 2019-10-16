@@ -18,7 +18,7 @@ in: search
 
 empty
 
-private
+public
 
 tuple: search
     pattern
@@ -33,11 +33,13 @@ tuple: search
 
 var current-search
 
+private
+
 : current-pattern                       // -> string/f
-    current-search [ pattern>> ] [ f ] if* ;
+    current-search [ pattern>> ] [ nil ] if* ;
 
 : whole-words-only?                     // -> ?
-    current-search [ whole-words-only>> ] [ f ] if* ;
+    current-search [ whole-words-only>> ] [ nil ] if* ;
 
 : found ( pos )                         // position -> void
     reset-redo
@@ -244,7 +246,9 @@ use: mini
 
 : find-command
     "find" set-history
-    "Find: " minibuffer-accept-string :> pattern
+    "Find: "                            // prompt
+    current-pattern                     // default pattern (might be nil)
+    minibuffer-accept-string/2 :> pattern
     pattern empty? ?exit
     pattern nil make-search current-search!
     pattern dot search-forward [ found ] [ not-found ] if* ;
