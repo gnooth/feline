@@ -137,21 +137,21 @@ public
 : clear-message
     "" minibuffer-set-text ;
 
-: minibuffer-accept-string              // prompt -> string/f
+: minibuffer-accept-string // prompt -> string/f
     verify-string prompt!
-    f minibuffer-contents!
+    nil minibuffer-contents!
+
     prompt string>sbuf minibuffer-set-text
     prompt length 0 gtkui-minibuffer-set-caret-pos
-    gtkui-minibuffer-main
-    minibuffer-contents [
-       prompt length minibuffer-contents tail
-    ] [ f ] if ;
 
-: minibuffer-accept-string/2            // prompt default -> string/f
+    gtkui-minibuffer-main
+    minibuffer-contents [ prompt length minibuffer-contents tail ] [ nil] if ;
+
+: minibuffer-accept-string/2 // prompt default -> string/nil
     2 ?enough
-    verify-string :> default
+    "" or verify-string :> default
     verify-string prompt!
-    f minibuffer-contents!
+    nil minibuffer-contents!
 
     prompt default +
     [ string>sbuf minibuffer-set-text ]
@@ -159,7 +159,4 @@ public
     bi
 
     gtkui-minibuffer-main
-
-    minibuffer-contents [
-        prompt length minibuffer-contents tail
-    ] [ f ] if ;
+    minibuffer-contents [ prompt length minibuffer-contents tail ] [ nil ] if ;

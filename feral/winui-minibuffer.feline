@@ -68,11 +68,11 @@ private
 
     current-history [
         prompt length minibuffer-contents tail update-history
-        f current-history!
+        nil current-history!
     ] when
 
     "" minibuffer-set-text
-    f set-completion-provider
+    nil set-completion-provider
     winui-minibuffer-exit
 ;
 
@@ -167,22 +167,21 @@ public
     "" minibuffer-set-text
 ;
 
-: minibuffer-accept-string              // prompt -> string/f
+: minibuffer-accept-string // prompt -> string/nil
     verify-string prompt!
-    f minibuffer-contents!
+    nil minibuffer-contents!
+
     prompt string>sbuf minibuffer-set-text
     prompt length winui-char-width * 0 winui-set-caret-pos
-    winui-minibuffer-main
-    minibuffer-contents [
-        prompt length minibuffer-contents tail
-    ] [ f ] if
-;
 
-: minibuffer-accept-string/2            // prompt default -> string/f
+    winui-minibuffer-main
+    minibuffer-contents [ prompt length minibuffer-contents tail ] [ nil ] if ;
+
+: minibuffer-accept-string/2 // prompt default -> string/nil
     2 ?enough
-    verify-string :> default
+    "" or verify-string :> default
     verify-string prompt!
-    f minibuffer-contents!
+    nil minibuffer-contents!
 
     prompt default +
     [ string>sbuf minibuffer-set-text ]
@@ -190,8 +189,4 @@ public
     bi
 
     winui-minibuffer-main
-
-    minibuffer-contents [
-        prompt length minibuffer-contents tail
-    ] [ f ] if
-;
+    minibuffer-contents [ prompt length minibuffer-contents tail ] [ nil ] if ;
