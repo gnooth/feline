@@ -1372,14 +1372,24 @@ subroutine fill_cells
 ; arg1_register: x
 ; arg2_register: untagged count
         test    arg2_register, arg2_register
-        jz      .1
+        jz      .exit
         sub     arg2_register, 1
-.2:
+        align   DEFAULT_CODE_ALIGNMENT
+.top:
         mov     [arg0_register + arg2_register * BYTES_PER_CELL], arg1_register
         sub     arg2_register, 1
-        jns     .2
-.1:
-        ret
+        js      .exit
+        mov     [arg0_register + arg2_register * BYTES_PER_CELL], arg1_register
+        sub     arg2_register, 1
+        js      .exit
+        mov     [arg0_register + arg2_register * BYTES_PER_CELL], arg1_register
+        sub     arg2_register, 1
+        js      .exit
+        mov     [arg0_register + arg2_register * BYTES_PER_CELL], arg1_register
+        sub     arg2_register, 1
+        jns     .top
+.exit:
+        _rep_return
 endsub
 
 ; ### char-upcase
