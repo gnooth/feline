@@ -20,9 +20,9 @@ public
 
 global find-in-files-local-map
 
-global current-output-buffer
+global find-in-files-output-buffer
 
-global current-pattern
+global find-in-files-pattern
 
 global current-files
 
@@ -38,23 +38,23 @@ global current-files
     filename file-lines [
         // -> string index
         i! s!
-        current-pattern s substring-start [
+        find-in-files-pattern s substring-start [
             found [
                 filename make-line/1 line!
                 filename :source-file line line-set-property
                 i 1+ :source-line-number line line-set-property
-                line current-output-buffer buffer-append-line
+                line find-in-files-output-buffer buffer-append-line
                 t found!
             ] unless
             i 1+ number>string ":" + s + make-line/1 line!
             filename :source-file line line-set-property
             i 1+ :source-line-number line line-set-property
-            line current-output-buffer buffer-append-line
+            line find-in-files-output-buffer buffer-append-line
         ] when
     ] each-index
 ;
 
-using: find-in-files feral-core history mini feline accessors ;
+using: find-in-files search feral-core history mini feline accessors ;
 in: editor
 
 : find-in-files
@@ -76,9 +76,9 @@ in: editor
         minibuffer-accept-string
     ] [
         default-pattern minibuffer-accept-string/2
-    ] if current-pattern!
+    ] if find-in-files-pattern!
 
-    current-pattern empty? ?exit
+    find-in-files-pattern empty? ?exit
 
     current-buffer directory>> file-name-as-directory :> default-directory
 
@@ -105,8 +105,10 @@ in: editor
 
     directory null? ?exit
 
+    find-in-files-pattern nil make-search current-search!
+
     make-buffer :> buf
-    buf current-output-buffer!
+    buf find-in-files-output-buffer!
 
     current-files directory-files [
         [
@@ -119,7 +121,7 @@ in: editor
     buf first-line>> 0 make-position buf dot<<
     buf first-line>> buf top-line<<
     t buf read-only<<
-    current-pattern current-files "find-in-files %S %s" format buf name<<
+    find-in-files-pattern current-files "find-in-files %S %s" format buf name<<
     directory buf directory<<
 
     find-in-files-local-map buf local-map<<
