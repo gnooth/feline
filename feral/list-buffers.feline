@@ -18,9 +18,6 @@ in: list-buffers
 
 private
 
-tuple: list-buffers-mode
-    formatter ;
-
 4 constant buffer-name-column
 
 40 constant buffer-directory-column
