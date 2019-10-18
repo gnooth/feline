@@ -16,6 +16,8 @@
 using: feline accessors feral-core ;
 in: segments
 
+empty
+
 tuple: segment
     text
     start
