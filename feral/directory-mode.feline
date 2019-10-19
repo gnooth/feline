@@ -13,23 +13,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline accessors directories mini ;
+using: feral-core feline accessors ;
 in: directory-mode
 
 private
-
-tuple: directory-mode ;
 
 global instance
 
 global directory-mode-local-map
 
-public
-
-: name-offset                           // string -> index/f
+: name-offset // string -> index/nil
     1 ?enough verify-string :> s
 
-    f :> index!
+    nil !> index
 
     win64? [
         // Windows
@@ -49,15 +45,15 @@ public
             39
         ] [
             // For a directory...
-            "<DIR>          " s substring-start // -> index/f
-            [ 15 + ] [ f ] if*
+            "<DIR>          " s substring-start // -> index/nil
+            [ 15 + ] [ nil ] if*
         ] if
     ] [
         // Linux
         // -rw-rw-r-- 1 peter peter  3224 May 24 10:10 directory-mode.feline
         //                                           ^^^
 
-        s length 1- s [ '\s' eq? ] find-last-from // -> index/f element/f
+        s length 1- s [ '\s' eq? ] find-last-from // -> index/nil element/nil
         [
             index!
             {
@@ -65,21 +61,12 @@ public
                 [ index s ?nth '\s' eq? ]
                 [ index 1+ s ?nth dup alphanumeric? swap '.' eq? or ]
             } && // -> ?
-            index 1+ f ?
+            index 1+ nil ?
         ] when
     ] if ;
 
-: get-instance                          // void -> directory-mode
-    instance [
-        directory-mode make-instance dup instance!
-    ] unless* ;
-
-method: directory-mode initialize-buffer // buffer mode -> void
-    2 ?enough
-    drop :> buf
-    get-instance dup assert buf mode<<
-    directory-mode-local-map buf local-map<<
-    t buf read-only<< ;
+: get-instance // void -> mode
+    instance ;
 
 : directory-contents ( dirname )        // dirname -> string
     win64? [
@@ -92,13 +79,17 @@ method: directory-mode initialize-buffer // buffer mode -> void
     ] if
     shell-command-to-string ;
 
-: create-directory-buffer ( dirname )   // dirname -> buffer/f
+: directory-mode-initialize-buffer // buffer -> void
+    1 ?enough :> buf
+    directory-mode-local-map buf local-map<< ;
+
+: create-directory-buffer ( dirname )   // dirname -> buffer/nil
     dirname directory-contents :> s
 
-    s empty? [ f ] return-if
+    s empty? [ nil ] ?return
 
-    f :> buf!
-    s length 0 > [
+    nil !> buf
+    s length 0> [
         make-buffer buf!
         s buf editor:buffer-set-contents
         buf first-line>> 0 make-position buf dot<<
@@ -106,8 +97,8 @@ method: directory-mode initialize-buffer // buffer mode -> void
         t buf read-only<<
         dirname buf [ filename<< ] [ directory<< ] [ name<< ] 2tri
 
-        directory-mode:get-instance dup buf mode<<
-        buf swap initialize-buffer
+        directory-mode:get-instance buf mode<<
+        buf directory-mode-initialize-buffer
 
         buf buffer-list vector-push
     ] when
@@ -135,11 +126,6 @@ method: directory-mode initialize-buffer // buffer mode -> void
         t repaint!
     ] unless ;
 
-using: directory-mode feral-core feline accessors ;
-in: editor
-
-public
-
 : dir
     current-buffer filename>> [
         file-name-directory
@@ -147,7 +133,7 @@ public
         get-current-directory
     ] if* :> dirname
 
-    dirname find-buffer-from-file-name [
+    dirname editor:find-buffer-from-file-name [
         set-current-buffer
     ] [
         dirname open-directory
@@ -156,33 +142,33 @@ public
 : dir-open-file                         // void -> void
     dot-line-text :> s
 
-    f :> name!
+    nil !> name
     s name-offset [
         s tail name!
         current-buffer filename>> name path-append
         canonical-path
-    ] [ f ] if* :> filename
+    ] [ nil ] if* :> filename
 
     filename [
-        filename find-buffer-from-file-name [
+        filename editor:find-buffer-from-file-name [
             set-current-buffer
         ] [
             filename directory? [
                 filename open-directory-in-current-buffer
             ] [
-                filename 1 create-buffer/2
+                filename 1 editor:create-buffer/2
             ] if
         ] if*
     ] when ;
 
 : dir-up-dir
-    f :> dirname!
+    nil !> dirname
     current-buffer :> buf
     buf filename>> [
         file-name-directory dirname!
         dirname [
             dirname directory? [
-                dirname directory-contents buf buffer-set-contents
+                dirname directory-contents buf editor:buffer-set-contents
                 buf first-line>> 0 make-position buf dot<<
                 buf first-line>> buf top-line<<
                 t buf read-only<<
@@ -192,23 +178,30 @@ public
         ] when
     ] when* ;
 
-using: feline ;
-in: directory-mode
-
-private
-
 : initialize-local-map
     128 <hashtable> :> m
-    ' editor:dir-open-file      feral-key:enter     m set-at
-    ' editor:dir-up-dir         'u'                 m set-at
-    ' editor:dir-up-dir         '^'                 m set-at // Emacs
-    m directory-mode-local-map!
-;
+    ' dir-open-file     feral-key:enter     m set-at
+    ' dir-up-dir        'u'                 m set-at
+    ' dir-up-dir        '^'                 m set-at // Emacs
+    m directory-mode-local-map! ;
 
 initialize-local-map
 
 feral-config:winui? #if
-
-' editor:dir-open-file feral-key:double-mouse-1 directory-mode-local-map set-at
-
+' dir-open-file feral-key:double-mouse-1 directory-mode-local-map set-at
 #endif
+
+: initialize-directory-mode
+    mode make-instance :> m
+    "Directory" m name<<
+    ' directory-mode-initialize-buffer m initialize-buffer-function<<
+    m instance! ;
+
+initialize-directory-mode
+
+using: feline ;
+in: editor
+
+public
+
+: dir directory-mode:dir ;
