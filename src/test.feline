@@ -4244,4 +4244,17 @@ test: 1--test-1
 
 1--test-1
 
+test: string-upcase-test-1
+    { "THIS IS A TEST" } [ "this is a test" string-upcase ] unit-test
+    { "1234567890TEST" } [ "1234567890test" string-upcase ] unit-test
+    { "THIS IS A TEST" } [ "THIS IS A TEST" string-upcase ] unit-test
+
+    // argument is always copied
+    "THIS IS A TEST" dup string-upcase eq? assert-false
+
+    "THIS IS A TEST" dup string-upcase string-equal? assert
+;
+
+string-upcase-test-1
+
 ?nl "Reached end of test.feline" write-string

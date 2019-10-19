@@ -21,8 +21,8 @@ private: string-trim-head-internal ( s ) // string -> string'
     [ s string-tail ] [ drop "" ] if ;
 
 : string-trim-head ( s ) // string -> string'
-    s string-length zero? [ s ] return-if
-    s string-first-char whitespace? not [ s ] return-if
+    s string-length 0? [ s ] ?return
+    s string-first-char whitespace? not [ s ] ?return
     s string-trim-head-internal ;
 
 private: string-trim-tail-internal ( s ) // string -> string'
@@ -30,15 +30,20 @@ private: string-trim-tail-internal ( s ) // string -> string'
     [ 1+ s string-head ] [ drop "" ] if ;
 
 : string-trim-tail ( s ) // string -> string'
-    s string-length zero? [ s ] return-if
-    s string-last-char whitespace? not [ s ] return-if
+    s string-length 0? [ s ] ?return
+    s string-last-char whitespace? not [ s ] ?return
     s string-trim-tail-internal ;
 
 : string-trim // string -> string'
     !> s // mutable
-    s string-length zero? [ s ] return-if
+    s string-length 0? [ s ] ?return
     s string-first-char whitespace? [ s string-trim-head-internal s! ] when
-    s string-length zero? [ s ] return-if
+    s string-length 0? [ s ] ?return
     s string-last-char whitespace? [ s string-trim-tail-internal s! ] when
     s ;
 
+: string-upcase ( s ) // string -> string'
+    // FIXME optimize (this should be a primitive!)
+    s string-length <sbuf> :> sb
+    s [ char-upcase sb sbuf-push-unsafe ] each
+    sb sbuf>string ;
