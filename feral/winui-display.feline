@@ -52,15 +52,13 @@ feral-config:winui? assert
 
 : repaint-line-no-selection ( line row ) // line row -> void
     // no part of line is selected
-    line text>> detab :> detabbed-text
-    detabbed-text format-line :> segments
+    line format-line :> segments
     segments row repaint-segments
     segments detabbed-text-length row winui-textview-clear-eol ;
 
 : repaint-selected-line ( line row ) // line row -> void
     // entire line is selected
-    line text>> detab :> detabbed-text
-    detabbed-text format-line :> segments
+    line format-line :> segments
     bg-set-selected
     segments row repaint-segments
     segments detabbed-text-length row winui-textview-clear-eol
@@ -115,8 +113,7 @@ feral-config:winui? assert
     segment row repaint-segment ;
 
 : repaint-partly-selected-line ( line row )
-    line text>> detab :> detabbed-text
-    detabbed-text format-line :> segments
+    line format-line :> segments
     mark dot make-region/2 :> region
     line line-starts-in-selection? [ bg-set-selected ] [ bg-set-default ] if
     segments [ line region row repaint-segment-of-partly-selected-line ] each
