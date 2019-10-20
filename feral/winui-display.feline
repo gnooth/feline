@@ -33,7 +33,7 @@ feral-config:winui? assert
 
 : bg-set-selected bg-selected winui-textview-set-bg-color ;
 
-: repaint-segment                       // segment row -> void
+: repaint-segment // segment row -> void
     2 ?enough
     :> row :> segment
 
@@ -43,23 +43,27 @@ feral-config:winui? assert
     row winui-char-height *
     segment text>> winui-textview-text-out ;
 
-: repaint-segments ( segments row )     // segments row -> void
+: repaint-segments ( segments row ) // segments row -> void
     segments [ row repaint-segment ] each ;
+
+: detabbed-text-length ( segments ) // segments -> fixnum
+    segments length 0? [ 0 ] ?return
+    segments last [ start>> ] [ text>> string-length ] bi + ;
 
 : repaint-line-no-selection ( line row ) // line row -> void
     // no part of line is selected
     line text>> detab :> detabbed-text
     detabbed-text format-line :> segments
     segments row repaint-segments
-    detabbed-text length row winui-textview-clear-eol ;
+    segments detabbed-text-length row winui-textview-clear-eol ;
 
-: repaint-selected-line ( line row )    // line row -> void
+: repaint-selected-line ( line row ) // line row -> void
     // entire line is selected
     line text>> detab :> detabbed-text
     detabbed-text format-line :> segments
     bg-set-selected
     segments row repaint-segments
-    detabbed-text length row winui-textview-clear-eol
+    segments detabbed-text-length row winui-textview-clear-eol
     bg-set-default ;
 
 : repaint-segment-of-partly-selected-line ( segment line region row )
@@ -71,10 +75,10 @@ feral-config:winui? assert
         // segment is entirely within selection
         bg-set-selected
         segment row repaint-segment
-    ] return-if
+    ] ?return
 
-    f !> seg1
-    f !> seg2
+    nil !> seg1
+    nil !> seg2
 
     selection-start-index segment in-segment? selection-end-index segment in-segment? and [
         // region is entirely within segment
@@ -89,7 +93,7 @@ feral-config:winui? assert
         row repaint-segment
         bg-set-default
         row repaint-segment
-    ] return-if
+    ] ?return
 
     selection-start-index segment in-segment? [
         segment selection-start-index segment start>> - split-segment seg2! seg1!
@@ -98,7 +102,7 @@ feral-config:winui? assert
         bg-set-selected
         seg2 row repaint-segment
         bg-set-default
-    ] return-if
+    ] ?return
 
     selection-end-index segment in-segment? [
         segment selection-end-index segment start>> - split-segment seg2! seg1!
@@ -106,7 +110,7 @@ feral-config:winui? assert
         seg1 row repaint-segment
         bg-set-default
         seg2 row repaint-segment
-    ] return-if
+    ] ?return
 
     segment row repaint-segment ;
 
@@ -122,7 +126,7 @@ feral-config:winui? assert
     both?
     bg-selected bg-default ? winui-textview-set-bg-color
 
-    detabbed-text length row winui-textview-clear-eol ;
+    segments detabbed-text-length row winui-textview-clear-eol ;
 
 : repaint-line ( line row )             // line row -> void
     {
@@ -154,7 +158,7 @@ feral-config:winui? assert
         row 1+ row!
     ] while
 
-    f repaint!
+    nil repaint?!
 
     winui-show-caret ;
 
@@ -165,7 +169,7 @@ feral-config:winui? assert
     ] [
         dot-line-changed? [
             dot-line dot-row repaint-line
-            f dot-line-changed!
+            nil dot-line-changed?!
         ] when
     ] if
     update-mode-line
