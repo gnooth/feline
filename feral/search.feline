@@ -79,7 +79,7 @@ private
 
 : find-substring-in-line ( pattern line )       // pattern line -> position/f
     pattern line text>> 0 find-substring-from
-    [ line swap make-position ] [ f ] if*
+    [ line swap make-position ] [ nil ] if*
 ;
 
 : search-forward ( pattern startpos )   // string position -> position/f
@@ -92,12 +92,12 @@ private
 
     line next>> line!
 
-    f :> result!
+    nil :> result!
 
     [ line ] [
         pattern line find-substring-in-line [
             result!
-            f line!
+            nil line!
         ] [
             line next>> line!
         ] if*
@@ -124,7 +124,7 @@ private
 
 : find-last-substring-in-line ( pattern line )  // pattern line -> position/f
     pattern line text>> line length find-last-substring-from
-    [ line swap make-position ] [ f ] if*
+    [ line swap make-position ] [ nil ] if*
 ;
 
 : search-backward ( pattern startpos )  // pattern startpos -> position/f
@@ -137,12 +137,12 @@ private
 
     line prev>> line!
 
-    f :> result!
+    nil !> result
 
     [ line ] [
         pattern line find-last-substring-in-line [
             result!
-            f line!
+            nil line!
         ] [
             line prev>> line!
         ] if*
@@ -155,21 +155,21 @@ private
     pos line>> :> line
     pos offset>> :> offset
 
-    t :> result!
+    t !> result
 
     offset 0 > [
         offset 1- line text>> string-nth current-mode identifier-char? [
-            f result!
+            nil result!
         ] when
     ] when
 
-    result f eq? [ f ] return-if
+    result nil? [ nil ] ?return
 
     offset len + :> after
 
     after line length < [
         after line text>> string-nth current-mode identifier-char? [
-            f result!
+            nil result!
         ] when
     ] when
 
@@ -177,15 +177,15 @@ private
 ;
 
 : find-word-in-line ( pattern line )    // pattern line -> position/f
-    0 :> index!
-    f :> pos!
+    0 !> index
+    nil !> pos
 
-    [ index pos null? and ] [
+    [ index pos nil? and ] [
         pattern line text>> index find-substring-from index!
         index [
             line index make-position pos!
-            pos pattern string-length delimited? [ f pos! ] unless
-            index line length < [ index 1+ ] [ f ] if index!
+            pos pattern string-length delimited? [ nil pos! ] unless
+            index line length < [ index 1+ ] [ nil ] if index!
         ] when
     ] while
 
@@ -202,9 +202,9 @@ private
     current-pattern :> pattern
     pattern string-length :> pattern-length
     startpos copy-position :> pos!
-    f :> result!
+    nil !> result
 
-    [ result null? pos and ] [
+    [ result nil? pos and ] [
         pos move-next [
             pattern pos search-forward pos!
             pos [
@@ -222,9 +222,9 @@ private
     current-pattern :> pattern
     pattern string-length :> pattern-length
     startpos copy-position :> pos!
-    f :> result!
+    nil !> result
 
-    [ result null? pos and ] [
+    [ result nil? pos and ] [
         pos move-prev [
             pattern pos search-backward pos!
             pos [
@@ -247,31 +247,30 @@ use: mini
 : find-command
     "find" set-history
     "Find: "                            // prompt
-    current-pattern                     // default pattern (might be nil)
-    minibuffer-accept-string/2 :> pattern
+    minibuffer-accept-string :> pattern
     pattern empty? ?exit
     pattern nil make-search current-search!
     pattern dot search-forward [ found ] [ not-found ] if* ;
 
 : search-forward-word-at-dot
-    current-mode identifier-at-dot      // -> index/f string/f
+    current-mode identifier-at-dot      // -> index/nil string/nil
     :> pattern :> start
-    f :> pos!
+    nil !> pos
     pattern empty? [
         pattern t make-search current-search!
-        dot-line start pattern length + make-position search-forward-word // -> position/f
+        dot-line start pattern length + make-position search-forward-word // -> position/nil
         [ found ] [ not-found ] if*
     ] unless ;
 
 : search-backward-word-at-dot
-    current-mode identifier-at-dot      // -> index/f string/f
+    current-mode identifier-at-dot      // -> index/nil string/nil
     :> pattern :> start
-    f :> pos!
+    nil !> pos
     pattern empty? [
         pattern t make-search current-search!
         dot-line start make-position pos!
         pos move-prev [
-            pos search-backward-word    // -> position/f
+            pos search-backward-word    // -> position/nil
             [ found ] [ not-found ] if*
         ] when
     ] unless ;
@@ -285,8 +284,7 @@ use: mini
         startpos search-forward-word
     ] [
         current-pattern startpos search-forward
-    ] if [ found ] [ not-found ] if*
-;
+    ] if [ found ] [ not-found ] if* ;
 
 : repeat-search-backward
     current-pattern empty? [ find-command ] ?return
@@ -297,8 +295,7 @@ use: mini
         startpos search-backward-word
     ] [
         current-pattern startpos search-backward
-    ] if [ found ] [ not-found ] if*
-;
+    ] if [ found ] [ not-found ] if* ;
 
 : search-list-occurrences
     current-search nil? ?exit
@@ -306,7 +303,7 @@ use: mini
     make-buffer :> buf
 
     current-pattern :> pattern
-    first-line :> line!
+    first-line !> line
 
     [ line ] [
         pattern line find-in-line [
