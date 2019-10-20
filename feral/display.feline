@@ -16,17 +16,23 @@
 using: feral-core feline accessors segments feral-colors ;
 in: editor
 
-: format-line ( s )                     // string -> segments
+: string-format-line ( s ) // string -> segments
     current-buffer mode>> :> mode
     mode [
         s mode formatter call
     ] [
         s 0 color-text make-segment/3
         1array
-    ] if
-;
+    ] if ;
 
-: mode-line-text                        // void -> string
+: line-format-line // line -> segments
+    text>> detab string-format-line ;
+
+: format-line ( x ) // line-or-string -> segments
+    x line? [ x line-format-line ] ?return
+    x verify-string string-format-line ;
+
+: mode-line-text // void -> string
     256 <sbuf> :> sb
     modified? '*' '\s' ? sb sbuf-push
     current-buffer name>> "untitled" or sb sbuf-append-string
@@ -39,8 +45,7 @@ in: editor
     ] when*
     sb sbuf>string ;
 
-use: feral-config
-use: feral-loader
+using: feral-loader feral-config feline ;
 
 {
     { [ winui?  ] [ "winui-display.feline"  ] }
