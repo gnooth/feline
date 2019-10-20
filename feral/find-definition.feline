@@ -19,7 +19,7 @@ in: editor
 : goto-location/2 // filename line-number -> void
     :> line-number :> filename
     filename [
-        filename find-buffer-from-file-name // -> buffer/f
+        filename find-buffer-from-file-name // -> buffer/nil
         [
             // -> buffer
             set-current-buffer
@@ -64,7 +64,7 @@ feral-config:winui? feral-config:gtkui? or #if
     1 ?enough :> identifier
 
     identifier symbols:find-tag :> location
-    location [ location goto-location/1 ] return-if
+    location [ location goto-location/1 ] ?return
 
     identifier find-qualified-name [
         goto-definition
@@ -94,7 +94,7 @@ feral-config:winui? feral-config:gtkui? or #if
     dot-char whitespace? [
         {
             { [ dot-offset indent < ] [ indent dot-offset! ] }
-            { [ dot-offset 0 > ] [ dot-offset 1- dot-offset! ] }
+            { [ dot-offset 0> ] [ dot-offset 1- dot-offset! ] }
         } cond
     ] when
 
