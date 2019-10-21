@@ -26,7 +26,17 @@ in: editor
     ] if ;
 
 : line-format-line // line -> segments
-    text>> detab string-format-line ;
+    1 ?enough :> line
+    current-buffer mode>> :> mode
+    nil !> format-line-function
+    mode [
+        mode format-line-function>> format-line-function!
+    ] when
+    format-line-function [
+        line format-line-function call
+    ] ?return
+
+    line text>> detab string-format-line ;
 
 : format-line ( x ) // line-or-string -> segments
     x line? [ x line-format-line ] ?return

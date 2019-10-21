@@ -778,6 +778,7 @@ tuple: mode
     initialize-buffer-function
     identifier-char?-function
     formatter
+    format-line-function
 ;
 
 : current-mode                          // -> mode
@@ -800,7 +801,7 @@ unuse: segments
 
 : alphanumeric?                         // char -> ?
 
-    dup char? not [ error-not-char ] return-if
+    dup char? not [ error-not-char ] ?return
 
     char-code :> c
 
@@ -808,7 +809,7 @@ unuse: segments
     [ 'a' char-code c <= ] [ c 'z' char-code <= ] both? [ t ] return-if
     [ '0' char-code c <= ] [ c '9' char-code <= ] both? [ t ] return-if
 
-    f ;
+    nil ;
 
 generic identifier-char?                // char mode -> ?
 
