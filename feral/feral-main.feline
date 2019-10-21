@@ -18,7 +18,7 @@ in: editor
 
 empty
 
-"feral-loader.feline" load
+feline-home "feral" path-append "feral-loader.feline" path-append load
 
 using: feral-core feline accessors ;
 in: editor
