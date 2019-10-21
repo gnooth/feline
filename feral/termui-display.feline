@@ -68,10 +68,10 @@ use: mini
         bg-selected write-string-escaped
         segment repaint-segment
         bg-default write-string-escaped
-    ] return-if
+    ] ?return
 
-    f :> seg1!
-    f :> seg2!
+    nil :> seg1!
+    nil :> seg2!
 
     region-begin segment in-segment? region-end segment in-segment? and [
         segment region-begin segment start>> - split-segment seg2! seg1!
@@ -85,7 +85,7 @@ use: mini
         repaint-segment
         bg-default write-string-escaped
         repaint-segment
-    ] return-if
+    ] ?return
 
     region-begin segment in-segment? [
         segment region-begin segment start>> - split-segment seg2! seg1!
@@ -94,7 +94,7 @@ use: mini
         bg-selected write-string-escaped
         seg2 repaint-segment
         bg-default write-string-escaped
-    ] return-if
+    ] ?return
 
     region-end segment in-segment? [
         segment region-end segment start>> - split-segment seg2! seg1!
@@ -102,7 +102,7 @@ use: mini
         seg1 repaint-segment
         bg-default write-string-escaped
         seg2 repaint-segment
-    ] return-if
+    ] ?return
 
     segment repaint-segment
 ;
@@ -111,20 +111,18 @@ use: mini
     [ repaint-segment ] each ;
 
 : repaint-selected-line ( line )        // line -> void
-    line text>> detab :> detabbed-text
-    detabbed-text format-line :> segments
+    line format-line :> segments
     bg-selected write-string-escaped
     segments repaint-segments
-    terminal-columns detabbed-text string-length - spaces
+    terminal-columns segments detabbed-text-length - spaces
     bg-default write-string-escaped ;
 
 : repaint-line-containing-selection ( line ) // line -> void
-    line text>> detab :> detabbed-text
-    detabbed-text format-line :> segments
+    line format-line :> segments
     mark dot make-region/2 :> region
     segments [ region repaint-segment-of-line-containing-selection ] each
-    detabbed-text string-length terminal-columns < [
-        terminal-columns detabbed-text string-length - spaces
+    segments detabbed-text-length terminal-columns < [
+        terminal-columns segments detabbed-text-length - spaces
     ] when ;
 
 : repaint-line ( line )                 // line -> void
@@ -134,14 +132,13 @@ use: mini
         line repaint-line-containing-selection
     ] return-if
 
-    line text>> detab :> detabbed-text
-    detabbed-text format-line :> segments
+    line format-line :> segments
     segments repaint-segments
-    terminal-columns detabbed-text string-length - spaces ;
+    terminal-columns segments detabbed-text-length - spaces ;
 
 : repaint
-    top-line :> line!
-    0 :> y!
+    top-line !> line
+    0 !> y
 
     [ line y textview-rows < and ] [
         0 y at-xy
@@ -154,7 +151,7 @@ use: mini
         y 1+ y!
     ] while
 
-    f repaint?!
+    nil repaint?!
 ;
 
 : update-display
@@ -165,7 +162,7 @@ use: mini
         dot-line-changed? [
             0 dot-row at-xy
             dot-line repaint-line
-            f dot-line-changed?!
+            nil dot-line-changed?!
         ] when
     ] if
     update-mode-line
