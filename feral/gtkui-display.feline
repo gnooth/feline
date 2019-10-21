@@ -41,17 +41,15 @@ feral-config:gtkui? assert
 
 : repaint-line-no-selection ( line row ) // line row -> void
     // no part of line is selected
-    line text>> detab :> detabbed-text
-    detabbed-text format-line :> segments
+    line format-line :> segments
     segments row repaint-segments ;
 
 : repaint-selected-line ( line row )    // line row -> void
     // entire line is selected
-    line text>> detab :> detabbed-text
-    detabbed-text format-line :> segments
+    line format-line :> segments
     bg-set-selected
     segments row repaint-segments
-    detabbed-text length row gtkui-textview-clear-eol
+    segments detabbed-text-length row gtkui-textview-clear-eol
     bg-set-default ;
 
 : repaint-segment-of-partly-selected-line ( segment line region row )
@@ -63,10 +61,10 @@ feral-config:gtkui? assert
         // segment is entirely within selection
         bg-set-selected
         segment row repaint-segment
-    ] return-if
+    ] ?return
 
-    f !> seg1
-    f !> seg2
+    nil !> seg1
+    nil !> seg2
 
     selection-start-index segment in-segment? selection-end-index segment in-segment? and [
         // region is entirely within segment
@@ -81,7 +79,7 @@ feral-config:gtkui? assert
         row repaint-segment
         bg-set-default
         row repaint-segment
-    ] return-if
+    ] ?return
 
     selection-start-index segment in-segment? [
         segment selection-start-index segment start>> - split-segment seg2! seg1!
@@ -90,7 +88,7 @@ feral-config:gtkui? assert
         bg-set-selected
         seg2 row repaint-segment
         bg-set-default
-    ] return-if
+    ] ?return
 
     selection-end-index segment in-segment? [
         segment selection-end-index segment start>> - split-segment seg2! seg1!
@@ -98,13 +96,12 @@ feral-config:gtkui? assert
         seg1 row repaint-segment
         bg-set-default
         seg2 row repaint-segment
-    ] return-if
+    ] ?return
 
     segment row repaint-segment ;
 
 : repaint-partly-selected-line ( line row )
-    line text>> detab :> detabbed-text
-    detabbed-text format-line :> segments
+    line format-line :> segments
     mark dot make-region/2 :> region
     line line-starts-in-selection? [ bg-set-selected ] [ bg-set-default ] if
     segments [ line region row repaint-segment-of-partly-selected-line ] each
@@ -114,7 +111,7 @@ feral-config:gtkui? assert
     both?
     bg-selected bg-default ? gtkui-textview-set-bg-color
 
-    detabbed-text length row gtkui-textview-clear-eol ;
+    segments detabbed-text-length row gtkui-textview-clear-eol ;
 
 : repaint-line ( line row )             // line row -> void
     {
@@ -139,7 +136,7 @@ feral-config:gtkui? assert
         row 1+ row! line next>> line!
     ] while
 
-    f repaint! ;
+    nil repaint?! ;
 
 : update-caret-pos
     dot-column // gtkui-char-width *
