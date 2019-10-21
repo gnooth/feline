@@ -46,10 +46,6 @@ feral-config:winui? assert
 : repaint-segments ( segments row ) // segments row -> void
     segments [ row repaint-segment ] each ;
 
-: detabbed-text-length ( segments ) // segments -> fixnum
-    segments length 0? [ 0 ] ?return
-    segments last [ start>> ] [ text>> string-length ] bi + ;
-
 : repaint-line-no-selection ( line row ) // line row -> void
     // no part of line is selected
     line format-line :> segments

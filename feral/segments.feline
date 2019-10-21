@@ -48,7 +48,7 @@ method: segment end-offset              // segment -> offset
 : in-segment? ( n segment )             // n segment -> ?
     n segment start>> >= [
         n segment start>> segment length + <
-    ] [ f ] if ;
+    ] [ nil ] if ;
 
 : split-segment ( segment index )       // segment index -> seg1 seg2
     segment text>> :> text
@@ -57,3 +57,7 @@ method: segment end-offset              // segment -> offset
 
     index text string-head start format make-segment/3
     index text string-tail start index + format make-segment/3 ;
+
+: detabbed-text-length ( segments ) // segments -> fixnum
+    segments length 0? [ 0 ] ?return
+    segments last [ start>> ] [ text>> string-length ] bi + ;
