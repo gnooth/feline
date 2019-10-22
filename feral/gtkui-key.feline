@@ -93,6 +93,8 @@ kp-up alt               constant alt-kp-up
 0xffc8                  constant f11
 0xffc9                  constant f12
 
+f3 ctrl                 constant ctrl-f3
+
 f3 shift                constant shift-f3
 f11 shift               constant shift-f11
 f12 shift               constant shift-f12
