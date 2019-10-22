@@ -35,9 +35,11 @@ feral-config:gtkui? #if
 
 feral-config:termui? #if
 
+var done?
+
 : exit-feral
     ' exit-feral-hook run-hook
-    t done! ;
+    t done?! ;
 
 #endif
 

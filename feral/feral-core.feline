@@ -338,8 +338,6 @@ var last-command
 
 var in-redo? : in-redo! in-redo?! ;
 
-var done? : done! done?! ;
-
 global buffer-list
 
 global current-buffer
