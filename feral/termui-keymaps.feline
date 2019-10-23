@@ -66,6 +66,7 @@ global ctrl-k-map
     ' find-command                      key:ctrl-f      m set-at
     ' repeat-search-forward             key:f3          m set-at
     ' repeat-search-backward            key:shift-f3    m set-at
+    ' search-list-occurrences           key:ctrl-f3     m set-at
     ' do-tab                            key:tab         m set-at
     ' undo                              key:ctrl-z      m set-at
     ' undo                              key:ctrl-u      m set-at
@@ -101,7 +102,6 @@ global ctrl-k-map
     ' cycle-paste                       'v'             m set-at
     ' search-forward-word-at-dot        key:down        m set-at
     ' search-backward-word-at-dot       key:up          m set-at
-    ' search-list-occurrences           'l'             m set-at
     ' do-anchor                         'a'             m set-at
     ' list-buffers                      'b'             m set-at
     ' execute-command                   'x'             m set-at

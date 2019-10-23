@@ -65,6 +65,7 @@ feral-config:winui? assert
     ' find-command                      feral-key:ctrl-f            m set-at
     ' repeat-search-forward             feral-key:f3                m set-at
     ' repeat-search-backward            feral-key:shift-f3          m set-at
+    ' search-list-occurrences           feral-key:ctrl-f3           m set-at
     ' do-tab                            feral-key:tab               m set-at
     ' kill-line                         feral-key:ctrl-k            m set-at
     ' undo                              feral-key:ctrl-z            m set-at
@@ -87,7 +88,6 @@ feral-config:winui? assert
     ' cycle-paste                       feral-key:alt-v             m set-at
     ' search-forward-word-at-dot        feral-key:alt-down          m set-at
     ' search-backward-word-at-dot       feral-key:alt-up            m set-at
-    ' search-list-occurrences           feral-key:alt-l             m set-at
     ' execute-command                   feral-key:alt-x             m set-at
     ' escape                            feral-key:escape            m set-at
 
