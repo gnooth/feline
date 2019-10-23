@@ -793,7 +793,7 @@ tuple: search
     tuck
     pattern<< ;
 
-var current-search
+global current-search
 
 "segments.feline" feral-loader:load-feral-source-file
 
