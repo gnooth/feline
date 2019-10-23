@@ -782,6 +782,19 @@ tuple: mode
 : current-mode                          // -> mode
     current-buffer mode>> ;
 
+tuple: search
+    pattern
+    whole-words-only ;
+
+: make-search                           // pattern whole-words-only -> search
+    search make-instance
+    tuck
+    whole-words-only<<
+    tuck
+    pattern<< ;
+
+var current-search
+
 "segments.feline" feral-loader:load-feral-source-file
 
 use: segments

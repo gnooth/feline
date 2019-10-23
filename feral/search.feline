@@ -18,21 +18,6 @@ in: search
 
 empty
 
-public
-
-tuple: search
-    pattern
-    whole-words-only ;
-
-: make-search                           // pattern whole-words-only -> search
-    search make-instance
-    tuck
-    whole-words-only<<
-    tuck
-    pattern<< ;
-
-var current-search
-
 private
 
 : current-pattern                       // -> string/f
