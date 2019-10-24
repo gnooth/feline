@@ -115,8 +115,8 @@ special: +compound-redo+
     dup mark-line-number>> [
         [ mark-line-number>> nth-line ]
         [ mark-offset>> ] bi make-position
-    ] [ drop f ] if mark!
-    t repaint! ;
+    ] [ drop nil ] if mark!
+    t repaint?! ;
 
 : add-undo-move
     new-undo-record
@@ -131,7 +131,7 @@ special: +compound-redo+
 : undo-move ( undo-rec )                // undo-record ->
     in-redo? [ add-undo-move ] [ add-redo-move ] if
 
-    mark [ t repaint! ] when
+    mark [ t repaint?! ] when
 
     undo-rec mod-count>> mod-count!
 
@@ -141,7 +141,7 @@ special: +compound-redo+
 
     top-line line? assert
 
-    mark [ t repaint! ] when
+    mark [ t repaint?! ] when
 ;
 
 : new-undo-line-edit                    // -> undo-record
@@ -165,14 +165,14 @@ special: +compound-redo+
         [ restore-mark ]
     } cleave
 
-    t dot-line-changed!
+    t dot-line-changed?!
 ;
 
 : add-undo-edit-region ( region )
     new-undo-record :> undo-rec
     +edit-region+ undo-rec action<<
 
-    region begin-line :> line!
+    region begin-line !> line
     region end-line :> endline
     16 <vector> :> v
 
@@ -189,7 +189,7 @@ special: +compound-redo+
     new-undo-record :> undo-rec
     +edit-region+ undo-rec action<<
 
-    region begin-line :> line!
+    region begin-line !> line
     region end-line :> endline
     16 <vector> :> v
 
@@ -209,7 +209,7 @@ special: +compound-redo+
 
     region add-redo-edit-region
 
-    region begin-line :> line!
+    region begin-line !> line
 
     undo-rec data>> [
         line text<<
@@ -218,7 +218,7 @@ special: +compound-redo+
 
     undo-rec mod-count>> mod-count!
 
-    t repaint! ;
+    t repaint?! ;
 
 : redo-edit-region ( undo-rec )
     mark assert
@@ -227,7 +227,7 @@ special: +compound-redo+
 
     region add-undo-edit-region
 
-    region begin-line :> line!
+    region begin-line !> line
 
     undo-rec data>> [
         line text<<
@@ -236,7 +236,7 @@ special: +compound-redo+
 
     undo-rec mod-count>> mod-count!
 
-    t repaint! ;
+    t repaint?! ;
 
 : add-undo-delete-line-separator
     new-undo-record
@@ -258,7 +258,7 @@ special: +compound-redo+
     dup array-first dot-line-text!
     array-second make-line/1 dot-line insert-after
 
-    t repaint!
+    t repaint?!
     renumber
 
     add-redo-delete-line-separator
@@ -323,7 +323,7 @@ special: +compound-redo+
     undo-rec data>> dot-line-text!
 
     renumber
-    t repaint!
+    t repaint?!
 ;
 
 symbol: +delete-line+
@@ -351,7 +351,7 @@ symbol: +delete-line+
         undo-rec restore-dot
     ] if
     renumber
-    t repaint!
+    t repaint?!
     add-redo-delete-line
 ;
 
@@ -383,7 +383,7 @@ symbol: +delete-region+
     undo-rec restore-mark
 
     renumber
-    t repaint! ;
+    t repaint?! ;
 
 : undo1                                 // undo-record ->
     dup action>>
