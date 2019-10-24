@@ -331,12 +331,12 @@ tuple: buffer
 
 var repaint? : repaint! repaint?! ;
 
-var dot-line-changed? : dot-line-changed! dot-line-changed?! ;
+var dot-line-changed?
 
 var current-command
 var last-command
 
-var in-redo? : in-redo! in-redo?! ;
+var in-redo?
 
 global buffer-list
 
