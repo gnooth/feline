@@ -219,17 +219,17 @@ feline-mode-comment-start length constant comment-start-length
     verify-string
     [ space-char neq? ] find drop ;
 
-: skip-quoted-string                    // start-index string -> index/f
-    2dup string-length >= [ 2drop f ] ?return
+: skip-quoted-string                    // start-index string -> index/nil
+    2dup string-length >= [ 2drop nil ] ?return
 
     :> s
     :> start
 
     start 1+ s string-tail <string-iterator> :> iter
 
-    f :> this-char!
-    this-char :> last-char!
-    f :> done?!
+    nil !> this-char
+    this-char !> last-char
+    nil !> done?
 
     [
         this-char last-char!
@@ -244,8 +244,7 @@ feline-mode-comment-start length constant comment-start-length
         ] when
     ] until
 
-    start 1+ iter string-iterator-index +
-;
+    start 1+ iter string-iterator-index + ;
 
 : string-segments ( s ) // string -> segments
     s string-length :> len
@@ -276,7 +275,7 @@ var last-segment-text
     segment text>> :> s
 
     in-comment? [
-        s { "--" "//" "///" } member? in-comment!
+        s { "--" "//" "///" } member? in-comment?!
     ] unless
 
     in-comment? [
@@ -318,7 +317,7 @@ var last-segment-text
     color-text segment format<< ;
 
 : format-segments ( segments )
-    f in-comment!
+    nil in-comment?!
     "" last-segment-text!
     segments [
         dup format-segment
@@ -330,26 +329,44 @@ var last-segment-text
     text>> detab string-segments format-segments ;
 
 : line-is-definition? ( line )
-    ": " line text>> head?
-    "global " line text>> head? or
-;
+    line text>> string-trim-head :> s
+    '\s' s string-index :> end
+    end nil? [ nil ] ?return
+    0 end s string-substring defining-words member? ;
 
 : feline-mode-list-symbols
-    make-buffer :> buf
-    "symbols " current-buffer filename>> file-name-nondirectory + buf name<<
 
-    first-line :> line!
+    // reuse existing buffer if possible
+    f !> buf
+    buffer-list [
+        dup mode>> symbols-mode:get-instance eq?
+        swap parent>> current-buffer eq? and
+    ] find
+    // -> index/nil element/nil
+    [ nip ] [ drop make-buffer ] if* buf!
 
-    [ line ] [
-        line line-is-definition? [
-            line number>> 1+ line text>> "%d %s" format make-line/1
-            buf top-line>> [ dup buf top-line<< ] unless
+    current-buffer filename>> file-name-nondirectory " [symbols]" + buf name<<
+
+    first-line !> source-line
+    nil !> goal // put dot on this line in the symbols list buffer
+
+    [ source-line ] [
+        source-line line-is-definition? [
+            source-line number>> 1+ source-line text>> "%d %s" format make-line/1
+            goal [
+                source-line number>> dot-line-number > [
+                    buf last-line>> goal!
+                ] when
+            ] unless
             buf editor:buffer-append-line
         ] when
-        line next>> line!
+        source-line next>> source-line!
     ] while
 
-    buf top-line>> 0 make-position buf dot<<
+    buf first-line>> buf top-line<<
+    goal [ buf last-line>> goal! ] unless
+    goal 0 make-position buf dot<<
+
     t buf read-only<<
 
     current-buffer buf parent<<
@@ -361,7 +378,8 @@ var last-segment-text
     buf set-current-buffer
 
     renumber
-    t repaint!
+    maybe-reframe
+    t repaint?!
 ;
 
 global feline-mode-local-map
