@@ -754,18 +754,14 @@ termui? #if
     within? not ;
 
 : reframe
-    textview-rows 2 /i verify-index :> i!
-    dot-line :> line!
-
-    [ i 0 > line prev>> and ] [
+    textview-rows 2 /i verify-index !> i
+    dot-line !> line
+    [ i 0> line prev>> and ] [
         line prev>> line!
         i 1- i!
     ] while
-
     line top-line!
-
-    t repaint?!
-;
+    t repaint?! ;
 
 : maybe-reframe reframe? [ reframe ] when ;
 
