@@ -67,7 +67,7 @@ feline-mode-comment-start length constant comment-start-length
     ] if
 
     modified
-    t dot-line-changed!
+    t dot-line-changed?!
 ;
 
 : feline-mode-expand-if
@@ -81,7 +81,7 @@ feline-mode-comment-start length constant comment-start-length
     dot-line-tail +
     dot-line-text!
 
-    t dot-line-changed! ;
+    t dot-line-changed?! ;
 
 : feline-mode-expand-when
     mark ?exit
@@ -95,7 +95,7 @@ feline-mode-comment-start length constant comment-start-length
     dot-line-text!
 
     dot-offset 2 - dot-offset!
-    t dot-line-changed! ;
+    t dot-line-changed?! ;
 
 : feline-mode-expand
     mark ?exit
@@ -337,7 +337,7 @@ var last-segment-text
 : feline-mode-list-symbols
 
     // reuse existing buffer if possible
-    f !> buf
+    nil !> buf
     buffer-list [
         dup mode>> symbols-mode:get-instance eq?
         swap parent>> current-buffer eq? and
