@@ -66,7 +66,7 @@ in: editor
     indent-size dot-offset indent-size mod - insert-spaces ;
 
 : get-indentation-column                // line -> column
-    dup empty? [ drop 0 ] return-if
+    dup empty? [ drop 0 ] ?return
 
     detab
     [ char-code 32 > ] find             // index/f element/f
@@ -99,7 +99,7 @@ in: editor
 
     reframe? [
         dot-line-number textview-rows 1- - nth-line top-line!
-        t repaint!
+        t repaint?!
     ] when ;
 
 : make-indentation-string ( n )         // n -> string
@@ -114,7 +114,7 @@ in: editor
     indent-size make-indentation-string dot-line-text + dot-line-text!
     old-dot-offset indent-size + dot-offset!
     modified
-    t dot-line-changed! ;
+    t dot-line-changed?! ;
 
 : indent-region
     mark null? ?exit
@@ -123,7 +123,7 @@ in: editor
     region editor:add-undo-edit-region
     region [ s over text>> + swap text<< ] region-each-line
     modified
-    t repaint! ;
+    t repaint?! ;
 
 : indent
     mark [ indent-region ] [ indent-line ] if ;
@@ -137,7 +137,7 @@ in: editor
         dot-offset n - 0 max dot-offset!
     ] when
     modified
-    t dot-line-changed! ;
+    t dot-line-changed?! ;
 
 : unindent-line-internal ( line )
     // no undo
@@ -154,7 +154,7 @@ in: editor
     region [
         unindent-line-internal
     ] region-each-line
-    t repaint! ;
+    t repaint?! ;
 
 : unindent
     mark [ unindent-region ] [ unindent-line ] if ;
@@ -165,7 +165,7 @@ in: editor
     current-mode comment-start :> s
     s empty? ?exit
 
-    f !> region
+    nil !> region
     mark [
         dot mark make-region/2 region!
         [
@@ -178,7 +178,7 @@ in: editor
         editor:add-undo-line-edit
         s dot-line-text + dot-line-text!
         dot-offset s length + dot-offset!
-        t dot-line-changed!
+        t dot-line-changed?!
     ] if
     modified ;
 
@@ -188,7 +188,7 @@ in: editor
     current-mode comment-start :> s
     s empty? ?exit
 
-    f !> region
+    nil !> region
     mark [
         dot mark make-region/2 region!
         [
@@ -208,7 +208,7 @@ in: editor
             editor:add-undo-line-edit
             s length dot-line-text tail dot-line-text!
             dot-offset s length - dot-offset!
-            t dot-line-changed!
+            t dot-line-changed?!
         ] when
     ] if
     modified ;
@@ -227,7 +227,7 @@ in: editor
 : delete-normal-char
     add-undo-line-edit
     dot-offset dot-line-text string-remove-nth dot-line-text!
-    t dot-line-changed! ;
+    t dot-line-changed?! ;
 
 : delete-line-separator
     dot-line-next at-eol? and [
@@ -235,7 +235,7 @@ in: editor
         dot-line-text dot-line-next text>> + dot-line-text!
         dot-line-next unlink
         renumber
-        t repaint!
+        t repaint?!
     ] when ;
 
 : backspace
@@ -293,7 +293,7 @@ use: kill-ring
         add-undo-line-edit
         dot-line-tail append-kill
         dot-line-head dot-line-text!
-        t dot-line-changed!
+        t dot-line-changed?!
     ] if
     modified ;
 
@@ -315,7 +315,7 @@ use: kill-ring
         dot-line-number textview-rows 1- - nth-line top-line!
     ] when
 
-    t repaint! ;
+    t repaint?! ;
 
 : do-anchor
     unmark
@@ -327,11 +327,11 @@ use: kill-ring
     [ insert-multiline-string-internal ] bi ;
 
 : delete-word-right
-    mark [ delete-region ] return-if
+    mark [ delete-region ] ?return
 
     at-eof? ?exit
 
-    at-eol? [ delete-line-separator modified ] return-if
+    at-eol? [ delete-line-separator modified ] ?return
 
     [
         add-undo-move
@@ -382,7 +382,7 @@ use: kill-ring
     ] with-compound-undo ;
 
 : delete-word-left
-    mark [ delete-region ] return-if
+    mark [ delete-region ] ?return
 
     at-bof? ?exit
 
@@ -393,7 +393,7 @@ use: kill-ring
             delete-line-separator
             modified
         ] with-compound-undo
-    ] return-if
+    ] ?return
 
     [
         add-undo-move
@@ -511,7 +511,7 @@ use: kill-ring
     } cond
     modified
     renumber
-    t repaint!
+    t repaint?!
 ;
 
 : delete-line
@@ -545,7 +545,7 @@ use: kill-ring
 
     modified
     renumber
-    t repaint!
+    t repaint?!
 ;
 
 : cut-line
@@ -561,32 +561,40 @@ use: kill-ring
     reset-redo
 
     {
-        { [ s string-?last '\n' eq? ] [
-            // one or more full lines (to a first approximation)
-            // insert string before line containing dot
+        {
+            [ s string-?last '\n' eq? ]
             [
-                dot-offset
-                add-undo-move
-                0 dot-offset!
+                // one or more full lines (to a first approximation)
+                // insert string before line containing dot
+                [
+                    dot-offset
+                    add-undo-move
+                    0 dot-offset!
+                    s insert-multiline-string
+                    add-undo-move
+                    dot-offset!
+                ] with-compound-undo
+                maybe-reframe
+                t repaint?!
+            ]
+        }
+
+        {
+            [ '\n' s string-index ]
+            [
                 s insert-multiline-string
-                add-undo-move
-                dot-offset!
-            ] with-compound-undo
-            maybe-reframe
-            t repaint!
-        ] }
-        { [ '\n' s string-index ] [
-            s insert-multiline-string
-            maybe-reframe
-            t repaint!
-        ] }
+                maybe-reframe
+                t repaint?!
+            ]
+        }
+
         [
             // default case
             // no newlines in string
             add-undo-line-edit
             dot-line-head s + dot-line-tail + dot-line-text!
             dot-offset s length + dot-offset!
-            t dot-line-changed!
+            t dot-line-changed?!
         ]
     } cond
 
@@ -608,7 +616,7 @@ use: kill-ring
     data>> insert-multiline-string
     modified
     renumber
-    t repaint!
+    t repaint?!
 ;
 
 : redo-delete-region                    // undo-record -> void
@@ -631,20 +639,18 @@ use: kill-ring
         { +insert-multiline-string+ [ redo-insert-multiline-string ] }
         [ error "unsupported" ]
     } case
-    maybe-reframe
-;
+    maybe-reframe ;
 
 : redo
     redo-stack empty? [
         "Nothing to redo" message
     ] [
-        t in-redo!
+        t in-redo?!
         pop-redo dup compound-undo? [
             [ records>> vector-reverse! ' redo1 each ] with-compound-undo
         ] [
             redo1
         ] if
-        f in-redo!
+        nil in-redo?!
         "Redo!" message
-    ] if
-;
+    ] if ;
