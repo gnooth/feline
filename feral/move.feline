@@ -28,7 +28,7 @@ in: editor
     first-line top-line!
     first-line 0 make-position dot!
     0 goal-column!
-    t repaint! ;
+    t repaint?! ;
 
 : end-of-buffer
     add-undo-move
@@ -39,7 +39,7 @@ in: editor
 
     reframe? [
         dot-line-number textview-rows 1- - nth-line top-line!
-        t repaint!
+        t repaint?!
     ] when
 ;
 
@@ -88,7 +88,7 @@ in: editor
         add-undo-move
         mark [ copy-dot mark! ] unless
         goal dot-offset neq? [ goal dot-offset! ] when
-        t repaint!
+        t repaint?!
     ] when ;
 
 : move-to-eol
@@ -106,7 +106,7 @@ in: editor
         add-undo-move
         mark [ copy-dot mark! ] unless
         len dot-offset!
-        t repaint!
+        t repaint?!
     ] when ;
 
 : beginning-of-block
@@ -157,7 +157,7 @@ in: editor
             dot-offset goal-column!
             reframe? [
                 dot-line top-line!
-                t repaint!
+                t repaint?!
             ] when
         ] when
     ] if ;
@@ -169,7 +169,7 @@ in: editor
         mark [ copy-dot mark! ] unless
         dot-offset 1- dot-offset!
         dot-offset goal-column!
-        t repaint!
+        t repaint?!
     ] [
         dot-line-prev [
             mark [ copy-dot mark! ] unless
@@ -179,7 +179,7 @@ in: editor
             reframe? [
                 dot-line top-line!
             ] when
-            t repaint!
+            t repaint?!
         ] when
     ] if ;
 
@@ -201,7 +201,7 @@ in: editor
             dot-offset goal-column!
             reframe? [
                 dot-line-number textview-rows 1- - nth-line top-line!
-                t repaint!
+                t repaint?!
             ] when
         ] when
     ] if ;
@@ -213,7 +213,7 @@ in: editor
         mark [ copy-dot mark! ] unless
         dot-offset 1+ dot-offset!
         dot-offset goal-column!
-        t repaint!
+        t repaint?!
     ] [
         dot-line-next [
             mark [ copy-dot mark! ] unless
@@ -223,7 +223,7 @@ in: editor
             reframe? [
                 dot-line-number textview-rows 1- - nth-line top-line!
             ] when
-            t repaint!
+            t repaint?!
         ] when
     ] if ;
 
@@ -248,7 +248,7 @@ in: editor
     at-bof? ?exit
     [ at-bof? not in-word? and ] [ char-left-internal ] while
     at-bof? [ char-right-internal ] unless
-    t repaint! ;
+    t repaint?! ;
 
 private: word-right-internal
     [ at-eof? not not-in-word? and ] [ char-right-internal ] while
@@ -267,7 +267,7 @@ private: word-right-internal
     add-undo-move
     mark [ copy-dot mark! ] unless
     word-right-internal
-    t repaint! ;
+    t repaint?! ;
 
 : move-up
     dot-line-prev null? ?exit
@@ -285,7 +285,7 @@ private: word-right-internal
     dot-line-prev dot-line!
     reframe? [
         dot-line top-line!
-        t repaint!
+        t repaint?!
     ] when
     adjust-dot-column ;
 
@@ -303,7 +303,7 @@ private: word-right-internal
         dot-line top-line!
     ] when
     adjust-dot-column
-    t repaint! ;
+    t repaint?! ;
 
 : move-down
     dot-line-next null? ?exit
@@ -321,7 +321,7 @@ private: word-right-internal
     dot-line-next dot-line!
     reframe? [
         dot-line-number textview-rows 1- - nth-line top-line!
-        t repaint!
+        t repaint?!
     ] when
     adjust-dot-column ;
 
@@ -339,7 +339,7 @@ private: word-right-internal
         dot-line-number textview-rows 1- - nth-line top-line!
     ] when
     adjust-dot-column
-    t repaint! ;
+    t repaint?! ;
 
 feral-config:winui? feral-config:gtkui? or #if
 
@@ -434,7 +434,7 @@ feral-config:winui? feral-config:gtkui? or #if
 
     line dot-line!
 
-    t repaint!
+    t repaint?!
     adjust-dot-column
 ;
 
@@ -462,6 +462,6 @@ feral-config:winui? feral-config:gtkui? or #if
 
     line top-line!
 
-    t repaint!
+    t repaint?!
     adjust-dot-column
 ;
