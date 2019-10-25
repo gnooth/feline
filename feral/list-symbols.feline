@@ -28,7 +28,7 @@ empty
         swap parent>> current-buffer eq? and
     ] find
     // -> index/nil element/nil
-    [ nip ] [ drop make-buffer ] if* buf!
+    [ nip dup editor:clear-buffer ] [ drop make-buffer ] if* buf!
 
     current-buffer filename>> file-name-nondirectory " [symbols]" + buf name<<
 
