@@ -17,7 +17,7 @@ using: feline ;
 in: feline
 
 private: string-trim-head-internal ( s ) // string -> string'
-    s [ whitespace? not ] find // -> index/f element/f
+    s [ whitespace? not ] find // -> index/nil element/nil
     [ s string-tail ] [ drop "" ] if ;
 
 : string-trim-head ( s ) // string -> string'
@@ -26,7 +26,7 @@ private: string-trim-head-internal ( s ) // string -> string'
     s string-trim-head-internal ;
 
 private: string-trim-tail-internal ( s ) // string -> string'
-    s string-length 1- s [ whitespace? not ] find-last-from // -> index/f element/f
+    s string-length 1- s [ whitespace? not ] find-last-from // -> index/nil element/nil
     [ 1+ s string-head ] [ drop "" ] if ;
 
 : string-trim-tail ( s ) // string -> string'
