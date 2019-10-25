@@ -24,13 +24,15 @@ in: editor
         line buf first-line<<
     ] unless ;
 
-: buffer-set-contents ( s buf )         // string buffer -> void
-    f buf first-line<<
-    f buf last-line<<
-    f buf top-line<<
-    f buf dot<<
-    f buf mark<<
+: clear-buffer ( buf )                  // buffer -> void
+    nil buf first-line<<
+    nil buf last-line<<
+    nil buf top-line<<
+    nil buf dot<<
+    nil buf mark<< ;
 
+: buffer-set-contents ( s buf )         // string buffer -> void
+    buf clear-buffer
     s string-lines [ make-line/2 buf buffer-append-line ] each-index ;
 
 : create-buffer                         // void -> void
@@ -116,7 +118,7 @@ in: editor
 
     t repaint! ;
 
-: find-buffer-from-file-name // filename -> buffer/nil
+: find-buffer-from-file-name            // filename -> buffer/nil
     !> filename
     win64? [
         filename string-upcase filename!
