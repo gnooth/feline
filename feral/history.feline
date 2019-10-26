@@ -29,14 +29,14 @@ tuple: history
     index
 ;
 
-: name                                  // void -> string/f
-    current-history [ name>> ] [ f ] if* ;
+: name                                  // void -> string/nil
+    current-history [ name>> ] [ nil ] if* ;
 
-: strings                               // void -> vector/f
-    current-history [ strings>> ] [ f ] if* ;
+: strings                               // void -> vector/nil
+    current-history [ strings>> ] [ nil ] if* ;
 
-: index                                 // void -> index/f
-    current-history [ index>> ] [ f ] if* ;
+: index                                 // void -> index/nil
+    current-history [ index>> ] [ nil ] if* ;
 
 : index!                                // index -> void
     current-history [ index<< ] [ drop ] if* ;
@@ -46,21 +46,21 @@ public
 : reset-history
     strings [ length index! ] when* ;
 
-: history-previous                      // void -> string/f
-    index null? [ f ] return-if
+: history-previous                      // void -> string/nil
+    index nil? [ nil ] ?return
 
-    index 0 > [
+    index 0> [
         index 1- index!
         index strings nth
-    ] [ f ] if ;
+    ] [ nil ] if ;
 
 : history-next
-    index null? [ f ] return-if
+    index nil? [ nil ] ?return
 
     index strings length 1- < [
         index 1+ index!
         index strings nth
-    ] [ reset-history f ] if ;
+    ] [ reset-history nil ] if ;
 
 : history-name->pathname                // name -> pathname
     feral-history-directory swap path-append ".history" string-append ;
@@ -86,7 +86,7 @@ public
         set-file-lines
     ] when* ;
 
-: update-history ( s )                  // string/f -> void
+: update-history ( s )                  // string/nil -> void
     s string? [
         current-history [
             strings>> s swap vector-adjoin
