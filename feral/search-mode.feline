@@ -1,0 +1,91 @@
+// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline accessors feral-core segments feral-colors ;
+in: search-mode
+
+private
+
+global instance
+
+: search-mode-format-line ( line )      // line -> segments
+
+    :search current-buffer buffer-get-property :> search
+    search nil? ?exit
+
+    search pattern>> :> pattern
+
+    line text>> detab :> s
+
+    16 <vector> :> v
+
+    pattern length :> len
+    pattern s substring-start !> index
+    index [
+        0 index s substring 0 color-text make-segment/3 v push
+        index dup len + s substring index color-name make-segment/3 v push
+        index len + index!
+        index s length < [
+            index s length s substring index color-text make-segment/3 v push
+        ] when
+    ] [
+        s 0 color-text make-segment/3 v push
+    ] if
+
+    v ;
+
+: search-mode-goto-source
+    dot-line-text :> s
+    ':' s index :> end
+    end nil? ?exit
+
+    0 end s substring string>number :> line-number
+    current-buffer parent>> set-current-buffer
+    line-number editor:gotoline-internal
+    t repaint?! ;
+
+global search-mode-local-map
+
+: initialize-local-map
+    128 <hashtable> :> m
+    ' editor:kill-buffer feral-key:escape m set-at
+    ' search-mode-goto-source feral-key:enter m set-at
+    m search-mode-local-map! ;
+
+initialize-local-map
+
+feral-config:winui? #if
+
+' search-mode-goto-source feral-key:double-mouse-1 search-mode-local-map set-at
+
+#endif
+
+: search-mode-initialize-buffer         // buffer -> void
+    1 ?enough :> buf
+    search-mode-local-map buf local-map<< ;
+
+: initialize-search-mode
+    mode make-instance :> m
+    "search" m name<<
+    ' search-mode-initialize-buffer m initialize-buffer-function<<
+    ' search-mode-format-line m format-line-function<<
+    m instance! ;
+
+initialize-search-mode
+
+public
+
+: get-instance                          // void -> mode
+    instance ;

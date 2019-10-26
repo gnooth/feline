@@ -39,6 +39,7 @@ in: user
     "logging"
     "modes"
     "search"
+    "search-mode"
     "symbols"
     "symbols-mode"
 } [ delete-vocab ] each
@@ -85,6 +86,7 @@ feral-source-directory add-source-directory
         "directory-mode.feline"
         "symbols.feline"
         "find-definition.feline"
+        "search-mode.feline"
         "search.feline"
         "find-in-files.feline"
         "commands.feline"
