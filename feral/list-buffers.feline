@@ -24,12 +24,12 @@ private
 
 : list-buffers-select
     :buffer dot-line line-get-property current-buffer!
-    t repaint!
+    t repaint?!
     update-display ;
 
 : list-buffers-quit
     current-buffer parent>> current-buffer!
-    t repaint!
+    t repaint?!
     update-display ;
 
 global list-buffers-local-map
@@ -97,7 +97,7 @@ feral-config:winui? #if
 
     buf current-buffer!
     renumber
-    t repaint!
+    t repaint?!
 ;
 
 in: editor
