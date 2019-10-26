@@ -13,14 +13,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline accessors editor history feral-config mini ;
+using: feral-core feline accessors editor search-mode history feral-config mini ;
 in: search
 
 empty
 
 private
 
-: current-pattern                       // -> string/f
+: current-pattern                       // -> string/nil
     current-search [ pattern>> ] [ nil ] if* ;
 
 : whole-words-only?                     // -> ?
@@ -35,17 +35,16 @@ private
     dot-offset goal-column!
 
     maybe-reframe
-    t repaint! ;
+    t repaint?! ;
 
 : not-found
     current-pattern "%S not found" format
     message ;
 
-: find-char-in-range ( char string start end )  // char string start end -> i/f
-    start end [ string string-nth-unsafe char eq? ] find-integer-in-range
-;
+: find-char-in-range ( char string start end )  // char string start end -> i/nil
+    start end [ string string-nth-unsafe char eq? ] find-integer-in-range ;
 
-: find-substring-in-range ( pattern string start end )  // pattern string start end -> i/f
+: find-substring-in-range ( pattern string start end )  // pattern string start end -> i/nil
     pattern unsafe-string-data-address :> pattern-data-address
     string unsafe-string-data-address :> string-data-address
     pattern string-length :> pattern-length
@@ -54,30 +53,27 @@ private
         string-data-address +
         pattern-data-address
         pattern-length unsafe-memequal
-    ] find-integer-in-range
-;
+    ] find-integer-in-range ;
 
-: find-substring-from ( pattern string start )  // pattern string start -> i/f
+: find-substring-from ( pattern string start )  // pattern string start -> i/nil
     string string-length pattern string-length - 1+ :> end
-    pattern string start end find-substring-in-range
-;
+    pattern string start end find-substring-in-range ;
 
-: find-substring-in-line ( pattern line )       // pattern line -> position/f
+: find-substring-in-line ( pattern line )       // pattern line -> position/nil
     pattern line text>> 0 find-substring-from
-    [ line swap make-position ] [ nil ] if*
-;
+    [ line swap make-position ] [ nil ] if* ;
 
-: search-forward ( pattern startpos )   // string position -> position/f
-    startpos line>> :> line!
+: search-forward ( pattern startpos )   // string position -> position/nil
+    startpos line>> !> line
     startpos offset>> :> offset
 
-    pattern line text>> offset find-substring-from :> index!
+    pattern line text>> offset find-substring-from !> index
 
-    index [ line index make-position ] return-if
+    index [ line index make-position ] ?return
 
     line next>> line!
 
-    nil :> result!
+    nil !> result
 
     [ line ] [
         pattern line find-substring-in-line [
@@ -88,10 +84,9 @@ private
         ] if*
     ] while
 
-    result
-;
+    result ;
 
-: find-last-substring-in-range ( pattern string start end )     // string1 string2 start end -> i/f
+: find-last-substring-in-range ( pattern string start end ) // string1 string2 start end -> i/nil
     pattern unsafe-string-data-address :> pattern-data-address
     string unsafe-string-data-address :> string-data-address
     pattern string-length :> pattern-length
@@ -102,23 +97,22 @@ private
         pattern-length unsafe-memequal
     ] find-last-integer-in-range ;
 
-: find-last-substring-from ( pattern string from )      // pattern string from -> i/f
+: find-last-substring-from ( pattern string from ) // pattern string from -> i/nil
     pattern string 0
     string string-length pattern string-length - 1+ from min
     find-last-substring-in-range ;
 
-: find-last-substring-in-line ( pattern line )  // pattern line -> position/f
+: find-last-substring-in-line ( pattern line ) // pattern line -> position/nil
     pattern line text>> line length find-last-substring-from
-    [ line swap make-position ] [ nil ] if*
-;
+    [ line swap make-position ] [ nil ] if* ;
 
-: search-backward ( pattern startpos )  // pattern startpos -> position/f
-    startpos line>> :> line!
+: search-backward ( pattern startpos )  // pattern startpos -> position/nil
+    startpos line>> !> line
     startpos offset>> :> offset
 
-    pattern line text>> offset find-last-substring-from :> index!
+    pattern line text>> offset find-last-substring-from !> index
 
-    index [ line index make-position ] return-if
+    index [ line index make-position ] ?return
 
     line prev>> line!
 
@@ -133,8 +127,7 @@ private
         ] if*
     ] while
 
-    result
-;
+    result ;
 
 : delimited? ( pos len )                // position length -> ?
     pos line>> :> line
@@ -158,10 +151,9 @@ private
         ] when
     ] when
 
-    result
-;
+    result ;
 
-: find-word-in-line ( pattern line )    // pattern line -> position/f
+: find-word-in-line ( pattern line )    // pattern line -> position/nil
     0 !> index
     nil !> pos
 
@@ -176,17 +168,17 @@ private
 
     pos ;
 
-: find-in-line                          // pattern line -> position/?
-    whole-words-only? [
-        find-word-in-line
+: find-in-line ( search line )          // search line -> position/nil
+    search whole-words-only>> [
+        search pattern>> line find-word-in-line
     ] [
-        find-substring-in-line
+        search pattern>> line find-substring-in-line
     ] if ;
 
-: search-forward-word ( startpos )      // position -> position/?
+: search-forward-word ( startpos )      // position -> position/nil
     current-pattern :> pattern
     pattern string-length :> pattern-length
-    startpos copy-position :> pos!
+    startpos copy-position !> pos
     nil !> result
 
     [ result nil? pos and ] [
@@ -200,13 +192,12 @@ private
         ] when
     ] while
 
-    result
-;
+    result ;
 
 : search-backward-word ( startpos )     // startpos -> pos/?
     current-pattern :> pattern
     pattern string-length :> pattern-length
-    startpos copy-position :> pos!
+    startpos copy-position !> pos
     nil !> result
 
     [ result nil? pos and ] [
@@ -220,8 +211,7 @@ private
         ] when
     ] while
 
-    result
-;
+    result ;
 
 public
 
@@ -287,11 +277,9 @@ use: mini
 
     make-buffer :> buf
 
-    current-pattern :> pattern
     first-line !> line
-
     [ line ] [
-        pattern line find-in-line [
+        current-search line find-in-line [
             line number>> 1+ line text>> "%d:%s" format
             make-line/1
             buf top-line>> [ dup buf top-line<< ] unless
@@ -302,11 +290,18 @@ use: mini
 
     buf top-line>> 0 make-position buf dot<<
     t buf read-only<<
-    pattern "list-occurrences %S" format buf name<<
-    current-buffer buf parent<<
 
+    // REVIEW
+    current-buffer filename>> file-name-nondirectory
+    current-search pattern>> " [%S]" format +
+    buf name<<
+
+    current-buffer buf parent<<
+    current-buffer directory>> buf directory<<
+    current-search :search buf buffer-set-property
+    search-mode:get-instance buf mode<<
+    buf dup mode>> initialize-buffer-function>> call
     buf set-current-buffer
 
     renumber
-    t repaint?!
-;
+    t repaint?! ;
