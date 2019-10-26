@@ -39,39 +39,15 @@ global instance
     ] if ;
 
 : line-is-definition? ( line )
-    "code " line text>> head?
-    "%macro " line text>> head? or
-;
+    line text>> string-trim-head :> s
+    '\s' s string-index :> end
+    end nil? [ nil ] ?return
+    0 end s string-substring {
+        "code" "inline" "subroutine" "%macro" "%define"
+    } member? ;
 
 : asm-mode-list-symbols
-    make-buffer :> buf
-    "symbols " current-buffer filename>> + buf name<<
-
-    first-line :> line!
-
-    [ line ] [
-        line line-is-definition? [
-            line number>> 1+ line text>> "%d %s" format make-line/1
-            buf top-line>> [ dup buf top-line<< ] unless
-            buf editor:buffer-append-line
-        ] when
-        line next>> line!
-    ] while
-
-    buf top-line>> 0 make-position buf dot<<
-    t buf read-only<<
-
-    current-buffer buf parent<<
-    current-buffer directory>> buf directory<<
-    symbols-mode:get-instance buf mode<<
-    buf mode>> initialize-buffer-function>> [ buf swap call ] when*
-
-    buf buffer-list vector-push
-    buf set-current-buffer
-
-    renumber
-    t repaint!
-;
+    ' asm-mode:line-is-definition? list-symbols:list-symbols ;
 
 global asm-mode-local-map
 
