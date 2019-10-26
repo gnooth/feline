@@ -335,52 +335,7 @@ var last-segment-text
     0 end s string-substring defining-words member? ;
 
 : feline-mode-list-symbols
-
-    // reuse existing buffer if possible
-    nil !> buf
-    buffer-list [
-        dup mode>> symbols-mode:get-instance eq?
-        swap parent>> current-buffer eq? and
-    ] find
-    // -> index/nil element/nil
-    [ nip ] [ drop make-buffer ] if* buf!
-
-    current-buffer filename>> file-name-nondirectory " [symbols]" + buf name<<
-
-    first-line !> source-line
-    nil !> goal // put dot on this line in the symbols list buffer
-
-    [ source-line ] [
-        source-line line-is-definition? [
-            source-line number>> 1+ source-line text>> "%d %s" format make-line/1
-            goal [
-                source-line number>> dot-line-number > [
-                    buf last-line>> goal!
-                ] when
-            ] unless
-            buf editor:buffer-append-line
-        ] when
-        source-line next>> source-line!
-    ] while
-
-    buf first-line>> buf top-line<<
-    goal [ buf last-line>> goal! ] unless
-    goal 0 make-position buf dot<<
-
-    t buf read-only<<
-
-    current-buffer buf parent<<
-    current-buffer directory>> buf directory<<
-    symbols-mode:get-instance buf mode<<
-    buf mode>> initialize-buffer-function>> [ buf swap call ] when*
-
-    buf buffer-list vector-push
-    buf set-current-buffer
-
-    renumber
-    maybe-reframe
-    t repaint?!
-;
+    ' feline-mode:line-is-definition? list-symbols:list-symbols ;
 
 global feline-mode-local-map
 
