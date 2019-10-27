@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -19,9 +19,9 @@ file __FILE__
 
 ; 4 cells: object header, length, data address, capacity
 
-%define SBUF_LENGTH_OFFSET              8
+%define SBUF_RAW_LENGTH_OFFSET          8
 
-%define SBUF_DATA_ADDRESS_OFFSET        16
+%define SBUF_RAW_DATA_ADDRESS_OFFSET    16
 
 %macro  _sbuf_raw_length 0              ; sbuf -- length
         _slot1
@@ -384,7 +384,7 @@ code sbuf_validate, 'sbuf-validate'     ; sbuf --
         push    this_register
         mov     this_register, rbx      ; -- sbuf
         _sbuf_data                      ; -- data-address
-        add     rbx, qword [this_register + SBUF_LENGTH_OFFSET] ; add length to data address
+        add     rbx, qword [this_register + SBUF_RAW_LENGTH_OFFSET] ; add length to data address
         mov     al, [rbx]               ; char in al should be 0
         poprbx
         test    al, al
@@ -415,8 +415,8 @@ code sbuf_shorten, 'sbuf-shorten'       ; n sbuf -> void
         _this_sbuf_set_raw_length
 
         ; store terminal null byte
-        mov     rax, qword [this_register + SBUF_DATA_ADDRESS_OFFSET]
-        add     rax, qword [this_register + SBUF_LENGTH_OFFSET]
+        mov     rax, qword [this_register + SBUF_RAW_DATA_ADDRESS_OFFSET]
+        add     rax, qword [this_register + SBUF_RAW_LENGTH_OFFSET]
         mov     byte [rax], 0
 
         pop     this_register
@@ -454,14 +454,14 @@ code sbuf_push_unsafe, 'sbuf-push-unsafe', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 endcode
 
 ; ### sbuf-push
-code sbuf_push, 'sbuf-push'             ; tagged-char sbuf --
+code sbuf_push, 'sbuf-push'             ; tagged-char sbuf -> void
         _ check_sbuf
 
         _verify_char [rbp]
         _untag_char qword [rbp]
 
         push    this_register           ; save callee-saved register
-        mov     this_register, rbx      ; sbuf in this_register
+        mov     this_register, rbx      ; ^sbuf in this_register
 
         _sbuf_raw_length                ; -- char length
         cmp     rbx, this_sbuf_raw_capacity
@@ -553,7 +553,7 @@ code sbuf_insert_nth, 'sbuf-insert-nth!'        ; char index sbuf --
         _this
         _ sbuf_ensure_capacity          ; -- char index
 
-        mov     rax, qword [this_register + SBUF_LENGTH_OFFSET] ; length in rax
+        mov     rax, qword [this_register + SBUF_RAW_LENGTH_OFFSET] ; length in rax
         sub     rax, rbx                ; subtract index to get count in rax
 
         _this_sbuf_data                 ; -- char index data-address
@@ -566,7 +566,7 @@ code sbuf_insert_nth, 'sbuf-insert-nth!'        ; char index sbuf --
 
         _ cmoveup                       ; -- char index
 
-        inc     qword [this_register + SBUF_LENGTH_OFFSET]      ; length = length + 1
+        inc     qword [this_register + SBUF_RAW_LENGTH_OFFSET] ; length = length + 1
 
         _this_sbuf_set_nth_unsafe       ; --
 
@@ -694,7 +694,7 @@ code sbuf_substring, 'sbuf-substring'   ; from to sbuf -> substring
         _error "start index > end index"
 .2:                                     ; -> from to
         sub     rbx, qword [rbp]        ; length in rbx = to - from
-        mov     rax, [this_register + SBUF_DATA_ADDRESS_OFFSET]
+        mov     rax, [this_register + SBUF_RAW_DATA_ADDRESS_OFFSET]
         add     qword [rbp], rax        ; address of start of substring
         _ copy_to_string
 
