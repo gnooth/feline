@@ -92,8 +92,8 @@ code vector?, 'vector?'                 ; x -> ?
         next
 endcode
 
-; ### check-vector
-code check_vector, 'check-vector'       ; handle -> vector
+; ### check_vector
+code check_vector, 'check_vector'       ; handle -> ^vector
         cmp     bl, HANDLE_TAG
         jne     .error2
         mov     rdx, rbx                ; copy argument in case there is an error

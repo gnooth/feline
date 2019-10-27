@@ -23,21 +23,21 @@ file __FILE__
 
 %define SBUF_RAW_DATA_ADDRESS_OFFSET    16
 
-%macro  _sbuf_raw_length 0              ; sbuf -- length
+%macro  _sbuf_raw_length 0              ; sbuf -> length
         _slot1
 %endmacro
 
-%macro  _sbuf_set_raw_length 0          ; length sbuf --
+%macro  _sbuf_set_raw_length 0          ; length sbuf -> void
         _set_slot1
 %endmacro
 
 %define this_sbuf_raw_length this_slot1
 
-%macro  _this_sbuf_raw_length 0         ; -- length
+%macro  _this_sbuf_raw_length 0         ; void -> length
         _this_slot1
 %endmacro
 
-%macro  _this_sbuf_set_raw_length 0     ; length --
+%macro  _this_sbuf_set_raw_length 0     ; length -> void
         _this_set_slot1
 %endmacro
 
@@ -119,20 +119,22 @@ code sbuf?, 'sbuf?'                     ; object -- ?
 endcode
 
 ; ### check_sbuf
-code check_sbuf, 'check-sbuf'           ; handle -- sbuf
-        _dup
-        _ deref
+code check_sbuf, 'check_sbuf'           ; handle -> ^sbuf
+        cmp     bl, HANDLE_TAG
+        jne     .error2
+        mov     rdx, rbx                ; copy argument in case there is an error
+        _handle_to_object_unsafe
+%ifdef DEBUG
         test    rbx, rbx
-        jz      .error
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_SBUF
-        jne     .error
-        _nip
+        jz      error_empty_handle
+%endif
+        cmp     word [rbx], TYPECODE_SBUF
+        jne     .error1
         next
-.error:
-        _drop
-        _ error_not_sbuf
-        next
+.error1:
+        mov     rbx, rdx                ; restore original argument
+.error2:
+        jmp     error_not_sbuf
 endcode
 
 ; ### sbuf-length
