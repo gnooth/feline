@@ -90,31 +90,31 @@ file __FILE__
         _cfetch
 %endmacro
 
-%macro  _this_sbuf_nth_unsafe 0         ; index -- untagged-char
-        mov     rdx, this_sbuf_raw_data_address
+%macro  _this_sbuf_nth_unsafe 0         ; index -> untagged-char
+        mov     rdx, qword [this_register + SBUF_RAW_DATA_ADDRESS_OFFSET]
         movzx   rbx, byte [rdx + rbx]
 %endmacro
 
-%macro  _this_sbuf_set_nth_unsafe 0     ; char index --
-        mov     rdx, this_sbuf_raw_data_address
+%macro  _this_sbuf_set_nth_unsafe 0     ; untagged-char index -> void
+        mov     rdx, qword [this_register + SBUF_RAW_DATA_ADDRESS_OFFSET]
         mov     al, [rbp]
         mov     [rdx + rbx], al
         _2drop
 %endmacro
 
 ; ### sbuf?
-code sbuf?, 'sbuf?'                     ; object -- ?
-        _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe        ; -- object
-        _dup_if .2
-        _object_raw_typecode
-        _eq? TYPECODE_SBUF
-        _return
-        _then .2
-        _then .1
-        mov     ebx, f_value
+code sbuf?, 'sbuf?'                     ; object -> ?
+        cmp     bl, HANDLE_TAG
+        jne     .no
+        _handle_to_object_unsafe
+        test    rbx, rbx
+        jz      .no
+        cmp     word [rbx], TYPECODE_SBUF
+        jne     .no
+        mov     ebx, t_value
+        next
+.no:
+        mov     ebx, nil_value
         next
 endcode
 
@@ -441,7 +441,7 @@ endcode
 
 ; ### sbuf-push-unsafe
 code sbuf_push_unsafe, 'sbuf-push-unsafe', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; tagged-char sbuf --
+; tagged-char sbuf -> void
         _ check_sbuf
 
         push    this_register
