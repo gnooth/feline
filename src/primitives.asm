@@ -1787,6 +1787,12 @@ inline char?, 'char?'                   ; x -- ?
         _char?
 endinline
 
+; ### verify-char
+code verify_char, 'verify-char'         ; x -> char
+        _verify_char
+        next
+endcode
+
 ; ### char-hashcode
 inline char_hashcode, 'char-hashcode'   ; tagged-char -- tagged-fixnum
         ; REVIEW collisions with fixnums
