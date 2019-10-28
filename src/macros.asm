@@ -150,44 +150,24 @@
         cmovne  rbx, rax
 %endmacro
 
-%macro  _char? 0                        ; x -- ?
-%if CHAR_TAG = FIXNUM_TAG
-        and     ebx, FIXNUM_TAG_MASK
-        cmp     ebx, FIXNUM_TAG
-        mov     eax, t_value
-        mov     ebx, f_value
-        cmove   ebx, eax
-%else
+%macro  _char? 0                        ; x -> ?
         cmp     bl, CHAR_TAG
         mov     eax, f_value
         mov     ebx, t_value
         cmovne  ebx, eax
-%endif
 %endmacro
 
 %macro  _tag_char 0
-%if CHAR_TAG = FIXNUM_TAG
-        _tag_fixnum
-%else
         shl     rbx, CHAR_TAG_BITS
         or      rbx, CHAR_TAG
-%endif
 %endmacro
 
 %macro  _untag_char 0
-%if CHAR_TAG = FIXNUM_TAG
-        _untag_fixnum
-%else
         shr     rbx, CHAR_TAG_BITS
-%endif
 %endmacro
 
 %macro  _untag_char 1
-%if CHAR_TAG = FIXNUM_TAG
-        _untag_fixnum %1
-%else
         shr     %1, CHAR_TAG_BITS
-%endif
 %endmacro
 
 %macro  _verify_char 0
