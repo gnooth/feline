@@ -84,10 +84,11 @@ file __FILE__
         _ult
 %endmacro
 
-%macro  _sbuf_nth_unsafe 0              ; sbuf index -- untagged-char
-        _sbuf_data
-        _plus
-        _cfetch
+%macro  _sbuf_nth_unsafe 0              ; index ^sbuf  -> untagged-char
+        mov     rbx, qword [rbx + SBUF_RAW_DATA_ADDRESS_OFFSET] ; raw data address in rbx
+        add     rbx, [rbp]              ; add index to get address of nth char in rbx
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        movzx   ebx, byte [rbx]
 %endmacro
 
 %macro  _this_sbuf_nth_unsafe 0         ; index -> untagged-char
