@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline ;
+using: feral-config feral-loader feline ;
 in: user
 
 "mini" delete-vocab
@@ -28,6 +28,8 @@ public
 
 : set-completion-provider completion-provider! ;
 
-"winui-minibuffer.feline" feral-config:winui? ?load
-"gtkui-minibuffer.feline" feral-config:gtkui? ?load
-"termui-minibuffer.feline" feral-config:termui? ?load
+{
+    { [ winui?  ] [ "winui-minibuffer.feline"  ] }
+    { [ gtkui?  ] [ "gtkui-minibuffer.feline"  ] }
+    { [ termui? ] [ "termui-minibuffer.feline" ] }
+} cond load-feral-source-file
