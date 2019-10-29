@@ -16,14 +16,6 @@
 using: feral-core feline accessors modes mini ;
 in: editor
 
-: buffer-append-line ( line buf )       // line buffer -> void
-    buf last-line>> line prev<<
-    buf last-line>> [ line swap next<< ] when*
-    line buf last-line<<
-    buf first-line>> [
-        line buf first-line<<
-    ] unless ;
-
 : clear-buffer ( buf )                  // buffer -> void
     nil buf first-line<<
     nil buf last-line<<

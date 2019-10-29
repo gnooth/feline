@@ -43,7 +43,7 @@ empty
                     buf last-line>> goal!
                 ] when
             ] unless
-            buf editor:buffer-append-line
+            buf buffer-append-line
         ] when
         source-line next>> source-line!
     ] while
