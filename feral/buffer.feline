@@ -13,7 +13,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline accessors modes ;
+using: feral-core feline accessors modes mini ;
 in: editor
 
 : clear-buffer ( buf )                  // buffer -> void
@@ -146,12 +146,6 @@ in: editor
 : buffer-name ( buf )
     buf name>> [ buf filename>> ] unless* ;
 
-use: feral-config
-
-winui? #if
-use: mini
-#endif
-
 : confirm-kill-current-buffer           // -> ?
     nil !> confirmed?
 
@@ -167,10 +161,6 @@ use: mini
 
     confirmed?
 ;
-
-winui? #if
-unuse: mini
-#endif
 
 : kill-current-buffer
     buffer-list [ current-buffer eq? ] find     // -> index/nil element/nil
