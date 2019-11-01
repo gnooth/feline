@@ -13,7 +13,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline accessors modes mini ;
+using: feral-core feline accessors modes ;
 in: editor
 
 : clear-buffer ( buf )                  // buffer -> void
@@ -38,8 +38,7 @@ in: editor
     buf buffer-list vector-push
     buf current-buffer!
 
-    dot-line top-line!
-;
+    dot-line top-line! ;
 
 : create-buffer/2                       // filename line-number -> void
     verify-index  :> line-number
@@ -154,7 +153,7 @@ use: mini
 #endif
 
 : confirm-kill-current-buffer           // -> ?
-    f :> confirmed?!
+    nil !> confirmed?
 
     modified? [
         "Save file? (y or n) " minibuffer-accept-string
@@ -174,9 +173,9 @@ unuse: mini
 #endif
 
 : kill-current-buffer
-    buffer-list [ current-buffer eq? ] find     // -> index/f element/f
+    buffer-list [ current-buffer eq? ] find     // -> index/nil element/nil
     current-buffer assert-eq                    // -> index
-    :> n!
+    !> n
 
     n buffer-list vector-remove-nth!
 
@@ -189,12 +188,12 @@ unuse: mini
     t repaint?! ;
 
 : kill-buffer
-    f !> confirmed?
+    nil !> confirmed?
 
     modified? [ confirm-kill-current-buffer confirmed?! ] when
 
     modified? not confirmed? or [
-        buffer-list length 1 = [
+        buffer-list length 1 eq? [
             0 buffer-list vector-set-length
             exit-feral
         ] [
