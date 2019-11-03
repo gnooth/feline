@@ -16,11 +16,9 @@
 using: feline accessors feral-config ;
 in: feral-core
 
-use: directories
-
 : shell-command-to-string ( command )   // command -> string/f
     nil !> result
-    get-temporary-filename :> tempfile
+    directories:get-temporary-filename :> tempfile
     command " > " + tempfile + run-shell-command // should return fixnum 0
     0? [
         tempfile safe-file-contents result!
@@ -29,8 +27,6 @@ use: directories
     // delete-file returns t if it succeeds
     drop
     result ;
-
-unuse: directories
 
 tuple: line
     prev
@@ -51,7 +47,7 @@ tuple: line
     swap verify-string >>text ;
 
 : line-get-property ( keyword line )    // keyword line -> value
-    line properties>> [ keyword swap at ] [ f ] if* ;
+    line properties>> [ keyword swap at ] [ nil ] if* ;
 
 : line-set-property ( value keyword line ) // value keyword line -> void
     line properties>> [
@@ -114,7 +110,7 @@ method: position equal? position-equal? ;
         { [ line1 number>> line2 number>> < ] [ t ] }
         { [ line1 line2 eq? ] [ pos1 offset>> pos2 offset>> < ] }
         // default
-        [ f ]
+        [ nil ]
     } cond ;
 
 generic before?
@@ -133,7 +129,7 @@ method: position before? position-before? ;
             line next>> pos line<<
             0 pos offset<< t
         ] }
-        [ f ]
+        [ nil ]
     } cond
 ;
 
@@ -147,7 +143,7 @@ method: position before? position-before? ;
             line prev>> pos line<<
             pos line>> length pos offset<< t
         ] }
-        [ f ]
+        [ nil ]
     } cond
 ;
 
@@ -165,7 +161,7 @@ tuple: region
 
 : in-region? ( pos region )             // pos region -> ?
     pos region begin>> before? [
-        f
+        nil
     ] [
         pos region end>> before?
     ] if ;
@@ -213,14 +209,14 @@ tuple: region-iterator
 
 : region-iterator-next                  // iterator -> line/f
 
-    dup current>> null? [ drop f ] return-if
+    dup current>> null? [ drop nil ] ?return
 
     [ current>> ] keep                  // -> current iterator
 
     dup
     [ current>> ] [ end>> ] bi eq?      // -> current iterator ?
 
-    [ f ] [
+    [ nil ] [
         dup current>> [ next>> ] when*
     ] if
 
@@ -246,13 +242,13 @@ tuple: region-iterator
         // -> callable iterator line
         pick call
     ] while
-    // -> callable iterator f
+    // -> callable iterator nil
     3drop ;
 
 : region-as-string ( region )
     region [ begin-line ] [ end-line ] bi eq? [
         region [ begin-offset ] [ end-offset ] [ begin-line ] tri substring
-    ] return-if
+    ] ?return
 
     1024 <sbuf> :> sb
 
@@ -260,7 +256,7 @@ tuple: region-iterator
     sb sbuf-append-string
     '\n' sb sbuf-push
 
-    region begin-line next>> :> line!
+    region begin-line next>> !> line
     region end-line :> region-end-line
 
     [ line region-end-line neq? ] [
@@ -328,7 +324,7 @@ tuple: buffer
     ] unless ;
 
 : buffer-get-property ( keyword buffer ) // keyword buffer -> value
-    buffer properties>> [ keyword swap at ] [ f ] if* ;
+    buffer properties>> [ keyword swap at ] [ nil ] if* ;
 
 : buffer-set-property ( value keyword buffer ) // value keyword buffer -> void
     buffer properties>> [
@@ -406,22 +402,22 @@ global current-buffer
     current-buffer mark<< ;
 
 : mark-line                             // -> line/f
-    mark [ mark line>> ] [ f ] if ;
+    mark [ mark line>> ] [ nil ] if ;
 
 : mark-line-number                      // -> line-number/f
-    mark [ mark line>> number>> ] [ f ] if ;
+    mark [ mark line>> number>> ] [ nil ] if ;
 
 : mark-offset                           // -> n
     mark offset>> ;
 
 : unmark
-    mark [ f mark! t repaint?! ] when ;
+    mark [ nil mark! t repaint?! ] when ;
 
 : copy-dot                              // -> position
     dot copy-position ;
 
 : copy-mark                             // -> position
-    mark [ copy-position ] [ f ] if* ;
+    mark [ copy-position ] [ nil ] if* ;
 
 : anchor                                // -> position/f
     current-buffer anchor>> ;
@@ -534,8 +530,8 @@ global current-buffer
     current-buffer indent-size>> [ 4 ] unless* ;
 
 : renumber
-    first-line :> line!
-    0 :> n!
+    first-line !> line
+    0 !> n
     [ line next>> ] [
         n line number<<
         n 1+ n!
@@ -546,18 +542,17 @@ global current-buffer
 
 : nth-line ( line-number )              // line-number -> line/f
 
-    line-number 0 < [ f ] return-if
+    line-number 0< [ nil ] ?return
 
-    first-line :> line!
-    0 :> n!
+    first-line !> line
+    0 !> n
 
     [ line n line-number < and ] [
         n 1+ n!
         line next>> line!
     ] while
 
-    line
-;
+    line ;
 
 : insert-after ( line prev )            // line prev -> void
     // insert line after prev
@@ -578,9 +573,9 @@ global current-buffer
 : insert-before ( line next )           // line next -> void
     // insert line before next
 
-    next [ next prev>> ] [ f ] if :> prev
+    next [ next prev>> ] [ nil ] if :> prev
 
-    prev [ line prev insert-after ] return-if
+    prev [ line prev insert-after ] ?return
 
     // prev is null
     line first-line prev<<
@@ -595,8 +590,8 @@ global current-buffer
     prev [ next prev next<< ] when
     next [ prev next prev<< ] when
 
-    f line next<<
-    f line prev<<
+    nil line next<<
+    nil line prev<<
 
     renumber
 ;
@@ -617,16 +612,15 @@ termui? #if
 #endif
 
 : bottom-line                           // -> line
-    top-line :> line!
-    0 :> i!
+    top-line !> line
+    0 !> i
 
     [ i textview-rows 1- < ] [
         line next>> [ line! ] when*
         i 1+ i!
     ] while
 
-    line
-;
+    line ;
 
 : bottom-line-number                    // -> n
     bottom-line number>> ;
@@ -646,13 +640,12 @@ termui? #if
         ] if
     ] each
 
-    sb sbuf>string
-;
+    sb sbuf>string ;
 
 : position-column ( pos )               // position -> column
     pos line>> :> line
     pos offset>> line text>> length min :> limit
-    0 :> column!
+    0 !> column
     limit [
         line text>> string-nth '\t' eq? [
             column tab-width column tab-width mod - + column!
@@ -669,10 +662,10 @@ termui? #if
     dot-line-number top-line-number - ;
 
 : mark-column                           // -> column
-    mark [ mark position-column ] [ f ] if ;
+    mark [ mark position-column ] [ nil ] if ;
 
 : line-selected? ( line )               // line -> ?
-    mark null? [ f ] return-if
+    mark null? [ nil ] ?return
     dot mark make-region/2 :> region
     {
         {
@@ -684,11 +677,11 @@ termui? #if
             [ region begin-offset 0 eq? line region end-line before? and ]
         }
         // default
-        [ f ]
+        [ nil ]
     } cond ;
 
 : line-starts-in-selection? ( line )    // line -> ?
-    mark null? [ f ] return-if
+    mark null? [ nil ] ?return
 
     mark dot make-region/2 :> region
     line 0 make-position :> pos
@@ -698,12 +691,12 @@ termui? #if
 : line-is-partly-selected? ( line )     // line -> ?
     mark [
         line dot-line eq? line mark-line eq? or
-    ] [ f ] if ;
+    ] [ nil ] if ;
 
 : line-contains-selection? ( line )     // line -> ?
     mark [
         line dot-line eq? line mark-line eq? and
-    ] [ f ] if ;
+    ] [ nil ] if ;
 
 : insert-string-internal ( s )
     dot-line-head s + dot-line-tail + dot-line-text!
@@ -727,7 +720,7 @@ termui? #if
     lines length :> len
     lines last :> last-line
 
-    f :> line!
+    local line
     lines [
         line!
 
@@ -739,8 +732,7 @@ termui? #if
 
     s last '\n' eq? [ insert-line-separator-internal ] when
 
-    renumber
-;
+    renumber ;
 
 : insert-string ( s )                   // string -> void
     // insert string at dot
@@ -819,9 +811,9 @@ unuse: segments
 
     char-code :> c
 
-    [ 'A' char-code c <= ] [ c 'Z' char-code <= ] both? [ t ] return-if
-    [ 'a' char-code c <= ] [ c 'z' char-code <= ] both? [ t ] return-if
-    [ '0' char-code c <= ] [ c '9' char-code <= ] both? [ t ] return-if
+    [ 'A' char-code c <= ] [ c 'Z' char-code <= ] both? [ t ] ?return
+    [ 'a' char-code c <= ] [ c 'z' char-code <= ] both? [ t ] ?return
+    [ '0' char-code c <= ] [ c '9' char-code <= ] both? [ t ] ?return
 
     nil ;
 
@@ -848,7 +840,7 @@ method: mode identifier-char?           // char mode -> ?
     dot-char whitespace? not ;
 
 : in-word?                              // void -> ?
-    dot-char [ current-mode identifier-char? ] [ f ] if* ;
+    dot-char [ current-mode identifier-char? ] [ nil ] if* ;
 
 : not-in-word?                          // void -> ?
     dot-char [ current-mode identifier-char? not ] [ t ] if* ;
@@ -865,12 +857,12 @@ generic identifier-at-dot               // mode -> start/f string/f
         dot-offset dot-line-length 1- min 0 max
     ] if :> offset
 
-    offset dot-line-text [ current-mode identifier-char? not ] find-last-from drop :> start!
+    offset dot-line-text [ current-mode identifier-char? not ] find-last-from drop !> start
 
     // advance to first identifier char
     start [ start 1+ start! ] [ 0 start! ] if
 
-    start dot-line-text [ current-mode identifier-char? not ] find-from drop :> end!
+    start dot-line-text [ current-mode identifier-char? not ] find-from drop !> end
 
     end [ dot-line-length end! ] unless
 
@@ -893,6 +885,6 @@ generic comment-start                   // mode -> string/f
 method: mode comment-start              // mode -> string/f
     comment-start>> ;
 
-: default-comment-start 1 ?enough drop f ;
+: default-comment-start 1 ?enough drop nil ;
 
 ' default-comment-start ' comment-start set-default-method
