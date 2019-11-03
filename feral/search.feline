@@ -275,11 +275,12 @@ use: mini
 : search-list-occurrences
     current-search nil? ?exit
 
-    make-buffer :> buf
+    local buf
 
     first-line !> line
     [ line ] [
         current-search line find-in-line [
+            buf [ make-buffer buf! ] unless
             line number>> 1+ line text>> "%d:%s" format
             make-line/1
             buf top-line>> [ dup buf top-line<< ] unless
@@ -287,6 +288,8 @@ use: mini
         ] when
         line next>> line!
     ] while
+
+    buf nil? [ not-found ] ?return
 
     buf top-line>> 0 make-position buf dot<<
     t buf read-only<<
