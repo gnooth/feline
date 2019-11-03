@@ -806,15 +806,10 @@ unuse: segments
     formatter>> [ ' trivial-format-line ] unless* ;
 
 : alphanumeric?                         // char -> ?
-
-    dup char? not [ error-not-char ] ?return
-
-    char-code :> c
-
+    verify-char char-code :> c
     [ 'A' char-code c <= ] [ c 'Z' char-code <= ] both? [ t ] ?return
     [ 'a' char-code c <= ] [ c 'z' char-code <= ] both? [ t ] ?return
     [ '0' char-code c <= ] [ c '9' char-code <= ] both? [ t ] ?return
-
     nil ;
 
 generic identifier-char?                // char mode -> ?
