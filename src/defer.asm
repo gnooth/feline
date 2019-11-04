@@ -1,4 +1,4 @@
-; Copyright (C) 2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -35,6 +35,9 @@ endcode
 
 ; ### defer
 code defer, 'defer', SYMBOL_IMMEDIATE
+        _lit S_defer
+        _ top_level_only
+
         _ parse_name
         _ make_deferred
         next
@@ -61,6 +64,35 @@ code defer_store, 'defer!'              ; symbol1 symbol2 -> void
         _ symbol_raw_code_address
         _swap
         _ symbol_set_value
+        next
+endcode
+
+; ### is
+code is_, 'is', SYMBOL_IMMEDIATE        ; symbol1 ->
+        _ must_parse_token              ; -> symbol1 string
+        _ must_find_name                ; -> symbol1 symbol2
+
+        _ in_definition?
+        _ get
+        _tagged_if .1
+        _get_accum
+        _dup
+        _tagged_if .2
+        _swap                           ; -> vector symbol2
+        _ new_wrapper                   ; -> vector wrapper
+        _over                           ; -> vector wrapper vector
+        _ vector_push                   ; -> vector
+        _lit S_defer_store
+        _swap
+        _ vector_push
+        _else .2
+        _drop
+        _then .2
+        _else .1
+        ; not in definition
+        _ defer_store
+        _then .1
+
         next
 endcode
 
