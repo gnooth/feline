@@ -3327,25 +3327,6 @@ test: named-parameters-test-4
 
 named-parameters-test-4
 
-defer %defer-test-1
-
-: %defer-test1-impl1 "hello!" ;
-
-: %defer-test1-impl2 "goodbye!" ;
-
-test: defer-test-1
-    [ %defer-test-1 ] assert-must-fail
-    ' %defer-test1-impl1 ' %defer-test-1 defer!
-    %defer-test-1 "hello!" assert=
-    ' %defer-test1-impl2 ' %defer-test-1 defer!
-    %defer-test-1 "goodbye!" assert=
-    ' %defer-test1-impl1 ' %defer-test-1 defer!
-    %defer-test-1 "hello!" assert=
-    [ ' %defer-test-1 ' %defer-test-1 defer! ] assert-must-fail
-;
-
-defer-test-1
-
 test: printable-char?-test-1
     // printable-char? returns its argument if it is a printable char
     { 'a' } [ 'a' printable-char? ] unit-test
@@ -4266,5 +4247,54 @@ test: pad-left-test-1
     { "  42" } [ '\s' 4 "42" pad-left ] unit-test ;
 
 pad-left-test-1
+
+defer message
+
+: hello "hello!" ;
+
+: goodbye "goodbye!" ;
+
+test: defer-test-1
+    [ message ] assert-must-fail
+
+    ' hello ' message defer!
+    message hello assert-eq
+    ' goodbye ' message defer!
+    message goodbye assert-eq
+    ' hello ' message defer!
+    message hello assert-eq
+
+    ' hello is message
+    message hello assert-eq
+    ' goodbye is message
+    message goodbye assert-eq
+    ' hello is message
+    message hello assert=
+
+    [ ' message ' message defer! ] assert-must-fail
+    [ ' message is message ] assert-must-fail ;
+
+defer-test-1
+
+defer message2
+
+[ message2 ] assert-must-fail
+
+' hello ' message2 defer!
+message2 hello assert-eq
+' goodbye ' message2 defer!
+message2 goodbye assert-eq
+' hello ' message2 defer!
+message2 hello assert-eq
+
+' hello is message2
+message2 hello assert-eq
+' goodbye is message2
+message2 goodbye assert-eq
+' hello is message2
+message2 hello assert-eq
+
+[ ' message2 ' message2 defer! ] assert-must-fail
+[ ' message2 is message2 ] assert-must-fail
 
 ?nl "Reached end of test.feline" write-string
