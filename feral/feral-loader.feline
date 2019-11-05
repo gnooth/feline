@@ -37,6 +37,7 @@ in: user
     "list-buffers"
     "list-symbols"
     "logging"
+    "mini"
     "modes"
     "search"
     "search-mode"
