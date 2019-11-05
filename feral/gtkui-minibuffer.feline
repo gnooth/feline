@@ -134,8 +134,12 @@ public
 : message                               // string ->
     minibuffer-set-text ;
 
+' message is feral-core:message
+
 : clear-message
     "" minibuffer-set-text ;
+
+' clear-message is feral-core:clear-message
 
 : minibuffer-accept-string // prompt -> string/f
     verify-string prompt!
