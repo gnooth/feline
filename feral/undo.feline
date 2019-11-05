@@ -398,10 +398,7 @@ symbol: +delete-region+
         { +delete-region+ [ undo-delete-region ] }
         [ error "unsupported" ]
     } case
-    maybe-reframe
-;
-
-use: mini
+    maybe-reframe ;
 
 : undo
     undo-stack empty? [
@@ -413,5 +410,4 @@ use: mini
             undo1
         ] if
         "Undo!" message
-    ] if
-;
+    ] if ;
