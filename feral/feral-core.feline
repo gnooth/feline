@@ -16,6 +16,9 @@
 using: feline accessors feral-config ;
 in: feral-core
 
+defer message
+defer clear-message
+
 : shell-command-to-string ( command )   // command -> string/f
     nil !> result
     directories:get-temporary-filename :> tempfile
