@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline accessors mini ;
+using: feral-core feline accessors ;
 in: editor
 
 : check-read-only // void -> ?
@@ -282,6 +282,9 @@ private: insert-char-internal // char -> void
         last-command ' insert-char eq? [ add-undo-line-edit ] unless
         insert-char-internal
     ] if ;
+
+// REVIEW
+feral-config:winui? #if ' insert-char is mini:minibuffer-insert-char #endif
 
 use: kill-ring
 
