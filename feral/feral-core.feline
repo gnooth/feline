@@ -363,6 +363,14 @@ global current-buffer
         t repaint?!
     ] when ;
 
+: save-current-buffer                   // quotation -> void
+// Save the value of current-buffer. Call the quotation. Restore
+// the saved value of current-buffer when the quotation returns.
+    current-buffer                      // -> quotation current-buffer
+    swap                                // -> current-buffer quotation
+    dip
+    current-buffer! ;
+
 : buffer-modified?                      // buffer -> ?
     dup mod-count>> swap mod-count-last-save>> neq? ;
 
