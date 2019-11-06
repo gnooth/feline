@@ -31,10 +31,10 @@ global current-files
     verify-string
     :> filename
 
-    f !> i
-    f !> s
-    f !> found
-    f !> line
+    local i
+    local s
+    local found
+    local line
     filename file-lines [
         // -> string index
         i! s!
@@ -51,8 +51,7 @@ global current-files
             i 1+ :source-line-number line line-set-property
             line find-in-files-output-buffer buffer-append-line
         ] when
-    ] each-index
-;
+    ] each-index ;
 
 using: find-in-files search feral-core history mini feline accessors ;
 in: editor
@@ -116,7 +115,7 @@ in: editor
         ] each
     ] when*
 
-    buf first-line>> null? [ "Not found" message ] return-if
+    buf first-line>> nil? [ "Not found" message ] ?return
 
     buf first-line>> 0 make-position buf dot<<
     buf first-line>> buf top-line<<
@@ -138,7 +137,7 @@ in: find-in-files
 
 private
 
-: find-in-files-open-file
+: find-in-files-goto-source
     :source-file dot-line line-get-property :> source-file
     :source-line-number dot-line line-get-property :> line-number
 
@@ -154,13 +153,11 @@ private
 : initialize-local-map
     128 <hashtable> :> m
     ' editor:kill-buffer feral-key:escape m set-at
-    ' find-in-files-open-file feral-key:enter m set-at
+    ' find-in-files-goto-source feral-key:enter m set-at
     m find-in-files-local-map! ;
 
 initialize-local-map
 
 feral-config:winui? #if
-
-' find-in-files-open-file feral-key:double-mouse-1 find-in-files-local-map set-at
-
+' find-in-files-goto-source feral-key:double-mouse-1 find-in-files-local-map set-at
 #endif
