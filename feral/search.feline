@@ -277,16 +277,19 @@ use: mini
 
     local buf
 
-    first-line !> line
-    [ line ] [
-        current-search line find-in-line [
+    local sourcelinenumber
+    local outputline
+    first-line !> sourceline
+    [ sourceline ] [
+        current-search sourceline find-in-line [
             buf [ make-buffer buf! ] unless
-            line number>> 1+ line text>> "%d:%s" format
-            make-line/1
-            buf top-line>> [ dup buf top-line<< ] unless
-            buf buffer-append-line
+            sourceline number>> 1+ sourcelinenumber!
+            sourcelinenumber sourceline text>> "%d:%s" format make-line/1 outputline!
+            sourcelinenumber :source-line-number outputline line-set-property
+            buf top-line>> [ outputline buf top-line<< ] unless
+            outputline buf buffer-append-line
         ] when
-        line next>> line!
+        sourceline next>> sourceline!
     ] while
 
     buf nil? [ not-found ] ?return
