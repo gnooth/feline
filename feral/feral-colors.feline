@@ -46,7 +46,8 @@ in: feral-colors
 255   0   0 make-colorref constant color-preprocessor
 210 105  30 make-colorref constant color-keyword
 
- 96  96  96 make-colorref constant color-line-number
+128 128   0 make-colorref constant color-linenumber
+ 77 166 255 make-colorref constant color-filename
 
   0 153   0 make-colorref constant color-insertion
 153   0   0 make-colorref constant color-deletion
@@ -66,7 +67,8 @@ in: feral-colors
 255   0   0 rgb-foreground-prefix constant color-preprocessor
 210 105  30 rgb-foreground-prefix constant color-keyword
 
- 96  96  96 rgb-foreground-prefix constant color-line-number
+128 128   0 rgb-foreground-prefix constant color-linenumber
+ 77 166 255 rgb-foreground-prefix constant color-filename
 
   0 153   0 rgb-foreground-prefix constant color-insertion
 153   0   0 rgb-foreground-prefix constant color-deletion

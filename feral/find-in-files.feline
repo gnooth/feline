@@ -16,8 +16,6 @@
 using: editor feral-core feline accessors mini ;
 in: find-in-files
 
-public
-
 global find-in-files-local-map
 
 global find-in-files-output-buffer
@@ -27,34 +25,35 @@ global find-in-files-pattern
 global current-files
 
 : find-in-file
-    1 ?enough
-    verify-string
-    :> filename
+    1 ?enough verify-string :> filename
 
-    local i
+    local linenumber
     local s
     local found
     local line
     filename file-lines [
         // -> string index
-        i! s!
+        1+ linenumber! // displayed line numbers are 1-based
+        s!
         find-in-files-pattern s substring-start [
             found [
+                // filename line
                 filename make-line/1 line!
                 filename :source-file line line-set-property
-                i 1+ :source-line-number line line-set-property
                 line find-in-files-output-buffer buffer-append-line
                 t found!
             ] unless
-            i 1+ number>string ":" + s + make-line/1 line!
+            linenumber number>string ":" + s + make-line/1 line!
             filename :source-file line line-set-property
-            i 1+ :source-line-number line line-set-property
+            linenumber :source-line-number line line-set-property
             line find-in-files-output-buffer buffer-append-line
         ] when
     ] each-index ;
 
 using: find-in-files search feral-core history mini feline accessors ;
 in: editor
+
+public
 
 : find-in-files
     local default-pattern
@@ -120,17 +119,17 @@ in: editor
     buf first-line>> 0 make-position buf dot<<
     buf first-line>> buf top-line<<
     t buf read-only<<
-    find-in-files-pattern current-files "find-in-files %S %s" format buf name<<
+    find-in-files-pattern current-files "%S %s" format buf name<<
     directory buf directory<<
 
-    find-in-files-local-map buf local-map<<
-
     current-buffer buf parent<<
+    current-search :search buf buffer-set-property
+    search-mode:get-instance buf mode<<
+    find-in-files-local-map buf local-map<<
     buf set-current-buffer
 
     renumber
-    t repaint?!
-;
+    t repaint?! ;
 
 using: editor feral-core feline accessors ;
 in: find-in-files
@@ -138,15 +137,15 @@ in: find-in-files
 private
 
 : find-in-files-goto-source
-    :source-file dot-line line-get-property :> source-file
-    :source-line-number dot-line line-get-property :> line-number
+    :source-file dot-line line-get-property :> sourcefile
+    :source-line-number dot-line line-get-property 1 or :> linenumber
 
-    source-file find-buffer-from-file-name [
+    sourcefile find-buffer-from-file-name [
         set-current-buffer
-        line-number gotoline-internal
+        linenumber gotoline-internal
         // gotoline-internal calls maybe-reframe
     ] [
-        source-file line-number create-buffer/2
+        sourcefile linenumber create-buffer/2
         reframe
     ] if* ;
 

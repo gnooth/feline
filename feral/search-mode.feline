@@ -27,22 +27,29 @@ global instance
 
     search pattern>> :> pattern
 
-    line text>> detab :> s
+    line text>> detab :> text
 
     16 <vector> :> v
 
-    pattern length :> len
-    pattern s substring-start !> index
-    index [
-        0 index s substring 0 color-text make-segment/3 v push
-        index dup len + s substring index color-name make-segment/3 v push
-        index len + index!
-        index s length < [
-            index s length s substring index color-text make-segment/3 v push
-        ] when
-    ] [
-        s 0 color-text make-segment/3 v push
-    ] if
+    [ :source-file line line-get-property ]
+    [ :source-line-number line line-get-property nil? ] both?
+    [ text 0 color-filename make-segment/3 v push v ] ?return
+
+    pattern length :> patternlength
+    0 !> i
+
+    ':' text string-index [
+        1+ i! // include ':' in segment
+        0 i text substring 0 color-linenumber make-segment/3 v push
+    ] when*
+
+    pattern text substring-start !> j
+    i j text substring i color-text make-segment/3 v push
+    j dup patternlength + text substring j color-name make-segment/3 v push
+    j patternlength + j!
+    j text length < [
+        j text length text substring j color-text make-segment/3 v push
+    ] when
 
     v ;
 
@@ -63,9 +70,7 @@ global search-mode-local-map
 initialize-local-map
 
 feral-config:winui? #if
-
 ' search-mode-goto-source feral-key:double-mouse-1 search-mode-local-map set-at
-
 #endif
 
 : search-mode-initialize-buffer         // buffer -> void

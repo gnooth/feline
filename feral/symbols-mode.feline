@@ -25,7 +25,7 @@ global instance
     16 <vector> :> v
 
     '\s' s index :> end
-    0 end s substring 0 color-line-number make-segment/3 v push
+    0 end s substring 0 color-linenumber make-segment/3 v push
 
     f !> comment-start
 
