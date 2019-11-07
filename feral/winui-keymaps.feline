@@ -108,53 +108,6 @@ feral-config:winui? assert
 
     m global-map! ;
 
-: initialize-minibuffer-keymap
-    mini:minibuffer-keymap ?exit
-
-    128 <hashtable> :> m
-
-    ' mini:minibuffer-accept            feral-key:enter             m set-at
-    ' mini:minibuffer-cancel            feral-key:escape            m set-at
-    ' mini:minibuffer-previous-history  feral-key:up                m set-at
-    ' mini:minibuffer-next-history      feral-key:down              m set-at
-    ' mini:minibuffer-complete          feral-key:tab               m set-at
-
-    // FIXME don't allow editing of prompt string
-    ' backspace                         feral-key:backspace         m set-at
-    ' do-delete                         feral-key:delete            m set-at
-    ' move-to-bol                       feral-key:home              m set-at
-    ' select-to-bol                     feral-key:shift-home        m set-at
-    ' move-to-eol                       feral-key:end               m set-at
-    ' select-to-eol                     feral-key:shift-end         m set-at
-    ' move-left                         feral-key:left              m set-at
-    ' select-left                       feral-key:shift-left        m set-at
-    ' move-right                        feral-key:right             m set-at
-    ' select-right                      feral-key:shift-right       m set-at
-
-    ' word-left                         feral-key:ctrl-left         m set-at
-    ' select-word-left                  feral-key:ctrl-shift-left   m set-at
-    ' word-right                        feral-key:ctrl-right        m set-at
-    ' select-word-right                 feral-key:ctrl-shift-right  m set-at
-    ' delete-word-right                 feral-key:ctrl-delete       m set-at
-    ' delete-word-left                  feral-key:ctrl-backspace    m set-at
-
-    ' beginning-of-buffer               feral-key:ctrl-home         m set-at
-    ' end-of-buffer                     feral-key:ctrl-end          m set-at
-
-    // FIXME remove
-    ' do-quit                           feral-key:ctrl-q            m set-at
-
-    ' kill-line                         feral-key:ctrl-k            m set-at
-    ' undo                              feral-key:ctrl-z            m set-at
-    ' redo                              feral-key:ctrl-y            m set-at
-
-    ' copy                              feral-key:ctrl-c            m set-at
-
-    // FIXME don't allow multiline pastes
-    ' paste                             feral-key:ctrl-v            m set-at
-
-    m mini:minibuffer-keymap! ;
-
 public
 
 : initialize-keymaps

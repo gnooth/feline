@@ -23,6 +23,8 @@ global global-map
 : lookup-key                            // key -> symbol/nil
     global-map at ;
 
+winui? [ "minibuffer-keymap.feline" load-feral-source-file ] when
+
 {
     { [ winui?  ] [ "winui-keymaps.feline"  ] }
     { [ gtkui?  ] [ "gtkui-keymaps.feline"  ] }
