@@ -47,13 +47,9 @@ global instance
     v ;
 
 : search-mode-goto-source
-    dot-line-text :> s
-    ':' s index :> end
-    end nil? ?exit
-
-    0 end s substring string>number :> line-number
+    :source-line-number dot-line line-get-property :> linenumber
     current-buffer parent>> set-current-buffer
-    line-number editor:gotoline-internal
+    linenumber editor:gotoline-internal
     t repaint?! ;
 
 global search-mode-local-map
