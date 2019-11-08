@@ -180,6 +180,13 @@ code gtkui_textview_invalidate, 'gtkui-textview-invalidate'
         next
 endcode
 
+; ### gtkui-minibuffer-invalidate
+code gtkui_minibuffer_invalidate, 'gtkui-minibuffer-invalidate' ; void -> void
+        extern  gtkui__minibuffer_invalidate
+        xcall   gtkui__minibuffer_invalidate
+        next
+endcode
+
 ; ### gtkui_textview_paint
 subroutine gtkui_textview_paint         ; void -> void
 ; 0-arg callback

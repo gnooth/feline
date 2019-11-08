@@ -213,6 +213,11 @@ void gtkui__textview_invalidate (void)
   gtk_widget_queue_draw (modeline);
 }
 
+void gtkui__minibuffer_invalidate (void)
+{
+  gtk_widget_queue_draw (minibuffer);
+}
+
 static gboolean gtkui__textview_size_allocate (GtkWidget *widget,
                                                GdkRectangle *allocation,
                                                gpointer data)
