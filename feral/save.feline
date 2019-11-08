@@ -45,7 +45,7 @@ in: editor
         ] if
     ] while
 
-    found null? ?exit // nothing to do
+    found nil? ?exit // nothing to do
 
     line found assert-eq
 
@@ -69,27 +69,27 @@ in: editor
 
     modified
 
-    buf current-buffer [ t repaint! ] when ;
+    buf current-buffer eq? [ t repaint?! ] when ;
 
 : do-save
-    current-buffer filename>> :> filename!
+    current-buffer filename>> !> filename
 
     filename [
         "File: " minibuffer-accept-string filename!
         filename [
             filename file-exists? [
                 "Overwrite existing file? (yes or no) " minibuffer-accept-string
-                "yes" = [ f filename! ] unless
+                "yes" = [ nil filename! ] unless
             ] when
         ] when
     ] unless
 
-    filename null? ?exit
+    filename nil? ?exit
 
     // save the current buffer to disk
     "Saving..." message
 
-    f :> saved?!
+    nil !> saved?
 
     make-backup
 
@@ -100,7 +100,7 @@ in: editor
     nano-count :> start-ns
 
     // all lines but the last are followed by eol
-    first-line :> line!
+    first-line !> line
     [ line ] [
         line text>> sb sbuf-append-string
         line next>> [
@@ -109,7 +109,7 @@ in: editor
         line next>> line!
     ] while
 
-    sb sbuf>string filename
+    sb sbuf>string filename // -> string filename
 
     // set-file-contents might throw
     [ set-file-contents t saved?! ] [ 2nip message ] recover
@@ -122,5 +122,4 @@ in: editor
         current-buffer filename>> [
             filename canonical-path current-buffer filename<<
         ] unless
-    ] when
-;
+    ] when ;
