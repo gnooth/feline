@@ -284,7 +284,9 @@ private: insert-char-internal // char -> void
     ] if ;
 
 // REVIEW
-feral-config:winui? #if ' insert-char is mini:minibuffer-insert-char #endif
+feral-config:winui? feral-config:gtkui? or #if
+' insert-char is mini:minibuffer-insert-char
+#endif
 
 use: kill-ring
 

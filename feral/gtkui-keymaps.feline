@@ -149,4 +149,5 @@ using: editor feline search ;
 public
 
 : initialize-keymaps
-    initialize-global-map ;
+    initialize-global-map
+    initialize-minibuffer-keymap ;

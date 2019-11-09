@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: history feline accessors ;
+using: history feral-core feline accessors ;
 in: mini
 
 feral-config:gtkui? assert
@@ -26,141 +26,145 @@ global minibuffer-contents
 
 global prompt
 
-tuple: minibuffer
-    text ;
+global minibuffer-keymap
 
 : create-minibuffer
-    minibuffer make-instance minibuf!
-    "" minibuf text<<
-;
+    minibuf nil? assert
+    make-buffer minibuf!
+    "" 0 make-line/2
+    [ minibuf buffer-append-line ]
+    [ 0 make-position minibuf dot<< ]
+    bi
+    minibuf dot>> line>> minibuf top-line<< ;
 
 create-minibuffer
 
+: minibuffer-update-caret-pos
+    minibuf dot>> offset>>              // -> col
+    0                                   // -> column row
+    gtkui-minibuffer-set-caret-pos ;
+
+: minibuffer-get-text                   // void -> string
+    minibuf dot>> line>> text>> "" or ;
+
 : repaint-minibuffer
-    minibuf text>> :> s!                // string or sbuf
-    s string? [ s sbuf>string s! ] unless
+    minibuffer-get-text !> s
     0 gtkui-char-height s gtkui-minibuffer-text-out ;
 
-public: minibuffer-set-text             // string-or-sbuf -> void
-    minibuf text>> over sequence= [ drop ] [ minibuf text<< ] if ;
+public: minibuffer-set-text             // string -> void
+    1 ?enough verify-string
+    minibuffer-get-text over sequence=
+    [ drop ] [ minibuf dot>> line>> text<< ] if ;
 
-: do-enter
-    minibuf text>> :> sb
-    sb sbuf? assert-true
-
-    sb sbuf>string minibuffer-contents!
+: minibuffer-accept
+    minibuffer-get-text minibuffer-contents!
 
     current-history [
         prompt length minibuffer-contents tail update-history
-        f current-history!
+        nil current-history!
     ] when
 
     "" minibuffer-set-text
-    f set-completion-provider
+    nil set-completion-provider
     gtkui-minibuffer-exit ;
 
-: do-escape
-    f minibuffer-contents!
+: minibuffer-cancel
+    nil minibuffer-contents!
     "" minibuffer-set-text
-    f current-history!
-    f set-completion-provider
+    nil current-history!
+    nil set-completion-provider
     gtkui-minibuffer-exit ;
 
-: do-bs
-    minibuf text>> :> sb
-    sb sbuf? assert-true
+: minibuffer-set-text-from-history ( s ) // string/nil -> void
+    s nil? ?exit
+    prompt s +
+    [ minibuffer-set-text ]
+    [ string-length dup minibuf dot>> offset<< 0 gtkui-minibuffer-set-caret-pos ]
+    bi ;
 
-    sb length prompt length > [
-        sb length 1 - sb sbuf-shorten
-        sb length 0
-        gtkui-minibuffer-set-caret-pos
-    ] when ;
+: minibuffer-previous-history
+    history-previous minibuffer-set-text-from-history ;
 
-: do-normal-char ( c )
-    minibuf text>> :> sb
-    sb sbuf? assert-true
+: minibuffer-next-history
+    history-next minibuffer-set-text-from-history ;
 
-    c sb sbuf-push
-    sb length 0 gtkui-minibuffer-set-caret-pos ;
-
-: minibuffer-set-text-from-history ( s ) // string/f -> void
-    s null? ?exit
-    prompt s + string>sbuf :> sb
-    sb minibuffer-set-text
-    sb length 0 gtkui-minibuffer-set-caret-pos ;
-
-: do-previous history-previous minibuffer-set-text-from-history ;
-
-: do-next history-next minibuffer-set-text-from-history ;
-
-: minibuffer-set-completion-text // string/f -> void
+: minibuffer-set-completion-text        // string/nil -> void
     minibuffer-set-text-from-history ;
 
-: do-tab
-    completion-provider null? ?exit
+: minibuffer-complete
+    completion-provider nil? ?exit
 
-    minibuf text>> :> sb
-    sb sbuf? assert-true
-    prompt length sb sbuf>string tail
+    minibuffer-get-text :> s
+    prompt length s tail
     completion-provider call [
         minibuffer-set-completion-text
     ] when* ;
 
-global minibuffer-keymap
-
-: initialize-minibuffer-keymap
-    128 <hashtable> :> m
-    ' do-enter      feral-key:enter     m set-at
-    ' do-escape     feral-key:escape    m set-at
-    ' do-bs         feral-key:backspace m set-at
-    ' do-previous   feral-key:up        m set-at
-    ' do-next       feral-key:down      m set-at
-    ' do-tab        feral-key:tab       m set-at
-    m minibuffer-keymap! ;
-
-initialize-minibuffer-keymap
-
-: lookup-key                            // key -> symbol/f
+: lookup-key                            // key -> symbol/nil
+    minibuffer-keymap nil? assert-false
     minibuffer-keymap at ;
+
+defer minibuffer-insert-char
 
 : gtkui-minibuffer-keydown              // key -> void
     1 ?enough :> key
-    key lookup-key [ call-symbol ] [
-        key feral-key:key-to-printable-char [ do-normal-char ] when*
-    ] if* ;
+    [
+        minibuf current-buffer!
+        key lookup-key
+        [
+            call-symbol
+            minibuffer-update-caret-pos
+            gtkui-minibuffer-invalidate
+        ] [
+            key feral-key:key-to-printable-char [
+                nil current-command!
+                minibuffer-insert-char
+                minibuffer-update-caret-pos
+                gtkui-minibuffer-invalidate
+            ] when*
+        ] if*
+    ] save-current-buffer ;
 
 public
 
-: message                               // string ->
-    minibuffer-set-text ;
+: message                               // string -> void
+    current-buffer minibuf eq? [ drop ] [ minibuffer-set-text ] if ;
 
 ' message is feral-core:message
 
 : clear-message
-    "" minibuffer-set-text ;
+    current-buffer minibuf eq? [ "" minibuffer-set-text ] unless ;
 
 ' clear-message is feral-core:clear-message
 
-: minibuffer-accept-string // prompt -> string/f
+: minibuffer-accept-string              // prompt -> string/nil
     verify-string prompt!
     nil minibuffer-contents!
 
-    prompt string>sbuf minibuffer-set-text
-    prompt length 0 gtkui-minibuffer-set-caret-pos
+    prompt
+    [ minibuffer-set-text ]
+    [ string-length minibuf dot>> offset<< ]
+    bi
 
+    // FIXME reset-undo reset-redo
+    minibuffer-update-caret-pos
     gtkui-minibuffer-main
+
     minibuffer-contents [ prompt length minibuffer-contents tail ] [ nil ] if ;
 
-: minibuffer-accept-string/2 // prompt default -> string/nil
+: minibuffer-accept-string/2            // prompt default -> string/nil
     2 ?enough
     "" or verify-string :> default
     verify-string prompt!
     nil minibuffer-contents!
 
     prompt default +
-    [ string>sbuf minibuffer-set-text ]
-    [ length 0 gtkui-minibuffer-set-caret-pos ]
+    [ minibuffer-set-text ]
+    [ string-length minibuf dot>> offset<< ]
     bi
 
+    // FIXME reset-undo reset-redo
+    minibuffer-update-caret-pos
     gtkui-minibuffer-main
+
     minibuffer-contents [ prompt length minibuffer-contents tail ] [ nil ] if ;
