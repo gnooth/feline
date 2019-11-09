@@ -43,9 +43,7 @@
 
 %macro  _tag_fixnum 0
         shl     rbx, FIXNUM_TAG_BITS
-%if FIXNUM_TAG <> 0
         or      rbx, FIXNUM_TAG
-%endif
 %endmacro
 
 %define tagged_fixnum(n)        ((n << FIXNUM_TAG_BITS) + FIXNUM_TAG)
