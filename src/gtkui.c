@@ -519,9 +519,6 @@ gtkui__minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer data)
 {
   cr_minibuffer = cr;
 
-  GtkAllocation allocation;
-  gtk_widget_get_allocation (widget, &allocation);
-
   cairo_select_font_face (cr, "monospace",
                           CAIRO_FONT_SLANT_NORMAL,
                           CAIRO_FONT_WEIGHT_NORMAL);
@@ -552,7 +549,6 @@ void gtkui__textview_set_caret_pos (int column, int row)
 
 void gtkui__minibuffer_main (void)
 {
-  gtk_widget_queue_draw (minibuffer);
   gtk_widget_grab_focus (minibuffer);
 
   // nested call to gtk_main
