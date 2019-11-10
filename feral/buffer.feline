@@ -96,7 +96,9 @@ in: editor
     dir [
         filename file-name-directory [
             set-current-directory [
-                "git symbolic-ref -q --short HEAD" shell-command-to-string [
+                "git symbolic-ref -q --short HEAD"
+                win64? [ " 2> nul" ] [ " 2>/dev/null" ] if +
+                shell-command-to-string [
                     dup string-?last '\n' eq? [
                         1 swap head*
                     ] when
