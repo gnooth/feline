@@ -156,10 +156,10 @@ feral-config:gtkui? #if
 : gtkui-textview-keydown ( key )        // key -> void
 
     current-command last-command!
-    f current-command!
+    nil current-command!
 
     mini:clear-message
-    f !> command
+    local command
 
     // try local map first
     current-buffer local-map>> :> local-map
@@ -167,6 +167,14 @@ feral-config:gtkui? #if
     local-map [
         key local-map at command!
     ] when
+
+    // local map might bind a printable character
+    // e.g. 'u' and '^' in directory mode
+    command [
+        key feral-key:key-to-printable-char [
+            local-map at command!
+        ] when*
+    ] unless
 
     // global map
     command [
