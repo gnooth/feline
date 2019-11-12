@@ -70,7 +70,7 @@ global instance
     2 m indent-size<<
     "// " m comment-start<<
     ' c-mode-initialize-buffer m initialize-buffer-function<<
-    ' c-mode-identifier-char? m identifier-char?-function<<
+    ' c-mode-identifier-char? m identifier-char-function<<
     ' c-format-line m formatter<<
     m ".c" modes set-at
     m ".h" modes set-at

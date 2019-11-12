@@ -74,7 +74,7 @@ initialize-local-map
     "; " m comment-start<<
     ' asm-mode-format-line m formatter<<
     ' asm-mode-initialize-buffer m initialize-buffer-function<<
-    ' asm-mode-identifier-char? m identifier-char?-function<<
+    ' asm-mode-identifier-char? m identifier-char-function<<
     m ".asm" modes set-at
     m instance! ;
 

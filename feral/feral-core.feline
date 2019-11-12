@@ -780,7 +780,7 @@ tuple: mode
     indent-size
     comment-start
     initialize-buffer-function
-    identifier-char?-function
+    identifier-char-function
     formatter
     format-line-function
 ;
@@ -827,7 +827,7 @@ generic identifier-char?                // char mode -> ?
 
 method: mode identifier-char?           // char mode -> ?
     swap :> x
-    identifier-char?-function>>
+    identifier-char-function>>
     [ x swap call ] [
         [ x alphanumeric? ] [ x '_' eq? ] either?
     ] if* ;
