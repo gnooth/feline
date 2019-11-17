@@ -1,0 +1,103 @@
+// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feral-core modes feline accessors segments feral-colors ;
+in: js-mode
+
+private
+
+global instance
+
+: get-instance                          // void -> mode
+    instance ;
+
+: js-mode-identifier-char? ( x )        // x -> ?
+// REVIEW first char must be letter, '_' or '$'
+    [ x alphanumeric? ] [ x '_' eq? x '$' eq? or ] either? ;
+
+: js-mode-identifier-at-dot             // void -> start/f string/f
+
+    [ mark ] [ mark-line dot-line eq? ] both? [
+        mark dot make-region/2 begin-offset
+    ] [
+        dot-offset dot-line-length 1- min 0 max
+    ] if :> offset
+
+    offset dot-line-text [ js-mode-identifier-char? not ] find-last-from drop :> start!
+
+    // advance to first identifier char
+    start [ start 1+ start! ] [ 0 start! ] if
+
+    start dot-line-text [ js-mode-identifier-char? not ] find-from drop :> end!
+
+    end [ dot-line-length end! ] unless
+
+    start
+    start end dot-line-text string-substring
+;
+
+: js-mode-format-line ( s )             // string -> array-of-segments
+    "//" s substring-start :> comment-start
+
+    comment-start [
+        comment-start s string-head 0 color-text make-segment/3
+        comment-start s string-tail comment-start color-comment make-segment/3
+        2array
+    ] [
+        s 0 color-text make-segment/3
+        1array
+    ] if ;
+
+: line-is-definition? ( line )
+    line text>> string-trim-head :> s
+    '\s' s string-index :> end
+    end nil? [ nil ] ?return
+    0 end s string-substring {
+        "function"
+    } member? ;
+
+: js-mode-list-symbols
+    ' js-mode:line-is-definition? list-symbols:list-symbols ;
+
+global js-mode-local-map
+
+feral-config:winui? feral-config:gtkui? or #if
+
+: initialize-local-map
+    128 <hashtable> :> m
+    ' js-mode-list-symbols feral-key:ctrl-shift-o m set-at
+    m js-mode-local-map! ;
+
+initialize-local-map
+
+#endif
+
+: js-mode-initialize-buffer            // buffer -> void
+    1 ?enough :> buf
+    js-mode-local-map buf local-map<<
+    instance indent-size>> buf indent-size<< ;
+
+: initialize-js-mode
+    mode make-instance :> m
+    "JavaScript" m name<<
+    8 m indent-size<<
+    "// " m comment-start<<
+    ' js-mode-format-line m formatter<<
+    ' js-mode-initialize-buffer m initialize-buffer-function<<
+    ' js-mode-identifier-char? m identifier-char-function<<
+    m ".js" modes set-at
+    m instance! ;
+
+initialize-js-mode
