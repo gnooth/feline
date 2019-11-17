@@ -16,14 +16,14 @@
 using: feline ;
 in: feline
 
-: ?nth                                  // n seq -> element/f
+: ?nth                                  // n seq -> element/nil
     ?bounds [ nth-unsafe ] when* ;
 
-: ?first                                // seq -> element/f
+: ?first                                // seq -> element/nil
     0 swap ?nth ;
 
-: empty?                                // seq/f -> ?
-    [ length zero? ] [ t ] if* ;
+: empty?                                // seq/nil -> ?
+    [ length 0? ] [ t ] if* ;
 
 : suffix!                               // seq element -> seq
     over push ;
