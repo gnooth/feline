@@ -16,6 +16,16 @@
 using: feral-core feline accessors segments feral-colors ;
 in: editor
 
+global changed-lines
+
+16 <vector> changed-lines!
+
+: line-changed // line -> void
+    changed-lines vector-push ;
+
+: clear-changed-lines
+    changed-lines vector-delete-all ;
+
 : string-format-line ( s ) // string -> segments
     current-buffer mode>> :> mode
     mode [
