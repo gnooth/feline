@@ -152,6 +152,29 @@ feral-config:winui? assert
     ] while
 
     nil repaint?!
+    clear-changed-lines
+
+    winui-show-caret ;
+
+: repaint-changed-lines
+    winui-hide-caret
+
+    top-line !> line
+    0 !> row
+
+    [ line row textview-rows <= and ] [
+        line changed-lines member-eq? [
+            line row repaint-line
+        ] when
+        row 1+ row! line next>> line!
+    ] while
+
+    [ row textview-rows <= ] [
+        0 row winui-textview-clear-eol
+        row 1+ row!
+    ] while
+
+    clear-changed-lines
 
     winui-show-caret ;
 
@@ -161,9 +184,10 @@ feral-config:winui? assert
         repaint
     ] [
         dot-line-changed? [
-            dot-line dot-row repaint-line
+            dot-line line-changed
             nil dot-line-changed?!
         ] when
+        repaint-changed-lines
     ] if
     update-mode-line
     update-caret-pos
