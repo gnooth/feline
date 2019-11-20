@@ -577,8 +577,7 @@ code get_current_directory, 'get-current-directory' ; -- string
 endcode
 
 ; ### set-current-directory
-code set_current_directory, 'set-current-directory'     ; string -- ?
-        _ verify_string
+code set_current_directory, 'set-current-directory'     ; string -> ?
         _ string_raw_data_address
         mov     arg0_register, rbx
         xcall   os_chdir
