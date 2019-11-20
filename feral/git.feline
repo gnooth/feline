@@ -20,10 +20,10 @@ in: editor
     current-buffer filename>> :> sourcefile
     sourcefile nil? ?exit
     get-current-directory :> olddir
-    sourcefile file-name-directory set-current-directory
+    sourcefile file-name-directory set-current-directory drop // REVIEW drop
     "git diff " sourcefile + :> command
     command shell-command-to-string :> output
-    olddir set-current-directory
+    olddir set-current-directory drop // REVIEW drop
 
     // shell-command-to-string might return nil
     output nil? ?exit
