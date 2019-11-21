@@ -200,6 +200,7 @@ feline-mode-comment-start length constant comment-start-length
     "if*"
     "keep"
     "loop"
+    "map"
     "return-if"
     "time"
     "times"
