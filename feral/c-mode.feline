@@ -74,6 +74,11 @@ global instance
     ' c-format-line m formatter<<
     m ".c" modes set-at
     m ".h" modes set-at
+
+    // FIXME when (if?) we have a C++ mode
+    m ".cpp" modes set-at
+    m ".cc" modes set-at
+
     m instance! ;
 
 initialize-c-mode
