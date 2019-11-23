@@ -70,8 +70,8 @@ use: mini
         bg-default write-string-escaped
     ] ?return
 
-    nil :> seg1!
-    nil :> seg2!
+    local seg1
+    local seg2
 
     region-begin segment in-segment? region-end segment in-segment? and [
         segment region-begin segment start>> - split-segment seg2! seg1!
@@ -126,11 +126,11 @@ use: mini
     ] when ;
 
 : repaint-line ( line )                 // line -> void
-    line line-selected? [ line repaint-selected-line ] return-if
+    line line-selected? [ line repaint-selected-line ] ?return
 
     line line-contains-selection? [
         line repaint-line-containing-selection
-    ] return-if
+    ] ?return
 
     line format-line :> segments
     segments repaint-segments
@@ -151,8 +151,28 @@ use: mini
         y 1+ y!
     ] while
 
-    nil repaint?!
-;
+    clear-changed-lines
+
+    nil repaint?! ;
+
+: repaint-changed-lines
+    top-line !> line
+    0 !> row
+
+    [ line row textview-rows < and ] [
+        line changed-lines member-eq? [
+            0 row at-xy
+            line repaint-line
+        ] when
+        row 1+ row! line next>> line!
+    ] while
+
+    [ row textview-rows < ] [
+        0 row at-xy terminal-columns spaces
+        row 1+ row!
+    ] while
+
+    clear-changed-lines ;
 
 : update-display
     hide-cursor
@@ -160,13 +180,11 @@ use: mini
         repaint
     ] [
         dot-line-changed? [
-            0 dot-row at-xy
-            dot-line repaint-line
+            dot-line line-changed
             nil dot-line-changed?!
         ] when
+        repaint-changed-lines
     ] if
     update-mode-line
     update-caret-pos
-    show-cursor
-;
-
+    show-cursor ;
