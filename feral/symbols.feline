@@ -21,8 +21,8 @@ global sourcefile
 global symbols-hashtable
 
 : process-code-line ( s lineno ) // string fixnum -> void
-    f !> begin
-    f !> end
+    local begin
+    local end
 
     "code " length begin!
     ',' s index verify-fixnum end!
@@ -41,8 +41,8 @@ global symbols-hashtable
     symbols-hashtable set-at ;
 
 : process-subroutine-line ( s lineno ) // string fixnum -> void
-    f !> begin
-    f !> end
+    local begin
+    local end
 
     "subroutine " length begin!
     begin s string-skip-whitespace begin!
@@ -53,8 +53,8 @@ global symbols-hashtable
     symbols-hashtable set-at ;
 
 : process-macro-line ( s lineno ) // string fixnum -> void
-    f !> begin
-    f !> end
+    local begin
+    local end
 
     "%macro " length begin!
     begin s string-skip-whitespace begin!
@@ -66,9 +66,9 @@ global symbols-hashtable
 
 : process-line // string fixnum -> void
     2 ?enough :> lineno :> s
-    "code " s head? [ s lineno process-code-line ] return-if
-    "subroutine " s head? [ s lineno process-subroutine-line ] return-if
-    "%macro " s head? [ s lineno process-macro-line ] return-if ;
+    "code " s head? [ s lineno process-code-line ] ?return
+    "subroutine " s head? [ s lineno process-subroutine-line ] ?return
+    "%macro " s head? [ s lineno process-macro-line ] ?return ;
 
 : process-asm-file
     sourcefile file-lines [ process-line ] each-index ;
@@ -157,7 +157,7 @@ global symbols-hashtable
          sourcefile regular-file? [ process-asm-file ] when
     ] each ;
 
-: find-tag // string -> 2array/f
+: find-tag // string -> 2array/nil
     1 ?enough :> tag
     symbols-hashtable [ generate-hashtable ] unless
     tag symbols-hashtable at ;
