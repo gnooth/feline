@@ -15,43 +15,70 @@
 
 file __FILE__
 
-; ### reload-file
-feline_global reload_file, 'reload-file'
+asm_global reload_file_, nil_value
 
-; ### maybe-set-reload-file
-code maybe_set_reload_file, 'maybe-set-reload-file'     ; path --
-        _ reload_file
-        _tagged_if_not .1
-        _to_global reload_file
-        _else .1
+; ### reload-file
+code reload_file, 'reload-file'
+        _dup
+        mov     rbx, [reload_file_]
+        next
+endcode
+
+; ### set-reload-file
+code set_reload_file, 'set-reload-file' ; string -> void
+        _ verify_string
+        mov     rax, [reload_file_]
+        cmp     rax, nil_value
+        jne     .1
+        ; first time
+        _lit reload_file_
+        _ gc_add_root
+.1:
+        mov     [reload_file_], rbx
         _drop
-        _then .1
         next
 endcode
 
 ; ### reload
-code reload, 'reload'   ; --
-        _ reload_file
+code reload, 'reload', SYMBOL_IMMEDIATE
+        _lit S_reload
+        _ top_level_only
+
+        _ interactive?
+        _ get
+        _tagged_if_not .1
+        _error "interactive only"
+        next
+        _then .1
+
+        _ parse_token                   ; -> string/nil
+        cmp     rbx, nil_value
+        jz      .2
+
+        ; -> string
+        _ ensure_feline_extension
         _dup
-        _tagged_if .1
+        _ set_reload_file
         _ load
-        _else .1
+        next
+
+.2:
+        ; -> nil
+        mov     rbx, [reload_file_]
+        cmp     rbx, nil_value
+        je      .3
+        _ load
+        next
+
+.3:
         _drop
         _write "nothing to reload"
-        _then .1
         next
 endcode
 
 ; ### r
-code interactive_reload, 'r', SYMBOL_IMMEDIATE  ; --
-        _ interactive?
-        _ get
-        _tagged_if .1
-        _ reload
-        _else .1
-        _error "interactive only"
-        _then .1
-        next
+code r, 'r', SYMBOL_IMMEDIATE
+        jmp reload
 endcode
 
 ; ### saved-current-vocab
@@ -216,7 +243,7 @@ code find_file_in_source_path, 'find-file-in-source-path'       ; string -- path
         _ canonical_path
         _else .2
         _2drop
-        _f
+        _nil
         _then .2
 
         next
@@ -303,16 +330,7 @@ code load, 'load'                       ; string --
         _ nl
         _then .2
 
-        _ interactive?
-        _ get
-        _tagged_if .3
-        _ current_lexer
-        _ get
-        _ lexer_file
-        _ maybe_set_reload_file
-        _then .3
-
-        _f
+        _nil
         _ interactive?
         _ set
 
