@@ -1154,24 +1154,6 @@ test: map-find-test-1
 
 map-find-test-1
 
-test: find-integer-test-1
-    clear
-    10 [ 5 eq? ] find-integer get-datastack { 5 } assert=
-    clear
-;
-
-find-integer-test-1
-
-test: find-integer-test-2
-    clear
-    0 [ "shouldn't happen!" error ] find-integer get-datastack { f } assert=
-    clear
-    -7 [ "shouldn't happen!" error ] find-integer get-datastack { f } assert=
-    clear
-;
-
-find-integer-test-2
-
 test: ?lookup-symbol-test-1
     "dup" "feline" ?lookup-symbol ' dup assert-eq
     "xxx" "feline" ?lookup-symbol assert-false
@@ -4296,5 +4278,18 @@ message2 hello assert-eq
 
 [ ' message2 ' message2 defer! ] assert-must-fail
 [ ' message2 is message2 ] assert-must-fail
+
+test: find-integer-test
+    { 5 } [ 10 [ 5 eq? ] find-integer ] unit-test
+
+    { 87 19 5 } [ 87 19 10 [ 5 eq? ] find-integer ] unit-test
+
+    { 19 87 87 } [ 19 87 100 [ over eq? ] find-integer ] unit-test
+
+    { nil } [ 0 [ "shouldn't happen!" error ] find-integer ] unit-test
+    { nil } [ -7 [ "shouldn't happen!" error ] find-integer ] unit-test
+;
+
+find-integer-test
 
 ?nl "Reached end of test.feline" write-string
