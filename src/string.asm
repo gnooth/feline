@@ -47,7 +47,7 @@ code string?, 'string?'                 ; x -> x/nil
         jne     .no
         next
 .no:
-        mov     rbx, NIL
+        mov     ebx, NIL
         next
 endcode
 
@@ -1150,9 +1150,9 @@ code stringequal, 'string='             ; string1 string2 -- ?
         _ string_from
 
         cmp     rbx, [rbp + BYTES_PER_CELL]
-        jz      .1
+        je      .1
         lea     rbp, [rbp + BYTES_PER_CELL * 3]
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 .1:
         ; lengths match                 ; -- addr1 len1 addr2 len2
@@ -1163,36 +1163,40 @@ code stringequal, 'string='             ; string1 string2 -- ?
 endcode
 
 ; ### string-equal?
-code string_equal?, 'string-equal?'     ; object1 object2 -- ?
+code string_equal?, 'string-equal?'     ; object1 object2 -> ?
 ; Returns true if both objects are strings and those strings are identical.
-        _dup
-        _ string?
-        _tagged_if .1
+
+        _ string?                       ; -> object1 string/nil
+        cmp     rbx, NIL
+        jne     .1
+        _nip
+        next
+
+.1:
         _swap
-        _dup
         _ string?
-        _tagged_if .2
+        cmp     rbx, NIL
+        jne     .2
+        _nip
+        next
 
+.2:
         ; both objects are strings
+        _over
+        _ string_hashcode
+        _over
+        _ string_hashcode
+        cmp     rbx, [rbp]
+        je      .3
 
-        _twodup
-        _lit S_string_hashcode
-        _ bi@                           ; -- seq1 seq2 hashcode1 hashcode2
+        ; hashcodes are not equal
+        mov     ebx, NIL
+        _3nip
+        next
 
-        _equal
-        _zeq_if .3
+.3:
         _2drop
-        _f
-        _return
-        _then .3
-
         _ stringequal
-        _return
-        _then .2
-        _then .1
-
-        _2drop
-        _f
         next
 endcode
 
