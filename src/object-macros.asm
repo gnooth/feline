@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -309,64 +309,4 @@ OBJECT_ALLOCATED_BIT            equ 4
 %macro  _this_set_slot7 0               ; x --
         mov     [this_register + BYTES_PER_CELL * 7], rbx
         poprbx
-%endmacro
-
-%macro  _string? 0
-        _object_raw_typecode
-        _lit TYPECODE_STRING
-        _equal
-%endmacro
-
-%macro  _sbuf? 0
-        _object_raw_typecode
-        _lit TYPECODE_SBUF
-        _equal
-%endmacro
-
-%macro  _vector? 0
-        _object_raw_typecode
-        _lit TYPECODE_VECTOR
-        _equal
-%endmacro
-
-%macro  _array? 0
-        _object_raw_typecode
-        _lit TYPECODE_ARRAY
-        _equal
-%endmacro
-
-%macro  _hashtable? 0
-        _object_raw_typecode
-        _lit TYPECODE_HASHTABLE
-        _equal
-%endmacro
-
-%macro  _symbol? 0
-        _object_raw_typecode
-        _lit TYPECODE_SYMBOL
-        _equal
-%endmacro
-
-%macro  _vocab? 0
-        _object_raw_typecode
-        _lit TYPECODE_VOCAB
-        _equal
-%endmacro
-
-%macro  _quotation? 0
-        _object_raw_typecode
-        _lit TYPECODE_QUOTATION
-        _equal
-%endmacro
-
-%macro  _curry? 0
-        _object_raw_typecode
-        _lit TYPECODE_CURRY
-        _equal
-%endmacro
-
-%macro  _slice? 0
-        _object_raw_typecode
-        _lit TYPECODE_SLICE
-        _equal
 %endmacro
