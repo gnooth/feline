@@ -478,7 +478,7 @@ use: kill-ring
 
 : copy
     [ anchor ] [ mark ] either?
-    [ dot make-region/2 copy-region unmark ] [ copy-line ] if* ;
+    [ dot make-region/2 copy-region ] [ copy-line ] if* ;
 
 : delete-line-internal
     dot-line-prev :> prev
