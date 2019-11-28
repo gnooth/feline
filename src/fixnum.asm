@@ -125,8 +125,27 @@ code generic_max, 'max'                 ; x y -- z
         next
 endcode
 
+; ### unsafe-fixnum+
+inline unsafe_fixnum_plus, 'unsafe-fixnum+'     ; fixnum1 fixnum2 -> sum
+; no type checking
+; ignores overflow
+        sub     rbx, 1                          ; zero tag bit
+        add     rbx, qword [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+endinline
+
+; ### unsafe-fixnum-
+inline unsafe_fixnum_minus, 'unsafe-fixnum-'    ; fixnum1 fixnum2 -> difference
+; no type checking
+; ignores overflow
+        sub     rbx, 1                          ; zero tag bit
+        neg     rbx
+        add     rbx, qword [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+endinline
+
 ; ### fixnum-fixnum+
-code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; fixnum1 fixnum2 -- sum
+code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; fixnum1 fixnum2 -> sum
         _check_fixnum
         _swap
         _check_fixnum
