@@ -62,7 +62,7 @@ clear
 test: multiline-string-test-1
     "this is
 a multiline string"
-    dup string? assert-true
+    dup string? assert
     dup length 26 assert=
     "this is\na multiline string" assert=
 ;
@@ -75,17 +75,17 @@ test: string-literal-escapes-test-1
 
 string-literal-escapes-test-1
 
-test: string?-test-1
+test: string?-test
     t string? assert-false
-    f string? assert-false
+    nil string? assert-false
     42 string? assert-false
     2000000 string? assert-false
-    "test" string? assert-true
+    "test" string? assert
+    "test" dup string? assert-eq
     ' dup string? assert-false
-    ' dup symbol-name string? assert-true
-;
+    ' dup symbol-name dup string? assert-eq ;
 
-string?-test-1
+string?-test
 
 // Test for the Factor/Feline version of pick.
 // The Forth version of pick is different.
@@ -1060,7 +1060,7 @@ test: hashtable-test-4
     n1 [ dup number>string ht at assert= ] each-integer
 
     ht hashtable-keys length n1 assert-eq
-    ht hashtable-keys [ string? assert-true ] each
+    ht hashtable-keys [ dup string? assert-eq ] each
     ht hashtable-values length n1 assert-eq
     ht hashtable-values [ fixnum? assert-true ] each
 
@@ -1511,7 +1511,7 @@ any?-test-1
 test: string-head-test-1
     "this is a test"
     [ 4 swap string-head "this" assert= ] keep
-    [ 0 swap string-head [ string? assert-true ] [ length zero? assert-true ] bi ] keep
+    [ 0 swap string-head [ string? "" assert= ] [ length 0? assert-true ] bi ] keep
     [ 14 swap string-head "this is a test" assert= ] keep
     drop
 ;
@@ -1521,7 +1521,7 @@ string-head-test-1
 test: string-tail-test-1
     "this is a test"
     [ 10 swap string-tail "test" assert= ] keep
-    [ 14 swap string-tail [ string? assert-true ] [ length zero? assert-true ] bi ] keep
+    [ 14 swap string-tail [ string? "" assert= ] [ length 0? assert-true ] bi ] keep
     [ 0 swap string-tail "this is a test" assert= ] keep
     drop
 ;
@@ -1531,20 +1531,18 @@ string-tail-test-1
 test: head-test-1
     "this is a test"
     [ 4 swap head "this" assert= ] keep
-    [ 0 swap head [ string? assert-true ] [ length zero? assert-true ] bi ] keep
+    [ 0 swap head [ string? "" assert= ] [ length 0? assert-true ] bi ] keep
     [ 14 swap head "this is a test" assert= ] keep
-    drop
-;
+    drop ;
 
 head-test-1
 
 test: tail-test-1
     "this is a test"
     [ 10 swap tail "test" assert= ] keep
-    [ 14 swap tail [ string? assert-true ] [ length zero? assert-true ] bi ] keep
+    [ 14 swap tail [ string? "" assert= ] [ length 0? assert-true ] bi ] keep
     [ 0 swap tail "this is a test" assert= ] keep
-    drop
-;
+    drop ;
 
 tail-test-1
 
@@ -1555,8 +1553,7 @@ test: head?-test-1
     "this is a test" "this" head? assert-false
 
     "" "this is a test" head? assert-true
-    "" "" head? assert-true
-;
+    "" "" head? assert-true ;
 
 head?-test-1
 
@@ -2937,7 +2934,7 @@ test: path-append-test-1
 path-append-test-1
 
 test: canonical-path-test-1
-    "." canonical-path string? assert-true
+    "." canonical-path string? assert
 
     " " canonical-path assert-false
     "" canonical-path assert-false

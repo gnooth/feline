@@ -25,9 +25,29 @@ file __FILE__
 %define STRING_RAW_DATA_OFFSET          24
 
 ; ### string?
-code string?, 'string?'                 ; x -- ?
-        _ object_raw_typecode
-        _eq? TYPECODE_STRING
+code string?, 'string?'                 ; x -> x/nil
+        cmp     bl, HANDLE_TAG
+        jne     .1
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_STRING
+        jne     .no
+        next
+.1:
+        ; not a handle
+        ; must be aligned
+        test    rbx, 7
+        jnz     .no
+        cmp     rbx, static_data_area
+        jb      .no
+        cmp     rbx, static_data_area_limit
+        jae     .no
+        cmp     word [rbx], TYPECODE_STRING
+        jne     .no
+        next
+.no:
+        mov     rbx, NIL
         next
 endcode
 
