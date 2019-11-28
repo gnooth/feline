@@ -809,20 +809,21 @@ code all_integers?, 'all-integers?'     ; n quot -- ?
 endcode
 
 ; ### find-integer
-code find_integer, 'find-integer'       ; tagged-fixnum callable -- i/f
-; callable must have stack effect ( i -- ? )
+code find_integer, 'find-integer'       ; fixnum callable -> fixnum/nil
+; callable must have stack effect fixnum -> ?
 
         _swap
         _check_fixnum
 
         test    rbx, rbx
         jg      .1
-        _2drop
-        _f
+        mov     rbx, nil_value
+        _nip
         _return
-.1:
 
-        _swap
+.1:
+        _tag_fixnum
+        _swap                           ; -> fixnum callable
 
         ; protect callable from gc
         push    rbx
@@ -830,42 +831,45 @@ code find_integer, 'find-integer'       ; tagged-fixnum callable -- i/f
         push    r12
         push    r13
         push    r15
-        xor     r12, r12                ; loop index in r12
+
+        mov     r12, tagged_zero        ; tagged loop index in r12
+
         _ callable_raw_code_address
         mov     r13, rbx                ; code address in r13
-        mov     r15, [rbp]              ; loop limit in r15
+        mov     r15, [rbp]              ; tagged loop limit in r15
         _2drop                          ; clean up the stack now!
-        test    r15, r15
-        jle     .3
+        _dup                            ; dup outside the loop!
+        jmp     .2                      ; jump over alignment nops
+
+        align   DEFAULT_CODE_ALIGNMENT
 .2:
-        pushd   r12
-        _tag_fixnum
+        mov     rbx, r12
+
         call    r13
         ; test flag returned by quotation
-        cmp     rbx, f_value
-        mov     rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
+        cmp     rbx, nil_value
         jne     .3
-        ; flag was f
+        ; flag was nil
         ; keep going
-        inc     r12
+        add     r12, (1 << FIXNUM_TAG_BITS)
         cmp     r12, r15
         jne     .2
         ; reached end
-        ; return f
-        _f
+        ; return nil
+        mov     ebx, nil_value
         jmp     .4
+
 .3:
         ; return tagged index
-        pushd   r12
-        _tag_fixnum
+        mov     rbx, r12
+
 .4:
         pop     r15
         pop     r13
         pop     r12
 
         ; drop quotation
-        pop     rax
+        _rdrop
 
         next
 endcode
@@ -947,7 +951,7 @@ code find_last_integer_in_range, 'find-last-integer-in-range'   ; start end call
 
 ; Applies the callable to each integer from end - 1 down to start. If the
 ; callable returns a true value for some integer in the specified range,
-; iteration stops and that integer is returned. Otherwise the word returns `f`.
+; iteration stops and that integer is returned. Otherwise the word returns nil.
 
         ; start
         mov     rax, [rbp + BYTES_PER_CELL]
