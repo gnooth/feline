@@ -118,6 +118,9 @@
 
 %define nil_value BOOLEAN_TAG
 
+%define NIL     BOOLEAN_TAG
+%define TRUE    BOOLEAN_TAG + (1 << LOWTAG_BITS)
+
 %macro  _f 0
         pushrbx
         mov     ebx, f_value
