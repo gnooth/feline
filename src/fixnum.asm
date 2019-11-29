@@ -611,17 +611,16 @@ code fixnum_mod, 'fixnum-mod'           ; x y -- z
 endcode
 
 ; ### fixnum-abs
-code fixnum_abs, 'fixnum-abs'           ; x -- y
+code fixnum_abs, 'fixnum-abs'           ; fixnum -> fixnum/int64
         _check_fixnum
         mov     rax, MOST_NEGATIVE_FIXNUM
         cmp     rbx, rax
         je      .1
         mov     rax, rbx
-        sar     rax, 63
-        xor     rbx, rax
-        sub     rbx, rax
+        neg     rbx
+        cmovl   rbx, rax
         _tag_fixnum
-        _return
+        next
 .1:
         neg     rbx
         _ new_int64
