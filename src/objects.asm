@@ -72,7 +72,6 @@ code error_empty_handle, 'error-empty-handle'
 endcode
 
 ; ### object_raw_typecode
-
 code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-typecode
 
         cmp     bl, HANDLE_TAG
@@ -81,26 +80,18 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-type
         test    ebx, LOWTAG_MASK
         jz      .4
 
-%if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
         test    ebx, FIXNUM_TAG
         jz      .1
-%else
-        mov     eax, ebx
-        and     eax, FIXNUM_TAG_MASK
-        cmp     eax, FIXNUM_TAG
-        jne     .1
-%endif
         mov     ebx, TYPECODE_FIXNUM
         _return
 
 .1:
-%if CHAR_TAG <> FIXNUM_TAG
         cmp     bl, CHAR_TAG
         jne     .2
         mov     ebx, TYPECODE_CHAR
         _return
+
 .2:
-%endif
         mov     eax, ebx
         and     eax, BOOLEAN_TAG_MASK
         cmp     eax, BOOLEAN_TAG
