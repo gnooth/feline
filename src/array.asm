@@ -115,6 +115,14 @@ code array_length, 'array-length'       ; array -> length
         next
 endcode
 
+; ### array-length-unsafe
+code array_length_unsafe, 'array-length-unsafe' ; array -> length
+        _handle_to_object_unsafe
+        _array_raw_length
+        _tag_fixnum
+        next
+endcode
+
 ; ### allocate_array
 subroutine allocate_array
 ; call with untagged length in arg0_register
