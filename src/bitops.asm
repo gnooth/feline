@@ -15,8 +15,14 @@
 
 file __FILE__
 
+; ### unsafe-fixnum-bitand
+inline unsafe_fixnum_bitand, 'unsafe-fixnum-bitand' ; x y -> z
+        and     rbx, qword [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+endinline
+
 ; ### bitand
-code bitand, 'bitand'                   ; x y -- z
+code bitand, 'bitand'                   ; x y -> z
         _check_fixnum
         _check_fixnum qword [rbp]
         _and
