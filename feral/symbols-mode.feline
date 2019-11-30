@@ -27,7 +27,7 @@ global instance
     '\s' s index :> end
     0 end s substring 0 color-linenumber make-segment/3 v push
 
-    f !> comment-start
+    local comment-start
 
     current-buffer parent>> mode>> comment-start>> s substring-start [
         comment-start!
@@ -46,13 +46,12 @@ global instance
 : symbols-mode-goto-source
     dot-line-text :> s
     '\s' s index :> end
-    end null? ?exit
+    end nil? ?exit
 
     0 end s substring string>number :> line-number
     current-buffer parent>> set-current-buffer
     line-number editor:gotoline-internal
-    t repaint!
-;
+    t repaint?! ;
 
 global symbols-mode-local-map
 
