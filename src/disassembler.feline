@@ -1626,6 +1626,7 @@ last-word 0x31 install-0x0f-handler
 
 16 [ 0x40 + ' .0f-4x swap install-0x0f-handler ] each-integer
 
+: .0f-80 "jo"  jcc-rel32 ; last-word 0x80 install-0x0f-handler
 : .0f-81 "jno" jcc-rel32 ; last-word 0x81 install-0x0f-handler
 : .0f-82 "jc"  jcc-rel32 ; last-word 0x82 install-0x0f-handler
 : .0f-83 "jnc" jcc-rel32 ; last-word 0x83 install-0x0f-handler
