@@ -165,7 +165,7 @@ global #operands
 : .mnemonic mnemonic [ mnemonic-col write-string ] when* ;
 
 : .hexbyte                              // unsigned-byte -> void
-    >hex dup length 2 < [ '0' write-char ] when write-string ;
+    fixnum->hex dup length 2 < [ '0' write-char ] when write-string ;
 
 : .bytes                                // u -> void
     [ instruction-start + c@ .hexbyte space ] each-integer ;
