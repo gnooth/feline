@@ -74,19 +74,19 @@ global #operands
     ip instruction-start!
     0 mnemonic!
 
-    f immediate-operand?!
-    f signed?!
-    f register-direct?!
-    f memory-operand?!
+    nil immediate-operand?!
+    nil signed?!
+    nil register-direct?!
+    nil memory-operand?!
 
-    f sreg!
-    f dreg!
+    nil sreg!
+    nil dreg!
     64 ssize!
     64 dsize!
-    f sbase!
-    f dbase!
-    f sindex!
-    f dindex!
+    nil sbase!
+    nil dbase!
+    nil sindex!
+    nil dindex!
     0 sscale!
     0 dscale!
     0 sdisp!
@@ -129,7 +129,7 @@ global #operands
 
 : .relative                             // base index scale disp size -> void
     :> size
-    :> disp!
+    !> disp
     :> scale
     :> index
     :> base
@@ -187,7 +187,7 @@ global #operands
     {
         { [ dreg ] [ dreg dsize .register-name ] }
         { [ dbase ] [ dbase dindex dscale ddisp dsize .relative ]  }
-        { [ memory-operand? ] [ ddisp dsize .memory-operand f memory-operand?! ] }
+        { [ memory-operand? ] [ ddisp dsize .memory-operand nil memory-operand?! ] }
         { [ immediate-operand? ] [ .immediate-operand ] }
         [ ".dest" error ]
     } cond ;
@@ -1760,7 +1760,7 @@ last-word 0xbe install-0x0f-handler
 : decode
     reset-disassembler
     .ip
-    ip c@ :> byte!
+    ip c@ !> byte
     byte 0x66 eq? [
         byte operand-size-prefix!
         ++ip
@@ -1829,7 +1829,7 @@ global choices
     find-qualified-name [
         all-words [ symbol-name over = ] filter nip
         dup length {
-            { 0 [ drop f ] }
+            { 0 [ drop nil ] }
             { 1 [ first ] }
             [
                 // more than 1 match
@@ -1839,14 +1839,14 @@ global choices
                     1+ dec. space
                     symbol-qualified-name write-string nl
                 ] each-index
-                f
+                nil
             ]
         } case
     ] unless ;
 
 : d/1 ( token1 )
     token1 string->index :> n
-    f :> sym!
+    local sym
     n [
         token1 find-symbol sym!
     ] unless
@@ -1863,9 +1863,9 @@ global choices
 
 : d/2 ( token1 token2 )
     token1 string->index :> addr
-    f :> len!
-    f :> sym1!
-    f :> sym2!
+    local len
+    local sym1
+    local sym2
     addr [
         token2 string->index len!
     ] [
@@ -1887,7 +1887,7 @@ global choices
 
 : d
     parse-token :> token1
-    token1 null? [ ] return-if
+    token1 nil? ?exit
     parse-token :> token2
     token2 [ token1 token2 d/2 ] [ token1 d/1 ] if ;
 
