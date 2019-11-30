@@ -198,8 +198,8 @@ code print_exception, 'print-exception'
         _ decimal_dot
         _write " at address "
         _ saved_signal_address
-        _ untagged_dot
-        _ nl
+        _tag_fixnum
+        _ hexdot
 %endif
 
         next

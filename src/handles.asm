@@ -431,48 +431,6 @@ code handles, 'handles'
         next
 endcode
 
-; ### .handles
-code dot_handles, '.handles'
-        _ ?nl
-        pushrbx
-        mov     rbx, [handle_space_free_]
-        pushrbx
-        mov     rbx, [handle_space_]
-        _minus
-
-;         _ cell
-;         _ slash
-        shr     rbx, 3
-
-        _tag_fixnum
-        _ decimal_dot
-        _write "handles"
-
-        pushrbx
-        mov     rbx, [handle_space_]
-        _begin .1
-        _dup
-        pushrbx
-        mov     rbx, [handle_space_free_]
-        _ult
-        _while .1
-        _ ?nl
-        _dup
-        _ untagged_dot
-        _dup
-        _fetch
-        _dup
-        _ untagged_dot
-        _if .2
-        _dup
-        _ dot_object
-        _then .2
-        _cellplus
-        _repeat .1
-        _drop
-        next
-endcode
-
 ; ### each_handle
 code each_handle, 'each_handle'         ; raw-code-address -> void
         push    r12

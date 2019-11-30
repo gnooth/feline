@@ -1192,16 +1192,6 @@ code bindot, 'bin.'                     ; n --
         next
 endcode
 
-; ### untagged.
-code untagged_dot, 'untagged.'          ; x --
-        _ untagged_to_hex
-        _lit tagged_char('$')
-        _ write_char
-        _ write_string
-        _ space
-        next
-endcode
-
 ; ### pick
 inline pick, 'pick'                     ; x y z -- x y z x
 ; This is the Factor/Feline version of pick.
