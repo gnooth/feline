@@ -54,6 +54,10 @@ interactive? get assert-false
 vector{ 1 2 3 } length 3 assert=
 vector{ "this is a test" } length 1 assert=
 
+fixnum-tag-bits 1 assert-eq
+most-positive-fixnum 4611686018427387903 assert-eq
+most-negative-fixnum -4611686018427387904 assert-eq
+
 "this is a multiline
 string" length 26 assert=
 
@@ -281,17 +285,18 @@ test: mod-test-1
      7 -3 fixnum>int64 mod  1 assert=
     -7  3 fixnum>int64 mod -1 assert=
 
-    fixnum-tag-bits 3 = [
-        most-positive-fixnum 17 mod 15 assert=
-        most-positive-fixnum 1 + dup int64? assert 17 mod 16 assert=
-        most-positive-fixnum 2 + dup int64? assert 17 mod  0 assert=
-        most-positive-fixnum 3 + dup int64? assert 17 mod  1 assert=
-
-        most-positive-fixnum 17 mod 15 fixnum>int64 assert=
-        most-positive-fixnum 1 + 17 fixnum>int64 mod 16 assert=
-        most-positive-fixnum 2 + 17 fixnum>int64 mod  0 assert=
-        most-positive-fixnum 3 + 17 fixnum>int64 mod  1 assert=
-    ] when
+    fixnum-tag-bits 1 assert-eq
+//     fixnum-tag-bits 3 = [
+//         most-positive-fixnum 17 mod 15 assert=
+//         most-positive-fixnum 1 + dup int64? assert 17 mod 16 assert=
+//         most-positive-fixnum 2 + dup int64? assert 17 mod  0 assert=
+//         most-positive-fixnum 3 + dup int64? assert 17 mod  1 assert=
+//
+//         most-positive-fixnum 17 mod 15 fixnum>int64 assert=
+//         most-positive-fixnum 1 + 17 fixnum>int64 mod 16 assert=
+//         most-positive-fixnum 2 + 17 fixnum>int64 mod  0 assert=
+//         most-positive-fixnum 3 + 17 fixnum>int64 mod  1 assert=
+//     ] when
 ;
 
 mod-test-1
@@ -325,15 +330,16 @@ test: fixnum-test-10
      42 -87 fixnum+  -45 assert=
     -42 -87 fixnum+ -129 assert=
 
-    fixnum-tag-bits 3 = [
-        most-positive-fixnum 1152921504606846975 assert-eq
-        most-positive-fixnum 1 - 1152921504606846974 assert-eq
-        most-positive-fixnum 1 + dup int64? assert 1152921504606846976 assert=
-
-        most-negative-fixnum -1152921504606846976 assert-eq
-        most-negative-fixnum 1 + -1152921504606846975 assert-eq
-        most-negative-fixnum 1 - dup int64? assert -1152921504606846977 assert=
-    ] when
+    fixnum-tag-bits 1 assert-eq
+//     fixnum-tag-bits 3 = [
+//         most-positive-fixnum 1152921504606846975 assert-eq
+//         most-positive-fixnum 1 - 1152921504606846974 assert-eq
+//         most-positive-fixnum 1 + dup int64? assert 1152921504606846976 assert=
+//
+//         most-negative-fixnum -1152921504606846976 assert-eq
+//         most-negative-fixnum 1 + -1152921504606846975 assert-eq
+//         most-negative-fixnum 1 - dup int64? assert -1152921504606846977 assert=
+//     ] when
 ;
 
 fixnum-test-10
@@ -343,12 +349,13 @@ test: fixnum>string-test-1
       0 fixnum>string   "0" assert=
      42 fixnum>string  "42" assert=
 
-    fixnum-tag-bits 3 = [
-        most-negative-fixnum fixnum>string "-1152921504606846976" assert=
-        most-negative-fixnum 1 + fixnum>string "-1152921504606846975" assert=
-        most-negative-fixnum 2 + fixnum>string "-1152921504606846974" assert=
-        most-positive-fixnum fixnum>string "1152921504606846975" assert=
-    ] when
+    fixnum-tag-bits 1 assert-eq
+//     fixnum-tag-bits 3 = [
+//         most-negative-fixnum fixnum>string "-1152921504606846976" assert=
+//         most-negative-fixnum 1 + fixnum>string "-1152921504606846975" assert=
+//         most-negative-fixnum 2 + fixnum>string "-1152921504606846974" assert=
+//         most-positive-fixnum fixnum>string "1152921504606846975" assert=
+//     ] when
 ;
 
 fixnum>string-test-1
@@ -358,16 +365,22 @@ test: fixnum>hex-test-1
       0 fixnum>hex   "0" assert=
      42 fixnum>hex  "2a" assert=
 
-    fixnum-tag-bits 3 = [
-        most-negative-fixnum     fixnum>hex "-1000000000000000" assert=
-        most-negative-fixnum 1 + fixnum>hex  "-fffffffffffffff" assert=
-        most-negative-fixnum 2 + fixnum>hex  "-ffffffffffffffe" assert=
-        most-positive-fixnum     fixnum>hex   "fffffffffffffff" assert=
-    ] when
+    fixnum-tag-bits 1 assert-eq
+//     fixnum-tag-bits 3 = [
+//         most-negative-fixnum     fixnum>hex "-1000000000000000" assert=
+//         most-negative-fixnum 1 + fixnum>hex  "-fffffffffffffff" assert=
+//         most-negative-fixnum 2 + fixnum>hex  "-ffffffffffffffe" assert=
+//         most-positive-fixnum     fixnum>hex   "fffffffffffffff" assert=
+//     ] when
 
-    -576460752303423488 >hex "-800000000000000" assert=
-     576460752303423487 >hex  "7ffffffffffffff" assert=
-;
+    most-negative-fixnum     fixnum>hex "-4000000000000000" assert=
+    most-negative-fixnum 1 + fixnum>hex "-3fffffffffffffff" assert=
+    most-negative-fixnum 2 + fixnum>hex "-3ffffffffffffffe" assert=
+
+    most-positive-fixnum fixnum>hex "3fffffffffffffff" assert=
+
+    -576460752303423488 fixnum>hex "-800000000000000" assert=
+     576460752303423487 fixnum>hex  "7ffffffffffffff" assert= ;
 
 fixnum>hex-test-1
 
@@ -376,11 +389,11 @@ test: number>string-test-1
     0 number>string "0" assert=
     42 number>string "42" assert=
 
-
-    fixnum-tag-bits 3 = [
-        most-negative-fixnum number>string "-1152921504606846976" assert=
-        most-positive-fixnum number>string  "1152921504606846975" assert=
-    ] when
+    fixnum-tag-bits 1 assert-eq
+//     fixnum-tag-bits 3 = [
+//         most-negative-fixnum number>string "-1152921504606846976" assert=
+//         most-positive-fixnum number>string  "1152921504606846975" assert=
+//     ] when
 ;
 
 number>string-test-1
@@ -391,9 +404,9 @@ test: fixnum-max-test-1
     -1 2 fixnum-max 2 assert-eq
     2 -1 fixnum-max 2 assert-eq
     most-positive-fixnum 0 fixnum-max most-positive-fixnum assert-eq
-    most-negative-fixnum 0 fixnum-max zero? assert-true
+    most-negative-fixnum 0 fixnum-max 0? assert
     0 most-positive-fixnum fixnum-max most-positive-fixnum assert-eq
-    0 most-negative-fixnum fixnum-max zero? assert-true
+    0 most-negative-fixnum fixnum-max 0? assert
 ;
 
 fixnum-max-test-1
@@ -1844,16 +1857,17 @@ test: sbuf-shorten-test-1
 sbuf-shorten-test-1
 
 test: base>integer-test-1
-      "0" 10 base>integer   0 assert-eq
-     "42" 10 base>integer  42 assert-eq
+    "0" 10 base>integer 0 assert-eq
+    "42" 10 base>integer 42 assert-eq
     "-42" 10 base>integer -42 assert-eq
 
-    fixnum-tag-bits 3 = [
-         "1152921504606846975" 10 base>integer most-positive-fixnum assert-eq
-        "-1152921504606846976" 10 base>integer most-negative-fixnum assert-eq
-
-         "2305843009213693950" 10 base>integer most-positive-fixnum dup + assert=
-     ] when
+    fixnum-tag-bits 1 assert-eq
+//     fixnum-tag-bits 3 = [
+//          "1152921504606846975" 10 base>integer most-positive-fixnum assert-eq
+//         "-1152921504606846976" 10 base>integer most-negative-fixnum assert-eq
+//
+//          "2305843009213693950" 10 base>integer most-positive-fixnum dup + assert=
+//      ] when
 ;
 
 base>integer-test-1
@@ -2272,11 +2286,11 @@ test: string>float-test-1
     "-42.0" string>float -42.0 assert=
     "-42" string>float -42.0 assert=
 
-
-    fixnum-tag-bits 3 = [
-        most-positive-fixnum fixnum>string string>float 1.152921504606847e+18 assert=
-        most-negative-fixnum fixnum>string string>float -1.152921504606847e+18 assert=
-    ] when
+    fixnum-tag-bits 1 assert-eq
+//     fixnum-tag-bits 3 = [
+//         most-positive-fixnum fixnum>string string>float 1.152921504606847e+18 assert=
+//         most-negative-fixnum fixnum>string string>float -1.152921504606847e+18 assert=
+//     ] when
 ;
 
 string>float-test-1
@@ -2284,10 +2298,11 @@ string>float-test-1
 test: int64>float-test-1
     42 fixnum>int64 int64>float 42.0 assert=
 
-    fixnum-tag-bits 3 = [
-        most-positive-fixnum dup + dup int64? assert-true
-        int64>float 2.305843009213694e+18 assert=
-    ] when
+    fixnum-tag-bits 1 assert-eq
+//     fixnum-tag-bits 3 = [
+//         most-positive-fixnum dup + dup int64? assert-true
+//         int64>float 2.305843009213694e+18 assert=
+//     ] when
 ;
 
 int64>float-test-1
@@ -2295,14 +2310,15 @@ int64>float-test-1
 test: int64-fixnum+-test-1
     42 fixnum>int64 87 int64-fixnum+ 129 assert-eq
 
-    fixnum-tag-bits 3 = [
-        most-positive-fixnum 10 + dup int64? assert-true
-        5 + dup int64? assert-true
-        1152921504606846990 assert=
-
-        "0x7fffffffffffffff" 16 base>integer most-positive-fixnum int64-fixnum+
-        1.0376293541461623e+19 assert=
-    ] when
+    fixnum-tag-bits 1 assert-eq
+//     fixnum-tag-bits 3 = [
+//         most-positive-fixnum 10 + dup int64? assert-true
+//         5 + dup int64? assert-true
+//         1152921504606846990 assert=
+//
+//         "0x7fffffffffffffff" 16 base>integer most-positive-fixnum int64-fixnum+
+//         1.0376293541461623e+19 assert=
+//     ] when
 ;
 
 int64-fixnum+-test-1
@@ -2383,14 +2399,15 @@ test: fixnum-fixnum+-test-1
     1  2 fixnum-fixnum+  3 assert-eq
     1 -2 fixnum-fixnum+ -1 assert-eq
 
-    fixnum-tag-bits 3 = [
-        most-positive-fixnum 0 fixnum-fixnum+ most-positive-fixnum assert-eq
-
-        most-positive-fixnum   1 fixnum-fixnum+  1152921504606846976 assert=
-        most-negative-fixnum  -1 fixnum-fixnum+ -1152921504606846977 assert=
-        most-positive-fixnum dup fixnum-fixnum+  2305843009213693950 assert=
-        most-negative-fixnum dup fixnum-fixnum+ -2305843009213693952 assert=
-    ] when
+    fixnum-tag-bits 1 assert-eq
+//     fixnum-tag-bits 3 = [
+//         most-positive-fixnum 0 fixnum-fixnum+ most-positive-fixnum assert-eq
+//
+//         most-positive-fixnum   1 fixnum-fixnum+  1152921504606846976 assert=
+//         most-negative-fixnum  -1 fixnum-fixnum+ -1152921504606846977 assert=
+//         most-positive-fixnum dup fixnum-fixnum+  2305843009213693950 assert=
+//         most-negative-fixnum dup fixnum-fixnum+ -2305843009213693952 assert=
+//     ] when
 ;
 
 fixnum-fixnum+-test-1
@@ -2437,19 +2454,20 @@ test: fixnum-1--test-1
 fixnum-1--test-1
 
 test: fixnum-fixnum*-test-1
-    fixnum-tag-bits 3 = [
-        most-positive-fixnum 1 fixnum-fixnum* 1152921504606846975 assert-eq
-        most-positive-fixnum 2 fixnum-fixnum* 2305843009213693950 assert=
-        most-positive-fixnum 3 fixnum-fixnum* 3458764513820540925 assert=
-
-        most-positive-fixnum dup fixnum-fixnum* 1329227995784915870597964051066650625 assert=
-        most-positive-fixnum dup fixnum-fixnum* most-positive-fixnum 2 expt assert=
-
-        most-negative-fixnum 1 fixnum-fixnum* -1152921504606846976 assert=
-
-        most-positive-fixnum most-negative-fixnum fixnum-fixnum*
-        -1329227995784915871750885555673497600 assert=
-    ] when
+    fixnum-tag-bits 1 assert-eq
+//     fixnum-tag-bits 3 = [
+//         most-positive-fixnum 1 fixnum-fixnum* 1152921504606846975 assert-eq
+//         most-positive-fixnum 2 fixnum-fixnum* 2305843009213693950 assert=
+//         most-positive-fixnum 3 fixnum-fixnum* 3458764513820540925 assert=
+//
+//         most-positive-fixnum dup fixnum-fixnum* 1329227995784915870597964051066650625 assert=
+//         most-positive-fixnum dup fixnum-fixnum* most-positive-fixnum 2 expt assert=
+//
+//         most-negative-fixnum 1 fixnum-fixnum* -1152921504606846976 assert=
+//
+//         most-positive-fixnum most-negative-fixnum fixnum-fixnum*
+//         -1329227995784915871750885555673497600 assert=
+//     ] when
 ;
 
 fixnum-fixnum*-test-1
@@ -2535,9 +2553,10 @@ fixnum-equal?-test-1
 test: float-sqrt-test-1
     2.0 float-sqrt 1.4142135623730951 assert=
 
-    fixnum-tag-bits 3 = [
-        most-positive-fixnum >float float-sqrt 1073741824.0 assert=
-    ] when
+    fixnum-tag-bits 1 assert-eq
+//     fixnum-tag-bits 3 = [
+//         most-positive-fixnum >float float-sqrt 1073741824.0 assert=
+//     ] when
 
     2 53 expt >float float-sqrt 94906265.624251559 assert=
 ;
@@ -2547,9 +2566,10 @@ float-sqrt-test-1
 test: sqrt-test-1
     2 sqrt 1.4142135623730951 assert=
 
-    fixnum-tag-bits 3 = [
-        most-positive-fixnum sqrt 1073741824.0 assert=
-    ] when
+    fixnum-tag-bits 1 assert-eq
+//     fixnum-tag-bits 3 = [
+//         most-positive-fixnum sqrt 1073741824.0 assert=
+//     ] when
 
     2 53 expt sqrt 94906265.624251559 assert=
     pi sqrt 1.7724538509055159 assert=
@@ -2838,10 +2858,11 @@ test: fixnum/f-test-1
     42 fixnum>int64 dup int64? assert-true 4 fixnum/f 10.5 assert=
     42.0 4 fixnum/f 10.5 assert=
 
-    fixnum-tag-bits 3 = [
-        most-positive-fixnum 1 + 2 fixnum/f  5.7646075230342349e+17 assert=
-        most-negative-fixnum     2 fixnum/f -5.7646075230342349e+17 assert=
-    ] when
+    fixnum-tag-bits 1 assert-eq
+//     fixnum-tag-bits 3 = [
+//         most-positive-fixnum 1 + 2 fixnum/f  5.7646075230342349e+17 assert=
+//         most-negative-fixnum     2 fixnum/f -5.7646075230342349e+17 assert=
+//     ] when
 ;
 
 fixnum/f-test-1

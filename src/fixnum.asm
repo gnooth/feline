@@ -840,7 +840,7 @@ code untagged_to_hex, 'untagged>hex'    ; untagged -- string
 endcode
 
 ; ### fixnum>string
-code fixnum_to_string, 'fixnum>string'  ; fixnum -- string
+code fixnum_to_string, 'fixnum>string'  ; fixnum -> string
         _check_fixnum
         _lit 10
         _ untagged_to_base
@@ -848,27 +848,26 @@ code fixnum_to_string, 'fixnum>string'  ; fixnum -- string
 endcode
 
 ; ### fixnum>hex
-code fixnum_to_hex, 'fixnum>hex'        ; fixnum -- string
-        _check_fixnum
-        _dup
-        _zge
-        _if .1
+code fixnum_to_hex, 'fixnum>hex'        ; fixnum -> string
+        test    bl, FIXNUM_TAG
+        jz      error_not_fixnum
+        sar     rbx, FIXNUM_TAG_BITS
+        js      .1
         _lit 16
         _ untagged_to_base
-        _return
-        _then .1
+        next
 
+.1:
         ; < 0
         ; REVIEW
-        _dup
-        _lit MOST_NEGATIVE_FIXNUM
-        _equal
-        _if .2
+        mov     rax, MOST_NEGATIVE_FIXNUM
+        cmp     rbx, rax
+        jne     .2
         _drop
-        _quote "-1000000000000000"
-        _return
-        _then .2
+        _quote "-4000000000000000"
+        next
 
+.2:
         ; otherwise...
         neg     rbx
         _lit 16
