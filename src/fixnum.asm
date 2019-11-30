@@ -847,8 +847,8 @@ code fixnum_to_string, 'fixnum>string'  ; fixnum -> string
         next
 endcode
 
-; ### fixnum>hex
-code fixnum_to_hex, 'fixnum>hex'        ; fixnum -> string
+; ### fixnum->hex
+code fixnum_to_hex, 'fixnum->hex'       ; fixnum -> string
         test    bl, FIXNUM_TAG
         jz      error_not_fixnum
         sar     rbx, FIXNUM_TAG_BITS

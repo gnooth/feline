@@ -219,7 +219,7 @@ f #if
     x fixnum>uint64 y!
     y uint64? assert
     x fixnum>string y uint64>string = assert
-    x fixnum>hex y uint64>hex = assert
+    x fixnum->hex y uint64>hex = assert
 ;
 
 test: test-13

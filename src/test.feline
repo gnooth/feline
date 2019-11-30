@@ -360,10 +360,10 @@ test: fixnum>string-test-1
 
 fixnum>string-test-1
 
-test: fixnum>hex-test-1
-    -17 fixnum>hex "-11" assert=
-      0 fixnum>hex   "0" assert=
-     42 fixnum>hex  "2a" assert=
+test: fixnum->hex-test
+    -17 fixnum->hex "-11" assert=
+      0 fixnum->hex   "0" assert=
+     42 fixnum->hex  "2a" assert=
 
     fixnum-tag-bits 1 assert-eq
 //     fixnum-tag-bits 3 = [
@@ -373,16 +373,16 @@ test: fixnum>hex-test-1
 //         most-positive-fixnum     fixnum>hex   "fffffffffffffff" assert=
 //     ] when
 
-    most-negative-fixnum     fixnum>hex "-4000000000000000" assert=
-    most-negative-fixnum 1 + fixnum>hex "-3fffffffffffffff" assert=
-    most-negative-fixnum 2 + fixnum>hex "-3ffffffffffffffe" assert=
+    most-negative-fixnum     fixnum->hex "-4000000000000000" assert=
+    most-negative-fixnum 1 + fixnum->hex "-3fffffffffffffff" assert=
+    most-negative-fixnum 2 + fixnum->hex "-3ffffffffffffffe" assert=
 
-    most-positive-fixnum fixnum>hex "3fffffffffffffff" assert=
+    most-positive-fixnum fixnum->hex "3fffffffffffffff" assert=
 
-    -576460752303423488 fixnum>hex "-800000000000000" assert=
-     576460752303423487 fixnum>hex  "7ffffffffffffff" assert= ;
+    -576460752303423488 fixnum->hex "-800000000000000" assert=
+     576460752303423487 fixnum->hex  "7ffffffffffffff" assert= ;
 
-fixnum>hex-test-1
+fixnum->hex-test
 
 test: number>string-test-1
     -17 number>string "-17" assert=
