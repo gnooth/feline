@@ -1147,12 +1147,10 @@ code to_hex, '>hex'                     ; n -- string
 endcode
 
 ; ### hex.
-code hexdot, 'hex.'                     ; x --
+code hexdot, 'hex.'                     ; x -> void
 
-        mov     eax, ebx
-        and     eax, FIXNUM_TAG_MASK
-        cmp     eax, FIXNUM_TAG
-        jne     .1
+        test    bl, FIXNUM_TAG
+        jz      .1
         _untag_fixnum
         _ raw_int64_to_hex
         jmp     .4
@@ -1173,7 +1171,7 @@ code hexdot, 'hex.'                     ; x --
         _then .3
 
         _error "unsupported"
-        _return
+        next
 
 .4:
         _quote "0x"
