@@ -135,10 +135,6 @@
         mov     rbx, [rbp + BYTES_PER_CELL * 2]
 %endmacro
 
-%macro  _forth_pick 0                   ; pick
-        mov     rbx, [rbp + rbx * BYTES_PER_CELL]
-%endmacro
-
 %macro  _plus 0                         ; +
         add     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
@@ -212,13 +208,6 @@
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
-%macro  _zne 0                          ; 0<>
-; Win32Forth
-        cmp     rbx, 1
-        sbb     rbx, rbx
-        not     rbx
-%endmacro
-
 %macro  _zlt 0                          ; 0<
 ; Win32Forth
         sar     rbx, 63
@@ -263,12 +252,6 @@
         mov     rbx, [rbp + BYTES_PER_CELL]
         mov     [rbp + BYTES_PER_CELL], rax
         lea     rbp, [rbp + BYTES_PER_CELL]
-%endmacro
-
-%macro  _slashstring 0                  ; /string
-        sub     [rbp], rbx
-        add     [rbp + BYTES_PER_CELL], rbx
-        poprbx
 %endmacro
 
 %macro  _and 0
