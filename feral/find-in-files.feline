@@ -101,7 +101,7 @@ public
 
     current-files file-name-directory :> directory
 
-    directory null? ?exit
+    directory nil? ?exit
 
     find-in-files-pattern nil make-search current-search!
 
@@ -126,6 +126,11 @@ public
     current-search :search buf buffer-set-property
     search-mode:get-instance buf mode<<
     find-in-files-local-map buf local-map<<
+
+    buf buffer-list member-eq? [
+        buf buffer-list vector-push
+    ] unless
+
     buf set-current-buffer
 
     renumber
