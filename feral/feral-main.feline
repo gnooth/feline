@@ -241,7 +241,7 @@ feral-config:termui? #if
 
 : do-command ( key )                    // key -> ?
 
-    f !> command
+    nil !> command
 
     // try local map first
     current-buffer local-map>> :> local-map
@@ -258,7 +258,7 @@ feral-config:termui? #if
         command dup current-command! safe-call-symbol
         t
     ] [
-        linux? [ key do-mouse ] [ f ] if
+        linux? [ key do-mouse ] [ nil ] if
     ] if ;
 
 : dispatch                              // key -> void
