@@ -47,20 +47,19 @@ in: editor
     buf buffer-list vector-push
     buf current-buffer!
 
-    t repaint?!
-;
+    t repaint?! ;
 
 : open-file-get-completions
     1 ?enough verify-string :> prefix
     prefix file-name-directory :> dir
     prefix file-name-nondirectory :> name
 
-    f !> s
+    nil !> s
     dir directory-files [
         s! [ s string-last-char '~' neq? ] [ name s head? ] both?
     ] filter :> files
 
-    files length 1 eq? [ dir files first path-append ] [ f ] if ;
+    files length 1 eq? [ dir files first path-append ] [ nil ] if ;
 
 : open-file
     current-buffer directory>> file-name-as-directory :> default-directory
@@ -77,7 +76,7 @@ in: editor
 
     arg find-file-to-edit :> filename
 
-    f !> buf
+    local buf
     {
         {
             [ filename null? ]
@@ -97,13 +96,20 @@ in: editor
         }
         // otherwise...
         [ arg canonical-path [ create-buffer-for-new-file ] when* ]
-    } cond
-;
+    } cond ;
+
+: parse-command-line // string -> command
+    dup execute-command-input-string!
+    <lexer> :> lexer
+    lexer lexer-parse-token ;
 
 : execute-command
     "command" set-history
-    "Command: " minibuffer-accept-string :> command
+    "Command: " minibuffer-accept-string :> commandline
 
+    commandline empty? ?exit
+
+    commandline parse-command-line :> command
     command empty? [
         command find-name [
             call-symbol
@@ -129,13 +135,13 @@ in: editor
     command buf name<<
     t buf read-only<<
     buf first-line>> 0 make-position buf dot<<
-    f buf mark<<
+    nil buf mark<<
     buf first-line>> buf top-line<<
 
     buf buffer-list vector-push
     buf set-current-buffer
 
-    t repaint! ;
+    t repaint?! ;
 
 : escape
-    mark [ unmark t repaint! ] when ;
+    mark [ unmark t repaint?! ] when ;
