@@ -131,7 +131,7 @@ in: editor
             // -> index
             1+ dup buffer-list length < [ drop 0 ] unless
             buffer-list vector-nth current-buffer!
-            t repaint!
+            t repaint?!
         ] when
     ] when ;
 
@@ -139,9 +139,9 @@ in: editor
     buffer-list length 1 > [
         buffer-list [ current-buffer eq? ] find [
             // -> index
-            1- dup 0 >= [ drop buffer-list length 1- ] unless
+            1- dup 0< [ drop buffer-list length 1- ] when
             buffer-list vector-nth current-buffer!
-            t repaint!
+            t repaint?!
         ] when
     ] when ;
 
