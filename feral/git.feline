@@ -61,3 +61,66 @@ in: editor
         "git ls-files " sourcefile + shell-command-to-string // -> string/nil
         [ length 0? "Untracked" "No changes" ? message ] when*
     ] if ;
+
+global git-command
+
+: git-misc
+    current-buffer filename>> :> sourcefilename
+    sourcefilename nil? ?exit
+
+    get-current-directory :> olddir
+    sourcefilename file-name-directory set-current-directory drop
+    execute-command-input-string :> command
+    command shell-command-to-string :> output
+    olddir set-current-directory drop
+
+    // shell-command-to-string might return nil
+    output nil? ?exit
+
+    local buf
+    output length 0> [
+        // reuse existing buffer if possible
+        buffer-list [ command>> command = ] find // -> index/nil element/nil
+        [
+            nip buf!
+        ] [
+            drop make-buffer buf!
+        ] if*
+
+        output buf buffer-set-contents
+        command buf command<<
+        command buf name<<
+        current-buffer directory>> buf directory<<
+        t buf read-only<<
+        buf first-line>> 0 make-position buf dot<<
+        nil buf mark<<
+        buf first-line>> buf top-line<<
+
+        current-buffer buf parent<<
+
+        git-command { "diff" "show" } member? [
+            diff-mode:get-instance buf mode<<
+            buf mode>> initialize-buffer-function>> [ buf swap call ] when*
+        ] when
+
+        buf buffer-list member-eq? [
+            buf buffer-list vector-push
+        ] unless
+        buf set-current-buffer
+
+        t repaint?!
+    ] when ;
+
+: git
+    nil git-command!
+
+    execute-command-input-string <lexer> :> lexer
+    lexer lexer-parse-token "git" string= assert
+    lexer lexer-index execute-command-input-string string-tail :> git-command-and-options
+    lexer lexer-parse-token git-command!
+    lexer lexer-skip-blank drop
+    lexer lexer-index execute-command-input-string string-tail :> git-options
+
+    git-command "diff" equal? git-options empty? and [ git-diff ] ?return
+
+    git-misc ;
