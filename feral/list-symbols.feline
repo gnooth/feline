@@ -59,7 +59,10 @@ empty
     symbols-mode:get-instance buf mode<<
     buf mode>> initialize-buffer-function>> [ buf swap call ] when*
 
-    buf buffer-list vector-push
+    buf buffer-list member-eq? [
+        buf buffer-list vector-push
+    ] unless
+
     buf set-current-buffer
 
     renumber
