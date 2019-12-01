@@ -196,6 +196,8 @@ feline-mode-comment-start length constant comment-start-length
     "filter"
     "find"
     "find-from"
+    "find-integer"
+    "find-integer-in-range"
     "find-last-from"
     "if"
     "if*"
