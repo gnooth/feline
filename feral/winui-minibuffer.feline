@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: history feral-core feline accessors ;
+using: history completion feral-core feline accessors ;
 in: mini
 
 feral-config:winui? assert
@@ -108,9 +108,11 @@ private
 
     minibuffer-get-text :> s
     prompt length s tail
-    completion-provider call [
-        minibuffer-set-completion-text
-    ] when* ;
+    completion-provider call :> completion
+
+    completion string? [
+        completion minibuffer-set-completion-text
+    ] when ;
 
 : lookup-key                            // key -> symbol/nil
     minibuffer-keymap at ;
@@ -129,6 +131,7 @@ defer minibuffer-insert-char
     current-buffer minibuf assert-eq
     dup printable-char? [
         nil current-command!
+        reset-completion
         minibuffer-insert-char
         minibuffer-update-caret-pos
         repaint-minibuffer
