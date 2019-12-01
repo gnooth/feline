@@ -19,6 +19,8 @@ in: feral-core
 defer message
 defer clear-message
 
+global execute-command-input-string
+
 : shell-command-to-string ( command )   // command -> string/f
     nil !> result
     directories:get-temporary-filename :> tempfile
