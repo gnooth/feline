@@ -343,6 +343,32 @@ var last-segment-text
 : feline-mode-list-symbols
     ' feline-mode:line-is-definition? list-symbols:list-symbols ;
 
+use: completion
+
+: feline-mode-provide-completion
+    1 ?enough verify-string :> prefix
+
+    current-completion [ next-completion ] ?return
+
+    all-words
+    [ symbol-name prefix swap string-has-prefix? ] filter
+    [ symbol-name ] map
+    :> strings
+
+    prefix strings initialize-completion
+    next-completion ;
+
+: feline-mode-find-definition
+    "find-definition" history:set-history
+
+    ' feline-mode-provide-completion mini:set-completion-provider
+    nil current-completion!
+
+    "Word: " mini:minibuffer-accept-string
+    [ editor:find-definition-internal ] when* ;
+
+unuse: completion
+
 global feline-mode-local-map
 
 feral-config:winui? feral-config:gtkui? or #if
@@ -354,6 +380,7 @@ use: feral-key
     ' feline-mode-toggle-line-comment   ctrl-/          m set-at
     ' feline-mode-expand                ctrl-space      m set-at
     ' feline-mode-list-symbols          ctrl-shift-o    m set-at
+    ' feline-mode-find-definition       ctrl-t          m set-at
     m feline-mode-local-map! ;
 
 initialize-local-map
