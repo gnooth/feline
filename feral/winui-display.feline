@@ -28,7 +28,7 @@ feral-config:winui? assert
 192 192 192 make-colorref constant fg-default
   0   0   0 make-colorref constant bg-default
  64  64  64 make-colorref constant bg-selected
- 16  16  16 make-colorref constant bg-current-line
+ 32  32  32 make-colorref constant bg-current-line
 
 : bg-set-default bg-default winui-textview-set-bg-color ;
 
