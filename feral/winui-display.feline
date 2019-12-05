@@ -28,10 +28,13 @@ feral-config:winui? assert
 192 192 192 make-colorref constant fg-default
   0   0   0 make-colorref constant bg-default
  64  64  64 make-colorref constant bg-selected
+ 16  16  16 make-colorref constant bg-current-line
 
 : bg-set-default bg-default winui-textview-set-bg-color ;
 
 : bg-set-selected bg-selected winui-textview-set-bg-color ;
+
+: bg-set-current-line bg-current-line winui-textview-set-bg-color ;
 
 : repaint-segment // segment row -> void
     2 ?enough
@@ -48,9 +51,11 @@ feral-config:winui? assert
 
 : repaint-line-no-selection ( line row ) // line row -> void
     // no part of line is selected
+    line dot-line eq? [ bg-set-current-line ] [ bg-set-default ] if
     line format-line :> segments
     segments row repaint-segments
-    segments detabbed-text-length row winui-textview-clear-eol ;
+    segments detabbed-text-length row winui-textview-clear-eol
+    bg-set-default ;
 
 : repaint-selected-line ( line row ) // line row -> void
     // entire line is selected
