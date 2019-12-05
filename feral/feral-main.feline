@@ -172,7 +172,7 @@ feral-config:gtkui? #if
     // e.g. 'u' and '^' in directory mode
     command [
         key feral-key:key-to-printable-char [
-            local-map at command!
+            local-map [ at command! ] when*
         ] when*
     ] unless
 
