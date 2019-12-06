@@ -99,7 +99,7 @@ feral-config:winui? #if
     ] when ;
 
 : mouse-select ( col row )
-    mark null? [
+    mark nil? [
         add-undo-move
         dot copy-position mark!
         top-line-number row + nth-line dot-line!
@@ -112,23 +112,26 @@ feral-config:winui? #if
 
     mini:clear-message
 
-    lparam 0xffff bitand winui-char-width /i :> x
-    lparam 16 rshift 0xffff bitand winui-char-height /i :> y
+    lparam 0xffff bitand winui-char-width /i :> col
+    lparam 16 rshift 0xffff bitand winui-char-height /i :> row
+
+    local old-dot-line
 
     wparam {
-
         // MK_LBUTTON = 0x01 left mouse button is down
         { 0x01 [
+            dot-line old-dot-line!
             add-undo-move
             unmark
-            top-line-number y + last-line-number min nth-line dot-line!
-            x dot-line-length min dot-offset!
+            top-line-number row + last-line-number min nth-line dot-line!
+            col dot-line-length min dot-offset!
+            dot-line old-dot-line eq? [ dot-line line-changed ] [ t repaint?! ] if
             update-display
         ] }
 
         // MK_SHIFT = 0x04 shift key is down
         // 0x05 = MK_LBUTTON | MK_SHIFT
-        { 0x05 [ x y mouse-select ] }
+        { 0x05 [ col row mouse-select ] }
 
         // default case
         [ drop ]
