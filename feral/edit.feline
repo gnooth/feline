@@ -241,6 +241,7 @@ in: editor
 : backspace
     at-bof? ?exit
     check-read-only ?exit
+    mark [ delete-region ] ?return
     dot-offset 0> [
         add-undo-line-edit
         dot-offset 1-
