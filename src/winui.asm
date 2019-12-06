@@ -188,6 +188,34 @@ subroutine winui_textview_lbuttondown   ; wparam lparam -> void
         ret
 endsub
 
+; ### winui_textview_mousemove
+subroutine winui_textview_mousemove     ; wparam lparam -> void
+; 2-arg callback
+
+        ; enter callback
+        push    rbx
+        push    rbp
+        mov     rbp, [winui_raw_sp0_]
+
+        pushrbx
+        mov     rbx, arg0_register      ; wparam
+        _tag_fixnum
+        pushrbx
+        mov     rbx, arg1_register      ; lparam
+        _tag_fixnum
+
+        _quote "winui-textview-mousemove"
+        _quote "editor"
+        _ ?lookup_symbol
+        _ call_symbol
+
+        ; leave callback
+        pop     rbp
+        pop     rbx
+
+        ret
+endsub
+
 ; ### winui_textview_mousewheel
 subroutine winui_textview_mousewheel    ; delta -> void
 ; 1-arg callback

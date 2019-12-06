@@ -137,6 +137,21 @@ feral-config:winui? #if
         [ drop ]
     } case ;
 
+: winui-textview-mousemove ( wparam lparam ) // wparam lparam -> void
+    lparam 0xffff bitand winui-char-width /i :> col
+    lparam 16 rshift 0xffff bitand winui-char-height /i :> row
+
+    top-line-number row + last-line-number min nth-line dot-line!
+    col dot-line-length min dot-offset!
+
+    mark [
+        add-undo-move
+        copy-dot mark!
+    ] unless
+
+    t repaint?!
+    update-display ;
+
 : edit1-internal
     winui-initialize
     winui-create-frame

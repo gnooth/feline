@@ -365,6 +365,7 @@ extern void winui_textview_paint (void);
 extern void winui_textview_char (WPARAM);
 extern void winui_textview_keydown (WPARAM);
 extern void winui_textview_lbuttondown (WPARAM, LPARAM);
+extern void winui_textview_mousemove (WPARAM, LPARAM);
 extern void winui_textview_mousewheel (int);
 
 #define ALT_MASK        0x01 << 16
@@ -456,6 +457,12 @@ static LRESULT CALLBACK winui__textview_wnd_proc (HWND hwnd, UINT msg,
     case WM_LBUTTONDBLCLK:
       // pretend it's just a key...
       winui__textview_keydown (VK_LBUTTON);
+      return 0;
+
+    case WM_MOUSEMOVE:
+      if ((wparam & MK_LBUTTON) == 0)
+        return 0;
+      winui_textview_mousemove (wparam, lparam);
       return 0;
 
     case WM_MOUSEWHEEL:
