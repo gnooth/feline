@@ -21,16 +21,18 @@ empty
 : list-symbols                          // callable -> void
     1 ?enough verify-callable :> line-is-definition-function
 
+    current-buffer filename>> :> filename
+    filename nil? ?exit
+
     // reuse existing buffer if possible
-    nil !> buf
     buffer-list [
         dup mode>> symbols-mode:get-instance eq?
         swap parent>> current-buffer eq? and
     ] find
     // -> index/nil element/nil
-    [ nip dup editor:clear-buffer ] [ drop make-buffer ] if* buf!
+    [ nip dup editor:clear-buffer ] [ drop make-buffer ] if* :> buf
 
-    current-buffer filename>> file-name-nondirectory " [symbols]" + buf name<<
+    filename file-name-nondirectory " [symbols]" + buf name<<
 
     first-line !> source-line
     nil !> goal // put dot on this line in the [symbols] buffer
