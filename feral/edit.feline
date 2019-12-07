@@ -207,7 +207,7 @@ in: editor
         s dot-line-text head? [
             editor:add-undo-line-edit
             s length dot-line-text tail dot-line-text!
-            dot-offset s length - dot-offset!
+            dot-offset s length - 0 max dot-offset!
             t dot-line-changed?!
         ] when
     ] if
