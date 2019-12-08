@@ -112,6 +112,9 @@ static gboolean gtkui__textview_size_allocate (GtkWidget *widget,
                                                GdkRectangle* allocation,
                                                gpointer data);
 
+static gboolean gtkui__textview_realize (GtkWidget *widget,
+                                         gpointer data);
+
 static gboolean gtkui__frame_configure (GtkWidget *widget,
                                         GdkEventConfigure *event,
                                         gpointer data);
@@ -166,6 +169,8 @@ void gtkui__initialize (void)
                     G_CALLBACK(gtkui__textview_mousewheel), NULL);
   g_signal_connect (textview, "size-allocate",
                     G_CALLBACK (gtkui__textview_size_allocate), NULL);
+  g_signal_connect (textview, "realize",
+                    G_CALLBACK (gtkui__textview_realize), NULL);
 
   modeline = gtk_drawing_area_new();
 
@@ -227,6 +232,14 @@ static gboolean gtkui__textview_size_allocate (GtkWidget *widget,
   if (char_width)
     textview_columns = allocation->width / char_width;
   return TRUE;
+}
+
+static gboolean gtkui__textview_realize (GtkWidget *widget,
+                                         gpointer data)
+{
+  GdkCursor *cursor = gdk_cursor_new_from_name (gdk_display_get_default (),
+                                                "text");
+  gdk_window_set_cursor (gtk_widget_get_window (textview), cursor);
 }
 
 static gboolean gtkui__frame_configure (GtkWidget *widget,
