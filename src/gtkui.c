@@ -22,21 +22,20 @@
 
 #define FERAL_DEFAULT_FONT_SIZE         14.0
 
-#define FERAL_DEFAULT_CHAR_HEIGHT       16
-
 #define FERAL_DEFAULT_MODELINE_HEIGHT   20
-#define FERAL_DEFAULT_MINIBUFFER_HEIGHT 20
+#define FERAL_DEFAULT_MINIBUFFER_HEIGHT 24
 
 #define FERAL_DEFAULT_TEXTVIEW_HEIGHT \
  (FERAL_DEFAULT_FRAME_HEIGHT - \
   FERAL_DEFAULT_MODELINE_HEIGHT - \
   FERAL_DEFAULT_MINIBUFFER_HEIGHT)
 
+static int ascent = 0;
+static int descent = 0;
 static int char_width = 0;
-static int char_height = FERAL_DEFAULT_CHAR_HEIGHT;
+static int char_height = 0;
 
-static int textview_rows
-  = FERAL_DEFAULT_FRAME_HEIGHT / FERAL_DEFAULT_CHAR_HEIGHT - 2;
+static int textview_rows = 0;
 static int textview_columns = 0;
 
 static GtkWidget *frame;
@@ -398,7 +397,7 @@ void gtkui__textview_text_out (int x, int y, const char* s)
                                 rgb_blue (rgb_textview_bg));
           cairo_rectangle (cr_textview,
                            x,
-                           y - char_height + 3, // REVIEW
+                           y - ascent,
                            char_width * strlen (s),
                            char_height);
           cairo_clip (cr_textview);
@@ -428,9 +427,9 @@ void gtkui__textview_clear_eol (int column, int row)
                         rgb_blue (rgb_textview_bg));
   cairo_rectangle (cr_textview,
                    column * char_width,
-                   row * char_height + 3, // REVIEW
+                   row * char_height + descent,
                    textview_columns * char_width,
-                   char_height);
+                   ascent + descent);
   cairo_clip (cr_textview);
   cairo_paint (cr_textview);
   cairo_restore (cr_textview);
@@ -444,7 +443,7 @@ gtkui__textview_draw_caret ()
       int x = char_width * textview_caret_column;
       int y = char_height * textview_caret_row;
       cairo_set_source_rgb (cr_textview, 1.0, 1.0, 1.0); // white
-      cairo_rectangle (cr_textview, x, y + 3, 2, char_height);
+      cairo_rectangle (cr_textview, x, y + descent, 2, char_height);
       cairo_fill (cr_textview);
     }
 }
@@ -466,8 +465,10 @@ gtkui__textview_draw (GtkWidget *widget, cairo_t *cr, gpointer data)
       cairo_font_extents_t fe;
       cairo_font_extents (cr, &fe);
 
+      ascent = (int) fe.ascent;
+      descent = (int) fe.descent;
       char_width = (int) fe.max_x_advance;
-      char_height = (int) fe.height;
+      char_height = ascent + descent + 1;
 
       GtkAllocation allocation;
       gtk_widget_get_allocation (widget, &allocation);
@@ -536,13 +537,12 @@ gtkui__minibuffer_draw (GtkWidget *widget, cairo_t *cr, gpointer data)
                           CAIRO_FONT_SLANT_NORMAL,
                           CAIRO_FONT_WEIGHT_NORMAL);
 
-  cairo_text_extents_t extents;
-  cairo_text_extents (cr, "test", &extents);
   cairo_set_font_size (cr, 14.0);
 
   // black background
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
   cairo_paint (cr);
+
   // white text
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
   gtkui_minibuffer_paint ();
