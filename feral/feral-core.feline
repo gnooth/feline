@@ -810,16 +810,20 @@ tuple: mode
 : current-mode                          // -> mode
     current-buffer mode>> ;
 
+global whole-words-only-default
+
+global ignore-case-default
+
 tuple: search
     pattern
-    whole-words-only ;
+    whole-words-only
+    ignore-case ;
 
-: make-search                           // pattern whole-words-only -> search
+: make-search                           // pattern -> search
     search make-instance
-    tuck
-    whole-words-only<<
-    tuck
-    pattern<< ;
+    swap >>pattern
+    whole-words-only-default >>whole-words-only
+    ignore-case-default >>ignore-case ;
 
 global current-search
 

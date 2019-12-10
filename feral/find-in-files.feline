@@ -103,7 +103,7 @@ public
 
     directory nil? ?exit
 
-    find-in-files-pattern nil make-search current-search!
+    find-in-files-pattern make-search current-search!
 
     make-buffer :> buf
     buf find-in-files-output-buffer!
