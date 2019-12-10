@@ -136,6 +136,8 @@ VK_DOWN alt             constant alt-down
 VK_UP alt               constant alt-up
 'L' char-code alt       constant alt-l
 'X' char-code alt       constant alt-x
+'W' char-code alt       constant alt-w
+'C' char-code alt       constant alt-c
 
 'D' char-code ctrl shift    constant ctrl-shift-d
 'F' char-code ctrl shift    constant ctrl-shift-f

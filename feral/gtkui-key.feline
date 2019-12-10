@@ -134,6 +134,8 @@ end ctrl shift          constant ctrl-shift-end
 'v' char-code alt       constant alt-v
 'l' char-code alt       constant alt-l
 'x' char-code alt       constant alt-x
+'w' char-code alt       constant alt-w
+'c' char-code alt       constant alt-c
 
 'a' char-code ctrl      constant ctrl-a
 'b' char-code ctrl      constant ctrl-b
