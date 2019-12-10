@@ -66,6 +66,8 @@ feral-config:winui? assert
     ' repeat-search-forward             feral-key:f3                m set-at
     ' repeat-search-backward            feral-key:shift-f3          m set-at
     ' search-list-occurrences           feral-key:ctrl-f3           m set-at
+    ' toggle-whole-words-only           feral-key:alt-w             m set-at
+    ' toggle-ignore-case                feral-key:alt-c             m set-at
     ' do-tab                            feral-key:tab               m set-at
     ' kill-line                         feral-key:ctrl-k            m set-at
     ' undo                              feral-key:ctrl-z            m set-at
