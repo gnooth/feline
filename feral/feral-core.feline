@@ -668,6 +668,26 @@ termui? #if
     ] each-integer
     column ;
 
+: line-column-offset ( line column )    // line column -> offset
+
+    0 !> offset
+    0 !> col
+    line length :> limit
+
+    [
+        [ offset limit < ] [ col column < ] both?
+    ]
+    [
+        offset line text>> string-nth '\t' eq? [
+            col tab-width col tab-width mod - + col!
+        ] [
+            col 1+ col!
+        ] if
+        offset 1+ offset!
+    ] while
+
+    offset ;
+
 : dot-column                            // -> column
     dot position-column ;
 
