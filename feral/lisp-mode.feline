@@ -27,7 +27,8 @@ global instance
     // REVIEW
     [ x alphanumeric? ] [ x '-' eq? ] either? ;
 
-: lisp-mode-format-line ( s )           // string -> array-of-segments
+: lisp-mode-format-line ( line )        // line -> array-of-segments
+    line text>> detab :> s
     ';' s string-find-char :> comment-start
 
     comment-start [
@@ -73,7 +74,7 @@ initialize-local-map
     "Lisp" m name<<
     2 m indent-size<<
     "; " m comment-start<<
-    ' lisp-mode-format-line m formatter<<
+    ' lisp-mode-format-line m format-line-function<<
     ' lisp-mode-initialize-buffer m initialize-buffer-function<<
     ' lisp-mode-identifier-char? m identifier-char-function<<
     m ".lisp" modes set-at
