@@ -440,7 +440,6 @@ static LRESULT CALLBACK winui__textview_wnd_proc (HWND hwnd, UINT msg,
       // "The value is 1 if the ALT key is down while the key is pressed;
       // it is 0 if the WM_SYSKEYDOWN message is posted to the active
       // window because no window has the keyboard focus."
-      // "The value is always 0 for a WM_KEYDOWN message."
       if (wparam != VK_CONTROL && wparam != VK_MENU && (lparam & (1 << 29)) != 0)
         winui__textview_keydown (wparam);
       break;
@@ -622,6 +621,15 @@ static LRESULT CALLBACK winui__minibuffer_wnd_proc (HWND hwnd, UINT msg,
 
     case WM_KEYDOWN:
       if (wparam != VK_SHIFT && wparam != VK_CONTROL && wparam != VK_MENU)
+        winui__minibuffer_keydown (wparam);
+      break;
+
+    case WM_SYSKEYDOWN:
+      // lparam bit 29 is the context code
+      // "The value is 1 if the ALT key is down while the key is pressed;
+      // it is 0 if the WM_SYSKEYDOWN message is posted to the active
+      // window because no window has the keyboard focus."
+      if (wparam != VK_CONTROL && wparam != VK_MENU && (lparam & (1 << 29)) != 0)
         winui__minibuffer_keydown (wparam);
       break;
     }
