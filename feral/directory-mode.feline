@@ -120,43 +120,36 @@ global directory-mode-local-map
     buf buffer-list vector-push
     buf ;
 
-: open-directory ( dirname ) // dirname -> void
-    dirname directory? [
-        dirname create-directory-buffer [
-            current-buffer!
-            t repaint?!
-        ] when*
-    ] when ;
+: dir-get-filename // line -> filename/nil
+    text>> :> s
+    s name-offset [ s tail ] [ nil ] if* ;
 
-: open-directory-in-current-buffer ( dirname ) // dirname -> void
-    current-buffer :> buf
-    dirname directory-contents :> s
-    s empty? [
-        s buf editor:buffer-set-contents
-        buf first-line>> 0 make-position buf dot<<
-        buf first-line>> buf top-line<<
-        t buf read-only<<
-        dirname buf [ filename<< ] [ directory<< ] [ name<< ] 2tri
-        renumber
-        maybe-reframe
-        t repaint?!
-    ] unless ;
+: dir-goto-next-nontrivial-file
+    dot-line !> line
 
-: dir
-    current-buffer filename>> :> filename
+    [ line ] [
+        line dir-get-filename { nil "." ".." } member?
+        [ line next>> line! ] [
+            line dup text>> name-offset move-dot-to
+            nil line!
+        ] if
+    ] while ;
 
-    filename [
-        file-name-directory
-    ] [
-        get-current-directory
-    ] if* :> dirname
+: dir-next-line
+    dot-line-next [
+        text>> name-offset [ goal-column! ] when*
+        editor:move-down
+    ] when* ;
 
-    dirname editor:find-buffer-from-file-name [
-        set-current-buffer
-    ] [
-        dirname open-directory
-    ] if*
+: dir-previous-line
+    dot-line-prev [
+        text>> name-offset [ goal-column! ] when*
+        editor:move-up
+    ] when* ;
 
+: dir-goto-file ( filename ) // filename -> void
+    current-buffer mode>> directory-mode:get-instance neq? ?exit
+    filename nil? ?exit
     filename file-name-nondirectory :> name
 
     top-line !> line
@@ -177,10 +170,50 @@ global directory-mode-local-map
         linenumber 1+ editor:gotoline-internal
     ] when ;
 
+: open-directory ( dirname ) // dirname -> void
+    dirname directory? [
+        dirname create-directory-buffer [
+            current-buffer!
+            dir-goto-next-nontrivial-file
+            t repaint?!
+        ] when*
+    ] when ;
+
+: open-directory-in-current-buffer ( dirname ) // dirname -> void
+    current-buffer :> buf
+    dirname directory-contents :> s
+    s empty? [
+        s buf editor:buffer-set-contents
+        buf first-line>> 0 make-position buf dot<<
+        buf first-line>> buf top-line<<
+        t buf read-only<<
+        dirname buf [ filename<< ] [ directory<< ] [ name<< ] 2tri
+        renumber
+        maybe-reframe
+        dir-goto-next-nontrivial-file
+        t repaint?!
+    ] unless ;
+
+: dir
+    current-buffer filename>> :> filename
+
+    filename [ file-name-directory ] [ current-buffer directory>> ] if*
+    !> dirname
+
+    dirname nil? ?exit
+
+    dirname editor:find-buffer-from-file-name [
+        set-current-buffer
+    ] [
+        dirname open-directory
+    ] if*
+
+    filename [ dir-goto-file ] [ dir-goto-next-nontrivial-file ] if* ;
+
 : dir-open-file                         // void -> void
     dot-line-text :> s
 
-    nil !> name
+    local name
     s name-offset [
         s tail name!
         current-buffer filename>> name path-append
@@ -200,17 +233,19 @@ global directory-mode-local-map
     ] when ;
 
 : dir-up-dir
-    nil !> dirname
     current-buffer :> buf
-    buf filename>> [
-        file-name-directory dirname!
-        dirname [
-            dirname directory? [
-                dirname directory-contents buf editor:buffer-set-contents
+    buf filename>> :> dir
+    local up
+    dir [
+        file-name-directory up!
+        up [
+            up directory? [
+                up directory-contents "" or buf editor:buffer-set-contents
                 buf first-line>> 0 make-position buf dot<<
                 buf first-line>> buf top-line<<
                 t buf read-only<<
-                dirname buf [ filename<< ] [ directory<< ] [ name<< ] 2tri
+                up buf [ filename<< ] [ directory<< ] [ name<< ] 2tri
+                dir dir-goto-file
                 t repaint?!
             ] when
         ] when
@@ -218,9 +253,11 @@ global directory-mode-local-map
 
 : initialize-local-map
     128 <hashtable> :> m
-    ' dir-open-file     feral-key:enter     m set-at
-    ' dir-up-dir        'u'                 m set-at
-    ' dir-up-dir        '^'                 m set-at // Emacs
+    ' dir-open-file         feral-key:enter     m set-at
+    ' dir-up-dir            'u'                 m set-at
+    ' dir-up-dir            '^'                 m set-at // Emacs
+    ' dir-next-line         feral-key:down      m set-at
+    ' dir-previous-line     feral-key:up        m set-at
     m directory-mode-local-map! ;
 
 initialize-local-map
