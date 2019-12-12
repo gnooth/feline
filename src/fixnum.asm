@@ -446,7 +446,7 @@ code raw_int64_divide_truncate, 'raw_int64_divide_truncate', SYMBOL_INTERNAL
 endcode
 
 ; ### fixnum-fixnum/i
-code fixnum_fixnum_divide_truncate, 'fixnum-fixnum/i'   ; x y -- z
+code fixnum_fixnum_divide_truncate, 'fixnum-fixnum/i' ; x y -> z
         _check_fixnum
         _swap
         _check_fixnum
@@ -457,19 +457,24 @@ endcode
 
 ; ### fixnum-2/-fast
 inline fixnum_twoslash_fast, 'fixnum-2/-fast' ; fixnum -> fixnum
-%if FIXNUM_TAG_BITS = 1 && FIXNUM_TAG = 1
-        sar     rbx, 2
-        shl     rbx, 1
-        or      rbx, 1
-%else
-        _untag_fixnum
+; no type checking
+; rounds toward negative infinity (floor)
         sar     rbx, 1
-        _tag_fixnum
-%endif
+        or      rbx, 1
 endinline
 
+; ### 2/
+code twoslash, '2/' ; fixnum -> fixnum
+; rounds toward negative infinity (floor)
+        test    bl, FIXNUM_TAG
+        jz      error_not_fixnum
+        sar     rbx, 1
+        or      rbx, 1
+        next
+endcode
+
 ; ### int64-fixnum/i
-code int64_fixnum_divide_truncate, 'int64-fixnum/i'     ; x y -- z
+code int64_fixnum_divide_truncate, 'int64-fixnum/i' ; x y -> z
         _check_fixnum
         _swap
         _ check_int64
@@ -479,7 +484,7 @@ code int64_fixnum_divide_truncate, 'int64-fixnum/i'     ; x y -- z
 endcode
 
 ; ### fixnum/i
-code fixnum_divide_truncate, 'fixnum/i' ; x y -- z
+code fixnum_divide_truncate, 'fixnum/i' ; x y -> z
 
         ; second arg must be a fixnum
         _verify_fixnum
@@ -488,7 +493,7 @@ code fixnum_divide_truncate, 'fixnum/i' ; x y -- z
         _over
         _ object_raw_typecode
         mov     rax, rbx
-        poprbx                          ; -- x y
+        poprbx                          ; -> x y
 
         cmp     rax, TYPECODE_FIXNUM
         je      fixnum_fixnum_divide_truncate

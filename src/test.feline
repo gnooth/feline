@@ -3707,12 +3707,14 @@ test: fixnum-2*-fast-test-1
 
     { 2 } [ 1 fixnum-2*-fast ] unit-test
     { 4 } [ 2 fixnum-2*-fast ] unit-test
-    { 6 } [ 3 fixnum-2*-fast ] unit-test
-;
+    { 6 } [ 3 fixnum-2*-fast ] unit-test ;
 
 fixnum-2*-fast-test-1
 
 test: fixnum-2/-fast-test-1
+    // fixnum-2/-fast rounds toward negative infinity (floor)
+    // /i rounds toward 0 (truncate)
+
     { -3 } [ -6 fixnum-2/-fast ] unit-test
     { -2 } [ -4 fixnum-2/-fast ] unit-test
     { -1 } [ -2 fixnum-2/-fast ] unit-test
@@ -3730,7 +3732,12 @@ test: fixnum-2/-fast-test-1
     { 2 } [ 4 fixnum-2/-fast ] unit-test
     { 2 } [ 5 fixnum-2/-fast ] unit-test
     { 3 } [ 6 fixnum-2/-fast ] unit-test
-;
+
+    most-positive-fixnum fixnum-2/-fast most-positive-fixnum 2 /i assert-eq
+    most-positive-fixnum 1- fixnum-2/-fast most-positive-fixnum 1- 2 /i assert-eq
+
+    most-negative-fixnum fixnum-2/-fast most-negative-fixnum 2 /i assert-eq
+    most-negative-fixnum 1+ fixnum-2/-fast 1+ most-negative-fixnum 1+ 2 /i assert-eq ;
 
 fixnum-2/-fast-test-1
 
@@ -3741,8 +3748,7 @@ test: &&-test-1
 
     { f } [ { } && ] unit-test
 
-    [ { [ f assert-true 42 ] } && ] assert-must-fail
-;
+    [ { [ f assert-true 42 ] } && ] assert-must-fail ;
 
 &&-test-1
 
