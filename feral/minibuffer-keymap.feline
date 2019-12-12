@@ -16,6 +16,8 @@
 using: editor feline ;
 in: keymaps
 
+feral-config:winui? feral-config:gtkui? or assert
+
 private
 
 : initialize-minibuffer-keymap
@@ -50,6 +52,9 @@ private
 
     ' beginning-of-buffer               feral-key:ctrl-home         m set-at
     ' end-of-buffer                     feral-key:ctrl-end          m set-at
+
+    ' search:toggle-whole-words-only    feral-key:alt-w             m set-at
+    ' search:toggle-ignore-case         feral-key:alt-c             m set-at
 
     // FIXME remove
     ' do-quit                           feral-key:ctrl-q            m set-at
