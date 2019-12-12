@@ -99,33 +99,33 @@ feral-config:winui? #if
     ] when ;
 
 : mouse-select ( col row )
-    mark nil? [
+    mark [
         add-undo-move
-        dot copy-position mark!
-        top-line-number row + nth-line dot-line!
-        col dot-line-length min dot-offset!
-        t repaint!
+        copy-dot mark!
+        top-line-number row + last-line-number min nth-line dot-line!
+        dot-line col line-column-offset dot-line-length min dot-offset!
+        t repaint?!
         update-display
-    ] when ;
+    ] unless ;
 
 : winui-textview-lbuttondown ( wparam lparam ) // wparam lparam -> void
+    clear-message
 
-    mini:clear-message
-
-    lparam 0xffff bitand winui-char-width /i :> col
+    lparam 0xffff bitand :> x
+    x winui-char-width 2/ + winui-char-width /i :> col
     lparam 16 rshift 0xffff bitand winui-char-height /i :> row
 
-    local old-dot-line
+    local olddotline
 
     wparam {
         // MK_LBUTTON = 0x01 left mouse button is down
         { 0x01 [
-            dot-line old-dot-line!
+            dot-line olddotline!
             add-undo-move
             unmark
             top-line-number row + last-line-number min nth-line dot-line!
-            col dot-line-length min dot-offset!
-            dot-line old-dot-line eq? [ dot-line line-changed ] [ t repaint?! ] if
+            dot-line col line-column-offset dot-line-length min dot-offset!
+            dot-line olddotline eq? [ dot-line line-changed ] [ t repaint?! ] if
             update-display
         ] }
 
@@ -138,16 +138,23 @@ feral-config:winui? #if
     } case ;
 
 : winui-textview-mousemove ( wparam lparam ) // wparam lparam -> void
-    lparam 0xffff bitand winui-char-width /i :> col
+    lparam 0xffff bitand :> x
+
+    x winui-char-width 2/ + winui-char-width /i :> col
     lparam 16 rshift 0xffff bitand winui-char-height /i :> row
 
-    top-line-number row + last-line-number min nth-line dot-line!
-    col dot-line-length min dot-offset!
+    top-line-number row + last-line-number min nth-line :> newline
+    dot-line col line-column-offset dot-line-length min :> newoffset
+
+    newline dot-line eq? newoffset dot-offset eq? and ?exit // no change
 
     mark [
         add-undo-move
         copy-dot mark!
     ] unless
+
+    newline dot-line!
+    newoffset dot-offset!
 
     t repaint?!
     update-display ;
@@ -156,7 +163,7 @@ feral-config:winui? #if
     winui-initialize
     winui-create-frame
     reframe
-    t repaint!
+    t repaint?!
     update-display
     winui-main ;
 
@@ -229,7 +236,7 @@ feral-config:gtkui? #if
 : edit1
     gtkui-initialize
     reframe
-    t repaint!
+    t repaint?!
     update-display
     gtkui-main ;
 
