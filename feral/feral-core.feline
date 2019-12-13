@@ -655,18 +655,21 @@ termui? #if
 
     sb sbuf>string ;
 
-: position-column ( pos )               // position -> column
-    pos line>> :> line
-    pos offset>> line text>> length min :> limit
+: line-offset-column ( line offset )    // line offset -> column
+    line text>> :> text
+    offset text length min :> limit
     0 !> column
     limit [
-        line text>> string-nth '\t' eq? [
+        text string-nth '\t' eq? [
             column tab-width column tab-width mod - + column!
         ] [
             column 1+ column!
         ] if
     ] each-integer
     column ;
+
+: position-column ( pos )               // position -> column
+    pos line>> pos offset>> line-offset-column ;
 
 : line-column-offset ( line column )    // line column -> offset
 
@@ -694,7 +697,7 @@ termui? #if
 : dot-row                               // -> n
     dot-line-number top-line-number - ;
 
-: mark-column                           // -> column
+: mark-column                           // -> column/nil
     mark [ mark position-column ] [ nil ] if ;
 
 : line-selected? ( line )               // line -> ?
