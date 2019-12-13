@@ -221,11 +221,17 @@ use: mini
 
 : find-command
     "find" set-history
-    "Find: "                            // prompt
+    whole-words-only-default "Find word: " "Find: " ? // prompt
     minibuffer-accept-string :> pattern
     pattern empty? ?exit
     pattern make-search current-search!
-    pattern dot search-forward [ found ] [ not-found ] if* ;
+
+    whole-words-only? [
+        dot search-forward-word
+    ] [
+        pattern dot search-forward
+    ] if // -> pattern/nil
+    [ found ] [ not-found ] if* ;
 
 : search-forward-word-at-dot
     current-mode identifier-at-dot      // -> index/nil string/nil
@@ -321,7 +327,8 @@ use: mini
 : toggle-whole-words-only
     whole-words-only-default not whole-words-only-default!
     current-search [ whole-words-only-default swap whole-words-only<< ] when*
-    whole-words-only-default "Match whole words only" "Match any occurrence" ? message ;
+    whole-words-only-default "Match whole words only" "Match any occurrence" ?
+    current-buffer minibuffer? [ show-message-briefly ] [ message ] if ;
 
 : toggle-ignore-case
     ignore-case-default not ignore-case-default!
