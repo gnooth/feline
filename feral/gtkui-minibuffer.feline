@@ -127,15 +127,30 @@ defer minibuffer-insert-char
 
 public
 
+: minibuffer? minibuf eq? ;
+
 : message                               // string -> void
-    current-buffer minibuf eq? [ drop ] [ minibuffer-set-text ] if ;
+    current-buffer minibuffer? [ drop ] [ minibuffer-set-text ] if ;
 
 ' message is feral-core:message
 
 : clear-message
-    current-buffer minibuf eq? [ "" minibuffer-set-text ] unless ;
+    current-buffer minibuffer? [ "" minibuffer-set-text ] unless ;
 
 ' clear-message is feral-core:clear-message
+
+: show-message-briefly                  // string -> void
+    current-buffer minibuffer? assert
+
+    minibuffer-get-text :> saved-text
+    copy-dot :> saved-dot
+
+    minibuffer-set-text
+    repaint-minibuffer
+    1000 sleep
+    saved-text minibuffer-set-text
+    repaint-minibuffer
+    saved-dot dot! ;
 
 : minibuffer-accept-string              // prompt -> string/nil
     verify-string prompt!
