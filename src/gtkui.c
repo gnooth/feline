@@ -384,7 +384,8 @@ on_minibuffer_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
 
 extern void gtkui_textview_paint (void);
 
-void gtkui__textview_text_out (int x, int y, const char* s)
+void
+gtkui__textview_text_out (int x, int y, const char* s)
 {
   if (cr_textview)
     {
@@ -418,7 +419,8 @@ void gtkui__textview_text_out (int x, int y, const char* s)
     }
 }
 
-void gtkui__textview_clear_eol (int column, int row)
+void
+gtkui__textview_clear_eol (int column, int row)
 {
   cairo_save (cr_textview);
   cairo_set_source_rgb (cr_textview,
@@ -427,9 +429,9 @@ void gtkui__textview_clear_eol (int column, int row)
                         rgb_blue (rgb_textview_bg));
   cairo_rectangle (cr_textview,
                    column * char_width,
-                   row * char_height + descent,
+                   (row + 1) * char_height - ascent,
                    textview_columns * char_width,
-                   ascent + descent);
+                   char_height);
   cairo_clip (cr_textview);
   cairo_paint (cr_textview);
   cairo_restore (cr_textview);
