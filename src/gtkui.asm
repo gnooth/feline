@@ -156,8 +156,8 @@ code gtkui_textview_text_out, 'gtkui-textview-text-out' ; x y string -> void
         next
 endcode
 
-; ### gtkui-textview-clear-eol
-code gtkui_textview_clear_eol, 'gtkui-textview-clear-eol' ; x y -> void
+; ### textview-clear-eol
+code gtkui_textview_clear_eol, 'textview-clear-eol' ; column row -> void
         _check_fixnum
         mov     arg1_register, rbx
         poprbx

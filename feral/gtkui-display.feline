@@ -47,7 +47,7 @@ feral-config:gtkui? assert
     line dot-line eq? [ bg-set-current-line ] [ bg-set-default ] if
     line format-line :> segments
     segments row repaint-segments
-    segments detabbed-text-length row gtkui-textview-clear-eol
+    segments detabbed-text-length row textview-clear-eol
     bg-set-default ;
 
 : repaint-selected-line ( line row )    // line row -> void
@@ -55,7 +55,7 @@ feral-config:gtkui? assert
     line format-line :> segments
     bg-set-selected
     segments row repaint-segments
-    segments detabbed-text-length row gtkui-textview-clear-eol
+    segments detabbed-text-length row textview-clear-eol
     bg-set-default ;
 
 : repaint-segment-of-partly-selected-line ( segment line region row )
@@ -117,7 +117,7 @@ feral-config:gtkui? assert
     both?
     bg-selected bg-default ? gtkui-textview-set-bg-color
 
-    segments detabbed-text-length row gtkui-textview-clear-eol ;
+    segments detabbed-text-length row textview-clear-eol ;
 
 : repaint-line ( line row )             // line row -> void
     {
