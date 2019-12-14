@@ -59,27 +59,32 @@ feral-config:gtkui? assert
     bg-set-default ;
 
 : repaint-segment-of-partly-selected-line ( segment line region row )
-    line region begin-line eq? [ region begin-offset ] [ 0 ] if :> selection-start-index
-    line region end-line eq? [ region end-offset ] [ line length ] if :> selection-end-index
+    line region begin-line eq? [ region begin position-column ] [ 0 ] if
+    :> startcol // region start column
 
-    selection-start-index segment start>> <
-    segment start>> segment text>> length + selection-end-index <= and [
+    line region end-line eq?
+    [ region end position-column ]
+    [ line dup length line-offset-column ] if
+    :> endcol   // region end column
+
+    segment start>> startcol >
+    segment start>> segment length + endcol <= and [
         // segment is entirely within selection
         bg-set-selected
         segment row repaint-segment
     ] ?return
 
-    nil !> seg1
-    nil !> seg2
+    local seg1
+    local seg2
 
-    selection-start-index segment in-segment? selection-end-index segment in-segment? and [
+    startcol segment in-segment? endcol segment in-segment? and [
         // region is entirely within segment
-        segment selection-start-index segment start>> - split-segment seg2! seg1!
+        segment startcol segment start>> - split-segment seg2! seg1!
         bg-set-default
         seg1 row repaint-segment
 
-        // now split seg2 at selection-end-index
-        seg2 selection-end-index seg2 start>> - split-segment
+        // now split seg2 at endcol
+        seg2 endcol seg2 start>> - split-segment
         swap
         bg-set-selected
         row repaint-segment
@@ -87,8 +92,8 @@ feral-config:gtkui? assert
         row repaint-segment
     ] ?return
 
-    selection-start-index segment in-segment? [
-        segment selection-start-index segment start>> - split-segment seg2! seg1!
+    startcol segment in-segment? [
+        segment startcol segment start>> - split-segment seg2! seg1!
         bg-set-default
         seg1 row repaint-segment
         bg-set-selected
@@ -96,8 +101,8 @@ feral-config:gtkui? assert
         bg-set-default
     ] ?return
 
-    selection-end-index segment in-segment? [
-        segment selection-end-index segment start>> - split-segment seg2! seg1!
+    endcol segment in-segment? [
+        segment endcol segment start>> - split-segment seg2! seg1!
         bg-set-selected
         seg1 row repaint-segment
         bg-set-default
