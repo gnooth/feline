@@ -280,15 +280,17 @@ private: word-right-internal
         dot-offset goal-column!
     ] when
 
-    dot-line line-changed
-    dot-line-prev line-changed
-
-    dot-line-prev dot-line!
-    reframe? [
-        dot-line top-line!
-        t repaint?!
-    ] when
-    adjust-dot-column ;
+    // dot-line-prev might be nil here if we've unmarked a multiline block
+    dot-line-prev [
+        dot-line-prev dot-line!
+        dot-line line-changed
+        dot-line-prev line-changed
+        reframe? [
+            dot-line top-line!
+            t repaint?!
+        ] when
+        adjust-dot-column
+    ] when ;
 
 : select-up
     dot-line-prev nil? ?exit
