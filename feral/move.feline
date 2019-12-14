@@ -282,9 +282,9 @@ private: word-right-internal
 
     // dot-line-prev might be nil here if we've unmarked a multiline block
     dot-line-prev [
-        dot-line-prev dot-line!
         dot-line line-changed
         dot-line-prev line-changed
+        dot-line-prev dot-line!
         reframe? [
             dot-line top-line!
             t repaint?!
@@ -321,15 +321,17 @@ private: word-right-internal
         dot-offset goal-column!
     ] when
 
-    dot-line line-changed
-    dot-line-next line-changed
-
-    dot-line-next dot-line!
-    reframe? [
-        dot-line-number textview-rows 1- - nth-line top-line!
-        t repaint?!
-    ] when
-    adjust-dot-column ;
+    // dot-line-next might be nil here if we've unmarked a multiline block
+    dot-line-next [
+        dot-line line-changed
+        dot-line-next line-changed
+        dot-line-next dot-line!
+        reframe? [
+            dot-line-number textview-rows 1- - nth-line top-line!
+            t repaint?!
+        ] when
+        adjust-dot-column
+    ] when ;
 
 : select-down
     dot-line-next nil? ?exit
