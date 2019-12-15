@@ -385,8 +385,11 @@ on_minibuffer_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
 extern void gtkui_textview_paint (void);
 
 void
-gtkui__textview_text_out (int x, int y, const char* s)
+gtkui__textview_text_out (int column, int row, const char* s)
 {
+  int x = column * char_width;
+  int y = (row + 1) * char_height;
+
   if (cr_textview)
     {
       if (rgb_textview_bg != 0) // REVIEW

@@ -138,9 +138,8 @@ code gtkui_modeline_set_text, 'modeline-set-text' ; string -> void
 endcode
 
 ; ### textview-text-out
-code gtkui_textview_text_out, 'textview-text-out' ; x y string -> void
-        _ string_from
-        _drop
+code gtkui_textview_text_out, 'textview-text-out' ; column row string -> void
+        _ string_raw_data_address
         mov     arg2_register, rbx
         poprbx
         _ check_fixnum
