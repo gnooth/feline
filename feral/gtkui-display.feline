@@ -23,17 +23,17 @@ feral-config:gtkui? assert
  64  64  64 make-colorref constant bg-selected
  32  32  32 make-colorref constant bg-current-line
 
-: bg-set-default bg-default gtkui-textview-set-bg-color ;
+: bg-set-default bg-default textview-set-bg-color ;
 
-: bg-set-selected bg-selected gtkui-textview-set-bg-color ;
+: bg-set-selected bg-selected textview-set-bg-color ;
 
-: bg-set-current-line bg-current-line gtkui-textview-set-bg-color ;
+: bg-set-current-line bg-current-line textview-set-bg-color ;
 
 : repaint-segment                       // segment row -> void
     2 ?enough
     :> row :> segment
 
-    segment format>> gtkui-textview-set-fg-color
+    segment format>> textview-set-fg-color
 
     segment start>> gtkui-char-width *
     row 1+ gtkui-char-height *
@@ -120,7 +120,7 @@ feral-config:gtkui? assert
     [ line next>> ]
     [ line next>> 0 make-position region in-region? ]
     both?
-    bg-selected bg-default ? gtkui-textview-set-bg-color
+    bg-selected bg-default ? textview-set-bg-color
 
     segments detabbed-text-length row textview-clear-eol ;
 

@@ -85,8 +85,8 @@ code gtkui_textview_columns, 'gtkui-textview-columns' ; void -> fixnum
         next
 endcode
 
-; ### gtkui-textview-set-fg-color
-code gtkui_textview_set_fg_color, 'gtkui-textview-set-fg-color' ; color -> void
+; ### textview-set-fg-color
+code gtkui_textview_set_fg_color, 'textview-set-fg-color' ; color -> void
         _check_fixnum
         mov     arg0_register, rbx
         poprbx
@@ -95,8 +95,8 @@ code gtkui_textview_set_fg_color, 'gtkui-textview-set-fg-color' ; color -> void
         next
 endcode
 
-; ### gtkui-textview-set-bg-color
-code gtkui_textview_set_bg_color, 'gtkui-textview-set-bg-color' ; color -> void
+; ### textview-set-bg-color
+code gtkui_textview_set_bg_color, 'textview-set-bg-color' ; color -> void
         _check_fixnum
         mov     arg0_register, rbx
         poprbx
