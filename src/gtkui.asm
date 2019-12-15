@@ -293,7 +293,7 @@ subroutine gtkui_textview_mousewheel    ; +1/-1 -> void
         ret
 endsub
 
-; ### gtkui-textview-set-caret-pos
+; ### textview-set-caret-pos
 code gtkui_textview_set_caret_pos, 'textview-set-caret-pos' ; x y -> void
         _check_fixnum
         mov     arg1_register, rbx

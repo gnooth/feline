@@ -21,9 +21,9 @@ feral-config:winui? assert
 : update-caret-pos
     dot-column textview-char-width *
     dot-line-number top-line-number - textview-char-height *
-    winui-set-caret-pos ;
+    textview-set-caret-pos ;
 
-: update-mode-line mode-line-text winui-modeline-set-text ;
+: update-mode-line mode-line-text modeline-set-text ;
 
 192 192 192 make-colorref constant fg-default
   0   0   0 make-colorref constant bg-default
@@ -44,7 +44,7 @@ feral-config:winui? assert
 
     segment start>> textview-char-width *
     row textview-char-height *
-    segment text>> winui-textview-text-out ;
+    segment text>> textview-text-out ;
 
 : repaint-segments ( segments row ) // segments row -> void
     segments [ row repaint-segment ] each ;
@@ -54,7 +54,7 @@ feral-config:winui? assert
     line dot-line eq? [ bg-set-current-line ] [ bg-set-default ] if
     line format-line :> segments
     segments row repaint-segments
-    segments detabbed-text-length row winui-textview-clear-eol
+    segments detabbed-text-length row textview-clear-eol
     bg-set-default ;
 
 : repaint-selected-line ( line row ) // line row -> void
@@ -62,7 +62,7 @@ feral-config:winui? assert
     line format-line :> segments
     bg-set-selected
     segments row repaint-segments
-    segments detabbed-text-length row winui-textview-clear-eol
+    segments detabbed-text-length row textview-clear-eol
     bg-set-default ;
 
 : repaint-segment-of-partly-selected-line ( segment line region row )
@@ -129,7 +129,7 @@ feral-config:winui? assert
     both?
     bg-selected bg-default ? textview-set-bg-color
 
-    segments detabbed-text-length row winui-textview-clear-eol ;
+    segments detabbed-text-length row textview-clear-eol ;
 
 : repaint-line ( line row )             // line row -> void
     {
@@ -157,7 +157,7 @@ feral-config:winui? assert
     ] while
 
     [ row textview-rows <= ] [
-        0 row winui-textview-clear-eol
+        0 row textview-clear-eol
         row 1+ row!
     ] while
 
@@ -180,7 +180,7 @@ feral-config:winui? assert
     ] while
 
     [ row textview-rows <= ] [
-        0 row winui-textview-clear-eol
+        0 row textview-clear-eol
         row 1+ row!
     ] while
 

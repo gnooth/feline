@@ -253,8 +253,8 @@ subroutine winui_textview_mousewheel    ; delta -> void
         ret
 endsub
 
-; ### winui-textview-text-out
-code winui_textview_text_out, 'winui-textview-text-out' ; x y string -> void
+; ### textview-text-out
+code winui_textview_text_out, 'textview-text-out' ; x y string -> void
         _ string_from
         mov     arg3_register, rbx
         poprbx
@@ -273,8 +273,8 @@ code winui_textview_text_out, 'winui-textview-text-out' ; x y string -> void
         next
 endcode
 
-; ### winui-textview-clear-eol
-code winui_textview_clear_eol, 'winui-textview-clear-eol' ; x y -> void
+; ### textview-clear-eol
+code winui_textview_clear_eol, 'textview-clear-eol' ; x y -> void
         _check_fixnum
         mov     arg1_register, rbx
         poprbx
@@ -348,8 +348,8 @@ code winui_char_height, 'textview-char-height' ; void -> fixnum
         next
 endcode
 
-; ### winui-modeline-set-text
-code winui_modeline_set_text, 'winui-modeline-set-text' ; string -> void
+; ### modeline-set-text
+code winui_modeline_set_text, 'modeline-set-text' ; string -> void
         _ string_raw_data_address
         mov     arg0_register, rbx
         poprbx
@@ -503,8 +503,8 @@ code winui_hide_caret, 'winui-hide-caret' ; void -> void
         next
 endcode
 
-; ### winui-set-caret-pos
-code winui_set_caret_pos, 'winui-set-caret-pos' ; x y -> void
+; ### textview-set-caret-pos
+code winui_set_caret_pos, 'textview-set-caret-pos' ; x y -> void
         _check_fixnum
         mov     arg1_register, rbx
         poprbx

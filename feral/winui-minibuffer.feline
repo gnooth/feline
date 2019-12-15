@@ -42,7 +42,7 @@ create-minibuffer
 : minibuffer-update-caret-pos
     minibuf dot>> offset>> textview-char-width *
     0
-    winui-set-caret-pos ;
+    textview-set-caret-pos ;
 
 : minibuffer-get-text                   // void -> string
     minibuf dot>> line>> text>> "" or ;
@@ -89,7 +89,7 @@ private
     s nil? ?exit
     prompt s +
     [ minibuffer-set-text ]
-    [ string-length dup minibuf dot>> offset<< textview-char-width * 0 winui-set-caret-pos ]
+    [ string-length dup minibuf dot>> offset<< textview-char-width * 0 textview-set-caret-pos ]
     bi
 
     winui-minibuffer-invalidate ;
