@@ -16,8 +16,11 @@
 using: feral-core feline accessors ;
 in: editor
 
-: adjust-dot-column
-    goal-column dot-offset!
+: update-goal-column
+    dot-column goal-column! ;
+
+: move-dot-to-goal-column
+    dot-line goal-column line-column-offset dot-offset!
     dot-offset dot-line-length > [
         dot-line-length dot-offset!
     ] when ;
@@ -68,7 +71,8 @@ in: editor
     goal dot-offset neq? [
         add-undo-move
         unmark
-        goal dup dot-offset! goal-column!
+        goal dot-offset!
+        update-goal-column
     ] [
         mark [ add-undo-move unmark ] when
     ] if ;
@@ -93,7 +97,8 @@ in: editor
     mark dot-offset dot-line-length neq? or [
         add-undo-move
         unmark
-        dot-line-length dup dot-offset! goal-column!
+        dot-line-length dot-offset!
+        update-goal-column
     ] when ;
 
 : select-to-eol
@@ -289,7 +294,7 @@ private: word-right-internal
             dot-line top-line!
             t repaint?!
         ] when
-        adjust-dot-column
+        move-dot-to-goal-column
     ] when ;
 
 : select-up
@@ -305,7 +310,7 @@ private: word-right-internal
     reframe? [
         dot-line top-line!
     ] when
-    adjust-dot-column
+    move-dot-to-goal-column
     t repaint?! ;
 
 : move-down
@@ -330,7 +335,7 @@ private: word-right-internal
             dot-line-number textview-rows 1- - nth-line top-line!
             t repaint?!
         ] when
-        adjust-dot-column
+        move-dot-to-goal-column
     ] when ;
 
 : select-down
@@ -346,7 +351,7 @@ private: word-right-internal
     reframe? [
         dot-line-number textview-rows 1- - nth-line top-line!
     ] when
-    adjust-dot-column
+    move-dot-to-goal-column
     t repaint?! ;
 
 feral-config:winui? feral-config:gtkui? or #if
@@ -420,7 +425,7 @@ feral-config:winui? feral-config:gtkui? or #if
 
     top-line-number textview-rows + last-line-number > [
         last-line dot-line!
-        adjust-dot-column
+        move-dot-to-goal-column
     ] ?return
 
     top-line !> line
@@ -441,7 +446,7 @@ feral-config:winui? feral-config:gtkui? or #if
     line dot-line!
 
     t repaint?!
-    adjust-dot-column ;
+    move-dot-to-goal-column ;
 
 : do-page-up
     add-undo-move
@@ -468,4 +473,4 @@ feral-config:winui? feral-config:gtkui? or #if
     line top-line!
 
     t repaint?!
-    adjust-dot-column ;
+    move-dot-to-goal-column ;
