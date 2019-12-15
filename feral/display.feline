@@ -67,7 +67,7 @@ global changed-lines
 
 using: feral-loader feral-config feline ;
 
-winui? [ "display-common.feline" load-feral-source-file ] when
+winui? gtkui? or [ "display-common.feline" load-feral-source-file ] when
 
 {
     { [ winui?  ] [ "winui-display.feline"  ] }
