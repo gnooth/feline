@@ -105,8 +105,8 @@ code gtkui_textview_set_bg_color, 'textview-set-bg-color' ; color -> void
         next
 endcode
 
-; ### gtkui-char-width
-code gtkui_char_width, 'gtkui-char-width' ; void -> fixnum
+; ### textview-char-width
+code gtkui_char_width, 'textview-char-width' ; void -> fixnum
         extern  gtkui__char_width
         xcall   gtkui__char_width
         pushrbx
@@ -115,8 +115,8 @@ code gtkui_char_width, 'gtkui-char-width' ; void -> fixnum
         next
 endcode
 
-; ### gtkui-char-height
-code gtkui_char_height, 'gtkui-char-height' ; void -> fixnum
+; ### textview-char-height
+code gtkui_char_height, 'textview-char-height' ; void -> fixnum
         extern  gtkui__char_height
         xcall   gtkui__char_height
         pushrbx

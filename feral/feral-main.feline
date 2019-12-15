@@ -218,8 +218,8 @@ feral-config:gtkui? #if
 : gtkui-textview-button-press
     2 ?enough :> y :> x
 
-    x gtkui-char-width /i :> column
-    y gtkui-char-height /i :> row
+    x textview-char-width /i :> column
+    y textview-char-height /i :> row
 
     add-undo-move
     unmark

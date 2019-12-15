@@ -35,8 +35,8 @@ feral-config:gtkui? assert
 
     segment format>> textview-set-fg-color
 
-    segment start>> gtkui-char-width *
-    row 1+ gtkui-char-height *
+    segment start>> textview-char-width *
+    row 1+ textview-char-height *
     segment text>> gtkui-textview-text-out ;
 
 : repaint-segments ( segments row )     // segments row -> void
@@ -150,8 +150,8 @@ feral-config:gtkui? assert
     nil repaint?! ;
 
 : update-caret-pos
-    dot-column // gtkui-char-width *
-    dot-line-number top-line-number - // gtkui-char-height *
+    dot-column
+    dot-line-number top-line-number -
     gtkui-textview-set-caret-pos ;
 
 : update-mode-line mode-line-text gtkui-modeline-set-text ;
