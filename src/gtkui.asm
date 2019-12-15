@@ -125,8 +125,8 @@ code gtkui_char_height, 'textview-char-height' ; void -> fixnum
         next
 endcode
 
-; ### gtkui-modeline-set-text
-code gtkui_modeline_set_text, 'gtkui-modeline-set-text' ; string -> void
+; ### modeline-set-text
+code gtkui_modeline_set_text, 'modeline-set-text' ; string -> void
         _ string_raw_data_address
         mov     arg0_register, rbx
         poprbx
@@ -137,8 +137,8 @@ code gtkui_modeline_set_text, 'gtkui-modeline-set-text' ; string -> void
         next
 endcode
 
-; ### gtkui-textview-text-out
-code gtkui_textview_text_out, 'gtkui-textview-text-out' ; x y string -> void
+; ### textview-text-out
+code gtkui_textview_text_out, 'textview-text-out' ; x y string -> void
         _ string_from
         _drop
         mov     arg2_register, rbx
@@ -294,7 +294,7 @@ subroutine gtkui_textview_mousewheel    ; +1/-1 -> void
 endsub
 
 ; ### gtkui-textview-set-caret-pos
-code gtkui_textview_set_caret_pos, 'gtkui-textview-set-caret-pos' ; x y -> void
+code gtkui_textview_set_caret_pos, 'textview-set-caret-pos' ; x y -> void
         _check_fixnum
         mov     arg1_register, rbx
         poprbx
