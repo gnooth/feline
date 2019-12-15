@@ -19,8 +19,8 @@ in: editor
 feral-config:winui? assert
 
 : update-caret-pos
-    dot-column winui-char-width *
-    dot-line-number top-line-number - winui-char-height *
+    dot-column textview-char-width *
+    dot-line-number top-line-number - textview-char-height *
     winui-set-caret-pos ;
 
 : update-mode-line mode-line-text winui-modeline-set-text ;
@@ -30,20 +30,20 @@ feral-config:winui? assert
  64  64  64 make-colorref constant bg-selected
  32  32  32 make-colorref constant bg-current-line
 
-: bg-set-default bg-default winui-textview-set-bg-color ;
+: bg-set-default bg-default textview-set-bg-color ;
 
-: bg-set-selected bg-selected winui-textview-set-bg-color ;
+: bg-set-selected bg-selected textview-set-bg-color ;
 
-: bg-set-current-line bg-current-line winui-textview-set-bg-color ;
+: bg-set-current-line bg-current-line textview-set-bg-color ;
 
 : repaint-segment // segment row -> void
     2 ?enough
     :> row :> segment
 
-    segment format>> winui-textview-set-fg-color
+    segment format>> textview-set-fg-color
 
-    segment start>> winui-char-width *
-    row winui-char-height *
+    segment start>> textview-char-width *
+    row textview-char-height *
     segment text>> winui-textview-text-out ;
 
 : repaint-segments ( segments row ) // segments row -> void
@@ -127,7 +127,7 @@ feral-config:winui? assert
     [ line next>> ]
     [ line next>> 0 make-position region in-region? ]
     both?
-    bg-selected bg-default ? winui-textview-set-bg-color
+    bg-selected bg-default ? textview-set-bg-color
 
     segments detabbed-text-length row winui-textview-clear-eol ;
 

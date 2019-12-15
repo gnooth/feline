@@ -40,7 +40,7 @@ global minibuffer-keymap
 create-minibuffer
 
 : minibuffer-update-caret-pos
-    minibuf dot>> offset>> winui-char-width *
+    minibuf dot>> offset>> textview-char-width *
     0
     winui-set-caret-pos ;
 
@@ -89,7 +89,7 @@ private
     s nil? ?exit
     prompt s +
     [ minibuffer-set-text ]
-    [ string-length dup minibuf dot>> offset<< winui-char-width * 0 winui-set-caret-pos ]
+    [ string-length dup minibuf dot>> offset<< textview-char-width * 0 winui-set-caret-pos ]
     bi
 
     winui-minibuffer-invalidate ;

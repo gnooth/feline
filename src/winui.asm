@@ -308,8 +308,8 @@ code winui_textview_columns, 'winui-textview-columns' ; void -> fixnum
         next
 endcode
 
-; ### winui-textview-set-fg-color
-code winui_textview_set_fg_color, 'winui-textview-set-fg-color' ; color -> void
+; ### textview-set-fg-color
+code winui_textview_set_fg_color, 'textview-set-fg-color' ; color -> void
         _check_fixnum
         mov     arg0_register, rbx
         poprbx
@@ -318,8 +318,8 @@ code winui_textview_set_fg_color, 'winui-textview-set-fg-color' ; color -> void
         next
 endcode
 
-; ### winui-textview-set-bg-color
-code winui_textview_set_bg_color, 'winui-textview-set-bg-color' ; color -> void
+; ### textview-set-bg-color
+code winui_textview_set_bg_color, 'textview-set-bg-color' ; color -> void
         _check_fixnum
         mov     arg0_register, rbx
         poprbx
@@ -328,8 +328,8 @@ code winui_textview_set_bg_color, 'winui-textview-set-bg-color' ; color -> void
         next
 endcode
 
-; ### winui-char-width
-code winui_char_width, 'winui-char-width' ; void -> fixnum
+; ### textview-char-width
+code winui_char_width, 'textview-char-width' ; void -> fixnum
         extern  winui__char_width
         xcall   winui__char_width
         pushrbx
@@ -338,8 +338,8 @@ code winui_char_width, 'winui-char-width' ; void -> fixnum
         next
 endcode
 
-; ### winui-char-height
-code winui_char_height, 'winui-char-height' ; void -> fixnum
+; ### textview-char-height
+code winui_char_height, 'textview-char-height' ; void -> fixnum
         extern  winui__char_height
         xcall   winui__char_height
         pushrbx
