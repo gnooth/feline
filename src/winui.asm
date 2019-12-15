@@ -254,7 +254,7 @@ subroutine winui_textview_mousewheel    ; delta -> void
 endsub
 
 ; ### textview-text-out
-code winui_textview_text_out, 'textview-text-out' ; x y string -> void
+code winui_textview_text_out, 'textview-text-out' ; column row string -> void
         _ string_from
         mov     arg3_register, rbx
         poprbx

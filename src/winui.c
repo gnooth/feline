@@ -472,8 +472,11 @@ static LRESULT CALLBACK winui__textview_wnd_proc (HWND hwnd, UINT msg,
   return DefWindowProc (hwnd, msg, wparam, lparam);
 }
 
-void winui__textview_text_out (int x, int y, LPCSTR lpString, int c)
+void winui__textview_text_out (int column, int row, LPCSTR lpString, int c)
 {
+  int x = column * char_width;
+  int y = row * char_height;
+
   if (hdc_textview)
     {
       SetTextColor (hdc_textview, rgb_textview_fg);

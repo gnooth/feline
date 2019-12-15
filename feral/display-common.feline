@@ -16,8 +16,6 @@
 using: feral-core feline accessors segments feral-colors ;
 in: editor
 
-"loading display-common" print
-
 feral-config:winui? feral-config:gtkui? or assert
 
 192 192 192 make-colorref constant fg-default
@@ -36,10 +34,7 @@ feral-config:winui? feral-config:gtkui? or assert
     :> row :> segment
 
     segment format>> textview-set-fg-color
-
-    segment start>> textview-char-width *
-    row textview-char-height *
-    segment text>> textview-text-out ;
+    segment start>> row segment text>> textview-text-out ;
 
 : repaint-segments ( segments row ) // segments row -> void
     segments [ row repaint-segment ] each ;
