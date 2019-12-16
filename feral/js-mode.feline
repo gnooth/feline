@@ -27,27 +27,6 @@ global instance
 // REVIEW first char must be letter, '_' or '$'
     [ x alphanumeric? ] [ x '_' eq? x '$' eq? or ] either? ;
 
-: js-mode-identifier-at-dot             // void -> start/f string/f
-
-    [ mark ] [ mark-line dot-line eq? ] both? [
-        mark dot make-region/2 begin-offset
-    ] [
-        dot-offset dot-line-length 1- min 0 max
-    ] if :> offset
-
-    offset dot-line-text [ js-mode-identifier-char? not ] find-last-from drop :> start!
-
-    // advance to first identifier char
-    start [ start 1+ start! ] [ 0 start! ] if
-
-    start dot-line-text [ js-mode-identifier-char? not ] find-from drop :> end!
-
-    end [ dot-line-length end! ] unless
-
-    start
-    start end dot-line-text string-substring
-;
-
 : js-mode-format-line ( s )             // string -> array-of-segments
     "//" s substring-start :> comment-start
 
