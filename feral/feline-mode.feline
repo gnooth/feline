@@ -67,8 +67,7 @@ feline-mode-comment-start length constant comment-start-length
     ] if
 
     modified
-    t dot-line-changed?!
-;
+    true dot-line-changed?! ;
 
 : feline-mode-expand-if
     mark ?exit
@@ -81,7 +80,7 @@ feline-mode-comment-start length constant comment-start-length
     dot-line-tail +
     dot-line-text!
 
-    t dot-line-changed?! ;
+    true dot-line-changed?! ;
 
 : feline-mode-expand-when
     mark ?exit
@@ -95,7 +94,7 @@ feline-mode-comment-start length constant comment-start-length
     dot-line-text!
 
     dot-offset 2 - dot-offset!
-    t dot-line-changed?! ;
+    true dot-line-changed?! ;
 
 : feline-mode-expand
     mark ?exit
@@ -152,6 +151,7 @@ feline-mode-comment-start length constant comment-start-length
     "syntax:"
     "t"
     "test:"
+    "true"
     "tuple:"
     "unuse:"
     "use:"
@@ -240,12 +240,12 @@ feline-mode-comment-start length constant comment-start-length
     [
         this-char last-char!
         iter string-iterator-next this-char!
-        this-char [ t done?! ] unless
+        this-char [ true done?! ] unless
         done?
     ] [
         this-char '\x22' eq? [
             last-char '\' neq? [
-                t done?!
+                true done?!
             ] when
         ] when
     ] until
