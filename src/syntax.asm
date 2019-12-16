@@ -86,6 +86,13 @@ code f, 'f', SYMBOL_IMMEDIATE   ; -- f
         next
 endcode
 
+; ### true
+code true, 'true', SYMBOL_IMMEDIATE ; -> nil
+        _true
+        _ maybe_add
+        next
+endcode
+
 ; ### nil
 code nil, 'nil', SYMBOL_IMMEDIATE ; -> nil
         _nil

@@ -136,7 +136,12 @@
 
 %macro  _nil 0
         pushrbx
-        mov     ebx, nil_value
+        mov     ebx, NIL
+%endmacro
+
+%macro  _true 0
+        pushrbx
+        mov     ebx, TRUE
 %endmacro
 
 %macro  _tag_boolean 0
