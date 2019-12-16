@@ -260,17 +260,17 @@ endcode
 code object_to_string, 'object->string' ; object -> string
 ; FIXME make this a generic word
 
-        cmp     rbx, nil_value
+        cmp     rbx, NIL
         jnz     .1
         _drop
         _quote "nil"
         _return
 
 .1:
-        cmp     rbx, t_value
+        cmp     rbx, TRUE
         jnz     .2
         _drop
-        _quote "t"
+        _quote "true"
         _return
 
 .2:
