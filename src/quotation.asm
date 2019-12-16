@@ -310,6 +310,26 @@ code curry, 'curry'                     ; x quot1 -> quot2
         next
 endcode
 
+; ### compose
+code compose, 'compose'                 ; quot1 quot2 -> composed
+; FIXME handle all callables (symbols as well as quotations)
+; FIXME optimize
+        _twodup
+        _ quotation_length
+        _swap
+        _ quotation_length
+        _ unsafe_fixnum_plus
+        _ new_vector                    ; -> quot1 quot2 vector
+        _ swapd                         ; -> quot2 quot1 vector
+        _tuck                           ; -> quot2 vector quot1 vector
+        _ vector_push_all
+        _tuck
+        _ vector_push_all
+        _ vector_to_array
+        _ array_to_quotation
+        next
+endcode
+
 ; ### callable?
 code callable?, 'callable?'             ; object -- ?
         _ object_raw_typecode
