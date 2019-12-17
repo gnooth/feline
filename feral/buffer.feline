@@ -88,9 +88,7 @@ in: editor
 
     buf mode>> mode? [
         buf mode>> initialize-buffer-function>> [ buf swap call ] when*
-    ] [
-        buf dup mode>> initialize-buffer
-    ] if
+    ] when
 
     get-current-directory :> dir
     dir [

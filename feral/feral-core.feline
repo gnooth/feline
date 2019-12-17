@@ -898,15 +898,6 @@ unuse: segments
     start
     start end dot-line-text string-substring ;
 
-generic initialize-buffer               // buffer mode -> void
-
-: default-initialize-buffer             // buffer mode -> void
-    2 ?enough
-    2drop
-;
-
-' default-initialize-buffer ' initialize-buffer set-default-method
-
 generic comment-start                   // mode -> string/f
 
 method: mode comment-start              // mode -> string/f
