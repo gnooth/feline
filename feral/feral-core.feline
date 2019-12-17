@@ -852,21 +852,14 @@ unuse: segments
     [ '0' char-code c <= ] [ c '9' char-code <= ] both? [ t ] ?return
     nil ;
 
-generic identifier-char?                // char mode -> ?
-
-method: mode identifier-char?           // char mode -> ?
-    swap :> x
-    identifier-char-function>>
-    [ x swap call ] [
-        [ x alphanumeric? ] [ x '_' eq? ] either?
-    ] if* ;
-
-: default-identifier-char?              // char mode -> ?
-    drop
+: default-identifier-char?              // char -> ?
     :> x
     [ x alphanumeric? ] [ x '_' eq? ] either? ;
 
-' default-identifier-char? ' identifier-char? set-default-method
+: identifier-char?                      // char -> ?
+    current-mode identifier-char-function>> [
+        ' default-identifier-char?
+    ] unless* call ;
 
 : in-whitespace?                        // void -> ?
     dot-char whitespace? ;
@@ -875,16 +868,17 @@ method: mode identifier-char?           // char mode -> ?
     dot-char whitespace? not ;
 
 : in-word?                              // void -> ?
-    dot-char [ current-mode identifier-char? ] [ nil ] if* ;
+    dot-char [ identifier-char? ] [ nil ] if* ;
 
 : not-in-word?                          // void -> ?
-    dot-char [ current-mode identifier-char? not ] [ t ] if* ;
+    dot-char [ identifier-char? not ] [ true ] if* ;
 
-generic identifier-at-dot               // mode -> start/f string/f
+: identifier-at-dot                     // void -> start/nil string/nil
 
-: default-identifier-at-dot             // mode -> start/f string/f
+    current-mode identifier-char-function>> [ ' default-identifier-char? ] unless*
+    // -> symbol
+    1quotation [ not ] compose :> not-identifier-char-function
 
-    drop
 
     [ mark ] [ mark-line dot-line eq? ] both? [
         mark dot make-region/2 begin-offset
@@ -892,19 +886,17 @@ generic identifier-at-dot               // mode -> start/f string/f
         dot-offset dot-line-length 1- min 0 max
     ] if :> offset
 
-    offset dot-line-text [ current-mode identifier-char? not ] find-last-from drop !> start
+    offset dot-line-text not-identifier-char-function find-last-from drop !> start
 
     // advance to first identifier char
     start [ start 1+ start! ] [ 0 start! ] if
 
-    start dot-line-text [ current-mode identifier-char? not ] find-from drop !> end
+    start dot-line-text not-identifier-char-function find-from drop !> end
 
     end [ dot-line-length end! ] unless
 
     start
     start end dot-line-text string-substring ;
-
-' default-identifier-at-dot ' identifier-at-dot set-default-method
 
 generic initialize-buffer               // buffer mode -> void
 

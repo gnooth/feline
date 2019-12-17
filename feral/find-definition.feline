@@ -98,7 +98,7 @@ feral-config:winui? feral-config:gtkui? or #if
         } cond
     ] when
 
-    current-mode identifier-at-dot      // -> index/f string/f
-    nip                                 // -> string/f
+    identifier-at-dot                   // -> index/nil string/nil
+    nip                                 // -> string/nil
     old-dot-offset dot-offset!
     [ find-definition-internal ] when* ;

@@ -136,7 +136,7 @@ private
     t !> result
 
     offset 0 > [
-        offset 1- line text>> string-nth current-mode identifier-char? [
+        offset 1- line text>> string-nth identifier-char? [
             nil result!
         ] when
     ] when
@@ -146,7 +146,7 @@ private
     offset len + :> after
 
     after line length < [
-        after line text>> string-nth current-mode identifier-char? [
+        after line text>> string-nth identifier-char? [
             nil result!
         ] when
     ] when
@@ -234,17 +234,17 @@ use: mini
     [ found ] [ not-found ] if* ;
 
 : search-forward-word-at-dot
-    current-mode identifier-at-dot      // -> index/nil string/nil
+    identifier-at-dot                   // -> index/nil string/nil
     :> pattern :> start
     pattern empty? [
-        t whole-words-only-default!
+        true whole-words-only-default!
         pattern make-search current-search!
         dot-line start pattern length + make-position search-forward-word // -> position/nil
         [ found ] [ not-found ] if*
     ] unless ;
 
 : search-backward-word-at-dot
-    current-mode identifier-at-dot      // -> index/nil string/nil
+    identifier-at-dot                   // -> index/nil string/nil
     :> pattern :> start
     nil !> pos
     pattern empty? [

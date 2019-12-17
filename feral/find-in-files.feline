@@ -41,7 +41,7 @@ global current-files
                 filename make-line/1 line!
                 filename :source-file line line-set-property
                 line find-in-files-output-buffer buffer-append-line
-                t found!
+                true found!
             ] unless
             linenumber number>string ":" + s + make-line/1 line!
             filename :source-file line line-set-property
@@ -65,7 +65,7 @@ public
     ] when
 
     default-pattern [
-        current-mode identifier-at-dot nip default-pattern!
+        identifier-at-dot nip default-pattern!
     ] unless
 
     "find" set-history
