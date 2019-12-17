@@ -897,12 +897,3 @@ unuse: segments
 
     start
     start end dot-line-text string-substring ;
-
-generic comment-start                   // mode -> string/f
-
-method: mode comment-start              // mode -> string/f
-    comment-start>> ;
-
-: default-comment-start 1 ?enough drop nil ;
-
-' default-comment-start ' comment-start set-default-method
