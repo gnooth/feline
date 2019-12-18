@@ -111,7 +111,7 @@ global directory-mode-local-map
     s buf editor:buffer-set-contents
     buf first-line>> 0 make-position buf dot<<
     buf first-line>> buf top-line<<
-    t buf read-only<<
+    true buf read-only<<
     dirname buf [ filename<< ] [ directory<< ] [ name<< ] 2tri
 
     directory-mode:get-instance buf mode<<
@@ -173,9 +173,9 @@ global directory-mode-local-map
 : open-directory ( dirname ) // dirname -> void
     dirname directory? [
         dirname create-directory-buffer [
-            current-buffer!
+            set-current-buffer
             dir-goto-next-nontrivial-file
-            t repaint?!
+            true repaint?!
         ] when*
     ] when ;
 
@@ -186,12 +186,12 @@ global directory-mode-local-map
         s buf editor:buffer-set-contents
         buf first-line>> 0 make-position buf dot<<
         buf first-line>> buf top-line<<
-        t buf read-only<<
+        true buf read-only<<
         dirname buf [ filename<< ] [ directory<< ] [ name<< ] 2tri
         renumber
         maybe-reframe
         dir-goto-next-nontrivial-file
-        t repaint?!
+        true repaint?!
     ] unless ;
 
 : dir
@@ -243,10 +243,10 @@ global directory-mode-local-map
                 up directory-contents "" or buf editor:buffer-set-contents
                 buf first-line>> 0 make-position buf dot<<
                 buf first-line>> buf top-line<<
-                t buf read-only<<
+                true buf read-only<<
                 up buf [ filename<< ] [ directory<< ] [ name<< ] 2tri
                 dir dir-goto-file
-                t repaint?!
+                true repaint?!
             ] when
         ] when
     ] when* ;
