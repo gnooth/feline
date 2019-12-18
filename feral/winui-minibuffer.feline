@@ -180,7 +180,7 @@ public
         // FIXME reset-undo reset-redo
         minibuffer-update-caret-pos
         winui-minibuffer-main
-    ] save-current-buffer
+    ] keep-current-buffer
 
     minibuffer-contents [ prompt length minibuffer-contents tail ] [ nil ] if ;
 
@@ -200,6 +200,6 @@ public
         // FIXME reset-undo reset-redo
         minibuffer-update-caret-pos
         winui-minibuffer-main
-    ] save-current-buffer
+    ] keep-current-buffer
 
     minibuffer-contents [ prompt length minibuffer-contents tail ] [ nil ] if ;

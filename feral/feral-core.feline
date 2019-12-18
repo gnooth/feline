@@ -365,7 +365,7 @@ global current-buffer
         t repaint?!
     ] when ;
 
-: save-current-buffer                   // quotation -> void
+: keep-current-buffer                   // quotation -> void
 // Save the value of current-buffer. Call the quotation. Restore
 // the saved value of current-buffer when the quotation returns.
     current-buffer                      // -> quotation current-buffer
