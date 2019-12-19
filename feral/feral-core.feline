@@ -856,10 +856,12 @@ unuse: segments
     :> x
     [ x alphanumeric? ] [ x '_' eq? ] either? ;
 
+: identifier-char-function              // void -> callable
+    current-mode [ identifier-char-function>> ] [ nil ] if*
+    ' default-identifier-char? or ;
+
 : identifier-char?                      // char -> ?
-    current-mode identifier-char-function>> [
-        ' default-identifier-char?
-    ] unless* call ;
+    identifier-char-function call ;
 
 : in-whitespace?                        // void -> ?
     dot-char whitespace? ;
