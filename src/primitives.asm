@@ -221,12 +221,12 @@ inline zero?, 'zero?'
 endinline
 
 ; ### and
-code feline_and, 'and'                  ; obj1 obj2 -- ?
-        cmp     rbx, f_value
+code feline_and, 'and'                  ; obj1 obj2 -> ?
+        cmp     rbx, NIL
         je      .exit
-        ; obj2 is not f
+        ; obj2 is not nil
         mov     rax, [rbp]
-        cmp     rax, f_value
+        cmp     rax, NIL
         cmove   rbx, rax
 .exit:
         lea     rbp, [rbp + BYTES_PER_CELL]
@@ -234,13 +234,12 @@ code feline_and, 'and'                  ; obj1 obj2 -- ?
 endcode
 
 ; ### or
-code feline_or, 'or'                    ; obj1 obj2 -- ?
+inline feline_or, 'or'                  ; obj1 obj2 -> ?
         mov     rax, [rbp]
-        cmp     rax, f_value
+        cmp     rax, NIL
         cmovne  rbx, rax
         lea     rbp, [rbp + BYTES_PER_CELL]
-        next
-endcode
+endinline
 
 ; ### if
 code feline_if, 'if'                    ; ? true false --
