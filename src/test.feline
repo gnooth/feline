@@ -1780,31 +1780,30 @@ test: ?nth-test-2
 
 ?nth-test-2
 
-test: and-test-1
-    t f and assert-false
-    f t and assert-false
-    0 t and assert-true
-    t 0 and 0 assert-eq
+test: and-test
+    { nil } [ true nil and ] unit-test
+    { nil } [ nil true and ] unit-test
+    { true } [ 0 true and ] unit-test
+    { 0 } [ true 0 and ] unit-test
 
-    f 71 and 71 eq? assert-false
-    t 71 and 71 assert-eq
-    "test" 42 and 42 assert-eq
-;
+    { nil } [ nil 71 and ] unit-test
+    { 71 } [ true 71 and ] unit-test
+    { 42 } [ "test" 42 and ] unit-test ;
 
-and-test-1
+and-test
 
-test: or-test-1
-    t f or assert-true
-    f t or assert-true
-    0 t or 0 assert-eq
-    t 0 or assert-true
+test: or-test
+    { true } [ true nil or ] unit-test
+    { true } [ nil true or ] unit-test
+    { 0 } [ 0 true or ] unit-test
+    { true } [ true 0 or ] unit-test
 
-    f 71 or 71 assert-eq
-    t 71 or assert-true
-    "test" 42 or "test" assert=
-;
+    { 71 } [ nil 71 or ] unit-test
+    { true } [ true 71 or ] unit-test
+    { -1 } [ -1 1 or ] unit-test
+    { "test" } [ "test" 42 or ] unit-test ;
 
-or-test-1
+or-test
 
 test: sbuf-insert-nth!-test-1
     "oat" string>sbuf :> sb
