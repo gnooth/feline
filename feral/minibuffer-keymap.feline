@@ -32,12 +32,20 @@ public
     true dot-line-changed?! ;
 
 : minibuffer-move-to-bol
-    prompt [ length ] [ 0 ] if* :> goal
-    goal dot-offset eq? [
+    prompt [ length ] [ 0 ] if* :> min-offset
+    dot-offset min-offset eq? [
         add-undo-move
         unmark
-        goal dot-offset!
+        min-offset dot-offset!
     ] unless ;
+
+: minibuffer-move-left
+    prompt [ length ] [ 0 ] if* :> min-offset
+    dot-offset min-offset > [
+        last-command ' minibuffer-move-left eq? [ add-undo-move ] unless
+        unmark
+        dot-offset 1- dot-offset!
+    ] when ;
 
 using: mini editor feline ;
 in: keymaps
@@ -64,7 +72,7 @@ private
     ' select-to-bol                     feral-key:shift-home        m set-at
     ' move-to-eol                       feral-key:end               m set-at
     ' select-to-eol                     feral-key:shift-end         m set-at
-    ' move-left                         feral-key:left              m set-at
+    ' minibuffer-move-left              feral-key:left              m set-at
     ' select-left                       feral-key:shift-left        m set-at
     ' move-right                        feral-key:right             m set-at
     ' select-right                      feral-key:shift-right       m set-at
