@@ -91,6 +91,10 @@ static gboolean gtkui__textview_button_press (GtkWidget *widget,
                                               GdkEventButton *event,
                                               gpointer data);
 
+static gboolean gtkui__textview_motion_notify (GtkWidget *widget,
+                                               GdkEventButton *event,
+                                               gpointer data);
+
 static gboolean on_minibuffer_key_press (GtkWidget *widget,
                                          GdkEventKey *event,
                                          gpointer data);
@@ -154,6 +158,7 @@ void gtkui__initialize (void)
 
   gtk_widget_set_events (textview,
                          GDK_BUTTON_PRESS_MASK |
+                         GDK_POINTER_MOTION_MASK |
                          GDK_SCROLL_MASK |
                          GDK_KEY_PRESS_MASK
                          );
@@ -164,6 +169,8 @@ void gtkui__initialize (void)
                     G_CALLBACK(gtkui__textview_key_press), NULL);
   g_signal_connect (textview, "button-press-event",
                     G_CALLBACK(gtkui__textview_button_press), NULL);
+  g_signal_connect (textview, "motion-notify-event",
+                    G_CALLBACK(gtkui__textview_motion_notify),  NULL);
   g_signal_connect (textview, "scroll-event",
                     G_CALLBACK(gtkui__textview_mousewheel), NULL);
   g_signal_connect (textview, "size-allocate",
@@ -293,6 +300,7 @@ int gtkui__char_width (void)
 // gtkui.asm
 extern void gtkui_textview_keydown (guint);
 extern void gtkui_textview_button_press (int, int);
+extern void gtkui_textview_mousemove (int, int);
 
 #define ALT_MASK        0x01 << 16
 #define CTRL_MASK       0x02 << 16
@@ -337,6 +345,20 @@ gtkui__textview_button_press (GtkWidget *widget,
   else
     gtkui_textview_button_press (event->x, event->y);
   return TRUE;
+}
+
+static gboolean
+gtkui__textview_motion_notify (GtkWidget *widget,
+                               GdkEventButton *event,
+                               gpointer data)
+{
+  if (event->state & GDK_BUTTON1_MASK)
+    {
+      gtkui_textview_mousemove (event->x, event->y);
+      return TRUE;
+    }
+  else
+    return FALSE;
 }
 
 extern void gtkui_textview_mousewheel (cell);
