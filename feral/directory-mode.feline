@@ -262,7 +262,7 @@ global directory-mode-local-map
 
 initialize-local-map
 
-feral-config:winui? #if
+feral-config:winui? feral-config:gtkui? #if
 ' dir-open-file feral-key:double-mouse-1 directory-mode-local-map set-at
 #endif
 
