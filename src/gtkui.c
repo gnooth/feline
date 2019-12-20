@@ -322,7 +322,20 @@ gtkui__textview_button_press (GtkWidget *widget,
                               GdkEventButton *event,
                               gpointer data)
 {
-  gtkui_textview_button_press (event->x, event->y);
+  if (event->type == GDK_2BUTTON_PRESS)
+    {
+      guint keyval = GDK_KEY_Pointer_DblClick1;
+      guint state = event->state;
+      if (state & GDK_MOD1_MASK)
+        keyval |= ALT_MASK;
+      if (state & GDK_CONTROL_MASK)
+        keyval |= CTRL_MASK;
+      if (state & GDK_SHIFT_MASK)
+        keyval |= SHIFT_MASK;
+      gtkui_textview_keydown (keyval);
+    }
+  else
+    gtkui_textview_button_press (event->x, event->y);
   return TRUE;
 }
 
