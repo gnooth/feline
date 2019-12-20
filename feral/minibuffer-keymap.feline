@@ -13,7 +13,33 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: editor feline ;
+using: editor feral-core feline accessors ;
+in: mini
+
+feral-config:winui? feral-config:gtkui? or assert
+
+public
+
+: minibuffer-at-bol?                    // void -> ?
+    dot-offset prompt [ length ] [ 0 ] if* eq? ;
+
+: minibuffer-backspace
+    minibuffer-at-bol? ?exit
+    mark [ delete-region ] ?return
+    last-command ' minibuffer-backspace eq? [ add-undo-line-edit ] unless
+    dot-offset 1-
+    [ dot-line text>> string-remove-nth dot-line text<< ] [ dot-offset! ] bi
+    true dot-line-changed?! ;
+
+: minibuffer-move-to-bol
+    prompt [ length ] [ 0 ] if* :> goal
+    goal dot-offset eq? [
+        add-undo-move
+        unmark
+        goal dot-offset!
+    ] unless ;
+
+using: mini editor feline ;
 in: keymaps
 
 feral-config:winui? feral-config:gtkui? or assert
@@ -32,9 +58,9 @@ private
     ' mini:minibuffer-complete          feral-key:tab               m set-at
 
     // FIXME don't allow editing of prompt string
-    ' backspace                         feral-key:backspace         m set-at
+    ' minibuffer-backspace              feral-key:backspace         m set-at
     ' do-delete                         feral-key:delete            m set-at
-    ' move-to-bol                       feral-key:home              m set-at
+    ' minibuffer-move-to-bol            feral-key:home              m set-at
     ' select-to-bol                     feral-key:shift-home        m set-at
     ' move-to-eol                       feral-key:end               m set-at
     ' select-to-eol                     feral-key:shift-end         m set-at
