@@ -20,25 +20,6 @@ feral-config:gtkui? assert
 
 private
 
-global minibuf
-
-global minibuffer-contents
-
-global prompt
-
-global minibuffer-keymap
-
-: create-minibuffer
-    minibuf nil? assert
-    make-buffer minibuf!
-    "" 0 make-line/2
-    [ minibuf buffer-append-line ]
-    [ 0 make-position minibuf dot<< ]
-    bi
-    minibuf dot>> line>> minibuf top-line<< ;
-
-create-minibuffer
-
 : minibuffer-update-caret-pos
     minibuf dot>> offset>>              // -> col
     0                                   // -> column row
@@ -126,8 +107,6 @@ defer minibuffer-insert-char
     ] keep-current-buffer ;
 
 public
-
-: minibuffer? minibuf eq? ;
 
 : message                               // string -> void
     current-buffer minibuffer? [ drop ] [ minibuffer-set-text ] if ;

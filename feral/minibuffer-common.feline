@@ -13,17 +13,37 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-config feral-loader feline ;
-in: user
-
-"mini" delete-vocab
-
+using: feral-core feline accessors ;
 in: mini
 
-winui? gtkui? or [ "minibuffer-common.feline" load-feral-source-file ] when
+feral-config:winui? feral-config:gtkui? or assert
 
-{
-    { [ winui?  ] [ "winui-minibuffer.feline"  ] }
-    { [ gtkui?  ] [ "gtkui-minibuffer.feline"  ] }
-    { [ termui? ] [ "termui-minibuffer.feline" ] }
-} cond load-feral-source-file
+private
+
+global minibuf
+
+global minibuffer-contents
+
+global prompt
+
+global minibuffer-keymap
+
+global completion-provider
+
+: create-minibuffer
+    minibuf nil? assert
+    make-buffer minibuf!
+    "" 0 make-line/2
+    [ minibuf buffer-append-line ]
+    [ 0 make-position minibuf dot<< ]
+    bi
+    minibuf dot>> line>> minibuf top-line<< ;
+
+create-minibuffer
+
+public
+
+: minibuffer? minibuf eq? ;
+
+: set-completion-provider completion-provider! ;
+

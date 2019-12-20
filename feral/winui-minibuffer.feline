@@ -20,25 +20,6 @@ feral-config:winui? assert
 
 private
 
-global minibuf
-
-global minibuffer-contents
-
-global prompt
-
-global minibuffer-keymap
-
-: create-minibuffer
-    minibuf nil? assert
-    make-buffer minibuf!
-    "" 0 make-line/2
-    [ minibuf buffer-append-line ]
-    [ 0 make-position minibuf dot<< ]
-    bi
-    minibuf dot>> line>> minibuf top-line<< ;
-
-create-minibuffer
-
 : minibuffer-update-caret-pos
     minibuf dot>> offset>> textview-char-width *
     0
@@ -117,31 +98,36 @@ private
 : lookup-key                            // key -> symbol/nil
     minibuffer-keymap at ;
 
-: winui-minibuffer-keydown              // key -> void
-    current-buffer minibuf assert-eq
-    lookup-key [
-        call-symbol
-        minibuffer-update-caret-pos
-        winui-minibuffer-invalidate
-    ] when* ;
-
 defer minibuffer-insert-char
 
-: winui-minibuffer-char                 // tagged-char -> void
+: minibuffer-dispatch                   // key -> void
     current-buffer minibuf assert-eq
-    dup printable-char? [
-        nil current-command!
-        reset-completion
-        minibuffer-insert-char
+
+    1 ?enough :> key
+
+    current-command last-command!
+    nil current-command!
+
+    key lookup-key [
+        dup current-command! call-symbol // REVIEW safe-call-symbol
         minibuffer-update-caret-pos
-        repaint-minibuffer
+        winui-minibuffer-invalidate
     ] [
-        lookup-key [ call-symbol ] when*
-    ] if ;
+        key printable-char? [
+            reset-completion
+            minibuffer-insert-char
+            minibuffer-update-caret-pos
+            repaint-minibuffer
+        ] when*
+    ] if* ;
+
+: winui-minibuffer-keydown              // key -> void
+    minibuffer-dispatch ;
+
+: winui-minibuffer-char                 // tagged-char -> void
+    minibuffer-dispatch ;
 
 public
-
-: minibuffer? minibuf eq? ;
 
 : message                               // string -> void
     current-buffer minibuffer? [ drop ] [ minibuffer-set-text ] if ;
@@ -176,8 +162,10 @@ public
     bi
 
     [
+        current-buffer minibuf parent<<
         minibuf current-buffer!
-        // FIXME reset-undo reset-redo
+        editor:reset-undo
+        editor:reset-redo
         minibuffer-update-caret-pos
         winui-minibuffer-main
     ] keep-current-buffer
@@ -196,8 +184,10 @@ public
     bi
 
     [
+        current-buffer minibuf parent<<
         minibuf current-buffer!
-        // FIXME reset-undo reset-redo
+        editor:reset-undo
+        editor:reset-redo
         minibuffer-update-caret-pos
         winui-minibuffer-main
     ] keep-current-buffer
