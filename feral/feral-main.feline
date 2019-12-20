@@ -118,20 +118,34 @@ feral-config:winui? #if
     local olddotline
 
     wparam {
-        // MK_LBUTTON = 0x01 left mouse button is down
-        { 0x01 [
-            dot-line olddotline!
-            add-undo-move
-            unmark
-            top-line-number row + last-line-number min nth-line dot-line!
-            dot-line col line-column-offset dot-line-length min dot-offset!
-            dot-line olddotline eq? [ dot-line line-changed ] [ t repaint?! ] if
-            update-display
-        ] }
+        {
+            // MK_LBUTTON = 0x01 left mouse button is down
+            0x01
+            [
+                current-buffer mini:minibuffer? [
+                    // minibuffer has focus
+                    // cancel and return to textview
+                    current-buffer parent>> current-buffer!
+                    mini:minibuffer-cancel
+                    true repaint?!
+                ] when
 
-        // MK_SHIFT = 0x04 shift key is down
-        // 0x05 = MK_LBUTTON | MK_SHIFT
-        { 0x05 [ col row mouse-select ] }
+                dot-line olddotline!
+                add-undo-move
+                unmark
+                top-line-number row + last-line-number min nth-line dot-line!
+                dot-line col line-column-offset dot-line-length min dot-offset!
+                dot-line olddotline eq? [ dot-line line-changed ] [ true repaint?! ] if
+                update-display
+            ]
+        }
+
+        {
+            // MK_SHIFT = 0x04 shift key is down
+            // 0x05 = MK_LBUTTON | MK_SHIFT
+            0x05
+            [ col row mouse-select ]
+        }
 
         // default case
         [ drop ]
