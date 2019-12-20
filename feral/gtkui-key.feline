@@ -20,6 +20,8 @@ feral-config:gtkui? assert
 
 public
 
+0xfeef                  constant double-mouse-1 // GDK_KEY_Pointer_DblClick1
+
 0xff09                  constant tab
 0xff1b                  constant escape
 
@@ -169,8 +171,8 @@ end ctrl shift          constant ctrl-shift-end
 'K' char-code ctrl shift    constant ctrl-shift-k
 'O' char-code ctrl shift    constant ctrl-shift-o
 
-: key-to-printable-char ( key )         // fixnum -> char/f
-    f !> result
+: key-to-printable-char ( key )         // fixnum -> char/nil
+    local result
 
     key code-char printable-char? [ result! ] when*
 
