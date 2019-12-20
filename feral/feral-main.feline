@@ -247,6 +247,27 @@ feral-config:gtkui? #if
 
     gtkui-textview-invalidate ;
 
+: gtkui-textview-mousemove ( x y )
+    x textview-char-width 2/ + textview-char-width /i :> col
+    y textview-char-height /i :> row
+
+    top-line-number row + last-line-number min nth-line :> newline
+    dot-line col line-column-offset dot-line-length min :> newoffset
+
+    newline dot-line eq? newoffset dot-offset eq? and ?exit // no change
+
+    mark [
+        add-undo-move
+        copy-dot mark!
+    ] unless
+
+    newline dot-line!
+    newoffset dot-offset!
+
+    t repaint?!
+    update-display
+    gtkui-textview-invalidate ;
+
 : edit1
     gtkui-initialize
     reframe
