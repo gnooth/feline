@@ -877,10 +877,9 @@ unuse: segments
 
 : identifier-at-dot                     // void -> start/nil string/nil
 
-    current-mode identifier-char-function>> [ ' default-identifier-char? ] unless*
-    // -> symbol
-    1quotation [ not ] compose :> not-identifier-char-function
-
+    // REVIEW identifier-char-function might not be a symbol
+    identifier-char-function verify-symbol 1quotation [ not ] compose
+    :> not-identifier-char-function
 
     [ mark ] [ mark-line dot-line eq? ] both? [
         mark dot make-region/2 begin-offset
