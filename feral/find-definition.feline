@@ -28,9 +28,8 @@ in: editor
             filename line-number create-buffer/2
         ] if*
         maybe-reframe
-        t repaint!
-    ] when
-;
+        true repaint?!
+    ] when ;
 
 : goto-location/1 // 2array -> void
     1 ?enough dup second :> line-number first :> filename
@@ -41,23 +40,17 @@ in: editor
     goto-location/2 ;
 
 feral-config:winui? feral-config:gtkui? or #if
-
 : minibuffer-list-symbols               // symbols -> void
     256 <sbuf> :> sb
     [
         symbol-qualified-name sb sbuf-append-string
         '\s' sb sbuf-push
     ] each
-    sb sbuf>string minibuffer-set-text
-;
-
+    sb sbuf>string minibuffer-set-text ;
 #else
-
 : minibuffer-list-symbols               // symbols -> void
     0 message-y at-xy
-    [ symbol-qualified-name write-string space ] each
-;
-
+    [ symbol-qualified-name write-string space ] each ;
 #endif
 
 : find-definition-internal              // string -> void

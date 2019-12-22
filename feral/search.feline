@@ -35,7 +35,7 @@ private
     dot-offset goal-column!
 
     maybe-reframe
-    t repaint?! ;
+    true repaint?! ;
 
 : not-found
     current-pattern "%S not found" format
@@ -133,7 +133,7 @@ private
     pos line>> :> line
     pos offset>> :> offset
 
-    t !> result
+    true !> result
 
     offset 0 > [
         offset 1- line text>> string-nth identifier-char? [
@@ -237,8 +237,8 @@ use: mini
     identifier-at-dot                   // -> index/nil string/nil
     :> pattern :> start
     pattern empty? [
-        true whole-words-only-default!
         pattern make-search current-search!
+        true current-search whole-words-only<< // don't change default!
         dot-line start pattern length + make-position search-forward-word // -> position/nil
         [ found ] [ not-found ] if*
     ] unless ;
@@ -248,8 +248,8 @@ use: mini
     :> pattern :> start
     nil !> pos
     pattern empty? [
-        t whole-words-only-default!
         pattern make-search current-search!
+        true current-search whole-words-only<< // don't change default!
         dot-line start make-position pos!
         pos move-prev [
             pos search-backward-word    // -> position/nil
@@ -302,7 +302,7 @@ use: mini
     buf nil? [ not-found ] ?return
 
     buf top-line>> 0 make-position buf dot<<
-    t buf read-only<<
+    true buf read-only<<
 
     // REVIEW
     current-buffer name>>
@@ -322,7 +322,7 @@ use: mini
     buf set-current-buffer
 
     renumber
-    t repaint?! ;
+    true repaint?! ;
 
 : toggle-whole-words-only
     whole-words-only-default not whole-words-only-default!
