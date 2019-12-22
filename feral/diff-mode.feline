@@ -21,13 +21,13 @@ private
 global instance
 
 : diff-mode-goto-source
-    dot-line :> line!
-    f :> found!
-    0 :> count!
+    dot-line !> line
+    nil !> found
+    0 !> count
 
     [ line ] [
         "@@" line text>> head? [
-            line found! f line!
+            line found! nil line!
         ] [
             "-" line text>> head? [ count 1+ count! ] unless
             line prev>> line!
@@ -46,7 +46,7 @@ global instance
 
     current-buffer parent>> set-current-buffer
     line-number editor:gotoline-internal
-    t repaint! ;
+    true repaint?! ;
 
 global diff-mode-local-map
 
@@ -58,10 +58,8 @@ global diff-mode-local-map
 
 initialize-local-map
 
-feral-config:winui? #if
-
+feral-config:winui? feral-config:gtkui? or #if
 ' diff-mode-goto-source feral-key:double-mouse-1 diff-mode-local-map set-at
-
 #endif
 
 : diff-mode-format-line ( s ) // string -> segments
