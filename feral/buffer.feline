@@ -107,21 +107,7 @@ in: editor
         ] when*
     ] when
 
-    t repaint! ;
-
-: find-buffer-from-file-name            // filename -> buffer/nil
-    !> filename
-    win64? [
-        filename string-upcase filename!
-        buffer-list [
-            filename>> [ string-upcase filename string-equal? ] [ nil ] if*
-        ] find
-    ] [
-        // not win64
-        buffer-list [ filename>> filename = ] find
-    ] if
-    // -> index/nil buffer/nil
-    nip ;
+    t repaint?! ;
 
 : next-buffer
     buffer-list length 1 > [
