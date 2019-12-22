@@ -305,7 +305,7 @@ use: mini
     t buf read-only<<
 
     // REVIEW
-    current-buffer filename>> file-name-nondirectory
+    current-buffer name>>
     current-search pattern>> " [%S]" format +
     buf name<<
 
