@@ -122,7 +122,7 @@ feral-config:winui? #if
             // MK_LBUTTON = 0x01 left mouse button is down
             0x01
             [
-                current-buffer mini:minibuffer? [
+                current-buffer minibuffer? [
                     // minibuffer has focus
                     // cancel and return to textview
                     current-buffer parent>> current-buffer!

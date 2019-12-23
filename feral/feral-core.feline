@@ -16,8 +16,6 @@
 using: feline accessors feral-config ;
 in: feral-core
 
-global minibuffer
-
 defer message
 defer clear-message
 
@@ -349,6 +347,10 @@ var current-command
 var last-command
 
 var in-redo?
+
+global minibuffer
+
+: minibuffer? minibuffer eq? ;
 
 global buffer-list
 

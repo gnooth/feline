@@ -41,7 +41,5 @@ create-minibuffer
 
 public
 
-: minibuffer? minibuffer eq? ;
-
 : set-completion-provider completion-provider! ;
 
