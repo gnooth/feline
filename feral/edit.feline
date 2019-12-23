@@ -463,7 +463,8 @@ use: kill-ring
         // otherwise...
         [ delete-line-separator ]
     } cond
-    modified ;
+    modified
+    update-goal-column ;
 
 : cut-region ( region )
     region region-as-string append-kill
