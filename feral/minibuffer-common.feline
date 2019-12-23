@@ -20,8 +20,6 @@ feral-config:winui? feral-config:gtkui? or assert
 
 private
 
-global minibuf
-
 global minibuffer-contents
 
 global prompt
