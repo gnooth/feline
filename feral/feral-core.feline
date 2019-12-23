@@ -19,6 +19,8 @@ in: feral-core
 defer message
 defer clear-message
 
+defer add-recent-file
+
 global execute-command-input-string
 
 : shell-command-to-string ( command )   // command -> string/f
