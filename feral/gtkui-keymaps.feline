@@ -133,6 +133,8 @@ using: editor feline search ;
 
     ' dir                               feral-key:ctrl-d            m set-at
 
+    ' recent-files:recent-files         feral-key:ctrl-r            m set-at
+
     ' find-in-files                     feral-key:ctrl-shift-f      m set-at
 
     // emacs
