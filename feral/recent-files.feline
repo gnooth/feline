@@ -1,0 +1,118 @@
+// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feral-core feline accessors ;
+in: recent-files
+
+private
+
+global recent-files-vector
+
+40 constant directory-column
+
+directories:feral-directory "recent-files" path-append constant recent-files-filename
+
+public
+
+: load-recent-files
+    recent-files-filename file-lines recent-files-vector!
+    recent-files-vector [
+        32 <vector> recent-files-vector!
+    ] unless ;
+
+: save-recent-files
+    recent-files-vector [
+        [ length dup 40 - 0 max swap ] keep <slice>
+        recent-files-filename
+        set-file-lines
+    ] when* ;
+
+private
+
+: recent-files-select
+    // line numbers are 0-based
+    // the most recent file is the first file in the recent files vector
+    recent-files-vector length 1- dot-line-number - 0 max // -> index
+    recent-files-vector nth :> filename
+    filename find-buffer-from-file-name !> buf
+    buf [
+        filename file-exists? [
+            // REVIEW error handling
+            filename 1 editor:create-buffer/2 buf!
+        ] when
+    ] unless
+    buf [ current-buffer! ] when*
+    true repaint?! ;
+
+: recent-files-quit
+    current-buffer parent>> current-buffer!
+    true repaint?! ;
+
+global recent-files-local-map
+
+: initialize-local-map
+    128 <hashtable> :> keymap
+    ' recent-files-select   feral-key:enter     keymap set-at
+    ' recent-files-quit     feral-key:escape    keymap set-at
+    ' recent-files-quit     feral-key:ctrl-w    keymap set-at
+    keymap recent-files-local-map! ;
+
+initialize-local-map
+
+feral-config:winui? feral-config:gtkui? or #if
+' recent-files-select feral-key:double-mouse-1 recent-files-local-map set-at
+#endif
+
+public
+
+: recent-files
+    recent-files-vector [ load-recent-files ] unless
+
+    make-buffer :> buf
+    "Recent Files" buf name<<
+    current-buffer directory>> buf directory<<
+    recent-files-local-map buf local-map<<
+
+    local sb
+
+    recent-files-vector vector-length
+    [
+        // -> i
+        negate recent-files-vector vector-length 1- +
+        recent-files-vector vector-nth
+        verify-string
+        128 <sbuf> sb!
+        dup file-name-nondirectory sb sbuf-append-string
+        [ sb sbuf-length directory-column < ] [ '\s' sb push ] while
+        file-name-directory sb sbuf-append-string
+        sb sbuf>string make-line/1 buf buffer-append-line
+    ] each-integer
+
+    current-buffer buf parent<<
+    true buf read-only<<
+
+    buf first-line>> buf top-line<<
+    buf first-line>> 0 make-position buf dot<<
+    buf current-buffer!
+
+    renumber
+    true repaint?! ;
+
+: add-recent-file                       // filename -> void
+    recent-files-vector [ load-recent-files ] unless
+    recent-files-vector vector-adjoin
+    save-recent-files ;
+
+' add-recent-file is feral-core:add-recent-file
