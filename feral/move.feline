@@ -161,7 +161,10 @@ in: editor
             reframe? [
                 dot-line top-line!
                 true repaint?!
-            ] when
+            ] [
+                dot-line line-changed
+                dot-line-next line-changed
+            ] if
         ] when
     ] if ;
 
@@ -205,7 +208,10 @@ in: editor
             reframe? [
                 dot-line-number textview-rows 1- - nth-line top-line!
                 true repaint?!
-            ] when
+            ] [
+                dot-line line-changed
+                dot-line-prev line-changed
+            ] if
         ] when
     ] if ;
 
