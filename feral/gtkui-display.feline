@@ -18,16 +18,23 @@ in: editor
 
 feral-config:gtkui? assert
 
-: repaint
+: repaint-internal
     top-line !> line
     0 !> row
-
     [ line row textview-rows < and ] [
         line row repaint-line
         row 1+ row! line next>> line!
     ] while
-
     nil repaint?! ;
+
+: repaint
+    current-buffer minibuffer? [
+        minibuffer parent>> current-buffer!
+        repaint-internal
+        minibuffer current-buffer!
+    ] [
+        repaint-internal
+    ] if ;
 
 : update-caret-pos
     dot-column

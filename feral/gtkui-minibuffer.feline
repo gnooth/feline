@@ -140,9 +140,14 @@ public
     [ string-length minibuffer dot>> offset<< ]
     bi
 
-    // FIXME reset-undo reset-redo
-    minibuffer-update-caret-pos
-    gtkui-minibuffer-main
+    [
+        current-buffer minibuffer parent<<
+        minibuffer current-buffer!
+        editor:reset-undo
+        editor:reset-redo
+        minibuffer-update-caret-pos
+        gtkui-minibuffer-main
+    ] keep-current-buffer
 
     minibuffer-contents [ prompt length minibuffer-contents tail ] [ nil ] if ;
 
@@ -157,8 +162,13 @@ public
     [ string-length minibuffer dot>> offset<< ]
     bi
 
-    // FIXME reset-undo reset-redo
-    minibuffer-update-caret-pos
-    gtkui-minibuffer-main
+    [
+        current-buffer minibuffer parent<<
+        minibuffer current-buffer!
+        editor:reset-undo
+        editor:reset-redo
+        minibuffer-update-caret-pos
+        gtkui-minibuffer-main
+    ] keep-current-buffer
 
     minibuffer-contents [ prompt length minibuffer-contents tail ] [ nil ] if ;
