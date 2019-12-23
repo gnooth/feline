@@ -21,12 +21,12 @@ feral-config:winui? assert
 private
 
 : minibuffer-update-caret-pos
-    minibuf dot>> offset>> textview-char-width *
+    minibuffer dot>> offset>> textview-char-width *
     0
     textview-set-caret-pos ;
 
 : minibuffer-get-text                   // void -> string
-    minibuf dot>> line>> text>> "" or ;
+    minibuffer dot>> line>> text>> "" or ;
 
 : repaint-minibuffer
     winui-hide-caret
@@ -41,7 +41,7 @@ public
     1 ?enough verify-string
 
     minibuffer-get-text over sequence= [ drop ] [
-        minibuf dot>> line>> text<<
+        minibuffer dot>> line>> text<<
         winui-minibuffer-invalidate
     ] if ;
 
@@ -70,7 +70,7 @@ private
     s nil? ?exit
     prompt s +
     [ minibuffer-set-text ]
-    [ string-length dup minibuf dot>> offset<< textview-char-width * 0 textview-set-caret-pos ]
+    [ string-length dup minibuffer dot>> offset<< textview-char-width * 0 textview-set-caret-pos ]
     bi
 
     winui-minibuffer-invalidate ;
@@ -101,7 +101,7 @@ private
 defer minibuffer-insert-char
 
 : minibuffer-dispatch                   // key -> void
-    current-buffer minibuf assert-eq
+    current-buffer minibuffer assert-eq
 
     1 ?enough :> key
 
@@ -158,12 +158,12 @@ public
 
     prompt
     [ minibuffer-set-text ]
-    [ string-length minibuf dot>> offset<< ]
+    [ string-length minibuffer dot>> offset<< ]
     bi
 
     [
-        current-buffer minibuf parent<<
-        minibuf current-buffer!
+        current-buffer minibuffer parent<<
+        minibuffer current-buffer!
         editor:reset-undo
         editor:reset-redo
         minibuffer-update-caret-pos
@@ -180,12 +180,12 @@ public
 
     prompt default +
     [ minibuffer-set-text ]
-    [ string-length minibuf dot>> offset<< ]
+    [ string-length minibuffer dot>> offset<< ]
     bi
 
     [
-        current-buffer minibuf parent<<
-        minibuf current-buffer!
+        current-buffer minibuffer parent<<
+        minibuffer current-buffer!
         editor:reset-undo
         editor:reset-redo
         minibuffer-update-caret-pos

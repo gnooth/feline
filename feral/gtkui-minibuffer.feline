@@ -21,12 +21,12 @@ feral-config:gtkui? assert
 private
 
 : minibuffer-update-caret-pos
-    minibuf dot>> offset>>              // -> col
+    minibuffer dot>> offset>>              // -> col
     0                                   // -> column row
     gtkui-minibuffer-set-caret-pos ;
 
 : minibuffer-get-text                   // void -> string
-    minibuf dot>> line>> text>> "" or ;
+    minibuffer dot>> line>> text>> "" or ;
 
 : repaint-minibuffer
     minibuffer-get-text !> s
@@ -35,7 +35,7 @@ private
 public: minibuffer-set-text             // string -> void
     1 ?enough verify-string
     minibuffer-get-text over sequence=
-    [ drop ] [ minibuf dot>> line>> text<< ] if ;
+    [ drop ] [ minibuffer dot>> line>> text<< ] if ;
 
 : minibuffer-accept
     minibuffer-get-text minibuffer-contents!
@@ -60,7 +60,7 @@ public: minibuffer-set-text             // string -> void
     s nil? ?exit
     prompt s +
     [ minibuffer-set-text ]
-    [ string-length dup minibuf dot>> offset<< 0 gtkui-minibuffer-set-caret-pos ]
+    [ string-length dup minibuffer dot>> offset<< 0 gtkui-minibuffer-set-caret-pos ]
     bi ;
 
 : minibuffer-previous-history
@@ -90,7 +90,7 @@ defer minibuffer-insert-char
 : gtkui-minibuffer-keydown              // key -> void
     1 ?enough :> key
     [
-        minibuf current-buffer!
+        minibuffer current-buffer!
         key lookup-key
         [
             call-symbol
@@ -137,7 +137,7 @@ public
 
     prompt
     [ minibuffer-set-text ]
-    [ string-length minibuf dot>> offset<< ]
+    [ string-length minibuffer dot>> offset<< ]
     bi
 
     // FIXME reset-undo reset-redo
@@ -154,7 +154,7 @@ public
 
     prompt default +
     [ minibuffer-set-text ]
-    [ string-length minibuf dot>> offset<< ]
+    [ string-length minibuffer dot>> offset<< ]
     bi
 
     // FIXME reset-undo reset-redo

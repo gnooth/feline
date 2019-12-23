@@ -29,19 +29,19 @@ global minibuffer-keymap
 global completion-provider
 
 : create-minibuffer
-    minibuf nil? assert
-    make-buffer minibuf!
+    minibuffer nil? assert
+    make-buffer minibuffer!
     "" 0 make-line/2
-    [ minibuf buffer-append-line ]
-    [ 0 make-position minibuf dot<< ]
+    [ minibuffer buffer-append-line ]
+    [ 0 make-position minibuffer dot<< ]
     bi
-    minibuf dot>> line>> minibuf top-line<< ;
+    minibuffer dot>> line>> minibuffer top-line<< ;
 
 create-minibuffer
 
 public
 
-: minibuffer? minibuf eq? ;
+: minibuffer? minibuffer eq? ;
 
 : set-completion-provider completion-provider! ;
 

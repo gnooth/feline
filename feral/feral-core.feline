@@ -16,7 +16,7 @@
 using: feline accessors feral-config ;
 in: feral-core
 
-global minibuf
+global minibuffer
 
 defer message
 defer clear-message
