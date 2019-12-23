@@ -42,6 +42,7 @@ in: user
     "logging"
     "mini"
     "modes"
+    "recent-files"
     "search"
     "search-mode"
     "symbols"
@@ -96,6 +97,7 @@ feral-source-directory add-source-directory
         "search-mode.feline"
         "search.feline"
         "find-in-files.feline"
+        "recent-files.feline"
         "commands.feline"
         "keymaps.feline"
     } ' load-feral-source-file each

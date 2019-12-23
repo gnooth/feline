@@ -82,6 +82,8 @@ in: editor
 
     buf set-current-buffer
 
+    filename add-recent-file
+
     line-number 1- 0 max line-count 1- min nth-line dot-line!
 
     0 dot-offset!
