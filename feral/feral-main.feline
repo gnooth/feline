@@ -246,13 +246,8 @@ feral-config:gtkui? #if
     add-undo-move
     unmark
     top-line-number row + last-line-number min nth-line dot-line!
-
-    // FIXME
-    // column may not be the same as offset if there are tab chars in the buffer
-    column dot-line-length min dot-offset!
-
+    dot-line column line-column-offset dot-line-length min dot-offset!
     update-display
-
     gtkui-textview-invalidate ;
 
 : gtkui-textview-mousemove ( x y )
