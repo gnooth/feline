@@ -27,10 +27,11 @@ directories:feral-directory "recent-files" path-append constant recent-files-fil
 public
 
 : load-recent-files
-    recent-files-filename file-lines recent-files-vector!
-    recent-files-vector [
-        32 <vector> recent-files-vector!
-    ] unless ;
+    recent-files-filename file-exists? [
+        recent-files-filename file-lines
+    ] [
+        40 <vector>
+    ] if recent-files-vector! ;
 
 : save-recent-files
     recent-files-vector [
