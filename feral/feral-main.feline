@@ -235,6 +235,14 @@ feral-config:gtkui? #if
     x textview-char-width /i :> column
     y textview-char-height /i :> row
 
+    current-buffer minibuffer? [
+        // minibuffer has focus
+        // cancel and return to textview
+        current-buffer parent>> current-buffer!
+        mini:minibuffer-cancel
+        gtkui-minibuffer-invalidate
+    ] when
+
     add-undo-move
     unmark
     top-line-number row + last-line-number min nth-line dot-line!
