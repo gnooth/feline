@@ -731,30 +731,31 @@ code string_has_prefix?, 'string-has-prefix?' ; prefix string -> ?
 endcode
 
 ; ### substring-start
-code substring_start, 'substring-start'         ; pattern string -- index/f
-        _ check_string
+code substring_start, 'substring-start'         ; pattern string -> index/nil
+        _ check_string                          ; -> pattern ^string
 
         push    this_register
-        popd    this_register                   ; -- pattern
+        mov     this_register, rbx              ; ^string in this_register
+        _drop                                   ; -> pattern
 
-        _ check_string
+        _ check_string                          ; -> ^pattern (in rbx)
 
         ; return right away if pattern is longer than string
-        _dup
-        _string_raw_length
-        _this_string_raw_length
-        cmp     rbx, [rbp]
-        _2drop
-        jnc     .1
-        mov     ebx, f_value
+        mov     rax, [rbx + STRING_RAW_LENGTH_OFFSET] ; pattern raw length in rax
+        cmp     [this_register + STRING_RAW_LENGTH_OFFSET], rax
+        jge     .1
+
+        ; -> ^pattern
+        mov     ebx, NIL
         pop     this_register
         _return
 
 .1:
+        ; -> ^pattern
         _dup
-        _string_raw_data_address                ; -- pattern-raw-data-address
+        _string_raw_data_address                ; -> pattern-raw-data-address
         _swap
-        _string_raw_length                      ; -- pattern-raw-data-address pattern-raw-length
+        _string_raw_length                      ; -> pattern-raw-data-address pattern-raw-length
 
         _this_string_raw_length
         _over
