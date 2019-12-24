@@ -2006,16 +2006,17 @@ test: string-has-suffix?-test-1
 
 string-has-suffix?-test-1
 
-test: substring-start-test-1
-    "test" "this is a test" substring-start 10 assert=
-    "test" "testing" substring-start 0 assert=
-    "test" "test" substring-start 0 assert=
+test: substring-start-test
+    { 10 } [ "test" "this is a test" substring-start ] unit-test
+    { 0 } [ "test" "testing" substring-start ] unit-test
+    { 0 } [ "test" "test" substring-start ] unit-test
 
-    "test" "no match" substring-start assert-false
-    "this string is too long" "test" substring-start assert-false
+    { nil } [ "test" "no match" substring-start ] unit-test
+    { nil } [ "this string is much too long" "test" substring-start ] unit-test
+    { nil } [ "test1" "test" substring-start ] unit-test
 ;
 
-substring-start-test-1
+substring-start-test
 
 test: vector-find-string-test-1
     vector{ "foo" "bar" "baz" "zork" } :> v
