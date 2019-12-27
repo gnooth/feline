@@ -502,38 +502,90 @@ code string_find_char, 'string-find-char'       ; char string -- index/f
 endcode
 
 ; ### string-find-char-from-index
-code string_find_char_from_index, 'string-find-char-from-index' ; index char string -- index/f
+code string_find_char_from_index, 'string-find-char-from-index'
+; index char string -> index/nil
+
+        %define count_register  r12
+        %define index_register  r13
 
         _ check_string
 
         push    this_register
-        popd    this_register           ; -- tagged-index tagged-char
+        mov     this_register, rbx
+        _drop                           ; -> tagged-index tagged-char
 
-        _check_char                     ; -- tagged-index untagged-char
+        _check_char                     ; -> tagged-index untagged-char
 
         _swap
-        _check_index                    ; -- untagged-char untagged-index
+        _check_index                    ; -> untagged-char untagged-start-index
 
-        _this_string_raw_length
-        _swap
-        _register_do_range .1           ; -- untagged-char
-        _raw_loop_index
-        _this_string_nth_unsafe
-        _over
-        _eq?
-        _tagged_if .2
+        mov     rax, [this_register + STRING_RAW_LENGTH_OFFSET]
+        sub     rax, rbx                ; subtract start index from length to get count in rax
+        jle     .exit2
+
+        push    count_register
+        push    index_register
+        mov     count_register, rax
+        mov     index_register, rbx
         _drop
-        _tagged_loop_index
-        _unloop
-        jmp     .exit
-        _then .2
-        _loop .1
+        jmp     .loop
+
+.exit2:
         ; not found
-        _drop
-        _f
-.exit:
+        _nip
+        pop     this_register
+        mov     ebx, NIL
+        next
+
+        align   DEFAULT_CODE_ALIGNMENT
+.loop:
+        cmp     bl, byte [this_register + STRING_RAW_DATA_OFFSET + index_register]
+        je      .found
+        inc     index_register
+        dec     count_register
+
+        jz      .exit
+        cmp     bl, byte [this_register + STRING_RAW_DATA_OFFSET + index_register]
+        je      .found
+        inc     index_register
+        dec     count_register
+
+        jz      .exit
+        cmp     bl, byte [this_register + STRING_RAW_DATA_OFFSET + index_register]
+        je      .found
+        inc     index_register
+        dec     count_register
+
+        jz      .exit
+        cmp     bl, byte [this_register + STRING_RAW_DATA_OFFSET + index_register]
+        je      .found
+        inc     index_register
+        dec     count_register
+
+        jz      .exit
+        jmp     .loop
+
+.found:
+        mov     rbx, index_register
+        shl     rbx, 1
+        or      rbx, 1
+        pop     index_register
+        pop     count_register
         pop     this_register
         next
+
+.exit:
+        pop     index_register
+        pop     count_register
+
+; .exit2:
+        ; not found
+        pop     this_register
+        mov     ebx, NIL
+        next
+
+        %undef  count_register
+        %undef  index_register
 endcode
 
 ; ### string-validate-slice
