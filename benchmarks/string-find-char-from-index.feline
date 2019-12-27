@@ -1,0 +1,33 @@
+using: feline ;
+in: user
+
+0 't' "" string-find-char-from-index nil assert-eq
+
+1000000 constant reps
+
+"test" constant s1
+
+0 't' s1 string-find-char-from-index 0 assert-eq
+
+: %test1
+    reps [ 0 't' s1 string-find-char-from-index drop ] times ;
+
+: test1 [ %test1 ] time ;
+
+"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxtest" constant s2
+
+0 't' s2 string-find-char-from-index 36 assert-eq
+
+: %test2
+    reps [ 0 't' s2 string-find-char-from-index drop ] times ;
+
+: test2 [ %test2 ] time ;
+
+"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxtest" constant s3
+
+0 't' s3 string-find-char-from-index 76 assert-eq
+
+: %test3
+    reps [ 0 't' s3 string-find-char-from-index drop ] times ;
+
+: test3 [ %test3 ] time ;
