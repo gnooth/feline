@@ -23,7 +23,8 @@ global instance
 : get-instance // void -> mode
     instance ;
 
-: c-format-line ( s )                   // string -> array-of-segments
+: c-mode-format-line ( line )           // line -> array-of-segments
+    line text>> detab :> s
     "//" s substring-start :> comment-start
 
     comment-start [
@@ -46,7 +47,7 @@ global instance
     2 m indent-size<<
     "// " m comment-start<<
     ' c-mode-initialize-buffer m initialize-buffer-function<<
-    ' c-format-line m formatter<<
+    ' c-mode-format-line m format-line-function<<
     m ".c" modes set-at
     m ".h" modes set-at
 
