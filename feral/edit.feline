@@ -63,7 +63,8 @@ in: editor
 
 : do-tab
     add-undo-line-edit
-    indent-size dot-offset indent-size mod - insert-spaces ;
+    indent-size dot-offset indent-size mod - insert-spaces
+    update-goal-column ;
 
 : get-indentation-column                // line -> column
     dup empty? [ drop 0 ] ?return
@@ -251,7 +252,8 @@ in: editor
     ] [
         dot-line-prev assert
         [ move-left delete-line-separator modified ] with-compound-undo
-    ] if ;
+    ] if
+    update-goal-column ;
 
 private: insert-char-internal // char -> void
     // no undo
