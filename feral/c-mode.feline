@@ -23,30 +23,6 @@ global instance
 : get-instance // void -> mode
     instance ;
 
-: c-mode-identifier-char? ( x )         // x -> ?
-    [ x alphanumeric? ] [ x '_' eq? ] either? ;
-
-: c-mode-identifier-at-dot              // void -> start/f string/f
-
-    [ mark ] [ mark-line dot-line eq? ] both? [
-        mark dot make-region/2 begin-offset
-    ] [
-        dot-offset dot-line-length 1- min 0 max
-    ] if :> offset
-
-    offset dot-line-text [ c-mode-identifier-char? not ] find-last-from drop :> start!
-
-    // advance to first identifier char
-    start [ start 1+ start! ] [ 0 start! ] if
-
-    start dot-line-text [ c-mode-identifier-char? not ] find-from drop :> end!
-
-    end [ dot-line-length end! ] unless
-
-    start
-    start end dot-line-text string-substring
-;
-
 : c-format-line ( s )                   // string -> array-of-segments
     "//" s substring-start :> comment-start
 
@@ -70,7 +46,6 @@ global instance
     2 m indent-size<<
     "// " m comment-start<<
     ' c-mode-initialize-buffer m initialize-buffer-function<<
-    ' c-mode-identifier-char? m identifier-char-function<<
     ' c-format-line m formatter<<
     m ".c" modes set-at
     m ".h" modes set-at
