@@ -47,6 +47,7 @@ in: user
     "rust-mode"
     "search"
     "search-mode"
+    "swift-mode"
     "symbols"
     "symbols-mode"
 } [ delete-vocab ] each
@@ -94,6 +95,7 @@ feral-source-directory add-source-directory
         "go-mode.feline"
         "lisp-mode.feline"
         "rust-mode.feline"
+        "swift-mode.feline"
         "list-buffers.feline"
         "diff-mode.feline"
         "git.feline"
