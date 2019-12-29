@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -91,11 +91,11 @@ code elapsed, 'elapsed'                 ; callable -- ns cycles
 endcode
 
 ; ### time
-code feline_time, 'time'                ; callable --
+code feline_time, 'time'                ; callable -> void
 
-        _ elapsed                       ; -- ns cycles
+        _ elapsed                       ; -> ns cycles
 
-        _swap                           ; -- cycles ns
+        _swap                           ; -> cycles ns
 
         _ ?nl
 
@@ -105,13 +105,12 @@ code feline_time, 'time'                ; callable --
         _ float_float_divide
         _ float_to_string
         _ write_string
-        _quote " ms"
-        _ write_string
-        _ nl                            ; -- cycles
+        _quote " ms ("
+        _ write_string                  ; -> cycles
 
         _ fixnum_to_string
         _ write_string
-        _quote " cycles"
+        _quote " cycles)"
         _ write_string
         _ nl
 
