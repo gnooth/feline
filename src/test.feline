@@ -4320,18 +4320,20 @@ test: string-find-char-from-index-test
     "this is only a test" :> s
     { 0 } [ 0 't' s string-find-char-from-index ] unit-test
     { 15 } [ 1 't' s string-find-char-from-index ] unit-test
+    { 18 } [ 16 't' s string-find-char-from-index ] unit-test
     { 3 } [ 3 's' s string-find-char-from-index ] unit-test
 
     { nil } [ s length 't' s string-find-char-from-index ] unit-test
     { nil } [ most-positive-fixnum 't' s string-find-char-from-index ] unit-test
+
+    { 10 } [ 0 'k' "abcdefghijk" string-find-char-from-index ] unit-test
 
     { nil } [ 0 'x' "" string-find-char-from-index ] unit-test
     { 0 } [ 0 'x' "x" string-find-char-from-index ] unit-test
 
     [ -1 'x' "x" string-find-char-from-index ] assert-must-fail
     [ 0 "test" "test" string-find-char-from-index ] assert-must-fail
-    [ 0 'x' { 'x' 'y' } string-find-char-from-index ] assert-must-fail
-;
+    [ 0 'x' { 'x' 'y' } string-find-char-from-index ] assert-must-fail ;
 
 string-find-char-from-index-test
 

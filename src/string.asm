@@ -505,9 +505,6 @@ endcode
 code string_find_char_from_index, 'string-find-char-from-index'
 ; index char string -> index/nil
 
-        %define count_register  r12
-        %define index_register  r13
-
         _ check_string
 
         push    this_register
@@ -519,13 +516,14 @@ code string_find_char_from_index, 'string-find-char-from-index'
         _swap
         _check_index                    ; -> untagged-char untagged-start-index
 
-        mov     rax, [this_register + STRING_RAW_LENGTH_OFFSET]
-        sub     rax, rbx                ; subtract start index from length to get count in rax
-        jle     .exit2
+        ; is start index (in rbx) >= length?
+        cmp     rbx, [this_register + STRING_RAW_LENGTH_OFFSET]
+        jge     .exit2
 
-        push    count_register
-        push    index_register
-        mov     count_register, rax
+        %define limit_register  rax
+        %define index_register  rdx
+
+        mov     limit_register, [this_register + STRING_RAW_LENGTH_OFFSET]
         mov     index_register, rbx
         _drop
         jmp     .loop
@@ -541,50 +539,44 @@ code string_find_char_from_index, 'string-find-char-from-index'
 .loop:
         cmp     bl, byte [this_register + STRING_RAW_DATA_OFFSET + index_register]
         je      .found
-        inc     index_register
-        dec     count_register
+        add     index_register, 1
+        cmp     index_register, limit_register
+        je      .exit
 
-        jz      .exit
         cmp     bl, byte [this_register + STRING_RAW_DATA_OFFSET + index_register]
         je      .found
-        inc     index_register
-        dec     count_register
+        add     index_register, 1
+        cmp     index_register, limit_register
+        je      .exit
 
-        jz      .exit
         cmp     bl, byte [this_register + STRING_RAW_DATA_OFFSET + index_register]
         je      .found
-        inc     index_register
-        dec     count_register
+        add     index_register, 1
+        cmp     index_register, limit_register
+        je      .exit
 
-        jz      .exit
         cmp     bl, byte [this_register + STRING_RAW_DATA_OFFSET + index_register]
         je      .found
-        inc     index_register
-        dec     count_register
+        add     index_register, 1
+        cmp     index_register, limit_register
+        je      .exit
 
-        jz      .exit
         jmp     .loop
 
 .found:
         mov     rbx, index_register
         shl     rbx, 1
         or      rbx, 1
-        pop     index_register
-        pop     count_register
         pop     this_register
         next
 
 .exit:
-        pop     index_register
-        pop     count_register
-
-; .exit2:
         ; not found
         pop     this_register
         mov     ebx, NIL
         next
 
-        %undef  count_register
+        %undef  limit_register
         %undef  index_register
 endcode
 
