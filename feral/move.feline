@@ -45,12 +45,14 @@ in: editor
         dot-line-number textview-rows 1- - nth-line top-line!
     ] when ;
 
-: gotoline-internal                     // line-number -> void
+: gotoline-internal                     // linenumber -> void
     1- 0 max line-count 1- min
     dup dot-line-number <> [
         add-undo-move
         unmark
+        dot-line line-changed
         nth-line dot-line!
+        dot-line line-changed
         0 dot-offset!
         maybe-reframe
     ] [
