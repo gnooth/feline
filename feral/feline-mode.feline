@@ -231,26 +231,23 @@ feline-mode-comment-start length constant comment-start-length
     :> s
     :> start
 
-    start 1+ s string-tail <string-iterator> :> iter
+    start 1+ s string-tail make-string-iterator :> iter
 
-    nil !> this-char
-    this-char !> last-char
-    nil !> done?
+    local ch
 
     [
-        this-char last-char!
-        iter string-iterator-next this-char!
-        this-char [ true done?! ] unless
-        done?
+        iter string-iterator-next ch!
+        ch dup '"' neq? and
+    ] loop
+    // reached end
+    ch [
+        ch '"' assert-eq
+        iter string-iterator-index 1+
     ] [
-        this-char '\x22' eq? [
-            last-char '\' neq? [
-                true done?!
-            ] when
-        ] when
-    ] until
+        iter string-iterator-string string-length
+    ] if :> end
 
-    start 1+ iter string-iterator-index + ;
+    start 1+ end + ;
 
 : string-segments ( s ) // string -> segments
     s string-length :> len

@@ -1,4 +1,4 @@
-; Copyright (C) 2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -17,63 +17,21 @@ file __FILE__
 
 ; 5 cells: object header, string, raw index, raw length, raw data address
 
-%define string_iterator_string_slot             qword [rbx + BYTES_PER_CELL]
+%define STRING_ITERATOR_STRING_OFFSET           BYTES_PER_CELL * 1
 
-%macro  _string_iterator_string 0
-        _slot1
-%endmacro
+%define STRING_ITERATOR_RAW_INDEX_OFFSET        BYTES_PER_CELL * 2
 
-%macro  _this_string_iterator_string 0
-        _this_slot1
-%endmacro
+%define STRING_ITERATOR_RAW_LENGTH_OFFSET       BYTES_PER_CELL * 3
+
+%define STRING_ITERATOR_RAW_DATA_ADDRESS_OFFSET BYTES_PER_CELL * 4
 
 %macro  _this_string_iterator_set_string 0
         _this_set_slot1
 %endmacro
 
-%define string_iterator_raw_index_slot          qword [rbx + BYTES_PER_CELL * 2]
-
-%define this_string_iterator_raw_index_slot     qword [this_register + BYTES_PER_CELL * 2]
-
-%macro  _string_iterator_raw_index 0
-        _slot2
-%endmacro
-
-%macro  _this_string_iterator_raw_index 0
-        _this_slot2
-%endmacro
-
-%macro  _this_string_iterator_set_raw_index 0
-        _this_set_slot2
-%endmacro
-
-%macro  _string_iterator_index 0
-        _slot2
-        _tag_fixnum
-%endmacro
-
-%macro  _this_string_iterator_index 0
-        _this_slot2
-        _tag_fixnum
-%endmacro
-
-%define string_iterator_raw_length_slot         qword [rbx + BYTES_PER_CELL * 3]
-
-%define this_string_iterator_raw_length_slot    qword [this_register + BYTES_PER_CELL * 3]
-
-%macro  _string_iterator_raw_length 0
-        _slot3
-%endmacro
-
-%macro  _this_string_iterator_raw_length 0
-        _this_slot3
-%endmacro
-
 %macro  _this_string_iterator_set_raw_length 0
         _this_set_slot3
 %endmacro
-
-%define string_iterator_raw_data_address_slot           qword [rbx + BYTES_PER_CELL * 4]
 
 %define this_string_iterator_raw_data_address_slot      qword [this_register + BYTES_PER_CELL * 4]
 
@@ -138,19 +96,20 @@ endcode
 ; ### string-iterator-string
 code string_iterator_string, 'string-iterator-string'   ; iterator -> string
         _ check_string_iterator
-        _string_iterator_string
+        mov     rbx, [rbx + STRING_ITERATOR_STRING_OFFSET]
         next
 endcode
 
 ; ### string-iterator-index
 code string_iterator_index, 'string-iterator-index'     ; iterator -> index
         _ check_string_iterator
-        _string_iterator_index
+        mov     rbx, [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET]
+        _tag_fixnum
         next
 endcode
 
-; ### <string-iterator>
-code new_string_iterator, '<string-iterator>'   ; string -> iterator
+; ### make-string-iterator
+code make_string_iterator, 'make-string-iterator'       ; string -> iterator
 ; 5 cells: object header, string, raw index, raw length, raw data address
 
         _ verify_string
@@ -160,9 +119,11 @@ code new_string_iterator, '<string-iterator>'   ; string -> iterator
 
         push    this_register
         mov     this_register, rbx
-        poprbx
+        _drop
 
-        _this_object_set_raw_typecode TYPECODE_STRING_ITERATOR
+        mov     qword [this_register], TYPECODE_STRING_ITERATOR
+
+        mov     qword [this_register + STRING_ITERATOR_RAW_INDEX_OFFSET], -1
 
         _dup
         _ string_raw_length
@@ -172,7 +133,8 @@ code new_string_iterator, '<string-iterator>'   ; string -> iterator
         _ string_raw_data_address
         _this_string_iterator_set_raw_data_address
 
-        _this_string_iterator_set_string
+        mov     [this_register + STRING_ITERATOR_STRING_OFFSET], rbx
+        _drop
 
         pushrbx
         mov     rbx, this_register      ; -> iterator
@@ -186,21 +148,41 @@ code new_string_iterator, '<string-iterator>'   ; string -> iterator
 endcode
 
 ; ### string-iterator-next
-code string_iterator_next, 'string-iterator-next'       ; iterator -> element/f
+code string_iterator_next, 'string-iterator-next'       ; iterator -> element/nil
         _ check_string_iterator
 
-        mov     rax, string_iterator_raw_index_slot
-        cmp     rax, string_iterator_raw_length_slot
-        jae     .not_ok
+        mov     rax, [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET]
+        add     rax, 1
+        cmp     rax, [rbx + STRING_ITERATOR_RAW_LENGTH_OFFSET]
+        jge     .end
 
-        add     rax, string_iterator_raw_data_address_slot
-        add     string_iterator_raw_index_slot, 1
+        mov     [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET], rax
+        add     rax, [rbx + STRING_ITERATOR_RAW_DATA_ADDRESS_OFFSET]
         movzx   ebx, byte [rax]
         _tag_char
         next
 
-.not_ok:
-        mov     ebx, f_value
+.end:
+        mov     ebx, NIL
+        next
+endcode
+
+; ### string-iterator-peek
+code string_iterator_peek, 'string-iterator-peek'       ; iterator -> element/nil
+        _ check_string_iterator
+
+        mov     rax, [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET]
+        add     rax, 1
+        cmp     rax, [rbx + STRING_ITERATOR_RAW_LENGTH_OFFSET]
+        jge     .end
+
+        add     rax, [rbx + STRING_ITERATOR_RAW_DATA_ADDRESS_OFFSET]
+        movzx   ebx, byte [rax]
+        _tag_char
+        next
+
+.end:
+        mov     ebx, NIL
         next
 endcode
 
@@ -213,9 +195,18 @@ code string_interator_skip, 'string-iterator-skip'      ; fixnum string-iterator
         jz      error_not_fixnum_rax
         sar     rax, FIXNUM_TAG_BITS
 
-        add     string_iterator_raw_index_slot, rax
+        add     qword [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET], rax
         _2drop
 
+        next
+endcode
+
+; ### string-iterator-skip-to-end
+code string_iterator_skip_to_end, 'string-iterator-skip-to-end' ; string-iterator -> void
+        _ check_string_iterator
+        mov     rax, [rbx + STRING_ITERATOR_RAW_LENGTH_OFFSET]
+        mov     [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET], rax
+        _drop
         next
 endcode
 

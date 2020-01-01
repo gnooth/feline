@@ -3402,27 +3402,62 @@ test: iterator-test-1
 
 iterator-test-1
 
-test: string-iterator-test-1
-    clear
+test: string-iterator-test
+    local iter
 
-    "test" <string-iterator> :> iter
+    { } [ "this is a test" make-string-iterator iter! ] unit-test
+    { true } [ iter string-iterator? ] unit-test
+    { "this is a test" } [ iter string-iterator-string ] unit-test
+    { -1 } [ iter string-iterator-index ] unit-test
 
-    { t } [ iter string-iterator? ] unit-test
+    { 't' } [ iter string-iterator-peek ] unit-test
+    { -1 } [ iter string-iterator-index ] unit-test
 
     { 't' } [ iter string-iterator-next ] unit-test
-    { 'e' } [ iter string-iterator-next ] unit-test
+    { 0 } [ iter string-iterator-index ] unit-test
+
+    { 'h' } [ iter string-iterator-peek ] unit-test
+    { 0 } [ iter string-iterator-index ] unit-test
+
+    { 'h' } [ iter string-iterator-next ] unit-test
+    { 'i' } [ iter string-iterator-next ] unit-test
     { 's' } [ iter string-iterator-next ] unit-test
-    { 't' } [ iter string-iterator-next ] unit-test
+    { '\s' } [ iter string-iterator-next ] unit-test
 
-    { f } [ iter string-iterator-next ] unit-test
+    { } [ iter string-iterator-skip-to-end ] unit-test
+    { 14 } [ iter string-iterator-index ] unit-test
+    { nil } [ iter string-iterator-next ] unit-test
 
-    // subsequent calls continue to return f
-    { f } [ iter string-iterator-next ] unit-test
+    // subsequent calls continue to return nil
+    { nil } [ iter string-iterator-next ] unit-test
 
-    get-datastack empty? assert-true
+
+    { } [ "this is another test" make-string-iterator iter! ] unit-test
+    { true } [ iter string-iterator? ] unit-test
+    { "this is another test" } [ iter string-iterator-string ] unit-test
+    { -1 } [ iter string-iterator-index ] unit-test
+
+    { } [ 1 iter string-iterator-skip ] unit-test
+    { 0 } [ iter string-iterator-index ] unit-test
+
+    { 'h' } [ iter string-iterator-next ] unit-test
+    { 1 } [ iter string-iterator-index ] unit-test
+
+    { } [ 12 iter string-iterator-skip ] unit-test
+    { 13 } [ iter string-iterator-index ] unit-test
+
+    { 'r' } [ iter string-iterator-peek ] unit-test
+    { 'r' } [ iter string-iterator-next ] unit-test
+
+    { } [ iter string-iterator-skip-to-end ] unit-test
+    { 20 } [ iter string-iterator-index ] unit-test
+    { nil } [ iter string-iterator-next ] unit-test
+
+    // subsequent calls continue to return nil
+    { nil } [ iter string-iterator-next ] unit-test
 ;
 
-string-iterator-test-1
+string-iterator-test
 
 test: string-index-from-test-1
     't' 0 "this is a test" string-index-from zero? assert-true
