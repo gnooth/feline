@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -164,10 +164,10 @@ code string_empty?, 'string-empty?'     ; string -> ?
         _string_raw_length
         test    rbx, rbx
         jz      .1
-        mov     ebx, f_value
-        _return
+        mov     ebx, NIL
+        next
 .1:
-        mov     ebx, t_value
+        mov     ebx, TRUE
         next
 endcode
 
@@ -177,7 +177,7 @@ endcode
 %endmacro
 
 %macro  _this_string_raw_data_address 0
-        pushrbx
+        _dup
         lea     rbx, [this_register + STRING_RAW_DATA_OFFSET]
 %endmacro
 
@@ -213,21 +213,21 @@ endcode
 %define this_string_first_unsafe        byte [this_register + STRING_RAW_DATA_OFFSET]
 
 %macro  _this_string_first_unsafe 0     ; -- untagged-char
-        pushrbx
+        _dup
         movzx   ebx, byte [this_register + STRING_RAW_DATA_OFFSET]
 %endmacro
 
 %define this_string_second_unsafe       byte [this_register + STRING_RAW_DATA_OFFSET + 1]
 
 %macro  _this_string_second_unsafe 0    ; -- untagged-char
-        pushrbx
+        _dup
         movzx   ebx, byte [this_register + STRING_RAW_DATA_OFFSET + 1]
 %endmacro
 
 %define this_string_third_unsafe        byte [this_register + STRING_RAW_DATA_OFFSET + 2]
 
 %macro  _this_string_third_unsafe 0     ; -- untagged-char
-        pushrbx
+        _dup
         movzx   ebx, byte [this_register + STRING_RAW_DATA_OFFSET + 2]
 %endmacro
 
@@ -248,7 +248,7 @@ code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL ; from-addr from-length -
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -- from-addr from-length
+        _drop                           ; -- from-addr from-length
 
         ; zero all bits of object header
         xor     eax, eax
@@ -257,7 +257,7 @@ code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL ; from-addr from-length -
         _this_object_set_raw_typecode TYPECODE_STRING
         _this_object_set_flags OBJECT_ALLOCATED_BIT
 
-        _f
+        _nil
         _this_string_set_hashcode
 
         _this_string_set_raw_length     ; -- from-addr
@@ -271,7 +271,7 @@ code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL ; from-addr from-length -
         lea     rax, [this_register + STRING_RAW_DATA_OFFSET]
         mov     byte [rax + rdx], 0
 
-        pushrbx
+        _dup
         mov     rbx, this_register      ; -- string
 
         ; return handle of allocated string
@@ -437,7 +437,7 @@ code string_?first, 'string-?first'     ; string -> char/f
         _tag_char
         next
 .empty:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
@@ -466,7 +466,7 @@ code string_?last, 'string-?last'       ; string -> char/f
         _tag_char
         next
 .empty:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
@@ -495,7 +495,7 @@ code string_find_char, 'string-find-char'       ; char string -- index/f
         _loop .1
         ; not found
         _drop
-        _f
+        _nil
 .exit:
         pop     this_register
         next
@@ -769,7 +769,7 @@ code string_has_prefix?, 'string-has-prefix?' ; prefix string -> ?
         _ not
         _else .1
         _2drop
-        _f
+        _nil
         _then .1
         next
 endcode
@@ -797,9 +797,9 @@ code substring_start, 'substring-start'         ; pattern string -> index/nil
 .1:
         ; -> ^pattern
         _dup
-        _string_raw_data_address                ; -> pattern-raw-data-address
+        _string_raw_data_address        ; -> pattern-raw-data-address
         _swap
-        _string_raw_length                      ; -> pattern-raw-data-address pattern-raw-length
+        _string_raw_length              ; -> pattern-raw-data-address pattern-raw-length
 
         _this_string_raw_length
         _over
@@ -808,8 +808,9 @@ code substring_start, 'substring-start'         ; pattern string -> index/nil
 
         _register_do_times .2
 
-        _this_string_raw_data_address
-        add rbx, index_register
+        _this_string_raw_data_address   ; -> pattern-raw-data-address pattern-raw-length string-raw-data-address
+        add     rbx, index_register
+
         _ feline_2over
         _ unsafe_raw_memequal
         _tagged_if .3
@@ -822,7 +823,7 @@ code substring_start, 'substring-start'         ; pattern string -> index/nil
         _loop .2
 
         _2drop
-        _f
+        _nil
 
 .exit:
         pop     this_register
@@ -844,7 +845,7 @@ code string_has_suffix?, 'string-has-suffix?'   ; suffix string -- ?
         _ stringequal
         _else .1
         _4drop
-        _f
+        _nil
         _then .1
         next
 endcode
@@ -862,7 +863,7 @@ code string_skip_whitespace, 'string-skip-whitespace' ; start-index string -> in
         cmp     [rbp], rbx
         jl      .1
         _drop
-        mov     rbx, f_value
+        mov     rbx, NIL
         jmp     .exit
 .1:
         _swap
@@ -879,7 +880,7 @@ code string_skip_whitespace, 'string-skip-whitespace' ; start-index string -> in
         _loop .2
 
         ; not found
-        _f
+        _nil
 
 .exit:
         pop     this_register
@@ -900,7 +901,7 @@ code string_skip_to_whitespace, 'string-skip-to-whitespace' ; start-index string
         _ge
         _if .1
         _2drop
-        _f
+        _nil
         jmp     .exit
         _then .1                        ; -- untagged-start-index untagged-length
 
@@ -917,7 +918,7 @@ code string_skip_to_whitespace, 'string-skip-to-whitespace' ; start-index string
         _loop .2
 
         ; not found
-        _f
+        _nil
 
 .exit:
         pop     this_register
@@ -1004,7 +1005,7 @@ code string_index_from, 'string-index-from'     ; char start-index string -- ind
 
 .not_found:
         ; not found
-        mov     ebx, f_value
+        mov     ebx, NIL
 
 .exit:
         pop     this_register
@@ -1034,7 +1035,7 @@ code string_last_index_from, 'string-last-index-from'   ; char start-index strin
 
         push    r12
         mov     r12, rbx                ; untagged start index in r12
-        poprbx                          ; -> char
+        _drop                           ; -> char
 
         _untag_char                     ; -> untagged-char
 
@@ -1046,7 +1047,7 @@ code string_last_index_from, 'string-last-index-from'   ; char start-index strin
         jns     .loop
 
         ; not found
-        mov     ebx, f_value
+        mov     ebx, NIL
         pop     r12
         pop     this_register
         next
@@ -1060,7 +1061,7 @@ code string_last_index_from, 'string-last-index-from'   ; char start-index strin
 
 .out_of_bounds:
         _nip
-        mov     ebx, f_value
+        mov     ebx, NIL
         pop     this_register
         next
 
@@ -1151,14 +1152,14 @@ code unsafe_raw_memequal, 'unsafe_raw_memequal', SYMBOL_INTERNAL
         sub     rcx, 1
         jnz     .3
 .1:
-        mov     ebx, t_value
+        mov     ebx, TRUE
 %ifdef WIN64
         pop     rsi
         pop     rdi
 %endif
         next
 .2:
-        mov     ebx, f_value
+        mov     ebx, NIL
 %ifdef WIN64
         pop     rsi
         pop     rdi
@@ -1254,7 +1255,7 @@ code string_lines, 'string-lines'       ; string -- lines
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; --
+        _drop                           ; --
 
         _lit 10
         _ new_vector_untagged           ; -- vector
