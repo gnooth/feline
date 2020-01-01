@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@
 %endmacro
 
 %macro  _register_raw_loop_index 0      ; -- untagged-index
-        pushrbx
+        _dup
         mov     rbx, index_register
 %endmacro
 
@@ -75,7 +75,6 @@
         pop     index_register
         pop     count_register
 %endmacro
-
 
 %macro  _?do 1                          ; limit start-index --
         mov     rax, [rbp]              ; limit in rax, start index in rbx
@@ -125,7 +124,7 @@
 %ifdef index_register
         _register_raw_loop_index
 %else
-        pushrbx
+        _dup
         mov     rbx, [rsp]
 %endif
 %endmacro
@@ -140,7 +139,7 @@
 %ifdef index_register
         _register_raw_loop_index
 %else
-        pushrbx
+        _dup
         mov     rbx, [rsp]
 %endif
 %endmacro

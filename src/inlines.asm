@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -15,16 +15,16 @@
 
 %macro  _tor 0                          ; >R
         push    rbx
-        poprbx
+        _drop
 %endmacro
 
 %macro  _rfetch 0                       ; R@
-        pushrbx
+        _dup
         mov     rbx, [rsp]
 %endmacro
 
 %macro  _rfrom 0                        ; R>
-        pushrbx
+        _dup
         pop     rbx
 %endmacro
 
@@ -87,8 +87,9 @@
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
 
-%macro  _dup 0                          ; DUP
-        pushrbx
+%macro  _dup 0
+        mov     [rbp - BYTES_PER_CELL], rbx
+        lea     rbp, [rbp - BYTES_PER_CELL]
 %endmacro
 
 %macro  _twodup 0                       ; 2DUP
@@ -101,7 +102,7 @@
 %macro  _?dup 0
         test    rbx, rbx
         jz      %%skip
-        pushrbx
+        _dup
 %%skip:
 %endmacro
 
@@ -131,7 +132,7 @@
 
 ; This is the Factor/Feline version of pick.
 %macro  _pick 0
-        pushrbx
+        _dup
         mov     rbx, [rbp + BYTES_PER_CELL * 2]
 %endmacro
 
@@ -269,16 +270,16 @@
 %endmacro
 
 %macro  _not 0
-        mov     eax, t_value
-        cmp     rbx, f_value
-        mov     ebx, f_value
+        mov     eax, TRUE
+        cmp     rbx, NIL
+        mov     ebx, NIL
         cmove   ebx, eax
 %endmacro
 
 %macro _nil? 0
-        mov     eax, nil_value
+        mov     eax, NIL
         cmp     rbx, rax
-        mov     ebx, t_value
+        mov     ebx, TRUE
         cmovne  ebx, eax
 %endmacro
 
@@ -291,12 +292,12 @@
 
 %macro  _lshift 0                       ; x1 u  -- x2
         mov     ecx, ebx
-        poprbx
+        _drop
         shl     rbx, cl
 %endmacro
 
 %macro  _rshift 0                       ; x1 u  -- x2
         mov     ecx, ebx
-        poprbx
+        _drop
         shr     rbx, cl
 %endmacro
