@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -24,18 +24,18 @@ code dip, 'dip'                         ; x quot -> x
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
         call    rax
-        pushrbx
+        _dup
         pop     rbx
         next
 endcode
 
 ; ### 2dip
-code twodip, '2dip'                     ; x y quot -- x y
+code twodip, '2dip'                     ; x y quot -> x y
 ; Remove x and y, call quot, restore x and y to top of stack after
 ; quot returns.
         _ callable_raw_code_address     ; code address in rbx
         mov     rax, rbx                ; code address in rax
-        poprbx                          ; -- x y
+        _drop                           ; -> x y
         _tor
         _tor
         call    rax
@@ -51,10 +51,10 @@ code keep, 'keep'                       ; .. x quot -- .. x
 ; the quotation returns."
         _ callable_raw_code_address     ; code address in rbx
         mov     rax, rbx                ; code address in rax
-        poprbx
+        _drop
         push    rbx
         call    rax
-        pushrbx
+        _dup
         pop     rbx
         next
 endcode
@@ -63,7 +63,7 @@ endcode
 code twokeep, '2keep'                   ; .. x y quot -- .. x y
         _ callable_raw_code_address     ; code address in rbx
         mov     rax, rbx                ; code address in rax
-        poprbx
+        _drop
         push    qword [rbp]
         push    rbx
         call    rax
@@ -93,7 +93,7 @@ code tri, 'tri'                         ; x quot1 quot2 quot3 --
         _rfrom
         _ callable_raw_code_address
         mov     rax, rbx
-        poprbx
+        _drop
         call    rax
         next
 endcode
@@ -134,7 +134,7 @@ code twotri, '2tri'                     ; x y quot1 quot2 quot3 --
         _rfrom
         _ callable_raw_code_address
         mov     rax, rbx
-        poprbx
+        _drop
         call    rax
         next
 endcode
@@ -167,7 +167,7 @@ code bi@, 'bi@'                         ; x y quot ->
         lea     rbp, [rbp + BYTES_PER_CELL * 2] ; -> x
         push    rax                     ; save y
         call    r12
-        pushrbx
+        _dup
         pop     rbx                     ; -> y
         call    r12
         pop     r12
@@ -199,10 +199,10 @@ code tri@, 'tri@'                       ; x y z quot ->
         _3drop                          ; -> x
 
         call    r12
-        pushrbx
+        _dup
         pop     rbx                     ; -> y
         call    r12
-        pushrbx
+        _dup
         pop     rbx                     ; -> z
         call    r12
 
@@ -215,8 +215,8 @@ code tri@, 'tri@'                       ; x y z quot ->
 endcode
 
 ; ### ?
-code question, '?'                      ; ? true false -- true/false
-        cmp     qword [rbp + BYTES_PER_CELL], f_value
+code question, '?'                      ; ? true false -> true/false
+        cmp     qword [rbp + BYTES_PER_CELL], NIL
         mov     rax, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
         cmovne  rbx, rax
@@ -228,7 +228,7 @@ code case, 'case'               ; x array --
         _ check_array
         push    this_register
         mov     this_register, rbx
-        poprbx                  ; -- x
+        _drop                   ; -- x
 
         _this_array_raw_length
         _zero
@@ -277,7 +277,7 @@ code old_cond, 'old-cond'               ; array ->
         _ check_array
         push    this_register
         mov     this_register, rbx
-        poprbx                  ; --
+        _drop                   ; --
 
         _this_array_raw_length
         _zero
@@ -337,7 +337,7 @@ code cond, 'cond'                       ; array ->
         _ check_array
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -> void
+        _drop                           ; -> void
 
         _this_array_raw_length
         shr     rbx, 1
@@ -378,16 +378,16 @@ code short_circuit_and, '&&'            ; seq -> ?
         _this                           ; -- tagged-index handle
         _ nth_unsafe                    ; -- quotation
         _ call_quotation
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         mov     rax, rbx
-        poprbx
+        _drop
         jne     .2
         _unloop
         jmp     .exit
 .2:
         _loop .1
 .exit:
-        pushrbx
+        _dup
         mov     rbx, rax
         pop     this_register
         next
@@ -404,16 +404,16 @@ code short_circuit_or, '||'             ; seq -> ?
         _this                           ; -- tagged-index handle
         _ nth_unsafe                    ; -- quotation
         _ call_quotation
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         mov     rax, rbx
-        poprbx
+        _drop
         je      .2
         _unloop
         jmp     .exit
 .2:
         _loop .1
 .exit:
-        pushrbx
+        _dup
         mov     rbx, rax
         pop     this_register
         next
@@ -423,20 +423,20 @@ endcode
 code both?, 'both?'                     ; quot1 quot2 -> ?
 ; Short-circuit `and` for two quotations.
 ; Removes both quotations from the stack. Calls quot1.
-; Returns f without calling quot2 if quot1 returns f.
+; Returns nil without calling quot2 if quot1 returns nil.
 ; Otherwise, calls quot2 and returns the result quot2
 ; returns.
         _tor                            ; move quot2 to return stack
         _ callable_raw_code_address     ; quot1 code address in rbx
         mov     rax, rbx                ; quot1 code address in rax
-        poprbx                          ; empty stack
+        _drop                           ; empty stack
         call    rax                     ; call quot1
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         je      .1
         pop     rbx
         _ callable_raw_code_address
         mov     rax, rbx
-        poprbx
+        _drop
         call    rax
         next
 .1:
@@ -454,14 +454,14 @@ code either?, 'either?'                 ; quot1 quot2 -> ?
         _tor                            ; move quot2 to return stack
         _ callable_raw_code_address     ; quot1 code address in rbx
         mov     rax, rbx                ; quot1 code address in rax
-        poprbx                          ; empty stack
+        _drop                           ; empty stack
         call    rax                     ; call quot1
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         jne     .1
         pop     rbx
         _ callable_raw_code_address
         mov     rax, rbx
-        poprbx
+        _drop
         call    rax
         next
 .1:
