@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -74,10 +74,10 @@ code array?, 'array?'                   ; handle -- ?
         movzx   eax, word [rbx]
         cmp     eax, TYPECODE_ARRAY
         jne     .1
-        mov     ebx, t_value
-        _return
+        mov     ebx, TRUE
+        next
 .1:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
@@ -143,7 +143,7 @@ code make_array_1, 'make-array/1'       ; length -> array
         mov     arg0_register, rbx
         _ allocate_array                ; returns raw object address in rax
         lea     arg0_register, [rax + ARRAY_DATA_OFFSET] ; data address
-        mov     arg1_register, f_value  ; element
+        mov     arg1_register, NIL      ; element
         mov     arg2_register, rbx      ; length
         mov     rbx, rax                ; object address
         _ fill_cells
@@ -338,9 +338,9 @@ code array_third, 'array-third'         ; handle -- element
 endcode
 
 ; ### array-?last
-code array_?last, 'array-?last'         ; array -> element/f
+code array_?last, 'array-?last'         ; array -> element/nil
 ; return last element of array
-; return f if array is empty
+; return nil if array is empty
         _ check_array
         mov     rax, [rbx + ARRAY_RAW_LENGTH_OFFSET]
         sub     rax, 1
@@ -348,7 +348,7 @@ code array_?last, 'array-?last'         ; array -> element/f
         mov     rbx, [rbx + ARRAY_DATA_OFFSET + BYTES_PER_CELL * rax]
         next
 .empty:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
