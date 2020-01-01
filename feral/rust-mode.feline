@@ -23,18 +23,91 @@ global instance
 : get-instance // void -> mode
     instance ;
 
-: rust-mode-format-line ( line )        // line -> array-of-segments
-    line text>> detab :> s
-    "//" s substring-start :> comment-start
-
-    comment-start [
-        comment-start s string-head 0 color-text make-segment/3
-        comment-start s string-tail comment-start color-comment make-segment/3
-        2array
+: parse-quoted-string ( iter )          // string-iterator -> segment
+    iter string-iterator-index :> start
+    local ch
+    [
+        iter string-iterator-next ch!
+        ch dup '"' neq? and
+    ] loop
+    // reached end
+    ch [
+        ch '"' assert-eq
+        1 iter string-iterator-skip
+        iter string-iterator-index
     ] [
-        s 0 color-text make-segment/3
-        1array
+        iter string-iterator-string string-length
+    ] if :> end
+
+    start end iter string-iterator-string substring
+    start color-string make-segment/3 ;
+
+: parse-line-comment ( iter )           // string-iterator -> segment
+    iter string-iterator-index !> start
+    start 0? [
+        iter string-iterator-string 0 color-comment make-segment/3
+    ] [
+        start
+        iter string-iterator-string string-length
+        iter string-iterator-string substring
+        start color-comment make-segment/3
     ] if ;
+
+: format-iter ( iter )
+    100 <vector> :> v
+    0 !> start
+
+    local ch
+    local end
+
+    [
+        iter string-iterator-next ch!
+        ch
+    ] [
+        {
+            {
+                [ ch '"' eq? ]
+                [
+                    iter string-iterator-index end!
+                    start end iter string-iterator-string substring
+                    start color-text make-segment/3 v push
+                    iter parse-quoted-string v push
+                    iter string-iterator-index start!
+                ]
+            }
+
+            {
+                [ ch '/' eq? ]
+                [
+                    iter string-iterator-peek '/' eq? [
+                        iter string-iterator-index start > [
+                            iter string-iterator-index end!
+                            start end iter string-iterator-string substring
+                            start color-text make-segment/3 v push
+                        ] when
+                        iter parse-line-comment v push
+                        iter string-iterator-skip-to-end
+                        iter string-iterator-index start!
+                    ] when
+                ]
+            }
+
+            [
+                // default
+            ]
+        } cond
+    ] while
+
+    iter string-iterator-string string-length end!
+    start end < [
+        start end iter string-iterator-string substring
+        start color-text make-segment/3 v push
+    ] when
+
+    v ;
+
+: rust-mode-format-line ( line )        // line -> vector-of-segments
+    line text>> detab make-string-iterator format-iter ;
 
 : rust-mode-initialize-buffer           // buffer -> void
     1 ?enough :> buf
