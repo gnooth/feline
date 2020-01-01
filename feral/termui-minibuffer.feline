@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,6 +18,14 @@ in: mini
 
 feral-config:termui? assert
 
+private
+
+global completion-provider
+
+public
+
+: set-completion-provider completion-provider! ;
+
 : status-y                              // -> n
     terminal-rows 2 - ;
 
@@ -32,6 +40,10 @@ feral-config:termui? assert
 : clear-message hide-cursor 0 message-y at-xy clear-to-eol ;
 
 ' clear-message is feral-core:clear-message
+
+: show-message-briefly                  // string -> void
+    // REVIEW
+    drop ;
 
 : minibuffer-accept-string              // prompt -> string
     0 message-y at-xy
