@@ -341,7 +341,7 @@ endcode
 ; ### gc2_scan_string_iterator
 code gc2_scan_string_iterator, 'gc2_scan_string_iterator' ; ^string-iterator -> void
 
-        _string_iterator_string
+        mov     rbx, [rbx + STRING_ITERATOR_STRING_OFFSET]
         _ gc2_maybe_push_handle
 
         next
