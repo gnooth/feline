@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -109,8 +109,28 @@ global instance
 : rust-mode-format-line ( line )        // line -> vector-of-segments
     line text>> detab make-string-iterator format-iter ;
 
+: line-is-definition? ( line )
+    " fn " line text>> substring-start ;
+
+: rust-mode-list-symbols
+    ' rust-mode:line-is-definition? list-symbols:list-symbols ;
+
+global rust-mode-local-map
+
+feral-config:winui? feral-config:gtkui? or #if
+
+: initialize-local-map
+    128 <hashtable> :> m
+    ' rust-mode-list-symbols feral-key:ctrl-shift-o m set-at
+    m rust-mode-local-map! ;
+
+initialize-local-map
+
+#endif
+
 : rust-mode-initialize-buffer           // buffer -> void
     1 ?enough :> buf
+    rust-mode-local-map buf local-map<<
     get-instance :> m
     m indent-size>> buf indent-size<< ;
 
