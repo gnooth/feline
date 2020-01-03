@@ -21,7 +21,8 @@ in: editor
     nil buf last-line<<
     nil buf top-line<<
     nil buf dot<<
-    nil buf mark<< ;
+    nil buf mark<<
+    nil buf properties<< ;
 
 : buffer-set-contents ( s buf )         // string buffer -> void
     buf clear-buffer
