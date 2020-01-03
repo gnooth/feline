@@ -20,11 +20,13 @@ private
 
 global instance
 
+": " constant line-number-suffix
+
 : symbols-mode-format-line ( s ) // string -> segments
 
     16 <vector> :> v
 
-    '\s' s index :> end
+    line-number-suffix s substring-start 1+ :> end
     0 end s substring 0 color-linenumber make-segment/3 v push
 
     local comment-start
@@ -45,10 +47,10 @@ global instance
 
 : symbols-mode-goto-source
     dot-line-text :> s
-    '\s' s index :> end
+    line-number-suffix s substring-start :> end
     end nil? ?exit
 
-    0 end s substring string>number :> line-number
+    0 end s substring string-trim string>number :> line-number
     current-buffer parent>> set-current-buffer
     line-number editor:gotoline-internal
     t repaint?! ;

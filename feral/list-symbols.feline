@@ -34,21 +34,30 @@ empty
 
     filename file-name-nondirectory " [symbols]" + buf name<<
 
+    last-line-number fixnum>string string-length :> line-number-width
+
     first-line !> source-line
     nil !> goal // put dot on this line in the [symbols] buffer
 
     [ source-line ] [
         source-line line-is-definition-function call [
-            source-line number>> 1+ source-line text>> "%d %s" format make-line/1
+            '\s' line-number-width source-line number>> 1+ fixnum>string pad-left
+            symbols-mode:line-number-suffix +
+            source-line text>> +
+            make-line/1
+
             goal [
                 source-line number>> dot-line-number > [
                     buf last-line>> goal!
                 ] when
             ] unless
+
             buf buffer-append-line
         ] when
         source-line next>> source-line!
     ] while
+
+    buf first-line>> nil? [ "No symbols" message ] ?return
 
     buf first-line>> buf top-line<<
     goal [ buf last-line>> goal! ] unless
