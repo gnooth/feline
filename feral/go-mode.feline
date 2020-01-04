@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,28 +23,121 @@ global instance
 : get-instance // void -> mode
     instance ;
 
-: go-mode-format-line ( line )          // line -> array-of-segments
-    line text>> detab :> s
-    "//" s substring-start :> comment-start
-
-    comment-start [
-        comment-start s string-head 0 color-text make-segment/3
-        comment-start s string-tail comment-start color-comment make-segment/3
-        2array
+: parse-quoted-string ( iter )          // string-iterator -> segment
+    iter string-iterator-index :> start
+    local ch
+    [
+        iter string-iterator-next ch!
+        ch dup '"' neq? and
+    ] loop
+    // reached end
+    ch [
+        ch '"' assert-eq
+        1 iter string-iterator-skip
+        iter string-iterator-index
     ] [
-        s 0 color-text make-segment/3
-        1array
+        iter string-iterator-string string-length
+    ] if :> end
+
+    start end iter string-iterator-string substring
+    start color-string make-segment/3 ;
+
+: parse-line-comment ( iter )           // string-iterator -> segment
+    iter string-iterator-index !> start
+    start 0? [
+        iter string-iterator-string 0 color-comment make-segment/3
+    ] [
+        start
+        iter string-iterator-string string-length
+        iter string-iterator-string substring
+        start color-comment make-segment/3
     ] if ;
+
+: format-iter ( iter )
+    100 <vector> :> v
+    0 !> start
+
+    local ch
+    local end
+
+    [
+        iter string-iterator-next ch!
+        ch
+    ] [
+        {
+            {
+                [ ch '"' eq? ]
+                [
+                    iter string-iterator-index end!
+                    start end iter string-iterator-string substring
+                    start color-text make-segment/3 v push
+                    iter parse-quoted-string v push
+                    iter string-iterator-index start!
+                ]
+            }
+
+            {
+                [ ch '/' eq? ]
+                [
+                    iter string-iterator-peek '/' eq? [
+                        iter string-iterator-index start > [
+                            iter string-iterator-index end!
+                            start end iter string-iterator-string substring
+                            start color-text make-segment/3 v push
+                        ] when
+                        iter parse-line-comment v push
+                        iter string-iterator-skip-to-end
+                        iter string-iterator-index start!
+                    ] when
+                ]
+            }
+
+            [
+                // default
+            ]
+        } cond
+    ] while
+
+    iter string-iterator-string string-length end!
+    start end < [
+        start end iter string-iterator-string substring
+        start color-text make-segment/3 v push
+    ] when
+
+    v ;
+
+: go-mode-format-line ( line )        // line -> segments
+    line text>> detab make-string-iterator format-iter ;
+
+: line-is-definition? ( line )
+    "func" line text>> string-has-prefix? ;
+
+: go-mode-list-symbols
+    ' go-mode:line-is-definition? list-symbols:list-symbols ;
+
+global go-mode-local-map
+
+feral-config:winui? feral-config:gtkui? or #if
+
+: initialize-local-map
+    128 <hashtable> :> m
+    ' go-mode-list-symbols feral-key:ctrl-shift-o m set-at
+    m go-mode-local-map! ;
+
+initialize-local-map
+
+#endif
 
 : go-mode-initialize-buffer             // buffer -> void
     1 ?enough :> buf
+    go-mode-local-map buf local-map<<
     get-instance :> m
     m indent-size>> buf indent-size<< ;
 
 : initialize-go-mode
     mode make-instance :> m
     "Go" m name<<
-    4 m indent-size<<
+    8 m indent-size<<
     "// " m comment-start<<
     ' go-mode-initialize-buffer m initialize-buffer-function<<
     ' go-mode-format-line m format-line-function<<
