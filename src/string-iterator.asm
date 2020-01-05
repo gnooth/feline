@@ -163,6 +163,8 @@ code string_iterator_next, 'string-iterator-next'       ; iterator -> element/ni
         next
 
 .end:
+        mov     rax, [rbx + STRING_ITERATOR_RAW_LENGTH_OFFSET]
+        mov     [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET], rax
         mov     ebx, NIL
         next
 endcode

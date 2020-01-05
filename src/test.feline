@@ -3455,7 +3455,20 @@ test: string-iterator-test
 
     // subsequent calls continue to return nil
     { nil } [ iter string-iterator-next ] unit-test
-;
+
+    { } [ "test" make-string-iterator iter! ] unit-test
+    { 't' } [ iter string-iterator-next ] unit-test
+    { 'e' } [ iter string-iterator-next ] unit-test
+    { 's' } [ iter string-iterator-next ] unit-test
+    { 't' } [ iter string-iterator-next ] unit-test
+    { 3 } [ iter string-iterator-index ] unit-test
+    { nil } [ iter string-iterator-next ] unit-test
+    { 4 } [ iter string-iterator-index ] unit-test
+
+    // subsequent calls continue to return nil...
+    { nil } [ iter string-iterator-next ] unit-test
+    // ...and leave the index unchanged
+    { 4 } [ iter string-iterator-index ] unit-test ;
 
 string-iterator-test
 
