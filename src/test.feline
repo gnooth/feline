@@ -4385,4 +4385,80 @@ test: string-find-char-from-index-test
 
 string-find-char-from-index-test
 
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ" constant upper-case-chars
+
+"abcdefghijklmnopqrstuvwxyz" constant lower-case-chars
+
+test: char-downcase-test
+    26 <sbuf> :> sb
+    local char
+
+    { } [
+        lower-case-chars [ dup char-downcase assert-eq ] each
+
+        upper-case-chars [ char-downcase sb push ] each
+        sb sbuf>string lower-case-chars assert=
+
+        128 [
+            code-char char!
+            char char-upper-case? [ char dup char-downcase assert-eq ] unless
+        ] each-integer
+    ] unit-test ;
+
+char-downcase-test
+
+test: char-upcase-test
+    26 <sbuf> :> sb
+    local char
+
+    { } [
+        upper-case-chars [ dup char-upcase assert-eq ] each
+
+        lower-case-chars [ char-upcase sb push ] each
+        sb sbuf>string upper-case-chars assert=
+
+        128 [
+            code-char char!
+            char char-lower-case? [ char dup char-upcase assert-eq ] unless
+        ] each-integer
+    ] unit-test ;
+
+char-upcase-test
+
+test: char-lower-case?-test
+    { } [
+        upper-case-chars [ char-lower-case? assert-false ] each
+
+        // char-lower-case? returns the char itself instead of true
+        lower-case-chars [ dup char-lower-case? assert-eq ] each
+
+        // chars before 'a' are not lower case
+        'a' char-code 97 assert-eq
+        97 [ code-char char-lower-case? assert-false ] each-integer
+
+        // chars after 'z' are not lower case
+        'z' char-code 122 assert-eq
+        5 [ 123 + code-char char-lower-case? assert-false ] each-integer
+    ] unit-test ;
+
+char-lower-case?-test
+
+test: char-upper-case?-test
+    { } [
+        lower-case-chars [ char-upper-case? assert-false ] each
+
+        // char-upper-case? returns the char itself instead of true
+        upper-case-chars [ dup char-upper-case? assert-eq ] each
+
+        // chars before 'A' are not upper case
+        'A' char-code 65 assert-eq
+        65 [ code-char char-upper-case? assert-false ] each-integer
+
+        // chars after 'Z' are not upper case
+        'Z' char-code 90 assert-eq
+        37 [ 91 + code-char char-upper-case? assert-false ] each-integer
+    ] unit-test ;
+
+char-upper-case?-test
+
 ?nl "Reached end of test.feline" write-string

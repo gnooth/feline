@@ -1383,21 +1383,60 @@ subroutine fill_cells
         _rep_return
 endsub
 
-; ### char-upcase
-code char_upcase, 'char-upcase'
+; ### char-downcase
+code char_downcase, 'char-downcase'
         _check_char
-        cmp     rbx, 'a'
+        cmp     ebx, 'A'
         jl      .1
-        cmp     rbx, 'z'
+        cmp     ebx, 'Z'
         jg      .1
-        sub     rbx, 'a' - 'A'
+        add     ebx, 'a' - 'A'
 .1:
         _tag_char
         next
 endcode
 
+; ### char-upcase
+code char_upcase, 'char-upcase'
+        _check_char
+        cmp     ebx, 'a'
+        jl      .1
+        cmp     ebx, 'z'
+        jg      .1
+        sub     ebx, 'a' - 'A'
+.1:
+        _tag_char
+        next
+endcode
+
+; ### char-lower-case?
+code char_lower_case?, 'char-lower-case?' ; char -> char/nil
+        _verify_char
+        cmp     ebx, tagged_char('a')
+        jl      .1
+        cmp     ebx, tagged_char('z')
+        jg      .1
+        next
+.1:
+        mov     ebx, NIL
+        next
+endcode
+
+; ### char-upper-case?
+code char_upper_case?, 'char-upper-case?' ; char -> char/nil
+        _verify_char
+        cmp     ebx, tagged_char('A')
+        jl      .1
+        cmp     ebx, tagged_char('Z')
+        jg      .1
+        next
+.1:
+        mov     ebx, NIL
+        next
+endcode
+
 ; ### binary-digit?
-code binary_digit?, 'binary-digit?'     ; char -- n/nil
+code binary_digit?, 'binary-digit?'     ; char -> n/nil
         _check_char
         cmp     ebx, '0'
         jne     .1
