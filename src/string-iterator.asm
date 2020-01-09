@@ -189,17 +189,34 @@ code string_iterator_peek, 'string-iterator-peek'       ; iterator -> element/ni
 endcode
 
 ; ### string-iterator-skip
-code string_interator_skip, 'string-iterator-skip'      ; fixnum string-iterator -> void
+code string_interator_skip, 'string-iterator-skip' ; fixnum string-iterator -> void
         _ check_string_iterator
 
         mov     rax, [rbp]
         test    al, FIXNUM_TAG
         jz      error_not_fixnum_rax
-        sar     rax, FIXNUM_TAG_BITS
+        sar     rax, FIXNUM_TAG_BITS ; rax = number of bytes to skip
 
-        add     qword [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET], rax
+        ; the only valid negative index is -1
+        mov     rdx, -1
+
+        ; add number of bytes to skip to raw index to get new index
+        add     rax, qword [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET] ; rax = new index
+
+        ; if rax < 0, set rax = -1
+        cmovl   rax, rdx
+
+        mov     rdx, qword [rbx + STRING_ITERATOR_RAW_LENGTH_OFFSET] ; rdx = string length
+
+        ; new index (in rax) is -1 or >= 0
+        cmp     rax, rdx
+
+        ; if new index > string length, set new index = string length
+        cmovg   rax, rdx
+
+        ; move new index into its slot
+        mov     qword [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET], rax
         _2drop
-
         next
 endcode
 

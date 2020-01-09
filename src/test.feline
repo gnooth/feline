@@ -3404,71 +3404,89 @@ iterator-test-1
 
 test: string-iterator-test
     local iter
+    { } [
+        "this is a test" make-string-iterator iter!
+        iter string-iterator? assert
+        iter string-iterator-string "this is a test" assert=
+        iter string-iterator-index -1 assert-eq
 
-    { } [ "this is a test" make-string-iterator iter! ] unit-test
-    { true } [ iter string-iterator? ] unit-test
-    { "this is a test" } [ iter string-iterator-string ] unit-test
-    { -1 } [ iter string-iterator-index ] unit-test
+        iter string-iterator-peek 't' assert-eq
+        iter string-iterator-index -1 assert-eq
 
-    { 't' } [ iter string-iterator-peek ] unit-test
-    { -1 } [ iter string-iterator-index ] unit-test
+        iter string-iterator-next 't' assert-eq
+        iter string-iterator-index 0 assert-eq
 
-    { 't' } [ iter string-iterator-next ] unit-test
-    { 0 } [ iter string-iterator-index ] unit-test
+        iter string-iterator-peek 'h' assert-eq
+        iter string-iterator-index 0 assert-eq
 
-    { 'h' } [ iter string-iterator-peek ] unit-test
-    { 0 } [ iter string-iterator-index ] unit-test
+        iter string-iterator-next 'h' assert-eq
+        iter string-iterator-next 'i' assert-eq
+        iter string-iterator-next 's' assert-eq
+        iter string-iterator-next '\s' assert-eq
 
-    { 'h' } [ iter string-iterator-next ] unit-test
-    { 'i' } [ iter string-iterator-next ] unit-test
-    { 's' } [ iter string-iterator-next ] unit-test
-    { '\s' } [ iter string-iterator-next ] unit-test
+        iter string-iterator-skip-to-end
+        iter string-iterator-index 14 assert-eq
+        iter string-iterator-next nil assert-eq
 
-    { } [ iter string-iterator-skip-to-end ] unit-test
-    { 14 } [ iter string-iterator-index ] unit-test
-    { nil } [ iter string-iterator-next ] unit-test
+        // subsequent calls continue to return nil
+        iter string-iterator-next nil assert-eq
 
-    // subsequent calls continue to return nil
-    { nil } [ iter string-iterator-next ] unit-test
+        "this is another test" make-string-iterator iter!
+        iter string-iterator? assert
+        iter string-iterator-string "this is another test" assert=
+        iter string-iterator-index -1 assert-eq
 
+        1 iter string-iterator-skip
+        iter string-iterator-index 0 assert-eq
 
-    { } [ "this is another test" make-string-iterator iter! ] unit-test
-    { true } [ iter string-iterator? ] unit-test
-    { "this is another test" } [ iter string-iterator-string ] unit-test
-    { -1 } [ iter string-iterator-index ] unit-test
+        iter string-iterator-next 'h' assert-eq
+        iter string-iterator-index 1 assert-eq
 
-    { } [ 1 iter string-iterator-skip ] unit-test
-    { 0 } [ iter string-iterator-index ] unit-test
+        12 iter string-iterator-skip
+        iter string-iterator-index 13 assert-eq
 
-    { 'h' } [ iter string-iterator-next ] unit-test
-    { 1 } [ iter string-iterator-index ] unit-test
+        iter string-iterator-peek 'r' assert-eq
+        iter string-iterator-index 13 assert-eq
+        iter string-iterator-next 'r' assert-eq
+        iter string-iterator-index 14 assert-eq
 
-    { } [ 12 iter string-iterator-skip ] unit-test
-    { 13 } [ iter string-iterator-index ] unit-test
+        iter string-iterator-skip-to-end
+        iter string-iterator-index 20 assert-eq
+        iter string-iterator-next nil assert-eq
 
-    { 'r' } [ iter string-iterator-peek ] unit-test
-    { 'r' } [ iter string-iterator-next ] unit-test
+        // subsequent calls continue to return nil
+        iter string-iterator-next nil assert-eq
 
-    { } [ iter string-iterator-skip-to-end ] unit-test
-    { 20 } [ iter string-iterator-index ] unit-test
-    { nil } [ iter string-iterator-next ] unit-test
+        "best" make-string-iterator iter!
+        iter string-iterator-next 'b' assert-eq
+        iter string-iterator-next 'e' assert-eq
+        iter string-iterator-next 's' assert-eq
+        iter string-iterator-next 't' assert-eq
+        iter string-iterator-index 3 assert-eq
+        iter string-iterator-next nil assert-eq
+        iter string-iterator-index 4 assert-eq
 
-    // subsequent calls continue to return nil
-    { nil } [ iter string-iterator-next ] unit-test
+        // subsequent calls continue to return nil...
+        iter string-iterator-next nil assert-eq
+        // ...and leave the index unchanged
+        iter string-iterator-index 4 assert-eq
 
-    { } [ "test" make-string-iterator iter! ] unit-test
-    { 't' } [ iter string-iterator-next ] unit-test
-    { 'e' } [ iter string-iterator-next ] unit-test
-    { 's' } [ iter string-iterator-next ] unit-test
-    { 't' } [ iter string-iterator-next ] unit-test
-    { 3 } [ iter string-iterator-index ] unit-test
-    { nil } [ iter string-iterator-next ] unit-test
-    { 4 } [ iter string-iterator-index ] unit-test
+        // REVIEW string-iterator-reset
+        -5 iter string-iterator-skip
 
-    // subsequent calls continue to return nil...
-    { nil } [ iter string-iterator-next ] unit-test
-    // ...and leave the index unchanged
-    { 4 } [ iter string-iterator-index ] unit-test ;
+        iter string-iterator-index -1 assert-eq
+        iter string-iterator-next 'b' assert-eq
+        iter string-iterator-index 0 assert-eq
+        iter string-iterator-next 'e' assert-eq
+        -1 iter string-iterator-skip
+        iter string-iterator-next 'e' assert-eq
+        iter string-iterator-next 's' assert-eq
+        iter string-iterator-next 't' assert-eq
+
+        -100 iter string-iterator-skip
+        iter string-iterator-index -1 assert-eq
+        iter string-iterator-next 'b' assert-eq
+    ] unit-test ;
 
 string-iterator-test
 
