@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,34 +24,65 @@ global recent-files-vector
 
 directories:feral-directory "recent-files" path-append constant recent-files-filename
 
-public
+tuple: entry
+    filename
+    linenumber ;
+
+: make-entry                            // filename linenumber -> entry
+    entry make-instance tuck linenumber<< tuck filename<< ;
+
+: string-from-entry                     // entry -> string
+    :> entry
+    256 <sbuf> :> sb
+    entry filename>> sb sbuf-append-string
+    '\t' sb sbuf-push
+    entry linenumber>> fixnum>decimal sb sbuf-append-string
+    sb sbuf>string ;
+
+: entry-from-string                     // string -> entry
+    verify-string :> s
+    entry make-instance :> entry
+    '\t' s string-index :> index
+    index [
+        index s string-head entry filename<<
+        index 1+ s string-tail decimal>number entry linenumber<<
+    ] [
+        s entry filename<<
+        1 entry linenumber<<
+    ] if
+    entry ;
 
 : load-recent-files
+    recent-files-vector nil? assert
+    40 <vector> :> v
     recent-files-filename file-exists? [
-        recent-files-filename file-lines
-    ] [
-        40 <vector>
-    ] if recent-files-vector! ;
+        recent-files-filename file-lines [ entry-from-string v vector-push ] each
+    ] when
+    v recent-files-vector! ;
 
 : save-recent-files
+    local v
     recent-files-vector [
+        40 <vector> v!
         [ length dup 40 - 0 max swap ] keep <slice>
-        recent-files-filename
-        set-file-lines
+        [
+            string-from-entry v push
+        ] each
+        v recent-files-filename set-file-lines
     ] when* ;
-
-private
 
 : recent-files-select
     // line numbers are 0-based
     // the most recent file is the first file in the recent files vector
     recent-files-vector length 1- dot-line-number - 0 max // -> index
-    recent-files-vector nth :> filename
+    recent-files-vector nth :> entry
+    entry filename>> :> filename
+    entry linenumber>> :> linenumber
     filename find-buffer-from-file-name !> buf
     buf [
         filename file-exists? [
             // REVIEW error handling
-            filename 1 editor:create-buffer/2 buf!
+            filename linenumber editor:create-buffer/2 buf!
         ] when
     ] unless
     buf [ current-buffer! ] when*
@@ -76,6 +107,24 @@ feral-config:winui? feral-config:gtkui? or #if
 ' recent-files-select feral-key:double-mouse-1 recent-files-local-map set-at
 #endif
 
+: add-recent-file ( filename linenumber ) // filename linenumber -> void
+    // REVIEW don't save directories
+    filename directory? ?exit
+
+    recent-files-vector [ load-recent-files ] unless
+
+    recent-files-vector [ filename>> filename = ] find // -> index/nil element/nil
+    [
+        // -> index
+        recent-files-vector vector-remove-nth!
+    ] [ drop ] if
+
+    filename linenumber make-entry recent-files-vector vector-push
+
+    save-recent-files ;
+
+' add-recent-file is feral-core:add-recent-file
+
 public
 
 : recent-files
@@ -93,7 +142,7 @@ public
         // -> i
         negate recent-files-vector vector-length 1- +
         recent-files-vector vector-nth
-        verify-string
+        dup entry? [ filename>> ] when
         128 <sbuf> sb!
         dup file-name-nondirectory sb sbuf-append-string
         [ sb sbuf-length directory-column < ] [ '\s' sb push ] while
@@ -110,10 +159,3 @@ public
 
     renumber
     true repaint?! ;
-
-: add-recent-file                       // filename -> void
-    recent-files-vector [ load-recent-files ] unless
-    recent-files-vector vector-adjoin
-    save-recent-files ;
-
-' add-recent-file is feral-core:add-recent-file
