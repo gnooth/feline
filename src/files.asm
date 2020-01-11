@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -16,35 +16,35 @@
 file __FILE__
 
 ; ### file-exists?
-code file_exists?, 'file-exists?'       ; path -- ?
+code file_exists?, 'file-exists?'       ; path -> ?
         _ string_raw_data_address
         mov     arg0_register, rbx
         xcall   os_file_status          ; returns 0 if file exists
         test    rax, rax
-        mov     eax, f_value
-        mov     ebx, t_value
+        mov     eax, NIL
+        mov     ebx, TRUE
         cmovnz  ebx, eax
         next
 endcode
 
 ; ### directory?
-code directory?, 'directory?'           ; path -- ?
+code directory?, 'directory?'           ; path -> ?
         _ string_raw_data_address
         mov     arg0_register, rbx
         xcall   os_file_is_directory
         test    rax, rax
-        mov     eax, t_value
-        mov     ebx, f_value
+        mov     eax, TRUE
+        mov     ebx, NIL
         cmovnz  ebx, eax
         next
 endcode
 
 ; ### regular-file?
-code regular_file?, 'regular-file?'     ; path -- ?
+code regular_file?, 'regular-file?'     ; path -> ?
         _dup
         _ directory?
         _tagged_if .1
-        mov     ebx, f_value
+        mov     ebx, NIL
         _else .1
         ; not a directory
         _ file_exists?
@@ -53,15 +53,16 @@ code regular_file?, 'regular-file?'     ; path -- ?
 endcode
 
 ; ### file-open-read
-code file_open_read, 'file-open-read'   ; string -- fd
+code file_open_read, 'file-open-read'   ; string -> fd
         _dup
         _ string_raw_data_address
-        popd    arg0_register
+        mov     arg0_register, rbx
+        _drop
         xcall   os_file_open_read
         test    rax, rax
         js      .1
         mov     rbx, rax
-        _return
+        next
 .1:
         _ error_file_not_found
         next
@@ -88,7 +89,7 @@ code file_create_write, 'file-create-write' ; string -> file-output-stream
         _dup
         _ string_raw_data_address
         mov     arg0_register, rbx
-        poprbx
+        _drop
         xcall   os_file_create_write
         test    rax, rax
         js      .error
@@ -136,9 +137,9 @@ code file_read_char, 'file-read-char'   ; fd -> char/f
         js      .1
         mov     ebx, eax
         _tag_char
-        _return
+        next
 .1:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
@@ -162,7 +163,7 @@ code file_read_unsafe, 'file-read-unsafe' ; buffer-address tagged-size fd -> tag
         js      .1
         pushd   rax
         _tag_fixnum                     ; -> tagged-count
-        _return
+        next
 .1:
         _error "error reading from file"
         next
@@ -172,10 +173,10 @@ endcode
 code file_read_line, 'file-read-line'   ; fd -- string/f
         _dup
         _ file_read_char                ; -- fd char/f
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         jne     .1
         _nip
-        _return
+        next
 .1:                                     ; -- fd char
         _lit 256
         _ new_sbuf_untagged             ; -- fd char sbuf
@@ -187,7 +188,7 @@ code file_read_line, 'file-read-line'   ; fd -- string/f
 .3:
         cmp     rbx, tagged_char(10)
         je      .4
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         je      .4
         _over
         _ sbuf_push
@@ -223,7 +224,7 @@ code file_create_write_fd, 'file-create-write-fd'       ; string -- fd
         test    rax, rax
         js      .1
         pushd   rax                     ; -- fd
-        _return
+        next
 .1:
         _error "unable to create file"
         next
@@ -271,12 +272,13 @@ code file_write_line, 'file-write-line' ; string fd --
 endcode
 
 ; ### file-close
-code file_close, 'file-close'           ; fd --
-        popd    arg0_register
+code file_close, 'file-close'           ; fd -> void
+        mov     arg0_register, rbx
+        _drop
         xcall   os_close_file
         test    rax, rax
         js      .1
-        _return
+        next
 .1:
         _error "unable to close file"
         next
@@ -284,7 +286,8 @@ endcode
 
 ; ### file-flush
 code file_flush, 'file-flush'           ; fd -> void
-        popd    arg0_register
+        mov     arg0_register, rbx
+        _drop
         xcall   os_flush_file
         test    rax, rax
         js      .1
@@ -374,7 +377,7 @@ code file_name_absolute?, 'file-name-absolute?' ; string -> ?
         _dup
         _ string_empty?
         _tagged_if .1
-        mov     ebx, f_value
+        mov     ebx, NIL
         _return
         _then .1
 
@@ -384,7 +387,7 @@ code file_name_absolute?, 'file-name-absolute?' ; string -> ?
         _ string_first_char
         _ path_separator_char?
         _tagged_if .2
-        mov     ebx, t_value
+        mov     ebx, TRUE
         _return
         _then .2
 
@@ -392,7 +395,7 @@ code file_name_absolute?, 'file-name-absolute?' ; string -> ?
         _dup
         _ string_raw_length
         cmp     rbx, 2
-        poprbx
+        _drop
         jb      .3
         _lit tagged_fixnum(1)
         _swap
@@ -401,7 +404,7 @@ code file_name_absolute?, 'file-name-absolute?' ; string -> ?
         _return
 
 .3:
-        mov     ebx, f_value
+        mov     ebx, NIL
 
 %else
 
@@ -427,7 +430,7 @@ code path_separator_char?, 'path-separator-char?'       ; char -- ?
 %ifdef WIN64
         cmp     rbx, tagged_char('\')
         jne     .1
-        mov     ebx, t_value
+        mov     ebx, TRUE
         _return
 .1:
         ; fall through...
@@ -547,7 +550,7 @@ code canonical_path, 'canonical-path'   ; string1 -> string2/f
 
 .1:
         ; error
-        mov     rbx, f_value
+        mov     rbx, NIL
         next
 endcode
 
@@ -572,7 +575,7 @@ code get_current_directory, 'get-current-directory' ; -- string
         ; error
         mov     arg0_register, rbx
         xcall   os_free
-        mov     rbx, f_value
+        mov     rbx, NIL
         next
 endcode
 
@@ -657,10 +660,10 @@ code find_next_file, 'find-next-file'   ; alien -> ?
         xcall   os_find_next_file
         test    rax, rax
         jz .1
-        mov     ebx, t_value
+        mov     ebx, TRUE
         next
 .1:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
@@ -673,10 +676,10 @@ code find_close, 'find-close'           ; alien -> ?
         xcall   os_find_close
         test    rax, rax
         jz .1
-        mov     ebx, t_value
+        mov     ebx, TRUE
         next
 .1:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
