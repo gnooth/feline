@@ -1,4 +1,4 @@
-// Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2018-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ in: feral-colors
   0 153 153 make-colorref constant color-combinator
 255   0   0 make-colorref constant color-preprocessor
 210 105  30 make-colorref constant color-keyword
+153  77   0 make-colorref constant color-type
 
 128 128   0 make-colorref constant color-linenumber
  77 166 255 make-colorref constant color-filename
@@ -66,6 +67,7 @@ in: feral-colors
   0 153 153 rgb-foreground-prefix constant color-combinator
 255   0   0 rgb-foreground-prefix constant color-preprocessor
 210 105  30 rgb-foreground-prefix constant color-keyword
+153  77   0 rgb-foreground-prefix constant color-type
 
 128 128   0 rgb-foreground-prefix constant color-linenumber
  77 166 255 rgb-foreground-prefix constant color-filename
