@@ -18,6 +18,28 @@ in: swift-mode
 
 private
 
+{
+    // declarations
+    "associatedtype" "class" "deinit" "enum" "extension" "fileprivate" "func"
+    "import" "init" "inout" "internal" "let" "open" "operator" "private"
+    "protocol" "public" "some" "static" "struct" "subscript" "typealias" "var"
+
+    // statements
+    "break" "case" "continue" "default" "defer" "do" "else" "fallthrough"
+    "for" "guard" "if" "in" "repeat" "return" "switch" "where" "while"
+
+    // expressions and types
+    "as" "catch" "dynamicType" "is" "rethrows" "super" "self" "Self" "throws"
+    "throw" "try"
+
+    // context-sensitive keywords
+    "Protocol" "Type" "and" "assignment" "associativity" "convenience" "didSet"
+    "dynamic" "final" "get" "higherThan" "indirect" "infix" "lazy" "left"
+    "lowerThan" "mutating" "none" "nonmutating" "optional" "override" "postfix"
+    "precedence" "precedencegroup" "prefix" "required" "right" "set" "unowned"
+    "weak" "willSet"
+} constant syntax-words // swift-mode/swift-mode-font-lock.el
+
 global instance
 
 : get-instance // void -> mode
@@ -52,6 +74,34 @@ global instance
         iter string-iterator-string substring
         start color-comment make-segment/3
     ] if ;
+
+global last-identifier
+
+: parse-identifier ( iter )             // string-iterator -> segment
+    iter string-iterator-index :> start
+
+    local ch
+    [
+        iter string-iterator-next ch!
+        [ ch char? ] [ ch identifier-char? ] both?
+    ] loop
+    // reached end of identifier
+    iter string-iterator-index :> end
+    start end iter string-iterator-string substring :> identifier
+
+    {
+        { [ last-identifier "func" = ] [ color-name ] }
+        { [ identifier syntax-words member? ] [ color-syntax ] }
+        { [ 0 identifier string-nth-unsafe char-upper-case? ] [ color-type ] }
+        [
+            // default
+            color-text
+        ]
+    } cond :> format
+
+    identifier last-identifier!
+
+    identifier start format make-segment/3 ;
 
 : format-iter ( iter )
     100 <vector> :> v
@@ -89,6 +139,17 @@ global instance
                         iter string-iterator-skip-to-end
                         iter string-iterator-index start!
                     ] when
+                ]
+            }
+
+            {
+                [ ch identifier-char? ]
+                [
+                    iter string-iterator-index end!
+                    start end iter string-iterator-string substring
+                    start color-text make-segment/3 v push
+                    iter parse-identifier v push
+                    iter string-iterator-index start!
                 ]
             }
 
