@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -333,6 +333,8 @@ use: kill-ring
     [ insert-multiline-string-internal ] bi ;
 
 : delete-word-right
+    check-read-only ?exit
+
     mark [ delete-region ] ?return
 
     at-eof? ?exit
@@ -388,6 +390,8 @@ use: kill-ring
     ] with-compound-undo ;
 
 : delete-word-left
+    check-read-only ?exit
+
     mark [ delete-region ] ?return
 
     at-bof? ?exit
