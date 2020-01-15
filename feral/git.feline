@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ in: editor
         command buf command<<
         command buf name<<
         current-buffer directory>> buf directory<<
-        t buf read-only<<
+        true buf read-only<<
         buf first-line>> 0 make-position buf dot<<
         nil buf mark<<
         buf first-line>> buf top-line<<
@@ -51,12 +51,10 @@ in: editor
         diff-mode:get-instance buf mode<<
         buf mode>> initialize-buffer-function>> [ buf swap call ] when*
 
-        buf buffer-list member-eq? [
-            buf buffer-list vector-push
-        ] unless
+        buf listed? [ buf buffer-list vector-push ] unless
         buf set-current-buffer
 
-        t repaint?!
+        true repaint?!
     ] [
         "git ls-files " sourcefile + shell-command-to-string // -> string/nil
         [ length 0? "Untracked" "No changes" ? message ] when*
@@ -91,7 +89,7 @@ global git-command
         command buf command<<
         command buf name<<
         current-buffer directory>> buf directory<<
-        t buf read-only<<
+        true buf read-only<<
         buf first-line>> 0 make-position buf dot<<
         nil buf mark<<
         buf first-line>> buf top-line<<
@@ -103,12 +101,10 @@ global git-command
             buf mode>> initialize-buffer-function>> [ buf swap call ] when*
         ] when
 
-        buf buffer-list member-eq? [
-            buf buffer-list vector-push
-        ] unless
+        buf listed? [ buf buffer-list vector-push ] unless
         buf set-current-buffer
 
-        t repaint?!
+        true repaint?!
     ] when ;
 
 : git
