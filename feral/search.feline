@@ -315,10 +315,7 @@ use: mini
     search-mode:get-instance buf mode<<
     buf dup mode>> initialize-buffer-function>> call
 
-    buf buffer-list member-eq? [
-        buf buffer-list vector-push
-    ] unless
-
+    buf listed? [ buf buffer-list vector-push ] unless
     buf set-current-buffer
 
     renumber
