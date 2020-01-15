@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -353,6 +353,9 @@ global minibuffer
 : minibuffer? minibuffer eq? ;
 
 global buffer-list
+
+: listed? // buffer -> ?
+    buffer-list member-eq? ;
 
 : find-buffer-from-file-name            // filename -> buffer/nil
     !> filename
