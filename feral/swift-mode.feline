@@ -110,6 +110,8 @@ global last-identifier
     local ch
     local end
 
+    nil last-identifier!
+
     [
         iter string-iterator-next ch!
         ch
