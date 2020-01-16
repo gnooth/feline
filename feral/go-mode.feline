@@ -18,6 +18,45 @@ in: go-mode
 
 private
 
+{
+    "break"
+    "case"
+    "chan"
+    "const"
+    "continue"
+    "default"
+    "defer"
+    "else"
+    "fallthrough"
+    "for"
+    "func"
+    "go"
+    "goto"
+    "if"
+    "import"
+    "interface"
+    "map"
+    "package"
+    "range"
+    "return"
+    "select"
+    "struct"
+    "switch"
+    "type"
+    "var"
+} constant syntax-words
+
+{
+    "bool"
+    "string"
+    "int" "int8" "int16" "int32" "int64"
+    "uint" "uint8" "uint16" "uint32" "uint64" "uintptr"
+    "byte"
+    "rune"
+    "float32" "float64"
+    "complex64" "complex128"
+} constant special-types
+
 global instance
 
 : get-instance // void -> mode
@@ -53,12 +92,42 @@ global instance
         start color-comment make-segment/3
     ] if ;
 
+global last-identifier
+
+: parse-identifier ( iter )             // string-iterator -> segment
+    iter string-iterator-index :> start
+
+    local ch
+    [
+        iter string-iterator-next ch!
+        [ ch char? ] [ ch identifier-char? ] both?
+    ] loop
+    // reached end of identifier
+    iter string-iterator-index :> end
+    start end iter string-iterator-string substring :> identifier
+
+    {
+        { [ last-identifier "func" = ] [ color-name ] }
+        { [ identifier syntax-words member? ] [ color-syntax ] }
+        { [ identifier special-types member? ] [ color-type ] }
+        [
+            // default
+            color-text
+        ]
+    } cond :> format
+
+    identifier last-identifier!
+
+    identifier start format make-segment/3 ;
+
 : format-iter ( iter )
     100 <vector> :> v
     0 !> start
 
     local ch
     local end
+
+    nil last-identifier!
 
     [
         iter string-iterator-next ch!
@@ -89,6 +158,17 @@ global instance
                         iter string-iterator-skip-to-end
                         iter string-iterator-index start!
                     ] when
+                ]
+            }
+
+            {
+                [ ch identifier-char? ]
+                [
+                    iter string-iterator-index end!
+                    start end iter string-iterator-string substring
+                    start color-text make-segment/3 v push
+                    iter parse-identifier v push
+                    iter string-iterator-index start!
                 ]
             }
 
