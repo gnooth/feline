@@ -1,4 +1,4 @@
-; Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2018-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -70,8 +70,8 @@ code error_not_string_iterator, 'error-not-string-iterator'     ; x ->
         next
 endcode
 
-; ### verify-iterator
-code verify_string_iterator, 'verify-iterator'  ; iterator -> iterator
+; ### verify-string-iterator
+code verify_string_iterator, 'verify-string-iterator'   ; iterator -> iterator
         _dup
         _ string_iterator?
         _tagged_if .1
@@ -148,7 +148,7 @@ code make_string_iterator, 'make-string-iterator'       ; string -> iterator
 endcode
 
 ; ### string-iterator-next
-code string_iterator_next, 'string-iterator-next'       ; iterator -> element/nil
+code string_iterator_next, 'string-iterator-next'       ; iterator -> char/nil
         _ check_string_iterator
 
         mov     rax, [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET]
