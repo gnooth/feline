@@ -162,10 +162,8 @@ code bi@, 'bi@'                         ; x y quot ->
 
         push    r12                     ; save non-volatile register
         mov     r12, rbx                ; address to call in r12
-        mov     rax, [rbp]              ; y in rax
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2] ; -> x
-        push    rax                     ; save y
+        push    qword [rbp]             ; save y
+        _2drop                          ; -> x
         call    r12
         _dup
         pop     rbx                     ; -> y
