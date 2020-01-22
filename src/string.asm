@@ -758,6 +758,7 @@ code string_tail, 'string-tail'         ; n string -> substring
         next
 endcode
 
+; ### string-has-prefix?
 code string_has_prefix?, 'string-has-prefix?'   ; prefix string -> ?
         _ check_string
         _swap
