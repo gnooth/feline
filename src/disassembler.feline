@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -647,7 +647,16 @@ last-word 0x39 install-handler
     "cmp" mnemonic!
     8 dup ssize! dsize!
     !modrm-byte
+    modrm-reg register-reg dreg!
     modrm-mod {
+        { 0 [
+            modrm-rm 4 = [
+                !sib-byte
+                sib-base register-rm sbase!
+                sib-index register-index sindex!
+                sib-scale sscale!
+            ] [ unsupported ] if
+        ] }
         { 1 [
             modrm-rm 4 = [
                 !sib-byte
@@ -663,7 +672,6 @@ last-word 0x39 install-handler
                 modrm-rm register-rm sbase!
                 next-signed-byte sdisp!
             ] if
-            modrm-reg register-reg dreg!
         ] }
         [ unsupported ]
     } case
