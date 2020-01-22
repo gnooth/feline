@@ -758,19 +758,41 @@ code string_tail, 'string-tail'         ; n string -> substring
         next
 endcode
 
-; ### string-has-prefix?
-code string_has_prefix?, 'string-has-prefix?' ; prefix string -> ?
-        _twodup
-        _lit S_string_length
-        _ bi@
-        _ fixnum_fixnum_le
-        _tagged_if .1
-        _ mismatch
-        _ not
-        _else .1
-        _2drop
-        _nil
-        _then .1
+code string_has_prefix?, 'string-has-prefix?'   ; prefix string -> ?
+        _ check_string
+        _swap
+        _ check_string                          ; -> ^string ^prefix
+
+        mov     arg0_register, rbx              ; ^prefix in arg0_register
+        mov     arg1_register, [rbp]            ; ^string in arg1_register
+        mov     arg2_register, [arg0_register + STRING_RAW_LENGTH_OFFSET] ; prefix length
+        _nip
+
+        ; zero length prefix -> true
+        test    arg2_register, arg2_register
+        jz      .yes
+
+        ; prefix length greater than string length -> nil
+        cmp     arg2_register, [arg1_register + STRING_RAW_LENGTH_OFFSET]
+        jg      .no
+
+        lea     arg0_register, [arg0_register + STRING_RAW_DATA_OFFSET]
+        lea     arg1_register, [arg1_register + STRING_RAW_DATA_OFFSET]
+        xor     arg3_register, arg3_register
+
+.loop:
+        mov     al, [arg0_register + arg3_register]
+        cmp     al, [arg1_register + arg3_register]
+        jne     .no
+        add     arg3_register, 1
+        cmp     arg3_register, arg2_register
+        jl      .loop
+
+.yes:
+        mov     rbx, TRUE
+        next
+.no:
+        mov     rbx, NIL
         next
 endcode
 
