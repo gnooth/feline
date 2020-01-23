@@ -248,20 +248,9 @@
         lea     rbp, [rbp - BYTES_PER_CELL]
 %endmacro
 
-%macro  _dropswap 0                     ; DROP SWAP
-        mov     rax, [rbp]
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        mov     [rbp + BYTES_PER_CELL], rax
-        lea     rbp, [rbp + BYTES_PER_CELL]
-%endmacro
-
 %macro  _and 0
         and     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
-%endmacro
-
-%macro  _and_literal 1
-        and     rbx, %1
 %endmacro
 
 %macro  _or 0
