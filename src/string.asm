@@ -427,9 +427,9 @@ code string_first_char, 'string-first-char'     ; string -- char
 endcode
 
 ; ### string-?first
-code string_?first, 'string-?first'     ; string -> char/f
+code string_?first, 'string-?first'     ; string -> char/nil
 ; return first byte of string
-; return f if string is empty
+; return nil if string is empty
         _ check_string
         cmp     qword [rbx + STRING_RAW_LENGTH_OFFSET], 0
         je      .empty
@@ -455,9 +455,9 @@ code string_last_char, 'string-last-char'       ; string -- char
 endcode
 
 ; ### string-?last
-code string_?last, 'string-?last'       ; string -> char/f
+code string_?last, 'string-?last'       ; string -> char/nil
 ; return last byte of string
-; return f if string is empty
+; return nil if string is empty
         _ check_string
         mov     rax, [rbx + STRING_RAW_LENGTH_OFFSET]
         sub     rax, 1
@@ -471,7 +471,7 @@ code string_?last, 'string-?last'       ; string -> char/f
 endcode
 
 ; ### string-find-char
-code string_find_char, 'string-find-char'       ; char string -- index/f
+code string_find_char, 'string-find-char'       ; char string -- index/nil
 
         _ check_string
 
@@ -694,13 +694,13 @@ code quote_string, 'quote-string'       ; string -- quoted-string
 
         _begin .1
         _dup
-        _ iterator_next                 ; -- iterator char/f
+        _ iterator_next                 ; -- iterator char/nil
         _dup
         _tagged_if .2                   ; -- iterator char
 
         _dup
         _ unescaped
-        _ string_index                  ; -- iterator char index/f
+        _ string_index                  ; -- iterator char index/nil
         _dup
         _tagged_if .3                   ; -- iterator char index
 
@@ -715,7 +715,7 @@ code quote_string, 'quote-string'       ; string -- quoted-string
         _rfetch
         _ sbuf_push
 
-        _else .3                        ; -- iterator char f
+        _else .3                        ; -- iterator char nil
 
         _drop
 
@@ -724,7 +724,7 @@ code quote_string, 'quote-string'       ; string -- quoted-string
 
         _then .3
 
-        _else .2                        ; -- iterator f
+        _else .2                        ; -- iterator nil
         _2drop
 
         _tagged_char '"'
@@ -790,10 +790,10 @@ code string_has_prefix?, 'string-has-prefix?'   ; prefix string -> ?
         jl      .loop
 
 .yes:
-        mov     rbx, TRUE
+        mov     ebx, TRUE
         next
 .no:
-        mov     rbx, NIL
+        mov     ebx, NIL
         next
 endcode
 
@@ -874,7 +874,7 @@ code string_has_suffix?, 'string-has-suffix?'   ; suffix string -- ?
 endcode
 
 ; ### string-skip-whitespace
-code string_skip_whitespace, 'string-skip-whitespace' ; start-index string -> index/f
+code string_skip_whitespace, 'string-skip-whitespace' ; start-index string -> index/nil
         _ check_string
 
         push    this_register
@@ -911,7 +911,7 @@ code string_skip_whitespace, 'string-skip-whitespace' ; start-index string -> in
 endcode
 
 ; ### string-skip-to-whitespace
-code string_skip_to_whitespace, 'string-skip-to-whitespace' ; start-index string -- index/f
+code string_skip_to_whitespace, 'string-skip-to-whitespace' ; start-index string -- index/nil
         _ check_string
 
         push    this_register
@@ -949,7 +949,7 @@ code string_skip_to_whitespace, 'string-skip-to-whitespace' ; start-index string
 endcode
 
 ; ### string-skip-quoted-string
-code string_skip_quoted_string, 'string-skip-quoted-string'     ; start-index string -> index/f
+code string_skip_quoted_string, 'string-skip-quoted-string'     ; start-index string -> index/nil
         _ check_string
 
         push    this_register
@@ -962,7 +962,7 @@ code string_skip_quoted_string, 'string-skip-quoted-string'     ; start-index st
         _ge
         _if .1
         _2drop
-        _f
+        _nil
         jmp     .exit
         _then .1                        ; -> untagged-start-index untagged-length
 
@@ -985,7 +985,7 @@ code string_skip_quoted_string, 'string-skip-quoted-string'     ; start-index st
         _loop .2
 
         ; not found
-        _f
+        _nil
 
 .exit:
         pop     this_register
@@ -993,7 +993,7 @@ code string_skip_quoted_string, 'string-skip-quoted-string'     ; start-index st
 endcode
 
 ; ### string-index-from
-code string_index_from, 'string-index-from'     ; char start-index string -- index/f
+code string_index_from, 'string-index-from'     ; char start-index string -- index/nil
 
         _ check_string
 
@@ -1036,7 +1036,7 @@ code string_index_from, 'string-index-from'     ; char start-index string -- ind
 endcode
 
 ; ### string-index
-code string_index, 'string-index'       ; char string -- index/f
+code string_index, 'string-index'       ; char string -- index/nil
         _lit tagged_zero
         _swap
         _ string_index_from
@@ -1044,7 +1044,7 @@ code string_index, 'string-index'       ; char string -- index/f
 endcode
 
 ; ### string-last-index-from
-code string_last_index_from, 'string-last-index-from'   ; char start-index string -- index/f
+code string_last_index_from, 'string-last-index-from'   ; char start-index string -- index/nil
 
         _ check_string
 
@@ -1153,61 +1153,71 @@ code string_append_char, 'string-append-char' ; string char -> string'
         next
 endcode
 
+; ### memequal
+subroutine memequal
+; arg0_register: untagged addr1
+; arg1_register: untagged addr2
+; arg2_register: untaqgged len
+; returns TRUE or NIL in rax
+
+        ; zero length -> true
+        test    arg2_register, arg2_register
+        jz      .yes
+
+        xor     arg3_register, arg3_register
+
+.loop:
+        mov     al, byte [arg0_register + arg3_register]
+        cmp     al, byte [arg1_register + arg3_register]
+        jne     .no
+        add     arg3_register, 1
+        cmp     arg3_register, arg2_register
+        jl     .loop
+
+.yes:
+        mov     eax, TRUE
+        ret
+.no:
+        mov     eax, NIL
+        ret
+endsub
+
 ; ### unsafe_raw_memequal
 code unsafe_raw_memequal, 'unsafe_raw_memequal', SYMBOL_INTERNAL
-; addr1 addr2 len -- ?
-%ifdef WIN64
-        push    rdi
-        push    rsi
-%endif
-        mov     rcx, rbx
-        mov     rdi, [rbp]
-        mov     rsi, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
-        jrcxz   .1
-.3:
-        movzx   eax, byte [rdi]
-        movzx   edx, byte [rsi]
-        cmp     al, dl
-        jne     .2
-        add     rdi, 1
-        add     rsi, 1
-        sub     rcx, 1
-        jnz     .3
-.1:
-        mov     ebx, TRUE
-%ifdef WIN64
-        pop     rsi
-        pop     rdi
-%endif
-        next
-.2:
-        mov     ebx, NIL
-%ifdef WIN64
-        pop     rsi
-        pop     rdi
-%endif
+; addr1 addr2 len -> ?
+        mov     arg0_register, [rbp + BYTES_PER_CELL]
+        mov     arg1_register, [rbp]
+        mov     arg2_register, rbx
+        _2nip
+        call    memequal
+        mov     rbx, rax
         next
 endcode
 
+; ### unsafe-memequal
 code unsafe_memequal, 'unsafe-memequal' ; address1 address2 length -> ?
         ; address1
         mov     rax, [rbp + BYTES_PER_CELL]
         test    al, FIXNUM_TAG
         jz      error_not_fixnum_rax
         _untag_fixnum rax
-        mov     [rbp + BYTES_PER_CELL], rax
+        mov     arg0_register, rax
 
         ; address2
         mov     rdx, [rbp]
         test    dl, FIXNUM_TAG
         jz      error_not_fixnum_rdx
         _untag_fixnum rdx
-        mov     [rbp], rdx
+        mov     arg1_register, rdx
 
+        ; length
         _check_fixnum
+        mov     arg2_register, rbx
 
-        _ unsafe_raw_memequal
+        _2nip
+        call    memequal
+        mov     rbx, rax
+
         next
 endcode
 
@@ -1219,15 +1229,20 @@ code stringequal, 'string='             ; string1 string2 -- ?
         _ string_from
 
         cmp     rbx, [rbp + BYTES_PER_CELL]
-        je      .1
-        lea     rbp, [rbp + BYTES_PER_CELL * 3]
-        mov     ebx, NIL
-        next
-.1:
-        ; lengths match                 ; -- addr1 len1 addr2 len2
-        _dropswap                       ; -- addr1 addr2 len1
-        _ unsafe_raw_memequal
+        jne     .1
 
+        ; lengths match                 ; -> addr1 len1 addr2 len2
+        mov     arg0_register, [rbp + BYTES_PER_CELL * 2]
+        mov     arg1_register, [rbp]
+        mov     arg2_register, rbx
+        _3nip
+        call    memequal
+        mov     rbx, rax
+        next
+
+.1:
+        _3nip
+        mov     ebx, NIL
         next
 endcode
 
