@@ -95,8 +95,7 @@ code verify_string, 'verify-string'     ; string -> string
         test    rax, rax
         jz      error_empty_handle
 %endif
-        movzx   eax, word [rax]
-        cmp     eax, TYPECODE_STRING
+        cmp     word [rax], TYPECODE_STRING
         jne     error_not_string
         next
 .1:
