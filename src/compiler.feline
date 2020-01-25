@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@ private
 // These definitions shadow the ones in compile-word.asm. Turning on
 // verbosity in this vocabulary only affects the optimizing compiler.
 global compile-verbose?
-: +v t compile-verbose?! ;
-: -v f compile-verbose?! ;
+: +v true compile-verbose?! ;
+: -v nil compile-verbose?! ;
 
 tuple: compiler-context
     pc
@@ -74,7 +74,7 @@ tuple: node
     literal-value
     op
     type                                // result type
-    pred                                // predecessor node or f
+    pred                                // predecessor node or nil
 ;
 
 : make-literal-node                     // literal -> node
@@ -121,9 +121,9 @@ defer compile-quotation
         x make-operator-node
     ] [
         x quotation? [
-            x quotation-code-address zero? [
+            x quotation-code-address 0? [
                 x compile-quotation drop
-                x quotation-code-address zero? assert-false
+                x quotation-code-address 0? assert-false
             ] when
         ] when
         x make-literal-node
@@ -201,7 +201,7 @@ defer compile-quotation
 
     compile-verbose? [ ?nl "compile-when" print ] when
 
-    pending empty? [ ' when compile-call-symbol ] return-if
+    pending empty? [ ' when compile-call-symbol ] ?return
 
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
 
@@ -218,6 +218,19 @@ defer compile-quotation
     ] [
         flush-pending
         ' when compile-call-symbol
+    ] if ;
+
+: compile-call-quotation ( node )
+    pending empty? [ ' call compile-call-symbol ] ?return
+    pending-last-value dup wrapper? [ wrapped ] when :> last-value
+    last-value callable-code-address :> address
+    address [
+        pending-remove-last
+        flush-pending
+        address compile-call-address
+    ] [
+        flush-pending
+        ' call compile-call-symbol
     ] if ;
 
 : compile-declare ( node )              // node -> void
@@ -256,11 +269,11 @@ defer compile-quotation
 
     flush-pending
 
-    method null? [ op compile-call-symbol ] return-if
+    method null? [ op compile-call-symbol ] ?return
 
     method method-callable :> callable
 
-    callable symbol? [ callable inline-or-compile-call ] return-if
+    callable symbol? [ callable inline-or-compile-call ] ?return
 
     callable callable-code-address compile-call-address ;
 
@@ -268,17 +281,21 @@ defer compile-quotation
 
     node op>> :> op
 
+    op ' call eq? [
+        node compile-call-quotation
+    ] ?return
+
     op ' when eq? [
         node compile-when
-    ] return-if
+    ] ?return
 
     op ' declare eq? [
         node compile-declare
-    ] return-if
+    ] ?return
 
     op generic? [
         node compile-generic
-    ] return-if
+    ] ?return
 
     flush-pending
 
@@ -292,37 +309,29 @@ defer compile-quotation
     ] if ;
 
 : compile-quotation-internal            // quotation -> void
-
     dup precompile-quotation            // -> quotation array
-
     dup length 32 * 16 max initialize-code-block dup pc! origin!
-
     ' compile-node each
-
     flush-pending
-
     0xc3 emit-byte
-
     origin pc over -                    // -> quotation code-address code-size
     pick quotation-set-code-size
     swap quotation-set-code-address ;
 
 : %compile-quotation ( quotation )       // quotation -> quotation
-    compile-verbose? [ ?nl "%compile-quotation " write quotation . ] when
 
-    { [ quotation length 1 eq? ] [ quotation first symbol? ] } && [
+    [ quotation length 1 eq? ] [ quotation first symbol? ] both?
+    [
         quotation first [ symbol-code-address ] [ symbol-code-size ] bi
         quotation quotation-set-code-size
         quotation quotation-set-code-address
         quotation
-    ] return-if
+    ] ?return
 
     [
         make-compiler-context current-context set
         quotation [ compile-quotation-internal ] keep
-    ] with-dynamic-scope
-
-     compile-verbose? [ ?nl "leaving %compile-quotation" print ] when ;
+    ] with-dynamic-scope ;
 
 ' %compile-quotation ' compile-quotation defer!
 
