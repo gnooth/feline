@@ -1,4 +1,4 @@
-; Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -353,6 +353,13 @@ endcode
 ; ### error-not-callable
 code error_not_callable, 'error-not-callable'
         _quote "a callable"
+        _ format_type_error
+        next
+endcode
+
+; ### error-not-quotation
+code error_not_quotation, 'error-not-quotation'
+        _quote "a quotation"
         _ format_type_error
         next
 endcode

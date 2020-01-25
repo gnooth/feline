@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -57,12 +57,6 @@ file __FILE__
 code quotation?, 'quotation?'                 ; x -- ?
         _ object_raw_typecode
         _eq? TYPECODE_QUOTATION
-        next
-endcode
-
-; ### error-not-quotation
-code error_not_quotation, 'error-not-quotation' ; x --
-        _error "not a quotation"
         next
 endcode
 
@@ -371,7 +365,7 @@ endcode
 code call_quotation, 'call'             ; callable --
         _ callable_raw_code_address
         mov     rax, rbx
-        poprbx
+        _drop
 %ifdef DEBUG
         call    rax
         next
@@ -386,7 +380,7 @@ code callable_raw_code_address, 'callable_raw_code_address', SYMBOL_INTERNAL
         _dup
         _ object_raw_typecode
         mov     rax, rbx
-        poprbx
+        _drop
 
         cmp     rax, TYPECODE_SYMBOL
         je      symbol_raw_code_address
