@@ -67,19 +67,18 @@ endcode
 code check_string, 'check_string'       ; x -> ^string
         cmp     bl, HANDLE_TAG
         jne     .1
-        push    rbx                     ; save x for error reporting
-        _handle_to_object_unsafe
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_STRING
-        jne     .2
-        _rdrop                          ; drop saved x
+        mov     rax, rbx                ; save x in rax for error reporting
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]              ; -> ^string
+        cmp     word [rbx], TYPECODE_STRING
+        jne     .error
         next
 .1:
         ; not a handle
         _ verify_static_string
         next
-.2:
-        pop     rbx
+.error:
+        mov     rbx, rax                ; retrieve x
         _ error_not_string
         next
 endcode
