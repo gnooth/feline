@@ -87,21 +87,21 @@ endcode
 ; ### verify-string
 code verify_string, 'verify-string'     ; string -> string
 ; returns argument unchanged
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .1
-        _object_raw_typecode_eax
+        cmp     bl, HANDLE_TAG
+        jne     .1
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+%ifdef DEBUG
+        test    rax, rax
+        jz      error_empty_handle
+%endif
+        movzx   eax, word [rax]
         cmp     eax, TYPECODE_STRING
-        jne     .2
-        _drop
-        _return
+        jne     error_not_string
+        next
 .1:
-        _drop
         _ verify_static_string
-        _return
-.2:
-        _ error_not_string
         next
 endcode
 
