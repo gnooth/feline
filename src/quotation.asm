@@ -61,7 +61,7 @@ code quotation?, 'quotation?'                 ; x -- ?
 endcode
 
 ; ### verify-unboxed-quotation
-code verify_unboxed_quotation, 'verify-unboxed-quotation'       ; quotation -- quotation
+code verify_unboxed_quotation, 'verify-unboxed-quotation' ; quotation -> quotation
         ; make sure address is in the permissible range
         _dup
         _ in_static_data_area?
@@ -82,22 +82,22 @@ code verify_unboxed_quotation, 'verify-unboxed-quotation'       ; quotation -- q
         next
 endcode
 
-; ### check-quotation
-code check_quotation, 'check-quotation' ; handle-or-quotation -- unboxed-quotation
-        _dup
-        _ deref                         ; -- x object/0
-        test    rbx, rbx
-        jz      .1
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_QUOTATION
-        jne     .2
-        _nip
-        _return
+; ### check_quotation
+code check_quotation, 'check_quotation' ; x -> ^quotation
+        cmp     bl, HANDLE_TAG
+        jne     .1
+        mov     rax, rbx                ; save x in rax for error reporting
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]              ; -> ^string
+        cmp     word [rbx], TYPECODE_QUOTATION
+        jne     .error
+        next
 .1:
-        _drop
+        ; not a handle
         _ verify_unboxed_quotation
-        _return
-.2:
+        next
+.error:
+        mov     rbx, rax                ; retrieve x
         _ error_not_quotation
         next
 endcode
