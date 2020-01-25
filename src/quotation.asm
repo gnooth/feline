@@ -102,6 +102,26 @@ code check_quotation, 'check_quotation' ; x -> ^quotation
         next
 endcode
 
+; ### verify-quotation
+code verify_quotation, 'verify-quotation' ; quotation -> quotation
+; returns argument unchanged
+        cmp     bl, HANDLE_TAG
+        jne     .1
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+%ifdef DEBUG
+        test    rax, rax
+        jz      error_empty_handle
+%endif
+        cmp     word [rax], TYPECODE_QUOTATION
+        jne     error_not_quotation
+        next
+.1:
+        _ verify_unboxed_quotation
+        next
+endcode
+
 ; ### array>quotation
 code array_to_quotation, 'array>quotation'      ; array -- quotation
 ; 4 cells: object header, array, raw code address, raw code size
