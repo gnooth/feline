@@ -4149,35 +4149,39 @@ test: tilde-expand-filename-test-1
 
 tilde-expand-filename-test-1
 
-test: both?-test-1
-    { 42 } [ [ t ] [ 42 ] both? ] unit-test
-    { f }  [ [ t ] [ f ]  both? ] unit-test
+test: both?-test
+    { 42 } [ [ true ] [ 42 ] both? ] unit-test
+    { 1 2 3 4 42 } [ 1 2 3 4 [ true ] [ 42 ] both? ] unit-test
+
+    { nil } [ [ true ] [ nil ]  both? ] unit-test
+    { 1 2 3 4 nil }  [ 1 2 3 4 [ true ] [ nil ]  both? ] unit-test
 
     87 !> x
 
-    { f } [ [ x ] [ 93 x! f ] both? ] unit-test
+    { nil } [ [ x ] [ 93 x! nil ] both? ] unit-test
     x 93 assert-eq
 
-    { f } [ [ 71 x! f ] [ 97 x! f ] both? ] unit-test
-    x 71 assert-eq
-;
+    { nil } [ [ 71 x! nil ] [ 97 x! nil ] both? ] unit-test
+    x 71 assert-eq ;
 
-both?-test-1
+both?-test
 
-test: either?-test-1
-    { 42 } [ [ f ] [ 42 ] either? ] unit-test
-    { t }  [ [ f ] [ t ]  either? ] unit-test
+test: either?-test
+    { 42 } [ [ nil ] [ 42 ] either? ] unit-test
+    { 1 2 3 4 42 } [ 1 2 3 4 [ nil ] [ 42 ] either? ] unit-test
+
+    { true } [ [ nil ] [ true ]  either? ] unit-test
+    { 1 2 3 4 true }  [ 1 2 3 4 [ nil ] [ true ]  either? ] unit-test
 
     87 !> x
 
     { 87 } [ [ x ] [ 93 x! ] either? ] unit-test
     x 87 assert-eq
 
-    { f } [ [ 71 x! f ] [ 97 x! f ] either? ] unit-test
-    x 97 assert-eq
-;
+    { nil } [ [ 71 x! nil ] [ 97 x! nil ] either? ] unit-test
+    x 97 assert-eq ;
 
-either?-test-1
+either?-test
 
 test: string-trim-head-test-1
     { "" } [ "" string-trim-head ] unit-test

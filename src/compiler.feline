@@ -235,6 +235,8 @@ defer compile-quotation
     quot1 callable-code-address :> addr1
     pending-remove-last
 
+    flush-pending
+
     addr1 compile-call-address          // call addr1
     { 0x48 0x83 0xfb 0x06 } emit-bytes  // cmp rbx, 6
     0x74 emit-byte                      // jz
@@ -258,6 +260,8 @@ defer compile-quotation
     pending-remove-last
     quot1 callable-code-address :> addr1
     pending-remove-last
+
+    flush-pending
 
     addr1 compile-call-address          // call addr1
     { 0x48 0x83 0xfb 0x06 } emit-bytes  // cmp rbx, 6
