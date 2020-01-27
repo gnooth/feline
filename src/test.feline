@@ -1277,17 +1277,12 @@ test: until-test-1
 
 until-test-1
 
-test: while-test-1
-    clear
-    1 [ dup 1 = ] [ 1 + ] while get-datastack { 2 } sequence= assert-true
-    clear
-    1 [ dup 4 = ] [ 1 + ] while get-datastack { 1 } sequence= assert-true
-    clear
-    [ f ] [ 42 ] while get-datastack empty? assert-true
-    clear
-;
+test: while-test
+    { 1 2 3 4 43 } [ 1 2 3 4 42 [ dup 42 = ] [ 1 + ] while ] unit-test
+    { 1 2 3 4 42 } [ 1 2 3 4 42 [ dup 7 = ] [ 1 + ] while ] unit-test
+    { 1 2 3 4 } [ 1 2 3 4 [ nil ] [ 42 ] while ] unit-test ;
 
-while-test-1
+while-test
 
 test: bi-test-1
     clear

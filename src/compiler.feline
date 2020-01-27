@@ -271,6 +271,34 @@ defer compile-quotation
     addr2 compile-call-address          // call addr2
 ;
 
+: compile-while ( node )
+    ?nl "while" print
+    pending length 2 < [ ' while compile-call-symbol ] ?return
+
+    pending last literal-value>> :> quot2
+
+    pending dup length 2 - swap nth literal-value>> :> quot1
+    [ quot1 quotation? ] [ quot2 quotation? ] both? nil?
+    [ ' while compile-call-symbol ] ?return
+
+    // quot1 and quot2 are both literal quotations
+    quot2 callable-code-address :> addr2
+    pending-remove-last
+    quot1 callable-code-address :> addr1
+    pending-remove-last
+
+    flush-pending
+
+    addr1 compile-call-address          // call addr1
+    { 0x48 0x83 0xfb 0x06 } emit-bytes  // cmp rbx, 6
+    emit-drop                           // drop
+    0x74 emit-byte                      // je
+    0x07 emit-byte                      // $+7
+    addr2 compile-call-address          // call addr2
+    0xeb emit-byte                      // jmp
+    0xe6 emit-byte                      // $-26
+;
+
 : compile-call-quotation ( node )
     pending empty? [ ' call compile-call-symbol ] ?return
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
@@ -331,6 +359,10 @@ defer compile-quotation
 : compile-operator-node ( node )        // node -> void
 
     node op>> :> op
+
+    op ' while eq? [
+        node compile-while
+    ] ?return
 
     op ' either? eq? [
         node compile-either?
