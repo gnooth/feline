@@ -148,7 +148,7 @@ defer compile-quotation
 : emit-pushrbx
     { 0x48 0x89 0x5d 0xf8 0x48 0x8d 0x6d 0xf8 } emit-bytes ;
 
-: emit-poprbx
+: emit-drop
     { 0x48 0x8b 0x5d 0x00 0x48 0x8d 0x6d 0x08 } emit-bytes ;
 
 : compile-literal                       // node -> void
@@ -211,7 +211,7 @@ defer compile-quotation
         pending-remove-last
         flush-pending
         { 0x48 0x83 0xfb 0x06 } emit-bytes // cmp rbx, 6
-        emit-poprbx
+        emit-drop
         0x74 emit-byte                  // jz
         0x05 emit-byte                  // $+5
         address compile-call-address
@@ -219,6 +219,29 @@ defer compile-quotation
         flush-pending
         ' when compile-call-symbol
     ] if ;
+
+: compile-both? ( node )
+    pending length 2 < [ ' both? compile-call-symbol ] ?return
+
+    pending last literal-value>> :> quot2
+
+    pending dup length 2 - swap nth literal-value>> :> quot1
+    [ quot1 quotation? ] [ quot2 quotation? ] both? nil?
+    [ ' both? compile-call-symbol ] ?return
+
+    // quot1 and quot2 are both literal quotations
+    quot2 callable-code-address :> addr2
+    pending-remove-last
+    quot1 callable-code-address :> addr1
+    pending-remove-last
+
+    addr1 compile-call-address          // call addr1
+    { 0x48 0x83 0xfb 0x06 } emit-bytes  // cmp rbx, 6
+    0x74 emit-byte                      // jz
+    0x0d emit-byte                      // $+13
+    emit-drop                           // drop
+    addr2 compile-call-address          // call addr2
+;
 
 : compile-call-quotation ( node )
     pending empty? [ ' call compile-call-symbol ] ?return
@@ -280,6 +303,10 @@ defer compile-quotation
 : compile-operator-node ( node )        // node -> void
 
     node op>> :> op
+
+    op ' both? eq? [
+        node compile-both?
+    ] ?return
 
     op ' call eq? [
         node compile-call-quotation
