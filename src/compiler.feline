@@ -72,7 +72,7 @@ special: current-context
 
 tuple: node
     literal-value
-    op
+    op                                  // symbol
     type                                // result type
     pred                                // predecessor node or nil
 ;
@@ -198,6 +198,7 @@ defer compile-quotation
     ] if ;
 
 : compile-when ( node )                 // node -> void
+    ?nl "when" print
 
     compile-verbose? [ ?nl "compile-when" print ] when
 
@@ -220,7 +221,11 @@ defer compile-quotation
         ' when compile-call-symbol
     ] if ;
 
+' compile-when :compiler ' when symbol-set-prop
+
 : compile-both? ( node )
+    ?nl "both?" print
+
     pending length 2 < [ ' both? compile-call-symbol ] ?return
 
     pending last literal-value>> :> quot2
@@ -244,6 +249,8 @@ defer compile-quotation
     emit-drop                           // drop
     addr2 compile-call-address          // call addr2
 ;
+
+' compile-both? :compiler ' both? symbol-set-prop
 
 : compile-either? ( node )
     ?nl "either?" print
@@ -270,6 +277,8 @@ defer compile-quotation
     emit-drop                           // drop
     addr2 compile-call-address          // call addr2
 ;
+
+' compile-either? :compiler ' either? symbol-set-prop
 
 : compile-while ( node )
     ?nl "while" print
@@ -299,8 +308,11 @@ defer compile-quotation
     0xe6 emit-byte                      // $-26
 ;
 
+' compile-while :compiler ' while symbol-set-prop
+
 : compile-if ( node )
     ?nl "if" print
+
     pending length 2 < [
         flush-pending
         ' if compile-call-symbol
@@ -331,7 +343,11 @@ defer compile-quotation
     addr2 compile-call-address          // call addr2
 ;
 
+' compile-if :compiler ' if symbol-set-prop
+
 : compile-call-quotation ( node )
+    ?nl "call" print
+
     pending empty? [ ' call compile-call-symbol ] ?return
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
     last-value callable-code-address :> address
@@ -344,7 +360,10 @@ defer compile-quotation
         ' call compile-call-symbol
     ] if ;
 
+' compile-call-quotation :compiler ' call symbol-set-prop
+
 : compile-declare ( node )              // node -> void
+    ?nl "declare" print
 
     compile-verbose? [ ?nl "compile-declare" print ] when
 
@@ -361,6 +380,8 @@ defer compile-quotation
     compile-verbose? [
         ?nl "compile-declare declared type = " write-string declared-type type-name print
     ] when ;
+
+' compile-declare :compiler ' declare symbol-set-prop
 
 : inline-or-compile-call                // symbol -> void
     dup symbol-primitive? [ compile-primitive ] [ compile-call-symbol ] if ;
@@ -392,32 +413,10 @@ defer compile-quotation
 
     node op>> :> op
 
-    op ' if eq? [
-        node compile-if
-    ] ?return
+    :compiler op symbol-prop :> compiler
 
-    op ' while eq? [
-        node compile-while
-    ] ?return
-
-    op ' either? eq? [
-        node compile-either?
-    ] ?return
-
-    op ' both? eq? [
-        node compile-both?
-    ] ?return
-
-    op ' call eq? [
-        node compile-call-quotation
-    ] ?return
-
-    op ' when eq? [
-        node compile-when
-    ] ?return
-
-    op ' declare eq? [
-        node compile-declare
+    compiler symbol? [
+        node compiler call-symbol
     ] ?return
 
     op generic? [
