@@ -810,13 +810,17 @@ test: local-test-5
 
 local-test-5
 
-test: if-test-1
-    t [ 42 ] [ 17 ] if 42 assert-eq
-    f [ 42 ] [ 17 ] if 17 assert-eq
-    0 [ 42 ] [ 17 ] if 42 assert-eq
-;
+test: if-test
+    { 42 } [ true [ 42 ] [ 17 ] if ] unit-test
+    { 1 2 3 4 42 } [ 1 2 3 4 true [ 42 ] [ 17 ] if ] unit-test
 
-if-test-1
+    { 17 } [ nil [ 42 ] [ 17 ] if ] unit-test
+    { 1 2 3 4 17 } [ 1 2 3 4 nil [ 42 ] [ 17 ] if ] unit-test
+
+    { 42 } [ 0 [ 42 ] [ 17 ] if ] unit-test
+    { 1 2 3 4 42 } [ 1 2 3 4 0 [ 42 ] [ 17 ] if ] unit-test ;
+
+if-test
 
 test: if*-test-1
     clear
