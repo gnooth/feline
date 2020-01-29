@@ -4482,4 +4482,26 @@ test: char-upper-case?-test
 
 char-upper-case?-test
 
+test: when-test
+    { 14 } [ 89 [ 14 ] when ] unit-test
+    { 1 2 3 14 } [ 1 2 3 89 [ 14 ] when ] unit-test
+    { 1 2 3 14 } [ 1 2 3 true [ 14 ] when ] unit-test
+    { 1 2 3 14 } [ 1 2 3 "test" [ 14 ] when ] unit-test
+    { 1 2 3 } [ 1 2 3 nil [ 14 ] when ] unit-test
+    { 1 2 14 } [ 1 2 3 odd? [ 14 ] when ] unit-test
+    { 1 2 } [ 1 2 3 even? [ 14 ] when ] unit-test
+;
+
+when-test
+
+test: when*-test
+    { 90 } [ 89 [ 1+ ] when* ] unit-test
+    { 1 2 3 90 } [ 1 2 3 89 [ 1+ ] when* ] unit-test
+    { 89 14 } [ 89 [ 14 ] when* ] unit-test
+    { true 14 } [ 89 odd? [ 14 ] when* ] unit-test
+    { } [ 89 even? [ 14 ] when* ] unit-test
+;
+
+when*-test
+
 ?nl "Reached end of test.feline" write-string

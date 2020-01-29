@@ -198,11 +198,9 @@ defer compile-quotation
     ] if ;
 
 : compile-when ( node )                 // node -> void
-    ?nl "when" print
+    ?nl node op>> symbol-name print
 
-    compile-verbose? [ ?nl "compile-when" print ] when
-
-    pending empty? [ ' when compile-call-symbol ] ?return
+    pending empty? [ node op>> compile-call-symbol ] ?return
 
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
 
@@ -218,10 +216,36 @@ defer compile-quotation
         address compile-call-address
     ] [
         flush-pending
-        ' when compile-call-symbol
+        node op>> compile-call-symbol
     ] if ;
 
 ' compile-when :compiler ' when symbol-set-prop
+
+: compile-when* ( node )                // node -> void
+    ?nl node op>> symbol-name print
+
+    pending empty? [ node op>> compile-call-symbol ] ?return
+
+    pending-last-value dup wrapper? [ wrapped ] when :> last-value
+
+    last-value callable-code-address :> address
+
+    address [
+        pending-remove-last
+        flush-pending
+        { 0x48 0x83 0xfb 0x06 } emit-bytes // cmp rbx, 6
+        0x74 emit-byte                  // je
+        0x07 emit-byte                  // $+7
+        address compile-call-address
+        0xeb emit-byte                  // jmp
+        0x08 emit-byte                  // $+8
+        emit-drop
+    ] [
+        flush-pending
+        node op>> compile-call-symbol
+    ] if ;
+
+' compile-when* :compiler ' when* symbol-set-prop
 
 : compile-both? ( node )
     ?nl "both?" print
