@@ -156,10 +156,10 @@ static void initialize_dynamic_code_space (void)
 #else
   // Linux
   code_space_ =
-    (cell) mmap ((void *)0x1000000,                             // starting address
+    (cell) mmap (NULL,                                          // starting address
                  DYNAMIC_CODE_SPACE_RESERVED_SIZE,              // size
                  PROT_READ|PROT_WRITE|PROT_EXEC,                // protection
-                 MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE,       // flags
+                 MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_32BIT, // flags
                  -1,                                            // fd
                  0);                                            // offset
 
