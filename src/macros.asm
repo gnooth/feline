@@ -25,6 +25,11 @@
         lea     rbp, [rbp - BYTES_PER_CELL]
 %endmacro
 
+%macro _drop 0
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+%endmacro
+
 %macro  poprbx  0
         mov     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
@@ -130,22 +135,22 @@
 %define TRUE    BOOLEAN_TAG + (1 << LOWTAG_BITS)
 
 %macro  _f 0
-        pushrbx
-        mov     ebx, f_value
+        _dup
+        mov     ebx, NIL
 %endmacro
 
 %macro  _t 0
-        pushrbx
-        mov     ebx, t_value
+        _dup
+        mov     ebx, TRUE
 %endmacro
 
 %macro  _nil 0
-        pushrbx
+        _dup
         mov     ebx, NIL
 %endmacro
 
 %macro  _true 0
-        pushrbx
+        _dup
         mov     ebx, TRUE
 %endmacro
 
@@ -253,13 +258,13 @@
 %endmacro
 
 %macro  pushd   1
-        pushrbx
+        _dup
         mov     rbx, %1
 %endmacro
 
 %macro  popd    1
         mov     %1, rbx
-        poprbx
+        _drop
 %endmacro
 
 %ifdef WIN64
@@ -477,7 +482,7 @@ section .data
         section .text
         align   DEFAULT_CODE_ALIGNMENT
 %1:
-        pushrbx
+        _dup
         mov     rbx, S_%1
         ret
 %1_ret:
@@ -558,7 +563,7 @@ section .data
         dq      %3
         section .text
 %1:
-        pushrbx
+        _dup
         mov     rbx, [%1_data]
 %1_ret:
         next
@@ -569,7 +574,7 @@ section .data
         section .text
         align DEFAULT_CODE_ALIGNMENT
 %1:
-        pushrbx
+        _dup
         mov     rbx, [S_%1_symbol_value]
 %1_ret:
         next
@@ -581,7 +586,7 @@ section .data
 
 %macro  _to_global 1                    ; label
         mov     [S_%1_symbol_value], rbx
-        poprbx
+        _drop
 %endmacro
 
 %macro  feline_constant 3               ; label, name, value
@@ -589,7 +594,7 @@ section .data
         section .text
         align DEFAULT_CODE_ALIGNMENT
 %1:
-        pushrbx
+        _dup
         mov     rbx, %3
 %1_ret:
         next
@@ -599,7 +604,7 @@ section .data
         head    %1, %2, 0, %1_ret - %1
         section .text
 %1:
-        pushrbx
+        _dup
         mov     rbx, %3
 %1_ret:
         next
@@ -607,7 +612,7 @@ section .data
 
 %macro  _to 1                           ; label
         mov     [%1_data], rbx          ; REVIEW 32-bit address
-        poprbx
+        _drop
 %endmacro
 
 %macro  _zeroto 1                       ; label
@@ -633,7 +638,7 @@ section .data
         db      %1                      ; string
         db      0                       ; null byte at end
         section .text
-        pushrbx
+        _dup
         mov     rbx, %%string
 %endmacro
 
@@ -750,7 +755,7 @@ section .data
         section .text
         test    rbx, rbx
         jnz     %%skip
-        poprbx
+        _drop
         jz      %1_ifnot
 %%skip:
 %endmacro
@@ -808,11 +813,6 @@ section .text
 %1_end:
 %endmacro
 
-%macro _drop 0
-        mov     rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
-%endmacro
-
 %macro _2drop 0
         mov     rbx, [rbp + BYTES_PER_CELL]
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
@@ -868,7 +868,7 @@ section .text
         section .text
         align   DEFAULT_CODE_ALIGNMENT
 %1_end:
-        pushrbx
+        _dup
         mov     rbx, %1_quotation
         %pop
 %else
@@ -895,7 +895,7 @@ section .text
 ; "The high-order 32 bits are loaded into EDX, and the low-order 32 bits are
 ; loaded into the EAX register. This instruction ignores operand size."
         rdtsc
-        pushrbx
+        _dup
         mov     ebx, eax
         shl     rdx, 32
         add     rbx, rdx
@@ -936,6 +936,6 @@ section .text
 
 %macro  _feline_free 0
         mov     arg0_register, rbx
-        poprbx
+        _drop
         xcall   free
 %endmacro
