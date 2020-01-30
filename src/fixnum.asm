@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -28,40 +28,40 @@ code most_negative_fixnum, 'most-negative-fixnum'
 endcode
 
 ; ### fixnum?
-code fixnum?, 'fixnum?'                 ; x -- ?
+code fixnum?, 'fixnum?'                 ; x -> ?
         test    bl, FIXNUM_TAG
-        mov     eax, t_value
-        mov     ebx, f_value
+        mov     eax, TRUE
+        mov     ebx, NIL
         cmovnz  ebx, eax
         next
 endcode
 
 ; ### verify-fixnum
-code verify_fixnum, 'verify-fixnum'     ; fixnum -- fixnum
+code verify_fixnum, 'verify-fixnum'     ; fixnum -> fixnum
         _verify_fixnum
         next
 endcode
 
 ; ### check-fixnum
-code check_fixnum, 'check-fixnum'       ; fixnum -- untagged-fixnum
+code check_fixnum, 'check-fixnum'       ; fixnum -> untagged-fixnum
         _check_fixnum
         next
 endcode
 
 ; ### fixnum-hashcode
-code fixnum_hashcode, 'fixnum-hashcode' ; fixnum -- hashcode
+code fixnum_hashcode, 'fixnum-hashcode' ; fixnum -> hashcode
         _verify_fixnum
         _rep_return
 endcode
 
 ; ### verify-index
-code verify_index, 'verify-index'       ; index -- index
+code verify_index, 'verify-index'       ; index -> index
         _verify_index
         next
 endcode
 
 ; ### check-index
-code check_index, 'check-index'         ; non-negative-fixnum -- untagged-fixnum
+code check_index, 'check-index'         ; non-negative-fixnum -> untagged-fixnum
         _check_index
         next
 endcode
@@ -72,18 +72,19 @@ code index?, 'index?'                   ; x -> ?
         jz      .1
         test    rbx, rbx
         js      .1
-        mov     ebx, t_value
+        mov     ebx, TRUE
         next
 .1:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
 ; ### fixnum-min
-code fixnum_min, 'fixnum-min'           ; x y -- z
+code fixnum_min, 'fixnum-min'           ; x y -> z
 ; No type checking.
         _untag_2_fixnums
-        popd    rax
+        mov     rax, rbx
+        _drop
         cmp     rax, rbx
         cmovl   rbx, rax
         _tag_fixnum
@@ -91,10 +92,11 @@ code fixnum_min, 'fixnum-min'           ; x y -- z
 endcode
 
 ; ### fixnum-max
-code fixnum_max, 'fixnum-max'           ; x y -- z
+code fixnum_max, 'fixnum-max'           ; x y -> z
 ; No type checking.
         _untag_2_fixnums
-        popd    rax
+        mov     rax, rbx
+        _drop
         cmp     rax, rbx
         cmovg   rbx, rax
         _tag_fixnum
@@ -102,7 +104,7 @@ code fixnum_max, 'fixnum-max'           ; x y -- z
 endcode
 
 ; ### min
-code generic_min, 'min'                 ; x y -- z
+code generic_min, 'min'                 ; x y -> z
         _twodup
         _ generic_le
         _tagged_if .1
@@ -114,7 +116,7 @@ code generic_min, 'min'                 ; x y -- z
 endcode
 
 ; ### max
-code generic_max, 'max'                 ; x y -- z
+code generic_max, 'max'                 ; x y -> z
         _twodup
         _ generic_ge
         _tagged_if .1
@@ -156,7 +158,7 @@ code fixnum_fixnum_plus, 'fixnum-fixnum+'       ; fixnum1 fixnum2 -> sum
 endcode
 
 ; ### fixnum-1+
-code fixnum_oneplus, 'fixnum-1+'                 ; fixnum -- fixnum/int64
+code fixnum_oneplus, 'fixnum-1+'                 ; fixnum -> fixnum/int64
         _verify_fixnum
         add     rbx, (1 << FIXNUM_TAG_BITS)
         jo      .overflow
@@ -182,7 +184,7 @@ code oneplus, '1+'                              ; fixnum -> fixnum
 endcode
 
 ; ### int64-fixnum+
-code int64_fixnum_plus, 'int64-fixnum+'         ; int64 fixnum -- sum
+code int64_fixnum_plus, 'int64-fixnum+'         ; int64 fixnum -> sum
 
         _debug_?enough 2
 
@@ -205,7 +207,7 @@ code int64_fixnum_plus, 'int64-fixnum+'         ; int64 fixnum -- sum
 endcode
 
 ; ### fixnum-fixnum-
-code fixnum_fixnum_minus, 'fixnum-fixnum-'      ; fixnum1 fixnum2 -- difference
+code fixnum_fixnum_minus, 'fixnum-fixnum-'      ; fixnum1 fixnum2 -> difference
         _check_fixnum
         _swap
         _check_fixnum
@@ -216,7 +218,7 @@ code fixnum_fixnum_minus, 'fixnum-fixnum-'      ; fixnum1 fixnum2 -- difference
 endcode
 
 ; ### fixnum-1-
-code fixnum_oneminus, 'fixnum-1-'               ; fixnum -- fixnum/int64
+code fixnum_oneminus, 'fixnum-1-'               ; fixnum -> fixnum/int64
         _verify_fixnum
         sub     rbx, (1 << FIXNUM_TAG_BITS)
         jo      .overflow
@@ -237,7 +239,7 @@ code oneminus, '1-'                             ; fixnum -> fixnum
 endcode
 
 ; ### int64-fixnum-
-code int64_fixnum_minus, 'int64-fixnum-'        ; int64 fixnum -- difference
+code int64_fixnum_minus, 'int64-fixnum-'        ; int64 fixnum -> difference
         _check_fixnum
         _swap
         _ check_int64
@@ -247,7 +249,7 @@ code int64_fixnum_minus, 'int64-fixnum-'        ; int64 fixnum -- difference
 endcode
 
 ; ### fixnum+
-code fixnum_plus, 'fixnum+'             ; number fixnum -- sum
+code fixnum_plus, 'fixnum+'             ; number fixnum -> sum
 
         ; second arg must be a fixnum
         _verify_fixnum
@@ -277,7 +279,7 @@ code fixnum_plus, 'fixnum+'             ; number fixnum -- sum
 endcode
 
 ; ### fixnum-
-code fixnum_minus, 'fixnum-'            ; x y -- z
+code fixnum_minus, 'fixnum-'            ; x y -> z
 
         ; y must be a fixnum
         _verify_fixnum
@@ -300,7 +302,7 @@ code fixnum_minus, 'fixnum-'            ; x y -- z
         _over
         _ object_raw_typecode
         mov     rax, rbx
-        poprbx                          ; -- x y
+        _drop                           ; -> x y
 
         cmp     rax, TYPECODE_INT64
         je      int64_fixnum_minus
@@ -317,7 +319,7 @@ code fixnum_minus, 'fixnum-'            ; x y -- z
 endcode
 
 ; ### fixnum-fixnum*
-code fixnum_fixnum_multiply, 'fixnum-fixnum*'   ; x y -- z
+code fixnum_fixnum_multiply, 'fixnum-fixnum*'   ; x y -> z
         _check_fixnum
         _swap
         _check_fixnum
@@ -363,7 +365,7 @@ inline fixnum_twostar_fast, 'fixnum-2*-fast' ; fixnum -> fixnum
 endinline
 
 ; ### int64-fixnum*
-code int64_fixnum_multiply, 'int64-fixnum*'     ; x y -- z
+code int64_fixnum_multiply, 'int64-fixnum*'     ; x y -> z
         _check_fixnum
         _swap
         _ check_int64
@@ -396,7 +398,7 @@ code int64_fixnum_multiply, 'int64-fixnum*'     ; x y -- z
 endcode
 
 ; ### fixnum*
-code fixnum_multiply, 'fixnum*'         ; x y -- z
+code fixnum_multiply, 'fixnum*'         ; x y -> z
 
         ; second arg must be a fixnum
         _verify_fixnum
@@ -405,7 +407,7 @@ code fixnum_multiply, 'fixnum*'         ; x y -- z
         _over
         _ object_raw_typecode
         mov     rax, rbx
-        poprbx                          ; -- x y
+        _drop                           ; -> x y
 
         cmp     rax, TYPECODE_FIXNUM
         je      fixnum_fixnum_multiply
@@ -426,7 +428,7 @@ endcode
 
 ; ### raw_int64_divide_truncate
 code raw_int64_divide_truncate, 'raw_int64_divide_truncate', SYMBOL_INTERNAL
-; x y -- z
+; x y -> z
         mov     rax, [rbp]
         cqo                             ; sign-extend rax into rdx:rax
         idiv    rbx                     ; quotient in rax, remainder in rdx
@@ -493,7 +495,7 @@ code fixnum_divide_truncate, 'fixnum/i' ; x y -> z
         _over
         _ object_raw_typecode
         mov     rax, rbx
-        poprbx                          ; -> x y
+        _drop                           ; -> x y
 
         cmp     rax, TYPECODE_FIXNUM
         je      fixnum_fixnum_divide_truncate
@@ -514,7 +516,7 @@ code fixnum_divide_truncate, 'fixnum/i' ; x y -> z
 endcode
 
 ; ### fixnum-fixnum/f
-code fixnum_fixnum_divide_float, 'fixnum-fixnum/f'      ; x y -- z
+code fixnum_fixnum_divide_float, 'fixnum-fixnum/f'      ; x y -> z
         _ fixnum_to_float
         _swap
         _ fixnum_to_float
@@ -524,7 +526,7 @@ code fixnum_fixnum_divide_float, 'fixnum-fixnum/f'      ; x y -- z
 endcode
 
 ; ### int64-fixnum/f
-code int64_fixnum_divide_float, 'int64-fixnum/f'        ; x y -- z
+code int64_fixnum_divide_float, 'int64-fixnum/f'        ; x y -> z
         _ fixnum_to_float
         _swap
         _ int64_to_float
@@ -534,7 +536,7 @@ code int64_fixnum_divide_float, 'int64-fixnum/f'        ; x y -- z
 endcode
 
 ; ### fixnum/f
-code fixnum_divide_float, 'fixnum/f'    ; x y -- z
+code fixnum_divide_float, 'fixnum/f'    ; x y -> z
 
         ; second arg must be a fixnum
         _ verify_fixnum
@@ -543,7 +545,7 @@ code fixnum_divide_float, 'fixnum/f'    ; x y -- z
         _over
         _ object_raw_typecode
         mov     rax, rbx
-        poprbx
+        _drop
 
         cmp     rax, TYPECODE_FIXNUM
         je      fixnum_fixnum_divide_float
@@ -564,7 +566,7 @@ code fixnum_divide_float, 'fixnum/f'    ; x y -- z
 endcode
 
 ; ### fixnum-fixnum-mod
-code fixnum_fixnum_mod, 'fixnum-fixnum-mod'     ; x y -- z
+code fixnum_fixnum_mod, 'fixnum-fixnum-mod'     ; x y -> z
         _check_fixnum
         _swap
         _check_fixnum
@@ -579,7 +581,7 @@ code fixnum_fixnum_mod, 'fixnum-fixnum-mod'     ; x y -- z
 endcode
 
 ; ### int64-fixnum-mod
-code int64_fixnum_mod, 'int64-fixnum-mod'       ; x y -- z
+code int64_fixnum_mod, 'int64-fixnum-mod'       ; x y -> z
         _check_fixnum
         _swap
         _ check_int64
@@ -594,7 +596,7 @@ code int64_fixnum_mod, 'int64-fixnum-mod'       ; x y -- z
 endcode
 
 ; ### fixnum-mod
-code fixnum_mod, 'fixnum-mod'           ; x y -- z
+code fixnum_mod, 'fixnum-mod'           ; x y -> z
         _verify_fixnum
 
         _over_fixnum?_if .1
@@ -633,7 +635,7 @@ code fixnum_abs, 'fixnum-abs'           ; fixnum -> fixnum/int64
 endcode
 
 ; ### fixnum-negate
-code fixnum_negate, 'fixnum-negate'     ; n -- -n
+code fixnum_negate, 'fixnum-negate'     ; n -> -n
         _dup
         _ most_negative_fixnum
         _eq?
@@ -650,21 +652,21 @@ code fixnum_negate, 'fixnum-negate'     ; n -- -n
 endcode
 
 ; ### odd?
-code odd?, 'odd?'                       ; n -- ?
-        _check_fixnum                   ; -- untagged
-        mov     eax, t_value
+code odd?, 'odd?'                       ; n -> ?
+        _check_fixnum                   ; -> untagged
+        mov     eax, TRUE
         and     ebx, 1
-        mov     ebx, f_value
+        mov     ebx, NIL
         cmovnz  ebx, eax
         next
 endcode
 
 ; ### even?
-code even?, 'even?'                     ; n -- ?
-        _check_fixnum                   ; -- untagged
-        mov     eax, t_value
+code even?, 'even?'                     ; n -> ?
+        _check_fixnum                   ; -> untagged
+        mov     eax, TRUE
         and     ebx, 1
-        mov     ebx, f_value
+        mov     ebx, NIL
         cmovz   ebx, eax
         next
 endcode
@@ -674,8 +676,8 @@ code zgt, '0>'                          ; fixnum -> ?
         test    bl, FIXNUM_TAG
         jz      error_not_fixnum
         sar     rbx, FIXNUM_TAG_BITS
-        mov     eax, nil_value
-        mov     ebx, t_value
+        mov     eax, NIL
+        mov     ebx, TRUE
         cmovng  ebx, eax
         next
 endcode
@@ -685,8 +687,8 @@ code zlt, '0<'                          ; fixnum -> ?
         test    bl, FIXNUM_TAG
         jz      error_not_fixnum
         sar     rbx, FIXNUM_TAG_BITS
-        mov     eax, nil_value
-        mov     ebx, t_value
+        mov     eax, NIL
+        mov     ebx, TRUE
         cmovnl  ebx, eax
         next
 endcode
@@ -696,14 +698,14 @@ code fixnum_zero?, '0?'                 ; fixnum -> ?
         test    bl, FIXNUM_TAG
         jz      error_not_fixnum
         sar     rbx, FIXNUM_TAG_BITS
-        mov     eax, nil_value
-        mov     ebx, t_value
+        mov     eax, NIL
+        mov     ebx, TRUE
         cmovnz  ebx, eax
         next
 endcode
 
 ; ### fixnum>binary
-code fixnum_to_binary, 'fixnum>binary'  ; fixnum -- string
+code fixnum_to_binary, 'fixnum>binary'  ; fixnum -> string
 
         _check_fixnum
 
@@ -712,7 +714,7 @@ code fixnum_to_binary, 'fixnum>binary'  ; fixnum -- string
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -- n
+        _drop                           ; -> n
 
         _begin .1
         test    bl, 1
@@ -741,17 +743,17 @@ code fixnum_to_binary, 'fixnum>binary'  ; fixnum -- string
 endcode
 
 ; ### raw_int64_to_decimal
-code raw_int64_to_decimal, 'raw_int64_to_decimal', SYMBOL_INTERNAL      ; raw-int64 -- string
+code raw_int64_to_decimal, 'raw_int64_to_decimal', SYMBOL_INTERNAL ; raw-int64 -> string
 
         push    r12
         push    this_register
 
         _lit 128
-        _ new_sbuf_untagged             ; -- raw-int64 handle
-        _handle_to_object_unsafe        ; -- raw-int64 sbuf
+        _ new_sbuf_untagged             ; -> raw-int64 handle
+        _handle_to_object_unsafe        ; -> raw-int64 sbuf
 
         mov     this_register, rbx
-        poprbx                          ; -- raw-int64
+        _drop                           ; -> raw-int64
 
         mov     rax, rbx                ; raw-int64 in rax
 
@@ -771,7 +773,7 @@ code raw_int64_to_decimal, 'raw_int64_to_decimal', SYMBOL_INTERNAL      ; raw-in
         push    rax
 
         add     edx, '0'
-        pushrbx
+        _dup
         mov     ebx, edx
 
         _ this_sbuf_push_raw_unsafe
@@ -785,7 +787,7 @@ code raw_int64_to_decimal, 'raw_int64_to_decimal', SYMBOL_INTERNAL      ; raw-in
 
         test    r12, r12
         jz      .2
-        pushrbx
+        _dup
         mov     ebx, '-'
         _ this_sbuf_push_raw_unsafe
 .2:
@@ -800,19 +802,19 @@ code raw_int64_to_decimal, 'raw_int64_to_decimal', SYMBOL_INTERNAL      ; raw-in
 endcode
 
 ; ### fixnum>decimal
-code fixnum_to_decimal, 'fixnum>decimal'        ; fixnum -- string
+code fixnum_to_decimal, 'fixnum>decimal' ; fixnum -> string
         _check_fixnum
         _ raw_int64_to_decimal
         next
 endcode
 
 ; ### fixnum>base
-code fixnum_to_base, 'fixnum>base'      ; fixnum base -- string
+code fixnum_to_base, 'fixnum>base'      ; fixnum base -> string
 
         _check_fixnum
         _swap
         _check_fixnum
-        _swap                           ; -- untagged-fixnum untagged-base
+        _swap                           ; -> untagged-fixnum untagged-base
 
 ; FIXME it's an error if base is not 10 or 16 here
 
@@ -820,7 +822,7 @@ untagged_to_base:
 
         _lit 256
         _dup
-        _ raw_allocate                  ; -- untagged-fixnum untagged-base size buffer
+        _ raw_allocate                  ; -> untagged-fixnum untagged-base size buffer
         _duptor
         mov     arg2_register, rbx                              ; buffer
         mov     arg3_register, [rbp]                            ; size
@@ -828,8 +830,9 @@ untagged_to_base:
         mov     arg0_register, [rbp + BYTES_PER_CELL * 2]       ; untagged fixnum
         _4drop
         xcall   c_fixnum_to_base        ; number of chars printed in rax
-        _rfetch                         ; -- buffer
-        pushd   rax                     ; -- buffer size
+        _rfetch                         ; -> buffer
+        _dup
+        mov     rbx, rax                ; -> buffer size
         _ copy_to_string
         _rfrom
         _ raw_free
@@ -838,7 +841,7 @@ endcode
 
 ; REVIEW
 ; ### untagged>hex
-code untagged_to_hex, 'untagged>hex'    ; untagged -- string
+code untagged_to_hex, 'untagged>hex'    ; untagged -> string
         _lit 16
         _ untagged_to_base
         next
