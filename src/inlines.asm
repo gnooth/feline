@@ -87,11 +87,6 @@
         lea     rbp, [rbp + BYTES_PER_CELL * 2]
 %endmacro
 
-%macro  _dup 0
-        mov     [rbp - BYTES_PER_CELL], rbx
-        lea     rbp, [rbp - BYTES_PER_CELL]
-%endmacro
-
 %macro  _twodup 0                       ; 2DUP
         mov     rax, [rbp]
         lea     rbp, [rbp - BYTES_PER_CELL * 2]

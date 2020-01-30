@@ -15,6 +15,11 @@
 
 %idefine bytes_per_cell 8
 
+%macro  _dup 0
+        mov     [rbp - BYTES_PER_CELL], rbx
+        lea     rbp, [rbp - BYTES_PER_CELL]
+%endmacro
+
 %macro  pushrbx 0
         mov     [rbp - BYTES_PER_CELL], rbx
         lea     rbp, [rbp - BYTES_PER_CELL]
