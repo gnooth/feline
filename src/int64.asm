@@ -1,4 +1,4 @@
-; Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -21,23 +21,23 @@ file __FILE__
         _slot1
 %endmacro
 
-%macro  _int64_set_raw_value 0          ; raw-value int64 --
+%macro  _int64_set_raw_value 0          ; raw-value int64 ->
         _set_slot1
 %endmacro
 
 %define __this_int64_raw_value this_slot1
 
-%macro  _this_int64_raw_value 0         ; -- raw-value
+%macro  _this_int64_raw_value 0         ; -> raw-value
         _this_slot1
 %endmacro
 
-%macro  _this_int64_set_raw_value 0     ; raw-value --
+%macro  _this_int64_set_raw_value 0     ; raw-value ->
         _this_set_slot1
 %endmacro
 
 ; ### int64?
-code int64?, 'int64?'                   ; handle -- ?
-        _ deref                         ; -- raw-object/0
+code int64?, 'int64?'                   ; handle -> ?
+        _ deref                         ; -> raw-object/0
         test    rbx, rbx
         jz      .1
         movzx   eax, word [rbx]
@@ -51,7 +51,7 @@ code int64?, 'int64?'                   ; handle -- ?
 endcode
 
 ; ### verify-int64
-code verify_int64, 'verify-int64'       ; x -- x
+code verify_int64, 'verify-int64'       ; x -> x
         _dup
         _ deref
         test    rbx, rbx
@@ -62,13 +62,13 @@ code verify_int64, 'verify-int64'       ; x -- x
         _drop
         _return
 .error:
-        _drop                           ; -- x
+        _drop                           ; -> x
         jmp     error_not_int64
         next
 endcode
 
 ; ### check_int64
-code check_int64, 'check_int64'         ; handle -- raw-int64
+code check_int64, 'check_int64'         ; handle -> raw-int64
         _dup
         _ deref
         test    rbx, rbx
@@ -87,7 +87,7 @@ endcode
 
 ; ### int64_raw_value
 code int64_raw_value, 'int64_raw_value', SYMBOL_INTERNAL
-; handle -- raw-int64
+; handle -> raw-int64
         _ deref
         _int64_raw_value
         next
@@ -127,7 +127,7 @@ endcode
 
 ; ### raw_int64_int64_plus
 code raw_int64_int64_plus, 'raw_int64_int64_plus', SYMBOL_INTERNAL
-; x y -- z
+; x y -> z
         _twodup
         add     rbx, [rbp]
         jo      .1
@@ -144,7 +144,7 @@ code raw_int64_int64_plus, 'raw_int64_int64_plus', SYMBOL_INTERNAL
 endcode
 
 ; ### fixnum-int64+
-code fixnum_int64_plus, 'fixnum-int64+' ; x y -- z
+code fixnum_int64_plus, 'fixnum-int64+' ; x y -> z
         _ check_int64
         _swap
         _check_fixnum
@@ -153,7 +153,7 @@ code fixnum_int64_plus, 'fixnum-int64+' ; x y -- z
 endcode
 
 ; ### int64-int64+
-code int64_int64_plus, 'int64-int64+'   ; x y -- z
+code int64_int64_plus, 'int64-int64+'   ; x y -> z
         _ check_int64
         _swap
         _ check_int64
@@ -162,7 +162,7 @@ code int64_int64_plus, 'int64-int64+'   ; x y -- z
 endcode
 
 ; ### int64+
-code int64_plus, 'int64+'               ; x y -- z
+code int64_plus, 'int64+'               ; x y -> z
 
         ; second arg must be int64
         _ verify_int64
@@ -171,7 +171,7 @@ code int64_plus, 'int64+'               ; x y -- z
         _over
         _ object_raw_typecode
         mov     rax, rbx
-        poprbx                          ; -- x y
+        _drop                           ; -> x y
 
         cmp     rax, TYPECODE_FIXNUM
         je      fixnum_int64_plus
@@ -193,7 +193,7 @@ endcode
 
 ; ### raw_int64_int64_minus
 code raw_int64_int64_minus, 'raw_int64_int64_minus', SYMBOL_INTERNAL
-; x y -- z
+; x y -> z
         _twodup
         neg     rbx
         add     rbx, [rbp]
@@ -212,7 +212,7 @@ code raw_int64_int64_minus, 'raw_int64_int64_minus', SYMBOL_INTERNAL
 endcode
 
 ; ### fixnum-int64-
-code fixnum_int64_minus, 'fixnum-int64-'        ; x y -- z
+code fixnum_int64_minus, 'fixnum-int64-'        ; x y -> z
         _ check_int64
         _swap
         _check_fixnum
@@ -222,7 +222,7 @@ code fixnum_int64_minus, 'fixnum-int64-'        ; x y -- z
 endcode
 
 ; ### int64-int64-
-code int64_int64_minus, 'int64-int64-'  ; x y -- z
+code int64_int64_minus, 'int64-int64-'  ; x y -> z
         _ check_int64
         _swap
         _ check_int64
@@ -232,7 +232,7 @@ code int64_int64_minus, 'int64-int64-'  ; x y -- z
 endcode
 
 ; ### int64-
-code int64_minus, 'int64-'              ; x y -- z
+code int64_minus, 'int64-'              ; x y -> z
 
         ; second arg must be int64
         _ verify_int64
@@ -241,7 +241,7 @@ code int64_minus, 'int64-'              ; x y -- z
         _over
         _ object_raw_typecode
         mov     rax, rbx
-        poprbx                          ; -- x y
+        _drop                           ; -> x y
 
         cmp     rax, TYPECODE_FIXNUM
         je      fixnum_int64_minus
@@ -263,7 +263,7 @@ endcode
 
 ; ### raw_int64_int64_multiply
 code raw_int64_int64_multiply, 'raw_int64_int64_multiply', SYMBOL_INTERNAL
-; x y -- z
+; x y -> z
         _twodup
         mov     rax, rbx
         imul    rbx, [rbp]
@@ -281,7 +281,7 @@ code raw_int64_int64_multiply, 'raw_int64_int64_multiply', SYMBOL_INTERNAL
 endcode
 
 ; ### fixnum-int64*
-code fixnum_int64_multiply, 'fixnum-int64*'     ; x y -- z
+code fixnum_int64_multiply, 'fixnum-int64*'     ; x y -> z
         _ check_int64
         _swap
         _check_fixnum
@@ -290,7 +290,7 @@ code fixnum_int64_multiply, 'fixnum-int64*'     ; x y -- z
 endcode
 
 ; ### int64-int64*
-code int64_int64_multiply, 'int64-int64*'       ; x y -- z
+code int64_int64_multiply, 'int64-int64*'       ; x y -> z
         _ check_int64
         _swap
         _ check_int64
@@ -299,7 +299,7 @@ code int64_int64_multiply, 'int64-int64*'       ; x y -- z
 endcode
 
 ; ### int64*
-code int64_multiply, 'int64*'           ; x y -- z
+code int64_multiply, 'int64*'           ; x y -> z
 
         ; second arg must be int64
         _ verify_int64
@@ -308,7 +308,7 @@ code int64_multiply, 'int64*'           ; x y -- z
         _over
         _ object_raw_typecode
         mov     rax, rbx
-        poprbx                          ; -- x y
+        _drop                           ; -> x y
 
         cmp     rax, TYPECODE_FIXNUM
         je      fixnum_int64_multiply
@@ -329,7 +329,7 @@ code int64_multiply, 'int64*'           ; x y -- z
 endcode
 
 ; ### fixnum-int64/i
-code fixnum_int64_divide_truncate, 'fixnum-int64/i'     ; x y -- z
+code fixnum_int64_divide_truncate, 'fixnum-int64/i'     ; x y -> z
         _ check_int64
         _swap
         _check_fixnum
@@ -339,7 +339,7 @@ code fixnum_int64_divide_truncate, 'fixnum-int64/i'     ; x y -- z
 endcode
 
 ; ### int64-int64/i
-code int64_int64_divide_truncate, 'int64-int64/i'       ; x y -- z
+code int64_int64_divide_truncate, 'int64-int64/i'       ; x y -> z
         _ check_int64
         _swap
         _ check_int64
@@ -349,7 +349,7 @@ code int64_int64_divide_truncate, 'int64-int64/i'       ; x y -- z
 endcode
 
 ; ### int64/i
-code int64_divide_truncate, 'int64/i'   ; x y -- z
+code int64_divide_truncate, 'int64/i'   ; x y -> z
 
         ; second arg must be int64
         _ verify_int64
@@ -358,7 +358,7 @@ code int64_divide_truncate, 'int64/i'   ; x y -- z
         _over
         _ object_raw_typecode
         mov     rax, rbx
-        poprbx                          ; -- x y
+        _drop                           ; -> x y
 
         cmp     rax, TYPECODE_FIXNUM
         je      fixnum_int64_divide_truncate
@@ -379,7 +379,7 @@ code int64_divide_truncate, 'int64/i'   ; x y -- z
 endcode
 
 ; ### fixnum-int64/f
-code fixnum_int64_divide_float, 'fixnum-int64/f'        ; x y -- z
+code fixnum_int64_divide_float, 'fixnum-int64/f'        ; x y -> z
         _ int64_to_float
         _swap
         _ fixnum_to_float
@@ -389,7 +389,7 @@ code fixnum_int64_divide_float, 'fixnum-int64/f'        ; x y -- z
 endcode
 
 ; ### int64-int64/f
-code int64_int64_divide_float, 'int64-int64/f'  ; x y -- z
+code int64_int64_divide_float, 'int64-int64/f'  ; x y -> z
         _ int64_to_float
         _swap
         _ int64_to_float
@@ -399,7 +399,7 @@ code int64_int64_divide_float, 'int64-int64/f'  ; x y -- z
 endcode
 
 ; ### int64/f
-code int64_divide_float, 'int64/f'      ; x y -- z
+code int64_divide_float, 'int64/f'      ; x y -> z
 
         ; second arg must be int64
         _ verify_int64
@@ -408,7 +408,7 @@ code int64_divide_float, 'int64/f'      ; x y -- z
         _over
         _ object_raw_typecode
         mov     rax, rbx
-        poprbx
+        _drop
 
         cmp     rax, TYPECODE_FIXNUM
         je      fixnum_int64_divide_float
@@ -429,14 +429,14 @@ code int64_divide_float, 'int64/f'      ; x y -- z
 endcode
 
 ; ### fixnum>int64
-code fixnum_to_int64, 'fixnum>int64'    ; fixnum -- int64
+code fixnum_to_int64, 'fixnum>int64'    ; fixnum -> int64
         _check_fixnum
         _ new_int64
         next
 endcode
 
 ; ### int64-negate
-code int64_negate, 'int64-negate'       ; n -- -n
+code int64_negate, 'int64-negate'       ; n -> -n
         _ check_int64
         mov     rax, MOST_POSITIVE_FIXNUM + 1
         cmp     rbx, rax
@@ -458,7 +458,7 @@ code int64_negate, 'int64-negate'       ; n -- -n
 endcode
 
 ; ### fixnum-int64-mod
-code fixnum_int64_mod, 'fixnum-int64-mod'       ; x y -- z
+code fixnum_int64_mod, 'fixnum-int64-mod'       ; x y -> z
         _ check_int64
         _swap
         _check_fixnum
@@ -473,7 +473,7 @@ code fixnum_int64_mod, 'fixnum-int64-mod'       ; x y -- z
 endcode
 
 ; ### int64-int64-mod
-code int64_int64_mod, 'int64-int64-mod' ; x y -- z
+code int64_int64_mod, 'int64-int64-mod' ; x y -> z
         _ check_int64
         _swap
         _ check_int64
@@ -488,7 +488,7 @@ code int64_int64_mod, 'int64-int64-mod' ; x y -- z
 endcode
 
 ; ### int64-mod
-code int64_mod, 'int64-mod'             ; x y -- z
+code int64_mod, 'int64-mod'             ; x y -> z
         _ verify_int64
 
         _over_fixnum?_if .1
@@ -510,7 +510,7 @@ code int64_mod, 'int64-mod'             ; x y -- z
 endcode
 
 ; ### int64-abs
-code int64_abs, 'int64-abs'             ; x -- y
+code int64_abs, 'int64-abs'             ; x -> y
         _ check_int64
         mov     rax, MOST_NEGATIVE_INT64
         cmp     rbx, rax
@@ -528,20 +528,20 @@ code int64_abs, 'int64-abs'             ; x -- y
 endcode
 
 ; ### raw_int64_to_hex
-code raw_int64_to_hex, 'raw_int64_to_hex', SYMBOL_INTERNAL      ; raw-int64 -- string
+code raw_int64_to_hex, 'raw_int64_to_hex', SYMBOL_INTERNAL ; raw-int64 -> string
 
         push    r12
         push    this_register
 
         _lit 32
-        _ new_sbuf_untagged             ; -- raw-int64 handle
-        _handle_to_object_unsafe        ; -- raw-int64 sbuf
+        _ new_sbuf_untagged             ; -> raw-int64 handle
+        _handle_to_object_unsafe        ; -> raw-int64 sbuf
 
         mov     this_register, rbx
-        poprbx                          ; -- raw-int64
+        _drop                           ; -> raw-int64
 
         mov     r12, rbx                ; raw int64 in r12
-        poprbx                          ; --
+        _drop                           ; ->
 
         align   DEFAULT_CODE_ALIGNMENT
 .1:
@@ -551,7 +551,7 @@ code raw_int64_to_hex, 'raw_int64_to_hex', SYMBOL_INTERNAL      ; raw-int64 -- s
         mov     rcx, hexchars
         mov     dl, [rcx + rdx]
 
-        pushrbx
+        _dup
         movzx   ebx, dl
         _ this_sbuf_push_raw_unsafe
 
@@ -570,14 +570,14 @@ code raw_int64_to_hex, 'raw_int64_to_hex', SYMBOL_INTERNAL      ; raw-int64 -- s
 endcode
 
 ; ### int64>string
-code int64_to_string, 'int64>string'    ; int64 -- string
+code int64_to_string, 'int64>string'    ; int64 -> string
         _ check_int64
         _ raw_int64_to_decimal
         next
 endcode
 
 ; ### int64>hex
-code int64_to_hex, 'int64>hex'          ; int64 -- string
+code int64_to_hex, 'int64>hex'          ; int64 -> string
         _ check_int64
         _ raw_int64_to_hex
         next
