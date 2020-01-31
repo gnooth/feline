@@ -810,30 +810,6 @@ test: local-test-5
 
 local-test-5
 
-test: if-test
-    { 42 } [ true [ 42 ] [ 17 ] if ] unit-test
-    { 1 2 3 4 42 } [ 1 2 3 4 true [ 42 ] [ 17 ] if ] unit-test
-
-    { 17 } [ nil [ 42 ] [ 17 ] if ] unit-test
-    { 1 2 3 4 17 } [ 1 2 3 4 nil [ 42 ] [ 17 ] if ] unit-test
-
-    { 42 } [ 0 [ 42 ] [ 17 ] if ] unit-test
-    { 1 2 3 4 42 } [ 1 2 3 4 0 [ 42 ] [ 17 ] if ] unit-test ;
-
-if-test
-
-test: if*-test-1
-    clear
-    t [ 42 ] [ 17 ] if* get-datastack { t 42 } sequence= assert-true
-    clear
-    f [ 42 ] [ 17 ] if* get-datastack { 17 } sequence= assert-true
-    clear
-    0 [ 42 ] [ 17 ] if* get-datastack { 0 42 } sequence= assert-true
-    clear
-;
-
-if*-test-1
-
 test: symbol?-test-1
     ' dup symbol? assert-true
     ' assert-true symbol? assert-true
@@ -4489,8 +4465,7 @@ test: when-test
     { 1 2 3 14 } [ 1 2 3 "test" [ 14 ] when ] unit-test
     { 1 2 3 } [ 1 2 3 nil [ 14 ] when ] unit-test
     { 1 2 14 } [ 1 2 3 odd? [ 14 ] when ] unit-test
-    { 1 2 } [ 1 2 3 even? [ 14 ] when ] unit-test
-;
+    { 1 2 } [ 1 2 3 even? [ 14 ] when ] unit-test ;
 
 when-test
 
@@ -4499,9 +4474,32 @@ test: when*-test
     { 1 2 3 90 } [ 1 2 3 89 [ 1+ ] when* ] unit-test
     { 89 14 } [ 89 [ 14 ] when* ] unit-test
     { true 14 } [ 89 odd? [ 14 ] when* ] unit-test
-    { } [ 89 even? [ 14 ] when* ] unit-test
-;
+    { } [ 89 even? [ 14 ] when* ] unit-test ;
 
 when*-test
+
+test: if-test
+    { 42 } [ true [ 42 ] [ 17 ] if ] unit-test
+    { 1 2 3 4 42 } [ 1 2 3 4 true [ 42 ] [ 17 ] if ] unit-test
+
+    { 17 } [ nil [ 42 ] [ 17 ] if ] unit-test
+    { 1 2 3 4 17 } [ 1 2 3 4 nil [ 42 ] [ 17 ] if ] unit-test
+
+    { 42 } [ 0 [ 42 ] [ 17 ] if ] unit-test
+    { 1 2 3 4 42 } [ 1 2 3 4 0 [ 42 ] [ 17 ] if ] unit-test ;
+
+if-test
+
+test: if*-test
+    { t 42 } [ true [ 42 ] [ 17 ] if* ] unit-test
+    { 1 2 3 4 t 42 } [ 1 2 3 4 true [ 42 ] [ 17 ] if* ] unit-test
+
+    { 17 } [ nil [ 42 ] [ 17 ] if* ] unit-test
+    { 1 2 3 4 17 } [ 1 2 3 4 nil [ 42 ] [ 17 ] if* ] unit-test
+
+    { 0 42 } [ 0 [ 42 ] [ 17 ] if* ] unit-test
+    { 1 2 3 4 0 42 } [ 1 2 3 4 0 [ 42 ] [ 17 ] if* ] unit-test ;
+
+if*-test
 
 ?nl "Reached end of test.feline" write-string
