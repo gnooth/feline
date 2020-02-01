@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -440,7 +440,7 @@ code symbol_set_def, 'symbol-set-def'   ; definition symbol --
 endcode
 
 ; ### symbol-props
-code symbol_props, 'symbol-props'       ; symbol -> hashtable/f
+code symbol_props, 'symbol-props'       ; symbol -> hashtable/nil
         _ check_symbol
         _symbol_props
         next
@@ -449,12 +449,12 @@ endcode
 ; ### symbol-prop
 code symbol_prop, 'symbol-prop'         ; key symbol -> value
         _ symbol_props
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         je      .no_props
         _ hashtable_at
         next
 .no_props:
-        ; rbx = f
+        ; rbx = NIL
         _nip
         next
 endcode
