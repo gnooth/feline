@@ -54,7 +54,7 @@ file __FILE__
 %endmacro
 
 ; ### quotation?
-code quotation?, 'quotation?'                 ; x -- ?
+code quotation?, 'quotation?'                   ; x -- ?
         _ object_raw_typecode
         _eq? TYPECODE_QUOTATION
         next
@@ -74,7 +74,7 @@ code verify_unboxed_quotation, 'verify-unboxed-quotation' ; quotation -> quotati
         _dup
         _object_raw_typecode
         cmp     rbx, TYPECODE_QUOTATION
-        poprbx
+        _drop
         jne .2
         _return
 .2:
@@ -123,7 +123,7 @@ code verify_quotation, 'verify-quotation' ; quotation -> quotation
 endcode
 
 ; ### array>quotation
-code array_to_quotation, 'array>quotation'      ; array -- quotation
+code array_to_quotation, 'array>quotation'      ; array -> quotation
 ; 4 cells: object header, array, raw code address, raw code size
 
         _lit 4
@@ -131,7 +131,7 @@ code array_to_quotation, 'array>quotation'      ; array -- quotation
 
         push    this_register
         mov     this_register, rbx
-        poprbx
+        _drop
 
         _this_object_set_raw_typecode TYPECODE_QUOTATION
 
@@ -145,7 +145,7 @@ code array_to_quotation, 'array>quotation'      ; array -- quotation
         _zero
         _this_quotation_set_raw_code_size
 
-        pushrbx
+        _dup
         mov     rbx, this_register      ; -- quotation
 
         ; return handle
@@ -345,20 +345,16 @@ code compose, 'compose'                 ; quot1 quot2 -> composed
 endcode
 
 ; ### callable?
-code callable?, 'callable?'             ; object -- ?
+code callable?, 'callable?'             ; object -> ?
         _ object_raw_typecode
-
         cmp     ebx, TYPECODE_QUOTATION
         je      .1
-
         cmp     ebx, TYPECODE_SYMBOL
         je      .1
-
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
-
 .1:
-        mov     ebx, t_value
+        mov     ebx, TRUE
         next
 endcode
 
