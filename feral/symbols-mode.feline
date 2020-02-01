@@ -50,10 +50,7 @@ global instance
     line-number-suffix s substring-start :> end
     end nil? ?exit
 
-    current-buffer parent>> :> parent
-    // the parent buffer may have been killed
-    parent listed? [ parent buffer-list vector-push ] unless
-    parent set-current-buffer
+    editor:switch-to-parent-buffer
 
     0 end s substring string-trim string>number :> linenumber
     linenumber editor:gotoline-internal
