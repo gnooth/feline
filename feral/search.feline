@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -135,7 +135,7 @@ private
 
     true !> result
 
-    offset 0 > [
+    offset 0> [
         offset 1- line text>> string-nth identifier-char? [
             nil result!
         ] when
