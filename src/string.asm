@@ -807,25 +807,27 @@ code substring_start, 'substring-start'         ; pattern string -> index/nil
 
         ; return right away if pattern is longer than string
         mov     rax, [rbx + STRING_RAW_LENGTH_OFFSET] ; pattern raw length in rax
-        cmp     [this_register + STRING_RAW_LENGTH_OFFSET], rax
+        mov     rdx, [this_register + STRING_RAW_LENGTH_OFFSET] ; string raw length in rdx
+        cmp     rdx, rax
         jge     .1
 
         ; -> ^pattern
         mov     ebx, NIL
         pop     this_register
-        _return
+        next
 
 .1:
         ; -> ^pattern
+        ; rax: pattern raw length
+        ; rdx: string raw length
+        lea     rbx, [rbx + STRING_RAW_DATA_OFFSET]     ; -> pattern-raw-data-address
         _dup
-        _string_raw_data_address        ; -> pattern-raw-data-address
-        _swap
-        _string_raw_length              ; -> pattern-raw-data-address pattern-raw-length
+        mov     rbx, rax                ; -> pattern-raw-data-address pattern-raw-length
 
-        _this_string_raw_length
-        _over
-        _minus
-        _oneplus
+        sub     rdx, rax
+        add     rdx, 1
+        _dup
+        mov     rbx, rdx
 
         _register_do_times .2
 
