@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -202,9 +202,9 @@ code vector_delete_all, 'vector-delete-all' ; vector -> void
 endcode
 
 ; ### <vector>
-code new_vector, '<vector>'             ; capacity -- handle
+code new_vector, '<vector>'             ; capacity -> handle
 
-        _check_index                    ; -- raw-capacity
+        _check_index                    ; -> raw-capacity
 
 new_vector_untagged:
 
@@ -212,25 +212,25 @@ new_vector_untagged:
         _ raw_allocate_cells
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -- raw-capacity
+        _drop                           ; -> raw-capacity
         _this_object_set_raw_typecode TYPECODE_VECTOR
         _this_object_set_flags OBJECT_ALLOCATED_BIT
         _dup
-        _ raw_allocate_cells            ; -- raw-capacity raw-data-address
+        _ raw_allocate_cells            ; -> raw-capacity raw-data-address
         _this_vector_set_raw_data_address
-        _this_vector_set_raw_capacity   ; --
+        _this_vector_set_raw_capacity   ; ->
 
-        ; initialize all allocated cells to f
+        ; initialize all allocated cells to nil
         mov     arg0_register, [this_register + VECTOR_RAW_DATA_ADDRESS_OFFSET]
-        mov     arg1_register, f_value
+        mov     arg1_register, NIL
         mov     arg2_register, [this_register + VECTOR_RAW_CAPACITY_OFFSET]
         _ fill_cells
 
         pushrbx
-        mov     rbx, this_register      ; -- vector
+        mov     rbx, this_register      ; -> ^vector
 
         ; return handle
-        _ new_handle                    ; -- handle
+        _ new_handle                    ; -> handle
 
         pop     this_register
         next
@@ -394,7 +394,7 @@ code vector_?last, 'vector-?last'       ; vector -> element/f
         mov     rbx, [rbx + BYTES_PER_CELL * rax]
         next
 .empty:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
