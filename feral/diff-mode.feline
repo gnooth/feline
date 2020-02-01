@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ global instance
         ] if
     ] while
 
-    found null? ?exit
+    found nil? ?exit
 
     found text>> :> s
     '+' s string-find-char 1+ s string-tail :> s2
@@ -42,10 +42,12 @@ global instance
 
     s3 string>number count +
     1- 0 max                            // convert to zero-based line number
-    :> line-number
+    :> linenumber
 
-    current-buffer parent>> set-current-buffer
-    line-number editor:gotoline-internal
+    // REVIEW parent buffer may have been killed
+    editor:switch-to-parent-buffer
+
+    linenumber editor:gotoline-internal
     true repaint?! ;
 
 global diff-mode-local-map
@@ -64,10 +66,10 @@ feral-config:winui? feral-config:gtkui? or #if
 
 : diff-mode-format-line ( s ) // string -> segments
 
-    s length 0 eq? [ s trivial-format-line ] return-if
+    s length 0? [ s trivial-format-line ] ?return
 
-    "+++" s head? [ s trivial-format-line ] return-if
-    "---" s head? [ s trivial-format-line ] return-if
+    "+++" s head? [ s trivial-format-line ] ?return
+    "---" s head? [ s trivial-format-line ] ?return
 
     s string-first-char {
         { '+' [ color-insertion ] }
