@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -24,8 +24,7 @@ code cmove, 'cmove', SYMBOL_INTERNAL    ; c-addr1 c-addr2 u --
         mov     rcx, rbx                        ; count
         mov     rdi, [rbp]                      ; destination
         mov     rsi, [rbp + BYTES_PER_CELL]     ; source
-        mov     rbx, [rbp + BYTES_PER_CELL * 2]
-        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+        _3drop
         jrcxz   .1
         rep     movsb
 .1:
@@ -37,16 +36,15 @@ code cmove, 'cmove', SYMBOL_INTERNAL    ; c-addr1 c-addr2 u --
 endcode
 
 ; ### cmove>
-code cmoveup, 'cmove>', SYMBOL_INTERNAL ; c-addr1 c-addr2 u --
+code cmoveup, 'cmove>', SYMBOL_INTERNAL ; source destination count -> void
 %ifdef WIN64
         push    rsi
         push    rdi
 %endif
-        mov     rcx, rbx                        ; count
+        mov     rcx, rbx                        ; count (in bytes)
         mov     rdi, [rbp]                      ; destination
         mov     rsi, [rbp + BYTES_PER_CELL]     ; source
-        mov     rbx, [rbp + BYTES_PER_CELL * 2]
-        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+        _3drop
         jrcxz   .1
         dec     rcx
         add     rdi, rcx
