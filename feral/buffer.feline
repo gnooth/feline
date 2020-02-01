@@ -1,4 +1,4 @@
-//  Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+//  Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -41,24 +41,19 @@ in: editor
 
     dot-line top-line! ;
 
-: create-buffer/2                       // filename linenumber -> void
-    verify-index  :> linenumber
+: create-buffer-for-file                // filename -> buffer
+    1 ?enough
     verify-string :> filename
 
     make-buffer :> buf
 
     filename buf filename<<
-
     filename file-name-directory buf directory<<
-
     filename file-name-nondirectory buf name<<
-
     filename file-name-extension [ modes at buf mode<< ] when*
 
     filename file-contents :> contents
-
     contents string-lines verify-vector :> lines
-
     contents empty? [
         "" lines vector-push
     ] [
@@ -79,8 +74,15 @@ in: editor
     buf first-line>> 0 make-position buf dot<<
     buf first-line>> buf top-line<<
 
-    buf buffer-list vector-push
+    buf ;
 
+: create-buffer/2                       // filename linenumber -> void
+    verify-index  :> linenumber
+    verify-string :> filename
+
+    filename create-buffer-for-file :> buf
+
+    buf buffer-list vector-push
     buf set-current-buffer
 
     filename linenumber add-recent-file
@@ -184,3 +186,23 @@ in: editor
             kill-current-buffer
         ] if
     ] when ;
+
+: switch-to-parent-buffer
+    current-buffer parent>> :> parent
+    parent buffer? assert
+    local buf
+    {
+        { [ parent listed? ] [ parent set-current-buffer ] }
+        {
+            // parent buffer is no longer in buffer list
+            // there might be a different buffer for the same file
+            [ parent filename>> find-buffer-from-file-name buf! buf ]
+            [
+                buf listed? assert
+                // update current buffer's parent slot
+                buf current-buffer parent<<
+                buf set-current-buffer
+            ]
+        }
+        [ parent filename>> 1 editor:create-buffer/2 ]
+    } cond ;
