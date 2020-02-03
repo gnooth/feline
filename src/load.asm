@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 
 file __FILE__
 
-asm_global reload_file_, nil_value
+asm_global reload_file_, NIL
 
 ; ### reload-file
 code reload_file, 'reload-file'
@@ -28,7 +28,7 @@ endcode
 code set_reload_file, 'set-reload-file' ; string -> void
         _ verify_string
         mov     rax, [reload_file_]
-        cmp     rax, nil_value
+        cmp     rax, NIL
         jne     .1
         ; first time
         _lit reload_file_
@@ -52,7 +52,7 @@ code reload, 'reload', SYMBOL_IMMEDIATE
         _then .1
 
         _ parse_token                   ; -> string/nil
-        cmp     rbx, nil_value
+        cmp     rbx, NIL
         jz      .2
 
         ; -> string
@@ -65,7 +65,7 @@ code reload, 'reload', SYMBOL_IMMEDIATE
 .2:
         ; -> nil
         mov     rbx, [reload_file_]
-        cmp     rbx, nil_value
+        cmp     rbx, NIL
         je      .3
         _ load
         next
