@@ -541,11 +541,14 @@ code each_index, 'each-index'           ; seq callable ->
         ; protect callable from gc
         push    rbx
 
+        ; protect sequence from gc
+        push    qword [rbp]
+
         _ callable_raw_code_address     ; -> seq code-address
 
         push    r12
         mov     r12, rbx                ; code address in r12
-        poprbx                          ; -> seq
+        _drop                           ; -> seq
         push    this_register
         mov     this_register, rbx      ; handle to seq in this_register
         _ length
@@ -562,6 +565,9 @@ code each_index, 'each-index'           ; seq callable ->
         _loop .1
         pop     this_register
         pop     r12
+
+        ; drop sequence
+        pop     rax
 
         ; drop callable
         pop     rax
