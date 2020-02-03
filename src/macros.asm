@@ -155,24 +155,24 @@
 %endmacro
 
 %macro  _tag_boolean 0
-; converts 0 in rbx to f, anything else to t
-        mov     eax, f_value
+; converts 0 in rbx to nil, anything else to true
+        mov     eax, NIL
         test    rbx, rbx
-        mov     ebx, t_value
+        mov     ebx, TRUE
         cmovz   ebx, eax
 %endmacro
 
 %macro  _as_boolean 0
-; converts anything in rbx but f to t
-        mov     eax, t_value
-        cmp     rbx, f_value
+; converts anything in rbx but nil to true
+        mov     eax, TRUE
+        cmp     rbx, NIL
         cmovne  rbx, rax
 %endmacro
 
 %macro  _char? 0                        ; x -> ?
         cmp     bl, CHAR_TAG
-        mov     eax, f_value
-        mov     ebx, t_value
+        mov     eax, NIL
+        mov     ebx, TRUE
         cmovne  ebx, eax
 %endmacro
 
@@ -385,7 +385,7 @@
         dq      len                     ; length
 
         ; slot 2
-        dq      f_value                 ; hashcode
+        dq      NIL                     ; hashcode
 
         db      %2                      ; string
         db      0                       ; null byte at end
@@ -437,7 +437,7 @@ section .data
 %define symbol_link     0
 
 ; static symbol
-%macro  symbol 2-6 0, 0, 0, f_value     ; label, name, code address, code size, flags, value
+%macro  symbol 2-6 0, 0, 0, NIL         ; label, name, code address, code size, flags, value
 
         string  %%name, %2
 
@@ -453,9 +453,9 @@ section .data
 
         dq      %%name                  ; symbol name
         dq      FELINE_VOCAB_NAME       ; vocab name
-        dq      f_value                 ; hashcode (link field)
-        dq      f_value                 ; def
-        dq      f_value                 ; props
+        dq      NIL                     ; hashcode (link field)
+        dq      NIL                     ; def
+        dq      NIL                     ; props
 
         global  %1_symbol_value
 
@@ -581,7 +581,7 @@ section .data
 %endmacro
 
 %macro  feline_global 2                 ; label, name
-        feline_global %1, %2, f_value
+        feline_global %1, %2, NIL
 %endmacro
 
 %macro  _to_global 1                    ; label
@@ -634,7 +634,7 @@ section .data
         db      0                       ; not used
         dd      0                       ; not used
         dq      len                     ; length
-        dq      f_value                 ; hashcode
+        dq      NIL                     ; hashcode
         db      %1                      ; string
         db      0                       ; null byte at end
         section .text
@@ -682,7 +682,7 @@ section .data
 %macro  _tagged_if 1
         %push if
         section .text
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         mov     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
         jz      %1_ifnot
@@ -691,7 +691,7 @@ section .data
 %macro  _tagged_if_not 1
         %push if
         section .text
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         mov     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
         jnz     %1_ifnot
@@ -801,7 +801,7 @@ section .text
 %endmacro
 
 %macro  _tagged_while 1
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         mov     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
         je      %1_end
@@ -829,9 +829,9 @@ section .text
 %endmacro
 
 %macro  _fixnum_zero? 0
-        mov     eax, t_value
+        mov     eax, TRUE
         cmp     rbx, tagged_zero
-        mov     ebx, f_value
+        mov     ebx, NIL
         cmovz   ebx, eax
 %endmacro
 
@@ -862,7 +862,7 @@ section .text
         db      0                       ; not used
         dd      0                       ; not used
 
-        dq      f_value                 ; array
+        dq      NIL                     ; array
         dq      %1_code                 ; code address
 
         section .text
@@ -877,17 +877,17 @@ section .text
 %endmacro
 
 %macro  _eq? 0                          ; obj1 obj2 -- ?
-        mov     eax, t_value
+        mov     eax, TRUE
         cmp     rbx, [rbp]
-        mov     ebx, f_value
+        mov     ebx, NIL
         cmove   ebx, eax
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
 %macro  _eq? 1                          ; obj -- ?
-        mov     eax, t_value
+        mov     eax, TRUE
         cmp     rbx, %1
-        mov     ebx, f_value
+        mov     ebx, NIL
         cmove   ebx, eax
 %endmacro
 
