@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,11 +28,11 @@
 
 #include "feline.h"
 
-extern void cold();
-extern void reset();
+extern void cold ();
+extern void reset ();
 
 #ifdef WIN64
-LONG CALLBACK windows_exception_handler(EXCEPTION_POINTERS *exception_pointers)
+LONG CALLBACK windows_exception_handler (EXCEPTION_POINTERS *exception_pointers)
 {
   EXCEPTION_RECORD *exception_record = exception_pointers->ExceptionRecord;
   saved_exception_code_data = exception_record->ExceptionCode;
@@ -48,8 +48,8 @@ LONG CALLBACK windows_exception_handler(EXCEPTION_POINTERS *exception_pointers)
   saved_rdi_data = (cell) context->Rdi;
   saved_rbp_data = (cell) context->Rbp;
   saved_rsp_data = (cell) context->Rsp;
-  saved_r8_data =  (cell) context->R8;
-  saved_r9_data =  (cell) context->R9;
+  saved_r8_data  = (cell) context->R8;
+  saved_r9_data  = (cell) context->R9;
   saved_r10_data = (cell) context->R10;
   saved_r11_data = (cell) context->R11;
   saved_r12_data = (cell) context->R12;
@@ -61,8 +61,8 @@ LONG CALLBACK windows_exception_handler(EXCEPTION_POINTERS *exception_pointers)
 
   c_save_backtrace(context->Rip, context->Rsp);
 
-  extern void handle_signal();
-  handle_signal();
+  extern void handle_signal ();
+  handle_signal ();
 
   // not reached
   return EXCEPTION_CONTINUE_SEARCH;
@@ -70,7 +70,7 @@ LONG CALLBACK windows_exception_handler(EXCEPTION_POINTERS *exception_pointers)
 #endif
 
 #ifndef WIN64
-static void signal_handler(int sig, siginfo_t *si, void * context)
+static void signal_handler (int sig, siginfo_t *si, void * context)
 {
   saved_signal_data = sig;
   saved_signal_address_data = (cell) si->si_addr;
@@ -96,14 +96,14 @@ static void signal_handler(int sig, siginfo_t *si, void * context)
   saved_rip_data = (cell) uc->uc_mcontext.gregs[REG_RIP];
   saved_efl_data = (cell) uc->uc_mcontext.gregs[REG_EFL];
 
-  c_save_backtrace(saved_rip_data, saved_rsp_data);
+  c_save_backtrace (saved_rip_data, saved_rsp_data);
 
-  extern void handle_signal();
+  extern void handle_signal ();
   uc->uc_mcontext.gregs[REG_RIP] = (cell) handle_signal;
 }
 #endif
 
-static void args(int argc, char **argv)
+static void args (int argc, char **argv)
 {
   extern cell main_argc;
   extern cell main_argv;
@@ -111,10 +111,10 @@ static void args(int argc, char **argv)
   main_argv = (cell) argv;
 }
 
-static void initialize_datastack()
+static void initialize_datastack (void)
 {
   extern cell primordial_sp0_;
-  primordial_sp0_ = os_thread_initialize_datastack();
+  primordial_sp0_ = os_thread_initialize_datastack ();
 }
 
 static void initialize_dynamic_code_space (void)
@@ -171,7 +171,7 @@ static void initialize_dynamic_code_space (void)
   code_space_limit_ = code_space_ + DYNAMIC_CODE_SPACE_RESERVED_SIZE;
 }
 
-static void reserve_handle_space()
+static void reserve_handle_space (void)
 {
   extern cell handle_space_;
 
@@ -200,7 +200,7 @@ DWORD tls_index;
 pthread_key_t tls_key;
 #endif
 
-static void initialize_threads()
+static void initialize_threads (void)
 {
 #ifdef WIN64
   tls_index = TlsAlloc();
@@ -213,37 +213,37 @@ static void initialize_threads()
 #endif
 }
 
-int main(int argc, char **argv, char **env)
+int main (int argc, char **argv, char **env)
 {
   start_time_raw_nano_count_ = os_nano_count();
 
   args(argc, argv);
 
-  prep_terminal();
+  prep_terminal ();
 
-  initialize_dynamic_code_space();
+  initialize_dynamic_code_space ();
 
-  reserve_handle_space();
+  reserve_handle_space ();
 
-  initialize_datastack();
+  initialize_datastack ();
 
-  initialize_threads();
+  initialize_threads ();
 
 #ifdef WIN64
-  AddVectoredExceptionHandler(1, windows_exception_handler);
+  AddVectoredExceptionHandler (1, windows_exception_handler);
 #else
   struct sigaction sa;
   sa.sa_flags = SA_SIGINFO;
-  sigemptyset(&sa.sa_mask);
+  sigemptyset (&sa.sa_mask);
 
   sa.sa_sigaction = signal_handler;
-  sigaction(SIGSEGV, &sa, NULL);
-  sigaction(SIGABRT, &sa, NULL);
-  sigaction(SIGFPE,  &sa, NULL);
-  sigaction(SIGTRAP, &sa, NULL);
+  sigaction (SIGSEGV, &sa, NULL);
+  sigaction (SIGABRT, &sa, NULL);
+  sigaction (SIGFPE,  &sa, NULL);
+  sigaction (SIGTRAP, &sa, NULL);
 #endif
 
-  cold();
+  cold ();
 
   return 0;
 }
