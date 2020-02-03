@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -52,8 +52,8 @@ endcode
 ; ### throw
 code throw, 'throw'                     ; error ->
 
-        cmp     rbx, f_value
-        jnz     .error
+        cmp     rbx, NIL
+        jne     .error
         _drop
         next
 
@@ -62,7 +62,7 @@ code throw, 'throw'                     ; error ->
         _ thread_catchstack
         _ vector_?pop
 
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         je      .no_catch
 
         ; -> saved-raw-rp

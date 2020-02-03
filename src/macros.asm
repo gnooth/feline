@@ -129,8 +129,6 @@
 %define f_value BOOLEAN_TAG
 %define t_value BOOLEAN_TAG + (1 << LOWTAG_BITS)
 
-%define nil_value BOOLEAN_TAG
-
 %define NIL     BOOLEAN_TAG
 %define TRUE    BOOLEAN_TAG + (1 << LOWTAG_BITS)
 

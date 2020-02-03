@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -112,10 +112,10 @@ code sbuf?, 'sbuf?'                     ; object -> ?
         jz      .no
         cmp     word [rbx], TYPECODE_SBUF
         jne     .no
-        mov     ebx, t_value
+        mov     ebx, TRUE
         next
 .no:
-        mov     ebx, nil_value
+        mov     ebx, NIL
         next
 endcode
 
@@ -308,20 +308,20 @@ code sbuf_nth, 'sbuf-nth'               ; index sbuf -- char
 endcode
 
 ; ### sbuf-?last
-code sbuf_?last, 'sbuf-?last'           ; sbuf -- char/f
+code sbuf_?last, 'sbuf-?last'           ; sbuf -> char/nil
         _dup
         _ sbuf_length
         _untag_fixnum
         _oneminus
         _dup
         _zge
-        _if .1                          ; -- sbuf untagged-fixnum
+        _if .1                          ; -> sbuf untagged-fixnum
         _tag_fixnum
         _swap
         _ sbuf_nth_unsafe
         _else .1
         _2drop
-        _f
+        _nil
         _then .1
         next
 endcode

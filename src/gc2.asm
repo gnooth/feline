@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -885,7 +885,7 @@ code gc2_process_work_list, 'gc2_process_work_list'
 
         _gc2_work_list                  ; -> ^vector
         _ vector_?pop_internal          ; -> ^object/nil
-        cmp     rbx, nil_value
+        cmp     rbx, NIL
         je      drop                    ; normal exit
 
         ; -> ^object
