@@ -316,11 +316,21 @@ code when_star, 'when*'                 ; x quotation -> ...
 
         cmp     qword [rbp], NIL
         je      twodrop
+
         ; x is not nil
+
+        ; protect callable from gc
+        push    rbx
+
         _ callable_raw_code_address
         mov     rax, rbx
         _drop
-        jmp     rax
+        call    rax
+
+        ; drop callable
+        pop     rax
+
+        next
 endcode
 
 ; ### unless
