@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -152,22 +152,22 @@ code hashtable?, 'hashtable?'           ; x -- ?
 endcode
 
 ; ### check_hashtable
-code check_hashtable, 'check_hashtable'         ; handle -- hashtable
-        _dup
+code check_hashtable, 'check_hashtable' ; handle -> ^hashtable
         cmp     bl, HANDLE_TAG
-        jne     .error
+        jne     .error2
+        mov     rdx, rbx                ; copy argument in case there is an error
         _handle_to_object_unsafe
+%ifdef DEBUG
         test    rbx, rbx
-        jz      .error
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_HASHTABLE
-        jne     .error
-        _nip
+        jz      error_empty_handle
+%endif
+        cmp     word [rbx], TYPECODE_HASHTABLE
+        jne     .error1
         next
-.error:
-        _drop
-        _ error_not_hashtable
-        next
+.error1:
+        mov     rbx, rdx                ; restore original argument
+.error2:
+        jmp     error_not_hashtable
 endcode
 
 ; ### verify-hashtable
