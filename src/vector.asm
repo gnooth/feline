@@ -182,7 +182,7 @@ code vector_set_length, 'vector-set-length' ; tagged-new-length handle --
         _dup
         _this_vector_raw_length
         _register_do_range .3
-        _f
+        _nil
         _i
         _this_vector_set_nth_unsafe
         _loop .3
@@ -438,7 +438,7 @@ code vector_set_nth, 'vector-set-nth'   ; element index vector -> void
         _dup
         _this_vector_raw_length
         _register_do_range .2
-        _f
+        _nil
         _i
         _this_vector_set_nth_unsafe
         _loop .2
@@ -776,7 +776,7 @@ subroutine vector_?pop_internal         ; ^vector -> element/nil
         mov     rbx, qword [rdx + rax * BYTES_PER_CELL]
         ret
 .1:
-        mov     ebx, nil_value
+        mov     ebx, NIL
         ret
 endsub
 
@@ -802,7 +802,7 @@ code vector_pop_star, 'vector-pop*'     ; handle --
         _this_vector_set_raw_length
 
         ; mark cell empty
-        _f
+        _nil
         _this_vector_raw_length
         _this_vector_set_nth_unsafe
 
@@ -824,14 +824,14 @@ code vector_equal?, 'vector-equal?'     ; vector1 vector2 -- ?
         _ vector?
         _tagged_if_not .1
         _3drop
-        _f
+        _nil
         _return
         _then .1
 
         _ vector?
         _tagged_if_not .2
         _2drop
-        _f
+        _nil
         _return
         _then .2
 
@@ -935,15 +935,15 @@ code vector_each, 'vector-each'         ; vector callable --
 endcode
 
 ; ### vector-all?
-code vector_all?, 'vector-all?'         ; vector callable -- ?
+code vector_all?, 'vector-all?'         ; vector callable -> ?
 
         ; protect callable from gc
         push    rbx
 
-        _ callable_raw_code_address     ; -- vector code-address
+        _ callable_raw_code_address     ; -> vector code-address
 
         _swap
-        _ check_vector                  ; -- code-address vector
+        _ check_vector                  ; -> code-address vector
 
         push    this_register
         mov     this_register, rbx
@@ -951,17 +951,17 @@ code vector_all?, 'vector-all?'         ; vector callable -- ?
         mov     r12, [rbp]              ; code address in r12
         _2drop                          ; adjust stack
 
-        _t                              ; initialize return value
+        _true                           ; initialize return value
 
         _this_vector_raw_length
         _do_times .1
         _raw_loop_index
-        _this_vector_nth_unsafe         ; -- t element
-        call    r12                     ; -- t ?
-        cmp     rbx, f_value
-        poprbx                          ; -- t
+        _this_vector_nth_unsafe         ; -> true element
+        call    r12                     ; -> true ?
+        cmp     rbx, NIL
+        _drop                           ; -> true
         jne     .2
-        mov     rbx, f_value            ; -- f
+        mov     rbx, NIL                ; -> nil
         _leave .1
 .2:
         _loop .1
@@ -1001,7 +1001,7 @@ code vector_each_index, 'vector-each-index' ; vector quotation-or-xt --
 endcode
 
 ; ### vector-find-string
-code vector_find_string, 'vector-find-string' ; string vector -- index/string ?
+code vector_find_string, 'vector-find-string' ; string vector -> index/string ?
         _ check_vector
 
         push    this_register
@@ -1010,22 +1010,22 @@ code vector_find_string, 'vector-find-string' ; string vector -- index/string ?
         _vector_raw_length
         _register_do_times .1
         _i
-        _this_vector_nth_unsafe         ; -- string element
+        _this_vector_nth_unsafe         ; -> string element
         _over
-        _ string_equal?                 ; -- string ?
+        _ string_equal?                 ; -> string ?
         _tagged_if .2
         ; found it!
-        _drop                           ; --
+        _drop                           ; ->
         _i
         _tag_fixnum
-        _t                              ; -- index t
+        _true                           ; -> index true
         _unloop
         jmp     .exit
         _then .2
-        _loop .1                        ; -- string
+        _loop .1                        ; -> string
 
         ; not found
-        _f                              ; -- string f
+        _nil                            ; -> string nil
 
 .exit:
         pop     this_register
