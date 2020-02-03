@@ -909,6 +909,9 @@ code vector_each, 'vector-each'         ; vector callable --
         ; protect callable from gc
         push    rbx
 
+        ; protect vector from gc
+        push    qword [rbp]
+
         _ callable_raw_code_address     ; -- vector code-address
 
         _swap
@@ -927,6 +930,9 @@ code vector_each, 'vector-each'         ; vector callable --
         _loop .1
         pop     r12
         pop     this_register
+
+        ; drop vector
+        pop     rax
 
         ; drop callable
         pop     rax
