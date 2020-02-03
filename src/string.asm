@@ -1285,7 +1285,11 @@ code string_equal?, 'string-equal?'     ; object1 object2 -> ?
 endcode
 
 ; ### string-lines
-code string_lines, 'string-lines'       ; string -- lines
+code string_lines, 'string-lines'       ; string -> vector
+
+        ; protect string from gc
+        push    rbx
+
         _ check_string
 
         push    r14
@@ -1293,10 +1297,10 @@ code string_lines, 'string-lines'       ; string -- lines
 
         push    this_register
         mov     this_register, rbx
-        _drop                           ; --
+        _drop                           ; ->
 
         _lit 10
-        _ new_vector_untagged           ; -- vector
+        _ new_vector_untagged           ; -> vector
 
         _zero                           ; raw index of start of first line
 
@@ -1311,14 +1315,14 @@ code string_lines, 'string-lines'       ; string -- lines
         _tagged_if .2
         ; looking at lf
         _drop
-        _raw_loop_index                 ; -- vector from to
+        _raw_loop_index                 ; -> vector from to
 
         sub     rbx, r14                ; adjust for preceding cr if necessary
         mov     r14, 0
 
-        _this_string_substring_unsafe   ; -- vector string
+        _this_string_substring_unsafe   ; -> vector string
         _over
-        _ vector_push                   ; -- vector
+        _ vector_push                   ; -> vector
 
         _raw_loop_index
         _oneplus                        ; start of next line
@@ -1336,9 +1340,9 @@ code string_lines, 'string-lines'       ; string -- lines
         _then .3
         _then .2
 
-        _loop .1                        ; -- from
+        _loop .1                        ; -> from
 
-        _this_string_raw_length         ; -- from to
+        _this_string_raw_length         ; -> from to
         _twodup
         _ult_if .4
         _this_string_substring_unsafe
@@ -1351,6 +1355,9 @@ code string_lines, 'string-lines'       ; string -- lines
         pop     this_register
 
         pop     r14
+
+        ; drop string
+        pop     rax
 
         next
 endcode
