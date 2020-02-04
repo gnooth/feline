@@ -17,15 +17,14 @@ file __FILE__
 
 ; ### dip
 code dip, 'dip'                         ; x quot -> x
-; Removes x, calls quot, restores x to top of stack after quot returns.
+; Remove x, call quot, restore x to top of stack after quot returns.
         _ callable_raw_code_address     ; code address in rbx
-        push    qword [rbp]
+        push    qword [rbp]             ; save x
         mov     rax, rbx
-        mov     rbx, [rbp + BYTES_PER_CELL]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        _2drop
         call    rax
         _dup
-        pop     rbx
+        pop     rbx                     ; restore x
         next
 endcode
 
