@@ -44,7 +44,7 @@ code twodip, '2dip'                     ; x y quot -> x y
 endcode
 
 ; ### keep
-code keep, 'keep'                       ; .. x quot -- .. x
+code keep, 'keep'                       ; .. x quot -> .. x
 ; Factor
 ; "Call a quotation with a value on the stack, restoring the value when
 ; the quotation returns."
@@ -59,7 +59,7 @@ code keep, 'keep'                       ; .. x quot -- .. x
 endcode
 
 ; ### 2keep
-code twokeep, '2keep'                   ; .. x y quot -- .. x y
+code twokeep, '2keep'                   ; .. x y quot -> .. x y
         _ callable_raw_code_address     ; code address in rbx
         mov     rax, rbx                ; code address in rax
         _drop
@@ -71,7 +71,7 @@ code twokeep, '2keep'                   ; .. x y quot -- .. x y
 endcode
 
 ; ### bi
-code bi, 'bi'                           ; x quot1 quot2 --
+code bi, 'bi'                           ; x quot1 quot2 ->
 ; Apply quot1 to x, then apply quot2 to x.
         _ callable_raw_code_address
         _tor
@@ -82,7 +82,7 @@ code bi, 'bi'                           ; x quot1 quot2 --
 endcode
 
 ; ### tri
-code tri, 'tri'                         ; x quot1 quot2 quot3 --
+code tri, 'tri'                         ; x quot1 quot2 quot3 ->
 ; Apply quot1 to x, then apply quot2 to x, and finally apply quot3 to x.
         _tor
         _tor
@@ -98,22 +98,22 @@ code tri, 'tri'                         ; x quot1 quot2 quot3 --
 endcode
 
 ; ### cleave
-code cleave, 'cleave'                   ; x seq --
+code cleave, 'cleave'                   ; x seq ->
 ; Apply each quotation in seq to x.
         push    r12
         mov     r12, [rbp]              ; x in r12
-        _nip                            ; -- seq
+        _nip                            ; -> seq
         push    this_register
         mov     this_register, rbx      ; handle to seq in this_register
         _ length
         _untag_fixnum
         _do_times .1
         _tagged_loop_index
-        _this                           ; -- tagged-index handle
-        _ nth_unsafe                    ; -- quotation
+        _this                           ; -> tagged-index handle
+        _ nth_unsafe                    ; -> quotation
         _ callable_raw_code_address
         mov     rax, rbx
-        mov     rbx, r12                ; -- x
+        mov     rbx, r12                ; -> x
         call    rax
         _loop .1
         pop     this_register
@@ -122,7 +122,7 @@ code cleave, 'cleave'                   ; x seq --
 endcode
 
 ; ### 2tri
-code twotri, '2tri'                     ; x y quot1 quot2 quot3 --
+code twotri, '2tri'                     ; x y quot1 quot2 quot3 ->
 ; Apply quot1 to x and y, then apply quot2 to x and y, and finally apply
 ; quot3 to x and y.
         _tor
@@ -139,7 +139,7 @@ code twotri, '2tri'                     ; x y quot1 quot2 quot3 --
 endcode
 
 ; ### 2bi
-code twobi, '2bi'                       ; x y quot1 quot2 --
+code twobi, '2bi'                       ; x y quot1 quot2 ->
 ; Apply quot1 to x and y, then apply quot2 to x and y.
         _ callable_raw_code_address
         _tor
@@ -215,33 +215,33 @@ endcode
 code question, '?'                      ; ? true false -> true/false
         cmp     qword [rbp + BYTES_PER_CELL], NIL
         mov     rax, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
+        _2nip
         cmovne  rbx, rax
         next
 endcode
 
 ; ### case
-code case, 'case'               ; x array --
+code case, 'case'               ; x array ->
         _ check_array
         push    this_register
         mov     this_register, rbx
-        _drop                   ; -- x
+        _drop                   ; -> x
 
         _this_array_raw_length
         _zero
         _?do .1
         _i
-        _this_array_nth_unsafe  ; -- x quotation-or-2array
+        _this_array_nth_unsafe  ; -> x quotation-or-2array
 
         _dup
         _ array?
         _tagged_if .2
 
         _dup
-        _ array_first           ; -- x array element
-        _pick                   ; -- x array element x
+        _ array_first           ; -> x array element
+        _pick                   ; -> x array element x
         _ feline_equal
-        _tagged_if .3           ; -- x array
+        _tagged_if .3           ; -> x array
         _nip
         _ array_second
         _ call_quotation
@@ -274,22 +274,22 @@ code old_cond, 'old-cond'               ; array ->
         _ check_array
         push    this_register
         mov     this_register, rbx
-        _drop                   ; --
+        _drop                   ; ->
 
         _this_array_raw_length
         _zero
         _?do .1
         _i
-        _this_array_nth_unsafe  ; -- 2array-or-quotation
+        _this_array_nth_unsafe  ; -> 2array-or-quotation
 
         _dup
         _ array?
-        _tagged_if .2           ; -- 2array
+        _tagged_if .2           ; -> 2array
 
         _duptor
-        _ array_first           ; -- quotation
+        _ array_first           ; -> quotation
         _ call_quotation
-        _tagged_if .3           ; --
+        _tagged_if .3           ; ->
         _rfrom
         _ array_second
         _ call_quotation
@@ -372,8 +372,8 @@ code short_circuit_and, '&&'            ; seq -> ?
         _untag_fixnum
         _do_times .1
         _tagged_loop_index
-        _this                           ; -- tagged-index handle
-        _ nth_unsafe                    ; -- quotation
+        _this                           ; -> tagged-index handle
+        _ nth_unsafe                    ; -> quotation
         _ call_quotation
         cmp     rbx, NIL
         mov     rax, rbx
@@ -398,8 +398,8 @@ code short_circuit_or, '||'             ; seq -> ?
         _untag_fixnum
         _do_times .1
         _tagged_loop_index
-        _this                           ; -- tagged-index handle
-        _ nth_unsafe                    ; -- quotation
+        _this                           ; -> tagged-index handle
+        _ nth_unsafe                    ; -> quotation
         _ call_quotation
         cmp     rbx, NIL
         mov     rax, rbx
