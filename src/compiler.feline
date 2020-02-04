@@ -444,6 +444,26 @@ defer compile-quotation
 
 ' compile-dip :compiler ' dip symbol-set-prop
 
+: compile-keep ( node )
+    ?nl node op>> symbol-name print
+
+    pending empty? [ node op>> compile-call-symbol ] ?return
+    pending-last-value dup wrapper? [ wrapped ] when :> last-value
+    last-value callable-code-address :> address
+    address [
+        pending-remove-last
+        flush-pending
+        0x53 emit-byte                  // push rbx
+        address compile-call-address
+        emit-dup
+        0x5b emit-byte                  // pop rbx
+    ] [
+        flush-pending
+        node op>> compile-call-symbol
+    ] if ;
+
+' compile-keep :compiler ' keep symbol-set-prop
+
 : compile-declare ( node )              // node -> void
     ?nl "declare" print
 
