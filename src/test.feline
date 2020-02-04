@@ -458,22 +458,6 @@ test: min-length-test-1
 
 min-length-test-1
 
-test: dip-test-1
-    clear
-    87 42 [ 3 * ] dip get-datastack vector{ 261 42 } sequence= assert-true
-    clear
-;
-
-dip-test-1
-
-test: 2dip-test-1
-    clear
-    42 17 89 [ 1 + ] 2dip get-datastack { 43 17 89 } sequence= assert-true
-    clear
-;
-
-2dip-test-1
-
 test: each-index-test-1
     clear
     { "a" "b" "c" } [ 2array ] each-index get-datastack
@@ -4501,5 +4485,15 @@ test: if*-test
     { 1 2 3 4 0 42 } [ 1 2 3 4 0 [ 42 ] [ 17 ] if* ] unit-test ;
 
 if*-test
+
+test: dip-test
+    { 261 42 } [ 87 42 [ 3 * ] dip ] unit-test ;
+
+dip-test
+
+test: 2dip-test
+    { 43 17 89 } [ 42 17 89 [ 1+ ] 2dip ] unit-test ;
+
+2dip-test
 
 ?nl "Reached end of test.feline" write-string
