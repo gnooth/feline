@@ -145,7 +145,7 @@ defer compile-quotation
 
     vec ;
 
-: emit-pushrbx
+: emit-dup
     { 0x48 0x89 0x5d 0xf8 0x48 0x8d 0x6d 0xf8 } emit-bytes ;
 
 : emit-drop
@@ -156,7 +156,7 @@ defer compile-quotation
 
     dup wrapper? [ wrapped ] when
 
-    emit-pushrbx
+    emit-dup
     object>uint64
     dup 32 rshift 0 = [
         0xbb emit-byte emit-dword
