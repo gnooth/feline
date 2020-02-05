@@ -846,13 +846,13 @@ code find_integer, 'find-integer'       ; fixnum callable -> fixnum/nil
         _ callable_raw_code_address
         mov     r13, rbx                ; code address in r13
         mov     r15, [rbp]              ; tagged loop limit in r15
-        _2drop                          ; clean up the stack now!
-        _dup                            ; dup outside the loop!
-        jmp     .2                      ; jump over alignment nops
+        _2drop                          ; clean up the stack now
+        _dup                            ; dup outside the loop
+        jmp     .2                      ; jump over alignment padding
 
         align   DEFAULT_CODE_ALIGNMENT
 .2:
-        mov     rbx, r12
+        mov     rbx, r12                ; tagged index in rbx
 
         call    r13
         ; test flag returned by quotation
@@ -877,15 +877,15 @@ code find_integer, 'find-integer'       ; fixnum callable -> fixnum/nil
         pop     r13
         pop     r12
 
-        ; drop quotation
-        _rdrop
+        ; drop callable
+        pop     rax
 
         next
 endcode
 
 ; ### find-integer-in-range
-code find_integer_in_range, 'find-integer-in-range' ; start end callable -> i/nil
-; callable must have stack effect ( i -> ? )
+code find_integer_in_range, 'find-integer-in-range' ; start end callable -> fixnum/nil
+; callable must have stack effect fixnum -> ?
 
         ; start
         mov     rax, [rbp + BYTES_PER_CELL]
