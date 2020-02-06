@@ -341,14 +341,14 @@ defer compile-quotation
 
     pending length 2 < [
         flush-pending
-        ' if compile-call-symbol
+        node op>> compile-call-symbol
     ] ?return
 
     pending last literal-value>> :> quot2
     pending dup length 2 - swap nth literal-value>> :> quot1
     [ quot1 quotation? ] [ quot2 quotation? ] both? nil? [
         flush-pending
-        ' if compile-call-symbol
+        node op>> compile-call-symbol
     ] ?return
 
     // quot1 and quot2 are both literal quotations
@@ -464,6 +464,66 @@ defer compile-quotation
 
 ' compile-keep :compiler ' keep symbol-set-prop
 
+: compile-bi ( node )
+    ?nl node op>> symbol-name print
+
+    pending length 2 < [
+        flush-pending
+        node op>> compile-call-symbol
+    ] ?return
+
+    pending last literal-value>> :> quot2
+    pending dup length 2 - swap nth literal-value>> :> quot1
+    [ quot1 quotation? ] [ quot2 quotation? ] both? nil? [
+        flush-pending
+        node op>> compile-call-symbol
+    ] ?return
+
+    // quot1 and quot2 are both literal quotations
+    quot2 callable-code-address :> addr2
+    pending-remove-last
+    quot1 callable-code-address :> addr1
+    pending-remove-last
+
+    flush-pending
+
+    0x53 emit-byte                  // push rbx
+    addr1 compile-call-address
+    emit-dup
+    0x5b emit-byte                  // pop rbx
+    addr2 compile-call-address ;
+
+' compile-bi :compiler ' bi symbol-set-prop
+
+: compile-bi@ ( node )
+    ?nl node op>> symbol-name print
+
+    pending length 1 < [
+        flush-pending
+        node op>> compile-call-symbol
+    ] ?return
+
+    pending last literal-value>> :> quot
+    quot quotation? nil? [
+        flush-pending
+        node op>> compile-call-symbol
+    ] ?return
+
+    // quot1 is a literal quotation
+    quot callable-code-address :> addr
+    pending-remove-last
+
+    flush-pending
+
+    0x53 emit-byte                  // push rbx
+    emit-drop
+    addr compile-call-address
+    emit-dup
+    0x5b emit-byte                  // pop rbx
+    addr compile-call-address ;
+
+' compile-bi@ :compiler ' bi@ symbol-set-prop
+
 : compile-declare ( node )              // node -> void
     ?nl "declare" print
 
@@ -503,7 +563,7 @@ defer compile-quotation
 
     flush-pending
 
-    method null? [ op compile-call-symbol ] ?return
+    method nil? [ op compile-call-symbol ] ?return
 
     method method-callable :> callable
 

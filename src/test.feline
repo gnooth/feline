@@ -490,13 +490,6 @@ test: map-index-test-1
 
 map-index-test-1
 
-test: bi@-test-1
-    3 4 [ dup ] bi@ get-datastack vector{ 3 3 4 4 } sequence= assert-true
-    clear
-;
-
-bi@-test-1
-
 test: tri@-test-1
     clear
     10 20 30 ' 1+ tri@ get-datastack { 11 21 31 } sequence= assert-true
@@ -1240,24 +1233,6 @@ test: while-test
     { 1 2 3 4 } [ 1 2 3 4 [ nil ] [ 42 ] while ] unit-test ;
 
 while-test
-
-test: bi-test-1
-    clear
-    42 [ 1 + ] [ 2 + ] bi get-datastack { 43 44 } sequence= assert-true
-    clear
-;
-
-bi-test-1
-
-test: 2bi-test-1
-    clear
-    1 2 3 4 [ dup ] [ + ] 2bi get-datastack { 1 2 3 4 4 7 } sequence= assert-true
-    clear
-    1 2 3 4 [ nip ] [ + ] 2bi get-datastack { 1 2 4 7 } sequence= assert-true
-    clear
-;
-
-2bi-test-1
 
 test: verify-type-test-1
     42 type-of dup verify-type assert-eq
@@ -4493,5 +4468,33 @@ test: keep-test
     { 1 2 4 3 } [ 1 2 3 [ 1+ ] keep ] unit-test ;
 
 keep-test
+
+test: bi-test
+    { 43 44 } [ 42 [ 1 + ] [ 2 + ] bi ] unit-test
+    { 1 2 3 4 43 44 } [ 1 2 3 4 42 [ 1 + ] [ 2 + ] bi ] unit-test
+    { 42 13 42 17 } [ 42 [ 13 ] [ 17 ] bi ] unit-test
+    { 1 2 3 4 42 13 42 17 } [ 1 2 3 4 42 [ 13 ] [ 17 ] bi ] unit-test
+    { } [ 42 [ drop ] [ drop ] bi ] unit-test
+    { 1 2 3 4 } [ 1 2 3 4 42 [ drop ] [ drop ] bi ] unit-test ;
+
+bi-test
+
+test: 2bi-test-1
+    clear
+    1 2 3 4 [ dup ] [ + ] 2bi get-datastack { 1 2 3 4 4 7 } sequence= assert-true
+    clear
+    1 2 3 4 [ nip ] [ + ] 2bi get-datastack { 1 2 4 7 } sequence= assert-true
+    clear
+;
+
+2bi-test-1
+
+test: bi@-test
+    { 1 2 4 5 } [ 1 2 3 4 [ 1+ ] bi@ ] unit-test
+    { 1 2 3 3 4 4 } [ 1 2 3 4 [ dup ] bi@ ] unit-test
+    { 1 2 } [ 1 2 3 4 [ drop ] bi@ ] unit-test
+    { } [ 1 2 [ drop ] bi@ ] unit-test ;
+
+bi@-test
 
 ?nl "Reached end of test.feline" write-string
