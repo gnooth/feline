@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -57,8 +57,9 @@ TYPECODE_STRING_ITERATOR        equ 27
 TYPECODE_SLOT                   equ 28
 TYPECODE_FILE_OUTPUT_STREAM     equ 29
 TYPECODE_STRING_OUTPUT_STREAM   equ 30
+TYPECODE_FIXNUM_HASHTABLE       equ 31
 
-LAST_BUILTIN_TYPECODE           equ 30
+LAST_BUILTIN_TYPECODE           equ 31
 
 asm_global last_raw_typecode_, LAST_BUILTIN_TYPECODE + 1
 

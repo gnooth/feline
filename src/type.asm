@@ -1,4 +1,4 @@
-; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -243,6 +243,7 @@ code initialize_types, 'initialize_types', SYMBOL_INTERNAL
         _add_type "slot", TYPECODE_SLOT
         _add_type "file-output-stream", TYPECODE_FILE_OUTPUT_STREAM
         _add_type "string-output-stream", TYPECODE_STRING_OUTPUT_STREAM
+        _add_type "fixnum-hashtable", TYPECODE_FIXNUM_HASHTABLE
 
         next
 endcode
