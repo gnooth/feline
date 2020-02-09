@@ -1,4 +1,4 @@
-// Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2018-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -73,6 +73,20 @@ global inspected-object
 } hashtable builtin-type-set-layout
 
 { "name" "hashtable" } vocab builtin-type-set-layout
+
+{
+    "name"
+    "vocab name"
+    "hashcode"
+    "def"
+    "props"
+    "value"
+    { "raw-code-address" :raw }
+    { "raw-code-size" :raw }
+    { "flags" :raw }
+    "file"
+    "line number"
+} symbol builtin-type-set-layout
 
 : print-slot ( object n )               // object n -> void
     object object-layout :> layout
