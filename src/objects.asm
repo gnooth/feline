@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -192,13 +192,16 @@ code destroy_heap_object, 'destroy_heap_object', SYMBOL_INTERNAL
 endcode
 
 ; ### slot@
-code slot@, 'slot@'                     ; obj tagged-fixnum -- value
-        _untag_fixnum
-        _cells
-        _swap
-        _handle_to_object_unsafe
-        _plus
-        _fetch
+code slot@, 'slot@'                     ; obj tagged-fixnum -> value
+        _check_fixnum
+        mov     rax, rbx
+        _drop
+        cmp     bl, HANDLE_TAG
+        jne     .1
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]
+.1:
+        mov     rbx, [rbx + rax * BYTES_PER_CELL]
         next
 endcode
 
