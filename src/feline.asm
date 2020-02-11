@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ string FELINE_VOCAB_NAME, 'feline'
 %include "vector.asm"
 %include "handles.asm"
 %include "locals.asm"
+%include "hashtable-common.asm"
 %include "hashtable.asm"
 %include "generic.asm"
 %include "method.asm"

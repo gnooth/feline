@@ -223,7 +223,7 @@ code empty_or_deleted?, 'empty-or-deleted?'     ; x -> ?
         cmp     rbx, f_value
         je     .2
 .1:
-        cmp     rbx, S_deleted
+        cmp     rbx, S_deleted_marker
         je      .2
         mov     rbx, f_value
         next
@@ -535,9 +535,6 @@ hashtable_set_at_unchecked:
         next
 endcode
 
-; ### +deleted+
-feline_constant deleted, '+deleted+', S_deleted
-
 ; ### delete-at
 code delete_at, 'delete-at'     ; key handle --
 
@@ -551,8 +548,8 @@ code delete_at, 'delete-at'     ; key handle --
         _tagged_if .1
 
         ; -- tagged-index
-        _ deleted
-        _ deleted
+        _ deleted_marker
+        _ deleted_marker
         _ rot
         _untag_fixnum
         _this_hashtable_set_nth_pair
