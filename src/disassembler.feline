@@ -1305,19 +1305,21 @@ last-word 0xc6 install-handler
                 { 4 [
                     !sib-byte
                     sib-base {
-                        { 2 [
+                        { 5 [
+                            next-int32 ddisp!
+                            true memory-operand?!
+                            next-uint32 immediate-operand!
+                            true immediate-operand?!
+                        ] }
+                        [
+                            // default case
+                            drop
                             next-int32 immediate-operand!
-                            t immediate-operand?!
+                            true immediate-operand?!
                             sib-base register-rm dbase!
                             sib-index register-index dindex!
                             sib-scale dscale!
-                        ] }
-                        { 5 [
-                            next-int32 ddisp!
-                            t memory-operand?!
-                            next-uint32 immediate-operand!
-                            t immediate-operand?!
-                        ] }
+                        ]
                     } case
                 ] }
                 [
