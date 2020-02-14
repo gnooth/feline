@@ -176,6 +176,14 @@ code error_not_hashtable, 'error-not-hashtable' ; x --
         next
 endcode
 
+; ### error-not-fixnum-hashtable
+code error_not_fixnum_hashtable, 'error-not-fixnum-hashtable' ; x --
+        _quote "a fixnum hashtable"
+        _ format_type_error
+        _ error
+        next
+endcode
+
 ; ### error-not-mutex
 code error_not_mutex, 'error-not-mutex'         ; x --
         _quote "a mutex"
