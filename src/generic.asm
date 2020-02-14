@@ -299,9 +299,9 @@ endcode
 
 %endmacro
 
-; ### make-fixnum-hashtable
-code make_fixnum_hashtable, 'make-fixnum-hashtable'     ; -> hashtable
-; Return a new hashtable with hash and test functions suitable for fixnum keys.
+; ### make-fixnum-hashtable/0
+code make_fixnum_hashtable_0, 'make-fixnum-hashtable/0' ; -> hashtable
+; return a new hashtable with hash and test functions suitable for fixnum keys
 
         _lit 2
         _ new_hashtable_untagged
@@ -326,12 +326,12 @@ code initialize_generic_function, 'initialize-generic-function' ; generic-symbol
         _ new_generic_function          ; -> symbol gf
 
         ; methods
-        _ make_fixnum_hashtable
+        _ make_fixnum_hashtable_0
         _over
         _ generic_function_set_methods
 
         ; dispatch
-        _ make_fixnum_hashtable
+        _ make_fixnum_hashtable_0
         _over
         _ generic_function_set_dispatch ; -> symbol gf
 
@@ -353,12 +353,12 @@ code define_generic, 'define-generic'   ; symbol -> symbol
         _tor                            ; -> symbol     r: -> gf
 
         ; methods
-        _ make_fixnum_hashtable
+        _ make_fixnum_hashtable_0
         _rfetch
         _ generic_function_set_methods
 
         ; dispatch table
-        _ make_fixnum_hashtable
+        _ make_fixnum_hashtable_0
         _rfetch
         _ generic_function_set_dispatch ; -> symbol
 
