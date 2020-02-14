@@ -44,6 +44,7 @@ string FELINE_VOCAB_NAME, 'feline'
 %include "locals.asm"
 %include "hashtable-common.asm"
 %include "hashtable.asm"
+%include "fixnum-hashtable.asm"
 %include "generic.asm"
 %include "method.asm"
 %include "fixnum.asm"

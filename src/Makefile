@@ -150,6 +150,7 @@ ASM_SOURCES = feline.asm feline_home.asm externs.asm \
 	errors.asm \
 	file-output-stream.asm \
 	files.asm \
+	fixnum-hashtable.asm \
 	fixnum.asm \
 	float.asm \
 	format.asm \
