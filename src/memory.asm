@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -15,10 +15,23 @@
 
 file __FILE__
 
+subroutine feline_malloc
+; call with raw number of bytes to allocate in arg0_register
+; returns raw allocated address in rax
+        xcall   malloc
+        test    rax, rax
+        jz      error_out_of_memory
+        _rep_return
+endsub
+
 ; ### raw_allocate
 code raw_allocate, 'raw_allocate', SYMBOL_INTERNAL ; raw-size -> raw-address
-        _feline_malloc
-        next
+        mov     arg0_register, rbx
+        xcall   malloc
+        test    rax, rax
+        mov     rbx, rax
+        jz      error_out_of_memory
+        _rep_return
 endcode
 
 ; ### raw_realloc
@@ -37,7 +50,7 @@ endcode
 ; ### raw_free
 code raw_free, 'raw_free', SYMBOL_INTERNAL ; raw-address -> void
         mov     arg0_register, rbx
-        poprbx
+        _drop
         _os_free
         next
 endcode
