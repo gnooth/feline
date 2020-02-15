@@ -4497,4 +4497,12 @@ test: bi@-test
 
 bi@-test
 
+test: fixnum-hashtable-test
+    1000 :> count
+    count make-fixnum-hashtable :> ht
+    count [ dup 17 + swap ht puthash ] each-integer
+    count [ dup ht gethash 17 - assert-eq ] each-integer ;
+
+fixnum-hashtable-test
+
 ?nl "Reached end of test.feline" write-string
