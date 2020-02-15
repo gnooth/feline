@@ -13,7 +13,7 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%idefine bytes_per_cell 8
+%define BYTES_PER_CELL 8
 
 %macro  _dup 0
         mov     [rbp - BYTES_PER_CELL], rbx
@@ -247,6 +247,7 @@
 %endmacro
 
 %macro  _rep_return 0
+; https://repzret.org/p/repzret/
 %ifndef in_inline
         rep
         ret
@@ -922,14 +923,6 @@ section .text
 
 %macro  _os_free 0
         xcall   free
-%endmacro
-
-%macro  _feline_malloc 0
-        mov     arg0_register, rbx
-        xcall   malloc
-        test    rax, rax
-        mov     rbx, rax
-        jz      error_out_of_memory
 %endmacro
 
 %macro  _feline_free 0
