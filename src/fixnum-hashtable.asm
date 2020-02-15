@@ -15,7 +15,8 @@
 
 file __FILE__
 
-; 4 cells (object header, capacity, count, data address, old data address)
+; 5 cells (object header, capacity, count, data address, old data address)
+%define FIXNUM_HASHTABLE_SIZE                            5 * BYTES_PER_CELL
 
 %define FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET             8
 %define FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET           16
@@ -44,18 +45,15 @@ endcode
 ; ### make-fixnum-hashtable
 code make_fixnum_hashtable, 'make-fixnum-hashtable' ; capacity -> hashtable
         _ next_power_of_2
-        _untag_fixnum                   ; -> raw-capacity
+        _untag_fixnum                   ; -> raw-capacity (in rbx)
 
-        ; allocate memory for hashtable object
-        ; 5 cells (object header, capacity, count, old data address)
-        _dup
-        mov     rbx, 5 * BYTES_PER_CELL
-        _ raw_allocate                  ; -> raw-capacity ^hashtable
-        mov     qword [rbx], TYPECODE_FIXNUM_HASHTABLE
+        ; allocate memory for the hashtable object
+        mov     arg0_register, FIXNUM_HASHTABLE_SIZE
+        _ feline_malloc                 ; returns raw address in rax
+        mov     qword [rax], TYPECODE_FIXNUM_HASHTABLE
 
         push    this_register
-        mov     this_register, rbx      ; ^hashtable in this_register
-        _drop                           ; -> raw-capacity (in rbx)
+        mov     this_register, rax      ; ^hashtable in this_register
 
         mov     [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET], rbx
         mov     qword [this_register + FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET], 0
