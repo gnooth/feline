@@ -42,6 +42,36 @@ code check_fixnum_hashtable, 'check_fixnum_hashtable' ; handle -> ^hashtable
         jmp     error_not_fixnum_hashtable
 endcode
 
+subroutine make_bucket_array    ; raw-capacity -> raw-address
+; call with raw capacity (number of entries) in rbx
+; returns raw allocated address in rbx
+
+        ; convert entries to cells (2 cells per entry)
+        shl     rbx, 1
+
+        ; plus one more cell for a sentinel
+        lea     arg0_register, [rbx + 1]
+
+        ; convert cells to bytes
+        shl     arg0_register, 3
+
+        _ feline_malloc                 ; returns raw allocated address in rax
+
+        mov     arg0_register, rax      ; raw address
+        mov     arg1_register, S_empty_marker
+        mov     arg2_register, rbx      ; raw capacity in cells
+        push    rax
+        _ fill_cells
+        pop     rax
+
+        ; store sentinel
+        mov     qword [rax + rbx * BYTES_PER_CELL], 0
+
+        ; return raw address in rbx
+        mov     rbx, rax
+        ret
+endsub
+
 ; ### make-fixnum-hashtable
 code make_fixnum_hashtable, 'make-fixnum-hashtable' ; capacity -> hashtable
         _ next_power_of_2
@@ -52,46 +82,17 @@ code make_fixnum_hashtable, 'make-fixnum-hashtable' ; capacity -> hashtable
         _ feline_malloc                 ; returns raw address in rax
         mov     qword [rax], TYPECODE_FIXNUM_HASHTABLE
 
-        push    this_register
-        mov     this_register, rax      ; ^hashtable in this_register
-
-        mov     [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET], rbx
-        mov     qword [this_register + FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET], 0
-
-        mov     arg0_register, rbx      ; raw capacity in arg0_register
-
-        ; each entry occupies two cells (key, value)
-        shl     arg0_register, 4        ; convert entries to bytes
-
-        ; plus one more cell for a sentinel
-        add     arg0_register, BYTES_PER_CELL
-
-        xcall   malloc                  ; returns raw data address im rax
-        test    rax, rax
-        jz      error_out_of_memory
-
-        mov     [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET], rax
-
-        mov     arg0_register, rax      ; address
-        mov     arg1_register, S_empty_marker
-        mov     arg2_register, rbx      ; raw capacity
-        shl     arg2_register, 1        ; two cells per entry
-        _ fill_cells
-
-        ; sentinel
-        mov     rax, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
-        ; rbx: raw capacity
-        shl     rbx, 4                  ; convert entries (2 cells per entry) to bytes
-        mov     qword [rax + rbx], 0    ; store raw zero as sentinel
-
-        mov     qword [this_register + FIXNUM_HASHTABLE_RAW_OLD_DATA_ADDRESS_OFFSET], 0
-
-        mov     rbx, this_register
-        pop     this_register
+        mov     qword [rax + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET], rbx
+        mov     qword [rax + FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET], 0
+        push    rax
+        _ make_bucket_array             ; returns raw address in rbx
+        pop     rax
+        mov     qword [rax + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET], rbx
+        mov     qword [rax + FIXNUM_HASHTABLE_RAW_OLD_DATA_ADDRESS_OFFSET], 0
 
         ; return handle
-        _ new_handle                    ; -- handle
-
+        mov     rbx, rax
+        _ new_handle                    ; -> hashtable
         next
 endcode
 
