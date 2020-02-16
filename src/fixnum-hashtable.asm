@@ -21,7 +21,7 @@ file __FILE__
 %define FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET             8
 %define FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET           16
 %define FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET        24
-%define FIXNUM_HASHTABLE_RAW_OLD_DATA_ADDRESS_OFFSET    32
+%define FIXNUM_HASHTABLE_OLD_RAW_DATA_ADDRESS_OFFSET    32
 
 ; ### check_fixnum_hashtable
 code check_fixnum_hashtable, 'check_fixnum_hashtable' ; handle -> ^hashtable
@@ -88,7 +88,7 @@ code make_fixnum_hashtable, 'make-fixnum-hashtable' ; capacity -> hashtable
         _ make_bucket_array             ; returns raw address in rbx
         pop     rax
         mov     qword [rax + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET], rbx
-        mov     qword [rax + FIXNUM_HASHTABLE_RAW_OLD_DATA_ADDRESS_OFFSET], 0
+        mov     qword [rax + FIXNUM_HASHTABLE_OLD_RAW_DATA_ADDRESS_OFFSET], 0
 
         ; return handle
         mov     rbx, rax
@@ -151,15 +151,8 @@ code gethash, 'gethash'                 ; key hashtable -> void
         next
 endcode
 
-; ### puthash
-code puthash, 'puthash'                 ; value key hashtable ->
-        _ check_fixnum_hashtable        ; -> value key ^hashtable
-        push    this_register
-        mov     this_register, rbx
-        _drop                   ; ^hashtable in this_register, key in rbx, value in [rbp]
-
-        _verify_fixnum
-
+subroutine puthash_internal             ; value key -> void
+; call with ^hashtable in this_register
         mov     rdx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET] ; capacity in rdx
         mov     rax, rbx                ; key in rax
         lea     r10, [rdx - 1]  ; mask in r10
@@ -190,8 +183,7 @@ code puthash, 'puthash'                 ; value key hashtable ->
 
         ; no empty slot found
         _2drop
-        pop     this_register
-        next
+        ret
 
 .found_empty_slot:
 
@@ -207,8 +199,18 @@ code puthash, 'puthash'                 ; value key hashtable ->
         mov     [r11 + r9 * BYTES_PER_CELL], r8         ; store value
 
         _2drop
-        pop     this_register
+        ret
+endsub
 
+; ### puthash
+code puthash, 'puthash'                 ; value key hashtable ->
+        _ check_fixnum_hashtable        ; -> value key ^hashtable
+        push    this_register
+        mov     this_register, rbx      ; ^hashtable in this_register
+        _drop                           ; -> value key
+        _verify_fixnum
+        _ puthash_internal
+        pop     this_register
         next
 endcode
 
@@ -229,6 +231,7 @@ endcode
 
 ; dump-fixnum-hashtable
 code dump_fixnum_hashtable, 'dump-fixnum-hashtable'     ; hashtable -> void
+        _ ?enough_1
         _ check_fixnum_hashtable
         push    this_register
         mov     this_register, rbx
@@ -251,7 +254,7 @@ code dump_fixnum_hashtable, 'dump-fixnum-hashtable'     ; hashtable -> void
         _ object_to_string
         _ print
         lea     r12, [r12 + BYTES_PER_CELL * 2]
-       jmp      .1
+        jmp      .1
 
 .2:
         pop     r12
@@ -261,13 +264,45 @@ endcode
 
 ; grow-fixnum-hashtable
 code grow_fixnum_hashtable, 'grow-fixnum-hashtable'     ; hashtable -> void
+        _ ?enough_1
         _ check_fixnum_hashtable
         push    this_register
-        mov     this_register, rbx
-        _drop                           ; ^hashtable in this_register
+        mov     this_register, rbx      ; ^hashtable in this_register
 
-        ; FIXME needs code!
+        mov     rax, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+        mov     [this_register + FIXNUM_HASHTABLE_OLD_RAW_DATA_ADDRESS_OFFSET], rax
 
+        mov     rbx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET]
+        shl     rbx, 2
+        mov     [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET], rbx
+        _ make_bucket_array             ; returns raw address in rbx
+        mov     [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET], rbx
+        _drop
+
+        push    r12
+        mov     r12, [this_register + FIXNUM_HASHTABLE_OLD_RAW_DATA_ADDRESS_OFFSET]
+
+.1:
+        mov     rax, [r12]
+        test    rax, rax
+        jz      .2
+        mov     rdx, [r12 + BYTES_PER_CELL]     ; key in rax, value in rdx
+
+        _dup
+        mov     rbx, rdx
+        _dup
+        mov     rbx, rax
+        _ puthash_internal
+
+        lea     r12, [r12 + BYTES_PER_CELL * 2]
+        jmp      .1
+
+.2:
+        ; free old bucket data
+        mov     arg0_register, [this_register + FIXNUM_HASHTABLE_OLD_RAW_DATA_ADDRESS_OFFSET]
+        xcall   free
+
+        pop     r12
         pop     this_register
         next
 endcode
