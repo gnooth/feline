@@ -721,43 +721,48 @@ code times_, 'times'                    ; tagged-fixnum quotation --
 endcode
 
 ; ### each-integer
-code each_integer, 'each-integer'       ; n quot --
-        ; check that n is a fixnum
-        mov     al, byte [rbp]
-        and     al, FIXNUM_TAG_MASK
-        cmp     al, FIXNUM_TAG
-        jne     error_not_fixnum
-
-        ; untag n
-        _untag_fixnum qword [rbp]
+code each_integer, 'each-integer'       ; n quot ->
+        ; verify that n is a fixnum
+        mov     rax, [rbp]
+        test    al, FIXNUM_TAG
+        jz      error_not_fixnum_rax
 
         ; protect quotation from gc
         push    rbx
 
-        _ callable_raw_code_address     ; -- untagged-fixnum code-address
+        _ callable_raw_code_address     ; -> tagged-fixnum raw-code-address
 
         push    r12
         push    r13
         push    r15
-        xor     r12, r12                ; loop index in r12
+        mov     r12, tagged_zero
         mov     r13, rbx                ; code address in r13
         mov     r15, [rbp]              ; loop limit in r15
         _2drop                          ; clean up the stack now!
-        test    r15, r15
+        cmp     r15, tagged_zero
         jle     .2
+
+        align DEFAULT_CODE_ALIGNMENT
 .1:
-        pushd   r12
-        _tag_fixnum
+        _dup
+        mov     rbx, r12
         call    r13
-        inc     r12
+        add     r12, 2
         cmp     r12, r15
         je     .2
-        pushd   r12
-        _tag_fixnum
+        _dup
+        mov     rbx, r12
         call    r13
-        inc     r12
+        add     r12, 2
+        cmp     r12, r15
+        je     .2
+        _dup
+        mov     rbx, r12
+        call    r13
+        add     r12, 2
         cmp     r12, r15
         jne     .1
+
 .2:
         pop     r15
         pop     r13
