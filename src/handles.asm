@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -361,10 +361,9 @@ code deref, 'deref', SYMBOL_INTERNAL    ; x -- object-address/0
 endcode
 
 ; ### release_handle_unsafe
-code release_handle_unsafe, 'release_handle_unsafe', SYMBOL_INTERNAL    ; handle --
+code release_handle_unsafe, 'release_handle_unsafe', SYMBOL_INTERNAL ; handle -> void
         ; zero out the stored address
-        xor     eax, eax
-        mov     qword [rbx], rax
+        mov     qword [rbx], 0
 
         ; add handle to recycled handles vector
         _recycled_handles_vector
