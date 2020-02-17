@@ -187,6 +187,29 @@ code gc2_scan_hashtable, 'gc2_scan_hashtable' ; ^hashtable -> void
         next
 endcode
 
+; ### gc2_scan_fixnum_hashtable
+code gc2_scan_fixnum_hashtable, 'gc2_scan_fixnum_hashtable' ; ^hashtable -> void
+
+        push    r12
+        mov     r12, [rbx + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+        _drop
+
+.1:
+        mov     rax, [r12]
+        test    rax, rax
+        jz      .2
+        ; we only need to mark the values (the keys are fixnums)
+        _dup
+        mov     rbx, [r12 + BYTES_PER_CELL]
+        _ gc2_maybe_push_handle
+        lea     r12, [r12 + BYTES_PER_CELL * 2]
+        jmp      .1
+
+.2:
+        pop     r12
+        next
+endcode
+
 ; ### gc2_scan_vocab
 code gc2_scan_vocab, 'gc2_scan_vocab' ; ^vocab -> void
 
@@ -443,6 +466,10 @@ code gc2_initialize_dispatch_table, 'gc2_initialize_dispatch_table'
 
         _lit gc2_scan_hashtable
         _lit TYPECODE_HASHTABLE
+        _this_array_set_nth_unsafe
+
+        _lit gc2_scan_fixnum_hashtable
+        _lit TYPECODE_FIXNUM_HASHTABLE
         _this_array_set_nth_unsafe
 
         _lit gc2_scan_vocab

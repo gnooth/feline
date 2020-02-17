@@ -4508,4 +4508,14 @@ test: fixnum-hashtable-test
 
 fixnum-hashtable-test
 
+test: fixnum-hashtable-gc-test
+    10 :> count
+    count make-fixnum-hashtable :> ht
+    count [ dup fixnum>string swap ht puthash ] each-integer
+    count [ dup ht gethash swap fixnum>string assert= ] each-integer
+    gc
+    count [ dup ht gethash swap fixnum>string assert= ] each-integer ;
+
+fixnum-hashtable-gc-test
+
 ?nl "Reached end of test.feline" write-string
