@@ -15,13 +15,14 @@
 
 file __FILE__
 
-; 5 cells (object header, capacity, count, data address, old data address)
-%define FIXNUM_HASHTABLE_SIZE                            5 * BYTES_PER_CELL
+; 6 cells (object header, capacity, occupancy, deletions, data address, old data address)
+%define FIXNUM_HASHTABLE_SIZE                            6 * BYTES_PER_CELL
 
 %define FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET             8
 %define FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET           16
-%define FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET        24
-%define FIXNUM_HASHTABLE_OLD_RAW_DATA_ADDRESS_OFFSET    32
+%define FIXNUM_HASHTABLE_RAW_DELETIONS_OFFSET           24
+%define FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET        32
+%define FIXNUM_HASHTABLE_OLD_RAW_DATA_ADDRESS_OFFSET    40
 
 ; ### check_fixnum_hashtable
 code check_fixnum_hashtable, 'check_fixnum_hashtable' ; handle -> ^hashtable
@@ -84,6 +85,7 @@ code make_fixnum_hashtable, 'make-fixnum-hashtable' ; capacity -> hashtable
 
         mov     qword [rax + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET], rbx
         mov     qword [rax + FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET], 0
+        mov     qword [rax + FIXNUM_HASHTABLE_RAW_DELETIONS_OFFSET], 0
         push    rax
         _ make_bucket_array             ; returns raw address in rbx
         pop     rax
@@ -106,6 +108,30 @@ code destroy_fixnum_hashtable, 'destroy_fixnum_hashtable'       ; ^hashtable -> 
         mov     qword [rbx], 0
 
         _feline_free
+        next
+endcode
+
+; ### fixnum-hashtable-capacity
+code fixnum_hashtable_capacity, 'fixnum-hashtable-capacity'     ; hashtable -> fixnum
+        _ check_fixnum_hashtable
+        mov     rbx, [rbx + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET]
+        _tag_fixnum
+        next
+endcode
+
+; ### fixnum-hashtable-occupancy
+code fixnum_hashtable_occupancy, 'fixnum-hashtable-occupancy'   ; hashtable -> fixnum
+        _ check_fixnum_hashtable
+        mov     rbx, [rbx + FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET]
+        _tag_fixnum
+        next
+endcode
+
+; ### fixnum-hashtable-deletions
+code fixnum_hashtable_deleetions, 'fixnum-hashtable-deletions'  ; hashtable -> fixnum
+        _ check_fixnum_hashtable
+        mov     rbx, [rbx + FIXNUM_HASHTABLE_RAW_DELETIONS_OFFSET]
+        _tag_fixnum
         next
 endcode
 
