@@ -158,11 +158,10 @@ code dot_t, '.t'                        ; object -- object
 endcode
 
 ; ### destroy_heap_object
-code destroy_heap_object, 'destroy_heap_object', SYMBOL_INTERNAL
-; raw-object-address --
+code destroy_heap_object, 'destroy_heap_object', SYMBOL_INTERNAL ; ^object -> void
 
 ; The argument is known to be the raw address of a valid heap object, not a
-; handle or null. Called only by maybe_collect_handle during gc.
+; handle or null. Called only by gc2_maybe_collect_handle during gc.
 
         _object_raw_typecode_eax
 
@@ -172,6 +171,8 @@ code destroy_heap_object, 'destroy_heap_object', SYMBOL_INTERNAL
         je      destroy_vector_unchecked
         cmp     eax, TYPECODE_HASHTABLE
         je      destroy_hashtable_unchecked
+        cmp     eax, TYPECODE_FIXNUM_HASHTABLE
+        je      destroy_fixnum_hashtable
         cmp     eax, TYPECODE_QUOTATION
         je      destroy_quotation_unchecked
         cmp     eax, TYPECODE_THREAD
@@ -183,8 +184,7 @@ code destroy_heap_object, 'destroy_heap_object', SYMBOL_INTERNAL
 
         ; Zero out the object header so it won't look like a valid object
         ; after it has been freed.
-        xor     eax, eax
-        mov     [rbx], rax
+        mov     qword [rbx], 0
 
         _feline_free
 

@@ -96,6 +96,19 @@ code make_fixnum_hashtable, 'make-fixnum-hashtable' ; capacity -> hashtable
         next
 endcode
 
+; ### destroy_fixnum_hashtable
+code destroy_fixnum_hashtable, 'destroy_fixnum_hashtable'       ; ^hashtable -> void
+
+        mov     arg0_register, [rbx + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+        xcall   free
+
+        ; zero out object header
+        mov     qword [rbx], 0
+
+        _feline_free
+        next
+endcode
+
 ; ### gethash
 code gethash, 'gethash'                 ; key hashtable -> void
 
