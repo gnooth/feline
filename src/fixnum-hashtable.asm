@@ -308,19 +308,18 @@ code dump_fixnum_hashtable, 'dump-fixnum-hashtable'     ; hashtable -> void
         next
 endcode
 
-; grow-fixnum-hashtable
-code grow_fixnum_hashtable, 'grow-fixnum-hashtable'     ; hashtable -> void
-        _ ?enough_1
-        _ check_fixnum_hashtable
-        push    this_register
-        mov     this_register, rbx      ; ^hashtable in this_register
+subroutine grow_fixnum_hashtable_internal
+; call with ^hashtable in this_register
 
         mov     rax, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
         mov     [this_register + FIXNUM_HASHTABLE_OLD_RAW_DATA_ADDRESS_OFFSET], rax
 
-        mov     rbx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET]
-        shl     rbx, 1                  ; double existing capacity
-        mov     [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET], rbx
+        mov     rax, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET]
+        shl     rax, 1                  ; double existing capacity
+        mov     [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET], rax
+
+        _dup
+        mov     rbx, rax
 
         _ make_bucket_array             ; returns raw address in rbx
 
@@ -361,6 +360,20 @@ code grow_fixnum_hashtable, 'grow-fixnum-hashtable'     ; hashtable -> void
         mov     qword [this_register + FIXNUM_HASHTABLE_OLD_RAW_DATA_ADDRESS_OFFSET], 0
 
         pop     r12
+
+        ret
+endsub
+
+; grow-fixnum-hashtable
+code grow_fixnum_hashtable, 'grow-fixnum-hashtable'     ; hashtable -> void
+        _ ?enough_1
+        _ check_fixnum_hashtable
+        push    this_register
+        mov     this_register, rbx      ; ^hashtable in this_register
+        _drop
+
+        _ grow_fixnum_hashtable_internal
+
         pop     this_register
         next
 endcode
