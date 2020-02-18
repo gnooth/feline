@@ -193,7 +193,7 @@ endcode
 subroutine puthash_internal             ; value key -> void
 ; call with ^hashtable in this_register
         mov     rdx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET] ; capacity in rdx
-        mov     rax, rbx                ; key in rax
+        mov     rax, rbx        ; key in rax
         lea     r10, [rdx - 1]  ; mask in r10
         and     rax, r10        ; apply mask to key (fixnum)
 
@@ -217,11 +217,15 @@ subroutine puthash_internal             ; value key -> void
 
         cmp     r8, S_empty_marker
         jz      .found_empty_slot
+
+        cmp     r8, rbx
+        jz      .found_key
+
         sub     rcx, 1          ; decrement counter
         jnz     .2
 
-        ; no empty slot found
-        _2drop
+        ; REVIEW this shouldn't happen
+        _error "no empty buckets"
         ret
 
 .found_empty_slot:
@@ -233,6 +237,9 @@ subroutine puthash_internal             ; value key -> void
         ; rax: index
 
         mov     [r11 + r9 * BYTES_PER_CELL], rbx        ; store key
+        add     qword [this_register + FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET], 1
+
+.found_key:
         mov     r8, [rbp]                               ; r8: value
         add     r9, 1
         mov     [r11 + r9 * BYTES_PER_CELL], r8         ; store value
@@ -312,11 +319,16 @@ code grow_fixnum_hashtable, 'grow-fixnum-hashtable'     ; hashtable -> void
         mov     [this_register + FIXNUM_HASHTABLE_OLD_RAW_DATA_ADDRESS_OFFSET], rax
 
         mov     rbx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET]
-        shl     rbx, 2
+        shl     rbx, 1                  ; double existing capacity
         mov     [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET], rbx
+
         _ make_bucket_array             ; returns raw address in rbx
+
         mov     [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET], rbx
         _drop
+
+        mov     qword [this_register + FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET], 0
+        mov     qword [this_register + FIXNUM_HASHTABLE_RAW_DELETIONS_OFFSET], 0
 
         push    r12
         mov     r12, [this_register + FIXNUM_HASHTABLE_OLD_RAW_DATA_ADDRESS_OFFSET]
@@ -325,14 +337,19 @@ code grow_fixnum_hashtable, 'grow-fixnum-hashtable'     ; hashtable -> void
         mov     rax, [r12]
         test    rax, rax
         jz      .2
+
         mov     rdx, [r12 + BYTES_PER_CELL]     ; key in rax, value in rdx
 
-        _dup
-        mov     rbx, rdx
-        _dup
+        test    al, FIXNUM_TAG
+        jz      .3
+
+        mov     [rbp - BYTES_PER_CELL * 2], rbx
+        lea     rbp, [rbp - BYTES_PER_CELL * 2]
+        mov     [rbp], rdx
         mov     rbx, rax
         _ puthash_internal
 
+.3:
         lea     r12, [r12 + BYTES_PER_CELL * 2]
         jmp      .1
 
@@ -340,6 +357,8 @@ code grow_fixnum_hashtable, 'grow-fixnum-hashtable'     ; hashtable -> void
         ; free old bucket data
         mov     arg0_register, [this_register + FIXNUM_HASHTABLE_OLD_RAW_DATA_ADDRESS_OFFSET]
         xcall   free
+
+        mov     qword [this_register + FIXNUM_HASHTABLE_OLD_RAW_DATA_ADDRESS_OFFSET], 0
 
         pop     r12
         pop     this_register
