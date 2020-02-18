@@ -4500,13 +4500,48 @@ bi@-test
 test: fixnum-hashtable-test
     1000 :> count
     count make-fixnum-hashtable :> ht
-    count [ dup 17 + swap ht puthash ] each-integer
-    count [ dup ht gethash 17 - assert-eq ] each-integer
+    { } [
+        ht fixnum-hashtable-capacity 1024 assert-eq
+        ht fixnum-hashtable-occupancy 0? assert
+        ht fixnum-hashtable-deletions 0? assert
 
-    ht grow-fixnum-hashtable
-    count [ dup ht gethash 17 - assert-eq ] each-integer ;
+        count [ dup 17 + swap ht puthash ] each-integer
+
+        ht fixnum-hashtable-capacity 1024 assert-eq
+        ht fixnum-hashtable-occupancy count assert-eq
+        ht fixnum-hashtable-deletions 0? assert
+
+        count [ dup ht gethash 17 - assert-eq ] each-integer
+
+        ht fixnum-hashtable-capacity 1024 assert-eq
+        ht fixnum-hashtable-occupancy count assert-eq
+        ht fixnum-hashtable-deletions 0? assert
+
+        ht grow-fixnum-hashtable
+
+        ht fixnum-hashtable-capacity 2048 assert-eq
+        ht fixnum-hashtable-occupancy count assert-eq
+        ht fixnum-hashtable-deletions 0? assert
+
+        count [ dup ht gethash 17 - assert-eq ] each-integer
+    ] unit-test ;
 
 fixnum-hashtable-test
+
+test: fixnum-hashtable-test-2
+    10 :> count
+    count make-fixnum-hashtable :> ht
+    { } [
+        ht fixnum-hashtable-capacity 16 assert-eq
+        ht fixnum-hashtable-occupancy 0? assert
+        ht fixnum-hashtable-deletions 0? assert
+        "foo" 42 ht puthash
+        42 ht gethash "foo" assert=
+        "bar" 42 ht puthash
+        42 ht gethash "bar" assert=
+    ] unit-test ;
+
+fixnum-hashtable-test-2
 
 test: fixnum-hashtable-gc-test
     10 :> count
