@@ -256,6 +256,13 @@ code puthash, 'puthash'                 ; value key hashtable ->
         _drop                           ; -> value key
         _verify_fixnum
         _ puthash_internal
+
+        mov     rax, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET]
+        sar     rax, 1                  ; 50% occupancy
+        cmp     [this_register + FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET], rax
+        jl      .1
+        _ grow_fixnum_hashtable_internal
+.1:
         pop     this_register
         next
 endcode

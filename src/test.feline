@@ -4507,19 +4507,19 @@ test: fixnum-hashtable-test
 
         count [ dup 17 + swap ht puthash ] each-integer
 
-        ht fixnum-hashtable-capacity 1024 assert-eq
+        ht fixnum-hashtable-capacity 2048 assert-eq
         ht fixnum-hashtable-occupancy count assert-eq
         ht fixnum-hashtable-deletions 0? assert
 
         count [ dup ht gethash 17 - assert-eq ] each-integer
 
-        ht fixnum-hashtable-capacity 1024 assert-eq
+        ht fixnum-hashtable-capacity 2048 assert-eq
         ht fixnum-hashtable-occupancy count assert-eq
         ht fixnum-hashtable-deletions 0? assert
 
         ht grow-fixnum-hashtable
 
-        ht fixnum-hashtable-capacity 2048 assert-eq
+        ht fixnum-hashtable-capacity 4096 assert-eq
         ht fixnum-hashtable-occupancy count assert-eq
         ht fixnum-hashtable-deletions 0? assert
 
