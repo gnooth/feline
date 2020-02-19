@@ -1,0 +1,34 @@
+using: feline ;
+in: bench-hashtable
+
+empty
+
+global ht
+
+global count 1000000 count!
+
+: test1
+    2 make-fixnum-hashtable ht!
+    count [ dup 17 + swap ht puthash ] each-integer ;
+
+: test2
+    // assertions are slow
+    count [ dup ht gethash 17 - assert-eq ] each-integer ;
+
+: test3
+    // no assertions
+    count [ ht gethash drop ] each-integer ;
+
+: bench
+    // first verify correct behavior
+    test1 test2 nil ht! gc
+
+    ?nl "test1:" print
+    5 [ ' test1 time ] times
+
+    gc
+
+    ?nl "test3:" print
+    5 [ ' test3 time ] times
+
+    nil ht! gc ;
