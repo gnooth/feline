@@ -165,27 +165,20 @@ code gethash, 'gethash'                 ; key hashtable -> void
 
 .1:
         mov     r9, rax
-        shl     r9, 1           ; 2 cells per entry
-        mov     r8, [r11 + r9 * BYTES_PER_CELL]
-
-        cmp     r8, rbx
+        shl     r9, 4           ; convert entries to bytes
+        cmp     rbx, [r11 + r9]
         je      .found
+
         sub     rcx, 1          ; decrement counter
         jnz     .2
+
         ; not found
         mov     rbx, NIL
         pop     this_register
         next
 
 .found:
-        ; rbx: key
-        ; rdx: capacity
-        ; r11: data address
-        ; rax: index
-
-        add     r9, 1
-        mov     rbx, [r11 + r9 * BYTES_PER_CELL]
-
+        mov     rbx, [r11 + r9 + BYTES_PER_CELL]
         pop     this_register
         next
 endcode
