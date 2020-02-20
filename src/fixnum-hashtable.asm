@@ -183,6 +183,57 @@ code gethash, 'gethash'                 ; key hashtable -> void
         next
 endcode
 
+; ### remhash
+code remhash, 'remhash'                 ; key hashtable -> void
+
+        _ check_fixnum_hashtable        ; -> key ^hashtable
+        push    this_register
+        mov     this_register, rbx
+        _drop                           ; ^hashtable in this_register, key in rbx
+
+        _verify_fixnum
+
+        mov     rdx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET] ; capacity in rdx
+        mov     rax, rbx                ; key in rax
+        lea     r10, [rdx - 1]          ; mask in r10
+        and     rax, r10                ; apply mask to key (key is a tagged fixnum)
+
+        ; index of first entry to check is now in rax
+
+        ; get data address in r11
+        mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+
+        mov     rcx, rdx        ; rcx counts down
+
+        jmp     .1
+
+.2:
+        add     rax, 1
+        and     rax, r10
+
+.1:
+        mov     r9, rax
+        shl     r9, 4           ; convert entries to bytes
+        cmp     rbx, [r11 + r9]
+        je      .found
+
+        sub     rcx, 1          ; decrement counter
+        jnz     .2
+
+        ; not found
+        _drop
+        pop     this_register
+        next
+
+.found:
+        mov     qword [r11 + r9], S_deleted_marker
+        mov     qword [r11 + r9 + BYTES_PER_CELL], S_deleted_marker
+        add     qword [this_register + FIXNUM_HASHTABLE_RAW_DELETIONS_OFFSET], 1
+        _drop
+        pop     this_register
+        next
+endcode
+
 subroutine puthash_internal             ; value key -> void
 ; call with ^hashtable in this_register
         mov     rdx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET] ; capacity in rdx

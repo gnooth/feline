@@ -4543,6 +4543,62 @@ test: fixnum-hashtable-test-2
 
 fixnum-hashtable-test-2
 
+test: fixnum-hashtable-deletion-test
+    10 :> count
+    count make-fixnum-hashtable :> ht
+    { } [
+        ht fixnum-hashtable-capacity 16 assert-eq
+        ht fixnum-hashtable-occupancy 0? assert
+        ht fixnum-hashtable-deletions 0? assert
+
+        "foo" 42 ht puthash
+
+        ht fixnum-hashtable-occupancy 1 assert-eq
+        ht fixnum-hashtable-deletions 0? assert
+        42 ht gethash "foo" assert=
+
+        "bar" 87 ht puthash
+
+        ht fixnum-hashtable-occupancy 2 assert-eq
+        ht fixnum-hashtable-deletions 0? assert
+        87 ht gethash "bar" assert=
+
+        42 ht remhash
+
+        ht fixnum-hashtable-occupancy 2 assert-eq
+        ht fixnum-hashtable-deletions 1 assert-eq
+        42 ht gethash nil? assert
+
+        87 ht remhash
+
+        ht fixnum-hashtable-occupancy 2 assert-eq
+        ht fixnum-hashtable-deletions 2 assert-eq
+        87 ht gethash nil? assert
+
+        6 ht gethash nil? assert    // key not found
+        6 ht remhash                // no error
+        6 ht gethash nil? assert    // still not found
+
+        ht fixnum-hashtable-occupancy 2 assert-eq
+        ht fixnum-hashtable-deletions 2 assert-eq
+
+        "foo" 42 ht puthash
+
+        ht fixnum-hashtable-occupancy 3 assert-eq
+        ht fixnum-hashtable-deletions 2 assert-eq
+        42 ht gethash "foo" assert=
+
+        ht grow-fixnum-hashtable
+
+        ht fixnum-hashtable-capacity 32 assert-eq
+        ht fixnum-hashtable-occupancy 1 assert-eq
+        ht fixnum-hashtable-deletions 0? assert
+
+        42 ht gethash "foo" assert=
+    ] unit-test ;
+
+fixnum-hashtable-deletion-test
+
 test: fixnum-hashtable-gc-test
     10 :> count
     count make-fixnum-hashtable :> ht
