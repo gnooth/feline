@@ -169,9 +169,13 @@ code gethash, 'gethash'                 ; key hashtable -> void
         cmp     rbx, [r11 + r9]
         je      .found
 
+        cmp     qword [r11 + r9], S_empty_marker
+        je      .not_found
+
         sub     rcx, 1          ; decrement counter
         jnz     .2
 
+.not_found:
         ; not found
         mov     rbx, NIL
         pop     this_register
