@@ -198,7 +198,7 @@ defer compile-quotation
     ] if ;
 
 : compile-when ( node )                 // node -> void
-    ?nl node op>> symbol-name print
+//     ?nl node op>> symbol-name print
 
     pending empty? [ node op>> compile-call-symbol ] ?return
 
@@ -221,8 +221,32 @@ defer compile-quotation
 
 ' compile-when :compiler ' when symbol-set-prop
 
+: compile-unless ( node )                 // node -> void
+//     ?nl node op>> symbol-name print
+
+    pending empty? [ node op>> compile-call-symbol ] ?return
+
+    pending-last-value dup wrapper? [ wrapped ] when :> last-value
+
+    last-value callable-code-address :> address
+
+    address [
+        pending-remove-last
+        flush-pending
+        { 0x48 0x83 0xfb 0x06 } emit-bytes // cmp rbx, 6
+        emit-drop
+        0x75 emit-byte                  // jne
+        0x05 emit-byte                  // $+5
+        address compile-call-address
+    ] [
+        flush-pending
+        node op>> compile-call-symbol
+    ] if ;
+
+' compile-unless :compiler ' unless symbol-set-prop
+
 : compile-when* ( node )                // node -> void
-    ?nl node op>> symbol-name print
+//     ?nl node op>> symbol-name print
 
     pending empty? [ node op>> compile-call-symbol ] ?return
 
@@ -248,7 +272,7 @@ defer compile-quotation
 ' compile-when* :compiler ' when* symbol-set-prop
 
 : compile-both? ( node )
-    ?nl node op>> symbol-name print
+//     ?nl node op>> symbol-name print
 
     pending length 2 < [ ' both? compile-call-symbol ] ?return
 
@@ -277,7 +301,7 @@ defer compile-quotation
 ' compile-both? :compiler ' both? symbol-set-prop
 
 : compile-either? ( node )
-    ?nl node op>> symbol-name print
+//     ?nl node op>> symbol-name print
 
     pending length 2 < [ ' either? compile-call-symbol ] ?return
 
@@ -306,7 +330,7 @@ defer compile-quotation
 ' compile-either? :compiler ' either? symbol-set-prop
 
 : compile-while ( node )
-    ?nl node op>> symbol-name print
+//     ?nl node op>> symbol-name print
 
     pending length 2 < [ ' while compile-call-symbol ] ?return
 
@@ -337,7 +361,7 @@ defer compile-quotation
 ' compile-while :compiler ' while symbol-set-prop
 
 : compile-if ( node )
-    ?nl node op>> symbol-name print
+//     ?nl node op>> symbol-name print
 
     pending length 2 < [
         flush-pending
@@ -372,7 +396,7 @@ defer compile-quotation
 ' compile-if :compiler ' if symbol-set-prop
 
 : compile-if* ( node )
-    ?nl node op>> symbol-name print
+//     ?nl node op>> symbol-name print
 
     pending length 2 < [
         flush-pending
@@ -407,7 +431,7 @@ defer compile-quotation
 ' compile-if* :compiler ' if* symbol-set-prop
 
 : compile-call-quotation ( node )
-    ?nl "call" print
+//     ?nl "call" print
 
     pending empty? [ ' call compile-call-symbol ] ?return
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
@@ -424,7 +448,7 @@ defer compile-quotation
 ' compile-call-quotation :compiler ' call symbol-set-prop
 
 : compile-dip ( node )
-    ?nl node op>> symbol-name print
+//     ?nl node op>> symbol-name print
 
     pending empty? [ ' dip compile-call-symbol ] ?return
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
@@ -445,7 +469,7 @@ defer compile-quotation
 ' compile-dip :compiler ' dip symbol-set-prop
 
 : compile-keep ( node )
-    ?nl node op>> symbol-name print
+//     ?nl node op>> symbol-name print
 
     pending empty? [ node op>> compile-call-symbol ] ?return
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
@@ -465,7 +489,7 @@ defer compile-quotation
 ' compile-keep :compiler ' keep symbol-set-prop
 
 : compile-bi ( node )
-    ?nl node op>> symbol-name print
+//     ?nl node op>> symbol-name print
 
     pending length 2 < [
         flush-pending
@@ -496,7 +520,7 @@ defer compile-quotation
 ' compile-bi :compiler ' bi symbol-set-prop
 
 : compile-bi@ ( node )
-    ?nl node op>> symbol-name print
+//     ?nl node op>> symbol-name print
 
     pending length 1 < [
         flush-pending
