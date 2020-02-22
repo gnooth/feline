@@ -162,56 +162,70 @@ in: editor
 : comment-region
     // REVIEW comment-padding
 
-    current-mode comment-start>> :> s
-    s empty? ?exit
+    current-mode comment-start>> :> prefix
+    prefix empty? ?exit
 
-    nil !> region
-    mark [
-        dot mark make-region/2 region!
-        [
+    local region
+    [ mark ] [ mark-line dot-line neq? ] both?
+    [ dot mark make-region/2 region! ] when
+
+    [
+        region [
             region editor:add-undo-edit-region
-            region [ s over text>> + swap text<< ] region-each-line
+            region [ prefix over text>> + swap text<< ] region-each-line
             add-undo-move
             unmark
-        ] with-compound-undo
-    ] [
-        editor:add-undo-line-edit
-        s dot-line-text + dot-line-text!
-        dot-offset s length + dot-offset!
-        true dot-line-changed?!
-    ] if
-    modified ;
+        ] [
+            add-undo-move
+            unmark
+
+            editor:add-undo-line-edit
+            prefix dot-line-text + dot-line-text!
+            dot-offset prefix length + dot-offset!
+            true dot-line-changed?!
+        ] if
+
+        modified
+
+    ] with-compound-undo ;
 
 : uncomment-region
     // REVIEW comment-padding
 
-    current-mode comment-start>> :> s
-    s empty? ?exit
+    current-mode comment-start>> :> prefix
+    prefix empty? ?exit
 
-    nil !> region
-    mark [
-        dot mark make-region/2 region!
-        [
+    local region
+    [ mark ] [ mark-line dot-line neq? ] both? // must be multiline
+    [ dot mark make-region/2 region! ] when
+
+    [
+        region [
             region editor:add-undo-edit-region
             region [
-                s over text>> head? [
-                    s length over text>> tail swap text<<
+                prefix over text>> head? [
+                    prefix length over text>> tail swap text<<
                 ] [
                     drop
                 ] if
             ] region-each-line
             add-undo-move
             unmark
-        ] with-compound-undo
-    ] [
-        s dot-line-text head? [
-            editor:add-undo-line-edit
-            s length dot-line-text tail dot-line-text!
-            dot-offset s length - 0 max dot-offset!
-            true dot-line-changed?!
-        ] when
-    ] if
-    modified ;
+        ] [
+            add-undo-move
+            unmark
+
+            prefix dot-line-text head? [
+                editor:add-undo-line-edit
+                prefix length dot-line-text tail dot-line-text!
+                dot-offset prefix length - 0 max dot-offset!
+                true dot-line-changed?!
+            ] when
+        ] if
+
+        modified
+
+    ] with-compound-undo ;
 
 : string-remove-nth                     // n string1 -> string2
     check-bounds
