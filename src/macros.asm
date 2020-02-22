@@ -875,17 +875,17 @@ section .text
 %endif
 %endmacro
 
-%macro  _eq? 0                          ; obj1 obj2 -- ?
-        mov     eax, TRUE
+%macro  _eq? 0                          ; obj1 obj2 -> ?
         cmp     rbx, [rbp]
+        mov     eax, TRUE
         mov     ebx, NIL
         cmove   ebx, eax
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
-%macro  _eq? 1                          ; obj -- ?
-        mov     eax, TRUE
+%macro  _eq? 1                          ; obj -> ?
         cmp     rbx, %1
+        mov     eax, TRUE
         mov     ebx, NIL
         cmove   ebx, eax
 %endmacro
