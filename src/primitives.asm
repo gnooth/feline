@@ -159,9 +159,9 @@ inline eq?, 'eq?'
 endinline
 
 ; ### neq?
-inline neq?, 'neq?'                     ; x y -- ?
-        mov     eax, TRUE
+inline neq?, 'neq?'                     ; x y -> ?
         cmp     rbx, [rbp]
+        mov     eax, TRUE
         mov     ebx, NIL
         cmovne  ebx, eax
         lea     rbp, [rbp + BYTES_PER_CELL]
