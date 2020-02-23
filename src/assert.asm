@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -64,18 +64,18 @@ code check_assert_false, 'check-assert-false'   ; x location --
 endcode
 
 ; ### check-assert-eq
-code check_assert_eq, 'check-assert-eq'         ; x y location --
+code check_assert_eq, 'check-assert-eq'         ; x y location ->
         _debug_?enough 3
-        _ feline_2over
-        _eq?
-        _tagged_if .1
+        mov     rax, [rbp]
+        cmp     rax, [rbp + BYTES_PER_CELL]
+        jne     .1
         _3drop
-        _else .1
+        next
+.1:
         _ set_error_location
         _quote "Assertion failed: %S %S eq?"
         _ format
         _ error
-        _then .1
         next
 endcode
 
