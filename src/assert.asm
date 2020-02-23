@@ -24,14 +24,15 @@ code assertion_failed, 'assertion-failed'       ; location --
 endcode
 
 ; ### check-assert
-code check_assert, 'check-assert'       ; x location --
+code check_assert, 'check-assert'       ; x location ->
         _debug_?enough 2
-        _swap
-        _tagged_if .1
+        cmp     qword [rbp], NIL
+        je      .1
+        _2drop
+        next
+.1:
         _drop
-        _else .1
         _ assertion_failed
-        _then .1
         next
 endcode
 
