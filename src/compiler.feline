@@ -129,7 +129,7 @@ defer compile-quotation
         x make-literal-node
     ] if ;
 
-: precompile-quotation                  // quotation -> array
+: precompile-quotation                  // quotation -> vector
 
     64 <vector> :> vec
 
@@ -158,7 +158,7 @@ defer compile-quotation
 
     emit-dup
     object>uint64
-    dup 32 rshift 0 = [
+    dup 32 rshift 0? [
         0xbb emit-byte emit-dword
     ] [
         0x48 emit-byte 0xbb emit-byte emit-qword
@@ -576,7 +576,7 @@ defer compile-quotation
 
     node op>> :> op
 
-    node pred>> [ type>> ] [ f ] if* :> derived-type
+    node pred>> [ type>> ] [ nil ] if* :> derived-type
 
     compile-verbose? [ ?nl "compile-generic derived-type = " write derived-type . ] when
 
