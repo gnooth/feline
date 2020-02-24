@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ file __FILE__
 
 ; ### max-locals
 code max_locals, 'max-locals'           ; -> n
-        pushrbx
+        _dup
         mov     ebx, tagged_fixnum(MAX_LOCALS)
         next
 endcode
@@ -45,57 +45,57 @@ endcode
 
 ; ### local_0_get
 inline local_0_get, 'local_0_get', SYMBOL_INTERNAL      ; -> value
-        pushrbx
+        _dup
         mov     rbx, [r14]
 endinline
 
 ; ### local_1_get
 inline local_1_get, 'local_1_get', SYMBOL_INTERNAL      ; -> value
-        pushrbx
+        _dup
         mov     rbx, [r14 + BYTES_PER_CELL]
 endinline
 
 ; ### local_2_get
 inline local_2_get, 'local_2_get', SYMBOL_INTERNAL      ; -> value
-        pushrbx
+        _dup
         mov     rbx, [r14 + BYTES_PER_CELL * 2]
 endinline
 
 ; ### local_3_get
 inline local_3_get, 'local_3_get', SYMBOL_INTERNAL      ; -> value
-        pushrbx
+        _dup
         mov     rbx, [r14 + BYTES_PER_CELL * 3]
 endinline
 
 ; ### local_4_get
 inline local_4_get, 'local_4_get', SYMBOL_INTERNAL      ; -> value
-        pushrbx
+        _dup
         mov     rbx, [r14 + BYTES_PER_CELL * 4]
 endinline
 
 ; ### local_5_get
 inline local_5_get, 'local_5_get', SYMBOL_INTERNAL      ; -> value
-        pushrbx
+        _dup
         mov     rbx, [r14 + BYTES_PER_CELL * 5]
 endinline
 
 ; ### local_6_get
 inline local_6_get, 'local_6_get', SYMBOL_INTERNAL      ; -> value
-        pushrbx
+        _dup
         mov     rbx, [r14 + BYTES_PER_CELL * 6]
 endinline
 
 ; ### local_7_get
 inline local_7_get, 'local_7_get', SYMBOL_INTERNAL      ; -> value
-        pushrbx
+        _dup
         mov     rbx, [r14 + BYTES_PER_CELL * 7]
 endinline
 
-asm_global local_getters_, f_value
+asm_global local_getters_, NIL
 
 ; ### local-getters
 code local_getters, 'local-getters'     ; -> vector
-        pushrbx
+        _dup
         mov     rbx, [local_getters_]
         next
 endcode
@@ -105,12 +105,12 @@ code initialize_local_getters, 'initialize_local_getters', SYMBOL_INTERNAL
         _lit 16
         _ new_vector_untagged
         mov     [local_getters_], rbx
-        poprbx
+        _drop
 
         _lit local_getters_
         _ gc_add_root
 
-        pushrbx
+        _dup
         mov     rbx, [local_getters_]
 
         _lit S_local_0_get
@@ -158,7 +158,7 @@ code local_getter, 'local-getter'       ; index -> symbol
 endcode
 
 ; ### local!
-code local_set, 'local!'                ; value index --
+code local_set, 'local!'                ; value index -> void
         _check_index
         _cells
         add     rbx, r14
@@ -172,63 +172,63 @@ endcode
 inline local_0_set, 'local_0_set', SYMBOL_INTERNAL      ; value -> void
         _debug_?enough_1
         mov     [r14], rbx
-        poprbx
+        _drop
 endinline
 
 ; ### local_1_set
 inline local_1_set, 'local_1_set', SYMBOL_INTERNAL      ; value -> void
         _debug_?enough_1
         mov     [r14 + BYTES_PER_CELL], rbx
-        poprbx
+        _drop
 endinline
 
 ; ### local_2_set
 inline local_2_set, 'local_2_set', SYMBOL_INTERNAL      ; value -> void
         _debug_?enough_1
         mov     [r14 + BYTES_PER_CELL * 2], rbx
-        poprbx
+        _drop
 endinline
 
 ; ### local_3_set
 inline local_3_set, 'local_3_set', SYMBOL_INTERNAL      ; value -> void
         _debug_?enough_1
         mov     [r14 + BYTES_PER_CELL * 3], rbx
-        poprbx
+        _drop
 endinline
 
 ; ### local_4_set
 inline local_4_set, 'local_4_set', SYMBOL_INTERNAL      ; value -> void
         _debug_?enough_1
         mov     [r14 + BYTES_PER_CELL * 4], rbx
-        poprbx
+        _drop
 endinline
 
 ; ### local_5_set
 inline local_5_set, 'local_5_set', SYMBOL_INTERNAL      ; value -> void
         _debug_?enough_1
         mov     [r14 + BYTES_PER_CELL * 5], rbx
-        poprbx
+        _drop
 endinline
 
 ; ### local_6_set
 inline local_6_set, 'local_6_set', SYMBOL_INTERNAL      ; value -> void
         _debug_?enough_1
         mov     [r14 + BYTES_PER_CELL * 6], rbx
-        poprbx
+        _drop
 endinline
 
 ; ### local_7_set
 inline local_7_set, 'local_7_set', SYMBOL_INTERNAL      ; value -> void
         _debug_?enough_1
         mov     [r14 + BYTES_PER_CELL * 7], rbx
-        poprbx
+        _drop
 endinline
 
-asm_global local_setters_, f_value
+asm_global local_setters_, NIL
 
 ; ### local-setters
 code local_setters, 'local-setters'     ; -> vector
-        pushrbx
+        _dup
         mov     rbx, [local_setters_]
         next
 endcode
@@ -238,12 +238,12 @@ code initialize_local_setters, 'initialize_local_setters', SYMBOL_INTERNAL
         _lit 16
         _ new_vector_untagged
         mov     [local_setters_], rbx
-        poprbx
+        _drop
 
         _lit local_setters_
         _ gc_add_root
 
-        pushrbx
+        _dup
         mov     rbx, [local_setters_]
 
         _lit S_local_0_set
@@ -290,20 +290,20 @@ code local_setter, 'local-setter'       ; index -> symbol
         next
 endcode
 
-asm_global using_locals?_, f_value
+asm_global using_locals?_, NIL
 
 ; ### using-locals?
 code using_locals?, 'using-locals?'     ; -> ?
-        pushrbx
+        _dup
         mov     rbx, [using_locals?_]
         next
 endcode
 
-asm_global locals_, f_value
+asm_global locals_, NIL
 
 ; ### locals
-code locals, 'locals'                   ; -- hashtable/f
-        pushrbx
+code locals, 'locals'                   ; -> hashtable/nil
+        _dup
         mov     rbx, [locals_]
         next
 endcode
@@ -311,18 +311,18 @@ endcode
 asm_global locals_count_, 0
 
 ; ### locals-count
-code locals_count, 'locals-count'       ; -- n
-        pushrbx
+code locals_count, 'locals-count'       ; -> n
+        _dup
         mov     rbx, [locals_count_]
         _tag_fixnum
         next
 endcode
 
-asm_global local_names_, f_value
+asm_global local_names_, NIL
 
 ; ### local-names
 code local_names, 'local-names'
-        pushrbx
+        _dup
         mov     rbx, [local_names_]
         next
 endcode
@@ -358,16 +358,16 @@ code initialize_locals, 'initialize-locals'
         _lit MAX_LOCALS
         _ new_hashtable_untagged
         mov     [locals_], rbx
-        poprbx
+        _drop
 
         mov     qword [locals_count_], 0
 
         _lit MAX_LOCALS * 2
         _ new_hashtable_untagged
         mov     [local_names_], rbx
-        poprbx
+        _drop
 
-        mov     qword [using_locals?_], t_value
+        mov     qword [using_locals?_], TRUE
 
         _lit S_locals_enter
         _lit tagged_zero
@@ -500,10 +500,10 @@ code add_local_setter, 'add-local-setter'       ; string -> void
 endcode
 
 ; ### forget-locals
-code forget_locals, 'forget-locals'     ; --
-        mov     qword [locals_], f_value
+code forget_locals, 'forget-locals'
+        mov     qword [locals_], NIL
         mov     qword [locals_count_], 0
-        mov     qword [local_names_], f_value
-        mov     qword [using_locals?_], f_value
+        mov     qword [local_names_], NIL
+        mov     qword [using_locals?_], NIL
         next
 endcode
