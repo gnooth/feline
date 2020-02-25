@@ -556,15 +556,15 @@ defer compile-quotation
         node op>> compile-primitive
     ] ?return
 
-    node op>> symbol-name {
-        { "local_0_set" [ 0 ] }
-        { "local_1_set" [ 1 ] }
-        { "local_2_set" [ 2 ] }
-        { "local_3_set" [ 3 ] }
-        { "local_4_set" [ 4 ] }
-        { "local_5_set" [ 5 ] }
-        { "local_6_set" [ 6 ] }
-        { "local_7_set" [ 7 ] }
+    node op>> {
+        { local_0_set [ 0 ] }
+        { local_1_set [ 1 ] }
+        { local_2_set [ 2 ] }
+        { local_3_set [ 3 ] }
+        { local_4_set [ 4 ] }
+        { local_5_set [ 5 ] }
+        { local_6_set [ 6 ] }
+        { local_7_set [ 7 ] }
     } case :> n
 
     pending last literal-value>> :> x
