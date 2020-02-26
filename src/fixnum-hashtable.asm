@@ -15,14 +15,16 @@
 
 file __FILE__
 
-; 6 cells (object header, capacity, occupancy, deletions, data address, old data address)
-%define FIXNUM_HASHTABLE_SIZE                            6 * BYTES_PER_CELL
+; 7 cells (object header, capacity, occupancy, deletions, data address,
+; old data address, mask)
+%define FIXNUM_HASHTABLE_SIZE                            7 * BYTES_PER_CELL
 
 %define FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET             8
 %define FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET           16
 %define FIXNUM_HASHTABLE_RAW_DELETIONS_OFFSET           24
 %define FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET        32
 %define FIXNUM_HASHTABLE_OLD_RAW_DATA_ADDRESS_OFFSET    40
+%define FIXNUM_HASHTABLE_RAW_MASK_OFFSET                48
 
 ; ### check_fixnum_hashtable
 code check_fixnum_hashtable, 'check_fixnum_hashtable' ; handle -> ^hashtable
@@ -84,6 +86,10 @@ code make_fixnum_hashtable, 'make-fixnum-hashtable' ; capacity -> hashtable
         mov     qword [rax], TYPECODE_FIXNUM_HASHTABLE
 
         mov     qword [rax + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET], rbx
+
+        mov     qword [rax + FIXNUM_HASHTABLE_RAW_MASK_OFFSET], rbx
+        sub     qword [rax + FIXNUM_HASHTABLE_RAW_MASK_OFFSET], 1
+
         mov     qword [rax + FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET], 0
         mov     qword [rax + FIXNUM_HASHTABLE_RAW_DELETIONS_OFFSET], 0
         push    rax
@@ -145,23 +151,21 @@ code gethash, 'gethash'                 ; key hashtable -> void
 
         _verify_fixnum
 
-        mov     rdx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET] ; capacity in rdx
         mov     rax, rbx                ; key in rax
-        lea     r10, [rdx - 1]          ; mask in r10
-        and     rax, r10                ; apply mask to key (key is a tagged fixnum)
+        and     rax, qword [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
         ; index of first entry to check is now in rax
 
         ; get data address in r11
         mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
 
-        mov     rcx, rdx        ; rcx counts down
+        mov     rcx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET] ; rcx counts down
 
         jmp     .1
 
 .2:
         add     rax, 1
-        and     rax, r10
+        and     rax, qword [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
 .1:
         mov     r9, rax
@@ -372,6 +376,9 @@ subroutine grow_fixnum_hashtable_internal
         mov     rax, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET]
         shl     rax, 1                  ; double existing capacity
         mov     [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET], rax
+
+        mov     qword [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET], rax
+        sub     qword [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET], 1
 
         _dup
         mov     rbx, rax
