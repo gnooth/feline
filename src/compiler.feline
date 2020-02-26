@@ -165,7 +165,7 @@ defer compile-quotation
     ] if ;
 
 : flush-pending
-    pending empty? [
+    pending length 0? [
         pending [ compile-literal ] each
         pending vector-delete-all
     ] unless ;
@@ -200,7 +200,7 @@ defer compile-quotation
 : compile-when ( node )                 // node -> void
 //     ?nl node op>> symbol-name print
 
-    pending empty? [ node op>> compile-call-symbol ] ?return
+    pending length 0? [ node op>> compile-call-symbol ] ?return
 
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
 
@@ -224,7 +224,7 @@ defer compile-quotation
 : compile-unless ( node )                 // node -> void
 //     ?nl node op>> symbol-name print
 
-    pending empty? [ node op>> compile-call-symbol ] ?return
+    pending length 0? [ node op>> compile-call-symbol ] ?return
 
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
 
@@ -248,7 +248,7 @@ defer compile-quotation
 : compile-when* ( node )                // node -> void
 //     ?nl node op>> symbol-name print
 
-    pending empty? [ node op>> compile-call-symbol ] ?return
+    pending length 0? [ node op>> compile-call-symbol ] ?return
 
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
 
@@ -433,7 +433,7 @@ defer compile-quotation
 : compile-call-quotation ( node )
 //     ?nl "call" print
 
-    pending empty? [ ' call compile-call-symbol ] ?return
+    pending length 0? [ ' call compile-call-symbol ] ?return
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
     last-value callable-code-address :> address
     address [
@@ -450,7 +450,7 @@ defer compile-quotation
 : compile-dip ( node )
 //     ?nl node op>> symbol-name print
 
-    pending empty? [ ' dip compile-call-symbol ] ?return
+    pending length 0? [ ' dip compile-call-symbol ] ?return
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
     last-value callable-code-address :> address
     address [
@@ -471,7 +471,7 @@ defer compile-quotation
 : compile-keep ( node )
 //     ?nl node op>> symbol-name print
 
-    pending empty? [ node op>> compile-call-symbol ] ?return
+    pending length 0? [ node op>> compile-call-symbol ] ?return
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
     last-value callable-code-address :> address
     address [
@@ -522,8 +522,7 @@ defer compile-quotation
 : compile-bi@ ( node )
 //     ?nl node op>> symbol-name print
 
-    pending length 1 < [
-        flush-pending
+    pending length 0? [
         node op>> compile-call-symbol
     ] ?return
 
@@ -551,8 +550,7 @@ defer compile-quotation
 : compile-local-set ( node )
 //     ?nl node op>> symbol-name print
 
-    pending length 1 < [
-        flush-pending
+    pending length 0? [
         node op>> compile-primitive
     ] ?return
 
@@ -593,6 +591,37 @@ defer compile-quotation
 ' compile-local-set :compiler ' local_5_set symbol-set-prop
 ' compile-local-set :compiler ' local_6_set symbol-set-prop
 ' compile-local-set :compiler ' local_7_set symbol-set-prop
+
+: compile-symbol-value ( node )         // node -> void
+//     ?nl node op>> symbol-name print
+
+    pending length 0? [
+        node op>> compile-primitive
+    ] ?return
+
+    pending last literal-value>> !> x
+
+    x wrapper? [ x wrapped x! ] when
+
+    x symbol? nil? [
+        flush-pending
+        node op>> compile-primitive
+    ] ?return
+
+    // x is a symbol
+    x object-address :> addr
+
+    pending-remove-last
+    flush-pending
+
+    emit-dup
+    0x48 emit-byte
+    0xbb emit-byte
+    addr emit-qword
+    { 0x48 0x8b 0x5b 0x30 } emit-bytes  // mov rbx, qword [rbx + BYTES_PER_CELL * 6]
+;
+
+' compile-symbol-value :compiler ' symbol-value symbol-set-prop
 
 : compile-declare ( node )              // node -> void
     ?nl "declare" print
