@@ -227,26 +227,29 @@ code verify_static_symbol, 'verify_static_symbol', SYMBOL_INTERNAL
 endcode
 
 ; ### check_symbol
-code check_symbol, 'check_symbol', SYMBOL_INTERNAL      ; x -- symbol
+code check_symbol, 'check_symbol', SYMBOL_INTERNAL      ; x -> ^symbol
 
         cmp     bl, HANDLE_TAG
         jne     verify_static_symbol
 
-        ; save argument in rdx
-        mov     rdx, rbx
+        ; save argument in rax
+        mov     rax, rbx
 
-        _handle_to_object_unsafe
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]              ; -> ^symbol
 
+%ifdef DEBUG
         test    rbx, rbx
-        jz      .error
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_SYMBOL
+        jz      error_empty_handle
+%endif
+
+        cmp     word [rbx], TYPECODE_SYMBOL
         jne     .error
-        _return
+        next
 
 .error:
         ; restore original argument for error message
-        mov     rbx, rdx
+        mov     rbx, rax
         jmp     error_not_symbol
 
         next
