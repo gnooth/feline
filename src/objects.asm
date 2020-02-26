@@ -35,16 +35,15 @@ code raw_allocate_cells, 'raw_allocate_cells', SYMBOL_INTERNAL
 endcode
 
 ; ### object-address
-code object_address, 'object-address'   ; handle -- tagged-address
-        _dup
-        _ handle?
-        _tagged_if .1
+code object_address, 'object-address'   ; x -> tagged-address
+        cmp     bl, HANDLE_TAG
+        jne     .1
         _handle_to_object_unsafe
         _tag_fixnum
-        _return
-        _then .1
+        next
 
-        ; not allocated
+.1:
+        ; not a handle
         _dup
         _ string?
         _tagged_if .2
@@ -60,7 +59,7 @@ code object_address, 'object-address'   ; handle -- tagged-address
         _then .3
 
         ; apparently not an object
-        mov     ebx, f_value
+        mov     ebx, NIL
 
         next
 endcode
