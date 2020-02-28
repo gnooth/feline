@@ -4532,13 +4532,27 @@ test: fixnum-hashtable-test-2
     10 :> count
     count make-fixnum-hashtable :> ht
     { } [
+
         ht fixnum-hashtable-capacity 16 assert-eq
         ht fixnum-hashtable-occupancy 0? assert
         ht fixnum-hashtable-deletions 0? assert
+
         "foo" 42 ht puthash
         42 ht gethash "foo" assert=
+
         "bar" 42 ht puthash
         42 ht gethash "bar" assert=
+
+        // negative key
+        "zork" -87 ht puthash
+        -87 ht gethash "zork" assert=
+
+        "high" most-positive-fixnum ht puthash
+        most-positive-fixnum ht gethash "high" assert=
+
+        "low" most-negative-fixnum ht puthash
+        most-negative-fixnum ht gethash "low" assert=
+
     ] unit-test ;
 
 fixnum-hashtable-test-2
