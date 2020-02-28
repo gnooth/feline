@@ -152,7 +152,7 @@ code gethash, 'gethash'                 ; key hashtable -> void
         _verify_fixnum
 
         mov     rax, rbx                ; key in rax
-        and     rax, qword [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
+        and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
         ; index of first entry to check is now in rax
 
@@ -165,7 +165,7 @@ code gethash, 'gethash'                 ; key hashtable -> void
 
 .2:
         add     rax, 1
-        and     rax, qword [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
+        and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
 .1:
         mov     r9, rax
@@ -201,32 +201,35 @@ code remhash, 'remhash'                 ; key hashtable -> void
 
         _verify_fixnum
 
-        mov     rdx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET] ; capacity in rdx
-        mov     rax, rbx                ; key in rax
-        lea     r10, [rdx - 1]          ; mask in r10
-        and     rax, r10                ; apply mask to key (key is a tagged fixnum)
+        ; data address in r11
+        mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+
+        ; loop counter in rcx
+        mov     rcx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET]
+
+        ; hashcode in rax
+        ; for a fixnum hashtable, the hashcode is the key itself
+        mov     rax, rbx
+
+        ; apply mask to get index of first entry to check
+        and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
         ; index of first entry to check is now in rax
 
-        ; get data address in r11
-        mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+        jmp     .loop_entry
 
-        mov     rcx, rdx        ; rcx counts down
-
-        jmp     .1
-
-.2:
+.loop_top:
         add     rax, 1
-        and     rax, r10
+        and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
-.1:
+.loop_entry:
         mov     r9, rax
         shl     r9, 4           ; convert entries to bytes
         cmp     rbx, [r11 + r9]
         je      .found
 
-        sub     rcx, 1          ; decrement counter
-        jnz     .2
+        sub     rcx, 1          ; count down
+        jnz     .loop_top
 
         ; not found
         _drop
