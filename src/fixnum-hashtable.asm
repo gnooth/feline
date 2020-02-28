@@ -228,10 +228,13 @@ code remhash, 'remhash'                 ; key hashtable -> void
         cmp     rbx, [r11 + r9]
         je      .found
 
+        cmp     qword [r11 + r9], S_empty_marker
+        je      .not_found
+
         sub     rcx, 1          ; count down
         jnz     .loop_top
 
-        ; not found
+.not_found:
         _drop
         pop     this_register
         next
