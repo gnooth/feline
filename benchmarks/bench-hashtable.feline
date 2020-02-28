@@ -19,16 +19,30 @@ global count 1000000 count!
     // no assertions
     count [ ht gethash drop ] each-integer ;
 
+: test4
+    // looking for keys that aren't there
+    count [ count + ht gethash drop ] each-integer ;
+
 : bench
     // first verify correct behavior
     test1 test2 nil ht! gc
 
-    ?nl "test1:" print
+    ?nl "test1" print
     5 [ ' test1 time ] times
 
     gc
 
-    ?nl "test3:" print
+    ?nl "test2" print
+    5 [ ' test2 time ] times
+
+    gc
+
+    ?nl "test3" print
     5 [ ' test3 time ] times
+
+    gc
+
+    ?nl "test4" print
+    5 [ ' test4 time ] times
 
     nil ht! gc ;
