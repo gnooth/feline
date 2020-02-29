@@ -26,6 +26,24 @@ file __FILE__
 %define FIXNUM_HASHTABLE_OLD_RAW_DATA_ADDRESS_OFFSET    40
 %define FIXNUM_HASHTABLE_RAW_MASK_OFFSET                48
 
+; ### fixnum-hashtable?
+code fixnum_hashtable?, 'fixnum-hashtable?'     ; x -> ?
+        cmp     bl, HANDLE_TAG
+        jne     .no
+        _handle_to_object_unsafe
+%ifdef DEBUG
+        test    rbx, rbx
+        jz      error_empty_handle
+%endif
+        cmp     word [rbx], TYPECODE_FIXNUM_HASHTABLE
+        jne     .no
+        mov     ebx, TRUE
+        next
+.no:
+        mov     ebx, NIL
+        next
+endcode
+
 ; ### check_fixnum_hashtable
 code check_fixnum_hashtable, 'check_fixnum_hashtable' ; handle -> ^hashtable
         cmp     bl, HANDLE_TAG
@@ -456,5 +474,57 @@ code grow_fixnum_hashtable, 'grow-fixnum-hashtable'     ; hashtable -> void
         _ grow_fixnum_hashtable_internal
 
         pop     this_register
+        next
+endcode
+
+; ### fixnum-hashtable->string
+code fixnum_hashtable_to_string, 'fixnum-hashtable->string' ; hashtable -> string
+        _ check_fixnum_hashtable
+
+        push    this_register
+        mov     this_register, rbx
+        _drop
+
+        _quote "H{"
+        _ string_to_sbuf                ; -> sbuf
+
+        push    r12
+        mov     r12, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+
+.1:
+        mov     rax, [r12]
+        test    rax, rax
+        jz      .2
+        _quote " { "
+        _over
+        _ sbuf_append_string
+        _dup
+        mov     rbx, [r12]
+        _ object_to_string
+        _over
+        _ sbuf_append_string
+        _lit tagged_char(32)
+        _over
+        _ sbuf_push
+        _dup
+        mov     rbx, [r12 + BYTES_PER_CELL]
+        _ object_to_string
+        _over
+        _ sbuf_append_string
+        _quote " }"
+        _over
+        _ sbuf_append_string
+        lea     r12, [r12 + BYTES_PER_CELL * 2]
+        jmp      .1
+
+.2:
+        pop     r12
+        pop     this_register
+
+        _quote " }"
+        _over
+        _ sbuf_append_string
+        _ sbuf_to_string
+
         next
 endcode

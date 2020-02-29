@@ -503,6 +503,13 @@ code object_to_string, 'object->string' ; object -> string
         _return
         _then .36
 
+        _dup
+        _ fixnum_hashtable?
+        _tagged_if .37
+        _ fixnum_hashtable_to_string
+        _return
+        _then .37
+
         ; give up
         _ raw_uint64_to_hex
         _quote "0x"
