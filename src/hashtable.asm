@@ -713,35 +713,3 @@ code hashtable_to_string, 'hashtable>string'    ; hashtable -- string
 
         next
 endcode
-
-; ### .hashtable
-code dot_hashtable, '.hashtable'        ; hashtable --
-        _ check_hashtable
-
-        push    this_register
-        mov     this_register, rbx
-
-        _write "H{"
-        _hashtable_raw_capacity
-        _register_do_times .1
-        _i
-        _this_hashtable_nth_key
-        _dup
-        _tagged_if .2
-        _write " { "
-        _ dot_object
-        _ space
-        _i
-        _this_hashtable_nth_value
-        _ dot_object
-        _ space
-        _write "}"
-        _else .2
-        _drop
-        _then .2
-        _loop .1
-        _write " }"
-
-        pop     this_register
-        next
-endcode
