@@ -161,13 +161,13 @@ code gethash, 'gethash'                 ; key hashtable -> void
 
         mov     rcx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET] ; rcx counts down
 
-        jmp     .1
+        jmp     .loop_entry
 
-.2:
+.loop_top:
         add     rax, 1
         and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
-.1:
+.loop_entry:
         mov     r9, rax
         shl     r9, 4           ; convert entries to bytes
         cmp     rbx, [r11 + r9]
@@ -177,7 +177,7 @@ code gethash, 'gethash'                 ; key hashtable -> void
         je      .not_found
 
         sub     rcx, 1          ; decrement counter
-        jnz     .2
+        jnz     .loop_top
 
 .not_found:
         ; not found
@@ -207,7 +207,7 @@ code remhash, 'remhash'                 ; key hashtable -> void
         ; loop counter in rcx
         mov     rcx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET]
 
-        ; hashcode in rax
+        ; get hashcode in rax
         ; for a fixnum hashtable, the hashcode is the key itself
         mov     rax, rbx
 
@@ -225,6 +225,7 @@ code remhash, 'remhash'                 ; key hashtable -> void
 .loop_entry:
         mov     r9, rax
         shl     r9, 4           ; convert entries to bytes
+
         cmp     rbx, [r11 + r9]
         je      .found
 
@@ -250,37 +251,40 @@ endcode
 
 subroutine puthash_internal             ; value key -> void
 ; call with ^hashtable in this_register
-        mov     rdx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET] ; capacity in rdx
-        mov     rax, rbx        ; key in rax
-        lea     r10, [rdx - 1]  ; mask in r10
-        and     rax, r10        ; apply mask to key (fixnum)
+
+        ; data address in r11
+        mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+
+        ; loop counter in rcx
+        mov     rcx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET] ; rcx counts down
+
+        ; get hashcode in rax
+        ; for a fixnum hashtable, the hashcode is the key itself
+        mov     rax, rbx
+
+        ; apply mask to get index of first entry to check
+        and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
         ; index of first entry to check is now in rax
 
-        ; get data address in r11
-        mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+        jmp     .loop_entry
 
-        mov     rcx, rdx        ; rcx counts down
-
-        jmp     .1
-
-.2:
+.loop_top:
         add     rax, 1
-        and     rax, r10
+        and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
-.1:
+.loop_entry:
         mov     r9, rax
-        shl     r9, 1           ; 2 cells per entry
-        mov     r8, [r11 + r9 * BYTES_PER_CELL]
+        shl     r9, 4           ; convert entries to bytes
 
-        cmp     r8, S_empty_marker
-        jz      .found_empty_slot
+        cmp     rbx, [r11 + r9]
+        je      .found_key
 
-        cmp     r8, rbx
-        jz      .found_key
+        cmp     qword [r11 + r9], S_empty_marker
+        je      .found_empty_slot
 
-        sub     rcx, 1          ; decrement counter
-        jnz     .2
+        sub     rcx, 1          ; count down
+        jnz     .loop_top
 
         ; REVIEW this shouldn't happen
         _error "no empty buckets"
@@ -288,19 +292,17 @@ subroutine puthash_internal             ; value key -> void
 
 .found_empty_slot:
 
-        ; rbx: key
-        ; [rbp]: value
-        ; rdx: capacity
-        ; r11: data address
-        ; rax: index
+        ; store key
+        mov     [r11 + r9], rbx
 
-        mov     [r11 + r9 * BYTES_PER_CELL], rbx        ; store key
+        ; update occupancy
         add     qword [this_register + FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET], 1
 
+        ; fall through...
+
 .found_key:
-        mov     r8, [rbp]                               ; r8: value
-        add     r9, 1
-        mov     [r11 + r9 * BYTES_PER_CELL], r8         ; store value
+        mov     rax, [rbp]                               ; get value in rax
+        mov     [r11 + r9 + BYTES_PER_CELL], rax         ; store value
 
         _2drop
         ret
