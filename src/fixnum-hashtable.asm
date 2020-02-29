@@ -151,16 +151,20 @@ code gethash, 'gethash'                 ; key hashtable -> void
 
         _verify_fixnum
 
-        mov     rax, rbx                ; key in rax
+        ; data address in r11
+        mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+
+        ; loop counter in rcx
+        mov     rcx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET]
+
+        ; get hashcode in rax
+        ; for a fixnum hashtable, the hashcode is the key itself
+        mov     rax, rbx
+
+        ; apply mask to get index of first entry to check
         and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
         ; index of first entry to check is now in rax
-
-        ; get data address in r11
-        mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
-
-        mov     rcx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET] ; rcx counts down
-
         jmp     .loop_entry
 
 .loop_top:
@@ -170,17 +174,21 @@ code gethash, 'gethash'                 ; key hashtable -> void
 .loop_entry:
         mov     r9, rax
         shl     r9, 4           ; convert entries to bytes
+
         cmp     rbx, [r11 + r9]
         je      .found
 
         cmp     qword [r11 + r9], S_empty_marker
         je      .not_found
 
-        sub     rcx, 1          ; decrement counter
+        sub     rcx, 1          ; count down
         jnz     .loop_top
 
+        ; REVIEW this shouldn't happen
+        _error "no empty buckets"
+        next
+
 .not_found:
-        ; not found
         mov     rbx, NIL
         pop     this_register
         next
@@ -215,7 +223,6 @@ code remhash, 'remhash'                 ; key hashtable -> void
         and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
         ; index of first entry to check is now in rax
-
         jmp     .loop_entry
 
 .loop_top:
@@ -235,15 +242,17 @@ code remhash, 'remhash'                 ; key hashtable -> void
         sub     rcx, 1          ; count down
         jnz     .loop_top
 
-.not_found:
-        _drop
-        pop     this_register
+        ; REVIEW this shouldn't happen
+        _error "no empty buckets"
         next
 
 .found:
         mov     qword [r11 + r9], S_deleted_marker
         mov     qword [r11 + r9 + BYTES_PER_CELL], S_deleted_marker
         add     qword [this_register + FIXNUM_HASHTABLE_RAW_DELETIONS_OFFSET], 1
+        ; fall through...
+
+.not_found:
         _drop
         pop     this_register
         next
@@ -266,7 +275,6 @@ subroutine puthash_internal             ; value key -> void
         and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
         ; index of first entry to check is now in rax
-
         jmp     .loop_entry
 
 .loop_top:
@@ -278,10 +286,10 @@ subroutine puthash_internal             ; value key -> void
         shl     r9, 4           ; convert entries to bytes
 
         cmp     rbx, [r11 + r9]
-        je      .found_key
+        je      .found
 
         cmp     qword [r11 + r9], S_empty_marker
-        je      .found_empty_slot
+        je      .not_found
 
         sub     rcx, 1          ; count down
         jnz     .loop_top
@@ -290,19 +298,18 @@ subroutine puthash_internal             ; value key -> void
         _error "no empty buckets"
         ret
 
-.found_empty_slot:
-
+.not_found:
         ; store key
         mov     [r11 + r9], rbx
-
         ; update occupancy
         add     qword [this_register + FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET], 1
-
         ; fall through...
 
-.found_key:
-        mov     rax, [rbp]                               ; get value in rax
-        mov     [r11 + r9 + BYTES_PER_CELL], rax         ; store value
+.found:
+        ; get value in rax
+        mov     rax, [rbp]
+        ; store value
+        mov     [r11 + r9 + BYTES_PER_CELL], rax
 
         _2drop
         ret
@@ -310,11 +317,14 @@ endsub
 
 ; ### puthash
 code puthash, 'puthash'                 ; value key hashtable ->
+
         _ check_fixnum_hashtable        ; -> value key ^hashtable
         push    this_register
         mov     this_register, rbx      ; ^hashtable in this_register
         _drop                           ; -> value key
+
         _verify_fixnum
+
         _ puthash_internal
 
         mov     rax, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET]
@@ -322,6 +332,7 @@ code puthash, 'puthash'                 ; value key hashtable ->
         cmp     [this_register + FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET], rax
         jl      .1
         _ grow_fixnum_hashtable_internal
+
 .1:
         pop     this_register
         next
