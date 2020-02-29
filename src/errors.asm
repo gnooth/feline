@@ -372,6 +372,13 @@ code error_not_quotation, 'error-not-quotation'
         next
 endcode
 
+; ### error-not-boolean
+code error_not_boolean, 'error-not-boolean'
+        _quote "a boolean"
+        _ format_type_error
+        next
+endcode
+
 ; ### error-index-not-valid-for-string  ; index string -> void
 code error_index_not_valid_for_string, 'error-index-not-valid-for-string'
         _quote "ERROR: the value %d is not a valid index for the string %S."
