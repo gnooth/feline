@@ -582,8 +582,8 @@ generic stream_?nl, 'stream-?nl'        ; stream -> void
 ; ### close
 generic generic_close, 'close'          ; stream -> void
 
-; ### generic-object->string
-generic generic_object_to_string, 'generic-object->string' ; object -> string
+; ### object->string
+generic object_to_string, 'object->string' ; object -> string
 
 ; ### initialize_generic_functions
 code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERNAL ; ->
@@ -796,40 +796,40 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method generic_close, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_close
 
         ; object-to-string
-        _initialize_generic_function generic_object_to_string
-        _add_method generic_object_to_string, TYPECODE_BOOLEAN, boolean_to_string
-        _add_method generic_object_to_string, TYPECODE_STRING, quote_string
-        _add_method generic_object_to_string, TYPECODE_SBUF, sbuf_description
-        _add_method generic_object_to_string, TYPECODE_VECTOR, vector_to_string
-        _add_method generic_object_to_string, TYPECODE_ARRAY, array_to_string
-        _add_method generic_object_to_string, TYPECODE_FIXNUM, fixnum_to_string
-        _add_method generic_object_to_string, TYPECODE_HASHTABLE, hashtable_to_string
-        _add_method generic_object_to_string, TYPECODE_FIXNUM_HASHTABLE, fixnum_hashtable_to_string
-        _add_method generic_object_to_string, TYPECODE_SYMBOL, symbol_name
-        _add_method generic_object_to_string, TYPECODE_VOCAB, vocab_to_string
-        _add_method generic_object_to_string, TYPECODE_QUOTATION, quotation_to_string
-        _add_method generic_object_to_string, TYPECODE_WRAPPER, wrapper_to_string
-        _add_method generic_object_to_string, TYPECODE_SLICE, slice_to_string
-        _add_method generic_object_to_string, TYPECODE_RANGE, range_to_string
-        _add_method generic_object_to_string, TYPECODE_LEXER, lexer_to_string
-        _add_method generic_object_to_string, TYPECODE_FLOAT, float_to_string
-        _add_method generic_object_to_string, TYPECODE_ITERATOR, iterator_to_string
-        _add_method generic_object_to_string, TYPECODE_TYPE, type_to_string
-        _add_method generic_object_to_string, TYPECODE_METHOD, method_to_string
-        _add_method generic_object_to_string, TYPECODE_GENERIC_FUNCTION, generic_function_to_string
-        _add_method generic_object_to_string, TYPECODE_UINT64, uint64_to_string
-        _add_method generic_object_to_string, TYPECODE_INT64, int64_to_string
-        _add_method generic_object_to_string, TYPECODE_CHAR, char_to_string
-        _add_method generic_object_to_string, TYPECODE_KEYWORD, keyword_to_string
-        _add_method generic_object_to_string, TYPECODE_THREAD, thread_to_string
-        _add_method generic_object_to_string, TYPECODE_MUTEX, mutex_to_string
-        _add_method generic_object_to_string, TYPECODE_STRING_ITERATOR, string_iterator_to_string
-        _add_method generic_object_to_string, TYPECODE_SLOT, slot_to_string
-        _add_method generic_object_to_string, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_to_string
-        _add_method generic_object_to_string, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_to_string
+        _initialize_generic_function object_to_string
+        _add_method object_to_string, TYPECODE_BOOLEAN, boolean_to_string
+        _add_method object_to_string, TYPECODE_STRING, quote_string
+        _add_method object_to_string, TYPECODE_SBUF, sbuf_description
+        _add_method object_to_string, TYPECODE_VECTOR, vector_to_string
+        _add_method object_to_string, TYPECODE_ARRAY, array_to_string
+        _add_method object_to_string, TYPECODE_FIXNUM, fixnum_to_string
+        _add_method object_to_string, TYPECODE_HASHTABLE, hashtable_to_string
+        _add_method object_to_string, TYPECODE_FIXNUM_HASHTABLE, fixnum_hashtable_to_string
+        _add_method object_to_string, TYPECODE_SYMBOL, symbol_name
+        _add_method object_to_string, TYPECODE_VOCAB, vocab_to_string
+        _add_method object_to_string, TYPECODE_QUOTATION, quotation_to_string
+        _add_method object_to_string, TYPECODE_WRAPPER, wrapper_to_string
+        _add_method object_to_string, TYPECODE_SLICE, slice_to_string
+        _add_method object_to_string, TYPECODE_RANGE, range_to_string
+        _add_method object_to_string, TYPECODE_LEXER, lexer_to_string
+        _add_method object_to_string, TYPECODE_FLOAT, float_to_string
+        _add_method object_to_string, TYPECODE_ITERATOR, iterator_to_string
+        _add_method object_to_string, TYPECODE_TYPE, type_to_string
+        _add_method object_to_string, TYPECODE_METHOD, method_to_string
+        _add_method object_to_string, TYPECODE_GENERIC_FUNCTION, generic_function_to_string
+        _add_method object_to_string, TYPECODE_UINT64, uint64_to_string
+        _add_method object_to_string, TYPECODE_INT64, int64_to_string
+        _add_method object_to_string, TYPECODE_CHAR, char_to_string
+        _add_method object_to_string, TYPECODE_KEYWORD, keyword_to_string
+        _add_method object_to_string, TYPECODE_THREAD, thread_to_string
+        _add_method object_to_string, TYPECODE_MUTEX, mutex_to_string
+        _add_method object_to_string, TYPECODE_STRING_ITERATOR, string_iterator_to_string
+        _add_method object_to_string, TYPECODE_SLOT, slot_to_string
+        _add_method object_to_string, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_to_string
+        _add_method object_to_string, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_to_string
 
         _lit S_object_to_string_default
-        _lit S_generic_object_to_string
+        _lit S_object_to_string
         _ set_default_method
         next
 endcode

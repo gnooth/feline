@@ -258,12 +258,6 @@ code verify_typecode, 'verify-typecode' ; object typecode -- object
         next
 endcode
 
-; ### object->string
-code object_to_string, 'object->string' ; object -> string
-        _ generic_object_to_string
-        next
-endcode
-
 ; ### object->string/default
 code object_to_string_default, 'object->string/default' ; object -> string
         _dup
