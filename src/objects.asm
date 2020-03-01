@@ -264,7 +264,8 @@ code object_to_string, 'object->string' ; object -> string
         next
 endcode
 
-code default_object_to_string, 'default-object->string' ; object -> string
+; ### object->string/default
+code object_to_string_default, 'object->string/default' ; object -> string
         _dup
         _ tuple_instance?
         _tagged_if .1

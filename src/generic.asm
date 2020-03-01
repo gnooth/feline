@@ -828,7 +828,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method generic_object_to_string, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_to_string
         _add_method generic_object_to_string, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_to_string
 
-        _lit S_default_object_to_string
+        _lit S_object_to_string_default
         _lit S_generic_object_to_string
         _ set_default_method
         next
