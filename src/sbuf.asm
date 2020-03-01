@@ -704,3 +704,10 @@ code sbuf_substring, 'sbuf-substring'   ; from to sbuf -> substring
         pop     this_register
         next
 endcode
+
+; ### sbuf-description
+code sbuf_description, 'sbuf-description'       ; sbuf -> string
+        _ sbuf_to_string
+        _ quote_string
+        next
+endcode
