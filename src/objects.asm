@@ -519,6 +519,20 @@ code object_to_string, 'object->string' ; object -> string
         next
 endcode
 
+code default_object_to_string, 'default-object->string' ; object -> string
+        _dup
+        _ tuple_instance?
+        _tagged_if .1
+        _ tuple_to_string
+        _else .1
+        _ raw_uint64_to_hex
+        _quote "0x"
+        _swap
+        _ string_append
+        _then .1
+        next
+endcode
+
 ; ### .
 code dot_object, '.'                    ; handle-or-object --
         _ object_to_string
