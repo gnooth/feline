@@ -286,11 +286,8 @@ endcode
 subroutine puthash_internal             ; value key -> void
 ; call with ^hashtable in this_register
 
-        ; data address in r11
+        ; get data address in r11
         mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
-
-        ; loop counter in rcx
-        mov     rcx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET] ; rcx counts down
 
         ; get hashcode in rax
         ; for a fixnum hashtable, the hashcode is the key itself
@@ -299,33 +296,43 @@ subroutine puthash_internal             ; value key -> void
         ; apply mask to get index of first entry to check
         and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
-        ; index of first entry to check is now in rax
-        jmp     .loop_entry
+        ; calculate the address of the first key
+        shl     rax, 4          ; convert entry index to byte index
+        add     r11, rax        ; address of first key in r11
 
-.loop_top:
-        add     rax, 1
-        and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
+.loop1:
+        mov     rax, [r11]
 
-.loop_entry:
-        mov     r9, rax
-        shl     r9, 4           ; convert entries to bytes
-
-        cmp     rbx, [r11 + r9]
+        cmp     rbx, rax
         je      .found
 
-        cmp     qword [r11 + r9], S_empty_marker
+        cmp     rax, S_empty_marker
         je      .not_found
 
-        sub     rcx, 1          ; count down
-        jnz     .loop_top
+        test    rax, rax                ; check for sentinel
+        jz      .wrap                   ; wrap around
 
-        ; REVIEW this shouldn't happen
-        _error "no empty buckets"
-        ret
+        add     r11, BYTES_PER_CELL * 2 ; point to next key
+        jmp     .loop1
+
+.wrap:
+        mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+
+.loop2:
+        mov     rax, [r11]
+
+        cmp     rbx, rax
+        je      .found
+
+        cmp     rax, S_empty_marker
+        je      .not_found
+
+        add     r11, BYTES_PER_CELL * 2
+        jmp     .loop2
 
 .not_found:
         ; store key
-        mov     [r11 + r9], rbx
+        mov     [r11], rbx
         ; update occupancy
         add     qword [this_register + FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET], 1
         ; fall through...
@@ -334,7 +341,7 @@ subroutine puthash_internal             ; value key -> void
         ; get value in rax
         mov     rax, [rbp]
         ; store value
-        mov     [r11 + r9 + BYTES_PER_CELL], rax
+        mov     [r11 + BYTES_PER_CELL], rax
 
         _2drop
         ret
