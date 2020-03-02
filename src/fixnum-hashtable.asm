@@ -234,11 +234,8 @@ code remhash, 'remhash'                 ; key hashtable -> void
 
         _verify_fixnum
 
-        ; data address in r11
+        ; get data address in r11
         mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
-
-        ; loop counter in rcx
-        mov     rcx, [this_register + FIXNUM_HASHTABLE_RAW_CAPACITY_OFFSET]
 
         ; get hashcode in rax
         ; for a fixnum hashtable, the hashcode is the key itself
@@ -247,33 +244,43 @@ code remhash, 'remhash'                 ; key hashtable -> void
         ; apply mask to get index of first entry to check
         and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
-        ; index of first entry to check is now in rax
-        jmp     .loop_entry
+        ; calculate the address of the first key
+        shl     rax, 4          ; convert entry index to byte index
+        add     r11, rax        ; address of first key in r11
 
-.loop_top:
-        add     rax, 1
-        and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
+.loop1:
+        mov     rax, [r11]
 
-.loop_entry:
-        mov     r9, rax
-        shl     r9, 4           ; convert entries to bytes
-
-        cmp     rbx, [r11 + r9]
+        cmp     rbx, rax
         je      .found
 
-        cmp     qword [r11 + r9], S_empty_marker
+        cmp     rax, S_empty_marker
         je      .not_found
 
-        sub     rcx, 1          ; count down
-        jnz     .loop_top
+        test    rax, rax                ; check for sentinel
+        jz      .wrap                   ; wrap around
 
-        ; REVIEW this shouldn't happen
-        _error "no empty buckets"
-        next
+        add     r11, BYTES_PER_CELL * 2 ; point to next key
+        jmp     .loop1
+
+.wrap:
+        mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+
+.loop2:
+        mov     rax, [r11]
+
+        cmp     rbx, rax
+        je      .found
+
+        cmp     rax, S_empty_marker
+        je      .not_found
+
+        add     r11, BYTES_PER_CELL * 2
+        jmp     .loop2
 
 .found:
-        mov     qword [r11 + r9], S_deleted_marker
-        mov     qword [r11 + r9 + BYTES_PER_CELL], S_deleted_marker
+        mov     qword [r11], S_deleted_marker
+        mov     qword [r11 + BYTES_PER_CELL], S_deleted_marker
         add     qword [this_register + FIXNUM_HASHTABLE_RAW_DELETIONS_OFFSET], 1
         ; fall through...
 
