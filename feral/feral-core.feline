@@ -879,6 +879,9 @@ unuse: segments
     :> x
     [ x alphanumeric? ] [ x '_' eq? ] either? ;
 
+: asm-mode-identifier-char? ( x )       // x -> ?
+    [ x alphanumeric? ] [ x "_$#@~.?" member-eq? ] either? ;
+
 : identifier-char-function              // void -> callable
     current-mode [ identifier-char-function>> ] [ nil ] if*
     ' default-identifier-char? or ;

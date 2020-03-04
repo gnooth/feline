@@ -1,4 +1,4 @@
-// Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2018-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,9 +22,6 @@ global instance
 
 : get-instance                          // void -> mode
     instance ;
-
-: asm-mode-identifier-char? ( x )       // x -> ?
-    [ x alphanumeric? ] [ x "_$#@~.?" member-eq? ] either? ;
 
 : asm-mode-format-line ( s )            // string -> array-of-segments
     ';' s string-find-char :> comment-start
