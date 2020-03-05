@@ -31,7 +31,7 @@ code check_assert, 'check-assert'       ; x location ->
         _2drop
         next
 .1:
-        _drop
+        _nip
         _ assertion_failed
         next
 endcode
