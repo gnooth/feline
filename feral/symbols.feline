@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,11 +20,11 @@ global sourcefile
 
 global symbols-hashtable
 
-: process-code-line ( s lineno ) // string fixnum -> void
+: process-2-symbols ( token s lineno ) // token string fixnum -> void
     local begin
     local end
 
-    "code " length begin!
+    token length 1+ begin!
     ',' s index verify-fixnum end!
 
     sourcefile lineno 1+ 2array // location
@@ -32,33 +32,22 @@ global symbols-hashtable
     symbols-hashtable set-at
 
     end 2 + s nth :> quotechar
-    quotechar { '\'' '"' } member-eq? assert
-    end 3 + begin!
-    quotechar begin s index-from verify-fixnum end!
+    quotechar { '\'' '"' } member-eq? [
+        end 3 + begin!
+        quotechar begin s index-from verify-fixnum end!
 
-    sourcefile lineno 1+ 2array // location
-    begin end s substring // symbol
-    symbols-hashtable set-at ;
+        sourcefile lineno 1+ 2array // location
+        begin end s substring // symbol
+        symbols-hashtable set-at
+    ] when ;
 
-: process-subroutine-line ( s lineno ) // string fixnum -> void
+: process-1-symbol ( token s lineno ) // token string fixnum -> void
     local begin
     local end
 
-    "subroutine " length begin!
+    token length 1+ begin!
     begin s string-skip-whitespace begin!
-    begin s string-skip-to-whitespace s length or end!
-
-    sourcefile lineno 1+ 2array // location
-    begin end s substring // symbol
-    symbols-hashtable set-at ;
-
-: process-macro-line ( s lineno ) // string fixnum -> void
-    local begin
-    local end
-
-    "%macro " length begin!
-    begin s string-skip-whitespace begin!
-    begin s string-skip-to-whitespace end!
+    begin s [ feral-core:asm-mode-identifier-char? nil? ] find-from drop s length or end!
 
     sourcefile lineno 1+ 2array // location
     begin end s substring // symbol
@@ -66,9 +55,18 @@ global symbols-hashtable
 
 : process-line // string fixnum -> void
     2 ?enough :> lineno :> s
-    "code " s head? [ s lineno process-code-line ] ?return
-    "subroutine " s head? [ s lineno process-subroutine-line ] ?return
-    "%macro " s head? [ s lineno process-macro-line ] ?return ;
+
+    local token
+
+    '\s' s string-find-char [ 0 swap s substring token! ] when*
+
+    token nil? ?exit
+
+    token { "code" "inline" "generic" "special" } member?
+    [ token s lineno process-2-symbols ] ?return
+
+    token { "subroutine" "%macro" "asm_global" "%define" } member?
+    [ token s lineno process-1-symbol ] when ;
 
 : process-asm-file
     sourcefile file-lines [ process-line ] each-index ;
@@ -148,6 +146,8 @@ global symbols-hashtable
     "vector.asm"
     "winui.asm"
     "wrapper.asm"
+    "fixnum-hashtable.asm"
+    "hashtable-common.asm"
 } constant asm-files
 
 : generate-hashtable
