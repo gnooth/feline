@@ -62,7 +62,7 @@ global symbols-hashtable
 
     token nil? ?exit
 
-    token { "code" "inline" "generic" "special" } member?
+    token { "code" "inline" "always_inline" "generic" "special" } member?
     [ token s lineno process-2-symbols ] ?return
 
     token { "subroutine" "%macro" "asm_global" "%define" } member?
