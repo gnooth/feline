@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,26 +26,26 @@ public
 // returns filename without its directory component
 : file-name-nondirectory ( filename )
     filename length :> len
-    len 1- filename [ path-separator-char? ] find-last-from // -> index/f element/f
+    len 1- filename [ path-separator-char? ] find-last-from // -> index/nil element/nil
     [ 1+ filename tail ] [ filename nip ] if ;
 
 // Returns the filename's extension, including its leading '.' (".ext"),
-// or f if the filename has no extension.
-: file-name-extension // filename -> string/f
+// or nil if the filename has no extension.
+: file-name-extension // filename -> string/nil
     file-name-nondirectory :> name
     name length :> len
 
-    f !> index
+    nil !> index
     {
-        { [ len zero? ] [ f ] }
-        { [ name first '.' eq? ] [ f ] }
-        { [ name last '.' eq? ] [ f ] }
+        { [ len zero? ] [ nil ] }
+        { [ name first '.' eq? ] [ nil ] }
+        { [ name last '.' eq? ] [ nil ] }
         {
             [ '.' len 1- name string-last-index-from dup index! ]
             [ index name tail ]
         }
         // otherwise...
-        [ f ]
+        [ nil ]
     } cond ;
 
 : file-name-directory-win64 ( filename ) // filename -> dirname/nil
@@ -89,22 +89,22 @@ public
 // returns the file name's directory component
     win64? [ file-name-directory-win64 ] [ file-name-directory-linux ] if ;
 
-: verify-extension // extension filename  -> filename/f
+: verify-extension // extension filename  -> filename/nil
     tuck
-    file-name-extension equal? [ drop f ] unless ;
+    file-name-extension equal? [ drop nil ] unless ;
 
 win64? #if
 
-: directory-files // string -> sequence/f
+: directory-files // string -> sequence/nil
     1 ?enough !> arg
 
-    arg empty? [ f ] return-if
+    arg empty? [ nil ] ?return
 
     // canonical-path calls tilde-expand-filename
     arg canonical-path arg!
 
-    // canonical-path might return f
-    arg null? [ f ] return-if
+    // canonical-path might return nil
+    arg null? [ nil ] ?return
 
     arg directory? [
         arg "*" path-append arg!
@@ -116,11 +116,11 @@ win64? #if
 
     arg find-first-file :> p
 
-    p zero? [ f ] return-if
+    p zero? [ nil ] ?return
 
     64 <vector> :> v
 
-    f !> filename
+    nil !> filename
     extension [
         p find-file-filename alien->string filename!
         extension filename verify-extension [
@@ -151,13 +151,13 @@ win64? #if
 
 linux? #if
 
-: directory-files // string -> sequence/f
+: directory-files // string -> sequence/nil
     1 ?enough !> arg
-    arg empty? [ f ] return-if
+    arg empty? [ nil ] ?return
 
     arg tilde-expand-filename arg!
 
-    f !> dir
+    nil !> dir
     arg directory? [
         arg dir!
     ] [
@@ -170,8 +170,8 @@ linux? #if
 
     dir opendir :> p
 
-    f !> entry
-    f !> filename
+    nil !> entry
+    nil !> filename
 
     [ p readdir dup entry! zero? ] [
         entry alien->string filename!
