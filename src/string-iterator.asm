@@ -16,6 +16,7 @@
 file __FILE__
 
 ; 5 cells: object header, string, raw index, raw length, raw data address
+%define STRING_ITERATOR_SIZE                    5 * BYTES_PER_CELL
 
 %define STRING_ITERATOR_STRING_OFFSET           BYTES_PER_CELL * 1
 
@@ -112,37 +113,29 @@ endcode
 code make_string_iterator, 'make-string-iterator'       ; string -> iterator
 ; 5 cells: object header, string, raw index, raw length, raw data address
 
-        _ verify_string
+        ; allocate memory for the iterator object
+        mov     arg0_register, FIXNUM_HASHTABLE_SIZE
+        _ feline_malloc                 ; returns raw address in rax
+        mov     qword [rax], TYPECODE_STRING_ITERATOR
 
-        _lit 5
-        _ raw_allocate_cells
+        mov     qword [rax + STRING_ITERATOR_RAW_INDEX_OFFSET], -1
 
-        push    this_register
-        mov     this_register, rbx
-        _drop
+        mov     [rax + STRING_ITERATOR_STRING_OFFSET], rbx
 
-        mov     qword [this_register], TYPECODE_STRING_ITERATOR
+        push    rax
+        _ check_string                  ; -> ^string
+        pop     rax
 
-        mov     qword [this_register + STRING_ITERATOR_RAW_INDEX_OFFSET], -1
+        mov     rdx, [rbx + STRING_RAW_LENGTH_OFFSET]
+        mov     [rax + STRING_ITERATOR_RAW_LENGTH_OFFSET], rdx
 
-        _dup
-        _ string_raw_length
-        _this_string_iterator_set_raw_length
+        lea     rdx, [rbx + STRING_RAW_DATA_OFFSET]
+        mov     [rax + STRING_ITERATOR_RAW_DATA_ADDRESS_OFFSET], rdx
 
-        _dup
-        _ string_raw_data_address
-        _this_string_iterator_set_raw_data_address
-
-        mov     [this_register + STRING_ITERATOR_STRING_OFFSET], rbx
-        _drop
-
-        pushrbx
-        mov     rbx, this_register      ; -> iterator
-
-        pop     this_register
+        mov     rbx, rax
 
         ; return handle
-        _ new_handle                    ; -> handle
+        _ new_handle                    ; -> iterator
 
         next
 endcode
