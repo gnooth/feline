@@ -118,7 +118,7 @@ code make_string_iterator, 'make-string-iterator'       ; string -> iterator
         _ feline_malloc                 ; returns raw address in rax
         mov     qword [rax], TYPECODE_STRING_ITERATOR
 
-        mov     qword [rax + STRING_ITERATOR_RAW_INDEX_OFFSET], -1
+        mov     qword [rax + STRING_ITERATOR_RAW_INDEX_OFFSET], 0
 
         mov     [rax + STRING_ITERATOR_STRING_OFFSET], rbx
 
@@ -145,11 +145,11 @@ code string_iterator_next, 'string-iterator-next'       ; iterator -> char/nil
         _ check_string_iterator
 
         mov     rax, [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET]
-        add     rax, 1
         cmp     rax, [rbx + STRING_ITERATOR_RAW_LENGTH_OFFSET]
         jge     .end
 
-        mov     [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET], rax
+        add     qword [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET], 1
+
         add     rax, [rbx + STRING_ITERATOR_RAW_DATA_ADDRESS_OFFSET]
         movzx   ebx, byte [rax]
         _tag_char
@@ -167,7 +167,6 @@ code string_iterator_peek, 'string-iterator-peek'       ; iterator -> element/ni
         _ check_string_iterator
 
         mov     rax, [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET]
-        add     rax, 1
         cmp     rax, [rbx + STRING_ITERATOR_RAW_LENGTH_OFFSET]
         jge     .end
 
@@ -190,21 +189,19 @@ code string_interator_skip, 'string-iterator-skip' ; fixnum string-iterator -> v
         jz      error_not_fixnum_rax
         sar     rax, FIXNUM_TAG_BITS ; rax = number of bytes to skip
 
-        ; the only valid negative index is -1
-        mov     rdx, -1
+        ; index must be >= 0
+        xor     rdx, rdx
 
         ; add number of bytes to skip to raw index to get new index
         add     rax, qword [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET] ; rax = new index
 
-        ; if rax < 0, set rax = -1
+        ; if rax < 0, set rax = 0
         cmovl   rax, rdx
 
         mov     rdx, qword [rbx + STRING_ITERATOR_RAW_LENGTH_OFFSET] ; rdx = string length
 
-        ; new index (in rax) is -1 or >= 0
-        cmp     rax, rdx
-
         ; if new index > string length, set new index = string length
+        cmp     rax, rdx
         cmovg   rax, rdx
 
         ; move new index into its slot
