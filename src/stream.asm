@@ -1,4 +1,4 @@
-; Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2018-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -138,16 +138,27 @@ asm_global stdout_
 
 ; ### stdout
 code feline_stdout, 'stdout'            ; -> stream
-        pushrbx
+        _dup
         mov     rbx, [stdout_]
         next
 endcode
 
 special standard_output, 'standard-output'
 
+asm_global stderr_
+
+; ### stderr
+code feline_stderr, 'stderr'            ; -> stream
+        _dup
+        mov     rbx, [stderr_]
+        next
+endcode
+
+special error_output, 'error-output'
+
 ; ### initialize-streams
 code initialize_streams, 'initialize-streams'
-        pushrbx
+        _dup
 %ifdef WIN64
         mov     rbx, [standard_output_handle]
 %else
@@ -162,6 +173,23 @@ code initialize_streams, 'initialize-streams'
 
         _ feline_stdout
         _ standard_output
+        _ set
+
+        _dup
+%ifdef WIN64
+        mov     rbx, [error_output_handle]
+%else
+        mov     rbx, 2
+%endif
+        _ make_file_output_stream
+        mov     [stderr_], rbx
+        _drop
+
+        _lit stderr_
+        _ gc_add_root
+
+        _ feline_stderr
+        _ error_output
         _ set
 
         next

@@ -1225,6 +1225,7 @@ endcode
 
 %ifdef WIN64
 _global standard_output_handle
+_global error_output_handle
 %endif
 
 asm_global last_char_, 10

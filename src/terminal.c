@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ extern cell line_input_data;
 #ifdef WIN64
 static HANDLE console_input_handle = INVALID_HANDLE_VALUE;
 static HANDLE console_output_handle = INVALID_HANDLE_VALUE;
+static HANDLE console_error_handle = INVALID_HANDLE_VALUE;
 #else
 static int tty;
 static struct termios otio;
@@ -67,33 +68,36 @@ static void sig_winch(int signo)
 }
 #endif
 
-void prep_terminal()
+void prep_terminal ()
 {
 #ifdef WIN64
-  console_input_handle = GetStdHandle(STD_INPUT_HANDLE);
-  console_output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+  console_input_handle = GetStdHandle (STD_INPUT_HANDLE);
+  console_output_handle = GetStdHandle (STD_OUTPUT_HANDLE);
 
   extern cell standard_output_handle;
   standard_output_handle = (cell) console_output_handle;
 
+  extern cell error_output_handle;
+  error_output_handle = (cell) GetStdHandle (STD_ERROR_HANDLE);
+
   DWORD mode;
-  if (GetConsoleMode(console_input_handle, &mode))
+  if (GetConsoleMode (console_input_handle, &mode))
     {
       mode = (mode & ~ENABLE_ECHO_INPUT & ~ENABLE_LINE_INPUT & ~ENABLE_PROCESSED_INPUT);
-      SetConsoleMode(console_input_handle, mode);
-      get_terminal_size();
+      SetConsoleMode (console_input_handle, mode);
+      get_terminal_size ();
       COORD size;
       size.X = terminal_columns_;
       size.Y = terminal_rows_;
-      SetConsoleScreenBufferSize(console_input_handle, size);
+      SetConsoleScreenBufferSize (console_input_handle, size);
       line_input_data = 0;
-      if (GetConsoleMode(console_output_handle, &mode))
+      if (GetConsoleMode (console_output_handle, &mode))
         {
 #ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
 #define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
 #endif
           mode = (mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
-          SetConsoleMode(console_output_handle, mode);
+          SetConsoleMode (console_output_handle, mode);
         }
     }
   else
@@ -103,23 +107,23 @@ void prep_terminal()
     }
 #else
   // Linux.
-  tty = fileno(stdin);
+  tty = fileno (stdin);
   struct termios tio;
   char *term;
   struct winsize size;
-  if (!isatty(tty))
+  if (!isatty (tty))
     return;
-  term = getenv("TERM");
-  if (term == NULL || !strcmp(term, "dumb"))
+  term = getenv ("TERM");
+  if (term == NULL || !strcmp (term, "dumb"))
     return;
-  tcgetattr(tty, &tio);
+  tcgetattr (tty, &tio);
   otio = tio;
   tio.c_iflag &= ~(IXON | IXOFF);       // we want to see C-s and C-q
   tio.c_lflag &= ~(ISIG | ICANON | ECHO);
-  tcsetattr(tty, TCSADRAIN, &tio);
-  setvbuf(stdin, NULL, _IONBF, 0);
-  signal(SIGWINCH, sig_winch);
-  get_terminal_size();
+  tcsetattr (tty, TCSADRAIN, &tio);
+  setvbuf (stdin, NULL, _IONBF, 0);
+  signal (SIGWINCH, sig_winch);
+  get_terminal_size ();
   line_input_data = 0;
   terminal_prepped = 1;
 #endif
