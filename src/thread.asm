@@ -1,4 +1,4 @@
-; Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -620,12 +620,20 @@ code unlock_all_threads, 'unlock_all_threads', SYMBOL_INTERNAL  ; --
         next
 endcode
 
-asm_global primordial_thread_, f_value
+asm_global primordial_thread_, NIL
 
 ; ### primordial-thread
 code primordial_thread, 'primordial-thread' ; -> thread
-        pushrbx
+        _dup
         mov     rbx, [primordial_thread_]
+        next
+endcode
+
+; ### current-thread-is-primordial?
+code current_thread_is_primordial?, 'current-thread-is-primordial?' ; -> ?
+        _ current_thread
+        _ primordial_thread
+        _eq?
         next
 endcode
 
