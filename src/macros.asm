@@ -312,15 +312,18 @@
 %endmacro
 
 %macro  _lit    1
-        pushd   %1
+        _dup
+        mov     rbx, %1
 %endmacro
 
 %macro  _tagged_fixnum 1
-        pushd   tagged_fixnum(%1)
+        _dup
+        mov     rbx, tagged_fixnum(%1)
 %endmacro
 
 %macro  _tagged_char 1
-        pushd   tagged_char(%1)
+        _dup
+        mov     rbx, tagged_char(%1)
 %endmacro
 
 %macro  _char_code 0
@@ -666,7 +669,7 @@ section .data
 
 %macro  _error 1
         _quote %1
-        _ throw
+        _ error
 %endmacro
 
 %macro  _if 1
