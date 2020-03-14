@@ -134,8 +134,8 @@ file __FILE__
 %endmacro
 
 ; ### thread?
-code thread?, 'thread?'                 ; handle -- ?
-        _ deref                         ; -- raw-object/0
+code thread?, 'thread?'                 ; handle -> ?
+        _ deref                         ; -> raw-object/0
         test    rbx, rbx
         jz      .1
         _object_raw_typecode_eax
@@ -192,7 +192,7 @@ code thread_set_raw_thread_id, 'thread_set_raw_thread_id', SYMBOL_INTERNAL
 endcode
 
 ; ### thread-id
-code thread_id, 'thread-id'             ; thread -- thread-id
+code thread_id, 'thread-id'             ; thread -> thread-id
         _ check_thread
         _thread_raw_thread_id
         _ normalize
@@ -353,7 +353,7 @@ endcode
 ; ### current-thread
 code current_thread, 'current-thread'   ; -> thread
         xcall   os_current_thread
-        pushrbx
+        _dup
         mov     rbx, rax
         next
 endcode
@@ -369,7 +369,7 @@ endcode
 ; ### current_thread_raw_thread_id
 code current_thread_raw_thread_id, 'current_thread_raw_thread_id', SYMBOL_INTERNAL ; -> raw-thread-id
         xcall   os_current_thread_raw_thread_id
-        pushrbx
+        _dup
         mov     rbx, rax
         next
 endcode
@@ -434,17 +434,17 @@ code current_thread_raw_rp0_rax, 'current_thread_raw_rp0_rax', SYMBOL_INTERNAL
 endcode
 
 ; ### current_thread_save_registers
-code current_thread_save_registers, 'current_thread_save_registers', SYMBOL_INTERNAL    ; --
-        pushrbx                         ; -- rbx
+code current_thread_save_registers, 'current_thread_save_registers', SYMBOL_INTERNAL
+        _dup                            ; -> rbx
         _ current_thread
         _ check_thread                  ; -> rbx ^thread
         _tuck
         _thread_set_saved_rbx
-        pushrbx
+        _dup
         mov     rbx, rsp
         _over
         _thread_set_saved_rsp
-        pushrbx
+        _dup
         mov     rbx, rbp
         _swap
         _thread_set_saved_rbp
@@ -452,10 +452,10 @@ code current_thread_save_registers, 'current_thread_save_registers', SYMBOL_INTE
 endcode
 
 ; ### get_next_thread_debug_name
-code get_next_thread_debug_name, 'get_next_thread_debug_name', SYMBOL_INTERNAL  ; -- name
+code get_next_thread_debug_name, 'get_next_thread_debug_name', SYMBOL_INTERNAL  ; -> name
         _ lock_all_threads
         mov     rax, [thread_number_]
-        pushrbx
+        _dup
         mov     rbx, rax
         add     rax, 1
         mov     [thread_number_], rax
@@ -467,7 +467,7 @@ code get_next_thread_debug_name, 'get_next_thread_debug_name', SYMBOL_INTERNAL  
 endcode
 
 ; ### new_thread
-code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
+code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -> thread
         _lit 14
         _ raw_allocate_cells
 
@@ -478,7 +478,7 @@ code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
         _over
         _thread_set_locals
 
-        _f
+        _nil
         _over
         _thread_set_quotation
 
@@ -486,7 +486,7 @@ code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
         _over
         _thread_set_state
 
-        _f
+        _nil
         _over
         _thread_set_debug_name
 
@@ -496,13 +496,13 @@ code new_thread, 'new_thread', SYMBOL_INTERNAL  ; -- thread
 endcode
 
 ; ### make-thread
-code make_thread, 'make-thread'         ; quotation -- thread
+code make_thread, 'make-thread'         ; quotation -> thread
 
         ; REVIEW locking
         _dup
         _ quotation_raw_code_address
         cmp     rbx, 0
-        poprbx
+        _drop
         jnz     .1
         _ compile_quotation
 
@@ -516,7 +516,7 @@ code make_thread, 'make-thread'         ; quotation -- thread
         _over
         _thread_set_debug_name
 
-        _f
+        _nil
         _over
         _thread_set_result
 
@@ -540,11 +540,10 @@ code make_thread, 'make-thread'         ; quotation -- thread
 endcode
 
 ; ### destroy_thread
-code destroy_thread, 'destroy_thread', SYMBOL_INTERNAL  ; thread --
+code destroy_thread, 'destroy_thread', SYMBOL_INTERNAL  ; thread -> void
 
         ; zero out object header
-        xor     eax, eax
-        mov     [rbx], rax
+        mov     qword [rbx], 0
 
         _ raw_free
         next
@@ -553,25 +552,25 @@ endcode
 ; 0 is reserved for the primordial thread
 asm_global thread_number_, 1
 
-asm_global all_threads_, f_value
+asm_global all_threads_, NIL
 
 ; ### all-threads
-code all_threads, 'all-threads'         ; -- vector
-        pushrbx
+code all_threads, 'all-threads'         ; -> vector
+        _dup
         mov     rbx, [all_threads_]
         next
 endcode
 
 asm_global thread_count_, 1
 
-%macro  _thread_count 0                 ; -- count
-        pushrbx
+%macro  _thread_count 0                 ; -> count
+        _dup
         mov     rbx, [thread_count_]
 %endmacro
 
 %macro  _set_thread_count 0
         xchg    [thread_count_], rbx
-        poprbx
+        _drop
 %endmacro
 
 %macro  _update_thread_count 0
@@ -580,8 +579,14 @@ asm_global thread_count_, 1
         _set_thread_count
 %endmacro
 
+; ### update-thread-count
+code update_thread_count, 'update-thread-count'
+        _update_thread_count
+        next
+endcode
+
 ; ### thread-count
-code thread_count, 'thread-count'       ; -- count
+code thread_count, 'thread-count'       ; -> count
         _thread_count
         _tag_fixnum
         next
@@ -590,12 +595,12 @@ endcode
 asm_global all_threads_lock_, 0
 
 %macro  _all_threads_lock 0
-        pushrbx
+        _dup
         mov     rbx, [all_threads_lock_]
 %endmacro
 
 ; ### lock_all_threads
-code lock_all_threads, 'lock_all_threads', SYMBOL_INTERNAL      ; --
+code lock_all_threads, 'lock_all_threads', SYMBOL_INTERNAL
 
         _debug_print "lock all threads"
 
@@ -608,7 +613,7 @@ code lock_all_threads, 'lock_all_threads', SYMBOL_INTERNAL      ; --
 endcode
 
 ; ### unlock_all_threads
-code unlock_all_threads, 'unlock_all_threads', SYMBOL_INTERNAL  ; --
+code unlock_all_threads, 'unlock_all_threads', SYMBOL_INTERNAL
 
         _debug_print "unlock all threads"
 
@@ -638,20 +643,20 @@ code current_thread_is_primordial?, 'current-thread-is-primordial?' ; -> ?
 endcode
 
 ; ### initialize_threads
-code initialize_threads, 'initialize_threads', SYMBOL_INTERNAL  ; --
+code initialize_threads, 'initialize_threads', SYMBOL_INTERNAL
 
         ; all-threads vector
         _lit 8
         _ new_vector_untagged
         mov     [all_threads_], rbx
-        poprbx
+        _drop
         _lit all_threads_
         _ gc_add_root
 
         ; all-threads lock
         _ make_mutex
         mov     [all_threads_lock_], rbx
-        poprbx
+        _drop
         _lit all_threads_lock_
         _ gc_add_root
 
@@ -666,15 +671,15 @@ code initialize_threads, 'initialize_threads', SYMBOL_INTERNAL  ; --
         _over
         _ thread_set_debug_name
 
-        pushrbx
+        _dup
         mov     rbx, [primordial_sp0_]
         _over
-        _ thread_set_raw_sp0            ; -- thread
+        _ thread_set_raw_sp0            ; -> thread
 
-        pushrbx
+        _dup
         mov     rbx, [primordial_rp0_]
         _over
-        _ thread_set_raw_rp0            ; -- thread
+        _ thread_set_raw_rp0            ; -> thread
 
         _ current_thread_raw_thread_id
         _over
@@ -682,7 +687,7 @@ code initialize_threads, 'initialize_threads', SYMBOL_INTERNAL  ; --
 
 %ifdef WIN64
         xcall   os_current_thread_raw_thread_handle
-        pushrbx
+        _dup
         mov     rbx, rax
         _over
         _ thread_set_raw_thread_handle
@@ -730,7 +735,7 @@ code thread_create, 'thread-create'     ; thread -> void
 %else
         mov     [rbx + THREAD_RAW_THREAD_ID_OFFSET], rax
 %endif
-        poprbx
+        _drop
         next
 endcode
 
@@ -751,7 +756,7 @@ code thread_join, 'thread-join'         ; thread -> void
 %endif
 
         mov     arg0_register, rbx
-        poprbx
+        _drop
 
         xcall   os_thread_join
 
@@ -768,7 +773,7 @@ code thread_suspend, 'thread-suspend'   ; thread -> void
         _ check_thread
         _thread_raw_thread_handle
         mov     arg0_register, rbx
-        poprbx
+        _drop
         extern  SuspendThread
         xcall   SuspendThread
         next
@@ -779,7 +784,7 @@ code thread_resume, 'thread-resume'     ; thread -> void
         _ check_thread
         _thread_raw_thread_handle
         mov     arg0_register, rbx
-        poprbx
+        _drop
         extern  ResumeThread
         xcall   ResumeThread
         next
@@ -790,7 +795,7 @@ endcode
 code sleep, 'sleep'                     ; millis -> void
         _check_fixnum
         mov     arg0_register, rbx
-        poprbx
+        _drop
         xcall   os_sleep
         next
 endcode
@@ -857,14 +862,14 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
 
         _thread_quotation
 
-        _ call_quotation                ; -- ???
+        _ call_quotation                ; -> results
 
-        _ get_datastack                ; -- ??? array
+        _ get_datastack                 ; -> results array
 
-        pushrbx
-        pop     rbx                     ; -- ??? array handle
+        _dup
+        pop     rbx                     ; -> results array handle
         _tuck
-        _ thread_set_result             ; -- ??? handle
+        _ thread_set_result             ; -> results handle
 
         _ THREAD_STOPPED
         _over
@@ -872,8 +877,8 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
 
         _ lock_all_threads
         _ all_threads
-        _ vector_remove_mutating        ; -- vector
-        _drop                           ; --
+        _ vector_remove_mutating        ; -> vector
+        _drop                           ; ->
         _update_thread_count
         _ unlock_all_threads
 
