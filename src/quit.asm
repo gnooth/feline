@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -345,6 +345,9 @@ endcode
 ; ### reset
 code reset, 'reset'
 
+        _ current_thread_is_primordial?
+        _tagged_if .1
+
         _ get_dynamic_scope
         _dup
         _ vector?
@@ -357,7 +360,28 @@ code reset, 'reset'
         ; REVIEW
         _ forget_locals
 
-        jmp     quit
+        _ quit
+
+        _else .1
+
+        ; not primordial thread
+        _ lock_all_threads
+        _ current_thread
+        _ all_threads
+        _ vector_remove_mutating        ; -> vector
+        _drop                           ; -> empty
+        _ update_thread_count
+        _ unlock_all_threads
+
+%ifdef WIN64
+        mov     arg0_register, 0        ; REVIEW exit code
+        extern  ExitThread
+        xcall   ExitThread
+%else
+        ; FIXME Linux
+%endif
+
+        _then .1
 
         next                            ; for decompiler
 endcode
