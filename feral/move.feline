@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -432,7 +432,9 @@ feral-config:winui? feral-config:gtkui? or #if
     dot-row :> goal-row
 
     top-line-number textview-rows + last-line-number > [
+        dot-line line-changed
         last-line dot-line!
+        dot-line line-changed
         move-dot-to-goal-column
     ] ?return
 
