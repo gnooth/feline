@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -191,32 +191,6 @@ code all_words, 'all-words'             ; -- seq
         _ vector_push_all
         _end_quotation .1
         _ each
-        next
-endcode
-
-; ### apropos
-code apropos, 'apropos'                 ; pattern -> void
-        _ all_words
-        _quotation .1
-        _ symbol_name
-        _over
-        _swap
-        _ substring_start
-        _end_quotation .1
-        _ filter
-        _nip
-        _quotation .2
-        _ symbol_qualified_name
-        _ print
-        _end_quotation .2
-        _ vector_each
-        next
-endcode
-
-; ### a
-code a, 'a'
-        _ must_parse_token
-        _ apropos
         next
 endcode
 

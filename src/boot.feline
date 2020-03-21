@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,6 +20,17 @@ public
 
 : blank?                                // char -> ?
     "\t\n\r " member? ;
+
+: apropos ( pattern )
+    all-words [ symbol-name pattern swap substring-start ] filter
+    [
+        dup symbol-qualified-name write
+        symbol-private? [ 48 tab "private" write ] when
+        nl
+    ] each ;
+
+: a
+    must-parse-token apropos ;
 
 {
     "syntax.feline"
