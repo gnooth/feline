@@ -396,17 +396,16 @@ code string_nth_unsafe, 'string-nth-unsafe'
 endcode
 
 ; ### string-nth
-code string_nth, 'string-nth'   ; tagged-index string -- tagged-char
+code string_nth, 'string-nth'   ; tagged-index string -> tagged-char
 ; return byte at index
-        _ check_string
-        push    rbx
-        mov     rbx, [rbp]
-        _nip
+        _ check_string                  ; -> tagged-index ^string
+        push    rbx                     ; save ^string on return stack
+        _drop                           ; -> tagged_index
         _check_fixnum
         mov     rax, rbx                ; raw index in rax
-        pop     rbx                     ; -- string
+        pop     rbx                     ; -> ^string
         cmp     rax, [rbx + STRING_RAW_LENGTH_OFFSET]
-        jnb     error_string_index_out_of_bounds
+        jnc     error_string_index_out_of_bounds
         movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET + rax]
         _tag_char
         next
