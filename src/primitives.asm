@@ -168,7 +168,7 @@ inline neq?, 'neq?'                     ; x y -> ?
 endinline
 
 ; ### =
-code feline_equal, '='                  ; x y -- ?
+code feline_equal, '='                  ; x y -> ?
 
         _debug_?enough 2
 
@@ -176,7 +176,7 @@ code feline_equal, '='                  ; x y -- ?
         jne     .1
         lea     rbp, [rbp + BYTES_PER_CELL]
         mov     ebx, TRUE
-        _return
+        next
 .1:
         _ equal?
         next
@@ -208,7 +208,7 @@ code not_equal, '<>'                    ; x y -> ?
         jne     .1
         lea     rbp, [rbp + BYTES_PER_CELL]
         mov     ebx, NIL
-        _return
+        next
 .1:
         _ equal?
         _not
@@ -242,11 +242,11 @@ inline feline_or, 'or'                  ; obj1 obj2 -> ?
 endinline
 
 ; ### if
-code feline_if, 'if'                    ; ? true false --
+code feline_if, 'if'                    ; ? true false ->
         mov     rax, [rbp + BYTES_PER_CELL] ; condition in rax
         mov     rdx, [rbp]              ; true quotation in rdx, false quotation in rbx
         cmp     rax, NIL
-        cmovne  rbx, rdx                ; if condition is not f, move true quotation into rbx
+        cmovne  rbx, rdx                ; if condition is not nil, move true quotation into rbx
         _ callable_raw_code_address     ; code address in rbx
         mov     rax, rbx
         _3drop
@@ -259,7 +259,7 @@ code feline_if, 'if'                    ; ? true false --
 endcode
 
 ; ### if*
-code if_star, 'if*'                     ; ? true false --
+code if_star, 'if*'                     ; ? true false ->
 ; Factor
 ; "If the condition is true, it is retained on the stack before the true
 ; quotation is called. Otherwise, the condition is removed from the stack
@@ -275,7 +275,7 @@ code if_star, 'if*'                     ; ? true false --
         mov     rax, rbx
         _drop
         call    rax
-        _return
+        next
 .1:
         ; condition is true
         ; drop false quotation
@@ -395,7 +395,7 @@ code return_if_no_locals, 'return-if-no-locals' ; ? quot --
         _nip
         _ call_quotation
         lea     rsp, [rsp + BYTES_PER_CELL]
-        _return
+        next
 .1:
         _2drop
         next
@@ -409,7 +409,7 @@ code return_if_locals, 'return-if-locals'       ; ? quot --
         _ call_quotation
         lea     rsp, [rsp + BYTES_PER_CELL]
         _locals_leave
-        _return
+        next
 .1:
         _2drop
         next
@@ -475,8 +475,8 @@ code until, 'until'             ; pred body --
 endcode
 
 ; ### while
-code while, 'while'             ; pred body --
-; call body until pred returns f
+code while, 'while'             ; pred body ->
+; call body until pred returns nil
 
         ; protect quotations from gc
         push    rbx
@@ -563,7 +563,7 @@ code token_character_literal?, 'token-character-literal?'       ; string -> char
 
 .fail:
         _drop
-        _f
+        _nil
         next
 
 .length_is_3:
@@ -571,7 +571,7 @@ code token_character_literal?, 'token-character-literal?'       ; string -> char
         _tagged_fixnum(1)
         _swap
         _ string_nth_unsafe
-        _t
+        _true
         next
 
 .length_is_4:
@@ -589,10 +589,10 @@ code token_character_literal?, 'token-character-literal?'       ; string -> char
         _dup
         _tagged_if .1
         _nip
-        _t
+        _true
         _else .1
         _drop
-        _f
+        _nil
         _then .1
 
         next
@@ -618,23 +618,23 @@ code token_character_literal?, 'token-character-literal?'       ; string -> char
         _ hex_to_integer
         cmp     rbx, NIL
         jne     .ok
-        _return
+        next
 .ok:
         _code_char
         _nip
-        _t
+        _true
         next
 endcode
 
 ; ### token-string-literal?
-code token_string_literal?, 'token-string-literal?' ; token -- string t | token f
+code token_string_literal?, 'token-string-literal?' ; token -> string t | token nil
         _dup
         _ string_length
         _lit tagged_fixnum(2)
         _ fixnum_fixnum_lt
         _tagged_if .1
-        _f
-        _return
+        _nil
+        next
         _then .1
 
         _lit tagged_zero
@@ -644,8 +644,8 @@ code token_string_literal?, 'token-string-literal?' ; token -- string t | token 
         _tag_char
         _equal
         _zeq_if .2
-        _f
-        _return
+        _nil
+        next
         _then .2
 
         _dup
@@ -658,8 +658,8 @@ code token_string_literal?, 'token-string-literal?' ; token -- string t | token 
         _tag_char
         _equal
         _zeq_if .3
-        _f
-        _return
+        _nil
+        next
         _then .3
 
         ; ok, it's a string
@@ -673,7 +673,7 @@ code token_string_literal?, 'token-string-literal?' ; token -- string t | token 
 
         _ copy_to_string
 
-        _t
+        _true
 
         next
 endcode
@@ -833,7 +833,7 @@ code find_integer, 'find-integer'       ; fixnum callable -> fixnum/nil
         jg      .1
         mov     rbx, NIL
         _nip
-        _return
+        next
 
 .1:
         _tag_fixnum
@@ -909,7 +909,7 @@ code find_integer_in_range, 'find-integer-in-range' ; start end callable -> fixn
         jg      .1
         _2drop
         mov     ebx, NIL
-        _return
+        next
 
 .1:
         ; protect callable from gc
@@ -935,14 +935,14 @@ code find_integer_in_range, 'find-integer-in-range' ; start end callable -> fixn
         mov     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
         jne     .3
-        ; flag was f
+        ; flag was nil
         ; keep going
         inc     r12
         cmp     r12, r15
         jne     .2
         ; reached end
-        ; return f
-        _f
+        ; return nil
+        _nil
         jmp     .4
 .3:
         ; return tagged index
@@ -984,7 +984,7 @@ code find_last_integer_in_range, 'find-last-integer-in-range' ; start end callab
         jg      .1
         _2drop
         mov     ebx, NIL
-        _return
+        next
 
 .1:
         ; protect callable from gc
@@ -1011,14 +1011,14 @@ code find_last_integer_in_range, 'find-last-integer-in-range' ; start end callab
         mov     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
         jne     .3
-        ; flag was f
+        ; flag was nil
         ; keep going as long as loop index >= start
         dec     r12
         cmp     r12, r15
         jge     .2
         ; reached start of range
-        ; return f
-        _f
+        ; return nil
+        _nil
         jmp     .4
 .3:
         ; return tagged index
@@ -1152,7 +1152,7 @@ code to_hex, '>hex'                     ; n -- string
         _dup
         _fixnum?_if .1
         _ fixnum_to_hex
-        _return
+        next
         _then .1
 
         _ error_not_number
@@ -1457,12 +1457,12 @@ code binary_digit?, 'binary-digit?'     ; char -> n/nil
         cmp     ebx, '0'
         jne     .1
         mov     ebx, tagged_zero
-        _return
+        next
 .1:
         cmp     ebx, '1'
         jne     .2
         mov     ebx, tagged_fixnum(1)
-        _return
+        next
 .2:
         mov     ebx, NIL
         next
@@ -1478,7 +1478,7 @@ code hex_digit?, 'hex-digit?'           ; char -- n/nil
         jg      .1
         sub     ebx, '0'
         _tag_fixnum
-        _return
+        next
 .1:
         cmp     ebx, 'A'
         jl      .2
@@ -1486,7 +1486,7 @@ code hex_digit?, 'hex-digit?'           ; char -- n/nil
         jg      .2
         sub     ebx, 'A' - 10
         _tag_fixnum
-        _return
+        next
 .2:
         mov     ebx, NIL
         next
@@ -1501,7 +1501,7 @@ code digit?, 'digit?'                   ; char -- n/nil
         jg      .1
         sub     ebx, '0'
         _tag_fixnum
-        _return
+        next
 .1:
         mov     ebx, NIL
         next
@@ -1555,7 +1555,7 @@ code string_to_number, 'string>number'  ; string -> n/nil
         _ string_empty?
         _tagged_if .1
         mov     ebx, NIL
-        _return
+        next
         _then .1
 
         _quote "0x"
@@ -1580,7 +1580,7 @@ code string_to_number, 'string>number'  ; string -> n/nil
         _swap
         _ string_tail
         _ binary_to_integer
-        _return
+        next
         _then .2
 
         _quote "-0b"
@@ -1592,7 +1592,7 @@ code string_to_number, 'string>number'  ; string -> n/nil
         _ string_tail
         _ binary_to_integer
         _ generic_negate
-        _return
+        next
         _then .3
 
         _ decimal_to_number
@@ -1632,7 +1632,7 @@ code decimal_to_number, 'decimal>number'        ; string -- n/nil
         _dup
         _tagged_if .2
         _rdrop
-        _return
+        next
         _then .2
 
         ; not an integer
@@ -1647,14 +1647,14 @@ code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned/nil
 
         _ check_string
 
-        ; return f if string is empty
+        ; return nil if string is empty
         _dup
         _string_raw_length
         test    rbx, rbx
         _drop
         jnz     .1
         mov     ebx, NIL
-        _return
+        next
 .1:
 
         push    this_register
@@ -1672,7 +1672,7 @@ code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned/nil
         _unloop
         pop     this_register
         mov     ebx, NIL
-        _return
+        next
 
 .no_overflow:
         mov     rbx, rax
@@ -1686,7 +1686,7 @@ code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned/nil
         _unloop
         pop     this_register
         mov     ebx, NIL
-        _return
+        next
 .2:
         add     qword [rbp], rbx
 
@@ -1695,7 +1695,7 @@ code decimal_to_unsigned, 'decimal>unsigned'    ; string -- unsigned/nil
         _unloop
         pop     this_register
         mov     ebx, NIL
-        _return
+        next
 
 .no_carry:
         _drop
@@ -1719,7 +1719,7 @@ code decimal_to_signed, 'decimal>signed'        ; string -- signed/nil
         _drop
         jge     .1
         mov     ebx, NIL
-        _return
+        next
 
 .1:
         _dup
@@ -1728,7 +1728,7 @@ code decimal_to_signed, 'decimal>signed'        ; string -- signed/nil
         _drop
         je      .2
         mov     ebx, NIL
-        _return
+        next
 
 .2:
         push    this_register
@@ -1746,7 +1746,7 @@ code decimal_to_signed, 'decimal>signed'        ; string -- signed/nil
         _unloop
         pop     this_register
         mov     ebx, NIL
-        _return
+        next
 
 .no_overflow:
         _raw_loop_index
@@ -1759,7 +1759,7 @@ code decimal_to_signed, 'decimal>signed'        ; string -- signed/nil
         _unloop
         pop     this_register
         mov     ebx, NIL
-        _return
+        next
 .3:
         add     qword [rbp], rbx
 
@@ -1779,7 +1779,7 @@ code decimal_to_signed, 'decimal>signed'        ; string -- signed/nil
         _unloop
         pop     this_register
         mov     rbx, NIL
-        _return
+        next
 
 .no_carry:
         _drop
@@ -1848,7 +1848,7 @@ endinline
 ; ### whitespace?
 code whitespace?, 'whitespace?'         ; x -> ?
 ; return t if x is a space or tab character
-; otherwise return f (no error if x is not a character)
+; otherwise return nil (no error if x is not a character)
         cmp     rbx, tagged_char(32)
         jne     .1
         mov     ebx, TRUE
@@ -1873,7 +1873,7 @@ code char_to_string, 'char>string'      ; tagged-char -- string
         _tagged_if .1
         _drop
         _quote "'\s'"
-        _return
+        next
         _then .1
 
         _lit 3
@@ -1956,7 +1956,7 @@ feline_allocate_untagged:
         mov     rbx, rax                ; -- addr
         test    rbx, rbx
         jz .1
-        _return
+        next
 .1:
         _error "memory allocation failed"
         next
@@ -2047,7 +2047,7 @@ code expt, 'expt'                       ; base power -- result
         _dup_fixnum?_if .2
         _ fixnum_to_float
         _then .2
-        _ check_float                   ; -- power base
+        _ check_float                   ; -> power base
 
         mov     arg0_register, rbx
         mov     arg1_register, [rbp]
@@ -2063,27 +2063,27 @@ endcode
 ; ### win64?
 inline win64?, 'win64?'                 ; void -> ?
 %ifdef WIN64
-        _t
+        _true
 %else
-        _f
+        _nil
 %endif
 endinline
 
 ; ### linux?
 inline linux?, 'linux?'                 ; void -> ?
 %ifdef WIN64
-        _f
+        _nil
 %else
-        _t
+        _true
 %endif
 endinline
 
 ; ### debug?
 inline debug?, 'debug?'                 ; void -> ?
 %ifdef DEBUG
-        _t
+        _true
 %else
-        _f
+        _nil
 %endif
 endinline
 
