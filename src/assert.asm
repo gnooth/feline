@@ -74,7 +74,7 @@ code check_assert_eq, 'check-assert-eq'         ; x y location ->
         next
 .1:
         _ set_error_location
-        _quote "Assertion failed: %S %S eq?"
+        _quote "Assertion failed: %S %S assert-eq"
         _ format
         _ error
         next
@@ -89,7 +89,7 @@ code check_assert_equal, 'check-assert='        ; x y location --
         _3drop
         _else .1
         _ set_error_location
-        _quote "Assertion failed: %S %S ="
+        _quote "Assertion failed: %S %S assert="
         _ format
         _ error
         _then .1
