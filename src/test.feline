@@ -4425,7 +4425,7 @@ test: when*-test
     { 90 } [ 89 [ 1+ ] when* ] unit-test
     { 1 2 3 90 } [ 1 2 3 89 [ 1+ ] when* ] unit-test
     { 89 14 } [ 89 [ 14 ] when* ] unit-test
-    { true 14 } [ 89 odd? [ 14 ] when* ] unit-test
+    { 89 14 } [ 89 odd? [ 14 ] when* ] unit-test
     { } [ 89 even? [ 14 ] when* ] unit-test ;
 
 when*-test
@@ -4622,5 +4622,40 @@ test: fixnum-hashtable-gc-test
     count [ dup ht gethash swap fixnum>string assert= ] each-integer ;
 
 fixnum-hashtable-gc-test
+
+test: odd?-test // odd? returns its argument if its argument is not nil
+    { } [
+        most-negative-fixnum odd? assert-false
+        most-negative-fixnum 1+ odd? assert
+        most-negative-fixnum 1+ odd? most-negative-fixnum 1+ assert-eq
+        -1 odd? assert
+        -1 odd? -1 assert-eq
+        0 odd? assert-false
+        1 odd? assert
+        1 odd? 1 assert-eq
+        most-positive-fixnum odd? assert
+        most-positive-fixnum odd? most-positive-fixnum assert-eq
+        most-positive-fixnum 1- odd? assert-false
+    ] unit-test
+;
+
+odd?-test
+
+test: even?-test // even? returns its argument if its argument is not nil
+    { } [
+        most-negative-fixnum even? assert
+        most-negative-fixnum even? most-negative-fixnum assert-eq
+        most-negative-fixnum 1+ even? assert-false
+        -1 even? assert-false
+        0 even? assert
+        0 even? 0 assert-eq
+        1 even? assert-false
+        most-positive-fixnum even? assert-false
+        most-positive-fixnum 1- even? assert
+        most-positive-fixnum 1- even? most-positive-fixnum 1- assert-eq
+    ] unit-test
+;
+
+even?-test
 
 ?nl "Reached end of test.feline" write-string

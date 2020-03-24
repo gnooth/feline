@@ -653,21 +653,21 @@ endcode
 
 ; ### odd?
 code odd?, 'odd?'                       ; n -> ?
-        _check_fixnum                   ; -> untagged
-        mov     eax, TRUE
-        and     ebx, 1
-        mov     ebx, NIL
-        cmovnz  ebx, eax
+        test    bl, FIXNUM_TAG
+        jz      error_not_fixnum
+        mov     eax, NIL
+        test    rbx, (1 << FIXNUM_TAG_BITS)
+        cmovz   rbx, rax
         next
 endcode
 
 ; ### even?
 code even?, 'even?'                     ; n -> ?
-        _check_fixnum                   ; -> untagged
-        mov     eax, TRUE
-        and     ebx, 1
-        mov     ebx, NIL
-        cmovz   ebx, eax
+        test    bl, FIXNUM_TAG
+        jz      error_not_fixnum
+        mov     eax, NIL
+        test    rbx, (1 << FIXNUM_TAG_BITS)
+        cmovnz  rbx, rax
         next
 endcode
 
