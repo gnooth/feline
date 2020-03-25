@@ -377,18 +377,19 @@ endcode
 
 ; ### string-nth-unsafe
 code string_nth_unsafe, 'string-nth-unsafe'
-; tagged-index handle-or-raw-string -- tagged-char
+; tagged-index handle-or-static-string -> tagged-char
 
         ; no type checking
         ; no bounds checking
 
         cmp     bl, HANDLE_TAG
         jne     .1
-        _handle_to_object_unsafe
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]
 .1:
         mov     rax, [rbp]
         _nip
-        _untag_fixnum rax
+        sar     rax, FIXNUM_TAG_BITS
         movzx   ebx, byte [rax + rbx + STRING_RAW_DATA_OFFSET]
         _tag_char
 
