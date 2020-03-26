@@ -636,29 +636,36 @@ code float_fixnum_gt, 'float-fixnum>'   ; float fixnum -- ?
 endcode
 
 ; ### fixnum>
-code fixnum_gt, 'fixnum>'               ; number fixnum -- ?
+code fixnum_gt, 'fixnum>'               ; number fixnum -> ?
 
-        ; second arg must be a fixnum
+        ; last arg must be a fixnum
         _verify_fixnum
 
         ; dispatch on type of first arg
+        test    byte [rbp], FIXNUM_TAG
+        jz      .1
+        mov     eax, TRUE
+        cmp     [rbp], rbx
+        mov     ebx, NIL
+        cmovg   ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+
+.1:
         _over
         _ object_raw_typecode
         mov     rax, rbx
-        poprbx                          ; -- x y
-
-        cmp     rax, TYPECODE_FIXNUM
-        je      fixnum_fixnum_gt
+        _drop                           ; -> x y
 
         cmp     rax, TYPECODE_INT64
         je      int64_fixnum_gt
 
         cmp     rax, TYPECODE_FLOAT
-        jne     .1
+        jne     .2
         _ fixnum_to_float
         jmp     float_float_gt
 
-.1:
+.2:
         _drop
         _ error_not_number
         next
