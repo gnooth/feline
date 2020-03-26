@@ -4658,4 +4658,19 @@ test: even?-test // even? returns its argument if its argument is not nil
 
 even?-test
 
+test: check-bounds-test
+    "this is a test" :> s
+    0 s check-bounds s assert-eq 0 assert-eq
+    1 s check-bounds s assert-eq 1 assert-eq
+    13 s check-bounds s assert-eq 13 assert-eq
+
+    [ most-negative-fixnum s check-bounds ] assert-must-fail
+    [ -1 s check-bounds ] assert-must-fail
+    [ 14 s check-bounds ] assert-must-fail
+    [ most-positive-fixnum s check-bounds ] assert-must-fail
+
+    [ "test" s check-bounds ] assert-must-fail ;
+
+check-bounds-test
+
 ?nl "Reached end of test.feline" write-string
