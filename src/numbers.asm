@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -230,18 +230,20 @@ code float_fixnum_lt, 'float-fixnum<'   ; float fixnum -- ?
 endcode
 
 ; ### fixnum<
-code fixnum_lt, 'fixnum<'               ; number fixnum -- ?
+code fixnum_lt, 'fixnum<'               ; number fixnum -> ?
 
-        ; second arg must be a fixnum
+        ; last arg must be a fixnum
         _verify_fixnum
 
         ; dispatch on type of first arg
-        mov     al, byte [rbp]
-        and     al, FIXNUM_TAG_MASK
-        cmp     al, FIXNUM_TAG
-        jne     .1
-        _ fixnum_fixnum_lt
-        _return
+        test    byte [rbp], FIXNUM_TAG
+        jz      .1
+        mov     eax, TRUE
+        cmp     [rbp], rbx
+        mov     ebx, NIL
+        cmovl   ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
 
 .1:
 
