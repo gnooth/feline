@@ -56,12 +56,21 @@ endcode
 
 ; ### check-bounds
 code check_bounds, 'check-bounds'       ; n seq -> n seq
-        _ qbounds
-        cmp     rbx, NIL
-        je      .1
-        next
+
+        push    rbx
+        _ length                ; -> n length
+        mov     rdx, rbx        ; length in rdx
+        pop     rbx             ; -> n seq
+
+        mov     rax, [rbp]      ; n in rax
+        test    al, FIXNUM_TAG
+        jz      error_not_fixnum_rax
+        test    rax, rax
+        js      .1
+        cmp     rax, rdx        ; sets carry if rax < rdx (unsigned)
+        jge     .1
+        _rep_return
 .1:
-        _2drop
         _error "index out of bounds for sequence"
         next
 endcode
