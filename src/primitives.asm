@@ -1428,26 +1428,24 @@ endcode
 ; ### char-lower-case?
 code char_lower_case?, 'char-lower-case?' ; char -> char/nil
         _verify_char
-        cmp     ebx, tagged_char('a')
-        jl      .1
-        cmp     ebx, tagged_char('z')
-        jg      .1
-        next
-.1:
-        mov     ebx, NIL
+        mov     rax, rbx
+        mov     edx, NIL
+        shr     rax, CHAR_TAG_BITS
+        sub     rax, 'a'
+        cmp     rax, 25
+        cmova   rbx, rdx
         next
 endcode
 
 ; ### char-upper-case?
 code char_upper_case?, 'char-upper-case?' ; char -> char/nil
         _verify_char
-        cmp     ebx, tagged_char('A')
-        jl      .1
-        cmp     ebx, tagged_char('Z')
-        jg      .1
-        next
-.1:
-        mov     ebx, NIL
+        mov     rax, rbx
+        mov     edx, NIL
+        shr     rax, CHAR_TAG_BITS
+        sub     rax, 'A'
+        cmp     rax, 25
+        cmova   rbx, rdx
         next
 endcode
 
