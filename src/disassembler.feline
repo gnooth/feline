@@ -692,6 +692,18 @@ last-word 0x3b install-handler
 
 last-word 0x3c install-handler
 
+: .3d
+    "cmp" mnemonic!
+    // dest is ax/eax/rax
+    0 dreg!
+    instruction-operand-size ssize!
+    ssize 16 eq? [ unsupported ] when
+    next-uint32 immediate-operand!
+    true immediate-operand?!
+    .inst ;
+
+last-word 0x3d install-handler
+
 : .63
     // /r
     // source is r/m32
@@ -699,7 +711,7 @@ last-word 0x3c install-handler
     "movsx" mnemonic!
     !modrm-byte
     modrm-reg register-reg dreg!
-    modrm-rm  register-rm  sbase!
+    modrm-rm register-rm sbase!
     .inst ;
 
 last-word 0x63 install-handler
