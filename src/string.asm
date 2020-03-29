@@ -113,14 +113,6 @@ endcode
         _this_slot 1
 %endmacro
 
-%macro  _this_string_set_raw_length 0   ; raw-length -> void
-        _this_set_slot 1
-%endmacro
-
-%macro  _string_hashcode 0              ; ^string -> tagged-fixnum
-        _slot 2
-%endmacro
-
 %macro  _this_string_set_hashcode 0     ; fixnum -> void
         _this_set_slot 2
 %endmacro
@@ -285,24 +277,24 @@ endcode
 ; ### string_from
 code string_from, 'string_from', SYMBOL_INTERNAL ; string -> raw-data-address raw-length
         _ check_string
-        mov     rax, [rbx + STRING_RAW_LENGTH_OFFSET]
-        _string_raw_data_address
+        mov     rax, [rbx + STRING_RAW_LENGTH_OFFSET]   ; raw length in rax
+        lea     rbx, [rbx + STRING_RAW_DATA_OFFSET]     ; raw data address in rbx
         _dup
         mov     rbx, rax
         next
 endcode
 
 ; ### hash-string
-code hash_string, 'hash-string'         ; string --
+code hash_string, 'hash-string'         ; string -> fixnum
 ; Hash function adapted from SBCL.
 
-        _ check_string                  ; -- string
+        _ check_string                  ; -> ^string
 
 hash_string_unchecked:
         push    this_register
-        popd    this_register           ; --
+        popd    this_register           ; -> empty
 
-        _zero                           ; -- accumulator
+        _zero                           ; -> accumulator
 
         _this_string_raw_length
         _register_do_times .1
@@ -333,30 +325,27 @@ hash_string_unchecked:
         shl     rax, 15
         xor     rbx, rax
 
-        _lit MOST_POSITIVE_FIXNUM
-        _and
+        mov     rax, MOST_POSITIVE_FIXNUM
+        and     rbx, rax
 
         _tag_fixnum
-        _this_string_set_hashcode
+        mov     qword [this_register + STRING_HASHCODE_OFFSET], rbx
 
         pop     this_register
         next
 endcode
 
 ; ### string-hashcode
-code string_hashcode, 'string-hashcode' ; handle-or-string -- fixnum
+code string_hashcode, 'string-hashcode' ; handle-or-string -> fixnum
         _ check_string
-        _dup
-        _string_hashcode
-        _dup
-        _tagged_if .1
-        _nip
-        _else .1
-        _drop
-        _dup
-        _ hash_string_unchecked
-        _string_hashcode
-        _then .1
+        mov     rax, [rbx + STRING_HASHCODE_OFFSET]
+        cmp     rax, NIL
+        jz      .1
+        mov     rbx, rax
+        next
+.1:
+        ; -> ^string
+        _ hash_string_unchecked         ; -> hashcode
         next
 endcode
 
