@@ -21,7 +21,9 @@ file __FILE__
 
 %define STRING_RAW_LENGTH_OFFSET        8
 
-; character data (untagged) starts at offset 24
+%define STRING_HASHCODE_OFFSET          16
+
+; inline character data (untagged) starts at offset 24
 %define STRING_RAW_DATA_OFFSET          24
 
 ; ### string?
@@ -235,45 +237,37 @@ endcode
 %endmacro
 
 ; ### copy_to_string
-code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL ; from-addr from-length -> string
+code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL
+; source-address source-length -> string
 ; arguments are untagged
 
-        _lit STRING_RAW_DATA_OFFSET
-        _over
-        _oneplus                        ; +1 for terminal null byte
-        _plus                           ; -- from-addr from-length size
-        _ allocate_object               ; -- from-addr from-length string
+        mov     arg0_register, STRING_RAW_DATA_OFFSET
+        add     arg0_register, rbx      ; add source length
+        inc     arg0_register           ; +1 for terminal null byte
+        _ feline_malloc                 ; returns untagged allocated address in rax
 
         push    this_register
-        mov     this_register, rbx
-        _drop                           ; -- from-addr from-length
+        mov     this_register, rax      ; -> source-address source-length
 
-        ; zero all bits of object header
-        xor     eax, eax
-        mov     [this_register], rax
+        mov     qword [this_register], 0
+        mov     qword [this_register], TYPECODE_STRING
+        mov     qword [this_register + STRING_HASHCODE_OFFSET], NIL
+        mov     qword [this_register + STRING_RAW_LENGTH_OFFSET], rbx
+        _drop                           ; -> source address (in rbx)
 
-        _this_object_set_raw_typecode TYPECODE_STRING
-        _this_object_set_flags OBJECT_ALLOCATED_BIT
-
-        _nil
-        _this_string_set_hashcode
-
-        _this_string_set_raw_length     ; -- from-addr
-
-        _this_string_raw_data_address
-        _this_string_raw_length
-        _ cmove                         ; --
+        mov     arg0_register, rbx      ; source address
+        lea     arg1_register, [this_register + STRING_RAW_DATA_OFFSET] ; destination address
+        mov     arg2_register, [this_register + STRING_RAW_LENGTH_OFFSET] ; length
+        _ copy_bytes
 
         ; store terminal null byte
         mov     rdx, [this_register + STRING_RAW_LENGTH_OFFSET]
         lea     rax, [this_register + STRING_RAW_DATA_OFFSET]
         mov     byte [rax + rdx], 0
 
-        _dup
-        mov     rbx, this_register      ; -- string
+        mov     rbx, this_register      ; -> ^string
 
-        ; return handle of allocated string
-        _ new_handle                    ; -- handle
+        _ new_handle                    ; -> handle
 
         pop     this_register
         next
