@@ -98,26 +98,26 @@ string FELINE_VOCAB_NAME, 'feline'
 
 %ifdef WIN64 ; Windows
 
-feline_constant have_gtkui?, 'have-gtkui?', f_value
+feline_constant have_gtkui?, 'have-gtkui?', NIL
 
 %ifdef WINUI
 %include "winui.asm"
-feline_constant have_winui?, 'have-winui?', t_value
+feline_constant have_winui?, 'have-winui?', TRUE
 %else
-feline_constant have_winui?, 'have-winui?', f_value
+feline_constant have_winui?, 'have-winui?', NIL
 %endif
 
 %endif ; Windows
 
 %ifndef WIN64 ; Linux
 
-feline_constant have_winui?, 'have-winui?', f_value
+feline_constant have_winui?, 'have-winui?', NIL
 
 %ifdef GTKUI
 %include "gtkui.asm"
-feline_constant have_gtkui?, 'have-gtkui?', t_value
+feline_constant have_gtkui?, 'have-gtkui?', TRUE
 %else
-feline_constant have_gtkui?, 'have-gtkui?', f_value
+feline_constant have_gtkui?, 'have-gtkui?', NIL
 %endif
 
 %endif ; Linux
@@ -129,15 +129,15 @@ code in_static_data_area?, 'in-static-data-area?', SYMBOL_PRIMITIVE | SYMBOL_PRI
         jb .1
         cmp     rbx, static_data_area_limit
         jae .1
-        mov     ebx, t_value
-        _return
+        mov     ebx, TRUE
+        next
 .1:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
 code last_static_symbol, 'last-static-symbol', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-        pushrbx
+        _dup
         mov     rbx, symbol_link
         next
 endcode
