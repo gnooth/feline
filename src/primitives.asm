@@ -1399,32 +1399,6 @@ subroutine fill_cells
         _rep_return
 endsub
 
-; ### char-downcase
-code char_downcase, 'char-downcase'
-        _check_char
-        cmp     ebx, 'A'
-        jl      .1
-        cmp     ebx, 'Z'
-        jg      .1
-        add     ebx, 'a' - 'A'
-.1:
-        _tag_char
-        next
-endcode
-
-; ### char-upcase
-code char_upcase, 'char-upcase'
-        _check_char
-        cmp     ebx, 'a'
-        jl      .1
-        cmp     ebx, 'z'
-        jg      .1
-        sub     ebx, 'a' - 'A'
-.1:
-        _tag_char
-        next
-endcode
-
 ; ### char-lower-case?
 code char_lower_case?, 'char-lower-case?' ; char -> char/nil
         _verify_char
@@ -1446,6 +1420,34 @@ code char_upper_case?, 'char-upper-case?' ; char -> char/nil
         sub     rax, 'A'
         cmp     rax, 25
         cmova   rbx, rdx
+        next
+endcode
+
+; ### char-downcase
+code char_downcase, 'char-downcase'
+        _verify_char
+        mov     rax, rbx
+        shr     rax, CHAR_TAG_BITS
+        sub     rax, 'A'
+        cmp     rax, 25
+        ja      .1
+        ; char is upper case
+        or      rbx, 0x2000
+.1:
+        next
+endcode
+
+; ### char-upcase
+code char_upcase, 'char-upcase'
+        _verify_char
+        mov     rax, rbx
+        shr     rax, CHAR_TAG_BITS
+        sub     rax, 'a'
+        cmp     rax, 25
+        ja      .1
+        ; char is lower case
+        and     rbx, 0xdfff
+.1:
         next
 endcode
 
