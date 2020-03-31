@@ -15,23 +15,23 @@
 
 file __FILE__
 
-asm_global compile_verbose_, f_value
+asm_global compile_verbose_, NIL
 
 ; ### +v
 code verbose_on, '+v'
-        mov     qword [compile_verbose_], t_value
+        mov     qword [compile_verbose_], TRUE
         next
 endcode
 
 ; ### -v
 code verbose_off, '-v'
-        mov     qword [compile_verbose_], f_value
+        mov     qword [compile_verbose_], NIL
         next
 endcode
 
 ; ### compile-verbose?
-code compile_verbose?, 'compile-verbose?'       ; -- ?
-        pushrbx
+code compile_verbose?, 'compile-verbose?' ; -> ?
+        _dup
         mov     rbx, [compile_verbose_]
         next
 endcode
@@ -41,36 +41,12 @@ asm_global code_space_, 0
 asm_global code_space_free_, 0
 asm_global code_space_limit_, 0
 
-; ### code-space
-code code_space, 'code-space'
-        pushrbx
-        mov     rbx, [code_space_]
-        _tag_fixnum
-        next
-endcode
-
-; ### code-space-free
-code code_space_free, 'code-space-free'
-        pushrbx
-        mov     rbx, [code_space_free_]
-        _tag_fixnum
-        next
-endcode
-
-; ### code-space-limit
-code code_space_limit, 'code-space-limit'
-        pushrbx
-        mov     rbx, [code_space_limit_]
-        _tag_fixnum
-        next
-endcode
-
 %define USE_XALLOC
 
 %ifdef USE_XALLOC
 
 ; ### xalloc
-code xalloc, 'xalloc'                           ; raw-size -- raw-address
+code xalloc, 'xalloc'                   ; raw-size -> raw-address
         mov     rax, [code_space_free_]
 
         add     rbx, rax
@@ -97,7 +73,7 @@ code xalloc, 'xalloc'                           ; raw-size -- raw-address
 endcode
 
 ; ### xfree
-code xfree, 'xfree'                             ; raw-address --
+code xfree, 'xfree'                     ; raw-address -> void
         ; for now, do nothing
         _drop
 
@@ -108,7 +84,7 @@ endcode
 
 ; ### raw_allocate_executable
 code raw_allocate_executable, 'raw_allocate_executable', SYMBOL_INTERNAL
-; raw-size -- raw-address
+; raw-size -> raw-address
 
 %ifdef USE_XALLOC
 
@@ -131,7 +107,7 @@ endcode
 
 ; ### raw_free_executable
 code raw_free_executable, 'raw_free_executable', SYMBOL_INTERNAL
-; raw-address --
+; raw-address -> void
 
 %ifdef USE_XALLOC
 
@@ -145,7 +121,7 @@ code raw_free_executable, 'raw_free_executable', SYMBOL_INTERNAL
 %else
         xcall   os_free
 %endif
-        poprbx
+        _drop
 
 %endif
 
@@ -160,24 +136,24 @@ asm_global pc_, 0
 %endmacro
 
 ; ### initialize-code-block
-code initialize_code_block, 'initialize-code-block' ; tagged-size -- tagged-address
+code initialize_code_block, 'initialize-code-block' ; tagged-size -> tagged-address
         _check_fixnum
-        _ raw_allocate_executable       ; -- raw-address
+        _ raw_allocate_executable       ; -> raw-address
         _tag_fixnum
         next
 endcode
 
 ; ### precompile-object
 code precompile_object, 'precompile-object', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; object -- pair
+; object -> pair
 ; all values are untagged
         _dup
         _ symbol?
         _tagged_if .1
-        _zero                           ; -- symbol 0
+        _zero                           ; -> symbol 0
         _else .1
         _zero
-        _swap                           ; -- 0 literal-value
+        _swap                           ; -> 0 literal-value
         _then .1
         _ two_array
         next
@@ -185,7 +161,7 @@ endcode
 
 ; ### add-code-size
 code add_code_size, 'add-code-size', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; accum pair -- accum
+; accum pair -> accum
 ; FIXME arbitrary for now
         _drop
         _lit 25
@@ -236,10 +212,10 @@ code raw_int32?, 'raw_int32?'           ; untagged-fixnum -> ?
         jl      .1
         cmp     rbx, MAX_INT32
         jg      .1
-        mov     ebx, t_value
-        _return
+        mov     ebx, TRUE
+        next
 .1:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
@@ -250,7 +226,7 @@ code int32?, 'int32?'                   ; tagged-fixnum -> ?
         _untag_fixnum
         jmp     raw_int32?
 .1:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
@@ -301,30 +277,30 @@ code compile_call, 'compile-call', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
-%define PUSHRBX_BYTES   $0f86d8d48f85d8948
+%define DUP_BYTES 0xf86d8d48f85d8948
 
 ; ### compile-literal
 code compile_literal, 'compile-literal', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; literal --
+; literal -> void
         _dup
         _ wrapper?
         _tagged_if .1
         _ wrapped
         _then .1
 
-        _lit PUSHRBX_BYTES
+        _lit DUP_BYTES
         _ emit_raw_qword
         _dup
-        _lit $100000000
+        _lit 0x100000000
         _ult
         _if .2
-        _lit $0bb
+        _lit 0xbb
         _ emit_raw_byte
         _ emit_raw_dword
         _else .2
-        _lit $48
+        _lit 0x48
         _ emit_raw_byte
-        _lit $0bb
+        _lit 0xbb
         _ emit_raw_byte
         _ emit_raw_qword
         _then .2
@@ -332,7 +308,7 @@ code compile_literal, 'compile-literal', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 endcode
 
 ; ### inline-primitive
-code inline_primitive, 'inline-primitive'       ; symbol --
+code inline_primitive, 'inline-primitive' ; symbol -> void
 
 %ifdef DEBUG
         _dup
@@ -346,21 +322,21 @@ code inline_primitive, 'inline-primitive'       ; symbol --
         _dup
         _ symbol_raw_code_address
         _swap
-        _ symbol_raw_code_size          ; -- raw-code-address raw-code-size
+        _ symbol_raw_code_size          ; -> raw-code-address raw-code-size
 
         _oneminus                       ; adjust size to exclude ret instruction
-        _tuck                           ; -- size addr size
+        _tuck                           ; -> size addr size
         _pc
         _swap
-        _ cmove                         ; -- size
+        _ cmove                         ; -> size
         add     qword [pc_], rbx
-        poprbx
+        _drop
         next
 endcode
 
 ; ### compile-primitive
 code compile_primitive, 'compile-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; symbol --
+; symbol -> void
         _dup
 %ifdef DEBUG
         _ symbol_always_inline?
@@ -378,16 +354,16 @@ endcode
 
 ; ### compile-pair
 code compile_pair, 'compile-pair', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; pair --
+; pair -> void
         _dup
         _ array_first
         _zeq_if .1
         _ array_second
         _ compile_literal
         _return
-        _then .1                        ; -- pair
+        _then .1                        ; -> pair
 
-        _ array_first                   ; -- symbol
+        _ array_first                   ; -> symbol
         _dup
         _ symbol_primitive?
         _tagged_if .2
@@ -404,7 +380,7 @@ endcode
 
 ; ### primitive-compile-quotation
 code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; quotation --
+; quotation -> void
 
         _debug_?enough 1
 
@@ -422,11 +398,11 @@ code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIV
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; --
+        _drop                           ; -> empty
 
         _this_quotation_array
         _lit S_precompile_object
-        _ map_array                     ; -- precompiled-array
+        _ map_array                     ; -> precompiled-array
 
         _ compile_verbose?
         _tagged_if .2
@@ -442,14 +418,14 @@ code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIV
         _ array_each
 
         ; add size of return instruction
-        _oneplus                        ; -- raw-size
+        _oneplus                        ; -> raw-size
         _tag_fixnum
 
-        _ initialize_code_block         ; -- tagged-address
+        _ initialize_code_block         ; -> tagged-address
 
         _check_fixnum
         mov     [pc_], rbx
-        poprbx
+        _drop
 
         _pc
         _tor
@@ -457,10 +433,10 @@ code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIV
         _lit S_compile_pair
         _ array_each
 
-        _lit $0c3
+        _lit 0xc3
         _ emit_raw_byte
 
-        _rfetch                         ; -- raw-code-address
+        _rfetch                         ; -> raw-code-address
         _this_quotation_set_raw_code_address
 
         _pc
@@ -475,7 +451,7 @@ endcode
 
 ; ### compile-quotation
 code compile_quotation, 'compile-quotation', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; quotation -- quotation
+; quotation -> quotation
         _duptor
         _ primitive_compile_quotation
         _rfrom
@@ -484,10 +460,10 @@ endcode
 
 ; ### primitive-compile-word
 code primitive_compile_word, 'primitive-compile-word', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; symbol --
+; symbol -> void
         _dup
         _ symbol_def
-        _ compile_quotation             ; -- symbol quotation
+        _ compile_quotation             ; -> symbol quotation
 
         _dup
         _ quotation_code_address
