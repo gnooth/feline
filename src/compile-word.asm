@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -155,7 +155,7 @@ endcode
 asm_global pc_, 0
 
 %macro _pc 0
-        pushrbx
+        _dup
         mov     rbx, [pc_]
 %endmacro
 
@@ -194,26 +194,29 @@ code add_code_size, 'add-code-size', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 endcode
 
 ; ### emit_raw_byte
-code emit_raw_byte, 'emit_raw_byte', SYMBOL_INTERNAL    ; byte --
-        _pc
-        _cstore
+code emit_raw_byte, 'emit_raw_byte', SYMBOL_INTERNAL    ; byte -> void
+        mov     rdx, [pc_]
+        mov     [rdx], bl
         add     qword [pc_], 1
+        _drop
         next
 endcode
 
 ; ### emit_raw_dword
-code emit_raw_dword, 'emit_raw_dword', SYMBOL_INTERNAL  ; dword --
-        _pc
-        _lstore
+code emit_raw_dword, 'emit_raw_dword', SYMBOL_INTERNAL  ; dword -> void
+        mov     rdx, [pc_]
+        mov     [rdx], ebx
         add     qword [pc_], 4
+        _drop
         next
 endcode
 
 ; ### emit_raw_qword
-code emit_raw_qword, 'emit_raw_qword', SYMBOL_INTERNAL  ; qword --
-        _pc
-        _store
+code emit_raw_qword, 'emit_raw_qword', SYMBOL_INTERNAL  ; qword -> void
+        mov     rdx, [pc_]
+        mov     [rdx], rbx
         add     qword [pc_], 8
+        _drop
         next
 endcode
 
