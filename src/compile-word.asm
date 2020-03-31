@@ -256,41 +256,46 @@ endcode
 
 ; ### compile-call
 code compile_call, 'compile-call', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; raw-address --
+; raw-address -> void
         _dup
         _pc
         add     rbx, 5
         _minus
         _ raw_int32?
-        _tagged_if .1
-        _lit $0e8
-        _ emit_raw_byte                 ; -- raw-address
+        cmp     rbx, NIL
+        mov     rbx, [rbp]
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        jz      .1
+
+        _lit 0xe8
+        _ emit_raw_byte                 ; -> raw-address
         _pc
         add     rbx, 4
         _minus
         _ emit_raw_dword
-        _return
-        _then .1
+        next
 
-        ; -- raw-address
-        _dup
-        _lit MAX_INT32
-        _ult
-        _if .2
-        _lit $0b8
+.1:
+        ; -> raw-address
+        cmp     rbx, MAX_INT32
+        jz      .2
+
+        _lit 0xb8
         _ emit_raw_byte
         _ emit_raw_dword
-        _else .2
-        _lit $48
+        jmp     .3
+
+.2:
+        _lit 0x48
         _ emit_raw_byte
-        _lit $0b8
+        _lit 0xb8
         _ emit_raw_byte
         _ emit_raw_qword
-        _then .2
 
-        _lit $0ff
+.3:
+        _lit 0xff
         _ emit_raw_byte
-        _lit $0d0
+        _lit 0xd0
         _ emit_raw_byte
 
         next
