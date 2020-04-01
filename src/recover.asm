@@ -69,18 +69,28 @@ code throw, 'throw'                     ; error ->
         _rpstore
         next
 
-.no_catch:
+.no_catch:                              ; -> error nil
         ; REVIEW
+        _print "no catch"
+        _drop                           ; -> error
+        _ string?                       ; -> string/nil
+        cmp     rbx, NIL
+        je      .1
+        _ error_output
+        _ get
+        _ stream_write_string
+.1:                                     ; -> nil
+        _ maybe_print_backtrace
         _ bye
         next
 endcode
 
 ; REVIEW
-asm_global error_object_, f_value
+asm_global error_object_, NIL
 
 ; ### last-error
 code last_error, 'last-error'           ; void -> object/f
-        pushrbx
+        _dup
         mov     rbx, [error_object_]
         next
 endcode
@@ -106,7 +116,7 @@ code recover, 'recover'                 ; try-quot recover-quot ->
         pop     r13
         pop     r12
 
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         jne     .error
 
         ; no error
