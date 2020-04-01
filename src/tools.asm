@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 file __FILE__
 
 ; ### int3
-code int3, 'int3'                       ; --
+code int3, 'int3'
         int3
         next
 endcode
@@ -27,21 +27,15 @@ extern c_get_saved_backtrace_size
 extern c_save_backtrace
 
 ; ### save-backtrace
-code save_backtrace, 'save-backtrace'   ; --
-%ifdef WIN64
-        mov     rcx, $
-        mov     rdx, rsp
-%else
-        mov     rdi, $
-        mov     rsi, rsp
-%endif
+code save_backtrace, 'save-backtrace'
+        mov     arg0_register, $
+        mov     arg1_register, rsp
         xcall   c_save_backtrace
         next
 endcode
 
-
 ; ### get-saved-backtrace
-code get_saved_backtrace, 'get-saved-backtrace' ; -- vector
+code get_saved_backtrace, 'get-saved-backtrace' ; -> vector
         xcall   c_get_saved_backtrace_array
         pushd   rax
         xcall   c_get_saved_backtrace_size
@@ -100,31 +94,31 @@ value saved_rip, 'saved-rip', 0
 value saved_efl, 'saved-efl', 0
 
 ; ### maybe-print-saved-registers
-code maybe_print_saved_registers, 'maybe-print-saved-registers' ; --
+code maybe_print_saved_registers, 'maybe-print-saved-registers' ; -> void
         _quote "print-saved-registers"
         _quote "feline"
-        _ ?lookup_symbol                ; -- symbol/f
+        _ ?lookup_symbol                ; -> symbol/nil
         _dup
-        _tagged_if .1                   ; -- symbol
-        _ call_symbol                   ; --
+        _tagged_if .1                   ; -> symbol
+        _ call_symbol
         _then .1
         next
 endcode
 
 ; ### maybe-print-backtrace
-code maybe_print_backtrace, 'maybe-print-backtrace' ; --
+code maybe_print_backtrace, 'maybe-print-backtrace' ; -> void
         _quote "print-backtrace"
         _quote "feline"
-        _ ?lookup_symbol                ; -- symbol/f
+        _ ?lookup_symbol                ; -> symbol/nil
         _dup
-        _tagged_if .1                   ; -- symbol
-        _ call_symbol                   ; --
+        _tagged_if .1                   ; -> symbol
+        _ call_symbol
         _then .1
         next
 endcode
 
 ; ### print-saved-registers-and-backtrace
-code print_saved_registers_and_backtrace, 'print-saved-registers-and-backtrace' ; --
+code print_saved_registers_and_backtrace, 'print-saved-registers-and-backtrace' ; -> void
         _ maybe_print_saved_registers
         _ maybe_print_backtrace
         next
@@ -133,9 +127,9 @@ endcode
 %ifdef WIN64
 
 ; ### exception-text
-code exception_text, 'exception-text'   ; n -- string/f
+code exception_text, 'exception-text'   ; n -> string/nil
         _dup
-        _lit $0C0000005
+        _lit 0xc0000005
         _equal
         _if .1
         _drop
@@ -144,7 +138,7 @@ code exception_text, 'exception-text'   ; n -- string/f
         _then .1
 
         _dup
-        _lit $0C0000094
+        _lit 0xc0000094
         _equal
         _if .2
         _drop
@@ -153,7 +147,7 @@ code exception_text, 'exception-text'   ; n -- string/f
         _then .2
 
         _dup
-        _lit $080000003
+        _lit 0x80000003
         _equal
         _if .3
         _drop
@@ -163,7 +157,7 @@ code exception_text, 'exception-text'   ; n -- string/f
 
         ; default
         _drop
-        _f
+        _nil
         next
 endcode
 
