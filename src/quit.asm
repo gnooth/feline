@@ -378,7 +378,10 @@ code reset, 'reset'
         extern  ExitThread
         xcall   ExitThread
 %else
-        ; FIXME Linux
+        ; Linux
+        mov     arg0_register, 0        ; REVIEW exit code
+        extern  pthread_exit
+        xcall   pthread_exit
 %endif
 
         _then .1
