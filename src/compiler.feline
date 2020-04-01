@@ -705,7 +705,7 @@ defer compile-quotation
     pick quotation-set-code-size
     swap quotation-set-code-address ;
 
-: %compile-quotation ( quotation )       // quotation -> quotation
+: %compile-quotation ( quotation )      // quotation -> quotation
 
     [ quotation length 1 eq? ] [ quotation first symbol? ] both?
     [

@@ -1103,7 +1103,7 @@ endcode
 ; ### number>string
 code number_to_string, 'number>string'  ; n -- string
         test    bl, FIXNUM_TAG
-        jnz fixnum_to_string
+        jnz     fixnum_to_string
 
         _dup
         _ object_raw_typecode
