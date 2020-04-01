@@ -50,6 +50,28 @@ global current-files
         ] when
     ] each-index ;
 
+: find-in-directory ( directory extension )
+    local filename
+    directory directory-files [
+        [
+            directory swap path-append filename!
+            {
+                {
+                    [ filename directory? ]
+                    [
+                        filename file-name-nondirectory { "." ".." } member?
+                        [ filename extension find-in-directory ] unless
+                    ]
+                }
+                {
+                    [ filename file-name-extension extension = ]
+                    [ filename find-in-file ]
+                }
+                [ ]
+            } cond
+        ] each
+    ] when* ;
+
 using: find-in-files search feral-core history mini feline accessors ;
 in: editor
 
@@ -101,6 +123,8 @@ public
 
     current-files file-name-directory :> directory
 
+    current-files file-name-extension :> extension
+
     directory nil? ?exit
 
     find-in-files-pattern make-search current-search!
@@ -108,11 +132,7 @@ public
     make-buffer :> buf
     buf find-in-files-output-buffer!
 
-    current-files directory-files [
-        [
-            directory swap path-append canonical-path [ find-in-file ] when*
-        ] each
-    ] when*
+    directory extension find-in-directory
 
     buf first-line>> nil? [ "Not found" message ] ?return
 
