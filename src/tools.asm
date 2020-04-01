@@ -207,11 +207,22 @@ code handle_signal, 'handle-signal'
         _ current_thread_raw_sp0_rax
         mov     rbp, rax
 
+        ; check for stack underflow
+        cmp     [saved_rbp_data], rbp
+        jl      .1
+
+        _ ?nl
+        _print "Stack underflow"
+        _ maybe_print_backtrace
+        jmp     .2
+
+.1:
+        ; not stack underflow
         _ ?nl
         _ print_exception
         _ print_saved_registers_and_backtrace
 
+.2:
         _ reset
-
         next
 endcode
