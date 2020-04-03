@@ -18,13 +18,6 @@ file __FILE__
 ; maximum number of local variables in a definition
 %define MAX_LOCALS      8
 
-; ### max-locals
-code max_locals, 'max-locals'           ; -> n
-        _dup
-        mov     ebx, tagged_fixnum(MAX_LOCALS)
-        next
-endcode
-
 %macro  _locals_enter 0
         push    r14
         sub     rsp, BYTES_PER_CELL * MAX_LOCALS
@@ -36,8 +29,8 @@ endcode
         pop     r14
 %endmacro
 
-; ### local@
-code local_get, 'local@'                ; index -> value
+; ### local_get
+code local_get, 'local_get', SYMBOL_INTERNAL    ; index -> value
         _check_index
         mov     rbx, [r14 + rbx * BYTES_PER_CELL]
         next
@@ -157,8 +150,8 @@ code local_getter, 'local-getter'       ; index -> symbol
         next
 endcode
 
-; ### local!
-code local_set, 'local!'                ; value index -> void
+; ### local_set
+code local_set, 'local_set', SYMBOL_INTERNAL            ; value index -> void
         _check_index
         _cells
         add     rbx, r14
