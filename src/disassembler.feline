@@ -579,6 +579,17 @@ last-word 0x29 install-handler
 
 last-word 0x2b install-handler
 
+: .2d
+    "sub" mnemonic!
+    // destination is ax/rax
+    0 dreg!
+    // source is imm16/32
+    next-int32 immediate-operand!
+    true immediate-operand?!
+    .inst ;
+
+last-word 0x2d install-handler
+
 : .30
     // /r
     // dest is r/m8
