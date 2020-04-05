@@ -739,15 +739,15 @@ code symbol_set_code_address, 'symbol-set-code-address' ; tagged-code-address sy
         next
 endcode
 
-; ### symbol-raw-code-size
-code symbol_raw_code_size, 'symbol-raw-code-size'       ; symbol -- raw-code-size/0
+; ### symbol_raw_code_size
+code symbol_raw_code_size, 'symbol_raw_code_size'       ; symbol -> raw-code-size/0
         _ check_symbol
         _symbol_raw_code_size
         next
 endcode
 
 ; ### symbol-code-size
-code symbol_code_size, 'symbol-code-size'       ; symbol -- code-size/f
+code symbol_code_size, 'symbol-code-size'       ; symbol -> code-size/nil
         _ check_symbol
         _symbol_raw_code_size
         _?dup_if .1
