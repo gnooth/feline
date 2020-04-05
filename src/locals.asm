@@ -15,6 +15,27 @@
 
 file __FILE__
 
+asm_global experimental_, NIL
+
+; ### x?
+code x?, 'x?'                           ; void -> ?
+        _dup
+        mov     rbx, [experimental_]
+        next
+endcode
+
+; ### +x
+code enable_x, '+x'
+        mov     qword [experimental_], TRUE
+        next
+endcode
+
+; ### -x
+code disable_x, '-x'
+        mov     qword [experimental_], NIL
+        next
+endcode
+
 ; maximum number of local variables in a definition
 %define MAX_LOCALS      8
 
@@ -345,6 +366,35 @@ always_inline locals_leave, 'locals-leave'
         _locals_leave
 endinline
 
+%macro  _n_locals_enter 0
+        shl     rbx, 3                  ; convert cells to bytes
+        push    r14
+        sub     rsp, rbx
+        mov     r14, rsp
+        _drop
+%endmacro
+
+%macro  _n_locals_leave 0
+        shl     rbx, 3                  ; convert cells to bytes
+        add     rsp, rbx
+        pop     r14
+        _drop
+%endmacro
+
+; ### n_locals_enter
+always_inline n_locals_enter, 'n_locals_enter' ; n -> void
+;         _check_fixnum
+        _untag_fixnum
+        _n_locals_enter
+endinline
+
+; ### n_locals_leave
+always_inline n_locals_leave, 'n_locals_leave' ; n -> void
+;         _check_fixnum
+        _untag_fixnum
+        _n_locals_leave
+endinline
+
 ; ### initialize-locals
 code initialize_locals, 'initialize-locals'
 
@@ -362,10 +412,40 @@ code initialize_locals, 'initialize-locals'
 
         mov     qword [using_locals?_], TRUE
 
+        cmp     qword [experimental_], NIL
+        jne     .experimental
+
+        ; old code (non-experimental)
         _lit S_locals_enter
         _lit tagged_zero
         _ current_definition
         _ vector_insert_nth
+
+        jmp     .continue
+
+        ; experimental code
+.experimental:
+        _lit S_n_locals_enter
+        _lit tagged_zero
+        _ current_definition
+        _ vector_insert_nth
+
+        _ current_definition
+        _ ?nl
+        _ dot_object
+
+        _lit tagged_fixnum(1)
+        _lit tagged_zero
+        _ current_definition
+        _ vector_insert_nth
+
+        _ current_definition
+        _ ?nl
+        _ dot_object
+
+.continue:
+
+        ; old code (non-experimental)
 
         ; check for return-if-no-locals
         ; if found, replace with return-if-locals
