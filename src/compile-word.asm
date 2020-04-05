@@ -169,11 +169,17 @@ code add_code_size, 'add-code-size', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
+%macro _emit_raw_byte 1
+        mov     rdx, [pc_]
+        add     qword [pc_], 1
+        mov     byte [rdx], %1
+%endmacro
+
 ; ### emit_raw_byte
 code emit_raw_byte, 'emit_raw_byte', SYMBOL_INTERNAL    ; byte -> void
         mov     rdx, [pc_]
-        mov     [rdx], bl
         add     qword [pc_], 1
+        mov     [rdx], bl
         _drop
         next
 endcode
@@ -236,15 +242,16 @@ code compile_call, 'compile-call', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         _dup
         _pc
         add     rbx, 5
-        _minus
-        _ raw_int32?
-        cmp     rbx, NIL
-        mov     rbx, [rbp]
-        lea     rbp, [rbp + BYTES_PER_CELL]
-        jz      .1
+        _minus                          ; -> raw-address signed-displacement
 
-        _lit 0xe8
-        _ emit_raw_byte                 ; -> raw-address
+        ; does the signed displacement fit in 32 bits?
+        cmp     rbx, MIN_INT32
+        jl      .1
+        cmp     rbx, MAX_INT32
+        jg      .1
+
+        _drop                           ; -> raw-address
+        _emit_raw_byte 0xe8
         _pc
         add     rbx, 4
         _minus
@@ -252,27 +259,24 @@ code compile_call, 'compile-call', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 
 .1:
-        ; -> raw-address
+        _drop                           ; -> raw-address
         cmp     rbx, MAX_INT32
-        jz      .2
+        jl      .2
 
-        _lit 0xb8
-        _ emit_raw_byte
-        _ emit_raw_dword
+        ; raw address fits in 32 bits
+        _emit_raw_byte 0xb8
+        _ emit_raw_dword                ; mov eax, raw-address
         jmp     .3
 
 .2:
-        _lit 0x48
-        _ emit_raw_byte
-        _lit 0xb8
-        _ emit_raw_byte
-        _ emit_raw_qword
+        ; raw address does not fit in 32 bits
+        _emit_raw_byte 0x48
+        _emit_raw_byte 0xb8
+        _ emit_raw_qword                ; mov rax, raw-address
 
 .3:
-        _lit 0xff
-        _ emit_raw_byte
-        _lit 0xd0
-        _ emit_raw_byte
+        _emit_raw_byte 0xff
+        _emit_raw_byte 0xd0             ; call rax
 
         next
 endcode
@@ -294,14 +298,11 @@ code compile_literal, 'compile-literal', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         _lit 0x100000000
         _ult
         _if .2
-        _lit 0xbb
-        _ emit_raw_byte
+        _emit_raw_byte 0xbb
         _ emit_raw_dword
         _else .2
-        _lit 0x48
-        _ emit_raw_byte
-        _lit 0xbb
-        _ emit_raw_byte
+        _emit_raw_byte 0x48
+        _emit_raw_byte 0xbb
         _ emit_raw_qword
         _then .2
         next
@@ -319,18 +320,21 @@ code inline_primitive, 'inline-primitive' ; symbol -> void
         _then .1
 %endif
 
-        _dup
+        push    rbx
         _ symbol_raw_code_address
-        _swap
+        _dup
+        pop     rbx
         _ symbol_raw_code_size          ; -> raw-code-address raw-code-size
 
-        _oneminus                       ; adjust size to exclude ret instruction
-        _tuck                           ; -> size addr size
-        _pc
-        _swap
-        _ cmove                         ; -> size
+        sub     rbx, 1                  ; adjust size to exclude ret instruction
+
+        mov     arg0_register, [rbp]    ; source address
+        mov     arg1_register, [pc_]    ; destination address
+        mov     arg2_register, rbx      ; size
+        _ copy_bytes                    ; -> addr size
+
         add     qword [pc_], rbx
-        _drop
+        _2drop
         next
 endcode
 
@@ -433,8 +437,7 @@ code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIV
         _lit S_compile_pair
         _ array_each
 
-        _lit 0xc3
-        _ emit_raw_byte
+        _emit_raw_byte 0xc3
 
         _rfetch                         ; -> raw-code-address
         _this_quotation_set_raw_code_address
@@ -493,10 +496,8 @@ code compile_deferred, 'compile-deferred'       ; symbol -> void
         _ symbol_set_code_address       ; -> symbol
 
         ; movabs rax, qword [moffset64]
-        _lit 0x48
-        _ emit_raw_byte
-        _lit 0xa1
-        _ emit_raw_byte
+        _emit_raw_byte 0x48
+        _emit_raw_byte 0xa1
 
         _dup
         _ check_symbol
@@ -504,10 +505,8 @@ code compile_deferred, 'compile-deferred'       ; symbol -> void
         _ emit_raw_qword
 
         ; jmp rax
-        _lit 0xff
-        _ emit_raw_byte
-        _lit 0xe0
-        _ emit_raw_byte
+        _emit_raw_byte 0xff
+        _emit_raw_byte 0xe0
 
         _lit tagged_fixnum(12)
         _swap
