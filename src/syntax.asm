@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -381,23 +381,23 @@ code parse_name, 'parse-name'           ; -> symbol
         next
 endcode
 
-asm_global current_definition_, f_value
+asm_global current_definition_, NIL
 
 ; ### current-definition
-code current_definition, 'current-definition'   ; -> vector/?
-        pushrbx
+code current_definition, 'current-definition'   ; -> vector/nil
+        _dup
         mov     rbx, [current_definition_]
         next
 endcode
 
 ; ### set-current-definition
-code set_current_definition, 'set-current-definition'   ; vector/? -> void
+code set_current_definition, 'set-current-definition'   ; vector/nil -> void
         _dup
         _tagged_if .1
         _ verify_vector
         _then .1
         mov     [current_definition_], rbx
-        poprbx
+        _drop
         next
 endcode
 
@@ -406,7 +406,7 @@ code parse_definition, 'parse-definition'       ; -> vector
 
         _ begin_dynamic_scope
 
-        _t
+        _true
         _ in_definition?
         _ set
 
@@ -417,11 +417,12 @@ code parse_definition, 'parse-definition'       ; -> vector
         _set_accum
 
 .top:
-        _ parse_token                   ; -> string/f
-        cmp     rbx, f_value
+        _ parse_token                   ; -> string/nil
+        cmp     rbx, NIL
         jne     .1
-        poprbx
+        _drop
         _ error_unexpected_end_of_input
+
 .1:                                     ; ->  string
         _dup
         _quote ";"
@@ -436,12 +437,25 @@ code parse_definition, 'parse-definition'       ; -> vector
         jmp     .top
 
 .bottom:
-
         _ using_locals?
         _tagged_if .5
+
+        cmp     qword [experimental_], NIL
+        jne     .experimental
         _lit S_locals_leave
+        jmp     .not_experimental
+
+.experimental:
+        _lit tagged_fixnum(1)           ; locals count
         _ current_definition
         _ vector_push
+
+        _lit S_n_locals_leave
+
+.not_experimental:
+        _ current_definition
+        _ vector_push
+
         _then .5
 
         _ current_definition            ; -> vector
@@ -450,7 +464,7 @@ code parse_definition, 'parse-definition'       ; -> vector
 
         _ forget_locals
 
-        _f
+        _nil
         _ set_current_definition
 
         next
@@ -865,7 +879,7 @@ code paren, '(', SYMBOL_IMMEDIATE       ; --
         _dup
         _quote ")"
         _ string_equal?
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         _drop
         jne     .done
         _get_accum
@@ -898,7 +912,7 @@ code define_immutable_local, ':>', SYMBOL_IMMEDIATE
         _dup
         _ string_last_char
         cmp     rbx, tagged_char('!')
-        poprbx
+        _drop
         jne     .1
 
         _dup
