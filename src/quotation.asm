@@ -17,44 +17,44 @@ file __FILE__
 
 ; 4 cells: object header, array, raw code address, raw code size
 
-%macro  _quotation_array 0              ; quotation -- array
+%macro  _quotation_array 0              ; quotation -> array
         _slot1
 %endmacro
 
-%macro  _this_quotation_array 0         ; -- array
+%macro  _this_quotation_array 0         ; -> array
         _this_slot1
 %endmacro
 
-%macro  _this_quotation_set_array 0     ; array --
+%macro  _this_quotation_set_array 0     ; array ->
         _this_set_slot1
 %endmacro
 
-%macro  _quotation_raw_code_address 0   ; quotation -- raw-code-address
+%macro  _quotation_raw_code_address 0   ; quotation -> raw-code-address
         _slot2
 %endmacro
 
-%macro  _quotation_set_raw_code_address 0       ; raw-code-address quotation --
+%macro  _quotation_set_raw_code_address 0       ; raw-code-address quotation -> void
         _set_slot2
 %endmacro
 
-%macro  _this_quotation_set_raw_code_address 0  ; raw-code-address --
+%macro  _this_quotation_set_raw_code_address 0  ; raw-code-address -> void
         _this_set_slot2
 %endmacro
 
-%macro  _quotation_raw_code_size 0              ; quotation -- raw-code-size
+%macro  _quotation_raw_code_size 0              ; quotation -> raw-code-size
         _slot3
 %endmacro
 
-%macro  _quotation_set_raw_code_size 0          ; raw-code-size quotation --
+%macro  _quotation_set_raw_code_size 0          ; raw-code-size quotation -> void
         _set_slot3
 %endmacro
 
-%macro  _this_quotation_set_raw_code_size 0     ; raw-code-size --
+%macro  _this_quotation_set_raw_code_size 0     ; raw-code-size -> void
         _this_set_slot3
 %endmacro
 
 ; ### quotation?
-code quotation?, 'quotation?'                   ; x -- ?
+code quotation?, 'quotation?'                   ; x -> ?
         _ object_raw_typecode
         _eq? TYPECODE_QUOTATION
         next
@@ -88,7 +88,7 @@ code check_quotation, 'check_quotation' ; x -> ^quotation
         jne     .1
         mov     rax, rbx                ; save x in rax for error reporting
         shr     rbx, HANDLE_TAG_BITS
-        mov     rbx, [rbx]              ; -> ^string
+        mov     rbx, [rbx]              ; -> ^object
         cmp     word [rbx], TYPECODE_QUOTATION
         jne     .error
         next
@@ -146,10 +146,10 @@ code array_to_quotation, 'array>quotation'      ; array -> quotation
         _this_quotation_set_raw_code_size
 
         _dup
-        mov     rbx, this_register      ; -- quotation
+        mov     rbx, this_register      ; -> quotation
 
         ; return handle
-        _ new_handle                    ; -- handle
+        _ new_handle                    ; -> handle
 
         pop     this_register
         next
@@ -171,7 +171,7 @@ endcode
 
 ; ### destroy_quotation_unchecked
 code destroy_quotation_unchecked, 'destroy_quotation_unchecked', SYMBOL_INTERNAL
-; quotation --
+; quotation -> void
 
         _dup
         _quotation_raw_code_address
@@ -180,22 +180,21 @@ code destroy_quotation_unchecked, 'destroy_quotation_unchecked', SYMBOL_INTERNAL
         _then .1
 
         ; zero out object header
-        xor     eax, eax
-        mov     [rbx], rax
+        mov     qword [rbx], 0
 
         _ raw_free
         next
 endcode
 
 ; ### quotation-array
-code quotation_array, 'quotation-array' ; quotation -- array
+code quotation_array, 'quotation-array' ; quotation -> array
         _ check_quotation
         _quotation_array
         next
 endcode
 
 ; ### quotation-length
-code quotation_length, 'quotation-length'       ; quotation -- length
+code quotation_length, 'quotation-length'       ; quotation -> length
         _ check_quotation
         _quotation_array
         _ array_length
@@ -203,7 +202,7 @@ code quotation_length, 'quotation-length'       ; quotation -- length
 endcode
 
 ; ### quotation-nth
-code quotation_nth, 'quotation-nth'     ; index quotation -- element
+code quotation_nth, 'quotation-nth'     ; index quotation -> element
         _ check_quotation
         _quotation_array
         _ array_nth
@@ -212,7 +211,7 @@ endcode
 
 ; ### quotation-nth-unsafe
 code quotation_nth_unsafe, 'quotation-nth-unsafe'
-; index quotation -- element
+; index quotation -> element
         _handle_to_object_unsafe
         _quotation_array
         _ array_nth_unsafe
@@ -221,7 +220,7 @@ endcode
 
 ; ### quotation_raw_code_address
 code quotation_raw_code_address, 'quotation_raw_code_address', SYMBOL_INTERNAL
-; quotation -- raw-code-address
+; quotation -> raw-code-address
         _ check_quotation
         _quotation_raw_code_address
         next
@@ -229,7 +228,7 @@ endcode
 
 ; ### quotation-code-address
 code quotation_code_address, 'quotation-code-address'
-; quotation -- code-address
+; quotation -> code-address
         _ check_quotation
         _quotation_raw_code_address
         _tag_fixnum
@@ -238,7 +237,7 @@ endcode
 
 ; ### quotation_set_raw_code_address
 code quotation_set_raw_code_address, 'quotation_set_raw_code_address', SYMBOL_INTERNAL
-; raw-code-address quotation --
+; raw-code-address quotation -> void
 
         _ check_quotation
 
@@ -259,7 +258,7 @@ endcode
 
 ; ### quotation-set-code-address
 code quotation_set_code_address, 'quotation-set-code-address'
-; tagged-address quotation --
+; tagged-address quotation -> void
         _swap
         _check_fixnum
         _swap
@@ -269,7 +268,7 @@ endcode
 
 ; ### quotation-code-size
 code quotation_code_size, 'quotation-code-size'
-; quotation -- code-size
+; quotation -> code-size
         _ check_quotation
         _quotation_raw_code_size
         _tag_fixnum
@@ -278,7 +277,7 @@ endcode
 
 ; ### quotation-set-code-size
 code quotation_set_code_size, 'quotation-set-code-size'
-; tagged-size quotation --
+; tagged-size quotation -> void
         _ check_quotation
         _swap
         _check_fixnum
@@ -378,7 +377,7 @@ code verify_callable, 'verify-callable' ; callable -> callable
 endcode
 
 ; ### call
-code call_quotation, 'call'             ; callable --
+code call_quotation, 'call'             ; callable -> void
         _ callable_raw_code_address
         mov     rax, rbx
         _drop
