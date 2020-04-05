@@ -457,7 +457,7 @@ code vector_set_nth, 'vector-set-nth'   ; element index vector -> void
 endcode
 
 ; ### vector-insert-nth
-code vector_insert_nth, 'vector-insert-nth'     ; element n vector --
+code vector_insert_nth, 'vector-insert-nth'     ; element n vector -> void
         _ check_vector
 
         _verify_index qword [rbp]
@@ -470,7 +470,7 @@ code vector_insert_nth, 'vector-insert-nth'     ; element n vector --
         _vector_raw_length              ; -- element n vector n length
         _ugt                            ; -- element n vector
         _if .1
-        _error "vector-insert-nth! n > length"
+        _error "vector-insert-nth n > length"
         _then .1
 
         _dup                            ; -- element n vector vector
@@ -498,11 +498,11 @@ code vector_insert_nth, 'vector-insert-nth'     ; element n vector --
         lea     rbp, [rbp + BYTES_PER_CELL * 3]
         _ move_cells
 
-        _this_vector_raw_length         ; -- element n length
-        _oneplus                        ; -- element n length+1
-        _this_vector_set_raw_length     ; -- element n
+        ; update length
+        add     qword [this_register + VECTOR_RAW_LENGTH_OFFSET], 1
 
-        _this_vector_set_nth_unsafe     ; ---
+        ; -> element n
+        _this_vector_set_nth_unsafe     ; -> empty
 
         pop     this_register
         next
