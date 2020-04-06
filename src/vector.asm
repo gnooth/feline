@@ -172,7 +172,7 @@ code vector_set_length, 'vector-set-length' ; tagged-new-length handle --
         _if .1                          ; -- new-length
         _dup
         _this
-        _ vector_ensure_capacity
+        _ vector_ensure_capacity_unchecked
         _then .1                        ; -- new-length
         _dup
         _this_vector_raw_length
@@ -195,8 +195,7 @@ endcode
 ; ### vector-delete-all
 code vector_delete_all, 'vector-delete-all' ; vector -> void
         _ check_vector
-        xor     eax, eax
-        mov     [rbx + VECTOR_RAW_LENGTH_OFFSET], rax
+        mov     qword [rbx + VECTOR_RAW_LENGTH_OFFSET], 0
         _drop
         next
 endcode
@@ -291,33 +290,41 @@ code vector_grow_capacity, 'vector-grow-capacity'       ; new-capacity vector ->
         next
 endcode
 
-; ### vector_ensure_capacity
-code vector_ensure_capacity, 'vector_ensure_capacity', SYMBOL_INTERNAL
-; raw-capacity raw-vector -> void
+; ### vector-ensure-capacity
+code vector_ensure_capacity, 'vector-ensure-capacity' ; capacity vector -> void
+        _ check_vector
+        _check_index qword [rbp]        ; -> untagged-capacity ^vector
 
-        push    this_register
-        mov     this_register, rbx
-        poprbx                          ; -> raw-capacity
-
-        cmp     [this_register + VECTOR_RAW_CAPACITY_OFFSET], rbx
+vector_ensure_capacity_unchecked:
+        mov     rax, [rbx + VECTOR_RAW_CAPACITY_OFFSET] ; existing capacity in rax
+        cmp     rax, [rbp]              ; compare with requested capacity in [rbp]
         jge     .nothing_to_do
 
-        _this_vector_raw_capacity
-        _twostar
-        _max
-        _this_vector_raw_data_address
-        _over
-        _cells
-        _ raw_realloc
-        _this_vector_set_raw_data_address
-        _this_vector_set_raw_capacity
+        ; need to grow
+        shl     rax, 1                  ; double existing capacity
+        cmp     rax, [rbp]              ; must also be >= requested capacity
+        jge     .1
+        mov     rax, [rbp]              ; otherwise use requested capacity
+.1:
+        push    rax                     ; save new capacity
+        mov     arg0_register, [rbx + VECTOR_RAW_DATA_ADDRESS_OFFSET]
+        mov     arg1_register, rax      ; new capacity
+        shl     arg1_register, 3        ; convert cells to bytes
+        xcall   realloc
+        test    rax, rax
+        jz      .error
 
-        pop     this_register
-        next
+        ; success
+        mov     [rbx + VECTOR_RAW_DATA_ADDRESS_OFFSET], rax
+        pop     rax                     ; new capacity
+        mov     [rbx + VECTOR_RAW_CAPACITY_OFFSET], rax
 
 .nothing_to_do:
-        _drop
-        pop     this_register
+        _2drop
+        next
+
+.error:
+        _error "ERROR: unable to grow capacity"
         next
 endcode
 
@@ -465,7 +472,7 @@ code vector_set_nth, 'vector-set-nth'   ; element index vector -> void
         _oneplus
 
         _this
-        _ vector_ensure_capacity        ; -- element untagged-index
+        _ vector_ensure_capacity_unchecked      ; -> element untagged-index
 
         ; initialize new cells to nil
         _dup
@@ -509,7 +516,7 @@ code vector_insert_nth, 'vector-insert-nth'     ; element n vector -> void
         _vector_raw_length              ; -- element n vector length
         _oneplus                        ; -- element n vector length+1
         _over                           ; -- element n vector length+1 vector
-        _ vector_ensure_capacity        ; -- element n vector
+        _ vector_ensure_capacity_unchecked      ; -> element n vector
 
         _vector_raw_data_address        ; -- element n raw-data-address
         _over                           ; -- element n raw-data-address n
@@ -738,7 +745,7 @@ subroutine vector_push_internal         ; element ^vector -> void
         _vector_raw_length
         _oneplus
         _over
-        _ vector_ensure_capacity
+        _ vector_ensure_capacity_unchecked
 
         mov     rax, [rbx + VECTOR_RAW_LENGTH_OFFSET] ; raw length in rax
         mov     rdx, [rbp]              ; element in rdx
