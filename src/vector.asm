@@ -259,8 +259,41 @@ code destroy_vector_unchecked, 'destroy_vector_unchecked', SYMBOL_INTERNAL
         next
 endcode
 
+; ### vector_grow_capacity
+code vector_grow_capacity, 'vector-grow-capacity'       ; new-capacity vector -> void
+        _ check_vector
+        push    this_register
+        mov     this_register, rbx
+        _drop
+        _check_index                    ; -> untagged-new-capacity
+
+        ; untagged new capacity is in rbx
+        cmp     [this_register + VECTOR_RAW_CAPACITY_OFFSET], rbx
+        jge     .nothing_to_do
+
+        mov     arg0_register, [this_register + VECTOR_RAW_DATA_ADDRESS_OFFSET]
+        mov     arg1_register, rbx      ; untagged new capacity
+        xcall   realloc                 ; returns address or 0 in rax
+        test    rax, rax
+        jz      .error
+
+        ; success
+        mov     [this_register + VECTOR_RAW_DATA_ADDRESS_OFFSET], rax
+        mov     [this_register + VECTOR_RAW_CAPACITY_OFFSET], rbx
+
+.nothing_to_do:
+        _drop
+        pop     this_register
+        next
+
+.error:
+        _error "ERROR: unable to grow capacity"
+        next
+endcode
+
 ; ### vector_ensure_capacity
-code vector_ensure_capacity, 'vector_ensure_capacity', SYMBOL_INTERNAL  ; raw-capacity raw-vector -> void
+code vector_ensure_capacity, 'vector_ensure_capacity', SYMBOL_INTERNAL
+; raw-capacity raw-vector -> void
 
         push    this_register
         mov     this_register, rbx
@@ -434,7 +467,7 @@ code vector_set_nth, 'vector-set-nth'   ; element index vector -> void
         _this
         _ vector_ensure_capacity        ; -- element untagged-index
 
-        ; initialize new cells to f
+        ; initialize new cells to nil
         _dup
         _this_vector_raw_length
         _register_do_range .2
@@ -460,8 +493,7 @@ endcode
 code vector_insert_nth, 'vector-insert-nth'     ; element n vector -> void
         _ check_vector
 
-        _verify_index qword [rbp]
-        _untag_fixnum qword [rbp]
+        _check_index qword [rbp]
 
         push    this_register
         mov     this_register, rbx      ; -- element n vector
@@ -494,8 +526,7 @@ code vector_insert_nth, 'vector-insert-nth'     ; element n vector -> void
         mov     arg2_register, rbx                      ; count
         mov     arg1_register, [rbp]                    ; destination
         mov     arg0_register, [rbp + BYTES_PER_CELL]   ; source
-        mov     rbx, [rbp + BYTES_PER_CELL * 2]
-        lea     rbp, [rbp + BYTES_PER_CELL * 3]
+        _3drop
         _ move_cells
 
         ; update length
