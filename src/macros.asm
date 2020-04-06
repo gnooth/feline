@@ -98,18 +98,18 @@
 %endmacro
 
 %macro  _verify_index 0
-        _verify_fixnum
+        test    bl, FIXNUM_TAG
+        jz      error_not_index
         test    rbx, rbx
         js      error_not_index
 %endmacro
 
 %macro  _verify_index 1
         mov     rax, %1
+        test    al, FIXNUM_TAG
+        jz      error_not_index_rax
         test    rax, rax
-        js      error_not_index
-        and     al, FIXNUM_TAG_MASK
-        cmp     al, FIXNUM_TAG
-        jne     error_not_index
+        js      error_not_index_rax
 %endmacro
 
 %macro  _check_index 0
@@ -118,12 +118,8 @@
 %endmacro
 
 %macro  _check_index 1
-        mov     rax, %1
-        test    al, FIXNUM_TAG
-        jz      error_not_index_rax
-        test    rax, rax
-        js      error_not_index_rax
-        sar     %1, FIXNUM_TAG_BITS
+        _verify_index %1
+        _untag_fixnum %1
 %endmacro
 
 %define f_value BOOLEAN_TAG
