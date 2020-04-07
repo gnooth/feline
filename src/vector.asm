@@ -15,6 +15,9 @@
 
 file __FILE__
 
+; 4 cells (object header, raw length, raw data address, raw capacity
+%define VECTOR_SIZE                     4 * BYTES_PER_CELL
+
 %define VECTOR_RAW_LENGTH_OFFSET 8
 %define VECTOR_RAW_DATA_ADDRESS_OFFSET 16
 %define VECTOR_RAW_CAPACITY_OFFSET 24
@@ -232,6 +235,43 @@ new_vector_untagged:
         _ new_handle                    ; -> handle
 
         pop     this_register
+        next
+endcode
+
+; ### make-vector
+code make_vector, 'make-vector'         ; capacity -> vector
+
+        _check_index                    ; -> raw-capacity (in rbx)
+
+make_vector_unchecked:
+
+        mov     arg0_register, VECTOR_SIZE
+        _ feline_malloc                 ; returns address in rax
+        _dup
+        mov     rbx, rax                ; -> raw-capacity ^vector
+
+        mov     word [rbx], TYPECODE_VECTOR
+
+        mov     arg0_register, [rbp]    ; raw capacity (cells) in arg0_register
+        shl     arg0_register, 3        ; convert cells to bytes
+        _ feline_malloc                 ; returns raw address in rax
+
+        mov     [rbx + VECTOR_RAW_DATA_ADDRESS_OFFSET], rax
+
+        mov     rax, [rbp]
+        _nip                            ; -> ^vector
+        mov     [rbx + VECTOR_RAW_CAPACITY_OFFSET], rax
+        mov     qword [rbx + VECTOR_RAW_LENGTH_OFFSET], 0
+
+        ; REVIEW
+        ; initialize all allocated cells to nil
+        mov     arg0_register, [rbx + VECTOR_RAW_DATA_ADDRESS_OFFSET]
+        mov     arg1_register, NIL
+        mov     arg2_register, [rbx + VECTOR_RAW_CAPACITY_OFFSET]
+        _ fill_cells
+
+        _ new_handle                    ; -> vector
+
         next
 endcode
 
