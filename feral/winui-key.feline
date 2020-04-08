@@ -38,6 +38,16 @@ private
 
 0x2e constant VK_DELETE
 
+0x61 constant VK_NUMPAD1
+0x62 constant VK_NUMPAD2
+0x63 constant VK_NUMPAD3
+0x64 constant VK_NUMPAD4
+0x65 constant VK_NUMPAD5
+0x66 constant VK_NUMPAD6
+0x67 constant VK_NUMPAD7
+0x68 constant VK_NUMPAD8
+0x69 constant VK_NUMPAD9
+
 0x70 constant VK_F1
 0x71 constant VK_F2
 0x72 constant VK_F3
