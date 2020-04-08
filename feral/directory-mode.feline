@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -257,7 +257,9 @@ global directory-mode-local-map
     ' dir-up-dir            'u'                 m set-at
     ' dir-up-dir            '^'                 m set-at // Emacs
     ' dir-next-line         feral-key:down      m set-at
+    ' dir-next-line         feral-key:kp-down   m set-at
     ' dir-previous-line     feral-key:up        m set-at
+    ' dir-previous-line     feral-key:kp-up     m set-at
     m directory-mode-local-map! ;
 
 initialize-local-map
