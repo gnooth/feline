@@ -510,20 +510,6 @@ gtkui__textview_draw (GtkWidget *widget, cairo_t *cr, gpointer data)
       char_width = (int) fe.max_x_advance;
       char_height = ascent + descent + 1;
 
-      g_print ("GTK version %d.%d.%d\n",
-               gtk_get_major_version (),
-               gtk_get_minor_version (),
-               gtk_get_micro_version ());
-
-      PangoFontDescription *desc;
-      GtkStyleContext *style_context = gtk_widget_get_style_context (widget);
-      gtk_style_context_get (style_context,
-                             gtk_style_context_get_state (style_context),
-                             "font", &desc, NULL);
-      g_print ("%s\n", pango_font_description_to_string (desc));
-
-      g_print ("char_width = %d\n", char_width);
-
       GtkAllocation allocation;
       gtk_widget_get_allocation (widget, &allocation);
 
