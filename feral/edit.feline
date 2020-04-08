@@ -539,6 +539,7 @@ use: kill-ring
     true repaint?! ;
 
 : delete-line
+    check-read-only ?exit
     unmark
     reset-redo
     add-undo-delete-line
