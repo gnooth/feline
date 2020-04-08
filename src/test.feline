@@ -601,6 +601,12 @@ test: vector-insert-nth-test
         v vector-length 6 assert-eq
         v { 43 17 0 1 2 3 } sequence= assert-true
 
+        // REVIEW insertion works at the end of the vector
+        v vector-length 6 assert-eq
+        713 6 v vector-insert-nth
+        v vector-capacity 6 > assert-true
+        v vector-length 7 assert-eq
+        v { 43 17 0 1 2 3 713 } sequence= assert-true
     ] unit-test ;
 
 vector-insert-nth-test
