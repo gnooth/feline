@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -126,6 +126,15 @@ VK_UP shift             constant shift-up
 VK_DOWN shift           constant shift-down
 VK_HOME shift           constant shift-home
 VK_END shift            constant shift-end
+
+VK_NUMPAD7              constant kp-home
+VK_NUMPAD1              constant kp-end
+VK_NUMPAD4              constant kp-left
+VK_NUMPAD6              constant kp-right
+VK_NUMPAD8              constant kp-up
+VK_NUMPAD2              constant kp-down
+VK_NUMPAD9              constant kp-pageup
+VK_NUMPAD3              constant kp-pagedown
 
 VK_SPACE ctrl           constant ctrl-space
 
