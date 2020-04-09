@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,31 +41,22 @@ feral-config:winui? #if
 
 : do-command ( key )                    // key -> ?
 
-    f !> command
+    local command
 
     // try local map first
     current-buffer local-map>> :> local-map
-    local-map [
-        key local-map at command!
-    ] when
+    local-map [ key local-map at command! ] when
 
     // global map
-    command [
-        key keymaps:lookup-key command!
-    ] unless
+    command [ key keymaps:lookup-key command! ] unless
 
-    command [
-        command dup current-command! safe-call-symbol
-        t
-    ] [
-        f
-    ] if ;
+    command [ command dup current-command! safe-call-symbol true ] [ nil ] if ;
 
 : dispatch                              // key -> void
     1 ?enough :> key
 
     current-command last-command!
-    f current-command!
+    nil current-command!
 
     key do-command [
         key printable-char? [ insert-char ] when*
@@ -79,7 +70,8 @@ feral-config:winui? #if
 : winui-textview-keydown ( key )        // key -> void
     current-command last-command!
     mini:clear-message
-    f !> command
+
+    local command
 
     // try local map first
     current-buffer local-map>> :> local-map
@@ -104,7 +96,7 @@ feral-config:winui? #if
         copy-dot mark!
         top-line-number row + last-line-number min nth-line dot-line!
         dot-line col line-column-offset dot-line-length min dot-offset!
-        t repaint?!
+        true repaint?!
         update-display
     ] unless ;
 
@@ -170,14 +162,14 @@ feral-config:winui? #if
     newline dot-line!
     newoffset dot-offset!
 
-    t repaint?!
+    true repaint?!
     update-display ;
 
 : edit1-internal
     winui-initialize
     winui-create-frame
     reframe
-    t repaint?!
+    true repaint?!
     update-display
     winui-main ;
 
@@ -203,9 +195,7 @@ feral-config:gtkui? #if
     // try local map first
     current-buffer local-map>> :> local-map
 
-    local-map [
-        key local-map at command!
-    ] when
+    local-map [ key local-map at command! ] when
 
     // local map might bind a printable character
     // e.g. 'u' and '^' in directory mode
@@ -216,9 +206,7 @@ feral-config:gtkui? #if
     ] unless
 
     // global map
-    command [
-        key keymaps:lookup-key command!
-    ] unless
+    command [ key keymaps:lookup-key command! ] unless
 
     command [
         dup current-command! safe-call-symbol
@@ -226,8 +214,7 @@ feral-config:gtkui? #if
         key feral-key:key-to-printable-char [ insert-char ] when*
     ] if*
 
-    update-display
-;
+    update-display ;
 
 : gtkui-textview-button-press
     2 ?enough :> y :> x
@@ -267,14 +254,14 @@ feral-config:gtkui? #if
     newline dot-line!
     newoffset dot-offset!
 
-    t repaint?!
+    true repaint?!
     update-display
     gtkui-textview-invalidate ;
 
 : edit1
     gtkui-initialize
     reframe
-    t repaint?!
+    true repaint?!
     update-display
     gtkui-main ;
 
@@ -283,10 +270,13 @@ feral-config:gtkui? #if
 feral-config:termui? #if
 
 : do-mouse                              // key -> ?
-    dup fixnum? not [ drop f ] return-if
+    dup fixnum? not [ drop nil ] ?return
 
     :> keycode
-    f !> column f !> row f !> result
+
+    local column
+    local row
+    local result
 
     keycode 24 rshift 0x1b5b4d = [
         // "\e[M"
@@ -296,7 +286,7 @@ feral-config:termui? #if
             // left button pressed
             top-line-number row + gotoline-internal
             column 1- 0 max dot-line-length min dot-offset!
-            t result!
+            true result!
         ] when
     ] when
 
@@ -304,22 +294,18 @@ feral-config:termui? #if
 
 : do-command ( key )                    // key -> ?
 
-    nil !> command
+    local command
 
     // try local map first
     current-buffer local-map>> :> local-map
-    local-map [
-        key local-map at command!
-    ] when
+    local-map [ key local-map at command! ] when
 
     // global map
-    command [
-        key keymaps:lookup-key command!
-    ] unless
+    command [ key keymaps:lookup-key command! ] unless
 
     command [
         command dup current-command! safe-call-symbol
-        t
+        true
     ] [
         linux? [ key do-mouse ] [ nil ] if
     ] if ;
@@ -328,14 +314,14 @@ feral-config:termui? #if
     1 ?enough :> key
 
     current-command last-command!
-    f current-command!
+    nil current-command!
 
     key do-command [
         key printable-char? [ insert-char ] when*
     ] unless ;
 
 : edit-loop
-    f done?!
+    nil done?!
     [ done? ] [
         update-display
         ekey
@@ -344,10 +330,9 @@ feral-config:termui? #if
     ] until
 
     // clean up
-    f current-buffer!
-    f buffer-list!
-    gc
-;
+    nil current-buffer!
+    nil buffer-list!
+    gc ;
 
 : edit1
     use-alternate-screen-buffer
@@ -355,7 +340,7 @@ feral-config:termui? #if
     page
     normal
     maybe-reframe
-    t repaint?!
+    true repaint?!
 
     linux? [
         // enable mouse tracking
@@ -375,7 +360,7 @@ feral-config:termui? #if
     use-alternate-screen-buffer
     page
     normal
-    t repaint?!
+    true repaint?!
     edit-loop
     clear-status-line
     mini:clear-message
