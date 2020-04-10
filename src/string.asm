@@ -1335,3 +1335,24 @@ code string_lines, 'string-lines'       ; string -> vector
 
         next
 endcode
+
+; ### zstrlen
+subroutine zstrlen                      ; raw-address -> raw-length
+        mov     rcx, rbx
+.1:
+        mov     al, [rbx]
+        test    al, al
+        jz      .2
+        inc     rbx
+        jmp     .1
+.2:
+        sub     rbx, rcx
+        next
+endsub
+
+; ### zcount
+subroutine zcount                       ; raw-address -> raw-address raw-length
+        _dup
+        _ zstrlen
+        next
+endsub
