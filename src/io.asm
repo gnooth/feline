@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -17,28 +17,6 @@ file __FILE__
 
 ; ### errno
 value os_errno, 'errno', 0
-
-; ### file-status
-code file_status, 'file-status'         ; c-addr u -- x ior
-; FILE EXT
-; "If the file exists, ior is zero; otherwise ior is the implementation-defined I/O result code."
-        _ as_c_string
-%ifdef WIN64
-        popd    rcx
-%else
-        popd    rdi
-%endif
-        xcall   os_file_status
-        or      rax, rax
-        jnz      .1
-        pushd   rax
-        pushd   rax
-        next
-.1:
-        _zero
-        _lit -1
-        next
-endcode
 
 ; ### reposition-file
 code reposition_file, 'reposition-file' ; ud fileid -- ior

@@ -349,15 +349,6 @@ code string_hashcode, 'string-hashcode' ; handle-or-string -> fixnum
         next
 endcode
 
-; ### as-c-string
-code as_c_string, 'as-c-string'         ; c-addr u -- zaddr
-; Arguments are untagged.
-; Returns a pointer to a null-terminated string.
-        _ copy_to_string
-        _ string_raw_data_address
-        next
-endcode
-
 ; ### string-nth-unsafe
 code string_nth_unsafe, 'string-nth-unsafe'
 ; tagged-index handle-or-static-string -> tagged-char
