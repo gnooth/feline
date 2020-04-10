@@ -1,4 +1,4 @@
-; Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -345,6 +345,18 @@ code winui_char_height, 'textview-char-height' ; void -> fixnum
         pushrbx
         mov     rbx, rax
         _tag_fixnum
+        next
+endcode
+
+; ### winui-frame-set-text
+code winui_frame_set_text, 'winui-frame-set-text' ; string -> void
+        _ string_raw_data_address
+        mov     arg0_register, rbx
+        _drop
+
+        extern  winui__frame_set_text
+        xcall   winui__frame_set_text
+
         next
 endcode
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -541,6 +541,12 @@ int winui__char_height (void)
 int winui__char_width (void)
 {
   return char_width;
+}
+
+void winui__frame_set_text (LPCSTR lpString)
+{
+  if (hwnd_frame)
+    SetWindowText (hwnd_frame, lpString);
 }
 
 void winui__modeline_set_text (LPCSTR lpString)
