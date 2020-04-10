@@ -525,8 +525,7 @@ test: array-test-3
     { "one" "two" "three" } array-first "one" assert=
     { "one" "two" } array-first "one" assert=
     { 42 } array-first 42 assert=
-    [ { } array-first ] assert-must-fail
-;
+    [ { } array-first ] assert-must-fail ;
 
 array-test-3
 
@@ -806,15 +805,20 @@ test: local-test-5
 
 local-test-5
 
-test: symbol?-test-1
-    ' dup symbol? assert-true
-    ' assert-true symbol? assert-true
+test: symbol?-test
+    // static symbol
+    ' dup symbol? assert
+    ' dup symbol? ' dup assert-eq
+
+    // heap symbol
+    ' symbol?-test symbol? assert
+    ' symbol?-test symbol? ' symbol?-test assert-eq
+
     42 symbol? assert-false
     -3 symbol? assert-false
-    "test" symbol? assert-false
-;
+    "test" symbol? assert-false ;
 
-symbol?-test-1
+symbol?-test
 
 test: decimal>unsigned-test-1
     "" decimal>unsigned assert-false
@@ -956,25 +960,22 @@ test: string>number-test-5
 
     most-negative-fixnum 1 - number>string string>number
     dup int64? assert-true
-    most-negative-fixnum 1 - assert=
-;
+    most-negative-fixnum 1 - assert= ;
 
 string>number-test-5
 
-test: '-test-1
-    [ ' dup ] call symbol? assert-true
+test: '-test
+    [ ' dup ] call symbol? assert
     3 [ dup ] call get-datastack { 3 3 } sequence= assert-true
-    clear
-;
+    clear ;
 
-'-test-1
+'-test
 
 test: hashcode-test-1
     "test"
     [ string-hashcode fixnum? assert-true ] keep
     [ hashcode dup fixnum? assert-true ] keep
-    string-hashcode assert-eq
-;
+    string-hashcode assert-eq ;
 
 hashcode-test-1
 
@@ -1276,19 +1277,17 @@ tuple: foo a b c ;
 : %tuple-layout-test-1
     foo dup verify-type assert-eq
     foo type? assert-true
-    foo type-symbol dup symbol? assert-true ' foo assert-eq
+    foo type-symbol dup symbol? assert ' foo assert-eq
     foo type-layout array? assert-true
     foo type-layout length 3 assert-eq
     foo type-layout [ slot? assert-true ] each
     foo type-layout [ slot-index ] map { 1 2 3 } equal? assert-true
-    foo type-layout [ slot-name ] map { "a" "b" "c" } equal? assert-true
-;
+    foo type-layout [ slot-name ] map { "a" "b" "c" } equal? assert-true ;
 
 test: tuple-layout-test-1
     %tuple-layout-test-1
     gc
-    %tuple-layout-test-1
-;
+    %tuple-layout-test-1 ;
 
 tuple-layout-test-1
 
@@ -3789,13 +3788,13 @@ test: as-type-test-1
 
     string "test" type-of assert-eq
 
-    ' string symbol? assert-true
+    ' string symbol? assert
     ' string type? assert-false
     ' string as-type type? assert-true
     ' string as-type string assert-eq
 
     { string } first {
-        [ symbol? assert-true ]
+        [ symbol? assert ]
         [ type? assert-false ]
         [ as-type type? assert-true ]
         [ as-type string assert-eq ]

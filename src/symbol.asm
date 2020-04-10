@@ -193,36 +193,33 @@ file __FILE__
         _this_set_slot 11
 %endmacro
 
-; ### symbol?
-code symbol?, 'symbol?'                 ; x -- ?
-        _ object_raw_typecode
-        _eq? TYPECODE_SYMBOL
-        next
-endcode
-
-; ### verify-symbol
-code verify_symbol, 'verify-symbol'     ; symbol -- symbol
-        _dup
-        _ symbol?
-        _tagged_if_not .1
-        _ error_not_symbol
-        _then .1
-        next
-endcode
-
-; ### verify_static_symbol
-code verify_static_symbol, 'verify_static_symbol', SYMBOL_INTERNAL
-; symbol -- symbol
+; ### static-symbol?
+code static_symbol?, 'static-symbol?'   ; x -> x/nil
+        ; must be aligned
+        test    rbx, 7
+        jnz     .no
         cmp     rbx, static_data_area
-        jb      .1
+        jb      .no
         cmp     rbx, static_data_area_limit
-        jae     .1
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_SYMBOL
-        jne     .1
+        jae     .no
+        cmp     word [rbx], TYPECODE_SYMBOL
+        jne     .no
         next
-.1:
-        _ error_not_symbol
+.no:
+        mov     ebx, NIL
+        next
+endcode
+
+; ### symbol?
+code symbol?, 'symbol?'                 ; x -> x/nil
+        cmp     bl, HANDLE_TAG
+        jne     static_symbol?
+        mov     rax, rbx                ; save x in rax
+        mov     rdx, NIL
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_SYMBOL
+        cmovne  rbx, rdx
         next
 endcode
 
@@ -252,6 +249,32 @@ code check_symbol, 'check_symbol', SYMBOL_INTERNAL      ; x -> ^symbol
         mov     rbx, rax
         jmp     error_not_symbol
 
+        next
+endcode
+
+; ### verify-symbol
+code verify_symbol, 'verify-symbol'     ; symbol -- symbol
+        _dup
+        _ symbol?
+        _tagged_if_not .1
+        _ error_not_symbol
+        _then .1
+        next
+endcode
+
+; ### verify_static_symbol
+code verify_static_symbol, 'verify_static_symbol', SYMBOL_INTERNAL
+; symbol -> symbol
+        cmp     rbx, static_data_area
+        jb      .1
+        cmp     rbx, static_data_area_limit
+        jae     .1
+        _object_raw_typecode_eax
+        cmp     eax, TYPECODE_SYMBOL
+        jne     .1
+        next
+.1:
+        _ error_not_symbol
         next
 endcode
 
