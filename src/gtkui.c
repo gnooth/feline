@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -306,11 +306,6 @@ extern void gtkui_textview_mousemove (int, int);
 #define CTRL_MASK       0x02 << 16
 #define SHIFT_MASK      0x04 << 16
 
-void gtkui__modeline_set_text (const char *s)
-{
-  mode_line_text = s;
-}
-
 static void gtkui__textview_keydown (GdkEventKey *event)
 {
   guint keyval = event->keyval;
@@ -598,6 +593,16 @@ void gtkui__textview_set_caret_pos (int column, int row)
 {
   textview_caret_column = column;
   textview_caret_row = row;
+}
+
+void gtkui__frame_set_text (const char *s)
+{
+  gtk_window_set_title (GTK_WINDOW (frame), s);
+}
+
+void gtkui__modeline_set_text (const char *s)
+{
+  mode_line_text = s;
 }
 
 void gtkui__minibuffer_main (void)
