@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 file __FILE__
 
 ; ### zstrlen
-code zstrlen, 'zstrlen'                 ; zaddr -- len
+subroutine zstrlen                      ; raw-address -> raw-length
         mov     rcx, rbx
 .1:
         mov     al, [rbx]
@@ -27,11 +27,11 @@ code zstrlen, 'zstrlen'                 ; zaddr -- len
 .2:
         sub     rbx, rcx
         next
-endcode
+endsub
 
 ; ### zcount
-code zcount, 'zcount'                   ; zaddr -- zaddr len
+subroutine zcount                       ; raw-address -> raw-address raw-length
         _dup
         _ zstrlen
         next
-endcode
+endsub
