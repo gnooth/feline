@@ -29,7 +29,7 @@ global instance
 
     line text>> detab :> text
 
-    16 <vector> :> v
+    16 make-vector :> v
 
     [ :source-file line line-get-property ]
     [ :source-line-number line line-get-property nil? ] both?
@@ -54,10 +54,27 @@ global instance
     v ;
 
 : search-mode-goto-source
+    :search current-buffer buffer-get-property :> search
+
     :source-line-number dot-line line-get-property :> linenumber
+    :source-offset dot-line line-get-property :> offset
+
     editor:switch-to-parent-buffer
     linenumber editor:gotoline-internal
-    t repaint?! ;
+
+    offset [
+        offset dot-offset!
+        search [
+            dot-line
+            dot-offset search pattern>> length +
+            make-position mark!
+
+            // put dot after mark
+            dot mark dot! mark!
+        ] when
+    ] when
+
+    true repaint?! ;
 
 global search-mode-local-map
 
