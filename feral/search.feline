@@ -286,17 +286,25 @@ use: mini
 
     local sourcelinenumber
     local outputline
+    local pos
     first-line !> sourceline
-    [ sourceline ] [
-        current-search sourceline find-in-line [
+    [ sourceline ]
+    [
+        // while
+        current-search sourceline find-in-line  // -> position/nil
+        [
+            pos!
             buf [ make-buffer buf! ] unless
             sourceline number>> 1+ sourcelinenumber!
             sourcelinenumber sourceline text>> "%d:%s" format make-line/1 outputline!
             sourcelinenumber :source-line-number outputline line-set-property
+            pos offset>> :source-offset outputline line-set-property
             buf top-line>> [ outputline buf top-line<< ] unless
             outputline buf buffer-append-line
-        ] when
+        ] when*
+
         sourceline next>> sourceline!
+
     ] while
 
     buf nil? [ not-found ] ?return
