@@ -29,25 +29,42 @@ global current-files
 
     local linenumber
     local s
-    local found
+    local first-match
     local line
-    filename file-lines [
+    local offset
+
+    true first-match!
+
+    filename file-lines
+    [
+        // each-index
         // -> string index
+
         1+ linenumber! // displayed line numbers are 1-based
         s!
-        find-in-files-pattern s substring-start [
-            found [
-                // filename line
+
+        find-in-files-pattern s substring-start offset!
+
+        offset
+        [
+            // we found the pattern in this line
+            first-match
+            [
+                // first match in this file
+                // add a filename line to the output buffer
                 filename make-line/1 line!
                 filename :source-file line line-set-property
                 line find-in-files-output-buffer buffer-append-line
-                true found!
-            ] unless
+                nil first-match!
+            ] when
+
             linenumber number>string ":" + s + make-line/1 line!
             filename :source-file line line-set-property
             linenumber :source-line-number line line-set-property
+            offset :source-offset line line-set-property
             line find-in-files-output-buffer buffer-append-line
         ] when
+
     ] each-index ;
 
 : find-in-directory ( directory extension )
@@ -159,17 +176,34 @@ in: find-in-files
 private
 
 : find-in-files-goto-source
+    :search current-buffer buffer-get-property :> search
+
     :source-file dot-line line-get-property :> sourcefile
     :source-line-number dot-line line-get-property 1 or :> linenumber
+    :source-offset dot-line line-get-property :> offset
 
-    sourcefile find-buffer-from-file-name [
+    sourcefile find-buffer-from-file-name // -> buffer/nil
+    [
         set-current-buffer
         linenumber gotoline-internal
         // gotoline-internal calls maybe-reframe
     ] [
         sourcefile linenumber create-buffer/2
         reframe
-    ] if* ;
+    ] if*
+
+    offset
+    [
+        offset dot-offset!
+        search [
+            dot-line
+            dot-offset search pattern>> length +
+            make-position mark!
+
+            // put dot after mark
+            dot mark dot! mark!
+        ] when
+    ] when ;
 
 : initialize-local-map
     128 <hashtable> :> m
