@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -151,43 +151,56 @@ endcode
 extern version
 extern build
 
-; ### .version
-code dot_version, '.version'            ; --
-        _quote "Feline "
+; ### version-string
+code version_string, 'version-string'   ; void -> string
+        _lit tagged_fixnum(256)
+        _ make_sbuf                     ; -> sbuf
 
-        xcall   version
-        pushrbx
-        mov     rbx, rax
+        _quote "Feline "                ; -> sbuf string
+        _over
+        _ sbuf_append_string            ; -> sbuf
+
+        xcall   version                 ; returns address of null-terminated string in rax
+        _dup
+        mov     rbx, rax                ; -> sbuf
         _ zcount
-        _ copy_to_string
+        _ copy_to_string                ; -> sbuf string
 
-        _ string_append
-        _ write_string
+        _over
+        _ sbuf_append_string            ; -> sbuf
 
 %ifdef DEBUG
         _quote "-DEBUG"
-        _ write_string
+        _over
+        _ sbuf_append_string
 %endif
 
-        xcall   build
-        pushrbx
-        mov     rbx, rax
-        _ zcount
-        _ copy_to_string
-
+        xcall   build                   ; returns address of null-terminated string in rax
         _dup
-        _ string_length
-        _lit tagged_fixnum(10)
-        _ fixnum_fixnum_gt
-        _tagged_if .1
-        _quote " built "
-        _ write_string
-        _ write_string
-        _ nl
-        _else .1
-        _drop
-        _then .1
+        mov     rbx, rax
+        _ zcount                        ; -> sbuf raw-chars raw-count
+        test    rbx, rbx                ; zero length string?
+        jz      .1
+        _ copy_to_string                ; -> sbuf string
 
+        _quote " built "                ; -> sbuf string string'
+        _pick                           ; -> sbuf string string' sbuf
+        _ sbuf_append_string            ; -> sbuf string
+
+        _over
+        _ sbuf_append_string
+        _ sbuf_to_string
+        next
+.1:
+        _2drop                          ; -> sbuf
+        _ sbuf_to_string
+        next
+endcode
+
+; ### .version
+code dot_version, '.version'
+        _ version_string
+        _ print
         next
 endcode
 
