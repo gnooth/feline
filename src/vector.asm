@@ -18,9 +18,9 @@ file __FILE__
 ; 4 cells (object header, raw length, raw data address, raw capacity
 %define VECTOR_SIZE                     4 * BYTES_PER_CELL
 
-%define VECTOR_RAW_LENGTH_OFFSET 8
-%define VECTOR_RAW_DATA_ADDRESS_OFFSET 16
-%define VECTOR_RAW_CAPACITY_OFFSET 24
+%define VECTOR_RAW_LENGTH_OFFSET        8
+%define VECTOR_RAW_DATA_ADDRESS_OFFSET  16
+%define VECTOR_RAW_CAPACITY_OFFSET      24
 
 %macro  _vector_raw_length 0            ; ^vector -> raw-length
         _slot 1
@@ -203,41 +203,6 @@ code vector_delete_all, 'vector-delete-all' ; vector -> void
         next
 endcode
 
-; ### <vector>
-code new_vector, '<vector>'             ; capacity -> handle
-
-        _check_index                    ; -> raw-capacity
-
-new_vector_untagged:
-
-        _lit 4
-        _ raw_allocate_cells
-        push    this_register
-        mov     this_register, rbx
-        _drop                           ; -> raw-capacity
-        _this_object_set_raw_typecode TYPECODE_VECTOR
-        _this_object_set_flags OBJECT_ALLOCATED_BIT
-        _dup
-        _ raw_allocate_cells            ; -> raw-capacity raw-data-address
-        _this_vector_set_raw_data_address
-        _this_vector_set_raw_capacity   ; ->
-
-        ; initialize all allocated cells to nil
-        mov     arg0_register, [this_register + VECTOR_RAW_DATA_ADDRESS_OFFSET]
-        mov     arg1_register, NIL
-        mov     arg2_register, [this_register + VECTOR_RAW_CAPACITY_OFFSET]
-        _ fill_cells
-
-        pushrbx
-        mov     rbx, this_register      ; -> ^vector
-
-        ; return handle
-        _ new_handle                    ; -> handle
-
-        pop     this_register
-        next
-endcode
-
 ; ### make-vector
 code make_vector, 'make-vector'         ; capacity -> vector
 
@@ -271,6 +236,21 @@ make_vector_unchecked:
         _ fill_cells
 
         _ new_handle                    ; -> vector
+
+        next
+endcode
+
+; ### <vector>
+; Deprecated. Use make-vector.
+code new_vector, '<vector>'             ; capacity -> handle
+
+        jmp     make_vector
+
+        _check_index                    ; -> raw-capacity
+
+new_vector_untagged:
+
+        jmp     make_vector_unchecked
 
         next
 endcode
