@@ -64,9 +64,9 @@ code check_bounds, 'check-bounds'       ; n seq -> n seq
 
         mov     rax, [rbp]      ; n in rax
         test    al, FIXNUM_TAG
-        jz      error_not_fixnum_rax
+        jz      error_not_index_rax
         test    rax, rax
-        js      .1
+        js      error_not_index_rax
         cmp     rax, rdx        ; sets carry if rax < rdx (unsigned)
         jge     .1
         _rep_return
