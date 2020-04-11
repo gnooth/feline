@@ -195,6 +195,12 @@ new_sbuf_untagged:
         next
 endcode
 
+; ### make-sbuf
+code make_sbuf, 'make-sbuf'             ; capacity -> sbuf
+        jmp     new_sbuf
+        next
+endcode
+
 ; ### copy_to_sbuf
 code copy_to_sbuf, 'copy_to_sbuf', SYMBOL_INTERNAL
 ; from-addr length -- handle
