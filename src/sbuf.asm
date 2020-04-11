@@ -18,10 +18,11 @@ file __FILE__
 ; Mutable (and growable) strings
 
 ; 4 cells: object header, length, data address, capacity
+%define SBUF_SIZE                       4 * BYTES_PER_CELL
 
 %define SBUF_RAW_LENGTH_OFFSET          8
-
 %define SBUF_RAW_DATA_ADDRESS_OFFSET    16
+%define SBUF_RAW_CAPACITY_OFFSET        24
 
 %macro  _sbuf_raw_length 0              ; sbuf -> length
         _slot1
@@ -156,28 +157,26 @@ endcode
 
 ; ### make_sbuf_internal
 code make_sbuf_internal, 'make_sbuf_internal', SYMBOL_INTERNAL
-; untagged-capacity -- sbuf
-        _lit 4
-        _ raw_allocate_cells            ; -- capacity addr
+; untagged-capacity -> sbuf
 
-        push    this_register
-        mov     this_register, rbx
-        poprbx                          ; -- capacity
-
-        _this_object_set_raw_typecode TYPECODE_SBUF
-        _this_object_set_flags OBJECT_ALLOCATED_BIT
-
+        mov     arg0_register, SBUF_SIZE
+        _ feline_malloc                 ; returns address in rax
         _dup
-        _oneplus                        ; terminal null byte
-        _ raw_allocate
-        _this_sbuf_set_data             ; -- capacity
+        mov     rbx, rax                ; -> raw-capacity ^sbuf
 
-        _this_sbuf_set_raw_capacity
+        mov     word [rbx], TYPECODE_SBUF
 
-        pushrbx
-        mov     rbx, this_register      ; -- sbuf
+        mov     arg0_register, [rbp]    ; raw capacity (bytes) in arg0_register
+        add     arg0_register, 1        ; terminal null byte
+        _ feline_malloc                 ; returns raw address in rax
 
-        pop     this_register
+        mov     [rbx + SBUF_RAW_DATA_ADDRESS_OFFSET], rax
+
+        mov     rax, [rbp]              ; raw capacity in rax
+        _nip                            ; -> ^sbuf
+        mov     [rbx + SBUF_RAW_CAPACITY_OFFSET], rax
+        mov     qword [rbx + SBUF_RAW_LENGTH_OFFSET], 0
+
         next
 endcode
 
