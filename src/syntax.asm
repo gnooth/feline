@@ -462,8 +462,6 @@ code parse_definition, 'parse-definition'       ; -> vector
 
         _ end_dynamic_scope
 
-        _ forget_locals
-
         _nil
         _ set_current_definition
 

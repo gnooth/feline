@@ -725,7 +725,8 @@ defer compile-quotation
 : compile-word                          // symbol -> void
     dup symbol-def compile-quotation    // -> symbol quotation
     dup quotation-code-address pick symbol-set-code-address
-    quotation-code-size swap symbol-set-code-size ;
+    quotation-code-size swap symbol-set-code-size
+    forget-locals ;
 
 public
 

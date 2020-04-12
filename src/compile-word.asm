@@ -477,6 +477,8 @@ code primitive_compile_word, 'primitive-compile-word', SYMBOL_PRIMITIVE | SYMBOL
         _swap
         _ symbol_set_code_size
 
+        _ forget_locals
+
         next
 endcode
 
