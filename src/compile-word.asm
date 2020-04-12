@@ -382,6 +382,64 @@ code compile_pair, 'compile-pair', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
+; ### compile-prolog
+code compile_prolog, 'compile-prolog'
+        cmp     qword [experimental_], NIL
+        je      .1
+
+        _ locals_count          ; -> tagged-count
+        _check_fixnum           ; -> raw-count (in rbx)
+        test    rbx, rbx
+        jz      drop
+
+        ; we have locals
+        _emit_raw_byte 0x41
+        _emit_raw_byte 0x56     ; push r14
+
+        _emit_raw_byte 0x48
+        _emit_raw_byte 0x81
+        _emit_raw_byte 0xec
+
+        ; -> raw-count (in rbx)
+        shl     rbx, 3          ; convert cells to bytes
+        _ emit_raw_dword        ; sub rsp, number of bytes
+
+        _emit_raw_byte 0x49
+        _emit_raw_byte 0x89
+        _emit_raw_byte 0xe6     ; mov r14, rsp
+
+.1:
+        ; -> empty
+        next
+endcode
+
+; ### compile-epilog
+code compile_epilog, 'compile-epilog'
+        cmp     qword [experimental_], NIL
+        je      .1
+
+        _ locals_count          ; -> tagged-count
+        _check_fixnum           ; -> raw-count (in rbx)
+        test    rbx, rbx
+        jz      drop
+
+        ; we have locals
+        _emit_raw_byte 0x48
+        _emit_raw_byte 0x81
+        _emit_raw_byte 0xc4
+
+        ; -> raw-count (in rbx)
+        shl     rbx, 3          ; convert cells to bytes
+        _ emit_raw_dword        ; sub rsp, number of bytes
+
+        ; -> empty
+        _emit_raw_byte 0x41
+        _emit_raw_byte 0x5e     ; pop r14
+
+.1:
+        next
+endcode
+
 ; ### primitive-compile-quotation
 code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; quotation -> void
