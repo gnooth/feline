@@ -125,8 +125,8 @@ code gtkui_char_height, 'textview-char-height' ; void -> fixnum
         next
 endcode
 
-; ### gktui-frame-set-text
-code gtkui_frame_set_text, 'gtkui-frame-set-text' ; string -> void
+; ### frame-set-text
+code gtkui_frame_set_text, 'frame-set-text' ; string -> void
         _ string_raw_data_address
         mov     arg0_register, rbx
         _drop

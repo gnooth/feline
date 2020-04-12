@@ -348,8 +348,8 @@ code winui_char_height, 'textview-char-height' ; void -> fixnum
         next
 endcode
 
-; ### winui-frame-set-text
-code winui_frame_set_text, 'winui-frame-set-text' ; string -> void
+; ### frame-set-text
+code winui_frame_set_text, 'frame-set-text' ; string -> void
         _ string_raw_data_address
         mov     arg0_register, rbx
         _drop
