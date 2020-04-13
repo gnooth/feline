@@ -446,33 +446,15 @@ code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIV
 
         _debug_?enough 1
 
-        _ compile_verbose?
-        _tagged_if .1
-        _ ?nl
-        _quote "primitive-compile-quotation "
-        _ write_string
-        _dup
-        _ dot_object
-        _ nl
-        _then .1
-
-        _ check_quotation
+        _ check_quotation               ; -> ^quotation
 
         push    this_register
-        mov     this_register, rbx
+        mov     this_register, rbx      ; ^quotation in this_register
         _drop                           ; -> empty
 
         _this_quotation_array
         _lit S_precompile_object
         _ map_array                     ; -> precompiled-array
-
-        _ compile_verbose?
-        _tagged_if .2
-        _ ?nl
-        _dup
-        _ dot_object
-        _ nl
-        _then .2
 
         _zero
         _over
@@ -485,15 +467,22 @@ code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIV
 
         _ initialize_code_block         ; -> tagged-address
 
-        _check_fixnum
+        _check_fixnum                   ; -> untagged-address
         mov     [pc_], rbx
-        _drop
 
-        _pc
-        _tor
+        ; save untagged address of code block on the return stack
+        push    rbx
+        _drop                           ; -> empty
 
+        ; prolog
+        _ compile_prolog
+
+        ; body
         _lit S_compile_pair
-        _ array_each
+        _ each
+
+        ; epilog
+        _ compile_epilog
 
         _emit_raw_byte 0xc3
 
