@@ -51,10 +51,10 @@ endcode
 special current_lexer, 'current-lexer'
 
 ; ### parse-token
-code parse_token, 'parse-token'         ; -> string/f
+code parse_token, 'parse-token'         ; -> string/nil
         _ current_lexer
         _ get
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         je      .error
         _ lexer_parse_token
         next
@@ -67,7 +67,7 @@ endcode
 ; ### must-parse-token
 code must_parse_token, 'must-parse-token'       ; -> string
         _ parse_token
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         je      error_unexpected_end_of_input
         next
 endcode
@@ -427,37 +427,31 @@ code parse_definition, 'parse-definition'       ; -> vector
         _dup
         _quote ";"
         _ string_equal?
-        _tagged_if .3
+        _tagged_if .2
         _drop
         jmp     .bottom
-        _then .3
+        _then .2
 
         _ process_token
 
         jmp     .top
 
 .bottom:
-        _ using_locals?
-        _tagged_if .5
+        cmp     qword [using_locals?_], NIL
+        jz      .3
 
+        ; experimental code
+        ; do not add locals-leave to the definition
+        ; compile-epilog will do the job
         cmp     qword [experimental_], NIL
-        jne     .experimental
+        jne     .3
+
+        ; non-experimental code
         _lit S_locals_leave
-        jmp     .not_experimental
-
-.experimental:
-        _lit tagged_fixnum(1)           ; locals count
         _ current_definition
         _ vector_push
 
-        _lit S_n_locals_leave
-
-.not_experimental:
-        _ current_definition
-        _ vector_push
-
-        _then .5
-
+.3:
         _ current_definition            ; -> vector
 
         _ end_dynamic_scope
