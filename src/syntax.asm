@@ -713,6 +713,25 @@ code comment_to_eol3, '///', SYMBOL_IMMEDIATE
         next
 endcode
 
+; ### ?exit-no-locals
+always_inline ?exit_no_locals, '?exit-no-locals'
+        cmp     rbx, NIL
+        _drop
+        je      .1
+        ret
+.1:
+endinline
+
+; ### ?exit-locals
+always_inline ?exit_locals, '?exit-locals'
+        cmp     rbx, NIL
+        _drop
+        je      .1
+        _locals_leave
+        ret
+.1:
+endinline
+
 ; ### ?exit
 code ?exit, '?exit', SYMBOL_IMMEDIATE
         _ using_locals?

@@ -369,25 +369,6 @@ code unless_star, 'unless*'             ; x quotation -> ...
         jmp     rax
 endcode
 
-; ### ?exit-no-locals
-always_inline ?exit_no_locals, '?exit-no-locals'
-        cmp     rbx, NIL
-        _drop
-        je      .1
-        ret
-.1:
-endinline
-
-; ### ?exit-locals
-always_inline ?exit_locals, '?exit-locals'
-        cmp     rbx, NIL
-        _drop
-        je      .1
-        _locals_leave
-        ret
-.1:
-endinline
-
 ; ### return-if-no-locals
 code return_if_no_locals, 'return-if-no-locals' ; ? quot --
         cmp     qword [rbp], NIL
