@@ -412,41 +412,18 @@ code initialize_locals, 'initialize-locals'
 
         mov     qword [using_locals?_], TRUE
 
+        ; experimental code
+        ; do not add locals-enter to the definition
+        ; compile-prolog will do the job
         cmp     qword [experimental_], NIL
-        jne     .experimental
+        jne     .continue
 
-        ; old code (non-experimental)
         _lit S_locals_enter
         _lit tagged_zero
         _ current_definition
         _ vector_insert_nth
 
-        jmp     .continue
-
-        ; experimental code
-.experimental:
-        _lit S_n_locals_enter
-        _lit tagged_zero
-        _ current_definition
-        _ vector_insert_nth
-
-        _ current_definition
-        _ ?nl
-        _ dot_object
-
-        _lit tagged_fixnum(1)
-        _lit tagged_zero
-        _ current_definition
-        _ vector_insert_nth
-
-        _ current_definition
-        _ ?nl
-        _ dot_object
-
 .continue:
-
-        ; old code (non-experimental)
-
         ; check for return-if-no-locals
         ; if found, replace with return-if-locals
         _ current_definition
