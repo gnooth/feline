@@ -428,10 +428,60 @@ code compile_prolog, 'compile-prolog'
         next
 endcode
 
+asm_global exit_address_, 0
+
+; ### exit-address
+code exit_address, 'exit-address'
+        _dup
+        mov     rbx, [exit_address_]
+        _tag_fixnum
+        next
+endcode
+
+; ### patch-forward-jump
+code patch_forward_jump, 'patch-forward-jump'   ; tagged-address -> void
+
+        _lit 1
+        _ ?enough
+
+        _ ?nl
+        _write "patching forward jump at "
+        _dup
+        _ hexdot
+        _ nl
+
+        ; -> tagged-address
+        _ exit_address          ; -> tagged-address tagged-exit-address
+        _check_fixnum           ; -> tagged-address untagged-exit-address
+        _over                   ; -> tagged-address untagged-exit-address tagged-address
+        _check_fixnum           ; -> tagged-address untagged-exit-address untagged-address
+        add     rbx, 4          ; rbx: address of next instruction's first byte
+        _minus                  ; -> tagged-address untagged-jump
+        _tag_fixnum
+        _swap
+        _ lstore
+
+        next
+endcode
+
+; ### patch-forward-jumps
+code patch_forward_jumps, 'patch-forward-jumps' ; address -> void
+        cmp     qword [experimental_], NIL
+        je      .1
+        _ forward_jumps
+        _lit S_patch_forward_jump
+        _ vector_each
+.1:
+        next
+endcode
+
 ; ### compile-epilog
 code compile_epilog, 'compile-epilog'
         cmp     qword [experimental_], NIL
         je      .1
+
+        mov     rax, [pc_]
+        mov     [exit_address_], rax
 
         _ locals_count          ; -> tagged-count
         _check_fixnum           ; -> raw-count (in rbx)
@@ -445,7 +495,7 @@ code compile_epilog, 'compile-epilog'
 
         ; -> raw-count (in rbx)
         shl     rbx, 3          ; convert cells to bytes
-        _ emit_raw_dword        ; sub rsp, number of bytes
+        _ emit_raw_dword        ; add rsp, number of bytes
 
         ; -> empty
         _emit_raw_byte 0x41
