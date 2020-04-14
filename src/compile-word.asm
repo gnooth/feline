@@ -308,6 +308,21 @@ code compile_literal, 'compile-literal', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
+asm_global forward_jumps_
+
+code forward_jumps, 'forward-jumps'     ; -> vector
+        _dup
+        mov     rbx, [forward_jumps_]
+        next
+endcode
+
+; ### add-forward-jump-address
+code add_forward_jump_address, 'add-forward-jump-address' ; tagged-address -> void
+        _ forward_jumps
+        _ vector_push
+        next
+endcode
+
 ; ### inline-primitive
 code inline_primitive, 'inline-primitive' ; symbol -> void
 

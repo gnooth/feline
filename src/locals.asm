@@ -412,6 +412,14 @@ code initialize_locals, 'initialize-locals'
 
         mov     qword [using_locals?_], TRUE
 
+        _lit 8
+        _ make_vector_unchecked
+        mov     [forward_jumps_], rbx
+        _drop
+
+        _lit forward_jumps_
+        _ gc_add_root
+
         ; experimental code
         ; do not add locals-enter to the definition
         ; compile-prolog will do the job
