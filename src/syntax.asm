@@ -745,6 +745,36 @@ code ?exit, '?exit', SYMBOL_IMMEDIATE
         next
 endcode
 
+; ### ?exitx-no-locals
+always_inline ?exitx_no_locals, '?exitx-no-locals'
+        cmp     rbx, NIL
+        _drop
+        je      .1
+        ret
+.1:
+endinline
+
+; ### ?exitx-locals
+always_inline ?exitx_locals, '?exitx-locals'
+        cmp     rbx, NIL
+        _drop
+        jnz     quit
+endinline
+
+; ### ?exitx
+code ?exitx, '?exitx', SYMBOL_IMMEDIATE
+; FIXME check definition only
+        _ using_locals?
+        _tagged_if .1
+        _lit S_?exitx_locals
+        _else .1
+        _lit S_?exitx_no_locals
+        _then .1
+        _get_accum
+        _ vector_push
+        next
+endcode
+
 ; ### return-if-no-locals
 code return_if_no_locals, 'return-if-no-locals' ; ? quot --
         cmp     qword [rbp], NIL
