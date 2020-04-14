@@ -59,7 +59,7 @@ code error_no_method, 'error-no-method' ; object return-address --
 endcode
 
 ; ### format-type-error
-code format_type_error, 'format-type-error'     ; object expected-type -- string
+code format_type_error, 'format-type-error'     ; object expected-type ->
         _quote "ERROR: the value %S is not %s."
         _ format
         _ error
@@ -100,7 +100,6 @@ endcode
 code error_not_float, 'error-not-float'         ; x --
         _quote "a float"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -108,7 +107,6 @@ endcode
 code error_not_char, 'error-not-char'           ; x --
         _quote "a character"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -116,7 +114,6 @@ endcode
 code error_not_keyword, 'error-not-keyword'     ; x --
         _quote "a keyword"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -124,7 +121,6 @@ endcode
 code error_not_string, 'error-not-string'       ; x --
         _quote "a string"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -132,7 +128,6 @@ endcode
 code error_not_symbol, 'error-not-symbol'       ; x --
         _quote "a symbol"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -140,7 +135,6 @@ endcode
 code error_not_index, 'error-not-index'         ; x --
         _quote "a valid sequence index"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -156,7 +150,6 @@ endcode
 code error_not_vocab, 'error-not-vocab'         ; x --
         _quote "a vocabulary"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -164,7 +157,6 @@ endcode
 code error_not_vector, 'error-not-vector'       ; x --
         _quote "a vector"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -172,7 +164,6 @@ endcode
 code error_not_hashtable, 'error-not-hashtable' ; x --
         _quote "a hashtable"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -180,7 +171,6 @@ endcode
 code error_not_fixnum_hashtable, 'error-not-fixnum-hashtable' ; x --
         _quote "a fixnum hashtable"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -188,7 +178,6 @@ endcode
 code error_not_mutex, 'error-not-mutex'         ; x --
         _quote "a mutex"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -196,7 +185,6 @@ endcode
 code error_not_stream, 'error-not-stream'       ; x --
         _quote "a stream"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -204,7 +192,6 @@ endcode
 code error_not_file_output_stream, 'error-not-file-output-stream'       ; x --
         _quote "a file output stream"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -212,7 +199,6 @@ endcode
 code error_not_string_output_stream, 'error-not-string-output-stream'   ; x --
         _quote "a string output stream"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -220,7 +206,6 @@ endcode
 code error_not_thread, 'error-not-thread'       ; x --
         _quote "a thread"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -228,7 +213,6 @@ endcode
 code error_not_type, 'error-not-type'           ; x --
         _quote "a type"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -254,7 +238,6 @@ endcode
 code error_not_method, 'error-not-method'       ; x --
         _quote "a method"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -262,7 +245,6 @@ endcode
 code error_not_generic_function, 'error-not-generic-function'   ; x --
         _quote "a generic function"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -278,7 +260,6 @@ endcode
 code error_not_slot, 'error-not-slot'   ; x -> void
         _quote "a slot"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -286,7 +267,6 @@ endcode
 code error_not_sbuf, 'error-not-sbuf'   ; x --
         _quote "a string buffer"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -294,7 +274,6 @@ endcode
 code error_not_uint64, 'error-not-uint64'       ; x --
         _quote "a uint64"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -302,7 +281,6 @@ endcode
 code error_not_int64, 'error-not-int64' ; x --
         _quote "an int64"
         _ format_type_error
-        _ error
         next
 endcode
 
@@ -310,7 +288,6 @@ endcode
 code error_not_integer, 'error-not-integer'     ; x --
         _quote "an integer"
         _ format_type_error
-        _ error
         next
 endcode
 
