@@ -1,38 +1,3 @@
-using: feline ;
-in: unit-test
-
-empty
-
-private
-
-var location
-var expected
-var quot
-var got
-
-: do-unit-test                          // sequence quotation location -> void
-    location! quot! expected!
-    clear
-    quot call
-    get-datastack got!
-    clear
-    expected got sequence= [
-        location set-error-location
-        expected got "ERROR: expected %s, got %s." format error
-    ] unless
-;
-
-public
-
-syntax: unit-test
-    in-definition? get [
-        current-lexer-location accum-push
-        ' do-unit-test accum-push
-    ] [
-        current-lexer-location do-unit-test
-    ] if
-;
-
 using: unit-test feline ;
 in: test
 
