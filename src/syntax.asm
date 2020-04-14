@@ -745,6 +745,33 @@ code ?exit, '?exit', SYMBOL_IMMEDIATE
         next
 endcode
 
+; ### return-if-no-locals
+code return_if_no_locals, 'return-if-no-locals' ; ? quot --
+        cmp     qword [rbp], NIL
+        je      .1
+        _nip
+        _ call_quotation
+        lea     rsp, [rsp + BYTES_PER_CELL]
+        next
+.1:
+        _2drop
+        next
+endcode
+
+; ### return-if-locals
+code return_if_locals, 'return-if-locals'       ; ? quot --
+        cmp     qword [rbp], NIL
+        je      .1
+        _nip
+        _ call_quotation
+        lea     rsp, [rsp + BYTES_PER_CELL]
+        _locals_leave
+        next
+.1:
+        _2drop
+        next
+endcode
+
 ; ### return-if
 code return_if, 'return-if', SYMBOL_IMMEDIATE
         _ using_locals?
