@@ -70,7 +70,7 @@ feline-home "feral" path-append "editor.feline" path-append constant editor.feli
 
 : load-editor
     [
-        f load-verbose? set
+        nil load-verbose? set
         editor.feline load
     ] with-dynamic-scope ;
 
@@ -78,13 +78,13 @@ feline-home "feral" path-append "editorx.feline" path-append constant editorx.fe
 
 : load-editorx
     [
-        f load-verbose? set
+        nil load-verbose? set
         editorx.feline load
     ] with-dynamic-scope ;
 
 : load-inspector
     [
-        f load-verbose? set
+        nil load-verbose? set
         "inspector.feline" load-system-file
     ] with-dynamic-scope ;
 
@@ -110,14 +110,14 @@ public
 : opt
     "compiler" delete-vocab
     [
-        f load-verbose? set
+        nil load-verbose? set
         "compiler.feline" load-system-file
     ] with-dynamic-scope
     "opt" "compiler" vocab-find-name [ call-symbol ] when ;
 
 : run-tests
     [
-        t load-verbose? set
+        true load-verbose? set
 
         {
             "test.feline"
