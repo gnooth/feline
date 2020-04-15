@@ -480,7 +480,7 @@ code symbol_prop, 'symbol-prop'         ; key symbol -> value
         _ hashtable_at
         next
 .no_props:
-        ; rbx = NIL
+        ; rbx: NIL
         _nip
         next
 endcode
@@ -488,19 +488,19 @@ endcode
 ; ### symbol-set-prop
 code symbol_set_prop, 'symbol-set-prop' ; value key symbol -> void
         _ check_symbol                  ; -> value key ^symbol
-        mov     rax, rbx                ; rax = ^symbol
-        mov     rbx, [rax + SYMBOL_PROPS_OFFSET] ; -> value key hashtable/f
+        mov     rax, rbx                ; rax: ^symbol
+        mov     rbx, [rax + SYMBOL_PROPS_OFFSET] ; -> value key hashtable/nil
         cmp     rbx, rbx
         je      .no_props
         _ hashtable_set_at
         next
 .no_props:
-        ; rax = ^symbol
-        ; -> value key f
+        ; rax: ^symbol
+        ; -> value key nil
         push    rax                     ; save ^symbol on return stack
-        mov     rbx, 2                  ; replace f with 2 (capacity arg for new hashtable)
+        mov     rbx, 2                  ; replace nil with 2 (capacity arg for new hashtable)
         _ new_hashtable_untagged        ; -> value key hashtable
-        pop     rax                     ; rax = ^symbol, rbx = hashtable
+        pop     rax                     ; rax: ^symbol
         mov     [rax + SYMBOL_PROPS_OFFSET], rbx ; store hashtable in symbol object
         _ hashtable_set_at
         next
