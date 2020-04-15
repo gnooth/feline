@@ -1,4 +1,4 @@
-; Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -19,37 +19,37 @@ file __FILE__
 
 asm_global keyword_hashtable_
 
-code keyword_hashtable, 'keyword-hashtable'     ; -- hashtable
+code keyword_hashtable, 'keyword-hashtable' ; -> hashtable
         _dup
         mov     rbx, [keyword_hashtable_]
         next
 endcode
 
-%macro  _keyword_name 0                 ; keyword -- name
+%macro  _keyword_name 0                 ; keyword -> name
         _slot1
 %endmacro
 
-%macro  _this_keyword_set_name 0        ; name --
+%macro  _this_keyword_set_name 0        ; name ->
         _this_set_slot1
 %endmacro
 
 ; ### keyword?
-code keyword?, 'keyword?'               ; x -- ?
-        _ deref                         ; -- raw-object/0
+code keyword?, 'keyword?'               ; x -> ?
+        _ deref                         ; -> raw-object/0
         test    rbx, rbx
         jz      .1
         _object_raw_typecode_eax
         cmp     eax, TYPECODE_KEYWORD
         jne     .1
-        mov     ebx, t_value
+        mov     ebx, TRUE
         _return
 .1:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
 ; ### verify-keyword
-code verify_keyword, 'verify-keyword'   ; keyword -- keyword
+code verify_keyword, 'verify-keyword'   ; keyword -> keyword
         _dup
         _ keyword?
         _tagged_if_not .1
@@ -59,7 +59,7 @@ code verify_keyword, 'verify-keyword'   ; keyword -- keyword
 endcode
 
 ; ### check_keyword
-code check_keyword, 'check_keyword', SYMBOL_INTERNAL      ; x -- keyword
+code check_keyword, 'check_keyword', SYMBOL_INTERNAL ; x -> keyword
         _dup
         _ deref
         test    rbx, rbx
@@ -75,49 +75,49 @@ code check_keyword, 'check_keyword', SYMBOL_INTERNAL      ; x -- keyword
         next
 endcode
 
-; ### string>keyword
-code string_to_keyword, 'string>keyword'        ; string -- keyword
+; ### string->keyword
+code string_to_keyword, 'string->keyword' ; string -> keyword
 
         _lit 2
-        _ raw_allocate_cells            ; -- name raw-object-address
+        _ raw_allocate_cells            ; -> name raw-object-address
 
         push    this_register
         mov     this_register, rbx
 
-        mov     rbx, [rbp]              ; -- name name
+        mov     rbx, [rbp]              ; -> name name
 
         _this_object_set_raw_typecode TYPECODE_KEYWORD
 
-        _this_keyword_set_name          ; -- name
+        _this_keyword_set_name          ; -> name
 
         _dup
-        mov     rbx, this_register      ; -- name keyword
+        mov     rbx, this_register      ; -> name keyword
         pop     this_register
 
-        _ new_handle                    ; -- name handle
+        _ new_handle                    ; -> name handle
 
         _swap
-        _dupd                           ; -- handle handle name
+        _dupd                           ; -> handle handle name
         _ keyword_hashtable
-        _ hashtable_set_at              ; -- handle
+        _ hashtable_set_at              ; -> handle
 
         next
 endcode
 
 ; ### intern-keyword
-code intern_keyword, 'intern-keyword'   ; string -- keyword
+code intern_keyword, 'intern-keyword'   ; string -> keyword
          _dup
         _ keyword_hashtable
         _ hashtable_at_star
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         _drop
         je      .not_found
         _nip
-        _return
+        next
 
-.not_found:                             ; -- string f
-        _drop                           ; -- string
-        _ string_to_keyword             ; -- keyword
+.not_found:                             ; -> string nil
+        _drop                           ; -> string
+        _ string_to_keyword             ; -> keyword
         next
 endcode
 
