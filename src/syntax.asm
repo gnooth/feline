@@ -800,9 +800,15 @@ always_inline ?returnx_locals, '?returnx-locals' ; ? quot ->
         cmp     qword [rbp], NIL
         je      .1
         _nip
+..@?returnx_locals_patch1:      ; use ..@ prefix to avoid interfering with local labels
         _ call_quotation
-;         lea     rsp, [rsp + BYTES_PER_CELL]
-        jmp     quit
+        db      0xe9            ; jmp
+..@?returnx_locals_patch2:
+        ; These bytes will be patched. 0xcc is int3.
+        db      0xcc
+        db      0xcc
+        db      0xcc
+        db      0xcc
 .1:
         _2drop
 endinline
