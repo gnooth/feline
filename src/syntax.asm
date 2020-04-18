@@ -788,8 +788,8 @@ always_inline ?returnx_no_locals, '?returnx-no-locals' ; ? quot ->
         cmp     qword [rbp], NIL
         je      .1
         _nip
+..@?returnx_no_locals_patch:    ; use ..@ prefix to avoid interfering with local labels
         _ call_quotation
-;         lea     rsp, [rsp + BYTES_PER_CELL]
         ret
 .1:
         _2drop
