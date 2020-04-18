@@ -353,6 +353,18 @@ code inline_primitive, 'inline-primitive' ; symbol -> void
         next
 endcode
 
+; ### compile-?exitx-locals
+code compile_?exitx_locals, 'compile-?exitx-locals' ; symbol1 symbol2 -> void
+; symbol1 is the name of the definition being compiled
+; symbol2 is the name of the function being compiled (?exitx-locals)
+        _pc
+        add       rbx, ?exitx_locals_patch - ?exitx_locals
+        _tag_fixnum
+        _ add_forward_jump_address      ; -> symbol1
+        _ inline_primitive              ; -> empty
+        next
+endcode
+
 ; ### compile-primitive
 code compile_primitive, 'compile-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; symbol -> void

@@ -758,7 +758,15 @@ endinline
 always_inline ?exitx_locals, '?exitx-locals'
         cmp     rbx, NIL
         _drop
-        jnz     quit
+        ; 2-byte jne
+        db      0x0f
+        db      0x85
+?exitx_locals_patch:
+        ; These bytes will be patched. 0xcc is int3.
+        db      0xcc
+        db      0xcc
+        db      0xcc
+        db      0xcc
 endinline
 
 ; ### ?exitx
