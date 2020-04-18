@@ -775,6 +775,43 @@ code ?exitx, '?exitx', SYMBOL_IMMEDIATE
         next
 endcode
 
+; ### ?returnx-no-locals
+always_inline ?returnx_no_locals, '?returnx-no-locals' ; ? quot ->
+        cmp     qword [rbp], NIL
+        je      .1
+        _nip
+        _ call_quotation
+;         lea     rsp, [rsp + BYTES_PER_CELL]
+        ret
+.1:
+        _2drop
+endinline
+
+; ### ?returnx-locals
+always_inline ?returnx_locals, '?returnx-locals' ; ? quot ->
+        cmp     qword [rbp], NIL
+        je      .1
+        _nip
+        _ call_quotation
+;         lea     rsp, [rsp + BYTES_PER_CELL]
+        jmp     quit
+.1:
+        _2drop
+endinline
+
+; ### ?returnx
+code ?returnx, '?returnx', SYMBOL_IMMEDIATE
+        _ using_locals?
+        _tagged_if .1
+        _lit S_?returnx_locals
+        _else .1
+        _lit S_?returnx_no_locals
+        _then .1
+        _get_accum
+        _ vector_push
+        next
+endcode
+
 ; ### return-if-no-locals
 code return_if_no_locals, 'return-if-no-locals' ; ? quot --
         cmp     qword [rbp], NIL
