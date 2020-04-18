@@ -492,28 +492,16 @@ code exit_address, 'exit-address'
 endcode
 
 ; ### patch-forward-jump
-code patch_forward_jump, 'patch-forward-jump'   ; tagged-address -> void
-
-        _lit 1
-        _ ?enough
-
-        _ ?nl
-        _write "patching forward jump at "
-        _dup
-        _ hexdot
-        _ nl
-
-        ; -> tagged-address
+code patch_forward_jump, 'patch-forward-jump' ; tagged-address -> void
         _ exit_address          ; -> tagged-address tagged-exit-address
         _check_fixnum           ; -> tagged-address untagged-exit-address
         _over                   ; -> tagged-address untagged-exit-address tagged-address
         _check_fixnum           ; -> tagged-address untagged-exit-address untagged-address
-        add     rbx, 4          ; rbx: address of next instruction's first byte
-        _minus                  ; -> tagged-address untagged-jump
+        add     rbx, 4          ; address of next instruction's first byte in rbx
+        _minus                  ; -> tagged-address delta
         _tag_fixnum
         _swap
         _ lstore
-
         next
 endcode
 
@@ -603,6 +591,8 @@ code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIV
         _ compile_epilog
 
         _emit_raw_byte 0xc3
+
+        _ patch_forward_jumps
 
         _rfetch                         ; -> raw-code-address
         _this_quotation_set_raw_code_address
