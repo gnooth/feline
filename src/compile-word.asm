@@ -354,14 +354,16 @@ code inline_primitive, 'inline-primitive' ; symbol -> void
 endcode
 
 ; ### compile-?exitx-locals
-code compile_?exitx_locals, 'compile-?exitx-locals' ; symbol1 symbol2 -> void
-; symbol1 is the name of the definition being compiled
-; symbol2 is the name of the function being compiled (?exitx-locals)
+code compile_?exitx_locals, 'compile-?exitx-locals' ;  symbol -> void
+; symbol is the name of the function being compiled (?exitx-locals)
+
         _pc
         add       rbx, ?exitx_locals_patch - ?exitx_locals
         _tag_fixnum
-        _ add_forward_jump_address      ; -> symbol1
+        _ add_forward_jump_address      ; -> symbol
+
         _ inline_primitive              ; -> empty
+
         next
 endcode
 
@@ -381,6 +383,25 @@ code fix_call, 'fix-call'               ; call-address target-address -> void
         add     rbx, 1          ; skip over 0xe8
 
         _lstore
+
+        next
+endcode
+
+; ### compile-?returnx-no-locals
+code compile_?returnx_no_locals, 'compile-?returnx-no-locals' ; symbol -> void
+; symbol is the name of the function being compiled (?returnx-no-locals)
+
+        _pc
+        add     rbx, ..@?returnx_no_locals_patch - ?returnx_no_locals
+        _tag_fixnum                     ; -> symbol tagged-call-address
+
+        _swap                           ; -> tagged-call-addres symbol
+        _ inline_primitive              ; -> tagged-call-address
+
+        _lit S_call_quotation
+        _ symbol_code_address           ; -> tagged-call-address tagged-target-address
+
+        _ fix_call
 
         next
 endcode
