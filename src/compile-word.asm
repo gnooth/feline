@@ -365,6 +365,26 @@ code compile_?exitx_locals, 'compile-?exitx-locals' ; symbol1 symbol2 -> void
         next
 endcode
 
+; ### fix-call
+code fix_call, 'fix-call'               ; call-address target-address -> void
+; arguments are tagged fixnums
+
+        ; [rbp]: address of call instruction (0xe8)
+        ; rbx: address of call target
+
+        _check_fixnum qword [rbp]       ; untag call address
+        _check_fixnum                   ; untag target address
+        _over                   ; -> call-address target-address call-address
+        add     rbx, 5          ; rbx: untagged address of first byte of next instruction
+        _minus                  ; -> call-address delta
+        _swap                   ; -> delta call-address
+        add     rbx, 1          ; skip over 0xe8
+
+        _lstore
+
+        next
+endcode
+
 ; ### compile-primitive
 code compile_primitive, 'compile-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; symbol -> void
