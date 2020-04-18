@@ -401,7 +401,34 @@ code compile_?returnx_no_locals, 'compile-?returnx-no-locals' ; symbol -> void
         _lit S_call_quotation
         _ symbol_code_address           ; -> tagged-call-address tagged-target-address
 
-        _ fix_call
+        _ fix_call                      ; -> empty
+
+        next
+endcode
+
+; ### compile-?returnx-locals
+code compile_?returnx_locals, 'compile-?returnx-locals' ; symbol -> void
+; symbol is the name of the function being compiled (?returnx-locals)
+
+        _pc
+        add     rbx, ..@?returnx_locals_patch1 - ?returnx_locals
+        _tag_fixnum                     ; address to patch for call
+
+        _pc
+        add     rbx, ..@?returnx_locals_patch2 - ?returnx_locals
+        _tag_fixnum                     ; address to patch for jump to exit
+
+        ; -> symbol patch1-address patch2-address
+        _ add_forward_jump_address      ; -> symbol patch1-address
+
+        _swap                           ; -> patch1-address symbol
+        _ inline_primitive              ; -> patch1-address
+
+        _lit S_call_quotation
+        _ symbol_code_address           ; -> patch1-address call-target-address
+
+        ; -> patch1-address call-target-address
+        _ fix_call                      ; -> empty
 
         next
 endcode
@@ -416,7 +443,16 @@ code compile_primitive, 'compile-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         _ symbol_inline?
 %endif
         _tagged_if .1
+
+        cmp     rbx, S_?exitx_locals
+        je      compile_?exitx_locals
+        cmp     rbx, S_?returnx_no_locals
+        je      compile_?returnx_no_locals
+        cmp     rbx, S_?returnx_locals
+        je      compile_?returnx_locals
+
         _ inline_primitive
+
         _else .1
         _ symbol_raw_code_address
         _ compile_call
