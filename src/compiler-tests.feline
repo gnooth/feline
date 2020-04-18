@@ -1,0 +1,128 @@
+using: unit-test feline ;
+in: compiler-tests
+
+empty
+
++x
+: %test-1
+    42 :> x
+    x
+;
+-x
+
+test: test-1
+    %test-1 42 assert-eq
+;
+
+test-1
+
++x
+: %test-2
+    'a' :> x1
+    'b' :> x2
+    'c' :> x3
+    'd' :> x4
+    'e' :> x5
+    'f' :> x6
+    'g' :> x7
+    'h' :> x8
+    // MAX_LOCALS is 8
+//     'i' :> x9
+//     'j' :> x10
+//     'k' :> x11
+//     'l' :> x12
+//     'm' :> x13
+//     'n' :> x14
+//     'o' :> x15
+//     'p' :> x16
+    x1 'a' assert-eq
+    x2 'b' assert-eq
+    x3 'c' assert-eq
+    x4 'd' assert-eq
+    x5 'e' assert-eq
+    x6 'f' assert-eq
+    x7 'g' assert-eq
+    x8 'h' assert-eq
+    // MAX_LOCALS is 8
+//     x9 'i' assert-eq
+//     x10 'j' assert-eq
+//     x11 'k' assert-eq
+//     x12 'l' assert-eq
+//     x13 'm' assert-eq
+//     x14 'n' assert-eq
+//     x15 'o' assert-eq
+//     x16 'p' assert-eq
+;
+-x
+
+test: test-2
+    %test-2
+;
+
+test-2
+
++x
+: %test-3
+    ?exitx 42
+;
+-x
+
+test: test-3
+    { } [ true %test-3 ] unit-test
+    { 42 } [ nil %test-3 ] unit-test
+;
+
+test-3
+
++x
+: %test-4
+    [ "test" ] ?return 42
+;
+-x
+
+test: test-4
+    { "test" } [ true %test-4 ] unit-test
+    { 42 } [ nil %test-4 ] unit-test
+;
+
+test-4
+
+// ?exitx
++x
+: %test-5 ( x ) x nil? ?exitx x ;
+-x
+
+test: test-5
+    { } [ nil %test-5 ] unit-test
+    { 42 } [ 42 %test-5 ] unit-test
+;
+
+test-5
+
+// ?returnx-no-locals
++x
+: %test-6
+    [ 42 ] ?returnx 87
+;
+-x
+
+test: test-6
+    { 87 } [ nil  %test-6 ] unit-test
+    { 42 } [ true %test-6 ] unit-test
+;
+
+test-6
+
+// ?returnx-locals
++x
+: %test-7
+    :> x x [ 42 ] ?returnx 87
+;
+-x
+
+test: test-7
+    { 87 } [ nil  %test-7 ] unit-test
+    { 42 } [ true %test-7 ] unit-test
+;
+
+test-7
