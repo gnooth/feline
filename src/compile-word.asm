@@ -353,6 +353,30 @@ code inline_primitive, 'inline-primitive' ; symbol -> void
         next
 endcode
 
+; ### ?exitx-no-locals
+always_inline ?exitx_no_locals, '?exitx-no-locals'
+        cmp     rbx, NIL
+        _drop
+        je      .1
+        ret
+.1:
+endinline
+
+; ### ?exitx-locals
+always_inline ?exitx_locals, '?exitx-locals'
+        cmp     rbx, NIL
+        _drop
+        ; 2-byte jne
+        db      0x0f
+        db      0x85
+?exitx_locals_patch:
+        ; These bytes will be patched. 0xcc is int3.
+        db      0xcc
+        db      0xcc
+        db      0xcc
+        db      0xcc
+endinline
+
 ; ### compile-?exitx-locals
 code compile_?exitx_locals, 'compile-?exitx-locals' ;  symbol -> void
 ; symbol is the name of the function being compiled (?exitx-locals)
@@ -387,6 +411,18 @@ code fix_call, 'fix-call'               ; call-address target-address -> void
         next
 endcode
 
+; ### ?returnx-no-locals
+always_inline ?returnx_no_locals, '?returnx-no-locals' ; ? quot ->
+        cmp     qword [rbp], NIL
+        je      .1
+        _nip
+..@?returnx_no_locals_patch:    ; use ..@ prefix to avoid interfering with local labels
+        _ call_quotation
+        ret
+.1:
+        _2drop
+endinline
+
 ; ### compile-?returnx-no-locals
 code compile_?returnx_no_locals, 'compile-?returnx-no-locals' ; symbol -> void
 ; symbol is the name of the function being compiled (?returnx-no-locals)
@@ -405,6 +441,24 @@ code compile_?returnx_no_locals, 'compile-?returnx-no-locals' ; symbol -> void
 
         next
 endcode
+
+; ### ?returnx-locals
+always_inline ?returnx_locals, '?returnx-locals' ; ? quot ->
+        cmp     qword [rbp], NIL
+        je      .1
+        _nip
+..@?returnx_locals_patch1:      ; use ..@ prefix to avoid interfering with local labels
+        _ call_quotation
+        db      0xe9            ; jmp
+..@?returnx_locals_patch2:
+        ; These bytes will be patched. 0xcc is int3.
+        db      0xcc
+        db      0xcc
+        db      0xcc
+        db      0xcc
+.1:
+        _2drop
+endinline
 
 ; ### compile-?returnx-locals
 code compile_?returnx_locals, 'compile-?returnx-locals' ; symbol -> void
