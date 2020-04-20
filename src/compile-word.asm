@@ -308,7 +308,7 @@ code compile_literal, 'compile-literal', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
-asm_global forward_jumps_
+asm_global forward_jumps_, NIL
 
 code forward_jumps, 'forward-jumps'     ; -> vector
         _dup
@@ -583,6 +583,16 @@ endcode
 
 ; ### patch-forward-jump
 code patch_forward_jump, 'patch-forward-jump' ; tagged-address -> void
+
+        _ ?nl
+        _write "patch-forward-jump "
+        _ exit_address
+        _ hexdot
+        _ space
+        _dup
+        _ hexdot
+        _ nl
+
         _ exit_address          ; -> tagged-address tagged-exit-address
         _check_fixnum           ; -> tagged-address untagged-exit-address
         _over                   ; -> tagged-address untagged-exit-address tagged-address
@@ -601,8 +611,8 @@ code patch_forward_jumps, 'patch-forward-jumps' ; address -> void
 ;         je      .1
         _ forward_jumps
 
-        test    rbx, rbx
-        jz      drop
+        cmp     rbx, NIL
+        je      drop
 
 ;         _dup
 ;         _ check_vector
@@ -615,6 +625,7 @@ code patch_forward_jumps, 'patch-forward-jumps' ; address -> void
 
         _lit S_patch_forward_jump
         _ vector_each
+        mov     qword [forward_jumps_], NIL
 ; .1:
         next
 endcode

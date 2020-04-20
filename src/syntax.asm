@@ -736,9 +736,9 @@ endinline
 code ?exit, '?exit', SYMBOL_IMMEDIATE
         _ using_locals?
         _tagged_if .1
-        _lit S_?exit_locals
+        _lit S_?exitx_locals
         _else .1
-        _lit S_?exit_no_locals
+        _lit S_?exitx_no_locals
         _then .1
         _get_accum
         _ vector_push
@@ -814,11 +814,19 @@ endcode
 
 ; ### ?return
 code ?return, '?return', SYMBOL_IMMEDIATE
+;         _ using_locals?
+;         _tagged_if .1
+;         _lit S_return_if_locals
+;         _else .1
+;         _lit S_return_if_no_locals
+;         _then .1
+;         _get_accum
+;         _ vector_push
         _ using_locals?
         _tagged_if .1
-        _lit S_return_if_locals
+        _lit S_?returnx_locals
         _else .1
-        _lit S_return_if_no_locals
+        _lit S_?returnx_no_locals
         _then .1
         _get_accum
         _ vector_push

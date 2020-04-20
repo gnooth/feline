@@ -438,10 +438,12 @@ code initialize_locals, 'initialize-locals'
         _quotation .1
         ; -> element index
         _swap
-        _lit S_return_if_no_locals
+;         _lit S_return_if_no_locals
+        _lit S_?returnx_no_locals
         _eq?
         _tagged_if .2
-        _lit S_return_if_locals
+;         _lit S_return_if_locals
+        _lit S_?returnx_locals
         _swap
         _ current_definition
         _ vector_set_nth
@@ -456,10 +458,12 @@ code initialize_locals, 'initialize-locals'
         _ current_definition
         _quotation .3
         _swap
-        _lit S_?exit_no_locals
+;         _lit S_?exit_no_locals
+        _lit S_?exitx_no_locals
         _eq?
         _tagged_if .4
-        _lit S_?exit_locals
+;         _lit S_?exit_locals
+        _lit S_?exitx_locals
         _swap
         _ current_definition
         _ vector_set_nth
