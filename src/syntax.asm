@@ -440,16 +440,16 @@ code parse_definition, 'parse-definition'       ; -> vector
         cmp     qword [using_locals?_], NIL
         jz      .3
 
-        ; experimental code
-        ; do not add locals-leave to the definition
-        ; compile-epilog will do the job
-        cmp     qword [experimental_], NIL
-        jne     .3
-
-        ; non-experimental code
-        _lit S_locals_leave
-        _ current_definition
-        _ vector_push
+;         ; experimental code
+;         ; do not add locals-leave to the definition
+;         ; compile-epilog will do the job
+;         cmp     qword [experimental_], NIL
+;         jne     .3
+;
+;         ; non-experimental code
+;         _lit S_locals_leave
+;         _ current_definition
+;         _ vector_push
 
 .3:
         _ current_definition            ; -> vector

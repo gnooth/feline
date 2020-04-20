@@ -542,8 +542,8 @@ endcode
 
 ; ### compile-prolog
 code compile_prolog, 'compile-prolog'
-        cmp     qword [experimental_], NIL
-        je      .1
+;         cmp     qword [experimental_], NIL
+;         je      .1
 
         _ locals_count          ; -> tagged-count
         _check_fixnum           ; -> raw-count (in rbx)
@@ -566,7 +566,7 @@ code compile_prolog, 'compile-prolog'
         _emit_raw_byte 0x89
         _emit_raw_byte 0xe6     ; mov r14, rsp
 
-.1:
+; .1:
         ; -> empty
         next
 endcode
@@ -597,19 +597,32 @@ endcode
 
 ; ### patch-forward-jumps
 code patch_forward_jumps, 'patch-forward-jumps' ; address -> void
-        cmp     qword [experimental_], NIL
-        je      .1
+;         cmp     qword [experimental_], NIL
+;         je      .1
         _ forward_jumps
+
+        test    rbx, rbx
+        jz      drop
+
+;         _dup
+;         _ check_vector
+;
+;         mov     rax, [rbx + VECTOR_RAW_LENGTH_OFFSET]
+;         test    rax, rax
+;         jz      drop
+
+        _ verify_vector
+
         _lit S_patch_forward_jump
         _ vector_each
-.1:
+; .1:
         next
 endcode
 
 ; ### compile-epilog
 code compile_epilog, 'compile-epilog'
-        cmp     qword [experimental_], NIL
-        je      .1
+;         cmp     qword [experimental_], NIL
+;         je      .1
 
         mov     rax, [pc_]
         mov     [exit_address_], rax
@@ -632,7 +645,7 @@ code compile_epilog, 'compile-epilog'
         _emit_raw_byte 0x41
         _emit_raw_byte 0x5e     ; pop r14
 
-.1:
+; .1:
         next
 endcode
 
