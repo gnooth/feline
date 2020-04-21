@@ -164,7 +164,7 @@ code make_sbuf_internal, 'make_sbuf_internal', SYMBOL_INTERNAL
         _dup
         mov     rbx, rax                ; -> raw-capacity ^sbuf
 
-        mov     word [rbx], TYPECODE_SBUF
+        mov     qword [rbx], TYPECODE_SBUF
 
         mov     arg0_register, [rbp]    ; raw capacity (bytes) in arg0_register
         add     arg0_register, 1        ; terminal null byte
