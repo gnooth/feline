@@ -215,7 +215,7 @@ make_vector_unchecked:
         _dup
         mov     rbx, rax                ; -> raw-capacity ^vector
 
-        mov     word [rbx], TYPECODE_VECTOR
+        mov     qword [rbx], TYPECODE_VECTOR
 
         mov     arg0_register, [rbp]    ; raw capacity (cells) in arg0_register
         shl     arg0_register, 3        ; convert cells to bytes
