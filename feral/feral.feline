@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 using: feline ;
 in: feral-config
 
-t constant standalone?
+true constant standalone?
 
 win64? have-winui? and constant winui?
 linux? have-gtkui? and constant gtkui?
