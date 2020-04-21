@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -75,6 +75,9 @@ feral-config:winui? feral-config:gtkui? or #if
     ] if ;
 
 : find-definition
+
+    feral-config:standalone? ?exit
+
     "find-definition" set-history
     "Word: " minibuffer-accept-string
     [ find-definition-internal ] when* ;
