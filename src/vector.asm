@@ -264,17 +264,15 @@ endcode
 
 ; ### destroy_vector_unchecked
 code destroy_vector_unchecked, 'destroy_vector_unchecked', SYMBOL_INTERNAL
-; vector --
+; ^vector -> void
 
-        _dup
-        _vector_raw_data_address
-        _ raw_free
+        mov     arg0_register, [rbx + VECTOR_RAW_DATA_ADDRESS_OFFSET]
+        xcall   free
 
         ; zero out object header
-        xor     eax, eax
-        mov     [rbx], rax
+        mov     qword [rbx], 0
 
-        _ raw_free
+        _feline_free
         next
 endcode
 
