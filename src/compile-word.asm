@@ -583,16 +583,6 @@ endcode
 
 ; ### patch-forward-jump
 code patch_forward_jump, 'patch-forward-jump' ; tagged-address -> void
-
-        _ ?nl
-        _write "patch-forward-jump "
-        _ exit_address
-        _ hexdot
-        _ space
-        _dup
-        _ hexdot
-        _ nl
-
         _ exit_address          ; -> tagged-address tagged-exit-address
         _check_fixnum           ; -> tagged-address untagged-exit-address
         _over                   ; -> tagged-address untagged-exit-address tagged-address
