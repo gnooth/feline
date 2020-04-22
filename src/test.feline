@@ -3078,14 +3078,9 @@ test: reduce-test-1
 reduce-test-1
 
 test: cleave-test-1
-    clear
-    19 { [ dup + ] [ dup * ] } cleave get-datastack { 38 361 } assert=
-    clear
-    14 { [ 23 + ] } cleave get-datastack { 37 } assert=
-    clear
-    97 { } cleave get-datastack { } assert=
-    clear
-;
+    { 38 361 } [ 19 { [ dup + ] [ dup * ] } cleave ] unit-test
+    { 37 } [ 14 { [ 23 + ] } cleave ] unit-test
+    { } [ 97 { } cleave ] unit-test ;
 
 cleave-test-1
 
