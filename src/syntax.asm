@@ -801,11 +801,19 @@ endcode
 
 ; ### return-if
 code return_if, 'return-if', SYMBOL_IMMEDIATE
+;         _ using_locals?
+;         _tagged_if .1
+;         _lit S_return_if_locals
+;         _else .1
+;         _lit S_return_if_no_locals
+;         _then .1
+;         _get_accum
+;         _ vector_push
         _ using_locals?
         _tagged_if .1
-        _lit S_return_if_locals
+        _lit S_?returnx_locals
         _else .1
-        _lit S_return_if_no_locals
+        _lit S_?returnx_no_locals
         _then .1
         _get_accum
         _ vector_push
