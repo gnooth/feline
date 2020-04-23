@@ -308,7 +308,7 @@ code compile_literal, 'compile-literal', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
-asm_global forward_jumps_
+asm_global forward_jumps_, NIL
 
 code forward_jumps, 'forward-jumps'     ; -> vector
         _dup
@@ -353,8 +353,8 @@ code inline_primitive, 'inline-primitive' ; symbol -> void
         next
 endcode
 
-; ### ?exitx-no-locals
-always_inline ?exitx_no_locals, '?exitx-no-locals'
+; ### ?exit-no-locals
+always_inline ?exit_no_locals, '?exit_no_locals'
         cmp     rbx, NIL
         _drop
         je      .1
@@ -362,27 +362,27 @@ always_inline ?exitx_no_locals, '?exitx-no-locals'
 .1:
 endinline
 
-; ### ?exitx-locals
-always_inline ?exitx_locals, '?exitx-locals'
+; ### ?exit-locals
+always_inline ?exit_locals, '?exit_locals'
         cmp     rbx, NIL
         _drop
         ; 2-byte jne
         db      0x0f
         db      0x85
-?exitx_locals_patch:
-        ; These bytes will be patched. 0xcc is int3.
-        db      0xcc
-        db      0xcc
-        db      0xcc
-        db      0xcc
+?exit_locals_patch:
+        ; These bytes will be patched.
+        db      0
+        db      0
+        db      0
+        db      0
 endinline
 
-; ### compile-?exitx-locals
-code compile_?exitx_locals, 'compile-?exitx-locals' ;  symbol -> void
-; symbol is the name of the function being compiled (?exitx-locals)
+; ### compile-?exit-locals
+code compile_?exit_locals, 'compile-?exit-locals' ;  symbol -> void
+; symbol is the name of the function being compiled (?exit_locals)
 
         _pc
-        add       rbx, ?exitx_locals_patch - ?exitx_locals
+        add       rbx, ?exit_locals_patch - ?exit_locals
         _tag_fixnum
         _ add_forward_jump_address      ; -> symbol
 
@@ -411,24 +411,24 @@ code fix_call, 'fix-call'               ; call-address target-address -> void
         next
 endcode
 
-; ### ?returnx-no-locals
-always_inline ?returnx_no_locals, '?returnx-no-locals' ; ? quot ->
+; ### ?return-no-locals
+always_inline ?return_no_locals, '?return_no_locals' ; ? quot ->
         cmp     qword [rbp], NIL
         je      .1
         _nip
-..@?returnx_no_locals_patch:    ; use ..@ prefix to avoid interfering with local labels
+..@?return_no_locals_patch:     ; use ..@ prefix to avoid interfering with local labels
         _ call_quotation
         ret
 .1:
         _2drop
 endinline
 
-; ### compile-?returnx-no-locals
-code compile_?returnx_no_locals, 'compile-?returnx-no-locals' ; symbol -> void
+; ### compile-?return-no-locals
+code compile_?return_no_locals, 'compile-?return-no-locals' ; symbol -> void
 ; symbol is the name of the function being compiled (?returnx-no-locals)
 
         _pc
-        add     rbx, ..@?returnx_no_locals_patch - ?returnx_no_locals
+        add     rbx, ..@?return_no_locals_patch - ?return_no_locals
         _tag_fixnum                     ; -> symbol tagged-call-address
 
         _swap                           ; -> tagged-call-addres symbol
@@ -442,34 +442,34 @@ code compile_?returnx_no_locals, 'compile-?returnx-no-locals' ; symbol -> void
         next
 endcode
 
-; ### ?returnx-locals
-always_inline ?returnx_locals, '?returnx-locals' ; ? quot ->
+; ### ?return-locals
+always_inline ?return_locals, '?return_locals' ; ? quot ->
         cmp     qword [rbp], NIL
         je      .1
         _nip
-..@?returnx_locals_patch1:      ; use ..@ prefix to avoid interfering with local labels
+..@?return_locals_patch1:       ; use ..@ prefix to avoid interfering with local labels
         _ call_quotation
         db      0xe9            ; jmp
-..@?returnx_locals_patch2:
-        ; These bytes will be patched. 0xcc is int3.
-        db      0xcc
-        db      0xcc
-        db      0xcc
-        db      0xcc
+..@?return_locals_patch2:
+        ; These bytes will be patched.
+        db      0
+        db      0
+        db      0
+        db      0
 .1:
         _2drop
 endinline
 
-; ### compile-?returnx-locals
-code compile_?returnx_locals, 'compile-?returnx-locals' ; symbol -> void
+; ### compile-?return-locals
+code compile_?return_locals, 'compile-?return-locals' ; symbol -> void
 ; symbol is the name of the function being compiled (?returnx-locals)
 
         _pc
-        add     rbx, ..@?returnx_locals_patch1 - ?returnx_locals
+        add     rbx, ..@?return_locals_patch1 - ?return_locals
         _tag_fixnum                     ; address to patch for call
 
         _pc
-        add     rbx, ..@?returnx_locals_patch2 - ?returnx_locals
+        add     rbx, ..@?return_locals_patch2 - ?return_locals
         _tag_fixnum                     ; address to patch for jump to exit
 
         ; -> symbol patch1-address patch2-address
@@ -498,12 +498,12 @@ code compile_primitive, 'compile-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 %endif
         _tagged_if .1
 
-        cmp     rbx, S_?exitx_locals
-        je      compile_?exitx_locals
-        cmp     rbx, S_?returnx_no_locals
-        je      compile_?returnx_no_locals
-        cmp     rbx, S_?returnx_locals
-        je      compile_?returnx_locals
+        cmp     rbx, S_?exit_locals
+        je      compile_?exit_locals
+        cmp     rbx, S_?return_no_locals
+        je      compile_?return_no_locals
+        cmp     rbx, S_?return_locals
+        je      compile_?return_locals
 
         _ inline_primitive
 
@@ -542,8 +542,6 @@ endcode
 
 ; ### compile-prolog
 code compile_prolog, 'compile-prolog'
-        cmp     qword [experimental_], NIL
-        je      .1
 
         _ locals_count          ; -> tagged-count
         _check_fixnum           ; -> raw-count (in rbx)
@@ -566,7 +564,6 @@ code compile_prolog, 'compile-prolog'
         _emit_raw_byte 0x89
         _emit_raw_byte 0xe6     ; mov r14, rsp
 
-.1:
         ; -> empty
         next
 endcode
@@ -597,19 +594,21 @@ endcode
 
 ; ### patch-forward-jumps
 code patch_forward_jumps, 'patch-forward-jumps' ; address -> void
-        cmp     qword [experimental_], NIL
-        je      .1
+
         _ forward_jumps
+
+        cmp     rbx, NIL
+        je      drop
+
         _lit S_patch_forward_jump
         _ vector_each
-.1:
+        mov     qword [forward_jumps_], NIL
+
         next
 endcode
 
 ; ### compile-epilog
 code compile_epilog, 'compile-epilog'
-        cmp     qword [experimental_], NIL
-        je      .1
 
         mov     rax, [pc_]
         mov     [exit_address_], rax
@@ -632,7 +631,6 @@ code compile_epilog, 'compile-epilog'
         _emit_raw_byte 0x41
         _emit_raw_byte 0x5e     ; pop r14
 
-.1:
         next
 endcode
 

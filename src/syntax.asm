@@ -437,21 +437,6 @@ code parse_definition, 'parse-definition'       ; -> vector
         jmp     .top
 
 .bottom:
-        cmp     qword [using_locals?_], NIL
-        jz      .3
-
-        ; experimental code
-        ; do not add locals-leave to the definition
-        ; compile-epilog will do the job
-        cmp     qword [experimental_], NIL
-        jne     .3
-
-        ; non-experimental code
-        _lit S_locals_leave
-        _ current_definition
-        _ vector_push
-
-.3:
         _ current_definition            ; -> vector
 
         _ end_dynamic_scope
@@ -713,25 +698,6 @@ code comment_to_eol3, '///', SYMBOL_IMMEDIATE
         next
 endcode
 
-; ### ?exit-no-locals
-always_inline ?exit_no_locals, '?exit-no-locals'
-        cmp     rbx, NIL
-        _drop
-        je      .1
-        ret
-.1:
-endinline
-
-; ### ?exit-locals
-always_inline ?exit_locals, '?exit-locals'
-        cmp     rbx, NIL
-        _drop
-        je      .1
-        _locals_leave
-        ret
-.1:
-endinline
-
 ; ### ?exit
 code ?exit, '?exit', SYMBOL_IMMEDIATE
         _ using_locals?
@@ -745,80 +711,23 @@ code ?exit, '?exit', SYMBOL_IMMEDIATE
         next
 endcode
 
-; ### ?exitx
-code ?exitx, '?exitx', SYMBOL_IMMEDIATE
-; FIXME check definition only
-        _ using_locals?
-        _tagged_if .1
-        _lit S_?exitx_locals
-        _else .1
-        _lit S_?exitx_no_locals
-        _then .1
-        _get_accum
-        _ vector_push
-        next
-endcode
-
-; ### ?returnx
-code ?returnx, '?returnx', SYMBOL_IMMEDIATE
-        _ using_locals?
-        _tagged_if .1
-        _lit S_?returnx_locals
-        _else .1
-        _lit S_?returnx_no_locals
-        _then .1
-        _get_accum
-        _ vector_push
-        next
-endcode
-
-; ### return-if-no-locals
-code return_if_no_locals, 'return-if-no-locals' ; ? quot --
-        cmp     qword [rbp], NIL
-        je      .1
-        _nip
-        _ call_quotation
-        lea     rsp, [rsp + BYTES_PER_CELL]
-        next
-.1:
-        _2drop
-        next
-endcode
-
-; ### return-if-locals
-code return_if_locals, 'return-if-locals'       ; ? quot --
-        cmp     qword [rbp], NIL
-        je      .1
-        _nip
-        _ call_quotation
-        lea     rsp, [rsp + BYTES_PER_CELL]
-        _locals_leave
-        next
-.1:
-        _2drop
-        next
-endcode
-
 ; ### return-if
 code return_if, 'return-if', SYMBOL_IMMEDIATE
-        _ using_locals?
-        _tagged_if .1
-        _lit S_return_if_locals
-        _else .1
-        _lit S_return_if_no_locals
-        _then .1
-        _get_accum
-        _ vector_push
-        next
+        _ ?nl
+        _quote "WARNING: return-if is deprecated. Use ?return instead."
+        _ print
+        _ where
+
+        jmp     ?return
 endcode
 
 ; ### ?return
 code ?return, '?return', SYMBOL_IMMEDIATE
         _ using_locals?
         _tagged_if .1
-        _lit S_return_if_locals
+        _lit S_?return_locals
         _else .1
-        _lit S_return_if_no_locals
+        _lit S_?return_no_locals
         _then .1
         _get_accum
         _ vector_push
