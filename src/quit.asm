@@ -91,11 +91,11 @@ code find_name_in_context_vocab, 'find-name-in-context-vocab'
 endcode
 
 ; ### find-name
-code find_name, 'find-name'             ; string -- symbol/string ?
+code find_name, 'find-name'             ; string -> symbol/string ?
         _dup
         _ current_vocab
         _ vocab_hashtable
-        _ hashtable_at_star             ; -- string symbol/? ?
+        _ hashtable_at_star             ; -> string symbol/nil ?
         _tagged_if .1
 
         ; found in current vocab
@@ -618,6 +618,7 @@ code print_datastack, 'print-datastack'
         _ output_style
         _print "Empty"
         _then .1
+        _ output_style
         next
 endcode
 
@@ -673,8 +674,14 @@ asm_global saved_data_stack_, f_value
 asm_global continue?_, f_value
 
 ; ### continue
-code continue, 'continue'               ; --
-        mov     qword [continue?_], t_value
+code continue, 'continue'
+        mov     qword [continue?_], TRUE
+        next
+endcode
+
+; ### cont
+code cont, 'cont'
+        mov     qword [continue?_], TRUE
         next
 endcode
 
@@ -694,7 +701,7 @@ code break, 'break'                     ; --
 .loop:
         _ query
         _ evaluate
-        cmp     qword [continue?_], f_value
+        cmp     qword [continue?_], NIL
         jne     .continue
         _ maybe_print_datastack
         jmp     .loop
