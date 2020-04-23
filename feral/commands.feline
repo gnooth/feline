@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ in: editor
 
     arg tilde-expand-filename arg!
 
-    arg directory? [ arg directory-mode:open-directory ] return-if
+    arg directory? [ arg directory-mode:open-directory ] ?return
 
     arg find-file-to-edit :> filename
 
