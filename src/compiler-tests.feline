@@ -3,20 +3,15 @@ in: compiler-tests
 
 empty
 
-+x
 : %test-1
     42 :> x
-    x
-;
--x
+    x ;
 
 test: test-1
-    %test-1 42 assert-eq
-;
+    %test-1 42 assert-eq ;
 
 test-1
 
-+x
 : %test-2
     'a' :> x1
     'b' :> x2
@@ -52,77 +47,55 @@ test-1
 //     x14 'n' assert-eq
 //     x15 'o' assert-eq
 //     x16 'p' assert-eq
-;
--x
+    ;
 
 test: test-2
-    %test-2
-;
+    %test-2 ;
 
 test-2
 
-+x
 : %test-3
-    ?exitx 42
-;
--x
+    ?exit 42 ;
 
 test: test-3
     { } [ true %test-3 ] unit-test
-    { 42 } [ nil %test-3 ] unit-test
-;
+    { 42 } [ nil %test-3 ] unit-test ;
 
 test-3
 
-+x
-: %test-4
-    [ "test" ] ?return 42
-;
--x
+: %test-4 [ "test" ] ?return 42 ;
 
 test: test-4
     { "test" } [ true %test-4 ] unit-test
-    { 42 } [ nil %test-4 ] unit-test
-;
+    { 42 } [ nil %test-4 ] unit-test ;
 
 test-4
 
-// ?exitx
-+x
-: %test-5 ( x ) x nil? ?exitx x ;
--x
+// ?exit
+: %test-5 ( x ) x nil? ?exit x ;
 
 test: test-5
     { } [ nil %test-5 ] unit-test
-    { 42 } [ 42 %test-5 ] unit-test
-;
+    { 42 } [ 42 %test-5 ] unit-test ;
 
 test-5
 
-// ?returnx-no-locals
-+x
+// ?return-no-locals
 : %test-6
-    [ 42 ] ?returnx 87
-;
--x
+    [ 42 ] ?return 87 ;
 
 test: test-6
     { 87 } [ nil  %test-6 ] unit-test
-    { 42 } [ true %test-6 ] unit-test
-;
+    { 42 } [ true %test-6 ] unit-test ;
 
 test-6
 
-// ?returnx-locals
-+x
+// ?return-locals
 : %test-7
-    :> x x [ 42 ] ?returnx 87
-;
--x
+    :> x x [ 42 ] ?return 87 ;
 
 test: test-7
     { 87 } [ nil  %test-7 ] unit-test
-    { 42 } [ true %test-7 ] unit-test
-;
+    { 42 } [ true %test-7 ] unit-test ;
 
 test-7
