@@ -741,15 +741,15 @@ code symbol_raw_code_address, 'symbol_raw_code_address', SYMBOL_INTERNAL
 endcode
 
 ; ### symbol-code-address
-code symbol_code_address, 'symbol-code-address' ; symbol -- code-address/f
+code symbol_code_address, 'symbol-code-address' ; symbol -> code-address/nil
         _ check_symbol
         _symbol_raw_code_address
         test    rbx, rbx
         jz      .1
         _tag_fixnum
-        _return
+        next
 .1:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
