@@ -437,21 +437,6 @@ code parse_definition, 'parse-definition'       ; -> vector
         jmp     .top
 
 .bottom:
-        cmp     qword [using_locals?_], NIL
-        jz      .3
-
-;         ; experimental code
-;         ; do not add locals-leave to the definition
-;         ; compile-epilog will do the job
-;         cmp     qword [experimental_], NIL
-;         jne     .3
-;
-;         ; non-experimental code
-;         _lit S_locals_leave
-;         _ current_definition
-;         _ vector_push
-
-.3:
         _ current_definition            ; -> vector
 
         _ end_dynamic_scope
@@ -801,14 +786,6 @@ endcode
 
 ; ### return-if
 code return_if, 'return-if', SYMBOL_IMMEDIATE
-;         _ using_locals?
-;         _tagged_if .1
-;         _lit S_return_if_locals
-;         _else .1
-;         _lit S_return_if_no_locals
-;         _then .1
-;         _get_accum
-;         _ vector_push
         _ using_locals?
         _tagged_if .1
         _lit S_?returnx_locals
@@ -822,14 +799,6 @@ endcode
 
 ; ### ?return
 code ?return, '?return', SYMBOL_IMMEDIATE
-;         _ using_locals?
-;         _tagged_if .1
-;         _lit S_return_if_locals
-;         _else .1
-;         _lit S_return_if_no_locals
-;         _then .1
-;         _get_accum
-;         _ vector_push
         _ using_locals?
         _tagged_if .1
         _lit S_?returnx_locals
