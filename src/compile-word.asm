@@ -411,24 +411,24 @@ code fix_call, 'fix-call'               ; call-address target-address -> void
         next
 endcode
 
-; ### ?returnx-no-locals
-always_inline ?returnx_no_locals, '?returnx-no-locals' ; ? quot ->
+; ### ?return-no-locals
+always_inline ?return_no_locals, '?return_no_locals' ; ? quot ->
         cmp     qword [rbp], NIL
         je      .1
         _nip
-..@?returnx_no_locals_patch:    ; use ..@ prefix to avoid interfering with local labels
+..@?return_no_locals_patch:     ; use ..@ prefix to avoid interfering with local labels
         _ call_quotation
         ret
 .1:
         _2drop
 endinline
 
-; ### compile-?returnx-no-locals
-code compile_?returnx_no_locals, 'compile-?returnx-no-locals' ; symbol -> void
+; ### compile-?return-no-locals
+code compile_?return_no_locals, 'compile-?return-no-locals' ; symbol -> void
 ; symbol is the name of the function being compiled (?returnx-no-locals)
 
         _pc
-        add     rbx, ..@?returnx_no_locals_patch - ?returnx_no_locals
+        add     rbx, ..@?return_no_locals_patch - ?return_no_locals
         _tag_fixnum                     ; -> symbol tagged-call-address
 
         _swap                           ; -> tagged-call-addres symbol
@@ -442,15 +442,15 @@ code compile_?returnx_no_locals, 'compile-?returnx-no-locals' ; symbol -> void
         next
 endcode
 
-; ### ?returnx-locals
-always_inline ?returnx_locals, '?returnx-locals' ; ? quot ->
+; ### ?return-locals
+always_inline ?return_locals, '?return_locals' ; ? quot ->
         cmp     qword [rbp], NIL
         je      .1
         _nip
-..@?returnx_locals_patch1:      ; use ..@ prefix to avoid interfering with local labels
+..@?return_locals_patch1:       ; use ..@ prefix to avoid interfering with local labels
         _ call_quotation
         db      0xe9            ; jmp
-..@?returnx_locals_patch2:
+..@?return_locals_patch2:
         ; These bytes will be patched. 0xcc is int3.
         db      0xcc
         db      0xcc
@@ -460,16 +460,16 @@ always_inline ?returnx_locals, '?returnx-locals' ; ? quot ->
         _2drop
 endinline
 
-; ### compile-?returnx-locals
-code compile_?returnx_locals, 'compile-?returnx-locals' ; symbol -> void
+; ### compile-?return-locals
+code compile_?return_locals, 'compile-?return-locals' ; symbol -> void
 ; symbol is the name of the function being compiled (?returnx-locals)
 
         _pc
-        add     rbx, ..@?returnx_locals_patch1 - ?returnx_locals
+        add     rbx, ..@?return_locals_patch1 - ?return_locals
         _tag_fixnum                     ; address to patch for call
 
         _pc
-        add     rbx, ..@?returnx_locals_patch2 - ?returnx_locals
+        add     rbx, ..@?return_locals_patch2 - ?return_locals
         _tag_fixnum                     ; address to patch for jump to exit
 
         ; -> symbol patch1-address patch2-address
@@ -500,10 +500,10 @@ code compile_primitive, 'compile-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 
         cmp     rbx, S_?exitx_locals
         je      compile_?exitx_locals
-        cmp     rbx, S_?returnx_no_locals
-        je      compile_?returnx_no_locals
-        cmp     rbx, S_?returnx_locals
-        je      compile_?returnx_locals
+        cmp     rbx, S_?return_no_locals
+        je      compile_?return_no_locals
+        cmp     rbx, S_?return_locals
+        je      compile_?return_locals
 
         _ inline_primitive
 

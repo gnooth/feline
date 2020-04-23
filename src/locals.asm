@@ -426,12 +426,10 @@ code initialize_locals, 'initialize-locals'
         _quotation .1
         ; -> element index
         _swap
-;         _lit S_return_if_no_locals
-        _lit S_?returnx_no_locals
+        _lit S_?return_no_locals
         _eq?
         _tagged_if .2
-;         _lit S_return_if_locals
-        _lit S_?returnx_locals
+        _lit S_?return_locals
         _swap
         _ current_definition
         _ vector_set_nth

@@ -744,19 +744,6 @@ code ?exitx, '?exitx', SYMBOL_IMMEDIATE
         next
 endcode
 
-; ### ?returnx
-code ?returnx, '?returnx', SYMBOL_IMMEDIATE
-        _ using_locals?
-        _tagged_if .1
-        _lit S_?returnx_locals
-        _else .1
-        _lit S_?returnx_no_locals
-        _then .1
-        _get_accum
-        _ vector_push
-        next
-endcode
-
 ; ### return-if
 code return_if, 'return-if', SYMBOL_IMMEDIATE
         _ ?nl
@@ -771,9 +758,9 @@ endcode
 code ?return, '?return', SYMBOL_IMMEDIATE
         _ using_locals?
         _tagged_if .1
-        _lit S_?returnx_locals
+        _lit S_?return_locals
         _else .1
-        _lit S_?returnx_no_locals
+        _lit S_?return_no_locals
         _then .1
         _get_accum
         _ vector_push
