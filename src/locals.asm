@@ -420,18 +420,6 @@ code initialize_locals, 'initialize-locals'
         _lit forward_jumps_
         _ gc_add_root
 
-;         ; experimental code
-;         ; do not add locals-enter to the definition
-;         ; compile-prolog will do the job
-;         cmp     qword [experimental_], NIL
-;         jne     .continue
-;
-;         _lit S_locals_enter
-;         _lit tagged_zero
-;         _ current_definition
-;         _ vector_insert_nth
-;
-; .continue:
         ; check for return-if-no-locals
         ; if found, replace with return-if-locals
         _ current_definition
