@@ -698,46 +698,13 @@ code comment_to_eol3, '///', SYMBOL_IMMEDIATE
         next
 endcode
 
-; ### ?exit-no-locals
-always_inline ?exit_no_locals, '?exit-no-locals'
-        cmp     rbx, NIL
-        _drop
-        je      .1
-        ret
-.1:
-endinline
-
-; ### ?exit-locals
-always_inline ?exit_locals, '?exit-locals'
-        cmp     rbx, NIL
-        _drop
-        je      .1
-        _locals_leave
-        ret
-.1:
-endinline
-
 ; ### ?exit
 code ?exit, '?exit', SYMBOL_IMMEDIATE
         _ using_locals?
         _tagged_if .1
-        _lit S_?exitx_locals
+        _lit S_?exit_locals
         _else .1
-        _lit S_?exitx_no_locals
-        _then .1
-        _get_accum
-        _ vector_push
-        next
-endcode
-
-; ### ?exitx
-code ?exitx, '?exitx', SYMBOL_IMMEDIATE
-; FIXME check definition only
-        _ using_locals?
-        _tagged_if .1
-        _lit S_?exitx_locals
-        _else .1
-        _lit S_?exitx_no_locals
+        _lit S_?exit_no_locals
         _then .1
         _get_accum
         _ vector_push

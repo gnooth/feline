@@ -353,8 +353,8 @@ code inline_primitive, 'inline-primitive' ; symbol -> void
         next
 endcode
 
-; ### ?exitx-no-locals
-always_inline ?exitx_no_locals, '?exitx-no-locals'
+; ### ?exit-no-locals
+always_inline ?exit_no_locals, '?exit_no_locals'
         cmp     rbx, NIL
         _drop
         je      .1
@@ -362,27 +362,27 @@ always_inline ?exitx_no_locals, '?exitx-no-locals'
 .1:
 endinline
 
-; ### ?exitx-locals
-always_inline ?exitx_locals, '?exitx-locals'
+; ### ?exit-locals
+always_inline ?exit_locals, '?exit_locals'
         cmp     rbx, NIL
         _drop
         ; 2-byte jne
         db      0x0f
         db      0x85
-?exitx_locals_patch:
-        ; These bytes will be patched. 0xcc is int3.
-        db      0xcc
-        db      0xcc
-        db      0xcc
-        db      0xcc
+?exit_locals_patch:
+        ; These bytes will be patched.
+        db      0
+        db      0
+        db      0
+        db      0
 endinline
 
-; ### compile-?exitx-locals
-code compile_?exitx_locals, 'compile-?exitx-locals' ;  symbol -> void
-; symbol is the name of the function being compiled (?exitx-locals)
+; ### compile-?exit-locals
+code compile_?exit_locals, 'compile-?exit-locals' ;  symbol -> void
+; symbol is the name of the function being compiled (?exit_locals)
 
         _pc
-        add       rbx, ?exitx_locals_patch - ?exitx_locals
+        add       rbx, ?exit_locals_patch - ?exit_locals
         _tag_fixnum
         _ add_forward_jump_address      ; -> symbol
 
@@ -451,11 +451,11 @@ always_inline ?return_locals, '?return_locals' ; ? quot ->
         _ call_quotation
         db      0xe9            ; jmp
 ..@?return_locals_patch2:
-        ; These bytes will be patched. 0xcc is int3.
-        db      0xcc
-        db      0xcc
-        db      0xcc
-        db      0xcc
+        ; These bytes will be patched.
+        db      0
+        db      0
+        db      0
+        db      0
 .1:
         _2drop
 endinline
@@ -498,8 +498,8 @@ code compile_primitive, 'compile-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 %endif
         _tagged_if .1
 
-        cmp     rbx, S_?exitx_locals
-        je      compile_?exitx_locals
+        cmp     rbx, S_?exit_locals
+        je      compile_?exit_locals
         cmp     rbx, S_?return_no_locals
         je      compile_?return_no_locals
         cmp     rbx, S_?return_locals

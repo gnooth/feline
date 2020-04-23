@@ -15,40 +15,8 @@
 
 file __FILE__
 
-asm_global experimental_, NIL
-
-; ### x?
-code x?, 'x?'                           ; void -> ?
-        _dup
-        mov     rbx, [experimental_]
-        next
-endcode
-
-; ### +x
-code enable_x, '+x'
-        mov     qword [experimental_], TRUE
-        next
-endcode
-
-; ### -x
-code disable_x, '-x'
-        mov     qword [experimental_], NIL
-        next
-endcode
-
 ; maximum number of local variables in a definition
 %define MAX_LOCALS      8
-
-%macro  _locals_enter 0
-        push    r14
-        sub     rsp, BYTES_PER_CELL * MAX_LOCALS
-        mov     r14, rsp
-%endmacro
-
-%macro  _locals_leave 0
-        add     rsp, BYTES_PER_CELL * MAX_LOCALS
-        pop     r14
-%endmacro
 
 ; ### local_get
 code local_get, 'local_get', SYMBOL_INTERNAL    ; index -> value
@@ -356,45 +324,6 @@ code cold_initialize_locals, 'cold_initialize_locals', SYMBOL_INTERNAL
         next
 endcode
 
-; ### locals-enter
-always_inline locals_enter, 'locals-enter'
-        _locals_enter
-endinline
-
-; ### locals-leave
-always_inline locals_leave, 'locals-leave'
-        _locals_leave
-endinline
-
-%macro  _n_locals_enter 0
-        shl     rbx, 3                  ; convert cells to bytes
-        push    r14
-        sub     rsp, rbx
-        mov     r14, rsp
-        _drop
-%endmacro
-
-%macro  _n_locals_leave 0
-        shl     rbx, 3                  ; convert cells to bytes
-        add     rsp, rbx
-        pop     r14
-        _drop
-%endmacro
-
-; ### n_locals_enter
-always_inline n_locals_enter, 'n_locals_enter' ; n -> void
-;         _check_fixnum
-        _untag_fixnum
-        _n_locals_enter
-endinline
-
-; ### n_locals_leave
-always_inline n_locals_leave, 'n_locals_leave' ; n -> void
-;         _check_fixnum
-        _untag_fixnum
-        _n_locals_leave
-endinline
-
 ; ### initialize-locals
 code initialize_locals, 'initialize-locals'
 
@@ -444,12 +373,10 @@ code initialize_locals, 'initialize-locals'
         _ current_definition
         _quotation .3
         _swap
-;         _lit S_?exit_no_locals
-        _lit S_?exitx_no_locals
+        _lit S_?exit_no_locals
         _eq?
         _tagged_if .4
-;         _lit S_?exit_locals
-        _lit S_?exitx_locals
+        _lit S_?exit_locals
         _swap
         _ current_definition
         _ vector_set_nth
