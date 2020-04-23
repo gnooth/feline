@@ -757,44 +757,14 @@ code ?returnx, '?returnx', SYMBOL_IMMEDIATE
         next
 endcode
 
-; ### return-if-no-locals
-code return_if_no_locals, 'return-if-no-locals' ; ? quot --
-        cmp     qword [rbp], NIL
-        je      .1
-        _nip
-        _ call_quotation
-        lea     rsp, [rsp + BYTES_PER_CELL]
-        next
-.1:
-        _2drop
-        next
-endcode
-
-; ### return-if-locals
-code return_if_locals, 'return-if-locals'       ; ? quot --
-        cmp     qword [rbp], NIL
-        je      .1
-        _nip
-        _ call_quotation
-        lea     rsp, [rsp + BYTES_PER_CELL]
-        _locals_leave
-        next
-.1:
-        _2drop
-        next
-endcode
-
 ; ### return-if
 code return_if, 'return-if', SYMBOL_IMMEDIATE
-        _ using_locals?
-        _tagged_if .1
-        _lit S_?returnx_locals
-        _else .1
-        _lit S_?returnx_no_locals
-        _then .1
-        _get_accum
-        _ vector_push
-        next
+        _ ?nl
+        _quote "WARNING: return-if is deprecated. Use ?return instead."
+        _ print
+        _ where
+
+        jmp     ?return
 endcode
 
 ; ### ?return
