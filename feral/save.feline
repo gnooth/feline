@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -85,6 +85,8 @@ in: editor
     ] unless
 
     filename nil? ?exit
+
+    modified? nil? [ "Not modified" message ] ?return
 
     // save the current buffer to disk
     "Saving..." message
