@@ -29,7 +29,7 @@ standalone? [ source-path vector-delete-all ] when
 
 : go
     "editor" use-vocab // REVIEW
-    args length 3 = [ args third editor:edit-file bye ] when
-;
+    args length 3 eq?
+    [ args third editor:edit-file bye ] [ editor:edit-current-directory ] if ;
 
 go
