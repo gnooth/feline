@@ -138,6 +138,18 @@ code find_name, 'find-name'             ; string -> symbol/string ?
         next
 endcode
 
+; ### defined?
+code defined?, 'defined?'               ; string -> symbol/nil
+        _ find_name
+        cmp     rbx, NIL
+        je      .undefined
+        _drop
+        next
+.undefined:
+        _nip
+        next
+endcode
+
 ; ### error
 code error, 'error'                     ; string -> void
         _ save_backtrace
