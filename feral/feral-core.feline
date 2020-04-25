@@ -26,12 +26,12 @@ global execute-command-input-string
 : shell-command-to-string ( command )   // command -> string/f
     nil !> result
     directories:get-temporary-filename :> tempfile
-    command " > " + tempfile + run-shell-command // should return fixnum 0
+    command " > " + tempfile + " 2>&1 " + run-shell-command // should return fixnum 0
     0? [
         tempfile safe-file-contents result!
     ] when
     tempfile delete-file
-    // delete-file returns t if it succeeds
+    // delete-file returns true if it succeeds
     drop
     result ;
 
