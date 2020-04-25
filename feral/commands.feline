@@ -105,8 +105,34 @@ in: editor
     <lexer> :> lexer
     lexer lexer-parse-token ;
 
+use: completion
+
+: execute-command-provide-completion    // prefix -> string
+    1 ?enough verify-string :> prefix
+
+    prefix empty? [ nil ] ?return
+
+    current-completion [ next-completion ] ?return
+
+    current-buffer filename>> !> filename
+
+    filename [
+        current-buffer parent>> [ filename>> filename! ] when*
+    ] unless
+
+    filename nil? [ nil ] ?return
+
+    prefix
+    dup last '\s' eq? [ " " + ] unless
+    filename file-name-nondirectory + 1array :> strings
+
+    prefix strings initialize-completion
+
+    next-completion ;
+
 : execute-command
     "command" set-history
+    ' execute-command-provide-completion set-completion-provider
     "Command: " minibuffer-accept-string :> commandline
 
     commandline empty? ?exit
@@ -119,6 +145,8 @@ in: editor
             "%S is not a valid command name." format message
         ] if
     ] unless ;
+
+unuse: completion
 
 : shell-command
     "shell-command" set-history
