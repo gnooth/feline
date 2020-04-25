@@ -373,6 +373,12 @@ global buffer-list
 
 global current-buffer
 
+: current-buffer-filename               // void -> string/nil
+    current-buffer filename>> ;
+
+: current-buffer-directory              // void -> string/nil
+    current-buffer directory>> ;
+
 : set-current-buffer ( buf )            // buffer -> void
     [ buf ] [ buf current-buffer neq? ] both? [
         current-buffer [
