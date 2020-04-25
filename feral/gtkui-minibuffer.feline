@@ -83,9 +83,10 @@ public: minibuffer-set-text             // string -> void
 : minibuffer-complete
     completion-provider nil? ?exit
 
-    minibuffer-get-text :> s
-    prompt length s tail
+    prompt length minibuffer-get-text tail
     completion-provider call [
+        // -> string
+        editor:add-undo-line-edit
         minibuffer-set-completion-text
     ] when* ;
 

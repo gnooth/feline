@@ -95,13 +95,12 @@ private
 : minibuffer-complete
     completion-provider nil? ?exit
 
-    minibuffer-get-text :> s
-    prompt length s tail
-    completion-provider call :> completion
-
-    completion string? [
-        completion minibuffer-set-completion-text
-    ] when ;
+    prompt length minibuffer-get-text tail
+    completion-provider call [
+        // -> string
+        editor:add-undo-line-edit
+        minibuffer-set-completion-text
+    ] when* ;
 
 : lookup-key                            // key -> symbol/nil
     minibuffer-keymap at ;
