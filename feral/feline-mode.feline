@@ -356,6 +356,9 @@ use: completion
     next-completion ;
 
 : feline-mode-find-definition
+
+    feral-config:standalone? ?exit
+
     "find-definition" history:set-history
 
     ' feline-mode-provide-completion mini:set-completion-provider

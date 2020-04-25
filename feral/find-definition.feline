@@ -84,6 +84,9 @@ feral-config:winui? feral-config:gtkui? or #if
 
 // REVIEW name
 : find-definition-at-dot
+
+    feral-config:standalone? ?exit
+
     dot-offset :> old-dot-offset
     dot-line indentation-length :> indent
 
