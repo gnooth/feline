@@ -387,7 +387,17 @@ in: editor
     16 make-vector buffer-list!
     keymaps:initialize-keymaps ;
 
-: edit-file ( name )                    // name -> void
+: edit-file                             // string -> void
+    !> name
+
+    name tilde-expand-filename name!
+
+    name directory? [
+        initialize-editor
+        name directory-mode:open-directory
+        edit1
+    ] ?return
+
     name find-file-to-edit [
         initialize-editor
         1 create-buffer/2
