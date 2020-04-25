@@ -63,11 +63,10 @@ in: editor
 global git-command
 
 : git-misc
-    current-buffer filename>> :> sourcefilename
-    sourcefilename nil? ?exit
+    current-buffer-directory nil? ?exit
 
     get-current-directory :> olddir
-    sourcefilename file-name-directory set-current-directory drop
+    current-buffer-directory set-current-directory drop
     execute-command-input-string :> command
     command shell-command-to-string :> output
     olddir set-current-directory drop
