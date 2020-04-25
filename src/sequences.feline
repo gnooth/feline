@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ in: feline
     0 swap ?nth ;
 
 : empty?                                // seq/nil -> ?
-    [ length 0? ] [ t ] if* ;
+    [ length 0? ] [ true ] if* ;
 
 : suffix!                               // seq element -> seq
     over push ;
