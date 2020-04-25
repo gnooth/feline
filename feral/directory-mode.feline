@@ -195,12 +195,10 @@ global directory-mode-local-map
     ] unless ;
 
 : dir
-    current-buffer filename>> :> filename
-
-    filename [ file-name-directory ] [ current-buffer directory>> ] if*
-    !> dirname
-
+    current-buffer-directory :> dirname
     dirname nil? ?exit
+
+    current-buffer-filename :> filename
 
     dirname find-buffer-from-file-name [
         set-current-buffer
