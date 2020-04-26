@@ -280,6 +280,30 @@ private: word-right-internal
     word-right-internal
     true repaint?! ;
 
+: mouse-select-word
+
+    // REVIEW identifier-char-function might not be a symbol
+    identifier-char-function verify-symbol 1quotation [ not ] compose
+    :> not-identifier-char-function
+
+    dot-offset dot-line-length 1- min 0 max :> offset
+
+    offset dot-line-text not-identifier-char-function find-last-from drop !> start
+
+    // advance to first identifier char
+    start [ start 1+ start! ] [ 0 start! ] if
+
+    start dot-line-text not-identifier-char-function find-from drop !> end
+
+    end [ dot-line-length end! ] unless
+
+    add-undo-move
+
+    dot-line start make-position mark!
+    end dot-offset!
+    dot-offset goal-column!
+    true repaint?! ;
+
 : move-up
     dot-line-prev nil? ?exit
 
