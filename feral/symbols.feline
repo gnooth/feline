@@ -71,6 +71,49 @@ global symbols-hashtable
 : process-asm-file
     sourcefile file-lines [ asm-process-line ] each-index ;
 
+global in-vocab
+
+: feline-process-line // string fixnum -> void
+    2 ?enough
+    :> lineno
+    :> s
+
+    local token
+
+    '\s' s string-find-char [ 0 swap s substring token! ] when*
+
+    token nil? ?exit
+
+    local begin
+    local end
+    local name
+    local location
+
+    token "in:" = [
+        token length 1+ begin!
+        begin s string-skip-whitespace begin!
+        begin s [ '\s' eq? ] find-from drop s length or end!
+        begin end s substring in-vocab!
+    ] when
+
+    token feline-mode:defining-words member? [
+        token length 1+ begin!
+        begin s string-skip-whitespace begin!
+        begin s [ '\s' eq? ] find-from drop s length or end!
+        begin end s substring name!
+
+        sourcefile lineno 1+ 2array location!
+        location name symbols-hashtable set-at
+        in-vocab [
+            ":" + name + location swap symbols-hashtable set-at
+        ] when*
+    ] when ;
+
+: process-feline-file
+    nil in-vocab!
+    sourcefile file-lines [ feline-process-line ] each-index
+    nil in-vocab! ;
+
 {
     "feline.asm"
     "feline_home.asm"
@@ -94,9 +137,10 @@ global symbols-hashtable
     "file-output-stream.asm"
     "files.asm"
     "fixnum.asm"
+    "fixnum-hashtable.asm"
     "float.asm"
     "format.asm"
-    "gc.asm"
+    "gc2.asm"
     "generic.asm"
     "gtkui.asm"
     "handles.asm"
@@ -150,12 +194,119 @@ global symbols-hashtable
     "hashtable-common.asm"
 } constant asm-files
 
+{
+    "accept.feline"
+    "backtrace.feline"
+    "boot.feline"
+    "clisp-tests.feline"
+    "compiler-tests.feline"
+    "compiler.feline"
+    "control-test.feline"
+    "control.feline"
+    "declare.feline"
+    "disassembler.feline"
+    "dump.feline"
+    "files.feline"
+    "help.feline"
+    "inspector.feline"
+    "key.feline"
+    "random-tests.feline"
+    "sequences.feline"
+    "stress.feline"
+    "strings.feline"
+    "syntax.feline"
+    "test.feline"
+    "tuple.feline"
+    "unit-test.feline"
+} constant feline-files
+
+{
+    "accept-string.feline"
+    "ansi-color.feline"
+    "asm-mode.feline"
+    "buffer.feline"
+    "c-mode.feline"
+    "commands.feline"
+    "completion.feline"
+    "diff-mode.feline"
+    "directories.feline"
+    "directory-mode.feline"
+    "display-common.feline"
+    "display.feline"
+    "early-feline-mode.feline"
+    "edit.feline"
+    "editor.feline"
+    "editorx.feline"
+    "feline-mode.feline"
+    "feral-colors.feline"
+    "feral-core.feline"
+    "feral-hooks.feline"
+    "feral-key.feline"
+    "feral-loader.feline"
+    "feral-main.feline"
+    "feral.feline"
+    "find-definition.feline"
+    "find-in-files.feline"
+    "git.feline"
+    "go-mode.feline"
+    "gtkui-display.feline"
+    "gtkui-key.feline"
+    "gtkui-keymaps.feline"
+    "gtkui-minibuffer.feline"
+    "history.feline"
+    "js-mode.feline"
+    "keymaps.feline"
+    "kill-ring.feline"
+    "lisp-mode.feline"
+    "list-buffers.feline"
+    "list-symbols.feline"
+    "logging.feline"
+    "mini.feline"
+    "minibuffer-common.feline"
+    "minibuffer-keymap.feline"
+    "modes.feline"
+    "move.feline"
+    "quit.feline"
+    "recent-files.feline"
+    "rust-mode.feline"
+    "save.feline"
+    "search-mode.feline"
+    "search.feline"
+    "segments.feline"
+    "swift-mode.feline"
+    "symbols-mode.feline"
+    "symbols.feline"
+    "termui-display.feline"
+    "termui-key.feline"
+    "termui-keymaps.feline"
+    "termui-minibuffer.feline"
+    "undo.feline"
+    "winui-display.feline"
+    "winui-key.feline"
+    "winui-keymaps.feline"
+    "winui-minibuffer.feline"
+} constant feral-files
+
 : generate-hashtable
-    4096 <hashtable> symbols-hashtable!
-    asm-files [
-         feline-source-directory swap path-append sourcefile!
-         sourcefile regular-file? [ process-asm-file ] when
-    ] each ;
+    "generate-hashtable" print
+    [
+        8192 <hashtable> symbols-hashtable!
+
+        asm-files [
+            feline-source-directory swap path-append sourcefile!
+            sourcefile regular-file? [ process-asm-file ] when
+        ] each
+
+        feline-files [
+            feline-source-directory swap path-append sourcefile!
+            sourcefile regular-file? [ process-feline-file ] when
+        ] each
+
+        feral-files [
+            feral-loader:feral-source-directory swap path-append sourcefile!
+            sourcefile regular-file? [ process-feline-file ] when
+        ] each
+    ] time ;
 
 : find-tag // string -> 2array/nil
     1 ?enough :> tag
