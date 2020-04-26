@@ -1,0 +1,113 @@
+// Copyright (C) 2018-2020 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline ;
+in: feline-mode
+
+{
+    "!>"
+    "'"
+    "("
+    ")"
+    ":"
+    ":>"
+    ";"
+    "=>"
+    "["
+    "]"
+    "constant"
+    "defer"
+    "generic"
+    "global"
+    "in:"
+    "is"
+    "local"
+    "method:"
+    "private"
+    "private:"
+    "public"
+    "public:"
+    "special:"
+    "symbol:"
+    "syntax:"
+    "test:"
+    "tuple:"
+    "unuse:"
+    "use:"
+    "using:"
+    "var"
+    "vector{"
+    "{"
+    "}"
+} constant syntax-words
+
+{
+    ":"
+    "constant"
+    "defer"
+    "generic"
+    "global"
+    "method:"
+    "private:"
+    "public:"
+    "syntax:"
+    "test:"
+    "tuple:"
+    "var"
+} constant defining-words
+
+{
+    "&&"
+    "2dip"
+    "2tri"
+    "?"
+    "?exit"
+    "?return"
+    "bi"
+    "bi@"
+    "both?"
+    "call"
+    "case"
+    "cleave"
+    "cond"
+    "dip"
+    "each"
+    "each-index"
+    "each-integer"
+    "either?"
+    "filter"
+    "find"
+    "find-from"
+    "find-integer"
+    "find-integer-in-range"
+    "find-last-from"
+    "if"
+    "if*"
+    "keep"
+    "loop"
+    "map"
+    "return-if"
+    "time"
+    "times"
+    "tri"
+    "unless"
+    "unless*"
+    "until"
+    "when"
+    "when*"
+    "while"
+    "with-dynamic-scope"
+    "||"
+} constant combinators

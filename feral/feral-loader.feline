@@ -84,6 +84,7 @@ feral-source-directory add-source-directory
         "save.feline"
         "quit.feline"
         "buffer.feline"
+        "early-feline-mode.feline"
         "symbols-mode.feline"
         "list-symbols.feline"
         "symbols.feline"
