@@ -20,7 +20,7 @@ global sourcefile
 
 global symbols-hashtable
 
-: process-2-symbols ( token s lineno ) // token string fixnum -> void
+: asm-process-2-symbols ( token s lineno ) // token string fixnum -> void
     local begin
     local end
 
@@ -41,7 +41,7 @@ global symbols-hashtable
         symbols-hashtable set-at
     ] when ;
 
-: process-1-symbol ( token s lineno ) // token string fixnum -> void
+: asm-process-1-symbol ( token s lineno ) // token string fixnum -> void
     local begin
     local end
 
@@ -53,7 +53,7 @@ global symbols-hashtable
     begin end s substring // symbol
     symbols-hashtable set-at ;
 
-: process-line // string fixnum -> void
+: asm-process-line // string fixnum -> void
     2 ?enough :> lineno :> s
 
     local token
