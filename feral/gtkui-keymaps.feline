@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -73,6 +73,8 @@ using: editor feline search ;
     ' delete-word-right                 feral-key:ctrl-delete       m set-at
     ' delete-word-right                 feral-key:ctrl-kp-delete    m set-at
     ' delete-word-left                  feral-key:ctrl-backspace    m set-at
+
+    ' mouse-select-word                 feral-key:double-mouse-1    m set-at
 
     ' do-page-up                        feral-key:pageup            m set-at
     ' do-page-down                      feral-key:pagedown          m set-at
