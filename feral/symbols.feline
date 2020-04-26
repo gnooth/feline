@@ -63,13 +63,13 @@ global symbols-hashtable
     token nil? ?exit
 
     token { "code" "inline" "always_inline" "generic" "special" } member?
-    [ token s lineno process-2-symbols ] ?return
+    [ token s lineno asm-process-2-symbols ] ?return
 
     token { "subroutine" "%macro" "asm_global" "%define" } member?
-    [ token s lineno process-1-symbol ] when ;
+    [ token s lineno asm-process-1-symbol ] when ;
 
 : process-asm-file
-    sourcefile file-lines [ process-line ] each-index ;
+    sourcefile file-lines [ asm-process-line ] each-index ;
 
 {
     "feline.asm"
