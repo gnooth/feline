@@ -54,29 +54,9 @@ feral-config:winui? feral-config:gtkui? or #if
 #endif
 
 : find-definition-internal              // string -> void
-    1 ?enough :> identifier
-
-    identifier symbols:find-tag :> location
-    location [ location goto-location/1 ] ?return
-
-    identifier find-qualified-name [
-        goto-definition
-    ] [
-        all-words [ symbol-name over = ] filter nip
-        dup length {
-            { 0 [ drop ] }
-            { 1 [ first goto-definition ] }
-            [
-                // more than 1 match
-                drop
-                minibuffer-list-symbols
-            ]
-        } case
-    ] if ;
+    symbols:find-tag [ goto-location/1 ] when* ;
 
 : find-definition
-
-    feral-config:standalone? ?exit
 
     "find-definition" set-history
     "Word: " minibuffer-accept-string
@@ -84,8 +64,6 @@ feral-config:winui? feral-config:gtkui? or #if
 
 // REVIEW name
 : find-definition-at-dot
-
-    feral-config:standalone? ?exit
 
     dot-offset :> old-dot-offset
     dot-line indentation-length :> indent
