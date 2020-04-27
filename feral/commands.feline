@@ -64,7 +64,7 @@ in: editor
     files length 1 eq? [ dir files first path-append ] [ nil ] if ;
 
 : open-file
-    current-buffer directory>> file-name-as-directory :> default-directory
+    current-buffer-directory file-name-as-directory :> default-directory
 
     "open-file" set-history
     ' open-file-get-completions mini:set-completion-provider
@@ -114,7 +114,7 @@ use: completion
 
     current-completion [ next-completion ] ?return
 
-    current-buffer filename>> !> filename
+    current-buffer-filename !> filename
 
     filename [
         current-buffer parent>> [ filename>> filename! ] when*
