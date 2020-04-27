@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -118,14 +118,14 @@ end ctrl shift          constant ctrl-shift-end
 0x0004ffb4              constant shift-kp-left  // GDK_KEY_KP_4
 0x0004ffb6              constant shift-kp-right // GDK_KEY_KP_6
 0x0004ffb8              constant shift-kp-up    // GDK_KEY_KP_8
-0x0004ffb2              constant shift-kp-down  // GDK_JEY_KP_2
+0x0004ffb2              constant shift-kp-down  // GDK_KEY_KP_2
 0x0004ffb7              constant shift-kp-home  // GDK_KEY_KP_7
 0x0004ffb1              constant shift-kp-end   // GDK_KEY_KP_1
 
 0x0006ffb4              constant ctrl-shift-kp-left  // GDK_KEY_KP_4
 0x0006ffb6              constant ctrl-shift-kp-right // GDK_KEY_KP_6
 0x0006ffb8              constant ctrl-shift-kp-up    // GDK_KEY_KP_8
-0x0006ffb2              constant ctrl-shift-kp-down  // GDK_JEY_KP_2
+0x0006ffb2              constant ctrl-shift-kp-down  // GDK_KEY_KP_2
 0x0006ffb7              constant ctrl-shift-kp-home  // GDK_KEY_KP_7
 0x0006ffb1              constant ctrl-shift-kp-end   // GDK_KEY_KP_1
 
