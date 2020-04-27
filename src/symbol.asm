@@ -393,14 +393,14 @@ code symbol_equal?, 'symbol-equal?'     ; x y -- ?
 endcode
 
 ; ### symbol-name
-code symbol_name, 'symbol-name'         ; symbol -- name
+code symbol_name, 'symbol-name'         ; symbol -> string
         _ check_symbol
         _symbol_name
         next
 endcode
 
 ; ### symbol-qualified-name
-code symbol_qualified_name, 'symbol-qualified-name'     ; symbol -- qualified-name
+code symbol_qualified_name, 'symbol-qualified-name' ; symbol -> string
         _ check_symbol
         _dup
         _symbol_vocab_name
@@ -417,14 +417,14 @@ code symbol_qualified_name, 'symbol-qualified-name'     ; symbol -- qualified-na
 endcode
 
 ; ### symbol-hashcode
-code symbol_hashcode, 'symbol-hashcode' ; symbol -- hashcode
+code symbol_hashcode, 'symbol-hashcode' ; symbol -> hashcode
         _ check_symbol
         _symbol_hashcode
         next
 endcode
 
 ; ### symbol-set-hashcode
-code symbol_set_hashcode, 'symbol-set-hashcode' ; hashcode symbol --
+code symbol_set_hashcode, 'symbol-set-hashcode' ; hashcode symbol -> void
         _ check_symbol
         _symbol_set_hashcode
         next
