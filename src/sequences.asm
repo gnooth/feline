@@ -816,6 +816,14 @@ code third, 'third'                     ; seq -> third
         next
 endcode
 
+; ### fourth
+code fourth, 'fourth'                   ; seq -> fourth
+        _tagged_fixnum(3)
+        _swap
+        _ nth
+        next
+endcode
+
 ; ### last
 code last, 'last'                       ; seq -> element
         _dup
