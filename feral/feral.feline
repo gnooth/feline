@@ -32,18 +32,20 @@ standalone? [ source-path vector-delete-all ] when
     // args[0] is full path to Feline executable
     // args[1] is full path to feral.feline
     args length :> len
-    len 2 eq? [ editor:edit-current-directory ] ?return
+    len 2 eq? [ editor:edit-current-directory bye ] ?return
 
     // more than 2 args
-    len 3 eq? [ args third editor:edit-file ] ?return
+    len 3 eq? [ args third editor:edit-file bye ] ?return
 
     len 4 >= [
         args third first '+' eq? [
             1 args third string-tail string>number [
                 // -> n
-                args fourth editor:edit-file/2
+                args fourth editor:edit-file/2 bye
             ] when*
         ] when
-    ] when ;
+    ] when
+
+    ?nl "Too many command line arguments" print bye ;
 
 go
