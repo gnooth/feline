@@ -25,11 +25,25 @@ winui? gtkui? or not constant termui?
 
 feline-home "feral" path-append "feral-main.feline" path-append load
 
+// REVIEW
 standalone? [ source-path vector-delete-all ] when
 
 : go
-    "editor" use-vocab // REVIEW
-    args length 3 eq?
-    [ args third editor:edit-file bye ] [ editor:edit-current-directory ] if ;
+    // args[0] is full path to Feline executable
+    // args[1] is full path to feral.feline
+    args length :> len
+    len 2 eq? [ editor:edit-current-directory ] ?return
+
+    // more than 2 args
+    len 3 eq? [ args third editor:edit-file ] ?return
+
+    len 4 >= [
+        args third first '+' eq? [
+            1 args third string-tail string>number [
+                // -> n
+                args fourth editor:edit-file/2
+            ] when*
+        ] when
+    ] when ;
 
 go
