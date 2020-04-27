@@ -221,8 +221,17 @@ use: mini
 
 : find-command
     "find" set-history
-    whole-words-only-default "Find word: " "Find: " ? // prompt
-    minibuffer-accept-string :> pattern
+    whole-words-only-default "Find word: " "Find: " ? :> prompt
+
+    local default
+
+    mark-line dot-line eq? [
+        dot-offset mark-offset min
+        dot-offset mark-offset max
+        dot-line-text string-substring default!
+    ] when
+
+    prompt default minibuffer-accept-string/2 :> pattern
     pattern empty? ?exit
     pattern make-search current-search!
 
