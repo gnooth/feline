@@ -15,20 +15,26 @@
 
 file __FILE__
 
-; ### file-exists?
-code file_exists?, 'file-exists?'       ; path -> ?
+; ### exists?
+code exists?, 'exists?'                 ; path -> path/nil
+        push    rbx
         _ string_raw_data_address
         mov     arg0_register, rbx
         xcall   os_file_status          ; returns 0 if file exists
         test    rax, rax
+        pop     rbx
         mov     eax, NIL
-        mov     ebx, TRUE
-        cmovnz  ebx, eax
+        cmovnz  rbx, rax
         next
 endcode
 
+; ### file-exists?
+code file_exists?, 'file-exists?'       ; path -> path/nil
+        jmp     exists?
+endcode
+
 ; ### dir?
-code dir?, 'dir?'                       ; path -> ?
+code dir?, 'dir?'                       ; path -> path/nil
         push    rbx
         _ string_raw_data_address
         mov     arg0_register, rbx
@@ -36,26 +42,31 @@ code dir?, 'dir?'                       ; path -> ?
         test    rax, rax
         pop     rax
         mov     ebx, NIL
-        cmovnz  ebx, eax
+        cmovnz  rbx, rax
         next
 endcode
 
 ; ### directory?
-code directory?, 'directory?'           ; path -> ?
+code directory?, 'directory?'           ; path -> path/nil
         jmp     dir?
 endcode
 
-; ### regular-file?
-code regular_file?, 'regular-file?'     ; path -> ?
-        _dup
-        _ directory?
-        _tagged_if .1
+; ### file?
+code file?, 'file?'                     ; path -> path/nil
+        push    rbx
+        _ string_raw_data_address
+        mov     arg0_register, rbx
+        xcall   os_file_is_regular_file ; returns 1 if it's a regular file
+        test    rax, rax
+        pop     rax
         mov     ebx, NIL
-        _else .1
-        ; not a directory
-        _ file_exists?
-        _then .1
+        cmovnz  rbx, rax
         next
+endcode
+
+; ### regular-file?
+code regular_file?, 'regular-file?'     ; path -> path/nil
+        jmp     file?
 endcode
 
 ; ### file-open-read

@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ extern os_delete_file
 extern os_emit_file
 extern os_file_create_write
 extern os_file_is_directory
+extern os_file_is_regular_file
 extern os_file_open_append
 extern os_file_open_read
 extern os_file_position

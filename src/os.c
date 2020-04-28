@@ -99,6 +99,25 @@ int os_file_is_directory(char *path)
 #endif
 }
 
+int os_file_is_regular_file(char *path)
+{
+#ifdef WIN64
+  const DWORD attributes = GetFileAttributes(path);
+  if (attributes != INVALID_FILE_ATTRIBUTES)
+    {
+      // file exists
+      if ((attributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
+        return 1;
+    }
+  return 0;
+#else
+  struct stat buf;
+  // stat() follows symlinks; lstat() does not
+  return (stat(path, &buf) == 0
+          && S_ISREG(buf.st_mode)) ? 1 : 0;
+#endif
+}
+
 #ifdef WIN64
 
 typedef struct
