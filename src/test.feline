@@ -3030,13 +3030,13 @@ tri-test-1
 test: file-attributes-test-1
     win64? "c:/windows" "/home" ?
     [ file-exists? assert-true ]
-    [ directory? assert-true ]
+    [ dir? assert ]
     [ regular-file? assert-false ]
     tri
 
     feline-home "src/test.feline" path-append
     [ file-exists? assert-true ]
-    [ directory? assert-false ]
+    [ dir? assert-false ]
     [ regular-file? assert-true ]
     tri
 ;

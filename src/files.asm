@@ -27,16 +27,22 @@ code file_exists?, 'file-exists?'       ; path -> ?
         next
 endcode
 
-; ### directory?
-code directory?, 'directory?'           ; path -> ?
+; ### dir?
+code dir?, 'dir?'                       ; path -> ?
+        push    rbx
         _ string_raw_data_address
         mov     arg0_register, rbx
-        xcall   os_file_is_directory
+        xcall   os_file_is_directory    ; returns 1 if it's a directory, 0 otherwise
         test    rax, rax
-        mov     eax, TRUE
+        pop     rax
         mov     ebx, NIL
         cmovnz  ebx, eax
         next
+endcode
+
+; ### directory?
+code directory?, 'directory?'           ; path -> ?
+        jmp     dir?
 endcode
 
 ; ### regular-file?
