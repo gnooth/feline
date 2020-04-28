@@ -52,24 +52,24 @@ code process_command_line, 'process_command_line', SYMBOL_INTERNAL
 ; sudo sh -c 'echo 1 > /proc/sys/kernel/perf_event_paranoid'
 ; perf record feline -e '"stress.feline" load bye'
 
-        pushrbx
-        mov     rbx, [main_argc]        ; -- argc
+        _dup
+        mov     rbx, [main_argc]        ; -> argc
 
         _dup
-        _ new_vector_untagged           ; -- argc vector
+        _ new_vector_untagged           ; -> argc vector
         mov     [args_], rbx
-        poprbx
+        _drop
         _lit args_
         _ gc_add_root
 
         _zero
         _?do .1
-        pushrbx
+        _dup
         mov     rbx, [main_argv]
         _i
         _cells
         _plus
-        _fetch                          ; -- zstring
+        _fetch                          ; -> zstring
         _ zcount
         _ copy_to_string
         _ args
@@ -247,7 +247,7 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
 
         _ initialize_types
 
-        _ initialize_source_path
+        _ initialize_load_path
 
         _ initialize_threads
 

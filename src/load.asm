@@ -170,65 +170,65 @@ code ensure_feline_extension, 'ensure-feline-extension'         ; path -- path
         next
 endcode
 
-asm_global source_path_, f_value
+asm_global load_path_, NIL
 
-; ### source-path
-code source_path, 'source-path'         ; -- vector
-        pushrbx
-        mov     rbx, [source_path_]
+; ### load-path
+code load_path, 'load-path'             ; -> vector
+        _dup
+        mov     rbx, [load_path_]
         next
 endcode
 
-; ### initialize_source_path
-code initialize_source_path, 'initialize_source_path', SYMBOL_INTERNAL  ; --
-        _lit 8
-        _ new_vector_untagged
-        mov     [source_path_], rbx
-        poprbx
-        _lit source_path_
-        _ gc_add_root
-
-        _ feline_source_directory
-        _ add_source_directory
-
-        _ feline_home
-        _quote "feral"
-        _ path_append
-        _ add_source_directory
-
-        _ feline_home
-        _quote "examples"
-        _ path_append
-        _ add_source_directory
-
-        _ feline_home
-        _quote "benchmarks"
-        _ path_append
-        _ add_source_directory
-
-        next
-endcode
-
-; ### add-source-directory
-code add_source_directory, 'add-source-directory'       ; path --
+; ### add-directory-to-load-path
+code add_directory_to_load_path, 'add-directory-to-load-path' ; string ->
         _ verify_string
 
         _dup
-        _ source_path
+        _ load_path
         _ member?
         _tagged_if .1
         _drop
         _else .1
-        _ source_path
+        _ load_path
         _ vector_push
         _then .1
         next
 endcode
 
-; ### find-file-in-source-path
-code find_file_in_source_path, 'find-file-in-source-path'       ; string -- path
+; ### initialize_load_path
+code initialize_load_path, 'initialize_load_path', SYMBOL_INTERNAL
+        _lit 8
+        _ new_vector_untagged
+        mov     [load_path_], rbx
+        _drop
+        _lit load_path_
+        _ gc_add_root
 
-        _ source_path
+        _ feline_source_directory
+        _ add_directory_to_load_path
+
+        _ feline_home
+        _quote "feral"
+        _ path_append
+        _ add_directory_to_load_path
+
+        _ feline_home
+        _quote "examples"
+        _ path_append
+        _ add_directory_to_load_path
+
+        _ feline_home
+        _quote "benchmarks"
+        _ path_append
+        _ add_directory_to_load_path
+
+        next
+endcode
+
+; ### find-file-in-load-path
+code find_file_in_load_path, 'find-file-in-load-path' ; string -> path
+
+        _ load_path
         _quotation .1
         _ over
         _ path_append
@@ -250,7 +250,7 @@ code find_file_in_source_path, 'find-file-in-source-path'       ; string -- path
 endcode
 
 ; ### find-file
-code find_file, 'find-file'             ; string -> path/f
+code find_file, 'find-file'             ; string -> path/nil
 
         _duptor
 
@@ -265,7 +265,7 @@ code find_file, 'find-file'             ; string -> path/f
         _dup
         _ canonical_path
 
-        ; canonical-path might return f
+        ; canonical-path might return nil
         _dup
         _tagged_if .2
 
@@ -281,9 +281,9 @@ code find_file, 'find-file'             ; string -> path/f
 
         _2drop
 
-        _rfrom                          ; -- string
+        _rfrom                          ; -> string
 
-        _ find_file_in_source_path
+        _ find_file_in_load_path
 
         next
 endcode
@@ -354,7 +354,7 @@ endcode
 
 ; ### ?load
 code ?load, '?load'                     ; filename ? -> void
-; if ? is not f, calls load
+; if ? is not nil, calls load
         cmp     rbx, f_value
         je      .1
         _drop

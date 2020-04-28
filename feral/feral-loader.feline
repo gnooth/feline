@@ -61,7 +61,7 @@ feline-home "feral" path-append constant feral-source-directory
 : load-feral-source-file // string -> void
     feral-source-directory swap path-append load ;
 
-feral-source-directory add-source-directory
+feral-source-directory add-directory-to-load-path
 
 : load-feral
     {
