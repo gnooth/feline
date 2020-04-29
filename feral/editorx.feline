@@ -25,4 +25,6 @@ linux? have-gtkui? and constant gtkui?
 
 winui? gtkui? or not constant termui?
 
+global source-path
+
 feline-home "feral" path-append "feral-main.feline" path-append load
