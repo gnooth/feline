@@ -1,4 +1,4 @@
-// Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2018-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,14 +20,14 @@ empty
 
 private
 
-var log-stream
+global log-stream
 
 : close-log                             // void -> void
-    log-stream [ close f log-stream! ] when* ;
+    log-stream [ close nil log-stream! ] when* ;
 
 : initialize-logging                    // void -> void
     ' close-log ' exit-feral-hook add-hook
-    "feral.log" file-create-write log-stream! ;
+    user-home "feral.log" path-append file-create-write log-stream! ;
 
 : stamp                                 // void -> void
     log-stream [
