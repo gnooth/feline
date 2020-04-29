@@ -249,8 +249,8 @@ code find_file_in_load_path, 'find-file-in-load-path' ; string -> path
         next
 endcode
 
-; ### find-file
-code find_file, 'find-file'             ; string -> path/nil
+; ### find-file-to-load
+code find_file_to_load, 'find-file-to-load' ; string -> path/nil
 
         _duptor
 
@@ -270,7 +270,7 @@ code find_file, 'find-file'             ; string -> path/nil
         _tagged_if .2
 
         _dup
-        _ regular_file?
+        _ file?
         _tagged_if .3
         _nip
         _rdrop
@@ -294,7 +294,7 @@ code load, 'load'                       ; string --
         _ ensure_feline_extension
 
         _dup
-        _ find_file
+        _ find_file_to_load
         _dup
         _tagged_if_not .1
         _drop

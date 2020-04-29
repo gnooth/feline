@@ -22,9 +22,9 @@ in: editor
         s string>number [ gotoline-internal ] when*
     ] unless ;
 
-: find-file-to-edit ( arg )             // arg -> path/f
-    arg find-file [
-        arg ensure-feline-extension find-file
+: find-file-to-edit ( arg )             // arg -> path/nil
+    arg find-file-to-load [
+        arg ensure-feline-extension find-file-to-load
     ] unless* ;
 
 : create-buffer-for-new-file ( filename )
