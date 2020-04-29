@@ -27,6 +27,9 @@ in: editor
     arg canonical-path [ file? ] [ nil ] if* ;
 
 : find-file-in-source-path ( arg )      // arg -> path/nil
+
+    feral-config:source-path nil? [ nil ] ?return
+
     feral-config:source-path [ arg path-append file? ] map-find // -> result directory
     drop // -> result
     [ canonical-path ] [ nil ] if* ;
