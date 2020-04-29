@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,9 +28,23 @@ global minibuffer-keymap
 
 global completion-provider
 
+global minibuffer-mode
+
+: minibuffer-mode-identifier-char?      // char -> ?
+    '\s' neq? ;
+
+: initialize-minibuffer-mode
+    mode make-instance :> m
+    "Minibuffer" m name<<
+    ' minibuffer-mode-identifier-char? m identifier-char-function<<
+    m minibuffer-mode! ;
+
+initialize-minibuffer-mode
+
 : create-minibuffer
     minibuffer nil? assert
     make-buffer minibuffer!
+    minibuffer-mode minibuffer mode<<
     "" 0 make-line/2
     [ minibuffer buffer-append-line ]
     [ 0 make-position minibuffer dot<< ]
