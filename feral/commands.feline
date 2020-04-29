@@ -22,10 +22,27 @@ in: editor
         s string>number [ gotoline-internal ] when*
     ] unless ;
 
-: find-file-to-edit ( arg )             // arg -> path/nil
-    arg find-file-to-load [
-        arg ensure-feline-extension find-file-to-load
-    ] unless* ;
+: find-file-to-edit-internal ( arg )    // arg -> path/nil
+    arg file-name-absolute? [ arg canonical-path ] ?return
+    arg canonical-path [ file? ] [ nil ] if* ;
+
+: find-file-in-source-path ( arg )      // arg -> path/nil
+    feral-config:source-path [ arg path-append file? ] map-find // -> result directory
+    drop // -> result
+    [ canonical-path ] [ nil ] if* ;
+
+: find-file-to-edit ( arg )
+    arg find-file-to-edit-internal !> file
+
+    file [
+        feral-config:standalone? [
+            arg ensure-feline-extension find-file-to-edit-internal file!
+        ] unless
+    ] unless
+
+    file [ arg find-file-in-source-path file! ] unless
+
+    file ;
 
 : create-buffer-for-new-file ( filename )
     make-buffer :> buf
