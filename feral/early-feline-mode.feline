@@ -98,6 +98,7 @@ in: feline-mode
     "keep"
     "loop"
     "map"
+    "map-find"
     "return-if"
     "time"
     "times"
