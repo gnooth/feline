@@ -205,6 +205,8 @@ global last-identifier
     line text>> detab make-string-iterator format-iter ;
 
 : line-is-definition? ( line )
+    "fn " line text>> string-has-prefix? [ true ] ?return
+
     " fn " line text>> substring-start !> offset
 
     offset nil? [ nil ] ?return
