@@ -14,11 +14,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using: feline ;
-in: symbols
+in: feline-symbols
+
+private
 
 global sourcefile
 
-global symbols-hashtable
+global feline-symbols
 
 : asm-process-2-symbols ( token s lineno ) // token string fixnum -> void
     local begin
@@ -29,7 +31,7 @@ global symbols-hashtable
 
     sourcefile lineno 1+ 2array // location
     begin end s substring // symbol
-    symbols-hashtable set-at
+    feline-symbols set-at
 
     end 2 + s nth :> quotechar
     quotechar { '\'' '"' } member-eq? [
@@ -38,7 +40,7 @@ global symbols-hashtable
 
         sourcefile lineno 1+ 2array // location
         begin end s substring // symbol
-        symbols-hashtable set-at
+        feline-symbols set-at
     ] when ;
 
 : asm-process-1-symbol ( token s lineno ) // token string fixnum -> void
@@ -51,7 +53,7 @@ global symbols-hashtable
 
     sourcefile lineno 1+ 2array // location
     begin end s substring // symbol
-    symbols-hashtable set-at ;
+    feline-symbols set-at ;
 
 : asm-process-line // string fixnum -> void
     2 ?enough :> lineno :> s
@@ -103,9 +105,9 @@ global in-vocab
         begin end s substring name!
 
         sourcefile lineno 1+ 2array location!
-        location name symbols-hashtable set-at
+        location name feline-symbols set-at
         in-vocab [
-            ":" + name + location swap symbols-hashtable set-at
+            ":" + name + location swap feline-symbols set-at
         ] when*
     ] when ;
 
@@ -238,6 +240,7 @@ global in-vocab
     "editor.feline"
     "editorx.feline"
     "feline-mode.feline"
+    "feline-symbols.feline"
     "feral-colors.feline"
     "feral-core.feline"
     "feral-hooks.feline"
@@ -275,7 +278,6 @@ global in-vocab
     "segments.feline"
     "swift-mode.feline"
     "symbols-mode.feline"
-    "symbols.feline"
     "termui-display.feline"
     "termui-key.feline"
     "termui-keymaps.feline"
@@ -287,28 +289,26 @@ global in-vocab
     "winui-minibuffer.feline"
 } constant feral-files
 
-: generate-hashtable
-    "generate-hashtable" print
-    [
-        8192 <hashtable> symbols-hashtable!
+: scan
+    8192 <hashtable> feline-symbols!
 
-        asm-files [
-            feline-source-directory swap path-append sourcefile!
-            sourcefile regular-file? [ process-asm-file ] when
-        ] each
+    asm-files [
+        feline-source-directory swap path-append sourcefile!
+        sourcefile regular-file? [ process-asm-file ] when
+    ] each
 
-        feline-files [
-            feline-source-directory swap path-append sourcefile!
-            sourcefile regular-file? [ process-feline-file ] when
-        ] each
+    feline-files [
+        feline-source-directory swap path-append sourcefile!
+        sourcefile regular-file? [ process-feline-file ] when
+    ] each
 
-        feral-files [
-            feral-loader:feral-source-directory swap path-append sourcefile!
-            sourcefile regular-file? [ process-feline-file ] when
-        ] each
-    ] time ;
+    feral-files [
+        feral-loader:feral-source-directory swap path-append sourcefile!
+        sourcefile regular-file? [ process-feline-file ] when
+    ] each ;
 
-: find-tag // string -> 2array/nil
-    1 ?enough :> tag
-    symbols-hashtable [ generate-hashtable ] unless
-    tag symbols-hashtable at ;
+public
+
+: find-definition // string -> 2array/nil
+    feline-symbols [ scan ] unless
+    feline-symbols at ;
