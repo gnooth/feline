@@ -16,14 +16,14 @@
 using: feline ;
 in: feral-config
 
-true constant standalone?
+empty
 
-win64? have-winui? and constant winui?
-linux? have-gtkui? and constant gtkui?
+true                    constant standalone?
 
-winui? gtkui? or not constant termui?
+win64? have-winui? and  constant winui?
+linux? have-gtkui? and  constant gtkui?
 
-global source-path
+winui? gtkui? or not    constant termui?
 
 feline-home "feral" path-append "feral-main.feline" path-append load
 
