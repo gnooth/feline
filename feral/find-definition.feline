@@ -54,7 +54,7 @@ feral-config:winui? feral-config:gtkui? or #if
 #endif
 
 : find-definition-internal              // string -> void
-    symbols:find-tag [ goto-location/1 ] when* ;
+    feline-symbols:find-definition [ goto-location/1 ] when* ;
 
 : find-definition
 
