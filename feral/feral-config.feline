@@ -1,0 +1,42 @@
+// Copyright (C) 2020 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline ;
+in: feral-config
+
+// The location of the local copy of the Feline source repository.
+global feline-repository
+
+// This is the default. The user can specify a different repository path
+// in .feral.d/init.feline.
+feline-home feline-repository!
+
+: get-feline-repository
+    feline-repository ;
+
+: set-feline-repository
+    feline-repository! ;
+
+global source-path
+
+// This is the default. The user can specify a different source path in
+// .feral.d/init.feline.
+{ "src" "feral" } [ feline-home swap path-append ] map source-path!
+
+: get-source-path
+    source-path ;
+
+: set-source-path
+    source-path! ;
