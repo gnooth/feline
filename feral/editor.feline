@@ -22,8 +22,7 @@ nil  constant standalone?
 
 nil  constant winui?
 nil  constant gtkui?
-true constant termui?
 
-global source-path
+true constant termui?
 
 feline-home "feral" path-append "feral-main.feline" path-append load
