@@ -87,7 +87,7 @@ feral-source-directory add-directory-to-load-path
         "early-feline-mode.feline"
         "symbols-mode.feline"
         "list-symbols.feline"
-        "symbols.feline"
+        "feline-symbols.feline"
         "find-definition.feline"
         "asm-mode.feline"
         "c-mode.feline"
