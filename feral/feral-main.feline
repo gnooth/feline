@@ -235,8 +235,11 @@ feral-config:gtkui? #if
         gtkui-minibuffer-invalidate
     ] when
 
-    add-undo-move
-    unmark
+    row dot-row eq? column dot-column eq? and [
+        add-undo-move
+        unmark
+    ] unless
+
     top-line-number row + last-line-number min nth-line dot-line!
     dot-line column line-column-offset dot-line-length min dot-offset!
     update-display
