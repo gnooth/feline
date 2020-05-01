@@ -1869,6 +1869,8 @@ global choices
                 drop
                 dup choices!
                 [
+                    // each-index
+                    // -> string index
                     1+ dec. space
                     symbol-qualified-name write-string nl
                 ] each-index
