@@ -242,6 +242,7 @@ global in-vocab
     "feline-mode.feline"
     "feline-symbols.feline"
     "feral-colors.feline"
+    "feral-config.feline"
     "feral-core.feline"
     "feral-hooks.feline"
     "feral-key.feline"
@@ -290,21 +291,28 @@ global in-vocab
 } constant feral-files
 
 : scan
+    feral-config:get-feline-repository feline-home or :> repo
+
+    repo nil? ?exit // shouldn't happen (feline-home is baked in)
+
     8192 <hashtable> feline-symbols!
 
+    repo "src" path-append :> feline-source-dir
+    repo "feral" path-append :> feral-source-dir
+
     asm-files [
-        feline-source-directory swap path-append sourcefile!
-        sourcefile regular-file? [ process-asm-file ] when
+        feline-source-dir swap path-append sourcefile!
+        sourcefile file? [ process-asm-file ] when
     ] each
 
     feline-files [
-        feline-source-directory swap path-append sourcefile!
-        sourcefile regular-file? [ process-feline-file ] when
+        feline-source-dir swap path-append sourcefile!
+        sourcefile file? [ process-feline-file ] when
     ] each
 
     feral-files [
-        feral-loader:feral-source-directory swap path-append sourcefile!
-        sourcefile regular-file? [ process-feline-file ] when
+        feral-source-dir swap path-append sourcefile!
+        sourcefile file? [ process-feline-file ] when
     ] each ;
 
 public
