@@ -446,8 +446,8 @@ code either?, 'either?'                 ; quot1 quot2 -> ?
 ; Short-circuit `or` for two quotations.
 ; Removes both quotations from the stack. Calls quot1.
 ; Returns the result without calling quot2 if the result
-; is not f. Otherwise, calls quot2 and returns the result quot2
-; returns.
+; is not nil. Otherwise, calls quot2 and returns the
+; result quot2 returns.
         _tor                            ; move quot2 to return stack
         _ callable_raw_code_address     ; quot1 code address in rbx
         mov     rax, rbx                ; quot1 code address in rax

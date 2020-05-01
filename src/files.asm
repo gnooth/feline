@@ -544,7 +544,7 @@ code tilde_expand_filename, 'tilde-expand-filename' ; string1 -> string2
 endcode
 
 ; ### canonical-path
-code canonical_path, 'canonical-path'   ; string1 -> string2/f
+code canonical_path, 'canonical-path'   ; string1 -> string2/nil
 
         _ tilde_expand_filename
 
@@ -563,10 +563,11 @@ code canonical_path, 'canonical-path'   ; string1 -> string2/f
         mov     arg0_register, [rbp]
         xcall   os_free
         _nip
-        _return
+        next
 
 .1:
         ; error
+        ; on Linux, realpath returns NULL if the named file does not exist
         mov     rbx, NIL
         next
 endcode

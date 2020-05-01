@@ -159,7 +159,7 @@ code feline_extension, 'feline-extension'       ; -- string
 endcode
 
 ; ### ensure-feline-extension
-code ensure_feline_extension, 'ensure-feline-extension'         ; path -- path
+code ensure_feline_extension, 'ensure-feline-extension' ; path -> path
         _ feline_extension
         _over
         _ string_has_suffix?
@@ -232,9 +232,9 @@ code find_file_in_load_path, 'find-file-in-load-path' ; string -> path
         _quotation .1
         _ over
         _ path_append
-        _ regular_file?
+        _ file?
         _end_quotation .1
-        _ map_find                      ; -- string boolean directory
+        _ map_find                      ; -> string boolean directory
 
         _swap
         _tagged_if .2
