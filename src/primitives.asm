@@ -1405,6 +1405,42 @@ code char_upcase, 'char-upcase'
         next
 endcode
 
+; ### char-ci=?
+code char_ci_equal?, 'char-ci=?'        ; x y -> ?
+        cmp     bl, CHAR_TAG
+        jne     error_not_char
+        _swap
+        cmp     bl, CHAR_TAG
+        jne     error_not_char
+        cmp     rbx, [rbp]
+        jne     .1
+        _nip
+        mov     rbx, TRUE
+        next
+.1:
+        shr     rbx, CHAR_TAG_BITS
+        sub     rbx, 'A'
+        cmp     rbx, 25
+        ja      .2
+        ; char is upper case
+        or      rbx, 0x20
+.2:
+        mov     rax, [rbp]
+        shr     rax, CHAR_TAG_BITS
+        sub     rax, 'A'
+        cmp     rax, 25
+        ja      .3
+        ; char is upper case
+        or      rax, 0x20
+.3:
+        cmp     rax, rbx
+        mov     eax, TRUE
+        mov     ebx, NIL
+        cmove   ebx, eax
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+endcode
+
 ; ### binary-digit?
 code binary_digit?, 'binary-digit?'     ; char -> n/nil
         _check_char
