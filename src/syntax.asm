@@ -852,7 +852,7 @@ code paren, '(', SYMBOL_IMMEDIATE       ; --
         _ must_parse_token              ; -> string
         _dup
         _quote ")"
-        _ string_equal?
+        _ generic_string_equal?
         cmp     rbx, NIL
         _drop
         jne     .done
