@@ -769,6 +769,53 @@ code string_has_prefix?, 'string-has-prefix?'   ; prefix string -> ?
         next
 endcode
 
+; ### string=?
+code string_equal?, 'string=?'          ; x y -> ?
+        _ check_string                  ; -> x ^y
+
+        ; rbx: ^y
+        push    rbx
+        _drop                           ; -> x (in rbx)
+        _ check_string                  ; rbx: ^x
+        pop     rax                     ; rax: ^y
+
+        cmp     rbx, rax
+        jne     .1
+        mov     rbx, TRUE
+        next
+
+.1:
+        mov     rdx, [rbx + STRING_RAW_LENGTH_OFFSET]   ; rdx: x raw length
+        cmp     rdx, [rax + STRING_RAW_LENGTH_OFFSET]   ; compare with y raw length
+        jne     .no                                     ; must be the same length
+
+        test    rdx, rdx                ; both zero length strings?
+        jz      .yes
+
+        lea     r8, [rbx + STRING_RAW_DATA_OFFSET]      ; r8: x raw data address
+        lea     r9, [rax + STRING_RAW_DATA_OFFSET]      ; r9: y raw data address
+
+        xor     rcx, rcx                ; rcx: 0
+
+.top:
+        mov     al, [r8 + rcx]          ; al: char from x
+        cmp     al, [r9 + rcx]          ; compare with char from y
+        jne     .no
+        add     rcx, 1
+        cmp     rcx, rdx
+        jne     .top
+        mov     rbx, TRUE
+        next
+
+.yes:
+        mov     rbx, TRUE
+        next
+
+.no:
+        mov     rbx, NIL
+        next
+endcode
+
 ; ### substring-start
 code substring_start, 'substring-start'         ; pattern string -> index/nil
         _ check_string                          ; -> pattern ^string
@@ -1223,38 +1270,17 @@ endcode
 ; ### string-equal?
 code generic_string_equal?, 'string-equal?' ; object1 object2 -> ?
 ; Returns true if both objects are strings and those strings are identical.
-
         _ string?                       ; -> object1 string/nil
         cmp     rbx, NIL
         jne     .1
         _nip
         next
-
 .1:
         _swap
         _ string?
         cmp     rbx, NIL
-        jne     .2
+        jne     string_equal?
         _nip
-        next
-
-.2:
-        ; both objects are strings
-        _over
-        _ string_hashcode
-        _over
-        _ string_hashcode
-        cmp     rbx, [rbp]
-        je      .3
-
-        ; hashcodes are not equal
-        mov     ebx, NIL
-        _3nip
-        next
-
-.3:
-        _2drop
-        _ stringequal
         next
 endcode
 
