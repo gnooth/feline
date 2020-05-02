@@ -1074,7 +1074,7 @@ code vector_find_string, 'vector-find-string' ; string vector -> index/string ?
         _i
         _this_vector_nth_unsafe         ; -> string element
         _over
-        _ string_equal?                 ; -> string ?
+        _ generic_string_equal?         ; -> string ?
         _tagged_if .2
         ; found it!
         _drop                           ; ->

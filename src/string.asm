@@ -1221,7 +1221,7 @@ code stringequal, 'string='             ; string1 string2 -- ?
 endcode
 
 ; ### string-equal?
-code string_equal?, 'string-equal?'     ; object1 object2 -> ?
+code generic_string_equal?, 'string-equal?' ; object1 object2 -> ?
 ; Returns true if both objects are strings and those strings are identical.
 
         _ string?                       ; -> object1 string/nil

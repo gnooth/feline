@@ -175,8 +175,8 @@ code process_token, 'process-token'     ; string -- ???
 endcode
 
 ; ### parse-until
-code parse_until, 'parse-until'         ; delimiter -- vector
-; REVIEW Delimiter is a string.
+code parse_until, 'parse-until'         ; delimiter -> vector
+; REVIEW delimiter is a string
 
         _ begin_dynamic_scope
 
@@ -186,19 +186,19 @@ code parse_until, 'parse-until'         ; delimiter -- vector
 
         _lit 10
         _ new_vector_untagged
-        _set_accum                      ; -- delimiter
+        _set_accum                      ; -> delimiter
 
 .top:
-        _ parse_token                   ; -- delimiter string/f
-        cmp     rbx, f_value
+        _ parse_token                   ; -> delimiter string/nil
+        cmp     rbx, NIL
         jne     .1
         _2drop
         _ error_unexpected_end_of_input
-.1:                                     ; -- delimiter string
-        _twodup                         ; -- d s d s
-        _ string_equal?                 ; -- d s ?
-        cmp     rbx, f_value
-        poprbx
+.1:                                     ; -> delimiter string
+        _twodup                         ; -> d s d s
+        _ generic_string_equal?         ; -> d s ?
+        cmp     rbx, NIL
+        _drop
         jne     .bottom
         _ process_token
         jmp     .top
@@ -426,7 +426,7 @@ code parse_definition, 'parse-definition'       ; -> vector
 .1:                                     ; ->  string
         _dup
         _quote ";"
-        _ string_equal?
+        _ generic_string_equal?
         _tagged_if .2
         _drop
         jmp     .bottom
@@ -849,7 +849,7 @@ code paren, '(', SYMBOL_IMMEDIATE       ; --
         _set_accum
 
 .again:
-        _ must_parse_token              ; -- string
+        _ must_parse_token              ; -> string
         _dup
         _quote ")"
         _ string_equal?
@@ -862,7 +862,7 @@ code paren, '(', SYMBOL_IMMEDIATE       ; --
 
 .done:
         _drop
-        _get_accum                      ; -- vector
+        _get_accum                      ; -> vector
 
         _ end_dynamic_scope
 
