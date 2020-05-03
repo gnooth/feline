@@ -1242,31 +1242,6 @@ code unsafe_memequal, 'unsafe-memequal' ; address1 address2 length -> ?
         next
 endcode
 
-; ### string=
-code stringequal, 'string='             ; string1 string2 -- ?
-        _tor
-        _ string_from
-        _rfrom
-        _ string_from
-
-        cmp     rbx, [rbp + BYTES_PER_CELL]
-        jne     .1
-
-        ; lengths match                 ; -> addr1 len1 addr2 len2
-        mov     arg0_register, [rbp + BYTES_PER_CELL * 2]
-        mov     arg1_register, [rbp]
-        mov     arg2_register, rbx
-        _3nip
-        call    memequal
-        mov     rbx, rax
-        next
-
-.1:
-        _3nip
-        mov     ebx, NIL
-        next
-endcode
-
 ; ### string-equal?
 code generic_string_equal?, 'string-equal?' ; object1 object2 -> ?
 ; Returns true if both objects are strings and those strings are identical.
