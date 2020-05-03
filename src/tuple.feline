@@ -117,7 +117,7 @@ global generic-writer                   // -> symbol
 
 : parse-tuple-slots
     10 <vector>
-    [ must-parse-token dup ";" string= ] [ suffix! ] until
+    [ must-parse-token dup ";" string=? ] [ suffix! ] until
     drop
     vector->array
     [ 1+ make-slot ] map-index slots!
