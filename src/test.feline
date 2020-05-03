@@ -4655,4 +4655,25 @@ test: check-bounds-test
 
 check-bounds-test
 
+test: string=?-test
+    { true } [ "test" "test" string=? ] unit-test
+    { nil } [ "text" "test" string=? ] unit-test
+    { nil } [ "test" "text" string=? ] unit-test
+    { nil } [ "test" "Test" string=? ] unit-test
+    { nil } [ "Test" "test" string=? ] unit-test
+    { nil } [ "tesT" "test" string=? ] unit-test
+    { nil } [ "test" "tesT" string=? ] unit-test
+    { nil } [ "test" "testx" string=? ] unit-test
+    { nil } [ "testx" "test" string=? ] unit-test
+
+    { true } [ "this is a longer test" "this is a longer test" string=? ] unit-test
+    { nil } [ "this is a longer test" "this is a longer text" string=? ] unit-test
+    { nil } [ "this is a longer text" "this is a longer test" string=? ] unit-test
+
+    { true } [ "" "" string=? ] unit-test
+    { nil } [ "test" "" string=? ] unit-test
+    { nil } [ "" "test" string=? ] unit-test ;
+
+string=?-test
+
 ?nl "Reached end of test.feline" write-string
