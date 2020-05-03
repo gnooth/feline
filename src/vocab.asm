@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -119,7 +119,7 @@ code new_vocab, '<vocab>'               ;  name -> vocab
         ; Deleting a symbol breaks the current hashtable implementation if
         ; string= is the test function.
         ; Sep 23 2018 11:02 AM
-        _lit S_stringequal
+        _lit S_stringequal?             ; string= replaced by string=? May 3 2020 10:46 AM
         _ symbol_raw_code_address
         _this_vocab_hashtable
         _ hashtable_set_test_function
@@ -197,7 +197,7 @@ code vocab_empty, 'vocab-empty'         ; vocab --
         _over
         _ hashtable_set_hash_function
 
-        _lit S_stringequal
+        _lit S_stringequal?
         _ symbol_raw_code_address
         _over
         _ hashtable_set_test_function

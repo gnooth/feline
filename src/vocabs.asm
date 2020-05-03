@@ -217,7 +217,7 @@ code lookup_vocab, 'lookup-vocab'       ; vocab-specifier -- vocab/f ?
         ; We haven't created the dictionary yet.
         ; There is only the "feline" vocab.
         _quote "feline"
-        _ stringequal
+        _ stringequal?
         _tagged_if .3
         _ feline_vocab
         _t
@@ -433,7 +433,7 @@ code using_colon, 'using:'
         _ must_parse_token
         _dup
         _quote ";"
-        _ stringequal
+        _ stringequal?
         _ not
         _tagged_while .1
         _over
