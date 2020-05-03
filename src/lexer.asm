@@ -643,10 +643,10 @@ code lexer_parse_token, 'lexer-parse-token'     ; lexer -> string/f
         ; check for comment
         _dup
         _quote "--"
-        _ stringequal
+        _ stringequal?
         _over
         _quote "//"
-        _ stringequal
+        _ stringequal?
         _ feline_or
         _tagged_if .3
 
