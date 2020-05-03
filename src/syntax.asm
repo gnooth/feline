@@ -196,7 +196,7 @@ code parse_until, 'parse-until'         ; delimiter -> vector
         _ error_unexpected_end_of_input
 .1:                                     ; -> delimiter string
         _twodup                         ; -> d s d s
-        _ generic_string_equal?         ; -> d s ?
+        _ string_equal?                 ; -> d s ?
         cmp     rbx, NIL
         _drop
         jne     .bottom
@@ -426,7 +426,7 @@ code parse_definition, 'parse-definition'       ; -> vector
 .1:                                     ; ->  string
         _dup
         _quote ";"
-        _ generic_string_equal?
+        _ string_equal?
         _tagged_if .2
         _drop
         jmp     .bottom
@@ -852,7 +852,7 @@ code paren, '(', SYMBOL_IMMEDIATE       ; --
         _ must_parse_token              ; -> string
         _dup
         _quote ")"
-        _ generic_string_equal?
+        _ string_equal?
         cmp     rbx, NIL
         _drop
         jne     .done

@@ -1243,7 +1243,7 @@ code unsafe_memequal, 'unsafe-memequal' ; address1 address2 length -> ?
 endcode
 
 ; ### string-equal?
-code generic_string_equal?, 'string-equal?' ; object1 object2 -> ?
+code string_equal?, 'string-equal?'     ; object1 object2 -> ?
 ; Returns true if both objects are strings and those strings are identical.
         _ string?                       ; -> object1 string/nil
         cmp     rbx, NIL
