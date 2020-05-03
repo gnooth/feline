@@ -278,7 +278,7 @@ var prefix-offset
     buffer sbuf>string [
         {
             { [ dup empty? ] [ drop ] }
-            { [ dup "bye" string= ] [ drop ] }
+            { [ dup "bye" string=? ] [ drop ] }
             [ history vector-adjoin save-history ]
         } cond
     ] keep

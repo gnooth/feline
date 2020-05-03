@@ -946,8 +946,8 @@ hashcode-test-1
 
 test: hashcode-test-2
     ' dup
-    [ symbol-name "dup" string= assert-true ] keep
-    [ symbol-vocab-name "feline" string= assert-true ] keep
+    [ symbol-name "dup" string=? assert-true ] keep
+    [ symbol-vocab-name "feline" string=? assert-true ] keep
     [ symbol-hashcode ] keep
     [ symbol-name hashcode ] keep
     symbol-vocab-name hashcode hash-combine assert-eq
@@ -3808,7 +3808,7 @@ test: file-lines-test-1
 
     file file-contents
     win64? "this\r\nis\r\na\r\ntest\r\n" "this\nis\na\ntest\n" ?
-    string= assert-true
+    string=? assert-true
 
     file file-lines seq sequence= assert-true
 

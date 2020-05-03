@@ -16,7 +16,7 @@ in: stress
 limit [ number>string drop ] each-integer
 
 "find-integer-gc-test-1" ?nl write-string
-limit [ number>string "9999999" string= ] find-integer drop
+limit [ number>string "9999999" string=? ] find-integer drop
 
 "times-gc-test-1" ?nl write-string
 limit [ most-positive-fixnum number>string drop ] times
