@@ -1,4 +1,4 @@
-; Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -171,7 +171,7 @@ code format_object, 'format-object'     ; object format-specifier -- string
 
         _dup
         _quote "%d"
-        _ stringequal
+        _ stringequal?
         _tagged_if .1
         _drop
         _ number_to_string
@@ -181,7 +181,7 @@ code format_object, 'format-object'     ; object format-specifier -- string
         ; %S print quoted
         _dup
         _quote "%S"
-        _ stringequal
+        _ stringequal?
         _tagged_if .2
         _drop
         _ object_to_string
@@ -191,7 +191,7 @@ code format_object, 'format-object'     ; object format-specifier -- string
         ; %s print without quoting
         _dup
         _quote "%s"
-        _ stringequal
+        _ stringequal?
         _tagged_if .3
         _drop
         _dup
@@ -205,7 +205,7 @@ code format_object, 'format-object'     ; object format-specifier -- string
         ; %% escaped % char
         _dup
         _quote "%%"
-        _ stringequal
+        _ stringequal?
         _tagged_if .5
         _drop
         _quote "%"
