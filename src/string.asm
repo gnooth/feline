@@ -770,7 +770,7 @@ code string_has_prefix?, 'string-has-prefix?'   ; prefix string -> ?
 endcode
 
 ; ### string=?
-code string_equal?, 'string=?'          ; x y -> ?
+code stringequal?, 'string=?'           ; x y -> ?
         _ check_string                  ; -> x ^y
 
         ; rbx: ^y
@@ -886,7 +886,7 @@ code string_has_suffix?, 'string-has-suffix?'   ; suffix string -- ?
         _ fixnum_minus
         _swap
         _ string_tail
-        _ stringequal
+        _ stringequal?
         _else .1
         _4drop
         _nil
@@ -1279,7 +1279,7 @@ code generic_string_equal?, 'string-equal?' ; object1 object2 -> ?
         _swap
         _ string?
         cmp     rbx, NIL
-        jne     string_equal?
+        jne     stringequal?
         _nip
         next
 endcode
