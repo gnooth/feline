@@ -1935,18 +1935,6 @@ test: substring-start-test
 
 substring-start-test
 
-test: vector-find-string-test-1
-    vector{ "foo" "bar" "baz" "zork" } :> v
-    "foo"  v vector-find-string assert-true 0 assert=
-    "zork" v vector-find-string assert-true 3 assert=
-    "baz"  v vector-find-string assert-true 2 assert=
-    "bar"  v vector-find-string assert-true 1 assert=
-
-    "cat"  v vector-find-string assert-false "cat" assert=
-;
-
-vector-find-string-test-1
-
 : %case-test-1                          // x -> y
     {
         { 1 [ "one" ] }

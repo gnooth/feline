@@ -1062,38 +1062,6 @@ code vector_each_index, 'vector-each-index' ; vector quotation-or-xt --
         next
 endcode
 
-; ### vector-find-string
-code vector_find_string, 'vector-find-string' ; string vector -> index/string ?
-        _ check_vector
-
-        push    this_register
-        mov     this_register, rbx
-
-        _vector_raw_length
-        _register_do_times .1
-        _i
-        _this_vector_nth_unsafe         ; -> string element
-        _over
-        _ generic_string_equal?         ; -> string ?
-        _tagged_if .2
-        ; found it!
-        _drop                           ; ->
-        _i
-        _tag_fixnum
-        _true                           ; -> index true
-        _unloop
-        jmp     .exit
-        _then .2
-        _loop .1                        ; -> string
-
-        ; not found
-        _nil                            ; -> string nil
-
-.exit:
-        pop     this_register
-        next
-endcode
-
 ; ### vector>string
 code vector_to_string, 'vector>string'  ; vector -- string
         _quote "vector{ "
