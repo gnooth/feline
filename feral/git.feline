@@ -110,7 +110,7 @@ global git-command
     nil git-command!
 
     execute-command-input-string <lexer> :> lexer
-    lexer lexer-parse-token "git" string= assert
+    lexer lexer-parse-token "git" string=? assert
     lexer lexer-index execute-command-input-string string-tail :> git-command-and-options
     lexer lexer-parse-token git-command!
     lexer lexer-skip-blank drop

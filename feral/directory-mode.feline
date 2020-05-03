@@ -159,7 +159,7 @@ global directory-mode-local-map
     [ line linenumber nil? and ] [
         line text>> s!
         s name-offset [
-            s string-tail name string= [
+            s string-tail name string=? [
                 line number>> linenumber!
             ] when
         ] when*
