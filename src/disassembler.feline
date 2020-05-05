@@ -540,6 +540,12 @@ last-word 0x09 install-handler
 
 last-word 0x0b install-handler
 
+: .0c
+    // or al, imm8
+    "or" al,imm8 ;
+
+last-word 0x0c install-handler
+
 : .19 "sbb" mnemonic! /r-r/m-reg ;
 
 last-word 0x19 install-handler
@@ -578,6 +584,12 @@ last-word 0x29 install-handler
     /r-reg-r/m ;
 
 last-word 0x2b install-handler
+
+: .2c
+    // sub al, imm8
+    "sub" al,imm8 ;
+
+last-word 0x2c install-handler
 
 : .2d
     "sub" mnemonic!
