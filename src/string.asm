@@ -781,7 +781,7 @@ code stringequal?, 'string=?'           ; x y -> ?
 
         cmp     rbx, rax
         jne     .1
-        mov     rbx, TRUE
+        mov     ebx, TRUE
         next
 
 .1:
@@ -795,7 +795,7 @@ code stringequal?, 'string=?'           ; x y -> ?
         lea     r8, [rbx + STRING_RAW_DATA_OFFSET]      ; r8: x raw data address
         lea     r9, [rax + STRING_RAW_DATA_OFFSET]      ; r9: y raw data address
 
-        xor     rcx, rcx                ; rcx: 0
+        xor     ecx, ecx                ; rcx: 0
 
 .top:
         mov     al, [r8 + rcx]          ; al: char from x
@@ -804,15 +804,15 @@ code stringequal?, 'string=?'           ; x y -> ?
         add     rcx, 1
         cmp     rcx, rdx
         jne     .top
-        mov     rbx, TRUE
+        mov     ebx, TRUE
         next
 
 .yes:
-        mov     rbx, TRUE
+        mov     ebx, TRUE
         next
 
 .no:
-        mov     rbx, NIL
+        mov     ebx, NIL
         next
 endcode
 
@@ -874,7 +874,7 @@ code string_ci_equal?, 'string-ci=?'    ; x y -> ?
         ja      .3
         ; char is upper case
         or      r11b, 0x20
-.3
+.3:
         cmp     r10b, r11b
         jne     .no
         add     rcx, 1
