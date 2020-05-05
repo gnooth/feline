@@ -844,7 +844,7 @@ code string_ci_equal?, 'string-ci=?'    ; x y -> ?
         lea     r8, [rbx + STRING_RAW_DATA_OFFSET]      ; r8: x raw data address
         lea     r9, [rax + STRING_RAW_DATA_OFFSET]      ; r9: y raw data address
 
-        xor     rcx, rcx                ; rcx: 0
+        xor     ecx, ecx                ; rcx: 0
 
 .top:
         mov     al, [r8 + rcx]          ; al: char from x
@@ -982,7 +982,7 @@ code string_skip_whitespace, 'string-skip-whitespace' ; start-index string -> in
         cmp     [rbp], rbx
         jl      .1
         _drop
-        mov     rbx, NIL
+        mov     ebx, NIL
         jmp     .exit
 .1:
         _swap
