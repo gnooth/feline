@@ -842,7 +842,7 @@ last-word 0x6b install-handler
         ] }
         { 3  [
             // register-direct
-            modrm-rm dreg!
+            modrm-rm register-rm dreg!
             next-byte immediate-operand!
         ] }
         [ unsupported ]
@@ -1006,26 +1006,27 @@ last-word 0x87 install-handler
     modrm-reg register-reg sreg!
     8 ssize!
     8 dsize!
-    {
-        { [ modrm-rm 4 = ] [
-            !sib-byte
-            sib-base {
-                { 5 [
-                    next-int32 ddisp!
-                    t memory-operand?!
-                ] }
-                [
-                    // default case
-                    drop
-                    sib-base register-rm dbase!
-                    sib-index register-index dindex!
-                    sib-scale dscale!
-                ]
-            } case
-            .inst
-        ] }
-        { [ modrm-mod 0 = ] [ modrm-rm dbase! .inst ] }
-        { [ modrm-mod 3 = ] [ modrm-rm dreg!  .inst ] }
+    { // cond
+        {
+            [ modrm-rm 4 eq? ]
+            [
+                !sib-byte
+                sib-base
+                { // case
+                    { 5 [ next-int32 ddisp! true memory-operand?! ] }
+                    [
+                        // default case
+                        drop
+                        sib-base register-rm dbase!
+                        sib-index register-index dindex!
+                        sib-scale dscale!
+                    ]
+                } case
+                .inst
+            ]
+        }
+        { [ modrm-mod 0 eq? ] [ modrm-rm dbase! .inst ] }
+        { [ modrm-mod 3 eq? ] [ modrm-rm register-rm dreg! .inst ] }
         [ unsupported ]
     } cond ;
 
