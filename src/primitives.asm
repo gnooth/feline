@@ -1418,22 +1418,22 @@ code char_ci_equal?, 'char-ci=?'        ; x y -> ?
         mov     rbx, TRUE
         next
 .1:
-        shr     rbx, CHAR_TAG_BITS
-        sub     rbx, 'A'
-        cmp     rbx, 25
+        shr     rbx, CHAR_TAG_BITS      ; bl: x (raw 8-bit char)
+        sub     bl, 'A'
+        cmp     bl, 25
         ja      .2
         ; char is upper case
-        or      rbx, 0x20
+        or      bl, 0x20
 .2:
         mov     rax, [rbp]
-        shr     rax, CHAR_TAG_BITS
-        sub     rax, 'A'
-        cmp     rax, 25
+        shr     rax, CHAR_TAG_BITS      ; bl: y (raw 8-bit char)
+        sub     al, 'A'
+        cmp     al, 25
         ja      .3
         ; char is upper case
-        or      rax, 0x20
+        or      al, 0x20
 .3:
-        cmp     rax, rbx
+        cmp     al, bl
         mov     eax, TRUE
         mov     ebx, NIL
         cmove   ebx, eax
