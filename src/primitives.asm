@@ -1415,7 +1415,7 @@ code char_ci_equal?, 'char-ci=?'        ; x y -> ?
         cmp     rbx, [rbp]
         jne     .1
         _nip
-        mov     rbx, TRUE
+        mov     ebx, TRUE
         next
 .1:
         shr     rbx, CHAR_TAG_BITS      ; bl: x (raw 8-bit char)
@@ -1768,7 +1768,7 @@ code decimal_to_signed, 'decimal>signed'        ; string -- signed/nil
         _nip
         _unloop
         pop     this_register
-        mov     rbx, NIL
+        mov     ebx, NIL
         next
 
 .no_carry:
