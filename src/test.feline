@@ -4664,4 +4664,32 @@ test: string=?-test
 
 string=?-test
 
+test: string-ci=?-test
+    { true } [ "test" "test" string-ci=? ] unit-test
+    { nil } [ "text" "test" string-ci=? ] unit-test
+    { nil } [ "test" "text" string-ci=? ] unit-test
+    { true } [ "test" "Test" string-ci=? ] unit-test
+    { true } [ "Test" "test" string-ci=? ] unit-test
+    { true } [ "tesT" "test" string-ci=? ] unit-test
+    { true } [ "test" "tesT" string-ci=? ] unit-test
+    { nil } [ "test" "testx" string-ci=? ] unit-test
+    { nil } [ "testx" "test" string-ci=? ] unit-test
+
+    { true } [ "this is a longer test" "this is a longer test" string=? ] unit-test
+    { nil } [ "this is a longer test" "this is a longer text" string=? ] unit-test
+    { nil } [ "this is a longer text" "this is a longer test" string=? ] unit-test
+
+    { true } [ "this is a LONGER test" "this is a LoNgEr test" string-ci=? ] unit-test
+    { nil } [ "this is a LOXGER test" "this is a LoNgEr test" string-ci=? ] unit-test
+    { nil } [ "this is a longer test" "this is a longer text" string-ci=? ] unit-test
+    { nil } [ "this is a longer teSt" "this is a longer teXt" string-ci=? ] unit-test
+    { nil } [ "this is a longer text" "this is a longer test" string-ci=? ] unit-test
+    { nil } [ "this is a longer teXt" "this is a longer teSt" string-ci=? ] unit-test
+
+    { true } [ "" "" string-ci=? ] unit-test
+    { nil } [ "test" "" string-ci=? ] unit-test
+    { nil } [ "" "test" string-ci=? ] unit-test ;
+
+string-ci=?-test
+
 ?nl "Reached end of test.feline" write-string

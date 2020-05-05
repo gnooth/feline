@@ -816,6 +816,81 @@ code stringequal?, 'string=?'           ; x y -> ?
         next
 endcode
 
+; ### string-ci=?
+code string_ci_equal?, 'string-ci=?'    ; x y -> ?
+        _ check_string                  ; -> x ^y
+
+        ; rbx: ^y
+        push    rbx
+        _drop                           ; -> x (in rbx)
+        _ check_string                  ; rbx: ^x
+        pop     rax                     ; rax: ^y
+
+        cmp     rbx, rax
+        jne     .1
+        mov     ebx, TRUE
+        next
+
+.1:
+        ; rbx: ^x
+        ; rax: ^y
+        mov     rdx, [rbx + STRING_RAW_LENGTH_OFFSET]   ; rdx: x raw length
+        cmp     rdx, [rax + STRING_RAW_LENGTH_OFFSET]   ; compare with y raw length
+        jne     .no                                     ; must be the same length
+
+        test    rdx, rdx                ; both zero length strings?
+        jz      .yes
+
+        lea     r8, [rbx + STRING_RAW_DATA_OFFSET]      ; r8: x raw data address
+        lea     r9, [rax + STRING_RAW_DATA_OFFSET]      ; r9: y raw data address
+
+        xor     rcx, rcx                ; rcx: 0
+
+.top:
+        mov     al, [r8 + rcx]          ; al: char from x
+        cmp     al, [r9 + rcx]          ; compare with char from y
+        jne     .ignore_case
+        add     rcx, 1
+        cmp     rcx, rdx
+        jne     .top
+        mov     ebx, TRUE
+        next
+
+.ignore_case:
+        ; r8: x raw data address
+        ; r9: y raw data address
+        ; al: raw char from x
+        mov     r10b, al                ; r10b: raw char from x
+        mov     r11b, byte [r9 + rcx]   ; r11b: raw char from y
+
+        sub     r10b, 'A'
+        cmp     r10b, 25
+        ja      .2
+        ; char is upper case
+        or      r10b, 0x20
+.2:
+        sub     r11b, 'A'
+        cmp     r11b, 25
+        ja      .3
+        ; char is upper case
+        or      r11b, 0x20
+.3
+        cmp     r10b, r11b
+        jne     .no
+        add     rcx, 1
+        cmp     rcx, rdx
+        jne     .top
+        ; fall through...
+
+.yes:
+        mov     ebx, TRUE
+        next
+
+.no:
+        mov     ebx, NIL
+        next
+endcode
+
 ; ### substring-start
 code substring_start, 'substring-start'         ; pattern string -> index/nil
         _ check_string                          ; -> pattern ^string
