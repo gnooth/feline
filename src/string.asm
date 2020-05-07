@@ -970,39 +970,45 @@ code string_has_suffix?, 'string-has-suffix?'   ; suffix string -- ?
 endcode
 
 ; ### string-skip-whitespace
-code string_skip_whitespace, 'string-skip-whitespace' ; start-index string -> index/nil
+code string_skip_whitespace, 'string-skip-whitespace' ; index string -> index/nil
         _ check_string
 
-        push    this_register
-        popd    this_register           ; -> start-index
+        mov     rdx, rbx                ; rdx: ^string
+        _drop                           ; -> start=index
 
-        _ check_index                   ; -> untagged-start-index
+        test    bl, FIXNUM_TAG
+        jz      error_not_index
+        test    rbx, rbx
+        js      error_not_index
+        sar     rbx, FIXNUM_TAG_BITS    ; rbx: index (untagged)
 
-        _this_string_raw_length
-        cmp     [rbp], rbx
-        jl      .1
-        _drop
+        mov     rcx, [rdx + STRING_RAW_LENGTH_OFFSET]   ; rcx: length (untagged)
+
+        cmp     rcx, rbx                ; is length in rcx > index in rbx?
+        jng     .not_found              ; REVIEW should this be an error?
+
+        ; rdx: ^string
+        lea     rdx, [rdx + STRING_RAW_DATA_OFFSET]
+
+.top:
+        ; rdx: starting address of string raw data
+        ; rbx: index
+        cmp     byte [rdx + rbx], 0x20
+        jg      .found
+
+        add     rbx, 1
+        cmp     rcx, rbx
+        jg      .top
+
+        ; reached end of string
+        ; fall through...
+.not_found:
         mov     ebx, NIL
-        jmp     .exit
-.1:
-        _swap
-        _do .2
-        _raw_loop_index
-        _this_string_nth_unsafe
-        cmp     rbx, 32
-        _drop
-        jle     .3
-        _tagged_loop_index
-        _unloop
-        jmp     .exit
-.3:
-        _loop .2
+        next
 
-        ; not found
-        _nil
-
-.exit:
-        pop     this_register
+.found:
+        ; rbx: index
+        _tag_fixnum
         next
 endcode
 
