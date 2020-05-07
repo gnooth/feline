@@ -794,7 +794,7 @@ last-word 0x6b install-handler
     // source is imm8
     // dest is r/m8
     8 dsize!
-    t immediate-operand?!
+    true immediate-operand?!
     !modrm-byte
     regop-mnemonic mnemonic!
     modrm-mod {
@@ -805,9 +805,13 @@ last-word 0x6b install-handler
                     sib-index 4 =
                     sib-base 5 = and [
                         next-int32 ddisp!
-                        t memory-operand?!
+                        true memory-operand?!
                         next-byte immediate-operand!
-                    ] [ unsupported ] if
+                    ] [
+                        sib-base dbase!
+                        sib-index dindex!
+                        next-byte immediate-operand!
+                    ] if
                 ] }
                 [
                     // default case
