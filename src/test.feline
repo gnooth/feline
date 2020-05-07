@@ -4692,4 +4692,24 @@ test: string-ci=?-test
 
 string-ci=?-test
 
+test: tokenize-test
+    { vector{ "x" } } [ "x" tokenize  ] unit-test
+    { vector{ "x" } } [ " x " tokenize  ] unit-test
+    { vector{ "x" } } [ " x" tokenize  ] unit-test
+    { vector{ "x" } } [ "x " tokenize  ] unit-test
+
+    { vector{ "test" } } [ "test" tokenize  ] unit-test
+    { vector{ "test" } } [ " test " tokenize  ] unit-test
+    { vector{ "test" } } [ " test" tokenize  ] unit-test
+    { vector{ "test" } } [ "test " tokenize  ] unit-test
+
+    { vector{ "this" "is" "a" "test" } } [ "this is a test" tokenize ] unit-test
+
+    { nil } [ "" tokenize ] unit-test
+    { nil } [ " " tokenize ] unit-test
+    { nil } [ "    " tokenize ] unit-test
+;
+
+tokenize-test
+
 ?nl "Reached end of test.feline" write-string

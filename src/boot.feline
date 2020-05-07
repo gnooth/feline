@@ -42,6 +42,7 @@ public
     "sequences.feline"
     "files.feline"
     "tuple.feline"
+    "tokenize.feline"
     "accept.feline"
     "help.feline"
 } [ load-system-file ] each
