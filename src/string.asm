@@ -1013,40 +1013,45 @@ code string_skip_whitespace, 'string-skip-whitespace' ; index string -> index/ni
 endcode
 
 ; ### string-skip-to-whitespace
-code string_skip_to_whitespace, 'string-skip-to-whitespace' ; start-index string -- index/nil
+code string_skip_to_whitespace, 'string-skip-to-whitespace' ; index string -> index/nil
         _ check_string
 
-        push    this_register
-        popd    this_register           ; -- start-index
+        mov     rdx, rbx                ; rdx: ^string
+        _drop                           ; -> start=index
 
-        _ check_index                   ; -- untagged-start-index
+        test    bl, FIXNUM_TAG
+        jz      error_not_index
+        test    rbx, rbx
+        js      error_not_index
+        sar     rbx, FIXNUM_TAG_BITS    ; rbx: index (untagged)
 
-        _this_string_raw_length
-        _twodup
-        _ge
-        _if .1
-        _2drop
-        _nil
-        jmp     .exit
-        _then .1                        ; -- untagged-start-index untagged-length
+        mov     rcx, [rdx + STRING_RAW_LENGTH_OFFSET]   ; rcx: length (untagged)
 
-        _swap
-        _register_do_range .2
-        _raw_loop_index
-        _this_string_nth_unsafe
-        _lit 33
-        _ult_if .3
-        _tagged_loop_index
-        _unloop
-        jmp     .exit
-        _then .3
-        _loop .2
+        cmp     rcx, rbx                ; is length in rcx > index in rbx?
+        jng     .not_found              ; REVIEW should this be an error?
 
-        ; not found
-        _nil
+        ; rdx: ^string
+        lea     rdx, [rdx + STRING_RAW_DATA_OFFSET]
 
-.exit:
-        pop     this_register
+.top:
+        ; rdx: starting address of string raw data
+        ; rbx: index
+        cmp     byte [rdx + rbx], 0x20
+        jle     .found
+
+        add     rbx, 1
+        cmp     rcx, rbx
+        jg      .top
+
+        ; reached end of string
+        ; fall through...
+.not_found:
+        mov     ebx, NIL
+        next
+
+.found:
+        ; rbx: index
+        _tag_fixnum
         next
 endcode
 
