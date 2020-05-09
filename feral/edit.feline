@@ -546,6 +546,8 @@ use: kill-ring
     delete-line-internal ;
 
 : join-lines
+    check-read-only ?exit
+
     dot-line-next null? ?exit
 
     dot-line-next text>> string-trim-head :> next-line-trimmed-text
