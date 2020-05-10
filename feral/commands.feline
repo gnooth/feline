@@ -66,10 +66,9 @@ in: editor
         buf mode>> initialize-buffer-function>> [ buf swap call ] when*
     ] when
 
-    buf buffer-list vector-push
-    buf current-buffer!
+    buf set-current-buffer
 
-    t repaint?! ;
+    true repaint?! ;
 
 : open-file-get-completions
     1 ?enough verify-string :> prefix
