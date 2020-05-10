@@ -83,7 +83,8 @@ in: editor
     files length 1 eq? [ dir files first path-append ] [ nil ] if ;
 
 : open-file
-    current-buffer-directory file-name-as-directory :> default-directory
+    current-buffer-directory get-current-directory or
+    file-name-as-directory :> default-directory
 
     "open-file" set-history
     ' open-file-get-completions mini:set-completion-provider
@@ -98,9 +99,10 @@ in: editor
     arg find-file-to-edit :> filename
 
     local buf
+
     {
         {
-            [ filename null? ]
+            [ filename nil? ]
             [ arg canonical-path [ create-buffer-for-new-file ] when* ]
         }
         {
@@ -108,11 +110,11 @@ in: editor
             [ buf set-current-buffer ]
         }
         {
-            [ filename file-exists? ]
+            [ filename file? ]
             [ filename 1 create-buffer/2 ]
         }
         {
-            [ filename feline-extension + file-exists? ]
+            [ filename feline-extension + file? ]
             [ filename feline-extension + 1 create-buffer/2 ]
         }
         // otherwise...
