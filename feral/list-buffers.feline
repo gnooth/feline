@@ -54,7 +54,7 @@ feral-config:winui? feral-config:gtkui? or #if
 
     make-buffer :> buf
     name buf name<<
-    current-buffer directory>> buf directory<<
+    current-buffer-directory buf directory<<
     list-buffers-local-map buf local-map<<
 
     current-buffer listed? [ current-buffer ] [ current-buffer parent>> ] if
