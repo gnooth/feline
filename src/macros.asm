@@ -473,6 +473,13 @@ section .data
         symbol S_%1, %2, %1, %4, %3
 %endmacro
 
+%define symbol(x) S_ %+ x               ; symbol(dup) -> S_dup
+
+%macro  _symbol 1                       ; _symbol dup -> _lit S_dup
+        _dup
+        mov     rbx, symbol(%1)
+%endmacro
+
 %macro  special 2                       ; label, name
 
         head    %1, %2, SYMBOL_SPECIAL, %1_ret - %1

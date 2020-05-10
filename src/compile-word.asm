@@ -434,7 +434,7 @@ code compile_?return_no_locals, 'compile-?return-no-locals' ; symbol -> void
         _swap                           ; -> tagged-call-addres symbol
         _ inline_primitive              ; -> tagged-call-address
 
-        _lit S_call_quotation
+        _symbol call_quotation
         _ symbol_code_address           ; -> tagged-call-address tagged-target-address
 
         _ fix_call                      ; -> empty
@@ -478,7 +478,7 @@ code compile_?return_locals, 'compile-?return-locals' ; symbol -> void
         _swap                           ; -> patch1-address symbol
         _ inline_primitive              ; -> patch1-address
 
-        _lit S_call_quotation
+        _symbol call_quotation
         _ symbol_code_address           ; -> patch1-address call-target-address
 
         ; -> patch1-address call-target-address
@@ -498,11 +498,11 @@ code compile_primitive, 'compile-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 %endif
         _tagged_if .1
 
-        cmp     rbx, S_?exit_locals
+        cmp     rbx, symbol(?exit_locals)
         je      compile_?exit_locals
-        cmp     rbx, S_?return_no_locals
+        cmp     rbx, symbol(?return_no_locals)
         je      compile_?return_no_locals
-        cmp     rbx, S_?return_locals
+        cmp     rbx, symbol(?return_locals)
         je      compile_?return_locals
 
         _ inline_primitive
@@ -600,7 +600,7 @@ code patch_forward_jumps, 'patch-forward-jumps' ; address -> void
         cmp     rbx, NIL
         je      drop
 
-        _lit S_patch_forward_jump
+        _symbol patch_forward_jump
         _ vector_each
         mov     qword [forward_jumps_], NIL
 
@@ -647,12 +647,12 @@ code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIV
         _drop                           ; -> empty
 
         _this_quotation_array
-        _lit S_precompile_object
+        _symbol precompile_object
         _ map_array                     ; -> precompiled-array
 
         _zero
         _over
-        _lit S_add_code_size
+        _symbol add_code_size
         _ array_each
 
         ; add size of return instruction
@@ -672,7 +672,7 @@ code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIV
         _ compile_prolog
 
         ; body
-        _lit S_compile_pair
+        _symbol compile_pair
         _ each
 
         ; epilog

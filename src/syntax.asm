@@ -450,7 +450,7 @@ endcode
 ; ### :
 code colon, ':', SYMBOL_IMMEDIATE
 
-        _lit S_colon
+        _symbol colon
         _ top_level_only
 
         _ parse_name                    ; -> symbol
@@ -466,7 +466,7 @@ endcode
 
 ; ### private:
 code private_colon, 'private:', SYMBOL_IMMEDIATE        ; --
-        _lit S_private_colon
+        _symbol private_colon
         _ top_level_only
 
         _ colon
@@ -477,7 +477,7 @@ endcode
 
 ; ### public:
 code public_colon, 'public:', SYMBOL_IMMEDIATE          ; --
-        _lit S_public_colon
+        _symbol public_colon
         _ top_level_only
 
         _ colon
@@ -511,7 +511,7 @@ code define_test, 'test:'
         _ parse_name                    ; -> symbol
         _ parse_definition              ; -> symbol vector
 
-        _lit S_?nl
+        _symbol ?nl
         _lit tagged_zero
         _pick
         _ vector_insert_nth
@@ -522,7 +522,7 @@ code define_test, 'test:'
         _pick
         _ vector_insert_nth
 
-        _lit S_write_string
+        _symbol write_string
         _lit tagged_fixnum(2)
         _pick
         _ vector_insert_nth
@@ -608,7 +608,7 @@ endcode
 ; ### method:
 code method_colon, 'method:', SYMBOL_IMMEDIATE
 
-        _lit S_method_colon
+        _symbol method_colon
         _ top_level_only
 
         ; type
@@ -643,7 +643,7 @@ code forget_colon, 'forget:', SYMBOL_IMMEDIATE
 ; Removes the symbol from its vocab.
 ; Does nothing if the symbol does not exist.
 
-        _lit S_forget_colon
+        _symbol forget_colon
         _ top_level_only
 
         _ must_parse_token
@@ -702,9 +702,9 @@ endcode
 code ?exit, '?exit', SYMBOL_IMMEDIATE
         _ using_locals?
         _tagged_if .1
-        _lit S_?exit_locals
+        _symbol ?exit_locals
         _else .1
-        _lit S_?exit_no_locals
+        _symbol ?exit_no_locals
         _then .1
         _get_accum
         _ vector_push
@@ -725,9 +725,9 @@ endcode
 code ?return, '?return', SYMBOL_IMMEDIATE
         _ using_locals?
         _tagged_if .1
-        _lit S_?return_locals
+        _symbol ?return_locals
         _else .1
-        _lit S_?return_no_locals
+        _symbol ?return_no_locals
         _then .1
         _get_accum
         _ vector_push
@@ -787,25 +787,25 @@ code process_named_parameters, 'process-named-parameters'
 
 .1:
         _drop
-        _lit S_store_1_arg
+        _symbol store_1_arg
         _ add_to_definition
         _return
 
 .2:
         _drop
-        _lit S_store_2_args
+        _symbol store_2_args
         _ add_to_definition
         _return
 
 .3:
         _drop
-        _lit S_store_3_args
+        _symbol store_3_args
         _ add_to_definition
         _return
 
 .4:
         _drop
-        _lit S_store_4_args
+        _symbol store_4_args
         _ add_to_definition
         _return
 
