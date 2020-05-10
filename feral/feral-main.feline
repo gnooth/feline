@@ -390,26 +390,27 @@ in: editor
     16 make-vector buffer-list!
     keymaps:initialize-keymaps ;
 
-: edit-file/2                           // linenumber string -> void
-    !> name
-    :> linenumber
+: edit-file/2                           // line-number string -> void
+    tilde-expand-filename :> name
+    :> line-number
 
-    name tilde-expand-filename name!
+    initialize-editor
 
     name directory? [
-        initialize-editor
         name directory-mode:open-directory
-        linenumber gotoline-internal
+        line-number gotoline-internal
         edit1
     ] ?return
 
-    name find-file-to-edit [
-        initialize-editor
-        linenumber create-buffer/2
-        edit1
+    name find-file-to-edit
+    [
+        line-number create-buffer/2
     ] [
-        name error-file-not-found
-    ] if* ;
+        name canonical-path create-buffer-for-new-file
+        "New file" message
+    ] if*
+
+    edit1 ;
 
 : edit-file                             // string -> void
     1 swap edit-file/2 ;
