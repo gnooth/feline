@@ -115,18 +115,21 @@ defer minibuffer-insert-char
     current-command last-command!
     nil current-command!
 
+    mod-count :> saved-mod-count
+
     key lookup-key [
         dup current-command! call-symbol // REVIEW safe-call-symbol
         minibuffer-update-caret-pos
         winui-minibuffer-invalidate
     ] [
         key printable-char? [
-            reset-completion
             minibuffer-insert-char
             minibuffer-update-caret-pos
             repaint-minibuffer
         ] when*
-    ] if* ;
+    ] if*
+
+    mod-count saved-mod-count > [ reset-completion ] when ;
 
 : winui-minibuffer-keydown              // key -> void
     minibuffer-dispatch ;
@@ -173,6 +176,7 @@ public
         minibuffer current-buffer!
         editor:reset-undo
         editor:reset-redo
+        reset-completion
         minibuffer-update-caret-pos
         winui-minibuffer-main
     ] keep-current-buffer
@@ -195,6 +199,7 @@ public
         minibuffer current-buffer!
         editor:reset-undo
         editor:reset-redo
+        reset-completion
         minibuffer-update-caret-pos
         winui-minibuffer-main
     ] keep-current-buffer

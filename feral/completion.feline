@@ -34,9 +34,7 @@ global current-completion
     c strings<<
     c prefix<<
     0 c index<<
-    c current-completion!
-    current-completion assert
-;
+    c current-completion! ;
 
 : reset-completion
     nil current-completion! ;
