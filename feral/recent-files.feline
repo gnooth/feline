@@ -132,7 +132,7 @@ public
 
     make-buffer :> buf
     "Recent Files" buf name<<
-    current-buffer directory>> buf directory<<
+    current-buffer-directory buf directory<<
     recent-files-local-map buf local-map<<
 
     local entry

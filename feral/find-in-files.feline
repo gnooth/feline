@@ -117,7 +117,7 @@ public
 
     find-in-files-pattern empty? ?exit
 
-    current-buffer directory>> file-name-as-directory :> default-directory
+    current-buffer-directory file-name-as-directory :> default-directory
 
     local default-extension
     current-buffer filename>> [
@@ -164,7 +164,7 @@ public
     search-mode:get-instance buf mode<<
     find-in-files-local-map buf local-map<<
 
-    buf listed? [ buf buffer-list vector-push ] unless
+    buf in-buffer-list? [ buf buffer-list vector-push ] unless
     buf set-current-buffer
 
     renumber

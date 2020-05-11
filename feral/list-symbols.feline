@@ -66,11 +66,11 @@ empty
     true buf read-only<<
 
     current-buffer buf parent<<
-    current-buffer directory>> buf directory<<
+    current-buffer-directory buf directory<<
     symbols-mode:get-instance buf mode<<
     buf mode>> initialize-buffer-function>> [ buf swap call ] when*
 
-    buf listed? [ buf buffer-list vector-push ] unless
+    buf in-buffer-list? [ buf buffer-list vector-push ] unless
     buf set-current-buffer
 
     renumber

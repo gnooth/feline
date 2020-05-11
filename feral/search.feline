@@ -327,12 +327,12 @@ use: mini
     buf name<<
 
     current-buffer buf parent<<
-    current-buffer directory>> buf directory<<
+    current-buffer-directory buf directory<<
     current-search :search buf buffer-set-property
     search-mode:get-instance buf mode<<
     buf dup mode>> initialize-buffer-function>> call
 
-    buf listed? [ buf buffer-list vector-push ] unless
+    buf in-buffer-list? [ buf buffer-list vector-push ] unless
     buf set-current-buffer
 
     renumber

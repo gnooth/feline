@@ -57,10 +57,10 @@ feral-config:winui? feral-config:gtkui? or #if
     current-buffer-directory buf directory<<
     list-buffers-local-map buf local-map<<
 
-    current-buffer listed? [ current-buffer ] [ current-buffer parent>> ] if
+    current-buffer in-buffer-list? [ current-buffer ] [ current-buffer parent>> ] if
     :> parent-buffer
 
-    parent-buffer listed? assert
+    parent-buffer in-buffer-list? assert
 
     local b
     local sb
