@@ -54,8 +54,8 @@ tuple: entry
 
 : load-recent-files
     recent-files-vector nil? assert
-    40 <vector> :> v
-    recent-files-filename file-exists? [
+    40 make-vector :> v
+    recent-files-filename file? [
         recent-files-filename file-lines [ entry-from-string v vector-push ] each
     ] when
     v recent-files-vector! ;
@@ -63,7 +63,7 @@ tuple: entry
 : save-recent-files
     local v
     recent-files-vector [
-        40 <vector> v!
+        40 make-vector v!
         [ length dup 40 - 0 max swap ] keep <slice>
         [
             string-from-entry v push
@@ -135,18 +135,21 @@ public
     current-buffer directory>> buf directory<<
     recent-files-local-map buf local-map<<
 
+    local entry
     local sb
 
     recent-files-vector vector-length
     [
         // -> i
         negate recent-files-vector vector-length 1- +
-        recent-files-vector vector-nth
-        dup entry? [ filename>> ] when
-        128 <sbuf> sb!
-        dup file-name-nondirectory sb sbuf-append-string
+        recent-files-vector vector-nth entry!
+        128 make-sbuf sb!
+        entry filename>> file-name-nondirectory sb sbuf-append-string
         [ sb sbuf-length directory-column < ] [ '\s' sb push ] while
-        file-name-directory sb sbuf-append-string
+
+        // FIXME it's a bug if entry filename>> does not have a directory component
+        entry filename>> file-name-directory [ sb sbuf-append-string ] when*
+
         sb sbuf>string make-line/1 buf buffer-append-line
     ] each-integer
 
