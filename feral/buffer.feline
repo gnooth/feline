@@ -159,7 +159,7 @@ in: editor
     current-buffer assert-eq                    // -> index
     !> n
 
-    current-buffer filename>> [
+    current-buffer-filename [
         dot-line-number 1+ add-recent-file
     ] when*
 
@@ -167,11 +167,11 @@ in: editor
 
     n 0> [ n 1- n! ] when
 
-    current-buffer parent>>
-    n buffer-list vector-nth or
+    current-buffer parent>> :> parent
+    parent listed? [ parent ] [ n buffer-list vector-nth ] if
     current-buffer!
 
-    t repaint?! ;
+    true repaint?! ;
 
 : kill-buffer
     nil !> confirmed?
