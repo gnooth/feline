@@ -354,8 +354,12 @@ global minibuffer
 
 global buffer-list
 
-: listed? // buffer -> ?
+: in-buffer-list? // buffer -> ?
     buffer-list member-eq? ;
+
+// deprecated
+: listed? // buffer -> ?
+    in-buffer-list? ;
 
 : find-buffer-from-file-name            // filename -> buffer/nil
     !> filename
