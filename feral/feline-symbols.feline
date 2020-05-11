@@ -217,7 +217,8 @@ global in-vocab
     "stress.feline"
     "strings.feline"
     "syntax.feline"
-    "test.feline"
+    "test.feline"                       // REVIEW
+    "tokenize.feline"
     "tuple.feline"
     "unit-test.feline"
 } constant feline-files
