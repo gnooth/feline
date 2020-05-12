@@ -635,14 +635,14 @@ hashtable_grow_unchecked:
 endcode
 
 ; ### hash-combine
-code hash_combine, 'hash-combine'       ; hash1 hash2 -- newhash
+code hash_combine, 'hash-combine'       ; hash1 hash2 -> combined
 
         sar     rbx, FIXNUM_TAG_BITS    ; hash2 (untagged) in rbx
         mov     rax, [rbp]
         sar     rax, FIXNUM_TAG_BITS    ; hash1 (untagged) in rax
         lea     rbp, [rbp + BYTES_PER_CELL]
 
-        mov     rdx, $9e3779b97f4a7800
+        mov     rdx, 0x9e3779b97f4a7800
         add     rbx, rdx
 
         mov     rdx, rax
@@ -655,8 +655,50 @@ code hash_combine, 'hash-combine'       ; hash1 hash2 -- newhash
 
         xor     rbx, rax
 
-        _lit MOST_POSITIVE_FIXNUM
-        _and
+        mov     rax, MOST_POSITIVE_FIXNUM
+        and     rbx, rax
+
+        _tag_fixnum
+
+        next
+endcode
+
+; ### mix
+code mix, 'mix'                         ; x y -> z
+; sbcl target-sxhash.lisp:
+;
+; (defun mix (x y)
+;   (declare (optimize (speed 3)))
+;   (declare (type (and fixnum unsigned-byte) x y))
+;   (let* ((mul (logand 3622009729038463111 sb-xc:most-positive-fixnum))
+;          (xor (logand 608948948376289905 sb-xc:most-positive-fixnum))
+;          (xy (logand (+ (* x mul) y) sb-xc:most-positive-fixnum)))
+;     (logand (logxor xor xy (ash xy -5)) sb-xc:most-positive-fixnum)))
+
+        sar     rbx, FIXNUM_TAG_BITS    ; rbx: y (untagged)
+        mov     rcx, [rbp]
+        sar     rcx, FIXNUM_TAG_BITS    ; rcx: x (untagged)
+        lea     rbp, [rbp + BYTES_PER_CELL]
+
+        mov     rax, rcx                        ; rax: x
+        mov     rdx, 3622009729038463111        ; rdx: mul
+        mul     rdx                             ; rax: (* x mul)
+
+        add     rax, rbx                        ; rax: (+ (* x mul) y)
+        mov     rdx, MOST_POSITIVE_FIXNUM
+        and     rax, rdx                        ; rax: (logand (+ (* x mul) y) m-p-f)
+
+        mov     rdx, rax                        ; rdx: xy
+        shr     rdx, 5                          ; rdx: (ash xy -5)
+
+        mov     r8, 608948948376289905          ; r8: xor
+        xor     rax, r8                         ; rax: (logxor xor xy)
+        xor     rax, rdx                        ; rax: (logxor xor xy (ash xy -1))
+
+        mov     rdx, MOST_POSITIVE_FIXNUM
+        and     rax, rdx                        ; rax: (logand (logxor xor xy (ash xy -1)) m-p-f)
+
+        mov     rbx, rax
 
         _tag_fixnum
 
