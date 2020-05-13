@@ -145,6 +145,23 @@ VK_NUMPAD8              constant kp-up
 VK_NUMPAD2              constant kp-down
 VK_NUMPAD9              constant kp-pageup
 VK_NUMPAD3              constant kp-pagedown
+VK_DIVIDE               constant kp-delete
+
+VK_DIVIDE ctrl          constant ctrl-kp-delete
+
+VK_NUMPAD4 shift        constant shift-kp-left
+VK_NUMPAD6 shift        constant shift-kp-right
+VK_NUMPAD8 shift        constant shift-kp-up
+VK_NUMPAD2 shift        constant shift-kp-down
+VK_NUMPAD7 shift        constant shift-kp-home
+VK_NUMPAD1 shift        constant shift-kp-end
+
+VK_NUMPAD4 ctrl shift   constant ctrl-shift-kp-left
+VK_NUMPAD6 ctrl shift   constant ctrl-shift-kp-right
+VK_NUMPAD8 ctrl shift   constant ctrl-shift-kp-up
+VK_NUMPAD2 ctrl shift   constant ctrl-shift-kp-down
+VK_NUMPAD7 ctrl shift   constant ctrl-shift-kp-home
+VK_NUMPAD1 ctrl shift   constant ctrl-shift-kp-end
 
 VK_SPACE ctrl           constant ctrl-space
 
