@@ -16,19 +16,98 @@
 using: feral-core feline accessors directories mini diff-mode ;
 in: editor
 
+private
+
+: current-buffer-repository // void -> string/nil
+    current-buffer-directory !> dir
+    dir nil? [ nil ] ?return
+
+    local repo
+
+    [ dir repo nil? and ]
+    [
+        dir ".git" path-append dir? [ repo! ] when*
+        repo [ dir file-name-directory dir! ] unless
+    ] while
+
+    repo ;
+
+: git-diff-no-output ( sourcefile )
+    sourcefile
+    [
+        "git ls-files " sourcefile + shell-command-to-string // -> string/nil
+        [ length 0? "Untracked" "No changes" ? message ] when*
+    ]
+    [
+        "No output" message
+    ] if ;
+
+: git-find-file ( name )
+
+    name file? [
+        name canonical-path
+    ] ?return
+
+    name file-name-absolute? [
+        name
+    ] ?return
+
+    local old-dir
+    local output
+    local found
+
+    current-buffer-repository [
+        // -> repo
+        get-current-directory old-dir!
+        file-name-directory set-current-directory drop
+
+        "git ls-files --full-name" shell-command-to-string [
+            // -> output
+            string-lines [
+                // -> string
+                name swap string-has-suffix?
+            ] find
+            // -> index/nil element/nil
+            nip found!
+        ] when*
+
+        old-dir set-current-directory drop
+    ] when*
+
+    found [
+        current-buffer-repository
+        file-name-directory
+        swap path-append
+        canonical-path
+    ] [ nil ] if* ;
+
 : git-diff
-    current-buffer filename>> :> sourcefile
-    sourcefile nil? ?exit
-    get-current-directory :> olddir
-    sourcefile file-name-directory set-current-directory drop // REVIEW drop
-    "git diff " sourcefile + :> command
+    execute-command-input-string tokenize :> tokens
+
+    tokens first "git" assert=
+    tokens second "diff" assert=
+
+    2 tokens [ '-' swap string-first-char neq? ] find-from nip :> name
+
+    name git-find-file name or :> sourcefile
+
+    get-current-directory :> old-dir
+
+    // change to directory containing sourcefile
+    sourcefile file-name-directory set-current-directory drop
+
+    execute-command-input-string :> command
+
+    // execute the command
     command shell-command-to-string :> output
-    olddir set-current-directory drop // REVIEW drop
+
+    old-dir [ set-current-directory drop ] when*
 
     // shell-command-to-string might return nil
-    output nil? ?exit
+    output nil? [ "No output" message ] ?return
 
     local buf
+
     output length 0> [
         // reuse existing buffer if possible
         buffer-list [ command>> command = ] find // -> index/nil element/nil
@@ -56,8 +135,7 @@ in: editor
 
         true repaint?!
     ] [
-        "git ls-files " sourcefile + shell-command-to-string // -> string/nil
-        [ length 0? "Untracked" "No changes" ? message ] when*
+        sourcefile git-diff-no-output
     ] if ;
 
 global git-command
@@ -67,8 +145,11 @@ global git-command
 
     get-current-directory :> olddir
     current-buffer-directory set-current-directory drop
+
+    // execute the command
     execute-command-input-string :> command
     command shell-command-to-string :> output
+
     olddir set-current-directory drop
 
     // shell-command-to-string might return nil
@@ -95,7 +176,7 @@ global git-command
 
         current-buffer buf parent<<
 
-        git-command { "diff" "show" } member? [
+        git-command { "show" } equal? [
             diff-mode:get-instance buf mode<<
             buf mode>> initialize-buffer-function>> [ buf swap call ] when*
         ] when
@@ -104,18 +185,22 @@ global git-command
         buf set-current-buffer
 
         true repaint?!
-    ] when ;
+    ] [
+        // zero length output
+        "No output" message
+    ] if ;
+
+public
 
 : git
     nil git-command!
 
     execute-command-input-string <lexer> :> lexer
+
+    // first token is "git"
     lexer lexer-parse-token "git" string=? assert
-    lexer lexer-index execute-command-input-string string-tail :> git-command-and-options
+
+    // second token is git command (e.g. "diff")
     lexer lexer-parse-token git-command!
-    lexer lexer-skip-blank drop
-    lexer lexer-index execute-command-input-string string-tail :> git-options
 
-    git-command "diff" equal? git-options empty? and [ git-diff ] ?return
-
-    git-misc ;
+    git-command "diff" equal? [ git-diff ] [ git-misc ] if ;
