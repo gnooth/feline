@@ -30,6 +30,8 @@ shift-bit 16 lshift constant shift-mask
 
 : modifiers 16 rshift 0x7 bitand ;
 
-"winui-key.feline" feral-config:winui? ?load
-"gtkui-key.feline" feral-config:gtkui? ?load
-"termui-key.feline" feral-config:termui? ?load
+use: feral-loader
+
+feral-config:winui?  [ "winui-key.feline"  load-feral-source-file ] when
+feral-config:gtkui?  [ "gtkui-key.feline"  load-feral-source-file ] when
+feral-config:termui? [ "termui-key.feline" load-feral-source-file ] when
