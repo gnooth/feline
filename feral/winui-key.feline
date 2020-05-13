@@ -146,6 +146,11 @@ VK_NUMPAD2              constant kp-down
 VK_NUMPAD9              constant kp-pageup
 VK_NUMPAD3              constant kp-pagedown
 
+VK_NUMPAD4 ctrl         constant ctrl-kp-left
+VK_NUMPAD6 ctrl         constant ctrl-kp-right
+VK_NUMPAD7 ctrl         constant ctrl-kp-home
+VK_NUMPAD1 ctrl         constant ctrl-kp-end
+
 VK_NUMPAD4 shift        constant shift-kp-left
 VK_NUMPAD6 shift        constant shift-kp-right
 VK_NUMPAD8 shift        constant shift-kp-up
