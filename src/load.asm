@@ -226,7 +226,7 @@ code initialize_load_path, 'initialize_load_path', SYMBOL_INTERNAL
 endcode
 
 ; ### find-file-in-load-path
-code find_file_in_load_path, 'find-file-in-load-path' ; string -> path
+code find_file_in_load_path, 'find-file-in-load-path' ; string -> path/nil
 
         _ load_path
         _quotation .1
@@ -349,18 +349,6 @@ code load, 'load'                       ; string --
 
         _ end_dynamic_scope
 
-        next
-endcode
-
-; ### ?load
-code ?load, '?load'                     ; filename ? -> void
-; if ? is not nil, calls load
-        cmp     rbx, f_value
-        je      .1
-        _drop
-        jmp     load
-.1:
-        _2drop
         next
 endcode
 
