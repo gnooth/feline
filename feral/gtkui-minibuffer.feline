@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: history feral-core feline accessors ;
+using: history completion feral-core feline accessors ;
 in: mini
 
 feral-config:gtkui? assert
@@ -98,21 +98,32 @@ defer minibuffer-insert-char
 
 : minibuffer-dispatch                   // key -> void
     1 ?enough :> key
+
+    local saved-mod-count
+
     [
         minibuffer current-buffer!
+
+        current-command last-command!
+        nil current-command!
+
+        mod-count saved-mod-count!
+
         key lookup-key
         [
-            call-symbol
+            dup current-command! call-symbol
             minibuffer-update-caret-pos
             gtkui-minibuffer-invalidate
         ] [
             key feral-key:key-to-printable-char [
-                nil current-command!
                 minibuffer-insert-char
                 minibuffer-update-caret-pos
                 gtkui-minibuffer-invalidate
             ] when*
         ] if*
+
+        mod-count saved-mod-count > [ reset-completion ] when
+
     ] keep-current-buffer ;
 
 public
@@ -154,6 +165,7 @@ public
         minibuffer current-buffer!
         editor:reset-undo
         editor:reset-redo
+        reset-completion
         minibuffer-update-caret-pos
         gtkui-minibuffer-main
     ] keep-current-buffer
@@ -176,6 +188,7 @@ public
         minibuffer current-buffer!
         editor:reset-undo
         editor:reset-redo
+        reset-completion
         minibuffer-update-caret-pos
         gtkui-minibuffer-main
     ] keep-current-buffer
