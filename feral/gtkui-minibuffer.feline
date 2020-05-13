@@ -96,7 +96,7 @@ public: minibuffer-set-text             // string -> void
 
 defer minibuffer-insert-char
 
-: gtkui-minibuffer-keydown              // key -> void
+: minibuffer-dispatch                   // key -> void
     1 ?enough :> key
     [
         minibuffer current-buffer!

@@ -412,7 +412,7 @@ subroutine gtkui_minibuffer_keydown     ; wparam -> void
         mov     rbx, arg0_register
         _tag_fixnum
 
-        _quote "gtkui-minibuffer-keydown"
+        _quote "minibuffer-dispatch"
         _quote "mini"
         _ ?lookup_symbol
         _ call_symbol
