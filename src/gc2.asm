@@ -20,14 +20,14 @@ file __FILE__
 asm_global gc_roots_                    ; initialized in cold
 
 ; ### gc_roots
-code gc_roots, 'gc_roots', SYMBOL_INTERNAL ; -- vector
-        pushrbx
+code gc_roots, 'gc_roots', SYMBOL_INTERNAL ; -> vector
+        _dup
         mov     rbx, [gc_roots_]
         next
 endcode
 
 ; ### gc_add_root
-code gc_add_root, 'gc_add_root', SYMBOL_INTERNAL  ; raw-address --
+code gc_add_root, 'gc_add_root', SYMBOL_INTERNAL  ; raw-address ->
         _ gc_roots
         _ vector_push
         next
@@ -36,7 +36,7 @@ endcode
 asm_global gc2_work_list_
 
 %macro _gc2_work_list 0                 ; -> ^vector
-        pushrbx
+        _dup
         mov     rbx, [gc2_work_list_]
 %endmacro
 
@@ -44,7 +44,7 @@ asm_global gc2_work_list_fake_handle_
 
 ; ### gc2_work_list
 code gc2_work_list, 'gc2_work_list'     ; -> handle
-        pushrbx
+        _dup
         mov     rbx, [gc2_work_list_fake_handle_]
         _tag_handle
         next
@@ -62,7 +62,7 @@ code gc2_initialize_work_list, 'gc2_initialize_work_list'
 
         ; store address of vector in asm global
         mov     [gc2_work_list_], rbx                   ; -> handle ^vector
-        poprbx                                          ; -> handle
+        _drop                                           ; -> handle
 
         ; and release its handle
         _untag_handle
@@ -124,7 +124,7 @@ code gc2_assert_white, 'gc2_assert_white' ; ^object -> void
 .ok:
         cmp     byte [rbx + OBJECT_MARK_BYTE_OFFSET], MARK_WHITE
         jne     .error
-        poprbx
+        _drop
         next
 
 .error:
@@ -430,7 +430,7 @@ endcode
 asm_global gc2_dispatch_table_
 
 %macro _gc2_dispatch_table 0 ; -> ^vector
-        pushrbx
+        _dup
         mov     rbx, [gc2_dispatch_table_]
 %endmacro
 
@@ -447,7 +447,7 @@ code gc2_initialize_dispatch_table, 'gc2_initialize_dispatch_table'
 
         ; store address of array in asm global
         mov     [gc2_dispatch_table_], rbx
-        poprbx                          ; -> handle
+        _drop                           ; -> handle
 
         ; and release its handle
         _untag_handle
@@ -542,14 +542,14 @@ code gc2_scan_object, 'gc2_scan_object' ; ^object -> void
         cmp     rbx, LAST_BUILTIN_TYPECODE
         jg      .1
 
-        pushrbx
+        _dup
         mov     rbx, [gc2_dispatch_table_]
 
         _array_nth_unsafe
         test    rbx, rbx
         jz      twodrop
         mov     rax, rbx
-        poprbx                          ; -- object
+        _drop                           ; -> object
         call    rax
         next
 
@@ -564,8 +564,8 @@ code gc2_scan_verified_handle, 'gc2_scan_verified_handle' ; handle -> empty
 
         _dup
         _ verified_handle?
-        cmp     rbx, f_value
-        poprbx
+        cmp     rbx, NIL
+        _drop
         jz      drop
         ; -> handle
         _ gc2_maybe_push_handle
@@ -684,11 +684,11 @@ code gc2_scan_static_symbols, 'gc2_scan_static_symbols'
         next
 endcode
 
-asm_global stop_for_gc?_, f_value
+asm_global stop_for_gc?_, NIL
 
 ; ### stop_for_gc?
 code stop_for_gc?, 'stop_for_gc?', SYMBOL_INTERNAL ; -> ?
-        pushrbx
+        _dup
         mov     rbx, [stop_for_gc?_]
         next
 endcode
@@ -698,7 +698,7 @@ code stop_for_gc, 'stop_for_gc', SYMBOL_INTERNAL
         ; store the Feline handle of the current thread in the asm global
         _ current_thread
         xchg    qword [stop_for_gc?_], rbx
-        poprbx
+        _drop
         next
 endcode
 
@@ -734,7 +734,7 @@ endcode
 code safepoint_stop, 'safepoint_stop', SYMBOL_INTERNAL
         _ current_thread
         cmp     qword [stop_for_gc?_], rbx
-        poprbx
+        _drop
         jne     .2
         _return
 .2:
@@ -744,16 +744,16 @@ endcode
 
 ; ### safepoint
 code safepoint, 'safepoint', SYMBOL_INTERNAL
-        cmp     qword [stop_for_gc?_], f_value
+        cmp     qword [stop_for_gc?_], NIL
         jne     safepoint_stop
         next
 endcode
 
-asm_global in_gc?_, f_value
+asm_global in_gc?_, NIL
 
 ; ### in-gc?
 code in_gc?, 'in-gc?' ; -> ?
-        pushrbx
+        _dup
         mov     rbx, [in_gc?_]
         next
 endcode
@@ -773,8 +773,8 @@ value gc_end_cycles, 'gc-end-cycles', 0
 asm_global gc_count_value, 0
 
 ; ### gc-count
-code gc_count, 'gc-count'       ; -- n
-        pushrbx
+code gc_count, 'gc-count'       ; -> n
+        _dup
         mov     rbx, [gc_count_value]
         _tag_fixnum
         next
@@ -792,16 +792,16 @@ feline_global gc_pending, 'gc-pending'
 ; ### gc-disable
 code gc_disable, 'gc-disable'
         _ maybe_gc
-        mov     qword [S_gc_inhibit_symbol_value], t_value
+        mov     qword [S_gc_inhibit_symbol_value], TRUE
         next
 endcode
 
 ; ### gc-enable
 code gc_enable, 'gc-enable'
-        mov     qword [S_gc_inhibit_symbol_value], f_value
-        cmp     qword [S_gc_pending_symbol_value], f_value
+        mov     qword [S_gc_inhibit_symbol_value], NIL
+        cmp     qword [S_gc_pending_symbol_value], NIL
         je     .1
-        mov     qword [S_gc_pending_symbol_value], f_value
+        mov     qword [S_gc_pending_symbol_value], NIL
         _ gc
 .1:
         next
@@ -818,7 +818,7 @@ code wait_for_thread_to_stop, 'wait_for_thread_to_stop', SYMBOL_INTERNAL ; threa
         _dup
         _ thread_state
         cmp     rbx, S_THREAD_STOPPED
-        poprbx
+        _drop
         je      .exit
 
         _lit tagged_zero
@@ -849,16 +849,16 @@ code start_the_world, 'start_the_world', SYMBOL_INTERNAL
 
         _debug_print "start_the_world"
 
-        mov     eax, f_value
+        mov     eax, NIL
         xchg    qword [stop_for_gc?_], rax
 
         next
 endcode
 
-asm_global gc_lock_, f_value
+asm_global gc_lock_, NIL
 
 %macro  _gc_lock 0
-        pushrbx
+        _dup
         mov     rbx, [gc_lock_]
 %endmacro
 
@@ -872,7 +872,7 @@ endcode
 code initialize_gc_lock, 'initialize_gc_lock', SYMBOL_INTERNAL
         _ make_mutex
         mov     [gc_lock_], rbx
-        poprbx
+        _drop
         _lit gc_lock_
         _ gc_add_root
         next
@@ -882,7 +882,7 @@ asm_global gc2_work_list_max_
 
 ; ### gc2_work_list_max
 code gc2_work_list_max, 'gc2_work_list_max'
-        pushrbx
+        _dup
         mov     rbx, [gc2_work_list_max_]
         _tag_fixnum
         next
@@ -934,23 +934,23 @@ endcode
 ; ### gc2_collect
 code gc2_collect, 'gc2_collect'
 
-        cmp     qword [S_gc_inhibit_symbol_value], f_value
+        cmp     qword [S_gc_inhibit_symbol_value], NIL
         je .1
-        mov     qword [S_gc_pending_symbol_value], t_value
+        mov     qword [S_gc_pending_symbol_value], TRUE
         _return
 .1:
-        cmp     qword [S_gc_verbose_symbol_value], f_value
+        cmp     qword [S_gc_verbose_symbol_value], NIL
         je .2
         _ ticks
         _to gc_start_ticks
         _rdtsc
         _to gc_start_cycles
 .2:
-        mov     qword [in_gc?_], t_value
+        mov     qword [in_gc?_], TRUE
 
         _thread_count
         cmp     rbx, 1
-        poprbx
+        _drop
         jne     .3
 
         _ current_thread_save_registers
@@ -1007,11 +1007,11 @@ code gc2_collect, 'gc2_collect'
 
         inc     qword [gc_count_value]
 
-        mov     qword [in_gc?_], f_value
+        mov     qword [in_gc?_], NIL
 
-        mov     qword [S_gc_pending_symbol_value], f_value
+        mov     qword [S_gc_pending_symbol_value], NIL
 
-        cmp     qword [S_gc_verbose_symbol_value], f_value
+        cmp     qword [S_gc_verbose_symbol_value], NIL
         je .5
 
         _rdtsc
@@ -1060,7 +1060,7 @@ code gc2, 'gc2'
 
         _debug_print "entering gc2"
 
-        _ gc_lock
+        _gc_lock
         _ mutex_trylock
         _tagged_if_not .1
         ; gc is already in progress
@@ -1072,15 +1072,15 @@ code gc2, 'gc2'
 
 .wait:
         _ trylock_handles
-        cmp     rbx, f_value
-        poprbx
+        cmp     rbx, NIL
+        _drop
         je      .wait
 
         _ gc2_collect
 
         _ unlock_handles
 
-        _ gc_lock
+        _gc_lock
         _ mutex_unlock
         _tagged_if_not .2
         _error "gc mutex_unlock failed"
