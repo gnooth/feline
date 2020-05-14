@@ -18,7 +18,7 @@ in: editor
 
 private
 
-: current-buffer-repository // void -> string/nil
+: git-current-buffer-repository         // void -> string/nil
     current-buffer-directory !> dir
     dir nil? [ nil ] ?return
 
@@ -32,31 +32,25 @@ private
 
     repo ;
 
-: git-diff-no-output ( sourcefile )
-    sourcefile
-    [
-        "git ls-files " sourcefile + shell-command-to-string // -> string/nil
+: git-diff-no-output ( source-file )    // string/nil -> void
+    source-file [
+        "git ls-files " source-file + shell-command-to-string // -> string/nil
         [ length 0? "Untracked" "No changes" ? message ] when*
-    ]
-    [
+    ] [
         "No output" message
     ] if ;
 
-: git-find-file ( name )
+: git-find-file ( name )                // string/nil -> string/nil
 
-    name file? [
-        name canonical-path
-    ] ?return
-
-    name file-name-absolute? [
-        name
-    ] ?return
+    name nil? [ nil ] ?return
+    name file? [ name canonical-path ] ?return
+    name file-name-absolute? [ name ] ?return
 
     local old-dir
     local output
     local found
 
-    current-buffer-repository [
+    git-current-buffer-repository [
         // -> repo
         get-current-directory old-dir!
         file-name-directory set-current-directory drop
@@ -75,7 +69,7 @@ private
     ] when*
 
     found [
-        current-buffer-repository
+        git-current-buffer-repository
         file-name-directory
         swap path-append
         canonical-path
@@ -87,21 +81,33 @@ private
     tokens first "git" assert=
     tokens second "diff" assert=
 
-    2 tokens [ '-' swap string-first-char neq? ] find-from nip :> name
+    local name
+    local source-file
 
-    name git-find-file name or :> sourcefile
+    tokens length 2 > [
+        2 tokens [ '-' swap string-first-char neq? ] find-from nip name!
+    ] when
 
-    get-current-directory :> old-dir
+    name [
+        name git-find-file name or source-file!
+    ] when
 
-    // change to directory containing sourcefile
-    sourcefile file-name-directory set-current-directory drop
+    source-file [ file-name-directory ] [ current-buffer-directory ] if* :> source-dir
 
     execute-command-input-string :> command
 
-    // execute the command
-    command shell-command-to-string :> output
+    local old-dir
+    local output
 
-    old-dir [ set-current-directory drop ] when*
+    source-dir [
+        get-current-directory old-dir!
+        source-dir set-current-directory drop
+        command shell-command-to-string output!
+        old-dir [ set-current-directory drop ] when*
+    ] [
+        // no source dir
+        command shell-command-to-string output!
+    ] if
 
     // shell-command-to-string might return nil
     output nil? [ "No output" message ] ?return
@@ -135,7 +141,7 @@ private
 
         true repaint?!
     ] [
-        sourcefile git-diff-no-output
+        source-file git-diff-no-output
     ] if ;
 
 global git-command
