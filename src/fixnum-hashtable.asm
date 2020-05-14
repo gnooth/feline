@@ -79,7 +79,7 @@ subroutine make_bucket_array    ; raw-capacity -> raw-address
         _ feline_malloc                 ; returns raw allocated address in rax
 
         mov     arg0_register, rax      ; raw address
-        mov     arg1_register, S_empty_marker
+        mov     arg1_register, symbol(empty_marker)
         mov     arg2_register, rbx      ; raw capacity in cells
         push    rax
         _ fill_cells
@@ -152,7 +152,7 @@ code fixnum_hashtable_occupancy, 'fixnum-hashtable-occupancy'   ; hashtable -> f
 endcode
 
 ; ### fixnum-hashtable-deletions
-code fixnum_hashtable_deleetions, 'fixnum-hashtable-deletions'  ; hashtable -> fixnum
+code fixnum_hashtable_deletions, 'fixnum-hashtable-deletions'   ; hashtable -> fixnum
         _ check_fixnum_hashtable
         mov     rbx, [rbx + FIXNUM_HASHTABLE_RAW_DELETIONS_OFFSET]
         _tag_fixnum
@@ -189,7 +189,7 @@ code gethash, 'gethash'                 ; key hashtable -> void
         cmp     rbx, rax
         je      .found
 
-        cmp     rax, S_empty_marker
+        cmp     rax, symbol(empty_marker)
         je      .not_found
 
         test    rax, rax                ; check for sentinel
@@ -207,7 +207,7 @@ code gethash, 'gethash'                 ; key hashtable -> void
         cmp     rbx, rax
         je      .found
 
-        cmp     rax, S_empty_marker
+        cmp     rax, symbol(empty_marker)
         je      .not_found
 
         add     r11, BYTES_PER_CELL * 2
@@ -254,7 +254,7 @@ code remhash, 'remhash'                 ; key hashtable -> void
         cmp     rbx, rax
         je      .found
 
-        cmp     rax, S_empty_marker
+        cmp     rax, symbol(empty_marker)
         je      .not_found
 
         test    rax, rax                ; check for sentinel
@@ -272,7 +272,7 @@ code remhash, 'remhash'                 ; key hashtable -> void
         cmp     rbx, rax
         je      .found
 
-        cmp     rax, S_empty_marker
+        cmp     rax, symbol(empty_marker)
         je      .not_found
 
         add     r11, BYTES_PER_CELL * 2
@@ -313,7 +313,7 @@ subroutine puthash_internal             ; value key -> void
         cmp     rbx, rax
         je      .found
 
-        cmp     rax, S_empty_marker
+        cmp     rax, symbol(empty_marker)
         je      .not_found
 
         test    rax, rax                ; check for sentinel
@@ -331,7 +331,7 @@ subroutine puthash_internal             ; value key -> void
         cmp     rbx, rax
         je      .found
 
-        cmp     rax, S_empty_marker
+        cmp     rax, symbol(empty_marker)
         je      .not_found
 
         add     r11, BYTES_PER_CELL * 2
