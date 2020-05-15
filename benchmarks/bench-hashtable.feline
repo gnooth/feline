@@ -8,20 +8,20 @@ global ht
 global count 1000000 count!
 
 : test1
-    2 make-fixnum-hashtable ht!
-    count [ dup 17 + swap ht puthash ] each-integer ;
+    2 make-equal-hashtable ht!
+    count [ dup 17 + swap ht xputhash ] each-integer ;
 
 : test2
     // assertions are slow
-    count [ dup ht gethash 17 - assert-eq ] each-integer ;
+    count [ dup ht xgethash 17 - assert-eq ] each-integer ;
 
 : test3
     // no assertions
-    count [ ht gethash drop ] each-integer ;
+    count [ ht xgethash drop ] each-integer ;
 
 : test4
     // looking for keys that aren't there
-    count [ count + ht gethash drop ] each-integer ;
+    count [ count + ht xgethash drop ] each-integer ;
 
 : bench
     // first verify correct behavior
@@ -44,5 +44,47 @@ global count 1000000 count!
 
     ?nl "test4" print
     5 [ ' test4 time ] times
+
+    nil ht! gc ;
+
+global xht
+
+: xtest1
+    2 <hashtable> xht!
+    count [ dup 17 + swap xht set-at ] each-integer ;
+
+: xtest2
+    // assertions are slow
+    count [ dup xht at 17 - assert-eq ] each-integer ;
+
+: xtest3
+    // no assertions
+    count [ xht at drop ] each-integer ;
+
+: xtest4
+    // looking for keys that aren't there
+    count [ count + xht at drop ] each-integer ;
+
+: xbench
+    // first verify correct behavior
+    xtest1 xtest2 nil xht! gc
+
+    ?nl "xtest1" print
+    5 [ ' xtest1 time ] times
+
+    gc
+
+    ?nl "xtest2" print
+    5 [ ' xtest2 time ] times
+
+    gc
+
+    ?nl "xtest3" print
+    5 [ ' xtest3 time ] times
+
+    gc
+
+    ?nl "xtest4" print
+    5 [ ' xtest4 time ] times
 
     nil ht! gc ;
