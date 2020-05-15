@@ -425,11 +425,14 @@ global regop    // REGister or OPcode extension (depending on the instruction)
     modrm-reg register-reg dreg!
     modrm-mod {
         { 0 [
-            modrm-rm {
+            modrm-rm { // case
                 { 4 [
                     !sib-byte
                     {
-                        { [ sib-base 4 = sib-byte 0x24 = and ] [ sib-base sbase! ] }
+                        {
+                            [ sib-base 4 = sib-byte 0x24 = and ]
+                            [ sib-base register-rm sbase! ]
+                        }
                         { [ sib-base 5 = ] [ next-int32 sdisp! t memory-operand?! ] }
                         [
                             sib-base register-rm sbase!
@@ -440,7 +443,7 @@ global regop    // REGister or OPcode extension (depending on the instruction)
                 ] }
                 { 5 [
                     // RIP-relative addressing, 32-bit offset
-                    next-int32 ip + sdisp! t memory-operand?!
+                    next-int32 ip + sdisp! true memory-operand?!
                 ] }
                 [
                     // default case
