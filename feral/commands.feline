@@ -70,12 +70,16 @@ in: editor
 
     true repaint?! ;
 
-: open-file-get-completions
+: open-file-get-completions             // string -> completion
     1 ?enough verify-string :> prefix
-    prefix file-name-directory :> dir
+
+    prefix empty? [ nil ] ?return
+
+    prefix file-name-directory get-current-directory or :> dir
+
     prefix file-name-nondirectory :> name
 
-    nil !> s
+    local s
     dir directory-files [
         s! [ s string-last-char '~' neq? ] [ name s head? ] both?
     ] filter :> files
