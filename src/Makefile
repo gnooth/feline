@@ -147,6 +147,7 @@ ASM_SOURCES = feline.asm feline_home.asm externs.asm \
 	debug.asm \
 	defer.asm \
 	dynamic-scope.asm \
+	equal-hashtable.asm \
 	errors.asm \
 	file-output-stream.asm \
 	files.asm \

@@ -167,9 +167,16 @@ code error_not_hashtable, 'error-not-hashtable' ; x --
         next
 endcode
 
+; ### error-not-equal-hashtable
+code error_not_equal_hashtable, 'error-not-equal-hashtable' ; x --
+        _quote "an equal-hashtable"
+        _ format_type_error
+        next
+endcode
+
 ; ### error-not-fixnum-hashtable
 code error_not_fixnum_hashtable, 'error-not-fixnum-hashtable' ; x --
-        _quote "a fixnum hashtable"
+        _quote "a fixnum-hashtable"
         _ format_type_error
         next
 endcode
