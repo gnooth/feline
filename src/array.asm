@@ -286,25 +286,15 @@ array_nth_untagged:
 endcode
 
 ; ### array-set-nth
-code array_set_nth, 'array-set-nth'     ; element index handle --
-
-        _untag_fixnum qword [rbp]
-
-array_set_nth_untagged:
-        _ check_array
-
-        _twodup
-        _array_raw_length
-        _ult
-        _if .2
-        _array_raw_data_address
-        _swap
-        _cells
-        _plus
-        _store
-        _else .2
-        _error "array-set-nth index out of range"
-        _then .2
+code array_set_nth, 'array-set-nth'     ; element index array -> void
+        _ check_array                   ; rbx: ^array
+        mov     rax, [rbp]
+        _check_index_rax                ; rax: untagged index
+        cmp     rax, [rbx + ARRAY_RAW_LENGTH_OFFSET]
+        jge     error_array_index_out_of_bounds
+        mov     rdx, [rbp + BYTES_PER_CELL]
+        mov     qword [rbx + ARRAY_DATA_OFFSET + rax * BYTES_PER_CELL], rdx
+        _3drop
         next
 endcode
 
