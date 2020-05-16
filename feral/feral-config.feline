@@ -33,7 +33,7 @@ global source-path
 
 // This is the default. The user can specify a different source path in
 // .feral.d/init.feline.
-{ "src" "feral" } [ feline-home swap path-append ] map source-path!
+{ "src" "feral" "benchmarks" } [ feline-home swap path-append ] map source-path!
 
 : get-source-path
     source-path ;
