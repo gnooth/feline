@@ -196,8 +196,8 @@ code xgethash, 'xgethash'                 ; key hashtable -> void
 .loop1:
         mov     rax, [r12]      ; rax: entry-key
 
-;         cmp     r13, rax
-;         je      .found
+        cmp     r13, rax
+        je      .found
 
         cmp     rax, symbol(empty_marker)
         je      .not_found
@@ -223,8 +223,8 @@ code xgethash, 'xgethash'                 ; key hashtable -> void
 .loop2:
         mov     rax, [r12]
 
-;         cmp     rbx, rax
-;         je      .found
+        cmp     r13, rax
+        je      .found
 
         cmp     rax, symbol(empty_marker)
         je      .not_found
