@@ -242,12 +242,11 @@ inline feline_or, 'or'                  ; obj1 obj2 -> ?
 endinline
 
 ; ### if
-code feline_if, 'if'                    ; ? true false ->
-        mov     rax, [rbp + BYTES_PER_CELL] ; condition in rax
-        mov     rdx, [rbp]              ; true quotation in rdx, false quotation in rbx
-        cmp     rax, NIL
-        cmovne  rbx, rdx                ; if condition is not nil, move true quotation into rbx
-        _ callable_raw_code_address     ; code address in rbx
+code feline_if, 'if'                    ; ? quot1 quot2 ->
+        cmp     qword [rbp + BYTES_PER_CELL], NIL
+        mov     rdx, [rbp]              ; quot1 in rdx, quot2 in rbx
+        cmovne  rbx, rdx                ; if condition is not nil, move quot1 into rbx
+        _ callable_raw_code_address     ; rbx: ^code
         mov     rax, rbx
         _3drop
 %ifdef DEBUG
@@ -259,33 +258,38 @@ code feline_if, 'if'                    ; ? true false ->
 endcode
 
 ; ### if*
-code if_star, 'if*'                     ; ? true false ->
+code if_star, 'if*'                     ; ? quot1 quot2 ->
 ; Factor
 ; "If the condition is true, it is retained on the stack before the true
 ; quotation is called. Otherwise, the condition is removed from the stack
 ; and the false quotation is called."
 
-        mov     rax, [rbp + BYTES_PER_CELL] ; condition in rax
-        cmp     rax, NIL
+        cmp     qword [rbp + BYTES_PER_CELL], NIL
         jne     .1
         ; condition is false
-        ; false quotation is already in rbx
-        _2nip
+        ; rbx: quot2
         _ callable_raw_code_address
         mov     rax, rbx
-        _drop
+        _3drop
+%ifdef DEBUG
         call    rax
         next
+%else
+        jmp     rax
+%endif
 .1:
         ; condition is true
-        ; drop false quotation
-        _drop                           ; true quotation is now in rbx
+        ; drop quot2
+        _drop                           ; rbx: quot1
         _ callable_raw_code_address
         mov     rax, rbx
         _drop
+%ifdef DEBUG
         call    rax
-
         next
+%else
+        jmp     rax
+%endif
 endcode
 
 ; ### when
