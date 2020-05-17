@@ -122,6 +122,14 @@
         _untag_fixnum %1
 %endmacro
 
+%macro  _check_index_rax 0
+        test    al, FIXNUM_TAG
+        jz      error_not_index
+        test    rax, rax
+        js      error_not_index
+        sar     rax, FIXNUM_TAG_BITS
+%endmacro
+
 %define f_value BOOLEAN_TAG
 %define t_value BOOLEAN_TAG + (1 << LOWTAG_BITS)
 
