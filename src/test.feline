@@ -4712,4 +4712,21 @@ test: tokenize-test
 
 tokenize-test
 
+test: array-set-nth-test
+    10 make-array/1 :> a
+    { } [
+        10 [ [ number>string ] keep a array-set-nth ] each-integer
+        a [ number>string assert= ] each-index
+
+        [ -1 -1 a array-set-nth ] assert-must-fail
+        [ -1 most-negative-fixnum a array-set-nth ] assert-must-fail
+        [ 87 10 a array-set-nth ] assert-must-fail
+        [ 87 most-positive-fixnum a array-set-nth ] assert-must-fail
+
+        [ array-set-nth ] assert-must-fail
+    ] unit-test
+;
+
+array-set-nth-test
+
 ?nl "Reached end of test.feline" write-string
