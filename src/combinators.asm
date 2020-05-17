@@ -366,10 +366,14 @@ endcode
 
 ; ### &&
 code short_circuit_and, '&&'            ; seq -> ?
+; If every quotation returns true, returns the result from the last quotation.
+; If any quotation returns nil, returns nil without calling the subsequent
+; quotations.
         push    this_register
         mov     this_register, rbx      ; handle to seq in this_register
         _ length
-        _untag_fixnum
+        sar     rbx, FIXNUM_TAG_BITS
+        jz      .exit2
         _do_times .1
         _tagged_loop_index
         _this                           ; -> tagged-index handle
@@ -388,14 +392,20 @@ code short_circuit_and, '&&'            ; seq -> ?
         mov     rbx, rax
         pop     this_register
         next
+.exit2:
+        mov     rbx, NIL
+        pop     this_register
+        next
 endcode
 
 ; ### ||
 code short_circuit_or, '||'             ; seq -> ?
+; Returns the first true result, or nil if every quotation returns nil.
         push    this_register
         mov     this_register, rbx      ; handle to seq in this_register
         _ length
-        _untag_fixnum
+        sar     rbx, FIXNUM_TAG_BITS
+        jz      .exit2
         _do_times .1
         _tagged_loop_index
         _this                           ; -> tagged-index handle
@@ -412,6 +422,10 @@ code short_circuit_or, '||'             ; seq -> ?
 .exit:
         _dup
         mov     rbx, rax
+        pop     this_register
+        next
+.exit2:
+        mov     rbx, NIL
         pop     this_register
         next
 endcode
@@ -463,5 +477,50 @@ code either?, 'either?'                 ; quot1 quot2 -> ?
         next
 .1:
         _rdrop
+        next
+endcode
+
+; ### replicate
+code replicate, 'replicate'             ; n quotation -> array
+; Factor
+; Calls the quotation n times and collects the results into a new array.
+; quotation: void -> x
+
+        ; protect callable from gc
+        push    rbx
+
+        _ callable_raw_code_address
+
+        push    r12
+        push    this_register
+
+        mov     r12, rbx                ; r12: ^code
+        _drop                           ; -> n
+
+        _dup
+        _ make_array_1
+        mov     this_register, rbx      ; this_register: array (handle)
+        _drop                           ; -> n
+
+        _untag_fixnum
+        _do_times .1
+
+        call    r12
+
+        _tagged_loop_index
+        _this
+        _ array_set_nth                 ; FIXME array-set-nth-unsafe
+
+        _loop .1
+
+        _dup
+        mov     rbx, this_register
+
+        pop     this_register
+        pop     r12
+
+        ; drop callable
+        pop     rax
+
         next
 endcode
