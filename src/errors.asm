@@ -153,6 +153,13 @@ code error_not_vocab, 'error-not-vocab'         ; x --
         next
 endcode
 
+; ### error-not-array
+code error_not_array, 'error-not-array'         ; x ->
+        _quote "an array"
+        _ format_type_error
+        next
+endcode
+
 ; ### error-not-vector
 code error_not_vector, 'error-not-vector'       ; x --
         _quote "a vector"

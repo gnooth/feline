@@ -81,22 +81,23 @@ code array?, 'array?'                   ; handle -- ?
         next
 endcode
 
-; ### error-not-array
-code error_not_array, 'error-not-array' ; x --
-        ; REVIEW
-        _error "not an array"
-        next
-endcode
-
-; ### check-array
-code check_array, 'check-array'         ; handle -- raw-array
-        _ deref
+; ### check_array
+code check_array, 'check_array'         ; handle -> ^array
+        cmp     bl, HANDLE_TAG
+        jne     .error2
+        mov     rdx, rbx                ; copy argument in case there is an error
+        _handle_to_object_unsafe
+%ifdef DEBUG
         test    rbx, rbx
-        jz      error_not_array
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_ARRAY
-        jne     error_not_array
+        jz      error_empty_handle
+%endif
+        cmp     word [rbx], TYPECODE_ARRAY
+        jne     .error1
         next
+.error1:
+        mov     rbx, rdx                ; restore original argument
+.error2:
+        jmp     error_not_array
 endcode
 
 ; ### array_raw_length
