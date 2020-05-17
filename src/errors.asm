@@ -328,16 +328,23 @@ code error_unexpected_end_of_input, 'error-unexpected-end-of-input'
         next
 endcode
 
+; ### error-array-index-out-of-bounds
+code error_array_index_out_of_bounds, 'error-array-index-out-of-bounds'
+        _quote "ERROR: array index out of bounds"
+        _ error
+        next
+endcode
+
 ; ### error-string-index-out-of-bounds
 code error_string_index_out_of_bounds, 'error-string-index-out-of-bounds'
-        _quote "ERROR: string index out of bounds."
+        _quote "ERROR: string index out of bounds"
         _ error
         next
 endcode
 
 ; ### error-vector-index-out-of-bounds
 code error_vector_index_out_of_bounds, 'error-vector-index-out-of-bounds'
-        _quote "ERROR: vector index out of bounds."
+        _quote "ERROR: vector index out of bounds"
         _ error
         next
 endcode
