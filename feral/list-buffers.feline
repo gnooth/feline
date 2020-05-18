@@ -26,8 +26,26 @@ private
 
 : list-buffers-select
     :buffer dot-line line-get-property current-buffer!
-    t repaint?!
+    true repaint?!
     update-display ;
+
+: list-buffers-delete
+    :buffer dot-line line-get-property :> buf
+    buf buffer-modified? [
+        "Buffer is modified" message
+    ] [
+        buffer-list vector? assert
+        buffer-list [ buf eq? ] find    // -> index/nil element/nil
+        [
+            // -> index
+            buffer-list vector-remove-nth!
+
+            delete-line-internal
+            buffer-name-column dot-offset!
+            mod-count mod-count-last-save!
+            update-display
+        ] when
+    ] if ;
 
 : list-buffers-quit
     current-buffer parent>> current-buffer!
@@ -39,6 +57,7 @@ global list-buffers-local-map
 : initialize-local-map
     128 <hashtable> :> keymap
     ' list-buffers-select   feral-key:enter     keymap set-at
+    ' list-buffers-delete   feral-key:delete    keymap set-at
     ' list-buffers-quit     feral-key:escape    keymap set-at
     ' list-buffers-quit     feral-key:ctrl-w    keymap set-at
     keymap list-buffers-local-map! ;
@@ -105,8 +124,7 @@ feral-config:winui? feral-config:gtkui? or #if
 
     buf current-buffer!
     renumber
-    true repaint?!
-;
+    true repaint?! ;
 
 in: editor
 
