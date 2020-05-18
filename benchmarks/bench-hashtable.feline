@@ -8,20 +8,20 @@ global ht
 global count 1000000 count!
 
 : test1
-    2 make-equal-hashtable ht!
-    count [ dup 17 + swap ht xputhash ] each-integer ;
+    2 make-fixnum-hashtable ht!
+    count [ dup 17 + swap ht puthash ] each-integer ;
 
 : test2
     // assertions are slow
-    count [ dup ht xgethash 17 - assert-eq ] each-integer ;
+    count [ dup ht gethash 17 - assert-eq ] each-integer ;
 
 : test3
     // no assertions
-    count [ ht xgethash drop ] each-integer ;
+    count [ ht gethash drop ] each-integer ;
 
 : test4
     // looking for keys that aren't there
-    count [ count + ht xgethash drop ] each-integer ;
+    count [ count + ht gethash drop ] each-integer ;
 
 : bench
     // first verify correct behavior
