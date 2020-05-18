@@ -159,6 +159,86 @@ code fixnum_hashtable_deletions, 'fixnum-hashtable-deletions'   ; hashtable -> f
         next
 endcode
 
+; ### hash-fixnum
+code hash_fixnum, 'hash-fixnum'         ; x -> hashcode
+; sbcl src/code/compiler/sxhash.lisp
+
+;  (let ((c (logand 1193941380939624010 sb-xc:most-positive-fixnum)))
+;    ;; shift by -1 to get sign bit into hash
+;    `(logand (logxor (ash x 4) (ash x -1) ,c) sb-xc:most-positive-fixnum)))
+
+        _verify_fixnum
+        sar     rbx, FIXNUM_TAG_BITS    ; rbx: x (untagged)
+
+        mov     rcx, rbx
+        shl     rcx, 4                  ; rcx: (ash x 4)
+
+        ; get sign bit into hash
+        shr     rbx, 1                  ; rbx: (ash x -1)
+
+        mov     rdx, 1193941380939624010
+        mov     rax, MOST_POSITIVE_FIXNUM
+        and     rdx, rax                ; rdx: c
+
+        xor     rbx, rcx                ; (logxor (ash x 4) (ash x -1))
+        xor     rbx, rdx                ; (logxor (ash x 4) (ash x -1) c)
+        and     rbx, rax                ; (logand (logxor ...) m-p-f)
+
+        _tag_fixnum
+        next
+endcode
+
+; ### murmur64
+code murmur64, 'murmur64'               ; k -> hashcode
+; smhasher/src/MurmurHash3.cpp
+
+; FORCE_INLINE uint64_t fmix64 ( uint64_t k )
+; {
+;   k ^= k >> 33;
+;   k *= BIG_CONSTANT(0xff51afd7ed558ccd);
+;   k ^= k >> 33;
+;   k *= BIG_CONSTANT(0xc4ceb9fe1a85ec53);
+;   k ^= k >> 33;
+;
+;   return k;
+; }
+
+        _verify_fixnum
+        sar     rbx, FIXNUM_TAG_BITS    ; rbx: k (untagged)
+
+        mov     rax, rbx
+        shr     rax, 33                 ; rax: k >> 33
+        xor     rax, rbx                ; rax: k ^= k >> 33
+
+        mov     rdx, 0xff51afd7ed558ccd
+        mul     rdx                     ; rax: k *= 0xff51afd7ed558ccd
+
+        mov     rbx, rax                ; rbx: k *= 0xff51afd7ed558ccd
+        shr     rax, 33                 ; rax: k >> 33
+        xor     rax, rbx                ; rax: k ^= k >> 33
+
+        mov     rdx, 0xc4ceb9fe1a85ec53
+        mul     rdx                     ; rax: k *= 0xc4ceb9fe1a85ec53
+
+        mov     rbx, rax                ; rbx: k *= 0xc4ceb9fe1a85ec53
+        shr     rax, 33                 ; rax: k >> 33
+        xor     rbx, rax                ; rbx: k ^= k >> 33
+
+        mov     rax, MOST_POSITIVE_FIXNUM
+        and     rbx, rax
+
+        _tag_fixnum
+        next
+endcode
+
+%macro  _hashcode_rax 0
+;         mov     rax, rbx
+        push    rbx
+        _ murmur64
+        mov     rax, rbx
+        pop     rbx
+%endmacro
+
 ; ### gethash
 code gethash, 'gethash'                 ; key hashtable -> void
 
@@ -169,22 +249,24 @@ code gethash, 'gethash'                 ; key hashtable -> void
 
         _verify_fixnum
 
-        ; get data address in r11
-        mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+        ; get data address in r12
+        push    r12
+        mov     r12, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
 
         ; get hashcode in rax
         ; for a fixnum hashtable, the hashcode is the key itself
-        mov     rax, rbx
+;         mov     rax, rbx
+        _hashcode_rax
 
         ; apply mask to get index of first entry to check
         and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
         ; calculate the address of the first key
         shl     rax, 4          ; convert entry index to byte index
-        add     r11, rax        ; address of first key in r11
+        add     r12, rax        ; address of first key in r12
 
 .loop1:
-        mov     rax, [r11]
+        mov     rax, [r12]
 
         cmp     rbx, rax
         je      .found
@@ -195,14 +277,14 @@ code gethash, 'gethash'                 ; key hashtable -> void
         test    rax, rax                ; check for sentinel
         jz      .wrap                   ; wrap around
 
-        add     r11, BYTES_PER_CELL * 2 ; point to next key
+        add     r12, BYTES_PER_CELL * 2 ; point to next key
         jmp     .loop1
 
 .wrap:
-        mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+        mov     r12, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
 
 .loop2:
-        mov     rax, [r11]
+        mov     rax, [r12]
 
         cmp     rbx, rax
         je      .found
@@ -210,16 +292,18 @@ code gethash, 'gethash'                 ; key hashtable -> void
         cmp     rax, symbol(empty_marker)
         je      .not_found
 
-        add     r11, BYTES_PER_CELL * 2
+        add     r12, BYTES_PER_CELL * 2
         jmp     .loop2
 
 .not_found:
         mov     rbx, NIL
+        pop     r12
         pop     this_register
         next
 
 .found:
-        mov     rbx, [r11 + BYTES_PER_CELL]
+        mov     rbx, [r12 + BYTES_PER_CELL]
+        pop     r12
         pop     this_register
         next
 endcode
@@ -234,22 +318,24 @@ code remhash, 'remhash'                 ; key hashtable -> void
 
         _verify_fixnum
 
-        ; get data address in r11
-        mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+        ; get data address in r12
+        push    r12
+        mov     r12, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
 
         ; get hashcode in rax
         ; for a fixnum hashtable, the hashcode is the key itself
-        mov     rax, rbx
+;         mov     rax, rbx
+        _hashcode_rax
 
         ; apply mask to get index of first entry to check
         and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
         ; calculate the address of the first key
         shl     rax, 4          ; convert entry index to byte index
-        add     r11, rax        ; address of first key in r11
+        add     r12, rax        ; address of first key in r12
 
 .loop1:
-        mov     rax, [r11]
+        mov     rax, [r12]
 
         cmp     rbx, rax
         je      .found
@@ -260,14 +346,14 @@ code remhash, 'remhash'                 ; key hashtable -> void
         test    rax, rax                ; check for sentinel
         jz      .wrap                   ; wrap around
 
-        add     r11, BYTES_PER_CELL * 2 ; point to next key
+        add     r12, BYTES_PER_CELL * 2 ; point to next key
         jmp     .loop1
 
 .wrap:
-        mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+        mov     r12, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
 
 .loop2:
-        mov     rax, [r11]
+        mov     rax, [r12]
 
         cmp     rbx, rax
         je      .found
@@ -275,17 +361,18 @@ code remhash, 'remhash'                 ; key hashtable -> void
         cmp     rax, symbol(empty_marker)
         je      .not_found
 
-        add     r11, BYTES_PER_CELL * 2
+        add     r12, BYTES_PER_CELL * 2
         jmp     .loop2
 
 .found:
-        mov     qword [r11], S_deleted_marker
-        mov     qword [r11 + BYTES_PER_CELL], S_deleted_marker
+        mov     qword [r12], S_deleted_marker
+        mov     qword [r12 + BYTES_PER_CELL], S_deleted_marker
         add     qword [this_register + FIXNUM_HASHTABLE_RAW_DELETIONS_OFFSET], 1
         ; fall through...
 
 .not_found:
         _drop
+        pop     r12
         pop     this_register
         next
 endcode
@@ -293,22 +380,24 @@ endcode
 subroutine puthash_internal             ; value key -> void
 ; call with ^hashtable in this_register
 
-        ; get data address in r11
-        mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+        ; get data address in r12
+        push    r12
+        mov     r12, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
 
         ; get hashcode in rax
         ; for a fixnum hashtable, the hashcode is the key itself
-        mov     rax, rbx
+;         mov     rax, rbx
+        _hashcode_rax
 
         ; apply mask to get index of first entry to check
         and     rax, [this_register + FIXNUM_HASHTABLE_RAW_MASK_OFFSET]
 
         ; calculate the address of the first key
         shl     rax, 4          ; convert entry index to byte index
-        add     r11, rax        ; address of first key in r11
+        add     r12, rax        ; address of first key in r12
 
 .loop1:
-        mov     rax, [r11]
+        mov     rax, [r12]
 
         cmp     rbx, rax
         je      .found
@@ -319,14 +408,14 @@ subroutine puthash_internal             ; value key -> void
         test    rax, rax                ; check for sentinel
         jz      .wrap                   ; wrap around
 
-        add     r11, BYTES_PER_CELL * 2 ; point to next key
+        add     r12, BYTES_PER_CELL * 2 ; point to next key
         jmp     .loop1
 
 .wrap:
-        mov     r11, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
+        mov     r12, [this_register + FIXNUM_HASHTABLE_RAW_DATA_ADDRESS_OFFSET]
 
 .loop2:
-        mov     rax, [r11]
+        mov     rax, [r12]
 
         cmp     rbx, rax
         je      .found
@@ -334,12 +423,12 @@ subroutine puthash_internal             ; value key -> void
         cmp     rax, symbol(empty_marker)
         je      .not_found
 
-        add     r11, BYTES_PER_CELL * 2
+        add     r12, BYTES_PER_CELL * 2
         jmp     .loop2
 
 .not_found:
         ; store key
-        mov     [r11], rbx
+        mov     [r12], rbx
         ; update occupancy
         add     qword [this_register + FIXNUM_HASHTABLE_RAW_OCCUPANCY_OFFSET], 1
         ; fall through...
@@ -348,9 +437,10 @@ subroutine puthash_internal             ; value key -> void
         ; get value in rax
         mov     rax, [rbp]
         ; store value
-        mov     [r11 + BYTES_PER_CELL], rax
+        mov     [r12 + BYTES_PER_CELL], rax
 
         _2drop
+        pop     r12
         ret
 endsub
 
