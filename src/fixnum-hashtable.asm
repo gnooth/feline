@@ -232,11 +232,14 @@ code murmur64, 'murmur64'               ; k -> hashcode
 endcode
 
 %macro  _hashcode_rax 0
-;         mov     rax, rbx
+%if 1
+        mov     rax, rbx
+%else
         push    rbx
         _ murmur64
         mov     rax, rbx
         pop     rbx
+%endif
 %endmacro
 
 ; ### gethash
