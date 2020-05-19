@@ -597,25 +597,10 @@ section .data
         feline_global %1, %2, NIL
 %endmacro
 
-%macro  _to_global 1                    ; label
-        mov     [S_%1_symbol_value], rbx
-        _drop
-%endmacro
-
 %macro  feline_constant 3               ; label, name, value
         symbol S_%1, %2, %1, %1_ret - %1 + 1, SYMBOL_CONSTANT | SYMBOL_INLINE, %3
         section .text
         align DEFAULT_CODE_ALIGNMENT
-%1:
-        _dup
-        mov     rbx, %3
-%1_ret:
-        next
-%endmacro
-
-%macro  constant 3                      ; label, name, value
-        head    %1, %2, 0, %1_ret - %1
-        section .text
 %1:
         _dup
         mov     rbx, %3
