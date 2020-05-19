@@ -5,7 +5,7 @@ empty
 
 global ht
 
-global count 1000000 count!
+global count 10000000 count!
 
 : test1
     2 make-fixnum-hashtable ht!
@@ -51,6 +51,7 @@ global xht
 
 : xtest1
     2 <hashtable> xht!
+//     make-fixnum-hashtable/0 xht!
     count [ dup 17 + swap xht set-at ] each-integer ;
 
 : xtest2
@@ -63,11 +64,59 @@ global xht
 
 : xtest4
     // looking for keys that aren't there
-    count [ count + xht at drop ] each-integer ;
+    6777210 [
+        count + xht at drop
+    ] each-integer ;
+
+// 2 <hashtable>
+
+// 10000000 fails
+// 7000000 fails
+// 6777225 works (2.578 seconds)
+// 6777210 works (322 ms)
+// 6777210 works (330 ms)
+// 6777200 works (441 ms)
+// 6777000 works (408 ms)
+
+
+// make-fixnum-hashtable/0
+
+// 6800000 fails
+// 6760000 works
+// 6780000 fails
+// 6777000 works
+// 6779000 fails
+// 6778000 works but very very slow (~25 seconds)
+// 6777500 works (~9 seconds)
+// 6777250 works (1.237 seconds)
+// 6777250 works (1.223 seconds)
+// 6777245 works (1.056 seconds)
+// 6777240 works (0.911 seconds)
+// 6777235 works (0.748 seconds)
+// 6777225 works (491 ms)
+
+// 6777220 works (336 ms)
+// 6777219 works (312 ms)
+// 6777218 works (289 ms)
+// 6777217 works (263 ms)
+// 6777216 works (229 ms)
+// 6777215 works (226 ms)
+
+// 6777210 works (225 ms)
+// 6777200 works (246 ms)
+// 6777160 works (229 ms)
+// 6777150 works (246 ms)
+// 6777125 works (234 ms)
+// 6777000 works (224 ms)
+// 6776000 works (247 ms)
+// 6775000 works (224 ms)
+// 6774000 works (234 ms)
+// 6770000 works (~230 ms)
 
 : xbench
     // first verify correct behavior
-    xtest1 xtest2 nil xht! gc
+    xtest1 xtest2 nil xht!
+    gc
 
     ?nl "xtest1" print
     5 [ ' xtest1 time ] times
@@ -87,4 +136,6 @@ global xht
     ?nl "xtest4" print
     5 [ ' xtest4 time ] times
 
-    nil ht! gc ;
+    nil ht!
+    gc
+;
