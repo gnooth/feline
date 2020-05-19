@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ code integer_to_raw_bits, 'integer_to_raw_bits', SYMBOL_INTERNAL
 endcode
 
 ; ### bitor
-code bitor, 'bitor'                     ; x y -- z
+code bitor, 'bitor'                     ; x y -> z
         _check_fixnum
         _check_fixnum qword [rbp]
         _or
@@ -78,10 +78,10 @@ code bitor, 'bitor'                     ; x y -- z
 endcode
 
 ; ### bitxor
-code bitxor, 'bitxor'                   ; x y -- z
-        test    ebx, FIXNUM_TAG
+code bitxor, 'bitxor'                   ; x y -> z
+        test    bl, FIXNUM_TAG
         jz      .1
-        test    qword [rbp], FIXNUM_TAG
+        test    byte qword [rbp], FIXNUM_TAG
         jz      .1
         ; x and y are both fixnums
         xor     rbx, [rbp]
@@ -99,7 +99,7 @@ code bitxor, 'bitxor'                   ; x y -- z
 endcode
 
 ; ### bitnot
-code bitnot, 'bitnot'                   ; x -- y
+code bitnot, 'bitnot'                   ; x -> y
         _ integer_to_raw_bits
         not     rbx
         _ normalize
