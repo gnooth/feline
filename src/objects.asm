@@ -76,19 +76,21 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-type
         cmp     bl, HANDLE_TAG
         je      .3
         ; not a handle
+        cmp     bl, STATIC_TAG
+        je      .static
         test    ebx, LOWTAG_MASK
         jz      .4
 
         test    ebx, FIXNUM_TAG
         jz      .1
         mov     ebx, TYPECODE_FIXNUM
-        _return
+        next
 
 .1:
         cmp     bl, CHAR_TAG
         jne     .2
         mov     ebx, TYPECODE_CHAR
-        _return
+        next
 
 .2:
         mov     eax, ebx
@@ -96,7 +98,7 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-type
         cmp     eax, BOOLEAN_TAG
         jne     .5
         mov     ebx, TYPECODE_BOOLEAN
-        _return
+        next
 
 .3:
         _handle_to_object_unsafe
@@ -105,7 +107,12 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-type
         jz      error_empty_handle
 %endif
         _object_raw_typecode
-        _return
+        next
+
+.static:
+        shr     rbx, STATIC_TAG_BITS
+        _object_raw_typecode
+        next
 
 .4:
         cmp     rbx, static_data_area
@@ -113,12 +120,11 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-type
         cmp     rbx, static_data_area_limit
         jae     .5
         _object_raw_typecode
-        _return
+        next
 
 .5:
         ; not an object
         mov     ebx, TYPECODE_UNKNOWN
-
         next
 endcode
 

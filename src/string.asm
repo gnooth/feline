@@ -37,6 +37,15 @@ code string?, 'string?'                 ; x -> x/nil
         jne     .no
         next
 .1:
+        cmp     bl, STATIC_TAG
+        jne     .2
+        mov     rax, rbx
+        _untag_static
+        cmp     word [rbx], TYPECODE_STRING
+        jne     .no
+        mov     rbx, rax
+        next
+.2:
         ; not a handle
         ; must be aligned
         test    rbx, 7
@@ -76,6 +85,13 @@ code check_string, 'check_string'       ; x -> ^string
         jne     .error
         next
 .1:
+        cmp     bl, STATIC_TAG
+        jne     .2
+        _untag_static
+        cmp     word [rbx], TYPECODE_STRING
+        jne     .error
+        next
+.2:
         ; not a handle
         _ verify_static_string
         next
@@ -101,6 +117,16 @@ code verify_string, 'verify-string'     ; string -> string
         jne     error_not_string
         next
 .1:
+        cmp     bl, STATIC_TAG
+        jne     .2
+        mov     rax, rbx
+        shr     rax, STATIC_TAG_BITS
+;         cmp     word [rax], TYPECODE_STRING
+        movzx   eax, word [rax]
+        cmp     rax, TYPECODE_STRING
+        jne     error_not_string
+        next
+.2:
         _ verify_static_string
         next
 endcode
@@ -141,14 +167,21 @@ code string_length, 'string-length'     ; string -> length
 endcode
 
 ; ### string-length-unsafe
-inline string_length_unsafe, 'string-length-unsafe' ; string -> length
-        cmp     bl, HANDLE_TAG
-        jne     .1
-        _handle_to_object_unsafe
-.1:
+;inline string_length_unsafe, 'string-length-unsafe' ; string -> length
+;         cmp     bl, HANDLE_TAG
+;         jne     .1
+;         _handle_to_object_unsafe
+; .1:
+;        _string_raw_length
+;         _tag_fixnum
+;endinline
+code string_length_unsafe, 'string-length-unsafe' ; string -> length
+; REVIEW this is now the same as string-length
+        _ check_string
         _string_raw_length
         _tag_fixnum
-endinline
+        next
+endcode
 
 ; ### string-empty?
 code string_empty?, 'string-empty?'     ; string -> ?
@@ -352,6 +385,9 @@ endcode
 ; ### string-nth-unsafe
 code string_nth_unsafe, 'string-nth-unsafe'
 ; tagged-index handle-or-static-string -> tagged-char
+
+        ; FIXME
+        jmp     string_nth
 
         ; no type checking
         ; no bounds checking

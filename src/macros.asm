@@ -622,7 +622,20 @@ section .data
         inc     qword [%1_data]
 %endmacro
 
-%macro  _quote 1                        ; -- string
+; tagged static objects
+%define STATIC_TAG_BITS         8
+%define STATIC_TAG              0xd2
+
+%macro  _tag_static 0
+        shl     rbx, STATIC_TAG_BITS
+        or      rbx, STATIC_TAG
+%endmacro
+
+%macro  _untag_static 0
+        shr     rbx, STATIC_TAG_BITS
+%endmacro
+
+%macro  _quote 1                        ; -> string
         section .data
         align   DEFAULT_DATA_ALIGNMENT
 %strlen len     %1
@@ -638,6 +651,7 @@ section .data
         section .text
         _dup
         mov     rbx, %%string
+        _tag_static
 %endmacro
 
 %macro  _write_char 1
