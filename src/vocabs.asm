@@ -129,10 +129,29 @@ code hash_vocabs, 'hash-vocabs', SYMBOL_INTERNAL
         _ last_static_symbol
         _begin .1
         _dup
-        _while .1                       ; -- symbol
+        _while .1                       ; -> symbol
 
         _dup
         _ symbol_set_primitive
+
+        ; tag symbol name
+        _dup
+        _ symbol_name
+        _tag_static
+        _over
+        _ symbol_set_name
+
+        ; when hash-vocabs is called, "feline" is the only vocab
+        _quote "feline"
+        _over
+        _ symbol_set_vocab_name
+
+        ; tag source file name
+        _dup
+        _ symbol_source_file
+        _tag_static
+        _over
+        _ symbol_set_source_file
 
         _dup
         _ symbol_name

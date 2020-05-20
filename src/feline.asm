@@ -24,7 +24,7 @@ default abs ; use absolute addresses by default
 section .data
 static_data_area:
 
-string FELINE_VOCAB_NAME, 'feline'
+; string FELINE_VOCAB_NAME, 'feline'
 
 %include "io.asm"
 %include "stack.asm"

@@ -399,6 +399,20 @@ code symbol_name, 'symbol-name'         ; symbol -> string
         next
 endcode
 
+; ### symbol-set-name
+code symbol_set_name, 'symbol-set-name' ; name symbol -> void
+        _ check_symbol
+        _set_slot1
+        next
+endcode
+
+; ### symbol-set-vocab-name
+code symbol_set_vocab_name, 'symbol-set-vocab-name' ; name symbol -> void
+        _ check_symbol
+        _set_slot2
+        next
+endcode
+
 ; ### symbol-qualified-name
 code symbol_qualified_name, 'symbol-qualified-name' ; symbol -> string
         _ check_symbol
@@ -798,8 +812,22 @@ code symbol_flags, 'symbol-flags'       ; symbol -- flags
         next
 endcode
 
+; ### symbol-source-file
+code symbol_source_file, 'symbol-source-file'   ; symbol -> string
+        _ check_symbol
+        _symbol_file
+        next
+endcode
+
+; ### symbol-set-source-file
+code symbol_set_source_file, 'symbol-set-source-file'   ; string symbol -> void
+        _ check_symbol
+        _symbol_set_file
+        next
+endcode
+
 ; ### symbol-location
-code symbol_location, 'symbol-location' ; -- file line-number
+code symbol_location, 'symbol-location' ; -> file line-number
         _ check_symbol
         _dup
         _symbol_file
@@ -809,7 +837,7 @@ code symbol_location, 'symbol-location' ; -- file line-number
 endcode
 
 ; ### symbol-set-location
-code symbol_set_location, 'symbol-set-location' ; file line-number symbol --
+code symbol_set_location, 'symbol-set-location' ; file line-number symbol -> void
         _ check_symbol
         _pick
         _tagged_if .1
