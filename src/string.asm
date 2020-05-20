@@ -38,42 +38,15 @@ code string?, 'string?'                 ; x -> x/nil
         next
 .1:
         cmp     bl, STATIC_TAG
-
-;         jne     .2
         jne     .no
-
         mov     rax, rbx
         _untag_static
         cmp     word [rbx], TYPECODE_STRING
         jne     .no
         mov     rbx, rax
         next
-.2:
-        ; not a handle
-        ; must be aligned
-        test    rbx, 7
-        jnz     .no
-        cmp     rbx, static_data_area
-        jb      .no
-        cmp     rbx, static_data_area_limit
-        jae     .no
-        cmp     word [rbx], TYPECODE_STRING
-        jne     .no
-        next
 .no:
         mov     ebx, NIL
-        next
-endcode
-
-; ### verify_static_string
-code verify_static_string, 'verify_static_string'       ; string -> string
-        cmp     rbx, static_data_area
-        jb      error_not_string
-        cmp     rbx, static_data_area_limit
-        jae     error_not_string
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_STRING
-        jne     error_not_string
         next
 endcode
 
@@ -89,17 +62,11 @@ code check_string, 'check_string'       ; x -> ^string
         next
 .1:
         cmp     bl, STATIC_TAG
-
-;         jne     .2
         jne     error_not_string
-
+        mov     rax, rbx                ; save x in rax for error reporting
         _untag_static
         cmp     word [rbx], TYPECODE_STRING
         jne     .error
-        next
-.2:
-        ; not a handle
-        _ verify_static_string
         next
 .error:
         mov     rbx, rax                ; retrieve x
@@ -124,19 +91,11 @@ code verify_string, 'verify-string'     ; string -> string
         next
 .1:
         cmp     bl, STATIC_TAG
-
-;         jne     .2
         jne     error_not_string
-
         mov     rax, rbx
         shr     rax, STATIC_TAG_BITS
-;         cmp     word [rax], TYPECODE_STRING
-        movzx   eax, word [rax]
-        cmp     rax, TYPECODE_STRING
+        cmp     word [rax], TYPECODE_STRING
         jne     error_not_string
-        next
-.2:
-        _ verify_static_string
         next
 endcode
 
