@@ -37,13 +37,8 @@ code string?, 'string?'                 ; x -> x/nil
         jne     .no
         next
 .1:
-        cmp     bl, STATIC_TAG
+        cmp     bl, STATIC_STRING_TAG
         jne     .no
-        mov     rax, rbx
-        _untag_static
-        cmp     word [rbx], TYPECODE_STRING
-        jne     .no
-        mov     rbx, rax
         next
 .no:
         mov     ebx, NIL
@@ -61,12 +56,9 @@ code check_string, 'check_string'       ; x -> ^string
         jne     .error
         next
 .1:
-        cmp     bl, STATIC_TAG
+        cmp     bl, STATIC_STRING_TAG
         jne     error_not_string
-        mov     rax, rbx                ; save x in rax for error reporting
-        _untag_static
-        cmp     word [rbx], TYPECODE_STRING
-        jne     .error
+        _untag_static_string
         next
 .error:
         mov     rbx, rax                ; retrieve x
@@ -90,11 +82,7 @@ code verify_string, 'verify-string'     ; string -> string
         jne     error_not_string
         next
 .1:
-        cmp     bl, STATIC_TAG
-        jne     error_not_string
-        mov     rax, rbx
-        shr     rax, STATIC_TAG_BITS
-        cmp     word [rax], TYPECODE_STRING
+        cmp     bl, STATIC_STRING_TAG
         jne     error_not_string
         next
 endcode

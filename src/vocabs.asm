@@ -137,7 +137,7 @@ code hash_vocabs, 'hash-vocabs', SYMBOL_INTERNAL
         ; tag symbol name
         _dup
         _ symbol_name
-        _tag_static
+        _tag_static_string
         _over
         _ symbol_set_name
 
@@ -149,7 +149,7 @@ code hash_vocabs, 'hash-vocabs', SYMBOL_INTERNAL
         ; tag source file name
         _dup
         _ symbol_source_file
-        _tag_static
+        _tag_static_string
         _over
         _ symbol_set_source_file
 

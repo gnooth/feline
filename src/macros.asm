@@ -626,16 +626,16 @@ section .data
 %endmacro
 
 ; tagged static objects
-%define STATIC_TAG_BITS         8
-%define STATIC_TAG              0xd2
+%define STATIC_STRING_TAG_BITS  8
+%define STATIC_STRING_TAG       0xd2
 
-%macro  _tag_static 0
-        shl     rbx, STATIC_TAG_BITS
-        or      rbx, STATIC_TAG
+%macro  _tag_static_string 0
+        shl     rbx, STATIC_STRING_TAG_BITS
+        or      rbx, STATIC_STRING_TAG
 %endmacro
 
-%macro  _untag_static 0
-        shr     rbx, STATIC_TAG_BITS
+%macro  _untag_static_string 0
+        shr     rbx, STATIC_STRING_TAG_BITS
 %endmacro
 
 %macro  _quote 1                        ; -> string
@@ -654,7 +654,7 @@ section .data
         section .text
         _dup
         mov     rbx, %%string
-        _tag_static
+        _tag_static_string
 %endmacro
 
 %macro  _write_char 1

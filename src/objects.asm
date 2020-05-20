@@ -75,9 +75,11 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-type
 
         cmp     bl, HANDLE_TAG
         je      .3
+
         ; not a handle
-        cmp     bl, STATIC_TAG
-        je      .static
+        cmp     bl, STATIC_STRING_TAG
+        je      .static_string
+
         test    ebx, LOWTAG_MASK
         jz      .4
 
@@ -109,9 +111,8 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-type
         _object_raw_typecode
         next
 
-.static:
-        shr     rbx, STATIC_TAG_BITS
-        _object_raw_typecode
+.static_string:
+        mov     ebx, TYPECODE_STRING
         next
 
 .4:
