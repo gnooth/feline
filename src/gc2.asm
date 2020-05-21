@@ -815,10 +815,14 @@ code wait_for_thread_to_stop, 'wait_for_thread_to_stop', SYMBOL_INTERNAL ; threa
         je      .exit
 
 .top:
+        ; -> thread
         _dup
         _ thread_state
-        cmp     rbx, S_THREAD_STOPPED
-        _drop
+;         cmp     rbx, S_THREAD_STOPPED
+;         _drop
+        _ THREAD_STOPPED
+        cmp     rbx, [rbp]
+        _2drop
         je      .exit
 
         _lit tagged_zero

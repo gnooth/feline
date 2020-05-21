@@ -66,6 +66,13 @@ code check_string, 'check_string'       ; x -> ^string
         next
 endcode
 
+; ### string-address
+code string_address, 'string-address'   ; string -> ^string
+        _ check_string
+        _tag_fixnum
+        next
+endcode
+
 ; ### verify-string
 code verify_string, 'verify-string'     ; string -> string
 ; returns argument unchanged

@@ -213,7 +213,6 @@ endcode
 ; ### symbol?
 code symbol?, 'symbol?'                 ; x -> x/nil
         cmp     bl, HANDLE_TAG
-;         jne     static_symbol?
         jne     .1
         mov     rax, rbx                ; save x in rax
         mov     rdx, NIL
@@ -264,6 +263,13 @@ code check_symbol, 'check_symbol', SYMBOL_INTERNAL      ; x -> ^symbol
         mov     rbx, rax
         jmp     error_not_symbol
 
+        next
+endcode
+
+; ### symbol-address
+code symbol_address, 'symbol-address'   ; symbol -> ^symbol
+        _ check_symbol
+        _tag_fixnum
         next
 endcode
 
