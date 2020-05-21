@@ -631,6 +631,7 @@ section .data
 %define STATIC_OBJECT_TAG_BITS  8
 %define STATIC_STRING_TAG       0xd2
 %define STATIC_SYMBOL_TAG       0xc2
+%define STATIC_QUOTATION_TAG    0xb2
 
 %macro  _tag_static_string 0
         shl     rbx, STATIC_OBJECT_TAG_BITS
@@ -647,6 +648,15 @@ section .data
 %endmacro
 
 %macro  _untag_static_symbol 0
+        shr     rbx, STATIC_OBJECT_TAG_BITS
+%endmacro
+
+%macro  _tag_static_quotation 0
+        shl     rbx, STATIC_OBJECT_TAG_BITS
+        or      rbx, STATIC_QUOTATION_TAG
+%endmacro
+
+%macro  _untag_static_quotation 0
         shr     rbx, STATIC_OBJECT_TAG_BITS
 %endmacro
 
@@ -897,6 +907,7 @@ section .text
 %1_end:
         _dup
         mov     rbx, %1_quotation
+        _tag_static_quotation
         %pop
 %else
         %error  "not in a quotation"

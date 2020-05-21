@@ -54,9 +54,23 @@ file __FILE__
 %endmacro
 
 ; ### quotation?
-code quotation?, 'quotation?'                   ; x -> ?
-        _ object_raw_typecode
-        _eq? TYPECODE_QUOTATION
+code quotation?, 'quotation?'                   ; x -> x/nil
+;         _ object_raw_typecode
+;         _eq? TYPECODE_QUOTATION
+        cmp     bl, HANDLE_TAG
+        jne     .1
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_QUOTATION
+        jne     .no
+        next
+.1:
+        cmp     bl, STATIC_QUOTATION_TAG
+        jne     .no
+        next
+.no:
+        mov     ebx, NIL
         next
 endcode
 
@@ -84,17 +98,30 @@ endcode
 
 ; ### check_quotation
 code check_quotation, 'check_quotation' ; x -> ^quotation
+;         cmp     bl, HANDLE_TAG
+;         jne     .1
+;         mov     rax, rbx                ; save x in rax for error reporting
+;         shr     rbx, HANDLE_TAG_BITS
+;         mov     rbx, [rbx]              ; -> ^object
+;         cmp     word [rbx], TYPECODE_QUOTATION
+;         jne     .error
+;         next
+; .1:
+;         ; not a handle
+;         _ verify_unboxed_quotation
+;         next
         cmp     bl, HANDLE_TAG
         jne     .1
         mov     rax, rbx                ; save x in rax for error reporting
         shr     rbx, HANDLE_TAG_BITS
-        mov     rbx, [rbx]              ; -> ^object
+        mov     rbx, [rbx]              ; -> ^quotation
         cmp     word [rbx], TYPECODE_QUOTATION
         jne     .error
         next
 .1:
-        ; not a handle
-        _ verify_unboxed_quotation
+        cmp     bl, STATIC_QUOTATION_TAG
+        jne     error_not_quotation
+        _untag_static_quotation
         next
 .error:
         mov     rbx, rax                ; retrieve x
@@ -105,6 +132,20 @@ endcode
 ; ### verify-quotation
 code verify_quotation, 'verify-quotation' ; quotation -> quotation
 ; returns argument unchanged
+;         cmp     bl, HANDLE_TAG
+;         jne     .1
+;         mov     rax, rbx
+;         shr     rax, HANDLE_TAG_BITS
+;         mov     rax, [rax]
+; %ifdef DEBUG
+;         test    rax, rax
+;         jz      error_empty_handle
+; %endif
+;         cmp     word [rax], TYPECODE_QUOTATION
+;         jne     error_not_quotation
+;         next
+; .1:
+;         _ verify_unboxed_quotation
         cmp     bl, HANDLE_TAG
         jne     .1
         mov     rax, rbx
@@ -118,7 +159,8 @@ code verify_quotation, 'verify-quotation' ; quotation -> quotation
         jne     error_not_quotation
         next
 .1:
-        _ verify_unboxed_quotation
+        cmp     bl, STATIC_QUOTATION_TAG
+        jne     error_not_quotation
         next
 endcode
 

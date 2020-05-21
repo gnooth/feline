@@ -2624,7 +2624,7 @@ test: type-of-test-1
     [ dup + ] type-of quotation assert-eq
     ' dup <wrapper> dup wrapper? assert-true
     type-of wrapper assert-eq
-    3 [ + ] curry dup quotation? assert-true
+    3 [ + ] curry dup quotation? assert // quotation? returns its argument or nil
     type-of quotation assert-eq
     2 5 { 11 12 13 14 15 16 17 18 } <slice> dup slice? assert-true
     type-of slice assert-eq
@@ -2706,7 +2706,8 @@ test: callable?-test-1
 
     [ dup ] callable? assert-true
 
-    3 [ + ] curry dup quotation? assert-true callable? assert-true
+    // quotation? returns its argument or nil
+    3 [ + ] curry dup quotation? assert callable? assert-true
 
     42 callable? assert-false
     "test" callable? assert-false

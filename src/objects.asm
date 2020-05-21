@@ -85,6 +85,9 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-type
         cmp     bl, STATIC_SYMBOL_TAG
         je      .static_symbol
 
+        cmp     bl, STATIC_QUOTATION_TAG
+        je      .static_quotation
+
         test    ebx, LOWTAG_MASK
         jz      .4
 
@@ -122,6 +125,10 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-type
 
 .static_symbol:
         mov     ebx, TYPECODE_SYMBOL
+        next
+
+.static_quotation:
+        mov     ebx, TYPECODE_QUOTATION
         next
 
 .4:
