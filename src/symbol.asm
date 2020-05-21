@@ -255,11 +255,7 @@ code check_symbol, 'check_symbol', SYMBOL_INTERNAL      ; x -> ^symbol
 
 .1:
         cmp     bl, STATIC_SYMBOL_TAG
-;         jne     error_not_symbol
-        je      .2
-        int3
-        jmp     error_not_symbol
-.2:
+        jne     error_not_symbol
         _untag_static_symbol
         next
 
@@ -350,7 +346,10 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
 
         _ default_visibility
         _ get
-        _eq? S_private
+
+        _symbol private
+        _eq?
+
         _tagged_if .1
         _this_symbol_set_flags_bit SYMBOL_PRIVATE
         _then .1

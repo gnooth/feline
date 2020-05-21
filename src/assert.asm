@@ -97,7 +97,10 @@ code check_assert_equal, 'check-assert='        ; x y location --
 endcode
 
 ; ### +failed+
-feline_constant failed, '+failed+', S_failed
+; feline_constant failed, '+failed+', S_failed
+inline failed, '+failed+'                 ; -> symbol
+        _symbol failed
+endinline
 
 ; ### check-assert-must-fail
 code check_assert_must_fail, 'check-assert-must-fail' ; quotation location -> void
