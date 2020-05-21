@@ -306,12 +306,12 @@ code make_fixnum_hashtable_0, 'make-fixnum-hashtable/0' ; -> hashtable
         _lit 2
         _ new_hashtable_untagged
 
-        _lit S_fixnum_hashcode
+        _symbol fixnum_hashcode
         _ symbol_raw_code_address
         _over
         _ hashtable_set_hash_function
 
-        _lit S_eq?
+        _symbol eq?
         _ symbol_raw_code_address
         _over
         _ hashtable_set_test_function
@@ -362,11 +362,11 @@ code define_generic, 'define-generic'   ; symbol -> symbol
         _rfetch
         _ generic_function_set_dispatch ; -> symbol
 
-        _lit S_dup
-        _lit S_object_typecode
+        _symbol dup
+        _symbol object_typecode
         _rfetch
         _ generic_function_dispatch
-        _lit S_do_generic
+        _symbol do_generic
         _ four_array
         _ array_to_quotation
         _ compile_quotation             ; -> symbol quotation
@@ -429,7 +429,7 @@ code find_method, 'find-method'         ; symbol-or-type symbol-or-gf -> method/
 endcode
 
 %macro _initialize_generic_function 1
-        _lit S_%1
+        _symbol %1
         _ initialize_generic_function   ; -> gf
         _ generic_function_dispatch     ; -> hashtable
         mov     [%1_generic_function_dispatch_table], rbx
@@ -473,12 +473,12 @@ endcode
 %macro _add_method 3            ; generic-asm-name, raw-typecode, method-asm-name
         _lit %2                         ; -> raw-typecode
         _tag_fixnum                     ; -> tagged-typecode
-        _lit S_%1                       ; -> tagged-typecode generic-symbol
+        _symbol %1                       ; -> tagged-typecode generic-symbol
         _ symbol_def                    ; -> tagged-typecode generic-function
 %ifdef DEBUG
         _ verify_generic_function
 %endif
-        _lit S_%3                       ; -> tagged-typecode generic-function callable
+        _symbol %3                       ; -> tagged-typecode generic-function callable
         _ new_method                    ; -> method
         _ install_method                ; ->
 %endmacro
@@ -828,8 +828,8 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method object_to_string, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_to_string
         _add_method object_to_string, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_to_string
 
-        _lit S_object_to_string_default
-        _lit S_object_to_string
+        _symbol object_to_string_default
+        _symbol object_to_string
         _ set_default_method
         next
 endcode

@@ -944,7 +944,7 @@ endcode
 ; ### string-has-suffix?
 code string_has_suffix?, 'string-has-suffix?'   ; suffix string -- ?
         _twodup
-        _lit S_string_length
+        _symbol string_length
         _ bi@                           ; -- suffix string len1 len2
         _twodup
         _ fixnum_fixnum_le

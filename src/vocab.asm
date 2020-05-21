@@ -110,7 +110,7 @@ code new_vocab, '<vocab>'               ;  name -> vocab
         _ new_hashtable_untagged
         _this_vocab_set_hashtable
 
-        _lit S_string_hashcode
+        _symbol string_hashcode
         _ symbol_raw_code_address
         _this_vocab_hashtable
         _ hashtable_set_hash_function
@@ -119,7 +119,7 @@ code new_vocab, '<vocab>'               ;  name -> vocab
         ; Deleting a symbol breaks the current hashtable implementation if
         ; string= is the test function.
         ; Sep 23 2018 11:02 AM
-        _lit S_stringequal?             ; string= replaced by string=? May 3 2020 10:46 AM
+        _symbol stringequal?             ; string= replaced by string=? May 3 2020 10:46 AM
         _ symbol_raw_code_address
         _this_vocab_hashtable
         _ hashtable_set_test_function
@@ -192,12 +192,12 @@ code vocab_empty, 'vocab-empty'         ; vocab --
         _lit 32
         _ new_hashtable_untagged        ; -- vocab hashtable
 
-        _lit S_string_hashcode
+        _symbol string_hashcode
         _ symbol_raw_code_address
         _over
         _ hashtable_set_hash_function
 
-        _lit S_stringequal?
+        _symbol stringequal?
         _ symbol_raw_code_address
         _over
         _ hashtable_set_test_function

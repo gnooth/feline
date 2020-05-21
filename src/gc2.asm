@@ -635,8 +635,8 @@ endcode
 code gc2_scan_thread_stacks, 'gc2_scan_thread_stacks' ; thread -> void
         _debug_print "gc2_scan_thread_stacks called"
 
-        _lit S_gc2_thread_scan_data_stack
-        _lit S_gc2_thread_scan_return_stack
+        _symbol gc2_thread_scan_data_stack
+        _symbol gc2_thread_scan_return_stack
         _ bi
 
         next
@@ -673,7 +673,7 @@ code gc2_scan_static_symbols, 'gc2_scan_static_symbols'
         _ last_static_symbol
         _begin .1
         _dup
-        _while .1                       ; -> symbol
+        _while .1                       ; -> ^symbol
         _dup
         _ gc2_scan_static_symbol
         _cellminus
@@ -838,7 +838,7 @@ code stop_the_world, 'stop_the_world', SYMBOL_INTERNAL
         _ stop_for_gc
 
         _ all_threads
-        _lit S_wait_for_thread_to_stop
+        _symbol wait_for_thread_to_stop
         _ vector_each
 
         next

@@ -489,6 +489,7 @@ section .data
 %macro  _symbol 1                       ; _symbol dup -> _lit S_dup
         _dup
         mov     rbx, symbol(%1)
+        _tag_static_symbol
 %endmacro
 
 %macro  special 2                       ; label, name
@@ -500,6 +501,7 @@ section .data
 %1:
         _dup
         mov     rbx, S_%1
+        _tag_static_symbol
         ret
 %1_ret:
 
@@ -626,16 +628,26 @@ section .data
 %endmacro
 
 ; tagged static objects
-%define STATIC_STRING_TAG_BITS  8
+%define STATIC_OBJECT_TAG_BITS  8
 %define STATIC_STRING_TAG       0xd2
+%define STATIC_SYMBOL_TAG       0xc2
 
 %macro  _tag_static_string 0
-        shl     rbx, STATIC_STRING_TAG_BITS
+        shl     rbx, STATIC_OBJECT_TAG_BITS
         or      rbx, STATIC_STRING_TAG
 %endmacro
 
 %macro  _untag_static_string 0
-        shr     rbx, STATIC_STRING_TAG_BITS
+        shr     rbx, STATIC_OBJECT_TAG_BITS
+%endmacro
+
+%macro  _tag_static_symbol 0
+        shl     rbx, STATIC_OBJECT_TAG_BITS
+        or      rbx, STATIC_SYMBOL_TAG
+%endmacro
+
+%macro  _untag_static_symbol 0
+        shr     rbx, STATIC_OBJECT_TAG_BITS
 %endmacro
 
 %macro  _quote 1                        ; -> string

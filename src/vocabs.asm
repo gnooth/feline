@@ -126,10 +126,13 @@ endcode
 ; ### hash-vocabs
 code hash_vocabs, 'hash-vocabs', SYMBOL_INTERNAL
 
-        _ last_static_symbol
+        _ last_static_symbol            ; -> ^symbol
         _begin .1
         _dup
-        _while .1                       ; -> symbol
+        _while .1                       ; -> ^symbol
+
+        ; tag the symbol object
+        _tag_static_symbol
 
         _dup
         _ symbol_set_primitive
@@ -166,6 +169,8 @@ code hash_vocabs, 'hash-vocabs', SYMBOL_INTERNAL
         _ dup
         _ feline_vocab
         _ vocab_add_symbol
+
+        _untag_static_symbol            ; -> ^symbol
 
         _cellminus
         _fetch
@@ -463,14 +468,14 @@ code using_colon, 'using:'
 
         ; Verify that we can load all of the specified vocabs before we touch
         ; the context vector.
-        _lit S_load_vocab
+        _symbol load_vocab
         _ map
 
         _lit tagged_zero
         _ context_vector
         _ vector_set_length
 
-        _lit S_use_vocab
+        _symbol use_vocab
         _ vector_each
 
         next

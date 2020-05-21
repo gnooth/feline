@@ -213,7 +213,8 @@ endcode
 ; ### symbol?
 code symbol?, 'symbol?'                 ; x -> x/nil
         cmp     bl, HANDLE_TAG
-        jne     static_symbol?
+;         jne     static_symbol?
+        jne     .1
         mov     rax, rbx                ; save x in rax
         mov     rdx, NIL
         shr     rax, HANDLE_TAG_BITS
@@ -221,13 +222,21 @@ code symbol?, 'symbol?'                 ; x -> x/nil
         cmp     word [rax], TYPECODE_SYMBOL
         cmovne  rbx, rdx
         next
+.1:
+        cmp     bl, STATIC_SYMBOL_TAG
+        jne     .no
+        next
+.no:
+        mov     ebx, NIL
+        next
 endcode
 
 ; ### check_symbol
 code check_symbol, 'check_symbol', SYMBOL_INTERNAL      ; x -> ^symbol
 
         cmp     bl, HANDLE_TAG
-        jne     verify_static_symbol
+;         jne     verify_static_symbol
+        jne     .1
 
         ; save argument in rax
         mov     rax, rbx
@@ -242,6 +251,16 @@ code check_symbol, 'check_symbol', SYMBOL_INTERNAL      ; x -> ^symbol
 
         cmp     word [rbx], TYPECODE_SYMBOL
         jne     .error
+        next
+
+.1:
+        cmp     bl, STATIC_SYMBOL_TAG
+;         jne     error_not_symbol
+        je      .2
+        int3
+        jmp     error_not_symbol
+.2:
+        _untag_static_symbol
         next
 
 .error:
@@ -264,7 +283,7 @@ endcode
 
 ; ### verify_static_symbol
 code verify_static_symbol, 'verify_static_symbol', SYMBOL_INTERNAL
-; symbol -> symbol
+; ^symbol -> ^symbol
         cmp     rbx, static_data_area
         jb      .1
         cmp     rbx, static_data_area_limit
