@@ -1941,11 +1941,7 @@ code feline_allocate, 'allocate'        ; tagged-size -- addr
 
 feline_allocate_untagged:
 
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
+        mov     arg0_register, rbx
         xcall   os_malloc
         mov     rbx, rax                ; -- addr
         test    rbx, rbx
@@ -1959,11 +1955,7 @@ endcode
 ; ### free
 code feline_free, 'free'                ; addr --
 ; Argument is untagged.
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
+        mov     arg0_register, rbx
         _drop
         xcall   os_free                 ; "The free() function returns no value."
         next
