@@ -17,26 +17,32 @@ file __FILE__
 
 ; ### boolean?
 code boolean?, 'boolean?'               ; x -> ?
-        and     ebx, BOOLEAN_TAG_MASK
-        mov     eax, TRUE
-        cmp     ebx, BOOLEAN_TAG
+        cmp     rbx, NIL
+        je      .yes
+        cmp     rbx, TRUE
+        je      .yes
         mov     ebx, NIL
-        cmove   ebx, eax
+        next
+.yes:
+        mov     ebx, TRUE
         next
 endcode
 
 ; ### boolean-equal?
-code boolean_equal?, 'boolean-equal?'
-        _dup
-        _ boolean?
-        _tagged_if .1
-        _eq?
-        _return
-        _then .1
-
-        _drop
+code boolean_equal?, 'boolean-equal?'   ; x y -> ?
+        cmp     rbx, NIL
+        je      .1
+        cmp     rbx, TRUE
+        jne     .no
+.1:
+        cmp     rbx, [rbp]
+        jne     .no
+        _nip
+        mov     ebx, TRUE
+        next
+.no:
+        _nip
         mov     ebx, NIL
-
         next
 endcode
 
@@ -55,7 +61,6 @@ code boolean_to_string, 'boolean->string'       ; boolean -> string
         _drop
         _quote "nil"
         next
-
 .1:
         cmp     rbx, TRUE
         jne     error_not_boolean
