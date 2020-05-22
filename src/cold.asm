@@ -259,7 +259,7 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         _ gc2_initialize_work_list
 
         _quote "boot.feline"
-        _lit S_load_system_file
+        _symbol load_system_file
         _ catch
         _dup
         _tagged_if .1
@@ -273,7 +273,7 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         _ user_vocab
         _ set_current_vocab
 
-        _lit S_process_command_line
+        _symbol process_command_line
         _ catch
         _dup
         _tagged_if .2
@@ -284,7 +284,7 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
 
         _ dot_version
 
-        _lit S_process_init_file
+        _symbol process_init_file
         _ catch
         _dup
         _tagged_if .3
