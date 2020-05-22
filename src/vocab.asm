@@ -119,7 +119,7 @@ code new_vocab, '<vocab>'               ;  name -> vocab
         ; Deleting a symbol breaks the current hashtable implementation if
         ; string= is the test function.
         ; Sep 23 2018 11:02 AM
-        _symbol stringequal?             ; string= replaced by string=? May 3 2020 10:46 AM
+        _symbol stringequal?            ; string= replaced by string=? May 3 2020 10:46 AM
         _ symbol_raw_code_address
         _this_vocab_hashtable
         _ hashtable_set_test_function
