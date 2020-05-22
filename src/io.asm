@@ -18,50 +18,6 @@ file __FILE__
 ; ### errno
 value os_errno, 'errno', 0
 
-; ### reposition-file
-code reposition_file, 'reposition-file' ; ud fileid -- ior
-; We ignore the upper 64 bits of the 128-bit offset.
-%ifdef WIN64
-        mov     rcx, rbx                        ; fileid in RCX
-        mov     rdx, [rbp + BYTES_PER_CELL]     ; 64-bit offset in RDX
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
-%else
-        mov     rdi, rbx                        ; fileid
-        mov     rsi, [rbp + BYTES_PER_CELL]     ; 64-bit offset
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
-%endif
-        xcall   os_reposition_file
-        test    rax, rax
-        js      .1
-        xor     rbx, rbx                ; success
-        next
-.1:
-        mov     rbx, -1                 ; error
-        next
-endcode
-
-; ### resize-file
-code resize_file, 'resize-file'         ; ud fileid -- ior
-; We ignore the upper 64 bits of the 128-bit offset.
-%ifdef WIN64
-        mov     rcx, rbx                        ; fileid in RCX
-        mov     rdx, [rbp + BYTES_PER_CELL]     ; 64-bit offset in RDX
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
-%else
-        mov     rdi, rbx                        ; fileid
-        mov     rsi, [rbp + BYTES_PER_CELL]     ; 64-bit offset
-        lea     rbp, [rbp + BYTES_PER_CELL * 2]
-%endif
-        xcall   os_resize_file
-        or      rax, rax
-        js      .1
-        xor     rbx, rbx                ; success
-        next
-.1:
-        mov     rbx, -1                 ; error
-        next
-endcode
-
 ; ### delete-file
 code delete_file, 'delete-file'         ; string -> ?
 ; returns t if successful, f on error
@@ -108,12 +64,8 @@ code run_shell_command, 'run-shell-command' ; string -> fixnum
 endcode
 
 ; ### errno-to-string
-code errno_to_string, 'errno-to-string' ; n -- string
-%ifdef WIN64
-        mov     rcx, rbx
-%else
-        mov     rdi, rbx
-%endif
+code errno_to_string, 'errno-to-string' ; n -> string
+        mov     arg0_register, rbx
         xcall   os_strerror
         mov     rbx, rax
         _ zcount
