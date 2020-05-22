@@ -234,7 +234,6 @@ endcode
 code check_symbol, 'check_symbol', SYMBOL_INTERNAL      ; x -> ^symbol
 
         cmp     bl, HANDLE_TAG
-;         jne     verify_static_symbol
         jne     .1
 
         ; save argument in rax
@@ -352,10 +351,8 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
 
         _ default_visibility
         _ get
-
         _symbol private
         _eq?
-
         _tagged_if .1
         _this_symbol_set_flags_bit SYMBOL_PRIVATE
         _then .1
