@@ -47,7 +47,6 @@ code object_address, 'object-address'   ; x -> tagged-address
         _dup
         _ string?
         _tagged_if .2
-;         _tag_fixnum
         _ string_address
         _return
         _then .2
@@ -55,7 +54,6 @@ code object_address, 'object-address'   ; x -> tagged-address
         _dup
         _ symbol?
         _tagged_if .3
-;         _tag_fixnum
         _ symbol_address
         _return
         _then .3
@@ -215,15 +213,6 @@ endcode
 
 ; ### slot@
 code slot@, 'slot@'                     ; obj tagged-fixnum -> value
-;         _check_fixnum
-;         mov     rax, rbx
-;         _drop
-;         cmp     bl, HANDLE_TAG
-;         jne     .1
-;         shr     rbx, HANDLE_TAG_BITS
-;         mov     rbx, [rbx]
-; .1:
-;         mov     rbx, [rbx + rax * BYTES_PER_CELL]
         _swap
         _ object_address
         _check_fixnum
