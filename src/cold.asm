@@ -268,7 +268,7 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         _drop
         _then .1
 
-        _ report_startup_time
+;         _ report_startup_time
 
         _ user_vocab
         _ set_current_vocab
