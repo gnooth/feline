@@ -235,6 +235,9 @@ endcode
 code four_array, '4array'               ; w x y z -> array
         mov     arg0_register, 4        ; untagged length in arg0_register
         _ allocate_array                ; returns untagged address in rax
+%ifdef WIN64
+        push    rsi                     ; rsi is callee-saved on Windows
+%endif
         mov     rsi, [rbp + BYTES_PER_CELL * 2 ] ; w
         mov     rdx, [rbp + BYTES_PER_CELL] ; x
         mov     rcx, [rbp]              ; y
@@ -244,6 +247,9 @@ code four_array, '4array'               ; w x y z -> array
         mov     [rax + ARRAY_DATA_OFFSET + BYTES_PER_CELL * 2], rcx
         mov     [rax + ARRAY_DATA_OFFSET + BYTES_PER_CELL * 3], rbx ; z
         mov     rbx, rax
+%ifdef WIN64
+        pop    rsi
+%endif
         _ new_handle
         next
 endcode
