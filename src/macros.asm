@@ -458,10 +458,7 @@ section .data
         dd      0                       ; not used
 
         dq      %%name                  ; symbol name (will be tagged in hash-vocabs)
-
-;         dq      FELINE_VOCAB_NAME       ; vocab name
         dq      NIL                     ; vocab name (will be set in hash-vocabs)
-
         dq      NIL                     ; hashcode (link field)
         dq      NIL                     ; def
         dq      NIL                     ; props
