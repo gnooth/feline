@@ -55,8 +55,6 @@ file __FILE__
 
 ; ### quotation?
 code quotation?, 'quotation?'                   ; x -> x/nil
-;         _ object_raw_typecode
-;         _eq? TYPECODE_QUOTATION
         cmp     bl, HANDLE_TAG
         jne     .1
         mov     rax, rbx
@@ -74,42 +72,8 @@ code quotation?, 'quotation?'                   ; x -> x/nil
         next
 endcode
 
-; ### verify-unboxed-quotation
-code verify_unboxed_quotation, 'verify-unboxed-quotation' ; quotation -> quotation
-        ; make sure address is in the permissible range
-        _dup
-        _ in_static_data_area?
-        _tagged_if_not .1
-        ; address is not in the permissible range
-        _ error_not_quotation
-        _return
-        _then .1
-
-        _dup
-        _object_raw_typecode
-        cmp     rbx, TYPECODE_QUOTATION
-        _drop
-        jne .2
-        _return
-.2:
-        _ error_not_quotation
-        next
-endcode
-
 ; ### check_quotation
 code check_quotation, 'check_quotation' ; x -> ^quotation
-;         cmp     bl, HANDLE_TAG
-;         jne     .1
-;         mov     rax, rbx                ; save x in rax for error reporting
-;         shr     rbx, HANDLE_TAG_BITS
-;         mov     rbx, [rbx]              ; -> ^object
-;         cmp     word [rbx], TYPECODE_QUOTATION
-;         jne     .error
-;         next
-; .1:
-;         ; not a handle
-;         _ verify_unboxed_quotation
-;         next
         cmp     bl, HANDLE_TAG
         jne     .1
         mov     rax, rbx                ; save x in rax for error reporting
@@ -132,20 +96,6 @@ endcode
 ; ### verify-quotation
 code verify_quotation, 'verify-quotation' ; quotation -> quotation
 ; returns argument unchanged
-;         cmp     bl, HANDLE_TAG
-;         jne     .1
-;         mov     rax, rbx
-;         shr     rax, HANDLE_TAG_BITS
-;         mov     rax, [rax]
-; %ifdef DEBUG
-;         test    rax, rax
-;         jz      error_empty_handle
-; %endif
-;         cmp     word [rax], TYPECODE_QUOTATION
-;         jne     error_not_quotation
-;         next
-; .1:
-;         _ verify_unboxed_quotation
         cmp     bl, HANDLE_TAG
         jne     .1
         mov     rax, rbx
