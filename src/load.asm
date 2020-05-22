@@ -41,7 +41,7 @@ endcode
 
 ; ### reload
 code reload, 'reload', SYMBOL_IMMEDIATE
-        _lit S_reload
+        _symbol reload
         _ top_level_only
 
         _ interactive?
@@ -95,7 +95,7 @@ code save_search_order, 'save-search-order'
         _ set
 
         _ context_vector
-        _lit S_vocab_name
+        _symbol vocab_name
         _ map
         _ saved_context_vector
         _ set
@@ -120,7 +120,7 @@ code restore_search_order, 'restore-search-order'
 
         _ saved_context_vector
         _ get
-        _lit S_maybe_use_vocab
+        _symbol maybe_use_vocab
         _ each
 
         _ context_vector
@@ -138,7 +138,7 @@ special default_visibility, 'default-visibility'
 
 ; ### private
 code private, 'private'                         ; --
-        _lit S_private
+        _symbol private
         _ default_visibility
         _ set
         next
@@ -146,7 +146,7 @@ endcode
 
 ; ### public
 code public, 'public'                           ; --
-        _lit S_public
+        _symbol public
         _ default_visibility
         _ set
         next
@@ -314,7 +314,7 @@ code load, 'load'                       ; string --
         _ current_lexer
         _ set                           ; --
 
-        _lit S_public
+        _symbol public
         _ default_visibility
         _ set
 
@@ -336,7 +336,7 @@ code load, 'load'                       ; string --
 
         _ save_search_order
 
-        _lit S_interpret                ; try
+        _symbol interpret                ; try
         _quotation .4                   ; recover
         _ do_error1
         _ restore_search_order

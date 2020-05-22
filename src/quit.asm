@@ -624,7 +624,7 @@ code print_datastack, 'print-datastack'
         _depth
         _if .1
         _ get_datastack
-        _lit S_print_datastack1
+        _symbol print_datastack1
         _ each
         _else .1
         _ output_style
@@ -651,8 +651,8 @@ code evaluate, 'evaluate'               ; string --
         _ current_lexer
         _ set
 
-        _lit S_interpret        ; try
-        _lit S_do_error         ; recover
+        _symbol interpret        ; try
+        _symbol do_error         ; recover
         _ recover
 
         _ end_dynamic_scope

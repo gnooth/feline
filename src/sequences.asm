@@ -78,7 +78,7 @@ endcode
 ; ### shorter?
 code shorter?, 'shorter?'               ; seq1 seq2 -> ?
 ; Factor
-        _lit S_length
+        _symbol length
         _ bi@
         _ fixnum_lt
         next
@@ -87,7 +87,7 @@ endcode
 ; ### longer?
 code longer?, 'longer?'                 ; seq1 seq2 -> ?
 ; Factor
-        _lit S_length
+        _symbol length
         _ bi@
         _ fixnum_gt
         next
@@ -95,7 +95,7 @@ endcode
 
 ; ### min-length
 code min_length, 'min-length'           ; seq1 seq2 -> n
-        _lit S_length
+        _symbol length
         _ bi@
         _ fixnum_min
         next
@@ -421,7 +421,7 @@ endcode
 ; ### sequence=
 code sequence_equal, 'sequence='        ; seq1 seq2 -> ?
         _twodup
-        _lit S_length
+        _symbol length
         _ bi@                           ; -> seq1 seq2 len1 len2
         _equal
         _zeq_if .1

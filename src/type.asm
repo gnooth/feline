@@ -149,7 +149,7 @@ code make_type, 'make-type'             ; symbol typecode -> type
 
         _over                           ; -> symbol type symbol
         _ new_wrapper
-        _lit S_symbol_value
+        _symbol symbol_value
         _ two_array
         _ array_to_quotation            ; -> symbol type quotation
         _pick                           ; -> symbol type quotation symbol

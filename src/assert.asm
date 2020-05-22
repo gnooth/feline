@@ -97,18 +97,21 @@ code check_assert_equal, 'check-assert='        ; x y location --
 endcode
 
 ; ### +failed+
-feline_constant failed, '+failed+', S_failed
+; feline_constant failed, '+failed+', S_failed
+inline failed, '+failed+'                 ; -> symbol
+        _symbol failed
+endinline
 
 ; ### check-assert-must-fail
 code check_assert_must_fail, 'check-assert-must-fail' ; quotation location -> void
         _debug_?enough 2
         _swap
-        _lit S_drop
-        _lit S_failed
+        _symbol drop
+        _symbol failed
         _ two_quotation
         _ recover
         _dup
-        _lit S_failed
+        _symbol failed
         _eq?
         _tagged_if .2
         ; The expected failure did occur. This is not an error!
@@ -142,7 +145,7 @@ code assert, 'assert', SYMBOL_IMMEDIATE
         _tagged_if .1
         _ current_lexer_location
         _ accum_push
-        _lit S_check_assert
+        _symbol check_assert
         _ accum_push
         _else .1
         ; top level assertion
@@ -159,7 +162,7 @@ code assert_true, 'assert-true', SYMBOL_IMMEDIATE
         _tagged_if .1
         _ current_lexer_location
         _ accum_push
-        _lit S_check_assert_true
+        _symbol check_assert_true
         _ accum_push
         _else .1
         ; top level assertion
@@ -176,7 +179,7 @@ code assert_false, 'assert-false', SYMBOL_IMMEDIATE
         _tagged_if .1
         _ current_lexer_location
         _ accum_push
-        _lit S_check_assert_false
+        _symbol check_assert_false
         _ accum_push
         _else .1
         ; top level assertion
@@ -193,7 +196,7 @@ code assert_eq, 'assert-eq', SYMBOL_IMMEDIATE
         _tagged_if .1
         _ current_lexer_location
         _ accum_push
-        _lit S_check_assert_eq
+        _symbol check_assert_eq
         _ accum_push
         _else .1
         ; top level assertion
@@ -210,7 +213,7 @@ code assert_equal, 'assert=', SYMBOL_IMMEDIATE
         _tagged_if .1
         _ current_lexer_location
         _ accum_push
-        _lit S_check_assert_equal
+        _symbol check_assert_equal
         _ accum_push
         _else .1
         ; top level assertion
@@ -227,7 +230,7 @@ code assert_must_fail, 'assert-must-fail', SYMBOL_IMMEDIATE
         _tagged_if .1
         _ current_lexer_location
         _ accum_push
-        _lit S_check_assert_must_fail
+        _symbol check_assert_must_fail
         _ accum_push
         _else .1
         ; top level assertion
