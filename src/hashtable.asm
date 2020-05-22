@@ -342,11 +342,11 @@ new_hashtable_untagged:
         _store
         _loop .1
 
-        _lit S_generic_hashcode
+        _symbol generic_hashcode
         _ symbol_raw_code_address
         _this_hashtable_set_hash_function
 
-        _lit S_feline_equal
+        _symbol feline_equal
         _ symbol_raw_code_address
         _this_hashtable_set_test_function
 

@@ -95,35 +95,35 @@ code initialize_local_getters, 'initialize_local_getters', SYMBOL_INTERNAL
         _dup
         mov     rbx, [local_getters_]
 
-        _lit S_local_0_get
+        _symbol local_0_get
         _over
         _ vector_push
 
-        _lit S_local_1_get
+        _symbol local_1_get
         _over
         _ vector_push
 
-        _lit S_local_2_get
+        _symbol local_2_get
         _over
         _ vector_push
 
-        _lit S_local_3_get
+        _symbol local_3_get
         _over
         _ vector_push
 
-        _lit S_local_4_get
+        _symbol local_4_get
         _over
         _ vector_push
 
-        _lit S_local_5_get
+        _symbol local_5_get
         _over
         _ vector_push
 
-        _lit S_local_6_get
+        _symbol local_6_get
         _over
         _ vector_push
 
-        _lit S_local_7_get
+        _symbol local_7_get
         _over
         _ vector_push
 
@@ -228,35 +228,35 @@ code initialize_local_setters, 'initialize_local_setters', SYMBOL_INTERNAL
         _dup
         mov     rbx, [local_setters_]
 
-        _lit S_local_0_set
+        _symbol local_0_set
         _over
         _ vector_push
 
-        _lit S_local_1_set
+        _symbol local_1_set
         _over
         _ vector_push
 
-        _lit S_local_2_set
+        _symbol local_2_set
         _over
         _ vector_push
 
-        _lit S_local_3_set
+        _symbol local_3_set
         _over
         _ vector_push
 
-        _lit S_local_4_set
+        _symbol local_4_set
         _over
         _ vector_push
 
-        _lit S_local_5_set
+        _symbol local_5_set
         _over
         _ vector_push
 
-        _lit S_local_6_set
+        _symbol local_6_set
         _over
         _ vector_push
 
-        _lit S_local_7_set
+        _symbol local_7_set
         _over
         _ vector_push
 
@@ -355,10 +355,10 @@ code initialize_locals, 'initialize-locals'
         _quotation .1
         ; -> element index
         _swap
-        _lit S_?return_no_locals
+        _symbol ?return_no_locals
         _eq?
         _tagged_if .2
-        _lit S_?return_locals
+        _symbol ?return_locals
         _swap
         _ current_definition
         _ vector_set_nth
@@ -373,10 +373,10 @@ code initialize_locals, 'initialize-locals'
         _ current_definition
         _quotation .3
         _swap
-        _lit S_?exit_no_locals
+        _symbol ?exit_no_locals
         _eq?
         _tagged_if .4
-        _lit S_?exit_locals
+        _symbol ?exit_locals
         _swap
         _ current_definition
         _ vector_set_nth
