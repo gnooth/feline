@@ -425,13 +425,13 @@ endinline
 
 ; ### compile-?return-no-locals
 code compile_?return_no_locals, 'compile-?return-no-locals' ; symbol -> void
-; symbol is the name of the function being compiled (?returnx-no-locals)
+; symbol is the name of the function being compiled (?return-no-locals)
 
         _pc
         add     rbx, ..@?return_no_locals_patch - ?return_no_locals
         _tag_fixnum                     ; -> symbol tagged-call-address
 
-        _swap                           ; -> tagged-call-addres symbol
+        _swap                           ; -> tagged-call-address symbol
         _ inline_primitive              ; -> tagged-call-address
 
         _symbol call_quotation
@@ -498,11 +498,17 @@ code compile_primitive, 'compile-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 %endif
         _tagged_if .1
 
-        cmp     rbx, symbol(?exit_locals)
+        ; -> symbol
+        _dup
+        _ check_symbol                  ; -> symbol ^symbol
+        mov     rax, rbx                ; rax: ^symbol
+        _drop                           ; -> symbol
+
+        cmp     rax, symbol(?exit_locals)
         je      compile_?exit_locals
-        cmp     rbx, symbol(?return_no_locals)
+        cmp     rax, symbol(?return_no_locals)
         je      compile_?return_no_locals
-        cmp     rbx, symbol(?return_locals)
+        cmp     rax, symbol(?return_locals)
         je      compile_?return_locals
 
         _ inline_primitive
