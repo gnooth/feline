@@ -858,7 +858,10 @@ code thread_run_internal, 'thread_run_internal', SYMBOL_INTERNAL
         ; rp0
         mov     [rbx + THREAD_RAW_RP0_OFFSET], rsp
 
-        mov     qword [rbx + THREAD_STATE_OFFSET], S_THREAD_RUNNING
+        mov     rax, S_THREAD_RUNNING
+        shl     rax, STATIC_OBJECT_TAG_BITS
+        or      rax, STATIC_SYMBOL_TAG
+        mov     qword [rbx + THREAD_STATE_OFFSET], rax
 
         _thread_quotation
 

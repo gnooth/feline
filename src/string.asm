@@ -37,31 +37,11 @@ code string?, 'string?'                 ; x -> x/nil
         jne     .no
         next
 .1:
-        ; not a handle
-        ; must be aligned
-        test    rbx, 7
-        jnz     .no
-        cmp     rbx, static_data_area
-        jb      .no
-        cmp     rbx, static_data_area_limit
-        jae     .no
-        cmp     word [rbx], TYPECODE_STRING
+        cmp     bl, STATIC_STRING_TAG
         jne     .no
         next
 .no:
         mov     ebx, NIL
-        next
-endcode
-
-; ### verify_static_string
-code verify_static_string, 'verify_static_string'       ; string -> string
-        cmp     rbx, static_data_area
-        jb      error_not_string
-        cmp     rbx, static_data_area_limit
-        jae     error_not_string
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_STRING
-        jne     error_not_string
         next
 endcode
 
@@ -76,12 +56,20 @@ code check_string, 'check_string'       ; x -> ^string
         jne     .error
         next
 .1:
-        ; not a handle
-        _ verify_static_string
+        cmp     bl, STATIC_STRING_TAG
+        jne     error_not_string
+        _untag_static_string
         next
 .error:
         mov     rbx, rax                ; retrieve x
         _ error_not_string
+        next
+endcode
+
+; ### string-address
+code string_address, 'string-address'   ; string -> ^string
+        _ check_string
+        _tag_fixnum
         next
 endcode
 
@@ -101,7 +89,8 @@ code verify_string, 'verify-string'     ; string -> string
         jne     error_not_string
         next
 .1:
-        _ verify_static_string
+        cmp     bl, STATIC_STRING_TAG
+        jne     error_not_string
         next
 endcode
 
@@ -141,14 +130,21 @@ code string_length, 'string-length'     ; string -> length
 endcode
 
 ; ### string-length-unsafe
-inline string_length_unsafe, 'string-length-unsafe' ; string -> length
-        cmp     bl, HANDLE_TAG
-        jne     .1
-        _handle_to_object_unsafe
-.1:
+;inline string_length_unsafe, 'string-length-unsafe' ; string -> length
+;         cmp     bl, HANDLE_TAG
+;         jne     .1
+;         _handle_to_object_unsafe
+; .1:
+;        _string_raw_length
+;         _tag_fixnum
+;endinline
+code string_length_unsafe, 'string-length-unsafe' ; string -> length
+; REVIEW this is now the same as string-length
+        _ check_string
         _string_raw_length
         _tag_fixnum
-endinline
+        next
+endcode
 
 ; ### string-empty?
 code string_empty?, 'string-empty?'     ; string -> ?
@@ -352,6 +348,9 @@ endcode
 ; ### string-nth-unsafe
 code string_nth_unsafe, 'string-nth-unsafe'
 ; tagged-index handle-or-static-string -> tagged-char
+
+        ; FIXME
+        jmp     string_nth
 
         ; no type checking
         ; no bounds checking
@@ -952,7 +951,7 @@ endcode
 ; ### string-has-suffix?
 code string_has_suffix?, 'string-has-suffix?'   ; suffix string -- ?
         _twodup
-        _lit S_string_length
+        _symbol string_length
         _ bi@                           ; -- suffix string len1 len2
         _twodup
         _ fixnum_fixnum_le

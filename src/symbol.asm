@@ -213,7 +213,7 @@ endcode
 ; ### symbol?
 code symbol?, 'symbol?'                 ; x -> x/nil
         cmp     bl, HANDLE_TAG
-        jne     static_symbol?
+        jne     .1
         mov     rax, rbx                ; save x in rax
         mov     rdx, NIL
         shr     rax, HANDLE_TAG_BITS
@@ -221,13 +221,20 @@ code symbol?, 'symbol?'                 ; x -> x/nil
         cmp     word [rax], TYPECODE_SYMBOL
         cmovne  rbx, rdx
         next
+.1:
+        cmp     bl, STATIC_SYMBOL_TAG
+        jne     .no
+        next
+.no:
+        mov     ebx, NIL
+        next
 endcode
 
 ; ### check_symbol
 code check_symbol, 'check_symbol', SYMBOL_INTERNAL      ; x -> ^symbol
 
         cmp     bl, HANDLE_TAG
-        jne     verify_static_symbol
+        jne     .1
 
         ; save argument in rax
         mov     rax, rbx
@@ -244,11 +251,24 @@ code check_symbol, 'check_symbol', SYMBOL_INTERNAL      ; x -> ^symbol
         jne     .error
         next
 
+.1:
+        cmp     bl, STATIC_SYMBOL_TAG
+        jne     error_not_symbol
+        _untag_static_symbol
+        next
+
 .error:
         ; restore original argument for error message
         mov     rbx, rax
         jmp     error_not_symbol
 
+        next
+endcode
+
+; ### symbol-address
+code symbol_address, 'symbol-address'   ; symbol -> ^symbol
+        _ check_symbol
+        _tag_fixnum
         next
 endcode
 
@@ -264,7 +284,7 @@ endcode
 
 ; ### verify_static_symbol
 code verify_static_symbol, 'verify_static_symbol', SYMBOL_INTERNAL
-; symbol -> symbol
+; ^symbol -> ^symbol
         cmp     rbx, static_data_area
         jb      .1
         cmp     rbx, static_data_area_limit
@@ -331,7 +351,8 @@ code new_symbol, '<symbol>'             ; name vocab -- symbol
 
         _ default_visibility
         _ get
-        _eq? S_private
+        _symbol private
+        _eq?
         _tagged_if .1
         _this_symbol_set_flags_bit SYMBOL_PRIVATE
         _then .1
@@ -396,6 +417,20 @@ endcode
 code symbol_name, 'symbol-name'         ; symbol -> string
         _ check_symbol
         _symbol_name
+        next
+endcode
+
+; ### symbol-set-name
+code symbol_set_name, 'symbol-set-name' ; name symbol -> void
+        _ check_symbol
+        _set_slot1
+        next
+endcode
+
+; ### symbol-set-vocab-name
+code symbol_set_vocab_name, 'symbol-set-vocab-name' ; name symbol -> void
+        _ check_symbol
+        _set_slot2
         next
 endcode
 
@@ -798,8 +833,22 @@ code symbol_flags, 'symbol-flags'       ; symbol -- flags
         next
 endcode
 
+; ### symbol-source-file
+code symbol_source_file, 'symbol-source-file'   ; symbol -> string
+        _ check_symbol
+        _symbol_file
+        next
+endcode
+
+; ### symbol-set-source-file
+code symbol_set_source_file, 'symbol-set-source-file'   ; string symbol -> void
+        _ check_symbol
+        _symbol_set_file
+        next
+endcode
+
 ; ### symbol-location
-code symbol_location, 'symbol-location' ; -- file line-number
+code symbol_location, 'symbol-location' ; -> file line-number
         _ check_symbol
         _dup
         _symbol_file
@@ -809,7 +858,7 @@ code symbol_location, 'symbol-location' ; -- file line-number
 endcode
 
 ; ### symbol-set-location
-code symbol_set_location, 'symbol-set-location' ; file line-number symbol --
+code symbol_set_location, 'symbol-set-location' ; file line-number symbol -> void
         _ check_symbol
         _pick
         _tagged_if .1

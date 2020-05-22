@@ -457,8 +457,8 @@ section .data
         db      0                       ; not used
         dd      0                       ; not used
 
-        dq      %%name                  ; symbol name
-        dq      FELINE_VOCAB_NAME       ; vocab name
+        dq      %%name                  ; symbol name (will be tagged in hash-vocabs)
+        dq      NIL                     ; vocab name (will be set in hash-vocabs)
         dq      NIL                     ; hashcode (link field)
         dq      NIL                     ; def
         dq      NIL                     ; props
@@ -486,6 +486,7 @@ section .data
 %macro  _symbol 1                       ; _symbol dup -> _lit S_dup
         _dup
         mov     rbx, symbol(%1)
+        _tag_static_symbol
 %endmacro
 
 %macro  special 2                       ; label, name
@@ -497,6 +498,7 @@ section .data
 %1:
         _dup
         mov     rbx, S_%1
+        _tag_static_symbol
         ret
 %1_ret:
 
@@ -622,7 +624,40 @@ section .data
         inc     qword [%1_data]
 %endmacro
 
-%macro  _quote 1                        ; -- string
+; tagged static objects
+%define STATIC_OBJECT_TAG_BITS  8
+%define STATIC_STRING_TAG       0xd2
+%define STATIC_SYMBOL_TAG       0xc2
+%define STATIC_QUOTATION_TAG    0xb2
+
+%macro  _tag_static_string 0
+        shl     rbx, STATIC_OBJECT_TAG_BITS
+        or      rbx, STATIC_STRING_TAG
+%endmacro
+
+%macro  _untag_static_string 0
+        shr     rbx, STATIC_OBJECT_TAG_BITS
+%endmacro
+
+%macro  _tag_static_symbol 0
+        shl     rbx, STATIC_OBJECT_TAG_BITS
+        or      rbx, STATIC_SYMBOL_TAG
+%endmacro
+
+%macro  _untag_static_symbol 0
+        shr     rbx, STATIC_OBJECT_TAG_BITS
+%endmacro
+
+%macro  _tag_static_quotation 0
+        shl     rbx, STATIC_OBJECT_TAG_BITS
+        or      rbx, STATIC_QUOTATION_TAG
+%endmacro
+
+%macro  _untag_static_quotation 0
+        shr     rbx, STATIC_OBJECT_TAG_BITS
+%endmacro
+
+%macro  _quote 1                        ; -> string
         section .data
         align   DEFAULT_DATA_ALIGNMENT
 %strlen len     %1
@@ -638,6 +673,7 @@ section .data
         section .text
         _dup
         mov     rbx, %%string
+        _tag_static_string
 %endmacro
 
 %macro  _write_char 1
@@ -868,6 +904,7 @@ section .text
 %1_end:
         _dup
         mov     rbx, %1_quotation
+        _tag_static_quotation
         %pop
 %else
         %error  "not in a quotation"

@@ -47,14 +47,14 @@ code object_address, 'object-address'   ; x -> tagged-address
         _dup
         _ string?
         _tagged_if .2
-        _tag_fixnum
+        _ string_address
         _return
         _then .2
 
         _dup
         _ symbol?
         _tagged_if .3
-        _tag_fixnum
+        _ symbol_address
         _return
         _then .3
 
@@ -75,20 +75,30 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-type
 
         cmp     bl, HANDLE_TAG
         je      .3
+
         ; not a handle
+        cmp     bl, STATIC_STRING_TAG
+        je      .static_string
+
+        cmp     bl, STATIC_SYMBOL_TAG
+        je      .static_symbol
+
+        cmp     bl, STATIC_QUOTATION_TAG
+        je      .static_quotation
+
         test    ebx, LOWTAG_MASK
         jz      .4
 
         test    ebx, FIXNUM_TAG
         jz      .1
         mov     ebx, TYPECODE_FIXNUM
-        _return
+        next
 
 .1:
         cmp     bl, CHAR_TAG
         jne     .2
         mov     ebx, TYPECODE_CHAR
-        _return
+        next
 
 .2:
         mov     eax, ebx
@@ -96,7 +106,7 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-type
         cmp     eax, BOOLEAN_TAG
         jne     .5
         mov     ebx, TYPECODE_BOOLEAN
-        _return
+        next
 
 .3:
         _handle_to_object_unsafe
@@ -105,7 +115,19 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-type
         jz      error_empty_handle
 %endif
         _object_raw_typecode
-        _return
+        next
+
+.static_string:
+        mov     ebx, TYPECODE_STRING
+        next
+
+.static_symbol:
+        mov     ebx, TYPECODE_SYMBOL
+        next
+
+.static_quotation:
+        mov     ebx, TYPECODE_QUOTATION
+        next
 
 .4:
         cmp     rbx, static_data_area
@@ -113,12 +135,11 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-type
         cmp     rbx, static_data_area_limit
         jae     .5
         _object_raw_typecode
-        _return
+        next
 
 .5:
         ; not an object
         mov     ebx, TYPECODE_UNKNOWN
-
         next
 endcode
 
@@ -192,15 +213,14 @@ endcode
 
 ; ### slot@
 code slot@, 'slot@'                     ; obj tagged-fixnum -> value
+        _swap
+        _ object_address
         _check_fixnum
-        mov     rax, rbx
+        push    rbx
         _drop
-        cmp     bl, HANDLE_TAG
-        jne     .1
-        shr     rbx, HANDLE_TAG_BITS
-        mov     rbx, [rbx]
-.1:
-        mov     rbx, [rbx + rax * BYTES_PER_CELL]
+        _check_fixnum
+        pop     rax
+        mov     rbx, [rax + rbx * BYTES_PER_CELL]
         next
 endcode
 
