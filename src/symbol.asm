@@ -266,14 +266,14 @@ code check_symbol, 'check_symbol', SYMBOL_INTERNAL      ; x -> ^symbol
 endcode
 
 ; ### symbol-address
-code symbol_address, 'symbol-address'   ; symbol -> ^symbol
+code symbol_address, 'symbol-address'   ; symbol -> fixnum
         _ check_symbol
         _tag_fixnum
         next
 endcode
 
 ; ### verify-symbol
-code verify_symbol, 'verify-symbol'     ; symbol -- symbol
+code verify_symbol, 'verify-symbol'     ; symbol -> symbol
         _dup
         _ symbol?
         _tagged_if_not .1
