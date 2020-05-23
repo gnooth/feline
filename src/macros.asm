@@ -230,6 +230,39 @@
         shr     rbx, HANDLE_TAG_BITS
 %endmacro
 
+; tagged static objects
+%define STATIC_OBJECT_TAG_BITS  8
+%define STATIC_STRING_TAG       0xd2
+%define STATIC_SYMBOL_TAG       0xc2
+%define STATIC_QUOTATION_TAG    0xb2
+
+%macro  _tag_static_string 0
+        shl     rbx, STATIC_OBJECT_TAG_BITS
+        or      rbx, STATIC_STRING_TAG
+%endmacro
+
+%macro  _untag_static_string 0
+        shr     rbx, STATIC_OBJECT_TAG_BITS
+%endmacro
+
+%macro  _tag_static_symbol 0
+        shl     rbx, STATIC_OBJECT_TAG_BITS
+        or      rbx, STATIC_SYMBOL_TAG
+%endmacro
+
+%macro  _untag_static_symbol 0
+        shr     rbx, STATIC_OBJECT_TAG_BITS
+%endmacro
+
+%macro  _tag_static_quotation 0
+        shl     rbx, STATIC_OBJECT_TAG_BITS
+        or      rbx, STATIC_QUOTATION_TAG
+%endmacro
+
+%macro  _untag_static_quotation 0
+        shr     rbx, STATIC_OBJECT_TAG_BITS
+%endmacro
+
 %define DEFAULT_DATA_ALIGNMENT  8
 
 %define DEFAULT_CODE_ALIGNMENT 16
@@ -477,16 +510,16 @@ section .data
 
 %endmacro
 
-%macro  head 2-4 0, 0                   ; label, name, flags, inline size
-        symbol S_%1, %2, %1, %4, %3
-%endmacro
-
 %define symbol(x) S_ %+ x               ; symbol(dup) -> S_dup
 
 %macro  _symbol 1                       ; _symbol dup -> _lit S_dup
         _dup
         mov     rbx, symbol(%1)
         _tag_static_symbol
+%endmacro
+
+%macro  head 2-4 0, 0                   ; label, name, flags, inline size
+        symbol S_%1, %2, %1, %4, %3
 %endmacro
 
 %macro  special 2                       ; label, name
@@ -622,39 +655,6 @@ section .data
 
 %macro  _oneplusto 1                    ; label
         inc     qword [%1_data]
-%endmacro
-
-; tagged static objects
-%define STATIC_OBJECT_TAG_BITS  8
-%define STATIC_STRING_TAG       0xd2
-%define STATIC_SYMBOL_TAG       0xc2
-%define STATIC_QUOTATION_TAG    0xb2
-
-%macro  _tag_static_string 0
-        shl     rbx, STATIC_OBJECT_TAG_BITS
-        or      rbx, STATIC_STRING_TAG
-%endmacro
-
-%macro  _untag_static_string 0
-        shr     rbx, STATIC_OBJECT_TAG_BITS
-%endmacro
-
-%macro  _tag_static_symbol 0
-        shl     rbx, STATIC_OBJECT_TAG_BITS
-        or      rbx, STATIC_SYMBOL_TAG
-%endmacro
-
-%macro  _untag_static_symbol 0
-        shr     rbx, STATIC_OBJECT_TAG_BITS
-%endmacro
-
-%macro  _tag_static_quotation 0
-        shl     rbx, STATIC_OBJECT_TAG_BITS
-        or      rbx, STATIC_QUOTATION_TAG
-%endmacro
-
-%macro  _untag_static_quotation 0
-        shr     rbx, STATIC_OBJECT_TAG_BITS
 %endmacro
 
 %macro  _quote 1                        ; -> string
