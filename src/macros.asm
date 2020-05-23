@@ -510,11 +510,12 @@ section .data
 
 %endmacro
 
-%define symbol(x) S_ %+ x               ; symbol(dup) -> S_dup
+; static symbols only
+%define symbol_raw_address(x) S_ %+ x   ; symbol_raw_address(dup) -> S_dup
 
 %macro  _symbol 1                       ; _symbol dup -> _lit S_dup
         _dup
-        mov     rbx, symbol(%1)
+        mov     rbx, symbol_raw_address(%1)
         _tag_static_symbol
 %endmacro
 

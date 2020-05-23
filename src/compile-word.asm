@@ -504,11 +504,11 @@ code compile_primitive, 'compile-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         mov     rax, rbx                ; rax: ^symbol
         pop     rbx
 
-        cmp     rax, symbol(?exit_locals)
+        cmp     rax, symbol_raw_address(?exit_locals)
         je      compile_?exit_locals
-        cmp     rax, symbol(?return_no_locals)
+        cmp     rax, symbol_raw_address(?return_no_locals)
         je      compile_?return_no_locals
-        cmp     rax, symbol(?return_locals)
+        cmp     rax, symbol_raw_address(?return_locals)
         je      compile_?return_locals
 
         _ inline_primitive

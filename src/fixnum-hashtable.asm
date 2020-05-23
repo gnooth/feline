@@ -79,7 +79,7 @@ subroutine make_bucket_array    ; raw-capacity -> raw-address
         _ feline_malloc                 ; returns raw allocated address in rax
 
         mov     arg0_register, rax      ; raw address
-        mov     arg1_register, symbol(empty_marker)
+        mov     arg1_register, symbol_raw_address(empty_marker)
         mov     arg2_register, rbx      ; raw capacity in cells
         push    rax
         _ fill_cells
@@ -274,7 +274,7 @@ code gethash, 'gethash'                 ; key hashtable -> void
         cmp     rbx, rax
         je      .found
 
-        cmp     rax, symbol(empty_marker)
+        cmp     rax, symbol_raw_address(empty_marker)
         je      .not_found
 
         test    rax, rax                ; check for sentinel
@@ -292,7 +292,7 @@ code gethash, 'gethash'                 ; key hashtable -> void
         cmp     rbx, rax
         je      .found
 
-        cmp     rax, symbol(empty_marker)
+        cmp     rax, symbol_raw_address(empty_marker)
         je      .not_found
 
         add     r12, BYTES_PER_CELL * 2
@@ -343,7 +343,7 @@ code remhash, 'remhash'                 ; key hashtable -> void
         cmp     rbx, rax
         je      .found
 
-        cmp     rax, symbol(empty_marker)
+        cmp     rax, symbol_raw_address(empty_marker)
         je      .not_found
 
         test    rax, rax                ; check for sentinel
@@ -361,7 +361,7 @@ code remhash, 'remhash'                 ; key hashtable -> void
         cmp     rbx, rax
         je      .found
 
-        cmp     rax, symbol(empty_marker)
+        cmp     rax, symbol_raw_address(empty_marker)
         je      .not_found
 
         add     r12, BYTES_PER_CELL * 2
@@ -405,7 +405,7 @@ subroutine puthash_internal             ; value key -> void
         cmp     rbx, rax
         je      .found
 
-        cmp     rax, symbol(empty_marker)
+        cmp     rax, symbol_raw_address(empty_marker)
         je      .not_found
 
         test    rax, rax                ; check for sentinel
@@ -423,7 +423,7 @@ subroutine puthash_internal             ; value key -> void
         cmp     rbx, rax
         je      .found
 
-        cmp     rax, symbol(empty_marker)
+        cmp     rax, symbol_raw_address(empty_marker)
         je      .not_found
 
         add     r12, BYTES_PER_CELL * 2

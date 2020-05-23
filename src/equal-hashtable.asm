@@ -199,7 +199,7 @@ code xgethash, 'xgethash'                 ; key hashtable -> void
         cmp     r13, rax
         je      .found
 
-        cmp     rax, symbol(empty_marker)
+        cmp     rax, symbol_raw_address(empty_marker)
         je      .not_found
 
         test    rax, rax                ; check for sentinel
@@ -226,7 +226,7 @@ code xgethash, 'xgethash'                 ; key hashtable -> void
         cmp     r13, rax
         je      .found
 
-        cmp     rax, symbol(empty_marker)
+        cmp     rax, symbol_raw_address(empty_marker)
         je      .not_found
 
 ;         _dup
