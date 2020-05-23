@@ -448,18 +448,18 @@ section .data
 %endmacro
 
 ; symbol bit flags
-%define SYMBOL_PRIMITIVE        $0001
-%define SYMBOL_IMMEDIATE        $0002
-%define SYMBOL_INLINE           $0004
-%define SYMBOL_GLOBAL           $0008
-%define SYMBOL_CONSTANT         $0010
-%define SYMBOL_SPECIAL          $0020
-%define SYMBOL_PRIVATE          $0040
-%define SYMBOL_GENERIC          $0080
-%define SYMBOL_ALWAYS_INLINE    $0100
-%define SYMBOL_INTERNAL         $0200
-%define SYMBOL_THREAD_LOCAL     $0400
-%define SYMBOL_DEFERRED         $0800
+%define SYMBOL_PRIMITIVE        0x0001
+%define SYMBOL_IMMEDIATE        0x0002
+%define SYMBOL_INLINE           0x0004
+%define SYMBOL_GLOBAL           0x0008
+%define SYMBOL_CONSTANT         0x0010
+%define SYMBOL_SPECIAL          0x0020
+%define SYMBOL_PRIVATE          0x0040
+%define SYMBOL_GENERIC          0x0080
+%define SYMBOL_ALWAYS_INLINE    0x0100
+%define SYMBOL_INTERNAL         0x0200
+%define SYMBOL_THREAD_LOCAL     0x0400
+%define SYMBOL_DEFERRED         0x0800
 
 %macro  subroutine 1
         %push subroutine
