@@ -1153,6 +1153,13 @@ code hexdot, 'hex.'                     ; x -> void
         next
 endcode
 
+; ### raw.
+code rawdot, 'raw.'                     ; x -> void
+        _ normalize_unsigned
+        _ hexdot
+        next
+endcode
+
 ; ### bin.
 code bindot, 'bin.'                     ; n --
         _ fixnum_to_binary
