@@ -499,10 +499,10 @@ code compile_primitive, 'compile-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         _tagged_if .1
 
         ; -> symbol
-        _dup
+        push    rbx
         _ check_symbol                  ; -> symbol ^symbol
         mov     rax, rbx                ; rax: ^symbol
-        _drop                           ; -> symbol
+        pop     rbx
 
         cmp     rax, symbol(?exit_locals)
         je      compile_?exit_locals
