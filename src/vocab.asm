@@ -209,11 +209,12 @@ code vocab_empty, 'vocab-empty'         ; vocab --
 endcode
 
 ; ### vocab-add-symbol
-code vocab_add_symbol, 'vocab-add-symbol' ; symbol vocab --
-        _tor
+code vocab_add_symbol, 'vocab-add-symbol' ; symbol vocab -> void
+        push    rbx
+        mov     rbx, [rbp]
+        _ symbol_name                   ; -> symbol symbol-name
         _dup
-        _ symbol_name                   ; -- symbol name        r: -- vocab
-        _rfrom
+        pop     rbx                     ; -> symbol symbol-name vocab
         _ vocab_hashtable
         _ hashtable_set_at
         next
