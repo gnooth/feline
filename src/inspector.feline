@@ -83,7 +83,7 @@ global inspected-object
     "value"
     { "raw-code-address" :raw }
     { "raw-code-size" :raw }
-    { "flags" :raw }
+    { "raw-flags" :raw }
     "file"
     "line number"
 } symbol builtin-type-set-layout
