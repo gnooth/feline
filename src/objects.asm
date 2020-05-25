@@ -74,9 +74,8 @@ endcode
 code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-typecode
 
         cmp     bl, HANDLE_TAG
-        je      .3
+        je      .handle
 
-        ; not a handle
         cmp     bl, STATIC_STRING_TAG
         je      .static_string
 
@@ -86,29 +85,25 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-type
         cmp     bl, STATIC_QUOTATION_TAG
         je      .static_quotation
 
-        test    ebx, LOWTAG_MASK
-        jz      .4
+        test    bl, FIXNUM_TAG
+        jnz     .fixnum
 
-        test    ebx, FIXNUM_TAG
-        jz      .1
-        mov     ebx, TYPECODE_FIXNUM
-        next
-
-.1:
         cmp     bl, CHAR_TAG
-        jne     .2
-        mov     ebx, TYPECODE_CHAR
+        je     .char
+
+        cmp     ebx, NIL
+        je      .boolean
+
+        cmp     ebx, TRUE
+        je      .boolean
+
+        ; not an object
+        mov     ebx, TYPECODE_UNKNOWN
         next
 
-.2:
-        mov     eax, ebx
-        and     eax, BOOLEAN_TAG_MASK
-        cmp     eax, BOOLEAN_TAG
-        jne     .5
-        mov     ebx, TYPECODE_BOOLEAN
-        next
+        align   DEFAULT_CODE_ALIGNMENT
 
-.3:
+.handle:
         _handle_to_object_unsafe
 %ifdef DEBUG
         test    rbx, rbx
@@ -129,24 +124,23 @@ code object_raw_typecode, 'object_raw_typecode', SYMBOL_INTERNAL ; x -> raw-type
         mov     ebx, TYPECODE_QUOTATION
         next
 
-.4:
-        cmp     rbx, static_data_area
-        jb      .5
-        cmp     rbx, static_data_area_limit
-        jae     .5
-        _object_raw_typecode
+.fixnum:
+        mov     ebx, TYPECODE_FIXNUM
         next
 
-.5:
-        ; not an object
-        mov     ebx, TYPECODE_UNKNOWN
+.char:
+        mov     ebx, TYPECODE_CHAR
         next
+
+.boolean:
+        mov     ebx, TYPECODE_BOOLEAN
+        next
+
 endcode
 
 ; ### object-typecode
 code object_typecode, 'object-typecode' ; x -> typecode
 ; return value is tagged
-; error if x is not an object
         _ object_raw_typecode
         _tag_fixnum
         next

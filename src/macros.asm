@@ -49,11 +49,6 @@
 %define CHAR_TAG        0xe2
 %define CHAR_TAG_BITS   8
 
-%define BOOLEAN_TAG_BITS        3
-%define BOOLEAN_TAG_MASK        (1 << BOOLEAN_TAG_BITS) - 1
-
-%define BOOLEAN_TAG     6
-
 %macro  _tag_fixnum 0
         shl     rbx, FIXNUM_TAG_BITS
         or      rbx, FIXNUM_TAG
@@ -130,11 +125,11 @@
         sar     rax, FIXNUM_TAG_BITS
 %endmacro
 
-%define f_value BOOLEAN_TAG
-%define t_value BOOLEAN_TAG + (1 << LOWTAG_BITS)
+%define f_value 0
+%define t_value 0b00001110      ; 14
 
-%define NIL     BOOLEAN_TAG
-%define TRUE    BOOLEAN_TAG + (1 << LOWTAG_BITS)
+%define NIL     0
+%define TRUE    0b00001110
 
 %macro  _f 0
         _dup

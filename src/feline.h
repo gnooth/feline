@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ typedef cell COLORREF;
 
 // These #defines must be kept in sync with macros.asm and object-macros.asm.
 #define T_VALUE                14
-#define F_VALUE                 6
+#define F_VALUE                 0
 
 #define TYPECODE_FLOAT         17
 #define TYPECODE_INT64         22
