@@ -75,6 +75,12 @@ global feline-symbols
 
 global in-vocab
 
+: add-entry ( name location )
+    location name feline-symbols set-at
+    in-vocab [
+        ":" + name + location swap feline-symbols set-at
+    ] when* ;
+
 : feline-process-line // string fixnum -> void
     2 ?enough
     :> lineno
@@ -105,10 +111,10 @@ global in-vocab
         begin end s substring name!
 
         sourcefile lineno 1+ 2array location!
-        location name feline-symbols set-at
-        in-vocab [
-            ":" + name + location swap feline-symbols set-at
-        ] when*
+        name location add-entry
+        token { "global" "var" } member? [
+            name '!' string-append-char location add-entry
+        ] when
     ] when ;
 
 : process-feline-file
