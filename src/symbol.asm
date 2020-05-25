@@ -15,8 +15,21 @@
 
 file __FILE__
 
-; 12 slots: object header, name, vocab name, hashcode, def, props,
-; value, raw code address, raw code size, flags, file, line number
+; 12 slots: object header, name, vocab name, hashcode, def, props, value,
+; raw code address, raw code size, raw flags, file, line number
+%define SYMBOL_SIZE                     12 * BYTES_PER_CELL
+
+%define SYMBOL_NAME_OFFSET              8
+%define SYMBOL_VOCAB_NAME_OFFSET        16
+%define SYMBOL_HASHCODE_OFFSET          24
+%define SYMBOL_DEF_OFFSET               32
+%define SYMBOL_PROPS_OFFSET             40
+%define SYMBOL_VALUE_OFFSET             48
+%define SYMBOL_RAW_CODE_ADDRESS_OFFSET  56
+%define SYMBOL_RAW_CODE_SIZE_OFFSET     64
+%define SYMBOL_RAW_FLAGS_OFFSET         72
+%define SYMBOL_SOURCE_FILE_OFFSET       80
+%define SYMBOL_LINE_NUMBER_OFFSET       88
 
 %macro  _symbol_name 0                  ; symbol -- name
         _slot1
@@ -299,73 +312,62 @@ code verify_static_symbol, 'verify_static_symbol', SYMBOL_INTERNAL
 endcode
 
 ; ### <symbol>
-code new_symbol, '<symbol>'             ; name vocab -- symbol
-; 12 slots: object header, name, vocab name, hashcode, def, props,
-; value, code address, code size, flags, file, line number
+code new_symbol, '<symbol>'             ; name vocab -> symbol
 
-        _lit 12
-        _ raw_allocate_cells            ; -- name vocab object-address
+        mov     arg0_register, SYMBOL_SIZE
+        _ feline_malloc                 ; rax: ^object
 
         push    this_register
-        mov     this_register, rbx
-        poprbx                          ; -- name vocab
+        mov     this_register, rax      ; -> name vocab
 
-        _this_object_set_raw_typecode TYPECODE_SYMBOL
+        mov     qword [this_register], TYPECODE_SYMBOL
 
-        _tuck
+        _tuck                           ; -> vocab name vocab
         _ vocab_name
-        _this_symbol_set_vocab_name     ; -- vocab name
+        mov     qword [this_register + SYMBOL_VOCAB_NAME_OFFSET], rbx
+        _drop
 
-        _this_symbol_set_name           ; -- vocab
+        ; -> vocab name
+        mov     [this_register + SYMBOL_NAME_OFFSET], rbx
 
-        _this_symbol_name
+        ; -> vocab name
         _ string_hashcode
-        _this_symbol_vocab_name
+        _dup
+        mov     rbx, [this_register + SYMBOL_VOCAB_NAME_OFFSET]
         _ string_hashcode
         _ hash_combine
-        _this_symbol_set_hashcode
+        mov     [this_register + SYMBOL_HASHCODE_OFFSET], rbx
+        _drop                           ; -> vocab
 
-        _f
-        _this_symbol_set_def
-
-        _f
-        _this_symbol_set_props
-
-        _f
-        _this_symbol_set_value
-
-        _zero
-        _this_symbol_set_raw_code_address
-
-        _zero
-        _this_symbol_set_raw_code_size
-
-        _zero
-        _this_symbol_set_flags
-
-        _f
-        _this_symbol_set_file
-
-        _f
-        _this_symbol_set_line_number
+        mov     qword [this_register + SYMBOL_DEF_OFFSET], NIL
+        mov     qword [this_register + SYMBOL_PROPS_OFFSET], NIL
+        mov     qword [this_register + SYMBOL_VALUE_OFFSET], NIL
+        mov     qword [this_register + SYMBOL_RAW_CODE_ADDRESS_OFFSET], 0
+        mov     qword [this_register + SYMBOL_RAW_CODE_SIZE_OFFSET], 0
+        mov     qword [this_register + SYMBOL_RAW_FLAGS_OFFSET], 0
+        mov     qword [this_register + SYMBOL_SOURCE_FILE_OFFSET], NIL
+        mov     qword [this_register + SYMBOL_LINE_NUMBER_OFFSET], NIL
 
         _ default_visibility
         _ get
         _symbol private
-        _eq?
-        _tagged_if .1
-        _this_symbol_set_flags_bit SYMBOL_PRIVATE
-        _then .1
+        cmp     rbx, [rbp]
+        _2drop
+        jne     .1
+        or      qword [this_register + SYMBOL_RAW_FLAGS_OFFSET], SYMBOL_PRIVATE
 
-        pushrbx
-        mov     rbx, this_register      ; -- vocab symbol
-        pop     this_register
+.1:
+        _dup
+        mov     rbx, this_register
+        pop     this_register           ; -> vocab ^symbol
 
-        _ new_handle                    ; -- vocab handle
+        _ new_handle                    ; -> vocab symbol
 
+        push    rbx
         _swap
-        _dupd                           ; -- handle handle vocab
-        _ vocab_add_symbol              ; -- handle
+        _ vocab_add_symbol              ; -> symbol
+        _dup
+        pop     rbx
 
         next
 endcode
