@@ -348,3 +348,85 @@ use: mini
     ignore-case-default not ignore-case-default!
     current-search [ ignore-case-default swap ignore-case<< ] when*
     ignore-case-default "Ignore case" "Match case" ? message ;
+
+global replacement
+
+: replace1
+    add-undo-line-edit
+
+    // mark is at the beginning of the pattern
+    mark-offset dot-line-text string-head
+
+    replacement +
+
+    // dot is at the end of the pattern
+    dot-offset dot-line-text string-tail +
+
+    dot-line-text!
+
+    unmark
+    true dot-line-changed?! ;
+
+: query-replace-command
+    local default-pattern
+
+    mark dot and [
+        mark-line dot-line eq? [
+            dot mark make-region/2 region-as-string default-pattern!
+        ] when
+    ] when
+
+    default-pattern [
+        identifier-at-dot nip default-pattern!
+    ] unless
+
+    "find" set-history
+    "Find: "
+    default-pattern empty? [
+        minibuffer-accept-string
+    ] [
+        default-pattern minibuffer-accept-string/2
+    ] if :> pattern
+
+    pattern empty? ?exit
+
+    "replacement" set-history
+    pattern "Replace %S with: " format
+    minibuffer-accept-string replacement!
+
+    replacement empty? ?exit
+
+    pattern make-search current-search!
+
+    local done?
+    local response
+
+    [ done? ]
+    [
+        whole-words-only? [
+            dot search-forward-word
+        ] [
+            pattern dot search-forward
+        ] if
+
+        // -> pattern/nil
+        [
+            found
+            update-display
+
+            "Replace? " minibuffer-accept-string response!
+
+            response {
+                { "y" [ replace1 ] }
+                { "n" [ ] }
+                { "q" [ true done?! ] }
+                [
+                    // default
+                    drop
+                ]
+            } case
+        ] [
+            not-found
+            true done?!
+        ] if*
+    ] until ;

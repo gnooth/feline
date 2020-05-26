@@ -99,6 +99,7 @@ using: editor feline search ;
     ' kill-buffer                       feral-key:ctrl-w            m set-at
     ' newline-and-indent                feral-key:enter             m set-at
     ' find-command                      feral-key:ctrl-f            m set-at
+    ' query-replace-command             feral-key:ctrl-h            m set-at
     ' repeat-search-forward             feral-key:f3                m set-at
     ' repeat-search-backward            feral-key:shift-f3          m set-at
     ' search-list-occurrences           feral-key:ctrl-f3           m set-at
