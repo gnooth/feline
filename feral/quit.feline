@@ -19,7 +19,7 @@ in: editor
 feral-config:winui? #if
 
 : exit-feral
-    ' exit-feral-hook run-hook
+    ' exit-feral-hook run-hooks
     winui-exit
     current-thread primordial-thread eq? [ bye ] when ;
 
@@ -28,7 +28,7 @@ feral-config:winui? #if
 feral-config:gtkui? #if
 
 : exit-feral
-    ' exit-feral-hook run-hook
+    ' exit-feral-hook run-hooks
     gtkui-exit ;
 
 #endif
@@ -38,8 +38,8 @@ feral-config:termui? #if
 var done?
 
 : exit-feral
-    ' exit-feral-hook run-hook
-    t done?! ;
+    ' exit-feral-hook run-hooks
+    true done?! ;
 
 #endif
 
@@ -56,12 +56,11 @@ use: accessors
 
     buffer-list [ buffer-modified? ] count :> n
 
-    n zero? [
+    n 0? [
         exit-feral
     ] [
         n dup 1 > "s" "" ?
         "Really exit with %s modified buffer%s? (yes or no) " format
         minibuffer-accept-string
         "yes" = [ exit-feral ] when
-    ] if
-;
+    ] if ;
