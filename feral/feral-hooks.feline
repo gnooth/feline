@@ -18,15 +18,21 @@ in: feral-hooks
 
 : add-hook ( callable hook )            // callable symbol -> void
     hook symbol-value [
-        1 <vector> hook symbol-set-value
+        1 make-vector hook symbol-set-value
     ] unless
     hook symbol-value verify-vector :> hooks
     callable hooks vector-adjoin ;
 
+: remove-hook ( callable hook )         // callable symbol -> void
+    hook nil? ?exit
+    hook symbol-value vector? [
+        callable swap vector-remove! drop
+    ] when* ;
+
 : run-hooks ( hook )                    // hook -> void
-    hook symbol-value :> val
-    val vector? [
-        val [ call ] each
-    ] when ;
+    hook nil? ?exit
+    hook symbol-value vector? [
+        [ call ] each
+    ] when* ;
 
 global exit-feral-hook
