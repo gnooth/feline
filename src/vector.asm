@@ -78,20 +78,18 @@ file __FILE__
 %endmacro
 
 ; ### vector?
-code vector?, 'vector?'                 ; x -> ?
+code vector?, 'vector?'                 ; x -> x/nil
+; If x is a vector, returns x unchanged. If x is not a vector, returns nil.
         cmp     bl, HANDLE_TAG
         jne     .not_a_vector
-        _handle_to_object_unsafe
-%ifdef DEBUG
-        test    rbx, rbx
-        jz      error_empty_handle
-%endif
-        cmp     word [rbx], TYPECODE_VECTOR
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_VECTOR
         jne     .not_a_vector
-        mov     ebx, t_value
         next
 .not_a_vector:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 

@@ -586,12 +586,12 @@ test: vector-remove-nth!-test-1
 vector-remove-nth!-test-1
 
 test: vector-test-2
-    1 <vector> [ vector? assert-true ] keep
+    1 make-vector [ vector? assert ] keep
     100 [ dup pick vector-set-nth ] each-integer
     [ [ assert-eq ] vector-each-index ] keep
     clear
 
-    1 <vector>
+    1 make-vector
     "test" [ 100 pick vector-set-nth ] keep
     100 pick vector-nth assert-eq
 
@@ -599,10 +599,10 @@ test: vector-test-2
     100 [ over vector-nth assert-false ] each-integer
     clear
 
-    1 <vector> :> v
+    1 make-vector :> v
     42 9 v set-nth
     87 v push
-    v vector{ f f f f f f f f f 42 87 } sequence= assert-true
+    v vector{ nil nil nil nil nil nil nil nil nil 42 87 } sequence= assert-true
 
     // FIXME this fails Nov 25 2016 9:42 AM
     // 14 19 v set-nth
@@ -612,13 +612,12 @@ test: vector-test-2
 vector-test-2
 
 test: vector-test-3
-    1 <vector> [ vector? assert-true ] keep
+    1 make-vector [ vector? assert ] keep
     10 [ over vector-push ] each-integer
     10 [ dup pick vector-nth assert-eq ] each-integer
     [ [ assert-eq ] each-index ] keep
     10 [ 9 swap - over vector-pop assert-eq ] each-integer
-    vector-length zero? assert-true
-;
+    vector-length 0? assert-true ;
 
 vector-test-3
 
