@@ -162,6 +162,17 @@ public
     repaint-minibuffer
     saved-dot dot! ;
 
+: minibuffer-run
+    [
+        current-buffer minibuffer parent<<
+        minibuffer current-buffer!
+        editor:reset-undo
+        editor:reset-redo
+        reset-completion
+        minibuffer-update-caret-pos
+        winui-minibuffer-main
+    ] keep-current-buffer ;
+
 : minibuffer-accept-string              // prompt -> string/nil
     verify-string prompt!
     nil minibuffer-contents!
@@ -171,15 +182,7 @@ public
     [ string-length minibuffer dot>> offset<< ]
     bi
 
-    [
-        current-buffer minibuffer parent<<
-        minibuffer current-buffer!
-        editor:reset-undo
-        editor:reset-redo
-        reset-completion
-        minibuffer-update-caret-pos
-        winui-minibuffer-main
-    ] keep-current-buffer
+    minibuffer-run
 
     minibuffer-contents [ prompt length minibuffer-contents tail ] [ nil ] if ;
 
@@ -194,14 +197,6 @@ public
     [ string-length minibuffer dot>> offset<< ]
     bi
 
-    [
-        current-buffer minibuffer parent<<
-        minibuffer current-buffer!
-        editor:reset-undo
-        editor:reset-redo
-        reset-completion
-        minibuffer-update-caret-pos
-        winui-minibuffer-main
-    ] keep-current-buffer
+    minibuffer-run
 
     minibuffer-contents [ prompt length minibuffer-contents tail ] [ nil ] if ;
