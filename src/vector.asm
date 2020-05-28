@@ -94,40 +94,34 @@ code vector?, 'vector?'                 ; x -> x/nil
 endcode
 
 ; ### check_vector
-code check_vector, 'check_vector'       ; handle -> ^vector
+code check_vector, 'check_vector'       ; vector -> ^vector
         cmp     bl, HANDLE_TAG
         jne     .error2
-        mov     rdx, rbx                ; copy argument in case there is an error
-        _handle_to_object_unsafe
-%ifdef DEBUG
-        test    rbx, rbx
-        jz      error_empty_handle
-%endif
+        mov     rax, rbx
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]              ; rbx: ^vector
         cmp     word [rbx], TYPECODE_VECTOR
         jne     .error1
         next
 .error1:
-        mov     rbx, rdx                ; restore original argument
+        mov     rbx, rax
 .error2:
         jmp     error_not_vector
 endcode
 
 ; ### verify-vector
-code verify_vector, 'verify-vector'     ; handle -- handle
-; returns argument unchanged
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .error
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_VECTOR
+code verify_vector, 'verify-vector'     ; vector -> vector
+; Returns argument unchanged.
+        cmp     bl, HANDLE_TAG
         jne     .error
-        _drop
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_VECTOR
+        jne     .error
         next
 .error:
-        _drop
-        _ error_not_vector
-        next
+        jmp     error_not_vector
 endcode
 
 ; ### vector-capacity
