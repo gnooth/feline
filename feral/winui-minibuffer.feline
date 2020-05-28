@@ -107,8 +107,18 @@ private
 
 defer minibuffer-insert-char
 
-: minibuffer-dispatch                   // key -> void
+global minibuffer-dispatch-hook
+
+: minibuffer-dispatch                   // fixnum/char -> void
+
     current-buffer minibuffer assert-eq
+
+    // REVIEW
+    // call the hook function(s) with the argument still on the stack
+    ' minibuffer-dispatch-hook feral-hooks:run-hooks
+
+    // the hook function may have changed the stack
+    dup nil? [ drop ] ?return
 
     1 ?enough :> key
 
@@ -131,10 +141,10 @@ defer minibuffer-insert-char
 
     mod-count saved-mod-count > [ reset-completion ] when ;
 
-: winui-minibuffer-keydown              // key -> void
+: winui-minibuffer-keydown              // fixnum -> void
     minibuffer-dispatch ;
 
-: winui-minibuffer-char                 // tagged-char -> void
+: winui-minibuffer-char                 // char -> void
     minibuffer-dispatch ;
 
 public
@@ -172,6 +182,39 @@ public
         minibuffer-update-caret-pos
         winui-minibuffer-main
     ] keep-current-buffer ;
+
+global minibuffer-accept-char-result    // -> char/nil
+
+: minibuffer-accept-char-hook           // char/fixnum -> char/fixnum/nil
+    dup :> key
+
+    key printable-char? [
+        key minibuffer-accept-char-result!
+        "" minibuffer-set-text
+        unmark
+        repaint-minibuffer
+        winui-minibuffer-exit
+    ] [
+        nil minibuffer-accept-char-result!
+    ] if
+
+    drop nil ;
+
+: minibuffer-accept-char                // prompt -> char/nil
+    verify-string prompt!
+    nil minibuffer-accept-char-result!
+    ' minibuffer-accept-char-hook ' minibuffer-dispatch-hook feral-hooks:add-hook
+
+    prompt
+    [ minibuffer-set-text ]
+    [ string-length minibuffer dot>> offset<< ]
+    bi
+
+    minibuffer-run
+
+    ' minibuffer-accept-char-hook ' minibuffer-dispatch-hook feral-hooks:remove-hook
+
+    minibuffer-accept-char-result ;
 
 : minibuffer-accept-string              // prompt -> string/nil
     verify-string prompt!
