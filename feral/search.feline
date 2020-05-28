@@ -414,12 +414,12 @@ global replacement
             found
             update-display
 
-            "Replace? " minibuffer-accept-string response!
+            "Replace? " minibuffer-accept-char response!
 
             response {
-                { "y" [ replace1 ] }
-                { "n" [ ] }
-                { "q" [ true done?! ] }
+                { 'y' [ replace1 ] }
+                { 'n' [ ] }
+                { 'q' [ true done?! ] }
                 [
                     // default
                     drop
@@ -429,4 +429,6 @@ global replacement
             not-found
             true done?!
         ] if*
+        true repaint?!
+        update-display
     ] until ;
