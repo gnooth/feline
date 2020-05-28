@@ -96,7 +96,19 @@ public: minibuffer-set-text             // string -> void
 
 defer minibuffer-insert-char
 
+global minibuffer-dispatch-hook
+
 : minibuffer-dispatch                   // key -> void
+
+    current-buffer minibuffer assert-eq
+
+    // REVIEW
+    // call the hook function(s) with the argument still on the stack
+    ' minibuffer-dispatch-hook feral-hooks:run-hooks
+
+    // the hook function may have changed the stack
+    dup nil? [ drop ] ?return
+
     1 ?enough :> key
 
     local saved-mod-count
@@ -161,6 +173,39 @@ public
         minibuffer-update-caret-pos
         gtkui-minibuffer-main
     ] keep-current-buffer ;
+
+global minibuffer-accept-char-result    // -> char/nil
+
+: minibuffer-accept-char-hook           // char/fixnum -> char/fixnum/nil
+    dup :> key
+
+    key feral-key:key-to-printable-char [
+        minibuffer-accept-char-result!
+        "" minibuffer-set-text
+        unmark
+        gtkui-minibuffer-invalidate
+        gtkui-minibuffer-exit
+    ] [
+        nil minibuffer-accept-char-result!
+    ] if*
+
+    drop nil ;
+
+: minibuffer-accept-char                // prompt -> char/nil
+    verify-string prompt!
+    nil minibuffer-accept-char-result!
+    ' minibuffer-accept-char-hook ' minibuffer-dispatch-hook feral-hooks:add-hook
+
+    prompt
+    [ minibuffer-set-text ]
+    [ string-length minibuffer dot>> offset<< ]
+    bi
+
+    minibuffer-run
+
+    ' minibuffer-accept-char-hook ' minibuffer-dispatch-hook feral-hooks:remove-hook
+
+    minibuffer-accept-char-result ;
 
 : minibuffer-accept-string              // prompt -> string/nil
     verify-string prompt!
