@@ -18,79 +18,63 @@ file __FILE__
 ; 5 cells: object header, string, raw index, raw length, raw data address
 %define STRING_ITERATOR_SIZE                    5 * BYTES_PER_CELL
 
-%define STRING_ITERATOR_STRING_OFFSET           BYTES_PER_CELL * 1
+%define STRING_ITERATOR_STRING_OFFSET           8
 
-%define STRING_ITERATOR_RAW_INDEX_OFFSET        BYTES_PER_CELL * 2
+%define STRING_ITERATOR_RAW_INDEX_OFFSET        16
 
-%define STRING_ITERATOR_RAW_LENGTH_OFFSET       BYTES_PER_CELL * 3
+%define STRING_ITERATOR_RAW_LENGTH_OFFSET       24
 
-%define STRING_ITERATOR_RAW_DATA_ADDRESS_OFFSET BYTES_PER_CELL * 4
-
-%macro  _this_string_iterator_set_string 0
-        _this_set_slot1
-%endmacro
-
-%macro  _this_string_iterator_set_raw_length 0
-        _this_set_slot3
-%endmacro
-
-%define this_string_iterator_raw_data_address_slot      qword [this_register + BYTES_PER_CELL * 4]
-
-%macro  _string_iterator_raw_data_address 0
-        _slot4
-%endmacro
-
-%macro  _this_string_iterator_raw_data_address 0
-        _this_slot4
-%endmacro
-
-%macro  _this_string_iterator_set_raw_data_address 0
-        _this_set_slot4
-%endmacro
+%define STRING_ITERATOR_RAW_DATA_ADDRESS_OFFSET 32
 
 ; ### string-iterator?
-code string_iterator?, 'string-iterator?'       ; handle -> ?
-        _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe        ; -> object
-        _dup_if .2
-        _object_raw_typecode
-        _eq? TYPECODE_STRING_ITERATOR
-        _return
-        _then .2
-        _then .1
-        mov     ebx, f_value
+code string_iterator?, 'string-iterator?'       ; x -> x/nil
+; If x is a string-iterator, returns x unchanged.
+; If x is not a string-iterator, returns nil.
+        cmp     bl, HANDLE_TAG
+        jne     .not_a_string_iterator
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_STRING_ITERATOR
+        jne     .not_a_string_iterator
         next
-endcode
-
-; ### error-not-string-iterator
-code error_not_string_iterator, 'error-not-string-iterator'     ; x ->
-        ; REVIEW
-        _error "not a string iterator"
+.not_a_string_iterator:
+        mov     ebx, NIL
         next
 endcode
 
 ; ### verify-string-iterator
 code verify_string_iterator, 'verify-string-iterator'   ; iterator -> iterator
-        _dup
-        _ string_iterator?
-        _tagged_if .1
-        _return
-        _then .1
-
-        _ error_not_string_iterator
+; Returns argument unchanged.
+        cmp     bl, HANDLE_TAG
+        jne     error_not_string_iterator
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_STRING_ITERATOR
+        jne     error_not_string_iterator
         next
 endcode
 
 ; ### check-string-iterator
-code check_string_iterator, 'check-string-iterator'     ; x -> raw-iterator
-        _ deref
-        test    rbx, rbx
-        jz      error_not_string_iterator
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_STRING_ITERATOR
+code check_string_iterator, 'check_string_iterator'     ; iterator -> ^iterator
+        cmp     bl, HANDLE_TAG
         jne     error_not_string_iterator
+        mov     rax, rbx
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]              ; rbx: ^vector
+        cmp     word [rbx], TYPECODE_STRING_ITERATOR
+        jne     .error
+        next
+.error:
+        mov     rbx, rax
+        jmp     error_not_string_iterator
+endcode
+
+; ### error-not-string-iterator
+code error_not_string_iterator, 'error-not-string-iterator'     ; x ->
+        _quote "a string-iterator"
+        _ format_type_error
         next
 endcode
 
