@@ -42,8 +42,8 @@ code verify_fixnum, 'verify-fixnum'     ; fixnum -> fixnum
         next
 endcode
 
-; ### check-fixnum
-code check_fixnum, 'check-fixnum'       ; fixnum -> untagged-fixnum
+; ### check_fixnum
+code check_fixnum, 'check_fixnum'       ; fixnum -> untagged-fixnum
         _check_fixnum
         next
 endcode
@@ -51,7 +51,7 @@ endcode
 ; ### fixnum-hashcode
 code fixnum_hashcode, 'fixnum-hashcode' ; fixnum -> hashcode
         _verify_fixnum
-        _rep_return
+        next
 endcode
 
 ; ### verify-index
@@ -60,8 +60,8 @@ code verify_index, 'verify-index'       ; index -> index
         next
 endcode
 
-; ### check-index
-code check_index, 'check-index'         ; non-negative-fixnum -> untagged-fixnum
+; ### check_index
+code check_index, 'check_index'         ; non-negative-fixnum -> untagged-fixnum
         _check_index
         next
 endcode
