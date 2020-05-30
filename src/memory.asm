@@ -16,12 +16,12 @@
 file __FILE__
 
 subroutine feline_malloc
-; call with raw number of bytes to allocate in arg0_register
-; returns raw allocated address in rax
+; Call with raw number of bytes to allocate in arg0_register.
+; Returns raw address in rax.
         xcall   malloc
         test    rax, rax
         jz      error_out_of_memory
-        _rep_return
+        ret
 endsub
 
 ; ### raw_allocate
@@ -29,9 +29,9 @@ code raw_allocate, 'raw_allocate', SYMBOL_INTERNAL ; raw-size -> raw-address
         mov     arg0_register, rbx
         xcall   malloc
         test    rax, rax
-        mov     rbx, rax
         jz      error_out_of_memory
-        _rep_return
+        mov     rbx, rax
+        next
 endcode
 
 ; ### raw_realloc
