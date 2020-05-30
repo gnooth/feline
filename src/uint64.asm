@@ -1,4 +1,4 @@
-; Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -73,45 +73,13 @@ code uint64_raw_value, 'uint64_raw_value', SYMBOL_INTERNAL      ; handle -- raw-
         next
 endcode
 
-%if 0
-; ### new_uint64
-code new_uint64, 'new_uint64', SYMBOL_INTERNAL  ; raw-uint64 -- uint64
-; 2 cells: object header, raw value
-        _lit 2
-        _cells
-        _ raw_allocate
-
-        push    this_register
-        mov     this_register, rbx
-        poprbx
-
-        xor     eax, eax
-        mov     [this_register], rax
-
-        _this_object_set_raw_typecode TYPECODE_UINT64
-
-        _this_uint64_set_raw_value
-
-        pushrbx
-        mov     rbx, this_register      ; -- uint64
-        pop     this_register
-
-        ; return handle
-        _ new_handle                    ; -- handle
-
-        next
-endcode
-%endif
-
 ; ### new_uint64
 code new_uint64, 'new_uint64', SYMBOL_INTERNAL ; raw-uint64 -> uint64
 
         ; 2 cells: object header, raw value
         mov     arg0_register, 2 * BYTES_PER_CELL
 
-        _os_malloc
-        test    rax, rax
-        jz      error_out_of_memory
+        _ feline_malloc
 
         mov     qword [rax], TYPECODE_UINT64
         mov     [rax + BYTES_PER_CELL], rbx

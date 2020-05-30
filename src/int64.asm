@@ -99,9 +99,7 @@ code new_int64, 'new_int64', SYMBOL_INTERNAL ; raw-int64 -> int64
         ; 2 cells: object header, raw value
         mov     arg0_register, 2 * BYTES_PER_CELL
 
-        _os_malloc
-        test    rax, rax
-        jz      error_out_of_memory
+        _ feline_malloc
 
         mov     qword [rax], TYPECODE_INT64
         mov     [rax + BYTES_PER_CELL], rbx
