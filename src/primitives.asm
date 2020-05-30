@@ -1941,24 +1941,6 @@ code char_to_string, 'char>string'      ; tagged-char -- string
         next
 endcode
 
-; ### allocate
-code feline_allocate, 'allocate'        ; tagged-size -- addr
-
-        _ check_index
-
-feline_allocate_untagged:
-
-        mov     arg0_register, rbx
-        xcall   os_malloc
-        mov     rbx, rax                ; -- addr
-        test    rbx, rbx
-        jz .1
-        next
-.1:
-        _error "memory allocation failed"
-        next
-endcode
-
 ; ### free
 code feline_free, 'free'                ; addr --
 ; Argument is untagged.
