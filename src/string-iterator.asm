@@ -62,7 +62,7 @@ code check_string_iterator, 'check_string_iterator'     ; iterator -> ^iterator
         jne     error_not_string_iterator
         mov     rax, rbx
         shr     rbx, HANDLE_TAG_BITS
-        mov     rbx, [rbx]              ; rbx: ^vector
+        mov     rbx, [rbx]              ; rbx: ^iterator
         cmp     word [rbx], TYPECODE_STRING_ITERATOR
         jne     .error
         next
@@ -100,6 +100,7 @@ code make_string_iterator, 'make-string-iterator'       ; string -> iterator
         ; allocate memory for the iterator object
         mov     arg0_register, FIXNUM_HASHTABLE_SIZE
         _ feline_malloc                 ; returns raw address in rax
+
         mov     qword [rax], TYPECODE_STRING_ITERATOR
 
         mov     qword [rax + STRING_ITERATOR_RAW_INDEX_OFFSET], -1
