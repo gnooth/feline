@@ -365,6 +365,7 @@ global replacement
     dot-line-text!
 
     unmark
+    modified
     true dot-line-changed?! ;
 
 : query-replace-command
@@ -398,8 +399,11 @@ global replacement
 
     pattern make-search current-search!
 
+    local found?
     local done?
     local response
+
+    0 !> count
 
     [ done? ]
     [
@@ -409,15 +413,16 @@ global replacement
             pattern dot search-forward
         ] if
 
-        // -> pattern/nil
+        // -> position/nil
         [
+            true found?!
             found
             update-display
 
             "Replace? " minibuffer-accept-char response!
 
             response {
-                { 'y' [ replace1 ] }
+                { 'y' [ replace1 count 1+ count! ] }
                 { 'n' [ ] }
                 { 'q' [ true done?! ] }
                 [
@@ -426,7 +431,14 @@ global replacement
                 ]
             } case
         ] [
-            not-found
+            found? [
+                count 0> [
+                    count dup 1 > "s" "" ? "%d occurrence%s replaced" format
+                    message
+                ] when
+            ] [
+                not-found
+            ] if
             true done?!
         ] if*
         true repaint?!
