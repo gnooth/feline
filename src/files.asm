@@ -122,7 +122,7 @@ code file_create_write, 'file-create-write' ; string -> file-output-stream
 endcode
 
 ; ### file-size
-code file_size, 'file-size'             ; fd -> tagged-size
+code file_size, 'file-size'             ; fd -> fixnum
         mov     arg0_register, rbx
         xcall   os_file_size
         test    rax, rax
@@ -136,7 +136,7 @@ code file_size, 'file-size'             ; fd -> tagged-size
 endcode
 
 ; ### file-write-time
-code file_write_time, 'file-write-time' ; path -- fixnum
+code file_write_time, 'file-write-time' ; path -> fixnum
         _ string_raw_data_address
         mov     arg0_register, rbx
         xcall   os_file_write_time
@@ -320,7 +320,8 @@ code file_contents, 'file-contents'     ; path -- string
         _duptor
         _ file_size                     ; -- tagged-size
         _dup
-        _ feline_allocate               ; -- tagged-size buffer
+        _untag_fixnum
+        _ raw_allocate
         _swap                           ; -- buffer tagged-size
         _dupd                           ; -- buffer buffer size
         _rfetch                         ; -- buffer buffer size fd
@@ -573,24 +574,23 @@ code canonical_path, 'canonical-path'   ; string1 -> string2/nil
 endcode
 
 ; ### get-current-directory
-code get_current_directory, 'get-current-directory' ; -- string
-        _lit 1024
-        _ feline_allocate_untagged      ; address in rbx
+code get_current_directory, 'get-current-directory' ; -> string/nil
+        mov     arg0_register, 1024
+        _ feline_malloc                 ; rax: raw address
+        _dup
+        mov     rbx, rax
         mov     arg1_register, 1024
-        mov     arg0_register, rbx      ; address
+        mov     arg0_register, rax
         xcall   os_getcwd
         test    rax, rax
-        jz      .1
-        mov     rbx, rax
+        jz      .error
         _dup
         _ zcount
         _ copy_to_string
         _swap
         _ feline_free
-        _return
-
-.1:
-        ; error
+        next
+.error:
         mov     arg0_register, rbx
         xcall   os_free
         mov     rbx, NIL
