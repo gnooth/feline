@@ -55,6 +55,7 @@ static_data_area:
 %include "objects.asm"
 %include "array.asm"
 %include "string.asm"
+%include "string-slice.asm"
 %include "sbuf.asm"
 %include "slice.asm"
 %include "range.asm"

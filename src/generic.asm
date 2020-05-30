@@ -827,6 +827,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method object_to_string, TYPECODE_SLOT, slot_to_string
         _add_method object_to_string, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_to_string
         _add_method object_to_string, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_to_string
+        _add_method object_to_string, TYPECODE_STRING_SLICE, quote_string_slice
 
         _symbol object_to_string_default
         _symbol object_to_string

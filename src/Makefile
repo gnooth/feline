@@ -190,6 +190,7 @@ ASM_SOURCES = feline.asm feline_home.asm externs.asm \
 	string-iterator.asm \
 	string-output-stream.asm \
 	string.asm \
+	string-slice.asm \
 	symbol.asm \
 	thread.asm \
 	time.asm \
