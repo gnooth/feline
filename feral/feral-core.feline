@@ -23,8 +23,8 @@ defer add-recent-file
 
 global execute-command-input-string
 
-: shell-command-to-string ( command )   // command -> string/f
-    nil !> result
+: shell-command-to-string ( command )   // command -> string/nil
+    local result
     directories:get-temporary-filename :> tempfile
     command " > " + tempfile + " 2>&1 " + run-shell-command // should return fixnum 0
     0? [
@@ -96,8 +96,7 @@ tuple: position
     position make-instance :> pos
     pos offset<<
     pos line<<
-    pos
-;
+    pos ;
 
 : copy-position ( pos )                 // position -> copy
     pos line>> pos offset>> make-position ;
@@ -214,7 +213,7 @@ tuple: region-iterator
     >>end                               // -> iterator
 ;
 
-: region-iterator-next                  // iterator -> line/f
+: region-iterator-next                  // iterator -> line/nil
 
     dup current>> null? [ drop nil ] ?return
 
@@ -378,10 +377,10 @@ global buffer-list
 global current-buffer
 
 : current-buffer-filename               // void -> string/nil
-    current-buffer filename>> ;
+    current-buffer [ filename>> ] [ nil ] if* ;
 
 : current-buffer-directory              // void -> string/nil
-    current-buffer directory>> ;
+    current-buffer [ directory>> ] [ nil ] if* ;
 
 : set-current-buffer ( buf )            // buffer -> void
     [ buf ] [ buf current-buffer neq? ] both? [
@@ -856,6 +855,7 @@ tuple: search
     ignore-case ;
 
 : make-search                           // pattern -> search
+    verify-string
     search make-instance
     swap >>pattern
     whole-words-only-default >>whole-words-only
