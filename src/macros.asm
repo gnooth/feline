@@ -54,6 +54,11 @@
         or      rbx, FIXNUM_TAG
 %endmacro
 
+%macro  _tag_fixnum 1
+        shl     %1, FIXNUM_TAG_BITS
+        or      %1, FIXNUM_TAG
+%endmacro
+
 %define tagged_fixnum(n)        ((n << FIXNUM_TAG_BITS) + FIXNUM_TAG)
 
 %define tagged_zero     FIXNUM_TAG
