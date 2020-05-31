@@ -110,8 +110,7 @@ feral-config:winui? assert
 
     // j
     ' find-in-files                     feral-key:f6                m set-at
-    ' comment-region                    feral-key:f11               m set-at
-    ' uncomment-region                  feral-key:shift-f11         m set-at
+    ' frame-toggle-fullscreen           feral-key:f11               m set-at
 
     m global-map! ;
 
@@ -119,5 +118,4 @@ public
 
 : initialize-keymaps
     initialize-global-map
-    initialize-minibuffer-keymap
-;
+    initialize-minibuffer-keymap ;
