@@ -119,9 +119,30 @@ endcode
 code gtkui_char_height, 'textview-char-height' ; void -> fixnum
         extern  gtkui__char_height
         xcall   gtkui__char_height
-        pushrbx
+        _dup
         mov     rbx, rax
         _tag_fixnum
+        next
+endcode
+
+; ### frame-maximize
+code gtkui_frame_maximize, 'frame-maximize'
+        extern  gtkui__frame_maximize
+        xcall   gtkui__frame_maximize
+        next
+endcode
+
+; ### frame-unmaximize
+code gtkui_frame_unmaximize, 'frame-unmaximize'
+        extern  gtkui__frame_unmaximize
+        xcall   gtkui__frame_unmaximize
+        next
+endcode
+
+; ### frame-toggle-fullscreen
+code gtkui_frame_toggle_fullscreen, 'frame-toggle-fullscreen'
+        extern  gtkui__frame_toggle_fullscreen
+        xcall   gtkui__frame_toggle_fullscreen
         next
 endcode
 

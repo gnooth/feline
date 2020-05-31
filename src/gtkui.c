@@ -595,6 +595,24 @@ void gtkui__textview_set_caret_pos (int column, int row)
   textview_caret_row = row;
 }
 
+void gtkui__frame_maximize ()
+{
+  gtk_window_maximize (GTK_WINDOW (frame));
+}
+
+void gtkui__frame_unmaximize ()
+{
+  gtk_window_unmaximize (GTK_WINDOW (frame));
+}
+
+void gtkui__frame_toggle_fullscreen ()
+{
+  if (gtk_window_is_maximized (GTK_WINDOW (frame)))
+    gtk_window_unmaximize (GTK_WINDOW (frame));
+  else
+    gtk_window_maximize (GTK_WINDOW (frame));
+}
+
 void gtkui__frame_set_text (const char *s)
 {
   gtk_window_set_title (GTK_WINDOW (frame), s);
