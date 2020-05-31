@@ -543,6 +543,28 @@ int winui__char_width (void)
   return char_width;
 }
 
+void winui__frame_maximize (void)
+{
+  ShowWindow (hwnd_frame, SW_MAXIMIZE);
+}
+
+void winui__frame_unmaximize (void)
+{
+  ShowWindow (hwnd_frame, SW_RESTORE);
+}
+
+void winui__frame_toggle_fullscreen (void)
+{
+  WINDOWPLACEMENT wp;
+  ZeroMemory( &wp, sizeof (wp));
+  wp.length = sizeof (wp);
+  GetWindowPlacement (hwnd_frame, &wp);
+  if (wp.showCmd == SW_MAXIMIZE)
+    ShowWindow (hwnd_frame, SW_RESTORE);
+  else
+    ShowWindow (hwnd_frame, SW_MAXIMIZE);
+}
+
 void winui__frame_set_text (LPCSTR lpString)
 {
   if (hwnd_frame)

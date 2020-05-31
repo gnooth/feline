@@ -348,6 +348,27 @@ code winui_char_height, 'textview-char-height' ; void -> fixnum
         next
 endcode
 
+; ### frame-maximize
+code winui_frame_maximize, 'frame-maximize'
+        extern  winui__frame_maximize
+        xcall   winui__frame_maximize
+        next
+endcode
+
+; ### frame-unmaximize
+code winui_frame_unmaximize, 'frame-unmaximize'
+        extern  winui__frame_unmaximize
+        xcall   winui__frame_unmaximize
+        next
+endcode
+
+; ### frame-toggle-fullscreen
+code winui_frame_toggle_fullscreen, 'frame-toggle-fullscreen'
+        extern  winui__frame_toggle_fullscreen
+        xcall   winui__frame_toggle_fullscreen
+        next
+endcode
+
 ; ### frame-set-text
 code winui_frame_set_text, 'frame-set-text' ; string -> void
         _ string_raw_data_address
