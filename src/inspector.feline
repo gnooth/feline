@@ -88,6 +88,12 @@ global inspected-object
     "line number"
 } symbol builtin-type-set-layout
 
+{
+    "base string"
+    { "data address" :raw }
+    { "length" :raw }
+} string-slice builtin-type-set-layout
+
 : print-slot ( object n )               // object n -> void
     object object-layout :> layout
     n layout nth :> slot
@@ -97,9 +103,7 @@ global inspected-object
     slot slot-name write
     32 tab
     object n 1+ slot@
-    slot slot-type :raw eq? [ normalize ] when
-    short.
-;
+    slot slot-type :raw eq? [ normalize hex. nl ] [ short. ] if ;
 
 : inspect
     1 ?enough
@@ -109,5 +113,4 @@ global inspected-object
     layout [
         layout length dup "%d slots" format print
         [ inspected-object swap print-slot ] each-integer
-    ] when
-;
+    ] when ;
