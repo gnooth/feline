@@ -67,14 +67,14 @@ code format_type_error, 'format-type-error'     ; object expected-type ->
 endcode
 
 ; ### error-not-number
-code error_not_number, 'error-not-number'       ; x --
+code error_not_number, 'error-not-number'       ; x ->
         _quote "a number"
         _ format_type_error
         next
 endcode
 
 ; ### error-not-fixnum
-code error_not_fixnum, 'error-not-fixnum'       ; x --
+code error_not_fixnum, 'error-not-fixnum'       ; x ->
         _quote "a fixnum"
         _ format_type_error
         next
@@ -147,7 +147,7 @@ code error_not_index_rax, 'error_not_index_rax', SYMBOL_INTERNAL
 endcode
 
 ; ### error-not-vocab
-code error_not_vocab, 'error-not-vocab'         ; x --
+code error_not_vocab, 'error-not-vocab'         ; x ->
         _quote "a vocabulary"
         _ format_type_error
         next
@@ -161,14 +161,14 @@ code error_not_array, 'error-not-array'         ; x ->
 endcode
 
 ; ### error-not-vector
-code error_not_vector, 'error-not-vector'       ; x --
+code error_not_vector, 'error-not-vector'       ; x ->
         _quote "a vector"
         _ format_type_error
         next
 endcode
 
 ; ### error-not-hashtable
-code error_not_hashtable, 'error-not-hashtable' ; x --
+code error_not_hashtable, 'error-not-hashtable' ; x ->
         _quote "a hashtable"
         _ format_type_error
         next
@@ -374,14 +374,6 @@ endcode
 code error_not_boolean, 'error-not-boolean'
         _quote "a boolean"
         _ format_type_error
-        next
-endcode
-
-; ### error-index-not-valid-for-string  ; index string -> void
-code error_index_not_valid_for_string, 'error-index-not-valid-for-string'
-        _quote "ERROR: the value %d is not a valid index for the string %S."
-        _ format
-        _ error
         next
 endcode
 

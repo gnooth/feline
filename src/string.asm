@@ -554,45 +554,70 @@ endcode
 ; ### string-validate-slice
 code string_validate_slice, 'string-validate-slice'
 ; from to string -> from to string
-        _debug_?enough 3
-        _ threedup
-
+        push    rbx
         _ string_raw_length
-        _check_index qword [rbp]
-        _check_index qword [rbp + BYTES_PER_CELL]
+        mov     rax, rbx                ; rax: length
+        pop     rbx                     ; rbx: string
 
-        ; to
-        cmp     [rbp], rbx
-        jg      .error1
+        ; -> from to string
+        mov     rcx, [rbp + BYTES_PER_CELL]     ; rcx: from
+        test    cl, FIXNUM_TAG
+        jz      .error1
+        sar     rcx, FIXNUM_TAG_BITS
+        js      .error2
 
-        ; from
-        cmp     [rbp + BYTES_PER_CELL], rbx
-        jg      .error2
+        mov     rdx, [rbp]                      ; rdx: to
+        test    dl, FIXNUM_TAG
+        jz      .error3
+        sar     rdx, FIXNUM_TAG_BITS
+        js      .error4
 
-        ; `from` must be <= `to`
-        mov     rax, [rbp + BYTES_PER_CELL]     ; from
-        cmp     rax, [rbp]                      ; to
-        jg      .error3
-
-        _3drop
+        cmp     rdx, rax                ; to must be <= length
+        jg      .error5
+        cmp     rcx, rdx                ; from must be <= to
+        jg      .error6
         next
 
 .error1:
-        _3drop                          ; -> from to string
-        _ rot
-        _drop                           ; -> to string
-        _ error_index_not_valid_for_string
-        next
-
+        mov     rbx, rcx
+        _2nip
+        jmp     error_not_index
 .error2:
-        _3drop
-        _nip                            ; -> from string
-        _ error_index_not_valid_for_string
-        next
-
+        mov     rbx, rcx
+        _tag_fixnum
+        _2nip
+        jmp     error_not_index
 .error3:
-        _4drop                          ; -> from to
-        _quote "ERROR: the `from` index %d must not be greater than the `to` index %d."
+        mov     rbx, rdx
+        _2nip
+        jmp     error_not_index
+.error4:
+        mov     rbx, rdx
+        _tag_fixnum
+        _2nip
+        jmp     error_not_index
+.error5:
+        _drop
+        _tag_fixnum rdx
+        mov     [rbp], rdx
+        mov     rbx, rax
+        _tag_fixnum
+        jmp     error_index_not_valid_for_string
+.error6:
+        _drop
+        _tag_fixnum rdx
+        mov     rbx, rdx
+        _tag_fixnum rcx
+        mov     [rbp], rcx
+        _quote "ERROR: the start index (%d) must not be greater than the end index (%d)."
+        _ format
+        _ error
+        next
+endcode
+
+; ### error-index-not-valid-for-string  ; index length -> void
+code error_index_not_valid_for_string, 'error-index-not-valid-for-string'
+        _quote "ERROR: the value %d is not a valid index for a string of length %d."
         _ format
         _ error
         next
