@@ -4729,4 +4729,22 @@ test: array-set-nth-test
 
 array-set-nth-test
 
+test: string-validate-slice-test
+    {  0  4 "this is a test" } [  0  4 "this is a test" string-validate-slice ] unit-test
+    {  2  7 "this is a test" } [  2  7 "this is a test" string-validate-slice ] unit-test
+    {  0  0 "this is a test" } [  0  0 "this is a test" string-validate-slice ] unit-test
+    {  0 14 "this is a test" } [  0 14 "this is a test" string-validate-slice ] unit-test
+    { 14 14 "this is a test" } [ 14 14 "this is a test" string-validate-slice ] unit-test
+    { } [
+        [ 0 4 14 string-validate-slice ] assert-must-fail
+        [ 'a'  14 "this is a test" string-validate-slice ] assert-must-fail
+        [ 14  'a' "this is a test" string-validate-slice ] assert-must-fail
+        [ -1   14 "this is a test" string-validate-slice ] assert-must-fail
+        [  1  -14 "this is a test" string-validate-slice ] assert-must-fail
+        [  0   15 "this is a test" string-validate-slice ] assert-must-fail
+        [  4    0 "this is a test" string-validate-slice ] assert-must-fail
+    ] unit-test ;
+
+string-validate-slice-test
+
 ?nl "Reached end of test.feline" write-string
