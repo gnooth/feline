@@ -20,16 +20,21 @@ in: editor
     current-buffer read-only>> dup [ "Buffer is read-only" message ] when ;
 
 : delete-region/1 ( region ) // region -> void
-    region add-undo-delete-region
-
     0 region begin-offset region begin-line substring :> head
     region end-offset region end-line length region end-line substring :> tail
 
-    head tail + region begin-line text<<
+    local next
 
-    region end-line next>> :> next
-    next region begin-line next<<
-    next [ region begin-line next prev<< ] when
+    region begin-line region end-line eq? [
+        add-undo-line-edit
+        head tail + region begin-line text<<
+    ] [
+        region add-undo-delete-region
+        head tail + region begin-line text<<
+        region end-line next>> next!
+        next region begin-line next<<
+        next [ region begin-line next prev<< ] when
+    ] if
 
     unmark
     region begin copy-position dot!
