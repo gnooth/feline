@@ -184,6 +184,7 @@ global in-vocab
     "string-iterator.asm"
     "string-output-stream.asm"
     "string.asm"
+    "string-slice.asm"
     "strings.asm"
     "symbol.asm"
     "thread.asm"
