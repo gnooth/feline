@@ -24,7 +24,7 @@ global instance
     instance ;
 
 : feline-mode-identifier-char?          // char -> ?
-    '\s' neq? ;
+    char? [ '\s' neq? ] [ nil ] if* ;
 
 "// " constant feline-mode-comment-start
 
