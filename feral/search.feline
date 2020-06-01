@@ -215,21 +215,11 @@ private
 
 public
 
-winui? #if
-use: mini
-#endif
-
 : find-command
     "find" set-history
+    history-previous :> default
+
     whole-words-only-default "Find word: " "Find: " ? :> prompt
-
-    local default
-
-    mark-line dot-line eq? [
-        dot-offset mark-offset min
-        dot-offset mark-offset max
-        dot-line-text string-substring default!
-    ] when
 
     prompt default minibuffer-accept-string/2 :> pattern
     pattern empty? ?exit
@@ -369,26 +359,9 @@ global replacement
     true dot-line-changed?! ;
 
 : query-replace-command
-    local default-pattern
-
-    mark dot and [
-        mark-line dot-line eq? [
-            dot mark make-region/2 region-as-string default-pattern!
-        ] when
-    ] when
-
-    default-pattern [
-        identifier-at-dot nip default-pattern!
-    ] unless
-
     "find" set-history
-    "Find: "
-    default-pattern empty? [
-        minibuffer-accept-string
-    ] [
-        default-pattern minibuffer-accept-string/2
-    ] if :> pattern
-
+    history-previous :> default-pattern
+    "Find: " default-pattern minibuffer-accept-string/2 :> pattern
     pattern empty? ?exit
 
     "replacement" set-history
