@@ -74,7 +74,7 @@ using: editor feline search ;
     ' delete-word-right                 feral-key:ctrl-kp-delete    m set-at
     ' delete-word-left                  feral-key:ctrl-backspace    m set-at
 
-    ' mouse-select-word                 feral-key:double-mouse-1    m set-at
+    ' select-word                       feral-key:double-mouse-1    m set-at
 
     ' do-page-up                        feral-key:pageup            m set-at
     ' do-page-down                      feral-key:pagedown          m set-at
@@ -148,6 +148,8 @@ using: editor feline search ;
 
     // j
     ' find-in-files                     feral-key:f6                m set-at
+
+    // vscode, sublime, atom
     ' frame-toggle-fullscreen           feral-key:f11               m set-at
 
     m global-map! ;
