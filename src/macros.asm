@@ -171,13 +171,6 @@
         cmovne  rbx, rax
 %endmacro
 
-%macro  _char? 0                        ; x -> ?
-        cmp     bl, CHAR_TAG
-        mov     eax, NIL
-        mov     ebx, TRUE
-        cmovne  ebx, eax
-%endmacro
-
 %macro  _tag_char 0
         shl     rbx, CHAR_TAG_BITS
         or      rbx, CHAR_TAG

@@ -1830,8 +1830,12 @@ inline char_code, 'char-code'           ; tagged-char -- tagged-fixnum
 endinline
 
 ; ### char?
-inline char?, 'char?'                   ; x -- ?
-        _char?
+inline char?, 'char?'                   ; x -> x/nil
+; If x is a char, returns x unchanged.
+; If x is not a char, returns nil.
+        cmp     bl, CHAR_TAG
+        mov     eax, NIL
+        cmovne  ebx, eax
 endinline
 
 ; ### verify-char
