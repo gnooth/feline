@@ -95,25 +95,10 @@ in: editor
 public
 
 : find-in-files
-    local default-pattern
-
-    mark dot and [
-        mark-line dot-line eq? [
-            dot mark make-region/2 region-as-string default-pattern!
-        ] when
-    ] when
-
-    default-pattern [
-        identifier-at-dot nip default-pattern!
-    ] unless
-
     "find" set-history
-    "Find: "
-    default-pattern empty? [
-        minibuffer-accept-string
-    ] [
-        default-pattern minibuffer-accept-string/2
-    ] if find-in-files-pattern!
+    history-previous :> default-pattern
+
+    "Find: " default-pattern minibuffer-accept-string/2 find-in-files-pattern!
 
     find-in-files-pattern empty? ?exit
 
