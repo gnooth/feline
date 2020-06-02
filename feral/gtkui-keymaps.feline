@@ -13,14 +13,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline search ;
+using: editor feline search ;
 in: keymaps
 
 private
 
 feral-config:gtkui? assert
 
-using: editor feline search ;
+global ctrl-k-map
+
+: do-ctrl-k
+    "ctrl-k-" mini:message
+    ctrl-k-map feral-core:transient-map! ;
 
 : initialize-global-map
     global-map ?exit
@@ -109,6 +113,7 @@ using: editor feline search ;
     ' kill-line                         feral-key:ctrl-shift-delete m set-at
     ' undo                              feral-key:ctrl-z            m set-at
     ' redo                              feral-key:ctrl-y            m set-at
+    ' do-ctrl-k                         feral-key:ctrl-k            m set-at
     ' open-file                         feral-key:ctrl-o            m set-at
     ' next-buffer                       feral-key:alt-right         m set-at
     ' next-buffer                       feral-key:alt-kp-right      m set-at
@@ -154,8 +159,16 @@ using: editor feline search ;
 
     m global-map! ;
 
+: initialize-ctrl-k-map
+    ctrl-k-map ?exit
+    16 <hashtable> :> m
+    ' comment-region                    feral-key:ctrl-c            m set-at
+    ' uncomment-region                  feral-key:ctrl-u            m set-at
+    m ctrl-k-map! ;
+
 public
 
 : initialize-keymaps
     initialize-global-map
+    initialize-ctrl-k-map
     initialize-minibuffer-keymap ;

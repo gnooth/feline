@@ -203,16 +203,24 @@ feral-config:gtkui? #if
     mini:clear-message
     local command
 
-    // try local map first
-    current-buffer local-map>> :> local-map
+    // try transient map first
+    transient-map [
+        key swap at command!
+        nil transient-map!
+    ] when*
 
-    local-map [ key local-map at command! ] when
+    // local map
+    command [
+        current-buffer local-map>> [
+            key swap at command!
+        ] when*
+    ] unless
 
     // local map might bind a printable character
     // e.g. 'u' and '^' in directory mode
     command [
         key feral-key:key-to-printable-char [
-            local-map [ at command! ] when*
+            current-buffer local-map>> [ at command! ] when*
         ] when*
     ] unless
 
