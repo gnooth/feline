@@ -279,6 +279,8 @@ tuple: region-iterator
     sb sbuf>string
 ;
 
+global transient-map
+
 tuple: buffer
     name
     mode

@@ -73,12 +73,18 @@ feral-config:winui? #if
 
     local command
 
-    // try local map first
-    current-buffer local-map>> :> local-map
+    // try transient map first
+    transient-map [
+        key swap at command!
+        nil transient-map!
+    ] when*
 
-    local-map [
-        key local-map at command!
-    ] when
+    // local map
+    command [
+        current-buffer local-map>> [
+            key swap at command!
+        ] when*
+    ] unless
 
     // global map
     command [
