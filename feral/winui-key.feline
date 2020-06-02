@@ -165,6 +165,8 @@ VK_NUMPAD2 ctrl shift   constant ctrl-shift-kp-down
 VK_NUMPAD7 ctrl shift   constant ctrl-shift-kp-home
 VK_NUMPAD1 ctrl shift   constant ctrl-shift-kp-end
 
+VK_DELETE ctrl shift    constant ctrl-shift-delete
+
 VK_SPACE ctrl           constant ctrl-space
 
 'B' char-code alt       constant alt-b
