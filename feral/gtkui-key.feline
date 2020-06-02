@@ -115,6 +115,9 @@ down ctrl shift         constant ctrl-shift-down
 home ctrl shift         constant ctrl-shift-home
 end ctrl shift          constant ctrl-shift-end
 
+delete ctrl shift       constant ctrl-shift-delete
+kp-delete ctrl shift    constant ctrl-shift-kp-delete
+
 0x0004ffb4              constant shift-kp-left  // GDK_KEY_KP_4
 0x0004ffb6              constant shift-kp-right // GDK_KEY_KP_6
 0x0004ffb8              constant shift-kp-up    // GDK_KEY_KP_8
