@@ -183,6 +183,13 @@ code verify_thread, 'verify-thread'     ; thread -> thread
         next
 endcode
 
+; ### error-not-thread
+code error_not_thread, 'error-not-thread'       ; x -> void
+        _quote "a thread"
+        _ format_type_error
+        next
+endcode
+
 ; ### thread_set_raw_thread_id
 code thread_set_raw_thread_id, 'thread_set_raw_thread_id', SYMBOL_INTERNAL
 ; raw-thread-id thread -> void
