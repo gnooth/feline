@@ -3103,7 +3103,8 @@ test: sbuf-push-test-1
 sbuf-push-test-1
 
 test: thread-test-1
-    current-thread thread? assert-true
+    // thread? returns its argument if it is a thread
+    current-thread dup thread? assert-eq
     current-thread thread-state THREAD_RUNNING assert-eq
     sp0 current-thread thread-sp0 assert-eq
 ;

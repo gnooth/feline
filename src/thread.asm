@@ -133,54 +133,50 @@ file __FILE__
         _set_slot 12
 %endmacro
 
-; ### thread?
-code thread?, 'thread?'                 ; handle -> ?
-        _ deref                         ; -> raw-object/0
-        test    rbx, rbx
-        jz      .1
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_THREAD
-        jne     .1
-        mov     ebx, t_value
-        _return
-.1:
-        mov     ebx, f_value
+code thread?, 'thread?'                 ; x -> x/nil
+; If x is a thread, returns x unchanged. If x is not a thread, returns nil.
+        cmp     bl, HANDLE_TAG
+        jne     .not_a_thread
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_THREAD
+        jne     .not_a_thread
+        next
+.not_a_thread:
+        mov     ebx, NIL
         next
 endcode
 
 ; ### check_thread
 code check_thread, 'check_thread', SYMBOL_INTERNAL ; thread -> ^thread
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .error
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_THREAD
-        jne     .error
-        _nip
+        cmp     bl, HANDLE_TAG
+        jne     .error2
+        mov     rax, rbx
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]              ; rbx: ^thread
+        cmp     word [rbx], TYPECODE_THREAD
+        jne     .error1
         next
-.error:
-        _drop
-        _ error_not_thread
-        next
+.error1:
+        mov     rbx, rax
+.error2:
+        jmp     error_not_thread
 endcode
 
 ; ### verify-thread
 code verify_thread, 'verify-thread'     ; thread -> thread
-; returns argument unchanged
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .error
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_THREAD
+; Returns argument unchanged.
+        cmp     bl, HANDLE_TAG
         jne     .error
-        _drop
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_THREAD
+        jne     .error
         next
 .error:
-        _drop
-        _ error_not_thread
-        next
+        jmp     error_not_thread
 endcode
 
 ; ### error-not-thread
