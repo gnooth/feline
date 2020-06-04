@@ -217,11 +217,8 @@ public
 
 : find-command
     "find" set-history
-    history-previous :> default
-
     whole-words-only-default "Find word: " "Find: " ? :> prompt
-
-    prompt default minibuffer-accept-string/2 :> pattern
+    prompt minibuffer-accept-string :> pattern
     pattern empty? ?exit
     pattern make-search current-search!
 
@@ -360,8 +357,7 @@ global replacement
 
 : query-replace-command
     "find" set-history
-    history-previous :> default-pattern
-    "Find: " default-pattern minibuffer-accept-string/2 :> pattern
+    "Find: " minibuffer-accept-string :> pattern
     pattern empty? ?exit
 
     "replacement" set-history

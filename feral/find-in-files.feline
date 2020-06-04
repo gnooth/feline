@@ -96,16 +96,13 @@ public
 
 : find-in-files
     "find" set-history
-    history-previous :> default-pattern
-
-    "Find: " default-pattern minibuffer-accept-string/2 find-in-files-pattern!
-
+    "Find: " minibuffer-accept-string find-in-files-pattern!
     find-in-files-pattern empty? ?exit
 
     current-buffer-directory file-name-as-directory :> default-directory
 
     local default-extension
-    current-buffer filename>> [
+    current-buffer-filename [
         file-name-extension default-extension!
     ] [
         current-buffer parent>> [
@@ -120,7 +117,6 @@ public
     "Files: "
     default-directory "*" + default-extension +
     minibuffer-accept-string/2 current-files!
-
     current-files empty? ?exit
 
     current-files file-name-directory :> directory
