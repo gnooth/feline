@@ -229,7 +229,11 @@ public
     ] if // -> pattern/nil
     [ found ] [ not-found ] if* ;
 
-: search-forward-word-at-dot
+: find-under
+// sublime find_under ctrl-f3
+// atom find-next-selected ctrl-f3
+// vscode Find Next Selection ctrl-f3
+// Find next occurrence of identifier at dot.
     identifier-at-dot                   // -> index/nil string/nil
     :> pattern :> start
     pattern empty? [
@@ -239,7 +243,11 @@ public
         [ found ] [ not-found ] if*
     ] unless ;
 
-: search-backward-word-at-dot
+: find-under-prev
+// sublime find_under_prev ctrl-shift-f3
+// atom ctrl-shift-f3 find-previous-selected ctrl-shift-f3
+// vscode Find Previous Selection ctrl-f3
+// Find previous occurrence of identifier at dot.
     identifier-at-dot                   // -> index/nil string/nil
     :> pattern :> start
     nil !> pos

@@ -103,10 +103,12 @@ global ctrl-k-map
     ' kill-buffer                       feral-key:ctrl-w            m set-at
     ' newline-and-indent                feral-key:enter             m set-at
     ' find-command                      feral-key:ctrl-f            m set-at
+    ' find-under                        feral-key:ctrl-f3           m set-at
+    ' find-under-prev                   feral-key:ctrl-shift-f3     m set-at
+    ' search-list-occurrences           feral-key:alt-f3            m set-at
     ' query-replace-command             feral-key:ctrl-h            m set-at
     ' repeat-search-forward             feral-key:f3                m set-at
     ' repeat-search-backward            feral-key:shift-f3          m set-at
-    ' search-list-occurrences           feral-key:ctrl-f3           m set-at
     ' toggle-whole-words-only           feral-key:alt-w             m set-at
     ' toggle-ignore-case                feral-key:alt-c             m set-at
     ' do-tab                            feral-key:tab               m set-at
@@ -132,10 +134,6 @@ global ctrl-k-map
     ' unindent                          feral-key:ctrl-[            m set-at
 
     ' cycle-paste                       feral-key:alt-v             m set-at
-    ' search-forward-word-at-dot        feral-key:alt-down          m set-at
-    ' search-forward-word-at-dot        feral-key:alt-kp-down       m set-at
-    ' search-backward-word-at-dot       feral-key:alt-up            m set-at
-    ' search-backward-word-at-dot       feral-key:alt-kp-up         m set-at
     ' execute-command                   feral-key:alt-x             m set-at
     ' escape                            feral-key:escape            m set-at
 
