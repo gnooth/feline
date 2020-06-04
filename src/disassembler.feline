@@ -549,6 +549,19 @@ last-word 0x0b install-handler
 
 last-word 0x0c install-handler
 
+: .0d
+    // or eax/rax, imm32
+    "or" mnemonic!
+    set-instruction-size
+    // destination is eax/rax
+    0 dreg!
+    // source is imm32
+    next-int32 immediate-operand!
+    true immediate-operand?!
+    .inst ;
+
+last-word 0x0d install-handler
+
 : .19 "sbb" mnemonic! /r-r/m-reg ;
 
 last-word 0x19 install-handler
