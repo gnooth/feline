@@ -117,6 +117,7 @@ end ctrl shift          constant ctrl-shift-end
 
 delete ctrl shift       constant ctrl-shift-delete
 kp-delete ctrl shift    constant ctrl-shift-kp-delete
+f3 ctrl shift           constant ctrl-shift-f3
 
 0x0004ffb4              constant shift-kp-left  // GDK_KEY_KP_4
 0x0004ffb6              constant shift-kp-right // GDK_KEY_KP_6
@@ -141,6 +142,8 @@ kp-delete ctrl shift    constant ctrl-shift-kp-delete
 'x' char-code alt       constant alt-x
 'w' char-code alt       constant alt-w
 'c' char-code alt       constant alt-c
+
+f3 alt                  constant alt-f3
 
 'a' char-code ctrl      constant ctrl-a
 'b' char-code ctrl      constant ctrl-b

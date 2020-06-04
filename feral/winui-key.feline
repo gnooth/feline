@@ -166,6 +166,7 @@ VK_NUMPAD7 ctrl shift   constant ctrl-shift-kp-home
 VK_NUMPAD1 ctrl shift   constant ctrl-shift-kp-end
 
 VK_DELETE ctrl shift    constant ctrl-shift-delete
+VK_F3 ctrl shift        constant ctrl-shift-f3
 
 VK_SPACE ctrl           constant ctrl-space
 
@@ -178,6 +179,8 @@ VK_UP alt               constant alt-up
 'X' char-code alt       constant alt-x
 'W' char-code alt       constant alt-w
 'C' char-code alt       constant alt-c
+
+VK_F3 alt               constant alt-f3
 
 'D' char-code ctrl shift    constant ctrl-shift-d
 'F' char-code ctrl shift    constant ctrl-shift-f
