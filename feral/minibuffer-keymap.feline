@@ -50,22 +50,28 @@ public
 
 : slurp-find-string
 // sublime slurp_find_string ctrl-e
+// atom use-selection-as-find-pattern ctrl-e
     current-buffer minibuffer? nil? ?exit
     minibuffer parent>> :> parent-buffer
     parent-buffer nil? ?exit
 
-    local s
+    local pattern
 
     [
         parent-buffer current-buffer!
-        identifier-at-dot               // -> start/nil string/nil
-        s! nip
+
+        dot-line line-contains-selection? [
+            mark dot make-region/2 region-as-string pattern!
+        ] [
+            identifier-at-dot           // -> start/nil string/nil
+            pattern! nip
+        ] if
     ] keep-current-buffer
 
-    s nil? ?exit
+    pattern nil? ?exit
 
     add-undo-line-edit
-    prompt s + dup minibuffer-set-text length dot-offset!
+    prompt pattern + dup minibuffer-set-text length dot-offset!
 
     true dot-line-changed?!
     modified ;
@@ -132,7 +138,7 @@ private
     // FIXME remove
     ' do-quit                           feral-key:ctrl-q                m set-at
 
-    ' kill-line                         feral-key:ctrl-k                m set-at
+    ' kill-line                         feral-key:ctrl-shift-delete     m set-at
     ' undo                              feral-key:ctrl-z                m set-at
     ' redo                              feral-key:ctrl-y                m set-at
 
