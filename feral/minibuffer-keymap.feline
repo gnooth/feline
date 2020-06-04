@@ -48,6 +48,28 @@ public
         dot-offset 1- dot-offset!
     ] when ;
 
+: slurp-find-string
+// sublime slurp_find_string ctrl-e
+    current-buffer minibuffer? nil? ?exit
+    minibuffer parent>> :> parent-buffer
+    parent-buffer nil? ?exit
+
+    local s
+
+    [
+        parent-buffer current-buffer!
+        identifier-at-dot               // -> start/nil string/nil
+        s! nip
+    ] keep-current-buffer
+
+    s nil? ?exit
+
+    add-undo-line-edit
+    prompt s + dup minibuffer-set-text length dot-offset!
+
+    true dot-line-changed?!
+    modified ;
+
 using: mini editor feline ;
 in: keymaps
 
@@ -118,5 +140,7 @@ private
 
     // FIXME don't allow multiline pastes
     ' paste                             feral-key:ctrl-v                m set-at
+
+    ' slurp-find-string                 feral-key:ctrl-e                m set-at
 
     m mini:minibuffer-keymap! ;
