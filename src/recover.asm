@@ -96,13 +96,18 @@ code last_error, 'last-error'           ; void -> object/f
 endcode
 
 ; ### recover
-code recover, 'recover'                 ; try-quot recover-quot ->
-        _tor
-        _tor                            ; --            r: -- recover-quot try-quot
-        _ get_datastack                 ; -- data-stack
-        _rfrom                          ; -- data-stack try-quot
-        _swap
-        _tor                            ; -- try-quot
+code recover, 'recover'                 ; try-quotation recover-quotion ->
+        push    rbx
+        push    qword [rbp]     ;                       r: -> recover try
+        _2drop
+
+        _ get_datastack         ; -> data-stack         r: -> recover try
+
+        pop     rax             ; -> data-stack         r: -> recover           rax: try
+
+        push    rbx             ; -> data-stack         r: -> recover data-stack
+
+        mov     rbx, rax        ; -> try                r: -> recover data-stack
 
         push    r12
         push    r13
@@ -120,13 +125,12 @@ code recover, 'recover'                 ; try-quot recover-quot ->
         jne     .error
 
         ; no error
-        poprbx
-        _rdrop
-        _rdrop
-        _return
+        _drop                   ;                       r: -> recover data-stack
+        add     rsp, BYTES_PER_CELL * 2
+        next
 
 .error:
-        ; error object is in rbx
+                                ; -> error-object       r: -> recover data-stack
         mov     [error_object_], rbx
 
         ; restore data stack
@@ -137,10 +141,10 @@ code recover, 'recover'                 ; try-quot recover-quot ->
         _end_quotation .1
         _ each
 
-        pushrbx
+        _dup
         mov     rbx, [error_object_]
 
-        _rfrom                          ; -- recover-quot
+        _rfrom                  ; -> recover-quot
 
         _ callable_raw_code_address
         mov     rax, rbx
