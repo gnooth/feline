@@ -340,7 +340,7 @@ tuple: buffer
     ] unless
     value keyword buffer properties>> set-at ;
 
-var repaint? : repaint! repaint?! ;
+global repaint?
 
 var dot-line-changed?
 
