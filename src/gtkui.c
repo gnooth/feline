@@ -220,8 +220,10 @@ void gtkui__initialize (void)
 
 void gtkui__textview_invalidate (void)
 {
-  gtk_widget_queue_draw (textview);
-  gtk_widget_queue_draw (modeline);
+  if (GTK_IS_WIDGET (textview))
+    gtk_widget_queue_draw (textview);
+  if (GTK_IS_WIDGET (modeline))
+    gtk_widget_queue_draw (modeline);
 }
 
 void gtkui__minibuffer_invalidate (void)

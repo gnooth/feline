@@ -44,5 +44,6 @@ feral-config:gtkui? assert
 : update-mode-line mode-line-text modeline-set-text ;
 
 : update-display
+    gtkui-textview-invalidate
     update-caret-pos
     update-mode-line ;

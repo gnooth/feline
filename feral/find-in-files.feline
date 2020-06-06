@@ -97,10 +97,7 @@ global find-in-files-extension
 
     found? [
         output-buffer buffer-renumber
-        current-buffer output-buffer eq? [
-            update-display
-            feral-config:gtkui? [ gtkui-textview-invalidate ] when
-        ] when
+        current-buffer output-buffer eq? [ update-display ] when
     ] when ;
 
 : find-in-directory ( directory extension )
