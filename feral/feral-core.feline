@@ -458,7 +458,7 @@ global current-buffer
     mark offset>> ;
 
 : unmark
-    mark [ nil mark! t repaint?! ] when ;
+    mark [ nil mark! true repaint?! ] when ;
 
 : copy-dot                              // -> position
     dot copy-position ;
@@ -538,8 +538,22 @@ global current-buffer
 : last-line-number                      // -> n
     last-line number>> ;
 
+: buffer-renumber ( buf )
+    buf first-line>> !> line
+    0 !> n
+    [ line next>> ] [
+        n line number<<
+        n 1+ n!
+        line next>> line!
+    ] while
+    n line number<<
+    line buf last-line<< ;
+
+: renumber
+    current-buffer buffer-renumber ;
+
 : line-count                            // -> n
-    last-line-number 1+ ;
+    last-line-number [ 1+ ] [ renumber last-line-number 1+ ] if* ;
 
 : goal-column                           // -> n
     current-buffer goal-column>> ;
@@ -575,17 +589,6 @@ global current-buffer
 
 : indent-size                           // void -> n
     current-buffer indent-size>> [ 4 ] unless* ;
-
-: renumber
-    first-line !> line
-    0 !> n
-    [ line next>> ] [
-        n line number<<
-        n 1+ n!
-        line next>> line!
-    ] while
-    n line number<<
-    line last-line! ;
 
 : nth-line ( line-number )              // line-number -> line/f
 
