@@ -18,25 +18,46 @@ in: find-in-files
 
 global find-in-files-local-map
 
-global find-in-files-output-buffer
+global output-buffer
 
 global find-in-files-pattern
 
 global current-files
+
+global find-in-files-directory
+
+global find-in-files-extension
+
+: make-output-buffer ( line )
+    make-buffer :> buf
+    line buf buffer-append-line
+
+    buf first-line>> 0 make-position buf dot<<
+    buf first-line>> buf top-line<<
+    true buf read-only<<
+    find-in-files-pattern current-files "%S %s" format buf name<<
+    find-in-files-directory buf directory<<
+
+    current-buffer buf parent<<
+    current-search :search buf buffer-set-property
+    search-mode:get-instance buf mode<<
+    find-in-files-local-map buf local-map<<
+
+    buf output-buffer!
+
+    buf in-buffer-list? [ buf buffer-list vector-push ] unless
+    buf set-current-buffer ;
 
 : find-in-file
     1 ?enough verify-string :> filename
 
     local linenumber
     local s
-    local first-match
+    local found?
     local line
     local offset
 
-    true first-match!
-
-    filename file-lines
-    [
+    filename file-lines [
         // each-index
         // -> string index
 
@@ -45,27 +66,39 @@ global current-files
 
         find-in-files-pattern s substring-start offset!
 
-        offset
-        [
+        offset [
             // we found the pattern in this line
-            first-match
-            [
+            found? [
                 // first match in this file
+                true found?!
+
                 // add a filename line to the output buffer
                 filename make-line/1 line!
                 filename :source-file line line-set-property
-                line find-in-files-output-buffer buffer-append-line
-                nil first-match!
-            ] when
+                output-buffer [
+                    line output-buffer buffer-append-line
+                ] [
+                    line make-output-buffer
+                ] if
+
+                line line-changed
+            ] unless
 
             linenumber number>string ":" + s + make-line/1 line!
             filename :source-file line line-set-property
             linenumber :source-line-number line line-set-property
             offset :source-offset line line-set-property
-            line find-in-files-output-buffer buffer-append-line
+            line output-buffer buffer-append-line
+
+            line line-changed
         ] when
 
-    ] each-index ;
+    ] each-index
+
+    found? [
+        output-buffer buffer-renumber
+        current-buffer output-buffer eq? [ update-display ] when
+    ] when ;
 
 : find-in-directory ( directory extension )
     local filename
@@ -89,12 +122,19 @@ global current-files
         ] each
     ] when* ;
 
+: find-in-files-run
+    find-in-files-directory find-in-files-extension find-in-directory
+    output-buffer [ nil output-buffer! ] [ "Not found" message ] if ;
+
 using: find-in-files search feral-core history mini feline accessors ;
 in: editor
 
 public
 
 : find-in-files
+
+    output-buffer nil? assert
+
     "find" set-history
     "Find: " minibuffer-accept-string find-in-files-pattern!
     find-in-files-pattern empty? ?exit
@@ -119,37 +159,15 @@ public
     minibuffer-accept-string/2 current-files!
     current-files empty? ?exit
 
-    current-files file-name-directory :> directory
+    current-files file-name-directory find-in-files-directory!
 
-    current-files file-name-extension :> extension
+    find-in-files-directory nil? ?exit
 
-    directory nil? ?exit
+    current-files file-name-extension find-in-files-extension!
 
     find-in-files-pattern make-search current-search!
 
-    make-buffer :> buf
-    buf find-in-files-output-buffer!
-
-    directory extension find-in-directory
-
-    buf first-line>> nil? [ "Not found" message ] ?return
-
-    buf first-line>> 0 make-position buf dot<<
-    buf first-line>> buf top-line<<
-    true buf read-only<<
-    find-in-files-pattern current-files "%S %s" format buf name<<
-    directory buf directory<<
-
-    current-buffer buf parent<<
-    current-search :search buf buffer-set-property
-    search-mode:get-instance buf mode<<
-    find-in-files-local-map buf local-map<<
-
-    buf in-buffer-list? [ buf buffer-list vector-push ] unless
-    buf set-current-buffer
-
-    renumber
-    true repaint?! ;
+    [ find-in-files-run ] make-thread dup thread-create ;
 
 using: editor feral-core feline accessors ;
 in: find-in-files
