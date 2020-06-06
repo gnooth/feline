@@ -25,7 +25,9 @@ private
 40 constant buffer-directory-column
 
 : list-buffers-select
-    :buffer dot-line line-get-property current-buffer!
+    :buffer dot-line line-get-property :> selected-buffer
+    current-buffer parent>> current-buffer!
+    selected-buffer set-current-buffer
     true repaint?!
     update-display ;
 
