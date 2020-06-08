@@ -430,7 +430,7 @@ global regop    // REGister or OPcode extension (depending on the instruction)
                     !sib-byte
                     {
                         {
-                            [ sib-base 4 = sib-byte 0x24 = and ]
+                            [ sib-byte 0x24 = ]
                             [ sib-base register-rm sbase! ]
                         }
                         { [ sib-base 5 = ] [ next-int32 sdisp! t memory-operand?! ] }
@@ -1319,7 +1319,7 @@ last-word 0xc3 install-handler
                     !sib-byte
                     sib-index 4 = sib-base 5 = and [
                         next-int32 ddisp!
-                        t memory-operand?!
+                        true memory-operand?!
                     ] [
                         sib-base register-rm dbase!
                         sib-index register-index dindex!
@@ -1353,7 +1353,7 @@ last-word 0xc6 install-handler
     // dest is r/m16/32/64
     set-instruction-size
     !modrm-byte
-    regop zero? [ unsupported ] unless
+    regop 0? [ unsupported ] unless
     "mov" mnemonic!
     modrm-mod {
         { 0 [
@@ -1361,6 +1361,13 @@ last-word 0xc6 install-handler
                 { 4 [
                     !sib-byte
                     sib-base {
+                        { 4 [
+                            sib-index 4 = [
+                                sib-base register-rm dreg!
+                                next-int32 immediate-operand!
+                                true immediate-operand?!
+                            ] [ unsupported ] if
+                        ] }
                         { 5 [
                             next-int32 ddisp!
                             true memory-operand?!
@@ -1387,16 +1394,26 @@ last-word 0xc6 install-handler
                     ] [
                         next-int32 immediate-operand!
                     ] if
-                    t immediate-operand?!
+                    true immediate-operand?!
                 ]
             } case
         ] }
         { 1 [
-            // [r/m + disp8]
-            modrm-rm register-rm dbase!
-            next-signed-byte ddisp!
-            next-int32 immediate-operand!
-            t immediate-operand?!
+            modrm-rm 4 = [
+                !sib-byte
+                sib-base 4 = sib-index 4 = and [
+                    sib-base register-rm dbase!
+                    next-signed-byte ddisp!
+                    next-int32 immediate-operand!
+                    true immediate-operand?!
+                ] [ unsupported ] if
+            ] [
+                // [r/m + disp8]
+                modrm-rm register-rm dbase!
+                next-signed-byte ddisp!
+                next-int32 immediate-operand!
+                true immediate-operand?!
+            ] if
         ] }
         { 3 [
             modrm-rm register-rm dreg!
