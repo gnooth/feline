@@ -308,6 +308,7 @@ tuple: buffer
     indent-size
     tab-width
     command
+    needs-scan
     properties ;
 
 "\n"   constant LF
@@ -848,7 +849,7 @@ tuple: mode
     identifier-char-function
     formatter
     format-line-function
-;
+    scan-buffer-function ;
 
 : current-mode                          // -> mode
     current-buffer mode>> ;
