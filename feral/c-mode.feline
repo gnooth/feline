@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,23 +23,127 @@ global instance
 : get-instance // void -> mode
     instance ;
 
-: c-mode-format-line ( line )           // line -> array-of-segments
-    line text>> detab :> s
-    "//" s substring-start :> comment-start
+: scan-neutral ( char iter )
+    char '/' neq? [ :neutral ] ?return
+    iter string-iterator-peek :> char2
+    char2 '/' eq? [ :line-comment ] ?return
+    char2 '*' eq? [ :block-comment ] [ :neutral ] if ;
 
-    comment-start [
-        comment-start s string-head 0 color-text make-segment/3
-        comment-start s string-tail comment-start color-comment make-segment/3
-        2array
+: scan-block-comment ( char iter )
+    char '*' neq? [ :block-comment ] ?return
+    iter string-iterator-peek '/' eq? [
+        2 iter string-iterator-skip
+        :neutral
+    ] [ :block-comment ] if ;
+
+: scan-line ( line ) // line -> state
+    line text>> make-string-iterator :> iter
+    line state>> !> state
+    local char
+    [
+        iter string-iterator-next char!
+        char
     ] [
-        s 0 color-text make-segment/3
-        1array
-    ] if ;
+        {
+            { [ state :neutral eq? ] [ char iter scan-neutral state! ] }
+            { [ state :block-comment eq? ] [ char iter scan-block-comment state! ] }
+            {
+                [ state :line-comment eq? ]
+                [ iter string-iterator-skip-to-end :neutral state! ]
+            }
+        } cond
+    ] while
+    state ;
 
-: c-mode-initialize-buffer              // buffer -> void
-    1 ?enough :> buf
+: scan-buffer ( buf )                   // buffer -> void
+    buf first-line>> !> line
+    :neutral !> state
+    [ line ] [
+        state line state<<
+        line scan-line state!
+        line next>> line!
+    ] while
+    nil buf needs-scan<< ;
+
+: c-mode-format-line ( line )           // line -> segments
+    line text>> detab :> text
+    text make-string-iterator :> iter
+    line state>> !> state
+
+    local char
+    0 !> start-index
+    16 make-vector :> v
+
+    [
+        iter string-iterator-next char!
+        char
+    ]
+    [
+        // while
+        {
+            // cond
+            {
+                [ state :neutral eq? ]
+                [
+                    char iter scan-neutral state!
+                    state :neutral eq? [
+                        start-index iter string-iterator-index text substring
+                        start-index color-text make-segment/3 v push
+                        iter string-iterator-index start-index!
+                    ] when
+                    state :block-comment eq? [
+                        // block comment
+                        start-index iter string-iterator-index text substring
+                        start-index color-text make-segment/3 v push
+                        iter string-iterator-index start-index!
+                    ] when
+                    state :line-comment eq? [
+                        start-index iter string-iterator-index text substring
+                        start-index color-text make-segment/3 v push
+                        iter string-iterator-index start-index!
+                    ] when
+                ]
+            }
+            {
+                [ state :block-comment eq? ]
+                [
+                    char iter scan-block-comment state!
+                    state :neutral eq? [
+                        start-index iter string-iterator-index text substring
+                        start-index color-comment make-segment/3 v push
+                        iter string-iterator-index start-index!
+                    ] when
+                    state :block-comment eq? [
+                        start-index iter string-iterator-index text substring
+                        start-index color-comment make-segment/3 v push
+                        iter string-iterator-index start-index!
+                    ] when
+                ]
+            }
+            {
+                [ state :line-comment eq? ]
+                [ ] // nothing to do
+            }
+            [
+                ?nl "c-mode-format-line unsupported state " write state .
+                "unsupported" error
+            ]
+        } cond
+    ] while
+
+    start-index iter string-iterator-index text substring
+    start-index
+    state :block-comment eq? state :line-comment eq? or [ color-comment ] [ color-text ] if
+    make-segment/3 v push
+
+    state :line-comment? eq? [ :neutral state! ] when
+
+    v ;
+
+: c-mode-initialize-buffer ( buf )      // buffer -> void
     get-instance :> m
-    m indent-size>> buf indent-size<< ;
+    m indent-size>> buf indent-size<<
+    true buf needs-scan<< ;
 
 : initialize-c-mode
     mode make-instance :> m
@@ -48,6 +152,7 @@ global instance
     "// " m comment-start<<
     ' c-mode-initialize-buffer m initialize-buffer-function<<
     ' c-mode-format-line m format-line-function<<
+    ' scan-buffer m scan-buffer-function<<
     m ".c" modes set-at
     m ".h" modes set-at
 

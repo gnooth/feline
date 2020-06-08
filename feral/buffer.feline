@@ -91,9 +91,11 @@ in: editor
 
     0 dot-offset!
 
-    buf mode>> mode? [
-        buf mode>> initialize-buffer-function>> [ buf swap call ] when*
-    ] when
+    buf mode>> [
+        [ initialize-buffer-function>> [ buf swap call ] when* ]
+        [ scan-buffer-function>> [ buf swap call ] when* ]
+        bi
+    ] when*
 
     get-current-directory :> dir
     dir [
