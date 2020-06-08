@@ -40,16 +40,19 @@ tuple: line
     next
     number                              // 0-based line number
     text
+    state
     properties ;
 
 : make-line/1                           // string -> line
     verify-string
     line make-instance
+    :neutral >>state
     tuck
     text<< ;
 
 : make-line/2                           // string line-number -> line
     line make-instance
+    :neutral >>state
     swap verify-fixnum >>number
     swap verify-string >>text ;
 
