@@ -96,8 +96,7 @@ global find-in-files-extension
     ] each-index
 
     found? [
-        output-buffer buffer-renumber
-        current-buffer output-buffer eq? [ update-display ] when
+        current-buffer output-buffer eq? [ request-update-display ] when
     ] when ;
 
 : find-in-directory ( directory extension )
@@ -133,7 +132,7 @@ public
 
 : find-in-files
 
-    output-buffer nil? assert
+    nil output-buffer!
 
     "find" set-history
     "Find: " minibuffer-accept-string find-in-files-pattern!
