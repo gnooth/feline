@@ -322,8 +322,8 @@ tuple: buffer
     0 buf mod-count-last-save<<
     LF buf eol<<
 
-    100 <vector> buf undo-stack<<
-    16 <vector> buf redo-stack<<
+    100 make-vector buf undo-stack<<
+    16 make-vector buf redo-stack<<
 
     buf ;
 
@@ -333,6 +333,11 @@ tuple: buffer
     line buf last-line<<
     buf first-line>> [
         line buf first-line<<
+    ] unless
+
+    // REVIEW
+    line number>> [
+        line prev>> [ number>> 1+ ] [ 0 ] if* line number<<
     ] unless ;
 
 : buffer-get-property ( keyword buffer ) // keyword buffer -> value
