@@ -24,18 +24,16 @@ using: feral-core feline accessors ;
 in: editor
 
 : safe-call-symbol                      // symbol ->
-    [ call-symbol ]
-    [
+    [ call-symbol ] [
         last-error string? [
             last-error
             [ feral-config:termui? [ print ] unless ]
-            [ mini:message ]
+            [ message ]
             [ logging:log ]
             tri
         ] when
         [ print-backtrace ] logging:with-output-to-log
-    ]
-    recover ;
+    ] recover ;
 
 feral-config:winui? #if
 
