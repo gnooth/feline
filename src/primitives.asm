@@ -1820,14 +1820,20 @@ code printable_char?, 'printable-char?' ; x -- ?
 endcode
 
 ; ### code-char
-inline code_char, 'code-char'           ; tagged_fixnum -- tagged-char
+code code_char, 'code-char'             ; tagged_fixnum -> tagged-char
+        test    bl, FIXNUM_TAG
+        jz      error_not_fixnum
         _code_char
-endinline
+        next
+endcode
 
 ; ### char-code
-inline char_code, 'char-code'           ; tagged-char -- tagged-fixnum
+code char_code, 'char-code'             ; tagged-char -> tagged-fixnum
+        cmp     bl, CHAR_TAG
+        jne     error_not_char
         _char_code
-endinline
+        next
+endcode
 
 ; ### char?
 inline char?, 'char?'                   ; x -> x/nil
