@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -68,8 +68,11 @@ feral-config:winui? assert
 
     winui-show-caret ;
 
-: update-display
-    winui-hide-caret
+: update-display-internal
+
+    // FIXME needs-renumber [ renumber ] when
+    renumber
+
     repaint? [
         repaint
     ] [
@@ -80,5 +83,19 @@ feral-config:winui? assert
         repaint-changed-lines
     ] if
     update-mode-line
-    update-caret-pos
-    winui-show-caret ;
+    update-caret-pos ;
+
+: update-display
+    [ update-display-internal ] [
+        last-error string? [
+            last-error
+            [ feral-config:termui? [ print ] unless ]
+            [ message ]
+            [ logging:log ]
+            tri
+        ] when
+        [ print-backtrace ] logging:with-output-to-log
+    ] recover ;
+
+: request-update-display
+    winui-request-update-display ;
