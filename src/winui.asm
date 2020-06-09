@@ -110,6 +110,27 @@ subroutine winui_textview_paint         ; void -> void
         ret
 endsub
 
+; ### winui_textview_update_display
+subroutine winui_textview_update_display        ; void -> void
+; 0-arg callback
+
+        ; enter callback
+        push    rbx
+        push    rbp
+        mov     rbp, [winui_raw_sp0_]
+
+        _quote "update-display"
+        _quote "editor"
+        _ ?lookup_symbol
+        _ call_symbol
+
+        ; leave callback
+        pop     rbp
+        pop     rbx
+
+        ret
+endsub
+
 ; ### winui_textview_char
 subroutine winui_textview_char          ; wparam -> void
 ; 1-arg callback
@@ -252,6 +273,13 @@ subroutine winui_textview_mousewheel    ; delta -> void
 
         ret
 endsub
+
+; ### winui-request-update-display
+code winui_request_update_display, 'winui-request-update-display'
+        extern  winui__textview_request_update_display
+        xcall   winui__textview_request_update_display
+        next
+endcode
 
 ; ### textview-text-out
 code winui_textview_text_out, 'textview-text-out' ; column row string -> void

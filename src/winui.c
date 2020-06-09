@@ -362,6 +362,7 @@ static LRESULT CALLBACK winui__frame_wnd_proc (HWND hwnd, UINT msg,
 
 // winui.asm
 extern void winui_textview_paint (void);
+extern void winui_textview_update_display (void);
 extern void winui_textview_char (WPARAM);
 extern void winui_textview_keydown (WPARAM);
 extern void winui_textview_lbuttondown (WPARAM, LPARAM);
@@ -381,6 +382,13 @@ static void winui__textview_keydown (WPARAM wparam)
   if (GetKeyState (VK_SHIFT) & 0x8000)
     wparam |= SHIFT_MASK;
   winui_textview_keydown (wparam);
+}
+
+#define WM_FERAL_UPDATE_DISPLAY        (WM_USER + 1)
+
+void winui__textview_request_update_display (void)
+{
+  PostMessage (hwnd_textview, WM_FERAL_UPDATE_DISPLAY, 0, 0);
 }
 
 static LRESULT CALLBACK winui__textview_wnd_proc (HWND hwnd, UINT msg,
@@ -410,6 +418,10 @@ static LRESULT CALLBACK winui__textview_wnd_proc (HWND hwnd, UINT msg,
         EndPaint (hwnd, &ps);
       }
       return 0;
+
+    case WM_FERAL_UPDATE_DISPLAY:
+      winui_textview_update_display ();
+      break;
 
     case WM_SIZE:
       textview_rows = HIWORD (lparam) / char_height;
