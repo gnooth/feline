@@ -126,8 +126,14 @@ global ctrl-k-map
 : initialize-ctrl-k-map
     ctrl-k-map ?exit
     16 <hashtable> :> m
+
+    // vscode
     ' comment-region                    feral-key:ctrl-c            m set-at
     ' uncomment-region                  feral-key:ctrl-u            m set-at
+
+    // sublime
+    ' kill-line                         feral-key:ctrl-k            m set-at
+
     m ctrl-k-map! ;
 
 public
