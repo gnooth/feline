@@ -13,20 +13,22 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: editor feral-core feline accessors mini ;
+using: feral-core feline accessors ;
 in: find-in-files
 
-global find-in-files-local-map
+private
+
+global local-map
 
 global output-buffer
 
-global find-in-files-pattern
+global pattern
 
 global current-files
 
-global find-in-files-directory
+global directory
 
-global find-in-files-extension
+global extension
 
 : make-output-buffer ( line )
     make-buffer :> buf
@@ -35,13 +37,13 @@ global find-in-files-extension
     buf first-line>> 0 make-position buf dot<<
     buf first-line>> buf top-line<<
     true buf read-only<<
-    find-in-files-pattern current-files "%S %s" format buf name<<
-    find-in-files-directory buf directory<<
+    pattern current-files "%S %s" format buf name<<
+    directory buf directory<<
 
     current-buffer buf parent<<
     current-search :search buf buffer-set-property
     search-mode:get-instance buf mode<<
-    find-in-files-local-map buf local-map<<
+    local-map buf local-map<<
 
     buf output-buffer!
 
@@ -64,7 +66,7 @@ global find-in-files-extension
         1+ linenumber! // displayed line numbers are 1-based
         s!
 
-        find-in-files-pattern s substring-start offset!
+        pattern s substring-start offset!
 
         offset [
             // we found the pattern in this line
@@ -81,7 +83,7 @@ global find-in-files-extension
                     line make-output-buffer
                 ] if
 
-                line line-changed
+                line editor:line-changed
             ] unless
 
             linenumber number>string ":" + s + make-line/1 line!
@@ -90,13 +92,13 @@ global find-in-files-extension
             offset :source-offset line line-set-property
             line output-buffer buffer-append-line
 
-            line line-changed
+            line editor:line-changed
         ] when
 
     ] each-index
 
     found? [
-        current-buffer output-buffer eq? [ request-update-display ] when
+        current-buffer output-buffer eq? [ editor:request-update-display ] when
     ] when ;
 
 : find-in-directory ( directory extension )
@@ -122,21 +124,16 @@ global find-in-files-extension
     ] when* ;
 
 : find-in-files-run
-    find-in-files-directory find-in-files-extension find-in-directory
+    directory extension find-in-directory
     output-buffer [ nil output-buffer! ] [ "Not found" message ] if ;
-
-using: find-in-files search feral-core history mini feline accessors ;
-in: editor
-
-public
 
 : find-in-files
 
     nil output-buffer!
 
-    "find" set-history
-    "Find: " minibuffer-accept-string find-in-files-pattern!
-    find-in-files-pattern empty? ?exit
+    "find" history:set-history
+    "Find: " mini:minibuffer-accept-string pattern!
+    pattern empty? ?exit
 
     current-buffer-directory file-name-as-directory :> default-directory
 
@@ -152,26 +149,21 @@ public
     ] if*
     default-extension [ feline-extension default-extension! ] unless
 
-    "files" set-history
+    "files" history:set-history
     "Files: "
     default-directory "*" + default-extension +
-    minibuffer-accept-string/2 current-files!
+    mini:minibuffer-accept-string/2 current-files!
     current-files empty? ?exit
 
-    current-files file-name-directory find-in-files-directory!
+    current-files file-name-directory directory!
 
-    find-in-files-directory nil? ?exit
+    directory nil? ?exit
 
-    current-files file-name-extension find-in-files-extension!
+    current-files file-name-extension extension!
 
-    find-in-files-pattern make-search current-search!
+    pattern make-search current-search!
 
     [ find-in-files-run ] make-thread dup thread-create ;
-
-using: editor feral-core feline accessors ;
-in: find-in-files
-
-private
 
 : find-in-files-goto-source
     :search current-buffer buffer-get-property :> search
@@ -183,10 +175,10 @@ private
     sourcefile find-buffer-from-file-name // -> buffer/nil
     [
         set-current-buffer
-        linenumber gotoline-internal
+        linenumber editor:gotoline-internal
         // gotoline-internal calls maybe-reframe
     ] [
-        sourcefile linenumber create-buffer/2
+        sourcefile linenumber editor:create-buffer/2
         reframe
     ] if*
 
@@ -207,10 +199,10 @@ private
     128 <hashtable> :> m
     ' editor:kill-buffer feral-key:escape m set-at
     ' find-in-files-goto-source feral-key:enter m set-at
-    m find-in-files-local-map! ;
+    m local-map! ;
 
 initialize-local-map
 
 feral-config:winui? #if
-' find-in-files-goto-source feral-key:double-mouse-1 find-in-files-local-map set-at
+' find-in-files-goto-source feral-key:double-mouse-1 local-map set-at
 #endif
