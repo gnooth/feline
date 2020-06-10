@@ -385,7 +385,25 @@ global buffer-list
     // -> index/nil buffer/nil
     nip ;
 
+global current-buffer-lock  make-mutex current-buffer-lock!
+
+: lock-current-buffer
+    [ current-buffer-lock mutex-trylock ] [ 1 sleep ] until ;
+
+: unlock-current-buffer
+    current-buffer-lock mutex-unlock [
+        ?nl "unlock-current-buffer: mutex-unlock returned false" print
+    ] unless ;
+
 global current-buffer
+
+forget: current-buffer!
+
+: current-buffer!                       // buffer -> void
+    1 ?enough dup buffer? assert
+    lock-current-buffer
+    ' current-buffer symbol-set-value
+    unlock-current-buffer ;
 
 : current-buffer-filename               // void -> string/nil
     current-buffer [ filename>> ] [ nil ] if* ;
@@ -394,6 +412,7 @@ global current-buffer
     current-buffer [ directory>> ] [ nil ] if* ;
 
 : set-current-buffer ( buf )            // buffer -> void
+    lock-current-buffer
     [ buf ] [ buf current-buffer neq? ] both? [
         current-buffer [
             buffer-list [ current-buffer eq? ] find [
@@ -405,8 +424,9 @@ global current-buffer
             ] when
         ] when
         buf current-buffer!
-        t repaint?!
-    ] when ;
+        true repaint?!
+    ] when
+    unlock-current-buffer ;
 
 : keep-current-buffer                   // quotation -> void
 // Save the value of current-buffer. Call the quotation. Restore
