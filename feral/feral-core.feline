@@ -412,7 +412,6 @@ forget: current-buffer!
     current-buffer [ directory>> ] [ nil ] if* ;
 
 : set-current-buffer ( buf )            // buffer -> void
-    lock-current-buffer
     [ buf ] [ buf current-buffer neq? ] both? [
         current-buffer [
             buffer-list [ current-buffer eq? ] find [
@@ -425,8 +424,7 @@ forget: current-buffer!
         ] when
         buf current-buffer!
         true repaint?!
-    ] when
-    unlock-current-buffer ;
+    ] when ;
 
 : keep-current-buffer                   // quotation -> void
 // Save the value of current-buffer. Call the quotation. Restore
