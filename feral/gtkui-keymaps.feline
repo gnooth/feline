@@ -144,7 +144,7 @@ global ctrl-k-map
 
     ' recent-files:recent-files         feral-key:ctrl-r            m set-at
 
-    ' find-in-files                     feral-key:ctrl-shift-f      m set-at
+    ' find-in-files:find-in-files       feral-key:ctrl-shift-f      m set-at
 
     // emacs
     ' find-definition-at-dot            feral-key:alt-.             m set-at
@@ -153,7 +153,7 @@ global ctrl-k-map
     ' find-definition-at-dot            feral-key:f12               m set-at
 
     // j
-    ' find-in-files                     feral-key:f6                m set-at
+    ' find-in-files:find-in-files       feral-key:f6                m set-at
 
     // vscode, sublime, atom
     ' frame-toggle-fullscreen           feral-key:f11               m set-at
