@@ -27,6 +27,12 @@ public
 
 0xffff                  constant delete
 0xff9f                  constant kp-delete
+delete ctrl             constant ctrl-delete
+kp-delete ctrl          constant ctrl-kp-delete
+delete shift            constant shift-delete
+0xffae shift            constant shift-kp-delete        // GDK_KEY_KP_Decimal (0xffae)
+delete ctrl shift       constant ctrl-shift-delete
+0xffae ctrl shift       constant ctrl-shift-kp-delete   // GDK_KEY_KP_Decimal (0xffae)
 
 0xff50                  constant home
 0xff57                  constant end
@@ -54,9 +60,6 @@ public
 ']' char-code ctrl      constant ctrl-]
 
 backspace ctrl          constant ctrl-backspace
-
-delete ctrl             constant ctrl-delete
-kp-delete ctrl          constant ctrl-kp-delete
 
 home ctrl               constant ctrl-home
 end ctrl                constant ctrl-end
@@ -115,8 +118,6 @@ down ctrl shift         constant ctrl-shift-down
 home ctrl shift         constant ctrl-shift-home
 end ctrl shift          constant ctrl-shift-end
 
-delete ctrl shift       constant ctrl-shift-delete
-kp-delete ctrl shift    constant ctrl-shift-kp-delete
 f3 ctrl shift           constant ctrl-shift-f3
 
 0x0004ffb4              constant shift-kp-left  // GDK_KEY_KP_4

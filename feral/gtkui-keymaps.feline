@@ -112,7 +112,10 @@ global ctrl-k-map
     ' toggle-whole-words-only           feral-key:alt-w             m set-at
     ' toggle-ignore-case                feral-key:alt-c             m set-at
     ' do-tab                            feral-key:tab               m set-at
-    ' kill-line                         feral-key:ctrl-shift-delete m set-at
+
+    ' kill-line                         feral-key:ctrl-shift-delete     m set-at
+    ' kill-line                         feral-key:ctrl-shift-kp-delete  m set-at
+
     ' undo                              feral-key:ctrl-z            m set-at
     ' redo                              feral-key:ctrl-y            m set-at
     ' do-ctrl-k                         feral-key:ctrl-k            m set-at
@@ -160,8 +163,14 @@ global ctrl-k-map
 : initialize-ctrl-k-map
     ctrl-k-map ?exit
     16 <hashtable> :> m
+
+    // vscode
     ' comment-region                    feral-key:ctrl-c            m set-at
     ' uncomment-region                  feral-key:ctrl-u            m set-at
+
+    // sublime
+    ' kill-line                         feral-key:ctrl-k            m set-at
+
     m ctrl-k-map! ;
 
 public
