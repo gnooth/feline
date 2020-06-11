@@ -66,6 +66,10 @@ global list-buffers-local-map
 
 initialize-local-map
 
+feral-config:gtkui? #if
+' list-buffers-delete feral-key:kp-delete list-buffers-local-map set-at
+#endif
+
 feral-config:winui? feral-config:gtkui? or #if
 ' list-buffers-select feral-key:double-mouse-1 list-buffers-local-map set-at
 #endif
