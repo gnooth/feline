@@ -278,7 +278,7 @@ feral-config:gtkui? #if
     update-display
     gtkui-textview-invalidate ;
 
-: edit1
+: edit1-internal
     gtkui-initialize
 
     feral-config:standalone? "(standalone) " "" ?
@@ -289,6 +289,13 @@ feral-config:gtkui? #if
     true repaint?!
     update-display
     gtkui-main ;
+
+: edit1
+    feral-config:standalone? [
+        edit1-internal
+    ] [
+        [ edit1-internal ] make-thread thread-create
+    ] if ;
 
 #endif
 
