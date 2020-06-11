@@ -37,18 +37,21 @@ global instance
 
     pattern length :> patternlength
     0 !> i
+    local j
 
     ':' text string-index [
         1+ i! // include ':' in segment
         0 i text substring 0 color-linenumber make-segment/3 v push
     ] when*
 
-    pattern text substring-start !> j
-    i j text substring i color-text make-segment/3 v push
-    j dup patternlength + text substring j color-name make-segment/3 v push
-    j patternlength + j!
-    j text length < [
-        j text length text substring j color-text make-segment/3 v push
+    [ pattern text i find-substring-from dup j! ] [
+        i j text substring i color-text make-segment/3 v push
+        j dup patternlength + text substring j color-name make-segment/3 v push
+        j patternlength + i!
+    ] while
+
+    i text length < [
+        i text length text substring i color-text make-segment/3 v push
     ] when
 
     v ;
