@@ -18,14 +18,23 @@ in: editor
 
 feral-config:gtkui? assert
 
+: update-caret-pos
+    dot-column
+    dot-line-number top-line-number -
+    textview-set-caret-pos ;
+
+: update-mode-line mode-line-text modeline-set-text ;
+
 : repaint-internal
+    lock-current-buffer
     top-line !> line
     0 !> row
     [ line row textview-rows < and ] [
         line row repaint-line
         row 1+ row! line next>> line!
     ] while
-    nil repaint?! ;
+    nil repaint?!
+    unlock-current-buffer ;
 
 : repaint
     current-buffer minibuffer? [
@@ -36,17 +45,22 @@ feral-config:gtkui? assert
         repaint-internal
     ] if ;
 
-: update-caret-pos
-    dot-column
-    dot-line-number top-line-number -
-    textview-set-caret-pos ;
-
-: update-mode-line mode-line-text modeline-set-text ;
-
-: update-display
+: update-display-internal
     gtkui-textview-invalidate
     update-caret-pos
     update-mode-line ;
+
+: update-display
+    [ update-display-internal ] [
+        last-error string? [
+            last-error
+            [ feral-config:termui? [ print ] unless ]
+            [ message ]
+            [ logging:log ]
+            tri
+        ] when
+        [ print-backtrace ] logging:with-output-to-log
+    ] recover ;
 
 : request-update-display
     // REVIEW
