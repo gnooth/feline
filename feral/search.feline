@@ -44,21 +44,6 @@ private
 : find-char-in-range ( char string start end )  // char string start end -> i/nil
     start end [ string string-nth-unsafe char eq? ] find-integer-in-range ;
 
-: find-substring-in-range ( pattern string start end )  // pattern string start end -> i/nil
-    pattern unsafe-string-data-address :> pattern-data-address
-    string unsafe-string-data-address :> string-data-address
-    pattern string-length :> pattern-length
-
-    start end [
-        string-data-address +
-        pattern-data-address
-        pattern-length unsafe-memequal
-    ] find-integer-in-range ;
-
-: find-substring-from ( pattern string start )  // pattern string start -> i/nil
-    string string-length pattern string-length - 1+ :> end
-    pattern string start end find-substring-in-range ;
-
 : find-substring-in-line ( pattern line )       // pattern line -> position/nil
     pattern line text>> 0 find-substring-from
     [ line swap make-position ] [ nil ] if* ;
