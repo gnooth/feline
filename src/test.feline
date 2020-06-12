@@ -4748,4 +4748,30 @@ test: string-validate-slice-test
 
 string-validate-slice-test
 
+symbol: kablooey
+
+: %match-test
+    {
+        0 => [ "zero" ]
+        1 => [ "one" ]
+        2 => [ "two" ]
+        -1 => [ "minus one" ]
+        :keyword => [ "KEYWORD" ]
+        "tabouli" => [ "TABOULI" ]
+        kablooey => [ "KABLOOEY" ]
+        _ => [ "none of the above" ]
+    } match ;
+
+: match-test
+    { "zero" } [ 0 %match-test ] unit-test
+    { "one" } [ 1 %match-test ] unit-test
+    { "two" } [ 2 %match-test ] unit-test
+    { "minus one" } [ -1 %match-test ] unit-test
+    { "KEYWORD" } [ :keyword %match-test ] unit-test
+    { "TABOULI" } [ "tabouli" %match-test ] unit-test
+    { "KABLOOEY" } [ kablooey %match-test ] unit-test
+    { "none of the above" } [ "I'm not there!" %match-test ] unit-test ;
+
+match-test
+
 ?nl "Reached end of test.feline" write-string

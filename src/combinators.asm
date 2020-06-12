@@ -269,6 +269,61 @@ code case, 'case'               ; x array ->
         next
 endcode
 
+feline_symbol any, '_'
+
+; ### match
+code match, 'match'                     ; x array ->
+        _ check_array
+        push    this_register
+        mov     this_register, rbx      ; this_register: ^array
+        _drop                           ; -> x
+        _this_array_raw_length
+        shr     rbx, 1                  ; divide by 2
+        _do_times .1
+        _raw_loop_index
+        shl     rbx, 1                  ; multiply by 2
+        _this_array_nth_unsafe          ; -> x key
+
+        ; check for _
+        mov     rax, S_any
+        shl     rax, STATIC_OBJECT_TAG_BITS
+        or      rax, STATIC_SYMBOL_TAG
+        cmp     rbx, rax
+        jne     .2
+        _2drop
+        _raw_loop_index
+        shl     rbx, 1
+        add     rbx, 1
+        _this_array_nth_unsafe
+        _ call_quotation
+        _unloop
+        jmp     .exit
+
+.2:
+        _over
+        _ feline_equal
+        _tagged_if .2
+        ; found a match
+        _drop
+        _raw_loop_index
+        shl     rbx, 1
+        add     rbx, 1
+        _this_array_nth_unsafe
+        _ call_quotation
+        _unloop
+        jmp     .exit
+        _then .2
+
+        _loop .1
+
+        ; reached end of loop
+        _error "no match"
+
+.exit:
+        pop     this_register
+        next
+endcode
+
 ; ### old-cond
 code old_cond, 'old-cond'               ; array ->
         _ check_array

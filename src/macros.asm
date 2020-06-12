@@ -516,10 +516,8 @@ section .data
         symbol S_%1, %2, %1, %4, %3
 %endmacro
 
-%macro  special 2                       ; label, name
-
-        head    %1, %2, SYMBOL_SPECIAL, %1_ret - %1
-
+%macro  feline_symbol 2                 ; label, name
+        head    %1, %2, 0, %1_ret - %1
         section .text
         align   DEFAULT_CODE_ALIGNMENT
 %1:
@@ -528,7 +526,18 @@ section .data
         _tag_static_symbol
         ret
 %1_ret:
+%endmacro
 
+%macro  special 2                       ; label, name
+        head    %1, %2, SYMBOL_SPECIAL, %1_ret - %1
+        section .text
+        align   DEFAULT_CODE_ALIGNMENT
+%1:
+        _dup
+        mov     rbx, S_%1
+        _tag_static_symbol
+        ret
+%1_ret:
 %endmacro
 
 %macro  code 2-4 SYMBOL_PRIMITIVE, 0
