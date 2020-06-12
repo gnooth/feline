@@ -105,10 +105,9 @@ tuple: position
     pos line>> pos offset>> make-position ;
 
 : position-equal? ( pos1 pos2 )
-    {
-        [ pos1 line>> pos2 line>> eq? ]
-        [ pos1 offset>> pos2 offset>> eq? ]
-    } && ;
+    [ pos1 line>> pos2 line>> eq? ]
+    [ pos1 offset>> pos2 offset>> eq? ]
+    both? ;
 
 method: position equal? position-equal? ;
 
@@ -116,7 +115,7 @@ method: position equal? position-equal? ;
     pos1 line>> :> line1
     pos2 line>> :> line2
     {
-        { [ line1 number>> line2 number>> < ] [ t ] }
+        { [ line1 number>> line2 number>> < ] [ true ] }
         { [ line1 line2 eq? ] [ pos1 offset>> pos2 offset>> < ] }
         // default
         [ nil ]
@@ -133,28 +132,33 @@ method: position before? position-before? ;
     pos line>> :> line
 
     {
-        { [ offset line length < ] [ offset 1+ pos offset<< t ] }
-        { [ line next>> ] [
-            line next>> pos line<<
-            0 pos offset<< t
-        ] }
+        { [ offset line length < ] [ offset 1+ pos offset<< true ] }
+        {
+            [ line next>> ] [
+                line next>> pos line<< 0
+                pos offset<<
+                true
+            ]
+        }
         [ nil ]
-    } cond
-;
+    } cond ;
 
 : move-prev ( pos )                     // position -> ?
     pos offset>> :> offset
     pos line>> :> line
 
     {
-        { [ offset 0 > ] [ offset 1- pos offset<< t ] }
-        { [ line prev>> ] [
-            line prev>> pos line<<
-            pos line>> length pos offset<< t
-        ] }
+        { [ offset 0 > ] [ offset 1- pos offset<< true ] }
+        {
+            [ line prev>> ]
+            [
+                line prev>> pos line<<
+                pos line>> length pos offset<<
+                true
+            ]
+        }
         [ nil ]
-    } cond
-;
+    } cond ;
 
 tuple: region
     begin
@@ -469,16 +473,16 @@ forget: current-buffer!
 : move-dot-to                           // line offset -> void
     dot-offset! dot-line! ;
 
-: mark                                  // -> position/f
+: mark                                  // -> position/nil
     current-buffer mark>> ;
 
 : mark!                                 // position -> void
     current-buffer mark<< ;
 
-: mark-line                             // -> line/f
+: mark-line                             // -> line/nil
     mark [ mark line>> ] [ nil ] if ;
 
-: mark-line-number                      // -> line-number/f
+: mark-line-number                      // -> line-number/nil
     mark [ mark line>> number>> ] [ nil ] if ;
 
 : mark-offset                           // -> n
@@ -493,7 +497,7 @@ forget: current-buffer!
 : copy-mark                             // -> position
     mark [ copy-position ] [ nil ] if* ;
 
-: anchor                                // -> position/f
+: anchor                                // -> position/nil
     current-buffer anchor>> ;
 
 : anchor!                               // position -> void
@@ -517,10 +521,10 @@ forget: current-buffer!
 : dot-char                              // -> char/?
     dot-offset dot-line-text ?nth ;
 
-: dot-char-next                         // void -> char/f
+: dot-char-next                         // void -> char/nil
     dot-offset 1+ dot-line-text ?nth ;
 
-: dot-char-prev                         // void -> char/f
+: dot-char-prev                         // void -> char/nil
     dot-offset 1- dot-line-text ?nth ;
 
 : dot-line-length                       // -> n
@@ -617,7 +621,7 @@ forget: current-buffer!
 : indent-size                           // void -> n
     current-buffer indent-size>> [ 4 ] unless* ;
 
-: nth-line ( line-number )              // line-number -> line/f
+: nth-line ( line-number )              // line-number -> line/nil
 
     line-number 0< [ nil ] ?return
 
@@ -801,7 +805,7 @@ termui? #if
 : insert-string-internal ( s )
     dot-line-head s + dot-line-tail + dot-line-text!
     dot-offset s length + dot-offset!
-    t dot-line-changed?! ;
+    true dot-line-changed?! ;
 
 : insert-line-separator-internal
     // insert line separator at dot
@@ -860,7 +864,7 @@ termui? #if
         i 1- i!
     ] while
     line top-line!
-    t repaint?! ;
+    true repaint?! ;
 
 : maybe-reframe reframe? [ reframe ] when ;
 
