@@ -77,58 +77,30 @@ global instance
     [
         iter string-iterator-next char!
         char
-    ]
-    [
-        // while
-        {
-            // cond
-            {
-                [ state :neutral eq? ]
-                [
-                    char iter scan-neutral state!
-                    state :neutral eq? [
-                        start-index iter string-iterator-index text substring
-                        start-index color-text make-segment/3 v push
-                        iter string-iterator-index start-index!
-                    ] when
-                    state :block-comment eq? [
-                        // block comment
-                        start-index iter string-iterator-index text substring
-                        start-index color-text make-segment/3 v push
-                        iter string-iterator-index start-index!
-                    ] when
-                    state :line-comment eq? [
-                        start-index iter string-iterator-index text substring
-                        start-index color-text make-segment/3 v push
-                        iter string-iterator-index start-index!
-                    ] when
-                ]
-            }
-            {
-                [ state :block-comment eq? ]
-                [
-                    char iter scan-block-comment state!
-                    state :neutral eq? [
-                        start-index iter string-iterator-index text substring
-                        start-index color-comment make-segment/3 v push
-                        iter string-iterator-index start-index!
-                    ] when
-                    state :block-comment eq? [
-                        start-index iter string-iterator-index text substring
-                        start-index color-comment make-segment/3 v push
-                        iter string-iterator-index start-index!
-                    ] when
-                ]
-            }
-            {
-                [ state :line-comment eq? ]
-                [ ] // nothing to do
-            }
-            [
+    ] [ // while
+        state { // match
+            :neutral => [
+                char iter scan-neutral state!
+                state { :neutral :block-comment :line-comment } member-eq? [
+                    start-index iter string-iterator-index text substring
+                    start-index color-text make-segment/3 v push
+                    iter string-iterator-index start-index!
+                ] when
+            ]
+            :block-comment => [
+                char iter scan-block-comment state!
+                state { :neutral :block-comment } member-eq? [
+                    start-index iter string-iterator-index text substring
+                    start-index color-comment make-segment/3 v push
+                    iter string-iterator-index start-index!
+                ] when
+            ]
+            :line-comment => [ ]    // nothing to do
+            _ => [
                 ?nl "c-mode-format-line unsupported state " write state .
                 "unsupported" error
             ]
-        } cond
+        } match
     ] while
 
     start-index iter string-iterator-index text substring
