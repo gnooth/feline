@@ -100,6 +100,7 @@ in: feline-mode
     "loop"
     "map"
     "map-find"
+    "match"
     "recover"
     "return-if"
     "time"
