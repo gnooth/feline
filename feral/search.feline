@@ -221,12 +221,14 @@ public
 // Find next occurrence of identifier at dot.
     identifier-at-dot                   // -> index/nil string/nil
     :> pattern :> start
-    pattern empty? [
-        pattern make-search current-search!
-        true current-search whole-words-only<< // don't change default!
-        dot-line start pattern length + make-position search-forward-word // -> position/nil
-        [ found ] [ not-found ] if*
-    ] unless ;
+    pattern empty? ?exit
+    pattern make-search current-search!
+    true current-search whole-words-only<< // don't change default!
+
+    dot-line start pattern length + make-position search-forward-word // -> position/nil
+    [ found ] [
+        first-line 0 make-position search-forward-word [ found ] [ not-found ] if*
+    ] if* ;
 
 : find-under-prev
 // sublime find_under_prev ctrl-shift-f3
@@ -235,16 +237,19 @@ public
 // Find previous occurrence of identifier at dot.
     identifier-at-dot                   // -> index/nil string/nil
     :> pattern :> start
-    nil !> pos
-    pattern empty? [
-        pattern make-search current-search!
-        true current-search whole-words-only<< // don't change default!
-        dot-line start make-position pos!
-        pos move-prev [
-            pos search-backward-word    // -> position/nil
-            [ found ] [ not-found ] if*
-        ] when
-    ] unless ;
+    pattern empty? ?exit
+    pattern make-search current-search!
+    true current-search whole-words-only<< // don't change default!
+
+    dot-line start make-position :> pos
+    pos move-prev [
+        last-line [ pos line<< ] [ length pos offset<< ] bi
+    ] unless
+    pos search-backward-word            // -> position/nil
+    [ found ] [
+        last-line [ pos line<< ] [ length pos offset<< ] bi
+        pos search-backward-word [ found ] [ not-found ] if*
+    ] if* ;
 
 : repeat-search-forward
     current-pattern empty? [ find-command ] ?return
