@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -57,8 +57,7 @@ special: +compound-undo+
         call
         +compound-undo+ get
     ] with-dynamic-scope
-    push-undo
-;
+    push-undo ;
 
 : pop-undo                              // -> undo-record
     undo-stack vector-pop ;
@@ -74,8 +73,7 @@ special: +compound-redo+
         call
         +compound-redo+ get
     ] with-dynamic-scope
-    push-redo
-;
+    push-redo ;
 
 : pop-redo                              // -> undo-record
     redo-stack vector-pop ;
@@ -99,8 +97,7 @@ special: +compound-redo+
         mark-offset undo-rec mark-offset<<
     ] when
 
-    undo-rec
-;
+    undo-rec ;
 
 : restore-dot-line // undo-record -> void
     dot-line-number>> nth-line dot-line! ;
@@ -116,7 +113,7 @@ special: +compound-redo+
         [ mark-line-number>> nth-line ]
         [ mark-offset>> ] bi make-position
     ] [ drop nil ] if mark!
-    t repaint?! ;
+    true repaint?! ;
 
 : add-undo-move
     new-undo-record
@@ -130,25 +127,17 @@ special: +compound-redo+
 
 : undo-move ( undo-rec )                // undo-record ->
     in-redo? [ add-undo-move ] [ add-redo-move ] if
-
-    mark [ t repaint?! ] when
-
+    mark [ true repaint?! ] when
     undo-rec mod-count>> mod-count!
-
     undo-rec restore-dot
-
     undo-rec restore-mark
-
     top-line line? assert
-
-    mark [ t repaint?! ] when
-;
+    mark [ true repaint?! ] when ;
 
 : new-undo-line-edit                    // -> undo-record
     new-undo-record
     +line-edit+ over action<<
-    dot-line-text over data<<
-;
+    dot-line-text over data<< ;
 
 : add-undo-line-edit new-undo-line-edit push-undo ;
 
@@ -165,8 +154,7 @@ special: +compound-redo+
         [ restore-mark ]
     } cleave
 
-    t dot-line-changed?!
-;
+    true dot-line-changed?! ;
 
 : add-undo-edit-region ( region )
     new-undo-record :> undo-rec
@@ -182,8 +170,7 @@ special: +compound-redo+
     ] while
 
     v vector->array undo-rec data<<
-    undo-rec push-undo
-;
+    undo-rec push-undo ;
 
 : add-redo-edit-region ( region )
     new-undo-record :> undo-rec
@@ -199,8 +186,7 @@ special: +compound-redo+
     ] while
 
     v vector->array undo-rec data<<
-    undo-rec push-redo
-;
+    undo-rec push-redo ;
 
 : undo-edit-region ( undo-rec )
     mark assert
@@ -218,7 +204,7 @@ special: +compound-redo+
 
     undo-rec mod-count>> mod-count!
 
-    t repaint?! ;
+    true repaint?! ;
 
 : redo-edit-region ( undo-rec )
     mark assert
@@ -236,20 +222,18 @@ special: +compound-redo+
 
     undo-rec mod-count>> mod-count!
 
-    t repaint?! ;
+    true repaint?! ;
 
 : add-undo-delete-line-separator
     new-undo-record
     +delete-line-separator+ >>action
     dot-line-text dot-line-next text>> 2array >>data
-    push-undo
-;
+    push-undo ;
 
 : add-redo-delete-line-separator
     new-undo-record
     +delete-line-separator+ >>action
-    push-redo
-;
+    push-redo ;
 
 : undo-delete-line-separator  ( undo-rec )      // undo-record -> void
     undo-rec mod-count>> mod-count!
@@ -258,24 +242,21 @@ special: +compound-redo+
     dup array-first dot-line-text!
     array-second make-line/1 dot-line insert-after
 
-    t repaint?!
+    true repaint?!
     renumber
 
-    add-redo-delete-line-separator
-;
+    add-redo-delete-line-separator ;
 
 : add-undo-insert-line-separator
     new-undo-record
     +insert-line-separator+ >>action
     dot-line-text >>data
-    push-undo
-;
+    push-undo ;
 
 : add-redo-insert-line-separator
     new-undo-record
     +insert-line-separator+ >>action
-    push-redo
-;
+    push-redo ;
 
 : undo-insert-line-separator            // undo-record -> void
     [ mod-count>> mod-count! ]
@@ -284,19 +265,15 @@ special: +compound-redo+
     tri
 
     dot-line next>> unlink
-
-    t repaint?!
-
-    add-redo-insert-line-separator
-;
+    true repaint?!
+    add-redo-insert-line-separator ;
 
 : add-undo-insert-multiline-string ( s ) // string -> void
     new-undo-record
     dot-line-text >>data
     s >>redo-data
     +insert-multiline-string+ >>action
-    push-undo
-;
+    push-undo ;
 
 : add-redo-insert-multiline-string ( s ) // string -> void
     new-undo-record
@@ -323,8 +300,7 @@ special: +compound-redo+
     undo-rec data>> dot-line-text!
 
     renumber
-    t repaint?!
-;
+    true repaint?! ;
 
 symbol: +delete-line+
 
@@ -351,9 +327,8 @@ symbol: +delete-line+
         undo-rec restore-dot
     ] if
     renumber
-    t repaint?!
-    add-redo-delete-line
-;
+    true repaint?!
+    add-redo-delete-line ;
 
 symbol: +delete-region+
 
@@ -383,7 +358,7 @@ symbol: +delete-region+
     undo-rec restore-mark
 
     renumber
-    t repaint?! ;
+    true repaint?! ;
 
 : undo1                                 // undo-record ->
     dup action>>
