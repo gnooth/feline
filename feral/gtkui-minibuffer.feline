@@ -34,8 +34,10 @@ private
 
 public: minibuffer-set-text             // string -> void
     1 ?enough verify-string
-    minibuffer-get-text over sequence=
-    [ drop ] [ minibuffer dot>> line>> text<< ] if ;
+    minibuffer-get-text over sequence= [ drop ] [
+        minibuffer dot>> line>> text<<
+        gtkui-minibuffer-invalidate
+    ] if ;
 
 : minibuffer-accept
     minibuffer-get-text minibuffer-contents!
