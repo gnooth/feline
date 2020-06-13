@@ -69,10 +69,6 @@ feral-config:winui? assert
     winui-show-caret ;
 
 : update-display-internal
-
-    // FIXME needs-renumber [ renumber ] when
-    renumber
-
     repaint? [
         repaint
     ] [
