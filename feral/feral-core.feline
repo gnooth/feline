@@ -985,3 +985,31 @@ unuse: segments
 : find-substring-from ( pattern string start )  // pattern string start -> i/nil
     string string-length pattern string-length - 1+ :> end
     pattern string start end find-substring-in-range ;
+
+: delimited? ( string index pattern-length )    // string index pattern-length -> ?
+    true !> result
+    index 0> [
+        index 1- string string-nth identifier-char? [ nil result! ] when
+    ] when
+    result nil? [ nil ] ?return
+    index pattern-length + :> after
+    after string string-length < [
+        after string string-nth identifier-char? [ nil result! ] when
+    ] when
+    result ;
+
+: find-word-from ( pattern string start )   // pattern string start -> i/nil
+    pattern string-length :> pattern-length
+    start !> index
+    local found
+    [ index found nil? and ] [
+        pattern string index find-substring-from index!
+        index [
+            string index pattern-length delimited? [
+                index found!
+            ] [
+                index string length < [ index 1+ ] [ nil ] if index!
+            ] if
+        ] when
+    ] while
+    found ;

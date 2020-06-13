@@ -114,44 +114,12 @@ private
 
     result ;
 
-: delimited? ( pos len )                // position length -> ?
-    pos line>> :> line
-    pos offset>> :> offset
-
-    true !> result
-
-    offset 0> [
-        offset 1- line text>> string-nth identifier-char? [
-            nil result!
-        ] when
-    ] when
-
-    result nil? [ nil ] ?return
-
-    offset len + :> after
-
-    after line length < [
-        after line text>> string-nth identifier-char? [
-            nil result!
-        ] when
-    ] when
-
-    result ;
+: position-delimited? ( pos len )       // position length -> ?
+    pos [ line>> text>> ] [ offset>> ] bi len delimited? ;
 
 : find-word-in-line ( pattern line )    // pattern line -> position/nil
-    0 !> index
-    nil !> pos
-
-    [ index pos nil? and ] [
-        pattern line text>> index find-substring-from index!
-        index [
-            line index make-position pos!
-            pos pattern string-length delimited? [ nil pos! ] unless
-            index line length < [ index 1+ ] [ nil ] if index!
-        ] when
-    ] while
-
-    pos ;
+    pattern line text>> 0 find-word-from :> index
+    index [ line index make-position ] [ nil ] if ;
 
 : find-in-line ( search line )          // search line -> position/nil
     search whole-words-only>> [
@@ -170,7 +138,7 @@ private
         pos move-next [
             pattern pos search-forward pos!
             pos [
-                pos pattern-length delimited? [
+                pos pattern-length position-delimited? [
                     pos result!
                 ] when
             ] when
@@ -189,7 +157,7 @@ private
         pos move-prev [
             pattern pos search-backward pos!
             pos [
-                pos pattern-length delimited? [
+                pos pattern-length position-delimited? [
                     pos result!
                 ] when
             ] when
