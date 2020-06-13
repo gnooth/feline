@@ -37,7 +37,7 @@ global extension
     buf first-line>> 0 make-position buf dot<<
     buf first-line>> buf top-line<<
     true buf read-only<<
-    pattern current-files "%S %s" format buf name<<
+    current-files pattern "%s [%S]" format buf name<<
     directory buf directory<<
 
     current-buffer buf parent<<
