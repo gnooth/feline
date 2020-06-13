@@ -44,7 +44,11 @@ global instance
         0 i text substring 0 color-linenumber make-segment/3 v push
     ] when*
 
-    [ pattern text i find-substring-from dup j! ] [
+    [
+        pattern text i
+        search whole-words-only>> [ find-word-from ] [ find-substring-from ] if
+        dup j!
+    ] [
         i j text substring i color-text make-segment/3 v push
         j dup patternlength + text substring j color-name make-segment/3 v push
         j patternlength + i!
