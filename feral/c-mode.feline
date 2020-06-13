@@ -77,11 +77,11 @@ global instance
     [
         iter string-iterator-next char!
         char
-    ] [ // while
-        state { // match
+    ] [
+        state {
             :neutral => [
                 char iter scan-neutral state!
-                state { :neutral :block-comment :line-comment } member-eq? [
+                state { :block-comment :line-comment } member-eq? [
                     start-index iter string-iterator-index text substring
                     start-index color-text make-segment/3 v push
                     iter string-iterator-index start-index!
@@ -89,13 +89,13 @@ global instance
             ]
             :block-comment => [
                 char iter scan-block-comment state!
-                state { :neutral :block-comment } member-eq? [
+                state :neutral eq? [
                     start-index iter string-iterator-index text substring
                     start-index color-comment make-segment/3 v push
                     iter string-iterator-index start-index!
                 ] when
             ]
-            :line-comment => [ ]    // nothing to do
+            :line-comment => [ ]        // nothing to do
             _ => [
                 ?nl "c-mode-format-line unsupported state " write state .
                 "unsupported" error
