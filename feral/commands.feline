@@ -60,7 +60,7 @@ in: editor
     filename buf filename<<
     filename file-name-nondirectory buf name<<
     filename file-name-directory buf directory<<
-    filename file-name-extension [ modes:modes at buf mode<< ] when*
+    filename file-name-extension [ modes:mode-from-extension buf mode<< ] when*
 
     buf mode>> mode? [
         buf mode>> initialize-buffer-function>> [ buf swap call ] when*
