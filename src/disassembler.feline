@@ -747,10 +747,11 @@ last-word 0x3d install-handler
     // /r
     // source is r/m32
     // dest is r32/64
-    "movsx" mnemonic!
+    "movsxd" mnemonic!
     !modrm-byte
     modrm-reg register-reg dreg!
     modrm-rm register-rm sbase!
+    32 ssize!
     .inst ;
 
 last-word 0x63 install-handler

@@ -1232,7 +1232,7 @@ endcode
 ; ### l@s
 code lfetchs, 'l@s'     ; address -- int32
         _check_fixnum
-        movsx   rbx, dword [rbx]
+        movsxd  rbx, dword [rbx]
         _tag_fixnum
         next
 endcode
