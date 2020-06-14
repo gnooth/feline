@@ -1,4 +1,4 @@
-// Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2018-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,5 +19,8 @@ in: modes
 global modes
 
 : initialize-modes 8 <hashtable> modes! ;
+
+: mode-from-extension                   // string -> mode/nil
+    modes at ;
 
 initialize-modes

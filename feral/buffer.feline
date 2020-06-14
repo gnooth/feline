@@ -50,7 +50,7 @@ in: editor
     filename buf filename<<
     filename file-name-directory buf directory<<
     filename file-name-nondirectory buf name<<
-    filename file-name-extension [ modes at buf mode<< ] when*
+    filename file-name-extension [ mode-from-extension buf mode<< ] when*
 
     filename file-contents :> contents
     contents string-lines verify-vector :> lines
