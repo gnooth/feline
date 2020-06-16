@@ -169,16 +169,11 @@ endinline
 
 ; ### =
 code feline_equal, '='                  ; x y -> ?
-
         _debug_?enough 2
-
         cmp     rbx, [rbp]
-        jne     .1
+        jne     equal?
         lea     rbp, [rbp + BYTES_PER_CELL]
         mov     ebx, TRUE
-        next
-.1:
-        _ equal?
         next
 endcode
 
