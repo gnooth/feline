@@ -17,6 +17,8 @@ file __FILE__
 
 ; 4 cells: object header, array, raw code address, raw code size
 
+%define QUOTATION_RAW_CODE_ADDRESS_OFFSET  16
+
 %macro  _quotation_array 0              ; quotation -> array
         _slot1
 %endmacro
@@ -384,24 +386,48 @@ endcode
 ; ### callable_raw_code_address
 code callable_raw_code_address, 'callable_raw_code_address', SYMBOL_INTERNAL
 ; callable -> raw-code-address
-        _dup
-        _ object_raw_typecode
-        mov     rax, rbx
-        _drop
+        cmp     bl, STATIC_SYMBOL_TAG
+        je      .static_symbol
 
-        cmp     rax, TYPECODE_SYMBOL
-        je      symbol_raw_code_address
-        cmp     rax, TYPECODE_QUOTATION
+        cmp     bl, STATIC_QUOTATION_TAG
+        je      .static_quotation
+
+        cmp     bl, HANDLE_TAG
         jne     error_not_callable
 
-        _dup
-        _ quotation_raw_code_address    ; -> quotation raw-code-address
-        test    rbx, rbx
-        jz      .1
-        _nip
+        ; -> handle
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_SYMBOL
+        je      .symbol
+
+        cmp     word [rax], TYPECODE_QUOTATION
+        jne     error_not_callable
+
+        ; rax: ^quotation
+        mov     rax, [rax + QUOTATION_RAW_CODE_ADDRESS_OFFSET]  ; rax: raw code address
+        test    rax, rax
+        jz      .compile_quotation
+        mov     rbx, rax
         next
-.1:
-        _drop
+
+.static_symbol:
+        _untag_static_symbol
+        mov     rbx, [rbx + SYMBOL_RAW_CODE_ADDRESS_OFFSET]
+        next
+
+.static_quotation:
+        _untag_static_quotation
+        mov     rbx, [rbx + QUOTATION_RAW_CODE_ADDRESS_OFFSET]
+        next
+
+.symbol:
+        mov     rbx, [rax + SYMBOL_RAW_CODE_ADDRESS_OFFSET]
+        next
+
+.compile_quotation:
+        ; rbx: handle
         _ compile_quotation             ; -> quotation
         _ quotation_raw_code_address
         next
