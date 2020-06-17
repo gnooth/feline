@@ -545,41 +545,55 @@ code each, 'each'                       ; seq callable -> void
 endcode
 
 ; ### each-index
-code each_index, 'each-index'           ; seq callable ->
+code each_index, 'each-index'           ; sequence callable ->
 
         ; protect callable from gc
         push    rbx
 
-        ; protect sequence from gc
-        push    qword [rbp]
-
-        _ callable_raw_code_address     ; -> seq code-address
-
+        ; save non-volatile registers
         push    r12
-        mov     r12, rbx                ; code address in r12
+        push    r13
+        push    r15
+
+        _ callable_raw_code_address
+        mov     r12, rbx                ; r12: raw code address
         _drop                           ; -> seq
-        push    this_register
-        mov     this_register, rbx      ; handle to seq in this_register
+
+        push    rbx                     ; -> seq        r: -> seq
         _ length
-        _untag_fixnum
-        _zero
-        _?do .1
-        _i
-        _tag_fixnum
+        mov     r13, rbx                ; r13: length
+        _drop                           ; -> empty
+
+        cmp     r13, tagged_zero
+        jz      .exit                   ; length is 0, nothing to do
+
+        mov     r15, tagged_zero        ; r15: index = 0
+        jmp     .top
+
+        align   DEFAULT_CODE_ALIGNMENT
+.top:
         _dup
-        _this                           ; -> index index handle
-        _ nth_unsafe                    ; -> index element
-        _swap                           ; -> element index
+        mov     rbx, r15                ; -> tagged-index
+        _dup
+        mov     rbx, [rsp]              ; -> tagged-index sequence
+
+        _ nth_unsafe                    ; -> element
+
+        _dup
+        mov     rbx, r15                ; -> element tagged-index
+
         call    r12
-        _loop .1
-        pop     this_register
+
+        add     r15, (1 << FIXNUM_TAG_BITS)
+        cmp     r15, r13
+        jl      .top
+
+.exit:
+        pop     rax                     ; drop sequence
+        pop     r15
+        pop     r13
         pop     r12
-
-        ; drop sequence
-        pop     rax
-
-        ; drop callable
-        pop     rax
+        pop     rax                     ; drop callable
 
         next
 endcode
