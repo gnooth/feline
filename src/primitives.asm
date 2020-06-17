@@ -428,8 +428,8 @@ code until, 'until'             ; pred body --
 endcode
 
 ; ### while
-code while, 'while'             ; pred body ->
-; call body until pred returns nil
+code while, 'while'             ; predicate body ->
+; call body until predicate returns nil
 
         ; protect quotations from gc
         push    rbx
@@ -438,18 +438,30 @@ code while, 'while'             ; pred body ->
         push    r12
         push    r13
         _ callable_raw_code_address
-        mov     r13, rbx        ; body
-        _drop
+        mov     r13, rbx        ; r13: body
+        mov     rbx, [rbp]
         _ callable_raw_code_address
-        mov     r12, rbx        ; pred
-        _drop
-.1:
+        mov     r12, rbx        ; r12: predicate
+        _2drop
+
+        jmp     .entry
+
+        align   DEFAULT_CODE_ALIGNMENT
+.top:
+        ; call body
+        call    r13
+
+        cmp     qword [stop_for_gc?_], NIL
+        je      .entry
+        _ safepoint_stop
+
+.entry:
+        ; call predicate
         call    r12
         cmp     rbx, NIL
         _drop
-        je      .exit
-        call    r13
-        jmp     .1
+        jne     .top
+
 .exit:
         pop     r13
         pop     r12
