@@ -572,6 +572,11 @@ code each_index, 'each-index'           ; sequence callable ->
 
         align   DEFAULT_CODE_ALIGNMENT
 .top:
+        cmp     qword [stop_for_gc?_], NIL
+        je      .continue
+        _ safepoint_stop
+
+.continue:
         _dup
         mov     rbx, r15                ; -> tagged-index
         _dup
