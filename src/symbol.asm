@@ -709,9 +709,15 @@ code symbol_value, 'symbol-value'               ; symbol -- value
 endcode
 
 ; ### symbol-set-value
-code symbol_set_value, 'symbol-set-value'       ; value symbol --
+code symbol_set_value, 'symbol-set-value'       ; value symbol -> void
         _ check_symbol
-        _symbol_set_value
+        mov     rax, [rbp]
+
+        ; use xchg instead of mov to force synchronization with other
+        ; processors or cores
+        xchg    [rbx + SYMBOL_VALUE_OFFSET], rax
+
+        _2drop
         next
 endcode
 
