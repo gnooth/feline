@@ -930,17 +930,15 @@ unuse: segments
 : asm-mode-identifier-char? ( x )       // x -> ?
     [ x alphanumeric? ] [ x "_$#@~.?" member-eq? ] either? ;
 
+[ drop nil ] ' identifier-char-function>> set-default-method
+
 : identifier-char-function              // void -> callable
-    local function
-    current-search [ identifier-char-function>> function! ] when*
-    function [
-        current-buffer [ identifier-char-function>> function! ] when*
-    ] unless
-    function [
-        current-mode [ identifier-char-function>> function! ] when*
-    ] unless
-    function [ ' default-identifier-char? function! ] unless
-    function ;
+    {
+        [ current-search identifier-char-function>> ]
+        [ current-buffer identifier-char-function>> ]
+        [ current-mode   identifier-char-function>> ]
+        [ ' default-identifier-char? ]
+    } || ;
 
 : identifier-char?                      // char -> ?
     identifier-char-function call ;
