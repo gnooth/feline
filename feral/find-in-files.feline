@@ -45,6 +45,12 @@ global extension
     search-mode:get-instance buf mode<<
     local-map buf local-map<<
 
+    extension [
+        modes:mode-from-extension [
+            identifier-char-function>> buf identifier-char-function<<
+        ] when*
+    ] when*
+
     buf output-buffer!
 
     buf in-buffer-list? [ buf buffer-list vector-push ] unless
@@ -66,7 +72,12 @@ global extension
         1+ linenumber! // displayed line numbers are 1-based
         s!
 
-        pattern s substring-start offset!
+        pattern s
+        current-search whole-words-only>> [
+            0 find-word-from
+        ] [
+            0 find-substring-from
+        ] if offset!
 
         offset [
             // we found the pattern in this line
@@ -125,14 +136,23 @@ global extension
 
 : find-in-files-run
     directory extension find-in-directory
-    output-buffer [ nil output-buffer! ] [ "Not found" message ] if ;
+    output-buffer [
+        nil output-buffer!
+        true repaint?!
+        editor:request-update-display
+        "Search completed" message
+    ] [
+        "Not found" message
+    ] if
+    nil current-search! ;
 
 : find-in-files
 
     nil output-buffer!
 
     "find" history:set-history
-    "Find: " mini:minibuffer-accept-string pattern!
+    whole-words-only-default "Find word: " "Find: " ? :> prompt
+    prompt mini:minibuffer-accept-string pattern!
     pattern empty? ?exit
 
     current-buffer-directory file-name-as-directory :> default-directory
@@ -162,6 +182,18 @@ global extension
     current-files file-name-extension extension!
 
     pattern make-search current-search!
+
+    extension [
+        modes:mode-from-extension [
+            identifier-char-function>> [
+                current-search identifier-char-function<<
+            ] when*
+        ] when*
+    ] when*
+
+    current-search identifier-char-function>> [
+        ' default-identifier-char? current-search identifier-char-function<<
+    ] unless
 
     [ find-in-files-run ] make-thread dup thread-create ;
 
