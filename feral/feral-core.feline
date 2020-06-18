@@ -313,6 +313,7 @@ tuple: buffer
     tab-width
     command
     needs-scan
+    identifier-char-function
     properties ;
 
 "\n"   constant LF
@@ -888,7 +889,8 @@ global ignore-case-default
 tuple: search
     pattern
     whole-words-only
-    ignore-case ;
+    ignore-case
+    identifier-char-function ;
 
 : make-search                           // pattern -> search
     verify-string
@@ -929,8 +931,16 @@ unuse: segments
     [ x alphanumeric? ] [ x "_$#@~.?" member-eq? ] either? ;
 
 : identifier-char-function              // void -> callable
-    current-mode [ identifier-char-function>> ] [ nil ] if*
-    ' default-identifier-char? or ;
+    local function
+    current-search [ identifier-char-function>> function! ] when*
+    function [
+        current-buffer [ identifier-char-function>> function! ] when*
+    ] unless
+    function [
+        current-mode [ identifier-char-function>> function! ] when*
+    ] unless
+    function [ ' default-identifier-char? function! ] unless
+    function ;
 
 : identifier-char?                      // char -> ?
     identifier-char-function call ;
