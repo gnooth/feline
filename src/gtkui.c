@@ -229,6 +229,8 @@ void gtkui__textview_invalidate (void)
 void gtkui__minibuffer_invalidate (void)
 {
   gtk_widget_queue_draw (minibuffer);
+  while (g_main_context_pending (NULL))
+    g_main_context_iteration (NULL, FALSE);
 }
 
 static gboolean gtkui__textview_size_allocate (GtkWidget *widget,
