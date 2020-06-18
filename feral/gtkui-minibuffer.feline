@@ -159,10 +159,8 @@ public
     copy-dot :> saved-dot
 
     minibuffer-set-text
-    repaint-minibuffer
     1000 sleep
     saved-text minibuffer-set-text
-    repaint-minibuffer
     saved-dot dot! ;
 
 : minibuffer-run
