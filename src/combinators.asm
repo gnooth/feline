@@ -212,7 +212,9 @@ code tri@, 'tri@'                       ; x y z quot ->
 endcode
 
 ; ### ?
-code question, '?'                      ; ? true false -> true/false
+code question, '?'                      ; ? x y -> x-or-y
+; If the condition `?` is true, returns x. If the condition is nil,
+; returns y.
         cmp     qword [rbp + BYTES_PER_CELL], NIL
         mov     rax, [rbp]
         _2nip
