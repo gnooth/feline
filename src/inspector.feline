@@ -101,7 +101,7 @@ global inspected-object
     n 1+ 2 dec.r
     8 tab
     slot slot-name write
-    32 tab
+    40 tab
     object n 1+ slot@
     slot slot-type :raw eq? [ normalize hex. nl ] [ short. ] if ;
 
