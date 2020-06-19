@@ -142,9 +142,9 @@ global extension
         editor:request-update-display
         "Search completed" message
     ] [
+        nil current-search!
         "Not found" message
-    ] if
-    nil current-search! ;
+    ] if ;
 
 : find-in-files
 
