@@ -147,7 +147,7 @@ private
 
     result ;
 
-: search-backward-word ( startpos )     // startpos -> pos/?
+: search-backward-word ( startpos )     // startpos -> pos/nil
     current-pattern :> pattern
     pattern string-length :> pattern-length
     startpos copy-position !> pos
@@ -179,8 +179,13 @@ public
         dot search-forward-word
     ] [
         pattern dot search-forward
-    ] if // -> pattern/nil
-    [ found ] [ not-found ] if* ;
+    ] if
+    // -> pattern/nil
+    [
+        found
+        current-search last-search!
+    ] [ not-found ] if*
+    nil current-search! ;
 
 : find-under
 // sublime find_under ctrl-f3
@@ -193,10 +198,21 @@ public
     pattern make-search current-search!
     true current-search whole-words-only<< // don't change default!
 
-    dot-line start pattern length + make-position search-forward-word // -> position/nil
-    [ found ] [
-        first-line 0 make-position search-forward-word [ found ] [ not-found ] if*
-    ] if* ;
+    dot-line start pattern length + make-position search-forward-word
+    // -> position/nil
+    [
+        found
+        current-search last-search!
+    ] [
+        // wrap around
+        first-line 0 make-position search-forward-word
+        // -> position/nil
+        [
+            found
+            current-search last-search!
+        ] [ not-found ] if*
+    ] if*
+    nil current-search! ;
 
 : find-under-prev
 // sublime find_under_prev ctrl-shift-f3
@@ -213,13 +229,24 @@ public
     pos move-prev [
         last-line [ pos line<< ] [ length pos offset<< ] bi
     ] unless
-    pos search-backward-word            // -> position/nil
-    [ found ] [
+    pos search-backward-word
+    // -> position/nil
+    [ found ]
+    [
+        // wrap around
         last-line [ pos line<< ] [ length pos offset<< ] bi
-        pos search-backward-word [ found ] [ not-found ] if*
-    ] if* ;
+        pos search-backward-word
+        // -> position/nil
+        [
+            found
+            current-search last-search!
+        ] [ not-found ] if*
+    ] if*
+    nil current-search! ;
 
 : repeat-search-forward
+    last-search current-search!
+
     current-pattern empty? [ find-command ] ?return
 
     mark [ dot mark make-region/2 end ] [ copy-dot ] if :> startpos
@@ -231,6 +258,8 @@ public
     ] if [ found ] [ not-found ] if* ;
 
 : repeat-search-backward
+    last-search current-search!
+
     current-pattern empty? [ find-command ] ?return
 
     mark [ dot mark make-region/2 begin ] [ copy-dot ] if :> startpos
@@ -242,53 +271,67 @@ public
     ] if [ found ] [ not-found ] if* ;
 
 : search-list-occurrences
-    current-search nil? ?exit
+    last-search nil? ?exit
 
-    local buf
+    last-search current-search!
 
-    local sourcelinenumber
-    local outputline
     local pos
+    local buf
+    local filename
+    local outputline
+    local sourcelinenumber
     first-line !> sourceline
-    [ sourceline ]
-    [
+    local dotline
+
+    [ sourceline ] [
         // while
         current-search sourceline find-in-line  // -> position/nil
         [
             pos!
-            buf [ make-buffer buf! ] unless
+            buf [
+                make-buffer buf!
+                current-buffer filename>> filename!
+                filename [
+                    filename make-line/1 outputline!
+                    filename :source-file outputline line-set-property
+                    outputline buf buffer-append-line
+                    outputline buf top-line<<
+                ] when
+            ] unless
             sourceline number>> 1+ sourcelinenumber!
             sourcelinenumber sourceline text>> "%d:%s" format make-line/1 outputline!
             sourcelinenumber :source-line-number outputline line-set-property
             pos offset>> :source-offset outputline line-set-property
             buf top-line>> [ outputline buf top-line<< ] unless
             outputline buf buffer-append-line
+            sourcelinenumber dot-line-number 1+ <= [ outputline dotline! ] when
         ] when*
-
         sourceline next>> sourceline!
-
     ] while
 
     buf nil? [ not-found ] ?return
 
-    buf top-line>> 0 make-position buf dot<<
+    dotline [ 0 make-position buf dot<< ] [ buf top-line>> 0 make-position buf dot<< ] if*
     true buf read-only<<
 
     // REVIEW
     current-buffer name>>
-    current-search pattern>> " [%S]" format +
+    last-search pattern>> " [%S]" format +
     buf name<<
 
     current-buffer buf parent<<
     current-buffer-directory buf directory<<
-    current-search :search buf buffer-set-property
+    last-search :search buf buffer-set-property
     search-mode:get-instance buf mode<<
     buf dup mode>> initialize-buffer-function>> call
+
+    identifier-char-function buf identifier-char-function<<
+    nil current-search!
 
     buf in-buffer-list? [ buf buffer-list vector-push ] unless
     buf set-current-buffer
 
-    renumber
+    maybe-reframe
     true repaint?! ;
 
 : toggle-whole-words-only
