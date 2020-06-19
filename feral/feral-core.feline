@@ -901,6 +901,8 @@ tuple: search
 
 global current-search
 
+global last-search
+
 "segments.feline" feral-loader:load-feral-source-file
 
 use: segments
