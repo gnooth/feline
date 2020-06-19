@@ -131,6 +131,7 @@ in: editor
     true repaint?! ;
 
 : indent
+    check-read-only ?exit
     mark [ indent-region ] [ indent-line ] if ;
 
 : unindent-line
@@ -162,6 +163,7 @@ in: editor
     true repaint?! ;
 
 : unindent
+    check-read-only ?exit
     mark [ unindent-region ] [ unindent-line ] if ;
 
 : comment-region
