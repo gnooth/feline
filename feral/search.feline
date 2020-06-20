@@ -336,13 +336,23 @@ public
 
 : toggle-whole-words-only
     whole-words-only-default not whole-words-only-default!
-    current-search [ whole-words-only-default swap whole-words-only<< ] when*
-    whole-words-only-default "Match whole words only" "Match any occurrence" ?
-    current-buffer minibuffer? [ show-message-briefly ] [ message ] if ;
+
+    local prompt
+    local offset
+
+    current-buffer minibuffer? [
+        dot-offset minibuffer-prompt length - offset!
+        whole-words-only-default "Find word: " "Find: " ? prompt!
+        prompt minibuffer-user-text + minibuffer-set-text
+        prompt minibuffer-set-prompt
+        offset prompt length + dot-offset!
+    ] [
+        whole-words-only-default "Match whole words only" "Match any occurrence" ?
+        message
+    ] if ;
 
 : toggle-ignore-case
     ignore-case-default not ignore-case-default!
-    current-search [ ignore-case-default swap ignore-case<< ] when*
     ignore-case-default "Ignore case" "Match case" ? message ;
 
 global replacement
