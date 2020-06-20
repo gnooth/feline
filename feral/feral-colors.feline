@@ -39,6 +39,8 @@ in: feral-colors
 192 192 192 make-colorref constant color-text
 128 128   0 make-colorref constant color-comment
 
+192 192   0 make-colorref constant color-header
+
   0 255 255 make-colorref constant color-syntax
 255 165   0 make-colorref constant color-name
   0 170   0 make-colorref constant color-string
