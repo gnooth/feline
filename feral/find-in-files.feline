@@ -168,7 +168,12 @@ global extension
 
     "find" history:set-history
     whole-words-only-default "Find word: " "Find: " ? :> prompt
+
+    // REVIEW with-current-context
+    :find-prompt current-context!
     prompt mini:minibuffer-accept-string pattern!
+    nil current-context!
+
     pattern empty? ?exit
 
     current-buffer-directory file-name-as-directory :> default-directory
