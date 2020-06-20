@@ -32,6 +32,21 @@ global extension
 
 : make-output-buffer ( line )
     make-buffer :> buf
+
+    current-search pattern>> "Pattern: %S" format make-line/1 !> outputline
+    true :search-results-header outputline line-set-property
+    outputline buf buffer-append-line
+    outputline buf top-line<<
+
+    current-search whole-words-only>> [ "whole words only" ] [ "" ] if
+    "Options: %s" format make-line/1 outputline!
+    true :search-results-header outputline line-set-property
+    outputline buf buffer-append-line
+
+    current-files "Files: %s" format make-line/1 outputline!
+    true :search-results-header outputline line-set-property
+    outputline buf buffer-append-line
+
     line buf buffer-append-line
 
     buf first-line>> 0 make-position buf dot<<

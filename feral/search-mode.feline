@@ -31,6 +31,10 @@ global instance
 
     16 make-vector :> v
 
+    :search-results-header line line-get-property [
+        text 0 color-header make-segment/3 v push v
+    ] ?return
+
     [ :source-file line line-get-property ]
     [ :source-line-number line line-get-property nil? ] both?
     [ text 0 color-filename make-segment/3 v push v ] ?return

@@ -292,10 +292,17 @@ public
                 make-buffer buf!
                 current-buffer filename>> filename!
                 filename [
+                    current-search pattern>> "Pattern: %S" format make-line/1 outputline!
+                    true :search-results-header outputline line-set-property
+                    outputline buf buffer-append-line
+                    outputline buf top-line<<
+                    current-search whole-words-only>> [ "whole words only" ] [ "" ] if
+                    "Options: %s" format make-line/1 outputline!
+                    true :search-results-header outputline line-set-property
+                    outputline buf buffer-append-line
                     filename make-line/1 outputline!
                     filename :source-file outputline line-set-property
                     outputline buf buffer-append-line
-                    outputline buf top-line<<
                 ] when
             ] unless
             sourceline number>> 1+ sourcelinenumber!
