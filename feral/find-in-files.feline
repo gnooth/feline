@@ -140,11 +140,12 @@ global extension
         nil output-buffer!
         true repaint?!
         editor:request-update-display
+        current-search last-search!
         "Search completed" message
     ] [
-        nil current-search!
         "Not found" message
-    ] if ;
+    ] if
+    nil current-search! ;
 
 : find-in-files
 
