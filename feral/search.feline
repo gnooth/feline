@@ -171,7 +171,12 @@ public
 : find-command
     "find" set-history
     whole-words-only-default "Find word: " "Find: " ? :> prompt
+
+    // REVIEW with-current-context
+    :find-prompt current-context!
     prompt minibuffer-accept-string :> pattern
+    nil current-context!
+
     pattern empty? ?exit
     pattern make-search current-search!
 
@@ -342,18 +347,20 @@ public
     true repaint?! ;
 
 : toggle-whole-words-only
-    whole-words-only-default not whole-words-only-default!
-
     local prompt
     local offset
 
     current-buffer minibuffer? [
-        dot-offset minibuffer-prompt length - offset!
-        whole-words-only-default "Find word: " "Find: " ? prompt!
-        prompt minibuffer-user-text + minibuffer-set-text
-        prompt minibuffer-set-prompt
-        offset prompt length + dot-offset!
+        current-context :find-prompt eq? [
+            whole-words-only-default not whole-words-only-default!
+            dot-offset minibuffer-prompt length - offset!
+            whole-words-only-default "Find word: " "Find: " ? prompt!
+            prompt minibuffer-user-text + minibuffer-set-text
+            prompt minibuffer-set-prompt
+            offset prompt length + dot-offset!
+        ] when
     ] [
+        whole-words-only-default not whole-words-only-default!
         whole-words-only-default "Match whole words only" "Match any occurrence" ?
         message
     ] if ;
@@ -383,7 +390,12 @@ global replacement
 
 : query-replace-command
     "find" set-history
+
+    // REVIEW with-current-context
+    :find-prompt current-context!
     "Find: " minibuffer-accept-string :> pattern
+    nil current-context!
+
     pattern empty? ?exit
 
     "replacement" set-history

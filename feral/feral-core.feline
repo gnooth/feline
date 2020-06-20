@@ -288,6 +288,8 @@ tuple: region-iterator
 
 global transient-map
 
+global current-context
+
 tuple: buffer
     name
     mode
