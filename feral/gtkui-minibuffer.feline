@@ -21,23 +21,24 @@ feral-config:gtkui? assert
 private
 
 : minibuffer-update-caret-pos
-    minibuffer dot>> offset>>              // -> col
+    minibuffer dot>> offset>>           // -> column
     0                                   // -> column row
     gtkui-minibuffer-set-caret-pos ;
-
-: minibuffer-get-text                   // void -> string
-    minibuffer dot>> line>> text>> "" or ;
 
 : repaint-minibuffer
     minibuffer-get-text !> s
     0 textview-char-height s gtkui-minibuffer-text-out ;
 
-public: minibuffer-set-text             // string -> void
+public
+
+: minibuffer-set-text                   // string -> void
     1 ?enough verify-string
     minibuffer-get-text over sequence= [ drop ] [
         minibuffer dot>> line>> text<<
         gtkui-minibuffer-invalidate
     ] if ;
+
+private
 
 : minibuffer-accept
     minibuffer-get-text minibuffer-contents!

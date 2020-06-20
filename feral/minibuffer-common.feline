@@ -55,5 +55,17 @@ create-minibuffer
 
 public
 
-: set-completion-provider completion-provider! ;
+: minibuffer-get-text                   // void -> string
+    minibuffer dot>> line>> text>> "" or ;
 
+: minibuffer-user-text                  // void -> string
+    minibuffer-get-text :> s
+    s length prompt length > [ prompt length s string-tail ] [ "" ] if ;
+
+: minibuffer-prompt                     // void -> string/nil
+    prompt ;
+
+: minibuffer-set-prompt                 // string/nil -> void
+    prompt! ;
+
+: set-completion-provider completion-provider! ;
