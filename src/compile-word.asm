@@ -549,10 +549,11 @@ endcode
 ; ### compile-prolog
 code compile_prolog, 'compile-prolog'
 
-        _ locals_count          ; -> tagged-count
-        _check_fixnum           ; -> raw-count (in rbx)
-        test    rbx, rbx
-        jz      drop
+        _ locals_count          ; -> tagged-fixnum
+        test    bl, FIXNUM_TAG
+        jz      error_not_fixnum
+        sar     rbx, FIXNUM_TAG_BITS
+        jz      drop            ; nothing to do if locals-count is 0
 
         ; we have locals
         _emit_raw_byte 0x41
@@ -619,10 +620,11 @@ code compile_epilog, 'compile-epilog'
         mov     rax, [pc_]
         mov     [exit_address_], rax
 
-        _ locals_count          ; -> tagged-count
-        _check_fixnum           ; -> raw-count (in rbx)
-        test    rbx, rbx
-        jz      drop
+        _ locals_count          ; -> tagged-fixnum
+        test    bl, FIXNUM_TAG
+        jz      error_not_fixnum
+        sar     rbx, FIXNUM_TAG_BITS
+        jz      drop            ; nothing to do if locals-count is 0
 
         ; we have locals
         _emit_raw_byte 0x48
