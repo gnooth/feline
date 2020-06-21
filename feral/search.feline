@@ -379,10 +379,16 @@ global replacement
 
     replacement +
 
+    // dot should be placed at the end of the replacement
+    dup string-length :> offset
+
     // dot is at the end of the pattern
     dot-offset dot-line-text string-tail +
 
     dot-line-text!
+
+    // put dot at the end of the replacement
+    offset dot-offset!
 
     unmark
     modified
