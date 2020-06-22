@@ -252,7 +252,10 @@ public
 : repeat-search-forward
     last-search current-search!
 
-    current-pattern empty? [ find-command ] ?return
+    current-pattern empty? [
+        nil current-search!
+        find-command
+    ] ?return
 
     mark [ dot mark make-region/2 end ] [ copy-dot ] if :> startpos
 
@@ -260,12 +263,16 @@ public
         startpos search-forward-word
     ] [
         current-pattern startpos search-forward
-    ] if [ found ] [ not-found ] if* ;
+    ] if [ found ] [ not-found ] if*
+    nil current-search! ;
 
 : repeat-search-backward
     last-search current-search!
 
-    current-pattern empty? [ find-command ] ?return
+    current-pattern empty? [
+        nil current-search!
+        find-command
+    ] ?return
 
     mark [ dot mark make-region/2 begin ] [ copy-dot ] if :> startpos
 
@@ -273,7 +280,8 @@ public
         startpos search-backward-word
     ] [
         current-pattern startpos search-backward
-    ] if [ found ] [ not-found ] if* ;
+    ] if [ found ] [ not-found ] if*
+    nil current-search! ;
 
 : search-list-occurrences
     last-search nil? ?exit
