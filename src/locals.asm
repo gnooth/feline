@@ -321,6 +321,9 @@ code cold_initialize_locals, 'cold_initialize_locals', SYMBOL_INTERNAL
         _ initialize_local_getters
         _ initialize_local_setters
 
+        _lit forward_jumps_
+        _ gc_add_root
+
         next
 endcode
 
