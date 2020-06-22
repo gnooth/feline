@@ -200,7 +200,7 @@ code make_vector, 'make-vector'         ; capacity -> vector
 
         _check_index                    ; -> raw-capacity (in rbx)
 
-make_vector_unchecked:
+make_vector_untagged:
 
         mov     arg0_register, VECTOR_SIZE
         _ feline_malloc                 ; returns address in rax
@@ -242,7 +242,7 @@ code new_vector, '<vector>'             ; capacity -> handle
 
 new_vector_untagged:
 
-        jmp     make_vector_unchecked
+        jmp     make_vector_untagged
 
         next
 endcode

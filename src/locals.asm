@@ -342,12 +342,9 @@ code initialize_locals, 'initialize-locals'
         mov     qword [using_locals?_], TRUE
 
         _lit 8
-        _ make_vector_unchecked
+        _ make_vector_untagged
         mov     [forward_jumps_], rbx
         _drop
-
-        _lit forward_jumps_
-        _ gc_add_root
 
         ; check for return-if-no-locals
         ; if found, replace with return-if-locals
