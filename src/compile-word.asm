@@ -310,7 +310,7 @@ endcode
 
 asm_global forward_jumps_, NIL
 
-code forward_jumps, 'forward-jumps'     ; -> vector
+code forward_jumps, 'forward-jumps'     ; -> vector/nil
         _dup
         mov     rbx, [forward_jumps_]
         next
@@ -362,7 +362,7 @@ always_inline ?exit_no_locals, '?exit_no_locals'
 .1:
 endinline
 
-; ### ?exit-locals
+; ### ?exit_locals
 always_inline ?exit_locals, '?exit_locals'
         cmp     rbx, NIL
         _drop
@@ -376,6 +376,15 @@ always_inline ?exit_locals, '?exit_locals'
         db      0
         db      0
 endinline
+
+; ### ?exit-locals-patch-offset
+code ?exit_locals_patch_offset, '?exit-locals-patch-offset'     ; void -> fixnum
+        _dup
+        mov     rbx, ?exit_locals_patch
+        sub     rbx, ?exit_locals
+        _tag_fixnum
+        next
+endcode
 
 ; ### compile-?exit-locals
 code compile_?exit_locals, 'compile-?exit-locals' ;  symbol -> void
@@ -547,7 +556,7 @@ code compile_pair, 'compile-pair', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 endcode
 
 ; ### compile-prolog
-code compile_prolog, 'compile-prolog'
+code compile_prolog, 'compile-prolog', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 
         _ locals_count          ; -> tagged-fixnum
         test    bl, FIXNUM_TAG
@@ -578,7 +587,7 @@ endcode
 asm_global exit_address_, 0
 
 ; ### exit-address
-code exit_address, 'exit-address'
+code exit_address, 'exit-address'       ; void -> fixnum
         _dup
         mov     rbx, [exit_address_]
         _tag_fixnum
@@ -615,7 +624,7 @@ code patch_forward_jumps, 'patch-forward-jumps' ; address -> void
 endcode
 
 ; ### compile-epilog
-code compile_epilog, 'compile-epilog'
+code compile_epilog, 'compile-epilog', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 
         mov     rax, [pc_]
         mov     [exit_address_], rax
