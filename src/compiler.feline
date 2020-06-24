@@ -41,7 +41,7 @@ tuple: compiler-context
     compiler-context make-instance
     10 <vector> >>pending ;
 
-special: current-context
+special current-context
 
 : origin                                // void -> fixnum
     current-context get origin>> ;

@@ -46,7 +46,7 @@ tuple: compound-undo
 : add-undo                              // undo-record compound-undo ->
     records>> vector-push ;
 
-special: +compound-undo+
+special +compound-undo+
 
 : push-undo                             // undo-record -> void
     +compound-undo+ get [ add-undo ] [ undo-stack vector-push ] if* ;
@@ -62,7 +62,7 @@ special: +compound-undo+
 : pop-undo                              // -> undo-record
     undo-stack vector-pop ;
 
-special: +compound-redo+
+special +compound-redo+
 
 : push-redo                             // undo-record ->
     +compound-redo+ get [ add-undo ] [ redo-stack vector-push ] if* ;

@@ -294,10 +294,10 @@ code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE  ; --
         next
 endcode
 
-; ### special:
-code parse_special, 'special:', SYMBOL_IMMEDIATE        ; --
-        _ must_parse_token              ; -- string
-        _ new_symbol_in_current_vocab   ; -- symbol
+; ### special
+code parse_special, 'special', SYMBOL_IMMEDIATE ; void -> void
+        _ must_parse_token              ; -> string
+        _ new_symbol_in_current_vocab   ; -> symbol
 
         _dup
         _ symbol_set_special_bit
