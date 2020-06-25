@@ -443,7 +443,7 @@ code compile_?return_no_locals, 'compile-?return-no-locals' ; symbol -> void
         _swap                           ; -> tagged-call-address symbol
         _ inline_primitive              ; -> tagged-call-address
 
-        _symbol call_quotation
+        _tick call_quotation
         _ symbol_code_address           ; -> tagged-call-address tagged-target-address
 
         _ fix_call                      ; -> empty
@@ -487,7 +487,7 @@ code compile_?return_locals, 'compile-?return-locals' ; symbol -> void
         _swap                           ; -> patch1-address symbol
         _ inline_primitive              ; -> patch1-address
 
-        _symbol call_quotation
+        _tick call_quotation
         _ symbol_code_address           ; -> patch1-address call-target-address
 
         ; -> patch1-address call-target-address
@@ -616,7 +616,7 @@ code patch_forward_jumps, 'patch-forward-jumps' ; address -> void
         cmp     rbx, NIL
         je      drop
 
-        _symbol patch_forward_jump
+        _tick patch_forward_jump
         _ vector_each
         mov     qword [forward_jumps_], NIL
 
@@ -664,12 +664,12 @@ code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIV
         _drop                           ; -> empty
 
         _this_quotation_array
-        _symbol precompile_object
+        _tick precompile_object
         _ map_array                     ; -> precompiled-array
 
         _zero
         _over
-        _symbol add_code_size
+        _tick add_code_size
         _ array_each
 
         ; add size of return instruction
@@ -689,7 +689,7 @@ code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIV
         _ compile_prolog
 
         ; body
-        _symbol compile_pair
+        _tick compile_pair
         _ each
 
         ; epilog

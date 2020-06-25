@@ -512,6 +512,12 @@ section .data
         _tag_static_symbol
 %endmacro
 
+%macro  _tick 1                         ; _tick dup -> _lit S_dup
+        _dup
+        mov     rbx, symbol_raw_address(%1)
+        _tag_static_symbol
+%endmacro
+
 %macro  head 2-4 0, 0                   ; label, name, flags, inline size
         symbol S_%1, %2, %1, %4, %3
 %endmacro
