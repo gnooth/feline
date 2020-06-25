@@ -638,12 +638,12 @@ code method_colon, 'method:', SYMBOL_IMMEDIATE
         next
 endcode
 
-; ### forget:
-code forget_colon, 'forget:', SYMBOL_IMMEDIATE
+; ### forget
+code forget, 'forget', SYMBOL_IMMEDIATE
 ; Removes the symbol from its vocab.
 ; Does nothing if the symbol does not exist.
 
-        _symbol forget_colon
+        _tick forget
         _ top_level_only
 
         _ must_parse_token

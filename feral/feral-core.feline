@@ -404,7 +404,7 @@ global current-buffer-lock  make-mutex current-buffer-lock!
 
 global current-buffer
 
-forget: current-buffer!
+forget current-buffer!
 
 : current-buffer!                       // buffer -> void
     1 ?enough dup buffer? assert
