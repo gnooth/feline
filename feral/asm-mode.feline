@@ -40,7 +40,7 @@ global instance
     '\s' s string-index :> end
     end nil? [ nil ] ?return
     0 end s string-substring {
-        "code" "inline" "always_inline" "subroutine" "%macro" "%define"
+        "code" "inline" "always_inline" "subroutine" "%macro" "%define" "deferred"
     } member? ;
 
 : asm-mode-list-symbols

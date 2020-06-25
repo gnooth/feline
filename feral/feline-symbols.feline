@@ -64,7 +64,7 @@ global feline-symbols
 
     token nil? ?exit
 
-    token { "code" "inline" "always_inline" "generic" "special" } member?
+    token { "code" "inline" "always_inline" "generic" "special" "deferred" } member?
     [ token s lineno asm-process-2-symbols ] ?return
 
     token { "subroutine" "%macro" "asm_global" "%define" } member?
