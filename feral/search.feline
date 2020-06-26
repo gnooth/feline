@@ -186,10 +186,9 @@ public
         pattern dot search-forward
     ] if
     // -> pattern/nil
-    [
-        found
-        current-search last-search!
-    ] [ not-found ] if*
+    [ found ] [ not-found ] if*
+
+    current-search last-search!
     nil current-search! ;
 
 : find-under
