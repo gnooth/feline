@@ -29,7 +29,7 @@ in: feline-mode
     "]"
     "constant"
     "defer"
-    "forget:"
+    "forget"
     "generic"
     "global"
     "in:"
