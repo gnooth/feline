@@ -163,8 +163,16 @@ endcode
 
 %endif
 
+asm_global in_print_exception, NIL
+
 ; ### print-exception
 code print_exception, 'print-exception'
+
+        cmp     qword [in_print_exception], NIL
+        jz      .1
+        _ bye
+.1:
+        mov     qword [in_print_exception], TRUE
 
 %ifdef WIN64
         _ saved_exception_code
@@ -195,6 +203,8 @@ code print_exception, 'print-exception'
         _tag_fixnum
         _ hexdot
 %endif
+
+        mov     qword [in_print_exception], NIL
 
         next
 endcode
