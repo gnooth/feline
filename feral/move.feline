@@ -407,11 +407,13 @@ feral-config:winui? feral-config:gtkui? or #if
         top-line!
         4 [ top-line prev>> [ top-line! ] when* ] times
 
-        dot-line-number bottom-line-number > [
-            last-command ' mousewheel-scroll-up eq? [ add-undo-move ] unless
-            bottom-line dot-line!
-            0 dot-offset!
-        ] when
+        mark [
+            dot-line-number bottom-line-number > [
+                last-command ' mousewheel-scroll-up eq? [ add-undo-move ] unless
+                bottom-line dot-line!
+                0 dot-offset!
+            ] when
+        ] unless
 
         true repaint?!
         update-display
@@ -425,11 +427,13 @@ feral-config:winui? feral-config:gtkui? or #if
         top-line!
         4 [ top-line next>> [ top-line! ] when* ] times
 
-        dot-line-number top-line-number < [
-            last-command ' mousewheel-scroll-down eq? [ add-undo-move ] unless
-            top-line dot-line!
-            0 dot-offset!
-        ] when
+        mark [
+            dot-line-number top-line-number < [
+                last-command ' mousewheel-scroll-down eq? [ add-undo-move ] unless
+                top-line dot-line!
+                0 dot-offset!
+            ] when
+        ] unless
 
         true repaint?!
         update-display
@@ -440,22 +444,26 @@ feral-config:winui? feral-config:gtkui? or #if
 : do-window-up
     top-line prev>> [
         top-line prev>> top-line!
-        dot-line-number bottom-line-number > [
-            add-undo-move
-            bottom-line dot-line!
-            0 dot-offset!
-        ] when
+        mark [
+            dot-line-number bottom-line-number > [
+                add-undo-move
+                bottom-line dot-line!
+                0 dot-offset!
+            ] when
+        ] unless
         true repaint?!
     ] when ;
 
 : do-window-down
     top-line next>> [
         top-line next>> top-line!
-        dot-line-number top-line-number < [
-            add-undo-move
-            top-line dot-line!
-            0 dot-offset!
-        ] when
+        mark [
+            dot-line-number top-line-number < [
+                add-undo-move
+                top-line dot-line!
+                0 dot-offset!
+            ] when
+        ] unless
         true repaint?!
     ] when ;
 
