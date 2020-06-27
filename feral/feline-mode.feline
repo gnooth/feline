@@ -98,28 +98,19 @@ feline-mode-comment-start length constant comment-start-length
 
 : feline-mode-expand
     mark ?exit
-    dot-offset zero? ?exit
-
+    dot-offset 0? ?exit
     dot-offset :> old-dot-offset
-
     dot-offset 1- dot-offset!
-
-    [ in-word? dot-offset zero? not and ] [
-        dot-offset 1- dot-offset!
-    ] while
-
+    [ in-word? dot-offset 0? not and ] [ dot-offset 1- dot-offset! ] while
     not-in-word? [ dot-offset 1+ dot-offset! ] when
-
-    dot-offset old-dot-offset dot-line-text string-substring
-
+    dot-offset old-dot-offset eq? ?exit
+    dot-offset old-dot-offset dot-line-text string-substring :> abbrev
     old-dot-offset dot-offset!
-
-    {
-        { "when" [ feline-mode-expand-when ] }
-        { "if"   [ feline-mode-expand-if ]   }
-        // default
-        [ "No expansion for %S" format mini:message ]
-    } case ;
+    abbrev {
+        "when" => [ feline-mode-expand-when ]
+        "if"   => [ feline-mode-expand-if ]
+        _      => [ abbrev "No expansion for %S" format mini:message ]
+    } match ;
 
 32 code-char constant space-char
 34 code-char constant quote-char
