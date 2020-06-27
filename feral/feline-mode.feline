@@ -23,14 +23,14 @@ global instance
 : get-instance                          // void -> mode
     instance ;
 
-: feline-mode-identifier-char?          // char -> ?
+: identifier-char?                      // char -> ?
     char? [ '\s' neq? ] [ nil ] if* ;
 
-"// " constant feline-mode-comment-start
+"// " constant comment-start
 
-feline-mode-comment-start length constant comment-start-length
+comment-start length constant comment-start-length
 
-: feline-mode-toggle-line-comment
+: toggle-line-comment
     dot-line-text :> text
     text indentation-string :> indentation-string
     indentation-string length :> indentation-length
@@ -38,7 +38,7 @@ feline-mode-comment-start length constant comment-start-length
 
     editor:add-undo-line-edit
 
-    feline-mode-comment-start content head? [
+    comment-start content head? [
         // uncomment
         indentation-string
         comment-start-length content tail +
@@ -58,7 +58,7 @@ feline-mode-comment-start length constant comment-start-length
     ] [
         // comment
         indentation-string
-        feline-mode-comment-start +
+        comment-start +
         content +
         dot-line-text!
         dot-offset indentation-length >= [
@@ -110,13 +110,10 @@ feline-mode-comment-start length constant comment-start-length
         _           => [ abbrev "No expansion for %S" format message ]
     } match ;
 
-32 code-char constant space-char
-34 code-char constant quote-char
-
 : non-blank?                            // string -> ?
     1 ?enough
     verify-string
-    [ space-char neq? ] find drop ;
+    [ '\s' neq? ] find drop ;
 
 : skip-quoted-string                    // start-index string -> index/nil
     2dup string-length >= [ 2drop nil ] ?return
@@ -142,18 +139,18 @@ feline-mode-comment-start length constant comment-start-length
 
     start 1+ end + ;
 
-: string-segments ( s ) // string -> segments
+: string-segments ( s )                 // string -> segments
     s string-length :> len
     0 !> start
     0 !> end
-    16 <vector> :> v
+    16 make-vector :> v
     nil !> c
 
     [ end len fixnum-fixnum< ] [
         start s string-nth c!
         {
-            { [ c space-char eq? ] [ start s string-skip-whitespace len or end! ] }
-            { [ c quote-char eq? ] [ start s skip-quoted-string len or end! ] }
+            { [ c '\s' eq? ] [ start s string-skip-whitespace len or end! ] }
+            { [ c '"' eq? ] [ start s skip-quoted-string len or end! ] }
             [ start s string-skip-to-whitespace len or end! ]
         } cond
         start end s string-substring start make-segment v vector-push
@@ -189,7 +186,7 @@ var last-segment-text
 
     s string-first-char :> first-char
 
-    first-char quote-char eq? [
+    first-char '"' eq? [
         color-string segment format<<
     ] ?return
 
@@ -221,7 +218,7 @@ var last-segment-text
     ] each
     segments ;
 
-: feline-mode-format-line // line -> segments
+: format-line                           // line -> segments
     text>> detab string-segments format-segments ;
 
 : line-is-definition? ( line )
@@ -230,12 +227,12 @@ var last-segment-text
     end nil? [ nil ] ?return
     0 end s string-substring defining-words member? ;
 
-: feline-mode-list-symbols
+: list-symbols
     ' feline-mode:line-is-definition? list-symbols:list-symbols ;
 
 use: completion
 
-: feline-mode-provide-completion
+: provide-completion
     1 ?enough verify-string :> prefix
 
     current-completion [ next-completion ] ?return
@@ -248,11 +245,11 @@ use: completion
     prefix strings initialize-completion
     next-completion ;
 
-: feline-mode-find-definition
+: find-definition
 
     "find-definition" history:set-history
 
-    ' feline-mode-provide-completion mini:set-completion-provider
+    ' provide-completion mini:set-completion-provider
     nil current-completion!
 
     "Word: " mini:minibuffer-accept-string
@@ -260,7 +257,7 @@ use: completion
 
 unuse: completion
 
-global feline-mode-local-map
+global local-map
 
 feral-config:winui? feral-config:gtkui? or #if
 
@@ -268,11 +265,11 @@ use: feral-key
 
 : initialize-local-map
     128 <hashtable> :> m
-    ' feline-mode-toggle-line-comment   ctrl-/          m set-at
+    ' toggle-line-comment               ctrl-/          m set-at
     ' expand                            ctrl-space      m set-at
-    ' feline-mode-list-symbols          ctrl-shift-o    m set-at
-    ' feline-mode-find-definition       ctrl-t          m set-at
-    m feline-mode-local-map! ;
+    ' list-symbols                      ctrl-shift-o    m set-at
+    ' find-definition                   ctrl-t          m set-at
+    m local-map! ;
 
 initialize-local-map
 
@@ -280,19 +277,19 @@ unuse: feral-key
 
 #endif
 
-: feline-mode-initialize-buffer         // buffer -> void
+: initialize-buffer                     // buffer -> void
     1 ?enough :> buf
-    feline-mode-local-map buf local-map<<
+    local-map buf local-map<<
     instance indent-size>> buf indent-size<< ;
 
 : initialize-feline-mode
     mode make-instance :> m
     "Feline" m name<<
     4 m indent-size<<
-    feline-mode-comment-start m comment-start<<
-    ' feline-mode-initialize-buffer m initialize-buffer-function<<
-    ' feline-mode-identifier-char? m identifier-char-function<<
-    ' feline-mode-format-line m format-line-function<<
+    comment-start m comment-start<<
+    ' initialize-buffer m initialize-buffer-function<<
+    ' identifier-char? m identifier-char-function<<
+    ' format-line m format-line-function<<
     m feline-extension modes set-at
     m instance! ;
 
