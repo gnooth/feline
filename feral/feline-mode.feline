@@ -69,47 +69,45 @@ feline-mode-comment-start length constant comment-start-length
     modified
     true dot-line-changed?! ;
 
-: feline-mode-expand-if
+: expand-internal ( abbrev expansion )  // abbrev expansion -> void
     mark ?exit
-    "if" dot-line-head tail? not ?exit
-
+    abbrev dot-line-head tail? not ?exit
     editor:add-undo-line-edit
-
-    "if" length dot-line-head head*
-    "[  ] [  ] if" +
+    abbrev length dot-line-head head*
+    expansion +
+    abbrev +
     dot-line-tail +
     dot-line-text!
-
+    dot-offset abbrev length - 2 + dot-offset!
     true dot-line-changed?! ;
 
-: feline-mode-expand-when
-    mark ?exit
-    "when" dot-line-head tail? not ?exit
+: expand-1 ( abbrev )                   // abbrev -> void
+    abbrev "[  ] " expand-internal ;
 
-    editor:add-undo-line-edit
+: expand-2 ( abbrev )                   // abbrev -> void
+    abbrev "[  ] [  ] " expand-internal ;
 
-    "when" length dot-line-head head*
-    "[  ] when" +
-    dot-line-tail +
-    dot-line-text!
-
-    dot-offset 2 - dot-offset!
-    true dot-line-changed?! ;
-
-: feline-mode-expand
+: expand                                // void -> void
     mark ?exit
     dot-offset 0? ?exit
-    dot-offset :> old-dot-offset
+    dot-offset :> old-offset
     dot-offset 1- dot-offset!
     [ in-word? dot-offset 0? not and ] [ dot-offset 1- dot-offset! ] while
     not-in-word? [ dot-offset 1+ dot-offset! ] when
-    dot-offset old-dot-offset eq? ?exit
-    dot-offset old-dot-offset dot-line-text string-substring :> abbrev
-    old-dot-offset dot-offset!
+    dot-offset old-offset eq? ?exit
+    dot-offset old-offset dot-line-text string-substring :> abbrev
+    old-offset dot-offset!
     abbrev {
-        "when" => [ feline-mode-expand-when ]
-        "if"   => [ feline-mode-expand-if ]
-        _      => [ abbrev "No expansion for %S" format mini:message ]
+        "if"        => [ abbrev expand-2 ]
+        "if*"       => [ abbrev expand-2 ]
+        "recover"   => [ abbrev expand-2 ]
+        "unless"    => [ abbrev expand-1 ]
+        "unless*"   => [ abbrev expand-1 ]
+        "until"     => [ abbrev expand-2 ]
+        "when"      => [ abbrev expand-1 ]
+        "when*"     => [ abbrev expand-1 ]
+        "while"     => [ abbrev expand-2 ]
+        _           => [ abbrev "No expansion for %S" format message ]
     } match ;
 
 32 code-char constant space-char
@@ -271,7 +269,7 @@ use: feral-key
 : initialize-local-map
     128 <hashtable> :> m
     ' feline-mode-toggle-line-comment   ctrl-/          m set-at
-    ' feline-mode-expand                ctrl-space      m set-at
+    ' expand                            ctrl-space      m set-at
     ' feline-mode-list-symbols          ctrl-shift-o    m set-at
     ' feline-mode-find-definition       ctrl-t          m set-at
     m feline-mode-local-map! ;
