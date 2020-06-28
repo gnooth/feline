@@ -446,7 +446,7 @@ global replacement
             response {
                 { 'y' [ replace1 count 1+ count! ] }
                 { 'n' [ ] }
-                { 'q' [ true done?! ] }
+                { 'q' [ unmark true done?! ] }
                 [
                     // default
                     drop
