@@ -127,38 +127,39 @@ method: line before? line-before? ;
 
 method: position before? position-before? ;
 
-: move-next ( pos )                     // position -> ?
+: move-next                             // position -> position/nil
+    !> pos
     pos offset>> :> offset
     pos line>> :> line
-
     {
-        { [ offset line length < ] [ offset 1+ pos offset<< true ] }
+        { [ offset line length < ] [ offset 1+ pos offset<< ] }
         {
-            [ line next>> ] [
+            [ line next>> ]
+            [
                 line next>> pos line<< 0
                 pos offset<<
-                true
             ]
         }
-        [ nil ]
-    } cond ;
+        [ nil pos! ]
+    } cond
+    pos ;
 
-: move-prev ( pos )                     // position -> ?
+: move-prev                             // position -> position/nil
+    !> pos
     pos offset>> :> offset
     pos line>> :> line
-
     {
-        { [ offset 0 > ] [ offset 1- pos offset<< true ] }
+        { [ offset 0> ] [ offset 1- pos offset<< ] }
         {
             [ line prev>> ]
             [
                 line prev>> pos line<<
                 pos line>> length pos offset<<
-                true
             ]
         }
-        [ nil ]
-    } cond ;
+        [ nil pos! ]
+    } cond
+    pos ;
 
 tuple: region
     begin

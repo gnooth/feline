@@ -41,10 +41,10 @@ private
     current-pattern "%S not found" format
     message ;
 
-: find-char-in-range ( char string start end )  // char string start end -> i/nil
+: find-char-in-range ( char string start end ) // char string start end -> i/nil
     start end [ string string-nth-unsafe char eq? ] find-integer-in-range ;
 
-: find-substring-in-line ( pattern line )       // pattern line -> position/nil
+: find-substring-in-line ( pattern line ) // pattern line -> position/nil
     pattern line text>> 0 find-substring-from
     [ line swap make-position ] [ nil ] if* ;
 
@@ -68,48 +68,46 @@ private
     pattern line text>> line length find-last-substring-from
     [ line swap make-position ] [ nil ] if* ;
 
-: search-forward ( pattern startpos )   // string position -> position/nil
+: search-forward ( startpos )           // position -> position/nil
+    // get pattern from current-search
+    current-pattern :> pattern
+
     startpos line>> !> line
     startpos offset>> :> offset
 
     pattern line text>> offset find-substring-from !> index
-
     index [ line index make-position ] ?return
 
     line next>> line!
-
     nil !> result
 
     [ line ] [
         pattern line find-substring-in-line [
             result!
             nil line!
-        ] [
-            line next>> line!
-        ] if*
+        ] [ line next>> line! ] if*
     ] while
 
     result ;
 
-: search-backward ( pattern startpos )  // pattern startpos -> position/nil
+: search-backward ( startpos )          // startpos -> position/nil
+    // get pattern from current-search
+    current-pattern :> pattern
+
     startpos line>> !> line
     startpos offset>> :> offset
 
     pattern line text>> offset find-last-substring-from !> index
-
     index [ line index make-position ] ?return
 
     line prev>> line!
-
     nil !> result
 
     [ line ] [
         pattern line find-last-substring-in-line [
             result!
             nil line!
-        ] [
-            line prev>> line!
-        ] if*
+        ] [ line prev>> line! ] if*
     ] while
 
     result ;
@@ -129,39 +127,43 @@ private
     ] if ;
 
 : search-forward-word ( startpos )      // position -> position/nil
+    // get pattern from current-search
     current-pattern :> pattern
+
     pattern string-length :> pattern-length
     startpos copy-position !> pos
     nil !> result
 
     [ result nil? pos and ] [
         pos move-next [
-            pattern pos search-forward pos!
+            search-forward pos!
             pos [
                 pos pattern-length position-delimited? [
                     pos result!
                 ] when
             ] when
-        ] when
+        ] when*
     ] while
 
     result ;
 
 : search-backward-word ( startpos )     // startpos -> pos/nil
+    // get pattern from current-search
     current-pattern :> pattern
+
     pattern string-length :> pattern-length
     startpos copy-position !> pos
     nil !> result
 
     [ result nil? pos and ] [
         pos move-prev [
-            pattern pos search-backward pos!
+            search-backward pos!
             pos [
                 pos pattern-length position-delimited? [
                     pos result!
                 ] when
             ] when
-        ] when
+        ] when*
     ] while
 
     result ;
@@ -183,7 +185,7 @@ public
     whole-words-only? [
         dot search-forward-word
     ] [
-        pattern dot search-forward
+        dot search-forward
     ] if
     // -> pattern/nil
     [ found ] [ not-found ] if*
@@ -229,9 +231,9 @@ public
     pattern make-search current-search!
     true current-search whole-words-only<< // don't change default!
 
-    dot-line start make-position :> pos
+    dot-line start make-position !> pos
     pos move-prev [
-        last-line [ pos line<< ] [ length pos offset<< ] bi
+        last-line dup length make-position pos!
     ] unless
     pos search-backward-word
     // -> position/nil
@@ -261,7 +263,7 @@ public
     whole-words-only? [
         startpos search-forward-word
     ] [
-        current-pattern startpos search-forward
+        startpos search-forward
     ] if [ found ] [ not-found ] if*
     nil current-search! ;
 
@@ -278,7 +280,7 @@ public
     whole-words-only? [
         startpos search-backward-word
     ] [
-        current-pattern startpos search-backward
+        startpos search-backward
     ] if [ found ] [ not-found ] if*
     nil current-search! ;
 
@@ -430,7 +432,7 @@ global replacement
         whole-words-only? [
             dot search-forward-word
         ] [
-            pattern dot search-forward
+            dot search-forward
         ] if
 
         // -> position/nil
