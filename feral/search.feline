@@ -135,19 +135,19 @@ private
     nil !> result
 
     [ result nil? pos and ] [
-        pos move-next [
-            search-forward pos!
-            pos [
-                pos pattern-length position-delimited? [
-                    pos result!
-                ] when
-            ] when
-        ] when*
+        pos search-forward pos!
+        pos [
+            pos pattern-length position-delimited? [
+                pos result!
+            ] [
+                pos move-next
+            ] if
+        ] when
     ] while
 
     result ;
 
-: search-backward-word ( startpos )     // startpos -> pos/nil
+: search-backward-word ( startpos )     // position -> position/nil
     // get pattern from current-search
     current-pattern :> pattern
 
