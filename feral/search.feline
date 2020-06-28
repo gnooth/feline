@@ -48,6 +48,26 @@ private
     pattern line text>> 0 find-substring-from
     [ line swap make-position ] [ nil ] if* ;
 
+: find-last-substring-in-range ( pattern string start end ) // string1 string2 start end -> i/nil
+    pattern unsafe-string-data-address :> pattern-data-address
+    string unsafe-string-data-address :> string-data-address
+    pattern string-length :> pattern-length
+
+    start string string-length pattern-length - 1+ end min [
+        string-data-address +
+        pattern-data-address
+        pattern-length unsafe-memequal
+    ] find-last-integer-in-range ;
+
+: find-last-substring-from ( pattern string from ) // pattern string from -> i/nil
+    pattern string 0
+    string string-length pattern string-length - 1+ from min
+    find-last-substring-in-range ;
+
+: find-last-substring-in-line ( pattern line ) // pattern line -> position/nil
+    pattern line text>> line length find-last-substring-from
+    [ line swap make-position ] [ nil ] if* ;
+
 : search-forward ( pattern startpos )   // string position -> position/nil
     startpos line>> !> line
     startpos offset>> :> offset
@@ -70,26 +90,6 @@ private
     ] while
 
     result ;
-
-: find-last-substring-in-range ( pattern string start end ) // string1 string2 start end -> i/nil
-    pattern unsafe-string-data-address :> pattern-data-address
-    string unsafe-string-data-address :> string-data-address
-    pattern string-length :> pattern-length
-
-    start string string-length pattern-length - 1+ end min [
-        string-data-address +
-        pattern-data-address
-        pattern-length unsafe-memequal
-    ] find-last-integer-in-range ;
-
-: find-last-substring-from ( pattern string from ) // pattern string from -> i/nil
-    pattern string 0
-    string string-length pattern string-length - 1+ from min
-    find-last-substring-in-range ;
-
-: find-last-substring-in-line ( pattern line ) // pattern line -> position/nil
-    pattern line text>> line length find-last-substring-from
-    [ line swap make-position ] [ nil ] if* ;
 
 : search-backward ( pattern startpos )  // pattern startpos -> position/nil
     startpos line>> !> line
