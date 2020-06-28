@@ -258,11 +258,17 @@ code this_sbuf_to_string, 'this_sbuf_to_string', SYMBOL_INTERNAL        ; -- str
         next
 endcode
 
-; ### sbuf>string
-code sbuf_to_string, 'sbuf>string'      ; handle -- string
+; ### sbuf->string
+code sbuf_to_string, 'sbuf->string'     ; sbuf -> string
         _ sbuf_from
         _ copy_to_string
         next
+endcode
+
+; ### sbuf>string
+; Deprecated. Use sbuf->string.
+code old_sbuf_to_string, 'sbuf>string'  ; sbuf -> string
+        jmp     sbuf_to_string
 endcode
 
 ; ### destroy_sbuf
