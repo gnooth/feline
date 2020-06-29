@@ -61,6 +61,7 @@ private
 0x7a constant VK_F11
 0x7b constant VK_F12
 
+0xba constant VK_OEM_1                  // ';' ':'
 0xbe constant VK_OEM_PERIOD
 0xbf constant VK_OEM_2                  // '/' '?'
 0xdb constant VK_OEM_4                  // '[' '{'
@@ -179,6 +180,7 @@ VK_UP alt               constant alt-up
 'X' char-code alt       constant alt-x
 'W' char-code alt       constant alt-w
 'C' char-code alt       constant alt-c
+VK_OEM_1 alt            constant alt-;
 
 VK_F3 alt               constant alt-f3
 
