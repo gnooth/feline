@@ -143,6 +143,7 @@ f3 ctrl shift           constant ctrl-shift-f3
 'x' char-code alt       constant alt-x
 'w' char-code alt       constant alt-w
 'c' char-code alt       constant alt-c
+';' char-code alt       constant alt-;
 
 f3 alt                  constant alt-f3
 
