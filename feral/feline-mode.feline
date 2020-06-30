@@ -30,12 +30,6 @@ global instance
 
 comment-start length constant comment-start-length
 
-// REVIEW global
-global comment-column
-
-// REVIEW 41
-41 comment-column!
-
 : toggle-line-comment
     dot-line-text :> text
     text indentation-string :> indentation-string
@@ -73,50 +67,6 @@ global comment-column
     ] if
 
     modified
-    true dot-line-changed?! ;
-
-: reindent-comment                      // void -> void
-    comment-start dot-line-text 0 find-substring-from :> comment-start-offset
-    comment-start-offset comment-column 1- eq? ?exit
-    128 make-sbuf :> sb
-
-    comment-start-offset nil? [
-        // no existing comment
-        dot-line-text string-trim-tail sb sbuf-append-string // non-comment text
-        '\s' sb push
-        [ sb length comment-column 1- < ] [ '\s' sb push ] while
-        comment-start sb sbuf-append-string
-
-        editor:add-undo-line-edit
-        sb sbuf->string dot-line-text!
-        dot-line-length dot-offset!
-        true dot-line-changed?!
-    ] ?return
-
-    // we have an existing comment
-    comment-start-offset dot-line-text string-head string-trim-tail :> non-comment-text
-    comment-start-offset dot-line-text string-tail :> comment-text
-
-    [ comment-start-offset comment-column > ]
-    [ comment-start-offset non-comment-text length 1+ eq? ] both? ?exit // can't improve
-
-    non-comment-text sb sbuf-append-string
-
-    '\s' sb sbuf-push                   // must have at least 1 space
-    [ sb length comment-column 1- < ] [ '\s' sb sbuf-push ] while
-
-    sb length :> new-comment-offset     // start of relocated comment
-    comment-text sb sbuf-append-string
-
-    local delta
-    dot-offset comment-start-offset >= [
-        // dot is in the comment text
-        dot-offset comment-start-offset - delta!
-    ] when
-
-    editor:add-undo-line-edit
-    sb sbuf->string dot-line-text!
-    delta [ new-comment-offset delta + dot-offset! ] when
     true dot-line-changed?! ;
 
 : expand-internal ( abbrev expansion )  // abbrev expansion -> void
@@ -316,7 +266,6 @@ use: feral-key
 : initialize-local-map
     128 <hashtable> :> m
     ' toggle-line-comment               ctrl-/          m set-at
-    ' reindent-comment                  alt-;           m set-at
     ' expand                            ctrl-space      m set-at
     ' list-symbols                      ctrl-shift-o    m set-at
     ' find-definition                   ctrl-t          m set-at

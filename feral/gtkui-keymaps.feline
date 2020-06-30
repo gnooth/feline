@@ -136,6 +136,8 @@ global ctrl-k-map
     ' indent                            feral-key:ctrl-]            m set-at
     ' unindent                          feral-key:ctrl-[            m set-at
 
+    ' reindent-comment                  feral-key:alt-;             m set-at
+
     ' cycle-paste                       feral-key:alt-v             m set-at
     ' execute-command                   feral-key:alt-x             m set-at
     ' escape                            feral-key:escape            m set-at
