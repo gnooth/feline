@@ -78,13 +78,6 @@ public
 
     dirname ;
 
-: file-name-directory-linux ( filename ) // filename -> dirname/nil
-    filename length :> len
-    len 1- filename [ path-separator-char? ] find-last-from [
-        // -> index
-        dup zero? [ drop "/" ] [ filename head ] if
-    ] when ;
-
 : file-name-directory // filename -> dirname/nil
 // returns the file name's directory component
     win64? [ file-name-directory-win64 ] [ file-name-directory-linux ] if ;

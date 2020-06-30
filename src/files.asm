@@ -573,6 +573,37 @@ code canonical_path, 'canonical-path'   ; string1 -> string2/nil
         next
 endcode
 
+; ### file-name-directory-linux
+code file_name_directory_linux, 'file-name-directory-linux' ; string -> string/nil
+        _dup
+        _ string_length
+        cmp     rbx, tagged_zero
+        je      .exit1
+        ; -> string length
+        sub     rbx, (1 << FIXNUM_TAG_BITS) ; -> string length-1
+        _lit tagged_char('/')           ; -> string length-1 '/'
+        _swap
+        _pick                           ; -> string '/' length-1 string
+        _ string_last_index_from        ; -> string index/nil
+        cmp     rbx, NIL
+        je      .exit2
+        ; -> string index
+        cmp     rbx, tagged_zero
+        jne     .1
+        add     rbx, (1 << FIXNUM_TAG_BITS) ; -> string index
+.1:
+        _swap                           ; -> index string
+        _lit tagged_zero
+        _ rrot                          ; -> 0 index string
+        _ string_substring
+        next
+.exit1:
+        mov     rbx, NIL
+.exit2:
+        _nip
+        next
+endcode
+
 ; ### get-current-directory
 code get_current_directory, 'get-current-directory' ; -> string/nil
         mov     arg0_register, 1024
