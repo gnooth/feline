@@ -127,6 +127,12 @@ feral-config:winui? feral-config:gtkui? or #if
 
 public
 
+: line-number-from-file-name ( filename )  // string -> fixnum/nil
+    entries [ load-entries ] unless
+    entries length 1-
+    entries [ filename>> filename = ] find-last-from //  -> index/nil element/nil
+    [ nip linenumber>> ] when* ;
+
 : recent-files
     entries [ load-entries ] unless
 
