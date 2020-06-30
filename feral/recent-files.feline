@@ -18,7 +18,7 @@ in: recent-files
 
 private
 
-global recent-files-vector
+global entries
 
 40 constant directory-column
 
@@ -52,17 +52,17 @@ tuple: entry
     ] if
     entry ;
 
-: load-recent-files
-    recent-files-vector nil? assert
+: load-entries
+    entries nil? assert
     40 make-vector :> v
     recent-files-filename file? [
         recent-files-filename file-lines [ entry-from-string v vector-push ] each
     ] when
-    v recent-files-vector! ;
+    v entries! ;
 
-: save-recent-files
+: save-entries
     local v
-    recent-files-vector [
+    entries [
         40 make-vector v!
         [ length dup 40 - 0 max swap ] keep <slice>
         [
@@ -71,11 +71,11 @@ tuple: entry
         v recent-files-filename set-file-lines
     ] when* ;
 
-: recent-files-select
+: select
     // line numbers are 0-based
-    // the most recent file is the first file in the recent files vector
-    recent-files-vector length 1- dot-line-number - 0 max // -> index
-    recent-files-vector nth :> entry
+    // the most recent file is the last file in the recent files vector
+    entries length 1- dot-line-number - 0 max // -> index
+    entries nth :> entry
     entry filename>> :> filename
     entry linenumber>> :> linenumber
     filename find-buffer-from-file-name !> buf
@@ -92,57 +92,57 @@ tuple: entry
     current-buffer parent>> current-buffer!
     true repaint?! ;
 
-global recent-files-local-map
+global local-map
 
 : initialize-local-map
     128 <hashtable> :> keymap
-    ' recent-files-select   feral-key:enter     keymap set-at
-    ' recent-files-quit     feral-key:escape    keymap set-at
-    ' recent-files-quit     feral-key:ctrl-w    keymap set-at
-    keymap recent-files-local-map! ;
+    ' select                feral-key:enter     keymap set-at
+    ' quit                  feral-key:escape    keymap set-at
+    ' quit                  feral-key:ctrl-w    keymap set-at
+    keymap local-map! ;
 
 initialize-local-map
 
 feral-config:winui? feral-config:gtkui? or #if
-' recent-files-select feral-key:double-mouse-1 recent-files-local-map set-at
+' select feral-key:double-mouse-1 local-map set-at
 #endif
 
 : add-recent-file ( filename linenumber ) // filename linenumber -> void
     // REVIEW don't save directories
     filename directory? ?exit
 
-    recent-files-vector [ load-recent-files ] unless
+    entries [ load-entries ] unless
 
-    recent-files-vector [ filename>> filename = ] find // -> index/nil element/nil
+    entries [ filename>> filename = ] find // -> index/nil element/nil
     [
         // -> index
-        recent-files-vector vector-remove-nth!
+        entries vector-remove-nth!
     ] [ drop ] if
 
-    filename linenumber make-entry recent-files-vector vector-push
+    filename linenumber make-entry entries vector-push
 
-    save-recent-files ;
+    save-entries ;
 
 ' add-recent-file is feral-core:add-recent-file
 
 public
 
 : recent-files
-    recent-files-vector [ load-recent-files ] unless
+    entries [ load-entries ] unless
 
     make-buffer :> buf
     "Recent Files" buf name<<
     current-buffer-directory buf directory<<
-    recent-files-local-map buf local-map<<
+    local-map buf local-map<<
 
     local entry
     local sb
 
-    recent-files-vector vector-length
+    entries vector-length
     [
         // -> i
-        negate recent-files-vector vector-length 1- +
-        recent-files-vector vector-nth entry!
+        negate entries vector-length 1- +
+        entries vector-nth entry!
         128 make-sbuf sb!
         entry filename>> file-name-nondirectory sb sbuf-append-string
         [ sb sbuf-length directory-column < ] [ '\s' sb push ] while
@@ -150,7 +150,7 @@ public
         // FIXME it's a bug if entry filename>> does not have a directory component
         entry filename>> file-name-directory [ sb sbuf-append-string ] when*
 
-        sb sbuf>string make-line/1 buf buffer-append-line
+        sb sbuf->string make-line/1 buf buffer-append-line
     ] each-integer
 
     current-buffer buf parent<<
