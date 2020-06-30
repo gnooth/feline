@@ -411,7 +411,7 @@ in: editor
 
 : edit-file/2                           // line-number string -> void
     tilde-expand-filename :> name
-    :> line-number
+    !> line-number
 
     initialize-editor
 
@@ -421,18 +421,27 @@ in: editor
         edit1
     ] ?return
 
-    name find-file-to-edit
-    [
+    name find-file-to-edit canonical-path :> filename
+
+    line-number [
+        filename [
+            recent-files:line-number-from-file-name line-number!
+        ] when*
+    ] unless
+
+    line-number [ 1 line-number! ] unless
+
+    filename [
         line-number create-buffer/2
     ] [
-        name canonical-path create-buffer-for-new-file
+        filename create-buffer-for-new-file
         "New file" message
     ] if*
 
     edit1 ;
 
 : edit-file                             // string -> void
-    1 swap edit-file/2 ;
+    nil swap edit-file/2 ;
 
 : edit-definition                       // symbol ->
     symbol-location 2dup and
