@@ -23,11 +23,14 @@ public
         path-separator-char string-append-char
     ] unless ;
 
-// returns filename without its directory component
-: file-name-nondirectory ( filename )
+: file-name-nondirectory-win64 ( filename )
     filename length :> len
     len 1- filename [ path-separator-char? ] find-last-from // -> index/nil element/nil
     [ 1+ filename tail ] [ filename nip ] if ;
+
+// returns filename without its directory component
+: file-name-nondirectory                // string -> string
+    win64? [ file-name-nondirectory-win64 ] [ file-name-nondirectory-linux ] if ;
 
 // Returns the filename's extension, including its leading '.' (".ext"),
 // or nil if the filename has no extension.
