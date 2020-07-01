@@ -604,6 +604,30 @@ code file_name_directory_linux, 'file-name-directory-linux' ; string -> string/n
         next
 endcode
 
+; ### file-name-nondirectory-linux
+code file_name_nondirectory_linux, 'file-name-nondirectory-linux' ; string -> string/nil
+        _dup
+        _ string_length
+        cmp     rbx, tagged_zero
+        je      .exit
+        ; -> string length
+        sub     rbx, (1 << FIXNUM_TAG_BITS) ; -> string length-1
+        _lit tagged_char('/')           ; -> string length-1 '/'
+        _swap
+        _pick                           ; -> string '/' length-1 string
+        _ string_last_index_from        ; -> string index/nil
+        cmp     rbx, NIL
+        je      .exit
+        ; -> string index
+        add     rbx, (1 << FIXNUM_TAG_BITS) ; -> string index+1
+        _swap                           ; -> index string
+        _ string_tail
+        next
+.exit:
+        _drop
+        next
+endcode
+
 ; ### get-current-directory
 code get_current_directory, 'get-current-directory' ; -> string/nil
         mov     arg0_register, 1024
