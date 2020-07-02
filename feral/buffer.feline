@@ -114,8 +114,8 @@ in: editor
         ] when*
     ] when
 
-    maybe-reframe
-    t repaint?! ;
+    reframe
+    true repaint?! ;
 
 : next-buffer
     buffer-list length 1 > [
@@ -123,7 +123,7 @@ in: editor
             // -> index
             1+ dup buffer-list length < [ drop 0 ] unless
             buffer-list vector-nth current-buffer!
-            t repaint?!
+            true repaint?!
         ] when
     ] when ;
 
@@ -133,7 +133,7 @@ in: editor
             // -> index
             1- dup 0< [ drop buffer-list length 1- ] when
             buffer-list vector-nth current-buffer!
-            t repaint?!
+            true repaint?!
         ] when
     ] when ;
 
@@ -150,7 +150,7 @@ in: editor
 
     modified? [
         "Abandon changes? (yes or no) " minibuffer-accept-string
-        "yes" = [ t confirmed?! ] when
+        "yes" = [ true confirmed?! ] when
     ] when
 
     confirmed?
