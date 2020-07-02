@@ -226,24 +226,24 @@ code initialize_load_path, 'initialize_load_path', SYMBOL_INTERNAL
 endcode
 
 ; ### find-file-in-load-path
-code find_file_in_load_path, 'find-file-in-load-path' ; string -> path/nil
+code find_file_in_load_path, 'find-file-in-load-path' ; name  -> path/nil
 
         _ load_path
         _quotation .1
-        _ over
-        _ path_append
-        _ file?
+        ; -> name load-path-element
+        _ over                          ; -> name load-path-element name
+        _ path_append                   ; -> name path
+        _ file?                         ; -> name path/nil
         _end_quotation .1
-        _ map_find                      ; -> string boolean directory
+        _ map_find                      ; -> name path/nil load-path-element/nil
 
-        _swap
         _tagged_if .2
-        _swap
-        _ path_append
+        ; -> name path
+        _nip
         _ canonical_path
         _else .2
-        _2drop
-        _nil
+        ; -> name nil
+        _nip
         _then .2
 
         next
