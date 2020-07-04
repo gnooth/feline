@@ -23,6 +23,7 @@ in: editor
     ] unless ;
 
 : find-file-to-edit-internal ( arg )    // arg -> path/nil
+    arg nil? [ nil ] ?return
     arg file-name-absolute? [ arg canonical-path ] ?return
     arg canonical-path [ file? ] [ nil ] if* ;
 
@@ -34,7 +35,7 @@ in: editor
     drop // -> result
     [ canonical-path ] [ nil ] if* ;
 
-: find-file-to-edit ( arg )
+: find-file-to-edit ( arg )             // arg -> path/nil
     arg find-file-to-edit-internal !> file
 
     file [
@@ -67,8 +68,8 @@ in: editor
     ] when
 
     buf set-current-buffer
-
-    true repaint?! ;
+    true repaint?!
+    "New file" message ;
 
 : open-file-get-completions             // string -> completion
     1 ?enough verify-string :> prefix
@@ -107,7 +108,11 @@ in: editor
     {
         {
             [ filename nil? ]
-            [ arg canonical-path [ create-buffer-for-new-file ] when* ]
+            [
+                default-directory arg path-append canonical-path [
+                    create-buffer-for-new-file
+                ] when*
+            ]
         }
         {
             [ filename find-buffer-from-file-name dup buf! ]
