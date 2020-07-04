@@ -409,7 +409,7 @@ in: editor
     16 make-vector buffer-list!
     keymaps:initialize-keymaps ;
 
-: edit-file/2                           // line-number string -> void
+: edit-file/2                           // line-number name  -> void
     tilde-expand-filename :> name
     !> line-number
 
@@ -421,7 +421,7 @@ in: editor
         edit1
     ] ?return
 
-    name find-file-to-edit canonical-path :> filename
+    name find-file-to-edit :> filename
 
     line-number [
         filename [
