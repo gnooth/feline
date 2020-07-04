@@ -135,22 +135,24 @@ global last-identifier
 
     identifier start format make-segment/3 ;
 
-: format-iter ( iter )
-    100 <vector> :> v
+: rust-mode-format-line ( line )        // line -> vector-of-segments
+    line text>> detab :> text
+    text make-string-iterator :> iter
+    100 make-vector :> v
     0 !> start
 
-    local ch
+    local char
     local end
 
     nil last-identifier!
 
     [
-        iter string-iterator-next ch!
-        ch
+        iter string-iterator-next char!
+        char
     ] [
         {
             {
-                [ ch '"' eq? ]
+                [ char '"' eq? ]
                 [
                     iter string-iterator-index end!
                     start end iter string-iterator-string substring
@@ -161,7 +163,7 @@ global last-identifier
             }
 
             {
-                [ ch '/' eq? ]
+                [ char '/' eq? ]
                 [
                     iter string-iterator-peek '/' eq? [
                         iter string-iterator-index start > [
@@ -177,7 +179,7 @@ global last-identifier
             }
 
             {
-                [ ch identifier-char? ]
+                [ char identifier-char? ]
                 [
                     iter string-iterator-index end!
                     start end iter string-iterator-string substring
@@ -201,9 +203,6 @@ global last-identifier
 
     v ;
 
-: rust-mode-format-line ( line )        // line -> vector-of-segments
-    line text>> detab make-string-iterator format-iter ;
-
 : line-is-definition? ( line )
     "fn " line text>> string-has-prefix? [ true ] ?return
 
@@ -217,25 +216,25 @@ global last-identifier
 
     offset ;
 
-: rust-mode-list-symbols
-    ' rust-mode:line-is-definition? list-symbols:list-symbols ;
+: list-symbols
+    ' line-is-definition? list-symbols:list-symbols ;
 
-global rust-mode-local-map
+global local-map
 
 feral-config:winui? feral-config:gtkui? or #if
 
 : initialize-local-map
     128 <hashtable> :> m
-    ' rust-mode-list-symbols feral-key:ctrl-shift-o m set-at
-    m rust-mode-local-map! ;
+    ' list-symbols feral-key:ctrl-shift-o m set-at
+    m local-map! ;
 
 initialize-local-map
 
 #endif
 
-: rust-mode-initialize-buffer           // buffer -> void
+: initialize-buffer                     // buffer -> void
     1 ?enough :> buf
-    rust-mode-local-map buf local-map<<
+    local-map buf local-map<<
     get-instance :> m
     m indent-size>> buf indent-size<< ;
 
@@ -244,8 +243,12 @@ initialize-local-map
     "Rust" m name<<
     4 m indent-size<<
     "// " m comment-start<<
-    ' rust-mode-initialize-buffer m initialize-buffer-function<<
+    ' initialize-buffer m initialize-buffer-function<<
     ' rust-mode-format-line m format-line-function<<
+
+    // REVIEW c-mode
+    ' c-mode:scan-buffer m scan-buffer-function<<
+
     m ".rs" modes set-at
     m instance! ;
 
