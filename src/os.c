@@ -566,9 +566,9 @@ cell os_chdir (const char *path)
 #endif
 }
 
-char *os_realpath (const char *path)
-{
 #ifdef WIN64
+char *os_get_full_path_name (const char *path)
+{
   char *buf = malloc (MAX_PATH);
   DWORD ret = GetFullPathName (path, MAX_PATH, buf, NULL);
   if (ret > 0 && ret <= MAX_PATH)
@@ -578,10 +578,8 @@ char *os_realpath (const char *path)
       free (buf);
       return NULL;
     }
-#else
-  return realpath (path, NULL);
-#endif
 }
+#endif
 
 char *os_strerror (int errnum)
 {

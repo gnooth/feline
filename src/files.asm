@@ -544,35 +544,6 @@ code tilde_expand_filename, 'tilde-expand-filename' ; string1 -> string2
         next
 endcode
 
-; ### canonical-path
-code canonical_path, 'canonical-path'   ; string1 -> string2/nil
-
-        _ tilde_expand_filename
-
-        _ string_raw_data_address       ; -> zaddr1
-
-        mov     arg0_register, rbx
-        xcall   os_realpath
-
-        test    rax, rax
-        jz      .1
-
-        mov     rbx, rax                ; -> zaddr2
-        _dup
-        _ zcount
-        _ copy_to_string                ; -> zaddr2 string2
-        mov     arg0_register, [rbp]
-        xcall   os_free
-        _nip
-        next
-
-.1:
-        ; error
-        ; on Linux, realpath returns NULL if the named file does not exist
-        mov     rbx, NIL
-        next
-endcode
-
 ; ### file-name-directory-linux
 code file_name_directory_linux, 'file-name-directory-linux' ; string -> string/nil
         _dup
@@ -625,6 +596,96 @@ code file_name_nondirectory_linux, 'file-name-nondirectory-linux' ; string -> st
         next
 .exit:
         _drop
+        next
+endcode
+
+%ifndef WIN64
+; ### realpath
+code feline_realpath, 'realpath' ; string1 -> string2/nil
+        _ verify_string
+        _ tilde_expand_filename
+        _ string_raw_data_address       ; -> zaddr1
+        mov     arg0_register, rbx
+        mov     arg1_register, 0
+        xcall   realpath
+        test    rax, rax
+        jz      .error
+        mov     rbx, rax                ; -> zaddr2
+        _dup
+        _ zcount
+        _ copy_to_string                ; -> zaddr2 string2
+        mov     arg0_register, [rbp]
+        xcall   free
+        _nip
+        next
+.error:
+        ; error
+        ; realpath returns NULL if the named file does not exist
+        mov     rbx, NIL
+        next
+endcode
+
+; ### canonical-path-linux
+code canonical_path_linux, 'canonical-path-linux' ; path -> path/nil
+        _dup
+        _ feline_realpath
+        cmp     rbx, NIL
+        jne     .exit
+
+        ; -> path nil
+        mov     rbx, [rbp]              ; -> path path
+        _ file_name_directory_linux     ; -> path dir/nil
+        cmp     rbx, NIL
+        je      .exit
+
+        ; -> path dir
+        _ feline_realpath               ; -> path dir/nil
+        cmp     rbx, NIL
+        je      .exit
+
+        ; -> path dir
+        _swap
+        _ file_name_nondirectory_linux
+        _ path_append
+        next
+
+.exit:
+        _nip
+        next
+endcode
+%endif
+
+%ifdef WIN64
+; ### canonical-path-win64
+code canonical_path_win64, 'canonical-path-win64' ; string1 -> string2/nil
+        _ tilde_expand_filename
+        _ string_raw_data_address       ; -> zaddr1
+        mov     arg0_register, rbx
+        xcall   os_get_full_path_name
+        test    rax, rax
+        jz      .error
+        mov     rbx, rax                ; -> zaddr2
+        _dup
+        _ zcount
+        _ copy_to_string                ; -> zaddr2 string2
+        mov     arg0_register, [rbp]
+        xcall   free
+        _nip
+        next
+.error:
+        mov     rbx, NIL
+        next
+endcode
+%endif
+
+; ### canonical-path
+code canonical_path, 'canonical-path'   ; path -> path/nil
+        _ verify_string
+%ifdef WIN64
+        _ canonical_path_win64
+%else
+        _ canonical_path_linux
+%endif
         next
 endcode
 

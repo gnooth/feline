@@ -17,6 +17,10 @@ extern malloc
 extern realloc
 extern free
 
+%ifndef WIN64
+extern realpath
+%endif
+
 %ifdef WIN64
 extern CreateMutexA
 %endif
@@ -30,6 +34,7 @@ extern os_current_thread
 
 %ifdef WIN64
 extern os_current_thread_raw_thread_handle
+extern os_get_full_path_name
 %endif
 
 extern os_current_thread_raw_thread_id
@@ -63,7 +68,6 @@ extern os_open_file
 extern os_read_char
 extern os_read_file
 extern os_realloc
-extern os_realpath
 extern os_rename_file
 extern os_reposition_file
 extern os_resize_file
