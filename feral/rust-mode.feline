@@ -138,6 +138,7 @@ global last-identifier
 : rust-mode-format-line ( line )        // line -> vector-of-segments
     line text>> detab :> text
     text make-string-iterator :> iter
+    line state>> !> state
     100 make-vector :> v
     0 !> start
 
@@ -150,55 +151,67 @@ global last-identifier
         iter string-iterator-next char!
         char
     ] [
-        {
-            {
-                [ char '"' eq? ]
-                [
-                    iter string-iterator-index end!
-                    start end iter string-iterator-string substring
-                    start color-text make-segment/3 v push
-                    iter parse-quoted-string v push
-                    iter string-iterator-index start!
-                ]
-            }
-
-            {
-                [ char '/' eq? ]
-                [
-                    iter string-iterator-peek '/' eq? [
-                        iter string-iterator-index start > [
+        state {
+            :neutral => [
+                char {
+                    '"' =>  [
+                        iter string-iterator-index end!
+                        start end iter string-iterator-string substring
+                        start color-text make-segment/3 v push
+                        iter parse-quoted-string v push
+                        iter string-iterator-index start!
+                    ]
+                    '/' => [
+                        iter string-iterator-peek '/' eq? [
+                            iter string-iterator-index start > [
+                                iter string-iterator-index end!
+                                start end iter string-iterator-string substring
+                                start color-text make-segment/3 v push
+                            ] when
+                            iter parse-line-comment v push
+                            iter string-iterator-skip-to-end
+                            iter string-iterator-index start!
+                        ] [
+                            iter string-iterator-peek '*' eq? [
+                                iter string-iterator-index start > [
+                                    iter string-iterator-index end!
+                                    start end iter string-iterator-string substring
+                                    start color-text make-segment/3 v push
+                                ] when
+                                :block-comment state!
+                            ] when
+                        ] if
+                    ]
+                    _ => [
+                        char identifier-char?
+                        [
                             iter string-iterator-index end!
                             start end iter string-iterator-string substring
                             start color-text make-segment/3 v push
+                            iter parse-identifier v push
+                            iter string-iterator-index start!
                         ] when
-                        iter parse-line-comment v push
-                        iter string-iterator-skip-to-end
-                        iter string-iterator-index start!
-                    ] when
-                ]
-            }
-
-            {
-                [ char identifier-char? ]
-                [
-                    iter string-iterator-index end!
-                    start end iter string-iterator-string substring
-                    start color-text make-segment/3 v push
-                    iter parse-identifier v push
-                    iter string-iterator-index start!
-                ]
-            }
-
-            [
-                // default
+                    ]
+                } match
             ]
-        } cond
+            :block-comment => [
+                char iter c-mode:scan-block-comment state!
+                state :neutral eq? [
+                    start iter string-iterator-index text substring
+                    start color-comment make-segment/3 v push
+                    iter string-iterator-index start!
+                ] when
+            ]
+            _ => [ ]
+        } match
     ] while
 
-    iter string-iterator-string string-length end!
+    iter string-iterator-string length end!
     start end < [
         start end iter string-iterator-string substring
-        start color-text make-segment/3 v push
+        start
+        state { :block-comment :line-comment } member-eq? [ color-comment ] [ color-text ] if
+        make-segment/3 v push
     ] when
 
     v ;
