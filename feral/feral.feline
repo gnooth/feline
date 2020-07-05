@@ -30,7 +30,7 @@ feline-home "feral" path-append "feral-main.feline" path-append load
 in: feral
 
 : go
-    load-feral-init-file
+    feral-core:load-feral-init-file
 
     "editor" use-vocab
 
