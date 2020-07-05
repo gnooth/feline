@@ -29,10 +29,6 @@ feline-home "feral" path-append "feral-main.feline" path-append load
 
 in: feral
 
-: load-feral-init-file
-    directories:feral-directory "init.feline" path-append
-    file? [ load ] when* ;
-
 : go
     load-feral-init-file
 

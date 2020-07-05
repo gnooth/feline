@@ -16,6 +16,10 @@
 using: feline accessors feral-config ;
 in: feral-core
 
+: load-feral-init-file
+    directories:feral-directory "init.feline" path-append
+    file? [ load ] when* ;
+
 // REVIEW name
 : dprintf                               // ... format-string -> void
     ?nl format print ;
