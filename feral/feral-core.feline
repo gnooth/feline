@@ -74,7 +74,8 @@ method: line substring                  // from to line -> substring
 generic indentation-length
 
 method: string indentation-length       // string -> index
-    [ whitespace? not ] find [ drop 0 ] unless ;
+    :> s
+    s [ whitespace? not ] find [ drop s length ] unless ;
 
 method: line indentation-length         // line -> index
     text>> indentation-length ;
