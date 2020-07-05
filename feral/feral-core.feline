@@ -16,9 +16,17 @@
 using: feline accessors feral-config ;
 in: feral-core
 
+private
+
+global loaded?
+
+public
+
 : load-feral-init-file
+    loaded? ?exit
     directories:feral-directory "init.feline" path-append
-    file? [ load ] when* ;
+    file? [ load ] when*
+    true loaded?! ;
 
 // REVIEW name
 : dprintf                               // ... format-string -> void
