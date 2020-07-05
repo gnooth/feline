@@ -67,6 +67,7 @@ in: editor
         buf mode>> initialize-buffer-function>> [ buf swap call ] when*
     ] when
 
+    buf in-buffer-list? [ buf buffer-list vector-push ] unless
     buf set-current-buffer
     true repaint?!
     "New file" message ;
