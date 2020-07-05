@@ -406,6 +406,7 @@ using: editor feral-core feline ;
 in: editor
 
 : initialize-editor
+    load-feral-init-file
     16 make-vector buffer-list!
     keymaps:initialize-keymaps ;
 
