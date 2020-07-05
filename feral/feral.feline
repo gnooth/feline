@@ -29,12 +29,12 @@ feline-home "feral" path-append "feral-main.feline" path-append load
 
 in: feral
 
-: process-feral-init-file
+: load-feral-init-file
     directories:feral-directory "init.feline" path-append
     file? [ load ] when* ;
 
 : go
-    process-feral-init-file
+    load-feral-init-file
 
     "editor" use-vocab
 
