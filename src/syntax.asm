@@ -632,6 +632,7 @@ code method_colon, 'method:', SYMBOL_IMMEDIATE
         _ vector_to_array
         _ array_to_quotation            ; -> typecode gf quotation
         _ compile_quotation             ; -> typecode gf quotation
+        _ forget_locals
         _ new_method
         _ install_method
 
