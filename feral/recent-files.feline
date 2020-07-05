@@ -18,6 +18,8 @@ in: recent-files
 
 private
 
+global exclusions
+
 global entries
 
 40 constant directory-column
@@ -33,7 +35,7 @@ tuple: entry
 
 : string-from-entry                     // entry -> string
     :> entry
-    256 <sbuf> :> sb
+    256 make-sbuf :> sb
     entry filename>> sb sbuf-append-string
     '\t' sb sbuf-push
     entry linenumber>> fixnum>decimal sb sbuf-append-string
@@ -111,6 +113,8 @@ feral-config:winui? feral-config:gtkui? or #if
     // REVIEW don't save directories
     filename directory? ?exit
 
+    [ exclusions ] [ filename exclusions member? ] both? ?exit
+
     entries [ load-entries ] unless
 
     entries [ filename>> filename = ] find // -> index/nil element/nil
@@ -126,6 +130,10 @@ feral-config:winui? feral-config:gtkui? or #if
 ' add-recent-file is feral-core:add-recent-file
 
 public
+
+: exclude ( name )
+    exclusions [ 16 make-vector exclusions! ] unless
+    name verify-string exclusions vector-adjoin ;
 
 : line-number-from-file-name ( filename )  // string -> fixnum/nil
     entries [ load-entries ] unless
