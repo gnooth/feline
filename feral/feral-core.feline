@@ -16,6 +16,10 @@
 using: feline accessors feral-config ;
 in: feral-core
 
+// REVIEW name
+: dprintf                               // ... format-string -> void
+    ?nl format print ;
+
 defer message
 defer clear-message
 
