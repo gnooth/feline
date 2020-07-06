@@ -435,8 +435,12 @@ in: editor
     filename [
         line-number create-buffer/2
     ] [
-        filename create-buffer-for-new-file
-        "New file" message
+        current-buffer-directory get-current-directory or [
+            file-name-as-directory name path-append canonical-path [
+                create-buffer-for-new-file
+                "New file" message
+            ] when*
+        ] when*
     ] if*
 
     edit1 ;
@@ -444,7 +448,7 @@ in: editor
 : edit-file                             // string -> void
     nil swap edit-file/2 ;
 
-: edit-definition                       // symbol ->
+: edit-definition                       // symbol -> void
     symbol-location 2dup and
     [
         initialize-editor
