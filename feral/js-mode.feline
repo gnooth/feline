@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,6 +18,42 @@ in: js-mode
 
 private
 
+{
+    "break"
+    "catch"
+    "case"
+    "class"
+    "const"
+    "continue"
+    "debugger"
+    "default"
+    "delete"
+    "do"
+    "else"
+    "export"
+    "extends"
+    "finally"
+    "for"
+    "function"
+    "if"
+    "import"
+    "in"
+    "instanceof"
+    "new"
+    "return"
+    "super"
+    "switch"
+    "this"
+    "throw"
+    "try"
+    "typeof"
+    "var"
+    "void"
+    "while"
+    "with"
+    "yield"
+} constant syntax-words                 // ECMAScript 6 (2015)
+
 global instance
 
 : get-instance                          // void -> mode
@@ -27,17 +63,143 @@ global instance
 // REVIEW first char must be letter, '_' or '$'
     [ x alphanumeric? ] [ x '_' eq? x '$' eq? or ] either? ;
 
-: js-mode-format-line ( s )             // string -> array-of-segments
-    "//" s substring-start :> comment-start
-
-    comment-start [
-        comment-start s string-head 0 color-text make-segment/3
-        comment-start s string-tail comment-start color-comment make-segment/3
-        2array
+: parse-quoted-string ( iter )          // string-iterator -> segment
+    iter string-iterator-index :> start
+    local ch
+    [
+        iter string-iterator-next ch!
+        ch dup '"' neq? and
+    ] loop
+    // reached end
+    ch [
+        ch '"' assert-eq
+        1 iter string-iterator-skip
+        iter string-iterator-index
     ] [
-        s 0 color-text make-segment/3
-        1array
+        iter string-iterator-string string-length
+    ] if :> end
+
+    start end iter string-iterator-string substring
+    start color-string make-segment/3 ;
+
+: parse-line-comment ( iter )           // string-iterator -> segment
+    iter string-iterator-index !> start
+    start 0? [
+        iter string-iterator-string 0 color-comment make-segment/3
+    ] [
+        start
+        iter string-iterator-string string-length
+        iter string-iterator-string substring
+        start color-comment make-segment/3
     ] if ;
+
+global last-identifier
+
+: parse-identifier ( iter )             // string-iterator -> segment
+    iter string-iterator-index :> start
+
+    local ch
+    [
+        iter string-iterator-next ch!
+        [ ch char? ] [ ch identifier-char? ] both?
+    ] loop
+    // reached end of identifier
+    iter string-iterator-index :> end
+    start end iter string-iterator-string substring :> identifier
+
+    {
+        { [ last-identifier "function" = ] [ color-name ] }
+        { [ identifier syntax-words member? ] [ color-syntax ] }
+        [
+            // default
+            color-text
+        ]
+    } cond :> format
+
+    identifier last-identifier!
+
+    identifier start format make-segment/3 ;
+
+: js-mode-format-line ( line )        // line -> vector-of-segments
+    line text>> detab :> text
+    text make-string-iterator :> iter
+    line state>> !> state
+    100 make-vector :> v
+    0 !> start
+
+    local char
+    local end
+
+    nil last-identifier!
+
+    [
+        iter string-iterator-next char!
+        char
+    ] [
+        state {
+            :neutral => [
+                char {
+                    '"' =>  [
+                        iter string-iterator-index end!
+                        start end iter string-iterator-string substring
+                        start color-text make-segment/3 v push
+                        iter parse-quoted-string v push
+                        iter string-iterator-index start!
+                    ]
+                    '/' => [
+                        iter string-iterator-peek '/' eq? [
+                            iter string-iterator-index start > [
+                                iter string-iterator-index end!
+                                start end iter string-iterator-string substring
+                                start color-text make-segment/3 v push
+                            ] when
+                            iter parse-line-comment v push
+                            iter string-iterator-skip-to-end
+                            iter string-iterator-index start!
+                        ] [
+                            iter string-iterator-peek '*' eq? [
+                                iter string-iterator-index start > [
+                                    iter string-iterator-index end!
+                                    start end iter string-iterator-string substring
+                                    start color-text make-segment/3 v push
+                                ] when
+                                :block-comment state!
+                            ] when
+                        ] if
+                    ]
+                    _ => [
+                        char identifier-char?
+                        [
+                            iter string-iterator-index end!
+                            start end iter string-iterator-string substring
+                            start color-text make-segment/3 v push
+                            iter parse-identifier v push
+                            iter string-iterator-index start!
+                        ] when
+                    ]
+                } match
+            ]
+            :block-comment => [
+                char iter c-mode:scan-block-comment state!
+                state :neutral eq? [
+                    start iter string-iterator-index text substring
+                    start color-comment make-segment/3 v push
+                    iter string-iterator-index start!
+                ] when
+            ]
+            _ => [ ]
+        } match
+    ] while
+
+    iter string-iterator-string length end!
+    start end < [
+        start end iter string-iterator-string substring
+        start
+        state { :block-comment :line-comment } member-eq? [ color-comment ] [ color-text ] if
+        make-segment/3 v push
+    ] when
+
+    v ;
 
 : line-is-definition? ( line )
     line text>> string-trim-head :> s
@@ -73,9 +235,13 @@ initialize-local-map
     "JavaScript" m name<<
     8 m indent-size<<
     "// " m comment-start<<
-    ' js-mode-format-line m formatter<<
+    ' js-mode-format-line m  format-line-function<<
     ' js-mode-initialize-buffer m initialize-buffer-function<<
     ' js-mode-identifier-char? m identifier-char-function<<
+
+    // REVIEW c-mode
+    ' c-mode:scan-buffer m scan-buffer-function<<
+
     m ".js" modes set-at
     m instance! ;
 
