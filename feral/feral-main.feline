@@ -416,9 +416,9 @@ in: editor
 
     initialize-editor
 
-    name directory? [
+    name dir? [
         name directory-mode:open-directory
-        line-number gotoline-internal
+        line-number [ gotoline-internal ] when*
         edit1
     ] ?return
 
