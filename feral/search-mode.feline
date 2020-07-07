@@ -71,7 +71,7 @@ global instance
     :source-offset dot-line line-get-property :> offset
 
     editor:switch-to-parent-buffer
-    linenumber editor:gotoline-internal
+    linenumber editor:goto-line-internal
 
     offset [
         offset dot-offset!

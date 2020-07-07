@@ -96,7 +96,7 @@ global ctrl-k-map
     ' do-window-down                    feral-key:ctrl-down         m set-at
     ' do-window-down                    feral-key:ctrl-kp-down      m set-at
 
-    ' gotoline                          feral-key:ctrl-g            m set-at
+    ' goto-line                         feral-key:ctrl-g            m set-at
     ' do-quit                           feral-key:ctrl-q            m set-at
     ' do-save                           feral-key:ctrl-s            m set-at
     ' list-buffers                      feral-key:ctrl-b            m set-at

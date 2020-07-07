@@ -57,7 +57,7 @@ global ctrl-k-map
     ' do-page-down                      key:pagedown    m set-at
     ' beginning-of-buffer               key:ctrl-home   m set-at
     ' end-of-buffer                     key:ctrl-end    m set-at
-    ' gotoline                          key:ctrl-g      m set-at
+    ' goto-line                         key:ctrl-g      m set-at
     ' do-quit                           key:ctrl-q      m set-at
     ' do-save                           key:ctrl-s      m set-at
     ' list-buffers                      key:ctrl-b      m set-at

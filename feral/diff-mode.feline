@@ -47,7 +47,7 @@ global instance
     // REVIEW parent buffer may have been killed
     editor:switch-to-parent-buffer
 
-    linenumber editor:gotoline-internal
+    linenumber editor:goto-line-internal
     true repaint?! ;
 
 global diff-mode-local-map

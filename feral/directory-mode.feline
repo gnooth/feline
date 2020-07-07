@@ -167,7 +167,7 @@ global directory-mode-local-map
     ] while
 
     linenumber [
-        linenumber 1+ editor:gotoline-internal
+        linenumber 1+ editor:goto-line-internal
     ] when ;
 
 : open-directory ( dirname ) // dirname -> void

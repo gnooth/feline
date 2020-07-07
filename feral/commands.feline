@@ -16,10 +16,10 @@
 using: feline accessors feral-core history mini ;
 in: editor
 
-: gotoline
+: goto-line
     "Line number: " minibuffer-accept-string :> s
     s empty? [
-        s string>number [ gotoline-internal ] when*
+        s string>number [ goto-line-internal ] when*
     ] unless ;
 
 : find-file-to-edit-internal ( arg )    // arg -> path/nil

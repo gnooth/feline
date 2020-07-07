@@ -53,7 +53,7 @@ global instance
     editor:switch-to-parent-buffer
 
     0 end s substring string-trim string>number :> linenumber
-    linenumber editor:gotoline-internal
+    linenumber editor:goto-line-internal
     t repaint?! ;
 
 global symbols-mode-local-map

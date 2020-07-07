@@ -23,7 +23,7 @@ in: editor
         [
             // -> buffer
             set-current-buffer
-            line-number gotoline-internal
+            line-number goto-line-internal
         ] [
             filename line-number create-buffer/2
         ] if*

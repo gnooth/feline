@@ -228,8 +228,8 @@ global extension
     sourcefile find-buffer-from-file-name // -> buffer/nil
     [
         set-current-buffer
-        linenumber editor:gotoline-internal
-        // gotoline-internal calls maybe-reframe
+        linenumber editor:goto-line-internal
+        // goto-line-internal calls maybe-reframe
     ] [
         sourcefile linenumber editor:create-buffer/2
         reframe

@@ -316,7 +316,7 @@ feral-config:termui? #if
         keycode 0xff00 bitand 8 rshift 32 - column!
         keycode 0xff0000 bitand 16 rshift 3 bitand zero? [
             // left button pressed
-            top-line-number row + gotoline-internal
+            top-line-number row + goto-line-internal
             column 1- 0 max dot-line-length min dot-offset!
             true result!
         ] when
@@ -418,7 +418,7 @@ in: editor
 
     name dir? [
         name directory-mode:open-directory
-        line-number [ gotoline-internal ] when*
+        line-number [ goto-line-internal ] when*
         edit1
     ] ?return
 
