@@ -94,22 +94,24 @@ global instance
         start color-comment make-segment/3
     ] if ;
 
-global last-identifier
+global last-token
 
 : parse-identifier ( iter )             // string-iterator -> segment
     iter string-iterator-index :> start
 
-    local ch
+    local char
+
     [
-        iter string-iterator-next ch!
-        [ ch char? ] [ ch identifier-char? ] both?
+        iter string-iterator-next char!
+        [ char char? ] [ char identifier-char? ] both?
     ] loop
+
     // reached end of identifier
     iter string-iterator-index :> end
     start end iter string-iterator-string substring :> identifier
 
     {
-        { [ last-identifier "function" = ] [ color-name ] }
+        { [ last-token "function" = ] [ color-name ] }
         { [ identifier syntax-words member? ] [ color-syntax ] }
         [
             // default
@@ -117,11 +119,16 @@ global last-identifier
         ]
     } cond :> format
 
-    identifier last-identifier!
+    identifier last-token!
+
+    // REVIEW
+    char '(' eq? [
+        identifier "function" = [ "(" last-token! ] when
+    ] when
 
     identifier start format make-segment/3 ;
 
-: js-mode-format-line ( line )        // line -> vector-of-segments
+: js-mode-format-line ( line )        // line -> segments
     line text>> detab :> text
     text make-string-iterator :> iter
     line state>> !> state
@@ -131,7 +138,7 @@ global last-identifier
     local char
     local end
 
-    nil last-identifier!
+    nil last-token!
 
     [
         iter string-iterator-next char!
@@ -175,9 +182,11 @@ global last-identifier
                             ] when
                         ] if
                     ]
+                    '(' => [
+                        "(" last-token!
+                    ]
                     _ => [
-                        char identifier-char?
-                        [
+                        char identifier-char? [
                             iter string-iterator-index end!
                             start end iter string-iterator-string substring
                             start color-text make-segment/3 v push
