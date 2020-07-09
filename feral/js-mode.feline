@@ -39,6 +39,7 @@ private
     "import"
     "in"
     "instanceof"
+    "let"
     "new"
     "return"
     "super"
@@ -63,16 +64,16 @@ global instance
 // REVIEW first char must be letter, '_' or '$'
     [ x alphanumeric? ] [ x '_' eq? x '$' eq? or ] either? ;
 
-: parse-quoted-string ( iter )          // string-iterator -> segment
+: parse-quoted-string ( quote-char iter ) // string-iterator -> segment
     iter string-iterator-index :> start
-    local ch
+    local char
     [
-        iter string-iterator-next ch!
-        ch dup '"' neq? and
+        iter string-iterator-next char!
+        char dup quote-char neq? and
     ] loop
     // reached end
-    ch [
-        ch '"' assert-eq
+    char [
+        char quote-char assert-eq
         1 iter string-iterator-skip
         iter string-iterator-index
     ] [
@@ -143,7 +144,14 @@ global last-identifier
                         iter string-iterator-index end!
                         start end iter string-iterator-string substring
                         start color-text make-segment/3 v push
-                        iter parse-quoted-string v push
+                        char iter parse-quoted-string v push
+                        iter string-iterator-index start!
+                    ]
+                    '\'' =>  [
+                        iter string-iterator-index end!
+                        start end iter string-iterator-string substring
+                        start color-text make-segment/3 v push
+                        char iter parse-quoted-string v push
                         iter string-iterator-index start!
                     ]
                     '/' => [
