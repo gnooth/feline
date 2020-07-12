@@ -66,6 +66,7 @@ in: editor
     modified ;
 
 : do-tab
+    check-read-only ?exit
     add-undo-line-edit
     indent-size dot-offset indent-size mod - insert-spaces
     update-goal-column ;
