@@ -1,4 +1,4 @@
-; Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2018-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ code make_deferred, 'make-deferred'     ; symbol -> void
         _dup
         _ symbol_set_deferred_bit       ; -> symbol
         _dup
-        _symbol error_no_definition
+        _tick error_no_definition
         _ curry                         ; -> symbol quotation
         _ compile_quotation
         _dup                            ; -> symbol quotation quotation
@@ -35,7 +35,7 @@ endcode
 
 ; ### defer
 code defer, 'defer', SYMBOL_IMMEDIATE
-        _symbol defer
+        _tick defer
         _ top_level_only
 
         _ parse_name
@@ -82,7 +82,7 @@ code is_, 'is', SYMBOL_IMMEDIATE        ; symbol1 ->
         _ new_wrapper                   ; -> vector wrapper
         _over                           ; -> vector wrapper vector
         _ vector_push                   ; -> vector
-        _symbol defer_store
+        _tick defer_store
         _swap
         _ vector_push
         _else .2
