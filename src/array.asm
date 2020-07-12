@@ -67,16 +67,17 @@ file __FILE__
 %endmacro
 
 ; ### array?
-code array?, 'array?'                   ; handle -- ?
-        _ deref                         ; -- array/0
-        test    rbx, rbx
-        jz      .1
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_ARRAY
-        jne     .1
-        mov     ebx, TRUE
+code array?, 'array?'                 ; x -> x/nil
+; If x is an array, returns x unchanged. If x is not an array, returns nil.
+        cmp     bl, HANDLE_TAG
+        jne     .not_an_array
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_ARRAY
+        jne     .not_an_array
         next
-.1:
+.not_an_array:
         mov     ebx, NIL
         next
 endcode

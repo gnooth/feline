@@ -467,7 +467,7 @@ tri@-test-1
 
 test: array-test-1
     10 42 make-array/2
-    [ array? assert-true ] keep
+    [ dup array? assert-eq ] keep
     [ length 10 assert= ] keep
     10 [ over nth 42 assert-eq ] each-integer
     drop
@@ -498,7 +498,7 @@ test: 1array-test-1
     clear
     71 1array get-datastack { { 71 } } sequence= assert-true
     clear
-    "test" 1array [ array? assert-true ] [ array-first "test" assert= ] bi
+    "test" 1array [ dup array? assert-eq ] [ array-first "test" assert= ] bi
 ;
 
 1array-test-1
@@ -507,7 +507,7 @@ test: 2array-test-1
     clear
     "test1" "test2" 2array get-datastack { { "test1" "test2" } } sequence= assert-true
     clear
-    "test1" "test2" 2array [ array? assert-true ] [ array-first "test1" assert= ] bi
+    "test1" "test2" 2array [ dup array? assert-eq ] [ array-first "test1" assert= ] bi
 ;
 
 2array-test-1
@@ -517,7 +517,7 @@ test: 3array-test-1
     1 2 3 3array get-datastack { { 1 2 3 } } sequence= assert-true
     clear
     "ready" "steady" "go!" 3array
-    [ array? assert-true ] [ array-first "ready" assert= ] bi
+    [ dup array? assert-eq ] [ array-first "ready" assert= ] bi
 ;
 
 3array-test-1
@@ -527,7 +527,7 @@ test: 4array-test-1
     1 2 3 4 4array get-datastack { { 1 2 3 4 } } sequence= assert-true
     clear
     "fee" "fie" "fo" "fum" 4array
-    [ array? assert-true ] [ array-first "fee" assert= ] bi
+    [ dup array? assert-eq ] [ array-first "fee" assert= ] bi
 ;
 
 4array-test-1
@@ -709,7 +709,7 @@ vector-?nth-test-1
 
 test: vector->array-test-1
     vector{ 1 2 3 } vector->array
-    [ array? assert-true ] keep
+    [ dup array? assert-eq ] keep
     { 1 2 3 } assert=
 ;
 
@@ -1242,7 +1242,7 @@ tuple: foo a b c ;
     foo dup verify-type assert-eq
     foo type? assert-true
     foo type-symbol dup symbol? assert ' foo assert-eq
-    foo type-layout array? assert-true
+    foo type-layout dup array? assert-eq
     foo type-layout length 3 assert-eq
     foo type-layout [ slot? assert-true ] each
     foo type-layout [ slot-index ] map { 1 2 3 } equal? assert-true
