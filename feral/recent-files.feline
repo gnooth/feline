@@ -18,8 +18,6 @@ in: recent-files
 
 private
 
-global exclusions
-
 global entries
 
 40 constant directory-column
@@ -109,11 +107,23 @@ feral-config:winui? feral-config:gtkui? or #if
 ' select feral-key:double-mouse-1 local-map set-at
 #endif
 
+global exclusions
+
+: excluded? ( filename )                // filename -> ?
+    local excluded
+    exclusions [
+        filename exclusions member? excluded!
+        excluded [
+            filename file-name-nondirectory exclusions member? excluded!
+        ] unless
+    ] when
+    excluded ;
+
 : add-recent-file ( filename linenumber ) // filename linenumber -> void
     // REVIEW don't save directories
     filename directory? ?exit
 
-    [ exclusions ] [ filename exclusions member? ] both? ?exit
+    filename excluded? ?exit
 
     entries [ load-entries ] unless
 
