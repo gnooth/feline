@@ -217,6 +217,13 @@ code handle_signal, 'handle-signal'
         _ current_thread_raw_sp0_rax
         mov     rbp, rax
 
+%ifdef WIN64
+        _ saved_exception_code
+        cmp     ebx, 0xc0000005         ; memory access exception
+        _drop
+        jne     .1
+%endif
+
         ; check for stack underflow
         cmp     [saved_rbp_data], rbp
         jl      .1
