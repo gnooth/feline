@@ -222,6 +222,11 @@ code handle_signal, 'handle-signal'
         cmp     ebx, 0xc0000005         ; memory access exception
         _drop
         jne     .1
+%else
+        _ saved_signal
+        cmp     rbx, 11                 ; SIGSEGV
+        _drop
+        jne     .1
 %endif
 
         ; check for stack underflow
