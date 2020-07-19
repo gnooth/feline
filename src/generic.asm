@@ -617,6 +617,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method length, TYPECODE_STRING, string_length_unsafe
         _add_method length, TYPECODE_SBUF, sbuf_length
         _add_method length, TYPECODE_ARRAY, array_length
+        _add_method length, TYPECODE_BIT_ARRAY, bit_array_length
         _add_method length, TYPECODE_VECTOR, vector_length_unsafe
         _add_method length, TYPECODE_SLICE, slice_length
         _add_method length, TYPECODE_RANGE, range_length
@@ -630,6 +631,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         ; nth
         _initialize_generic_function nth
         _add_method nth, TYPECODE_ARRAY, array_nth
+        _add_method nth, TYPECODE_BIT_ARRAY, bit_array_nth
         _add_method nth, TYPECODE_VECTOR, vector_nth
         _add_method nth, TYPECODE_STRING, string_nth
         _add_method nth, TYPECODE_SBUF, sbuf_nth
@@ -641,6 +643,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method nth_unsafe, TYPECODE_STRING, string_nth_unsafe
         _add_method nth_unsafe, TYPECODE_SBUF, sbuf_nth_unsafe
         _add_method nth_unsafe, TYPECODE_ARRAY, array_nth_unsafe
+        _add_method nth_unsafe, TYPECODE_BIT_ARRAY, bit_array_nth_unsafe
         _add_method nth_unsafe, TYPECODE_VECTOR, vector_nth_unsafe
         _add_method nth_unsafe, TYPECODE_SLICE, slice_nth_unsafe
         _add_method nth_unsafe, TYPECODE_RANGE, range_nth_unsafe
@@ -828,6 +831,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method object_to_string, TYPECODE_FILE_OUTPUT_STREAM, file_output_stream_to_string
         _add_method object_to_string, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_to_string
         _add_method object_to_string, TYPECODE_STRING_SLICE, quote_string_slice
+        _add_method object_to_string, TYPECODE_BIT_ARRAY, bit_array_to_string
 
         _symbol object_to_string_default
         _symbol object_to_string
