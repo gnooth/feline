@@ -1345,6 +1345,31 @@ subroutine copy_cells
         ret
 endsub
 
+; ### zero_bytes
+subroutine zero_bytes
+; arg0_register: untagged address
+; arg1_register: untagged count
+        test    arg1_register, arg1_register
+        jz      .exit
+        sub     arg1_register, 1
+        align   DEFAULT_CODE_ALIGNMENT
+.top:
+        mov     byte [arg0_register + arg1_register], 0
+        sub     arg1_register, 1
+        js      .exit
+        mov     byte [arg0_register + arg1_register], 0
+        sub     arg1_register, 1
+        js      .exit
+        mov     byte [arg0_register + arg1_register], 0
+        sub     arg1_register, 1
+        js      .exit
+        mov     byte [arg0_register + arg1_register], 0
+        sub     arg1_register, 1
+        jns     .top
+.exit:
+        _rep_return
+endsub
+
 ; ### fill_cells
 subroutine fill_cells
 ; arg0_register: untagged address
