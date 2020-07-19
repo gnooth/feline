@@ -54,6 +54,7 @@ static_data_area:
 %include "math.asm"
 %include "objects.asm"
 %include "array.asm"
+%include "bit-array.asm"
 %include "string.asm"
 %include "string-slice.asm"
 %include "sbuf.asm"

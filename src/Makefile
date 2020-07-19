@@ -138,6 +138,7 @@ ASM_SOURCES = feline.asm feline_home.asm externs.asm \
 	ansi.asm \
 	array.asm \
 	assert.asm \
+	bit-array.asm \
 	bitops.asm \
 	boolean.asm \
 	cold.asm \
