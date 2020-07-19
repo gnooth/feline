@@ -245,6 +245,7 @@ code initialize_types, 'initialize_types', SYMBOL_INTERNAL
         _add_type "string-output-stream", TYPECODE_STRING_OUTPUT_STREAM
         _add_type "fixnum-hashtable", TYPECODE_FIXNUM_HASHTABLE
         _add_type "string-slice", TYPECODE_STRING_SLICE
+        _add_type "bit-array", TYPECODE_BIT_ARRAY
 
         next
 endcode
