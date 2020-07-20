@@ -212,7 +212,15 @@ code parse_until, 'parse-until'         ; delimiter -> vector
 endcode
 
 ; ### vector{
-code parse_vector, 'vector{', SYMBOL_IMMEDIATE  ; -- handle
+code old_parse_vector, 'vector{', SYMBOL_IMMEDIATE ; -> vector
+        _quote "}"
+        _ parse_until
+        _ maybe_add
+        next
+endcode
+
+; ### V{
+code parse_vector, 'V{', SYMBOL_IMMEDIATE ; -> vector
         _quote "}"
         _ parse_until
         _ maybe_add

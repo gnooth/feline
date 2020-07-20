@@ -1054,11 +1054,11 @@ code vector_each_index, 'vector-each-index' ; vector quotation-or-xt --
         next
 endcode
 
-; ### vector>string
-code vector_to_string, 'vector>string'  ; vector -- string
-        _quote "vector{ "
-        _ string_to_sbuf        ; -- vector sbuf
-        _swap                   ; -- sbuf vector
+; ### vector->string
+code vector_to_string, 'vector->string' ; vector -> string
+        _quote "V{ "
+        _ string_to_sbuf        ; -> vector sbuf
+        _swap                   ; -> sbuf vector
         _quotation .1
         _ object_to_string
         _over
