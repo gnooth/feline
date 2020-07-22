@@ -125,6 +125,34 @@ code make_string_iterator, 'make-string-iterator'       ; string -> iterator
         next
 endcode
 
+; ### string-iterator-nth
+code string_iterator_nth, 'string-iterator-nth' ; n iterator -> char/nil
+        _ check_string_iterator
+        push    rbx
+        _drop
+        _check_index
+        mov     rax, rbx
+        pop     rbx
+        cmp     rax, [rbx + STRING_ITERATOR_RAW_LENGTH_OFFSET]
+        jge     .error
+        mov     rdx, [rbx + STRING_ITERATOR_RAW_DATA_ADDRESS_OFFSET]
+        movzx   ebx, byte [rdx + rax]
+        _tag_char
+        next
+.error:
+        ; rbx: ^string-iterator
+        ; rax: raw index
+        mov     rbx, [rbx + STRING_ITERATOR_RAW_LENGTH_OFFSET]
+        _tag_fixnum
+        _dup
+        mov     rbx, rax
+        _tag_fixnum
+        _quote "ERROR: the index %s is out of bounds for a string of length %s."
+        _ format
+        _ error
+        next
+endcode
+
 ; ### string-iterator-next
 code string_iterator_next, 'string-iterator-next'       ; iterator -> char/nil
         _ check_string_iterator
@@ -207,8 +235,8 @@ code string_iterator_skip_to_end, 'string-iterator-skip-to-end' ; string-iterato
         next
 endcode
 
-; ### string-iterator>string
-code string_iterator_to_string, 'string-iterator>string'        ; string-iterator -> string
+; ### string-iterator->string
+code string_iterator_to_string, 'string-iterator->string' ; string-iterator -> string
 
         _ verify_string_iterator
 

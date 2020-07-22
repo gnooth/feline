@@ -637,6 +637,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method nth, TYPECODE_SBUF, sbuf_nth
         _add_method nth, TYPECODE_SLICE, slice_nth
         _add_method nth, TYPECODE_QUOTATION, quotation_nth
+        _add_method nth, TYPECODE_STRING_ITERATOR, string_iterator_nth
 
         ; nth-unsafe
         _initialize_generic_function nth_unsafe
