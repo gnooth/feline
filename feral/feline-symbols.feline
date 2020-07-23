@@ -132,6 +132,7 @@ global in-vocab
     "ansi.asm"
     "array.asm"
     "assert.asm"
+    "bit-array.asm"
     "bitops.asm"
     "boolean.asm"
     "cold.asm"
