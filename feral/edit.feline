@@ -561,19 +561,17 @@ use: kill-ring
 : delete-line-internal
     dot-line-prev :> prev
     dot-line-next :> next
-
     {
         {
-            [ prev next and ]
-            [
+            [ prev next and ] [
                 dot-line
+                dup top-line eq? [ next top-line! ] when
                 next dot-line! 0 dot-offset!
                 unlink
             ]
         }
         {
-            [ prev null? ]
-            [
+            [ prev nil? ] [
                 // deleting first line
                 dot-line
                 next dot-line! 0 dot-offset!
@@ -582,8 +580,7 @@ use: kill-ring
             ]
         }
         {
-            [ next null? ]
-            [
+            [ next nil? ] [
                 // deleting last line
                 dot-line
                 prev dot-line! prev length dot-offset!
