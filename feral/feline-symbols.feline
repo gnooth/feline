@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline ;
+using: feral-core accessors feline ;
 in: feline-symbols
 
 private
@@ -75,14 +75,15 @@ global feline-symbols
 
 global in-vocab
 
-: add-entry ( name location )
-    location name feline-symbols set-at
+: add-entry ( name location symbols )
+    location name symbols set-at
     in-vocab [
-        ":" + name + location swap feline-symbols set-at
+        ":" + name + location swap symbols set-at
     ] when* ;
 
-: feline-process-line // string fixnum -> void
-    2 ?enough
+: feline-process-line // string fixnum symbols -> void
+    3 ?enough
+    :> symbols
     :> lineno
     :> s
 
@@ -111,15 +112,15 @@ global in-vocab
         begin end s substring name!
 
         sourcefile lineno 1+ 2array location!
-        name location add-entry
+        name location symbols add-entry
         token { "global" "var" } member? [
-            name '!' string-append-char location add-entry
+            name '!' string-append-char location symbols add-entry
         ] when
     ] when ;
 
 : process-feline-file
     nil in-vocab!
-    sourcefile file-lines [ feline-process-line ] each-index
+    sourcefile file-lines [ feline-symbols feline-process-line ] each-index
     nil in-vocab! ;
 
 {
@@ -324,8 +325,31 @@ global in-vocab
         sourcefile file? [ process-feline-file ] when
     ] each ;
 
+: scan-current-buffer
+    256 <hashtable> :> symbols
+    current-buffer filename>> sourcefile!
+    first-line !> line
+    nil in-vocab!
+    [ line ] [
+        line text>> line number>> symbols feline-process-line
+        line next>> line!
+    ] while
+    symbols ;
+
 public
 
-: find-definition // string -> 2array/nil
+: find-definition ( name )              // string -> 2array/nil
+    name string? assert
+
+    local location
+
+    current-buffer filename>> [
+        file-name-extension ".feline" = [
+            name scan-current-buffer at location!
+        ] when
+    ] when*
+
+    location [ location ] ?return
+
     feline-symbols [ scan ] unless
-    feline-symbols at ;
+    name feline-symbols at ;
