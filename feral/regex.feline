@@ -1,0 +1,258 @@
+// Copyright (C) 2020 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: feline ;
+in: regex
+
+empty
+
+private
+
+// FIXME copied from feral-core.feline
+: dprintf                               // ... format-string -> void
+    ?nl format print ;
+
+// FIXME copied from feral-core.feline
+: alphanumeric?                         // char -> ?
+    verify-char char-code :> c
+    [ 'A' char-code c <= ] [ c 'Z' char-code <= ] both? [ true ] ?return
+    [ 'a' char-code c <= ] [ c 'z' char-code <= ] both? [ true ] ?return
+    [ '0' char-code c <= ] [ c '9' char-code <= ] both? [ true ] ?return
+    nil ;
+
+public
+
+// Parsing
+var regex
+
+: parse-character-class                 // string-iterator -> void
+    1 ?enough :> iter
+
+    32 make-sbuf :> buf
+
+    local negate?
+    local done?
+    local char
+    local char1
+    local char2
+
+    iter string-iterator-peek '^' eq? [
+        true negate?!
+        1 iter string-iterator-skip
+    ] when
+
+    [
+        iter string-iterator-peek
+        done? not and
+    ] [
+        iter string-iterator-next char!
+        char {
+            ']' => [ true done?! ]
+            '-' => [
+                [ iter string-iterator-index 1- iter nth dup char1! alphanumeric? ]
+                [ iter string-iterator-peek dup char2! alphanumeric? ]
+                both? [
+                    // at this point char1 has already been added to buf
+                    char1 char!
+                    [
+                        char char-code 1+ code-char char!
+                        char dup char2 neq? and
+                    ] [
+                        char buf push
+                    ] while
+                ] [
+                    char buf push
+                ] if
+            ]
+            _ => [
+                char buf push
+            ]
+        } match
+    ] while
+
+    negate? :nccl :ccl ?
+    buf sbuf->string
+    2array regex push ;
+
+: parse-regex                           // string -> void
+    1 ?enough make-string-iterator :> iter
+    16 make-vector regex!
+    local char
+
+    [ iter string-iterator-next dup char! ]
+    [
+        char {
+            '.' => [
+                :any regex push
+            ]
+            '^' => [
+                iter string-iterator-index 0? [ :bol regex push ] when
+            ]
+            '$' => [
+                iter string-iterator-peek nil? [ :eol regex push ] when
+            ]
+            '?' => [
+                iter string-iterator-index 0> [
+                    :question regex last 2array
+                    regex length 1- regex set-nth
+                ] when
+            ]
+            '*' => [
+                iter string-iterator-index 0> [
+                    :star regex last 2array
+                    regex length 1- regex set-nth
+                ] when
+            ]
+            '[' => [
+                iter parse-character-class
+            ]
+            _ => [
+                char regex push
+            ]
+        } match
+    ] while ;
+
+var text
+
+: op-first ( op )                       // op -> sub/nil
+    op array? [ first ] [ nil ] if* ;
+
+: op-literal ( op )                     // op -? char/nil
+    op char? ;
+
+defer match-here
+
+: match-star                            // char text-index regex-index -> ?
+    !> regex-index !> text-index :> op
+
+    regex-index text-index match-here [ true ] ?return
+
+    local result
+
+    [
+        [ text-index text length < ]
+        [ [ op :any eq? ] [ op op-literal text-index text nth eq? ] either? ]
+        both?
+    ] [
+        text-index 1+ text-index!
+        regex-index text-index match-here [
+            text length text-index!     // force termination
+            true result!
+        ] when
+    ] while
+
+    result ;
+
+: %match-here ( text-index regex-index ) // text-index regex-index -> index/nil
+    regex length :> len
+    regex-index len eq? [ text-index ] ?return
+    regex-index regex nth :> op
+
+    op op-first :question eq? [
+        // FIXME
+    ] ?return
+
+    op op-first :star eq? [
+        op second
+        text-index regex-index 1+ match-star
+    ] ?return
+
+    op :eol eq? regex-index 1+ len eq? and
+    [
+        text-index text length eq? [ text-index ] [ nil ] if
+    ] ?return
+
+    text-index text length eq? [ nil ] ?return
+
+    op :any eq?
+    op op-literal text-index text nth eq?
+    or
+    [ text-index 1+ regex-index 1+ match-here ] ?return
+
+    [ op op-first :ccl eq? ]
+    [ text-index text nth op second member-eq? ] both?
+    [ text-index 1+ regex-index 1+ match-here ] ?return
+
+    [ op op-first :nccl eq? ]
+    [ text-index text nth op second member-eq? not ] both?
+    [ text-index 1+ regex-index 1+ match-here ] ?return
+
+    nil ;
+
+' %match-here is match-here
+
+: find-regex-from                       // pattern string start -> index1/nil index2/nil
+    3 ?enough
+    verify-index !> i
+
+    text!
+    text empty? [ nil ] ?return
+
+    parse-regex
+    regex empty? [ nil ] ?return
+
+    text length :> len
+
+    local done
+
+    [
+        i len <
+        done nil? and
+    ] [
+        i 0 match-here done!
+        done [ i 1+ i! ] unless
+    ] while
+
+    i done ;
+
+: find-regex                            // pattern string -> index1/nil index2/nil
+    0 find-regex-from ;
+
+: matches?                              // text regex -> ?
+    parse-regex
+    text!
+    0 0 match-here as-boolean ;
+
+// Testing
+: test ( text pattern expected )        // text pattern expected -> void
+    ?nl text pattern "%S %S -> " format write
+    text pattern matches? dup .
+    expected assert-eq ;
+
+: test2 ( pattern text expected1 expected2 ) // pattern text expected -> void
+    ?nl pattern text "%S %S -> " format write
+    pattern text find-regex 2dup [ object->string ] bi@ "%s %s" format print
+    expected2 assert-eq expected1 assert-eq ;
+
+: tests
+    "a" "a" true test
+    "b" "a" nil test
+    "ab" "ab" true test
+    "ab" "a." true test
+    "ab" ".b" true test
+    "fooooobar" "f.*bar" true test
+    "a" "[ab]" true test
+    "b" "[ab]" true test
+    "c" "[ab]" nil test
+    "d" "[a-z]" true test
+
+    "[^a]" "ab" 1 2 test2
+    "[^ab]" "abcd" 2 3 test2
+    "[ab]" "dcba" 2 3 test2
+
+    // basic.dat
+    "abracadabra$" "abracadabracadabra" 7 18 test2
+    "a...b" "abababbb" 2 7 test2
+    "XXXXXX" "..XXXXXX" 2 8 test2 ;
