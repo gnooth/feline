@@ -181,6 +181,7 @@ VK_UP alt               constant alt-up
 'W' char-code alt       constant alt-w
 'C' char-code alt       constant alt-c
 VK_OEM_1 alt            constant alt-;
+VK_OEM_2 alt            constant alt-/
 
 VK_F3 alt               constant alt-f3
 
