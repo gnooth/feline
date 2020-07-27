@@ -134,6 +134,7 @@ private
 
     ' search:toggle-whole-words-only    feral-key:alt-w                 m set-at
     ' search:toggle-ignore-case         feral-key:alt-c                 m set-at
+    ' search:toggle-regex               feral-key:alt-r                 m set-at
 
     // FIXME remove
     ' do-quit                           feral-key:ctrl-q                m set-at

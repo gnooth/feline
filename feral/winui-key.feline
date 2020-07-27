@@ -172,14 +172,16 @@ VK_F3 ctrl shift        constant ctrl-shift-f3
 VK_SPACE ctrl           constant ctrl-space
 
 'B' char-code alt       constant alt-b
-VK_OEM_PERIOD alt       constant alt-.
+'C' char-code alt       constant alt-c
+'L' char-code alt       constant alt-l
+'R' char-code alt       constant alt-r
 'V' char-code alt       constant alt-v
+'W' char-code alt       constant alt-w
+'X' char-code alt       constant alt-x
+
+VK_OEM_PERIOD alt       constant alt-.
 VK_DOWN alt             constant alt-down
 VK_UP alt               constant alt-up
-'L' char-code alt       constant alt-l
-'X' char-code alt       constant alt-x
-'W' char-code alt       constant alt-w
-'C' char-code alt       constant alt-c
 VK_OEM_1 alt            constant alt-;
 VK_OEM_2 alt            constant alt-/
 
