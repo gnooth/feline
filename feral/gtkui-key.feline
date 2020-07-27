@@ -137,13 +137,16 @@ f3 ctrl shift           constant ctrl-shift-f3
 0x20 ctrl               constant ctrl-space
 
 'b' char-code alt       constant alt-b
-'.' char-code alt       constant alt-.
-'v' char-code alt       constant alt-v
-'l' char-code alt       constant alt-l
-'x' char-code alt       constant alt-x
-'w' char-code alt       constant alt-w
 'c' char-code alt       constant alt-c
+'l' char-code alt       constant alt-l
+'r' char-code alt       constant alt-r
+'v' char-code alt       constant alt-v
+'w' char-code alt       constant alt-w
+'x' char-code alt       constant alt-x
+
+'.' char-code alt       constant alt-.
 ';' char-code alt       constant alt-;
+'/' char-code alt       constant alt-/
 
 f3 alt                  constant alt-f3
 
