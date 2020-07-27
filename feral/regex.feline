@@ -198,15 +198,14 @@ defer match-here
     verify-index !> i
 
     text!
-    text empty? [ nil ] ?return
+    text empty? [ drop nil nil ] ?return
 
     parse-regex
-    regex empty? [ nil ] ?return
+    regex empty? [ nil nil ] ?return
 
     text length :> len
 
     local done
-
     [
         i len <
         done nil? and
@@ -214,11 +213,37 @@ defer match-here
         i 0 match-here done!
         done [ i 1+ i! ] unless
     ] while
+    done [ i done ] [ nil nil ] if ;
 
-    i done ;
+ : find-last-regex-from                  // pattern string start -> index1/nil index2/nil
+    3 ?enough
+    verify-index 1- !> i
+
+    i 0 < [ 2drop nil nil ] ?return
+
+    text!
+    text empty? [ drop nil ] ?return
+
+    parse-regex
+    regex empty? [ nil nil ] ?return
+
+    text length :> len
+
+    local done
+    [
+        i 0 >=
+        done nil? and
+    ] [
+        i 0 match-here done!
+        done [ i 1- i! ] unless
+    ] while
+    done [ i done ] [ nil nil ] if ;
 
 : find-regex                            // pattern string -> index1/nil index2/nil
     0 find-regex-from ;
+
+: find-last-regex                       // pattern string -> index1/nil index2/nil
+    dup length find-last-regex-from ;
 
 : matches?                              // text regex -> ?
     parse-regex
