@@ -906,11 +906,15 @@ global whole-words-only-default
 
 global ignore-case-default
 
+global regex-default
+
 tuple: search
     pattern
     whole-words-only
     ignore-case
-    identifier-char-function ;
+    identifier-char-function
+    regex
+    regex-match-end ;
 
 : make-search                           // pattern -> search
     verify-string
