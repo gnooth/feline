@@ -31,7 +31,11 @@ private
 
     add-undo-move
     pos mark!
-    mark-line mark-offset current-pattern string-length + make-position dot!
+    current-search regex-match-end>> [
+        mark-line swap make-position dot!
+    ] [
+        mark-line mark-offset current-pattern string-length + make-position dot!
+    ] if*
     dot-offset goal-column!
 
     maybe-reframe
@@ -168,11 +172,45 @@ private
 
     result ;
 
+use: regex
+
+: search-forward-regex ( startpos )     // position -> position/nil
+    "search-forward-regexp" dprintf
+
+    // get pattern from current-search
+    current-pattern :> pattern
+
+    startpos line>> !> line
+    startpos offset>> :> offset
+
+    pattern line text>> offset regex:find-regex-from !> index1 !> index2
+    index1 [
+        index2 current-search regex-match-end<<
+        line index1 make-position
+    ] ?return
+
+    line next>> line!
+    nil !> result
+
+    [ line ] [
+        pattern line text>> 0 find-regex-from [
+            current-search regex-match-end<<
+            line swap make-position result!
+            nil line!
+        ] [ line next>> line! ] if*
+    ] while
+
+    result ;
+
 public
 
 : find-command
     "find" set-history
-    whole-words-only-default "Find word: " "Find: " ? :> prompt
+    regex-default [
+        "Find regex: "
+    ] [
+        whole-words-only-default "Find word: " "Find: " ?
+    ] if :> prompt
 
     // REVIEW with-current-context
     :find-prompt current-context!
@@ -182,10 +220,14 @@ public
     pattern empty? ?exit
     pattern make-search current-search!
 
-    whole-words-only? [
-        dot search-forward-word
+    regex-default [
+        dot search-forward-regex
     ] [
-        dot search-forward
+        whole-words-only? [
+            dot search-forward-word
+        ] [
+            dot search-forward
+        ] if
     ] if
     // -> pattern/nil
     [ found ] [ not-found ] if*
@@ -260,10 +302,14 @@ public
 
     mark [ dot mark make-region/2 end ] [ copy-dot ] if :> startpos
 
-    whole-words-only? [
-        startpos search-forward-word
+    regex-default [
+        startpos search-forward-regex
     ] [
-        startpos search-forward
+        whole-words-only? [
+            startpos search-forward-word
+        ] [
+            startpos search-forward
+        ] if
     ] if [ found ] [ not-found ] if*
     nil current-search! ;
 
@@ -377,6 +423,29 @@ public
 : toggle-ignore-case
     ignore-case-default not ignore-case-default!
     ignore-case-default "Ignore case" "Match case" ? message ;
+
+: toggle-regex
+    local prompt
+    local offset
+
+    current-buffer minibuffer? [
+        current-context :find-prompt eq? [
+            regex-default not regex-default!
+            dot-offset minibuffer-prompt length - offset!
+            regex-default [
+                "Find regex: "
+            ] [
+                whole-words-only-default "Find word: " "Find: " ?
+            ] if prompt!
+            prompt minibuffer-user-text + minibuffer-set-text
+            prompt minibuffer-set-prompt
+            offset prompt length + dot-offset!
+        ] when
+    ] [
+        regex-default not regex-default!
+        regex-default "Match regex" "Match literal string" ?
+        message
+    ] if ;
 
 global replacement
 
