@@ -33,12 +33,19 @@ private
     reset-redo
 
     add-undo-move
-    pos mark!
-    current-search regex-match-end>> [
-        mark-line swap make-position dot!
+    regex? [
+        current-search regex-match-end>> pos offset>> eq? [
+            // dot is at the end of the found pattern
+            pos dot!
+            pos line>> current-search regex-match-start>> make-position mark!
+        ] [
+            pos line>> current-search regex-match-start>> make-position dot!
+            pos line>> current-search regex-match-end>> make-position mark!
+        ] if
     ] [
+        pos mark!
         mark-line mark-offset current-pattern string-length + make-position dot!
-    ] if*
+    ] if
     dot-offset goal-column!
 
     maybe-reframe
@@ -184,19 +191,24 @@ use: regex
     startpos line>> !> line
     startpos offset>> :> offset
 
-    pattern line text>> offset regex:find-regex-from !> index1 !> index2
-    index1 [
-        index2 current-search regex-match-end<<
-        line index1 make-position
-    ] ?return
+    pattern line text>> offset find-regex-from // -> index1/nil index2/nil
+    !> index2 !> index1
+
+    index1 current-search regex-match-start<<
+    index2 current-search regex-match-end<<
+
+    index2 [ line index2 make-position ] ?return
 
     line next>> line!
     nil !> result
 
     [ line ] [
-        pattern line text>> 0 find-regex-from [
-            current-search regex-match-end<<
-            line swap make-position result!
+        pattern line text>> 0 find-regex-from // -> index1/nil index2/nil
+        index2! index1!
+        index2 [
+            index1 current-search regex-match-start<<
+            index2 current-search regex-match-end<<
+            line index2 make-position result!
             nil line!
         ] [ line next>> line! ] if*
     ] while
@@ -210,16 +222,23 @@ use: regex
     startpos line>> !> line
     startpos offset>> :> offset
 
-    pattern line text>> offset regex:find-last-regex-from !> index1 !> index2
+    pattern line text>> offset find-last-regex-from !> index2 !> index1
+
+    index1 current-search regex-match-start<<
+    index2 current-search regex-match-end<<
+
     index1 [ line index1 make-position ] ?return
 
     line prev>> line!
     nil !> result
 
     [ line ] [
-        pattern line text>> regex:find-last-regex [
-            current-search regex-match-end<<
-            line swap make-position result!
+        pattern line text>> find-last-regex // -> index1/nil index2/nil
+        index2! index1!
+        index2 [
+            index1 current-search regex-match-start<<
+            index2 current-search regex-match-end<<
+            line index1 make-position result!
             nil line!
         ] [ line prev>> line! ] if*
     ] while
