@@ -195,7 +195,7 @@ defer match-here
 
 : find-regex-from                       // pattern string start -> index1/nil index2/nil
     3 ?enough
-    verify-index !> i
+    verify-index !> index1
 
     text!
     text empty? [ drop nil nil ] ?return
@@ -203,23 +203,23 @@ defer match-here
     parse-regex
     regex empty? [ nil nil ] ?return
 
-    text length :> len
+    text length :> text-length
 
-    local done
+    nil !> index2
     [
-        i len <
-        done nil? and
+        index1 text-length <
+        index2 nil? and
     ] [
-        i 0 match-here done!
-        done [ i 1+ i! ] unless
+        index1 0 match-here index2!
+        index2 [ index1 1+ index1! ] unless
     ] while
-    done [ i done ] [ nil nil ] if ;
+    index2 [ index1 index2 ] [ nil nil ] if ;
 
- : find-last-regex-from                  // pattern string start -> index1/nil index2/nil
+: find-last-regex-from                  // pattern string start -> index1/nil index2/nil
     3 ?enough
-    verify-index 1- !> i
+    verify-index 1- !> index1
 
-    i 0 < [ 2drop nil nil ] ?return
+    index1 0 < [ 2drop nil nil ] ?return
 
     text!
     text empty? [ drop nil ] ?return
@@ -227,17 +227,15 @@ defer match-here
     parse-regex
     regex empty? [ nil nil ] ?return
 
-    text length :> len
-
-    local done
+    local index2
     [
-        i 0 >=
-        done nil? and
+        index1 0 >=
+        index2 nil? and
     ] [
-        i 0 match-here done!
-        done [ i 1- i! ] unless
+        index1 0 match-here index2!
+        index2 [ index1 1- index1! ] unless
     ] while
-    done [ i done ] [ nil nil ] if ;
+    index2 [ index1 index2 ] [ nil nil ] if ;
 
 : find-regex                            // pattern string -> index1/nil index2/nil
     0 find-regex-from ;
