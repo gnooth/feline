@@ -914,6 +914,7 @@ tuple: search
     ignore-case
     identifier-char-function
     regex
+    regex-match-start
     regex-match-end ;
 
 : make-search                           // pattern -> search
