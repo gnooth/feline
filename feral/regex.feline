@@ -134,12 +134,13 @@ var text
 
 defer match-here
 
-: match-star                            // char text-index regex-index -> ?
+: match-star                            // op text-index regex-index -> index/nil
     !> regex-index !> text-index :> op
 
-    regex-index text-index match-here [ true ] ?return
-
     local result
+
+    text-index regex-index match-here result!
+    result [ result ] ?return
 
     [
         [ text-index text length < ]
@@ -147,10 +148,10 @@ defer match-here
         both?
     ] [
         text-index 1+ text-index!
-        regex-index text-index match-here [
+        text-index regex-index match-here [
+            result!
             text length text-index!     // force termination
-            true result!
-        ] when
+        ] when*
     ] while
 
     result ;
@@ -274,6 +275,8 @@ defer match-here
     "[^a]" "ab" 1 2 test2
     "[^ab]" "abcd" 2 3 test2
     "[ab]" "dcba" 2 3 test2
+
+    "text.*x" "no text index here" 3 13 test2
 
     // basic.dat
     "abracadabra$" "abracadabracadabra" 7 18 test2
