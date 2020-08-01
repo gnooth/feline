@@ -276,7 +276,7 @@ code array_nth_unsafe, 'array-nth-unsafe' ; index handle -> element
 endcode
 
 ; ### array-nth
-code array_nth, 'array-nth'             ; index handle -- element
+code array_nth, 'array-nth'             ; index array -> element
 
         _check_fixnum qword [rbp]       ; -- untagged-index handle
 
