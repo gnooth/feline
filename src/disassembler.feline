@@ -566,6 +566,23 @@ last-word 0x0d install-handler
 
 last-word 0x19 install-handler
 
+: .20
+    // dest is r/m8
+    // source is r8
+    "and" mnemonic!
+    !modrm-byte
+    8 ssize!
+    8 dsize!
+    modrm-mod 3 = [
+        // register-direct
+        modrm-rm register-rm dreg!
+        // source is cl register
+        modrm-reg register-reg sreg!
+        .inst
+    ] [ unsupported ] if ;
+
+last-word 0x20 install-handler
+
 : .21
     // /r
     // source is r32/64
@@ -1027,11 +1044,24 @@ last-word 0x87 install-handler
     modrm-reg register-reg sreg!
     8 ssize!
     8 dsize!
+    modrm-rm 4 = [ !sib-byte ] when
     { // cond
+        { [ modrm-mod 0 eq? ] [ modrm-rm dbase! .inst ] }
+        {
+            [ modrm-mod 1 = ]
+            [
+                // 1-byte displacement
+                sib-base register-rm dbase!
+                sib-index register-index dindex!
+                sib-scale dscale!
+                next-signed-byte ddisp!
+                .inst
+            ]
+        }
+        { [ modrm-mod 3 eq? ] [ modrm-rm register-rm dreg! .inst ] }
         {
             [ modrm-rm 4 eq? ]
             [
-                !sib-byte
                 sib-base
                 { // case
                     { 5 [ next-int32 ddisp! true memory-operand?! ] }
@@ -1046,8 +1076,6 @@ last-word 0x87 install-handler
                 .inst
             ]
         }
-        { [ modrm-mod 0 eq? ] [ modrm-rm dbase! .inst ] }
-        { [ modrm-mod 3 eq? ] [ modrm-rm register-rm dreg! .inst ] }
         [ unsupported ]
     } cond ;
 
@@ -1068,13 +1096,24 @@ last-word 0x89 install-handler
     // dest is r8
     "mov" mnemonic!
     !modrm-byte
-    modrm-reg dreg!
+    modrm-reg register-reg dreg!
     8 ssize!
     8 dsize!
+    modrm-rm 4 = [ !sib-byte ] when
     {
+        { [ modrm-mod 0 = ] [ modrm-rm register-rm sbase! ] }
+        {
+            [ modrm-mod 1 = ]
+            [
+                // 1-byte displacement
+                sib-base register-rm sbase!
+                sib-index register-index sindex!
+                sib-scale sscale!
+                next-signed-byte sdisp!
+            ]
+        }
         { [ modrm-mod 3 = ] [ modrm-rm register-rm sreg! ] }
         { [ modrm-rm 4 = ] [
-            !sib-byte
             sib-base {
                 { 5 [
                     next-int32 sdisp!
@@ -1082,6 +1121,7 @@ last-word 0x89 install-handler
                 ] }
                 [
                     // default case
+                    ?nl "got to here" print
                     drop
                     sib-base register-rm sbase!
                     sib-index register-index sindex!
@@ -1089,8 +1129,6 @@ last-word 0x89 install-handler
                 ]
             } case
         ] }
-        { [ modrm-mod 0 = ] [ modrm-rm register-rm sbase! ] }
-        { [ modrm-mod 1 = ] [ modrm-rm register-rm sbase! next-signed-byte sdisp! ] }
         [ unsupported ]
     } cond
     .inst ;
@@ -1253,6 +1291,19 @@ last-word 0xaa install-handler
     .inst ;
 
 last-word 0xab install-handler
+
+: .b0
+    // source is imm8
+    // dest is r8
+    "mov" mnemonic!
+    8 ssize!
+    8 dsize!
+    opcode 0xb0 - register-rm dreg!
+    next-byte immediate-operand!
+    true immediate-operand?!
+    .inst ;
+
+8 [ 0xb0 + ' .b0 swap install-handler ] each-integer
 
 : .b8
     // source is imm32/64
@@ -1455,6 +1506,23 @@ last-word 0xcc install-handler
     .inst ;
 
 last-word 0xd1 install-handler
+
+: .d2
+    // dest is r/m8
+    // src is cl register
+    !modrm-byte
+    regop-mnemonic mnemonic!
+    8 ssize!
+    8 dsize!
+    modrm-mod 3 = [
+        // register-direct
+        modrm-rm register-rm dreg!
+        // source is cl register
+        1 sreg!
+        .inst
+    ] [ unsupported ] if ;
+
+last-word 0xd2 install-handler
 
 : .d3
     // dest is r/m32/64
