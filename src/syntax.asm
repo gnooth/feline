@@ -455,6 +455,24 @@ code parse_definition, 'parse-definition'       ; -> vector
         next
 endcode
 
+; ### symbol-get-locals-count
+code symbol_get_locals_count, 'symbol-get-locals-count' ; symbol -> n
+        _tick locals_count
+        _swap
+        _ symbol_prop
+        _lit tagged_zero
+        _ feline_or
+        next
+endcode
+
+; ### symbol-set-locals-count
+code symbol_set_locals_count, 'symbol-set-locals-count' ; n symbol -> void
+        _tick locals_count
+        _swap
+        _ symbol_set_prop
+        next
+endcode
+
 ; ### :
 code colon, ':', SYMBOL_IMMEDIATE
 
@@ -467,6 +485,11 @@ code colon, ':', SYMBOL_IMMEDIATE
         _ array_to_quotation            ; -> symbol quotation
         _over
         _ symbol_set_def                ; -> symbol
+
+        _ locals_count
+        _over
+        _ symbol_set_locals_count
+
         _ compile_word
 
         next
@@ -539,6 +562,11 @@ code define_test, 'test:'
         _ array_to_quotation            ; -> symbol quotation
         _over
         _ symbol_set_def                ; -> symbol
+
+        _ locals_count
+        _over
+        _ symbol_set_locals_count
+
         _ compile_word
         next
 endcode
