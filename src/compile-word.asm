@@ -318,6 +318,13 @@ endcode
 
 ; ### add-forward-jump-address
 code add_forward_jump_address, 'add-forward-jump-address' ; tagged-address -> void
+        cmp     qword [forward_jumps_], NIL
+        jne     .1
+        _lit 8
+        _ make_vector_untagged
+        mov     qword [forward_jumps_], rbx
+        _drop
+.1:
         _ forward_jumps
         _ vector_push
         next
@@ -722,8 +729,14 @@ code compile_quotation, 'compile-quotation', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 endcode
 
 ; ### primitive-compile-word
-code primitive_compile_word, 'primitive-compile-word', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; symbol -> void
+code primitive_compile_word, 'primitive-compile-word' ; symbol -> void
+
+        _dup
+        _ symbol_get_locals_count
+        _check_fixnum
+        mov     [locals_count_], rbx
+        _drop
+
         _dup
         _ symbol_def
         _ compile_quotation             ; -> symbol quotation
