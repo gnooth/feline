@@ -293,10 +293,18 @@ endcode
 asm_global locals_count_, 0
 
 ; ### locals-count
-code locals_count, 'locals-count'       ; -> n
+code locals_count, 'locals-count'       ; void -> n
         _dup
         mov     rbx, [locals_count_]
         _tag_fixnum
+        next
+endcode
+
+; ### set-locals-count
+code set_locals_count, 'set-locals-count' ; n -> void
+        _check_index
+        mov     [locals_count_], rbx
+        _drop
         next
 endcode
 
