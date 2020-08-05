@@ -28,10 +28,6 @@ public
     file? [ load ] when*
     true loaded?! ;
 
-// REVIEW name
-: dprintf                               // ... format-string -> void
-    ?nl format print ;
-
 defer message
 defer clear-message
 
@@ -281,7 +277,7 @@ tuple: region-iterator
         region [ begin-offset ] [ end-offset ] [ begin-line ] tri substring
     ] ?return
 
-    1024 <sbuf> :> sb
+    1024 make-sbuf :> sb
 
     region [ begin-offset ] [ begin-line length ] [ begin-line ] tri substring
     sb sbuf-append-string
@@ -376,12 +372,12 @@ tuple: buffer
 
 global repaint?
 
-var dot-line-changed?
+global dot-line-changed?
 
-var current-command
-var last-command
+global current-command
+global last-command
 
-var in-redo?
+global in-redo?
 
 global minibuffer
 
@@ -1005,6 +1001,10 @@ unuse: segments
 
     start
     start end dot-line-text string-substring ;
+
+: single-line-selection                 // void -> string/nil
+    [ mark ] [ mark-line dot-line eq? ] both?
+    [ mark dot make-region/2 region-as-string ] [ nil ] if ;
 
 : find-substring-in-range ( pattern string start end )  // pattern string start end -> i/nil
     pattern unsafe-string-data-address :> pattern-data-address
