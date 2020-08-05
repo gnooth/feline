@@ -505,6 +505,9 @@ forget current-buffer!
 : mark-offset                           // -> n
     mark offset>> ;
 
+: mark-offset!                          // n -> void
+    mark offset<< ;
+
 : unmark
     mark [ nil mark! true repaint?! ] when ;
 
