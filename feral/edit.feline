@@ -235,12 +235,16 @@ in: editor
 
     ] with-compound-undo ;
 
+// FIXME should be configurable
+41 constant comment-column
+
 : reindent-comment                      // void -> void
+
+    // REVIEW reindent existing comments in a multiline block
+    [ mark ] [ mark-line dot-line neq? ] both? ?exit
+
     current-mode comment-start>> :> comment-start
     comment-start nil? ?exit
-
-    // FIXME
-    41 :> comment-column
 
     comment-start dot-line-text 0 find-substring-from :> comment-start-offset
     comment-start-offset comment-column 1- eq? ?exit
@@ -254,6 +258,7 @@ in: editor
         comment-start sb sbuf-append-string
 
         editor:add-undo-line-edit
+        unmark
         sb sbuf->string dot-line-text!
         dot-line-length dot-offset!
         true dot-line-changed?!
@@ -272,7 +277,7 @@ in: editor
     '\s' sb sbuf-push                   // must have at least 1 space
     [ sb length comment-column 1- < ] [ '\s' sb sbuf-push ] while
 
-    sb length :> new-comment-offset     // start of relocated comment
+    sb length :> new-comment-offset     // start of reindented comment
     comment-text sb sbuf-append-string
 
     local delta
@@ -281,9 +286,35 @@ in: editor
         dot-offset comment-start-offset - delta!
     ] when
 
+    local mark-delta
+    mark [
+        mark-offset comment-start-offset >= [
+            // mark is in the comment text
+            mark-offset comment-start-offset - mark-delta!
+        ] when
+    ] when
+
     editor:add-undo-line-edit
     sb sbuf->string dot-line-text!
+
+    // adjust dot if dot is in the comment text
     delta [ new-comment-offset delta + dot-offset! ] when
+
+    // adjust mark if both dot and mark are in the comment text
+    delta mark-delta and [ new-comment-offset mark-delta + mark-offset! ] when
+
+    // unmark if dot is in the comment text and mark is in the non-comment text
+    [ delta mark and ] [ mark-delta nil? ] both? [ unmark ] when
+
+    // unmark if mark is in the comment text and dot is in the non-comment text
+    delta [
+        // dot is in non-comment text
+        mark-delta [
+            // mark is in comment text
+            unmark
+        ] when
+    ] unless
+
     true dot-line-changed?!
     modified ;
 
