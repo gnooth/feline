@@ -109,7 +109,7 @@ in: editor
     ] when ;
 
 : make-indentation-string ( n )         // n -> string
-    n <sbuf> :> sb
+    n make-sbuf :> sb
     n [ '\s' sb push ] times
     sb sbuf>string ;
 
@@ -257,6 +257,7 @@ in: editor
         sb sbuf->string dot-line-text!
         dot-line-length dot-offset!
         true dot-line-changed?!
+        modified
     ] ?return
 
     // we have an existing comment
@@ -283,7 +284,8 @@ in: editor
     editor:add-undo-line-edit
     sb sbuf->string dot-line-text!
     delta [ new-comment-offset delta + dot-offset! ] when
-    true dot-line-changed?! ;
+    true dot-line-changed?!
+    modified ;
 
 : string-remove-nth                     // n string1 -> string2
     check-bounds
