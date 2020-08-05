@@ -16,12 +16,12 @@
 file __FILE__
 
 ; ### parse-format-specifier
-code parse_format_specifier, 'parse-format-specifier' ; lexer -> string/f
+code parse_format_specifier, 'parse-format-specifier' ; lexer -> string/nil
         _ check_lexer
 
         push    this_register
         mov     this_register, rbx
-        poprbx
+        _drop
 
         _this_lexer_raw_index
         add     rbx, 2
@@ -53,21 +53,21 @@ code parse_format_specifier, 'parse-format-specifier' ; lexer -> string/f
 endcode
 
 ; ### parse-format-text
-code parse_format_text, 'parse-format-text'     ; lexer -- string
+code parse_format_text, 'parse-format-text' ; lexer -> string
         _ check_lexer
 
         push    this_register
         mov     this_register, rbx
-        poprbx
+        _drop
 
         _lit tagged_char('%')
         _this_lexer_raw_index
         _tag_fixnum
-        _this_lexer_string              ; -- char start-index string
-        _ string_index_from             ; -- index/f
+        _this_lexer_string              ; -> char start-index string
+        _ string_index_from             ; -> index/nil
 
         _dup
-        _tagged_if .1                   ; -- index
+        _tagged_if .1                   ; -> index
 
         ; found '%'
         _this_lexer_raw_index
@@ -79,14 +79,14 @@ code parse_format_text, 'parse-format-text'     ; lexer -- string
         _untag_fixnum
         _this_lexer_set_raw_index
 
-        _else .1                        ; -- f
+        _else .1                        ; -> nil
 
         ; no '%'
-        _drop                           ; --
+        _drop                           ; -> empty
         _this_lexer_raw_index
         _tag_fixnum
         _this_lexer_string
-        _ string_length                 ; -- tagged-index tagged-length
+        _ string_length                 ; -> tagged-index tagged-length
         _dup
         _untag_fixnum
         _this_lexer_set_raw_index
@@ -100,12 +100,12 @@ code parse_format_text, 'parse-format-text'     ; lexer -- string
 endcode
 
 ; ### parse-format-string
-code parse_format_string, 'parse-format-string' ; format-string -- vector
-        _ new_lexer                     ; -- lexer
+code parse_format_string, 'parse-format-string' ; format-string -> vector
+        _ new_lexer                     ; -> lexer
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; --
+        _drop                           ; -> empty
 
         _lit 10
         _ new_vector_untagged
@@ -142,7 +142,7 @@ code parse_format_string, 'parse-format-string' ; format-string -- vector
 endcode
 
 ; ### format-specifier?
-code format_specifier?, 'format-specifier?'     ; x -- ?
+code format_specifier?, 'format-specifier?' ; x -> ?
         _dup
         _ string?
         _tagged_if_not .1
@@ -166,7 +166,7 @@ code format_specifier?, 'format-specifier?'     ; x -- ?
 endcode
 
 ; ### format-object
-code format_object, 'format-object'     ; object format-specifier -- string
+code format_object, 'format-object'     ; object format-specifier -> string
         _ verify_string
 
         _dup
@@ -218,45 +218,45 @@ code format_object, 'format-object'     ; object format-specifier -- string
 endcode
 
 ; ### format
-code format, 'format'           ; ... arg format-string -- output-string
-        _ parse_format_string   ; -- ... arg vector
+code format, 'format'                   ; arg(s) format-string -> output-string
+        _ parse_format_string           ; -> arg(s) vector
 
         _ vector_reverse_in_place
 
         _dup
         _ vector_raw_length
-        _register_do_times .1   ; -- ... arg vector
+        _register_do_times .1           ; -> arg(s) vector
 
         _tagged_loop_index
         _over
         _ vector_nth_unsafe
         _dup
         _ format_specifier?
-        _tagged_if .2           ; -- ... arg vector format-specifier
+        _tagged_if .2                   ; -> arg(s) vector format-specifier
 
-        _swap                   ; -- ... arg format-specifier vector
+        _swap                           ; -> arg(s) format-specifier vector
         _tor
-        _ format_object         ; -- ... string
-        _rfrom                  ; -- ... string vector
-        _swap                   ; -- ... vector string
+        _ format_object                 ; -> arg(s) string
+        _rfrom                          ; -> arg(s) string vector
+        _swap                           ; -> arg(s) vector string
 
-        _tagged_loop_index      ; -- ... vector string tagged-index
+        _tagged_loop_index              ; -> arg(s) vector string tagged-index
         _pick
-        _ vector_set_nth        ; -- ... vector
+        _ vector_set_nth                ; -> arg(s) vector
 
         _else .2
         ; not a format specifier
         _drop
         _then .2
 
-        _loop .1                ; -- vector
+        _loop .1                        ; -> vector
 
         _ vector_reverse_in_place
 
         _lit 256
         _ new_sbuf_untagged
 
-        _swap                   ; -- sbuf vector
+        _swap                           ; -> sbuf vector
 
         _quotation .3
         _over
@@ -266,5 +266,13 @@ code format, 'format'           ; ... arg format-string -- output-string
 
         _ sbuf_to_string
 
+        next
+endcode
+
+; ### dprintf
+code dprintf, 'dprintf'                 ; arg(s) format-string -> void
+        _ ?nl
+        _ format
+        _ print
         next
 endcode
