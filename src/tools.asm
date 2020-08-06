@@ -147,13 +147,22 @@ code exception_text, 'exception-text'   ; n -> string/nil
         _then .2
 
         _dup
-        _lit 0x80000003
+        _lit 0xc00000fd
         _equal
         _if .3
         _drop
-        _quote "breakpoint exception"
+        _quote "stack overflow exception"
         _return
         _then .3
+
+        _dup
+        _lit 0x80000003
+        _equal
+        _if .4
+        _drop
+        _quote "breakpoint exception"
+        _return
+        _then .4
 
         ; default
         _drop
