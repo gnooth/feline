@@ -202,40 +202,6 @@ code emit_raw_qword, 'emit_raw_qword', SYMBOL_INTERNAL  ; qword -> void
         next
 endcode
 
-%define MIN_INT32       -2147483648
-
-%define MAX_INT32       2147483647
-
-; ### min-int32
-feline_constant min_int32, 'min-int32', tagged_fixnum(MIN_INT32)
-
-; ### max-int32
-feline_constant max_int32, 'max-int32', tagged_fixnum(MAX_INT32)
-
-; ### raw_int32?
-code raw_int32?, 'raw_int32?'           ; untagged-fixnum -> ?
-        cmp     rbx, MIN_INT32
-        jl      .1
-        cmp     rbx, MAX_INT32
-        jg      .1
-        mov     ebx, TRUE
-        next
-.1:
-        mov     ebx, NIL
-        next
-endcode
-
-; ### int32?
-code int32?, 'int32?'                   ; tagged-fixnum -> ?
-        test    bl, FIXNUM_TAG
-        jz      .1
-        _untag_fixnum
-        jmp     raw_int32?
-.1:
-        mov     ebx, NIL
-        next
-endcode
-
 ; ### compile-call
 code compile_call, 'compile-call', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 ; raw-address -> void
