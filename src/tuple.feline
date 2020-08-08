@@ -43,6 +43,8 @@ global generic-writer                   // -> symbol
     } case
     array>quotation :> quotation
 
+    quotation primitive-compile-quotation
+
     tuple-typecode
     generic-reader symbol-def verify-generic-function
     quotation
@@ -65,6 +67,8 @@ global generic-writer                   // -> symbol
     ' slot!
     4array array>quotation :> quotation
 
+    quotation primitive-compile-quotation
+
     tuple-typecode
     generic-writer symbol-def verify-generic-function
     quotation
@@ -85,7 +89,7 @@ global generic-writer                   // -> symbol
 
     ' over
     generic-writer
-    2array array>quotation setter symbol-set-def
+    2array array>quotation dup primitive-compile-quotation setter symbol-set-def
     setter compile-word
 ;
 
@@ -106,6 +110,8 @@ global generic-writer                   // -> symbol
     tuple-typecode
     ' eq?
     3array array>quotation
+
+    dup primitive-compile-quotation
 
     over symbol-set-def
     compile-word

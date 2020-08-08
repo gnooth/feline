@@ -39,7 +39,7 @@ tuple: compiler-context
     compile-verbose? [ ?nl "make-compiler-context" print ] when
 
     compiler-context make-instance
-    10 <vector> >>pending ;
+    10 make-vector >>pending ;
 
 special current-context
 
@@ -49,11 +49,11 @@ special current-context
 : origin!                               // address -> void
     current-context get origin<< ;
 
-: pc                                    // void -> fixnum
-    current-context get pc>> ;
-
-: pc!                                   // address -> void
-    current-context get pc<< ;
+// : pc                                    // void -> fixnum
+//     current-context get pc>> ;
+//
+// : pc!                                   // address -> void
+//     current-context get pc<< ;
 
 : emit-byte                             // byte -> void
     pc c!
@@ -131,7 +131,7 @@ defer compile-quotation
 
 : precompile-quotation                  // quotation -> vector
 
-    64 <vector> :> vec
+    64 make-vector :> vec
 
     quotation-array [
         precompile-object               // -> node
@@ -170,12 +170,17 @@ defer compile-quotation
         pending vector-delete-all
     ] unless ;
 
-: inline-primitive
+: inline-primitive                      // symbol -> void
+    dup pc "entering inline-primitive %s pc is 0x%x" dprintf
+
     dup symbol-code-address
     swap symbol-code-size               // -> address size
     1-                                  // adjust size to exclude ret instruction
     pc swap [ unsafe-copy-bytes ] keep  // -> size
-    pc + pc! ;
+    dup .
+    pc + pc!
+    pc "leaving inline-primitive pc is 0x%x" dprintf
+;
 
 : compile-call-address                  // tagged-address -> void
     dup pc 5 + -                        // -> tagged-address tagged-displacement
@@ -191,6 +196,8 @@ defer compile-quotation
     compile-call-address ;
 
 : compile-primitive                     // symbol -> void
+    dup pc "compile-primitive %s pc is 0x%x" dprintf
+
     dup debug? [
         symbol-always-inline? [ inline-primitive ] [ compile-call-symbol ] if
     ] [
@@ -671,6 +678,7 @@ defer compile-quotation
     callable callable-code-address compile-call-address ;
 
 : compile-operator-node ( node )        // node -> void
+    pc "compile-operator-node pc is 0x%x" dprintf
 
     node op>> :> op
 
@@ -689,18 +697,28 @@ defer compile-quotation
     op inline-or-compile-call ;
 
 : compile-node                          // node -> void
+    pc "compile-node pc is 0x%x" dprintf
+
     dup op>> [
         compile-operator-node
     ] [
         pending vector-push
-    ] if ;
+    ] if
+    pc "leaving compile-node pc is 0x%x" dprintf
+;
 
 : compile-quotation-internal            // quotation -> void
     dup precompile-quotation            // -> quotation array
     dup length 32 * 16 max initialize-code-block dup pc! origin!
+
+    pc origin "pc is 0x%x origin is 0x%x" dprintf
+
     ' compile-node each
     flush-pending
     0xc3 emit-byte
+
+    pc origin "pc is 0x%x origin is 0x%x" dprintf
+
     origin pc over -                    // -> quotation code-address code-size
     pick quotation-set-code-size
     swap quotation-set-code-address ;
@@ -715,18 +733,90 @@ defer compile-quotation
         quotation
     ] ?return
 
-    [
+//     [
         make-compiler-context current-context set
         quotation [ compile-quotation-internal ] keep
-    ] with-dynamic-scope ;
+//     ] with-dynamic-scope
+;
 
-' %compile-quotation ' compile-quotation defer!
+' %compile-quotation is compile-quotation
 
-: compile-word                          // symbol -> void
+// begin compiler2
+
+global worklist
+
+: add-quotation                         // quotation -> void
+    verify-quotation
+//     dup object->string "add-quotation %s" dprintf
+
+    worklist vector? assert
+    worklist push ;
+
+: add-children                          // quotation -> void
+    verify-quotation
+//     dup object->string "add-children %s" dprintf
+    [
+        quotation? [ add-quotation ] when*
+    ] each ;
+
+: process-quotation                     // x -> void
+    dup object>short-string "process-quotation %s" dprintf
+
+    worklist length 10 > ?exit
+
+    quotation? [
+        dup add-quotation
+        add-children
+    ] when* ;
+
+: process-definition                    // symbol -> void
+//     dup symbol-name "process-definition %s" dprintf
+
+    128 make-vector worklist!
+
+    symbol-def
+    verify-quotation
+    process-quotation ;
+
+// : compile-word                          // symbol -> void
+// //     dup "compile-word %s" dprintf
+//
+//     1 ?enough verify-symbol :> word
+//     word process-definition
+// //     ?nl worklist .
+//     worklist [ object>short-string print ] each
+//     worklist vector-reverse! drop
+//     worklist vector-pop*
+//     0 set-locals-count
+//     worklist [ primitive-compile-quotation ] each
+//     word primitive-compile-word
+// ;
+
+// end compiler2
+
+: compile-word-internal                 // symbol -> void
+
+    dup symbol-get-locals-count set-locals-count
+
     dup symbol-def compile-quotation    // -> symbol quotation
     dup quotation-code-address pick symbol-set-code-address
     quotation-code-size swap symbol-set-code-size
     forget-locals ;
+
+: compile-word                          // symbol -> void
+    dup "compile-word %s" dprintf
+
+    1 ?enough verify-symbol :> word
+    word process-definition
+//     ?nl worklist .
+    worklist [ object>short-string print ] each
+    worklist vector-reverse! drop
+    worklist vector-pop*
+    0 set-locals-count
+    worklist [ primitive-compile-quotation ] each
+//     word primitive-compile-word
+    word compile-word-internal
+;
 
 public
 

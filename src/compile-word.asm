@@ -135,9 +135,24 @@ asm_global pc_, 0
         mov     rbx, [pc_]
 %endmacro
 
+; ### pc
+code pc, 'pc'
+        _pc
+        _tag_fixnum
+        next
+endcode
+
+; ### pc!
+code pcstore, 'pc!'
+        _check_index
+        mov     [pc_], rbx
+        _drop
+        next
+endcode
+
 ; ### initialize-code-block
 code initialize_code_block, 'initialize-code-block' ; tagged-size -> tagged-address
-        _check_fixnum
+        _check_index
         _ raw_allocate_executable       ; -> raw-address
         _tag_fixnum
         next
@@ -563,7 +578,7 @@ code compile_pair, 'compile-pair', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 endcode
 
 ; ### compile-prolog
-code compile_prolog, 'compile-prolog', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+code compile_prolog, 'compile-prolog'
 
         _ locals_count          ; -> tagged-fixnum
         test    bl, FIXNUM_TAG
@@ -631,7 +646,7 @@ code patch_forward_jumps, 'patch-forward-jumps' ; address -> void
 endcode
 
 ; ### compile-epilog
-code compile_epilog, 'compile-epilog', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+code compile_epilog, 'compile-epilog'
 
         mov     rax, [pc_]
         mov     [exit_address_], rax
@@ -659,8 +674,10 @@ code compile_epilog, 'compile-epilog', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 endcode
 
 ; ### primitive-compile-quotation
-code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; quotation -> void
+code primitive_compile_quotation, 'primitive-compile-quotation' ; quotation -> void
+
+;         _quote "primitive-compile-quotation called"
+;         _ dprintf
 
         _debug_?enough 1
 
@@ -720,7 +737,7 @@ code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIV
 endcode
 
 ; ### compile-quotation
-code compile_quotation, 'compile-quotation', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+code compile_quotation, 'compile-quotation'
 ; quotation -> quotation
         _duptor
         _ primitive_compile_quotation
@@ -733,9 +750,7 @@ code primitive_compile_word, 'primitive-compile-word' ; symbol -> void
 
         _dup
         _ symbol_get_locals_count
-        _check_fixnum
-        mov     [locals_count_], rbx
-        _drop
+        _ set_locals_count
 
         _dup
         _ symbol_def

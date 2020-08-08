@@ -401,17 +401,17 @@ code reset, 'reset'
         next                            ; for decompiler
 endcode
 
-asm_global error_location_, f_value
+asm_global error_location_, NIL
 
 ; ### error-location
-code error_location, 'error-location'   ; -> location/f
+code error_location, 'error-location'   ; -> location/nil
         pushrbx
         mov     rbx, [error_location_]
         next
 endcode
 
 ; ### set-error-location
-code set_error_location, 'set-error-location'   ; location/f -> void
+code set_error_location, 'set-error-location'   ; location/nil -> void
         mov     [error_location_], rbx
         poprbx
         next
@@ -477,6 +477,36 @@ code print_error_location, 'print-error-location'       ; --
         next
 endcode
 
+; ### edit-error-location
+code edit_error_location, 'edit-error-location'
+        _ error_location
+        _tagged_if .1
+
+        _ error_location
+        _ array_first                   ; -> path
+        _ error_location
+        _ array_second                  ; -> path linenumber
+        _twodup
+        _ feline_and
+        _tagged_if .2
+        _swap
+        _quote "feral +%d %s"
+        _ format
+
+        _dup
+        _ ?nl
+        _ print
+
+        _ run_shell_command             ; -> fixnum
+        _drop
+        _else .2
+        _2drop
+        _then .2
+
+        _then .1
+        next
+endcode
+
 ; ### where
 code where, 'where'
 
@@ -513,7 +543,9 @@ code where, 'where'
 
         _ print_error_location
 
-        _f
+        _ edit_error_location
+
+        _nil
         _ set_error_location
 
         next

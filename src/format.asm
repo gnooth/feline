@@ -172,11 +172,21 @@ code format_object, 'format-object'     ; object format-specifier -> string
         _dup
         _quote "%d"
         _ stringequal?
-        _tagged_if .1
+        _tagged_if .1a
         _drop
         _ number_to_string
         _return
-        _then .1
+        _then .1a
+
+        _dup
+        _quote "%x"
+        _ stringequal?
+        _tagged_if .1b
+        _drop
+        _check_fixnum
+        _ raw_int64_to_hex
+        _return
+        _then .1b
 
         ; %S print quoted
         _dup

@@ -384,7 +384,7 @@ code call_quotation, 'call'             ; callable -> void
 endcode
 
 ; ### callable_raw_code_address
-code callable_raw_code_address, 'callable_raw_code_address', SYMBOL_INTERNAL
+code callable_raw_code_address, 'callable_raw_code_address'
 ; callable -> raw-code-address
         cmp     bl, STATIC_SYMBOL_TAG
         je      .static_symbol
@@ -428,6 +428,12 @@ code callable_raw_code_address, 'callable_raw_code_address', SYMBOL_INTERNAL
 
 .compile_quotation:
         ; rbx: handle
+
+        _dup
+        _ object_to_short_string
+        _quote "calling compile-quotation %s"
+        _ dprintf
+
         _ compile_quotation             ; -> quotation
         _ quotation_raw_code_address
         next

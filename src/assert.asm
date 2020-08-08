@@ -102,13 +102,20 @@ inline failed, '+failed+'                 ; -> symbol
         _symbol failed
 endinline
 
+code check_assert_must_fail_recover, 'check_assert_must_fail_recover'
+        _drop
+        _symbol failed
+        next
+endcode
+
 ; ### check-assert-must-fail
 code check_assert_must_fail, 'check-assert-must-fail' ; quotation location -> void
         _debug_?enough 2
         _swap
-        _symbol drop
-        _symbol failed
-        _ two_quotation
+;         _symbol drop
+;         _symbol failed
+;         _ two_quotation
+        _tick check_assert_must_fail_recover
         _ recover
         _dup
         _symbol failed

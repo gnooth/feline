@@ -433,7 +433,7 @@ global regop    // REGister or OPcode extension (depending on the instruction)
                             [ sib-byte 0x24 = ]
                             [ sib-base register-rm sbase! ]
                         }
-                        { [ sib-base 5 = ] [ next-int32 sdisp! t memory-operand?! ] }
+                        { [ sib-base 5 = ] [ next-int32 sdisp! true memory-operand?! ] }
                         [
                             sib-base register-rm sbase!
                             sib-index register-index sindex!
@@ -457,7 +457,7 @@ global regop    // REGister or OPcode extension (depending on the instruction)
                 !sib-byte
                 next-signed-byte sdisp!
                 sib-byte 0x24 = [
-                    sib-base  sbase!
+                    sib-base sbase!
                 ] [
                     sib-base register-rm sbase!
                     sib-index register-index sindex!

@@ -279,25 +279,59 @@ public
     current-search last-search!
     nil current-search! ;
 
-: find-under
+private: find-under-make-search
+    local start
+    local pattern
+    local whole-words-only
+    single-line-selection pattern!
+    pattern empty? [
+        identifier-at-dot               // -> start/nil string/nil
+        nip pattern!
+        true whole-words-only!
+    ] when
+    pattern empty? [ nil ] ?return
+    pattern make-search :> search
+    whole-words-only [ search whole-words-only<< ] [ whole-words-only-default! ] bi
+    search ;
+
+: find-under                            // void -> void
 // sublime find_under ctrl-f3
 // atom find-next-selected ctrl-f3
 // vscode Find Next Selection ctrl-f3
 // Find next occurrence of identifier at dot.
-    identifier-at-dot                   // -> index/nil string/nil
-    :> pattern :> start
-    pattern empty? ?exit
-    pattern make-search current-search!
-    true current-search whole-words-only<< // don't change default!
 
-    dot-line start pattern length + make-position search-forward-word
+//     identifier-at-dot                   // -> index/nil string/nil
+//     :> pattern :> start
+//     pattern empty? ?exit
+//     pattern make-search current-search!
+//     true current-search whole-words-only<< // don't change default!
+
+    current-search nil? assert
+    find-under-make-search current-search!
+    current-search nil? ?exit
+    current-search assert
+
+    last-search [
+        pattern>> last-search pattern>> = [
+            "same pattern" dprintf
+            last-command ' find-under eq? [
+                "last-command was " write last-command .
+                last-search whole-words-only>> current-search whole-words-only<<
+            ] when
+        ] when
+    ] when*
+
+    dot whole-words-only? [ search-forward-word ] [ search-forward ] if
+
     // -> position/nil
     [
         found
         current-search last-search!
     ] [
         // wrap around
-        first-line 0 make-position search-forward-word
+//         first-line 0 make-position search-forward-word
+        first-line 0 make-position
+        whole-words-only? [ search-forward-word ] [ search-forward ] if
         // -> position/nil
         [
             found
@@ -311,23 +345,57 @@ public
 // atom ctrl-shift-f3 find-previous-selected ctrl-shift-f3
 // vscode Find Previous Selection ctrl-f3
 // Find previous occurrence of identifier at dot.
-    identifier-at-dot                   // -> index/nil string/nil
-    :> pattern :> start
-    pattern empty? ?exit
-    pattern make-search current-search!
-    true current-search whole-words-only<< // don't change default!
 
-    dot-line start make-position !> pos
-    pos move-prev [
-        last-line dup length make-position pos!
-    ] unless
-    pos search-backward-word
+//     identifier-at-dot                   // -> index/nil string/nil
+//     :> pattern :> start
+//     pattern empty? ?exit
+//     pattern make-search current-search!
+//     true current-search whole-words-only<< // don't change default!
+
+//     dot-line start make-position !> pos
+//     pos move-prev [
+//         last-line dup length make-position pos!
+//     ] unless
+
+    current-search nil? assert
+    find-under-make-search current-search!
+    current-search nil? ?exit
+    current-search assert
+
+    last-search [
+        pattern>> last-search pattern>> = [
+            "find-under-prev same pattern" dprintf
+            last-command ' find-under-prev eq? [
+                "last-command was " write last-command .
+                last-search whole-words-only>> current-search whole-words-only<<
+            ] when
+        ] when
+    ] when*
+
+    "whole-words-only is " write whole-words-only? .
+
+    dot whole-words-only? [ search-backward-word ] [ search-backward ] if
+
+    local pos
+
+//     pos search-backward-word
     // -> position/nil
-    [ found ]
     [
+        "got to here 1" dprintf
+        found
+        current-search last-search!
+    ] [
+        "got to here 2" dprintf
+
+        // here we have to move dot leftwards to the beginning of the found pattern
+        // otherwise we'll just find the same occurrence again
+        // see `found`
+
         // wrap around
-        last-line [ pos line<< ] [ length pos offset<< ] bi
-        pos search-backward-word
+//         last-line [ pos line<< ] [ length pos offset<< ] bi
+        last-line dup length make-position pos!
+//         pos search-backward-word
+        pos whole-words-only? [ search-backward-word ] [ search-backward ] if
         // -> position/nil
         [
             found

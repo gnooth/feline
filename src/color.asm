@@ -149,7 +149,7 @@ code comment_style, 'comment-style'
         next
 endcode
 
-asm_global error_foreground_, RED
+asm_global error_foreground_, WHITE
 
 ; ### error-foreground
 code error_foreground, 'error-foreground'

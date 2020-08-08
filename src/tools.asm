@@ -244,7 +244,21 @@ code handle_signal, 'handle-signal'
 
         _ ?nl
         _print "Stack underflow"
-        _ maybe_print_backtrace
+
+        _ ?nl
+        _ saved_rbp
+        _tag_fixnum
+        _ hexdot
+        _ nl
+
+        _ current_thread
+        _ thread_sp0
+        _ hexdot
+        _ nl
+
+;         _ maybe_print_saved_registers
+;         _ maybe_print_backtrace
+        _ print_saved_registers_and_backtrace
         jmp     .2
 
 .1:
