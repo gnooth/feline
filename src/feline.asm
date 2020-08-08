@@ -84,6 +84,7 @@ static_data_area:
 %include "gc2.asm"
 %include "syntax.asm"
 %include "assert.asm"
+%include "xalloc.asm"
 %include "compile-word.asm"
 %include "recover.asm"
 %include "files.asm"

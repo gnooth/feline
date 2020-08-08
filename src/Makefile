@@ -203,7 +203,8 @@ ASM_SOURCES = feline.asm feline_home.asm externs.asm \
 	vocab.asm \
 	vocabs.asm \
 	vector.asm \
-	wrapper.asm
+	wrapper.asm \
+	xalloc.asm
 
 ifeq ($(OS),Windows_NT)
 
