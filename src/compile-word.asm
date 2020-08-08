@@ -51,25 +51,67 @@ code initialize_code_block, 'initialize-code-block' ; tagged-size -> tagged-addr
         next
 endcode
 
+; tuple: node
+;     literal-value
+;     op                                  // symbol
+;     type                                // result type
+; ;
+
+; ### make-literal-node
+code make_literal_node, 'make-literal-node' ; literal -> node
+        _nil                            ; operator
+        _nil                            ; result type
+        _ three_array
+        next
+endcode
+
+; ### make-operator-node
+code make_operator_node, 'make-operator-node' ; operator -> node
+        _nil                            ; literal value
+        _swap
+        _nil                            ; result type
+        _ three_array
+        next
+endcode
+
+; ### node-literal-value
+code node_literal_value, 'node-literal-value' ; node -> literal-value
+        _lit tagged_zero
+        _swap
+        _ array_nth
+        next
+endcode
+
+; ### node-operator
+code node_operator, 'node-operator'     ; node -> symbol
+        _lit tagged_fixnum(1)
+        _swap
+        _ array_nth
+        next
+endcode
+
+; ### node-result-type
+code node_result_type, 'node-result-type' ; node -> result-type
+        _lit tagged_fixnum(2)
+        _swap
+        _ array_nth
+        next
+endcode
+
 ; ### precompile-object
-code precompile_object, 'precompile-object', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; object -> pair
-; all values are untagged
+code precompile_object, 'precompile-object' ; object -> node
         _dup
         _ symbol?
         _tagged_if .1
-        _zero                           ; -> symbol 0
+        _ make_operator_node
         _else .1
-        _zero
-        _swap                           ; -> 0 literal-value
+        _ make_literal_node
         _then .1
-        _ two_array
         next
 endcode
 
 ; ### add-code-size
-code add_code_size, 'add-code-size', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; accum pair -> accum
+code add_code_size, 'add-code-size'     ; accum node -> accum
 ; FIXME arbitrary for now
         _drop
         _lit 25
@@ -84,7 +126,7 @@ endcode
 %endmacro
 
 ; ### emit_raw_byte
-code emit_raw_byte, 'emit_raw_byte', SYMBOL_INTERNAL    ; byte -> void
+code emit_raw_byte, 'emit_raw_byte', SYMBOL_INTERNAL ; byte -> void
         mov     rdx, [pc_]
         add     qword [pc_], 1
         mov     [rdx], bl
@@ -158,8 +200,7 @@ endcode
 %define DUP_BYTES 0xf86d8d48f85d8948
 
 ; ### compile-literal
-code compile_literal, 'compile-literal', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; literal -> void
+code compile_literal, 'compile-literal' ; literal -> void
         _dup
         _ wrapper?
         _tagged_if .1
@@ -378,7 +419,7 @@ code compile_?return_locals, 'compile-?return-locals' ; symbol -> void
 endcode
 
 ; ### compile-primitive
-code compile_primitive, 'compile-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+code compile_primitive, 'compile-primitive'
 ; symbol -> void
         _dup
 %ifdef DEBUG
@@ -410,24 +451,15 @@ code compile_primitive, 'compile-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
-; ### compile-pair
-code compile_pair, 'compile-pair', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; pair -> void
-        _dup
-        _ array_first
-        _zeq_if .1
-        _ array_second
-        _ compile_literal
-        _return
-        _then .1                        ; -> pair
-
-        _ array_first                   ; -> symbol
+; ### compile-operator-node
+code compile_operator_node, 'compile-operator-node' ; node -> void
+        _ node_operator
         _dup
         _ symbol_primitive?
-        _tagged_if .2
+        _tagged_if .1
         _ compile_primitive
         _return
-        _then .2
+        _then .1
 
         ; not a primitive
         _ symbol_raw_code_address
@@ -436,8 +468,27 @@ code compile_pair, 'compile-pair', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
+; ### compile-literal-node
+code compile_literal_node, 'compile-literal-node' ; node -> void
+        _ node_literal_value
+        _ compile_literal
+        next
+endcode
+
+; ### compile-node
+code compile_node, 'compile-node'       ; node -> void
+        _dup
+        _ node_operator
+        _tagged_if .1
+        _ compile_operator_node
+        _else .1
+        _ compile_literal_node
+        _then .1
+        next
+endcode
+
 ; ### compile-prolog
-code compile_prolog, 'compile-prolog', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+code compile_prolog, 'compile-prolog'
 
         _ locals_count          ; -> tagged-fixnum
         test    bl, FIXNUM_TAG
@@ -505,7 +556,7 @@ code patch_forward_jumps, 'patch-forward-jumps' ; address -> void
 endcode
 
 ; ### compile-epilog
-code compile_epilog, 'compile-epilog', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
+code compile_epilog, 'compile-epilog'
 
         mov     rax, [pc_]
         mov     [exit_address_], rax
@@ -533,8 +584,7 @@ code compile_epilog, 'compile-epilog', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
 endcode
 
 ; ### primitive-compile-quotation
-code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; quotation -> void
+code primitive_compile_quotation, 'primitive-compile-quotation' ; quotation -> void
 
         _debug_?enough 1
 
@@ -570,7 +620,7 @@ code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIV
         _ compile_prolog
 
         ; body
-        _tick compile_pair
+        _tick compile_node
         _ each
 
         ; epilog
@@ -594,8 +644,7 @@ code primitive_compile_quotation, 'primitive-compile-quotation', SYMBOL_PRIMITIV
 endcode
 
 ; ### compile-quotation
-code compile_quotation, 'compile-quotation', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; quotation -> quotation
+code compile_quotation, 'compile-quotation' ; quotation -> quotation
         _duptor
         _ primitive_compile_quotation
         _rfrom
