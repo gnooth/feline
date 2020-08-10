@@ -300,7 +300,7 @@ always_inline ?exit_locals, '?exit_locals'
 endinline
 
 ; ### ?exit-locals-patch-offset
-code ?exit_locals_patch_offset, '?exit-locals-patch-offset'     ; void -> fixnum
+code ?exit_locals_patch_offset, '?exit-locals-patch-offset' ; void -> fixnum
         _dup
         mov     rbx, ?exit_locals_patch
         sub     rbx, ?exit_locals
@@ -309,14 +309,15 @@ code ?exit_locals_patch_offset, '?exit-locals-patch-offset'     ; void -> fixnum
 endcode
 
 ; ### compile-?exit-locals
-code compile_?exit_locals, 'compile-?exit-locals' ;  symbol -> void
-; symbol is the name of the function being compiled (?exit_locals)
+code compile_?exit_locals, 'compile-?exit-locals' ;  node -> void
 
         _pc
         add       rbx, ?exit_locals_patch - ?exit_locals
         _tag_fixnum
-        _ add_forward_jump_address      ; -> symbol
+        _ add_forward_jump_address
 
+        ; -> node
+        _ node_operator
         _ inline_primitive              ; -> empty
 
         next
@@ -419,8 +420,7 @@ code compile_?return_locals, 'compile-?return-locals' ; symbol -> void
 endcode
 
 ; ### compile-primitive
-code compile_primitive, 'compile-primitive'
-; symbol -> void
+code compile_primitive, 'compile-primitive' ; symbol -> void
         _dup
 %ifdef DEBUG
         _ symbol_always_inline?
@@ -435,8 +435,6 @@ code compile_primitive, 'compile-primitive'
         mov     rax, rbx                ; rax: ^symbol
         pop     rbx
 
-        cmp     rax, symbol_raw_address(?exit_locals)
-        je      compile_?exit_locals
         cmp     rax, symbol_raw_address(?return_no_locals)
         je      compile_?return_no_locals
         cmp     rax, symbol_raw_address(?return_locals)
@@ -451,15 +449,52 @@ code compile_primitive, 'compile-primitive'
         next
 endcode
 
+asm_global compiler_initialized_, NIL
+
+; ### maybe-init
+code maybe_init, 'maybe-init'
+        cmp     qword [compiler_initialized_], NIL
+        jnz     .exit
+
+        _tick compile_?exit_locals
+        _quote "compiler"
+        _tick ?exit_locals
+        _ symbol_set_prop
+        mov     qword [compiler_initialized_], TRUE
+
+.exit:
+        next
+endcode
+
 ; ### compile-operator-node
 code compile_operator_node, 'compile-operator-node' ; node -> void
+
+        ; REVIEW
+        _ maybe_init
+
+        _quote "compiler"               ; -> node "compiler"
+        _over                           ; -> node "compiler" node
+        _ node_operator                 ; -> node "compiler" symbol
+        _ symbol_prop                   ; -> node compiler/nil
+        _ symbol?                       ; -> node compiler/nil
+        cmp     rbx, NIL
+        je      .1
+
+        ; -> node compiler
+        _ call_symbol
+        _return
+
+.1:
+        ; -> node nil
+        _drop                           ; -> node
+
         _ node_operator
         _dup
         _ symbol_primitive?
-        _tagged_if .1
+        _tagged_if .2
         _ compile_primitive
         _return
-        _then .1
+        _then .2
 
         ; not a primitive
         _ symbol_raw_code_address
