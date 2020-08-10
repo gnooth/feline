@@ -343,7 +343,7 @@ code fix_call, 'fix-call'               ; call-address target-address -> void
         next
 endcode
 
-; ### ?return-no-locals
+; ### ?return_no_locals
 always_inline ?return_no_locals, '?return_no_locals' ; ? quot ->
         cmp     qword [rbp], NIL
         je      .1
@@ -356,18 +356,18 @@ always_inline ?return_no_locals, '?return_no_locals' ; ? quot ->
 endinline
 
 ; ### compile-?return-no-locals
-code compile_?return_no_locals, 'compile-?return-no-locals' ; symbol -> void
-; symbol is the name of the function being compiled (?return-no-locals)
+code compile_?return_no_locals, 'compile-?return-no-locals' ; node -> void
 
         _pc
         add     rbx, ..@?return_no_locals_patch - ?return_no_locals
-        _tag_fixnum                     ; -> symbol tagged-call-address
+        _tag_fixnum                     ; -> node call-address
 
-        _swap                           ; -> tagged-call-address symbol
-        _ inline_primitive              ; -> tagged-call-address
+        _swap
+        _ node_operator
+        _ inline_primitive              ; -> call-address
 
         _tick call_quotation
-        _ symbol_code_address           ; -> tagged-call-address tagged-target-address
+        _ symbol_code_address           ; -> call-address target-address
 
         _ fix_call                      ; -> empty
 
@@ -393,8 +393,7 @@ always_inline ?return_locals, '?return_locals' ; ? quot ->
 endinline
 
 ; ### compile-?return-locals
-code compile_?return_locals, 'compile-?return-locals' ; symbol -> void
-; symbol is the name of the function being compiled (?returnx-locals)
+code compile_?return_locals, 'compile-?return-locals' ; node -> void
 
         _pc
         add     rbx, ..@?return_locals_patch1 - ?return_locals
@@ -404,10 +403,11 @@ code compile_?return_locals, 'compile-?return-locals' ; symbol -> void
         add     rbx, ..@?return_locals_patch2 - ?return_locals
         _tag_fixnum                     ; address to patch for jump to exit
 
-        ; -> symbol patch1-address patch2-address
-        _ add_forward_jump_address      ; -> symbol patch1-address
+        ; -> node patch1-address patch2-address
+        _ add_forward_jump_address      ; -> node patch1-address
 
-        _swap                           ; -> patch1-address symbol
+        _swap
+        _ node_operator
         _ inline_primitive              ; -> patch1-address
 
         _tick call_quotation
@@ -428,20 +428,7 @@ code compile_primitive, 'compile-primitive' ; symbol -> void
         _ symbol_inline?
 %endif
         _tagged_if .1
-
-        ; -> symbol
-        push    rbx
-        _ check_symbol                  ; -> symbol ^symbol
-        mov     rax, rbx                ; rax: ^symbol
-        pop     rbx
-
-        cmp     rax, symbol_raw_address(?return_no_locals)
-        je      compile_?return_no_locals
-        cmp     rax, symbol_raw_address(?return_locals)
-        je      compile_?return_locals
-
         _ inline_primitive
-
         _else .1
         _ symbol_raw_code_address
         _ compile_call
@@ -460,6 +447,17 @@ code maybe_init, 'maybe-init'
         _quote "compiler"
         _tick ?exit_locals
         _ symbol_set_prop
+
+        _tick compile_?return_no_locals
+        _quote "compiler"
+        _tick ?return_no_locals
+        _ symbol_set_prop
+
+        _tick compile_?return_locals
+        _quote "compiler"
+        _tick ?return_locals
+        _ symbol_set_prop
+
         mov     qword [compiler_initialized_], TRUE
 
 .exit:
