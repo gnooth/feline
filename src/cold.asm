@@ -258,6 +258,8 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         _ gc2_initialize_dispatch_table
         _ gc2_initialize_work_list
 
+        _ initialize_compiler
+
         _quote "boot.feline"
         _symbol load_system_file
         _ catch

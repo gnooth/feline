@@ -436,39 +436,33 @@ code compile_primitive, 'compile-primitive' ; symbol -> void
         next
 endcode
 
-asm_global compiler_initialized_, NIL
-
-; ### maybe-init
-code maybe_init, 'maybe-init'
-        cmp     qword [compiler_initialized_], NIL
-        jnz     .exit
-
-        _tick compile_?exit_locals
+; ### symbol-set-compiler
+code symbol_set_compiler, 'symbol-set-compiler' ; compiler symbol -> void
         _quote "compiler"
-        _tick ?exit_locals
+        _swap
         _ symbol_set_prop
+        next
+endcode
+
+; ### initialize-compiler
+code initialize_compiler, 'initialize-compiler'
+        _tick compile_?exit_locals
+        _tick ?exit_locals
+        _ symbol_set_compiler
 
         _tick compile_?return_no_locals
-        _quote "compiler"
         _tick ?return_no_locals
-        _ symbol_set_prop
+        _ symbol_set_compiler
 
         _tick compile_?return_locals
-        _quote "compiler"
         _tick ?return_locals
-        _ symbol_set_prop
+        _ symbol_set_compiler
 
-        mov     qword [compiler_initialized_], TRUE
-
-.exit:
         next
 endcode
 
 ; ### compile-operator-node
 code compile_operator_node, 'compile-operator-node' ; node -> void
-
-        ; REVIEW
-        _ maybe_init
 
         _quote "compiler"               ; -> node "compiler"
         _over                           ; -> node "compiler" node
