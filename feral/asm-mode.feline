@@ -23,17 +23,32 @@ global instance
 : get-instance                          // void -> mode
     instance ;
 
-: asm-mode-format-line ( s )            // string -> array-of-segments
-    ';' s string-find-char :> comment-start
+: format-line ( line )                  // line -> segments
+    line text>> detab !> s
 
-    comment-start [
-        comment-start s string-head 0 color-text make-segment/3
-        comment-start s string-tail comment-start color-comment make-segment/3
-        2array
+    8 make-vector :> vec
+
+    s length 0? [ vec ] ?return
+
+    '\s' s string-index s length or !> i
+    i 0> [ 0 i s substring ] [ nil ] if :> first-token
+
+    first-token { "%if" "%ifdef" "%else" "%endif" } member? [
+        first-token 0 color-preprocessor make-segment/3 vec push
+        first-token length s string-tail s!
     ] [
-        s 0 color-text make-segment/3
-        1array
-    ] if ;
+        0 i!
+    ] if
+
+    ';' s string-find-char :> j
+    j [
+        j s string-head i color-text make-segment/3 vec push
+        j s string-tail j color-comment make-segment/3 vec push
+    ] [
+        s i color-text make-segment/3 vec push
+    ] if
+
+    vec ;
 
 : line-is-definition? ( line )
     line text>> string-trim-head :> s
@@ -69,7 +84,7 @@ initialize-local-map
     "Assembly" m name<<
     8 m indent-size<<
     "; " m comment-start<<
-    ' asm-mode-format-line m formatter<<
+    ' format-line m format-line-function<<
     ' asm-mode-initialize-buffer m initialize-buffer-function<<
     ' asm-mode-identifier-char? m identifier-char-function<<
     m ".asm" modes set-at
