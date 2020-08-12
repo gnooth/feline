@@ -45,7 +45,7 @@ in: feral-colors
 255 165   0 make-colorref constant color-name
   0 170   0 make-colorref constant color-string
   0 153 153 make-colorref constant color-combinator
-255   0   0 make-colorref constant color-preprocessor
+255  69   0 make-colorref constant color-preprocessor
 210 105  30 make-colorref constant color-keyword
 153  77   0 make-colorref constant color-type
 
@@ -67,7 +67,7 @@ in: feral-colors
 255 165   0 rgb-foreground-prefix constant color-name
   0 170   0 rgb-foreground-prefix constant color-string
   0 153 153 rgb-foreground-prefix constant color-combinator
-255   0   0 rgb-foreground-prefix constant color-preprocessor
+255  69   0 rgb-foreground-prefix constant color-preprocessor
 210 105  30 rgb-foreground-prefix constant color-keyword
 153  77   0 rgb-foreground-prefix constant color-type
 
