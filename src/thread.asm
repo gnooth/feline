@@ -391,7 +391,8 @@ code current_thread_raw_sp0, 'current_thread_raw_sp0', SYMBOL_INTERNAL
         cmp     rbx, NIL
         je      .too_soon
         ; -> thread
-        _thread_raw_sp0
+        _handle_to_object_unsafe
+        mov     rbx, [rbx + THREAD_RAW_SP0_OFFSET]
         next
 
 .too_soon:
