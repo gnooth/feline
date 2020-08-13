@@ -22,7 +22,7 @@ global sourcefile
 
 global feline-symbols
 
-: asm-process-2-symbols ( token s lineno ) // token string fixnum -> void
+: asm-process-2-symbols ( token s lineno symbols ) // token string fixnum hashtable -> void
     local begin
     local end
 
@@ -31,7 +31,7 @@ global feline-symbols
 
     sourcefile lineno 1+ 2array // location
     begin end s substring // symbol
-    feline-symbols set-at
+    symbols set-at
 
     end 2 + s nth :> quotechar
     quotechar { '\'' '"' } member-eq? [
@@ -40,10 +40,10 @@ global feline-symbols
 
         sourcefile lineno 1+ 2array // location
         begin end s substring // symbol
-        feline-symbols set-at
+        symbols set-at
     ] when ;
 
-: asm-process-1-symbol ( token s lineno ) // token string fixnum -> void
+: asm-process-1-symbol ( token s lineno symbols ) // token string fixnum hashtable -> void
     local begin
     local end
 
@@ -53,10 +53,10 @@ global feline-symbols
 
     sourcefile lineno 1+ 2array // location
     begin end s substring // symbol
-    feline-symbols set-at ;
+    symbols set-at ;
 
-: asm-process-line // string fixnum -> void
-    2 ?enough :> lineno :> s
+: asm-process-line // string fixnum symbols -> void
+    :> symbols :> lineno :> s
 
     local token
 
@@ -65,13 +65,13 @@ global feline-symbols
     token nil? ?exit
 
     token { "code" "inline" "always_inline" "generic" "special" "deferred" } member?
-    [ token s lineno asm-process-2-symbols ] ?return
+    [ token s lineno symbols asm-process-2-symbols ] ?return
 
     token { "subroutine" "%macro" "asm_global" "%define" } member?
-    [ token s lineno asm-process-1-symbol ] when ;
+    [ token s lineno symbols asm-process-1-symbol ] when ;
 
 : process-asm-file
-    sourcefile file-lines [ asm-process-line ] each-index ;
+    sourcefile file-lines [ feline-symbols asm-process-line ] each-index ;
 
 global in-vocab
 
@@ -326,9 +326,18 @@ global in-vocab
         sourcefile file? [ process-feline-file ] when
     ] each ;
 
-: scan-current-buffer
+: scan-asm-buffer                       // void -> hashtable
     256 <hashtable> :> symbols
-    current-buffer filename>> sourcefile!
+    first-line !> line
+    nil in-vocab!
+    [ line ] [
+        line text>> line number>> symbols asm-process-line
+        line next>> line!
+    ] while
+    symbols ;
+
+: scan-feline-buffer                    // void -> hashtable
+    256 <hashtable> :> symbols
     first-line !> line
     nil in-vocab!
     [ line ] [
@@ -337,6 +346,13 @@ global in-vocab
     ] while
     symbols ;
 
+: scan-current-buffer                   // void -> hashtable
+    current-buffer filename>> sourcefile!
+    sourcefile file-name-extension {
+        ".asm"      => [ scan-asm-buffer ]
+        ".feline"   => [ scan-feline-buffer ]
+    } match ;
+
 public
 
 : find-definition ( name )              // string -> 2array/nil
@@ -344,8 +360,8 @@ public
 
     local location
 
-    current-buffer filename>> [
-        file-name-extension ".feline" = [
+    current-buffer-filename [
+        file-name-extension { ".asm" ".feline" } member? [
             name scan-current-buffer at location!
         ] when
     ] when*
