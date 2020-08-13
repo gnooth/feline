@@ -387,8 +387,16 @@ endcode
 ; ### current_thread_raw_sp0
 code current_thread_raw_sp0, 'current_thread_raw_sp0', SYMBOL_INTERNAL
         _ current_thread
-        _ check_thread
+        _ thread?                       ; -> thread/nil
+        cmp     rbx, NIL
+        je      .too_soon
+        ; -> thread
         _thread_raw_sp0
+        next
+
+.too_soon:
+        ; -> nil
+        mov     rbx, [primordial_sp0_]
         next
 endcode
 
