@@ -33,7 +33,7 @@ global instance
     '\s' s string-index s length or !> i
     i 0> [ 0 i s substring ] [ nil ] if :> first-token
 
-    first-token { "%if" "%ifdef" "%else" "%endif" } member? [
+    first-token { "%if" "%ifdef" "%ifndef" "%else" "%endif" } member? [
         first-token 0 color-preprocessor make-segment/3 vec push
         first-token length s string-tail s!
     ] [
