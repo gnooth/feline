@@ -56,7 +56,7 @@ global feline-symbols
     symbols set-at ;
 
 : asm-process-line // string fixnum symbols -> void
-    3 ?enough :> symbols :> lineno :> s
+    :> symbols :> lineno :> s
 
     local token
 
@@ -327,7 +327,6 @@ global in-vocab
     ] each ;
 
 : scan-asm-buffer                       // void -> hashtable
-    "scan-asm-buffer" dprintf
     256 <hashtable> :> symbols
     first-line !> line
     nil in-vocab!
@@ -338,7 +337,6 @@ global in-vocab
     symbols ;
 
 : scan-feline-buffer                    // void -> hashtable
-    "scan-feline-buffer" dprintf
     256 <hashtable> :> symbols
     first-line !> line
     nil in-vocab!
@@ -351,8 +349,8 @@ global in-vocab
 : scan-current-buffer                   // void -> hashtable
     current-buffer filename>> sourcefile!
     sourcefile file-name-extension {
-        ".asm"      => [ ' scan-asm-buffer time ]
-        ".feline"   => [ ' scan-feline-buffer time ]
+        ".asm"      => [ scan-asm-buffer ]
+        ".feline"   => [ scan-feline-buffer ]
     } match ;
 
 public
