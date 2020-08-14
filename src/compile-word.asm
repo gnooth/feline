@@ -15,27 +15,6 @@
 
 file __FILE__
 
-asm_global compile_verbose_, NIL
-
-; ### +v
-code verbose_on, '+v'
-        mov     qword [compile_verbose_], TRUE
-        next
-endcode
-
-; ### -v
-code verbose_off, '-v'
-        mov     qword [compile_verbose_], NIL
-        next
-endcode
-
-; ### compile-verbose?
-code compile_verbose?, 'compile-verbose?' ; -> ?
-        _dup
-        mov     rbx, [compile_verbose_]
-        next
-endcode
-
 ; tuple: compiler-context
 ;     pc
 ;     origin
