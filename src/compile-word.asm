@@ -67,6 +67,22 @@ endcode
         _check_fixnum
 %endmacro
 
+; ### origin
+code origin, 'origin'                   ; void -> fixnum
+        _lit tagged_fixnum(1)
+        _ current_context
+        _ array_nth
+        next
+endcode
+
+; ### origin!
+code set_origin, 'origin!'              ; fixnum -> void
+        _lit tagged_fixnum(1)
+        _ current_context
+        _ array_set_nth
+        next
+endcode
+
 ; ### initialize-code-block
 code initialize_code_block, 'initialize-code-block' ; size -> address
         _check_fixnum
@@ -185,8 +201,7 @@ code emit_raw_qword, 'emit_raw_qword'   ; raw-qword -> void
 endcode
 
 ; ### compile-call
-code compile_call, 'compile-call', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; raw-address -> void
+code compile_call, 'compile-call'       ; raw-address -> void
         _dup
         _pc
         add     rbx, 5
@@ -659,14 +674,9 @@ code primitive_compile_quotation, 'primitive-compile-quotation' ; quotation -> v
         _tag_fixnum
 
         _ initialize_code_block         ; -> tagged-address
-
         _dup
+        _ set_origin
         _ set_pc
-        _check_fixnum
-
-        ; save untagged address of code block on the return stack
-        push    rbx
-        _drop                           ; -> empty
 
         ; prolog
         _ compile_prolog
@@ -682,12 +692,14 @@ code primitive_compile_quotation, 'primitive-compile-quotation' ; quotation -> v
 
         _ patch_forward_jumps
 
-        _rfetch                         ; -> raw-code-address
+        _ origin
+        _check_fixnum
         _this_quotation_set_raw_code_address
 
-        _pc
-        _rfrom
-        _minus
+        _ pc
+        _ origin
+        _ fast_fixnum_minus
+        _check_fixnum
         _this_quotation_set_raw_code_size
 
         pop     this_register
