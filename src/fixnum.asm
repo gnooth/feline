@@ -174,15 +174,34 @@ endinline
 ; REVIEW name
 ; Swift uses the & prefix for its opt-in wrap-around overflow operators (&+, &-, &*).
 ; Feline's &+ errors on overflow, but is otherwise guaranteed to return a fixnum.
-; Feline's generic + operator promotes to a float on overflow.
 code fast_fixnum_plus, '&+'             ; fixnum fixnum -> fixnum
         test    bl, FIXNUM_TAG
         jz      error_not_fixnum
         test    qword [rbp], FIXNUM_TAG
         jz      .1
-        sub     rbx, 1                          ; zero tag bit
+        sub     rbx, 1                  ; zero tag bit
         add     rbx, qword [rbp]
         jo      error_fixnum_overflow
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+.1:
+        mov     rbx, [rbp]
+        jmp     error_not_fixnum
+endcode
+
+; ### &-
+; REVIEW name
+; Swift uses the & prefix for its opt-in wrap-around overflow operators (&+, &-, &*).
+; Feline's &- errors on overflow, but is otherwise guaranteed to return a fixnum.
+code fast_fixnum_minus, '&-'            ; fixnum fixnum -> fixnum
+        test    bl, FIXNUM_TAG
+        jz      error_not_fixnum
+        test    qword [rbp], FIXNUM_TAG
+        jz      .1
+        sub     [rbp], rbx
+        jo      error_fixnum_overflow
+        mov     rbx, [rbp]
+        or      rbx, FIXNUM_TAG
         lea     rbp, [rbp + BYTES_PER_CELL]
         next
 .1:

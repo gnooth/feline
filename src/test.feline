@@ -4812,4 +4812,39 @@ test: bit-array-test
 
 bit-array-test
 
+test: &+-test
+    { 3 } [ 1 2 &+ ] unit-test
+    { 3 } [ 2 1 &+ ] unit-test
+    { -1 } [ 1 -2 &+ ] unit-test
+    { -1 } [ -2 1 &+ ] unit-test
+    { 4611686018427387903 } [ 0 most-positive-fixnum &+ ] unit-test
+    { 4611686018427387903 } [ most-positive-fixnum 0 &+ ] unit-test
+    { -1 } [ most-negative-fixnum most-positive-fixnum &+ ] unit-test
+    { -1 } [ most-positive-fixnum most-negative-fixnum &+ ] unit-test
+
+    [ most-positive-fixnum 1 &+ ] assert-must-fail
+    [ 1 most-positive-fixnum &+ ] assert-must-fail
+;
+
+&+-test
+
+test: &--test
+    { -1 } [ 1 2 &- ] unit-test
+    { 1 } [ 2 1 &- ] unit-test
+    { 3 } [ 1 -2 &- ] unit-test
+    { -3 } [ -2 1 &- ] unit-test
+    { -4611686018427387903 } [ 0 most-positive-fixnum &- ] unit-test
+    { -4611686018427387902 } [ 1 most-positive-fixnum &- ] unit-test
+    { 4611686018427387903 } [ most-positive-fixnum 0 &- ] unit-test
+    { 4611686018427387902 } [ most-positive-fixnum 1 &- ] unit-test
+    { 1 } [ most-positive-fixnum dup 1- &- ] unit-test
+    { 0 } [ most-positive-fixnum dup &- ] unit-test
+    { -4611686018427387903 } [ most-negative-fixnum -1 &- ] unit-test
+    { 4611686018427387903 } [ -1 most-negative-fixnum &- ] unit-test
+
+    [ most-negative-fixnum 1 &- ] assert-must-fail
+;
+
+&--test
+
 ?nl "Reached end of test.feline" write-string
