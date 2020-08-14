@@ -51,18 +51,11 @@ code make_compiler_context, 'make-compiler-context' ; void -> context
         next
 endcode
 
-asm_global current_context_, NIL
-
-; ### current-context
-code current_context, 'current-context', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-        _dup
-        mov     rbx, [current_context_]
-        next
-endcode
+feline_global current_context, 'current-context'
 
 ; ### current-context!
-code set_current_context, 'current-context!', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-        mov     [current_context_], rbx
+code set_current_context, 'current-context!' ; x -> void
+        xchg    [S_current_context_symbol_value], rbx
         _drop
         next
 endcode
