@@ -36,10 +36,6 @@ code compile_verbose?, 'compile-verbose?' ; -> ?
         next
 endcode
 
-%define USE_COMPILER_CONTEXT
-
-%ifdef USE_COMPILER_CONTEXT
-
 ; tuple: compiler-context
 ;     pc
 ;     origin
@@ -94,21 +90,10 @@ code set_pc, 'pc!'                      ; fixnum -> void
         next
 endcode
 
-%endif
-
-%ifdef USE_COMPILER_CONTEXT
 %macro _pc 0
         _ pc
         _check_fixnum
 %endmacro
-%else
-asm_global pc_, 0
-
-%macro _pc 0
-        _dup
-        mov     rbx, [pc_]
-%endmacro
-%endif
 
 ; ### initialize-code-block
 code initialize_code_block, 'initialize-code-block' ; size -> address
@@ -186,7 +171,6 @@ code add_code_size, 'add-code-size'     ; accum node -> accum
         next
 endcode
 
-%ifdef USE_COMPILER_CONTEXT
 ; ### emit-byte
 code emit_byte, 'emit-byte'     ; byte -> void
         _ pc
@@ -203,17 +187,9 @@ endcode
         _tag_fixnum
         _ emit_byte
 %endmacro
-%else
-%macro _emit_raw_byte 1
-        mov     rdx, [pc_]
-        add     qword [pc_], 1
-        mov     byte [rdx], %1
-%endmacro
-%endif
 
 ; ### emit_raw_dword
 code emit_raw_dword, 'emit_raw_dword'   ; dword -> void
-%ifdef USE_COMPILER_CONTEXT
         _tag_fixnum
         _ pc
         _ lstore
@@ -222,18 +198,10 @@ code emit_raw_dword, 'emit_raw_dword'   ; dword -> void
         _ fixnum_fixnum_plus
         _ set_pc
         next
-%else
-        mov     rdx, [pc_]
-        mov     [rdx], ebx
-        add     qword [pc_], 4
-        _drop
-        next
-%endif
 endcode
 
 ; ### emit_raw_qword
 code emit_raw_qword, 'emit_raw_qword'   ; raw-qword -> void
-%ifdef USE_COMPILER_CONTEXT
         _ new_uint64
         _ pc
         _ store
@@ -242,13 +210,6 @@ code emit_raw_qword, 'emit_raw_qword'   ; raw-qword -> void
         _ fixnum_fixnum_plus
         _ set_pc
         next
-%else
-        mov     rdx, [pc_]
-        mov     [rdx], rbx
-        add     qword [pc_], 8
-        _drop
-        next
-%endif
 endcode
 
 ; ### compile-call
@@ -344,46 +305,6 @@ code add_forward_jump_address, 'add-forward-jump-address' ; tagged-address -> vo
         next
 endcode
 
-%ifndef USE_COMPILER_CONTEXT
-; ### inline-primitive
-code inline_primitive, 'inline-primitive' ; symbol -> void
-
-%ifdef DEBUG
-        _dup
-        _ symbol_inline?
-        _tagged_if_not .1
-        _error "symbol not inline"
-        _return
-        _then .1
-%endif
-
-        push    rbx
-        _ symbol_raw_code_address
-        _dup
-        pop     rbx
-        _ symbol_raw_code_size          ; -> raw-code-address raw-code-size
-
-        sub     rbx, 1                  ; adjust size to exclude ret instruction
-
-        mov     arg0_register, [rbp]    ; source address
-        mov     arg1_register, [pc_]    ; destination address
-        mov     arg2_register, rbx      ; size
-        _ copy_bytes                    ; -> addr size
-
-        add     qword [pc_], rbx
-        _2drop
-        next
-endcode
-%endif
-
-%ifdef USE_COMPILER_CONTEXT
-; : inline-primitive
-;     dup symbol-code-address
-;     swap symbol-code-size               // -> address size
-;     1-                                  // adjust size to exclude ret instruction
-;     pc swap [ unsafe-copy-bytes ] keep  // -> size
-;     pc + pc! ;
-
 ; ### inline-primitive
 code inline_primitive, 'inline-primitive' ; symbol -> void
         _dup
@@ -400,7 +321,6 @@ code inline_primitive, 'inline-primitive' ; symbol -> void
         _ set_pc
         next
 endcode
-%endif
 
 ; ### ?exit-no-locals
 always_inline ?exit_no_locals, '?exit_no_locals'
@@ -712,14 +632,10 @@ endcode
 ; ### compile-epilog
 code compile_epilog, 'compile-epilog'
 
-%ifdef USE_COMPILER_CONTEXT
         _ pc
         _untag_fixnum
         mov     rax, rbx
         _drop
-%else
-        mov     rax, [pc_]
-%endif
         mov     [exit_address_], rax
 
         _ locals_count          ; -> tagged-fixnum
@@ -747,9 +663,7 @@ endcode
 ; ### primitive-compile-quotation
 code primitive_compile_quotation, 'primitive-compile-quotation' ; quotation -> void
 
-%ifdef USE_COMPILER_CONTEXT
         _ new_context
-%endif
 
         _debug_?enough 1
 
@@ -774,14 +688,9 @@ code primitive_compile_quotation, 'primitive-compile-quotation' ; quotation -> v
 
         _ initialize_code_block         ; -> tagged-address
 
-%ifdef USE_COMPILER_CONTEXT
         _dup
         _ set_pc
         _check_fixnum
-%else
-        _check_fixnum                   ; -> untagged-address
-        mov     [pc_], rbx
-%endif
 
         ; save untagged address of code block on the return stack
         push    rbx
@@ -854,22 +763,13 @@ deferred compile_word, 'compile-word', primitive_compile_word
 ; ### compile-deferred
 code compile_deferred, 'compile-deferred'       ; symbol -> void
 
-%ifdef USE_COMPILER_CONTEXT
         _ new_context
-%endif
 
         _lit tagged_fixnum(16)
         _ initialize_code_block         ; -> symbol address
 
-%ifdef USE_COMPILER_CONTEXT
         _dup
         _ set_pc
-%else
-        _dup
-        _check_fixnum
-        mov     [pc_], rbx
-        _drop
-%endif
 
         ; -> symbol address
         ; REVIEW set current context origin slot
