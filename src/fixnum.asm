@@ -15,36 +15,27 @@
 
 file __FILE__
 
+%define MAX_INT32        2147483647
 %define MIN_INT32       -2147483648
-
-%define MAX_INT32       2147483647
-
-; ### min-int32
-feline_constant min_int32, 'min-int32', tagged_fixnum(MIN_INT32)
 
 ; ### max-int32
 feline_constant max_int32, 'max-int32', tagged_fixnum(MAX_INT32)
 
-; ### raw_int32?
-code raw_int32?, 'raw_int32?'           ; untagged-fixnum -> ?
-        cmp     rbx, MIN_INT32
-        jl      .1
-        cmp     rbx, MAX_INT32
-        jg      .1
-        mov     ebx, TRUE
-        next
-.1:
-        mov     ebx, NIL
-        next
-endcode
+; ### min-int32
+feline_constant min_int32, 'min-int32', tagged_fixnum(MIN_INT32)
 
 ; ### int32?
-code int32?, 'int32?'                   ; tagged-fixnum -> ?
+code int32?, 'int32?'                   ; x -> x/nil
         test    bl, FIXNUM_TAG
-        jz      .1
-        _untag_fixnum
-        jmp     raw_int32?
-.1:
+        jz      .not_int32
+        mov     rax, rbx
+        sar     rax, FIXNUM_TAG_BITS
+        cmp     rax, MIN_INT32
+        jl      .not_int32
+        cmp     rax, MAX_INT32
+        jg      .not_int32
+        next
+.not_int32:
         mov     ebx, NIL
         next
 endcode

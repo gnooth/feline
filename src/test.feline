@@ -2486,19 +2486,18 @@ sqrt-test-1
 test: int32?-test-1
     most-negative-fixnum int32? assert-false
     min-int32 1 - int32? assert-false
-    min-int32 int32? assert-true
-    min-int32 1 + int32? assert-true
-    -1 int32? assert-true
-    0 int32? assert-true
-    1 int32? assert-true
-    max-int32 1 - int32? assert-true
-    max-int32 int32? assert-true
+    min-int32 dup int32? assert-eq      // int32? returns its argument instead of true
+    min-int32 1 + dup int32? assert-eq
+    -1 dup int32? assert-eq
+    0 dup int32? assert-eq
+    1 dup int32? assert-eq
+    max-int32 1 - dup int32? assert-eq
+    max-int32 dup int32? assert-eq
     max-int32 1 + int32? assert-false
     most-positive-fixnum int32? assert-false
 
     pi int32? assert-false
-    "test" int32? assert-false
-;
+    "test" int32? assert-false ;
 
 int32?-test-1
 
