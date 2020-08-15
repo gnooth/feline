@@ -715,8 +715,112 @@ code compile_quotation, 'compile-quotation' ; quotation -> quotation
         next
 endcode
 
+%define USE_WORKLIST
+
+%ifdef USE_WORKLIST
+
+feline_global worklist, 'worklist'
+
+; ### worklist!
+code set_worklist, 'worklist!'          ; x -> void
+        xchg    [S_worklist_symbol_value], rbx
+        _drop
+        next
+endcode
+
+; ### add-quotation
+code add_quotation, 'add-quotation'     ; quotation -> void
+        _ ?enough_1
+        _ verify_quotation
+
+        _ worklist
+        _ verify_vector
+        _ push
+        next
+endcode
+
+; ### add-children
+code add_children, 'add-children'       ; quotation -> void
+        _ ?enough_1
+        _ verify_quotation
+
+        _tick maybe_add_quotation_and_children
+        _ each
+        next
+endcode
+
+; ### add-quotation-and-children
+code add_quotation_and_children, 'add-quotation-and-children' ; quotation -> void
+        _ ?enough_1
+        _ verify_quotation
+
+        _ dup
+        _ add_quotation
+        _ add_children
+        next
+endcode
+
+; ### maybe-add-quotation-and-children
+code maybe_add_quotation_and_children, 'maybe-add-quotation-and-children' ; x -> void
+        _ ?enough_1
+
+        _ quotation?                    ; -> quotation/nil
+        cmp     rbx, NIL
+        je      drop
+        ; -> quotation
+        _ add_quotation_and_children
+        next
+endcode
+
+; ### build-worklist
+code build_worklist, 'build-worklist'   ; word -> void
+        _ ?enough_1
+
+        _lit tagged_fixnum(32)
+        _ make_vector
+        _ set_worklist
+
+        ; -> word
+        _ symbol_def
+        _ verify_quotation
+        _ add_quotation_and_children
+        next
+endcode
+
+; : compile-word                          // symbol -> void
+;     1 ?enough verify-symbol :> word
+;     word process-definition
+;     worklist vector-reverse! drop
+;     worklist vector-pop*
+;     0 set-locals-count
+;     worklist [ primitive-compile-quotation ] each
+;     word primitive-compile-word ;
+
+; ### process-worklist
+code process_worklist, 'process-worklist' ; void -> void
+        _ worklist
+        _ vector_reverse_in_place       ; -> vector
+        _drop
+        _ worklist
+        _ vector_pop_star
+        _lit tagged_zero
+        _ set_locals_count
+        _ worklist
+        _tick primitive_compile_quotation
+        _ each
+        next
+endcode
+
+%endif
+
 ; ### primitive-compile-word
-code primitive_compile_word, 'primitive-compile-word' ; symbol -> void
+code primitive_compile_word, 'primitive-compile-word' ; word -> void
+
+%ifdef USE_WORKLIST
+        _dup
+        _ build_worklist
+        _ process_worklist
+%endif
 
         _dup
         _ symbol_get_locals_count
@@ -745,7 +849,7 @@ endcode
 deferred compile_word, 'compile-word', primitive_compile_word
 
 ; ### compile-deferred
-code compile_deferred, 'compile-deferred'       ; symbol -> void
+code compile_deferred, 'compile-deferred' ; symbol -> void
 
         _ new_context
 
