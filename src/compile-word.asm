@@ -25,7 +25,8 @@ code make_compiler_context, 'make-compiler-context' ; void -> context
 ; REVIEW maybe add quotation slot
         _nil                            ; pc
         _nil                            ; origin
-        _nil                            ; pending
+        _lit tagged_fixnum(10)
+        _ make_vector                   ; pending
         _ three_array
         next
 endcode
@@ -80,6 +81,14 @@ code set_origin, 'origin!'              ; fixnum -> void
         _lit tagged_fixnum(1)
         _ current_context
         _ array_set_nth
+        next
+endcode
+
+; ### pending
+code pending, 'pending'                 ; void -> fixnum
+        _lit tagged_fixnum(2)
+        _ current_context
+        _ array_nth
         next
 endcode
 
@@ -270,6 +279,22 @@ code compile_literal, 'compile-literal' ; literal -> void
         next
 endcode
 
+; ### flush-pending
+code flush_pending, 'flush-pending'     ; void -> void
+        _ pending
+        _ vector_length
+        cmp     rbx, tagged_zero
+        _drop
+        jz      .exit
+        _ pending
+        _tick compile_literal_node
+        _ vector_each
+        _ pending
+        _ vector_delete_all
+.exit:
+        next
+endcode
+
 asm_global forward_jumps_, NIL
 
 code forward_jumps, 'forward-jumps'     ; void -> vector/nil
@@ -345,6 +370,8 @@ endcode
 ; ### compile-?exit-locals
 code compile_?exit_locals, 'compile-?exit-locals' ;  node -> void
 
+        _ flush_pending
+
         _pc
         add       rbx, ?exit_locals_patch - ?exit_locals
         _tag_fixnum
@@ -392,6 +419,8 @@ endinline
 ; ### compile-?return-no-locals
 code compile_?return_no_locals, 'compile-?return-no-locals' ; node -> void
 
+        _ flush_pending
+
         _pc
         add     rbx, ..@?return_no_locals_patch - ?return_no_locals
         _tag_fixnum                     ; -> node call-address
@@ -428,6 +457,8 @@ endinline
 
 ; ### compile-?return-locals
 code compile_?return_locals, 'compile-?return-locals' ; node -> void
+
+        _ flush_pending
 
         _pc
         add     rbx, ..@?return_locals_patch1 - ?return_locals
@@ -495,9 +526,21 @@ code initialize_compiler, 'initialize-compiler'
         next
 endcode
 
+; ### inline-or-compile-call
+code inline_or_compile_call, 'inline-or-compile-call' ; word -> void
+        _dup
+        _ symbol_primitive?
+        _tagged_if .1
+        _ compile_primitive
+        _else .1
+        _ symbol_raw_code_address
+        _ compile_call
+        _then .1
+        next
+endcode
+
 ; ### compile-operator-node
 code compile_operator_node, 'compile-operator-node' ; node -> void
-
         _quote "compiler"               ; -> node "compiler"
         _over                           ; -> node "compiler" node
         _ node_operator                 ; -> node "compiler" symbol
@@ -513,19 +556,9 @@ code compile_operator_node, 'compile-operator-node' ; node -> void
 .1:
         ; -> node nil
         _drop                           ; -> node
-
+        _ flush_pending
         _ node_operator
-        _dup
-        _ symbol_primitive?
-        _tagged_if .2
-        _ compile_primitive
-        _return
-        _then .2
-
-        ; not a primitive
-        _ symbol_raw_code_address
-        _ compile_call
-
+        _ inline_or_compile_call
         next
 endcode
 
@@ -543,7 +576,9 @@ code compile_node, 'compile-node'       ; node -> void
         _tagged_if .1
         _ compile_operator_node
         _else .1
-        _ compile_literal_node
+        ; literal node
+        _ pending
+        _ vector_push
         _then .1
         next
 endcode
@@ -684,6 +719,8 @@ code primitive_compile_quotation, 'primitive-compile-quotation' ; quotation -> v
         ; body
         _tick compile_node
         _ each
+
+        _ flush_pending
 
         ; epilog
         _ compile_epilog
