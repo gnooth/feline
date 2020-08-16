@@ -227,15 +227,22 @@ endcode
         _ emit_byte
 %endmacro
 
-; ### emit_raw_dword
-code emit_raw_dword, 'emit_raw_dword'   ; dword -> void
-        _tag_fixnum
+; ### emit-int32
+code emit_int32, 'emit-int32'           ; int32 -> void
+        _ verify_int32
         _ pc
         _ lstore
         _ pc
         _lit tagged_fixnum(4)
-        _ fixnum_fixnum_plus
+        _ fast_fixnum_plus
         _ set_pc
+        next
+endcode
+
+; ### emit_raw_dword
+code emit_raw_dword, 'emit_raw_dword'   ; dword -> void
+        _tag_fixnum
+        _ emit_int32
         next
 endcode
 
