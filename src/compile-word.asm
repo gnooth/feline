@@ -92,6 +92,28 @@ code pending, 'pending'                 ; void -> fixnum
         next
 endcode
 
+; ### pending-last
+code pending_last, 'pending-last'       ; void -> node/nil
+        _ pending
+        _ vector_last
+        next
+endcode
+
+; ### pending-last-value
+code pending_last_value, 'pending-last-value' ; void -> x
+        _ pending
+        _ vector_last
+        _ node_literal_value
+        next
+endcode
+
+; ### pending-remove-last
+code pending_remove_last, 'pending-remove-last' ; void -> void
+        _ pending
+        _ vector_pop_star
+        next
+endcode
+
 ; ### initialize-code-block
 code initialize_code_block, 'initialize-code-block' ; size -> address
         _check_fixnum
@@ -169,12 +191,19 @@ code add_code_size, 'add-code-size'     ; accum node -> accum
 endcode
 
 ; ### emit-byte
-code emit_byte, 'emit-byte'     ; byte -> void
+code emit_byte, 'emit-byte'             ; byte -> void
         _ pc
         _ cstore
         _ pc
         _ oneplus
         _ set_pc
+        next
+endcode
+
+; ### emit-bytes
+code emit_bytes, 'emit-bytes'           ; bytes -> void
+        _tick emit_byte
+        _ each
         next
 endcode
 
