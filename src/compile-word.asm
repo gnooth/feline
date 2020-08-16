@@ -205,6 +205,7 @@ endcode
 
 ; ### emit-byte
 code emit_byte, 'emit-byte'             ; byte -> void
+        _verify_fixnum
         _ pc
         _ cstore
         _ pc
@@ -220,10 +221,9 @@ code emit_bytes, 'emit-bytes'           ; bytes -> void
         next
 endcode
 
-%macro _emit_raw_byte 1
+%macro _emit_byte 1
         _dup
-        mov     rbx, %1
-        _tag_fixnum
+        mov     rbx, tagged_fixnum(%1)
         _ emit_byte
 %endmacro
 
@@ -268,7 +268,7 @@ code compile_call, 'compile-call'       ; address -> void
         jg      .1
 
         _drop                           ; -> raw-address
-        _emit_raw_byte 0xe8
+        _emit_byte 0xe8
         _pc
         add     rbx, 4
         _minus
@@ -281,19 +281,19 @@ code compile_call, 'compile-call'       ; address -> void
         jl      .2
 
         ; raw address fits in 32 bits
-        _emit_raw_byte 0xb8
+        _emit_byte 0xb8
         _ emit_raw_dword                ; mov eax, raw-address
         jmp     .3
 
 .2:
         ; raw address does not fit in 32 bits
-        _emit_raw_byte 0x48
-        _emit_raw_byte 0xb8
+        _emit_byte 0x48
+        _emit_byte 0xb8
         _ emit_raw_qword                ; mov rax, raw-address
 
 .3:
-        _emit_raw_byte 0xff
-        _emit_raw_byte 0xd0             ; call rax
+        _emit_byte 0xff
+        _emit_byte 0xd0                 ; call rax
 
         next
 endcode
@@ -321,11 +321,11 @@ code compile_literal, 'compile-literal' ; literal -> void
         _lit 0x100000000
         _ult
         _if .2
-        _emit_raw_byte 0xbb
+        _emit_byte 0xbb
         _ emit_raw_dword
         _else .2
-        _emit_raw_byte 0x48
-        _emit_raw_byte 0xbb
+        _emit_byte 0x48
+        _emit_byte 0xbb
         _ emit_raw_qword
         _then .2
         next
@@ -641,27 +641,27 @@ endcode
 ; ### compile-prolog
 code compile_prolog, 'compile-prolog'
 
-        _ locals_count          ; -> tagged-fixnum
+        _ locals_count                  ; -> tagged-fixnum
         test    bl, FIXNUM_TAG
         jz      error_not_fixnum
         sar     rbx, FIXNUM_TAG_BITS
-        jz      drop            ; nothing to do if locals-count is 0
+        jz      drop                    ; nothing to do if locals-count is 0
 
         ; we have locals
-        _emit_raw_byte 0x41
-        _emit_raw_byte 0x56     ; push r14
+        _emit_byte 0x41
+        _emit_byte 0x56                 ; push r14
 
-        _emit_raw_byte 0x48
-        _emit_raw_byte 0x81
-        _emit_raw_byte 0xec
+        _emit_byte 0x48
+        _emit_byte 0x81
+        _emit_byte 0xec
 
         ; -> raw-count (in rbx)
-        shl     rbx, 3          ; convert cells to bytes
-        _ emit_raw_dword        ; sub rsp, number of bytes
+        shl     rbx, 3                  ; convert cells to bytes
+        _ emit_raw_dword                ; sub rsp, number of bytes
 
-        _emit_raw_byte 0x49
-        _emit_raw_byte 0x89
-        _emit_raw_byte 0xe6     ; mov r14, rsp
+        _emit_byte 0x49
+        _emit_byte 0x89
+        _emit_byte 0xe6                 ; mov r14, rsp
 
         ; -> empty
         next
@@ -715,24 +715,24 @@ code compile_epilog, 'compile-epilog'
         _drop
         mov     [exit_address_], rax
 
-        _ locals_count          ; -> tagged-fixnum
+        _ locals_count                  ; -> tagged-fixnum
         test    bl, FIXNUM_TAG
         jz      error_not_fixnum
         sar     rbx, FIXNUM_TAG_BITS
-        jz      drop            ; nothing to do if locals-count is 0
+        jz      drop                    ; nothing to do if locals-count is 0
 
         ; we have locals
-        _emit_raw_byte 0x48
-        _emit_raw_byte 0x81
-        _emit_raw_byte 0xc4
+        _emit_byte 0x48
+        _emit_byte 0x81
+        _emit_byte 0xc4
 
         ; -> raw-count (in rbx)
-        shl     rbx, 3          ; convert cells to bytes
-        _ emit_raw_dword        ; add rsp, number of bytes
+        shl     rbx, 3                  ; convert cells to bytes
+        _ emit_raw_dword                ; add rsp, number of bytes
 
         ; -> empty
-        _emit_raw_byte 0x41
-        _emit_raw_byte 0x5e     ; pop r14
+        _emit_byte 0x41
+        _emit_byte 0x5e                 ; pop r14
 
         next
 endcode
@@ -780,7 +780,7 @@ code primitive_compile_quotation, 'primitive-compile-quotation' ; quotation -> v
         ; epilog
         _ compile_epilog
 
-        _emit_raw_byte 0xc3
+        _emit_byte 0xc3
 
         _ patch_forward_jumps
 
@@ -959,8 +959,8 @@ code compile_deferred, 'compile-deferred' ; symbol -> void
         _ symbol_set_code_address       ; -> symbol
 
         ; movabs rax, qword [moffset64]
-        _emit_raw_byte 0x48
-        _emit_raw_byte 0xa1
+        _emit_byte 0x48
+        _emit_byte 0xa1
 
         _dup
         _ check_symbol
@@ -968,8 +968,8 @@ code compile_deferred, 'compile-deferred' ; symbol -> void
         _ emit_raw_qword
 
         ; jmp rax
-        _emit_raw_byte 0xff
-        _emit_raw_byte 0xe0
+        _emit_byte 0xff
+        _emit_byte 0xe0
 
         _lit tagged_fixnum(12)
         _swap
