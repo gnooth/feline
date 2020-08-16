@@ -210,7 +210,10 @@ code emit_raw_qword, 'emit_raw_qword'   ; raw-qword -> void
 endcode
 
 ; ### compile-call
-code compile_call, 'compile-call'       ; raw-address -> void
+code compile_call, 'compile-call'       ; address -> void
+
+        _check_fixnum
+
         _dup
         _pc
         add     rbx, 5
@@ -250,6 +253,13 @@ code compile_call, 'compile-call'       ; raw-address -> void
         _emit_raw_byte 0xff
         _emit_raw_byte 0xd0             ; call rax
 
+        next
+endcode
+
+; ### compile-call-symbol
+code compile_call_symbol, 'compile-call-symbol' ; symbol -> void
+        _ symbol_code_address
+        _ compile_call
         next
 endcode
 
@@ -495,8 +505,7 @@ code compile_primitive, 'compile-primitive' ; symbol -> void
         _tagged_if .1
         _ inline_primitive
         _else .1
-        _ symbol_raw_code_address
-        _ compile_call
+        _ compile_call_symbol
         _then .1
         next
 endcode
@@ -533,8 +542,7 @@ code inline_or_compile_call, 'inline-or-compile-call' ; word -> void
         _tagged_if .1
         _ compile_primitive
         _else .1
-        _ symbol_raw_code_address
-        _ compile_call
+        _ compile_call_symbol
         _then .1
         next
 endcode
