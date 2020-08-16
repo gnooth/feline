@@ -40,6 +40,26 @@ code int32?, 'int32?'                   ; x -> x/nil
         next
 endcode
 
+; ### error-not-int32
+code error_not_int32, 'error-not-int32' ; x ->
+        _quote "an int32"
+        _ format_type_error
+        next
+endcode
+
+; ### verify-int32
+code verify_int32, 'verify-int32'       ; int32 -> int32
+        test    bl, FIXNUM_TAG
+        jz      error_not_int32
+        mov     rax, rbx
+        sar     rax, FIXNUM_TAG_BITS
+        cmp     rax, MIN_INT32
+        jl      error_not_int32
+        cmp     rax, MAX_INT32
+        jg      error_not_int32
+        next
+endcode
+
 ; ### most-positive-fixnum
 code most_positive_fixnum, 'most-positive-fixnum'
         _lit tagged_fixnum(MOST_POSITIVE_FIXNUM)
