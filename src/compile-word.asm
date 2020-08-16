@@ -40,9 +40,22 @@ code set_current_context, 'current-context!' ; x -> void
         next
 endcode
 
+feline_global context_stack, 'context-stack'
+
 ; ### new-context
 code new_context, 'new-context'         ; void -> void
+        _ current_context
+        _ context_stack
+        _ vector_push
         _ make_compiler_context
+        _ set_current_context
+        next
+endcode
+
+; ### restore-context
+code restore_context, 'restore-context' ; void -> void
+        _ context_stack
+        _ vector_pop
         _ set_current_context
         next
 endcode
@@ -547,8 +560,8 @@ code symbol_set_compiler, 'symbol-set-compiler' ; compiler symbol -> void
         next
 endcode
 
-; ### initialize-compiler
-code initialize_compiler, 'initialize-compiler'
+; ### initialize_compiler
+code initialize_compiler, 'initialize_compiler'
         _tick compile_?exit_locals
         _tick ?exit_locals
         _ symbol_set_compiler
@@ -560,6 +573,11 @@ code initialize_compiler, 'initialize-compiler'
         _tick compile_?return_locals
         _tick ?return_locals
         _ symbol_set_compiler
+
+        _lit tagged_fixnum(16)
+        _ make_vector
+        _tick context_stack
+        _ symbol_set_value
 
         next
 endcode
@@ -778,6 +796,8 @@ code primitive_compile_quotation, 'primitive-compile-quotation' ; quotation -> v
 
         pop     this_register
 
+        _ restore_context
+
         next
 endcode
 
@@ -954,6 +974,8 @@ code compile_deferred, 'compile-deferred' ; symbol -> void
         _lit tagged_fixnum(12)
         _swap
         _ symbol_set_code_size
+
+        _ restore_context
 
         next
 endcode

@@ -245,6 +245,8 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         _lit keyword_hashtable_
         _ gc_add_root
 
+        _ initialize_compiler
+
         _ initialize_types
 
         _ initialize_load_path
@@ -257,8 +259,6 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
 
         _ gc2_initialize_dispatch_table
         _ gc2_initialize_work_list
-
-        _ initialize_compiler
 
         _quote "boot.feline"
         _symbol load_system_file
