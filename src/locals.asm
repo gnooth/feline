@@ -329,9 +329,6 @@ code cold_initialize_locals, 'cold_initialize_locals', SYMBOL_INTERNAL
         _ initialize_local_getters
         _ initialize_local_setters
 
-        _lit forward_jumps_
-        _ gc_add_root
-
         next
 endcode
 
@@ -351,11 +348,6 @@ code initialize_locals, 'initialize-locals'
         _drop
 
         mov     qword [using_locals?_], TRUE
-
-        _lit 8
-        _ make_vector_untagged
-        mov     [forward_jumps_], rbx
-        _drop
 
         ; check for return-if-no-locals
         ; if found, replace with return-if-locals

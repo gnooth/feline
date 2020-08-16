@@ -347,24 +347,28 @@ code flush_pending, 'flush-pending'     ; void -> void
         next
 endcode
 
-asm_global forward_jumps_, NIL
+feline_global forward_jumps, 'forward-jumps', NIL
 
-code forward_jumps, 'forward-jumps'     ; void -> vector/nil
-        _dup
-        mov     rbx, [forward_jumps_]
+; ### forward-jumps!
+code set_forward_jumps, 'forward-jumps!'
+        xchg    [S_forward_jumps_symbol_value], rbx
+        _drop
         next
 endcode
 
 ; ### add-forward-jump-address
 code add_forward_jump_address, 'add-forward-jump-address' ; tagged-address -> void
-        cmp     qword [forward_jumps_], NIL
-        jne     .1
-        _lit 8
-        _ make_vector_untagged
-        mov     qword [forward_jumps_], rbx
-        _drop
-.1:
         _ forward_jumps
+        cmp     rbx, NIL
+        je      .1
+        _ vector_push
+        next
+.1:
+        _drop
+        _lit tagged_fixnum(8)
+        _ make_vector
+        _dup
+        _ set_forward_jumps
         _ vector_push
         next
 endcode
@@ -701,7 +705,9 @@ code patch_forward_jumps, 'patch-forward-jumps' ; void -> void
 
         _tick patch_forward_jump
         _ vector_each
-        mov     qword [forward_jumps_], NIL
+
+        _nil
+        _ set_forward_jumps
 
         next
 endcode
@@ -921,6 +927,9 @@ code primitive_compile_word, 'primitive-compile-word' ; word -> void
         _check_fixnum
         mov     [locals_count_], rbx
         _drop
+
+        _nil
+        _ set_forward_jumps
 
         _dup
         _ symbol_def
