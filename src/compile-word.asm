@@ -209,7 +209,7 @@ code emit_byte, 'emit-byte'             ; byte -> void
         _ pc
         _ cstore
         _ pc
-        _ oneplus
+        add     rbx, (1 << FIXNUM_TAG_BITS)
         _ set_pc
         next
 endcode
@@ -246,6 +246,17 @@ code emit_raw_dword, 'emit_raw_dword'   ; dword -> void
         next
 endcode
 
+; ### emit-qword
+code emit_qword, 'emit-qword'           ; raw-qword -> void
+        _ pc
+        _ store
+        _ pc
+        _lit tagged_fixnum(8)
+        _ fixnum_fixnum_plus
+        _ set_pc
+        next
+endcode
+
 ; ### emit_raw_qword
 code emit_raw_qword, 'emit_raw_qword'   ; raw-qword -> void
         _ new_uint64
@@ -260,48 +271,52 @@ endcode
 
 ; ### compile-call
 code compile_call, 'compile-call'       ; address -> void
-
-        _check_fixnum
-
+        ; calculate displacement
         _dup
-        _pc
-        add     rbx, 5
-        _minus                          ; -> raw-address signed-displacement
+        _ pc
+        _lit tagged_fixnum(5)
+        _ fast_fixnum_plus
+        _ fast_fixnum_minus             ; address displacement
 
-        ; does the signed displacement fit in 32 bits?
-        cmp     rbx, MIN_INT32
-        jl      .1
-        cmp     rbx, MAX_INT32
-        jg      .1
+        ; does displacement fit in 32 bits?
+        _ int32?
+        cmp     rbx, NIL
+        je      .1
 
-        _drop                           ; -> raw-address
+        ; displacement fits in 32 bits
+        ; -> address displacement
+        _nip
         _emit_byte 0xe8
-        _pc
-        add     rbx, 4
-        _minus
-        _ emit_raw_dword
+        _ emit_int32
         next
 
 .1:
-        _drop                           ; -> raw-address
-        cmp     rbx, MAX_INT32
-        jl      .2
+        ; displacement does not fit in 32 bits
+        ; -> address nil
+        _drop                           ; -> address
 
-        ; raw address fits in 32 bits
+        ; does address fit in 32 bits?
+        _dup
+        _ int32?
+
+        cmp     rbx, NIL
+        _drop
+        je      .2
+
+        ; address fits in 32 bits
         _emit_byte 0xb8
-        _ emit_raw_dword                ; mov eax, raw-address
-        jmp     .3
-
-.2:
-        ; raw address does not fit in 32 bits
-        _emit_byte 0x48
-        _emit_byte 0xb8
-        _ emit_raw_qword                ; mov rax, raw-address
-
-.3:
+        _ emit_int32                    ; mov eax, address
         _emit_byte 0xff
         _emit_byte 0xd0                 ; call rax
+        next
 
+.2:
+        ; address does not fit in 32 bits
+        _emit_byte 0x48
+        _emit_byte 0xb8
+        _ emit_qword
+        _emit_byte 0xff
+        _emit_byte 0xd0                 ; call rax
         next
 endcode
 
