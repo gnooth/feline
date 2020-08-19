@@ -64,11 +64,11 @@ global feline-symbols
 
     token nil? ?exit
 
-    token { "code" "inline" "always_inline" "generic" "special" "deferred" } member?
-    [ token s lineno symbols asm-process-2-symbols ] ?return
+    token { "code" "inline" "always_inline" "generic" "special" "deferred" "feline_global" }
+    member? [ token s lineno symbols asm-process-2-symbols ] ?return
 
-    token { "subroutine" "%macro" "asm_global" "%define" } member?
-    [ token s lineno symbols asm-process-1-symbol ] when ;
+    token { "subroutine" "%macro" "asm_global" "%define" }
+    member? [ token s lineno symbols asm-process-1-symbol ] when ;
 
 : process-asm-file
     sourcefile file-lines [ feline-symbols asm-process-line ] each-index ;
