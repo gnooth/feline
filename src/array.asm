@@ -278,39 +278,56 @@ endcode
 ; ### array-nth
 code array_nth, 'array-nth'             ; index array -> element
 
-        _check_fixnum qword [rbp]       ; -- untagged-index handle
+        _ check_array                   ; rbx: ^array
 
-array_nth_untagged:
-        _ check_array                   ; -- untagged-index array
-        push    this_register
-        mov     this_register, rbx
-        poprbx                          ; -- untagged-index
-        cmp     rbx, [this_register + ARRAY_RAW_LENGTH_OFFSET]
-        jae     .error
-        _this_array_nth_unsafe
-        pop     this_register
-        _return
-.error:
-        pop     this_register
-        _error "array-nth index out of range"
+        mov     rax, [rbp]
+        test    al, FIXNUM_TAG
+        jz      .error_not_index
+        test    rax, rax
+        js      .error_not_index
+        sar     rax, FIXNUM_TAG_BITS    ; rax: untagged index
+
+        ; rbx: ^array
+        cmp     rax, [rbx + ARRAY_RAW_LENGTH_OFFSET]
+        jge     error_array_index_out_of_bounds
+        mov     rbx, [rbx + ARRAY_DATA_OFFSET + rax * BYTES_PER_CELL]
+        _nip
+        next
+
+.error_not_index:
+        mov     rbx, rax
+        _ error_not_index
         next
 endcode
 
 ; ### array-set-nth
 code array_set_nth, 'array-set-nth'     ; element index array -> void
+
         _ check_array                   ; rbx: ^array
+
         mov     rax, [rbp]
-        _check_index_rax                ; rax: untagged index
+        test    al, FIXNUM_TAG
+        jz      .error_not_index
+        test    rax, rax
+        js      .error_not_index
+        sar     rax, FIXNUM_TAG_BITS    ; rax: untagged index
+
+        ; rbx: ^array
         cmp     rax, [rbx + ARRAY_RAW_LENGTH_OFFSET]
         jge     error_array_index_out_of_bounds
-        mov     rdx, [rbp + BYTES_PER_CELL]
+        mov     rdx, [rbp + BYTES_PER_CELL] ; rdx: element
         mov     qword [rbx + ARRAY_DATA_OFFSET + rax * BYTES_PER_CELL], rdx
         _3drop
+        next
+
+.error_not_index:
+        mov     rbx, rax
+        _ error_not_index
         next
 endcode
 
 ; ### array-first
-code array_first, 'array-first'         ; handle -- element
+code array_first, 'array-first'         ; handle -> element
         _ check_array
         mov     rax, [rbx + ARRAY_RAW_LENGTH_OFFSET]
         test    rax, rax
@@ -323,18 +340,18 @@ code array_first, 'array-first'         ; handle -- element
 endcode
 
 ; ### array-second
-code array_second, 'array-second'       ; handle -- element
-        _lit 1
+code array_second, 'array-second'       ; array -> element
+        _lit tagged_fixnum(1)
         _swap
-        _ array_nth_untagged
+        _ array_nth
         next
 endcode
 
 ; ### array-third
-code array_third, 'array-third'         ; handle -- element
-        _lit 2
+code array_third, 'array-third'         ; array -> element
+        _lit tagged_fixnum(2)
         _swap
-        _ array_nth_untagged
+        _ array_nth
         next
 endcode
 
