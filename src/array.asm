@@ -266,12 +266,16 @@ code array_new_sequence, 'array-new-sequence' ; len seq -- newseq
 endcode
 
 ; ### array-nth-unsafe
-code array_nth_unsafe, 'array-nth-unsafe' ; index handle -> element
-        mov     rax, [rbp]              ; tagged index in rax
+code array_nth_unsafe, 'array-nth-unsafe' ; index array -> element
+
+        _handle_to_object_unsafe        ; rbx: ^array
+
+        mov     rax, [rbp]
+        sar     rax, FIXNUM_TAG_BITS    ; rax: untagged index
+
+        ; rbx: ^array
+        mov     rbx, [rbx + ARRAY_DATA_OFFSET + rax * BYTES_PER_CELL]
         _nip
-        _handle_to_object_unsafe
-        _untag_fixnum rax               ; untagged index in rax
-        mov     rbx, [rbx + ARRAY_DATA_OFFSET + BYTES_PER_CELL * rax]
         next
 endcode
 
@@ -323,6 +327,21 @@ code array_set_nth, 'array-set-nth'     ; element index array -> void
 .error_not_index:
         mov     rbx, rax
         _ error_not_index
+        next
+endcode
+
+; ### array-set-nth-unsafe
+code array_set_nth_unsafe, 'array-set-nth-unsafe' ; element index array -> void
+
+        _handle_to_object_unsafe        ; rbx: ^array
+
+        mov     rax, [rbp]
+        sar     rax, FIXNUM_TAG_BITS    ; rax: untagged index
+
+        ; rbx: ^array
+        mov     rdx, [rbp + BYTES_PER_CELL] ; rdx: element
+        mov     qword [rbx + ARRAY_DATA_OFFSET + rax * BYTES_PER_CELL], rdx
+        _3drop
         next
 endcode
 
