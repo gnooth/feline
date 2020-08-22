@@ -66,17 +66,18 @@ file __FILE__
 %endmacro
 
 ; ### type?
-code type?, 'type?'                     ; handle -> ?
-        _ deref                         ; -> raw-object/0
-        test    rbx, rbx
-        jz      .1
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_TYPE
-        jne     .1
-        mov     ebx, t_value
-        _return
-.1:
-        mov     ebx, f_value
+code type?, 'type?'                 ; x -> x/nil
+; If x is a type, returns x unchanged. If x is not a type, returns nil.
+        cmp     bl, HANDLE_TAG
+        jne     .not_a_type
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_TYPE
+        jne     .not_a_type
+        next
+.not_a_type:
+        mov     ebx, NIL
         next
 endcode
 

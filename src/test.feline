@@ -1240,7 +1240,7 @@ tuple: foo a b c ;
 
 : %tuple-layout-test-1
     foo dup verify-type assert-eq
-    foo type? assert-true
+    foo dup type? assert-eq
     foo type-symbol dup symbol? assert ' foo assert-eq
     foo type-layout dup array? assert-eq
     foo type-layout length 3 assert-eq
@@ -3729,20 +3729,20 @@ test: ||-test-1
 ||-test-1
 
 test: as-type-test-1
-    string type? assert-true
+    string dup type? assert-eq
     string as-type string assert-eq
 
     string "test" type-of assert-eq
 
     ' string symbol? assert
     ' string type? assert-false
-    ' string as-type type? assert-true
+    ' string as-type dup type? assert-eq
     ' string as-type string assert-eq
 
     { string } first {
         [ symbol? assert ]
         [ type? assert-false ]
-        [ as-type type? assert-true ]
+        [ as-type dup type? assert-eq ]
         [ as-type string assert-eq ]
     } cleave
 
