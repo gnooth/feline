@@ -117,13 +117,6 @@ code error_not_keyword, 'error-not-keyword'     ; x --
         next
 endcode
 
-; ### error-not-string
-code error_not_string, 'error-not-string'       ; x --
-        _quote "a string"
-        _ format_type_error
-        next
-endcode
-
 ; ### error-not-symbol
 code error_not_symbol, 'error-not-symbol'       ; x --
         _quote "a symbol"

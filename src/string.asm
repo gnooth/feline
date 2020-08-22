@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; strings are immutable
+; Strings are immutable.
 
 ; 3 cells: object header, length, hashcode
 
@@ -25,6 +25,50 @@ file __FILE__
 
 ; inline character data (untagged) starts at offset 24
 %define STRING_RAW_DATA_OFFSET          24
+
+%macro  _string_raw_length 0            ; ^string -> raw-length
+        _slot 1
+%endmacro
+
+%macro  _this_string_raw_length 0       ; -> raw-length
+        _this_slot 1
+%endmacro
+
+%macro  _this_string_set_hashcode 0     ; fixnum -> void
+        _this_set_slot 2
+%endmacro
+
+%macro  _this_string_substring_unsafe 0 ; from to -> substring
+; no bounds checking
+        sub     rbx, qword [rbp]        ; length (in rbx) = to - from
+        lea     rax, [this_register + STRING_RAW_DATA_OFFSET]   ; raw data address in rax
+        add     qword [rbp], rax        ; start of substring = raw data address + from
+        _ copy_to_string
+%endmacro
+
+; Strings store their character data inline starting at this + STRING_RAW_DATA_OFFSET bytes.
+%macro  _string_raw_data_address 0
+        lea     rbx, [rbx + STRING_RAW_DATA_OFFSET]
+%endmacro
+
+%macro  _this_string_raw_data_address 0
+        _dup
+        lea     rbx, [this_register + STRING_RAW_DATA_OFFSET]
+%endmacro
+
+%macro  _string_nth_unsafe 0            ; untagged-index string -- untagged-char
+        _string_raw_data_address
+        _plus
+        _cfetch
+%endmacro
+
+%macro  _this_string_nth_unsafe 0       ; untagged-index -- untagged-char
+        movzx   ebx, byte [rbx + this_register + STRING_RAW_DATA_OFFSET]
+%endmacro
+
+%macro  _string_first_unsafe 0
+        movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET]
+%endmacro
 
 ; ### string?
 code string?, 'string?'                 ; x -> x/nil
@@ -66,10 +110,10 @@ code check_string, 'check_string'       ; x -> ^string
         next
 endcode
 
-; ### string-address
-code string_address, 'string-address'   ; string -> ^string
-        _ check_string
-        _tag_fixnum
+; ### error-not-string
+code error_not_string, 'error-not-string' ; x ->
+        _quote "a string"
+        _ format_type_error
         next
 endcode
 
@@ -94,25 +138,23 @@ code verify_string, 'verify-string'     ; string -> string
         next
 endcode
 
-%macro  _string_raw_length 0            ; ^string -> raw-length
-        _slot 1
-%endmacro
+; ### string_raw_address_unsafe
+code string_raw_address_unsafe, 'string_raw_address_unsafe'
+        cmp     bl, HANDLE_TAG
+        jne     .1
+        _handle_to_object_unsafe
+        next
+.1:
+        _untag_static_string
+        next
+endcode
 
-%macro  _this_string_raw_length 0       ; -> raw-length
-        _this_slot 1
-%endmacro
-
-%macro  _this_string_set_hashcode 0     ; fixnum -> void
-        _this_set_slot 2
-%endmacro
-
-%macro  _this_string_substring_unsafe 0 ; from to -> substring
-; no bounds checking
-        sub     rbx, qword [rbp]        ; length (in rbx) = to - from
-        lea     rax, [this_register + STRING_RAW_DATA_OFFSET]   ; raw data address in rax
-        add     qword [rbp], rax        ; start of substring = raw data address + from
-        _ copy_to_string
-%endmacro
+; ### string-address
+code string_address, 'string-address'   ; string -> ^string
+        _ check_string
+        _tag_fixnum
+        next
+endcode
 
 ; ### string_raw_length
 code string_raw_length, 'string_raw_length', SYMBOL_INTERNAL ; string -> raw-length
@@ -130,17 +172,8 @@ code string_length, 'string-length'     ; string -> length
 endcode
 
 ; ### string-length-unsafe
-;inline string_length_unsafe, 'string-length-unsafe' ; string -> length
-;         cmp     bl, HANDLE_TAG
-;         jne     .1
-;         _handle_to_object_unsafe
-; .1:
-;        _string_raw_length
-;         _tag_fixnum
-;endinline
 code string_length_unsafe, 'string-length-unsafe' ; string -> length
-; REVIEW this is now the same as string-length
-        _ check_string
+        _ string_raw_address_unsafe
         _string_raw_length
         _tag_fixnum
         next
@@ -159,16 +192,6 @@ code string_empty?, 'string-empty?'     ; string -> ?
         next
 endcode
 
-; Strings store their character data inline starting at this + STRING_RAW_DATA_OFFSET bytes.
-%macro  _string_raw_data_address 0
-        lea     rbx, [rbx + STRING_RAW_DATA_OFFSET]
-%endmacro
-
-%macro  _this_string_raw_data_address 0
-        _dup
-        lea     rbx, [this_register + STRING_RAW_DATA_OFFSET]
-%endmacro
-
 ; ### string_raw_data_address
 code string_raw_data_address, 'string_raw_data_address', SYMBOL_INTERNAL ; string -> raw-data-address
         _ check_string
@@ -183,46 +206,6 @@ code unsafe_string_data_address, 'unsafe-string-data-address' ; string -> addres
         _tag_fixnum
         next
 endcode
-
-%macro  _string_nth_unsafe 0            ; untagged-index string -- untagged-char
-        _string_raw_data_address
-        _plus
-        _cfetch
-%endmacro
-
-%macro  _this_string_nth_unsafe 0       ; untagged-index -- untagged-char
-        movzx   ebx, byte [rbx + this_register + STRING_RAW_DATA_OFFSET]
-%endmacro
-
-%macro  _string_first_unsafe 0
-        movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET]
-%endmacro
-
-%define this_string_first_unsafe        byte [this_register + STRING_RAW_DATA_OFFSET]
-
-%macro  _this_string_first_unsafe 0     ; -- untagged-char
-        _dup
-        movzx   ebx, byte [this_register + STRING_RAW_DATA_OFFSET]
-%endmacro
-
-%define this_string_second_unsafe       byte [this_register + STRING_RAW_DATA_OFFSET + 1]
-
-%macro  _this_string_second_unsafe 0    ; -- untagged-char
-        _dup
-        movzx   ebx, byte [this_register + STRING_RAW_DATA_OFFSET + 1]
-%endmacro
-
-%define this_string_third_unsafe        byte [this_register + STRING_RAW_DATA_OFFSET + 2]
-
-%macro  _this_string_third_unsafe 0     ; -- untagged-char
-        _dup
-        movzx   ebx, byte [this_register + STRING_RAW_DATA_OFFSET + 2]
-%endmacro
-
-%macro  _this_string_last_unsafe 0      ; -- untagged-char
-        _this_string_raw_length
-        movzx   ebx, byte [rbx + this_register + STRING_RAW_DATA_OFFSET - 1]
-%endmacro
 
 ; ### copy_to_string
 code copy_to_string, 'copy_to_string', SYMBOL_INTERNAL
