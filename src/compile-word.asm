@@ -64,7 +64,7 @@ endcode
 code pc, 'pc'                           ; void -> fixnum
         _lit tagged_zero
         _ current_context
-        _ array_nth
+        _ array_nth_unsafe
         next
 endcode
 
@@ -72,7 +72,7 @@ endcode
 code set_pc, 'pc!'                      ; fixnum -> void
         _lit tagged_zero
         _ current_context
-        _ array_set_nth
+        _ array_set_nth_unsafe
         next
 endcode
 
@@ -106,7 +106,7 @@ code pending, 'pending'                 ; void -> fixnum
 endcode
 
 ; ### pending-last
-code pending_last, 'pending-last'       ; void -> node/nil
+code pending_last, 'pending-last'       ; void -> node
         _ pending
         _ vector_last
         next
@@ -269,6 +269,40 @@ code emit_raw_qword, 'emit_raw_qword'   ; raw-qword -> void
         next
 endcode
 
+; : emit-dup
+;     { 0x48 0x89 0x5d 0xf8 0x48 0x8d 0x6d 0xf8 } emit-bytes ;
+
+; ### emit-dup
+code emit_dup, 'emit-dup'               ; void -> void
+        _ pc
+        _untag_fixnum
+        mov     rax, 0xf86d8d48f85d8948
+        mov     [rbx], rax
+        _drop
+        _ pc
+        _lit tagged_fixnum(8)
+        _ fast_fixnum_plus
+        _ set_pc
+        next
+endcode
+
+; : emit-drop
+;     { 0x48 0x8b 0x5d 0x00 0x48 0x8d 0x6d 0x08 } emit-bytes ;
+
+; ### emit-drop
+code emit_drop, 'emit-drop'             ; void -> void
+        _ pc
+        _untag_fixnum
+        mov     rax, 0x086d8d48005d8b48
+        mov     [rbx], rax
+        _drop
+        _ pc
+        _lit tagged_fixnum(8)
+        _ fast_fixnum_plus
+        _ set_pc
+        next
+endcode
+
 ; ### compile-call
 code compile_call, 'compile-call'       ; address -> void
         ; calculate displacement
@@ -327,8 +361,6 @@ code compile_call_symbol, 'compile-call-symbol' ; symbol -> void
         next
 endcode
 
-%define DUP_BYTES 0xf86d8d48f85d8948
-
 ; ### compile-literal
 code compile_literal, 'compile-literal' ; literal -> void
         _dup
@@ -337,8 +369,7 @@ code compile_literal, 'compile-literal' ; literal -> void
         _ wrapped
         _then .1
 
-        _lit DUP_BYTES
-        _ emit_raw_qword
+        _ emit_dup
         _dup
         _lit 0x100000000
         _ult
@@ -620,6 +651,15 @@ code inline_or_compile_call, 'inline-or-compile-call' ; word -> void
         next
 endcode
 
+; ### primitive-compile-generic
+code primitive_compile_generic, 'primitive_compile_generic' ; symbol -> void
+        _ flush_pending
+        _ compile_call_symbol
+        next
+endcode
+
+deferred compile_generic, 'compile-generic', primitive_compile_generic
+
 ; ### compile-operator-node
 code compile_operator_node, 'compile-operator-node' ; node -> void
         _quote "compiler"               ; -> node "compiler"
@@ -632,13 +672,25 @@ code compile_operator_node, 'compile-operator-node' ; node -> void
 
         ; -> node compiler
         _ call_symbol
-        _return
+        next
 
 .1:
         ; -> node nil
         _drop                           ; -> node
+        _ node_operator                 ; -> symbol
+        _dup
+        _ generic?                      ; -> symbol ?
+        cmp     rbx, NIL
+        _drop                           ; -> symbol
+        je      .2
+
+        ; -> symbol
+        _ compile_generic
+        next
+
+.2:
+        ; -> symbol
         _ flush_pending
-        _ node_operator
         _ inline_or_compile_call
         next
 endcode
