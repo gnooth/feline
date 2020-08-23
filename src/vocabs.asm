@@ -15,38 +15,47 @@
 
 file __FILE__
 
-asm_global feline_vocab_, f_value
+asm_global feline_vocab_, nil
 
 ; ### feline-vocab
 code feline_vocab, 'feline-vocab'       ; -> vocab
-        pushrbx
+        _dup
         mov     rbx, [feline_vocab_]
         next
 endcode
 
-asm_global user_vocab_, f_value
+asm_global user_vocab_, nil
 
 ; ### user-vocab
 code user_vocab, 'user-vocab'           ; -> vocab
-        pushrbx
+        _dup
         mov     rbx, [user_vocab_]
         next
 endcode
 
-asm_global accessors_vocab_, f_value
+asm_global accessors_vocab_, nil
 
 ; ### accessors-vocab
 code accessors_vocab, 'accessors-vocab' ; -> vocab
-        pushrbx
+        _dup
         mov     rbx, [accessors_vocab_]
         next
 endcode
 
-asm_global dictionary_, f_value
+asm_global methods_vocab_, nil
+
+; ### methods-vocab
+code methods_vocab, 'methods-vocab'     ; -> vocab
+        _dup
+        mov     rbx, [methods_vocab_]
+        next
+endcode
+
+asm_global dictionary_, nil
 
 ; ### dictionary
 code dictionary, 'dictionary'           ; -> hashtable
-        pushrbx
+        _dup
         mov     rbx, [dictionary_]
         next
 endcode
@@ -55,36 +64,36 @@ asm_global context_vector_
 
 ; ### context-vector
 code context_vector, 'context-vector', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; -- vector
-        pushrbx
+; -> vector
+        _dup
         mov     rbx, [context_vector_]
         next
 endcode
 
-asm_global current_vocab_, f_value
+asm_global current_vocab_, nil
 
 ; ### current-vocab
-code current_vocab, 'current-vocab'     ; -- vocab
-        pushrbx
+code current_vocab, 'current-vocab'     ; -> vocab
+        _dup
         mov     rbx, [current_vocab_]
         next
 endcode
 
 ; ### set-current-vocab
-code set_current_vocab, 'set-current-vocab'     ; vocab --
+code set_current_vocab, 'set-current-vocab' ; vocab ->
         _ verify_vocab
         mov     [current_vocab_], rbx
-        poprbx
+        _drop
         next
 endcode
 
 ; ### initialize_vocabs
-code initialize_vocabs, 'initialize_vocabs', SYMBOL_INTERNAL    ; --
+code initialize_vocabs, 'initialize_vocabs', SYMBOL_INTERNAL
 
         _quote "feline"
         _ new_vocab
         mov     [feline_vocab_], rbx
-        poprbx
+        _drop
 
         _lit feline_vocab_
         _ gc_add_root
@@ -92,7 +101,7 @@ code initialize_vocabs, 'initialize_vocabs', SYMBOL_INTERNAL    ; --
         _quote "user"
         _ new_vocab
         mov     [user_vocab_], rbx
-        poprbx
+        _drop
 
         _lit user_vocab_
         _ gc_add_root
@@ -100,15 +109,23 @@ code initialize_vocabs, 'initialize_vocabs', SYMBOL_INTERNAL    ; --
         _quote "accessors"
         _ new_vocab
         mov     [accessors_vocab_], rbx
-        poprbx
+        _drop
 
         _lit accessors_vocab_
+        _ gc_add_root
+
+        _quote "methods"
+        _ new_vocab
+        mov     [methods_vocab_], rbx
+        _drop
+
+        _lit methods_vocab_
         _ gc_add_root
 
         _lit 16
         _ new_vector_untagged
         mov     [context_vector_], rbx
-        poprbx
+        _drop
 
         _lit context_vector_
         _ gc_add_root
@@ -181,7 +198,7 @@ code hash_vocabs, 'hash-vocabs', SYMBOL_INTERNAL
         _lit 16
         _ new_hashtable_untagged
         mov     [dictionary_], rbx
-        poprbx
+        _drop
         _lit dictionary_
         _ gc_add_root
 
@@ -204,7 +221,7 @@ code hash_vocabs, 'hash-vocabs', SYMBOL_INTERNAL
 endcode
 
 ; ### all-words
-code all_words, 'all-words'             ; -- seq
+code all_words, 'all-words'             ; -> seq
         _lit 2048
         _ new_vector_untagged
         _ dictionary
@@ -219,7 +236,7 @@ code all_words, 'all-words'             ; -- seq
 endcode
 
 ; ### lookup-vocab
-code lookup_vocab, 'lookup-vocab'       ; vocab-specifier -- vocab/f ?
+code lookup_vocab, 'lookup-vocab'       ; vocab-specifier -> vocab/nil ?
         _dup
         _ vocab?
         _tagged_if .1
@@ -254,7 +271,7 @@ code lookup_vocab, 'lookup-vocab'       ; vocab-specifier -- vocab/f ?
 endcode
 
 ; ### delete-vocab
-code delete_vocab, 'delete-vocab'       ; vocab-specifier --
+code delete_vocab, 'delete-vocab'       ; vocab-specifier ->
         _dup
         _ vocab?
         _tagged_if .1
@@ -273,16 +290,16 @@ code delete_vocab, 'delete-vocab'       ; vocab-specifier --
 endcode
 
 ; ### ensure-vocab
-code ensure_vocab, 'ensure-vocab'       ; string -- vocab
+code ensure_vocab, 'ensure-vocab'       ; string -> vocab
         _ verify_string
-        _dup                            ; -- string string
-        _ lookup_vocab                  ; -- string vocab/f ?
-        _tagged_if .1                   ; -- string vocab
-        _nip                            ; -- vocab
-        _else .1                        ; -- string f
+        _dup                            ; -> string string
+        _ lookup_vocab                  ; -> string vocab/nil ?
+        _tagged_if .1                   ; -> string vocab
+        _nip                            ; -> vocab
+        _else .1                        ; -> string nil
         _drop
         _dup
-        _ new_vocab                     ; -- string vocab
+        _ new_vocab                     ; -> string vocab
         _tuck
         _swap
         _ dictionary
@@ -293,14 +310,14 @@ endcode
 
 ; ### in:
 code in_colon, 'in:'
-        _ must_parse_token              ; -- string/f
+        _ must_parse_token              ; -> string/nil
         _ ensure_vocab
         _ set_current_vocab
         next
 endcode
 
 ; ### empty
-code empty, 'empty'                     ; --
+code empty, 'empty'
         _ current_vocab
         _dup
         _ vocab_empty?
@@ -313,7 +330,7 @@ code empty, 'empty'                     ; --
 endcode
 
 ; ### using-vocab?
-code using_vocab?, 'using-vocab?'       ; vocab-specifier -- ?
+code using_vocab?, 'using-vocab?'       ; vocab-specifier -> ?
         _ lookup_vocab
         _tagged_if .1
         _ context_vector
@@ -323,15 +340,15 @@ code using_vocab?, 'using-vocab?'       ; vocab-specifier -- ?
 endcode
 
 ; ### load-vocab
-code load_vocab, 'load-vocab'           ; string -- vocab/f
-        _dup                            ; -- string
+code load_vocab, 'load-vocab'           ; string -> vocab/nil
+        _dup                            ; -> string
         _ lookup_vocab
         _tagged_if .1
         _nip
         _return
         _then .1
 
-        _drop                           ; -- string
+        _drop                           ; -> string
 
         ; not loaded
         ; check Feline source directory first
@@ -358,7 +375,7 @@ code load_vocab, 'load-vocab'           ; string -- vocab/f
 endcode
 
 ; ### use-vocab
-code use_vocab, 'use-vocab'             ; vocab-specifier --
+code use_vocab, 'use-vocab'             ; vocab-specifier ->
 
         _dup
         _ using_vocab?
@@ -367,7 +384,7 @@ code use_vocab, 'use-vocab'             ; vocab-specifier --
         _return
         _then .1
 
-        _dup                            ; -- string
+        _dup                            ; -> string
         _ lookup_vocab
         _tagged_if .2
         _nip
@@ -376,7 +393,7 @@ code use_vocab, 'use-vocab'             ; vocab-specifier --
         _return
         _then .2
 
-        _drop                           ; -- string
+        _drop                           ; -> string
 
         _ load_vocab
         _dup
@@ -394,7 +411,7 @@ code use_vocab, 'use-vocab'             ; vocab-specifier --
 endcode
 
 ; ### maybe-use-vocab
-code maybe_use_vocab, 'maybe-use-vocab' ; vocab-specifier --
+code maybe_use_vocab, 'maybe-use-vocab' ; vocab-specifier ->
         _dup
         _ using_vocab?
         _tagged_if .1
@@ -428,7 +445,7 @@ code unuse_vocab, 'unuse-vocab'         ; vocab-specifier -> void
         _then .1
 
         _ context_vector
-        _ index                         ; -> index/f
+        _ index                         ; -> index/nil
         _dup
         _tagged_if_not .2
         _drop
@@ -442,7 +459,7 @@ endcode
 
 ; ### unuse:
 code unuse_colon, 'unuse:'
-        _ must_parse_token              ; -- string
+        _ must_parse_token              ; -> string
         _ unuse_vocab
         next
 endcode
@@ -464,7 +481,7 @@ code using_colon, 'using:'
         _ vector_push
         _repeat .1
 
-        _drop                           ; -- vector
+        _drop                           ; -> vector
 
         ; Verify that we can load all of the specified vocabs before we touch
         ; the context vector.
