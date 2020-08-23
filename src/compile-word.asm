@@ -303,6 +303,34 @@ code emit_drop, 'emit-drop'             ; void -> void
         next
 endcode
 
+; ### emit-2drop
+code emit_2drop, 'emit-2drop'           ; void -> void
+        _ pc
+        _untag_fixnum
+        mov     rax, 0x106d8d48085d8b48
+        mov     [rbx], rax
+        _drop
+        _ pc
+        _lit tagged_fixnum(8)
+        _ fast_fixnum_plus
+        _ set_pc
+        next
+endcode
+
+; ### emit-nip
+code emit_nip, 'emit-nip'               ; void -> void
+        _ pc
+        _untag_fixnum
+        mov     eax, 0x086d8d48
+        mov     [rbx], eax
+        _drop
+        _ pc
+        _lit tagged_fixnum(4)
+        _ fast_fixnum_plus
+        _ set_pc
+        next
+endcode
+
 ; ### compile-call
 code compile_call, 'compile-call'       ; address -> void
         ; calculate displacement
