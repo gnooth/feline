@@ -470,17 +470,17 @@ code install_method, 'install-method'   ; method -> void
         next
 endcode
 
-%macro _add_method 3            ; generic-asm-name, raw-typecode, method-asm-name
+%macro _add_method 3                    ; generic-asm-name, raw-typecode, method-asm-name
         _lit %2                         ; -> raw-typecode
-        _tag_fixnum                     ; -> tagged-typecode
-        _symbol %1                       ; -> tagged-typecode generic-symbol
-        _ symbol_def                    ; -> tagged-typecode generic-function
+        _tag_fixnum                     ; -> typecode
+        _symbol %1                      ; -> typecode generic-symbol
+        _ symbol_def                    ; -> typecode generic-function
 %ifdef DEBUG
         _ verify_generic_function
 %endif
-        _symbol %3                       ; -> tagged-typecode generic-function callable
-        _ new_method                    ; -> method
-        _ install_method                ; ->
+        _symbol %3                      ; -> typecode generic-function callable
+        _ make_method                   ; -> method
+        _ install_method                ; -> empty
 %endmacro
 
 ; ### hashcode

@@ -227,13 +227,6 @@ code error_data_stack_underflow, 'error-data-stack-underflow'           ; --
         next
 endcode
 
-; ### error-not-method
-code error_not_method, 'error-not-method'       ; x --
-        _quote "a method"
-        _ format_type_error
-        next
-endcode
-
 ; ### error-not-generic-function
 code error_not_generic_function, 'error-not-generic-function'   ; x --
         _quote "a generic function"

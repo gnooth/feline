@@ -46,9 +46,8 @@ global generic-writer                   // -> symbol
     tuple-typecode
     generic-reader symbol-def verify-generic-function
     quotation
-    <method>
-    install-method
-;
+    make-method
+    install-method ;
 
 : define-generic-writer                 // slot -> void
     [ slot-name ]
@@ -68,9 +67,8 @@ global generic-writer                   // -> symbol
     tuple-typecode
     generic-writer symbol-def verify-generic-function
     quotation
-    <method>
-    install-method
-;
+    make-method
+    install-method ;
 
 : define-setter                         // slot -> void
     ">>" swap slot-name string-append :> setter-name
