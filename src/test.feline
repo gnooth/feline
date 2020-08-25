@@ -1286,16 +1286,16 @@ tuple-instance-test-1
 test: vocab?-test-1
     42 vocab? assert-false
     "feline" vocab? assert-false
-    "feline" lookup-vocab assert-true vocab? assert-true
+    "feline" lookup-vocab assert-true dup vocab? assert-eq
 ;
 
 vocab?-test-1
 
 test: lookup-vocab-test-1
-    "feline" lookup-vocab assert-true vocab? assert-true
-    "feline" lookup-vocab assert-true lookup-vocab assert-true vocab? assert-true
+    "feline" lookup-vocab assert-true vocab? dup assert-eq
+    "feline" lookup-vocab assert-true lookup-vocab assert-true vocab? dup assert-eq
     "feline" lookup-vocab assert-true dup lookup-vocab assert-true assert-eq
-    current-vocab lookup-vocab assert-true vocab? assert-true
+    current-vocab lookup-vocab assert-true vocab? dup assert-eq
     "not a vocab" lookup-vocab assert-false vocab? assert-false
 ;
 
