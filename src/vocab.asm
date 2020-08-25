@@ -60,7 +60,7 @@ code vocab?, 'vocab?'                 ; x -> x/nil
 endcode
 
 ; ### verify_vocab
-code verify_vocab, 'verify_vocab'       ; vocab -> vocab
+code verify_vocab, 'verify-vocab'       ; vocab -> vocab
 ; Returns argument unchanged.
         cmp     bl, HANDLE_TAG
         jne     .error
