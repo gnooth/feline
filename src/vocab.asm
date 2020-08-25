@@ -44,52 +44,56 @@ file __FILE__
 %endmacro
 
 ; ### vocab?
-code vocab?, 'vocab?'                   ; handle -- ?
-        _ deref                         ; -- raw-object/0
-        test    rbx, rbx
-        jz      .1
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_VOCAB
-        jne     .1
-        mov     ebx, t_value
-        _return
-.1:
-        mov     ebx, f_value
+code vocab?, 'vocab?'                 ; x -> x/nil
+; If x is a vocab, returns x unchanged. If x is not a vocab, returns nil.
+        cmp     bl, HANDLE_TAG
+        jne     .not_a_vocab
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_VOCAB
+        jne     .not_a_vocab
+        next
+.not_a_vocab:
+        mov     ebx, NIL
         next
 endcode
 
 ; ### verify_vocab
-code verify_vocab, 'verify_vocab'       ; handle -- handle
-; returns argument unchanged
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .error
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_VOCAB
+code verify_vocab, 'verify_vocab'       ; vocab -> vocab
+; Returns argument unchanged.
+        cmp     bl, HANDLE_TAG
         jne     .error
-        _drop
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_VOCAB
+        jne     .error
         next
 .error:
-        _drop
-        _ error_not_vocab
-        next
+        jmp     error_not_vocab
 endcode
 
 ; ### check_vocab
-code check_vocab, 'check_vocab', SYMBOL_INTERNAL        ; handle -- vocab
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .error
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_VOCAB
+code check_vocab, 'check_vocab'         ; vocab -> ^vocab
+        cmp     bl, HANDLE_TAG
+        jne     error_not_vocab
+        mov     rax, rbx
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]              ; rbx: ^vocab
+        cmp     word [rbx], TYPECODE_VOCAB
         jne     .error
-        _nip
         next
 .error:
-        _drop
-        _ error_not_vocab
+        mov     rbx, rax
+        jmp     error_not_vocab
+        next
+endcode
+
+; ### error-not-vocab
+code error_not_vocab, 'error-not-vocab' ; x ->
+        _quote "a vocabulary"
+        _ format_type_error
         next
 endcode
 

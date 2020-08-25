@@ -139,13 +139,6 @@ code error_not_index_rax, 'error_not_index_rax', SYMBOL_INTERNAL
         next
 endcode
 
-; ### error-not-vocab
-code error_not_vocab, 'error-not-vocab'         ; x ->
-        _quote "a vocabulary"
-        _ format_type_error
-        next
-endcode
-
 ; ### error-not-vector
 code error_not_vector, 'error-not-vector'       ; x ->
         _quote "a vector"
