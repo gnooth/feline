@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; 4 cells (object header, raw length, raw data address, raw capacity
+; 4 cells: object header, raw length, raw data address, raw capacity
 %define VECTOR_SIZE                     4 * BYTES_PER_CELL
 
 %define VECTOR_RAW_LENGTH_OFFSET        8
@@ -99,7 +99,7 @@ code check_vector, 'check_vector'       ; vector -> ^vector
         jne     error_not_vector
         mov     rax, rbx
         shr     rbx, HANDLE_TAG_BITS
-        mov     rbx, [rbx]              ; rbx: ^vector
+        mov     rbx, [rbx]
         cmp     word [rbx], TYPECODE_VECTOR
         jne     .error
         next
@@ -159,24 +159,24 @@ inline vector_length_unsafe, 'vector-length-unsafe' ; vector -> length
 endinline
 
 ; ### vector-set-length
-code vector_set_length, 'vector-set-length' ; tagged-new-length handle --
-        _ check_vector                  ; -- tagged-new-length vector
+code vector_set_length, 'vector-set-length' ; tagged-new-length handle -> void
+        _ check_vector                  ; -> tagged-new-length vector
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -- tagged-new-length
-        _check_index                    ; -- new-length
+        poprbx                          ; -> tagged-new-length
+        _check_index                    ; -> new-length
         _dup
         _this_vector_raw_capacity
         _ugt
-        _if .1                          ; -- new-length
+        _if .1                          ; -> new-length
         _dup
         _this
         _ vector_ensure_capacity_unchecked
-        _then .1                        ; -- new-length
+        _then .1                        ; -> new-length
         _dup
         _this_vector_raw_length
         _ugt
-        _if .2                          ; -- new-length
+        _if .2                          ; -> new-length
         ; initialize new cells to f
         _dup
         _this_vector_raw_length
@@ -239,20 +239,15 @@ endcode
 ; ### <vector>
 ; Deprecated. Use make-vector.
 code new_vector, '<vector>'             ; capacity -> handle
-
         jmp     make_vector
-
         _check_index                    ; -> raw-capacity
-
 new_vector_untagged:
-
         jmp     make_vector_untagged
-
         next
 endcode
 
 ; ### vector-new-sequence
-code vector_new_sequence, 'vector-new-sequence' ; len seq -- newseq
+code vector_new_sequence, 'vector-new-sequence' ; len seq -> newseq
         _drop
         _ new_vector
         next
@@ -273,7 +268,7 @@ code destroy_vector_unchecked, 'destroy_vector_unchecked', SYMBOL_INTERNAL
 endcode
 
 ; ### vector_grow_capacity
-code vector_grow_capacity, 'vector-grow-capacity'       ; new-capacity vector -> void
+code vector_grow_capacity, 'vector-grow-capacity' ; new-capacity vector -> void
         _ check_vector
         push    this_register
         mov     this_register, rbx
@@ -343,7 +338,7 @@ vector_ensure_capacity_unchecked:
 endcode
 
 ; ### vector-nth-unsafe
-code vector_nth_unsafe, 'vector-nth-unsafe'     ; index handle -> element
+code vector_nth_unsafe, 'vector-nth-unsafe' ; index handle -> element
         _untag_fixnum qword [rbp]
         _handle_to_object_unsafe
         _vector_nth_unsafe
@@ -351,7 +346,7 @@ code vector_nth_unsafe, 'vector-nth-unsafe'     ; index handle -> element
 endcode
 
 ; ### vector-nth
-code vector_nth, 'vector-nth'           ; index handle -- element
+code vector_nth, 'vector-nth'           ; index handle -> element
 
         _check_index qword [rbp]
 
@@ -359,7 +354,7 @@ vector_nth_untagged:
 
         _ check_vector
 
-        mov     rax, [rbp]              ; raw index in rax
+        mov     rax, [rbp]              ; rax: raw index
         cmp     rax, [rbx + VECTOR_RAW_LENGTH_OFFSET]
         jge     .error                  ; index >= length
         _vector_raw_data_address
@@ -368,7 +363,7 @@ vector_nth_untagged:
         next
 
 .error:
-        ; -- raw-index vector
+        ; -> raw-index vector
         _vector_raw_length
         _tag_fixnum
         _swap
@@ -381,19 +376,19 @@ vector_nth_untagged:
 endcode
 
 ; ### vector-?nth
-code vector_?nth, 'vector-?nth'         ; index vector -- element/f
+code vector_?nth, 'vector-?nth'         ; index vector -> element/nil
 
         _ check_vector
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -- index
+        poprbx                          ; -> index
 
-        _check_index                    ; -- raw-index
+        _check_index                    ; -> raw-index
 
-        _this_vector_raw_length         ; -- raw-index raw-length
+        _this_vector_raw_length         ; -> raw-index raw-length
         cmp     [rbp], rbx
-        poprbx                          ; -- raw-index
+        poprbx                          ; -> raw-index
         jae .1                          ; branch if index >= length (unsigned comparison)
         _this_vector_nth_unsafe
         pop     this_register
@@ -405,7 +400,7 @@ code vector_?nth, 'vector-?nth'         ; index vector -- element/f
 endcode
 
 ; ### vector-first
-code vector_first, 'vector-first'       ; handle -- element
+code vector_first, 'vector-first'       ; handle -> element
         _zero
         _swap
         _ vector_nth_untagged
@@ -413,7 +408,7 @@ code vector_first, 'vector-first'       ; handle -- element
 endcode
 
 ; ### vector-second
-code vector_second, 'vector-second'     ; handle -- element
+code vector_second, 'vector-second'     ; handle -> element
         _lit 1
         _swap
         _ vector_nth_untagged
@@ -421,10 +416,10 @@ code vector_second, 'vector-second'     ; handle -- element
 endcode
 
 ; ### vector-last
-code vector_last, 'vector-last'         ; handle -- element
+code vector_last, 'vector-last'         ; handle -> element
         _ check_vector
         _dup
-        _vector_raw_length              ; -- vector untagged-length
+        _vector_raw_length              ; -> vector untagged-length
         _oneminus
         _dup
         _zge
@@ -439,7 +434,7 @@ code vector_last, 'vector-last'         ; handle -- element
 endcode
 
 ; ### vector-?last
-code vector_?last, 'vector-?last'       ; vector -> element/f
+code vector_?last, 'vector-?last'       ; vector -> element/nil
         _ check_vector
         mov     rax, [rbx + VECTOR_RAW_LENGTH_OFFSET]
         sub     rax, 1
@@ -479,14 +474,14 @@ code vector_set_nth, 'vector-set-nth'   ; element index vector -> void
         cmp     rbx, [this_register + VECTOR_RAW_CAPACITY_OFFSET]
         jl      .1
 
-        ; -- element untagged-index
+        ; -> element untagged-index
         _dup
 
         ; new capacity needs to be at least index + 1
         _oneplus
 
         _this
-        _ vector_ensure_capacity_unchecked      ; -> element untagged-index
+        _ vector_ensure_capacity_unchecked ; -> element untagged-index
 
         ; initialize new cells to nil
         _dup
@@ -511,42 +506,42 @@ code vector_set_nth, 'vector-set-nth'   ; element index vector -> void
 endcode
 
 ; ### vector-insert-nth
-code vector_insert_nth, 'vector-insert-nth'     ; element n vector -> void
+code vector_insert_nth, 'vector-insert-nth' ; element n vector -> void
         _ check_vector
 
         _check_index qword [rbp]
 
         push    this_register
-        mov     this_register, rbx      ; -- element n vector
+        mov     this_register, rbx      ; -> element n vector
 
-        _twodup                         ; -- element n vector n vector
-        _vector_raw_length              ; -- element n vector n length
-        _ugt                            ; -- element n vector
+        _twodup                         ; -> element n vector n vector
+        _vector_raw_length              ; -> element n vector n length
+        _ugt                            ; -> element n vector
         _if .1
         _error "vector-insert-nth n > length"
         _then .1
 
-        _dup                            ; -- element n vector vector
-        _vector_raw_length              ; -- element n vector length
-        _oneplus                        ; -- element n vector length+1
-        _over                           ; -- element n vector length+1 vector
-        _ vector_ensure_capacity_unchecked      ; -> element n vector
+        _dup                            ; -> element n vector vector
+        _vector_raw_length              ; -> element n vector length
+        _oneplus                        ; -> element n vector length+1
+        _over                           ; -> element n vector length+1 vector
+        _ vector_ensure_capacity_unchecked ; -> element n vector
 
-        _vector_raw_data_address        ; -- element n raw-data-address
-        _over                           ; -- element n raw-data-address n
-        _duptor                         ; -- element n raw-data-address n           r: -- n
+        _vector_raw_data_address        ; -> element n raw-data-address
+        _over                           ; -> element n raw-data-address n
+        _duptor                         ; -> element n raw-data-address n       r: -> n
         _cells
-        _plus                           ; -- element n addr
+        _plus                           ; -> element n addr
         _dup
-        _cellplus                       ; -- element n addr addr+8
+        _cellplus                       ; -> element n addr addr+8
         _this
         _vector_raw_length
         _rfrom
-        _minus                          ; -- element n addr addr+8 #cells
+        _minus                          ; -> element n addr addr+8 #cells
 
-        mov     arg2_register, rbx                      ; count
-        mov     arg1_register, [rbp]                    ; destination
-        mov     arg0_register, [rbp + BYTES_PER_CELL]   ; source
+        mov     arg2_register, rbx      ; count
+        mov     arg1_register, [rbp]    ; destination
+        mov     arg0_register, [rbp + BYTES_PER_CELL] ; source
         _3drop
         _ move_cells
 
@@ -561,7 +556,7 @@ code vector_insert_nth, 'vector-insert-nth'     ; element n vector -> void
 endcode
 
 ; ### vector-remove-nth!
-code vector_remove_nth_mutating, 'vector-remove-nth!'   ; n vector --
+code vector_remove_nth_mutating, 'vector-remove-nth!' ; n vector -> void
 
         _ check_bounds
 
@@ -573,22 +568,22 @@ code vector_remove_nth_mutating, 'vector-remove-nth!'   ; n vector --
 
         _untag_fixnum
 
-        _this_vector_raw_data_address   ; -- n addr
-        _swap                           ; -- addr n
-        _duptor                         ; -- addr n                     r: -- n
+        _this_vector_raw_data_address   ; -> n addr
+        _swap                           ; -> addr n
+        _duptor                         ; -> addr n     r: -> n
         _oneplus
         _cells
-        _plus                           ; -- addr2
-        _dup                            ; -- addr2 addr2
-        _cellminus                      ; -- addr2 addr2-8
+        _plus                           ; -> addr2
+        _dup                            ; -> addr2 addr2
+        _cellminus                      ; -> addr2 addr2-8
         _this_vector_raw_length
-        _oneminus                       ; -- addr2 addr2-8 len-1        r: -- n
-        _rfrom                          ; -- addr2 addr2-8 len-1 n
-        _minus                          ; -- addr2 addr2-8 len-1-n
+        _oneminus                       ; -> addr2 addr2-8 len-1        r: -> n
+        _rfrom                          ; -> addr2 addr2-8 len-1 n
+        _minus                          ; -> addr2 addr2-8 len-1-n
 
-        mov     arg2_register, rbx                      ; count
-        mov     arg1_register, [rbp]                    ; destination
-        mov     arg0_register, [rbp + BYTES_PER_CELL]   ; source
+        mov     arg2_register, rbx      ; count
+        mov     arg1_register, [rbp]    ; destination
+        mov     arg0_register, [rbp + BYTES_PER_CELL] ; source
         mov     rbx, [rbp + BYTES_PER_CELL * 2]
         lea     rbp, [rbp + BYTES_PER_CELL * 3]
         _ move_cells
@@ -608,16 +603,16 @@ code vector_remove_nth_mutating, 'vector-remove-nth!'   ; n vector --
 endcode
 
 ; ### vector-remove
-code vector_remove, 'vector-remove'     ; element vector -- new-vector
+code vector_remove, 'vector-remove'     ; element vector -> new-vector
         _ check_vector
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -- element
+        poprbx                          ; -> element
 
         _lit 16
         _ new_vector_untagged
-        _swap                           ; -- new-vector element
+        _swap                           ; -> new-vector element
 
         _this_vector_raw_length
         _register_do_times .1
@@ -634,14 +629,14 @@ code vector_remove, 'vector-remove'     ; element vector -- new-vector
 
         _loop .1
 
-        _drop                           ; -- new-vector
+        _drop                           ; -> new-vector
 
         pop     this_register
         next
 endcode
 
 ; ### vector-remove!
-code vector_remove_mutating, 'vector-remove!' ; element vector -- vector
+code vector_remove_mutating, 'vector-remove!' ; element vector -> vector
         ; save handle
         _duptor
 
@@ -649,15 +644,15 @@ code vector_remove_mutating, 'vector-remove!' ; element vector -- vector
 
         push    this_register
         mov     this_register, rbx
-        poprbx                          ; -- element-to-be-removed
+        poprbx                          ; -> element-to-be-removed
 
-        _lit 0                          ; -- element-to-be-removed count
-        _swap                           ; -- count element-to-be-removed
+        _lit 0                          ; -> element-to-be-removed count
+        _swap                           ; -> count element-to-be-removed
 
         _this_vector_raw_length
         _register_do_times .1
         _raw_loop_index
-        _this_vector_nth_unsafe         ; -- count element-to-be-removed current-element
+        _this_vector_nth_unsafe         ; -> count element-to-be-removed current-element
 
         _twodup
         _ feline_equal
@@ -669,17 +664,17 @@ code vector_remove_mutating, 'vector-remove!' ; element vector -- vector
         _else .2
 
         ; keep current element
-        _pick                           ; -- count element-to-be-removed current-element count
-        _this_vector_set_nth_unsafe     ; -- count element-to-be-removed
+        _pick                           ; -> count element-to-be-removed current-element count
+        _this_vector_set_nth_unsafe     ; -> count element-to-be-removed
 
         ; increment count
         add     qword [rbp], 1
 
         _then .2
 
-        _loop .1                        ; -- count element-to-be-removed
+        _loop .1                        ; -> count element-to-be-removed
 
-        _drop                           ; -- count
+        _drop                           ; -> count
         _this_vector_set_raw_length
 
         pop     this_register
@@ -776,7 +771,7 @@ code vector_push, 'vector-push'         ; element handle -> void
 endcode
 
 ; ### vector-push-all
-code vector_push_all, 'vector-push-all' ; seq vector --
+code vector_push_all, 'vector-push-all' ; seq vector -> void
         _ verify_vector
         _swap
         _quotation .1
@@ -800,7 +795,7 @@ endcode
 code vector_pop, 'vector-pop'           ; vector -> element
 ; error if vector is empty
 
-        _ check_vector                  ; ^vector in rbx
+        _ check_vector                  ; rbx: ^vector
 
 vector_pop_unchecked:
         mov     rax, [rbx + VECTOR_RAW_LENGTH_OFFSET]
@@ -839,9 +834,9 @@ code vector_?pop, 'vector-?pop'         ; handle -> element/nil
 endcode
 
 ; ### vector-pop*
-code vector_pop_star, 'vector-pop*'     ; handle --
+code vector_pop_star, 'vector-pop*'     ; handle ->
 
-        _ check_vector                  ; -- vector
+        _ check_vector                  ; -> vector
 
         push    this_register
         mov     this_register, rbx
@@ -870,7 +865,7 @@ code vector_pop_star, 'vector-pop*'     ; handle --
 endcode
 
 ; ### vector-equal?
-code vector_equal?, 'vector-equal?'     ; vector1 vector2 -- ?
+code vector_equal?, 'vector-equal?'     ; vector1 vector2 -> ?
         _twodup
 
         _ vector?
@@ -892,7 +887,7 @@ code vector_equal?, 'vector-equal?'     ; vector1 vector2 -- ?
 endcode
 
 ; ### vector-reverse!
-code vector_reverse_in_place, 'vector-reverse!'         ; vector -- vector
+code vector_reverse_in_place, 'vector-reverse!' ; vector -> vector
         _duptor
         _ check_vector
 
@@ -908,13 +903,13 @@ code vector_reverse_in_place, 'vector-reverse!'         ; vector -- vector
         _register_do_times .1
 
         _i
-        _this_vector_nth_unsafe         ; -- char1
+        _this_vector_nth_unsafe         ; -> char1
 
         _this_vector_raw_length
         _oneminus
         _i
         _minus
-        _this_vector_nth_unsafe         ; -- char1 char2
+        _this_vector_nth_unsafe         ; -> char1 char2
 
         _i
         _this_vector_set_nth_unsafe
@@ -933,7 +928,7 @@ code vector_reverse_in_place, 'vector-reverse!'         ; vector -- vector
 endcode
 
 ; ### vector_each_internal
-subroutine vector_each_internal ; vector raw-code-address ->
+subroutine vector_each_internal ; vector raw-code-address -> void
 
         _swap
         _ check_vector                  ; -> code-address vector
@@ -956,7 +951,7 @@ subroutine vector_each_internal ; vector raw-code-address ->
 endsub
 
 ; ### vector-each
-code vector_each, 'vector-each'         ; vector callable --
+code vector_each, 'vector-each'         ; vector callable -> void
 
         ; protect callable from gc
         push    rbx
@@ -964,10 +959,10 @@ code vector_each, 'vector-each'         ; vector callable --
         ; protect vector from gc
         push    qword [rbp]
 
-        _ callable_raw_code_address     ; -- vector code-address
+        _ callable_raw_code_address     ; -> vector code-address
 
         _swap
-        _ check_vector                  ; -- code-address vector
+        _ check_vector                  ; -> code-address vector
 
         push    this_register
         mov     this_register, rbx
@@ -977,7 +972,7 @@ code vector_each, 'vector-each'         ; vector callable --
         _this_vector_raw_length
         _do_times .1
         _raw_loop_index
-        _this_vector_nth_unsafe         ; -- element
+        _this_vector_nth_unsafe         ; -> element
         call    r12
         _loop .1
         pop     r12
@@ -1033,26 +1028,26 @@ code vector_all?, 'vector-all?'         ; vector callable -> ?
 endcode
 
 ; ### vector-each-index
-code vector_each_index, 'vector-each-index' ; vector quotation-or-xt --
-        _ callable_raw_code_address     ; -- vector code-address
+code vector_each_index, 'vector-each-index' ; vector callable -> void
+        _ callable_raw_code_address     ; -> vector code-address
 
         _swap
-        _ check_vector                  ; -- code-address vector
+        _ check_vector                  ; -> code-address vector
 
         push    this_register
         mov     this_register, rbx
         push    r12
-        mov     r12, [rbp]              ; code address in r12
+        mov     r12, [rbp]              ; r12: code address
         _2drop                          ; adjust stack
         _this_vector_raw_length
         _zero
         _?do .1
-        _i                              ; -- i
-        _this_vector_nth_unsafe         ; -- element
-        _i                              ; -- element i
-        _tag_fixnum                     ; -- element index
+        _i                              ; -> i
+        _this_vector_nth_unsafe         ; -> element
+        _i                              ; -> element i
+        _tag_fixnum                     ; -> element index
         call    r12
-        _loop .1                        ; --
+        _loop .1
         pop     r12
         pop     this_register
         next
